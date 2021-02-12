@@ -49,7 +49,7 @@ const ResultLists = (props) => {
       return (
         <>
           {props.searchRadius < props.trainings[0].place.distance ? (
-            <div className="trainingColor bold">
+            <div className="bold px-3 py-3">
               Aucune formation ne correspondait à votre zone de recherche, nous avons trouvé les plus proches
             </div>
           ) : (
@@ -69,7 +69,9 @@ const ResultLists = (props) => {
       );
     } else if (props.isTrainingSearchLoading) {
       return "Nous recherchons les formations, merci de patienter...";
-    } else return "";
+    } else {
+      return <div className="bold bg-white">Aucune formation trouvée pour votre recherche</div>;
+    }
   };
 
   const getJobResult = () => {

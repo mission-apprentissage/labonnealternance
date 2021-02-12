@@ -52,10 +52,10 @@
 .demoPage .floatingButtons button {
   cursor: pointer;
   margin-right: 30px;
-  background-color: #0061DF;
+  background-color: $gray-750;
   font-size: 14px;
   color: #fff;
-  border-radius: 19px;
+  border-radius: 58px;
   border: none;
   padding: 10px 20px;
 }
@@ -86,9 +86,6 @@
     position: fixed;
     bottom: 40px;
     right: 40%;
-  }
-  .demoPage .floatingButtons.resultList {
-    right: -10px;
   }
 }
 .demoPage .inFormIcon {

@@ -1,7 +1,10 @@
 # CHANGELOG
 
-## 1.8.6 [10/02/2021]
+## 1.8.7 [12/02/2021]
 [388] Endpoint d'injection du fichier domainesMetiers
+
+## 1.8.6 [11/02/2021]
+[363] Charter les messages d'info
 
 ## 1.8.5 [10/02/2021]
 [386] Rechargement carte après navigation navigateur
