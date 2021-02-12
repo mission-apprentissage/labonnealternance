@@ -89,7 +89,6 @@ const updateRomesMetiersQuery = async (query) => {
     return { error: "wrong_secret" };
   } else {
     try {
-      console.log("update");
       let result = await updateDomainesMetiers(query.fileName);
       return result;
     } catch (err) {
