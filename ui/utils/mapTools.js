@@ -22,7 +22,8 @@ const initializeMap = ({ mapContainer, store, unselectItem, trainings, jobs, sel
 
   map = new mapboxgl.Map({
     container: mapContainer.current,
-    style: "mapbox://styles/alanlr/ckkcqqf4e0dxz17r5xa3fkn1f", // stylesheet location
+    //style: "mapbox://styles/alanlr/ckkcqqf4e0dxz17r5xa3fkn1f", // stylesheet location
+    style: "mapbox://styles/alanlr/ckmufy44q4yky17qof4arfdz3",
     center: [2.2, 47],
     zoom: 5,
     maxZoom: 17,
