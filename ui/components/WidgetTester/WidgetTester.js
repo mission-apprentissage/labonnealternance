@@ -182,6 +182,7 @@ const WidgetTester = () => {
                       onInputValueChangeFunction={fetchRomes}
                       name="jobField"
                       placeholder="Ex : boulangerie"
+                      searchPlaceholder="Indiquez le métier recherché ci-dessus"
                     />
                   </div>
                   {showSelectedRomes()}
@@ -204,6 +205,7 @@ const WidgetTester = () => {
                       scrollParentId="choiceColumn"
                       name="placeField"
                       placeholder="Adresse, ville ou code postal"
+                      searchPlaceholder="Indiquez le lieu recherché ci-dessus"
                     />
                   </div>
                   {showSearchCenter()}

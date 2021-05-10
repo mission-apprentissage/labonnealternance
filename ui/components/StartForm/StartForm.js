@@ -6,37 +6,30 @@ import {
   compareAutoCompleteValues,
   autoCompleteToStringFunction,
 } from "components/AutoCompleteField/AutoCompleteField";
-import { fetchAddresses } from "../../services/baseAdresse";
-import fetchRomes from "../../services/fetchRomes";
+import { fetchAddresses } from "services/baseAdresse";
+import domainChanged from "services/domainChanged";
 import { DomainError } from "../";
 import { push } from "connected-next-router";
 import { setFormValues, setShouldExecuteSearch } from "store/actions";
 import glassImage from "public/images/glass.svg";
 import localisationImage from "public/images/localisation.svg";
-import { SendTrackEvent } from "utils/gtm";
 
 const StartForm = (props) => {
   const dispatch = useDispatch();
   const { formValues } = useSelector((state) => state.trainings);
-
   const [domainError, setDomainError] = useState(false);
 
-  const domainChanged = async function (val) {
-    const res = await fetchRomes(val, () => {
-      setDomainError(true);
-    });
-
-    // tracking des recherches sur table domaines métier que lorsque le mot recherché fait au moins trois caractères
-    if (val.length > 2) {
-      SendTrackEvent({
-        event: "Moteur de recherche - Metier",
-        terme: val,
-        hits: res.length,
-      });
-    }
-
+  const jobChanged = async function (val, setLoadingState) {
+    let res = await domainChanged(val, setDomainError)
+    setLoadingState('done')
     return res;
   };
+
+  const addressChanged = async function (val, setLoadingState) {
+    let res = await fetchAddresses(val)
+    setLoadingState('done')
+    return res
+  }
 
   const handleSearchSubmit = (values) => {
     dispatch(setFormValues({ job: values.job, location: values.location }));
@@ -96,12 +89,13 @@ const StartForm = (props) => {
                   itemToStringFunction={autoCompleteToStringFunction}
                   onSelectedItemChangeFunction={updateValuesFromJobAutoComplete}
                   compareItemFunction={compareAutoCompleteValues}
-                  onInputValueChangeFunction={domainChanged}
+                  onInputValueChangeFunction={jobChanged}
                   previouslySelectedItem={formValues?.job ?? null}
                   name="jobField"
                   placeholder="Ex : boulangerie"
                   illustration={glassImage}
                   isHome={true}
+                  searchPlaceholder="Indiquez le métier recherché ci-dessus"
                 />
                 <ErrorMessage name="job" className="u-error-text-color" component="div" />
               </div>
@@ -113,13 +107,14 @@ const StartForm = (props) => {
                   itemToStringFunction={autoCompleteToStringFunction}
                   onSelectedItemChangeFunction={updateValuesFromPlaceAutoComplete}
                   compareItemFunction={compareAutoCompleteValues}
-                  onInputValueChangeFunction={fetchAddresses}
+                  onInputValueChangeFunction={addressChanged}
                   previouslySelectedItem={formValues?.location ?? null}
                   scrollParentId="choiceColumn"
                   name="placeField"
                   placeholder="Adresse, ville ou code postal"
                   illustration={localisationImage}
                   isHome={true}
+                  searchPlaceholder="Indiquez le lieu recherché ci-dessus"
                 />
                 <ErrorMessage name="location" className="u-error-text-color" component="div" />
               </div>

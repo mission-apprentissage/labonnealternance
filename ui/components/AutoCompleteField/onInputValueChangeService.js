@@ -5,6 +5,7 @@ export default async function onInputValueChangeService({
   inputItems = [],
   items = [],
   setInputItems = noop,
+  setLoadingState = noop,
   selectItem = noop,
   onInputValueChangeFunction = null,
   compareItemFunction = null,
@@ -14,7 +15,7 @@ export default async function onInputValueChangeService({
 }) {
   // fixe la liste d'items en fonction de la valeur courante du champ input. S'il y a appel à une API c'est ici
   if (onInputValueChangeFunction) {
-    const newItems = await onInputValueChangeFunction(inputValue);
+    const newItems = await onInputValueChangeFunction(inputValue, setLoadingState);
     setInputItems(newItems);
 
     if (previouslySelectedItem) { // uniquement appelé lors d'une réinitialisation de l'input après navigation
