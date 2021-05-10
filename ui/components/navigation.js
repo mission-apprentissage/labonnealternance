@@ -32,12 +32,13 @@ const Navigation = (props) => {
             <Nav className="c-navbar-links ml-auto" navbar>
               <NavItem>
                 <a
-                  href="https://labonneboite.pole-emploi.fr/informations-entreprise/action"
-                  target="_blank"
                   className="nav-link"
-                  rel="noopener noreferrer"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    dispatch(push({ pathname: "/acces-recruteur" }));
+                  }}
+                  href="/acces-recruteur"
                 >
-                  <img className="mt-n1" src="/images/square_link.svg" alt="Lien organisme recruteur" />
                   <span className="ml-2">Recruteur</span>
                 </a>
               </NavItem>
