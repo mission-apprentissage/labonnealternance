@@ -9,6 +9,7 @@ import smallMapPointIcon from "public/images/icons/small_map_point.svg";
 import chevronLeft from "public/images/chevronleft.svg";
 import chevronRight from "public/images/chevronright.svg";
 import chevronClose from "public/images/close.svg";
+import { capitalizeFirstLetter } from "utils/strutils";
 
 import { useSwipeable } from "react-swipeable";
 import { mergeJobs, mergeOpportunities } from "utils/itemListUtils";
@@ -73,7 +74,12 @@ const ItemDetail = ({ selectedItem, handleClose, displayNavbar, handleSelectItem
 
   return (
     <>
-      <section className={`c-detail itemDetail ${selectedItem ? "" : "hiddenItemDetail"}`} {...swipeHandlers}>
+      <section
+        className={`c-detail itemDetail ${kind ? `gtmDetail${capitalizeFirstLetter(kind)}` : ""} ${
+          selectedItem ? "" : "hiddenItemDetail"
+        }`}
+        {...swipeHandlers}
+      >
         {displayNavbar ? (
           <nav
             className="c-detail-stickynav"
@@ -179,7 +185,6 @@ const ItemDetail = ({ selectedItem, handleClose, displayNavbar, handleSelectItem
           ) : (
             ""
           )}
-          
         </div>
       </section>
     </>

@@ -1,6 +1,7 @@
 # CHANGELOG
 
 ## 1.13.4 [07/05/2021]
+[595] tracking gtm
 [579] Suppression notion de poids sur les opportunités d'emploi
 
 ## 1.13.3 [05/05/2021]
