@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 1.13.4 [07/05/2021]
+[579] Suppression notion de poids sur les opportunités d'emploi
+
 ## 1.13.3 [05/05/2021]
 [610] Envoi event vers catalogue à l'affichage d'une formation
 

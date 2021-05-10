@@ -40,7 +40,6 @@ const getMatchaJobs = async ({ romes, radius, latitude, longitude }) => {
 const transformMatchaJobsForIdea = (jobs) => {
   let resultJobs = {
     results: [],
-    inRadiusItems: 0,
   };
 
   if (jobs && jobs.length) {

@@ -1,7 +1,7 @@
 const axios = require("axios");
 const Sentry = require("@sentry/node");
 const { itemModel } = require("../../model/itemModel");
-const { getAccessToken, peApiHeaders, getRoundedRadius } = require("./common.js");
+const { getAccessToken, peApiHeaders } = require("./common.js");
 const { isOriginLocal } = require("../../common/utils/isOriginLocal");
 
 const getSomeLbbCompanies = async ({ romes, latitude, longitude, radius, type, strictRadius, referer }) => {
@@ -31,13 +31,9 @@ const getSomeLbbCompanies = async ({ romes, latitude, longitude, radius, type, s
   return companySet;
 };
 
-const transformLbbCompaniesForIdea = ({ companySet, radius, type, strictRadius, referer }) => {
-  let maxWeigth = type === "lbb" ? 800 : 900;
-  if (!strictRadius) maxWeigth = 1000;
-
+const transformLbbCompaniesForIdea = ({ companySet, type, referer }) => {
   let resultCompanies = {
     results: [],
-    inRadiusItems: 0,
   };
 
   if (companySet.companies && companySet.companies.length) {
@@ -45,22 +41,8 @@ const transformLbbCompaniesForIdea = ({ companySet, radius, type, strictRadius, 
 
     for (let i = 0; i < companySet.companies.length; ++i) {
       let company = transformLbbCompanyForIdea({ company: companySet.companies[i], type, contactAllowedOrigin });
-      let distanceWeightModifier = 0;
-
-      // détermine si la bonne boîte est dans le rayon de recherche initial ou non
-      if (company.place.distance < getRoundedRadius(radius)) {
-        resultCompanies.inRadiusItems++;
-      } else {
-        distanceWeightModifier = (company.place.distance - radius) * 3; // on retire au poids 3 pts par km au delà du rayon de recherche initial
-      }
-
-      if (distanceWeightModifier > maxWeigth) distanceWeightModifier = maxWeigth; // malus au poids maximal de maxWeight pour la distance
-
-      company.ideaWeight = maxWeigth - distanceWeightModifier; // affectation d'un poids moins élevé que  pour les offres d'emploi
 
       resultCompanies.results.push(company);
-
-      //console.log("comapany weight : ", companySet.companies[i].weight);
     }
   }
 
@@ -153,7 +135,7 @@ const getLbbCompanies = async ({ romes, latitude, longitude, radius, companyLimi
 
     return companies.data;
   } catch (error) {
-    let errorObj = { result: "error", message: error.message };
+    let errorObj = { result: "error", results: [], message: error.message };
 
     if (error?.response?.data) {
       errorObj.status = error.response.status;

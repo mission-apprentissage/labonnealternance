@@ -79,7 +79,6 @@ const getSomePeJobsForChunkedRomes = async ({ romes, insee, radius, lat, long, s
 const transformPeJobsForIdea = (jobs, radius, lat, long) => {
   let resultJobs = {
     results: [],
-    inRadiusItems: 0,
   };
 
   if (jobs.resultats && jobs.resultats.length) {
