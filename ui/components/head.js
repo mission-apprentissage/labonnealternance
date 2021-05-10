@@ -4,6 +4,11 @@ import Fonts from "./fonts";
 import env from "utils/env";
 
 const HeadLaBonneAlternance = (props) => {
+  if (typeof window !== "undefined") {
+    window.$crisp = [];
+    window.CRISP_WEBSITE_ID = "42aea9c7-003d-4ed2-8871-130250e8c4b3";
+  }
+
   return (
     <Head>
       <title>La Bonne Alternance | Trouvez votre alternance</title>
@@ -46,6 +51,8 @@ const HeadLaBonneAlternance = (props) => {
       ) : (
         ""
       )}
+
+      <script async src={`https://client.crisp.chat/l.js`}></script>
     </Head>
   );
 };
