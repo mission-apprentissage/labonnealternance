@@ -24,6 +24,7 @@ const TrainingDetail = ({ training, seeInfo, setSeeInfo }) => {
   }, []); // Utiliser le useEffect une seule fois : https://css-tricks.com/run-useeffect-only-once/
 
   useEffect(() => {
+    console.log("prdvUseEffect ",training?.idRco);
     if (window && window.initPrdvWidget) {
       const el = document.getElementsByClassName("widget-prdv");
 
