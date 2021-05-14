@@ -376,6 +376,7 @@ const transformFormationForIdea = (formation) => {
   let resultFormation = itemModel("formation");
 
   resultFormation.title = _.get(formation, "source.intitule_long", formation.source.intitule_court);
+  resultFormation.title += " --- " + formation.source.nom + " --- " + formation.source.code_commune_insee;
   resultFormation.longTitle = formation.source.intitule_long;
   resultFormation.diplomaLevel = formation.source.niveau;
   resultFormation.onisepUrl = formation.source.onisep_url;
@@ -485,6 +486,8 @@ const getTrainingSchoolName = (school) => {
   let schoolName = school.etablissement_formateur_entreprise_raison_sociale
     ? school.etablissement_formateur_entreprise_raison_sociale
     : school.etablissement_gestionnaire_entreprise_raison_sociale;
+
+  schoolName += " ---- " + school.etablissement_formateur_enseigne;
 
   return schoolName;
 };
@@ -629,6 +632,7 @@ const getFormationEsQueryIndexFragment = (limit) => {
       "etablissement_formateur_code_postal",
       "etablissement_formateur_localite",
       "etablissement_formateur_entreprise_raison_sociale",
+      "etablissement_formateur_enseigne",
       "etablissement_formateur_cedex",
       "etablissement_formateur_complement_adresse",
       "etablissement_gestionnaire_id",
@@ -649,6 +653,8 @@ const getFormationEsQueryIndexFragment = (limit) => {
       "periode",
       "capacite",
       "id_rco_formation",
+      "code_commune_insee",
+      "nom",
     ],
   };
 };
