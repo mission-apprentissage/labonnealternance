@@ -19,6 +19,8 @@ import {
   setFormValues,
   setExtendedSearch,
   setHasSearch,
+  setWidgetParameters,
+  setFormParameters,
 } from "store/actions";
 
 import {
@@ -48,7 +50,7 @@ const SearchForTrainingsAndJobs = () => {
   const dispatch = useDispatch();
   const scopeContext = useScopeContext();
 
-  const { trainings, jobs, hasSearch, selectedItem, widgetParameters, visiblePane, isFormVisible, formValues } = useSelector(
+  const { trainings, jobs, hasSearch, selectedItem, widgetParameters, formParameters, visiblePane, isFormVisible, formValues } = useSelector(
     (state) => state.trainings
   );
 
@@ -87,6 +89,8 @@ const SearchForTrainingsAndJobs = () => {
         setTrainings,
         setJobs,
         setActiveFilter,
+        formParameters,
+        setFormParameters,
       });
     };
 

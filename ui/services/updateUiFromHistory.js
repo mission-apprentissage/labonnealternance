@@ -23,6 +23,10 @@ export const updateUiFromHistory = ({
   setTrainings,
   setJobs,
   setActiveFilter,
+  widgetParameters,
+  setWidgetParameters,
+  formParameters,
+  setFormParameters,
 }) => {
   // récupération des query parameters donnant des indications sur l'état de l'interface
   let urlParams;
@@ -53,6 +57,10 @@ export const updateUiFromHistory = ({
   // réconciliation entre le store et l'état des formulaires de recherche
   if (jobName || address) {
     // TODO: à faire
+
+    console.log("ICI QUAND MEME ",jobName, address, formParameters);
+
+    setFormParameters({updateFormValues:jobName});
   }
 
   // réconciliation entre le store et l'état attendu indiqué par les query parameters pour les éléments sélectionnés

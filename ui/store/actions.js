@@ -13,6 +13,7 @@ export const types = {
   SET_SHOULD_EXECUTE_SEARCH: "trainings/SET_SHOULD_EXECUTE_SEARCH",
   SET_SHOULD_MAP_BE_VISIBLE: "trainings/SET_SHOULD_MAP_BE_VISIBLE",
   SET_WIDGET_PARAMETERS: "trainings/SET_WIDGET_PARAMETERS",
+  SET_FORM_PARAMETERS: "trainings/SET_FORM_PARAMETERS",
   SET_ITEM_PARAMETERS: "trainings/SET_ITEM_PARAMETERS",
   SET_TRAININGS_AND_SELECTED_ITEM: "trainings/SET_TRAININGS_AND_SELECTED_ITEM",
   SET_SELECTED_MAP_POPUP_ITEM: "trainings/SET_SELECTED_MAP_POPUP_ITEM",
@@ -129,6 +130,14 @@ export const setWidgetParameters = (widgetParameters = true) => {
   return {
     type: types.SET_WIDGET_PARAMETERS,
     widgetParameters,
+  };
+};
+
+export const setFormParameters = (formParameters = true) => {
+  console.log("EET ALOR ,",formParameters);
+  return {
+    type: types.SET_FORM_PARAMETERS,
+    formParameters,
   };
 };
 

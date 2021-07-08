@@ -14,6 +14,7 @@ const initialState = {
   shouldExecuteSearch: false,
   shouldMapBeVisible: false,
   widgetParameters: null,
+  formParameters: null,
   itemParameters: null,
   selectedMapPopupItem: null,
 };
@@ -100,6 +101,11 @@ const mainReducer = (state = initialState, action) => {
     res = {
       ...state_copy,
       widgetParameters: action.widgetParameters,
+    };
+  } else if (action.type === actionsTypes.SET_FORM_PARAMETERS) {
+    res = {
+      ...state_copy,
+      formParameters: action.formParameters,
     };
   } else if (action.type === actionsTypes.SET_ITEM_PARAMETERS) {
     res = {

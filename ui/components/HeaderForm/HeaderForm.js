@@ -18,7 +18,7 @@ import { autoCompleteToStringFunction, compareAutoCompleteValues } from "service
 import validateFormik from "services/validateFormik";
 
 const HeaderForm = ({ handleSearchSubmit, isHome }) => {
-  const { formValues, widgetParameters } = useSelector((state) => {
+  const { formValues, widgetParameters, formParameters } = useSelector((state) => {
     return state.trainings;
   });
 
@@ -27,8 +27,16 @@ const HeaderForm = ({ handleSearchSubmit, isHome }) => {
     setDiploma(contextFormValues?.diploma ?? "");
   }, [widgetParameters?.applyFormValues]);
 
+  useEffect(() => {
+    console.log("ALALALA",formParameters?.updateFormValues);
+    //setLocationRadius(contextFormValues?.radius ?? 30);
+    //setDiploma(contextFormValues?.diploma ?? "");
+  }, [formParameters]);
+
   const contextFormValues =
     widgetParameters?.applyFormValues && widgetParameters?.formValues ? widgetParameters.formValues : formValues;
+
+  console.log("CONTEXTFORMVALUES : ",contextFormValues);
 
   const [locationRadius, setLocationRadius] = useState(30);
   const [diplomas, setDiplomas] = useState([]);
