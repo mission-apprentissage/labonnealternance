@@ -114,6 +114,19 @@ const Footer = (props) => {
                     className="c-footer-links__link"
                     onClick={(e) => {
                       e.preventDefault();
+                      dispatch(push({ pathname: "/metiers" }));
+                    }}
+                    href="/metiers"
+                  >
+                    Métiers
+                  </a>
+                </li>
+
+                <li className="c-footer-links__line">
+                  <a
+                    className="c-footer-links__link"
+                    onClick={(e) => {
+                      e.preventDefault();
                       dispatch(push({ pathname: "/rgpd" }));
                     }}
                     href="/rgpd"

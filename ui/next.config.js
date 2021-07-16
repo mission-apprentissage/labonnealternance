@@ -42,12 +42,6 @@ module.exports = withPlugins(
       withSourceMaps,
       {
         webpack: (config, options) => {
-
-          // generate sitemap
-          // only one "webpack" prop is allowed inside this file
-          // See https://github.com/cyrilwanner/next-compose-plugins/issues/22
-          require('./scripts/generate-sitemap');
-
           config.module.rules.push({
             test: /\.(svg|png|jpg|gif)$/,
             use: {

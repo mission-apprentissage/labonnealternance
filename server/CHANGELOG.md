@@ -7,6 +7,7 @@
 [724] Augmentation de quota
 
 ## 1.15.8 [07/07/2021]
+[715] Catalogue
 [724] Augmentation de quota
 
 ## 1.15.7 [06/07/2021]

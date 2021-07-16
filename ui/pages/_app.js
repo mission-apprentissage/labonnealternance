@@ -19,11 +19,10 @@ class ExampleApp extends App {
     // récupération du hostname pour initialiser les fonts en preload
     const { req } = context.ctx;
     let host = "";
-    if (req) {
+    if (req?.headers?.host) {
       host = req.headers.host;
       host = `${host.startsWith("localhost") ? "http" : "https"}://${host}`;
     }
-
     return { host };
   }
 
