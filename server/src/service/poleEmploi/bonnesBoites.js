@@ -171,9 +171,21 @@ const getCompanyFromSiret = async ({ siret, referer, caller, type }) => {
     let headers = peApiHeaders;
     headers.Authorization = `Bearer ${token}`;
 
-    const companyQuery = await axios.get(`${lbbCompanyApiEndPoint}${siret}/details?contract=alternance`, {
-      headers,
-    });
+    let companyQuery = null;
+
+    try {
+      companyQuery = await axios.get(`${lbbCompanyApiEndPoint}${siret}/details?contract=alternance`, {
+        headers,
+      });
+    } catch (err) {
+      if (err?.response?.status === 404) {
+        companyQuery = await axios.get(`${lbbCompanyApiEndPoint}${siret}/details`, {
+          headers,
+        });
+      } else {
+        throw err;
+      }
+    }
 
     let company = transformLbbCompanyForIdea({
       company: companyQuery.data,
