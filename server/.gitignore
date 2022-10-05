@@ -1,0 +1,4 @@
+.local/
+.coverage/
+.env
+.nyc_output/

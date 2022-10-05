@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+function validate_commit() {
+  cd "${SCRIPT_DIR}/../.."
+  local sensible_files_pattern="\.(csv|xls|xls(x?)|json|env)$"
+  local exception="package.json$"
+  local files
+  files=$(git diff --cached --name-only | grep -v -E "$exception" | grep -E "$sensible_files_pattern") || true
+
+  if [ -z "$files" ]; then
+    make lint
+    make test
+  else
+    echo
+    echo "ERROR: Preventing commit of potentially sensible files:"
+    echo
+    echo "$files" | sed "s/^/   /"
+    echo
+    echo "Either reset those files, add them to .gitignore or remove them."
+    echo
+    echo "If you know what you are doing, please double-check that you are not commiting"
+    echo "any credentials, password or sensible data and run git commit again with --no-verify."
+    echo
+    exit 1
+  fi
+  cd -
+}
+
+validate_commit

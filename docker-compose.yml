@@ -1,0 +1,54 @@
+version: "2.4"
+services:
+  reverse_proxy:
+    image: doctrina_reverse_proxy
+    container_name: doctrina_reverse_proxy
+    build:
+      context: reverse_proxy
+    mem_limit: 256m
+    restart: unless-stopped
+    ports:
+      - 80:80
+    networks:
+      - doctrina_network
+    depends_on:
+      - server
+      - ui
+
+  ui:
+    image: doctrina_ui
+    container_name: doctrina_ui
+    build:
+      context: ui
+    mem_limit: 256m
+    networks:
+      - doctrina_network
+    depends_on:
+      - server
+
+  server:
+    image: doctrina_server
+    container_name: doctrina_server
+    build:
+      context: server
+    mem_limit: 1g
+    restart: unless-stopped
+    networks:
+      - doctrina_network
+    depends_on:
+      - mongodb
+    environment:
+      - DOCTRINA_MONGODB_URI=mongodb://mongodb:27017/doctrina?retryWrites=true&w=majority
+      - DOCTRINA_LOG_DESTINATIONS=stdout,mongodb
+
+  mongodb:
+    image: mongo:5.0.6-focal
+    container_name: doctrina_mongodb
+    mem_limit: 2g
+    restart: unless-stopped
+    networks:
+      - doctrina_network
+
+networks:
+  doctrina_network:
+    name: doctrina_network

@@ -1,0 +1,7 @@
+{
+  "timeout": 5000,
+  "exit": true,
+  "recursive": true,
+  "require": "tests/utils/mochaGlobalFixtures.js",
+  "reporter": "tests/utils/mochaReporter.cjs"
+}

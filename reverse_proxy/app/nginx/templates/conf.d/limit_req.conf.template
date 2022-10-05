@@ -1,0 +1,4 @@
+# Maximum 2400r/m pour l'ensemble des utilisateurs avant dégradation du service
+limit_req_zone $binary_remote_addr zone=flood:10m rate=400r/m;
+limit_req_log_level error;
+limit_req zone=flood burst=100 nodelay;

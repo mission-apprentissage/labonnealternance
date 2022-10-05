@@ -1,0 +1,18 @@
+# set cache policy to off for dev
+# map $sent_http_content_type $ui_expires {
+#     default                    off;
+#     text/html                  off;
+#     text/css                   off;
+#     ~application/javascript    off;
+#     ~image/                    off;
+#     ~font/                     off;
+# }
+
+# Needed by NextJs to hot reload
+location /_next {
+    proxy_pass          http://ui:3000;
+    proxy_http_version  1.1;
+    proxy_set_header    Upgrade $http_upgrade;
+    proxy_set_header    Connection "Upgrade";
+    proxy_set_header    Host $host;
+}

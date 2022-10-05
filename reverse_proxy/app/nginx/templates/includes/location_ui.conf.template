@@ -1,0 +1,23 @@
+location / {
+    set $upstream http://ui:3000;
+    include includes/proxy.conf;
+
+    client_max_body_size 0;
+
+    if ($always_redirect = on) {
+        return 301 https://$host$request_uri;
+    }
+
+    set $CSP "default-src 'self';";
+    set $CSP "connect-src 'self' https://*.ingest.sentry.io;base-uri;";
+    set $CSP "block-all-mixed-content;";
+    set $CSP "font-src 'self' https: data:;";
+    set $CSP "frame-ancestors 'self';";
+    set $CSP "img-src 'self' data:;";
+    set $CSP "object-src 'none';";
+    set $CSP "script-src 'self' 'sha256-yt+SNVxRkIi6H6yb7ndFuZM1esMX9esg3UpRHaTsyVk=';";# create-react-app iframe error
+    set $CSP "script-src-attr 'none';";
+    set $CSP "style-src 'self' https: 'unsafe-inline';";
+    set $CSP "upgrade-insecure-requests;";
+    add_header Content-Security-Policy $CSP always;
+}
