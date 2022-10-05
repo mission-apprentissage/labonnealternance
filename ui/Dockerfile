@@ -1,4 +1,4 @@
-ARG MNAPROJECTNAME_ENV=production
+ARG DOCTRINA_ENV=production
 
 #From https://github.com/vercel/next.js/blob/canary/examples/with-docker/Dockerfile
 # Install dependencies only when needed
@@ -55,4 +55,4 @@ EXPOSE 3000
 ENV PORT 3000
 CMD ["yarn", "dev"]
 
-FROM ui-${MNAPROJECTNAME_ENV} as final
+FROM ui-${DOCTRINA_ENV} as final

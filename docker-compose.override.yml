@@ -5,9 +5,6 @@ services:
     volumes:
       - doctrina_nginx_data:/data:z
       - ./reverse_proxy/dev/includes:/etc/nginx/templates/includes/env
-    build:
-      args:
-        - ENV=development
 
   ui:
     build:
