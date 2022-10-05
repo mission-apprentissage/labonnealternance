@@ -21,9 +21,7 @@ const contentSecurityPolicy = `
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  experimental: {
-    outputStandalone: true,
-  },
+  output: "standalone",
   async headers() {
     return [
       {
