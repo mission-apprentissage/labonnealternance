@@ -79,9 +79,7 @@ const nextConfig = withImages({
     includePaths: [path.join(__dirname, "/public/styles")],
   },
   reactStrictMode: true,
-  experimental: {
-    outputStandalone: true,
-  },
+  output: "standalone",
   async headers() {
     return [
       {
