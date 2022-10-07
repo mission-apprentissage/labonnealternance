@@ -53,6 +53,6 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 EXPOSE 3000
 ENV PORT 3000
-CMD ["yarn", "dev"]
+CMD ["yarn", "docker-dev"]
 
 FROM ui-${DOCTRINA_ENV} as final
