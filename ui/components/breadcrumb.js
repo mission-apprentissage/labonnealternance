@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 
-import separator from "public/images/breadcrumb_separator.svg";
+import separator from "../public/images/breadcrumb_separator.svg";
 
 const Breadcrumb = ({ forPage, label, items = null }) => {
   return (
