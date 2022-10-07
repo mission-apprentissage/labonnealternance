@@ -1,7 +1,7 @@
 import React from "react";
 
 import ExternalLink from "../externalLink";
-import linkedIn from "public/images/icons/linkedin.svg";
+import linkedIn from "../../public/images/icons/linkedin.svg";
 
 
 const FollowLinkedIn = () => {
