@@ -1,15 +1,40 @@
-FROM node:16-stretch
+ARG DOCTRINA_ENV=production
 
-#Install and cache node_modules
-COPY package.json yarn.lock /tmp/
-RUN cd /tmp && \
-    yarn install --frozen-lockfile && \
-    mkdir -p /app && \
-    mv /tmp/node_modules /app/
+FROM node:18-alpine AS deps
 
-COPY ./ /app
+WORKDIR /app
+COPY package.json yarn.lock ./
+COPY . .
+RUN yarn install --frozen-lockfile
+
+# Rebuild the source code only when needed
+# FROM node:16-alpine AS builder-production
+# WORKDIR /app
+# COPY --from=deps /app/node_modules ./node_modules 
+
+RUN yarn build
+
+# Production image, copy all the files and run node
+FROM node:18-alpine AS server-production
 WORKDIR /app
 
-VOLUME /data
-EXPOSE 5000
-CMD ["yarn", "start"]
+ENV NODE_ENV production
+
+COPY --from=deps /app/node_modules ./node_modules 
+COPY --from=deps /app/build .
+COPY --from=deps /app/package.json .
+
+USER nodejs
+EXPOSE 3000
+ENV PORT 3000
+CMD ["node", "server.js"]
+
+FROM node:18-alpine AS server-dev
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+EXPOSE 3000
+ENV PORT 3000
+CMD ["yarn", "dev"]
+
+FROM server-${DOCTRINA_ENV} as final
