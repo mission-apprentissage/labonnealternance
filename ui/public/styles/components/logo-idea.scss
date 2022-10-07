@@ -1,0 +1,16 @@
+.c-logoheader
+{
+  display: none;
+}
+
+@media only screen and (min-width: 1250px) {
+  .c-logoheader
+  {
+    display: inline-block;
+  }
+}
+
+.c-logoidea-title {
+  font-size: 1.25rem;
+  margin-top: .5rem;
+}

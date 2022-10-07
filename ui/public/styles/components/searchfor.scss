@@ -1,0 +1,387 @@
+.demoPage .c-autocomplete__menu {
+  margin-left: 0px;
+  width: 100%;
+  max-width: 370px;
+  margin-top: 4px;
+  box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.2);
+}
+.demoPage header {
+  background: none;
+  padding: 0px 10px;
+}
+.demoPage .bold {
+  font-weight: bold;
+}
+.c-searchform {
+  margin-top: 10px;
+}
+.demoPage form .row {
+  margin-left: -5px;
+  margin-right: -5px;
+}
+.demoPage form .col-3.radioButton {
+  max-width: 100% !important;
+}
+.demoPage .hiddenResultList,
+.demoPage .hiddenSearchForm,
+.demoPage .hiddenItemDetail {
+  display: none;
+}
+.demoPage .leftShadow {
+  box-shadow: none;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.demoPage .inactiveXSPane {
+  display: block;
+}
+.demoPage .floatingButtons {
+  @include media-breakpoint-up(md) {
+    display: none;
+  }
+}
+.demoPage .floatingButtons.is-hidden-true {
+  display: none;
+}
+
+.demoPage .floatingButtons button {
+  cursor: pointer;
+  margin-right: 30px;
+  background-color: $gray-750;
+  font-size: 14px;
+  color: #fff;
+  border-radius: 58px;
+  border: none;
+  padding: 10px 20px;
+  margin-top: -2rem;
+}
+.demoPage .floatingButtons button:focus {
+  box-shadow: none;
+}
+
+@media only screen and (max-width: 350px) {
+  .demoPage .inactiveXSPane {
+    display: none;
+  }
+  .demoPage .floatingButtons {
+    display: block;
+    position: fixed;
+    bottom: 40px;
+    right: unset;
+    left: 50%;
+    transform: translateX(-40%);
+  }
+}
+@media only screen and (min-width: 351px) and (max-width: 767px) {
+  .demoPage .inactiveXSPane {
+    display: none;
+  }
+  .demoPage .floatingButtons {
+    &.is-hidden-true {
+      display: none;
+    }
+    &.is-hidden-false {
+      display: block;
+    }
+    position: fixed;
+    bottom: 22px;
+    left: 50%;
+    transform: translateX(-40%);
+  }
+}
+.demoPage .inFormIcon {
+  margin-top: 13px;
+  margin-left: 15px;
+}
+
+.choiceCol .apiResult {
+  text-align: left;
+}
+.choiceCol .formGroup {
+  text-align: left;
+  margin: auto;
+  width: 90%;
+  max-width: 450px;
+  min-width: 250px;
+}
+.choiceCol .fieldContainer {
+  border: 1px solid #e0e0e0;
+  height: 56px;
+  width: 90%;
+  margin: auto;
+  margin-bottom: 15px;
+  text-align: left;
+  padding: 1px 10px;
+  background: #fff;
+  border-radius: 10px;
+}
+.choiceCol .fieldContainer:focus-within {
+  border: 1px solid #006AEB;
+}
+.choiceCol .form-check {
+  padding-left: 0;
+}
+.choiceCol .buttons {
+  margin: auto;
+  max-width: 600px;
+}
+.choiceCol input[type="radio"] {
+  height: 16px;
+  margin-left: -45px;
+  margin-top: 3px;
+}
+.choiceCol input:focus,
+.choiceCol select:focus {
+  outline: none;
+}
+.choiceCol .fa-search {
+  margin-top: 16px;
+}
+.choiceCol .autoCompleteContainer {
+  width: 87%;
+  float: left;
+}
+.choiceCol h2 {
+  font-size: 24px;
+  color: #333;
+  margin: 20px 0;
+}
+.choiceCol .listText {
+  font-weight: bold;
+  margin: 20px 0;
+}
+
+.choiceCol .blueButton {
+  color: #066EE7;
+  background: #fff;
+  border: 2px solid #066EE7;
+  border-radius: 50px !important;
+  font-size: 14px;
+  padding: 10px;
+  text-align: center;
+  width: auto;
+}
+.choiceCol .closeButton {
+  color: #4A4A4A;
+  background: #fff;
+  border-radius: 50px !important;
+  font-size: 16px;
+  padding: 4px 5px 3px 4px;
+  text-align: center;
+  width: auto;
+  float: right;
+  width: 32px;
+  height: 32px;
+  border: none;
+  box-shadow: 0px 1px 0px 1px rgba(0, 0, 0, 0.2);
+}
+.choiceCol .submitButton {
+  margin-top: 20px;
+  background-color: #0061DF;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 22px;
+  font-weight: bold;
+  padding: 10px;
+  border: none;
+  margin-bottom: 30px;
+}
+.choiceCol header .blueButton {
+  margin-top: 5px;
+  float: right;
+}
+.choiceCol .blueButton:hover {
+  color: #fff;
+  border: 2px solid #066EE7;
+  background: #066EE7;
+}
+.choiceCol .filterButton {
+  background-image: url(/images/icons/filter.svg);
+  background-position: 4px;
+  background-repeat: no-repeat;
+  width: 80px;
+  text-align: right;
+}
+.choiceCol .filterButton:hover {
+  background-image: url("/images/icons/filter_white.svg");
+  background-position: 4px;
+  background-repeat: no-repeat;
+}
+.choiceCol .noOpportunityFound {
+  margin-top: 30px;
+}
+
+.demoPage .row {
+  text-align: center;
+}
+.demoPage .clearBoth {
+  clear: both;
+}
+@media only screen and (max-width: 900px) {
+  .demoPage .hiddenSM {
+    display: none;
+  }
+  .demoPage .filterButton {
+    background-position: 8px !important;
+    width: 42px !important;
+    height: 42px !important;
+  }
+  .demoPage .filterButton:hover {
+    background-position: 8px !important;
+  }
+}
+.demoPage .countValue {
+  font-weight: bold;
+}
+.demoPage .trainingColor {
+  color: $greensoft500;
+}
+.demoPage .jobColor {
+  color: $pinksoft750;
+}
+
+.demoPage .resultTitle {
+  text-align: left;
+  margin-left: 10px;
+  color: #4A4A4A;
+  font-weight: 600;
+  font-size: 22px;
+  margin-bottom: 0px;
+  padding: 0 20px;
+}
+.demoPage .searchLoading {
+  margin-bottom: 20px;
+}
+.demoPage .searchLoading .spinner-border {
+  margin-bottom: -3px;
+  margin-left: 20px;
+}
+.demoPage .mapContainer,
+.demoPage .dummyMapContainer {
+  height: 100vh;
+  width: 100%;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  @include media-breakpoint-up(md) { 
+    position: absolute;
+  }
+}
+
+.mapContainer:focus,
+.dummyMapContainer:focus
+{
+  outline:none;
+}
+
+.dummyMapContainer {
+  
+  .c-staticmapframe
+  {
+    background: center no-repeat url("/images/static_map.svg"), #FFF;
+    background-size: auto 85%;
+    background-position-y: 10px;
+    height: 100%;
+    padding-top: 150px;
+    box-shadow: 0px 0px 12px 2px rgb(0 0 0 / 21%);
+  }
+}
+
+.c-staticmapframe__message
+  {
+    margin: auto;
+    width: 80%;
+    min-width: 250px;
+    max-width: 600px;
+    background: #FFFFFF;
+    box-shadow: 0px 0px 12px 2px rgba(0, 0, 0, 0.21);
+    border-radius: 8px;
+    text-align: left;
+    font-size: 16px;
+    font-weight: 400;
+
+    .c-staticmapframe__title
+    {
+      font-size: 27px;
+      font-weight: 700;
+    }
+
+    .c-staticmapframe__decoration
+    {
+      width: 40px;
+      height: 100%;
+      background: center no-repeat url(/images/icons/static_map_search.svg);  
+    }
+  }
+
+.demoPage .markerIcon {
+  width: 30px;
+  height: 30px;
+}
+.demoPage .jobMarkerIcon {
+  background-image: url(/images/icons/job.svg);
+  background-repeat: no-repeat;
+}
+.demoPage .trainingMarkerIcon {
+  background-image: url(/images/icons/school.svg);
+  background-repeat: no-repeat;
+}
+.demoPage .markerIcon > div {
+  position: absolute;
+  bottom: -5px;
+  right: -5px;
+  color: #fff;
+  background-color: #000;
+  text-align: left;
+  font-size: 12px;
+  width: 18px;
+  height: 18px;
+  border-radius: 15px !important;
+  text-align: center;
+}
+
+
+/**
+*   This section is dedicated to the "scroll result" problem.
+*   See https://codepen.io/pigparlor/pen/NWbBMYL
+*/
+.c-searchfor {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+.c-searchfor__row {
+  flex: 1;
+  overflow: hidden;
+    &.is-visible-true {
+      overflow: inherit;
+    }
+    &.is-visible-true.is-welcome-true {
+      overflow: hidden;
+    }
+}
+.choiceCol-container {
+  overflow:hidden;
+  height: 100%;
+  display: flex;
+}
+.choiceCol {
+  flex: 1;
+}
+.c-result-list {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  
+  &__text {
+    flex: 1;
+    overflow: auto;
+    background-color: #f9f8f6;
+  }
+}
+
+.c-result-list.c-result-list--item {
+  height: 0%;
+} 

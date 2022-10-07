@@ -1,0 +1,47 @@
+.avenir
+{
+    text-align:center;
+    width:100%;
+}
+
+.demoPage .avenir button.tmsPriseDeRendezVous {
+    background: #0061df;
+    text-align: center;
+    padding: 10px 14px;
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 16px;
+    color: white;
+    font-weight: 400;
+    max-width: 270px;
+    border-radius: 10px;
+    cursor: pointer;
+    border: none;
+}
+
+.avenirModale .question
+{
+    margin-top: 20px;
+    min-width: 150px;
+    text-align: left;
+}
+
+.avenirModale .question.btn-white
+{
+    border: 1px solid black !important;
+}
+
+.avenirModale .question.btn-white:hover
+{
+    background-color: #ccc;
+}
+
+.demoPage .avenir button.tmsPriseDeRendezVous:focus
+{
+    outline:none;
+}
+
+.modal-title img
+{
+    margin-right: 10px;
+}

@@ -1,0 +1,10 @@
+.c-follow-linkedin {
+  display: flex;
+  flex-direction: column;
+  @include media-breakpoint-up(lg) {
+    flex-direction: row;
+  }
+  @include media-breakpoint-up(xl) {
+    max-width: 1310px;
+  }
+}
