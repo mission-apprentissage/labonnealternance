@@ -6,17 +6,50 @@
     "docker-dev": "yarn install && yarn dev",
     "dev": "next dev",
     "build": "next build",
+    "postbuild": "next-sitemap --config next-sitemap.js",
     "start": "next start",
     "lint": "next lint",
-    "test": "jest --watch",
+    "test": "nyc --silent jest --env=jest-environment-jsdom-sixteen",
+    "testlocal": "nyc --silent jest --env=jest-environment-jsdom-sixteen --watch",
     "test:ci": "jest --ci",
-    "coverage": "jest --ci --coverage"
+    "coverage": "jest --ci --coverage",
+    "serve": "next start",
+    "cypress": "cypress open",
+    "cypress:headless": "cypress run",
+    "e2e": "echo '{ \"presets\": [ \"next/babel\" ], \"plugins\": [ \"istanbul\" ] }' > .babelrc && start-server-and-test dev http://localhost:3000 cypress ; rm .babelrc",
+    "e2e:headless": "echo '{ \"presets\": [ \"next/babel\" ], \"plugins\": [ \"istanbul\" ] }' > .babelrc && nyc --silent --no-clean  start-server-and-test dev http://localhost:3000 cypress:headless ; rm .babelrc",
+    "mergecov": "mkdir -p ./coverage/both && cp ./coverage/e2e/coverage-final.json ./coverage/both/coverage-final-e2e.json && cp ./coverage/unit/coverage-final.json ./coverage/both/coverage-final-unit.json && mkdir -p ./coverage/final && npx nyc merge ./coverage/both ./coverage/final/merged-coverage.json && npx nyc report -t ./coverage/final/ --report-dir ./coverage/final/ --reporter=html --reporter=text-summary"
   },
+  "nyc": {
+    "report-dir": "coverage/e2e",
+    "exclude": [
+      "pages",
+      "pages/**"
+    ],
+    "excludeAfterRemap": true
+  },
+  
   "dependencies": {
     "next": "12.3.1",
     "next-images": "1.8.4",
+    "next-plausible": "3.6.3",
     "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "react-dom": "18.2.0",    
+    "react-html-parser": "2.0.2",
+    "react-swipeable": "6.1.0",    
+    "react-dropzone": "11.4.2",
+    "reactstrap": "^8.4.1",
+    "bootstrap": "^4.4.1",
+    "config": "3.3.3",
+    "downshift": "5.2.0",
+    "sass": "1.55.0",
+    "@turf/distance": "^6.0.1",
+    "lodash": "4.17.20",
+    "mapbox-gl": "2.0.1",
+    "markdown-it": "12.0.4",
+    "email-misspelled": "3.3.9",
+    "formik": "^2.1.4",
+    "yup": "0.32.9"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "5.16.5",
