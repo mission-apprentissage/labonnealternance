@@ -1,8 +1,0 @@
-{
-  "verbose": true,
-  "ignore": ["node_modules", ".git"],
-  "watch": ["src/**/*.ts", "src/**/*.js"],
-  "execMap": {
-    "ts": "node --inspect=0.0.0.0 --nolazy --loader ts-node/esm -r ts-node/register"
-  }
-}
