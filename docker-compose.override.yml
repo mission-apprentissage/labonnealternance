@@ -21,13 +21,11 @@ services:
     build:
       args:
         DOCTRINA_ENV: dev
-    command: ["yarn", "debug"]
     ports:
       - "127.0.0.1:9229:9229" # Allows remote debugging
     volumes:
       - doctrina_server_data:/data:z
       - ./server/src:/app/src:z
-      - ./server/nodemon.json:/app/nodemon.json
     environment:
       - DOCTRINA_ENV=dev
       - DOCTRINA_LOG_LEVEL=debug
