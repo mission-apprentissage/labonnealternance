@@ -10,8 +10,7 @@
   "scripts": {
     "dev": "nodemon --ext 'ts,js,cjs,json' --ignore 'tests/' --exec 'ts-node --esm src/index.ts'",
     "build": "tsc -p .",
-    "start": "NODE_PATH=./build node build/index.js",
-    "debug": "nodemon --inspect=0.0.0.0 --signal SIGINT --ignore tests/ src/index.ts",
+    "start": "node build/index.js",
     "test": "DOCTRINA_LOG_LEVEL=fatal mocha --exit tests/**/*-test.js",
     "cli": "DOCTRINA_LOG_DESTINATIONS=stderr node src/cli.js",
     "coverage": "nyc --temp-dir .coverage/.nyc_output --report-dir .coverage --reporter=lcov --reporter=html yarn test",

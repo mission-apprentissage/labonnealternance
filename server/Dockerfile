@@ -18,12 +18,12 @@ RUN yarn build
 FROM node:18-alpine AS server-production
 ENV NODE_ENV production
 WORKDIR /app
-COPY --from=builder-production /app/build ./
+COPY --from=builder-production /app/build ./src
 COPY --from=builder-production /app/node_modules ./node_modules
 COPY package.json ./
 
 EXPOSE 5000
-CMD ["node", "index.js"]
+CMD ["node", "src/index.js"]
 
 # Development image
 FROM node:18-alpine AS server-dev
