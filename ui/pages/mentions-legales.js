@@ -1,11 +1,11 @@
 import React from "react";
-import Navigation from "components/navigation";
-import ScrollToTop from "components/ScrollToTop";
-import Breadcrumb from "components/breadcrumb";
+import Navigation from "../components/navigation";
+import ScrollToTop from "../components/ScrollToTop";
+import Breadcrumb from "../components/breadcrumb";
 import { NextSeo } from "next-seo";
 
-import Footer from "components/footer";
-import ExternalLink from "@/components/externalLink";
+import Footer from "../components/footer";
+import ExternalLink from "../components/externalLink";
 const MentionsLegales = () => (
   <div>
     <NextSeo
