@@ -313,6 +313,11 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
+"@corex/deepmerge@^2.6.20":
+  version "2.6.148"
+  resolved "https://registry.yarnpkg.com/@corex/deepmerge/-/deepmerge-2.6.148.tgz#8fa825d53ffd1cbcafce1b6a830eefd3dcc09dd5"
+  integrity sha512-6QMz0/2h5C3ua51iAnXMPWFbb1QOU1UvSM4bKBw5mzdT+WtLgjbETBBIQZ+Sh9WvEcGwlAt/DEdRpIC3XlDBMA==
+
 "@eslint/eslintrc@^1.2.2":
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/@eslint/eslintrc/-/eslintrc-1.2.2.tgz#4989b9e8c0216747ee7cca314ae73791bb281aae"
@@ -3424,6 +3429,13 @@ markdown-it@12.0.4:
     mdurl "^1.0.1"
     uc.micro "^1.0.5"
 
+matcher@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/matcher/-/matcher-4.0.0.tgz#a42a05a09aaed92e2d241eb91fddac689461ea51"
+  integrity sha512-S6x5wmcDmsDRRU/c2dkccDwQPXoFczc5+HpQ2lON8pnvHlnvHAHj5WlLVvw6n6vNyHuVugYrFohYxbS+pvFpKQ==
+  dependencies:
+    escape-string-regexp "^4.0.0"
+
 mdurl@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/mdurl/-/mdurl-1.0.1.tgz#fe85b2ec75a59037f2adfec100fd6c601761152e"
@@ -3533,6 +3545,15 @@ next-seo@4.26.0:
   version "4.26.0"
   resolved "https://registry.yarnpkg.com/next-seo/-/next-seo-4.26.0.tgz#4218cfae5651fdc2e330dcdf1cc1b34ce199d41c"
   integrity sha512-5TqywQ3XAwqdmEU1AyNZjR7WdDKFTkDD8aBtgQelPvzBUEy8i0mTjtiw+09jhiHFNik6FqS8uPKCaYcY6jRgSQ==
+
+next-sitemap@1.6.133:
+  version "1.6.133"
+  resolved "https://registry.yarnpkg.com/next-sitemap/-/next-sitemap-1.6.133.tgz#6c9d67d2c5722e4f12a28b000c30e89574a866cf"
+  integrity sha512-AG4BIXoVO+Nl0nyIYCuz/Vh7Vtn0BO0Lc8ssr3YWiFQFXqHTdKVHUXNP3ZSekmT32BjcMgWtpyoiEAmpXty0ZA==
+  dependencies:
+    "@corex/deepmerge" "^2.6.20"
+    matcher "^4.0.0"
+    minimist "^1.2.5"
 
 next@12.3.1:
   version "12.3.1"
