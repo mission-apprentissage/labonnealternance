@@ -1,0 +1,35 @@
+.c-howto {
+  .card {
+    margin-left: 0px;
+    margin-right: 0px;
+    max-width: 241px;
+    background-color: #f9f8f6;
+    z-index: 1;
+    @include media-breakpoint-up(lg) { 
+      max-width: 281px;
+    }
+  }
+  .card + .card {
+    margin-top: 28px;
+    @include media-breakpoint-up(lg) { 
+      margin-top: 0;
+    }
+  }
+  .card-body {
+    padding: 0;
+  }
+  .c-howto-cards {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 12px;
+    padding-bottom: 62px;
+    @include media-breakpoint-up(lg) { 
+      margin-top: 42px;
+    }
+    @include media-breakpoint-up(lg) { 
+      flex-direction: row;
+    }
+  }
+}

@@ -1,0 +1,47 @@
+.c-page-container {
+  background-color: $gray-100;
+  border-radius: 0px;
+  @include media-breakpoint-up(md) {
+    border-radius: 10px;
+  }
+}
+
+.c-page-title {
+  font-size: 40px;
+  font-weight: 700;
+  letter-spacing: 0em;
+  text-align: left;
+}
+
+.c-page-title.is-color-1 {
+  color: $gray-750;
+}
+
+.c-page-title.is-color-2 {
+  color: $info;
+}
+
+.c-page-title-separator {
+  color: $info;
+  max-width: 93px;
+  border-top: 4px solid #3A55D1;
+  @extend .my-5;
+}
+
+.c-stats-iframe {
+  width: 100%;
+  border: 0;
+  height: 780px;
+
+  @include media-breakpoint-up(lg) {
+    height: 500px;
+  }
+}
+
+.c-stats-iframe.c-stats-iframe__lba {
+  height: 1200px;
+
+  @include media-breakpoint-up(lg) {
+    height: 800px;
+  }
+}

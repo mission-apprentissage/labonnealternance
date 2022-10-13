@@ -1,0 +1,37 @@
+.whisper-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #3A3A3A;
+}
+
+.whisper-title-special {
+  color: #0c0ccf;
+}
+
+.whisper .resultCard {
+  background-color: transparent;
+  cursor: text;
+}
+
+.whisper .cardIcon {
+  width: 34px;
+}
+
+.whisper-useful {
+  font-size: 14px;
+  font-weight: 700;
+  color: $gray-700;
+}
+
+.whisper-useful-btn {
+  font-size: 14px;
+  font-weight: 400;
+  border: none;
+}
+
+.whisper-feedback {
+  font-size: 14px;
+  font-weight: 700;
+  background-color: #F0F0F0;
+  border-radius: 8px;
+}

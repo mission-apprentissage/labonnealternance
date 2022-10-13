@@ -1,0 +1,74 @@
+.c-regular-darkbtn {
+  font-size: 18px;
+  font-weight: 700;
+  padding-top: 0.35rem;
+  padding-bottom: 0.35rem;
+}
+
+.c-rayons-buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+
+  button {
+    background: #FFFFFF;
+    border: 1px solid #CECECE;
+    border-radius: 40px;
+  }
+}
+
+.c-rayons-button {
+  background: #FFFFFF;
+  border: 1px solid #CECECE;
+  border-radius: 40px;
+  cursor: pointer;
+  color: #2A2A2A;
+  margin-right: .2rem;
+  padding: .3rem 1rem;
+  font-size: 16px;
+  line-height: 24px;
+
+  @include media-breakpoint-down(xs) {
+    font-size: 12px;
+    line-height: 16px;
+    margin-right: .6rem;
+    padding: .1rem .5rem;
+  }
+}
+
+.c-rayons-button.is-selected {
+  background-color: blue;
+  color: white;
+}
+
+.c-diplomas-buttons {
+  display: flex;
+  flex-direction: column;
+}
+
+.c-diplomas-button {
+  background: #FFFFFF;
+  border: 1px solid #CECECE;
+  margin-top: 2px;
+  width: fit-content;
+  border-radius: 40px;
+  cursor: pointer;
+  color: #2A2A2A;
+  margin-right: .2rem;
+  padding: .3rem 1rem;
+  font-size: 16px;
+  line-height: 24px;
+
+  @include media-breakpoint-down(xs) {
+    font-size: 12px;
+    line-height: 16px;
+    margin-right: .6rem;
+    padding: .1rem .5rem;
+  }
+}
+
+.c-diplomas-button.is-selected {
+  background-color: blue;
+  color: white;
+}
