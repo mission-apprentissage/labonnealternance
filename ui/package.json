@@ -13,7 +13,6 @@
     "testlocal": "nyc --silent jest --env=jest-environment-jsdom-sixteen --watch",
     "test:ci": "jest --ci",
     "coverage": "jest --ci --coverage",
-    "serve": "next start",
     "cypress": "cypress open",
     "cypress:headless": "cypress run",
     "e2e": "echo '{ \"presets\": [ \"next/babel\" ], \"plugins\": [ \"istanbul\" ] }' > .babelrc && start-server-and-test dev http://localhost:3000 cypress ; rm .babelrc",
