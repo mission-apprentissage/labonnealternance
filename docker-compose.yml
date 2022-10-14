@@ -59,16 +59,6 @@ services:
     networks:
       - doctrina_network
 
-  kibana:
-    image: docker.elastic.co/kibana/kibana-oss:7.1.1
-    container_name: doctrina_kibana
-    depends_on:
-      - elasticsearch
-    networks:
-      - doctrina_network
-    environment:
-      - SERVER_BASEPATH=/kibana
-
 networks:
   doctrina_network:
     name: doctrina_network
