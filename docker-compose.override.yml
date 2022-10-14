@@ -18,7 +18,9 @@ services:
     stdin_open: true
 
   server:
-    command: ["yarn", "debug"]
+    build:
+      args:
+        DOCTRINA_ENV: dev
     ports:
       - "127.0.0.1:9229:9229" # Allows remote debugging
     volumes:
