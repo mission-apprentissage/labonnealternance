@@ -55,6 +55,9 @@ services:
     environment:
       - ES_JAVA_OPTS=-Xmx512m -Xms512m -Dlog4j2.formatMsgNoLookups=true
       - discovery.type=single-node
+      - cluster.name=docker-cluster
+      - discovery.zen.minimum_master_nodes=1
+      - network.host=0.0.0.0
     mem_limit: 6g
     networks:
       - doctrina_network
