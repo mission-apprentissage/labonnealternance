@@ -63,10 +63,7 @@ const config = {
     allowedSources: env.get("LABONNEALTERNANCE_ALLOWED_SOURCES").default("allowed").asString(),
     lbb: 
     {
-      score100Level: env.get("LABONNEALTERNANCE_LBB_SCORE_100").default(1).asFloatPositive(),
-      score80Level: env.get("LABONNEALTERNANCE_LBB_SCORE_80").default(1).asFloatPositive(),
-      score60Level: env.get("LABONNEALTERNANCE_LBB_SCORE_60").default(1).asFloatPositive(),       
-      score50Level: env.get("LABONNEALTERNANCE_LBB_SCORE_50").default(1).asFloatPositive(),
+      score50Level: env.get("LABONNEALTERNANCE_LBB_SCORE_50").default(1).asFloatPositive(), //TODO: rename
     },
     smtp:
     {
