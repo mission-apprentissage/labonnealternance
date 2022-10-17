@@ -111,7 +111,7 @@ const TrainingDetail = ({ training, hasAlsoJob }) => {
       {getTrainingDetails(training.training)}
       <div className="c-detail-newadvice mt-4 pl-4">
         <div className="pt-1 pb-2">
-          <img src={questionmarkIcon} alt="point d'interrogation" />
+          <img src={questionmarkIcon} alt="" />
           <span className="c-detail-newadvice-title ml-2">{training.title ? training.title : training.longTitle}</span>
         </div>
         {training.onisepUrl ? (
@@ -120,7 +120,7 @@ const TrainingDetail = ({ training, hasAlsoJob }) => {
             <span className="c-detail-traininglink">
               <a href={training.onisepUrl} target="_blank" rel="noopener noreferrer" className="c-nice-link">
                 le site Onisep&nbsp;
-                <img src={gotoIcon} alt="Lien" />
+                <img src={gotoIcon} alt="Ouverture dans un nouvel onglet" />
               </a>
             </span>
           </div>
