@@ -32,7 +32,7 @@ const LogoIdea = () => {
               ? widgetParameters.parameters.returnLogoURL
               : logoLBA
           }
-          alt="Retour page d'accueil de La Bonne Alternance"
+          alt="Retour page d'accueil de La bonne alternance"
         />
       </a>
     </div>
