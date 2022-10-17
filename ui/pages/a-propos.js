@@ -74,11 +74,11 @@ const APROPOS = () => (
 
           <div className="card c-about-card c-about-card--flat mt-4">
             <div className="c-about-card__img">
-              <img className={"c-about-card__img--matcha"} src={logoMatcha} alt={"Logo matcha"} />
+              <img className={"c-about-card__img--matcha"} src={logoMatcha} alt={""} />
             </div>
             <div className="c-about-card__content">
-              <div className="c-about-card__title">Matcha</div>
-              <div className="c-about-card__text">Susciter des recrutements en apprentissage</div>
+              <div className="c-about-card__title">Dépôt d'offres simplifié</div>
+              <div className="c-about-card__text">Susciter des recrutements en alternance</div>
               <div className="c-about-card__link">
                 <ExternalLink
                   url="https://mission-apprentissage.gitbook.io/general/les-services-en-devenir/untitled"
@@ -90,7 +90,7 @@ const APROPOS = () => (
 
           <div className="card c-about-card c-about-card--flat mt-3">
             <div className="c-about-card__img">
-              <img className={"c-about-card__img--catalog"} src={logoCatalogue} alt={"Logo catalogue"} />
+              <img className={"c-about-card__img--catalog"} src={logoCatalogue} alt={""} />
             </div>
             <div className="c-about-card__content">
               <div className="c-about-card__title">Catalogue des formations</div>
@@ -106,7 +106,7 @@ const APROPOS = () => (
               <img className={"c-about-card__img--prdv"} src={logoPrdv} alt={"Logo prdv"} />
             </div>
             <div className="c-about-card__content">
-              <div className="c-about-card__title">Prise de rendez-vous</div>
+              <div className="c-about-card__title">Rendez-vous apprentissage</div>
               <div className="c-about-card__text">Pour échanger facilement avec les centres de formation</div>
               <div className="c-about-card__link">
                 <ExternalLink
@@ -122,7 +122,7 @@ const APROPOS = () => (
           <div className="card-deck">
             <div className="card c-about-card c-about-card--small mt-3 mb-4">
               <div className="c-about-card__img2">
-                <img src={logoLbb} width="134" alt={"Logo"} />
+                <img src={logoLbb} width="134" alt={"Redirection vers le site La bonne boite"} />
               </div>
               <div className="c-about-card__content">
                 <ExternalLink
@@ -134,19 +134,7 @@ const APROPOS = () => (
             </div>
             <div className="card c-about-card c-about-card--small mt-3 mb-4">
               <div className="c-about-card__img2">
-                <img src={logoLbf} width="134" alt={"Logo"} />
-              </div>
-              <div className="c-about-card__content">
-                <ExternalLink
-                  className="c-about-card__text2 stretched-link"
-                  url="https://labonneformation.pole-emploi.fr/"
-                  title="Trouvez une formation en fonction de votre profil ET du marché du travail"
-                />
-              </div>
-            </div>
-            <div className="card c-about-card c-about-card--small mt-3 mb-4">
-              <div className="c-about-card__img2">
-                <img src={logoMaintenant} width="134" alt={"Logo"} />
+                <img src={logoMaintenant} width="134" alt={"Redirection vers le site Maintenant"} />
               </div>
               <div className="c-about-card__content">
                 <ExternalLink
@@ -161,7 +149,7 @@ const APROPOS = () => (
           <div className="card-deck">
             <div className="card c-about-card c-about-card--small mt-3 mb-4">
               <div className="c-about-card__img2">
-                <img src="/images/logo-memo.png" width="114" className={"c-about-card__img--memo"} alt={"Logo"} />
+                <img src="/images/logo-memo.png" width="114" className={"c-about-card__img--memo"} alt={"Redirection vers le site Mémo"} />
               </div>
               <div className="c-about-card__content">
                 <ExternalLink
@@ -173,25 +161,13 @@ const APROPOS = () => (
             </div>
             <div className="card c-about-card c-about-card--small mt-3 mb-4">
               <div className="c-about-card__img2">
-                <img src={logoAvril} width="114" className={"c-about-card__img--avril"} alt={"Logo"} />
+                <img src={logoAvril} width="114" className={"c-about-card__img--avril"} alt={"Redirection vers le site Avril"} />
               </div>
               <div className="c-about-card__content">
                 <ExternalLink
                   className="c-about-card__text2 stretched-link"
                   url="https://avril.pole-emploi.fr/"
                   title="Trouvez une formation en fonction de votre profil ET du marché du travail"
-                />
-              </div>
-            </div>
-            <div className="card c-about-card c-about-card--small mt-3 mb-4">
-              <div className="c-about-card__img2">
-                <img src={logoClara} width="134" className={"c-about-card__img--clara"} alt={"Logo"} />
-              </div>
-              <div className="c-about-card__content">
-                <ExternalLink
-                  className="c-about-card__text2 stretched-link"
-                  url="https://clara.pole-emploi.fr/"
-                  title="Découvrez les aides et mesures qui vont accélérer votre retour à l'emploi."
                 />
               </div>
             </div>
