@@ -34,11 +34,11 @@ const Home = (props) => {
       <ScrollToTop />
       <Navigation />
       <div className="c-homebg c-homebg--light">
-        <img src={howtocircle1} className="c-homebg-img c-homebg-img--circle c-homebg-img--circle1" alt="Cercle" />
-        <img src={howtocircle2} className="c-homebg-img c-homebg-img--circle c-homebg-img--circle2" alt="Cercle" />
-        <img src={howtocircle3} className="c-homebg-img c-homebg-img--circle c-homebg-img--circle3" alt="Cercle" />
-        <img src={howtocircle4} className="c-homebg-img c-homebg-img--circle c-homebg-img--circle4" alt="Cercle" />
-        <img src={howtocircle5} className="c-homebg-img c-homebg-img--circle c-homebg-img--circle5" alt="Cercle" />
+        <img src={howtocircle1} className="c-homebg-img c-homebg-img--circle c-homebg-img--circle1" alt="" />
+        <img src={howtocircle2} className="c-homebg-img c-homebg-img--circle c-homebg-img--circle2" alt="" />
+        <img src={howtocircle3} className="c-homebg-img c-homebg-img--circle c-homebg-img--circle3" alt="" />
+        <img src={howtocircle4} className="c-homebg-img c-homebg-img--circle c-homebg-img--circle4" alt="" />
+        <img src={howtocircle5} className="c-homebg-img c-homebg-img--circle c-homebg-img--circle5" alt="" />
         <HomeHero />
         <HowTo />
       </div>
