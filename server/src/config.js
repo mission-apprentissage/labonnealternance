@@ -51,10 +51,8 @@ const config = {
     mongodbUrl: env.get("MONGODB_URL").default("1234").asString(),
     mongodbDbname: env.get("MONGODB_DBNAME").default("1234").asString(),
     apiEntrepriseKey: env.get("API_ENTREPRISE_KEY").default("1234").asString(),
-    azureStorageConnectionString: env.get("AZURE_STORAGE_CONNECTION_STRING").default("1234").asString(),
     esdClientId: env.get("ESD_CLIENT_ID").default("1234").asString(),
     esdClientSecret: env.get("ESD_CLIENT_SECRET").default("1234").asString(),
-    googleAnalyticsUA: env.get("LABONNEALTERNANCE_GOOGLE_ANALYTICS_UA").default("1234").asString(),
     serverSentryDsn: env.get("SERVER_SENTRY_DSN").default("https://61156c2d46b54369b777900d475ee0f9@o154210.ingest.sentry.io/5562203").asString(),
     secretUpdateRomesMetiers: env.get("LABONNEALTERNANCE_SECRET_UPDATE_ROMES_METIERS").default("1234").asString(),  //TODO: rename
     secret1j1s: env.get("LABONNEALTERNANCE_SECRET_1J1S").default("5678").asString(), //TODO: rearrange
