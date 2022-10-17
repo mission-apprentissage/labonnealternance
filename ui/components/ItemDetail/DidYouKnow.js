@@ -23,7 +23,7 @@ const DidYouKnow = ({ item }) => {
                 className="gtmDidask2  c-nice-link"
                 url="https://dinum-beta.didask.com/courses/demonstration/60d1adbb877dae00003f0eac"
                 title="On vous donne des conseils pour vous aider à le préparer."
-                withPic={<img src={gotoIcon} alt="Lien" />}
+                withPic={<img src={gotoIcon} alt="Ouverture dans un nouvel onglet" />}
               />
             </span>
           </span>
