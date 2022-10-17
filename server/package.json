@@ -23,7 +23,7 @@
     "bunyan-slack": "0.0.10",
     "commander": "9.2.0",
     "dotenv": "16.0.0",
-    "env-var": "7.1.1",
+    "env-var": "7.3.0",
     "express": "4.18.1",
     "joi": "17.6.0",
     "lodash-es": "4.17.21",
