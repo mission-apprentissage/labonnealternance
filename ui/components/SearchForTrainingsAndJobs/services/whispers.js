@@ -69,7 +69,7 @@ function getHTML(text, link) {
   return `<div class="resultCard gtmWhisper">
             <div class="c-media">
               <div class="c-media-figure">
-                <img className="c-whisper-img" src="/images/whisper.svg" alt="Someone" />
+                <img className="c-whisper-img" src="/images/whisper.svg" alt="" />
               </div>
               <div class="c-media-body">
                 <div class="row no-gutters">
@@ -91,7 +91,7 @@ function getHTML(text, link) {
 
 function getHTMLLink(link) {
   return `<a href="${link}" target="_blank" class="gtmWhisperLink" rel="noopener noreferrer">
-                  <img className="mt-n1" src="/images/square_link.svg" alt="Lien externe" />
+                  <img className="mt-n1" src="/images/square_link.svg" alt="Ouverture dans un nouvel onglet" />
                   <span className="ml-1">En savoir plus</span>
                 </a>`;
 }
