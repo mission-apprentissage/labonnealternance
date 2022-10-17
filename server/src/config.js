@@ -1,7 +1,7 @@
 import env from "env-var";
 
 const config = {
-  //appName : env.get("").default("labonnealternance").asString(),
+  appName : env.get("DOCTRINA_NAME").default("doctrina").asString(),
   env: env.get("DOCTRINA_ENV").default("local").asString(),
   publicUrl: env.get("DOCTRINA_PUBLIC_URL").default("http://localhost:3000").asString(),
   outputDir: env.get("LABONNEALTERNANCE_OUTPUT_DIR").default(".local/output").asString(),
@@ -22,7 +22,7 @@ const config = {
       .asString(),
   },
   private: {
-    apiKey: env.get("LABONNEALTERNANCE_API_KEY").default("12345").asString(),
+    apiKey: env.get("LABONNEALTERNANCE_API_KEY").default("12345").asString(), //TODO: check usefulness
     laBonneFormationPassword: env.get("LABONNEFORMATION_PASSWORD").default("12345").asString(),
     auth: {
       passwordHashRounds: env.get("LABONNEALTERNANCE_AUTH_PASSWORD_HASH_ROUNDS").default(1001).asIntPositive(),
