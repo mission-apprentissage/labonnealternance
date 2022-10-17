@@ -138,7 +138,7 @@ const HeaderForm = ({ handleSearchSubmit, isHome }) => {
                 disabled={isSubmitting}
                 alt="Lancer la recherche"
               >
-                <img alt="" src={glassImage} />
+                <img alt="Lancer la recherche" src={glassImage} />
                 {isHome ? <div className="c-logobar-letstart">C'est parti</div> : ""}
               </button>
             </div>
