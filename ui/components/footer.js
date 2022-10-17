@@ -14,7 +14,7 @@ const Footer = (props) => {
             <Col className="col-12 col-lg-3">
               <img
                 src="/images/marianne.svg#svgView(viewBox(19 0 162 78))"
-                alt="Logo république française"
+                alt=""
                 width="290"
                 height="130"
               />
@@ -23,7 +23,7 @@ const Footer = (props) => {
               <div className="c-footer-francerelance">
                 <img
                   src="/images/france_relance.svg"
-                  alt="France relance"
+                  alt=""
                   width="81"
                   height="81"
                 />
