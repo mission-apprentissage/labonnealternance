@@ -182,7 +182,7 @@ const Footer = (props) => {
                 <ExternalLink
                   url="https://www.etalab.gouv.fr/licence-version-2-0-de-la-licence-ouverte-suite-a-la-consultation-et-presentation-du-decret"
                   title="etalab-2.0"
-                  withPic={<img className="ml-1" src="/images/square_link.svg" alt="Lien" />}
+                  withPic={<img className="ml-1" src="/images/square_link.svg" alt="Ouverture dans un nouvel onglet" />}
                 />
               </div>
             </Col>
