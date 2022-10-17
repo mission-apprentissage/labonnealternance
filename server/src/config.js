@@ -48,8 +48,6 @@ const config = {
     matcha: {
       apiKey: env.get("MATCHA_ACCESS_KEY").default("1234").asString(),
     },
-    mongodbUrl: env.get("MONGODB_URL").default("1234").asString(),
-    mongodbDbname: env.get("MONGODB_DBNAME").default("1234").asString(),
     apiEntrepriseKey: env.get("API_ENTREPRISE_KEY").default("1234").asString(),
     esdClientId: env.get("ESD_CLIENT_ID").default("1234").asString(),
     esdClientSecret: env.get("ESD_CLIENT_SECRET").default("1234").asString(),
