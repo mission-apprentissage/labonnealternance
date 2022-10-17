@@ -132,14 +132,14 @@ const LocationDetail = ({ item, isCfa }) => {
 
         <div className="c-locationdetail-line mt-3">
           <span className="c-locationdetail-imgcontainer">
-            <img className="" src="/images/icons/small_map_point.svg" alt="point de localisation" />
+            <img className="" src="/images/icons/small_map_point.svg" alt="Adresse" />
           </span>
           <span className="c-detail-sizetext">
             <ExternalLink
               className={`c-nice-link font-weight-normal gtm${capitalizeFirstLetter(kind)} gtmPathLink`}
               url={getPathLink(item)}
               title="Obtenir l'itinéraire"
-              withPic={<img className="mt-n1" src="/images/square_link.svg" alt="" />}
+              withPic={<img className="mt-n1" src="/images/square_link.svg" alt="Ouverture dans un nouvel onglet" />}
             />
           </span>
         </div>
