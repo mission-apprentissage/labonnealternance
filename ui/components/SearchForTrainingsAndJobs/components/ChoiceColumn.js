@@ -203,7 +203,7 @@ const ChoiceColumn = ({
   const getInitialDesktopText = () => {
     return (
       <div className={`w-75 m-auto d-none pt-5 ${shouldShowWelcomeMessage ? "d-md-block" : ""}`}>
-        <img className="w-75" src={dosearchImage} alt="Faites une recherche" />
+        <img className="w-75" src={dosearchImage} alt="" />
         <div className="c-staticmapframe__message pr-5 py-3">
           <table>
             <tbody>
