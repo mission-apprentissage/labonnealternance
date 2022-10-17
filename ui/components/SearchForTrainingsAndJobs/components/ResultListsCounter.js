@@ -126,7 +126,7 @@ const ResultListsCounter = (props) => {
                 handleFilterButtonClicked={filterButtonClicked}
               />
               <div className="c-resultlist-purplefilter" onClick={showSearchForm}>
-                <img src={purpleFilterIcon} alt="Image de filtres" />
+                <img src={purpleFilterIcon} alt="Filtrer les résultats" />
               </div>
             </div>
           </>
