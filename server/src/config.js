@@ -56,9 +56,9 @@ const config = {
     esdClientSecret: env.get("ESD_CLIENT_SECRET").default("1234").asString(),
     googleAnalyticsUA: env.get("LABONNEALTERNANCE_GOOGLE_ANALYTICS_UA").default("1234").asString(),
     serverSentryDsn: env.get("SERVER_SENTRY_DSN").default("https://61156c2d46b54369b777900d475ee0f9@o154210.ingest.sentry.io/5562203").asString(),
-    secretUpdateRomesMetiers: env.get("LABONNEALTERNANCE_SECRET_UPDATE_ROMES_METIERS").default("1234").asString(),
-    secret1j1s: env.get("LABONNEALTERNANCE_SECRET_1J1S").default("5678").asString(),
-    secretAkto: env.get("LABONNEALTERNANCE_SECRET_AKTO").default("1234").asString(),
+    secretUpdateRomesMetiers: env.get("LABONNEALTERNANCE_SECRET_UPDATE_ROMES_METIERS").default("1234").asString(),  //TODO: rename
+    secret1j1s: env.get("LABONNEALTERNANCE_SECRET_1J1S").default("5678").asString(), //TODO: rearrange
+    secretAkto: env.get("LABONNEALTERNANCE_SECRET_AKTO").default("1234").asString(), //TODO: rearrange
     jobSlackWebhook: env.get("LABONNEALTERNANCE_JOB_SLACK_WEBHOOK").default("https://hooks.slack.com/services").asString(),
     allowedSources: env.get("LABONNEALTERNANCE_ALLOWED_SOURCES").default("allowed").asString(),
     lbb: 
