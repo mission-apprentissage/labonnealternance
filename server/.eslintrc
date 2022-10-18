@@ -1,23 +1,30 @@
 {
   "root": true,
-  "extends": [
-    "eslint:recommended",
-    "plugin:node/recommended",
-    "plugin:prettier/recommended"
-  ],
-  "plugins": [
-    "mocha"
-  ],
+  "extends": ["eslint:recommended", "plugin:node/recommended-module", "plugin:prettier/recommended"],
+  "plugins": ["mocha"],
   "rules": {
     "mocha/no-skipped-tests": "error",
-    "mocha/no-exclusive-tests": "error"
+    "mocha/no-exclusive-tests": "error",
+    "no-nonoctal-decimal-escape": 0,
+    "no-unsafe-optional-chaining": 0,
+    "node/exports-style": ["error", "exports"]
   },
+  "overrides": [
+    {
+      "files": ["**/*test.js", "**/*Tests.js", "tests/**/*.js"],
+      "rules": {
+        "node/no-unpublished-require": 0,
+        "no-nonoctal-decimal-escape": 0,
+        "no-unsafe-optional-chaining": 0
+      }
+    }
+  ],
   "env": {
     "node": true,
-    "es6": true,
+    "es2022": true,
     "mocha": true
   },
   "parserOptions": {
-    "ecmaVersion": 2020
+    "ecmaVersion": 2022
   }
 }
