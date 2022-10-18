@@ -78,15 +78,6 @@ export default async () => {
    * Bloc LBA J
    */
 
-  /**
-   * TODO: to be removed
-   */
-  /*app.use(bodyParser.text({ type: "application/x-ndjson" }));
-  app.use("/api/v1/es/search", limiter3PerSecond, esSearch());*/
-  /** */
-
-  
-
   app.get("/api-docs/swagger.json", (req, res) => {
     res.sendFile(path.resolve("./src/api-docs/swagger.json"));
   });
