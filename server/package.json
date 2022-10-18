@@ -37,6 +37,7 @@
     "pretty-ms": "7.0.1",
     "@sentry/node": "^5.22.3",
     "@sentry/tracing": "^5.22.3",
+    "stream-json": "1.7.4",
     "swagger-ui-express": "4.1.4"
   },
   "engines": {
