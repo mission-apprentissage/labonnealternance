@@ -1,4 +1,4 @@
-const etablissementReferenceInfo = {
+export const etablissementReferenceInfo = {
   etablissement_reference: {
     type: String,
     default: null,
@@ -45,5 +45,3 @@ const etablissementReferenceInfo = {
     description: "Date de création de l'établissement",
   },
 };
-
-module.exports = etablissementReferenceInfo;

@@ -1,4 +1,4 @@
-const sourceFormationsSchema = {
+export const sourceFormationsSchema = {
   currentIndex: {
     type: String,
     default: null,
@@ -16,5 +16,3 @@ const sourceFormationsSchema = {
     description: "Date de dernières mise à jour",
   },
 };
-
-module.exports = sourceFormationsSchema;

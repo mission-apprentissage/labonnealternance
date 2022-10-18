@@ -1,4 +1,4 @@
-const applicationSchema = {
+export const applicationSchema = {
   applicant_email: {
     type: String,
     default: null,
@@ -162,5 +162,3 @@ const applicationSchema = {
     description: "Date de dernières mise à jour",
   },
 };
-
-module.exports = applicationSchema;

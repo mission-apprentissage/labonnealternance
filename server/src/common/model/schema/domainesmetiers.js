@@ -1,4 +1,4 @@
-const domainesMetiersSchema = {
+export const domainesMetiersSchema = {
   sous_domaine: {
     type: String,
     default: null,
@@ -80,5 +80,3 @@ const domainesMetiersSchema = {
     description: "Date de dernières mise à jour",
   },
 };
-
-module.exports = domainesMetiersSchema;

@@ -1,4 +1,4 @@
-const bonneBoiteSchema = {
+export const bonneBoiteSchema = {
   siret: {
     type: String,
     default: null,
@@ -109,5 +109,3 @@ const bonneBoiteSchema = {
     description: "Date de dernières mise à jour",
   },
 };
-
-module.exports = bonneBoiteSchema;

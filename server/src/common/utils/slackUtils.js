@@ -1,5 +1,5 @@
 import config from "../../config.js";
-const axios = require("axios");
+import axios from "axios";
 
 const notifyToSlack = async (message) => {
   await axios.post(config.private.jobSlackWebhook, {

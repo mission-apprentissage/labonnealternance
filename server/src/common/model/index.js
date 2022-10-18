@@ -1,6 +1,7 @@
 import { mongooseInstance } from "../mongodb.js";
 import { mongoosastic, getElasticInstance } from "../esClient/index.js";
 import schema from "../model/schema/index.js";
+import mongoosePaginate from "mongoose-paginate";
 
 const createModel = (modelName, descriptor, options = {}) => {
   const schema = new mongooseInstance.Schema(descriptor);
@@ -10,7 +11,7 @@ const createModel = (modelName, descriptor, options = {}) => {
   }
 
   if (options.esIndexName || options.paginate) {
-    schema.plugin(require("mongoose-paginate"));
+    schema.plugin(mongoosePaginate);
   }
 
   if (options.createMongoDBIndexes) {

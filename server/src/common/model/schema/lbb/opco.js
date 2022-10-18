@@ -1,4 +1,4 @@
-const opco = {
+export const opco = {
   siren: {
     type: String,
     default: null,
@@ -19,5 +19,3 @@ const opco = {
     description: "Identifiant convention collective",
   },
 };
-
-module.exports = opco;

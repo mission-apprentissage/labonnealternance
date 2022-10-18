@@ -1,4 +1,4 @@
-const diplomesMetiersSchema = {
+export const diplomesMetiersSchema = {
   intitule_long: {
     type: String,
     default: null,
@@ -30,5 +30,3 @@ const diplomesMetiersSchema = {
     description: "Date de dernières mise à jour",
   },
 };
-
-module.exports = diplomesMetiersSchema;

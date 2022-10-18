@@ -1,4 +1,4 @@
-const etablissementFormateurInfo = {
+export const etablissementFormateurInfo = {
   etablissement_formateur_id: {
     type: String,
     default: null,
@@ -132,5 +132,3 @@ const etablissementFormateurInfo = {
     description: "Date de création de l'établissement",
   },
 };
-
-module.exports = etablissementFormateurInfo;

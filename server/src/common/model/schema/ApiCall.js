@@ -1,4 +1,4 @@
-const apiCallSchema = {
+export const apiCallSchema = {
   caller: {
     type: String,
     default: null,
@@ -35,5 +35,3 @@ const apiCallSchema = {
     description: "Date d'ajout en base de données",
   },
 };
-
-module.exports = apiCallSchema;

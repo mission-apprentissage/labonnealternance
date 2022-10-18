@@ -34,7 +34,7 @@ const validateOptionalRomeOrDomain = ({ romes, romeDomain, romeLimit = 15 }, err
   validateRomeOrDomain({ romes, romeDomain, romeLimit, optional: true }, error_messages);
 };
 
-const { regionCodeToDepartmentList } = require("../common/utils/regionInseeCodes");
+import { regionCodeToDepartmentList } from "../common/utils/regionInseeCodes.js";
 
 const validateOptionalRegion = ({ region, departement }, error_messages) => {
   // codes ROME : romes
@@ -124,7 +124,7 @@ const validateApiSources = (
   }
 };
 
-const { isOriginLocal } = require("../common/utils/isOriginLocal");
+import { isOriginLocal } from "../common/utils/isOriginLocal.js";
 
 // contrôle sur la présence d'un appelant valide
 const validateCaller = ({ caller, referer }, error_messages = []) => {

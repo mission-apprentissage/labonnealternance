@@ -11,7 +11,7 @@ process.on("uncaughtException", (e) => logger.error(e, "An unexpected error occu
   await connectToMongodb();
   await configureValidation();
   */
-  await connectToMongodb();   // using older version with mongoose
+  await connectToMongo();   // using older version with mongoose
 
   const http = await server();
   http.listen(5000, () => logger.info(`Server ready and listening on port ${5000}`));

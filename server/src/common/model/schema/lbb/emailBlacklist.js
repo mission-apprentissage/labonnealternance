@@ -1,4 +1,4 @@
-const emailBlacklist = {
+export const emailBlacklist = {
   email: {
     type: String,
     default: null,
@@ -12,5 +12,3 @@ const emailBlacklist = {
     description: "Source de l'information de blacklisting",
   },
 };
-
-module.exports = emailBlacklist;

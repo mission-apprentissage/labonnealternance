@@ -1,4 +1,4 @@
-const geoLocationSchema = {
+export const geoLocationSchema = {
   address: {
     type: String,
     default: null,
@@ -22,5 +22,3 @@ const geoLocationSchema = {
     description: "Les coordonnées latitude et longitude",
   },
 };
-
-module.exports = geoLocationSchema;
