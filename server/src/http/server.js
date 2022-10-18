@@ -6,7 +6,7 @@ import config from "../config.js";
 import { logger } from "../common/logger.js";
 import { logMiddleware } from "./middlewares/logMiddleware.js";
 import { errorMiddleware } from "./middlewares/errorMiddleware.js";
-//import { corsMiddleware } from "./middlewares/corsMiddleware";
+import { corsMiddleware } from "./middlewares/corsMiddleware.js";
 import { tryCatch } from "./middlewares/tryCatchMiddleware.js";
 import hello from "./routes/helloRoutes.js";
 import { dbCollection } from "../common/mongodb.js";
@@ -38,7 +38,7 @@ export default async () => {
 
   app.use(bodyParser.json());
 
-  //app.use(corsMiddleware());
+  app.use(corsMiddleware());
 
   app.use(logMiddleware());
   app.use(hello());
