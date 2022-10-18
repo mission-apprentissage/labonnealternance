@@ -118,7 +118,7 @@ const createStreams = () => {
 };
 
 export const logger = bunyan.createLogger({
-  name: "trajectoire-pro",
+  name: "doctrina",
   serializers: {
     ...bunyan.stdSerializers,
     err: function (err) {

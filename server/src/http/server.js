@@ -3,14 +3,10 @@ import Sentry from "@sentry/node";
 import Tracing from "@sentry/tracing";
 import bodyParser from "body-parser";
 import config from "../config.js";
-import { logger } from "../common/logger.js";
 import { logMiddleware } from "./middlewares/logMiddleware.js";
 import { errorMiddleware } from "./middlewares/errorMiddleware.js";
 import { corsMiddleware } from "./middlewares/corsMiddleware.js";
-import { tryCatch } from "./middlewares/tryCatchMiddleware.js";
 import hello from "./routes/helloRoutes.js";
-import { dbCollection } from "../common/mongodb.js";
-import { packageJson } from "../common/esm.js";
 import { limiter3PerSecond, limiter10PerSecond, limiter1Per20Second, limiter20PerSecond, limiter5PerSecond, limiter7PerSecond } from "./utils/rateLimiters.js";
 import swaggerUi from "swagger-ui-express";
 import swaggerDocument  from "../api-docs/swagger.json" assert { type: 'json' };
@@ -51,31 +47,6 @@ export default async () => {
   
   app.use(errorMiddleware());
   
-  app.get(
-    "/api",
-    tryCatch(async (req, res) => {
-      let mongodbStatus;
-
-      await dbCollection("logs")
-        .stats()
-        .then(() => {
-          mongodbStatus = true;
-        })
-        .catch((e) => {
-          mongodbStatus = false;
-          logger.error("Healthcheck failed", e);
-        });
-
-      return res.json({
-        version: packageJson.version,
-        env: config.env,
-        healthcheck: {
-          mongodb: mongodbStatus,
-        },
-      });
-    })
-  );
-
   /**
    * Bloc LBA J
    */

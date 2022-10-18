@@ -1,21 +1,21 @@
 import { compose, transformData } from "oleoduc";
-import Pick from "stream-json/filters/Pick";
-import { parser: jsonParser } from "stream-json";
-import { streamArray } from "stream-json/streamers/StreamArray";
+import streamJson from "stream-json";
+import jsonFilters from "stream-json/filters/Pick.js";
+import streamers from "stream-json/streamers/StreamArray.js";
 
-export {
-  streamNestedJsonArray: (arrayPropertyName) => {
-    return compose(
-      Pick.withParser({ filter: arrayPropertyName }),
-      streamArray(),
-      transformData((data) => data.value)
-    );
-  },
-  streamJsonArray: () => {
-    return compose(
-      jsonParser(),
-      streamArray(),
-      transformData((data) => data.value)
-    );
-  },
-};
+export function streamNestedJsonArray(arrayPropertyName) {
+  return compose(
+    streamJson.parser(),
+    jsonFilters.pick({ filter: arrayPropertyName }),
+    streamers.streamArray(),
+    transformData((data) => data.value)
+  );
+}
+
+export function streamJsonArray() {
+  return compose(
+    streamJson.parser(),
+    streamers.streamArray(),
+    transformData((data) => data.value)
+  );
+}

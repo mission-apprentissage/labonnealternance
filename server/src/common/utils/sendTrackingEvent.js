@@ -17,4 +17,4 @@ const trackApiCall = async ({ caller, api, nb_formations, nb_emplois, result_cou
   }
 };
 
-export default { trackApiCall };
+export { trackApiCall };

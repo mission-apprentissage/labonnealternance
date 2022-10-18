@@ -1,4 +1,4 @@
-const itemModel = (type) => {
+export const itemModel = (type) => {
   return {
     ideaType: type, // type de l'item :  formation | lbb | lba | peJob | matcha
 
@@ -116,5 +116,3 @@ const itemModel = (type) => {
     */,
   };
 };
-
-export default { itemModel };

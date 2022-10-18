@@ -1,7 +1,7 @@
 import { SourceFormations, ConvertedFormation_0, ConvertedFormation_1 } from "../model/index.js";
 import { Client } from "@elastic/elasticsearch";
 import _ from "lodash";
-import logger from "../logger.js";
+import { logger } from "../logger.js";
 import Sentry from "@sentry/node";
 import config from "../../config.js";
 

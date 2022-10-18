@@ -1,7 +1,5 @@
 import { Client } from "@elastic/elasticsearch";
-import ElasticsearchScrollStream from "elasticsearch-scroll-stream";
-import { transformObject, mergeStreams } from "../utils/streamUtils.js";
-import mongoosastic from "./mongoosastic.js";
+import mongoosastic from "./mongoosastic/index.js";
 import config from "../../config.js";
 
 const getClientOptions = (envName) => {
@@ -19,24 +17,7 @@ const createEsInstance = () => {
     requestTimeout: 60000,
   });
 
-  client.extend("searchDocumentsAsStream", () => {
-    return (options) => {
-      return mergeStreams(
-        new ElasticsearchScrollStream(
-          client,
-          {
-            scroll: "1m",
-            size: "50",
-            ...options,
-          },
-          ["_id"]
-        ),
-        transformObject((data) => {
-          return JSON.parse(Buffer.from(data).toString());
-        })
-      );
-    };
-  });
+  
   return client;
 };
 const clientDefault = createEsInstance();

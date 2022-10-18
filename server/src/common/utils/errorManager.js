@@ -24,4 +24,4 @@ const manageApiError = ({ error, api, caller, errorTitle }) => {
   return errorObj;
 };
 
-export default { manageApiError };
+export { manageApiError };
