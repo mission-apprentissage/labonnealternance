@@ -15,7 +15,7 @@ import { limiter3PerSecond, limiter10PerSecond, limiter1Per20Second, limiter20Pe
 import swaggerUi from "swagger-ui-express";
 import swaggerDocument  from "../api-docs/swagger.json" assert { type: 'json' };
 import version from "./routes/version.js";
-
+import faq from "./routes/faq.js";
 
 export default async () => {
 
@@ -84,9 +84,9 @@ export default async () => {
   app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
   app.use("/api/version", limiter3PerSecond, version());
 
-  /*app.use("/api/faq", limiter5PerSecond, faq());
+  app.use("/api/faq", limiter5PerSecond, faq());
 
-  app.use("/api/error500", limiter3PerSecond, error500());
+  /*app.use("/api/error500", limiter3PerSecond, error500());
 
   app.use("/api/v1/formations", limiter7PerSecond, formationV1());
 
