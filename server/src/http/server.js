@@ -77,35 +77,6 @@ export default async () => {
    * Bloc LBA J
    */
 
-   const limiter3PerSecond = rateLimit({
-    windowMs: 1000, // 1 second
-    max: 3, // limit each IP to 3 requests per windowMs
-  });
-
-  const limiter1Per20Second = rateLimit({
-    windowMs: 20000, // 20 seconds
-    max: 1, // limit each IP to 1 request per windowMs
-  });
-
-  const limiter5PerSecond = rateLimit({
-    windowMs: 1000, // 1 second
-    max: 5, // limit each IP to 5 requests per windowMs
-  });
-  const limiter7PerSecond = rateLimit({
-    windowMs: 1000, // 1 second
-    max: 7, // limit each IP to 7 requests per windowMs
-  });
-  const limiter10PerSecond = rateLimit({
-    windowMs: 1000, // 1 second
-    max: 10, // limit each IP to 10 requests per windowMs
-  });
-
-  const limiter20PerSecond = rateLimit({
-    windowMs: 1000, // 1 second
-    max: 20, // limit each IP to 20 requests per windowMs
-  });
-  
-
   /**
    * TODO: to be removed
    */
@@ -113,8 +84,7 @@ export default async () => {
   app.use("/api/v1/es/search", limiter3PerSecond, esSearch());*/
   /** */
 
-  const swaggerUi = require("swagger-ui-express");
-  const swaggerDocument = require("../api-docs/swagger.json");
+  
 
   app.get("/api-docs/swagger.json", (req, res) => {
     res.sendFile(path.resolve("./src/api-docs/swagger.json"));
