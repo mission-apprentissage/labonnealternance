@@ -13,7 +13,8 @@ import { dbCollection } from "../common/mongodb.js";
 import { packageJson } from "../common/esm.js";
 import { limiter3PerSecond, limiter10PerSecond, limiter1Per20Second, limiter20PerSecond, limiter5PerSecond, limiter7PerSecond } from "./utils/rateLimiters.js";
 import swaggerUi from "swagger-ui-express";
-import swaggerDocument  from "../api-docs/swagger.json" assert { type: 'json' };;
+import swaggerDocument  from "../api-docs/swagger.json" assert { type: 'json' };
+import version from "./routes/version.js";
 
 
 export default async () => {
@@ -43,7 +44,7 @@ export default async () => {
 
   app.use(corsMiddleware());
 
-  app.use(logMiddleware());
+  //app.use(logMiddleware());
   app.use(hello());
   
   app.use(errorMiddleware());
@@ -92,7 +93,7 @@ export default async () => {
   app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
   app.use("/api/version", limiter3PerSecond, version());
 
-  app.use("/api/faq", limiter5PerSecond, faq());
+  /*app.use("/api/faq", limiter5PerSecond, faq());
 
   app.use("/api/error500", limiter3PerSecond, error500());
 
@@ -123,7 +124,7 @@ export default async () => {
   app.use("/api/mail", limiter1Per20Second, sendMail(components));
 
   app.use("/api/application", sendApplication(components));
-  app.use("/api/V1/application", limiter5PerSecond, sendApplicationAPI(components));
+  app.use("/api/V1/application", limiter5PerSecond, sendApplicationAPI(components));*/
   /**
    * FIN Bloc LBA J
    */

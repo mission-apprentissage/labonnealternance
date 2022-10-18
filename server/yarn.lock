@@ -790,6 +790,14 @@ chalk@^2.0.0:
     escape-string-regexp "^1.0.5"
     supports-color "^5.3.0"
 
+changelog-parser@2.8.0:
+  version "2.8.0"
+  resolved "https://registry.yarnpkg.com/changelog-parser/-/changelog-parser-2.8.0.tgz#c14293e3e8fab797913c722de965480198650108"
+  integrity sha512-ZtSwN0hY7t+WpvaXqqXz98RHCNhWX9HsvCRAv1aBLlqJ7BpKtqdM6Nu6JOiUhRAWR7Gov0aN0fUnmflTz0WgZg==
+  dependencies:
+    line-reader "^0.2.4"
+    remove-markdown "^0.2.2"
+
 chardet@^0.7.0:
   version "0.7.0"
   resolved "https://registry.yarnpkg.com/chardet/-/chardet-0.7.0.tgz#90094849f0937f2eedc2425d0d28a9e5f0cbad9e"
@@ -2263,6 +2271,11 @@ lilconfig@2.0.4:
   resolved "https://registry.yarnpkg.com/lilconfig/-/lilconfig-2.0.4.tgz#f4507d043d7058b380b6a8f5cb7bcd4b34cee082"
   integrity sha512-bfTIN7lEsiooCocSISTWXkiWJkRqtL9wYtYy+8EK3Y41qh3mpwPU0ycTOgjdY9ErwXCc8QyrQp82bdL0Xkm9yA==
 
+line-reader@^0.2.4:
+  version "0.2.4"
+  resolved "https://registry.yarnpkg.com/line-reader/-/line-reader-0.2.4.tgz#c4392b587dea38580c9678570e6e8e49fce52622"
+  integrity sha512-342xzyZZS9uTiKwHJcMacopVl/WjrMMCZS1Qg4Uhl/WBknWRrGFdKOIS1Kec6SaiTcZMtmuxWvvIbPXj/+FMjA==
+
 lint-staged@>=10:
   version "12.4.1"
   resolved "https://registry.yarnpkg.com/lint-staged/-/lint-staged-12.4.1.tgz#63fa27bfc8a33515f6902f63f6670864f1fb233c"
@@ -3112,6 +3125,11 @@ release-zalgo@^1.0.0:
   integrity sha1-CXALflB0Mpc5Mw5TXFqQ+2eFFzA=
   dependencies:
     es6-error "^4.0.1"
+
+remove-markdown@^0.2.2:
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/remove-markdown/-/remove-markdown-0.2.2.tgz#66b0ceeba9fb77ca9636bb1b0307ce21a32a12a6"
+  integrity sha512-jwgEf3Yh/xi4WodWi/vPlasa9C9pMv1kz5ITOIAGjBW7PeZ/CHZCdBfJzQnn2VX2cBvf1xCuJv0tUJqn/FCMNA==
 
 request@^2.51.0:
   version "2.88.2"

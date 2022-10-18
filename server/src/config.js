@@ -5,7 +5,7 @@ const config = {
   env: env.get("DOCTRINA_ENV").default("local").asString(),
   publicUrl: env.get("DOCTRINA_PUBLIC_URL").default("http://localhost:3000").asString(),
   outputDir: env.get("LABONNEALTERNANCE_OUTPUT_DIR").default(".local/output").asString(),
-  formationsEndPoint: env.get("XXXX").default("/api/v1/entity/formations").asString(),
+  formationsEndPoint: env.get("XXXX").default("/api/v1/entity/formations").asString(),  //TODO: remplacer les XXXX par des vars ou sortir du config
   maxApplicationPerDay: env.get("XXXX").default(100).asIntPositive(),
   log: {
     level: env.get("DOCTRINA_LOG_LEVEL").default("info").asString(),
