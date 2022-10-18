@@ -16,6 +16,7 @@ import swaggerUi from "swagger-ui-express";
 import swaggerDocument  from "../api-docs/swagger.json" assert { type: 'json' };
 import version from "./routes/version.js";
 import faq from "./routes/faq.js";
+import error500 from "./routes/error500.js";
 
 export default async () => {
 
@@ -86,9 +87,9 @@ export default async () => {
 
   app.use("/api/faq", limiter5PerSecond, faq());
 
-  /*app.use("/api/error500", limiter3PerSecond, error500());
+  app.use("/api/error500", limiter3PerSecond, error500());
 
-  app.use("/api/v1/formations", limiter7PerSecond, formationV1());
+  /*app.use("/api/v1/formations", limiter7PerSecond, formationV1());
 
   app.use("/api/v1/formationsParRegion", limiter5PerSecond, formationRegionV1());
 
