@@ -10,9 +10,9 @@
 /* eslint-disable no-param-reassign */
 "use strict";
 
-const serialize = require("./serialize");
-const { oleoduc, writeData } = require("oleoduc");
-const { logMessage } = require("../../utils/logMessage");
+import serialize from "./serialize.js";
+import { oleoduc, writeData } from "oleoduc";
+import { logMessage } from "../../utils/logMessage.js";
 
 // https://www.elastic.co/guide/en/elasticsearch/client/javascript-api/current/bulk_examples.html
 
@@ -324,4 +324,4 @@ function Mongoosastic(schema, options) {
   setUpMiddlewareHooks(schema);
 }
 
-module.exports = Mongoosastic;
+export default Mongoosastic;

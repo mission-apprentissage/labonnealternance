@@ -1,6 +1,6 @@
-import { getFormationsES } from "../common/esClient.js";
+import { getFormationsES } from "../common/esClient/index.js";
 import axios from "axios";
-const config = require("config");
+import config from "../config.js";
 import Sentry from "@sentry/node";
 import { getCurrentFormationsSourceCollection } from "../common/components/indexSourceFormations.js";
 import _ from "lodash";

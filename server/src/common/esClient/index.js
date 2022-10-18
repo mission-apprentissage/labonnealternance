@@ -1,8 +1,8 @@
-const { Client } = require("@elastic/elasticsearch");
-const ElasticsearchScrollStream = require("elasticsearch-scroll-stream");
-const { transformObject, mergeStreams } = require("../utils/streamUtils");
-const mongoosastic = require("./mongoosastic");
-const config = require("config");
+import { Client } from "@elastic/elasticsearch";
+import ElasticsearchScrollStream from "elasticsearch-scroll-stream";
+import { transformObject, mergeStreams } from "../utils/streamUtils.js";
+import mongoosastic from "./mongoosastic.js";
+import config from "../../config.js";
 
 const getClientOptions = (envName) => {
   let node = { node: envName === "local" ? "http://127.0.0.1:9200" : "http://elasticsearch:9200" };
@@ -63,7 +63,7 @@ const getBonnesBoitesES = () => {
   return clientBonnesBoites;
 };
 
-module.exports = {
+export {
   getDomainesMetiersES,
   getDiplomesMetiersES,
   getElasticInstance,

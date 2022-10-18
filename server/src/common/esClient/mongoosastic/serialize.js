@@ -51,4 +51,4 @@ const serialize = (model, mapping) => {
   return outModel;
 };
 
-module.exports = serialize;
+export default serialize;
