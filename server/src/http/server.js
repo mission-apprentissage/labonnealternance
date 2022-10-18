@@ -1,14 +1,16 @@
 import express from "express";
+import Sentry from "@sentry/node";
+import Tracing from "@sentry/tracing";
 import bodyParser from "body-parser";
 import config from "../config.js";
 import { logger } from "../common/logger.js";
 import { logMiddleware } from "./middlewares/logMiddleware.js";
 import { errorMiddleware } from "./middlewares/errorMiddleware.js";
+//import { corsMiddleware } from "./middlewares/corsMiddleware";
 import { tryCatch } from "./middlewares/tryCatchMiddleware.js";
 import hello from "./routes/helloRoutes.js";
 import { dbCollection } from "../common/mongodb.js";
 import { packageJson } from "../common/esm.js";
-import corsMiddleware from "./middlewares/corsMiddleware";
 import rateLimit from "express-rate-limit";
 
 export default async () => {
@@ -36,7 +38,7 @@ export default async () => {
 
   app.use(bodyParser.json());
 
-  app.use(corsMiddleware());
+  //app.use(corsMiddleware());
 
   app.use(logMiddleware());
   app.use(hello());

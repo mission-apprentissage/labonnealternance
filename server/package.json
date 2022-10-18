@@ -30,7 +30,9 @@
     "lodash-es": "4.17.21",
     "mongodb": "4.5.0",
     "oleoduc": "0.7.0",
-    "pretty-ms": "7.0.1"
+    "pretty-ms": "7.0.1",
+    "@sentry/node": "^5.22.3",
+    "@sentry/tracing": "^5.22.3"
   },
   "engines": {
     "node": ">=12.11.0"
