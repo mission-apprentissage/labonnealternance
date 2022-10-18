@@ -106,8 +106,8 @@ export default async () => {
   /**
    * TODO: to be removed
    */
-  app.use(bodyParser.text({ type: "application/x-ndjson" }));
-  app.use("/api/v1/es/search", limiter3PerSecond, esSearch());  
+  /*app.use(bodyParser.text({ type: "application/x-ndjson" }));
+  app.use("/api/v1/es/search", limiter3PerSecond, esSearch());*/
   /** */
 
   const swaggerUi = require("swagger-ui-express");
