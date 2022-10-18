@@ -11,7 +11,10 @@ import { tryCatch } from "./middlewares/tryCatchMiddleware.js";
 import hello from "./routes/helloRoutes.js";
 import { dbCollection } from "../common/mongodb.js";
 import { packageJson } from "../common/esm.js";
-import rateLimit from "express-rate-limit";
+import { limiter3PerSecond, limiter10PerSecond, limiter1Per20Second, limiter20PerSecond, limiter5PerSecond, limiter7PerSecond } from "./utils/rateLimiters.js";
+import swaggerUi from "swagger-ui-express";
+import swaggerDocument  from "../api-docs/swagger.json" assert { type: 'json' };;
+
 
 export default async () => {
 
