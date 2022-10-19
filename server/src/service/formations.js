@@ -12,7 +12,6 @@ import { manageApiError } from "../common/utils/errorManager.js";
 import { regionCodeToDepartmentList } from "../common/utils/regionInseeCodes.js";
 import { formationMock, formationsMock, lbfFormationMock } from "../../tests/mocks/formations-mock.js";
 import { notifyToSlack } from "../common/utils/slackUtils.js";
-import { logger } from "../common/logger.js";
 
 const formationResultLimit = 150;
 
