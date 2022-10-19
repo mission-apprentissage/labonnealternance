@@ -3,6 +3,7 @@ import config from "../../config.js";
 const localOrigin = [
   "https://labonnealternance.beta.pole-emploi.fr",
   "https://labonnealternance.pole-emploi.fr",
+  "https://doctrina.apprentissage.beta.gouv.fr",
   "http://localhost:3003",
   "http://localhost:3000",
 ];
