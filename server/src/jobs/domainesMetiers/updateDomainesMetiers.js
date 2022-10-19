@@ -1,12 +1,14 @@
-const path = require("path");
-const fs = require("fs");
-const _ = require("lodash");
-const XLSX = require("xlsx");
-const { DomainesMetiers } = require("../../common/model");
-const { getElasticInstance } = require("../../common/esClient");
-const { getFileFromS3 } = require("../../common/utils/awsUtils");
-const { oleoduc } = require("oleoduc");
-const { logMessage } = require("../../common/utils/logMessage");
+import path from "path";
+import fs from "fs";
+import _ from "lodash";
+import XLSX from "xlsx";
+import { DomainesMetiers } from "../../common/model/index.js";
+import { getElasticInstance } from "../../common/esClient/index.js";
+import { getFileFromS3 } from "../../common/utils/awsUtils.js";
+import { oleoduc } from "oleoduc";
+import { logMessage } from "../../common/utils/logMessage.js";
+import * as url from 'url';
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
 const FILE_LOCAL_PATH = path.join(__dirname, "./assets/domainesMetiers_S3.xlsx");
 
@@ -49,7 +51,7 @@ const readXLSXFile = (filePath) => {
   return { sheet_name_list: workbook.SheetNames, workbook };
 };
 
-module.exports = async (optionalFileName) => {
+export default async function(optionalFileName) {
   let step = 0;
 
   try {

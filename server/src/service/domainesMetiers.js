@@ -1,4 +1,4 @@
-import logger from "../common/logger.js";
+import { logger } from "../common/logger.js";
 import { getDomainesMetiersES } from "../common/esClient/index.js";
 import _ from "lodash";
 import config from "../config.js";

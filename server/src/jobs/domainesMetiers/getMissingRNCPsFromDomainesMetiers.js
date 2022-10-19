@@ -2,13 +2,15 @@ import path from "path";
 import config from "../../config.js";
 import fs from "fs";
 import _ from "lodash";
-import logger from "../../common/logger.js";
+import { logger } from "../../common/logger.js";
 import XLSX from "xlsx";
 import { DomainesMetiers } from "../../common/model/index.js";
 import { getFormationsES } from "../../common/esClient/index.js";
 import { getFileFromS3 } from "../../common/utils/awsUtils.js";
 import { oleoduc } from "oleoduc";
-import { logMessage } from "../../common/utils/logMessage";
+import { logMessage } from "../../common/utils/logMessage.js";
+import * as url from 'url';
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
 const esClient = getFormationsES();
 
