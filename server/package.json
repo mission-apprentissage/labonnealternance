@@ -42,6 +42,7 @@
     "@sentry/tracing": "^5.22.3",
     "stream-json": "1.7.4",
     "swagger-ui-express": "4.1.4",
+    "@turf/distance": "^6.0.1",
     "xlsx": "0.16.1"
   },
   "engines": {
