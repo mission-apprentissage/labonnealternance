@@ -192,7 +192,7 @@ const transformPeJobForIdea = ({ job, lat = null, long = null, caller = null }) 
 const computeJobDistanceToSearchCenter = (job, lat, long) => {
   // si la distance au centre du point de recherche n'est pas connue, on la calcule avec l'utilitaire distance de turf.js
   if (job.lieuTravail && job.lieuTravail.latitude && job.lieuTravail.longitude)
-    return Math.round(10 * distance.default([long, lat], [job.lieuTravail.longitude, job.lieuTravail.latitude])) / 10;
+    return Math.round(10 * distance([long, lat], [job.lieuTravail.longitude, job.lieuTravail.latitude])) / 10;
   else return null;
 };
 
