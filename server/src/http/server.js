@@ -14,6 +14,7 @@ import version from "./routes/version.js";
 import faq from "./routes/faq.js";
 import error500 from "./routes/error500.js";
 import formationV1 from "./routes/formationV1.js";
+import rome from "./routes/rome.js";
 
 export default async () => {
 
@@ -62,6 +63,8 @@ export default async () => {
   app.use("/api/error500", limiter3PerSecond, error500());
 
   app.use("/api/v1/formations", limiter7PerSecond, formationV1());
+
+  app.use("/api/romelabels", limiter10PerSecond, rome());
 
   /*app.use("/api/v1/formationsParRegion", limiter5PerSecond, formationRegionV1());
 
