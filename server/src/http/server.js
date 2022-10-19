@@ -15,6 +15,7 @@ import faq from "./routes/faq.js";
 import error500 from "./routes/error500.js";
 import formationV1 from "./routes/formationV1.js";
 import rome from "./routes/rome.js";
+import jobDiploma from "./routes/jobDiploma.js";
 
 export default async () => {
 
@@ -66,13 +67,13 @@ export default async () => {
 
   app.use("/api/romelabels", limiter10PerSecond, rome());
 
+  app.use("/api/jobsdiplomas", limiter10PerSecond, jobDiploma());
+
   /*app.use("/api/v1/formationsParRegion", limiter5PerSecond, formationRegionV1());
 
   app.use("/api/v1/jobs", limiter5PerSecond, jobV1());
 
   app.use("/api/v1/jobsEtFormations", limiter5PerSecond, jobEtFormationV1());
-
-  app.use("/api/jobsdiplomas", limiter10PerSecond, jobDiploma());
 
   app.use("/api/romelabels", limiter10PerSecond, rome());
 
