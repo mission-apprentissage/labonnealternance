@@ -20,6 +20,7 @@ import updateRomesMetiers from "./routes/updateRomesMetiers.js";
 import formationRegionV1 from "./routes/formationRegionV1.js";
 import jobV1 from "./routes/jobV1.js";
 import jobEtFormationV1 from "./routes/jobEtFormationV1.js";
+import metiers from "./routes/metiers.js";
 
 export default async () => {
 
@@ -80,6 +81,10 @@ export default async () => {
   app.use("/api/v1/jobs", limiter5PerSecond, jobV1());
 
   app.use("/api/v1/jobsEtFormations", limiter5PerSecond, jobEtFormationV1());
+
+  app.use("/api/metiers", limiter20PerSecond, metiers());
+  app.use("/api/v1/metiers", limiter20PerSecond, metiers());
+
   /*
   app.use("/api/updateLBB", limiter1Per20Second, updateLBB());
 
@@ -87,9 +92,9 @@ export default async () => {
 
   app.use("/api/updateDiplomesMetiers", limiter1Per20Second, updateDiplomesMetiers());
 
-  app.use("/api/metiers", limiter20PerSecond, metiers());
+  
 
-  app.use("/api/v1/metiers", limiter20PerSecond, metiers());
+  
 
   app.use("/api/mail", limiter1Per20Second, sendMail(components));
 
