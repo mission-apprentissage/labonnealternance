@@ -27,6 +27,9 @@ import updateLBB from"./routes/updateLBB.js";
 import updateFormations from "./routes/updateFormations.js";
 import updateDiplomesMetiers from "./routes/updateDiplomesMetiers.js";
 import sendMail from "./routes/sendMail.js";
+import sendApplication from "./routes/sendApplication.js";
+import sendApplicationAPI from "./routes/sendApplicationAPI.js";
+import { initWebhook } from "../service/sendinblue/webhookSendinBlue.js";
 
 export default async (components) => {
 
@@ -125,12 +128,13 @@ export default async (components) => {
 
   app.use("/api/mail", limiter1Per20Second, sendMail(components));
 
-  /*
   app.use("/api/application", sendApplication(components));
-  app.use("/api/V1/application", limiter5PerSecond, sendApplicationAPI(components));*/
+  app.use("/api/V1/application", limiter5PerSecond, sendApplicationAPI(components));
   /**
    * FIN Bloc LBA J
    */
+
+  initWebhook();
 
   return app;
 };
