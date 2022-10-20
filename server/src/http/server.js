@@ -6,6 +6,7 @@ import config from "../config.js";
 import { logMiddleware } from "./middlewares/logMiddleware.js";
 import { errorMiddleware } from "./middlewares/errorMiddleware.js";
 import { corsMiddleware } from "./middlewares/corsMiddleware.js";
+import { tryCatch } from "./middlewares/tryCatchMiddleware.js";
 import hello from "./routes/helloRoutes.js";
 import { limiter3PerSecond, limiter10PerSecond, limiter1Per20Second, limiter20PerSecond, limiter5PerSecond, limiter7PerSecond } from "./utils/rateLimiters.js";
 import swaggerUi from "swagger-ui-express";
@@ -24,8 +25,9 @@ import metiers from "./routes/metiers.js";
 import updateLBB from"./routes/updateLBB.js";
 import updateFormations from "./routes/updateFormations.js";
 import updateDiplomesMetiers from "./routes/updateDiplomesMetiers.js";
+import sendMail from "./routes/sendMail.js";
 
-export default async () => {
+export default async (components) => {
 
   const app = express();
 
@@ -56,6 +58,32 @@ export default async () => {
   app.use(hello());
   
   app.use(errorMiddleware());
+
+
+  app.get(
+    "/api",
+    tryCatch(async (req, res) => {
+      let mongodbStatus;
+
+      await db.collection("logs")
+        .stats()
+        .then(() => {
+          mongodbStatus = true;
+        })
+        .catch((e) => {
+          mongodbStatus = false;
+          logger.error("Healthcheck failed", e);
+        });
+
+      return res.json({
+        version: packageJson.version,
+        env: config.env,
+        healthcheck: {
+          mongodb: mongodbStatus,
+        },
+      });
+    })
+  );
   
   /**
    * Bloc LBA J
@@ -94,9 +122,9 @@ export default async () => {
 
   app.use("/api/updateDiplomesMetiers", limiter1Per20Second, updateDiplomesMetiers());
 
-  /*
   app.use("/api/mail", limiter1Per20Second, sendMail(components));
 
+  /*
   app.use("/api/application", sendApplication(components));
   app.use("/api/V1/application", limiter5PerSecond, sendApplicationAPI(components));*/
   /**
