@@ -14,6 +14,17 @@ services:
     depends_on:
       - server
       - ui
+    environment:
+      - PARANOIA=1
+      - ANOMALY_INBOUND=5
+      - ANOMALY_OUTBOUND=4
+      - DNS_SERVER=127.0.0.11
+      - PROXY=1
+      - ACCESSLOG=/data/access.log
+      - ERRORLOG=/data/error.log
+      - LOGLEVEL=warn
+      - NGINX_ALWAYS_TLS_REDIRECT=false
+      - ALLOWED_METHODS=GET HEAD POST OPTIONS PUT
 
   ui:
     image: doctrina_ui
