@@ -23,6 +23,7 @@ import jobEtFormationV1 from "./routes/jobEtFormationV1.js";
 import metiers from "./routes/metiers.js";
 import updateLBB from"./routes/updateLBB.js";
 import updateFormations from "./routes/updateFormations.js";
+import updateDiplomesMetiers from "./routes/updateDiplomesMetiers.js";
 
 export default async () => {
 
@@ -90,14 +91,10 @@ export default async () => {
   app.use("/api/updateLBB", limiter1Per20Second, updateLBB());
 
   app.use("/api/updateFormations", limiter1Per20Second, updateFormations());
-  /*
-  
-
-  
 
   app.use("/api/updateDiplomesMetiers", limiter1Per20Second, updateDiplomesMetiers());
 
-
+  /*
   app.use("/api/mail", limiter1Per20Second, sendMail(components));
 
   app.use("/api/application", sendApplication(components));
@@ -105,8 +102,6 @@ export default async () => {
   /**
    * FIN Bloc LBA J
    */
-
-
 
   return app;
 };
