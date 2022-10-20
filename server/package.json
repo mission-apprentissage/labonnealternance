@@ -45,6 +45,7 @@
     "notion-client": "4.12.0",
     "oleoduc": "0.7.0",
     "pretty-ms": "7.0.1",
+    "query-string": "7.1.1",
     "stream-json": "1.7.4",
     "swagger-ui-express": "4.1.4",
     "xlsx": "0.16.1",
