@@ -22,7 +22,7 @@ const client = new QueryClient({
 
 ReactDOM.render(
   <QueryClientProvider client={client}>
-    <BrowserRouter>
+    <BrowserRouter basename='/espace-pro'>
       <ChakraProvider theme={theme}>
         <WidgetProvider>
           <LogoProvider>

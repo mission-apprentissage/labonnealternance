@@ -7,6 +7,7 @@
   "author": "MNA",
   "license": "MIT",
   "main": "src/index.js",
+  "homepage": "/espace-pro",
   "scripts": {
     "analyze": "source-map-explorer 'build/static/js/*.js'",
     "start": "react-scripts start",
