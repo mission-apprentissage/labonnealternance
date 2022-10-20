@@ -1,11 +1,11 @@
 location /espace-pro {
-    set $upstream http://ui-espace-pro:3001;
+    set $upstream http://ui_espace_pro:3001;
     include includes/proxy.conf;
 
     client_max_body_size 0;
 
     if ($always_redirect = on) {
-        return 301 https://$host$request_uri;
+        return 301 https://$host$request_uri/;
     }
 
     set $CSP "default-src 'self';";
