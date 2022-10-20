@@ -2,6 +2,7 @@
   "root": true,
   "extends": ["eslint:recommended", "plugin:node/recommended-module", "plugin:prettier/recommended"],
   "plugins": ["mocha"],
+  "ignorePatterns": ["/build"],
   "rules": {
     "mocha/no-skipped-tests": "error",
     "mocha/no-exclusive-tests": "error",
