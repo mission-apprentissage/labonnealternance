@@ -1,5 +1,5 @@
 location /espace-pro {
-    set $upstream http://ui:3001;
+    set $upstream http://ui-espace-pro:3001;
     include includes/proxy.conf;
 
     client_max_body_size 0;
