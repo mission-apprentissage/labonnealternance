@@ -1,6 +1,6 @@
-const { logMessage } = require("../../common/utils/logMessage");
-const miniget = require("miniget");
-const { oleoduc, readLineByLine, transformData, writeData } = require("oleoduc");
+import { logMessage } from "../../common/utils/logMessage.js";
+import miniget from "miniget";
+import { oleoduc, readLineByLine, transformData, writeData } from "oleoduc";
 
 let nafMap = {};
 let count = 0;
@@ -41,7 +41,7 @@ const computeLine = async ({ code_naf, intitule_naf }) => {
   }
 };
 
-module.exports = async () => {
+export default async function() {
   try {
     logMessage("info", " -- Start updating rome naf -- ");
 

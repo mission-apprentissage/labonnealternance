@@ -1,7 +1,10 @@
-const { logMessage } = require("../../common/utils/logMessage");
-const { oleoduc, readLineByLine, transformData, writeData } = require("oleoduc");
-const fs = require("fs");
-const path = require("path");
+import { logMessage } from "../../common/utils/logMessage.js";
+import { oleoduc, readLineByLine, transformData, writeData } from "oleoduc";
+import fs from "fs";
+import path from "path";
+import * as url from 'url';
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
+
 const filePath = path.join(__dirname, "./assets/tirage_LBA_170621.csv");
 
 let predictionMap = {};
@@ -31,7 +34,7 @@ const computeLine = async ({ siret, score }) => {
   }
 };
 
-module.exports = async () => {
+export default async function() {
   try {
     logMessage("info", " -- Start init CBS predictionMap -- ");
 

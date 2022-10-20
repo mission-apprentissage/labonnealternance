@@ -1,7 +1,7 @@
-const _ = require("lodash");
-const config = require("config");
-const updateOpcoJob = require("../../jobs/lbb/updateOpcoCompanies");
-const Sentry = require("@sentry/node");
+import _ from "lodash";
+import config from "../../config.js";
+import updateOpcoJob from "../../jobs/lbb/updateOpcoCompanies.js";
+import Sentry from "@sentry/node";
 
 const updateOpcos = async (query) => {
   if (!query.secret) {
@@ -20,6 +20,6 @@ const updateOpcos = async (query) => {
   }
 };
 
-module.exports = {
+export {
   updateOpcos,
 };

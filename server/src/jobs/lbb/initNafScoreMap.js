@@ -1,7 +1,9 @@
-const path = require("path");
-const fs = require("fs");
-const { oleoduc, readLineByLine, transformData, writeData } = require("oleoduc");
-const { logMessage } = require("../../common/utils/logMessage");
+import path from "path";
+import fs from "fs";
+import { oleoduc, readLineByLine, transformData, writeData } from "oleoduc";
+import { logMessage } from "../../common/utils/logMessage.js";
+import * as url from 'url';
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
 let nafRomeHiringMap = {};
 
@@ -42,7 +44,7 @@ const computeLine = async ({ rome, naf, hirings }) => {
   nafRomeHiringMap[naf] = nafHirings;
 };
 
-module.exports = async () => {
+export default async function() {
   try {
     try {
       await oleoduc(

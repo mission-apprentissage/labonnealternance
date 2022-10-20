@@ -1,5 +1,5 @@
-const { BonnesBoites } = require("../../common/model");
-const { logMessage } = require("../../common/utils/logMessage");
+import { BonnesBoites } from "../../common/model/index.js";
+import { logMessage } from "../../common/utils/logMessage.js";
 
 const updateSAVECompanies = async ({ updateMap }) => {
   logMessage("info", "Starting updateSAVECompanies");
@@ -63,6 +63,6 @@ const updateSAVECompanies = async ({ updateMap }) => {
   logMessage("info", "Ended updateSAVECompanies");
 };
 
-module.exports = {
+export {
   updateSAVECompanies,
 };

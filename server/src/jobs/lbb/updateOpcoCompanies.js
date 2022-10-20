@@ -1,14 +1,16 @@
-const fs = require("fs");
-const fetch = require("node-fetch");
-const config = require("config");
-const axios = require("axios");
-const path = require("path");
-const { oleoduc, readLineByLine, transformData, writeData } = require("oleoduc");
-const { Opco } = require("../../common/model");
-const _ = require("lodash");
-const { logMessage } = require("../../common/utils/logMessage");
+import fs from "fs";
+import fetch from "node-fetch";
+import config from "../../config.js";
+import axios from "axios";
+import path from "path";
+import { oleoduc, readLineByLine, transformData, writeData } from "oleoduc";
+import { Opco } from "../../common/model/index.js";
+import _ from "lodash";
+import { logMessage } from "../../common/utils/logMessage.js";
 //const opcoAktoSirenFilePath = path.join(__dirname, "./assets/20220301-Akto_SIREN.csv");
-const { notifyToSlack } = require("../../common/utils/slackUtils");
+import { notifyToSlack } from "../../common/utils/slackUtils.js";
+import * as url from 'url';
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
 const opcoSirenFile = path.join(__dirname, "./assets/opco_sirens.csv");
 
@@ -93,7 +95,7 @@ const removeOpcoFile = async () => {
   }
 };
 
-module.exports = async () => {
+export default async function() {
   if (!running) {
     running = true;
     try {
