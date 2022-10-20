@@ -3,6 +3,7 @@ import Sentry from "@sentry/node";
 import Tracing from "@sentry/tracing";
 import bodyParser from "body-parser";
 import config from "../config.js";
+import packageJson from "../../package.json" assert { type: "json" } ;
 import { logMiddleware } from "./middlewares/logMiddleware.js";
 import { errorMiddleware } from "./middlewares/errorMiddleware.js";
 import { corsMiddleware } from "./middlewares/corsMiddleware.js";
@@ -65,7 +66,7 @@ export default async (components) => {
     tryCatch(async (req, res) => {
       let mongodbStatus;
 
-      await db.collection("logs")
+      await components.db.collection("logs")
         .stats()
         .then(() => {
           mongodbStatus = true;
