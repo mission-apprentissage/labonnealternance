@@ -1,16 +1,17 @@
-ARG MNAPROJECTNAME_ENV=production
+ARG DOCTRINA_ENV=production
 
 ARG REACT_APP_BASE_URL
 ARG REACT_APP_METABASE_URL
 ARG REACT_APP_ENV
 
+FROM node:16-alpine AS deps
+
+
 ENV REACT_APP_BASE_URL=$REACT_APP_BASE_URL
 ENV REACT_APP_METABASE_URL=$REACT_APP_METABASE_URL
 ENV REACT_APP_ENV=$REACT_APP_ENV
 
-
-# Install dependencies only when needed
-FROM node:16-alpine AS deps
+#Install dependencies only when needed
 WORKDIR /app
 COPY package.json yarn.lock ./
 RUN yarn install --frozen-lockfile
@@ -42,4 +43,5 @@ EXPOSE 3001
 ENV PORT 3001
 CMD ["yarn", "start"]
 
-FROM ui-${MNAPROJECTNAME_ENV} as final
+# FROM ui-dev as final
+FROM ui-${DOCTRINA_ENV} as final
