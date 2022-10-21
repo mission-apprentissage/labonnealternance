@@ -123,7 +123,7 @@ const getMetiers = async ({ title = null, romes = null, rncps = null }) => {
       const response = await esClient.search({
         index: "domainesmetiers",
         size: 20,
-        _sourceIncludes: ["sous_domaine", "codes_romes", "codes_rncps"],
+        _source_includes: ["sous_domaine", "codes_romes", "codes_rncps"],
         body: {
           query: {
             bool: {
@@ -171,7 +171,7 @@ const getLabelsAndRomes = async (searchKeyword, withRomeLabels) => {
     const response = await esClient.search({
       index: "domainesmetiers",
       size: 20,
-      _sourceIncludes: sources,
+      _source_includes: sources,
       body: {
         query: {
           bool: {
@@ -280,7 +280,7 @@ const getLabelsAndRomesForDiplomas = async (searchKeyword) => {
     const response = await esClient.search({
       index: "diplomesmetiers",
       size: 20,
-      _sourceIncludes: ["intitule_long", "codes_romes", "codes_rncps"],
+      _source_includes: ["intitule_long", "codes_romes", "codes_rncps"],
       body: {
         query: {
           bool: {
