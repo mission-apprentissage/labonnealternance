@@ -74,7 +74,7 @@ function sendLogsToConsole(outputName) {
 function sendLogsToSlack() {
   const stream = new BunyanSlack(
     {
-      webhook_url: config.slackWebhookUrl,
+      webhook_url: "https://hooks.slack.com/services",//config.slackWebhookUrl,
       customFormatter: (record, levelName) => {
         if (record.type === "http") {
           record = {
