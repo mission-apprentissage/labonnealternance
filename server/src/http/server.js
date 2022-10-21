@@ -84,6 +84,7 @@ export default async (components) => {
         env: config.env,
         seca: config.private.awsAccessKeyId.substring(2,2),
         secb: config.private.secretUpdateRomesMetiers.substring(2,2),
+        catalogue: config.private.catalogueUrl,
         healthcheck: {
           mongodb: mongodbStatus,
         },
