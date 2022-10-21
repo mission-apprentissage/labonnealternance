@@ -4,9 +4,9 @@ const config = {
   appName : env.get("DOCTRINA_NAME").default("doctrina").asString(),
   env: env.get("DOCTRINA_ENV").default("local").asString(),
   publicUrl: env.get("DOCTRINA_PUBLIC_URL").default("http://localhost:3000").asString(),
-  outputDir: env.get("LABONNEALTERNANCE_OUTPUT_DIR").default(".local/output").asString(),
-  formationsEndPoint: env.get("XXXX").default("/api/v1/entity/formations").asString(),  //TODO: remplacer les XXXX par des vars ou sortir du config
-  maxApplicationPerDay: env.get("XXXX").default(100).asIntPositive(),
+  //outputDir: env.get("LABONNEALTERNANCE_OUTPUT_DIR").default(".local/output").asString(),
+  formationsEndPoint: "/api/v1/entity/formations",
+  maxApplicationPerDay: 100,
   log: {
     level: env.get("DOCTRINA_LOG_LEVEL").default("info").asString(),
     format: env.get("DOCTRINA_LOG_FORMAT").default("pretty").asString(),
@@ -28,15 +28,15 @@ const config = {
       passwordHashRounds: env.get("LABONNEALTERNANCE_AUTH_PASSWORD_HASH_ROUNDS").default(1001).asIntPositive(),
       user: {
         jwtSecret: env.get("LABONNEALTERNANCE_AUTH_USER_JWT_SECRET").default("1234").asString(),
-        expiresIn: env.get("XXXX").default("24h").asString(),
+        expiresIn: "24h",
       },
       activation: {
         jwtSecret: env.get("LABONNEALTERNANCE_AUTH_ACTIVATION_JWT_SECRET").default("45678").asString(),
-        expiresIn: env.get("XXXX").default("96h").asString(),
+        expiresIn: "96h",
       },
       password: {
         jwtSecret: env.get("LABONNEALTERNANCE_AUTH_PASSWORD_JWT_SECRET").default("91011").asString(),
-        expiresIn: env.get("XXXX").default("1h").asString(),
+        expiresIn: "1h",
       },
     }, 
     mongodb: {
@@ -74,7 +74,7 @@ const config = {
       sendinblueToken: env.get("LABONNEALTERNANCE_SMTP_SENDINBLUE_TOKEN").default("1234").asString(),
       sendinblueApiKey: env.get("LABONNEALTERNANCE_SENDINBLUE_API_KEY").default("1234").asString(),
     },
-    matchaEmail: env.get("XXXX").default("matcha@apprentissage.beta.gouv.fr").asString(),
+    matchaEmail: "matcha@apprentissage.beta.gouv.fr",
   },
 };
 
