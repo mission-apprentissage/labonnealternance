@@ -24,7 +24,7 @@ services:
       - ERRORLOG=/data/error.log
       - LOGLEVEL=warn
       - NGINX_ALWAYS_TLS_REDIRECT=false
-      - ALLOWED_METHODS=GET HEAD POST OPTIONS PUT
+      - ALLOWED_METHODS=GET HEAD POST OPTIONS PUT DELETE
 
   ui:
     image: doctrina_ui
