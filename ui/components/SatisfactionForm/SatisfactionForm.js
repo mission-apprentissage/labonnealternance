@@ -104,7 +104,7 @@ const SatisfactionForm = ({ formType }) => {
     } else {
       res = Yup.object({
         comment: Yup.string().required("Veuillez remplir le message"),
-        email: Yup.string().email("⚠ Adresse e-mail invalide.").required("⚠ L'adresse e-mail est obligatoire."),
+        email: Yup.string().email("⚠ Adresse e-mail invalide").required("⚠ L'adresse e-mail est obligatoire"),
         phone: Yup.string()
           .matches(/^[0-9]{10}$/, "⚠ Le numéro de téléphone doit avoir exactement 10 chiffres")
           .required("⚠ Le téléphone est obligatoire"),
