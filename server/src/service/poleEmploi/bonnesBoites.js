@@ -283,7 +283,7 @@ const getBonnesBoitesEsQueryIndexFragment = (limit) => {
     //index: "mnaformation",
     index: "bonnesboites",
     size: limit,
-    _sourceIncludes: [
+    _source_includes: [
       "siret",
       "score",
       "raisonsociale",

@@ -710,7 +710,7 @@ const getFormationEsQueryIndexFragment = (limit) => {
     //index: "mnaformation",
     index: "convertedformations",
     size: limit,
-    _sourceIncludes: [
+    _source_includes: [
       "etablissement_formateur_siret",
       "onisep_url",
       "_id",

@@ -75,7 +75,7 @@ const getFormationEsQueryIndexFragment = () => {
   return {
     index: "convertedformations",
     size: 1000,
-    _sourceIncludes: ["rome_codes"],
+    _source_includes: ["rome_codes"],
   };
 };
 

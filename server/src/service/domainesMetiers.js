@@ -404,7 +404,7 @@ const getMetiersFromRomes = async (romes) => {
     const response = await esClient.search({
       index: "domainesmetiers",
       size: 20,
-      _sourceIncludes: ["sous_domaine"],
+      _source_includes: ["sous_domaine"],
       body: {
         query: {
           match: {
@@ -436,7 +436,7 @@ const getTousLesMetiers = async () => {
     const response = await esClient.search({
       index: "domainesmetiers",
       size: 200,
-      _sourceIncludes: ["sous_domaine"],
+      _source_includes: ["sous_domaine"],
       body: {
         query: {
           match_all: {},

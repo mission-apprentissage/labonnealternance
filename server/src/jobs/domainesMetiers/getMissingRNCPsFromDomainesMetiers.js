@@ -20,7 +20,7 @@ const getFormationEsQueryIndexFragment = (limit) => {
   return {
     index: "convertedformations",
     size: limit,
-    _sourceIncludes: ["rncp_code", "rncp_intitule"],
+    _source_includes: ["rncp_code", "rncp_intitule"],
   };
 };
 
