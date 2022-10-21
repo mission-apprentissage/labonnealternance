@@ -18,7 +18,7 @@ const config = {
   mongodb: {
     uri: env
       .get("DOCTRINA_MONGODB_URI")
-      .default("mongodb://127.0.0.1:27017/referentiel?retryWrites=true&w=majority")
+      .default("mongodb://127.0.0.1:27017/doctrina?retryWrites=true&w=majority")
       .asString(),
   },
   private: {
@@ -38,9 +38,6 @@ const config = {
         jwtSecret: env.get("LABONNEALTERNANCE_AUTH_PASSWORD_JWT_SECRET").default("91011").asString(),
         expiresIn: env.get("XXXX").default("1h").asString(),
       },
-    }, 
-    mongodb: {
-      uri: env.get("LABONNEALTERNANCE_MONGODB_URI").default("mongodb://127.0.0.1:27017/labonnealternance?retryWrites=true&w=majority").asString(),
     },
     awsAccessKeyId: env.get("AWS_ACCESS_KEY_ID").default("1234").asString(),
     awsSecretAccessKey: env.get("AWS_SECRET_ACCESS_KEY").default("1234").asString(),

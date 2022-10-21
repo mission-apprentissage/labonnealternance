@@ -27,6 +27,7 @@ services:
     environment:
       - DOCTRINA_ENV=dev
       - DOCTRINA_LOG_LEVEL=debug
+      - DOCTRINA_MONGODB_URI=mongodb://mongodb:27017/doctrina?retryWrites=true&w=majority
 
   mongodb:
     ports:
@@ -39,7 +40,6 @@ services:
       - "127.0.0.1:9200:9200"
     volumes:
       - doctrina_elasticsearch_data:/usr/share/elasticsearch/data
-      - ./elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
 
 volumes:
   doctrina_mongodb_data:
