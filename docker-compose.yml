@@ -71,6 +71,7 @@ services:
       - discovery.type=single-node
       - cluster.name=docker-cluster
       - network.host=0.0.0.0
+      - xpack.security.enabled=false
     mem_limit: 6g
     networks:
       - doctrina_network
