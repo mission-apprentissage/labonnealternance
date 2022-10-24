@@ -24,7 +24,7 @@ export default (props) => {
           </Flex>
           <Button
             display='flex'
-            onClick={props.fromDashboard ? () => props.onClose() : () => navigate('/')}
+            onClick={props.fromDashboard ? () => props.onClose() : () => navigate(-1)}
             fontWeight='normal'
             variant='pill'
             color='bluefrance.500'
