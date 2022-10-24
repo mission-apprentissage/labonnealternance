@@ -42,6 +42,10 @@ services:
     volumes:
       - doctrina_elasticsearch_data:/usr/share/elasticsearch/data
 
+  clamav:
+    ports:
+      - "127.0.0.1:3310:3310"
+
 volumes:
   doctrina_mongodb_data:
     driver: local
