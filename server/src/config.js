@@ -18,7 +18,7 @@ const config = {
   mongodb: {
     uri: env
       .get("DOCTRINA_MONGODB_URI")
-      .default("mongodb://127.0.0.1:27017/referentiel?retryWrites=true&w=majority")
+      .default("mongodb://127.0.0.1:27017/doctrina?retryWrites=true&w=majority")
       .asString(),
   },
   private: {

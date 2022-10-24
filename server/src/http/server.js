@@ -82,8 +82,6 @@ export default async (components) => {
       return res.json({
         version: packageJson.version,
         env: config.env,
-        seca: config.private.awsAccessKeyId.substring(2,2),
-        secb: config.private.secretUpdateRomesMetiers.substring(2,2),
         catalogue: config.private.catalogueUrl,
         healthcheck: {
           mongodb: mongodbStatus,
