@@ -1,11 +1,11 @@
 import { AnimatePresence } from 'framer-motion'
+import { useEffect } from 'react'
 import { Helmet } from 'react-helmet'
 import { ReactQueryDevtoolsPanel } from 'react-query/devtools'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { AUTHTYPE } from './common/contants'
 import useAuth from './common/hooks/useAuth'
 import { Layout, MailActionsOnOffre } from './components'
-import { Accueil } from './pages/Accueil'
 import {
   Account,
   AdministrationOpco,
@@ -28,8 +28,21 @@ import {
   OptOutValidation,
 } from './pages/Authentification'
 import { DepotRapide_AjouterVoeux, DepotRapide_AjouterVoeuxMiseEnRelation, DepotRapide_Fin } from './pages/Formulaire'
-import { NonTrouve } from './pages/NonTrouvé'
 import { PropositionOffreId } from './pages/Proposition/Offre/PropositionOffreId'
+
+function RedirectTo404() {
+  useEffect(() => {
+    window.location.replace('/404')
+  }, [])
+  return null
+}
+
+function RedirectToLba() {
+  useEffect(() => {
+    window.location.replace('/')
+  }, [])
+  return null
+}
 
 function PrivateRoute({ children }) {
   let [auth] = useAuth()
@@ -111,12 +124,10 @@ const App = () => {
         <Route path='/authentification/validation/:id' element={<ConfirmationValidationEmail />} />
         <Route path='/authentification/verification' element={<AuthValidation />} />
         <Route path='/authentification/optout/verification' element={<OptOutValidation />} />
-        <Route path='/' element={<Layout />}>
-          <Route index element={<Accueil />} />
-        </Route>
+        <Route path='/' element={<RedirectToLba />} />
         <Route path='/offre/:idOffre/:option' element={<MailActionsOnOffre />} />
         <Route path='/widget/:origine' element={<CreationCompte type={AUTHTYPE.ENTREPRISE} widget={true} />} />
-        <Route path='*' element={<NonTrouve />} />
+        <Route path='*' element={<RedirectTo404 />} />
       </Routes>
     </AnimatePresence>
   )
