@@ -1,33 +1,62 @@
+import { Button, Stack } from "@chakra-ui/react";
+import { useRouter } from "next/router";
 import React from "react";
-import ExternalLink from "../externalLink";
 
 const ConnectionActions = ({ service }) => {
+  const router = useRouter();
+
   return (
-    <div className="my-4 mx-auto">
-      {service === "entreprise" ? (
-        <ExternalLink
-          className="c-homecomponent-link c-homecomponent-link__first mr-1 mr-md-5"
-          url="https://matcha.apprentissage.beta.gouv.fr/creation/entreprise"
-          title="Déposer une offre"
-        />
-      ) : (
-        ""
+    <Stack direction="row" spacing="25px" pt="30px">
+      {service === "entreprise" && (
+        <Button
+          sx={{
+            border: "1px solid #000091",
+            borderRadius: 0,
+            textTransform: "none",
+            fontWeight: 400,
+            bg: "#000091",
+            color: "white",
+            padding: "10px 24px",
+            fontSize: "18px",
+          }}
+          onClick={() => router.push("/espace-pro/creation/entreprise")}
+        >
+          Déposer une offre
+        </Button>
       )}
-      {service === "cfa" ? (
-        <ExternalLink
-          className="c-homecomponent-link c-homecomponent-link__first mr-1 mr-md-5"
-          url="https://matcha.apprentissage.beta.gouv.fr/creation/cfa"
-          title="Créer mon espace dédié"
-        />
-      ) : (
-        ""
+      {service === "cfa" && (
+        <Button
+          sx={{
+            border: "1px solid #000091",
+            borderRadius: 0,
+            textTransform: "none",
+            fontWeight: 400,
+            bg: "#000091",
+            color: "white",
+            padding: "10px 24px",
+            fontSize: "18px",
+          }}
+          onClick={() => router.push("/espace-pro/creation/cfa")}
+        >
+          Créer mon espace dédié
+        </Button>
       )}
-      <ExternalLink
-        className="c-homecomponent-link c-homecomponent-link__clear"
-        url="https://matcha.apprentissage.beta.gouv.fr/authentification"
-        title="Me connecter"
-      />
-    </div>
+      <Button
+        sx={{
+          borderRadius: 0,
+          textTransform: "none",
+          fontWeight: 400,
+          color: "#000091",
+          bg: "white",
+          border: "1px solid #000091",
+          padding: "10px 24px",
+          fontSize: "18px",
+        }}
+        onClick={() => navigate("/espace-pro/creation/cfa")}
+      >
+        Me connecter
+      </Button>
+    </Stack>
   );
 };
 export default ConnectionActions;

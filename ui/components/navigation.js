@@ -1,7 +1,13 @@
-import React, { useState } from "react";
-import { Collapse, Navbar, NavbarToggler, NavbarBrand, Nav, NavItem } from "reactstrap";
 import { useRouter } from "next/router";
-import ExternalLink from "./externalLink";
+import React, { useState } from "react";
+import {
+  Collapse,
+  Nav,
+  Navbar,
+  NavbarBrand,
+  NavbarToggler,
+  NavItem,
+} from "reactstrap";
 
 const Navigation = ({ currentPage, bgcolor }) => {
   const router = useRouter();
@@ -27,7 +33,10 @@ const Navigation = ({ currentPage, bgcolor }) => {
 
   const getLogoTargetUrl = () => {
     let url = "/";
-    if (currentPage === "acces-recruteur" || currentPage === "organisme-de-formation") {
+    if (
+      currentPage === "acces-recruteur" ||
+      currentPage === "organisme-de-formation"
+    ) {
       url += currentPage;
     }
 
@@ -52,12 +61,20 @@ const Navigation = ({ currentPage, bgcolor }) => {
               height="78"
               className="c-marianne-header"
             />
-            <img src={`/images/${getLogo()}`} alt="Logo LBA" className="c-navbar-brand-img" width="110" height="76" />
+            <img
+              src={`/images/${getLogo()}`}
+              alt="Logo LBA"
+              className="c-navbar-brand-img"
+              width="110"
+              height="76"
+            />
           </NavbarBrand>
           <NavbarToggler onClick={toggle} />
           <Collapse isOpen={isOpen} navbar>
             <Nav className="c-navbar-links ml-auto" navbar>
-              <NavItem className={`ml-lg-5 mr-2 ${!currentPage ? "selected" : ""}`}>
+              <NavItem
+                className={`ml-lg-5 mr-2 ${!currentPage ? "selected" : ""}`}
+              >
                 <a
                   className="nav-link"
                   onClick={(e) => {
@@ -72,7 +89,11 @@ const Navigation = ({ currentPage, bgcolor }) => {
 
               <div className="c-navigation__separator"></div>
 
-              <NavItem className={`mr-2 ml-lg-2 ${currentPage === "acces-recruteur" ? "selected" : ""}`}>
+              <NavItem
+                className={`mr-2 ml-lg-2 ${
+                  currentPage === "acces-recruteur" ? "selected" : ""
+                }`}
+              >
                 <a
                   className="nav-link"
                   onClick={(e) => {
@@ -87,7 +108,11 @@ const Navigation = ({ currentPage, bgcolor }) => {
 
               <div className="c-navigation__separator"></div>
 
-              <NavItem className={`ml-lg-2 ${currentPage === "organisme-de-formation" ? "selected" : ""}`}>
+              <NavItem
+                className={`ml-lg-2 ${
+                  currentPage === "organisme-de-formation" ? "selected" : ""
+                }`}
+              >
                 <a
                   className="nav-link"
                   onClick={(e) => {
@@ -100,17 +125,28 @@ const Navigation = ({ currentPage, bgcolor }) => {
                 </a>
               </NavItem>
 
-              {currentPage === "acces-recruteur" || currentPage === "organisme-de-formation" ? (
+              {currentPage === "acces-recruteur" ||
+              currentPage === "organisme-de-formation" ? (
                 <>
                   <div className="ml-2 c-navigation__separator"></div>
                   <NavItem className="ml-lg-2">
-                    <ExternalLink
-                      className="nav-link mx-1"
-                      url="https://matcha.apprentissage.beta.gouv.fr/authentification"
-                      title="Connexion"
-                      picPosition="left"
-                      withPic={<img className="c-homecomponent-bluelock" src="/images/icons/blue_lock.svg" alt="" />}
-                    />
+                    <a
+                      className="nav-link"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        router.push("/espace-pro/authentification");
+                      }}
+                      href="/organisme-de-formation"
+                    >
+                      <span className="mx-1">
+                        <img
+                          className="c-homecomponent-bluelock mr-2"
+                          src="/images/icons/blue_lock.svg"
+                          alt=""
+                        />
+                        Connexion
+                      </span>
+                    </a>
                   </NavItem>
                 </>
               ) : (
