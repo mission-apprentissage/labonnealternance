@@ -1,7 +1,6 @@
 import { amongst } from "../../../utils/arrayutils";
 import TagCandidatureSpontanee from "../TagCandidatureSpontanee";
 import TagOffreEmploi from "../TagOffreEmploi";
-import TagOffreAssociee from "../TagOffreAssociee";
 import TagCfaDEntreprise from "../TagCfaDEntreprise";
 import TagFormationAssociee from "../TagFormationAssociee";
 
