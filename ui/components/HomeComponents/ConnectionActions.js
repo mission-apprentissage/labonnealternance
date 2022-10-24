@@ -52,7 +52,7 @@ const ConnectionActions = ({ service }) => {
           padding: "10px 24px",
           fontSize: "18px",
         }}
-        onClick={() => navigate("/espace-pro/creation/cfa")}
+        onClick={() => router.push("/espace-pro/creation/cfa")}
       >
         Me connecter
       </Button>
