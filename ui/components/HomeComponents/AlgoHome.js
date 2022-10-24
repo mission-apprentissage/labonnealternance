@@ -27,7 +27,7 @@ const AlgoHome = () => {
         </ul>
       </div>
       <div className="c-algo-img d-flex-center">
-        <img className="" src="/images/icons/algo_home.svg" alt="Recherche Internet" />
+        <img className="" src="/images/icons/algo_home.svg" alt="" />
       </div>
     </section>
   );

@@ -18,7 +18,7 @@ const CandidatureSpontaneeWorked = ({ email, company, kind }) => {
 
         <div className="c-candidature-worked-header d-flex my-5">
           <div>
-            <img src={paperplaneIcon} alt="avion en papier" />
+            <img src={paperplaneIcon} alt="" />
           </div>
           <div className="ml-3 pl-3">
             <h2 className="c-candidature-worked-title">

@@ -145,7 +145,7 @@ const ItemDetail = ({ selectedItem, handleClose, displayNavbar, handleSelectItem
                   <>
                     <div className="text-left pb-3">
                       <span className="c-locationdetail-imgcontainer">
-                        <img className="" src="/images/info.svg" alt="info" />
+                        <img className="" src="/images/info.svg" alt="A noter" />
                       </span>
                       <span className="c-detail-also mb-0">
                         Le centre de formation propose également des offres d'emploi.
@@ -187,7 +187,7 @@ const ItemDetail = ({ selectedItem, handleClose, displayNavbar, handleSelectItem
                     className="gtmDidask1 c-nice-link"
                     url="https://dinum-beta.didask.com/courses/demonstration/60d21bf5be76560000ae916e"
                     title="Chercher un employeur"
-                    withPic={<img src={gotoIcon} alt="Lien" />}
+                    withPic={<img src={gotoIcon} alt="Ouverture dans un nouvel onglet" />}
                   />
                 </span>
               </li>
@@ -197,7 +197,7 @@ const ItemDetail = ({ selectedItem, handleClose, displayNavbar, handleSelectItem
                     className="gtmDidask2 c-nice-link"
                     url="https://dinum-beta.didask.com/courses/demonstration/60d1adbb877dae00003f0eac"
                     title="Préparer un entretien avec un employeur"
-                    withPic={<img src={gotoIcon} alt="Lien" />}
+                    withPic={<img src={gotoIcon} alt="Ouverture dans un nouvel onglet" />}
                   />
                 </span>
               </li>

@@ -93,14 +93,14 @@ const LocationDetail = ({ item, isCfa }) => {
           )}
           <div className="c-locationdetail-line mt-3">
             <span className="c-locationdetail-imgcontainer">
-              <img className="" src="/images/icons/small_map_point.svg" alt="point de localisation" />
+              <img className="" src="/images/icons/small_map_point.svg" alt="Adresse" />
             </span>
             <span className="c-detail-sizetext">
               <ExternalLink
                 className={`c-nice-link font-weight-normal gtm${capitalizeFirstLetter(kind)} gtmPathLink`}
                 url={getCompanyPathLink(item)}
                 title="Obtenir l'itinéraire"
-                withPic={<img className="mt-n1" src="/images/square_link.svg" alt="" />}
+                withPic={<img className="mt-n1" src="/images/square_link.svg" alt="Ouverture dans un nouvel onglet" />}
               />
             </span>
           </div>
@@ -132,14 +132,14 @@ const LocationDetail = ({ item, isCfa }) => {
 
         <div className="c-locationdetail-line mt-3">
           <span className="c-locationdetail-imgcontainer">
-            <img className="" src="/images/icons/small_map_point.svg" alt="point de localisation" />
+            <img className="" src="/images/icons/small_map_point.svg" alt="Adresse" />
           </span>
           <span className="c-detail-sizetext">
             <ExternalLink
               className={`c-nice-link font-weight-normal gtm${capitalizeFirstLetter(kind)} gtmPathLink`}
               url={getPathLink(item)}
               title="Obtenir l'itinéraire"
-              withPic={<img className="mt-n1" src="/images/square_link.svg" alt="" />}
+              withPic={<img className="mt-n1" src="/images/square_link.svg" alt="Ouverture dans un nouvel onglet" />}
             />
           </span>
         </div>
@@ -148,7 +148,7 @@ const LocationDetail = ({ item, isCfa }) => {
           <>
             <div className="c-locationdetail-line mt-1">
               <span className="c-locationdetail-imgcontainer">
-                <img className="" src="/images/icons/small_info.svg" alt="point info" />
+                <img className="" src="/images/icons/small_info.svg" alt="A noter" />
               </span>
               <span className="c-detail-sizetext">
                 <span className="">En savoir plus sur &nbsp;</span>
@@ -163,7 +163,7 @@ const LocationDetail = ({ item, isCfa }) => {
         {shouldDisplayEmail(item) ? (
           <div className="c-locationdetail-line mt-1">
             <span className="c-locationdetail-imgcontainer">
-              <img className="" src="/images/icons/small_email.svg" alt="email" />
+              <img className="" src="/images/icons/small_email.svg" alt="Email" />
             </span>
             <span className="c-detail-sizetext">{item.contact.email}</span>
           </div>
@@ -174,7 +174,7 @@ const LocationDetail = ({ item, isCfa }) => {
         {item?.contact?.phone ? (
           <div className="c-locationdetail-line mt-1 mb-3">
             <span className="c-locationdetail-imgcontainer c-locationdetail-imgcontainer--smallphone">
-              <img className="" src="/images/icons/small_phone.svg" alt="téléphone" />
+              <img className="" src="/images/icons/small_phone.svg" alt="Téléphone" />
             </span>
             <ExternalLink
               className="c-nice-link"
@@ -192,7 +192,7 @@ const LocationDetail = ({ item, isCfa }) => {
             <div className="pb-3">
               <div className="c-detail-newadvice">
                 <div className="pt-1 mb-2">
-                  <img src="/images/info.svg" alt="information pratique" width="24" height="24" />
+                  <img src="/images/info.svg" alt="Information pratique" width="24" height="24" />
                   <span class="c-detail-newadvice-title ml-2">Cet établissement est un CFA d'entreprise</span>
                 </div>
                 <p>
@@ -211,7 +211,7 @@ const LocationDetail = ({ item, isCfa }) => {
                       className="c-nice-link"
                       url="https://dinum-beta.didask.com/courses/demonstration/60abc18c075edf000065c987"
                       title="Préparez votre premier contact avec un CFA"
-                      withPic={<img src={gotoIcon} alt="Lien" />}
+                      withPic={<img src={gotoIcon} alt="Ouverture dans un nouvel onglet" />}
                     />
                   </span>
                 </p>
@@ -226,7 +226,7 @@ const LocationDetail = ({ item, isCfa }) => {
           <>
             <div className="c-locationdetail-line mt-1">
               <span className="c-locationdetail-imgcontainer">
-                <img className="" src="/images/info.svg" alt="info" />
+                <img className="" src="/images/info.svg" alt="A noter" />
               </span>
               <span className="c-detail-sizetext mb-0">
                 En savoir plus sur&nbsp;
@@ -234,7 +234,7 @@ const LocationDetail = ({ item, isCfa }) => {
                   className="c-nice-link gtmGoogleLink"
                   url={`https://www.google.fr/search?q=${getGoogleSearchParameters()}`}
                   title={item.company.name}
-                  withPic={<img className="mt-n1" src="/images/square_link.svg" alt="lien" />}
+                  withPic={<img className="mt-n1" src="/images/square_link.svg" alt="Ouverture dans un nouvel onglet" />}
                 />
               </span>
             </div>
