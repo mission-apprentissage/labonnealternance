@@ -68,7 +68,7 @@ services:
     mem_limit: 3g
     restart: unless-stopped
     networks:
-      - labonnealternance_network
+      - doctrina_network
     healthcheck:
       test: [ "CMD", "/usr/local/bin/clamdcheck.sh" ]
       interval: 60s
