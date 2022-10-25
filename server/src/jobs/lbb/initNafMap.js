@@ -41,7 +41,7 @@ const computeLine = async ({ code_naf, intitule_naf }) => {
   }
 };
 
-export default async function() {
+export default async function () {
   try {
     logMessage("info", " -- Start updating rome naf -- ");
 
@@ -62,4 +62,4 @@ export default async function() {
   count = 0;
 
   return nafMap;
-};
+}

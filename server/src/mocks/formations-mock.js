@@ -97,8 +97,4 @@ const lbfFormationMock = {
   },
 };
 
-export {
-  formationMock,
-  formationsMock,
-  lbfFormationMock,
-}
+export { formationMock, formationsMock, lbfFormationMock };

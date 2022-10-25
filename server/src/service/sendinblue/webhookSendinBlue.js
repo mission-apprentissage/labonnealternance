@@ -32,6 +32,4 @@ const initWebhook = () => {
   );
 };
 
-export {
-  initWebhook,
-};
+export { initWebhook };

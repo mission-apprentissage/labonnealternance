@@ -2,7 +2,7 @@ import express from "express";
 import { tryCatch } from "../middlewares/tryCatchMiddleware.js";
 import { getJobsEtFormationsQuery } from "../../service/jobsEtFormations.js";
 
-export default function() {
+export default function () {
   const router = express.Router();
 
   router.get(
@@ -23,4 +23,4 @@ export default function() {
   );
 
   return router;
-};
+}

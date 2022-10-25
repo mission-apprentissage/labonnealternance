@@ -1,5 +1,5 @@
 import Sentry from "@sentry/node";
-import { trackApiCall } from"./sendTrackingEvent.js";
+import { trackApiCall } from "./sendTrackingEvent.js";
 
 const manageApiError = ({ error, api, caller, errorTitle }) => {
   let errorObj = { result: "error", message: error.message };

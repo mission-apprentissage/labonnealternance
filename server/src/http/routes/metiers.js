@@ -8,7 +8,7 @@ import {
   getCoupleAppellationRomeIntitule,
 } from "../../service/domainesMetiers.js";
 
-export default function() {
+export default function () {
   const router = express.Router();
 
   router.get(
@@ -85,4 +85,4 @@ export default function() {
   );
 
   return router;
-};
+}

@@ -8,8 +8,8 @@ import { GeoLocation } from "../../common/model/index.js";
 import _ from "lodash";
 import fsExtra from "fs-extra";
 import { logMessage } from "../../common/utils/logMessage.js";
-import * as url from 'url';
-const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
+import * as url from "url";
+const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
 
 const tempDir = "./assets/geoLocations/";
 const etablissementFilePath = path.join(__dirname, "./assets/etablissements.csv");
@@ -64,7 +64,7 @@ const clearingFiles = () => {
 
 const geolocateCsvHeader = "rue;citycode";
 
-export default async function() {
+export default async function () {
   let step = 0;
 
   try {
@@ -162,4 +162,4 @@ export default async function() {
     let error_msg = _.get(err, "meta.body") ?? err.message;
     return { error: error_msg };
   }
-};
+}

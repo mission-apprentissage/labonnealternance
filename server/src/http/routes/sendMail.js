@@ -2,7 +2,7 @@ import express from "express";
 import { tryCatch } from "../middlewares/tryCatchMiddleware.js";
 import { sendTestMail } from "../../service/applications.js";
 
-export default function(components) {
+export default function (components) {
   const router = express.Router();
 
   router.get(
@@ -14,4 +14,4 @@ export default function(components) {
   );
 
   return router;
-};
+}

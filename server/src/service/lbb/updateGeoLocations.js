@@ -22,6 +22,4 @@ const updateGeoLocations = async (query) => {
   }
 };
 
-export {
-  updateGeoLocations,
-};
+export { updateGeoLocations };

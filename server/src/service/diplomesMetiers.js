@@ -22,6 +22,4 @@ const updateDiplomesMetiersQuery = async (query) => {
   }
 };
 
-export {
-  updateDiplomesMetiersQuery,
-};
+export { updateDiplomesMetiersQuery };

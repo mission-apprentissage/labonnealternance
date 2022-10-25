@@ -18,7 +18,7 @@ const limiter1Per5Second = rateLimit({
   max: 1, // limit each IP to 1 request per windowMs
 });
 
-export default function(components) {
+export default function (components) {
   const router = express.Router();
 
   router.post(
@@ -118,4 +118,4 @@ export default function(components) {
   );
 
   return router;
-};
+}

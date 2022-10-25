@@ -56,10 +56,4 @@ const decryptWithIV = (value, ivHex) => {
   return decrypt({ value, iv });
 };
 
-export {
-  encrypt,
-  encryptMailWithIV,
-  encryptIdWithIV,
-  decrypt,
-  decryptWithIV,
-};
+export { encrypt, encryptMailWithIV, encryptIdWithIV, decrypt, decryptWithIV };

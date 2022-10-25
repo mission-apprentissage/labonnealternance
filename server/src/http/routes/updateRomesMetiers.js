@@ -3,7 +3,7 @@ import { tryCatch } from "../middlewares/tryCatchMiddleware.js";
 import { updateRomesMetiersQuery, getMissingRNCPs } from "../../service/domainesMetiers.js";
 import path from "path";
 
-export default function() {
+export default function () {
   const router = express.Router();
 
   router.get(
@@ -27,4 +27,4 @@ export default function() {
   });
 
   return router;
-};
+}

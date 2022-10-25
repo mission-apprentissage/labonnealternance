@@ -79,7 +79,4 @@ const getFormationEsQueryIndexFragment = () => {
   };
 };
 
-export {
-  getRomesFromCfd,
-  getRomesFromSiret,
-};
+export { getRomesFromCfd, getRomesFromSiret };

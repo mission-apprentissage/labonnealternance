@@ -67,7 +67,7 @@ console.log("scan result EICAR String : ", isInfected, viruses);
   return isInfected;
 };
 
-export default function(fileContent) {
+export default function (fileContent) {
   async function scan(fileContent) {
     if (scanner) {
       //console.log("clamav est dans la place");
@@ -87,4 +87,4 @@ export default function(fileContent) {
   }
 
   return scan(fileContent);
-};
+}

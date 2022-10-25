@@ -59,7 +59,7 @@ let shouldStop = false;
 const size = 1500;
 let lastIdToSearchAfter = null;
 
-export default async function() {
+export default async function () {
   let step = 0;
 
   try {
@@ -102,7 +102,7 @@ export default async function() {
     let error_msg = _.get(err, "meta.body") ?? err.message;
     return { error: error_msg };
   }
-};
+}
 
 const getIntitulesFormations = async ({ size = 0 }) => {
   try {

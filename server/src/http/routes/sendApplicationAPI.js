@@ -2,7 +2,7 @@ import express from "express";
 import { tryCatch } from "../middlewares/tryCatchMiddleware.js";
 import { sendApplication } from "../../service/applications.js";
 
-export default function(components) {
+export default function (components) {
   const router = express.Router();
 
   router.post(
@@ -28,4 +28,4 @@ export default function(components) {
   );
 
   return router;
-};
+}

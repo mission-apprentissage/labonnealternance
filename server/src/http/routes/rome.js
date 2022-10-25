@@ -1,10 +1,10 @@
 import express from "express";
-import {tryCatch} from "../middlewares/tryCatchMiddleware.js";
+import { tryCatch } from "../middlewares/tryCatchMiddleware.js";
 import { getRomesAndLabelsFromTitleQuery } from "../../service/domainesMetiers.js";
 /**
  * API romes
  */
-export default function(){
+export default function () {
   const router = express.Router();
 
   router.get(
@@ -16,4 +16,4 @@ export default function(){
   );
 
   return router;
-};
+}

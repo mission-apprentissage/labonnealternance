@@ -26,11 +26,11 @@ const publishedMustTerm = {
 };
 
 const diplomaMap = {
-  "3": "3 (CAP...)",
-  "4": "4 (BAC...)",
-  "5": "5 (BTS, DEUST...)",
-  "6": "6 (Licence, BUT...)",
-  "7": "7 (Master, titre ingénieur...)",
+  3: "3 (CAP...)",
+  4: "4 (BAC...)",
+  5: "5 (BTS, DEUST...)",
+  6: "6 (Licence, BUT...)",
+  7: "7 (Master, titre ingénieur...)",
 };
 
 const getDiplomaKey = (value) => {

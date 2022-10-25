@@ -24,6 +24,4 @@ const updateFormationsQuery = async (query) => {
   }
 };
 
-export {
-  updateFormationsQuery,
-};
+export { updateFormationsQuery };

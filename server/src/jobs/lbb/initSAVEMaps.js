@@ -2,8 +2,8 @@ import { logMessage } from "../../common/utils/logMessage.js";
 import { oleoduc, accumulateData, readLineByLine, transformData, writeData } from "oleoduc";
 import fs from "fs";
 import path from "path";
-import * as url from 'url';
-const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
+import * as url from "url";
+const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
 
 const updateFilePath = path.join(__dirname, "./assets/lba_save_etablissements_admin_update.csv");
 const removeFilePath = path.join(__dirname, "./assets/lba_save_etablissements_admin_remove.csv");
@@ -304,8 +304,4 @@ const initSAVEUpdateMap = async () => {
   return updateMap;
 };
 
-export {
-  initSAVERemoveMap,
-  initSAVEAddMap,
-  initSAVEUpdateMap,
-};
+export { initSAVERemoveMap, initSAVEAddMap, initSAVEUpdateMap };

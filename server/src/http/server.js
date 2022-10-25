@@ -1,38 +1,43 @@
-import express from "express";
 import Sentry from "@sentry/node";
 import Tracing from "@sentry/tracing";
 import bodyParser from "body-parser";
-import config from "../config.js";
-import packageJson from "../../package.json" assert { type: "json" } ;
-import { logMiddleware } from "./middlewares/logMiddleware.js";
-import { errorMiddleware } from "./middlewares/errorMiddleware.js";
-import { corsMiddleware } from "./middlewares/corsMiddleware.js";
-import { tryCatch } from "./middlewares/tryCatchMiddleware.js";
-import hello from "./routes/helloRoutes.js";
-import { limiter3PerSecond, limiter10PerSecond, limiter1Per20Second, limiter20PerSecond, limiter5PerSecond, limiter7PerSecond } from "./utils/rateLimiters.js";
+import express from "express";
 import swaggerUi from "swagger-ui-express";
-import swaggerDocument  from "../api-docs/swagger.json" assert { type: 'json' };
-import version from "./routes/version.js";
-import faq from "./routes/faq.js";
+import packageJson from "../../package.json" assert { type: "json" };
+import swaggerDocument from "../api-docs/swagger.json" assert { type: "json" };
+import config from "../config.js";
+import { initWebhook } from "../service/sendinblue/webhookSendinBlue.js";
+import { corsMiddleware } from "./middlewares/corsMiddleware.js";
+import { errorMiddleware } from "./middlewares/errorMiddleware.js";
+import { tryCatch } from "./middlewares/tryCatchMiddleware.js";
 import error500 from "./routes/error500.js";
-import formationV1 from "./routes/formationV1.js";
-import rome from "./routes/rome.js";
-import jobDiploma from "./routes/jobDiploma.js";
-import updateRomesMetiers from "./routes/updateRomesMetiers.js";
+import faq from "./routes/faq.js";
 import formationRegionV1 from "./routes/formationRegionV1.js";
-import jobV1 from "./routes/jobV1.js";
+import formationV1 from "./routes/formationV1.js";
+import hello from "./routes/helloRoutes.js";
+import jobDiploma from "./routes/jobDiploma.js";
 import jobEtFormationV1 from "./routes/jobEtFormationV1.js";
+import jobV1 from "./routes/jobV1.js";
 import metiers from "./routes/metiers.js";
-import updateLBB from"./routes/updateLBB.js";
-import updateFormations from "./routes/updateFormations.js";
-import updateDiplomesMetiers from "./routes/updateDiplomesMetiers.js";
-import sendMail from "./routes/sendMail.js";
+import rome from "./routes/rome.js";
 import sendApplication from "./routes/sendApplication.js";
 import sendApplicationAPI from "./routes/sendApplicationAPI.js";
-import { initWebhook } from "../service/sendinblue/webhookSendinBlue.js";
+import sendMail from "./routes/sendMail.js";
+import updateDiplomesMetiers from "./routes/updateDiplomesMetiers.js";
+import updateFormations from "./routes/updateFormations.js";
+import updateLBB from "./routes/updateLBB.js";
+import updateRomesMetiers from "./routes/updateRomesMetiers.js";
+import version from "./routes/version.js";
+import {
+  limiter10PerSecond,
+  limiter1Per20Second,
+  limiter20PerSecond,
+  limiter3PerSecond,
+  limiter5PerSecond,
+  limiter7PerSecond,
+} from "./utils/rateLimiters.js";
 
 export default async (components) => {
-
   const app = express();
 
   Sentry.init({
@@ -60,16 +65,16 @@ export default async (components) => {
 
   //app.use(logMiddleware());
   app.use(hello());
-  
-  app.use(errorMiddleware());
 
+  app.use(errorMiddleware());
 
   app.get(
     "/api",
     tryCatch(async (req, res) => {
       let mongodbStatus;
 
-      await components.db.collection("logs")
+      await components.db
+        .collection("logs")
         .stats()
         .then(() => {
           mongodbStatus = true;
@@ -89,7 +94,7 @@ export default async (components) => {
       });
     })
   );
-  
+
   /**
    * Bloc LBA J
    */

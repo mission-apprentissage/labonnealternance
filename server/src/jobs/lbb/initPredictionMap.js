@@ -4,8 +4,8 @@ import fs from "fs";
 import path from "path";
 import config from "../../config.js";
 
-import * as url from 'url';
-const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
+import * as url from "url";
+const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
 const filePath = path.join(__dirname, "./assets/predictions.csv");
 
 const seuilElimination = config.private.lbb.score50Level;
@@ -37,7 +37,7 @@ const computeLine = async ({ siret, score }) => {
   }
 };
 
-export default async function() {
+export default async function () {
   try {
     logMessage("info", " -- Start init predictionMap -- ");
     logMessage("info", ` -- Seuil d'élimination : ${seuilElimination}`);
@@ -57,4 +57,4 @@ export default async function() {
   count = 0;
 
   return predictionMap;
-};
+}

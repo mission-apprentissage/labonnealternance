@@ -7,8 +7,8 @@ import { getElasticInstance } from "../../common/esClient/index.js";
 import { getFileFromS3 } from "../../common/utils/awsUtils.js";
 import { oleoduc } from "oleoduc";
 import { logMessage } from "../../common/utils/logMessage.js";
-import * as url from 'url';
-const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
+import * as url from "url";
+const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
 
 const FILE_LOCAL_PATH = path.join(__dirname, "./assets/domainesMetiers_S3.xlsx");
 
@@ -51,7 +51,7 @@ const readXLSXFile = (filePath) => {
   return { sheet_name_list: workbook.SheetNames, workbook };
 };
 
-export default async function(optionalFileName) {
+export default async function (optionalFileName) {
   let step = 0;
 
   try {
@@ -249,4 +249,4 @@ export default async function(optionalFileName) {
     let error_msg = _.get(err, "meta.body") ?? err.message;
     return { error: error_msg, fileName: optionalFileName ? optionalFileName : "currentDomainesMetiers.xlsx" };
   }
-};
+}

@@ -1,7 +1,7 @@
 import AWS from "aws-sdk";
 import config from "../../config.js";
 import fs from "fs";
-import {logger} from "../logger.js";
+import { logger } from "../logger.js";
 
 const s3 = new AWS.S3({
   apiVersion: "2006-03-01",
@@ -28,8 +28,4 @@ const downloadAndSaveFileFromS3 = (from, to) => {
   });
 };
 
-export 
-{
-  getFileFromS3,
-  downloadAndSaveFileFromS3,
-}
+export { getFileFromS3, downloadAndSaveFileFromS3 };

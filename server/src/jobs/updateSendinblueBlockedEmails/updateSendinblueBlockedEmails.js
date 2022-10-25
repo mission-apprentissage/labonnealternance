@@ -88,7 +88,7 @@ let running = false;
 let blacklistedAddressCount = 0;
 let modifiedCompanyCount = 0;
 
-export default async function({ query }) {
+export default async function ({ query }) {
   if (!running) {
     running = true;
     blacklistedAddressCount = 0;
@@ -120,4 +120,4 @@ export default async function({ query }) {
   } else {
     logMessage("info", "Mise à jour des adresses emails bloquées déjà en cours");
   }
-};
+}

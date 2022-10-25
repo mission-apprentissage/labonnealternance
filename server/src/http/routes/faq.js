@@ -1,6 +1,6 @@
 import express from "express";
 import { NotionAPI } from "notion-client";
-import { tryCatch } from "../middlewares/tryCatchMiddleware.js";
+import { tryCatch } from "../middlewares/tryCatchMiddleware.js";
 
 const notion = new NotionAPI();
 

@@ -63,6 +63,4 @@ const updateSAVECompanies = async ({ updateMap }) => {
   logMessage("info", "Ended updateSAVECompanies");
 };
 
-export {
-  updateSAVECompanies,
-};
+export { updateSAVECompanies };

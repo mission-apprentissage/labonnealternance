@@ -1,6 +1,6 @@
-import { etablissementFormateurInfo } from "./etablissement.formateur.sub.js";
-import { etablissementGestionnaireInfo } from "./etablissement.gestionnaire.sub.js";
-import { etablissementReferenceInfo } from "./etablissement.reference.sub.js";
+import { etablissementFormateurInfo } from "./etablissement.formateur.sub.js";
+import { etablissementGestionnaireInfo } from "./etablissement.gestionnaire.sub.js";
+import { etablissementReferenceInfo } from "./etablissement.reference.sub.js";
 
 const mnaFormationSchema = {
   cle_ministere_educatif: {

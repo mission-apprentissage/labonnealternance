@@ -32,4 +32,4 @@ export default async function ({ opco, jobs }) {
   });
 
   return results;
-};
+}

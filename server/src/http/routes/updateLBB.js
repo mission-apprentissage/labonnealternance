@@ -5,7 +5,7 @@ import { updateGeoLocations } from "../../service/lbb/updateGeoLocations.js";
 import { updateOpcos } from "../../service/lbb/updateOpcos.js";
 import { updateContactInfo } from "../../service/lbb/updateContactInfo.js";
 
-export default function() {
+export default function () {
   const router = express.Router();
 
   router.get(
@@ -41,4 +41,4 @@ export default function() {
   );
 
   return router;
-};
+}

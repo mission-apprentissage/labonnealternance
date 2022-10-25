@@ -7,6 +7,4 @@ const notifyToSlack = async (message) => {
   });
 };
 
-export {
-  notifyToSlack,
-};
+export { notifyToSlack };

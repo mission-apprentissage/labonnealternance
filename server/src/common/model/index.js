@@ -26,12 +26,12 @@ export const DomainesMetiers = createModel("domainesmetiers", schema.domainesMet
 });
 
 export const ConvertedFormation_0 = createModel("convertedformation_0", schema.mnaFormationSchema, {
-    esIndexName: "convertedformation_0",
-  });
+  esIndexName: "convertedformation_0",
+});
 
 export const ConvertedFormation_1 = createModel("convertedformation_1", schema.mnaFormationSchema, {
-    esIndexName: "convertedformation_1",
-  });
+  esIndexName: "convertedformation_1",
+});
 
 export const DiplomesMetiers = createModel("diplomesmetiers", schema.diplomesMetiersSchema, {
   esIndexName: "diplomesmetiers",
@@ -40,17 +40,17 @@ export const DiplomesMetiers = createModel("diplomesmetiers", schema.diplomesMet
 export const ApiCalls = createModel("apicalls", schema.apiCallSchema);
 
 export const Application = createModel("applications", schema.applicationSchema, {
-    paginate: true,
+  paginate: true,
 });
-  
+
 export const SourceFormations = createModel("sourceformations", schema.sourceFormationsSchema);
 
 export const GeoLocation = createModel("geolocation", schema.geoLocationSchema);
-  
+
 export const EmailBlacklist = createModel("emailblacklist", schema.emailBlacklist);
-  
+
 export const Opco = createModel("opco", schema.opco);
 
 export const BonnesBoites = createModel("bonnesboites", schema.bonneBoiteSchema, {
-    esIndexName: "bonnesboites",
-  });
+  esIndexName: "bonnesboites",
+});

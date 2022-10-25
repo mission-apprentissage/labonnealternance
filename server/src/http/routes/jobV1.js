@@ -3,7 +3,7 @@ import { tryCatch } from "../middlewares/tryCatchMiddleware.js";
 import { getJobsQuery, getPeJobQuery, getCompanyQuery } from "../../service/poleEmploi/jobsAndCompanies.js";
 import { getMatchaJobById } from "../../service/matcha.js";
 
-export default function() {
+export default function () {
   const router = express.Router();
 
   router.get(
@@ -90,4 +90,4 @@ export default function() {
   );
 
   return router;
-};
+}

@@ -17,7 +17,6 @@ const createEsInstance = () => {
     requestTimeout: 60000,
   });
 
-  
   return client;
 };
 const clientDefault = createEsInstance();

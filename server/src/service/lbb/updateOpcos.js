@@ -20,6 +20,4 @@ const updateOpcos = async (query) => {
   }
 };
 
-export {
-  updateOpcos,
-};
+export { updateOpcos };

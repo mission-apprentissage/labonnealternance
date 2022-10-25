@@ -71,6 +71,4 @@ async function runScript(job) {
   }
 }
 
-export {
-  runScript,
-};
+export { runScript };

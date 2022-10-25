@@ -9,8 +9,8 @@ import { getFormationsES } from "../../common/esClient/index.js";
 import { getFileFromS3 } from "../../common/utils/awsUtils.js";
 import { oleoduc } from "oleoduc";
 import { logMessage } from "../../common/utils/logMessage.js";
-import * as url from 'url';
-const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
+import * as url from "url";
+const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
 
 const esClient = getFormationsES();
 

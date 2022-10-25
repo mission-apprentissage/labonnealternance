@@ -9,8 +9,8 @@ import _ from "lodash";
 import { logMessage } from "../../common/utils/logMessage.js";
 //const opcoAktoSirenFilePath = path.join(__dirname, "./assets/20220301-Akto_SIREN.csv");
 import { notifyToSlack } from "../../common/utils/slackUtils.js";
-import * as url from 'url';
-const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
+import * as url from "url";
+const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
 
 const opcoSirenFile = path.join(__dirname, "./assets/opco_sirens.csv");
 
@@ -95,7 +95,7 @@ const removeOpcoFile = async () => {
   }
 };
 
-export default async function() {
+export default async function () {
   if (!running) {
     running = true;
     try {
@@ -135,4 +135,4 @@ export default async function() {
   } else {
     logMessage("Opco job already running");
   }
-};
+}

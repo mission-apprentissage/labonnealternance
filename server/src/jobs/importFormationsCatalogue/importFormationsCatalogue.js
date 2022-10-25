@@ -87,7 +87,7 @@ const importFormations = async ({ workIndex, workMongo, formationCount }) => {
 
 let running = false;
 
-export default async function(onlyChangeMasterIndex = false) {
+export default async function (onlyChangeMasterIndex = false) {
   if (!running) {
     running = true;
 
@@ -166,4 +166,4 @@ export default async function(onlyChangeMasterIndex = false) {
   } else {
     logMessage("info", "Import formations catalogue already running");
   }
-};
+}

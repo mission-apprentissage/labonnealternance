@@ -2,8 +2,8 @@ import path from "path";
 import fs from "fs";
 import { oleoduc, readLineByLine, transformData, writeData } from "oleoduc";
 import { logMessage } from "../../common/utils/logMessage.js";
-import * as url from 'url';
-const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
+import * as url from "url";
+const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
 
 let nafRomeHiringMap = {};
 
@@ -44,7 +44,7 @@ const computeLine = async ({ rome, naf, hirings }) => {
   nafRomeHiringMap[naf] = nafHirings;
 };
 
-export default async function() {
+export default async function () {
   try {
     try {
       await oleoduc(
@@ -64,4 +64,4 @@ export default async function() {
   count = 0;
 
   return nafRomeHiringMap;
-};
+}

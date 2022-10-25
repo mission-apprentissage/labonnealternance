@@ -1,7 +1,7 @@
 import path from "path";
 import fs from "fs";
 import { oleoduc, readLineByLine, transformData, writeData } from "oleoduc";
-import _  from "lodash";
+import _ from "lodash";
 import geoData from "../../common/utils/geoData.js";
 import { GeoLocation, BonnesBoites, Opco } from "../../common/model/index.js";
 import { rebuildIndex } from "../../common/utils/esUtils.js";
@@ -14,8 +14,8 @@ import { mongooseInstance } from "../../common/mongodb.js";
 import { initSAVERemoveMap, initSAVEUpdateMap, initSAVEAddMap } from "./initSAVEMaps.js";
 import { updateSAVECompanies } from "./updateSAVECompanies.js";
 
-import * as url from 'url';
-const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
+import * as url from "url";
+const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
 
 const defaultPredictionByROMEThreshold = 0.2; // 0.2 arbitraire
 const CBSPredictionByROMEThreshold = 3.84; // 3.84 arbitraire
@@ -333,7 +333,7 @@ const initMaps = async ({ shouldInitSAVEMaps }) => {
   nafMap = await initNafMap();
 };
 
-export default async function({
+export default async function ({
   shouldClearMongo,
   shouldBuildIndex,
   shouldParseFiles,
@@ -385,4 +385,4 @@ export default async function({
   } else {
     return { error: "process_already_running" };
   }
-};
+}

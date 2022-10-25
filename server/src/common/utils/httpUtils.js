@@ -59,8 +59,4 @@ function addCsvHeaders(filename, encoding, res) {
   res.setHeader("Content-Type", `text/csv; charset=${encoding}`);
 }
 
-export {
-  fetchStream,
-  fetchJson,
-  addCsvHeaders,
-};
+export { fetchStream, fetchJson, addCsvHeaders };

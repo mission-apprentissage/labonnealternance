@@ -61,6 +61,4 @@ const updateContactInfo = async (query) => {
   }
 };
 
-export {
-  updateContactInfo,
-};
+export { updateContactInfo };

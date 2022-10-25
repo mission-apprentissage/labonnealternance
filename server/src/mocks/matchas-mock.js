@@ -154,8 +154,4 @@ const matchaMock = {
 
 const matchasMock = [matchaMock, matchaMockMandataire];
 
-export {
-  matchasMock,
-  matchaMock,
-  matchaMockMandataire,
-};
+export { matchasMock, matchaMock, matchaMockMandataire };

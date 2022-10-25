@@ -32,6 +32,4 @@ const updateLaBonneBoite = async (query) => {
   }
 };
 
-export {
-  updateLaBonneBoite,
-};
+export { updateLaBonneBoite };

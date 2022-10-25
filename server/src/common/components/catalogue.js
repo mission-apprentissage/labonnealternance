@@ -97,7 +97,4 @@ const convertQueryIntoParams = (query, options = {}) => {
   );
 };
 
-export {
-  fetchFormations,
-  countFormations,
-};
+export { fetchFormations, countFormations };

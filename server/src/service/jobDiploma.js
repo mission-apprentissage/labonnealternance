@@ -80,7 +80,4 @@ const getFormationEsQueryIndexFragment = () => {
   };
 };
 
-export {
-  getDiplomasForJobsQuery,
-  getDiplomasForJobs,
-};
+export { getDiplomasForJobsQuery, getDiplomasForJobs };

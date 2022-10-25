@@ -1,9 +1,9 @@
-import { SourceFormations, ConvertedFormation_0, ConvertedFormation_1 } from "../model/index.js";
 import { Client } from "@elastic/elasticsearch";
-import _ from "lodash";
-import { logger } from "../logger.js";
 import Sentry from "@sentry/node";
+import { get } from "lodash-es";
 import config from "../../config.js";
+import { logger } from "../logger.js";
+import { ConvertedFormation_0, ConvertedFormation_1, SourceFormations } from "../model/index.js";
 
 const esClient = new Client({ node: config.env === "local" ? "http://127.0.0.1:9200" : "http://elasticsearch:9200" });
 
@@ -61,13 +61,13 @@ const updateFormationsIndexAlias = async ({ masterIndex, indexToUnAlias }) => {
     return "ok";
   } catch (err) {
     Sentry.captureException(err);
-    let error_msg = _.get(err, "meta.body") ?? err.message;
+    let error_msg = get(err, "meta.body") ?? err.message;
 
     if (typeof error_msg === "object") {
       error_msg = JSON.stringify(error_msg, null, 2);
     }
 
-    if (_.get(err, "meta.meta.connection.status") === "dead") {
+    if (get(err, "meta.meta.connection.status") === "dead") {
       logger.error(
         `Error updating formations Alias. Elastic search is down or unreachable. error_message=${error_msg}`
       );

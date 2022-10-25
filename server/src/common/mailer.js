@@ -56,4 +56,4 @@ export default function (config, transporter = createTransporter(config.smtp)) {
       });
     },
   };
-};
+}
