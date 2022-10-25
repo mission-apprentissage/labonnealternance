@@ -39,6 +39,8 @@ services:
 
   server:
     image: doctrina_server
+    volumes:
+      - /opt/labonnealternance/data/server/lbb/assets:/app/src/jobs/lbb/assets
     container_name: doctrina_server
     build:
       context: server
@@ -50,6 +52,7 @@ services:
       - mongodb
     environment:
       - DOCTRINA_MONGODB_URI=mongodb://mongodb:27017/doctrina?retryWrites=true&w=majority
+      - LABONNEALTERNANCE_MONGODB_URI=mongodb://mongodb:27017/labonnealternance?retryWrites=true&w=majority
       - DOCTRINA_LOG_DESTINATIONS=stdout,mongodb
 
   mongodb:
@@ -61,13 +64,14 @@ services:
       - doctrina_network
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.4.3
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.6
     container_name: doctrina_elasticsearch
     environment:
       - ES_JAVA_OPTS=-Xmx512m -Xms512m
       - discovery.type=single-node
       - cluster.name=docker-cluster
       - network.host=0.0.0.0
+      - discovery.zen.minimum_master_nodes=1
     mem_limit: 3g
     networks:
       - doctrina_network
