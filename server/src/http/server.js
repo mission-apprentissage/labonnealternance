@@ -28,6 +28,28 @@ import updateFormations from "./routes/updateFormations.js";
 import updateLBB from "./routes/updateLBB.js";
 import updateRomesMetiers from "./routes/updateRomesMetiers.js";
 import version from "./routes/version.js";
+
+
+import appointmentRoute from "./routes/admin/appointment";
+import adminEtablissementRoute from "./routes/admin/etablissement";
+import etablissementRoute from "./routes/etablissement";
+import appointmentRequestRoute from "./routes/appointmentRequest";
+import catalogueRoute from "./routes/catalogue";
+import widgetParameterRoute from "./routes/admin/widgetParameter";
+import partnersRoute from "./routes/partners";
+import emailsRoute from "./routes/auth/emails";
+import constantsRoute from "./routes/constants";
+import supportRoute from "./routes/support";
+
+
+
+
+
+
+
+
+
+
 import {
   limiter10PerSecond,
   limiter1Per20Second,
@@ -135,7 +157,22 @@ export default async (components) => {
   app.use("/api/mail", limiter1Per20Second, sendMail(components));
 
   app.use("/api/application", sendApplication(components));
+
   app.use("/api/V1/application", limiter5PerSecond, sendApplicationAPI(components));
+
+
+  // RDV-A
+  app.use("/api/appointment", appointmentRoute(components));
+  app.use("/api/admin/etablissements", checkJwtToken, adminOnly, adminEtablissementRoute(components));
+  app.use("/api/etablissements", etablissementRoute(components));
+  app.use("/api/appointment-request", appointmentRequestRoute(components));
+  app.use("/api/catalogue", catalogueRoute(components));
+  app.use("/api/constants", constantsRoute(components));
+  app.use("/api/widget-parameters", checkJwtToken, adminOnly, widgetParameterRoute(components));
+  app.use("/api/partners", partnersRoute(components));
+  app.use("/api/emails", emailsRoute(components));
+  app.use("/api/support", supportRoute(components));
+
   /**
    * FIN Bloc LBA J
    */
