@@ -18,12 +18,12 @@ const MapSearchButton = ({ handleSearchClick }) => {
       >
         {formValues ? (
           <>
-            <img src={refreshSearchOnMap} alt="" />
+            <img src={refreshSearchOnMap} alt="Relancer la recherche depuis la carte" />
             <span className="ml-2">Rechercher dans cette zone</span>
           </>
         ) : (
           <>
-            <img src={lookingGlassOnMap} alt="" />
+            <img src={lookingGlassOnMap} alt="Relancer la recherche depuis la carte" />
             <span className="ml-2">Lancer une recherche</span>
           </>
         )}

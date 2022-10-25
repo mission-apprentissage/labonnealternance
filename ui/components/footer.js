@@ -14,7 +14,7 @@ const Footer = (props) => {
             <Col className="col-12 col-lg-3">
               <img
                 src="/images/marianne.svg#svgView(viewBox(19 0 162 78))"
-                alt="Logo république française"
+                alt=""
                 width="290"
                 height="130"
               />
@@ -23,7 +23,7 @@ const Footer = (props) => {
               <div className="c-footer-francerelance">
                 <img
                   src="/images/france_relance.svg"
-                  alt="France relance"
+                  alt=""
                   width="81"
                   height="81"
                 />
@@ -182,7 +182,7 @@ const Footer = (props) => {
                 <ExternalLink
                   url="https://www.etalab.gouv.fr/licence-version-2-0-de-la-licence-ouverte-suite-a-la-consultation-et-presentation-du-decret"
                   title="etalab-2.0"
-                  withPic={<img className="ml-1" src="/images/square_link.svg" alt="Lien" />}
+                  withPic={<img className="ml-1" src="/images/square_link.svg" alt="Ouverture dans un nouvel onglet" />}
                 />
               </div>
             </Col>

@@ -11,7 +11,7 @@ import { tryCatch } from "./middlewares/tryCatchMiddleware.js";
 import hello from "./routes/helloRoutes.js";
 import { limiter3PerSecond, limiter10PerSecond, limiter1Per20Second, limiter20PerSecond, limiter5PerSecond, limiter7PerSecond } from "./utils/rateLimiters.js";
 import swaggerUi from "swagger-ui-express";
-import swaggerDocument  from "../api-docs/swagger.json" assert { type: 'json' };
+//import swaggerDocument  from "../api-docs/swagger.json" assert { type: 'json' };
 import version from "./routes/version.js";
 import faq from "./routes/faq.js";
 import error500 from "./routes/error500.js";
@@ -97,7 +97,7 @@ export default async (components) => {
   app.get("/api-docs/swagger.json", (req, res) => {
     res.sendFile(path.resolve("./src/api-docs/swagger.json"));
   });
-  app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+  //app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
   app.use("/api/version", limiter3PerSecond, version());
 
   app.use("/api/faq", limiter5PerSecond, faq());

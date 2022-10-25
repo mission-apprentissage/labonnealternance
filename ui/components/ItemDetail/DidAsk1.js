@@ -13,7 +13,7 @@ const DidAsk1 = () => {
             className="gtmDidask1"
             url="https://dinum-beta.didask.com/courses/demonstration/60d21bf5be76560000ae916e"
             title="des conseils pour vous aider !"
-            withPic={<img src={gotoIcon} alt="Lien" />}
+            withPic={<img src={gotoIcon} alt="Ouverture dans un nouvel onglet" />}
           />
         </span>
       </p>

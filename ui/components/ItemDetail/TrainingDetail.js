@@ -111,7 +111,7 @@ const TrainingDetail = ({ training, hasAlsoJob }) => {
       {getTrainingDetails(training.training)}
       <div className="c-detail-newadvice mt-4 pl-4">
         <div className="pt-1 pb-2">
-          <img src={questionmarkIcon} alt="point d'interrogation" />
+          <img src={questionmarkIcon} alt="" />
           <span className="c-detail-newadvice-title ml-2">{training.title ? training.title : training.longTitle}</span>
         </div>
         {training.onisepUrl ? (
@@ -120,7 +120,7 @@ const TrainingDetail = ({ training, hasAlsoJob }) => {
             <span className="c-detail-traininglink">
               <a href={training.onisepUrl} target="_blank" rel="noopener noreferrer" className="c-nice-link">
                 le site Onisep&nbsp;
-                <img src={gotoIcon} alt="Lien" />
+                <img src={gotoIcon} alt="Ouverture dans un nouvel onglet" />
               </a>
             </span>
           </div>
@@ -136,7 +136,7 @@ const TrainingDetail = ({ training, hasAlsoJob }) => {
             className="c-nice-link"
           >
             &nbsp;Préparez votre premier contact avec un CFA&nbsp;
-            <img src={gotoIcon} alt="Lien" />
+            <img src={gotoIcon} alt="Ouverture dans un nouvel onglet" />
           </a>
         </div>
       </div>
@@ -167,7 +167,7 @@ const getTrainingDetails = (training) => {
     <>
       {training.description ? (
         <div className="c-detail-description is-first media">
-          <img src={clipboardListIcon} alt="dossier" />
+          <img src={clipboardListIcon} alt="" />
           <div className="c-detail-training media-body">
             <h3 className="c-detail-description-title mb-3 mt-0">Description de la formation</h3>
             <span className="dont-break-out">{training.description}</span>
@@ -179,7 +179,7 @@ const getTrainingDetails = (training) => {
 
       {training.objectif ? (
         <div className="c-detail-description media">
-          <img src={targetIcon} alt="cible" />
+          <img src={targetIcon} alt="" />
           <div className="c-detail-training media-body">
             <h3 className="c-detail-description-title mb-3 mt-0">Objectifs</h3>
             <span className="dont-break-out">{training.objectif}</span>
@@ -191,7 +191,7 @@ const getTrainingDetails = (training) => {
 
       {training["duree-indicative"] ? (
         <div className="c-detail-description media">
-          <img src={sablierIcon} alt="sablier" />
+          <img src={sablierIcon} alt="" />
           <div className="c-detail-training media-body">
             <h3 className="c-detail-description-title mb-3 mt-0">Durée</h3>
             {training["duree-indicative"]}
@@ -203,7 +203,7 @@ const getTrainingDetails = (training) => {
 
       {training["sessions"] && training["sessions"].length ? (
         <div className="c-detail-description media">
-          <img src={academicCapIcon} alt="cape académique" />
+          <img src={academicCapIcon} alt="" />
           <div className="c-detail-training media-body">
             <h3 className="c-detail-description-title mb-3 mt-0">Modalités alternance</h3>
             Heures en centre de formation :{" "}
@@ -242,7 +242,7 @@ const getTrainingSessions = (training) => {
 
     return sessions.length ? (
       <div className="c-detail-description media">
-        <img src={clipboardListIcon} alt="dossier" />
+        <img src={clipboardListIcon} alt="" />
         <div className="c-detail-training media-body">
           <h3 className="c-detail-description-title mb-3 mt-0">Sessions</h3>
           {sessions.map((session, idx) => {

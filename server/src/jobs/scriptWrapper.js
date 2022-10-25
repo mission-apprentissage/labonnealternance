@@ -1,6 +1,6 @@
 import moment from "moment";
 import { closeMongoConnection } from "../common/mongodb.js";
-import createComponents from "../common/components/components");
+import createComponents from "../common/components/components";
 import logger from "../common/logger.js";
 import config from "../config.js";
 import promises from "fs";

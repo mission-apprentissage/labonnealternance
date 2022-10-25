@@ -18,7 +18,9 @@ services:
     stdin_open: true
 
   server:
-    command: ["yarn", "debug"]
+    build:
+      args:
+        DOCTRINA_ENV: dev
     ports:
       - "127.0.0.1:9229:9229" # Allows remote debugging
     volumes:
@@ -39,6 +41,10 @@ services:
       - "127.0.0.1:9200:9200"
     volumes:
       - doctrina_elasticsearch_data:/usr/share/elasticsearch/data
+
+  clamav:
+    ports:
+      - "127.0.0.1:3310:3310"
 
 volumes:
   doctrina_mongodb_data:

@@ -174,6 +174,7 @@ const SearchForm = (props) => {
                 type="submit"
                 className="d-block btn btn-lg btn-dark w-100 font-weight-bold c-regular-darkbtn mt-5"
                 disabled={isSubmitting}
+                alt="Lancer la recherche"
               >
                 C'est parti
               </button>

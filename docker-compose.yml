@@ -72,9 +72,22 @@ services:
       - cluster.name=docker-cluster
       - network.host=0.0.0.0
       - discovery.zen.minimum_master_nodes=1
-    mem_limit: 6g
+    mem_limit: 3g
     networks:
       - doctrina_network
+
+  clamav:
+    image: clamav/clamav:0.105.0
+    container_name: labonnealternance_clamav
+    mem_limit: 3g
+    restart: unless-stopped
+    networks:
+      - doctrina_network
+    healthcheck:
+      test: [ "CMD", "/usr/local/bin/clamdcheck.sh" ]
+      interval: 60s
+      retries: 3
+      start_period: 120s
 
 networks:
   doctrina_network:

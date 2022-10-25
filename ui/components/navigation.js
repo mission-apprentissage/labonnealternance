@@ -47,12 +47,12 @@ const Navigation = ({ currentPage, bgcolor }) => {
           >
             <img
               src="/images/marianne.svg#svgView(viewBox(12 0 162 78))"
-              alt="Logo république française"
+              alt="Redirection vers la page d'accueil"
               width="162"
               height="78"
               className="c-marianne-header"
             />
-            <img src={`/images/${getLogo()}`} alt="Logo LBA" className="c-navbar-brand-img" width="110" height="76" />
+            <img src={`/images/${getLogo()}`} alt="Redirection vers la page d'accueil" className="c-navbar-brand-img" width="110" height="76" />
           </NavbarBrand>
           <NavbarToggler onClick={toggle} />
           <Collapse isOpen={isOpen} navbar>
