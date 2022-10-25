@@ -10,7 +10,7 @@ import { trackApiCall } from "../common/utils/sendTrackingEvent.js";
 import crypto from "crypto";
 import { manageApiError } from "../common/utils/errorManager.js";
 import { regionCodeToDepartmentList } from "../common/utils/regionInseeCodes.js";
-import { formationMock, formationsMock, lbfFormationMock } from "../../tests/mocks/formations-mock.js";
+import { formationMock, formationsMock, lbfFormationMock } from "../mocks/formations-mock.js";
 import { notifyToSlack } from "../common/utils/slackUtils.js";
 
 const formationResultLimit = 150;

@@ -14,7 +14,7 @@ const matchaJobEndPoint = `${matchaApiEndpoint}/offre`;
 
 const coordinatesOfFrance = [2.213749, 46.227638];
 
-import { matchaMock, matchaMockMandataire, matchasMock } from "../../tests/mocks/matchas-mock.js";
+import { matchaMock, matchaMockMandataire, matchasMock } from "../mocks/matchas-mock.js";
 
 const getMatchaJobs = async ({ romes, radius, latitude, longitude, api, opco, caller, useMock }) => {
   try {
