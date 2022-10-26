@@ -17,15 +17,16 @@ const ResultLists = (props) => {
   const scopeContext = useContext(ScopeContext);
 
   let [extendedSearch, hasSearch, isFormVisible] = [false, false, false];
+
+  ({ isFormVisible } = useContext(DisplayContext));
+  ({ extendedSearch, hasSearch } = useContext(SearchResultContext));
+
   if (props.isTestMode) {
     [extendedSearch, hasSearch, isFormVisible] = [
       props.stubbedExtendedSearch,
       props.stubbedHasSearch,
       props.stubbedIsFormVisible,
     ];
-  } else {
-    ({ isFormVisible } = useContext(DisplayContext));
-    ({ extendedSearch, hasSearch } = useContext(SearchResultContext));
   }
 
   const filterButtonClicked = (filterButton) => {
