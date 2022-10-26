@@ -56,7 +56,7 @@ const ItemDetail = ({ selectedItem, handleClose, displayNavbar, handleSelectItem
   const hasAlsoJob = hasAlsoEmploi({ isCfa, company: selectedItem?.company, searchedMatchaJobs: jobs?.matchas });
   const currentList = getCurrentList({ store: { trainings, jobs }, activeFilter, extendedSearch });
 
-  const { swipeHandlers, goNext, goPrev } = buildSwipe({ currentList, handleSelectItem, selectedItem });
+  const { swipeHandlers, goNext, goPrev } = BuildSwipe({ currentList, handleSelectItem, selectedItem });
 
   const [collapseHeader, setCollapseHeader] = useState(false);
   const maxScroll = 100;
