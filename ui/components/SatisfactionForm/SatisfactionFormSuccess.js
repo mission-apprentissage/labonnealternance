@@ -3,9 +3,9 @@ import React from "react";
 import { useRouter } from 'next/router'
 
 const SatisfactionFormSuccess = () => {
+  const router = useRouter()
 
-  const readIntention = () => {
-    const router = useRouter()
+  const readIntention = () => {  
     const { intention } = router?.query ? router.query : { intention: 'intention' }
     return intention
   }

@@ -15,20 +15,20 @@ let id = null;
 let intention = null;
 
 const SatisfactionForm = ({ formType }) => {
+  const router = useRouter();
+
   const initParametersFromPath = () => {
     iv = getValueFromPath("iv");
     id = getValueFromPath("id");
     intention = getValueFromPath("intention");
   };
 
-  const readIntention = () => {
-    const router = useRouter();
+  const readIntention = () => {  
     const { intention } = router?.query ? router.query : { intention: "intention" };
     return intention;
   };
 
   const getFeedbackText = () => {
-    const router = useRouter();
     const { intention, fn, ln } = router?.query ? router.query : { intention: "intention", fn: "prénom", ln: "nom" };
     let firstName = fn;
     let lastName = ln;
@@ -94,7 +94,6 @@ const SatisfactionForm = ({ formType }) => {
   const [sendingState, setSendingState] = useState("not_sent");
 
   const getValidationSchema = () => {
-    const router = useRouter();
     const { intention } = router?.query ? router.query : { intention: "intention" };
     let res = Yup.object({});
     if (intention === "refus") {
@@ -149,7 +148,6 @@ const SatisfactionForm = ({ formType }) => {
   };
 
   const getPlaceHolderText = () => {
-    const router = useRouter();
     const { intention } = router?.query ? router.query : { intention: "intention" };
     let res = "";
     if (intention === "ne_sais_pas") {
