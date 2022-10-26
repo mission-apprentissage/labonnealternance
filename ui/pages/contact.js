@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 import Navigation from "components/navigation";
 import ScrollToTop from "components/ScrollToTop";
 import Breadcrumb from "components/breadcrumb";
@@ -27,9 +28,9 @@ const contact = () => (
           <h3>Nous contacter</h3>
           <p>Vous avez une question sur nos outils ? Consultez notre foire aux questions. </p>
           <div className="my-5 d-flex-center">
-            <a className="c-homecomponent-link c-homecomponent-link__first" href="/faq">
-              Consulter la FAQ
-            </a>
+            <Link href="/faq">
+              <a className="c-homecomponent-link c-homecomponent-link__first">Consulter la FAQ</a>
+            </Link>
           </div>
           <div className="text-break">
             <p>
