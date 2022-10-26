@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Link from "next/link";
 import { Collapse, Navbar, NavbarToggler, NavbarBrand, Nav, NavItem } from "reactstrap";
 import { useRouter } from "next/router";
 import ExternalLink from "./externalLink";
@@ -58,46 +59,31 @@ const Navigation = ({ currentPage, bgcolor }) => {
           <Collapse isOpen={isOpen} navbar>
             <Nav className="c-navbar-links ml-auto" navbar>
               <NavItem className={`ml-lg-5 mr-2 ${!currentPage ? "selected" : ""}`}>
-                <a
-                  className="nav-link"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    router.push("/");
-                  }}
-                  href="/"
-                >
-                  <span className="mx-1">Candidat</span>
-                </a>
+                <Link href="/">
+                  <a className="nav-link">
+                    <span className="mx-1">Candidat</span>
+                  </a>
+                </Link>
               </NavItem>
 
               <div className="c-navigation__separator"></div>
 
               <NavItem className={`mr-2 ml-lg-2 ${currentPage === "acces-recruteur" ? "selected" : ""}`}>
-                <a
-                  className="nav-link"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    router.push("/acces-recruteur");
-                  }}
-                  href="/acces-recruteur"
-                >
-                  <span className="mx-1">Recruteur</span>
-                </a>
+                <Link href="/acces-recruteur">
+                  <a className="nav-link">
+                    <span className="mx-1">Recruteur</span>
+                  </a>
+                </Link>
               </NavItem>
 
               <div className="c-navigation__separator"></div>
 
               <NavItem className={`ml-lg-2 ${currentPage === "organisme-de-formation" ? "selected" : ""}`}>
-                <a
-                  className="nav-link"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    router.push("/organisme-de-formation");
-                  }}
-                  href="/organisme-de-formation"
-                >
-                  <span className="mx-1">Organisme de formation</span>
-                </a>
+                <Link href="/organisme-de-formation">
+                  <a className="nav-link">
+                    <span className="mx-1">Organisme de formation</span>
+                  </a>
+                </Link>
               </NavItem>
 
               {currentPage === "acces-recruteur" || currentPage === "organisme-de-formation" ? (
