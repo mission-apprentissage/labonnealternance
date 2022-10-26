@@ -128,7 +128,7 @@ const TrainingDetail = ({ training, hasAlsoJob }) => {
           ""
         )}
         <div className="mt-2 mb-2">
-          Vous vous posez des questions sur votre orientation ou votre recherche d'emploi ?
+          Vous vous posez des questions sur votre orientation ou votre recherche d&apos;emploi ?
           <a
             href="https://dinum-beta.didask.com/courses/demonstration/60abc18c075edf000065c987"
             target="_blank"
