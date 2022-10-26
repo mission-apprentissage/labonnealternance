@@ -139,7 +139,7 @@ const SatisfactionForm = ({ formType }) => {
     } else if (sendingState === "not_sent_because_of_errors") {
       errorMsg = (
         <div className="c-candidature-erreur mb-2 visible">
-          Une erreur technique empêche l'enregistrement de votre avis. Merci de réessayer ultérieurement
+          Une erreur technique empêche l&apos;enregistrement de votre avis. Merci de réessayer ultérieurement
         </div>
       );
     } else {

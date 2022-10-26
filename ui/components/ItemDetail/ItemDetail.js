@@ -148,7 +148,7 @@ const ItemDetail = ({ selectedItem, handleClose, displayNavbar, handleSelectItem
                         <img className="" src="/images/info.svg" alt="A noter" />
                       </span>
                       <span className="c-detail-also mb-0">
-                        Le centre de formation propose également des offres d'emploi.
+                        Le centre de formation propose également des offres d&apos;emploi.
                       </span>
                     </div>
                   </>
@@ -175,7 +175,7 @@ const ItemDetail = ({ selectedItem, handleClose, displayNavbar, handleSelectItem
 
         {amongst(kind, ["lbb", "lba"]) ? (
           <div className="c-needHelp">
-            <div className="c-needHelp-title">Besoin d'aide ?</div>
+            <div className="c-needHelp-title">Besoin d&apos;aide ?</div>
             <div className="c-needHelp-text">
               Découvrez les modules de formation de La Bonne Alternance. Des modules de quelques minutes pour bien
               préparer vos candidatures.

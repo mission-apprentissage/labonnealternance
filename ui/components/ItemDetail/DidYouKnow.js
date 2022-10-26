@@ -9,8 +9,8 @@ const DidYouKnow = ({ item }) => {
       <div className="c-detail-body c-locationdetail mt-4">
         <h2 className="c-locationdetail-title mt-2">Le saviez-vous ?</h2>
         <p className="c-didyouknow-paragraph">
-          Diversifiez vos démarches en envoyant aussi des candidatures spontanées aux entreprises qui n'ont pas diffusé
-          d'offre! Repérez les tags suivants dans la liste de résultats
+          Diversifiez vos démarches en envoyant aussi des candidatures spontanées aux entreprises qui n&apos;ont pas diffusé
+          d&apos;offre! Repérez les tags suivants dans la liste de résultats
         </p>
         <p>
           <TagCandidatureSpontanee />

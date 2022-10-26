@@ -19,7 +19,7 @@ const SatisfactionFormNavigation = () => {
             <Nav className="c-navbar-links ml-auto" navbar>
               <NavItem className="ml-lg-5">
                 <NavLink href="/" className="ml-1 c-formulaire-satisfaction-navlink">
-                  Page d'accueil La Bonne Alternance
+                  Page d&apos;accueil La Bonne Alternance
                 </NavLink>
               </NavItem>
             </Nav>
