@@ -35,7 +35,7 @@ export const buildPrdvButton = (training) => {
   );
 };
 
-export const buildSwipe = ({ currentList, handleSelectItem, selectedItem }) => {
+export const BuildSwipe = ({ currentList, handleSelectItem, selectedItem }) => {
   // See https://www.npmjs.com/package/react-swipeable
   const swipeHandlers = useSwipeable({
     onSwiped: (event_data) => {

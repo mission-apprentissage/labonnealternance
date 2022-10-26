@@ -72,7 +72,7 @@ const CandidatureSpontaneeFileDropzone = ({ setFileValue, formik }) => {
         )}
         {showUnacceptedFileMessage ? (
           <div className="c-candidature-erreur visible">
-            ⚠ Le fichier n'est pas au bon format (autorisé : .docx ou .pdf, &lt;3mo, max 1 fichier)
+            ⚠ Le fichier n&apos;est pas au bon format (autorisé : .docx ou .pdf, &lt;3mo, max 1 fichier)
           </div>
         ) : (
           ""

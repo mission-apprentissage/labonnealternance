@@ -56,7 +56,7 @@ const ItemDetail = ({ selectedItem, handleClose, displayNavbar, handleSelectItem
   const hasAlsoJob = hasAlsoEmploi({ isCfa, company: selectedItem?.company, searchedMatchaJobs: jobs?.matchas });
   const currentList = getCurrentList({ store: { trainings, jobs }, activeFilter, extendedSearch });
 
-  const { swipeHandlers, goNext, goPrev } = buildSwipe({ currentList, handleSelectItem, selectedItem });
+  const { swipeHandlers, goNext, goPrev } = BuildSwipe({ currentList, handleSelectItem, selectedItem });
 
   const [collapseHeader, setCollapseHeader] = useState(false);
   const maxScroll = 100;
@@ -148,7 +148,7 @@ const ItemDetail = ({ selectedItem, handleClose, displayNavbar, handleSelectItem
                         <img className="" src="/images/info.svg" alt="A noter" />
                       </span>
                       <span className="c-detail-also mb-0">
-                        Le centre de formation propose également des offres d'emploi.
+                        Le centre de formation propose également des offres d&apos;emploi.
                       </span>
                     </div>
                   </>
@@ -175,7 +175,7 @@ const ItemDetail = ({ selectedItem, handleClose, displayNavbar, handleSelectItem
 
         {amongst(kind, ["lbb", "lba"]) ? (
           <div className="c-needHelp">
-            <div className="c-needHelp-title">Besoin d'aide ?</div>
+            <div className="c-needHelp-title">Besoin d&apos;aide ?</div>
             <div className="c-needHelp-text">
               Découvrez les modules de formation de La Bonne Alternance. Des modules de quelques minutes pour bien
               préparer vos candidatures.

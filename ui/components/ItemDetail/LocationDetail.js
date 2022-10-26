@@ -65,18 +65,18 @@ const LocationDetail = ({ item, isCfa }) => {
 
           <div className="c-locationdetail-line mt-1">
             <span className="c-detail-sizetext">
-              <strong>Taille de l'entreprise :&nbsp;</strong> {companySize}
+              <strong>Taille de l&apos;entreprise :&nbsp;</strong> {companySize}
             </span>
           </div>
           <div className="c-locationdetail-line mt-1">
             <span className="c-detail-sizetext">
-              <strong>Secteur d'activité :&nbsp;</strong> {item?.nafs[0]?.label}
+              <strong>Secteur d&apos;activité :&nbsp;</strong> {item?.nafs[0]?.label}
             </span>
           </div>
           {item?.company?.creationDate && !isNaN(new Date(item.company.creationDate)) ? (
             <div className="c-locationdetail-line mt-1">
               <span className="c-detail-sizetext">
-                <strong>Année de création de l'entreprise :&nbsp;</strong>{" "}
+                <strong>Année de création de l&apos;entreprise :&nbsp;</strong>{" "}
                 {new Date(item.company.creationDate).getFullYear()}
               </span>
             </div>
@@ -193,15 +193,15 @@ const LocationDetail = ({ item, isCfa }) => {
               <div className="c-detail-newadvice">
                 <div className="pt-1 mb-2">
                   <img src="/images/info.svg" alt="Information pratique" width="24" height="24" />
-                  <span class="c-detail-newadvice-title ml-2">Cet établissement est un CFA d'entreprise</span>
+                  <span className="c-detail-newadvice-title ml-2">Cet établissement est un CFA d&apos;entreprise</span>
                 </div>
                 <p>
-                  La particularité ? Il s'agit d'une formule complète <strong>Emploi + Formation</strong> ! Cette
-                  formation vous intéresse ? La marche à suivre diffère selon le CFA d'entreprise concerné :
+                  La particularité ? Il s&apos;agit d&apos;une formule complète <strong>Emploi + Formation</strong> ! Cette
+                  formation vous intéresse ? La marche à suivre diffère selon le CFA d&apos;entreprise concerné :
                 </p>
                 <ul>
                   <li>Commencez par vous inscrire à la formation pour accéder ensuite au contrat,</li>
-                  <li>Ou commencez par postuler à une offre d'emploi pour être ensuite inscrit en formation.</li>
+                  <li>Ou commencez par postuler à une offre d&apos;emploi pour être ensuite inscrit en formation.</li>
                 </ul>
                 <p>Prenez contact avec cet établissement ou consultez son site web pour en savoir + !</p>
                 <p>
@@ -241,14 +241,14 @@ const LocationDetail = ({ item, isCfa }) => {
             <div className="c-locationdetail-line mt-1 mb-1">
               <span className="c-locationdetail-imgcontainer"></span>
               <span className="c-detail-sizetext c-locationdetail-hint">
-                Renseignez-vous sur l'établissement pour préparer votre candidature
+                Renseignez-vous sur l&apos;établissement pour préparer votre candidature
               </span>
             </div>
             {!item?.company?.mandataire ? (
               <div className="c-locationdetail-line mb-1">
                 <span className="c-locationdetail-imgcontainer"></span>
                 <span className="c-detail-sizetext">
-                  <strong>Taille de l'entreprise :&nbsp;</strong> {companySize}
+                  <strong>Taille de l&apos;entreprise :&nbsp;</strong> {companySize}
                 </span>
               </div>
             ) : (

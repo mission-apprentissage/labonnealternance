@@ -38,7 +38,7 @@ const Cookies = () => (
           <hr className="c-page-title-separator" align="left" />
         </div>
         <div className="col-12 col-md-7">
-          <h2 className="h3 c-faq-question">1. Qu'est-ce qu'un cookie ?</h2>
+          <h2 className="h3 c-faq-question">1. Qu&apos;est-ce qu&apos;un cookie ?</h2>
           <p>
             <span className="d-block">
               Un cookie est un petit fichier texte déposé sur le terminal des utilisateurs (par exemple un ordinateur,
@@ -88,7 +88,7 @@ const Cookies = () => (
             <span className="d-block">
               Des cookies sont utilisés sur le site{" "}
               <ExternalLink url="https://labonnealternance.pole-emploi.fr/" title="La bonne alternance" /> afin
-              d’effectuer de la mesure d’audience, des analyses statistiques dans le but d'améliorer l'expérience
+              d’effectuer de la mesure d’audience, des analyses statistiques dans le but d&apos;améliorer l&apos;expérience
               utilisateur et la performance du site internet. Ces cookies sont déposés par des tiers pour le compte de
               Pôle emploi.
             </span>
@@ -107,7 +107,7 @@ const Cookies = () => (
           <p>
             <span className="d-block">
               L’utilisateur peut paramétrer le dépôt des cookies en suivant les indications données au point 3. Le fait
-              de refuser la mise en œuvre de tels cookies n'a pas d'incidence sur la navigation sur le site.
+              de refuser la mise en œuvre de tels cookies n&apos;a pas d&apos;incidence sur la navigation sur le site.
             </span>
           </p>
           <p>
@@ -191,7 +191,7 @@ const Cookies = () => (
               Pour information, la plupart des navigateurs acceptent par défaut le dépôt de cookies. L’utilisateur peut
               modifier ses choix en matière de cookies à tout moment. Le paramétrage des cookies est susceptible de
               modifier les conditions de navigation sur le site internet, ainsi que les conditions d’accès à certains
-              services, et d'entraîner des dysfonctionnements de certaines fonctionnalités.
+              services, et d&apos;entraîner des dysfonctionnements de certaines fonctionnalités.
             </span>
           </p>
           <p>

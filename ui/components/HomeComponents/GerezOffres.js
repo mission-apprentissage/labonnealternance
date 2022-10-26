@@ -17,10 +17,10 @@ const GerezOffres = () => {
           <h2 className="c-homecomponent-title__small mb-3">Gérez vos offres de manière collaborative</h2>
           <div>
             Un accès multi-comptes permettra à plusieurs personnes de votre entreprise d’accéder et de gérer vos offres
-            d'emploi.
+            d&apos;emploi.
           </div>
           <h2 className="c-homecomponent-title__small mb-3 mt-4">Consultez et gérez vos candidatures</h2>
-          <div>Vérifiez d'un coup d'œil la progression des candidatures pour définir les prochaines étapes.</div>
+          <div>Vérifiez d&apos;un coup d&apos;œil la progression des candidatures pour définir les prochaines étapes.</div>
         </div>
       </div>
     </section>
