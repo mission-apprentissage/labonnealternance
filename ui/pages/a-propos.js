@@ -46,7 +46,7 @@ const APROPOS = () => (
           </p>
           <p>
             Notre algorithme La bonne alternance analyse les offres et les recrutements des 6 dernières années pour vous
-            proposer les entreprises qui recrutent régulièrement en alternance (contrat d'apprentissage ou contrat de
+            proposer les entreprises qui recrutent régulièrement en alternance (contrat d&apos;apprentissage ou contrat de
             professionnalisation).
           </p>
 
@@ -66,7 +66,7 @@ const APROPOS = () => (
             <br />
             Reprise par la{" "}
             <ExternalLink url="https://mission-apprentissage.gitbook.io/general/" title="Mission apprentissage" /> en
-            2020, le site ajoute désormais des informations sur les formations en apprentissage et les offres d'emploi
+            2020, le site ajoute désormais des informations sur les formations en apprentissage et les offres d&apos;emploi
             en alternance.
           </p>
 
@@ -77,7 +77,7 @@ const APROPOS = () => (
               <img className={"c-about-card__img--matcha"} src={logoMatcha} alt={""} />
             </div>
             <div className="c-about-card__content">
-              <div className="c-about-card__title">Dépôt d'offres simplifié</div>
+              <div className="c-about-card__title">Dépôt d&apos;offres simplifié</div>
               <div className="c-about-card__text">Susciter des recrutements en alternance</div>
               <div className="c-about-card__link">
                 <ExternalLink
@@ -184,7 +184,7 @@ const APROPOS = () => (
               </div>
               <div className="c-about-otherright">
                 <span className="c-about-otherdescr">
-                  Outil d'orientation complet qui permet d'accéder à des pistes métiers en adéquation avec ses intérêts.
+                  Outil d&apos;orientation complet qui permet d&apos;accéder à des pistes métiers en adéquation avec ses intérêts.
                 </span>
               </div>
             </div>
@@ -240,7 +240,7 @@ const APROPOS = () => (
               </div>
               <div className="c-about-otherright">
                 <span className="c-about-otherdescr">
-                  Profitez d’un cours en ligne gratuit pour découvrir l'alternance.
+                  Profitez d’un cours en ligne gratuit pour découvrir l&apos;alternance.
                 </span>
               </div>
             </div>

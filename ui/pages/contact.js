@@ -55,7 +55,7 @@ const contact = () => (
               </a>
             </p>
             <p>
-              <b>Vous êtes une entreprise intéressée par notre service de dépôt d'offre simplifié,</b> écrivez-nous à{" "}
+              <b>Vous êtes une entreprise intéressée par notre service de dépôt d&apos;offre simplifié,</b> écrivez-nous à{" "}
               <a href="mailto:matcha@apprentissage.beta.gouv.fr">matcha@apprentissage.beta.gouv.fr</a>
             </p>
           </div>
