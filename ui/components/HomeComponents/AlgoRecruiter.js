@@ -6,12 +6,12 @@ const AlgoRecruiter = () => {
       <div className="">
         <h2 className="c-algo-title">
           <span className="d-block c-algo-title__top">La bonne alternance révèle</span>
-          <span className="d-block c-algo-title__down">le marché caché de l'emploi</span>
+          <span className="d-block c-algo-title__down">le marché caché de l&apos;emploi</span>
         </h2>
         <hr className="c-page-title-separator" align="left"></hr>
         <p className="c-algo-text">
-          Le saviez-vous ? Afin d’aider les candidats intéressés par l'alternance à trouver un contrat, nous exposons
-          différents types d'entreprises sur notre service :
+          Le saviez-vous ? Afin d&apos;aider les candidats intéressés par l&apos;alternance à trouver un contrat, nous exposons
+          différents types d&apos;entreprises sur notre service :
         </p>
         <ul className="c-algo-text">
           <li>
@@ -20,8 +20,8 @@ const AlgoRecruiter = () => {
           </li>
           <li className="pt-3">
             <strong>
-              Celles n'ayant pas diffusé d'offres, mais ayant été identifiées comme "à fort potentiel d'embauche en
-              alternance"
+              Celles n&apos;ayant pas diffusé d&apos;offres, mais ayant été identifiées comme &quot;à fort potentiel d&apos;embauche en
+              alternance&quot;
             </strong>{" "}
             par un algorithme prédictif de Pôle emploi, qui analyse les recrutements des 6 années passées en CDI, CDD de
             plus de 30 jours et alternance. L’objectif de cet algorithme est de rendre accessible le marché caché de
