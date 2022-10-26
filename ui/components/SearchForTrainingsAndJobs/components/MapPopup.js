@@ -29,7 +29,7 @@ const MapPopup = ({ type, item, handleSelectItem, setSelectedItem, setSelectedMa
             <div className="ml-3 my-3">
               <img className="cardIcon mr-2" src={jobIcon} alt="" />
               <span className="mapboxPopupTitle">
-                Opportunité<span className={`${list.length > 1 ? "" : "d-none"}`}>s</span> d'emploi :{" "}
+                Opportunité<span className={`${list.length > 1 ? "" : "d-none"}`}>s</span> d&apos;emploi :{" "}
               </span>
             </div>
             <div className="c-mapbox-address mx-3 my-2 mb-3">{getJobAddress(list[0])}</div>
@@ -87,12 +87,12 @@ const MapPopup = ({ type, item, handleSelectItem, setSelectedItem, setSelectedMa
         <ErrorMessage
           message={
             <div className="popupError">
-              Le format de l'élément sélectionné est erroné.
+              Le format de l&apos;élément sélectionné est erroné.
               <br />
               <br />
               Veuillez accepter nos excuses.
               <br />
-              L'équipe Labonnealternance.
+              L&apos;équipe Labonnealternance.
             </div>
           }
         />
