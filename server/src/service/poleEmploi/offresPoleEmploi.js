@@ -158,7 +158,7 @@ const transformPeJobForIdea = ({ job, lat = null, long = null, caller = null }) 
     }
   }
 
-  resultJob.url = `https://candidat.pole-emploi.fr/offres/recherche/detail/${job.id}`;
+  resultJob.url = `https://candidat.pole-emploi.fr/offres/recherche/detail/${job.id}?utm_source=labonnealternance&utm_medium=web&utm_campaign=labonnealternance_candidater_a_une_offre`;
 
   resultJob.job = {
     id: job.id,
