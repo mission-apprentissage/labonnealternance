@@ -1,6 +1,6 @@
-const { ParcoursupEtablissementStat } = require("../../common/model");
+import { ParcoursupEtablissementStat } from "../../common/model";
 
-module.exports = () => ({
+export default async () => ({
   /**
    * @description Bulk insert ParcoursupEtablissementStat.
    * @param {ParcoursupEtablissementStat[]} parcoursupEtablissementStats

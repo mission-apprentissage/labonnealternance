@@ -1,6 +1,6 @@
-const { WidgetParameter } = require("../model");
+import { WidgetParameter } from "../model";
 
-module.exports = async () => ({
+export default async () => ({
   /**
    * @description Creates new item.
    * @param {String} etablissement_siret

@@ -1,6 +1,6 @@
-const { Etablissement } = require("../../common/model");
+import { Etablissement }  from "../../common/model";
 
-module.exports = async () => ({
+export default async () => ({
   /**
    * @description Creates an etablissement.
    * @param {Object} options

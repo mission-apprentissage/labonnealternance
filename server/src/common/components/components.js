@@ -14,7 +14,7 @@ export default async function (options = {}) {
   const appointments = await createAppointements();
   const widgetParameters = await createWidgetParameters();
   const etablissements = await createEtablissements();
-  const parcoursupEtablissementStats =await createParcoursupEtablissementStats();
+  const parcoursupEtablissementStats = await createParcoursupEtablissementStats();
 
   return {
     db: options.db || (await connectToMongo()).db,

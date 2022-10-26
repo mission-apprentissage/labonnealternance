@@ -1,5 +1,5 @@
-const { User } = require("../model");
-const sha512Utils = require("../utils/sha512Utils");
+import { User } from "../model";
+import sha512Utils from "../utils/sha512Utils";
 
 /**
  * @description Hash password
@@ -13,7 +13,7 @@ const rehashPassword = (user, password) => {
   return user.save();
 };
 
-module.exports = async () => ({
+export default async () => ({
   /**
    * @description Authenticates user from its username and password.
    * @param {String} username

@@ -1,6 +1,6 @@
-const { Appointment } = require("../../common/model");
+import { Appointment } from "../../common/model";
 
-module.exports = async () => ({
+export default async () => ({
   /**
    * @description Crates an appointment.
    * @param {String} candidat_id
