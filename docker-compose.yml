@@ -78,7 +78,7 @@ services:
 
   clamav:
     image: clamav/clamav:0.105.0
-    container_name: labonnealternance_clamav
+    container_name: doctrina_clamav
     mem_limit: 3g
     restart: unless-stopped
     networks:
