@@ -3,7 +3,6 @@ import Tracing from "@sentry/tracing";
 import bodyParser from "body-parser";
 import express from "express";
 import swaggerUi from "swagger-ui-express";
-import packageJson from "../../package.json" assert { type: "json" };
 import swaggerDocument from "../api-docs/swagger.json" assert { type: "json" };
 import config from "../config.js";
 import { initWebhook } from "../service/sendinblue/webhookSendinBlue.js";
@@ -107,7 +106,6 @@ export default async (components) => {
         });
 
       return res.json({
-        version: packageJson.version,
         env: config.env,
         catalogue: config.private.catalogueUrl,
         healthcheck: {

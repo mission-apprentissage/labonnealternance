@@ -17,7 +17,7 @@ const Styleguide = () => {
       <div className="container mt-5">
         <h1 className="text-center">Styleguide</h1>
 
-        <p className="lead text-center">Ensemble des styles utilisés dans l'application</p>
+        <p className="lead text-center">Ensemble des styles utilisés dans l&apos;application</p>
 
         <h2 className="fw-bold mt-4 pt-4">Couleurs illustratives</h2>
         <hr />
@@ -234,7 +234,7 @@ const Styleguide = () => {
           </a>
           .
         </p>
-        <p className="lead">Ceci est un paragraphe avec de l'emphase (classe "lead" appliquée).</p>
+        <p className="lead">Ceci est un paragraphe avec de l&apos;emphase (classe &apos;lead&apos; appliquée).</p>
 
         <p>
           You can use the mark tag to <mark>highlight</mark> text.
@@ -264,7 +264,7 @@ const Styleguide = () => {
           This is an abbreviation : <abbr title="attribute">attr</abbr>
         </p>
         <blockquote className="blockquote">
-          <p className="mb-0">Ceci est une citation. Rendons hommage à celui qui l'a formulée.</p>
+          <p className="mb-0">Ceci est une citation. Rendons hommage à celui qui l&apos;a formulée.</p>
           <footer className="blockquote-footer">
             Someone famous in <cite title="Source Title">Source Title</cite>
           </footer>

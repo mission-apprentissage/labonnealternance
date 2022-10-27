@@ -50,7 +50,7 @@ const CandidatureSpontaneeNominalBodyFooter = ({ formik, sendingState, company, 
         <h1 className="c-candidature-title" data-testid="CandidatureSpontaneeTitle">
           {kind === "matcha" ? (
             <>
-              Postuler à l'offre {fromWidget ? `${item.title} ` : ""}de {company}
+              Postuler à l&apos;offre {fromWidget ? `${item.title} ` : ""}de {company}
             </>
           ) : (
             <>Candidature spontanée{fromWidget ? ` auprès de ${company}` : ""}</>
@@ -186,9 +186,9 @@ const CandidatureSpontaneeNominalBodyFooter = ({ formik, sendingState, company, 
             <div>
               En remplissant ce formulaire, vous acceptez les{" "}
               <a href="/cgu" className="c-candidature-link" target="_blank">
-                Conditions générales d'utilisation
+                Conditions générales d&apos;utilisation
               </a>{" "}
-              du service La Bonne Alternance et acceptez le partage de vos informations avec l'établissement {company}
+              du service La Bonne Alternance et acceptez le partage de vos informations avec l&apos;établissement {company}
             </div>
           </label>
         </fieldset>

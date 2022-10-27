@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 import { Row, Col, Container } from "reactstrap";
 import ExternalLink from "./externalLink";
 import { useRouter } from "next/router";
@@ -56,120 +57,79 @@ const Footer = (props) => {
             <Col className="col-12">
               <ul className="c-footer-links">
                 <li className="c-footer-links__line">
-                  <a
-                    className="c-footer-links__link c-footer-smallword pr-3"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      router.push("/mentions-legales");
-                    }}
-                    href="/mentions-legales"
-                  >
-                    Mentions légales
-                  </a>
+                  <Link href="/mentions-legales">
+                    <a
+                      className="c-footer-links__link c-footer-smallword pr-3"
+                    >
+                      Mentions légales
+                    </a>
+                  </Link>
                 </li>
 
                 <li className="c-footer-links__line">
-                  <a
-                    className="c-footer-links__link c-footer-smallword"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      router.push("/cgu");
-                    }}
-                    href="/cgu"
-                  >
-                    CGU
-                  </a>
+                  <Link href="/cgu">
+                    <a
+                      className="c-footer-links__link c-footer-smallword"
+                    >
+                      CGU
+                    </a>
+                    </Link>
                 </li>
 
                 <li className="c-footer-links__line">
-                  <a
-                    className="c-footer-links__link c-footer-smallword"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      router.push("/cookies");
-                    }}
-                    href="/cookies"
-                  >
-                    Cookies
-                  </a>
+                  <Link href="/cookies">
+                    <a className="c-footer-links__link c-footer-smallword">
+                      Cookies
+                    </a>
+                  </Link>
                 </li>
 
                 <li className="c-footer-links__line">
-                  <a
-                    className="c-footer-links__link c-footer-smallword"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      router.push("/stats");
-                    }}
-                    href="/stats"
-                  >
-                    Statistiques
-                  </a>
+                  <Link href="/stats">
+                    <a className="c-footer-links__link c-footer-smallword">
+                      Statistiques
+                    </a>
+                  </Link>
                 </li>
 
                 <li className="c-footer-links__line">
-                  <a
-                    className="c-footer-links__link c-footer-smallword"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      router.push("/faq");
-                    }}
-                    href="/faq"
-                  >
-                    FAQ
-                  </a>
+                  <Link href="/faq">
+                    <a className="c-footer-links__link c-footer-smallword">
+                      FAQ
+                    </a>
+                  </Link>
                 </li>
 
                 <li className="c-footer-links__line">
-                  <a
-                    className="c-footer-links__link c-footer-smallword"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      router.push("/contact");
-                    }}
-                    href="/contact"
-                  >
-                    Contact
-                  </a>
+                  <Link href="/contact">
+                    <a className="c-footer-links__link c-footer-smallword">
+                      Contact
+                    </a>
+                  </Link>
                 </li>
 
                 <li className="c-footer-links__line">
-                  <a
-                    className="c-footer-links__link c-footer-smallword"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      router.push("/metiers");
-                    }}
-                    href="/metiers"
-                  >
-                    Métiers
-                  </a>
+                  <Link href="/metiers">
+                    <a className="c-footer-links__link c-footer-smallword">
+                      Métiers
+                    </a>
+                  </Link>
                 </li>
 
                 <li className="c-footer-links__line">
-                  <a
-                    className="c-footer-links__link c-footer-smallword"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      router.push("/a-propos");
-                    }}
-                    href="/a-propos"
-                  >
-                    A propos
-                  </a>
+                  <Link href="/a-propos">
+                    <a className="c-footer-links__link c-footer-smallword">
+                      A propos
+                    </a>
+                  </Link>
                 </li>
 
                 <li className="c-footer-links__line">
-                  <a
-                    className="c-footer-links__link c-footer-smallword"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      router.push("/developpeurs");
-                    }}
-                    href="/developpeurs"
-                  >
-                    Développeurs
-                  </a>
+                  <Link href="/developpeurs">
+                    <a className="c-footer-links__link c-footer-smallword">
+                      Développeurs
+                    </a>
+                  </Link>
                 </li>
                 <li className="c-footer-links__line">
                   <a className="c-footer-links__link c-footer-smallword">Accessibilité : non conforme</a>

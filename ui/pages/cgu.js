@@ -27,7 +27,7 @@ const CGU = (props) => {
             <h1>
               <span className="d-block c-page-title is-color-1">Conditions</span>
               <span className="d-block c-page-title is-color-2">générales</span>
-              <span className="d-block c-page-title is-color-2">d'utilisation</span>
+              <span className="d-block c-page-title is-color-2">d&apos;utilisation</span>
             </h1>
             <hr className="c-page-title-separator" align="left" />
           </div>
@@ -53,7 +53,7 @@ const CGU = (props) => {
                   title="labonnealternance.pole-emploi.fr"
                 />{" "}
                 a pour objet de faciliter les entrées en alternance des usagers en informant sur les formations en
-                apprentissage ainsi que les offres d'emplois et entreprises auprès desquelles adresser une candidature.
+                apprentissage ainsi que les offres d&apos;emplois et entreprises auprès desquelles adresser une candidature.
               </p>
               <p>
                 L’utilisateur peut filtrer tout ou partie des informations à l’aide des filtres suivants : niveau de
@@ -137,7 +137,7 @@ const CGU = (props) => {
               </p>
               <p>
                 Tout événement dû à un cas de force majeure ayant pour conséquence un dysfonctionnement du site et sous
-                réserve de toute interruption ou modification en cas de maintenance, n'engage pas la responsabilité de
+                réserve de toute interruption ou modification en cas de maintenance, n&apos;engage pas la responsabilité de
                 l’éditeur.
               </p>
               <p>
@@ -168,7 +168,7 @@ const CGU = (props) => {
                 </li>
               </ul>
               <p>
-                Toute information transmise par l'Utilisateur est de sa seule responsabilité. Il est rappelé que toute
+                Toute information transmise par l&apos;Utilisateur est de sa seule responsabilité. Il est rappelé que toute
                 personne procédant à une fausse déclaration pour elle-même ou pour autrui s’expose, notamment, aux
                 sanctions prévues à l’article 441-1 du code pénal, prévoyant des peines pouvant aller jusqu’à trois ans
                 d’emprisonnement et 45 000 euros d’amende.
@@ -234,7 +234,7 @@ const CGU = (props) => {
                 Les marques Pôle emploi et La bonne alternance sont protégées au titre des articles L.712-1 et suivants
                 du code de la propriété intellectuelle. Toute représentation, reproduction ou diffusion, intégrale ou
                 partielle de la marque Pôle emploi et/ou de la marque La bonne alternance, sur quelque support que ce
-                soit, sans l'autorisation expresse et préalable de Pôle emploi constitue un acte de contrefaçon,
+                soit, sans l&apos;autorisation expresse et préalable de Pôle emploi constitue un acte de contrefaçon,
                 sanctionné en application de l’article L.716-1 du même code.
                 <br />
                 Par ailleurs, le site{" "}

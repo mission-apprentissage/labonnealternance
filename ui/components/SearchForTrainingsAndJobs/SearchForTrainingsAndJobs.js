@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import React, { useState, useEffect, useContext } from "react";
 
 import { useRouter } from "next/router";

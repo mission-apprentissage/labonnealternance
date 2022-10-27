@@ -15,7 +15,7 @@ const ExternalLink = ({ url, title, className = "", withPic, picPosition = "righ
   };
 
   return (
-    <a className={className} target="_blank" rel="noopener norefferer" href={url} data-testid={dataTestid}>
+    <a className={className} target="_blank" rel="noopener noreferrer" href={url} data-testid={dataTestid}>
       {getPic("left")}
       {title}
       {getPic("right")}

@@ -6,7 +6,7 @@ const TagCfaDEntreprise = () => {
   return (
     <span className="c-media-tag c-media-tag--smiley">
       <img src={smileyIcon} alt="sourire" />
-      <span className="ml-1">CFA d'entreprise</span>
+      <span className="ml-1">CFA d&apos;entreprise</span>
     </span>
   );
 };
