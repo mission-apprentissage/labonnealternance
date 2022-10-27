@@ -1,29 +1,11 @@
 {
   "devDependencies": {
     "@commitlint/cli": "^17.1.2",
-    "@commitlint/config-conventional": "^17.1.0",
-    "husky": "^8.0.1",
-    "lint-staged": "^13.0.3"
+    "@commitlint/config-conventional": "^17.1.0"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "./git-hooks/preventSensibleFilesCommit.sh && lint-staged",
-      "commit-msg": "[[ -n $HUSKY_BYPASS ]] || commitlint --config ./config/commitlint.config.js -E HUSKY_GIT_PARAMS"
-    }
-  },
-  "lint-staged": {
-    "./server/*.{js,jsx}": [
-      "eslint --cache --fix ./server/src ./server/tests"
-    ],
-    "./ui/*.{js,jsx}": [
-      "yarn --cwd ui lint"
-    ],
-    "./ui_espace_pro/*.{js,jsx}": [
-      "yarn --cwd ui lint"
-    ],
-    "*.{js,jsx}": [
-      "prettier --write ./ui ./server ./ui_espace_pro"
-    ],
-    "*.{md,json,html}": "prettier --write ./ui ./server ./ui_espace_pro"
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
   }
 }

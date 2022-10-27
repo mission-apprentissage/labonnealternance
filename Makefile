@@ -20,6 +20,7 @@ coverage:
 lint:
 	yarn --cwd server lint
 	yarn --cwd ui lint
+	yarn --cwd ui_espace_pro lint
 
 clean:
 	docker-compose kill && docker system prune --force --volumes
