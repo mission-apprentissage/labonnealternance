@@ -3,8 +3,9 @@ import Tracing from "@sentry/tracing";
 import bodyParser from "body-parser";
 import express from "express";
 import swaggerUi from "swagger-ui-express";
-import swaggerDocument from "../api-docs/swagger.json" assert { type: "json" };
+import swaggerDocument from "../api-docs/swagger.json";
 import config from "../config.js";
+import cron from "node-cron";
 import { initWebhook } from "../service/sendinblue/webhookSendinBlue.js";
 import { corsMiddleware } from "./middlewares/corsMiddleware.js";
 import { errorMiddleware } from "./middlewares/errorMiddleware.js";
@@ -27,8 +28,6 @@ import updateFormations from "./routes/updateFormations.js";
 import updateLBB from "./routes/updateLBB.js";
 import updateRomesMetiers from "./routes/updateRomesMetiers.js";
 import version from "./routes/version.js";
-
-
 import appointmentRoute from "./routes/admin/appointment";
 import adminEtablissementRoute from "./routes/admin/etablissement";
 import etablissementRoute from "./routes/etablissement";
@@ -39,16 +38,6 @@ import partnersRoute from "./routes/partners";
 import emailsRoute from "./routes/auth/emails";
 import constantsRoute from "./routes/constants";
 import supportRoute from "./routes/support";
-
-
-
-
-
-
-
-
-
-
 import {
   limiter10PerSecond,
   limiter1Per20Second,
@@ -56,10 +45,23 @@ import {
   limiter3PerSecond,
   limiter5PerSecond,
   limiter7PerSecond,
-} from "./utils/rateLimiters.js";
+} from "./utils/rateLimiters";
+import authMiddleware from "./middlewares/authMiddleware";
+import permissionsMiddleware from "./middlewares/permissionsMiddleware";
+import { roles } from "./../common/roles";
+import { logger } from "../common/logger.js";
+import { syncEtablissementsAndFormations } from "../cron/syncEtablissementsAndFormations";
+import { activateOptOutEtablissementFormations } from "../cron/activateOptOutEtablissementFormations";
+import { inviteEtablissementToOptOut } from "../cron/inviteEtablissementToOptOut";
+import { inviteEtablissementToPremium } from "../cron/inviteEtablissementToPremium";
+import { inviteEtablissementToPremiumFollowUp } from "../cron/inviteEtablissementToPremiumFollowUp";
+import { parcoursupEtablissementStat } from "../cron/parcoursupEtablissementStat";
 
 export default async (components) => {
   const app = express();
+
+  const checkJwtToken = authMiddleware(components);
+  const adminOnly = permissionsMiddleware(roles.administrator);
 
   Sentry.init({
     dsn: config.private.serverSentryDsn,
@@ -158,8 +160,13 @@ export default async (components) => {
 
   app.use("/api/V1/application", limiter5PerSecond, sendApplicationAPI(components));
 
+  /**
+   * FIN Bloc LBA J
+   */
 
-  // RDV-A
+  /**
+   * RDV-Apprentissage
+   */
   app.use("/api/appointment", appointmentRoute(components));
   app.use("/api/admin/etablissements", checkJwtToken, adminOnly, adminEtablissementRoute(components));
   app.use("/api/etablissements", etablissementRoute(components));
@@ -172,8 +179,26 @@ export default async (components) => {
   app.use("/api/support", supportRoute(components));
 
   /**
-   * FIN Bloc LBA J
+   * RDV-Apprentissage: cron
+   * Note: Will be rewritten.
    */
+  // Everyday at 14:00: Opt-out invite
+  cron.schedule("0 14 * * *", () => inviteEtablissementToOptOut(components));
+
+  // Everyday at 04:00 AM: Copy catalogue formations
+  cron.schedule("0 4 * * *", () => syncEtablissementsAndFormations(components));
+
+  // Everyday, every 5 minutes: Opt-out activation
+  cron.schedule("*/5 * * * *", () => activateOptOutEtablissementFormations(components));
+
+  // Everyday at 6AM create Parcoursup stats
+  cron.schedule("0 6 * * *", () => parcoursupEtablissementStat(components));
+
+  // Every hours: Invite to Premium mode
+  cron.schedule("0 * * * *", () => inviteEtablissementToPremium(components));
+
+  // Every hours: Invite to Premium mode (follow up)
+  cron.schedule("0 * * * *", () => inviteEtablissementToPremiumFollowUp(components));
 
   initWebhook();
 
