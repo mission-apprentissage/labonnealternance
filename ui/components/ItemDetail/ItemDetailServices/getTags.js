@@ -3,13 +3,14 @@ import TagCandidatureSpontanee from "../TagCandidatureSpontanee";
 import TagOffreEmploi from "../TagOffreEmploi";
 import TagCfaDEntreprise from "../TagCfaDEntreprise";
 import TagFormationAssociee from "../TagFormationAssociee";
+import TagFormation from "../TagFormation";
 
 export default function getTags({ kind, isCfa, isMandataire, hasAlsoJob }) {
   return (
     <div className="mr-auto c-tagcfa-container text-left">
       {kind === "formation" ? 
         <>
-          {isCfa ? <TagCfaDEntreprise /> : "" }
+          {isCfa ? <TagCfaDEntreprise /> : <TagFormation /> }
         </>
         : 
         "" 
