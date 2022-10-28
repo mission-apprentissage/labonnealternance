@@ -4,7 +4,7 @@ import { fetchAddresses } from "../../services/baseAdresse";
 import extendedSearchPin from "../../public/images/icons/jobPin.svg";
 import { ScopeContext } from "../../context/ScopeContext";
 import TagCfaDEntreprise from "./TagCfaDEntreprise";
-import TagOffreAssociee from "./TagOffreAssociee";
+import TagFormation from "./TagFormation";
 import { setSelectedMarker } from "../../utils/mapTools";
 import { getItemQueryParameters } from "../../utils/getItemId";
 import { getSearchQueryParameters } from "../../utils/getSearchParameters";
@@ -113,9 +113,6 @@ const Training = ({ training, handleSelectItem, showTextOnly, searchForJobsOnNew
       href={actualLink}
     >
       <div className="c-media" id={`id${training.id}`}>
-        <div className="c-media-figure">
-          <img className="cardIcon" src={trainingIcon} alt="" />
-        </div>
 
         <div className="c-media-body">
           <div className="row no-gutters">
@@ -124,7 +121,7 @@ const Training = ({ training, handleSelectItem, showTextOnly, searchForJobsOnNew
             </div>
             <div className="col-12 col-lg-6  d-lg-flex flex-column text-left text-lg-right my-1 my-lg-0">
               {
-                isCfa ? <TagCfaDEntreprise /> : ""
+                isCfa ? <TagCfaDEntreprise /> : <TagFormation />
               }
             </div>
           </div>
