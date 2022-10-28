@@ -9,7 +9,13 @@ import { mailType } from "../common/model/constants/appointments";
  * @description Sends a mail to the candidat in order to know if he has been contacter or not.
  * @returns {Promise<void>}
  */
-export const candidatHaveYouBeenContacted = async ({ etablissements, widgetParameters, mailer, appointments, users }) => {
+export const candidatHaveYouBeenContacted = async ({
+  etablissements,
+  widgetParameters,
+  mailer,
+  appointments,
+  users,
+}) => {
   logger.info("Cron #candidatHaveYouBeenContacted started.");
 
   // Appointments created there are less than 5 days

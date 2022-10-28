@@ -1,4 +1,4 @@
-import { Etablissement }  from "../../common/model";
+import { Etablissement } from "../../common/model";
 
 export default async () => ({
   /**

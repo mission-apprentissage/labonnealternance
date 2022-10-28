@@ -33,6 +33,4 @@ const enableAllEtablissementFormations = async (siret, referrers = []) => {
   return etablissement;
 };
 
-export {
-  enableAllEtablissementFormations,
-};
+export { enableAllEtablissementFormations };

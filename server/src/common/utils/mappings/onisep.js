@@ -7,6 +7,4 @@ import { mapping } from "./onisep/mapping";
  */
 const getCleMinistereEducatifFromIdActionFormation = (idActionFormation) => mapping[idActionFormation.toUpperCase()];
 
-export {
-  getCleMinistereEducatifFromIdActionFormation,
-};
+export { getCleMinistereEducatifFromIdActionFormation };

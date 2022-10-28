@@ -21,6 +21,4 @@ const emailStatus = {
  */
 const getEmailStatus = (status) => emailStatus[status] || "N/C";
 
-export {
-  getEmailStatus,
-};
+export { getEmailStatus };

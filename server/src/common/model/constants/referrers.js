@@ -70,8 +70,4 @@ function getReferrerById(id) {
   return referrer;
 }
 
-export {
-  referrers,
-  getReferrerByKeyName,
-  getReferrerById,
-};
+export { referrers, getReferrerByKeyName, getReferrerById };

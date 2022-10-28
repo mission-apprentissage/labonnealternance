@@ -9,7 +9,6 @@ import createEtablissements from "./etablissement";
 import createParcoursupEtablissementStats from "./parcoursupEtablissementStat";
 
 export default async function (options = {}) {
-
   const users = await createUsers();
   const appointments = await createAppointements();
   const widgetParameters = await createWidgetParameters();

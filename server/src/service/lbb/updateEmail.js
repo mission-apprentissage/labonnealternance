@@ -45,6 +45,4 @@ const updateEmail = async (query) => {
   }
 };
 
-export {
-  updateEmail,
-};
+export { updateEmail };

@@ -22,6 +22,6 @@ const getUniqueArray = (arr, properties) => {
   });
 
   return modifiedArray;
-}
+};
 
 export { getUniqueArray };
