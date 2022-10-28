@@ -43,7 +43,7 @@ const Opco = createModel("opco", schema.opco);
 const BonnesBoites = createModel("bonnesboites", schema.bonneBoiteSchema, {
   esIndexName: "bonnesboites",
 });
-const userModel = createModel("user", schema.userSchema, { paginate: true });
+const User = createModel("user", schema.userSchema, { paginate: true });
 const UserEvent = createModel("userEvents", schema.userSchema, { paginate: true });
 const Appointment = createModel("appointment", schema.appointmentSchema, { paginate: true });
 const WidgetParameter = createModel("widgetParameter", schema.widgetParameterSchema, { paginate: true });
@@ -66,7 +66,7 @@ export {
   EmailBlacklist,
   Opco,
   BonnesBoites,
-  userModel,
+  User,
   UserEvent,
   Appointment,
   WidgetParameter,
