@@ -73,7 +73,7 @@ const getFormations = async (query, page = 1, limit = 500, enableCache = true) =
   }
 
   const { data } = await axios.post(
-    `${config.mnaCatalog.endpoint}/v1/entity/formations`,
+    `${config.catalogueUrl}/v1/entity/formations`,
     {
       query,
       select: {
@@ -107,7 +107,7 @@ const getFormations = async (query, page = 1, limit = 500, enableCache = true) =
   return data;
 };
 
-module.exports = {
+export {
   getFormationsByIdRcoFormations,
   getFormationsByIdRcoFormationsRaw,
   getFormationsByIdParcoursup,

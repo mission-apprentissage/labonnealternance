@@ -100,7 +100,7 @@ export const candidatHaveYouBeenContacted = async ({ etablissements, widgetParam
             referrer: referrerObj.full_name,
           },
         },
-        from: config.email,
+        from: config.rdvEmail,
       }),
     ]);
 

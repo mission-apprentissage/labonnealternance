@@ -39,8 +39,8 @@ services:
 
   server:
     image: doctrina_server
-    volumes:
-      - /opt/labonnealternance/data/server/lbb/assets:/app/src/jobs/lbb/assets
+#    volumes:
+#      - /opt/labonnealternance/data/server/lbb/assets:/app/src/jobs/lbb/assets
     container_name: doctrina_server
     build:
       context: server

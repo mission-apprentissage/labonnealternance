@@ -74,7 +74,7 @@ export default ({ etablissements, mailer, widgetParameters, appointments }) => {
           },
           activationDate: dayjs().format("DD/MM"),
         },
-        config.email
+        config.rdvEmail
       );
 
       const [widgetParametersFound] = await Promise.all([
@@ -152,7 +152,7 @@ export default ({ etablissements, mailer, widgetParameters, appointments }) => {
           },
           activationDate: dayjs().format("DD/MM"),
         },
-        config.email
+        config.rdvEmail
       );
 
       await etablissements.findOneAndUpdate(
@@ -240,7 +240,7 @@ export default ({ etablissements, mailer, widgetParameters, appointments }) => {
         etablissement = await etablissements.findById(req.params.id);
 
         await mailer.sendEmail({
-          to: config.email,
+          to: config.rdvEmail,
           subject: `Un CFA se pose une question concernant l'opt-out"`,
           template: path.join(__dirname, `../../../assets/templates/mail-rdva-optout-unsubscription-question.mjml.ejs`),
           data: {
@@ -302,7 +302,7 @@ export default ({ etablissements, mailer, widgetParameters, appointments }) => {
             destinataireEmail: etablissement.email_decisionnaire,
           },
         },
-        config.email
+        config.rdvEmail
       );
 
       await etablissements.findOneAndUpdate(
