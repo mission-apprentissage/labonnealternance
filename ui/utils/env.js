@@ -13,7 +13,7 @@ export const getEnvFromProps = (props) => {
     envrnt = "local";
   }
 
-  return { env: envrnt, shoudLoadAnalytics: props.shouldLoadAnalytics };
+  return { env: envrnt };
 };
 
 export default env;
