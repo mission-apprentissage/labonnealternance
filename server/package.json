@@ -28,6 +28,8 @@
     "bunyan": "1.8.15",
     "bunyan-slack": "0.0.10",
     "burner-email-providers": "1.0.67",
+    "chai": "4.3.6",
+    "chai-as-promised": "7.1.1",
     "changelog-parser": "2.8.0",
     "clamscan": "2.1.2",
     "commander": "9.2.0",
