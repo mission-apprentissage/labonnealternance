@@ -1,16 +1,16 @@
 import express from "express";
-import lodash from "lodash";
-import { tryCatch } from "../../middlewares/tryCatchMiddleware";
-import { Appointment, User } from "../../../common/model";
-import { logger } from "../../../common/logger";
-import { getReferrerById, referrers } from "../../../common/model/constants/referrers";
-import { getEmailStatus } from "../../../common/model/constants/emails";
-import { getFormationsByIdRcoFormationsRaw } from "../../../common/utils/catalogue";
+import lodash from "lodash-es";
+import { tryCatch } from "../../middlewares/tryCatchMiddleware.js";
+import { Appointment, User } from "../../../common/model/index.js";
+import { logger } from "../../../common/logger.js";
+import { getReferrerById, referrers } from "../../../common/model/constants/referrers.js";
+import { getEmailStatus } from "../../../common/model/constants/emails.js";
+import { getFormationsByIdRcoFormationsRaw } from "../../../common/utils/catalogue.js";
 
 /**
  * Sample entity route module for GET
  */
-export default ({ cache, etablissements, appointments, users }) => {
+export default ({ etablissements, appointments, users }) => {
   const router = express.Router();
 
   /**
@@ -42,7 +42,6 @@ export default ({ cache, etablissements, appointments, users }) => {
    * */
   router.get(
     "/appointments/details",
-    cache("5 minutes"),
     tryCatch(async (req, res) => {
       let qs = req.query;
       const query = qs && qs.query ? JSON.parse(qs.query) : {};
@@ -170,7 +169,6 @@ export default ({ cache, etablissements, appointments, users }) => {
    */
   router.get(
     "/appointments/count",
-    cache("5 minutes"),
     tryCatch(async (req, res) => {
       let qs = req.query;
       const query = qs && qs.query ? JSON.parse(qs.query) : {};

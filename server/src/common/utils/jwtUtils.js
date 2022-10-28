@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import config from "../../config";
+import config from "../../config.js";
 
 const createToken = (type, subject, options = {}) => {
   const defaults = config.auth[type];

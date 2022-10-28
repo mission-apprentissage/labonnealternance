@@ -2,11 +2,11 @@ import Boom from "boom";
 import express from "express";
 import Joi from "joi";
 import path from "path";
-import { tryCatch } from "../middlewares/tryCatchMiddleware";
+import { tryCatch } from "../middlewares/tryCatchMiddleware.js";
 import { dayjs } from "../../common/utils/dayjs.js";
-import { referrers } from "../../common/model/constants/referrers";
-import { mailType } from "../../common/model/constants/etablissement";
-import config from "../../config";
+import { referrers } from "../../common/model/constants/referrers.js";
+import { mailType } from "../../common/model/constants/etablissement.js";
+import config from "../../config.js";
 
 const optOutUnsubscribeSchema = Joi.object({
   opt_out_question: Joi.string().optional(),

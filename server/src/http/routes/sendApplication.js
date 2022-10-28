@@ -1,4 +1,5 @@
 import express from "express";
+import rateLimit from "express-rate-limit";
 import { tryCatch } from "../middlewares/tryCatchMiddleware.js";
 import {
   getApplications,
@@ -10,7 +11,6 @@ import {
   debugUpdateApplicationStatus,
   updateBlockedEmails,
 } from "../../service/applications.js";
-import rateLimit from "express-rate-limit";
 import apiKeyAuthMiddleware from "../middlewares/apiKeyAuthMiddleware.js";
 
 const limiter1Per5Second = rateLimit({

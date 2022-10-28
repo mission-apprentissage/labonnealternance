@@ -1,4 +1,4 @@
-import _ from "lodash";
+import _ from "lodash-es";
 import config from "../../config.js";
 import updateOpcoJob from "../../jobs/lbb/updateOpcoCompanies.js";
 import Sentry from "@sentry/node";

@@ -3,14 +3,14 @@ import path from "path";
 import Joi from "joi";
 import Boom from "boom";
 import Sentry from "@sentry/node";
-import { tryCatch } from "../middlewares/tryCatchMiddleware";
-import config from "../../config";
-import { getReferrerById, getReferrerByKeyName, referrers } from "../../common/model/constants/referrers";
-import { candidatFollowUpType, mailType } from "../../common/model/constants/appointments";
-import { roles } from "../../common/roles";
-import { getCleMinistereEducatifFromIdActionFormation } from "../../common/utils/mappings/onisep";
-import { dayjs } from "../../common/utils/dayjs";
-import { isValidEmail } from "../../common/utils/isValidEmail";
+import { tryCatch } from "../middlewares/tryCatchMiddleware.js";
+import config from "../../config.js";
+import { getReferrerById, getReferrerByKeyName, referrers } from "../../common/model/constants/referrers.js";
+import { candidatFollowUpType, mailType } from "../../common/model/constants/appointments.js";
+import { roles } from "../../common/roles.js";
+import { getCleMinistereEducatifFromIdActionFormation } from "../../common/utils/mappings/onisep.js";
+import { dayjs } from "../../common/utils/dayjs.js";
+import { isValidEmail } from "../../common/utils/isValidEmail.js";
 
 const contextCreateSchema = Joi.alternatives().try(
   // Find through "idParcoursup"

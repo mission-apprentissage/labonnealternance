@@ -1,11 +1,10 @@
 import express from "express";
-import { tryCatch } from "../middlewares/tryCatchMiddleware.js";
-
 import parseChangelog from "changelog-parser";
 import { get } from "lodash-es";
 import path from "path";
-
 import * as url from "url";
+import { tryCatch } from "../middlewares/tryCatchMiddleware.js";
+
 const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
 
 /**

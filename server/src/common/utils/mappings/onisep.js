@@ -1,4 +1,4 @@
-import { mapping } from "./onisep/mapping";
+import { mapping } from "./onisep/mapping.js";
 
 /**
  * @description Returns idRcoFormation through its idActionFormation.

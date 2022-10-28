@@ -5,7 +5,7 @@ import axios from "axios";
 import path from "path";
 import { oleoduc, readLineByLine, transformData, writeData } from "oleoduc";
 import { Opco } from "../../common/model/index.js";
-import _ from "lodash";
+import _ from "lodash-es";
 import { logMessage } from "../../common/utils/logMessage.js";
 //const opcoAktoSirenFilePath = path.join(__dirname, "./assets/20220301-Akto_SIREN.csv");
 import { notifyToSlack } from "../../common/utils/slackUtils.js";

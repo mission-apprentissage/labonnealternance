@@ -1,8 +1,8 @@
 import path from "path";
-import { logger } from "../common/logger";
-import config from "../config";
-import { dayjs } from "../common/utils/dayjs";
-import { mailType } from "../common/model/constants/etablissement";
+import { logger } from "../common/logger.js";
+import config from "../config.js";
+import { dayjs } from "../common/utils/dayjs.js";
+import { mailType } from "../common/model/constants/etablissement.js";
 
 /**
  * @description Invite all "etablissements" to Premium.

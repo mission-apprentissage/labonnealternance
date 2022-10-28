@@ -1,6 +1,6 @@
 import express from "express";
-import { tryCatch } from "../middlewares/tryCatchMiddleware";
-import { referrers } from "../../common/model/constants/referrers";
+import { tryCatch } from "../middlewares/tryCatchMiddleware.js";
+import { referrers } from "../../common/model/constants/referrers.js";
 
 /**
  * @description Partners router.

@@ -1,9 +1,9 @@
 import express from "express";
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
-import { createUserToken } from "../../../common/utils/jwtUtils";
 import { compose } from "compose-middleware";
-import { tryCatch } from "../../middlewares/tryCatchMiddleware";
+import { createUserToken } from "../../../common/utils/jwtUtils.js";
+import { tryCatch } from "../../middlewares/tryCatchMiddleware.js";
 
 export default ({ users }) => {
   const router = express.Router(); // eslint-disable-line new-cap

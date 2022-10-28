@@ -1,19 +1,19 @@
-import { domainesMetiersSchema } from "./domainesmetiers";
-import { diplomesMetiersSchema } from "./diplomesmetiers";
-import { apiCallSchema } from "./ApiCall";
-import { applicationSchema } from "./applications";
-import { sourceFormationsSchema } from "./sourceFormationsSchema";
-import mnaFormationSchema from "./mnaFormation/mnaFormation";
-import { geoLocationSchema } from "./lbb/geoLocations";
-import { bonneBoiteSchema } from "./lbb/bonneBoite";
-import { emailBlacklist } from "./lbb/emailBlacklist";
-import { opco } from "./lbb/opco";
-import { logSchema } from "./log";
-import { userSchema } from "./user";
-import { appointmentSchema } from "./appointment";
-import { widgetParameterSchema } from "./widgetParameter";
-import { etablissementSchema } from "./etablissement";
-import { parcoursupEtablissementStatSchema } from "./parcoursupEtablissementStat";
+import { domainesMetiersSchema } from "./domainesmetiers.js";
+import { diplomesMetiersSchema } from "./diplomesmetiers.js";
+import { apiCallSchema } from "./ApiCall.js";
+import { applicationSchema } from "./applications.js";
+import { sourceFormationsSchema } from "./sourceFormationsSchema.js";
+import mnaFormationSchema from "./mnaFormation/mnaFormation.js";
+import { geoLocationSchema } from "./lbb/geoLocations.js";
+import { bonneBoiteSchema } from "./lbb/bonneBoite.js";
+import { emailBlacklist } from "./lbb/emailBlacklist.js";
+import { opco } from "./lbb/opco.js";
+import { logSchema } from "./log.js";
+import { userSchema } from "./user.js";
+import { appointmentSchema } from "./appointment.js";
+import { widgetParameterSchema } from "./widgetParameter.js";
+import { etablissementSchema } from "./etablissement.js";
+import { parcoursupEtablissementStatSchema } from "./parcoursupEtablissementStat.js";
 
 export default {
   domainesMetiersSchema,

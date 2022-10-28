@@ -2,9 +2,9 @@ import express from "express";
 import passport from "passport";
 import Joi from "joi";
 import { Strategy as LocalAPIKeyStrategy } from "passport-localapikey";
-import config from "../../../config";
-import { tryCatch } from "../../middlewares/tryCatchMiddleware";
-import { dayjs } from "../../../common/utils/dayjs";
+import config from "../../../config.js";
+import { tryCatch } from "../../middlewares/tryCatchMiddleware.js";
+import { dayjs } from "../../../common/utils/dayjs.js";
 
 /**
  * @description Checks "Sendinblue" token.

@@ -1,6 +1,6 @@
 import axios from "axios";
 import rax from "retry-axios";
-import config from "../../config";
+import config from "../../config.js";
 
 // Retry calls 3 times.
 rax.attach();

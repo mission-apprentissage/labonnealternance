@@ -1,4 +1,4 @@
-import _ from "lodash";
+import _ from "lodash-es";
 import config from "../config.js";
 import updateFormations from "../jobs/importFormationsCatalogue/importFormationsCatalogue.js";
 import Sentry from "@sentry/node";

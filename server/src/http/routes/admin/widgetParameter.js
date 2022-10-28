@@ -2,13 +2,13 @@ import express from "express";
 import Joi from "joi";
 import json2csvParser from "json2csv";
 import Boom from "boom";
-import { tryCatch } from "../../middlewares/tryCatchMiddleware";
-import { WidgetParameter } from "../../../common/model";
-import { logger } from "../../../common/logger";
-import { getReferrerById } from "../../../common/model/constants/referrers";
-import { optMode } from "../../../common/model/constants/etablissement";
-import { getFormationsBySiretFormateur, getFormationsByIdRcoFormationsRaw } from "../../../common/utils/catalogue";
-import { dayjs } from "../../../common/utils/dayjs";
+import { tryCatch } from "../../middlewares/tryCatchMiddleware.js";
+import { WidgetParameter } from "../../../common/model/index.js";
+import { logger } from "../../../common/logger.js";
+import { getReferrerById } from "../../../common/model/constants/referrers.js";
+import { optMode } from "../../../common/model/constants/etablissement.js";
+import { getFormationsBySiretFormateur, getFormationsByIdRcoFormationsRaw } from "../../../common/utils/catalogue.js";
+import { dayjs } from "../../../common/utils/dayjs.js";
 
 const widgetParameterIdPatchSchema = Joi.object({
   is_custom_email_rdv: Joi.boolean(),

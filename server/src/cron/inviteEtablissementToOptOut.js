@@ -1,9 +1,9 @@
 import path from "path";
-import { logger } from "../common/logger";
-import config from "../config";
-import { dayjs } from "../common/utils/dayjs";
-import { optMode, mailType } from "../common/model/constants/etablissement";
-import { isValidEmail } from "../common/utils/isValidEmail";
+import { logger } from "../common/logger.js";
+import config from "../config.js";
+import { dayjs } from "../common/utils/dayjs.js";
+import { optMode, mailType } from "../common/model/constants/etablissement.js";
+import { isValidEmail } from "../common/utils/isValidEmail.js";
 
 /**
  * @description Invite all "etablissements" without opt_mode to opt-out.

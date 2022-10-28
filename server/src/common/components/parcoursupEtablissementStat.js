@@ -1,4 +1,4 @@
-import { ParcoursupEtablissementStat } from "../../common/model";
+import { ParcoursupEtablissementStat } from "../model/index.js";
 
 export default async () => ({
   /**

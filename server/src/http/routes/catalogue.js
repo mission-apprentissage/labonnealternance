@@ -1,7 +1,7 @@
 import express from "express";
-import { tryCatch } from "../middlewares/tryCatchMiddleware";
-import { getFormations } from "../../common/utils/catalogue";
-import { getUniqueArray } from "../../common/utils/array";
+import { tryCatch } from "../middlewares/tryCatchMiddleware.js";
+import { getFormations } from "../../common/utils/catalogue.js";
+import { getUniqueArray } from "../../common/utils/array.js";
 
 /**
  * @description Catalogue router.

@@ -1,5 +1,5 @@
-import { User } from "../model";
-import sha512Utils from "../utils/sha512Utils";
+import { User } from "../model/index.js";
+import * as sha512Utils from "../../common/utils/sha512Utils.js";
 
 /**
  * @description Hash password

@@ -1,4 +1,4 @@
-import _ from "lodash";
+import _ from "lodash-es";
 import { ConvertedFormation_0, ConvertedFormation_1 } from "../../common/model/index.js";
 import { getElasticInstance } from "../../common/esClient/index.js";
 import { fetchFormations, countFormations } from "../../common/components/catalogue.js";

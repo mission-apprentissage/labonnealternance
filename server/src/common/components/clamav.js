@@ -1,6 +1,6 @@
 import NodeClam from "clamscan";
-import config from "../../config.js";
 import tcpPortUsed from "tcp-port-used";
+import config from "../../config.js";
 import { logger } from "../logger.js";
 import { notifyToSlack } from "../utils/slackUtils.js";
 

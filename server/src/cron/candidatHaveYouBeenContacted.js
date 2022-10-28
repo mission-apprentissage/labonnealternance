@@ -1,9 +1,9 @@
 import path from "path";
-import { logger } from "../common/logger";
-import config from "../config";
-import { dayjs } from "../common/utils/dayjs";
-import { getReferrerById } from "../common/model/constants/referrers";
-import { mailType } from "../common/model/constants/appointments";
+import { logger } from "../common/logger.js";
+import config from "../config.js";
+import { dayjs } from "../common/utils/dayjs.js";
+import { getReferrerById } from "../common/model/constants/referrers.js";
+import { mailType } from "../common/model/constants/appointments.js";
 
 /**
  * @description Sends a mail to the candidat in order to know if he has been contacter or not.

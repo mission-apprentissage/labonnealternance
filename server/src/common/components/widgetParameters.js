@@ -1,4 +1,4 @@
-import { WidgetParameter } from "../model";
+import { WidgetParameter } from "../model/index.js";
 
 export default async () => ({
   /**

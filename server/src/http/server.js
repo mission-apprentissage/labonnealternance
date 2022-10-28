@@ -3,7 +3,7 @@ import Tracing from "@sentry/tracing";
 import bodyParser from "body-parser";
 import express from "express";
 import swaggerUi from "swagger-ui-express";
-import swaggerDocument from "../api-docs/swagger.json";
+import swaggerDocument from "../api-docs/swagger.json" assert { type: "json" };
 import config from "../config.js";
 import cron from "node-cron";
 import { initWebhook } from "../service/sendinblue/webhookSendinBlue.js";
@@ -28,20 +28,20 @@ import updateFormations from "./routes/updateFormations.js";
 import updateLBB from "./routes/updateLBB.js";
 import updateRomesMetiers from "./routes/updateRomesMetiers.js";
 import version from "./routes/version.js";
-import appointmentRoute from "./routes/admin/appointment";
-import adminEtablissementRoute from "./routes/admin/etablissement";
-import etablissementRoute from "./routes/etablissement";
-import appointmentRequestRoute from "./routes/appointmentRequest";
-import catalogueRoute from "./routes/catalogue";
-import widgetParameterRoute from "./routes/admin/widgetParameter";
-import partnersRoute from "./routes/partners";
-import emailsRoute from "./routes/auth/emails";
-import constantsRoute from "./routes/constants";
-import supportRoute from "./routes/support";
-import login from "./routes/auth/login";
-import authentified from "./routes/auth/authentified";
-import admin from "./routes/admin/admin";
-import password from "./routes/auth/password";
+import appointmentRoute from "./routes/admin/appointment.js";
+import adminEtablissementRoute from "./routes/admin/etablissement.js";
+import etablissementRoute from "./routes/etablissement.js";
+import appointmentRequestRoute from "./routes/appointmentRequest.js";
+import catalogueRoute from "./routes/catalogue.js";
+import widgetParameterRoute from "./routes/admin/widgetParameter.js";
+import partnersRoute from "./routes/partners.js";
+import emailsRoute from "./routes/auth/emails.js";
+import constantsRoute from "./routes/constants.js";
+import supportRoute from "./routes/support.js";
+import login from "./routes/auth/login.js";
+import authentified from "./routes/auth/authentified.js";
+import admin from "./routes/admin/admin.js";
+import password from "./routes/auth/password.js";
 import {
   limiter10PerSecond,
   limiter1Per20Second,
@@ -49,17 +49,19 @@ import {
   limiter3PerSecond,
   limiter5PerSecond,
   limiter7PerSecond,
-} from "./utils/rateLimiters";
-import authMiddleware from "./middlewares/authMiddleware";
-import permissionsMiddleware from "./middlewares/permissionsMiddleware";
-import { roles } from "./../common/roles";
+} from "./utils/rateLimiters.js";
+import authMiddleware from "./middlewares/authMiddleware.js";
+import permissionsMiddleware from "./middlewares/permissionsMiddleware.js";
+import { roles } from "./../common/roles.js";
 import { logger } from "../common/logger.js";
-import { syncEtablissementsAndFormations } from "../cron/syncEtablissementsAndFormations";
-import { activateOptOutEtablissementFormations } from "../cron/activateOptOutEtablissementFormations";
-import { inviteEtablissementToOptOut } from "../cron/inviteEtablissementToOptOut";
-import { inviteEtablissementToPremium } from "../cron/inviteEtablissementToPremium";
-import { inviteEtablissementToPremiumFollowUp } from "../cron/inviteEtablissementToPremiumFollowUp";
-import { parcoursupEtablissementStat } from "../cron/parcoursupEtablissementStat";
+import { syncEtablissementsAndFormations } from "../cron/syncEtablissementsAndFormations.js";
+import { activateOptOutEtablissementFormations } from "../cron/activateOptOutEtablissementFormations.js";
+import { inviteEtablissementToOptOut } from "../cron/inviteEtablissementToOptOut.js";
+import { inviteEtablissementToPremium } from "../cron/inviteEtablissementToPremium.js";
+import { inviteEtablissementToPremiumFollowUp } from "../cron/inviteEtablissementToPremiumFollowUp.js";
+import { parcoursupEtablissementStat } from "../cron/parcoursupEtablissementStat.js";
+import apiKeyAuthMiddleware from "./middlewares/apiKeyAuthMiddleware.js";
+import secured from "./routes/auth/secured.js";
 
 export default async (components) => {
   const app = express();
@@ -96,29 +98,29 @@ export default async (components) => {
   app.use(errorMiddleware());
 
   app.get(
-    "/api",
-    tryCatch(async (req, res) => {
-      let mongodbStatus;
+      "/api",
+      tryCatch(async (req, res) => {
+        let mongodbStatus;
 
-      await components.db
-        .collection("logs")
-        .stats()
-        .then(() => {
-          mongodbStatus = true;
-        })
-        .catch((e) => {
-          mongodbStatus = false;
-          logger.error("Healthcheck failed", e);
+        await components.db
+            .collection("logs")
+            .stats()
+            .then(() => {
+              mongodbStatus = true;
+            })
+            .catch((e) => {
+              mongodbStatus = false;
+              logger.error("Healthcheck failed", e);
+            });
+
+        return res.json({
+          env: config.env,
+          catalogue: config.private.catalogueUrl,
+          healthcheck: {
+            mongodb: mongodbStatus,
+          },
         });
-
-      return res.json({
-        env: config.env,
-        catalogue: config.private.catalogueUrl,
-        healthcheck: {
-          mongodb: mongodbStatus,
-        },
-      });
-    })
+      })
   );
 
   /**

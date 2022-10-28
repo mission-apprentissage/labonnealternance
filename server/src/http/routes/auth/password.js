@@ -1,13 +1,13 @@
 import express from "express";
 import Boom from "boom";
 import Joi from "joi";
-import config from "../../../config";
 import passport from "passport";
 import { Strategy, ExtractJwt } from "passport-jwt";
-import { tryCatch } from "../../middlewares/tryCatchMiddleware";
-import { createUserToken } from "../../../common/utils/jwtUtils";
-import * as validators from "../../utils/validators";
-import { createPasswordToken } from "../../../common/utils/jwtUtils";
+import config from "../../../config.js";
+import { tryCatch } from "../../middlewares/tryCatchMiddleware.js";
+import { createUserToken } from "../../../common/utils/jwtUtils.js";
+import * as validators from "../../utils/validators.js";
+import { createPasswordToken } from "../../../common/utils/jwtUtils.js";
 
 const checkPasswordToken = (users) => {
   passport.use(

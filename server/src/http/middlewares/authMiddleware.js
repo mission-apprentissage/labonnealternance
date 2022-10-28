@@ -1,7 +1,7 @@
 import passport from "passport";
 import { Strategy, ExtractJwt } from "passport-jwt";
 import { compose } from "compose-middleware";
-import config from "../../config";
+import config from "../../config.js";
 
 export default ({ users }) => {
   passport.use(

@@ -1,12 +1,12 @@
 import express from "express";
 import path from "path";
-import config from "../../../config";
-import { tryCatch } from "../../middlewares/tryCatchMiddleware";
-import { Etablissement } from "../../../common/model";
-import { enableAllEtablissementFormations } from "../../../common/utils/optIn";
-import { optMode, mailType } from "../../../common/model/constants/etablissement";
-import { referrers } from "../../../common/model/constants/referrers";
-import { dayjs } from "../../../common/utils/dayjs";
+import config from "../../../config.js";
+import { tryCatch } from "../../middlewares/tryCatchMiddleware.js";
+import { Etablissement } from "../../../common/model/index.js";
+import { enableAllEtablissementFormations } from "../../../common/utils/optIn.js";
+import { optMode, mailType } from "../../../common/model/constants/etablissement.js";
+import { referrers } from "../../../common/model/constants/referrers.js";
+import { dayjs } from "../../../common/utils/dayjs.js";
 
 /**
  * @description Etablissement Router.

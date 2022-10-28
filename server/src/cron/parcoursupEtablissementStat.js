@@ -1,7 +1,7 @@
-import { meanBy, round } from "lodash";
-import { logger } from "../common/logger";
-import { dayjs } from "../common/utils/dayjs";
-import { referrers } from "../common/model/constants/referrers";
+import { meanBy, round } from "lodash-es";
+import { logger } from "../common/logger.js";
+import { dayjs } from "../common/utils/dayjs.js";
+import { referrers } from "../common/model/constants/referrers.js";
 
 /**
  * @description Generate stats.

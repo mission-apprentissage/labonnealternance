@@ -1,8 +1,8 @@
 import csvToJson from "csvtojson";
 import fs from "fs";
-import { chunk } from "lodash";
-import { getFormationsById } from "../../../catalogue";
-import { logger } from "../../../../logger";
+import { chunk } from "lodash-es";
+import { getFormationsById } from "../../../catalogue.js";
+import { logger } from "../../../../logger.js";
 
 /**
  * @description Parses CSV file given from ONISEP and generate an hashmap "id" => "cle_ministere_educatif.

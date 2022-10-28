@@ -1,4 +1,4 @@
-import { Appointment } from "../../common/model";
+import { Appointment } from "../model/index.js";
 
 export default async () => ({
   /**

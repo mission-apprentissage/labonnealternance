@@ -1,4 +1,4 @@
-import _ from "lodash";
+import _ from "lodash-es";
 import config from "../../config.js";
 import updateGeoLocationJob from "../../jobs/lbb/updateGeoLocations.js";
 import Sentry from "@sentry/node";

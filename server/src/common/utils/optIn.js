@@ -1,8 +1,8 @@
 import { validate } from "email-validator";
-import { WidgetParameter, Etablissement } from "../model";
-import { optMode } from "../model/constants/etablissement";
-import { logger } from "../logger";
-import { dayjs } from "../utils/dayjs";
+import { WidgetParameter, Etablissement } from "../model/index.js";
+import { optMode } from "../model/constants/etablissement.js";
+import { logger } from "../logger.js";
+import { dayjs } from "../utils/dayjs.js";
 
 /**
  * @description Activate all "etablissement's formations".

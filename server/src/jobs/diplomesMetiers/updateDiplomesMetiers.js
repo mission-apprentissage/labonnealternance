@@ -1,4 +1,4 @@
-import _ from "lodash";
+import _ from "lodash-es";
 import Sentry from "@sentry/node";
 import { logMessage } from "../../common/utils/logMessage.js";
 import { DiplomesMetiers } from "../../common/model/index.js";

@@ -1,13 +1,13 @@
 import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc";
-import timezone from "dayjs/plugin/timezone";
-import advancedFormat from "dayjs/plugin/advancedFormat";
-import duration from "dayjs/plugin/duration";
-import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
-import isBetween from "dayjs/plugin/isBetween";
-import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
-import customParseFormat from "dayjs/plugin/customParseFormat";
-import isYesterday from "dayjs/plugin/isYesterday";
+import utc from "dayjs/plugin/utc.js";
+import timezone from "dayjs/plugin/timezone.js";
+import advancedFormat from "dayjs/plugin/advancedFormat.js";
+import duration from "dayjs/plugin/duration.js";
+import isSameOrAfter from "dayjs/plugin/isSameOrAfter.js";
+import isBetween from "dayjs/plugin/isBetween.js";
+import isSameOrBefore from "dayjs/plugin/isSameOrBefore.js";
+import customParseFormat from "dayjs/plugin/customParseFormat.js";
+import isYesterday from "dayjs/plugin/isYesterday.js";
 
 dayjs.extend(utc);
 dayjs.extend(duration);

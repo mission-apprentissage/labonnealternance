@@ -1,4 +1,4 @@
-import { optMode } from "../constants/etablissement";
+import { optMode } from "../constants/etablissement.js";
 
 export const etablissementSchema = {
   siret_formateur: {

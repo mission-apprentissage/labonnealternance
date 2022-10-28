@@ -1,8 +1,8 @@
-import _ from "lodash";
+import _ from "lodash-es";
 import config from "config";
 import Sentry from "@sentry/node";
 import Yup from "yup";
-import { BonnesBoites } from "../../common/model";
+import { BonnesBoites } from "../../common/model/index.js";
 
 const validationError = "error - validation of data failed";
 
