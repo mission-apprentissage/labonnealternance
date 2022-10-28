@@ -1,4 +1,4 @@
-export const usersSchema = {
+export const userSchema = {
   username: {
     type: String,
     default: null,

@@ -38,6 +38,10 @@ import partnersRoute from "./routes/partners";
 import emailsRoute from "./routes/auth/emails";
 import constantsRoute from "./routes/constants";
 import supportRoute from "./routes/support";
+import login from "./routes/auth/login";
+import authentified from "./routes/auth/authentified";
+import admin from "./routes/admin/admin";
+import password from "./routes/auth/password";
 import {
   limiter10PerSecond,
   limiter1Per20Second,
@@ -163,6 +167,16 @@ export default async (components) => {
   /**
    * FIN Bloc LBA J
    */
+
+
+  /**
+   *
+   */
+  app.use("/api/login", login(components));
+  app.use("/api/password", password(components));
+  app.use("/api/authentified", checkJwtToken, authentified());
+  app.use("/api/secured", apiKeyAuthMiddleware, secured());
+  app.use("/api/admin", checkJwtToken, adminOnly, admin());
 
   /**
    * RDV-Apprentissage
