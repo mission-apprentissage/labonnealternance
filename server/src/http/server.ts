@@ -1,5 +1,6 @@
 import Sentry from "@sentry/node";
 import Tracing from "@sentry/tracing";
+import path from "path";
 import bodyParser from "body-parser";
 import express from "express";
 import swaggerUi from "swagger-ui-express";
@@ -124,54 +125,34 @@ export default async (components) => {
   );
 
   /**
-   * Bloc LBA J
+   * LBA-J
    */
-
   app.get("/api-docs/swagger.json", (req, res) => {
     res.sendFile(path.resolve("./src/api-docs/swagger.json"));
   });
   app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
   app.use("/api/version", limiter3PerSecond, version());
-
   app.use("/api/faq", limiter5PerSecond, faq());
-
   app.use("/api/error500", limiter3PerSecond, error500());
-
   app.use("/api/v1/formations", limiter7PerSecond, formationV1());
-
   app.use("/api/romelabels", limiter10PerSecond, rome());
-
   app.use("/api/jobsdiplomas", limiter10PerSecond, jobDiploma());
-
   app.use("/api/updateRomesMetiers", limiter1Per20Second, updateRomesMetiers());
-
   app.use("/api/v1/formationsParRegion", limiter5PerSecond, formationRegionV1());
-
   app.use("/api/v1/jobs", limiter5PerSecond, jobV1());
-
   app.use("/api/v1/jobsEtFormations", limiter5PerSecond, jobEtFormationV1());
-
   app.use("/api/metiers", limiter20PerSecond, metiers());
   app.use("/api/v1/metiers", limiter20PerSecond, metiers());
-
   app.use("/api/updateLBB", limiter1Per20Second, updateLBB());
-
   app.use("/api/updateFormations", limiter1Per20Second, updateFormations());
-
   app.use("/api/updateDiplomesMetiers", limiter1Per20Second, updateDiplomesMetiers());
-
   app.use("/api/mail", limiter1Per20Second, sendMail(components));
-
   app.use("/api/application", sendApplication(components));
-
   app.use("/api/V1/application", limiter5PerSecond, sendApplicationAPI(components));
 
-  /**
-   * FIN Bloc LBA J
-   */
 
   /**
-   *
+   * Admin / Auth
    */
   app.use("/api/login", login(components));
   app.use("/api/password", password(components));
@@ -186,12 +167,12 @@ export default async (components) => {
   app.use("/api/admin/etablissements", checkJwtToken, adminOnly, adminEtablissementRoute(components));
   app.use("/api/etablissements", etablissementRoute(components));
   app.use("/api/appointment-request", appointmentRequestRoute(components));
-  app.use("/api/catalogue", catalogueRoute(components));
-  app.use("/api/constants", constantsRoute(components));
+  app.use("/api/catalogue", catalogueRoute());
+  app.use("/api/constants", constantsRoute());
   app.use("/api/widget-parameters", checkJwtToken, adminOnly, widgetParameterRoute(components));
   app.use("/api/partners", partnersRoute(components));
   app.use("/api/emails", emailsRoute(components));
-  app.use("/api/support", supportRoute(components));
+  app.use("/api/support", supportRoute());
 
   /**
    * RDV-Apprentissage: cron

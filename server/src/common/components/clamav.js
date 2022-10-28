@@ -1,5 +1,6 @@
 import NodeClam from "clamscan";
 import tcpPortUsed from "tcp-port-used";
+import { Readable } from "stream";
 import config from "../../config.js";
 import { logger } from "../logger.js";
 import { notifyToSlack } from "../utils/slackUtils.js";
@@ -37,8 +38,6 @@ const initScanner = async () => {
 };
 
 const scanString = async (fileContent) => {
-  const Readable = require("stream").Readable;
-
   /*
 const eicarStr = "X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*";
 const utf8Encode = new TextEncoder();
