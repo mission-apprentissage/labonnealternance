@@ -53,7 +53,7 @@ export const inviteEtablissementToPremiumFollowUp = async ({ etablissements, mai
           linkToForm: `${config.publicUrl}/form/premium/${etablissement._id}`,
         },
       },
-      from: config.rdvEmail,
+      from: config.private.rdvEmail,
     });
 
     await etablissements.updateOne(

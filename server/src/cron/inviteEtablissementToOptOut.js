@@ -89,7 +89,7 @@ export const inviteEtablissementToOptOut = async ({ etablissements, widgetParame
             destinataireEmail: emailDecisionaire,
           },
         },
-        from: config.rdvEmail,
+        from: config.private.rdvEmail,
       });
 
       await etablissements.updateOne(
