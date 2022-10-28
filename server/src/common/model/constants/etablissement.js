@@ -13,7 +13,7 @@ const mailType = {
   PREMIUM_STARTING: "PREMIUM_STARTING",
 };
 
-module.exports = {
+export {
   optMode,
   mailType,
 };

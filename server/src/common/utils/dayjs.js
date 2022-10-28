@@ -1,13 +1,13 @@
-const dayjs = require("dayjs");
-const utc = require("dayjs/plugin/utc");
-const timezone = require("dayjs/plugin/timezone");
-const advancedFormat = require("dayjs/plugin/advancedFormat");
-const duration = require("dayjs/plugin/duration");
-const isSameOrAfter = require("dayjs/plugin/isSameOrAfter");
-const isBetween = require("dayjs/plugin/isBetween");
-const isSameOrBefore = require("dayjs/plugin/isSameOrBefore");
-const customParseFormat = require("dayjs/plugin/customParseFormat");
-const isYesterday = require("dayjs/plugin/isYesterday");
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+import advancedFormat from "dayjs/plugin/advancedFormat";
+import duration from "dayjs/plugin/duration";
+import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
+import isBetween from "dayjs/plugin/isBetween";
+import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+import isYesterday from "dayjs/plugin/isYesterday";
 
 dayjs.extend(utc);
 dayjs.extend(duration);
@@ -45,8 +45,4 @@ const formatDatetime = (date) => {
   return dayjs.tz(date, "Europe/Paris").format("DD/MM/YYYY HH:mm:ss");
 };
 
-module.exports = {
-  dayjs,
-  formatDate,
-  formatDatetime,
-};
+export { dayjs, formatDate, formatDatetime };

@@ -1,8 +1,8 @@
-const csvToJson = require("csvtojson");
-const fs = require("fs");
-const { chunk } = require("lodash");
-const { getFormationsById } = require("../../../catalogue");
-const logger = require("../../../../../common/logger");
+import csvToJson from "csvtojson";
+import fs from "fs";
+import { chunk } from "lodash";
+import { getFormationsById } from "../../../catalogue";
+import { logger } from "../../../../logger";
 
 /**
  * @description Parses CSV file given from ONISEP and generate an hashmap "id" => "cle_ministere_educatif.

@@ -8,4 +8,4 @@ const candidatFollowUpType = {
   RESEND: "RESEND",
 };
 
-module.exports = { mailType, candidatFollowUpType };
+export { mailType, candidatFollowUpType };

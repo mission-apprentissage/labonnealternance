@@ -1,4 +1,4 @@
-const { mapping } = require("./onisep/mapping");
+import { mapping } from "./onisep/mapping";
 
 /**
  * @description Returns idRcoFormation through its idActionFormation.
@@ -7,6 +7,6 @@ const { mapping } = require("./onisep/mapping");
  */
 const getCleMinistereEducatifFromIdActionFormation = (idActionFormation) => mapping[idActionFormation.toUpperCase()];
 
-module.exports = {
+export {
   getCleMinistereEducatifFromIdActionFormation,
 };

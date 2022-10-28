@@ -1,10 +1,10 @@
-const express = require("express");
-const passport = require("passport");
-const Joi = require("joi");
-const { Strategy: LocalAPIKeyStrategy } = require("passport-localapikey");
-const config = require("../../../../config");
-const tryCatch = require("../../middlewares/tryCatchMiddleware");
-const { dayjs } = require("../../utils/dayjs");
+import express from "express";
+import passport from "passport";
+import Joi from "joi";
+import { Strategy as LocalAPIKeyStrategy } from "passport-localapikey";
+import config from "../../../config";
+import { tryCatch } from "../../middlewares/tryCatchMiddleware";
+import { dayjs } from "../../../common/utils/dayjs";
 
 /**
  * @description Checks "Sendinblue" token.
@@ -26,7 +26,7 @@ const checkWebhookToken = () => {
  * @param {Etablissement} etablissements
  * @return {Router}
  */
-module.exports = ({ appointments, etablissements }) => {
+export default ({ appointments, etablissements }) => {
   const router = express.Router();
 
   /**

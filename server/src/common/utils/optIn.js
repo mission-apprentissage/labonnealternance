@@ -1,8 +1,8 @@
-const { validate } = require("email-validator");
-const { WidgetParameter, Etablissement } = require("../../common/model");
-const { optMode } = require("../../common/model/constants/etablissement");
-const logger = require("../../common/logger");
-const { dayjs } = require("../utils/dayjs");
+import { validate } from "email-validator";
+import { WidgetParameter, Etablissement } from "../model";
+import { optMode } from "../model/constants/etablissement";
+import { logger } from "../logger";
+import { dayjs } from "../utils/dayjs";
 
 /**
  * @description Activate all "etablissement's formations".
@@ -33,6 +33,6 @@ const enableAllEtablissementFormations = async (siret, referrers = []) => {
   return etablissement;
 };
 
-module.exports = {
+export {
   enableAllEtablissementFormations,
 };

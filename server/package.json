@@ -60,7 +60,6 @@
     "tcp-port-used": "1.0.2",
     "xlsx": "0.16.1",
     "yup": "0.32.11",
-    "@tictactrip/axios-redis": "2.0.0",
     "apicache": "1.6.3",
     "bunyan-mongodb-stream": "0.0.3",
     "bunyan-prettystream": "0.1.3",

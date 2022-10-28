@@ -29989,4 +29989,4 @@ const mapping = {
   "AF.65056": "109523P01317862705870001178627058700011-53201#L01",
 };
 
-module.exports = { mapping };
+export { mapping };

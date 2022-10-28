@@ -4,7 +4,7 @@
  * @param {string[]} properties
  * @returns {T[]}
  */
-function getUniqueArray(arr, properties) {
+const getUniqueArray = (arr, properties) => {
   const modifiedArray = [];
 
   if (properties.length === 0 && arr.length > 0) {
@@ -24,4 +24,4 @@ function getUniqueArray(arr, properties) {
   return modifiedArray;
 }
 
-module.exports = { getUniqueArray };
+export { getUniqueArray };

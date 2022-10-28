@@ -1,4 +1,4 @@
-const Boom = require("boom");
+import Boom from "boom";
 
 // Referrer configurations
 const referrers = {
@@ -70,7 +70,7 @@ function getReferrerById(id) {
   return referrer;
 }
 
-module.exports = {
+export {
   referrers,
   getReferrerByKeyName,
   getReferrerById,

@@ -1,8 +1,8 @@
-const _ = require("lodash");
-const config = require("config");
-const Sentry = require("@sentry/node");
-const { BonnesBoites } = require("../../common/model");
-const Yup = require("yup");
+import _ from "lodash";
+import config from "config";
+import Sentry from "@sentry/node";
+import Yup from "yup";
+import { BonnesBoites } from "../../common/model";
 
 const validationError = "error - validation of data failed";
 
@@ -45,6 +45,6 @@ const updateEmail = async (query) => {
   }
 };
 
-module.exports = {
+export {
   updateEmail,
 };
