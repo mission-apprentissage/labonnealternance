@@ -26,7 +26,7 @@ import {
   buttonPRDVShouldBeDisplayed,
   buildPrdvButton,
   getNavigationButtons,
-  buildSwipe,
+  BuildSwipe,
 } from "./ItemDetailServices/getButtons";
 
 import GoingToContactQuestion, { getGoingtoId } from "./GoingToContactQuestion";
