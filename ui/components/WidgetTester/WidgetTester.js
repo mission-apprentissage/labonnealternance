@@ -383,6 +383,10 @@ const WidgetTester = () => {
           <Col xs="12">
             URL associée à l&apos;attribut <strong>src</strong> de l&apos;iframe : {getIdeaUrlWithParams()}
           </Col>
+          <Col xs="12">
+          <a href="https://media.giphy.com/media/3oz8xyB3C126ZDDAuk/giphy.gif" classname="c-nice-link font-weight-normal" target="_blank">
+            Accéder au détail de la documentation
+          </Col>
         </Row>
         <Row className="widgetList">
           <Col xs="12">
