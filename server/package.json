@@ -81,7 +81,6 @@
     "migrate-mongo": "8.1.4",
     "moment": "2.26.0",
     "multipipe": "4.0.0",
-    "nock": "13.0.6",
     "node-cron": "3.0.0",
     "passport": "0.4.1",
     "passport-http": "0.3.0",
