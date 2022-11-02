@@ -1,17 +1,15 @@
 import express from "express";
 import rateLimit from "express-rate-limit";
-import { tryCatch } from "../middlewares/tryCatchMiddleware.js";
 import {
-  getApplications,
-  sendApplication,
+  debugUpdateApplicationStatus,
   saveApplicationFeedback,
   saveApplicationFeedbackComment,
   saveApplicationIntentionComment,
+  sendApplication,
   updateApplicationStatus,
-  debugUpdateApplicationStatus,
   updateBlockedEmails,
 } from "../../service/applications.js";
-import apiKeyAuthMiddleware from "../middlewares/apiKeyAuthMiddleware.js";
+import { tryCatch } from "../middlewares/tryCatchMiddleware.js";
 
 const limiter1Per5Second = rateLimit({
   windowMs: 5000, // 5 seconds
@@ -101,19 +99,6 @@ export default function (components) {
     tryCatch(async (req, res) => {
       updateBlockedEmails({ shouldCheckSecret: true, query: req.query, ...components });
       return res.json({ result: "ok" });
-    })
-  );
-
-  router.get(
-    "/search",
-    apiKeyAuthMiddleware,
-    tryCatch(async (req, res) => {
-      if (!req.query) {
-        return res.status(400).json({ error: true, message: "No query provided." });
-      }
-
-      let results = await getApplications(req.query);
-      return res.json(results);
     })
   );
 

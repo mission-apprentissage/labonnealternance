@@ -16,7 +16,6 @@ import { parcoursupEtablissementStat } from "../cron/parcoursupEtablissementStat
 import { syncEtablissementsAndFormations } from "../cron/syncEtablissementsAndFormations.js";
 import { initWebhook } from "../service/sendinblue/webhookSendinBlue.js";
 import { roles } from "./../common/roles.js";
-import apiKeyAuthMiddleware from "./middlewares/apiKeyAuthMiddleware.js";
 import authMiddleware from "./middlewares/authMiddleware.js";
 import { corsMiddleware } from "./middlewares/corsMiddleware.js";
 import { errorMiddleware } from "./middlewares/errorMiddleware.js";
@@ -31,7 +30,6 @@ import authentified from "./routes/auth/authentified.js";
 import emailsRoute from "./routes/auth/emails.js";
 import login from "./routes/auth/login.js";
 import password from "./routes/auth/password.js";
-import secured from "./routes/auth/secured.js";
 import catalogueRoute from "./routes/catalogue.js";
 import constantsRoute from "./routes/constants.js";
 import error500 from "./routes/error500.js";
@@ -158,7 +156,6 @@ export default async (components) => {
   app.use("/api/login", login(components));
   app.use("/api/password", password(components));
   app.use("/api/authentified", checkJwtToken, authentified());
-  app.use("/api/secured", apiKeyAuthMiddleware, secured());
   app.use("/api/admin", checkJwtToken, adminOnly, admin());
 
   /**
