@@ -19,8 +19,6 @@ httpTests(__filename, ({ startServer }) => {
 
     const response = await httpClient.get("/api/updateRomesMetiers?secret=123");
 
-    console.log("********","********","********",response.data,"********","********","#########");
-
     assert.ok(response.data.error.indexOf("wrong_secret") >= 0);
   });
 });
