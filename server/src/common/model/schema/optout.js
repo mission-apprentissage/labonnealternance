@@ -1,7 +1,7 @@
-const { Schema } = require("mongoose");
+import { mongooseInstance } from "../../mongodb.js";
 
-export const optoutSchema =
-  ({
+export const optoutSchema = mongooseInstance.Schema(
+  {
     etat: {
       type: String,
       description: "Etat administratif de l'organisme de formation",
@@ -67,11 +67,12 @@ export const optoutSchema =
       description: "Interaction avec les contacts",
     },
     user_id: {
-      type: Schema.Types.ObjectId,
+      type: mongooseInstance.Schema.Types.ObjectId,
       description: "Identifiant mongoDB de l'utilisateur, si il existe dans la collection User",
     },
   },
   {
     timestamps: true,
     versionKey: false,
-  });
+  }
+);

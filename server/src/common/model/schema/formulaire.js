@@ -1,8 +1,9 @@
 import { nanoid } from "nanoid";
+import { mongooseInstance } from "../../mongodb.js";
 import { offreSchema } from "./offre.js";
 
-export const formulaireSchema =
-  ({
+export const formulaireSchema = mongooseInstance.Schema(
+  {
     id_form: {
       type: String,
       default: () => nanoid(),
@@ -102,4 +103,5 @@ export const formulaireSchema =
   },
   {
     timestamps: true,
-  });
+  }
+);

@@ -1,4 +1,4 @@
-const { OPCOS } = require("../../constants");
+import { OPCOS } from "../../constants.js";
 
 export const referentielOpcoSchema = {
   opco_label: {

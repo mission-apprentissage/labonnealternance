@@ -1,6 +1,7 @@
 import { apiCallSchema } from "./ApiCall.js";
 import { applicationSchema } from "./applications.js";
 import { appointmentSchema } from "./appointment.js";
+import { credentialSchema } from "./credentials.js";
 import { diplomesMetiersSchema } from "./diplomesmetiers.js";
 import { domainesMetiersSchema } from "./domainesmetiers.js";
 import { etablissementSchema } from "./etablissement.js";
@@ -42,4 +43,5 @@ export default {
   referentielOpcoSchema,
   optoutSchema,
   userRecruteur,
+  credentialSchema,
 };

@@ -29,8 +29,8 @@ const userValidationSchema = new mongooseInstance.Schema(
   { _id: false }
 );
 
-export const userRecruteur =
-  ({
+export const userRecruteur = mongooseInstance.Schema(
+  {
     nom: {
       type: String,
       description: "Nom de l'utilisateur",
@@ -121,4 +121,5 @@ export const userRecruteur =
   },
   {
     timestamps: true,
-  });
+  }
+);

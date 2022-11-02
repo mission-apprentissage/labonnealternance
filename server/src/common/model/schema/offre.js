@@ -1,4 +1,6 @@
-export const offreSchema = {
+import { mongooseInstance } from "../../mongodb.js";
+
+export const offreSchema = mongooseInstance.Schema({
   libelle: { type: String, default: null, description: "Libellé du métier concerné" },
   rome_appellation_label: { type: String, default: null, description: "Libellé de l'appelation ROME" },
   niveau: {
@@ -104,4 +106,4 @@ export const offreSchema = {
     default: null,
     description: "Latitude/Longitude de l'adresse personnalisée de l'entreprise",
   },
-};
+});

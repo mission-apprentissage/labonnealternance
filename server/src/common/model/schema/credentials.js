@@ -1,8 +1,7 @@
-const generator = require("generate-password");
-const { KEY_GENERATOR_PARAMS } = require("../../constants");
-const { Schema } = require("mongoose");
+import { v4 as uuidv4 } from "uuid";
+import { mongooseInstance } from "../../mongodb.js";
 
-module.exports = new Schema(
+export const credentialSchema = mongooseInstance.Schema(
   {
     nom: {
       type: String,
@@ -26,7 +25,7 @@ module.exports = new Schema(
     },
     apiKey: {
       type: String,
-      default: () => `mna-${generator.generate(KEY_GENERATOR_PARAMS())}`,
+      default: () => `mna-${uuidv4()}`,
       index: true,
       required: true,
     },
