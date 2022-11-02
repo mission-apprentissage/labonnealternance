@@ -7,7 +7,7 @@ const config = {
   outputDir: env.get("LABONNEALTERNANCE_OUTPUT_DIR").default(".local/output").asString(),
   formationsEndPoint: "/api/v1/entity/formations",
   maxApplicationPerDay: 100,
-  elasticSearch: env.default("http://localhost:9200"),
+  elasticSearch: "http://localhost:9200",
   log: {
     level: env.get("DOCTRINA_LOG_LEVEL").default("info").asString(),
     format: env.get("DOCTRINA_LOG_FORMAT").default("pretty").asString(),
