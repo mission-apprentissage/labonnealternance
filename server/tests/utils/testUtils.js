@@ -1,11 +1,19 @@
-import server from "../../src/http/server.ts";
-import axiosist from "axiosist"; // eslint-disable-line node/no-unpublished-import
+import path from "path";
+import { emptyDir } from "fs-extra";
+import config from "../../src/config.js";
+import { connectToMongo } from "../../src/common/mongodb.js";
+import * as models from "../../src/common/model/index.js";
 
-export async function startServer() {
-  const app = await server();
-  const httpClient = axiosist(app);
+const testDataDir = path.join(__dirname, "../../.local/test");
+let mongoHolder = null;
 
-  return {
-    httpClient,
-  };
-}
+const connectToMongoForTestsFn = async () => {
+  if (!mongoHolder) {
+    const uri = config.mongodb.uri.split("doctrina").join("doctrina_test");
+    mongoHolder = await connectToMongo(uri);
+  }
+  return mongoHolder;
+};
+
+export const connectToMongoForTests = mongoHolder || connectToMongoForTestsFn;
+export const cleanAll = () => Promise.all([emptyDir(testDataDir), ...Object.values(models).map((m) => m.deleteMany())]);

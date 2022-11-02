@@ -1,5 +1,5 @@
 import { MongoMemoryServer } from "mongodb-memory-server"; // eslint-disable-line node/no-unpublished-import
-import { connectToMongo, getDatabase, configureValidation, configureIndexes } from "../../src/common/mongodb.js";
+import { connectToMongo } from "../../src/common/mongodb.js";
 
 let mongodHolder;
 
@@ -11,8 +11,8 @@ export async function startMongod() {
   });
   let uri = mongodHolder.getUri();
   let client = await connectToMongo(uri);
-  await configureIndexes();
-  await configureValidation();
+  // await configureIndexes();
+  // await configureValidation();
   return client;
 }
 
@@ -21,6 +21,6 @@ export function stopMongod() {
 }
 
 export async function removeAll() {
-  let collections = await getDatabase().collections();
-  return Promise.all(collections.map((c) => c.deleteMany({})));
+  // let collections = await getDatabase().collections();
+  // return Promise.all(collections.map((c) => c.deleteMany({})));
 }
