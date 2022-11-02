@@ -17,6 +17,16 @@ services:
     mem_limit: 1g
     stdin_open: true
 
+  ui_espace_pro:
+    build:
+      args:
+        DOCTRINA_ENV: dev
+    volumes:
+      - ./ui_espace_pro:/app:z
+      - /app/node_modules/
+    mem_limit: 1g
+    stdin_open: true
+
   server:
     build:
       args:
