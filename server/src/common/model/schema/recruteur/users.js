@@ -1,6 +1,6 @@
-import { Schema } from "mongoose";
+import { mongooseInstance } from "../../../mongodb.js";
 
-const userValidationSchema = new Schema(
+const userValidationSchema = new mongooseInstance.Schema(
   {
     validation_type: {
       type: String,

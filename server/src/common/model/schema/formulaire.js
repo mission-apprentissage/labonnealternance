@@ -1,5 +1,5 @@
 import { nanoid } from "nanoid";
-import offresSchema from "./offre";
+import { offreSchema } from "./offre.js";
 
 export const formulaireSchema =
   ({
@@ -63,7 +63,7 @@ export const formulaireSchema =
       default: null,
       description: "Email du contact",
     },
-    offres: [{ type: offresSchema, default: {}, description: "Liste des offres d'apprentissage" }],
+    offres: [{ type: offreSchema, default: {}, description: "Liste des offres d'apprentissage" }],
     origine: {
       type: String,
       default: null,
