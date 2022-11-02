@@ -1,6 +1,9 @@
 import assert from "assert";
 import httpTests from "../../utils/httpTests.js";
 
+import { fileURLToPath } from 'url';
+const __filename = fileURLToPath(import.meta.url)
+
 httpTests(__filename, ({ startServer }) => {
   it("rate-limit, exemple avec /api/romelabels : 11 requêtes consécutives : les 10 premières sont acceptées, mais pas la 11ème", async () => {
     const { httpClient } = await startServer();

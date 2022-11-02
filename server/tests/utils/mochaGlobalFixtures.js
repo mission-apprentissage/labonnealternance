@@ -20,5 +20,4 @@ export const mochaHooks = {
 
 export function mochaGlobalTeardown() {
   return stopMongod();
-}
-*/
+}*/

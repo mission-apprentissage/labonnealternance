@@ -3233,6 +3233,13 @@ is-regex@^1.1.4:
     call-bind "^1.0.2"
     has-tostringtag "^1.0.0"
 
+is-semver@1.0.11:
+  version "1.0.11"
+  resolved "https://registry.yarnpkg.com/is-semver/-/is-semver-1.0.11.tgz#ef4b28f470dc4c5c74db04611057b9f386cf57ea"
+  integrity sha512-yEHN/JhQU0Y+WR3Zkw+QyABQsMI16t71XVhpBqkYmA6DG6v2S2AFOJE9T/AUGL228brp+Rvjbj4ROZ59R5JESQ==
+  dependencies:
+    semver "^7.3.7"
+
 is-shared-array-buffer@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/is-shared-array-buffer/-/is-shared-array-buffer-1.0.2.tgz#8f259c573b60b6a32d4058a1a07430c0a7344c79"

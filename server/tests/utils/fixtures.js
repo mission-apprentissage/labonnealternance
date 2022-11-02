@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   models: {
     sampleEntity: {
       nom: "TEST",

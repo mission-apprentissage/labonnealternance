@@ -23,5 +23,4 @@ export function stopMongod() {
 export async function removeAll() {
   let collections = await getDatabase().collections();
   return Promise.all(collections.map((c) => c.deleteMany({})));
-}
-*/
+}*/

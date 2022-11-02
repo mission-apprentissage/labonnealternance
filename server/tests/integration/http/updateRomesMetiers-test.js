@@ -1,6 +1,9 @@
 import assert from "assert";
 import httpTests from "../../utils/httpTests.js";
 
+import { fileURLToPath } from 'url';
+const __filename = fileURLToPath(import.meta.url)
+
 httpTests(__filename, ({ startServer }) => {
   it("Vérifie que la route répond", async () => {
     const { httpClient } = await startServer();
@@ -15,6 +18,8 @@ httpTests(__filename, ({ startServer }) => {
     const { httpClient } = await startServer();
 
     const response = await httpClient.get("/api/updateRomesMetiers?secret=123");
+
+    console.log("********","********","********",response.data,"********","********","#########");
 
     assert.ok(response.data.error.indexOf("wrong_secret") >= 0);
   });

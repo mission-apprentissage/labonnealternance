@@ -1,6 +1,6 @@
-const { connectToMongoForTests, cleanAll } = require("./testUtils.js");
+import { connectToMongoForTests, cleanAll } from "../utils/testUtils.js";
 
-module.exports = (desc, cb) => {
+export default function(desc, cb) {
   describe(desc, function () {
     let context;
 
