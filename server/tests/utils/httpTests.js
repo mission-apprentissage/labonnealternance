@@ -1,7 +1,7 @@
 import axiosist from "axiosist";
 import createComponents from "../../src/common/components/components.js";
 import { connectToMongoForTests, cleanAll } from "./testUtils.js";
-import server from "../../src/http/server.js";
+import server from "../../src/http/server.ts";
 import nock from "nock";
 
 //FIXME : issue https://github.com/mission-apprentissage/labonnealternance/issues/158
@@ -34,9 +34,9 @@ const startServer = async () => {
   };
 };
 
-export default function(desc, cb) {
+export default function (desc, cb) {
   describe(desc, function () {
     cb({ startServer });
     afterEach(cleanAll);
   });
-};
+}

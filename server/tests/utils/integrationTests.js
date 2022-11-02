@@ -1,6 +1,6 @@
 import { connectToMongoForTests, cleanAll } from "../utils/testUtils.js";
 
-export default function(desc, cb) {
+export default function (desc, cb) {
   describe(desc, function () {
     let context;
 
@@ -13,4 +13,4 @@ export default function(desc, cb) {
 
     afterEach(cleanAll);
   });
-};
+}

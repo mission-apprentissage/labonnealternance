@@ -21,9 +21,6 @@ import * as models from "../../src/common/model/index.js";
 
 const cleanAll = () => {
   return Promise.all([emptyDir(testDataDir), ...Object.values(models).map((m) => m.deleteMany())]);
-}; 
-
-export {
-  connectToMongoForTests,
-  cleanAll,
 };
+
+export { connectToMongoForTests, cleanAll };
