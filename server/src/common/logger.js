@@ -1,9 +1,9 @@
-import util from "util";
-import { throttle, omit, isEmpty } from "lodash-es";
 import bunyan from "bunyan";
 import BunyanSlack from "bunyan-slack";
 import chalk from "chalk"; // eslint-disable-line node/no-unpublished-import
-import { compose, writeData, transformData } from "oleoduc";
+import { isEmpty, omit, throttle } from "lodash-es";
+import { compose, transformData, writeData } from "oleoduc";
+import util from "util";
 import config from "../config.js";
 
 function prettyPrintStream(outputName) {
@@ -74,7 +74,7 @@ function sendLogsToConsole(outputName) {
 function sendLogsToSlack() {
   const stream = new BunyanSlack(
     {
-      webhook_url: "https://hooks.slack.com/services", //config.slackWebhookUrl,
+      webhook_url: config.slackWebhookUrl,
       customFormatter: (record, levelName) => {
         if (record.type === "http") {
           record = {
