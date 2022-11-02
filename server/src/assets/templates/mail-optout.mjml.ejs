@@ -1,0 +1,57 @@
+<mjml>
+  <mj-head>
+    <mj-title>Vous êtes invité à rejoindre La Bonne Alternance</mj-title>
+    <mj-font name="Work Sans" href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;700&display=swap" />
+    <mj-style inline="inline">
+      .grey {color: #1E1E1E;}
+    </mj-style>
+    <mj-attributes>
+      <mj-text color="#242424" font-family="Work Sans, Arial" font-size="16px" line-height="24px" />
+      <mj-button font-size="16px" line-height="24px" padding="8px 24px" font-family="Work Sans" height="40px" />
+    </mj-attributes>
+  </mj-head>
+  <mj-body background-color="#E5E5E5">
+    <mj-section>
+      <mj-column>
+        <mj-image width="150px" src="https://matcha.apprentissage.beta.gouv.fr/images/logo-lba-recruteur-violet.png" />
+      </mj-column>
+    </mj-section>
+
+    <mj-section padding-top="0">
+      <mj-column width="600px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 10px">
+        <mj-text font-weight="700" font-size="24px" line-height="28px">Publiez les offres en alternance de vos entreprises partenaires</mj-text>
+        <mj-text>
+          Bonjour,
+        </mj-text>
+        <mj-text>
+          La Bonne Alternance met à la disposition de votre organisme de formation <b><%= data.raison_sociale %></b> un nouvel outil de dépôt d’offres d’emploi et de mise en relation avec les candidats et les entreprises. Vos offres sont visibles sur les sites d’alternance les plus visités par les candidats, notament <b>La Bonne Alternance, Affelnet, Parcoursup, 1jeune1solution.</b>
+        </mj-text>
+        <mj-text><b>Activez le compte de votre CFA : </b>vérifiez et complétez les informations manquantes.</mj-text>
+
+        <mj-button color="#ffffff" background-color="#000091" href="<%= data.url %>">
+          Activer mon compte
+        </mj-button>
+        <mj-text><b>Ajoutez les entreprises</b> que vous accompagnez en renseignant leurs informations, et <b>publiez leurs offres.</b> Gérez depuis un tableau de bord les offres de vos entreprises partenaires.</mj-text>
+          <mj-text font-style="italic" font-size="14px">Les informations de vos entreprises partenaires ne sont pas exposées aux candidats. Vous recevez directement les candidatures afin de préserver votre exclusivité.</mj-text>
+      </mj-column>
+    </mj-section>
+    <mj-section padding-top="30px">
+      <mj-column width="600px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 10px">
+        <mj-text font-style="normal" font-weight="700" font-size="24px" line-height="28px">Qu'est ce que la Bonne Alternance ?</mj-text>
+
+        <mj-text >
+          La Bonne Alternance a pour objectif d’aider les entreprises et les organismes de formation à diffuser et gérer leurs offres de manière simplifiée, et à faciliter la mise en relation entre les acteurs de l’apprentissage.
+        </mj-text>
+        <mj-text>
+          L'équipe La Bonne Alternance, <br><br>
+          <a href="https://mission-apprentissage.gitbook.io/general" font-weight="700">Mission interministérielle pour l'apprentissage et les trajectoires profesionnelles</a>
+        </mj-text>
+      </mj-column>
+    </mj-section>
+    <mj-section padding-top="30px">
+      <mj-column>
+        <mj-image src="https://matcha.apprentissage.beta.gouv.fr/images/logo-republique-francaise.png" width="200px" align="left" ></mj-image>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

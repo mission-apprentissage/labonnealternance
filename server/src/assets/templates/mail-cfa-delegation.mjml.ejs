@@ -1,0 +1,69 @@
+<mjml>
+    <mj-head>
+        <mj-title>Une entreprise souhaite être accompagnée dans son recrutement</mj-title>
+        <mj-font name="Work Sans" href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;700&display=swap" />
+        <mj-style inline="inline">
+            .grey {color: #1E1E1E;}
+        </mj-style>
+        <mj-attributes>
+            <mj-text color="#242424" font-family="Work Sans, Arial" font-size="16px" line-height="24px" />
+            <mj-button font-size="16px" line-height="24px" padding="8px 24px" font-family="Work Sans" height="40px"/>
+        </mj-attributes>
+    </mj-head>
+    <mj-body background-color="#E5E5E5">
+        <mj-section>
+            <mj-column>
+                <mj-image width="150px" src="https://matcha.apprentissage.beta.gouv.fr/images/logo-lba-recruteur-violet.png" />
+            </mj-column>
+          </mj-section>
+        <mj-section padding-top="0">
+            <mj-column width="600px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 10px">
+                <mj-text>
+                    Bonjour,
+                </mj-text>
+                <mj-text>
+                    L’entreprise <%= data.enterpriseName %>, localisée à proximité de votre CFA, a exprimé un besoin en alternance. Contactez-la pour l’accompagner dans sa recherche et lui présenter vos apprentis.
+                </mj-text>
+                <mj-text padding-bottom="27px">
+                    Métier : <b><%= data.jobName %></b> <br>
+                    Type de contrat : <b><%= data.contractType %></b> <br>
+                    Niveau de formation : <b><%= data.trainingLevel %></b> <br>
+                    Date de début : <b><%= data.startDate %></b> <br>
+                    Durée : <b><%= data.duration %> an(s)</b> <br>
+                    Rythme : <b><%= data.rhythm %></b> <br>
+                </mj-text>
+                <mj-button color="#ffffff" background-color="#000091" href="<%= data.offerButton %>">
+                    Voir les coordonnées de l’entreprise
+                </mj-button>
+            </mj-column>
+        </mj-section>
+        <mj-section padding-top="30px">
+            <mj-column width="600px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 10px">
+                <mj-text font-size="16px" line-height="24px" font-weight="600" color="#242424">
+                    Vous n’avez pas encore de compte ?
+                </mj-text>
+                <mj-text>
+                    Avec La Bonne Alternance, déposez et gérez les offres de vos entreprises partenaires, et attirez de nouveaux jeunes vers vos formations.
+                    <br></br>
+
+                    La Bonne Alternance est un service construit par <a href="https://mission-apprentissage.gitbook.io/general/">la mission interministérielle pour l’apprentissage et les trajectoires professionnelles</a> en lien avec les acteurs de l’apprentissage.
+                    <br><br>
+                    Créez votre compte en cliquant sur ce lien :
+                </mj-text>
+                <mj-button color="#ffffff" background-color="#000091" href="<%= data.createAccountButton %>" padding-bottom="27px" padding-top="27px">
+                    Créer mon compte
+                </mj-button>
+                <mj-divider border-width="1px" border-color="lightgrey" padding-bottom="27px" />
+                <mj-text>
+                    L'équipe La Bonne Alternance, <br />
+                    Mission interministérielle pour l'apprentissage et les trajectoires profesionnelles
+                </mj-text>
+            </mj-column>
+        </mj-section>
+        <mj-section padding-top="30px">
+            <mj-column>
+                <mj-image src="https://matcha.apprentissage.beta.gouv.fr/images/logo-republique-francaise.png" width="200px" align="left" ></mj-image>
+              </mj-column>
+          </mj-section>
+    </mj-body>
+</mjml>

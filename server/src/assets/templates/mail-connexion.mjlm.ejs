@@ -1,0 +1,61 @@
+<mjml>
+  <mj-head>
+    <mj-title>La bonne alternance - Lien de connexion</mj-title>
+    <mj-font name="Work Sans" href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;700&display=swap" />
+    <mj-style inline="inline">
+      .grey {color: #1E1E1E;}
+    </mj-style>
+    <mj-attributes>
+      <mj-text color="#242424" font-family="Work Sans, Arial" font-size="16px" line-height="24px" />
+      <mj-button font-size="16px" line-height="24px" padding="8px 24px" font-family="Work Sans" height="40px" />
+    </mj-attributes>
+  </mj-head>
+  <mj-body background-color="#E5E5E5">
+    <mj-section>
+      <mj-column>
+        <mj-image width="150px" src="https://matcha.apprentissage.beta.gouv.fr/images/logo-lba-recruteur-violet.png" />
+      </mj-column>
+    </mj-section>
+    <mj-wrapper background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF">
+
+      <mj-section padding="0px 0px">
+        <mj-column width="600px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 10px">
+          <mj-text>
+            Bonjour <%= data.prenom %> <%= data.nom %>,
+          </mj-text>
+
+          <mj-text>
+            Pour accéder à votre espace, merci de cliquer sur le lien ci-dessous :
+          </mj-text>
+          <mj-button color="#ffffff" background-color="#000091" href="<%= data.connexion_url %>">
+            Accéder à mon espace
+          </mj-button>
+      </mj-section>
+      <mj-section padding="20px 20px">
+        <mj-column background-color="#E5E5E5">
+          <mj-text>ℹ️ Attention, ce lien n'est valide que pour une durée de 1 heure.</mj-text>
+        </mj-column>
+      </mj-section>
+      <mj-section>
+        <mj-column>
+
+          <mj-text>Si le lien ne fonctionne pas, copier le lien suivant dans le navigateur : <a href="<%= data.connexion_url %></"><%= data.connexion_url %></a></mj-text>
+        </mj-column>
+      </mj-section>
+
+      <mj-section>
+        <mj-column>
+          <mj-text>
+            L'équipe La Bonne Alternance, <br>
+            Mission interministérielle pour l'apprentissage et les trajectoires profesionnelles
+          </mj-text>
+        </mj-column>
+      </mj-section>
+    </mj-wrapper>
+    <mj-section padding-top="30px">
+      <mj-column>
+        <mj-image src="https://matcha.apprentissage.beta.gouv.fr/images/logo-republique-francaise.png" width="200px" align="left" ></mj-image>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>
