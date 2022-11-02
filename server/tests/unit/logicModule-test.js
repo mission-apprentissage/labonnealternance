@@ -1,8 +1,8 @@
 /*import assert from "assert";
 import { getTestMessage, compare } from "../../src/logic/logicModule.js";
 
-import { fileURLToPath } from 'url';
-const __filename = fileURLToPath(import.meta.url)
+import { fileURLToPath } from "url";
+const __filename = fileURLToPath(import.meta.url);
 
 
 describe(__filename, () => {

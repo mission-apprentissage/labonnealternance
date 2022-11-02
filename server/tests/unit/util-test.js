@@ -2,8 +2,8 @@ import assert from "assert";
 import { isOriginLocal } from "../../src/common/utils/isOriginLocal.js";
 import { encrypt, decrypt } from "../../src/common/utils/encryptString.js";
 
-import { fileURLToPath } from 'url';
-const __filename = fileURLToPath(import.meta.url)
+import { fileURLToPath } from "url";
+const __filename = fileURLToPath(import.meta.url);
 
 describe(__filename, () => {
   it("Détection origine autorisée - retourne false si undefined ", () => {

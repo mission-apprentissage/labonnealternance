@@ -11,8 +11,8 @@ import {
   validateCompanyEmail,
 } from "../../src/service/validateSendApplication.js";
 
-import { fileURLToPath } from 'url';
-const __filename = fileURLToPath(import.meta.url)
+import { fileURLToPath } from "url";
+const __filename = fileURLToPath(import.meta.url);
 
 import { decryptWithIV } from "../../src/common/utils/encryptString.js";
 

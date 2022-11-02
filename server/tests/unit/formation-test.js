@@ -1,7 +1,7 @@
 import assert from "assert";
 import { deduplicateFormations } from "../../src/service/formations.js";
-import { fileURLToPath } from 'url';
-const __filename = fileURLToPath(import.meta.url)
+import { fileURLToPath } from "url";
+const __filename = fileURLToPath(import.meta.url);
 
 describe(__filename, () => {
   const sampleFormation1 = [
