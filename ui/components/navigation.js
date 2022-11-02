@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { useRouter } from 'next/router'
-import { default as React, default as React, useState } from 'react'
+import { useState } from 'react'
 import { Collapse, Nav, Navbar, NavbarBrand, NavbarToggler, NavItem } from 'reactstrap'
 
 const Navigation = ({ currentPage, bgcolor }) => {
