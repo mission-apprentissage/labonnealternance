@@ -1,5 +1,7 @@
 import assert from "assert";
 import httpTests from "../../utils/httpTests.js";
+import { fileURLToPath } from "url";
+const __filename = fileURLToPath(import.meta.url);
 
 httpTests(__filename, ({ startServer }) => {
   it("Vérifie que l'on expose bien l'ensemble des constantes", async () => {

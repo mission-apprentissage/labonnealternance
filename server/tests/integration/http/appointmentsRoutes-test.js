@@ -4,6 +4,8 @@ import { sampleAppointment, sampleUpdateAppointment } from "../../data/samples.j
 import { Appointment } from "../../../src/common/model/index.js";
 import { roles } from "../../../src/common/roles.js";
 import { referrers } from "../../../src/common/model/constants/referrers.js";
+import { fileURLToPath } from "url";
+const __filename = fileURLToPath(import.meta.url);
 
 httpTests(__filename, ({ startServer }) => {
   it("Vérifie qu'on peut consulter la liste des rdvs en tant qu'admin via la Route", async () => {

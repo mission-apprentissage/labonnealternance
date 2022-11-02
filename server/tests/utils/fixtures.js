@@ -1,6 +1,8 @@
-export const models = {
-  Sample: {
-    nom: "TEST",
-    valeur: "Valeur",
+export default {
+  models: {
+    sampleEntity: {
+      nom: "TEST",
+      valeur: "Valeur",
+    },
   },
 };

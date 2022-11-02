@@ -5,6 +5,8 @@ import config from "../../../src/config.js";
 import httpTests from "../../utils/httpTests.js";
 import { User } from "../../../src/common/model/index.js";
 import { hash } from "../../../src/common/utils/sha512Utils.js";
+import { fileURLToPath } from "url";
+const __filename = fileURLToPath(import.meta.url);
 
 httpTests(__filename, ({ startServer }) => {
   it("Vérifie qu'on peut se connecter", async () => {

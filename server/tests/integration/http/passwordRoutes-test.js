@@ -5,6 +5,8 @@ import config from "../../../src/config.js";
 import httpTests from "../../utils/httpTests.js";
 import { createPasswordToken } from "../../../src/common/utils/jwtUtils.js";
 import { roles } from "../../../src/common/roles.js";
+import { fileURLToPath } from "url";
+const __filename = fileURLToPath(import.meta.url);
 
 httpTests(__filename, ({ startServer }) => {
   it("Vérifie qu'un utilisateur peut faire une demande de réinitialisation de mot de passe", async () => {

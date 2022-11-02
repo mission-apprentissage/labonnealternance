@@ -1,19 +1,26 @@
 import path from "path";
-import { emptyDir } from "fs-extra";
 import config from "../../src/config.js";
+import { emptyDir } from "fs-extra";
 import { connectToMongo } from "../../src/common/mongodb.js";
-import * as models from "../../src/common/model/index.js";
+
+import * as url from "url";
+const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
 
 const testDataDir = path.join(__dirname, "../../.local/test");
 let mongoHolder = null;
 
-const connectToMongoForTestsFn = async () => {
+const connectToMongoForTests = async () => {
   if (!mongoHolder) {
-    const uri = config.mongodb.uri.split("doctrina").join("doctrina_test");
+    const uri = config.private.mongodb.uri.split("labonnealternance").join("labonnealternance_test");
     mongoHolder = await connectToMongo(uri);
   }
   return mongoHolder;
 };
 
-export const connectToMongoForTests = mongoHolder || connectToMongoForTestsFn;
-export const cleanAll = () => Promise.all([emptyDir(testDataDir), ...Object.values(models).map((m) => m.deleteMany())]);
+import * as models from "../../src/common/model/index.js";
+
+const cleanAll = () => {
+  return Promise.all([emptyDir(testDataDir), ...Object.values(models).map((m) => m.deleteMany())]);
+};
+
+export { connectToMongoForTests, cleanAll };

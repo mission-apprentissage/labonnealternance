@@ -1,6 +1,8 @@
 import assert from "assert";
 import httpTests from "../../utils/httpTests.js";
 import { roles } from "../../../src/common/roles.js";
+import { fileURLToPath } from "url";
+const __filename = fileURLToPath(import.meta.url);
 
 httpTests(__filename, ({ startServer }) => {
   it("Vérifie qu'on peut se connecter à une route sécurisée en tant qu'administrateur", async () => {

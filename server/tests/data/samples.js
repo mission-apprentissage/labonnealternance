@@ -65,7 +65,7 @@ const sampleParameters = [
   },
 ];
 
-module.exports = {
+export {
   sampleParameter,
   sampleUpdateParameter,
   sampleParameters,

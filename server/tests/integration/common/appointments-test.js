@@ -4,6 +4,8 @@ import appointments from "../../../src/common/components/appointments.js";
 import users from "../../../src/common/components/users.js";
 import { Appointment } from "../../../src/common/model/index.js";
 import { roles } from "../../../src/common/roles.js";
+import { fileURLToPath } from "url";
+const __filename = fileURLToPath(import.meta.url);
 
 integrationTests(__filename, () => {
   it("Permet de créer un appointment", async () => {

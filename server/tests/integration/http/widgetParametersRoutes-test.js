@@ -1,10 +1,12 @@
 import assert from "assert";
-import { omit } from "lodash";
+import { omit } from "lodash-es";
 import httpTests from "../../utils/httpTests.js";
 import { roles } from "../../../src/common/roles.js";
 import { sampleParameter, sampleUpdateParameter } from "../../data/samples.js";
 import { WidgetParameter } from "../../../src/common/model/index.js";
 import { referrers } from "../../../src/common/model/constants/referrers.js";
+import { fileURLToPath } from "url";
+const __filename = fileURLToPath(import.meta.url);
 
 httpTests(__filename, ({ startServer }) => {
   const sampleWidgetParameter = omit(sampleParameter, ["id_parcoursup"]);

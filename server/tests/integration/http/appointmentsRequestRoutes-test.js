@@ -2,6 +2,8 @@ import assert from "assert";
 import httpTests from "../../utils/httpTests.js";
 import widgetParameters from "../../../src/common/components/widgetParameters.js";
 import { sampleParameter } from "../../data/samples.js";
+import { fileURLToPath } from "url";
+const __filename = fileURLToPath(import.meta.url);
 
 httpTests(__filename, ({ startServer }) => {
   it("Vérifie qu'on peut récupérer les infos de context via idRcoFormation and cleMinistereEducatif", async () => {
