@@ -14,5 +14,6 @@ export const logSchema = {
   time: {
     type: Date,
     required: true,
+    expires: "7d",
   },
 };

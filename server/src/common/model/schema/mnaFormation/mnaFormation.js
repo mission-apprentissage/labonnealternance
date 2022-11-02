@@ -2,7 +2,7 @@ import { etablissementFormateurInfo } from "./etablissement.formateur.sub.js";
 import { etablissementGestionnaireInfo } from "./etablissement.gestionnaire.sub.js";
 import { etablissementReferenceInfo } from "./etablissement.reference.sub.js";
 
-const mnaFormationSchema = {
+export const mnaFormationSchema = {
   cle_ministere_educatif: {
     index: true,
     type: String,
@@ -559,5 +559,3 @@ const mnaFormationSchema = {
   ...etablissementFormateurInfo,
   ...etablissementReferenceInfo,
 };
-
-export default mnaFormationSchema;
