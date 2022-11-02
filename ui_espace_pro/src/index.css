@@ -1,0 +1,69 @@
+/* Marianne font */
+
+@font-face {
+  font-family: 'Marianne';
+  src: local('Marianne'), url(./assets/fonts/Marianne-Regular.woff2) format('woff2'),
+    url(./assets/fonts/Marianne-Regular.woff) format('woff');
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Marianne';
+  src: local('Marianne'), url(./assets/fonts/Marianne-Regular_Italic.woff2) format('woff2'),
+    url(./assets/fonts/Marianne-Regular_Italic.woff) format('woff');
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Marianne';
+  src: local('Marianne'), url(./assets/fonts/Marianne-Bold.woff2) format('woff2'),
+    url(./assets/fonts/Marianne-Bold.woff) format('woff');
+  font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Marianne';
+  src: local('Marianne'), url(./assets/fonts/Marianne-Bold_Italic.woff2) format('woff2'),
+    url(./assets/fonts/Marianne-Bold_Italic.woff) format('woff');
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Marianne';
+  src: local('Marianne'), url(./assets/fonts/Marianne-ExtraBold.woff2) format('woff2'),
+    url(./assets/fonts/Marianne-ExtraBold.woff) format('woff');
+  font-weight: 800;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Marianne';
+  src: local('Marianne'), url(./assets/fonts/Marianne-ExtraBold_Italic.woff2) format('woff2'),
+    url(./assets/fonts/Marianne-ExtraBold_Italic.woff) format('woff');
+  font-style: italic;
+  font-weight: 800;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Marianne';
+  src: local('Marianne'), url(./assets/fonts/Marianne-Light.woff2) format('woff2'),
+    url(./assets/fonts/Marianne-Light.woff) format('woff');
+  font-weight: 300;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Marianne';
+  src: local('Marianne'), url(./assets/fonts/Marianne-Light_Italic.woff2) format('woff2'),
+    url(./assets/fonts/Marianne-Light_Italic.woff) format('woff');
+  font-style: italic;
+  font-weight: 300;
+  font-display: swap;
+}

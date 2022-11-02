@@ -1,5 +1,5 @@
 import Sentry from "@sentry/node";
-import _ from "lodash";
+import _ from "lodash-es";
 import { getFormationsES } from "../common/esClient/index.js";
 
 const esClient = getFormationsES();

@@ -1,4 +1,4 @@
-import _ from "lodash";
+import _ from "lodash-es";
 import Sentry from "@sentry/node";
 import { getFormationsES } from "../common/esClient/index.js";
 

@@ -1,9 +1,10 @@
 import dayjs from "dayjs";
+import promises from "fs";
 import { closeMongoConnection } from "../common/mongodb.js";
 import createComponents from "../common/components/components";
-import logger from "../common/logger.js";
+import { logger } from "../common/logger.js";
 import config from "../config.js";
-import promises from "fs";
+
 const { access, mkdir } = promises;
 
 process.on("unhandledRejection", (e) => console.log(e));

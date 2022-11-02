@@ -1,0 +1,70 @@
+<mjml>
+    <mj-head>
+        <mj-title>RDV Apprentissage est disponible sur Parcoursup</mj-title>
+        <mj-font name="Work Sans" href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;700&display=swap" />
+        <mj-style inline="inline">
+            .grey {color: #1E1E1E;}
+        </mj-style>
+        <mj-attributes>
+            <mj-text color="#242424" font-family="Work Sans, Arial" font-size="16px" line-height="24px" />
+            <mj-button font-size="16px" line-height="24px" padding="8px 24px" font-family="Work Sans" height="40px" />
+        </mj-attributes>
+    </mj-head>
+    <mj-body background-color="#E5E5E5">
+        <mj-section>
+            <mj-column>
+                <mj-image src="<%= data.images.logoCfa %>" width="150px"  alt="Logo" />
+            </mj-column>
+        </mj-section>
+        <mj-section padding-top="0">
+            <mj-column width="600px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 10px">
+                <mj-text color="#000091" font-size="18px" padding-bottom="20px">
+                    <b>RDV Apprentissage est disponible sur Parcoursup !</b>
+                </mj-text>
+                <mj-text>
+                    Depuis le <%= data.etablissement.activatedAt %>, vous êtes inscrit au service RDV Apprentissage qui vous permet de recevoir automatiquement des demandes de
+                    contact de candidats depuis <a class="grey" href="https://labonnealternance.pole-emploi.fr/">La bonne alternance</a>.
+                </mj-text>
+                <mj-text>
+                    Plus de 1 400 établissements ont déjà fait le choix d’activer le service RDV Apprentissage sur Parcoursup.
+                    Comme eux, ne manquez pas cette opportunité de donner de la visibilité à vos formations auprès des jeunes en quelques clics !
+                </mj-text>
+                <mj-text>
+                    <b>Pour recevoir des demandes depuis Parcoursup, vous pouvez dès aujourd’hui activer le service RDV Apprentissage sous conditions</b>
+                </mj-text>
+                <mj-button color="#ffffff" padding-top="20px" padding-bottom="20px" background-color="#000091" href="<%= data.etablissement.linkToForm %>">
+                    Je souhaite activer le service sur Parcoursup
+                </mj-button>
+                <mj-image width="520px" src="<%= data.images.parcoursupIntegrationExample %>" alt="Intégration Parcoursup" />
+                <mj-button color="#000091" padding-top="20px" background-color="#ffffff" border="1px solid #000091" href="https://mission-apprentissage.gitbook.io/rendez-vous-apprentissage-inscription/">
+                    Je souhaite en savoir plus sur ce service
+                </mj-button>
+                <mj-button color="#000091" background-color="#ffffff" border="1px solid #000091" href="mailto:rdv_apprentissage@apprentissage.beta.gouv.fr">
+                    J’ai une question
+                </mj-button>
+            </mj-column>
+        </mj-section>
+        <mj-section padding-top="30px">
+            <mj-column width="600px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 10px">
+                <mj-text>
+                    Cordialement,<br/>
+                    L'équipe La bonne alternance,<br/>
+                    <a class="grey" href="https://mission-apprentissage.gitbook.io/general/">Mission interministérielle pour l'apprentissage et les trajectoires professionnelles</a>
+                </mj-text>
+            </mj-column>
+        </mj-section>
+        <mj-section padding-top="5px" text-align="left">
+            <mj-column width="200px">
+                <mj-image padding="0" src="<%= data.images.logoFooter %>"></mj-image>
+            </mj-column>
+            <mj-column width="400px" padding-left="30px">
+                <mj-text padding-bottom="15px" padding-right="0" font-size="12px">
+                    Si vous avez des questions ou si vous souhaitez vous désinscrire du service, envoyez un email à <a class="grey" href="mailto:rdv_apprentissage@apprentissage.beta.gouv.fr">rdv_apprentissage@apprentissage.beta.gouv.fr</a>.
+                </mj-text>
+                <mj-text padding-top="15px" padding-right="0" font-size="12px">
+                    Cette demande a été réalisée sur le site <a class="grey" href="https://labonnealternance.pole-emploi.fr/">La bonne alternance</a>.
+                </mj-text>
+            </mj-column>
+        </mj-section>
+    </mj-body>
+</mjml>

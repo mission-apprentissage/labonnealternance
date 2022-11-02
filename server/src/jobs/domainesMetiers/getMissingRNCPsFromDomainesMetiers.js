@@ -1,7 +1,7 @@
 import path from "path";
 import config from "../../config.js";
 import fs from "fs";
-import _ from "lodash";
+import _ from "lodash-es";
 import { logger } from "../../common/logger.js";
 import XLSX from "xlsx";
 import { DomainesMetiers } from "../../common/model/index.js";
