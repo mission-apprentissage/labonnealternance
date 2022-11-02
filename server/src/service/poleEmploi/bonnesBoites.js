@@ -4,7 +4,7 @@ import { manageApiError } from "../../common/utils/errorManager.js";
 import { encryptMailWithIV } from "../../common/utils/encryptString.js";
 import { isAllowedSource } from "../../common/utils/isAllowedSource.js";
 
-import { lbbMock } from "../../../tests/mocks/lbbs-mock";
+import { lbbMock } from "../../mocks/lbbs-mock";
 
 const esClient = getBonnesBoitesES();
 
@@ -18,7 +18,7 @@ const getSomeLbbCompanies = async ({
   caller,
   opco,
   api = "jobV1",
-  useMock
+  useMock,
 }) => {
   const hasLocation = latitude === undefined ? false : true;
   let companies = null;
