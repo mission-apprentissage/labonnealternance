@@ -9,10 +9,14 @@ const customJoi = Joi.extend((joi) => ({
   },
 }));
 
-export function arrayOf(itemSchema = Joi.string()) {
+function arrayOf(itemSchema = Joi.string()) {
   return customJoi.arrayOf().items(itemSchema).single();
 }
 
-export function validate(obj, validators) {
+function validate(obj, validators) {
   return Joi.object(validators).validateAsync(obj, { abortEarly: false });
 }
+
+const password = () => Joi.string().regex(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/);
+
+export { arrayOf, validate, password };

@@ -3,7 +3,7 @@ import axios from "axios";
 import config from "../config.js";
 import Sentry from "@sentry/node";
 import { getCurrentFormationsSourceCollection } from "../common/components/indexSourceFormations.js";
-import _ from "lodash";
+import _ from "lodash-es";
 import { itemModel } from "../model/itemModel.js";
 import { formationsQueryValidator, formationsRegionQueryValidator } from "./formationsQueryValidator.js";
 import { trackApiCall } from "../common/utils/sendTrackingEvent.js";

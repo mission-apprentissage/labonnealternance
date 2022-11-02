@@ -1,7 +1,7 @@
+import mongoosePaginate from "mongoose-paginate";
 import { mongooseInstance } from "../mongodb.js";
 import { mongoosastic, getElasticInstance } from "../esClient/index.js";
 import schema from "../model/schema/index.js";
-import mongoosePaginate from "mongoose-paginate";
 
 const createModel = (modelName, descriptor, options = {}) => {
   const schema = new mongooseInstance.Schema(descriptor);
@@ -20,37 +20,56 @@ const createModel = (modelName, descriptor, options = {}) => {
 
   return mongooseInstance.model(modelName, schema);
 };
-
-export const DomainesMetiers = createModel("domainesmetiers", schema.domainesMetiersSchema, {
+const DomainesMetiers = createModel("domainesmetiers", schema.domainesMetiersSchema, {
   esIndexName: "domainesmetiers",
 });
-
-export const ConvertedFormation_0 = createModel("convertedformation_0", schema.mnaFormationSchema, {
+const ConvertedFormation_0 = createModel("convertedformation_0", schema.mnaFormationSchema, {
   esIndexName: "convertedformation_0",
 });
-
-export const ConvertedFormation_1 = createModel("convertedformation_1", schema.mnaFormationSchema, {
+const ConvertedFormation_1 = createModel("convertedformation_1", schema.mnaFormationSchema, {
   esIndexName: "convertedformation_1",
 });
-
-export const DiplomesMetiers = createModel("diplomesmetiers", schema.diplomesMetiersSchema, {
+const DiplomesMetiers = createModel("diplomesmetiers", schema.diplomesMetiersSchema, {
   esIndexName: "diplomesmetiers",
 });
-
-export const ApiCalls = createModel("apicalls", schema.apiCallSchema);
-
-export const Application = createModel("applications", schema.applicationSchema, {
+const ApiCalls = createModel("apicalls", schema.apiCallSchema);
+const Application = createModel("applications", schema.applicationSchema, {
   paginate: true,
 });
-
-export const SourceFormations = createModel("sourceformations", schema.sourceFormationsSchema);
-
-export const GeoLocation = createModel("geolocation", schema.geoLocationSchema);
-
-export const EmailBlacklist = createModel("emailblacklist", schema.emailBlacklist);
-
-export const Opco = createModel("opco", schema.opco);
-
-export const BonnesBoites = createModel("bonnesboites", schema.bonneBoiteSchema, {
+const SourceFormations = createModel("sourceformations", schema.sourceFormationsSchema);
+const GeoLocation = createModel("geolocation", schema.geoLocationSchema);
+const EmailBlacklist = createModel("emailblacklist", schema.emailBlacklist);
+const Opco = createModel("opco", schema.opco);
+const BonnesBoites = createModel("bonnesboites", schema.bonneBoiteSchema, {
   esIndexName: "bonnesboites",
 });
+const User = createModel("user", schema.userSchema, { paginate: true });
+const UserEvent = createModel("userEvents", schema.userSchema, { paginate: true });
+const Appointment = createModel("appointment", schema.appointmentSchema, { paginate: true });
+const WidgetParameter = createModel("widgetParameter", schema.widgetParameterSchema, { paginate: true });
+const Etablissement = createModel("etablissement", schema.etablissementSchema, { paginate: true });
+const ParcoursupEtablissementStat = createModel(
+  "parcoursupEtablissementStat",
+  schema.parcoursupEtablissementStatSchema,
+  { paginate: true }
+);
+
+export {
+  DomainesMetiers,
+  ConvertedFormation_0,
+  ConvertedFormation_1,
+  DiplomesMetiers,
+  ApiCalls,
+  Application,
+  SourceFormations,
+  GeoLocation,
+  EmailBlacklist,
+  Opco,
+  BonnesBoites,
+  User,
+  UserEvent,
+  Appointment,
+  WidgetParameter,
+  Etablissement,
+  ParcoursupEtablissementStat,
+};

@@ -1,5 +1,5 @@
 import { MongoMemoryServer } from "mongodb-memory-server"; // eslint-disable-line node/no-unpublished-import
-import { connectToMongodb, getDatabase, configureValidation, configureIndexes } from "../../src/common/mongodb.js";
+import { connectToMongo, getDatabase, configureValidation, configureIndexes } from "../../src/common/mongodb.js";
 
 let mongodHolder;
 
@@ -10,7 +10,7 @@ export async function startMongod() {
     },
   });
   let uri = mongodHolder.getUri();
-  let client = await connectToMongodb(uri);
+  let client = await connectToMongo(uri);
   await configureIndexes();
   await configureValidation();
   return client;

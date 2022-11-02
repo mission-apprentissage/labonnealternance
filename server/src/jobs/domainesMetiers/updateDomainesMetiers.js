@@ -1,6 +1,6 @@
 import path from "path";
 import fs from "fs";
-import _ from "lodash";
+import _ from "lodash-es";
 import XLSX from "xlsx";
 import { DomainesMetiers } from "../../common/model/index.js";
 import { getElasticInstance } from "../../common/esClient/index.js";

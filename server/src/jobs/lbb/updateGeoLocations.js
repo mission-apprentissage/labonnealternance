@@ -5,7 +5,7 @@ import path from "path";
 import { oleoduc, readLineByLine, transformData, writeData } from "oleoduc";
 import initPredictionMap from "./initPredictionMap.js";
 import { GeoLocation } from "../../common/model/index.js";
-import _ from "lodash";
+import _ from "lodash-es";
 import fsExtra from "fs-extra";
 import { logMessage } from "../../common/utils/logMessage.js";
 import * as url from "url";

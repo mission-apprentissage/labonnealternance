@@ -1,12 +1,12 @@
 {
     "openapi": "3.0.1",
-    
-    "info": 
+
+    "info":
     {
-      "title": "La bonne alternance",
-      "description": "Cherchez des formations et des emplois en alternance",
-      "version": "V1.0",
-      "contact": "labonnealternance@apprentissage.beta.gouv.fr"
+        "title": "La bonne alternance",
+        "description": "Cherchez des formations et des emplois en alternance",
+        "version": "V1.0",
+        "contact": "labonnealternance@apprentissage.beta.gouv.fr"
     },
 
     "servers": [
@@ -18,11 +18,11 @@
         }
     ],
 
-    "paths": 
-    {        
-        "/api/V1/formations": 
+    "paths":
+    {
+        "/api/V1/formations":
         {
-            "get": 
+            "get":
             {
                 "description": "Rechercher des formations en alternance pour un métier ou un ensemble de métiers autour d'un point géographique",
 
@@ -39,13 +39,13 @@
                         "$ref": "#/parameters/romeDomain"
                     },
                     {
-                        "$ref": "#/parameters/latitude"                        
+                        "$ref": "#/parameters/latitude"
                     },
                     {
-                        "$ref": "#/parameters/longitude"                        
+                        "$ref": "#/parameters/longitude"
                     },
                     {
-                        "$ref": "#/parameters/radius"                        
+                        "$ref": "#/parameters/radius"
                     },
                     {
                         "$ref": "#/parameters/diploma"
@@ -55,11 +55,11 @@
                     },
                     {
                         "$ref": "#/parameters/opco"
-                    }                    
+                    }
                 ],
 
                 "responses": {
-                    "200": 
+                    "200":
                     {
                         "description": "Un tableau contenant la liste des formations correspondants aux critères transmis en paramètre de la requête. Le tableau peut être vide si aucune formation ne correspond.",
                         "content":
@@ -73,44 +73,44 @@
                             }
                         }
                     },
-                    
-                    "400": 
+
+                    "400":
                     {
                         "$ref": "#/responses/WrongParameters"
                     }
-                }            
+                }
             }
         },
 
-        "/api/V1/formationsParRegion": 
+        "/api/V1/formationsParRegion":
         {
-            "get": 
+            "get":
             {
                 "description": "Rechercher des formations en alternance dans un département ou dans une région ou dans la France entière pour un métier ou un ensemble de métiers",
-                
+
                 "parameters": [
                     {
-                        "$ref": "#/parameters/regionRomes"                        
+                        "$ref": "#/parameters/regionRomes"
                     },
                     {
-                        "$ref": "#/parameters/regionRomeDomain"                        
+                        "$ref": "#/parameters/regionRomeDomain"
                     },
                     {
-                        "$ref": "#/parameters/region"                        
+                        "$ref": "#/parameters/region"
                     },
                     {
-                        "$ref": "#/parameters/departement"                        
+                        "$ref": "#/parameters/departement"
                     },
                     {
                         "$ref": "#/parameters/diploma"
                     },
                     {
                         "$ref": "#/parameters/caller"
-                    }                    
+                    }
                 ],
 
                 "responses": {
-                    "200": 
+                    "200":
                     {
                         "description": "Un tableau contenant la liste des formations correspondants aux critères transmis en paramètre de la requête. Le tableau peut être vide si aucune formation ne correspond.",
                         "content":
@@ -124,33 +124,33 @@
                             }
                         }
                     },
-                    
-                    "400": 
+
+                    "400":
                     {
                         "$ref": "#/responses/WrongParameters"
                     }
-                }            
+                }
             }
         },
 
-        "/api/V1/jobs": 
+        "/api/V1/jobs":
         {
-            "get": 
+            "get":
             {
                 "description": "Rechercher les entreprises recrutant ou susceptibles de recruter en alternance référencées par les APIs de Pôle emploi, pour un métier ou un ensemble de métiers, autour d'un point géographique ou sur la France entière",
-                
+
                 "parameters": [
                     {
-                        "$ref": "#/parameters/requiredRomes"                        
+                        "$ref": "#/parameters/requiredRomes"
                     },
                     {
-                        "$ref": "#/parameters/latitude"                        
+                        "$ref": "#/parameters/latitude"
                     },
                     {
-                        "$ref": "#/parameters/longitude"                        
+                        "$ref": "#/parameters/longitude"
                     },
                     {
-                        "$ref": "#/parameters/radius"                        
+                        "$ref": "#/parameters/radius"
                     },
                     {
                         "$ref": "#/parameters/insee"
@@ -163,11 +163,11 @@
                     },
                     {
                         "$ref": "#/parameters/opco"
-                    }                                        
+                    }
                 ],
 
                 "responses": {
-                    "200": 
+                    "200":
                     {
                         "description": "tableau contenant la liste des opportunités d'emploi correspondants aux critères transmis en paramètre de la requête. Le tableau peut être vide si aucune opportunité d'emploi ne correspond.",
                         "content":
@@ -181,32 +181,32 @@
                             }
                         }
                     },
-                    
-                    "400": 
+
+                    "400":
                     {
                         "$ref": "#/responses/WrongParameters"
                     }
-                }            
+                }
             }
         },
 
-        "/api/V1/jobsEtFormations": 
+        "/api/V1/jobsEtFormations":
         {
-            "get": 
+            "get":
             {
                 "description": "Rechercher des formations en alternance et des entreprises recrutant ou susceptibles de recruter en alternance référencées par les APIs de Pôle emploi, pour un métier ou un ensemble de métiers, autour d'un point géographique ou sur la France entière",
                 "parameters": [
                     {
-                        "$ref": "#/parameters/requiredRomes"                        
+                        "$ref": "#/parameters/requiredRomes"
                     },
                     {
-                        "$ref": "#/parameters/latitude"                        
+                        "$ref": "#/parameters/latitude"
                     },
                     {
-                        "$ref": "#/parameters/longitude"                        
+                        "$ref": "#/parameters/longitude"
                     },
                     {
-                        "$ref": "#/parameters/radius"                        
+                        "$ref": "#/parameters/radius"
                     },
                     {
                         "$ref": "#/parameters/diploma"
@@ -222,11 +222,11 @@
                     },
                     {
                         "$ref": "#/parameters/opco"
-                    }                                        
+                    }
                 ],
 
                 "responses": {
-                    "200": 
+                    "200":
                     {
                         "description": "Un objet contenant la liste des formations et les opportunités d'emploi correspondants aux critères transmis en paramètre de la requête.",
                         "content":
@@ -246,23 +246,23 @@
                                             "$ref": "#/definitions/Jobs"
                                         }
                                     }
-                                    
+
                                 }
                             }
                         }
                     },
-                    
-                    "400": 
+
+                    "400":
                     {
                         "$ref": "#/responses/WrongParameters"
                     }
-                }            
+                }
             }
         },
 
-        "/api/V1/metiers": 
+        "/api/V1/metiers":
         {
-            "get": 
+            "get":
             {
                 "description": "Rechercher des métiers et les codes ROMEs et RNCPs correspondants pour un titre, des codes ROMEs ou des codes RNCPs",
 
@@ -287,7 +287,7 @@
                 ],
 
                 "responses": {
-                    "200": 
+                    "200":
                     {
                         "description": "Un tableau contenant la liste des métiers correspondants aux critères transmis en paramètre de la requête. Le tableau peut être vide si aucun métier ne correspond.",
                         "content":
@@ -301,18 +301,18 @@
                             }
                         }
                     },
-                    
-                    "400": 
+
+                    "400":
                     {
                         "$ref": "#/responses/WrongParameters"
                     }
-                }            
+                }
             }
         },
 
         "/api/V1/metiers/all":
         {
-            "get": 
+            "get":
             {
                 "description": "Récupérer la liste des noms des métiers du référentiel de La bonne alternance",
 
@@ -322,7 +322,7 @@
                 ],
 
                 "responses": {
-                    "200": 
+                    "200":
                     {
                         "description": "Un tableau contenant la liste de tous les noms de métiers.",
                         "content":
@@ -336,14 +336,14 @@
                             }
                         }
                     }
-                }            
+                }
             }
         },
 
-        
+
         "/api/V1/metiers/metiersParFormation/{cfd}":
         {
-            "get": 
+            "get":
             {
                 "description": "Récupérer la liste des noms des métiers du référentiel de La bonne alternance pour une formation donnée",
 
@@ -353,7 +353,7 @@
                     "required": true,
                     "type": "string",
                     "description": "L'identifiant CFD de la formation.",
-                    "example": "50022137"                    
+                    "example": "50022137"
                 }],
 
                 "produces": [
@@ -362,7 +362,7 @@
                 ],
 
                 "responses": {
-                    "200": 
+                    "200":
                     {
                         "description": "Un tableau contenant la liste de tous les noms de métiers.",
                         "content":
@@ -376,13 +376,13 @@
                             }
                         }
                     }
-                }            
+                }
             }
         },
 
         "/api/V1/metiers/metiersParEtablissement/{siret}":
         {
-            "get": 
+            "get":
             {
                 "description": "Récupérer la liste des noms des métiers du référentiel de La bonne alternance pour un établissement de formation",
 
@@ -392,7 +392,7 @@
                     "required": true,
                     "type": "string",
                     "description": "Le siret de l'établissement de formation.",
-                    "example": "1234567890123"                    
+                    "example": "1234567890123"
                 }],
 
                 "produces": [
@@ -401,7 +401,7 @@
                 ],
 
                 "responses": {
-                    "200": 
+                    "200":
                     {
                         "description": "Un tableau contenant la liste de tous les noms de métiers.",
                         "content":
@@ -415,13 +415,13 @@
                             }
                         }
                     }
-                }            
+                }
             }
         },
 
-        "/api/V1/application": 
+        "/api/V1/application":
         {
-            "post": 
+            "post":
             {
                 "description": "Envoi d'un email de candidature à une offre postée sur La bonne alternance recruteur ou une candidature spontanée à une entreprise identifiée par La bonne alternance.\nL'email est envoyé depuis l'adresse générique \"Ne pas répondre\" de La bonne alternance.\n",
                 "produces": [
@@ -484,7 +484,7 @@
                 ],
 
                 "responses": {
-                    "200": 
+                    "200":
                     {
                         "description": "L'accusé de réception d'un envoi de candidature ",
                         "content":
@@ -496,8 +496,8 @@
                                     "type": "object",
                                     "properties":
                                     {
-                                        "result": 
-                                        { 
+                                        "result":
+                                        {
                                             "type": "string",
                                             "description": "Indique le succès ou l'échec de l'opération",
                                             "example": "ok"
@@ -512,21 +512,21 @@
                             }
                         }
                     },
-                    
-                    "400": 
+
+                    "400":
                     {
                         "$ref": "#/responses/WrongParameters"
                     },
 
-                    "429": 
+                    "429":
                     {
                         "$ref": "#/responses/TooManyRequests"
                     }
-                }            
+                }
             }
         }
     },
- 
+
     "responses":
     {
         "WrongParameters" :
@@ -543,12 +543,12 @@
                 }
             }
         },
-        "TooManyRequests" : 
+        "TooManyRequests" :
         {
             "description": "Trop d'appels consécutifs. Les en-têtes de la réponse indiquent le temps d'attente nécessaire entre deux requêtes. Ré-émettez la requête après ce temps d'attente."
         }
     },
-    
+
     "parameters":
     {
         "caller":
@@ -720,7 +720,7 @@
             "in": "query",
             "required": false,
             "type": "integer",
-            "description": "Le rayon de recherche en kilomètres", 
+            "description": "Le rayon de recherche en kilomètres",
             "example": 30,
             "default": 30
         },
@@ -734,7 +734,7 @@
                 "type": "string",
                 "enum": ["3 (CAP...)", "4 (BAC...)", "5 (BTS, DEUST...)", "6 (Licence...)", "7 (Master, titre ingénieur...)"]
             },
-            "description": "Le niveau de diplôme requis. Si précisé, doit contenir à minima le chiffre d'une seule des valeurs autorisées", 
+            "description": "Le niveau de diplôme requis. Si précisé, doit contenir à minima le chiffre d'une seule des valeurs autorisées",
             "example": "3"
         },
 
@@ -750,12 +750,12 @@
                 "collectionFormat": "csv",
                 "default": "formations,lba,matcha,offres",
                 "items":
-                    {
-                        "type": "string",
-                        "enum": ["formations", "lba", "matcha", "offres"]                            
-                    }
+                {
+                    "type": "string",
+                    "enum": ["formations", "lba", "matcha", "offres"]
+                }
             },
-            "description": "Les sources de données dans lesquelles la recherche aura lieu. Ces sources doivent être séparées par des virgules", 
+            "description": "Les sources de données dans lesquelles la recherche aura lieu. Ces sources doivent être séparées par des virgules",
             "example": "formations,offres"
         },
 
@@ -771,12 +771,12 @@
                 "collectionFormat": "csv",
                 "default": "lba,offres,matcha",
                 "items":
-                    {
-                        "type": "string",
-                        "enum": ["lba", "offres", "matcha"]                            
-                    }
+                {
+                    "type": "string",
+                    "enum": ["lba", "offres", "matcha"]
+                }
             },
-            "description": "Les sources de données dans lesquelles la recherche aura lieu. Ces sources doivent être séparées par des virgules", 
+            "description": "Les sources de données dans lesquelles la recherche aura lieu. Ces sources doivent être séparées par des virgules",
             "example": "offres"
         },
 
@@ -943,14 +943,14 @@
 
     "definitions":
     {
-        "Error" : 
+        "Error" :
         {
             "type": "object",
             "required" : ["error"],
             "properties":
             {
-                "error": 
-                { 
+                "error":
+                {
                     "type": "string",
                     "description": "Le type générique de l'erreur",
                     "example": "wrong_parameters"
@@ -958,8 +958,8 @@
                 "error_messages":
                 {
                     "type": "array",
-                    "items" : 
-                    { 
+                    "items" :
+                    {
                         "type":"string"
                     },
                     "description": "Une liste d'erreurs détaillées. Ex : les erreurs de paramétrage de la requête.",
@@ -971,14 +971,14 @@
             }
         },
 
-        "Formations" : 
+        "Formations" :
         {
             "type": "object",
             "required" : ["results"],
             "properties":
             {
-                "results": 
-                { 
+                "results":
+                {
                     "type": "array",
                     "items":
                     {
@@ -995,8 +995,8 @@
             "description": "Cet objet contient les types d'opportunité d'emploi demandé dans le champ <strong>source</strong> de la requête.",
             "properties":
             {
-                "peJobs": 
-                { 
+                "peJobs":
+                {
                     "$ref": "#/definitions/Offres"
                 },
                 "lbaCompanies":
@@ -1010,15 +1010,15 @@
             }
         },
 
-        "Offres" : 
+        "Offres" :
         {
             "type": "object",
             "required" : ["results"],
             "description": "Un tableau d'offres d'emploi en alternance correspondantes aux critères",
             "properties":
             {
-                "results": 
-                { 
+                "results":
+                {
                     "type": "array",
                     "items":
                     {
@@ -1028,131 +1028,131 @@
             }
         },
 
-        "Societes" : 
+        "Societes" :
         {
             "type": "object",
             "required" : ["results"],
             "description": "Un tableau de sociétés susceptibles de recruter en alternance correspondantes aux critères.<br />Les lba ont déjà recruté des apprentis par le passé.",
             "properties":
             {
-                "results": 
-                { 
+                "results":
+                {
                     "type": "array",
                     "items":
                     {
                         "$ref": "#/definitions/Societe"
                     }
-                    
+
                 }
             }
         },
 
-        "OffresMatchas" : 
+        "OffresMatchas" :
         {
             "type": "object",
             "required" : ["results"],
             "description": "Un tableau d'offres d'emploi en alternance correspondantes aux critères.",
             "properties":
             {
-                "results": 
-                { 
+                "results":
+                {
                     "type": "array",
                     "items":
                     {
                         "$ref": "#/definitions/OffreMatcha"
                     }
-                    
+
                 }
             }
         },
 
-        "Formation" : 
+        "Formation" :
         {
             "type": "object",
             "required": ["title","ideaType","id"],
             "properties":
             {
-                "title": 
-                { 
+                "title":
+                {
                     "type": "string",
                     "example": "CAP Monteur en Installation Thermique",
                     "description": "Le titre de la formation"
                 },
-                "longTitle": 
-                { 
+                "longTitle":
+                {
                     "type": "string",
                     "example": "MONTEUR EN INSTALLATIONS THERMIQUES (CAP)",
                     "description": "Le titre en version longue de la formation"
                 },
-                "ideaType": 
-                { 
+                "ideaType":
+                {
                     "type": "string",
                     "value": "formation",
                     "example": "formation",
                     "description": "Le type labonnealternance d'objet, ici la seule valeur possible est 'formation'"
                 },
-                "id": 
-                { 
+                "id":
+                {
                     "type": "string",
                     "example": "5e8dfad720ff3b2161269d86",
                     "description": "L'identifiant de la formation dans le catalogue de la mission apprentissage."
                 },
-                "diplomaLevel": 
-                { 
+                "diplomaLevel":
+                {
                     "type": "string",
                     "example": "3 (CAP...)",
                     "description": "Le niveau de la formation."
                 },
-                "diploma": 
-                { 
+                "diploma":
+                {
                     "type": "string",
                     "example": "CERTIFICAT D'APTITUDES PROFESSIONNELLES",
                     "description": "Le diplôme délivré par la formation."
                 },
-                "cfd": 
-                { 
+                "cfd":
+                {
                     "type": "string",
                     "example": "50023324",
                     "description": "Le code formation diplôme de l'éducation nationale."
                 },
-                "rncpCode": 
-                { 
+                "rncpCode":
+                {
                     "type": "string",
                     "example": "RNCP31899",
                     "description": "Le code RNCP."
                 },
-                "rncpLabel": 
-                { 
+                "rncpLabel":
+                {
                     "type": "string",
                     "example": "Intégrateur - Développeur Web",
                     "description": "L'intitulé RNCP."
                 },
-                "rncpEligibleApprentissage": 
-                { 
+                "rncpEligibleApprentissage":
+                {
                     "type": "string",
                     "example": "true",
                     "description": "Indique si le titre RNCP est éligible en apprentissage."
                 },
-                "period": 
-                { 
+                "period":
+                {
                     "type": "string",
                     "example": "[\"Septembre\"]",
                     "description": "Période d'inscription à la formation."
                 },
-                "capacity": 
-                { 
+                "capacity":
+                {
                     "type": "string",
                     "example": "15",
                     "description": "Capacité d'accueil."
                 },
-                "createdAt": 
-                { 
+                "createdAt":
+                {
                     "type": "string",
                     "example": "2020-11-30T21:33:23.481Z",
                     "description": "Date d'ajout en base de données de la formation"
                 },
-                "lastUpdateAt": 
-                { 
+                "lastUpdateAt":
+                {
                     "type": "string",
                     "example": "2020-11-30T21:33:23.481Z",
                     "description": "Date de dernières mise à jour"
@@ -1178,28 +1178,28 @@
                 },
                 "romes":
                 {
-                   "type": "array",
-                   "items":{
-                       "$ref": "#/definitions/Rome"
-                   }
+                    "type": "array",
+                    "items":{
+                        "$ref": "#/definitions/Rome"
+                    }
                 }
             }
         },
 
-        "Offre" : 
+        "Offre" :
         {
             "type": "object",
             "required": ["title","ideaType","url","job"],
             "properties":
             {
-                "title": 
-                { 
+                "title":
+                {
                     "type": "string",
                     "example": "Monteur / Monteuse en chauffage (H/F)",
                     "description": "Le titre de l'offre"
                 },
-                "ideaType": 
-                { 
+                "ideaType":
+                {
                     "type": "string",
                     "value": "peJob",
                     "example": "peJob",
@@ -1230,28 +1230,28 @@
                 },
                 "romes":
                 {
-                   "type": "array",
-                   "items":{
-                       "$ref": "#/definitions/Rome"
-                   }
+                    "type": "array",
+                    "items":{
+                        "$ref": "#/definitions/Rome"
+                    }
                 }
             }
         },
 
-        "OffreMatcha" : 
+        "OffreMatcha" :
         {
             "type": "object",
             "required": ["title","ideaType","job"],
             "properties":
             {
-                "title": 
-                { 
+                "title":
+                {
                     "type": "string",
                     "example": "Monteur / Monteuse en chauffage (H/F)",
                     "description": "Le titre de l'offre"
                 },
-                "ideaType": 
-                { 
+                "ideaType":
+                {
                     "type": "string",
                     "value": "matcha",
                     "example": "matcha",
@@ -1276,10 +1276,10 @@
                 },
                 "romes":
                 {
-                   "type": "array",
-                   "items":{
-                       "$ref": "#/definitions/Rome"
-                   }
+                    "type": "array",
+                    "items":{
+                        "$ref": "#/definitions/Rome"
+                    }
                 },
                 "diplomaLevel":
                 {
@@ -1290,20 +1290,20 @@
             }
         },
 
-        "Societe" : 
+        "Societe" :
         {
             "type": "object",
             "required": ["title","ideaType","url"],
             "properties":
             {
-                "title": 
-                { 
+                "title":
+                {
                     "type": "string",
                     "example": "COMPAGNIE PARISIENNE DE CHAUFFAGE URBAIN",
                     "description": "La raison sociale de la société"
                 },
-                "ideaType": 
-                { 
+                "ideaType":
+                {
                     "type": "string",
                     "example": "lba",
                     "description": "Le type d'objet, une société peut être de type lba si elle a déjà recruté en alternance ou de type lbb si elle a recruté sur le métier recherché"
@@ -1323,17 +1323,17 @@
                 },
                 "romes":
                 {
-                   "type": "array",
-                   "items":{
-                       "$ref": "#/definitions/Rome"
-                   }
+                    "type": "array",
+                    "items":{
+                        "$ref": "#/definitions/Rome"
+                    }
                 },
                 "nafs":
                 {
-                   "type": "array",
-                   "items":{
-                       "$ref": "#/definitions/Naf"
-                   }
+                    "type": "array",
+                    "items":{
+                        "$ref": "#/definitions/Naf"
+                    }
                 }
             }
         },
@@ -1365,8 +1365,8 @@
                 {
                     "type": "string",
                     "description": "Des informations complémentaires concernant le contact de référence"
-                }                      
-            }            
+                }
+            }
         },
 
         "Place":
@@ -1442,7 +1442,7 @@
                     "example": "11",
                     "description": "Région administrative"
                 }
-            }      
+            }
         },
 
         "Job":
@@ -1493,14 +1493,14 @@
                     "example": "39H Horaires normaux",
                     "description": "Le volume horaire de l'offre d'emploi"
                 }
-            }      
+            }
         },
 
         "Company":
         {
             "type": "object",
             "description": "Les informations de la société. Selon le contexte il peut s'agir du centre de formation ou de l'entreprise offrant une opportunité d'emploi.",
-            "properties": 
+            "properties":
             {
                 "name":
                 {
@@ -1552,7 +1552,7 @@
                 "mandataire":
                 {
                     "type": "boolean",
-                    "description": "Indique si l'offre est déposée par un CFA mandataire (offres Matcha seulement)"  
+                    "description": "Indique si l'offre est déposée par un CFA mandataire (offres Matcha seulement)"
                 },
                 "headquarter":
                 {
@@ -1587,7 +1587,7 @@
                         {
                             "$ref": "#/definitions/Place"
                         }
-                    }                                        
+                    }
                 }
             }
         },
@@ -1609,7 +1609,7 @@
                     "type": "string",
                     "example": "Installation d'équipements sanitaires et thermiques",
                     "description": "Le libellé correspondant au code ROME"
-                }                      
+                }
             }
         },
 
@@ -1630,18 +1630,18 @@
                     "type": "string",
                     "example": "Production et distribution de vapeur et d'air conditionné",
                     "description": "Le libellé correspondant au code NAF"
-                }                      
+                }
             }
         },
 
-        "Metiers" : 
+        "Metiers" :
         {
             "type": "object",
             "required" : ["labelsAndRomes"],
             "properties":
             {
-                "labelsAndRomes": 
-                { 
+                "labelsAndRomes":
+                {
                     "type": "array",
                     "items":
                     {
@@ -1658,8 +1658,8 @@
             "required" : ["metiers"],
             "properties":
             {
-                "metiers": 
-                { 
+                "metiers":
+                {
                     "type": "array",
                     "items":
                     {
@@ -1713,7 +1713,7 @@
                     },
                     "description": "Optionnel : tableau de couples romes / libellés"
                 }
-            }      
+            }
         },
         "RomeTitle":
         {
@@ -1740,4 +1740,4 @@
     }
 
 }
-  
+

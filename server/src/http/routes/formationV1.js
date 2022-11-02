@@ -1,6 +1,6 @@
 import express from "express";
 import { tryCatch } from "../middlewares/tryCatchMiddleware.js";
-import { getFormationsQuery, getFormationDescriptionQuery } from "../../service/formations.js";
+import { getFormationsQuery, getFormationDescriptionQuery, getFormationQuery } from "../../service/formations.js";
 
 /**
  * API romes
