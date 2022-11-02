@@ -32,6 +32,7 @@
     "clamscan": "2.1.2",
     "commander": "9.2.0",
     "convert-csv-to-json": "0.0.15",
+    "dayjs": "1.11.6",
     "dotenv": "16.0.0",
     "ejs": "3.1.6",
     "env-var": "7.3.0",
