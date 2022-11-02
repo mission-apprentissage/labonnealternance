@@ -6,6 +6,12 @@
   }
 }
 
+.c-navigation .navbar-brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .c-marianne-header {
   margin-right: 0.3rem;
   @include media-breakpoint-up(md) { 

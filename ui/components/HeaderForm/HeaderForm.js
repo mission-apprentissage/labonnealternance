@@ -134,7 +134,7 @@ const HeaderForm = ({ handleSearchSubmit, isHome }) => {
             <div className="c-logobar-formgroup ml-md-1 ml-lg-3 border-0 c-logobar-submit-container">
               <button
                 type="submit"
-                className={`d-block btn btn-lg btn-dark w-100 font-weight-bold c-regular-darkbtn c-logobar-submit is-home-${isHome}`}
+                className={`btn btn-lg btn-dark w-100 font-weight-bold c-regular-darkbtn c-logobar-submit is-home-${isHome}`}
                 disabled={isSubmitting}
                 alt="Lancer la recherche"
               >

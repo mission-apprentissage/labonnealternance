@@ -14,7 +14,7 @@ const Footer = (props) => {
           <Row>
             <Col className="col-12 col-lg-3">
               <img
-                src="/images/marianne.svg#svgView(viewBox(19 0 162 78))"
+                src="/images/marianne.svg#svgView(viewBox(0 0 162 78))"
                 alt=""
                 width="290"
                 height="130"
