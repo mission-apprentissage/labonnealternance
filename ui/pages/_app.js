@@ -36,6 +36,7 @@ class LaBonneAlternance extends App {
     const env = getEnvFromProps(this.props).env;
 
     return (
+      // <ChakraProvider theme={theme}>
       <Providers env={env}>
         <PageTracker>
           <main className="c-app">
@@ -44,6 +45,7 @@ class LaBonneAlternance extends App {
           </main>
         </PageTracker>
       </Providers>
+      // </ChakraProvider>
     );
   }
 }

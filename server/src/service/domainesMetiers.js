@@ -1,6 +1,6 @@
 import { logger } from "../common/logger.js";
 import { getDomainesMetiersES } from "../common/esClient/index.js";
-import _ from "lodash";
+import _ from "lodash-es";
 import config from "../config.js";
 import updateDomainesMetiers from "../jobs/domainesMetiers/updateDomainesMetiers.js";
 import getMissingRNCPsFromDomainesMetiers from "../jobs/domainesMetiers/getMissingRNCPsFromDomainesMetiers.js";

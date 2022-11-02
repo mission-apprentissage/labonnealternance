@@ -1,4 +1,4 @@
-version: "2.4"
+version: '2.4'
 services:
   reverse_proxy:
     image: doctrina_reverse_proxy
@@ -37,10 +37,21 @@ services:
     depends_on:
       - server
 
+  ui_espace_pro:
+    image: doctrina_ui_espace_pro
+    container_name: doctrina_ui_espace_pro
+    build:
+      context: ui_espace_pro
+    mem_limit: 256m
+    networks:
+      - doctrina_network
+    depends_on:
+      - server
+
   server:
     image: doctrina_server
-    volumes:
-      - /opt/labonnealternance/data/server/lbb/assets:/app/src/jobs/lbb/assets
+    #    volumes:
+    #      - /opt/labonnealternance/data/server/lbb/assets:/app/src/jobs/lbb/assets
     container_name: doctrina_server
     build:
       context: server
@@ -78,13 +89,13 @@ services:
 
   clamav:
     image: clamav/clamav:0.105.0
-    container_name: labonnealternance_clamav
+    container_name: doctrina_clamav
     mem_limit: 3g
     restart: unless-stopped
     networks:
       - doctrina_network
     healthcheck:
-      test: [ "CMD", "/usr/local/bin/clamdcheck.sh" ]
+      test: ['CMD', '/usr/local/bin/clamdcheck.sh']
       interval: 60s
       retries: 3
       start_period: 120s

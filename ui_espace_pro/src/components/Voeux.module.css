@@ -1,0 +1,16 @@
+.voeux ul {
+  list-style: none;
+}
+
+.voeux ul li {
+  margin-bottom: 5px;
+}
+
+.voeux ul li::before {
+  content: '\2022';
+  color: #000091;
+  font-weight: bold;
+  display: inline-block;
+  width: 1em;
+  margin-left: -1em;
+}

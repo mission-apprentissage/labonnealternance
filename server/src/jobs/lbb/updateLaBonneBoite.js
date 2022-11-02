@@ -1,7 +1,7 @@
 import path from "path";
 import fs from "fs";
 import { oleoduc, readLineByLine, transformData, writeData } from "oleoduc";
-import _ from "lodash";
+import _ from "lodash-es";
 import geoData from "../../common/utils/geoData.js";
 import { GeoLocation, BonnesBoites, Opco } from "../../common/model/index.js";
 import { rebuildIndex } from "../../common/utils/esUtils.js";

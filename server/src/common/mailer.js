@@ -1,6 +1,5 @@
 import nodemailer from "nodemailer";
 import nodemailerHtmlToText from "nodemailer-html-to-text";
-
 import mjml from "mjml";
 import { promisify } from "util";
 import ejs from "ejs";

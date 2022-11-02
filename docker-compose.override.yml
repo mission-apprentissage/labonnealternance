@@ -17,6 +17,16 @@ services:
     mem_limit: 1g
     stdin_open: true
 
+  ui_espace_pro:
+    build:
+      args:
+        DOCTRINA_ENV: dev
+    volumes:
+      - ./ui_espace_pro:/app:z
+      - /app/node_modules/
+    mem_limit: 1g
+    stdin_open: true
+
   server:
     build:
       args:
@@ -45,6 +55,19 @@ services:
   clamav:
     ports:
       - "127.0.0.1:3310:3310"
+
+  mailhog:
+    image: mailhog/mailhog
+    container_name: doctrina_mailhog
+    ports:
+      - "127.0.0.1:1025:1025"
+    volumes:
+      - ./mailhog-auth.txt:/app/mailhog-auth.txt
+    environment:
+      - MH_UI_WEB_PATH=smtp
+      - MH_AUTH_FILE=/app/mailhog-auth.txt
+    networks:
+      - doctrina_network
 
 volumes:
   doctrina_mongodb_data:

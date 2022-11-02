@@ -1,0 +1,75 @@
+<mjml>
+    <mj-head>
+        <mj-title>Un candidat souhaite être contacté</mj-title>
+        <mj-font name="Work Sans" href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;700&display=swap" />
+        <mj-style inline="inline">
+            .grey {color: #1E1E1E;}
+        </mj-style>
+        <mj-attributes>
+            <mj-text color="#242424" font-family="Work Sans, Arial" font-size="16px" line-height="24px" />
+            <mj-button font-size="16px" line-height="24px" padding="8px 24px" font-family="Work Sans" height="40px" />
+        </mj-attributes>
+    </mj-head>
+    <mj-body background-color="#E5E5E5">
+        <mj-section>
+            <mj-column>
+                <mj-image src="<%= data.images.logoCfa %>" width="150px" alt="Logo" />
+            </mj-column>
+        </mj-section>
+        <mj-section padding-top="0">
+            <mj-column width="600px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 10px">
+                <mj-text>
+                    Bonjour,
+                </mj-text>
+                <mj-text>
+                    Le ou la candidate <b><%= data.user.firstname %> <%= data.user.lastname %></b> souhaite être contacté(e).
+                </mj-text>
+                <mj-button color="#ffffff" background-color="#000091" href="<%= data.appointment.link %>">
+                    Voir les coordonnées du candidat
+                </mj-button>
+                <mj-text>
+                    Il ou elle souhaite aborder avec vous le(s) sujet(s) suivant :<br />
+                    <b>"<%= data.user.motivations %>"</b><br />
+                    à propos de la formation : <b><%= data.formation.intitule %></b><br />
+                    dispensée par : <b><%= data.etablissement.name %>, <%= data.etablissement.address %>, <%= data.etablissement.postalCode %> <%= data.etablissement.ville %></b>
+                </mj-text>
+            </mj-column>
+        </mj-section>
+        <mj-section padding-top="30px">
+            <mj-column width="600px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 10px">
+                <mj-image width="240px" src="<%= data.images.peopleLaptop %>"></mj-image>
+                <mj-text>
+                    <b>Vous souhaitez attirer des candidats vers vos formations</b>
+                </mj-text>
+                <mj-text>
+                    Avec La bonne alternance (ex Matcha), déposez et gérez les offres de vos entreprises partenaires, et attirez de nouveaux candidats vers vos formations. Les informations de vos entreprises partenaires ne sont pas exposées aux candidats. Vous recevez directement les candidatures afin de préserver votre exclusivité.
+                </mj-text>
+                <mj-button color="#000091" background-color="#ffffff" border="1px solid #000091" href="https://matcha.apprentissage.beta.gouv.fr/">
+                    Découvrir le service
+                </mj-button>
+            </mj-column>
+        </mj-section>
+        <mj-section padding-top="30px">
+            <mj-column width="600px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 10px">
+                <mj-text>
+                    Cordialement,<br />
+                    L'équipe La bonne alternance,<br />
+                    <a class="grey" href="https://mission-apprentissage.gitbook.io/general/">Mission interministérielle pour l'apprentissage et les trajectoires professionnelles</a>
+                </mj-text>
+            </mj-column>
+        </mj-section>
+        <mj-section padding-top="5px" text-align="left">
+            <mj-column width="200px">
+                <mj-image padding-left="0" src="<%= data.images.logoFooter %>"></mj-image>
+            </mj-column>
+            <mj-column width="400px" padding-left="30px">
+                <mj-text padding-bottom="15px" padding-right="0" font-size="12px">
+                    Si vous avez des questions ou si vous souhaitez vous désinscrire du service, envoyez un email à <a class="grey" href="mailto:rdv_apprentissage@apprentissage.beta.gouv.fr">rdv_apprentissage@apprentissage.beta.gouv.fr</a>.
+                </mj-text>
+                <mj-text padding-top="15px" padding-right="0" font-size="12px">
+                    Cette demande a été réalisée sur le site <a class="grey" href="<%= data.appointment.referrerLink %>"><%= data.appointment.referrer %></a>.
+                </mj-text>
+            </mj-column>
+        </mj-section>
+    </mj-body>
+</mjml>

@@ -2,6 +2,7 @@
 install: gitconfig
 	yarn --cwd server install --frozen-lockfile
 	yarn --cwd ui install --frozen-lockfile
+	yarn --cwd ui_espace_pro install --frozen-lockfile
 
 start:
 	docker-compose up --build --force-recreate

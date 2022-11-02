@@ -10,7 +10,7 @@ export async function startMongod() {
     },
   });
   let uri = mongodHolder.getUri();
-  let client = await connectToMongodb(uri);
+  let client = await connectToMongo(uri);
   await configureIndexes();
   await configureValidation();
   return client;

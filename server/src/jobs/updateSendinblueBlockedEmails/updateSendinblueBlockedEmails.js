@@ -1,5 +1,5 @@
 import config from "../../config.js";
-import _ from "lodash";
+import _ from "lodash-es";
 import { logMessage } from "../../common/utils/logMessage.js";
 import { notifyToSlack } from "../../common/utils/slackUtils.js";
 import { EmailBlacklist, BonnesBoites } from "../../common/model/index.js";

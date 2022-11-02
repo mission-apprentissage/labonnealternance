@@ -4,7 +4,7 @@ const config = {
   appName: env.get("DOCTRINA_NAME").default("doctrina").asString(),
   env: env.get("DOCTRINA_ENV").default("local").asString(),
   publicUrl: env.get("DOCTRINA_PUBLIC_URL").default("http://localhost:3000").asString(),
-  //outputDir: env.get("LABONNEALTERNANCE_OUTPUT_DIR").default(".local/output").asString(),
+  outputDir: env.get("LABONNEALTERNANCE_OUTPUT_DIR").default(".local/output").asString(),
   formationsEndPoint: "/api/v1/entity/formations",
   maxApplicationPerDay: 100,
   log: {
@@ -69,18 +69,39 @@ const config = {
       score50Level: env.get("LABONNEALTERNANCE_LBB_SCORE_50").default(1).asFloatPositive(), //TODO: rename
     },
     smtp: {
-      host: env.get("LABONNEALTERNANCE_SMTP_HOST").default("localhost").asString(),
-      port: env.get("LABONNEALTERNANCE_SMTP_PORT").default("25").asString(),
-
+      host: env.get("LABONNEALTERNANCE_SMTP_HOST").default("mailhog").asString(),
+      port: env.get("LABONNEALTERNANCE_SMTP_PORT").default("1025").asString(),
       auth: {
         user: env.get("LABONNEALTERNANCE_SMTP_AUTH_USER").default("1234").asString(),
         pass: env.get("LABONNEALTERNANCE_SMTP_AUTH_PASS").default("1234").asString(),
       },
-
       sendinblueToken: env.get("LABONNEALTERNANCE_SMTP_SENDINBLUE_TOKEN").default("1234").asString(),
       sendinblueApiKey: env.get("LABONNEALTERNANCE_SENDINBLUE_API_KEY").default("1234").asString(),
     },
     matchaEmail: "matcha@apprentissage.beta.gouv.fr",
+    rdvEmail: "rdv_apprentissage@apprentissage.beta.gouv.fr",
+  },
+  auth: {
+    passwordHashRounds: env.get("LABONNEALTERNANCE_AUTH_PASSWORD_HASH_ROUNDS").default(1001).asInt(),
+    user: {
+      jwtSecret: env.get("LABONNEALTERNANCE_AUTH_USER_JWT_SECRET").default(1234).asString(),
+      expiresIn: env.get("LABONNEALTERNANCE_AUTH_USER_JWT_SECRET_EXPIRES").default("24h").asString(),
+    },
+    activation: {
+      jwtSecret: env.get("LABONNEALTERNANCE_AUTH_ACTIVATION_JWT_SECRET").default("456").asString(),
+      expiresIn: env.get("LABONNEALTERNANCE_AUTH_ACTIVATION_JWT_SECRET_EXPIRES").default("96h").asString(),
+    },
+    password: {
+      jwtSecret: env.get("LABONNEALTERNANCE_AUTH_PASSWORD_JWT_SECRET").default("789").asString(),
+      expiresIn: env.get("LABONNEALTERNANCE_AUTH_PASSWORD_JWT_SECRET_EXPIRES").default("1h").asString(),
+    },
+  },
+  users: {
+    defaultAdmin: {
+      name: env.get("LABONNEALTERNANCE_USERS_DEFAULT_ADMIN_NAME").default("admin").asString(),
+      password: env.get("LABONNEALTERNANCE_USERS_DEFAULT_ADMIN_PASSWORD").default("password").asString(),
+      role: env.get("LABONNEALTERNANCE_USERS_DEFAULT_ADMIN_ROLE").default("administrator").asString(),
+    },
   },
 };
 
