@@ -118,7 +118,7 @@ const HeaderForm = ({ handleSearchSubmit, isHome }) => {
             </div>
             <div className="c-logobar-formgroup c-logobar-formgroup--diploma ml-3">
               <label htmlFor="jobField" className="c-logobar-label c-logobar-label--diploma">
-                Niveau d'études visé
+                Niveau d&apos;études visé
               </label>
               <div className="c-logobar-field">
                 <Input
@@ -138,8 +138,8 @@ const HeaderForm = ({ handleSearchSubmit, isHome }) => {
                 disabled={isSubmitting}
                 alt="Lancer la recherche"
               >
-                <img alt="" src={glassImage} />
-                {isHome ? <div className="c-logobar-letstart">C'est parti</div> : ""}
+                <img alt="Lancer la recherche" src={glassImage} />
+                {isHome ? <div className="c-logobar-letstart">C&apos;est parti</div> : ""}
               </button>
             </div>
           </Form>

@@ -28,7 +28,9 @@ services:
     stdin_open: true
 
   server:
-    command: ["yarn", "debug"]
+    build:
+      args:
+        DOCTRINA_ENV: dev
     ports:
       - "127.0.0.1:9229:9229" # Allows remote debugging
     volumes:
@@ -49,6 +51,23 @@ services:
       - "127.0.0.1:9200:9200"
     volumes:
       - doctrina_elasticsearch_data:/usr/share/elasticsearch/data
+
+  clamav:
+    ports:
+      - "127.0.0.1:3310:3310"
+
+  mailhog:
+    image: mailhog/mailhog
+    container_name: doctrina_mailhog
+    ports:
+      - "127.0.0.1:1025:1025"
+    volumes:
+      - ./mailhog-auth.txt:/app/mailhog-auth.txt
+    environment:
+      - MH_UI_WEB_PATH=smtp
+      - MH_AUTH_FILE=/app/mailhog-auth.txt
+    networks:
+      - doctrina_network
 
 volumes:
   doctrina_mongodb_data:

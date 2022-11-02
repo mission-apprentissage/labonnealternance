@@ -145,7 +145,7 @@ const SearchForm = (props) => {
                 <div className="formGroup c-logobar-formgroup mt-3 d-none d-md-block">
                   <div className="">
                     <label htmlFor="jobField" className="c-logobar-label">
-                      Niveau d'études visé
+                      Niveau d&apos;études visé
                     </label>
                     <div className="c-logobar-field">
                       <Input
@@ -161,7 +161,7 @@ const SearchForm = (props) => {
                 </div>
                 <div className="mt-3 d-block d-md-none formGroup">
                   <h3 className="h6 font-weight-bold">
-                    Niveau d'études visé
+                    Niveau d&apos;études visé
                   </h3>
                   <div className="c-diplomas-buttons">
                     {buildAvailableDiplomasButtons(diploma, diplomas, (evt) => handleSelectChange(evt, setFieldValue, setDiploma, "diploma"))}
@@ -174,8 +174,9 @@ const SearchForm = (props) => {
                 type="submit"
                 className="d-block btn btn-lg btn-dark w-100 font-weight-bold c-regular-darkbtn mt-5"
                 disabled={isSubmitting}
+                alt="Lancer la recherche"
               >
-                C'est parti
+                C&apos;est parti
               </button>
             </div>
           </Form>

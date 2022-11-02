@@ -1,4 +1,4 @@
-version: "2.4"
+version: '2.4'
 services:
   reverse_proxy:
     image: doctrina_reverse_proxy
@@ -24,7 +24,7 @@ services:
       - ERRORLOG=/data/error.log
       - LOGLEVEL=warn
       - NGINX_ALWAYS_TLS_REDIRECT=false
-      - ALLOWED_METHODS=GET HEAD POST OPTIONS PUT
+      - ALLOWED_METHODS=GET HEAD POST OPTIONS PUT DELETE
 
   ui:
     image: doctrina_ui
@@ -50,6 +50,8 @@ services:
 
   server:
     image: doctrina_server
+    #    volumes:
+    #      - /opt/labonnealternance/data/server/lbb/assets:/app/src/jobs/lbb/assets
     container_name: doctrina_server
     build:
       context: server
@@ -61,6 +63,7 @@ services:
       - mongodb
     environment:
       - DOCTRINA_MONGODB_URI=mongodb://mongodb:27017/doctrina?retryWrites=true&w=majority
+      - LABONNEALTERNANCE_MONGODB_URI=mongodb://mongodb:27017/labonnealternance?retryWrites=true&w=majority
       - DOCTRINA_LOG_DESTINATIONS=stdout,mongodb
 
   mongodb:
@@ -72,16 +75,30 @@ services:
       - doctrina_network
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.4.3
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.6
     container_name: doctrina_elasticsearch
     environment:
       - ES_JAVA_OPTS=-Xmx512m -Xms512m
       - discovery.type=single-node
       - cluster.name=docker-cluster
       - network.host=0.0.0.0
+      - discovery.zen.minimum_master_nodes=1
     mem_limit: 3g
     networks:
       - doctrina_network
+
+  clamav:
+    image: clamav/clamav:0.105.0
+    container_name: doctrina_clamav
+    mem_limit: 3g
+    restart: unless-stopped
+    networks:
+      - doctrina_network
+    healthcheck:
+      test: ['CMD', '/usr/local/bin/clamdcheck.sh']
+      interval: 60s
+      retries: 3
+      start_period: 120s
 
 networks:
   doctrina_network:

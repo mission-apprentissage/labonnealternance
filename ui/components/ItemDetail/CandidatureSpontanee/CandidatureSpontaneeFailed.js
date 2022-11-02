@@ -36,7 +36,7 @@ const CandidatureSpontaneeFailed = ({ sendingState }) => {
           <div className="c-candidature-worked-text mt-3 mb-5">
             Les adresses emails temporaires ne sont pas acceptées pour envoyer des candidatures via La bonne alternance.
             <br />
-            Merci d'utiliser une adresse email permanente
+            Merci d&apos;utiliser une adresse email permanente
           </div>
         </>
       );
@@ -73,7 +73,7 @@ const CandidatureSpontaneeFailed = ({ sendingState }) => {
             </div>
             <div className="ml-3 pl-3">
               <h2 className="c-candidature-worked-title" data-testid="CandidatureSpontaneeFailedTempEmailTitle">
-                Vous avez atteint le nombre maximum de candidature pour aujourd'hui
+                Vous avez atteint le nombre maximum de candidature pour aujourd&apos;hui
               </h2>
             </div>
           </div>

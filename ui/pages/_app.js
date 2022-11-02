@@ -21,23 +21,17 @@ class LaBonneAlternance extends App {
     // récupération du hostname pour initialiser les fonts en preload
     const { req } = context.ctx;
     let host = "";
-    let shouldLoadAnalytics = true;
 
     if (req?.headers?.host) {
       host = req.headers.host;
       host = `${host.startsWith("localhost") ? "http" : "https"}://${host}`;
     }
 
-    // identification des exceptions au chargement d'analytics
-    if (/caller=TSA/g.test(req?.url)) {
-      shouldLoadAnalytics = false;
-    }
-
-    return { host, shouldLoadAnalytics };
+    return { host };
   }
 
   render() {
-    const { Component, pageProps, host, shouldLoadAnalytics } = this.props;
+    const { Component, pageProps, host } = this.props;
 
     const env = getEnvFromProps(this.props).env;
 
@@ -46,10 +40,7 @@ class LaBonneAlternance extends App {
       <Providers env={env}>
         <PageTracker>
           <main className="c-app">
-            <HeadLaBonneAlternance
-              shouldLoadAnalytics={shouldLoadAnalytics}
-              publicUrl={host && process.env.publicUrl ? host : ""}
-            />
+            <HeadLaBonneAlternance publicUrl={host && process.env.publicUrl ? host : ""} />
             <Component {...pageProps} />
           </main>
         </PageTracker>

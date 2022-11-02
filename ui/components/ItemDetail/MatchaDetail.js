@@ -33,7 +33,7 @@ const MatchaDetail = ({ job, seeInfo, setSeeInfo }) => {
   return (
     <>
       <div className="c-detail-body mt-4">
-        <h2 className="c-locationdetail-title mt-2">Description de l'offre</h2>
+        <h2 className="c-locationdetail-title mt-2">Description de l&apos;offre</h2>
         <div className="c-matcha-detail-container">
           <div>
             <strong>Début du contrat le : </strong> {jobStartDate}
@@ -42,7 +42,7 @@ const MatchaDetail = ({ job, seeInfo, setSeeInfo }) => {
             <strong>Nature du contrat : </strong> {getContractTypes(job?.job?.contractType)}
           </div>
           <div>
-            <strong>Niveau visé en fin d'études :</strong>{" "}
+            <strong>Niveau visé en fin d&apos;études :</strong>{" "}
             {job?.diplomaLevel ? (
               <>
                 <div className="c-required-levels">
@@ -63,7 +63,7 @@ const MatchaDetail = ({ job, seeInfo, setSeeInfo }) => {
           {job?.job?.elligibleHandicap ? 
             <div className="c-eligible mt-3">
               <div>
-                <img className="" src="/images/info.svg" alt="info" />
+                <img className="" src="/images/info.svg" alt="A noter" />
               </div>
               <div className="ml-2">
                 À compétences égales, une attention particulière sera apportée aux personnes en situation de handicap.
@@ -84,10 +84,10 @@ const MatchaDetail = ({ job, seeInfo, setSeeInfo }) => {
           <>
             <p>
               <span className="c-detail-bolded">{job.company.name}</span> recrute dans le domaine suivant{" "}
-              <span className="c-detail-bolded">{job.title}</span>. Cela signifie que l'établissement est activement à
-              la recherche d'un.e candidat.e.
+              <span className="c-detail-bolded">{job.title}</span>. Cela signifie que l&apos;établissement est activement à
+              la recherche d&apos;un.e candidat.e.
             </p>
-            <p>Vous avez donc tout intérêt à le contacter rapidement, avant que l'offre ne soit pourvue !</p>
+            <p>Vous avez donc tout intérêt à le contacter rapidement, avant que l&apos;offre ne soit pourvue !</p>
             <p className="mb-0">Trouver et convaincre une entreprise de vous embaucher ?</p>
             <p>
               <span className="c-detail-traininglink">
@@ -95,7 +95,7 @@ const MatchaDetail = ({ job, seeInfo, setSeeInfo }) => {
                   className="gtmDidask1"
                   url="https://dinum-beta.didask.com/courses/demonstration/60d21bf5be76560000ae916e"
                   title="On vous donne des conseils ici pour vous aider !"
-                  withPic={<img src="../../images/icons/goto.svg" alt="Lien" />}
+                  withPic={<img src="../../images/icons/goto.svg" alt="Ouverture dans un nouvel onglet" />}
                 />
               </span>
             </p>

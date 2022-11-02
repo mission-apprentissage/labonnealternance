@@ -29,7 +29,7 @@ const CandidatureSpontaneeSubmit = (props) => {
       </span>
     );
   } else if (sendingState === "not_sent_because_of_errors") {
-    res = <span className="c-candidature-submit-error">Erreur lors de l'envoi, veuillez réessayer plus tard</span>;
+    res = <span className="c-candidature-submit-error">Erreur lors de l&apos;envoi, veuillez réessayer plus tard</span>;
   }
   return res;
 };

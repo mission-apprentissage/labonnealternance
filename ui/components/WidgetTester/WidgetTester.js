@@ -315,7 +315,7 @@ const WidgetTester = () => {
               <Col xs="12">
                 <div className="formGroup">
                   <label>
-                    Filtrage des opportunités d'emploi pour un OPCO. Optionnel (<strong>opco</strong>)
+                    Filtrage des opportunités d&apos;emploi pour un OPCO. Optionnel (<strong>opco</strong>)
                   </label>
                   <Field type="text" className="widgetTestPage--textInput" name="opco" />
                 </div>
@@ -336,7 +336,7 @@ const WidgetTester = () => {
                     </Container>
                   </div>
                   <div className="widgetTestPage--notice">
-                    L'utilisateur ne pourra pas faire une recherche sur d'autres métiers (romes) que ceux que vous avez
+                    L&apos;utilisateur ne pourra pas faire une recherche sur d&apos;autres métiers (romes) que ceux que vous avez
                     spécifiés.
                   </div>
                 </div>
@@ -349,8 +349,8 @@ const WidgetTester = () => {
                   </label>
                   <Field type="text" className="widgetTestPage--textInput" name="jobName" />
                   <div className="widgetTestPage--notice">
-                    La phrase suivante apparaîtra sur le formulaire: "Vous souhaitez travailler dans le domaine de
-                    [votre saisie]".
+                    La phrase suivante apparaîtra sur le formulaire: &quot;Vous souhaitez travailler dans le domaine de
+                    [votre saisie]&quot;.
                   </div>
                 </div>
               </Col>
@@ -381,7 +381,7 @@ const WidgetTester = () => {
           </Col>
 
           <Col xs="12">
-            URL associée à l'attribut <strong>src</strong> de l'iframe : {getIdeaUrlWithParams()}
+            URL associée à l&apos;attribut <strong>src</strong> de l&apos;iframe : {getIdeaUrlWithParams()}
           </Col>
         </Row>
         <Row className="widgetList">

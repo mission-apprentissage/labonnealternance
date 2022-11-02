@@ -10,7 +10,7 @@ const CandidatureSpontaneeWorked = ({ email, company, kind }) => {
         <h1 className="c-candidature-title" data-testid="CandidatureSpontaneeWorkedTitle">
           {
             kind === 'matcha' ?
-              <>Postuler à l'offre de {company}</>
+              <>Postuler à l&apos;offre de {company}</>
               :
               <>Candidature spontanée</>
           }
@@ -18,7 +18,7 @@ const CandidatureSpontaneeWorked = ({ email, company, kind }) => {
 
         <div className="c-candidature-worked-header d-flex my-5">
           <div>
-            <img src={paperplaneIcon} alt="avion en papier" />
+            <img src={paperplaneIcon} alt="" />
           </div>
           <div className="ml-3 pl-3">
             <h2 className="c-candidature-worked-title">
@@ -37,7 +37,7 @@ const CandidatureSpontaneeWorked = ({ email, company, kind }) => {
           <span className="c-candidature-worked-email">{email}</span>
         </div>
         <div className="c-candidature-worked-text mt-3 mb-5">
-          Si vous n'avez pas reçu d'email de confirmation d'ici 24 heures, soumettez à nouveau votre candidature
+          Si vous n&apos;avez pas reçu d&apos;email de confirmation d&apos;ici 24 heures, soumettez à nouveau votre candidature
         </div>
       </ModalBody>
       <ModalFooter className="pb-5"></ModalFooter>

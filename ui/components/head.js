@@ -15,7 +15,7 @@ const HeadLaBonneAlternance = (props) => {
       envrnt = "local";
     }
 
-    return { env: envrnt, shoudLoadAnalytics: props.shouldLoadAnalytics };
+    return { env: envrnt };
   };
 
   return (
@@ -48,15 +48,6 @@ const HeadLaBonneAlternance = (props) => {
         property="og:description"
         content="Vous ne trouvez pas de contrat ou d'offres d'alternance ? Essayez La bonne alternance ! Trouvez ici les formations en alternance et les entreprises qui recrutent régulièrement en alternance"
       />
-
-      {getEnvFromProps().env !== "local" && getEnvFromProps().shoudLoadAnalytics ? (
-        <script
-          async
-          src={`https://cdn.tagcommander.com/5234/${getEnvFromProps().env !== "production" ? "uat/" : ""}tc_lba_31.js`}
-        ></script>
-      ) : (
-        ""
-      )}
     </Head>
   );
 };

@@ -12,8 +12,8 @@ const config = {
 
   prod: {
     env: "production",
-    urls: [/^labonnealternance.apprentissage.beta.gouv.fr$/g, /^labonnealternance.pole-emploi.fr$/g],
-    baseUrl: "https://labonnealternance.apprentissage.beta.gouv.fr",
+    urls: [/^doctrina.apprentissage.beta.gouv.fr$/g, /^labonnealternance.apprentissage.beta.gouv.fr$/g, /^labonnealternance.pole-emploi.fr$/g],
+    baseUrl: "https://doctrina.apprentissage.beta.gouv.fr",
   },
 };
 

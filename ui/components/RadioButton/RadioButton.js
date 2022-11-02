@@ -23,4 +23,6 @@ const RadioButton = React.memo(({ inputName, handleChange, value, label, selecte
   );
 });
 
+RadioButton.displayName = "RadioButton";
+
 export default RadioButton;

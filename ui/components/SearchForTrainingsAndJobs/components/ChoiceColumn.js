@@ -203,7 +203,7 @@ const ChoiceColumn = ({
   const getInitialDesktopText = () => {
     return (
       <div className={`w-75 m-auto d-none pt-5 ${shouldShowWelcomeMessage ? "d-md-block" : ""}`}>
-        <img className="w-75" src={dosearchImage} alt="Faites une recherche" />
+        <img className="w-75" src={dosearchImage} alt="" />
         <div className="c-staticmapframe__message pr-5 py-3">
           <table>
             <tbody>
@@ -212,8 +212,8 @@ const ChoiceColumn = ({
                 <td>
                   <span className="c-staticmapframe__title">Faites une recherche</span>
                   <br />
-                  Renseignez les champs de recherche ci-dessus pour trouver la formation et l'entreprise pour réaliser
-                  votre projet d'alternance
+                  Renseignez les champs de recherche ci-dessus pour trouver la formation et l&apos;entreprise pour réaliser
+                  votre projet d&apos;alternance
                 </td>
               </tr>
             </tbody>

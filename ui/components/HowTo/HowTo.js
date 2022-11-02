@@ -13,11 +13,11 @@ const HowTo = () => {
       <section className="c-howto container">
         <div className="c-howto-cards card-deck">
           <div className="card border-0 position-relative">
-            <img src={howto1} className="card-img-top" alt="Première étape" />
+            <img src={howto1} className="card-img-top" alt="" />
             <img
               src={howtoline1}
               className="position-absolute c-homebg-img c-homebg-img--line c-homebg-img--line1"
-              alt="Ligne"
+              alt=""
             />
             <div className="card-body">
               <h5 className="card-title">Le job de vos rêves</h5>
@@ -27,11 +27,11 @@ const HowTo = () => {
             </div>
           </div>
           <div className="card border-0  position-relative">
-            <img src={howto2} className="card-img-top" alt="Deuxième étape" />
+            <img src={howto2} className="card-img-top" alt="" />
             <img
               src={howtoline2a}
               className="position-absolute c-homebg-img c-homebg-img--line c-homebg-img--line2a"
-              alt="Ligne"
+              alt=""
             />
             <div className="card-body">
               <h5 className="card-title">En un clin d’&oelig;il</h5>
@@ -41,16 +41,16 @@ const HowTo = () => {
             </div>
           </div>
           <div className="card border-0  position-relative">
-            <img src={howto3} className="card-img-top" alt="Troisième étape" />
+            <img src={howto3} className="card-img-top" alt="" />
             <img
               src={howtoline3a}
               className="position-absolute c-homebg-img c-homebg-img--line c-homebg-img--line3a"
-              alt="Ligne"
+              alt=""
             />
             <img
               src={howtoline3b}
               className="position-absolute c-homebg-img c-homebg-img--line c-homebg-img--line3b"
-              alt="Ligne"
+              alt=""
             />
             <div className="card-body">
               <h5 className="card-title">Un contact facile</h5>

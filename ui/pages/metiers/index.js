@@ -29,7 +29,7 @@ export default function Catalog(props) {
         <p>
           Vous voulez travailler en alternance ? Vous voulez obtenir un diplôme en alternance ? Toutes les informations pour trouver une alternance rapidement sont sur La bonne alternance :
           <ul className="mt-2">
-            <li>Offres d'emploi en contrat d'apprentissage ou en contrat de professionnalisation</li>
+            <li>Offres d&apos;emploi en contrat d&apos;apprentissage ou en contrat de professionnalisation</li>
             <li>Liste d’entreprises qui recrutent en alternance</li>
             <li>Formations en apprentissage en CAP, Bac pro, Mention complémentaire, BTS, BUT, DEUST, Licence, Master</li>
           </ul>

@@ -124,25 +124,8 @@ const Training = ({ training, handleSelectItem, showTextOnly, searchForJobsOnNew
             </div>
             <div className="col-12 col-lg-6  d-lg-flex flex-column text-left text-lg-right my-1 my-lg-0">
               {
-                isCfa ? 
-                  <>
-                    <TagCfaDEntreprise />
-                    <span>
-                      <TagOffreAssociee />
-                    </span>
-                  </> 
-                  :
-                  <>
-                    {hasAlsoJob ?
-                      <>
-                        <TagOffreAssociee />
-                      </>
-                      :
-                      <></>
-                    }
-                  </> 
+                isCfa ? <TagCfaDEntreprise /> : ""
               }
-
             </div>
           </div>
 
