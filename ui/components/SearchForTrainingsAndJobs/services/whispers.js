@@ -91,7 +91,7 @@ function getHTML(text, link) {
 
 function getHTMLLink(link) {
   return `<a href="${link}" target="_blank" class="gtmWhisperLink" rel="noopener noreferrer">
-                  <img className="mt-n1" src="/images/square_link.svg" alt="Ouverture dans un nouvel onglet" />
+                  <img className="mt-n1 ml-1" src="/images/square_link.svg" alt="Ouverture dans un nouvel onglet" />
                   <span className="ml-1">En savoir plus</span>
                 </a>`;
 }

@@ -16,18 +16,17 @@
 }
 
 .c-media-tag {
-  align-self: flex-end;
   font-size: 12px;
   font-weight: 700;
   line-height: 15px;
   letter-spacing: 0px;
-  text-align: left;
   width: fit-content;
   border-radius: 6px;
   padding: 0.5rem;
   padding-top: 0.25rem;
   font-size: 12px;
-  display: inline-block;
+  display: flex;
+  align-items: center;
   @include media-breakpoint-up(lg) {
     font-size: 8px;
   }
