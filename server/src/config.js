@@ -3,7 +3,7 @@ import env from "env-var";
 const config = {
   appName: env.get("DOCTRINA_NAME").default("doctrina").asString(),
   env: env.get("DOCTRINA_ENV").default("local").asString(),
-  publicUrl: env.get("DOCTRINA_PUBLIC_URL").default("http://localhost:3000").asString(),
+  publicUrl: env.get("DOCTRINA_PUBLIC_URL").default("http://localhost").asString(),
   outputDir: env.get("LABONNEALTERNANCE_OUTPUT_DIR").default(".local/output").asString(),
   formationsEndPoint: "/api/v1/entity/formations",
   maxApplicationPerDay: 100,
