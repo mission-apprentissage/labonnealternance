@@ -1,6 +1,2 @@
-<<<<<<< HEAD
-lba-admin:$2a$12$3IPEdUvdR7JH4SH3.gkwJOOS90O6xwiuqsCnUBV33GLA/B0/8vl76
-=======
 lba-admin:$2a$12$Lek9yUzWcy/TdlQapvFWtew7esxmtuwEgxadxk6pVorLvHDPOf.k.
 octo:$2a$12$Y8eq2145GL26pIqbv8T5Lei0wJ1DSG4dNyjeMh8z5I3zvwieDeP6S
->>>>>>> 56b96ff (fix(core): mailhog)
