@@ -434,11 +434,11 @@ export default ({ users, appointments, mailer, widgetParameters, etablissements 
       if (action === candidatFollowUpType.RESEND) {
         const referrerObj = getReferrerById(appointment.referrer);
 
-        const { messageId } = await mailer.sendEmail(
-          widgetParameter.email_rdv,
-          `[RDV via ${referrerObj.full_name}] Relance - Un candidat souhaite être contacté`,
-          path.join(__dirname, `../../../assets/templates/mail-cfa-demande-de-contact.mjml.ejs`),
-          {
+        const { messageId } = await mailer.sendEmail({
+          to: widgetParameter.email_rdv,
+          subject: `[RDV via ${referrerObj.full_name}] Relance - Un candidat souhaite être contacté`,
+          template: path.join(__dirname, `../../../assets/templates/mail-cfa-demande-de-contact.mjml.ejs`),
+          data: {
             user: {
               firstname: user.firstname,
               lastname: user.lastname,
@@ -462,8 +462,8 @@ export default ({ users, appointments, mailer, widgetParameters, etablissements 
             images: {
               peopleLaptop: `${config.publicUrl}/assets/girl_laptop.png?raw=true`,
             },
-          }
-        );
+          },
+        });
 
         await appointments.findOneAndUpdate(
           { _id: appointment._id },
