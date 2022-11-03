@@ -7,6 +7,8 @@ import { dayjs } from "../../common/utils/dayjs.js";
 import { referrers } from "../../common/model/constants/referrers.js";
 import { mailType } from "../../common/model/constants/etablissement.js";
 import config from "../../config.js";
+import * as url from "url";
+const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
 
 const optOutUnsubscribeSchema = Joi.object({
   opt_out_question: Joi.string().optional(),

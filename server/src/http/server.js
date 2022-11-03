@@ -180,6 +180,8 @@ export default async (components) => {
   // Everyday at 14:00: Opt-out invite
   cron.schedule("0 14 * * *", () => inviteEtablissementToOptOut(components));
 
+  // inviteEtablissementToOptOut(components)
+
   // Everyday at 04:00 AM: Copy catalogue formations
   cron.schedule("0 4 * * *", () => syncEtablissementsAndFormations(components));
 
@@ -191,6 +193,8 @@ export default async (components) => {
 
   // Every hours: Invite to Premium mode
   cron.schedule("0 * * * *", () => inviteEtablissementToPremium(components));
+
+  inviteEtablissementToPremium(components)
 
   // Every hours: Invite to Premium mode (follow up)
   cron.schedule("0 * * * *", () => inviteEtablissementToPremiumFollowUp(components));

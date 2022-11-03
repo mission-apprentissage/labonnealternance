@@ -7,6 +7,8 @@ import { enableAllEtablissementFormations } from "../../../common/utils/optIn.js
 import { optMode, mailType } from "../../../common/model/constants/etablissement.js";
 import { referrers } from "../../../common/model/constants/referrers.js";
 import { dayjs } from "../../../common/utils/dayjs.js";
+import * as url from "url";
+const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
 
 /**
  * @description Etablissement Router.

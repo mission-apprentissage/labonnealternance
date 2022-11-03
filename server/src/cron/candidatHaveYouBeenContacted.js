@@ -4,6 +4,8 @@ import config from "../config.js";
 import { dayjs } from "../common/utils/dayjs.js";
 import { getReferrerById } from "../common/model/constants/referrers.js";
 import { mailType } from "../common/model/constants/appointments.js";
+import * as url from "url";
+const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
 
 /**
  * @description Sends a mail to the candidat in order to know if he has been contacter or not.

@@ -3,6 +3,8 @@ import { logger } from "../common/logger.js";
 import config from "../config.js";
 import { dayjs } from "../common/utils/dayjs.js";
 import { mailType } from "../common/model/constants/etablissement.js";
+import * as url from "url";
+const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
 
 /**
  * @description Invite all "etablissements" to Premium.
@@ -15,11 +17,11 @@ export const inviteEtablissementToPremium = async ({ etablissements, mailer }) =
     email_decisionnaire: {
       $ne: null,
     },
-    opt_out_will_be_activated_at: {
-      $ne: null,
-      $lte: dayjs().subtract(1, "day").toDate(),
-    },
-    "mailing.campaign": { $ne: mailType.PREMIUM_INVITE },
+    // opt_out_will_be_activated_at: {
+    //   $ne: null,
+    //   $lte: dayjs().subtract(1, "day").toDate(),
+    // },
+    // "mailing.campaign": { $ne: mailType.PREMIUM_INVITE },
   });
 
   for (const etablissement of etablissementsActivated) {
