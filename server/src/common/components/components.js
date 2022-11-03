@@ -4,7 +4,7 @@ import { connectToMongo } from "../mongodb.js";
 import createAppointements from "./appointments.js";
 import scan from "./clamav.js";
 import createEtablissements from "./etablissement.js";
-import createEtablissementRecruteur from "./etablissementRecruteur";
+import createEtablissementRecruteur from "./etablissementRecruteur.js";
 import createFormulaire from "./formulaire.js";
 import createParcoursupEtablissementStats from "./parcoursupEtablissementStat.js";
 import createUsers from "./users.js";
@@ -17,7 +17,7 @@ export default async function (options = {}) {
   const widgetParameters = await createWidgetParameters();
   const etablissements = await createEtablissements();
   const parcoursupEtablissementStats = await createParcoursupEtablissementStats();
-  const userRecuteur = await createUserRecruteur();
+  const usersRecuteur = await createUserRecruteur();
   const formulaire = await createFormulaire();
   const etablissmentsRecruteur = await createEtablissementRecruteur();
 
@@ -28,7 +28,7 @@ export default async function (options = {}) {
     users,
     formulaire,
     appointments,
-    userRecuteur,
+    usersRecuteur,
     etablissements,
     widgetParameters,
     etablissmentsRecruteur,

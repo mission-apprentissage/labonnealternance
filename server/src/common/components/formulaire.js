@@ -1,6 +1,6 @@
 import moment from "moment";
 import { ANNULEE, POURVUE } from "../constants.js";
-import { Formulaire } from "../model";
+import { Formulaire } from "../model/index.js";
 
 export default () => ({
   getFormulaires: async (query, options, { page, limit }) => {

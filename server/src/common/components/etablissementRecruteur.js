@@ -2,7 +2,7 @@ import Sentry from "@sentry/node";
 import axios from "axios";
 import config from "config";
 import { etat_etablissements } from "../constants.js";
-import { ReferentielOpco, UserRecruteur } from "../model";
+import { ReferentielOpco, UserRecruteur } from "../model/index.js";
 
 const apiParams = {
   token: config.apiEntreprise,

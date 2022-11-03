@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
-import { UserRecruteur } from "../model";
+import { UserRecruteur } from "../model/index.js";
 
 export default () => ({
   createApiKey: () => `mna-${uuidv4()}`,
