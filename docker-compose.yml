@@ -87,6 +87,21 @@ services:
     networks:
       - doctrina_network
 
+  metabase:
+    image: metabase/metabase:v0.41.4
+    volumes:
+      - /opt/labonnealternance/data/metabase:/metabase-data
+    depends_on:
+      - mongodb
+    environment:
+      JAVA_TIMEZONE: Europe/Paris
+      MB_DB_FILE: /metabase-data/metabase.db
+      MB_SITE_LOCALE: fr
+      MB_SITE_URL: http://0.0.0.0/metabase
+    restart: always
+    networks:
+      - doctrina_network
+
   clamav:
     image: clamav/clamav:0.105.0
     container_name: doctrina_clamav
