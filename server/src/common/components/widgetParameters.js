@@ -1,6 +1,6 @@
 import { WidgetParameter } from "../model/index.js";
 
-export default async () => ({
+export default () => ({
   /**
    * @description Creates new item.
    * @param {String} etablissement_siret
@@ -45,6 +45,7 @@ export default async () => ({
       id_parcoursup,
       cle_ministere_educatif,
     });
+
     await widgetParameter.save();
 
     return widgetParameter.toObject();

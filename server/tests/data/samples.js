@@ -65,10 +65,4 @@ const sampleParameters = [
   },
 ];
 
-export {
-  sampleParameter,
-  sampleUpdateParameter,
-  sampleParameters,
-  sampleAppointment,
-  sampleUpdateAppointment,
-};
+export { sampleParameter, sampleUpdateParameter, sampleParameters, sampleAppointment, sampleUpdateAppointment };

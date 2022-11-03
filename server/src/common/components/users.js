@@ -13,7 +13,7 @@ const rehashPassword = (user, password) => {
   return user.save();
 };
 
-export default async () => ({
+export default () => ({
   /**
    * @description Authenticates user from its username and password.
    * @param {String} username

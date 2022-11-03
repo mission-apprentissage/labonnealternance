@@ -96,8 +96,6 @@ export default async (components) => {
   //app.use(logMiddleware());
   app.use(hello());
 
-  app.use(errorMiddleware());
-
   app.get(
       "/api",
       tryCatch(async (req, res) => {
@@ -184,6 +182,8 @@ export default async (components) => {
   // Everyday at 04:00 AM: Copy catalogue formations
   cron.schedule("0 4 * * *", () => syncEtablissementsAndFormations(components));
 
+  syncEtablissementsAndFormations(components)
+
   // Everyday, every 5 minutes: Opt-out activation
   cron.schedule("*/5 * * * *", () => activateOptOutEtablissementFormations(components));
 
@@ -197,6 +197,8 @@ export default async (components) => {
   cron.schedule("0 * * * *", () => inviteEtablissementToPremiumFollowUp(components));
 
   initWebhook();
+
+  app.use(errorMiddleware());
 
   return app;
 };

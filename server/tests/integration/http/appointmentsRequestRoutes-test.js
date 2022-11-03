@@ -7,9 +7,10 @@ const __filename = fileURLToPath(import.meta.url);
 
 httpTests(__filename, ({ startServer }) => {
   it("Vérifie qu'on peut récupérer les infos de context via idRcoFormation and cleMinistereEducatif", async () => {
-    const { createParameter } = await widgetParameters();
+    const { createParameter } = widgetParameters();
 
     await createParameter(sampleParameter);
+
     const { httpClient } = await startServer();
 
     const { status, data } = await httpClient.post(`/api/appointment-request/context/create`, {
@@ -35,7 +36,7 @@ httpTests(__filename, ({ startServer }) => {
   });
 
   it("Vérifie qu'on peut récupérer les infos de context via idRcoFormation", async () => {
-    const { createParameter } = await widgetParameters();
+    const { createParameter } = widgetParameters();
 
     await createParameter(sampleParameter);
     const { httpClient } = await startServer();
@@ -62,7 +63,7 @@ httpTests(__filename, ({ startServer }) => {
   });
 
   it("Vérifie qu'on peut récupérer les infos de context via idCleMinistereEducatif", async () => {
-    const { createParameter } = await widgetParameters();
+    const { createParameter } = widgetParameters();
 
     await createParameter(sampleParameter);
     const { httpClient } = await startServer();
@@ -89,7 +90,7 @@ httpTests(__filename, ({ startServer }) => {
   });
 
   it("Vérifie qu'on peut récupérer les infos de context via idParcoursup", async () => {
-    const { createParameter } = await widgetParameters();
+    const { createParameter } = widgetParameters();
 
     await createParameter(sampleParameter);
     const { httpClient } = await startServer();

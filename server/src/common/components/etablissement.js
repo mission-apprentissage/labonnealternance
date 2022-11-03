@@ -1,6 +1,6 @@
 import { Etablissement } from "../model/index.js";
 
-export default async () => ({
+export default () => ({
   /**
    * @description Creates an etablissement.
    * @param {Object} options
