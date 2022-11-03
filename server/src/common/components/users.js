@@ -1,5 +1,9 @@
-import { User } from "../model/index.js";
 import * as sha512Utils from "../../common/utils/sha512Utils.js";
+import { User } from "../model/index.js";
+
+/**
+ * KBA 3/11 : To be refactored and merged with userRecuteur.js
+ */
 
 /**
  * @description Hash password
