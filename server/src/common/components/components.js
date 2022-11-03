@@ -1,6 +1,7 @@
 import config from "../../config.js";
 import createMailer from "../mailer.js";
 import { connectToMongo } from "../mongodb.js";
+import createApplication from "./application.js";
 import createAppointements from "./appointments.js";
 import scan from "./clamav.js";
 import createEtablissements from "./etablissement.js";
@@ -20,6 +21,7 @@ export default async function (options = {}) {
   const usersRecuteur = await createUserRecruteur();
   const formulaire = await createFormulaire();
   const etablissmentsRecruteur = await createEtablissementRecruteur();
+  const application = await createApplication();
 
   return {
     db: options.db || (await connectToMongo()).db,
@@ -27,6 +29,7 @@ export default async function (options = {}) {
     scan,
     users,
     formulaire,
+    application,
     appointments,
     usersRecuteur,
     etablissements,

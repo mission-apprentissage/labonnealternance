@@ -107,6 +107,10 @@ const config = {
     clientId: env.get("LBA_POLE_EMPLOI_CLIENT_ID").default("").asString(),
     clientSecret: env.get("LBA_POLE_EMPOI_CLIENT_SECRET").default("").asString(),
   },
+  lba: {
+    application: env.get("LBA_APPLICATION_NAME").default("").asString(),
+    apiKey: env.get("LBA_APPLICATION_API_KEY").default("").asString(),
+  },
   users: {
     defaultAdmin: {
       name: env.get("LABONNEALTERNANCE_USERS_DEFAULT_ADMIN_NAME").default("admin").asString(),
