@@ -11,6 +11,8 @@ import { roles } from "../../common/roles.js";
 import { getCleMinistereEducatifFromIdActionFormation } from "../../common/utils/mappings/onisep.js";
 import { dayjs } from "../../common/utils/dayjs.js";
 import { isValidEmail } from "../../common/utils/isValidEmail.js";
+import * as url from "url";
+const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
 
 const contextCreateSchema = Joi.alternatives().try(
   // Find through "idParcoursup"

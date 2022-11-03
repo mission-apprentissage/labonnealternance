@@ -1,6 +1,8 @@
 import XLSX from "xlsx";
 import csvToJson from "convert-csv-to-json";
 import path from "path";
+import * as url from "url";
+const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
 
 const readJsonFromCsvFile = (localPath) => {
   return csvToJson.getJsonFromCsv(localPath);

@@ -4,6 +4,8 @@ import config from "../config.js";
 import { dayjs } from "../common/utils/dayjs.js";
 import { optMode, mailType } from "../common/model/constants/etablissement.js";
 import { isValidEmail } from "../common/utils/isValidEmail.js";
+import * as url from "url";
+const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
 
 /**
  * @description Invite all "etablissements" without opt_mode to opt-out.

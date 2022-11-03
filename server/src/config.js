@@ -69,7 +69,7 @@ const config = {
       score50Level: env.get("LABONNEALTERNANCE_LBB_SCORE_50").default(1).asFloatPositive(), //TODO: rename
     },
     smtp: {
-      host: env.get("LABONNEALTERNANCE_SMTP_HOST").default("mailhog").asString(),
+      host: env.get("LABONNEALTERNANCE_SMTP_HOST").default("smtp").asString(),
       port: env.get("LABONNEALTERNANCE_SMTP_PORT").default("1025").asString(),
       auth: {
         user: env.get("LABONNEALTERNANCE_SMTP_AUTH_USER").default("1234").asString(),
