@@ -53,6 +53,14 @@ import updateFormations from "./routes/updateFormations.js";
 import updateLBB from "./routes/updateLBB.js";
 import updateRomesMetiers from "./routes/updateRomesMetiers.js";
 import version from "./routes/version.js";
+
+import apiRoute from "./routes/api.js";
+import esSearchRoute from "./routes/esSearch.js";
+import formulaireRoute from "./routes/formulaire.js";
+import loginRoute from "./routes/login.js";
+import optoutRoute from "./routes/optout.js";
+import userRoute from "./routes/user.js";
+
 import {
   limiter10PerSecond,
   limiter1Per20Second,
@@ -116,7 +124,6 @@ export default async (components) => {
 
       return res.json({
         env: config.env,
-        catalogue: config.private.catalogueUrl,
         healthcheck: {
           mongodb: mongodbStatus,
         },
@@ -125,7 +132,7 @@ export default async (components) => {
   );
 
   /**
-   * LBA-J
+   * LBACandidat
    */
   app.get("/api-docs/swagger.json", (req, res) => {
     res.sendFile(path.resolve("./src/api-docs/swagger.json"));
@@ -159,7 +166,7 @@ export default async (components) => {
   app.use("/api/admin", checkJwtToken, adminOnly, admin());
 
   /**
-   * RDV-Apprentissage
+   * LBA-Organisme de formation
    */
   app.use("/api/appointment", appointmentRoute(components));
   app.use("/api/admin/etablissements", checkJwtToken, adminOnly, adminEtablissementRoute(components));
@@ -173,8 +180,22 @@ export default async (components) => {
   app.use("/api/support", supportRoute());
 
   /**
+   * LBA-Recruteur
+   */
+  app.use("/api/v1", apiRoute(components));
+
+  app.use("/api/user", userRoute(components));
+  app.use("/api/authentification", loginRoute(components)); // ex /api/login LBA-R
+  app.use("/api/formulaire", formulaireRoute(components));
+  app.use("/api/es/search", esSearchRoute());
+  app.use("/api/rome", rome());
+  app.use("/api/optout", optoutRoute());
+
+  /**
    * RDV-Apprentissage: cron
    * Note: Will be rewritten.
+   *
+   * KBA : to be transfered to infra.
    */
   // Everyday at 14:00: Opt-out invite
   cron.schedule("0 14 * * *", () => inviteEtablissementToOptOut(components));
