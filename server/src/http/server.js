@@ -4,6 +4,7 @@ import path from "path";
 import bodyParser from "body-parser";
 import express from "express";
 import swaggerUi from "swagger-ui-express";
+// eslint-disable-next-line
 import swaggerDocument from "../api-docs/swagger.json" assert { type: "json" };
 import config from "../config.js";
 import cron from "node-cron";
@@ -181,8 +182,6 @@ export default async (components) => {
 
   // Everyday at 04:00 AM: Copy catalogue formations
   cron.schedule("0 4 * * *", () => syncEtablissementsAndFormations(components));
-
-  syncEtablissementsAndFormations(components)
 
   // Everyday, every 5 minutes: Opt-out activation
   cron.schedule("*/5 * * * *", () => activateOptOutEtablissementFormations(components));

@@ -46,7 +46,7 @@ httpTests(__filename, ({ startServer }) => {
 
   it("Vérifie qu'un utilisateur peut changer son mot de passe", async () => {
     const { httpClient, createAndLogUser } = await startServer();
-    await createAndLogUser("admin", "password", { role: administrator });
+    await createAndLogUser("admin", "password", { role: roles.administrator });
 
     const response = await httpClient.post("/api/password/reset-password", {
       passwordToken: createPasswordToken("admin"),
