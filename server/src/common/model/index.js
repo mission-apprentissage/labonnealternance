@@ -20,6 +20,7 @@ const createModel = (modelName, descriptor, options = {}) => {
 
   return mongooseInstance.model(modelName, schema);
 };
+
 const DomainesMetiers = createModel("domainesmetiers", schema.domainesMetiersSchema, {
   esIndexName: "domainesmetiers",
 });

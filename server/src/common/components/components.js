@@ -9,11 +9,11 @@ import createEtablissements from "./etablissement.js";
 import createParcoursupEtablissementStats from "./parcoursupEtablissementStat.js";
 
 export default async function (options = {}) {
-  const users = await createUsers();
-  const appointments = await createAppointements();
-  const widgetParameters = await createWidgetParameters();
-  const etablissements = await createEtablissements();
-  const parcoursupEtablissementStats = await createParcoursupEtablissementStats();
+  const users = createUsers();
+  const appointments = createAppointements();
+  const widgetParameters = createWidgetParameters();
+  const etablissements = createEtablissements();
+  const parcoursupEtablissementStats = createParcoursupEtablissementStats();
 
   return {
     db: options.db || (await connectToMongo()).db,

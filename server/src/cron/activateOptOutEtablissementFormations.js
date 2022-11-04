@@ -4,6 +4,8 @@ import config from "../config.js";
 import { dayjs } from "../common/utils/dayjs.js";
 import { referrers } from "../common/model/constants/referrers.js";
 import { mailType } from "../common/model/constants/etablissement.js";
+import __dirname from "../common/dirname.js";
+const currentDirname = __dirname(import.meta.url);
 
 /**
  * @description Active all etablissement's formations that have subscribed to opt-out.
@@ -48,7 +50,7 @@ export const activateOptOutEtablissementFormations = async ({ etablissements, wi
       const { messageId } = await mailer.sendEmail({
         to: etablissement.email_decisionnaire,
         subject: `C'est parti pour améliorer le sourcing de vos candidats !`,
-        template: path.join(__dirname, `../assets/templates/mail-cfa-optout-start.mjml.ejs`),
+        template: path.join(currentDirname, `../assets/templates/mail-cfa-optout-start.mjml.ejs`),
         data: {
           images: {
             logoCfa: `${config.publicUrl}/assets/logo-lba-recruteur-cfa.png?raw=true`,

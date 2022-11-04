@@ -7,6 +7,8 @@ import { enableAllEtablissementFormations } from "../../../common/utils/optIn.js
 import { optMode, mailType } from "../../../common/model/constants/etablissement.js";
 import { referrers } from "../../../common/model/constants/referrers.js";
 import { dayjs } from "../../../common/utils/dayjs.js";
+import __dirname from "../../../common/dirname.js";
+const currentDirname = __dirname(import.meta.url);
 
 /**
  * @description Etablissement Router.
@@ -113,7 +115,7 @@ export default ({ etablissements, mailer }) => {
         const { messageId } = await mailer.sendEmail({
           to: etablissement.email_decisionnaire,
           subject: `Améliorer le sourcing de vos candidats !`,
-          template: path.join(__dirname, `../../../assets/templates/mail-cfa-optout-invitation.mjml.ejs`),
+          template: path.join(currentDirname, `../../../assets/templates/mail-cfa-optout-invitation.mjml.ejs`),
           data: {
             images: {
               peopleLaptop: `${config.publicUrl}/assets/girl_laptop.png?raw=true`,

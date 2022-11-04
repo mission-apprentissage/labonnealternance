@@ -13,9 +13,8 @@ import { logMessage } from "../../common/utils/logMessage.js";
 import { mongooseInstance } from "../../common/mongodb.js";
 import { initSAVERemoveMap, initSAVEUpdateMap, initSAVEAddMap } from "./initSAVEMaps.js";
 import { updateSAVECompanies } from "./updateSAVECompanies.js";
-
-import * as url from "url";
-const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
+import __dirname from "../../common/dirname.js";
+const currentDirname = __dirname(import.meta.url);
 
 const defaultPredictionByROMEThreshold = 0.2; // 0.2 arbitraire
 const CBSPredictionByROMEThreshold = 3.84; // 3.84 arbitraire
@@ -42,7 +41,7 @@ let findBBCount = 0;
 let findBBTime = 0;
 let running = false;
 
-const filePath = path.join(__dirname, "./assets/etablissements.csv");
+const filePath = path.join(currentDirname, "./assets/etablissements.csv");
 
 /*
 path point de montage

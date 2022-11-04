@@ -27,7 +27,6 @@ const getEmailFromCatalogueField = (email) => {
  */
 export const syncEtablissementsAndFormations = async ({ etablissements, widgetParameters }) => {
   logger.info("Cron #syncEtablissementsAndFormations started.");
-
   const batchSize = 50;
   let response;
 

@@ -8,11 +8,11 @@ import { GeoLocation } from "../../common/model/index.js";
 import _ from "lodash-es";
 import fsExtra from "fs-extra";
 import { logMessage } from "../../common/utils/logMessage.js";
-import * as url from "url";
-const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
+import __dirname from "../../common/dirname.js";
+const currentDirname = __dirname(import.meta.url);
 
 const tempDir = "./assets/geoLocations/";
-const etablissementFilePath = path.join(__dirname, "./assets/etablissements.csv");
+const etablissementFilePath = path.join(currentDirname, "./assets/etablissements.csv");
 
 let predictionMap = {};
 
@@ -48,7 +48,7 @@ const parseGeoLoc = (line) => {
 
 // enregistre un fichier d'adresses à géolocaliser
 const createToGeolocateFile = (addressesToGeolocate, sourceFileCount) => {
-  fs.writeFileSync(path.join(__dirname, `${tempDir}geolocatesource-${sourceFileCount}.csv`), addressesToGeolocate);
+  fs.writeFileSync(path.join(currentDirname, `${tempDir}geolocatesource-${sourceFileCount}.csv`), addressesToGeolocate);
 };
 
 const saveGeoData = async (geoData) => {
@@ -59,7 +59,7 @@ const saveGeoData = async (geoData) => {
 };
 
 const clearingFiles = () => {
-  fsExtra.emptyDirSync(path.join(__dirname, tempDir));
+  fsExtra.emptyDirSync(path.join(currentDirname, tempDir));
 };
 
 const geolocateCsvHeader = "rue;citycode";
@@ -119,7 +119,7 @@ export default async function () {
     for (let i = 0; i < sourceFileCount; ++i) {
       logMessage("info", `Géolocalisation fichier d'adressses (${i + 1}/${sourceFileCount})`);
 
-      const sourceFilePath = path.join(__dirname, `${tempDir}geolocatesource-${i}.csv`);
+      const sourceFilePath = path.join(currentDirname, `${tempDir}geolocatesource-${i}.csv`);
       const form = new FormData();
       const stream = fs.createReadStream(sourceFilePath);
       form.append("data", stream, `geolocatesource-${i}.csv`);
@@ -130,7 +130,7 @@ export default async function () {
         },
       });
 
-      const destFilePath = path.join(__dirname, `${tempDir}geolocated-${i}.csv`);
+      const destFilePath = path.join(currentDirname, `${tempDir}geolocated-${i}.csv`);
       fs.writeFileSync(destFilePath, res.data);
 
       await oleoduc(

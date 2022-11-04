@@ -1,4 +1,4 @@
-import "./testConfig.js";
+/*import "./testConfig.js";
 import nock from "nock"; // eslint-disable-line node/no-unpublished-import
 import { stopMongod, removeAll, startMongod } from "./mongoMemoryServer.js";
 
@@ -20,4 +20,4 @@ export const mochaHooks = {
 
 export function mochaGlobalTeardown() {
   return stopMongod();
-}
+}*/

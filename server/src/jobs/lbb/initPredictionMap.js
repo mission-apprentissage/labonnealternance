@@ -3,10 +3,9 @@ import { oleoduc, readLineByLine, transformData, writeData } from "oleoduc";
 import fs from "fs";
 import path from "path";
 import config from "../../config.js";
-
-import * as url from "url";
-const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
-const filePath = path.join(__dirname, "./assets/predictions.csv");
+import __dirname from "../../common/dirname.js";
+const currentDirname = __dirname(import.meta.url);
+const filePath = path.join(currentDirname, "./assets/predictions.csv");
 
 const seuilElimination = config.private.lbb.score50Level;
 
