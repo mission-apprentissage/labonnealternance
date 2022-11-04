@@ -1,7 +1,12 @@
-import XLSX from "xlsx";
 import csvToJson from "convert-csv-to-json";
+import { parse } from "csv-parse";
+import { isEmpty, pickBy } from "lodash-es";
 import path from "path";
+import XLSX from "xlsx";
+import config from "../../config.js";
+
 import __dirname from "../../common/dirname.js";
+import { FTPClient } from "./ftpUtils.js";
 
 const readJsonFromCsvFile = (localPath) => {
   return csvToJson.getJsonFromCsv(localPath);
@@ -55,6 +60,35 @@ const prepareMessageForMail = (data) => {
   return result ? result.replace(/\r\n|\r|\n/gi, "<br />") : result;
 };
 
+const parseCsv = (options = {}) => {
+  return parse({
+    trim: true,
+    delimiter: ";",
+    columns: true,
+    on_record: (record) => {
+      return pickBy(record, (v) => {
+        return !isEmpty(v) && v !== "NULL" && v.trim().length;
+      });
+    },
+    ...options,
+  });
+};
+
+const fileDownloader = async (filePath, remoteFileName, { ftp = {} }) => {
+  const opt = {
+    host: config.ftp.host,
+    user: ftp.user,
+    password: ftp.password,
+    port: 21,
+  };
+
+  const client = new FTPClient();
+
+  await client.connect(opt);
+  await client.downloadFile(remoteFileName, filePath);
+  await client.disconnect();
+};
+
 export {
   readJsonFromCsvFile,
   readXLSXFile,
@@ -63,4 +97,6 @@ export {
   writeXlsxFile,
   removeLine,
   prepareMessageForMail,
+  parseCsv,
+  fileDownloader,
 };

@@ -1,0 +1,79 @@
+<mjml>
+  <mj-head>
+    <mj-title>La bonne alternance - Expiration prochaine de vos offres</mj-title>
+    <mj-font name="Work Sans" href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;700&display=swap" />
+    <mj-style inline="inline">
+      .grey {color: #1E1E1E;}
+    </mj-style>
+    <mj-attributes>
+      <mj-text color="#242424" font-family="Work Sans, Arial" font-size="16px" line-height="24px" />
+      <mj-button font-size="16px" line-height="24px" padding="8px 24px" font-family="Work Sans" height="40px" />
+    </mj-attributes>
+  </mj-head>
+  <mj-body background-color="#E5E5E5">
+    <mj-section>
+      <mj-column>
+        <mj-image width="150px" src="https://matcha.apprentissage.beta.gouv.fr/images/logo-lba-recruteur-violet.png" />
+      </mj-column>
+    </mj-section>
+
+    <mj-section padding-top="0">
+      <mj-column width="600px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 10px">
+        <mj-text>
+          Bonjour <%= data.prenom %> <%= data.nom %>,
+        </mj-text>
+        <% if(!data.mandataire && data.threshold === 7){ %>
+          <mj-text>
+          La diffusion de votre offre d'alternance expire dans 7 jours et ne sera bientôt plus visible par les jeunes.
+          </mj-text>
+        <% } %>
+
+        <% if(!data.mandataire && data.threshold === 1){ %>
+        <mj-text>La diffusion de votre offre d'alternance expire demain et ne sera bientôt plus visible par les jeunes.</mj-text>
+        <% } %>
+
+        <% if(data.mandataire && data.threshold === 7){ %>
+        <mj-text>L'offre d'alternance que vous avez publié pour <%= data.raison_sociale %> expire dans 7 jours</mj-text>
+        <% } %>
+
+        <% if(data.mandataire && data.threshold === 1){ %>
+          <mj-text>L'offre d'alternance que vous avez publié pour <%= data.raison_sociale %> expire demain</mj-text>
+        <% } %>
+
+        <mj-text>Connectez-vous à votre espace afin de gérer vos offres ou sélectionnez l'une des actions ci-dessous.</mj-text>
+
+        <mj-button color="#ffffff" background-color="#000091" href="<%= data.url %>">
+          Se connecter
+        </mj-button>
+
+        <mj-text font-weight="700">Rappel de vos offres :</mj-text>
+        <mj-table>
+          <tr style="border-bottom:1px solid #ecedee;text-align:left;padding:15px 0;">
+            <th style="padding: 0 15px 0 0;">Métier</th>
+            <th style="padding: 0 15px;">Type</th>
+            <th style="padding: 0 0 0 15px;" colspan="2">Actions</th>
+          </tr>
+          <% data.offres.forEach((offre) => { %>
+          <tr>
+            <td style="padding: 0 15px 0 0;" rowspan="2"><%= offre.libelle %></td>
+            <td style="padding: 0 15px;" rowspan="2"><%= offre.type %></td>
+            <td style="padding: 0 0 0 15px;"><a href="<%= offre.supprimer %>">Supprimer</a></td>
+          </tr>
+          <tr style="border-bottom: 1px dotted #000091;">
+            <td style="padding: 0 0 0 15px;"><a href="<%= offre.pourvue %>">Pourvue</a></td>
+          </tr>
+          <% }); %>
+        </mj-table>
+        <mj-text>
+          L'équipe La Bonne Alternance, <br>
+          Mission interministérielle pour l'apprentissage et les trajectoires profesionnelles
+        </mj-text>
+      </mj-column>
+    </mj-section>
+    <mj-section padding-top="30px">
+      <mj-column>
+        <mj-image src="https://matcha.apprentissage.beta.gouv.fr/images/logo-republique-francaise.png" width="200px" align="left" ></mj-image>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

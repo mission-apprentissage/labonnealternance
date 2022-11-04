@@ -1,12 +1,10 @@
 import { Client } from "@elastic/elasticsearch";
-import mongoosastic from "./mongoosastic/index.js";
 import config from "../../config.js";
+import mongoosastic from "./mongoosastic/index.js";
 
-const getClientOptions = (envName) => {
-  let node = { node: envName === "local" ? "http://127.0.0.1:9200" : "http://elasticsearch:9200" };
-
-  return node;
-};
+const getClientOptions = (envName) => ({
+  node: envName === "local" ? "http://localhost:9200" : "http://elasticsearch:9200",
+});
 
 const createEsInstance = () => {
   const options = getClientOptions(config.env);

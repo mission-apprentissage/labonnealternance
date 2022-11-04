@@ -1,0 +1,64 @@
+<mjml>
+  <mj-head>
+    <mj-title>La bonne alternance - Bienvenue</mj-title>
+    <mj-font name="Work Sans" href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;700&display=swap" />
+    <mj-style inline="inline">
+      .grey {color: #1E1E1E;}
+    </mj-style>
+    <mj-attributes>
+      <mj-text color="#242424" font-family="Work Sans, Arial" font-size="16px" line-height="24px" />
+      <mj-button font-size="16px" line-height="24px" padding="8px 24px" font-family="Work Sans" height="40px" />
+    </mj-attributes>
+  </mj-head>
+  <mj-body background-color="#E5E5E5">
+    <mj-section>
+      <mj-column>
+        <mj-image width="150px" src="https://matcha.apprentissage.beta.gouv.fr/images/logo-lba-recruteur-violet.png" />
+      </mj-column>
+    </mj-section>
+    <mj-wrapper background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF">
+      <mj-section padding="0px 0px">
+        <mj-column>
+          <mj-text>
+            Bonjour <%= data.prenom %> <%= data.nom %>,<br /><br />
+            <% if(!data.mandataire){ %>
+              Félicitations, votre compte La Bonne Alternance est désormais créé pour l'entreprise :<br /><br />
+            <% } %>
+            <% if(data.mandataire){ %>
+              Félicitations, votre compte La Bonne Alternance est désormais créé pour votre centre de formation :<br /><br />
+            <% } %>
+            <%= data.raison_sociale %><br /><br />
+            Vous pouvez désormais accéder à votre espace pour publier vos offres en quelques clics et les diffuser au plus près des jeunes : sur les sites Parcoursup, Affelnet, 1 Jeune 1 Solution et La Bonne Alternance<br /><br />
+            Votre identifiant : <%= data.email %>
+          </mj-text>
+        </mj-column>
+      </mj-section>
+      <mj-section padding="20px 20px">
+        <mj-column background-color="#E5E5E5">
+          <mj-text>ℹ️ Pas besoin de mot de passe avec La Bonne Alternance. Pour vous connecter, renseignez votre adresse email afin de recevoir un lien de connexion sécurisé.</mj-text>
+        </mj-column>
+      </mj-section>
+      <mj-section padding="0">
+        <mj-column padding="0">
+          <mj-button color="#ffffff" background-color="#000091" href="https://matcha.apprentissage.beta.gouv.fr/authentification">
+            Me connecter
+          </mj-button>
+        </mj-column>
+      </mj-section>
+    </mj-wrapper>
+    <mj-section padding="0px 0px">
+      <mj-column width="600px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding-bottom="20px">
+        <mj-divider border-width="1px" border-color="#E3E3FD" />
+        <mj-text>
+          L'équipe La Bonne Alternance, <br />
+          Mission interministérielle pour l'apprentissage et les trajectoires profesionnelles
+        </mj-text>
+      </mj-column>
+    </mj-section>
+    <mj-section padding-top="30px">
+      <mj-column>
+        <mj-image src="https://matcha.apprentissage.beta.gouv.fr/images/logo-republique-francaise.png" width="200px" align="left" ></mj-image>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

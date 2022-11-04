@@ -1,8 +1,10 @@
+import ejs from "ejs";
+import { omit } from "lodash-es";
+import mjml from "mjml";
 import nodemailer from "nodemailer";
 import nodemailerHtmlToText from "nodemailer-html-to-text";
-import mjml from "mjml";
 import { promisify } from "util";
-import ejs from "ejs";
+import config from "../config.js";
 
 const htmlToText = nodemailerHtmlToText.htmlToText;
 const renderFile = promisify(ejs.renderFile);
@@ -18,7 +20,9 @@ const renderFile = promisify(ejs.renderFile);
  * @returns {Mail}
  */
 const createTransporter = (smtp) => {
-  const transporter = nodemailer.createTransport(smtp);
+  const needAuthentication = config.env === "production" ? true : false;
+
+  const transporter = nodemailer.createTransport(needAuthentication ? smtp : omit(smtp, ["auth"]));
 
   transporter.use("compile", htmlToText({ ignoreImage: true }));
 

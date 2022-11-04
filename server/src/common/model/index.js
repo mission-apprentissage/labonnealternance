@@ -1,7 +1,7 @@
 import mongoosePaginate from "mongoose-paginate";
-import { mongooseInstance } from "../mongodb.js";
-import { mongoosastic, getElasticInstance } from "../esClient/index.js";
+import { getElasticInstance, mongoosastic } from "../esClient/index.js";
 import schema from "../model/schema/index.js";
+import { mongooseInstance } from "../mongodb.js";
 
 const createModel = (modelName, descriptor, options = {}) => {
   const schema = new mongooseInstance.Schema(descriptor);
@@ -54,6 +54,12 @@ const ParcoursupEtablissementStat = createModel(
   schema.parcoursupEtablissementStatSchema,
   { paginate: true }
 );
+const Formulaire = createModel("formulaire", schema.formulaireSchema, { esIndexName: "formulaires", paginate: true });
+const Credential = createModel("credentials", schema.credentialsSchema);
+const Offre = createModel("offre", schema.offresSchema);
+const Optout = createModel("optout", schema.OptoutSchema, { paginate: true });
+const ReferentielOpco = createModel("referentielOpco", schema.ReferentielOpco);
+const UserRecruteur = createModel("userRecruteur", schema.userRecruteur, { paginate: true });
 
 export {
   DomainesMetiers,
@@ -73,4 +79,10 @@ export {
   WidgetParameter,
   Etablissement,
   ParcoursupEtablissementStat,
+  Formulaire,
+  Credential,
+  Offre,
+  Optout,
+  ReferentielOpco,
+  UserRecruteur,
 };

@@ -1,5 +1,5 @@
-import { logger } from "../logger.js";
 import { getElasticInstance } from "../esClient/index.js";
+import { logger } from "../logger.js";
 
 const rebuildIndex = async (model, { skipNotFound } = { skipNotFound: false }) => {
   let client = getElasticInstance();
@@ -26,4 +26,19 @@ const rebuildIndex = async (model, { skipNotFound } = { skipNotFound: false }) =
   });
 };
 
-export { rebuildIndex };
+const getNestedQueryFilter = (nested) => {
+  const filters = nested.query.bool.must[0].bool.must;
+
+  let filt = filters
+    .map((item) => {
+      if (item.nested) {
+        return item.nested.query.bool.should[0].terms;
+      }
+    })
+    .filter((x) => x !== undefined)
+    .reduce((a, b) => Object.assign(a, b), {});
+
+  return filt;
+};
+
+export { rebuildIndex, getNestedQueryFilter };

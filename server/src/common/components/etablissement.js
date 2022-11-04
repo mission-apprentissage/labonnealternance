@@ -1,6 +1,10 @@
 import { Etablissement } from "../model/index.js";
 
-export default () => ({
+/**
+ * KBA: to be refactored and merged with etablissementRecruteur.js
+ */
+
+export default async () => ({
   /**
    * @description Creates an etablissement.
    * @param {Object} options

@@ -7,6 +7,7 @@ const config = {
   outputDir: env.get("LABONNEALTERNANCE_OUTPUT_DIR").default(".local/output").asString(),
   formationsEndPoint: "/api/v1/entity/formations",
   maxApplicationPerDay: 100,
+  elasticSearch: "http://localhost:9200",
   log: {
     level: env.get("DOCTRINA_LOG_LEVEL").default("info").asString(),
     format: env.get("DOCTRINA_LOG_FORMAT").default("pretty").asString(),
@@ -23,21 +24,6 @@ const config = {
   private: {
     apiKey: env.get("LABONNEALTERNANCE_API_KEY").default("12345").asString(), //TODO: check usefulness
     laBonneFormationPassword: env.get("LABONNEFORMATION_PASSWORD").default("12345").asString(),
-    auth: {
-      passwordHashRounds: env.get("LABONNEALTERNANCE_AUTH_PASSWORD_HASH_ROUNDS").default(1001).asIntPositive(),
-      user: {
-        jwtSecret: env.get("LABONNEALTERNANCE_AUTH_USER_JWT_SECRET").default("1234").asString(),
-        expiresIn: "24h",
-      },
-      activation: {
-        jwtSecret: env.get("LABONNEALTERNANCE_AUTH_ACTIVATION_JWT_SECRET").default("45678").asString(),
-        expiresIn: "96h",
-      },
-      password: {
-        jwtSecret: env.get("LABONNEALTERNANCE_AUTH_PASSWORD_JWT_SECRET").default("91011").asString(),
-        expiresIn: "1h",
-      },
-    },
     mongodb: {
       uri: env
         .get("LABONNEALTERNANCE_MONGODB_URI")
@@ -72,7 +58,7 @@ const config = {
       host: env.get("LABONNEALTERNANCE_SMTP_HOST").default("smtp").asString(),
       port: env.get("LABONNEALTERNANCE_SMTP_PORT").default("1025").asString(),
       auth: {
-        user: env.get("LABONNEALTERNANCE_SMTP_AUTH_USER").default("1234").asString(),
+        user: env.get("LABONNEALTERNANCE_SMTP_AUTH_USER").default("lba").asString(),
         pass: env.get("LABONNEALTERNANCE_SMTP_AUTH_PASS").default("1234").asString(),
       },
       sendinblueToken: env.get("LABONNEALTERNANCE_SMTP_SENDINBLUE_TOKEN").default("1234").asString(),
@@ -95,6 +81,35 @@ const config = {
       jwtSecret: env.get("LABONNEALTERNANCE_AUTH_PASSWORD_JWT_SECRET").default("789").asString(),
       expiresIn: env.get("LABONNEALTERNANCE_AUTH_PASSWORD_JWT_SECRET_EXPIRES").default("1h").asString(),
     },
+    magiclink: {
+      jwtSecret: env.get("LBA_MAGICLINK_JWT_SECRET"),
+      expiresIn: env.get("LBA_MAGICLINK_JWT_SECRET_EXPIRE").default("1h").asString(),
+    },
+  },
+  ftp: {
+    host: env.get("LBA_OPCO_FTP_HOST").default("").asString(),
+    constructys: {
+      user: env.get("LBA_OPCO_CONSTRUCTYS_USER").default("").asString(),
+      password: env.get("LBA_OPCO_CONSTRUCTYS_PASSWORD").default("").asString(),
+    },
+    ocapiat: {
+      user: env.get("LBA_OPCO_OCAPIAT_USER").default("").asString(),
+      password: env.get("LBA_OPCO_OCAPIAT_PASSWORD").default("").asString(),
+    },
+  },
+  akto: {
+    grantType: env.get("LBA_AKTO_GRANT_TYPE").default("").asString(),
+    clientId: env.get("LBA_AKTO_CLIENT_ID").default("").asString(),
+    clientSecret: env.get("LBA_AKTO_CLIENT_SECRET").default("").asString(),
+    scope: env.get("LBA_AKTO_SCOPE").default("").asString(),
+  },
+  poleEmploi: {
+    clientId: env.get("LBA_POLE_EMPLOI_CLIENT_ID").default("").asString(),
+    clientSecret: env.get("LBA_POLE_EMPOI_CLIENT_SECRET").default("").asString(),
+  },
+  lba: {
+    application: env.get("LBA_APPLICATION_NAME").default("").asString(),
+    apiKey: env.get("LBA_APPLICATION_API_KEY").default("").asString(),
   },
   users: {
     defaultAdmin: {
