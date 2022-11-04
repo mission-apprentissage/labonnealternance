@@ -1,6 +1,6 @@
 import { ParcoursupEtablissementStat } from "../model/index.js";
 
-export default async () => ({
+export default () => ({
   /**
    * @description Bulk insert ParcoursupEtablissementStat.
    * @param {ParcoursupEtablissementStat[]} parcoursupEtablissementStats

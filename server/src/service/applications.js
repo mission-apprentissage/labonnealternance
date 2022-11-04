@@ -19,6 +19,8 @@ import {
 import { validateCaller } from "./queryValidators.js";
 import { logger } from "../common/logger.js";
 import { oleoduc, writeData } from "oleoduc";
+import __dirname from "../common/dirname.js";
+const currentDirname = __dirname(import.meta.url);
 
 const publicUrl = config.publicUrl;
 
@@ -206,30 +208,30 @@ const sendApplication = async ({ scan, mailer, query, referer, shouldCheckSecret
 
       // Sends acknowledge email to "candidate" and application email to "company"
       const [emailCandidat, emailCompany] = await Promise.all([
-        mailer.sendEmail(
-          application.applicant_email,
-          `Votre candidature chez ${application.company_name}`,
-          getEmailTemplate(emailTemplates.candidat),
-          { ...application._doc, ...images, ...encryptedId, publicUrl },
-          [
+        mailer.sendEmail({
+          to: application.applicant_email,
+          subject: `Votre candidature chez ${application.company_name}`,
+          template: getEmailTemplate(emailTemplates.candidat),
+          data: { ...application._doc, ...images, ...encryptedId, publicUrl },
+          attachments: [
             {
               filename: application.applicant_file_name,
               path: fileContent,
             },
-          ]
-        ),
-        mailer.sendEmail(
-          application.company_email,
-          buildTopic(application.company_type, application.job_title),
-          getEmailTemplate(emailTemplates.entreprise),
-          { ...application._doc, ...images, ...encryptedId, publicUrl, urlOfDetail, matchaApiEndpoint },
-          [
+          ],
+        }),
+        mailer.sendEmail({
+          to: application.company_email,
+          subject: buildTopic(application.company_type, application.job_title),
+          template: getEmailTemplate(emailTemplates.entreprise),
+          data: { ...application._doc, ...images, ...encryptedId, publicUrl, urlOfDetail, matchaApiEndpoint },
+          attachments: [
             {
               filename: application.applicant_file_name,
               path: fileContent,
             },
-          ]
-        ),
+          ],
+        }),
       ]);
 
       application.to_applicant_message_id = emailCandidat.messageId;
@@ -363,30 +365,30 @@ const debugUpdateApplicationStatus = async ({ mailer, query, shouldCheckSecret }
 const sendNotificationToApplicant = async ({ mailer, application, intention, email, phone, comment }) => {
   switch (intention) {
     case "entretien": {
-      mailer.sendEmail(
-        application.applicant_email,
-        `Réponse positive à votre candidature chez ${application.company_name}`,
-        getEmailTemplate("mail-candidat-entretien"),
-        { ...application._doc, ...images, email, phone, comment }
-      );
+      mailer.sendEmail({
+        to: application.applicant_email,
+        subject: `Réponse positive à votre candidature chez ${application.company_name}`,
+        template: getEmailTemplate("mail-candidat-entretien"),
+        data: { ...application._doc, ...images, email, phone, comment },
+      });
       break;
     }
     case "ne_sais_pas": {
-      mailer.sendEmail(
-        application.applicant_email,
-        `Réponse à votre candidature chez ${application.company_name}`,
-        getEmailTemplate("mail-candidat-nsp"),
-        { ...application._doc, ...images, email, phone, comment }
-      );
+      mailer.sendEmail({
+        to: application.applicant_email,
+        subject: `Réponse à votre candidature chez ${application.company_name}`,
+        template: getEmailTemplate("mail-candidat-nsp"),
+        data: { ...application._doc, ...images, email, phone, comment },
+      });
       break;
     }
     case "refus": {
-      mailer.sendEmail(
-        application.applicant_email,
-        `Réponse à votre candidature chez ${application.company_name}`,
-        getEmailTemplate("mail-candidat-refus"),
-        { ...application._doc, ...images, comment }
-      );
+      mailer.sendEmail({
+        to: application.applicant_email,
+        subject: `Réponse à votre candidature chez ${application.company_name}`,
+        template: getEmailTemplate("mail-candidat-refus"),
+        data: { ...application._doc, ...images, comment },
+      });
       break;
     }
     default:
@@ -395,21 +397,21 @@ const sendNotificationToApplicant = async ({ mailer, application, intention, ema
 };
 
 const notifyHardbounceToApplicant = async ({ mailer, application }) => {
-  mailer.sendEmail(
-    application.applicant_email,
-    `${application.company_name} n'a pas reçu votre candidature sur La Bonne Alternance`,
-    getEmailTemplate("mail-candidat-hardbounce"),
-    { ...application._doc, ...images }
-  );
+  mailer.sendEmail({
+    to: application.applicant_email,
+    subject: `${application.company_name} n'a pas reçu votre candidature sur La Bonne Alternance`,
+    template: getEmailTemplate("mail-candidat-hardbounce"),
+    data: { ...application._doc, ...images },
+  });
 };
 
 const warnMatchaTeamAboutBouncedEmail = async ({ application, mailer }) => {
-  mailer.sendEmail(
-    config.private.matchaEmail,
-    `Hardbounce détecté pour ${application.company_name}`,
-    getEmailTemplate("mail-matcha-hardbounce"),
-    { ...application._doc, ...images }
-  );
+  mailer.sendEmail({
+    to: config.private.matchaEmail,
+    subject: `Hardbounce détecté pour ${application.company_name}`,
+    template: getEmailTemplate("mail-matcha-hardbounce"),
+    data: { ...application._doc, ...images },
+  });
 };
 
 const removeEmailFromBonnesBoites = async (email) => {
@@ -514,14 +516,12 @@ const sendTestMail = async ({ mailer, query }) => {
         },
       };
 
-      let result = await mailer.sendEmail(
-        query.applicant_email,
-        "Envoi mail de test",
-        getEmailTemplate("mail-candidat"),
-        mailData
-      );
-
-      return result;
+      return mailer.sendEmail({
+        to: query.applicant_email,
+        subject: "Envoi mail de test",
+        template: getEmailTemplate("mail-candidat"),
+        data: mailData,
+      });
     } catch (err) {
       Sentry.captureException(err);
       return { error: "error_sending_test_mail" };
@@ -530,7 +530,7 @@ const sendTestMail = async ({ mailer, query }) => {
 };
 
 const getEmailTemplate = (type = "mail-candidat") => {
-  return path.join(__dirname, `../assets/templates/${type}.mjml.ejs`);
+  return path.join(currentDirname, `../assets/templates/${type}.mjml.ejs`);
 };
 
 const updateBlockedEmails = async ({ query, shouldCheckSecret }) => {

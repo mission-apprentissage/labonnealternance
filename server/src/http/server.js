@@ -105,8 +105,6 @@ export default async (components) => {
   //app.use(logMiddleware());
   app.use(hello());
 
-  app.use(errorMiddleware());
-
   app.get(
     "/api",
     tryCatch(async (req, res) => {
@@ -218,6 +216,8 @@ export default async (components) => {
   cron.schedule("0 * * * *", () => inviteEtablissementToPremiumFollowUp(components));
 
   initWebhook();
+
+  app.use(errorMiddleware());
 
   return app;
 };

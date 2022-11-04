@@ -1,4 +1,4 @@
-import moment from "moment";
+import dayjs from "dayjs";
 import promises from "fs";
 import { closeMongoConnection } from "../common/mongodb.js";
 import createComponents from "../common/components/components";
@@ -14,13 +14,13 @@ const createTimer = () => {
   let launchTime;
   return {
     start: () => {
-      launchTime = new Date().getTime();
+      launchTime = dayjs();
     },
     stop: (results) => {
-      const duration = moment.utc(new Date().getTime() - launchTime).format("HH:mm:ss.SSS");
+      const duration = dayjs().diff(launchTime, "second");
       const data = results && results.toJSON ? results.toJSON() : results;
       console.log(JSON.stringify(data || {}, null, 2));
-      console.log(`Completed in ${duration}`);
+      console.log(`Completed in ${duration} second(s)`);
     },
   };
 };

@@ -1,6 +1,6 @@
 import { Appointment } from "../model/index.js";
 
-export default async () => ({
+export default () => ({
   /**
    * @description Crates an appointment.
    * @param {String} candidat_id

@@ -3,6 +3,8 @@ import { logger } from "../common/logger.js";
 import config from "../config.js";
 import { dayjs } from "../common/utils/dayjs.js";
 import { mailType } from "../common/model/constants/etablissement.js";
+import __dirname from "../common/dirname.js";
+const currentDirname = __dirname(import.meta.url);
 
 /**
  * @description Invite all "etablissements" to Premium.
@@ -27,7 +29,7 @@ export const inviteEtablissementToPremium = async ({ etablissements, mailer }) =
     const { messageId } = await mailer.sendEmail({
       to: etablissement.email_decisionnaire,
       subject: `Optimisez le sourcing de vos candidats sur Parcoursup !`,
-      template: path.join(__dirname, `../assets/templates/mail-cfa-premium-invite.mjml.ejs`),
+      template: path.join(currentDirname, `../assets/templates/mail-cfa-premium-invite.mjml.ejs`),
       data: {
         images: {
           logoCfa: `${config.publicUrl}/assets/logo-lba-recruteur-cfa.png?raw=true`,

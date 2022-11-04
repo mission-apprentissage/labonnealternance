@@ -1,5 +1,5 @@
 import axios from "axios";
-import moment from "moment";
+import dayjs from "dayjs";
 import config from "../../config.js";
 
 const accessTokenEndpoint = "https://entreprise.pole-emploi.fr/connexion/oauth2/access_token?realm=%2Fpartenaire";
@@ -48,7 +48,7 @@ const getAccessTokenFromQuery = async (query) => {
 // retourne un refresh token encore valide ou null à défaut
 const getCurrentToken = (api) => {
   const token = tokens[api];
-  const now = moment();
+  const now = dayjs();
 
   if (token && token.expiry.isAfter(now)) {
     return token.value;
@@ -61,7 +61,7 @@ const getCurrentToken = (api) => {
 const setCurrentToken = async (api, token, expiresIn) => {
   tokens[api] = {
     value: token,
-    expiry: moment().add(expiresIn - 10, "s"),
+    expiry: dayjs().add(expiresIn - 10, "s"),
   };
 };
 

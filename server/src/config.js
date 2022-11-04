@@ -32,7 +32,7 @@ const config = {
     },
     awsAccessKeyId: env.get("AWS_ACCESS_KEY_ID").default("1234").asString(),
     awsSecretAccessKey: env.get("AWS_SECRET_ACCESS_KEY").default("1234").asString(),
-    catalogueUrl: env.get("CATALOGUE_URL").default("https://catalogue.apprentissage.beta.gouv.fr").asString(),
+    catalogueUrl: env.get("CATALOGUE_URL").default("https://catalogue-recette.intercariforef.org").asString(),
     matcha: {
       apiKey: env.get("MATCHA_ACCESS_KEY").default("1234").asString(),
     },

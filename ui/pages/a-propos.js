@@ -232,6 +232,21 @@ const APROPOS = () => (
               <div className="c-about-otherleft">
                 <span className="c-about-otherbullet">•</span>
                 <span className="c-about-otherlink">
+                  <ExternalLink 
+                    url="https://media.giphy.com/media/3oz8xzYXuCWF1IXv68/giphy.gif" 
+                    title="The one" />
+                </span>
+              </div>
+              <div className="c-about-otherright">
+                <span className="c-about-otherdescr">
+                  The one vous aide dans toutes vos démarches de recherche d'une alternance.
+                </span>
+              </div>
+            </div>
+            <div className="c-about-other">
+              <div className="c-about-otherleft">
+                <span className="c-about-otherbullet">•</span>
+                <span className="c-about-otherlink">
                   <ExternalLink
                     url="https://openclassrooms.com/fr/courses/6003601-decouvrez-lalternance"
                     title="Openclassrooms"
@@ -253,7 +268,7 @@ const APROPOS = () => (
               </div>
               <div className="c-about-otherright">
                 <span className="c-about-otherdescr">
-                  je suis jeune, je découvre toutes les solutions pour préparer mon avenir.
+                  Je suis jeune, je découvre toutes les solutions pour préparer mon avenir.
                 </span>
               </div>
             </div>
