@@ -1,6 +1,6 @@
 /* eslint-disable */
 import axios from "axios";
-import _ from "lodash";
+import { omit } from "lodash-es";
 import { logger } from "../../../common/logger.js";
 import { Formulaire, Offre } from "../../../common/model/index.js";
 import config from "../../../config.js";
@@ -47,8 +47,8 @@ export const createOffreCollection = async (application) => {
     formulaires.map(async (form) => {
       await Promise.all(
         form.offres.map(async (offre) => {
-          const filtOffre = _.omit(offre, ["_id"]);
-          const filtForm = _.omit(form, ["_id", "offres", "mailing", "events", "statut"]);
+          const filtOffre = omit(offre, ["_id"]);
+          const filtForm = omit(form, ["_id", "offres", "mailing", "events", "statut"]);
           filtForm.statutFormulaire = form.statut;
           filtOffre.id_offre = offre._id;
 

@@ -1,5 +1,5 @@
 import axios from "axios";
-import _ from "lodash";
+import { differenceBy } from "lodash-es";
 import { Optout } from "../../../common/model/index.js";
 import { runScript } from "../../scriptWrapper.js";
 
@@ -29,7 +29,7 @@ runScript(async ({ etablissement }) => {
   const referentiel = await getEtablissements();
   const data = await Optout.find({}).lean();
 
-  const newEtablissement = _.differenceBy(referentiel, data, "siret");
+  const newEtablissement = differenceBy(referentiel, data, "siret");
   const organismes = newEtablissement.filter(
     (etablissement) => etablissement.contacts.length > 0 && etablissement.adresse
   );

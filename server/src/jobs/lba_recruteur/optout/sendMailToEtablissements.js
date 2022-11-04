@@ -1,5 +1,5 @@
 import Joi from "joi";
-import _ from "lodash";
+import { differenceBy } from "lodash-es";
 import { mailTemplate } from "../../../assets/index.js";
 import { logger } from "../../../common/logger.js";
 import { Optout, UserRecruteur } from "../../../common/model/index.js";
@@ -16,7 +16,7 @@ const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 runScript(async ({ mailer }) => {
   const [etablissements, users] = await Promise.all([Optout.find().lean(), UserRecruteur.find({ type: "CFA" }).lean()]);
 
-  const etablissementsToContact = _.differenceBy(etablissements, users, "siret");
+  const etablissementsToContact = differenceBy(etablissements, users, "siret");
 
   logger.info(`Sending optout mail to ${etablissementsToContact.length} etablissement`);
 

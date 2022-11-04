@@ -1,11 +1,11 @@
 import express from "express";
-import lodash from "lodash-es";
-import { tryCatch } from "../../middlewares/tryCatchMiddleware.js";
-import { Appointment, User } from "../../../common/model/index.js";
+import { chunk } from "lodash-es";
 import { logger } from "../../../common/logger.js";
-import { getReferrerById, referrers } from "../../../common/model/constants/referrers.js";
 import { getEmailStatus } from "../../../common/model/constants/emails.js";
+import { getReferrerById, referrers } from "../../../common/model/constants/referrers.js";
+import { Appointment, User } from "../../../common/model/index.js";
 import { getFormationsByIdRcoFormationsRaw } from "../../../common/utils/catalogue.js";
+import { tryCatch } from "../../middlewares/tryCatchMiddleware.js";
 
 /**
  * Sample entity route module for GET
@@ -53,7 +53,7 @@ export default ({ etablissements, appointments, users }) => {
       const idRcoFormations = [...new Set(allData.docs.map((document) => document.id_rco_formation))];
 
       // Split array by chunk to avoid sending unit calls to the catalogue
-      const idRcoFormationsChunks = lodash.chunk(idRcoFormations, 40);
+      const idRcoFormationsChunks = chunk(idRcoFormations, 40);
 
       // Get formations from catalogue by block of 40 id_rco_formations
       let formations = await Promise.all(
@@ -141,7 +141,7 @@ export default ({ etablissements, appointments, users }) => {
       );
 
       const output = [];
-      for (const appointmentListChunck of lodash.chunk(appointmentList, 100)) {
+      for (const appointmentListChunck of chunk(appointmentList, 100)) {
         const result = await Promise.all(
           appointmentListChunck.map(async (appointment) => {
             const candidat = await users.getUserById(appointment.candidat_id);
