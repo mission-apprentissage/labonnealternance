@@ -2,12 +2,12 @@ import path from "path";
 import fs from "fs";
 import { oleoduc, readLineByLine, transformData, writeData } from "oleoduc";
 import { logMessage } from "../../common/utils/logMessage.js";
-import * as url from "url";
-const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
+import __dirname from "../../common/dirname.js";
+const currentDirname = __dirname(import.meta.url);
 
 let nafRomeHiringMap = {};
 
-const filePath = path.join(__dirname, "./assets/contrats_30j.csv");
+const filePath = path.join(currentDirname, "./assets/contrats_30j.csv");
 
 let count = 0;
 

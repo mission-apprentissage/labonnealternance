@@ -4,8 +4,8 @@ import config from "../config.js";
 import { dayjs } from "../common/utils/dayjs.js";
 import { mailType, optMode } from "../common/model/constants/etablissement.js";
 import { isValidEmail } from "../common/utils/isValidEmail.js";
-import * as url from "url";
-const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
+import __dirname from "../common/dirname.js";
+const currentDirname = __dirname(import.meta.url);
 
 /**
  * @description Invite all "etablissements" to Premium (followup).
@@ -42,7 +42,7 @@ export const inviteEtablissementToPremiumFollowUp = async ({ etablissements, mai
     const { messageId } = await mailer.sendEmail({
       to: etablissement.email_decisionnaire,
       subject: `Rendez-vous Apprentissage est disponible sur Parcoursup`,
-      template: path.join(__dirname, `../assets/templates/mail-cfa-premium-invite-followup.mjml.ejs`),
+      template: path.join(currentDirname, `../assets/templates/mail-cfa-premium-invite-followup.mjml.ejs`),
       data: {
         images: {
           logoCfa: `${config.publicUrl}/assets/logo-lba-recruteur-cfa.png?raw=true`,

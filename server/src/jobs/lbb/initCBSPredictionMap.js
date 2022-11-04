@@ -2,10 +2,10 @@ import { logMessage } from "../../common/utils/logMessage.js";
 import { oleoduc, readLineByLine, transformData, writeData } from "oleoduc";
 import fs from "fs";
 import path from "path";
-import * as url from "url";
-const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
+import __dirname from "../../common/dirname.js";
+const currentDirname = __dirname(import.meta.url);
 
-const filePath = path.join(__dirname, "./assets/tirage_LBA_170621.csv");
+const filePath = path.join(currentDirname, "./assets/tirage_LBA_170621.csv");
 
 let predictionMap = {};
 let count = 0;

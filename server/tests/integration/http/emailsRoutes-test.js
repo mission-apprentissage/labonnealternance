@@ -1,10 +1,9 @@
 import assert from "assert";
 import httpTests from "../../utils/httpTests.js";
 import { sampleAppointment } from "../../data/samples.js";
-import { fileURLToPath } from "url";
-const __filename = fileURLToPath(import.meta.url);
+import __filename from "../../../src/common/filename.js";
 
-httpTests(__filename, ({ startServer }) => {
+httpTests(__filename(import.meta.url), ({ startServer }) => {
   it("Vérifie qu'on peut prendre en compte des notifications via webhook pour le premier email cfa", async () => {
     const { httpClient, components } = await startServer();
     const messageId = "60ae479632bd2611ce1bfd54@domain.com";

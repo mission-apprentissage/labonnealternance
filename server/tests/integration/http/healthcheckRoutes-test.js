@@ -1,10 +1,9 @@
 import assert from "assert";
 import httpTests from "../../utils/httpTests.js";
 import config from "../../../src/config.js";
-import { fileURLToPath } from "url";
-const __filename = fileURLToPath(import.meta.url);
+import __filename from "../../../src/common/filename.js";
 
-httpTests(__filename, ({ startServer }) => {
+httpTests(__filename(import.meta.url), ({ startServer }) => {
   it("Vérifie que le server fonctionne", async () => {
     const { httpClient } = await startServer();
 

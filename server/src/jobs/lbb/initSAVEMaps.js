@@ -2,12 +2,12 @@ import { logMessage } from "../../common/utils/logMessage.js";
 import { oleoduc, accumulateData, readLineByLine, transformData, writeData } from "oleoduc";
 import fs from "fs";
 import path from "path";
-import * as url from "url";
-const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
+import __dirname from "../../common/dirname.js";
+const currentDirname = __dirname(import.meta.url);
 
-const updateFilePath = path.join(__dirname, "./assets/lba_save_etablissements_admin_update.csv");
-const removeFilePath = path.join(__dirname, "./assets/lba_save_etablissements_admin_remove.csv");
-const addFilePath = path.join(__dirname, "./assets/lba_save_etablissements_admin_add.csv");
+const updateFilePath = path.join(currentDirname, "./assets/lba_save_etablissements_admin_update.csv");
+const removeFilePath = path.join(currentDirname, "./assets/lba_save_etablissements_admin_remove.csv");
+const addFilePath = path.join(currentDirname, "./assets/lba_save_etablissements_admin_add.csv");
 
 let removeMap = {};
 let updateMap = {};
