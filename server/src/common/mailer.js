@@ -34,20 +34,47 @@ export default function (config, transporter = createTransporter(config.smtp)) {
   };
 
   return {
+    /**
+     * @description Process template ejs and mjml template.
+     * @returns {string}
+     */
     renderEmail,
-    sendEmail: async (to, subject, template, data, attachments = null) => {
+    /**
+     * @description Sends email.
+     * @param {string} to
+     * @param {string} subject
+     * @param {string} template
+     * @param {Object} data
+     * @param {string} from
+     * @param {undefined|string} cc
+     * @returns {Promise<{messageId: string}>}
+     */
+    sendEmail: async ({
+      to,
+      subject,
+      template,
+      data,
+      from = "nepasrepondre@apprentissage.beta.gouv.fr",
+      cc = undefined,
+    }) => {
       return transporter.sendMail({
-        from: "no-reply@apprentissage.beta.gouv.fr",
+        from,
         to,
+        cc,
         subject,
         html: await renderEmail(template, data),
         list: {},
-        attachments,
       });
     },
+    /**
+     * @description Send plain test email.
+     * @param {string} to
+     * @param {string} subject
+     * @returns {Promise<*>}
+     */
     sendPlainTextEmail: async (to, subject) => {
       return transporter.sendMail({
-        from: "no-reply@apprentissage.beta.gouv.fr",
+        from: "nepasrepondre@apprentissage.beta.gouv.fr",
         to,
         subject,
         body: `Mail pour ${to}`,

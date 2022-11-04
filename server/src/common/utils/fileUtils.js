@@ -1,6 +1,7 @@
 import XLSX from "xlsx";
 import csvToJson from "convert-csv-to-json";
 import path from "path";
+import __dirname from "../../common/dirname.js";
 
 const readJsonFromCsvFile = (localPath) => {
   return csvToJson.getJsonFromCsv(localPath);
@@ -30,7 +31,7 @@ const convertIntoBuffer = (workbook) => {
 const writeXlsxFile = async (workbook, filePath, fileName) => {
   const execWrite = () =>
     new Promise((resolve) => {
-      XLSX.writeFileAsync(path.join(__dirname, `${filePath}/${fileName}`), workbook, (e) => {
+      XLSX.writeFileAsync(path.join(__dirname(import.meta.url), `${filePath}/${fileName}`), workbook, (e) => {
         if (e) {
           console.log(e);
           throw new Error("La génération du fichier excel à échoué : ", e);

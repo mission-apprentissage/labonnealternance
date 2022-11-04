@@ -7,10 +7,10 @@ import { getElasticInstance } from "../../common/esClient/index.js";
 import { getFileFromS3 } from "../../common/utils/awsUtils.js";
 import { oleoduc } from "oleoduc";
 import { logMessage } from "../../common/utils/logMessage.js";
-import * as url from "url";
-const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
+import __dirname from "../../common/dirname.js";
+const currentDirname = __dirname(import.meta.url);
 
-const FILE_LOCAL_PATH = path.join(__dirname, "./assets/domainesMetiers_S3.xlsx");
+const FILE_LOCAL_PATH = path.join(currentDirname, "./assets/domainesMetiers_S3.xlsx");
 
 const emptyMongo = async () => {
   logMessage("info", `Clearing domainesmetiers db...`);

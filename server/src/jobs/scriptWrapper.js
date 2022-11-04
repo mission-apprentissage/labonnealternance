@@ -17,7 +17,7 @@ const createTimer = () => {
       launchTime = dayjs();
     },
     stop: (results) => {
-      const duration = dayjs().diff(launchTime,"second");
+      const duration = dayjs().diff(launchTime, "second");
       const data = results && results.toJSON ? results.toJSON() : results;
       console.log(JSON.stringify(data || {}, null, 2));
       console.log(`Completed in ${duration} second(s)`);

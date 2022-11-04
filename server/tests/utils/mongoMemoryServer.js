@@ -1,5 +1,5 @@
-import { MongoMemoryServer } from "mongodb-memory-server"; // eslint-disable-line node/no-unpublished-import
-import { connectToMongo, getDatabase, configureValidation, configureIndexes } from "../../src/common/mongodb.js";
+/*import { MongoMemoryServer } from "mongodb-memory-server"; // eslint-disable-line node/no-unpublished-import
+import { connectToMongodb, getDatabase, configureValidation, configureIndexes } from "../../src/common/mongodb.js";
 
 let mongodHolder;
 
@@ -23,4 +23,4 @@ export function stopMongod() {
 export async function removeAll() {
   let collections = await getDatabase().collections();
   return Promise.all(collections.map((c) => c.deleteMany({})));
-}
+}*/

@@ -11,6 +11,8 @@ import { roles } from "../../common/roles.js";
 import { getCleMinistereEducatifFromIdActionFormation } from "../../common/utils/mappings/onisep.js";
 import { dayjs } from "../../common/utils/dayjs.js";
 import { isValidEmail } from "../../common/utils/isValidEmail.js";
+import __dirname from "../../common/dirname.js";
+const currentDirname = __dirname(import.meta.url);
 
 const contextCreateSchema = Joi.alternatives().try(
   // Find through "idParcoursup"
@@ -296,13 +298,13 @@ export default ({ users, appointments, mailer, widgetParameters, etablissements 
         mailer.sendEmail({
           to: user.email,
           subject: `Le centre de formation a bien reçu votre demande de contact !`,
-          template: path.join(__dirname, `../../../assets/templates/mail-candidat-confirmation-rdv.mjml.ejs`),
+          template: path.join(currentDirname, `../../../assets/templates/mail-candidat-confirmation-rdv.mjml.ejs`),
           data: mailData,
         }),
         mailer.sendEmail({
           to: widgetParameter.email_rdv,
           subject: `[RDV via ${referrerObj.full_name}] Un candidat souhaite être contacté`,
-          template: path.join(__dirname, `../../../assets/templates/mail-cfa-demande-de-contact.mjml.ejs`),
+          template: path.join(currentDirname, `../../../assets/templates/mail-cfa-demande-de-contact.mjml.ejs`),
           data: mailData,
         }),
       ]);
@@ -432,11 +434,11 @@ export default ({ users, appointments, mailer, widgetParameters, etablissements 
       if (action === candidatFollowUpType.RESEND) {
         const referrerObj = getReferrerById(appointment.referrer);
 
-        const { messageId } = await mailer.sendEmail(
-          widgetParameter.email_rdv,
-          `[RDV via ${referrerObj.full_name}] Relance - Un candidat souhaite être contacté`,
-          path.join(__dirname, `../../../assets/templates/mail-cfa-demande-de-contact.mjml.ejs`),
-          {
+        const { messageId } = await mailer.sendEmail({
+          to: widgetParameter.email_rdv,
+          subject: `[RDV via ${referrerObj.full_name}] Relance - Un candidat souhaite être contacté`,
+          template: path.join(currentDirname, `../../../assets/templates/mail-cfa-demande-de-contact.mjml.ejs`),
+          data: {
             user: {
               firstname: user.firstname,
               lastname: user.lastname,
@@ -460,8 +462,8 @@ export default ({ users, appointments, mailer, widgetParameters, etablissements 
             images: {
               peopleLaptop: `${config.publicUrl}/assets/girl_laptop.png?raw=true`,
             },
-          }
-        );
+          },
+        });
 
         await appointments.findOneAndUpdate(
           { _id: appointment._id },

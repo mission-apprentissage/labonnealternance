@@ -4,6 +4,8 @@ import config from "../config.js";
 import { dayjs } from "../common/utils/dayjs.js";
 import { optMode, mailType } from "../common/model/constants/etablissement.js";
 import { isValidEmail } from "../common/utils/isValidEmail.js";
+import __dirname from "../common/dirname.js";
+const currentDirname = __dirname(import.meta.url);
 
 /**
  * @description Invite all "etablissements" without opt_mode to opt-out.
@@ -68,7 +70,7 @@ export const inviteEtablissementToOptOut = async ({ etablissements, widgetParame
       const { messageId } = await mailer.sendEmail({
         to: emailDecisionaire,
         subject: `Améliorer le sourcing de vos candidats !`,
-        template: path.join(__dirname, `../assets/templates/mail-cfa-optout-invitation.mjml.ejs`),
+        template: path.join(currentDirname, `../assets/templates/mail-cfa-optout-invitation.mjml.ejs`),
         data: {
           images: {
             logoCfa: `${config.publicUrl}/assets/logo-lba-recruteur-cfa.png?raw=true`,
