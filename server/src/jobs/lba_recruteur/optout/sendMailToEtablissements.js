@@ -53,15 +53,15 @@ runScript(async ({ mailer }) => {
     let data;
 
     try {
-      data = await mailer.sendEmail(
-        email,
-        "Vous êtes invité à rejoindre La bonne alternance",
-        mailTemplate["mail-optout"],
-        {
+      data = await mailer.sendEmail({
+        to: email,
+        subject: "Vous êtes invité à rejoindre La bonne alternance",
+        template: mailTemplate["mail-optout"],
+        data: {
           raison_sociale: etablissement.raison_sociale,
           url: accessLink,
-        }
-      );
+        },
+      });
     } catch (errror) {
       console.log(`ERROR : ${email} - ${etablissement.siret}`, "-----", error);
       return;

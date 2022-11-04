@@ -106,12 +106,17 @@ export default ({ usersRecruteur, mailer, formulaire }) => {
 
       if (req.body.statut === "VALIDÉ") {
         // envoyer mail de bienvenue si validation de l'utilisateur
-        await mailer.sendEmail(user.email, "Bienvenue sur La Bonne Alternance", mailTemplate["mail-bienvenue"], {
-          nom: user.nom,
-          prenom: user.prenom,
-          raison_sociale: user.raison_sociale,
-          email: user.email,
-          mandataire: user.type === CFA,
+        await mailer.sendEmail({
+          to: user.email,
+          subject: "Bienvenue sur La Bonne Alternance",
+          template: mailTemplate["mail-bienvenue"],
+          data: {
+            nom: user.nom,
+            prenom: user.prenom,
+            raison_sociale: user.raison_sociale,
+            email: user.email,
+            mandataire: user.type === CFA,
+          },
         });
       }
 

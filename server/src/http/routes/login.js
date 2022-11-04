@@ -83,16 +83,16 @@ export default ({ usersRecruteur, mailer, etablissementsRecruteur }) => {
 
         const url = etablissementsRecruteur.getValidationUrl(_id);
 
-        await mailer.sendEmail(
-          email,
-          "La bonne alternance - Confirmez votre adresse email",
-          mailTemplate["mail-confirmation-email"],
-          {
+        await mailer.sendEmail({
+          to: email,
+          subject: "La bonne alternance - Confirmez votre adresse email",
+          template: mailTemplate["mail-confirmation-email"],
+          data: {
             nom,
             prenom,
             confirmation_url: url,
-          }
-        );
+          },
+        });
 
         return res.status(400).json({
           error: true,
@@ -102,10 +102,15 @@ export default ({ usersRecruteur, mailer, etablissementsRecruteur }) => {
 
       const magiclink = `${config.publicUrl}/authentification/verification?token=${createMagicLinkToken(email)}`;
 
-      await mailer.sendEmail(user.email, "La bonne alternance - Lien de connexion", mailTemplate["mail-connexion"], {
-        nom: user.nom,
-        prenom: user.prenom,
-        connexion_url: magiclink,
+      await mailer.sendEmail({
+        to: user.email,
+        subject: "La bonne alternance - Lien de connexion",
+        template: mailTemplate["mail-connexion"],
+        data: {
+          nom: user.nom,
+          prenom: user.prenom,
+          connexion_url: magiclink,
+        },
       });
 
       return res.sendStatus(200);

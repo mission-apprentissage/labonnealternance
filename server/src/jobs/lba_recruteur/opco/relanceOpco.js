@@ -32,14 +32,14 @@ export const relanceOpco = async (mailer) => {
     const user = await UserRecruteur.findOne({ scope: opco, type: "OPCO" });
 
     // send mail to recipient
-    await mailer.sendEmail(
-      user.email,
-      "La bonne alternance - Vos entreprises souhaitent déposer des offres",
-      mailTemplate["mail-relance-opco"],
-      {
+    await mailer.sendEmail({
+      to: user.email,
+      subject: "La bonne alternance - Vos entreprises souhaitent déposer des offres",
+      template: mailTemplate["mail-relance-opco"],
+      data: {
         count: userList[opco],
         url: `${config.publicUrl}/authentification`,
-      }
-    );
+      },
+    });
   }
 };

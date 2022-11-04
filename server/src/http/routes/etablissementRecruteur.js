@@ -277,16 +277,16 @@ export default ({ etablissementsRecruteur, usersRecruteur, formulaire, mailer })
 
             const url = etablissement.getValidationUrl(_id);
 
-            await mailer.sendEmail(
-              email,
-              "La Bonne Alternance — Confirmer votre adresse mail",
-              mailTemplate["mail-confirmation-email"],
-              {
+            await mailer.sendEmail({
+              to: email,
+              subject: "La Bonne Alternance — Confirmer votre adresse mail",
+              template: mailTemplate["mail-confirmation-email"],
+              data: {
                 prenom,
                 nom,
                 confirmation_url: url,
-              }
-            );
+              },
+            });
 
             // Keep the same structure as ENTREPRISE
             return res.json({ user: partenaire });
@@ -309,16 +309,16 @@ export default ({ etablissementsRecruteur, usersRecruteur, formulaire, mailer })
 
               const url = etablissement.getValidationUrl(_id);
 
-              await mailer.sendEmail(
-                email,
-                "La Bonne Alternance — Confirmer votre adresse mail",
-                mailTemplate["mail-confirmation-email"],
-                {
+              await mailer.sendEmail({
+                to: email,
+                subject: "La Bonne Alternance — Confirmer votre adresse mail",
+                template: mailTemplate["mail-confirmation-email"],
+                data: {
                   prenom,
                   nom,
                   confirmation_url: url,
-                }
-              );
+                },
+              });
 
               // Keep the same structure as ENTREPRISE
               return res.json({ user: partenaire });
@@ -401,12 +401,17 @@ export default ({ etablissementsRecruteur, usersRecruteur, formulaire, mailer })
 
       const user = await User.findById(req.body.id);
 
-      await mailer.sendEmail(user.email, "Bienvenue sur La Bonne Alternance", mailTemplate["mail-bienvenue"], {
-        raison_sociale: user.raison_sociale,
-        nom: user.nom,
-        prenom: user.prenom,
-        email: user.email,
-        mandataire: user.type === CFA,
+      await mailer.sendEmail({
+        to: user.email,
+        subject: "Bienvenue sur La Bonne Alternance",
+        template: mailTemplate["mail-bienvenue"],
+        data: {
+          raison_sociale: user.raison_sociale,
+          nom: user.nom,
+          prenom: user.prenom,
+          email: user.email,
+          mandataire: user.type === CFA,
+        },
       });
 
       await usersRecruteur.registerUser(user.email);

@@ -1,5 +1,4 @@
 import express from "express";
-import path from "path";
 import { mailTemplate } from "../../assets/index.js";
 import { getCatalogueEtablissements, getCatalogueFormations } from "../../common/catalogue.js";
 import dayjs from "../../common/dayjs.js";
@@ -179,18 +178,18 @@ export default ({ formulaire, mailer, etablissementsRecruteur, application, user
         // Get user account validation link
         const url = etablissementsRecruteur.getValidationUrl(user._id);
 
-        await mailer.sendEmail(
-          email,
-          "La bonne alternance - Merci de valider votre adresse mail pour diffuser votre offre",
-          mailTemplate["mail-nouvelle-offre-depot-simplifie"],
-          {
+        await mailer.sendEmail({
+          to: email,
+          subject: "La bonne alternance - Merci de valider votre adresse mail pour diffuser votre offre",
+          template: mailTemplate["mail-nouvelle-offre-depot-simplifie"],
+          data: {
             nom: user.nom,
             prenom: user.prenom,
             email: user.email,
             confirmation_url: url,
             offres: [offre],
-          }
-        );
+          },
+        });
 
         return res.json(result);
       }
@@ -201,13 +200,13 @@ export default ({ formulaire, mailer, etablissementsRecruteur, application, user
       }
 
       // Send mail with action links to manage offers
-      await mailer.sendEmail(
-        mandataire ? contactCFA.email : email,
-        mandataire
+      await mailer.sendEmail({
+        to: mandataire ? contactCFA.email : email,
+        subject: mandataire
           ? `La bonne alternance - Votre offre d'alternance pour ${raison_sociale} a bien été publiée`
           : `La bonne alternance - Votre offre d'alternance a bien été publiée`,
-        mailTemplate["mail-nouvelle-offre"],
-        {
+        template: mailTemplate["mail-nouvelle-offre"],
+        data: {
           nom: mandataire ? contactCFA.nom : nom,
           prenom: mandataire ? contactCFA.prenom : prenom,
           raison_sociale,
@@ -216,8 +215,8 @@ export default ({ formulaire, mailer, etablissementsRecruteur, application, user
           lba_url: config.publicUrl.includes("production")
             ? `https://labonnealternance.apprentissage.beta.gouv.fr/recherche-apprentissage?&display=list&page=fiche&type=matcha&itemId=${offre._id}`
             : `https://labonnealternance-recette.apprentissage.beta.gouv.fr/recherche-apprentissage?&display=list&page=fiche&type=matcha&itemId=${offre._id}`,
-        }
-      );
+        },
+      });
 
       return res.json(result);
     })
@@ -254,11 +253,11 @@ export default ({ formulaire, mailer, etablissementsRecruteur, application, user
           { etablissement_gestionnaire_courriel: 1 }
         );
 
-        await mailer.sendEmail(
-          formations[0].etablissement_gestionnaire_courriel,
-          `Une entreprise recrute dans votre domaine`,
-          path.join(__dirname, `../../assets/templates/mail-cfa-delegation.mjml.ejs`),
-          {
+        await mailer.sendEmail({
+          to: formations[0].etablissement_gestionnaire_courriel,
+          subject: `Une entreprise recrute dans votre domaine`,
+          template: mailTemplate["mail-cfa-delegation"],
+          data: {
             enterpriseName: offreDocument.raison_sociale,
             jobName: offre.libelle,
             contractType: offre.type[0],
@@ -269,8 +268,7 @@ export default ({ formulaire, mailer, etablissementsRecruteur, application, user
             offerButton: `${config.publicUrl}/proposition/formulaire/${offreDocument.id_form}/offre/${offre._id}`,
             createAccountButton: `${config.publicUrl}/creation/cfa`,
           },
-          "matcha@apprentissage.beta.gouv.fr"
-        );
+        });
       });
 
       await Promise.all(promises);

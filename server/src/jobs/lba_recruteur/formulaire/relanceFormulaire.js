@@ -66,18 +66,18 @@ export const relanceFormulaire = async (mailer, threshold) => {
       contactCFA = await UserRecruteur.findOne({ siret: gestionnaire });
     }
 
-    await mailer.sendEmail(
-      mandataire ? contactCFA.email : email,
-      "La bonne alternance - Vos offres vont expirer prochainement",
-      mailTemplate["mail-expiration-offres"],
-      {
+    await mailer.sendEmail({
+      to: mandataire ? contactCFA.email : email,
+      subject: "La bonne alternance - Vos offres vont expirer prochainement",
+      template: mailTemplate["mail-expiration-offres"],
+      data: {
         nom: mandataire ? contactCFA.nom : nom,
         prenom: mandataire ? contactCFA.prenom : prenom,
         raison_sociale,
         offres,
         threshold,
         url: `${config.publicUrl}/authentification`,
-      }
-    );
+      },
+    });
   });
 };
