@@ -1,8 +1,8 @@
-import config from "config";
 import { createReadStream } from "fs";
 import Joi from "joi";
 import { filterData, oleoduc, transformData, writeData } from "oleoduc";
 import path from "path";
+import config from "../../../../config.js";
 
 import __dirname from "../../../../common/dirname.js";
 import logger from "../../../../common/logger.js";

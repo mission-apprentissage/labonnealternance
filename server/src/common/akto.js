@@ -1,8 +1,8 @@
 import Sentry from "@sentry/node";
 import axios from "axios";
-import config from "config";
 import dayjs from "dayjs";
 import querystring from "querystring";
+import config from "../config.js";
 
 const isTokenValid = (token) => dayjs().isAfter(dayjs(token.expire));
 

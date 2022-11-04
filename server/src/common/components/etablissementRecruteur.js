@@ -1,6 +1,6 @@
 import Sentry from "@sentry/node";
 import axios from "axios";
-import config from "config";
+import config from "../../config.js";
 import { etat_etablissements } from "../constants.js";
 import { ReferentielOpco, UserRecruteur } from "../model/index.js";
 

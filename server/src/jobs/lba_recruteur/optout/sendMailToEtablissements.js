@@ -1,4 +1,3 @@
-import config from "config";
 import Joi from "joi";
 import _ from "lodash";
 import { mailTemplate } from "../../../assets/index.js";
@@ -6,6 +5,7 @@ import { logger } from "../../../common/logger.js";
 import { Optout, UserRecruteur } from "../../../common/model/index.js";
 import { asyncForEach } from "../../../common/utils/asyncUtils.js";
 import { createActivationToken } from "../../../common/utils/jwtUtils.js";
+import config from "../../../config.js";
 import { runScript } from "../../scriptWrapper.js";
 
 /**

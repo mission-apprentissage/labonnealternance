@@ -1,10 +1,10 @@
 import axios from "axios";
-import config from "config";
 import moment from "moment";
 import dayjs from "../../../common/dayjs.js";
 import { logger } from "../../../common/logger.js";
 import { Formulaire } from "../../../common/model/index.js";
 import { asyncForEach } from "../../../common/utils/asyncUtils.js";
+import config from "../../../config.js";
 
 export const annuleFormulaire = async () => {
   const today = dayjs().startOf("day").utc(true);

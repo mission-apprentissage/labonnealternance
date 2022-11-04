@@ -37,7 +37,6 @@
     "commander": "9.2.0",
     "company-email-validator": "1.0.8",
     "compose-middleware": "5.0.1",
-    "config": "3.3.1",
     "convert-csv-to-json": "0.0.15",
     "csv-parse": "5.3.1",
     "csvtojson": "2.0.10",

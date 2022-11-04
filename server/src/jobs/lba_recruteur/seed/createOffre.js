@@ -1,9 +1,9 @@
 /* eslint-disable */
 import axios from "axios";
-import config from "config";
 import _ from "lodash";
 import { logger } from "../../../common/logger.js";
 import { Formulaire, Offre } from "../../../common/model/index.js";
+import config from "../../../config.js";
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 

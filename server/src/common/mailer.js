@@ -1,10 +1,10 @@
-import config from "config";
 import ejs from "ejs";
 import { omit } from "lodash-es";
 import mjml from "mjml";
 import nodemailer from "nodemailer";
 import nodemailerHtmlToText from "nodemailer-html-to-text";
 import { promisify } from "util";
+import config from "../config.js";
 
 const htmlToText = nodemailerHtmlToText.htmlToText;
 const renderFile = promisify(ejs.renderFile);

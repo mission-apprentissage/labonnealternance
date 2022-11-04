@@ -1,4 +1,3 @@
-import config from "config";
 import express from "express";
 import path from "path";
 import { mailTemplate } from "../../assets/index.js";
@@ -6,6 +5,7 @@ import { getCatalogueEtablissements, getCatalogueFormations } from "../../common
 import dayjs from "../../common/dayjs.js";
 import { getElasticInstance } from "../../common/esClient/index.js";
 import { UserRecruteur } from "../../common/model/index.js";
+import config from "../../config.js";
 import { tryCatch } from "../middlewares/tryCatchMiddleware.js";
 
 const esClient = getElasticInstance();

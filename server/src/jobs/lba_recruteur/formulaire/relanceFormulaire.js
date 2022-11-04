@@ -1,10 +1,10 @@
 import axios from "axios";
-import config from "config";
 import moment from "moment";
 import { mailTemplate } from "../../../assets/index.js";
 import { logger } from "../../../common/logger.js";
 import { Formulaire, UserRecruteur } from "../../../common/model/index.js";
 import { asyncForEach } from "../../../common/utils/asyncUtils.js";
+import config from "../../../config.js";
 
 export const relanceFormulaire = async (mailer, threshold) => {
   // number of days to expiration for the reminder email to be sent
