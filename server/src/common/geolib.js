@@ -1,4 +1,4 @@
-import { getDistance } from "geolib";
+import distance from "@turf/distance";
 
 /**
  * @description Returns number of kilometers between two geo points.
@@ -6,7 +6,10 @@ import { getDistance } from "geolib";
  * @returns {number}
  */
 export const getDistanceInKm = (coordinate) => {
-  const distanceInKm = getDistance(coordinate.origin, coordinate.destination) / 1000;
+  const distanceInKm = distance(
+    Object.values(coordinate.origin).reverse(),
+    Object.values(coordinate.destination).reverse()
+  );
 
   return Math.ceil(distanceInKm);
 };
