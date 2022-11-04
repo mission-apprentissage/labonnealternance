@@ -2,10 +2,9 @@ import express from "express";
 import parseChangelog from "changelog-parser";
 import { get } from "lodash-es";
 import path from "path";
-import * as url from "url";
 import { tryCatch } from "../middlewares/tryCatchMiddleware.js";
-
-const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
+import __dirname from "../../common/dirname.js";
+const currentDirname = __dirname(import.meta.url);
 
 /**
  * VERSION
@@ -16,7 +15,7 @@ export default () => {
   router.get(
     "/",
     tryCatch(async (req, res) => {
-      let data = await parseChangelog(path.join(__dirname, "../../../CHANGELOG.md"));
+      let data = await parseChangelog(path.join(currentDirname, "../../../CHANGELOG.md"));
       return res.json(get(data, "versions.0", {}));
     })
   );

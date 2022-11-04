@@ -4,10 +4,9 @@ import widgetParameters from "../../../src/common/components/widgetParameters.js
 import { WidgetParameter } from "../../../src/common/model/index.js";
 import { referrers } from "../../../src/common/model/constants/referrers.js";
 import { sampleParameter, sampleUpdateParameter } from "../../data/samples.js";
-import { fileURLToPath } from "url";
-const __filename = fileURLToPath(import.meta.url);
+import __filename from "../../../src/common/filename.js";
 
-integrationTests(__filename, () => {
+integrationTests(__filename(import.meta.url), () => {
   it("Permet de créer un paramètre de Widget", async () => {
     const { createParameter } = await widgetParameters();
 

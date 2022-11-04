@@ -9,10 +9,10 @@ import _ from "lodash-es";
 import { logMessage } from "../../common/utils/logMessage.js";
 //const opcoAktoSirenFilePath = path.join(__dirname, "./assets/20220301-Akto_SIREN.csv");
 import { notifyToSlack } from "../../common/utils/slackUtils.js";
-import * as url from "url";
-const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
+import __dirname from "../../common/dirname.js";
+const currentDirname = __dirname(import.meta.url);
 
-const opcoSirenFile = path.join(__dirname, "./assets/opco_sirens.csv");
+const opcoSirenFile = path.join(currentDirname, "./assets/opco_sirens.csv");
 
 const aadTokenUrl = "https://login.microsoftonline.com/0285c9cb-dd17-4c1e-9621-c83e9204ad68/oauth2/v2.0/token";
 const grantType = "client_credentials";

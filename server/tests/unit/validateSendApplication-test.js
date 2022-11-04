@@ -10,13 +10,11 @@ import {
   validatePermanentEmail,
   validateCompanyEmail,
 } from "../../src/service/validateSendApplication.js";
-
-import { fileURLToPath } from "url";
-const __filename = fileURLToPath(import.meta.url);
+import __filename from "../../src/common/filename.js";
 
 import { decryptWithIV } from "../../src/common/utils/encryptString.js";
 
-describe(__filename, () => {
+describe(__filename(import.meta.url), () => {
   it("validateSendApplication : Echoue si mauvais argument passé en param", async () => {
     expect(await validateSendApplication()).to.equal("données de candidature invalides");
   });

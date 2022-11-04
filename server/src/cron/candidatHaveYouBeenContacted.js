@@ -4,8 +4,8 @@ import config from "../config.js";
 import { dayjs } from "../common/utils/dayjs.js";
 import { getReferrerById } from "../common/model/constants/referrers.js";
 import { mailType } from "../common/model/constants/appointments.js";
-import * as url from "url";
-const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
+import __dirname from "../common/dirname.js";
+const currentDirname = __dirname(import.meta.url);
 
 /**
  * @description Sends a mail to the candidat in order to know if he has been contacter or not.
@@ -45,7 +45,7 @@ export const candidatHaveYouBeenContacted = async ({
       mailer.sendEmail({
         to: user.email,
         subject: `🛎️ Avez-vous été contacté par le centre de formation ?`,
-        template: path.join(__dirname, `../assets/templates/mail-candidat-rdv-have-you-been-contacted.mjml.ejs`),
+        template: path.join(currentDirname, `../assets/templates/mail-candidat-rdv-have-you-been-contacted.mjml.ejs`),
         data: {
           images: {
             logoCandidat: `${config.publicUrl}/assets/logo-lba-recruteur-candidat.png?raw=true`,
@@ -80,7 +80,7 @@ export const candidatHaveYouBeenContacted = async ({
       mailer.sendEmail({
         to: widgetParameter.email_rdv,
         subject: `[RDV via ${referrerObj.full_name}] 🛎 ️Pouvez-vous contacter ce candidat ?`,
-        template: path.join(__dirname, `../assets/templates/mail-cfa-relance-demande-de-contact.mjml.ejs`),
+        template: path.join(currentDirname, `../assets/templates/mail-cfa-relance-demande-de-contact.mjml.ejs`),
         data: {
           images: {
             logoCfa: `${config.publicUrl}/assets/logo-lba-recruteur-candidat.png?raw=true`,

@@ -4,10 +4,9 @@ import appointments from "../../../src/common/components/appointments.js";
 import users from "../../../src/common/components/users.js";
 import { Appointment } from "../../../src/common/model/index.js";
 import { roles } from "../../../src/common/roles.js";
-import { fileURLToPath } from "url";
-const __filename = fileURLToPath(import.meta.url);
+import __filename from "../../../src/common/filename.js";
 
-integrationTests(__filename, () => {
+integrationTests(__filename(import.meta.url), () => {
   it("Permet de créer un appointment", async () => {
     const { createAppointment } = await appointments();
     const { createUser } = await users();

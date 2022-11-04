@@ -19,6 +19,8 @@ import {
 import { validateCaller } from "./queryValidators.js";
 import { logger } from "../common/logger.js";
 import { oleoduc, writeData } from "oleoduc";
+import __dirname from "../common/dirname.js";
+const currentDirname = __dirname(import.meta.url);
 
 const publicUrl = config.publicUrl;
 
@@ -528,7 +530,7 @@ const sendTestMail = async ({ mailer, query }) => {
 };
 
 const getEmailTemplate = (type = "mail-candidat") => {
-  return path.join(__dirname, `../assets/templates/${type}.mjml.ejs`);
+  return path.join(currentDirname, `../assets/templates/${type}.mjml.ejs`);
 };
 
 const updateBlockedEmails = async ({ query, shouldCheckSecret }) => {

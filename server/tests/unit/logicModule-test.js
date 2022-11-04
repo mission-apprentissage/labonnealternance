@@ -5,7 +5,7 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 
 
-describe(__filename, () => {
+describe(__filename(import.meta.url), () => {
   it("Renvoi un message de test valide", () => {
     assert.strictEqual(getTestMessage("TEST"), "TEST Message");
   });

@@ -1,10 +1,9 @@
 import assert from "assert";
 import httpTests from "../../utils/httpTests.js";
 import { roles } from "../../../src/common/roles.js";
-import { fileURLToPath } from "url";
-const __filename = fileURLToPath(import.meta.url);
+import __filename from "../../../src/common/filename.js";
 
-httpTests(__filename, ({ startServer }) => {
+httpTests(__filename(import.meta.url), ({ startServer }) => {
   it("Vérifie qu'on peut se connecter à une route sécurisée en tant qu'administrateur", async () => {
     const { httpClient, createAndLogUser } = await startServer();
     const bearerToken = await createAndLogUser("userAdmin", "password", { role: roles.administrator });

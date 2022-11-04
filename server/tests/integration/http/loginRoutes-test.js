@@ -5,10 +5,9 @@ import config from "../../../src/config.js";
 import httpTests from "../../utils/httpTests.js";
 import { User } from "../../../src/common/model/index.js";
 import { hash } from "../../../src/common/utils/sha512Utils.js";
-import { fileURLToPath } from "url";
-const __filename = fileURLToPath(import.meta.url);
+import __filename from "../../../src/common/filename.js";
 
-httpTests(__filename, ({ startServer }) => {
+httpTests(__filename(import.meta.url), ({ startServer }) => {
   it("Vérifie qu'on peut se connecter", async () => {
     const { httpClient, components } = await startServer();
     await components.users.createUser("user", "password");
