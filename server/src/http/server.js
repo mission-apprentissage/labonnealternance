@@ -2,10 +2,10 @@ import Sentry from "@sentry/node";
 import Tracing from "@sentry/tracing";
 import bodyParser from "body-parser";
 import express from "express";
+import { readFileSync } from "fs";
 import cron from "node-cron";
 import path from "path";
 import swaggerUi from "swagger-ui-express";
-import swaggerDocument from "../api-docs/swagger.json" assert { type: "json" };
 import { logger } from "../common/logger.js";
 import config from "../config.js";
 import { activateOptOutEtablissementFormations } from "../cron/activateOptOutEtablissementFormations.js";
@@ -70,6 +70,8 @@ import {
   limiter5PerSecond,
   limiter7PerSecond,
 } from "./utils/rateLimiters.js";
+
+const swaggerDocument = JSON.parse(readFileSync("../api-docs/swagger.json"));
 
 export default async (components) => {
   const app = express();
