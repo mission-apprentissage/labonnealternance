@@ -93,6 +93,7 @@
     "sha512crypt-node": "0.1.0",
     "sib-api-v3-sdk": "8.2.1",
     "stream-json": "1.7.4",
+    "swagger-jsdoc": "6.2.5",
     "swagger-ui-express": "4.1.4",
     "tcp-port-used": "1.0.2",
     "uuid": "9.0.0",

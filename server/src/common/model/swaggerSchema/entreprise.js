@@ -1,4 +1,4 @@
-import { offre } from "./offre.js";
+import offre from "./offre.js";
 
 export default {
   entreprise: {

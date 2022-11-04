@@ -5,6 +5,7 @@ import express from "express";
 import { readFileSync } from "fs";
 import cron from "node-cron";
 import path from "path";
+import swaggerDoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
 import { logger } from "../common/logger.js";
 import config from "../config.js";
@@ -19,6 +20,7 @@ import { roles } from "./../common/roles.js";
 import authMiddleware from "./middlewares/authMiddleware.js";
 import { corsMiddleware } from "./middlewares/corsMiddleware.js";
 import { errorMiddleware } from "./middlewares/errorMiddleware.js";
+import { logMiddleware } from "./middlewares/logMiddleware.js";
 import permissionsMiddleware from "./middlewares/permissionsMiddleware.js";
 import { tryCatch } from "./middlewares/tryCatchMiddleware.js";
 import admin from "./routes/admin/admin.js";
@@ -37,7 +39,6 @@ import etablissementRoute from "./routes/etablissement.js";
 import faq from "./routes/faq.js";
 import formationRegionV1 from "./routes/formationRegionV1.js";
 import formationV1 from "./routes/formationV1.js";
-import hello from "./routes/helloRoutes.js";
 import jobDiploma from "./routes/jobDiploma.js";
 import jobEtFormationV1 from "./routes/jobEtFormationV1.js";
 import jobV1 from "./routes/jobV1.js";
@@ -62,6 +63,7 @@ import loginRoute from "./routes/login.js";
 import optoutRoute from "./routes/optout.js";
 import userRoute from "./routes/user.js";
 
+import __dirname from "../common/dirname.js";
 import {
   limiter10PerSecond,
   limiter1Per20Second,
@@ -71,7 +73,57 @@ import {
   limiter7PerSecond,
 } from "./utils/rateLimiters.js";
 
-const swaggerDocument = JSON.parse(readFileSync("../api-docs/swagger.json"));
+/**
+ * LBA-Candidat Swagger file
+ */
+const dirname = __dirname(import.meta.url);
+const swaggerDocument = JSON.parse(readFileSync(path.resolve(dirname, "../api-docs/swagger.json")));
+
+/**
+ * LBA-Recruteur Swagger configuration
+ */
+
+const swaggerOptions = {
+  definition: {
+    openapi: "3.0.0",
+    info: {
+      title: "La bonne alternance - recruteur",
+      version: "1.0.0",
+      description: `Vous trouverez ici la définition de l'api La bonne alternance recruteur<br/><br/>
+      <h3><strong>${config.publicUrl}/api/v1</strong></h3><br/>
+      Contact:
+      `,
+      contact: {
+        name: "Mission Nationale pour l'apprentissage",
+        url: "https://mission-apprentissage.gitbook.io/general/",
+        email: "nepasrepondre@apprentissage.beta.gouv.fr",
+      },
+    },
+    servers: [
+      {
+        url: `${config.publicUrl}/api/v1`,
+      },
+    ],
+  },
+  apis: ["./src/http/routes/api.js"],
+};
+
+const swaggerSpecification = swaggerDoc(swaggerOptions);
+
+swaggerSpecification.components = {
+  // schemas: swaggerRecruteurSchema, // To be fixed, require-all is commonJS only
+  securitySchemes: {
+    bearerAuth: {
+      type: "http",
+      scheme: "bearer",
+      bearerFormat: "api-key",
+    },
+  },
+};
+
+const swaggerUIOptions = {
+  customCss: ".swagger-ui .topbar { display: none }",
+};
 
 export default async (components) => {
   const app = express();
@@ -104,8 +156,7 @@ export default async (components) => {
 
   app.use(corsMiddleware());
 
-  //app.use(logMiddleware());
-  app.use(hello());
+  app.use(logMiddleware());
 
   app.get(
     "/api",
@@ -133,12 +184,17 @@ export default async (components) => {
   );
 
   /**
-   * LBACandidat
+   * Swaggers
    */
   app.get("/api-docs/swagger.json", (req, res) => {
-    res.sendFile(path.resolve("./src/api-docs/swagger.json"));
+    res.sendFile(path.resolve(dirname, "../api-docs/swagger.json"));
   });
-  app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+  app.use("/api/v1/lba-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument, swaggerUIOptions));
+  app.use("/api/v1/lbar-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpecification, swaggerUIOptions));
+
+  /**
+   * LBACandidat
+   */
   app.use("/api/version", limiter3PerSecond, version());
   app.use("/api/faq", limiter5PerSecond, faq());
   app.use("/api/error500", limiter3PerSecond, error500());

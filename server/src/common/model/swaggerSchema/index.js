@@ -21,4 +21,4 @@ Object.keys(modelsList).forEach((filename) => {
   models = { ...models, ...model };
 });
 
-export { models };
+export default models;
