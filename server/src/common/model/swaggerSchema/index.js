@@ -1,4 +1,5 @@
-const requireAll = require("require-all");
+import requireAll from "require-all";
+import __dirname from "../../dirname.js";
 
 let models = {};
 
@@ -11,7 +12,7 @@ function filterFile(filename) {
 }
 
 const modelsList = requireAll({
-  dirname: __dirname,
+  dirname: __dirname(import.meta.url),
   filter: (filename) => filterFile(filename),
 });
 
@@ -20,4 +21,4 @@ Object.keys(modelsList).forEach((filename) => {
   models = { ...models, ...model };
 });
 
-module.exports = models;
+export { models };

@@ -1,4 +1,4 @@
-const userList = [
+export const userList = [
   { nom: "Delafosse", prenom: "Diane", email: "d.delafosse@opco2i.fr", opco: { OPCO2I: "OPCO 2i" } },
   {
     nom: "Bossan",
@@ -26,5 +26,3 @@ const userList = [
   },
   { nom: "Bauer", prenom: "Marie", email: "marie.bauer@opcomobilites.fr", opco: { MOBILITE: "Opco Mobilités" } },
 ];
-
-module.exports = { userList };

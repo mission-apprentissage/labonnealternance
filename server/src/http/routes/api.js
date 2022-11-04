@@ -270,7 +270,7 @@ export default ({ formulaire, etablissementsRecruteur, usersRecruteur }) => {
         });
       }
 
-      let formattedSiretInfo = etablissement.formatEntrepriseData(siretInfo.data.etablissement);
+      let formattedSiretInfo = etablissementsRecruteur.formatEntrepriseData(siretInfo.data.etablissement);
 
       let opcoResult = await etablissementsRecruteur.getOpco(req.params.siret);
       let geo_coordonnees = await etablissementsRecruteur.getGeoCoordinates(
@@ -710,7 +710,7 @@ export default ({ formulaire, etablissementsRecruteur, usersRecruteur }) => {
         });
       }
 
-      let formattedSiretInfo = etablissement.formatCatalogueData(siretInfo);
+      let formattedSiretInfo = etablissementsRecruteur.formatCatalogueData(siretInfo);
 
       let newUser = await usersRecruteur.createUser({ type: "CFA", ...formattedSiretInfo, ...req.body });
 

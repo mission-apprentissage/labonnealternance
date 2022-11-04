@@ -1,7 +1,7 @@
-import config from "config";
 import got from "got";
 import { sortBy } from "lodash-es";
 import { getDistanceInKm } from "../common/geolib.js";
+import config from "../config.js";
 
 /**
  * @description Returns wanted page number.

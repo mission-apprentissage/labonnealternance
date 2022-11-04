@@ -1,5 +1,8 @@
-import config from "config";
+import axios from "axios";
 import express from "express";
+import querystring from "querystring";
+import dayjs from "../../common/dayjs.js";
+import config from "../../config.js";
 import { getRomesAndLabelsFromTitleQuery } from "../../service/domainesMetiers.js";
 import { tryCatch } from "../middlewares/tryCatchMiddleware.js";
 
@@ -7,7 +10,7 @@ import { tryCatch } from "../middlewares/tryCatchMiddleware.js";
  * API romes
  */
 
-const isTokenValid = (token) => token.expire?.isAfter(moment());
+const isTokenValid = (token) => token.expire?.isAfter(dayjs());
 
 const getToken = async (token = {}) => {
   let isValid = isTokenValid(token);
@@ -35,7 +38,7 @@ const getToken = async (token = {}) => {
 
     return {
       ...response.data,
-      expire: moment().add(response.data.expires_in - 10, "s"),
+      expire: dayjs().add(response.data.expires_in - 10, "s"),
     };
   } catch (error) {
     console.log(error);

@@ -3,6 +3,7 @@ import { parse } from "csv-parse";
 import { isEmpty, pickBy } from "lodash-es";
 import path from "path";
 import XLSX from "xlsx";
+import config from "../../config.js";
 
 import { FTPClient } from "./ftpUtils.js";
 

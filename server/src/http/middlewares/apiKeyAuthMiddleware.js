@@ -1,6 +1,6 @@
-import { Credential } from "common/model";
+import { Credential } from "../../common/model/index.js";
 
-export default function (req, res, next) {
+export default async function (req, res, next) {
   const apiKey = req.get("API-Key");
   const exist = await Credential.exists({ apiKey, actif: true });
 
