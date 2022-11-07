@@ -1,3 +1,4 @@
+// eslint-disable-next-line node/no-missing-import, node/no-unpublished-import
 import faker from "faker/locale/fr.js";
 import RandExp from "randexp";
 import { referrers } from "../../src/common/model/constants/referrers.js";
