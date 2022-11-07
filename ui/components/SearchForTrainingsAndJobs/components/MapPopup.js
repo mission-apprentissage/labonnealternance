@@ -67,7 +67,7 @@ const MapPopup = ({ type, item, handleSelectItem, setSelectedItem, setSelectedMa
             <div className="ml-3 my-3">
               <img className="cardIcon mr-2" src={bookIcon} alt="" />
               <span className="mapboxPopupTitle">Formations : </span>
-              <a href="https://media.giphy.com/media/l3vRfjcp7VMSZwbGo/giphy.gif" classname="c-nice-link font-weight-normal" target="_blank">
+              <a href="https://media.giphy.com/media/l3vRfjcp7VMSZwbGo/giphy.gif" className="c-nice-link font-weight-normal" target="_blank" rel="noreferrer">
                 Plus de formations
               </a>
             </div>
