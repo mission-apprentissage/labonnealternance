@@ -24,7 +24,7 @@ class LaBonneAlternance extends App {
 
     if (req?.headers?.host) {
       host = req.headers.host;
-      host = `${host.startsWith("localhost") ? "http" : "https"}://0.0.0.0`;
+      host = `${host.startsWith("localhost") ? "http" : "https"}://${host}`;
     }
 
     return { host };
