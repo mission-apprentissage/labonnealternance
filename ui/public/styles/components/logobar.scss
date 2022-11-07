@@ -103,6 +103,9 @@ form.c-logobar-form {
 }
 
 .c-regular-darkbtn.c-logobar-submit.is-home-true {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   @include media-breakpoint-up(xl) { 
     padding-left: 38px;
     padding-right: 42px;

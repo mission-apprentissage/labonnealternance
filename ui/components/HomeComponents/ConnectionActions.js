@@ -9,16 +9,7 @@ const ConnectionActions = ({ service }) => {
     <Stack direction="row" spacing="25px" pt="30px">
       {service === "entreprise" && (
         <Button
-          sx={{
-            border: "1px solid #000091",
-            borderRadius: 0,
-            textTransform: "none",
-            fontWeight: 400,
-            bg: "#000091",
-            color: "white",
-            padding: "10px 24px",
-            fontSize: "18px",
-          }}
+          variant="primary"
           onClick={() => router.push("/espace-pro/creation/entreprise")}
         >
           Déposer une offre
@@ -26,32 +17,14 @@ const ConnectionActions = ({ service }) => {
       )}
       {service === "cfa" && (
         <Button
-          sx={{
-            border: "1px solid #000091",
-            borderRadius: 0,
-            textTransform: "none",
-            fontWeight: 400,
-            bg: "#000091",
-            color: "white",
-            padding: "10px 24px",
-            fontSize: "18px",
-          }}
+          variant="primary"
           onClick={() => router.push("/espace-pro/creation/cfa")}
         >
           Créer mon espace dédié
         </Button>
       )}
       <Button
-        sx={{
-          borderRadius: 0,
-          textTransform: "none",
-          fontWeight: 400,
-          color: "#000091",
-          bg: "white",
-          border: "1px solid #000091",
-          padding: "10px 24px",
-          fontSize: "18px",
-        }}
+        variant="secondary"
         onClick={() => router.push("/espace-pro/creation/cfa")}
       >
         Me connecter
