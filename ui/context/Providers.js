@@ -4,7 +4,7 @@ import ParameterContextProvider from "./ParameterContextProvider";
 import DisplayContextProvider from "./DisplayContextProvider";
 import PlausibleProvider from "next-plausible";
 import { ChakraProvider } from '@chakra-ui/react'
-import theme from '../theme/theme'
+import theme from '../theme/index'
 
 const Providers = ({ env, children }) => {
   return (

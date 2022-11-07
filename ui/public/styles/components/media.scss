@@ -25,7 +25,7 @@
   padding: 0.5rem;
   padding-top: 0.25rem;
   font-size: 12px;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   @include media-breakpoint-up(lg) {
     font-size: 8px;
