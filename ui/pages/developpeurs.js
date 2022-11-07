@@ -7,7 +7,7 @@ import { NextSeo } from "next-seo";
 import Footer from "../components/footer";
 import ExternalLink from "../components/externalLink";
 
-import { Box } from '@chakra-ui/react';
+import { Box, Grid, GridItem } from '@chakra-ui/react';
 
 const developpeurs = () => (
   <div>
@@ -20,14 +20,14 @@ const developpeurs = () => (
     <Breadcrumb forPage="developpeurs" label="Développeurs" />
 
     <Box p={12} my={0} mb={[0,12]} className="c-page-container container">
-      <div className="row">
-        <div className="col-12 col-md-5">
+      <Grid templateColumns="repeat(12, 1fr)">
+        <GridItem colSpan={[12,12,12,5]}>
           <h1>
             <span className="d-block c-page-title is-color-2">Développeurs</span>
           </h1>
           <hr className="c-page-title-separator" align="left" />
-        </div>
-        <div className="col-12 col-md-7">
+        </GridItem>
+        <GridItem colSpan={[12,12,12,7]}>
           <h3>Code source ouvert</h3>
           <ExternalLink
             url="https://github.com/mission-apprentissage/labonnealternance"
@@ -43,8 +43,8 @@ const developpeurs = () => (
             url="https://api.gouv.fr/les-api/api-la-bonne-alternance"
             title="https://api.gouv.fr/les-api/api-la-bonne-alternance"
           />
-        </div>
-      </div>
+        </GridItem>
+      </Grid>
     </Box>
     <Box mb={3}>&nbsp;</Box>
     <Footer />
