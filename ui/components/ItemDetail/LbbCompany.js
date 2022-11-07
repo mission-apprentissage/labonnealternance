@@ -120,7 +120,7 @@ const LbbCompany = ({ company, handleSelectItem, showTextOnly, searchForTraining
           </div>
 
           <div>
-            <div className="cardText pt-2">{get(company, "nafs[0].label", "")}</div>
+            <div className="cardText pt-2">Secteur d'activité : {get(company, "nafs[0].label", "")}</div>
             <div className="cardText pt-2">{company.place.fullAddress}</div>
           </div>
 

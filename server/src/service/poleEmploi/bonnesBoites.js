@@ -4,6 +4,8 @@ import { manageApiError } from "../../common/utils/errorManager.js";
 import { encryptMailWithIV } from "../../common/utils/encryptString.js";
 import { isAllowedSource } from "../../common/utils/isAllowedSource.js";
 
+import { lbbMock } from "../../mocks/lbbs-mock";
+
 const esClient = getBonnesBoitesES();
 
 const getSomeLbbCompanies = async ({
@@ -16,29 +18,34 @@ const getSomeLbbCompanies = async ({
   caller,
   opco,
   api = "jobV1",
+  useMock,
 }) => {
   const hasLocation = latitude === undefined ? false : true;
   let companies = null;
   let currentRadius = hasLocation ? radius : 21000;
   let companyLimit = 150; //TODO: query params options or default value from properties -> size || 100
 
-  companies = await getLbbCompanies({
-    romes,
-    latitude,
-    longitude,
-    radius: currentRadius,
-    companyLimit,
-    type,
-    caller,
-    api,
-    opco,
-  });
+  if (useMock) {
+    return { results: [lbbMock] };
+  } else {
+    companies = await getLbbCompanies({
+      romes,
+      latitude,
+      longitude,
+      radius: currentRadius,
+      companyLimit,
+      type,
+      caller,
+      api,
+      opco,
+    });
 
-  if (companies && companies.length) {
-    companies = transformLbbCompaniesForIdea({ companies, radius, type, referer, caller });
+    if (companies && companies.length) {
+      companies = transformLbbCompaniesForIdea({ companies, radius, type, referer, caller });
+    }
+
+    return companies;
   }
-
-  return companies;
 };
 
 const transformLbbCompaniesForIdea = ({ companies, type, referer, caller }) => {

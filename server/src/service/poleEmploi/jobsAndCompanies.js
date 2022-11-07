@@ -109,6 +109,7 @@ const getJobsFromApi = async ({ query, api }) => {
             caller: query.caller,
             api,
             opco: query.opco,
+            useMock: query.useMock,
           })
         : null,
       sources.indexOf("lbb") >= 0
@@ -122,6 +123,7 @@ const getJobsFromApi = async ({ query, api }) => {
             caller: query.caller,
             api,
             opco: query.opco,
+            useMock: query.useMock,
           })
         : null,
       sources.indexOf("matcha") >= 0

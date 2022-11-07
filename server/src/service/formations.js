@@ -226,8 +226,6 @@ const getRegionFormations = async ({
   limit = formationResultLimit,
   caller,
 }) => {
-  //console.log(romes, coords, radius, diploma);
-
   try {
     let mustTerm = [];
 
@@ -655,8 +653,6 @@ const getFormationDescriptionQuery = async (params) => {
 };
 
 const getFormationsParRegionQuery = async (query) => {
-  //console.log("query : ", query);
-
   const queryValidationResult = formationsRegionQueryValidator(query);
 
   if (queryValidationResult.error) {
