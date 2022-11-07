@@ -7,6 +7,8 @@ import { NextSeo } from "next-seo";
 import Footer from "../components/footer";
 import ExternalLink from "../components/externalLink";
 
+import { Box } from '@chakra-ui/react';
+
 const developpeurs = () => (
   <div>
     <NextSeo
@@ -17,7 +19,7 @@ const developpeurs = () => (
     <Navigation />
     <Breadcrumb forPage="developpeurs" label="Développeurs" />
 
-    <div className="c-page-container container my-0 mb-sm-5 p-5">
+    <Box p={12} my={0} mb={[0,12]} className="c-page-container container">
       <div className="row">
         <div className="col-12 col-md-5">
           <h1>
@@ -43,8 +45,8 @@ const developpeurs = () => (
           />
         </div>
       </div>
-    </div>
-    <div className="mb-3">&nbsp;</div>
+    </Box>
+    <Box mb={3}>&nbsp;</Box>
     <Footer />
   </div>
 );
