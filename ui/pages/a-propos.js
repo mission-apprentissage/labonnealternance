@@ -239,7 +239,7 @@ const APROPOS = () => (
               </div>
               <div className="c-about-otherright">
                 <span className="c-about-otherdescr">
-                  The one vous aide dans toutes vos démarches de recherche d'une alternance.
+                  The one vous aide dans toutes vos démarches de recherche d&apos;une alternance.
                 </span>
               </div>
             </div>
