@@ -95,18 +95,10 @@ const Navigation = ({ currentPage, bgcolor }) => {
                 <>
                   <div className='ml-2 c-navigation__separator'></div>
                   <NavItem className='ml-lg-2'>
-                    <Link href='/organisme-de-formation'>
-                      <a
-                        className='nav-link'
-                        onClick={(e) => {
-                          e.preventDefault()
-                          router.push('/espace-pro/authentification')
-                        }}                      
-                      >
-                        <span className='mx-1'>
-                          <img className='c-homecomponent-bluelock mr-2' src='/images/icons/blue_lock.svg' alt='' />
-                          Connexion
-                        </span>
+                    <Link href='/espace-pro/authentification'>
+                      <a className='nav-link'>
+                        <img className='c-homecomponent-bluelock mr-2' src='/images/icons/blue_lock.svg' alt='Locking tool' />
+                        <span className='mx-1'>Connexion</span>
                       </a>
                     </Link>
                   </NavItem>
