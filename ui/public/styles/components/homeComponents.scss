@@ -36,6 +36,21 @@
     margin:auto;
 }
 
+.c-homecomponent-illustration--above1 {
+    position: absolute;
+    width: 100px;
+    right: 0;
+    top: 33%;
+}
+.c-homecomponent-illustration--above2 {
+    position: absolute;
+    width: 100px;
+    right: 0;
+    top: 20%;
+
+}
+
+
 .c-homecomponent-xxsbr{
     display:none;
     @media (max-width: 410px)
