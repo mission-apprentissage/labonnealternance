@@ -1,7 +1,7 @@
-import path from "path";
-import config from "../../src/config.js";
 import { emptyDir } from "fs-extra";
+import path from "path";
 import { connectToMongo } from "../../src/common/mongodb.js";
+import config from "../../src/config.js";
 
 import * as url from "url";
 const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
@@ -11,7 +11,7 @@ let mongoHolder = null;
 
 const connectToMongoForTests = async () => {
   if (!mongoHolder) {
-    const uri = config.private.mongodb.uri.split("labonnealternance").join("labonnealternance_test");
+    const uri = config.mongodb.uri.split("labonnealternance").join("labonnealternance_test");
     mongoHolder = await connectToMongo(uri);
   }
   return mongoHolder;

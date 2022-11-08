@@ -1,12 +1,12 @@
-import { logger } from "../common/logger.js";
-import { getDomainesMetiersES } from "../common/esClient/index.js";
-import _ from "lodash-es";
-import config from "../config.js";
-import updateDomainesMetiers from "../jobs/domainesMetiers/updateDomainesMetiers.js";
-import getMissingRNCPsFromDomainesMetiers from "../jobs/domainesMetiers/getMissingRNCPsFromDomainesMetiers.js";
 import Sentry from "@sentry/node";
-import { getRomesFromCfd, getRomesFromSiret } from "./romesFromCatalogue.js";
+import _ from "lodash-es";
 import { matchSorter } from "match-sorter";
+import { getDomainesMetiersES } from "../common/esClient/index.js";
+import { logger } from "../common/logger.js";
+import config from "../config.js";
+import getMissingRNCPsFromDomainesMetiers from "../jobs/domainesMetiers/getMissingRNCPsFromDomainesMetiers.js";
+import updateDomainesMetiers from "../jobs/domainesMetiers/updateDomainesMetiers.js";
+import { getRomesFromCfd, getRomesFromSiret } from "./romesFromCatalogue.js";
 
 const getRomesAndLabelsFromTitleQuery = async (query) => {
   if (!query.title) return { error: "title_missing" };
@@ -329,7 +329,7 @@ const removeDuplicateDiplomas = (diplomas) => {
 const updateRomesMetiersQuery = async (query) => {
   if (!query.secret) {
     return { error: "secret_missing" };
-  } else if (query.secret !== config.private.secretUpdateRomesMetiers) {
+  } else if (query.secret !== config.secretUpdateRomesMetiers) {
     return { error: "wrong_secret" };
   } else {
     try {
@@ -348,7 +348,7 @@ const updateRomesMetiersQuery = async (query) => {
 const getMissingRNCPs = async (query) => {
   if (!query.secret) {
     return { error: "secret_missing" };
-  } else if (query.secret !== config.private.secretUpdateRomesMetiers) {
+  } else if (query.secret !== config.secretUpdateRomesMetiers) {
     return { error: "wrong_secret" };
   } else {
     try {

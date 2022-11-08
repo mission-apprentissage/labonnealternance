@@ -63,7 +63,7 @@ const getFormationsByIdParcoursup = ({ idParcoursup }) =>
  * @returns {Promise<Object>}
  */
 const getFormations = async (query, page = 1, limit = 500) => {
-  const { data } = await axios.post(`${config.private.catalogueUrl}/api/v1/entity/formations`, {
+  const { data } = await axios.post(`${config.catalogueUrl}/api/v1/entity/formations`, {
     query,
     select: {
       _id: 1,

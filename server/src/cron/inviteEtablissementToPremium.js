@@ -1,9 +1,9 @@
 import path from "path";
-import { logger } from "../common/logger.js";
-import config from "../config.js";
-import { dayjs } from "../common/utils/dayjs.js";
-import { mailType } from "../common/model/constants/etablissement.js";
 import __dirname from "../common/dirname.js";
+import { logger } from "../common/logger.js";
+import { mailType } from "../common/model/constants/etablissement.js";
+import { dayjs } from "../common/utils/dayjs.js";
+import config from "../config.js";
 const currentDirname = __dirname(import.meta.url);
 
 /**
@@ -42,7 +42,7 @@ export const inviteEtablissementToPremium = async ({ etablissements, mailer }) =
           linkToForm: `${config.publicUrl}/form/premium/${etablissement._id}`,
         },
       },
-      from: config.private.rdvEmail,
+      from: config.rdvEmail,
     });
 
     await etablissements.updateOne(

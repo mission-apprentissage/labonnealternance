@@ -132,7 +132,7 @@ export default async (components) => {
   const adminOnly = permissionsMiddleware(roles.administrator);
 
   Sentry.init({
-    dsn: config.private.serverSentryDsn,
+    dsn: config.serverSentryDsn,
     environment: config.env,
     enabled: ["production", "recette"].includes(config.env),
     integrations: [

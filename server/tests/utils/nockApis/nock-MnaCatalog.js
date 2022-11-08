@@ -3,7 +3,7 @@ import config from "../../../src/config.js";
 import { sampleCatalogueResponse } from "../../data/mnaCatalogSamples.js";
 
 export default async () => {
-  nock(config.private.catalogueUrl)
+  nock(config.catalogueUrl)
     .persist()
     .post("/v1/entity/formations", {
       query: {},
@@ -34,7 +34,7 @@ export default async () => {
     })
     .reply(200, sampleCatalogueResponse);
 
-  nock(config.private.catalogueUrl)
+  nock(config.catalogueUrl)
     .persist()
     .post("/v1/entity/formations", {
       query: {
@@ -71,7 +71,7 @@ export default async () => {
     })
     .reply(200, sampleCatalogueResponse);
 
-  nock(config.private.catalogueUrl)
+  nock(config.catalogueUrl)
     .persist()
     .post("/v1/entity/formations", {
       query: {

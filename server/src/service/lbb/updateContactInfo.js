@@ -1,8 +1,8 @@
-import _ from "lodash-es";
-import config from "../../config.js";
 import Sentry from "@sentry/node";
-import { BonnesBoites } from "../../common/model/index.js";
+import _ from "lodash-es";
 import Yup from "yup";
+import { BonnesBoites } from "../../common/model/index.js";
+import config from "../../config.js";
 
 const validationError = "error - validation of data failed";
 
@@ -29,7 +29,7 @@ function emptyStringToNull(value, originalValue) {
 const updateContactInfo = async (query) => {
   if (!query.secret) {
     return { error: "secret_missing" };
-  } else if (query.secret !== config.private.secretUpdateRomesMetiers) {
+  } else if (query.secret !== config.secretUpdateRomesMetiers) {
     return { error: "wrong_secret" };
   } else {
     try {

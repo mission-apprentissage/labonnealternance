@@ -1,12 +1,12 @@
+import Sentry from "@sentry/node";
 import _ from "lodash-es";
 import config from "../config.js";
 import updateFormations from "../jobs/importFormationsCatalogue/importFormationsCatalogue.js";
-import Sentry from "@sentry/node";
 
 const updateFormationsQuery = async (query) => {
   if (!query.secret) {
     return { error: "secret_missing" };
-  } else if (query.secret !== config.private.secretUpdateRomesMetiers) {
+  } else if (query.secret !== config.secretUpdateRomesMetiers) {
     return { error: "wrong_secret" };
   } else {
     try {

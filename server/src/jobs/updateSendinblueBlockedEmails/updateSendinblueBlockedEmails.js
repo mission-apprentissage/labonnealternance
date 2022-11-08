@@ -1,8 +1,8 @@
-import config from "../../config.js";
 import _ from "lodash-es";
+import { BonnesBoites, EmailBlacklist } from "../../common/model/index.js";
 import { logMessage } from "../../common/utils/logMessage.js";
 import { notifyToSlack } from "../../common/utils/slackUtils.js";
-import { EmailBlacklist, BonnesBoites } from "../../common/model/index.js";
+import config from "../../config.js";
 
 import SibApiV3Sdk from "sib-api-v3-sdk";
 
@@ -43,7 +43,7 @@ const updateBlockedEmails = async ({ query }) => {
 
   let defaultClient = SibApiV3Sdk.ApiClient.instance;
   let apiKey = defaultClient.authentications["api-key"];
-  apiKey.apiKey = config.private.smtp.sendinblueApiKey;
+  apiKey.apiKey = config.smtp.sendinblueApiKey;
 
   let apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
 

@@ -2,12 +2,12 @@ import Boom from "boom";
 import express from "express";
 import Joi from "joi";
 import path from "path";
-import { tryCatch } from "../middlewares/tryCatchMiddleware.js";
-import { dayjs } from "../../common/utils/dayjs.js";
-import { referrers } from "../../common/model/constants/referrers.js";
-import { mailType } from "../../common/model/constants/etablissement.js";
-import config from "../../config.js";
 import __dirname from "../../common/dirname.js";
+import { mailType } from "../../common/model/constants/etablissement.js";
+import { referrers } from "../../common/model/constants/referrers.js";
+import { dayjs } from "../../common/utils/dayjs.js";
+import config from "../../config.js";
+import { tryCatch } from "../middlewares/tryCatchMiddleware.js";
 const currentDirname = __dirname(import.meta.url);
 
 const optOutUnsubscribeSchema = Joi.object({
@@ -76,7 +76,7 @@ export default ({ etablissements, mailer, widgetParameters, appointments }) => {
           },
           activationDate: dayjs().format("DD/MM"),
         },
-        from: config.private.rdvEmail,
+        from: config.rdvEmail,
       });
 
       const [widgetParametersFound] = await Promise.all([
@@ -154,7 +154,7 @@ export default ({ etablissements, mailer, widgetParameters, appointments }) => {
           },
           activationDate: dayjs().format("DD/MM"),
         },
-        from: config.private.rdvEmail,
+        from: config.rdvEmail,
       });
 
       await etablissements.findOneAndUpdate(
@@ -242,7 +242,7 @@ export default ({ etablissements, mailer, widgetParameters, appointments }) => {
         etablissement = await etablissements.findById(req.params.id);
 
         await mailer.sendEmail({
-          to: config.private.rdvEmail,
+          to: config.rdvEmail,
           subject: `Un CFA se pose une question concernant l'opt-out"`,
           template: path.join(
             currentDirname,
@@ -307,7 +307,7 @@ export default ({ etablissements, mailer, widgetParameters, appointments }) => {
             destinataireEmail: etablissement.email_decisionnaire,
           },
         },
-        from: config.private.rdvEmail,
+        from: config.rdvEmail,
       });
 
       await etablissements.findOneAndUpdate(

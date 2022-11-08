@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import config from "../config.js";
 
 export let mongooseInstance = mongoose;
-export const connectToMongo = (mongoUri = config.private.mongodb.uri, mongooseInst = null) => {
+export const connectToMongo = (mongoUri = config.mongodb.uri, mongooseInst = null) => {
   return new Promise((resolve, reject) => {
     console.log(`MongoDB: Connection to ${mongoUri}`);
 
