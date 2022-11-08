@@ -1,13 +1,13 @@
 import express from "express";
 import path from "path";
+import __dirname from "../../../common/dirname.js";
+import { mailType, optMode } from "../../../common/model/constants/etablissement.js";
+import { referrers } from "../../../common/model/constants/referrers.js";
+import { Etablissement } from "../../../common/model/index.js";
+import { dayjs } from "../../../common/utils/dayjs.js";
+import { enableAllEtablissementFormations } from "../../../common/utils/optIn.js";
 import config from "../../../config.js";
 import { tryCatch } from "../../middlewares/tryCatchMiddleware.js";
-import { Etablissement } from "../../../common/model/index.js";
-import { enableAllEtablissementFormations } from "../../../common/utils/optIn.js";
-import { optMode, mailType } from "../../../common/model/constants/etablissement.js";
-import { referrers } from "../../../common/model/constants/referrers.js";
-import { dayjs } from "../../../common/utils/dayjs.js";
-import __dirname from "../../../common/dirname.js";
 const currentDirname = __dirname(import.meta.url);
 
 /**
@@ -134,7 +134,7 @@ export default ({ etablissements, mailer }) => {
               destinataireEmail: etablissement.email_decisionnaire,
             },
           },
-          from: config.private.rdvEmail,
+          from: config.rdvEmail,
         });
 
         await Etablissement.updateOne(

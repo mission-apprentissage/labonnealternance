@@ -1,10 +1,10 @@
 import path from "path";
-import { logger } from "../common/logger.js";
-import config from "../config.js";
-import { dayjs } from "../common/utils/dayjs.js";
-import { getReferrerById } from "../common/model/constants/referrers.js";
-import { mailType } from "../common/model/constants/appointments.js";
 import __dirname from "../common/dirname.js";
+import { logger } from "../common/logger.js";
+import { mailType } from "../common/model/constants/appointments.js";
+import { getReferrerById } from "../common/model/constants/referrers.js";
+import { dayjs } from "../common/utils/dayjs.js";
+import config from "../config.js";
 const currentDirname = __dirname(import.meta.url);
 
 /**
@@ -108,7 +108,7 @@ export const candidatHaveYouBeenContacted = async ({
             referrer: referrerObj.full_name,
           },
         },
-        from: config.private.rdvEmail,
+        from: config.rdvEmail,
       }),
     ]);
 

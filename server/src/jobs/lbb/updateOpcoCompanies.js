@@ -1,15 +1,15 @@
-import fs from "fs";
-import fetch from "node-fetch";
-import config from "../../config.js";
 import axios from "axios";
-import path from "path";
-import { oleoduc, readLineByLine, transformData, writeData } from "oleoduc";
-import { Opco } from "../../common/model/index.js";
+import fs from "fs";
 import _ from "lodash-es";
+import fetch from "node-fetch";
+import { oleoduc, readLineByLine, transformData, writeData } from "oleoduc";
+import path from "path";
+import { Opco } from "../../common/model/index.js";
 import { logMessage } from "../../common/utils/logMessage.js";
+import config from "../../config.js";
 //const opcoAktoSirenFilePath = path.join(__dirname, "./assets/20220301-Akto_SIREN.csv");
-import { notifyToSlack } from "../../common/utils/slackUtils.js";
 import __dirname from "../../common/dirname.js";
+import { notifyToSlack } from "../../common/utils/slackUtils.js";
 const currentDirname = __dirname(import.meta.url);
 
 const opcoSirenFile = path.join(currentDirname, "./assets/opco_sirens.csv");
@@ -18,7 +18,7 @@ const aadTokenUrl = "https://login.microsoftonline.com/0285c9cb-dd17-4c1e-9621-c
 const grantType = "client_credentials";
 const clientId = "c6a6b396-82b9-4ab1-acc0-21b1c0ad8ae3";
 const scope = "api://ef286853-e767-4dd1-8de3-67116195eaad/.default";
-const clientSecret = config.private.secretAkto;
+const clientSecret = config.secretAkto;
 const opcoDumpUrl = "https://api.akto.fr/referentiel/api/v1/Dump/Adherents";
 
 let i = 0;

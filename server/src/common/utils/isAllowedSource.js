@@ -1,7 +1,7 @@
 import config from "../../config.js";
 import { isOriginLocal } from "./isOriginLocal.js";
 
-const allowedSources = config.private.allowedSources;
+const allowedSources = config.allowedSources;
 
 const isAllowedSource = ({ referer, caller }) => {
   return isOriginLocal(referer) || isAllowedClearEmail({ caller });

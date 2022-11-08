@@ -1,17 +1,17 @@
-import { getFormationsES } from "../common/esClient/index.js";
-import axios from "axios";
-import config from "../config.js";
 import Sentry from "@sentry/node";
-import { getCurrentFormationsSourceCollection } from "../common/components/indexSourceFormations.js";
-import _ from "lodash-es";
-import { itemModel } from "../model/itemModel.js";
-import { formationsQueryValidator, formationsRegionQueryValidator } from "./formationsQueryValidator.js";
-import { trackApiCall } from "../common/utils/sendTrackingEvent.js";
+import axios from "axios";
 import crypto from "crypto";
+import _ from "lodash-es";
+import { getCurrentFormationsSourceCollection } from "../common/components/indexSourceFormations.js";
+import { getFormationsES } from "../common/esClient/index.js";
 import { manageApiError } from "../common/utils/errorManager.js";
 import { regionCodeToDepartmentList } from "../common/utils/regionInseeCodes.js";
-import { formationMock, formationsMock, lbfFormationMock } from "../mocks/formations-mock.js";
+import { trackApiCall } from "../common/utils/sendTrackingEvent.js";
 import { notifyToSlack } from "../common/utils/slackUtils.js";
+import config from "../config.js";
+import { formationMock, formationsMock, lbfFormationMock } from "../mocks/formations-mock.js";
+import { itemModel } from "../model/itemModel.js";
+import { formationsQueryValidator, formationsRegionQueryValidator } from "./formationsQueryValidator.js";
 
 const formationResultLimit = 150;
 
@@ -621,7 +621,7 @@ const getLbfQueryParams = (params) => {
 
   let queryParams = `user=LBA&uid=${params.id}&timestamp=${date}`;
 
-  var hmac = crypto.createHmac("md5", config.private.laBonneFormationPassword);
+  var hmac = crypto.createHmac("md5", config.laBonneFormationPassword);
   const data = hmac.update(queryParams);
   const signature = data.digest("hex");
 

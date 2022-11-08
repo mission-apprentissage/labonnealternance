@@ -1,8 +1,8 @@
 import axios from "axios";
 import { compose } from "oleoduc";
 import queryString from "query-string";
-import { logger } from "../logger.js";
 import config from "../../config.js";
+import { logger } from "../logger.js";
 import { fetchStream } from "../utils/httpUtils.js";
 import { streamJsonArray } from "../utils/streamUtils.js";
 
@@ -55,7 +55,7 @@ const neededFieldsFromCatalogue = {
   rome_codes: 1,
 };
 
-const API = axios.create({ baseURL: `${config.private.catalogueUrl}` });
+const API = axios.create({ baseURL: `${config.catalogueUrl}` });
 
 const countFormations = async () => {
   try {
@@ -71,7 +71,7 @@ const fetchFormations = ({ formationCount }) => {
 
   const streamFormations = async (query, options) => {
     const params = convertQueryIntoParams(query, options);
-    const response = await fetchStream(`${config.private.catalogueUrl}${config.formationsEndPoint}.json?${params}`);
+    const response = await fetchStream(`${config.catalogueUrl}${config.formationsEndPoint}.json?${params}`);
 
     return compose(response, streamJsonArray());
   };

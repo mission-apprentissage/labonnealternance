@@ -1,8 +1,8 @@
-import config from "../../config.js";
 import axios from "axios";
+import config from "../../config.js";
 
 const notifyToSlack = async (message) => {
-  await axios.post(config.private.jobSlackWebhook, {
+  await axios.post(config.jobSlackWebhook, {
     text: `[LBA - ${config.env.toUpperCase()}] ${message}`,
   });
 };

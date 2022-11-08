@@ -25,7 +25,7 @@ export default async function (options = {}) {
 
   return {
     db: options.db || (await connectToMongo()).db,
-    mailer: options.mailer || createMailer({ smtp: { ...config.private.smtp, secure: false } }),
+    mailer: options.mailer || createMailer({ smtp: { ...config.smtp, secure: false } }),
     scan,
     users,
     formulaire,

@@ -1,10 +1,10 @@
 import path from "path";
-import { logger } from "../common/logger.js";
-import config from "../config.js";
-import { dayjs } from "../common/utils/dayjs.js";
-import { optMode, mailType } from "../common/model/constants/etablissement.js";
-import { isValidEmail } from "../common/utils/isValidEmail.js";
 import __dirname from "../common/dirname.js";
+import { logger } from "../common/logger.js";
+import { mailType, optMode } from "../common/model/constants/etablissement.js";
+import { dayjs } from "../common/utils/dayjs.js";
+import { isValidEmail } from "../common/utils/isValidEmail.js";
+import config from "../config.js";
 const currentDirname = __dirname(import.meta.url);
 
 /**
@@ -91,7 +91,7 @@ export const inviteEtablissementToOptOut = async ({ etablissements, widgetParame
             destinataireEmail: emailDecisionaire,
           },
         },
-        from: config.private.rdvEmail,
+        from: config.rdvEmail,
       });
 
       await etablissements.updateOne(

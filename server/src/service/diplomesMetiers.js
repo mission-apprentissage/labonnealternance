@@ -1,12 +1,12 @@
+import Sentry from "@sentry/node";
 import _ from "lodash-es";
 import config from "../config.js";
 import updateDiplomesMetiers from "../jobs/diplomesMetiers/updateDiplomesMetiers.js";
-import Sentry from "@sentry/node";
 
 const updateDiplomesMetiersQuery = async (query) => {
   if (!query.secret) {
     return { error: "secret_missing" };
-  } else if (query.secret !== config.private.secretUpdateRomesMetiers) {
+  } else if (query.secret !== config.secretUpdateRomesMetiers) {
     return { error: "wrong_secret" };
   } else {
     try {
