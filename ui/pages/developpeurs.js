@@ -7,7 +7,7 @@ import { NextSeo } from "next-seo";
 import Footer from "../components/footer";
 import ExternalLink from "../components/externalLink";
 
-import { Box, Grid, GridItem } from '@chakra-ui/react';
+import { Box, Grid, GridItem, Text } from '@chakra-ui/react';
 
 const developpeurs = () => (
   <div>
@@ -22,13 +22,11 @@ const developpeurs = () => (
     <Box p={12} my={0} mb={[0,12]} className="c-page-container container">
       <Grid templateColumns="repeat(12, 1fr)">
         <GridItem colSpan={[12,12,12,5]}>
-          <h1>
-            <span className="d-block c-page-title is-color-2">Développeurs</span>
-          </h1>
+          <Text variant="editorialContentH1" as="h1">Développeurs</Text>
           <hr className="c-page-title-separator" align="left" />
         </GridItem>
         <GridItem colSpan={[12,12,12,7]}>
-          <h3>Code source ouvert</h3>
+          <Text variant="editorialContentH3" as="h3">Code source ouvert</Text>
           <ExternalLink
             url="https://github.com/mission-apprentissage/labonnealternance"
             title="LBA - Recherche d'une formation et/ou d'un organisme de formation en apprentissage"
