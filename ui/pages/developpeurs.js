@@ -21,11 +21,11 @@ const developpeurs = () => (
 
     <Box p={12} my={0} mb={[0,12]} className="c-page-container container">
       <Grid templateColumns="repeat(12, 1fr)">
-        <GridItem colSpan={[12,12,12,5]}>
+        <GridItem px={4} colSpan={[12,12,12,5]}>
           <Text variant="editorialContentH1" as="h1">Développeurs</Text>
           <hr className="c-page-title-separator" align="left" />
         </GridItem>
-        <GridItem colSpan={[12,12,12,7]}>
+        <GridItem px={4} colSpan={[12,12,12,7]}>
           <Text variant="editorialContentH3" as="h3">Code source ouvert</Text>
           <ExternalLink
             url="https://github.com/mission-apprentissage/labonnealternance"
