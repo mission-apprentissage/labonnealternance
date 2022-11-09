@@ -1,8 +1,8 @@
 import { getBonnesBoitesES } from "../../common/esClient/index.js";
-import { itemModel } from "../../model/itemModel.js";
-import { manageApiError } from "../../common/utils/errorManager.js";
 import { encryptMailWithIV } from "../../common/utils/encryptString.js";
+import { manageApiError } from "../../common/utils/errorManager.js";
 import { isAllowedSource } from "../../common/utils/isAllowedSource.js";
+import { itemModel } from "../../model/itemModel.js";
 
 import { lbbMock } from "../../mocks/lbbs-mock.js";
 

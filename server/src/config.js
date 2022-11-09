@@ -23,15 +23,11 @@ const config = {
   },
   apiKey: env.get("LBA_API_KEY").default("12345").asString(), //TODO: check usefulness
   laBonneFormationPassword: env.get("LBA_LABONNEFORMATION_PASSWORD").default("12345").asString(),
-  awsAccessKeyId: env.get("LBA_AWS_ACCESS_KEY_ID").default("1234").asString(),
-  awsSecretAccessKey: env.get("LBA_AWS_SECRET_ACCESS_KEY").default("1234").asString(),
   catalogueUrl: env.get("LBA_CATALOGUE_URL").default("https://catalogue.intercariforef.org").asString(),
   matcha: {
     apiKey: env.get("LBA_MATCHA_ACCESS_KEY").default("1234").asString(),
   },
   apiEntrepriseKey: env.get("LBA_API_ENTREPRISE_KEY").default("1234").asString(),
-  esdClientId: env.get("LBA_ESD_CLIENT_ID").default("1234").asString(),
-  esdClientSecret: env.get("LBA_ESD_CLIENT_SECRET").default("1234").asString(),
   serverSentryDsn: env
     .get("LBA_SERVER_SENTRY_DSN")
     .default("https://61156c2d46b54369b777900d475ee0f9@o154210.ingest.sentry.io/5562203")
@@ -41,6 +37,13 @@ const config = {
   secretAkto: env.get("LBA_SECRET_AKTO").default("1234").asString(), //TODO: rearrange
   jobSlackWebhook: env.get("LBA_JOB_SLACK_WEBHOOK").default("https://hooks.slack.com/services").asString(),
   allowedSources: env.get("LBA_ALLOWED_SOURCES").default("allowed").asString(),
+  awsAccessKeyId: env.get("LBA_AWS_ACCESS_KEY_ID").default("1234").asString(),
+  awsSecretAccessKey: env.get("LBA_AWS_SECRET_ACCESS_KEY").default("1234").asString(),
+  esdClientId: env.get("LBA_ESD_CLIENT_ID").default("1234").asString(),
+  esdClientSecret: env.get("LBA_ESD_CLIENT_SECRET").default("1234").asString(),
+  lbb: {
+    score50Level: env.get("LBA_LBB_SCORE_50").default(1).asFloatPositive(), //TODO: rename
+  },
   smtp: {
     host: env.get("LBA_SMTP_HOST").default("smtp").asString(),
     port: env.get("LBA_SMTP_PORT").default("1025").asString(),
@@ -48,40 +51,11 @@ const config = {
       user: env.get("LBA_SMTP_AUTH_USER").default("lba").asString(),
       pass: env.get("LBA_SMTP_AUTH_PASS").default("1234").asString(),
     },
-    awsAccessKeyId: env.get("LBA_AWS_ACCESS_KEY_ID").default("1234").asString(),
-    awsSecretAccessKey: env.get("LBA_AWS_SECRET_ACCESS_KEY").default("1234").asString(),
-    catalogueUrl: env.get("LBA_CATALOGUE_URL").default("https://catalogue.intercariforef.org").asString(),
-    matcha: {
-      apiKey: env.get("LBA_MATCHA_ACCESS_KEY").default("1234").asString(),
-    },
-    apiEntrepriseKey: env.get("LBA_API_ENTREPRISE_KEY").default("1234").asString(),
-    esdClientId: env.get("LBA_ESD_CLIENT_ID").default("1234").asString(),
-    esdClientSecret: env.get("LBA_ESD_CLIENT_SECRET").default("1234").asString(),
-    serverSentryDsn: env
-      .get("LBA_SERVER_SENTRY_DSN")
-      .default("https://61156c2d46b54369b777900d475ee0f9@o154210.ingest.sentry.io/5562203")
-      .asString(),
-    secretUpdateRomesMetiers: env.get("LBA_SECRET_UPDATE_ROMES_METIERS").default("1234").asString(), //TODO: rename
-    secret1j1s: env.get("LBA_SECRET_1J1S").default("5678").asString(), //TODO: rearrange
-    secretAkto: env.get("LBA_SECRET_AKTO").default("1234").asString(), //TODO: rearrange
-    jobSlackWebhook: env.get("LBA_JOB_SLACK_WEBHOOK").default("https://hooks.slack.com/services").asString(),
-    allowedSources: env.get("LBA_ALLOWED_SOURCES").default("allowed").asString(),
-    lbb: {
-      score50Level: env.get("LBA_LBB_SCORE_50").default(1).asFloatPositive(), //TODO: rename
-    },
-    smtp: {
-      host: env.get("LBA_SMTP_HOST").default("smtp").asString(),
-      port: env.get("LBA_SMTP_PORT").default("1025").asString(),
-      auth: {
-        user: env.get("LBA_SMTP_AUTH_USER").default("lba").asString(),
-        pass: env.get("LBA_SMTP_AUTH_PASS").default("1234").asString(),
-      },
-      sendinblueToken: env.get("LBA_SMTP_SENDINBLUE_TOKEN").default("1234").asString(),
-      sendinblueApiKey: env.get("LBA_SENDINBLUE_API_KEY").default("1234").asString(),
-    },
-    matchaEmail: "matcha@apprentissage.beta.gouv.fr",
-    rdvEmail: "rdv_apprentissage@apprentissage.beta.gouv.fr",
+    sendinblueToken: env.get("LBA_SMTP_SENDINBLUE_TOKEN").default("1234").asString(),
+    sendinblueApiKey: env.get("LBA_SENDINBLUE_API_KEY").default("1234").asString(),
   },
+  matchaEmail: "matcha@apprentissage.beta.gouv.fr",
+  rdvEmail: "rdv_apprentissage@apprentissage.beta.gouv.fr",
   auth: {
     passwordHashRounds: env.get("LBA_AUTH_PASSWORD_HASH_ROUNDS").default(1001).asInt(),
     user: {

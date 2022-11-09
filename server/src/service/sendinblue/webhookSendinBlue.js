@@ -1,7 +1,7 @@
-import config from "../../config.js";
 import SibApiV3Sdk from "sib-api-v3-sdk";
-const defaultClient = SibApiV3Sdk.ApiClient.instance;
 import { logger } from "../../common/logger.js";
+import config from "../../config.js";
+const defaultClient = SibApiV3Sdk.ApiClient.instance;
 
 let apiKey = defaultClient.authentications["api-key"];
 apiKey.apiKey = config.smtp.sendinblueApiKey;

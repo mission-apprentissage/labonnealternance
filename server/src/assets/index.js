@@ -13,7 +13,7 @@ const createPaths = () => {
 
   fs.readdirSync(path.join(dirname, "./templates")).forEach((file) => {
     const [fileName] = file.split(".");
-    paths[fileName] = path.resolve("src/assets/templates", file);
+    paths[fileName] = path.resolve(dirname, "./templates", file);
   });
 
   return paths;
