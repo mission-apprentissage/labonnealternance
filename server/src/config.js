@@ -18,7 +18,7 @@ const config = {
   mongodb: {
     uri: env
       .get("LBA_MONGODB_URI")
-      .default("mongodb://127.0. .1:27017/labonnealternance?retryWrites=true&w=majority")
+      .default("mongodb://127.0.0.1:27017/labonnealternance?retryWrites=true&w=majority")
       .asString(),
   },
   apiKey: env.get("LBA_API_KEY").default("12345").asString(), //TODO: check usefulness
