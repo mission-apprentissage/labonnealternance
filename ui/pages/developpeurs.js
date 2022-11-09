@@ -7,7 +7,7 @@ import { NextSeo } from "next-seo";
 import Footer from "../components/footer";
 import ExternalLink from "../components/externalLink";
 
-import { Box, Grid, GridItem, Text, Link } from '@chakra-ui/react';
+import { Box, Container, Grid, GridItem, Text, Link } from '@chakra-ui/react';
 
 const developpeurs = () => (
   <div>
@@ -19,7 +19,7 @@ const developpeurs = () => (
     <Navigation />
     <Breadcrumb forPage="developpeurs" label="Développeurs" />
 
-    <Box p={12} my={0} mb={[0,12]} className="c-page-container container">
+    <Container p={12} my={0} mb={[0,12]} variant="pageContainer">
       <Grid templateColumns="repeat(12, 1fr)">
         <GridItem px={4} colSpan={[12,12,12,5]}>
           <Text variant="editorialContentH1" as="h1">Développeurs</Text>
@@ -36,13 +36,12 @@ const developpeurs = () => (
             internet !), nous avons développé 4 API et un Widget, disponibles en open source.
           </Text>
           <Text as="p" mb={4}>Testez le widget et les API et accédez à leur documentation sur le site API.gouv</Text>
-          <ExternalLink
-            url="https://api.gouv.fr/les-api/api-la-bonne-alternance"
-            title="https://api.gouv.fr/les-api/api-la-bonne-alternance"
-          />
+          <Link variant="editorialContentLink" href="https://api.gouv.fr/les-api/api-la-bonne-alternance" isExternal>
+            https://api.gouv.fr/les-api/api-la-bonne-alternance
+          </Link>
         </GridItem>
       </Grid>
-    </Box>
+    </Container>
     <Box mb={3}>&nbsp;</Box>
     <Footer />
   </div>
