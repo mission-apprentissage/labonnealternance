@@ -77,7 +77,7 @@ import {
  * LBA-Candidat Swagger file
  */
 const dirname = __dirname(import.meta.url);
-const swaggerDocument = JSON.parse(readFileSync(path.resolve(dirname, "../api-docs/swagger.json")));
+const swaggerDocument = JSON.parse(readFileSync(path.resolve(dirname, "../assets/api-docs/swagger.json")));
 
 /**
  * LBA-Recruteur Swagger configuration
@@ -187,7 +187,7 @@ export default async (components) => {
    * Swaggers
    */
   app.get("/api-docs/swagger.json", (req, res) => {
-    res.sendFile(path.resolve(dirname, "../api-docs/swagger.json"));
+    res.sendFile(path.resolve(dirname, "../assets/api-docs/swagger.json"));
   });
   app.use("/api/v1/lba-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument, swaggerUIOptions));
   app.use("/api/v1/lbar-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpecification, swaggerUIOptions));

@@ -9,8 +9,10 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon --ext 'ts,js,cjs,json' --ignore 'tests/' --exec 'ts-node --esm src/index.ts'",
-    "build": "tsc -p .",
+    "build": "yarn clean && tsc -p . && yarn copy-assets",
     "start": "node build/index.js",
+    "copy-assets": "copyfiles -u 2 src/assets/api-docs/swagger.json src/assets/templates/*.ejs build/assets",
+    "clean": "rimraf build/",
     "test": "mocha --recursive --exit --timeout 5000 tests/",
     "cli": "DOCTRINA_LOG_DESTINATIONS=stderr node src/cli.js",
     "coverage": "nyc --temp-dir .coverage/.nyc_output --report-dir .coverage --reporter=lcov --reporter=html yarn test",
@@ -111,6 +113,7 @@
     "@types/express": "4.17.14",
     "@types/node": "18.8.3",
     "chalk": "4.1.2",
+    "copyfiles": "2.4.1",
     "eslint": "8.25.0",
     "eslint-config-prettier": "8.5.0",
     "eslint-plugin-mocha": "10.1.0",
@@ -125,6 +128,7 @@
     "nyc": "15.1.0",
     "prettier": "2.6.2",
     "randexp": "0.5.3",
+    "rimraf": "3.0.2",
     "ts-node": "10.9.1",
     "typescript": "4.8.4"
   },
