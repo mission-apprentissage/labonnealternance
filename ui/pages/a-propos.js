@@ -18,6 +18,24 @@ import ExternalLink from "../components/externalLink";
 
 import { Box, Container, Divider, Grid, GridItem, Text, Link } from '@chakra-ui/react';
 
+const ServiceCard = ({logo, title, text, url}) => {
+  return (
+  <div className="card c-about-card c-about-card--flat mt-4">
+    <div className="c-about-card__img">
+      <img className={"c-about-card__img--matcha"} src={logo} alt="" />
+    </div>
+    <div className="c-about-card__content">
+      <div className="c-about-card__title">{title}</div>
+      <div className="c-about-card__text">{text}</div>
+      <div className="c-about-card__link">
+        <ExternalLink
+          url={url}
+          title="En savoir plus"
+        />
+      </div>
+    </div>
+  </div> )
+}
 const APROPOS = () => (
   <div>
     <NextSeo
@@ -42,55 +60,41 @@ const APROPOS = () => (
         </GridItem>
         <GridItem px={4} colSpan={[12,12,12,7]}>
           <Text variant="editorialContentH2" as="h2">Le saviez-vous ?</Text>
-          <p>
+          <Text as="p">
             7 employeurs sur 10 recrutent sans déposer d’offre d’emploi.
             <br />
             Il est essentiel dans votre recherche de proposer votre candidature à des entreprises n’ayant pas forcément
             déposé d’offre d’emploi en alternance.
-          </p>
-          <p>
+          </Text>
+          <Text as="p">
             Notre algorithme La bonne alternance analyse les offres et les recrutements des 6 dernières années pour vous
             proposer les entreprises qui recrutent régulièrement en alternance (contrat d&apos;apprentissage ou contrat de
             professionnalisation).
-          </p>
+          </Text>
 
-          <p>En complément, le service La bonne alternance expose les formations disponibles en apprentissage.</p>
+          <Text as="p">En complément, le service La bonne alternance expose les formations disponibles en apprentissage.</Text>
 
-          <p>
+          <Text as="p">
             Pour une meilleure lisibilité, les résultats sont affichés sur une carte et en liste.
             <br />
             En cliquant sur une entreprise, vous accédez à sa description, ses coordonnées lorsqu’elles sont
             disponibles, ainsi qu’à des conseils pour postuler.
-          </p>
+          </Text>
 
           <Text variant="editorialContentH2" as="h2">Qui sommes-nous ?</Text>
 
-          <p>
+          <Text as="p">
             La bonne alternance est d’abord une start-up interne de Pôle emploi créée et développée par des conseillers.{" "}
             <br />
             Reprise par la{" "}
-            <ExternalLink url="https://mission-apprentissage.gitbook.io/general/" title="Mission apprentissage" /> en
-            2020, le site ajoute désormais des informations sur les formations en apprentissage et les offres d&apos;emploi
+            <Link variant="editorialContentLink" href="https://mission-apprentissage.gitbook.io/general/" isExternal>Mission apprentissage</Link>
+            {" "}en 2020, le site ajoute désormais des informations sur les formations en apprentissage et les offres d&apos;emploi
             en alternance.
-          </p>
+          </Text>
 
           <Text variant="editorialContentH2" as="h2">Les services de La bonne alternance</Text>
 
-          <div className="card c-about-card c-about-card--flat mt-4">
-            <div className="c-about-card__img">
-              <img className={"c-about-card__img--matcha"} src={logoMatcha} alt={""} />
-            </div>
-            <div className="c-about-card__content">
-              <div className="c-about-card__title">Dépôt d&apos;offres simplifié</div>
-              <div className="c-about-card__text">Susciter des recrutements en alternance</div>
-              <div className="c-about-card__link">
-                <ExternalLink
-                  url="https://mission-apprentissage.gitbook.io/general/les-services-en-devenir/untitled"
-                  title="En savoir plus"
-                />
-              </div>
-            </div>
-          </div>
+          <ServiceCard logo={logoMatcha} title="Dépôt d&apos;offres simplifié" text="Susciter des recrutements en alternance" url="https://mission-apprentissage.gitbook.io/general/les-services-en-devenir/untitled" />          
 
           <div className="card c-about-card c-about-card--flat mt-3">
             <div className="c-about-card__img">
