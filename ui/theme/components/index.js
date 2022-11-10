@@ -4,6 +4,7 @@ import { Badge } from './badge'
 import { Button } from './button'
 import { Checkbox } from './checkbox'
 import { Container } from './container'
+import { Divider } from './divider'
 import { Input } from './input'
 import { Link } from './link'
 import { List } from './list'
@@ -17,6 +18,7 @@ import { Textarea } from './textarea'
 
 const components = {
   Container,
+  Divider,
   Tabs,
   Badge,
   Button,

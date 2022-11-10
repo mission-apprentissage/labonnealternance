@@ -7,7 +7,7 @@ import { NextSeo } from "next-seo";
 import Footer from "../components/footer";
 import ExternalLink from "../components/externalLink";
 
-import { Box, Container, Grid, GridItem, Text, Link } from '@chakra-ui/react';
+import { Box, Container, Divider, Grid, GridItem, Text, Link } from '@chakra-ui/react';
 
 const developpeurs = () => (
   <div>
@@ -23,7 +23,7 @@ const developpeurs = () => (
       <Grid templateColumns="repeat(12, 1fr)">
         <GridItem px={4} colSpan={[12,12,12,5]}>
           <Text variant="editorialContentH1" as="h1">Développeurs</Text>
-          <hr className="c-page-title-separator" align="left" />
+          <Divider variant="pageTitleDivider" my={12}  />
         </GridItem>
         <GridItem px={4} colSpan={[12,12,12,7]}>
           <Text variant="editorialContentH3" as="h3">Code source ouvert</Text>
