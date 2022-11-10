@@ -1,8 +1,8 @@
 {
-  "name": "matcha-ui",
+  "name": "ui_espace_pro",
   "version": "0.8.0",
-  "description": "[MNA] Matcha",
-  "repository": "https://github.com/mission-apprentissage/matcha.git",
+  "description": "Interface de gestion pour les entreprises, organismes de formation et candidats en apprentissage",
+  "repository": "https://github.com/mission-apprentissage/doctrina.git",
   "private": false,
   "author": "MNA",
   "license": "MIT",
