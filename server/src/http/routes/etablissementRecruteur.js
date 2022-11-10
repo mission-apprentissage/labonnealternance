@@ -101,7 +101,7 @@ export default ({ etablissementsRecruteur, usersRecruteur, formulaire, mailer })
         }
       }
 
-      let response = etablissement.formatEntrepriseData(result.data.etablissement);
+      let response = etablissementsRecruteur.formatEntrepriseData(result.data.etablissement);
       let opcoResult;
 
       opcoResult = await etablissementsRecruteur.getOpco(req.params.siret);

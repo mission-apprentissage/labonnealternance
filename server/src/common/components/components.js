@@ -18,9 +18,9 @@ export default async function (options = {}) {
   const widgetParameters = await createWidgetParameters();
   const etablissements = await createEtablissements();
   const parcoursupEtablissementStats = await createParcoursupEtablissementStats();
-  const usersRecuteur = await createUserRecruteur();
+  const usersRecruteur = await createUserRecruteur();
   const formulaire = await createFormulaire();
-  const etablissmentsRecruteur = await createEtablissementRecruteur();
+  const etablissementsRecruteur = await createEtablissementRecruteur();
   const application = await createApplication();
 
   return {
@@ -31,10 +31,10 @@ export default async function (options = {}) {
     formulaire,
     application,
     appointments,
-    usersRecuteur,
+    usersRecruteur,
     etablissements,
     widgetParameters,
-    etablissmentsRecruteur,
+    etablissementsRecruteur,
     parcoursupEtablissementStats,
   };
 }
