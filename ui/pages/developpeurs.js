@@ -7,6 +7,8 @@ import { NextSeo } from "next-seo";
 import Footer from "../components/footer";
 import ExternalLink from "../components/externalLink";
 
+import { Box, Container, Divider, Grid, GridItem, Text, Link } from '@chakra-ui/react';
+
 const developpeurs = () => (
   <div>
     <NextSeo
@@ -17,34 +19,30 @@ const developpeurs = () => (
     <Navigation />
     <Breadcrumb forPage="developpeurs" label="Développeurs" />
 
-    <div className="c-page-container container my-0 mb-sm-5 p-5">
-      <div className="row">
-        <div className="col-12 col-md-5">
-          <h1>
-            <span className="d-block c-page-title is-color-2">Développeurs</span>
-          </h1>
-          <hr className="c-page-title-separator" align="left" />
-        </div>
-        <div className="col-12 col-md-7">
-          <h3>Code source ouvert</h3>
-          <ExternalLink
-            url="https://github.com/mission-apprentissage/labonnealternance"
-            title="LBA - Recherche d'une formation et/ou d'un organisme de formation en apprentissage"
-          />
-          <h3 className="mt-3">Données ouvertes</h3>
-          <p>
+    <Container p={12} my={0} mb={[0,12]} variant="pageContainer">
+      <Grid templateColumns="repeat(12, 1fr)">
+        <GridItem px={4} colSpan={[12,12,12,5]}>
+          <Text variant="editorialContentH1" as="h1">Développeurs</Text>
+          <Divider variant="pageTitleDivider" my={12}  />
+        </GridItem>
+        <GridItem px={4} colSpan={[12,12,12,7]}>
+          <Text variant="editorialContentH3" as="h3">Code source ouvert</Text>
+          <Link variant="editorialContentLink" href="https://github.com/mission-apprentissage/labonnealternance" isExternal>
+            LBA - Recherche d&apos;une formation et/ou d&apos;un organisme de formation en apprentissage
+          </Link>
+          <Text variant="editorialContentH3" as="h3" mt={4}>Données ouvertes</Text>
+          <Text as="p" mb={4}>
             Afin de faciliter l’accès aux informations pour les publics là où ils se trouvent (notamment sur votre site
             internet !), nous avons développé 4 API et un Widget, disponibles en open source.
-          </p>
-          <p>Testez le widget et les API et accédez à leur documentation sur le site API.gouv</p>
-          <ExternalLink
-            url="https://api.gouv.fr/les-api/api-la-bonne-alternance"
-            title="https://api.gouv.fr/les-api/api-la-bonne-alternance"
-          />
-        </div>
-      </div>
-    </div>
-    <div className="mb-3">&nbsp;</div>
+          </Text>
+          <Text as="p" mb={4}>Testez le widget et les API et accédez à leur documentation sur le site API.gouv</Text>
+          <Link variant="editorialContentLink" href="https://api.gouv.fr/les-api/api-la-bonne-alternance" isExternal>
+            https://api.gouv.fr/les-api/api-la-bonne-alternance
+          </Link>
+        </GridItem>
+      </Grid>
+    </Container>
+    <Box mb={3}>&nbsp;</Box>
     <Footer />
   </div>
 );
