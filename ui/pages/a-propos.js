@@ -15,6 +15,9 @@ import logoClara from "../public/images/logo-clara.svg";
 
 import Footer from "../components/footer";
 import ExternalLink from "../components/externalLink";
+
+import { Box, Container, Divider, Grid, GridItem, Text, Link } from '@chakra-ui/react';
+
 const APROPOS = () => (
   <div>
     <NextSeo
@@ -27,17 +30,18 @@ const APROPOS = () => (
 
     <Breadcrumb forPage="a-propos" label="A propos" />
 
-    <div className="c-about c-page-container container my-0 mb-sm-5 p-5">
-      <div className="row">
-        <div className="col-12 col-md-5">
-          <h1>
-            <span className="d-block c-page-title is-color-1">A propos de</span>
-            <span className="d-block c-page-title is-color-2">La bonne alternance</span>
-          </h1>
-          <hr className="c-page-title-separator" align="left" />
-        </div>
-        <div className="col-12 col-md-7">
-          <h2 className="c-about-title">Le saviez-vous ?</h2>
+    <Container p={12} my={0} mb={[0,12]} variant="pageContainer">
+      <Grid templateColumns="repeat(12, 1fr)">
+        <GridItem px={4} colSpan={[12,12,12,5]}>
+            <Text variant="editorialContentH1" as="h1">
+              <Text as="span" color="black">A propos de</Text>
+              <br />
+              La bonne alternance
+            </Text>            
+            <Divider variant="pageTitleDivider" my={12}  />
+        </GridItem>
+        <GridItem px={4} colSpan={[12,12,12,7]}>
+          <Text variant="editorialContentH2" as="h2">Le saviez-vous ?</Text>
           <p>
             7 employeurs sur 10 recrutent sans déposer d’offre d’emploi.
             <br />
@@ -273,10 +277,10 @@ const APROPOS = () => (
               </div>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
-    <div className="mb-3">&nbsp;</div>
+        </GridItem>
+      </Grid>
+    </Container>
+    <Box mb={3}>&nbsp;</Box>
     <Footer />
   </div>
 );
