@@ -5,7 +5,7 @@ import { etat_etablissements } from "../constants.js";
 import { ReferentielOpco, UserRecruteur } from "../model/index.js";
 
 const apiParams = {
-  token: config.apiEntreprise,
+  token: config.apiEntrepriseKey,
   context: "Matcha MNA",
   recipient: "12000101100010", // Siret Dinum
   object: "Consolidation des données",

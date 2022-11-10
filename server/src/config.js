@@ -27,7 +27,7 @@ const config = {
   matcha: {
     apiKey: env.get("LBA_MATCHA_ACCESS_KEY").default("1234").asString(),
   },
-  apiEntrepriseKey: env.get("LBA_API_ENTREPRISE_KEY").default("1234").asString(),
+  apiEntrepriseKey: env.get("LBA_ENTREPRISE_API_KEY").default("1234").asString(),
   serverSentryDsn: env
     .get("LBA_SERVER_SENTRY_DSN")
     .default("https://61156c2d46b54369b777900d475ee0f9@o154210.ingest.sentry.io/5562203")
