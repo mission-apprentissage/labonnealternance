@@ -1,4 +1,4 @@
-version: '2.4'
+version: "2.4"
 services:
   reverse_proxy:
     image: doctrina_reverse_proxy
@@ -62,9 +62,8 @@ services:
     depends_on:
       - mongodb
     environment:
-      - DOCTRINA_MONGODB_URI=mongodb://mongodb:27017/doctrina?retryWrites=true&w=majority
-      - LABONNEALTERNANCE_MONGODB_URI=mongodb://mongodb:27017/labonnealternance?retryWrites=true&w=majority
-      - DOCTRINA_LOG_DESTINATIONS=stdout,mongodb
+      - LBA_MONGODB_URI=mongodb://mongodb:27017/labonnealternance?retryWrites=true&w=majority
+      - LBA_LOG_DESTINATIONS=stdout,mongodb
 
   mongodb:
     image: mongo:5.0.6-focal
@@ -95,7 +94,7 @@ services:
     networks:
       - doctrina_network
     healthcheck:
-      test: ['CMD', '/usr/local/bin/clamdcheck.sh']
+      test: ["CMD", "/usr/local/bin/clamdcheck.sh"]
       interval: 60s
       retries: 3
       start_period: 120s
