@@ -63,7 +63,7 @@ const APROPOS = () => (
             disponibles, ainsi qu’à des conseils pour postuler.
           </p>
 
-          <h2 className="c-about-title">Qui sommes-nous ?</h2>
+          <Text variant="editorialContentH2" as="h2">Qui sommes-nous ?</Text>
 
           <p>
             La bonne alternance est d’abord une start-up interne de Pôle emploi créée et développée par des conseillers.{" "}
@@ -74,7 +74,7 @@ const APROPOS = () => (
             en alternance.
           </p>
 
-          <h2 className="c-about-title">Les services de La bonne alternance</h2>
+          <Text variant="editorialContentH2" as="h2">Les services de La bonne alternance</Text>
 
           <div className="card c-about-card c-about-card--flat mt-4">
             <div className="c-about-card__img">
@@ -121,7 +121,7 @@ const APROPOS = () => (
             </div>
           </div>
 
-          <h2 className="c-about-title">Autres services de Pôle Emploi</h2>
+          <Text variant="editorialContentH2" as="h2">Autres services de Pôle Emploi</Text>
 
           <div className="card-deck">
             <div className="card c-about-card c-about-card--small mt-3 mb-4">
@@ -177,7 +177,7 @@ const APROPOS = () => (
             </div>
           </div>
 
-          <h2 className="c-about-title">Autres liens utiles</h2>
+          <Text variant="editorialContentH2" as="h2">Autres liens utiles</Text>
           <div className="c-about-others">
             <div className="c-about-other">
               <div className="c-about-otherleft">
