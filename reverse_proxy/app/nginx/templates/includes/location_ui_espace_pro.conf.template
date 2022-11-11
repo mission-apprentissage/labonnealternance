@@ -1,6 +1,6 @@
 location /espace-pro {
-    include /etc/nginx/mime.types
     set $upstream http://ui_espace_pro:3000;
+    include /etc/nginx/mime.types;
     include includes/proxy.conf;
 
     if ($always_redirect = on) {
