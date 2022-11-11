@@ -11,12 +11,8 @@ server {
 
     server_name ${SERVER_NAME};
     set $always_redirect ${NGINX_ALWAYS_TLS_REDIRECT};
-
-    include includes/location_api.conf;
-    include includes/location_smtp.conf;
-    include includes/location_ui.conf;
-    include includes/location_ui_espace_pro.conf;
-    
+ 
+    include includes/location_*.conf;
     include includes/env/location_*.conf;
 }
 
@@ -42,11 +38,7 @@ server {
 
     ssl_verify_client ${PROXY_SSL_VERIFY};
 
-    include includes/location_api.conf;
-    include includes/location_smtp.conf;
-    include includes/location_ui.conf;
-    include includes/location_ui_espace_pro.conf;
-
+    include includes/location_*.conf;
     include includes/env/location_*.conf;
 
 }
