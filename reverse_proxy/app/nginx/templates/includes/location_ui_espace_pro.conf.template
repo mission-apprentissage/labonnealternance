@@ -1,4 +1,5 @@
 location /espace-pro {
+    include /etc/nginx/mime.types
     set $upstream http://ui_espace_pro:3000;
     include includes/proxy.conf;
 
