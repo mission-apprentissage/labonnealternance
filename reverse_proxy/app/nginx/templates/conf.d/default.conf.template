@@ -16,6 +16,8 @@ server {
     include includes/location_smtp.conf;
     include includes/location_ui.conf;
     include includes/location_ui_espace_pro.conf;
+    
+    include includes/env/location_*.conf;
 }
 
 server {
@@ -44,5 +46,7 @@ server {
     include includes/location_smtp.conf;
     include includes/location_ui.conf;
     include includes/location_ui_espace_pro.conf;
+
+    include includes/env/location_*.conf;
 
 }
