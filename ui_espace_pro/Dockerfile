@@ -32,15 +32,15 @@ ENV NODE_ENV production
 COPY --from=builder-production /app/build ./build
 COPY --from=builder-production /app/package.json ./
 RUN yarn global add local-web-server
-EXPOSE 3001
-ENV PORT 3001
+EXPOSE 3000
+ENV PORT 3000
 CMD ["yarn", "serve"]
 
 FROM node:16-alpine AS ui-dev
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
-EXPOSE 3001
-ENV PORT 3001
+EXPOSE 3000
+ENV PORT 3000
 CMD ["yarn", "start"]
 
 # FROM ui-dev as final
