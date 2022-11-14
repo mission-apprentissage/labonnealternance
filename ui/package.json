@@ -41,7 +41,7 @@
     "formik": "^2.1.4",
     "framer-motion": "^6",
     "lodash": "4.17.20",
-    "mapbox-gl": "2.0.1",
+    "mapbox-gl": "2.10.0",
     "markdown-it": "12.0.4",
     "next": "12.3.1",
     "next-images": "1.8.4",
