@@ -20,6 +20,7 @@ server {
     listen ${SSL_PORT} ssl;
 
     server_name ${SERVER_NAME};
+    set $always_redirect false;
 
     ssl_certificate ${PROXY_SSL_CERT};
     ssl_certificate_key ${PROXY_SSL_CERT_KEY};
