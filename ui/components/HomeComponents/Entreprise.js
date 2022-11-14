@@ -1,14 +1,19 @@
 import React from "react";
+import { Box, Button, Flex, Image, SimpleGrid, Text } from '@chakra-ui/react'
+
 import ConnectionActions from "./ConnectionActions";
+import votrebesoinImage from '../../public/images/home_pics/illu-votrebesoin.svg'
+import ujusImage from '../../public/images/home_pics/1j1s.svg'
+import parcoursupImage from '../../public/images/home_pics/parcoursup.svg'
 
 const Entreprise = () => {
   return (
     <section className="p-3 mb-2 mb-md-5">
       <div className="row">
         <div className="col-12 col-md-6 d-none d-md-block">
-          <img className="c-homecomponent-illustration mr-3 my-3" src="/images/home_pics/illu-votrebesoin.svg" alt="" />
-          <img className="c-homecomponent-illustration--above1" src="/images/home_pics/1j1s.svg" alt="1 jeune 1 solution" />
-          <img className="c-homecomponent-illustration--above2" src="/images/home_pics/parcoursup.svg" alt="parcoursup" />
+          <Image src={votrebesoinImage} alt="Votre besoin" />
+          <Image src={ujusImage} alt="1 jeune 1 solution" />
+          <Image src={parcoursupImage} alt="parcoursup" />
         </div>
         <div className="col-12 col-md-6 order-md-first">
           <h1 className="c-homecomponent-title c-homecomponent-title__blue mb-3">Vous êtes une entreprise</h1>
