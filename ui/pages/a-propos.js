@@ -18,12 +18,13 @@ import ExternalLink from "../components/externalLink";
 
 import { Box, Container, Divider, Grid, GridItem, Text, Link } from '@chakra-ui/react';
 
-const ServiceCard = ({logo, title, text, url}) => {
+const ServiceCard = ({logo, title, text, url, mt, mb}) => {
   return (
-  <div className="card c-about-card c-about-card--flat mt-4">
-    <div className="c-about-card__img">
+  <Box mt={mt} mb={mb}>
+  <div className="card c-about-card c-about-card--flat">
+    <Box minW="68px" minH="68px" bg="grey.300" borderRadius="70px" >
       <img className={"c-about-card__img--matcha"} src={logo} alt="" />
-    </div>
+    </Box>
     <div className="c-about-card__content">
       <div className="c-about-card__title">{title}</div>
       <div className="c-about-card__text">{text}</div>
@@ -34,7 +35,8 @@ const ServiceCard = ({logo, title, text, url}) => {
         />
       </div>
     </div>
-  </div> )
+  </div>
+  </Box> )
 }
 const APROPOS = () => (
   <div>
@@ -94,37 +96,12 @@ const APROPOS = () => (
 
           <Text variant="editorialContentH2" as="h2">Les services de La bonne alternance</Text>
 
-          <ServiceCard logo={logoMatcha} title="Dépôt d&apos;offres simplifié" text="Susciter des recrutements en alternance" url="https://mission-apprentissage.gitbook.io/general/les-services-en-devenir/untitled" />          
+          <ServiceCard mt={6} logo={logoMatcha} title="Dépôt d&apos;offres simplifié" text="Susciter des recrutements en alternance" url="https://mission-apprentissage.gitbook.io/general/les-services-en-devenir/untitled" />
 
-          <div className="card c-about-card c-about-card--flat mt-3">
-            <div className="c-about-card__img">
-              <img className={"c-about-card__img--catalog"} src={logoCatalogue} alt={""} />
-            </div>
-            <div className="c-about-card__content">
-              <div className="c-about-card__title">Catalogue des formations</div>
-              <div className="c-about-card__text">Un catalogue élargi de formations en apprentissage</div>
-              <div className="c-about-card__link">
-                <ExternalLink url="https://mission-apprentissage.gitbook.io/catalogue/" title="En savoir plus" />
-              </div>
-            </div>
-          </div>
+          <ServiceCard mt={4} logo={logoCatalogue} title="Catalogue des formations" text="Un catalogue élargi de formations en apprentissage" url="https://mission-apprentissage.gitbook.io/catalogue/" />
 
-          <div className="card c-about-card c-about-card--flat mt-3 mb-4">
-            <div className="c-about-card__img">
-              <img className={"c-about-card__img--prdv"} src={logoPrdv} alt={"Logo prdv"} />
-            </div>
-            <div className="c-about-card__content">
-              <div className="c-about-card__title">Rendez-vous apprentissage</div>
-              <div className="c-about-card__text">Pour échanger facilement avec les centres de formation</div>
-              <div className="c-about-card__link">
-                <ExternalLink
-                  url="https://mission-apprentissage.gitbook.io/general/les-services-en-devenir/prise-de-rendez-vous"
-                  title="En savoir plus"
-                />
-              </div>
-            </div>
-          </div>
-
+          <ServiceCard mt={4} mb={6} logo={logoPrdv} title="Rendez-vous apprentissage" text="Pour échanger facilement avec les centres de formation" url="https://mission-apprentissage.gitbook.io/general/les-services-en-devenir/prise-de-rendez-vous" />
+          
           <Text variant="editorialContentH2" as="h2">Autres services de Pôle Emploi</Text>
 
           <div className="card-deck">
