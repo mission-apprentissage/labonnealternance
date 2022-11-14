@@ -17,9 +17,9 @@ const Navigation = ({ currentPage, bgcolor }) => {
     let logo = 'logo_LBA_candidat.svg'
 
     if (currentPage === 'acces-recruteur') {
-      logo = 'logo_LBA_recruteur ex matcha.svg'
+      logo = 'logo_LBA_recruteur.svg'
     } else if (currentPage === 'organisme-de-formation') {
-      logo = 'logo_LBA_cfa ex matcha.svg'
+      logo = 'logo_LBA_cfa.svg'
     }
 
     return logo
