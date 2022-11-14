@@ -4,7 +4,7 @@ import { Box, Text } from '@chakra-ui/react'
 
 const OffresGratuites = () => {
   return (
-    <section className="p-3 mb-2 mb-md-5">
+    <Box as="section" p={3} mb={{ base: '2', md: '5' }} >
       <div className="row">
         <div className="col-12 col-md-6">
           <img
@@ -34,7 +34,7 @@ const OffresGratuites = () => {
           </Box>
         </div>
       </div>
-    </section>
+    </Box>
   );
 };
 export default OffresGratuites;

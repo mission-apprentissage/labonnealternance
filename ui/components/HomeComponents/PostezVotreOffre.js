@@ -3,7 +3,7 @@ import { Box, Text } from '@chakra-ui/react'
 
 const PostezVotreOffre = () => {
   return (
-    <section className="p-3 mb-2 mb-md-5">
+    <Box as="section" p={3} mb={{ base: '2', md: '5' }} >
       <div className="row">
         <div className="col-12 col-md-6">
           <img className="c-homecomponent-illustration mr-3 my-3" src="/images/home_pics/illu-offreemploi.svg" alt="" />
@@ -16,7 +16,7 @@ const PostezVotreOffre = () => {
           </Box>
         </div>
       </div>
-    </section>
+    </Box>
   );
 };
 
