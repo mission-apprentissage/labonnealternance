@@ -3,6 +3,6 @@ location /espace-pro {
     include includes/proxy.conf;
 
     if ($always_redirect = on) {
-        return 301 https://$host$request_uri/;
+        return 301 https://$host$request_uri;
     }
 }
