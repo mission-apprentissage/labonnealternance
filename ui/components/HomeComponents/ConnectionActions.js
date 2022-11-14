@@ -6,7 +6,7 @@ const ConnectionActions = ({ service }) => {
   const router = useRouter();
 
   return (
-    <Stack direction="row" spacing="25px" pt="30px">
+    <Stack direction="row" spacing={{base: 1, sm: 2, md: 8}} pt="30px">
       {service === "entreprise" && (
         <Button
           variant="primary"
