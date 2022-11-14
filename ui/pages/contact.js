@@ -38,26 +38,28 @@ const contact = () => (
               suggestion d’amélioration sur nos outils, contactez nous par email.
             </p>
             <p>
-              <b>Vous êtes candidat,</b> écrivez-nous à <br />
-              <a href="mailto:labonnealternance@apprentissage.beta.gouv.fr">
-                labonnealternance@apprentissage.beta.gouv.fr
+              <b>Vous êtes candidat,</b> écrivez-nous en cliquant sur ce <br />
+              <a href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Page%20Contact%20-%20Candidat">
+                lien vers notre adresse email
               </a>
             </p>
             <p>
-              <b>Vous êtes un organisme de formation,</b> écrivez-nous à<br />
-              <a href="mailto:rdv_apprentissage@apprentissage.beta.gouv.fr">
-                rdv_apprentissage@apprentissage.beta.gouv.fr
+              <b>Vous êtes un organisme de formation,</b> écrivez-nous en cliquant sur ce <br />
+              <a href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Page%20Contact%20-%20OF">
+                lien vers notre adresse email
               </a>
             </p>
             <p>
-              <b>Vous êtes une entreprise recevant des candidatures spontanées,</b> écrivez-nous à{" "}
-              <a href="mailto:labonnealternance@apprentissage.beta.gouv.fr">
-                labonnealternance@apprentissage.beta.gouv.fr
+              <b>Vous êtes une entreprise recevant des candidatures spontanées,</b> écrivez-nous en cliquant sur ce{" "}
+              <a href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Page%20Contact%20-%20Entreprise%20-%20Candidature%20spontanée">
+                lien vers notre adresse email
               </a>
             </p>
             <p>
-              <b>Vous êtes une entreprise intéressée par notre service de dépôt d&apos;offre simplifié,</b> écrivez-nous à{" "}
-              <a href="mailto:matcha@apprentissage.beta.gouv.fr">matcha@apprentissage.beta.gouv.fr</a>
+              <b>Vous êtes une entreprise intéressée par notre service de dépôt d&apos;offre simplifié,</b> écrivez-nous en cliquant sur ce{" "}
+              <a href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Page%20Contact%20-%20Entreprise%20-%20Depot%20offre">
+                lien vers notre adresse email
+              </a>
             </p>
           </div>
         </div>
