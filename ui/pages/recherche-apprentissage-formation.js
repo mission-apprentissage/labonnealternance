@@ -4,7 +4,6 @@ import { useRouter } from "next/router";
 import { initParametersFromQuery } from "services/config";
 import { ScopeContextProvider } from "context/ScopeContext.js";
 import { NextSeo } from "next-seo";
-import Head from "next/head";
 import { ParameterContext } from "../context/ParameterContextProvider";
 
 const RechercheApprentissageFormation = () => {
@@ -22,15 +21,6 @@ const RechercheApprentissageFormation = () => {
         title="Recherche de formations | La bonne alternance | Trouvez votre alternance"
         description="Recherche de formations sur le site de La bonne alternance"
       />
-      <Head>
-        <link
-          href="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css"
-          rel="stylesheet"
-          media="print"
-          onLoad="this.media='all'"
-        />
-      </Head>
-
       <ScopeContextProvider value={{ isJob: false, isTraining: true, path: "/recherche-apprentissage-formation" }}>
         <SearchForTrainingsAndJobs />
       </ScopeContextProvider>

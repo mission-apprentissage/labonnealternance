@@ -172,6 +172,12 @@ canvas.mapboxgl-canvas:focus {
   }
 }
 
+.mapboxgl-ctrl-bottom-right {
+  @include media-breakpoint-up(md) { 
+    bottom: 75px !important;
+  }
+}
+
 .c-mapboxpopup--link {
   background: none;
   border: none;

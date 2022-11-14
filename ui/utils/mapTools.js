@@ -3,6 +3,7 @@ import distance from "@turf/distance";
 import { MapPopup } from "../components/SearchForTrainingsAndJobs/components";
 import ReactDOM from "react-dom";
 import * as mapboxgl from "mapbox-gl";
+import "mapbox-gl/dist/mapbox-gl.css";
 import { fetchAddresses } from "../services/baseAdresse";
 import { scrollToElementInContainer, getItemElement } from "./tools";
 import { isArea } from "./isArea";
