@@ -16,21 +16,21 @@ import logoClara from "../public/images/logo-clara.svg";
 import Footer from "../components/footer";
 import ExternalLink from "../components/externalLink";
 
-import { Box, Container, Divider, Grid, GridItem, Text, Link } from '@chakra-ui/react';
+import { Box, Container, Divider, Flex, Grid, GridItem, Text, Link } from '@chakra-ui/react';
 
 const ServiceCard = ({logo, title, text, url, mt, mb}) => {
   return (
   <Box mt={mt} mb={mb}>
-  <div className="card c-about-card c-about-card--flat">
-    <Box minW="68px" minH="68px" bg="grey.300" borderRadius="70px" >
-      <img className={"c-about-card__img--matcha"} src={logo} alt="" />
-    </Box>
-    <div className="c-about-card__content">
-      <Text color="grey.700" fontSize="22px" lineHeight="27px" fontWeight="700">{title}</Text>
-      <Text color="grey.600">{text}</Text>
-      <Link textDecoration="underline" color="grey.600" href={url} isExternal>En savoir plus</Link>
-    </div>
-  </div>
+    <Flex bg="white" py="18px" px="24px" direction={["column","row"]} borderRadius="10px" alignItems="center" boxShadow="0 0 12px rgb(0 0 0 / 21%)">
+      <Box minW="68px" minH="68px" bg="grey.300" borderRadius="70px" >
+        <img className={"c-about-card__img--matcha"} src={logo} alt="" />
+      </Box>
+      <Box pl={2} textAlign={["center","left"]}>
+        <Text color="grey.700" fontSize="22px" lineHeight="27px" fontWeight="700">{title}</Text>
+        <Text color="grey.600">{text}</Text>
+        <Link textDecoration="underline" color="grey.600" href={url} isExternal>En savoir plus</Link>
+      </Box>
+    </Flex>
   </Box> )
 }
 const APROPOS = () => (
