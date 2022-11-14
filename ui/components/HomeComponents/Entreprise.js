@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Button, Flex, Image, SimpleGrid, Text } from '@chakra-ui/react'
+import { Box, Button, Flex, Image, SimpleGrid, Text, Container, Grid, GridItem, Divider} from '@chakra-ui/react'
 
 import ConnectionActions from "./ConnectionActions";
 import votrebesoinImage from '../../public/images/home_pics/illu-votrebesoin.svg'
@@ -8,7 +8,7 @@ import parcoursupImage from '../../public/images/home_pics/parcoursup.svg'
 
 const Entreprise = () => {
   return (
-    <section className="p-3 mb-2 mb-md-5">
+    <Box as="section" p={3} mb={{ base: '2', md: '5' }} >
       <div className="row">
         <div className="col-12 col-md-6 d-none d-md-block">
           <Image src={votrebesoinImage} alt="Votre besoin" />
@@ -27,7 +27,7 @@ const Entreprise = () => {
           <ConnectionActions service="entreprise" />
         </div>
       </div>
-    </section>
+    </Box>
   );
 };
 
