@@ -16,14 +16,14 @@ import logoClara from "../public/images/logo-clara.svg";
 import Footer from "../components/footer";
 import ExternalLink from "../components/externalLink";
 
-import { Box, Container, Divider, Flex, Grid, GridItem, Text, Link } from '@chakra-ui/react';
+import { Box, Container, Divider, Flex, Grid, GridItem, Image, Text, Link } from '@chakra-ui/react';
 
 const ServiceCard = ({logo, title, text, url, mt, mb}) => {
   return (
   <Box mt={mt} mb={mb}>
     <Flex bg="white" py="18px" px="24px" direction={["column","row"]} borderRadius="10px" alignItems="center" boxShadow="0 0 12px rgb(0 0 0 / 21%)">
       <Box minW="68px" minH="68px" bg="grey.300" borderRadius="70px" >
-        <img className={"c-about-card__img--matcha"} src={logo} alt="" />
+        <Image className={"c-about-card__img--matcha"} src={logo} alt="" />
       </Box>
       <Box pl={2} textAlign={["center","left"]}>
         <Text color="grey.700" fontSize="22px" lineHeight="27px" fontWeight="700">{title}</Text>
@@ -91,11 +91,26 @@ const APROPOS = () => (
 
           <Text variant="editorialContentH2" as="h2">Les services de La bonne alternance</Text>
 
-          <ServiceCard mt={6} logo={logoMatcha} title="Dépôt d&apos;offres simplifié" text="Susciter des recrutements en alternance" url="https://mission-apprentissage.gitbook.io/general/les-services-en-devenir/untitled" />
+          <ServiceCard mt={6} 
+            logo={logoMatcha} 
+            title="Dépôt d&apos;offres simplifié" 
+            text="Susciter des recrutements en alternance" 
+            url="https://mission-apprentissage.gitbook.io/general/les-services-en-devenir/untitled" 
+          />
 
-          <ServiceCard mt={4} logo={logoCatalogue} title="Catalogue des formations" text="Un catalogue élargi de formations en apprentissage" url="https://mission-apprentissage.gitbook.io/catalogue/" />
+          <ServiceCard mt={4} 
+            logo={logoCatalogue} 
+            title="Catalogue des formations" 
+            text="Un catalogue élargi de formations en apprentissage" 
+            url="https://mission-apprentissage.gitbook.io/catalogue/" 
+          />
 
-          <ServiceCard mt={4} mb={6} logo={logoPrdv} title="Rendez-vous apprentissage" text="Pour échanger facilement avec les centres de formation" url="https://mission-apprentissage.gitbook.io/general/les-services-en-devenir/prise-de-rendez-vous" />
+          <ServiceCard mt={4} mb={6} 
+            logo={logoPrdv} 
+            title="Rendez-vous apprentissage" 
+            text="Pour échanger facilement avec les centres de formation" 
+            url="https://mission-apprentissage.gitbook.io/general/les-services-en-devenir/prise-de-rendez-vous" 
+          />
           
           <Text variant="editorialContentH2" as="h2">Autres services de Pôle Emploi</Text>
 
