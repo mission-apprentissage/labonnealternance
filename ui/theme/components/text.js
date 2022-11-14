@@ -9,6 +9,12 @@ const Text = {
       py: 0.5,
       fontWeight: 700,
     },
+    homeEditorialH1: {
+      color: '#000091',
+      fontSize: '32px',
+      lineHeight: '40px',
+      fontWeight: 700,
+    },
     homeEditorialH2: {
       color: '#3A3A3A',
       fontSize: '28px',
