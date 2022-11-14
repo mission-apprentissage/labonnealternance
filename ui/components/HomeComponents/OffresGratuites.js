@@ -1,8 +1,7 @@
 import React from "react";
-import ExternalLink from "../externalLink";
 import plateformesjeunesImage from '../../public/images/home_pics/illu-plateformesjeunes.svg'
 
-import { Box, Text, SimpleGrid, Image } from '@chakra-ui/react'
+import { Box, Text, SimpleGrid, Image, Link } from '@chakra-ui/react'
 
 const OffresGratuites = () => {
   return (
@@ -12,19 +11,25 @@ const OffresGratuites = () => {
           <Text as="h2" variant="homeEditorialH2" mb={{ base: '3', lg: '5' }}>Vos offres sont diffusées gratuitement au plus près des candidats.</Text>
           <Box variant="homeEditorialText">
             Elles sont mises en ligne sur les sites les plus visités par les candidats en recherche d’alternance :{" "}
-            <ExternalLink
-              className="c-homecomponent-link__inline"
-              url="https://labonnealternance.pole-emploi.fr"
-              title="La bonne alternance"
-            />
+            <Link variant="homeEditorialLink"
+              href="https://labonnealternance.pole-emploi.fr"
+              isExternal
+            >
+              la Bonne Alternance
+              </Link>
             ,{" "}
-            <ExternalLink
-              className="c-homecomponent-link__inline"
-              url="https://www.1jeune1solution.gouv.fr"
-              title="1jeune1solution"
-            />
+            <Link variant="homeEditorialLink"
+              href="https://www.1jeune1solution.gouv.fr"
+              isExternal
+              >
+              1jeune1solution
+              </Link>
             ,{" "}
-            <ExternalLink className="c-homecomponent-link__inline" url="https://www.parcoursup.fr" title="Parcoursup" />{" "}
+            <Link variant="homeEditorialLink" 
+              href="https://www.parcoursup.fr" 
+              isExternal >
+              parcoursup
+            </Link>{" "}
             et bien d’autres.
           </Box>
         </Box>
