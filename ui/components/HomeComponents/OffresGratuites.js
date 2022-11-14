@@ -28,7 +28,7 @@ const OffresGratuites = () => {
             et bien d’autres.
           </Box>
         </Box>
-        <Box>
+        <Box order={{base: '-1', md: '1'}}>
           <Image src={plateformesjeunesImage} alt="Plateforme jeune" />
         </Box>
       </SimpleGrid>
