@@ -9,13 +9,13 @@ const Text = {
       py: 0.5,
       fontWeight: 700,
     },
-    pageEntrepriseH2: {
+    homeH2: {
       color: '#3A3A3A',
       fontSize: '28px',
       lineHeight: '36px',
       fontWeight: 700,
     },
-    pageEntrepriseText: {
+    homeText: {
       color: '#161616',
       fontSize: '18px',
       lineHeight: '28px',

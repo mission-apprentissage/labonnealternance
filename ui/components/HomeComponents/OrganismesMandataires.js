@@ -10,10 +10,10 @@ const OrganismesMandataires = () => {
           <Image src={solliciterCFAImage} alt="Solliciter CFA" />
         </Box>
         <Box pl={{ base: 5 }}>
-          <Text as="h2" variant="pageEntrepriseH2" mb={{ base: '3', lg: '5' }}>
+          <Text as="h2" variant="homeH2" mb={{ base: '3', lg: '5' }}>
             Identifiez facilement les organismes de formation en lien avec votre offre d’emploi
           </Text>
-          <Box variant="pageEntrepriseText">
+          <Box variant="homeText">
             Vous pouvez choisir d’être accompagné par les centres de formation et votre OPCO de rattachement, afin
             d’accélérer vos recrutements.
           </Box>
