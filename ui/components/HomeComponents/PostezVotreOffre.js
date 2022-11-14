@@ -5,7 +5,7 @@ import offreemploiImage from "../../public/images/home_pics/illu-offreemploi.svg
 const PostezVotreOffre = () => {
   return (
     <Box as="section" p={3} mb={{ base: '2', md: '5' }} >
-      <SimpleGrid columns={{ sm: 1, md: 2 }} spacing='40px' alignItems={"center"}>
+      <SimpleGrid columns={{ sm: 1, md: 2 }} spacing='40px' alignItems={"center"} mt={12}>
         <Box>
           <Image src={offreemploiImage} alt="Offre d'emploi" />
         </Box>

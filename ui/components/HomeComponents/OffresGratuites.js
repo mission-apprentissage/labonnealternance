@@ -7,7 +7,7 @@ import { Box, Text, SimpleGrid, Image } from '@chakra-ui/react'
 const OffresGratuites = () => {
   return (
     <Box as="section" p={3} mb={{ base: '2', md: '5' }} >
-      <SimpleGrid columns={{ sm: 1, md: 2 }} spacing='40px' alignItems={"center"}>
+      <SimpleGrid columns={{ sm: 1, md: 2 }} spacing='40px' alignItems={"center"} mt={12}>
         <Box pl={{base: 5}}>
           <Text as="h2" variant="pageEntrepriseH2" mb={{ base: '3', lg: '5' }}>Vos offres sont diffusées gratuitement au plus près des candidats.</Text>
           <Box variant="pageEntrepriseText">
