@@ -26,14 +26,9 @@ const ServiceCard = ({logo, title, text, url, mt, mb}) => {
       <img className={"c-about-card__img--matcha"} src={logo} alt="" />
     </Box>
     <div className="c-about-card__content">
-      <div className="c-about-card__title">{title}</div>
-      <div className="c-about-card__text">{text}</div>
-      <div className="c-about-card__link">
-        <ExternalLink
-          url={url}
-          title="En savoir plus"
-        />
-      </div>
+      <Text color="grey.700" fontSize="22px" lineHeight="27px" fontWeight="700">{title}</Text>
+      <Text color="grey.600">{text}</Text>
+      <Link textDecoration="underline" color="grey.600" href={url} isExternal>En savoir plus</Link>
     </div>
   </div>
   </Box> )
@@ -62,21 +57,21 @@ const APROPOS = () => (
         </GridItem>
         <GridItem px={4} colSpan={[12,12,12,7]}>
           <Text variant="editorialContentH2" as="h2">Le saviez-vous ?</Text>
-          <Text as="p">
+          <Text as="p" mb={4}>
             7 employeurs sur 10 recrutent sans déposer d’offre d’emploi.
             <br />
             Il est essentiel dans votre recherche de proposer votre candidature à des entreprises n’ayant pas forcément
             déposé d’offre d’emploi en alternance.
           </Text>
-          <Text as="p">
+          <Text as="p" mb={4}>
             Notre algorithme La bonne alternance analyse les offres et les recrutements des 6 dernières années pour vous
             proposer les entreprises qui recrutent régulièrement en alternance (contrat d&apos;apprentissage ou contrat de
             professionnalisation).
           </Text>
 
-          <Text as="p">En complément, le service La bonne alternance expose les formations disponibles en apprentissage.</Text>
+          <Text as="p" mb={4}>En complément, le service La bonne alternance expose les formations disponibles en apprentissage.</Text>
 
-          <Text as="p">
+          <Text as="p" mb={4}>
             Pour une meilleure lisibilité, les résultats sont affichés sur une carte et en liste.
             <br />
             En cliquant sur une entreprise, vous accédez à sa description, ses coordonnées lorsqu’elles sont
@@ -85,7 +80,7 @@ const APROPOS = () => (
 
           <Text variant="editorialContentH2" as="h2">Qui sommes-nous ?</Text>
 
-          <Text as="p">
+          <Text as="p" mb={4}>
             La bonne alternance est d’abord une start-up interne de Pôle emploi créée et développée par des conseillers.{" "}
             <br />
             Reprise par la{" "}
