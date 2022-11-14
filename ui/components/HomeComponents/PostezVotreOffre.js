@@ -7,7 +7,7 @@ const PostezVotreOffre = () => {
     <Box as="section" p={3} mb={{ base: '2', md: '5' }} >
       <SimpleGrid columns={{ sm: 1, md: 2 }} spacing='40px' alignItems={"center"} mt={12}>
         <Box>
-          <Image src={offreemploiImage} alt="Offre d'emploi" />
+          <Image src={offreemploiImage} alt="" />
         </Box>
         <Box pl={{ base: 5 }}>
           <Text as="h2" variant="homeEditorialH2" mb={{ base: '3', lg: '5' }}>Postez votre offre d'alternance en quelques secondes.</Text>
