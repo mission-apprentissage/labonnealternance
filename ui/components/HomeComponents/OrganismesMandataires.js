@@ -1,4 +1,5 @@
 import React from "react";
+import { Box, Text } from '@chakra-ui/react'
 
 const OrganismesMandataires = () => {
   return (
@@ -12,13 +13,13 @@ const OrganismesMandataires = () => {
           />
         </div>
         <div className="col-12 col-md-6 pt-md-5">
-          <h2 className="c-homecomponent-title__small mb-3">
+          <Text as="h2" variant="pageEntrepriseH2" mb={{ base: '3', lg: '5' }}>
             Identifiez facilement les organismes de formation en lien avec votre offre d’emploi
-          </h2>
-          <div>
+          </Text>
+          <Box variant="pageEntrepriseText">
             Vous pouvez choisir d’être accompagné par les centres de formation et votre OPCO de rattachement, afin
             d’accélérer vos recrutements.
-          </div>
+          </Box>
         </div>
       </div>
     </section>
