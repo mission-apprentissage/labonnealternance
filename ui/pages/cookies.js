@@ -57,7 +57,7 @@ const Cookies = () => (
                 sont contenues.
             </Text>
 
-            <Text as="h2" mb="3" variant="homeEditorialH2">2. Les cookies déposés sur le site</Text>
+            <Text as="h2" mt="5" mb="3" variant="homeEditorialH2">2. Les cookies déposés sur le site</Text>
             <Text as="h3" mb="2" variant="homeEditorialH2" fontSize={{base: '22px'}}>Cookies strictement nécessaires au fonctionnement du site</Text>
             <Text as="p" mb="2">
               Des cookies sont utilisés sur le site{" "}
@@ -105,7 +105,7 @@ const Cookies = () => (
               .
             </Text>
 
-            <Text as="h2" mb="3" variant="homeEditorialH2">3. Accepter ou refuser les cookies</Text>
+            <Text as="h2" mt="5" mb="3" variant="homeEditorialH2">3. Accepter ou refuser les cookies</Text>
             <Text as="p" mb="2">
               L’utilisateur dispose de différents moyens pour gérer ses choix en matière de cookies. Les modalités de
               gestion diffèrent selon que le cookie est soumis ou non à consentement préalable. L’utilisateur peut
