@@ -57,103 +57,82 @@ const Cookies = () => (
                 sont contenues.
             </Text>
 
-            <h2 className="h3 c-faq-question">2. Les cookies déposés sur le site</h2>
-            <h3 className="h4 c-faq-question-small mt-4">Cookies strictement nécessaires au fonctionnement du site</h3>
-            <p className="mt-3">
-              <span className="d-block">
-                Des cookies sont utilisés sur le site{" "}
-                <ExternalLink url="https://labonnealternance.pole-emploi.fr/" title="La bonne alternance" /> permettre le
-                bon fonctionnement du site internet et l’utilisation des principales fonctionnalités du site.
-              </span>
-            </p>
-            <p>
-              <span className="d-block">
-                Ces cookies ne sont pas soumis au consentement de l’utilisateur. Ils permettent par exemple le maintien de
-                la connexion ou la conservation du choix de l’usager sur le dépôt des cookies. Sans ces cookies,
-                l’utilisation du site peut être dégradée et l’accès à certains services être rendu impossible. Il est
-                déconseillé de les désactiver.
-              </span>
-            </p>
-            <p>
-              <span className="d-block">
-                L’utilisateur peut cependant s’opposer à leur dépôt en suivant les indications données au point 3.
-              </span>
-            </p>
+            <Text as="h2" mb="3" variant="homeEditorialH2">2. Les cookies déposés sur le site</Text>
+            <Text as="h3" mb="2" variant="homeEditorialH2" fontSize={{base: '22px'}}>Cookies strictement nécessaires au fonctionnement du site</Text>
+            <Text as="p" mb="2">
+              Des cookies sont utilisés sur le site{" "}
+              <ExternalLink url="https://labonnealternance.pole-emploi.fr/" title="La bonne alternance" /> permettre le
+              bon fonctionnement du site internet et l’utilisation des principales fonctionnalités du site.
+            </Text>
+            <Text as="p" mb="2">
+              Ces cookies ne sont pas soumis au consentement de l’utilisateur. Ils permettent par exemple le maintien de
+              la connexion ou la conservation du choix de l’usager sur le dépôt des cookies. Sans ces cookies,
+              l’utilisation du site peut être dégradée et l’accès à certains services être rendu impossible. Il est
+              déconseillé de les désactiver.
+            </Text>
+            <Text as="p" mb="2">
+              L’utilisateur peut cependant s’opposer à leur dépôt en suivant les indications données au point 3.
+            </Text>
 
-            <h3 className="h4 c-faq-question-small mt-4">Cookies statistiques ou de mesure d’audience</h3>
-            <p>
-              <span className="d-block">
+            <Text as="h3" mb="2" mt="4" variant="homeEditorialH2" fontSize={{ base: '22px' }}>Cookies statistiques ou de mesure d’audience</Text>
+            <Text as="p" mb="2">
                 Des cookies sont utilisés sur le site{" "}
                 <ExternalLink url="https://labonnealternance.pole-emploi.fr/" title="La bonne alternance" /> afin
                 d’effectuer de la mesure d’audience, des analyses statistiques dans le but d&apos;améliorer l&apos;expérience
                 utilisateur et la performance du site internet. Ces cookies sont déposés par des tiers pour le compte de
                 Pôle emploi.
-              </span>
-            </p>
-            <p>
-              <span className="d-block">
-                Concernant le dépôt des cookies Google Analytics et Google Optimize, la société Google collecte par
-                l’intermédiaire de ce cookie des données pour son propre compte dans les conditions définies dans sa
-                politique de confidentialité accessible par le lien suivant :{" "}
-                <ExternalLink
-                  url="https://policies.google.com/technologies/partner-sites?gl=fr"
-                  title="https://policies.google.com/technologies/partner-sites?gl=fr"
+            </Text>
+            <Text as="p" mb="2">
+              Concernant le dépôt des cookies Google Analytics et Google Optimize, la société Google collecte par
+              l’intermédiaire de ce cookie des données pour son propre compte dans les conditions définies dans sa
+              politique de confidentialité accessible par le lien suivant :{" "}
+              <ExternalLink
+                url="https://policies.google.com/technologies/partner-sites?gl=fr"
+                title="https://policies.google.com/technologies/partner-sites?gl=fr"
                 />{" "}
-              </span>
-            </p>
-            <p>
-              <span className="d-block">
-                L’utilisateur peut paramétrer le dépôt des cookies en suivant les indications données au point 3. Le fait
-                de refuser la mise en œuvre de tels cookies n&apos;a pas d&apos;incidence sur la navigation sur le site.
-              </span>
-            </p>
-            <p>
-              <span className="d-block">
-                Pour plus d’informations sur les cookies notamment sur le type de cookies déposés ainsi que leurs
-                finalités précises, vous pouvez consulter la plateforme de gestion du consentement,{" "}
-                <a href="#" onClick={handleTagCo}>
-                  {" "}
-                  disponible ici{" "}
-                </a>
-                .
-              </span>
-            </p>
+            </Text>
+            <Text as="p" mb="2">
+              L’utilisateur peut paramétrer le dépôt des cookies en suivant les indications données au point 3. Le fait
+              de refuser la mise en œuvre de tels cookies n&apos;a pas d&apos;incidence sur la navigation sur le site.
+            </Text>
+            <Text as="p" mb="2">
+              Pour plus d’informations sur les cookies notamment sur le type de cookies déposés ainsi que leurs
+              finalités précises, vous pouvez consulter la plateforme de gestion du consentement,{" "}
+              <a href="#" onClick={handleTagCo}>
+                {" "}
+                disponible ici{" "}
+              </a>
+              .
+            </Text>
 
-            <h2 className="h3 c-faq-question">3. Accepter ou refuser les cookies</h2>
-            <p>
-              <span className="d-block">
-                L’utilisateur dispose de différents moyens pour gérer ses choix en matière de cookies. Les modalités de
-                gestion diffèrent selon que le cookie est soumis ou non à consentement préalable. L’utilisateur peut
-                modifier ses choix à tout moment. Pour information, le paramétrage des cookies est susceptible de modifier
-                les conditions de navigation sur le site internet{" "}
-                <ExternalLink url="https://labonnealternance.pole-emploi.fr/" title="La bonne alternance" />, ainsi que
-                les conditions d’accès à certains services et d’entrainer des dysfonctionnements de certaines
-                fonctionnalités.
-              </span>
-            </p>
+            <Text as="h2" mb="3" variant="homeEditorialH2">3. Accepter ou refuser les cookies</Text>
+            <Text as="p" mb="2">
+              L’utilisateur dispose de différents moyens pour gérer ses choix en matière de cookies. Les modalités de
+              gestion diffèrent selon que le cookie est soumis ou non à consentement préalable. L’utilisateur peut
+              modifier ses choix à tout moment. Pour information, le paramétrage des cookies est susceptible de modifier
+              les conditions de navigation sur le site internet{" "}
+              <ExternalLink url="https://labonnealternance.pole-emploi.fr/" title="La bonne alternance" />, ainsi que
+              les conditions d’accès à certains services et d’entrainer des dysfonctionnements de certaines
+              fonctionnalités.
+            </Text>
 
-            <h3 className="h4 c-faq-question-small">Cookies statistiques ou de mesure d’audience</h3>
-            <p>
-              <span className="d-block">
-                Pour les cookies donnant lieu à consentement préalable, l’utilisateur peut accepter ou refuser le dépôt de
-                tout ou partie des cookies, à tout moment, en formulant des choix sur la plateforme de gestion du
-                consentement via{" "}
-                <a href="#" onClick={handleTagCo}>
-                  {" "}
-                  ce lien dédié{" "}
-                </a>
-                .
-              </span>
-            </p>
+            <Text as="h3" mb="2" mt="4" variant="homeEditorialH2" fontSize={{ base: '22px' }}>Cookies statistiques ou de mesure d’audience</Text>
+            <Text as="p" mb="2">
+              Pour les cookies donnant lieu à consentement préalable, l’utilisateur peut accepter ou refuser le dépôt de
+              tout ou partie des cookies, à tout moment, en formulant des choix sur la plateforme de gestion du
+              consentement via{" "}
+              <a href="#" onClick={handleTagCo}>
+                {" "}
+                ce lien dédié{" "}
+              </a>.
+            </Text>
 
-            <h3 className="h4 c-faq-question-small">Le paramétrage du navigateur</h3>
-            <p>
-              <span className="d-block">
-                L’utilisateur peut accepter ou refuser le dépôt de tout ou partie des cookies, à tout moment, en modifiant
-                les paramètres de son navigateur (consulter la fonction « Aide » du navigateur pour en savoir plus) ou en
-                se rendant sur l’une des pages suivantes, selon le navigateur utilisé :
-              </span>
-            </p>
+            <Text as="h3" mb="2" mt="4" variant="homeEditorialH2" fontSize={{ base: '22px' }}>Le paramétrage du navigateur</Text>
+            <Text as="p" mb="2">
+              L’utilisateur peut accepter ou refuser le dépôt de tout ou partie des cookies, à tout moment, en modifiant
+              les paramètres de son navigateur (consulter la fonction « Aide » du navigateur pour en savoir plus) ou en
+              se rendant sur l’une des pages suivantes, selon le navigateur utilisé :
+            </Text>
             <li>
               Google Chrome :{" "}
               <ExternalLink
