@@ -1,6 +1,6 @@
 const Text = {
   baseStyle: {
-    fontFamily: 'Marianne',
+    fontFamily: 'Marianne, Arial',
   },
   variants: {
     highlight: {
@@ -34,6 +34,17 @@ const Text = {
       lineHeight: 1.2,
       marginBottom: '0.5rem',
     },
+
+    editorialContentH2: {
+      color: 'grey.750',
+      fontSize: '18px',
+      fontWeight: 700,
+      lineHeight: '22px',
+      marginBottom: '2.5rem',
+      marginTop: '2.5rem',
+      textAlign: 'left',
+    },
+
     editorialContentH3: {
       fontSize: '1.75rem',
       fontWeight: 500,

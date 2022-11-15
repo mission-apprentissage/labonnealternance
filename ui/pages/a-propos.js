@@ -8,14 +8,64 @@ import logoCatalogue from "../public/images/logo_catalogue.svg";
 import { NextSeo } from "next-seo";
 
 import logoLbb from "../public/images/logo-lbb.svg";
-import logoLbf from "../public/images/logo-labonneformation.svg";
 import logoMaintenant from "../public/images/logo-maintenant.svg";
 import logoAvril from "../public/images/logo-avril.svg";
-import logoClara from "../public/images/logo-clara.svg";
 
 import Footer from "../components/footer";
-import ExternalLink from "../components/externalLink";
-const APROPOS = () => (
+
+import { Box, Container, Divider, Flex, Grid, GridItem, Image, SimpleGrid, Text, Link, VStack } from '@chakra-ui/react';
+
+const ServiceCard = ({logo, title, text, url, mt, mb, imageMT, imageML}) => {
+  return (
+  <Box mt={mt} mb={mb}>
+    <Flex bg="white" py="18px" px="24px" direction={["column","row"]} borderRadius="10px" alignItems="center" boxShadow="0 0 12px rgb(0 0 0 / 21%)">
+      <Box minW="68px" minH="68px" bg="grey.300" borderRadius="70px" >
+        <Image src={logo} alt="" mt={imageMT} ml={imageML} />
+      </Box>
+      <Box pl={2} textAlign={["center","left"]}>
+        <Text color="grey.700" fontSize="22px" lineHeight="27px" fontWeight="700">{title}</Text>
+        <Text color="grey.600">{text}</Text>
+        <Link textDecoration="underline" color="grey.600" href={url} isExternal>En savoir plus</Link>
+      </Box>
+    </Flex>
+  </Box> )
+}
+
+const StartupCard = ({logoUrl,url, title }) => {
+  return (
+    <Box mx={4} mt={4} mb={6} py={4} px={3} bg="white" boxShadow="0px 0px 12px rgb(0 0 0 / 21%)" borderRadius="10px" >
+      <Box height="80px" display="flex" alignItems="center" justifyContent="center">
+        <Image src={logoUrl} width="134px" alt="" />
+      </Box>
+      <Box pl={2}>
+        <Link url={url} isExternal>
+          {title}
+        </Link>
+      </Box>
+    </Box>  
+  )
+}
+
+const ServiceLink = ({url, text, title}) => {
+  return (
+    <Grid templateColumns="repeat(12, 1fr)">
+      <GridItem sx={{'margin-top':'-7px'}} pr={4} colSpan={1} fontSize="25px">•</GridItem>
+      <GridItem ml={4} colSpan={[11,11,4]}>
+        <Link sx={{ 'text-underline-offset': '3px' }} 
+          textDecoration="underline" 
+          textDecorationThickness="2px" 
+          fontWeight="700" 
+          url={url} 
+          isExternal>
+            {title}
+        </Link>
+      </GridItem>
+      <GridItem colSpan={[12,12,7]} pl={[0,0,8]}>{text}</GridItem>
+    </Grid>
+  )
+}
+
+const APropos = () => (
   <div>
     <NextSeo
       title="A propos | La bonne alternance | Trouvez votre alternance"
@@ -27,258 +77,136 @@ const APROPOS = () => (
 
     <Breadcrumb forPage="a-propos" label="A propos" />
 
-    <div className="c-about c-page-container container my-0 mb-sm-5 p-5">
-      <div className="row">
-        <div className="col-12 col-md-5">
-          <h1>
-            <span className="d-block c-page-title is-color-1">A propos de</span>
-            <span className="d-block c-page-title is-color-2">La bonne alternance</span>
-          </h1>
-          <hr className="c-page-title-separator" align="left" />
-        </div>
-        <div className="col-12 col-md-7">
-          <h2 className="c-about-title">Le saviez-vous ?</h2>
-          <p>
+    <Container p={12} my={0} mb={[0,12]} variant="pageContainer">
+      <Grid templateColumns="repeat(12, 1fr)">
+        <GridItem px={4} colSpan={[12,12,12,5]}>
+            <Text variant="editorialContentH1" as="h1">
+              <Text as="span" color="black">A propos de</Text>
+              <br />
+              La bonne alternance
+            </Text>            
+            <Divider variant="pageTitleDivider" my={12}  />
+        </GridItem>
+        <GridItem px={4} colSpan={[12,12,12,7]}>
+          <Text variant="editorialContentH2" as="h2">Le saviez-vous ?</Text>
+          <Text as="p" mb={4}>
             7 employeurs sur 10 recrutent sans déposer d’offre d’emploi.
             <br />
             Il est essentiel dans votre recherche de proposer votre candidature à des entreprises n’ayant pas forcément
             déposé d’offre d’emploi en alternance.
-          </p>
-          <p>
+          </Text>
+          <Text as="p" mb={4}>
             Notre algorithme La bonne alternance analyse les offres et les recrutements des 6 dernières années pour vous
             proposer les entreprises qui recrutent régulièrement en alternance (contrat d&apos;apprentissage ou contrat de
             professionnalisation).
-          </p>
+          </Text>
 
-          <p>En complément, le service La bonne alternance expose les formations disponibles en apprentissage.</p>
+          <Text as="p" mb={4}>En complément, le service La bonne alternance expose les formations disponibles en apprentissage.</Text>
 
-          <p>
+          <Text as="p" mb={4}>
             Pour une meilleure lisibilité, les résultats sont affichés sur une carte et en liste.
             <br />
             En cliquant sur une entreprise, vous accédez à sa description, ses coordonnées lorsqu’elles sont
             disponibles, ainsi qu’à des conseils pour postuler.
-          </p>
+          </Text>
 
-          <h2 className="c-about-title">Qui sommes-nous ?</h2>
+          <Text variant="editorialContentH2" as="h2">Qui sommes-nous ?</Text>
 
-          <p>
+          <Text as="p" mb={4}>
             La bonne alternance est d’abord une start-up interne de Pôle emploi créée et développée par des conseillers.{" "}
             <br />
             Reprise par la{" "}
-            <ExternalLink url="https://mission-apprentissage.gitbook.io/general/" title="Mission apprentissage" /> en
-            2020, le site ajoute désormais des informations sur les formations en apprentissage et les offres d&apos;emploi
+            <Link variant="editorialContentLink" href="https://mission-apprentissage.gitbook.io/general/" isExternal>Mission apprentissage</Link>
+            {" "}en 2020, le site ajoute désormais des informations sur les formations en apprentissage et les offres d&apos;emploi
             en alternance.
-          </p>
+          </Text>
 
-          <h2 className="c-about-title">Les services de La bonne alternance</h2>
+          <Text variant="editorialContentH2" as="h2">Les services de La bonne alternance</Text>
 
-          <div className="card c-about-card c-about-card--flat mt-4">
-            <div className="c-about-card__img">
-              <img className={"c-about-card__img--matcha"} src={logoMatcha} alt={""} />
-            </div>
-            <div className="c-about-card__content">
-              <div className="c-about-card__title">Dépôt d&apos;offres simplifié</div>
-              <div className="c-about-card__text">Susciter des recrutements en alternance</div>
-              <div className="c-about-card__link">
-                <ExternalLink
-                  url="https://mission-apprentissage.gitbook.io/general/les-services-en-devenir/untitled"
-                  title="En savoir plus"
-                />
-              </div>
-            </div>
-          </div>
+          <ServiceCard mt={6} 
+            logo={logoMatcha} 
+            title="Dépôt d&apos;offres simplifié" 
+            text="Susciter des recrutements en alternance" 
+            url="https://mission-apprentissage.gitbook.io/general/les-services-en-devenir/untitled" 
+            imageMT="-2px"
+            imageML="0"
+          />
 
-          <div className="card c-about-card c-about-card--flat mt-3">
-            <div className="c-about-card__img">
-              <img className={"c-about-card__img--catalog"} src={logoCatalogue} alt={""} />
-            </div>
-            <div className="c-about-card__content">
-              <div className="c-about-card__title">Catalogue des formations</div>
-              <div className="c-about-card__text">Un catalogue élargi de formations en apprentissage</div>
-              <div className="c-about-card__link">
-                <ExternalLink url="https://mission-apprentissage.gitbook.io/catalogue/" title="En savoir plus" />
-              </div>
-            </div>
-          </div>
+          <ServiceCard mt={4} 
+            logo={logoCatalogue} 
+            title="Catalogue des formations" 
+            text="Un catalogue élargi de formations en apprentissage" 
+            url="https://mission-apprentissage.gitbook.io/catalogue/" 
+            imageMT="20px"
+            imageML="20px"
+          />
 
-          <div className="card c-about-card c-about-card--flat mt-3 mb-4">
-            <div className="c-about-card__img">
-              <img className={"c-about-card__img--prdv"} src={logoPrdv} alt={"Logo prdv"} />
-            </div>
-            <div className="c-about-card__content">
-              <div className="c-about-card__title">Rendez-vous apprentissage</div>
-              <div className="c-about-card__text">Pour échanger facilement avec les centres de formation</div>
-              <div className="c-about-card__link">
-                <ExternalLink
-                  url="https://mission-apprentissage.gitbook.io/general/les-services-en-devenir/prise-de-rendez-vous"
-                  title="En savoir plus"
-                />
-              </div>
-            </div>
-          </div>
+          <ServiceCard mt={4} mb={6} 
+            logo={logoPrdv} 
+            title="Rendez-vous apprentissage" 
+            text="Pour échanger facilement avec les centres de formation" 
+            url="https://mission-apprentissage.gitbook.io/general/les-services-en-devenir/prise-de-rendez-vous"
+            imageMT="4px"
+            imageML="4px"
+          />
+          
+          <Text variant="editorialContentH2" as="h2">Autres services de Pôle Emploi</Text>
 
-          <h2 className="c-about-title">Autres services de Pôle Emploi</h2>
+          <SimpleGrid columns={[1,1,2]}>
+            <StartupCard logoUrl={logoLbb} url="https://labonneboite.pole-emploi.fr/" title="Trouver des entreprises qui recrutent sans déposer d'offres d'emploi" />
+            <StartupCard logoUrl={logoMaintenant} url="https://maintenant.pole-emploi.fr/" title="Vous valez plus qu'un CV ! Trouvez le bon job en moins de 5 minutes" />
+          </SimpleGrid>
+          
+          <SimpleGrid columns={[1,1,2]}>
+            <StartupCard logoUrl="/images/logo-memo.png" url="https://memo.pole-emploi.fr/" title="Organiser votre recherche d'emploi avec notre tableau de bord" />
+            <StartupCard logoUrl={logoAvril} url="https://avril.pole-emploi.fr/" title="Trouvez une formation en fonction de votre profil ET du marché du travail" />
+          </SimpleGrid>
 
-          <div className="card-deck">
-            <div className="card c-about-card c-about-card--small mt-3 mb-4">
-              <div className="c-about-card__img2">
-                <img src={logoLbb} width="134" alt={"Redirection vers le site La bonne boite"} />
-              </div>
-              <div className="c-about-card__content">
-                <ExternalLink
-                  className="c-about-card__text2 stretched-link"
-                  url="https://labonneboite.pole-emploi.fr/"
-                  title="Trouver des entreprises qui recrutent sans déposer d'offres d'emploi"
-                />
-              </div>
-            </div>
-            <div className="card c-about-card c-about-card--small mt-3 mb-4">
-              <div className="c-about-card__img2">
-                <img src={logoMaintenant} width="134" alt={"Redirection vers le site Maintenant"} />
-              </div>
-              <div className="c-about-card__content">
-                <ExternalLink
-                  className="c-about-card__text2 stretched-link"
-                  url="https://maintenant.pole-emploi.fr/"
-                  title="Vous valez plus qu'un CV ! Trouvez le bon job en moins de 5 minutes"
-                />
-              </div>
-            </div>
-          </div>
+          <Text variant="editorialContentH2" as="h2">Autres liens utiles</Text>
 
-          <div className="card-deck">
-            <div className="card c-about-card c-about-card--small mt-3 mb-4">
-              <div className="c-about-card__img2">
-                <img src="/images/logo-memo.png" width="114" className={"c-about-card__img--memo"} alt={"Redirection vers le site Mémo"} />
-              </div>
-              <div className="c-about-card__content">
-                <ExternalLink
-                  className="c-about-card__text2 stretched-link"
-                  url="https://memo.pole-emploi.fr/"
-                  title="Organiser votre recherche d'emploi avec notre tableau de bord"
-                />
-              </div>
-            </div>
-            <div className="card c-about-card c-about-card--small mt-3 mb-4">
-              <div className="c-about-card__img2">
-                <img src={logoAvril} width="114" className={"c-about-card__img--avril"} alt={"Redirection vers le site Avril"} />
-              </div>
-              <div className="c-about-card__content">
-                <ExternalLink
-                  className="c-about-card__text2 stretched-link"
-                  url="https://avril.pole-emploi.fr/"
-                  title="Trouvez une formation en fonction de votre profil ET du marché du travail"
-                />
-              </div>
-            </div>
-          </div>
+          <VStack>
+            <ServiceLink 
+              url="https://diagoriente.beta.gouv.fr/" 
+              text="Outil d&apos;orientation complet qui permet d&apos;accéder à des pistes métiers en adéquation avec ses intérêts." 
+              title="Diagoriente" />
 
-          <h2 className="c-about-title">Autres liens utiles</h2>
-          <div className="c-about-others">
-            <div className="c-about-other">
-              <div className="c-about-otherleft">
-                <span className="c-about-otherbullet">•</span>
-                <span className="c-about-otherlink">
-                  <ExternalLink url="https://diagoriente.beta.gouv.fr/" title="Diagoriente" />
-                </span>
-              </div>
-              <div className="c-about-otherright">
-                <span className="c-about-otherdescr">
-                  Outil d&apos;orientation complet qui permet d&apos;accéder à des pistes métiers en adéquation avec ses intérêts.
-                </span>
-              </div>
-            </div>
-            <div className="c-about-other">
-              <div className="c-about-otherleft">
-                <span className="c-about-otherbullet">•</span>
-                <span className="c-about-otherlink">
-                  <ExternalLink
-                    url="https://www.parcoursup.fr/index.php?desc=formations_apprentissage"
-                    title="Parcoursup"
-                  />
-                </span>
-              </div>
-              <div className="c-about-otherright">
-                <span className="c-about-otherdescr">Les conseils de parcoursup pour entrer en apprentissage.</span>
-              </div>
-            </div>
-            <div className="c-about-other">
-              <div className="c-about-otherleft">
-                <span className="c-about-otherbullet">•</span>
-                <span className="c-about-otherlink">
-                  <ExternalLink url="https://www.parcoursup.fr/index.php?desc=services_numeriques" title="Parcoursup" />
-                </span>
-              </div>
-              <div className="c-about-otherright">
-                <span className="c-about-otherdescr">
-                  Les services d’aide à l’orientation vers les études supérieures proposés par Parcoursup.
-                </span>
-              </div>
-            </div>
-            <div className="c-about-other">
-              <div className="c-about-otherleft">
-                <span className="c-about-otherbullet">•</span>
-                <span className="c-about-otherlink">
-                  <ExternalLink url="https://www.myjobglasses.com/" title="Myjobglasses" />
-                </span>
-              </div>
-              <div className="c-about-otherright">
-                <span className="c-about-otherdescr">
-                  Myjobglasses vous aide à identifier le métier qui vous correspond.
-                </span>
-              </div>
-            </div>
-            <div className="c-about-other">
-              <div className="c-about-otherleft">
-                <span className="c-about-otherbullet">•</span>
-                <span className="c-about-otherlink">
-                  <ExternalLink 
-                    url="https://media.giphy.com/media/3oz8xzYXuCWF1IXv68/giphy.gif" 
-                    title="The one" />
-                </span>
-              </div>
-              <div className="c-about-otherright">
-                <span className="c-about-otherdescr">
-                  The one vous aide dans toutes vos démarches de recherche d&apos;une alternance.
-                </span>
-              </div>
-            </div>
-            <div className="c-about-other">
-              <div className="c-about-otherleft">
-                <span className="c-about-otherbullet">•</span>
-                <span className="c-about-otherlink">
-                  <ExternalLink
-                    url="https://openclassrooms.com/fr/courses/6003601-decouvrez-lalternance"
-                    title="Openclassrooms"
-                  />
-                </span>
-              </div>
-              <div className="c-about-otherright">
-                <span className="c-about-otherdescr">
-                  Profitez d’un cours en ligne gratuit pour découvrir l&apos;alternance.
-                </span>
-              </div>
-            </div>
-            <div className="c-about-other">
-              <div className="c-about-otherleft">
-                <span className="c-about-otherbullet">•</span>
-                <span className="c-about-otherlink">
-                  <ExternalLink url="https://www.1jeune1solution.gouv.fr/" title="#1jeune1solution" />
-                </span>
-              </div>
-              <div className="c-about-otherright">
-                <span className="c-about-otherdescr">
-                  Je suis jeune, je découvre toutes les solutions pour préparer mon avenir.
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div className="mb-3">&nbsp;</div>
+            <ServiceLink 
+              url="https://www.parcoursup.fr/index.php?desc=formations_apprentissage" 
+              text="Les conseils de parcoursup pour entrer en apprentissage." 
+              title="Parcoursup" />
+
+            <ServiceLink 
+              url="https://www.parcoursup.fr/index.php?desc=services_numeriques" 
+              text="Les services d’aide à l’orientation vers les études supérieures proposés par Parcoursup." 
+              title="Parcoursup" />
+
+            <ServiceLink 
+              url="https://www.myjobglasses.com/" 
+              text="Myjobglasses vous aide à identifier le métier qui vous correspond." 
+              title="Myjobglasses" />
+
+            <ServiceLink 
+              url="https://media.giphy.com/media/3oz8xzYXuCWF1IXv68/giphy.gif" 
+              text="The one vous aide dans toutes vos démarches de recherche d&apos;une alternance." 
+              title="The one" />
+
+            <ServiceLink 
+              url="https://openclassrooms.com/fr/courses/6003601-decouvrez-lalternance" 
+              text="Profitez d’un cours en ligne gratuit pour découvrir l&apos;alternance." 
+              title="Openclassrooms" />
+
+            <ServiceLink 
+              url="https://www.1jeune1solution.gouv.fr/" 
+              text="Je suis jeune, je découvre toutes les solutions pour préparer mon avenir." 
+              title="#1jeune1solution" />
+
+          </VStack>
+        </GridItem>
+      </Grid>
+    </Container>
+    <Box mb={3}>&nbsp;</Box>
     <Footer />
   </div>
 );
 
-export default APROPOS;
+export default APropos;
