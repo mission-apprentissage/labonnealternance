@@ -26,9 +26,9 @@ cli
   .requiredOption("-email_valide, <email_valide>", "email valide", true)
   .description("Permet de créer un accès utilisateur à l'espace partenaire")
   .action((prenom, nom, email, scope, raison_sociale, siret, telephone, adresse, options) => {
-    runScript(({ users }) => {
+    runScript(({ usersRecruteur }) => {
       createUser(
-        users,
+        usersRecruteur,
         {
           prenom,
           nom,
@@ -55,7 +55,7 @@ cli
   .command("reset-api-user <email>")
   .description("Permet de réinitialiser la clé API d'un utilisateur")
   .action((email) => {
-    runScript(({ users }) => resetApiKey(users, email));
+    runScript(({ usersRecruteur }) => resetApiKey(users, email));
   });
 
 cli
