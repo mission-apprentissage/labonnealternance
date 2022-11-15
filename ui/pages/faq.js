@@ -10,12 +10,11 @@ import Footer from "../components/footer";
 import { Box, Container, Divider, Grid, GridItem, Text, Spinner } from '@chakra-ui/react';
 import { Tabs, TabList, TabPanels, Tab, TabPanel } from '@chakra-ui/react'
 
-const FAQ = (props) => {
+const FAQ = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [recordMapNotionRecruteur, setRecordMapNotionRecruteur] = useState(null);
   const [recordMapNotionOrganisme, setRecordMapNotionOrganisme] = useState(null);
   const [recordMapNotionCandidat, setRecordMapNotionCandidat] = useState(null);
-  const [activeTab, setActiveTab] = useState("1");
 
   useEffect(() => {
     const fetchData = async () => {
