@@ -6,7 +6,7 @@ import ScrollToTop from "../components/ScrollToTop";
 import { NextSeo } from "next-seo";
 
 import Footer from "../components/footer";
-import { Box, Text, Link } from '@chakra-ui/react'
+import { Box, Text, Link, UnorderedList, ListItem } from '@chakra-ui/react'
 
 const CGU = () => {
   return (
@@ -37,14 +37,14 @@ const CGU = () => {
               Les présentes conditions générales d’utilisation (dites « CGU ») fixent le cadre juridique de La bonne
               alternance et définissent les conditions d’accès et d’utilisation des services par l’Utilisateur.
             </Text>
-            <Box as="section" mb="6">
+            <Box as="section" mt="6" mb="6">
               <Text as="h2" mb="3" variant="homeEditorialH2">Article 1 - Champ d’application</Text>
               <Text as="p" mb="3">
                 Le site est accessible sans création de compte et demeure d’accès libre. L’utilisation du site vaut
                 acceptation des présentes CGU.
               </Text>
             </Box>
-            <Box as="section" mb="6">
+            <Box as="section" mt="6" mb="6">
               <Text as="h2" mb="3" variant="homeEditorialH2">Article 2 - Objet</Text>
               <Text as="p" mb="2">
                 Le site internet{" "}
@@ -60,7 +60,7 @@ const CGU = () => {
                 diplôme préparé, secteur d’emploi et secteur géographique.
               </Text>
             </Box>
-            <Box as="section">
+            <Box as="section" mt="6">
               <Text as="h2" mb="3" variant="homeEditorialH2">Article 3 – Définitions</Text>
               <Text as="p" mb="2">L’Utilisateur est toute personne qui utilise le site.</Text>
               <Text as="p" mb="2">Les services sont l’ensemble des services proposés par La bonne alternance.</Text>
@@ -71,7 +71,7 @@ const CGU = () => {
                 personnel.
               </Text>
             </Box>
-            <Box as="section">
+            <Box as="section" mt="6">
               <Text as="h2" mb="3" variant="homeEditorialH2">Article 4 – Fonctionnalités</Text>
               <Text as="strong" mb="2">
                 Recherche de formations et d’entreprises
@@ -128,10 +128,10 @@ const CGU = () => {
                 d’information.
               </Text>
             </Box>
-            <Box as="section">
-              <h2 className="c-faq-question mt-2">Article 5 – Responsabilités</h2>
-              <Text as="p" mb="2">
-                <strong>5.1 L’éditeur du Site</strong>
+            <Box as="section" mt="6">
+              <Text as="h2" mb="3" variant="homeEditorialH2">Article 5 – Responsabilités</Text>
+              <Text as="strong" mb="2">
+                5.1 L’éditeur du Site
               </Text>
               <Text as="p" mb="2">
                 Les sources des informations diffusées sur le site sont réputées fiables mais La bonne alternance ne
@@ -149,7 +149,7 @@ const CGU = () => {
                 L’éditeur s’engage à la sécurisation du site, notamment en prenant les mesures nécessaires permettant de
                 garantir la sécurité et la confidentialité des informations fournies.
               </Text>
-              <Text as="p" mb="2">
+              <Text as="p" mb="4">
                 L’éditeur fournit les moyens nécessaires et raisonnables pour assurer un accès continu, sans
                 contrepartie financière, au site. Il se réserve la liberté de faire évoluer, de modifier ou de
                 suspendre, sans préavis, la plateforme pour des raisons de maintenance ou pour tout autre motif jugé
@@ -161,14 +161,12 @@ const CGU = () => {
               L’utilisation du site internet{" "}
               <Link url="https://labonnealternance.pole-emploi.fr/" title="labonnealternance.pole-emploi.fr" />{" "}
               est soumise au respect par l’utilisateur :
-              <ul>
-                <li> de la législation française;</li>
-                <li> des présentes conditions d’utilisation;</li>
-                <li>
-                  Les présentes conditions d’utilisation peuvent être modifiées à tout moment et la date de mise à jour
-                  est mentionnée.
-                </li>
-              </ul>
+              <UnorderedList mb="2">
+                <ListItem>de la législation française;</ListItem>
+                <ListItem>des présentes conditions d’utilisation;</ListItem>
+                <ListItem>Les présentes conditions d’utilisation peuvent être modifiées à tout moment et la date de mise à jour
+                  est mentionnée.</ListItem>
+              </UnorderedList>
               <Text as="p" mb="2">
                 Toute information transmise par l&apos;Utilisateur est de sa seule responsabilité. Il est rappelé que toute
                 personne procédant à une fausse déclaration pour elle-même ou pour autrui s’expose, notamment, aux
@@ -176,9 +174,9 @@ const CGU = () => {
                 d’emprisonnement et 45 000 euros d’amende.
               </Text>
             </Box>
-            <Box as="section">
-              <h2 className="c-faq-question mt-2">Article 6 - Protection des données à caractère personnel</h2>
-              <p>
+            <Box as="section" mt="6">
+              <Text as="h2" mb="3" variant="homeEditorialH2">Article 6 - Protection des données à caractère personnel</Text>
+              <Text as="p" mb="2">
                 L’utilisation du moteur de recherche disponible sur le site internet{" "}
                 <Link url="https://labonnealternance.pole-emploi.fr/" title="La bonne alternance" /> nécessite
                 d’indiquer le(s) métier(s) recherché(s), le périmètre géographique souhaité et de manière facultative le
@@ -187,31 +185,31 @@ const CGU = () => {
                 secteur d’emploi et géographique donné, une liste de formations en apprentissage dans un secteur
                 d’emploi et géographique donné, une liste d’offres d’emploi dans un secteur d’emploi et géographique
                 donné.
-              </p>
-              <p>
+              </Text>
+              <Text as="p" mb="2">
                 Les données à caractère personnel de l’utilisateur mentionnées ci-dessus sont destinées aux agents de
                 Pôle emploi en charge du service de{" "}
-                <Link url="https://labonnealternance.pole-emploi.fr/" title="La bonne alternance" />.
-              </p>
-              <p>
+                <Link href="https://labonnealternance.pole-emploi.fr/">La bonne alternance</Link>.
+              </Text>
+              <Text as="p" mb="2">
                 Pôle emploi traite également des données relatives aux entreprises qui peuvent concerner directement des
                 personnes physiques, notamment les coordonnées des interlocuteurs personnes physiques de ces
                 entreprises.
-              </p>
-              <p>
+              </Text>
+              <Text as="p" mb="2">
                 Les coordonnées de contact mentionnées ci-dessus sont destinées aux agents de Pôle emploi en charge du
                 service et aux utilisateurs du service de{" "}
-                <Link url="https://labonnealternance.pole-emploi.fr/" title="La bonne alternance" />.
-              </p>
-              <p>Les données traitées sont conservées pour une durée de 13 mois.</p>
-              <p>
+                <Link href="https://labonnealternance.pole-emploi.fr/" >La bonne alternance</Link>.
+              </Text>
+              <Text as="p" mb="2">Les données traitées sont conservées pour une durée de 13 mois.</Text>
+              <Text as="p" mb="2">
                 Pôle emploi est le responsable de ce traitement. Au titre de la licéité du traitement exigée par
                 l’article 6 du règlement général (UE) sur la protection des données n°2016/679 du 27 avril 2016 (RGPD),
                 le fondement juridique du traitement est la mission d’intérêt public dont est investi Pôle emploi en
                 vertu de l’article L.5312-1 du code du travail qui consiste notamment à mettre en relation l’offre et la
                 demande d’emploi.
-              </p>
-              <p>
+              </Text>
+              <Text as="p" mb="2">
                 Conformément aux articles 12 à 23 du règlement général (UE) sur la protection des données n°2016/679 du
                 27 avril 2016 et à la loi Informatique et libertés n°78-17 du 6 janvier 1978 modifiée, vous bénéficiez
                 d’un droit d’accès, de rectification, de limitation, de définir des directives sur le sort des données
@@ -220,9 +218,9 @@ const CGU = () => {
                 délégué à la protection des données de Pôle emploi (1 avenue du Docteur Gley, 75987 Paris cedex 20) ou à
                 l’adresse courriel suivante : <a href="mailto:contact-dpd@pole-emploi.fr">contact-dpd@pole-emploi.fr</a>
                 .
-              </p>
+              </Text>
             </Box>
-            <Box as="section">
+            <Box as="section" mt="6">
               <h2 className="c-faq-question mt-2">Article 7 – Mise à jour des conditions d’utilisation</h2>
               <p>
                 Les termes des présentes conditions d’utilisation peuvent être amendés à tout moment, sans préavis, en
@@ -230,7 +228,7 @@ const CGU = () => {
                 autre motif jugé nécessaire.
               </p>
             </Box>
-            <Box as="section">
+            <Box as="section" mt="6">
               <h2 className="c-faq-question mt-2">Article 8 - Propriété intellectuelle</h2>
               <p>
                 Les marques Pôle emploi et La bonne alternance sont protégées au titre des articles L.712-1 et suivants
