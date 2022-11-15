@@ -8,6 +8,7 @@ import axios from "axios";
 import { NotionRenderer } from "react-notion-x";
 import Footer from "../components/footer";
 import { Spinner, Nav, NavItem, NavLink, TabContent, TabPane } from "reactstrap";
+import { Box, Image, SimpleGrid, Text, Show } from '@chakra-ui/react'
 
 const FAQ = (props) => {
   const [isLoading, setIsLoading] = useState(true);
@@ -36,7 +37,7 @@ const FAQ = (props) => {
   }, []);
 
   return (
-    <div className="c-faq">
+    <Box>
       <NextSeo
         title="F.A.Q | La bonne alternance | Trouvez votre alternance"
         description="Questions fréquemment posées. Résultats entreprises, résultats formations, etc."
@@ -125,7 +126,7 @@ const FAQ = (props) => {
       </div>
       <div className="mb-3">&nbsp;</div>
       <Footer />
-    </div>
+    </Box>
   );
 };
 
