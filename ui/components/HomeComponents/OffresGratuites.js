@@ -1,41 +1,43 @@
 import React from "react";
-import ExternalLink from "../externalLink";
+import plateformesjeunesImage from '../../public/images/home_pics/illu-plateformesjeunes.svg'
+
+import { Box, Text, SimpleGrid, Image, Link } from '@chakra-ui/react'
 
 const OffresGratuites = () => {
   return (
-    <section className="p-3 mb-2 mb-md-5">
-      <div className="row">
-        <div className="col-12 col-md-6">
-          <img
-            className="c-homecomponent-illustration mr-3 my-3"
-            src="/images/home_pics/illu-plateformesjeunes.svg"
-            alt=""
-          />
-        </div>
-        <div className="col-12 col-md-6 pt-md-5 order-md-first">
-          <h2 className="c-homecomponent-title__small mb-3">
-            Diffusez gratuitement vos offres au plus près des candidats
-          </h2>
-          <div>
+    <Box as="section" p={3} mb={{ base: '2', md: '5' }} >
+      <SimpleGrid columns={{ sm: 1, md: 2 }} spacing='40px' alignItems={"center"} mt={12}>
+        <Box pl={{base: 5}}>
+          <Text as="h2" variant="homeEditorialH2" mb={{ base: '3', lg: '5' }}>Vos offres sont diffusées gratuitement au plus près des candidats.</Text>
+          <Box variant="homeEditorialText">
             Elles sont mises en ligne sur les sites les plus visités par les candidats en recherche d’alternance :{" "}
-            <ExternalLink
-              className="c-homecomponent-link__inline"
-              url="https://labonnealternance.pole-emploi.fr"
-              title="La bonne alternance"
-            />
+            <Link variant="homeEditorialLink"
+              href="https://labonnealternance.pole-emploi.fr"
+              isExternal
+            >
+              la Bonne Alternance
+              </Link>
             ,{" "}
-            <ExternalLink
-              className="c-homecomponent-link__inline"
-              url="https://www.1jeune1solution.gouv.fr"
-              title="1jeune1solution"
-            />
+            <Link variant="homeEditorialLink"
+              href="https://www.1jeune1solution.gouv.fr"
+              isExternal
+              >
+              1jeune1solution
+              </Link>
             ,{" "}
-            <ExternalLink className="c-homecomponent-link__inline" url="https://www.parcoursup.fr" title="Parcoursup" />{" "}
+            <Link variant="homeEditorialLink" 
+              href="https://www.parcoursup.fr" 
+              isExternal >
+              parcoursup
+            </Link>{" "}
             et bien d’autres.
-          </div>
-        </div>
-      </div>
-    </section>
+          </Box>
+        </Box>
+        <Box order={{base: '-1', md: '1'}}>
+          <Image src={plateformesjeunesImage} alt="Plateforme jeune" />
+        </Box>
+      </SimpleGrid>
+    </Box>
   );
 };
 export default OffresGratuites;

@@ -1,27 +1,25 @@
 import React from "react";
+import { Box, Text, SimpleGrid, Image } from "@chakra-ui/react"
+import solliciterCFAImage from "../../public/images/home_pics/illu-solliciterCFA.svg"
 
 const OrganismesMandataires = () => {
   return (
-    <section className="p-3 mb-2 mb-md-5">
-      <div className="row">
-        <div className="col-12 col-md-6">
-          <img
-            className="c-homecomponent-illustration mr-3 my-3"
-            src="/images/home_pics/illu-solliciterCFA.svg"
-            alt=""
-          />
-        </div>
-        <div className="col-12 col-md-6 pt-md-5">
-          <h2 className="c-homecomponent-title__small mb-3">
+    <Box as="section" p={3} mb={{ base: '2', md: '5' }} >
+      <SimpleGrid columns={{ sm: 1, md: 2 }} spacing='40px' alignItems={"center"} mt={12}>
+        <Box>
+          <Image src={solliciterCFAImage} alt="Solliciter CFA" />
+        </Box>
+        <Box pl={{ base: 5 }}>
+          <Text as="h2" variant="homeEditorialH2" mb={{ base: '3', lg: '5' }}>
             Identifiez facilement les organismes de formation en lien avec votre offre d’emploi
-          </h2>
-          <div>
+          </Text>
+          <Box variant="homeEditorialText">
             Vous pouvez choisir d’être accompagné par les centres de formation et votre OPCO de rattachement, afin
             d’accélérer vos recrutements.
-          </div>
-        </div>
-      </div>
-    </section>
+          </Box>
+        </Box>
+      </SimpleGrid>
+    </Box>
   );
 };
 
