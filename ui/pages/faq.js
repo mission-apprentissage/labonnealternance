@@ -9,6 +9,7 @@ import { NotionRenderer } from "react-notion-x";
 import Footer from "../components/footer";
 import { Spinner, Nav, NavItem, NavLink, TabContent, TabPane } from "reactstrap";
 import { Box, Container, Divider, Grid, GridItem, Text, Link } from '@chakra-ui/react';
+import { Tabs, TabList, TabPanels, Tab, TabPanel } from '@chakra-ui/react'
 
 const FAQ = (props) => {
   const [isLoading, setIsLoading] = useState(true);
@@ -48,8 +49,6 @@ const FAQ = (props) => {
 
       <Breadcrumb forPage="faq" label="FAQ" />
 
-
-
       <Container p={12} my={0} mb={[0, 12]} variant="pageContainer">
         <Grid templateColumns="repeat(12, 1fr)">
           <GridItem px={4} colSpan={[12, 12, 12, 5]}>
@@ -63,88 +62,61 @@ const FAQ = (props) => {
           <GridItem px={4} colSpan={[12, 12, 12, 7]}>
             {isLoading ? (
               <>
-                <div>
+                <Box>
                   <Spinner />
-                  <span className="ml-2">Chargement en cours...</span>
-                </div>
+                  <Box as="span" ml="2">Chargement en cours...</Box>
+                </Box>
               </>
             ) : (
               <>
-                <div>
-                  <Nav tabs>
-                    <NavItem>
-                      <NavLink className={activeTab == "1" ? "active" : ""} onClick={() => setActiveTab("1")}>
-                        Candidat
-                      </NavLink>
-                    </NavItem>
-                    <NavItem>
-                      <NavLink className={activeTab == "2" ? "active" : ""} onClick={() => setActiveTab("2")}>
-                        Recruteur
-                      </NavLink>
-                    </NavItem>
-                    <NavItem>
-                      <NavLink className={activeTab == "3" ? "active" : ""} onClick={() => setActiveTab("3")}>
-                        Organisme de formation
-                      </NavLink>
-                    </NavItem>
-                  </Nav>
-                  <TabContent activeTab={activeTab}>
-                    <TabPane tabId="1">
-                      <NotionRenderer
-                        recordMap={recordMapNotionCandidat}
-                        fullPage={false}
-                        darkMode={false}
-                        disableHeader={true}
-                        rootDomain={process.env.REACT_APP_BASE_URL}
-                        bodyClassName="notion-body"
-                      />
-                    </TabPane>
-                    <TabPane tabId="2">
-                      <NotionRenderer
-                        recordMap={recordMapNotionRecruteur}
-                        fullPage={false}
-                        darkMode={false}
-                        disableHeader={true}
-                        rootDomain={process.env.REACT_APP_BASE_URL}
-                        bodyClassName="notion-body"
-                      />
-                    </TabPane>
-                    <TabPane tabId="3">
-                      <NotionRenderer
-                        recordMap={recordMapNotionOrganisme}
-                        fullPage={false}
-                        darkMode={false}
-                        disableHeader={true}
-                        rootDomain={process.env.REACT_APP_BASE_URL}
-                        bodyClassName="notion-body"
-                      />
-                    </TabPane>
-                  </TabContent>
-                </div>
+                <Box>
+                    <Tabs>
+                      <TabList>
+                        <Tab>Candidat</Tab>
+                        <Tab>Recruteur</Tab>
+                        <Tab>Organisme de formation</Tab>
+                      </TabList>
+
+                      <TabPanels>
+                        <TabPanel color="#1e1e1e">
+                          <NotionRenderer
+                            recordMap={recordMapNotionCandidat}
+                            fullPage={false}
+                            darkMode={false}
+                            disableHeader={true}
+                            rootDomain={process.env.REACT_APP_BASE_URL}
+                            bodyClassName="notion-body"
+                          />
+                        </TabPanel>
+                        <TabPanel color="#1e1e1e">
+                          <NotionRenderer
+                            recordMap={recordMapNotionRecruteur}
+                            fullPage={false}
+                            darkMode={false}
+                            disableHeader={true}
+                            rootDomain={process.env.REACT_APP_BASE_URL}
+                            bodyClassName="notion-body"
+                          />
+                        </TabPanel>
+                        <TabPanel color="#1e1e1e">
+                          <NotionRenderer
+                            recordMap={recordMapNotionOrganisme}
+                            fullPage={false}
+                            darkMode={false}
+                            disableHeader={true}
+                            rootDomain={process.env.REACT_APP_BASE_URL}
+                            bodyClassName="notion-body"
+                          />
+                        </TabPanel>
+                      </TabPanels>
+                    </Tabs>
+                </Box>
               </>
             )}
           </GridItem>
         </Grid>
       </Container>
       <Box mb={3}>&nbsp;</Box>
-      <Footer />
-
-      <div className="c-page-container container my-0 mb-sm-5 p-5">
-        <div className="row">
-          <div className="col-12 col-md-5">
-            <h1>
-              <span className="d-block c-page-title is-color-1">Questions</span>
-              <span className="d-block c-page-title is-color-2">fréquemment</span>
-              <span className="d-block c-page-title is-color-2">posées</span>
-            </h1>
-            <hr className="c-page-title-separator" align="left" />
-          </div>
-          <div className="col-12 col-md-7">
-
-          </div>
-        </div>
-      </div>
-      <div className="mb-3">&nbsp;</div>
       <Footer />
     </Box>
   );
