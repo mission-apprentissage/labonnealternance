@@ -221,16 +221,16 @@ const CGU = () => {
               </Text>
             </Box>
             <Box as="section" mt="6">
-              <h2 className="c-faq-question mt-2">Article 7 – Mise à jour des conditions d’utilisation</h2>
-              <p>
+              <Text as="h2" mb="3" variant="homeEditorialH2">Article 7 – Mise à jour des conditions d’utilisation</Text>
+              <Text as="p" mb="2">
                 Les termes des présentes conditions d’utilisation peuvent être amendés à tout moment, sans préavis, en
                 fonction des modifications apportées à la plateforme, de l’évolution de la législation ou pour tout
                 autre motif jugé nécessaire.
-              </p>
+              </Text>
             </Box>
             <Box as="section" mt="6">
-              <h2 className="c-faq-question mt-2">Article 8 - Propriété intellectuelle</h2>
-              <p>
+              <Text as="h2" mb="3" variant="homeEditorialH2">Article 8 - Propriété intellectuelle</Text>
+              <Text as="p" mb="2">
                 Les marques Pôle emploi et La bonne alternance sont protégées au titre des articles L.712-1 et suivants
                 du code de la propriété intellectuelle. Toute représentation, reproduction ou diffusion, intégrale ou
                 partielle de la marque Pôle emploi et/ou de la marque La bonne alternance, sur quelque support que ce
@@ -238,15 +238,14 @@ const CGU = () => {
                 sanctionné en application de l’article L.716-1 du même code.
                 <br />
                 Par ailleurs, le site{" "}
-                <Link
-                  url="https://labonnealternance.pole-emploi.fr/"
-                  title="labonnealternance.pole-emploi.fr"
-                />{" "}
+                <Link url="https://labonnealternance.pole-emploi.fr/">
+                  labonnealternance.pole-emploi.fr
+                </Link>{" "}
                 contient des contenus sur lesquels des tiers détiennent des droits de propriété intellectuelle (dessin,
                 graphisme, marque, etc.) ou un droit à l’image (photo, visuel mettant en scène une personne physique,
                 vidéo, etc.). Les internautes ne sont pas autorisés à réutiliser ces contenus en l’absence de
                 l’autorisation préalable et expresse de ces tiers.
-              </p>
+              </Text>
             </Box>
           </Box>
         </Box>
