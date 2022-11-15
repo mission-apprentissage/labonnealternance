@@ -7,7 +7,7 @@ import { NextSeo } from "next-seo";
 
 import Footer from "../components/footer";
 import ExternalLink from "../components/externalLink";
-import { Box, Image, SimpleGrid, Text, Show } from '@chakra-ui/react'
+import { Box, Image, SimpleGrid, Text, Show, Link } from '@chakra-ui/react'
 
 const CGU = () => {
   return (
@@ -32,36 +32,38 @@ const CGU = () => {
             </Box>
           </Box>
           <Box className="col-12 col-md-7">
-            <p className="mb-3">Dernière mise à jour le : 12/04/2021</p>
-            <h3 className="mb-3">Conditions générales d’utilisation de La bonne alternance</h3>
-            <p>
+            <Text as="p" mb="3">Dernière mise à jour le : 12/04/2021</Text>
+            <Text as="h3" mb="3">Conditions générales d’utilisation de La bonne alternance</Text>
+            <Text as="p" mb="3">
               Les présentes conditions générales d’utilisation (dites « CGU ») fixent le cadre juridique de La bonne
               alternance et définissent les conditions d’accès et d’utilisation des services par l’Utilisateur.
-            </p>
-            <section>
-              <h2 className="c-faq-question mt-2">Article 1 - Champ d’application</h2>
-              <p className="mb-0">
+            </Text>
+            <Box as="section" mb="6">
+              <Text as="h2" mb="3" variant="homeEditorialH2">Article 1 - Champ d’application</Text>
+              <Text as="p" mb="3">
                 Le site est accessible sans création de compte et demeure d’accès libre. L’utilisation du site vaut
                 acceptation des présentes CGU.
-              </p>
-
-              <h2 className="c-faq-question mt-2">Article 2 - Objet</h2>
-              <p>
+              </Text>
+            </Box>
+            <Box as="section" mb="6">
+              <Text as="h2" mb="3" variant="homeEditorialH2">Article 2 - Objet</Text>
+              <Text as="p" mb="2">
                 Le site internet{" "}
-                <ExternalLink
-                  url="https://labonnealternance.pole-emploi.fr/"
+                <Link
+                  href="https://labonnealternance.pole-emploi.fr/"
                   title="labonnealternance.pole-emploi.fr"
+                  isExternal
                 />{" "}
                 a pour objet de faciliter les entrées en alternance des usagers en informant sur les formations en
                 apprentissage ainsi que les offres d&apos;emplois et entreprises auprès desquelles adresser une candidature.
-              </p>
-              <p>
+              </Text>
+              <Text as="p" mb="2">
                 L’utilisateur peut filtrer tout ou partie des informations à l’aide des filtres suivants : niveau de
                 diplôme préparé, secteur d’emploi et secteur géographique.
-              </p>
-            </section>
-            <section>
-              <h2 className="c-faq-question mt-2">Article 3 – Définitions</h2>
+              </Text>
+            </Box>
+            <Box as="section">
+              <Text as="h2" mb="3" variant="homeEditorialH2">Article 3 – Définitions</Text>
               <p>L’Utilisateur est toute personne qui utilise le site.</p>
               <p>Les services sont l’ensemble des services proposés par La bonne alternance.</p>
               <p>
@@ -70,8 +72,8 @@ const CGU = () => {
                 traitement des données à caractère personnel et à la libre circulation de ces données à caractère
                 personnel.
               </p>
-            </section>
-            <section>
+            </Box>
+            <Box as="section">
               <h2 className="c-faq-question mt-2">Article 4 – Fonctionnalités </h2>
 
               <p>
@@ -125,8 +127,8 @@ const CGU = () => {
                 télécharger les pièces jointes à la candidature, comme le CV, et les conserver au sein de leur système
                 d’information.
               </p>
-            </section>
-            <section>
+            </Box>
+            <Box as="section">
               <h2 className="c-faq-question mt-2">Article 5 – Responsabilités</h2>
               <p>
                 <strong>5.1 L’éditeur du Site</strong>
@@ -173,8 +175,8 @@ const CGU = () => {
                 sanctions prévues à l’article 441-1 du code pénal, prévoyant des peines pouvant aller jusqu’à trois ans
                 d’emprisonnement et 45 000 euros d’amende.
               </p>
-            </section>
-            <section>
+            </Box>
+            <Box as="section">
               <h2 className="c-faq-question mt-2">Article 6 - Protection des données à caractère personnel</h2>
               <p>
                 L’utilisation du moteur de recherche disponible sur le site internet{" "}
@@ -219,16 +221,16 @@ const CGU = () => {
                 l’adresse courriel suivante : <a href="mailto:contact-dpd@pole-emploi.fr">contact-dpd@pole-emploi.fr</a>
                 .
               </p>
-            </section>
-            <section>
+            </Box>
+            <Box as="section">
               <h2 className="c-faq-question mt-2">Article 7 – Mise à jour des conditions d’utilisation</h2>
               <p>
                 Les termes des présentes conditions d’utilisation peuvent être amendés à tout moment, sans préavis, en
                 fonction des modifications apportées à la plateforme, de l’évolution de la législation ou pour tout
                 autre motif jugé nécessaire.
               </p>
-            </section>
-            <section>
+            </Box>
+            <Box as="section">
               <h2 className="c-faq-question mt-2">Article 8 - Propriété intellectuelle</h2>
               <p>
                 Les marques Pôle emploi et La bonne alternance sont protégées au titre des articles L.712-1 et suivants
@@ -247,7 +249,7 @@ const CGU = () => {
                 vidéo, etc.). Les internautes ne sont pas autorisés à réutiliser ces contenus en l’absence de
                 l’autorisation préalable et expresse de ces tiers.
               </p>
-            </section>
+            </Box>
           </Box>
         </Box>
       </Box>
