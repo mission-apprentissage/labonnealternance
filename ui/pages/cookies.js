@@ -6,7 +6,7 @@ import { NextSeo } from "next-seo";
 
 import Footer from "../components/footer";
 import ExternalLink from "../components/externalLink";
-import { Box, Text, Link, UnorderedList, ListItem, Container, Divider, Grid, GridItem, Spinner } from '@chakra-ui/react'
+import { Box, Text, Link, UnorderedList, ListItem, Container, Divider, Grid, GridItem } from '@chakra-ui/react'
 
 const handleTagCo = (e) => {
   e.preventDefault();
@@ -133,34 +133,36 @@ const Cookies = () => (
               les paramètres de son navigateur (consulter la fonction « Aide » du navigateur pour en savoir plus) ou en
               se rendant sur l’une des pages suivantes, selon le navigateur utilisé :
             </Text>
-            <li>
-              Google Chrome :{" "}
-              <ExternalLink
-                url="https://support.google.com/chrome/answer/95647?hl=fr"
-                title="(https://support.google.com/chrome/answer/95647?hl=fr)"
-              />
-            </li>
-            <li>
-              Internet Explorer :{" "}
-              <ExternalLink
-                url="https://support.microsoft.com/fr-fr/help/17442"
-                title="(https://support.microsoft.com/fr-fr/help/17442)"
-              />
-            </li>
-            <li>
-              Mozilla Firefox :{" "}
-              <ExternalLink
-                url="https://support.mozilla.org/fr/kb/activer-desactiver-cookies"
-                title="(https://support.mozilla.org/fr/kb/activer-desactiver-cookies)"
-              />
-            </li>
-            <li>
-              Safari :{" "}
-              <ExternalLink
-                url="https://support.apple.com/fr-fr/guide/safari/sfri11471/mac"
-                title="(https://support.apple.com/fr-fr/guide/safari/sfri11471/mac)"
-              />
-            </li>
+            <UnorderedList>
+              <ListItem>
+                Google Chrome :{" "}
+                <ExternalLink
+                  url="https://support.google.com/chrome/answer/95647?hl=fr"
+                  title="(https://support.google.com/chrome/answer/95647?hl=fr)"
+                />
+              </ListItem>
+              <ListItem>
+                Mozilla Firefox :{" "}
+                <ExternalLink
+                  url="https://support.mozilla.org/fr/kb/activer-desactiver-cookies"
+                  title="(https://support.mozilla.org/fr/kb/activer-desactiver-cookies)"
+                />
+              </ListItem>
+              <ListItem>
+                Internet Explorer :{" "}
+                <ExternalLink
+                  url="https://support.microsoft.com/fr-fr/help/17442"
+                  title="(https://support.microsoft.com/fr-fr/help/17442)"
+                  />
+              </ListItem>
+              <ListItem>
+                Safari :{" "}
+                <ExternalLink
+                  url="https://support.apple.com/fr-fr/guide/safari/sfri11471/mac"
+                  title="(https://support.apple.com/fr-fr/guide/safari/sfri11471/mac)"
+                />
+              </ListItem>
+            </UnorderedList>
 
             <p className="mt-3">
               <span className="d-block">
