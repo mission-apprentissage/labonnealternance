@@ -62,100 +62,102 @@ const CGU = () => {
             </Box>
             <Box as="section">
               <Text as="h2" mb="3" variant="homeEditorialH2">Article 3 – Définitions</Text>
-              <p>L’Utilisateur est toute personne qui utilise le site.</p>
-              <p>Les services sont l’ensemble des services proposés par La bonne alternance.</p>
-              <p>
+              <Text as="p" mb="2">L’Utilisateur est toute personne qui utilise le site.</Text>
+              <Text as="p" mb="2">Les services sont l’ensemble des services proposés par La bonne alternance.</Text>
+              <Text as="p" mb="2">
                 Le responsable de traitement : est la personne qui, au sens de l’article du règlement (UE) n°2016/679 du
                 Parlement européen et du Conseil du 27 avril 2016 relatif à la protection des personnes physiques à du
                 traitement des données à caractère personnel et à la libre circulation de ces données à caractère
                 personnel.
-              </p>
+              </Text>
             </Box>
             <Box as="section">
-              <h2 className="c-faq-question mt-2">Article 4 – Fonctionnalités </h2>
-
-              <p>
-                <strong>Recherche de formations et d’entreprises</strong>
-              </p>
-              <p>
+              <Text as="h2" mb="3" variant="homeEditorialH2">Article 4 – Fonctionnalités</Text>
+              <Text as="strong" mb="2">
+                Recherche de formations et d’entreprises
+              </Text>
+              <Text as="p" mb="2">
                 Le service proposé sur le site labonnealternance.pole-emploi.fr permet à l’utilisateur de rechercher des
                 formations et/ou entreprises susceptibles d’embaucher en alternance des profils similaires au sien, en
                 fonction des données qu’il a saisies (domaine/métier, niveau de diplôme, secteur géographique).
-              </p>
-              <p>
+              </Text>
+              <Text as="p" mb="2">
                 Les résultats de recherche sont accessibles en liste et sur une carte. Ils sont classés en fonction de
                 leur proximité géographique par rapport au périmètre défini par l’utilisateur.
-              </p>
+              </Text>
 
-              <p>
+              <Text as="p" mb="2">
                 L’utilisateur peut entrer en contact avec l’entreprise ou l’organisme au moyen des coordonnées indiquées
                 sur la fiche de l’entreprise ou de l’organisme, ou directement via les services de candidature et de
                 prise de rendez-vous.
-              </p>
-              <p>
+              </Text>
+              <Text as="p" mb="2">
                 À tout moment, chaque entreprise peut d’une part s’opposer à ce que son nom apparaisse dans les
                 résultats de recherche ou d’autre part, demander à être mise en avant.
-              </p>
-              <p>
+              </Text>
+              <Text as="p" mb="4">
                 Elle peut également demander la modification/suppression des informations communiquées (ex. coordonnées)
                 sur le site La bonne alternance en remplissant le{" "}
                 <Link
-                  url="https://labonneboite.pole-emploi.fr/informations-entreprise/action"
-                  title="formulaire recruteur"
-                />{" "}
+                  href="https://labonneboite.pole-emploi.fr/informations-entreprise/action"
+                  isExternal
+                >formulaire recruteur</Link>{" "}
                 directement depuis la page d’accueil du site.
-              </p>
-              <p>
+              </Text>
+              <Text as="p" mb="2">
                 <strong>Envoi de candidature</strong>
-              </p>
-              <p>
+              </Text>
+              <Text as="p" mb="2">
                 Le service La bonne alternance permet à des personnes à la recherche d’une alternance d’envoyer des
                 candidatures directement à partir du site internet{" "}
                 <Link
-                  url="https://labonnealternance.pole-emploi.fr/"
+                  href="https://labonnealternance.pole-emploi.fr/"
                   title="labonnealternance.pole-emploi.fr"
-                />
+                  isExternal
+                >
+                https://labonnealternance.pole-emploi.fr/
+                </Link>
                 . Et ce, à l’ensemble des entreprises pour lesquelles un email de contact est connu.
-              </p>
-              <p>Tous les usagers peuvent accéder à ce service.</p>
-              <p>
+              </Text>
+              <Text as="p" mb="2">Tous les usagers peuvent accéder à ce service.</Text>
+              <Text as="p" mb="2">
                 Pour envoyer sa candidature, l’utilisateur complète un formulaire (nom, prénom, coordonnées, CV, lettre
                 de motivation). La candidature est envoyée à l’entreprise. Hormis les pièces jointes, le détail de
                 chaque candidature est stocké par La bonne alternance pendant 12 mois. En outre, les recruteurs peuvent
                 télécharger les pièces jointes à la candidature, comme le CV, et les conserver au sein de leur système
                 d’information.
-              </p>
+              </Text>
             </Box>
             <Box as="section">
               <h2 className="c-faq-question mt-2">Article 5 – Responsabilités</h2>
-              <p>
+              <Text as="p" mb="2">
                 <strong>5.1 L’éditeur du Site</strong>
-              </p>
-              <p>
+              </Text>
+              <Text as="p" mb="2">
                 Les sources des informations diffusées sur le site sont réputées fiables mais La bonne alternance ne
                 garantit pas qu’il soit exempt de défauts, d’erreurs ou d’omissions.
-              </p>
-              <p>
+              </Text>
+              <Text as="p" mb="2">
                 Tout événement dû à un cas de force majeure ayant pour conséquence un dysfonctionnement du site et sous
                 réserve de toute interruption ou modification en cas de maintenance, n&apos;engage pas la responsabilité de
                 l’éditeur.
-              </p>
-              <p>
+              </Text>
+              <Text as="p" mb="2">
                 L’éditeur s’engage à mettre en œuvre toutes mesures appropriées, afin de protéger les données traitées.
-              </p>
-              <p>
+              </Text>
+              <Text as="p" mb="2">
                 L’éditeur s’engage à la sécurisation du site, notamment en prenant les mesures nécessaires permettant de
                 garantir la sécurité et la confidentialité des informations fournies.
-              </p>
-              <p>
+              </Text>
+              <Text as="p" mb="2">
                 L’éditeur fournit les moyens nécessaires et raisonnables pour assurer un accès continu, sans
                 contrepartie financière, au site. Il se réserve la liberté de faire évoluer, de modifier ou de
                 suspendre, sans préavis, la plateforme pour des raisons de maintenance ou pour tout autre motif jugé
                 nécessaire.
-              </p>
-              <p>
+              </Text>
+              <Text as="p" mb="2">
                 <strong>5.2 L’Utilisateur</strong>
-              </p>
+              </Text>
               L’utilisation du site internet{" "}
               <Link url="https://labonnealternance.pole-emploi.fr/" title="labonnealternance.pole-emploi.fr" />{" "}
               est soumise au respect par l’utilisateur :
@@ -167,12 +169,12 @@ const CGU = () => {
                   est mentionnée.
                 </li>
               </ul>
-              <p>
+              <Text as="p" mb="2">
                 Toute information transmise par l&apos;Utilisateur est de sa seule responsabilité. Il est rappelé que toute
                 personne procédant à une fausse déclaration pour elle-même ou pour autrui s’expose, notamment, aux
                 sanctions prévues à l’article 441-1 du code pénal, prévoyant des peines pouvant aller jusqu’à trois ans
                 d’emprisonnement et 45 000 euros d’amende.
-              </p>
+              </Text>
             </Box>
             <Box as="section">
               <h2 className="c-faq-question mt-2">Article 6 - Protection des données à caractère personnel</h2>
