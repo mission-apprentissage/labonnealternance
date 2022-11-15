@@ -1,7 +1,7 @@
-import prettyMilliseconds from "pretty-ms";
 import { isEmpty } from "lodash-es";
-import { closeMongodbConnection, configureIndexes, configureValidation, connectToMongodb } from "./mongodb.js";
+import prettyMilliseconds from "pretty-ms";
 import { getLoggerWithContext } from "./logger.js";
+import { closeMongoConnection, connectToMongo } from "./mongodb.js";
 
 const logger = getLoggerWithContext("script");
 
@@ -39,7 +39,7 @@ const exit = async (scriptError) => {
 
   setTimeout(() => {
     //Waiting logger to flush all logs (MongoDB)
-    closeMongodbConnection().catch((e) => {
+    closeMongoConnection().catch((e) => {
       console.error(e);
       process.exitCode = 1;
     });
@@ -51,7 +51,7 @@ async function runScript(job) {
     const timer = createTimer();
     timer.start();
 
-    await connectToMongodb();
+    await connectToMongo();
     await configureValidation();
     await configureIndexes();
 

@@ -9,7 +9,6 @@ import { relanceFormulaire } from "./jobs/lba_recruteur/formulaire/relanceFormul
 import { generateIndexes } from "./jobs/lba_recruteur/indexes/generateIndexes.js";
 import { relanceOpco } from "./jobs/lba_recruteur/opco/relanceOpco.js";
 import { createOffreCollection } from "./jobs/lba_recruteur/seed/createOffre.js";
-import { migrate } from "./jobs/migrate.js";
 
 cli.addHelpText("after");
 
@@ -92,16 +91,6 @@ cli
   .description("Relance les opco avec le nombre d'utilisateur en attente de validation")
   .action(() => {
     runScript(({ mailer }) => relanceOpco(mailer));
-  });
-
-cli
-  .command("migrate")
-  .description("Execute les scripts de migration")
-  .option("--dropIndexes", "Supprime les anciens indexes")
-  .action((options) => {
-    runScript(() => {
-      return migrate(options);
-    });
   });
 
 cli.parse(process.argv);
