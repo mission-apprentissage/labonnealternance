@@ -61,7 +61,7 @@ const Cookies = () => (
             <Text as="h3" mb="2" variant="homeEditorialH2" fontSize={{base: '22px'}}>Cookies strictement nécessaires au fonctionnement du site</Text>
             <Text as="p" mb="2">
               Des cookies sont utilisés sur le site{" "}
-              <ExternalLink url="https://labonnealternance.pole-emploi.fr/" title="La bonne alternance" /> permettre le
+              <Link href="https://labonnealternance.pole-emploi.fr/" isExternal >La bonne alternance</Link> permettre le
               bon fonctionnement du site internet et l’utilisation des principales fonctionnalités du site.
             </Text>
             <Text as="p" mb="2">
@@ -77,7 +77,7 @@ const Cookies = () => (
             <Text as="h3" mb="2" mt="4" variant="homeEditorialH2" fontSize={{ base: '22px' }}>Cookies statistiques ou de mesure d’audience</Text>
             <Text as="p" mb="2">
                 Des cookies sont utilisés sur le site{" "}
-                <ExternalLink url="https://labonnealternance.pole-emploi.fr/" title="La bonne alternance" /> afin
+                <Link href="https://labonnealternance.pole-emploi.fr/" isExternal>La bonne alternance</Link> afin
                 d’effectuer de la mesure d’audience, des analyses statistiques dans le but d&apos;améliorer l&apos;expérience
                 utilisateur et la performance du site internet. Ces cookies sont déposés par des tiers pour le compte de
                 Pôle emploi.
@@ -86,10 +86,10 @@ const Cookies = () => (
               Concernant le dépôt des cookies Google Analytics et Google Optimize, la société Google collecte par
               l’intermédiaire de ce cookie des données pour son propre compte dans les conditions définies dans sa
               politique de confidentialité accessible par le lien suivant :{" "}
-              <ExternalLink
-                url="https://policies.google.com/technologies/partner-sites?gl=fr"
-                title="https://policies.google.com/technologies/partner-sites?gl=fr"
-                />{" "}
+              <Link
+                href="https://policies.google.com/technologies/partner-sites?gl=fr"
+                isExternal
+              >https://policies.google.com/technologies/partner-sites?gl=fr</Link>{" "}
             </Text>
             <Text as="p" mb="2">
               L’utilisateur peut paramétrer le dépôt des cookies en suivant les indications données au point 3. Le fait
@@ -98,10 +98,10 @@ const Cookies = () => (
             <Text as="p" mb="2">
               Pour plus d’informations sur les cookies notamment sur le type de cookies déposés ainsi que leurs
               finalités précises, vous pouvez consulter la plateforme de gestion du consentement,{" "}
-              <a href="#" onClick={handleTagCo}>
+              <Link href="#" onClick={handleTagCo}>
                 {" "}
                 disponible ici{" "}
-              </a>
+              </Link>
               .
             </Text>
 
@@ -121,10 +121,11 @@ const Cookies = () => (
               Pour les cookies donnant lieu à consentement préalable, l’utilisateur peut accepter ou refuser le dépôt de
               tout ou partie des cookies, à tout moment, en formulant des choix sur la plateforme de gestion du
               consentement via{" "}
-              <a href="#" onClick={handleTagCo}>
+              <Link href="#" onClick={handleTagCo}>
                 {" "}
                 ce lien dédié{" "}
-              </a>.
+              </Link>
+              .
             </Text>
 
             <Text as="h3" mb="2" mt="4" variant="homeEditorialH2" fontSize={{ base: '22px' }}>Le paramétrage du navigateur</Text>
@@ -136,31 +137,31 @@ const Cookies = () => (
             <UnorderedList>
               <ListItem>
                 Google Chrome :{" "}
-                <ExternalLink
-                  url="https://support.google.com/chrome/answer/95647?hl=fr"
-                  title="(https://support.google.com/chrome/answer/95647?hl=fr)"
-                />
+                <Link
+                  href="https://support.google.com/chrome/answer/95647?hl=fr"
+                  isExternal
+                >(https://support.google.com/chrome/answer/95647?hl=fr)</Link>
               </ListItem>
               <ListItem>
                 Mozilla Firefox :{" "}
-                <ExternalLink
-                  url="https://support.mozilla.org/fr/kb/activer-desactiver-cookies"
-                  title="(https://support.mozilla.org/fr/kb/activer-desactiver-cookies)"
-                />
+                <Link
+                  href="https://support.mozilla.org/fr/kb/activer-desactiver-cookies"
+                  isExternal
+                >(https://support.mozilla.org/fr/kb/activer-desactiver-cookies)</Link>
               </ListItem>
               <ListItem>
                 Internet Explorer :{" "}
-                <ExternalLink
-                  url="https://support.microsoft.com/fr-fr/help/17442"
-                  title="(https://support.microsoft.com/fr-fr/help/17442)"
-                  />
+                <Link
+                  href="https://support.microsoft.com/fr-fr/help/17442"
+                  isExternal
+                >(https://support.microsoft.com/fr-fr/help/17442)</Link>
               </ListItem>
               <ListItem>
                 Safari :{" "}
-                <ExternalLink
-                  url="https://support.apple.com/fr-fr/guide/safari/sfri11471/mac"
-                  title="(https://support.apple.com/fr-fr/guide/safari/sfri11471/mac)"
-                />
+                <Link
+                  href="https://support.apple.com/fr-fr/guide/safari/sfri11471/mac"
+                  isExternal
+                >(https://support.apple.com/fr-fr/guide/safari/sfri11471/mac)</Link>
               </ListItem>
             </UnorderedList>
 
@@ -174,10 +175,11 @@ const Cookies = () => (
             <Text as="p" mb="2">
                 Pour plus d’informations sur les cookies et les moyens permettant d’empêcher leur installation,
                 l’utilisateur peut se rendre sur la page dédiée sur le site internet de la CNIL :{" "}
-                <ExternalLink
-                  url="https://www.cnil.fr/fr/cookies-les-outils-pour-les-maitriser"
-                  title="https://www.cnil.fr/fr/cookies-les-outils-pour-les-maitriser"
-                />
+                <Link
+                href="https://www.cnil.fr/fr/cookies-les-outils-pour-les-maitriser"
+                isExternal>
+                  https://www.cnil.fr/fr/cookies-les-outils-pour-les-maitriser
+                </Link>
                 .
             </Text>
           </Box>
