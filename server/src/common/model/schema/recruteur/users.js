@@ -93,7 +93,7 @@ export const userRecruteur = mongooseInstance.Schema(
     },
     type: {
       type: String,
-      enum: ["ENTREPRISE", "CFA", "OPCO"],
+      enum: ["ENTREPRISE", "CFA", "OPCO", "ADMIN"],
       description: "Type d'utilisateur",
     },
     id_form: {
