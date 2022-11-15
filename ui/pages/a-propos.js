@@ -12,9 +12,8 @@ import logoMaintenant from "../public/images/logo-maintenant.svg";
 import logoAvril from "../public/images/logo-avril.svg";
 
 import Footer from "../components/footer";
-import ExternalLink from "../components/externalLink";
 
-import { Box, Container, Divider, Flex, Grid, GridItem, HStack, Image, SimpleGrid, Text, Link, VStack } from '@chakra-ui/react';
+import { Box, Container, Divider, Flex, Grid, GridItem, Image, SimpleGrid, Text, Link, VStack } from '@chakra-ui/react';
 
 const ServiceCard = ({logo, title, text, url, mt, mb, imageMT, imageML}) => {
   return (
@@ -34,16 +33,16 @@ const ServiceCard = ({logo, title, text, url, mt, mb, imageMT, imageML}) => {
 
 const StartupCard = ({logoUrl,url, title }) => {
   return (
-          <Box mx={4} mt={4} mb={6} py={4} px={3} bg="white" boxShadow="0px 0px 12px rgb(0 0 0 / 21%)" borderRadius="10px" >
-            <Box height="80px" display="flex" alignItems="center" justifyContent="center">
-              <Image src={logoUrl} width="134px" alt="" />
-            </Box>
-            <Box pl={2}>
-              <Link url={url} isExternal>
-                {title}
-              </Link>
-            </Box>
-          </Box>  
+    <Box mx={4} mt={4} mb={6} py={4} px={3} bg="white" boxShadow="0px 0px 12px rgb(0 0 0 / 21%)" borderRadius="10px" >
+      <Box height="80px" display="flex" alignItems="center" justifyContent="center">
+        <Image src={logoUrl} width="134px" alt="" />
+      </Box>
+      <Box pl={2}>
+        <Link url={url} isExternal>
+          {title}
+        </Link>
+      </Box>
+    </Box>  
   )
 }
 
@@ -66,7 +65,7 @@ const ServiceLink = ({url, text, title}) => {
   )
 }
 
-const APROPOS = () => (
+const APropos = () => (
   <div>
     <NextSeo
       title="A propos | La bonne alternance | Trouvez votre alternance"
@@ -210,4 +209,4 @@ const APROPOS = () => (
   </div>
 );
 
-export default APROPOS;
+export default APropos;
