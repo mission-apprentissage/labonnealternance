@@ -8,7 +8,7 @@ import { createUser } from "./jobs/lba_recruteur/formulaire/createUser.js";
 import { relanceFormulaire } from "./jobs/lba_recruteur/formulaire/relanceFormulaire.js";
 import { generateIndexes } from "./jobs/lba_recruteur/indexes/generateIndexes.js";
 import { relanceOpco } from "./jobs/lba_recruteur/opco/relanceOpco.js";
-import { createOffreCollection } from "./jobs/lba_recruteur/seed/createOffre";
+import { createOffreCollection } from "./jobs/lba_recruteur/seed/createOffre.js";
 import { migrate } from "./jobs/migrate.js";
 
 cli.addHelpText("after");
