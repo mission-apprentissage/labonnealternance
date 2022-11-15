@@ -7,10 +7,11 @@ import { NextSeo } from "next-seo";
 
 import Footer from "../components/footer";
 import ExternalLink from "../components/externalLink";
+import { Box, Image, SimpleGrid, Text, Show } from '@chakra-ui/react'
 
-const CGU = (props) => {
+const CGU = () => {
   return (
-    <div>
+    <Box>
       <NextSeo
         title="Conditions générales d'utilisation | La bonne alternance | Trouvez votre alternance"
         description="Conditions générales d’utilisation de La bonne alternance."
@@ -21,17 +22,16 @@ const CGU = (props) => {
 
       <Breadcrumb forPage="cgu" label="CGU" />
 
-      <div className="c-page-container container my-0 mb-sm-5 p-5">
-        <div className="row">
-          <div className="col-12 col-md-5">
-            <h1>
-              <span className="d-block c-page-title is-color-1">Conditions</span>
-              <span className="d-block c-page-title is-color-2">générales</span>
-              <span className="d-block c-page-title is-color-2">d&apos;utilisation</span>
-            </h1>
-            <hr className="c-page-title-separator" align="left" />
-          </div>
-          <div className="col-12 col-md-7">
+      <Box className="c-page-container container my-0 mb-sm-5 p-5">
+        <Box className="row">
+          <Box className="col-12 col-md-5">
+            <Box as="h1">
+              <Text as="span" display="block" mb={1} variant="editorialContentH1" color="#2a2a2a">Conditions</Text>
+              <Text as="span" display="block" mb={1} variant="editorialContentH1">générales</Text>
+              <Text as="span" display="block" mb={1} variant="editorialContentH1">d&apos;utilisation</Text>
+            </Box>
+          </Box>
+          <Box className="col-12 col-md-7">
             <p className="mb-3">Dernière mise à jour le : 12/04/2021</p>
             <h3 className="mb-3">Conditions générales d’utilisation de La bonne alternance</h3>
             <p>
@@ -248,12 +248,12 @@ const CGU = (props) => {
                 l’autorisation préalable et expresse de ces tiers.
               </p>
             </section>
-          </div>
-        </div>
-      </div>
-      <div className="mb-3">&nbsp;</div>
+          </Box>
+        </Box>
+      </Box>
+      <Box className="mb-3">&nbsp;</Box>
       <Footer />
-    </div>
+    </Box>
   );
 };
 
