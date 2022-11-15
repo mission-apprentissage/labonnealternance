@@ -3,7 +3,6 @@ import { oleoduc, readLineByLine, transformData, writeData } from "oleoduc";
 import path from "path";
 import __dirname from "../../common/dirname.js";
 import { logMessage } from "../../common/utils/logMessage.js";
-import config from "../../config.js";
 const currentDirname = __dirname(import.meta.url);
 const filePath = path.join(currentDirname, "./assets/predictions.csv");
 

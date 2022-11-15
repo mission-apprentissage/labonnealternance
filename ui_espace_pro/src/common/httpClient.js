@@ -70,6 +70,14 @@ export const _put = (path, body = {}) => {
   }).then((res) => handleResponse(path, res))
 }
 
+export const _patch = (path, body = {}) => {
+  return fetch(`${path}`, {
+    method: 'PATCH',
+    headers: getHeaders(),
+    body: JSON.stringify(body),
+  }).then((res) => handleResponse(path, res))
+}
+
 export const _delete = (path) => {
   return fetch(`${path}`, {
     method: 'DELETE',

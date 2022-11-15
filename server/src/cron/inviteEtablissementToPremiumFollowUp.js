@@ -1,11 +1,9 @@
-import path from "path";
-import __dirname from "../common/dirname.js";
 import { logger } from "../common/logger.js";
 import { mailType, optMode } from "../common/model/constants/etablissement.js";
 import { dayjs } from "../common/utils/dayjs.js";
 import { isValidEmail } from "../common/utils/isValidEmail.js";
 import config from "../config.js";
-const currentDirname = __dirname(import.meta.url);
+import { mailTemplate } from "../assets/index.js";
 
 /**
  * @description Invite all "etablissements" to Premium (followup).
@@ -42,17 +40,17 @@ export const inviteEtablissementToPremiumFollowUp = async ({ etablissements, mai
     const { messageId } = await mailer.sendEmail({
       to: etablissement.email_decisionnaire,
       subject: `Rendez-vous Apprentissage est disponible sur Parcoursup`,
-      template: path.join(currentDirname, `../assets/templates/mail-cfa-premium-invite-followup.mjml.ejs`),
+      template: mailTemplate["mail-cfa-premium-invite-followup"],
       data: {
         images: {
-          logoCfa: `${config.publicUrl}/assets/logo-lba-recruteur-cfa.png?raw=true`,
-          logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.png?raw=true`,
-          parcoursupIntegrationExample: `${config.publicUrl}/assets/exemple_integration_parcoursup.jpg?raw=true`,
+          logoCfa: `${config.publicUrl}/espace-pro/assets/logo-lba-recruteur-cfa.png?raw=true`,
+          logoFooter: `${config.publicUrl}/espace-pro/assets/logo-republique-francaise.png?raw=true`,
+          parcoursupIntegrationExample: `${config.publicUrl}/espace-pro/assets/exemple_integration_parcoursup.jpg?raw=true`,
         },
         etablissement: {
           email: etablissement.email_decisionnaire,
           activatedAt: dayjs(etablissement.opt_out_will_be_activated_at).format("DD/MM"),
-          linkToForm: `${config.publicUrl}/form/premium/${etablissement._id}`,
+          linkToForm: `${config.publicUrl}/espace-pro/form/premium/${etablissement._id}`,
         },
       },
       from: config.rdvEmail,

@@ -253,7 +253,7 @@ export default async (components) => {
    * RDV-Apprentissage: cron
    * Note: Will be rewritten.
    *
-   * KBA : to be transfered to infra.
+   * KBA : to be transferred to infra.
    */
   // Everyday at 14:00: Opt-out invite
   cron.schedule("0 14 * * *", () => inviteEtablissementToOptOut(components));

@@ -14,7 +14,8 @@
     "build": "react-scripts build",
     "serve": "ws --port 3000 -d /site --log.format dev --spa espace-pro/index.html",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "eslint:fix": "eslint --fix src/**/*.{jsx,js}"
   },
   "dependencies": {
     "@appbaseio/reactivesearch": "^3.30.3",
@@ -27,21 +28,35 @@
     "formik": "^2.2.6",
     "framer-motion": "^4",
     "jsonwebtoken": "^8.5.1",
-    "match-sorter": "6.3.1",
+    "match-sorter": "^6.3.1",
     "react": "^17.0.1",
-    "react-csv": "2.2.2",
+    "react-csv": "^2.2.2",
     "react-dom": "^17.0.1",
     "react-gtm-module": "^2.0.11",
-    "react-helmet": "6.1.0",
+    "react-helmet": "^6.1.0",
     "react-hooks-global-state": "^1.0.1",
     "react-icons": "^4.2.0",
     "react-query": "^3.34.19",
     "react-router-dom": "^6.2.1",
-    "react-scripts": "4.0.3",
+    "react-scripts": "^4.0.3",
     "react-table": "^7.7.0",
     "react-virtualized-auto-sizer": "^1.0.6",
     "react-window": "^1.8.6",
-    "yup": "^0.32.9"
+    "yup": "^0.32.9",
+    "@chakra-ui/icons": "^1.1.1",
+    "@chakra-ui/theme": "^1.12.2",
+    "chakra-ui-markdown-renderer": "^4.0.0",
+    "chakra-ui-steps-rework-mna": "^1.5.0-beta.5",
+    "email-validator": "^2.0.4",
+    "lodash": "^4.17.21",
+    "moment": "^2.29.3",
+    "query-string": "^7.0.1",
+    "react-dates": "^21.8.0",
+    "react-dropzone": "^11.3.4",
+    "react-notion-x": "^4.12.0",
+    "react-papaparse": "^3.17.1",
+    "react-router": "^5.2.1",
+    "styled-components": "^5.3.5"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -69,6 +84,7 @@
   },
   "devDependencies": {
     "eslint": "^7.22.0",
+    "eslint-config-react-app": "^7.0.1",
     "eslint-config-airbnb": "^18.2.0",
     "eslint-config-prettier": "^8.1.0",
     "eslint-plugin-import": "^2.22.0",
@@ -79,6 +95,7 @@
     "eslint-webpack-plugin": "^3.0.1",
     "local-web-server": "^4.2.1",
     "prettier": "^2.2.1",
-    "source-map-explorer": "^2.5.2"
+    "source-map-explorer": "^2.5.2",
+    "prop-types": "^15.8.1"
   }
 }

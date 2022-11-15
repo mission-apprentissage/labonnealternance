@@ -1,11 +1,9 @@
-import path from "path";
-import __dirname from "../common/dirname.js";
 import { logger } from "../common/logger.js";
 import { mailType, optMode } from "../common/model/constants/etablissement.js";
 import { dayjs } from "../common/utils/dayjs.js";
 import { isValidEmail } from "../common/utils/isValidEmail.js";
 import config from "../config.js";
-const currentDirname = __dirname(import.meta.url);
+import { mailTemplate } from "../assets/index.js";
 
 /**
  * @description Invite all "etablissements" without opt_mode to opt-out.
@@ -70,13 +68,13 @@ export const inviteEtablissementToOptOut = async ({ etablissements, widgetParame
       const { messageId } = await mailer.sendEmail({
         to: emailDecisionaire,
         subject: `Améliorer le sourcing de vos candidats !`,
-        template: path.join(currentDirname, `../assets/templates/mail-cfa-optout-invitation.mjml.ejs`),
+        template: mailTemplate["mail-cfa-optout-invitation"],
         data: {
           images: {
-            logoCfa: `${config.publicUrl}/assets/logo-lba-recruteur-cfa.png?raw=true`,
-            logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.png?raw=true`,
-            peopleLaptop: `${config.publicUrl}/assets/people-laptop.png?raw=true`,
-            optOutLbaIntegrationExample: `${config.publicUrl}/assets/exemple_integration_lba.png?raw=true`,
+            logoCfa: `${config.publicUrl}/espace-pro/assets/logo-lba-recruteur-cfa.png?raw=true`,
+            logoFooter: `${config.publicUrl}/espace-pro/assets/logo-republique-francaise.png?raw=true`,
+            peopleLaptop: `${config.publicUrl}/espace-pro/assets/people-laptop.png?raw=true`,
+            optOutLbaIntegrationExample: `${config.publicUrl}/espace-pro/assets/exemple_integration_lba.png?raw=true`,
           },
           etablissement: {
             name: etablissement.raison_sociale,
@@ -85,7 +83,7 @@ export const inviteEtablissementToOptOut = async ({ etablissements, widgetParame
             ville: etablissement.localite,
             siret: etablissement?.siret_formateur,
             optOutActivatedAtDate: optOutWillBeActivatedAtDayjs.format("DD/MM"),
-            linkToUnsubscribe: `${config.publicUrl}/form/opt-out/unsubscribe/${etablissement._id}`,
+            linkToUnsubscribe: `${config.publicUrl}/espace-pro/form/opt-out/unsubscribe/${etablissement._id}`,
           },
           user: {
             destinataireEmail: emailDecisionaire,
