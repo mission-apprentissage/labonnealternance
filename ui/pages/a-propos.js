@@ -16,7 +16,7 @@ import logoClara from "../public/images/logo-clara.svg";
 import Footer from "../components/footer";
 import ExternalLink from "../components/externalLink";
 
-import { Box, Container, Divider, Flex, Grid, GridItem, Image, Text, Link } from '@chakra-ui/react';
+import { Box, Container, Divider, Flex, Grid, GridItem, Image, SimpleGrid, Text, Link } from '@chakra-ui/react';
 
 const ServiceCard = ({logo, title, text, url, mt, mb, imageMT, imageML}) => {
   return (
@@ -32,6 +32,21 @@ const ServiceCard = ({logo, title, text, url, mt, mb, imageMT, imageML}) => {
       </Box>
     </Flex>
   </Box> )
+}
+
+const StartupCard = ({logoUrl,url, title }) => {
+  return (
+          <Box mx={4} mt={4} mb={6} py={4} px={3} bg="white" boxShadow="0px 0px 12px rgb(0 0 0 / 21%)" borderRadius="10px" >
+            <Box height="80px" display="flex" alignItems="center" justifyContent="center">
+              <Image src={logoUrl} width="134px" alt="" />
+            </Box>
+            <Box pl={2}>
+              <Link url={url} isExternal>
+                {title}
+              </Link>
+            </Box>
+          </Box>  
+  )
 }
 const APROPOS = () => (
   <div>
@@ -120,59 +135,15 @@ const APROPOS = () => (
           
           <Text variant="editorialContentH2" as="h2">Autres services de Pôle Emploi</Text>
 
-          <div className="card-deck">
-            <div className="card c-about-card c-about-card--small mt-3 mb-4">
-              <div className="c-about-card__img2">
-                <img src={logoLbb} width="134" alt={"Redirection vers le site La bonne boite"} />
-              </div>
-              <div className="c-about-card__content">
-                <ExternalLink
-                  className="c-about-card__text2 stretched-link"
-                  url="https://labonneboite.pole-emploi.fr/"
-                  title="Trouver des entreprises qui recrutent sans déposer d'offres d'emploi"
-                />
-              </div>
-            </div>
-            <div className="card c-about-card c-about-card--small mt-3 mb-4">
-              <div className="c-about-card__img2">
-                <img src={logoMaintenant} width="134" alt={"Redirection vers le site Maintenant"} />
-              </div>
-              <div className="c-about-card__content">
-                <ExternalLink
-                  className="c-about-card__text2 stretched-link"
-                  url="https://maintenant.pole-emploi.fr/"
-                  title="Vous valez plus qu'un CV ! Trouvez le bon job en moins de 5 minutes"
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="card-deck">
-            <div className="card c-about-card c-about-card--small mt-3 mb-4">
-              <div className="c-about-card__img2">
-                <img src="/images/logo-memo.png" width="114" className={"c-about-card__img--memo"} alt={"Redirection vers le site Mémo"} />
-              </div>
-              <div className="c-about-card__content">
-                <ExternalLink
-                  className="c-about-card__text2 stretched-link"
-                  url="https://memo.pole-emploi.fr/"
-                  title="Organiser votre recherche d'emploi avec notre tableau de bord"
-                />
-              </div>
-            </div>
-            <div className="card c-about-card c-about-card--small mt-3 mb-4">
-              <div className="c-about-card__img2">
-                <img src={logoAvril} width="114" className={"c-about-card__img--avril"} alt={"Redirection vers le site Avril"} />
-              </div>
-              <div className="c-about-card__content">
-                <ExternalLink
-                  className="c-about-card__text2 stretched-link"
-                  url="https://avril.pole-emploi.fr/"
-                  title="Trouvez une formation en fonction de votre profil ET du marché du travail"
-                />
-              </div>
-            </div>
-          </div>
+          <SimpleGrid columns={[1,1,2]}>
+            <StartupCard logoUrl={logoLbb} url="https://labonneboite.pole-emploi.fr/" title="Trouver des entreprises qui recrutent sans déposer d'offres d'emploi" />
+            <StartupCard logoUrl={logoMaintenant} url="https://maintenant.pole-emploi.fr/" title="Vous valez plus qu'un CV ! Trouvez le bon job en moins de 5 minutes" />
+          </SimpleGrid>
+          
+          <SimpleGrid columns={[1,1,2]}>
+            <StartupCard logoUrl="/images/logo-memo.png" url="https://memo.pole-emploi.fr/" title="Organiser votre recherche d'emploi avec notre tableau de bord" />
+            <StartupCard logoUrl={logoAvril} url="https://avril.pole-emploi.fr/" title="Trouvez une formation en fonction de votre profil ET du marché du travail" />
+          </SimpleGrid>
 
           <Text variant="editorialContentH2" as="h2">Autres liens utiles</Text>
           <div className="c-about-others">
