@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import Navigation from "../components/navigation";
 import Breadcrumb from "../components/breadcrumb";
 import ScrollToTop from "../components/ScrollToTop";
