@@ -5,7 +5,6 @@ import Breadcrumb from "../components/breadcrumb";
 import { NextSeo } from "next-seo";
 
 import Footer from "../components/footer";
-import ExternalLink from "../components/externalLink";
 
 import { Box, Container, Divider, Grid, GridItem, Text, Link } from '@chakra-ui/react';
 

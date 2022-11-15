@@ -8,7 +8,7 @@ import axios from "axios";
 import { NotionRenderer } from "react-notion-x";
 import Footer from "../components/footer";
 import { Spinner, Nav, NavItem, NavLink, TabContent, TabPane } from "reactstrap";
-import { Box, Image, SimpleGrid, Text, Show } from '@chakra-ui/react'
+import { Box, Container, Divider, Grid, GridItem, Text, Link } from '@chakra-ui/react';
 
 const FAQ = (props) => {
   const [isLoading, setIsLoading] = useState(true);
@@ -48,17 +48,19 @@ const FAQ = (props) => {
 
       <Breadcrumb forPage="faq" label="FAQ" />
 
-      <div className="c-page-container container my-0 mb-sm-5 p-5">
-        <div className="row">
-          <div className="col-12 col-md-5">
-            <h1>
-              <span className="d-block c-page-title is-color-1">Questions</span>
-              <span className="d-block c-page-title is-color-2">fréquemment</span>
-              <span className="d-block c-page-title is-color-2">posées</span>
-            </h1>
-            <hr className="c-page-title-separator" align="left" />
-          </div>
-          <div className="col-12 col-md-7">
+
+
+      <Container p={12} my={0} mb={[0, 12]} variant="pageContainer">
+        <Grid templateColumns="repeat(12, 1fr)">
+          <GridItem px={4} colSpan={[12, 12, 12, 5]}>
+            <Box as="h1" >
+              <Text as="span" display="block" mb={1} variant="editorialContentH1" color="#2a2a2a">Questions</Text>
+              <Text as="span" display="block" mb={1} variant="editorialContentH1">fréquemment</Text>
+              <Text as="span" display="block" mb={1} variant="editorialContentH1">posées</Text>
+            </Box>
+            <Divider variant="pageTitleDivider" my={12} />
+          </GridItem>
+          <GridItem px={4} colSpan={[12, 12, 12, 7]}>
             {isLoading ? (
               <>
                 <div>
@@ -121,6 +123,24 @@ const FAQ = (props) => {
                 </div>
               </>
             )}
+          </GridItem>
+        </Grid>
+      </Container>
+      <Box mb={3}>&nbsp;</Box>
+      <Footer />
+
+      <div className="c-page-container container my-0 mb-sm-5 p-5">
+        <div className="row">
+          <div className="col-12 col-md-5">
+            <h1>
+              <span className="d-block c-page-title is-color-1">Questions</span>
+              <span className="d-block c-page-title is-color-2">fréquemment</span>
+              <span className="d-block c-page-title is-color-2">posées</span>
+            </h1>
+            <hr className="c-page-title-separator" align="left" />
+          </div>
+          <div className="col-12 col-md-7">
+
           </div>
         </div>
       </div>
