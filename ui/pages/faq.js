@@ -7,8 +7,7 @@ import baseUrl from "../utils/baseUrl";
 import axios from "axios";
 import { NotionRenderer } from "react-notion-x";
 import Footer from "../components/footer";
-import { Spinner, Nav, NavItem, NavLink, TabContent, TabPane } from "reactstrap";
-import { Box, Container, Divider, Grid, GridItem, Text, Link } from '@chakra-ui/react';
+import { Box, Container, Divider, Grid, GridItem, Text, Spinner } from '@chakra-ui/react';
 import { Tabs, TabList, TabPanels, Tab, TabPanel } from '@chakra-ui/react'
 
 const FAQ = (props) => {
