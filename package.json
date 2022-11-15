@@ -7,5 +7,9 @@
     "extends": [
       "@commitlint/config-conventional"
     ]
+  },
+  "scripts": {
+    "docker:start": "docker-compose up -d --build --force-recreate",
+    "docker:stop": "docker-compose stop"
   }
 }
