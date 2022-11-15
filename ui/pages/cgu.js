@@ -159,7 +159,7 @@ const CGU = () => {
                 <strong>5.2 L’Utilisateur</strong>
               </Text>
               L’utilisation du site internet{" "}
-              <Link url="https://labonnealternance.pole-emploi.fr/" title="labonnealternance.pole-emploi.fr" />{" "}
+              <Link href="https://labonnealternance.pole-emploi.fr/" >labonnealternance.pole-emploi.fr</Link>{" "}
               est soumise au respect par l’utilisateur :
               <UnorderedList mb="2">
                 <ListItem>de la législation française;</ListItem>
@@ -178,7 +178,7 @@ const CGU = () => {
               <Text as="h2" mb="3" variant="homeEditorialH2">Article 6 - Protection des données à caractère personnel</Text>
               <Text as="p" mb="2">
                 L’utilisation du moteur de recherche disponible sur le site internet{" "}
-                <Link url="https://labonnealternance.pole-emploi.fr/" title="La bonne alternance" /> nécessite
+                <Link href="https://labonnealternance.pole-emploi.fr/">La bonne alternance</Link> nécessite
                 d’indiquer le(s) métier(s) recherché(s), le périmètre géographique souhaité et de manière facultative le
                 niveau d’études. Ces données sont collectées et traitées par Pôle emploi dans le but de fournir, à la
                 requête de l’utilisateur, la liste des entreprises ou organismes ayant un potentiel d’embauche dans un
