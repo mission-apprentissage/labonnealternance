@@ -8,15 +8,13 @@ import logoCatalogue from "../public/images/logo_catalogue.svg";
 import { NextSeo } from "next-seo";
 
 import logoLbb from "../public/images/logo-lbb.svg";
-import logoLbf from "../public/images/logo-labonneformation.svg";
 import logoMaintenant from "../public/images/logo-maintenant.svg";
 import logoAvril from "../public/images/logo-avril.svg";
-import logoClara from "../public/images/logo-clara.svg";
 
 import Footer from "../components/footer";
 import ExternalLink from "../components/externalLink";
 
-import { Box, Container, Divider, Flex, Grid, GridItem, Image, SimpleGrid, Text, Link } from '@chakra-ui/react';
+import { Box, Container, Divider, Flex, Grid, GridItem, HStack, Image, SimpleGrid, Text, Link, VStack } from '@chakra-ui/react';
 
 const ServiceCard = ({logo, title, text, url, mt, mb, imageMT, imageML}) => {
   return (
@@ -48,6 +46,26 @@ const StartupCard = ({logoUrl,url, title }) => {
           </Box>  
   )
 }
+
+const ServiceLink = ({url, text, title}) => {
+  return (
+    <Grid templateColumns="repeat(12, 1fr)">
+      <GridItem sx={{'margin-top':'-7px'}} pr={4} colSpan={1} fontSize="25px">•</GridItem>
+      <GridItem ml={4} colSpan={[11,11,4]}>
+        <Link sx={{ 'text-underline-offset': '3px' }} 
+          textDecoration="underline" 
+          textDecorationThickness="2px" 
+          fontWeight="700" 
+          url={url} 
+          isExternal>
+            {title}
+        </Link>
+      </GridItem>
+      <GridItem colSpan={[12,12,7]} pl={[0,0,8]}>{text}</GridItem>
+    </Grid>
+  )
+}
+
 const APROPOS = () => (
   <div>
     <NextSeo
@@ -146,105 +164,44 @@ const APROPOS = () => (
           </SimpleGrid>
 
           <Text variant="editorialContentH2" as="h2">Autres liens utiles</Text>
-          <div className="c-about-others">
-            <div className="c-about-other">
-              <div className="c-about-otherleft">
-                <span className="c-about-otherbullet">•</span>
-                <span className="c-about-otherlink">
-                  <ExternalLink url="https://diagoriente.beta.gouv.fr/" title="Diagoriente" />
-                </span>
-              </div>
-              <div className="c-about-otherright">
-                <span className="c-about-otherdescr">
-                  Outil d&apos;orientation complet qui permet d&apos;accéder à des pistes métiers en adéquation avec ses intérêts.
-                </span>
-              </div>
-            </div>
-            <div className="c-about-other">
-              <div className="c-about-otherleft">
-                <span className="c-about-otherbullet">•</span>
-                <span className="c-about-otherlink">
-                  <ExternalLink
-                    url="https://www.parcoursup.fr/index.php?desc=formations_apprentissage"
-                    title="Parcoursup"
-                  />
-                </span>
-              </div>
-              <div className="c-about-otherright">
-                <span className="c-about-otherdescr">Les conseils de parcoursup pour entrer en apprentissage.</span>
-              </div>
-            </div>
-            <div className="c-about-other">
-              <div className="c-about-otherleft">
-                <span className="c-about-otherbullet">•</span>
-                <span className="c-about-otherlink">
-                  <ExternalLink url="https://www.parcoursup.fr/index.php?desc=services_numeriques" title="Parcoursup" />
-                </span>
-              </div>
-              <div className="c-about-otherright">
-                <span className="c-about-otherdescr">
-                  Les services d’aide à l’orientation vers les études supérieures proposés par Parcoursup.
-                </span>
-              </div>
-            </div>
-            <div className="c-about-other">
-              <div className="c-about-otherleft">
-                <span className="c-about-otherbullet">•</span>
-                <span className="c-about-otherlink">
-                  <ExternalLink url="https://www.myjobglasses.com/" title="Myjobglasses" />
-                </span>
-              </div>
-              <div className="c-about-otherright">
-                <span className="c-about-otherdescr">
-                  Myjobglasses vous aide à identifier le métier qui vous correspond.
-                </span>
-              </div>
-            </div>
-            <div className="c-about-other">
-              <div className="c-about-otherleft">
-                <span className="c-about-otherbullet">•</span>
-                <span className="c-about-otherlink">
-                  <ExternalLink 
-                    url="https://media.giphy.com/media/3oz8xzYXuCWF1IXv68/giphy.gif" 
-                    title="The one" />
-                </span>
-              </div>
-              <div className="c-about-otherright">
-                <span className="c-about-otherdescr">
-                  The one vous aide dans toutes vos démarches de recherche d&apos;une alternance.
-                </span>
-              </div>
-            </div>
-            <div className="c-about-other">
-              <div className="c-about-otherleft">
-                <span className="c-about-otherbullet">•</span>
-                <span className="c-about-otherlink">
-                  <ExternalLink
-                    url="https://openclassrooms.com/fr/courses/6003601-decouvrez-lalternance"
-                    title="Openclassrooms"
-                  />
-                </span>
-              </div>
-              <div className="c-about-otherright">
-                <span className="c-about-otherdescr">
-                  Profitez d’un cours en ligne gratuit pour découvrir l&apos;alternance.
-                </span>
-              </div>
-            </div>
-            <div className="c-about-other">
-              <div className="c-about-otherleft">
-                <span className="c-about-otherbullet">•</span>
-                <span className="c-about-otherlink">
-                  <ExternalLink url="https://www.1jeune1solution.gouv.fr/" title="#1jeune1solution" />
-                </span>
-              </div>
-              <div className="c-about-otherright">
-                <span className="c-about-otherdescr">
-                  Je suis jeune, je découvre toutes les solutions pour préparer mon avenir.
-                </span>
-              </div>
-            </div>
-          </div>
+
+          <VStack>
+            <ServiceLink 
+              url="https://diagoriente.beta.gouv.fr/" 
+              text="Outil d&apos;orientation complet qui permet d&apos;accéder à des pistes métiers en adéquation avec ses intérêts." 
+              title="Diagoriente" />
+
+            <ServiceLink 
+              url="https://www.parcoursup.fr/index.php?desc=formations_apprentissage" 
+              text="Les conseils de parcoursup pour entrer en apprentissage." 
+              title="Parcoursup" />
+
+            <ServiceLink 
+              url="https://www.parcoursup.fr/index.php?desc=services_numeriques" 
+              text="Les services d’aide à l’orientation vers les études supérieures proposés par Parcoursup." 
+              title="Parcoursup" />
+
+            <ServiceLink 
+              url="https://www.myjobglasses.com/" 
+              text="Myjobglasses vous aide à identifier le métier qui vous correspond." 
+              title="Myjobglasses" />
+
+            <ServiceLink 
+              url="https://media.giphy.com/media/3oz8xzYXuCWF1IXv68/giphy.gif" 
+              text="The one vous aide dans toutes vos démarches de recherche d&apos;une alternance." 
+              title="The one" />
+
+            <ServiceLink 
+              url="https://openclassrooms.com/fr/courses/6003601-decouvrez-lalternance" 
+              text="Profitez d’un cours en ligne gratuit pour découvrir l&apos;alternance." 
+              title="Openclassrooms" />
+
+            <ServiceLink 
+              url="https://www.1jeune1solution.gouv.fr/" 
+              text="Je suis jeune, je découvre toutes les solutions pour préparer mon avenir." 
+              title="#1jeune1solution" />
+
+          </VStack>
         </GridItem>
       </Grid>
     </Container>
