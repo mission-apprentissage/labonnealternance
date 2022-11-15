@@ -6,6 +6,7 @@ import { NextSeo } from "next-seo";
 
 import Footer from "../components/footer";
 import ExternalLink from "../components/externalLink";
+import { Box, Text, Link, UnorderedList, ListItem } from '@chakra-ui/react'
 
 const handleTagCo = (e) => {
   e.preventDefault();
@@ -18,7 +19,7 @@ const handleTagCo = (e) => {
 };
 
 const Cookies = () => (
-  <div>
+  <Box>
     <NextSeo
       title="Cookies | La bonne alternance | Trouvez votre alternance"
       description="Politique de confidentialité, traitement des données à caractère personnel sur le site de La bonne alternance."
@@ -210,7 +211,7 @@ const Cookies = () => (
     </div>
     <div className="mb-3">&nbsp;</div>
     <Footer />
-  </div>
+  </Box>
 );
 
 export default Cookies;
