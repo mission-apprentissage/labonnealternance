@@ -67,7 +67,7 @@ const countFormations = async () => {
 };
 
 const fetchFormations = ({ formationCount }) => {
-  const query = { published: true };
+  const query = { published: true, catalogue_published: true };
 
   const streamFormations = async (query, options) => {
     const params = convertQueryIntoParams(query, options);

@@ -19,12 +19,6 @@ const lbfDescriptionUrl = "https://labonneformation.pole-emploi.fr/api/v1/detail
 
 const esClient = getFormationsES();
 
-const publishedMustTerm = {
-  match: {
-    published: true,
-  },
-};
-
 const diplomaMap = {
   3: "3 (CAP...)",
   4: "4 (BAC...)",
@@ -98,9 +92,7 @@ const getFormations = async ({
         },
       });
     }
-
-    mustTerm.push(publishedMustTerm);
-
+    
     let esQuerySort = {
       sort: [
         useGeoLocation
@@ -264,9 +256,7 @@ const getRegionFormations = async ({
           niveau: getDiplomaKey(diploma),
         },
       });
-
-    mustTerm.push(publishedMustTerm);
-
+    
     const esQueryIndexFragment = getFormationEsQueryIndexFragment(limit);
 
     const responseFormations = await esClient.search({
