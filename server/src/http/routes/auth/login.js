@@ -6,7 +6,7 @@ import { ExtractJwt, Strategy } from "passport-jwt";
 import { Strategy as LocalStrategy } from "passport-local";
 import { mailTemplate } from "../../../assets/index.js";
 import { CFA, ENTREPRISE, etat_utilisateur } from "../../../common/constants.js";
-import { createMagicLinkToken, createUserToken } from "../../../common/utils/jwtUtils.js";
+import { createMagicLinkToken, createUserRecruteurToken, createUserToken } from "../../../common/utils/jwtUtils.js";
 import config from "../../../config.js";
 import { tryCatch } from "../../middlewares/tryCatchMiddleware.js";
 
@@ -37,7 +37,6 @@ const checkToken = (usersRecruteur) => {
 };
 
 export default ({ users, usersRecruteur, etablissementsRecruteur, mailer }) => {
-  console.log(config.auth);
   const router = express.Router(); // eslint-disable-line new-cap
   passport.use(
     new LocalStrategy(
@@ -161,7 +160,7 @@ export default ({ users, usersRecruteur, etablissementsRecruteur, mailer }) => {
       const user = req.user;
       await usersRecruteur.registerUser(user.email);
       console.log({ user });
-      return res.json({ token: createUserToken(user) });
+      return res.json({ token: createUserRecruteurToken(user) });
     })
   );
 
