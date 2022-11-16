@@ -9,6 +9,13 @@ import { relanceFormulaire } from "./jobs/lba_recruteur/formulaire/relanceFormul
 import { generateIndexes } from "./jobs/lba_recruteur/indexes/generateIndexes.js";
 import { relanceOpco } from "./jobs/lba_recruteur/opco/relanceOpco.js";
 import { createOffreCollection } from "./jobs/lba_recruteur/seed/createOffre.js";
+import { activateOptOutEtablissementFormations } from "./jobs/rdv/activateOptOutEtablissementFormations.js";
+import { candidatHaveYouBeenContacted } from "./jobs/rdv/candidatHaveYouBeenContacted.js";
+import { inviteEtablissementToOptOut } from "./jobs/rdv/inviteEtablissementToOptOut.js";
+import { inviteEtablissementToPremium } from "./jobs/rdv/inviteEtablissementToPremium.js";
+import { inviteEtablissementToPremiumFollowUp } from "./jobs/rdv/inviteEtablissementToPremiumFollowUp.js";
+import { parcoursupEtablissementStat } from "./jobs/rdv/parcoursupEtablissementStat.js";
+import { syncEtablissementsAndFormations } from "./jobs/rdv/syncEtablissementsAndFormations.js";
 
 cli.addHelpText("after");
 
@@ -91,6 +98,55 @@ cli
   .description("Relance les opco avec le nombre d'utilisateur en attente de validation")
   .action(() => {
     runScript(({ mailer }) => relanceOpco(mailer));
+  });
+
+cli
+  .command("activate-opt-out-etablissement-formations")
+  .description("Active tous les établissements qui ont souscrits à l'opt-out.")
+  .action(() => {
+    runScript((components) => activateOptOutEtablissementFormations(components));
+  });
+
+cli
+  .command("candidat-have-you-been-contacted")
+  .description("Envoi un email au candidat afin de savoir si le CFA la contacté.")
+  .action(() => {
+    runScript((components) => candidatHaveYouBeenContacted(components));
+  });
+
+cli
+  .command("invite-etablissement-to-opt-out")
+  .description("Invite les établissements (via email décisionnaire) à l'opt-out.")
+  .action(() => {
+    runScript((components) => inviteEtablissementToOptOut(components));
+  });
+
+cli
+  .command("invite-etablissement-to-premium")
+  .description("Invite les établissements (via email décisionnaire) au premium (Parcoursup)")
+  .action(() => {
+    runScript((components) => inviteEtablissementToPremium(components));
+  });
+
+cli
+  .command("invite-etablissement-to-premium-follow-up")
+  .description("(Relance) Invite les établissements (via email décisionnaire) au premium (Parcoursup)")
+  .action(() => {
+    runScript((components) => inviteEtablissementToPremiumFollowUp(components));
+  });
+
+cli
+  .command("parcoursup-etablissement-stat")
+  .description("Remonte des statistiques sur Parcoursup.")
+  .action(() => {
+    runScript((components) => parcoursupEtablissementStat(components));
+  });
+
+cli
+  .command("sync-etablissements-and-formations")
+  .description("Récupère la liste de toutes les formations du Catalogue et les enregistre.")
+  .action(() => {
+    runScript((components) => syncEtablissementsAndFormations(components));
   });
 
 cli.parse(process.argv);

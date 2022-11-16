@@ -1,46 +1,33 @@
-import { logger } from "../common/logger.js";
-import { mailType, optMode } from "../common/model/constants/etablissement.js";
-import { dayjs } from "../common/utils/dayjs.js";
-import { isValidEmail } from "../common/utils/isValidEmail.js";
-import config from "../config.js";
-import { mailTemplate } from "../assets/index.js";
+import { logger } from "../../common/logger.js";
+import { mailType } from "../../common/model/constants/etablissement.js";
+import { dayjs } from "../../common/utils/dayjs.js";
+import config from "../../config.js";
+import { mailTemplate } from "../../assets/index.js";
 
 /**
- * @description Invite all "etablissements" to Premium (followup).
+ * @description Invite all "etablissements" to Premium.
  * @returns {Promise<void>}
  */
-export const inviteEtablissementToPremiumFollowUp = async ({ etablissements, mailer }) => {
-  logger.info("Cron #inviteEtablissementToPremiumFollowUp started.");
+export const inviteEtablissementToPremium = async ({ etablissements, mailer }) => {
+  logger.info("Cron #inviteEtablissementToPremium started.");
 
-  const etablissementsFound = await etablissements.find({
+  const etablissementsActivated = await etablissements.find({
     email_decisionnaire: {
       $ne: null,
     },
-    opt_mode: optMode.OPT_OUT,
     opt_out_will_be_activated_at: {
       $ne: null,
+      $lte: dayjs().subtract(1, "day").toDate(),
     },
-    premium_activated_at: null,
-    premium_refused_at: null,
-    premium_invited_at: {
-      $ne: null,
-      $lte: dayjs().subtract(10, "days").toDate(),
-    },
-    "mailing.campaign": {
-      $ne: mailType.PREMIUM_INVITE_FOLLOW_UP,
-    },
+    "mailing.campaign": { $ne: mailType.PREMIUM_INVITE },
   });
 
-  for (const etablissement of etablissementsFound) {
-    if (!etablissement.email_decisionnaire || !isValidEmail(etablissement.email_decisionnaire)) {
-      continue;
-    }
-
+  for (const etablissement of etablissementsActivated) {
     // Invite all etablissements only in production environment
     const { messageId } = await mailer.sendEmail({
       to: etablissement.email_decisionnaire,
-      subject: `Rendez-vous Apprentissage est disponible sur Parcoursup`,
-      template: mailTemplate["mail-cfa-premium-invite-followup"],
+      subject: `Optimisez le sourcing de vos candidats sur Parcoursup !`,
+      template: mailTemplate["mail-cfa-premium-invite"],
       data: {
         images: {
           logoCfa: `${config.publicUrl}/espace-pro/assets/logo-lba-recruteur-cfa.png?raw=true`,
@@ -62,7 +49,7 @@ export const inviteEtablissementToPremiumFollowUp = async ({ etablissements, mai
         premium_invited_at: dayjs().toDate(),
         $push: {
           mailing: {
-            campaign: mailType.PREMIUM_INVITE_FOLLOW_UP,
+            campaign: mailType.PREMIUM_INVITE,
             status: null,
             message_id: messageId,
             email_sent_at: dayjs().toDate(),
@@ -72,5 +59,5 @@ export const inviteEtablissementToPremiumFollowUp = async ({ etablissements, mai
     );
   }
 
-  logger.info("Cron #inviteEtablissementToPremiumFollowUp done.");
+  logger.info("Cron #inviteEtablissementToPremium done.");
 };

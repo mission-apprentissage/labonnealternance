@@ -1,8 +1,8 @@
-import { referrers } from "../common/model/constants/referrers.js";
-import { logger } from "../common/logger.js";
-import { dayjs } from "../common/utils/dayjs.js";
-import { getFormations } from "../common/utils/catalogue.js";
-import { isValidEmail } from "../common/utils/isValidEmail.js";
+import { referrers } from "../../common/model/constants/referrers.js";
+import { logger } from "../../common/logger.js";
+import { dayjs } from "../../common/utils/dayjs.js";
+import { getFormations } from "../../common/utils/catalogue.js";
+import { isValidEmail } from "../../common/utils/isValidEmail.js";
 
 /**
  * Gets email from catalogue field.

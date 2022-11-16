@@ -1,9 +1,9 @@
-import { logger } from "../common/logger.js";
-import { mailType } from "../common/model/constants/etablissement.js";
-import { referrers } from "../common/model/constants/referrers.js";
-import { dayjs } from "../common/utils/dayjs.js";
-import config from "../config.js";
-import { mailTemplate } from "../assets/index.js";
+import { logger } from "../../common/logger.js";
+import { mailType } from "../../common/model/constants/etablissement.js";
+import { referrers } from "../../common/model/constants/referrers.js";
+import { dayjs } from "../../common/utils/dayjs.js";
+import config from "../../config.js";
+import { mailTemplate } from "../../assets/index.js";
 
 /**
  * @description Active all etablissement's formations that have subscribed to opt-out.

@@ -74,7 +74,6 @@
     "multipipe": "4.0.0",
     "nanoid": "4.0.0",
     "nock": "13.0.6",
-    "node-cron": "3.0.0",
     "node-fetch": "3.2.10",
     "nodemailer": "6.6.3",
     "nodemailer-html-to-text": "3.2.0",
