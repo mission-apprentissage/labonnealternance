@@ -18,7 +18,7 @@ import { matchaMock, matchaMockMandataire, matchasMock } from "../mocks/matchas-
 
 const getMatchaJobs = async ({ romes, radius, latitude, longitude, api, opco, caller, useMock }) => {
   try {
-    const hasLocation = latitude === undefined ? false : true;
+    const hasLocation = latitude === "" || latitude === undefined ? false : true;
 
     let distance = hasLocation ? radius || 10 : 21000;
 
