@@ -24,13 +24,13 @@ const getToken = async (token = {}) => {
       "https://entreprise.pole-emploi.fr/connexion/oauth2/access_token?realm=partenaire",
       querystring.stringify({
         grant_type: "client_credentials",
-        client_id: config.poleEmploi.client_id,
-        client_secret: config.poleEmploi.client_secret,
-        scope: `api_romev1 application_${config.poleEmploi.client_id} nomenclatureRome`,
+        client_id: config.poleEmploi.clientId,
+        client_secret: config.poleEmploi.clientSecret,
+        scope: `api_romev1 application_${config.poleEmploi.clientId} nomenclatureRome`,
       }),
       {
         headers: {
-          Authorization: `Bearer ${config.poleEmploi.client_secret}`,
+          Authorization: `Bearer ${config.poleEmploi.clientSecret}`,
           "Content-Type": "application/x-www-form-urlencoded",
         },
       }

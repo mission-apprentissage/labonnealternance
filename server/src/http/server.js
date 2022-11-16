@@ -52,7 +52,6 @@ import apiRoute from "./routes/api.js";
 import esSearchRoute from "./routes/esSearch.js";
 import etablissementsRecruteurRoute from "./routes/etablissementRecruteur.js";
 import formulaireRoute from "./routes/formulaire.js";
-import loginRoute from "./routes/login.js";
 import optoutRoute from "./routes/optout.js";
 import userRoute from "./routes/user.js";
 
@@ -235,7 +234,6 @@ export default async (components) => {
   app.use("/api/v1", apiRoute(components));
 
   app.use("/api/user", userRoute(components));
-  app.use("/api/authentification", loginRoute(components)); // ex /api/login LBA-R
   app.use("/api/formulaire", formulaireRoute(components));
   app.use("/api/es/search", esSearchRoute());
   app.use("/api/rome", rome());

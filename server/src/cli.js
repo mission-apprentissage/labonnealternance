@@ -62,7 +62,7 @@ cli
   .command("reset-api-user <email>")
   .description("Permet de réinitialiser la clé API d'un utilisateur")
   .action((email) => {
-    runScript(({ usersRecruteur }) => resetApiKey(users, email));
+    runScript(({ usersRecruteur }) => resetApiKey(usersRecruteur, email));
   });
 
 cli

@@ -30,7 +30,7 @@ const getPage = ({ responsePage, responseNumberOfPages, defaultPage }) => {
  * @returns {Promise<Object[]>}
  */
 export const getCatalogueEtablissements = (query = {}) =>
-  got(`${config.catalogue.api.baseUrl}/entity/etablissements`, {
+  got(`${config.catalogueUrl}/api/v1/entity/etablissements`, {
     method: "POST",
     json: {
       query,
@@ -46,7 +46,7 @@ export const getCatalogueEtablissements = (query = {}) =>
  * @returns {Promise<Object[]>}
  */
 export const getCatalogueFormations = (query = {}, select = {}, page = undefined) =>
-  got(`${config.catalogue.api.baseUrl}/entity/formations`, {
+  got(`${config.catalogueUrl}/api/v1/entity/formations`, {
     method: "POST",
     json: {
       query,
