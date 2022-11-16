@@ -99,7 +99,7 @@ const config = {
   },
   lba: {
     application: env.get("LBA_APPLICATION_NAME").default("").asString(),
-    apiKey: env.get("LBA_APPLICATION_API_KEY").default("").asString(),
+    apiKey: env.get("LBA_APPLICATION_ACCESS_KEY").default("").asString(),
   },
   users: {
     defaultAdmin: {
