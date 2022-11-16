@@ -4,7 +4,7 @@ const config = {
   appName: env.get("LBA_NAME").default("doctrina").asString(),
   env: env.get("LBA_ENV").default("local").asString(),
   publicUrl: env.get("LBA_PUBLIC_URL").default("http://localhost").asString(),
-  publicUrlEspacePro: env.get("LBA_PUBLIC_URL").default("http://localhost/espace-pro").asString(),
+  publicUrlEspacePro: env.get("LBA_PUBLIC_URL_ESPACE_PRO").default("http://localhost/espace-pro").asString(),
   outputDir: env.get("LBA_OUTPUT_DIR").default(".local/output").asString(),
   formationsEndPoint: "/api/v1/entity/formations",
   maxApplicationPerDay: 100,
