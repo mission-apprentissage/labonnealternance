@@ -24,11 +24,11 @@ const stats = () => (
           <p>
             La bonne alternance est une startup d’Etat incubée par beta.gouv. Nous développons un service à destination
             des publics selon les principes du{" "}
-            <a href="https://beta.gouv.fr/approche/manifeste">Manifeste de beta.gouv</a>
+            <a href="https://beta.gouv.fr/approche/manifeste" aira-label="Accès au site de Beta gouv">Manifeste de beta.gouv</a>
           </p>
           <p>
             Nous mesurons l’impact de nos actions et publions en toute transparence nos statistiques que vous pouvez{" "}
-            <a href="https://datastudio.google.com/reporting/1v-Sim2qMlFSMn4n9JJWaMk8PIONvM757">consulter ici</a>
+            <a href="https://datastudio.google.com/reporting/1v-Sim2qMlFSMn4n9JJWaMk8PIONvM757" aria-label="Accès aux statistiques du service">consulter ici</a>
           </p>
         </div>
       </div>

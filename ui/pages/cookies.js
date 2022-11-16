@@ -65,7 +65,7 @@ const Cookies = () => (
           <p className="mt-3">
             <span className="d-block">
               Des cookies sont utilisés sur le site{" "}
-              <ExternalLink url="https://labonnealternance.pole-emploi.fr/" title="La bonne alternance" /> permettre le
+              <ExternalLink url="https://labonnealternance.pole-emploi.fr/" aria-label="Redirection vers la page d'accueil" title="La bonne alternance" /> permettre le
               bon fonctionnement du site internet et l’utilisation des principales fonctionnalités du site.
             </span>
           </p>
@@ -87,7 +87,7 @@ const Cookies = () => (
           <p>
             <span className="d-block">
               Des cookies sont utilisés sur le site{" "}
-              <ExternalLink url="https://labonnealternance.pole-emploi.fr/" title="La bonne alternance" /> afin
+              <ExternalLink url="https://labonnealternance.pole-emploi.fr/" aria-label="Redirection vers la page d'accueil" title="La bonne alternance" /> afin
               d’effectuer de la mesure d’audience, des analyses statistiques dans le but d&apos;améliorer l&apos;expérience
               utilisateur et la performance du site internet. Ces cookies sont déposés par des tiers pour le compte de
               Pôle emploi.
@@ -100,6 +100,7 @@ const Cookies = () => (
               politique de confidentialité accessible par le lien suivant :{" "}
               <ExternalLink
                 url="https://policies.google.com/technologies/partner-sites?gl=fr"
+                aria-label="Accès à la politique de confidentialité Google"
                 title="https://policies.google.com/technologies/partner-sites?gl=fr"
               />{" "}
             </span>
@@ -114,7 +115,7 @@ const Cookies = () => (
             <span className="d-block">
               Pour plus d’informations sur les cookies notamment sur le type de cookies déposés ainsi que leurs
               finalités précises, vous pouvez consulter la plateforme de gestion du consentement,{" "}
-              <a href="#" onClick={handleTagCo}>
+              <a href="#" aria-label="Accès à la pop-in de gestion des cookies" onClick={handleTagCo}>
                 {" "}
                 disponible ici{" "}
               </a>
@@ -129,7 +130,7 @@ const Cookies = () => (
               gestion diffèrent selon que le cookie est soumis ou non à consentement préalable. L’utilisateur peut
               modifier ses choix à tout moment. Pour information, le paramétrage des cookies est susceptible de modifier
               les conditions de navigation sur le site internet{" "}
-              <ExternalLink url="https://labonnealternance.pole-emploi.fr/" title="La bonne alternance" />, ainsi que
+              <ExternalLink url="https://labonnealternance.pole-emploi.fr/" aria-label="Redirection vers la page d'accueil" title="La bonne alternance" />, ainsi que
               les conditions d’accès à certains services et d’entrainer des dysfonctionnements de certaines
               fonctionnalités.
             </span>
@@ -141,7 +142,7 @@ const Cookies = () => (
               Pour les cookies donnant lieu à consentement préalable, l’utilisateur peut accepter ou refuser le dépôt de
               tout ou partie des cookies, à tout moment, en formulant des choix sur la plateforme de gestion du
               consentement via{" "}
-              <a href="#" onClick={handleTagCo}>
+              <a href="#" aria-label="Accès à la pop-in de gestion des cookies" onClick={handleTagCo}>
                 {" "}
                  ce lien dédié{" "}
               </a>
@@ -161,6 +162,7 @@ const Cookies = () => (
             Google Chrome :{" "}
             <ExternalLink
               url="https://support.google.com/chrome/answer/95647?hl=fr"
+              aria-label="Accès au site support de Google Chrome"
               title="(https://support.google.com/chrome/answer/95647?hl=fr)"
             />
           </li>
@@ -168,6 +170,7 @@ const Cookies = () => (
             Internet Explorer :{" "}
             <ExternalLink
               url="https://support.microsoft.com/fr-fr/help/17442"
+              aria-label="Accès au site support de Internet explorer"
               title="(https://support.microsoft.com/fr-fr/help/17442)"
             />
           </li>
@@ -175,6 +178,7 @@ const Cookies = () => (
             Mozilla Firefox :{" "}
             <ExternalLink
               url="https://support.mozilla.org/fr/kb/activer-desactiver-cookies"
+              aria-label="Accès au site support de Mozilla firefox"
               title="(https://support.mozilla.org/fr/kb/activer-desactiver-cookies)"
             />
           </li>
@@ -182,6 +186,7 @@ const Cookies = () => (
             Safari :{" "}
             <ExternalLink
               url="https://support.apple.com/fr-fr/guide/safari/sfri11471/mac"
+              aria-label="Accès au site support de Safari"
               title="(https://support.apple.com/fr-fr/guide/safari/sfri11471/mac)"
             />
           </li>
@@ -199,6 +204,7 @@ const Cookies = () => (
               Pour plus d’informations sur les cookies et les moyens permettant d’empêcher leur installation,
               l’utilisateur peut se rendre sur la page dédiée sur le site internet de la CNIL :{" "}
               <ExternalLink
+                aria-label="Accès au site de la Commission nationale de l'informatique et des libertés"
                 url="https://www.cnil.fr/fr/cookies-les-outils-pour-les-maitriser"
                 title="https://www.cnil.fr/fr/cookies-les-outils-pour-les-maitriser"
               />

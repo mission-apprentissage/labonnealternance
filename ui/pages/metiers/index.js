@@ -40,7 +40,7 @@ export default function Catalog(props) {
             <div key={index} className="mb-2 mb-lg-0">
               <span className="d-block d-lg-inline">Emploi en alternance et formation en alternance en </span>
               <span className="d-block d-lg-inline">
-                <a href={`/metiers/${job.slug}`} className="c-catalog-link">
+                <a href={`/metiers/${job.slug}`} className="c-catalog-link" aria-label="Lancement d'une recherche sur le métier "{job.name}>
                   {job.name}
                 </a>
               </span>

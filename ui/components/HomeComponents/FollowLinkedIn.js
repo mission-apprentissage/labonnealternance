@@ -15,6 +15,7 @@ const FollowLinkedIn = () => {
         <ExternalLink 
           className="c-follow-linkedin-button px-3 py-2 mx-3 d-flex" 
           url="https://www.linkedin.com/company/mission-apprentissage" 
+          aria-label="Accès à la page Linkedin de la mission interministérielle pour l’apprentissage et les trajectoires professionnelles"
           title="Voir notre page &nbsp;"
           withPic={<img src={linkedIn} alt="Lien" />} />
       </div>

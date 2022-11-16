@@ -50,6 +50,7 @@ const CGU = (props) => {
                 Le site internet{" "}
                 <ExternalLink
                   url="https://labonnealternance.pole-emploi.fr/"
+                  aria-label="Redirection vers la page d'accueil"
                   title="labonnealternance.pole-emploi.fr"
                 />{" "}
                 a pour objet de faciliter les entrées en alternance des usagers en informant sur les formations en
@@ -98,12 +99,8 @@ const CGU = (props) => {
               </p>
               <p>
                 Elle peut également demander la modification/suppression des informations communiquées (ex. coordonnées)
-                sur le site La bonne alternance en remplissant le{" "}
-                <ExternalLink
-                  url="https://labonneboite.pole-emploi.fr/informations-entreprise/action"
-                  title="formulaire recruteur"
-                />{" "}
-                directement depuis la page d’accueil du site.
+                sur le site La bonne alternance en 
+                <a aria-label="Envoi d'un email à labonnealternance@apprentissage.beta.gouv.fr" href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=CGU%20-%20MAJ%20informations%20entreprise">contactant l'équipe La bonne alternance</a>.
               </p>
               <p>
                 <strong>Envoi de candidature</strong>
@@ -113,6 +110,7 @@ const CGU = (props) => {
                 candidatures directement à partir du site internet{" "}
                 <ExternalLink
                   url="https://labonnealternance.pole-emploi.fr/"
+                  aria-label="Redirection vers la page d'accueil"
                   title="labonnealternance.pole-emploi.fr"
                 />
                 . Et ce, à l’ensemble des entreprises pour lesquelles un email de contact est connu.
@@ -157,7 +155,7 @@ const CGU = (props) => {
                 <strong>5.2 L’Utilisateur</strong>
               </p>
               L’utilisation du site internet{" "}
-              <ExternalLink url="https://labonnealternance.pole-emploi.fr/" title="labonnealternance.pole-emploi.fr" />{" "}
+              <ExternalLink url="https://labonnealternance.pole-emploi.fr/" aria-label="Redirection vers la page d'accueil" title="labonnealternance.pole-emploi.fr" />{" "}
               est soumise au respect par l’utilisateur :
               <ul>
                 <li> de la législation française;</li>
@@ -178,7 +176,7 @@ const CGU = (props) => {
               <h2 className="c-faq-question mt-2">Article 6 - Protection des données à caractère personnel</h2>
               <p>
                 L’utilisation du moteur de recherche disponible sur le site internet{" "}
-                <ExternalLink url="https://labonnealternance.pole-emploi.fr/" title="La bonne alternance" /> nécessite
+                <ExternalLink url="https://labonnealternance.pole-emploi.fr/" aria-label="Redirection vers la page d'accueil" title="La bonne alternance" /> nécessite
                 d’indiquer le(s) métier(s) recherché(s), le périmètre géographique souhaité et de manière facultative le
                 niveau d’études. Ces données sont collectées et traitées par Pôle emploi dans le but de fournir, à la
                 requête de l’utilisateur, la liste des entreprises ou organismes ayant un potentiel d’embauche dans un
@@ -189,7 +187,7 @@ const CGU = (props) => {
               <p>
                 Les données à caractère personnel de l’utilisateur mentionnées ci-dessus sont destinées aux agents de
                 Pôle emploi en charge du service de{" "}
-                <ExternalLink url="https://labonnealternance.pole-emploi.fr/" title="La bonne alternance" />.
+                <ExternalLink url="https://labonnealternance.pole-emploi.fr/" aria-label="Redirection vers la page d'accueil" title="La bonne alternance" />.
               </p>
               <p>
                 Pôle emploi traite également des données relatives aux entreprises qui peuvent concerner directement des
@@ -199,7 +197,7 @@ const CGU = (props) => {
               <p>
                 Les coordonnées de contact mentionnées ci-dessus sont destinées aux agents de Pôle emploi en charge du
                 service et aux utilisateurs du service de{" "}
-                <ExternalLink url="https://labonnealternance.pole-emploi.fr/" title="La bonne alternance" />.
+                <ExternalLink url="https://labonnealternance.pole-emploi.fr/" aria-label="Redirection vers la page d'accueil" title="La bonne alternance" />.
               </p>
               <p>Les données traitées sont conservées pour une durée de 13 mois.</p>
               <p>
@@ -216,7 +214,7 @@ const CGU = (props) => {
                 après votre mort et le droit de porter une réclamation devant la Commission nationale de l’informatique
                 et des libertés pour les données vous concernant. Pour exercer vos droits, vous pouvez vous adresser au
                 délégué à la protection des données de Pôle emploi (1 avenue du Docteur Gley, 75987 Paris cedex 20) ou à
-                l’adresse courriel suivante : <a href="mailto:contact-dpd@pole-emploi.fr">contact-dpd@pole-emploi.fr</a>
+                l’adresse courriel suivante : <a href="mailto:contact-dpd@pole-emploi.fr" aria-label="Envoi d'un email à contact-dpd@pole-emploi.fr">contact-dpd@pole-emploi.fr</a>
                 .
               </p>
             </section>
@@ -240,6 +238,7 @@ const CGU = (props) => {
                 Par ailleurs, le site{" "}
                 <ExternalLink
                   url="https://labonnealternance.pole-emploi.fr/"
+                  aria-label="Redirection vers la page d'accueil"
                   title="labonnealternance.pole-emploi.fr"
                 />{" "}
                 contient des contenus sur lesquels des tiers détiennent des droits de propriété intellectuelle (dessin,
