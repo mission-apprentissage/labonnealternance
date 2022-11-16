@@ -25,7 +25,7 @@ const getSomeLbbCompanies = async ({
   let currentRadius = hasLocation ? radius : 21000;
   let companyLimit = 150; //TODO: query params options or default value from properties -> size || 100
 
-  if (useMock) {
+  if (useMock && useMock !== "false") {
     return { results: [lbbMock] };
   } else {
     companies = await getLbbCompanies({
