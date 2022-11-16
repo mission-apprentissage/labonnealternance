@@ -19,7 +19,6 @@ const checkToken = (usersRecruteur) => {
         secretOrKey: config.auth.magiclink.jwtSecret,
       },
       (jwt_payload, done) => {
-        console.log({ jwt_payload });
         return usersRecruteur
           .getUser({ email: jwt_payload.sub })
           .then((user) => {
@@ -159,7 +158,6 @@ export default ({ users, usersRecruteur, etablissementsRecruteur, mailer }) => {
     tryCatch(async (req, res) => {
       const user = req.user;
       await usersRecruteur.registerUser(user.email);
-      console.log({ user });
       return res.json({ token: createUserRecruteurToken(user) });
     })
   );
