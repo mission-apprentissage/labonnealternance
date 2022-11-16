@@ -1,7 +1,6 @@
-import { compose } from "compose-middleware";
 import passport from "passport";
-import { ExtractJwt, Strategy } from "passport-jwt";
-import { Strategy as LocalStrategy } from "passport-local";
+import { Strategy, ExtractJwt } from "passport-jwt";
+import { compose } from "compose-middleware";
 import config from "../../config.js";
 
 export default ({ users }) => {
@@ -28,28 +27,8 @@ export default ({ users }) => {
     )
   );
 
-  passport.use(
-    new LocalStrategy(
-      {
-        usernameField: "username",
-        passwordField: "password",
-      },
-      function (username, password, cb) {
-        return users
-          .authenticate(username, password)
-          .then((user) => {
-            if (!user) {
-              return cb(null, false);
-            }
-            return cb(null, user);
-          })
-          .catch((err) => cb(err));
-      }
-    )
-  );
-
   return compose([
-    passport.authenticate(["local", "jwt"], { session: false }),
+    passport.authenticate("jwt", { session: false }),
     async (req, res, next) => {
       next();
     },
