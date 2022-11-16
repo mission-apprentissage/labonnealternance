@@ -218,12 +218,12 @@ export default async (components) => {
    * LBA-Organisme de formation
    */
   app.use("/api/appointment", appointmentRoute(components));
-  app.use("/api/admin/etablissements", checkJwtToken, adminOnly, adminEtablissementRoute(components));
+  app.use("/api/admin/etablissements", adminEtablissementRoute(components));
   app.use("/api/etablissements", etablissementRoute(components));
   app.use("/api/appointment-request", appointmentRequestRoute(components));
   app.use("/api/catalogue", catalogueRoute());
   app.use("/api/constants", constantsRoute());
-  app.use("/api/widget-parameters", checkJwtToken, adminOnly, widgetParameterRoute(components));
+  app.use("/api/widget-parameters", widgetParameterRoute(components));
   app.use("/api/partners", partnersRoute(components));
   app.use("/api/emails", emailsRoute(components));
   app.use("/api/support", supportRoute());
