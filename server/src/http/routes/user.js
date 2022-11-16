@@ -1,7 +1,7 @@
 import express from "express";
 import { mailTemplate } from "../../assets/index.js";
 import { CFA } from "../../common/constants.js";
-import { Formulaire, User } from "../../common/model/index.js";
+import { Formulaire, UserRecruteur } from "../../common/model/index.js";
 import { tryCatch } from "../middlewares/tryCatchMiddleware.js";
 
 export default ({ usersRecruteur, mailer, formulaire }) => {
@@ -14,7 +14,7 @@ export default ({ usersRecruteur, mailer, formulaire }) => {
       const formulaireQuery = JSON.parse(req.query.formulaireQuery);
 
       const [users, formulaires] = await Promise.all([
-        User.find(userQuery).lean(),
+        UserRecruteur.find(userQuery).lean(),
         Formulaire.find(formulaireQuery).lean(),
       ]);
 
@@ -45,7 +45,7 @@ export default ({ usersRecruteur, mailer, formulaire }) => {
     tryCatch(async (req, res) => {
       const query = JSON.parse(req.query.users);
 
-      const users = await User.find(query).lean();
+      const users = await UserRecruteur.find(query).lean();
 
       return res.json(users);
 
@@ -67,7 +67,7 @@ export default ({ usersRecruteur, mailer, formulaire }) => {
   router.get(
     "/:userId",
     tryCatch(async (req, res) => {
-      const users = await User.findOne({ _id: req.params.userId }).select("-password");
+      const users = await UserRecruteur.findOne({ _id: req.params.userId }).select("-password");
       return res.json(users);
     })
   );
@@ -86,7 +86,7 @@ export default ({ usersRecruteur, mailer, formulaire }) => {
       const userPayload = req.body;
       const { userId } = req.params;
 
-      const exist = await User.findOne({ email: userPayload.email, _id: { $ne: userId } }).lean();
+      const exist = await UserRecruteur.findOne({ email: userPayload.email, _id: { $ne: userId } }).lean();
 
       if (exist) {
         return res.status(400).json({ error: true, reason: "EMAIL_TAKEN" });
