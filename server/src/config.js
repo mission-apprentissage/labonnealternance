@@ -4,6 +4,7 @@ const config = {
   appName: env.get("LBA_NAME").default("doctrina").asString(),
   env: env.get("LBA_ENV").default("local").asString(),
   publicUrl: env.get("LBA_PUBLIC_URL").default("http://localhost").asString(),
+  publicUrlEspacePro: env.get("LBA_PUBLIC_URL").default("http://localhost/espace-pro").asString(),
   outputDir: env.get("LBA_OUTPUT_DIR").default(".local/output").asString(),
   formationsEndPoint: "/api/v1/entity/formations",
   maxApplicationPerDay: 100,
@@ -71,7 +72,7 @@ const config = {
       expiresIn: env.get("LBA_AUTH_PASSWORD_JWT_SECRET_EXPIRES").default("1h").asString(),
     },
     magiclink: {
-      jwtSecret: env.get("LBA_MAGICLINK_JWT_SECRET"),
+      jwtSecret: env.get("LBA_AUTH_MAGICLINK_JWT_SECRET").asString(),
       expiresIn: env.get("LBA_MAGICLINK_JWT_SECRET_EXPIRE").default("2h").asString(),
     },
   },
