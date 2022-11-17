@@ -187,6 +187,7 @@ export const AutoCompleteField = ({
         <Text marginBottom="0" marginLeft={2} paddingTop="0.3rem" color="grey.700" textAlign="left" lineHeight="15px" fontSize={["12px", "10px", "10px", "12px"]} as="label">
           {kind}
         </Text>
+
         <Input
           {...getInputProps({
             onFocus: (e) => {
@@ -197,8 +198,13 @@ export const AutoCompleteField = ({
             },
           })}
           disabled={isDisabled}
-          className={`${classesOfInsider} ${inputValue && inputValue.length > 20 ? "is-text-too-long" : "is-text-not-too-long"}`}
           placeholder={props.placeholder}
+          fontSize="14px"
+          fontWeight={600}
+          background="white"
+          px="0.5"
+          py="1px"
+          sx={{ height: "32px", border: "none !important", width: "95%", marginLeft: "5px" }}
           _placeholder={{ color: "grey.500", lineHeight: "17px", letterSpacing: "0px", fontWeight: "400", fontSize: "14px" }}
           name={props.name}
         />
