@@ -10,7 +10,7 @@ import { logMessage } from "../../common/utils/logMessage.js"
 import __dirname from "../../common/dirname.js"
 const currentDirname = __dirname(import.meta.url)
 
-const FILE_LOCAL_PATH = path.join(currentDirname, "./assets/domainesMetiers_S3.xlsx")
+const FILE_LOCAL_PATH = path.join(currentDirname, "../../assets/domainesMetiers_S3.xlsx")
 
 const emptyMongo = async () => {
   logMessage("info", `Clearing domainesmetiers db...`)
@@ -39,6 +39,11 @@ const downloadAndSaveFile = (optionalFileName) => {
     getFileFromS3(`mna-services/features/domainesMetiers/${optionalFileName ? optionalFileName : "currentDomainesMetiers.xlsx"}`),
     fs.createWriteStream(FILE_LOCAL_PATH)
   )
+}
+
+const removeFileFromAssets = async () => {
+  logMessage("info", "Deleting downloaded file frome assets")
+  await fs.unlinkSync(FILE_LOCAL_PATH)
 }
 
 const readXLSXFile = (filePath) => {
@@ -230,6 +235,8 @@ export default async function (optionalFileName) {
         }
       }
     }
+
+    await removeFileFromAssets()
 
     logMessage("info", `Fin traitement`)
 
