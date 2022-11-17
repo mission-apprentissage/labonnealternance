@@ -1,14 +1,14 @@
+import { ExternalLinkIcon } from "@chakra-ui/icons"
+import { Box, Button, Checkbox, Editable, EditableInput, EditablePreview, Flex, Heading, Spinner, Table, Tbody, Td, Text, Thead, Tr, useToast } from "@chakra-ui/react"
+import * as emailValidator from "email-validator"
 import React, { createRef, useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
-import * as emailValidator from "email-validator"
-import { Tbody, Tr, Thead, Td, Checkbox, Table, Flex, Box, Text, useToast, Spinner, Editable, Button, EditablePreview, Heading, EditableInput } from "@chakra-ui/react"
-import { _get, _patch } from "../../../../common/httpClient"
-import EtablissementComponent from "../components/EtablissementComponent"
 import { Breadcrumb } from "../../../../common/components/Breadcrumb"
-import { setTitle } from "../../../../common/utils/pageUtils"
 import { formatDate } from "../../../../common/dayjs"
-import { ExternalLinkIcon } from "@chakra-ui/icons"
+import { _get, _patch } from "../../../../common/httpClient"
+import { setTitle } from "../../../../common/utils/pageUtils"
 import { Check } from "../../../../theme/components/icons"
+import EtablissementComponent from "../components/EtablissementComponent"
 
 /**
  * @description Page that handle formation editions.

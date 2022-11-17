@@ -2,12 +2,12 @@ import express from "express"
 import Joi from "joi"
 import passport from "passport"
 import { Strategy as LocalAPIKeyStrategy } from "passport-localapikey"
+import { logger } from "../../../common/logger.js"
+import { SendinblueEventStatus } from "../../../common/sendinblue.js"
 import { dayjs } from "../../../common/utils/dayjs.js"
 import config from "../../../config.js"
-import { tryCatch } from "../../middlewares/tryCatchMiddleware.js"
-import { logger } from "../../../common/logger.js"
 import { addEmailToBlacklist } from "../../../service/applications.js"
-import { SendinblueEventStatus } from "../../../common/sendinblue.js"
+import { tryCatch } from "../../middlewares/tryCatchMiddleware.js"
 
 /**
  * @description Checks "Sendinblue" token.

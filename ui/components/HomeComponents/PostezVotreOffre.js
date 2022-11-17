@@ -1,5 +1,5 @@
+import { Box, Image, SimpleGrid, Text } from "@chakra-ui/react"
 import React from "react"
-import { Box, Text, SimpleGrid, Image } from "@chakra-ui/react"
 import offreemploiImage from "../../public/images/home_pics/illu-offreemploi.svg"
 
 const PostezVotreOffre = () => {

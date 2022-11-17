@@ -1,5 +1,5 @@
+import { Box, Divider, Grid, GridItem, Image, ListItem, Text, UnorderedList } from "@chakra-ui/react"
 import React from "react"
-import { Box, Divider, Text, UnorderedList, ListItem, GridItem, Grid, Image } from "@chakra-ui/react"
 
 const AlgoRecruiter = () => {
   return (

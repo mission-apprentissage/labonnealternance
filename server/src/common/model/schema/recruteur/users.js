@@ -1,4 +1,4 @@
-import { mongooseInstance } from "../../../mongodb.js";
+import { mongooseInstance } from "../../../mongodb.js"
 
 const userValidationSchema = new mongooseInstance.Schema(
   {
@@ -27,7 +27,7 @@ const userValidationSchema = new mongooseInstance.Schema(
     },
   },
   { _id: false }
-);
+)
 
 export const userRecruteur = mongooseInstance.Schema(
   {
@@ -122,4 +122,4 @@ export const userRecruteur = mongooseInstance.Schema(
   {
     timestamps: true,
   }
-);
+)

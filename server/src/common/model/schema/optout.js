@@ -1,4 +1,4 @@
-import { mongooseInstance } from "../../mongodb.js";
+import { mongooseInstance } from "../../mongodb.js"
 
 export const optoutSchema = mongooseInstance.Schema(
   {
@@ -75,4 +75,4 @@ export const optoutSchema = mongooseInstance.Schema(
     timestamps: true,
     versionKey: false,
   }
-);
+)

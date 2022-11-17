@@ -1,6 +1,6 @@
-import React from "react"
-import NextLink from "next/link"
 import { Flex, Image, Link, Spacer } from "@chakra-ui/react"
+import NextLink from "next/link"
+import React from "react"
 
 const SatisfactionFormNavigation = () => {
   return (

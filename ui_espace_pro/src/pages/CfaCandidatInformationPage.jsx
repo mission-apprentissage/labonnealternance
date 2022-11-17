@@ -1,9 +1,9 @@
-import { useParams } from "react-router-dom"
 import { Box, Text } from "@chakra-ui/react"
-import { FormLayoutComponent } from "./Candidat/layout/FormLayoutComponent"
-import { useFetch } from "../common/hooks/useFetch"
 import { useEffect } from "react"
+import { useParams } from "react-router-dom"
+import { useFetch } from "../common/hooks/useFetch"
 import { _patch } from "../common/httpClient"
+import { FormLayoutComponent } from "./Candidat/layout/FormLayoutComponent"
 
 /**
  * @description CfaCandidatInformationPage component.

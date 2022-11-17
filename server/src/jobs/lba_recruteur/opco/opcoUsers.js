@@ -25,4 +25,4 @@ export const userList = [
     opco: { UNIFORMATION: "Uniformation, l'Opco de la Cohésion sociale" },
   },
   { nom: "Bauer", prenom: "Marie", email: "marie.bauer@opcomobilites.fr", opco: { MOBILITE: "Opco Mobilités" } },
-];
+]

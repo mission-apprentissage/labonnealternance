@@ -1,7 +1,7 @@
-import { Formulaire } from "../../../common/model/index.js";
-import { rebuildIndex } from "../../../common/utils/esUtils.js";
+import { Formulaire } from "../../../common/model/index.js"
+import { rebuildIndex } from "../../../common/utils/esUtils.js"
 
 export const generateIndexes = async () => {
-  await Formulaire.syncIndexes();
-  await rebuildIndex("formulaires", Formulaire);
-};
+  await Formulaire.syncIndexes()
+  await rebuildIndex("formulaires", Formulaire)
+}

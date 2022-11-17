@@ -1,6 +1,6 @@
-import { nanoid } from "nanoid";
-import { mongooseInstance } from "../../mongodb.js";
-import { offreSchema } from "./offre.js";
+import { nanoid } from "nanoid"
+import { mongooseInstance } from "../../mongodb.js"
+import { offreSchema } from "./offre.js"
 
 export const formulaireSchema = mongooseInstance.Schema(
   {
@@ -104,4 +104,4 @@ export const formulaireSchema = mongooseInstance.Schema(
   {
     timestamps: true,
   }
-);
+)

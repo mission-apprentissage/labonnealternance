@@ -1,14 +1,13 @@
-import { useEffect, useState } from "react"
-import { Field, Form, Formik } from "formik"
-import * as Yup from "yup"
+import { Box, Button, Center, Flex, Input, Spinner, Text } from "@chakra-ui/react"
 import * as emailValidator from "email-validator"
+import { Field, Form, Formik } from "formik"
 import * as qs from "query-string"
-import { useNavigate, useLocation } from "react-router-dom"
-import { Input, Button, Box, Spinner, Text, Center, Flex } from "@chakra-ui/react"
+import { useEffect, useState } from "react"
+import { useLocation, useNavigate } from "react-router-dom"
+import * as Yup from "yup"
+import { _post } from "../../common/httpClient"
 import { ContactCfaComponent } from "./layout/ContactCfaComponent"
 import { FormLayoutComponent } from "./layout/FormLayoutComponent"
-import { _post } from "../../common/httpClient"
-import { AnimationContainer } from "../../components"
 
 /**
  * @description Form appointment page.

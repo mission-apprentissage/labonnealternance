@@ -1,7 +1,7 @@
+import { ExternalLinkIcon } from "@chakra-ui/icons"
+import { Box, Link, Text } from "@chakra-ui/react"
 import React from "react"
 import TagCandidatureSpontanee from "../../components/ItemDetail/TagCandidatureSpontanee.js"
-import { Box, Link, Text } from "@chakra-ui/react"
-import { ExternalLinkIcon } from "@chakra-ui/icons"
 
 const DidYouKnow = () => {
   return (

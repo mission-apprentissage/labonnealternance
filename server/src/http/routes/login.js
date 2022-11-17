@@ -1,12 +1,14 @@
-import express from "express";
-import Joi from "joi";
-import passport from "passport";
-import { ExtractJwt, Strategy } from "passport-jwt";
-import { mailTemplate } from "../../assets/index.js";
-import { CFA, ENTREPRISE, etat_utilisateur } from "../../common/constants.js";
-import { createMagicLinkToken, createUserToken } from "../../common/utils/jwtUtils.js";
-import config from "../../config.js";
-import { tryCatch } from "../middlewares/tryCatchMiddleware.js";
+import { compose } from "compose-middleware"
+import express from "express"
+import Joi from "joi"
+import passport from "passport"
+import { ExtractJwt, Strategy } from "passport-jwt"
+import { Strategy as LocalStrategy } from "passport-local"
+import { mailTemplate } from "../../../assets/index.js"
+import { CFA, ENTREPRISE, etat_utilisateur } from "../../../common/constants.js"
+import { createMagicLinkToken, createUserRecruteurToken, createUserToken } from "../../../common/utils/jwtUtils.js"
+import config from "../../../config.js"
+import { tryCatch } from "../../middlewares/tryCatchMiddleware.js"
 
 const checkToken = (users) => {
   passport.use(
@@ -21,67 +23,98 @@ const checkToken = (users) => {
           .getUser({ email: jwt_payload.sub })
           .then((user) => {
             if (!user) {
-              return done(null, false, { message: "User not found" });
+              return done(null, false, { message: "User not found" })
             }
-            return done(null, user);
+            return done(null, user)
           })
-          .catch((err) => done(err));
+          .catch((err) => done(err))
       }
     )
-  );
+  )
 
-  return passport.authenticate("jwt", { session: false, failWithError: true });
-};
+  return passport.authenticate("jwt", { session: false, failWithError: true })
+}
 
-export default ({ usersRecruteur, mailer, etablissementsRecruteur }) => {
-  const router = express.Router(); // eslint-disable-line new-cap
+export default ({ users, usersRecruteur, etablissementsRecruteur, mailer }) => {
+  const router = express.Router() // eslint-disable-line new-cap
+  passport.use(
+    new LocalStrategy(
+      {
+        usernameField: "username",
+        passwordField: "password",
+      },
+      function (username, password, cb) {
+        return users
+          .authenticate(username, password)
+          .then((user) => {
+            if (!user) {
+              return cb(null, false)
+            }
+            return cb(null, user)
+          })
+          .catch((err) => cb(err))
+      }
+    )
+  )
+
+  router.post(
+    "/",
+    compose([
+      passport.authenticate("local", { session: false, failWithError: true }),
+      tryCatch(async (req, res) => {
+        const user = req.user
+        const token = createUserToken(user)
+        return res.json({ token })
+      }),
+    ])
+  )
 
   router.post(
     "/magiclink",
     tryCatch(async (req, res) => {
       const { email } = await Joi.object({
         email: Joi.string().email().required(),
-      }).validateAsync(req.body, { abortEarly: false });
+      }).validateAsync(req.body, { abortEarly: false })
 
-      const user = await usersRecruteur.getUser({ email });
+      const user = await usersRecruteur.getUser({ email })
 
       if (!user) {
-        return res.status(400).json({ error: true, reason: "UNKNOWN" });
+        return res.status(400).json({ error: true, reason: "UNKNOWN" })
       }
 
-      const [lastValidationEntry] = user.etat_utilisateur.slice(-1);
+      const [lastValidationEntry] = user.etat_utilisateur.slice(-1)
 
       switch (user.type) {
         case CFA:
           if (lastValidationEntry.statut === etat_utilisateur.ATTENTE) {
-            return res.status(400).json({ error: true, reason: "VALIDATION" });
+            return res.status(400).json({ error: true, reason: "VALIDATION" })
           }
 
           if (lastValidationEntry.statut === etat_utilisateur.DESACTIVE) {
             return res.status(400).json({
               error: true,
               reason: "DISABLED",
-            });
+            })
           }
-          break;
+          break
         case ENTREPRISE:
           if (lastValidationEntry.statut === etat_utilisateur.ATTENTE) {
-            return res.status(400).json({ error: true, reason: "VALIDATION" });
+            return res.status(400).json({ error: true, reason: "VALIDATION" })
           }
 
           if (lastValidationEntry.statut === etat_utilisateur.DESACTIVE) {
             return res.status(400).json({
               error: true,
               reason: "DISABLED",
-            });
+            })
           }
-          break;
+          break
       }
 
       if (user.email_valide === false) {
-        let { email, _id, prenom, nom } = user;
+        let { email, _id, prenom, nom } = user
 
-        const url = etablissementsRecruteur.getValidationUrl(_id);
+        const url = etablissementsRecruteur.getValidationUrl(_id)
 
         await mailer.sendEmail({
           to: email,
@@ -92,15 +125,15 @@ export default ({ usersRecruteur, mailer, etablissementsRecruteur }) => {
             prenom,
             confirmation_url: url,
           },
-        });
+        })
 
         return res.status(400).json({
           error: true,
           reason: "VERIFY",
-        });
+        })
       }
 
-      const magiclink = `${config.publicUrl}/authentification/verification?token=${createMagicLinkToken(email)}`;
+      const magiclink = `${config.publicUrlEspacePro}/authentification/verification?token=${createMagicLinkToken(email)}`
 
       await mailer.sendEmail({
         to: user.email,
@@ -111,21 +144,21 @@ export default ({ usersRecruteur, mailer, etablissementsRecruteur }) => {
           prenom: user.prenom,
           connexion_url: magiclink,
         },
-      });
+      })
 
-      return res.sendStatus(200);
+      return res.sendStatus(200)
     })
-  );
+  )
 
   router.post(
     "/verification",
     checkToken(usersRecruteur),
     tryCatch(async (req, res) => {
-      const user = req.user;
-      await usersRecruteur.registerUser(user.email);
-      return res.json({ token: createUserToken(user) });
+      const user = req.user
+      await usersRecruteur.registerUser(user.email)
+      return res.json({ token: createUserRecruteurToken(user) })
     })
-  );
+  )
 
-  return router;
-};
+  return router
+}

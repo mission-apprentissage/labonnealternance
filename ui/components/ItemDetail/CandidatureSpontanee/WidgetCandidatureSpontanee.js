@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from "react"
+import { Box, Container } from "@chakra-ui/react"
 import { useFormik } from "formik"
+import React, { useEffect, useState } from "react"
+import { getItemId } from "../../../utils/getItemId"
+import { string_wrapper as with_str } from "../../../utils/wrapper_utils"
+import CandidatureSpontaneeFailed from "./CandidatureSpontaneeFailed"
 import CandidatureSpontaneeNominalBodyFooter from "./CandidatureSpontaneeNominalBodyFooter"
 import CandidatureSpontaneeWorked from "./CandidatureSpontaneeWorked"
-import CandidatureSpontaneeFailed from "./CandidatureSpontaneeFailed"
-import submitCandidature from "./services/submitCandidature"
-import { getValidationSchema, getInitialSchemaValues } from "./services/getSchema"
-import { string_wrapper as with_str } from "../../../utils/wrapper_utils"
-import useLocalStorage from "./services/useLocalStorage"
+import { getInitialSchemaValues, getValidationSchema } from "./services/getSchema"
 import hasAlreadySubmittedCandidature from "./services/hasAlreadySubmittedCandidature"
-import { getItemId } from "../../../utils/getItemId"
-import { Box, Container } from "@chakra-ui/react"
+import submitCandidature from "./services/submitCandidature"
+import useLocalStorage from "./services/useLocalStorage"
 
 const WidgetCandidatureSpontanee = (props) => {
   const [sendingState, setSendingState] = useState("not_sent")

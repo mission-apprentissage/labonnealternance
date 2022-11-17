@@ -1,4 +1,4 @@
-import { OPCOS } from "../../constants.js";
+import { OPCOS } from "../../constants.js"
 
 export const referentielOpcoSchema = {
   opco_label: {
@@ -17,4 +17,4 @@ export const referentielOpcoSchema = {
     description: "Liste des emails disponibles pour l'établissement",
     index: true,
   },
-};
+}

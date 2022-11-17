@@ -81,7 +81,7 @@ const MatchaDetail = ({ job, seeInfo, setSeeInfo }) => {
               <Text as="span" color="pinksoft.600" fontWeight={700}>
                 {job.company.name}
               </Text>{" "}
-              nous a récemment fait parvenir un besoin de recrutement : 
+              nous a récemment fait parvenir un besoin de recrutement :
               <Text as="span" color="pinksoft.600" fontWeight={700}>
                 {job.title}
               </Text>
