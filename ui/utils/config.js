@@ -6,10 +6,9 @@ const config = {
   },
   dev: {
     env: "recette",
-    urls: [/^labonnealternance-recette.apprentissage.beta.gouv.fr$/g, /^labonnealternance.beta.pole-emploi.fr$/g],
-    baseUrl: "https://labonnealternance-recette.apprentissage.beta.gouv.fr",
+    urls: [/^doctrina-recette.apprentissage.beta.gouv.fr$/g,/^labonnealternance-recette.apprentissage.beta.gouv.fr$/g, /^labonnealternance.beta.pole-emploi.fr$/g],
+    baseUrl: "https://doctrina-recette.apprentissage.beta.gouv.fr",
   },
-
   prod: {
     env: "production",
     urls: [/^doctrina.apprentissage.beta.gouv.fr$/g, /^labonnealternance.apprentissage.beta.gouv.fr$/g, /^labonnealternance.pole-emploi.fr$/g],

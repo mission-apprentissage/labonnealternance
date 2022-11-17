@@ -10,6 +10,7 @@ const ConnectionActions = ({ service }) => {
       {service === "entreprise" && (
         <Button
           variant="primary"
+          aria-label="Déposer une offre"
           onClick={() => router.push("/espace-pro/creation/entreprise")}
         >
           Déposer une offre
@@ -18,6 +19,7 @@ const ConnectionActions = ({ service }) => {
       {service === "cfa" && (
         <Button
           variant="primary"
+          aria-label="Créer mon espace dédié"  
           onClick={() => router.push("/espace-pro/creation/cfa")}
         >
           Créer mon espace dédié
@@ -25,6 +27,7 @@ const ConnectionActions = ({ service }) => {
       )}
       <Button
         variant="secondary"
+        aria-label="Me connecter"
         onClick={() => router.push("/espace-pro/creation/cfa")}
       >
         Me connecter

@@ -3,18 +3,11 @@ import Tracing from "@sentry/tracing";
 import bodyParser from "body-parser";
 import express from "express";
 import { readFileSync } from "fs";
-import cron from "node-cron";
 import path from "path";
 import swaggerDoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
 import { logger } from "../common/logger.js";
 import config from "../config.js";
-import { activateOptOutEtablissementFormations } from "../cron/activateOptOutEtablissementFormations.js";
-import { inviteEtablissementToOptOut } from "../cron/inviteEtablissementToOptOut.js";
-import { inviteEtablissementToPremium } from "../cron/inviteEtablissementToPremium.js";
-import { inviteEtablissementToPremiumFollowUp } from "../cron/inviteEtablissementToPremiumFollowUp.js";
-import { parcoursupEtablissementStat } from "../cron/parcoursupEtablissementStat.js";
-import { syncEtablissementsAndFormations } from "../cron/syncEtablissementsAndFormations.js";
 import { initWebhook } from "../service/sendinblue/webhookSendinBlue.js";
 import { roles } from "./../common/roles.js";
 import authMiddleware from "./middlewares/authMiddleware.js";
@@ -59,7 +52,6 @@ import apiRoute from "./routes/api.js";
 import esSearchRoute from "./routes/esSearch.js";
 import etablissementsRecruteurRoute from "./routes/etablissementRecruteur.js";
 import formulaireRoute from "./routes/formulaire.js";
-import loginRoute from "./routes/login.js";
 import optoutRoute from "./routes/optout.js";
 import userRoute from "./routes/user.js";
 
@@ -226,12 +218,12 @@ export default async (components) => {
    * LBA-Organisme de formation
    */
   app.use("/api/appointment", appointmentRoute(components));
-  app.use("/api/admin/etablissements", checkJwtToken, adminOnly, adminEtablissementRoute(components));
+  app.use("/api/admin/etablissements", adminEtablissementRoute(components));
   app.use("/api/etablissements", etablissementRoute(components));
   app.use("/api/appointment-request", appointmentRequestRoute(components));
   app.use("/api/catalogue", catalogueRoute());
   app.use("/api/constants", constantsRoute());
-  app.use("/api/widget-parameters", checkJwtToken, adminOnly, widgetParameterRoute(components));
+  app.use("/api/widget-parameters", widgetParameterRoute(components));
   app.use("/api/partners", partnersRoute(components));
   app.use("/api/emails", emailsRoute(components));
   app.use("/api/support", supportRoute());
@@ -242,36 +234,11 @@ export default async (components) => {
   app.use("/api/v1", apiRoute(components));
 
   app.use("/api/user", userRoute(components));
-  app.use("/api/authentification", loginRoute(components)); // ex /api/login LBA-R
   app.use("/api/formulaire", formulaireRoute(components));
   app.use("/api/es/search", esSearchRoute());
   app.use("/api/rome", rome());
   app.use("/api/optout", optoutRoute());
   app.use("/api/etablissementsRecruteur", etablissementsRecruteurRoute(components));
-
-  /**
-   * RDV-Apprentissage: cron
-   * Note: Will be rewritten.
-   *
-   * KBA : to be transfered to infra.
-   */
-  // Everyday at 14:00: Opt-out invite
-  cron.schedule("0 14 * * *", () => inviteEtablissementToOptOut(components));
-
-  // Everyday at 04:00 AM: Copy catalogue formations
-  cron.schedule("0 4 * * *", () => syncEtablissementsAndFormations(components));
-
-  // Everyday, every 5 minutes: Opt-out activation
-  cron.schedule("*/5 * * * *", () => activateOptOutEtablissementFormations(components));
-
-  // Everyday at 6AM create Parcoursup stats
-  cron.schedule("0 6 * * *", () => parcoursupEtablissementStat(components));
-
-  // Every hours: Invite to Premium mode
-  cron.schedule("0 * * * *", () => inviteEtablissementToPremium(components));
-
-  // Every hours: Invite to Premium mode (follow up)
-  cron.schedule("0 * * * *", () => inviteEtablissementToPremiumFollowUp(components));
 
   initWebhook();
 

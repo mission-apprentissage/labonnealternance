@@ -34,18 +34,20 @@ const Footer = (props) => {
               <div>La bonne alternance. Trouvez votre alternance.</div>
               <div className="mt-4">La bonne alternance est proposée par les services suivants :</div>
               <div className="mt-4 c-footer-official-links">
-                <ExternalLink className="c-footer-official-link" url="https://pole-emploi.fr" title="pole-emploi.fr" />
+                <ExternalLink className="c-footer-official-link" url="https://pole-emploi.fr" aria-label="Accès au site de Pôle emploi" title="pole-emploi.fr" />
                 <ExternalLink
                   className="c-footer-official-link"
                   url="https://gouvernement.fr"
+                  aria-label="Accès au site gouvernement.fr"
                   title="gouvernement.fr"
                 />
                 <ExternalLink
                   className="c-footer-official-link"
                   url="https://service-public.fr"
+                  aria-label="Accès au site service-public.fr"
                   title="service-public.fr"
                 />
-                <ExternalLink className="c-footer-official-link" url="https://data.gouv.fr" title="data.gouv.fr" />
+                <ExternalLink className="c-footer-official-link" url="https://data.gouv.fr" aria-label="Accès au site data.gouv" title="data.gouv.fr" />
               </div>
             </Col>
           </Row>
@@ -59,7 +61,7 @@ const Footer = (props) => {
                 <li className="c-footer-links__line">
                   <Link href="/mentions-legales">
                     <a
-                      className="c-footer-links__link c-footer-smallword pr-3"
+                      className="c-footer-links__link c-footer-smallword pr-3" aria-label="Accès aux mentions légales"
                     >
                       Mentions légales
                     </a>
@@ -69,7 +71,7 @@ const Footer = (props) => {
                 <li className="c-footer-links__line">
                   <Link href="/cgu">
                     <a
-                      className="c-footer-links__link c-footer-smallword"
+                      className="c-footer-links__link c-footer-smallword" aria-label="Accès aux conditions générales d'utilisation"
                     >
                       CGU
                     </a>
@@ -78,7 +80,7 @@ const Footer = (props) => {
 
                 <li className="c-footer-links__line">
                   <Link href="/cookies">
-                    <a className="c-footer-links__link c-footer-smallword">
+                    <a className="c-footer-links__link c-footer-smallword" aria-label="Accès à la page Cookies">
                       Cookies
                     </a>
                   </Link>
@@ -86,7 +88,7 @@ const Footer = (props) => {
 
                 <li className="c-footer-links__line">
                   <Link href="/stats">
-                    <a className="c-footer-links__link c-footer-smallword">
+                    <a className="c-footer-links__link c-footer-smallword" aria-label="Accès aux statistiques du service">
                       Statistiques
                     </a>
                   </Link>
@@ -94,7 +96,7 @@ const Footer = (props) => {
 
                 <li className="c-footer-links__line">
                   <Link href="/faq">
-                    <a className="c-footer-links__link c-footer-smallword">
+                    <a className="c-footer-links__link c-footer-smallword" aria-label="Accès à la foire aux questions">
                       FAQ
                     </a>
                   </Link>
@@ -102,7 +104,7 @@ const Footer = (props) => {
 
                 <li className="c-footer-links__line">
                   <Link href="/contact">
-                    <a className="c-footer-links__link c-footer-smallword">
+                    <a className="c-footer-links__link c-footer-smallword" aria-label="Accès à la page Contact">
                       Contact
                     </a>
                   </Link>
@@ -110,7 +112,7 @@ const Footer = (props) => {
 
                 <li className="c-footer-links__line">
                   <Link href="/metiers">
-                    <a className="c-footer-links__link c-footer-smallword">
+                    <a className="c-footer-links__link c-footer-smallword" aria-label="Accès à la page Métiers">
                       Métiers
                     </a>
                   </Link>
@@ -118,7 +120,7 @@ const Footer = (props) => {
 
                 <li className="c-footer-links__line">
                   <Link href="/a-propos">
-                    <a className="c-footer-links__link c-footer-smallword">
+                    <a className="c-footer-links__link c-footer-smallword" aria-label="Accès à la page A propos">
                       A propos
                     </a>
                   </Link>
@@ -126,7 +128,7 @@ const Footer = (props) => {
 
                 <li className="c-footer-links__line">
                   <Link href="/developpeurs">
-                    <a className="c-footer-links__link c-footer-smallword">
+                    <a className="c-footer-links__link c-footer-smallword" aria-label="Accès à la page Développeurs">
                       Développeurs
                     </a>
                   </Link>
@@ -141,6 +143,7 @@ const Footer = (props) => {
                 Sauf mention contraire, tous les contenus de ce site sont sous licence{" "}
                 <ExternalLink
                   url="https://www.etalab.gouv.fr/licence-version-2-0-de-la-licence-ouverte-suite-a-la-consultation-et-presentation-du-decret"
+                  aria-label="Accès au site Etalab"
                   title="etalab-2.0"
                   withPic={<img className="ml-1" src="/images/square_link.svg" alt="Ouverture dans un nouvel onglet" />}
                 />

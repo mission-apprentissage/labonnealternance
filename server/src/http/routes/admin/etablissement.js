@@ -1,6 +1,4 @@
 import express from "express";
-import path from "path";
-import __dirname from "../../../common/dirname.js";
 import { mailType, optMode } from "../../../common/model/constants/etablissement.js";
 import { referrers } from "../../../common/model/constants/referrers.js";
 import { Etablissement } from "../../../common/model/index.js";
@@ -8,7 +6,7 @@ import { dayjs } from "../../../common/utils/dayjs.js";
 import { enableAllEtablissementFormations } from "../../../common/utils/optIn.js";
 import config from "../../../config.js";
 import { tryCatch } from "../../middlewares/tryCatchMiddleware.js";
-const currentDirname = __dirname(import.meta.url);
+import { mailTemplate } from "../../../assets/index.js";
 
 /**
  * @description Etablissement Router.
@@ -115,12 +113,12 @@ export default ({ etablissements, mailer }) => {
         const { messageId } = await mailer.sendEmail({
           to: etablissement.email_decisionnaire,
           subject: `Améliorer le sourcing de vos candidats !`,
-          template: path.join(currentDirname, `../../../assets/templates/mail-cfa-optout-invitation.mjml.ejs`),
+          template: mailTemplate["mail-cfa-optout-invitation"],
           data: {
             images: {
-              peopleLaptop: `${config.publicUrl}/assets/girl_laptop.png?raw=true`,
-              optOutLbaIntegrationExample: `${config.publicUrl}/assets/exemple_integration_lba.png?raw=true`,
-              gouvernementLogo: `${config.publicUrl}/assets/gouvernement_logo.png?raw=true`,
+              peopleLaptop: `${config.publicUrl}/espace-pro/assets/girl_laptop.png?raw=true`,
+              optOutLbaIntegrationExample: `${config.publicUrl}/espace-pro/assets/exemple_integration_lba.png?raw=true`,
+              gouvernementLogo: `${config.publicUrl}/espace-pro/assets/gouvernement_logo.png?raw=true`,
             },
             etablissement: {
               name: etablissement.raison_sociale,
@@ -128,7 +126,7 @@ export default ({ etablissements, mailer }) => {
               postalCode: etablissement.code_postal,
               ville: etablissement.localite,
               optOutActivatedAtDate: optOutWillBeActivatedAtDayjs.format("DD/MM"),
-              linkToUnsubscribe: `${config.publicUrl}/form/opt-out/unsubscribe/${etablissement._id}`,
+              linkToUnsubscribe: `${config.publicUrl}/espace-pro/form/opt-out/unsubscribe/${etablissement._id}`,
             },
             user: {
               destinataireEmail: etablissement.email_decisionnaire,

@@ -63,8 +63,7 @@ const getFormationsByIdParcoursup = ({ idParcoursup }) =>
  * @returns {Promise<Object>}
  */
 const getFormations = async (query, page = 1, limit = 500) => {
-  const { data } = await axios.post(`${config.catalogueUrl}/api/v1/entity/formations`, {
-    query,
+  const dataToSend = {
     select: {
       _id: 1,
       code_postal: 1,
@@ -89,7 +88,14 @@ const getFormations = async (query, page = 1, limit = 500) => {
     },
     page,
     limit,
-  });
+  };
+
+  // Do not send "query" parameter if empty
+  if (Object.keys(query).length > 0) {
+    dataToSend.query = query;
+  }
+
+  const { data } = await axios.post(`${config.catalogueUrl}/api/v1/entity/formations`, dataToSend);
 
   return data;
 };

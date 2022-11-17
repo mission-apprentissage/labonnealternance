@@ -34,7 +34,7 @@ const MentionsLegales = () => (
             <br />
             75987 Paris cedex 20
             <br />
-            Tél. : <a href="tel:+33140306000">01 40 30 60 00</a>
+            Tél. : <a href="tel:+33140306000" aria-label="Appel du numéro +33140306000">01 40 30 60 00</a>
             <br />
           </p>
 
@@ -48,7 +48,7 @@ const MentionsLegales = () => (
             <br />
             59100 Roubaix
             <br />
-            Tél. : <a href="tel:+33972101007">09 72 10 10 07</a>
+            Tél. : <a href="tel:+33972101007" aria-label="Appel du numéro +33972101007">09 72 10 10 07</a>
           </p>
 
           <h3>Accessibilité</h3>
@@ -76,7 +76,7 @@ const MentionsLegales = () => (
           </p>
           <p>
             Le site La bonne alternance est en cours d&apos;optimisation afin de le rendre conforme au{" "}
-            <ExternalLink url="https://www.numerique.gouv.fr/publications/rgaa-accessibilite" title="RGAA v3" />. La
+            <ExternalLink url="https://www.numerique.gouv.fr/publications/rgaa-accessibilite" aria-label="Accès au Référentiel général d'amélioration de l'accessibilité" title="RGAA v3" />. La
             déclaration de conformité sera publiée ultérieurement.
           </p>
 
@@ -104,12 +104,12 @@ const MentionsLegales = () => (
 
           <p>
             Vous pouvez nous aider à améliorer l&apos;accessibilité du site en nous signalant les problèmes éventuels que
-            vous rencontrez : <a href="mailto:labonnealternance@apprentissage.beta.gouv.fr">Contactez-nous</a>.
+            vous rencontrez : <a aria-label="Envoi d'un email à labonnealternance@apprentissage.beta.gouv.fr" href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=CGU%20-%20Améliorer%20accessibilité">Contactez-nous</a>.
           </p>
 
           <p>
             Vous pouvez également soumettre vos demandes de modification sur la plate-forme{" "}
-            <ExternalLink url="https://github.com/mission-apprentissage/labonnealternance" title="Github" />.
+            <ExternalLink url="https://github.com/mission-apprentissage/labonnealternance" aria-label="Accès à Github" title="Github" />.
           </p>
 
           <p>
@@ -125,6 +125,7 @@ const MentionsLegales = () => (
             Pour en savoir plus sur la politique d’accessibilité numérique de l’État :<br />
             <ExternalLink
               url="http://references.modernisation.gouv.fr/accessibilite-numerique"
+              aria-label="Accès à la politique d’accessibilité numérique de l’État"
               title="http://references.modernisation.gouv.fr/accessibilite-numerique"
             />
           </p>
