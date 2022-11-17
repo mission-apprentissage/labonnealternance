@@ -7,6 +7,7 @@ import highlightItem from "../../services/hightlightItem"
 import ReactHtmlParser from "react-html-parser"
 import { Spinner } from "reactstrap"
 import findExactItemRank from "./findExactItemRank"
+import { Box } from "@chakra-ui/react"
 
 let debouncedOnInputValueChange = null
 
@@ -31,7 +32,6 @@ export const AutoCompleteField = ({
   items,
   initialIsOpen,
   scrollParentId,
-  illustration,
   searchPlaceholder,
   splitItemsByTypes = null,
   isDisabled = false,
@@ -173,7 +173,7 @@ export const AutoCompleteField = ({
   const classesOfInsider = props?.isHome ? "form-control-lg w-100 c-input-work" : "c-logobar-field"
 
   return (
-    <div className="">
+    <Box>
       <div className={`c-input-work-container ${classesOfContainer}`} {...getComboboxProps()}>
         <label className="c-logobar-label">{kind}</label>
         <input
@@ -191,7 +191,6 @@ export const AutoCompleteField = ({
           name={props.name}
           aria-describedby="name"
         />
-        {illustration && <img className="c-input-work-img" src={illustration} alt="" />}
       </div>
 
       <ul {...getMenuProps()} className={`c-autocomplete__menu is-open-${isOpen}`}>
@@ -236,7 +235,7 @@ export const AutoCompleteField = ({
           }
         })()}
       </ul>
-    </div>
+    </Box>
   )
 }
 
