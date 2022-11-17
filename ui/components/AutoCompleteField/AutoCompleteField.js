@@ -7,7 +7,7 @@ import highlightItem from "../../services/hightlightItem"
 import ReactHtmlParser from "react-html-parser"
 import { Spinner } from "reactstrap"
 import findExactItemRank from "./findExactItemRank"
-import { Box, Text } from "@chakra-ui/react"
+import { Box, Flex, Input, Text } from "@chakra-ui/react"
 
 let debouncedOnInputValueChange = null
 
@@ -124,7 +124,7 @@ export const AutoCompleteField = ({
               ancestor.scrollTop = ancestor.scrollTop + 150
             }
           } else {
-            const closest = target.closest(".c-input-work-container")
+            const closest = target.closest(".containerIdentity")
             const y = closest.getBoundingClientRect().top + window.pageYOffset - 20
             window.scrollTo({ top: y, behavior: "smooth" })
           }
@@ -169,33 +169,40 @@ export const AutoCompleteField = ({
     },
   })
 
-  const classesOfContainer = props?.isHome ? "" : "c-logobar-formgroup"
-  const classesOfInsider = props?.isHome ? "form-control-lg w-100 c-input-work" : "c-logobar-field"
+  const classesOfInsider = "c-logobar-field"
+
+  let containerChakraProps = {
+    position: "relative",
+    width: { lg: "232px" },
+    direction: "column",
+    borderRadius: "10px",
+    padding: "0.1rem",
+    sx: { borderColor: "grey.300 !important", border: "1px solid" },
+    className: "containerIdentity",
+  }
 
   return (
     <Box>
-      <Box>
-        <div className={`c-input-work-container ${classesOfContainer}`} {...getComboboxProps()}>
-          <Text marginBottom="0" marginLeft={2} paddingTop="0.3rem" color="gray.700" textAlign="left" lineHeight="15px" fontSize={["12px", "10px", "10px", "12px"]} as="label">
-            {kind}
-          </Text>
-          <input
-            {...getInputProps({
-              onFocus: (e) => {
-                if (!isOpen) {
-                  openMenu()
-                }
-                onFocusTriggered(e)
-              },
-            })}
-            disabled={isDisabled}
-            className={`${classesOfInsider} ${inputValue && inputValue.length > 20 ? "is-text-too-long" : "is-text-not-too-long"}`}
-            placeholder={props.placeholder}
-            name={props.name}
-            aria-describedby="name"
-          />
-        </div>
-      </Box>
+      <Flex {...containerChakraProps} {...getComboboxProps()}>
+        <Text marginBottom="0" marginLeft={2} paddingTop="0.3rem" color="grey.700" textAlign="left" lineHeight="15px" fontSize={["12px", "10px", "10px", "12px"]} as="label">
+          {kind}
+        </Text>
+        <Input
+          {...getInputProps({
+            onFocus: (e) => {
+              if (!isOpen) {
+                openMenu()
+              }
+              onFocusTriggered(e)
+            },
+          })}
+          disabled={isDisabled}
+          className={`${classesOfInsider} ${inputValue && inputValue.length > 20 ? "is-text-too-long" : "is-text-not-too-long"}`}
+          placeholder={props.placeholder}
+          _placeholder={{ color: "grey.500", lineHeight: "17px", letterSpacing: "0px", fontWeight: "400", fontSize: "14px" }}
+          name={props.name}
+        />
+      </Flex>
 
       <ul {...getMenuProps()} className={`c-autocomplete__menu is-open-${isOpen}`}>
         {(() => {
