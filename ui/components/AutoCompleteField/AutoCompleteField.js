@@ -30,6 +30,7 @@ export const AutoCompleteField = ({
   compareItemFunction,
   initialSelectedItem,
   items,
+  hasError,
   initialIsOpen,
   scrollParentId,
   searchPlaceholder,
@@ -169,15 +170,13 @@ export const AutoCompleteField = ({
     },
   })
 
-  const classesOfInsider = "c-logobar-field"
-
   let containerChakraProps = {
     position: "relative",
     width: { lg: "232px" },
     direction: "column",
     borderRadius: "10px",
     padding: "0.1rem",
-    sx: { borderColor: "grey.300 !important", border: "1px solid" },
+    sx: { borderColor: `${hasError ? "warning" : "grey.300"} !important`, border: "1px solid" },
     className: "containerIdentity",
   }
 
@@ -204,6 +203,7 @@ export const AutoCompleteField = ({
           background="white"
           px="0.5"
           py="1px"
+          mb="1px"
           sx={{ height: "32px", border: "none !important", width: "95%", marginLeft: "5px" }}
           _placeholder={{ color: "grey.500", lineHeight: "17px", letterSpacing: "0px", fontWeight: "400", fontSize: "14px" }}
           name={props.name}

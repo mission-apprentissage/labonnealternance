@@ -54,10 +54,11 @@ const HeaderForm = ({ handleSearchSubmit, isHome }) => {
       <Formik validate={(values) => validateFormik(values, widgetParameters)} initialValues={{ job: {}, location: {}, radius: 30, diploma: "" }} onSubmit={handleSearchSubmit}>
         {({ isSubmitting, setFieldValue, errors, touched }) => (
           <Form className="c-logobar-form c-searchform">
-            <div className={`formGroup formGroup--logobar ${errors.job ? "formGroup--logobar-onerror" : ""}`}>
+            <div className={`formGroup formGroup--logobar`}>
               <AutoCompleteField
                 kind="Métier ou diplôme *"
                 items={[]}
+                hasError={errors.job}
                 initialSelectedItem={contextFormValues?.job || null}
                 itemToStringFunction={autoCompleteToStringFunction}
                 onSelectedItemChangeFunction={partialRight(updateValuesFromJobAutoComplete, setDiplomas)}
@@ -75,10 +76,11 @@ const HeaderForm = ({ handleSearchSubmit, isHome }) => {
               />
             </div>
             <div className="ml-3">
-              <div className={`formGroup formGroup--logobar ${errors.location ? "formGroup--logobar-onerror" : ""}`}>
+              <div className={`formGroup formGroup--logobar`}>
                 <AutoCompleteField
                   kind="Lieu"
                   items={[]}
+                  hasError={errors.location}
                   initialSelectedItem={contextFormValues?.location ?? null}
                   itemToStringFunction={autoCompleteToStringFunction}
                   onSelectedItemChangeFunction={partialRight(formikUpdateValue, "location")}

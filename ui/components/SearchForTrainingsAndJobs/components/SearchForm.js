@@ -68,10 +68,11 @@ const SearchForm = (props) => {
                 </h1>
                 <div className="formGroup">
                   <h1 className="h6 font-weight-bold">Votre recherche</h1>
-                  <div className={`${errors.job ? "c-searchform--onerror" : ""}`}>
+                  <div>
                     <AutoCompleteField
                       kind="Métier ou diplôme *"
                       items={[]}
+                      hasError={errors.job}
                       initialSelectedItem={contextFormValues?.job || null}
                       itemToStringFunction={autoCompleteToStringFunction}
                       onSelectedItemChangeFunction={partialRight(updateValuesFromJobAutoComplete, setDiplomas)}
@@ -93,10 +94,11 @@ const SearchForm = (props) => {
               </Col>
 
               <Col xs="12">
-                <div className={`formGroup mt-3 ${errors.location ? "c-searchform--onerror" : ""}`}>
+                <div className={`formGroup mt-3`}>
                   <AutoCompleteField
                     kind="Lieu"
                     items={[]}
+                    hasError={errors.location}
                     initialSelectedItem={contextFormValues?.location ?? null}
                     itemToStringFunction={autoCompleteToStringFunction}
                     onSelectedItemChangeFunction={partialRight(formikUpdateValue, "location")}
