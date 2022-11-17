@@ -1,12 +1,12 @@
 import { logger } from "../../../common/logger.js";
 
 export const createUser = async (
-  users,
+  usersRecruteur,
   { prenom, nom, siret, raison_sociale, telephone, adresse, email, scope },
   { options }
 ) => {
   const { Type, Admin, Email_valide } = options;
-  let exist = await users.getUser({ email });
+  let exist = await usersRecruteur.getUser({ email });
 
   if (exist) {
     logger.error(`Users ${email} already exist - ${exist._id}`);
@@ -27,7 +27,7 @@ export const createUser = async (
     email_valide: Email_valide,
   };
 
-  await users.createUser(payload);
+  await usersRecruteur.createUser(payload);
 
   logger.info(`User created : ${email} — ${scope} - admin: ${Admin}`);
 };

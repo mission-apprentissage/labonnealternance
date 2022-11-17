@@ -1,7 +1,10 @@
-import prettyMilliseconds from "pretty-ms";
 import { isEmpty } from "lodash-es";
-import { closeMongodbConnection, configureIndexes, configureValidation, connectToMongodb } from "./mongodb.js";
+import { access, mkdir } from "node:fs/promises";
+import prettyMilliseconds from "pretty-ms";
+import createComponents from "../common/components/components.js";
+import config from "../config.js";
 import { getLoggerWithContext } from "./logger.js";
+import { closeMongoConnection } from "./mongodb.js";
 
 const logger = getLoggerWithContext("script");
 
@@ -31,6 +34,18 @@ const createTimer = () => {
   };
 };
 
+const ensureOutputDirExists = async () => {
+  const outputDir = config.outputDir;
+  try {
+    await access(outputDir);
+  } catch (e) {
+    if (e.code !== "EEXIST") {
+      await mkdir(outputDir, { recursive: true });
+    }
+  }
+  return outputDir;
+};
+
 const exit = async (scriptError) => {
   if (scriptError) {
     logger.error(scriptError.constructor.name === "EnvVarError" ? scriptError.message : scriptError);
@@ -39,7 +54,7 @@ const exit = async (scriptError) => {
 
   setTimeout(() => {
     //Waiting logger to flush all logs (MongoDB)
-    closeMongodbConnection().catch((e) => {
+    closeMongoConnection().catch((e) => {
       console.error(e);
       process.exitCode = 1;
     });
@@ -51,11 +66,10 @@ async function runScript(job) {
     const timer = createTimer();
     timer.start();
 
-    await connectToMongodb();
-    await configureValidation();
-    await configureIndexes();
+    await ensureOutputDirExists();
 
-    const results = await job();
+    const components = await createComponents();
+    const results = await job(components);
 
     timer.stop(results);
     await exit();

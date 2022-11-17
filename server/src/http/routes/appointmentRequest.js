@@ -1,5 +1,4 @@
 import express from "express";
-import path from "path";
 import Joi from "joi";
 import Boom from "boom";
 import Sentry from "@sentry/node";
@@ -11,8 +10,7 @@ import { roles } from "../../common/roles.js";
 import { getCleMinistereEducatifFromIdActionFormation } from "../../common/utils/mappings/onisep.js";
 import { dayjs } from "../../common/utils/dayjs.js";
 import { isValidEmail } from "../../common/utils/isValidEmail.js";
-import __dirname from "../../common/dirname.js";
-const currentDirname = __dirname(import.meta.url);
+import { mailTemplate } from "../../assets/index.js";
 
 const contextCreateSchema = Joi.alternatives().try(
   // Find through "idParcoursup"
@@ -283,13 +281,13 @@ export default ({ users, appointments, mailer, widgetParameters, etablissements 
         appointment: {
           referrerLink: referrerObj.url,
           referrer: referrerObj.full_name,
-          link: `${config.publicUrl}/establishment/${etablissement._id}/appointments/${createdAppointement._id}?utm_source=mail`,
+          link: `${config.publicUrl}/espace-pro/establishment/${etablissement._id}/appointments/${createdAppointement._id}?utm_source=mail`,
         },
         images: {
-          logoCandidat: `${config.publicUrl}/assets/logo-lba-recruteur-candidat.png?raw=true`,
-          logoCfa: `${config.publicUrl}/assets/logo-lba-recruteur-cfa.png?raw=true`,
-          logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.png?raw=true`,
-          peopleLaptop: `${config.publicUrl}/assets/people-laptop.png?raw=true`,
+          logoCandidat: `${config.publicUrl}/espace-pro/assets/logo-lba-recruteur-candidat.png?raw=true`,
+          logoCfa: `${config.publicUrl}/espace-pro/assets/logo-lba-recruteur-cfa.png?raw=true`,
+          logoFooter: `${config.publicUrl}/espace-pro/assets/logo-republique-francaise.png?raw=true`,
+          peopleLaptop: `${config.publicUrl}/espace-pro/assets/people-laptop.png?raw=true`,
         },
       };
 
@@ -298,13 +296,13 @@ export default ({ users, appointments, mailer, widgetParameters, etablissements 
         mailer.sendEmail({
           to: user.email,
           subject: `Le centre de formation a bien reçu votre demande de contact !`,
-          template: path.join(currentDirname, `../../../assets/templates/mail-candidat-confirmation-rdv.mjml.ejs`),
+          template: mailTemplate["mail-candidat-confirmation-rdv"],
           data: mailData,
         }),
         mailer.sendEmail({
           to: widgetParameter.email_rdv,
           subject: `[RDV via ${referrerObj.full_name}] Un candidat souhaite être contacté`,
-          template: path.join(currentDirname, `../../../assets/templates/mail-cfa-demande-de-contact.mjml.ejs`),
+          template: mailTemplate["mail-cfa-demande-de-contact"],
           data: mailData,
         }),
       ]);
@@ -437,7 +435,7 @@ export default ({ users, appointments, mailer, widgetParameters, etablissements 
         const { messageId } = await mailer.sendEmail({
           to: widgetParameter.email_rdv,
           subject: `[RDV via ${referrerObj.full_name}] Relance - Un candidat souhaite être contacté`,
-          template: path.join(currentDirname, `../../../assets/templates/mail-cfa-demande-de-contact.mjml.ejs`),
+          template: mailTemplate["mail-cfa-demande-de-contact"],
           data: {
             user: {
               firstname: user.firstname,
@@ -460,7 +458,7 @@ export default ({ users, appointments, mailer, widgetParameters, etablissements 
               referrer: referrerObj.full_name,
             },
             images: {
-              peopleLaptop: `${config.publicUrl}/assets/girl_laptop.png?raw=true`,
+              peopleLaptop: `${config.publicUrl}/espace-pro/assets/girl_laptop.png?raw=true`,
             },
           },
         });

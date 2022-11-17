@@ -29,7 +29,7 @@ const contact = () => (
           <p>Vous avez une question sur nos outils ? Consultez notre foire aux questions. </p>
           <div className="my-5 d-flex-center">
             <Link href="/faq">
-              <a className="c-homecomponent-link c-homecomponent-link__first">Consulter la FAQ</a>
+              <a aria-label="Accès à la Foire aux questions" className="c-homecomponent-link c-homecomponent-link__first">Consulter la FAQ</a>
             </Link>
           </div>
           <div className="text-break">
@@ -39,25 +39,25 @@ const contact = () => (
             </p>
             <p>
               <b>Vous êtes candidat,</b> écrivez-nous en cliquant sur ce <br />
-              <a href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Page%20Contact%20-%20Candidat">
+              <a aria-label="Envoi d'un email au service candidat de La bonne alternance" href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Page%20Contact%20-%20Candidat">
                 lien vers notre adresse email
               </a>
             </p>
             <p>
               <b>Vous êtes un organisme de formation,</b> écrivez-nous en cliquant sur ce <br />
-              <a href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Page%20Contact%20-%20OF">
+              <a aria-label="Envoi d'un email au service organisme de formation de La bonne alternance" href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Page%20Contact%20-%20OF">
                 lien vers notre adresse email
               </a>
             </p>
             <p>
               <b>Vous êtes une entreprise recevant des candidatures spontanées,</b> écrivez-nous en cliquant sur ce{" "}
-              <a href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Page%20Contact%20-%20Entreprise%20-%20Candidature%20spontanée">
+              <a aria-label="Envoi d'un email au service entreprise de La bonne alternance" href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Page%20Contact%20-%20Entreprise%20-%20Candidature%20spontanée">
                 lien vers notre adresse email
               </a>
             </p>
             <p>
               <b>Vous êtes une entreprise intéressée par notre service de dépôt d&apos;offre simplifié,</b> écrivez-nous en cliquant sur ce{" "}
-              <a href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Page%20Contact%20-%20Entreprise%20-%20Depot%20offre">
+              <a aria-label="Envoi d'un email au service recruteur de La bonne alternance" href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Page%20Contact%20-%20Entreprise%20-%20Depot%20offre">
                 lien vers notre adresse email
               </a>
             </p>

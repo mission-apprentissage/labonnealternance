@@ -65,7 +65,7 @@ const Navigation = ({ currentPage, bgcolor }) => {
             <Nav className='c-navbar-links ml-auto' navbar>
               <NavItem className={`ml-lg-5 mr-2 ${!currentPage ? 'selected' : ''}`}>
                 <Link href='/'>
-                  <a className='nav-link'>
+                  <a className='nav-link' aria-label='Accès espace candidat'>
                     <span className='mx-1'>Candidat</span>
                   </a>
                 </Link>
@@ -75,7 +75,7 @@ const Navigation = ({ currentPage, bgcolor }) => {
 
               <NavItem className={`mr-2 ml-lg-2 ${currentPage === 'acces-recruteur' ? 'selected' : ''}`}>
                 <Link href='/acces-recruteur'>
-                  <a className='nav-link'>
+                  <a className='nav-link' aria-label='Accès espace recruteur'>
                     <span className='mx-1'>Recruteur</span>
                   </a>
                 </Link>
@@ -85,7 +85,7 @@ const Navigation = ({ currentPage, bgcolor }) => {
 
               <NavItem className={`ml-lg-2 ${currentPage === 'organisme-de-formation' ? 'selected' : ''}`}>
                 <Link href='/organisme-de-formation'>
-                  <a className='nav-link'>
+                  <a className='nav-link' aria-label='Accès espace organisme de formation'>
                     <span className='mx-1'>Organisme de formation</span>
                   </a>
                 </Link>
@@ -96,7 +96,7 @@ const Navigation = ({ currentPage, bgcolor }) => {
                   <div className='ml-2 c-navigation__separator'></div>
                   <NavItem className='ml-lg-2'>
                     <Link href='/espace-pro/authentification'>
-                      <a className='nav-link'>
+                      <a className='nav-link' aria-label='Connexion'>
                         <img className='c-homecomponent-bluelock mr-2' src='/images/icons/blue_lock.svg' alt='Locking tool' />
                         <span className='mx-1'>Connexion</span>
                       </a>
