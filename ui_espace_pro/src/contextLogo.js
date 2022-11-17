@@ -1,12 +1,12 @@
-import { createContext, useState } from 'react'
+import { createContext, useState } from "react"
 
 const LogoContext = createContext({
-  organisation: '',
+  organisation: "",
   setOrganisation: () => {},
 })
 
 const LogoProvider = (props) => {
-  const [organisation, setOrganisation] = useState('')
+  const [organisation, setOrganisation] = useState("")
   let state = { organisation, setOrganisation }
 
   return <LogoContext.Provider value={state}>{props.children}</LogoContext.Provider>

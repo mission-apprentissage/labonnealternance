@@ -2,7 +2,7 @@
   color: $gray-750;
   word-break: break-all;
   border-bottom: none;
-  @include media-breakpoint-up(sm) { 
+  @include media-breakpoint-up(sm) {
     &:hover {
       text-decoration: none;
     }

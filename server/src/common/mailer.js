@@ -1,13 +1,13 @@
-import ejs from "ejs";
-import { omit } from "lodash-es";
-import mjml from "mjml";
-import nodemailer from "nodemailer";
-import nodemailerHtmlToText from "nodemailer-html-to-text";
-import { promisify } from "util";
-import config from "../config.js";
+import ejs from "ejs"
+import { omit } from "lodash-es"
+import mjml from "mjml"
+import nodemailer from "nodemailer"
+import nodemailerHtmlToText from "nodemailer-html-to-text"
+import { promisify } from "util"
+import config from "../config.js"
 
-const htmlToText = nodemailerHtmlToText.htmlToText;
-const renderFile = promisify(ejs.renderFile);
+const htmlToText = nodemailerHtmlToText.htmlToText
+const renderFile = promisify(ejs.renderFile)
 
 /**
  * @description Create transporter.
@@ -20,22 +20,22 @@ const renderFile = promisify(ejs.renderFile);
  * @returns {Mail}
  */
 const createTransporter = (smtp) => {
-  const needAuthentication = config.env === "production" ? true : false;
+  const needAuthentication = config.env === "production" ? true : false
 
-  const transporter = nodemailer.createTransport(needAuthentication ? smtp : omit(smtp, ["auth"]));
+  const transporter = nodemailer.createTransport(needAuthentication ? smtp : omit(smtp, ["auth"]))
 
-  transporter.use("compile", htmlToText({ ignoreImage: true }));
+  transporter.use("compile", htmlToText({ ignoreImage: true }))
 
-  return transporter;
-};
+  return transporter
+}
 
 export default function (config, transporter = createTransporter(config.smtp)) {
   const renderEmail = async (template, data = {}) => {
-    const buffer = await renderFile(template, { data });
-    const { html } = mjml(buffer.toString(), { minify: true });
+    const buffer = await renderFile(template, { data })
+    const { html } = mjml(buffer.toString(), { minify: true })
 
-    return html;
-  };
+    return html
+  }
 
   return {
     /**
@@ -53,14 +53,7 @@ export default function (config, transporter = createTransporter(config.smtp)) {
      * @param {undefined|string} cc
      * @returns {Promise<{messageId: string}>}
      */
-    sendEmail: async ({
-      to,
-      subject,
-      template,
-      data,
-      from = "nepasrepondre@apprentissage.beta.gouv.fr",
-      cc = undefined,
-    }) => {
+    sendEmail: async ({ to, subject, template, data, from = "nepasrepondre@apprentissage.beta.gouv.fr", cc = undefined }) => {
       return transporter.sendMail({
         from,
         to,
@@ -68,7 +61,7 @@ export default function (config, transporter = createTransporter(config.smtp)) {
         subject,
         html: await renderEmail(template, data),
         list: {},
-      });
+      })
     },
     /**
      * @description Send plain test email.
@@ -83,7 +76,7 @@ export default function (config, transporter = createTransporter(config.smtp)) {
         subject,
         body: `Mail pour ${to}`,
         list: {},
-      });
+      })
     },
-  };
+  }
 }

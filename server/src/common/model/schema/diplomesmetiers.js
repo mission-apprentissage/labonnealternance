@@ -29,4 +29,4 @@ export const diplomesMetiersSchema = {
     default: Date.now,
     description: "Date de dernières mise à jour",
   },
-};
+}

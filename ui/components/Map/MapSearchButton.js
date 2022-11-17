@@ -1,21 +1,17 @@
-import React from "react";
+import React from "react"
 
-import refreshSearchOnMap from "public/images/icons/refreshSearchOnMap.svg";
-import lookingGlassOnMap from "public/images/glass.svg";
-import { SearchResultContext } from "../../context/SearchResultContextProvider";
-import { DisplayContext } from "../../context/DisplayContextProvider";
+import refreshSearchOnMap from "public/images/icons/refreshSearchOnMap.svg"
+import lookingGlassOnMap from "public/images/glass.svg"
+import { SearchResultContext } from "../../context/SearchResultContextProvider"
+import { DisplayContext } from "../../context/DisplayContextProvider"
 
 const MapSearchButton = ({ handleSearchClick }) => {
-  const { formValues } = React.useContext(DisplayContext);
-  const { hasSearch } = React.useContext(SearchResultContext);
+  const { formValues } = React.useContext(DisplayContext)
+  const { hasSearch } = React.useContext(SearchResultContext)
 
   return hasSearch ? (
     <div className="c-map-searchButton">
-      <button
-        onClick={handleSearchClick}
-        title="Lancer une rechercher centrée sur la carte"
-        className="d-flex align-items-center"
-      >
+      <button onClick={handleSearchClick} title="Lancer une rechercher centrée sur la carte" className="d-flex align-items-center">
         {formValues ? (
           <>
             <img src={refreshSearchOnMap} alt="Relancer la recherche depuis la carte" />
@@ -31,7 +27,7 @@ const MapSearchButton = ({ handleSearchClick }) => {
     </div>
   ) : (
     ""
-  );
-};
+  )
+}
 
-export default MapSearchButton;
+export default MapSearchButton

@@ -13,14 +13,14 @@
   padding: 30px 40px;
   font-size: 16px;
   text-align: left;
-  background: #F5F5F5;
+  background: #f5f5f5;
 }
 .itemDetail .itemDetailBody .title {
   width: fit-content;
   padding: 3px 10px 2px;
   color: #fff;
   font-weight: bold;
-  background: #066EE7;
+  background: #066ee7;
   text-transform: uppercase;
   margin-bottom: 20px;
 }
@@ -37,14 +37,14 @@
 }
 .itemDetail .blueAdvice {
   margin: 30px -10px;
-  background: #D7E9FF;
+  background: #d7e9ff;
   border-radius: 15px;
   padding: 20px;
   text-align: justify;
 }
 .itemDetail .pinkAdvice {
   margin: 30px -10px;
-  background: #F1E3FD;
+  background: #f1e3fd;
   border-radius: 15px;
   padding: 20px;
   text-align: justify;
@@ -73,10 +73,10 @@
   margin-right: 20px;
 }
 
-.jobResult, .trainingResult {
-  background-color: #F9F8F6;
+.jobResult,
+.trainingResult {
+  background-color: #f9f8f6;
 }
-
 
 a.resultCard {
   display: block;
@@ -115,7 +115,7 @@ a.resultCard:hover {
     padding-right: 25px;
     padding-left: 25px;
   }
-  color: #4A4A4A;
+  color: #4a4a4a;
   cursor: pointer;
 }
 .resultCard .extendedJobSearchButton,
@@ -138,7 +138,7 @@ a.resultCard:hover {
   text-decoration: underline !important;
 }
 .resultCard .extendedJobSearchButton {
-  color: #FF8D7E !important;
+  color: #ff8d7e !important;
   display: flex;
 }
 .resultCard .extendedTrainingSearchButton {
@@ -215,28 +215,24 @@ a.resultCard:hover {
   color: black;
 }
 
-.c-detail-prdv
-{
+.c-detail-prdv {
   text-align: left;
 }
 
-.widget-prdv 
-{
-  button
-  {
-    border:none;
+.widget-prdv {
+  button {
+    border: none;
     background: none;
   }
 
-  a
-  {
+  a {
     display: inline-block;
     background-color: #000091;
     border: 1px solid #000091;
     border-radius: 8px;
     color: #fff !important;
     font-size: 18px;
-    font-weight: 700;  
+    font-weight: 700;
     padding: 6px 32px;
     text-align: center;
     vertical-align: middle;
@@ -252,4 +248,3 @@ a.resultCard:hover {
     }
   }
 }
-

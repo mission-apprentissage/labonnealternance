@@ -1,3 +1,3 @@
-import nockCatalog from "./nock-MnaCatalog.js";
+import nockCatalog from "./nock-MnaCatalog.js"
 
-export const nockApis = () => nockCatalog();
+export const nockApis = () => nockCatalog()

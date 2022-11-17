@@ -1,18 +1,10 @@
-import { Icon } from "@chakra-ui/react";
-import React from "react";
+import { Icon } from "@chakra-ui/react"
+import React from "react"
 
 export function IconeLogo(props) {
   return (
     <Icon viewBox="0 0 263 186" fill="none" {...props}>
-      <mask
-        id="mask0_1376:10522"
-        style={{ maskType: "alpha" }}
-        maskUnits="userSpaceOnUse"
-        x="0"
-        y="0"
-        width="263"
-        height="186"
-      >
+      <mask id="mask0_1376:10522" style={{ maskType: "alpha" }} maskUnits="userSpaceOnUse" x="0" y="0" width="263" height="186">
         <rect width="263" height="186" transform="matrix(1 0 0 -1 0 186)" fill="#C4C4C4" />
       </mask>
       <g mask="url(#mask0_1376:10522)">
@@ -300,5 +292,5 @@ export function IconeLogo(props) {
         />
       </g>
     </Icon>
-  );
+  )
 }

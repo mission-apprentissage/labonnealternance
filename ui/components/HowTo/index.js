@@ -1,3 +1,3 @@
-import HowTo from "./HowTo";
+import HowTo from "./HowTo"
 
-export default HowTo;
+export default HowTo

@@ -2,8 +2,7 @@ export const sourceFormationsSchema = {
   currentIndex: {
     type: String,
     default: null,
-    description:
-      "Base de données source des formations derrière l'alias convertedformations. convertedformation_0 OU convertedformation_1",
+    description: "Base de données source des formations derrière l'alias convertedformations. convertedformation_0 OU convertedformation_1",
   },
   created_at: {
     type: Date,
@@ -15,4 +14,4 @@ export const sourceFormationsSchema = {
     default: Date.now,
     description: "Date de dernières mise à jour",
   },
-};
+}

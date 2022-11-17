@@ -1,4 +1,4 @@
-import { WidgetParameter } from "../model/index.js";
+import { WidgetParameter } from "../model/index.js"
 
 export default () => ({
   /**
@@ -44,11 +44,11 @@ export default () => ({
       last_catalogue_sync,
       id_parcoursup,
       cle_ministere_educatif,
-    });
+    })
 
-    await widgetParameter.save();
+    await widgetParameter.save()
 
-    return widgetParameter.toObject();
+    return widgetParameter.toObject()
   },
 
   /**
@@ -88,18 +88,18 @@ export default () => ({
       id_rco_formation,
       referrers,
       cle_ministere_educatif,
-    };
-
-    const widgetParameterFind = await WidgetParameter.findOne({ id_rco_formation });
-
-    if (widgetParameterFind) {
-      return WidgetParameter.findOneAndUpdate({ _id: widgetParameterFind._id }, parameter, { new: true });
     }
 
-    const widgetParameter = new WidgetParameter(parameter);
-    await widgetParameter.save();
+    const widgetParameterFind = await WidgetParameter.findOne({ id_rco_formation })
 
-    return widgetParameter.toObject();
+    if (widgetParameterFind) {
+      return WidgetParameter.findOneAndUpdate({ _id: widgetParameterFind._id }, parameter, { new: true })
+    }
+
+    const widgetParameter = new WidgetParameter(parameter)
+    await widgetParameter.save()
+
+    return widgetParameter.toObject()
   },
 
   /**
@@ -159,16 +159,14 @@ export default () => ({
    * @param {String} cleMinistereEducatif
    * @returns {Promise<WidgetParameter>}
    */
-  getParameterByCleMinistereEducatif: ({ cleMinistereEducatif }) =>
-    WidgetParameter.findOne({ cle_ministere_educatif: cleMinistereEducatif }),
+  getParameterByCleMinistereEducatif: ({ cleMinistereEducatif }) => WidgetParameter.findOne({ cle_ministere_educatif: cleMinistereEducatif }),
 
   /**
    * @description Returns items from its "id_rco_formation" have referrer item.
    * @param {String} idRcoFormation
    * @returns {Promise<WidgetParameter>}
    */
-  getParameterByIdRcoFormationWithNotEmptyReferrers: ({ idRcoFormation }) =>
-    WidgetParameter.findOne({ id_rco_formation: idRcoFormation, referrers: { $not: { $size: 0 } } }),
+  getParameterByIdRcoFormationWithNotEmptyReferrers: ({ idRcoFormation }) => WidgetParameter.findOne({ id_rco_formation: idRcoFormation, referrers: { $not: { $size: 0 } } }),
 
   /**
    * @description Returns item through its "id_rco_formation".
@@ -192,8 +190,8 @@ export default () => ({
     const widgetParameter = await WidgetParameter.findOne({
       id_rco_formation: idRcoFormation,
       referrers: { $in: [referrer] },
-    });
+    })
 
-    return !!(widgetParameter && widgetParameter.email_rdv);
+    return !!(widgetParameter && widgetParameter.email_rdv)
   },
-});
+})

@@ -1,2 +1,2 @@
-import AutoCompleteField from "./AutoCompleteField";
-export default AutoCompleteField;
+import AutoCompleteField from "./AutoCompleteField"
+export default AutoCompleteField

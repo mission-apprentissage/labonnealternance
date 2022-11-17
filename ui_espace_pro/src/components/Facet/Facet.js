@@ -1,10 +1,10 @@
-import { memo } from 'react'
-import { MultiList } from '@appbaseio/reactivesearch'
-import { Accordion, AccordionButton, AccordionItem, AccordionPanel, Box } from '@chakra-ui/react'
+import { memo } from "react"
+import { MultiList } from "@appbaseio/reactivesearch"
+import { Accordion, AccordionButton, AccordionItem, AccordionPanel, Box } from "@chakra-ui/react"
 
-import './facet.css'
+import "./facet.css"
 
-import { AddFill, SubtractLine } from '../../theme/components/icons'
+import { AddFill, SubtractLine } from "../../theme/components/icons"
 
 const Facet = ({
   componentId,
@@ -22,25 +22,21 @@ const Facet = ({
   selectAllLabel,
 }) => {
   return (
-    <Accordion allowMultiple bg='white' my={3}>
-      <AccordionItem border='none'>
+    <Accordion allowMultiple bg="white" my={3}>
+      <AccordionItem border="none">
         {({ isExpanded }) => (
           <>
             <h2>
               <AccordionButton>
-                <Box flex='1' textAlign='left'>
+                <Box flex="1" textAlign="left">
                   {title}
                 </Box>
-                {isExpanded ? (
-                  <SubtractLine boxSize={3.5} color='bluefrance.500' />
-                ) : (
-                  <AddFill boxSize={3.5} color='bluefrance.500' />
-                )}
+                {isExpanded ? <SubtractLine boxSize={3.5} color="bluefrance.500" /> : <AddFill boxSize={3.5} color="bluefrance.500" />}
               </AccordionButton>
             </h2>
             <AccordionPanel pb={4}>
               <MultiList
-                className='facet-filters'
+                className="facet-filters"
                 componentId={componentId}
                 dataField={dataField}
                 nestedField={nestedField}
@@ -52,18 +48,18 @@ const Facet = ({
                 customQuery={customQuery}
                 showCount={showCount}
                 excludeFields={excludedFields}
-                queryFormat='or'
-                missingLabel='(Vide)'
+                queryFormat="or"
+                missingLabel="(Vide)"
                 showCheckbox={true}
                 innerClass={{
-                  title: 'search-title',
-                  input: 'search-input',
-                  checkbox: 'search-checkbox',
-                  label: 'search-label',
+                  title: "search-title",
+                  input: "search-input",
+                  checkbox: "search-checkbox",
+                  label: "search-label",
                 }}
                 showSearch={showSearch}
-                placeholder='Filtrer'
-                loader='Chargement'
+                placeholder="Filtrer"
+                loader="Chargement"
                 URLParams={true}
               />
             </AccordionPanel>

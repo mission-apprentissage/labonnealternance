@@ -1,18 +1,10 @@
-import { Box, Flex, Input, InputGroup, InputRightElement, Text } from '@chakra-ui/react'
-import { matchSorter } from 'match-sorter'
-import React, { useMemo } from 'react'
-import {
-  useAsyncDebounce,
-  useFilters,
-  useFlexLayout,
-  useGlobalFilter,
-  usePagination,
-  useSortBy,
-  useTable,
-} from 'react-table'
-import { ArrowDownLine, ArrowUpLine, SearchLine } from '../theme/components/icons'
-import ExportButtonNew from './ExportButton/ExportButtonNew'
-import PaginationReactQuery from './PaginationReactQuery'
+import { Box, Flex, Input, InputGroup, InputRightElement, Text } from "@chakra-ui/react"
+import { matchSorter } from "match-sorter"
+import React, { useMemo } from "react"
+import { useAsyncDebounce, useFilters, useFlexLayout, useGlobalFilter, usePagination, useSortBy, useTable } from "react-table"
+import { ArrowDownLine, ArrowUpLine, SearchLine } from "../theme/components/icons"
+import ExportButtonNew from "./ExportButton/ExportButtonNew"
+import PaginationReactQuery from "./PaginationReactQuery"
 
 // Define a default UI for filtering
 function GlobalFilter({ preGlobalFilteredRows, globalFilter, setGlobalFilter }) {
@@ -25,20 +17,15 @@ function GlobalFilter({ preGlobalFilteredRows, globalFilter, setGlobalFilter }) 
   return (
     <InputGroup>
       <Input
-        variant='search'
-        value={value || ''}
+        variant="search"
+        value={value || ""}
         onChange={(e) => {
           setValue(e.target.value)
           onChange(e.target.value)
         }}
         placeholder={`Rechercher par raison sociale, email ou téléphone...`}
       />
-      <InputRightElement
-        background='bluefrance.500'
-        border='none'
-        pointerEvents='none'
-        children={<SearchLine color='white' />}
-      />
+      <InputRightElement background="bluefrance.500" border="none" pointerEvents="none" children={<SearchLine color="white" />} />
     </InputGroup>
   )
 }
@@ -63,9 +50,7 @@ export default ({ data, columns, description }) => {
       text: (rows, id, filterValue) => {
         return rows.filter((row) => {
           const rowValue = row.values[id]
-          return rowValue !== undefined
-            ? String(rowValue).toLowerCase().startsWith(String(filterValue).toLowerCase())
-            : true
+          return rowValue !== undefined ? String(rowValue).toLowerCase().startsWith(String(filterValue).toLowerCase()) : true
         })
       },
     }),
@@ -92,7 +77,7 @@ export default ({ data, columns, description }) => {
       columns: tableColumns,
       data: tableData,
       defaultColumn: { width: 150 },
-      initialState: { sortBy: [{ id: 'createdAt', desc: true }], pageIndex: 0, pageSize: 8 },
+      initialState: { sortBy: [{ id: "createdAt", desc: true }], pageIndex: 0, pageSize: 8 },
       filterTypes,
     },
     useFilters,
@@ -104,17 +89,13 @@ export default ({ data, columns, description }) => {
 
   return (
     <Box>
-      <Flex align='center' mb={10}>
-        <Box width='90%'>
-          <Box width='50%'>
-            <GlobalFilter
-              preGlobalFilteredRows={preGlobalFilteredRows}
-              globalFilter={globalFilter}
-              setGlobalFilter={setGlobalFilter}
-            />
+      <Flex align="center" mb={10}>
+        <Box width="90%">
+          <Box width="50%">
+            <GlobalFilter preGlobalFilteredRows={preGlobalFilteredRows} globalFilter={globalFilter} setGlobalFilter={setGlobalFilter} />
           </Box>
           {description && (
-            <Box width='95%'>
+            <Box width="95%">
               <Text mt={3} noOfLines={3}>
                 {description}
               </Text>
@@ -124,33 +105,27 @@ export default ({ data, columns, description }) => {
         <ExportButtonNew data={tableData} />
       </Flex>
 
-      <Box as='table' {...getTableProps()} w='100%' flex={1} fontSize='delta'>
-        <Box as='thead' borderBottom='2px solid #3A3A3A'>
+      <Box as="table" {...getTableProps()} w="100%" flex={1} fontSize="delta">
+        <Box as="thead" borderBottom="2px solid #3A3A3A">
           {headerGroups.map((headerGroup) => (
-            <Box as='tr' {...headerGroup.getHeaderGroupProps({})} pb={4}>
+            <Box as="tr" {...headerGroup.getHeaderGroupProps({})} pb={4}>
               {headerGroup.headers.map((column, i) => (
-                <Box
-                  as='th'
-                  {...column.getHeaderProps(column.getSortByToggleProps())}
-                  display={[i === 0 || i > 2 ? 'none' : 'flex', 'flex']}
-                  overflow='hidden'
-                  px={2}
-                >
-                  <Flex flexDirection='column' w='full' alignItems='flex-start' justify='center'>
-                    <Text fontWeight='700' textAlign='left' fontSize='14px'>
-                      {column.render('Header')}
+                <Box as="th" {...column.getHeaderProps(column.getSortByToggleProps())} display={[i === 0 || i > 2 ? "none" : "flex", "flex"]} overflow="hidden" px={2}>
+                  <Flex flexDirection="column" w="full" alignItems="flex-start" justify="center">
+                    <Text fontWeight="700" textAlign="left" fontSize="14px">
+                      {column.render("Header")}
 
                       {column.isSorted ? (
                         column.isSortedDesc ? (
-                          <ArrowDownLine pl={1} color='bluefrance.500' />
+                          <ArrowDownLine pl={1} color="bluefrance.500" />
                         ) : (
-                          <ArrowUpLine pl={1} color='bluefrance.500' />
+                          <ArrowUpLine pl={1} color="bluefrance.500" />
                         )
                       ) : (
                         column.canSort && (
-                          <Box as='span' pl={1}>
-                            <ArrowUpLine color='bluefrance.500' />
-                            <ArrowDownLine color='bluefrance.500' />
+                          <Box as="span" pl={1}>
+                            <ArrowUpLine color="bluefrance.500" />
+                            <ArrowDownLine color="bluefrance.500" />
                           </Box>
                         )
                       )}
@@ -161,15 +136,15 @@ export default ({ data, columns, description }) => {
             </Box>
           ))}
         </Box>
-        <Box as='tbody' {...getTableBodyProps()}>
+        <Box as="tbody" {...getTableBodyProps()}>
           {page.map((row, i) => {
             prepareRow(row)
             return (
-              <Box as='tr' backgroundColor={i % 2 ? 'grey.200' : 'white'} py={4} {...row.getRowProps()}>
+              <Box as="tr" backgroundColor={i % 2 ? "grey.200" : "white"} py={4} {...row.getRowProps()}>
                 {row.cells.map((cell) => {
                   return (
-                    <Flex as='td' align='center' px={2} {...cell.getCellProps()}>
-                      {cell.render('Cell')}
+                    <Flex as="td" align="center" px={2} {...cell.getCellProps()}>
+                      {cell.render("Cell")}
                     </Flex>
                   )
                 })}

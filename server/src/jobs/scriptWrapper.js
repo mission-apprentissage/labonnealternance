@@ -1,46 +1,46 @@
-import dayjs from "dayjs";
-import promises from "fs";
-import { closeMongoConnection } from "../common/mongodb.js";
-import createComponents from "../common/components/components";
-import { logger } from "../common/logger.js";
-import config from "../config.js";
+import dayjs from "dayjs"
+import promises from "fs"
+import { closeMongoConnection } from "../common/mongodb.js"
+import createComponents from "../common/components/components"
+import { logger } from "../common/logger.js"
+import config from "../config.js"
 
-const { access, mkdir } = promises;
+const { access, mkdir } = promises
 
-process.on("unhandledRejection", (e) => console.log(e));
-process.on("uncaughtException", (e) => console.log(e));
+process.on("unhandledRejection", (e) => console.log(e))
+process.on("uncaughtException", (e) => console.log(e))
 
 const createTimer = () => {
-  let launchTime;
+  let launchTime
   return {
     start: () => {
-      launchTime = dayjs();
+      launchTime = dayjs()
     },
     stop: (results) => {
-      const duration = dayjs().diff(launchTime, "second");
-      const data = results && results.toJSON ? results.toJSON() : results;
-      console.log(JSON.stringify(data || {}, null, 2));
-      console.log(`Completed in ${duration} second(s)`);
+      const duration = dayjs().diff(launchTime, "second")
+      const data = results && results.toJSON ? results.toJSON() : results
+      console.log(JSON.stringify(data || {}, null, 2))
+      console.log(`Completed in ${duration} second(s)`)
     },
-  };
-};
+  }
+}
 
 const ensureOutputDirExists = async () => {
-  const outputDir = config.outputDir;
+  const outputDir = config.outputDir
   try {
-    await access(outputDir);
+    await access(outputDir)
   } catch (e) {
     if (e.code !== "EEXIST") {
-      await mkdir(outputDir, { recursive: true });
+      await mkdir(outputDir, { recursive: true })
     }
   }
-  return outputDir;
-};
+  return outputDir
+}
 
 const exit = async (rawError) => {
-  let error = rawError;
+  let error = rawError
   if (rawError) {
-    logger.error(rawError.constructor.name === "EnvVarError" ? rawError.message : rawError);
+    logger.error(rawError.constructor.name === "EnvVarError" ? rawError.message : rawError)
   }
 
   setTimeout(() => {
@@ -48,28 +48,28 @@ const exit = async (rawError) => {
     closeMongoConnection()
       .then(() => {})
       .catch((closeError) => {
-        error = closeError;
-        console.log(error);
-      });
-  }, 250);
+        error = closeError
+        console.log(error)
+      })
+  }, 250)
 
-  process.exitCode = error ? 1 : 0;
-};
+  process.exitCode = error ? 1 : 0
+}
 
 async function runScript(job) {
   try {
-    const timer = createTimer();
-    timer.start();
+    const timer = createTimer()
+    timer.start()
 
-    await ensureOutputDirExists();
-    const components = await createComponents();
-    const results = await job(components);
+    await ensureOutputDirExists()
+    const components = await createComponents()
+    const results = await job(components)
 
-    timer.stop(results);
-    await exit();
+    timer.stop(results)
+    await exit()
   } catch (e) {
-    await exit(e);
+    await exit(e)
   }
 }
 
-export { runScript };
+export { runScript }

@@ -1,7 +1,7 @@
-import { useState } from 'react'
-import { useCombobox } from 'downshift'
+import { useState } from "react"
+import { useCombobox } from "downshift"
 
-import { Input, Box } from '@chakra-ui/react'
+import { Input, Box } from "@chakra-ui/react"
 
 /**
  * @description Address autocomplete input.
@@ -27,7 +27,7 @@ export default (props) => {
       const data = await getAddress(search)
       data.features.forEach((feat) => {
         const name = `${feat.properties.label}`
-        const coordinates = feat.geometry.coordinates.reverse().join(',')
+        const coordinates = feat.geometry.coordinates.reverse().join(",")
         adresse.push({ name: name, geo_coordonnees: coordinates })
       })
       return adresse
@@ -35,11 +35,11 @@ export default (props) => {
     return items
   }
 
-  const itemToString = (item) => (item ? item.name : '')
+  const itemToString = (item) => (item ? item.name : "")
   const onSelectedItemChange = ({ selectedItem }) => props.handleValues(selectedItem)
   const onInputValueChange = async ({ inputValue }) => {
-    if (inputValue === '') {
-      props.handleValues({ name: '', geo_coordonnees: '' })
+    if (inputValue === "") {
+      props.handleValues({ name: "", geo_coordonnees: "" })
       return
     }
     setItems(await handleSearch(inputValue))
@@ -62,7 +62,7 @@ export default (props) => {
               setTimeout(() => props.setFieldTouched(props.name, true), 100)
             }
           }}
-          placeholder='Rechercher une adresse'
+          placeholder="Rechercher une adresse"
           required={props.required ?? false}
           onPaste={(e) => e.preventDefault()}
           {...getInputProps()}
@@ -70,27 +70,23 @@ export default (props) => {
       </div>
       <Box
         sx={{
-          width: '100%',
+          width: "100%",
           margin: 0,
-          marginTop: '2px',
+          marginTop: "2px",
           padding: 0,
           zIndex: 1,
-          position: 'absolute',
-          listStyle: 'none',
-          background: '#fff',
-          overflow: 'auto',
-          boxShadow: '0px 1px 8px rgba(8, 67, 85, 0.24)',
+          position: "absolute",
+          listStyle: "none",
+          background: "#fff",
+          overflow: "auto",
+          boxShadow: "0px 1px 8px rgba(8, 67, 85, 0.24)",
         }}
         {...getMenuProps()}
       >
         {isOpen &&
           items.map((item, index) => (
             <li
-              style={
-                highlightedIndex === index
-                  ? { backgroundColor: 'lightGrey', width: '100%', padding: '0.5rem' }
-                  : { width: '100%', padding: '0.5rem' }
-              }
+              style={highlightedIndex === index ? { backgroundColor: "lightGrey", width: "100%", padding: "0.5rem" } : { width: "100%", padding: "0.5rem" }}
               key={`${item}${index}`}
               {...getItemProps({ item, index })}
             >

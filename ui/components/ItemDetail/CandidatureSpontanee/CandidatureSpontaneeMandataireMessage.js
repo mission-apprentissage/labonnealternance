@@ -1,4 +1,4 @@
-import React from "react";
+import React from "react"
 
 const CandidatureSpontaneeMandataireMessage = ({ item }) => {
   return item?.company?.mandataire ? (
@@ -10,12 +10,9 @@ const CandidatureSpontaneeMandataireMessage = ({ item }) => {
               <img src="/images/info.svg" alt="information" />
             </td>
             <td>
-              Votre candidature sera envoyée au centre de formation en charge du recrutement pour le compte de
-              l’entreprise.
+              Votre candidature sera envoyée au centre de formation en charge du recrutement pour le compte de l’entreprise.
               <br />
-              <strong>
-                Vous pouvez candidater à l’offre même si vous avez déjà trouvé votre formation par ailleurs.
-              </strong>
+              <strong>Vous pouvez candidater à l’offre même si vous avez déjà trouvé votre formation par ailleurs.</strong>
             </td>
           </tr>
         </tbody>
@@ -23,7 +20,7 @@ const CandidatureSpontaneeMandataireMessage = ({ item }) => {
     </div>
   ) : (
     ""
-  );
-};
+  )
+}
 
-export default CandidatureSpontaneeMandataireMessage;
+export default CandidatureSpontaneeMandataireMessage

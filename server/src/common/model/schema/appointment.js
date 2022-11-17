@@ -208,4 +208,4 @@ export const appointmentSchema = {
     default: null,
     description: "Adresse email CFA",
   },
-};
+}

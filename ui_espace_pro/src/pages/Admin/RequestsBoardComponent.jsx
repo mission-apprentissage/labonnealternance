@@ -1,7 +1,7 @@
-import { Tbody, Tr, Thead, Td, Table, Flex, Box, Text } from "@chakra-ui/react";
-import { AppointmentItemList } from "./AppointmentItemList";
-import downloadFile from "../../common/utils/downloadFile";
-import { Download } from "../../theme/components/icons";
+import { Tbody, Tr, Thead, Td, Table, Flex, Box, Text } from "@chakra-ui/react"
+import { AppointmentItemList } from "./AppointmentItemList"
+import downloadFile from "../../common/utils/downloadFile"
+import { Download } from "../../theme/components/icons"
 
 /**
  * @description Appointments head table.
@@ -13,7 +13,7 @@ export const RequestsBoardComponent = (props) => {
    * @description Downloads CSV file.
    * @returns {Promise<void>}
    */
-  const download = () => downloadFile("/api/appointment/appointments/details/export", "rendez-vous.csv");
+  const download = () => downloadFile("/api/appointment/appointments/details/export", "rendez-vous.csv")
 
   return (
     <Box>
@@ -94,5 +94,5 @@ export const RequestsBoardComponent = (props) => {
         </Table>
       </Box>
     </Box>
-  );
-};
+  )
+}

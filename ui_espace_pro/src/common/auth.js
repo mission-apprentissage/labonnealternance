@@ -1,9 +1,9 @@
-import { createGlobalState } from 'react-hooks-global-state'
-import { subscribeToHttpEvent } from './httpClient'
-import decodeJWT from './utils/decodeJWT'
+import { createGlobalState } from "react-hooks-global-state"
+import { subscribeToHttpEvent } from "./httpClient"
+import decodeJWT from "./utils/decodeJWT"
 
-const anonymous = { sub: 'anonymous', permissions: {} }
-let token = sessionStorage.getItem('matcha:token')
+const anonymous = { sub: "anonymous", permissions: {} }
+let token = sessionStorage.getItem("matcha:token")
 
 const { useGlobalState, getGlobalState, setGlobalState } = createGlobalState({
   auth: token ? decodeJWT(token) : anonymous,
@@ -17,6 +17,6 @@ const { useGlobalState, getGlobalState, setGlobalState } = createGlobalState({
 //   }
 // })
 
-export const getAuth = () => getGlobalState('auth')
-export const useAuthState = () => useGlobalState('auth')
+export const getAuth = () => getGlobalState("auth")
+export const useAuthState = () => useGlobalState("auth")
 export { anonymous }

@@ -1,25 +1,21 @@
-import React from "react";
-import { Box, Text } from "@chakra-ui/react";
+import React from "react"
+import { Box, Text } from "@chakra-ui/react"
 
 export const Logo = ({ size = "sm" }) => {
-  let fontSize = "0.7875rem";
-  let beforeWidth = "2.0625rem";
-  let beforeHeight = "0.75rem";
-  let beforeMarginBottom = "0.25rem";
-  let beforeBackgroundSize = "2.0625rem 0.84375rem, 2.0625rem 0.75rem, 0";
-  let beforeBackgroundPosition = "0 -0.04688rem, 0 0, 0 0";
+  let fontSize = "0.7875rem"
+  let beforeWidth = "2.0625rem"
+  let beforeHeight = "0.75rem"
+  let beforeMarginBottom = "0.25rem"
+  let beforeBackgroundSize = "2.0625rem 0.84375rem, 2.0625rem 0.75rem, 0"
+  let beforeBackgroundPosition = "0 -0.04688rem, 0 0, 0 0"
 
   if (size === "xl") {
-    fontSize = ["1.05rem", "1.05rem", "1.3125rem"];
-    beforeWidth = ["25rem", "25rem", "31.25rem"];
-    beforeHeight = ["13.906rem", "13.906rem", "15.625rem"];
-    beforeMarginBottom = ["0.33333rem", "0.33333rem", "0.41667rem"];
-    beforeBackgroundSize = [
-      "25rem 13.906rem, 25rem 13.906rem, 0",
-      "25rem 13.906rem, 25rem 13.906rem, 0",
-      "31.25rem 15.625rem, 31.25rem 15.625rem, 0",
-    ];
-    beforeBackgroundPosition = ["0 -0.0625rem, 0 0, 0 0", "0 -0.0625rem, 0 0, 0 0", "0 -0.07812rem, 0 0, 0 0"];
+    fontSize = ["1.05rem", "1.05rem", "1.3125rem"]
+    beforeWidth = ["25rem", "25rem", "31.25rem"]
+    beforeHeight = ["13.906rem", "13.906rem", "15.625rem"]
+    beforeMarginBottom = ["0.33333rem", "0.33333rem", "0.41667rem"]
+    beforeBackgroundSize = ["25rem 13.906rem, 25rem 13.906rem, 0", "25rem 13.906rem, 25rem 13.906rem, 0", "31.25rem 15.625rem, 31.25rem 15.625rem, 0"]
+    beforeBackgroundPosition = ["0 -0.0625rem, 0 0, 0 0", "0 -0.0625rem, 0 0, 0 0", "0 -0.07812rem, 0 0, 0 0"]
   }
 
   return (
@@ -46,5 +42,5 @@ export const Logo = ({ size = "sm" }) => {
         }}
       />
     </Box>
-  );
-};
+  )
+}

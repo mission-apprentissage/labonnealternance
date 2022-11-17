@@ -1,6 +1,6 @@
-import React from "react";
+import React from "react"
 
-import smileyIcon from "../../public/images/smiley.svg";
+import smileyIcon from "../../public/images/smiley.svg"
 
 const TagCfaDEntreprise = () => {
   return (
@@ -8,7 +8,7 @@ const TagCfaDEntreprise = () => {
       <img src={smileyIcon} alt="sourire" />
       <span className="ml-1">CFA d&apos;entreprise</span>
     </span>
-  );
-};
+  )
+}
 
-export default TagCfaDEntreprise;
+export default TagCfaDEntreprise

@@ -1,12 +1,10 @@
-import React, { useState } from "react";
-import Link from "next/link";
-import { Collapse, NavbarToggler, Nav, NavItem, NavLink } from "reactstrap";
-
+import React, { useState } from "react"
+import Link from "next/link"
+import { Collapse, NavbarToggler, Nav, NavItem, NavLink } from "reactstrap"
 
 const SatisfactionFormNavigation = () => {
-
-  const [isOpen, setIsOpen] = useState(false);
-  const toggle = () => setIsOpen(!isOpen);
+  const [isOpen, setIsOpen] = useState(false)
+  const toggle = () => setIsOpen(!isOpen)
 
   return (
     <div className="c-navigation is-filled">
@@ -30,7 +28,7 @@ const SatisfactionFormNavigation = () => {
         </div>
       </nav>
     </div>
-  );
-};
+  )
+}
 
-export default SatisfactionFormNavigation;
+export default SatisfactionFormNavigation

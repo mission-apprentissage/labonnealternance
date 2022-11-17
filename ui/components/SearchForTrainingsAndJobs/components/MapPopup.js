@@ -1,27 +1,27 @@
-import React, { useEffect } from "react";
+import React, { useEffect } from "react"
 
-import { getJobAddress } from "../../../utils/jobs";
-import { logError } from "../../../utils/tools";
-import { ErrorMessage } from "../..";
-import { capitalizeFirstLetter } from "../../../utils/strutils";
-import { setSelectedMarker } from "../../../utils/mapTools";
-import bookIcon from "../../../public/images/icons/book.svg";
-import jobIcon from "../../../public/images/icons/job.svg";
+import { getJobAddress } from "../../../utils/jobs"
+import { logError } from "../../../utils/tools"
+import { ErrorMessage } from "../.."
+import { capitalizeFirstLetter } from "../../../utils/strutils"
+import { setSelectedMarker } from "../../../utils/mapTools"
+import bookIcon from "../../../public/images/icons/book.svg"
+import jobIcon from "../../../public/images/icons/job.svg"
 
 const MapPopup = ({ type, item, handleSelectItem, setSelectedItem, setSelectedMapPopupItem }) => {
   const openItemDetail = (item) => {
-    setSelectedItem(item);
-    setSelectedMarker(item);
-    handleSelectItem(item);
-  };
+    setSelectedItem(item)
+    setSelectedMarker(item)
+    handleSelectItem(item)
+  }
 
   useEffect(() => {
-    setSelectedMapPopupItem(item);
-  }, []);
+    setSelectedMapPopupItem(item)
+  }, [])
 
   const getContent = () => {
     try {
-      const list = item.items;
+      const list = item.items
 
       if (type === "job") {
         return (
@@ -37,30 +37,18 @@ const MapPopup = ({ type, item, handleSelectItem, setSelectedItem, setSelectedMa
               <div className="ml-3">
                 <ul className="c-mapbox-list">
                   {list.map((job, idx) => (
-                    <li
-                      className={`c-mapbox-list-item ${idx === list.length - 1 ? "is-last" : ""} ${
-                        idx === 0 ? "is-first" : ""
-                      }`}
-                      key={idx}
-                    >
-                      <button
-                        className={`c-mapboxpopup--link gtmSavoirPlus gtm${capitalizeFirstLetter(job.ideaType)} gtmMap`}
-                        onClick={() => openItemDetail(job)}
-                      >
+                    <li className={`c-mapbox-list-item ${idx === list.length - 1 ? "is-last" : ""} ${idx === 0 ? "is-first" : ""}`} key={idx}>
+                      <button className={`c-mapboxpopup--link gtmSavoirPlus gtm${capitalizeFirstLetter(job.ideaType)} gtmMap`} onClick={() => openItemDetail(job)}>
                         {job.title}
                       </button>
-                      {job.ideaType === "peJob" && job?.company?.name ? (
-                        <span className="c-mapbox-companyname">- {job.company.name}</span>
-                      ) : (
-                        ""
-                      )}
+                      {job.ideaType === "peJob" && job?.company?.name ? <span className="c-mapbox-companyname">- {job.company.name}</span> : ""}
                     </li>
                   ))}
                 </ul>
               </div>
             </div>
           </div>
-        );
+        )
       } else {
         return (
           <div className="mapboxPopupFormation">
@@ -81,11 +69,11 @@ const MapPopup = ({ type, item, handleSelectItem, setSelectedItem, setSelectedMa
               </div>
             </div>
           </div>
-        );
+        )
       }
     } catch (err) {
-      logError(`Popup error ${type}`, err);
-      console.log("Erreur de format des éléments emplois : ", type, item);
+      logError(`Popup error ${type}`, err)
+      console.log("Erreur de format des éléments emplois : ", type, item)
       return (
         <ErrorMessage
           message={
@@ -99,9 +87,9 @@ const MapPopup = ({ type, item, handleSelectItem, setSelectedItem, setSelectedMa
             </div>
           }
         />
-      );
+      )
     }
-  };
+  }
 
   const getTrainings = (list) => {
     let result = (
@@ -109,21 +97,18 @@ const MapPopup = ({ type, item, handleSelectItem, setSelectedItem, setSelectedMa
         {list.map((training, idx) => (
           <li key={idx} className="c-mapboxpopup-li">
             <span>
-              <button
-                className={`c-mapboxpopup--link gtmSavoirPlus gtmFormation gtmMap`}
-                onClick={() => openItemDetail(training)}
-              >
+              <button className={`c-mapboxpopup--link gtmSavoirPlus gtmFormation gtmMap`} onClick={() => openItemDetail(training)}>
                 {training.title ? training.title : training.longTitle}
               </button>
             </span>
           </li>
         ))}
       </>
-    );
-    return result;
-  };
+    )
+    return result
+  }
 
-  return getContent();
-};
+  return getContent()
+}
 
-export default MapPopup;
+export default MapPopup

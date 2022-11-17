@@ -1,25 +1,25 @@
-import React from "react";
+import React from "react"
 
-import domainErrorMainSvg from "./domain_error_main.svg";
-import domainErrorNoticeSvg from "./domain_error_notice.svg";
+import domainErrorMainSvg from "./domain_error_main.svg"
+import domainErrorNoticeSvg from "./domain_error_notice.svg"
 
 export default function DomainError({ position, setDomainError, setDiplomaError }) {
   const reset = (e) => {
     if (e) {
-      e.stopPropagation();
+      e.stopPropagation()
     }
 
-    setDomainError(false);
-    setDiplomaError(false);
-  };
+    setDomainError(false)
+    setDiplomaError(false)
+  }
 
   const getResetButton = () => {
     return (
       <button className="c-domainerror-reset mt-1 btn btn-dark" onClick={reset}>
         Réessayer
       </button>
-    );
-  };
+    )
+  }
 
   const getInColumnError = () => {
     return (
@@ -39,8 +39,8 @@ export default function DomainError({ position, setDomainError, setDiplomaError 
           {getResetButton()}
         </div>
       </div>
-    );
-  };
+    )
+  }
 
   const getInHeaderError = () => {
     return (
@@ -55,8 +55,8 @@ export default function DomainError({ position, setDomainError, setDiplomaError 
           {getResetButton()}
         </div>
       </div>
-    );
-  };
+    )
+  }
 
-  return position && position === "header" ? getInHeaderError() : getInColumnError();
+  return position && position === "header" ? getInHeaderError() : getInColumnError()
 }

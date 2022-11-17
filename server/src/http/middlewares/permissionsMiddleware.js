@@ -1,10 +1,10 @@
 export default (role = {}) => {
   return async (req, res, next) => {
-    const { user } = req;
+    const { user } = req
     if (user && user.role === role) {
-      next();
+      next()
     } else {
-      return res.status(401).send("Not authorized");
+      return res.status(401).send("Not authorized")
     }
-  };
-};
+  }
+}

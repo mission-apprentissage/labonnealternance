@@ -1,3 +1,3 @@
-import DomainError from "./DomainError";
+import DomainError from "./DomainError"
 
-export default DomainError;
+export default DomainError

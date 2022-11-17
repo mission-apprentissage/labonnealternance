@@ -1,6 +1,6 @@
-import { Box, Text, Flex } from "@chakra-ui/react";
-import PropTypes from "prop-types";
-import { IconeLogo } from "../../../theme/components/icons";
+import { Box, Text, Flex } from "@chakra-ui/react"
+import PropTypes from "prop-types"
+import { IconeLogo } from "../../../theme/components/icons"
 
 /**
  * @description Form header component.
@@ -23,9 +23,9 @@ export const FormHeaderComponent = ({ children }) => {
         </Box>
       </Flex>
     </Box>
-  );
-};
+  )
+}
 
 FormHeaderComponent.propTypes = {
   children: PropTypes.node,
-};
+}

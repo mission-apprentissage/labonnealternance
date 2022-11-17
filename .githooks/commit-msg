@@ -1,4 +1,0 @@
-#!/bin/sh
-
-echo "Commit message does not comply with the convention."
-npx --no -- commitlint --edit ${1}

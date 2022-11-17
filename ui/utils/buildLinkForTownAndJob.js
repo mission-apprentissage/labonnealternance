@@ -29,14 +29,14 @@ town
 */
 
 export const buildLinkForTownAndJob = (town, job) => {
-  let result = '/recherche-apprentissage?&display=list';
+  let result = "/recherche-apprentissage?&display=list"
 
-  result += '&job_name=' + encodeURIComponent(job.name)
-  result += '&romes=' + job.romes.join(',')
-  result += '&radius=30&lat=' + town.lat + '&lon=' + town.lon
-  result += '&zipcode=' + town.zip
-  result += '&insee=' + town.insee
-  result += '&address=' + encodeURIComponent(town.name)
+  result += "&job_name=" + encodeURIComponent(job.name)
+  result += "&romes=" + job.romes.join(",")
+  result += "&radius=30&lat=" + town.lat + "&lon=" + town.lon
+  result += "&zipcode=" + town.zip
+  result += "&insee=" + town.insee
+  result += "&address=" + encodeURIComponent(town.name)
 
-  return result;
-};
+  return result
+}

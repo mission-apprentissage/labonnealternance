@@ -1,11 +1,11 @@
-import { Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, Container, useToast } from '@chakra-ui/react'
-import { useQuery, useQueryClient } from 'react-query'
-import { useLocation, useNavigate, useParams } from 'react-router-dom'
-import { getOffre, postOffre, putOffre } from '../../api'
-import { AUTHTYPE } from '../../common/contants'
-import useAuth from '../../common/hooks/useAuth'
-import { AjouterVoeux } from '../../components'
-import { ArrowDropRightLine } from '../../theme/components/icons'
+import { Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, Container, useToast } from "@chakra-ui/react"
+import { useQuery, useQueryClient } from "react-query"
+import { useLocation, useNavigate, useParams } from "react-router-dom"
+import { getOffre, postOffre, putOffre } from "../../api"
+import { AUTHTYPE } from "../../common/contants"
+import useAuth from "../../common/hooks/useAuth"
+import { AjouterVoeux } from "../../components"
+import { ArrowDropRightLine } from "../../theme/components/icons"
 
 export default () => {
   const params = useParams()
@@ -15,20 +15,20 @@ export default () => {
   const client = useQueryClient()
   const [auth] = useAuth()
 
-  const { data, isLoading } = useQuery('offre', () => getOffre(params.id_offre), {
-    enabled: params.id_offre !== 'creation' ? true : false,
+  const { data, isLoading } = useQuery("offre", () => getOffre(params.id_offre), {
+    enabled: params.id_offre !== "creation" ? true : false,
     cacheTime: 0,
   })
 
   const handleSave = (values) => {
     // Updates an offer
-    if (params.id_offre !== 'creation') {
+    if (params.id_offre !== "creation") {
       putOffre(params.id_offre, values)
         .then(() => {
           toast({
-            title: 'Offre mise à jour avec succès.',
-            position: 'top-right',
-            status: 'success',
+            title: "Offre mise à jour avec succès.",
+            position: "top-right",
+            status: "success",
             duration: 2000,
             isClosable: true,
           })
@@ -46,33 +46,33 @@ export default () => {
       postOffre(params.id_form, values)
         .then(() => {
           toast({
-            title: 'Offre enregistrée avec succès.',
-            position: 'top-right',
-            status: 'success',
+            title: "Offre enregistrée avec succès.",
+            position: "top-right",
+            status: "success",
             duration: 2000,
             isClosable: true,
           })
         })
-        .then(() => client.invalidateQueries('offre-liste'))
+        .then(() => client.invalidateQueries("offre-liste"))
         .finally(() => navigate(-1))
     }
   }
 
-  if (isLoading) return 'Chargement en cours...'
+  if (isLoading) return "Chargement en cours..."
 
   return (
-    <Container maxW='container.xl' mt={5}>
+    <Container maxW="container.xl" mt={5}>
       <Box mb={5}>
-        <Breadcrumb separator={<ArrowDropRightLine color='grey.600' />} textStyle='xs'>
-          {auth.sub !== 'anonymous' && auth.type !== AUTHTYPE.ENTREPRISE && (
-            <Breadcrumb separator={<ArrowDropRightLine color='grey.600' />} textStyle='xs'>
+        <Breadcrumb separator={<ArrowDropRightLine color="grey.600" />} textStyle="xs">
+          {auth.sub !== "anonymous" && auth.type !== AUTHTYPE.ENTREPRISE && (
+            <Breadcrumb separator={<ArrowDropRightLine color="grey.600" />} textStyle="xs">
               <BreadcrumbItem>
-                <BreadcrumbLink textDecoration='underline' onClick={() => navigate(-1)} textStyle='xs'>
+                <BreadcrumbLink textDecoration="underline" onClick={() => navigate(-1)} textStyle="xs">
                   Administration des offres
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbItem>
-                <BreadcrumbLink textStyle='xs'>{location.state.raison_sociale}</BreadcrumbLink>
+                <BreadcrumbLink textStyle="xs">{location.state.raison_sociale}</BreadcrumbLink>
               </BreadcrumbItem>
             </Breadcrumb>
           )}

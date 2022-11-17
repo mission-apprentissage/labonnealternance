@@ -1,13 +1,13 @@
 .c-footer {
   background-color: $home-background-color;
-}   
+}
 
 .c-footer-text {
   font-size: 14px;
 }
 
 .c-footer--one {
-  border-top: 1px solid #3A55D1;
+  border-top: 1px solid #3a55d1;
 }
 
 .c-footer .container {
@@ -15,7 +15,7 @@
 }
 
 .c-footer__brand-img {
-  @include media-breakpoint-down(md) { 
+  @include media-breakpoint-down(md) {
     width: 110px;
   }
 }
@@ -40,15 +40,15 @@
 .c-footer-links__line {
   @extend .mb-1;
   border-right: none;
-  @include media-breakpoint-up(lg) { 
-    border-right: 1px solid #E5E5E5;
+  @include media-breakpoint-up(lg) {
+    border-right: 1px solid #e5e5e5;
   }
 }
 
 .c-footer-links__line + .c-footer-links__line {
   padding-right: 0;
   padding-left: 0;
-  @include media-breakpoint-up(lg) { 
+  @include media-breakpoint-up(lg) {
     padding-right: 1rem;
     padding-left: 1rem;
   }
@@ -57,7 +57,7 @@
 .c-footer-official-links {
   display: flex;
   flex-direction: column;
-  @include media-breakpoint-up(xl) { 
+  @include media-breakpoint-up(xl) {
     flex-direction: row;
     align-items: center;
   }
@@ -65,8 +65,8 @@
     cursor: pointer;
     color: #666666;
     font-weight: 700;
-    @include media-breakpoint-up(xl) { 
-      margin-right: .5rem;
+    @include media-breakpoint-up(xl) {
+      margin-right: 0.5rem;
     }
   }
 }
@@ -76,7 +76,7 @@
   display: flex;
   flex-direction: column;
   padding-left: 0;
-  @include media-breakpoint-up(lg) { 
+  @include media-breakpoint-up(lg) {
     flex-direction: row;
   }
 }
@@ -103,7 +103,7 @@
 }
 
 .c-footer-imgs {
-  @include media-breakpoint-down(sm) { 
+  @include media-breakpoint-down(sm) {
     text-align: center;
   }
 }
@@ -117,7 +117,7 @@
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  @include media-breakpoint-down(lg) { 
+  @include media-breakpoint-down(lg) {
     padding-top: 2rem;
     padding-bottom: 2rem;
   }

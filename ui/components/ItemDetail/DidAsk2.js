@@ -1,7 +1,7 @@
-import React from "react";
+import React from "react"
 
-import gotoIcon from "public/images/icons/goto.svg";
-import ExternalLink from "../externalLink";
+import gotoIcon from "public/images/icons/goto.svg"
+import ExternalLink from "../externalLink"
 
 const DidAsk2 = () => {
   return (
@@ -19,7 +19,7 @@ const DidAsk2 = () => {
         <span className="ml-1"> !</span>
       </p>
     </div>
-  );
-};
+  )
+}
 
-export default DidAsk2;
+export default DidAsk2

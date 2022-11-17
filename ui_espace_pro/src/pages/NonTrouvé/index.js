@@ -1,3 +1,3 @@
-import NonTrouve from './NonTrouve'
+import NonTrouve from "./NonTrouve"
 
 export { NonTrouve }

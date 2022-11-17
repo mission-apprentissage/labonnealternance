@@ -1,12 +1,12 @@
-import * as Yup from "yup";
-import { Box, Container, Input, Button, Text } from "@chakra-ui/react";
-import { Formik, Field, Form } from "formik";
-import { useNavigate } from "react-router-dom";
-import useAuth from "../../common/hooks/useAuth";
-import { _post } from "../../common/httpClient";
+import * as Yup from "yup"
+import { Box, Container, Input, Button, Text } from "@chakra-ui/react"
+import { Formik, Field, Form } from "formik"
+import { useNavigate } from "react-router-dom"
+import useAuth from "../../common/hooks/useAuth"
+import { _post } from "../../common/httpClient"
 
 const ForgottenPasswordPage = () => {
-  let [, setAuth] = useAuth();
+  let [, setAuth] = useAuth()
   const navigate = useNavigate()
 
   let showError = (meta) => {
@@ -15,20 +15,20 @@ const ForgottenPasswordPage = () => {
           feedback: meta.error,
           invalid: true,
         }
-      : {};
-  };
+      : {}
+  }
 
   let resetPassword = async (values, { setStatus }) => {
     try {
-      let { token } = await _post("/api/password/forgotten-password", { ...values });
-      setAuth(token);
-      setStatus({ message: "Un email vous a été envoyé." });
-      setTimeout(() => navigate("/"), 1500);
+      let { token } = await _post("/api/password/forgotten-password", { ...values })
+      setAuth(token)
+      setStatus({ message: "Un email vous a été envoyé." })
+      setTimeout(() => navigate("/"), 1500)
     } catch (e) {
-      console.error(e);
-      setStatus({ error: e.prettyMessage });
+      console.error(e)
+      setStatus({ error: e.prettyMessage })
     }
-  };
+  }
 
   return (
     <Box p={5} bg="#FAFAFA">
@@ -56,7 +56,7 @@ const ForgottenPasswordPage = () => {
                   </Text>
                   <Field name="username">
                     {({ field, meta }) => {
-                      return <Input type={"text"} placeholder="Votre identifiant..." {...field} {...showError(meta)} />;
+                      return <Input type={"text"} placeholder="Votre identifiant..." {...field} {...showError(meta)} />
                     }}
                   </Field>
                   <Button variant="primary" type={"submit"} fontSize="12px" fontWeight="700" mt={5}>
@@ -67,13 +67,13 @@ const ForgottenPasswordPage = () => {
                     {status.message && <Text color="#316100">{status.message}</Text>}
                   </Box>
                 </Form>
-              );
+              )
             }}
           </Formik>
         </Box>
       </Container>
     </Box>
-  );
-};
+  )
+}
 
-export default ForgottenPasswordPage;
+export default ForgottenPasswordPage

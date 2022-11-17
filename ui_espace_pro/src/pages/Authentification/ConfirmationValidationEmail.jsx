@@ -1,9 +1,9 @@
-import { Box, Flex, Heading, Link, Spinner, Text, useBoolean } from '@chakra-ui/react'
-import { useEffect } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
-import { validationCompte } from '../../api'
-import useAuth from '../../common/hooks/useAuth'
-import { AuthentificationLayout } from '../../components'
+import { Box, Flex, Heading, Link, Spinner, Text, useBoolean } from "@chakra-ui/react"
+import { useEffect } from "react"
+import { useNavigate, useParams } from "react-router-dom"
+import { validationCompte } from "../../api"
+import useAuth from "../../common/hooks/useAuth"
+import { AuthentificationLayout } from "../../components"
 
 /**
  *
@@ -12,13 +12,13 @@ import { AuthentificationLayout } from '../../components'
 
 const EmailInvalide = () => (
   <>
-    <Box pt={['6w', '12w']} px={['6', '8']}>
-      <Heading fontSize={['32px', '40px']} as='h1'>
+    <Box pt={["6w", "12w"]} px={["6", "8"]}>
+      <Heading fontSize={["32px", "40px"]} as="h1">
         Mail invalide
       </Heading>
-      <Text fontSize={['16px', '22px']}>
-        La validation de votre email à échoué. Merci de{' '}
-        <Link pl={2} href='mailto:matcha@apprentissage.beta.gouv.fr' textDecoration='underline'>
+      <Text fontSize={["16px", "22px"]}>
+        La validation de votre email à échoué. Merci de{" "}
+        <Link pl={2} href="mailto:matcha@apprentissage.beta.gouv.fr" textDecoration="underline">
           Contacter l'équipe de Matcha
         </Link>
       </Text>
@@ -42,14 +42,14 @@ export default (props) => {
   }, [id])
 
   useEffect(() => {
-    if (auth.sub !== 'anonymous') {
+    if (auth.sub !== "anonymous") {
       if (auth.id_form) {
         setTimeout(() => {
           navigate(`/administration/entreprise/${auth.id_form}`, { state: { newUser: true } })
         }, 3500)
       } else {
         setTimeout(() => {
-          navigate('/administration', { state: { newUser: true } })
+          navigate("/administration", { state: { newUser: true } })
         }, 3500)
       }
     }
@@ -59,8 +59,8 @@ export default (props) => {
     <>
       {isValid && (
         <Box>
-          <Flex justify='center' align='center' h='100vh' direction='column'>
-            <Spinner thickness='4px' speed='0.5s' emptyColor='gray.200' color='bluefrance.500' size='xl' />
+          <Flex justify="center" align="center" h="100vh" direction="column">
+            <Spinner thickness="4px" speed="0.5s" emptyColor="gray.200" color="bluefrance.500" size="xl" />
             <Text>Verification en cours...</Text>
           </Flex>
         </Box>

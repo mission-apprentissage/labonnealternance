@@ -43,7 +43,7 @@
 }
 
 .c-autocomplete__menu li {
-  padding: .4rem .8rem .4rem .8rem;
+  padding: 0.4rem 0.8rem 0.4rem 0.8rem;
   font-size: 14px;
   line-height: 19.6px;
   font-weight: 400;
@@ -54,8 +54,7 @@
   }
 }
 
-li.c-autocomplete_option
-{
+li.c-autocomplete_option {
   padding-left: 2rem;
 }
 
@@ -71,12 +70,11 @@ li.c-autocomplete_option
   }
 }
 
-
 .c-autocomplete__menu li:first-child {
-  padding-top: .8rem;
+  padding-top: 0.8rem;
 }
 .c-autocomplete__menu li:last-child {
-  padding-bottom: .8rem;
+  padding-bottom: 0.8rem;
 }
 
 .widgetTestPage .c-autocomplete__menu {
@@ -87,16 +85,15 @@ li.c-autocomplete_option
   box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.2);
 }
 
-
 .c-autocomplete__option--highlighted {
   background-color: #aaaaaa;
 }
 
 .c-input-work {
-  color: #2A2A2A;
+  color: #2a2a2a;
   padding-left: 2.3rem;
   text-align: left;
-  border: 1px solid #E0E0E0;
+  border: 1px solid #e0e0e0;
   border-radius: 8px;
   height: calc(1.75em + 0.7rem + 13px);
   @include media-breakpoint-up(sm) {
@@ -113,4 +110,3 @@ li.c-autocomplete_option
     }
   }
 }
-

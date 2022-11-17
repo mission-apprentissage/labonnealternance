@@ -1,39 +1,39 @@
-import React, { useEffect, useState } from "react";
-import { isEqual } from "lodash";
-import * as papaparse from "react-papaparse";
-import emailValidator from "email-validator";
-import { Box, Alert, Text, Button, Link, useToast } from "@chakra-ui/react";
-import FileDropzone from "../../../../common/components/FileDropzone";
-import { _get, _post } from "../../../../common/httpClient";
+import React, { useEffect, useState } from "react"
+import { isEqual } from "lodash"
+import * as papaparse from "react-papaparse"
+import emailValidator from "email-validator"
+import { Box, Alert, Text, Button, Link, useToast } from "@chakra-ui/react"
+import FileDropzone from "../../../../common/components/FileDropzone"
+import { _get, _post } from "../../../../common/httpClient"
 /**
  * @description Bulk import CFA.
  * @returns {JSX.Element}
  */
 const BulkImport = () => {
-  const [fileContent, setFileContent] = useState();
-  const [error, setError] = useState();
-  const [referrers, setReferrers] = useState();
-  const [submitLoading, setSubmitLoading] = useState(false);
-  const toast = useToast();
+  const [fileContent, setFileContent] = useState()
+  const [error, setError] = useState()
+  const [referrers, setReferrers] = useState()
+  const [submitLoading, setSubmitLoading] = useState(false)
+  const toast = useToast()
   const csvHeaders = {
     SIRET_FORMATEUR: "Siret formateur",
     EMAIL_CONTACT: "Email contact",
-  };
+  }
 
   const csvMapping = {
     [csvHeaders.SIRET_FORMATEUR]: 0,
     [csvHeaders.EMAIL_CONTACT]: 1,
-  };
+  }
 
   /**
    * @description Returns all referrers.
    * @returns {Promise<{code: {number}, name: {string}, full_name: {string}, url: {string}[]}>}
    */
   const getReferrers = async () => {
-    const { referrers } = await _get(`/api/constants`);
+    const { referrers } = await _get(`/api/constants`)
 
-    return referrers;
-  };
+    return referrers
+  }
 
   /**
    * @description Get all referrers.
@@ -41,21 +41,21 @@ const BulkImport = () => {
   useEffect(() => {
     async function fetchData() {
       try {
-        const referrersResponse = await getReferrers();
+        const referrersResponse = await getReferrers()
 
-        setReferrers(referrersResponse);
+        setReferrers(referrersResponse)
       } catch (error) {
         toast({
           title: "Une erreur est survenue durant la récupération des informations.",
           status: "error",
           isClosable: true,
           position: "bottom-right",
-        });
+        })
       }
     }
 
-    fetchData();
-  }, [toast]);
+    fetchData()
+  }, [toast])
 
   /**
    * @description Checks if the file is properly structured
@@ -63,8 +63,8 @@ const BulkImport = () => {
    * @returns {{error: {header: string, content: string}}|null}
    */
   const validFile = (data) => {
-    const [headers, ...rows] = data;
-    const headerColumns = Object.values(csvHeaders);
+    const [headers, ...rows] = data
+    const headerColumns = Object.values(csvHeaders)
 
     if (!isEqual(headerColumns, headers)) {
       return {
@@ -72,14 +72,14 @@ const BulkImport = () => {
           header: "Fichier invalide",
           content: `Les colonne du fichier doivent suivren le format: "${Object.values(csvHeaders)}".`,
         },
-      };
+      }
     }
 
     if (!rows.length) {
-      return { error: { header: "Fichier vide", content: "Aucun élément trouvé." } };
+      return { error: { header: "Fichier vide", content: "Aucun élément trouvé." } }
     }
 
-    let rowCounter = 1;
+    let rowCounter = 1
 
     for (const row of rows) {
       if (row.length !== headerColumns.length) {
@@ -88,7 +88,7 @@ const BulkImport = () => {
             header: "Structure du fichier non valide",
             content: `La ligne "${rowCounter}" doit suivre la structure suivante: "${headerColumns}".`,
           },
-        };
+        }
       }
 
       if (!row[csvMapping[csvHeaders.SIRET_FORMATEUR]]) {
@@ -97,7 +97,7 @@ const BulkImport = () => {
             header: "Siret formateur obligatoire",
             content: `La ligne "${rowCounter}" doit contenir un "${csvHeaders.SIRET_FORMATEUR}".`,
           },
-        };
+        }
       }
 
       if (row[csvMapping[csvHeaders.SIRET_FORMATEUR]].length !== 14) {
@@ -106,7 +106,7 @@ const BulkImport = () => {
             header: "Siret formateur invalide",
             content: `La ligne "${rowCounter}" doit contenir un "${csvHeaders.SIRET_FORMATEUR}" valide avec 14 numéros.`,
           },
-        };
+        }
       }
 
       if (!row[csvMapping[csvHeaders.EMAIL_CONTACT]]) {
@@ -115,7 +115,7 @@ const BulkImport = () => {
             header: "Email de contact obligatoire",
             content: `La ligne "${rowCounter}" doit contenir un "${csvHeaders.EMAIL_CONTACT}".`,
           },
-        };
+        }
       }
 
       if (!emailValidator.validate(row[csvMapping[csvHeaders.EMAIL_CONTACT]])) {
@@ -124,14 +124,14 @@ const BulkImport = () => {
             header: "Email de contact invalide",
             content: `La ligne "${rowCounter}" doit contenir un "${csvHeaders.EMAIL_CONTACT}" valide.`,
           },
-        };
+        }
       }
 
-      rowCounter++;
+      rowCounter++
     }
 
-    return null;
-  };
+    return null
+  }
 
   /**
    * @description Handle onDrop.
@@ -139,28 +139,28 @@ const BulkImport = () => {
    * @returns {void}
    */
   const onDrop = ([file]) => {
-    const reader = new FileReader();
+    const reader = new FileReader()
     reader.onload = (e) => {
-      const { data } = papaparse.readString(e.target.result, { skipEmptyLines: true });
+      const { data } = papaparse.readString(e.target.result, { skipEmptyLines: true })
 
-      const validationError = validFile(data)?.error;
+      const validationError = validFile(data)?.error
 
       if (validationError) {
-        setError(validationError);
+        setError(validationError)
       } else {
         // False to say "not imported yet"
-        setFileContent(data.slice(1).map((item) => [...item, null]));
-        setError(null);
+        setFileContent(data.slice(1).map((item) => [...item, null]))
+        setError(null)
       }
-    };
-    reader.readAsText(file);
-  };
+    }
+    reader.readAsText(file)
+  }
 
   /**
    * @description Cancels importation.
    * @returns {void}
    */
-  const cancel = () => setFileContent(null);
+  const cancel = () => setFileContent(null)
 
   /**
    * @description Submits importation.
@@ -168,7 +168,7 @@ const BulkImport = () => {
    */
   const submit = async () => {
     try {
-      setSubmitLoading(true);
+      setSubmitLoading(true)
 
       const { result } = await _post("/api/widget-parameters/import", {
         parameters: fileContent.map((row) => ({
@@ -176,63 +176,54 @@ const BulkImport = () => {
           email: row[csvMapping[csvHeaders.EMAIL_CONTACT]],
           referrers: referrers.map((referrer) => referrer.code),
         })),
-      });
+      })
 
       const fileContentUpdated = fileContent.map((row) => {
-        const relatedSiret = result.find(
-          (item) => item.siret_formateur === row[csvMapping[csvHeaders.SIRET_FORMATEUR]]
-        );
+        const relatedSiret = result.find((item) => item.siret_formateur === row[csvMapping[csvHeaders.SIRET_FORMATEUR]])
 
-        let status = "";
+        let status = ""
         if (relatedSiret.error) {
-          status = relatedSiret.error;
+          status = relatedSiret.error
         }
 
         if (!relatedSiret.error && !relatedSiret.formations.length) {
-          status = "Aucunes formation affectés";
+          status = "Aucunes formation affectés"
         }
 
         if (!relatedSiret.error && relatedSiret.formations.length) {
-          const countFormation = relatedSiret.formations.length;
+          const countFormation = relatedSiret.formations.length
           if (countFormation === 1) {
-            status = `${countFormation} formation a été activé.`;
+            status = `${countFormation} formation a été activé.`
           } else {
-            status = `${countFormation} formations ont été activés.`;
+            status = `${countFormation} formations ont été activés.`
           }
         }
 
-        return [...row.slice(0, -1), status];
-      });
+        return [...row.slice(0, -1), status]
+      })
 
-      setFileContent(fileContentUpdated);
+      setFileContent(fileContentUpdated)
       toast({
         title: "Import effectué avec succès.",
         status: "success",
         isClosable: true,
         position: "bottom-right",
-      });
+      })
     } catch (error) {
       toast({
         title: "Une erreur est survenue.",
         status: "error",
         isClosable: true,
         position: "bottom-right",
-      });
+      })
     } finally {
-      setSubmitLoading(false);
+      setSubmitLoading(false)
     }
-  };
+  }
 
   return (
     <Box>
-      <Box
-        bg="white"
-        mx={[2, 2, 40, 40]}
-        boxShadow="0 1px 2px 0 rgb(0 0 0 / 5%)"
-        border="1px solid rgba(0,40,100,.12)"
-        border-radius="3px"
-        mt={10}
-      >
+      <Box bg="white" mx={[2, 2, 40, 40]} boxShadow="0 1px 2px 0 rgb(0 0 0 / 5%)" border="1px solid rgba(0,40,100,.12)" border-radius="3px" mt={10}>
         <Text p={5} borderBottom="1px solid rgba(0,40,100,.12)" border-radius="3px">
           Activation massive de formations via fichier .csv
         </Text>
@@ -295,7 +286,7 @@ const BulkImport = () => {
         </>
       )}
     </Box>
-  );
-};
+  )
+}
 
-export { BulkImport };
+export { BulkImport }

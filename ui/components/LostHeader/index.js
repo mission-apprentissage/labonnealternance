@@ -1,3 +1,3 @@
-import LostHeader from "./LostHeader";
+import LostHeader from "./LostHeader"
 
-export { LostHeader };
+export { LostHeader }

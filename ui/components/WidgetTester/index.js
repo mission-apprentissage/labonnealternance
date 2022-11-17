@@ -1,3 +1,3 @@
-import WidgetTester from "./WidgetTester";
+import WidgetTester from "./WidgetTester"
 
-export default WidgetTester;
+export default WidgetTester

@@ -1,14 +1,11 @@
-@import 'public/styles/fonts.scss';
+@import "public/styles/fonts.scss";
 
-@import 'public/styles/custom-bootstrap.scss';
+@import "public/styles/custom-bootstrap.scss";
 
-@import 'bootstrap/scss/bootstrap.scss';
+@import "bootstrap/scss/bootstrap.scss";
 
-@import 'public/styles/all_components.scss';
+@import "public/styles/all_components.scss";
 
-
-body
-{
-    overscroll-behavior: none;
+body {
+  overscroll-behavior: none;
 }
-

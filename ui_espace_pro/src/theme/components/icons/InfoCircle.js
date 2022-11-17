@@ -1,5 +1,5 @@
-import { Icon } from "@chakra-ui/react";
-import * as PropTypes from "prop-types";
+import { Icon } from "@chakra-ui/react"
+import * as PropTypes from "prop-types"
 
 /**
  * @description Info Circle icon.
@@ -15,12 +15,12 @@ const InfoCircle = ({ width, fillHexaColor }) => {
         fill={fillHexaColor}
       />
     </Icon>
-  );
-};
+  )
+}
 
 InfoCircle.propTypes = {
   width: PropTypes.number.isRequired,
   fillHexaColor: PropTypes.string.isRequired,
-};
+}
 
-export { InfoCircle };
+export { InfoCircle }

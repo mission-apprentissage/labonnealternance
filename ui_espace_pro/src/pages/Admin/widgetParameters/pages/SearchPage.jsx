@@ -1,17 +1,17 @@
-import React, { useState } from 'react'
-import { Field, Form, Formik } from 'formik'
-import { Box, Button, Container, Heading, Input, Text, useToast } from '@chakra-ui/react'
-import { Breadcrumb } from '../../../../common/components/Breadcrumb'
-import { setTitle } from '../../../../common/utils/pageUtils'
-import { useNavigate } from 'react-router-dom'
+import React, { useState } from "react"
+import { Field, Form, Formik } from "formik"
+import { Box, Button, Container, Heading, Input, Text, useToast } from "@chakra-ui/react"
+import { Breadcrumb } from "../../../../common/components/Breadcrumb"
+import { setTitle } from "../../../../common/utils/pageUtils"
+import { useNavigate } from "react-router-dom"
 
 const SearchPage = () => {
-  const [searchKeyword, setSearchKeyword] = useState('')
+  const [searchKeyword, setSearchKeyword] = useState("")
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
   const toast = useToast()
 
-  const title = 'Rechercher'
+  const title = "Rechercher"
   setTitle(title)
 
   /**
@@ -37,20 +37,20 @@ const SearchPage = () => {
 
       if (!catalogueResult.formations.length) {
         toast({
-          title: 'Aucun établissement trouvé dans le catalogue.',
-          status: 'info',
+          title: "Aucun établissement trouvé dans le catalogue.",
+          status: "info",
           isClosable: true,
-          position: 'bottom-right',
+          position: "bottom-right",
         })
       } else {
         navigate(`/admin/widget-parameters/edit/${catalogueResult.formations[0].etablissement_formateur_siret}`)
       }
     } catch (e) {
       toast({
-        title: 'Une erreur est survenue pendant la recherche.',
-        status: 'error',
+        title: "Une erreur est survenue pendant la recherche.",
+        status: "error",
         isClosable: true,
-        position: 'bottom-right',
+        position: "bottom-right",
       })
     } finally {
       setLoading(false)
@@ -58,32 +58,27 @@ const SearchPage = () => {
   }
 
   return (
-    <Box w='100%' pt={[4, 8]} px={[1, 1, 12, 24]} pb={40}>
-      <Breadcrumb pages={[{ title: 'Administration', to: '/admin' }, { title }]} />
-      <Heading textStyle='h2' mt={5}>
+    <Box w="100%" pt={[4, 8]} px={[1, 1, 12, 24]} pb={40}>
+      <Breadcrumb pages={[{ title: "Administration", to: "/admin" }, { title }]} />
+      <Heading textStyle="h2" mt={5}>
         {title}
       </Heading>
-      <Box border='1px solid #E0E5ED' bg='white' mx={40} mt={20}>
-        {loading && <Button loading color='secondary' block />}
-        <Text fontWeight='500' textStyle='h6' p={4} px={6} borderBottom='1px solid #E0E5ED'>
+      <Box border="1px solid #E0E5ED" bg="white" mx={40} mt={20}>
+        {loading && <Button loading color="secondary" block />}
+        <Text fontWeight="500" textStyle="h6" p={4} px={6} borderBottom="1px solid #E0E5ED">
           Rechercher un établissement
         </Text>
         <Box mt={5} px={6}>
           <Formik initialValues={{ keyword: searchKeyword }} onSubmit={search}>
             <Form>
               <Box>
-                <Field name='keyword'>
+                <Field name="keyword">
                   {({ field }) => {
-                    return (
-                      <Input
-                        placeholder='Siret formateur / Cle ministère educatif / UAI / Identifiant RCO formation'
-                        {...field}
-                      />
-                    )
+                    return <Input placeholder="Siret formateur / Cle ministère educatif / UAI / Identifiant RCO formation" {...field} />
                   }}
                 </Field>
               </Box>
-              <Button variant='primary' mt={3} mb={5} type={'submit'} loading={loading}>
+              <Button variant="primary" mt={3} mb={5} type={"submit"} loading={loading}>
                 Rechercher
               </Button>
             </Form>

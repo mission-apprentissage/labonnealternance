@@ -1,6 +1,6 @@
-import React from "react";
-import { ModalBody, ModalFooter } from "reactstrap";
-import error2 from "../../../public/images/icons/input_value_error.svg";
+import React from "react"
+import { ModalBody, ModalFooter } from "reactstrap"
+import error2 from "../../../public/images/icons/input_value_error.svg"
 
 const CandidatureSpontaneeFailed = ({ sendingState }) => {
   const errorReasonText = () => {
@@ -18,7 +18,7 @@ const CandidatureSpontaneeFailed = ({ sendingState }) => {
         </div>
         <div className="c-candidature-worked-text mt-3 mb-5">Vous pourrez essayer ultérieurement.</div>
       </>
-    );
+    )
 
     if (sendingState === "email temporaire non autorisé") {
       res = (
@@ -39,7 +39,7 @@ const CandidatureSpontaneeFailed = ({ sendingState }) => {
             Merci d&apos;utiliser une adresse email permanente
           </div>
         </>
-      );
+      )
     }
 
     if (sendingState === "Too Many Requests") {
@@ -61,7 +61,7 @@ const CandidatureSpontaneeFailed = ({ sendingState }) => {
             Veuillez patienter quelques instants et réessayer.
           </div>
         </>
-      );
+      )
     }
 
     if (sendingState === "max candidatures atteint") {
@@ -79,11 +79,11 @@ const CandidatureSpontaneeFailed = ({ sendingState }) => {
           </div>
           <div className="c-candidature-worked-text mt-3 mb-5">Vous pourrez en envoyer de nouveau demain</div>
         </>
-      );
+      )
     }
 
-    return res;
-  };
+    return res
+  }
 
   return (
     <div data-testid="CandidatureSpontaneeFailed">
@@ -93,7 +93,7 @@ const CandidatureSpontaneeFailed = ({ sendingState }) => {
       </ModalBody>
       <ModalFooter className="pb-5"></ModalFooter>
     </div>
-  );
-};
+  )
+}
 
-export default CandidatureSpontaneeFailed;
+export default CandidatureSpontaneeFailed

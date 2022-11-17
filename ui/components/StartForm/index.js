@@ -1,3 +1,3 @@
-import StartForm from "./StartForm";
+import StartForm from "./StartForm"
 
-export default StartForm;
+export default StartForm

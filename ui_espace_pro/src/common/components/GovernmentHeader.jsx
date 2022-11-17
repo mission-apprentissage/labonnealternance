@@ -1,6 +1,6 @@
-import { Box, Flex, Link, Spacer, Text } from "@chakra-ui/react";
-import { ArrowForwardIcon } from "@chakra-ui/icons";
-import GovernmentLogo from "./GovernmentLogo";
+import { Box, Flex, Link, Spacer, Text } from "@chakra-ui/react"
+import { ArrowForwardIcon } from "@chakra-ui/icons"
+import GovernmentLogo from "./GovernmentLogo"
 
 /**
  * @description Government header.
@@ -36,6 +36,6 @@ const GovernmentHeader = () => (
     <Spacer />
     <Box w="130px" />
   </Flex>
-);
+)
 
-export default GovernmentHeader;
+export default GovernmentHeader

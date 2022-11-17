@@ -1,4 +1,4 @@
-import React from "react";
+import React from "react"
 
 const PostezVotreOffreAlternance = () => {
   return (
@@ -8,9 +8,7 @@ const PostezVotreOffreAlternance = () => {
           <img className="c-homecomponent-illustration mr-3 my-3" src="/images/home_pics/illu-offreemploi.svg" alt="" />
         </div>
         <div className="col-12 col-md-6 pt-md-5 order-md-first">
-          <h2 className="c-homecomponent-title__small mb-3">
-            Déposez des offres d’alternance pour vos entreprises partenaires
-          </h2>
+          <h2 className="c-homecomponent-title__small mb-3">Déposez des offres d’alternance pour vos entreprises partenaires</h2>
           <div>
             3 étapes seulement pour mettre en ligne les besoins de vos entreprises partenaires.
             <br />
@@ -19,7 +17,7 @@ const PostezVotreOffreAlternance = () => {
         </div>
       </div>
     </section>
-  );
-};
+  )
+}
 
-export default PostezVotreOffreAlternance;
+export default PostezVotreOffreAlternance

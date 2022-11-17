@@ -1,14 +1,11 @@
-import React from "react";
+import React from "react"
 
 /**
  * TODO: plus utilisé pour le moment. 16/06/2022
  */
 const CandidatureSpontaneeMandataireKnowMoreCheckbox = ({ formik, item }) => {
   return item?.company?.mandataire ? (
-    <fieldset
-      data-testid="fieldset-interetOffresMandataire"
-      className="c-candidature-terms c-candidature-terms--knowmore mt-3"
-    >
+    <fieldset data-testid="fieldset-interetOffresMandataire" className="c-candidature-terms c-candidature-terms--knowmore mt-3">
       <label htmlFor="interetOffresMandataire" className="c-candidature-terms-text">
         <input
           id="interetOffresMandataire"
@@ -23,7 +20,7 @@ const CandidatureSpontaneeMandataireKnowMoreCheckbox = ({ formik, item }) => {
     </fieldset>
   ) : (
     ""
-  );
-};
+  )
+}
 
-export default CandidatureSpontaneeMandataireKnowMoreCheckbox;
+export default CandidatureSpontaneeMandataireKnowMoreCheckbox

@@ -1,28 +1,21 @@
-
 .choiceCol {
-    background: #F6F6F6;
+  background: #f6f6f6;
 }
 
-.c-choicecolumn
-{
-    padding-top:0;
+.c-choicecolumn {
+  padding-top: 0;
 }
 
-
-.c-choicecolumn__nosearch
-{
-    background: #FFF;
+.c-choicecolumn__nosearch {
+  background: #fff;
 }
 
-@media only screen and (min-width: 768px){
-    .c-choicecolumn
-    {
-        padding-top:73px;
-    }
+@media only screen and (min-width: 768px) {
+  .c-choicecolumn {
+    padding-top: 73px;
+  }
 
-    .c-choicecolumn__nosearch
-    {
-        background: #F9F8F6;
-    }
+  .c-choicecolumn__nosearch {
+    background: #f9f8f6;
+  }
 }
-

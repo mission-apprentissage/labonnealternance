@@ -21,4 +21,4 @@ export const geoLocationSchema = {
     default: null,
     description: "Les coordonnées latitude et longitude",
   },
-};
+}

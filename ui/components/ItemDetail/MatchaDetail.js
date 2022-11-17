@@ -1,34 +1,34 @@
-import { DisplayContext } from "../../context/DisplayContextProvider";
-import React, { useEffect } from "react";
-import { SendPlausibleEvent, SendTrackEvent } from "../../utils/plausible";
-import { formatDate } from "../../utils/strutils";
-import ExternalLink from "../externalLink";
-import MatchaCompetences from "./MatchaComponents/MatchaCompetences";
-import MatchaDescription from "./MatchaComponents/MatchaDescription";
+import { DisplayContext } from "../../context/DisplayContextProvider"
+import React, { useEffect } from "react"
+import { SendPlausibleEvent, SendTrackEvent } from "../../utils/plausible"
+import { formatDate } from "../../utils/strutils"
+import ExternalLink from "../externalLink"
+import MatchaCompetences from "./MatchaComponents/MatchaCompetences"
+import MatchaDescription from "./MatchaComponents/MatchaDescription"
 
 const getContractTypes = (contractTypes) => {
-  return contractTypes instanceof Array ? contractTypes.join(", ") : contractTypes;
-};
+  return contractTypes instanceof Array ? contractTypes.join(", ") : contractTypes
+}
 
 const MatchaDetail = ({ job, seeInfo, setSeeInfo }) => {
   useEffect(() => {
     // S'assurer que l'utilisateur voit bien le haut de la fiche au départ
-    document.getElementsByClassName("choiceCol")[0].scrollTo(0, 0);
-  }, []); // Utiliser le useEffect une seule fois : https://css-tricks.com/run-useeffect-only-once/
+    document.getElementsByClassName("choiceCol")[0].scrollTo(0, 0)
+  }, []) // Utiliser le useEffect une seule fois : https://css-tricks.com/run-useeffect-only-once/
 
   useEffect(() => {
     SendPlausibleEvent("Affichage - Fiche entreprise Offre LBA", {
       info_fiche: `${job?.job?.id}${formValues?.job?.label ? ` - ${formValues.job.label}` : ""}`,
-    });
+    })
     SendTrackEvent({
       event: `Résultats Affichage Offre Matcha - Consulter fiche entreprise`,
       itemId: job?.job?.id,
-    });
-  }, [job?.job?.id]);
+    })
+  }, [job?.job?.id])
 
-  const jobStartDate = job?.job?.jobStartDate ? formatDate(job.job.jobStartDate) : undefined;
+  const jobStartDate = job?.job?.jobStartDate ? formatDate(job.job.jobStartDate) : undefined
 
-  const { formValues } = React.useContext(DisplayContext);
+  const { formValues } = React.useContext(DisplayContext)
 
   return (
     <>
@@ -51,7 +51,7 @@ const MatchaDetail = ({ job, seeInfo, setSeeInfo }) => {
                       <span key={idx} className="c-required-level">
                         {d}
                       </span>
-                    );
+                    )
                   })}
                 </div>
               </>
@@ -60,32 +60,28 @@ const MatchaDetail = ({ job, seeInfo, setSeeInfo }) => {
             )}
           </div>
 
-          {job?.job?.elligibleHandicap ? 
+          {job?.job?.elligibleHandicap ? (
             <div className="c-eligible mt-3">
               <div>
                 <img className="" src="/images/info.svg" alt="A noter" />
               </div>
-              <div className="ml-2">
-                À compétences égales, une attention particulière sera apportée aux personnes en situation de handicap.
-              </div>
+              <div className="ml-2">À compétences égales, une attention particulière sera apportée aux personnes en situation de handicap.</div>
             </div>
-            :
-            ""         
-          }
+          ) : (
+            ""
+          )}
         </div>
         {job?.company?.mandataire ? (
           <>
             <p>
-              Offre publiée par <span className="c-detail-bolded">{job.company.name}</span> pour une entreprise
-              partenaire du centre de formation.
+              Offre publiée par <span className="c-detail-bolded">{job.company.name}</span> pour une entreprise partenaire du centre de formation.
             </p>
           </>
         ) : (
           <>
             <p>
-              <span className="c-detail-bolded">{job.company.name}</span> recrute dans le domaine suivant{" "}
-              <span className="c-detail-bolded">{job.title}</span>. Cela signifie que l&apos;établissement est activement à
-              la recherche d&apos;un.e candidat.e.
+              <span className="c-detail-bolded">{job.company.name}</span> recrute dans le domaine suivant <span className="c-detail-bolded">{job.title}</span>. Cela signifie que
+              l&apos;établissement est activement à la recherche d&apos;un.e candidat.e.
             </p>
             <p>Vous avez donc tout intérêt à le contacter rapidement, avant que l&apos;offre ne soit pourvue !</p>
             <p className="mb-0">Trouver et convaincre une entreprise de vous embaucher ?</p>
@@ -117,7 +113,7 @@ const MatchaDetail = ({ job, seeInfo, setSeeInfo }) => {
         ""
       )}
     </>
-  );
-};
+  )
+}
 
-export default MatchaDetail;
+export default MatchaDetail

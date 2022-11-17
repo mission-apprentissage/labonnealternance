@@ -44,6 +44,6 @@ const lbbMock = {
     },
   ],
   training: null,
-};
+}
 
-export { lbbMock };
+export { lbbMock }

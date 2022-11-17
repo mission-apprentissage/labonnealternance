@@ -14,40 +14,40 @@
  *                 error: Code to run on request error.
  */
 export default function microAjax(options) {
-  "use strict";
+  "use strict"
 
   // Default to GET
   if (!options.method) {
-    options.method = "GET";
+    options.method = "GET"
   }
 
   // Default empty functions for the callbacks
   function noop() {}
   if (!options.success) {
-    options.success = noop;
+    options.success = noop
   }
   if (!options.warning) {
-    options.warning = noop;
+    options.warning = noop
   }
   if (!options.error) {
-    options.error = noop;
+    options.error = noop
   }
 
-  var request = new XMLHttpRequest();
-  request.open(options.method, options.url, true);
-  request.send(options.data);
+  var request = new XMLHttpRequest()
+  request.open(options.method, options.url, true)
+  request.send(options.data)
 
-  request.onload = function() {
+  request.onload = function () {
     // Success!
     if (request.readyState === 4 && request.status === 200) {
-      options.success(request.responseText);
+      options.success(request.responseText)
 
       // We reached our target destination, but it returned an error
     } else {
-      options.warning();
+      options.warning()
     }
-  };
+  }
 
   // There was a connection error of some sort
-  request.onerror = options.error;
+  request.onerror = options.error
 }

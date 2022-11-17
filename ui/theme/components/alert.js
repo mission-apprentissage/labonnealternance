@@ -2,24 +2,24 @@ const Alert = {
   variants: {
     akto: {
       container: {
-        bg: '#00a79b',
-        borderTopWidth: '3px',
-        borderTopColor: '#1d4851',
+        bg: "#00a79b",
+        borderTopWidth: "3px",
+        borderTopColor: "#1d4851",
       },
       description: {
-        color: '#fff',
+        color: "#fff",
       },
       icon: {
-        color: '#fff',
+        color: "#fff",
       },
     },
-    'top-accent': {
+    "top-accent": {
       container: {
-        bg: 'bluefrance.200',
-        borderTopColor: 'bluefrance.500',
+        bg: "bluefrance.200",
+        borderTopColor: "bluefrance.500",
       },
       icon: {
-        color: 'bluefrance.500',
+        color: "bluefrance.500",
       },
     },
   },

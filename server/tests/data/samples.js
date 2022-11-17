@@ -1,4 +1,4 @@
-import { referrers } from "../../src/common/model/constants/referrers.js";
+import { referrers } from "../../src/common/model/constants/referrers.js"
 
 const sampleAppointment = {
   id_rco_formation: "21_114876|21_114876|106291",
@@ -7,7 +7,7 @@ const sampleAppointment = {
   formation_id: "68769673",
   motivations: "TEST MOTIVATION",
   referrer: referrers.LBA.name,
-};
+}
 
 const sampleUpdateAppointment = {
   candidat_id: "77a370e6-3eb1-4e09-80f0-b7cc6be84fac",
@@ -15,7 +15,7 @@ const sampleUpdateAppointment = {
   formation_id: "68769999",
   motivations: "TEST MOTIVATION UPDATE",
   referrer: referrers.PARCOURSUP.name,
-};
+}
 
 const sampleParameter = {
   code_postal: "75000",
@@ -28,7 +28,7 @@ const sampleParameter = {
   cle_ministere_educatif: "064256P01111968000310005219680003100052-68287#L01",
   id_parcoursup: "12345",
   referrers: [referrers.LBA.code, referrers.PARCOURSUP.code],
-};
+}
 
 const sampleUpdateParameter = {
   code_postal: "75000",
@@ -40,7 +40,7 @@ const sampleUpdateParameter = {
   id_rco_formation: "15_554095|15_1117617|106339",
   cle_ministere_educatif: "064256P01111968000310005219680001100052-68287#L01",
   referrers: [referrers.PARCOURSUP.code],
-};
+}
 
 const sampleParameters = [
   {
@@ -63,6 +63,6 @@ const sampleParameters = [
     cle_ministere_educatif: "06434P01211968000110005219680001100052-68287#L01",
     referrers: [referrers.PARCOURSUP.code],
   },
-];
+]
 
-export { sampleParameter, sampleUpdateParameter, sampleParameters, sampleAppointment, sampleUpdateAppointment };
+export { sampleParameter, sampleUpdateParameter, sampleParameters, sampleAppointment, sampleUpdateAppointment }

@@ -1,4 +1,4 @@
-import { ParcoursupEtablissementStat } from "../model/index.js";
+import { ParcoursupEtablissementStat } from "../model/index.js"
 
 export default () => ({
   /**
@@ -13,4 +13,4 @@ export default () => ({
    * @returns {Promise<void>}
    */
   deleteAll: () => ParcoursupEtablissementStat.deleteMany({}),
-});
+})

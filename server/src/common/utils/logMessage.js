@@ -1,11 +1,11 @@
-import { logger } from "../logger.js";
+import { logger } from "../logger.js"
 const logMessage = (level, msg) => {
   //console.log(msg);
   if (level === "info") {
-    logger.info(msg);
+    logger.info(msg)
   } else {
-    logger.error(msg);
+    logger.error(msg)
   }
-};
+}
 
-export { logMessage };
+export { logMessage }

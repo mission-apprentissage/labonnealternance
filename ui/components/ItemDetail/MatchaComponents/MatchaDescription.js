@@ -1,10 +1,10 @@
-import React from "react";
+import React from "react"
 
-import { Collapse } from "reactstrap";
+import { Collapse } from "reactstrap"
 
 const MatchaDescription = ({ job }) => {
   // Collapse Open state
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [isOpen, setIsOpen] = React.useState(false)
 
   const getText = () => {
     return (
@@ -15,8 +15,8 @@ const MatchaDescription = ({ job }) => {
           </li>
         ))}
       </ul>
-    );
-  };
+    )
+  }
 
   return job?.job?.romeDetails?.definition ? (
     <>
@@ -24,7 +24,7 @@ const MatchaDescription = ({ job }) => {
         <button
           className="c-accordion-button"
           onClick={() => {
-            setIsOpen(!isOpen);
+            setIsOpen(!isOpen)
           }}
         >
           <span className="c-accordion-button-title">Description du métier</span>
@@ -37,7 +37,7 @@ const MatchaDescription = ({ job }) => {
     </>
   ) : (
     ""
-  );
-};
+  )
+}
 
-export default MatchaDescription;
+export default MatchaDescription

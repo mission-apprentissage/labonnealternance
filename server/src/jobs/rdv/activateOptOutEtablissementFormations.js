@@ -1,16 +1,16 @@
-import { logger } from "../../common/logger.js";
-import { mailType } from "../../common/model/constants/etablissement.js";
-import { referrers } from "../../common/model/constants/referrers.js";
-import { dayjs } from "../../common/utils/dayjs.js";
-import config from "../../config.js";
-import { mailTemplate } from "../../assets/index.js";
+import { logger } from "../../common/logger.js"
+import { mailType } from "../../common/model/constants/etablissement.js"
+import { referrers } from "../../common/model/constants/referrers.js"
+import { dayjs } from "../../common/utils/dayjs.js"
+import config from "../../config.js"
+import { mailTemplate } from "../../assets/index.js"
 
 /**
  * @description Active all etablissement's formations that have subscribed to opt-out.
  * @returns {Promise<void>}
  */
 export const activateOptOutEtablissementFormations = async ({ etablissements, widgetParameters, mailer }) => {
-  logger.info("Cron #activateOptOutEtablissementFormations started.");
+  logger.info("Cron #activateOptOutEtablissementFormations started.")
 
   // Opt-out etablissement to activate
   const etablissementsToActivate = await etablissements.find({
@@ -19,7 +19,7 @@ export const activateOptOutEtablissementFormations = async ({ etablissements, wi
     },
     opt_out_refused_at: null,
     opt_out_activated_at: null,
-  });
+  })
 
   // Activate all formations, for all referrers that have a mail
   await Promise.all(
@@ -42,7 +42,7 @@ export const activateOptOutEtablissementFormations = async ({ etablissements, wi
           },
           { opt_out_activated_at: dayjs().toDate() }
         ),
-      ]);
+      ])
 
       // Send email
       const { messageId } = await mailer.sendEmail({
@@ -69,7 +69,7 @@ export const activateOptOutEtablissementFormations = async ({ etablissements, wi
           },
         },
         from: config.rdvEmail,
-      });
+      })
 
       await etablissements.findOneAndUpdate(
         { _id: etablissement._id },
@@ -83,9 +83,9 @@ export const activateOptOutEtablissementFormations = async ({ etablissements, wi
             },
           },
         }
-      );
+      )
     })
-  );
+  )
 
-  logger.info("Cron #activateOptOutEtablissementFormations done.");
-};
+  logger.info("Cron #activateOptOutEtablissementFormations done.")
+}

@@ -79,4 +79,4 @@ export const domainesMetiersSchema = {
     default: Date.now,
     description: "Date de dernières mise à jour",
   },
-};
+}

@@ -1,10 +1,10 @@
-import bunyan from "bunyan";
-import BunyanSlack from "bunyan-slack";
-import chalk from "chalk"; // eslint-disable-line node/no-unpublished-import
-import { isEmpty, omit, throttle } from "lodash-es";
-import { compose, transformData, writeData } from "oleoduc";
-import util from "util";
-import config from "../config.js";
+import bunyan from "bunyan"
+import BunyanSlack from "bunyan-slack"
+import chalk from "chalk" // eslint-disable-line node/no-unpublished-import
+import { isEmpty, omit, throttle } from "lodash-es"
+import { compose, transformData, writeData } from "oleoduc"
+import util from "util"
+import config from "../config.js"
 
 function prettyPrintStream(outputName) {
   let levels = {
@@ -14,12 +14,12 @@ function prettyPrintStream(outputName) {
     40: chalk.yellow.bold("WARN"),
     50: chalk.red.bold("ERROR"),
     60: chalk.magenta.bold("FATAL"),
-  };
+  }
 
   return compose(
     transformData((raw) => {
-      let stack = raw.err?.stack;
-      let message = stack ? `${raw.msg}\n${stack}` : raw.msg;
+      let stack = raw.err?.stack
+      let message = stack ? `${raw.msg}\n${stack}` : raw.msg
       let rest = omit(raw, [
         //Bunyan core fields https://github.com/trentm/node-bunyan#core-fields
         "v",
@@ -38,25 +38,20 @@ function prettyPrintStream(outputName) {
         "err.signal",
         //Misc
         "context",
-      ]);
+      ])
 
-      let params = [
-        util.format("[%s][%s][%s] %s", raw.time.toISOString()),
-        levels[raw.level],
-        raw.context || "global",
-        message,
-      ];
+      let params = [util.format("[%s][%s][%s] %s", raw.time.toISOString()), levels[raw.level], raw.context || "global", message]
       if (!isEmpty(rest)) {
-        params.push(chalk.gray(`\n${util.inspect(rest, { depth: null })}`));
+        params.push(chalk.gray(`\n${util.inspect(rest, { depth: null })}`))
       }
-      return params;
+      return params
     }),
     writeData((data) => console[outputName === "stdout" ? "log" : "error"](...data))
-  );
+  )
 }
 
 function sendLogsToConsole(outputName) {
-  const { level, format } = config.log;
+  const { level, format } = config.log
   return format === "pretty"
     ? {
         type: "raw",
@@ -68,7 +63,7 @@ function sendLogsToConsole(outputName) {
         name: outputName,
         level,
         stream: process[outputName],
-      };
+      }
 }
 
 function sendLogsToSlack() {
@@ -81,25 +76,25 @@ function sendLogsToSlack() {
             url: record.request.url.relative,
             statusCode: record.response.statusCode,
             ...(record.error ? { message: record.error.message } : {}),
-          };
+          }
         }
         return {
           text: util.format(`[%s][${config.env}] %O`, levelName.toUpperCase(), record),
-        };
+        }
       },
     },
     (error) => {
-      console.error("Unable to send log to slack", error);
+      console.error("Unable to send log to slack", error)
     }
-  );
+  )
 
-  stream.write = throttle(stream.write, 5000);
+  stream.write = throttle(stream.write, 5000)
 
   return {
     name: "slack",
     level: "error",
     stream,
-  };
+  }
 }
 
 const createStreams = () => {
@@ -107,15 +102,15 @@ const createStreams = () => {
     stdout: () => sendLogsToConsole("stdout"),
     stderr: () => sendLogsToConsole("stderr"),
     slack: () => sendLogsToSlack(),
-  };
+  }
 
   return config.log.destinations
     .filter((type) => availableDestinations[type])
     .map((type) => {
-      let createDestination = availableDestinations[type];
-      return createDestination();
-    });
-};
+      let createDestination = availableDestinations[type]
+      return createDestination()
+    })
+}
 
 export const logger = bunyan.createLogger({
   name: "doctrina",
@@ -125,12 +120,12 @@ export const logger = bunyan.createLogger({
       return {
         ...bunyan.stdSerializers.err(err),
         ...(err.errInfo ? { errInfo: err.errInfo } : {}),
-      };
+      }
     },
   },
   streams: createStreams(),
-});
+})
 
 export function getLoggerWithContext(context) {
-  return logger.child({ context });
+  return logger.child({ context })
 }

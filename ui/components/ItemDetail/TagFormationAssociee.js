@@ -1,6 +1,6 @@
-import React from "react";
+import React from "react"
 
-import bookIcon from "../../public/images/book.svg";
+import bookIcon from "../../public/images/book.svg"
 
 const TagFormationAssociee = ({ isMandataire }) => {
   return (
@@ -14,7 +14,7 @@ const TagFormationAssociee = ({ isMandataire }) => {
         ""
       )}
     </>
-  );
-};
+  )
+}
 
-export default TagFormationAssociee;
+export default TagFormationAssociee

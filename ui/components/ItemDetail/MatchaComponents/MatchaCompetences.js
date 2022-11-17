@@ -1,10 +1,10 @@
-import React from "react";
+import React from "react"
 
-import { Collapse } from "reactstrap";
+import { Collapse } from "reactstrap"
 
 const MatchaCompetences = ({ job }) => {
   // Collapse Open state
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [isOpen, setIsOpen] = React.useState(false)
 
   const getText = () => {
     const res = (
@@ -15,10 +15,10 @@ const MatchaCompetences = ({ job }) => {
           </li>
         ))}
       </ul>
-    );
+    )
 
-    return res;
-  };
+    return res
+  }
 
   return job?.job?.romeDetails?.competencesDeBase?.length ? (
     <>
@@ -26,7 +26,7 @@ const MatchaCompetences = ({ job }) => {
         <button
           className="c-accordion-button"
           onClick={() => {
-            setIsOpen(!isOpen);
+            setIsOpen(!isOpen)
           }}
         >
           <span className="c-accordion-button-title">Quelles sont les compétences attendues ?</span>
@@ -39,7 +39,7 @@ const MatchaCompetences = ({ job }) => {
     </>
   ) : (
     ""
-  );
-};
+  )
+}
 
-export default MatchaCompetences;
+export default MatchaCompetences

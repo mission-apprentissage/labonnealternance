@@ -1,14 +1,14 @@
-import React from "react";
-import Navigation from "../components/navigation";
-import microAjax from "utils/microAjax";
-import baseUrl from "utils/baseUrl";
+import React from "react"
+import Navigation from "../components/navigation"
+import microAjax from "utils/microAjax"
+import baseUrl from "utils/baseUrl"
 
 const Styleguide = () => {
   if (typeof window !== "undefined") {
     microAjax({
       url: baseUrl + "/api/version",
       success: (res) => console.log(`version : ${JSON.parse(res).version}`),
-    });
+    })
   }
   return (
     <div className="c-styleguide">
@@ -177,28 +177,15 @@ const Styleguide = () => {
 
         <h2 className="fw-bold mt-4 pt-4">Dropdown</h2>
 
-        <div
-          className="c-input-work-container c-input-work-container--demo"
-          role="combobox"
-          aria-haspopup="listbox"
-          aria-owns="downshift-29-menu"
-        >
-          <input
-            className="form-control form-control-lg w-100 c-input-work"
-            placeholder="Indiquez un métier ou diplôme"
-          />
+        <div className="c-input-work-container c-input-work-container--demo" role="combobox" aria-haspopup="listbox" aria-owns="downshift-29-menu">
+          <input className="form-control form-control-lg w-100 c-input-work" placeholder="Indiquez un métier ou diplôme" />
           <img
             className="c-input-work-img"
             src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cGF0aCBkPSJNMTAgMThDMTEuNzc1IDE3Ljk5OTYgMTMuNDk4OCAxNy40MDU0IDE0Ljg5NyAxNi4zMTJMMTkuMjkzIDIwLjcwOEwyMC43MDcgMTkuMjk0TDE2LjMxMSAxNC44OThDMTcuNDA1IDEzLjQ5OTcgMTcuOTk5NiAxMS43NzU0IDE4IDEwQzE4IDUuNTg5IDE0LjQxMSAyIDEwIDJDNS41ODkgMiAyIDUuNTg5IDIgMTBDMiAxNC40MTEgNS41ODkgMTggMTAgMThaTTEwIDRDMTMuMzA5IDQgMTYgNi42OTEgMTYgMTBDMTYgMTMuMzA5IDEzLjMwOSAxNiAxMCAxNkM2LjY5MSAxNiA0IDEzLjMwOSA0IDEwQzQgNi42OTEgNi42OTEgNCAxMCA0WiIgZmlsbD0iIzM4MzgzOCIvPgogIDxwYXRoIGQ9Ik0xMS40MTIgOC41ODYwOUMxMS43OTEgOC45NjYwOSAxMiA5LjQ2ODA5IDEyIDEwLjAwMDFIMTRDMTQuMDAwOSA5LjQ3NDUxIDEzLjg5NzYgOC45NTM5OCAxMy42OTYxIDguNDY4NTdDMTMuNDk0NiA3Ljk4MzE2IDEzLjE5ODkgNy41NDI1MSAxMi44MjYgNy4xNzIwOUMxMS4zMTIgNS42NjAwOSA4LjY4NzAxIDUuNjYwMDkgNy4xNzQwMSA3LjE3MjA5TDguNTg2MDEgOC41ODgwOUM5LjM0NjAxIDcuODMwMDkgMTAuNjU2IDcuODMyMDkgMTEuNDEyIDguNTg2MDlaIiBmaWxsPSIjMzgzODM4Ii8+Cjwvc3ZnPgo="
             alt=""
           />
         </div>
-        <ul
-          id="downshift-1-menu"
-          role="listbox"
-          aria-labelledby="downshift-1-label"
-          className="c-autocomplete__menu mb-5"
-        >
+        <ul id="downshift-1-menu" role="listbox" aria-labelledby="downshift-1-label" className="c-autocomplete__menu mb-5">
           <li className="" role="option" aria-selected="false">
             <strong>Bou</strong>langerie, viennoiserie, pâtisserie, chocolaterie, confiserie, glacerie
           </li>
@@ -222,9 +209,8 @@ const Styleguide = () => {
         <h6>Heading 6</h6>
 
         <p>
-          Un simple paragraphe avec du texte. Lorem ipsum, dolor sit amet consectetur adipisicing elit. Eius iure
-          sapiente, ab ea aliquid minima animi maxime incidunt accusantium, sunt cupiditate soluta perferendis deleniti
-          vitae commodi ratione fugiat ut quidem.
+          Un simple paragraphe avec du texte. Lorem ipsum, dolor sit amet consectetur adipisicing elit. Eius iure sapiente, ab ea aliquid minima animi maxime incidunt accusantium,
+          sunt cupiditate soluta perferendis deleniti vitae commodi ratione fugiat ut quidem.
         </p>
 
         <p>
@@ -271,7 +257,7 @@ const Styleguide = () => {
         </blockquote>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Styleguide;
+export default Styleguide

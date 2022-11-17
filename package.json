@@ -1,15 +1,55 @@
 {
+  "scripts": {
+    "prepare": "husky install",
+    "docker:start": "docker-compose up -d --build --force-recreate",
+    "docker:stop": "docker-compose stop",
+    "lint": "yarn --cwd server lint && yarn --cwd ui lint && yarn --cwd ui_espace_pro lint",
+    "lint:staged": "lint-staged",
+    "prettier:fix": "prettier --write ./server ./ui ./ui_espace_pro",
+    "prettier:check": "prettier --check ./server ./ui ./ui_espace_pro",
+    "hook:pre-commit": "bash ./hooks/preventSensibleFilesCommit.sh && yarn lint-staged",
+    "hook:commit-msg": "commitlint --config package.json --edit ${1}"
+  },
   "devDependencies": {
     "@commitlint/cli": "^17.1.2",
-    "@commitlint/config-conventional": "^17.1.0"
+    "@commitlint/config-conventional": "^17.1.0",
+    "eslint": "^8.27.0",
+    "eslint-config-next": "^13.0.3",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-jsx-a11y": "^6.6.1",
+    "eslint-plugin-mocha": "^10.1.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "husky": "^8.0.2",
+    "lint-staged": "^13.0.3",
+    "prettier": "^2.7.1"
   },
   "commitlint": {
     "extends": [
       "@commitlint/config-conventional"
     ]
   },
-  "scripts": {
-    "docker:start": "docker-compose up -d --build --force-recreate",
-    "docker:stop": "docker-compose stop"
+  "prettier": {
+    "semi": false,
+    "tabWidth": 2,
+    "printWidth": 180,
+    "bracketSpacing": true,
+    "trailingComma": "es5"
+  },
+  "lint-staged": {
+    "./server/*.{js, ts}": [
+      "eslint --cache --fix ./server/src ./server/tests"
+    ],
+    "./ui/*.{js, jsx, tsx}": [
+      "yarn --cwd ui lint"
+    ],
+    "./ui_espace_pro/*.{js, jsx, tsx}": [
+      "yarn --cwd ui lint"
+    ],
+    "*.{js, jsx}": [
+      "prettier --write ./ui ./server ./ui_espace_pro"
+    ],
+    "*.{md, json, html}": "prettier --write ./ui ./server ./ui_espace_pro"
   }
 }

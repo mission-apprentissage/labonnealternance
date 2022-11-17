@@ -1,17 +1,17 @@
-import Sentry from "@sentry/node";
+import Sentry from "@sentry/node"
 
-import { getFormations, transformFormationsForIdea, deduplicateFormations } from "./formations.js";
-import { getJobsFromApi } from "./poleEmploi/jobsAndCompanies.js";
-import { jobsEtFormationsQueryValidator } from "./jobsEtFormationsQueryValidator.js";
-import { trackApiCall } from "../common/utils/sendTrackingEvent.js";
+import { getFormations, transformFormationsForIdea, deduplicateFormations } from "./formations.js"
+import { getJobsFromApi } from "./poleEmploi/jobsAndCompanies.js"
+import { jobsEtFormationsQueryValidator } from "./jobsEtFormationsQueryValidator.js"
+import { trackApiCall } from "../common/utils/sendTrackingEvent.js"
 
 const getJobsEtFormationsQuery = async (query) => {
-  const queryValidationResult = jobsEtFormationsQueryValidator(query);
+  const queryValidationResult = jobsEtFormationsQueryValidator(query)
 
-  if (queryValidationResult.error) return queryValidationResult;
+  if (queryValidationResult.error) return queryValidationResult
 
   try {
-    const sources = !query.sources ? ["formations", "lba", "lbb", "offres"] : query.sources.split(",");
+    const sources = !query.sources ? ["formations", "lba", "lbb", "offres"] : query.sources.split(",")
 
     let [formations, jobs] = await Promise.all([
       sources.indexOf("formations") >= 0
@@ -28,34 +28,31 @@ const getJobsEtFormationsQuery = async (query) => {
             useMock: query.useMock,
           })
         : null,
-      sources.indexOf("lba") >= 0 ||
-      sources.indexOf("lbb") >= 0 ||
-      sources.indexOf("offres") >= 0 ||
-      sources.indexOf("matcha") >= 0
+      sources.indexOf("lba") >= 0 || sources.indexOf("lbb") >= 0 || sources.indexOf("offres") >= 0 || sources.indexOf("matcha") >= 0
         ? getJobsFromApi({ query, api: "jobEtFormationV1" })
         : null,
-    ]);
+    ])
 
     if (formations && formations?.result !== "error") {
-      formations = deduplicateFormations(formations);
-      formations = transformFormationsForIdea(formations);
+      formations = deduplicateFormations(formations)
+      formations = transformFormationsForIdea(formations)
     }
 
     if (query.caller) {
-      let nb_emplois = 0;
+      let nb_emplois = 0
       if (jobs?.lbaCompanies?.results) {
-        nb_emplois += jobs.lbaCompanies.results.length;
+        nb_emplois += jobs.lbaCompanies.results.length
       }
 
       if (jobs?.peJobs?.results) {
-        nb_emplois += jobs.peJobs.results.length;
+        nb_emplois += jobs.peJobs.results.length
       }
 
       if (jobs?.matchas?.results) {
-        nb_emplois += jobs.matchas.results.length;
+        nb_emplois += jobs.matchas.results.length
       }
 
-      const nb_formations = formations?.results ? formations.results.length : 0;
+      const nb_formations = formations?.results ? formations.results.length : 0
 
       trackApiCall({
         caller: query.caller,
@@ -64,20 +61,20 @@ const getJobsEtFormationsQuery = async (query) => {
         nb_emplois,
         result_count: nb_emplois + nb_formations,
         result: "OK",
-      });
+      })
     }
 
-    return { formations, jobs };
+    return { formations, jobs }
   } catch (err) {
-    console.log("Error ", err.message);
-    Sentry.captureException(err);
+    console.log("Error ", err.message)
+    Sentry.captureException(err)
 
     if (query.caller) {
-      trackApiCall({ caller: query.caller, api: "jobEtFormationV1", result: "Error" });
+      trackApiCall({ caller: query.caller, api: "jobEtFormationV1", result: "Error" })
     }
 
-    return { error: "internal_error" };
+    return { error: "internal_error" }
   }
-};
+}
 
-export { getJobsEtFormationsQuery };
+export { getJobsEtFormationsQuery }

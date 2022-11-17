@@ -1,4 +1,4 @@
-import { Etablissement } from "../model/index.js";
+import { Etablissement } from "../model/index.js"
 
 /**
  * KBA: to be refactored and merged with etablissementRecruteur.js
@@ -11,10 +11,10 @@ export default async () => ({
    * @returns {Promise<Etablissement>}
    */
   create: async (options = {}) => {
-    const etablissement = new Etablissement(options);
-    await etablissement.save();
+    const etablissement = new Etablissement(options)
+    await etablissement.save()
 
-    return etablissement.toObject();
+    return etablissement.toObject()
   },
 
   /**
@@ -23,13 +23,13 @@ export default async () => ({
    * @returns {Promise<Etablissement>}
    */
   findById: async (id) => {
-    const etablissement = await Etablissement.findById(id);
+    const etablissement = await Etablissement.findById(id)
 
     if (!etablissement) {
-      throw new Error(`Unable to find etablissement ${id}`);
+      throw new Error(`Unable to find etablissement ${id}`)
     }
 
-    return etablissement.toObject();
+    return etablissement.toObject()
   },
 
   /**
@@ -84,4 +84,4 @@ export default async () => ({
    * @returns {Promise<void>}
    */
   findByIdAndDelete: (id) => Etablissement.findByIdAndDelete(id),
-});
+})

@@ -1,19 +1,19 @@
-import config from "./config";
+import config from "./config"
 
-const env = config.env;
+const env = config.env
 
 export const getEnvFromProps = (props) => {
-  let host = props.publicUrl || env;
+  let host = props.publicUrl || env
 
-  let envrnt = "production";
+  let envrnt = "production"
   if (host?.indexOf("recette") >= 0) {
-    envrnt = "recette";
+    envrnt = "recette"
   }
   if (host?.indexOf("local") >= 0) {
-    envrnt = "local";
+    envrnt = "local"
   }
 
-  return { env: envrnt };
-};
+  return { env: envrnt }
+}
 
-export default env;
+export default env

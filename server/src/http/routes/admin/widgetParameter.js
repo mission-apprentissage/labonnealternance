@@ -1,18 +1,18 @@
-import express from "express";
-import Joi from "joi";
-import json2csvParser from "json2csv";
-import Boom from "boom";
-import { tryCatch } from "../../middlewares/tryCatchMiddleware.js";
-import { WidgetParameter } from "../../../common/model/index.js";
-import { logger } from "../../../common/logger.js";
-import { getReferrerById } from "../../../common/model/constants/referrers.js";
-import { optMode } from "../../../common/model/constants/etablissement.js";
-import { getFormationsBySiretFormateur, getFormationsByIdRcoFormationsRaw } from "../../../common/utils/catalogue.js";
-import { dayjs } from "../../../common/utils/dayjs.js";
+import express from "express"
+import Joi from "joi"
+import json2csvParser from "json2csv"
+import Boom from "boom"
+import { tryCatch } from "../../middlewares/tryCatchMiddleware.js"
+import { WidgetParameter } from "../../../common/model/index.js"
+import { logger } from "../../../common/logger.js"
+import { getReferrerById } from "../../../common/model/constants/referrers.js"
+import { optMode } from "../../../common/model/constants/etablissement.js"
+import { getFormationsBySiretFormateur, getFormationsByIdRcoFormationsRaw } from "../../../common/utils/catalogue.js"
+import { dayjs } from "../../../common/utils/dayjs.js"
 
 const widgetParameterIdPatchSchema = Joi.object({
   is_custom_email_rdv: Joi.boolean(),
-});
+})
 
 const widgetParameterSchema = Joi.object({
   etablissement_siret: Joi.string().required(),
@@ -27,7 +27,7 @@ const widgetParameterSchema = Joi.object({
   referrers: Joi.array().items(Joi.number()),
   id_rco_formation: Joi.string().required(),
   cle_ministere_educatif: Joi.string().required(),
-});
+})
 
 const widgetParameterImportSchema = Joi.object({
   parameters: Joi.array()
@@ -39,17 +39,17 @@ const widgetParameterImportSchema = Joi.object({
       })
     )
     .required(),
-});
+})
 
 const widgetParameterReferrerUpdateBatchSchema = Joi.object({
   referrers: Joi.array().items(Joi.number()).required(),
-});
+})
 
 /**
  * Sample entity route module for GET
  */
 export default ({ widgetParameters, etablissements }) => {
-  const router = express.Router();
+  const router = express.Router()
 
   /**
    * Get all widgetParameters widgetParameters GET
@@ -57,24 +57,24 @@ export default ({ widgetParameters, etablissements }) => {
   router.get(
     "/parameters",
     tryCatch(async (req, res) => {
-      let qs = req.query;
-      const query = qs && qs.query ? JSON.parse(qs.query) : {};
-      const page = qs && qs.page ? qs.page : 1;
-      const limit = qs && qs.limit ? parseInt(qs.limit, 10) : 50;
+      let qs = req.query
+      const query = qs && qs.query ? JSON.parse(qs.query) : {}
+      const page = qs && qs.page ? qs.page : 1
+      const limit = qs && qs.limit ? parseInt(qs.limit, 10) : 50
 
-      const allData = await WidgetParameter.paginate(query, { page, limit });
+      const allData = await WidgetParameter.paginate(query, { page, limit })
 
       const parameters = await Promise.all(
         allData.docs.map(async (parameter) => {
-          const etablissement = await etablissements.findOne({ siret_formateur: parameter.etablissement_siret });
+          const etablissement = await etablissements.findOne({ siret_formateur: parameter.etablissement_siret })
 
           return {
             etablissement_raison_sociale: etablissement?.raison_sociale || "N/C",
             ...parameter._doc,
             referrers: parameter.referrers.map(getReferrerById),
-          };
+          }
         })
-      );
+      )
 
       return res.send({
         parameters,
@@ -84,9 +84,9 @@ export default ({ widgetParameters, etablissements }) => {
           nombre_de_page: allData.pages,
           total: allData.total,
         },
-      });
+      })
     })
-  );
+  )
 
   /**
    * Download in CSV.
@@ -94,22 +94,22 @@ export default ({ widgetParameters, etablissements }) => {
   router.get(
     "/parameters/export",
     tryCatch(async (req, res) => {
-      let qs = req.query;
-      const query = qs && qs.query ? JSON.parse(qs.query) : {};
+      let qs = req.query
+      const query = qs && qs.query ? JSON.parse(qs.query) : {}
 
-      const wigetParameters = await WidgetParameter.find(query);
+      const wigetParameters = await WidgetParameter.find(query)
 
-      const parameters = [];
+      const parameters = []
       for (const parameter of wigetParameters) {
-        let catalogueResponse = null;
+        let catalogueResponse = null
         // Note: "id_rco_formation" attribute isn't existing for oldest parameters
         if (parameter.id_rco_formation) {
           catalogueResponse = await getFormationsByIdRcoFormationsRaw({
             idRcoFormations: [parameter.id_rco_formation],
-          });
+          })
         }
 
-        const etablissement = await etablissements.findOne({ siret_formateur: parameter.etablissement_siret });
+        const etablissement = await etablissements.findOne({ siret_formateur: parameter.etablissement_siret })
 
         parameters.push({
           siret: parameter.etablissement_siret,
@@ -122,22 +122,22 @@ export default ({ widgetParameters, etablissements }) => {
           email_catalogue: catalogueResponse?.formations.length ? catalogueResponse?.formations[0].email : "",
           code_postal: parameter.code_postal,
           sources: parameter.referrers.map((referrer) => getReferrerById(referrer).full_name).join(", "),
-        });
+        })
       }
 
       if (!parameters.length) {
-        throw Boom.badRequest("Aucune information a exporter.");
+        throw Boom.badRequest("Aucune information a exporter.")
       }
 
-      const csv2json = new json2csvParser.Parser();
-      const csv = csv2json.parse(parameters);
+      const csv2json = new json2csvParser.Parser()
+      const csv = csv2json.parse(parameters)
 
-      res.setHeader("Content-disposition", "attachment; filename=parametres.csv");
-      res.set("Content-Type", "text/csv");
+      res.setHeader("Content-disposition", "attachment; filename=parametres.csv")
+      res.set("Content-Type", "text/csv")
 
-      return res.send(csv);
+      return res.send(csv)
     })
-  );
+  )
 
   /**
    * Get all widgetParameters widgetParameters/count GET
@@ -145,13 +145,13 @@ export default ({ widgetParameters, etablissements }) => {
   router.get(
     "/parameters/count",
     tryCatch(async (req, res) => {
-      let qs = req.query;
-      const query = qs && qs.query ? JSON.parse(qs.query) : {};
-      const total = await WidgetParameter.countDocuments(query);
+      let qs = req.query
+      const query = qs && qs.query ? JSON.parse(qs.query) : {}
+      const total = await WidgetParameter.countDocuments(query)
 
-      res.send({ total });
+      res.send({ total })
     })
-  );
+  )
 
   /**
    * Get widgetParameter widgetParameters / GET
@@ -159,16 +159,16 @@ export default ({ widgetParameters, etablissements }) => {
   router.get(
     "/",
     tryCatch(async (req, res) => {
-      let qs = req.query;
-      const query = qs && qs.query ? JSON.parse(qs.query) : {};
-      const retrievedData = await WidgetParameter.findOne(query);
+      let qs = req.query
+      const query = qs && qs.query ? JSON.parse(qs.query) : {}
+      const retrievedData = await WidgetParameter.findOne(query)
       if (retrievedData) {
-        res.send(retrievedData);
+        res.send(retrievedData)
       } else {
-        res.send({ message: `Item doesn't exist` });
+        res.send({ message: `Item doesn't exist` })
       }
     })
-  );
+  )
 
   /**
    * Get widgetParameters by id getWidgetParametersById /{id} GET
@@ -176,15 +176,15 @@ export default ({ widgetParameters, etablissements }) => {
   router.get(
     "/:id",
     tryCatch(async (req, res) => {
-      const itemId = req.params.id;
-      const retrievedData = await WidgetParameter.findById(itemId);
+      const itemId = req.params.id
+      const retrievedData = await WidgetParameter.findById(itemId)
       if (retrievedData) {
-        res.send(retrievedData);
+        res.send(retrievedData)
       } else {
-        res.send({ message: `Item ${itemId} doesn't exist` });
+        res.send({ message: `Item ${itemId} doesn't exist` })
       }
     })
-  );
+  )
 
   /**
    * Add/Post an item validated by schema createParameter /widgetParameter POST
@@ -192,11 +192,11 @@ export default ({ widgetParameters, etablissements }) => {
   router.post(
     "/",
     tryCatch(async ({ body }, res) => {
-      await widgetParameterSchema.validateAsync(body, { abortEarly: false });
-      const result = await widgetParameters.findUpdateOrCreate(body);
-      res.send(result);
+      await widgetParameterSchema.validateAsync(body, { abortEarly: false })
+      const result = await widgetParameters.findUpdateOrCreate(body)
+      res.send(result)
     })
-  );
+  )
 
   /**
    * Add all formations for given "siret_formateurs".
@@ -204,18 +204,18 @@ export default ({ widgetParameters, etablissements }) => {
   router.post(
     "/import",
     tryCatch(async ({ body }, res) => {
-      await widgetParameterImportSchema.validateAsync(body, { abortEarly: false });
+      await widgetParameterImportSchema.validateAsync(body, { abortEarly: false })
 
-      const result = [];
+      const result = []
       for (const parameter of body.parameters) {
-        const { formations } = await getFormationsBySiretFormateur({ siretFormateur: parameter.siret_formateur });
+        const { formations } = await getFormationsBySiretFormateur({ siretFormateur: parameter.siret_formateur })
 
         if (formations.length) {
           const widgetParametersCreated = await Promise.all(
             formations.map(async (formation) => {
               const parameterExists = await widgetParameters.getParameterByIdRcoFormationWithNotEmptyReferrers({
                 idRcoFormation: formation.id_rco_formation,
-              });
+              })
 
               if (!parameterExists) {
                 return widgetParameters.findUpdateOrCreate({
@@ -227,30 +227,27 @@ export default ({ widgetParameters, etablissements }) => {
                   etablissement_raison_sociale: formation.etablissement_formateur_entreprise_raison_sociale,
                   formation_cfd: formation.cfd,
                   formation_intitule: formation.intitule_long,
-                });
+                })
               }
             })
-          );
+          )
 
-          await etablissements.findOneAndUpdate(
-            { siret_formateur: parameter.siret_formateur, opt_mode: null },
-            { opt_mode: optMode.OPT_IN, opt_in_activated_at: dayjs().format() }
-          );
+          await etablissements.findOneAndUpdate({ siret_formateur: parameter.siret_formateur, opt_mode: null }, { opt_mode: optMode.OPT_IN, opt_in_activated_at: dayjs().format() })
           result.push({
             ...parameter,
             formations: widgetParametersCreated.filter(Boolean),
-          });
+          })
         } else {
           result.push({
             ...parameter,
             error: "Formations introuvables.",
-          });
+          })
         }
       }
 
-      res.send({ result });
+      res.send({ result })
     })
-  );
+  )
 
   /**
    * Updates all widgetParameter referrers.
@@ -258,17 +255,17 @@ export default ({ widgetParameters, etablissements }) => {
   router.put(
     "/referrers",
     tryCatch(async ({ body }, res) => {
-      await widgetParameterReferrerUpdateBatchSchema.validateAsync(body, { abortEarly: false });
-      logger.info("Updating items: ", body);
+      await widgetParameterReferrerUpdateBatchSchema.validateAsync(body, { abortEarly: false })
+      logger.info("Updating items: ", body)
 
       // Throw an error if referrer code isn't existing
-      body.referrers.map(getReferrerById);
+      body.referrers.map(getReferrerById)
 
-      const parameters = await widgetParameters.updateMany({ referrers: { $ne: [] } }, { referrers: body.referrers });
+      const parameters = await widgetParameters.updateMany({ referrers: { $ne: [] } }, { referrers: body.referrers })
 
-      res.send(parameters);
+      res.send(parameters)
     })
-  );
+  )
 
   /**
    * Update an item validated by schema updateParameter updateParameter/{id} PUT
@@ -276,12 +273,12 @@ export default ({ widgetParameters, etablissements }) => {
   router.put(
     "/:id",
     tryCatch(async ({ body, params }, res) => {
-      await widgetParameterSchema.validateAsync(body, { abortEarly: false });
-      logger.info("Updating new item: ", body);
-      const result = await widgetParameters.updateParameter(params.id, body);
-      res.send(result);
+      await widgetParameterSchema.validateAsync(body, { abortEarly: false })
+      logger.info("Updating new item: ", body)
+      const result = await widgetParameters.updateParameter(params.id, body)
+      res.send(result)
     })
-  );
+  )
 
   /**
    * Patch parameter.
@@ -289,13 +286,13 @@ export default ({ widgetParameters, etablissements }) => {
   router.patch(
     "/:id",
     tryCatch(async ({ body, params }, res) => {
-      await widgetParameterIdPatchSchema.validateAsync(body, { abortEarly: false });
+      await widgetParameterIdPatchSchema.validateAsync(body, { abortEarly: false })
 
-      const result = await widgetParameters.updateParameter(params.id, body);
+      const result = await widgetParameters.updateParameter(params.id, body)
 
-      res.send(result);
+      res.send(result)
     })
-  );
+  )
 
   /**
    * Delete an item by id deleteParameter widgetParameter/{id} DELETE
@@ -303,11 +300,11 @@ export default ({ widgetParameters, etablissements }) => {
   router.delete(
     "/:id",
     tryCatch(async ({ params }, res) => {
-      logger.info("Deleting new item: ", params.id);
-      await widgetParameters.deleteParameter(params.id);
-      res.send({ message: `Item ${params.id} deleted !` });
+      logger.info("Deleting new item: ", params.id)
+      await widgetParameters.deleteParameter(params.id)
+      res.send({ message: `Item ${params.id} deleted !` })
     })
-  );
+  )
 
-  return router;
-};
+  return router
+}

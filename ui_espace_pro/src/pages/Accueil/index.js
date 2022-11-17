@@ -1,3 +1,3 @@
-import Accueil from './Accueil'
+import Accueil from "./Accueil"
 
 export { Accueil }

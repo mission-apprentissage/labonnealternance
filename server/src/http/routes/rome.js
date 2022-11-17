@@ -1,22 +1,22 @@
-import axios from "axios";
-import express from "express";
-import querystring from "querystring";
-import dayjs from "../../common/dayjs.js";
-import config from "../../config.js";
-import { getRomesAndLabelsFromTitleQuery } from "../../service/domainesMetiers.js";
-import { tryCatch } from "../middlewares/tryCatchMiddleware.js";
+import axios from "axios"
+import express from "express"
+import querystring from "querystring"
+import dayjs from "../../common/dayjs.js"
+import config from "../../config.js"
+import { getRomesAndLabelsFromTitleQuery } from "../../service/domainesMetiers.js"
+import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
 
 /**
  * API romes
  */
 
-const isTokenValid = (token) => token.expire?.isAfter(dayjs());
+const isTokenValid = (token) => token.expire?.isAfter(dayjs())
 
 const getToken = async (token = {}) => {
-  let isValid = isTokenValid(token);
+  let isValid = isTokenValid(token)
 
   if (isValid) {
-    return token;
+    return token
   }
 
   try {
@@ -34,44 +34,44 @@ const getToken = async (token = {}) => {
           "Content-Type": "application/x-www-form-urlencoded",
         },
       }
-    );
+    )
 
     return {
       ...response.data,
       expire: dayjs().add(response.data.expires_in - 10, "s"),
-    };
+    }
   } catch (error) {
-    console.log(error);
-    return error.response.data;
+    console.log(error)
+    return error.response.data
   }
-};
+}
 
 export default function () {
-  const router = express.Router();
-  let token = {};
+  const router = express.Router()
+  let token = {}
 
   router.get(
     "/",
     tryCatch(async (req, res) => {
-      const result = await getRomesAndLabelsFromTitleQuery(req.query);
-      return res.json(result);
+      const result = await getRomesAndLabelsFromTitleQuery(req.query)
+      return res.json(result)
     })
-  );
+  )
 
   router.get(
     "/detail/:rome",
     tryCatch(async (req, res) => {
-      token = await getToken(token);
+      token = await getToken(token)
 
       let response = await axios.get(`https://api.emploi-store.fr/partenaire/rome/v1/metier/${req.params.rome}`, {
         headers: {
           Authorization: `Bearer ${token.access_token}`,
         },
-      });
+      })
 
-      return res.json(response.data);
+      return res.json(response.data)
     })
-  );
+  )
 
-  return router;
+  return router
 }

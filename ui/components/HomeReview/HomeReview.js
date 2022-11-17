@@ -1,8 +1,8 @@
-import React from "react";
+import React from "react"
 
-import homereview from "../../public/images/homereview.svg";
-import { some, values } from "lodash";
-import ExternalLink from "../externalLink";
+import homereview from "../../public/images/homereview.svg"
+import { some, values } from "lodash"
+import ExternalLink from "../externalLink"
 
 const HomeReview = (props) => {
   return (
@@ -35,9 +35,7 @@ const HomeReview = (props) => {
                     <></>
                   )}
                 </h2>
-                <p className="m-0">
-                  {props?.reviews?.TEXTE_1_NON_GRAS ? <>{props.reviews.TEXTE_1_NON_GRAS}</> : <></>}
-                </p>
+                <p className="m-0">{props?.reviews?.TEXTE_1_NON_GRAS ? <>{props.reviews.TEXTE_1_NON_GRAS}</> : <></>}</p>
                 <p className="pt-2">
                   {props?.reviews?.TEXTE_2_GRAS ? (
                     <>
@@ -67,7 +65,7 @@ const HomeReview = (props) => {
         ""
       )}
     </>
-  );
-};
+  )
+}
 
-export default HomeReview;
+export default HomeReview

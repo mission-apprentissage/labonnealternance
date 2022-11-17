@@ -1,13 +1,13 @@
-import Sentry from "@sentry/node";
-import _ from "lodash-es";
-import config from "../../config.js";
-import updateLaBonneBoiteJob from "../../jobs/lbb/updateLaBonneBoite.js";
+import Sentry from "@sentry/node"
+import _ from "lodash-es"
+import config from "../../config.js"
+import updateLaBonneBoiteJob from "../../jobs/lbb/updateLaBonneBoite.js"
 
 const updateLaBonneBoite = async (query) => {
   if (!query.secret) {
-    return { error: "secret_missing" };
+    return { error: "secret_missing" }
   } else if (query.secret !== config.secretUpdateRomesMetiers) {
-    return { error: "wrong_secret" };
+    return { error: "wrong_secret" }
   } else {
     try {
       let params = {
@@ -16,20 +16,20 @@ const updateLaBonneBoite = async (query) => {
         shouldParseFiles: query?.shouldParseFiles === "false" ? false : true,
         shouldInitSAVEMaps: query?.shouldInitSAVEMaps === "false" ? false : true,
         useCBSPrediction: query?.useCBSPrediction === "true" ? true : false,
-      };
+      }
 
-      console.log(params);
+      console.log(params)
 
-      let result = await updateLaBonneBoiteJob(params);
-      return result;
+      let result = await updateLaBonneBoiteJob(params)
+      return result
     } catch (err) {
-      Sentry.captureException(err);
+      Sentry.captureException(err)
 
-      let error_msg = _.get(err, "meta.body") ?? err.message;
+      let error_msg = _.get(err, "meta.body") ?? err.message
 
-      return { error: error_msg };
+      return { error: error_msg }
     }
   }
-};
+}
 
-export { updateLaBonneBoite };
+export { updateLaBonneBoite }

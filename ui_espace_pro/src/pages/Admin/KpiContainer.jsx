@@ -1,10 +1,10 @@
-import React from "react";
-import { Box, Text, Flex } from "@chakra-ui/react";
-import { useFetch } from "../../common/hooks/useFetch";
+import React from "react"
+import { Box, Text, Flex } from "@chakra-ui/react"
+import { useFetch } from "../../common/hooks/useFetch"
 
 export const KpisComponent = () => {
-  const [appointmentsCount, loading] = useFetch("/api/appointment/appointments/count");
-  const [parametersCount] = useFetch("/api/widget-parameters/parameters/count");
+  const [appointmentsCount, loading] = useFetch("/api/appointment/appointments/count")
+  const [parametersCount] = useFetch("/api/widget-parameters/parameters/count")
 
   return (
     <Box mt={6}>
@@ -49,5 +49,5 @@ export const KpisComponent = () => {
         )}
       </Flex>
     </Box>
-  );
-};
+  )
+}

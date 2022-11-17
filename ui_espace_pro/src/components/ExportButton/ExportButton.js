@@ -1,38 +1,38 @@
-import { ReactiveComponent } from '@appbaseio/reactivesearch'
-import { Button } from '@chakra-ui/react'
-import { memo, useState } from 'react'
+import { ReactiveComponent } from "@appbaseio/reactivesearch"
+import { Button } from "@chakra-ui/react"
+import { memo, useState } from "react"
 
-import { downloadCSV, CSV_SEPARATOR } from '../../common/utils/downloadUtils'
-import { DownloadLine } from '../../theme/components/icons/Download-line'
-import { _post } from '../../common/httpClient'
+import { downloadCSV, CSV_SEPARATOR } from "../../common/utils/downloadUtils"
+import { DownloadLine } from "../../theme/components/icons/Download-line"
+import { _post } from "../../common/httpClient"
 
 const serializeObject = (columns, obj) => {
   const res = []
 
   columns.forEach((c) => {
-    let value = c.fieldName.split('.').reduce((acc, curr) => acc[curr], obj)
+    let value = c.fieldName.split(".").reduce((acc, curr) => acc[curr], obj)
 
     if (!value) {
-      value = ''
+      value = ""
     } else if (Array.isArray(value)) {
-      if (value.length && typeof value[0] === 'object') {
+      if (value.length && typeof value[0] === "object") {
         let values = c
           .formatter(value)
           .map((x) => Object.values(x))
           .flat()
         values.forEach((x) => {
-          res.push(`${x}`.trim().replace(/"/g, "'").replace(/;/g, ',').replace(/\n/g, '').replace(/\r/g, ''))
+          res.push(`${x}`.trim().replace(/"/g, "'").replace(/;/g, ",").replace(/\n/g, "").replace(/\r/g, ""))
         })
         return
       } else {
-        value = value.join(',')
+        value = value.join(",")
       }
-    } else if (typeof c.formatter === 'function') {
+    } else if (typeof c.formatter === "function") {
       value = c.formatter(value, obj)
     } else {
-      value = `${value}`.trim().replace(/"/g, "'").replace(/;/g, ',').replace(/\n/g, '').replace(/\r/g, '')
+      value = `${value}`.trim().replace(/"/g, "'").replace(/;/g, ",").replace(/\n/g, "").replace(/\r/g, "")
     }
-    res.push(value !== '' ? `="${value}"` : '')
+    res.push(value !== "" ? `="${value}"` : "")
   })
 
   return res.join(CSV_SEPARATOR)
@@ -56,7 +56,7 @@ let scroll = (index, scrollId) => {
       scroll: true,
       scroll_id: scrollId,
       activeQuery: {
-        scroll: '1m',
+        scroll: "1m",
         scroll_id: scrollId,
       },
     },
@@ -98,8 +98,8 @@ let getDataAsCSV = async (searchUrl, query, columns, setProgress) => {
 
   data = duplicateFromByOffer(data)
 
-  let headers = columns.map((c) => c.header).join(CSV_SEPARATOR) + '\n'
-  let lines = data.map((obj) => serializeObject(columns, obj)).join('\n')
+  let headers = columns.map((c) => c.header).join(CSV_SEPARATOR) + "\n"
+  let lines = data.map((obj) => serializeObject(columns, obj)).join("\n")
   setProgress(100)
   return `${headers}${lines}`
 }
@@ -112,14 +112,14 @@ const ExportButton = ({ index, filters, columns, defaultQuery = { query: { match
   if (!requestExport) {
     return (
       <Button
-        variant='pill'
+        variant="pill"
         py={2}
         onClick={async () => {
           setRequestExport(true)
           setExporting(true)
         }}
       >
-        <DownloadLine mx='0.5rem' w='0.75rem' h='0.75rem' />
+        <DownloadLine mx="0.5rem" w="0.75rem" h="0.75rem" />
         Exporter
       </Button>
     )
@@ -143,7 +143,7 @@ const ExportButton = ({ index, filters, columns, defaultQuery = { query: { match
       render={() => {
         if (exporting) {
           return (
-            <Button isLoading size='sm' variant='pill' py={2} loadingText={`${progress}%`}>
+            <Button isLoading size="sm" variant="pill" py={2} loadingText={`${progress}%`}>
               Exporter
             </Button>
           )

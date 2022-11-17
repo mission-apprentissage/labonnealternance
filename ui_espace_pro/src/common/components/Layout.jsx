@@ -1,8 +1,8 @@
-import React from 'react'
-import { Box, Container } from '@chakra-ui/react'
-import Footer from './Footer'
-import Header from './Header'
-import NavigationMenu from './NavigationMenu'
+import React from "react"
+import { Box, Container } from "@chakra-ui/react"
+import Footer from "./Footer"
+import Header from "./Header"
+import NavigationMenu from "./NavigationMenu"
 
 /**
  * @description Beta layout component.
@@ -11,10 +11,10 @@ import NavigationMenu from './NavigationMenu'
  */
 const Layout = ({ children }) => {
   return (
-    <Container maxW='full'>
+    <Container maxW="full">
       <Header />
       <NavigationMenu />
-      <Box minH={'60vh'}>{children}</Box>
+      <Box minH={"60vh"}>{children}</Box>
       <Footer />
     </Container>
   )

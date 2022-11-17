@@ -4,14 +4,14 @@ source : https://www.section.io/engineering-education/an-introduction-to-memoiza
  */
 
 const memoize = (func) => {
-  const results = {};
+  const results = {}
   return (...args) => {
-    const argsKey = JSON.stringify(args);
+    const argsKey = JSON.stringify(args)
     if (!results[argsKey]) {
-      results[argsKey] = func(...args);
+      results[argsKey] = func(...args)
     }
-    return results[argsKey];
-  };
-};
+    return results[argsKey]
+  }
+}
 
-export default memoize;
+export default memoize

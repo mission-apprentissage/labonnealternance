@@ -11,10 +11,9 @@
   margin-bottom: 1rem;
 }
 
-  .c-detail-emptyspace {
-    line-height: 0.01;
-  }
-
+.c-detail-emptyspace {
+  line-height: 0.01;
+}
 
 .c-detail-header.c-detail--collapse-header-true {
   position: sticky;
@@ -27,7 +26,6 @@
 }
 
 .c-detail--collapse-header-true {
-
   .c-detail-address-section {
     display: none;
   }

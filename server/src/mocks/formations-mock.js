@@ -46,13 +46,13 @@ const formationMock = {
   code_postal: "74570",
   etablissement_gestionnaire_siret: "30000004600018",
   rome_codes: ["D1102"],
-};
+}
 
 const formationsMock = [
   { source: formationMock, id: formationMock.id, sort: [5] },
   { source: formationMock, id: formationMock.id, sort: [10] },
   { source: { ...formationMock, intitule_long: "PATISSIER (CAP)" }, id: formationMock.id, sort: [15] },
-];
+]
 
 const lbfFormationMock = {
   data: {
@@ -95,6 +95,6 @@ const lbfFormationMock = {
     },
     "duree-indicative": "2 ans",
   },
-};
+}
 
-export { formationMock, formationsMock, lbfFormationMock };
+export { formationMock, formationsMock, lbfFormationMock }

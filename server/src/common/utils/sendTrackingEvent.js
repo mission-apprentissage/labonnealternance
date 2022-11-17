@@ -1,4 +1,4 @@
-import { ApiCalls } from "../../common/model/index.js";
+import { ApiCalls } from "../../common/model/index.js"
 
 const trackApiCall = async ({ caller, api, nb_formations, nb_emplois, result_count, result }) => {
   try {
@@ -9,12 +9,12 @@ const trackApiCall = async ({ caller, api, nb_formations, nb_emplois, result_cou
       nb_emplois,
       result_count,
       result,
-    });
+    })
 
-    apiCall.save();
+    apiCall.save()
   } catch (err) {
-    console.log("Error tracking api call.", err);
+    console.log("Error tracking api call.", err)
   }
-};
+}
 
-export { trackApiCall };
+export { trackApiCall }

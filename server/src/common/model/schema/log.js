@@ -16,4 +16,4 @@ export const logSchema = {
     required: true,
     expires: "7d",
   },
-};
+}

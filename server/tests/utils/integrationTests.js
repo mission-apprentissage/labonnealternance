@@ -1,16 +1,16 @@
-import { connectToMongoForTests, cleanAll } from "../utils/testUtils.js";
+import { connectToMongoForTests, cleanAll } from "../utils/testUtils.js"
 
 export default function (desc, cb) {
   describe(desc, function () {
-    let context;
+    let context
 
     beforeEach(async () => {
-      const { db } = await connectToMongoForTests();
-      context = { db };
-    });
+      const { db } = await connectToMongoForTests()
+      context = { db }
+    })
 
-    cb({ getContext: () => context });
+    cb({ getContext: () => context })
 
-    afterEach(cleanAll);
-  });
+    afterEach(cleanAll)
+  })
 }

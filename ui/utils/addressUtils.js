@@ -1,4 +1,4 @@
-import { isNonEmptyString, countInstances } from "./strutils";
+import { isNonEmptyString, countInstances } from "./strutils"
 
 /*
  * Permet de ne retenir QUE l'adresse postale,
@@ -8,18 +8,18 @@ import { isNonEmptyString, countInstances } from "./strutils";
  * Devient : 2 rue Truc, 32300 Mouches
  */
 const rawPostalAddress = (address) => {
-  let result = "";
-  const SEPARATOR = ", ";
+  let result = ""
+  const SEPARATOR = ", "
   if (isNonEmptyString(address)) {
     if (countInstances(address, SEPARATOR) > 1) {
-      let elements = address.split(SEPARATOR);
-      elements.shift(); // Retire le premier élément : https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Global_Objects/Array/shift
-      result = elements.join(SEPARATOR);
+      let elements = address.split(SEPARATOR)
+      elements.shift() // Retire le premier élément : https://developer.mozilla.org/fr/docs/Web/JavaScript/Reference/Global_Objects/Array/shift
+      result = elements.join(SEPARATOR)
     } else {
-      result = address;
+      result = address
     }
   }
-  return result;
-};
+  return result
+}
 
-export { rawPostalAddress };
+export { rawPostalAddress }

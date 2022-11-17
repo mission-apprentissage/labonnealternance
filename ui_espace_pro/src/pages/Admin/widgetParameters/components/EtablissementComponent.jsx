@@ -1,10 +1,10 @@
-import { createRef, useState, useEffect } from "react";
-import { EmailIcon } from "@chakra-ui/icons";
-import * as PropTypes from "prop-types";
-import "react-dates/initialize";
-import { SingleDatePicker } from "react-dates";
-import "react-dates/lib/css/_datepicker.css";
-import * as moment from "moment";
+import { createRef, useState, useEffect } from "react"
+import { EmailIcon } from "@chakra-ui/icons"
+import * as PropTypes from "prop-types"
+import "react-dates/initialize"
+import { SingleDatePicker } from "react-dates"
+import "react-dates/lib/css/_datepicker.css"
+import * as moment from "moment"
 import {
   Box,
   Text,
@@ -31,11 +31,11 @@ import {
   Tr,
   Tbody,
   Td,
-} from "@chakra-ui/react";
-import { Disquette } from "../../../../theme/components/icons";
-import { _get, _put } from "../../../../common/httpClient";
-import { dayjs, formatDate } from "../../../../common/dayjs";
-import { emailStatus } from "../constants/email";
+} from "@chakra-ui/react"
+import { Disquette } from "../../../../theme/components/icons"
+import { _get, _put } from "../../../../common/httpClient"
+import { dayjs, formatDate } from "../../../../common/dayjs"
+import { emailStatus } from "../constants/email"
 
 /**
  * @description Etablissement component.
@@ -43,21 +43,21 @@ import { emailStatus } from "../constants/email";
  * @returns {JSX.Element}
  */
 const EtablissementComponent = ({ id }) => {
-  const emailDecisionnaireFocusRef = createRef();
-  const emailDecisionnaireRef = createRef();
+  const emailDecisionnaireFocusRef = createRef()
+  const emailDecisionnaireRef = createRef()
 
-  const [loading, setLoading] = useState(false);
-  const [optModeLoading, setOptModeLoading] = useState(false);
-  const [etablissement, setEtablissement] = useState();
-  const [optInActivatedAt, setOptInActivatedAt] = useState();
-  const [focused, setFocused] = useState();
-  const toast = useToast();
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [loading, setLoading] = useState(false)
+  const [optModeLoading, setOptModeLoading] = useState(false)
+  const [etablissement, setEtablissement] = useState()
+  const [optInActivatedAt, setOptInActivatedAt] = useState()
+  const [focused, setFocused] = useState()
+  const toast = useToast()
+  const { isOpen, onOpen, onClose } = useDisclosure()
 
   const optModes = {
     OPT_IN: "Opt-In",
     OPT_OUT: "Opt-Out",
-  };
+  }
 
   /**
    * @description Initial fetching.
@@ -65,21 +65,21 @@ const EtablissementComponent = ({ id }) => {
    */
   const fetchData = async () => {
     try {
-      setLoading(true);
-      const response = await _get(`/api/admin/etablissements/${id}`);
-      setEtablissement(response);
-      setOptInActivatedAt(moment(response.opt_in_activated_at));
+      setLoading(true)
+      const response = await _get(`/api/admin/etablissements/${id}`)
+      setEtablissement(response)
+      setOptInActivatedAt(moment(response.opt_in_activated_at))
     } catch (error) {
       toast({
         title: "Une erreur est survenue durant la récupération des informations.",
         status: "error",
         isClosable: true,
         position: "bottom-right",
-      });
+      })
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   /**
    * @description Returns toast common error for etablissement updates.
@@ -91,7 +91,7 @@ const EtablissementComponent = ({ id }) => {
       status: "error",
       isClosable: true,
       position: "bottom-right",
-    });
+    })
 
   /**
    * @description Call succes Toast.
@@ -103,9 +103,9 @@ const EtablissementComponent = ({ id }) => {
       status: "success",
       isClosable: true,
       position: "bottom-right",
-    });
+    })
 
-  useEffect(() => fetchData(), []);
+  useEffect(() => fetchData(), [])
 
   /**
    * @description Update "opt-in" activated.
@@ -114,17 +114,17 @@ const EtablissementComponent = ({ id }) => {
    */
   const updateOptInActivedDate = async (date) => {
     try {
-      setOptInActivatedAt(moment(date));
+      setOptInActivatedAt(moment(date))
       const response = await _put(`/api/admin/etablissements/${etablissement._id}`, {
         opt_in_activated_at: dayjs(date).format("YYYY-MM-DD"),
         opt_mode: "OPT_IN",
-      });
-      setEtablissement(response);
-      putSuccess();
+      })
+      setEtablissement(response)
+      putSuccess()
     } catch (error) {
-      putError();
+      putError()
     }
-  };
+  }
 
   /**
    * @description Upserts "email_decisionnaire"
@@ -133,13 +133,13 @@ const EtablissementComponent = ({ id }) => {
    */
   const upsertEmailDecisionnaire = async (email) => {
     try {
-      const response = await _put(`/api/admin/etablissements/${etablissement._id}`, { email_decisionnaire: email });
-      setEtablissement(response);
-      putSuccess();
+      const response = await _put(`/api/admin/etablissements/${etablissement._id}`, { email_decisionnaire: email })
+      setEtablissement(response)
+      putSuccess()
     } catch (error) {
-      putError();
+      putError()
     }
-  };
+  }
 
   /**
    * @description Enable Opt-in.
@@ -147,15 +147,15 @@ const EtablissementComponent = ({ id }) => {
    */
   const enableOptIn = async () => {
     try {
-      setOptModeLoading(true);
-      await _put(`/api/admin/etablissements/${etablissement._id}`, { opt_mode: "OPT_IN" });
-      window.location.reload(false);
+      setOptModeLoading(true)
+      await _put(`/api/admin/etablissements/${etablissement._id}`, { opt_mode: "OPT_IN" })
+      window.location.reload(false)
     } catch (error) {
-      putError();
+      putError()
     } finally {
-      setOptModeLoading(false);
+      setOptModeLoading(false)
     }
-  };
+  }
 
   /**
    * @description Enable opt-out.
@@ -163,18 +163,18 @@ const EtablissementComponent = ({ id }) => {
    */
   const enableOptOut = async () => {
     try {
-      setOptModeLoading(true);
+      setOptModeLoading(true)
       const response = await _put(`/api/admin/etablissements/${etablissement._id}`, {
         opt_mode: "OPT_OUT",
         opt_out_will_be_activated_at: dayjs().add(15, "days").format(),
-      });
-      setEtablissement(response);
+      })
+      setEtablissement(response)
     } catch (error) {
-      putError();
+      putError()
     } finally {
-      setOptModeLoading(false);
+      setOptModeLoading(false)
     }
-  };
+  }
 
   return (
     <Box bg="white" border="1px solid #E0E5ED" borderRadius="4px" mt={10} pb="5" loading={loading}>
@@ -257,10 +257,7 @@ const EtablissementComponent = ({ id }) => {
                     Activer l'opt-in
                   </Button>
                 </Tooltip>
-                <Tooltip
-                  label="Activer l'opt-out pour cet établissement. Un email décisionnaire doit être renseigné."
-                  key="opt-out"
-                >
+                <Tooltip label="Activer l'opt-out pour cet établissement. Un email décisionnaire doit être renseigné." key="opt-out">
                   <Button
                     variant="primary"
                     fontSize="12px"
@@ -401,22 +398,18 @@ const EtablissementComponent = ({ id }) => {
               <EditablePreview ref={emailDecisionnaireFocusRef} />
               <EditableInput ref={emailDecisionnaireRef} type="email" _focus={{ border: "none" }} />
             </Editable>
-            <Button
-              RootComponent="a"
-              variant="primary"
-              onClick={() => upsertEmailDecisionnaire(emailDecisionnaireRef.current.value.toLowerCase())}
-            >
+            <Button RootComponent="a" variant="primary" onClick={() => upsertEmailDecisionnaire(emailDecisionnaireRef.current.value.toLowerCase())}>
               <Disquette w="16px" h="16px" />
             </Button>
           </Flex>
         </Box>
       </Grid>
     </Box>
-  );
-};
+  )
+}
 
 EtablissementComponent.propTypes = {
   id: PropTypes.string.isRequired,
-};
+}
 
-export default EtablissementComponent;
+export default EtablissementComponent

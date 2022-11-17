@@ -1,6 +1,6 @@
-import React from "react";
+import React from "react"
 
-import bookIcon from "public/images/book.svg";
+import bookIcon from "public/images/book.svg"
 
 const TagFormation = () => {
   return (
@@ -12,7 +12,7 @@ const TagFormation = () => {
         </span>
       }
     </>
-  );
-};
+  )
+}
 
-export default TagFormation;
+export default TagFormation

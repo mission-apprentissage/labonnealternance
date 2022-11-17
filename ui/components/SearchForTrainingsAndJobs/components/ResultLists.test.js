@@ -1,12 +1,12 @@
-import React from "react";
-import { render, screen, fireEvent, wait, waitFor } from "@testing-library/react";
-import ResultLists from "./ResultLists";
-import nock from "nock";
+import React from "react"
+import { render, screen, fireEvent, wait, waitFor } from "@testing-library/react"
+import ResultLists from "./ResultLists"
+import nock from "nock"
 
 describe("ResultList", () => {
   beforeEach(() => {
-    nock.disableNetConnect();
-  });
+    nock.disableNetConnect()
+  })
 
   it("By default displays a result list", () => {
     // Given /When
@@ -38,11 +38,11 @@ describe("ResultList", () => {
           lbbCompanies: realisticLbbCompanies,
         }}
       />
-    );
+    )
     // Then
-    expect(screen.getByTestId("LbbCompany-uco")).not.toBeNull();
-    expect(screen.getByTestId("Training-ingediplo")).not.toBeNull();
-  });
+    expect(screen.getByTestId("LbbCompany-uco")).not.toBeNull()
+    expect(screen.getByTestId("Training-ingediplo")).not.toBeNull()
+  })
 
   let realisticFormations = [
     {
@@ -80,8 +80,7 @@ describe("ResultList", () => {
       diploma: "INGENIEURS RECONNUS (RCT..), NFI , ALTERNANCE",
       cfd: "1703260V",
       rncpCode: "RNCP35781",
-      rncpLabel:
-        "Ingénieur de l'école nationale supérieure des sciences appliquées et de technologie, spécialité informatique et technologies de l'information",
+      rncpLabel: "Ingénieur de l'école nationale supérieure des sciences appliquées et de technologie, spécialité informatique et technologies de l'information",
       rncpEligibleApprentissage: true,
       period: '["2021-09"]',
       createdAt: "2021-08-08T00:10:47.074Z",
@@ -90,7 +89,7 @@ describe("ResultList", () => {
       idRco: "06_2000241F",
       idRcoFormation: "06_2000241F|06_1254822|66191",
     },
-  ];
+  ]
   let realisticLbbCompanies = [
     {
       ideaType: "lbb",
@@ -112,10 +111,9 @@ describe("ResultList", () => {
         socialNetwork: "",
         url: "",
       },
-      url:
-        "https://labonneboite.pole-emploi.fr/39326123500013/details?rome_code=M1805&utm_medium=web&utm_source=api__emploi_store_dev&utm_campaign=api__emploi_store_dev__idea",
+      url: "https://labonneboite.pole-emploi.fr/39326123500013/details?rome_code=M1805&utm_medium=web&utm_source=api__emploi_store_dev&utm_campaign=api__emploi_store_dev__idea",
       romes: [{ code: "M1805", label: "Études et développement informatique" }],
       nafs: [{ code: "8542Z", label: "Enseignement supérieur" }],
     },
-  ];
-});
+  ]
+})

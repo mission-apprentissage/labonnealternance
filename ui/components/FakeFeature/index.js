@@ -1,2 +1,2 @@
-import FakeFeature from "./FakeFeature";
-export default FakeFeature;
+import FakeFeature from "./FakeFeature"
+export default FakeFeature

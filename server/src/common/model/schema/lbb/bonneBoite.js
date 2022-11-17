@@ -108,4 +108,4 @@ export const bonneBoiteSchema = {
     default: Date.now,
     description: "Date de dernières mise à jour",
   },
-};
+}

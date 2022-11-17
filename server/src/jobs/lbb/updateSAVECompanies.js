@@ -1,66 +1,66 @@
-import { BonnesBoites } from "../../common/model/index.js";
-import { logMessage } from "../../common/utils/logMessage.js";
+import { BonnesBoites } from "../../common/model/index.js"
+import { logMessage } from "../../common/utils/logMessage.js"
 
 const updateSAVECompanies = async ({ updateMap }) => {
-  logMessage("info", "Starting updateSAVECompanies");
+  logMessage("info", "Starting updateSAVECompanies")
   for (const key in updateMap) {
-    let company = updateMap[key];
+    let company = updateMap[key]
 
-    let bonneBoite = await BonnesBoites.findOne({ siret: company.siret });
+    let bonneBoite = await BonnesBoites.findOne({ siret: company.siret })
 
     if (bonneBoite) {
-      let shouldSave = true;
+      let shouldSave = true
       // remplacement pour une bonneBoite trouvée par les données modifiées dans la table update SAVE
       if (company.raisonsociale) {
-        bonneBoite.raisonsociale = company.raisonsociale;
+        bonneBoite.raisonsociale = company.raisonsociale
       }
       if (company.enseigne) {
-        bonneBoite.enseigne = company.enseigne;
+        bonneBoite.enseigne = company.enseigne
       }
 
       if (company?.email === "remove") {
-        bonneBoite.email = "";
+        bonneBoite.email = ""
       } else if (company.email && company.email != "NULL") {
-        bonneBoite.email = company.email;
+        bonneBoite.email = company.email
       }
 
       if (company?.telephone === "remove") {
-        bonneBoite.telephone = "";
+        bonneBoite.telephone = ""
       } else if (company.telephone && company.telephone != "NULL") {
-        bonneBoite.telephone = company.telephone;
+        bonneBoite.telephone = company.telephone
       }
 
       if (company?.website === "remove") {
-        bonneBoite.website = "";
+        bonneBoite.website = ""
       } else if (company.website && company.website != "NULL") {
-        bonneBoite.website = company.website;
+        bonneBoite.website = company.website
       }
 
-      bonneBoite.type = company.type;
+      bonneBoite.type = company.type
 
       if (company.romes) {
-        bonneBoite.romes = [...new Set(company.romes.concat(bonneBoite.romes))];
+        bonneBoite.romes = [...new Set(company.romes.concat(bonneBoite.romes))]
       }
 
       if (company.removedRomes) {
-        bonneBoite.romes = bonneBoite.romes.filter((el) => !company.removedRomes.includes(el));
+        bonneBoite.romes = bonneBoite.romes.filter((el) => !company.removedRomes.includes(el))
         if (bonneBoite.romes.length === 0) {
-          logMessage("info", "suppression bb car pas de romes " + bonneBoite.siret);
+          logMessage("info", "suppression bb car pas de romes " + bonneBoite.siret)
           try {
-            await bonneBoite.remove();
+            await bonneBoite.remove()
           } catch (err) {
             //console.log("not found when removing ",bonneBoite.siret);
           }
-          shouldSave = false;
+          shouldSave = false
         }
       }
 
       if (shouldSave) {
-        await bonneBoite.save();
+        await bonneBoite.save()
       }
     }
   }
-  logMessage("info", "Ended updateSAVECompanies");
-};
+  logMessage("info", "Ended updateSAVECompanies")
+}
 
-export { updateSAVECompanies };
+export { updateSAVECompanies }

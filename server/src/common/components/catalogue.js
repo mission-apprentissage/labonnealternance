@@ -1,10 +1,10 @@
-import axios from "axios";
-import { compose } from "oleoduc";
-import queryString from "query-string";
-import config from "../../config.js";
-import { logger } from "../logger.js";
-import { fetchStream } from "../utils/httpUtils.js";
-import { streamJsonArray } from "../utils/streamUtils.js";
+import axios from "axios"
+import { compose } from "oleoduc"
+import queryString from "query-string"
+import config from "../../config.js"
+import { logger } from "../logger.js"
+import { fetchStream } from "../utils/httpUtils.js"
+import { streamJsonArray } from "../utils/streamUtils.js"
 
 const neededFieldsFromCatalogue = {
   published: 1,
@@ -53,34 +53,34 @@ const neededFieldsFromCatalogue = {
   etablissement_gestionnaire_type: 1,
   etablissement_gestionnaire_conventionne: 1,
   rome_codes: 1,
-};
+}
 
-const API = axios.create({ baseURL: `${config.catalogueUrl}` });
+const API = axios.create({ baseURL: `${config.catalogueUrl}` })
 
 const countFormations = async () => {
   try {
-    const response = await API.get(`${config.formationsEndPoint}/count`);
-    return response.data;
+    const response = await API.get(`${config.formationsEndPoint}/count`)
+    return response.data
   } catch (error) {
-    logger.error(error);
+    logger.error(error)
   }
-};
+}
 
 const fetchFormations = ({ formationCount }) => {
-  const query = { published: true, catalogue_published: true };
+  const query = { published: true, catalogue_published: true }
 
   const streamFormations = async (query, options) => {
-    const params = convertQueryIntoParams(query, options);
-    const response = await fetchStream(`${config.catalogueUrl}${config.formationsEndPoint}.json?${params}`);
+    const params = convertQueryIntoParams(query, options)
+    const response = await fetchStream(`${config.catalogueUrl}${config.formationsEndPoint}.json?${params}`)
 
-    return compose(response, streamJsonArray());
-  };
+    return compose(response, streamJsonArray())
+  }
 
   return streamFormations(query, {
     limit: formationCount,
     select: neededFieldsFromCatalogue,
-  });
-};
+  })
+}
 
 const convertQueryIntoParams = (query, options = {}) => {
   return queryString.stringify(
@@ -90,11 +90,11 @@ const convertQueryIntoParams = (query, options = {}) => {
         return {
           ...acc,
           [key]: JSON.stringify(options[key]),
-        };
+        }
       }, {}),
     },
     { encode: false }
-  );
-};
+  )
+}
 
-export { fetchFormations, countFormations };
+export { fetchFormations, countFormations }

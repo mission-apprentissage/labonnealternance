@@ -1,5 +1,5 @@
-import { Icon } from "@chakra-ui/react";
-import React from "react";
+import { Icon } from "@chakra-ui/react"
+import React from "react"
 
 export function Disquette(props) {
   return (
@@ -20,5 +20,5 @@ export function Disquette(props) {
         fill="currentColor"
       />
     </Icon>
-  );
+  )
 }

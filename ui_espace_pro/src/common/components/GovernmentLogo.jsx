@@ -1,4 +1,4 @@
-import * as PropTypes from "prop-types";
+import * as PropTypes from "prop-types"
 
 /**
  * @description Government logo.
@@ -50,10 +50,10 @@ const GovernmentLogo = ({ width }) => (
       fill="black"
     />
   </svg>
-);
+)
 
 GovernmentLogo.propTypes = {
   width: PropTypes.number.isRequired,
-};
+}
 
-export default GovernmentLogo;
+export default GovernmentLogo

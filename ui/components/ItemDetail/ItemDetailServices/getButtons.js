@@ -1,26 +1,26 @@
-import React from "react";
-import { findIndex } from "lodash";
-import { useSwipeable } from "react-swipeable";
+import React from "react"
+import { findIndex } from "lodash"
+import { useSwipeable } from "react-swipeable"
 
-import ExternalLink from "../../externalLink";
-import chevronLeft from "../../../public/images/chevronleft.svg";
-import chevronRight from "../../../public/images/chevronright.svg";
-import chevronClose from "../../../public/images/close.svg";
-import { SendPlausibleEvent } from "../../../utils/plausible";
+import ExternalLink from "../../externalLink"
+import chevronLeft from "../../../public/images/chevronleft.svg"
+import chevronRight from "../../../public/images/chevronright.svg"
+import chevronClose from "../../../public/images/close.svg"
+import { SendPlausibleEvent } from "../../../utils/plausible"
 
 export const buttonJePostuleShouldBeDisplayed = (oneKind, oneItem) => {
-  return oneKind === "peJob" && oneItem?.url;
-};
+  return oneKind === "peJob" && oneItem?.url
+}
 
 export const buttonPRDVShouldBeDisplayed = (oneItem) => {
-  let res = !!oneItem?.prdvUrl;
-  return res;
-};
+  let res = !!oneItem?.prdvUrl
+  return res
+}
 
 export const buildPrdvButton = (training) => {
   const onClickPrdv = () => {
-    SendPlausibleEvent("Clic Prendre RDV - Fiche formation", { info_fiche: training.cleMinistereEducatif });
-  };
+    SendPlausibleEvent("Clic Prendre RDV - Fiche formation", { info_fiche: training.cleMinistereEducatif })
+  }
 
   return (
     <div
@@ -32,8 +32,8 @@ export const buildPrdvButton = (training) => {
     >
       <ExternalLink className="gtmPrdv" url={training.prdvUrl} title="Je prends rendez-vous" />
     </div>
-  );
-};
+  )
+}
 
 export const BuildSwipe = ({ currentList, handleSelectItem, selectedItem }) => {
   // See https://www.npmjs.com/package/react-swipeable
@@ -41,31 +41,31 @@ export const BuildSwipe = ({ currentList, handleSelectItem, selectedItem }) => {
     onSwiped: (event_data) => {
       if (event_data.dir === "Right") {
         if (currentList.length > 1) {
-          goPrev();
+          goPrev()
         }
       } else if (event_data.dir === "Left") {
         if (currentList.length > 1) {
-          goNext();
+          goNext()
         }
       }
     },
-  });
+  })
   const goNext = () => {
-    let currentIndex = findIndex(currentList, selectedItem);
-    let nextIndex = currentIndex == currentList.length - 1 ? 0 : currentIndex + 1;
-    handleSelectItem(currentList[nextIndex]);
-  };
+    let currentIndex = findIndex(currentList, selectedItem)
+    let nextIndex = currentIndex == currentList.length - 1 ? 0 : currentIndex + 1
+    handleSelectItem(currentList[nextIndex])
+  }
   const goPrev = () => {
-    let currentIndex = findIndex(currentList, selectedItem);
-    let prevIndex = currentIndex == 0 ? currentList.length - 1 : currentIndex - 1;
-    handleSelectItem(currentList[prevIndex]);
-  };
+    let currentIndex = findIndex(currentList, selectedItem)
+    let prevIndex = currentIndex == 0 ? currentList.length - 1 : currentIndex - 1
+    handleSelectItem(currentList[prevIndex])
+  }
   return {
     swipeHandlers,
     goNext,
     goPrev,
-  };
-};
+  }
+}
 
 export const getNavigationButtons = ({ goPrev, goNext, setSeeInfo, handleClose }) => {
   return (
@@ -74,7 +74,7 @@ export const getNavigationButtons = ({ goPrev, goNext, setSeeInfo, handleClose }
         <button
           className="c-tiny-btn"
           onClick={() => {
-            goPrev();
+            goPrev()
           }}
         >
           <img className="c-tiny-btn__image" src={chevronLeft} alt="Résultat précédent" />
@@ -84,7 +84,7 @@ export const getNavigationButtons = ({ goPrev, goNext, setSeeInfo, handleClose }
         <button
           className="c-tiny-btn"
           onClick={() => {
-            goNext();
+            goNext()
           }}
         >
           <img className="c-tiny-btn__image" src={chevronRight} alt="Résultat suivant" />
@@ -94,13 +94,13 @@ export const getNavigationButtons = ({ goPrev, goNext, setSeeInfo, handleClose }
         <button
           className="c-tiny-btn"
           onClick={() => {
-            setSeeInfo(false);
-            handleClose();
+            setSeeInfo(false)
+            handleClose()
           }}
         >
           <img className="c-tiny-btn__image" src={chevronClose} alt="Fermer la fenêtre" />
         </button>
       </div>
     </>
-  );
-};
+  )
+}

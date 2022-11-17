@@ -1,8 +1,8 @@
-import React from "react";
-import { Box, Container, Flex, Link, List, ListItem, Text } from "@chakra-ui/react";
-import { NavLink } from "react-router-dom";
-import { ExternalLinkLine } from "../../theme/components/icons";
-import { Logo } from "./LogoFooter";
+import React from "react"
+import { Box, Container, Flex, Link, List, ListItem, Text } from "@chakra-ui/react"
+import { NavLink } from "react-router-dom"
+import { ExternalLinkLine } from "../../theme/components/icons"
+import { Logo } from "./LogoFooter"
 
 /**
  * @description Footer component.
@@ -18,14 +18,9 @@ const Footer = () => {
           </Link>
           <Box alignSelf="center" flex="1">
             <Text>
-              Mandatée par le Ministère du Travail, de l'Emploi et de l'Insertion, le Ministère de la Transformation et
-              de la Fonction publiques, le Ministère de l'Education Nationale, de la Jeunesse et des Sports, le
-              Ministère de la Recherche, de l'Enseignement Supérieur et de l'Innovation, la{" "}
-              <Link
-                href="https://beta.gouv.fr/startups/?incubateur=mission-apprentissage"
-                textDecoration="underline"
-                isExternal
-              >
+              Mandatée par le Ministère du Travail, de l'Emploi et de l'Insertion, le Ministère de la Transformation et de la Fonction publiques, le Ministère de l'Education
+              Nationale, de la Jeunesse et des Sports, le Ministère de la Recherche, de l'Enseignement Supérieur et de l'Innovation, la{" "}
+              <Link href="https://beta.gouv.fr/startups/?incubateur=mission-apprentissage" textDecoration="underline" isExternal>
                 Mission interministérielle pour l'apprentissage
               </Link>{" "}
               développe plusieurs services destinés à faciliter les entrées en apprentissage.
@@ -103,7 +98,7 @@ const Footer = () => {
         </Container>
       </Box>
     </Box>
-  );
-};
+  )
+}
 
-export default Footer;
+export default Footer

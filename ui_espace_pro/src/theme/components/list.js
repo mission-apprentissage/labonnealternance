@@ -1,9 +1,9 @@
 const List = {
-  parts: ['container', 'item', 'icon'],
+  parts: ["container", "item", "icon"],
   baseStyle: {
     icon: {
-      listStyle: 'none',
-      color: '#000091',
+      listStyle: "none",
+      color: "#000091",
     },
     container: {
       marginLeft: 2,

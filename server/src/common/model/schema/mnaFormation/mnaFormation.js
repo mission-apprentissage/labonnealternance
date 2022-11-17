@@ -1,6 +1,6 @@
-import { etablissementFormateurInfo } from "./etablissement.formateur.sub.js";
-import { etablissementGestionnaireInfo } from "./etablissement.gestionnaire.sub.js";
-import { etablissementReferenceInfo } from "./etablissement.reference.sub.js";
+import { etablissementFormateurInfo } from "./etablissement.formateur.sub.js"
+import { etablissementGestionnaireInfo } from "./etablissement.gestionnaire.sub.js"
+import { etablissementReferenceInfo } from "./etablissement.reference.sub.js"
 
 export const mnaFormationSchema = {
   cle_ministere_educatif: {
@@ -338,14 +338,7 @@ export const mnaFormationSchema = {
   },
   affelnet_statut: {
     type: String,
-    enum: [
-      "hors périmètre",
-      "publié",
-      "non publié",
-      "à publier (soumis à validation)",
-      "à publier",
-      "en attente de publication",
-    ],
+    enum: ["hors périmètre", "publié", "non publié", "à publier (soumis à validation)", "à publier", "en attente de publication"],
     default: "hors périmètre",
     description: "Statut affelnet",
   },
@@ -558,4 +551,4 @@ export const mnaFormationSchema = {
   ...etablissementGestionnaireInfo,
   ...etablissementFormateurInfo,
   ...etablissementReferenceInfo,
-};
+}

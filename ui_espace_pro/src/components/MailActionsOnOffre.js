@@ -1,7 +1,7 @@
-import { Box, Flex, Spinner, Text, useToast } from '@chakra-ui/react'
-import { useEffect } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
-import { cancelOffre, fillOffre } from '../api'
+import { Box, Flex, Spinner, Text, useToast } from "@chakra-ui/react"
+import { useEffect } from "react"
+import { useNavigate, useParams } from "react-router-dom"
+import { cancelOffre, fillOffre } from "../api"
 
 export default (props) => {
   const params = useParams()
@@ -10,14 +10,14 @@ export default (props) => {
 
   const error = () => {
     toast({
-      title: 'Une erreur est survenue',
-      description: 'Merci de vous connecter.',
-      status: 'error',
-      position: 'top',
+      title: "Une erreur est survenue",
+      description: "Merci de vous connecter.",
+      status: "error",
+      position: "top",
       isClosable: false,
       duration: 5000,
     })
-    navigate('/')
+    navigate("/")
   }
 
   useEffect(() => {
@@ -27,15 +27,15 @@ export default (props) => {
       error()
     }
 
-    if (option === 'cancel') {
+    if (option === "cancel") {
       cancelOffre(idOffre)
         .then(() => {
-          navigate('/')
+          navigate("/")
           toast({
-            title: 'Offre annulée.',
+            title: "Offre annulée.",
             description: "L'offre a bien été mise à jour.",
-            position: 'top',
-            status: 'success',
+            position: "top",
+            status: "success",
             isClosable: true,
             duration: 7000,
           })
@@ -46,15 +46,15 @@ export default (props) => {
         })
     }
 
-    if (option === 'provided') {
+    if (option === "provided") {
       fillOffre(idOffre)
         .then(() => {
-          navigate('/')
+          navigate("/")
           toast({
-            title: 'Offre pourvue.',
+            title: "Offre pourvue.",
             description: "L'offre a bien été mise à jour",
-            position: 'top',
-            status: 'success',
+            position: "top",
+            status: "success",
             isClosable: true,
             duration: 7000,
           })
@@ -65,8 +65,8 @@ export default (props) => {
 
   return (
     <Box>
-      <Flex justify='center' align='center' h='100vh' direction='column'>
-        <Spinner thickness='4px' speed='0.5s' emptyColor='gray.200' color='bluefrance.500' size='xl' />
+      <Flex justify="center" align="center" h="100vh" direction="column">
+        <Spinner thickness="4px" speed="0.5s" emptyColor="gray.200" color="bluefrance.500" size="xl" />
         <Text>Verification en cours...</Text>
       </Flex>
     </Box>

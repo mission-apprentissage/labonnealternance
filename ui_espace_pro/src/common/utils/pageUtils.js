@@ -4,5 +4,5 @@
  * @returns {void}
  */
 export const setTitle = (title) => {
-  document.title = `${title} - RDV Apprentissage`;
-};
+  document.title = `${title} - RDV Apprentissage`
+}

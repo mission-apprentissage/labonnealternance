@@ -62,70 +62,70 @@ const areas = {
     zip: "09000",
     city: "Brassac",
   },
-  "10": {
+  10: {
     name: "Aube",
     lon: 4.161,
     lat: 48.304,
     zip: "10410",
     city: "Villechétif",
   },
-  "11": {
+  11: {
     name: "Aude",
     lon: 2.414,
     lat: 43.103,
     zip: "11250",
     city: "Ladern-sur-Lauquet",
   },
-  "12": {
+  12: {
     name: "Aveyron",
     lon: 2.679,
     lat: 44.28,
     zip: "12290",
     city: "Pont-de-Salars",
   },
-  "13": {
+  13: {
     name: "Bouches-du-Rhône",
     lon: 5.086,
     lat: 43.543,
     zip: "13250",
     city: "Saint-Chamas",
   },
-  "14": {
+  14: {
     name: "Calvados",
     lon: -0.363,
     lat: 49.099,
     zip: "14320",
     city: "May-sur-Orne",
   },
-  "15": {
+  15: {
     name: "Cantal",
     lon: 2.668,
     lat: 45.051,
     zip: "15800",
     city: "Thiézac",
   },
-  "16": {
+  16: {
     name: "Charente",
     lon: 0.201,
     lat: 45.718,
     zip: "16430",
     city: "Champniers",
   },
-  "17": {
+  17: {
     name: "Charente-Maritime",
     lon: -0.674,
     lat: 45.78,
     zip: "17810",
     city: "Saint-Georges-des-Coteaux",
   },
-  "18": {
+  18: {
     name: "Cher",
     lon: 2.491,
     lat: 47.064,
     zip: "18390",
     city: "Osmoy",
   },
-  "19": {
+  19: {
     name: "Corrèze",
     lon: 1.876,
     lat: 45.356,
@@ -146,525 +146,525 @@ const areas = {
     zip: "20244",
     city: "Lano",
   },
-  "21": {
+  21: {
     name: "Côte-d'Or",
     lon: 4.772,
     lat: 47.424,
     zip: "21440",
     city: "Saint-Martin-du-Mont",
   },
-  "22": {
+  22: {
     name: "Côtes-d'Armor",
     lon: 1.136,
     lat: 48.441,
     zip: "22800",
     city: "Plaine-Haute",
   },
-  "23": {
+  23: {
     name: "Creuse",
     lon: 2.018,
     lat: 46.09,
     zip: "23150",
     city: "Ahun",
   },
-  "24": {
+  24: {
     name: "Dordogne",
     lon: 0.741,
     lat: 45.104,
     zip: "24660",
     city: "Notre-Dame-de-Sanilhac",
   },
-  "25": {
+  25: {
     name: "Doubs",
     lon: 6.361,
     lat: 47.165,
     zip: "25530",
     city: "Chevigney-lès-Vercel",
   },
-  "26": {
+  26: {
     name: "Drôme",
     lon: 5.168,
     lat: 44.684,
     zip: "26340",
     city: "Saint-Sauveur-en-Diois",
   },
-  "27": {
+  27: {
     name: "Eure",
     lon: 0.996,
     lat: 49.113,
     zip: "27110",
     city: "Quittebeuf",
   },
-  "28": {
+  28: {
     name: "Eure-et-Loir",
     lon: 1.37,
     lat: 48.387,
     zip: "28120",
     city: "Nogent-sur-Eure",
   },
-  "29": {
+  29: {
     name: "Finistère",
     lon: 3.942,
     lat: 48.261,
     zip: "29590",
     city: "Lopérec",
   },
-  "30": {
+  30: {
     name: "Gard",
     lon: 4.18,
     lat: 43.993,
     zip: "30190",
     city: "Boucoiran-et-Nozières",
   },
-  "31": {
+  31: {
     name: "Haute-Garonne",
     lon: 1.172,
     lat: 43.358,
     zip: "31410",
     city: "Longages",
   },
-  "32": {
+  32: {
     name: "Gers",
     lon: 0.453,
     lat: 43.692,
     zip: "32350",
     city: "Ordan-Larroque",
   },
-  "33": {
+  33: {
     name: "Gironde",
     lon: -0.575,
     lat: 44.825,
     zip: "33000",
     city: "Bordeaux",
   },
-  "34": {
+  34: {
     name: "Hérault",
     lon: 3.367,
     lat: 43.579,
     zip: "34800",
     city: "Cabrières",
   },
-  "35": {
+  35: {
     name: "Ille-et-Vilaine",
     lon: 0.362,
     lat: 48.154,
     zip: "35830",
     city: "Betton",
   },
-  "36": {
+  36: {
     name: "Indre",
     lon: 1.575,
     lat: 46.777,
     zip: "36250",
     city: "Niherne/Saint-Maur",
   },
-  "37": {
+  37: {
     name: "Indre-et-Loire",
     lon: 0.691,
     lat: 47.258,
     zip: "37250",
     city: "Sorigny",
   },
-  "38": {
+  38: {
     name: "Isère",
     lon: 5.576,
     lat: 45.263,
     zip: "38113",
     city: "Veurey-Voroize",
   },
-  "39": {
+  39: {
     name: "Jura",
     lon: 5.697,
     lat: 46.728,
     zip: "39210",
     city: "La Marre",
   },
-  "40": {
+  40: {
     name: "Landes",
     lon: -0.783,
     lat: 43.965,
     zip: "40110",
     city: "Villenave",
   },
-  "41": {
+  41: {
     name: "Loir-et-Cher",
     lon: 1.429,
     lat: 47.616,
     zip: "41350",
     city: "Saint-Claude-de-Diray",
   },
-  "42": {
+  42: {
     name: "Loire",
     lon: 4.165,
     lat: 45.726,
     zip: "42110",
     city: "Poncins",
   },
-  "43": {
+  43: {
     name: "Haute-Loire",
     lon: 3.806,
     lat: 45.128,
     zip: "43350",
     city: "Saint-Paulien",
   },
-  "44": {
+  44: {
     name: "Loire-Atlantique",
     lon: 0.318,
     lat: 47.361,
     zip: "44130",
     city: "Notre-Dame-des-Landes",
   },
-  "45": {
+  45: {
     name: "Loiret",
     lon: 2.344,
     lat: 47.911,
     zip: "45110",
     city: "Saint-Martin-d’Abbat",
   },
-  "46": {
+  46: {
     name: "Lot",
     lon: 1.604,
     lat: 44.624,
     zip: "46240",
     city: "Soulomès",
   },
-  "47": {
+  47: {
     name: "Lot-et-Garonne",
     lon: 0.46,
     lat: 44.367,
     zip: "47260",
     city: "Granges-sur-Lot",
   },
-  "48": {
+  48: {
     name: "Lozère",
     lon: 3.5,
     lat: 44.517,
     zip: "48000",
     city: "Mende",
   },
-  "49": {
+  49: {
     name: "Maine-et-Loire",
     lon: -0.564,
     lat: 47.39,
     zip: "49610",
     city: "Mûrs-Erigné",
   },
-  "50": {
+  50: {
     name: "Manche",
     lon: 0.673,
     lat: 49.079,
     zip: "50210",
     city: "Camprond",
   },
-  "51": {
+  51: {
     name: "Marne",
     lon: 4.238,
     lat: 48.949,
     zip: "51510",
     city: "Saint-Pierre",
   },
-  "52": {
+  52: {
     name: "Haute-Marne",
     lon: 5.226,
     lat: 48.109,
     zip: "52000",
     city: "Chamarandes-Choignes",
   },
-  "53": {
+  53: {
     name: "Mayenne",
     lon: -0.658,
     lat: 48.146,
     zip: "53950",
     city: "La Chapelle-Anthenaise",
   },
-  "54": {
+  54: {
     name: "Meurthe-et-Moselle",
     lon: 6.165,
     lat: 48.786,
     zip: "54670",
     city: "Malleloy",
   },
-  "55": {
+  55: {
     name: "Meuse",
     lon: 5.381,
     lat: 48.989,
     zip: "55220",
     city: "Récourt-le-Creux",
   },
-  "56": {
+  56: {
     name: "Morbihan",
     lon: 1.19,
     lat: 47.846,
     zip: "56500",
     city: "Moustoir-Ac",
   },
-  "57": {
+  57: {
     name: "Moselle",
     lon: 6.663,
     lat: 49.037,
     zip: "57380",
     city: "Guessling-Hémering",
   },
-  "58": {
+  58: {
     name: "Nièvre",
     lon: 3.504,
     lat: 47.115,
     zip: "58330",
     city: "Saint-Saulge",
   },
-  "59": {
+  59: {
     name: "Nord",
     lon: 3.22,
     lat: 50.447,
     zip: "59310",
     city: "Coutiches",
   },
-  "60": {
+  60: {
     name: "Oise",
     lon: 2.425,
     lat: 49.41,
     zip: "60600",
     city: "Fitz-James",
   },
-  "61": {
+  61: {
     name: "Orne",
     lon: 0.128,
     lat: 48.623,
     zip: "61500",
     city: "Belfonds",
   },
-  "62": {
+  62: {
     name: "Pas-de-Calais",
     lon: 2.288,
     lat: 50.493,
     zip: "62134",
     city: "Fontaine-lès-Boulans",
   },
-  "63": {
+  63: {
     name: "Puy-de-Dôme",
     lon: 3.14,
     lat: 45.725,
     zip: "63170",
     city: "Pérignat-lès-Sarliève",
   },
-  "64": {
+  64: {
     name: "Pyrénées-Atlantiques",
     lon: -0.761,
     lat: 43.256,
     zip: "64190",
     city: "Gurs",
   },
-  "65": {
+  65: {
     name: "Hautes-Pyrénées",
     lon: 0.163,
     lat: 43.053,
     zip: "65200",
     city: "Gerde",
   },
-  "66": {
+  66: {
     name: "Pyrénées-Orientales",
     lon: 2.522,
     lat: 42.6,
     zip: "66320",
     city: "Finestret",
   },
-  "67": {
+  67: {
     name: "Bas-Rhin",
     lon: 7.551,
     lat: 48.67,
     zip: "67370",
     city: "Schnersheim",
   },
-  "68": {
+  68: {
     name: "Haut-Rhin",
     lon: 7.274,
     lat: 47.858,
     zip: "68540",
     city: "Feldkirch",
   },
-  "69": {
+  69: {
     name: "Rhône",
     lon: 4.641,
     lat: 45.87,
     zip: "69380",
     city: "Châtillon",
   },
-  "70": {
+  70: {
     name: "Haute-Saône",
     lon: 6.086,
     lat: 47.641,
     zip: "70000",
     city: "Montigny-lès-Vesoul",
   },
-  "71": {
+  71: {
     name: "Saône-et-Loire",
     lon: 4.542,
     lat: 46.644,
     zip: "71460",
     city: "Collonge-en-Charollais",
   },
-  "72": {
+  72: {
     name: "Sarthe",
     lon: 0.222,
     lat: 47.994,
     zip: "72000",
     city: "Le Mans",
   },
-  "73": {
+  73: {
     name: "Savoie",
     lon: 6.443,
     lat: 45.477,
     zip: "73260",
     city: "Les Avanchers-Valmorel",
   },
-  "74": {
+  74: {
     name: "Haute-Savoie",
     lon: 6.428,
     lat: 46.034,
     zip: "74130",
     city: "Brizon",
   },
-  "75": {
+  75: {
     name: "Paris",
     lon: 2.342,
     lat: 48.856,
     zip: "75001",
     city: "Paris",
   },
-  "76": {
+  76: {
     name: "Seine-Maritime",
     lon: 1.026,
     lat: 49.655,
     zip: "76890",
     city: "Varneville-Bretteville",
   },
-  "77": {
+  77: {
     name: "Seine-et-Marne",
     lon: 2.933,
     lat: 48.626,
     zip: "77720",
     city: "Quiers",
   },
-  "78": {
+  78: {
     name: "Yvelines",
     lon: 1.841,
     lat: 48.815,
     zip: "78490",
     city: "Vicq",
   },
-  "79": {
+  79: {
     name: "Deux-Sèvres",
     lon: -0.317,
     lat: 46.555,
     zip: "79310",
     city: "Mazières-en-Gâtine",
   },
-  "80": {
+  80: {
     name: "Somme",
     lon: 2.277,
     lat: 49.958,
     zip: "80260",
     city: "Bertangles",
   },
-  "81": {
+  81: {
     name: "Tarn",
     lon: 2.166,
     lat: 43.785,
     zip: "81120",
     city: "Réalmont",
   },
-  "82": {
+  82: {
     name: "Tarn-et-Garonne",
     lon: 1.281,
     lat: 44.085,
     zip: "82130",
     city: "Villemade",
   },
-  "83": {
+  83: {
     name: "Var",
     lon: 6.218,
     lat: 43.46,
     zip: "83570",
     city: "Carcès",
   },
-  "84": {
+  84: {
     name: "Vaucluse",
     lon: 5.186,
     lat: 43.993,
     zip: "84210",
     city: "Venasque",
   },
-  "85": {
+  85: {
     name: "Vendée",
     lon: 0.703,
     lat: 46.674,
     zip: "85310",
     city: "La Chaize-le-Vicomte",
   },
-  "86": {
+  86: {
     name: "Vienne",
     lon: 0.46,
     lat: 46.563,
     zip: "86800",
     city: "Saint-Julien-l’Ars",
   },
-  "87": {
+  87: {
     name: "Haute-Vienne",
     lon: 1.235,
     lat: 45.891,
     zip: "87270",
     city: "Couzeix",
   },
-  "88": {
+  88: {
     name: "Vosges",
     lon: 6.38,
     lat: 48.196,
     zip: "88390",
     city: "Uxegney",
   },
-  "89": {
+  89: {
     name: "Yonne",
     lon: 3.564,
     lat: 47.839,
     zip: "89470",
     city: "Monéteau",
   },
-  "90": {
+  90: {
     name: "Territoire de Belfort",
     lon: 6.928,
     lat: 47.631,
     zip: "90340",
     city: "Chèvremont",
   },
-  "91": {
+  91: {
     name: "Essonne",
     lon: 2.243,
     lat: 48.522,
     zip: "91510",
     city: "Lardy",
   },
-  "92": {
+  92: {
     name: "Hauts-de-Seine",
     lon: 2.245,
     lat: 48.847,
     zip: "92100",
     city: "Boulogne",
   },
-  "93": {
+  93: {
     name: "Seine-Saint-Denis",
     lon: 2.478,
     lat: 48.917,
     zip: "93140",
     city: "Bondy",
   },
-  "94": {
+  94: {
     name: "Val-de-Marne",
     lon: 2.468,
     lat: 48.777,
     zip: "94000",
     city: "Créteil",
   },
-  "95": {
+  95: {
     name: "Val-d'Oise",
     lon: 2.131,
     lat: 49.082,
@@ -741,10 +741,10 @@ const areas = {
     lon: 2.213749,
     lat: 46.227638,
   },
-};
+}
 
 const isArea = (area) => {
-  return areas[area];
-};
+  return areas[area]
+}
 
-export { isArea };
+export { isArea }

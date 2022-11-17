@@ -1,8 +1,8 @@
-import { Badge, Box, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr } from '@chakra-ui/react'
-import dayjs from 'dayjs'
-import { memo, useCallback, useEffect, useState } from 'react'
-import { getUser } from '../api'
-import LoadingEmptySpace from './LoadingEmptySpace'
+import { Badge, Box, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr } from "@chakra-ui/react"
+import dayjs from "dayjs"
+import { memo, useCallback, useEffect, useState } from "react"
+import { getUser } from "../api"
+import LoadingEmptySpace from "./LoadingEmptySpace"
 
 export default memo(({ histories }) => {
   const [historic, setHistoric] = useState([])
@@ -10,7 +10,7 @@ export default memo(({ histories }) => {
   const getValidator = useCallback(async () => {
     const buffer = await Promise.all(
       histories.map(async (user, i) => {
-        if (user.user !== 'SERVEUR') {
+        if (user.user !== "SERVEUR") {
           try {
             let result = await getUser(user.user)
             user.prenom = result.data.prenom
@@ -37,12 +37,12 @@ export default memo(({ histories }) => {
 
   const getStatut = (statut) => {
     switch (statut) {
-      case 'VALIDÉ':
-        return <Badge variant='active'>{statut}</Badge>
-      case 'EN ATTENTE DE VALIDATION':
-        return <Badge variant='awaiting'>{statut}</Badge>
-      case 'DESACTIVÉ':
-        return <Badge variant='inactive'>{statut}</Badge>
+      case "VALIDÉ":
+        return <Badge variant="active">{statut}</Badge>
+      case "EN ATTENTE DE VALIDATION":
+        return <Badge variant="awaiting">{statut}</Badge>
+      case "DESACTIVÉ":
+        return <Badge variant="inactive">{statut}</Badge>
       default:
         return <Badge>{statut}</Badge>
     }
@@ -52,11 +52,11 @@ export default memo(({ histories }) => {
     <Box mt={10}>
       <hr />
       <Box mt={5}>
-        <Text fontSize='20px' fontWeight={700}>
+        <Text fontSize="20px" fontWeight={700}>
           Historique du compte
         </Text>
         <TableContainer mt={4}>
-          <Table variant='simple'>
+          <Table variant="simple">
             <Thead>
               <Tr>
                 <Th>#</Th>
@@ -73,7 +73,7 @@ export default memo(({ histories }) => {
                   return (
                     <Tr>
                       <Td>{i + 1}</Td>
-                      <Td>{dayjs(date).format('DD/MM/YYYY')}</Td>
+                      <Td>{dayjs(date).format("DD/MM/YYYY")}</Td>
                       <Td>{getStatut(statut)}</Td>
                       <Td>{validation_type}</Td>
                       <Td>{prenom && nom ? `${prenom} ${nom}` : <Badge>{user}</Badge>}</Td>

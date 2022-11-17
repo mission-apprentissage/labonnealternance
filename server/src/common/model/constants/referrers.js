@@ -1,4 +1,4 @@
-import Boom from "boom";
+import Boom from "boom"
 
 // Referrer configurations
 const referrers = {
@@ -38,7 +38,7 @@ const referrers = {
     full_name: "Affelnet",
     url: "https://www.ac-versailles.fr/affelnet-lycee-121477",
   },
-};
+}
 
 /**
  * @description Returns referrer from it's key.
@@ -46,13 +46,13 @@ const referrers = {
  * @returns {{code: {Number}, name: {String}, fullName: {String}, url: {String}}}
  */
 function getReferrerByKeyName(keyName) {
-  const referrerFound = referrers[keyName.toUpperCase()];
+  const referrerFound = referrers[keyName.toUpperCase()]
 
   if (!referrerFound) {
-    throw Boom.badRequest("Referrer introuvable.");
+    throw Boom.badRequest("Referrer introuvable.")
   }
 
-  return referrerFound;
+  return referrerFound
 }
 
 /**
@@ -61,13 +61,13 @@ function getReferrerByKeyName(keyName) {
  * @returns {{code: {Number}, name: {String}, fullName: {String}, url: {String}}}
  */
 function getReferrerById(id) {
-  const referrer = Object.values(referrers).find((referrer) => referrer.code.toString() === id.toString());
+  const referrer = Object.values(referrers).find((referrer) => referrer.code.toString() === id.toString())
 
   if (!referrer) {
-    throw new Error(`Unknown "${id}" referrer code.`);
+    throw new Error(`Unknown "${id}" referrer code.`)
   }
 
-  return referrer;
+  return referrer
 }
 
-export { referrers, getReferrerByKeyName, getReferrerById };
+export { referrers, getReferrerByKeyName, getReferrerById }

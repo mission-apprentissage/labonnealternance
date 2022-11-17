@@ -1,7 +1,7 @@
-import { Box, Flex } from "@chakra-ui/react";
-import { UpdateAllParameterReferrers } from "../components/UpdateAllParameterReferrers";
-import { BulkImport } from "../components/BulkImport";
-import { ActivateAllCfaFormations } from "../components/ActivateAllCfaFormations";
+import { Box, Flex } from "@chakra-ui/react"
+import { UpdateAllParameterReferrers } from "../components/UpdateAllParameterReferrers"
+import { BulkImport } from "../components/BulkImport"
+import { ActivateAllCfaFormations } from "../components/ActivateAllCfaFormations"
 
 const BulkPage = () => (
   <Box>
@@ -12,6 +12,6 @@ const BulkPage = () => (
     </Flex>
     <Box height="5vh" />
   </Box>
-);
+)
 
-export default BulkPage;
+export default BulkPage

@@ -1,17 +1,14 @@
-import React from "react";
-import SatisfactionForm from "components/SatisfactionForm/SatisfactionForm";
-import { NextSeo } from "next-seo";
+import React from "react"
+import SatisfactionForm from "components/SatisfactionForm/SatisfactionForm"
+import { NextSeo } from "next-seo"
 
 const FormulaireIntention = () => {
   return (
     <>
-      <NextSeo
-        title="Formulaire d'intention | La bonne alternance | Trouvez votre alternance"
-        description="Formulaire d'intention."
-      />
+      <NextSeo title="Formulaire d'intention | La bonne alternance | Trouvez votre alternance" description="Formulaire d'intention." />
       <SatisfactionForm formType="intention" />
     </>
-  );
-};
+  )
+}
 
-export default FormulaireIntention;
+export default FormulaireIntention

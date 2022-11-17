@@ -12,28 +12,28 @@
   align-items: center;
 
   button {
-    background: #FFFFFF;
-    border: 1px solid #CECECE;
+    background: #ffffff;
+    border: 1px solid #cecece;
     border-radius: 40px;
   }
 }
 
 .c-rayons-button {
-  background: #FFFFFF;
-  border: 1px solid #CECECE;
+  background: #ffffff;
+  border: 1px solid #cecece;
   border-radius: 40px;
   cursor: pointer;
-  color: #2A2A2A;
-  margin-right: .2rem;
-  padding: .3rem 1rem;
+  color: #2a2a2a;
+  margin-right: 0.2rem;
+  padding: 0.3rem 1rem;
   font-size: 16px;
   line-height: 24px;
 
   @include media-breakpoint-down(xs) {
     font-size: 12px;
     line-height: 16px;
-    margin-right: .6rem;
-    padding: .1rem .5rem;
+    margin-right: 0.6rem;
+    padding: 0.1rem 0.5rem;
   }
 }
 
@@ -48,23 +48,23 @@
 }
 
 .c-diplomas-button {
-  background: #FFFFFF;
-  border: 1px solid #CECECE;
+  background: #ffffff;
+  border: 1px solid #cecece;
   margin-top: 2px;
   width: fit-content;
   border-radius: 40px;
   cursor: pointer;
-  color: #2A2A2A;
-  margin-right: .2rem;
-  padding: .3rem 1rem;
+  color: #2a2a2a;
+  margin-right: 0.2rem;
+  padding: 0.3rem 1rem;
   font-size: 16px;
   line-height: 24px;
 
   @include media-breakpoint-down(xs) {
     font-size: 12px;
     line-height: 16px;
-    margin-right: .6rem;
-    padding: .1rem .5rem;
+    margin-right: 0.6rem;
+    padding: 0.1rem 0.5rem;
   }
 }
 

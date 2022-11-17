@@ -1,8 +1,8 @@
-import { logger } from "../../../common/logger.js";
-import { Credential } from "../../../common/model/index.js";
+import { logger } from "../../../common/logger.js"
+import { Credential } from "../../../common/model/index.js"
 
 export const disableApiUser = async (email, state = false) => {
-  const updatedUser = await Credential.findOneAndUpdate({ email }, { actif: state }, { new: true });
+  const updatedUser = await Credential.findOneAndUpdate({ email }, { actif: state }, { new: true })
 
-  logger.info(`User ${updatedUser.email} disabled — API state : ${updatedUser.actif}`);
-};
+  logger.info(`User ${updatedUser.email} disabled — API state : ${updatedUser.actif}`)
+}

@@ -1,18 +1,10 @@
-import axios from "axios";
-import { logError } from "utils/tools";
-import { searchForJobsFunction } from "components/SearchForTrainingsAndJobs/services/searchForJobs";
-import {
-  trainingApi,
-  offreApi,
-  matchaApi,
-  companyApi,
-  trainingErrorText,
-  partialJobSearchErrorText,
-  notFoundErrorText,
-} from "components/SearchForTrainingsAndJobs/services/utils";
+import axios from "axios"
+import { logError } from "utils/tools"
+import { searchForJobsFunction } from "components/SearchForTrainingsAndJobs/services/searchForJobs"
+import { trainingApi, offreApi, matchaApi, companyApi, trainingErrorText, partialJobSearchErrorText, notFoundErrorText } from "components/SearchForTrainingsAndJobs/services/utils"
 
-import { flyToMarker, setSelectedMarker } from "utils/mapTools";
-import { storeTrainingsInSession } from "./handleSessionStorage";
+import { flyToMarker, setSelectedMarker } from "utils/mapTools"
+import { storeTrainingsInSession } from "./handleSessionStorage"
 
 export const loadItem = async ({
   item,
@@ -34,32 +26,30 @@ export const loadItem = async ({
   useMock,
 }) => {
   try {
-    setHasSearch(true);
-    setIsFormVisible(false);
+    setHasSearch(true)
+    setIsFormVisible(false)
 
-    let itemMarker = null;
+    let itemMarker = null
 
     if (item.type === "training") {
-      const response = await axios.get(
-        `${trainingApi}/${!useMock ? encodeURIComponent(item.itemId) : "id-formation-test"}`
-      );
+      const response = await axios.get(`${trainingApi}/${!useMock ? encodeURIComponent(item.itemId) : "id-formation-test"}`)
 
       if (response.data.result === "error") {
-        logError("Training Search Error", `${response.data.message}`);
-        setTrainingSearchError(trainingErrorText);
+        logError("Training Search Error", `${response.data.message}`)
+        setTrainingSearchError(trainingErrorText)
       }
 
-      const searchTimestamp = new Date().getTime();
+      const searchTimestamp = new Date().getTime()
 
-      setTrainings(response.data.results);
-      storeTrainingsInSession({ trainings: response.data.results, searchTimestamp });
+      setTrainings(response.data.results)
+      storeTrainingsInSession({ trainings: response.data.results, searchTimestamp })
 
       if (response.data.results.length) {
-        setTrainingMarkers(factorTrainingsForMap(response.data.results));
+        setTrainingMarkers(factorTrainingsForMap(response.data.results))
       }
-      setSelectedItem(response.data.results[0]);
-      setSelectedMarker(response.data.results[0]);
-      itemMarker = response.data.results[0];
+      setSelectedItem(response.data.results[0])
+      setSelectedMarker(response.data.results[0])
+      itemMarker = response.data.results[0]
 
       // lancement d'une recherche d'emploi autour de la formation chargée
       let values = {
@@ -75,7 +65,7 @@ export const loadItem = async ({
         },
         radius: 30,
         diploma: "",
-      };
+      }
 
       searchForJobsFunction({
         values,
@@ -92,102 +82,97 @@ export const loadItem = async ({
           isTraining: true,
           isJob: true,
         },
-      });
+      })
     } else {
       let results = {
         peJobs: null,
         lbbCompanies: null,
         lbaCompanies: null,
         matchas: null,
-      };
+      }
 
-      let loadedItem = null;
+      let loadedItem = null
 
-      let errorMessage = null;
-      let responseResult = null;
+      let errorMessage = null
+      let responseResult = null
 
       switch (item.type) {
         case "peJob": {
-          const response = await axios.get(offreApi + "/" + item.itemId);
+          const response = await axios.get(offreApi + "/" + item.itemId)
 
           // gestion des erreurs
           if (!response?.data?.message) {
-            let peJobs = await computeMissingPositionAndDistance(null, response.data.peJobs);
+            let peJobs = await computeMissingPositionAndDistance(null, response.data.peJobs)
 
-            results.peJobs = peJobs;
-            loadedItem = peJobs[0];
+            results.peJobs = peJobs
+            loadedItem = peJobs[0]
           } else {
-            errorMessage = `PE Error : ${response.data.message}`;
-            responseResult = response.data.result;
+            errorMessage = `PE Error : ${response.data.message}`
+            responseResult = response.data.result
           }
-          break;
+          break
         }
         case "matcha": {
-          
-          let matchaUrl = `${matchaApi}/${!useMock ? item.itemId : "id-matcha-test"}`          
-          const response = await axios.get(matchaUrl);
+          let matchaUrl = `${matchaApi}/${!useMock ? item.itemId : "id-matcha-test"}`
+          const response = await axios.get(matchaUrl)
 
           // gestion des erreurs
           if (!response?.data?.message) {
-            let matchas = await computeMissingPositionAndDistance(null, response.data.matchas);
-            results.matchas = matchas;
-            loadedItem = matchas[0];
+            let matchas = await computeMissingPositionAndDistance(null, response.data.matchas)
+            results.matchas = matchas
+            loadedItem = matchas[0]
           } else {
-            errorMessage = `Matcha Error : ${response.data.message}`;
-            responseResult = response.data.result;
+            errorMessage = `Matcha Error : ${response.data.message}`
+            responseResult = response.data.result
           }
-          break;
+          break
         }
 
         default: {
-          const response = await axios.get(`${companyApi}/${item.itemId}?type=${item.type}`);
+          const response = await axios.get(`${companyApi}/${item.itemId}?type=${item.type}`)
 
           // gestion des erreurs
           if (!response?.data?.message) {
-            let companies = item.type === "lbb" ? response.data.lbbCompanies : response.data.lbaCompanies;
+            let companies = item.type === "lbb" ? response.data.lbbCompanies : response.data.lbaCompanies
 
-            loadedItem = companies[0];
-            results.lbbCompanies = item.type === "lbb" ? companies : null;
-            results.lbaCompanies = item.type === "lba" ? companies : null;
+            loadedItem = companies[0]
+            results.lbbCompanies = item.type === "lbb" ? companies : null
+            results.lbaCompanies = item.type === "lba" ? companies : null
           } else {
-            errorMessage = `${item.type} Error : ${response.data.message}`;
-            responseResult = response.data.result;
+            errorMessage = `${item.type} Error : ${response.data.message}`
+            responseResult = response.data.result
           }
-          break;
+          break
         }
       }
 
       if (!errorMessage) {
-        setJobs(results);
+        setJobs(results)
 
-        setHasSearch(true);
+        setHasSearch(true)
 
-        setJobMarkers(factorJobsForMap(results), null);
+        setJobMarkers(factorJobsForMap(results), null)
 
-        setSelectedItem(loadedItem);
-        setSelectedMarker(loadedItem);
-        itemMarker = loadedItem;
+        setSelectedItem(loadedItem)
+        setSelectedMarker(loadedItem)
+        itemMarker = loadedItem
       } else {
-        logError("Job Load Error", errorMessage);
-        setJobSearchError(responseResult === "not_found" ? notFoundErrorText : partialJobSearchErrorText);
+        logError("Job Load Error", errorMessage)
+        setJobSearchError(responseResult === "not_found" ? notFoundErrorText : partialJobSearchErrorText)
       }
     }
 
     if (itemMarker) {
-      flyToMarker(itemMarker, 12);
+      flyToMarker(itemMarker, 12)
     }
-    setCurrentPage("fiche");
+    setCurrentPage("fiche")
   } catch (err) {
-    console.log(
-      `Erreur interne lors du chargement d'un élément (${err.response ? err.response.status : ""} : ${
-        err?.response?.data ? err.response.data.error : ""
-      })`
-    );
-    logError("Training search error", err);
-    setTrainingSearchError(trainingErrorText);
+    console.log(`Erreur interne lors du chargement d'un élément (${err.response ? err.response.status : ""} : ${err?.response?.data ? err.response.data.error : ""})`)
+    logError("Training search error", err)
+    setTrainingSearchError(trainingErrorText)
   }
 
-  setIsTrainingSearchLoading(false);
-  setIsJobSearchLoading(false);
-  return;
-};
+  setIsTrainingSearchLoading(false)
+  setIsJobSearchLoading(false)
+  return
+}

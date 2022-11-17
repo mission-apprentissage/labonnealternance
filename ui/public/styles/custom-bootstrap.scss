@@ -15,16 +15,18 @@
 *
 */
 
-$line-height-lg:              1.75;
+$line-height-lg: 1.75;
 
-$btn-border-radius:           8px;
-$btn-border-radius-lg:        8px;
-$btn-border-radius-sm:        8px;
+$btn-border-radius: 8px;
+$btn-border-radius-lg: 8px;
+$btn-border-radius-sm: 8px;
 
-$headings-font-family: 'Marianne', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-$font-family-base: 'Marianne', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+$headings-font-family: "Marianne", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+  "Segoe UI Symbol", "Noto Color Emoji";
+$font-family-base: "Marianne", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+  "Segoe UI Symbol", "Noto Color Emoji";
 
-$white:    #fff;
+$white: #fff;
 $gray-100: #f8f8f8;
 $gray-200: #f0f0f0;
 $gray-300: #e7e7e7;
@@ -32,10 +34,10 @@ $gray-400: #cecece;
 $gray-500: #9c9c9c;
 $gray-600: #6a6a6a;
 $gray-700: #383838;
-$gray-750: #2a2a2a; 
+$gray-750: #2a2a2a;
 $gray-800: #1e1e1e;
 $gray-900: #1e1e1e;
-$black:    #000;
+$black: #000;
 
 $grays: ();
 $grays: map-merge(
@@ -49,21 +51,20 @@ $grays: map-merge(
     "700": $gray-700,
     "750": $gray-750,
     "800": $gray-800,
-    "900": $gray-900
-    ),
-    $grays
-  );
+    "900": $gray-900,
+  ),
+  $grays
+);
 
 $bluesoft500: #5770be;
 $bluedark500: #484d7a;
 $pinksoft500: #ff8d7e;
-$pinksoft750: #D07C75;
-$greensoft500: #00AC8C;
-$greensoft750: #22967E;
+$pinksoft750: #d07c75;
+$greensoft500: #00ac8c;
+$greensoft750: #22967e;
 $pinkdark500: #d08a77;
 $pinklight500: #ffc29e;
-$home-background-color: #FFF;
-
+$home-background-color: #fff;
 
 $colors: ();
 $colors: map-merge(
@@ -76,19 +77,19 @@ $colors: map-merge(
     "greensoft500": $greensoft500,
     "greensoft750": $greensoft750,
     "pinklight500": $pinklight500,
-    "white":      $white
-    ),
+    "white": $white,
+  ),
   $colors
-  );
+);
 
-$success:       #0d6635;
-$info:          #3a55d1;
-$warning:       #fa5c00;
-$danger:        #b60000;
-$primary:       $info;
-$secondary:     $gray-600;
-$light:         $gray-100;
-$dark:          $gray-750;
+$success: #0d6635;
+$info: #3a55d1;
+$warning: #fa5c00;
+$danger: #b60000;
+$primary: $info;
+$secondary: $gray-600;
+$light: $gray-100;
+$dark: $gray-750;
 
 $small-font-size: 85%;
 
@@ -102,7 +103,6 @@ $small-font-size: 85%;
 @import "~bootstrap/scss/functions";
 @import "~bootstrap/scss/variables";
 @import "~bootstrap/scss/mixins";
-
 
 /** 
 *
@@ -125,7 +125,6 @@ $small-font-size: 85%;
   }
 }
 
-
 /** 
 *
 * PART 4
@@ -144,25 +143,28 @@ $small-font-size: 85%;
   .card-deck {
     margin: 0px;
   }
-  .btn-outline-primary:hover, .btn-outline-primary.hover {
-      color: $info;
-      background-color: white;
-      border-color: $info;
-      box-shadow: 0px 0px 12px 2px rgba(0, 0, 0, 0.21);
+  .btn-outline-primary:hover,
+  .btn-outline-primary.hover {
+    color: $info;
+    background-color: white;
+    border-color: $info;
+    box-shadow: 0px 0px 12px 2px rgba(0, 0, 0, 0.21);
   }
 
-  .btn-primary:hover, .btn-primary.hover {
-      color: white;
-      background-color: $info;
-      border-color: $info;
-      box-shadow: 0px 0px 12px 2px rgba(0, 0, 0, 0.21);
+  .btn-primary:hover,
+  .btn-primary.hover {
+    color: white;
+    background-color: $info;
+    border-color: $info;
+    box-shadow: 0px 0px 12px 2px rgba(0, 0, 0, 0.21);
   }
 
-  .btn-dark:hover, .btn-dark.hover {
-      color: white;
-      background-color: $dark;
-      border-color: $dark;
-      box-shadow: 0px 0px 12px 2px rgba(0, 0, 0, 0.21);
+  .btn-dark:hover,
+  .btn-dark.hover {
+    color: white;
+    background-color: $dark;
+    border-color: $dark;
+    box-shadow: 0px 0px 12px 2px rgba(0, 0, 0, 0.21);
   }
 
   .btn-outline-primary:not(:disabled):not(.disabled):active {
@@ -210,7 +212,6 @@ body {
 
 // Read https://css-tricks.com/snippets/css/prevent-long-urls-from-breaking-out-of-container/
 .dont-break-out {
-
   /* These are technically the same, but use both */
   overflow-wrap: break-word;
   word-wrap: break-word;
@@ -226,5 +227,4 @@ body {
   -moz-hyphens: auto;
   -webkit-hyphens: auto;
   hyphens: auto;
-
 }

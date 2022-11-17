@@ -1,9 +1,9 @@
-import React from "react";
-import Navigation from "components/navigation";
-import ScrollToTop from "components/ScrollToTop";
-import Breadcrumb from "components/breadcrumb";
+import React from "react"
+import Navigation from "components/navigation"
+import ScrollToTop from "components/ScrollToTop"
+import Breadcrumb from "components/breadcrumb"
 
-import Footer from "components/footer";
+import Footer from "components/footer"
 
 const stats2 = () => (
   <div>
@@ -22,8 +22,7 @@ const stats2 = () => (
         <div className="col-12 col-md-7">
           <h3>Statistiques</h3>
           <p>
-            La bonne alternance est une startup d’Etat incubée par beta.gouv. Nous développons un service à destination
-            des publics selon les principes du{" "}
+            La bonne alternance est une startup d’Etat incubée par beta.gouv. Nous développons un service à destination des publics selon les principes du{" "}
             <a href="https://beta.gouv.fr/approche/manifeste">Manifeste de beta.gouv</a>
           </p>
           <p>Nous mesurons l’impact de nos actions et publions en toute transparence nos statistiques :</p>
@@ -80,9 +79,7 @@ const stats2 = () => (
         />
       </div>
       <div>
-        <h3>
-          Taux de réponse aux candidatures (offres La bonne alternance, offres Pôle emploi et candidatures spontanées)
-        </h3>
+        <h3>Taux de réponse aux candidatures (offres La bonne alternance, offres Pôle emploi et candidatures spontanées)</h3>
         <iframe
           title="stats_taux_reponse_candidatures"
           className="c-stats-iframe c-stats-iframe__lba"
@@ -103,6 +100,6 @@ const stats2 = () => (
     <div className="mb-3">&nbsp;</div>
     <Footer />
   </div>
-);
+)
 
-export default stats2;
+export default stats2

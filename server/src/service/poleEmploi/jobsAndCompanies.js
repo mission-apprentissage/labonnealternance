@@ -1,60 +1,60 @@
-import Sentry from "@sentry/node";
+import Sentry from "@sentry/node"
 
-import { getPeJobFromId, getSomePeJobs } from "./offresPoleEmploi.js";
-import { getCompanyFromSiret, getSomeLbbCompanies } from "./bonnesBoites.js";
-import { getMatchaJobs } from "../matcha.js";
-import { jobsQueryValidator } from "./jobsQueryValidator.js";
-import { trackApiCall } from "../../common/utils/sendTrackingEvent.js";
+import { getPeJobFromId, getSomePeJobs } from "./offresPoleEmploi.js"
+import { getCompanyFromSiret, getSomeLbbCompanies } from "./bonnesBoites.js"
+import { getMatchaJobs } from "../matcha.js"
+import { jobsQueryValidator } from "./jobsQueryValidator.js"
+import { trackApiCall } from "../../common/utils/sendTrackingEvent.js"
 
 const getJobsQuery = async (query) => {
-  const queryValidationResult = jobsQueryValidator(query);
+  const queryValidationResult = jobsQueryValidator(query)
 
   if (queryValidationResult.error) {
-    return queryValidationResult;
+    return queryValidationResult
   }
 
-  const result = await getJobsFromApi({ query, api: "jobV1/jobs" });
+  const result = await getJobsFromApi({ query, api: "jobV1/jobs" })
 
   if (query.caller) {
-    let nb_emplois = 0;
+    let nb_emplois = 0
     if (result?.lbaCompanies?.results) {
-      nb_emplois += result.lbaCompanies.results.length;
+      nb_emplois += result.lbaCompanies.results.length
     }
 
     if (result?.peJobs?.results) {
-      nb_emplois += result.peJobs.results.length;
+      nb_emplois += result.peJobs.results.length
     }
 
     if (result?.matchas?.results) {
-      nb_emplois += result.matchas.results.length;
+      nb_emplois += result.matchas.results.length
     }
 
-    trackApiCall({ caller: query.caller, nb_emplois, result_count: nb_emplois, api: "jobV1/jobs", result: "OK" });
+    trackApiCall({ caller: query.caller, nb_emplois, result_count: nb_emplois, api: "jobV1/jobs", result: "OK" })
   }
 
-  return result;
-};
+  return result
+}
 
 const getPeJobQuery = async (query) => {
   try {
     const job = await getPeJobFromId({
       id: query.id,
       caller: query.caller,
-    });
+    })
 
     if (query.caller) {
-      trackApiCall({ caller: query.caller, nb_emplois: 1, result_count: 1, api: "jobV1/job", result: "OK" });
+      trackApiCall({ caller: query.caller, nb_emplois: 1, result_count: 1, api: "jobV1/job", result: "OK" })
     }
     //throw new Error("BIG BANG");
-    return job;
+    return job
   } catch (err) {
-    Sentry.captureException(err);
+    Sentry.captureException(err)
     if (query.caller) {
-      trackApiCall({ caller: query.caller, api: "jobV1/job", result: "Error" });
+      trackApiCall({ caller: query.caller, api: "jobV1/job", result: "Error" })
     }
-    return { error: "internal_error" };
+    return { error: "internal_error" }
   }
-};
+}
 
 const getCompanyQuery = async (query) => {
   try {
@@ -63,27 +63,27 @@ const getCompanyQuery = async (query) => {
       referer: query.referer,
       type: query.type,
       caller: query.caller,
-    });
+    })
 
     //throw new Error("BIG BANG");
     if (query.caller) {
-      trackApiCall({ caller: query.caller, api: "jobV1/company", nb_emplois: 1, result_count: 1, result: "OK" });
+      trackApiCall({ caller: query.caller, api: "jobV1/company", nb_emplois: 1, result_count: 1, result: "OK" })
     }
 
-    return company;
+    return company
   } catch (err) {
-    console.error("Error ", err.message);
-    Sentry.captureException(err);
+    console.error("Error ", err.message)
+    Sentry.captureException(err)
     if (query.caller) {
-      trackApiCall({ caller: query.caller, api: "jobV1/company", result: "Error" });
+      trackApiCall({ caller: query.caller, api: "jobV1/company", result: "Error" })
     }
-    return { error: "internal_error" };
+    return { error: "internal_error" }
   }
-};
+}
 
 const getJobsFromApi = async ({ query, api }) => {
   try {
-    const sources = !query.sources ? ["lba", "lbb", "offres", "matcha"] : query.sources.split(",");
+    const sources = !query.sources ? ["lba", "lbb", "offres", "matcha"] : query.sources.split(",")
 
     let [peJobs, lbaCompanies, lbbCompanies, matchas] = await Promise.all([
       sources.indexOf("offres") >= 0
@@ -138,11 +138,11 @@ const getJobsFromApi = async ({ query, api }) => {
             useMock: query.useMock,
           })
         : null,
-    ]);
+    ])
 
     //remove duplicates between lbas and lbbs. lbas stay untouched, only duplicate lbbs are removed
     if (lbaCompanies && lbbCompanies) {
-      deduplicateCompanies(lbaCompanies, lbbCompanies);
+      deduplicateCompanies(lbaCompanies, lbbCompanies)
     }
 
     /*if (!query.sources) {
@@ -150,33 +150,32 @@ const getJobsFromApi = async ({ query, api }) => {
     }*/
     //throw new Error("kaboom");
 
-    return { peJobs, matchas, lbaCompanies, lbbCompanies };
+    return { peJobs, matchas, lbaCompanies, lbbCompanies }
   } catch (err) {
-    console.log("Error ", err.message);
-    Sentry.captureException(err);
+    console.log("Error ", err.message)
+    Sentry.captureException(err)
 
     if (query.caller) {
-      trackApiCall({ caller: query.caller, api, result: "Error" });
+      trackApiCall({ caller: query.caller, api, result: "Error" })
     }
 
-    return { error: "internal_error" };
+    return { error: "internal_error" }
   }
-};
+}
 
 const deduplicateCompanies = (lbaCompanies, lbbCompanies) => {
   if (lbaCompanies.results && lbbCompanies.results) {
-    let lbaSirets = [];
+    let lbaSirets = []
     for (let i = 0; i < lbaCompanies.results.length; ++i) {
-      lbaSirets.push(lbaCompanies.results[i].company.siret);
+      lbaSirets.push(lbaCompanies.results[i].company.siret)
     }
 
-    let deduplicatedLbbCompanies = [];
+    let deduplicatedLbbCompanies = []
     for (let i = 0; i < lbbCompanies.results.length; ++i) {
-      if (lbaSirets.indexOf(lbbCompanies.results[i].company.siret) < 0)
-        deduplicatedLbbCompanies.push(lbbCompanies.results[i]);
+      if (lbaSirets.indexOf(lbbCompanies.results[i].company.siret) < 0) deduplicatedLbbCompanies.push(lbbCompanies.results[i])
     }
-    lbbCompanies.results = deduplicatedLbbCompanies;
+    lbbCompanies.results = deduplicatedLbbCompanies
   }
-};
+}
 
-export { getJobsFromApi, getJobsQuery, getPeJobQuery, getCompanyQuery };
+export { getJobsFromApi, getJobsQuery, getPeJobQuery, getCompanyQuery }

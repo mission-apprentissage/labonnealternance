@@ -1,19 +1,19 @@
-import React from "react";
-import Navigation from "../components/navigation";
-import ScrollToTop from "../components/ScrollToTop";
-import Breadcrumb from "../components/breadcrumb";
-import Entreprise from "../components/HomeComponents/Entreprise";
-import PostezVotreOffre from "../components/HomeComponents/PostezVotreOffre";
-import OffresGratuites from "../components/HomeComponents/OffresGratuites";
-import OrganismesMandataires from "../components/HomeComponents/OrganismesMandataires";
-import GerezOffres from "../components/HomeComponents/GerezOffres";
-import FollowLinkedIn from "../components/HomeComponents/FollowLinkedIn";
-import AlgoRecruiter from "../components/HomeComponents/AlgoRecruiter";
-import ConnectionActions from "../components/HomeComponents/ConnectionActions";
+import React from "react"
+import Navigation from "../components/navigation"
+import ScrollToTop from "../components/ScrollToTop"
+import Breadcrumb from "../components/breadcrumb"
+import Entreprise from "../components/HomeComponents/Entreprise"
+import PostezVotreOffre from "../components/HomeComponents/PostezVotreOffre"
+import OffresGratuites from "../components/HomeComponents/OffresGratuites"
+import OrganismesMandataires from "../components/HomeComponents/OrganismesMandataires"
+import GerezOffres from "../components/HomeComponents/GerezOffres"
+import FollowLinkedIn from "../components/HomeComponents/FollowLinkedIn"
+import AlgoRecruiter from "../components/HomeComponents/AlgoRecruiter"
+import ConnectionActions from "../components/HomeComponents/ConnectionActions"
 
-import { NextSeo } from "next-seo";
+import { NextSeo } from "next-seo"
 
-import Footer from "../components/footer";
+import Footer from "../components/footer"
 
 const AccesRecruteur = () => (
   <div>
@@ -58,6 +58,6 @@ const AccesRecruteur = () => (
     <div className="mb-3">&nbsp;</div>
     <Footer />
   </div>
-);
+)
 
-export default AccesRecruteur;
+export default AccesRecruteur

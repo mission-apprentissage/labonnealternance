@@ -1,67 +1,67 @@
-import Sentry from "@sentry/node";
-import axios from "axios";
-import config from "../../config.js";
-import { etat_etablissements } from "../constants.js";
-import { ReferentielOpco, UserRecruteur } from "../model/index.js";
+import Sentry from "@sentry/node"
+import axios from "axios"
+import config from "../../config.js"
+import { etat_etablissements } from "../constants.js"
+import { ReferentielOpco, UserRecruteur } from "../model/index.js"
 
 const apiParams = {
   token: config.apiEntrepriseKey,
   context: "Matcha MNA",
   recipient: "12000101100010", // Siret Dinum
   object: "Consolidation des données",
-};
+}
 
 const getEffectif = (code) => {
   switch (code) {
     case "00":
-      return "0 salarié";
+      return "0 salarié"
 
     case "01":
-      return "1 ou 2 salariés";
+      return "1 ou 2 salariés"
 
     case "02":
-      return "3 à 5 salariés";
+      return "3 à 5 salariés"
 
     case "03":
-      return "6 à 9 salariés";
+      return "6 à 9 salariés"
 
     case "11":
-      return "10 à 19 salariés";
+      return "10 à 19 salariés"
 
     case "12":
-      return "20 à 49 salariés";
+      return "20 à 49 salariés"
 
     case "21":
-      return "50 à 99 salariés";
+      return "50 à 99 salariés"
 
     case "22":
-      return "100 à 199 salariés";
+      return "100 à 199 salariés"
 
     case "31":
-      return "200 à 249 salariés";
+      return "200 à 249 salariés"
 
     case "32":
-      return "250 à 499 salariés";
+      return "250 à 499 salariés"
 
     case "41":
-      return "500 à 999 salariés";
+      return "500 à 999 salariés"
 
     case "42":
-      return "1 000 à 1 999 salariés";
+      return "1 000 à 1 999 salariés"
 
     case "51":
-      return "2 000 à 4 999 salariés";
+      return "2 000 à 4 999 salariés"
 
     case "52":
-      return "5 000 à 9 999 salariés";
+      return "5 000 à 9 999 salariés"
 
     case "53":
-      return "10 000 salariés et plus";
+      return "10 000 salariés et plus"
 
     default:
-      return "";
+      return ""
   }
-};
+}
 
 export default () => ({
   getEtablissement: (query) => UserRecruteur.findOne(query),
@@ -70,36 +70,36 @@ export default () => ({
   getIdcc: (siret) => axios.get(`https://siret2idcc.fabrique.social.gouv.fr/api/v2/${siret}`),
   getValidationUrl: (_id) => `${config.publicUrl}/authentification/validation/${_id}`,
   validateEtablissementEmail: async (_id) => {
-    let exist = await UserRecruteur.findById(_id);
+    let exist = await UserRecruteur.findById(_id)
 
     if (!exist) {
-      return false;
+      return false
     }
 
-    await UserRecruteur.findByIdAndUpdate(_id, { email_valide: true });
+    await UserRecruteur.findByIdAndUpdate(_id, { email_valide: true })
 
-    return true;
+    return true
   },
   getEtablissementFromGouv: async (siret) => {
     try {
       const result = await axios.get(`https://entreprise.api.gouv.fr/v2/etablissements/${siret}`, {
         params: apiParams,
-      });
+      })
 
-      return result;
+      return result
     } catch (error) {
-      Sentry.captureException(error);
-      return { error: true };
+      Sentry.captureException(error)
+      return { error: true }
     }
   },
   getEtablissementFromReferentiel: async (siret) => {
     try {
-      const response = await axios.get(`https://referentiel.apprentissage.beta.gouv.fr/api/v1/organismes/${siret}`);
-      return response;
+      const response = await axios.get(`https://referentiel.apprentissage.beta.gouv.fr/api/v1/organismes/${siret}`)
+      return response
     } catch (error) {
-      Sentry.captureException(error);
+      Sentry.captureException(error)
       if (error.response.status === 404) {
-        return null;
+        return null
       }
     }
   },
@@ -109,27 +109,24 @@ export default () => ({
         params: {
           query: { siret },
         },
-      });
-      return result;
+      })
+      return result
     } catch (error) {
-      Sentry.captureException(error);
-      return error;
+      Sentry.captureException(error)
+      return error
     }
   },
   getGeoCoordinates: async (adresse) => {
     try {
-      const response = await axios.get(`https://api-adresse.data.gouv.fr/search/?q=${adresse}`);
-      const coordinates = response.data.features[0]
-        ? response.data.features[0].geometry.coordinates.reverse().join(",")
-        : "NOT FOUND";
-      return coordinates;
+      const response = await axios.get(`https://api-adresse.data.gouv.fr/search/?q=${adresse}`)
+      const coordinates = response.data.features[0] ? response.data.features[0].geometry.coordinates.reverse().join(",") : "NOT FOUND"
+      return coordinates
     } catch (error) {
-      Sentry.captureException(error);
-      return error;
+      Sentry.captureException(error)
+      return error
     }
   },
-  getEstablishmentFromOpcoReferentiel: (opco_label, siret_code, email) =>
-    ReferentielOpco.findOne({ opco_label, siret_code, emails: { $in: [email] } }),
+  getEstablishmentFromOpcoReferentiel: (opco_label, siret_code, email) => ReferentielOpco.findOne({ opco_label, siret_code, emails: { $in: [email] } }),
   formatEntrepriseData: (d) => ({
     enseigne: d.enseigne,
     etat: d.etat_administratif.value, // F pour fermé ou A pour actif
@@ -166,9 +163,7 @@ export default () => ({
     raison_sociale: d.raison_sociale,
     contacts: d.contacts,
     adresse: d.adresse?.label,
-    rue:
-      d.adresse?.label?.split(`${d.adresse?.code_postal}`)[0].trim() ||
-      d.lieux_de_formation[0].adresse.label.split(`${d.lieux_de_formation[0].adresse.code_postal}`)[0].trim(),
+    rue: d.adresse?.label?.split(`${d.adresse?.code_postal}`)[0].trim() || d.lieux_de_formation[0].adresse.label.split(`${d.lieux_de_formation[0].adresse.code_postal}`)[0].trim(),
     commune: d.adresse?.localite || d.lieux_de_formation[0].adresse.localite,
     code_postal: d.adresse?.code_postal || d.lieux_de_formation[0].adresse.code_postal,
     geo_coordonnees: d.adresse
@@ -182,10 +177,8 @@ export default () => ({
     contacts: [], // les tco n'ont pas d'information de contact, mais conserve un standard pour l'ui,
     commune: d.localite,
     code_postal: d.code_postal,
-    adresse: `${d.numero_voie === null ? "" : d.numero_voie} ${d.type_voie} ${d.nom_voie} ${d.code_postal} ${
-      d.localite
-    }`,
+    adresse: `${d.numero_voie === null ? "" : d.numero_voie} ${d.type_voie} ${d.nom_voie} ${d.code_postal} ${d.localite}`,
     rue: `${d.numero_voie === null ? "" : d.numero_voie} ${d.type_voie} ${d.nom_voie}`,
     geo_coordonnees: d.geo_coordonnees,
   }),
-});
+})

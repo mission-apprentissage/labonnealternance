@@ -1,5 +1,5 @@
-import { Icon } from "@chakra-ui/react";
-import React from "react";
+import { Icon } from "@chakra-ui/react"
+import React from "react"
 
 export function MessageLogo(props) {
   return (
@@ -26,5 +26,5 @@ export function MessageLogo(props) {
         fill="currentColor"
       />
     </Icon>
-  );
+  )
 }

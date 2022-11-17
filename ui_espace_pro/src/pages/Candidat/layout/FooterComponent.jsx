@@ -1,4 +1,4 @@
-import { Box, Text, Link } from "@chakra-ui/react";
+import { Box, Text, Link } from "@chakra-ui/react"
 
 /**
  * @description Footer component.
@@ -13,4 +13,4 @@ export const FooterComponent = () => (
       </Link>
     </Text>
   </Box>
-);
+)

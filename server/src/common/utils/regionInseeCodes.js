@@ -17,7 +17,7 @@ const regionCodeToNameMap = {
   "03": "Guyane",
   "04": "La Réunion",
   "06": "Mayotte",
-};
+}
 
 const regionCodeToDepartmentList = {
   84: ["01", "03", "07", "15", "26", "38", "42", "43", "63", "69", "69", "73", "74"],
@@ -38,6 +38,6 @@ const regionCodeToDepartmentList = {
   "03": ["973"],
   "04": ["974"],
   "06": ["976"],
-};
+}
 
-export { regionCodeToNameMap, regionCodeToDepartmentList };
+export { regionCodeToNameMap, regionCodeToDepartmentList }

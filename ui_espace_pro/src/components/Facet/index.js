@@ -1,2 +1,2 @@
-import Facet from './Facet'
+import Facet from "./Facet"
 export default Facet

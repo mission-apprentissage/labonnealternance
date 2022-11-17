@@ -1,13 +1,13 @@
-import express from "express";
-import { tryCatch } from "../middlewares/tryCatchMiddleware.js";
-import { getFormations } from "../../common/utils/catalogue.js";
-import { getUniqueArray } from "../../common/utils/array.js";
+import express from "express"
+import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
+import { getFormations } from "../../common/utils/catalogue.js"
+import { getUniqueArray } from "../../common/utils/array.js"
 
 /**
  * @description Catalogue router.
  */
 export default () => {
-  const router = express.Router();
+  const router = express.Router()
 
   /**
    * @description Proxify catalogue's requests.
@@ -15,16 +15,16 @@ export default () => {
   router.get(
     "/formations",
     tryCatch(async (req, res) => {
-      const qs = req.query;
-      const query = qs && qs.query ? JSON.parse(qs.query) : {};
-      const page = qs && qs.page ? parseInt(qs.page, 10) : 1;
-      const limit = qs && qs.limit ? parseInt(qs.limit, 10) : 50;
+      const qs = req.query
+      const query = qs && qs.query ? JSON.parse(qs.query) : {}
+      const page = qs && qs.page ? parseInt(qs.page, 10) : 1
+      const limit = qs && qs.limit ? parseInt(qs.limit, 10) : 50
 
-      const response = await getFormations(query, page, limit);
+      const response = await getFormations(query, page, limit)
 
-      return res.send(response);
+      return res.send(response)
     })
-  );
+  )
 
   /**
    * @description Proxify catalogue's requests.
@@ -32,23 +32,23 @@ export default () => {
   router.get(
     "/formations/filter",
     tryCatch(async (req, res) => {
-      const qs = req.query;
-      const query = qs && qs.query ? JSON.parse(qs.query) : {};
+      const qs = req.query
+      const query = qs && qs.query ? JSON.parse(qs.query) : {}
 
-      const response = await getFormations(query, 1, 10000);
-      const totalFormations = response.formations.length;
+      const response = await getFormations(query, 1, 10000)
+      const totalFormations = response.formations.length
 
-      const criterias1 = ["etablissement_formateur_siret", "cfd"];
-      const arrayFiltered1 = getUniqueArray(response.formations, criterias1);
+      const criterias1 = ["etablissement_formateur_siret", "cfd"]
+      const arrayFiltered1 = getUniqueArray(response.formations, criterias1)
 
-      const criterias2 = ["etablissement_formateur_siret", "etablissement_gestionnaire_siret", "cfd"];
-      const arrayFiltered2 = getUniqueArray(response.formations, criterias2);
+      const criterias2 = ["etablissement_formateur_siret", "etablissement_gestionnaire_siret", "cfd"]
+      const arrayFiltered2 = getUniqueArray(response.formations, criterias2)
 
-      const criterias3 = ["etablissement_formateur_siret", "cfd", "code_postal"];
-      const arrayFiltered3 = getUniqueArray(response.formations, criterias3);
+      const criterias3 = ["etablissement_formateur_siret", "cfd", "code_postal"]
+      const arrayFiltered3 = getUniqueArray(response.formations, criterias3)
 
-      const criterias4 = ["etablissement_formateur_siret", "etablissement_gestionnaire_siret", "cfd", "code_postal"];
-      const arrayFiltered4 = getUniqueArray(response.formations, criterias4);
+      const criterias4 = ["etablissement_formateur_siret", "etablissement_gestionnaire_siret", "cfd", "code_postal"]
+      const arrayFiltered4 = getUniqueArray(response.formations, criterias4)
 
       const mapper = (item) => ({
         intitule_long: item.intitule_long,
@@ -57,7 +57,7 @@ export default () => {
         etablissement_gestionnaire_siret: item.etablissement_gestionnaire_siret,
         cfd: item.cfd,
         code_postal: item.code_postal,
-      });
+      })
 
       return res.send({
         filtre_1: {
@@ -84,9 +84,9 @@ export default () => {
           total_formations_apres_filtrage: arrayFiltered4.length,
           formations: arrayFiltered4.map(mapper),
         },
-      });
+      })
     })
-  );
+  )
 
-  return router;
-};
+  return router
+}

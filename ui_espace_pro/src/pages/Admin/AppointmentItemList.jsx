@@ -1,7 +1,7 @@
-import { useState } from "react";
-import { Tr, Td, Text, Button, Textarea, Tooltip, Tag } from "@chakra-ui/react";
-import { _put } from "../../common/httpClient";
-import { formatDate, dayjs } from "../../common/dayjs";
+import { useState } from "react"
+import { Tr, Td, Text, Button, Textarea, Tooltip, Tag } from "@chakra-ui/react"
+import { _put } from "../../common/httpClient"
+import { formatDate, dayjs } from "../../common/dayjs"
 
 /**
  * @description Row table component.
@@ -10,12 +10,10 @@ import { formatDate, dayjs } from "../../common/dayjs";
  * @returns {JSX.Element}
  */
 export const AppointmentItemList = (props) => {
-  const [showEditionMode, setShowEditionMode] = useState(false);
-  const [cfaAPrisContact, setCfaAPrisContact] = useState(props.appointment.cfa_pris_contact_candidat);
-  const [champsLibreStatut, setChampsLibreStatut] = useState(props.appointment.champs_libre_status || "");
-  const [champsLibreCommentaires, setChampsLibreCommentaires] = useState(
-    props.appointment.champs_libre_commentaire || ""
-  );
+  const [showEditionMode, setShowEditionMode] = useState(false)
+  const [cfaAPrisContact, setCfaAPrisContact] = useState(props.appointment.cfa_pris_contact_candidat)
+  const [champsLibreStatut, setChampsLibreStatut] = useState(props.appointment.champs_libre_status || "")
+  const [champsLibreCommentaires, setChampsLibreCommentaires] = useState(props.appointment.champs_libre_commentaire || "")
 
   /**
    * @description Updates appointment.
@@ -27,32 +25,32 @@ export const AppointmentItemList = (props) => {
       cfa_pris_contact_candidat: cfaAPrisContact,
       champs_libre_status: champsLibreStatut,
       champs_libre_commentaire: champsLibreCommentaires,
-    });
+    })
 
   const canCelModeEdition = () => {
-    setCfaAPrisContact(props.appointment.cfa_pris_contact_candidat);
-    setChampsLibreStatut(props.appointment.champs_libre_status || "");
-    setChampsLibreCommentaires(props.appointment.champs_libre_commentaire || "");
-  };
+    setCfaAPrisContact(props.appointment.cfa_pris_contact_candidat)
+    setChampsLibreStatut(props.appointment.champs_libre_status || "")
+    setChampsLibreCommentaires(props.appointment.champs_libre_commentaire || "")
+  }
 
   const handleOnClick = (event, buttonName) => {
-    event.preventDefault();
+    event.preventDefault()
     switch (buttonName) {
       case "buttonEdit":
-        setShowEditionMode(true);
-        break;
+        setShowEditionMode(true)
+        break
       case "buttonValidate":
-        setShowEditionMode(false);
-        editAppointment(props.appointment._id);
-        break;
+        setShowEditionMode(false)
+        editAppointment(props.appointment._id)
+        break
       case "buttonCancel":
-        setShowEditionMode(false);
-        canCelModeEdition();
-        break;
+        setShowEditionMode(false)
+        canCelModeEdition()
+        break
       default:
-        break;
+        break
     }
-  };
+  }
 
   return (
     <Tr id={props.appointment._id} _hover={{ bg: "#f4f4f4", transition: "0.5s" }} transition="0.5s">
@@ -105,12 +103,8 @@ export const AppointmentItemList = (props) => {
         )}
       </Td>
       <Td>
-        {props.appointment.etablissement?.opt_mode === "OPT_IN" && (
-          <> {dayjs(props.appointment.etablissement?.opt_in_activated_at).format("DD/MM/YYYY")} </>
-        )}
-        {props.appointment.etablissement?.opt_mode === "OPT_OUT" && (
-          <> {dayjs(props.appointment.etablissement?.opt_out_activated_at).format("DD/MM/YYYY")} </>
-        )}
+        {props.appointment.etablissement?.opt_mode === "OPT_IN" && <> {dayjs(props.appointment.etablissement?.opt_in_activated_at).format("DD/MM/YYYY")} </>}
+        {props.appointment.etablissement?.opt_mode === "OPT_OUT" && <> {dayjs(props.appointment.etablissement?.opt_out_activated_at).format("DD/MM/YYYY")} </>}
         {!props.appointment.etablissement?.opt_mode && "N/C"}
       </Td>
       <Td>
@@ -119,9 +113,7 @@ export const AppointmentItemList = (props) => {
       <Td>
         <Tooltip
           hasArrow
-          label={`Envoi: ${
-            formatDate(props.appointment.email_premiere_demande_candidat_date) || "N/C"
-          } / Dernier statut: ${
+          label={`Envoi: ${formatDate(props.appointment.email_premiere_demande_candidat_date) || "N/C"} / Dernier statut: ${
             dayjs.utc(props.appointment.email_premiere_demande_cfa_statut_date).format("DD/MM/YYYY HH:mm:ss") || "N/C"
           }`}
           bg="gray.300"
@@ -148,22 +140,12 @@ export const AppointmentItemList = (props) => {
         </Textarea>
       </Td>
       <Td>
-        <Textarea
-          minH="0"
-          type="text"
-          disabled={!showEditionMode}
-          onChange={(event) => setChampsLibreStatut(event.target.value)}
-        >
+        <Textarea minH="0" type="text" disabled={!showEditionMode} onChange={(event) => setChampsLibreStatut(event.target.value)}>
           {champsLibreStatut}
         </Textarea>
       </Td>
       <Td>
-        <Textarea
-          minH="0"
-          type="text"
-          disabled={!showEditionMode}
-          onChange={(event) => setChampsLibreCommentaires(event.target.value)}
-        >
+        <Textarea minH="0" type="text" disabled={!showEditionMode} onChange={(event) => setChampsLibreCommentaires(event.target.value)}>
           {champsLibreCommentaires}
         </Textarea>
       </Td>
@@ -196,5 +178,5 @@ export const AppointmentItemList = (props) => {
         </>
       </Td>
     </Tr>
-  );
-};
+  )
+}

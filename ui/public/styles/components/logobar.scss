@@ -14,7 +14,7 @@ form.c-logobar-form {
   position: relative;
   border: 1px solid $gray-300;
   border-radius: 10px;
-  padding: .1rem;
+  padding: 0.1rem;
 }
 
 .c-logobar-label {
@@ -24,13 +24,11 @@ form.c-logobar-form {
   line-height: 15px;
   color: $gray-700;
   text-align: left;
-  margin-left: .5rem;
+  margin-left: 0.5rem;
   padding-top: 0.3rem;
 }
 
-
-.formGroup--logobar-onerror 
-{
+.formGroup--logobar-onerror {
   .c-logobar-formgroup {
     border: 1px solid $warning;
   }
@@ -45,15 +43,16 @@ form.c-logobar-form {
 .c-logobar-field select {
   padding: 0;
   height: 30px;
-  margin-left: .8rem;
-  margin-right: .8rem;
+  margin-left: 0.8rem;
+  margin-right: 0.8rem;
 }
 
 .c-logobar-field {
   min-height: 30px;
 }
 
-.c-logobar-field input, .c-logobar-field select {
+.c-logobar-field input,
+.c-logobar-field select {
   border: none;
   width: auto;
 }
@@ -63,7 +62,7 @@ form.c-logobar-form {
 }
 
 .c-logobar-label--rayon {
-  margin-left: .6rem;
+  margin-left: 0.6rem;
 }
 
 .c-logobar-formgroup--diploma {
@@ -72,7 +71,7 @@ form.c-logobar-form {
 
 .c-logobar-letstart {
   display: none;
-  @include media-breakpoint-up(xl) { 
+  @include media-breakpoint-up(xl) {
     display: inline-block;
     margin-left: 8px;
   }
@@ -80,13 +79,13 @@ form.c-logobar-form {
 
 .c-widgetheader--home .c-logobar-formgroup--diploma {
   width: auto;
-  @include media-breakpoint-up(md) { 
+  @include media-breakpoint-up(md) {
     width: 150px;
   }
 }
 
 .c-logobar-label--diploma {
-  margin-left: .6rem;
+  margin-left: 0.6rem;
 }
 
 .choiceCol .formGroup.formGroup--logobar {
@@ -106,7 +105,7 @@ form.c-logobar-form {
   display: flex;
   align-items: center;
   justify-content: center;
-  @include media-breakpoint-up(xl) { 
+  @include media-breakpoint-up(xl) {
     padding-left: 38px;
     padding-right: 42px;
   }

@@ -1,6 +1,6 @@
-import { extendTheme } from "@chakra-ui/react";
-import { components } from "./components";
-import { colors, fonts, rootFontSizePx } from "./theme-beta";
+import { extendTheme } from "@chakra-ui/react"
+import { components } from "./components"
+import { colors, fonts, rootFontSizePx } from "./theme-beta"
 
 const styles = {
   global: {
@@ -10,7 +10,7 @@ const styles = {
       background: "white",
     },
   },
-};
+}
 
 const theme = {
   fonts,
@@ -20,6 +20,6 @@ const theme = {
   // textStyles,
   // space,
   components,
-};
+}
 
-export default extendTheme(theme);
+export default extendTheme(theme)

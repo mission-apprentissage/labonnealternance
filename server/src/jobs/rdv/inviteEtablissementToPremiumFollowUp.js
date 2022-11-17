@@ -1,16 +1,16 @@
-import { logger } from "../../common/logger.js";
-import { mailType, optMode } from "../../common/model/constants/etablissement.js";
-import { dayjs } from "../../common/utils/dayjs.js";
-import { isValidEmail } from "../../common/utils/isValidEmail.js";
-import config from "../../config.js";
-import { mailTemplate } from "../../assets/index.js";
+import { logger } from "../../common/logger.js"
+import { mailType, optMode } from "../../common/model/constants/etablissement.js"
+import { dayjs } from "../../common/utils/dayjs.js"
+import { isValidEmail } from "../../common/utils/isValidEmail.js"
+import config from "../../config.js"
+import { mailTemplate } from "../../assets/index.js"
 
 /**
  * @description Invite all "etablissements" to Premium (followup).
  * @returns {Promise<void>}
  */
 export const inviteEtablissementToPremiumFollowUp = async ({ etablissements, mailer }) => {
-  logger.info("Cron #inviteEtablissementToPremiumFollowUp started.");
+  logger.info("Cron #inviteEtablissementToPremiumFollowUp started.")
 
   const etablissementsFound = await etablissements.find({
     email_decisionnaire: {
@@ -29,11 +29,11 @@ export const inviteEtablissementToPremiumFollowUp = async ({ etablissements, mai
     "mailing.campaign": {
       $ne: mailType.PREMIUM_INVITE_FOLLOW_UP,
     },
-  });
+  })
 
   for (const etablissement of etablissementsFound) {
     if (!etablissement.email_decisionnaire || !isValidEmail(etablissement.email_decisionnaire)) {
-      continue;
+      continue
     }
 
     // Invite all etablissements only in production environment
@@ -54,7 +54,7 @@ export const inviteEtablissementToPremiumFollowUp = async ({ etablissements, mai
         },
       },
       from: config.rdvEmail,
-    });
+    })
 
     await etablissements.updateOne(
       { siret_formateur: etablissement.siret_formateur },
@@ -69,8 +69,8 @@ export const inviteEtablissementToPremiumFollowUp = async ({ etablissements, mai
           },
         },
       }
-    );
+    )
   }
 
-  logger.info("Cron #inviteEtablissementToPremiumFollowUp done.");
-};
+  logger.info("Cron #inviteEtablissementToPremiumFollowUp done.")
+}

@@ -1,10 +1,10 @@
-import Sentry from "@sentry/node";
-import Ftp from "basic-ftp";
-import { logger } from "../logger.js";
+import Sentry from "@sentry/node"
+import Ftp from "basic-ftp"
+import { logger } from "../logger.js"
 
 class FTPClient {
   constructor() {
-    this.client = new Ftp.Client();
+    this.client = new Ftp.Client()
   }
 
   /**
@@ -12,27 +12,27 @@ class FTPClient {
    * @param {object} options
    */
   async connect(options) {
-    logger.info(`Connecting to FTP....`);
+    logger.info(`Connecting to FTP....`)
 
     try {
-      await this.client.access(options);
+      await this.client.access(options)
     } catch (error) {
-      Sentry.captureException(error);
-      logger.error("FTP connection failed", error);
+      Sentry.captureException(error)
+      logger.error("FTP connection failed", error)
     }
   }
 
   async list() {
-    console.log(await this.client.list());
+    console.log(await this.client.list())
   }
 
   /**
    * @description Disconnect an FTP connection
    */
   async disconnect() {
-    logger.info(`Closing FTP....`);
-    await this.client.close();
-    logger.info(`Connection closed.`);
+    logger.info(`Closing FTP....`)
+    await this.client.close()
+    logger.info(`Connection closed.`)
   }
 
   /**
@@ -42,15 +42,15 @@ class FTPClient {
    */
   async downloadFile(remoteFile, destinationPath) {
     try {
-      this.client.trackProgress((info) => logger.info(`${(info.bytes / 1000000).toFixed(2)} MB`));
-      await this.client.downloadTo(destinationPath, remoteFile);
-      this.client.trackProgress();
-      logger.info(`File successfully downloaded.`);
+      this.client.trackProgress((info) => logger.info(`${(info.bytes / 1000000).toFixed(2)} MB`))
+      await this.client.downloadTo(destinationPath, remoteFile)
+      this.client.trackProgress()
+      logger.info(`File successfully downloaded.`)
     } catch (error) {
-      Sentry.captureException(error);
-      logger.error("Download failed:", error);
+      Sentry.captureException(error)
+      logger.error("Download failed:", error)
     }
   }
 }
 
-export { FTPClient };
+export { FTPClient }

@@ -12,13 +12,13 @@ const emailStatus = {
   invalid_email: "Email invalide",
   blocked: "Bloqué",
   error: "Erreur",
-};
+}
 
 /**
  * @description Returns email status.
  * @param {string} status - Status stored in database
  * @return {string}
  */
-const getEmailStatus = (status) => emailStatus[status] || "N/C";
+const getEmailStatus = (status) => emailStatus[status] || "N/C"
 
-export { getEmailStatus };
+export { getEmailStatus }

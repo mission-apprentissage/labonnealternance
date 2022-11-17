@@ -1,24 +1,24 @@
-import express from "express";
-import { tryCatch } from "../middlewares/tryCatchMiddleware.js";
-import { getJobsQuery, getPeJobQuery, getCompanyQuery } from "../../service/poleEmploi/jobsAndCompanies.js";
-import { getMatchaJobById } from "../../service/matcha.js";
+import express from "express"
+import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
+import { getJobsQuery, getPeJobQuery, getCompanyQuery } from "../../service/poleEmploi/jobsAndCompanies.js"
+import { getMatchaJobById } from "../../service/matcha.js"
 
 export default function () {
-  const router = express.Router();
+  const router = express.Router()
 
   router.get(
     "/",
     tryCatch(async (req, res) => {
-      const result = await getJobsQuery({ ...req.query, referer: req.headers.referer });
+      const result = await getJobsQuery({ ...req.query, referer: req.headers.referer })
 
       if (result.error) {
-        if (result.error === "wrong_parameters") res.status(400);
-        else res.status(500);
+        if (result.error === "wrong_parameters") res.status(400)
+        else res.status(500)
       }
 
-      return res.json(result);
+      return res.json(result)
     })
-  );
+  )
 
   router.get(
     "/job/:id",
@@ -27,21 +27,21 @@ export default function () {
         id: req.params.id,
         referer: req.headers.referer,
         caller: req.query.caller,
-      });
+      })
 
       if (result.error) {
         if (result.error === "wrong_parameters") {
-          res.status(400);
+          res.status(400)
         } else if (result.error === "not_found") {
-          res.status(404);
+          res.status(404)
         } else {
-          res.status(500);
+          res.status(500)
         }
       }
 
-      return res.json(result);
+      return res.json(result)
     })
-  );
+  )
 
   router.get(
     "/matcha/:id",
@@ -49,21 +49,21 @@ export default function () {
       const result = await getMatchaJobById({
         id: req.params.id,
         caller: req.query.caller,
-      });
+      })
 
       if (result.error) {
         if (result.error === "wrong_parameters") {
-          res.status(400);
+          res.status(400)
         } else if (result.error === "not_found") {
-          res.status(404);
+          res.status(404)
         } else {
-          res.status(500);
+          res.status(500)
         }
       }
 
-      return res.json(result);
+      return res.json(result)
     })
-  );
+  )
 
   router.get(
     "/company/:siret",
@@ -73,21 +73,21 @@ export default function () {
         type: req.query.type,
         referer: req.headers.referer,
         caller: req.query.caller,
-      });
+      })
 
       if (result.error) {
         if (result.error === "wrong_parameters") {
-          res.status(400);
+          res.status(400)
         } else if (result.error === "not_found") {
-          res.status(404);
+          res.status(404)
         } else {
-          res.status(500);
+          res.status(500)
         }
       }
 
-      return res.json(result);
+      return res.json(result)
     })
-  );
+  )
 
-  return router;
+  return router
 }

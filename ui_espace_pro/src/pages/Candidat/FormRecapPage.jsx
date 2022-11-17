@@ -1,11 +1,11 @@
-import { useParams } from "react-router-dom";
-import { Box, Text } from "@chakra-ui/react";
-import { FormLayoutComponent } from "./layout/FormLayoutComponent";
-import { useFetch } from "../../common/hooks/useFetch";
+import { useParams } from "react-router-dom"
+import { Box, Text } from "@chakra-ui/react"
+import { FormLayoutComponent } from "./layout/FormLayoutComponent"
+import { useFetch } from "../../common/hooks/useFetch"
 
 export const FormRecapPage = () => {
-  const { id: appointmentId } = useParams();
-  const [data, loading] = useFetch(`/api/appointment-request/context/recap?appointmentId=${appointmentId}`);
+  const { id: appointmentId } = useParams()
+  const [data, loading] = useFetch(`/api/appointment-request/context/recap?appointmentId=${appointmentId}`)
 
   return (
     <FormLayoutComponent
@@ -41,9 +41,7 @@ export const FormRecapPage = () => {
                 </Text>{" "}
                 pour répondre à vos questions.
               </Text>
-              <Text mt={10}>
-                Vous allez recevoir un email de confirmation de votre demande de contact sur votre adresse email.
-              </Text>
+              <Text mt={10}>Vous allez recevoir un email de confirmation de votre demande de contact sur votre adresse email.</Text>
               <Box borderBottom="1px solid #D0C9C4" mt={10} />
               <Box mt={10}>
                 {data.etablissement && (
@@ -61,5 +59,5 @@ export const FormRecapPage = () => {
         </>
       )}
     </FormLayoutComponent>
-  );
-};
+  )
+}

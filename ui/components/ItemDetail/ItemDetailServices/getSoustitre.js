@@ -1,7 +1,7 @@
-import React from "react";
+import React from "react"
 
 export default function getSoustitre({ selectedItem }) {
-  let res = "";
+  let res = ""
 
   selectedItem?.company?.mandataire
     ? (res = (
@@ -42,7 +42,7 @@ export default function getSoustitre({ selectedItem }) {
             <span className="c-detail-address">&nbsp;{selectedItem?.place?.city || selectedItem?.place?.address}</span>
           </span>
         </p>
-      ));
+      ))
 
-  return res;
+  return res
 }

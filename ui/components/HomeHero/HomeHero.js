@@ -1,5 +1,5 @@
-import React from "react";
-import StartForm from "../StartForm";
+import React from "react"
+import StartForm from "../StartForm"
 
 const HomeHero = () => {
   return (
@@ -10,7 +10,7 @@ const HomeHero = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default HomeHero;
+export default HomeHero

@@ -1,96 +1,96 @@
-import React, { useState, useEffect, useRef, useContext } from "react";
-import { useRouter } from "next/router";
-import { currentPage, setCurrentPage, currentSearch } from "utils/currentPage.js";
-import { ScopeContext } from "context/ScopeContext";
-import pushHistory from "utils/pushHistory";
-import MapSearchButton from "./MapSearchButton";
-import { map, initializeMap, isMapInitialized, setSelectedMarker } from "utils/mapTools";
-import { fetchAddressFromCoordinates } from "../../services/baseAdresse";
-import { SearchResultContext } from "../../context/SearchResultContextProvider";
-import { DisplayContext } from "../../context/DisplayContextProvider";
+import React, { useState, useEffect, useRef, useContext } from "react"
+import { useRouter } from "next/router"
+import { currentPage, setCurrentPage, currentSearch } from "utils/currentPage.js"
+import { ScopeContext } from "context/ScopeContext"
+import pushHistory from "utils/pushHistory"
+import MapSearchButton from "./MapSearchButton"
+import { map, initializeMap, isMapInitialized, setSelectedMarker } from "utils/mapTools"
+import { fetchAddressFromCoordinates } from "../../services/baseAdresse"
+import { SearchResultContext } from "../../context/SearchResultContextProvider"
+import { DisplayContext } from "../../context/DisplayContextProvider"
 
 let mapPosition = {
   lat: null,
   lon: null,
   zoom: null,
-};
+}
 
-let shouldHandleMapSearch = true;
+let shouldHandleMapSearch = true
 
 const Map = ({ handleSearchSubmit, showSearchForm, selectItemOnMap }) => {
-  const { formValues, shouldMapBeVisible } = useContext(DisplayContext);
+  const { formValues, shouldMapBeVisible } = useContext(DisplayContext)
 
-  const { trainings, jobs, setSelectedItem, setSelectedMapPopupItem } = useContext(SearchResultContext);
+  const { trainings, jobs, setSelectedItem, setSelectedMapPopupItem } = useContext(SearchResultContext)
 
-  const router = useRouter();
+  const router = useRouter()
 
-  const scopeContext = useContext(ScopeContext);
+  const scopeContext = useContext(ScopeContext)
 
-  const [mapInitialized, setMapInitialized] = useState(false);
-  const mapContainer = useRef(null);
+  const [mapInitialized, setMapInitialized] = useState(false)
+  const mapContainer = useRef(null)
 
   const unselectItem = () => {
-    setSelectedItem(null);
-    setSelectedMarker(null);
+    setSelectedItem(null)
+    setSelectedMarker(null)
     if (currentPage === "fiche") {
-      setCurrentPage("");
-      pushHistory({ router, scopeContext, searchParameters: formValues, searchTimestamp: currentSearch });
+      setCurrentPage("")
+      pushHistory({ router, scopeContext, searchParameters: formValues, searchTimestamp: currentSearch })
     }
-  };
+  }
 
   const unselectMapPopupItem = () => {
-    setSelectedMapPopupItem(null);
-  };
+    setSelectedMapPopupItem(null)
+  }
 
   const handleSearchClick = async () => {
     if (formValues) {
       if (shouldHandleMapSearch) {
-        shouldHandleMapSearch = false;
+        shouldHandleMapSearch = false
 
-        let values = formValues;
+        let values = formValues
         if (!values?.location?.value) {
           values.location = {
             value: {
               type: "Point",
             },
-          };
+          }
         }
 
         if (mapPosition.lon && mapPosition.lat) {
-          values.location.value.coordinates = [mapPosition.lon, mapPosition.lat];
+          values.location.value.coordinates = [mapPosition.lon, mapPosition.lat]
 
           try {
             // récupération du code insee depuis la base d'adresse
-            const addresses = await fetchAddressFromCoordinates([mapPosition.lon, mapPosition.lat]);
+            const addresses = await fetchAddressFromCoordinates([mapPosition.lon, mapPosition.lat])
 
             if (addresses.length) {
-              values.location.insee = addresses[0].insee;
-              values.location.zipcode = addresses[0].zipcode;
-              values.location.label = addresses[0].label;
+              values.location.insee = addresses[0].insee
+              values.location.zipcode = addresses[0].zipcode
+              values.location.label = addresses[0].label
             } else {
-              values.location.insee = null;
-              values.location.label = null;
-              values.location.zipcode = null;
+              values.location.insee = null
+              values.location.label = null
+              values.location.zipcode = null
             }
           } catch (err) {}
-          await handleSearchSubmit({ values });
+          await handleSearchSubmit({ values })
         }
 
-        shouldHandleMapSearch = true;
+        shouldHandleMapSearch = true
       }
     } else {
       // le formulaire n'a pas été renseigné. On ne connait pas le métier
-      showSearchForm();
+      showSearchForm()
     }
-  };
+  }
 
   const onMapHasMoved = ({ lat, lon, zoom }) => {
     mapPosition = {
       lat,
       lon,
       zoom,
-    };
-  };
+    }
+  }
 
   const shouldMapBeInitialized = () => {
     /*
@@ -100,19 +100,19 @@ const Map = ({ handleSearchSubmit, showSearchForm, selectItemOnMap }) => {
     - le panneau carte est visible à l'écran
      */
 
-    const vw = document.documentElement.clientWidth;
+    const vw = document.documentElement.clientWidth
 
     return (
       !isMapInitialized &&
       (trainings.length > 0 || jobs.peJobs || jobs.lbaCompanies || jobs.lbbCompanies || jobs.matchas) &&
       (shouldMapBeVisible || vw > 767) &&
       (!map || (map && !document.getElementsByClassName("mapContainer")[0].innerHTML.length))
-    );
-  };
+    )
+  }
 
   useEffect(() => {
     if (shouldMapBeInitialized()) {
-      setMapInitialized(true);
+      setMapInitialized(true)
       initializeMap({
         mapContainer,
         unselectItem,
@@ -123,14 +123,14 @@ const Map = ({ handleSearchSubmit, showSearchForm, selectItemOnMap }) => {
         unselectMapPopupItem,
         setSelectedItem,
         setSelectedMapPopupItem,
-      });
+      })
     }
-  }, [trainings, jobs, shouldMapBeVisible]);
+  }, [trainings, jobs, shouldMapBeVisible])
 
   useEffect(() => {
     //hack pour recharger la map après navigation back / forward navigateur
     if (!mapInitialized && isMapInitialized) {
-      setMapInitialized(true);
+      setMapInitialized(true)
       setTimeout(() => {
         initializeMap({
           mapContainer,
@@ -142,10 +142,10 @@ const Map = ({ handleSearchSubmit, showSearchForm, selectItemOnMap }) => {
           unselectMapPopupItem,
           setSelectedItem,
           setSelectedMapPopupItem,
-        });
-      }, 0);
+        })
+      }, 0)
     }
-  }, []);
+  }, [])
 
   // Warning : mapContainer doit être vide sinon les onclick sur la map ne marcheront pas
   return (
@@ -156,7 +156,7 @@ const Map = ({ handleSearchSubmit, showSearchForm, selectItemOnMap }) => {
         <div className="c-staticmapframe"></div>
       </div>
     </>
-  );
-};
+  )
+}
 
-export default Map;
+export default Map

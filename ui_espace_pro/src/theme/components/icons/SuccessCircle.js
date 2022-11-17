@@ -1,4 +1,4 @@
-import * as PropTypes from "prop-types";
+import * as PropTypes from "prop-types"
 
 /**
  * @description Success Circle icon.
@@ -15,11 +15,11 @@ const SuccessCircle = ({ width, fillHexaColor }) => (
       fill={fillHexaColor}
     />
   </svg>
-);
+)
 
 SuccessCircle.propTypes = {
   width: PropTypes.number.isRequired,
   fillHexaColor: PropTypes.string.isRequired,
-};
+}
 
-export { SuccessCircle };
+export { SuccessCircle }

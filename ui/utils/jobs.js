@@ -1,13 +1,8 @@
-import React from "react";
+import React from "react"
 
 const getJobAddress = (job) => {
-  if (job.ideaType === "peJob")
-    return (
-      <>
-        {job.place.fullAddress}
-      </>
-    );
-  else return job.place.fullAddress;
-};
+  if (job.ideaType === "peJob") return <>{job.place.fullAddress}</>
+  else return job.place.fullAddress
+}
 
-export { getJobAddress };
+export { getJobAddress }

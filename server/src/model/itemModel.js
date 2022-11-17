@@ -114,5 +114,5 @@ export const itemModel = (type) => {
             sessions,
         }
     */,
-  };
-};
+  }
+}

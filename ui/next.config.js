@@ -1,14 +1,12 @@
-const path = require("path");
-const withImages = require("next-images");
+const path = require("path")
+const withImages = require("next-images")
 
 /**
- * supprime les espacements inutiles pour remettre la séquence sur une seule ligne 
+ * supprime les espacements inutiles pour remettre la séquence sur une seule ligne
  */
 function inline(value) {
-  return value.replace(/\s{2,}/g, " ").trim();
+  return value.replace(/\s{2,}/g, " ").trim()
 }
-
-
 
 const contentSecurityPolicy = `
   default-src 'self'; 
@@ -72,8 +70,7 @@ const contentSecurityPolicy = `
   child-src 'self' blob:;
   block-all-mixed-content;
   upgrade-insecure-requests;
-`;
-
+`
 
 /** @type {import('next').NextConfig} */
 const nextConfig = withImages({
@@ -123,8 +120,8 @@ const nextConfig = withImages({
           },
         ],
       },
-    ];
+    ]
   },
-});
+})
 
-module.exports = nextConfig;
+module.exports = nextConfig

@@ -1,61 +1,61 @@
-import React from "react";
-import { capitalizeFirstLetter } from "../../utils/strutils";
-import { getPathLink, getCompanyPathLink } from "../../utils/tools";
-import { round } from "lodash";
-import { string_wrapper as with_str } from "../../utils/wrapper_utils";
-import ExternalLink from "../externalLink";
-import { endsWithNumber } from "../../utils/strutils";
-import gotoIcon from "../../public/images/icons/goto.svg";
+import React from "react"
+import { capitalizeFirstLetter } from "../../utils/strutils"
+import { getPathLink, getCompanyPathLink } from "../../utils/tools"
+import { round } from "lodash"
+import { string_wrapper as with_str } from "../../utils/wrapper_utils"
+import ExternalLink from "../externalLink"
+import { endsWithNumber } from "../../utils/strutils"
+import gotoIcon from "../../public/images/icons/goto.svg"
 
 const LocationDetail = ({ item, isCfa }) => {
-  const kind = item?.ideaType;
+  const kind = item?.ideaType
 
   const getGoogleSearchParameters = () => {
-    return encodeURIComponent(`${item.company.name} ${item.place.address}`);
-  };
+    return encodeURIComponent(`${item.company.name} ${item.place.address}`)
+  }
 
-  let companySize = item?.company?.size?.toLowerCase();
+  let companySize = item?.company?.size?.toLowerCase()
   if (!companySize) {
-    companySize = "non renseigné";
+    companySize = "non renseigné"
   } else if (companySize.startsWith("0")) {
-    companySize = "0 à 9 salariés";
+    companySize = "0 à 9 salariés"
   }
   if (endsWithNumber(companySize)) {
-    companySize += " salariés";
+    companySize += " salariés"
   }
 
   const getTitle = (oneItem) => {
-    const oneKind = oneItem?.ideaType;
-    const isMandataire = item?.company?.mandataire;
-    let res = "Quelques informations sur l'entreprise";
+    const oneKind = oneItem?.ideaType
+    const isMandataire = item?.company?.mandataire
+    let res = "Quelques informations sur l'entreprise"
     if (oneKind === "formation") {
-      res = "Quelques informations sur le centre de formation";
+      res = "Quelques informations sur le centre de formation"
     } else if (oneKind === "matcha" && !isMandataire) {
-      res = "Quelques informations sur l'établissement";
+      res = "Quelques informations sur l'établissement"
     } else if (oneKind === "matcha" && isMandataire) {
-      res = "Contactez le CFA pour avoir plus d'informations";
+      res = "Contactez le CFA pour avoir plus d'informations"
     }
-    return res;
-  };
+    return res
+  }
 
   const shouldDisplayEmail = (oneItem) => {
-    let res = false;
-    const oneKind = oneItem?.ideaType;
+    let res = false
+    const oneKind = oneItem?.ideaType
     if (oneKind === "matcha") {
-      res = !!item?.company?.mandataire;
+      res = !!item?.company?.mandataire
     } else if (oneKind === "lbb" || oneKind === "lba") {
-      res = false;
+      res = false
     } else if (oneKind === "peJob") {
-      res = false;
+      res = false
     } else {
-      res = !!item?.contact?.email && !item?.prdvUrl;
+      res = !!item?.contact?.email && !item?.prdvUrl
     }
     if (res) {
       // au cas où : on n'affiche l'email que si il n'est pas chiffré
-      res = with_str("@").in(item?.contact?.email);
+      res = with_str("@").in(item?.contact?.email)
     }
-    return res;
-  };
+    return res
+  }
 
   return (
     <>
@@ -76,21 +76,14 @@ const LocationDetail = ({ item, isCfa }) => {
           {item?.company?.creationDate && !isNaN(new Date(item.company.creationDate)) ? (
             <div className="c-locationdetail-line mt-1">
               <span className="c-detail-sizetext">
-                <strong>Année de création de l&apos;entreprise :&nbsp;</strong>{" "}
-                {new Date(item.company.creationDate).getFullYear()}
+                <strong>Année de création de l&apos;entreprise :&nbsp;</strong> {new Date(item.company.creationDate).getFullYear()}
               </span>
             </div>
           ) : (
             ""
           )}
           <div className="c-locationdetail-address mt-2">{item?.company?.place?.city}</div>
-          {item?.place?.distance ? (
-            <div className="c-locationdetail-distance">
-              {`${round(item.place.distance, 1)} km(s) du lieu de recherche`}
-            </div>
-          ) : (
-            ""
-          )}
+          {item?.place?.distance ? <div className="c-locationdetail-distance">{`${round(item.place.distance, 1)} km(s) du lieu de recherche`}</div> : ""}
           <div className="c-locationdetail-line mt-3">
             <span className="c-locationdetail-imgcontainer">
               <img className="" src="/images/icons/small_map_point.svg" alt="Adresse" />
@@ -113,9 +106,7 @@ const LocationDetail = ({ item, isCfa }) => {
         <h2 className="c-locationdetail-title mt-2">{getTitle(item)}</h2>
 
         {item?.company?.mandataire ? (
-          <div className="c-locationdetail-address mt-4">
-            Le centre de formation peut vous renseigner sur cette offre d’emploi ainsi que les formations qu’il propose.
-          </div>
+          <div className="c-locationdetail-address mt-4">Le centre de formation peut vous renseigner sur cette offre d’emploi ainsi que les formations qu’il propose.</div>
         ) : (
           ""
         )}
@@ -123,9 +114,7 @@ const LocationDetail = ({ item, isCfa }) => {
         <div className="c-locationdetail-address mt-4">{item?.place?.fullAddress}</div>
 
         {item?.place?.distance && !item?.company?.mandataire ? (
-          <div className="c-locationdetail-distance">
-            {`${round(item.place.distance, 1)} km(s) du lieu de recherche`}
-          </div>
+          <div className="c-locationdetail-distance">{`${round(item.place.distance, 1)} km(s) du lieu de recherche`}</div>
         ) : (
           ""
         )}
@@ -186,7 +175,7 @@ const LocationDetail = ({ item, isCfa }) => {
             </div>
             <div className="c-locationdetail-line mt-3">
               <a href="https://media.giphy.com/media/l3vR4IfRCoz8Qz9oA/giphy.gif" className="c-nice-link font-weight-normal" target="_blank" rel="noreferrer">
-                  En savoir plus
+                En savoir plus
               </a>
             </div>
           </>
@@ -203,8 +192,8 @@ const LocationDetail = ({ item, isCfa }) => {
                   <span className="c-detail-newadvice-title ml-2">Cet établissement est un CFA d&apos;entreprise</span>
                 </div>
                 <p>
-                  La particularité ? Il s&apos;agit d&apos;une formule complète <strong>Emploi + Formation</strong> ! Cette
-                  formation vous intéresse ? La marche à suivre diffère selon le CFA d&apos;entreprise concerné :
+                  La particularité ? Il s&apos;agit d&apos;une formule complète <strong>Emploi + Formation</strong> ! Cette formation vous intéresse ? La marche à suivre diffère
+                  selon le CFA d&apos;entreprise concerné :
                 </p>
                 <ul>
                   <li>Commencez par vous inscrire à la formation pour accéder ensuite au contrat,</li>
@@ -247,9 +236,7 @@ const LocationDetail = ({ item, isCfa }) => {
             </div>
             <div className="c-locationdetail-line mt-1 mb-1">
               <span className="c-locationdetail-imgcontainer"></span>
-              <span className="c-detail-sizetext c-locationdetail-hint">
-                Renseignez-vous sur l&apos;établissement pour préparer votre candidature
-              </span>
+              <span className="c-detail-sizetext c-locationdetail-hint">Renseignez-vous sur l&apos;établissement pour préparer votre candidature</span>
             </div>
             {!item?.company?.mandataire ? (
               <div className="c-locationdetail-line mb-1">
@@ -267,7 +254,7 @@ const LocationDetail = ({ item, isCfa }) => {
         )}
       </div>
     </>
-  );
-};
+  )
+}
 
-export default LocationDetail;
+export default LocationDetail

@@ -1,77 +1,68 @@
-import path from "path";
-import config from "../../config.js";
-import fs from "fs";
-import _ from "lodash-es";
-import { logger } from "../../common/logger.js";
-import XLSX from "xlsx";
-import { DomainesMetiers } from "../../common/model/index.js";
-import { getFormationsES } from "../../common/esClient/index.js";
-import { getFileFromS3 } from "../../common/utils/awsUtils.js";
-import { oleoduc } from "oleoduc";
-import { logMessage } from "../../common/utils/logMessage.js";
-import __dirname from "../../common/dirname.js";
-const currentDirname = __dirname(import.meta.url);
+import path from "path"
+import config from "../../config.js"
+import fs from "fs"
+import _ from "lodash-es"
+import { logger } from "../../common/logger.js"
+import XLSX from "xlsx"
+import { DomainesMetiers } from "../../common/model/index.js"
+import { getFormationsES } from "../../common/esClient/index.js"
+import { getFileFromS3 } from "../../common/utils/awsUtils.js"
+import { oleoduc } from "oleoduc"
+import { logMessage } from "../../common/utils/logMessage.js"
+import __dirname from "../../common/dirname.js"
+const currentDirname = __dirname(import.meta.url)
 
-const esClient = getFormationsES();
+const esClient = getFormationsES()
 
-const FILE_LOCAL_PATH = path.join(currentDirname, "./assets/domainesMetiers_S3.xlsx");
+const FILE_LOCAL_PATH = path.join(currentDirname, "./assets/domainesMetiers_S3.xlsx")
 
 const getFormationEsQueryIndexFragment = (limit) => {
   return {
     index: "convertedformations",
     size: limit,
     _source_includes: ["rncp_code", "rncp_intitule"],
-  };
-};
+  }
+}
 
-const resultFilePath = path.join(currentDirname, "./assets/RNCPs_manquants.xlsx");
+const resultFilePath = path.join(currentDirname, "./assets/RNCPs_manquants.xlsx")
 
 const saveResultToFile = (json) => {
-  logMessage("info", " -- Saving missing rncps to local file -- ");
+  logMessage("info", " -- Saving missing rncps to local file -- ")
 
   try {
-    fs.unlinkSync(resultFilePath);
+    fs.unlinkSync(resultFilePath)
   } catch (err) {
-    console.log("error removing file : ", err.message);
+    console.log("error removing file : ", err.message)
   }
 
-  let wsResult = [
-    ["Domaine", "Total_formations", "Total_formations_perdues", "Code_rncp", "Lbelle_rncp", "Rncp_dans_autres_metiers"],
-  ];
+  let wsResult = [["Domaine", "Total_formations", "Total_formations_perdues", "Code_rncp", "Lbelle_rncp", "Rncp_dans_autres_metiers"]]
 
   json.map((domain) => {
     if (domain.metier) {
       //console.log(domain);
-      wsResult.push([
-        domain.metier,
-        domain.missingRNCPs.totalFormations,
-        domain.missingRNCPs.totalFormationsPerdues,
-        "",
-        "",
-        "",
-      ]);
+      wsResult.push([domain.metier, domain.missingRNCPs.totalFormations, domain.missingRNCPs.totalFormationsPerdues, "", "", ""])
 
       domain.missingRNCPs.RNCPsManquants.map((rncp) => {
-        let metiers = "";
+        let metiers = ""
         if (rncp.autresMetiers !== "aucun") {
-          metiers = rncp.autresMetiers.join("; ");
+          metiers = rncp.autresMetiers.join("; ")
         }
 
-        wsResult.push(["", "", "", rncp.code, rncp.libelle, metiers]);
-      });
+        wsResult.push(["", "", "", rncp.code, rncp.libelle, metiers])
+      })
     }
-  });
+  })
 
   // Ecriture résultat
-  let wb = XLSX.utils.book_new();
+  let wb = XLSX.utils.book_new()
 
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(wsResult), "Rncps_manquants");
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(wsResult), "Rncps_manquants")
 
-  XLSX.writeFile(wb, resultFilePath);
-};
+  XLSX.writeFile(wb, resultFilePath)
+}
 
-let inDomainRNCPs = new Set();
-let domainsOfRNCPs = {};
+let inDomainRNCPs = new Set()
+let domainsOfRNCPs = {}
 
 const getMissingRNCPsOfDomain = async (domain) => {
   try {
@@ -85,30 +76,30 @@ const getMissingRNCPsOfDomain = async (domain) => {
           },
         },
       },
-    };
+    }
 
     const response = await esClient.search({
       ...getFormationEsQueryIndexFragment(10000),
       body,
-    });
+    })
 
-    let missingRNCPs = [];
-    let missingRNCPsWithLabel = [];
-    let missingTrainingCount = 0;
+    let missingRNCPs = []
+    let missingRNCPsWithLabel = []
+    let missingTrainingCount = 0
 
     response.body.hits.hits.forEach((training) => {
       if (domain.codes_rncps.indexOf(training._source.rncp_code) < 0) {
-        missingTrainingCount++;
+        missingTrainingCount++
         if (missingRNCPs.indexOf(training._source.rncp_code) < 0) {
-          missingRNCPs.push(training._source.rncp_code);
+          missingRNCPs.push(training._source.rncp_code)
           let missinRNCPWithLabel = {
             libelle: training._source.rncp_intitule,
             code: training._source.rncp_code,
-          };
-          missingRNCPsWithLabel.push(missinRNCPWithLabel);
+          }
+          missingRNCPsWithLabel.push(missinRNCPWithLabel)
         }
       }
-    });
+    })
 
     //console.log("total ", response.data.hits.hits.length, " miss : ", missingRNCPs.length,[...new Set(missingRNCPs)].length);
 
@@ -116,60 +107,55 @@ const getMissingRNCPsOfDomain = async (domain) => {
       totalFormations: response.body.hits.hits.length,
       totalFormationsPerdues: missingTrainingCount,
       RNCPsManquants: missingRNCPsWithLabel,
-    };
+    }
   } catch (err) {
-    let error_msg = _.get(err, "meta.body") ?? err.message;
+    let error_msg = _.get(err, "meta.body") ?? err.message
 
     if (_.get(err, "meta.meta.connection.status") === "dead") {
-      logger.error(`Elastic search is down or unreachable. error_message=${error_msg}`);
+      logger.error(`Elastic search is down or unreachable. error_message=${error_msg}`)
     } else {
-      logger.error(`Error analyzing rncps. error_message=${error_msg}`);
+      logger.error(`Error analyzing rncps. error_message=${error_msg}`)
     }
 
-    return { error: error_msg };
+    return { error: error_msg }
   }
-};
+}
 
 const downloadAndSaveFile = (optionalFileName) => {
-  logMessage(
-    "info",
-    `Downloading and save file ${optionalFileName ? optionalFileName : "currentDomainesMetiers.xlsx"} from S3 Bucket...`
-  );
+  logMessage("info", `Downloading and save file ${optionalFileName ? optionalFileName : "currentDomainesMetiers.xlsx"} from S3 Bucket...`)
   return oleoduc(
-    getFileFromS3(
-      `mna-services/features/domainesMetiers/${optionalFileName ? optionalFileName : "currentDomainesMetiers.xlsx"}`
-    ),
+    getFileFromS3(`mna-services/features/domainesMetiers/${optionalFileName ? optionalFileName : "currentDomainesMetiers.xlsx"}`),
     fs.createWriteStream(FILE_LOCAL_PATH)
-  );
-};
+  )
+}
 
 const readXLSXFile = (filePath) => {
-  const workbook = XLSX.readFile(filePath, { codepage: 65001 });
-  return { sheet_name_list: workbook.SheetNames, workbook };
-};
+  const workbook = XLSX.readFile(filePath, { codepage: 65001 })
+  return { sheet_name_list: workbook.SheetNames, workbook }
+}
 
 const searchForMissingRNCPsInOtherDomains = (missingRNCPs) => {
   missingRNCPs.forEach((domainMissingRNCPs) => {
     domainMissingRNCPs.missingRNCPs.RNCPsManquants.forEach((rncp) => {
       if (rncp) {
         if (inDomainRNCPs.has(rncp.code)) {
-          rncp.autresMetiers = domainsOfRNCPs[rncp.code];
+          rncp.autresMetiers = domainsOfRNCPs[rncp.code]
         } else {
-          rncp.autresMetiers = "aucun";
+          rncp.autresMetiers = "aucun"
         }
       }
-    });
-  });
-};
+    })
+  })
+}
 
 export default async (optionalFileName) => {
-  let step = 0;
+  let step = 0
   try {
-    logMessage("info", " -- Start of DomainesMetiers analyzer -- ");
+    logMessage("info", " -- Start of DomainesMetiers analyzer -- ")
 
-    await downloadAndSaveFile(optionalFileName);
+    await downloadAndSaveFile(optionalFileName)
 
-    const workbookDomainesMetiers = readXLSXFile(FILE_LOCAL_PATH);
+    const workbookDomainesMetiers = readXLSXFile(FILE_LOCAL_PATH)
 
     let codesROMEs,
       intitulesROMEs,
@@ -182,37 +168,37 @@ export default async (optionalFileName) => {
       coupleAppellationsRomeIntitules,
       codesFAPs,
       libellesFAPs,
-      sousDomainesOnisep;
+      sousDomainesOnisep
 
-    let missingRNCPs = [];
+    let missingRNCPs = []
 
     const reset = () => {
-      codesROMEs = [];
-      intitulesROMEs = [];
-      codesRNCPs = [];
-      intitulesRNCPs = [];
-      couplesROMEsIntitules = [];
-      motsClefsDomaine = [];
-      motsClefsSpecifiques = [];
-      appellationsROMEs = [];
-      coupleAppellationsRomeIntitules = [];
-      codesFAPs = [];
-      libellesFAPs = [];
-      sousDomainesOnisep = [];
-    };
+      codesROMEs = []
+      intitulesROMEs = []
+      codesRNCPs = []
+      intitulesRNCPs = []
+      couplesROMEsIntitules = []
+      motsClefsDomaine = []
+      motsClefsSpecifiques = []
+      appellationsROMEs = []
+      coupleAppellationsRomeIntitules = []
+      codesFAPs = []
+      libellesFAPs = []
+      sousDomainesOnisep = []
+    }
 
-    logMessage("info", `Début traitement`);
+    logMessage("info", `Début traitement`)
 
-    let onglet = XLSX.utils.sheet_to_json(workbookDomainesMetiers.workbook.Sheets["Liste"]);
+    let onglet = XLSX.utils.sheet_to_json(workbookDomainesMetiers.workbook.Sheets["Liste"])
 
-    reset();
+    reset()
 
     for (let i = 0; i < onglet.length; i++) {
-      let row = onglet[i];
+      let row = onglet[i]
       if (row.metier) {
         // cas de la ligne sur laquelle se trouve len nom du métier qui va marquer l'insertion d'une ligne dans la db
 
-        step = 1;
+        step = 1
 
         let domainesMetier = new DomainesMetiers({
           domaine: row.domaine,
@@ -229,35 +215,35 @@ export default async (optionalFileName) => {
           codes_fap: [...new Set(codesFAPs)],
           intitules_fap: [...new Set(libellesFAPs)],
           sous_domaine_onisep: sousDomainesOnisep,
-        });
+        })
 
         // enregistrement des rncps
         codesRNCPs.forEach((rncp) => {
-          inDomainRNCPs.add(rncp);
+          inDomainRNCPs.add(rncp)
           if (domainsOfRNCPs[rncp]) {
-            domainsOfRNCPs[rncp].push(domainesMetier.sous_domaine);
+            domainsOfRNCPs[rncp].push(domainesMetier.sous_domaine)
           } else {
-            domainsOfRNCPs[rncp] = [domainesMetier.sous_domaine];
+            domainsOfRNCPs[rncp] = [domainesMetier.sous_domaine]
           }
-        });
+        })
         //console.log("ICIII : ", getMissingRNCPsOfDomain);
 
-        let missingRNCPsOfDomain = await getMissingRNCPsOfDomain(domainesMetier);
+        let missingRNCPsOfDomain = await getMissingRNCPsOfDomain(domainesMetier)
 
         missingRNCPs.push({
           metier: domainesMetier.sous_domaine,
           //codesROMEs,
           //codesRNCPs,
           missingRNCPs: missingRNCPsOfDomain ? missingRNCPsOfDomain : "aucun RNCP manquant",
-        });
+        })
 
-        logMessage("info", `Analyzed ${domainesMetier.sous_domaine}`);
+        logMessage("info", `Analyzed ${domainesMetier.sous_domaine}`)
 
-        reset();
+        reset()
       } else {
-        step = 2;
+        step = 2
 
-        let currentAppellationsROMEs = row.appellations_rome;
+        let currentAppellationsROMEs = row.appellations_rome
 
         //couplesROMEsIntitules
         if (row.code_rome && row.libelle_rome) {
@@ -265,7 +251,7 @@ export default async (optionalFileName) => {
             couplesROMEsIntitules.push({
               codeRome: row.code_rome.trim(),
               intitule: row.libelle_rome.trim(),
-            });
+            })
           }
 
           if (currentAppellationsROMEs) {
@@ -274,89 +260,89 @@ export default async (optionalFileName) => {
                 codeRome: row.code_rome.trim(),
                 intitule: row.libelle_rome.trim(),
                 appellation: appellation,
-              });
-            });
+              })
+            })
           }
         }
 
-        step = 3;
+        step = 3
 
-        let currentROME = row.code_rome;
+        let currentROME = row.code_rome
         if (currentROME && codesROMEs.indexOf(currentROME.trim()) < 0) {
-          codesROMEs.push(currentROME.trim());
+          codesROMEs.push(currentROME.trim())
         }
 
-        step = 4;
+        step = 4
 
-        let currentIntituleROME = row.libelle_rome;
+        let currentIntituleROME = row.libelle_rome
         if (currentIntituleROME && intitulesROMEs.indexOf(currentIntituleROME.trim()) < 0) {
-          intitulesROMEs.push(currentIntituleROME.trim());
+          intitulesROMEs.push(currentIntituleROME.trim())
         }
 
-        step = 5;
+        step = 5
 
-        let currentRNCP = row.code_rncp;
+        let currentRNCP = row.code_rncp
         if (currentRNCP && codesRNCPs.indexOf(currentRNCP.trim()) < 0) {
-          codesRNCPs.push(currentRNCP.trim());
+          codesRNCPs.push(currentRNCP.trim())
         }
 
-        step = 6;
+        step = 6
 
-        let currentLibelleRNCP = row.intitule_rncp;
+        let currentLibelleRNCP = row.intitule_rncp
         if (currentLibelleRNCP && intitulesRNCPs.indexOf(currentLibelleRNCP.trim()) < 0) {
-          intitulesRNCPs.push(currentLibelleRNCP.trim());
+          intitulesRNCPs.push(currentLibelleRNCP.trim())
         }
 
-        step = 7;
+        step = 7
 
-        let currentSousDomaineOnisep = row.sous_domaine_onisep_1;
+        let currentSousDomaineOnisep = row.sous_domaine_onisep_1
         if (currentSousDomaineOnisep && sousDomainesOnisep.indexOf(currentSousDomaineOnisep.trim()) < 0) {
-          sousDomainesOnisep.push(currentSousDomaineOnisep.trim());
+          sousDomainesOnisep.push(currentSousDomaineOnisep.trim())
         }
-        currentSousDomaineOnisep = row.sous_domaine_onisep_2;
+        currentSousDomaineOnisep = row.sous_domaine_onisep_2
         if (currentSousDomaineOnisep && sousDomainesOnisep.indexOf(currentSousDomaineOnisep.trim()) < 0) {
-          sousDomainesOnisep.push(currentSousDomaineOnisep.trim());
+          sousDomainesOnisep.push(currentSousDomaineOnisep.trim())
         }
 
-        step = 8;
+        step = 8
 
-        let currentMotsClefsDomaine = row.mots_clefs_domaine;
+        let currentMotsClefsDomaine = row.mots_clefs_domaine
         if (currentMotsClefsDomaine) {
-          motsClefsDomaine = motsClefsDomaine.concat(currentMotsClefsDomaine.split(/[\s,;]+/));
+          motsClefsDomaine = motsClefsDomaine.concat(currentMotsClefsDomaine.split(/[\s,;]+/))
         }
 
-        step = 9;
+        step = 9
 
-        let currentMotsClefsSpecifiques = row.mots_clefs_ligne;
+        let currentMotsClefsSpecifiques = row.mots_clefs_ligne
         if (currentMotsClefsSpecifiques) {
-          motsClefsSpecifiques = motsClefsSpecifiques.concat(currentMotsClefsSpecifiques.split(/[\s,;]+/));
+          motsClefsSpecifiques = motsClefsSpecifiques.concat(currentMotsClefsSpecifiques.split(/[\s,;]+/))
         }
 
-        step = 10;
+        step = 10
 
-        let currentCodesFAP = row.codes_fap;
+        let currentCodesFAP = row.codes_fap
         if (currentCodesFAP) {
-          codesFAPs = codesFAPs.concat(currentCodesFAP.split(/[\s,;]+/));
+          codesFAPs = codesFAPs.concat(currentCodesFAP.split(/[\s,;]+/))
         }
 
-        step = 11;
+        step = 11
 
-        let currentLibellesFAP = row.libelles_fap;
+        let currentLibellesFAP = row.libelles_fap
         if (currentLibellesFAP) {
-          libellesFAPs = libellesFAPs.concat(currentLibellesFAP.split("; "));
+          libellesFAPs = libellesFAPs.concat(currentLibellesFAP.split("; "))
         }
 
-        step = 12;
+        step = 12
 
         if (currentAppellationsROMEs) {
-          appellationsROMEs = appellationsROMEs.concat(currentAppellationsROMEs.toLowerCase().split(/[\s,/;]+/));
+          appellationsROMEs = appellationsROMEs.concat(currentAppellationsROMEs.toLowerCase().split(/[\s,/;]+/))
         }
       }
     }
 
-    searchForMissingRNCPsInOtherDomains(missingRNCPs);
+    searchForMissingRNCPsInOtherDomains(missingRNCPs)
 
-    saveResultToFile(missingRNCPs);
+    saveResultToFile(missingRNCPs)
 
     return {
       result: "Fichier analysé",
@@ -364,10 +350,10 @@ export default async (optionalFileName) => {
       fichierXlsx: `${config.publicUrl}/api/updateRomesMetiers/missingRNCPs/RNCP_manquants.xlsx`,
       //inDomainRNCPs: [...inDomainRNCPs],
       missingRNCPs,
-    };
+    }
   } catch (err) {
-    logMessage("error", err);
-    let error_msg = _.get(err, "meta.body") ?? err.message;
-    return { error: error_msg, fileName: optionalFileName ? optionalFileName : "currentDomainesMetiers.xlsx", step };
+    logMessage("error", err)
+    let error_msg = _.get(err, "meta.body") ?? err.message
+    return { error: error_msg, fileName: optionalFileName ? optionalFileName : "currentDomainesMetiers.xlsx", step }
   }
-};
+}

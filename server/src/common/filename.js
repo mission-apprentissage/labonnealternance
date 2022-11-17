@@ -1,5 +1,5 @@
-import { fileURLToPath } from "url";
+import { fileURLToPath } from "url"
 
-const __filename = (filePath) => fileURLToPath(filePath);
+const __filename = (filePath) => fileURLToPath(filePath)
 
-export default __filename;
+export default __filename

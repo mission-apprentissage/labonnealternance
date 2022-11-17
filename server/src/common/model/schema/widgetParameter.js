@@ -114,4 +114,4 @@ export const widgetParameterSchema = {
     default: Date.now,
     description: "Date de création du document",
   },
-};
+}

@@ -1,20 +1,20 @@
 const Switch = {
-  parts: ['container', 'track', 'thumb'],
+  parts: ["container", "track", "thumb"],
   baseStyle: {
     container: {},
     track: {
-      padding: '0',
-      bg: 'white',
-      border: '1px solid #000091',
+      padding: "0",
+      bg: "white",
+      border: "1px solid #000091",
       _checked: {
-        bg: 'bluefrance.500',
+        bg: "bluefrance.500",
       },
       _focus: {
-        boxShadow: '0 0 0 3px #E5E5F4',
+        boxShadow: "0 0 0 3px #E5E5F4",
       },
     },
     thumb: {
-      border: '1px solid #000091',
+      border: "1px solid #000091",
     },
   },
 }

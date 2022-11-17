@@ -1,40 +1,37 @@
-import Sentry from "@sentry/node";
-import _ from "lodash-es";
-import { matchSorter } from "match-sorter";
-import { getDomainesMetiersES } from "../common/esClient/index.js";
-import { logger } from "../common/logger.js";
-import config from "../config.js";
-import getMissingRNCPsFromDomainesMetiers from "../jobs/domainesMetiers/getMissingRNCPsFromDomainesMetiers.js";
-import updateDomainesMetiers from "../jobs/domainesMetiers/updateDomainesMetiers.js";
-import { getRomesFromCfd, getRomesFromSiret } from "./romesFromCatalogue.js";
+import Sentry from "@sentry/node"
+import _ from "lodash-es"
+import { matchSorter } from "match-sorter"
+import { getDomainesMetiersES } from "../common/esClient/index.js"
+import { logger } from "../common/logger.js"
+import config from "../config.js"
+import getMissingRNCPsFromDomainesMetiers from "../jobs/domainesMetiers/getMissingRNCPsFromDomainesMetiers.js"
+import updateDomainesMetiers from "../jobs/domainesMetiers/updateDomainesMetiers.js"
+import { getRomesFromCfd, getRomesFromSiret } from "./romesFromCatalogue.js"
 
 const getRomesAndLabelsFromTitleQuery = async (query) => {
-  if (!query.title) return { error: "title_missing" };
+  if (!query.title) return { error: "title_missing" }
   else {
-    let [romesMetiers, romesDiplomes] = await Promise.all([
-      getLabelsAndRomes(query.title, query.withRomeLabels),
-      getLabelsAndRomesForDiplomas(query.title),
-    ]);
-    return { ...romesMetiers, ...romesDiplomes };
+    let [romesMetiers, romesDiplomes] = await Promise.all([getLabelsAndRomes(query.title, query.withRomeLabels), getLabelsAndRomesForDiplomas(query.title)])
+    return { ...romesMetiers, ...romesDiplomes }
   }
-};
+}
 
 const manageError = ({ error, msgToLog }) => {
-  Sentry.captureException(error);
-  let error_msg = _.get(error, "meta.body") ?? error.message;
+  Sentry.captureException(error)
+  let error_msg = _.get(error, "meta.body") ?? error.message
 
   if (typeof error_msg === "object") {
-    error_msg = JSON.stringify(error_msg, null, 2);
+    error_msg = JSON.stringify(error_msg, null, 2)
   }
 
   if (error?.meta?.meta?.connection?.status === "dead") {
-    logger.error(`Elastic search is down or unreachable. error_message=${error_msg}`);
+    logger.error(`Elastic search is down or unreachable. error_message=${error_msg}`)
   } else {
-    logger.error(`Error getting ${msgToLog}. error_message=${error_msg}`);
+    logger.error(`Error getting ${msgToLog}. error_message=${error_msg}`)
   }
 
-  return { error: error_msg };
-};
+  return { error: error_msg }
+}
 
 const getMultiMatchTerm = (term) => {
   return {
@@ -58,8 +55,8 @@ const getMultiMatchTerm = (term) => {
         },
       },
     },
-  };
-};
+  }
+}
 
 const getMultiMatchTermForDiploma = (term) => {
   return {
@@ -73,25 +70,25 @@ const getMultiMatchTermForDiploma = (term) => {
         },
       },
     },
-  };
-};
+  }
+}
 
 const getMetiers = async ({ title = null, romes = null, rncps = null }) => {
   if (!title && !romes && !rncps) {
     return {
       error: "missing_parameters",
       error_messages: ["Parameters must include at least one from 'title', 'romes' and 'rncps'"],
-    };
+    }
   } else {
     try {
-      let terms = [];
+      let terms = []
 
       if (title) {
         title.split(" ").forEach((term, idx) => {
           if (idx === 0 || term.length > 2) {
-            terms.push(getMultiMatchTerm(term));
+            terms.push(getMultiMatchTerm(term))
           }
-        });
+        })
       }
 
       if (romes) {
@@ -103,7 +100,7 @@ const getMetiers = async ({ title = null, romes = null, rncps = null }) => {
               },
             },
           },
-        });
+        })
       }
 
       if (rncps) {
@@ -115,10 +112,10 @@ const getMetiers = async ({ title = null, romes = null, rncps = null }) => {
               },
             },
           },
-        });
+        })
       }
 
-      const esClient = getDomainesMetiersES();
+      const esClient = getDomainesMetiersES()
 
       const response = await esClient.search({
         index: "domainesmetiers",
@@ -131,9 +128,9 @@ const getMetiers = async ({ title = null, romes = null, rncps = null }) => {
             },
           },
         },
-      });
+      })
 
-      let labelsAndRomes = [];
+      let labelsAndRomes = []
 
       response.body.hits.hits.forEach((labelAndRome) => {
         labelsAndRomes.push({
@@ -141,31 +138,31 @@ const getMetiers = async ({ title = null, romes = null, rncps = null }) => {
           romes: labelAndRome._source.codes_romes,
           rncps: labelAndRome._source.codes_rncps,
           type: "job",
-        });
-      });
+        })
+      })
 
-      return { labelsAndRomes };
+      return { labelsAndRomes }
     } catch (error) {
-      return manageError({ error, msgToLog: "getting metiers from title romes and rncps" });
+      return manageError({ error, msgToLog: "getting metiers from title romes and rncps" })
     }
   }
-};
+}
 
 const getLabelsAndRomes = async (searchKeyword, withRomeLabels) => {
   try {
-    let terms = [];
+    let terms = []
 
     searchKeyword.split(" ").forEach((term, idx) => {
       if (idx === 0 || term.length > 2) {
-        terms.push(getMultiMatchTerm(term));
+        terms.push(getMultiMatchTerm(term))
       }
-    });
+    })
 
-    const esClient = getDomainesMetiersES();
+    const esClient = getDomainesMetiersES()
 
-    let sources = ["sous_domaine", "codes_romes", "codes_rncps"];
+    let sources = ["sous_domaine", "codes_romes", "codes_rncps"]
     if (withRomeLabels) {
-      sources.push("couples_romes_metiers");
+      sources.push("couples_romes_metiers")
     }
 
     const response = await esClient.search({
@@ -179,9 +176,9 @@ const getLabelsAndRomes = async (searchKeyword, withRomeLabels) => {
           },
         },
       },
-    });
+    })
 
-    let labelsAndRomes = [];
+    let labelsAndRomes = []
 
     response.body.hits.hits.forEach((labelAndRome) => {
       let metier = {
@@ -189,31 +186,31 @@ const getLabelsAndRomes = async (searchKeyword, withRomeLabels) => {
         romes: labelAndRome._source.codes_romes,
         rncps: labelAndRome._source.codes_rncps,
         type: "job",
-      };
-
-      if (withRomeLabels) {
-        metier.romeTitles = labelAndRome._source.couples_romes_metiers;
       }
 
-      labelsAndRomes.push(metier);
-    });
+      if (withRomeLabels) {
+        metier.romeTitles = labelAndRome._source.couples_romes_metiers
+      }
 
-    return { labelsAndRomes };
+      labelsAndRomes.push(metier)
+    })
+
+    return { labelsAndRomes }
   } catch (error) {
-    return manageError({ error, msgToLog: "getting metiers from title" });
+    return manageError({ error, msgToLog: "getting metiers from title" })
   }
-};
+}
 
 const getCoupleAppellationRomeIntitule = async (searchKeyword) => {
   if (!searchKeyword) {
     return {
       error: "missing_parameters",
       error_messages: ["Parameters must include a label to search for."],
-    };
+    }
   }
 
   try {
-    const esClient = getDomainesMetiersES();
+    const esClient = getDomainesMetiersES()
 
     let body = {
       query: {
@@ -242,40 +239,40 @@ const getCoupleAppellationRomeIntitule = async (searchKeyword) => {
           ],
         },
       },
-    };
+    }
 
-    const response = await esClient.search({ index: "domainesmetiers", body });
+    const response = await esClient.search({ index: "domainesmetiers", body })
 
-    let coupleAppellationRomeMetier = [];
+    let coupleAppellationRomeMetier = []
 
     response.body.hits.hits.map((item) => {
-      coupleAppellationRomeMetier.push([...item._source.couples_appellations_rome_metier]);
-    });
+      coupleAppellationRomeMetier.push([...item._source.couples_appellations_rome_metier])
+    })
 
-    let intitulesAndRomesUnique = _.uniqBy(_.flatten(coupleAppellationRomeMetier), "appellation");
+    let intitulesAndRomesUnique = _.uniqBy(_.flatten(coupleAppellationRomeMetier), "appellation")
 
     coupleAppellationRomeMetier = matchSorter(intitulesAndRomesUnique, searchKeyword, {
       keys: ["appellation"],
       threshold: matchSorter.rankings.NO_MATCH,
-    });
+    })
 
-    return { coupleAppellationRomeMetier };
+    return { coupleAppellationRomeMetier }
   } catch (error) {
-    return manageError({ error, msgToLog: "getting intitule from title" });
+    return manageError({ error, msgToLog: "getting intitule from title" })
   }
-};
+}
 
 const getLabelsAndRomesForDiplomas = async (searchKeyword) => {
   try {
-    let terms = [];
+    let terms = []
 
     searchKeyword.split(" ").forEach((term, idx) => {
       if (idx === 0 || term.length > 2) {
-        terms.push(getMultiMatchTermForDiploma(term));
+        terms.push(getMultiMatchTermForDiploma(term))
       }
-    });
+    })
 
-    const esClient = getDomainesMetiersES();
+    const esClient = getDomainesMetiersES()
 
     const response = await esClient.search({
       index: "diplomesmetiers",
@@ -288,9 +285,9 @@ const getLabelsAndRomesForDiplomas = async (searchKeyword) => {
           },
         },
       },
-    });
+    })
 
-    let labelsAndRomesForDiplomas = [];
+    let labelsAndRomesForDiplomas = []
 
     response.body.hits.hits.forEach((labelAndRomeForDiploma) => {
       labelsAndRomesForDiplomas.push({
@@ -298,108 +295,107 @@ const getLabelsAndRomesForDiplomas = async (searchKeyword) => {
         romes: labelAndRomeForDiploma._source.codes_romes,
         rncps: labelAndRomeForDiploma._source.codes_rncps,
         type: "diploma",
-      });
-    });
+      })
+    })
 
-    labelsAndRomesForDiplomas = removeDuplicateDiplomas(labelsAndRomesForDiplomas);
+    labelsAndRomesForDiplomas = removeDuplicateDiplomas(labelsAndRomesForDiplomas)
 
-    return { labelsAndRomesForDiplomas };
+    return { labelsAndRomesForDiplomas }
   } catch (error) {
-    return manageError({ error, msgToLog: "getting diplomes from title" });
+    return manageError({ error, msgToLog: "getting diplomes from title" })
   }
-};
+}
 
 const removeDuplicateDiplomas = (diplomas) => {
-  let labelsAndRomesForDiplomas = [];
-  let diplomasWithoutLevel = [];
+  let labelsAndRomesForDiplomas = []
+  let diplomasWithoutLevel = []
 
   diplomas.forEach((diploma) => {
-    let diplomaWithoutLevel =
-      diploma.label.indexOf("(") > 0 ? diploma.label.substring(0, diploma.label.indexOf("(")).trim() : diploma.label;
+    let diplomaWithoutLevel = diploma.label.indexOf("(") > 0 ? diploma.label.substring(0, diploma.label.indexOf("(")).trim() : diploma.label
 
     if (diplomasWithoutLevel.indexOf(diplomaWithoutLevel) < 0) {
-      labelsAndRomesForDiplomas.push({ ...diploma, label: diplomaWithoutLevel });
-      diplomasWithoutLevel.push(diplomaWithoutLevel);
+      labelsAndRomesForDiplomas.push({ ...diploma, label: diplomaWithoutLevel })
+      diplomasWithoutLevel.push(diplomaWithoutLevel)
     }
-  });
+  })
 
-  return labelsAndRomesForDiplomas;
-};
+  return labelsAndRomesForDiplomas
+}
 
 const updateRomesMetiersQuery = async (query) => {
   if (!query.secret) {
-    return { error: "secret_missing" };
+    return { error: "secret_missing" }
   } else if (query.secret !== config.secretUpdateRomesMetiers) {
-    return { error: "wrong_secret" };
+    return { error: "wrong_secret" }
   } else {
     try {
-      let result = await updateDomainesMetiers(query.fileName);
-      return result;
+      let result = await updateDomainesMetiers(query.fileName)
+      return result
     } catch (err) {
-      Sentry.captureException(err);
+      Sentry.captureException(err)
 
-      let error_msg = _.get(err, "meta.body") ?? err.message;
+      let error_msg = _.get(err, "meta.body") ?? err.message
 
-      return { error: error_msg };
+      return { error: error_msg }
     }
   }
-};
+}
 
 const getMissingRNCPs = async (query) => {
   if (!query.secret) {
-    return { error: "secret_missing" };
+    return { error: "secret_missing" }
   } else if (query.secret !== config.secretUpdateRomesMetiers) {
-    return { error: "wrong_secret" };
+    return { error: "wrong_secret" }
   } else {
     try {
-      let result = await getMissingRNCPsFromDomainesMetiers(query.fileName);
-      return result;
+      let result = await getMissingRNCPsFromDomainesMetiers(query.fileName)
+      return result
     } catch (err) {
-      Sentry.captureException(err);
+      Sentry.captureException(err)
 
-      let error_msg = _.get(err, "meta.body") ?? err.message;
+      let error_msg = _.get(err, "meta.body") ?? err.message
 
-      return { error: error_msg };
+      return { error: error_msg }
     }
   }
-};
+}
 
 const getMetiersPourCfd = async ({ cfd }) => {
-  let romeResponse = await getRomesFromCfd({ cfd });
+  let romeResponse = await getRomesFromCfd({ cfd })
 
   if (romeResponse.error) {
-    romeResponse.metiers = [];
-    return romeResponse;
+    romeResponse.metiers = []
+    return romeResponse
   }
 
-  const romes = [...new Set(romeResponse.romes)];
+  const romes = [...new Set(romeResponse.romes)]
 
-  let metiers = await getMetiersFromRomes(romes);
+  let metiers = await getMetiersFromRomes(romes)
 
-  return metiers;
-};
+  return metiers
+}
 
 const getMetiersPourEtablissement = async ({ siret }) => {
-  let romeResponse = await getRomesFromSiret({ siret });
+  let romeResponse = await getRomesFromSiret({ siret })
 
   if (romeResponse.error) {
-    romeResponse.metiers = [];
-    return romeResponse;
+    romeResponse.metiers = []
+    return romeResponse
   }
 
-  const romes = [...new Set(romeResponse.romes)];
+  const romes = [...new Set(romeResponse.romes)]
 
-  let metiers = await getMetiersFromRomes(romes);
+  let metiers = await getMetiersFromRomes(romes)
 
-  return metiers;
-};
+  return metiers
+}
 
 const getMetiersFromRomes = async (romes) => {
   /**
    * récupère dans la table custo tous les métiers qui correspondent au tableau de romes en paramètres
    */
   try {
-    const esClient = getDomainesMetiersES();
+    const esClient = getDomainesMetiersES()
 
     const response = await esClient.search({
       index: "domainesmetiers",
@@ -412,26 +408,26 @@ const getMetiersFromRomes = async (romes) => {
           },
         },
       },
-    });
+    })
 
-    let metiers = [];
+    let metiers = []
 
     response.body.hits.hits.forEach((metier) => {
-      metiers.push(metier._source.sous_domaine);
-    });
+      metiers.push(metier._source.sous_domaine)
+    })
 
-    return { metiers };
+    return { metiers }
   } catch (error) {
-    return manageError({ error, msgToLog: "getting metiers from romes" });
+    return manageError({ error, msgToLog: "getting metiers from romes" })
   }
-};
+}
 
 const getTousLesMetiers = async () => {
   /**
    * récupère dans la table custo tous les métiers
    */
   try {
-    const esClient = getDomainesMetiersES();
+    const esClient = getDomainesMetiersES()
 
     const response = await esClient.search({
       index: "domainesmetiers",
@@ -442,21 +438,21 @@ const getTousLesMetiers = async () => {
           match_all: {},
         },
       },
-    });
+    })
 
-    let metiers = [];
+    let metiers = []
 
     response.body.hits.hits.forEach((metier) => {
-      metiers.push(metier._source.sous_domaine);
-    });
+      metiers.push(metier._source.sous_domaine)
+    })
 
-    metiers.sort();
+    metiers.sort()
 
-    return { metiers };
+    return { metiers }
   } catch (error) {
-    return manageError({ error, msgToLog: "getting all metiers" });
+    return manageError({ error, msgToLog: "getting all metiers" })
   }
-};
+}
 
 export {
   getRomesAndLabelsFromTitleQuery,
@@ -467,4 +463,4 @@ export {
   getMetiersPourEtablissement,
   getTousLesMetiers,
   getMetiers,
-};
+}

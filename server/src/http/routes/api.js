@@ -1,11 +1,11 @@
-import axios from "axios";
-import express from "express";
-import Joi from "joi";
-import { CFA, ENTREPRISE, REGEX } from "../../common/constants.js";
-import { tryCatch } from "../middlewares/tryCatchMiddleware.js";
+import axios from "axios"
+import express from "express"
+import Joi from "joi"
+import { CFA, ENTREPRISE, REGEX } from "../../common/constants.js"
+import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
 
 export default ({ formulaire, etablissementsRecruteur, usersRecruteur }) => {
-  const router = express.Router();
+  const router = express.Router()
 
   const searchValidationSchema = Joi.object({
     raison_sociale: Joi.string(),
@@ -14,7 +14,7 @@ export default ({ formulaire, etablissementsRecruteur, usersRecruteur }) => {
     nom: Joi.string(),
     prenom: Joi.string(),
     email: Joi.string().email(),
-  });
+  })
 
   const formulaireCreationValidationSchema = Joi.object({
     nom: Joi.string().required(),
@@ -22,14 +22,14 @@ export default ({ formulaire, etablissementsRecruteur, usersRecruteur }) => {
     email: Joi.string().email().required(),
     telephone: Joi.string().regex(REGEX.TELEPHONE).required(),
     siret: Joi.string().pattern(REGEX.SIRET).required(),
-  });
+  })
 
   const formulaireEditionValidationSchema = Joi.object({
     nom: Joi.string().required(),
     prenom: Joi.string().required(),
     email: Joi.string().email().required(),
     telephone: Joi.string().regex(REGEX.TELEPHONE).required(),
-  });
+  })
 
   const offreValidationSchema = Joi.object({
     libelle: Joi.string().required(),
@@ -51,13 +51,8 @@ export default ({ formulaire, etablissementsRecruteur, usersRecruteur }) => {
     elligible_handicap: Joi.boolean(),
     quantite: Joi.number().max(10).default(1),
     duree_contrat: Joi.number().max(4).default(1),
-    rythme_alternance: Joi.string().valid(
-      "2 jours / 3 jours",
-      "1 semaine / 1 semaine",
-      "2 semaines / 3 semaines",
-      "6 semaines / 6 semaines"
-    ),
-  });
+    rythme_alternance: Joi.string().valid("2 jours / 3 jours", "1 semaine / 1 semaine", "2 semaines / 3 semaines", "6 semaines / 6 semaines"),
+  })
 
   const userValidationSchema = Joi.object({
     nom: Joi.string().required(),
@@ -65,7 +60,7 @@ export default ({ formulaire, etablissementsRecruteur, usersRecruteur }) => {
     email: Joi.string().email().required(),
     telephone: Joi.string().regex(REGEX.TELEPHONE).required(),
     siret: Joi.string().pattern(REGEX.SIRET).required(),
-  });
+  })
 
   /**
    * @swagger
@@ -102,22 +97,22 @@ export default ({ formulaire, etablissementsRecruteur, usersRecruteur }) => {
   router.get(
     "/formulaire",
     tryCatch(async (req, res) => {
-      const { error } = searchValidationSchema.validate(req.query, { abortEarly: false });
+      const { error } = searchValidationSchema.validate(req.query, { abortEarly: false })
 
       if (error) {
-        return res.status(400).json({ status: "INPUT_VALIDATION_ERROR", message: error.message });
+        return res.status(400).json({ status: "INPUT_VALIDATION_ERROR", message: error.message })
       }
 
-      let qs = req.query;
-      const query = qs && qs.query ? JSON.parse(qs.query) : {};
-      const page = qs && qs.page ? qs.page : 1;
-      const limit = qs && qs.limit ? parseInt(qs.limit, 10) : 100;
+      let qs = req.query
+      const query = qs && qs.query ? JSON.parse(qs.query) : {}
+      const page = qs && qs.page ? qs.page : 1
+      const limit = qs && qs.limit ? parseInt(qs.limit, 10) : 100
 
-      const response = await formulaire.getFormulaires(query, { page, limit });
+      const response = await formulaire.getFormulaires(query, { page, limit })
 
-      return res.json(response);
+      return res.json(response)
     })
-  );
+  )
 
   /**
    * @swagger
@@ -149,10 +144,10 @@ export default ({ formulaire, etablissementsRecruteur, usersRecruteur }) => {
   router.get(
     "/formulaire/:formulaireId",
     tryCatch(async (req, res) => {
-      const response = await formulaire.getFormulaire({ id_form: req.params.formulaireId });
-      return res.json(response);
+      const response = await formulaire.getFormulaire({ id_form: req.params.formulaireId })
+      return res.json(response)
     })
-  );
+  )
 
   /**
    * @swagger\
@@ -184,10 +179,10 @@ export default ({ formulaire, etablissementsRecruteur, usersRecruteur }) => {
   router.get(
     "/offre/:offreId",
     tryCatch(async (req, res) => {
-      const response = await formulaire.getOffre(req.params.offreId);
-      return res.json(response);
+      const response = await formulaire.getOffre(req.params.offreId)
+      return res.json(response)
     })
-  );
+  )
 
   /**
    * @swagger/
@@ -240,26 +235,22 @@ export default ({ formulaire, etablissementsRecruteur, usersRecruteur }) => {
     "/formulaire/:userId",
     tryCatch(async (req, res) => {
       // update validation info
-      const { error } = formulaireCreationValidationSchema.validate(req.body, { abortEarly: false });
+      const { error } = formulaireCreationValidationSchema.validate(req.body, { abortEarly: false })
 
       if (error) {
-        return res.status(400).json({ status: "INPUT_VALIDATION_ERROR", message: error.message, error: true });
+        return res.status(400).json({ status: "INPUT_VALIDATION_ERROR", message: error.message, error: true })
       }
 
-      const userExist = await usersRecruteur.getUser({ _id: req.params.userId });
+      const userExist = await usersRecruteur.getUser({ _id: req.params.userId })
 
       if (!userExist) {
-        return res
-          .status(400)
-          .json({ status: "NOT_FOUND", error: true, message: "L'utilisateur mentionné n'a pas été trouvé" });
+        return res.status(400).json({ status: "NOT_FOUND", error: true, message: "L'utilisateur mentionné n'a pas été trouvé" })
       }
 
-      const siretInfo = await etablissementsRecruteur.getEtablissementFromGouv(req.body.siret);
+      const siretInfo = await etablissementsRecruteur.getEtablissementFromGouv(req.body.siret)
 
       if (siretInfo.data?.etablissement.etat_administratif.value === "F") {
-        return res
-          .status(400)
-          .json({ status: "CLOSED", error: true, message: "Cette entreprise est considérée comme fermé." });
+        return res.status(400).json({ status: "CLOSED", error: true, message: "Cette entreprise est considérée comme fermé." })
       }
 
       if (siretInfo.data?.etablissement.naf.startsWith("85")) {
@@ -267,15 +258,13 @@ export default ({ formulaire, etablissementsRecruteur, usersRecruteur }) => {
           status: "UNAUTHORIZED",
           error: true,
           message: "Le numéro siret n'est pas référencé comme une entreprise.",
-        });
+        })
       }
 
-      let formattedSiretInfo = etablissementsRecruteur.formatEntrepriseData(siretInfo.data.etablissement);
+      let formattedSiretInfo = etablissementsRecruteur.formatEntrepriseData(siretInfo.data.etablissement)
 
-      let opcoResult = await etablissementsRecruteur.getOpco(req.params.siret);
-      let geo_coordonnees = await etablissementsRecruteur.getGeoCoordinates(
-        `${formattedSiretInfo.adresse}, ${formattedSiretInfo.code_postal}, ${formattedSiretInfo.commune}`
-      );
+      let opcoResult = await etablissementsRecruteur.getOpco(req.params.siret)
+      let geo_coordonnees = await etablissementsRecruteur.getGeoCoordinates(`${formattedSiretInfo.adresse}, ${formattedSiretInfo.code_postal}, ${formattedSiretInfo.commune}`)
 
       const response = await formulaire.updateFormulaire({
         gestionnaire: userExist.siret,
@@ -283,11 +272,11 @@ export default ({ formulaire, etablissementsRecruteur, usersRecruteur }) => {
         opco: opcoResult.data?.opcoName ?? undefined,
         geo_coordonnees,
         ...req.body,
-      });
+      })
 
-      return res.json(response);
+      return res.json(response)
     })
-  );
+  )
 
   /**
    * @swagger
@@ -318,23 +307,23 @@ export default ({ formulaire, etablissementsRecruteur, usersRecruteur }) => {
   router.post(
     "/offre/:formulaireId",
     tryCatch(async (req, res) => {
-      const exist = await formulaire.getFormulaire({ id_form: req.params.formulaireId });
+      const exist = await formulaire.getFormulaire({ id_form: req.params.formulaireId })
 
       if (!exist) {
-        return res.status(400).json({ status: "INVALID_RESSOURCE", message: "Form does not exist" });
+        return res.status(400).json({ status: "INVALID_RESSOURCE", message: "Form does not exist" })
       }
 
-      const { error } = offreValidationSchema.validate(req.body, { abortEarly: false });
+      const { error } = offreValidationSchema.validate(req.body, { abortEarly: false })
 
       if (error) {
-        return res.status(400).json({ status: "INPUT_VALIDATION_ERROR", message: error.message });
+        return res.status(400).json({ status: "INPUT_VALIDATION_ERROR", message: error.message })
       }
 
-      const response = await formulaire.createOffre(req.params.formulaireId, req.body);
+      const response = await formulaire.createOffre(req.params.formulaireId, req.body)
 
-      return res.json(response);
+      return res.json(response)
     })
-  );
+  )
 
   /**
    * @swagger
@@ -378,23 +367,23 @@ export default ({ formulaire, etablissementsRecruteur, usersRecruteur }) => {
   router.put(
     "/formulaire/:formulaireId",
     tryCatch(async (req, res) => {
-      const exist = await formulaire.getFormulaire({ id_form: req.params.formulaireId });
+      const exist = await formulaire.getFormulaire({ id_form: req.params.formulaireId })
 
       if (!exist) {
-        return res.status(400).json({ status: "INVALID_RESSOURCE", message: "Formulaire does not exist" });
+        return res.status(400).json({ status: "INVALID_RESSOURCE", message: "Formulaire does not exist" })
       }
 
-      const { error } = formulaireEditionValidationSchema.validate(req.body, { abortEarly: false });
+      const { error } = formulaireEditionValidationSchema.validate(req.body, { abortEarly: false })
 
       if (error) {
-        return res.status(400).json({ status: "INPUT_VALIDATION_ERROR", message: error.message });
+        return res.status(400).json({ status: "INPUT_VALIDATION_ERROR", message: error.message })
       }
 
-      const response = formulaire.updateFormulaire(req.params.formulaireId, req.body);
+      const response = formulaire.updateFormulaire(req.params.formulaireId, req.body)
 
-      return res.json(response);
+      return res.json(response)
     })
-  );
+  )
 
   /**
    * @swagger\
@@ -435,12 +424,10 @@ export default ({ formulaire, etablissementsRecruteur, usersRecruteur }) => {
   router.get(
     "/rome/search",
     tryCatch(async (req, res) => {
-      const result = await axios.get(
-        `https://labonnealternance-recette.apprentissage.beta.gouv.fr/api/metiers/intitule?label=${req.query.search}`
-      );
-      return res.json({ coupleIntituleRome: result.data.coupleIntituleRome });
+      const result = await axios.get(`https://labonnealternance-recette.apprentissage.beta.gouv.fr/api/metiers/intitule?label=${req.query.search}`)
+      return res.json({ coupleIntituleRome: result.data.coupleIntituleRome })
     })
-  );
+  )
 
   /**
    * @swagger
@@ -483,29 +470,29 @@ export default ({ formulaire, etablissementsRecruteur, usersRecruteur }) => {
   router.put(
     "/offre/:offreId",
     tryCatch(async (req, res) => {
-      const checkFormulaire = await formulaire.getFormulaire({ id_form: req.params.formulaireId });
+      const checkFormulaire = await formulaire.getFormulaire({ id_form: req.params.formulaireId })
 
       if (!checkFormulaire) {
-        return res.status(400).json({ status: "INVALID_RESSOURCE", message: "Form does not exist" });
+        return res.status(400).json({ status: "INVALID_RESSOURCE", message: "Form does not exist" })
       }
 
-      const checkOffre = await formulaire.getOffre(req.params.offreId);
+      const checkOffre = await formulaire.getOffre(req.params.offreId)
 
       if (!checkOffre) {
-        return res.status(400).json({ status: "INVALID_RESSOURCE", message: "Offer does not exist" });
+        return res.status(400).json({ status: "INVALID_RESSOURCE", message: "Offer does not exist" })
       }
 
-      const { error } = offreValidationSchema.validate(req.body, { abortEarly: false });
+      const { error } = offreValidationSchema.validate(req.body, { abortEarly: false })
 
       if (error) {
-        return res.status(400).json({ status: "INPUT_VALIDATION_ERROR", message: error.message });
+        return res.status(400).json({ status: "INPUT_VALIDATION_ERROR", message: error.message })
       }
 
-      const response = formulaire.updateOffre(req.params.offreId, req.body);
+      const response = formulaire.updateOffre(req.params.offreId, req.body)
 
-      return res.json(response);
+      return res.json(response)
     })
-  );
+  )
 
   /**
    * @swagger
@@ -525,17 +512,17 @@ export default ({ formulaire, etablissementsRecruteur, usersRecruteur }) => {
   router.put(
     "/offre/:offreId/cancel",
     tryCatch(async (req, res) => {
-      const exist = formulaire.getOffre(req.params.offreId);
+      const exist = formulaire.getOffre(req.params.offreId)
 
       if (!exist) {
-        return res.status(400).json({ status: "INVALID_RESSOURCE", message: "Offre does not exist" });
+        return res.status(400).json({ status: "INVALID_RESSOURCE", message: "Offre does not exist" })
       }
 
-      await formulaire.cancelOffre(req.params.offreId);
+      await formulaire.cancelOffre(req.params.offreId)
 
-      return res.sendStatus(200);
+      return res.sendStatus(200)
     })
-  );
+  )
 
   /**
    * @swagger
@@ -555,17 +542,17 @@ export default ({ formulaire, etablissementsRecruteur, usersRecruteur }) => {
   router.put(
     "/offre/:offreId/provided",
     tryCatch(async (req, res) => {
-      const exist = formulaire.getOffre(req.params.offreId);
+      const exist = formulaire.getOffre(req.params.offreId)
 
       if (!exist) {
-        return res.status(400).json({ status: "INVALID_RESSOURCE", message: "Offre does not exist" });
+        return res.status(400).json({ status: "INVALID_RESSOURCE", message: "Offre does not exist" })
       }
 
-      await formulaire.provideOffre(req.params.offreId);
+      await formulaire.provideOffre(req.params.offreId)
 
-      return res.sendStatus(200);
+      return res.sendStatus(200)
     })
-  );
+  )
 
   /**
    * @swagger
@@ -585,17 +572,17 @@ export default ({ formulaire, etablissementsRecruteur, usersRecruteur }) => {
   router.put(
     "/offre/:offreId/extend",
     tryCatch(async (req, res) => {
-      const offre = formulaire.getOffre(req.params.offreId);
+      const offre = formulaire.getOffre(req.params.offreId)
 
       if (!offre) {
-        return res.status(400).json({ status: "INVALID_RESSOURCE", message: "Offre does not exist" });
+        return res.status(400).json({ status: "INVALID_RESSOURCE", message: "Offre does not exist" })
       }
 
-      await formulaire.extendOffre(req.params.offreId);
+      await formulaire.extendOffre(req.params.offreId)
 
-      return res.sendStatus(200);
+      return res.sendStatus(200)
     })
-  );
+  )
 
   /**
    * @swagger
@@ -619,15 +606,15 @@ export default ({ formulaire, etablissementsRecruteur, usersRecruteur }) => {
   router.post(
     "/user/:id",
     tryCatch(async (req, res) => {
-      const user = user.getUser(req.params.id);
+      const user = user.getUser(req.params.id)
 
       if (!user) {
-        return res.status(400).json({ status: "INVALID_RESSOURCE", message: "User does not exist" });
+        return res.status(400).json({ status: "INVALID_RESSOURCE", message: "User does not exist" })
       }
 
-      return res.json(user);
+      return res.json(user)
     })
-  );
+  )
 
   /**
    * @swagger
@@ -678,28 +665,28 @@ export default ({ formulaire, etablissementsRecruteur, usersRecruteur }) => {
   router.post(
     "/user",
     tryCatch(async (req, res) => {
-      const { error } = userValidationSchema.validate(req.body, { abortEarly: false });
+      const { error } = userValidationSchema.validate(req.body, { abortEarly: false })
 
       if (error) {
-        return res.status(400).json({ status: "INPUT_VALIDATION_ERROR", message: error.message, error: true });
+        return res.status(400).json({ status: "INPUT_VALIDATION_ERROR", message: error.message, error: true })
       }
 
-      const userExist = await usersRecruteur.getUser({ email: req.body.email });
+      const userExist = await usersRecruteur.getUser({ email: req.body.email })
 
       if (userExist) {
-        return res.status(403).json({ status: "USER_ALREADY_EXIST", error: true });
+        return res.status(403).json({ status: "USER_ALREADY_EXIST", error: true })
       }
 
-      const { data } = await etablissementsRecruteur.getEtablissementFromCatalogue(req.body.siret);
+      const { data } = await etablissementsRecruteur.getEtablissementFromCatalogue(req.body.siret)
 
-      const siretInfo = data?.etablissement[0] ?? null;
+      const siretInfo = data?.etablissement[0] ?? null
 
       if (!siretInfo) {
         return res.status(400).json({
           status: "NOT_FOUND",
           error: true,
           message: "L'organisme de formation n'a pas été trouvé parmis le catalogue des établissements",
-        });
+        })
       }
 
       if (siretInfo.ferme === true) {
@@ -707,16 +694,16 @@ export default ({ formulaire, etablissementsRecruteur, usersRecruteur }) => {
           statut: "ESTABLISHMENT_CLOSED",
           error: true,
           message: "Cette établissement est considérée comme fermé.",
-        });
+        })
       }
 
-      let formattedSiretInfo = etablissementsRecruteur.formatCatalogueData(siretInfo);
+      let formattedSiretInfo = etablissementsRecruteur.formatCatalogueData(siretInfo)
 
-      let newUser = await usersRecruteur.createUser({ type: "CFA", ...formattedSiretInfo, ...req.body });
+      let newUser = await usersRecruteur.createUser({ type: "CFA", ...formattedSiretInfo, ...req.body })
 
-      return res.json(newUser);
+      return res.json(newUser)
     })
-  );
+  )
 
   /**
    * @swagger
@@ -757,22 +744,20 @@ export default ({ formulaire, etablissementsRecruteur, usersRecruteur }) => {
     "/user/:userId",
     tryCatch(async (req, res) => {
       if (!req.params.userId) {
-        return res
-          .status(400)
-          .json({ status: "MISSING_PARAM", message: "L'identifiant utilisateur est absent", error: true });
+        return res.status(400).json({ status: "MISSING_PARAM", message: "L'identifiant utilisateur est absent", error: true })
       }
 
-      const exist = await usersRecruteur.getUser({ _id: req.params.userId });
+      const exist = await usersRecruteur.getUser({ _id: req.params.userId })
 
       if (!exist) {
-        return res.status(400).json({ statut: "NOT_FOUND", message: "L'utilisateur n'existe pas", error: true });
+        return res.status(400).json({ statut: "NOT_FOUND", message: "L'utilisateur n'existe pas", error: true })
       }
 
-      const updated = await usersRecruteur.updateUser(req.params.userId, req.body);
+      const updated = await usersRecruteur.updateUser(req.params.userId, req.body)
 
-      return res.json(updated);
+      return res.json(updated)
     })
-  );
+  )
 
   /**
    * @swagger
@@ -794,39 +779,37 @@ export default ({ formulaire, etablissementsRecruteur, usersRecruteur }) => {
     "/user/:userId",
     tryCatch(async (req, res) => {
       if (!req.params.userId) {
-        return res
-          .status(400)
-          .json({ status: "MISSING_PARAM", message: "L'identifiant utilisateur est absent", error: true });
+        return res.status(400).json({ status: "MISSING_PARAM", message: "L'identifiant utilisateur est absent", error: true })
       }
 
-      const user = await usersRecruteur.getUser({ _id: req.params.userId });
+      const user = await usersRecruteur.getUser({ _id: req.params.userId })
 
       if (!user) {
-        return res.status(400).json({ statut: "NOT_FOUND", message: "L'utilisateur n'existe pas", error: true });
+        return res.status(400).json({ statut: "NOT_FOUND", message: "L'utilisateur n'existe pas", error: true })
       }
 
-      let { _id, siret, id_form, type } = user;
+      let { _id, siret, id_form, type } = user
 
       switch (type) {
         case ENTREPRISE:
-          await usersRecruteur.removeUser(_id);
-          await formulaire.deleteFormulare(id_form);
+          await usersRecruteur.removeUser(_id)
+          await formulaire.deleteFormulare(id_form)
 
-          break;
+          break
 
         case CFA:
-          await usersRecruteur.removeUser(_id);
-          await formulaire.deleteFormulaireFromGestionnaire(siret);
+          await usersRecruteur.removeUser(_id)
+          await formulaire.deleteFormulaireFromGestionnaire(siret)
 
-          break;
+          break
 
         default:
-          return res.status(400).json({ statut: "ERREUR", message: "Une erreur est survenue", error: true });
+          return res.status(400).json({ statut: "ERREUR", message: "Une erreur est survenue", error: true })
       }
 
-      return res.sendStatus(200);
+      return res.sendStatus(200)
     })
-  );
+  )
 
-  return router;
-};
+  return router
+}

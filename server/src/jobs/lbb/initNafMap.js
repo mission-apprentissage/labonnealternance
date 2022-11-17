@@ -1,26 +1,26 @@
-import { logMessage } from "../../common/utils/logMessage.js";
-import miniget from "miniget";
-import { oleoduc, readLineByLine, transformData, writeData } from "oleoduc";
+import { logMessage } from "../../common/utils/logMessage.js"
+import miniget from "miniget"
+import { oleoduc, readLineByLine, transformData, writeData } from "oleoduc"
 
-let nafMap = {};
-let count = 0;
+let nafMap = {}
+let count = 0
 
 const parseLine = (line) => {
-  const terms = line.split(",");
+  const terms = line.split(",")
 
-  let intitule_naf = terms[3];
+  let intitule_naf = terms[3]
   if (terms.length > 5) {
     // cas où l'intitulé contient des virgules
     for (let i = 4; i < terms.length - 1; ++i) {
-      intitule_naf += "," + terms[i];
+      intitule_naf += "," + terms[i]
     }
-    intitule_naf = intitule_naf.slice(1, -1);
+    intitule_naf = intitule_naf.slice(1, -1)
   }
 
   if (count % 1000 === 0) {
-    logMessage("info", ` -- update init naf map ${count}`);
+    logMessage("info", ` -- update init naf map ${count}`)
   }
-  count++;
+  count++
 
   if (count > 1) {
     return {
@@ -29,37 +29,35 @@ const parseLine = (line) => {
       code_naf: terms[2],
       intitule_naf,
       //hirings: terms[terms.length - 1],
-    };
+    }
   } else {
-    return null;
+    return null
   }
-};
+}
 
 const computeLine = async ({ code_naf, intitule_naf }) => {
   if (!nafMap[code_naf]) {
-    nafMap[code_naf] = intitule_naf;
+    nafMap[code_naf] = intitule_naf
   }
-};
+}
 
 export default async function () {
   try {
-    logMessage("info", " -- Start updating rome naf -- ");
+    logMessage("info", " -- Start updating rome naf -- ")
 
     await oleoduc(
-      miniget(
-        "https://raw.githubusercontent.com/StartupsPoleEmploi/labonneboite/master/labonneboite/common/data/rome_naf_mapping.csv"
-      ),
+      miniget("https://raw.githubusercontent.com/StartupsPoleEmploi/labonneboite/master/labonneboite/common/data/rome_naf_mapping.csv"),
       readLineByLine(),
       transformData((line) => parseLine(line)),
       writeData(async (line) => computeLine(line))
-    );
+    )
 
-    logMessage("info", `End updating rome naf`);
+    logMessage("info", `End updating rome naf`)
   } catch (err) {
-    logMessage("error", err);
+    logMessage("error", err)
   }
 
-  count = 0;
+  count = 0
 
-  return nafMap;
+  return nafMap
 }

@@ -1,5 +1,5 @@
-import { m } from 'framer-motion'
-import { LazyMotion, domAnimation } from 'framer-motion'
+import { m } from "framer-motion"
+import { LazyMotion, domAnimation } from "framer-motion"
 
 export default (props) => {
   return (

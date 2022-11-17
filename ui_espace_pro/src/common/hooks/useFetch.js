@@ -1,5 +1,5 @@
-import { useState, useCallback, useEffect } from 'react'
-import { _get, _post } from '../httpClient'
+import { useState, useCallback, useEffect } from "react"
+import { _get, _post } from "../httpClient"
 
 export function useFetch(url, initialState = null) {
   const [response, setResponse] = useState(initialState)

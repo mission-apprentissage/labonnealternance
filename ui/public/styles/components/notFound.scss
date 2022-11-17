@@ -15,20 +15,20 @@
   font-weight: 400;
   font-size: 54px;
   margin-top: 1rem;
-  @include media-breakpoint-up(md) { 
+  @include media-breakpoint-up(md) {
     margin-top: 0;
     font-size: 76px;
   }
 }
 .not-found-subtitle {
   font-size: 16px;
-  @include media-breakpoint-up(md) { 
+  @include media-breakpoint-up(md) {
     font-size: 18px;
   }
 }
 .not-found-text {
   font-size: 14px;
-  @include media-breakpoint-up(md) { 
+  @include media-breakpoint-up(md) {
     font-size: 18px;
   }
 }

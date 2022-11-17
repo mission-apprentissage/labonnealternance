@@ -1,4 +1,4 @@
-import * as Yup from "yup";
+import * as Yup from "yup"
 
 export function getInitialSchemaValues() {
   return {
@@ -10,7 +10,7 @@ export function getInitialSchemaValues() {
     fileContent: null,
     message: "",
     //interetOffresMandataire: false,
-  };
+  }
 }
 
 const commonControls = {
@@ -21,10 +21,10 @@ const commonControls = {
   phone: Yup.string()
     .matches(/^[0-9]{10}$/, "⚠ Le numéro de téléphone doit avoir exactement 10 chiffres")
     .required("⚠ Le téléphone est obligatoire"),
-};
+}
 
 export function getValidationSchema(actualKind) {
-    return Yup.object({
-      ...commonControls,
-    });
+  return Yup.object({
+    ...commonControls,
+  })
 }

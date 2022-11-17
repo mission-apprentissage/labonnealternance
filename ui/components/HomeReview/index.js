@@ -1,3 +1,3 @@
-import HomeReview from "./HomeReview";
+import HomeReview from "./HomeReview"
 
-export default HomeReview;
+export default HomeReview

@@ -1,13 +1,13 @@
-import { fetchRomes } from "../services/fetchRomes";
-import { SendTrackEvent } from "../utils/plausible";
+import { fetchRomes } from "../services/fetchRomes"
+import { SendTrackEvent } from "../utils/plausible"
 
 export default async function domainChanged(val, setDomainErrorFunc) {
   const res = await fetchRomes(val, () => {
-    setDomainErrorFunc(true);
-  });
+    setDomainErrorFunc(true)
+  })
 
   if (res === "cancelled") {
-    return [];
+    return []
   }
 
   if (val && val.length > 2) {
@@ -15,8 +15,8 @@ export default async function domainChanged(val, setDomainErrorFunc) {
       event: "Moteur de recherche - Metier",
       terme: val,
       hits: res.length,
-    });
+    })
   }
 
-  return res;
+  return res
 }

@@ -1,15 +1,15 @@
-import React from "react";
-import { logError } from "utils/tools";
+import React from "react"
+import { logError } from "utils/tools"
 
 const SimulatedError = (props) => {
   try {
-    throw new Error("simulated error 1 ...");
+    throw new Error("simulated error 1 ...")
   } catch (error) {
-    logError("Test", error);
+    logError("Test", error)
   }
 
-  throw new Error("simulated error 2 ...");
+  throw new Error("simulated error 2 ...")
 
-  return <div>Passed</div>;
-};
-export default SimulatedError;
+  return <div>Passed</div>
+}
+export default SimulatedError

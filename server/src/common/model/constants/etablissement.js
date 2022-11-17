@@ -1,7 +1,7 @@
 const optMode = {
   OPT_IN: "OPT_IN",
   OPT_OUT: "OPT_OUT",
-};
+}
 
 const mailType = {
   OPT_OUT_INVITE: "OPT_OUT_INVITE",
@@ -11,6 +11,6 @@ const mailType = {
   PREMIUM_INVITE_FOLLOW_UP: "PREMIUM_INVITE_FOLLOW_UP",
   PREMIUM_REFUSED: "PREMIUM_REFUSED",
   PREMIUM_STARTING: "PREMIUM_STARTING",
-};
+}
 
-export { optMode, mailType };
+export { optMode, mailType }

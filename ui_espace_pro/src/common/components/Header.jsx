@@ -1,7 +1,7 @@
-import React from "react";
-import { NavLink } from "react-router-dom";
-import { Box, Container, Flex, Heading, Link } from "@chakra-ui/react";
-import { Logo } from "./Logo";
+import React from "react"
+import { NavLink } from "react-router-dom"
+import { Box, Container, Flex, Heading, Link } from "@chakra-ui/react"
+import { Logo } from "./Logo"
 
 const Header = () => {
   return (
@@ -21,7 +21,7 @@ const Header = () => {
         </Container>
       </Container>
     </>
-  );
-};
+  )
+}
 
-export default Header;
+export default Header

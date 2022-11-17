@@ -1,8 +1,8 @@
-import React from "react";
-import NotFound from "../components/NotFound";
+import React from "react"
+import NotFound from "../components/NotFound"
 
 const Error404 = () => {
-  return <NotFound />;
-};
+  return <NotFound />
+}
 
-export default Error404;
+export default Error404

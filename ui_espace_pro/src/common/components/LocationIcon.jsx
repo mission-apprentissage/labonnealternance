@@ -1,4 +1,4 @@
-import * as PropTypes from "prop-types";
+import * as PropTypes from "prop-types"
 
 /**
  * @description Location icon.
@@ -12,10 +12,10 @@ const LocationIcon = ({ width }) => (
       fill="#3A55D1"
     />
   </svg>
-);
+)
 
 LocationIcon.propTypes = {
   width: PropTypes.number.isRequired,
-};
+}
 
-export default LocationIcon;
+export default LocationIcon

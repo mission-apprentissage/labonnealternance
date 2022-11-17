@@ -49,4 +49,4 @@ export const parcoursupEtablissementStatSchema = {
     default: null,
     description: "Nombre de jours avant la consultation du rendez-vous",
   },
-};
+}

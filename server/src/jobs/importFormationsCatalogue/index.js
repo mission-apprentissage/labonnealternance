@@ -1,6 +1,6 @@
-import importFormationsCatalogue from "./importFormationsCatalogue.js";
-import { runScript } from "../scriptWrapper.js";
+import importFormationsCatalogue from "./importFormationsCatalogue.js"
+import { runScript } from "../scriptWrapper.js"
 
 runScript(async () => {
-  await importFormationsCatalogue();
-});
+  await importFormationsCatalogue()
+})

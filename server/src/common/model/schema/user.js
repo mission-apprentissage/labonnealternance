@@ -35,4 +35,4 @@ export const userSchema = {
     default: null,
     description: "candidat | cfa | administrator",
   },
-};
+}

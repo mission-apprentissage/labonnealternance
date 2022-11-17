@@ -1,14 +1,14 @@
-import { useEffect, useState } from 'react'
-import { Field, Form, Formik } from 'formik'
-import * as Yup from 'yup'
-import * as emailValidator from 'email-validator'
-import * as qs from 'query-string'
-import { useNavigate, useLocation } from 'react-router-dom'
-import { Input, Button, Box, Spinner, Text, Center, Flex } from '@chakra-ui/react'
-import { ContactCfaComponent } from './layout/ContactCfaComponent'
-import { FormLayoutComponent } from './layout/FormLayoutComponent'
-import { _post } from '../../common/httpClient'
-import { AnimationContainer } from '../../components'
+import { useEffect, useState } from "react"
+import { Field, Form, Formik } from "formik"
+import * as Yup from "yup"
+import * as emailValidator from "email-validator"
+import * as qs from "query-string"
+import { useNavigate, useLocation } from "react-router-dom"
+import { Input, Button, Box, Spinner, Text, Center, Flex } from "@chakra-ui/react"
+import { ContactCfaComponent } from "./layout/ContactCfaComponent"
+import { FormLayoutComponent } from "./layout/FormLayoutComponent"
+import { _post } from "../../common/httpClient"
+import { AnimationContainer } from "../../components"
 
 /**
  * @description Form appointment page.
@@ -17,14 +17,14 @@ import { AnimationContainer } from '../../components'
  * @constructor
  */
 export const FormCreatePage = (props) => {
-  const plausibleFeebackEnum = { OUI: 'Oui', NON: 'Non' }
+  const plausibleFeebackEnum = { OUI: "Oui", NON: "Non" }
 
   const navigate = useNavigate()
   const location = useLocation()
 
   const [data, setData] = useState()
   const [submitLoading, setSubmitLoading] = useState(false)
-  const [plausibleFeedback, setPlausibleFeedback] = useState('Non renseigné')
+  const [plausibleFeedback, setPlausibleFeedback] = useState("Non renseigné")
   const [error, setError] = useState()
   const [errorPhone, setErrorPhone] = useState()
   const [loading, setLoading] = useState(false)
@@ -68,9 +68,9 @@ export const FormCreatePage = (props) => {
     let error
 
     if (!value) {
-      error = 'Adresse email requise'
+      error = "Adresse email requise"
     } else if (!emailValidator.validate(value)) {
-      error = 'Adresse email invalide'
+      error = "Adresse email invalide"
     }
 
     return error
@@ -84,12 +84,12 @@ export const FormCreatePage = (props) => {
   function validatePhone(value) {
     let error
     if (!value) {
-      error = 'Numéro de téléphone requis'
+      error = "Numéro de téléphone requis"
     } else if (!/^0[1-98][0-9]{8}$/i.test(value)) {
-      error = 'Numéro de téléphone invalide'
+      error = "Numéro de téléphone invalide"
       setErrorPhone(error)
     } else {
-      error = ''
+      error = ""
       setErrorPhone(error)
     }
     return error
@@ -104,7 +104,7 @@ export const FormCreatePage = (props) => {
   const sendNewRequest = async (values, { setStatus }) => {
     try {
       setSubmitLoading(true)
-      const { appointment, error } = await _post('/api/appointment-request/validate', {
+      const { appointment, error } = await _post("/api/appointment-request/validate", {
         firstname: values.firstname,
         lastname: values.lastname,
         phone: values.phone,
@@ -121,7 +121,7 @@ export const FormCreatePage = (props) => {
 
       sendPlausibleFeedback(plausibleFeedback)
       navigate(`/form/confirm/${appointment._id}`)
-      setTimeout(() => window.scroll({ top: 0, behavior: 'smooth' }), 500)
+      setTimeout(() => window.scroll({ top: 0, behavior: "smooth" }), 500)
     } catch (e) {
       setStatus({ error: e.prettyMessage })
     } finally {
@@ -144,7 +144,7 @@ export const FormCreatePage = (props) => {
    * @return {void}
    */
   const sendPlausibleFeedback = (interested) => {
-    window.plausible('souhaitez-vous-recevoir-des-offres-en-lien-avec-cette-formation', {
+    window.plausible("souhaitez-vous-recevoir-des-offres-en-lien-avec-cette-formation", {
       props: { interessé: interested },
     })
   }
@@ -155,16 +155,16 @@ export const FormCreatePage = (props) => {
         <>
           Envoyer <br />
           une demande de contact <br />
-          <Text textStyle='h2' as='span' color='grey.700'>
+          <Text textStyle="h2" as="span" color="grey.700">
             au centre de formation
           </Text>
         </>
       }
-      bg='white'
+      bg="white"
     >
-      {loading && <Spinner display='block' mx='auto' size='xl' mt='10rem' />}
+      {loading && <Spinner display="block" mx="auto" size="xl" mt="10rem" />}
       {error && (
-        <Box mt='5rem' textAlign='center'>
+        <Box mt="5rem" textAlign="center">
           {error}
         </Box>
       )}
@@ -172,17 +172,17 @@ export const FormCreatePage = (props) => {
         <Box>
           <Formik
             initialValues={{
-              firstname: '',
-              lastname: '',
-              phone: '',
-              email: '',
-              motivations: '',
+              firstname: "",
+              lastname: "",
+              phone: "",
+              email: "",
+              motivations: "",
             }}
             validationSchema={Yup.object().shape({
-              firstname: Yup.string().required('Requis'),
-              lastname: Yup.string().required('Requis'),
-              phone: Yup.number().required('Requis'),
-              email: Yup.string().required('Requis'),
+              firstname: Yup.string().required("Requis"),
+              lastname: Yup.string().required("Requis"),
+              phone: Yup.number().required("Requis"),
+              email: Yup.string().required("Requis"),
               motivations: Yup.string(),
             })}
             onSubmit={sendNewRequest}
@@ -197,75 +197,54 @@ export const FormCreatePage = (props) => {
                     codePostal={data.code_postal}
                     ville={data.localite}
                   />
-                  <Text textStyle='h6' color='info'>
+                  <Text textStyle="h6" color="info">
                     Bonjour,
                   </Text>
                   <Text mt={7} pb={2}>
                     Vous êtes
-                    <Text color='redmarianne' as='span'>
+                    <Text color="redmarianne" as="span">
                       *
-                    </Text>{' '}
+                    </Text>{" "}
                     :
                   </Text>
-                  <Field name='firstname'>
-                    {({ field, meta }) => (
-                      <Input placeholder='votre prénom' {...field} {...feedback(meta, 'Prénom invalide')} />
-                    )}
-                  </Field>
-                  <Field name='lastname'>
-                    {({ field, meta }) => (
-                      <Input mt={2} placeholder='votre nom' {...field} {...feedback(meta, 'Nom invalide')} />
-                    )}
-                  </Field>
+                  <Field name="firstname">{({ field, meta }) => <Input placeholder="votre prénom" {...field} {...feedback(meta, "Prénom invalide")} />}</Field>
+                  <Field name="lastname">{({ field, meta }) => <Input mt={2} placeholder="votre nom" {...field} {...feedback(meta, "Nom invalide")} />}</Field>
                   {data.intitule_long && (
                     <Text mt={5}>
-                      Pour tout savoir de la formation{' '}
+                      Pour tout savoir de la formation{" "}
                       <b>
                         <u>{data.intitule_long.toUpperCase()}</u>
                       </b>
                       , laissez votre numéro et votre adresse email au centre de formation
-                      <Text color='redmarianne' as='span'>
+                      <Text color="redmarianne" as="span">
                         *
-                      </Text>{' '}
+                      </Text>{" "}
                       :
                     </Text>
                   )}
-                  <Field name='phone' validate={validatePhone}>
+                  <Field name="phone" validate={validatePhone}>
                     {({ field, meta }) => {
                       return (
                         <Box>
-                          <Input mt={2} type='tel' placeholder='votre numéro' {...field} />
-                          <Text color='red' mt={2}>
+                          <Input mt={2} type="tel" placeholder="votre numéro" {...field} />
+                          <Text color="red" mt={2}>
                             {errorPhone}
                           </Text>
                         </Box>
                       )
                     }}
                   </Field>
-                  <Field name='email' validate={validateEmail}>
+                  <Field name="email" validate={validateEmail}>
                     {({ field, meta }) => {
-                      return (
-                        <Input
-                          placeholder='votre adresse email'
-                          type='email'
-                          {...field}
-                          {...feedback(meta, 'Adresse email invalide')}
-                        />
-                      )
+                      return <Input placeholder="votre adresse email" type="email" {...field} {...feedback(meta, "Adresse email invalide")} />
                     }}
                   </Field>
                   <Text mt={5} pb={2}>
                     Quel sujet souhaitez-vous aborder ?
                   </Text>
-                  <Field name='motivations'>
+                  <Field name="motivations">
                     {({ field, meta }) => {
-                      return (
-                        <Input
-                          placeholder='période d’inscription, horaires, etc.'
-                          {...field}
-                          {...feedback(meta, 'Désolée, ce champs est nécessaire')}
-                        />
-                      )
+                      return <Input placeholder="période d’inscription, horaires, etc." {...field} {...feedback(meta, "Désolée, ce champs est nécessaire")} />
                     }}
                   </Field>
                   {/*<Flex mt={8}>*/}
@@ -285,52 +264,50 @@ export const FormCreatePage = (props) => {
                   {/*    </Text>*/}
                   {/*  </Box>*/}
                   {/*</Flex>*/}
-                  <Flex mt={8} bg='#F6F6F6' py='9px' px='18px'>
-                    <Box w='430px'>
-                      <Text fontWeight='600'>
-                        Souhaiteriez-vous recevoir des offres d’emploi en lien avec cette formation ?
-                      </Text>
+                  <Flex mt={8} bg="#F6F6F6" py="9px" px="18px">
+                    <Box w="430px">
+                      <Text fontWeight="600">Souhaiteriez-vous recevoir des offres d’emploi en lien avec cette formation ?</Text>
                     </Box>
-                    <Center w='150px' pl='20px'>
+                    <Center w="150px" pl="20px">
                       <Text
-                        as='span'
-                        pr='28px'
+                        as="span"
+                        pr="28px"
                         onClick={() => setPlausibleFeedback(plausibleFeebackEnum.OUI)}
-                        fontWeight={plausibleFeedback === plausibleFeebackEnum.OUI ? '600' : 'none'}
-                        sx={{ cursor: 'pointer' }}
+                        fontWeight={plausibleFeedback === plausibleFeebackEnum.OUI ? "600" : "none"}
+                        sx={{ cursor: "pointer" }}
                       >
                         👍 Oui
                       </Text>
                       <Text
                         onClick={() => setPlausibleFeedback(plausibleFeebackEnum.NON)}
-                        fontWeight={plausibleFeedback === plausibleFeebackEnum.NON ? '600' : 'none'}
-                        sx={{ cursor: 'pointer' }}
+                        fontWeight={plausibleFeedback === plausibleFeebackEnum.NON ? "600" : "none"}
+                        sx={{ cursor: "pointer" }}
                       >
                         👎 Non
                       </Text>
                     </Center>
                   </Flex>
                   <Button
-                    variant='unstyled'
-                    type={'submit'}
+                    variant="unstyled"
+                    type={"submit"}
                     loading={submitLoading}
                     disabled={submitLoading}
-                    bg={'grey.750'}
-                    borderRadius='10px'
-                    color='#FFFFFF'
-                    w='269px'
-                    h='44px'
-                    fontWeight='700'
-                    display='block'
-                    mx={['auto', '0', '0', '0']}
-                    mt='2rem'
-                    _hover=''
-                    textAlign='center'
+                    bg={"grey.750"}
+                    borderRadius="10px"
+                    color="#FFFFFF"
+                    w="269px"
+                    h="44px"
+                    fontWeight="700"
+                    display="block"
+                    mx={["auto", "0", "0", "0"]}
+                    mt="2rem"
+                    _hover=""
+                    textAlign="center"
                   >
                     Envoyer ma demande
                   </Button>
                   {status.error && (
-                    <Text color='#cd201f' textAlign='center' mt={8}>
+                    <Text color="#cd201f" textAlign="center" mt={8}>
                       {status.error}
                     </Text>
                   )}

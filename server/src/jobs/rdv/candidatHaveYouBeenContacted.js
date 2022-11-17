@@ -1,23 +1,17 @@
-import { logger } from "../../common/logger.js";
-import { mailType } from "../../common/model/constants/appointments.js";
-import { getReferrerById } from "../../common/model/constants/referrers.js";
-import { dayjs } from "../../common/utils/dayjs.js";
-import config from "../../config.js";
-import { mailTemplate } from "../../assets/index.js";
+import { logger } from "../../common/logger.js"
+import { mailType } from "../../common/model/constants/appointments.js"
+import { getReferrerById } from "../../common/model/constants/referrers.js"
+import { dayjs } from "../../common/utils/dayjs.js"
+import config from "../../config.js"
+import { mailTemplate } from "../../assets/index.js"
 
 /**
  * This cron has been "temporay" not trigger. This flow, is generating lots of emails to CFA.
  * @description Sends a mail to the candidat in order to know if he has been contacter or not.
  * @returns {Promise<void>}
  */
-export const candidatHaveYouBeenContacted = async ({
-  etablissements,
-  widgetParameters,
-  mailer,
-  appointments,
-  users,
-}) => {
-  logger.info("Cron #candidatHaveYouBeenContacted started.");
+export const candidatHaveYouBeenContacted = async ({ etablissements, widgetParameters, mailer, appointments, users }) => {
+  logger.info("Cron #candidatHaveYouBeenContacted started.")
 
   // Appointments created there are less than 5 days
   const appointmentsToTrigger = await appointments
@@ -29,16 +23,16 @@ export const candidatHaveYouBeenContacted = async ({
       },
       "candidat_mailing.campaign": { $ne: mailType.CANDIDAT_HAVE_YOU_BEEN_CONTACTED },
     })
-    .lean();
+    .lean()
 
   const promises = appointmentsToTrigger.map(async (appointment) => {
-    const referrerObj = getReferrerById(appointment.referrer);
+    const referrerObj = getReferrerById(appointment.referrer)
 
     const [user, widgetParameter, etablissement] = await Promise.all([
       users.findOne({ _id: appointment.candidat_id }),
       widgetParameters.findOne({ id_rco_formation: appointment.id_rco_formation }),
       etablissements.findOne({ siret_formateur: appointment.etablissement_id }),
-    ]);
+    ])
 
     const [mailCandidat, mailCfa] = await Promise.all([
       mailer.sendEmail({
@@ -109,7 +103,7 @@ export const candidatHaveYouBeenContacted = async ({
         },
         from: config.rdvEmail,
       }),
-    ]);
+    ])
 
     await appointments.findOneAndUpdate(
       { _id: appointment._id },
@@ -129,10 +123,10 @@ export const candidatHaveYouBeenContacted = async ({
           },
         },
       }
-    );
-  });
+    )
+  })
 
-  await Promise.all(promises);
+  await Promise.all(promises)
 
-  logger.info("Cron #candidatHaveYouBeenContacted done.");
-};
+  logger.info("Cron #candidatHaveYouBeenContacted done.")
+}

@@ -1,13 +1,13 @@
-import { extendTheme } from '@chakra-ui/react'
-import { components } from './components'
-import { colors, fonts, fontSizes, rootFontSizePx, space, textStyles } from './theme-beta'
+import { extendTheme } from "@chakra-ui/react"
+import { components } from "./components"
+import { colors, fonts, fontSizes, rootFontSizePx, space, textStyles } from "./theme-beta"
 
 const styles = {
   global: {
-    'html, body': {
+    "html, body": {
       fontSize: `${rootFontSizePx}px`,
-      fontFamily: 'Marianne, Arial',
-      background: 'white',
+      fontFamily: "Marianne, Arial",
+      background: "white",
     },
   },
 }

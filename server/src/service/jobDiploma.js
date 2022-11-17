@@ -1,12 +1,12 @@
-import _ from "lodash-es";
-import Sentry from "@sentry/node";
-import { getFormationsES } from "../common/esClient/index.js";
+import _ from "lodash-es"
+import Sentry from "@sentry/node"
+import { getFormationsES } from "../common/esClient/index.js"
 
-const esClient = getFormationsES();
+const esClient = getFormationsES()
 
 const getDiplomasForJobs = async (romes /*, rncps*/) => {
   try {
-    const esQueryIndexFragment = getFormationEsQueryIndexFragment();
+    const esQueryIndexFragment = getFormationEsQueryIndexFragment()
 
     const responseDiplomas = await esClient.search({
       ...esQueryIndexFragment,
@@ -34,50 +34,50 @@ const getDiplomasForJobs = async (romes /*, rncps*/) => {
         },
         size: 0,
       },
-    });
+    })
 
-    let diplomas = [];
+    let diplomas = []
 
     responseDiplomas.body.aggregations.niveaux.buckets.forEach((diploma) => {
-      diplomas.push(diploma.key);
-    });
+      diplomas.push(diploma.key)
+    })
 
-    return diplomas;
+    return diplomas
   } catch (err) {
-    Sentry.captureException(err);
+    Sentry.captureException(err)
 
-    let error_msg = _.get(err, "meta.body") ? err.meta.body : err.message;
-    console.log("Error getting jobDiplomas from romes and rncps", error_msg);
+    let error_msg = _.get(err, "meta.body") ? err.meta.body : err.message
+    console.log("Error getting jobDiplomas from romes and rncps", error_msg)
     if (_.get(err, "meta.meta.connection.status") === "dead") {
-      console.log("Elastic search is down or unreachable");
+      console.log("Elastic search is down or unreachable")
     }
-    return { error: error_msg };
+    return { error: error_msg }
   }
-};
+}
 
 const getDiplomasForJobsQuery = async (query) => {
   //console.log("query : ", query);
 
   if (!query.romes) {
-    return "romes_missing";
+    return "romes_missing"
   } else if (!query.rncps) {
-    return "rncps_missing";
+    return "rncps_missing"
   } else {
     try {
-      const diplomas = await getDiplomasForJobs(query.romes, query.rncps);
-      return diplomas;
+      const diplomas = await getDiplomasForJobs(query.romes, query.rncps)
+      return diplomas
     } catch (err) {
-      console.log("Error ", err.message);
-      return { error: "internal_error" };
+      console.log("Error ", err.message)
+      return { error: "internal_error" }
     }
   }
-};
+}
 
 const getFormationEsQueryIndexFragment = () => {
   return {
     index: "convertedformations",
     size: 1000,
-  };
-};
+  }
+}
 
-export { getDiplomasForJobsQuery, getDiplomasForJobs };
+export { getDiplomasForJobsQuery, getDiplomasForJobs }

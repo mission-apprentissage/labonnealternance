@@ -1,14 +1,14 @@
-import express from "express";
+import express from "express"
 
 /**
  * Simulate a dummy error
  */
 export default () => {
-  const router = express.Router();
+  const router = express.Router()
 
   router.get("/", function (req, res) {
-    res.status(500).send({ error: "Something failed ! This is a simulated error." });
-  });
+    res.status(500).send({ error: "Something failed ! This is a simulated error." })
+  })
 
-  return router;
-};
+  return router
+}

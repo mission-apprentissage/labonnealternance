@@ -1,5 +1,5 @@
-import { v4 as uuidv4 } from "uuid";
-import { mongooseInstance } from "../../mongodb.js";
+import { v4 as uuidv4 } from "uuid"
+import { mongooseInstance } from "../../mongodb.js"
 
 export const credentialSchema = mongooseInstance.Schema(
   {
@@ -35,4 +35,4 @@ export const credentialSchema = mongooseInstance.Schema(
     },
   },
   { timestamps: true }
-);
+)

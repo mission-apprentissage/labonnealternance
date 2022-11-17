@@ -1,12 +1,12 @@
-import express from "express";
-import { tryCatch } from "../middlewares/tryCatchMiddleware.js";
-import { referrers } from "../../common/model/constants/referrers.js";
+import express from "express"
+import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
+import { referrers } from "../../common/model/constants/referrers.js"
 
 /**
  * @description Partners router.
  */
 export default ({ widgetParameters }) => {
-  const router = express.Router();
+  const router = express.Router()
 
   /**
    * @description Returns all available parcoursup ids.
@@ -22,11 +22,11 @@ export default ({ widgetParameters }) => {
           referrers: { $in: [referrers.PARCOURSUP.code] },
         },
         { id_parcoursup: 1 }
-      );
+      )
 
-      return res.send({ ids: ids.map((widgetParameter) => widgetParameter.id_parcoursup) });
+      return res.send({ ids: ids.map((widgetParameter) => widgetParameter.id_parcoursup) })
     })
-  );
+  )
 
-  return router;
-};
+  return router
+}

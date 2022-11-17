@@ -1,12 +1,12 @@
-import React, { useEffect } from "react";
-import { get } from "lodash";
+import React, { useEffect } from "react"
+import { get } from "lodash"
 
 const CommonDetail = ({ thing }) => {
   useEffect(() => {
     try {
-      document.getElementsByClassName("choiceCol")[0].scrollTo(0, 0);
+      document.getElementsByClassName("choiceCol")[0].scrollTo(0, 0)
     } catch (err) {}
-  });
+  })
 
   return (
     <>
@@ -17,7 +17,7 @@ const CommonDetail = ({ thing }) => {
         </div>
       </main>
     </>
-  );
-};
+  )
+}
 
-export default CommonDetail;
+export default CommonDetail

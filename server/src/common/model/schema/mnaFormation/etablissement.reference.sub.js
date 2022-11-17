@@ -44,4 +44,4 @@ export const etablissementReferenceInfo = {
     default: null,
     description: "Date de création de l'établissement",
   },
-};
+}

@@ -1,4 +1,4 @@
-import { DataSearch, ReactiveBase, ReactiveList, StateProvider } from '@appbaseio/reactivesearch'
+import { DataSearch, ReactiveBase, ReactiveList, StateProvider } from "@appbaseio/reactivesearch"
 import {
   Box,
   Breadcrumb,
@@ -19,46 +19,33 @@ import {
   Text,
   useDisclosure,
   useToast,
-} from '@chakra-ui/react'
-import dayjs from 'dayjs'
-import { memo, useEffect, useState } from 'react'
-import { NavLink, useLocation, useNavigate } from 'react-router-dom'
-import addOfferImage from '../../assets/images/add-offer.svg'
-import useAuth from '../../common/hooks/useAuth'
-import { sortReactTableDate, sortReactTableString } from '../../common/utils/dateUtils'
-import { AnimationContainer, ConfirmationSuppressionEntreprise, Pagination, Table } from '../../components'
-import ExportButton from '../../components/ExportButton/ExportButton'
-import { Parametre } from '../../theme/components/icons'
-import constants from './reactiveSearchConfig'
-import './search.css'
+} from "@chakra-ui/react"
+import dayjs from "dayjs"
+import { memo, useEffect, useState } from "react"
+import { NavLink, useLocation, useNavigate } from "react-router-dom"
+import addOfferImage from "../../assets/images/add-offer.svg"
+import useAuth from "../../common/hooks/useAuth"
+import { sortReactTableDate, sortReactTableString } from "../../common/utils/dateUtils"
+import { AnimationContainer, ConfirmationSuppressionEntreprise, Pagination, Table } from "../../components"
+import ExportButton from "../../components/ExportButton/ExportButton"
+import { Parametre } from "../../theme/components/icons"
+import constants from "./reactiveSearchConfig"
+import "./search.css"
 
 const EmptySpace = () => (
-  <Stack
-    direction={['column', 'column', 'column', 'row']}
-    mt={12}
-    pt={12}
-    py={8}
-    border='1px solid'
-    borderColor='grey.400'
-    spacing='32px'
-  >
-    <Flex
-      justify={['center', 'center', 'center', 'flex-end']}
-      align={['center', 'center', 'center', 'flex-start']}
-      w={['100%', '100%', '100%', '350px']}
-      h='150px'
-    >
+  <Stack direction={["column", "column", "column", "row"]} mt={12} pt={12} py={8} border="1px solid" borderColor="grey.400" spacing="32px">
+    <Flex justify={["center", "center", "center", "flex-end"]} align={["center", "center", "center", "flex-start"]} w={["100%", "100%", "100%", "350px"]} h="150px">
       <Image src={addOfferImage} />
     </Flex>
 
-    <Box w={['100%', '100%', '100%', '600px']}>
-      <Heading fontSize='2rem' pb={7}>
+    <Box w={["100%", "100%", "100%", "600px"]}>
+      <Heading fontSize="2rem" pb={7}>
         Créez votre première entreprise mandatée.
       </Heading>
-      <Text fontSize='1.375rem'>Une entreprise vous a mandaté pour gérer ses offres d’emploi ?</Text>
-      <Text fontSize='1.375rem'>
-        En quelques secondes, exprimez les besoins de recrutement de cette entreprise pour les afficher sur le site{' '}
-        <span style={{ fontWeight: '700' }}>La Bonne Alternance</span> dès aujourd’hui.
+      <Text fontSize="1.375rem">Une entreprise vous a mandaté pour gérer ses offres d’emploi ?</Text>
+      <Text fontSize="1.375rem">
+        En quelques secondes, exprimez les besoins de recrutement de cette entreprise pour les afficher sur le site <span style={{ fontWeight: "700" }}>La Bonne Alternance</span>{" "}
+        dès aujourd’hui.
       </Text>
     </Box>
   </Stack>
@@ -76,10 +63,10 @@ export default memo(() => {
   useEffect(() => {
     if (location.state?.newUser) {
       toast({
-        title: 'Vérification réussie',
-        description: 'Votre adresse mail a été validée avec succès.',
-        position: 'top-right',
-        status: 'success',
+        title: "Vérification réussie",
+        description: "Votre adresse mail a été validée avec succès.",
+        position: "top-right",
+        status: "success",
         duration: 7000,
         isClosable: true,
       })
@@ -87,7 +74,7 @@ export default memo(() => {
   }, [])
 
   const queryFilter = () => {
-    if (auth.scope === 'all') return {}
+    if (auth.scope === "all") return {}
 
     if (auth.siret == undefined) {
       return {
@@ -101,7 +88,7 @@ export default memo(() => {
             filter: [
               {
                 match: {
-                  statut: 'Actif',
+                  statut: "Actif",
                 },
               },
             ],
@@ -121,7 +108,7 @@ export default memo(() => {
           filter: [
             {
               match: {
-                statut: 'Actif',
+                statut: "Actif",
               },
             },
           ],
@@ -132,10 +119,10 @@ export default memo(() => {
 
   const columns = [
     {
-      Header: 'ENTREPRISES',
-      id: 'raison_sociale',
-      width: '500',
-      maxWidth: '500',
+      Header: "ENTREPRISES",
+      id: "raison_sociale",
+      width: "500",
+      maxWidth: "500",
       sortType: (a, b) => sortReactTableString(a.original.raison_sociale, b.original.raison_sociale),
       accessor: ({ id_form, raison_sociale }) => (
         <Link as={NavLink} to={`/administration/entreprise/${id_form}`}>
@@ -144,44 +131,44 @@ export default memo(() => {
       ),
     },
     {
-      Header: 'Ajoutée le',
-      accessor: ({ createdAt }) => dayjs(createdAt).format('DD/MM/YYYY'),
-      id: 'createdAt',
+      Header: "Ajoutée le",
+      accessor: ({ createdAt }) => dayjs(createdAt).format("DD/MM/YYYY"),
+      id: "createdAt",
       sortType: (a, b) => sortReactTableDate(a.original.createdAt, b.original.createdAt),
     },
     {
-      Header: 'Offres',
-      id: 'nombre_offres',
-      sortType: 'basic',
+      Header: "Offres",
+      id: "nombre_offres",
+      sortType: "basic",
       accessor: ({ offres }) => offres.length,
     },
     {
-      Header: 'Dernière offre créée le',
-      id: 'date_creation_offre',
+      Header: "Dernière offre créée le",
+      id: "date_creation_offre",
       disableSortBy: true,
-      width: '225',
+      width: "225",
       accessor: ({ offres }) => {
         if (offres.length > 0) {
           let last = offres.pop()
-          return dayjs(last.date_creation).format('DD/MM/YYYY')
+          return dayjs(last.date_creation).format("DD/MM/YYYY")
         } else {
-          return ''
+          return ""
         }
       },
     },
     {
-      Header: '',
-      id: 'action',
-      maxWidth: '50',
+      Header: "",
+      id: "action",
+      maxWidth: "50",
       disableSortBy: true,
       accessor: (row) => {
         return (
-          <Box display={['none', 'block']}>
+          <Box display={["none", "block"]}>
             <Menu>
               {({ isOpen }) => (
                 <>
-                  <MenuButton isActive={isOpen} as={Button} variant='navdot' _hover={{ backgroundColor: 'none' }}>
-                    <Icon as={Parametre} color='bluefrance.500' />
+                  <MenuButton isActive={isOpen} as={Button} variant="navdot" _hover={{ backgroundColor: "none" }}>
+                    <Icon as={Parametre} color="bluefrance.500" />
                   </MenuButton>
                   <MenuList>
                     <MenuItem>
@@ -212,58 +199,54 @@ export default memo(() => {
   return (
     <AnimationContainer>
       <ConfirmationSuppressionEntreprise {...confirmationSuppression} {...currentEntreprise} />
-      <Container maxW='container.xl' mt={5}>
+      <Container maxW="container.xl" mt={5}>
         <Box mb={5}>
-          <Breadcrumb spacing='4px' textStyle='xs'>
+          <Breadcrumb spacing="4px" textStyle="xs">
             <BreadcrumbItem isCurrentPage>
-              <BreadcrumbLink href='#' textStyle='xs'>
+              <BreadcrumbLink href="#" textStyle="xs">
                 Administration des offres
               </BreadcrumbLink>
             </BreadcrumbItem>
           </Breadcrumb>
         </Box>
-        <div className='search-page'>
-          <ReactiveBase
-            url={`${process.env.REACT_APP_BASE_URL}/es/search`}
-            app='formulaires'
-            theme={{ typography: { fontFamily: 'Marianne' } }}
-          >
-            <Flex justify='space-between' mb={12}>
-              <Text fontSize='2rem' fontWeight={700}>
+        <div className="search-page">
+          <ReactiveBase url={`${process.env.REACT_APP_BASE_URL}/es/search`} app="formulaires" theme={{ typography: { fontFamily: "Marianne" } }}>
+            <Flex justify="space-between" mb={12}>
+              <Text fontSize="2rem" fontWeight={700}>
                 Mes entreprises
               </Text>
-              <Button variant='primary' size='sm' mr={3} onClick={() => navigate(`/administration/entreprise`)}>
+              <Button variant="primary" size="sm" mr={3} onClick={() => navigate(`/administration/entreprise`)}>
                 Nouvelle entreprise
               </Button>
             </Flex>
 
-            <div className='search-container'>
+            <div className="search-container">
               <StateProvider
                 render={({ searchState }) => {
                   if (!searchState.resultsFormulaire?.isLoading && searchState.resultsFormulaire?.hits?.total > 0) {
                     return <DataSearch {...dataSearchDefinition} defaultQuery={queryFilter} URLParams={true} />
                   } else {
-                    return ''
+                    return ""
                   }
                 }}
               />
             </div>
 
             <ReactiveList
-              componentId='resultsFormulaire'
-              dataField='_id'
-              innerClass={{ pagination: 'search-pagination' }}
-              loader='Chargement des résultats..'
-              excludeFields={['events', 'mailing']}
+              componentId="resultsFormulaire"
+              dataField="_id"
+              innerClass={{ pagination: "search-pagination" }}
+              loader="Chargement des résultats.."
+              excludeFields={["events", "mailing"]}
               react={{
-                and: ['searchFormulaire'],
+                and: ["searchFormulaire"],
               }}
               defaultQuery={queryFilter}
               scrollOnChange={false}
               pagination={true}
               URLParams={true}
               size={10}
-              sortBy='desc'
+              sortBy="desc"
               renderNoResults={() => {
                 return <EmptySpace />
               }}
@@ -271,29 +254,27 @@ export default memo(() => {
                 return (
                   <div
                     style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      flexGrow: '1',
-                      marginBottom: '15px',
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      flexGrow: "1",
+                      marginBottom: "15px",
                     }}
                   >
-                    <Text fontSize='sm'>
+                    <Text fontSize="sm">
                       {stats.displayedResults} entreprises sur {stats.numberOfResults}
                     </Text>
                     <ExportButton
-                      index='formulaires'
-                      filters={['searchFormulaire']}
+                      index="formulaires"
+                      filters={["searchFormulaire"]}
                       defaultQuery={queryFilter}
-                      columns={exportableColumns
-                        .filter((c) => c.exportable)
-                        .map((c) => ({ header: c.Header, fieldName: c.accessor, formatter: c.formatter }))}
+                      columns={exportableColumns.filter((c) => c.exportable).map((c) => ({ header: c.Header, fieldName: c.accessor, formatter: c.formatter }))}
                     />
                   </div>
                 )
               }}
               render={({ loading, data }) => {
-                if (loading) return 'Chargement en cours...'
+                if (loading) return "Chargement en cours..."
 
                 if (data.length > 0) {
                   return <Table data={data} columns={columns} />

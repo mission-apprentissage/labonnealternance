@@ -42,16 +42,16 @@
 
 .c-media-tag.c-media-tag--briefcase {
   color: $pinksoft750;
-  background: #FFF4F2;
+  background: #fff4f2;
 }
 .c-media-tag.c-media-tag--paperplane {
   color: $pinksoft750;
-  background: #FFF4F2;
+  background: #fff4f2;
 }
 .c-media-tag.c-media-tag--smiley {
-  color: #22967E;
-  background: #E5F7F4;
-  
+  color: #22967e;
+  background: #e5f7f4;
+
   img {
     width: 16px;
   }
@@ -64,11 +64,11 @@
   @include media-breakpoint-up(lg) {
     margin-left: 4px;
     margin-right: 0px;
-  } 
+  }
 }
 
 .c-candidature-terms td {
-    min-width: 40px;
+  min-width: 40px;
 }
 
 .c-candidature-terms--knowmore input {

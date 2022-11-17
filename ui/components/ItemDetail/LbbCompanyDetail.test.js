@@ -1,7 +1,7 @@
-import React from "react";
-import { render, screen } from "@testing-library/react";
-import LbbCompanyDetail from "./LbbCompanyDetail";
-import DisplayContextProvider from "../../context/DisplayContextProvider";
+import React from "react"
+import { render, screen } from "@testing-library/react"
+import LbbCompanyDetail from "./LbbCompanyDetail"
+import DisplayContextProvider from "../../context/DisplayContextProvider"
 
 describe("LbbCompanyDetail", () => {
   it("Displays the LBB component", () => {
@@ -10,12 +10,12 @@ describe("LbbCompanyDetail", () => {
       <DisplayContextProvider>
         <LbbCompanyDetail lbb={lbbWithoutEmail} />
       </DisplayContextProvider>
-    );
+    )
     // When
-    const knowMoreLbb = screen.getByTestId("lbb-component");
+    const knowMoreLbb = screen.getByTestId("lbb-component")
     // Then
-    expect(knowMoreLbb).toHaveTextContent("Qu'est ce qu'une candidature spontanée");
-  });
+    expect(knowMoreLbb).toHaveTextContent("Qu'est ce qu'une candidature spontanée")
+  })
 
   let lbbWithoutEmail = {
     ideaType: "lbb",
@@ -52,8 +52,7 @@ describe("LbbCompanyDetail", () => {
     createdAt: null,
     lastUpdateAt: null,
     onisepUrl: null,
-    url:
-      "https://labonneboite.pole-emploi.fr/40400744500079/details?rome_code=M1803&utm_medium=web&utm_source=api__emploi_store_dev&utm_campaign=api__emploi_store_dev__idea",
+    url: "https://labonneboite.pole-emploi.fr/40400744500079/details?rome_code=M1803&utm_medium=web&utm_source=api__emploi_store_dev&utm_campaign=api__emploi_store_dev__idea",
     job: null,
     romes: [
       {
@@ -68,5 +67,5 @@ describe("LbbCompanyDetail", () => {
       },
     ],
     training: null,
-  };
-});
+  }
+})

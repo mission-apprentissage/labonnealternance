@@ -1,10 +1,10 @@
 const Checkbox = {
-  parts: ['icon', 'control', 'label'],
+  parts: ["icon", "control", "label"],
   baseStyle: {
     control: {
       _checked: {
-        background: 'bluefrance.500',
-        borderColor: 'bluefrance.500',
+        background: "bluefrance.500",
+        borderColor: "bluefrance.500",
       },
     },
   },

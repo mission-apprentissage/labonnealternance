@@ -1,6 +1,6 @@
 .c-navbar-brand-img {
   width: 151px;
-  @include media-breakpoint-down(sm) { 
+  @include media-breakpoint-down(sm) {
     display: none;
     width: 110px;
   }
@@ -14,7 +14,7 @@
 
 .c-marianne-header {
   margin-right: 0.3rem;
-  @include media-breakpoint-up(md) { 
+  @include media-breakpoint-up(md) {
     margin-right: 2rem;
   }
 }
@@ -29,9 +29,8 @@
 // Nesting class is mandatory to
 // override Boostrap's classes.
 .c-navigation {
-  
   .navbar-toggler:after {
-    content: 'Menu';
+    content: "Menu";
     display: block;
     font-size: 12px; // can't find proper variable here
     margin-top: -6px;
@@ -52,22 +51,19 @@
   .navbar-light .navbar-toggler {
     border: none;
   }
-  
+
   &__separator {
-    border-left: 1px solid #E5E5E5;
+    border-left: 1px solid #e5e5e5;
     width: 0px;
     height: 16px;
     margin-top: 11px;
 
-    @include media-breakpoint-down(md)
-    {
-        display: none;
+    @include media-breakpoint-down(md) {
+      display: none;
     }
   }
 
-  .nav-item.selected
-  {
-    background: rgba(0,0,0,0.08);
+  .nav-item.selected {
+    background: rgba(0, 0, 0, 0.08);
   }
 }
-

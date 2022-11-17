@@ -1,6 +1,6 @@
-import nock from "nock";
-import config from "../../../src/config.js";
-import { sampleCatalogueResponse } from "../../data/mnaCatalogSamples.js";
+import nock from "nock"
+import config from "../../../src/config.js"
+import { sampleCatalogueResponse } from "../../data/mnaCatalogSamples.js"
 
 export default async () => {
   nock(config.catalogueUrl)
@@ -32,7 +32,7 @@ export default async () => {
       page: 1,
       limit: 50,
     })
-    .reply(200, sampleCatalogueResponse);
+    .reply(200, sampleCatalogueResponse)
 
   nock(config.catalogueUrl)
     .persist()
@@ -69,7 +69,7 @@ export default async () => {
       page: 1,
       limit: 500,
     })
-    .reply(200, sampleCatalogueResponse);
+    .reply(200, sampleCatalogueResponse)
 
   nock(config.catalogueUrl)
     .persist()
@@ -113,8 +113,7 @@ export default async () => {
           etablissement_formateur_siret: "32922456200234",
           etablissement_formateur_adresse: "3 RUE DARWIN",
           etablissement_formateur_code_postal: "49000",
-          etablissement_formateur_entreprise_raison_sociale:
-            "CHAMBRE DE METIERS ET DE L'ARTISANAT DE REGION DES PAYS DE LA LOIRE",
+          etablissement_formateur_entreprise_raison_sociale: "CHAMBRE DE METIERS ET DE L'ARTISANAT DE REGION DES PAYS DE LA LOIRE",
           etablissement_formateur_nom_departement: "Maine-et-Loire",
           cfd: "50022141",
           code_postal: "49000",
@@ -131,5 +130,5 @@ export default async () => {
         nombre_de_page: 1,
         total: 1,
       },
-    });
-};
+    })
+}

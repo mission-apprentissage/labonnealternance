@@ -1,152 +1,136 @@
-import React, { useState } from "react";
-import { Button, Container, Row, Col } from "reactstrap";
-import { Formik, Form, ErrorMessage, Field } from "formik";
-import { RadioButton } from "components";
-import {
-  AutoCompleteField,
-  compareAutoCompleteValues,
-  autoCompleteToStringFunction,
-} from "components/AutoCompleteField/AutoCompleteField";
-import { fetchAddresses } from "services/baseAdresse";
-import domainChanged from "services/domainChanged";
+import React, { useState } from "react"
+import { Button, Container, Row, Col } from "reactstrap"
+import { Formik, Form, ErrorMessage, Field } from "formik"
+import { RadioButton } from "components"
+import { AutoCompleteField, compareAutoCompleteValues, autoCompleteToStringFunction } from "components/AutoCompleteField/AutoCompleteField"
+import { fetchAddresses } from "services/baseAdresse"
+import domainChanged from "services/domainChanged"
 
 const WidgetTester = () => {
-  const [locationRadius, setLocationRadius] = useState(0);
-  const [scope, setScope] = useState("");
-  const [frozenJob, setFrozenJob] = useState("");
-  const [widgetParams, setWidgetParams] = useState(null);
-  const [shownRomes, setShownRomes] = useState(null);
-  const [shownSearchCenter, setShownSearchCenter] = useState(null);
-  const [domainError, setDomainError] = useState(false);
+  const [locationRadius, setLocationRadius] = useState(0)
+  const [scope, setScope] = useState("")
+  const [frozenJob, setFrozenJob] = useState("")
+  const [widgetParams, setWidgetParams] = useState(null)
+  const [shownRomes, setShownRomes] = useState(null)
+  const [shownSearchCenter, setShownSearchCenter] = useState(null)
+  const [domainError, setDomainError] = useState(false)
 
   const jobChanged = async function (val, setLoadingState) {
-    let res = await domainChanged(val, setDomainError);
-    setLoadingState("done");
-    return res;
-  };
+    let res = await domainChanged(val, setDomainError)
+    setLoadingState("done")
+    return res
+  }
 
   const addressChanged = async function (val, setLoadingState) {
-    let res = await fetchAddresses(val);
-    setLoadingState("done");
-    return res;
-  };
+    let res = await fetchAddresses(val)
+    setLoadingState("done")
+    return res
+  }
 
   const getRadioButton = (inputName, value, label, selectedValue, setFieldValue, handleChange) => {
     return (
       <Col xs="4" className="radioButton">
-        <RadioButton
-          inputName={inputName}
-          handleChange={handleChange}
-          value={value}
-          label={label}
-          selectedValue={selectedValue}
-          setFieldValue={setFieldValue}
-        />
+        <RadioButton inputName={inputName} handleChange={handleChange} value={value} label={label} selectedValue={selectedValue} setFieldValue={setFieldValue} />
       </Col>
-    );
-  };
+    )
+  }
 
   const handleRadiusChange = (radius, setFieldValue) => {
-    setLocationRadius(radius);
+    setLocationRadius(radius)
 
     setTimeout(() => {
-      setFieldValue("radius", radius);
-    }, 0);
-  };
+      setFieldValue("radius", radius)
+    }, 0)
+  }
 
   const handleScopeChange = (scope, setFieldValue) => {
-    setScope(scope);
+    setScope(scope)
 
     setTimeout(() => {
-      setFieldValue("scope", scope);
-    }, 0);
-  };
+      setFieldValue("scope", scope)
+    }, 0)
+  }
 
   const handleFrozenChange = (frozenJob, setFieldValue) => {
-    setFrozenJob(frozenJob);
+    setFrozenJob(frozenJob)
 
     setTimeout(() => {
-      setFieldValue("frozen_job", frozenJob);
-    }, 0);
-  };
+      setFieldValue("frozen_job", frozenJob)
+    }, 0)
+  }
 
   // Mets à jours les valeurs de champs du formulaire Formik à partir de l'item sélectionné dans l'AutoCompleteField
   const updateValuesFromJobAutoComplete = (item, setFieldValue) => {
     //setTimeout perme d'éviter un conflit de setState
     setTimeout(() => {
-      setFieldValue("job", item);
-      setShownRomes(item);
-    }, 0);
-  };
+      setFieldValue("job", item)
+      setShownRomes(item)
+    }, 0)
+  }
 
   // Mets à jours les valeurs de champs du formulaire Formik à partir de l'item sélectionné dans l'AutoCompleteField
   const updateValuesFromPlaceAutoComplete = (item, setFieldValue) => {
     //setTimeout perme d'éviter un conflit de setState
     setTimeout(() => {
-      setFieldValue("location", item);
-      setShownSearchCenter(item);
-    }, 0);
-  };
+      setFieldValue("location", item)
+      setShownSearchCenter(item)
+    }, 0)
+  }
 
   const showSearchCenter = () => {
     return shownSearchCenter && shownSearchCenter.value && shownSearchCenter.value.coordinates ? (
       <div className="shownValue">{`Lat : ${shownSearchCenter.value.coordinates[1]} - Lon : ${shownSearchCenter.value.coordinates[0]}`}</div>
     ) : (
       ""
-    );
-  };
+    )
+  }
 
   const showSelectedRomes = () => {
-    return shownRomes && shownRomes.romes ? (
-      <div className="shownValue">{`Romes : ${shownRomes.romes.join()}`}</div>
-    ) : (
-      ""
-    );
-  };
+    return shownRomes && shownRomes.romes ? <div className="shownValue">{`Romes : ${shownRomes.romes.join()}`}</div> : ""
+  }
 
   const handleSearchSubmit = async (values) => {
-    let res = {};
+    let res = {}
 
-    res.romes = values.job && values.job.romes ? values.job.romes.join() : null;
-    res.location = values.location && values.location.value ? values.location.value.coordinates : null;
-    res.radius = values.radius || null;
-    res.scope = values.scope || null;
-    res.caller = values.caller || null;
-    res.opco = values.opco || null;
-    res.jobName = values.jobName || null;
-    res.frozenJob = values.frozen_job || null;
+    res.romes = values.job && values.job.romes ? values.job.romes.join() : null
+    res.location = values.location && values.location.value ? values.location.value.coordinates : null
+    res.radius = values.radius || null
+    res.scope = values.scope || null
+    res.caller = values.caller || null
+    res.opco = values.opco || null
+    res.jobName = values.jobName || null
+    res.frozenJob = values.frozen_job || null
 
-    setWidgetParams(res);
-  };
+    setWidgetParams(res)
+  }
 
   const getIdeaUrlWithParams = () => {
-    let ideaUrl =
-      typeof window !== "undefined" ? window.location.origin : "https://labonnealternance.apprentissage.beta.gouv.fr";
+    let ideaUrl = typeof window !== "undefined" ? window.location.origin : "https://labonnealternance.apprentissage.beta.gouv.fr"
 
-    let path = "recherche-apprentissage";
+    let path = "recherche-apprentissage"
 
     if (widgetParams) {
-      if (widgetParams.scope === "job") path = "recherche-emploi";
-      else if (widgetParams.scope === "training") path = "recherche-apprentissage-formation";
+      if (widgetParams.scope === "job") path = "recherche-emploi"
+      else if (widgetParams.scope === "training") path = "recherche-apprentissage-formation"
 
-      ideaUrl = `${ideaUrl}/${path}`;
+      ideaUrl = `${ideaUrl}/${path}`
 
       //console.log("widgetParams  : ",widgetParams);
-      ideaUrl += "?";
-      ideaUrl += widgetParams.caller ? `&caller=${encodeURIComponent(widgetParams.caller)}` : "";
-      ideaUrl += widgetParams.romes ? `&romes=${widgetParams.romes}` : "";
-      ideaUrl += widgetParams.location ? `&lon=${widgetParams.location[0]}&lat=${widgetParams.location[1]}` : "";
-      ideaUrl += widgetParams.radius ? `&radius=${widgetParams.radius}` : "";
-      ideaUrl += widgetParams.opco ? `&opco=${encodeURIComponent(widgetParams.opco)}` : "";
-      ideaUrl += widgetParams.jobName ? `&job_name=${encodeURIComponent(widgetParams.jobName)}` : "";
-      ideaUrl += widgetParams.frozenJob ? "&frozen_job=1" : "";
-    } else ideaUrl = `${ideaUrl}/${path}`;
+      ideaUrl += "?"
+      ideaUrl += widgetParams.caller ? `&caller=${encodeURIComponent(widgetParams.caller)}` : ""
+      ideaUrl += widgetParams.romes ? `&romes=${widgetParams.romes}` : ""
+      ideaUrl += widgetParams.location ? `&lon=${widgetParams.location[0]}&lat=${widgetParams.location[1]}` : ""
+      ideaUrl += widgetParams.radius ? `&radius=${widgetParams.radius}` : ""
+      ideaUrl += widgetParams.opco ? `&opco=${encodeURIComponent(widgetParams.opco)}` : ""
+      ideaUrl += widgetParams.jobName ? `&job_name=${encodeURIComponent(widgetParams.jobName)}` : ""
+      ideaUrl += widgetParams.frozenJob ? "&frozen_job=1" : ""
+    } else ideaUrl = `${ideaUrl}/${path}`
 
-    return ideaUrl;
-  };
+    return ideaUrl
+  }
 
   const getWidget = (params) => {
-    let ideaUrl = getIdeaUrlWithParams(widgetParams);
+    let ideaUrl = getIdeaUrlWithParams(widgetParams)
 
     return (
       <iframe
@@ -159,8 +143,8 @@ const WidgetTester = () => {
         }}
         src={ideaUrl}
       />
-    );
-  };
+    )
+  }
 
   const getForm = () => {
     return (
@@ -232,46 +216,11 @@ const WidgetTester = () => {
                   <div className="buttons">
                     <Container>
                       <Row>
-                        {getRadioButton(
-                          "locationRadius",
-                          0,
-                          "Non défini",
-                          locationRadius,
-                          setFieldValue,
-                          handleRadiusChange
-                        )}
-                        {getRadioButton(
-                          "locationRadius",
-                          10,
-                          "10km",
-                          locationRadius,
-                          setFieldValue,
-                          handleRadiusChange
-                        )}
-                        {getRadioButton(
-                          "locationRadius",
-                          30,
-                          "30km",
-                          locationRadius,
-                          setFieldValue,
-                          handleRadiusChange
-                        )}
-                        {getRadioButton(
-                          "locationRadius",
-                          60,
-                          "60km",
-                          locationRadius,
-                          setFieldValue,
-                          handleRadiusChange
-                        )}
-                        {getRadioButton(
-                          "locationRadius",
-                          100,
-                          "100km",
-                          locationRadius,
-                          setFieldValue,
-                          handleRadiusChange
-                        )}
+                        {getRadioButton("locationRadius", 0, "Non défini", locationRadius, setFieldValue, handleRadiusChange)}
+                        {getRadioButton("locationRadius", 10, "10km", locationRadius, setFieldValue, handleRadiusChange)}
+                        {getRadioButton("locationRadius", 30, "30km", locationRadius, setFieldValue, handleRadiusChange)}
+                        {getRadioButton("locationRadius", 60, "60km", locationRadius, setFieldValue, handleRadiusChange)}
+                        {getRadioButton("locationRadius", 100, "100km", locationRadius, setFieldValue, handleRadiusChange)}
                       </Row>
                     </Container>
                   </div>
@@ -288,14 +237,7 @@ const WidgetTester = () => {
                     <Container>
                       <Row>
                         {getRadioButton("scope", "", "Tout", scope, setFieldValue, handleScopeChange)}
-                        {getRadioButton(
-                          "scope",
-                          "training",
-                          "Formations uniquement",
-                          scope,
-                          setFieldValue,
-                          handleScopeChange
-                        )}
+                        {getRadioButton("scope", "training", "Formations uniquement", scope, setFieldValue, handleScopeChange)}
                         {getRadioButton("scope", "job", "Emplois uniquement", scope, setFieldValue, handleScopeChange)}
                       </Row>
                     </Container>
@@ -336,8 +278,7 @@ const WidgetTester = () => {
                     </Container>
                   </div>
                   <div className="widgetTestPage--notice">
-                    L&apos;utilisateur ne pourra pas faire une recherche sur d&apos;autres métiers (romes) que ceux que vous avez
-                    spécifiés.
+                    L&apos;utilisateur ne pourra pas faire une recherche sur d&apos;autres métiers (romes) que ceux que vous avez spécifiés.
                   </div>
                 </div>
               </Col>
@@ -349,8 +290,7 @@ const WidgetTester = () => {
                   </label>
                   <Field type="text" className="widgetTestPage--textInput" name="jobName" />
                   <div className="widgetTestPage--notice">
-                    La phrase suivante apparaîtra sur le formulaire: &quot;Vous souhaitez travailler dans le domaine de
-                    [votre saisie]&quot;.
+                    La phrase suivante apparaîtra sur le formulaire: &quot;Vous souhaitez travailler dans le domaine de [votre saisie]&quot;.
                   </div>
                 </div>
               </Col>
@@ -362,8 +302,8 @@ const WidgetTester = () => {
           </Form>
         )}
       </Formik>
-    );
-  };
+    )
+  }
 
   return (
     <div className="page demoPage widgetTestPage">
@@ -384,9 +324,9 @@ const WidgetTester = () => {
             URL associée à l&apos;attribut <strong>src</strong> de l&apos;iframe : {getIdeaUrlWithParams()}
           </Col>
           <Col xs="12">
-          <a href="https://media.giphy.com/media/3oz8xyB3C126ZDDAuk/giphy.gif" className="c-nice-link font-weight-normal" rel="noreferrer" target="_blank">
-            Accéder au détail de la documentation
-          </a>
+            <a href="https://media.giphy.com/media/3oz8xyB3C126ZDDAuk/giphy.gif" className="c-nice-link font-weight-normal" rel="noreferrer" target="_blank">
+              Accéder au détail de la documentation
+            </a>
           </Col>
         </Row>
         <Row className="widgetList">
@@ -410,7 +350,7 @@ const WidgetTester = () => {
         </Row>
       </Container>
     </div>
-  );
-};
+  )
+}
 
-export default WidgetTester;
+export default WidgetTester

@@ -1,5 +1,5 @@
-import * as sha512Utils from "../../common/utils/sha512Utils.js";
-import { User } from "../model/index.js";
+import * as sha512Utils from "../../common/utils/sha512Utils.js"
+import { User } from "../model/index.js"
 
 /**
  * KBA 3/11 : To be refactored and merged with userRecuteur.js
@@ -12,10 +12,10 @@ import { User } from "../model/index.js";
  * @returns {Promise<User>}
  */
 const rehashPassword = (user, password) => {
-  user.password = sha512Utils.hash(password);
+  user.password = sha512Utils.hash(password)
 
-  return user.save();
-};
+  return user.save()
+}
 
 export default () => ({
   /**
@@ -25,21 +25,21 @@ export default () => ({
    * @returns {Promise<null|User>}
    */
   authenticate: async (username, password) => {
-    const user = await User.findOne({ username });
+    const user = await User.findOne({ username })
     if (!user) {
-      return null;
+      return null
     }
 
-    const current = user.password;
+    const current = user.password
     if (sha512Utils.compare(password, current)) {
       if (sha512Utils.isTooWeak(current)) {
-        await rehashPassword(user, password);
+        await rehashPassword(user, password)
       }
 
-      return user.toObject();
+      return user.toObject()
     }
 
-    return null;
+    return null
   },
 
   /**
@@ -72,8 +72,8 @@ export default () => ({
    * @returns {Promise<User>}
    */
   createUser: async (username, password, options = {}) => {
-    const hash = options.hash || sha512Utils.hash(password);
-    const { firstname, lastname, phone, email, role } = options;
+    const hash = options.hash || sha512Utils.hash(password)
+    const { firstname, lastname, phone, email, role } = options
 
     const user = new User({
       username,
@@ -83,11 +83,11 @@ export default () => ({
       phone,
       email,
       role,
-    });
+    })
 
-    await user.save();
+    await user.save()
 
-    return user.toObject();
+    return user.toObject()
   },
 
   /**
@@ -110,12 +110,12 @@ export default () => ({
    * @returns {Promise<User>}
    */
   removeUser: async (username) => {
-    const user = await User.findOne({ username });
+    const user = await User.findOne({ username })
     if (!user) {
-      throw new Error(`Unable to find user ${username}`);
+      throw new Error(`Unable to find user ${username}`)
     }
 
-    return user.deleteOne({ username });
+    return user.deleteOne({ username })
   },
 
   /**
@@ -125,14 +125,14 @@ export default () => ({
    * @returns {Promise<User>}
    */
   changePassword: async (username, newPassword) => {
-    const user = await User.findOne({ username });
+    const user = await User.findOne({ username })
     if (!user) {
-      throw new Error(`Unable to find user ${username}`);
+      throw new Error(`Unable to find user ${username}`)
     }
 
-    user.password = sha512Utils.hash(newPassword);
-    await user.save();
+    user.password = sha512Utils.hash(newPassword)
+    await user.save()
 
-    return user.toObject();
+    return user.toObject()
   },
-});
+})

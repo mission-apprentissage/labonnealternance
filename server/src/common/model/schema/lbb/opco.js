@@ -18,4 +18,4 @@ export const opco = {
     index: true,
     description: "Identifiant convention collective",
   },
-};
+}

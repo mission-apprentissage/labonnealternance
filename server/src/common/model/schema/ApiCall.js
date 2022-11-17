@@ -34,4 +34,4 @@ export const apiCallSchema = {
     default: Date.now,
     description: "Date d'ajout en base de données",
   },
-};
+}

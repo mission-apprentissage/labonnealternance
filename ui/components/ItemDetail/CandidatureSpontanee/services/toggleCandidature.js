@@ -1,12 +1,6 @@
-export default function toggleCandidature({
-  modal = false,
-  setSendingState = () => {},
-  setModal = () => {},
-} = {}) {
-
+export default function toggleCandidature({ modal = false, setSendingState = () => {}, setModal = () => {} } = {}) {
   if (!modal) {
-    setSendingState('not_sent')
+    setSendingState("not_sent")
   }
-  setModal(!modal);
-
+  setModal(!modal)
 }

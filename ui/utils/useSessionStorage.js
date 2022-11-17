@@ -1,25 +1,22 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react"
 
 function getSessionStorageOrDefault(key, defaultValue, stubbedSessionStorage = null) {
   let localSessionStorage = stubbedSessionStorage || sessionStorage
-  const stored = localSessionStorage.getItem(key);
+  const stored = localSessionStorage.getItem(key)
   if (!stored) {
-    return defaultValue;
+    return defaultValue
   }
-  return JSON.parse(stored);
+  return JSON.parse(stored)
 }
 
 export function useSessionStorage(key, defaultValue, stubbedSessionStorage = null) {
-
   let localSessionStorage = stubbedSessionStorage || sessionStorage
 
-  const [value, setValue] = useState(
-    getSessionStorageOrDefault(key, defaultValue, stubbedSessionStorage)
-  );
+  const [value, setValue] = useState(getSessionStorageOrDefault(key, defaultValue, stubbedSessionStorage))
 
   useEffect(() => {
-    localSessionStorage.setItem(key, JSON.stringify(value));
-  }, [key, value]);
+    localSessionStorage.setItem(key, JSON.stringify(value))
+  }, [key, value])
 
-  return [value, setValue];
+  return [value, setValue]
 }

@@ -1,32 +1,21 @@
-import { getBonnesBoitesES } from "../../common/esClient/index.js";
-import { encryptMailWithIV } from "../../common/utils/encryptString.js";
-import { manageApiError } from "../../common/utils/errorManager.js";
-import { isAllowedSource } from "../../common/utils/isAllowedSource.js";
-import { itemModel } from "../../model/itemModel.js";
+import { getBonnesBoitesES } from "../../common/esClient/index.js"
+import { encryptMailWithIV } from "../../common/utils/encryptString.js"
+import { manageApiError } from "../../common/utils/errorManager.js"
+import { isAllowedSource } from "../../common/utils/isAllowedSource.js"
+import { itemModel } from "../../model/itemModel.js"
 
-import { lbbMock } from "../../mocks/lbbs-mock.js";
+import { lbbMock } from "../../mocks/lbbs-mock.js"
 
-const esClient = getBonnesBoitesES();
+const esClient = getBonnesBoitesES()
 
-const getSomeLbbCompanies = async ({
-  romes,
-  latitude,
-  longitude,
-  radius,
-  type,
-  referer,
-  caller,
-  opco,
-  api = "jobV1",
-  useMock,
-}) => {
-  const hasLocation = latitude === undefined ? false : true;
-  let companies = null;
-  let currentRadius = hasLocation ? radius : 21000;
-  let companyLimit = 150; //TODO: query params options or default value from properties -> size || 100
+const getSomeLbbCompanies = async ({ romes, latitude, longitude, radius, type, referer, caller, opco, api = "jobV1", useMock }) => {
+  const hasLocation = latitude === undefined ? false : true
+  let companies = null
+  let currentRadius = hasLocation ? radius : 21000
+  let companyLimit = 150 //TODO: query params options or default value from properties -> size || 100
 
   if (useMock && useMock !== "false") {
-    return { results: [lbbMock] };
+    return { results: [lbbMock] }
   } else {
     companies = await getLbbCompanies({
       romes,
@@ -38,23 +27,23 @@ const getSomeLbbCompanies = async ({
       caller,
       api,
       opco,
-    });
+    })
 
     if (companies && companies.length) {
-      companies = transformLbbCompaniesForIdea({ companies, radius, type, referer, caller });
+      companies = transformLbbCompaniesForIdea({ companies, radius, type, referer, caller })
     }
 
-    return companies;
+    return companies
   }
-};
+}
 
 const transformLbbCompaniesForIdea = ({ companies, type, referer, caller }) => {
   let resultCompanies = {
     results: [],
-  };
+  }
 
   if (companies && companies.length) {
-    const contactAllowedOrigin = isAllowedSource({ referer, caller });
+    const contactAllowedOrigin = isAllowedSource({ referer, caller })
 
     for (let i = 0; i < companies.length; ++i) {
       let company = transformLbbCompanyForIdea({
@@ -62,31 +51,31 @@ const transformLbbCompaniesForIdea = ({ companies, type, referer, caller }) => {
         type,
         contactAllowedOrigin,
         caller,
-      });
-      resultCompanies.results.push(company);
+      })
+      resultCompanies.results.push(company)
     }
   }
 
-  return resultCompanies;
-};
+  return resultCompanies
+}
 
 // Adaptation au modèle Idea et conservation des seules infos utilisées des offres
 const transformLbbCompanyForIdea = ({ company, type, caller, contactAllowedOrigin }) => {
-  let resultCompany = itemModel(type);
+  let resultCompany = itemModel(type)
 
-  resultCompany.title = company.enseigne;
-  let email = encryptMailWithIV({ value: company.email !== "null" ? company.email : "", caller });
+  resultCompany.title = company.enseigne
+  let email = encryptMailWithIV({ value: company.email !== "null" ? company.email : "", caller })
 
   resultCompany.contact = {
     ...email,
-  };
+  }
 
   if (contactAllowedOrigin) {
-    resultCompany.contact.phone = company.telephone;
+    resultCompany.contact.phone = company.telephone
   }
 
   // format différent selon accès aux bonnes boîtes par recherche ou par siret
-  const address = `${company.numero_rue} ${company.libelle_rue}, ${company.code_postal} ${company.ville}`.trim();
+  const address = `${company.numero_rue} ${company.libelle_rue}, ${company.code_postal} ${company.ville}`.trim()
 
   resultCompany.place = {
     distance: company.distance?.length ? Math.round(10 * company.distance[0]) / 10 ?? 0 : null,
@@ -95,7 +84,7 @@ const transformLbbCompanyForIdea = ({ company, type, caller, contactAllowedOrigi
     longitude: company.geo_coordonnees.split(",")[1],
     city: company.ville,
     address,
-  };
+  }
 
   resultCompany.company = {
     name: company.enseigne,
@@ -103,7 +92,7 @@ const transformLbbCompanyForIdea = ({ company, type, caller, contactAllowedOrigi
     size: company.tranche_effectif,
     //socialNetwork: company.social_network,
     url: company.website,
-  };
+  }
 
   //resultCompany.url = company.url;
 
@@ -119,24 +108,14 @@ const transformLbbCompanyForIdea = ({ company, type, caller, contactAllowedOrigi
       code: company.code_naf,
       label: company.intitule_naf,
     },
-  ];
+  ]
 
-  return resultCompany;
-};
+  return resultCompany
+}
 
-const getLbbCompanies = async ({
-  romes,
-  latitude,
-  longitude,
-  radius,
-  companyLimit,
-  type,
-  caller,
-  opco,
-  api = "jobV1",
-}) => {
+const getLbbCompanies = async ({ romes, latitude, longitude, radius, companyLimit, type, caller, opco, api = "jobV1" }) => {
   try {
-    const distance = radius || 10;
+    const distance = radius || 10
 
     let mustTerm = [
       {
@@ -149,17 +128,17 @@ const getLbbCompanies = async ({
           type,
         },
       },
-    ];
+    ]
 
     if (opco) {
       mustTerm.push({
         match: {
           opco,
         },
-      });
+      })
     }
 
-    const esQueryIndexFragment = getBonnesBoitesEsQueryIndexFragment(companyLimit);
+    const esQueryIndexFragment = getBonnesBoitesEsQueryIndexFragment(companyLimit)
 
     let esQuerySort = {
       sort: [
@@ -176,7 +155,7 @@ const getLbbCompanies = async ({
             }
           : "_score",
       ],
-    };
+    }
 
     let esQuery = {
       query: {
@@ -184,7 +163,7 @@ const getLbbCompanies = async ({
           must: mustTerm,
         },
       },
-    };
+    }
 
     if (latitude || latitude === 0) {
       esQuery.query.bool.filter = {
@@ -195,13 +174,13 @@ const getLbbCompanies = async ({
             lon: longitude,
           },
         },
-      };
+      }
     } else {
       esQuery = {
         query: {
           function_score: esQuery,
         },
-      };
+      }
     }
 
     const responseBonnesBoites = await esClient.search({
@@ -210,25 +189,25 @@ const getLbbCompanies = async ({
         ...esQuery,
         ...esQuerySort,
       },
-    });
+    })
 
-    let bonnesBoites = [];
+    let bonnesBoites = []
 
     responseBonnesBoites.body.hits.hits.forEach((bonneBoite) => {
-      bonnesBoites.push({ ...bonneBoite._source, distance: latitude || latitude === 0 ? bonneBoite.sort : null });
-    });
+      bonnesBoites.push({ ...bonneBoite._source, distance: latitude || latitude === 0 ? bonneBoite.sort : null })
+    })
 
     if (!latitude && latitude !== 0) {
       bonnesBoites.sort(function (a, b) {
-        return a.enseigne.toLowerCase().localeCompare(b.enseigne.toLowerCase());
-      });
+        return a.enseigne.toLowerCase().localeCompare(b.enseigne.toLowerCase())
+      })
     }
 
-    return bonnesBoites;
+    return bonnesBoites
   } catch (error) {
-    return manageApiError({ error, api, caller, errorTitle: `getting bonnesBoites from local ES (${api})` });
+    return manageApiError({ error, api, caller, errorTitle: `getting bonnesBoites from local ES (${api})` })
   }
-};
+}
 
 const getCompanyFromSiret = async ({ siret, referer, caller, type }) => {
   try {
@@ -238,9 +217,9 @@ const getCompanyFromSiret = async ({ siret, referer, caller, type }) => {
           siret,
         },
       },
-    ];
+    ]
 
-    const esQueryIndexFragment = getBonnesBoitesEsQueryIndexFragment(1);
+    const esQueryIndexFragment = getBonnesBoitesEsQueryIndexFragment(1)
 
     const responseBonnesBoites = await esClient.search({
       ...esQueryIndexFragment,
@@ -251,13 +230,13 @@ const getCompanyFromSiret = async ({ siret, referer, caller, type }) => {
           },
         },
       },
-    });
+    })
 
-    let bonnesBoites = [];
+    let bonnesBoites = []
 
     responseBonnesBoites.body.hits.hits.forEach((bonneBoite) => {
-      bonnesBoites.push({ ...bonneBoite._source, distance: bonneBoite.sort });
-    });
+      bonnesBoites.push({ ...bonneBoite._source, distance: bonneBoite.sort })
+    })
 
     if (responseBonnesBoites.body.hits.hits.length) {
       let company = transformLbbCompanyForIdea({
@@ -265,25 +244,25 @@ const getCompanyFromSiret = async ({ siret, referer, caller, type }) => {
         type,
         contactAllowedOrigin: isAllowedSource({ referer, caller }),
         caller,
-      });
+      })
 
-      return type === "lbb" ? { lbbCompanies: [company] } : { lbaCompanies: [company] };
+      return type === "lbb" ? { lbbCompanies: [company] } : { lbaCompanies: [company] }
     } else {
-      return { result: "not_found", message: "Société non trouvée" };
+      return { result: "not_found", message: "Société non trouvée" }
     }
   } catch (error) {
     if (error?.response?.status === 404) {
-      return { result: "not_found", message: "Société non trouvée" };
+      return { result: "not_found", message: "Société non trouvée" }
     } else {
       return manageApiError({
         error,
         api: "jobV1/company",
         caller,
         errorTitle: "getting company by Siret from local ES",
-      });
+      })
     }
   }
-};
+}
 
 const getBonnesBoitesEsQueryIndexFragment = (limit) => {
   return {
@@ -309,7 +288,7 @@ const getBonnesBoitesEsQueryIndexFragment = (limit) => {
       "tranche_effectif",
       "type",
     ],
-  };
-};
+  }
+}
 
-export { getSomeLbbCompanies, getCompanyFromSiret };
+export { getSomeLbbCompanies, getCompanyFromSiret }

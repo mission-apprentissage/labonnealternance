@@ -1,3 +1,3 @@
-import SearchForTrainingsAndJobs from "./SearchForTrainingsAndJobs";
+import SearchForTrainingsAndJobs from "./SearchForTrainingsAndJobs"
 
-export default SearchForTrainingsAndJobs;
+export default SearchForTrainingsAndJobs

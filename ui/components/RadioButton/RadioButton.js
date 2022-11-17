@@ -1,5 +1,5 @@
-import React from "react";
-import { FormGroup, Label, Input } from "reactstrap";
+import React from "react"
+import { FormGroup, Label, Input } from "reactstrap"
 
 const RadioButton = React.memo(({ inputName, handleChange, value, label, selectedValue, setFieldValue }) => {
   return (
@@ -8,21 +8,15 @@ const RadioButton = React.memo(({ inputName, handleChange, value, label, selecte
         check
         className={`btn ${selectedValue === value ? "active" : ""}`}
         onClick={() => {
-          handleChange(value, setFieldValue);
+          handleChange(value, setFieldValue)
         }}
       >
-        <Input
-          type="radio"
-          name={inputName}
-          onChange={() => handleChange(value, setFieldValue)}
-          checked={selectedValue === value}
-        />{" "}
-        {label}
+        <Input type="radio" name={inputName} onChange={() => handleChange(value, setFieldValue)} checked={selectedValue === value} /> {label}
       </Label>
     </FormGroup>
-  );
-});
+  )
+})
 
-RadioButton.displayName = "RadioButton";
+RadioButton.displayName = "RadioButton"
 
-export default RadioButton;
+export default RadioButton

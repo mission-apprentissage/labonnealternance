@@ -45,7 +45,7 @@
 .widgetTestPage .floatingButtons button {
   cursor: pointer;
   margin-right: 30px;
-  background-color: #0061DF;
+  background-color: #0061df;
   font-size: 14px;
   color: #fff;
   border-radius: 19px;
@@ -101,7 +101,7 @@
   border-radius: 10px;
 }
 .widgetTestPage .c-logobar-formgroup:focus-within {
-  border: 1px solid #006AEB;
+  border: 1px solid #006aeb;
 }
 .widgetTestPage form .errorField {
   color: red;
@@ -120,16 +120,14 @@
   border: none;
   height: 52px;
   margin-left: 5px;
-  width: 90%;  
+  width: 90%;
 }
-.widgetTestPage--textInput
-{
+.widgetTestPage--textInput {
   background: #eee;
   padding: 2px 5px;
   border-radius: 5px;
 }
-.widgetTestPage--notice
-{
+.widgetTestPage--notice {
   font-size: 14px;
   font-style: italic;
 }
@@ -197,9 +195,9 @@
   margin: auto;
 }
 .widgetTestPage form .blueButton {
-  color: #066EE7;
+  color: #066ee7;
   background: #fff;
-  border: 2px solid #066EE7;
+  border: 2px solid #066ee7;
   border-radius: 50px !important;
   font-size: 14px;
   padding: 10px;
@@ -207,7 +205,7 @@
   width: auto;
 }
 .widgetTestPage form .closeButton {
-  color: #4A4A4A;
+  color: #4a4a4a;
   background: #fff;
   border-radius: 50px !important;
   font-size: 16px;
@@ -222,7 +220,7 @@
 }
 .widgetTestPage form .submitButton {
   margin-top: 20px;
-  background-color: #0061DF;
+  background-color: #0061df;
   border-radius: 10px;
   color: #fff;
   font-size: 22px;
@@ -237,8 +235,8 @@
 }
 .widgetTestPage form .blueButton:hover {
   color: #fff;
-  border: 2px solid #066EE7;
-  background: #066EE7;
+  border: 2px solid #066ee7;
+  background: #066ee7;
 }
 .widgetTestPage form .filterButton {
   background-image: url(/images/icons/filter.svg);

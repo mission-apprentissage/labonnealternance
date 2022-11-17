@@ -1,19 +1,19 @@
-import Sentry from "@sentry/node";
-import _ from "lodash-es";
-import { getFormationsES } from "../common/esClient/index.js";
+import Sentry from "@sentry/node"
+import _ from "lodash-es"
+import { getFormationsES } from "../common/esClient/index.js"
 
-const esClient = getFormationsES();
+const esClient = getFormationsES()
 
 const getRomesFromCatalogue = async ({ cfd, siret }) => {
   try {
-    let mustTerm = [];
+    let mustTerm = []
 
     if (cfd) {
       mustTerm.push({
         match: {
           cfd,
         },
-      });
+      })
     }
 
     if (siret) {
@@ -21,10 +21,10 @@ const getRomesFromCatalogue = async ({ cfd, siret }) => {
         match: {
           etablissement_formateur_siret: siret,
         },
-      });
+      })
     }
 
-    const esQueryIndexFragment = getFormationEsQueryIndexFragment();
+    const esQueryIndexFragment = getFormationEsQueryIndexFragment()
 
     const responseFormations = await esClient.search({
       ...esQueryIndexFragment,
@@ -35,48 +35,48 @@ const getRomesFromCatalogue = async ({ cfd, siret }) => {
           },
         },
       },
-    });
+    })
 
     //throw new Error("BOOM");
-    let romes = [];
+    let romes = []
 
     responseFormations.body.hits.hits.forEach((formation) => {
-      romes = romes.concat(formation._source.rome_codes);
-    });
+      romes = romes.concat(formation._source.rome_codes)
+    })
 
-    let result = { romes: romes };
+    let result = { romes: romes }
 
     if (!romes.length) {
-      result.error = "No training found";
+      result.error = "No training found"
     }
 
-    return result;
+    return result
   } catch (err) {
-    let error_msg = _.get(err, "meta.body", err.message);
-    console.error("Error getting trainings from romes ", error_msg);
+    let error_msg = _.get(err, "meta.body", err.message)
+    console.error("Error getting trainings from romes ", error_msg)
     if (_.get(err, "meta.meta.connection.status") === "dead") {
-      console.error("Elastic search is down or unreachable");
+      console.error("Elastic search is down or unreachable")
     }
-    Sentry.captureException(err);
+    Sentry.captureException(err)
 
-    return { romes: [], error: error_msg, message: error_msg };
+    return { romes: [], error: error_msg, message: error_msg }
   }
-};
+}
 
 const getRomesFromCfd = ({ cfd }) => {
-  return getRomesFromCatalogue({ cfd });
-};
+  return getRomesFromCatalogue({ cfd })
+}
 
 const getRomesFromSiret = ({ siret }) => {
-  return getRomesFromCatalogue({ siret });
-};
+  return getRomesFromCatalogue({ siret })
+}
 
 const getFormationEsQueryIndexFragment = () => {
   return {
     index: "convertedformations",
     size: 1000,
     _source_includes: ["rome_codes"],
-  };
-};
+  }
+}
 
-export { getRomesFromCfd, getRomesFromSiret };
+export { getRomesFromCfd, getRomesFromSiret }

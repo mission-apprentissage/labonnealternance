@@ -7,7 +7,7 @@ canvas.mapboxgl-canvas:focus {
 
   min-width: 200px !important;
   max-width: 200px !important;
-  
+
   @include media-breakpoint-up(sm) {
     min-width: 300px !important;
     max-width: 300px !important;
@@ -16,7 +16,7 @@ canvas.mapboxgl-canvas:focus {
     min-width: 400px !important;
     max-width: 400px !important;
   }
-  
+
   @include media-breakpoint-up(lg) {
     min-width: 600px !important;
     max-width: 600px !important;
@@ -27,7 +27,7 @@ canvas.mapboxgl-canvas:focus {
   border-radius: 11px;
   font-size: 14px;
   line-height: 20px;
-  color: #4A4A4A;
+  color: #4a4a4a;
   text-align: left;
   padding: 0;
 }
@@ -50,7 +50,7 @@ canvas.mapboxgl-canvas:focus {
 }
 
 .c-mapbox-bg {
-  background-color: #F9F8F6;
+  background-color: #f9f8f6;
   border-bottom-left-radius: 11px;
   border-bottom-right-radius: 11px;
 }
@@ -143,7 +143,7 @@ canvas.mapboxgl-canvas:focus {
 }
 
 .mapboxPopupBg {
-  background-color: #F9F8F6;
+  background-color: #f9f8f6;
 }
 
 .mapboxgl-popup-content .knowMore {
@@ -153,7 +153,7 @@ canvas.mapboxgl-canvas:focus {
 }
 .mapboxgl-popup-content .knowMore button {
   cursor: pointer !important;
-  color: #4A4A4A !important;
+  color: #4a4a4a !important;
   text-decoration: underline !important;
   background: none !important;
   border: none !important;
@@ -166,14 +166,13 @@ canvas.mapboxgl-canvas:focus {
 .mapboxgl-ctrl-bottom-right .mapboxgl-ctrl {
   margin: 0 18px 2rem 0;
 
-  
-  @include media-breakpoint-up(md) { 
+  @include media-breakpoint-up(md) {
     margin: 0 38px 6rem 0;
   }
 }
 
 .mapboxgl-ctrl-bottom-right {
-  @include media-breakpoint-up(md) { 
+  @include media-breakpoint-up(md) {
     bottom: 75px !important;
   }
 }
@@ -192,13 +191,11 @@ canvas.mapboxgl-canvas:focus {
   text-align: left;
 }
 
-.c-mapboxpopup--link:hover
-{
+.c-mapboxpopup--link:hover {
   color: #000;
 }
 
-.c-map-searchButton
-{
+.c-map-searchButton {
   z-index: 1;
   position: absolute;
   width: 260px;
@@ -220,7 +217,6 @@ canvas.mapboxgl-canvas:focus {
   box-shadow: 0px 0px 12px 6px rgba(121, 121, 121, 0.4);
 }
 
-.mapboxgl-ctrl-attrib
-{
-  display:none;
+.mapboxgl-ctrl-attrib {
+  display: none;
 }

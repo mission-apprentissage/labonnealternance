@@ -486,4 +486,4 @@ export const sampleCatalogueResponse = {
     nombre_de_page: 1,
     total: 2,
   },
-};
+}

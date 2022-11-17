@@ -1,6 +1,6 @@
-import React from "react";
-import errorAlertIcon from "../../public/images/icons/errorAlert.svg";
-import searchingPeople from "../../public/images/icons/searchingPeople.svg";
+import React from "react"
+import errorAlertIcon from "../../public/images/icons/errorAlert.svg"
+import searchingPeople from "../../public/images/icons/searchingPeople.svg"
 
 const ErrorMessage = ({ type, message }) => {
   return (
@@ -21,7 +21,7 @@ const ErrorMessage = ({ type, message }) => {
         ""
       )}
     </>
-  );
-};
+  )
+}
 
-export default ErrorMessage;
+export default ErrorMessage

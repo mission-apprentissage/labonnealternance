@@ -1,4 +1,4 @@
-import { Schema } from "mongoose";
+import { Schema } from "mongoose"
 
 export default new Schema({
   username: {
@@ -26,4 +26,4 @@ export default new Schema({
     default: null,
     description: "La donnée liéé à l'action",
   },
-});
+})

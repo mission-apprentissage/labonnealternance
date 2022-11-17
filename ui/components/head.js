@@ -1,22 +1,22 @@
-import React from "react";
-import Head from "next/head";
-import Fonts from "./fonts";
-import env from "../utils/env";
+import React from "react"
+import Head from "next/head"
+import Fonts from "./fonts"
+import env from "../utils/env"
 
 const HeadLaBonneAlternance = (props) => {
   const getEnvFromProps = () => {
-    let host = props.publicUrl || env;
+    let host = props.publicUrl || env
 
-    let envrnt = "production";
+    let envrnt = "production"
     if (host?.indexOf("recette") >= 0) {
-      envrnt = "recette";
+      envrnt = "recette"
     }
     if (host?.indexOf("local") >= 0) {
-      envrnt = "local";
+      envrnt = "local"
     }
 
-    return { env: envrnt };
-  };
+    return { env: envrnt }
+  }
 
   return (
     <Head>
@@ -49,7 +49,7 @@ const HeadLaBonneAlternance = (props) => {
         content="Vous ne trouvez pas de contrat ou d'offres d'alternance ? Essayez La bonne alternance ! Trouvez ici les formations en alternance et les entreprises qui recrutent régulièrement en alternance"
       />
     </Head>
-  );
-};
+  )
+}
 
-export default HeadLaBonneAlternance;
+export default HeadLaBonneAlternance

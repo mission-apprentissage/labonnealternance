@@ -1,15 +1,15 @@
-import { logger } from "../../common/logger.js";
-import { mailType } from "../../common/model/constants/etablissement.js";
-import { dayjs } from "../../common/utils/dayjs.js";
-import config from "../../config.js";
-import { mailTemplate } from "../../assets/index.js";
+import { logger } from "../../common/logger.js"
+import { mailType } from "../../common/model/constants/etablissement.js"
+import { dayjs } from "../../common/utils/dayjs.js"
+import config from "../../config.js"
+import { mailTemplate } from "../../assets/index.js"
 
 /**
  * @description Invite all "etablissements" to Premium.
  * @returns {Promise<void>}
  */
 export const inviteEtablissementToPremium = async ({ etablissements, mailer }) => {
-  logger.info("Cron #inviteEtablissementToPremium started.");
+  logger.info("Cron #inviteEtablissementToPremium started.")
 
   const etablissementsActivated = await etablissements.find({
     email_decisionnaire: {
@@ -20,7 +20,7 @@ export const inviteEtablissementToPremium = async ({ etablissements, mailer }) =
       $lte: dayjs().subtract(1, "day").toDate(),
     },
     "mailing.campaign": { $ne: mailType.PREMIUM_INVITE },
-  });
+  })
 
   for (const etablissement of etablissementsActivated) {
     // Invite all etablissements only in production environment
@@ -41,7 +41,7 @@ export const inviteEtablissementToPremium = async ({ etablissements, mailer }) =
         },
       },
       from: config.rdvEmail,
-    });
+    })
 
     await etablissements.updateOne(
       { siret_formateur: etablissement.siret_formateur },
@@ -56,8 +56,8 @@ export const inviteEtablissementToPremium = async ({ etablissements, mailer }) =
           },
         },
       }
-    );
+    )
   }
 
-  logger.info("Cron #inviteEtablissementToPremium done.");
-};
+  logger.info("Cron #inviteEtablissementToPremium done.")
+}

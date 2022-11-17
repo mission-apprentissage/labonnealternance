@@ -5,9 +5,9 @@ export const downloadCSV = (fileName, csv) => {
     // IE hack; see http://msdn.microsoft.com/en-us/library/ie/hh779016.aspx
     window.navigator.msSaveBlob(blob, fileName)
   } else {
-    let a = window.document.createElement('a')
+    let a = window.document.createElement("a")
     a.href = window.URL.createObjectURL(blob, {
-      type: 'text/plain;charset=UTF-8',
+      type: "text/plain;charset=UTF-8",
     })
     a.download = fileName
     document.body.appendChild(a)
@@ -16,14 +16,14 @@ export const downloadCSV = (fileName, csv) => {
   }
 }
 
-export const CSV_SEPARATOR = ';'
+export const CSV_SEPARATOR = ";"
 
 export const escapeDiacritics = (str) =>
   str
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/\s+/g, ' ')
-    .replaceAll(';', ',')
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, " ")
+    .replaceAll(";", ",")
 
 const regex = /^(.*) (\d{4,5}) (.*)$/
 

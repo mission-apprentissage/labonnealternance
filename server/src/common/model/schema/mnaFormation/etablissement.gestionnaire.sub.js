@@ -131,4 +131,4 @@ export const etablissementGestionnaireInfo = {
     default: null,
     description: "Date de création de l'établissement",
   },
-};
+}

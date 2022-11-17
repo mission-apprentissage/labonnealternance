@@ -1,5 +1,5 @@
-import React from "react";
-import NextErrorComponent from "next/error";
+import React from "react"
+import NextErrorComponent from "next/error"
 //import * as Sentry from "@sentry/node";
 
 const Error = ({ statusCode, hasGetInitialPropsRun, err }) => {
@@ -10,18 +10,18 @@ const Error = ({ statusCode, hasGetInitialPropsRun, err }) => {
     //Sentry.captureException(err);
   }
 
-  return <NextErrorComponent statusCode={statusCode} />;
-};
+  return <NextErrorComponent statusCode={statusCode} />
+}
 
 Error.getInitialProps = async ({ res, err, asPath }) => {
   const errorInitialProps = await NextErrorComponent.getInitialProps({
     res,
     err,
-  });
+  })
 
   // Workaround for https://github.com/vercel/next.js/issues/8592, mark when
   // getInitialProps has run
-  errorInitialProps.hasGetInitialPropsRun = true;
+  errorInitialProps.hasGetInitialPropsRun = true
 
   // Running on the server, the response object (`res`) is available.
   //
@@ -38,12 +38,12 @@ Error.getInitialProps = async ({ res, err, asPath }) => {
 
   if (res?.statusCode === 404) {
     // Opinionated: do not record an exception in Sentry for 404
-    return { statusCode: 404 };
+    return { statusCode: 404 }
   }
   if (err) {
     //Sentry.captureException(err);
     //await Sentry.flush(2000);
-    return errorInitialProps;
+    return errorInitialProps
   }
 
   // If this point is reached, getInitialProps was called without any
@@ -52,7 +52,7 @@ Error.getInitialProps = async ({ res, err, asPath }) => {
   //Sentry.captureException(new Error(`_error.js getInitialProps missing data at path: ${asPath}`));
   //await Sentry.flush(2000);
 
-  return errorInitialProps;
-};
+  return errorInitialProps
+}
 
-export default Error;
+export default Error

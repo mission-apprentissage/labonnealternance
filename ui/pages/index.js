@@ -1,33 +1,33 @@
-import React, { useEffect } from "react";
-import Navigation from "../components/navigation";
-import HomeHero from "../components/HomeHero";
-import HowTo from "../components/HowTo";
-import AlgoHome from "../components/HomeComponents/AlgoHome";
-import HomeReview from "../components/HomeReview";
-import { initParametersFromQuery } from "../services/config";
-import Footer from "../components/footer";
-import { useRouter } from "next/router";
+import React, { useEffect } from "react"
+import Navigation from "../components/navigation"
+import HomeHero from "../components/HomeHero"
+import HowTo from "../components/HowTo"
+import AlgoHome from "../components/HomeComponents/AlgoHome"
+import HomeReview from "../components/HomeReview"
+import { initParametersFromQuery } from "../services/config"
+import Footer from "../components/footer"
+import { useRouter } from "next/router"
 
-import ScrollToTop from "../components/ScrollToTop";
-import howtocircle1 from "../public/images/howtocircle1.svg";
-import howtocircle2 from "../public/images/howtocircle2.svg";
-import howtocircle3 from "../public/images/howtocircle3.svg";
-import howtocircle4 from "../public/images/howtocircle4.svg";
-import howtocircle5 from "../public/images/howtocircle5.svg";
-import axios from "axios";
-import csvToArray from "../utils/csvToArray.js";
-import { some } from "lodash";
-import { ParameterContext } from "../context/ParameterContextProvider";
-import AmeliorerLBA from "../components/HomeComponents/AmeliorerLBA";
+import ScrollToTop from "../components/ScrollToTop"
+import howtocircle1 from "../public/images/howtocircle1.svg"
+import howtocircle2 from "../public/images/howtocircle2.svg"
+import howtocircle3 from "../public/images/howtocircle3.svg"
+import howtocircle4 from "../public/images/howtocircle4.svg"
+import howtocircle5 from "../public/images/howtocircle5.svg"
+import axios from "axios"
+import csvToArray from "../utils/csvToArray.js"
+import { some } from "lodash"
+import { ParameterContext } from "../context/ParameterContextProvider"
+import AmeliorerLBA from "../components/HomeComponents/AmeliorerLBA"
 
 const Home = (props) => {
-  const router = useRouter();
+  const router = useRouter()
 
-  const parameterContext = React.useContext(ParameterContext);
+  const parameterContext = React.useContext(ParameterContext)
 
   useEffect(() => {
-    initParametersFromQuery({ router, shouldPush: "shouldPushPathname", parameterContext });
-  }, []);
+    initParametersFromQuery({ router, shouldPush: "shouldPushPathname", parameterContext })
+  }, [])
 
   return (
     <div>
@@ -54,8 +54,8 @@ const Home = (props) => {
 
       <Footer />
     </div>
-  );
-};
+  )
+}
 
 // This function gets called at build time on server-side.
 // It won't be called on client-side, so you can even do
@@ -63,7 +63,7 @@ const Home = (props) => {
 export async function getStaticProps() {
   // Call an external API endpoint to get reviews.
   // You can use any data fetching library
-  const reviews = await getAllReviews();
+  const reviews = await getAllReviews()
 
   // By returning { props: { reviews } }, the Blog component
   // will receive `reviews` as a prop at build time
@@ -71,14 +71,12 @@ export async function getStaticProps() {
     props: {
       reviews,
     },
-  };
+  }
 }
 
 async function getAllReviews() {
-  const response = await axios.get(
-    "https://raw.githubusercontent.com/mission-apprentissage/labonnealternance/datasets/ui/config/review.csv"
-  );
-  const csv = csvToArray(response.data);
+  const response = await axios.get("https://raw.githubusercontent.com/mission-apprentissage/labonnealternance/datasets/ui/config/review.csv")
+  const csv = csvToArray(response.data)
 
   /*
     [
@@ -106,19 +104,19 @@ async function getAllReviews() {
   const cleanedCsv = csv
     // the filter will clear the object with falsy-only values
     .filter((e) => {
-      return some(e, (k) => !!k);
+      return some(e, (k) => !!k)
     })
     // the map will clear the property ''
     .map((e) => {
-      delete e[""];
+      delete e[""]
       // trim all values
-      Object.keys(e).forEach((k) => (e[k] = e[k].trim()));
-      return e;
-    });
+      Object.keys(e).forEach((k) => (e[k] = e[k].trim()))
+      return e
+    })
 
-  let result = cleanedCsv[0] || {};
+  let result = cleanedCsv[0] || {}
 
-  return {} /*result*/;
+  return {} /*result*/
 }
 
-export default Home;
+export default Home

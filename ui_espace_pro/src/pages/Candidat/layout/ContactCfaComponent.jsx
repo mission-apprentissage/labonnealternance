@@ -1,5 +1,5 @@
-import { Box, Text } from "@chakra-ui/react";
-import { MapPin2Fill } from "../../../theme/components/icons";
+import { Box, Text } from "@chakra-ui/react"
+import { MapPin2Fill } from "../../../theme/components/icons"
 
 /**
  * @description Etablissement information.
@@ -12,7 +12,7 @@ import { MapPin2Fill } from "../../../theme/components/icons";
  * @returns {JSX.Element}
  */
 export const ContactCfaComponent = (props) => {
-  const { adresse, codePostal, entrepriseRaisonSociale, ville } = props;
+  const { adresse, codePostal, entrepriseRaisonSociale, ville } = props
 
   return (
     <Box py={[0, 7]} mt={2}>
@@ -32,5 +32,5 @@ export const ContactCfaComponent = (props) => {
       )}
       <Box mt={8} borderBottom="1px solid #D0C9C4" />
     </Box>
-  );
-};
+  )
+}

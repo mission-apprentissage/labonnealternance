@@ -1,13 +1,13 @@
-import faker from "faker/locale/fr.js";
-import RandExp from "randexp";
-import { referrers } from "../../src/common/model/constants/referrers.js";
-import { roles } from "../../src/common/roles.js";
+import faker from "faker/locale/fr.js"
+import RandExp from "randexp"
+import { referrers } from "../../src/common/model/constants/referrers.js"
+import { roles } from "../../src/common/roles.js"
 
 // Utils
-const isRandomCondition = () => Math.random() < 0.66;
-const getRandomIdFormation = () => new RandExp(/^[0-9]{8}$/).gen().toUpperCase();
-const getRandomUaiEtablissement = () => new RandExp(/^[0-9]{7}[A-Z]{1}$/).gen().toUpperCase();
-const getRandomSiretEtablissement = () => new RandExp(/^[0-9]{14}$/).gen().toUpperCase();
+const isRandomCondition = () => Math.random() < 0.66
+const getRandomIdFormation = () => new RandExp(/^[0-9]{8}$/).gen().toUpperCase()
+const getRandomUaiEtablissement = () => new RandExp(/^[0-9]{7}[A-Z]{1}$/).gen().toUpperCase()
+const getRandomSiretEtablissement = () => new RandExp(/^[0-9]{14}$/).gen().toUpperCase()
 
 /**
  * Random appointment model
@@ -19,14 +19,14 @@ const createRandomAppointment = () => {
     etablissement_id: getRandomUaiEtablissement(),
     formation_id: getRandomIdFormation(),
     referrer: faker.random.objectElement(referrers).name,
-  };
-};
+  }
+}
 
 /**
  * Random candidat-user model
  */
 const createRandomCandidat = () => {
-  const randomEmail = faker.internet.email();
+  const randomEmail = faker.internet.email()
   return {
     username: randomEmail,
     password: faker.internet.password(),
@@ -35,8 +35,8 @@ const createRandomCandidat = () => {
     phone: faker.phone.phoneNumberFormat(),
     email: randomEmail,
     role: roles.candidat,
-  };
-};
+  }
+}
 
 /**
  * Random widget parameter
@@ -49,8 +49,8 @@ const createRandomWidgetParameter = () => {
     formation_cfd: getRandomIdFormation(),
     email_rdv: faker.internet.email(),
     referrers: isRandomCondition() ? [referrers.LBA.code, referrers.PARCOURSUP.code] : [referrers.LBA.code],
-  };
-};
+  }
+}
 
 /**
  * Create random list
@@ -59,19 +59,19 @@ const createRandomWidgetParameter = () => {
 const createRandomListOf =
   (generateItem) =>
   (nbItems = null) => {
-    const randomList = [];
+    const randomList = []
     if (!nbItems) {
-      nbItems = Math.floor(Math.random() * Math.floor(100));
+      nbItems = Math.floor(Math.random() * Math.floor(100))
     }
     for (let index = 0; index < nbItems; index++) {
-      randomList.push(generateItem());
+      randomList.push(generateItem())
     }
-    return randomList;
-  };
+    return randomList
+  }
 
 // Random lists
-const createRandomAppointmentsList = createRandomListOf(createRandomAppointment);
-const createRandomWidgetParametersList = createRandomListOf(createRandomWidgetParameter);
-const createRandomCandidatsList = createRandomListOf(createRandomCandidat);
+const createRandomAppointmentsList = createRandomListOf(createRandomAppointment)
+const createRandomWidgetParametersList = createRandomListOf(createRandomWidgetParameter)
+const createRandomCandidatsList = createRandomListOf(createRandomCandidat)
 
-export { createRandomWidgetParametersList, createRandomAppointmentsList, createRandomCandidatsList };
+export { createRandomWidgetParametersList, createRandomAppointmentsList, createRandomCandidatsList }

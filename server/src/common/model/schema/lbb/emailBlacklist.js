@@ -11,4 +11,4 @@ export const emailBlacklist = {
     default: null,
     description: "Source de l'information de blacklisting",
   },
-};
+}

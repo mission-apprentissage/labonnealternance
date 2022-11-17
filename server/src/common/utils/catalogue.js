@@ -1,9 +1,9 @@
-import axios from "axios";
-import rax from "retry-axios";
-import config from "../../config.js";
+import axios from "axios"
+import rax from "retry-axios"
+import config from "../../config.js"
 
 // Retry calls 3 times.
-rax.attach();
+rax.attach()
 
 /**
  * @description Get formations by its identifier.
@@ -13,7 +13,7 @@ rax.attach();
 const getFormationsById = ({ id }) =>
   getFormations({
     $and: [{ _id: id }],
-  });
+  })
 
 /**
  * @description Get formations by "siret formateur" with "common conditions".
@@ -23,7 +23,7 @@ const getFormationsById = ({ id }) =>
 const getFormationsBySiretFormateur = ({ siretFormateur }) =>
   getFormations({
     $and: [{ etablissement_formateur_siret: siretFormateur }],
-  });
+  })
 
 /**
  * @description Get formations by idRcoFormations with "common conditions".
@@ -33,7 +33,7 @@ const getFormationsBySiretFormateur = ({ siretFormateur }) =>
 const getFormationsByIdRcoFormations = ({ idRcoFormations }) =>
   getFormations({
     $and: [{ id_rco_formation: idRcoFormations }],
-  });
+  })
 
 /**
  * @description Get formations by idRcoFormations.
@@ -43,7 +43,7 @@ const getFormationsByIdRcoFormations = ({ idRcoFormations }) =>
 const getFormationsByIdRcoFormationsRaw = ({ idRcoFormations }) =>
   getFormations({
     $and: [{ id_rco_formation: idRcoFormations }],
-  });
+  })
 
 /**
  * @description Get formations by its idParcoursup.
@@ -53,7 +53,7 @@ const getFormationsByIdRcoFormationsRaw = ({ idRcoFormations }) =>
 const getFormationsByIdParcoursup = ({ idParcoursup }) =>
   getFormations({
     id_parcoursup: idParcoursup,
-  });
+  })
 
 /**
  * @description Get formations through the catalogue.
@@ -88,23 +88,16 @@ const getFormations = async (query, page = 1, limit = 500) => {
     },
     page,
     limit,
-  };
+  }
 
   // Do not send "query" parameter if empty
   if (Object.keys(query).length > 0) {
-    dataToSend.query = query;
+    dataToSend.query = query
   }
 
-  const { data } = await axios.post(`${config.catalogueUrl}/api/v1/entity/formations`, dataToSend);
+  const { data } = await axios.post(`${config.catalogueUrl}/api/v1/entity/formations`, dataToSend)
 
-  return data;
-};
+  return data
+}
 
-export {
-  getFormationsByIdRcoFormations,
-  getFormationsByIdRcoFormationsRaw,
-  getFormationsByIdParcoursup,
-  getFormationsBySiretFormateur,
-  getFormationsById,
-  getFormations,
-};
+export { getFormationsByIdRcoFormations, getFormationsByIdRcoFormationsRaw, getFormationsByIdParcoursup, getFormationsBySiretFormateur, getFormationsById, getFormations }

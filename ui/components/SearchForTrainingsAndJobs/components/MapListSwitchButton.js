@@ -1,12 +1,12 @@
-import React from "react";
-import toggleList from "../../../public/images/icons/toggleList.svg";
-import toggleCard from "../../../public/images/icons/toggleCard.svg";
-import { SearchResultContext } from "../../../context/SearchResultContextProvider";
-import { DisplayContext } from "../../../context/DisplayContextProvider";
+import React from "react"
+import toggleList from "../../../public/images/icons/toggleList.svg"
+import toggleCard from "../../../public/images/icons/toggleCard.svg"
+import { SearchResultContext } from "../../../context/SearchResultContextProvider"
+import { DisplayContext } from "../../../context/DisplayContextProvider"
 
 const MapListSwitchButton = ({ showResultMap, showResultList, isFormVisible }) => {
-  const { hasSearch } = React.useContext(SearchResultContext);
-  const { visiblePane } = React.useContext(DisplayContext);
+  const { hasSearch } = React.useContext(SearchResultContext)
+  const { visiblePane } = React.useContext(DisplayContext)
 
   if (visiblePane === "resultList") {
     if (hasSearch)
@@ -17,8 +17,8 @@ const MapListSwitchButton = ({ showResultMap, showResultList, isFormVisible }) =
             <span className="ml-2 c-resultlist-card">Carte</span>
           </button>
         </div>
-      );
-    else return "";
+      )
+    else return ""
   } else {
     return (
       <div className="floatingButtons resultMap">
@@ -31,8 +31,8 @@ const MapListSwitchButton = ({ showResultMap, showResultList, isFormVisible }) =
           ""
         )}
       </div>
-    );
+    )
   }
-};
+}
 
-export default MapListSwitchButton;
+export default MapListSwitchButton

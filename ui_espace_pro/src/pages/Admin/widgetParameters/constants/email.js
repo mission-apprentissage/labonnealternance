@@ -13,4 +13,4 @@ export const emailStatus = {
   spam: "Plainte",
   unsubscribed: "Désinscrit",
   blocked: "Bloqué",
-};
+}

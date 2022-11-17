@@ -117,7 +117,7 @@
   border-radius: 10px;
 }
 .choiceCol .fieldContainer:focus-within {
-  border: 1px solid #006AEB;
+  border: 1px solid #006aeb;
 }
 .choiceCol .form-check {
   padding-left: 0;
@@ -153,9 +153,9 @@
 }
 
 .choiceCol .blueButton {
-  color: #066EE7;
+  color: #066ee7;
   background: #fff;
-  border: 2px solid #066EE7;
+  border: 2px solid #066ee7;
   border-radius: 50px !important;
   font-size: 14px;
   padding: 10px;
@@ -163,7 +163,7 @@
   width: auto;
 }
 .choiceCol .closeButton {
-  color: #4A4A4A;
+  color: #4a4a4a;
   background: #fff;
   border-radius: 50px !important;
   font-size: 16px;
@@ -178,7 +178,7 @@
 }
 .choiceCol .submitButton {
   margin-top: 20px;
-  background-color: #0061DF;
+  background-color: #0061df;
   border-radius: 10px;
   color: #fff;
   font-size: 22px;
@@ -193,8 +193,8 @@
 }
 .choiceCol .blueButton:hover {
   color: #fff;
-  border: 2px solid #066EE7;
-  background: #066EE7;
+  border: 2px solid #066ee7;
+  background: #066ee7;
 }
 .choiceCol .filterButton {
   background-image: url(/images/icons/filter.svg);
@@ -244,7 +244,7 @@
 .demoPage .resultTitle {
   text-align: left;
   margin-left: 10px;
-  color: #4A4A4A;
+  color: #4a4a4a;
   font-weight: 600;
   font-size: 22px;
   margin-bottom: 0px;
@@ -265,22 +265,19 @@
   right: 0;
   left: 0;
   bottom: 0;
-  @include media-breakpoint-up(md) { 
+  @include media-breakpoint-up(md) {
     position: absolute;
   }
 }
 
 .mapContainer:focus,
-.dummyMapContainer:focus
-{
-  outline:none;
+.dummyMapContainer:focus {
+  outline: none;
 }
 
 .dummyMapContainer {
-  
-  .c-staticmapframe
-  {
-    background: center no-repeat url("/images/static_map.svg"), #FFF;
+  .c-staticmapframe {
+    background: center no-repeat url("/images/static_map.svg"), #fff;
     background-size: auto 85%;
     background-position-y: 10px;
     height: 100%;
@@ -289,32 +286,29 @@
   }
 }
 
-.c-staticmapframe__message
-  {
-    margin: auto;
-    width: 80%;
-    min-width: 250px;
-    max-width: 600px;
-    background: #FFFFFF;
-    box-shadow: 0px 0px 12px 2px rgba(0, 0, 0, 0.21);
-    border-radius: 8px;
-    text-align: left;
-    font-size: 16px;
-    font-weight: 400;
+.c-staticmapframe__message {
+  margin: auto;
+  width: 80%;
+  min-width: 250px;
+  max-width: 600px;
+  background: #ffffff;
+  box-shadow: 0px 0px 12px 2px rgba(0, 0, 0, 0.21);
+  border-radius: 8px;
+  text-align: left;
+  font-size: 16px;
+  font-weight: 400;
 
-    .c-staticmapframe__title
-    {
-      font-size: 27px;
-      font-weight: 700;
-    }
-
-    .c-staticmapframe__decoration
-    {
-      width: 40px;
-      height: 100%;
-      background: center no-repeat url(/images/icons/static_map_search.svg);  
-    }
+  .c-staticmapframe__title {
+    font-size: 27px;
+    font-weight: 700;
   }
+
+  .c-staticmapframe__decoration {
+    width: 40px;
+    height: 100%;
+    background: center no-repeat url(/images/icons/static_map_search.svg);
+  }
+}
 
 .demoPage .markerIcon {
   width: 30px;
@@ -342,7 +336,6 @@
   text-align: center;
 }
 
-
 /**
 *   This section is dedicated to the "scroll result" problem.
 *   See https://codepen.io/pigparlor/pen/NWbBMYL
@@ -355,15 +348,15 @@
 .c-searchfor__row {
   flex: 1;
   overflow: hidden;
-    &.is-visible-true {
-      overflow: inherit;
-    }
-    &.is-visible-true.is-welcome-true {
-      overflow: hidden;
-    }
+  &.is-visible-true {
+    overflow: inherit;
+  }
+  &.is-visible-true.is-welcome-true {
+    overflow: hidden;
+  }
 }
 .choiceCol-container {
-  overflow:hidden;
+  overflow: hidden;
   height: 100%;
   display: flex;
 }
@@ -374,7 +367,7 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  
+
   &__text {
     flex: 1;
     overflow: auto;
@@ -384,4 +377,4 @@
 
 .c-result-list.c-result-list--item {
   height: 0%;
-} 
+}

@@ -1,9 +1,9 @@
-import { Box, Flex, Spinner, Text } from '@chakra-ui/react'
-import { useEffect } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
-import { validateToken } from '../../api'
-import { AUTHTYPE } from '../../common/contants'
-import useAuth from '../../common/hooks/useAuth'
+import { Box, Flex, Spinner, Text } from "@chakra-ui/react"
+import { useEffect } from "react"
+import { useLocation, useNavigate } from "react-router-dom"
+import { validateToken } from "../../api"
+import { AUTHTYPE } from "../../common/contants"
+import useAuth from "../../common/hooks/useAuth"
 
 export default () => {
   let navigate = useNavigate()
@@ -14,7 +14,7 @@ export default () => {
   const fromEntrepriseCreation = location.state
 
   let params = new URLSearchParams(search)
-  let token = params.get('token')
+  let token = params.get("token")
 
   useEffect(() => {
     // if (!token) {
@@ -27,7 +27,7 @@ export default () => {
         setAuth(data?.token)
       })
       .catch(() => {
-        navigate('/')
+        navigate("/")
       })
   }, [token])
 
@@ -51,7 +51,7 @@ export default () => {
       case AUTHTYPE.CFA:
       case AUTHTYPE.ADMIN:
         setTimeout(() => {
-          navigate('/administration')
+          navigate("/administration")
         }, 1000)
         break
 
@@ -64,8 +64,8 @@ export default () => {
   return (
     <>
       <Box>
-        <Flex justify='center' align='center' h='100vh' direction='column'>
-          <Spinner thickness='4px' speed='0.5s' emptyColor='gray.200' color='bluefrance.500' size='xl' />
+        <Flex justify="center" align="center" h="100vh" direction="column">
+          <Spinner thickness="4px" speed="0.5s" emptyColor="gray.200" color="bluefrance.500" size="xl" />
           <Text>Connexion en cours...</Text>
         </Flex>
       </Box>

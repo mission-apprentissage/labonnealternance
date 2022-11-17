@@ -1,4 +1,4 @@
-import { optMode } from "../constants/etablissement.js";
+import { optMode } from "../constants/etablissement.js"
 
 export const etablissementSchema = {
   siret_formateur: {
@@ -138,4 +138,4 @@ export const etablissementSchema = {
     default: Date.now,
     description: "Date de création de la collection",
   },
-};
+}
