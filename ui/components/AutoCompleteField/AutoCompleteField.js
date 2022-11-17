@@ -7,7 +7,7 @@ import highlightItem from "../../services/hightlightItem"
 import ReactHtmlParser from "react-html-parser"
 import { Spinner } from "reactstrap"
 import findExactItemRank from "./findExactItemRank"
-import { Box } from "@chakra-ui/react"
+import { Box, Text } from "@chakra-ui/react"
 
 let debouncedOnInputValueChange = null
 
@@ -174,24 +174,28 @@ export const AutoCompleteField = ({
 
   return (
     <Box>
-      <div className={`c-input-work-container ${classesOfContainer}`} {...getComboboxProps()}>
-        <label className="c-logobar-label">{kind}</label>
-        <input
-          {...getInputProps({
-            onFocus: (e) => {
-              if (!isOpen) {
-                openMenu()
-              }
-              onFocusTriggered(e)
-            },
-          })}
-          disabled={isDisabled}
-          className={`${classesOfInsider} ${inputValue && inputValue.length > 20 ? "is-text-too-long" : "is-text-not-too-long"}`}
-          placeholder={props.placeholder}
-          name={props.name}
-          aria-describedby="name"
-        />
-      </div>
+      <Box>
+        <div className={`c-input-work-container ${classesOfContainer}`} {...getComboboxProps()}>
+          <Text marginBottom="0" marginLeft={2} paddingTop="0.3rem" color="gray.700" textAlign="left" lineHeight="15px" fontSize={["12px", "10px", "10px", "12px"]} as="label">
+            {kind}
+          </Text>
+          <input
+            {...getInputProps({
+              onFocus: (e) => {
+                if (!isOpen) {
+                  openMenu()
+                }
+                onFocusTriggered(e)
+              },
+            })}
+            disabled={isDisabled}
+            className={`${classesOfInsider} ${inputValue && inputValue.length > 20 ? "is-text-too-long" : "is-text-not-too-long"}`}
+            placeholder={props.placeholder}
+            name={props.name}
+            aria-describedby="name"
+          />
+        </div>
+      </Box>
 
       <ul {...getMenuProps()} className={`c-autocomplete__menu is-open-${isOpen}`}>
         {(() => {
