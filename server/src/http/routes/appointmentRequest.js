@@ -183,7 +183,7 @@ export default ({ users, appointments, mailer, widgetParameters, etablissements 
         localite: widgetParameter.localite,
         id_rco_formation: widgetParameter.id_rco_formation,
         cle_ministere_educatif: widgetParameter?.cle_ministere_educatif,
-        form_url: `${config.publicUrl}/form?referrer=${referrer}&cleMinistereEducatif=${encodeURIComponent(widgetParameter.cle_ministere_educatif)}`,
+        form_url: `${config.publicUrlEspacePro}/form?referrer=${referrer}&cleMinistereEducatif=${encodeURIComponent(widgetParameter.cle_ministere_educatif)}`,
       })
     })
   )
@@ -275,13 +275,13 @@ export default ({ users, appointments, mailer, widgetParameters, etablissements 
         appointment: {
           referrerLink: referrerObj.url,
           referrer: referrerObj.full_name,
-          link: `${config.publicUrl}/espace-pro/establishment/${etablissement._id}/appointments/${createdAppointement._id}?utm_source=mail`,
+          link: `${config.publicUrlEspacePro}/establishment/${etablissement._id}/appointments/${createdAppointement._id}?utm_source=mail`,
         },
         images: {
-          logoCandidat: `${config.publicUrl}/espace-pro/assets/logo-lba-recruteur-candidat.png?raw=true`,
-          logoCfa: `${config.publicUrl}/espace-pro/assets/logo-lba-recruteur-cfa.png?raw=true`,
-          logoFooter: `${config.publicUrl}/espace-pro/assets/logo-republique-francaise.png?raw=true`,
-          peopleLaptop: `${config.publicUrl}/espace-pro/assets/people-laptop.png?raw=true`,
+          logoCandidat: `${config.publicUrlEspacePro}/assets/logo-lba-recruteur-candidat.png?raw=true`,
+          logoCfa: `${config.publicUrlEspacePro}/assets/logo-lba-recruteur-cfa.png?raw=true`,
+          logoFooter: `${config.publicUrlEspacePro}/assets/logo-republique-francaise.png?raw=true`,
+          peopleLaptop: `${config.publicUrlEspacePro}/assets/people-laptop.png?raw=true`,
         },
       }
 
@@ -448,7 +448,7 @@ export default ({ users, appointments, mailer, widgetParameters, etablissements 
               referrer: referrerObj.full_name,
             },
             images: {
-              peopleLaptop: `${config.publicUrl}/espace-pro/assets/girl_laptop.png?raw=true`,
+              peopleLaptop: `${config.publicUrlEspacePro}/assets/girl_laptop.png?raw=true`,
             },
           },
         })

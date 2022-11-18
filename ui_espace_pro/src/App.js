@@ -141,12 +141,12 @@ const App = () => {
         <Route path="/widget/:origine" element={<CreationCompte type={AUTHTYPE.ENTREPRISE} widget={true} />} />
         {/* RDVA */}
         <Route path="/form" element={<FormCreatePage />} />
-        <Route path="/form/confirm/:id" element={FormRecapPage} />
-        <Route path="/form/opt-out/unsubscribe/:id" element={OptOutUnsubscribe} />
-        <Route path="/form/premium/:id" element={PremiumForm} />
-        <Route path="/appointment/candidat/follow-up/:id/:action(confirm|resend)" element={AppointmentFollowUpPage} />
-        <Route path="/widget/tutorial" element={Widget} />
-        <Route path="/establishment/:establishmentId/appointments/:appointmentId" element={CfaCandidatInformationPage} />
+        <Route path="/form/confirm/:id" element={<FormRecapPage />} />
+        <Route path="/form/opt-out/unsubscribe/:id" element={<OptOutUnsubscribe />} />
+        <Route path="/form/premium/:id" element={<PremiumForm />} />
+        <Route path="/appointment/candidat/follow-up/:id/:action(confirm|resend)" element={<AppointmentFollowUpPage />} />
+        <Route path="/widget/tutorial" element={<Widget />} />
+        <Route path="/establishment/:establishmentId/appointments/:appointmentId" element={<CfaCandidatInformationPage />} />
 
         <Route
           path="/admin"

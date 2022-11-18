@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react"
 import { Box, Container, Flex, Text, RadioGroup, Stack, Radio, Textarea, Button, Heading } from "@chakra-ui/react"
-import { useParams } from "react-router"
+import { useParams } from "react-router-dom"
 import { SuccessCircle } from "../theme/components/icons"
 import { _get, _post } from "../common/httpClient"
 import { Breadcrumb } from "../common/components/Breadcrumb"

@@ -71,10 +71,10 @@ export const inviteEtablissementToOptOut = async ({ etablissements, widgetParame
         template: mailTemplate["mail-cfa-optout-invitation"],
         data: {
           images: {
-            logoCfa: `${config.publicUrl}/espace-pro/assets/logo-lba-recruteur-cfa.png?raw=true`,
-            logoFooter: `${config.publicUrl}/espace-pro/assets/logo-republique-francaise.png?raw=true`,
-            peopleLaptop: `${config.publicUrl}/espace-pro/assets/people-laptop.png?raw=true`,
-            optOutLbaIntegrationExample: `${config.publicUrl}/espace-pro/assets/exemple_integration_lba.png?raw=true`,
+            logoCfa: `${config.publicUrlEspacePro}/assets/logo-lba-recruteur-cfa.png?raw=true`,
+            logoFooter: `${config.publicUrlEspacePro}/assets/logo-republique-francaise.png?raw=true`,
+            peopleLaptop: `${config.publicUrlEspacePro}/assets/people-laptop.png?raw=true`,
+            optOutLbaIntegrationExample: `${config.publicUrlEspacePro}/assets/exemple_integration_lba.png?raw=true`,
           },
           etablissement: {
             name: etablissement.raison_sociale,
@@ -83,7 +83,7 @@ export const inviteEtablissementToOptOut = async ({ etablissements, widgetParame
             ville: etablissement.localite,
             siret: etablissement?.siret_formateur,
             optOutActivatedAtDate: optOutWillBeActivatedAtDayjs.format("DD/MM"),
-            linkToUnsubscribe: `${config.publicUrl}/espace-pro/form/opt-out/unsubscribe/${etablissement._id}`,
+            linkToUnsubscribe: `${config.publicUrlEspacePro}/form/opt-out/unsubscribe/${etablissement._id}`,
           },
           user: {
             destinataireEmail: emailDecisionaire,

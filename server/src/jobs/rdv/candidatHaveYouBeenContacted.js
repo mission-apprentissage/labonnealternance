@@ -41,8 +41,8 @@ export const candidatHaveYouBeenContacted = async ({ etablissements, widgetParam
         template: mailTemplate["mail-candidat-rdv-have-you-been-contacted"],
         data: {
           images: {
-            logoCandidat: `${config.publicUrl}/espace-pro/assets/logo-lba-recruteur-candidat.png?raw=true`,
-            logoFooter: `${config.publicUrl}/espace-pro/assets/logo-republique-francaise.png?raw=true`,
+            logoCandidat: `${config.publicUrlEspacePro}/assets/logo-lba-recruteur-candidat.png?raw=true`,
+            logoFooter: `${config.publicUrlEspacePro}/assets/logo-republique-francaise.png?raw=true`,
           },
           etablissement: {
             name: etablissement.raison_sociale,
@@ -65,8 +65,8 @@ export const candidatHaveYouBeenContacted = async ({ etablissements, widgetParam
             referrer: referrerObj.full_name,
           },
           links: {
-            confirm: `${config.publicUrl}/espace-pro/appointment/candidat/follow-up/${appointment._id}/confirm`,
-            resend: `${config.publicUrl}/espace-pro/appointment/candidat/follow-up/${appointment._id}/resend`,
+            confirm: `${config.publicUrlEspacePro}/appointment/candidat/follow-up/${appointment._id}/confirm`,
+            resend: `${config.publicUrlEspacePro}/appointment/candidat/follow-up/${appointment._id}/resend`,
           },
         },
       }),
@@ -76,8 +76,8 @@ export const candidatHaveYouBeenContacted = async ({ etablissements, widgetParam
         template: mailTemplate["mail-cfa-relance-demande-de-contact"],
         data: {
           images: {
-            logoCfa: `${config.publicUrl}/espace-pro/assets/logo-lba-recruteur-candidat.png?raw=true`,
-            logoFooter: `${config.publicUrl}/espace-pro/assets/logo-republique-francaise.png?raw=true`,
+            logoCfa: `${config.publicUrlEspacePro}/assets/logo-lba-recruteur-candidat.png?raw=true`,
+            logoFooter: `${config.publicUrlEspacePro}/assets/logo-republique-francaise.png?raw=true`,
           },
           etablissement: {
             name: etablissement.raison_sociale,

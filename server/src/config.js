@@ -43,8 +43,8 @@ const config = {
     host: env.get("LBA_SMTP_HOST").default("smtp").asString(),
     port: env.get("LBA_SMTP_PORT").default("1025").asString(),
     auth: {
-      user: env.get("LBA_SMTP_AUTH_USER").default("lba").asString(),
-      pass: env.get("LBA_SMTP_AUTH_PASS").default("1234").asString(),
+      user: env.get("LBA_SMTP_AUTH_USER").default("xxxxx").asString(),
+      pass: env.get("LBA_SMTP_AUTH_PASS").default("12345").asString(),
     },
     sendinblueToken: env.get("LBA_SMTP_SENDINBLUE_TOKEN").default("1234").asString(),
     sendinblueApiKey: env.get("LBA_SENDINBLUE_API_KEY").default("1234").asString(),

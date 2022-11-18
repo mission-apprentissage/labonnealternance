@@ -19,7 +19,8 @@
     "test": "mocha --recursive --exit --timeout 5000 tests/",
     "cli": "DOCTRINA_LOG_DESTINATIONS=stderr node src/cli.js",
     "coverage": "nyc --temp-dir .coverage/.nyc_output --report-dir .coverage --reporter=lcov --reporter=html yarn test",
-    "lint": "eslint src/ tests/"
+    "lint": "eslint src/ tests/",
+    "lint:fix": "eslint src/ tests/ --fix"
   },
   "dependencies": {
     "@elastic/elasticsearch": "7.9.1",
@@ -75,7 +76,7 @@
     "mongoose-paginate": "5.0.3",
     "multipipe": "4.0.0",
     "nanoid": "4.0.0",
-    "nock": "13.0.6",
+    "nock": "13.2.4",
     "node-fetch": "3.2.10",
     "nodemailer": "6.6.3",
     "nodemailer-html-to-text": "3.2.0",
@@ -115,7 +116,6 @@
     "eslint-plugin-prettier": "4.2.1",
     "mocha": "10.0.0",
     "mongodb-memory-server": "8.5.2",
-    "nock": "13.2.4",
     "nodemon": "2.0.16",
     "nyc": "15.1.0",
     "prettier": "2.6.2",

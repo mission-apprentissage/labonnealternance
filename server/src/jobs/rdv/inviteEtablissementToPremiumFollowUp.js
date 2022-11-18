@@ -43,14 +43,14 @@ export const inviteEtablissementToPremiumFollowUp = async ({ etablissements, mai
       template: mailTemplate["mail-cfa-premium-invite-followup"],
       data: {
         images: {
-          logoCfa: `${config.publicUrl}/espace-pro/assets/logo-lba-recruteur-cfa.png?raw=true`,
-          logoFooter: `${config.publicUrl}/espace-pro/assets/logo-republique-francaise.png?raw=true`,
-          parcoursupIntegrationExample: `${config.publicUrl}/espace-pro/assets/exemple_integration_parcoursup.jpg?raw=true`,
+          logoCfa: `${config.publicUrlEspacePro}/assets/logo-lba-recruteur-cfa.png?raw=true`,
+          logoFooter: `${config.publicUrlEspacePro}/assets/logo-republique-francaise.png?raw=true`,
+          parcoursupIntegrationExample: `${config.publicUrlEspacePro}/assets/exemple_integration_parcoursup.jpg?raw=true`,
         },
         etablissement: {
           email: etablissement.email_decisionnaire,
           activatedAt: dayjs(etablissement.opt_out_will_be_activated_at).format("DD/MM"),
-          linkToForm: `${config.publicUrl}/espace-pro/form/premium/${etablissement._id}`,
+          linkToForm: `${config.publicUrlEspacePro}/form/premium/${etablissement._id}`,
         },
       },
       from: config.rdvEmail,
