@@ -38,7 +38,7 @@ const itemProps = {
   marginTop: "0",
   color: "#383838",
   _hover: {
-    backgroundColor: "$grey.200",
+    backgroundColor: "grey.200",
     cursor: "pointer",
   },
 }
