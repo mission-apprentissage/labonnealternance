@@ -212,16 +212,16 @@ export const AutoCompleteField = ({
             if (isOpen) {
               if (inputValue.length === 0) {
                 return (
-                  <li key={`placeholder`} className="c-autocomplete-neutral">
+                  <Box key={`placeholder`} p="10px" width="100%" color="grey.500" fontSize="14px">
                     {searchPlaceholder}
-                  </li>
+                  </Box>
                 )
               } else if (loadingState === "loading") {
                 return (
-                  <li key={`spinner`} className="c-autocomplete-neutral">
-                    <Spinner color="primary" className="c-spinner" />
+                  <Box key={`spinner`} p="10px" width="100%" color="grey.500" fontSize="14px">
+                    <Spinner style={{ width: "1rem", height: "1rem" }} color="primary" />
                     &nbsp;Veuillez patienter
-                  </li>
+                  </Box>
                 )
               } else if (inputValue.length > 0 && inputItems?.length === 0) {
                 let message = "Pas de résultat, veuillez modifier votre recherche"
