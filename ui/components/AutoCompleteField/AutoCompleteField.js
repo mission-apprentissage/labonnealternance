@@ -185,7 +185,7 @@ export const AutoCompleteField = ({
 
   return (
     <Box>
-      <Flex variant={componentVariant} {...containerChakraProps} {...getComboboxProps()}>
+      <Flex {...containerChakraProps} {...getComboboxProps()}>
         <Text variant={labelVariant} as="label">
           {kind}
         </Text>
@@ -201,19 +201,12 @@ export const AutoCompleteField = ({
           })}
           disabled={isDisabled}
           placeholder={props.placeholder}
-          fontSize="14px"
-          fontWeight={600}
-          background="white"
-          px="0.5"
-          py="1px"
-          mb="1px"
-          sx={{ height: "32px", border: "none !important", width: "95%", marginLeft: "5px" }}
-          _placeholder={{ color: "grey.500", lineHeight: "17px", letterSpacing: "0px", fontWeight: "400", fontSize: "14px" }}
+          variant={inputVariant}
           name={props.name}
         />
       </Flex>
 
-      <ul {...getMenuProps()} className={`c-autocomplete__menu is-open-${isOpen}`}>
+      <ul {...getMenuProps()} className={`c-autocomplete__menu`}>
         {(() => {
           if (isOpen) {
             if (inputValue.length === 0) {
