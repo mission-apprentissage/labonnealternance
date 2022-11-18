@@ -36,6 +36,10 @@ export const AutoCompleteField = ({
   searchPlaceholder,
   splitItemsByTypes = null,
   isDisabled = false,
+  menuVariant = "defaultAutocomplete",
+  inputVariant = "defaultAutocomplete",
+  componentVariant = "defaultAutocomplete",
+  labelVariant = "defaultAutocomplete",
   ...props
 }) => {
   useEffect(() => {
@@ -183,7 +187,7 @@ export const AutoCompleteField = ({
   return (
     <Box>
       <Flex {...containerChakraProps} {...getComboboxProps()}>
-        <Text marginBottom="0" marginLeft={2} paddingTop="0.3rem" color="grey.700" textAlign="left" lineHeight="15px" fontSize={["12px", "10px", "10px", "12px"]} as="label">
+        <Text variant={labelVariant} as="label">
           {kind}
         </Text>
 
