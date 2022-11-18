@@ -7,7 +7,7 @@ import highlightItem from "../../services/hightlightItem"
 import ReactHtmlParser from "react-html-parser"
 import { Spinner } from "reactstrap"
 import findExactItemRank from "./findExactItemRank"
-import { Box, Flex, Input, Text } from "@chakra-ui/react"
+import { Box, Container, Flex, Input, Text, VStack } from "@chakra-ui/react"
 
 let debouncedOnInputValueChange = null
 
@@ -206,48 +206,50 @@ export const AutoCompleteField = ({
         />
       </Flex>
 
-      <ul {...getMenuProps()} className={`c-autocomplete__menu`}>
-        {(() => {
-          if (isOpen) {
-            if (inputValue.length === 0) {
-              return (
-                <li key={`placeholder`} className="c-autocomplete-neutral">
-                  {searchPlaceholder}
-                </li>
-              )
-            } else if (loadingState === "loading") {
-              return (
-                <li key={`spinner`} className="c-autocomplete-neutral">
-                  <Spinner color="primary" className="c-spinner" />
-                  &nbsp;Veuillez patienter
-                </li>
-              )
-            } else if (inputValue.length > 0 && inputItems?.length === 0) {
-              let message = "Pas de résultat, veuillez modifier votre recherche"
-              if (name === "jobField") {
-                message = "Nous ne parvenons pas à identifier le métier que vous cherchez, veuillez reformuler votre recherche"
-              }
-              if (name === "placeField") {
-                message = "Nous ne parvenons pas à identifier le lieu que vous cherchez, veuillez reformuler votre recherche"
-              }
-              return (
-                <li key={`noresult`} className="c-autocomplete-neutral">
-                  {message}
-                </li>
-              )
-            } else {
-              return (
-                <>
-                  <li key={`result`} className="c-autocomplete-minititle">
-                    Résultats de votre recherche
+      <Container {...getMenuProps()} variant={menuVariant}>
+        <VStack>
+          {(() => {
+            if (isOpen) {
+              if (inputValue.length === 0) {
+                return (
+                  <li key={`placeholder`} className="c-autocomplete-neutral">
+                    {searchPlaceholder}
                   </li>
-                  {buildInputItems()}
-                </>
-              )
+                )
+              } else if (loadingState === "loading") {
+                return (
+                  <li key={`spinner`} className="c-autocomplete-neutral">
+                    <Spinner color="primary" className="c-spinner" />
+                    &nbsp;Veuillez patienter
+                  </li>
+                )
+              } else if (inputValue.length > 0 && inputItems?.length === 0) {
+                let message = "Pas de résultat, veuillez modifier votre recherche"
+                if (name === "jobField") {
+                  message = "Nous ne parvenons pas à identifier le métier que vous cherchez, veuillez reformuler votre recherche"
+                }
+                if (name === "placeField") {
+                  message = "Nous ne parvenons pas à identifier le lieu que vous cherchez, veuillez reformuler votre recherche"
+                }
+                return (
+                  <li key={`noresult`} className="c-autocomplete-neutral">
+                    {message}
+                  </li>
+                )
+              } else {
+                return (
+                  <>
+                    <li key={`result`} className="c-autocomplete-minititle">
+                      Résultats de votre recherche
+                    </li>
+                    {buildInputItems()}
+                  </>
+                )
+              }
             }
-          }
-        })()}
-      </ul>
+          })()}
+        </VStack>
+      </Container>
     </Box>
   )
 }
