@@ -38,7 +38,6 @@ export const AutoCompleteField = ({
   isDisabled = false,
   menuVariant = "defaultAutocomplete",
   inputVariant = "defaultAutocomplete",
-  componentVariant = "defaultAutocomplete",
   labelVariant = "defaultAutocomplete",
   ...props
 }) => {
@@ -186,7 +185,7 @@ export const AutoCompleteField = ({
 
   return (
     <Box>
-      <Flex {...containerChakraProps} {...getComboboxProps()}>
+      <Flex variant={componentVariant} {...containerChakraProps} {...getComboboxProps()}>
         <Text variant={labelVariant} as="label">
           {kind}
         </Text>
