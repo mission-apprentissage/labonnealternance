@@ -21,6 +21,46 @@ export const autoCompleteToStringFunction = (item) => {
   return item?.label?.toString() ?? ""
 }
 
+const neutralItemProps = {
+  padding: "0.4rem 0.8rem 0.4rem 0.8rem",
+  width: "100%",
+  color: "grey.500",
+  marginTop: "0",
+  fontSize: "14px",
+}
+
+const itemProps = {
+  padding: "0.4rem 0.8rem 0.4rem 2rem",
+  width: "100%",
+  fontSize: "14px",
+  lineHeight: "19.6px",
+  fontWeight: 400,
+  marginTop: "0",
+  color: "#383838",
+  _hover: {
+    backgroundColor: "$grey.200",
+    cursor: "pointer",
+  },
+}
+
+const titleItemProps = {
+  padding: "0.4rem 0.8rem 0.4rem 0.8rem",
+  width: "100%",
+  color: "bluesoft.500",
+  marginTop: "0",
+  fontSize: "14px",
+  fontWeight: 700,
+  textTransform: "uppercase",
+}
+
+const borderedTitleItemProps = {
+  ...titleItemProps,
+  borderTop: "1px solid",
+  borderColor: "grey.400",
+  paddingTop: "0.5rem !important",
+  marginTop: "1rem !important",
+}
+
 export const AutoCompleteField = ({
   kind,
   name,
@@ -86,10 +126,11 @@ export const AutoCompleteField = ({
           currentType = splitItemsByTypes[currentTitleCnt].type
           currentTitleCnt++
         }
+        const titleProps = currentTitleCnt > 1 ? borderedTitleItemProps : titleItemProps
         res = (
-          <li key={`autocomplete_title_${currentTitleCnt - 1}`} className={`c-autocomplete-title ${currentTitleCnt > 1 ? "c-autocomplete-title_bordered" : ""} `}>
+          <Box key={`autocomplete_title_${currentTitleCnt - 1}`} {...titleProps}>
             {splitItemsByTypes[currentTitleCnt - 1].typeLabel}
-          </li>
+          </Box>
         )
       }
 
@@ -103,13 +144,9 @@ export const AutoCompleteField = ({
         return (
           <React.Fragment key={index}>
             {returnTitleLi(item)}
-            <li
-              key={index}
-              className={`c-autocomplete_option${highlightedIndex === index ? " c-autocomplete__option--highlighted" : ""}`}
-              {...getItemProps({ item: item.label, index })}
-            >
+            <Box key={index} {...itemProps} bg={highlightedIndex === index ? "#aaa" : ""} {...getItemProps({ item: item.label, index })}>
               {ReactHtmlParser(highlightItem(item.label, inputValue))}
-            </li>
+            </Box>
           </React.Fragment>
         )
       })
@@ -212,13 +249,13 @@ export const AutoCompleteField = ({
             if (isOpen) {
               if (inputValue.length === 0) {
                 return (
-                  <Box key={`placeholder`} p="10px" width="100%" color="grey.500" fontSize="14px">
+                  <Box key={`placeholder`} {...neutralItemProps}>
                     {searchPlaceholder}
                   </Box>
                 )
               } else if (loadingState === "loading") {
                 return (
-                  <Box key={`spinner`} p="10px" width="100%" color="grey.500" fontSize="14px">
+                  <Box key={`spinner`} {...neutralItemProps}>
                     <Spinner style={{ width: "1rem", height: "1rem" }} color="primary" />
                     &nbsp;Veuillez patienter
                   </Box>
@@ -232,16 +269,16 @@ export const AutoCompleteField = ({
                   message = "Nous ne parvenons pas à identifier le lieu que vous cherchez, veuillez reformuler votre recherche"
                 }
                 return (
-                  <li key={`noresult`} className="c-autocomplete-neutral">
+                  <Box key={`noresult`} {...neutralItemProps}>
                     {message}
-                  </li>
+                  </Box>
                 )
               } else {
                 return (
                   <>
-                    <li key={`result`} className="c-autocomplete-minititle">
+                    <Box key={`result`} {...neutralItemProps}>
                       Résultats de votre recherche
-                    </li>
+                    </Box>
                     {buildInputItems()}
                   </>
                 )
