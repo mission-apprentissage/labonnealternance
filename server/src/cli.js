@@ -1,5 +1,4 @@
 import { program as cli } from "commander"
-import { runScript } from "./common/runScript.js"
 import { createApiUser } from "./jobs/lba_recruteur/api/createApiUser.js"
 import { disableApiUser } from "./jobs/lba_recruteur/api/disableApiUser.js"
 import { resetApiKey } from "./jobs/lba_recruteur/api/resetApiKey.js"
@@ -16,6 +15,7 @@ import { inviteEtablissementToPremium } from "./jobs/rdv/inviteEtablissementToPr
 import { inviteEtablissementToPremiumFollowUp } from "./jobs/rdv/inviteEtablissementToPremiumFollowUp.js"
 import { parcoursupEtablissementStat } from "./jobs/rdv/parcoursupEtablissementStat.js"
 import { syncEtablissementsAndFormations } from "./jobs/rdv/syncEtablissementsAndFormations.js"
+import { runScript } from "./jobs/scriptWrapper.js"
 
 cli.addHelpText("after")
 
