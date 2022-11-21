@@ -7,6 +7,7 @@ import highlightItem from "../../services/hightlightItem"
 import ReactHtmlParser from "react-html-parser"
 import { Spinner } from "reactstrap"
 import findExactItemRank from "./findExactItemRank"
+import { Box, Container, Flex, Input, Text, VStack } from "@chakra-ui/react"
 
 let debouncedOnInputValueChange = null
 
@@ -20,6 +21,46 @@ export const autoCompleteToStringFunction = (item) => {
   return item?.label?.toString() ?? ""
 }
 
+const neutralItemProps = {
+  padding: "0.4rem 0.8rem 0.4rem 0.8rem",
+  width: "100%",
+  color: "grey.500",
+  marginTop: "0",
+  fontSize: "14px",
+}
+
+const itemProps = {
+  padding: "0.4rem 0.8rem 0.4rem 2rem",
+  width: "100%",
+  fontSize: "14px",
+  lineHeight: "19.6px",
+  fontWeight: 400,
+  marginTop: "0",
+  color: "#383838",
+  _hover: {
+    backgroundColor: "grey.200",
+    cursor: "pointer",
+  },
+}
+
+const titleItemProps = {
+  padding: "0.4rem 0.8rem 0.4rem 0.8rem",
+  width: "100%",
+  color: "bluesoft.500",
+  marginTop: "0",
+  fontSize: "14px",
+  fontWeight: 700,
+  textTransform: "uppercase",
+}
+
+const borderedTitleItemProps = {
+  ...titleItemProps,
+  borderTop: "1px solid",
+  borderColor: "grey.400",
+  paddingTop: "0.5rem !important",
+  marginTop: "1rem !important",
+}
+
 export const AutoCompleteField = ({
   kind,
   name,
@@ -29,12 +70,15 @@ export const AutoCompleteField = ({
   compareItemFunction,
   initialSelectedItem,
   items,
+  hasError,
   initialIsOpen,
   scrollParentId,
-  illustration,
   searchPlaceholder,
   splitItemsByTypes = null,
   isDisabled = false,
+  menuVariant = "defaultAutocomplete",
+  inputVariant = "defaultAutocomplete",
+  labelVariant = "defaultAutocomplete",
   ...props
 }) => {
   useEffect(() => {
@@ -82,10 +126,11 @@ export const AutoCompleteField = ({
           currentType = splitItemsByTypes[currentTitleCnt].type
           currentTitleCnt++
         }
+        const titleProps = currentTitleCnt > 1 ? borderedTitleItemProps : titleItemProps
         res = (
-          <li key={`autocomplete_title_${currentTitleCnt - 1}`} className={`c-autocomplete-title ${currentTitleCnt > 1 ? "c-autocomplete-title_bordered" : ""} `}>
+          <Box key={`autocomplete_title_${currentTitleCnt - 1}`} {...titleProps}>
             {splitItemsByTypes[currentTitleCnt - 1].typeLabel}
-          </li>
+          </Box>
         )
       }
 
@@ -99,13 +144,9 @@ export const AutoCompleteField = ({
         return (
           <React.Fragment key={index}>
             {returnTitleLi(item)}
-            <li
-              key={index}
-              className={`c-autocomplete_option${highlightedIndex === index ? " c-autocomplete__option--highlighted" : ""}`}
-              {...getItemProps({ item: item.label, index })}
-            >
+            <Box key={index} {...itemProps} bg={highlightedIndex === index ? "#aaa" : ""} {...getItemProps({ item: item.label, index })}>
               {ReactHtmlParser(highlightItem(item.label, inputValue))}
-            </li>
+            </Box>
           </React.Fragment>
         )
       })
@@ -124,7 +165,7 @@ export const AutoCompleteField = ({
               ancestor.scrollTop = ancestor.scrollTop + 150
             }
           } else {
-            const closest = target.closest(".c-input-work-container")
+            const closest = target.closest(".containerIdentity")
             const y = closest.getBoundingClientRect().top + window.pageYOffset - 20
             window.scrollTo({ top: y, behavior: "smooth" })
           }
@@ -169,14 +210,24 @@ export const AutoCompleteField = ({
     },
   })
 
-  const classesOfContainer = props?.isHome ? "" : "c-logobar-formgroup"
-  const classesOfInsider = props?.isHome ? "form-control-lg w-100 c-input-work" : "c-logobar-field"
+  let containerChakraProps = {
+    position: "relative",
+    width: { lg: "232px" },
+    direction: "column",
+    borderRadius: "10px",
+    padding: "0.1rem",
+    sx: { borderColor: `${hasError ? "warning" : "grey.300"} !important`, border: "1px solid" },
+    className: "containerIdentity",
+  }
 
   return (
-    <div className="">
-      <div className={`c-input-work-container ${classesOfContainer}`} {...getComboboxProps()}>
-        <label className="c-logobar-label">{kind}</label>
-        <input
+    <Box>
+      <Flex {...containerChakraProps} {...getComboboxProps()}>
+        <Text variant={labelVariant} as="label">
+          {kind}
+        </Text>
+
+        <Input
           {...getInputProps({
             onFocus: (e) => {
               if (!isOpen) {
@@ -186,57 +237,57 @@ export const AutoCompleteField = ({
             },
           })}
           disabled={isDisabled}
-          className={`${classesOfInsider} ${inputValue && inputValue.length > 20 ? "is-text-too-long" : "is-text-not-too-long"}`}
           placeholder={props.placeholder}
+          variant={inputVariant}
           name={props.name}
-          aria-describedby="name"
         />
-        {illustration && <img className="c-input-work-img" src={illustration} alt="" />}
-      </div>
+      </Flex>
 
-      <ul {...getMenuProps()} className={`c-autocomplete__menu is-open-${isOpen}`}>
-        {(() => {
-          if (isOpen) {
-            if (inputValue.length === 0) {
-              return (
-                <li key={`placeholder`} className="c-autocomplete-neutral">
-                  {searchPlaceholder}
-                </li>
-              )
-            } else if (loadingState === "loading") {
-              return (
-                <li key={`spinner`} className="c-autocomplete-neutral">
-                  <Spinner color="primary" className="c-spinner" />
-                  &nbsp;Veuillez patienter
-                </li>
-              )
-            } else if (inputValue.length > 0 && inputItems?.length === 0) {
-              let message = "Pas de résultat, veuillez modifier votre recherche"
-              if (name === "jobField") {
-                message = "Nous ne parvenons pas à identifier le métier que vous cherchez, veuillez reformuler votre recherche"
+      <Container {...getMenuProps()} variant={menuVariant}>
+        <VStack>
+          {(() => {
+            if (isOpen) {
+              if (inputValue.length === 0) {
+                return (
+                  <Box key={`placeholder`} {...neutralItemProps}>
+                    {searchPlaceholder}
+                  </Box>
+                )
+              } else if (loadingState === "loading") {
+                return (
+                  <Box key={`spinner`} {...neutralItemProps}>
+                    <Spinner style={{ width: "1rem", height: "1rem" }} color="primary" />
+                    &nbsp;Veuillez patienter
+                  </Box>
+                )
+              } else if (inputValue.length > 0 && inputItems?.length === 0) {
+                let message = "Pas de résultat, veuillez modifier votre recherche"
+                if (name === "jobField") {
+                  message = "Nous ne parvenons pas à identifier le métier que vous cherchez, veuillez reformuler votre recherche"
+                }
+                if (name === "placeField") {
+                  message = "Nous ne parvenons pas à identifier le lieu que vous cherchez, veuillez reformuler votre recherche"
+                }
+                return (
+                  <Box key={`noresult`} {...neutralItemProps}>
+                    {message}
+                  </Box>
+                )
+              } else {
+                return (
+                  <>
+                    <Box key={`result`} {...neutralItemProps}>
+                      Résultats de votre recherche
+                    </Box>
+                    {buildInputItems()}
+                  </>
+                )
               }
-              if (name === "placeField") {
-                message = "Nous ne parvenons pas à identifier le lieu que vous cherchez, veuillez reformuler votre recherche"
-              }
-              return (
-                <li key={`noresult`} className="c-autocomplete-neutral">
-                  {message}
-                </li>
-              )
-            } else {
-              return (
-                <>
-                  <li key={`result`} className="c-autocomplete-minititle">
-                    Résultats de votre recherche
-                  </li>
-                  {buildInputItems()}
-                </>
-              )
             }
-          }
-        })()}
-      </ul>
-    </div>
+          })()}
+        </VStack>
+      </Container>
+    </Box>
   )
 }
 
