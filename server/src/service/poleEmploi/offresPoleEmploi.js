@@ -1,12 +1,12 @@
 import distance from "@turf/distance"
 import axios from "axios"
-import { itemModel } from "../../model/itemModel.js"
-import { trackApiCall } from "../../common/utils/sendTrackingEvent.js"
 import { manageApiError } from "../../common/utils/errorManager.js"
+import { trackApiCall } from "../../common/utils/sendTrackingEvent.js"
+import { itemModel } from "../../model/itemModel.js"
 import filterJobsByOpco from "../filterJobsByOpco.js"
 
 //const poleEmploi = require("./common.js");
-import { getAccessToken, peApiHeaders, getRoundedRadius } from "./common.js"
+import { getAccessToken, getRoundedRadius, peApiHeaders } from "./common.js"
 
 const getSomePeJobs = async ({ romes, insee, radius, lat, long, caller, opco, api }) => {
   // la liste des romes peut être supérieure au maximum de trois autorisés par l'api offre de PE
@@ -196,8 +196,8 @@ const computeJobDistanceToSearchCenter = (job, lat, long) => {
   else return null
 }
 
-const peJobsApiEndpoint = "https://api.emploi-store.fr/partenaire/offresdemploi/v2/offres/search"
-const peJobApiEndpoint = "https://api.emploi-store.fr/partenaire/offresdemploi/v2/offres/"
+const peJobsApiEndpoint = "https://api.pole-emploi.io/partenaire/offresdemploi/v2/offres/search"
+const peJobApiEndpoint = "https://api.pole-emploi.io/partenaire/offresdemploi/v2/offres/"
 const peContratsAlternances = "E2,FS" //E2 -> Contrat d'Apprentissage, FS -> contrat de professionalisation
 
 const getPeJobs = async ({ romes, insee, radius, jobLimit, caller, api = "jobV1" }) => {
