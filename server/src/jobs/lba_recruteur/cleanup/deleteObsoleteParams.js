@@ -1,5 +1,5 @@
 import { pick } from "lodash-es"
-import logger from "../../../common/logger.js"
+import { logger } from "../../../common/logger.js"
 import { Formulaire, User } from "../../../common/model/index.js"
 import { runScript } from "../../scriptWrapper.js"
 

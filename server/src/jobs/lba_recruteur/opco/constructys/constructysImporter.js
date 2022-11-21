@@ -5,7 +5,7 @@ import path from "path"
 import config from "../../../../config.js"
 
 import __dirname from "../../../../common/dirname.js"
-import logger from "../../../../common/logger.js"
+import { logger } from "../../../../common/logger.js"
 import { ReferentielOpco } from "../../../../common/model/index.js"
 import { fileDownloader, parseCsv } from "../../../../common/utils/fileUtils.js"
 import { runScript } from "../../../scriptWrapper.js"

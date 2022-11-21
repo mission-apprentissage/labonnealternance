@@ -1,4 +1,4 @@
-import logger from "../../../common/logger.js"
+import { logger } from "../../../common/logger.js"
 import { UserRecruteur } from "../../../common/model/index.js"
 import { runScript } from "../../scriptWrapper.js"
 import { userList } from "./opcoUsers.js"
