@@ -17,7 +17,7 @@ const config = {
   },
   slackWebhookUrl: env.get("LBA_SLACK_WEBHOOK_URL").asString(),
   mongodb: {
-    uri: env.get("LBA_MONGODB_URI").default("mongodb://mongodb:27017/labonnealternance?retryWrites=true&w=majority").asString(),
+    uri: env.get("LBA_MONGODB_URI").default("mongodb://127.0.0.1:27017/labonnealternance?retryWrites=true&w=majority").asString(),
   },
   apiKey: env.get("LBA_API_KEY").default("12345").asString(), //TODO: check usefulness
   laBonneFormationPassword: env.get("LBA_LABONNEFORMATION_PASSWORD").default("12345").asString(),
@@ -71,14 +71,14 @@ const config = {
     },
   },
   ftp: {
-    host: env.get("LBA_OPCO_FTP_HOST").default("").asString(),
+    host: env.get("LBA_FTP_HOST").default("").asString(),
     constructys: {
-      user: env.get("LBA_OPCO_CONSTRUCTYS_USER").default("").asString(),
-      password: env.get("LBA_OPCO_CONSTRUCTYS_PASSWORD").default("").asString(),
+      user: env.get("LBA_FTP_CONSTRUCTYS_USER").default("").asString(),
+      password: env.get("LBA_FTP_CONSTRUCTYS_PASSWORD").default("").asString(),
     },
     ocapiat: {
-      user: env.get("LBA_OPCO_OCAPIAT_USER").default("").asString(),
-      password: env.get("LBA_OPCO_OCAPIAT_PASSWORD").default("").asString(),
+      user: env.get("LBA_FTP_OCAPIAT_USER").default("").asString(),
+      password: env.get("LBA_FTP_OCAPIAT_PASSWORD").default("").asString(),
     },
   },
   akto: {
