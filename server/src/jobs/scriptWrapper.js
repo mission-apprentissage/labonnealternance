@@ -1,26 +1,35 @@
-import dayjs from "dayjs"
-import promises from "fs"
+import { isEmpty } from "lodash-es"
+import { access, mkdir } from "node:fs/promises"
+import prettyMilliseconds from "pretty-ms"
+import createComponents from "../common/components/components.js"
+import { getLoggerWithContext } from "../common/logger.js"
 import { closeMongoConnection } from "../common/mongodb.js"
-import createComponents from "../common/components/components"
-import { logger } from "../common/logger.js"
 import config from "../config.js"
 
-const { access, mkdir } = promises
+const logger = getLoggerWithContext("script")
 
-process.on("unhandledRejection", (e) => console.log(e))
-process.on("uncaughtException", (e) => console.log(e))
+process.on("unhandledRejection", (e) => logger.error(e))
+process.on("uncaughtException", (e) => logger.error(e))
+process.stdout.on("error", function (err) {
+  if (err.code === "EPIPE") {
+    // eslint-disable-next-line no-process-exit
+    process.exit(0)
+  }
+})
 
 const createTimer = () => {
   let launchTime
   return {
     start: () => {
-      launchTime = dayjs()
+      launchTime = new Date().getTime()
     },
     stop: (results) => {
-      const duration = dayjs().diff(launchTime, "second")
+      const duration = prettyMilliseconds(new Date().getTime() - launchTime)
       const data = results && results.toJSON ? results.toJSON() : results
-      console.log(JSON.stringify(data || {}, null, 2))
-      console.log(`Completed in ${duration} second(s)`)
+      if (!isEmpty(data)) {
+        logger.info(JSON.stringify(data, null, 2))
+      }
+      logger.info(`Completed in ${duration}`)
     },
   }
 }
@@ -37,23 +46,19 @@ const ensureOutputDirExists = async () => {
   return outputDir
 }
 
-const exit = async (rawError) => {
-  let error = rawError
-  if (rawError) {
-    logger.error(rawError.constructor.name === "EnvVarError" ? rawError.message : rawError)
+const exit = async (scriptError) => {
+  if (scriptError) {
+    logger.error(scriptError.constructor.name === "EnvVarError" ? scriptError.message : scriptError)
+    process.exitCode = 1
   }
 
   setTimeout(() => {
     //Waiting logger to flush all logs (MongoDB)
-    closeMongoConnection()
-      .then(() => {})
-      .catch((closeError) => {
-        error = closeError
-        console.log(error)
-      })
+    closeMongoConnection().catch((e) => {
+      console.error(e)
+      process.exitCode = 1
+    })
   }, 250)
-
-  process.exitCode = error ? 1 : 0
 }
 
 async function runScript(job) {
@@ -62,6 +67,7 @@ async function runScript(job) {
     timer.start()
 
     await ensureOutputDirExists()
+
     const components = await createComponents()
     const results = await job(components)
 
