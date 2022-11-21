@@ -1,5 +1,5 @@
 import React from "react"
-import { Box, Container, Divider, Link, Text, VStack } from "@chakra-ui/react"
+import { Box, Button, Container, Divider, Link, Text, VStack } from "@chakra-ui/react"
 import { getStaticMetiers, getStaticVilles } from "utils/getStaticData"
 import { buildLinkForTownAndJob } from "utils/buildLinkForTownAndJob"
 import Navigation from "components/navigation"
@@ -51,9 +51,9 @@ export default function ForTown(props) {
           Cliquez sur &quot;lancer cette recherche&quot; pour accéder aux résultats que La bonne alternance a trouvés pour vous !
         </Text>
 
-        <a href={buildLinkForTownAndJob(currentTown, currentJob)} className="btn btn-primary mt-3">
+        <Button variant="editorialPrimary" as="a" href={buildLinkForTownAndJob(currentTown, currentJob)} mt={4}>
           Lancer cette recherche
-        </a>
+        </Button>
       </Container>
       <Footer />
     </Box>
