@@ -90,7 +90,7 @@ const getAccessToken = async (api) => {
   }
 }
 
-const peJobApiEndpointReferentiel = "https://api.emploi-store.fr/partenaire/offresdemploi/v2/referentiel/"
+const peJobApiEndpointReferentiel = "https://api.pole-emploi.io/partenaire/offresdemploi/v2/referentiel/"
 // liste des référentiels disponible sur https://www.emploi-store-dev.fr/portail-developpeur-cms/home/catalogue-des-api/documentation-des-api/api/api-offres-demploi-v2/referentiels.html
 // sous /server pour bénéficier du dossier /config
 // clear & node -e 'require("./src/service/poleEmploi/common").getPeApiReferentiels("themes")'
