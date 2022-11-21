@@ -1,5 +1,5 @@
 import Breadcrumb from "components/breadcrumb"
-import { Box, Container, Divider, Text, VStack } from "@chakra-ui/react"
+import { Box, Container, Divider, Link, Text, VStack } from "@chakra-ui/react"
 import Navigation from "components/navigation"
 import ScrollToTop from "components/ScrollToTop"
 import React from "react"
@@ -11,7 +11,7 @@ import { getStaticMetiers, getStaticVilles } from "utils/getStaticData"
 
 export default function Catalog(props) {
   return (
-    <div>
+    <Box>
       <NextSeo
         title={`Tous les emplois et formations en alternance | La bonne alternance | Trouvez votre alternance`}
         description={`Liste de métiers où trouver une formation ou un emploi en alternance`}
@@ -41,21 +41,19 @@ export default function Catalog(props) {
 
           {props.dataJobs.map((job, index) => {
             return (
-              <div key={index} className="mb-2 mb-lg-0">
-                <span className="d-block d-lg-inline">Emploi en alternance et formation en alternance en </span>
-                <span className="d-block d-lg-inline">
-                  <a href={`/metiers/${job.slug}`} className="c-catalog-link" aria-label={`Lancement d'une recherche sur le métier ${job.name}`}>
-                    {job.name}
-                  </a>
-                </span>
-              </div>
+              <Text key={index} marginTop="0px" mb={[2, 2, 2, 0]}>
+                <Text as="span">Emploi en alternance et formation en alternance en </Text>
+                <Link textDecoration="underline" fontWeight={700} href={`/metiers/${job.slug}`} aria-label={`Lancement d'une recherche sur le métier ${job.name}`}>
+                  {job.name}
+                </Link>
+              </Text>
             )
           })}
         </VStack>
       </Container>
 
       <Footer />
-    </div>
+    </Box>
   )
 }
 
