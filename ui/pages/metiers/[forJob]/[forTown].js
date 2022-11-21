@@ -1,4 +1,5 @@
 import React from "react"
+import { Box, Container, Divider, Link, Text, VStack } from "@chakra-ui/react"
 import { getStaticMetiers, getStaticVilles } from "utils/getStaticData"
 import { buildLinkForTownAndJob } from "utils/buildLinkForTownAndJob"
 import Navigation from "components/navigation"
@@ -22,7 +23,7 @@ export default function ForTown(props) {
   ]
 
   return (
-    <div>
+    <Box>
       <NextSeo
         title={`Tous les emplois et formations en alternance en ${currentJob.name} à ${currentTown.name} | La bonne alternance | Trouvez votre alternance`}
         description={`Chercher des emplois et formations en alternance pour le métier ${currentJob.name} dans la ville de ${currentTown.name}`}
@@ -30,30 +31,32 @@ export default function ForTown(props) {
       <Navigation />
       <Breadcrumb items={navigationItems} />
 
-      <div className="c-about c-page-container container my-0 mb-sm-5 p-5">
-        <h1 className="mt-0">
-          <span className="d-block c-page-title is-color-1">Tous les emplois et formations en alternance</span>
-          <span className="d-block c-page-title is-color-2">
-            {" "}
-            en <i>{currentJob.name}</i> à {currentTown.name}
-          </span>
-        </h1>
-        <hr className="c-catalog-title-separator mt-4 mb-5" align="left" />
+      <Container p={12} my={0} mb={[0, 12]} variant="pageContainer">
+        <Text variant="editorialContentH1" as="h1">
+          <Text as="span" color="black">
+            Tous les emplois et formations en alternance
+          </Text>
+          <br />
+          en <i>{currentJob.name}</i> à {currentTown.name}
+        </Text>
+        <Divider variant="pageTitleDivider" my={12} />
 
-        <p>
+        <Text mb={2} as="p">
           Vous voulez travailler en contrat d&apos;apprentissage ou en contrat de professionnalisation en <i>{currentJob.name}</i> à proximité de <i>{currentTown.name}</i> ?
-        </p>
-        <p>
+        </Text>
+        <Text mb={2} as="p">
           Vous voulez obtenir un diplôme en alternance en <i>{currentJob.name}</i> à proximité de <i>{currentTown.name}</i> ?
-        </p>
-        <p>Cliquez sur &quot;lancer cette recherche&quot; pour accéder aux résultats que La bonne alternance a trouvés pour vous !</p>
+        </Text>
+        <Text mb={2} as="p">
+          Cliquez sur &quot;lancer cette recherche&quot; pour accéder aux résultats que La bonne alternance a trouvés pour vous !
+        </Text>
 
         <a href={buildLinkForTownAndJob(currentTown, currentJob)} className="btn btn-primary mt-3">
           Lancer cette recherche
         </a>
-      </div>
+      </Container>
       <Footer />
-    </div>
+    </Box>
   )
 }
 
