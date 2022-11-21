@@ -46,7 +46,7 @@ runScript(async ({ mailer }) => {
       expiresIn: "45d",
     })
 
-    const accessLink = `${config.publicUrl}/authentification/optout/verification?token=${token}`
+    const accessLink = `${config.publicUrlEspacePro}/authentification/optout/verification?token=${token}`
 
     logger.info(`---- Sending mail for ${etablissement.siret} — ${email} ----`)
 
