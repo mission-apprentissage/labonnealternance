@@ -70,6 +70,13 @@ const Button = {
       bg: "bluefrance.500",
       color: "white",
     },
+    editorialPrimary: {
+      ...commonButtonStyle,
+      bg: "info",
+      borderRadius: "8px",
+      color: "white",
+      _hover: { bg: "info", color: "white", textDecoration: "underline", boxShadow: "0 0 12px 2px rgb(0 0 0 / 21%)" },
+    },
     "primary-red": {
       ...commonButtonStyle,
       bg: "#CC144A",
