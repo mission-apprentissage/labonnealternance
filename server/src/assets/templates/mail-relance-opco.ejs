@@ -1,76 +1,49 @@
 <mjml>
   <mj-head>
     <mj-title>La bonne alternance - Expiration prochaine de vos offres</mj-title>
-    <mj-font
-      name="Work Sans"
-      href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;700&display=swap"
-    ></mj-font>
-    <mj-style inline="inline">
-      .grey {color: #1E1E1E;}
-    </mj-style>
+    <mj-font name="Work Sans" href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;700&display=swap"></mj-font>
+    <mj-style inline="inline"> .grey {color: #1E1E1E;} </mj-style>
     <mj-attributes>
       <mj-text color="#242424" font-family="Work Sans, Arial" font-size="16px" line-height="24px"></mj-text>
-      <mj-button
-        font-size="16px"
-        line-height="24px"
-        padding="8px 24px"
-        font-family="Work Sans"
-        height="40px"
-      ></mj-button>
+      <mj-button font-size="16px" line-height="24px" padding="8px 24px" font-family="Work Sans" height="40px"></mj-button>
     </mj-attributes>
   </mj-head>
   <mj-body background-color="#E5E5E5">
     <mj-section>
       <mj-column>
-        <mj-image
-          width="150px"
-          src="https://matcha.apprentissage.beta.gouv.fr/images/logo-lba-recruteur-violet.png"
-        ></mj-image>
+        <mj-image width="150px" src="https://doctrina.apprentissage.beta.gouv.fr/images/logo-lba-recruteur-violet.png"></mj-image>
       </mj-column>
     </mj-section>
 
     <mj-section padding-top="0">
-      <mj-column
-        width="600px"
-        background-color="#FFFFFF"
-        border-radius="4px"
-        border="1px solid #FFFFFF"
-        padding="20px 10px"
-      >
-        <mj-text>
-          Bonjour <%= data.prenom %> <%= data.nom %>,
-        </mj-text>
+      <mj-column width="600px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 10px">
+        <mj-text> Bonjour <%= data.prenom %> <%= data.nom %>, </mj-text>
 
         <% if(data.count > 1) { %>
         <mj-text>
-          <strong><%= data.count %></strong> nouvelles entreprises dépendant de votre OPCO se sont connectées pour la
-          première fois cette semaine à La bonne alternance pour exprimer un besoin en recrutement.
+          <strong><%= data.count %></strong> nouvelles entreprises dépendant de votre OPCO se sont connectées pour la première fois cette semaine à La bonne alternance pour
+          exprimer un besoin en recrutement.
         </mj-text>
         <% } %> <% if(data.count === 1) { %>
         <mj-text>
-          <strong><%= data.count %></strong> nouvelle entreprise dépendant de votre OPCO s'est connectée pour la
-          première fois cette semaine à La bonne alternance pour exprimer un besoin en recrutement.
+          <strong><%= data.count %></strong> nouvelle entreprise dépendant de votre OPCO s'est connectée pour la première fois cette semaine à La bonne alternance pour exprimer un
+          besoin en recrutement.
         </mj-text>
         <% } %>
         <mj-text>
-          <b>Nous vous invitons à vérifier leurs coordonnées en vous connectant à votre espace OPCO.</b> Vous pourrez
-          alors valider leur compte pour que leurs offres apparaissent sur les plateformes de recherche d'alternance les
-          plus consultées des jeunes (1jeune 1solution, Parcoursup, Affelnet, ONISEP,...).
+          <b>Nous vous invitons à vérifier leurs coordonnées en vous connectant à votre espace OPCO.</b> Vous pourrez alors valider leur compte pour que leurs offres apparaissent
+          sur les plateformes de recherche d'alternance les plus consultées des jeunes (1jeune 1solution, Parcoursup, Affelnet, ONISEP,...).
         </mj-text>
 
-        <mj-button color="#ffffff" background-color="#000091" href="<%= data.url %>">
-          Accéder à mon espace
-        </mj-button>
+        <mj-button color="#ffffff" background-color="#000091" href="<%= data.url %>"> Accéder à mon espace </mj-button>
 
         <mj-text>
-          Ces entreprises ne connaissent pas forcément votre OPCO. Vous pouvez les contacter, leur présenter vos
-          services et vérifier qu'elles sont bien adhérentes et qu'il ne s'agit pas d'une tentative d'usurpation de
-          compte.
+          Ces entreprises ne connaissent pas forcément votre OPCO. Vous pouvez les contacter, leur présenter vos services et vérifier qu'elles sont bien adhérentes et qu'il ne
+          s'agit pas d'une tentative d'usurpation de compte.
         </mj-text>
 
         <mj-text align="center"
-          ><a
-            href="https://docs.google.com/presentation/d/1XTSuTs46IcBh7vCWD0Cb966-UqFTI_Cf/edit?usp=sharing&ouid=110913964761036068764&rtpof=true&sd=true"
+          ><a href="https://docs.google.com/presentation/d/1XTSuTs46IcBh7vCWD0Cb966-UqFTI_Cf/edit?usp=sharing&ouid=110913964761036068764&rtpof=true&sd=true"
             >Comment vérifier un compte entreprise ?</a
           ></mj-text
         >
@@ -85,11 +58,7 @@
     </mj-section>
     <mj-section padding-top="30px">
       <mj-column>
-        <mj-image
-          src="https://matcha.apprentissage.beta.gouv.fr/images/logo-republique-francaise.png"
-          width="200px"
-          align="left"
-        ></mj-image>
+        <mj-image src="https://doctrina.apprentissage.beta.gouv.fr/images/logo-republique-francaise.png" width="200px" align="left"></mj-image>
       </mj-column>
     </mj-section>
   </mj-body>
