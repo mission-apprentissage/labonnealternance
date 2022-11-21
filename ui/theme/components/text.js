@@ -51,6 +51,16 @@ const Text = {
       lineHeight: 1.2,
       marginBottom: "0.5rem",
     },
+
+    defaultAutocomplete: {
+      marginBottom: "0",
+      marginLeft: 2,
+      paddingTop: "0.3rem",
+      color: "grey.700",
+      textAlign: "left",
+      lineHeight: "15px",
+      fontSize: ["12px", "10px", "10px", "12px"],
+    },
   },
 }
 
