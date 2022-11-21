@@ -5,7 +5,6 @@ import { mailTemplate } from "../../assets/index.js"
 import { getAktoEstablishmentVerification } from "../../common/akto.js"
 import { getNearEtablissementsFromRomes } from "../../common/catalogue.js"
 import { CFA, etat_utilisateur, OPCOS, validation_utilisateur } from "../../common/constants.js"
-import { User } from "../../common/model/index.js"
 import { createUserToken } from "../../common/utils/jwtUtils.js"
 import { checkIfUserEmailIsPrivate, checkIfUserMailExistInReferentiel, getAllDomainsFromEmailList } from "../../common/utils/mailUtils.js"
 import { notifyToSlack } from "../../common/utils/slackUtils.js"
@@ -384,7 +383,7 @@ export default ({ etablissementsRecruteur, usersRecruteur, formulaire, mailer })
         })
       }
 
-      const user = await User.findById(req.body.id)
+      const user = await usersRecruteur.getUser({ _id: req.body.id })
 
       await mailer.sendEmail({
         to: user.email,
