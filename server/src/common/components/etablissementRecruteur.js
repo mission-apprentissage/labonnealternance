@@ -68,7 +68,7 @@ export default () => ({
   getOpco: (siret) => axios.get(`https://www.cfadock.fr/api/opcos?siret=${siret}`),
   getOpcoByIdcc: (idcc) => axios.get(`https://www.cfadock.fr/api/opcos?idcc=${idcc}`),
   getIdcc: (siret) => axios.get(`https://siret2idcc.fabrique.social.gouv.fr/api/v2/${siret}`),
-  getValidationUrl: (_id) => `${config.publicUrl}/authentification/validation/${_id}`,
+  getValidationUrl: (_id) => `${config.publicUrlEspacePro}/authentification/validation/${_id}`,
   validateEtablissementEmail: async (_id) => {
     let exist = await UserRecruteur.findById(_id)
 

@@ -74,7 +74,7 @@ export const relanceFormulaire = async (mailer, threshold) => {
         raison_sociale,
         offres,
         threshold,
-        url: `${config.publicUrl}/authentification`,
+        url: `${config.publicUrlEspacePro}/authentification`,
       },
     })
   })

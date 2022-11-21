@@ -38,7 +38,7 @@ export const relanceOpco = async (mailer) => {
       template: mailTemplate["mail-relance-opco"],
       data: {
         count: userList[opco],
-        url: `${config.publicUrl}/authentification`,
+        url: `${config.publicUrlEspacePro}/authentification`,
       },
     })
   }
