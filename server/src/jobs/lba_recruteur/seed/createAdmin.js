@@ -31,6 +31,8 @@ runScript(async ({ usersRecruteur }) => {
         scope: "all",
         type: "ADMIN",
         isAdmin: true,
+        email_valide: true,
+        raison_sociale: "BETA",
       })
 
       logger.info(`Admin created : ${created.email}`)
