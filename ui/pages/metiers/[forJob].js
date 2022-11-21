@@ -1,4 +1,5 @@
 import React from "react"
+import { Box, Container, Divider, Link, Text, VStack } from "@chakra-ui/react"
 import { getStaticMetiers, getStaticVilles } from "utils/getStaticData"
 import Navigation from "components/navigation"
 import { useRouter } from "next/router"
@@ -21,52 +22,49 @@ export default function ForJob(props) {
   ]
 
   return (
-    <div>
+    <Box>
       <NextSeo
         title={`Tous les emplois et formations en alternance en ${currentJob.name} | La bonne alternance | Trouvez votre alternance`}
         description={`Villes où chercher des emplois et formations en alternance pour le métier ${currentJob.name}`}
       />
       <Navigation />
       <Breadcrumb items={navigationItems} />
-      <div className="c-about c-page-container container my-0 mb-sm-5 p-5">
-        <h1 className="mt-0">
-          <span className="d-block c-page-title is-color-1">Tous les emplois et formations</span>
-          <span className="d-block c-page-title is-color-2">
-            en alternance en <i>{currentJob.name}</i>
-          </span>
-        </h1>
-        <hr className="c-catalog-title-separator mt-4 mb-5" align="left" />
+      <Container p={12} my={0} mb={[0, 12]} variant="pageContainer">
+        <Text variant="editorialContentH1" as="h1">
+          <Text as="span" color="black">
+            Tous les emplois et formations
+          </Text>
+          <br />
+          en alternance en <i>{currentJob.name}</i>
+        </Text>
+        <Divider variant="pageTitleDivider" my={12} />
 
-        <p>
-          Vous êtes à seulement 2 clics d&apos;obtenir toutes les informations pour trouver une alternance rapidement sur La Bonne Alternance :
-          <ul className="mt-2">
-            <li>
-              Offres d&apos;emploi en contrat d&apos;apprentissage ou en contrat de professionnalisation en <i>{currentJob.name}</i>
-            </li>
-            <li>
-              Liste d’entreprises qui recrutent en alternance en <i>{currentJob.name}</i>
-            </li>
-            <li>
-              Formations en apprentissage en CAP, Bac pro, Mention complémentaire, BTS, BUT, DEUST, Licence, Master en <i>{currentJob.name}</i>
-            </li>
-          </ul>
-        </p>
+        <Box as="p">Vous êtes à seulement 2 clics d&apos;obtenir toutes les informations pour trouver une alternance rapidement sur La Bonne Alternance :</Box>
+        <VStack mt={2} align="flex-start">
+          <Text>
+            Offres d&apos;emploi en contrat d&apos;apprentissage ou en contrat de professionnalisation en <i>{currentJob.name}</i>
+          </Text>
+          <Text>
+            Liste d’entreprises qui recrutent en alternance en <i>{currentJob.name}</i>
+          </Text>
+          <Text>
+            Formations en apprentissage en CAP, Bac pro, Mention complémentaire, BTS, BUT, DEUST, Licence, Master en <i>{currentJob.name}</i>
+          </Text>
 
-        {sortedTowns.map((currentTown, index) => {
-          return (
-            <div key={index}>
-              <span className="d-block d-lg-inline">Emploi en alternance et formation en alternance en </span>
-              <span className="d-block d-lg-inline">
-                <a href={`/metiers/${currentJob.slug}/${currentTown.slug}`} className="c-catalog-link">
+          {sortedTowns.map((currentTown, index) => {
+            return (
+              <Text key={index} marginTop="0px" mb={[2, 2, 2, 0]}>
+                <Text as="span">Emploi en alternance et formation en alternance en </Text>
+                <Link textDecoration="underline" fontWeight={700} href={`/metiers/${currentJob.slug}/${currentTown.slug}`}>
                   {currentJob.name} à {currentTown.name}
-                </a>
-              </span>
-            </div>
-          )
-        })}
-      </div>
+                </Link>
+              </Text>
+            )
+          })}
+        </VStack>
+      </Container>
       <Footer />
-    </div>
+    </Box>
   )
 }
 
