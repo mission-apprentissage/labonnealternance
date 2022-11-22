@@ -33,9 +33,8 @@ import { AUTHTYPE } from "../common/contants"
 import useAuth from "../common/hooks/useAuth"
 import { LogoContext } from "../contextLogo"
 import { WidgetContext } from "../contextWidget"
-import { ArrowRightLine, ExternalLinkLine, InfoCircle, Minus, Pen, Plus, Revert } from "../theme/components/icons"
+import { ArrowRightLine, ExternalLinkLine, InfoCircle, Minus, Plus } from "../theme/components/icons"
 import { J1S, LbaCandidat, Parcoursup } from "../theme/components/logos"
-import AdresseAutocomplete from "./AdresseAutocomplete"
 import DropdownCombobox from "./DropdownCombobox"
 import style from "./Voeux.module.css"
 
@@ -361,7 +360,7 @@ const AjouterVoeux = (props) => {
                 {errors.rythme_alternance && touched.rythme_alternance && <FormErrorMessage>{errors.rythme_alternance}</FormErrorMessage>}
               </FormControl>
             )}
-            <FormControl mt={6}>
+            {/* <FormControl mt={6}>
               <FormLabel fontWeight="bold">Lieu d’exécution de l’emploi</FormLabel>
               <Text fontSize="16px" mt={2} mb={4}>
                 Par défaut, l’adresse utilisée pour localiser l’offre est celle figurant dans les informations légales de l’entreprise.
@@ -419,8 +418,8 @@ const AjouterVoeux = (props) => {
                   </Link>
                 </>
               )}
-              <Divider mt={5} />
-            </FormControl>
+            </FormControl> */}
+            <Divider mt={5} />
             {(values.description || organisation?.includes("akto")) && (
               <FormControl mt={6}>
                 <FormLabel>Description</FormLabel>
