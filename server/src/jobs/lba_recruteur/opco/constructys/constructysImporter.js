@@ -17,6 +17,8 @@ const importer = async (filePath, remoteFileName, opco_label) => {
   logger.info(`Deleting collection entries for ${opco_label}...`)
   await ReferentielOpco.deleteMany({ opco_label })
 
+  logger.info("Importing Data...")
+
   const stat = {
     error: 0,
     total: 0,
