@@ -168,8 +168,8 @@ export default ({ formulaire, mailer, etablissementsRecruteur, application, user
 
       offre._id = result.offres.filter((x) => x.libelle === offre.libelle)[0]._id
 
-      offre.supprimer = `${config.publicUrl}/offre/${offre._id}/cancel`
-      offre.pourvue = `${config.publicUrl}/offre/${offre._id}/provided`
+      offre.supprimer = `${config.publicUrlEspacePro}/offre/${offre._id}/cancel`
+      offre.pourvue = `${config.publicUrlEspacePro}/offre/${offre._id}/provided`
 
       // if first offer creation for an Entreprise, send specific mail
       if (offres.length === 1 && mandataire === false) {
@@ -212,9 +212,10 @@ export default ({ formulaire, mailer, etablissementsRecruteur, application, user
           raison_sociale,
           mandataire: result.mandataire,
           offres: [offre],
-          lba_url: config.publicUrl.includes("production")
-            ? `https://labonnealternance.apprentissage.beta.gouv.fr/recherche-apprentissage?&display=list&page=fiche&type=matcha&itemId=${offre._id}`
-            : `https://labonnealternance-recette.apprentissage.beta.gouv.fr/recherche-apprentissage?&display=list&page=fiche&type=matcha&itemId=${offre._id}`,
+          lba_url:
+            config.env !== "recette"
+              ? `https://labonnealternance.apprentissage.beta.gouv.fr/recherche-apprentissage?&display=list&page=fiche&type=matcha&itemId=${offre._id}`
+              : `https://labonnealternance-recette.apprentissage.beta.gouv.fr/recherche-apprentissage?&display=list&page=fiche&type=matcha&itemId=${offre._id}`,
         },
       })
 
@@ -265,8 +266,8 @@ export default ({ formulaire, mailer, etablissementsRecruteur, application, user
             startDate: dayjs(offre.date_debut_apprentissage).format("DD/MM/YYYY"),
             duration: offre.duree_contrat,
             rhythm: offre.rythme_alternance,
-            offerButton: `${config.publicUrl}/proposition/formulaire/${offreDocument.id_form}/offre/${offre._id}`,
-            createAccountButton: `${config.publicUrl}/creation/cfa`,
+            offerButton: `${config.publicUrlEspacePro}/proposition/formulaire/${offreDocument.id_form}/offre/${offre._id}`,
+            createAccountButton: `${config.publicUrlEspacePro}/creation/cfa`,
           },
         })
       })
