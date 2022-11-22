@@ -1,4 +1,4 @@
-import { Box, Button, Center, Heading, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Stack, Text, useToast } from "@chakra-ui/react"
+import { Box, Button, Center, Heading, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Stack, Text } from "@chakra-ui/react"
 import { useNavigate } from "react-router-dom"
 import { deleteCfa, deleteEntreprise } from "../api"
 import { AUTHTYPE } from "../common/contants"
@@ -6,30 +6,21 @@ import { InfoCircle } from "../theme/components/icons"
 
 export default (props) => {
   let { isOpen, onClose, user, formulaire } = props
-  const toast = useToast()
   const navigate = useNavigate()
 
   const validateAccountCreation = () => {
     onClose()
-    navigate("/")
-    toast({
-      title: "Demande envoyée.",
-      description: "Votre compte va être vérifié par nos équipes.",
-      position: "top-right",
-      status: "success",
-      duration: 5000,
-      isClosable: true,
-    })
+    navigate("/authentification/en-attente", { state: { email: user.email } })
   }
 
   const deleteAccount = () => {
     if (user.type === AUTHTYPE.ENTREPRISE) {
       deleteEntreprise(user._id, formulaire._id).then(() => {
-        onClose()
+        window.location.replace("/")
       })
     } else {
       deleteCfa(user._id).then(() => {
-        onClose()
+        window.location.replace("/")
       })
     }
   }
