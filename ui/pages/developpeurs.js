@@ -8,8 +8,8 @@ import Footer from "../components/footer"
 
 import { Box, Container, Divider, Grid, GridItem, Link, Text } from "@chakra-ui/react"
 
-const developpeurs = () => (
-  <div>
+const Developpeurs = () => (
+  <Box>
     <NextSeo
       title="Développeurs | La Bonne Alternance | Trouvez votre alternance"
       description="Afin de faciliter l’accès aux informations pour les publics là où ils se trouvent, nous avons développé 4 API et un Widget"
@@ -51,7 +51,7 @@ const developpeurs = () => (
     </Container>
     <Box mb={3}>&nbsp;</Box>
     <Footer />
-  </div>
+  </Box>
 )
 
-export default developpeurs
+export default Developpeurs
