@@ -68,7 +68,7 @@ const Cookies = () => (
             </Text>
             <Text as="p" mb="2">
               Des cookies sont utilisés sur le site{" "}
-              <Link url="https://labonnealternance.beta.gouv.fr/" aria-label="Redirection vers la page d'accueil" title="La bonne alternance" /> permettre le bon fonctionnement du
+              <Link href="https://labonnealternance.beta.gouv.fr/" aria-label="Redirection vers la page d'accueil" title="La bonne alternance" /> permettre le bon fonctionnement du
               site internet et l’utilisation des principales fonctionnalités du site.
             </Text>
             <Text as="p" mb="2">
