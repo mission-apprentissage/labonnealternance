@@ -29,7 +29,7 @@ const userValidationSchema = new mongooseInstance.Schema(
   { _id: false }
 )
 
-export const userRecruteur = mongooseInstance.Schema(
+export const userRecruteurSchema = mongooseInstance.Schema(
   {
     nom: {
       type: String,

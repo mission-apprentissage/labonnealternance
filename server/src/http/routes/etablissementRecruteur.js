@@ -156,13 +156,13 @@ export default ({ etablissementsRecruteur, usersRecruteur, formulaire, mailer })
 
       if (!referentiel?.data?.qualiopi) {
         return res.status(400).json({
-          data: { ...etablissement.formatReferentielData(referentiel.data) },
+          data: { ...etablissementsRecruteur.formatReferentielData(referentiel.data) },
           error: true,
           reason: "QUALIOPI",
         })
       }
 
-      return res.json({ ...etablissement.formatReferentielData(referentiel.data) })
+      return res.json({ ...etablissementsRecruteur.formatReferentielData(referentiel.data) })
     })
   )
 

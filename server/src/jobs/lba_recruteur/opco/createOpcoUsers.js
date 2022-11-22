@@ -22,6 +22,8 @@ runScript(async () => {
         raison_social: Object.values(user.opco)[0],
         scope: Object.values(user.opco)[0],
         type: "OPCO",
+        isAdmin: false,
+        email_valide: true,
       })
 
       logger.info(`USER CREATED : ${newUser.nom} - ${newUser.prenom} — ${newUser.scope}`)

@@ -15,7 +15,7 @@ import { mnaFormationSchema } from "./mnaFormation/mnaFormation.js"
 import { offreSchema } from "./offre.js"
 import { optoutSchema } from "./optout.js"
 import { parcoursupEtablissementStatSchema } from "./parcoursupEtablissementStat.js"
-import { userRecruteur } from "./recruteur/users.js"
+import { userRecruteurSchema } from "./recruteur/users.js"
 import { referentielOpcoSchema } from "./referentielOpco.js"
 import { sourceFormationsSchema } from "./sourceFormationsSchema.js"
 import { userSchema } from "./user.js"
@@ -42,6 +42,6 @@ export default {
   offreSchema,
   referentielOpcoSchema,
   optoutSchema,
-  userRecruteur,
+  userRecruteurSchema,
   credentialSchema,
 }
