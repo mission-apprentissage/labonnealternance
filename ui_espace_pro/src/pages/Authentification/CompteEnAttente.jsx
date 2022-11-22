@@ -25,10 +25,7 @@ export default () => {
           <>
             <Flex alignItems="flex-start" mb={6}>
               <InfoCircle mr={2} mt={1} />
-              <Text textAlign="justify">
-                Votre adresse email <strong>{email}</strong> pour l’entreprise raison sociale est en attente de validation. Vous serez notifié par email une fois votre compte
-                validé, et vous pourrez ensuite publier vos offres d’emplois.
-              </Text>
+              <Text textAlign="justify">Vous serez notifié par email une fois votre compte validé, et vous pourrez ensuite publier vos offres d’emplois.</Text>
             </Flex>
 
             <Flex align="center" ml={5} mb="16px">
