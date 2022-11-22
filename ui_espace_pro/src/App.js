@@ -5,7 +5,13 @@ import { ReactQueryDevtoolsPanel } from "react-query/devtools"
 import { Navigate, Route, Routes } from "react-router-dom"
 import { AUTHTYPE } from "./common/contants"
 import useAuth from "./common/hooks/useAuth"
+import { isUserAdmin } from "./common/utils/rolesUtils"
 import { Layout, MailActionsOnOffre } from "./components"
+import DashboardPage from "./pages/Admin/DashboardPage"
+import BulkPage from "./pages/Admin/widgetParameters/pages/BulkPage"
+import WidgetParametersEditPage from "./pages/Admin/widgetParameters/pages/EditPage"
+import WidgetParametersPage from "./pages/Admin/widgetParameters/pages/MainPage"
+import WidgetParametersSearchPage from "./pages/Admin/widgetParameters/pages/SearchPage"
 import {
   Account,
   AdministrationOpco,
@@ -18,8 +24,10 @@ import {
   ListeOffre,
   Users,
 } from "./pages/Administration"
+import AppointmentFollowUpPage from "./pages/AppointmentFollowUpPage"
 import {
   AuthValidation,
+  CompteEnAttente,
   ConfirmationCreationCompte,
   ConfirmationValidationEmail,
   Connexion,
@@ -27,23 +35,16 @@ import {
   InformationCreationCompte,
   OptOutValidation,
 } from "./pages/Authentification"
-import { DepotRapide_AjouterVoeux, DepotRapide_AjouterVoeuxMiseEnRelation, DepotRapide_Fin } from "./pages/Formulaire"
-import { PropositionOffreId } from "./pages/Proposition/Offre/PropositionOffreId"
 import { FormCreatePage } from "./pages/Candidat/FormCreatePage"
 import { FormRecapPage } from "./pages/Candidat/FormRecapPage"
+import { CfaCandidatInformationPage } from "./pages/CfaCandidatInformationPage"
+import { DepotRapide_AjouterVoeux, DepotRapide_AjouterVoeuxMiseEnRelation, DepotRapide_Fin } from "./pages/Formulaire"
+import Layout2 from "./pages/Layout"
+import LoginPage from "./pages/LoginPage"
 import OptOutUnsubscribe from "./pages/OptOutUnsubscribe"
 import PremiumForm from "./pages/PremiumForm"
+import { PropositionOffreId } from "./pages/Proposition/Offre/PropositionOffreId"
 import Widget from "./pages/Widget"
-import AppointmentFollowUpPage from "./pages/AppointmentFollowUpPage"
-import { CfaCandidatInformationPage } from "./pages/CfaCandidatInformationPage"
-import DashboardPage from "./pages/Admin/DashboardPage"
-import { isUserAdmin } from "./common/utils/rolesUtils"
-import WidgetParametersPage from "./pages/Admin/widgetParameters/pages/MainPage"
-import WidgetParametersEditPage from "./pages/Admin/widgetParameters/pages/EditPage"
-import WidgetParametersSearchPage from "./pages/Admin/widgetParameters/pages/SearchPage"
-import BulkPage from "./pages/Admin/widgetParameters/pages/BulkPage"
-import LoginPage from "./pages/LoginPage"
-import Layout2 from "./pages/Layout"
 
 function RedirectTo404() {
   useEffect(() => {
@@ -136,6 +137,7 @@ const App = () => {
         <Route path="/authentification/validation/:id" element={<ConfirmationValidationEmail />} />
         <Route path="/authentification/verification" element={<AuthValidation />} />
         <Route path="/authentification/optout/verification" element={<OptOutValidation />} />
+        <Route path="/authentification/en-attente" element={<CompteEnAttente />} />
         <Route path="/" element={<RedirectToLba />} />
         <Route path="/offre/:idOffre/:option" element={<MailActionsOnOffre />} />
         <Route path="/widget/:origine" element={<CreationCompte type={AUTHTYPE.ENTREPRISE} widget={true} />} />

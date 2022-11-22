@@ -24,13 +24,13 @@ export default (props) => {
           </Flex>
           <Button
             display="flex"
-            onClick={props.fromDashboard ? () => props.onClose() : () => navigate(-1)}
+            onClick={props.fromDashboard ? () => props.onClose() : () => window.location.replace("/")}
             fontWeight="normal"
             variant="pill"
             color="bluefrance.500"
             rightIcon={<Close width={3} />}
           >
-            fermer
+            {props.fromDashboard ? "fermer" : "Retour à l'accueil"}
           </Button>
         </Flex>
         <Container maxW="full">{props.children}</Container>
