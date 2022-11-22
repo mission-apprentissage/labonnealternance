@@ -10,54 +10,53 @@ import GerezOffres from "../components/HomeComponents/GerezOffres"
 import FollowLinkedIn from "../components/HomeComponents/FollowLinkedIn"
 import AlgoRecruiter from "../components/HomeComponents/AlgoRecruiter"
 import ConnectionActions from "../components/HomeComponents/ConnectionActions"
+import { Box, Container, Text } from "@chakra-ui/react"
 
 import { NextSeo } from "next-seo"
 
 import Footer from "../components/footer"
 
 const AccesRecruteur = () => (
-  <div>
+  <Box>
     <NextSeo
       title="Acces recruteur | La bonne alternance | Trouvez votre alternance"
       description="Exprimez votre besoin en alternance. Aucune inscription ne vous sera demandée."
-    />
+      />
 
     <ScrollToTop />
     <Navigation currentPage="acces-recruteur" />
     <Breadcrumb forPage="acces-recruteur" label="Accès recruteur" />
 
-    <div className="container my-0 px-0">
+    <Container my={0} px={0} variant="pageContainer">
       <Entreprise />
 
-      <section className="c-homecomponent__beige mb-5">
+      <Box as="section" mb={5}>
         <PostezVotreOffre />
         <OffresGratuites />
         <OrganismesMandataires />
-      </section>
+      </Box>
 
       <GerezOffres />
 
-      <section className="c-homecomponent__blue">
+      <Box>
         <AlgoRecruiter />
-      </section>
+      </Box>
 
-      <section className="text-center mb-5">
-        <h2 className="c-homecomponent-title mb-5">Vous souhaitez recruter un alternant pour votre entreprise ?</h2>
-        <div className="ml-4">
+      <Box as="section" pb={24} backgroundColor="white">
+        <Text as="h2" align="center" variant="homeEditorialH2">Vous souhaitez recruter un alternant pour votre entreprise ?</Text>
+        <Box display="flex" justifyContent="center" alignItems="center">
           <ConnectionActions service="entreprise" />
-        </div>
-        <div className="clearfix" />
-      </section>
+        </Box>
+      </Box>
+
+      <Box as="section">
+      </Box>
 
       <FollowLinkedIn />
-      {/*
-      <AmeliorerLBA />
-      
-      <PartenairesDeConfiance />*/}
-    </div>
-    <div className="mb-3">&nbsp;</div>
+    </Container>
+    <Box mb={3}>&nbsp;</Box>
     <Footer />
-  </div>
+  </Box>
 )
 
 export default AccesRecruteur
