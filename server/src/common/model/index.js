@@ -54,8 +54,8 @@ const Formulaire = createModel("formulaire", schema.formulaireSchema, { esIndexN
 const Credential = createModel("credentials", schema.credentialsSchema)
 const Offre = createModel("offre", schema.offresSchema)
 const Optout = createModel("optout", schema.OptoutSchema, { paginate: true })
-const ReferentielOpco = createModel("referentielOpco", schema.ReferentielOpco)
-const UserRecruteur = createModel("userRecruteur", schema.userRecruteur, { paginate: true })
+const ReferentielOpco = createModel("referentielOpco", schema.referentielOpcoSchema)
+const UserRecruteur = createModel("userRecruteur", schema.userRecruteurSchema, { paginate: true })
 
 export {
   DomainesMetiers,
