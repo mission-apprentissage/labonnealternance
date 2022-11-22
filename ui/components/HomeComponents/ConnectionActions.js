@@ -17,7 +17,7 @@ const ConnectionActions = ({ service }) => {
           Créer mon espace dédié
         </Button>
       )}
-      <Button variant="secondary" aria-label="Me connecter" onClick={() => router.push("/espace-pro/creation/cfa")}>
+      <Button variant="secondary" aria-label="Me connecter" onClick={() => router.push("/espace-pro/authentification")}>
         Me connecter
       </Button>
     </Stack>
