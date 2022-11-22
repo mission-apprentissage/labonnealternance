@@ -27,15 +27,7 @@
 .demoPage .hiddenItemDetail {
   display: none;
 }
-.demoPage .leftShadow {
-  box-shadow: none;
-  padding-left: 0;
-  padding-right: 0;
-}
 
-.demoPage .inactiveXSPane {
-  display: block;
-}
 .demoPage .floatingButtons {
   @include media-breakpoint-up(md) {
     display: none;
@@ -61,9 +53,6 @@
 }
 
 @media only screen and (max-width: 350px) {
-  .demoPage .inactiveXSPane {
-    display: none;
-  }
   .demoPage .floatingButtons {
     display: block;
     position: fixed;
@@ -74,9 +63,6 @@
   }
 }
 @media only screen and (min-width: 351px) and (max-width: 767px) {
-  .demoPage .inactiveXSPane {
-    display: none;
-  }
   .demoPage .floatingButtons {
     &.is-hidden-true {
       display: none;
@@ -266,7 +252,7 @@
   left: 0;
   bottom: 0;
   @include media-breakpoint-up(md) {
-    position: absolute;
+    position: relative;
   }
 }
 
@@ -344,21 +330,6 @@
   display: flex;
   flex-direction: column;
   height: 100vh;
-}
-.c-searchfor__row {
-  flex: 1;
-  overflow: hidden;
-  &.is-visible-true {
-    overflow: inherit;
-  }
-  &.is-visible-true.is-welcome-true {
-    overflow: hidden;
-  }
-}
-.choiceCol-container {
-  overflow: hidden;
-  height: 100%;
-  display: flex;
 }
 .choiceCol {
   flex: 1;
