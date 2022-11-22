@@ -20,6 +20,6 @@ describe("AutoCompleteField", () => {
       </Formik>
     )
 
-    expect(container.querySelector(".c-input-work-container") != null).toBe(true)
+    expect(container.querySelector(".containerIdentity") != null).toBe(true)
   })
 })

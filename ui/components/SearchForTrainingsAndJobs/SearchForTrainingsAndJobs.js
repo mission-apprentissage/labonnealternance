@@ -28,11 +28,11 @@ import { ParameterContext } from "../../context/ParameterContextProvider"
 import { DisplayContext } from "../../context/DisplayContextProvider"
 
 import Map from "components/Map"
-import { Row, Col } from "reactstrap"
 import { MapListSwitchButton, ChoiceColumn } from "./components"
 import { WidgetHeader, InitWidgetSearchParameters } from "components/WidgetHeader"
 import { currentPage, setCurrentPage, currentSearch, setCurrentSearch } from "utils/currentPage"
 import updateUiFromHistory from "services/updateUiFromHistory"
+import { Box, Flex } from "@chakra-ui/react"
 
 const SearchForTrainingsAndJobs = () => {
   const scopeContext = useContext(ScopeContext)
@@ -345,12 +345,15 @@ const SearchForTrainingsAndJobs = () => {
     }
   }
 
+  let listDisplayParameters = visiblePane === "resultList" ? "flex" : ["none", "none", "flex"]
+  let mapDisplayParameters = visiblePane === "resultMap" ? "block" : ["none", "none", "block"]
+
   return (
-    <div className="page demoPage c-searchfor">
+    <Flex direction="column" sx={{ height: "100vh" }} className="page demoPage">
       <InitWidgetSearchParameters handleSearchSubmit={handleSearchSubmit} handleItemLoad={handleItemLoad} setIsLoading={setIsLoading} />
       <WidgetHeader handleSearchSubmit={handleSearchSubmit} />
-      <Row className={`c-searchfor__row is-visible-${isFormVisible} is-welcome-${shouldShowWelcomeMessage} `}>
-        <Col className={`choiceCol-container leftShadow ${visiblePane === "resultList" ? "activeXSPane" : "inactiveXSPane"}`} xs="12" md="5">
+      <Flex direction="row" overflow="hidden" height="100%">
+        <Box flex="5" display={listDisplayParameters} height="100%" overflow="hidden" direction="column">
           <ChoiceColumn
             shouldShowWelcomeMessage={shouldShowWelcomeMessage}
             handleSearchSubmit={handleSearchSubmit}
@@ -369,13 +372,13 @@ const SearchForTrainingsAndJobs = () => {
             setActiveFilter={setActiveFilter}
             activeFilter={activeFilter}
           />
-        </Col>
-        <Col className={`p-0 ${visiblePane === "resultMap" ? "activeXSPane" : "inactiveXSPane"}`} xs="12" md="7">
+        </Box>
+        <Box p="0" flex="7" display={mapDisplayParameters}>
           <Map handleSearchSubmit={handleSearchSubmit} showSearchForm={showSearchForm} selectItemOnMap={selectItemOnMap} />
-        </Col>
-      </Row>
+        </Box>
+      </Flex>
       <MapListSwitchButton showSearchForm={showSearchForm} showResultMap={showResultMap} showResultList={showResultList} isFormVisible={isFormVisible} />
-    </div>
+    </Flex>
   )
 }
 
