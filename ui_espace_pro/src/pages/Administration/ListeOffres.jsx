@@ -210,7 +210,7 @@ export default () => {
                     <MenuItem>
                       <Link
                         isExternal
-                        href={`https://labonnealternance${
+                        href={`https://doctrina${
                           window.location.href.includes("recette") ? "-recette" : ""
                         }.apprentissage.beta.gouv.fr/recherche-apprentissage?&type=matcha&itemId=${row._id}`}
                       >
@@ -223,7 +223,7 @@ export default () => {
                         <MenuItem>
                           <Link
                             isExternal
-                            href={`https://labonnealternance.apprentissage.beta.gouv.fr/recherche-apprentissage-formation?&caller=matcha&romes=${row.romes}&lon=${lon}&lat=${lat}`}
+                            href={`https://doctrina.apprentissage.beta.gouv.fr/recherche-apprentissage-formation?&caller=matcha&romes=${row.romes}&lon=${lon}&lat=${lat}`}
                           >
                             Voir les centres de formations
                           </Link>
