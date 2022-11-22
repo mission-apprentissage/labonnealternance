@@ -20,7 +20,7 @@ export default () => {
         <MailCloud style={{ paddingRight: "10px" }} />
         <Box pt={[3, 0]} ml={10}>
           <Heading fontSize="24px" mb="16px" mt={widget?.mobile ? "10px" : "0px"}>
-            Votre demande d’accès a bien été transmise et est en attente de validation.
+            Votre demande d’accès est désormais en attente de validation.
           </Heading>
           <>
             <Flex alignItems="flex-start" mb={6}>
