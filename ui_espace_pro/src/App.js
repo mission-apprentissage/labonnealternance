@@ -1,7 +1,6 @@
 import { AnimatePresence } from "framer-motion"
 import { useEffect } from "react"
 import { Helmet } from "react-helmet"
-import { ReactQueryDevtoolsPanel } from "react-query/devtools"
 import { Navigate, Route, Routes } from "react-router-dom"
 import { AUTHTYPE } from "./common/contants"
 import useAuth from "./common/hooks/useAuth"
@@ -81,7 +80,6 @@ const AdminRdvaRoute = ({ children }) => {
 const App = () => {
   return (
     <AnimatePresence>
-      <ReactQueryDevtoolsPanel />
       <Helmet>
         <script defer data-domain={window.location.hostname} src="https://plausible.io/js/script.local.hash.outbound-links.js" />
       </Helmet>
