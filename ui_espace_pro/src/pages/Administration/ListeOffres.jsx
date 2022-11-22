@@ -126,6 +126,15 @@ export default () => {
     {
       Header: "Métier",
       accessor: "libelle",
+      Cell: ({
+        data,
+        cell: {
+          row: { id },
+        },
+      }) => {
+        const { libelle, rome_appellation_label } = data[id]
+        return rome_appellation_label ?? libelle
+      },
       width: "500",
       maxWidth: "500",
     },
