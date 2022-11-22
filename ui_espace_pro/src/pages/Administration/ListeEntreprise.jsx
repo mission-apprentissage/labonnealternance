@@ -40,7 +40,7 @@ const EmptySpace = () => (
 
     <Box w={["100%", "100%", "100%", "600px"]}>
       <Heading fontSize="2rem" pb={7}>
-        Créez votre première entreprise mandatée.
+        Créer votre première entreprise mandatée.
       </Heading>
       <Text fontSize="1.375rem">Une entreprise vous a mandaté pour gérer ses offres d’emploi ?</Text>
       <Text fontSize="1.375rem">
@@ -275,6 +275,10 @@ export default memo(() => {
               }}
               render={({ loading, data }) => {
                 if (loading) return "Chargement en cours..."
+
+                if (!data.length) {
+                  return <EmptySpace />
+                }
 
                 if (data.length > 0) {
                   return <Table data={data} columns={columns} />
