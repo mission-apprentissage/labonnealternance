@@ -1,15 +1,16 @@
 import React from "react"
 import StartForm from "../StartForm"
+import { Container, Box } from "@chakra-ui/react"
 
 const HomeHero = () => {
   return (
-    <div className="c-home-hero">
-      <div className="container c-home-hero__container pt-3 pt-sm-5 pb-0 pb-sm-5">
-        <div className="card c-home-hero__card">
+    <Box backgroundSize="contain" backgroundRepeat="no-repeat">
+      <Container variant="responsiveContainer" pt={{ base: 3, sm: 12 }} pb={{ base: 0, sm: 12 }} position="relative">
+        <Box boxShadow="0 4px 12px 2px rgb(0 0 0 / 21%)" pt="6" pb="10" bg="#fff" backgroundClip="border-box" borderRadius="10px">
           <StartForm />
-        </div>
-      </div>
-    </div>
+        </Box>
+      </Container>
+    </Box>
   )
 }
 
