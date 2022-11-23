@@ -9,12 +9,10 @@ import swaggerUi from "swagger-ui-express"
 import { logger } from "../common/logger.js"
 import config from "../config.js"
 import { initWebhook } from "../service/sendinblue/webhookSendinBlue.js"
-import { roles } from "./../common/roles.js"
 import authMiddleware from "./middlewares/authMiddleware.js"
 import { corsMiddleware } from "./middlewares/corsMiddleware.js"
 import { errorMiddleware } from "./middlewares/errorMiddleware.js"
 import { logMiddleware } from "./middlewares/logMiddleware.js"
-import permissionsMiddleware from "./middlewares/permissionsMiddleware.js"
 import { tryCatch } from "./middlewares/tryCatchMiddleware.js"
 import admin from "./routes/admin/admin.js"
 import appointmentRoute from "./routes/admin/appointment.js"
@@ -47,7 +45,6 @@ import updateFormations from "./routes/updateFormations.js"
 import updateLBB from "./routes/updateLBB.js"
 import updateRomesMetiers from "./routes/updateRomesMetiers.js"
 import version from "./routes/version.js"
-
 import apiRoute from "./routes/api.js"
 import esSearchRoute from "./routes/esSearch.js"
 import etablissementsRecruteurRoute from "./routes/etablissementRecruteur.js"
@@ -114,7 +111,6 @@ export default async (components) => {
   const app = express()
 
   const checkJwtToken = authMiddleware(components)
-  const adminOnly = permissionsMiddleware(roles.administrator)
 
   Sentry.init({
     dsn: config.serverSentryDsn,
@@ -205,7 +201,7 @@ export default async (components) => {
   app.use("/api/login", login(components))
   app.use("/api/password", password(components))
   app.use("/api/authentified", checkJwtToken, authentified())
-  app.use("/api/admin", checkJwtToken, adminOnly, admin())
+  app.use("/api/admin", admin())
 
   /**
    * LBA-Organisme de formation
