@@ -40,7 +40,7 @@ const Formulaire = () => {
     postFormulaire(values)
       .then(({ data }) => {
         toast({
-          title: "Entreprise créé avec succès.",
+          title: "Entreprise créée avec succès.",
           position: "top-right",
           status: "success",
           duration: 4000,
