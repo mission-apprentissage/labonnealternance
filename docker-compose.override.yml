@@ -33,7 +33,7 @@ services:
       args:
         DOCTRINA_ENV: dev
     ports:
-      - "127.0.0.1:9229:9229" # Allows remote debugging
+      - "9229:9229" # Allows remote debugging
     volumes:
       - doctrina_server_data:/data:z
       - ./server/src:/app/src:z
@@ -43,25 +43,25 @@ services:
 
   mongodb:
     ports:
-      - "127.0.0.1:27017:27017"
+      - "27017:27017"
     volumes:
       - doctrina_mongodb_data:/data:z
 
   elasticsearch:
     ports:
-      - "127.0.0.1:9200:9200"
+      - "9200:9200"
     volumes:
       - doctrina_elasticsearch_data:/usr/share/elasticsearch/data
 
   clamav:
     ports:
-      - "127.0.0.1:3310:3310"
+      - "3310:3310"
 
   smtp:
     image: mailhog/mailhog
     container_name: doctrina_mailhog
     ports:
-      - "127.0.0.1:1025:1025"
+      - "1025:1025"
     volumes:
       - ./mailhog-auth.txt:/app/mailhog-auth.txt
     environment:
