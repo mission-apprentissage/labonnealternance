@@ -45,12 +45,10 @@ const EmptySpace = () => (
 
     <Box w={["100%", "100%", "100%", "600px"]}>
       <Heading fontSize="2rem" pb={7}>
-        Créer votre première offre.
+        Ajoutez votre première offre d’emploi en alternance.
       </Heading>
-      <Text fontSize="1.375rem">Une entreprise vous a mandaté pour gérer ses offres d’emploi ?</Text>
       <Text fontSize="1.375rem">
-        En quelques secondes, exprimez les besoins de recrutement de cette entreprise pour les afficher sur le site <span style={{ fontWeight: "700" }}>La Bonne Alternance</span>{" "}
-        dès aujourd’hui.
+        Décrivez vos besoins de recrutement pour les afficher sur le site <span style={{ fontWeight: "700" }}>La Bonne Alternance</span> dès aujourd’hui.
       </Text>
     </Box>
   </Stack>
