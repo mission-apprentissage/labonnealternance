@@ -15,7 +15,7 @@ import { logError } from "../utils/tools"
 export default async function fetchPrdv(training, hasAlsoJob, _axios = axios, _window = window, _logError = logError) {
   let res = null
 
-  const rdvUrl = `https://doctrina${env !== "production" ? "-recette" : ""}.apprentissage.beta.gouv.fr//api/appointment-request/context/create`
+  const rdvUrl = `https://doctrina${env !== "production" ? "-recette" : ""}.apprentissage.beta.gouv.fr/api/appointment-request/context/create`
 
   if (!training) {
     return null
