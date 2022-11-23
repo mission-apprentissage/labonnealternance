@@ -157,7 +157,7 @@ const Map = ({ handleSearchSubmit, showSearchForm, selectItemOnMap }) => {
     right: 0,
     left: 0,
     bottom: 0,
-    position: "absolute",
+    position: "relative",
     _focus: {
       outline: "none",
     },
