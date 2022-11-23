@@ -6,9 +6,7 @@ import config from "../config.js"
 import { itemModel } from "../model/itemModel.js"
 import filterJobsByOpco from "./filterJobsByOpco.js"
 
-const matchaApiEndpoint = `https://matcha${config.env === "production" ? "" : "-recette"}.apprentissage.beta.gouv.fr/api/formulaire`
-const matchaSearchEndPoint = `${matchaApiEndpoint}/search`
-const matchaJobEndPoint = `${matchaApiEndpoint}/offre`
+const recruteurEndpoint = `https://doctrina${config.env === "production" ? "" : "-recette"}.apprentissage.beta.gouv.fr/api/formulaire`
 
 const coordinatesOfFrance = [2.213749, 46.227638]
 
@@ -27,7 +25,7 @@ const getMatchaJobs = async ({ romes, radius, latitude, longitude, api, opco, ca
       lon: hasLocation ? longitude : coordinatesOfFrance[0],
     }
 
-    const jobs = useMock === "true" ? { data: matchasMock } : await axios.post(`${matchaSearchEndPoint}`, params)
+    const jobs = useMock === "true" ? { data: matchasMock } : await axios.post(`${recruteurEndpoint}/search`, params)
 
     let matchas = transformMatchaJobsForIdea({ jobs: jobs.data, caller })
 
@@ -74,7 +72,7 @@ const getMatchaJobById = async ({ id, caller }) => {
     } else if (id === "id-matcha-test2") {
       jobs = { data: matchaMockMandataire._source }
     } else {
-      jobs = await axios.get(`${matchaJobEndPoint}/${id}`)
+      jobs = await axios.get(`${recruteurEndpoint}/offre/${id}`)
     }
     const job = transformMatchaJobForIdea({
       job: jobs.data,
