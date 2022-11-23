@@ -1,10 +1,10 @@
-import React, { useEffect } from "react"
-import SearchForTrainingsAndJobs from "../components/SearchForTrainingsAndJobs"
-import { useRouter } from "next/router"
-import { initParametersFromQuery } from "services/config"
-import { ScopeContextProvider } from "context/ScopeContext.js"
 import { NextSeo } from "next-seo"
-import { ParameterContext } from "../context/ParameterContextProvider"
+import { useRouter } from "next/router"
+import React, { useEffect } from "react"
+import SearchForTrainingsAndJobs from "../components/SearchForTrainingsAndJobs/index.js"
+import { ParameterContext } from "../context/ParameterContextProvider.js"
+import { ScopeContextProvider } from "../context/ScopeContext.js"
+import { initParametersFromQuery } from "../services/config.js"
 
 const RechercheApprentissage = () => {
   const router = useRouter()
