@@ -3,5 +3,5 @@ import { rebuildIndex } from "../../../common/utils/esUtils.js"
 
 export const generateIndexes = async () => {
   await Formulaire.syncIndexes()
-  await rebuildIndex("formulaires", Formulaire)
+  await rebuildIndex(Formulaire, { skipNotFound: true })
 }
