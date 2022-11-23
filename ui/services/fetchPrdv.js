@@ -3,24 +3,32 @@ import env from "../utils/env"
 import _ from "lodash"
 import { logError } from "../utils/tools"
 
+/**
+ * @description Returns "RDV" link.
+ * @param training
+ * @param hasAlsoJob
+ * @param _axios
+ * @param _window
+ * @param _logError
+ * @returns {Promise<{error: string}|null>}
+ */
 export default async function fetchPrdv(training, hasAlsoJob, _axios = axios, _window = window, _logError = logError) {
   let res = null
 
-  const prdvEndpoint = `https://rdv-cfa${env !== "production" ? "-recette" : ""}.apprentissage.beta.gouv.fr/api/appointment-request/context/create`
+  const rdvUrl = `https://doctrina${env !== "production" ? "-recette" : ""}.apprentissage.beta.gouv.fr//api/appointment-request/context/create`
 
   if (!training) {
     return null
   }
 
   const response = await _axios.post(
-    prdvEndpoint,
+    rdvUrl,
     {
       referrer: "lba",
       idCleMinistereEducatif: training.id,
-      idRcoFormation: training.idRcoFormation,
       trainingHasJob: !!hasAlsoJob,
     },
-    { headers: { "content-type": "application/json" } }
+    { headers: { "Content-Type": "application/json" } }
   )
 
   if (response?.data?.error === "Prise de rendez-vous non disponible.") {
