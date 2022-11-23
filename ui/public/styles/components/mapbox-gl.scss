@@ -195,28 +195,6 @@ canvas.mapboxgl-canvas:focus {
   color: #000;
 }
 
-.c-map-searchButton {
-  z-index: 1;
-  position: absolute;
-  width: 260px;
-  margin: 0 auto;
-  left: 0;
-  right: 0;
-  top: 2rem;
-}
-
-.c-map-searchButton button {
-  cursor: pointer;
-  background-color: #fff;
-  font-size: 14px;
-  color: $gray-700;
-  border-radius: 58px;
-  border: none;
-  padding: 8px 15px;
-  margin: auto;
-  box-shadow: 0px 0px 12px 6px rgba(121, 121, 121, 0.4);
-}
-
 .mapboxgl-ctrl-attrib {
   display: none;
 }

@@ -8,6 +8,7 @@ import { map, initializeMap, isMapInitialized, setSelectedMarker } from "utils/m
 import { fetchAddressFromCoordinates } from "../../services/baseAdresse"
 import { SearchResultContext } from "../../context/SearchResultContextProvider"
 import { DisplayContext } from "../../context/DisplayContextProvider"
+import { Box } from "@chakra-ui/react"
 
 let mapPosition = {
   lat: null,
@@ -148,13 +149,38 @@ const Map = ({ handleSearchSubmit, showSearchForm, selectItemOnMap }) => {
   }, [])
 
   // Warning : mapContainer doit être vide sinon les onclick sur la map ne marcheront pas
+
+  const mapStyleParams = {
+    height: "100vh",
+    width: "100%",
+    top: 0,
+    right: 0,
+    left: 0,
+    bottom: 0,
+    position: "absolute",
+    _focus: {
+      outline: "none",
+    },
+  }
+
+  const staticMapStyleParams = {
+    background: "center no-repeat url('/images/static_map.svg'), #fff",
+    backgroundSize: "auto 85%",
+    sx: {
+      backgroundPositionY: "10px",
+    },
+    height: "100%",
+    paddingTop: "150px",
+    boxShadow: "0px 0px 12px 2px rgb(0 0 0 / 21%)",
+  }
+
   return (
     <>
       <MapSearchButton handleSearchClick={handleSearchClick} />
-      <div ref={(el) => (mapContainer.current = el)} className={`mapContainer ${mapInitialized ? "" : "d-none"}`}></div>
-      <div className={`dummyMapContainer ${mapInitialized ? "d-none" : ""}`}>
-        <div className="c-staticmapframe"></div>
-      </div>
+      <Box className="mapContainer" ref={(el) => (mapContainer.current = el)} display={mapInitialized ? "" : "none"} {...mapStyleParams}></Box>
+      <Box display={mapInitialized ? "none" : ""} {...mapStyleParams}>
+        <Box {...staticMapStyleParams}></Box>
+      </Box>
     </>
   )
 }

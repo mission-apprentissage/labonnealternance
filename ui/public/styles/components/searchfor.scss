@@ -243,34 +243,6 @@
   margin-bottom: -3px;
   margin-left: 20px;
 }
-.demoPage .mapContainer,
-.demoPage .dummyMapContainer {
-  height: 100vh;
-  width: 100%;
-  top: 0;
-  right: 0;
-  left: 0;
-  bottom: 0;
-  @include media-breakpoint-up(md) {
-    position: relative;
-  }
-}
-
-.mapContainer:focus,
-.dummyMapContainer:focus {
-  outline: none;
-}
-
-.dummyMapContainer {
-  .c-staticmapframe {
-    background: center no-repeat url("/images/static_map.svg"), #fff;
-    background-size: auto 85%;
-    background-position-y: 10px;
-    height: 100%;
-    padding-top: 150px;
-    box-shadow: 0px 0px 12px 2px rgb(0 0 0 / 21%);
-  }
-}
 
 .c-staticmapframe__message {
   margin: auto;
