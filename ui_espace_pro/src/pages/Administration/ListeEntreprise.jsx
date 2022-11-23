@@ -40,7 +40,7 @@ const EmptySpace = () => (
 
     <Box w={["100%", "100%", "100%", "600px"]}>
       <Heading fontSize="2rem" pb={7}>
-        Créer votre première entreprise mandatée.
+        Ajoutez votre première entreprise partenaire
       </Heading>
       <Text fontSize="1.375rem">Une entreprise partenaire vous fait confiance pour gérer ses offres d’emploi ?</Text>
       <Text fontSize="1.375rem">
