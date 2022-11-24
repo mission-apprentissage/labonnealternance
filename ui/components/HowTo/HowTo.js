@@ -14,12 +14,14 @@ const HowTo = () => {
       <Container variant="responsiveContainer">
         <Grid templateColumns={{ base: "1fr", md: "repeat(3, 1fr)" }} gap={{ base: "10", md: "24" }}>
           <GridItem position="relative" width={{ base: "200px", md: "auto" }} mx="auto">
-            <Image src={howto1} alt="" zIndex="2" position="inherit"/>
+            <Image src={howto1} alt="" zIndex="2" position="inherit" />
             <Show above="md">
               <Image src={howtoline1} alt="" position="absolute" top="85px" left="-162px" />
             </Show>
             <Box>
-              <Text as="h3" fontSize="1.25rem" fontWeight="500" mb="3">Le job de vos rêves</Text>
+              <Text as="h3" fontSize="1.25rem" fontWeight="500" mb="3">
+                Le job de vos rêves
+              </Text>
               <Text as="p">Renseignez le métier que vous souhaitez faire et la localisation (Ville ou Code postal)</Text>
             </Box>
           </GridItem>
@@ -29,7 +31,9 @@ const HowTo = () => {
               <Image src={howtoline2a} alt="" position="absolute" top="47px" left="-208px" />
             </Show>
             <Box>
-              <Text as="h3" fontSize="1.25rem" fontWeight="500" mb="3">En un clin d’&oelig;il</Text>
+              <Text as="h3" fontSize="1.25rem" fontWeight="500" mb="3">
+                En un clin d’&oelig;il
+              </Text>
               <Text as="p">Obtenez la liste des formations et entreprises proches de chez vous dans le domaine recherché.</Text>
             </Box>
           </GridItem>
@@ -40,7 +44,9 @@ const HowTo = () => {
               <Image src={howtoline3b} alt="" position="absolute" top="47px" left="158px" />
             </Show>
             <Box>
-              <Text as="h3" fontSize="1.25rem" fontWeight="500" mb="3">Un contact facile</Text>
+              <Text as="h3" fontSize="1.25rem" fontWeight="500" mb="3">
+                Un contact facile
+              </Text>
               <Text as="p">Contactez facilement les centres de formation ou les entreprises pour postuler </Text>
             </Box>
           </GridItem>
