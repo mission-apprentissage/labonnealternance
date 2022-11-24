@@ -15,6 +15,7 @@ import dosearchImage from "../../../public/images/dosearch.svg"
 import whispers from "../services/whispers.js"
 
 import { flyToMarker, flyToLocation, closeMapPopups, setSelectedMarker } from "../../../utils/mapTools"
+import { Box, Image, Text } from "@chakra-ui/react"
 
 const ChoiceColumn = ({
   showResultList,
@@ -183,31 +184,38 @@ const ChoiceColumn = ({
 
   const getSearchForm = () => {
     return (
-      <div className="d-block d-md-none">
+      <Box display={["block", "block", "none"]}>
         <SearchForm showResultList={showResultList} handleSearchSubmit={handleSearchSubmitFunction} />
-      </div>
+      </Box>
     )
   }
 
   const getInitialDesktopText = () => {
+    const displayProperty = shouldShowWelcomeMessage ? ["none", "none", "block"] : "none"
+
+    const noSearchTextProperties = {
+      margin: "auto",
+      width: "80%",
+      minWidth: "250px",
+      maxWidth: "600px",
+      background: "white",
+      boxShadow: "0px 0px 12px 2px rgba(0, 0, 0, 0.21)",
+      borderRadius: "8px",
+      textAlign: "center",
+    }
+
     return (
-      <div className={`w-75 m-auto d-none pt-5 ${shouldShowWelcomeMessage ? "d-md-block" : ""}`}>
-        <img className="w-75" src={dosearchImage} alt="" />
-        <div className="c-staticmapframe__message pr-5 py-3">
-          <table>
-            <tbody>
-              <tr>
-                <td className="px-4 px-lg-5 c-staticmapframe__decoration"></td>
-                <td>
-                  <span className="c-staticmapframe__title">Faites une recherche</span>
-                  <br />
-                  Renseignez les champs de recherche ci-dessus pour trouver la formation et l&apos;entreprise pour réaliser votre projet d&apos;alternance
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <Box display={displayProperty} width="75%" margin="auto" pt={12}>
+        <Image margin="auto" width="75%" src={dosearchImage} alt="" />
+        <Box pl={12} pr={8} py={4} {...noSearchTextProperties}>
+          <Box textAlign="left">
+            <Text fontSize="1.7rem" mb={2} fontWeight={700}>
+              Faites une recherche
+            </Text>
+            <Text>Renseignez les champs de recherche ci-dessus pour trouver la formation et l&apos;entreprise pour réaliser votre projet d&apos;alternance</Text>
+          </Box>
+        </Box>
+      </Box>
     )
   }
 
@@ -215,8 +223,10 @@ const ChoiceColumn = ({
     return <ItemDetail selectedItem={selectedItem} handleClose={handleClose} handleSelectItem={handleSelectItem} activeFilter={activeFilter} />
   }
 
+  const columnBackgroundProperty = shouldShowWelcomeMessage ? ["white", "white", "beige"] : "grey.100"
+
   return (
-    <div id="choiceColumn" className={`choiceCol w-75 ${shouldShowWelcomeMessage ? "c-choicecolumn__nosearch" : ""}`}>
+    <Box id="choiceColumn" width="75%" background={columnBackgroundProperty} className="choiceCol">
       {isLoading ? (
         <LoadingScreen />
       ) : (
@@ -227,7 +237,7 @@ const ChoiceColumn = ({
           {getSelectedItemDetail()}
         </>
       )}
-    </div>
+    </Box>
   )
 }
 

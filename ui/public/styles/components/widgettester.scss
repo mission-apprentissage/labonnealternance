@@ -23,33 +23,6 @@
 .widgetTestPage .hiddenItemDetail {
   display: none;
 }
-.widgetTestPage .floatingButtons {
-  display: none;
-}
-.widgetTestPage .floatingButtons button {
-  cursor: pointer;
-  margin-right: 30px;
-  background-color: #0061df;
-  font-size: 14px;
-  color: #fff;
-  border-radius: 19px;
-  border: none;
-  padding: 10px 20px;
-}
-.widgetTestPage .floatingButtons button:focus {
-  box-shadow: none;
-}
-@media only screen and (max-width: 767px) {
-  .widgetTestPage .floatingButtons {
-    display: block;
-    position: fixed;
-    bottom: 40px;
-    right: 40%;
-  }
-  .widgetTestPage .floatingButtons.resultList {
-    right: 30px;
-  }
-}
 .widgetTestPage .inFormIcon {
   margin-top: 13px;
   margin-left: 15px;
@@ -219,18 +192,6 @@
   border: 2px solid #066ee7;
   background: #066ee7;
 }
-.widgetTestPage form .filterButton {
-  background-image: url(/images/icons/filter.svg);
-  background-position: 4px;
-  background-repeat: no-repeat;
-  width: 80px;
-  text-align: right;
-}
-.widgetTestPage form .filterButton:hover {
-  background-image: url("/images/icons/filter_white.svg");
-  background-position: 4px;
-  background-repeat: no-repeat;
-}
 .widgetTestPage form .noOpportunityFound {
   margin-top: 30px;
 }
@@ -243,13 +204,5 @@
 @media only screen and (max-width: 900px) {
   .widgetTestPage .hiddenSM {
     display: none;
-  }
-  .widgetTestPage .filterButton {
-    background-position: 8px !important;
-    width: 42px !important;
-    height: 42px !important;
-  }
-  .widgetTestPage .filterButton:hover {
-    background-position: 8px !important;
   }
 }
