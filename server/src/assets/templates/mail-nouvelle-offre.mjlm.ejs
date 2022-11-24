@@ -25,12 +25,12 @@
 
         <% if(!data.mandataire){ %>
           <mj-text>
-            Félicitations! Votre offre d'alternance a bien été publiée. Elle maintenant visible par les candidats sur les plateformes suivantes : La Bonne Alternance, ParcourSup, 1 Jeune 1 Solution, Affelnet,...
+            Félicitations! Votre offre d'alternance a bien été publiée. Elle maintenant visible par les candidats sur les plateformes suivantes : La bonne alternance, ParcourSup, 1 Jeune 1 Solution, Affelnet,...
           </mj-text>
           <% } %>
 
           <% if(data.mandataire){ %>
-            <mj-text>Félicitations! Votre offre d'alternance pour l'entreprise <%= data.raison_sociale %> a bien été publiée. Elle est maintenant visible par les candidats sur les plateformes suivantes : La Bonne Alternance, 1 Jeune 1 Solution, Affelnet...</mj-text>
+            <mj-text>Félicitations! Votre offre d'alternance pour l'entreprise <%= data.raison_sociale %> a bien été publiée. Elle est maintenant visible par les candidats sur les plateformes suivantes : La bonne alternance, 1 Jeune 1 Solution, Affelnet...</mj-text>
           <% } %>
 
         <mj-text font-weight="700">Rappel de l'offre :</mj-text>
@@ -52,13 +52,13 @@
           <% } %>
         </mj-table>
 
-         <mj-text>Voici le lien de votre annonce sur La Bonne Alternance</mj-text>
+         <mj-text>Voici le lien de votre annonce sur La bonne alternance</mj-text>
 
         <mj-button color="#ffffff" background-color="#000091" href="<%= data.lba_url %>">
           Voir mon annonce
         </mj-button>
         <mj-text>
-          L'équipe La Bonne Alternance, <br>
+          L'équipe La bonne alternance, <br>
           Mission interministérielle pour l'apprentissage et les trajectoires profesionnelles
         </mj-text>
       </mj-column>

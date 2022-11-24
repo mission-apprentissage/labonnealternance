@@ -7,7 +7,7 @@ export default {
       properties: {
         libelle: {
           type: "string",
-          description: "Libellé du métier concerné selon le référentiel La Bonne Alternance",
+          description: "Libellé du métier concerné selon le référentiel La bonne alternance",
           required: true,
         },
         niveau: {

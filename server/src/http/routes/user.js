@@ -106,7 +106,7 @@ export default ({ usersRecruteur, mailer, formulaire }) => {
         // envoyer mail de bienvenue si validation de l'utilisateur
         await mailer.sendEmail({
           to: user.email,
-          subject: "Bienvenue sur La Bonne Alternance",
+          subject: "Bienvenue sur La bonne alternance",
           template: mailTemplate["mail-bienvenue"],
           data: {
             nom: user.nom,
