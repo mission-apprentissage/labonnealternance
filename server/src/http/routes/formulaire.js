@@ -3,7 +3,7 @@ import { mailTemplate } from "../../assets/index.js"
 import { getCatalogueEtablissements, getCatalogueFormations } from "../../common/catalogue.js"
 import dayjs from "../../common/dayjs.js"
 import { getElasticInstance } from "../../common/esClient/index.js"
-import { UserRecruteur } from "../../common/model/index.js"
+import { Formulaire, UserRecruteur } from "../../common/model/index.js"
 import config from "../../config.js"
 import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
 
@@ -18,15 +18,10 @@ export default ({ formulaire, mailer, etablissementsRecruteur, application, user
   router.get(
     "/",
     tryCatch(async (req, res) => {
-      let qs = req.query
-      const query = qs && qs.query ? JSON.parse(qs.query) : {}
-      const options = qs && qs.options ? JSON.parse(qs.options) : {}
-      const page = qs && qs.page ? qs.page : 1
-      const limit = qs && qs.limit ? parseInt(qs.limit, 10) : 100
+      let query = JSON.parse(req.query.query)
+      const results = await Formulaire.find(query).lean()
 
-      const result = await formulaire.getFormulaires(query, options, { page, limit })
-
-      return res.json(result)
+      return res.json(results)
     })
   )
 
