@@ -9,7 +9,9 @@ const FollowLinkedIn = () => {
     <Box as="section" className="c-follow-linkedin c-homecomponent__blue p-3 mb-5 d-flex">
       <Box ml={3}>
         <Text as="p">
-          <strong>La mission interministérielle pour l’apprentissage et les trajectoires professionnelles construit des services numériques qui facilitent les entrées en apprentissage.</strong>
+          <strong>
+            La mission interministérielle pour l’apprentissage et les trajectoires professionnelles construit des services numériques qui facilitent les entrées en apprentissage.
+          </strong>
         </Text>
         <Text fontWeight={700} color="#000091" fontSize={32} pt={2}>
           Rendez-vous sur LinkedIn pour suivre nos actualités
