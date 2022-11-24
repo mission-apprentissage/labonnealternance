@@ -94,7 +94,7 @@ export const applicationSchema = {
   company_type: {
     type: String,
     default: null,
-    description: "Le type de société / offre au sens source d'info La Bonne Alternance. Ex : lba, lbb, matcha, pejob",
+    description: "Le type de société / offre au sens source d'info La bonne alternance. Ex : lba, lbb, matcha, pejob",
   },
   job_title: {
     type: String,
