@@ -37,7 +37,7 @@ function fuzzyTextFilterFn(rows, id, filterValue) {
 // Let the table remove the filter if the string is empty
 fuzzyTextFilterFn.autoRemove = (val) => !val
 
-export default ({ data, columns, description }) => {
+export default ({ data, columns, description, exportable }) => {
   const tableData = useMemo(() => data, [data])
   const tableColumns = useMemo(() => columns, [columns])
 
@@ -102,7 +102,7 @@ export default ({ data, columns, description }) => {
             </Box>
           )}
         </Box>
-        <ExportButtonNew data={tableData} />
+        {exportable && <ExportButtonNew data={tableData} />}
       </Flex>
 
       <Box as="table" {...getTableProps()} w="100%" flex={1} fontSize="delta">
