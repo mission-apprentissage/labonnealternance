@@ -9,14 +9,18 @@ const AmeliorerLBA = () => {
           <Image src="/images/home_pics/illu-support.svg" alt="" />
         </GridItem>
         <GridItem pl="8">
-          <Text fontWeight="700" my="5">Donnez votre avis</Text>
-          <Text as="h2" color="#000091" fontSize="2rem" fontWeight="500" my="5">Aidez-nous à améliorer La bonne alternance</Text>
-          <Text>
-            La bonne alternance est un service en construction. Pour le faire évoluer, nous interrogeons régulièrement les utilisateurs du service.
+          <Text fontWeight="700" my="5">
+            Donnez votre avis
           </Text>
+          <Text as="h2" color="#000091" fontSize="2rem" fontWeight="500" my="5">
+            Aidez-nous à améliorer La bonne alternance
+          </Text>
+          <Text>La bonne alternance est un service en construction. Pour le faire évoluer, nous interrogeons régulièrement les utilisateurs du service.</Text>
           <Text>
-            <strong>Nous vous invitions à participer à un échange en visio d’une trentaine de minutes avec un membre de notre équipe pour répondre à quelques questions et nous partager
-              votre avis.</strong>
+            <strong>
+              Nous vous invitions à participer à un échange en visio d’une trentaine de minutes avec un membre de notre équipe pour répondre à quelques questions et nous partager
+              votre avis.
+            </strong>
           </Text>
           <Box mt="7">
             <Link
@@ -27,11 +31,11 @@ const AmeliorerLBA = () => {
               border="1px solid #000091"
               padding="10px 24px"
               isExternal
-            >Je participe à l'étude</Link>
+            >
+              Je participe à l'étude
+            </Link>
           </Box>
-          <Box mt="3">
-            &nbsp;
-          </Box>
+          <Box mt="3">&nbsp;</Box>
         </GridItem>
       </Grid>
     </Box>
