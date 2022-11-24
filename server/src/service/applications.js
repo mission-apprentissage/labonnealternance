@@ -390,7 +390,7 @@ const sendNotificationToApplicant = async ({ mailer, application, intention, ema
 const notifyHardbounceToApplicant = async ({ mailer, application }) => {
   mailer.sendEmail({
     to: application.applicant_email,
-    subject: `${application.company_name} n'a pas reçu votre candidature sur La Bonne Alternance`,
+    subject: `${application.company_name} n'a pas reçu votre candidature sur La bonne alternance`,
     template: getEmailTemplate("mail-candidat-hardbounce"),
     data: { ...application._doc, ...images },
   })

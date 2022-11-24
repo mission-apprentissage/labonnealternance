@@ -269,7 +269,7 @@ export default ({ etablissementsRecruteur, usersRecruteur, formulaire, mailer })
 
             await mailer.sendEmail({
               to: email,
-              subject: "La Bonne Alternance — Confirmer votre adresse mail",
+              subject: "La bonne alternance — Confirmer votre adresse mail",
               template: mailTemplate["mail-confirmation-email"],
               data: {
                 prenom,
@@ -301,7 +301,7 @@ export default ({ etablissementsRecruteur, usersRecruteur, formulaire, mailer })
 
               await mailer.sendEmail({
                 to: email,
-                subject: "La Bonne Alternance — Confirmer votre adresse mail",
+                subject: "La bonne alternance — Confirmer votre adresse mail",
                 template: mailTemplate["mail-confirmation-email"],
                 data: {
                   prenom,
@@ -387,7 +387,7 @@ export default ({ etablissementsRecruteur, usersRecruteur, formulaire, mailer })
 
       await mailer.sendEmail({
         to: user.email,
-        subject: "Bienvenue sur La Bonne Alternance",
+        subject: "Bienvenue sur La bonne alternance",
         template: mailTemplate["mail-bienvenue"],
         data: {
           raison_sociale: user.raison_sociale,
