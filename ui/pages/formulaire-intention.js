@@ -1,5 +1,5 @@
 import React from "react"
-import SatisfactionForm from "components/SatisfactionForm/SatisfactionForm"
+import SatisfactionForm from "../components/SatisfactionForm/SatisfactionForm.js"
 import { NextSeo } from "next-seo"
 
 const FormulaireIntention = () => {

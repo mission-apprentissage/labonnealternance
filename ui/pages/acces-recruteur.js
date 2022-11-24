@@ -21,7 +21,7 @@ const AccesRecruteur = () => (
     <NextSeo
       title="Acces recruteur | La bonne alternance | Trouvez votre alternance"
       description="Exprimez votre besoin en alternance. Aucune inscription ne vous sera demandée."
-      />
+    />
 
     <ScrollToTop />
     <Navigation currentPage="acces-recruteur" />
@@ -43,14 +43,15 @@ const AccesRecruteur = () => (
       </Box>
 
       <Box as="section" pb={24} backgroundColor="white">
-        <Text as="h2" align="center" variant="homeEditorialH2">Vous souhaitez recruter un alternant pour votre entreprise ?</Text>
+        <Text as="h2" align="center" variant="homeEditorialH2">
+          Vous souhaitez recruter un alternant pour votre entreprise ?
+        </Text>
         <Box display="flex" justifyContent="center" alignItems="center">
           <ConnectionActions service="entreprise" />
         </Box>
       </Box>
 
-      <Box as="section">
-      </Box>
+      <Box as="section"></Box>
 
       <FollowLinkedIn />
     </Container>
