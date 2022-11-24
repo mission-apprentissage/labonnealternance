@@ -20,7 +20,7 @@ const createActivationToken = (subject, options = {}) => createToken("activation
 const createPasswordToken = (subject, options = {}) => createToken("password", subject, options)
 const createUserToken = (user, options = {}) => {
   const payload = { role: user.role }
-  return createToken("user", user.username, { payload, ...options })
+  return createToken("user", user.email, { payload, ...options })
 }
 
 const createUserRecruteurToken = (user, options = {}) => {
