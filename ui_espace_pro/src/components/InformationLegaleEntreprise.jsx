@@ -128,7 +128,7 @@ export default (props) => {
                 NON
               </Text>
             )}
-            <InfoTooltip description='La donnée "Effectif” provient de l’INSEE puis est déduite du SIRET. Si cette information est erronée, merci de leur signaler.' />
+            <InfoTooltip description="La donnée 'Qualiopi' provient du Référentiel de l'ONISEP puis est déduite du SIRET. Si cette information est erronée, merci de leur signaler." />
           </Flex>
         )}
       </Stack>
