@@ -1,7 +1,7 @@
-import { Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, Button, Container, Flex, Heading, Link, SimpleGrid, Text, useToast } from "@chakra-ui/react"
+import { Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, Button, Container, Flex, Heading, SimpleGrid, Text, useToast } from "@chakra-ui/react"
 import { Form, Formik } from "formik"
 import { useMutation, useQuery, useQueryClient } from "react-query"
-import { useNavigate, useParams } from "react-router-dom"
+import { Link, useNavigate, useParams } from "react-router-dom"
 import * as Yup from "yup"
 import { getFormulaire, putFormulaire, updateEntreprise } from "../../api"
 import { AUTHTYPE } from "../../common/contants"
@@ -116,9 +116,9 @@ const Formulaire = ({ nom, prenom, telephone, email, id_form }) => {
               }
             />
             <Flex justifyContent="flex-end" alignItems="center" mt={5}>
-              <Link href="#" variant="secondary" mr={5} onClick={() => navigate(-1)}>
+              <Button as={Link} variant="secondary" mr={5} onClick={() => navigate(-1)}>
                 Annuler
-              </Link>
+              </Button>
               <Button
                 type="submit"
                 variant="form"
