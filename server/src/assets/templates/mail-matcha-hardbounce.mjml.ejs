@@ -1,0 +1,46 @@
+<mjml>
+    <mj-head>
+        <mj-title>Votre candidature chez <%= data.company_name %></mj-title>
+        <mj-font name="Inter" href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap'" />
+        <mj-style inline="inline">
+            a:link,a:visited, a:hover, a:active {color: #206BC4;}, a {color: #3A55D1;}, body{background: #EDF0F2;}
+            a.purple {color: #3A55D1; text-decoration: none}
+            .link-nostyle { color: inherit; text-decoration: none; font-size: 28px }
+            .link-nostyle:hover { color: inherit; text-decoration: none }
+        </mj-style>
+        <mj-attributes>
+            <mj-text padding="0px" color="#232E3C" font-family="Inter,sans-serif" font-size="14px" line-height="23px" />
+            <mj-divider padding="0px" />
+        </mj-attributes>
+    </mj-head>
+    <mj-body background-color="#EDF0F2">
+        <mj-section padding-bottom="10px">
+            <mj-column padding="0px" vertical-align="middle">
+                <mj-image padding="0px" width="150px" src="<%= data.images.logo %>" alt="Logo du site La bonne alternance" />
+            </mj-column>
+        </mj-section>
+        <mj-wrapper background-color="#ffffff" padding="0px" border-radius="10px">
+            <mj-section padding="15px">
+                <mj-column>
+                    <mj-text padding-bottom="32px" font-size="18px" padding="0px" font-weight="700" line-height="24px" text-decoration="none" color="#383838">
+                        Hardbounce détecté pour
+                    </mj-text>
+                    <mj-text font-size="22px" line-height="24px" font-weight="700" color="#F07F87">
+                        <%= data.company_name %> <%= data.company_siret %>
+                    </mj-text>
+                    <mj-text font-size="14px" line-height="24px">
+                        Offre numéro : <%= data.job_id %>
+                    </mj-text>                    
+                    <mj-text font-size="14px" line-height="24px">
+                        Adresse email : <%= data.company_email %>
+                    </mj-text>                    
+                </mj-column>
+            </mj-section>
+
+        </mj-wrapper>
+
+        <mj-section padding-top="50px">
+            <mj-column ></mj-column>
+        </mj-section>
+    </mj-body>
+</mjml>
