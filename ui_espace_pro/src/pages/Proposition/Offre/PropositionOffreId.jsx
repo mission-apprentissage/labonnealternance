@@ -19,7 +19,9 @@ export const PropositionOffreId = () => {
    * @return {Promise<void>}
    */
   const copyInClipboard = () => {
-    navigator.clipboard.writeText(`https://labonnealternance.pole-emploi.fr/recherche-apprentissage?&display=list&page=fiche&type=matcha&itemId=${offre._id}`)
+    navigator.clipboard.writeText(
+      `https://doctrina${window.location.href.includes("recette") ? "-recette" : ""}/recherche-apprentissage?&display=list&page=fiche&type=matcha&itemId=${offre._id}`
+    )
     toast({
       title: "Lien copié.",
       position: "bottom-right",
