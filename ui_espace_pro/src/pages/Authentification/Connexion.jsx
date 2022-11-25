@@ -27,7 +27,7 @@ const ConnexionCompte = () => {
           case "DISABLED":
             setFieldError(
               "email",
-              `Le compte utilisateur est désactivé, merci de prendre contact avec le <a style="text-decoration:underline;" href="mailto:matcha@apprentissage.beta.gouv.fr?subject=Compte CFA Matcha désactivé">support</a>`
+              `Le compte utilisateur est désactivé, merci de prendre contact avec le <a style="text-decoration:underline;" href="mailto:labonnealternance-contact@apprentissage.beta.gouv.fr?subject=Compte CFA La bonne alternance désactivé">support</a>`
             )
             break
           case "UNKNOWN":
