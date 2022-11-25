@@ -467,7 +467,7 @@ const Information = (props) => {
             <Text textAlign="justify">Voici la description visible par les candidats lors de la mise en ligne de l’offre d’emploi en alternance.</Text>
           </Flex>
 
-          <Accordion defaultIndex={[0, 1]}>
+          <Accordion defaultIndex={[0]} allowMultiple>
             <AccordionItem key={0}>
               {({ isExpanded }) => (
                 <>
