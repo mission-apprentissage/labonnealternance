@@ -80,7 +80,11 @@ const Formulaire = ({ submitForm, validateOpcoChoice }) => {
               type="tel"
               pattern="[0-9]{10}"
               maxLength="10"
-              helper="Le numéro de téléphone sera visible sur l'offre d'emploi"
+              helper={
+                type === AUTHTYPE.ENTREPRISE
+                  ? "Le numéro de téléphone sera visible sur l'offre d'emploi"
+                  : "Le numéro de téléphone sera visible sur l’offre d’emploi de vos entreprises partenaires"
+              }
               value={values.telephone}
             />
             <CustomInput
@@ -196,7 +200,9 @@ export default () => {
             <Heading>{type === AUTHTYPE.ENTREPRISE ? "Vos informations de contact" : "Créez votre compte"}</Heading>
             <Box fontSize="20px" mb={4}>
               <Text textAlign="justify" mt={2}>
-                Les informations de contact seront visibles sur vos offres et permettront de recevoir les candidatures.
+                {type === AUTHTYPE.ENTREPRISE
+                  ? "Les informations de contact seront visibles sur vos offres et permettront de recevoir les candidatures."
+                  : "Les informations de contact seront visibles sur les offres de vos entreprises partenaires"}
               </Text>
               <Text>Elles peuvent être modifiées ultérieurement.</Text>
             </Box>
