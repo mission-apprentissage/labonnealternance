@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react"
 import axios from "axios"
+import React, { useEffect, useState } from "react"
 import { initPostulerParametersFromQuery } from "services/config"
 import WidgetPostulerError from "./WidgetPostulerError"
-import { matchaApi, companyApi } from "components/SearchForTrainingsAndJobs/services/utils"
-import WidgetCandidatureSpontanee from "./WidgetCandidatureSpontanee"
+
 import { Spinner } from "reactstrap"
+import { companyApi, matchaApi } from "../../SearchForTrainingsAndJobs/services/utils"
+import WidgetCandidatureSpontanee from "./WidgetCandidatureSpontanee"
 
 const WidgetPostuler = () => {
   useEffect(() => {

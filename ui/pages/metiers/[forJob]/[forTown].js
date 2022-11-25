@@ -1,12 +1,12 @@
-import React from "react"
-import { Box, Button, Container, Divider, Link, Text, VStack } from "@chakra-ui/react"
-import { getStaticMetiers, getStaticVilles } from "utils/getStaticData"
-import { buildLinkForTownAndJob } from "utils/buildLinkForTownAndJob"
-import Navigation from "components/navigation"
-import { useRouter } from "next/router"
-import Footer from "components/footer"
+import { Box, Button, Container, Divider, Text } from "@chakra-ui/react"
 import { NextSeo } from "next-seo"
-import Breadcrumb from "components/breadcrumb"
+import { useRouter } from "next/router"
+import React from "react"
+import Breadcrumb from "../../../components/breadcrumb"
+import Footer from "../../../components/footer"
+import Navigation from "../../../components/navigation"
+import { buildLinkForTownAndJob } from "../../../utils/buildLinkForTownAndJob"
+import { getStaticMetiers, getStaticVilles } from "../../../utils/getStaticData"
 
 export default function ForTown(props) {
   const router = useRouter()

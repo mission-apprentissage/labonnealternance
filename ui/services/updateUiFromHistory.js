@@ -3,9 +3,9 @@
  * sans qu'il y ait de changement de page
  */
 
-import { restoreSearchFromSession } from "components/SearchForTrainingsAndJobs/services/handleSessionStorage"
-import { currentSearch, setCurrentSearch } from "utils/currentPage"
-import { filterLayers } from "utils/mapTools"
+import { restoreSearchFromSession } from "../components/SearchForTrainingsAndJobs/services/handleSessionStorage"
+import { currentSearch, setCurrentSearch } from "../utils/currentPage"
+import { filterLayers } from "../utils/mapTools"
 
 export const updateUiFromHistory = ({
   url,

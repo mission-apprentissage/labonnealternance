@@ -1,11 +1,11 @@
-import React from "react"
 import { Box, Container, Divider, Link, Text, VStack } from "@chakra-ui/react"
-import { getStaticMetiers, getStaticVilles } from "utils/getStaticData"
-import Navigation from "components/navigation"
-import { useRouter } from "next/router"
-import Footer from "components/footer"
 import { NextSeo } from "next-seo"
-import Breadcrumb from "components/breadcrumb"
+import { useRouter } from "next/router"
+import React from "react"
+import { getStaticMetiers, getStaticVilles } from "utils/getStaticData"
+import Breadcrumb from "../../components/breadcrumb"
+import Footer from "../../components/footer"
+import Navigation from "../../components/navigation"
 
 export default function ForJob(props) {
   const router = useRouter()

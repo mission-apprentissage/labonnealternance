@@ -1,7 +1,7 @@
 import axios from "axios"
 import { logError } from "utils/tools"
-import { searchForJobsFunction } from "components/SearchForTrainingsAndJobs/services/searchForJobs"
-import { trainingApi, offreApi, matchaApi, companyApi, trainingErrorText, partialJobSearchErrorText, notFoundErrorText } from "components/SearchForTrainingsAndJobs/services/utils"
+import { searchForJobsFunction } from "../../SearchForTrainingsAndJobs/services/searchForJobs"
+import { companyApi, matchaApi, notFoundErrorText, offreApi, partialJobSearchErrorText, trainingApi, trainingErrorText } from "../../SearchForTrainingsAndJobs/services/utils"
 
 import { flyToMarker, setSelectedMarker } from "utils/mapTools"
 import { storeTrainingsInSession } from "./handleSessionStorage"

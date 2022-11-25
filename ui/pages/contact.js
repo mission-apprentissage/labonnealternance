@@ -1,11 +1,11 @@
-import Breadcrumb from "components/breadcrumb"
-import Footer from "components/footer"
-import Navigation from "components/navigation"
-import ScrollToTop from "components/ScrollToTop"
 import NextLink from "next/link"
 import React from "react"
+import Breadcrumb from "../components/breadcrumb.js"
+import Footer from "../components/footer.js"
+import Navigation from "../components/navigation.js"
+import ScrollToTop from "../components/ScrollToTop/index.js"
 
-import { Button, Box, Container, Divider, Grid, GridItem, Link, Text } from "@chakra-ui/react"
+import { Box, Button, Container, Divider, Grid, GridItem, Link, Text } from "@chakra-ui/react"
 
 import { NextSeo } from "next-seo"
 

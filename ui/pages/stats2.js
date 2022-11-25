@@ -1,9 +1,9 @@
 import React from "react"
-import Navigation from "components/navigation"
-import ScrollToTop from "components/ScrollToTop"
-import Breadcrumb from "components/breadcrumb"
+import Breadcrumb from "../components/breadcrumb"
+import Navigation from "../components/navigation"
+import ScrollToTop from "../components/ScrollToTop"
 
-import Footer from "components/footer"
+import Footer from "../components/footer"
 
 const stats2 = () => (
   <div>

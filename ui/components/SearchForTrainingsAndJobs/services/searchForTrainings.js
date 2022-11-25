@@ -1,8 +1,8 @@
 import axios from "axios"
-import { logError } from "utils/tools"
 import { SendTrackEvent } from "utils/plausible"
+import { logError } from "utils/tools"
 
-import { trainingsApi, trainingErrorText, getRomeFromParameters, getRncpsFromParameters } from "components/SearchForTrainingsAndJobs/services/utils"
+import { getRncpsFromParameters, getRomeFromParameters, trainingErrorText, trainingsApi } from "../../SearchForTrainingsAndJobs/services/utils"
 import { storeTrainingsInSession } from "./handleSessionStorage"
 
 export const searchForTrainingsFunction = async ({

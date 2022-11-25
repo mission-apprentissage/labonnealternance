@@ -1,10 +1,9 @@
-import Breadcrumb from "components/breadcrumb"
 import { Box, Container, Divider, Link, Text, VStack } from "@chakra-ui/react"
-import Navigation from "components/navigation"
-import ScrollToTop from "components/ScrollToTop"
 import React from "react"
-
-import Footer from "components/footer"
+import Breadcrumb from "../../components/breadcrumb"
+import Footer from "../../components/footer"
+import Navigation from "../../components/navigation"
+import ScrollToTop from "../../components/ScrollToTop"
 
 import { NextSeo } from "next-seo"
 import { getStaticMetiers, getStaticVilles } from "utils/getStaticData"
