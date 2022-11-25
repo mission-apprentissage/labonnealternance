@@ -97,7 +97,7 @@ export const PropositionOffreId = () => {
             <Flex align="center">
               <Text mr={3}>Durée du contrat :</Text>
               <Text bg="#F9F8F6" px="8px" py="2px" mr={2} fontWeight={700} noOfLines={1}>
-                {offre.duree_contrat > 1 ? `${offre.duree_contrat} an` : `${offre.duree_contrat} ans`}
+                {offre.duree_contrat > 1 ? `${offre.duree_contrat} ans` : `${offre.duree_contrat} an`}
               </Text>
             </Flex>
             <Flex align="center">
