@@ -352,6 +352,7 @@ const AjouterVoeux = (props) => {
                   <option value="" hidden>
                     Choisissez un rythme
                   </option>
+                  <option value="Indifférent">Indifférent</option>
                   <option value="2 jours / 3 jours">2 jours / 3 jours</option>
                   <option value="1 semaine / 1 semaine">1 semaine / 1 semaine</option>
                   <option value="2 semaines / 3 semaines">2 semaines / 3 semaines</option>
