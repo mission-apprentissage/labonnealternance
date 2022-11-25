@@ -265,7 +265,7 @@ export default ({ etablissementsRecruteur, usersRecruteur, formulaire, mailer })
 
             let { email, _id, nom, prenom } = partenaire
 
-            const url = etablissement.getValidationUrl(_id)
+            const url = etablissementsRecruteur.getValidationUrl(_id)
 
             await mailer.sendEmail({
               to: email,
@@ -297,7 +297,7 @@ export default ({ etablissementsRecruteur, usersRecruteur, formulaire, mailer })
 
               let { email, _id, nom, prenom } = partenaire
 
-              const url = etablissement.getValidationUrl(_id)
+              const url = etablissementsRecruteur.getValidationUrl(_id)
 
               await mailer.sendEmail({
                 to: email,
