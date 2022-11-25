@@ -141,7 +141,7 @@ export default ({ type, widget, administration }) => {
           <Box>
             <Heading>Renseignements entreprise</Heading>
             <Text fontSize="20px" textAlign="justify" mt={2}>
-              Merci de renseigner le siret de l'entreprise qui vous a mandaté afin de l'identifier.
+              Merci de renseigner le siret de votre entreprise partenaire.
             </Text>
             <Box mt={4}>
               <CreationCompte type={type} />
