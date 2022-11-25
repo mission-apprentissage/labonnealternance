@@ -70,7 +70,7 @@ export default (props) => {
               <Text bg="#F9F8F6" px="8px" py="2px" fontWeight={700} mr={2} noOfLines={1}>
                 {code_postal}
               </Text>
-              <InfoTooltip description="La donnée “Adresse” provient de l’INSEE puis est déduite du SIRET. Si cette information est erronée, merci de leur signaler." />
+              <InfoTooltip description="La donnée “Code postal“ provient de l’INSEE puis est déduite du SIRET. Si cette information est erronée, merci de leur signaler." />
             </Flex>{" "}
             <Flex align="center">
               <Text mr={3}>Commune :</Text>
