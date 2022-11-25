@@ -3,7 +3,7 @@ import dayjs from "dayjs"
 import { useContext, useState } from "react"
 import { useQueryClient } from "react-query"
 import { useLocation, useNavigate } from "react-router-dom"
-import { sendMagiclink } from "../../api"
+import { sendValidationLink } from "../../api"
 import { AuthentificationLayout } from "../../components"
 import { WidgetContext } from "../../contextWidget"
 import { InfoCircle } from "../../theme/components/icons"
@@ -20,16 +20,43 @@ export default () => {
   const { offre, email, withDelegation, fromDashboard } = location.state
 
   const resendMail = (email) => {
-    sendMagiclink({ email }).catch(() => {
-      toast({
-        title: "Email envoyé.",
-        description: "Un nouveau email vient d'être envoyé.",
-        position: "top-right",
-        status: "success",
-        duration: 5000,
+    sendValidationLink({ email })
+      .then(() => {
+        toast({
+          title: "Email envoyé.",
+          description: "Un nouveau email vient d'être envoyé.",
+          position: "top-right",
+          status: "success",
+          duration: 4000,
+        })
       })
-      setDisableLink(true)
-    })
+      .catch((error) => {
+        if (error.response.error) {
+          switch (error.response.reason) {
+            case "UNKNOWN":
+              toast({
+                title: "Un problème est survenu.",
+                description: "L'email n'a pas pu être vérfié, merci de contacter le support.",
+                position: "top-right",
+                status: "success",
+                duration: 4000,
+              })
+              break
+            case "VERIFIED":
+              toast({
+                title: "L'email est déjà vérifié.",
+                description: "Vous pouvez vous connecter.",
+                position: "top-right",
+                status: "success",
+                duration: 4000,
+              })
+              break
+          }
+        }
+      })
+      .finally(() => {
+        setDisableLink(true)
+      })
   }
 
   /**

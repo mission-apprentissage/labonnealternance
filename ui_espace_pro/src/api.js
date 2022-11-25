@@ -61,6 +61,7 @@ export const updateEntreprise = async (userId, formId, values) => await Promise.
  */
 export const validateToken = async (token) => await API.post(`/login/verification`, token)
 export const sendMagiclink = async (email) => await API.post(`/login/magiclink`, email)
+export const sendValidationLink = async (email) => await API.post(`/login/confirmation-email`, email)
 export const validationCompte = (id) => API.post("/etablissementsRecruteur/validation", id)
 
 /**
