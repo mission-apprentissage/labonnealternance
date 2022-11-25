@@ -1,38 +1,38 @@
-import React, { useState, useEffect, useContext } from "react"
+import React, { useContext, useEffect, useState } from "react"
 
 import { useRouter } from "next/router"
 
-import { loadItem } from "components/SearchForTrainingsAndJobs/services/loadItem"
-import { searchForTrainingsFunction } from "components/SearchForTrainingsAndJobs/services/searchForTrainings"
-import { searchForJobsFunction } from "components/SearchForTrainingsAndJobs/services/searchForJobs"
 import pushHistory from "utils/pushHistory"
+import { loadItem } from "../SearchForTrainingsAndJobs/services/loadItem"
+import { searchForJobsFunction } from "../SearchForTrainingsAndJobs/services/searchForJobs"
+import { searchForTrainingsFunction } from "../SearchForTrainingsAndJobs/services/searchForTrainings"
 
 import {
-  flyToMarker,
-  flyToLocation,
   closeMapPopups,
-  factorTrainingsForMap,
-  factorJobsForMap,
   computeMissingPositionAndDistance,
-  setJobMarkers,
-  setTrainingMarkers,
-  setSelectedMarker,
-  resizeMap,
-  isMapInitialized,
   coordinatesOfFrance,
+  factorJobsForMap,
+  factorTrainingsForMap,
+  flyToLocation,
+  flyToMarker,
+  isMapInitialized,
+  resizeMap,
+  setJobMarkers,
+  setSelectedMarker,
+  setTrainingMarkers,
 } from "utils/mapTools"
 
 import { ScopeContext } from "context/ScopeContext"
-import { SearchResultContext } from "../../context/SearchResultContextProvider"
-import { ParameterContext } from "../../context/ParameterContextProvider"
 import { DisplayContext } from "../../context/DisplayContextProvider"
+import { ParameterContext } from "../../context/ParameterContextProvider"
+import { SearchResultContext } from "../../context/SearchResultContextProvider"
 
-import Map from "components/Map"
-import { MapListSwitchButton, ChoiceColumn } from "./components"
-import { WidgetHeader, InitWidgetSearchParameters } from "components/WidgetHeader"
-import { currentPage, setCurrentPage, currentSearch, setCurrentSearch } from "utils/currentPage"
-import updateUiFromHistory from "services/updateUiFromHistory"
 import { Box, Flex } from "@chakra-ui/react"
+import { currentPage, currentSearch, setCurrentPage, setCurrentSearch } from "utils/currentPage"
+import updateUiFromHistory from "../../services/updateUiFromHistory"
+import Map from "../Map"
+import { InitWidgetSearchParameters, WidgetHeader } from "../WidgetHeader"
+import { ChoiceColumn, MapListSwitchButton } from "./components"
 
 const SearchForTrainingsAndJobs = () => {
   const scopeContext = useContext(ScopeContext)

@@ -1,10 +1,10 @@
+import { ErrorMessage, Field, Form, Formik } from "formik"
 import React, { useState } from "react"
-import { Button, Container, Row, Col } from "reactstrap"
-import { Formik, Form, ErrorMessage, Field } from "formik"
-import { RadioButton } from "components"
-import { AutoCompleteField, compareAutoCompleteValues, autoCompleteToStringFunction } from "components/AutoCompleteField/AutoCompleteField"
-import { fetchAddresses } from "services/baseAdresse"
-import domainChanged from "services/domainChanged"
+import { Button, Col, Container, Row } from "reactstrap"
+import { fetchAddresses } from "../../services/baseAdresse"
+import domainChanged from "../../services/domainChanged"
+import { AutoCompleteField, autoCompleteToStringFunction, compareAutoCompleteValues } from "../AutoCompleteField/AutoCompleteField"
+import { RadioButton } from "../RadioButton"
 
 const WidgetTester = () => {
   const [locationRadius, setLocationRadius] = useState(0)

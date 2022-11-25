@@ -1,8 +1,8 @@
 import axios from "axios"
-import { logError } from "utils/tools"
 import { SendTrackEvent } from "utils/plausible"
+import { logError } from "utils/tools"
 
-import { jobsApi, technicalErrorText, allJobSearchErrorText, partialJobSearchErrorText, getRomeFromParameters } from "components/SearchForTrainingsAndJobs/services/utils"
+import { allJobSearchErrorText, getRomeFromParameters, jobsApi, partialJobSearchErrorText, technicalErrorText } from "../../SearchForTrainingsAndJobs/services/utils"
 import { storeJobsInSession } from "./handleSessionStorage"
 
 export const searchForJobsFunction = async ({
