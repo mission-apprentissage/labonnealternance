@@ -86,7 +86,7 @@ export default ({ users, usersRecruteur, etablissementsRecruteur, mailer }) => {
         return res.status(400).json({ error: true, reason: "VERIFIED" })
       }
 
-      let { email, _id, prenom, nom } = user
+      let { _id, prenom, nom } = user
 
       const url = etablissementsRecruteur.getValidationUrl(_id)
 
