@@ -1,14 +1,22 @@
 import { Button, Container, Flex } from "@chakra-ui/react"
 import { useContext } from "react"
-import { useNavigate } from "react-router-dom"
 import { WidgetContext } from "../contextWidget"
 import { Close } from "../theme/components/icons"
 import { LbaNew } from "../theme/components/logos"
 import Logo from "./Layout/Logo"
 
 export default (props) => {
-  const navigate = useNavigate()
   const { widget } = useContext(WidgetContext)
+
+  const redirect = () => {
+    const isCfa = window.location.pathname.includes("cfa") ? true : false
+
+    if (isCfa) {
+      return window.location.assign(`/organisme-de-formation`)
+    } else {
+      return window.location.assign(`/acces-recruteur`)
+    }
+  }
 
   if (widget?.isWidget) {
     return props.children
@@ -24,7 +32,7 @@ export default (props) => {
           </Flex>
           <Button
             display="flex"
-            onClick={props.fromDashboard ? () => props.onClose() : () => window.location.replace("/")}
+            onClick={props.fromDashboard ? () => props.onClose() : () => redirect()}
             fontWeight="normal"
             variant="pill"
             color="bluefrance.500"
