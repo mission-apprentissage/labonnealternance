@@ -30,7 +30,6 @@ const AlgoRecruiter = () => {
                 algorithme prédictif de Pôle emploi, qui analyse les recrutements des 6 années passées en CDI, CDD de plus de 30 jours et alternance. L’objectif de cet algorithme
                 est de rendre accessible le marché caché de l’emploi, et ainsi faciliter les démarches de candidatures spontanées des usagers du service.
               </ListItem>
-              <ListItem mb="3">Les présentes conditions d’utilisation peuvent être modifiées à tout moment et la date de mise à jour est mentionnée.</ListItem>
             </UnorderedList>
           </GridItem>
           <GridItem colSpan={{ base: "2" }}>

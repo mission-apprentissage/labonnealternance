@@ -15,7 +15,7 @@ const Entreprise = () => {
             Vous êtes une entreprise
           </Text>
           <Text as="h2" variant="homeEditorialH2" mb={{ base: "3", lg: "5" }}>
-            Diffusez simplement et gratuitement vos offres en alternance.
+            Diffusez simplement et gratuitement vos offres en alternance
           </Text>
           <Box fontWeight={"500"}>
             Exprimez vos besoins en alternance afin d’être visible auprès des jeunes en recherche de contrat, et des centres de formation pouvant vous accompagner.
