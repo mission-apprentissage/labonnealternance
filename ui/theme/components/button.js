@@ -110,6 +110,36 @@ const Button = {
         bg: "bluefrance.100",
       },
     },
+    centerSearch: {
+      display: "flex",
+      cursor: "pointer",
+      background: "none",
+      border: "none",
+      padding: "0px 5px 10px 0",
+      fontSize: "14px",
+      width: "fit-content",
+      _hover: {
+        background: "white",
+      },
+    },
+    knowMore: {
+      color: "grey.700",
+      fontSize: "14px",
+      fontWeight: 400,
+      width: "max-content",
+      height: "auto",
+      padding: "0 0 5px 0",
+      borderRadius: "none",
+      marginLeft: "auto",
+      lineHeight: "17px",
+      background: "none",
+      border: "none",
+      borderBottom: "2px solid",
+      borderColor: "grey.700",
+      _hover: {
+        color: "black",
+      },
+    },
   },
 }
 

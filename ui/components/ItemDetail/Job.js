@@ -1,5 +1,4 @@
 import React, { useState } from "react"
-import jobIcon from "../../public/images/icons/job.svg"
 import TagOffreEmploi from "./TagOffreEmploi"
 import { isDepartmentJob } from "../../utils/itemListUtils"
 import extendedSearchPin from "../../public/images/icons/trainingPin.svg"
@@ -11,6 +10,7 @@ import { getSearchQueryParameters } from "../../utils/getSearchParameters"
 import TagFormationAssociee from "./TagFormationAssociee"
 import { SearchResultContext } from "../../context/SearchResultContextProvider"
 import { DisplayContext } from "../../context/DisplayContextProvider"
+import { Box, Button, Flex, Image, Link, Text } from "@chakra-ui/react"
 
 const Job = ({ job, handleSelectItem, showTextOnly, searchForTrainingsOnNewCenter }) => {
   const { selectedMapPopupItem } = React.useContext(SearchResultContext)
@@ -30,10 +30,6 @@ const Job = ({ job, handleSelectItem, showTextOnly, searchForTrainingsOnNewCente
     handleSelectItem(job)
   }
 
-  const getHightlightClass = () => {
-    return shouldBeHighlighted() ? "c-resultcard--highlight" : ""
-  }
-
   const shouldBeHighlighted = () => {
     if (selectedMapPopupItem?.ideaType === "job") {
       return selectedMapPopupItem.items.find((item) => {
@@ -46,9 +42,12 @@ const Job = ({ job, handleSelectItem, showTextOnly, searchForTrainingsOnNewCente
 
   const getCenterSearchOnJobButton = () => {
     return (
-      <button className="extendedTrainingSearchButton" onClick={centerSearchOnJob}>
-        <img src={extendedSearchPin} alt="" /> <span>Voir les formations proches</span>
-      </button>
+      <Button variant="centerSearch" color="#01ac8c" title="Voir les entreprises proches" onClick={centerSearchOnJob}>
+        <Image mb="2px" mr="5px" src={extendedSearchPin} alt="" />{" "}
+        <Text textDecoration="underline" as="span">
+          Voir les formations proches
+        </Text>
+      </Button>
     )
   }
 
@@ -83,18 +82,6 @@ const Job = ({ job, handleSelectItem, showTextOnly, searchForTrainingsOnNewCente
     searchForTrainingsOnNewCenter(newCenter)
   }
 
-  const rootClassList = (actualKind) => {
-    let allClasses = "resultCard gtmSavoirPlus gtmListe "
-    if (actualKind === "peJob") {
-      allClasses += "gtmPeJob "
-    } else if (actualKind === "matcha") {
-      allClasses += "gtmMatcha "
-    }
-    allClasses += getHightlightClass()
-
-    return allClasses
-  }
-
   const highlightItemOnMap = () => {
     setSelectedMarker(job)
   }
@@ -109,45 +96,69 @@ const Job = ({ job, handleSelectItem, showTextOnly, searchForTrainingsOnNewCente
 
   const actualLink = `/recherche-apprentissage?display=list&page=fiche&${getItemQueryParameters(job)}&${getSearchQueryParameters(formValues)}`
 
-  return (
-    <a className={rootClassList(kind)} onClick={onSelectItem} onMouseOver={highlightItemOnMap} onMouseOut={dimItemOnMap} data-testid={`${kind}${job.job.id}`} href={actualLink}>
-      <div className="c-media" id={`${kind}${job.job.id}`}>
-        <div className="c-media-figure">
-          <img className="cardIcon" src={jobIcon} alt="" />
-        </div>
+  let cardProperties = {
+    color: "grey.650",
+    cursor: "pointer",
+    bg: "white",
+    textAlign: "left",
+    m: ["0.5rem 0", "18px 25px", "0.5rem 0", "0.5rem 25px"],
+    p: ["20px 10px", "20px 25px", "20px 10px", "20px 25px"],
+    _hover: {
+      textDecoration: "none",
+      color: "inherit",
+    },
+  }
 
-        <div className="c-media-body">
-          <div className="row no-gutters">
-            <div className="col-12 col-lg-7 text-left">
-              <div className="title d-inline-block">{job.title}</div>
-            </div>
-            <div className="col-12 col-lg-5 d-lg-flex flex-column text-left text-lg-right my-1 my-lg-0">
+  if (shouldBeHighlighted()) {
+    cardProperties.filter = "drop-shadow(0px 0px 8px rgba(30, 30, 30, 0.25))"
+  }
+
+  return (
+    <Link
+      as="a"
+      className="resultCard"
+      {...cardProperties}
+      onClick={onSelectItem}
+      onMouseOver={highlightItemOnMap}
+      onMouseOut={dimItemOnMap}
+      href={actualLink}
+      data-testid={`${kind}${job.job.id}`}
+    >
+      <Flex align="flex-start" id={`${kind}${job.job.id}`}>
+        <Box flex="1">
+          <Flex m="0">
+            <Box flex="initial" textAlign="left">
+              <Box color="black" fontSize="1rem" fontWeight={700}>
+                {job.title}
+              </Box>
+            </Box>
+            <Box my={[1, 1, 1, "0"]} flex="auto" textAlign="right">
               <TagOffreEmploi />
               <TagFormationAssociee isMandataire={job?.company?.mandataire} />
-            </div>
-          </div>
+            </Box>
+          </Flex>
 
-          <div>
-            <div className="cardText pt-2">{job.company && job.company.name ? job.company.name : ReactHtmlParser("<i>Offre anonyme</i>")}</div>
-            <div className="cardText pt-2">{job.place.fullAddress}</div>
-          </div>
+          <Box pt={2} fw={500} fs="14px" lineHeight="24px">
+            {job.company && job.company.name ? job.company.name : ReactHtmlParser("<i>Offre anonyme</i>")}
+          </Box>
+          <Box pt={2} fw={500} fs="14px" lineHeight="24px">
+            {job.place.fullAddress}
+          </Box>
 
-          <span className="cardDistance pt-1">
+          <Text display="flex" fs="14px" color="grey.600" as="span" pt={1}>
             {hasLocation ? isDepartmentJob(job) ? "Dans votre zone de recherche" : <>{job.place.distance} km(s) du lieu de recherche</> : ""}
             {showTextOnly ? (
               ""
             ) : (
-              <>
-                <span className="knowMore d-none d-md-block">
-                  <button className={`c-resultcard-knowmore`}>En savoir plus</button>
-                </span>
-              </>
+              <Text ml="auto" as="span" display={["none", "none", "block"]}>
+                <Button variant="knowMore">En savoir plus</Button>
+              </Text>
             )}
-          </span>
+          </Text>
           {Math.round(job.place.distance) > currentSearchRadius ? getCenterSearchOnJobButton() : ""}
-        </div>
-      </div>
-    </a>
+        </Box>
+      </Flex>
+    </Link>
   )
 }
 

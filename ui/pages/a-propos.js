@@ -43,7 +43,7 @@ const StartupCard = ({ logoUrl, url, title }) => {
         <Image src={logoUrl} width="134px" alt="" />
       </Box>
       <Box pl={2}>
-        <Link url={url} isExternal>
+        <Link href={url} isExternal>
           {title}
         </Link>
       </Box>
@@ -58,7 +58,7 @@ const ServiceLink = ({ url, text, title }) => {
         •
       </GridItem>
       <GridItem ml={4} colSpan={[11, 11, 4]}>
-        <Link sx={{ "text-underline-offset": "3px" }} textDecoration="underline" textDecorationThickness="2px" fontWeight="700" url={url} isExternal>
+        <Link sx={{ "text-underline-offset": "3px" }} textDecoration="underline" textDecorationThickness="2px" fontWeight="700" href={url} isExternal>
           {title}
         </Link>
       </GridItem>
@@ -195,11 +195,6 @@ const APropos = () => (
             />
           </SimpleGrid>
 
-          <SimpleGrid columns={[1, 1, 2]}>
-            <StartupCard logoUrl="/images/logo-memo.png" url="https://memo.pole-emploi.fr/" title="Organiser votre recherche d'emploi avec notre tableau de bord" />
-            <StartupCard logoUrl={logoAvril} url="https://avril.pole-emploi.fr/" title="Trouvez une formation en fonction de votre profil ET du marché du travail" />
-          </SimpleGrid>
-
           <Text variant="editorialContentH2" as="h2">
             Autres liens utiles
           </Text>
@@ -253,8 +248,6 @@ const APropos = () => (
               text="Je suis jeune, je découvre toutes les solutions pour préparer mon avenir."
               title="#1jeune1solution"
             />
-
-            <ServiceLink url="https://www.1jeune1solution.gouv.fr/" text="Je suis jeune, je découvre toutes les solutions pour préparer mon avenir." title="#1jeune1solution" />
           </VStack>
         </GridItem>
       </Grid>
