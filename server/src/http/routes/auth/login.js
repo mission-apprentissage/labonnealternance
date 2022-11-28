@@ -72,9 +72,16 @@ export default ({ users, usersRecruteur, etablissementsRecruteur, mailer }) => {
   router.post(
     "/confirmation-email",
     tryCatch(async (req, res) => {
-      const { email } = await Joi.object({
-        email: Joi.string().email().required(),
-      }).validateAsync(req.body, { abortEarly: false })
+      try {
+        await Joi.object({
+          email: Joi.string().email().required(),
+        }).validateAsync(req.body, { abortEarly: false })
+      } catch (error) {
+        return res.status(400).json({
+          errorMessage: "l'adresse mail n'est pas valide.",
+          details: error.details,
+        })
+      }
 
       const user = await usersRecruteur.getUser({ email })
 
@@ -82,11 +89,11 @@ export default ({ users, usersRecruteur, etablissementsRecruteur, mailer }) => {
         return res.status(400).json({ error: true, reason: "UNKNOWN" })
       }
 
-      if (user.email_valide) {
+      let { _id, prenom, nom, email, email_valide } = user
+
+      if (email_valide) {
         return res.status(400).json({ error: true, reason: "VERIFIED" })
       }
-
-      let { email, _id, prenom, nom } = user
 
       const url = etablissementsRecruteur.getValidationUrl(_id)
 
