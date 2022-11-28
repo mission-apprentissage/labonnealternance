@@ -78,7 +78,7 @@ export default ({ users, usersRecruteur, etablissementsRecruteur, mailer }) => {
         }).validateAsync(req.body, { abortEarly: false })
       } catch (error) {
         return res.status(400).json({
-          errorMessage: "Invalid form submission.",
+          errorMessage: "l'adresse mail n'est pas valide.",
           details: error.details,
         })
       }
