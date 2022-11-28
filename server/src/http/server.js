@@ -1,6 +1,5 @@
 import Sentry from "@sentry/node"
 import Tracing from "@sentry/tracing"
-import bodyParser from "body-parser"
 import express from "express"
 import { readFileSync } from "fs"
 import path from "path"
@@ -18,6 +17,7 @@ import admin from "./routes/admin/admin.js"
 import appointmentRoute from "./routes/admin/appointment.js"
 import adminEtablissementRoute from "./routes/admin/etablissement.js"
 import widgetParameterRoute from "./routes/admin/widgetParameter.js"
+import apiRoute from "./routes/api.js"
 import appointmentRequestRoute from "./routes/appointmentRequest.js"
 import authentified from "./routes/auth/authentified.js"
 import emailsRoute from "./routes/auth/emails.js"
@@ -26,14 +26,18 @@ import password from "./routes/auth/password.js"
 import catalogueRoute from "./routes/catalogue.js"
 import constantsRoute from "./routes/constants.js"
 import error500 from "./routes/error500.js"
+import esSearchRoute from "./routes/esSearch.js"
 import etablissementRoute from "./routes/etablissement.js"
+import etablissementsRecruteurRoute from "./routes/etablissementRecruteur.js"
 import faq from "./routes/faq.js"
 import formationRegionV1 from "./routes/formationRegionV1.js"
 import formationV1 from "./routes/formationV1.js"
+import formulaireRoute from "./routes/formulaire.js"
 import jobDiploma from "./routes/jobDiploma.js"
 import jobEtFormationV1 from "./routes/jobEtFormationV1.js"
 import jobV1 from "./routes/jobV1.js"
 import metiers from "./routes/metiers.js"
+import optoutRoute from "./routes/optout.js"
 import partnersRoute from "./routes/partners.js"
 import rome from "./routes/rome.js"
 import sendApplication from "./routes/sendApplication.js"
@@ -44,13 +48,8 @@ import updateDiplomesMetiers from "./routes/updateDiplomesMetiers.js"
 import updateFormations from "./routes/updateFormations.js"
 import updateLBB from "./routes/updateLBB.js"
 import updateRomesMetiers from "./routes/updateRomesMetiers.js"
-import version from "./routes/version.js"
-import apiRoute from "./routes/api.js"
-import esSearchRoute from "./routes/esSearch.js"
-import etablissementsRecruteurRoute from "./routes/etablissementRecruteur.js"
-import formulaireRoute from "./routes/formulaire.js"
-import optoutRoute from "./routes/optout.js"
 import userRoute from "./routes/user.js"
+import version from "./routes/version.js"
 
 import __dirname from "../common/dirname.js"
 import { limiter10PerSecond, limiter1Per20Second, limiter20PerSecond, limiter3PerSecond, limiter5PerSecond, limiter7PerSecond } from "./utils/rateLimiters.js"
@@ -133,7 +132,7 @@ export default async (components) => {
   // TracingHandler creates a trace for every incoming request
   app.use(Sentry.Handlers.tracingHandler())
 
-  app.use(bodyParser.json())
+  app.use(express.json({ limit: "5mb" }))
 
   app.use(corsMiddleware())
 
