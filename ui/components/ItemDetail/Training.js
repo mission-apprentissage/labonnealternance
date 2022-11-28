@@ -11,10 +11,10 @@ import { getSearchQueryParameters } from "../../utils/getSearchParameters"
 import { SearchResultContext } from "../../context/SearchResultContextProvider"
 import { ParameterContext } from "../../context/ParameterContextProvider"
 import { DisplayContext } from "../../context/DisplayContextProvider"
+import { Box, Button, Flex, Image, Link, Text } from "@chakra-ui/react"
 
 const Training = ({ training, handleSelectItem, showTextOnly, searchForJobsOnNewCenter, hasAlsoJob, isCfa }) => {
   const { selectedMapPopupItem } = React.useContext(SearchResultContext)
-  const { itemParameters } = React.useContext(ParameterContext)
   const { formValues } = React.useContext(DisplayContext)
   const scopeContext = useContext(ScopeContext)
 
@@ -26,10 +26,6 @@ const Training = ({ training, handleSelectItem, showTextOnly, searchForJobsOnNew
     e.preventDefault()
     setAllowDim(false) // fixation du flag
     handleSelectItem(training, "training")
-  }
-
-  const getHightlightClass = () => {
-    return shouldBeHighlighted() ? "c-resultcard--highlight" : ""
   }
 
   const shouldBeHighlighted = () => {
@@ -44,18 +40,13 @@ const Training = ({ training, handleSelectItem, showTextOnly, searchForJobsOnNew
 
   const getCenterSearchOnTrainingButton = () => {
     return (
-      <button className="extendedJobSearchButton" onClick={centerSearchOnTraining}>
-        <img src={extendedSearchPin} alt="" /> <span>Voir les entreprises proches</span>
-      </button>
+      <Button variant="centerSearch" color="#ff8d7e" title="Voir les entreprises proches" onClick={centerSearchOnTraining}>
+        <Image mb="2px" mr="5px" src={extendedSearchPin} alt="" />{" "}
+        <Text textDecoration="underline" as="span">
+          Voir les entreprises proches
+        </Text>
+      </Button>
     )
-  }
-
-  const getDebugClass = () => {
-    if (itemParameters?.mode === "debug" && formValues?.job?.rncps.indexOf(training.rncpCode) < 0) {
-      return "debugRemoved"
-    } else {
-      return ""
-    }
   }
 
   const centerSearchOnTraining = async (e) => {
@@ -102,46 +93,62 @@ const Training = ({ training, handleSelectItem, showTextOnly, searchForJobsOnNew
 
   const actualLink = `/recherche-apprentissage?display=list&page=fiche&${getItemQueryParameters(training)}&${getSearchQueryParameters(formValues)}`
 
-  return (
-    <a
-      className={`resultCard trainingCard gtmSavoirPlus gtmFormation gtmListe ${getHightlightClass()} ${getDebugClass()}`}
-      onClick={onSelectItem}
-      onMouseOver={highlightItemOnMap}
-      onMouseOut={dimItemOnMap}
-      href={actualLink}
-    >
-      <div className="c-media" id={`id${training.id}`}>
-        <div className="c-media-body">
-          <div className="row no-gutters">
-            <div className="col-12 col-lg-6 text-left">
-              <div className="title d-inline-block">{training.title ? training.title : training.longTitle}</div>
-            </div>
-            <div className="col-12 col-lg-6  d-lg-flex flex-column text-left text-lg-right my-1 my-lg-0">{isCfa ? <TagCfaDEntreprise /> : <TagFormation />}</div>
-          </div>
+  let cardProperties = {
+    color: "grey.650",
+    cursor: "pointer",
+    bg: "white",
+    textAlign: "left",
+    m: ["0.5rem 0", "18px 25px", "0.5rem 0", "0.5rem 25px"],
+    p: ["20px 10px", "20px 25px", "20px 10px", "20px 25px"],
+    _hover: {
+      textDecoration: "none",
+      color: "inherit",
+    },
+  }
 
-          <div className="cardText pt-3 pt-lg-1">{training.company.name}</div>
-          <div className="cardText pt-2">{training.place.fullAddress}</div>
-          {itemParameters?.mode === "debug" ? <div className="cardText pt-2">{`${training.rncpCode} - romes :${training.romes.map((rome) => " " + rome.code)}`}</div> : ""}
-          <span className="cardDistance pt-1">
+  if (shouldBeHighlighted()) {
+    cardProperties.filter = "drop-shadow(0px 0px 8px rgba(30, 30, 30, 0.25))"
+  }
+
+  return (
+    <Link as="a" className="resultCard" {...cardProperties} onClick={onSelectItem} onMouseOver={highlightItemOnMap} onMouseOut={dimItemOnMap} href={actualLink}>
+      <Flex align="flex-start" id={`id${training.id}`}>
+        <Box flex="1">
+          <Flex m="0">
+            <Box flex="initial" textAlign="left">
+              <Box color="black" fontSize="1rem" fontWeight={700}>
+                {training.title ? training.title : training.longTitle}
+              </Box>
+            </Box>
+            <Box my={[1, 1, 1, "0"]} flex="auto" textAlign="right">
+              {isCfa ? <TagCfaDEntreprise /> : <TagFormation />}
+            </Box>
+          </Flex>
+
+          <Box pt={[4, 4, 4, 1]} fw={500} fs="14px" lineHeight="24px">
+            {training.company.name}
+          </Box>
+          <Box pt={2} fw={500} fs="14px" lineHeight="24px">
+            {training.place.fullAddress}
+          </Box>
+          <Text display="flex" fs="14px" color="grey.600" as="span" pt={1}>
             {training.place.distance !== null ? `${Math.round(training.place.distance)} km(s) du lieu de recherche` : ""}
             {showTextOnly ? (
               ""
             ) : (
-              <>
-                <span className="knowMore d-none d-md-block">
-                  <button className="c-resultcard-knowmore">En savoir plus</button>
-                </span>
-              </>
+              <Text ml="auto" as="span" display={["none", "none", "block"]}>
+                <Button variant="knowMore">En savoir plus</Button>
+              </Text>
             )}
-          </span>
+          </Text>
           {showTextOnly ? (
             ""
           ) : (
             <>{(training.place.distance === null || Math.round(training.place.distance) > currentSearchRadius) && scopeContext.isJob ? getCenterSearchOnTrainingButton() : ""}</>
           )}
-        </div>
-      </div>
-    </a>
+        </Box>
+      </Flex>
+    </Link>
   )
 }
 

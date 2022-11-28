@@ -113,55 +113,9 @@ a.resultCard:hover {
   color: #4a4a4a;
   cursor: pointer;
 }
-.resultCard .extendedJobSearchButton,
-.resultCard .extendedTrainingSearchButton {
-  cursor: pointer !important;
-  background: none !important;
-  border: none !important;
-  padding: 0px 5px 10px 0 !important;
-  font-size: 14px !important;
-  width: fit-content !important;
-  max-width: unset !important;
-}
-.resultCard .extendedJobSearchButton img,
-.resultCard .extendedTrainingSearchButton img {
-  margin-bottom: 2px !important;
-  margin-right: 5px !important;
-}
-.resultCard .extendedJobSearchButton span,
-.resultCard .extendedTrainingSearchButton span {
-  text-decoration: underline !important;
-}
-.resultCard .extendedJobSearchButton {
-  color: #ff8d7e !important;
-  display: flex;
-}
-.resultCard .extendedTrainingSearchButton {
-  color: #01ac8c !important;
-}
+
 .itemDetail .resultCard {
   box-shadow: none;
-}
-
-.resultCard.debugRemoved {
-  background: red !important;
-}
-
-.resultCard.c-resultcard--highlight {
-  filter: drop-shadow(0px 0px 8px rgba(30, 30, 30, 0.25));
-}
-
-.resultCard .cardDistance {
-  display: flex;
-  font-size: 14px;
-  font-weight: 400;
-  color: $gray-600;
-}
-
-.resultCard .knowMore button.c-resultcard-knowmore {
-  font-size: 14px;
-  margin-left: auto;
-  line-height: 17px;
 }
 
 .cardText {
@@ -180,23 +134,7 @@ a.resultCard:hover {
 .resultCard .body > div {
   margin-top: 5px;
 }
-.resultCard .knowMore {
-  margin-left: auto;
-}
-.resultCard .knowMore button {
-  color: $gray-700 !important;
-  background: none;
-  border: none;
-  padding-left: 0;
-  padding-right: 0;
-  padding-bottom: 5px;
-  padding-top: 0px;
-  width: fit-content;
-  border-bottom: 2px solid $gray-700;
-}
-.resultCard .knowMore button:hover {
-  color: #000;
-}
+
 .resultCard .hasJob {
   font-weight: bold;
 }

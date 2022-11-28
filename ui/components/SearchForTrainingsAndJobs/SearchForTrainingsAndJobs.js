@@ -373,7 +373,7 @@ const SearchForTrainingsAndJobs = () => {
             activeFilter={activeFilter}
           />
         </Box>
-        <Box p="0" flex="7" display={mapDisplayParameters}>
+        <Box p="0" flex="7" display={mapDisplayParameters} position="relative">
           <Map handleSearchSubmit={handleSearchSubmit} showSearchForm={showSearchForm} selectItemOnMap={selectItemOnMap} />
         </Box>
       </Flex>
