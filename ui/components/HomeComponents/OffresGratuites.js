@@ -9,12 +9,12 @@ const OffresGratuites = () => {
       <SimpleGrid columns={{ sm: 1, md: 2 }} spacing="40px" alignItems={"center"} mt={12}>
         <Box pl={{ base: 5 }}>
           <Text as="h2" variant="homeEditorialH2" mb={{ base: "3", lg: "5" }}>
-            Vos offres sont diffusées gratuitement au plus près des candidats.
+            Vos offres sont diffusées gratuitement au plus près des candidats
           </Text>
           <Box variant="homeEditorialText">
             Elles sont mises en ligne sur les sites les plus visités par les candidats en recherche d’alternance :{" "}
             <Link variant="homeEditorialLink" aria-label="Redirection vers la page d'accueil" href="https://labonnealternance.pole-emploi.fr" isExternal>
-              la Bonne Alternance
+              La bonne alternance
             </Link>
             ,{" "}
             <Link variant="homeEditorialLink" aria-label="Accès au site un jeune une solution" href="https://www.1jeune1solution.gouv.fr" isExternal>
