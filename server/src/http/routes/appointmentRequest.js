@@ -113,9 +113,85 @@ export default ({ users, appointments, mailer, widgetParameters, etablissements 
   const notAllowedResponse = { error: "Prise de rendez-vous non disponible." }
 
   /**
-   * @description Creates and returns formation context.
-   * @param {Request} req
-   * @param {Response} res
+   * @swagger
+   * "/appointment-request/context/create":
+   *  post:
+   *    summary: Crée un lien pointant vers le formulaire de prise de rendez-vous avec un CFA.
+   *    description: Génère un lien pointant vers le formulaire de mise en relation avec le contact d'une formation à partir des informations fournis.
+   *    tags:
+   *        - Rendez-vous
+   *    requestBody:
+   *      description: L'objet "rendez-vous".
+   *      required: true
+   *      content:
+   *        application/json:
+   *          schema:
+   *            type: object
+   *            properties:
+   *              idCleMinistereEducatif:
+   *                type: string
+   *                description: Clé Ministère Educatif
+   *              referrer:
+   *                type: string
+   *                description: Source demandante la génération du lien
+   *                enum:
+   *                  - affelnet
+   *                  - parcoursup
+   *                  - lba
+   *                  - pfr_pays_de_la_loire
+   *                  - onisep
+   *                  - jeune_1_solution
+   *            required:
+   *              - idCleMinistereEducatif
+   *              - referrer
+   *    responses:
+   *      200:
+   *        description: Lien créé avec succès.
+   *        content:
+   *          application/json:
+   *            schema:
+   *              type: object
+   *              properties:
+   *                etablissement_formateur_entreprise_raison_sociale:
+   *                  type: string
+   *                  description: Raison sociale de l'établissement formateur.
+   *                  example: CAMPUS FONDERIE DE L'IMAGE
+   *                intitule_long:
+   *                  type: string
+   *                  description: Intitule long de la formation.
+   *                  example: METIERS D'ART ET DU DESIGN (DN)
+   *                lieu_formation_adresse:
+   *                  type: string
+   *                  description: Adresse de la formation.
+   *                  example: 10 rue Victor Hugo
+   *                code_postal:
+   *                  type: string
+   *                  description: Code postal du lieu de la formation.
+   *                  example: 93170
+   *                etablissement_formateur_siret:
+   *                  type: string
+   *                  description: Siret de l'établissement foramteur
+   *                  example: 35386977900036
+   *                cfd:
+   *                  type: string
+   *                  description: Code de formation.
+   *                  example: 24113401
+   *                localite:
+   *                  type: string
+   *                  description: Localité de la formation.
+   *                  example: Bagnolet
+   *                id_rco_formation:
+   *                  type: string
+   *                  description: Identifiant RCO
+   *                  example: 14_AF_0000095539|14_SE_0000501120##14_SE_0000598458##14_SE_0000642556##14_SE_0000642557##14_SE_0000825379##14_SE_0000825382|101249
+   *                cle_ministere_educatif:
+   *                  type: string
+   *                  description: Clé Ministère Educatif
+   *                  example: 101249P01313538697790003635386977900036-93006#L01
+   *                form_url:
+   *                  type: string
+   *                  description: Lien généré pointant vers le formulaire.
+   *                  example: http://https://labonnealternance.apprentissage.beta.gouv.fr/espace-pro/form?referrer=parcoursup&cleMinistereEducatif=101249P01313538697790003635386977900036-93006%23L01
    */
   router.post(
     "/context/create",
