@@ -48,39 +48,39 @@ export const CfaCandidatInformationPage = () => {
               <Box mt={6} pb={10} borderBottom="solid 1px #D0C9C4">
                 <Text>
                   Nom :{" "}
-                  <Text as="span" fontWeight="700">
-                    {data.user.lastname}
+                  <Text as="span">
+                    <b>{data.user.lastname}</b>
                   </Text>
                 </Text>
                 <Text>
                   Prénom :{" "}
-                  <Text as="span" fontWeight="700">
-                    {data.user.firstname}
+                  <Text as="span">
+                    <b>{data.user.firstname}</b>
                   </Text>
                 </Text>
                 <Text mt={4}>
                   Numéro de téléphone :{" "}
-                  <Text as="span" fontWeight="700">
-                    {data.user.phone.match(/.{1,2}/g).join(".")}
+                  <Text as="span">
+                    <b>{data.user.phone.match(/.{1,2}/g).join(".")}</b>
                   </Text>
                 </Text>
                 <Text>
                   Email :{" "}
-                  <Text as="span" fontWeight="700">
-                    {data.user.email}
+                  <Text as="span">
+                    <b>{data.user.email}</b>
                   </Text>
                 </Text>
               </Box>
               <Text mt={10}>
                 Il ou elle souhaite aborder avec vous le(s) sujet(s) suivant :
                 <br />"{data.appointment.motivations}" <br /> à propos de la formation :{" "}
-                <Text as="span" fontWeight="700">
-                  {data.etablissement.intitule_long}
+                <Text as="span">
+                  <b>{data.etablissement.intitule_long}</b>
                 </Text>
                 <br />
-                dispensé par :{" "}
-                <Text as="span" fontWeight="700">
-                  {data.etablissement.etablissement_formateur_entreprise_raison_sociale}
+                dispensée par :{" "}
+                <Text as="span">
+                  <b>{data.etablissement.etablissement_formateur_entreprise_raison_sociale}</b>
                 </Text>
               </Text>
             </Box>
