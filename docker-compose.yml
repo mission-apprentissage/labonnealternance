@@ -15,7 +15,7 @@ services:
       - server
       - ui
     environment:
-      - PARANOIA=1
+      - PARANOIA=3
       - ANOMALY_INBOUND=5
       - ANOMALY_OUTBOUND=4
       - DNS_SERVER=127.0.0.11
