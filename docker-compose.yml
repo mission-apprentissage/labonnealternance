@@ -15,7 +15,8 @@ services:
       - server
       - ui
     environment:
-      - PARANOIA=3
+      - MODSEC_RULE_ENGINE=Off
+      - PARANOIA=1
       - ANOMALY_INBOUND=5
       - ANOMALY_OUTBOUND=4
       - DNS_SERVER=127.0.0.11
