@@ -71,7 +71,7 @@ const swaggerOptions = {
       title: "La bonne alternance - recruteur",
       version: "1.0.0",
       description: `Vous trouverez ici la définition de l'api La bonne alternance recruteur<br/><br/>
-      <h3><strong>${config.publicUrl}/api/v1</strong></h3><br/>
+      <h3><strong>${config.publicUrl}/api</strong></h3><br/>
       Contact:
       `,
       contact: {
@@ -82,11 +82,11 @@ const swaggerOptions = {
     },
     servers: [
       {
-        url: `${config.publicUrl}/api/v1`,
+        url: `${config.publicUrl}/api`,
       },
     ],
   },
-  apis: ["./src/http/routes/api.js"],
+  apis: ["./src/http/routes/api.js", "./src/http/routes/appointmentRequest.js"],
 }
 
 const swaggerSpecification = swaggerDoc(swaggerOptions)
