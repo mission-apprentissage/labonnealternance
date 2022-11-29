@@ -3,7 +3,7 @@ import { Box, Grid, GridItem, Link, Image, Text } from "@chakra-ui/react"
 
 const AmeliorerLBA = () => {
   return (
-    <Box as="section" p="8" mb="5" backgroundColor="#f5f5fe" borderRadius="10px">
+    <Box as="section" p="8" mb="12" backgroundColor="#f5f5fe" borderRadius="10px">
       <Grid templateColumns={{ base: "1fr", md: "1fr 1fr" }}>
         <GridItem display="flex" justifyContent="center" alignItems="center">
           <Image src="/images/home_pics/illu-support.svg" alt="" />
