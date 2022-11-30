@@ -50,7 +50,8 @@ const updateDiplomeMetier = ({ initial, toAdd }) => {
   return initial
 }
 
-const getIntitulesFormations = async ({ size }) => {
+const getIntitulesFormations = async () => {
+  const size = 1500 // make the process 10 secondes faster
   const intitules = []
   const body = {
     query: {
@@ -68,6 +69,9 @@ const getIntitulesFormations = async ({ size }) => {
   }
 
   try {
+    /**
+     * KBA 30/11/2022 : TODO : use _scroll method from ES to get all data
+     */
     const responseIntitulesFormations = await esClient.search({
       index: "convertedformations",
       size,
@@ -107,9 +111,6 @@ const getIntitulesFormations = async ({ size }) => {
 export default async function () {
   logger.info(" -- Start of DiplomesMetiers initializer -- ")
 
-  const size = 1500
-  let rank = 0
-
   logger.info(`Clearing diplomesmetiers db...`)
   await DiplomesMetiers.deleteMany({})
 
@@ -126,9 +127,8 @@ export default async function () {
 
   logger.info(`Début traitement`)
 
-  while (!shouldStop && rank < 30) {
-    await getIntitulesFormations({ size })
-    rank++
+  while (!shouldStop) {
+    await getIntitulesFormations()
   }
 
   for (const k in diplomesMetiers) {
