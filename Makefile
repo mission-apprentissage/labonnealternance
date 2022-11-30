@@ -7,6 +7,8 @@ install: init
 init: 
 	yarn install
 
+seed:
+	yarn --cwd server seed:reference
 start:
 	docker-compose up --build --force-recreate
 
