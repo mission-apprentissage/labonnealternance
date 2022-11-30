@@ -1,117 +1,110 @@
-import path from "path"
+import Sentry from "@sentry/node"
 import fs from "fs"
-import _ from "lodash-es"
-import XLSX from "xlsx"
-import { DomainesMetiers } from "../../common/model/index.js"
-import { getElasticInstance } from "../../common/esClient/index.js"
-import { getFileFromS3 } from "../../common/utils/awsUtils.js"
 import { oleoduc } from "oleoduc"
-import { logMessage } from "../../common/utils/logMessage.js"
+import path from "path"
+import XLSX from "xlsx"
 import __dirname from "../../common/dirname.js"
+import { getElasticInstance } from "../../common/esClient/index.js"
+import { logger } from "../../common/logger.js"
+import { DomainesMetiers } from "../../common/model/index.js"
+import { getFileFromS3 } from "../../common/utils/awsUtils.js"
+import { readXLSXFile } from "../../common/utils/fileUtils.js"
+
 const currentDirname = __dirname(import.meta.url)
-
-const FILE_LOCAL_PATH = path.join(currentDirname, "../../assets/domainesMetiers_S3.xlsx")
-
-const emptyMongo = async () => {
-  logMessage("info", `Clearing domainesmetiers db...`)
-  await DomainesMetiers.deleteMany({})
-}
-
-const clearIndex = async () => {
-  try {
-    let client = getElasticInstance()
-    logMessage("info", `Removing domainesmetiers index...`)
-    await client.indices.delete({ index: "domainesmetiers" })
-  } catch (err) {
-    logMessage("error", `Error emptying es index : ${err.message}`)
-  }
-}
-
-const createIndex = async () => {
-  let requireAsciiFolding = true
-  logMessage("info", `Creating domainesmetiers index...`)
-  await DomainesMetiers.createMapping(requireAsciiFolding)
-}
+const FILEPATH = path.join(currentDirname, "../../assets/domainesMetiers_S3.xlsx")
 
 const downloadAndSaveFile = (optionalFileName) => {
-  logMessage("info", `Downloading and save file ${optionalFileName ? optionalFileName : "currentDomainesMetiers.xlsx"} from S3 Bucket...`)
-  return oleoduc(
-    getFileFromS3(`mna-services/features/domainesMetiers/${optionalFileName ? optionalFileName : "currentDomainesMetiers.xlsx"}`),
-    fs.createWriteStream(FILE_LOCAL_PATH)
-  )
-}
-
-const removeFileFromAssets = async () => {
-  logMessage("info", "Deleting downloaded file frome assets")
-  await fs.unlinkSync(FILE_LOCAL_PATH)
-}
-
-const readXLSXFile = (filePath) => {
-  const workbook = XLSX.readFile(filePath, { codepage: 65001 })
-  return { sheet_name_list: workbook.SheetNames, workbook }
+  logger.info(`Downloading and save file ${optionalFileName ? optionalFileName : "currentDomainesMetiers.xlsx"} from S3 Bucket...`)
+  return oleoduc(getFileFromS3(`mna-services/features/domainesMetiers/${optionalFileName ? optionalFileName : "currentDomainesMetiers.xlsx"}`), fs.createWriteStream(FILEPATH))
 }
 
 export default async function (optionalFileName) {
   let step = 0
 
+  logger.info(" -- Start of DomainesMetiers initializer -- ")
+
+  await downloadAndSaveFile(optionalFileName)
+
+  logger.info(`Clearing domainesmetiers db...`)
+  await DomainesMetiers.deleteMany({})
+
   try {
-    logMessage("info", " -- Start of DomainesMetiers initializer -- ")
+    let client = getElasticInstance()
+    logger.info(`Removing domainesmetiers index...`)
+    await client.indices.delete({ index: "domainesmetiers" })
+  } catch (err) {
+    logger.error(`Error emptying es index : ${err.message}`)
+  }
 
-    await downloadAndSaveFile(optionalFileName)
+  let requireAsciiFolding = true
+  logger.info(`Creating domainesmetiers index...`)
+  await DomainesMetiers.createMapping(requireAsciiFolding)
 
-    await emptyMongo()
-    await clearIndex()
+  const workbookDomainesMetiers = readXLSXFile(FILEPATH)
 
-    await createIndex()
+  let codesROMEs,
+    intitulesROMEs,
+    codesRNCPs,
+    intitulesRNCPs,
+    couplesROMEsIntitules,
+    motsClefsDomaine,
+    motsClefsSpecifiques,
+    appellationsROMEs,
+    coupleAppellationsRomeIntitules,
+    codesFAPs,
+    libellesFAPs,
+    sousDomainesOnisep
 
-    const workbookDomainesMetiers = readXLSXFile(FILE_LOCAL_PATH)
+  const reset = () => {
+    codesROMEs = []
+    intitulesROMEs = []
+    codesRNCPs = []
+    intitulesRNCPs = []
+    couplesROMEsIntitules = []
+    motsClefsDomaine = []
+    motsClefsSpecifiques = []
+    appellationsROMEs = []
+    coupleAppellationsRomeIntitules = []
+    codesFAPs = []
+    libellesFAPs = []
+    sousDomainesOnisep = []
+  }
 
-    let codesROMEs,
-      intitulesROMEs,
-      codesRNCPs,
-      intitulesRNCPs,
-      couplesROMEsIntitules,
-      motsClefsDomaine,
-      motsClefsSpecifiques,
-      appellationsROMEs,
-      coupleAppellationsRomeIntitules,
-      codesFAPs,
-      libellesFAPs,
-      sousDomainesOnisep
+  let avertissements = []
 
-    const reset = () => {
-      codesROMEs = []
-      intitulesROMEs = []
-      codesRNCPs = []
-      intitulesRNCPs = []
-      couplesROMEsIntitules = []
-      motsClefsDomaine = []
-      motsClefsSpecifiques = []
-      appellationsROMEs = []
-      coupleAppellationsRomeIntitules = []
-      codesFAPs = []
-      libellesFAPs = []
-      sousDomainesOnisep = []
-    }
+  logger.info(`Début traitement`)
 
-    let avertissements = []
+  let onglet = XLSX.utils.sheet_to_json(workbookDomainesMetiers.workbook.Sheets["Liste"])
 
-    logMessage("info", `Début traitement`)
+  reset()
 
-    let onglet = XLSX.utils.sheet_to_json(workbookDomainesMetiers.workbook.Sheets["Liste"])
-
-    reset()
-
+  try {
     for (let i = 0; i < onglet.length; i++) {
       let row = onglet[i]
-      if (row.metier) {
-        // cas de la ligne sur laquelle se trouve len nom du métier qui va marquer l'insertion d'une ligne dans la db
 
+      let {
+        metier,
+        domaine,
+        appellations_rome,
+        code_rome,
+        libelle_rome,
+        code_rncp,
+        intitule_rncp,
+        sous_domaine_onisep_1,
+        sous_domaine_onisep_2,
+        mots_clefs_domaine,
+        mots_clefs_ligne,
+        codes_fap,
+        libelles_fap,
+      } = row
+
+      if (metier) {
+        // cas de la ligne sur laquelle se trouve le nom du métier qui va marquer l'insertion d'une ligne dans la db
         step = 1
 
         let domainesMetier = new DomainesMetiers({
-          domaine: row.domaine,
-          sous_domaine: row.metier,
+          domaine: domaine,
+          sous_domaine: metier,
           mots_clefs_specifiques: [...new Set(motsClefsSpecifiques)].join(", "),
           mots_clefs: [...new Set(motsClefsDomaine)].join(", "),
           appellations_romes: [...new Set(appellationsROMEs)].join(", "),
@@ -127,33 +120,28 @@ export default async function (optionalFileName) {
         })
 
         if (codesROMEs.length > 15) {
-          avertissements.push({ domaine: row.metier, romes: codesROMEs.length })
+          avertissements.push({ domaine: metier, romes: codesROMEs.length })
         }
 
         await domainesMetier.save()
-        //console.log("DomainesMetier à sauver : ", domainesMetier);
-
-        logMessage("info", `Added ${domainesMetier.sous_domaine} ${domainesMetier._id} to collection `)
 
         reset()
       } else {
         step = 2
 
-        let currentAppellationsROMEs = row.appellations_rome
-
-        //couplesROMEsIntitules
-        if (row.code_rome && row.libelle_rome) {
-          if (codesROMEs.indexOf(row.code_rome.trim()) < 0 || intitulesROMEs.indexOf(row.libelle_rome.trim()) < 0) {
+        // Couple intitule - rome
+        if (code_rome && libelle_rome) {
+          if (codesROMEs.indexOf(code_rome.trim()) < 0 || intitulesROMEs.indexOf(libelle_rome.trim()) < 0) {
             couplesROMEsIntitules.push({
-              codeRome: row.code_rome.trim(),
-              intitule: row.libelle_rome.trim(),
+              codeRome: code_rome.trim(),
+              intitule: libelle_rome.trim(),
             })
-
-            if (currentAppellationsROMEs) {
-              currentAppellationsROMEs.split(", ").map((appellation) => {
+            // Couple appelation - code rome - intitule
+            if (appellations_rome) {
+              appellations_rome.split(", ").map((appellation) => {
                 coupleAppellationsRomeIntitules.push({
-                  codeRome: row.code_rome.trim(),
-                  intitule: row.libelle_rome.trim(),
+                  codeRome: code_rome.trim(),
+                  intitule: libelle_rome.trim(),
                   appellation: appellation,
                 })
               })
@@ -163,92 +151,84 @@ export default async function (optionalFileName) {
 
         step = 3
 
-        let currentROME = row.code_rome
-        if (currentROME && codesROMEs.indexOf(currentROME.trim()) < 0) {
-          codesROMEs.push(currentROME.trim())
+        if (code_rome && codesROMEs.indexOf(code_rome.trim()) < 0) {
+          codesROMEs.push(code_rome.trim())
         }
 
         step = 4
 
-        let currentIntituleROME = row.libelle_rome
-        if (currentIntituleROME && intitulesROMEs.indexOf(currentIntituleROME.trim()) < 0) {
-          intitulesROMEs.push(currentIntituleROME.trim())
+        if (libelle_rome && intitulesROMEs.indexOf(libelle_rome.trim()) < 0) {
+          intitulesROMEs.push(libelle_rome.trim())
         }
 
         step = 5
 
-        let currentRNCP = row.code_rncp
-        if (currentRNCP && codesRNCPs.indexOf(currentRNCP.trim()) < 0) {
-          codesRNCPs.push(currentRNCP.trim())
+        if (code_rncp && codesRNCPs.indexOf(code_rncp.trim()) < 0) {
+          codesRNCPs.push(code_rncp.trim())
         }
 
         step = 6
 
-        let currentLibelleRNCP = row.intitule_rncp
-        if (currentLibelleRNCP && intitulesRNCPs.indexOf(currentLibelleRNCP.trim()) < 0) {
-          intitulesRNCPs.push(currentLibelleRNCP.trim())
+        if (intitule_rncp && intitulesRNCPs.indexOf(intitule_rncp.trim()) < 0) {
+          intitulesRNCPs.push(intitule_rncp.trim())
         }
 
         step = 7
 
-        let currentSousDomaineOnisep = row.sous_domaine_onisep_1
-        if (currentSousDomaineOnisep && sousDomainesOnisep.indexOf(currentSousDomaineOnisep.trim()) < 0) {
-          sousDomainesOnisep.push(currentSousDomaineOnisep.trim())
+        if (sous_domaine_onisep_1 && sousDomainesOnisep.indexOf(sous_domaine_onisep_1.trim()) < 0) {
+          sousDomainesOnisep.push(sous_domaine_onisep_1.trim())
         }
-        currentSousDomaineOnisep = row.sous_domaine_onisep_2
-        if (currentSousDomaineOnisep && sousDomainesOnisep.indexOf(currentSousDomaineOnisep.trim()) < 0) {
-          sousDomainesOnisep.push(currentSousDomaineOnisep.trim())
+
+        if (sous_domaine_onisep_2 && sousDomainesOnisep.indexOf(sous_domaine_onisep_2.trim()) < 0) {
+          sousDomainesOnisep.push(sous_domaine_onisep_2.trim())
         }
 
         step = 8
 
-        let currentMotsClefsDomaine = row.mots_clefs_domaine
-        if (currentMotsClefsDomaine) {
-          motsClefsDomaine = motsClefsDomaine.concat(currentMotsClefsDomaine.split(/[\s,;]+/))
+        if (mots_clefs_domaine) {
+          motsClefsDomaine = motsClefsDomaine.concat(mots_clefs_domaine.split(/[\s,;]+/))
         }
 
         step = 9
 
-        let currentMotsClefsSpecifiques = row.mots_clefs_ligne
-        if (currentMotsClefsSpecifiques) {
-          motsClefsSpecifiques = motsClefsSpecifiques.concat(currentMotsClefsSpecifiques.split(/[\s,;]+/))
+        if (mots_clefs_ligne) {
+          motsClefsSpecifiques = motsClefsSpecifiques.concat(mots_clefs_ligne.split(/[\s,;]+/))
         }
 
         step = 10
 
-        let currentCodesFAP = row.codes_fap
-        if (currentCodesFAP) {
-          codesFAPs = codesFAPs.concat(currentCodesFAP.split(/[\s,;]+/))
+        if (codes_fap) {
+          codesFAPs = codesFAPs.concat(codes_fap.split(/[\s,;]+/))
         }
 
         step = 11
 
-        let currentLibellesFAP = row.libelles_fap
-        if (currentLibellesFAP) {
-          libellesFAPs = libellesFAPs.concat(currentLibellesFAP.split("; "))
+        if (libelles_fap) {
+          libellesFAPs = libellesFAPs.concat(libelles_fap.split("; "))
         }
 
         step = 12
 
-        if (currentAppellationsROMEs) {
-          appellationsROMEs = appellationsROMEs.concat(currentAppellationsROMEs.toLowerCase().split(/[\s,/;]+/))
+        if (appellations_rome) {
+          appellationsROMEs = appellationsROMEs.concat(appellations_rome.toLowerCase().split(/[\s,/;]+/))
         }
       }
     }
 
-    await removeFileFromAssets()
+    logger.info("Deleting downloaded file frome assets")
+    await fs.unlinkSync(FILEPATH)
 
-    logMessage("info", `Fin traitement`)
+    logger.info(`Fin traitement`)
 
     return {
       result: "Table mise à jour",
       fileName: optionalFileName ? optionalFileName : "currentDomainesMetiers.xlsx",
       avertissements,
     }
-  } catch (err) {
-    console.log("error step ", step)
-    logMessage("error", err)
-    let error_msg = _.get(err, "meta.body") ?? err.message
-    return { error: error_msg, fileName: optionalFileName ? optionalFileName : "currentDomainesMetiers.xlsx" }
+  } catch (error) {
+    Sentry.captureException(error)
+    logger.error(`error step ${step}`)
+    logger.error(error)
+    return { error, fileName: optionalFileName ? optionalFileName : "currentDomainesMetiers.xlsx" }
   }
 }
