@@ -1,6 +1,6 @@
 import Sentry from "@sentry/node"
 import fs from "fs"
-import _ from "lodash-es"
+import { get } from "lodash-es"
 import { oleoduc } from "oleoduc"
 import path from "path"
 import XLSX from "xlsx"
@@ -101,9 +101,9 @@ const getMissingRNCPsOfDomain = async (domain) => {
       RNCPsManquants: missingRNCPsWithLabel,
     }
   } catch (err) {
-    let error_msg = _.get(err, "meta.body") ?? err.message
+    let error_msg = get(err, "meta.body") ?? err.message
 
-    if (_.get(err, "meta.meta.connection.status") === "dead") {
+    if (get(err, "meta.meta.connection.status") === "dead") {
       logger.error(`Elastic search is down or unreachable. error_message=${error_msg}`)
     } else {
       logger.error(`Error analyzing rncps. error_message=${error_msg}`)
@@ -127,16 +127,20 @@ const searchForMissingRNCPsInOtherDomains = (missingRNCPs) => {
   })
 }
 
+const downloadAndSaveFile = (optionalFileName) => {
+  logger.info(`Downloading and save file ${optionalFileName ? optionalFileName : "currentDomainesMetiers.xlsx"} from S3 Bucket...`)
+  return oleoduc(
+    getFileFromS3(`mna-services/features/domainesMetiers/${optionalFileName ? optionalFileName : "currentDomainesMetiers.xlsx"}`),
+    fs.createWriteStream(FILE_LOCAL_PATH)
+  )
+}
+
 export default async (optionalFileName) => {
   let step = 0
 
   logger.info(" -- Start of DomainesMetiers analyzer -- ")
 
-  logger.info(`Downloading and save file ${optionalFileName ? optionalFileName : "currentDomainesMetiers.xlsx"} from S3 Bucket...`)
-  await oleoduc(
-    getFileFromS3(`mna-services/features/domainesMetiers/${optionalFileName ? optionalFileName : "currentDomainesMetiers.xlsx"}`),
-    fs.createWriteStream(FILEPATH_DOMAINES_METIERS)
-  )
+  await downloadAndSaveFile(optionalFileName)
 
   const workbookDomainesMetiers = readXLSXFile(FILEPATH_DOMAINES_METIERS)
 
@@ -327,7 +331,6 @@ export default async (optionalFileName) => {
     }
 
     searchForMissingRNCPsInOtherDomains(missingRNCPs)
-
     saveResultToFile(missingRNCPs)
 
     return {
