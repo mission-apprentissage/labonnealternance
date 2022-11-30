@@ -1,3 +1,4 @@
+import Sentry from "@sentry/node"
 import fs from "fs"
 import _ from "lodash-es"
 import { oleoduc } from "oleoduc"
@@ -8,41 +9,31 @@ import { getElasticInstance } from "../../common/esClient/index.js"
 import { logger } from "../../common/logger.js"
 import { DomainesMetiers } from "../../common/model/index.js"
 import { getFileFromS3 } from "../../common/utils/awsUtils.js"
-import { logMessage } from "../../common/utils/logMessage.js"
+import { readXLSXFile } from "../../common/utils/fileUtils.js"
 import config from "../../config.js"
-const currentDirname = __dirname(import.meta.url)
 
+const currentDirname = __dirname(import.meta.url)
 const esClient = getElasticInstance()
 
-const FILE_LOCAL_PATH = path.join(currentDirname, "./assets/domainesMetiers_S3.xlsx")
-
-const getFormationEsQueryIndexFragment = (limit) => {
-  return {
-    index: "convertedformations",
-    size: limit,
-    _source_includes: ["rncp_code", "rncp_intitule"],
-  }
-}
-
-const resultFilePath = path.join(currentDirname, "./assets/RNCPs_manquants.xlsx")
+const FILEPATH_DOMAINES_METIERS = path.join(currentDirname, "./assets/domainesMetiers_S3.xlsx")
+const FILEPATH_MISSING_RNCP = path.join(currentDirname, "./assets/RNCPs_manquants.xlsx")
 
 const saveResultToFile = (json) => {
-  logMessage("info", " -- Saving missing rncps to local file -- ")
+  logger.info(" -- Saving missing rncps to local file -- ")
 
   try {
-    fs.unlinkSync(resultFilePath)
+    fs.unlinkSync(FILEPATH_MISSING_RNCP)
   } catch (err) {
     console.log("error removing file : ", err.message)
   }
 
   let wsResult = [["Domaine", "Total_formations", "Total_formations_perdues", "Code_rncp", "Lbelle_rncp", "Rncp_dans_autres_metiers"]]
 
-  json.map((domain) => {
-    if (domain.metier) {
-      //console.log(domain);
-      wsResult.push([domain.metier, domain.missingRNCPs.totalFormations, domain.missingRNCPs.totalFormationsPerdues, "", "", ""])
+  json.map(({ metier, missingRNCPs }) => {
+    if (metier) {
+      wsResult.push([metier, missingRNCPs.totalFormations, missingRNCPs.totalFormationsPerdues, "", "", ""])
 
-      domain.missingRNCPs.RNCPsManquants.map((rncp) => {
+      missingRNCPs.RNCPsManquants.map((rncp) => {
         let metiers = ""
         if (rncp.autresMetiers !== "aucun") {
           metiers = rncp.autresMetiers.join("; ")
@@ -58,7 +49,7 @@ const saveResultToFile = (json) => {
 
   XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(wsResult), "Rncps_manquants")
 
-  XLSX.writeFile(wb, resultFilePath)
+  XLSX.writeFile(wb, FILEPATH_MISSING_RNCP)
 }
 
 let inDomainRNCPs = new Set()
@@ -79,7 +70,8 @@ const getMissingRNCPsOfDomain = async (domain) => {
     }
 
     const response = await esClient.search({
-      ...getFormationEsQueryIndexFragment(10000),
+      index: "convertedformations",
+      _source_includes: ["rncp_code", "rncp_intitule"],
       body,
     })
 
@@ -121,19 +113,6 @@ const getMissingRNCPsOfDomain = async (domain) => {
   }
 }
 
-const downloadAndSaveFile = (optionalFileName) => {
-  logMessage("info", `Downloading and save file ${optionalFileName ? optionalFileName : "currentDomainesMetiers.xlsx"} from S3 Bucket...`)
-  return oleoduc(
-    getFileFromS3(`mna-services/features/domainesMetiers/${optionalFileName ? optionalFileName : "currentDomainesMetiers.xlsx"}`),
-    fs.createWriteStream(FILE_LOCAL_PATH)
-  )
-}
-
-const readXLSXFile = (filePath) => {
-  const workbook = XLSX.readFile(filePath, { codepage: 65001 })
-  return { sheet_name_list: workbook.SheetNames, workbook }
-}
-
 const searchForMissingRNCPsInOtherDomains = (missingRNCPs) => {
   missingRNCPs.forEach((domainMissingRNCPs) => {
     domainMissingRNCPs.missingRNCPs.RNCPsManquants.forEach((rncp) => {
@@ -150,59 +129,80 @@ const searchForMissingRNCPsInOtherDomains = (missingRNCPs) => {
 
 export default async (optionalFileName) => {
   let step = 0
+
+  logger.info(" -- Start of DomainesMetiers analyzer -- ")
+
+  logger.info(`Downloading and save file ${optionalFileName ? optionalFileName : "currentDomainesMetiers.xlsx"} from S3 Bucket...`)
+  await oleoduc(
+    getFileFromS3(`mna-services/features/domainesMetiers/${optionalFileName ? optionalFileName : "currentDomainesMetiers.xlsx"}`),
+    fs.createWriteStream(FILEPATH_DOMAINES_METIERS)
+  )
+
+  const workbookDomainesMetiers = readXLSXFile(FILEPATH_DOMAINES_METIERS)
+
+  let codesROMEs,
+    intitulesROMEs,
+    codesRNCPs,
+    intitulesRNCPs,
+    couplesROMEsIntitules,
+    motsClefsDomaine,
+    motsClefsSpecifiques,
+    appellationsROMEs,
+    coupleAppellationsRomeIntitules,
+    codesFAPs,
+    libellesFAPs,
+    sousDomainesOnisep
+
+  let missingRNCPs = []
+
+  const reset = () => {
+    codesROMEs = []
+    intitulesROMEs = []
+    codesRNCPs = []
+    intitulesRNCPs = []
+    couplesROMEsIntitules = []
+    motsClefsDomaine = []
+    motsClefsSpecifiques = []
+    appellationsROMEs = []
+    coupleAppellationsRomeIntitules = []
+    codesFAPs = []
+    libellesFAPs = []
+    sousDomainesOnisep = []
+  }
+
+  logger.info(`Début traitement`)
+
+  let onglet = XLSX.utils.sheet_to_json(workbookDomainesMetiers.workbook.Sheets["Liste"])
+
+  reset()
+
   try {
-    logMessage("info", " -- Start of DomainesMetiers analyzer -- ")
-
-    await downloadAndSaveFile(optionalFileName)
-
-    const workbookDomainesMetiers = readXLSXFile(FILE_LOCAL_PATH)
-
-    let codesROMEs,
-      intitulesROMEs,
-      codesRNCPs,
-      intitulesRNCPs,
-      couplesROMEsIntitules,
-      motsClefsDomaine,
-      motsClefsSpecifiques,
-      appellationsROMEs,
-      coupleAppellationsRomeIntitules,
-      codesFAPs,
-      libellesFAPs,
-      sousDomainesOnisep
-
-    let missingRNCPs = []
-
-    const reset = () => {
-      codesROMEs = []
-      intitulesROMEs = []
-      codesRNCPs = []
-      intitulesRNCPs = []
-      couplesROMEsIntitules = []
-      motsClefsDomaine = []
-      motsClefsSpecifiques = []
-      appellationsROMEs = []
-      coupleAppellationsRomeIntitules = []
-      codesFAPs = []
-      libellesFAPs = []
-      sousDomainesOnisep = []
-    }
-
-    logMessage("info", `Début traitement`)
-
-    let onglet = XLSX.utils.sheet_to_json(workbookDomainesMetiers.workbook.Sheets["Liste"])
-
-    reset()
-
     for (let i = 0; i < onglet.length; i++) {
       let row = onglet[i]
-      if (row.metier) {
+      let {
+        metier,
+        domaine,
+        appellations_rome,
+        code_rome,
+        libelle_rome,
+        code_rncp,
+        intitule_rncp,
+        sous_domaine_onisep_1,
+        sous_domaine_onisep_2,
+        mots_clefs_domaine,
+        mots_clefs_ligne,
+        codes_fap,
+        libelles_fap,
+      } = row
+
+      if (metier) {
         // cas de la ligne sur laquelle se trouve len nom du métier qui va marquer l'insertion d'une ligne dans la db
 
         step = 1
 
         let domainesMetier = new DomainesMetiers({
-          domaine: row.domaine,
-          sous_domaine: row.metier,
+          domaine: domaine,
+          sous_domaine: metier,
           mots_clefs_specifiques: [...new Set(motsClefsSpecifiques)].join(", "),
           mots_clefs: [...new Set(motsClefsDomaine)].join(", "),
           appellations_romes: [...new Set(appellationsROMEs)].join(", "),
@@ -226,39 +226,34 @@ export default async (optionalFileName) => {
             domainsOfRNCPs[rncp] = [domainesMetier.sous_domaine]
           }
         })
-        //console.log("ICIII : ", getMissingRNCPsOfDomain);
 
         let missingRNCPsOfDomain = await getMissingRNCPsOfDomain(domainesMetier)
 
         missingRNCPs.push({
           metier: domainesMetier.sous_domaine,
-          //codesROMEs,
-          //codesRNCPs,
           missingRNCPs: missingRNCPsOfDomain ? missingRNCPsOfDomain : "aucun RNCP manquant",
         })
 
-        logMessage("info", `Analyzed ${domainesMetier.sous_domaine}`)
+        logger.info(`Analyzed ${domainesMetier.sous_domaine}`)
 
         reset()
       } else {
         step = 2
 
-        let currentAppellationsROMEs = row.appellations_rome
-
         //couplesROMEsIntitules
-        if (row.code_rome && row.libelle_rome) {
-          if (codesROMEs.indexOf(row.code_rome.trim()) < 0 || intitulesROMEs.indexOf(row.libelle_rome.trim()) < 0) {
+        if (code_rome && libelle_rome) {
+          if (codesROMEs.indexOf(code_rome.trim()) < 0 || intitulesROMEs.indexOf(libelle_rome.trim()) < 0) {
             couplesROMEsIntitules.push({
-              codeRome: row.code_rome.trim(),
-              intitule: row.libelle_rome.trim(),
+              codeRome: code_rome.trim(),
+              intitule: libelle_rome.trim(),
             })
           }
 
-          if (currentAppellationsROMEs) {
-            currentAppellationsROMEs.split(", ").map((appellation) => {
+          if (appellations_rome) {
+            appellations_rome.split(", ").map((appellation) => {
               coupleAppellationsRomeIntitules.push({
-                codeRome: row.code_rome.trim(),
-                intitule: row.libelle_rome.trim(),
+                codeRome: code_rome.trim(),
+                intitule: libelle_rome.trim(),
                 appellation: appellation,
               })
             })
@@ -267,75 +262,66 @@ export default async (optionalFileName) => {
 
         step = 3
 
-        let currentROME = row.code_rome
-        if (currentROME && codesROMEs.indexOf(currentROME.trim()) < 0) {
-          codesROMEs.push(currentROME.trim())
+        if (code_rome && codesROMEs.indexOf(code_rome.trim()) < 0) {
+          codesROMEs.push(code_rome.trim())
         }
 
         step = 4
 
-        let currentIntituleROME = row.libelle_rome
-        if (currentIntituleROME && intitulesROMEs.indexOf(currentIntituleROME.trim()) < 0) {
-          intitulesROMEs.push(currentIntituleROME.trim())
+        if (libelle_rome && intitulesROMEs.indexOf(libelle_rome.trim()) < 0) {
+          intitulesROMEs.push(libelle_rome.trim())
         }
 
         step = 5
 
-        let currentRNCP = row.code_rncp
-        if (currentRNCP && codesRNCPs.indexOf(currentRNCP.trim()) < 0) {
-          codesRNCPs.push(currentRNCP.trim())
+        if (code_rncp && codesRNCPs.indexOf(code_rncp.trim()) < 0) {
+          codesRNCPs.push(code_rncp.trim())
         }
 
         step = 6
 
-        let currentLibelleRNCP = row.intitule_rncp
-        if (currentLibelleRNCP && intitulesRNCPs.indexOf(currentLibelleRNCP.trim()) < 0) {
-          intitulesRNCPs.push(currentLibelleRNCP.trim())
+        if (intitule_rncp && intitulesRNCPs.indexOf(intitule_rncp.trim()) < 0) {
+          intitulesRNCPs.push(intitule_rncp.trim())
         }
 
         step = 7
 
-        let currentSousDomaineOnisep = row.sous_domaine_onisep_1
-        if (currentSousDomaineOnisep && sousDomainesOnisep.indexOf(currentSousDomaineOnisep.trim()) < 0) {
-          sousDomainesOnisep.push(currentSousDomaineOnisep.trim())
+        if (sous_domaine_onisep_1 && sousDomainesOnisep.indexOf(sous_domaine_onisep_1.trim()) < 0) {
+          sousDomainesOnisep.push(sous_domaine_onisep_1.trim())
         }
-        currentSousDomaineOnisep = row.sous_domaine_onisep_2
-        if (currentSousDomaineOnisep && sousDomainesOnisep.indexOf(currentSousDomaineOnisep.trim()) < 0) {
-          sousDomainesOnisep.push(currentSousDomaineOnisep.trim())
+
+        if (sous_domaine_onisep_2 && sousDomainesOnisep.indexOf(sous_domaine_onisep_2.trim()) < 0) {
+          sousDomainesOnisep.push(sous_domaine_onisep_2.trim())
         }
 
         step = 8
 
-        let currentMotsClefsDomaine = row.mots_clefs_domaine
-        if (currentMotsClefsDomaine) {
-          motsClefsDomaine = motsClefsDomaine.concat(currentMotsClefsDomaine.split(/[\s,;]+/))
+        if (mots_clefs_domaine) {
+          motsClefsDomaine = motsClefsDomaine.concat(mots_clefs_domaine.split(/[\s,;]+/))
         }
 
         step = 9
 
-        let currentMotsClefsSpecifiques = row.mots_clefs_ligne
-        if (currentMotsClefsSpecifiques) {
-          motsClefsSpecifiques = motsClefsSpecifiques.concat(currentMotsClefsSpecifiques.split(/[\s,;]+/))
+        if (mots_clefs_ligne) {
+          motsClefsSpecifiques = motsClefsSpecifiques.concat(mots_clefs_ligne.split(/[\s,;]+/))
         }
 
         step = 10
 
-        let currentCodesFAP = row.codes_fap
-        if (currentCodesFAP) {
-          codesFAPs = codesFAPs.concat(currentCodesFAP.split(/[\s,;]+/))
+        if (codes_fap) {
+          codesFAPs = codesFAPs.concat(codes_fap.split(/[\s,;]+/))
         }
 
         step = 11
 
-        let currentLibellesFAP = row.libelles_fap
-        if (currentLibellesFAP) {
-          libellesFAPs = libellesFAPs.concat(currentLibellesFAP.split("; "))
+        if (libelles_fap) {
+          libellesFAPs = libellesFAPs.concat(libelles_fap.split("; "))
         }
 
         step = 12
 
-        if (currentAppellationsROMEs) {
-          appellationsROMEs = appellationsROMEs.concat(currentAppellationsROMEs.toLowerCase().split(/[\s,/;]+/))
+        if (appellations_rome) {
+          appellationsROMEs = appellationsROMEs.concat(appellations_rome.toLowerCase().split(/[\s,/;]+/))
         }
       }
     }
@@ -348,12 +334,10 @@ export default async (optionalFileName) => {
       result: "Fichier analysé",
       fileName: optionalFileName ? optionalFileName : "currentDomainesMetiers.xlsx",
       fichierXlsx: `${config.publicUrl}/api/updateRomesMetiers/missingRNCPs/RNCP_manquants.xlsx`,
-      //inDomainRNCPs: [...inDomainRNCPs],
       missingRNCPs,
     }
-  } catch (err) {
-    logMessage("error", err)
-    let error_msg = _.get(err, "meta.body") ?? err.message
-    return { error: error_msg, fileName: optionalFileName ? optionalFileName : "currentDomainesMetiers.xlsx", step }
+  } catch (error) {
+    Sentry.captureException(error)
+    logger.error(error)
   }
 }
