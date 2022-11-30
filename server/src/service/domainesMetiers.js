@@ -5,7 +5,7 @@ import { getElasticInstance } from "../common/esClient/index.js"
 import { logger } from "../common/logger.js"
 import config from "../config.js"
 import getMissingRNCPsFromDomainesMetiers from "../jobs/domainesMetiers/getMissingRNCPsFromDomainesMetiers.js"
-import updateDomainesMetiers from "../jobs/domainesMetiers/updateDomainesMetiers.js"
+
 import { getRomesFromCfd, getRomesFromSiret } from "./romesFromCatalogue.js"
 
 const getRomesAndLabelsFromTitleQuery = async (query) => {
@@ -320,25 +320,6 @@ const removeDuplicateDiplomas = (diplomas) => {
   })
 
   return labelsAndRomesForDiplomas
-}
-
-const updateRomesMetiersQuery = async (query) => {
-  if (!query.secret) {
-    return { error: "secret_missing" }
-  } else if (query.secret !== config.secretUpdateRomesMetiers) {
-    return { error: "wrong_secret" }
-  } else {
-    try {
-      let result = await updateDomainesMetiers(query.fileName)
-      return result
-    } catch (err) {
-      Sentry.captureException(err)
-
-      let error_msg = _.get(err, "meta.body") ?? err.message
-
-      return { error: error_msg }
-    }
-  }
 }
 
 const getMissingRNCPs = async (query) => {
