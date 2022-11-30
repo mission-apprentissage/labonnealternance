@@ -1,7 +1,7 @@
 import Sentry from "@sentry/node"
 import _ from "lodash-es"
 import { matchSorter } from "match-sorter"
-import { getDomainesMetiersES } from "../common/esClient/index.js"
+import { getElasticInstance } from "../common/esClient/index.js"
 import { logger } from "../common/logger.js"
 import config from "../config.js"
 import getMissingRNCPsFromDomainesMetiers from "../jobs/domainesMetiers/getMissingRNCPsFromDomainesMetiers.js"
@@ -115,7 +115,7 @@ const getMetiers = async ({ title = null, romes = null, rncps = null }) => {
         })
       }
 
-      const esClient = getDomainesMetiersES()
+      const esClient = getElasticInstance()
 
       const response = await esClient.search({
         index: "domainesmetiers",
@@ -158,7 +158,7 @@ const getLabelsAndRomes = async (searchKeyword, withRomeLabels) => {
       }
     })
 
-    const esClient = getDomainesMetiersES()
+    const esClient = getElasticInstance()
 
     let sources = ["sous_domaine", "codes_romes", "codes_rncps"]
     if (withRomeLabels) {
@@ -210,7 +210,7 @@ const getCoupleAppellationRomeIntitule = async (searchKeyword) => {
   }
 
   try {
-    const esClient = getDomainesMetiersES()
+    const esClient = getElasticInstance()
 
     let body = {
       query: {
@@ -272,7 +272,7 @@ const getLabelsAndRomesForDiplomas = async (searchKeyword) => {
       }
     })
 
-    const esClient = getDomainesMetiersES()
+    const esClient = getElasticInstance()
 
     const response = await esClient.search({
       index: "diplomesmetiers",
@@ -395,7 +395,7 @@ const getMetiersFromRomes = async (romes) => {
    * récupère dans la table custo tous les métiers qui correspondent au tableau de romes en paramètres
    */
   try {
-    const esClient = getDomainesMetiersES()
+    const esClient = getElasticInstance()
 
     const response = await esClient.search({
       index: "domainesmetiers",
@@ -427,7 +427,7 @@ const getTousLesMetiers = async () => {
    * récupère dans la table custo tous les métiers
    */
   try {
-    const esClient = getDomainesMetiersES()
+    const esClient = getElasticInstance()
 
     const response = await esClient.search({
       index: "domainesmetiers",

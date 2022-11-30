@@ -1,8 +1,8 @@
-import _ from "lodash-es"
 import Sentry from "@sentry/node"
-import { getFormationsES } from "../common/esClient/index.js"
+import _ from "lodash-es"
+import { getElasticInstance } from "../common/esClient/index.js"
 
-const esClient = getFormationsES()
+const esClient = getElasticInstance()
 
 const getDiplomasForJobs = async (romes /*, rncps*/) => {
   try {
