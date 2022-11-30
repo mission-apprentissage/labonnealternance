@@ -1,18 +1,18 @@
-import path from "path"
-import config from "../../config.js"
 import fs from "fs"
 import _ from "lodash-es"
-import { logger } from "../../common/logger.js"
-import XLSX from "xlsx"
-import { DomainesMetiers } from "../../common/model/index.js"
-import { getFormationsES } from "../../common/esClient/index.js"
-import { getFileFromS3 } from "../../common/utils/awsUtils.js"
 import { oleoduc } from "oleoduc"
-import { logMessage } from "../../common/utils/logMessage.js"
+import path from "path"
+import XLSX from "xlsx"
 import __dirname from "../../common/dirname.js"
+import { getElasticInstance } from "../../common/esClient/index.js"
+import { logger } from "../../common/logger.js"
+import { DomainesMetiers } from "../../common/model/index.js"
+import { getFileFromS3 } from "../../common/utils/awsUtils.js"
+import { logMessage } from "../../common/utils/logMessage.js"
+import config from "../../config.js"
 const currentDirname = __dirname(import.meta.url)
 
-const esClient = getFormationsES()
+const esClient = getElasticInstance()
 
 const FILE_LOCAL_PATH = path.join(currentDirname, "./assets/domainesMetiers_S3.xlsx")
 

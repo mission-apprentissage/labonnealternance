@@ -15,25 +15,4 @@ const createEsInstance = () => {
 const clientDefault = createEsInstance()
 const getElasticInstance = () => clientDefault
 
-let clientDomainesMetiers = createEsInstance("domainesmetiers")
-let clientDiplomesMetiers = createEsInstance("diplomesmetiers")
-let clientCatalogueFormations = createEsInstance("convertedformations")
-let clientBonnesBoites = createEsInstance("bonnesboites")
-
-const getDomainesMetiersES = () => {
-  return clientDomainesMetiers
-}
-
-const getDiplomesMetiersES = () => {
-  return clientDiplomesMetiers
-}
-
-const getFormationsES = () => {
-  return clientCatalogueFormations
-}
-
-const getBonnesBoitesES = () => {
-  return clientBonnesBoites
-}
-
-export { getDomainesMetiersES, getDiplomesMetiersES, getElasticInstance, getFormationsES, getBonnesBoitesES, mongoosastic }
+export { getElasticInstance, mongoosastic }

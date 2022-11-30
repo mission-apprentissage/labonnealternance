@@ -1,10 +1,10 @@
-import _ from "lodash-es"
 import Sentry from "@sentry/node"
-import { logMessage } from "../../common/utils/logMessage.js"
+import _ from "lodash-es"
+import { getElasticInstance } from "../../common/esClient/index.js"
 import { DiplomesMetiers } from "../../common/model/index.js"
-import { getElasticInstance, getFormationsES } from "../../common/esClient/index.js"
+import { logMessage } from "../../common/utils/logMessage.js"
 
-const esClient = getFormationsES()
+const esClient = getElasticInstance()
 
 const motsIgnores = ["a", "au", "aux", "l", "le", "la", "les", "d", "de", "du", "des", "et", "en"]
 
