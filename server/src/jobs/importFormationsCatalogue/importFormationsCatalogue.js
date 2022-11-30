@@ -1,44 +1,33 @@
-import _ from "lodash-es"
-import { ConvertedFormation_0, ConvertedFormation_1 } from "../../common/model/index.js"
+import Sentry from "@sentry/node"
+import { oleoduc, writeData } from "oleoduc"
+import { countFormations, fetchFormations } from "../../common/components/catalogue.js"
+import { getCurrentFormationsSourceIndex, updateFormationsIndexAlias, updateFormationsSourceIndex } from "../../common/components/indexSourceFormations.js"
 import { getElasticInstance } from "../../common/esClient/index.js"
-import { fetchFormations, countFormations } from "../../common/components/catalogue.js"
+import { logger } from "../../common/logger.js"
+import { ConvertedFormation_0, ConvertedFormation_1 } from "../../common/model/index.js"
 import { mongooseInstance } from "../../common/mongodb.js"
 import { rebuildIndex } from "../../common/utils/esUtils.js"
-import { getCurrentFormationsSourceIndex, updateFormationsSourceIndex, updateFormationsIndexAlias } from "../../common/components/indexSourceFormations.js"
-import { oleoduc, transformData, writeData } from "oleoduc"
-import { logger } from "../../common/logger.js"
-import { logMessage } from "../../common/utils/logMessage.js"
-import { notifyToSlack } from "../../common/utils/slackUtils.js"
 
-const emptyMongo = async (model) => {
-  logMessage("info", `Clearing formations db...`)
-  await model.deleteMany({})
-}
+const resetIndexAndDb = async (index, model) => {
+  let client = getElasticInstance()
+  let requireAsciiFolding = true
 
-const clearIndex = async (index) => {
   try {
-    let client = getElasticInstance()
-    logMessage("info", `Removing formations index ${index} ...`)
+    logger.info(`Clearing formations db...`)
+    await model.deleteMany({})
+
+    logger.info(`Removing formations index ${index} ...`)
     await client.indices.delete({ index })
-  } catch (err) {
-    logMessage("error", `Error emptying es index : ${err.message}`)
+
+    logger.info(`Creating formations index ...`)
+    await model.createMapping(requireAsciiFolding)
+  } catch (error) {
+    logger.error(error)
   }
 }
 
-const createIndex = async (workMongo) => {
-  let requireAsciiFolding = true
-  logMessage("info", `Creating formations index ...`)
-  await workMongo.createMapping(requireAsciiFolding)
-}
-
-const cleanIndexAndDb = async ({ workIndex, workMongo }) => {
-  await emptyMongo(workMongo)
-  await clearIndex(workIndex)
-  await createIndex(workMongo)
-}
-
 const importFormations = async ({ workIndex, workMongo, formationCount }) => {
-  logMessage("info", `Début import`)
+  logger.info(`Début import`)
 
   const stats = {
     total: 0,
@@ -51,24 +40,16 @@ const importFormations = async ({ workIndex, workMongo, formationCount }) => {
 
     await oleoduc(
       await fetchFormations({ formationCount }),
-      transformData(async (formation) => {
-        return formation
-      }),
       writeData(async (formation) => {
         stats.total++
         try {
-          await db.collections[workIndex].save(formation)
+          await db.collections[workIndex].insertOne(formation)
           stats.created++
         } catch (e) {
           stats.failed++
-          logger.error(e)
-        }
-
-        if (stats.total % 1000 === 0) {
-          logMessage("info", `${stats.total} trainings processed`)
         }
       }),
-      { parallel: 8 }
+      { parallel: 500 }
     )
 
     await rebuildIndex(workMongo)
@@ -81,83 +62,70 @@ const importFormations = async ({ workIndex, workMongo, formationCount }) => {
   }
 }
 
-let running = false
-
 export default async function (onlyChangeMasterIndex = false) {
-  if (!running) {
-    running = true
+  let workIndex, workMongo
 
-    try {
-      logMessage("info", " -- Import formations catalogue -- ")
+  logger.info(" -- Import formations catalogue -- ")
 
-      const formationCount = await countFormations()
+  try {
+    const formationCount = await countFormations()
 
-      logMessage("info", `${formationCount} à importer`)
+    logger.info(`${formationCount} à importer`)
 
-      let stats = {
-        total: 0,
-        created: 0,
-        failed: 0,
-      }
-      let workIndex = "convertedformation_0"
-
-      if (formationCount > 0) {
-        const currentIndex = await getCurrentFormationsSourceIndex()
-
-        logMessage("info", `Index courant : ${currentIndex}`)
-
-        let workMongo = ConvertedFormation_0
-
-        if (currentIndex === "convertedformation_0") {
-          workIndex = "convertedformation_1"
-          workMongo = ConvertedFormation_1
-        }
-
-        logMessage("info", `Début process sur : ${workIndex}`)
-
-        if (!onlyChangeMasterIndex) {
-          await cleanIndexAndDb({ workIndex, workMongo })
-
-          stats = await importFormations({ workIndex, workMongo, formationCount })
-        } else {
-          logMessage("info", `Permutation d'index seule`)
-        }
-
-        const savedSource = await updateFormationsSourceIndex(workIndex)
-
-        logMessage("info", "Source mise à jour en base ", savedSource.currentIndex)
-
-        const savedIndexAliasResult = await updateFormationsIndexAlias({
-          masterIndex: workIndex,
-          indexToUnAlias: currentIndex,
-        })
-
-        if (savedIndexAliasResult === "ok") {
-          logMessage("info", "Alias mis à jour dans l'ES ", workIndex)
-        } else {
-          logMessage("error", "Alias pas mis à jour dans l'ES ", workIndex)
-        }
-      }
-      logMessage("info", `Fin traitement`)
-
-      running = false
-
-      notifyToSlack(`Import formations catalogue terminé sur ${workIndex}. ${stats.created} OK. ${stats.failed} erreur(s)`)
-
-      return {
-        result: "Import formations catalogue terminé",
-        index_maitre: workIndex,
-        nb_formations: stats.created,
-        erreurs: stats.failed,
-      }
-    } catch (err) {
-      logMessage("error", err)
-      let error_msg = _.get(err, "meta.body") ?? err.message
-      running = false
-      notifyToSlack(`ECHEC Import formations catalogue. ${error_msg}`)
-      return { error: error_msg }
+    let stats = {
+      total: 0,
+      created: 0,
+      failed: 0,
     }
-  } else {
-    logMessage("info", "Import formations catalogue already running")
+
+    if (formationCount > 0) {
+      const currentIndex = await getCurrentFormationsSourceIndex()
+
+      logger.info(`Index courant : ${currentIndex}`)
+
+      if (currentIndex === "convertedformation_0") {
+        workIndex = "convertedformation_1"
+        workMongo = ConvertedFormation_1
+      } else {
+        workIndex = "convertedformation_0"
+        workMongo = ConvertedFormation_0
+      }
+
+      logger.info(`Début process sur : ${workIndex}`)
+
+      if (!onlyChangeMasterIndex) {
+        await resetIndexAndDb(workIndex, workMongo)
+
+        stats = await importFormations({ workIndex, workMongo, formationCount })
+      } else {
+        logger.info(`Permutation d'index seule`)
+      }
+
+      const savedSource = await updateFormationsSourceIndex(workIndex)
+
+      logger.info("Source mise à jour en base ", savedSource.currentIndex)
+
+      const savedIndexAliasResult = await updateFormationsIndexAlias({
+        masterIndex: workIndex,
+        indexToUnAlias: currentIndex,
+      })
+
+      if (savedIndexAliasResult === "ok") {
+        logger.info("Alias mis à jour dans l'ES ", workIndex)
+      } else {
+        logger.error("Alias pas mis à jour dans l'ES ", workIndex)
+      }
+    }
+    logger.info(`Fin traitement`)
+
+    return {
+      result: "Import formations catalogue terminé",
+      index_maitre: workIndex,
+      nb_formations: stats.created,
+      erreurs: stats.failed,
+    }
+  } catch (error) {
+    Sentry.captureException(error)
+    logger.error(error)
   }
 }
