@@ -2,29 +2,10 @@ import Sentry from "@sentry/node"
 import { oleoduc, writeData } from "oleoduc"
 import { countFormations, fetchFormations } from "../../common/components/catalogue.js"
 import { getCurrentFormationsSourceIndex, updateFormationsIndexAlias, updateFormationsSourceIndex } from "../../common/components/indexSourceFormations.js"
-import { getElasticInstance } from "../../common/esClient/index.js"
 import { logger } from "../../common/logger.js"
 import { ConvertedFormation_0, ConvertedFormation_1 } from "../../common/model/index.js"
 import { mongooseInstance } from "../../common/mongodb.js"
-import { rebuildIndex } from "../../common/utils/esUtils.js"
-
-const resetIndexAndDb = async (index, model) => {
-  let client = getElasticInstance()
-  let requireAsciiFolding = true
-
-  try {
-    logger.info(`Clearing formations db...`)
-    await model.deleteMany({})
-
-    logger.info(`Removing formations index ${index} ...`)
-    await client.indices.delete({ index })
-
-    logger.info(`Creating formations index ...`)
-    await model.createMapping(requireAsciiFolding)
-  } catch (error) {
-    logger.error(error)
-  }
-}
+import { rebuildIndex, resetIndexAndDb } from "../../common/utils/esUtils.js"
 
 const importFormations = async ({ workIndex, workMongo, formationCount }) => {
   logger.info(`Début import`)
@@ -94,7 +75,7 @@ export default async function (onlyChangeMasterIndex = false) {
       logger.info(`Début process sur : ${workIndex}`)
 
       if (!onlyChangeMasterIndex) {
-        await resetIndexAndDb(workIndex, workMongo)
+        await resetIndexAndDb(workIndex, workMongo, { requireAsciiFolding: true })
 
         stats = await importFormations({ workIndex, workMongo, formationCount })
       } else {
