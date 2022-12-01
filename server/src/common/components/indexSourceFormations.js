@@ -1,11 +1,10 @@
-import { Client } from "@elastic/elasticsearch"
 import Sentry from "@sentry/node"
 import { get } from "lodash-es"
-import config from "../../config.js"
+import { getElasticInstance } from "../esClient/index.js"
 import { logger } from "../logger.js"
 import { ConvertedFormation_0, ConvertedFormation_1, SourceFormations } from "../model/index.js"
 
-const esClient = new Client({ node: config.env === "local" ? "http://127.0.0.1:9200" : "http://elasticsearch:9200" })
+const esClient = getElasticInstance()
 
 const getCurrentFormationsSourceIndex = async () => {
   try {

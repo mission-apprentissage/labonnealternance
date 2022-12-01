@@ -20,7 +20,8 @@
     "cli": "DOCTRINA_LOG_DESTINATIONS=stderr node src/cli.js",
     "coverage": "nyc --temp-dir .coverage/.nyc_output --report-dir .coverage --reporter=lcov --reporter=html yarn test",
     "lint": "eslint src/ tests/",
-    "lint:fix": "eslint src/ tests/ --fix"
+    "lint:fix": "eslint src/ tests/ --fix",
+    "seed:reference": "dotenv node src/jobs/seed/candidat.seed.js"
   },
   "dependencies": {
     "@elastic/elasticsearch": "7.9.1",
