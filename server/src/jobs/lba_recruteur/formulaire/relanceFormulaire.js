@@ -42,7 +42,7 @@ export const relanceFormulaire = async (mailer, threshold) => {
   if (formulaireToExpire.length === 0) {
     logger.info("Aucune offre à relancer aujourd'hui.")
     await axios.post(config.slackWebhookUrl, {
-      text: `[${config.env.toUpperCase()} - JOB MATCHA - RELANCE J+${threshold}] Aucune relance à effectuer`,
+      text: `[${config.env.toUpperCase()} - JOB LBA - RELANCE J+${threshold}] Aucune relance à effectuer`,
     })
   }
 
@@ -51,7 +51,7 @@ export const relanceFormulaire = async (mailer, threshold) => {
   if (nbOffres > 0) {
     logger.info(`${nbOffres} offres relancé aujourd'hui.`)
     await axios.post(config.slackWebhookUrl, {
-      text: `[${config.env.toUpperCase()} - JOB MATCHA - RELANCE J+${threshold}] *${nbOffres} offres* (${formulaireToExpire.length} formulaires) ont été relancés`,
+      text: `[${config.env.toUpperCase()} - JOB LBA - RELANCE J+${threshold}] *${nbOffres} offres* (${formulaireToExpire.length} formulaires) ont été relancés`,
     })
   }
 

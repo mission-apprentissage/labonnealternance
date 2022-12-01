@@ -325,7 +325,7 @@ const AjouterVoeux = (props) => {
                     isActive={values.multi_diffuser === false ? true : false}
                     onClick={() => setFieldValue('multi_diffuser', false)}
                   >
-                    Non, l'offre est uniquement sur Matcha
+                    Non, l'offre est uniquement sur La bonne alternance
                   </Button>
                 </Stack>
               </Box>

@@ -310,7 +310,7 @@ const WidgetTester = () => {
       <Container>
         <Row>
           <Col xs="12">
-            <h1>Test du Widget La Bonne Alternance</h1>
+            <h1>Test du Widget La bonne alternance</h1>
             <div>
               La documentation est ici :{" "}
               <a href="https://mission-apprentissage.gitbook.io/la-bonne-alternance/documentation" target="docIdea">

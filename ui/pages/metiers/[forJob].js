@@ -39,7 +39,7 @@ export default function ForJob(props) {
         </Text>
         <Divider variant="pageTitleDivider" my={12} />
 
-        <Box as="p">Vous êtes à seulement 2 clics d&apos;obtenir toutes les informations pour trouver une alternance rapidement sur La Bonne Alternance :</Box>
+        <Box as="p">Vous êtes à seulement 2 clics d&apos;obtenir toutes les informations pour trouver une alternance rapidement sur La bonne alternance :</Box>
         <VStack mt={2} align="flex-start">
           <Text>
             Offres d&apos;emploi en contrat d&apos;apprentissage ou en contrat de professionnalisation en <i>{currentJob.name}</i>

@@ -11,7 +11,7 @@ import { Box, Container, Divider, Grid, GridItem, Link, Text } from "@chakra-ui/
 const Developpeurs = () => (
   <Box>
     <NextSeo
-      title="Développeurs | La Bonne Alternance | Trouvez votre alternance"
+      title="Développeurs | La bonne alternance | Trouvez votre alternance"
       description="Afin de faciliter l’accès aux informations pour les publics là où ils se trouvent, nous avons développé 4 API et un Widget"
     />
     <ScrollToTop />
