@@ -2,6 +2,7 @@ import Sentry from "@sentry/node"
 import { getElasticInstance } from "../../common/esClient/index.js"
 import { logger } from "../../common/logger.js"
 import { DiplomesMetiers } from "../../common/model/index.js"
+import { resetIndexAndDb } from "../../common/utils/esUtils.js"
 
 const motsIgnores = ["a", "au", "aux", "l", "le", "la", "les", "d", "de", "du", "des", "et", "en"]
 const diplomesMetiers = []
@@ -111,19 +112,7 @@ const getIntitulesFormations = async () => {
 export default async function () {
   logger.info(" -- Start of DiplomesMetiers initializer -- ")
 
-  logger.info(`Clearing diplomesmetiers db...`)
-  await DiplomesMetiers.deleteMany({})
-
-  try {
-    logger.info(`Removing diplomesmetiers index...`)
-    await esClient.indices.delete({ index: "diplomesmetiers" })
-  } catch (err) {
-    logger.error(`Error emptying es index : ${err.message}`)
-  }
-
-  const requireAsciiFolding = true
-  logger.info(`Creating diplomesmetiers index...`)
-  await DiplomesMetiers.createMapping(requireAsciiFolding)
+  await resetIndexAndDb("diplomesmetiers", DiplomesMetiers, { requireAsciiFolding: true })
 
   logger.info(`Début traitement`)
 

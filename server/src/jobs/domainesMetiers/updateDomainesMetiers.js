@@ -4,10 +4,10 @@ import { oleoduc } from "oleoduc"
 import path from "path"
 import XLSX from "xlsx"
 import __dirname from "../../common/dirname.js"
-import { getElasticInstance } from "../../common/esClient/index.js"
 import { logger } from "../../common/logger.js"
 import { DomainesMetiers } from "../../common/model/index.js"
 import { getFileFromS3 } from "../../common/utils/awsUtils.js"
+import { resetIndexAndDb } from "../../common/utils/esUtils.js"
 import { readXLSXFile } from "../../common/utils/fileUtils.js"
 
 const currentDirname = __dirname(import.meta.url)
@@ -23,22 +23,9 @@ export default async function (optionalFileName) {
 
   logger.info(" -- Start of DomainesMetiers initializer -- ")
 
+  await resetIndexAndDb("domainesmetiers", DomainesMetiers, { requireAsciiFolding: true })
+
   await downloadAndSaveFile(optionalFileName)
-
-  logger.info(`Clearing domainesmetiers db...`)
-  await DomainesMetiers.deleteMany({})
-
-  try {
-    let client = getElasticInstance()
-    logger.info(`Removing domainesmetiers index...`)
-    await client.indices.delete({ index: "domainesmetiers" })
-  } catch (err) {
-    logger.error(`Error emptying es index : ${err.message}`)
-  }
-
-  let requireAsciiFolding = true
-  logger.info(`Creating domainesmetiers index...`)
-  await DomainesMetiers.createMapping(requireAsciiFolding)
 
   const workbookDomainesMetiers = readXLSXFile(FILEPATH)
 
