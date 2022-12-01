@@ -5,10 +5,9 @@ import { getElasticInstance } from "../common/esClient/index.js"
 import { logger } from "../common/logger.js"
 import config from "../config.js"
 import getMissingRNCPsFromDomainesMetiers from "../jobs/domainesMetiers/getMissingRNCPsFromDomainesMetiers.js"
-
 import { getRomesFromCfd, getRomesFromSiret } from "./romesFromCatalogue.js"
 
-const getRomesAndLabelsFromTitleQuery = async (query) => {
+export const getRomesAndLabelsFromTitleQuery = async (query) => {
   if (!query.title) return { error: "title_missing" }
   else {
     let [romesMetiers, romesDiplomes] = await Promise.all([getLabelsAndRomes(query.title, query.withRomeLabels), getLabelsAndRomesForDiplomas(query.title)])
@@ -73,7 +72,7 @@ const getMultiMatchTermForDiploma = (term) => {
   }
 }
 
-const getMetiers = async ({ title = null, romes = null, rncps = null }) => {
+export const getMetiers = async ({ title = null, romes = null, rncps = null }) => {
   if (!title && !romes && !rncps) {
     return {
       error: "missing_parameters",
@@ -201,7 +200,7 @@ const getLabelsAndRomes = async (searchKeyword, withRomeLabels) => {
   }
 }
 
-const getCoupleAppellationRomeIntitule = async (searchKeyword) => {
+export const getCoupleAppellationRomeIntitule = async (searchKeyword) => {
   if (!searchKeyword) {
     return {
       error: "missing_parameters",
@@ -322,7 +321,7 @@ const removeDuplicateDiplomas = (diplomas) => {
   return labelsAndRomesForDiplomas
 }
 
-const getMissingRNCPs = async (query) => {
+export const getMissingRNCPs = async (query) => {
   if (!query.secret) {
     return { error: "secret_missing" }
   } else if (query.secret !== config.secretUpdateRomesMetiers) {
@@ -341,7 +340,7 @@ const getMissingRNCPs = async (query) => {
   }
 }
 
-const getMetiersPourCfd = async ({ cfd }) => {
+export const getMetiersPourCfd = async ({ cfd }) => {
   let romeResponse = await getRomesFromCfd({ cfd })
 
   if (romeResponse.error) {
@@ -356,7 +355,7 @@ const getMetiersPourCfd = async ({ cfd }) => {
   return metiers
 }
 
-const getMetiersPourEtablissement = async ({ siret }) => {
+export const getMetiersPourEtablissement = async ({ siret }) => {
   let romeResponse = await getRomesFromSiret({ siret })
 
   if (romeResponse.error) {
@@ -403,7 +402,7 @@ const getMetiersFromRomes = async (romes) => {
   }
 }
 
-const getTousLesMetiers = async () => {
+export const getTousLesMetiers = async () => {
   /**
    * récupère dans la table custo tous les métiers
    */
@@ -433,15 +432,4 @@ const getTousLesMetiers = async () => {
   } catch (error) {
     return manageError({ error, msgToLog: "getting all metiers" })
   }
-}
-
-export {
-  getRomesAndLabelsFromTitleQuery,
-  getCoupleAppellationRomeIntitule,
-  updateRomesMetiersQuery,
-  getMissingRNCPs,
-  getMetiersPourCfd,
-  getMetiersPourEtablissement,
-  getTousLesMetiers,
-  getMetiers,
 }
