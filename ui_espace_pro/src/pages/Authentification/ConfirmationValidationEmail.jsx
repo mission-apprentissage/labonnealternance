@@ -18,8 +18,8 @@ const EmailInvalide = () => (
       </Heading>
       <Text fontSize={["16px", "22px"]}>
         La validation de votre email à échoué. Merci de{" "}
-        <Link pl={2} href="mailto:matcha@apprentissage.beta.gouv.fr" textDecoration="underline">
-          Contacter l'équipe de Matcha
+        <Link pl={2} href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Authentification%20LBAR%20-%20Mail%20invalide" textDecoration="underline">
+          Contacter l'équipe La bonne alternance
         </Link>
       </Text>
     </Box>

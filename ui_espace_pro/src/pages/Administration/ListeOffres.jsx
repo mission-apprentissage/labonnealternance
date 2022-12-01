@@ -48,7 +48,7 @@ const EmptySpace = () => (
         Ajoutez votre première offre d’emploi en alternance.
       </Heading>
       <Text fontSize="1.375rem">
-        Décrivez vos besoins de recrutement pour les afficher sur le site <span style={{ fontWeight: "700" }}>La Bonne Alternance</span> dès aujourd’hui.
+        Décrivez vos besoins de recrutement pour les afficher sur le site <span style={{ fontWeight: "700" }}>La bonne alternance</span> dès aujourd’hui.
       </Text>
     </Box>
   </Stack>

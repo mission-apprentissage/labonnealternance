@@ -178,7 +178,7 @@ export default ({ etablissementsRecruteur, usersRecruteur, formulaire, mailer })
       let formulaireInfo, partenaire
 
       if (exist) {
-        return res.status(403).json({ error: true, message: "L'adresse mail est déjà associée à un compte Matcha." })
+        return res.status(403).json({ error: true, message: "L'adresse mail est déjà associée à un compte La bonne alternance." })
       }
 
       if (ENTREPRISE) {
@@ -385,7 +385,7 @@ export default ({ etablissementsRecruteur, usersRecruteur, formulaire, mailer })
       if (!validation) {
         return res.status(400).json({
           error: true,
-          message: "La validation de l'adresse mail à échoué. Merci de contacter le support Matcha.",
+          message: "La validation de l'adresse mail à échoué. Merci de contacter le support La bonne alternance.",
         })
       }
 

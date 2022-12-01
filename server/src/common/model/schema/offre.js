@@ -11,20 +11,20 @@ export const offreSchema = mongooseInstance.Schema({
   date_debut_apprentissage: {
     type: Date,
     default: null,
-    description: "Date de début de l'apprentissage",
+    description: "Date de début de l'alternance",
   },
   description: {
     type: String,
-    description: "Description de l'offre d'apprentissage",
+    description: "Description de l'offre d'alternance",
   },
   romes: {
     type: [String],
     default: [],
-    description: "Liste des romes lié au métier",
+    description: "Liste des romes liés au métier",
   },
   rome_detail: {
     type: Object,
-    description: "Détail du code ROME selon la nomenclature Pole Emploi",
+    description: "Détail du code ROME selon la nomenclature Pole emploi",
   },
   date_creation: {
     type: Date,
@@ -39,7 +39,7 @@ export const offreSchema = mongooseInstance.Schema({
   date_mise_a_jour: {
     type: Date,
     default: Date.now,
-    description: "Date de dernière mise à jour",
+    description: "Date de dernière mise à jour de l'offre",
   },
   date_derniere_prolongation: {
     type: Date,
@@ -48,12 +48,12 @@ export const offreSchema = mongooseInstance.Schema({
   nombre_prolongation: {
     type: Number,
     default: 0,
-    description: "Nombre de fois ou l'offre a été prolongé",
+    description: "Nombre de fois où l'offre a été prolongée",
   },
   relance_mail_sent: {
     type: Boolean,
     default: false,
-    description: "Statut de l'envoie du mail de relance avant expiration",
+    description: "Statut de l'envoi du mail de relance avant expiration",
   },
   statut: {
     type: String,
@@ -74,19 +74,19 @@ export const offreSchema = mongooseInstance.Schema({
   multi_diffuser: {
     type: Boolean,
     default: null,
-    description: "Definit si l'offre est diffusé sur d'autre jobboard que Matcha",
+    description: "Definit si l'offre est diffusée sur d'autres jobboard que La bonne alternance",
   },
   delegate: {
     type: Boolean,
-    description: "Definit si l'entreprise souhaite déléger l'offre à un CFA",
+    description: "Definit si l'entreprise souhaite déléguer l'offre à un CFA",
   },
   elligible_handicap: {
     type: Boolean,
-    description: "Poste ouvert au personnes en situation de handicap",
+    description: "Poste ouvert aux personnes en situation de handicap",
   },
   quantite: {
     type: Number,
-    description: "Nombre de poste ouvert pour cette offre",
+    description: "Nombre de poste(s) ouvert(s) pour cette offre",
   },
   duree_contrat: {
     type: Number,
