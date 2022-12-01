@@ -119,7 +119,7 @@ export default async function () {
 
       logMessage("info", `End inserting opco sirens (${i})`)
 
-      notifyToSlack(`Fin d'insertion des SIRENs akto (${i})`)
+      await notifyToSlack({ subject: "", message: `Fin d'insertion des SIRENs akto (${i})` })
 
       resetContext()
 

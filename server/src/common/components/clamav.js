@@ -1,6 +1,6 @@
 import NodeClam from "clamscan"
-import tcpPortUsed from "tcp-port-used"
 import { Readable } from "stream"
+import tcpPortUsed from "tcp-port-used"
 import config from "../../config.js"
 import { logger } from "../logger.js"
 import { notifyToSlack } from "../utils/slackUtils.js"
@@ -56,7 +56,7 @@ console.log("scan result EICAR String : ", isInfected, viruses);
 
   if (isInfected) {
     logger.error(`Virus detected ${viruses.toString()}`)
-    notifyToSlack(`Virus detected ${viruses.toString()}`)
+    await notifyToSlack({ subject: "CLAMAV", message: `Virus detected ${viruses.toString()}` })
   }
 
   //console.log("resultat ", isInfected, viruses);

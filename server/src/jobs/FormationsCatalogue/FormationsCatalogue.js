@@ -6,6 +6,7 @@ import { logger } from "../../common/logger.js"
 import { ConvertedFormation_0, ConvertedFormation_1 } from "../../common/model/index.js"
 import { mongooseInstance } from "../../common/mongodb.js"
 import { rebuildIndex, resetIndexAndDb } from "../../common/utils/esUtils.js"
+import { notifyToSlack } from "../../common/utils/slackUtils.js"
 
 const importFormations = async ({ workIndex, workMongo, formationCount }) => {
   logger.info(`Début import`)
@@ -99,6 +100,8 @@ export default async function (onlyChangeMasterIndex = false) {
     }
     logger.info(`Fin traitement`)
 
+    await notifyToSlack({ subject: "IMPORT FORMATION", message: `Import formations catalogue terminé sur ${workIndex}. ${stats.created} OK. ${stats.failed} erreur(s)` })
+
     return {
       result: "Import formations catalogue terminé",
       index_maitre: workIndex,
@@ -108,5 +111,6 @@ export default async function (onlyChangeMasterIndex = false) {
   } catch (error) {
     Sentry.captureException(error)
     logger.error(error)
+    await notifyToSlack({ subject: "IMPORT FORMATION", message: `ECHEC Import formations catalogue` })
   }
 }
