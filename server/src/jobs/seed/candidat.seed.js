@@ -1,7 +1,7 @@
 import { logger } from "../../common/logger.js"
 import updateDiplomesMetiers from "../diplomesMetiers/updateDiplomesMetiers.js"
 import updateDomainesMetiers from "../domainesMetiers/updateDomainesMetiers.js"
-import importFormationsCatalogue from "../importFormationsCatalogue/importFormationsCatalogue.js"
+import importFormationsCatalogue from "../formationsCatalogue/formationsCatalogue.js"
 import { runScript } from "../scriptWrapper.js"
 
 runScript(async () => {
