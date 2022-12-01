@@ -258,7 +258,7 @@ const getRegionFormations = async ({ romes, romeDomain, region, departement, dip
     })
 
     if (formations.length === 0 && !caller) {
-      notifyToSlack(`Aucune formation par région trouvée pour les romes ${romes} ou le domaine ${romeDomain}.`)
+      await notifyToSlack({ subject: "FORMATION", message: `Aucune formation par région trouvée pour les romes ${romes} ou le domaine ${romeDomain}.` })
     }
 
     return formations
@@ -327,7 +327,10 @@ const getAtLeastSomeFormations = async ({ romes, rncps, romeDomain, coords, radi
       }
 
       if (formations.results.length === 0 && !caller) {
-        notifyToSlack(`Aucune formation trouvée pour les romes ${romes} ou le domaine ${romeDomain}. diploma : ${diploma}. coords: ${coords}. radius: ${currentRadius}`)
+        await notifyToSlack({
+          subject: "FORMATION",
+          message: `Aucune formation trouvée pour les romes ${romes} ou le domaine ${romeDomain}. diploma : ${diploma}. coords: ${coords}. radius: ${currentRadius}`,
+        })
       }
     }
 
