@@ -41,7 +41,7 @@ const formationMock = {
   created_at: "2021-04-01T02:23:24.063Z",
   last_update_at: "2022-06-01T05:59:29.856Z",
   id: "5fd25616c67da3c3e6bd0810",
-  email: "mock@mail.com",
+  email: "labonnealternance@apprentissage.beta.gouv.fr",
   lieu_formation_adresse: "126 route des emplois",
   code_postal: "74570",
   etablissement_gestionnaire_siret: "30000004600018",
@@ -88,7 +88,7 @@ const lbfFormationMock = {
         "code-postal": "01234",
       },
       contact: {
-        email: "maillbf@mail.com",
+        email: "labonnealternance@apprentissage.beta.gouv.fr",
         url: "https://labonnealternance.apprentissage.beta.gouv.fr",
         tel: "01 01 01 01 01",
       },
