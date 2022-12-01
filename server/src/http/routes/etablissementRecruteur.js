@@ -322,7 +322,10 @@ export default ({ etablissementsRecruteur, usersRecruteur, formulaire, mailer })
             statut: etat_utilisateur.ATTENTE,
           })
 
-          notifyToSlack("NOUVEAU CFA", `en attente de validation - ${partenaire.email} - https://referentiel.apprentissage.beta.gouv.fr/organismes/${partenaire.siret}`)
+          await notifyToSlack({
+            subject: "RECRUTEUR",
+            message: `Nouvel OF en attente de validation - ${partenaire.email} - https://referentiel.apprentissage.beta.gouv.fr/organismes/${partenaire.siret}`,
+          })
 
           return res.json({ user: partenaire })
         } else {
@@ -333,7 +336,10 @@ export default ({ etablissementsRecruteur, usersRecruteur, formulaire, mailer })
             statut: etat_utilisateur.ATTENTE,
           })
 
-          notifyToSlack("NOUVEAU CFA", `en attente de validation - ${partenaire.email} - https://referentiel.apprentissage.beta.gouv.fr/organismes/${partenaire.siret}`)
+          await notifyToSlack({
+            subject: "RECRUTEUR",
+            message: `Nouvel OF en attente de validation - ${partenaire.email} - https://referentiel.apprentissage.beta.gouv.fr/organismes/${partenaire.siret}`,
+          })
 
           return res.json({ user: partenaire })
         }
