@@ -219,7 +219,7 @@ export default async (components) => {
   app.use("/api/es/search", esSearchRoute())
   app.use("/api/rome", rome())
   app.use("/api/optout", optoutRoute())
-  app.use("/api/etablissementsRecruteur", etablissementsRecruteurRoute(components))
+  app.use("/api/etablissement", etablissementsRecruteurRoute(components))
 
   initWebhook()
 
