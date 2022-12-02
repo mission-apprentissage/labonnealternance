@@ -35,7 +35,6 @@ import useAuth from "../../common/hooks/useAuth"
 import { sortReactTableDate, sortReactTableString } from "../../common/utils/dateUtils"
 import { AnimationContainer, ConfirmationActivationUtilsateur, ConfirmationDesactivationUtilisateur, LoadingEmptySpace, TableNew } from "../../components"
 import { ArrowDropRightLine, Parametre } from "../../theme/components/icons"
-import "./search.css"
 
 const EmptySpace = () => (
   <Stack direction={["column", "column", "column", "row"]} mt={12} pt={12} py={8} border="1px solid" borderColor="grey.400" spacing="32px">
@@ -271,37 +270,36 @@ export default memo(() => {
             </BreadcrumbItem>
           </Breadcrumb>
         </Box>
-        <div className="search-page">
-          <Flex align="center" justify="space-between" mb={12}>
-            <Text fontSize="2rem" fontWeight={700}>
-              Entreprises
-            </Text>
-            {/* <Button variant='primary' size='sm' mr={3} onClick={() => navigate(`/administration/entreprise`)}>
+
+        <Flex align="center" justify="space-between" mb={12}>
+          <Text fontSize="2rem" fontWeight={700}>
+            Entreprises
+          </Text>
+          {/* <Button variant='primary' size='sm' mr={3} onClick={() => navigate(`/administration/entreprise`)}>
               Nouvelle entreprise
             </Button> */}
-          </Flex>
+        </Flex>
 
-          <Tabs index={tabIndex} onChange={(index) => setTabIndex(index)} variant="search" isLazy>
-            <Box mx={8}>
-              <TabList>
-                <Tab width="300px">En attente de vérification ({awaitingValidationUserList.data.data.length})</Tab>
-                <Tab width="300px">Actifs {activeUserList.isFetched && `(${activeUserList.data.data.length})`}</Tab>
-                <Tab width="300px">Désactivés {disableUserList.isFetched && `(${disableUserList.data.data.length})`}</Tab>
-              </TabList>
-            </Box>
-            <TabPanels mt={3}>
-              <TabPanel>
-                <TableNew
-                  columns={columns}
-                  data={awaitingValidationUserList.data.data}
-                  description="Les entreprises en attente de vérification représentent pour votre OPCO de nouvelles opportunités d’accompagnement.  Vous pouvez contacter chacun des comptes en attente, vérifier qu’il s’agit bien d’une entreprise relevant de vos champs de compétences, et qu’il ne s’agit pas d’une tentative d’usurpation de compte."
-                />
-              </TabPanel>
-              <TabPanel>{activeUserList.isLoading ? <LoadingEmptySpace /> : <TableNew columns={columns} data={activeUserList?.data?.data} />}</TabPanel>
-              <TabPanel>{disableUserList.isLoading ? <LoadingEmptySpace /> : <TableNew columns={columns} data={disableUserList?.data?.data} />}</TabPanel>
-            </TabPanels>
-          </Tabs>
-        </div>
+        <Tabs index={tabIndex} onChange={(index) => setTabIndex(index)} variant="search" isLazy>
+          <Box mx={8}>
+            <TabList>
+              <Tab width="300px">En attente de vérification ({awaitingValidationUserList.data.data.length})</Tab>
+              <Tab width="300px">Actifs {activeUserList.isFetched && `(${activeUserList.data.data.length})`}</Tab>
+              <Tab width="300px">Désactivés {disableUserList.isFetched && `(${disableUserList.data.data.length})`}</Tab>
+            </TabList>
+          </Box>
+          <TabPanels mt={3}>
+            <TabPanel>
+              <TableNew
+                columns={columns}
+                data={awaitingValidationUserList.data.data}
+                description="Les entreprises en attente de vérification représentent pour votre OPCO de nouvelles opportunités d’accompagnement.  Vous pouvez contacter chacun des comptes en attente, vérifier qu’il s’agit bien d’une entreprise relevant de vos champs de compétences, et qu’il ne s’agit pas d’une tentative d’usurpation de compte."
+              />
+            </TabPanel>
+            <TabPanel>{activeUserList.isLoading ? <LoadingEmptySpace /> : <TableNew columns={columns} data={activeUserList?.data?.data} />}</TabPanel>
+            <TabPanel>{disableUserList.isLoading ? <LoadingEmptySpace /> : <TableNew columns={columns} data={disableUserList?.data?.data} />}</TabPanel>
+          </TabPanels>
+        </Tabs>
       </Container>
     </AnimationContainer>
   )
