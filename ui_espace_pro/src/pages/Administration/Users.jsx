@@ -28,7 +28,6 @@ import useAuth from "../../common/hooks/useAuth"
 import { sortReactTableDate, sortReactTableString } from "../../common/utils/dateUtils"
 import { AnimationContainer, ConfirmationActivationUtilsateur, ConfirmationDesactivationUtilisateur, LoadingEmptySpace, TableNew } from "../../components"
 import { Parametre } from "../../theme/components/icons"
-import "./search.css"
 
 export default memo(() => {
   const [currentEntreprise, setCurrentEntreprise] = useState()
@@ -228,30 +227,28 @@ export default memo(() => {
       <ConfirmationActivationUtilsateur {...confirmationActivationUtilisateur} {...currentEntreprise} />
 
       <Container maxW="container.xl" mt={5}>
-        <div className="search-page">
-          <Flex align="center" justify="space-between" mb={12}>
-            <Text fontSize="2rem" fontWeight={700}>
-              Gestion des utilisateurs
-            </Text>
-          </Flex>
+        <Flex align="center" justify="space-between" mb={12}>
+          <Text fontSize="2rem" fontWeight={700}>
+            Gestion des utilisateurs
+          </Text>
+        </Flex>
 
-          <Tabs index={tabIndex} onChange={(index) => setTabIndex(index)} variant="search" isLazy>
-            <Box mx={8}>
-              <TabList>
-                <Tab width="300px">En attente de vérification ({awaitingValidationUserList.data.data.length})</Tab>
-                <Tab width="300px">Actifs {activeUserList.isFetched && `(${activeUserList.data.data.length})`}</Tab>
-                <Tab width="300px">Désactivés {disableUserList.isFetched && `(${disableUserList.data.data.length})`}</Tab>
-              </TabList>
-            </Box>
-            <TabPanels mt={3}>
-              <TabPanel>
-                <TableNew columns={columns} data={awaitingValidationUserList.data.data} />
-              </TabPanel>
-              <TabPanel>{activeUserList.isLoading ? <LoadingEmptySpace /> : <TableNew columns={columns} data={activeUserList?.data?.data} />}</TabPanel>
-              <TabPanel>{disableUserList.isLoading ? <LoadingEmptySpace /> : <TableNew columns={columns} data={disableUserList?.data?.data} />}</TabPanel>
-            </TabPanels>
-          </Tabs>
-        </div>
+        <Tabs index={tabIndex} onChange={(index) => setTabIndex(index)} variant="search" isLazy>
+          <Box mx={8}>
+            <TabList>
+              <Tab width="300px">En attente de vérification ({awaitingValidationUserList.data.data.length})</Tab>
+              <Tab width="300px">Actifs {activeUserList.isFetched && `(${activeUserList.data.data.length})`}</Tab>
+              <Tab width="300px">Désactivés {disableUserList.isFetched && `(${disableUserList.data.data.length})`}</Tab>
+            </TabList>
+          </Box>
+          <TabPanels mt={3}>
+            <TabPanel>
+              <TableNew columns={columns} data={awaitingValidationUserList.data.data} />
+            </TabPanel>
+            <TabPanel>{activeUserList.isLoading ? <LoadingEmptySpace /> : <TableNew columns={columns} data={activeUserList?.data?.data} />}</TabPanel>
+            <TabPanel>{disableUserList.isLoading ? <LoadingEmptySpace /> : <TableNew columns={columns} data={disableUserList?.data?.data} />}</TabPanel>
+          </TabPanels>
+        </Tabs>
       </Container>
     </AnimationContainer>
   )
