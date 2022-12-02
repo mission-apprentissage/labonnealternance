@@ -62,19 +62,18 @@ export const updateEntreprise = async (userId, formId, values) => await Promise.
 export const validateToken = async (token) => await API.post(`/login/verification`, token)
 export const sendMagiclink = async (email) => await API.post(`/login/magiclink`, email)
 export const sendValidationLink = async (email) => await API.post(`/login/confirmation-email`, email)
-export const validationCompte = (id) => API.post("/etablissementsRecruteur/validation", id)
+export const validationCompte = (id) => API.post("/etablissement/validation", id)
 
 /**
  * Etablissement API
  */
-export const getCfaInformation = async (siret) => await API.get(`/etablissementsRecruteur/cfa/${siret}`)
-export const getEntrepriseInformation = async (siret, options) => await API.get(`/etablissementsRecruteur/entreprise/${siret}`, { params: options })
-export const getPartenaire = (siret) => API.get(`etablissementsRecruteur/${siret}`)
-export const createPartenaire = (partenaire) => API.post("/etablissementsRecruteur/creation", partenaire)
-export const updatePartenaire = (id, partenaire) => API.put(`/etablissementsRecruteur/${id}`, partenaire)
+export const getCfaInformation = async (siret) => await API.get(`/etablissement/cfa/${siret}`)
+export const getEntrepriseInformation = async (siret, options) => await API.get(`/etablissement/entreprise/${siret}`, { params: options })
+export const getPartenaire = (siret) => API.get(`etablissement/${siret}`)
+export const createPartenaire = (partenaire) => API.post("/etablissement/creation", partenaire)
+export const updatePartenaire = (id, partenaire) => API.put(`/etablissement/${id}`, partenaire)
 export const getRomeDetail = (rome) => API.get(`/rome/detail/${rome}`)
-export const getRelatedEtablissementsFromRome = ({ rome, latitude, longitude }) =>
-  API.get(`/etablissementsRecruteur/cfa/rome?rome[]=${rome}&latitude=${latitude}&longitude=${longitude}`)
+export const getRelatedEtablissementsFromRome = ({ rome, latitude, longitude }) => API.get(`/etablissement/cfa/rome?rome[]=${rome}&latitude=${latitude}&longitude=${longitude}`)
 export const validateOptOutToken = (token) =>
   API.get(`/optout/validate`, {
     headers: {
