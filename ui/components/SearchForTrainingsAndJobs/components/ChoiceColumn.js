@@ -29,6 +29,7 @@ const ChoiceColumn = ({
   trainingSearchError,
   searchForJobs,
   isJobSearchLoading,
+  isFormVisible,
   jobSearchError,
   allJobSearchError,
   isLoading,
@@ -184,7 +185,7 @@ const ChoiceColumn = ({
 
   const getSearchForm = () => {
     return (
-      <Box display={["block", "block", "none"]}>
+      <Box background="white" padding="0.5rem 1rem 2rem" display={isFormVisible ? ["block", "block", "none"] : "none"}>
         <SearchForm showResultList={showResultList} handleSearchSubmit={handleSearchSubmitFunction} />
       </Box>
     )

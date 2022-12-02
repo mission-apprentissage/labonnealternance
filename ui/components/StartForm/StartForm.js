@@ -8,8 +8,9 @@ import { ParameterContext } from "../../context/ParameterContextProvider"
 import { pick } from "lodash"
 import SearchForm from "../../components/SearchForTrainingsAndJobs/components/SearchForm"
 import WidgetHeader from "../../components/WidgetHeader/WidgetHeader"
+import { Box } from "@chakra-ui/react"
 
-const StartForm = (props) => {
+const StartForm = () => {
   const router = useRouter()
 
   const { setFormValues } = useContext(DisplayContext)
@@ -27,12 +28,12 @@ const StartForm = (props) => {
 
   return (
     <>
-      <div className="d-lg-none">
+      <Box display={["block", "block", "block", "none"]}>
         <SearchForm handleSearchSubmit={handleSearchSubmitFunction} isHome={true} showResultList={() => {}} />
-      </div>
-      <div className="d-none d-lg-block">
+      </Box>
+      <Box display={["none", "none", "none", "block"]}>
         <WidgetHeader handleSearchSubmit={handleSearchSubmit} isHome={true} />
-      </div>
+      </Box>
     </>
   )
 }

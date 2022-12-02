@@ -138,16 +138,14 @@ const LbbCompany = ({ company, handleSelectItem, showTextOnly, searchForTraining
           </Box>
 
           <Text display="flex" fs="14px" color="grey.600" as="span" pt={1}>
-            {company.place.distance ? `${company.place.distance} km(s) du lieu de recherche` : ""}
-            {showTextOnly ? (
-              ""
-            ) : (
+            {company.place.distance && `${company.place.distance} km(s) du lieu de recherche`}
+            {!showTextOnly && (
               <Text ml="auto" as="span" display={["none", "none", "block"]}>
                 <Button variant="knowMore">En savoir plus</Button>
               </Text>
             )}
           </Text>
-          {showTextOnly ? "" : <>{Math.round(company.place.distance) > currentSearchRadius ? getCenterSearchOnCompanyButton() : ""}</>}
+          {!showTextOnly && Math.round(company.place.distance) > currentSearchRadius && <>{getCenterSearchOnCompanyButton()}</>}
         </Box>
       </Flex>
     </Link>
