@@ -44,7 +44,7 @@ const importFormations = async ({ workIndex, workMongo, formationCount }) => {
   }
 }
 
-export default async function (onlyChangeMasterIndex = false) {
+export default async function ({ OnlyChangeMaster }) {
   let workIndex, workMongo
 
   logger.info(" -- Import formations catalogue -- ")
@@ -75,7 +75,7 @@ export default async function (onlyChangeMasterIndex = false) {
 
       logger.info(`Début process sur : ${workIndex}`)
 
-      if (!onlyChangeMasterIndex) {
+      if (!OnlyChangeMaster) {
         await resetIndexAndDb(workIndex, workMongo, { requireAsciiFolding: true })
 
         stats = await importFormations({ workIndex, workMongo, formationCount })

@@ -38,7 +38,7 @@ const cleanCompany = async (company) => {
   modifiedCompanyCount++
 }
 
-const updateBlockedEmails = async ({ query }) => {
+const updateBlockedEmails = async ({ AllAddresses }) => {
   logger.info(`Début mise à jour blacklist sendinblue`)
 
   let defaultClient = SibApiV3Sdk.ApiClient.instance
@@ -55,8 +55,8 @@ const updateBlockedEmails = async ({ query }) => {
   const senders = ["no-reply@apprentissage.beta.gouv.fr"]
   let total = 0
   let offset = 0
-  let startDate = query.all ? null : todayStr
-  let endDate = query.all ? null : todayStr
+  let startDate = AllAddresses ? null : todayStr
+  let endDate = AllAddresses ? null : todayStr
 
   let opts = {
     startDate,
@@ -85,14 +85,14 @@ const updateBlockedEmails = async ({ query }) => {
 let blacklistedAddressCount = 0
 let modifiedCompanyCount = 0
 
-export default async function ({ query }) {
+export default async function ({ AllAddresses }) {
   blacklistedAddressCount = 0
   modifiedCompanyCount = 0
 
   try {
     logger.info(" -- Import blocked email addresses -- ")
 
-    await updateBlockedEmails({ query })
+    await updateBlockedEmails({ AllAddresses })
 
     await notifyToSlack({
       subject: "SENDINBLUE",

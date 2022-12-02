@@ -15,6 +15,9 @@ import { inviteEtablissementToPremium } from "./jobs/rdv/inviteEtablissementToPr
 import { inviteEtablissementToPremiumFollowUp } from "./jobs/rdv/inviteEtablissementToPremiumFollowUp.js"
 import { parcoursupEtablissementStat } from "./jobs/rdv/parcoursupEtablissementStat.js"
 import { syncEtablissementsAndFormations } from "./jobs/rdv/syncEtablissementsAndFormations.js"
+import importFormations from "./jobs/FormationsCatalogue/FormationsCatalogue.js"
+import updateSendinblueBlockedEmails from "./jobs/updateSendinblueBlockedEmails/updateSendinblueBlockedEmails.js"
+import anonymizeOldApplications from "./jobs/anonymizeOldApplications/anonymizeOldApplications.js"
 import { runScript } from "./jobs/scriptWrapper.js"
 
 cli.addHelpText("after")
@@ -147,6 +150,29 @@ cli
   .description("Récupère la liste de toutes les formations du Catalogue et les enregistre.")
   .action(() => {
     runScript((components) => syncEtablissementsAndFormations(components))
+  })
+
+cli
+  .command("sync-catalogue-trainings")
+  .option("-only-change-master, [OnlyChangeMaster]", "n'importe pas de nouvelles formations mais procède à une permutation de l'index master", false)
+  .description("Importe les formations depuis le Catalogue")
+  .action((options) => {
+    runScript(() => importFormations(options))
+  })
+
+cli
+  .command("sync-sib-blocked")
+  .option("-all-addresses, [AllAddresses]", "pour récupérer toutes les adresses bloquées", false)
+  .description("Récupère auprès de Sendinblue la liste des adresses emails bloquées le jour précédent (défaut) ou toutes les adresses bloquées (option)")
+  .action((options) => {
+    runScript(() => updateSendinblueBlockedEmails(options))
+  })
+
+cli
+  .command("anonymize-applications")
+  .description("Anonymise toutes les candidatures de plus de an qui ne sont pas déjà anonymisées")
+  .action(() => {
+    runScript(() => anonymizeOldApplications())
   })
 
 cli.parse(process.argv)
