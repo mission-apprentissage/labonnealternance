@@ -49,9 +49,14 @@ export default () => {
         break
 
       case AUTHTYPE.CFA:
-      case AUTHTYPE.ADMIN:
         setTimeout(() => {
           navigate("/administration")
+        }, 1000)
+        break
+
+      case AUTHTYPE.ADMIN:
+        setTimeout(() => {
+          navigate("/administration/users")
         }, 1000)
         break
 
