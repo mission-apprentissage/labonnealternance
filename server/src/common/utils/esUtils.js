@@ -1,9 +1,9 @@
 import { getElasticInstance } from "../esClient/index.js"
 import { logger } from "../logger.js"
 
-const rebuildIndex = async (model, { skipNotFound } = { skipNotFound: false }) => {
-  let client = getElasticInstance()
-  let index = model.collection.collectionName // Assume model name = index name
+export const rebuildIndex = async (model, { skipNotFound } = { skipNotFound: false }) => {
+  const client = getElasticInstance()
+  const index = model.collection.collectionName // Assume model name = index name
 
   logger.info(`Removing '${index}' index...`)
   try {
@@ -26,7 +26,7 @@ const rebuildIndex = async (model, { skipNotFound } = { skipNotFound: false }) =
   })
 }
 
-const getNestedQueryFilter = (nested) => {
+export const getNestedQueryFilter = (nested) => {
   const filters = nested.query.bool.must[0].bool.must
 
   let filt = filters
@@ -41,4 +41,22 @@ const getNestedQueryFilter = (nested) => {
   return filt
 }
 
-export { rebuildIndex, getNestedQueryFilter }
+export const resetIndexAndDb = async (index, model, { requireAsciiFolding = false }) => {
+  const client = getElasticInstance()
+
+  try {
+    logger.info(`Clearing ${model} db...`)
+    await model.deleteMany({})
+
+    const { body: hasIndex } = await client.indices.exists({ index })
+    if (hasIndex) {
+      logger.info(`Removing ${index} index...`)
+      await client.indices.delete({ index })
+    }
+
+    logger.info(`Creating ${index} with mapping ...`)
+    await model.createMapping(requireAsciiFolding)
+  } catch (error) {
+    logger.error(error)
+  }
+}

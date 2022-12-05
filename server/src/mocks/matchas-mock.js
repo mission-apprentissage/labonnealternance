@@ -14,7 +14,7 @@ const matchaMockMandataire = {
     nom: "MOREAU",
     prenom: "Claudine",
     telephone: "0742424242",
-    email: "claudine.z@example.com",
+    email: "labonnealternance@apprentissage.beta.gouv.fr",
     origine: "cfa-72vnr",
     statut: "Actif",
     gestionnaire: "33940141600047",
@@ -80,7 +80,7 @@ const matchaMock = {
     nom: "Pirate",
     prenom: "Jeanne",
     telephone: "0606060606",
-    email: "no-reply@apprentissage.beta.gouv.fr",
+    email: "labonnealternance@apprentissage.beta.gouv.fr",
     offres: [
       {
         libelle: "Etudes et développement informatique",

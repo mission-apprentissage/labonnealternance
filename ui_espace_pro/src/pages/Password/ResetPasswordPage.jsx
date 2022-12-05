@@ -35,7 +35,9 @@ const ResetPasswordPage = () => {
           <span>
             Le lien est expiré ou invalide, merci de prendre contact avec un administrateur en précisant votre adresse mail :
             <br />
-            <a href="mailto:prise-de-rdv@apprentissage.beta.gouv.fr">prise-de-rdv@apprentissage.beta.gouv.fr</a>
+            <a href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Reinitialiser%20mot%20de%20passe%20LBAR%20-%20Lien%20expire">
+              labonnealternance@apprentissage.beta.gouv.fr
+            </a>
           </span>
         ),
       })

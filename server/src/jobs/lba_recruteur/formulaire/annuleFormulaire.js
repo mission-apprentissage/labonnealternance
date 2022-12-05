@@ -31,7 +31,7 @@ export const annuleFormulaire = async () => {
   if (offersToCancel.length === 0) {
     logger.info("Aucune offre à annuler.")
     await axios.post(config.slackWebhookUrl, {
-      text: `[${config.env.toUpperCase()} - JOB MATCHA - EXPIRATION] Aucune offre à annuler`,
+      text: `[${config.env.toUpperCase()} - JOB LBA - EXPIRATION] Aucune offre à annuler`,
     })
     return
   }
@@ -49,7 +49,7 @@ export const annuleFormulaire = async () => {
   if (offersToCancel.length > 0) {
     logger.info(`${stats.totalCanceled} offres expirés`)
     await axios.post(config.slackWebhookUrl, {
-      text: `[${config.env.toUpperCase()} - JOB MATCHA - EXPIRATION] *${stats.offersToCancel}/${stats.totalCanceled} offres* ont expirées et ont été annulées automatiquement`,
+      text: `[${config.env.toUpperCase()} - JOB LBA - EXPIRATION] *${stats.offersToCancel}/${stats.totalCanceled} offres* ont expirées et ont été annulées automatiquement`,
     })
   }
 }

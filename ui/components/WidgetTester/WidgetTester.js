@@ -310,7 +310,7 @@ const WidgetTester = () => {
       <Container>
         <Row>
           <Col xs="12">
-            <h1>Test du Widget La Bonne Alternance</h1>
+            <h1>Test du Widget La bonne alternance</h1>
             <div>
               La documentation est ici :{" "}
               <a href="https://mission-apprentissage.gitbook.io/la-bonne-alternance/documentation" target="docIdea">
@@ -322,11 +322,6 @@ const WidgetTester = () => {
 
           <Col xs="12">
             URL associée à l&apos;attribut <strong>src</strong> de l&apos;iframe : {getIdeaUrlWithParams()}
-          </Col>
-          <Col xs="12">
-            <a href="https://media.giphy.com/media/3oz8xyB3C126ZDDAuk/giphy.gif" className="c-nice-link font-weight-normal" rel="noreferrer" target="_blank">
-              Accéder au détail de la documentation
-            </a>
           </Col>
         </Row>
         <Row className="widgetList">

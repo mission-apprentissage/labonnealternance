@@ -5,6 +5,7 @@ import { useAsyncDebounce, useFilters, useFlexLayout, useGlobalFilter, usePagina
 import { ArrowDownLine, ArrowUpLine, SearchLine } from "../theme/components/icons"
 import ExportButtonNew from "./ExportButton/ExportButtonNew"
 import PaginationReactQuery from "./PaginationReactQuery"
+import "./search.css"
 
 // Define a default UI for filtering
 function GlobalFilter({ preGlobalFilteredRows, globalFilter, setGlobalFilter }) {
@@ -88,7 +89,7 @@ export default ({ data, columns, description, exportable }) => {
   )
 
   return (
-    <Box>
+    <Box className="search-page">
       <Flex align="center" mb={10}>
         <Box width="90%">
           <Box width="50%">

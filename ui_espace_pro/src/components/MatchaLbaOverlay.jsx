@@ -16,15 +16,15 @@ export default () => {
           <Flex align="center" justify="space-between" direction={["column", "column", "column", "row"]}>
             <Box maxW="721px" mx={[0, 0, 0, 0 - 10]}>
               <Heading color="white" fontSize="24px">
-                Matcha évolue et rejoint La Bonne Alternance.
+                Matcha évolue et rejoint La bonne alternance.
               </Heading>
               <Text color="#cecece" maxW="666px" mt={4}>
-                Matcha et La Bonne Alternance fusionnent afin de proposer un service complet aux jeunes, aux entreprises et aux organismes de formation. Des modifications
+                Matcha et La bonne alternance fusionnent afin de proposer un service complet aux jeunes, aux entreprises et aux organismes de formation. Des modifications
                 successives surviendront sur le site internet Matcha dans les prochains mois.
               </Text>
             </Box>
             <Button as={Link} bg="#8585F6" borderRadius="0px" mt={[5, 5, 5, 5, 0]} href="https://labonnealternance.apprentissage.beta.gouv.fr/" isExternal>
-              Accéder au site La Bonne Alternance
+              Accéder au site La bonne alternance
             </Button>
           </Flex>
         </Container>

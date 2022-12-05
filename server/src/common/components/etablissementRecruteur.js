@@ -123,7 +123,7 @@ export default () => ({
       return coordinates
     } catch (error) {
       Sentry.captureException(error)
-      return error
+      return "NOT FOUND"
     }
   },
   getEstablishmentFromOpcoReferentiel: (opco_label, siret_code, email) => ReferentielOpco.findOne({ opco_label, siret_code, emails: { $in: [email] } }),

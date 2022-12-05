@@ -1,4 +1,4 @@
-import { getBonnesBoitesES } from "../../common/esClient/index.js"
+import { getElasticInstance } from "../../common/esClient/index.js"
 import { encryptMailWithIV } from "../../common/utils/encryptString.js"
 import { manageApiError } from "../../common/utils/errorManager.js"
 import { isAllowedSource } from "../../common/utils/isAllowedSource.js"
@@ -6,7 +6,7 @@ import { itemModel } from "../../model/itemModel.js"
 
 import { lbbMock } from "../../mocks/lbbs-mock.js"
 
-const esClient = getBonnesBoitesES()
+const esClient = getElasticInstance()
 
 const getSomeLbbCompanies = async ({ romes, latitude, longitude, radius, type, referer, caller, opco, api = "jobV1", useMock }) => {
   const hasLocation = latitude === undefined ? false : true

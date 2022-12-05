@@ -1,8 +1,8 @@
 import Sentry from "@sentry/node"
 import _ from "lodash-es"
-import { getFormationsES } from "../common/esClient/index.js"
+import { getElasticInstance } from "../common/esClient/index.js"
 
-const esClient = getFormationsES()
+const esClient = getElasticInstance()
 
 const getRomesFromCatalogue = async ({ cfd, siret }) => {
   try {

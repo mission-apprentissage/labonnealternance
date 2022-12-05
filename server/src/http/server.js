@@ -5,6 +5,7 @@ import { readFileSync } from "fs"
 import path from "path"
 import swaggerDoc from "swagger-jsdoc"
 import swaggerUi from "swagger-ui-express"
+import __dirname from "../common/dirname.js"
 import { logger } from "../common/logger.js"
 import config from "../config.js"
 import { initWebhook } from "../service/sendinblue/webhookSendinBlue.js"
@@ -44,14 +45,9 @@ import sendApplication from "./routes/sendApplication.js"
 import sendApplicationAPI from "./routes/sendApplicationAPI.js"
 import sendMail from "./routes/sendMail.js"
 import supportRoute from "./routes/support.js"
-import updateDiplomesMetiers from "./routes/updateDiplomesMetiers.js"
-import updateFormations from "./routes/updateFormations.js"
 import updateLBB from "./routes/updateLBB.js"
-import updateRomesMetiers from "./routes/updateRomesMetiers.js"
 import userRoute from "./routes/user.js"
 import version from "./routes/version.js"
-
-import __dirname from "../common/dirname.js"
 import { limiter10PerSecond, limiter1Per20Second, limiter20PerSecond, limiter3PerSecond, limiter5PerSecond, limiter7PerSecond } from "./utils/rateLimiters.js"
 
 /**
@@ -71,7 +67,7 @@ const swaggerOptions = {
       title: "La bonne alternance - recruteur",
       version: "1.0.0",
       description: `Vous trouverez ici la définition de l'api La bonne alternance recruteur<br/><br/>
-      <h3><strong>${config.publicUrl}/api/v1</strong></h3><br/>
+      <h3><strong>${config.publicUrl}/api</strong></h3><br/>
       Contact:
       `,
       contact: {
@@ -82,11 +78,11 @@ const swaggerOptions = {
     },
     servers: [
       {
-        url: `${config.publicUrl}/api/v1`,
+        url: `${config.publicUrl}/api`,
       },
     ],
   },
-  apis: ["./src/http/routes/api.js"],
+  apis: ["./src/http/routes/api.js", "./src/http/routes/appointmentRequest.js"],
 }
 
 const swaggerSpecification = swaggerDoc(swaggerOptions)
@@ -181,15 +177,12 @@ export default async (components) => {
   app.use("/api/v1/formations", limiter7PerSecond, formationV1())
   app.use("/api/romelabels", limiter10PerSecond, rome())
   app.use("/api/jobsdiplomas", limiter10PerSecond, jobDiploma())
-  app.use("/api/updateRomesMetiers", limiter1Per20Second, updateRomesMetiers())
   app.use("/api/v1/formationsParRegion", limiter5PerSecond, formationRegionV1())
   app.use("/api/v1/jobs", limiter5PerSecond, jobV1())
   app.use("/api/v1/jobsEtFormations", limiter5PerSecond, jobEtFormationV1())
   app.use("/api/metiers", limiter20PerSecond, metiers())
   app.use("/api/v1/metiers", limiter20PerSecond, metiers())
   app.use("/api/updateLBB", limiter1Per20Second, updateLBB())
-  app.use("/api/updateFormations", limiter1Per20Second, updateFormations())
-  app.use("/api/updateDiplomesMetiers", limiter1Per20Second, updateDiplomesMetiers())
   app.use("/api/mail", limiter1Per20Second, sendMail(components))
   app.use("/api/application", sendApplication(components))
   app.use("/api/V1/application", limiter5PerSecond, sendApplicationAPI(components))
@@ -226,7 +219,7 @@ export default async (components) => {
   app.use("/api/es/search", esSearchRoute())
   app.use("/api/rome", rome())
   app.use("/api/optout", optoutRoute())
-  app.use("/api/etablissementsRecruteur", etablissementsRecruteurRoute(components))
+  app.use("/api/etablissement", etablissementsRecruteurRoute(components))
 
   initWebhook()
 

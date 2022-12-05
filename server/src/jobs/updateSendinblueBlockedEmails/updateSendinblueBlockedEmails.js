@@ -1,10 +1,10 @@
-import _ from "lodash-es"
+import Sentry from "@sentry/node"
 import { BonnesBoites, EmailBlacklist } from "../../common/model/index.js"
-import { logMessage } from "../../common/utils/logMessage.js"
 import { notifyToSlack } from "../../common/utils/slackUtils.js"
 import config from "../../config.js"
 
 import SibApiV3Sdk from "sib-api-v3-sdk"
+import { logger } from "../../common/logger.js"
 
 const saveBlacklistEmails = async (contacts) => {
   for (let i = 0; i < contacts.length; ++i) {
@@ -38,8 +38,8 @@ const cleanCompany = async (company) => {
   modifiedCompanyCount++
 }
 
-const updateBlockedEmails = async ({ query }) => {
-  logMessage("info", `Début mise à jour blacklist sendinblue`)
+const updateBlockedEmails = async ({ AllAddresses }) => {
+  logger.info(`Début mise à jour blacklist sendinblue`)
 
   let defaultClient = SibApiV3Sdk.ApiClient.instance
   let apiKey = defaultClient.authentications["api-key"]
@@ -55,8 +55,8 @@ const updateBlockedEmails = async ({ query }) => {
   const senders = ["no-reply@apprentissage.beta.gouv.fr"]
   let total = 0
   let offset = 0
-  let startDate = query.all ? null : todayStr
-  let endDate = query.all ? null : todayStr
+  let startDate = AllAddresses ? null : todayStr
+  let endDate = AllAddresses ? null : todayStr
 
   let opts = {
     startDate,
@@ -82,38 +82,27 @@ const updateBlockedEmails = async ({ query }) => {
   }
 }
 
-let running = false
 let blacklistedAddressCount = 0
 let modifiedCompanyCount = 0
 
-export default async function ({ query }) {
-  if (!running) {
-    running = true
-    blacklistedAddressCount = 0
-    modifiedCompanyCount = 0
+export default async function ({ AllAddresses }) {
+  blacklistedAddressCount = 0
+  modifiedCompanyCount = 0
 
-    try {
-      logMessage("info", " -- Import blocked email addresses -- ")
+  try {
+    logger.info(" -- Import blocked email addresses -- ")
 
-      await updateBlockedEmails({ query })
+    await updateBlockedEmails({ AllAddresses })
 
-      logMessage("info", `Fin traitement`)
+    await notifyToSlack({
+      subject: "SENDINBLUE",
+      message: `Mise à jour des adresses emails bloquées terminée. ${blacklistedAddressCount} adresse(s) bloquée(s). ${modifiedCompanyCount} société(s) impactée(s).`,
+    })
 
-      notifyToSlack(`Mise à jour des adresses emails bloquées terminée. ${blacklistedAddressCount} adresse(s) bloquée(s). ${modifiedCompanyCount} société(s) impactée(s).`)
-
-      running = false
-
-      return {
-        result: "Mise à jour des adresses emails bloquées terminée",
-      }
-    } catch (err) {
-      logMessage("error", err)
-      let error_msg = _.get(err, "meta.body") ?? err.message
-      running = false
-      notifyToSlack(`ECHEC mise à jour des adresses emails bloquées. ${error_msg}`)
-      return { error: error_msg }
-    }
-  } else {
-    logMessage("info", "Mise à jour des adresses emails bloquées déjà en cours")
+    logger.info(`Fin traitement`)
+  } catch (error) {
+    Sentry.captureException(error)
+    logger.error(error)
+    await notifyToSlack({ subject: "SENDINBLUE", message: `Échec de la mise à jour des adresses emails bloquées` })
   }
 }
