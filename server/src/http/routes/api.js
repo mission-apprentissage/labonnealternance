@@ -250,7 +250,7 @@ export default ({ formulaire, etablissementsRecruteur, usersRecruteur }) => {
       const siretInfo = await etablissementsRecruteur.getEtablissementFromGouv(req.body.siret)
 
       if (siretInfo.data?.etablissement.etat_administratif.value === "F") {
-        return res.status(400).json({ status: "CLOSED", error: true, message: "Cette entreprise est considérée comme fermé." })
+        return res.status(400).json({ status: "CLOSED", error: true, message: "Cette entreprise est considérée comme fermée." })
       }
 
       if (siretInfo.data?.etablissement.naf.startsWith("85")) {
@@ -693,7 +693,7 @@ export default ({ formulaire, etablissementsRecruteur, usersRecruteur }) => {
         return res.status(400).json({
           statut: "ESTABLISHMENT_CLOSED",
           error: true,
-          message: "Cette établissement est considérée comme fermé.",
+          message: "Cet établissement est considéré comme fermé.",
         })
       }
 

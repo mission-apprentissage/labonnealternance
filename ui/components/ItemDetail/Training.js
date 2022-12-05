@@ -132,19 +132,15 @@ const Training = ({ training, handleSelectItem, showTextOnly, searchForJobsOnNew
             {training.place.fullAddress}
           </Box>
           <Text display="flex" fs="14px" color="grey.600" as="span" pt={1}>
-            {training.place.distance !== null ? `${Math.round(training.place.distance)} km(s) du lieu de recherche` : ""}
-            {showTextOnly ? (
-              ""
-            ) : (
+            {training.place.distance !== null && `${Math.round(training.place.distance)} km(s) du lieu de recherche`}
+            {!showTextOnly && (
               <Text ml="auto" as="span" display={["none", "none", "block"]}>
                 <Button variant="knowMore">En savoir plus</Button>
               </Text>
             )}
           </Text>
-          {showTextOnly ? (
-            ""
-          ) : (
-            <>{(training.place.distance === null || Math.round(training.place.distance) > currentSearchRadius) && scopeContext.isJob ? getCenterSearchOnTrainingButton() : ""}</>
+          {!showTextOnly && (training.place.distance === null || Math.round(training.place.distance) > currentSearchRadius) && scopeContext.isJob && (
+            <>{getCenterSearchOnTrainingButton()}</>
           )}
         </Box>
       </Flex>

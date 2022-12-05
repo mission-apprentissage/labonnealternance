@@ -16,24 +16,24 @@ export default {
         },
         date_debut_apprentissage: {
           type: "string",
-          description: "Date de début de l'apprentissage",
+          description: "Date de début de l'alternance",
           required: true,
         },
         description: {
           type: "string",
-          description: "Description de l'offre d'apprentissage",
+          description: "Description de l'offre d'alternance",
         },
         romes: {
           type: "array",
           items: {
             type: "string",
           },
-          description: "Liste des romes lié au métier",
+          description: "Liste des romes liés au métier",
           required: true,
         },
         rome_detail: {
           type: "object",
-          description: "Détail du code ROME selon la nomenclature Pole Emploi",
+          description: "Détail du code ROME selon la nomenclature Pole emploi",
         },
         date_creation: {
           type: "string",
@@ -48,7 +48,7 @@ export default {
         relance_mail_sent: {
           type: "boolean",
           default: "system",
-          description: "Statut de l'envoie du mail de relance avant expiration",
+          description: "Statut de l'envoi du mail de relance avant expiration",
         },
         statut: {
           type: "string",
@@ -68,19 +68,19 @@ export default {
         multi_diffuser: {
           type: "boolean",
           default: null,
-          description: "Definit si l'offre est diffusé sur d'autre jobboard que Matcha",
+          description: "Definit si l'offre est diffusée sur d'autres jobboard que La bonne alternance",
         },
         delegate: {
           type: "boolean",
-          description: "Definit si l'entreprise souhaite déléger l'offre à un CFA",
+          description: "Definit si l'entreprise souhaite déléguer l'offre à un CFA",
         },
         elligible_handicap: {
           type: "boolean",
-          description: "Poste ouvert au personnes en situation de handicap",
+          description: "Poste ouvert aux personnes en situation de handicap",
         },
         quantite: {
           type: "number",
-          description: "Nombre de poste ouvert pour cette offre",
+          description: "Nombre de poste(s) ouvert(s) pour cette offre",
         },
         duree_contrat: {
           type: "number",

@@ -1,3 +1,4 @@
+import { Box } from "@chakra-ui/react"
 import React from "react"
 
 const diplomaMap = {
@@ -41,6 +42,19 @@ function copyDeep(obj) {
   return JSON.parse(JSON.stringify(obj))
 }
 
+const buttonProperties = {
+  border: "1px solid",
+  borderColor: "grey.400",
+  marginTop: "2px",
+  width: "fit-content",
+  borderRadius: "40px",
+  cursor: "pointer",
+  marginRight: ["0.6rem", "0.2rem"],
+  padding: ["0.1rem 0.5rem", "0.3rem 1rem"],
+  fontSize: ["12px", "16px"],
+  lineHeight: ["16px", "24px"],
+}
+
 export function buildAvailableDiplomasButtons(currentDiploma, diplomas, onClickCallback) {
   let localDiploma = ""
 
@@ -62,17 +76,19 @@ export function buildAvailableDiplomasButtons(currentDiploma, diplomas, onClickC
     <>
       {allDiplomas.map(function (key, indx) {
         return (
-          <div
+          <Box
             key={indx}
             value={diplomaValue(key)}
-            className={`c-diplomas-button ${localDiploma === key ? "is-selected" : ""}`}
+            {...buttonProperties}
+            color={localDiploma === key ? "white" : "grey.750"}
+            background={localDiploma === key ? "blue" : "white"}
             onClick={(evt) => {
               evt.currentTarget.value = diplomaValue(key)
               onClickCallback(evt, key)
             }}
           >
             {diplomaMap[key] || defaultDiploma}
-          </div>
+          </Box>
         )
       })}
     </>

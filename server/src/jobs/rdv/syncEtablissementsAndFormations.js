@@ -64,7 +64,7 @@ export const syncEtablissementsAndFormations = async ({ etablissements, widgetPa
 
           // Don't override "email" if this field is true
           if (!widgetParameter?.is_custom_email_rdv) {
-            emailRdv = getEmailFromCatalogueField(formation.etablissement_formateur_courriel) || widgetParameter.email_rdv
+            emailRdv = getEmailFromCatalogueField(formation.email) || getEmailFromCatalogueField(formation.etablissement_formateur_courriel) || widgetParameter.email_rdv
           }
 
           await widgetParameters.updateMany(

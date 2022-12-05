@@ -106,7 +106,7 @@ export default () => {
                       <Text fontSize="20px" textAlign="justify">
                         {auth.type === AUTHTYPE.ENTREPRISE
                           ? "Vos informations de contact seront visibles sur les offres mises en ligne. Vous recevrez les candidatures sur l’email enregistré."
-                          : "Vos informations de contact seront visibles sur les offres mises en ligne à partir de votre espace personnel La Bonne Alternance, pour vos entreprises partenaires."}
+                          : "Vos informations de contact seront visibles sur les offres mises en ligne à partir de votre espace personnel La bonne alternance, pour vos entreprises partenaires."}
                       </Text>
                       {auth.type === AUTHTYPE.CFA && (
                         <Text fontSize="20px" textAlign="justify" mt={2}>

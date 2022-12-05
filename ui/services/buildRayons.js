@@ -1,3 +1,5 @@
+import { Box, Flex } from "@chakra-ui/react"
+
 const rayonMap = {
   10: "10km",
   30: "30km",
@@ -19,24 +21,39 @@ export function buildRayonsOptions() {
   )
 }
 
+const buttonProperties = {
+  border: "1px solid",
+  borderColor: "grey.400",
+  marginTop: "2px",
+  width: "fit-content",
+  borderRadius: "40px",
+  cursor: "pointer",
+  marginRight: ["0.6rem", "0.2rem"],
+  padding: ["0.1rem 0.5rem", "0.3rem 1rem"],
+  fontSize: ["12px", "16px"],
+  lineHeight: ["16px", "24px"],
+}
+
 export function buildRayonsButtons(locationRadius, onClickCallback) {
   return (
-    <div className="c-rayons-buttons">
+    <Flex>
       {Object.keys(rayonMap).map((key) => {
         return (
-          <div
+          <Box
             key={key}
             value={key}
-            className={`c-rayons-button ${locationRadius?.toString() === key ? "is-selected" : ""}`}
+            {...buttonProperties}
+            color={locationRadius?.toString() === key ? "white" : "grey.750"}
+            background={locationRadius?.toString() === key ? "blue" : "white"}
             onClick={(evt) => {
               evt.currentTarget.value = key
               onClickCallback(evt, key)
             }}
           >
             {`${key} km`}
-          </div>
+          </Box>
         )
       })}
-    </div>
+    </Flex>
   )
 }

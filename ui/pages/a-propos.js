@@ -229,13 +229,6 @@ const APropos = () => (
             />
 
             <ServiceLink
-              url="https://media.giphy.com/media/3oz8xzYXuCWF1IXv68/giphy.gif"
-              aria-label="Easter egg"
-              text="The one vous aide dans toutes vos démarches de recherche d'une alternance."
-              title="The one"
-            />
-
-            <ServiceLink
               url="https://openclassrooms.com/fr/courses/6003601-decouvrez-lalternance"
               aria-label="Accès au site Openclassroom"
               text="Profitez d’un cours en ligne gratuit pour découvrir l'alternance."

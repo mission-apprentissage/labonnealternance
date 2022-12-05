@@ -25,10 +25,6 @@ const DidYouKnow = ({ item }) => {
                 title="On vous donne des conseils pour vous aider à le préparer."
                 withPic={<img src={gotoIcon} alt="Ouverture dans un nouvel onglet" />}
               />
-              <br />
-              <a href="https://media.giphy.com/media/3oz8xG0CiDpXqYXCz6/giphy.gif" className="c-candidature-link" target="_blank" rel="noreferrer">
-                Donner mon avis sur cette entreprise.
-              </a>
             </span>
           </span>
         </p>

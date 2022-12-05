@@ -173,11 +173,6 @@ const LocationDetail = ({ item, isCfa }) => {
                 withPic={<img src={gotoIcon} alt={`Lien cliquable vers le numéro ${item.contact.phone}`} />}
               />
             </div>
-            <div className="c-locationdetail-line mt-3">
-              <a href="https://media.giphy.com/media/l3vR4IfRCoz8Qz9oA/giphy.gif" className="c-nice-link font-weight-normal" target="_blank" rel="noreferrer">
-                En savoir plus
-              </a>
-            </div>
           </>
         ) : (
           ""

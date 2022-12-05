@@ -73,7 +73,7 @@ const Text = {
       color: "grey.700",
       textAlign: "left",
       lineHeight: "15px",
-      fontSize: ["12px", "10px", "10px", "12px"],
+      fontSize: "12px",
     },
   },
 }

@@ -15,6 +15,7 @@ services:
       - server
       - ui
     environment:
+      - MODSEC_RULE_ENGINE=Off
       - PARANOIA=1
       - ANOMALY_INBOUND=5
       - ANOMALY_OUTBOUND=4

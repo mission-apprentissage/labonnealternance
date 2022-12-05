@@ -82,7 +82,22 @@ const Button = {
       bg: "grey.750",
       borderRadius: "8px",
       color: "white",
-      _hover: { textDecoration: "underline", boxShadow: "0 0 12px 2px rgb(0 0 0 / 21%)" },
+      _hover: {
+        textDecoration: "underline",
+        boxShadow: "0 0 12px 2px rgb(0 0 0 / 21%)",
+        _disabled: {
+          bg: "grey.750",
+          color: "white",
+          _disabled: {
+            bg: "grey.750",
+            color: "white",
+          },
+        },
+      },
+      _disabled: {
+        bg: "grey.750",
+        color: "white",
+      },
     },
     "primary-red": {
       ...commonButtonStyle,

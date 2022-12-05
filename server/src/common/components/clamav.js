@@ -1,6 +1,6 @@
 import NodeClam from "clamscan"
-import tcpPortUsed from "tcp-port-used"
 import { Readable } from "stream"
+import tcpPortUsed from "tcp-port-used"
 import config from "../../config.js"
 import { logger } from "../logger.js"
 import { notifyToSlack } from "../utils/slackUtils.js"
@@ -20,7 +20,6 @@ const initScanner = async () => {
     tcpPortUsed
       .waitUntilUsedOnHost(parseInt(port), host, 500, 30000)
       .then(() => {
-        //console.log("le port clamav est en écoute");
         const params = {
           //debugMode: config.env === "local" ? true : false, // This will put some debug info in your js console
           clamdscan: {
@@ -51,15 +50,13 @@ console.log("scan result EICAR String : ", isInfected, viruses);
   // le fichier est encodé en base 64 à la suite d'un en-tête.
   const decodedAscii = Readable.from(Buffer.from(fileContent.substring(fileContent.indexOf(";base64,") + 8), "base64").toString("ascii"))
   const rs = Readable.from(decodedAscii)
-  //console.log("avant scanstream ");
+
   const { isInfected, viruses } = await scanner.scanStream(rs)
 
   if (isInfected) {
     logger.error(`Virus detected ${viruses.toString()}`)
-    notifyToSlack(`Virus detected ${viruses.toString()}`)
+    await notifyToSlack({ subject: "CLAMAV", message: `Virus detected ${viruses.toString()}` })
   }
-
-  //console.log("resultat ", isInfected, viruses);
 
   return isInfected
 }
@@ -67,17 +64,15 @@ console.log("scan result EICAR String : ", isInfected, viruses);
 export default function (fileContent) {
   async function scan(fileContent) {
     if (scanner) {
-      //console.log("clamav est dans la place");
       return scanString(fileContent)
     } else {
-      //console.log("clamav pas encore là");
       try {
         logger.info("Initalizing clamav")
         await setScanner() //await new NodeClam().init(params);
         return scanString(fileContent)
       } catch (err) {
         logger.error("Error initializing clamav " + err)
-        //console.log("boom clamav tant pis");
+
         return false
       }
     }

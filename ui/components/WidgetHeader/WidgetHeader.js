@@ -7,43 +7,40 @@ import { includes } from "lodash"
 
 import { Row } from "reactstrap"
 import { SearchResultContext } from "../../context/SearchResultContextProvider"
+import { Box, Flex, Text } from "@chakra-ui/react"
 
 const WidgetHeader = ({ handleSearchSubmit, isHome }) => {
   const router = useRouter()
 
   const { selectedItem } = useContext(SearchResultContext)
 
-  let additionalClassName = selectedItem && includes(router.asPath, "page=fiche") ? "detail" : "global"
-
   const handleSearchSubmitFunction = (values) => {
     return handleSearchSubmit({ values })
   }
-  if (isHome) {
-    additionalClassName = "home"
-  }
+
+  const isFicheDetail = selectedItem && includes(router.asPath, "page=fiche") ? true : false
+  const formDisplayValue = isFicheDetail ? "none" : isHome ? "block" : ["none", "none", "block"]
 
   return (
-    <>
-      <div className={`c-widgetheader c-widgetheader--${additionalClassName}`}>
-        <Row className={`c-widgetheader-bar c-widgetheader-bar--${additionalClassName}`}>
-          {isHome ? "" : <LogoIdea />}
+    <Box zIndex={9} display={formDisplayValue} boxShadow={isHome ? "none" : "0 0 12px 2px rgb(0 0 0 / 21%)"} padding="8px">
+      <Flex>
+        {!isHome && <LogoIdea />}
 
-          <div>
-            {isHome ? (
-              <h1 className="card-title">
-                <span className="c-home-hero__title c-home-hero__title1 d-block d-lg-inline">Se former et travailler</span>
-                <span className="c-home-hero__title c-home-hero__title2 d-block d-lg-inline">
-                  <span className="d-none d-lg-inline">&nbsp;</span>en alternance
-                </span>
-              </h1>
-            ) : (
-              ""
-            )}
-            <HeaderForm handleSearchSubmit={handleSearchSubmitFunction} isHome={isHome} />
-          </div>
-        </Row>
-      </div>
-    </>
+        <Box>
+          {isHome && (
+            <Text mb={3} as="h1" fontSize={["26px", "29px"]} fontWeight={700}>
+              <Text as="span" display={{ base: "block", md: "inline" }}>
+                Se former et travailler{" "}
+              </Text>
+              <Text as="span" color="info" display={{ base: "block", md: "inline" }}>
+                en alternance
+              </Text>
+            </Text>
+          )}
+          <HeaderForm handleSearchSubmit={handleSearchSubmitFunction} isHome={isHome} />
+        </Box>
+      </Flex>
+    </Box>
   )
 }
 

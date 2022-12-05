@@ -3,7 +3,7 @@ import axios from "axios"
 import crypto from "crypto"
 import _ from "lodash-es"
 import { getCurrentFormationsSourceCollection } from "../common/components/indexSourceFormations.js"
-import { getFormationsES } from "../common/esClient/index.js"
+import { getElasticInstance } from "../common/esClient/index.js"
 import { manageApiError } from "../common/utils/errorManager.js"
 import { regionCodeToDepartmentList } from "../common/utils/regionInseeCodes.js"
 import { trackApiCall } from "../common/utils/sendTrackingEvent.js"
@@ -17,7 +17,7 @@ const formationResultLimit = 150
 
 const lbfDescriptionUrl = "https://labonneformation.pole-emploi.fr/api/v1/detail"
 
-const esClient = getFormationsES()
+const esClient = getElasticInstance()
 
 const diplomaMap = {
   3: "3 (CAP...)",
@@ -258,7 +258,7 @@ const getRegionFormations = async ({ romes, romeDomain, region, departement, dip
     })
 
     if (formations.length === 0 && !caller) {
-      notifyToSlack(`Aucune formation par région trouvée pour les romes ${romes} ou le domaine ${romeDomain}.`)
+      await notifyToSlack({ subject: "FORMATION", message: `Aucune formation par région trouvée pour les romes ${romes} ou le domaine ${romeDomain}.` })
     }
 
     return formations
@@ -327,7 +327,10 @@ const getAtLeastSomeFormations = async ({ romes, rncps, romeDomain, coords, radi
       }
 
       if (formations.results.length === 0 && !caller) {
-        notifyToSlack(`Aucune formation trouvée pour les romes ${romes} ou le domaine ${romeDomain}. diploma : ${diploma}. coords: ${coords}. radius: ${currentRadius}`)
+        await notifyToSlack({
+          subject: "FORMATION",
+          message: `Aucune formation trouvée pour les romes ${romes} ou le domaine ${romeDomain}. diploma : ${diploma}. coords: ${coords}. radius: ${currentRadius}`,
+        })
       }
     }
 

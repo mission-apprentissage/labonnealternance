@@ -81,7 +81,7 @@ const FAQ = () => {
                     </TabList>
 
                     <TabPanels>
-                      <TabPanel color="#1e1e1e" padding="0 !important;">
+                      <TabPanel color="grey.800" padding="0 !important;">
                         <NotionRenderer
                           recordMap={recordMapNotionCandidat}
                           fullPage={false}
@@ -91,7 +91,7 @@ const FAQ = () => {
                           bodyClassName="notion-body"
                         />
                       </TabPanel>
-                      <TabPanel color="#1e1e1e" padding="0 !important;">
+                      <TabPanel color="grey.800" padding="0 !important;">
                         <NotionRenderer
                           recordMap={recordMapNotionRecruteur}
                           fullPage={false}
@@ -101,7 +101,7 @@ const FAQ = () => {
                           bodyClassName="notion-body"
                         />
                       </TabPanel>
-                      <TabPanel color="#1e1e1e" padding="0 !important;">
+                      <TabPanel color="grey.800" padding="0 !important;">
                         <NotionRenderer
                           recordMap={recordMapNotionOrganisme}
                           fullPage={false}
