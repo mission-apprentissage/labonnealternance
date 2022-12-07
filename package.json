@@ -42,10 +42,10 @@
       "eslint --cache --fix ./server/src ./server/tests"
     ],
     "./ui/*.{js, jsx, tsx}": [
-      "yarn --cwd ui lint"
+      "yarn --cwd ui eslint"
     ],
     "./ui_espace_pro/*.{js, jsx, tsx}": [
-      "yarn --cwd ui lint"
+      "yarn --cwd ui_espace_pro lint"
     ],
     "*.{js, jsx}": [
       "prettier --write ./ui ./server ./ui_espace_pro"
