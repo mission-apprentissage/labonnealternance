@@ -38,7 +38,11 @@ const MapPopup = ({ type, item, handleSelectItem, setSelectedItem, setSelectedMa
                 <ul className="c-mapbox-list">
                   {list.map((job, idx) => (
                     <li className={`c-mapbox-list-item ${idx === list.length - 1 ? "is-last" : ""} ${idx === 0 ? "is-first" : ""}`} key={idx}>
-                      <button className={`c-mapboxpopup--link gtmSavoirPlus gtm${capitalizeFirstLetter(job.ideaType)} gtmMap`} aria-label="Accéder au détail de l'opportunité" onClick={() => openItemDetail(job)}>
+                      <button
+                        className={`c-mapboxpopup--link gtmSavoirPlus gtm${capitalizeFirstLetter(job.ideaType)} gtmMap`}
+                        aria-label="Accéder au détail de l'opportunité"
+                        onClick={() => openItemDetail(job)}
+                      >
                         {job.title}
                       </button>
                       {job.ideaType === "peJob" && job?.company?.name ? <span className="c-mapbox-companyname">- {job.company.name}</span> : ""}
