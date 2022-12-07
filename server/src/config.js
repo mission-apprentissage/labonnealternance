@@ -1,7 +1,7 @@
 import env from "env-var"
 
 const config = {
-  appName: env.get("LBA_NAME").default("doctrina").asString(),
+  appName: env.get("LBA_NAME").default("lba").asString(),
   env: env.get("LBA_ENV").default("local").asString(),
   publicUrl: env.get("LBA_PUBLIC_URL").default("http://localhost").asString(),
   publicUrlEspacePro: env.get("LBA_PUBLIC_URL_ESPACE_PRO").default("http://localhost/espace-pro").asString(),
