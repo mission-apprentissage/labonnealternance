@@ -1,1 +1,5 @@
-process.env.DOCTRINA_LOG_LEVEL = "info"
+/**
+ * @description: A supprimer.
+ */
+
+process.env.LBA_LOG_LEVEL = "info"

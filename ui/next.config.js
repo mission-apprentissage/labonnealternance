@@ -67,6 +67,7 @@ const contentSecurityPolicy = `
             https://cdn.trustcommander.net
             https://labonnealternance.pole-emploi.fr
             https://labonnealternance.apprentissage.beta.gouv.fr;
+            https://labonnealternance-recette.apprentissage.beta.gouv.fr;
   child-src 'self' blob:;
   block-all-mixed-content;
   upgrade-insecure-requests;

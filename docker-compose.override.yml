@@ -3,13 +3,13 @@ version: "2.4"
 services:
   reverse_proxy:
     volumes:
-      - doctrina_nginx_data:/data:z
+      - lba_nginx_data:/data:z
       - ./reverse_proxy/dev/includes:/etc/nginx/templates/includes/env
 
   ui:
     build:
       args:
-        DOCTRINA_ENV: dev
+        LBA_ENV: dev
     volumes:
       - ./ui:/app:z
       - /app/node_modules/
@@ -20,7 +20,7 @@ services:
   ui_espace_pro:
     build:
       args:
-        DOCTRINA_ENV: dev
+        LBA_ENV: dev
     volumes:
       - ./ui_espace_pro:/app:z
       - /app/node_modules/
@@ -31,27 +31,27 @@ services:
   server:
     build:
       args:
-        DOCTRINA_ENV: dev
+        LBA_ENV: dev
     ports:
       - "9229:9229" # Allows remote debugging
     volumes:
-      - doctrina_server_data:/data:z
+      - lba_server_data:/data:z
       - ./server/src:/app/src:z
     environment:
-      - DOCTRINA_ENV=dev
-      - DOCTRINA_LOG_LEVEL=debug
+      - LBA_ENV=dev
+      - LBA_LOG_LEVEL=debug
 
   mongodb:
     ports:
       - "27017:27017"
     volumes:
-      - doctrina_mongodb_data:/data:z
+      - lba_mongodb_data:/data:z
 
   elasticsearch:
     ports:
       - "9200:9200"
     volumes:
-      - doctrina_elasticsearch_data:/usr/share/elasticsearch/data
+      - lba_elasticsearch_data:/usr/share/elasticsearch/data
 
   clamav:
     ports:
@@ -59,7 +59,7 @@ services:
 
   smtp:
     image: mailhog/mailhog
-    container_name: doctrina_mailhog
+    container_name: lba_mailhog
     ports:
       - "1025:1025"
     volumes:
@@ -68,18 +68,18 @@ services:
       - MH_UI_WEB_PATH=smtp
       - MH_AUTH_FILE=/app/mailhog-auth.txt
     networks:
-      - doctrina_network
+      - lba_network
 
 volumes:
-  doctrina_mongodb_data:
+  lba_mongodb_data:
     driver: local
-    name: doctrina_mongodb_data
-  doctrina_nginx_data:
+    name: lba_mongodb_data
+  lba_nginx_data:
     driver: local
-    name: doctrina_nginx_data
-  doctrina_server_data:
+    name: lba_nginx_data
+  lba_server_data:
     driver: local
-    name: doctrina_server_data
-  doctrina_elasticsearch_data:
+    name: lba_server_data
+  lba_elasticsearch_data:
     driver: local
-    name: doctrina_elasticsearch_data
+    name: lba_elasticsearch_data
