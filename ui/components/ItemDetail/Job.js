@@ -151,7 +151,7 @@ const Job = ({ job, handleSelectItem, showTextOnly, searchForTrainingsOnNewCente
               ""
             ) : (
               <Text ml="auto" as="span" display={["none", "none", "block"]}>
-                <Button variant="knowMore">En savoir plus</Button>
+                <Button variant="knowMore" aria-label="Accéder au détail de l'offre">En savoir plus</Button>
               </Text>
             )}
           </Text>

@@ -42,7 +42,7 @@ const CandidatureSpontaneeExplanation = (props) => {
                 <ExternalLink
                   className="gtmCVLink gtmClicnjob c-nice-link"
                   url="https://cv.clicnjob.fr/"
-                  title="https://cv.clicnjob.fr/"
+                  title="Lien vers le site Clicnjob"
                   withPic={<img src="../../images/icons/goto.svg" alt="Lien" />}
                 />
               </li>
@@ -50,7 +50,7 @@ const CandidatureSpontaneeExplanation = (props) => {
                 <ExternalLink
                   className="gtmCVLink gtmCvdesigner c-nice-link"
                   url="https://cvdesignr.com/fr"
-                  title="https://cvdesignr.com/fr"
+                  title="Lien vers le site CV Designer"
                   withPic={<img src="../../images/icons/goto.svg" alt="Lien" />}
                 />
               </li>
@@ -58,7 +58,7 @@ const CandidatureSpontaneeExplanation = (props) => {
                 <ExternalLink
                   className="gtmCVLink gtmCanva c-nice-link"
                   url="https://www.canva.com/fr_fr/creer/cv/"
-                  title="https://www.canva.com/fr_fr/creer/cv/"
+                  title="Lien vers le site Canva"
                   withPic={<img src="../../images/icons/goto.svg" alt="Lien" />}
                 />
               </li>
