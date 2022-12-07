@@ -10,21 +10,21 @@ describe("CandidatureSpontaneeSubmit", () => {
 
   it("Renders a submit button by default", () => {
     const { container } = render(<CandidatureSpontaneeSubmit sendingState={"not_sent"} />)
-    expect(container.firstChild.classList.contains("c-candidature-submit--default")).toBe(true)
+    expect(container.firstChild.getByTestId("candidature-not-sent")).toBeTruthy()
   })
 
   it("Renders an spinner message if submission is pending", () => {
     const { container } = render(<CandidatureSpontaneeSubmit sendingState={"currently_sending"} />)
-    expect(container.firstChild.classList.contains("c-candidature-submit-sending")).toBe(true)
+    expect(container.firstChild.getByTestId("candidature-currently-sending")).toBeTruthy()
   })
 
   it("Renders an appropriate message if submission is over and OK", () => {
     const { container } = render(<CandidatureSpontaneeSubmit sendingState={"ok_sent"} />)
-    expect(container.firstChild.classList.contains("c-candidature-submit-ok")).toBe(true)
+    expect(container.firstChild.getByTestId("candidature-submit-ok")).toBeTruthy()
   })
 
   it("Renders an error message if submission is over and NOT OK", () => {
     const { container } = render(<CandidatureSpontaneeSubmit sendingState={"not_sent_because_of_errors"} />)
-    expect(container.firstChild.classList.contains("c-candidature-submit-error")).toBe(true)
+    expect(container.firstChild.getByTestId("candidature-submit-error")).toBeTruthy()
   })
 })
