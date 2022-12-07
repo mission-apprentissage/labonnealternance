@@ -141,7 +141,7 @@ const LbbCompany = ({ company, handleSelectItem, showTextOnly, searchForTraining
             {company.place.distance && `${company.place.distance} km(s) du lieu de recherche`}
             {!showTextOnly && (
               <Text ml="auto" as="span" display={["none", "none", "block"]}>
-                <Button variant="knowMore">En savoir plus</Button>
+                <Button variant="knowMore" aria-label="Accéder au détail de l'entreprise">En savoir plus</Button>
               </Text>
             )}
           </Text>

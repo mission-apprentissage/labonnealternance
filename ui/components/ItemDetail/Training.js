@@ -135,7 +135,7 @@ const Training = ({ training, handleSelectItem, showTextOnly, searchForJobsOnNew
             {training.place.distance !== null && `${Math.round(training.place.distance)} km(s) du lieu de recherche`}
             {!showTextOnly && (
               <Text ml="auto" as="span" display={["none", "none", "block"]}>
-                <Button variant="knowMore">En savoir plus</Button>
+                <Button variant="knowMore" aria-label="Accéder au détail de la formation">En savoir plus</Button>
               </Text>
             )}
           </Text>

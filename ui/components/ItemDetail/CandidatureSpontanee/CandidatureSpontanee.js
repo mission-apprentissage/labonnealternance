@@ -86,7 +86,7 @@ const CandidatureSpontanee = (props) => {
                   },
                 }}
                 onClick={openApplicationForm}
-                aria-label="jenvoie-une-candidature-spontanee"
+                aria-label="Ouvrir le formulaire d'envoi de candidature spontanée"
               >
                 J&apos;envoie ma candidature{with_str(kind).amongst(["lbb", "lba"]) ? " spontanée" : ""}
               </Button>
