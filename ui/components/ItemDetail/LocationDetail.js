@@ -1,11 +1,10 @@
-import React from "react"
-import { capitalizeFirstLetter } from "../../utils/strutils"
-import { getPathLink, getCompanyPathLink } from "../../utils/tools"
 import { round } from "lodash"
+import React from "react"
+import gotoIcon from "../../public/images/icons/goto.svg"
+import { capitalizeFirstLetter, endsWithNumber } from "../../utils/strutils"
+import { getCompanyPathLink, getPathLink } from "../../utils/tools"
 import { string_wrapper as with_str } from "../../utils/wrapper_utils"
 import ExternalLink from "../externalLink"
-import { endsWithNumber } from "../../utils/strutils"
-import gotoIcon from "../../public/images/icons/goto.svg"
 
 const LocationDetail = ({ item, isCfa }) => {
   const kind = item?.ideaType
@@ -141,7 +140,7 @@ const LocationDetail = ({ item, isCfa }) => {
               </span>
               <span className="c-detail-sizetext">
                 <span className="">En savoir plus sur &nbsp;</span>
-                <ExternalLink className="c-nice-link gtmTrainingLink" url={item.company.url} title="Lien vers le site "{item.company.url} />
+                <ExternalLink className="c-nice-link gtmTrainingLink" url={item.company.url} title={`Lien vers le site ${item.company.url}`} />
               </span>
             </div>
           </>
@@ -224,7 +223,7 @@ const LocationDetail = ({ item, isCfa }) => {
                 <ExternalLink
                   className="c-nice-link gtmGoogleLink"
                   url={`https://www.google.fr/search?q=${getGoogleSearchParameters()}`}
-                  title="Rechercher des informations sur "{item.company.name}
+                  title={`Rechercher des informations sur ${item.company.name}`}
                   withPic={<img className="mt-n1 ml-1" src="/images/square_link.svg" alt="Ouverture dans un nouvel onglet" />}
                 />
               </span>

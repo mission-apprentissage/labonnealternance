@@ -1,18 +1,18 @@
-import React, { useEffect, useState, useContext } from "react"
-import gotoIcon from "../../public/images/icons/goto.svg"
-import fetchTrainingDetails from "../../services/fetchTrainingDetails"
-import fetchPrdv from "../../services/fetchPrdv"
-import sendTrainingOpenedEventToCatalogue from "../../services/sendTrainingOpenedEventToCatalogue"
-import clipboardListIcon from "../../public/images/icons/traning-clipboard-list.svg"
-import targetIcon from "../../public/images/icons/training-target.svg"
-import sablierIcon from "../../public/images/icons/training-sablier.svg"
-import questionmarkIcon from "../../public/images/icons/training-questionmark.svg"
-import { SendPlausibleEvent, SendTrackEvent } from "../../utils/plausible"
-import academicCapIcon from "../../public/images/icons/training-academic-cap.svg"
-import { formatDate } from "../../utils/strutils"
+import React, { useContext, useEffect, useState } from "react"
 import { Spinner } from "reactstrap"
-import { SearchResultContext } from "../../context/SearchResultContextProvider"
 import { DisplayContext } from "../../context/DisplayContextProvider"
+import { SearchResultContext } from "../../context/SearchResultContextProvider"
+import gotoIcon from "../../public/images/icons/goto.svg"
+import academicCapIcon from "../../public/images/icons/training-academic-cap.svg"
+import questionmarkIcon from "../../public/images/icons/training-questionmark.svg"
+import sablierIcon from "../../public/images/icons/training-sablier.svg"
+import targetIcon from "../../public/images/icons/training-target.svg"
+import clipboardListIcon from "../../public/images/icons/traning-clipboard-list.svg"
+import fetchPrdv from "../../services/fetchPrdv"
+import fetchTrainingDetails from "../../services/fetchTrainingDetails"
+import sendTrainingOpenedEventToCatalogue from "../../services/sendTrainingOpenedEventToCatalogue"
+import { SendPlausibleEvent, SendTrackEvent } from "../../utils/plausible"
+import { formatDate } from "../../utils/strutils"
 
 const TrainingDetail = ({ training, hasAlsoJob }) => {
   const [loading, setLoading] = useState(true)
@@ -129,7 +129,13 @@ const TrainingDetail = ({ training, hasAlsoJob }) => {
         )}
         <div className="mt-2 mb-2">
           Vous vous posez des questions sur votre orientation ou votre recherche d&apos;emploi ?
-          <a href="https://dinum-beta.didask.com/courses/demonstration/60abc18c075edf000065c987" target="_blank" rel="noopener noreferrer" className="c-nice-link" aria-label="Lien vers des conseils pour préparer son premier contact avec un CFA"">
+          <a
+            href="https://dinum-beta.didask.com/courses/demonstration/60abc18c075edf000065c987"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="c-nice-link"
+            aria-label="Lien vers des conseils pour préparer son premier contact avec un CFA"
+          >
             &nbsp;Préparez votre premier contact avec un CFA&nbsp;
             <img src={gotoIcon} alt="Ouverture dans un nouvel onglet" />
           </a>
