@@ -27,6 +27,8 @@ const contentSecurityPolicy = `
   script-src-attr 'none';
   connect-src 'self'
               https://labonnealternance.apprentissage.beta.gouv.fr 
+              https://labonnealternance-recette.apprentissage.beta.gouv.fr
+              https://labonnealternance.pole-emploi.fr
               https://rdv-cfa.apprentissage.beta.gouv.fr 
               https://rdv-cfa-recette.apprentissage.beta.gouv.fr 
               https://catalogue.apprentissage.beta.gouv.fr 
@@ -55,7 +57,10 @@ const contentSecurityPolicy = `
               https://www.google.fr
               https://script.hotjar.com
               https://manager.tagcommander.com; 
-  object-src 'self' data: https://labonnealternance.apprentissage.beta.gouv.fr;
+  object-src 'self' data: 
+              https://labonnealternance.apprentissage.beta.gouv.fr
+              https://labonnealternance-recette.apprentissage.beta.gouv.fr
+              https://labonnealternance.pole-emploi.fr;
   font-src 'self' https: data:;
   style-src 'self' https: 'unsafe-inline';
   frame-src https://rdv-cfa.apprentissage.beta.gouv.fr 
@@ -66,7 +71,8 @@ const contentSecurityPolicy = `
             https://vars.hotjar.com
             https://cdn.trustcommander.net
             https://labonnealternance.pole-emploi.fr
-            https://labonnealternance.apprentissage.beta.gouv.fr;
+            https://labonnealternance.apprentissage.beta.gouv.fr
+            https://labonnealternance-recette.apprentissage.beta.gouv.fr;
   child-src 'self' blob:;
   block-all-mixed-content;
   upgrade-insecure-requests;
