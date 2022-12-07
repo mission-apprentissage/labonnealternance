@@ -1,36 +1,37 @@
+import { Box, Container, Flex, Image, Text } from "@chakra-ui/react"
 import React from "react"
-import { ModalBody, ModalFooter } from "reactstrap"
 import paperplaneIcon from "../../../public/images/paperplane2.svg"
 import { testingParameters } from "../../../utils/testingParameters"
 
 const CandidatureSpontaneeWorked = ({ email, company, kind }) => {
   return (
-    <div data-testid="CandidatureSpontaneeWorked">
-      <ModalBody>
-        <h1 className="c-candidature-title" data-testid="CandidatureSpontaneeWorkedTitle">
-          {kind === "matcha" ? <>Postuler à l&apos;offre de {company}</> : <>Candidature spontanée</>}
-        </h1>
+    <Container data-testid="CandidatureSpontaneeWorked">
+      <Text as="h1" fontSize="24px" fontWeight={700} data-testid="CandidatureSpontaneeWorkedTitle">
+        {kind === "matcha" ? <>Postuler à l&apos;offre de {company}</> : <>Candidature spontanée</>}
+      </Text>
 
-        <div className="c-candidature-worked-header d-flex my-5">
-          <div>
-            <img src={paperplaneIcon} alt="" />
-          </div>
-          <div className="ml-3 pl-3">
-            <h2 className="c-candidature-worked-title">
-              Votre candidature a bien été envoyée à <span className="c-candidature-worked-company">{company}</span>
-            </h2>
-            {testingParameters?.simulatedRecipient ? <div>Les emails ont été envoyés à {testingParameters.simulatedRecipient}</div> : ""}
-          </div>
-        </div>
-        <div className="c-candidature-worked-text">
-          Un e-mail de confirmation vous a été envoyé sur votre boite e-mail <span className="c-candidature-worked-email">{email}</span>
-        </div>
-        <div className="c-candidature-worked-text mt-3 mb-5">
-          Si vous n&apos;avez pas reçu d&apos;email de confirmation d&apos;ici 24 heures, soumettez à nouveau votre candidature
-        </div>
-      </ModalBody>
-      <ModalFooter className="pb-5"></ModalFooter>
-    </div>
+      <Flex direction="row" alignItems="center" my={12}>
+        <Image src={paperplaneIcon} alt="" />
+        <Box pl={4} ml={4}>
+          <Text as="h2" fontSize="20px" fontWeight={700}>
+            Votre candidature a bien été envoyée à{" "}
+            <Text as="span" fontSize="22px">
+              {company}
+            </Text>
+          </Text>
+          {testingParameters?.simulatedRecipient && <Text>Les emails ont été envoyés à {testingParameters.simulatedRecipient}</Text>}
+        </Box>
+      </Flex>
+      <Text fontSize="18px">
+        Un e-mail de confirmation vous a été envoyé sur votre boite e-mail{" "}
+        <Text as="span" fontWeight={700} color="#f07f87">
+          {email}
+        </Text>
+      </Text>
+      <Text fontSize="18px" mt={4} mb={12}>
+        Si vous n&apos;avez pas reçu d&apos;email de confirmation d&apos;ici 24 heures, soumettez à nouveau votre candidature
+      </Text>
+    </Container>
   )
 }
 
