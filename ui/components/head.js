@@ -1,23 +1,8 @@
 import React from "react"
 import Head from "next/head"
 import Fonts from "./fonts"
-import env from "../utils/env"
 
-const HeadLaBonneAlternance = (props) => {
-  const getEnvFromProps = () => {
-    let host = props.publicUrl || env
-
-    let envrnt = "production"
-    if (host?.indexOf("recette") >= 0) {
-      envrnt = "recette"
-    }
-    if (host?.indexOf("local") >= 0) {
-      envrnt = "local"
-    }
-
-    return { env: envrnt }
-  }
-
+const HeadLaBonneAlternance = () => {
   return (
     <Head>
       <title>La bonne alternance | Trouvez votre alternance</title>
@@ -28,7 +13,7 @@ const HeadLaBonneAlternance = (props) => {
       <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png" />
       <link rel="manifest" href="/favicon/site.webmanifest" />
 
-      <Fonts url={props.publicUrl} />
+      <Fonts />
 
       <meta name="msapplication-config" content="/favicon/browserconfig.xml" />
       <meta name="msapplication-TileColor" content="#ffffff" />
