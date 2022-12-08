@@ -44,8 +44,10 @@ const importFormations = async ({ workIndex, workMongo, formationCount }) => {
   }
 }
 
-export default async function ({ OnlyChangeMaster }) {
+export default async function (options) {
   let workIndex, workMongo
+
+  const OnlyChangeMaster = options?.OnlyChangeMaster || false
 
   logger.info(" -- Import formations catalogue -- ")
 
