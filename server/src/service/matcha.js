@@ -6,7 +6,7 @@ import config from "../config.js"
 import { itemModel } from "../model/itemModel.js"
 import filterJobsByOpco from "./filterJobsByOpco.js"
 
-const recruteurEndpoint = `https://doctrina${config.env === "production" ? "" : "-recette"}.apprentissage.beta.gouv.fr/api/formulaire`
+const recruteurEndpoint = `https://labonnealternance${config.env === "production" ? "" : "-recette"}.apprentissage.beta.gouv.fr/api/formulaire`
 
 const coordinatesOfFrance = [2.213749, 46.227638]
 

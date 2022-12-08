@@ -1,11 +1,10 @@
-import React from "react"
-import { capitalizeFirstLetter } from "../../utils/strutils"
-import { getPathLink, getCompanyPathLink } from "../../utils/tools"
 import { round } from "lodash"
+import React from "react"
+import gotoIcon from "../../public/images/icons/goto.svg"
+import { capitalizeFirstLetter, endsWithNumber } from "../../utils/strutils"
+import { getCompanyPathLink, getPathLink } from "../../utils/tools"
 import { string_wrapper as with_str } from "../../utils/wrapper_utils"
 import ExternalLink from "../externalLink"
-import { endsWithNumber } from "../../utils/strutils"
-import gotoIcon from "../../public/images/icons/goto.svg"
 
 const LocationDetail = ({ item, isCfa }) => {
   const kind = item?.ideaType

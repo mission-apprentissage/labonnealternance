@@ -1,7 +1,7 @@
 {
-  "name": "mna-doctrina-server",
+  "name": "mna-lba-server",
   "version": "0.0.1",
-  "description": "[MNA] App Template",
+  "description": "API La bonne alternance",
   "repository": "https://github.com/mission-apprentissage/doctrina.git",
   "private": false,
   "author": "MNA",
@@ -17,7 +17,7 @@
     "copy-assets": "copyfiles -u 2 src/assets/api-docs/swagger.json src/assets/templates/*.ejs build/assets",
     "clean": "rimraf build/",
     "test": "mocha --recursive --exit --timeout 5000 tests/",
-    "cli": "DOCTRINA_LOG_DESTINATIONS=stderr node src/cli.js",
+    "cli": "LBA_LOG_DESTINATIONS=stderr node src/cli.js",
     "coverage": "nyc --temp-dir .coverage/.nyc_output --report-dir .coverage --reporter=lcov --reporter=html yarn test",
     "lint": "eslint src/ tests/",
     "lint:fix": "eslint src/ tests/ --fix",
