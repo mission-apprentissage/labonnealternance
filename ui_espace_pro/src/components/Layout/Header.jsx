@@ -62,7 +62,7 @@ export default () => {
                       )}
                     </>
                   )}
-                  {auth.permissions.isAdmin && (
+                  {auth.permissions?.isAdmin && (
                     <>
                       <MenuItem onClick={() => navigate("/administration/users")}>Gestion des utilisateurs</MenuItem>
                       <MenuDivider />
