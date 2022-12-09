@@ -34,7 +34,7 @@ const FacilitezRDVA = () => {
                 <Text>Vous souhaitez référencer votre formation, modifier vos coordonnées, être visible sur Parcoursup ?</Text>
                 <Text mt={{ base: 2, lg: 0 }}>Vous souhaitez activer le service de demande de rendez-vous, consulter vos demandes de rendez-vous ?</Text>
                 <Text mt={{ base: 2, lg: 0 }}>
-                  <Link href="/faq" variant="homeEditorialLink" title="Lien vers la Foire aux questions">
+                  <Link href="/faq" variant="homeEditorialLink" aria-label="Lien vers la Foire aux questions">
                     Visitez notre FAQ
                   </Link>{" "}
                   pour trouver toutes les réponses à vos questions.
