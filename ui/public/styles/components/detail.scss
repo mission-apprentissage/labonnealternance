@@ -13,51 +13,9 @@
   height: 30px;
 }
 
-.c-detail-title {
-  font-size: 28px;
-  font-weight: 700;
-  line-height: 36px;
-  letter-spacing: 0em;
-  color: $pinksoft750;
-  margin-bottom: 11px;
-  padding-bottom: 0;
-  text-align: left;
-  word-break: break-word;
-}
-
-.c-detail--collapse-header-true .c-detail-title {
-  font-size: 20px;
-  line-height: 28px;
-}
-
 .c-detail-body.c-detail-body--inside {
   padding-left: 0;
   padding-right: 0;
-}
-
-.c-detail-title--formation {
-  color: $greensoft500;
-}
-
-.c-detail-title--lba,
-.c-detail-title--peJob,
-.c-detail-title--matcha {
-  color: $pinksoft750;
-}
-
-.c-detail-activity {
-  font-size: 16px;
-  font-weight: 700;
-  line-height: 24px;
-  letter-spacing: 0;
-  margin-bottom: 12px;
-  padding-bottom: 0;
-  text-align: left;
-  color: $gray-600;
-}
-
-.c-detail-activity__proposal {
-  font-weight: 400;
 }
 
 .c-detail-matcha-subtitle {
@@ -82,17 +40,6 @@
   height: 12px;
   line-height: 12px;
   background-color: $pinksoft750;
-}
-
-.c-detail-title.c-detail-title--matcha {
-  margin-bottom: 0;
-}
-
-.c-detail-address {
-  font-weight: 400;
-  font-size: 16px;
-  line-height: 24px;
-  color: #383838;
 }
 
 .c-detail-km {
@@ -523,30 +470,6 @@ a.c-detail-lbb-siretbutton {
 
 .c-detail-sizetext.c-detail-sizetext--matcha {
   margin-bottom: 32px;
-}
-
-.c-detail-stickynav {
-  cursor: pointer;
-  position: sticky;
-  top: 0;
-  background-color: white;
-  height: 60px;
-  padding-left: 30px;
-  display: flex;
-  align-items: center;
-  font-size: 16px;
-  font-weight: 700;
-  line-height: 19px;
-  letter-spacing: 0px;
-  text-align: left;
-  box-shadow: 0px 2px 4px #e0e0e0;
-  text-overflow: ellipsis;
-  overflow: hidden;
-}
-
-.c-detail {
-  overflow-y: auto;
-  position: relative;
 }
 
 .c-detail-also {

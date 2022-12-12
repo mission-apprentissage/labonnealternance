@@ -13,6 +13,7 @@ import fetchTrainingDetails from "../../services/fetchTrainingDetails"
 import sendTrainingOpenedEventToCatalogue from "../../services/sendTrainingOpenedEventToCatalogue"
 import { SendPlausibleEvent, SendTrackEvent } from "../../utils/plausible"
 import { formatDate } from "../../utils/strutils"
+import { Flex } from "@chakra-ui/react"
 
 const TrainingDetail = ({ training, hasAlsoJob }) => {
   const [loading, setLoading] = useState(true)
@@ -110,10 +111,10 @@ const TrainingDetail = ({ training, hasAlsoJob }) => {
       {getLoading()}
       {getTrainingDetails(training.training)}
       <div className="c-detail-newadvice mt-4 pl-4">
-        <div className="pt-1 pb-2">
+        <Flex alignItems="center" pt={1} pb={2}>
           <img src={questionmarkIcon} alt="" />
           <span className="c-detail-newadvice-title ml-2">{training.title ? training.title : training.longTitle}</span>
-        </div>
+        </Flex>
         {training.onisepUrl ? (
           <div>
             <span>Descriptif du {training.title ? training.title : training.longTitle} sur&nbsp;</span>
@@ -128,7 +129,7 @@ const TrainingDetail = ({ training, hasAlsoJob }) => {
           ""
         )}
         <div className="mt-2 mb-2">
-          Vous vous posez des questions sur votre orientation ou votre recherche d&apos;emploi ?
+          Vous vous posez des questions sur votre orientation ou votre recherche d&apos;emploi ?&nbsp;
           <a
             href="https://dinum-beta.didask.com/courses/demonstration/60abc18c075edf000065c987"
             target="_blank"
@@ -136,7 +137,7 @@ const TrainingDetail = ({ training, hasAlsoJob }) => {
             className="c-nice-link"
             aria-label="Lien vers des conseils pour préparer son premier contact avec un CFA"
           >
-            &nbsp;Préparez votre premier contact avec un CFA&nbsp;
+            Préparez votre premier contact avec un CFA&nbsp;
             <img src={gotoIcon} alt="Ouverture dans un nouvel onglet" />
           </a>
         </div>

@@ -140,7 +140,7 @@ const LocationDetail = ({ item, isCfa }) => {
               </span>
               <span className="c-detail-sizetext">
                 <span className="">En savoir plus sur &nbsp;</span>
-                <ExternalLink className="c-nice-link gtmTrainingLink" url={item.company.url} title={item.company.url}/>
+                <ExternalLink className="c-nice-link gtmTrainingLink" url={item.company.url} title={item.company.url} />
               </span>
             </div>
           </>
