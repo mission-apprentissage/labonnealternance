@@ -13,19 +13,23 @@ export default (props) => {
     }, 5000)
   }
 
+  const error = () => {
+    toast({
+      title: "Une erreur est survenue",
+      description: "Merci de vous connecter.",
+      status: "error",
+      position: "top",
+      isClosable: false,
+      duration: 5000,
+    })
+    redirect()
+  }
+
   useEffect(() => {
     let { idOffre, option } = params
 
     if (!idOffre || !option) {
-      toast({
-        title: "Une erreur est survenue",
-        description: "Merci de vous connecter.",
-        status: "error",
-        position: "top",
-        isClosable: false,
-        duration: 5000,
-      })
-      redirect()
+      error()
     }
 
     if (option === "cancel") {
@@ -41,10 +45,7 @@ export default (props) => {
           })
           redirect()
         })
-        .catch((err) => {
-          console.log(err.response)
-          error()
-        })
+        .catch((err) => error())
     }
 
     if (option === "provided") {
