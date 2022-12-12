@@ -1,44 +1,45 @@
 import { Box, Flex, Spinner, Text, useToast } from "@chakra-ui/react"
 import { useEffect } from "react"
-import { useNavigate, useParams } from "react-router-dom"
+import { useParams } from "react-router-dom"
 import { cancelOffre, fillOffre } from "../api"
 
 export default (props) => {
   const params = useParams()
-  const navigate = useNavigate()
   const toast = useToast()
 
-  const error = () => {
-    toast({
-      title: "Une erreur est survenue",
-      description: "Merci de vous connecter.",
-      status: "error",
-      position: "top",
-      isClosable: false,
-      duration: 5000,
-    })
-    navigate("/")
+  const redirect = (ms) => {
+    setTimeout(() => {
+      window.location.replace("/")
+    }, 5000)
   }
 
   useEffect(() => {
     let { idOffre, option } = params
 
     if (!idOffre || !option) {
-      error()
+      toast({
+        title: "Une erreur est survenue",
+        description: "Merci de vous connecter.",
+        status: "error",
+        position: "top",
+        isClosable: false,
+        duration: 5000,
+      })
+      redirect()
     }
 
     if (option === "cancel") {
       cancelOffre(idOffre)
         .then(() => {
-          navigate("/")
           toast({
             title: "Offre annulée.",
             description: "L'offre a bien été mise à jour.",
             position: "top",
             status: "success",
             isClosable: true,
-            duration: 7000,
+            duration: 5000,
           })
+          redirect()
         })
         .catch((err) => {
           console.log(err.response)
@@ -49,15 +50,15 @@ export default (props) => {
     if (option === "provided") {
       fillOffre(idOffre)
         .then(() => {
-          navigate("/")
           toast({
             title: "Offre pourvue.",
             description: "L'offre a bien été mise à jour",
             position: "top",
             status: "success",
             isClosable: true,
-            duration: 7000,
+            duration: 5000,
           })
+          redirect()
         })
         .catch(() => error())
     }
