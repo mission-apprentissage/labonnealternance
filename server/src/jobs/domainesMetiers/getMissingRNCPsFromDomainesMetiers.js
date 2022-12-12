@@ -131,7 +131,7 @@ const downloadAndSaveFile = (optionalFileName) => {
   logger.info(`Downloading and save file ${optionalFileName ? optionalFileName : "currentDomainesMetiers.xlsx"} from S3 Bucket...`)
   return oleoduc(
     getFileFromS3(`mna-services/features/domainesMetiers/${optionalFileName ? optionalFileName : "currentDomainesMetiers.xlsx"}`),
-    fs.createWriteStream(FILE_LOCAL_PATH)
+    fs.createWriteStream(FILEPATH_DOMAINES_METIERS)
   )
 }
 
@@ -340,6 +340,7 @@ export default async (optionalFileName) => {
       missingRNCPs,
     }
   } catch (error) {
+    console.log(`script failed on step ${step}`)
     Sentry.captureException(error)
     logger.error(error)
   }
