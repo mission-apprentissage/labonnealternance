@@ -2,6 +2,7 @@ import { Box, Flex, Heading, Link, Spinner, Text, useBoolean } from "@chakra-ui/
 import { useEffect } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import { validationCompte } from "../../api"
+import { AUTHTYPE } from "../../common/contants"
 import useAuth from "../../common/hooks/useAuth"
 import { AuthentificationLayout } from "../../components"
 
@@ -42,16 +43,21 @@ export default (props) => {
   }, [id])
 
   useEffect(() => {
-    if (auth.sub !== "anonymous") {
-      if (auth.id_form) {
+    switch (auth.type) {
+      case AUTHTYPE.ENTREPRISE:
         setTimeout(() => {
           navigate(`/administration/entreprise/${auth.id_form}`, { state: { newUser: true } })
-        }, 3500)
-      } else {
+        }, 1000)
+        break
+
+      case AUTHTYPE.CFA:
         setTimeout(() => {
-          navigate("/administration", { state: { newUser: true } })
-        }, 3500)
-      }
+          navigate("/administration")
+        }, 1000)
+        break
+
+      default:
+        break
     }
   }, [auth])
 
