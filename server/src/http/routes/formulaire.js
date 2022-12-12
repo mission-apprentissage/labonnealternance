@@ -41,8 +41,9 @@ export default ({ formulaire, mailer, etablissementsRecruteur, application, user
       await Promise.all(
         result.offres.map(async (offre) => {
           let candidatures = await application.getApplication(offre._id)
+
           if (candidatures) {
-            offre.candidatures = candidatures.data.data.length > 0 ? candidatures.data.data.length : undefined
+            offre.candidatures = candidatures.length > 0 ? candidatures.length : undefined
           }
 
           return offre
