@@ -6,10 +6,12 @@ export default async function sendTrainingOpenedEventToCatalogue(cleMinistereEdu
 
   const catalogueApi = `https://catalogue${env !== "production" ? "-recette" : ""}.apprentissage.beta.gouv.fr/api/stats`
   try {
-    axios.post(catalogueApi, {
-      source: `LBA${env !== "production" ? "-recette" : ""}`,
-      cle_ministere_educatif: cleMinistereEducatif,
-    })
+    if (env !== "local") {
+      axios.post(catalogueApi, {
+        source: `LBA${env !== "production" ? "-recette" : ""}`,
+        cle_ministere_educatif: cleMinistereEducatif,
+      })
+    }
   } catch (err) {}
 
   return

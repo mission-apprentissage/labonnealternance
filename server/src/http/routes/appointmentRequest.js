@@ -1,16 +1,16 @@
+import Sentry from "@sentry/node"
+import Boom from "boom"
 import express from "express"
 import Joi from "joi"
-import Boom from "boom"
-import Sentry from "@sentry/node"
-import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
-import config from "../../config.js"
-import { getReferrerById, getReferrerByKeyName, referrers } from "../../common/model/constants/referrers.js"
+import { mailTemplate } from "../../assets/index.js"
 import { candidatFollowUpType, mailType } from "../../common/model/constants/appointments.js"
+import { getReferrerById, getReferrerByKeyName, referrers } from "../../common/model/constants/referrers.js"
 import { roles } from "../../common/roles.js"
-import { getCleMinistereEducatifFromIdActionFormation } from "../../common/utils/mappings/onisep.js"
 import { dayjs } from "../../common/utils/dayjs.js"
 import { isValidEmail } from "../../common/utils/isValidEmail.js"
-import { mailTemplate } from "../../assets/index.js"
+import { getCleMinistereEducatifFromIdActionFormation } from "../../common/utils/mappings/onisep.js"
+import config from "../../config.js"
+import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
 
 const contextCreateSchema = Joi.alternatives().try(
   // Find through "idParcoursup"
@@ -242,7 +242,7 @@ export default ({ users, appointments, mailer, widgetParameters, etablissements 
       })
 
       if (!isOpenForAppointments) {
-        return res.send(notAllowedResponse)
+        return res.status(404).send(notAllowedResponse)
       }
 
       if (!isValidEmail(isOpenForAppointments?.email_rdv)) {
