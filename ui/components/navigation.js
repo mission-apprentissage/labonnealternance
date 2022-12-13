@@ -1,18 +1,9 @@
-import Link from "next/link"
-import { useRouter } from "next/router"
-import { useState } from "react"
-import { Collapse, Nav, Navbar, NavbarBrand, NavbarToggler, NavItem } from "reactstrap"
+import { Box, Flex, Image, Link, useDisclosure, Stack, Show, Container, keyframes, usePrefersReducedMotion } from "@chakra-ui/react"
+import NextLink from "next/link"
 
-const Navigation = ({ currentPage, bgcolor }) => {
-  const router = useRouter()
+import { CloseIcon, HamburgerIcon, LockIcon } from "@chakra-ui/icons"
 
-  const [isOpen, setIsOpen] = useState(false)
-
-  const toggle = () => setIsOpen(!isOpen)
-
-  let main_class_name = "c-navigation "
-  main_class_name += bgcolor ?? "is-filled"
-
+const Navigation = ({ currentPage }) => {
   const getLogo = () => {
     let logo = "logo_LBA_candidat.svg"
 
@@ -34,71 +25,134 @@ const Navigation = ({ currentPage, bgcolor }) => {
     return url
   }
 
+  const { isOpen, onOpen, onClose } = useDisclosure()
+
+  const spin = keyframes`
+     0% {
+          opacity: 0;
+     }
+
+     100% {
+          opacity: 1;
+     }
+  `
+  const prefersReducedMotion = usePrefersReducedMotion()
+  const animation = prefersReducedMotion ? undefined : `${spin} .7s`
+
   return (
-    <div className={main_class_name}>
-      <Navbar expand="lg" className="navbar-light">
-        <div className="container px-0">
-          <NavbarBrand
-            href={getLogoTargetUrl()}
-            onClick={(e) => {
-              e.preventDefault()
-              router.push(getLogoTargetUrl())
-            }}
-          >
-            <img src="/images/marianne.svg#svgView(viewBox(12 0 162 78))" alt="Redirection vers la page d'accueil" width="162" height="78" className="c-marianne-header" />
-            <img src={`/images/${getLogo()}`} alt="Redirection vers la page d'accueil" className="c-navbar-brand-img" width="110" height="76" />
-          </NavbarBrand>
-          <NavbarToggler onClick={toggle} />
-          <Collapse isOpen={isOpen} navbar>
-            <Nav className="c-navbar-links ml-auto" navbar>
-              <NavItem className={`ml-lg-5 mr-2 ${!currentPage ? "selected" : ""}`}>
-                <Link href="/">
-                  <a className="nav-link" aria-label="Accès espace candidat">
-                    <span className="mx-1">Candidat</span>
-                  </a>
-                </Link>
-              </NavItem>
-
-              <div className="c-navigation__separator"></div>
-
-              <NavItem className={`mr-2 ml-lg-2 ${currentPage === "acces-recruteur" ? "selected" : ""}`}>
-                <Link href="/acces-recruteur">
-                  <a className="nav-link" aria-label="Accès espace recruteur">
-                    <span className="mx-1">Recruteur</span>
-                  </a>
-                </Link>
-              </NavItem>
-
-              <div className="c-navigation__separator"></div>
-
-              <NavItem className={`ml-lg-2 ${currentPage === "organisme-de-formation" ? "selected" : ""}`}>
-                <Link href="/organisme-de-formation">
-                  <a className="nav-link" aria-label="Accès espace organisme de formation">
-                    <span className="mx-1">Organisme de formation</span>
-                  </a>
-                </Link>
-              </NavItem>
-
-              {currentPage === "acces-recruteur" || currentPage === "organisme-de-formation" ? (
-                <>
-                  <div className="ml-2 c-navigation__separator"></div>
-                  <NavItem className="ml-lg-2">
-                    <Link href="/espace-pro/authentification">
-                      <a className="nav-link" aria-label="Connexion">
-                        <img src="/images/icons/blue_lock.svg" alt="" />
-                        <span className="mx-2">Connexion</span>
-                      </a>
+    <Box>
+      <Container variant="responsiveContainer">
+        <Flex py={2} direction={["column", "column", "column", "row"]} justify="space-between">
+          <Flex alignItems="center" wrap="wrap">
+            <Flex flexGrow={1}>
+              <Box ml={0} display="flex" alignItems="center">
+                <NextLink passHref href={{ pathname: "/" }}>
+                  <Link aria-label="Retour à l'accueil">
+                    <Image src="/images/marianne.svg#svgView(viewBox(12 0 162 78))" alt="" width="162" height="78" />
+                  </Link>
+                </NextLink>
+                <Show above="md">
+                  <NextLink passHref href={{ pathname: getLogoTargetUrl() }}>
+                    <Link aria-label="Retour">
+                      <Image src={`/images/${getLogo()}`} alt="Redirection vers la page d'accueil" width="150" height="57" ml={4} />
                     </Link>
-                  </NavItem>
-                </>
-              ) : (
-                ""
-              )}
-            </Nav>
-          </Collapse>
-        </div>
-      </Navbar>
-    </div>
+                  </NextLink>
+                </Show>
+              </Box>
+            </Flex>
+            <HamburgerIcon
+              boxSize={6}
+              onClick={isOpen ? onClose : onOpen}
+              display={[isOpen ? "none" : "inline", isOpen ? "none" : "inline", isOpen ? "none" : "inline", "none"]}
+              cursor="pointer"
+            />
+            <CloseIcon
+              boxSize={4}
+              mr={1}
+              onClick={isOpen ? onClose : onOpen}
+              display={[isOpen ? "inline" : "none", isOpen ? "inline" : "none", isOpen ? "inline" : "none", "none"]}
+              cursor="pointer"
+            />
+          </Flex>
+          <Box animation={animation} display={[isOpen ? "block" : "none", isOpen ? "block" : "none", isOpen ? "block" : "none", "block"]}>
+            <Box display={["block", "block", "block", "flex"]} alignItems="center" height="100%">
+              <Stack align="left" direction={["column", "column", "column", "row"]} mb={[2, 2, 2, 0]}>
+                <NextLink passHref href={{ pathname: "/" }}>
+                  <Link aria-label="Accès espace candidat" display="inline-grid">
+                    <Box as="span" ml={[0, 0, 0, 2]} mr="1" color="bluefrance.500" fontSize={14} pl={[1, 1, 1, 3]} pr={3} py={2} bg={!currentPage ? "#00000014" : "none"}>
+                      Candidat
+                    </Box>
+                  </Link>
+                </NextLink>
+                <Box display={["none", "none", "none", "block"]} borderRight="1px solid" borderColor="grey.300" marginTop="10px !important;" marginBottom="10px !important;"></Box>
+                <NextLink passHref href={{ pathname: "/acces-recruteur" }}>
+                  <Link aria-label="Accès espace recruteur" display="inline-grid">
+                    <Box
+                      as="span"
+                      ml={[0, 0, 0, 2]}
+                      mr="1"
+                      color="bluefrance.500"
+                      fontSize={14}
+                      pl={[1, 1, 1, 3]}
+                      pr={3}
+                      py={2}
+                      bg={currentPage === "acces-recruteur" ? "#00000014" : "none"}
+                    >
+                      Recruteur
+                    </Box>
+                  </Link>
+                </NextLink>
+                <Box
+                  display={["none", "none", "none", "block"]}
+                  borderRight="1px solid"
+                  borderColor="grey.300"
+                  my="6"
+                  marginTop="10px !important;"
+                  marginBottom="10px !important;"
+                ></Box>
+                <NextLink passHref href={{ pathname: "/organisme-de-formation" }}>
+                  <Link aria-label="Accès espace organisme de formation" display="inline-grid">
+                    <Box
+                      as="span"
+                      ml={[0, 0, 0, 2]}
+                      mr="1"
+                      color="bluefrance.500"
+                      fontSize={14}
+                      pl={[1, 1, 1, 3]}
+                      pr={3}
+                      py={2}
+                      bg={currentPage === "organisme-de-formation" ? "#00000014" : "none"}
+                    >
+                      Organisme de formation
+                    </Box>
+                  </Link>
+                </NextLink>
+                {currentPage === "acces-recruteur" || currentPage === "organisme-de-formation" ? (
+                  <>
+                    <Box
+                      display={["none", "none", "none", "block"]}
+                      borderRight="1px solid"
+                      borderColor="grey.300"
+                      my="6"
+                      marginTop="10px !important;"
+                      marginBottom="10px !important;"
+                    ></Box>
+                    <Link href="/espace-pro/authentification" pl={[1, 1, 1, 3]} cursor="pointer" display="flex" alignItems="center" alt="Espace pro" isExternal>
+                      <LockIcon color="bluefrance.500" />
+                      <Box as="span" color="bluefrance.500" fontSize={14} pl={[1, 1, 1, 2]} pr={2} py={2}>
+                        Connexion
+                      </Box>
+                    </Link>
+                  </>
+                ) : (
+                  ""
+                )}
+              </Stack>
+            </Box>
+          </Box>
+        </Flex>
+      </Container>
+    </Box>
   )
 }
 
