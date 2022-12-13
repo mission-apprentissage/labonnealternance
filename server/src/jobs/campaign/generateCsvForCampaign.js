@@ -1,35 +1,37 @@
-import got from "got"
-import { asyncForEach } from "../../common/utils/asyncUtils.js"
-import config from "../../config.js"
+import { ConvertedFormation_0 } from "../../common/model/index.js"
 import { runScript } from "../scriptWrapper.js"
 import jeunes from "./jeunes.json" assert { type: "json" }
 
-const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
-
-const getCatalogueFormations = (query = {}, select = {}) =>
-  got(`${config.catalogueUrl}/api/v1/entity/formations`, {
-    method: "POST",
-    json: {
-      query,
-      select,
-      limit: 1000,
-    },
-  }).json()
-
 runScript(async () => {
   const first = jeunes.slice(0, 10)
+  const stat = {
+    noMatch: 0,
+    exactMatch: 0,
+    multiMatch: 0,
+  }
 
-  await asyncForEach(first, async (jeune) => {
-    const formation = await getCatalogueFormations({
-      cfd: jeune.formation_cfd,
-      etablissement_gestionnaire_siret: jeune.etablissement_siret,
-      etablissement_gestionnaire_uai: jeune.uai_etablissement,
-      published: true,
-      catalogue_published: true,
+  await Promise.all(
+    jeunes.map(async (jeune) => {
+      const formation = await ConvertedFormation_0.find({
+        etablissement_formateur_uai: jeune.uai_etablissement,
+        cfd: jeune.formation_cfd,
+        published: true,
+        catalogue_published: true,
+      })
+
+      switch (formation.length) {
+        case 0:
+          stat.noMatch++
+          break
+        case 1:
+          stat.exactMatch++
+          break
+
+        default:
+          stat.multiMatch++
+          break
+      }
     })
-
-    console.log({ jeune: jeune.formation_rncp, siret: jeune.siret_etablissement, catalogue: formation.pagination.total })
-
-    await delay(1000)
-  })
+  )
+  console.log(stat)
 })
