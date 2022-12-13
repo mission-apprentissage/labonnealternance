@@ -2,7 +2,7 @@ const config = {
   local: {
     env: "local",
     urls: [/^"localhost"$/g],
-    baseUrl: "http://localhost:5000",
+    baseUrl: "http://localhost",
   },
   dev: {
     env: "recette",
