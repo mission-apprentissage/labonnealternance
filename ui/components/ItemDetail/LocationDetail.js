@@ -1,10 +1,10 @@
+import { ExternalLinkIcon } from "@chakra-ui/icons"
+import { Box, Flex, Image, Link, Text } from "@chakra-ui/react"
 import { round } from "lodash"
 import React from "react"
-import gotoIcon from "../../public/images/icons/goto.svg"
-import { capitalizeFirstLetter, endsWithNumber } from "../../utils/strutils"
+import { endsWithNumber } from "../../utils/strutils"
 import { getCompanyPathLink, getPathLink } from "../../utils/tools"
 import { string_wrapper as with_str } from "../../utils/wrapper_utils"
-import ExternalLink from "../externalLink"
 
 const LocationDetail = ({ item, isCfa }) => {
   const kind = item?.ideaType
@@ -58,195 +58,171 @@ const LocationDetail = ({ item, isCfa }) => {
 
   return (
     <>
-      {kind === "matcha" && item?.company?.mandataire ? (
-        <div className="c-detail-body c-locationdetail mt-4">
-          <h2 className="c-locationdetail-title mt-2">{getTitle({})}</h2>
+      {kind === "matcha" && item?.company?.mandataire && (
+        <Box pb="0px" mt={6} position="relative" background="white" padding={["1px 12px 50px 12px", "1px 24px 50px 24px", "1px 12px 24px 12px"]} mx={["0", "30px"]}>
+          <Text as="h2" variant="itemDetailH2" mt={2}>
+            {getTitle({})}
+          </Text>
 
-          <div className="c-locationdetail-line mt-1">
-            <span className="c-detail-sizetext">
-              <strong>Taille de l&apos;entreprise :&nbsp;</strong> {companySize}
-            </span>
-          </div>
-          <div className="c-locationdetail-line mt-1">
-            <span className="c-detail-sizetext">
-              <strong>Secteur d&apos;activité :&nbsp;</strong> {item?.nafs[0]?.label}
-            </span>
-          </div>
-          {item?.company?.creationDate && !isNaN(new Date(item.company.creationDate)) ? (
-            <div className="c-locationdetail-line mt-1">
-              <span className="c-detail-sizetext">
-                <strong>Année de création de l&apos;entreprise :&nbsp;</strong> {new Date(item.company.creationDate).getFullYear()}
-              </span>
-            </div>
-          ) : (
-            ""
+          <Box mt={2}>
+            <strong>Taille de l&apos;entreprise :&nbsp;</strong> {companySize}
+          </Box>
+          <Box mt={2}>
+            <strong>Secteur d&apos;activité :&nbsp;</strong> {item?.nafs[0]?.label}
+          </Box>
+          {item?.company?.creationDate && !isNaN(new Date(item.company.creationDate)) && (
+            <Box mt={2}>
+              <strong>Année de création de l&apos;entreprise :&nbsp;</strong> {new Date(item.company.creationDate).getFullYear()}
+            </Box>
           )}
-          <div className="c-locationdetail-address mt-2">{item?.company?.place?.city}</div>
-          {item?.place?.distance ? <div className="c-locationdetail-distance">{`${round(item.place.distance, 1)} km(s) du lieu de recherche`}</div> : ""}
-          <div className="c-locationdetail-line mt-3">
-            <span className="c-locationdetail-imgcontainer">
-              <img className="" src="/images/icons/small_map_point.svg" alt="Adresse" />
-            </span>
-            <span className="c-detail-sizetext">
-              <ExternalLink
-                className={`c-nice-link font-weight-normal gtm${capitalizeFirstLetter(kind)} gtmPathLink`}
-                url={getCompanyPathLink(item)}
-                title="Obtenir l'itinéraire"
-                withPic={<img className="mt-n1 ml-1" src="/images/square_link.svg" alt="Ouverture dans un nouvel onglet" />}
-              />
-            </span>
-          </div>
-        </div>
-      ) : (
-        ""
+
+          <Box mt={3} color="grey.700">
+            {item?.company?.place?.city}
+          </Box>
+          {item?.place?.distance && <Box fontSize="14px" color="grey.600">{`${round(item.place.distance, 1)} km(s) du lieu de recherche`}</Box>}
+
+          <Flex mt={4} alignItems="center" direction="row">
+            <Box width="30px" minWidth="30px" pl="1px" mr={2}>
+              <Image mt="2px" mr={2} src="/images/icons/small_map_point.svg" alt="" />
+            </Box>
+            <Link variant="basicUnderlined" url={getCompanyPathLink(item)}>
+              Obtenir l'itinéraire <ExternalLinkIcon mb="3px" ml="2px" />
+            </Link>
+          </Flex>
+        </Box>
       )}
 
-      <div className="c-detail-body c-locationdetail mt-4">
-        <h2 className="c-locationdetail-title mt-2">{getTitle(item)}</h2>
+      <Box pb="0px" mt={6} position="relative" background="white" padding={["1px 12px 50px 12px", "1px 24px 50px 24px", "1px 12px 24px 12px"]} mx={["0", "30px"]}>
+        <Text as="h2" variant="itemDetailH2" mt={2}>
+          {getTitle(item)}
+        </Text>
 
-        {item?.company?.mandataire ? (
-          <div className="c-locationdetail-address mt-4">Le centre de formation peut vous renseigner sur cette offre d’emploi ainsi que les formations qu’il propose.</div>
-        ) : (
-          ""
+        {item?.company?.mandataire && (
+          <Box color="grey.700" mt={6}>
+            Le centre de formation peut vous renseigner sur cette offre d’emploi ainsi que les formations qu’il propose.
+          </Box>
         )}
 
-        <div className="c-locationdetail-address mt-4">{item?.place?.fullAddress}</div>
+        <Box color="grey.700" mt={6}>
+          {item?.place?.fullAddress}
+        </Box>
 
-        {item?.place?.distance && !item?.company?.mandataire ? (
-          <div className="c-locationdetail-distance">{`${round(item.place.distance, 1)} km(s) du lieu de recherche`}</div>
-        ) : (
-          ""
+        {item?.place?.distance && !item?.company?.mandataire && <Box color="grey.600" fontSize="14px">{`${round(item.place.distance, 1)} km(s) du lieu de recherche`}</Box>}
+
+        <Flex mt={4} alignItems="center" direction="row">
+          <Box width="30px" minWidth="30px" pl="1px" mr={2}>
+            <Image mt="2px" src="/images/icons/small_map_point.svg" alt="" />
+          </Box>
+          <Link variant="basicUnderlined" href={getPathLink(item)}>
+            Obtenir l'itinéraire <ExternalLinkIcon mb="3px" ml="2px" />
+          </Link>
+        </Flex>
+
+        {item?.company?.url && (
+          <Flex alignItems="center" mt={2} direction="row">
+            <Box width="30px" minWidth="30px" mr={2}>
+              <Image mt="2px" src="/images/icons/small_info.svg" alt="" />
+            </Box>
+            <Text as="span">
+              En savoir plus sur
+              <Link ml="2px" isExternal variant="basicUnderlined" href={item?.company?.url}>
+                {item?.company?.url} <ExternalLinkIcon mb="3px" ml="2px" />
+              </Link>
+            </Text>
+          </Flex>
         )}
 
-        <div className="c-locationdetail-line mt-3">
-          <span className="c-locationdetail-imgcontainer">
-            <img className="" src="/images/icons/small_map_point.svg" alt="Adresse" />
-          </span>
-          <span className="c-detail-sizetext">
-            <ExternalLink
-              className={`c-nice-link font-weight-normal gtm${capitalizeFirstLetter(kind)} gtmPathLink`}
-              url={getPathLink(item)}
-              title="Obtenir l'itinéraire"
-              withPic={<img className="mt-n1 ml-1" src="/images/square_link.svg" alt="Ouverture dans un nouvel onglet" />}
-            />
-          </span>
-        </div>
+        {shouldDisplayEmail(item) && (
+          <Flex alignItems="center" mt={2} direction="row">
+            <Box width="30px" minWidth="30px" mr={2}>
+              <Image mt="2px" src="/images/icons/small_email.svg" alt="" />
+            </Box>
+            <Link ml="2px" isExternal variant="basicUnderlined" href={`mailto:${item.contact.email}`}>
+              {item.contact.email}
+            </Link>
+          </Flex>
+        )}
 
-        {item?.company?.url ? (
+        {item?.contact?.phone && (
+          <Flex mt={2} mb={4}>
+            <Box width="30px" pl="2px" minWidth="30px" mr={2}>
+              <Image mt="2px" src="/images/icons/small_phone.svg" alt="" />
+            </Box>
+            <Link ml="2px" isExternal variant="basicUnderlined" href={`tel:${item.contact.phone}`}>
+              {item.contact.phone}
+            </Link>
+          </Flex>
+        )}
+
+        {isCfa && (
+          <Box background="#f6f6f6" borderRadius="8px" mt={6} p={4}>
+            <Flex alignItems="center" pt={1} pb={2}>
+              <Image src="/images/info.svg" alt="" width="24px" height="24px" />
+              <Text as="span" ml={2} fontWeight={700}>
+                Cet établissement est un CFA d&apos;entreprise
+              </Text>
+            </Flex>
+            <Text>
+              La particularité ? Il s&apos;agit d&apos;une formule complète <strong>Emploi + Formation</strong> ! Cette formation vous intéresse ? La marche à suivre diffère selon
+              le CFA d&apos;entreprise concerné :
+            </Text>
+
+            <Box mt={3}>
+              &bull;{" "}
+              <Text as="span" ml={4}>
+                Commencez par vous inscrire à la formation pour accéder ensuite au contrat,
+              </Text>
+            </Box>
+            <Box mt={2}>
+              &bull;{" "}
+              <Text as="span" ml={4}>
+                Ou commencez par postuler à une offre d&apos;emploi pour être ensuite inscrit en formation.
+              </Text>
+            </Box>
+
+            <Text>Prenez contact avec cet établissement ou consultez son site web pour en savoir + !</Text>
+
+            <Box my={2}>
+              Vous vous posez des questions sur votre orientation ou votre recherche d&apos;emploi ?&nbsp;
+              <Link
+                isExternal
+                variant="basicUnderlined"
+                href="https://dinum-beta.didask.com/courses/demonstration/60abc18c075edf000065c987"
+                aria-label="Lien vers des conseils pour préparer son premier contact avec un CFA"
+              >
+                Préparez votre premier contact avec un CFA&nbsp;
+                <ExternalLinkIcon mb="3px" ml="2px" />
+              </Link>
+            </Box>
+          </Box>
+        )}
+
+        {(kind === "matcha" || kind === "lbb" || kind === "lba") && (
           <>
-            <div className="c-locationdetail-line mt-1">
-              <span className="c-locationdetail-imgcontainer">
-                <img className="" src="/images/icons/small_info.svg" alt="A noter" />
-              </span>
-              <span className="c-detail-sizetext">
-                <span className="">En savoir plus sur &nbsp;</span>
-                <ExternalLink className="c-nice-link gtmTrainingLink" url={item.company.url} title={item.company.url} />
-              </span>
-            </div>
-          </>
-        ) : (
-          ""
-        )}
-
-        {shouldDisplayEmail(item) ? (
-          <div className="c-locationdetail-line mt-1">
-            <span className="c-locationdetail-imgcontainer">
-              <img className="" src="/images/icons/small_email.svg" alt="Email" />
-            </span>
-            <span className="c-detail-sizetext">{item.contact.email}</span>
-          </div>
-        ) : (
-          ""
-        )}
-
-        {item?.contact?.phone ? (
-          <>
-            <div className="c-locationdetail-line mt-1 mb-3">
-              <span className="c-locationdetail-imgcontainer c-locationdetail-imgcontainer--smallphone">
-                <img className="" src="/images/icons/small_phone.svg" alt="Téléphone" />
-              </span>
-              <ExternalLink
-                className="c-nice-link"
-                url={`tel:${item.contact.phone}`}
-                title={item.contact.phone}
-                withPic={<img src={gotoIcon} alt={`Lien cliquable vers le numéro ${item.contact.phone}`} />}
-              />
-            </div>
-          </>
-        ) : (
-          ""
-        )}
-
-        {isCfa ? (
-          <>
-            <div className="pb-3">
-              <div className="c-detail-newadvice">
-                <div className="pt-1 mb-2">
-                  <img src="/images/info.svg" alt="Information pratique" width="24" height="24" />
-                  <span className="c-detail-newadvice-title ml-2">Cet établissement est un CFA d&apos;entreprise</span>
-                </div>
-                <p>
-                  La particularité ? Il s&apos;agit d&apos;une formule complète <strong>Emploi + Formation</strong> ! Cette formation vous intéresse ? La marche à suivre diffère
-                  selon le CFA d&apos;entreprise concerné :
-                </p>
-                <ul>
-                  <li>Commencez par vous inscrire à la formation pour accéder ensuite au contrat,</li>
-                  <li>Ou commencez par postuler à une offre d&apos;emploi pour être ensuite inscrit en formation.</li>
-                </ul>
-                <p>Prenez contact avec cet établissement ou consultez son site web pour en savoir + !</p>
-                <p>
-                  Vous vous posez des questions sur votre orientation ou votre recherche d’emploi ?
-                  <span className="ml-1">
-                    <ExternalLink
-                      className="c-nice-link"
-                      url="https://dinum-beta.didask.com/courses/demonstration/60abc18c075edf000065c987"
-                      title="Préparez votre premier contact avec un CFA"
-                      withPic={<img src={gotoIcon} alt="Ouverture dans un nouvel onglet" />}
-                    />
-                  </span>
-                </p>
-              </div>
-            </div>
-          </>
-        ) : (
-          <></>
-        )}
-
-        {kind === "matcha" || kind === "lbb" || kind === "lba" ? (
-          <>
-            <div className="c-locationdetail-line mt-1">
-              <span className="c-locationdetail-imgcontainer">
-                <img className="" src="/images/info.svg" alt="A noter" />
-              </span>
-              <span className="c-detail-sizetext mb-0">
-                En savoir plus sur&nbsp;
-                <ExternalLink
-                  className="c-nice-link gtmGoogleLink"
-                  url={`https://www.google.fr/search?q=${getGoogleSearchParameters()}`}
-                  title={item.company.name}
-                  withPic={<img className="mt-n1 ml-1" src="/images/square_link.svg" alt="Ouverture dans un nouvel onglet" />}
-                />
-              </span>
-            </div>
-            <div className="c-locationdetail-line mt-1 mb-1">
-              <span className="c-locationdetail-imgcontainer"></span>
-              <span className="c-detail-sizetext c-locationdetail-hint">Renseignez-vous sur l&apos;établissement pour préparer votre candidature</span>
-            </div>
-            {!item?.company?.mandataire ? (
-              <div className="c-locationdetail-line mb-1">
-                <span className="c-locationdetail-imgcontainer"></span>
-                <span className="c-detail-sizetext">
-                  <strong>Taille de l&apos;entreprise :&nbsp;</strong> {companySize}
-                </span>
-              </div>
-            ) : (
-              ""
+            <Flex mt={2} mb={4}>
+              <Box width="30px" pl="2px" minWidth="30px" mr={2}>
+                <Image mt="2px" src="/images/info.svg" alt="A noter" />
+              </Box>
+              <Text as="span">
+                En savoir plus sur
+                <Link ml="2px" isExternal variant="basicUnderlined" href={`https://www.google.fr/search?q=${getGoogleSearchParameters()}`}>
+                  {item.company.name} <ExternalLinkIcon mb="3px" ml="2px" />
+                </Link>
+              </Text>
+            </Flex>
+            <Box pl={10}>
+              <Text fontSize="14px" fontStyle="italic" color="grey.500">
+                Renseignez-vous sur l&apos;établissement pour préparer votre candidature
+              </Text>
+            </Box>
+            {!item?.company?.mandataire && (
+              <Box mt={4} mb={1}>
+                <strong>Taille de l&apos;entreprise :&nbsp;</strong> {companySize}
+              </Box>
             )}
           </>
-        ) : (
-          <></>
         )}
-      </div>
+      </Box>
     </>
   )
 }

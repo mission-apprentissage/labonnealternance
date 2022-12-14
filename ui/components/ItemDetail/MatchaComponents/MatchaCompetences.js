@@ -1,3 +1,4 @@
+import { Box, Text } from "@chakra-ui/react"
 import React from "react"
 
 import { Collapse } from "reactstrap"
@@ -8,13 +9,16 @@ const MatchaCompetences = ({ job }) => {
 
   const getText = () => {
     const res = (
-      <ul>
+      <Box pl="12px" mt={4}>
         {job.job.romeDetails.competencesDeBase.map((competence) => (
-          <li key={competence.code} className="mt-2">
-            {competence.libelle}
-          </li>
+          <Box key={competence.code} mt={2}>
+            &bull;
+            <Text as="span" ml={3}>
+              {competence.libelle}
+            </Text>
+          </Box>
         ))}
-      </ul>
+      </Box>
     )
 
     return res

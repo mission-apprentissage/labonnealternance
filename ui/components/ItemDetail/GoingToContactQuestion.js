@@ -4,6 +4,7 @@ import { useSessionStorage } from "../../utils/useSessionStorage"
 import { getItemId } from "../../utils/getItemId"
 import { SendPlausibleEvent } from "../../utils/plausible"
 import { capitalizeFirstLetter } from "../../utils/strutils"
+import { Box } from "@chakra-ui/react"
 
 const GoingToContactQuestion = ({ kind, uniqId, item }) => {
   const [thanks, setThanks] = useSessionStorage(uniqId, false)
@@ -23,7 +24,16 @@ const GoingToContactQuestion = ({ kind, uniqId, item }) => {
   const typeForEventTracking = getType()
 
   return (
-    <div className="c-detail-body c-goingto mt-4" data-testid="GoingToContactQuestion">
+    <Box
+      className="c-goingto mt-4"
+      data-testid="GoingToContactQuestion"
+      pb="0px"
+      mt={6}
+      position="relative"
+      background="white"
+      padding={["1px 12px 50px 12px", "1px 24px 50px 24px", "1px 12px 24px 12px"]}
+      mx={["0", "30px"]}
+    >
       <div className="c-goingto-title">Allez-vous contacter {workplace} ?</div>
       <div className="">
         {thanks ? (
@@ -63,7 +73,7 @@ const GoingToContactQuestion = ({ kind, uniqId, item }) => {
           </>
         )}
       </div>
-    </div>
+    </Box>
   )
 }
 
