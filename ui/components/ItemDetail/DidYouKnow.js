@@ -19,7 +19,7 @@ const DidYouKnow = () => {
       <Text pb={4}>
         <Text>Un employeur vous a proposé un entretien ?</Text>
         <Text>
-          <Link isExternal fontWeight={700} href="https://dinum-beta.didask.com/courses/demonstration/60d1adbb877dae00003f0eac" variant="basicUnderlined">
+          <Link isExternal href="https://dinum-beta.didask.com/courses/demonstration/60d1adbb877dae00003f0eac" variant="basicUnderlined">
             On vous donne des conseils pour vous aider à le préparer. <ExternalLinkIcon mb="3px" ml="2px" />
           </Link>
         </Text>
