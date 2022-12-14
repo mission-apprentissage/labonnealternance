@@ -3,7 +3,6 @@ import React from "react"
 import { useSessionStorage } from "../../utils/useSessionStorage"
 import { getItemId } from "../../utils/getItemId"
 import { SendPlausibleEvent } from "../../utils/plausible"
-import { capitalizeFirstLetter } from "../../utils/strutils"
 import { Box, Button, Flex } from "@chakra-ui/react"
 
 const GoingToContactQuestion = ({ kind, uniqId, item }) => {
