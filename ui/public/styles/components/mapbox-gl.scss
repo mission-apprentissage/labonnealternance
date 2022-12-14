@@ -24,7 +24,7 @@ canvas.mapboxgl-canvas:focus {
 }
 
 .mapboxgl-popup-content {
-  border-radius: 11px;
+  border-radius: 11px !important;
   font-size: 14px;
   line-height: 20px;
   color: #4a4a4a;
@@ -87,8 +87,14 @@ canvas.mapboxgl-canvas:focus {
 }
 
 .mapboxgl-popup-close-button {
-  font-size: 20px;
+  font-size: 24px;
+  top: 5px !important;
+  right: 8px !important;
   color: #383838;
+  width: 20px;
+}
+.mapboxgl-popup-close-button:hover {
+  background: none !important;
 }
 
 .mapboxPopupFormation .mapboxPopupBg {
