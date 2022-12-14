@@ -7,7 +7,6 @@ import { defaultTo } from "lodash"
 import { amongst } from "../../utils/arrayutils"
 import { isCfaEntreprise } from "../../services/cfaEntreprise"
 import { filterLayers } from "../../utils/mapTools"
-import ExternalLink from "../externalLink"
 import { SearchResultContext } from "../../context/SearchResultContextProvider"
 
 import LocationDetail from "./LocationDetail"
@@ -23,9 +22,9 @@ import getTags from "./ItemDetailServices/getTags"
 import { buttonJePostuleShouldBeDisplayed, buttonPRDVShouldBeDisplayed, buildPrdvButton, getNavigationButtons, BuildSwipe } from "./ItemDetailServices/getButtons"
 
 import GoingToContactQuestion, { getGoingtoId } from "./GoingToContactQuestion"
-import gotoIcon from "../../public/images/icons/goto.svg"
 import { SendPlausibleEvent } from "../../utils/plausible"
-import { Box, Divider, Flex, Text } from "@chakra-ui/react"
+import { Box, Divider, Flex, Link, Text } from "@chakra-ui/react"
+import { ExternalLinkIcon } from "@chakra-ui/icons"
 
 const ItemDetail = ({ selectedItem, handleClose, handleSelectItem, activeFilter }) => {
   const kind = selectedItem?.ideaType
@@ -134,26 +133,26 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem, activeFilter 
           {!isCollapsedHeader && getSoustitre({ selectedItem, kind })}
 
           {buttonJePostuleShouldBeDisplayed(kind, selectedItem) && (
-            <div className="c-detail-description-me">
-              <div className="c-detail-pelink my-3">
-                <a className="btn btn-blue gtmContactPE" onClick={postuleSurPoleEmploi} target="poleemploi" href={selectedItem.url}>
-                  Je postule sur Pôle emploi
-                </a>
-              </div>
-            </div>
+            <Box my={4}>
+              <Link variant="postuler" href={selectedItem.url} target="poleemploi" onClick={postuleSurPoleEmploi}>
+                Je postule sur Pôle emploi
+              </Link>
+            </Box>
           )}
 
           {isCandidatureSpontanee(selectedItem) && (
             <>
-              <Divider my="0" />
+              <Divider my={2} />
               <CandidatureSpontanee item={selectedItem} />
             </>
           )}
 
           {kind === "formation" && buttonPRDVShouldBeDisplayed(selectedItem) && (
             <>
-              <hr className={"c-detail-header-separator c-detail-header-separator--upperformation"} />
-              <div className="c-detail-prdv mt-3 pb-4 w-75">{buildPrdvButton(selectedItem)}</div>
+              <Divider my={2} />
+              <Box mt={4} pb={6}>
+                {buildPrdvButton(selectedItem)}
+              </Box>
             </>
           )}
         </Box>
@@ -165,73 +164,64 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem, activeFilter 
 
       {kind === "formation" ? <TrainingDetail training={selectedItem} hasAlsoJob={hasAlsoJob} /> : ""}
 
-      {amongst(kind, ["lbb", "lba"]) ? (
-        <div className="c-needHelp">
-          <div className="c-needHelp-title">Besoin d&apos;aide ?</div>
-          <div className="c-needHelp-text">Découvrez les modules de formation de La bonne alternance. Des modules de quelques minutes pour bien préparer vos candidatures.</div>
-          <ul className="c-needHelp-listLinks">
-            <li>
-              <span className="c-detail-traininglink ml-1">
-                <ExternalLink
-                  className="gtmDidask1 c-nice-link"
-                  url="https://dinum-beta.didask.com/courses/demonstration/60d21bf5be76560000ae916e"
-                  title="Chercher un employeur"
-                  withPic={<img src={gotoIcon} alt="Ouverture dans un nouvel onglet" />}
-                />
-              </span>
-            </li>
-            <li>
-              <span className="c-detail-traininglink ml-1">
-                <ExternalLink
-                  className="gtmDidask2 c-nice-link"
-                  url="https://dinum-beta.didask.com/courses/demonstration/60d1adbb877dae00003f0eac"
-                  title="Préparer un entretien avec un employeur"
-                  withPic={<img src={gotoIcon} alt="Ouverture dans un nouvel onglet" />}
-                />
-              </span>
-            </li>
-          </ul>
-        </div>
-      ) : (
-        ""
+      {amongst(kind, ["lbb", "lba"]) && (
+        <Box bg="#f5f5fe" border="1px solid #e3e3fd" mx={8} mb={8} px={6} py={4}>
+          <Box color="bluefrance.500" fontSize="22px" fontWeight={700}>
+            Besoin d&apos;aide ?
+          </Box>
+          <Box color="grey.700">Découvrez les modules de formation de La bonne alternance. Des modules de quelques minutes pour bien préparer vos candidatures.</Box>
+          <Box pl={6}>
+            <Box pt={4}>
+              &bull;
+              <Link
+                sx={{
+                  textDecoration: "underline",
+                  _hover: {
+                    textDecoration: "underline",
+                  },
+                }}
+                ml={4}
+                isExternal
+                href="https://dinum-beta.didask.com/courses/demonstration/60d21bf5be76560000ae916e"
+              >
+                Chercher un employeur <ExternalLinkIcon mb="3px" mx="2px" />
+              </Link>
+            </Box>
+            <Box pt={4}>
+              &bull;
+              <Link
+                sx={{
+                  textDecoration: "underline",
+                  _hover: {
+                    textDecoration: "underline",
+                  },
+                }}
+                ml={4}
+                isExternal
+                href="https://dinum-beta.didask.com/courses/demonstration/60d1adbb877dae00003f0eac"
+              >
+                Préparer un entretien avec un employeur <ExternalLinkIcon mb="3px" mx="2px" />
+              </Link>
+            </Box>
+          </Box>
+        </Box>
       )}
 
       <LocationDetail item={selectedItem} isCfa={isCfa}></LocationDetail>
 
-      {kind === "peJob" ? (
+      {kind === "peJob" && (
         <>
-          <DidYouKnow item={selectedItem}></DidYouKnow>
-
-          {buttonJePostuleShouldBeDisplayed(kind, selectedItem) ? (
-            ""
-          ) : (
+          <DidYouKnow />
+          {!buttonJePostuleShouldBeDisplayed(kind, selectedItem) && (
             <GoingToContactQuestion kind={kind} uniqId={getGoingtoId(kind, selectedItem)} key={getGoingtoId(kind, selectedItem)} item={selectedItem} />
           )}
         </>
-      ) : (
-        <></>
       )}
-      {kind === "formation" ? (
-        <>
-          {buttonPRDVShouldBeDisplayed(selectedItem) ? (
-            ""
-          ) : (
-            <GoingToContactQuestion kind={kind} uniqId={getGoingtoId(kind, selectedItem)} key={getGoingtoId(kind, selectedItem)} item={selectedItem} />
-          )}
-        </>
-      ) : (
-        <></>
+      {kind === "formation" && !buttonPRDVShouldBeDisplayed(selectedItem) && (
+        <GoingToContactQuestion kind={kind} uniqId={getGoingtoId(kind, selectedItem)} key={getGoingtoId(kind, selectedItem)} item={selectedItem} />
       )}
-      {kind === "lbb" || kind === "lba" ? (
-        <>
-          {isCandidatureSpontanee(selectedItem) ? (
-            ""
-          ) : (
-            <GoingToContactQuestion kind={kind} uniqId={getGoingtoId(kind, selectedItem)} key={getGoingtoId(kind, selectedItem)} item={selectedItem} />
-          )}
-        </>
-      ) : (
-        <></>
+      {(kind === "lbb" || kind === "lba") && !isCandidatureSpontanee(selectedItem) && (
+        <GoingToContactQuestion kind={kind} uniqId={getGoingtoId(kind, selectedItem)} key={getGoingtoId(kind, selectedItem)} item={selectedItem} />
       )}
     </Box>
   )

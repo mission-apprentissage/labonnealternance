@@ -52,6 +52,12 @@ const Text = {
       marginBottom: "0.5rem",
     },
 
+    itemDetailH2: {
+      fontSize: "18px",
+      fontWeight: 700,
+      color: "bluefrance.500",
+    },
+
     tag: {
       fontSize: "12px",
       fontWeight: 700,

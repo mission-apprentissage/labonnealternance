@@ -2,7 +2,6 @@ import React, { useContext, useEffect, useState } from "react"
 import { Spinner } from "reactstrap"
 import { DisplayContext } from "../../context/DisplayContextProvider"
 import { SearchResultContext } from "../../context/SearchResultContextProvider"
-import gotoIcon from "../../public/images/icons/goto.svg"
 import academicCapIcon from "../../public/images/icons/training-academic-cap.svg"
 import questionmarkIcon from "../../public/images/icons/training-questionmark.svg"
 import sablierIcon from "../../public/images/icons/training-sablier.svg"
@@ -13,7 +12,8 @@ import fetchTrainingDetails from "../../services/fetchTrainingDetails"
 import sendTrainingOpenedEventToCatalogue from "../../services/sendTrainingOpenedEventToCatalogue"
 import { SendPlausibleEvent, SendTrackEvent } from "../../utils/plausible"
 import { formatDate } from "../../utils/strutils"
-import { Flex } from "@chakra-ui/react"
+import { Box, Flex, Image, Link, Text } from "@chakra-ui/react"
+import { ExternalLinkIcon } from "@chakra-ui/icons"
 
 const TrainingDetail = ({ training, hasAlsoJob }) => {
   const [loading, setLoading] = useState(true)
@@ -107,42 +107,41 @@ const TrainingDetail = ({ training, hasAlsoJob }) => {
   }
 
   return (
-    <div className="c-detail-body mt-4">
+    <Box pb="0px" mt={6} position="relative" background="white" padding={["1px 12px 50px 12px", "1px 24px 50px 24px", "1px 12px 24px 12px"]} mx={["0", "30px"]}>
       {getLoading()}
       {getTrainingDetails(training.training)}
-      <div className="c-detail-newadvice mt-4 pl-4">
+      <Box background="#f6f6f6" borderRadius="8px" mt={8} pl={8} py="10px" pr="10px">
         <Flex alignItems="center" pt={1} pb={2}>
-          <img src={questionmarkIcon} alt="" />
-          <span className="c-detail-newadvice-title ml-2">{training.title ? training.title : training.longTitle}</span>
+          <Image src={questionmarkIcon} alt="" />
+          <Text as="span" ml={2} fontWeight={700}>
+            {training.title ? training.title : training.longTitle}
+          </Text>
         </Flex>
-        {training.onisepUrl ? (
-          <div>
-            <span>Descriptif du {training.title ? training.title : training.longTitle} sur&nbsp;</span>
-            <span className="c-detail-traininglink">
-              <a href={training.onisepUrl} target="_blank" rel="noopener noreferrer" className="c-nice-link">
+        {training.onisepUrl && (
+          <Box>
+            <Text as="span">Descriptif du {training.title ? training.title : training.longTitle} sur&nbsp;</Text>
+            <Text as="span">
+              <Link variant="basicUnderlined" href={training.onisepUrl} isExternal>
                 le site Onisep&nbsp;
-                <img src={gotoIcon} alt="Ouverture dans un nouvel onglet" />
-              </a>
-            </span>
-          </div>
-        ) : (
-          ""
+                <ExternalLinkIcon mb="3px" ml="2px" />
+              </Link>
+            </Text>
+          </Box>
         )}
-        <div className="mt-2 mb-2">
+        <Box my={2}>
           Vous vous posez des questions sur votre orientation ou votre recherche d&apos;emploi ?&nbsp;
-          <a
+          <Link
+            isExternal
+            variant="basicUnderlined"
             href="https://dinum-beta.didask.com/courses/demonstration/60abc18c075edf000065c987"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="c-nice-link"
             aria-label="Lien vers des conseils pour préparer son premier contact avec un CFA"
           >
             Préparez votre premier contact avec un CFA&nbsp;
-            <img src={gotoIcon} alt="Ouverture dans un nouvel onglet" />
-          </a>
-        </div>
-      </div>
-    </div>
+            <ExternalLinkIcon mb="3px" ml="2px" />
+          </Link>
+        </Box>
+      </Box>
+    </Box>
   )
 }
 

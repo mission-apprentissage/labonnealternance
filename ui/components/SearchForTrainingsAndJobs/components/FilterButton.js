@@ -25,18 +25,21 @@ const FilterButton = ({ type, count, isActive, handleFilterButtonClicked }) => {
     width: "fit-content",
     fontSize: "14px",
     outline: "none",
-    border: "none",
+    border: "2px solid transparent",
     marginRight: "5px",
-    py: "0.3rem",
+    height: "auto",
+    paddingY: "0.3rem",
     borderRadius: "40px",
     whiteSpace: "pre-wrap",
     _hover: {
-      boxShadow: "0 0 0 2px primary",
       borderRadius: "15px",
+      border: "2px solid",
+      borderColor: "primary ",
     },
     _focus: {
-      boxShadow: "0 0 0 2px primary",
       borderRadius: "15px",
+      border: "2px solid",
+      borderColor: "primary",
     },
   }
 

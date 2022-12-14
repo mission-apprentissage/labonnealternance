@@ -1,7 +1,8 @@
-import ExternalLink from "../../../components/externalLink"
 import React from "react"
 
 import { Collapse } from "reactstrap"
+import { Box, Link } from "@chakra-ui/react"
+import { ExternalLinkIcon } from "@chakra-ui/icons"
 
 const CandidatureSpontaneeExplanation = (props) => {
   // Collapse Open state
@@ -21,49 +22,41 @@ const CandidatureSpontaneeExplanation = (props) => {
     let res = ""
     if (props.about == "what") {
       res = (
-        <p>
+        <Box pl="12px" mt={4}>
           L&apos;entreprise n&apos;a pas déposé d&apos;offre d&apos;emploi, vous pouvez tout de même lui envoyer votre CV pour lui indiquer que vous seriez très intéressé⸱e pour
           intégrer son équipe dans le cadre de votre apprentissage.
-        </p>
+        </Box>
       )
     } else if (props.about == "how") {
       res = (
         <>
-          <p className="c-detail-lbb-paragraph">Adaptez votre lettre de motivation à l&apos;entreprise aux informations recueillies : Activité, actualités et valeurs</p>
-          <p className="c-detail-lbb-paragraph">
+          <Box pl="12px" mt={4}>
+            Adaptez votre lettre de motivation à l&apos;entreprise aux informations recueillies : Activité, actualités et valeurs
+            <br />
+            <br />
             Mettez en valeur vos qualités en lien avec le métier recherché et indiquez pourquoi vous souhaitez réaliser votre alternance dans cette entreprise en particulier.
             <br />
             <br />
             Besoin d&apos;aide pour concevoir votre CV ? Il existe plusieurs outils gratuits :
-            <br />
-            <br />
-            <ul className="c-detail-lbb-minilist">
-              <li>
-                <ExternalLink
-                  className="gtmCVLink gtmClicnjob c-nice-link"
-                  url="https://cv.clicnjob.fr/"
-                  title="https://cv.clicnjob.fr/"
-                  withPic={<img src="../../images/icons/goto.svg" alt="Lien" />}
-                />
-              </li>
-              <li>
-                <ExternalLink
-                  className="gtmCVLink gtmCvdesigner c-nice-link"
-                  url="https://cvdesignr.com/fr"
-                  title="https://cvdesignr.com/fr"
-                  withPic={<img src="../../images/icons/goto.svg" alt="Lien" />}
-                />
-              </li>
-              <li>
-                <ExternalLink
-                  className="gtmCVLink gtmCanva c-nice-link"
-                  url="https://www.canva.com/fr_fr/creer/cv/"
-                  title="https://www.canva.com/fr_fr/creer/cv/"
-                  withPic={<img src="../../images/icons/goto.svg" alt="Lien" />}
-                />
-              </li>
-            </ul>
-          </p>
+            <Box mt={3}>
+              &bull;
+              <Link href="https://cv.clicnjob.fr/" ml={3} isExternal variant="basicUnderlined">
+                https://cv.clicnjob.fr/ <ExternalLinkIcon ml="2px" mb="3px" />
+              </Link>
+            </Box>
+            <Box mt={2}>
+              &bull;
+              <Link href="https://cvdesignr.com/fr" ml={3} isExternal variant="basicUnderlined">
+                https://cvdesignr.com/fr <ExternalLinkIcon ml="2px" mb="3px" />
+              </Link>
+            </Box>
+            <Box mt={2}>
+              &bull;
+              <Link href="https://www.canva.com/fr_fr/creer/cv/" ml={3} isExternal variant="basicUnderlined">
+                https://www.canva.com/fr_fr/creer/cv/ <ExternalLinkIcon ml="2px" mb="3px" />
+              </Link>
+            </Box>
+          </Box>
         </>
       )
     }
