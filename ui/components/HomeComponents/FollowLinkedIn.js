@@ -1,6 +1,6 @@
 import React from "react"
 
-import { Box, Text, Link, Image, Grid, GridItem } from "@chakra-ui/react"
+import { Text, Link, Image, Grid, GridItem } from "@chakra-ui/react"
 
 const FollowLinkedIn = () => {
   return (
@@ -15,7 +15,7 @@ const FollowLinkedIn = () => {
       </GridItem>
       <GridItem mt="4" colSpan={{ base: 1, lg: 3 }} display="flex" justifyContent="center" alignItems="center">
         <Link
-          url="https://www.linkedin.com/company/mission-apprentissage"
+          href="https://www.linkedin.com/company/mission-apprentissage"
           aria-label="Accès à la page Linkedin de la mission interministérielle pour l’apprentissage et les trajectoires professionnelles"
           bg="bluefrance.500"
           color="white"
@@ -24,6 +24,7 @@ const FollowLinkedIn = () => {
           justifyContent="center"
           py={4}
           fontSize={18}
+          isExternal
           _hover={{ color: "white", textDecoration: "underline" }}
         >
           Voir notre page &nbsp;
