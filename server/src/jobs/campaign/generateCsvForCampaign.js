@@ -21,14 +21,14 @@ runScript(async () => {
             etablissement_gestionnaire_siret: jeune.siret_etablissement,
           },
         ],
-        $or: [
-          {
-            etablissement_formateur_uai: jeune.uai_etablissement,
-          },
-          {
-            etablissement_gestionnaire_uai: jeune.uai_etablissement,
-          },
-        ],
+        // $or: [
+        //   {
+        //     etablissement_formateur_uai: jeune.uai_etablissement,
+        //   },
+        //   {
+        //     etablissement_gestionnaire_uai: jeune.uai_etablissement,
+        //   },
+        // ],
         cfd: jeune.formation_cfd,
         tags: { $in: ["2022"] },
         published: true,
