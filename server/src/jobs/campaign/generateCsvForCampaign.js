@@ -1,85 +1,70 @@
+import __dirname from "../../common/dirname.js"
 import { ConvertedFormation_0 } from "../../common/model/index.js"
+import { asyncForEach } from "../../common/utils/asyncUtils.js"
+import { createXLSXFile } from "../../common/utils/fileUtils.js"
 import { runScript } from "../scriptWrapper.js"
 import jeunes from "./jeunes.json" assert { type: "json" }
 
 runScript(async () => {
-  const first = jeunes.slice(0, 2)
-  const stat = {
-    noMatch: 0,
-    exactMatch: 0,
-    multiMatch: 0,
-  }
+  const buffer = []
 
-  await Promise.all(
-    first.map(async (jeune) => {
-      let formation = []
+  await asyncForEach(jeunes, async (jeune) => {
+    let formation = []
+    formation = await ConvertedFormation_0.find({
+      $or: [
+        {
+          etablissement_formateur_siret: jeune.siret_etablissement,
+        },
+        {
+          etablissement_gestionnaire_siret: jeune.siret_etablissement,
+        },
+      ],
+
+      cfd: jeune.formation_cfd,
+      tags: { $in: ["2022"] },
+      published: true,
+      catalogue_published: true,
+    })
+
+    if (!formation.length) {
       formation = await ConvertedFormation_0.find({
         $or: [
           {
-            etablissement_formateur_siret: jeune.siret_etablissement,
+            etablissement_formateur_uai: jeune.uai_etablissement,
           },
           {
-            etablissement_gestionnaire_siret: jeune.siret_etablissement,
+            etablissement_gestionnaire_uai: jeune.uai_etablissement,
           },
         ],
-        // $or: [
-        //   {
-        //     etablissement_formateur_uai: jeune.uai_etablissement,
-        //   },
-        //   {
-        //     etablissement_gestionnaire_uai: jeune.uai_etablissement,
-        //   },
-        // ],
         cfd: jeune.formation_cfd,
         tags: { $in: ["2022"] },
         published: true,
         catalogue_published: true,
       })
+    }
 
-      if (!formation.length) {
-        formation = await ConvertedFormation_0.find({
-          // $or: [
-          //   {
-          //     etablissement_formateur_siret: jeune.siret_etablissement,
-          //   },
-          //   {
-          //     etablissement_gestionnaire_siret: jeune.siret_etablissement,
-          //   },
-          // ],
-          $or: [
-            {
-              etablissement_formateur_uai: jeune.uai_etablissement,
-            },
-            {
-              etablissement_gestionnaire_uai: jeune.uai_etablissement,
-            },
-          ],
-          cfd: jeune.formation_cfd,
-          tags: { $in: ["2022"] },
-          published: true,
-          catalogue_published: true,
-        })
+    if (formation.length === 1) {
+      const x = formation[0]
+
+      if (!x.rome_codes.length || x.lieu_formation_geo_coordonnees === "null" || x.lieu_formation_geo_coordonnees == undefined) {
+        return
       }
 
-      const romes = formation.rome_codes.toString()
+      const romes = x.rome_codes.toString()
+      const [lat, long] = x.lieu_formation_geo_coordonnees.split(",")
+      const url = `https://labonnealternance.apprentissage.beta.gouv.fr/recherche-emploi?&display=list&romes=${romes}&radius=60&lat=${lat}&lon=${long}8&utm_source=campagne-mna&utm_medium=email&utm_campaign=jeunessanscontrat1222`
 
-      formation.url = `https://labonnealternance.apprentissage.beta.gouv.fr/recherche-emploi?&display=list&romes=${romes}&radius=100&lat=${"coucou"}&lon=${"coucou"}8&utm_source=campagne-mna&utm_medium=email&utm_campaign=jeunessanscontrat1222`
+      buffer.push({
+        email: jeune.email_contact,
+        lien: url,
+        prenom: jeune.prenom_apprenant,
+        libelle_formation: jeune.libelle_long_formation,
+        siret: jeune.siret_etablissement,
+      })
+    }
+  })
 
-      console.log({ jeune: jeune.formation_cfd, siret: jeune.siret_etablissement, catalogue: formation[0].rome_codes })
+  const filePath = __dirname(import.meta.url)
 
-      switch (formation.length) {
-        case 0:
-          stat.noMatch++
-          break
-        case 1:
-          stat.exactMatch++
-          break
-
-        default:
-          stat.multiMatch++
-          break
-      }
-    })
-  )
-  console.log(stat)
+  createXLSXFile(buffer, `${filePath}/jeunes.xlsx`)
 })
