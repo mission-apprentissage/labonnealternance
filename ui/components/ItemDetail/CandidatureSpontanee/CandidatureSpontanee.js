@@ -35,6 +35,7 @@ const CandidatureSpontanee = (props) => {
 
   useEffect(() => {
     onClose()
+    setSendingState("not_sent")
 
     // HACK HERE : reapply setApplied to currentUniqId to re-detect
     // if user already applied each time the user swap to another item.
