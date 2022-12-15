@@ -23,7 +23,7 @@ import { buttonJePostuleShouldBeDisplayed, buttonPRDVShouldBeDisplayed, buildPrd
 
 import GoingToContactQuestion, { getGoingtoId } from "./GoingToContactQuestion"
 import { SendPlausibleEvent } from "../../utils/plausible"
-import { Box, Divider, Flex, Link, Text } from "@chakra-ui/react"
+import { Alert, Box, Divider, Flex, Link, Text } from "@chakra-ui/react"
 import { ExternalLinkIcon } from "@chakra-ui/icons"
 
 const ItemDetail = ({ selectedItem, handleClose, handleSelectItem, activeFilter }) => {
@@ -143,7 +143,8 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem, activeFilter 
           {isCandidatureSpontanee(selectedItem) && (
             <>
               <Divider my={2} />
-              <CandidatureSpontanee item={selectedItem} />
+              <Alert status="error">Fonctionnalité de candidature momentanément indisponible</Alert>
+              {/*<CandidatureSpontanee item={selectedItem} />*/}
             </>
           )}
 
