@@ -101,7 +101,7 @@ const nextConfig = withImages({
           },
           {
             key: "Content-Security-Policy",
-            value: inline(contentSecurityPolicy + " frame-ancestors 'none';"),
+            value: inline(contentSecurityPolicy),
           },
           {
             key: "Referrer-Policy",
