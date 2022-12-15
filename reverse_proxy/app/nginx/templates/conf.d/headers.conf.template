@@ -2,6 +2,5 @@ server_tokens off;
 more_clear_headers Server;
 more_clear_headers "X-Powered-By";
 add_header Strict-Transport-Security "max-age=31536000; includeSubdomains" always;
-add_header Content-Security-Policy "frame-ancestors 'https://labonnealternance.apprentissage.beta.gouv.fr' 'https://labonnealternance-recette.apprentissage.beta.gouv.fr' 'https://www.akto.fr' 'https://www.opco-atlas.fr' 'https://www.opco2i.fr' 'https://www.ocapiat.fr';";
 add_header X-Content-Type-Options "nosniff" always;
 add_header Referrer-Policy "no-referrer-when-downgrade";
