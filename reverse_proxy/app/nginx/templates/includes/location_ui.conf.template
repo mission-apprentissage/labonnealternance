@@ -12,7 +12,6 @@ location / {
     set $CSP "connect-src 'self' https://*.ingest.sentry.io;base-uri;";
     set $CSP "block-all-mixed-content;";
     set $CSP "font-src 'self' https: data:;";
-    set $CSP "frame-ancestors 'self';";
     set $CSP "img-src 'self' data:;";
     set $CSP "object-src 'none';";
     set $CSP "script-src 'self' 'sha256-yt+SNVxRkIi6H6yb7ndFuZM1esMX9esg3UpRHaTsyVk=';";# create-react-app iframe error
