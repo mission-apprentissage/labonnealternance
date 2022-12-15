@@ -37,17 +37,18 @@ const contentSecurityPolicy = `
               https://api.mapbox.com 
               https://events.mapbox.com 
               https://raw.githubusercontent.com 
-              https://privacy.trustcommander.net
-              https://privacy.commander1.com
-              https://stats.g.doubleclick.net
-              https://*.hotjar.com
-              wss://*.hotjar.com
-              wss://client.relay.crisp.chat
-              https://*.hotjar.io
-              https://www.google-analytics.com
-              https://in.hotjar.com
+              https://privacy.trustcommander.net 
+              https://privacy.commander1.com 
+              https://stats.g.doubleclick.net 
+              https://*.hotjar.com 
+              wss://*.hotjar.com 
+              wss://client.relay.crisp.chat 
+              https://*.hotjar.io 
+              https://www.google-analytics.com 
+              https://in.hotjar.com 
               https://plausible.io 
-              http://localhost:5000; 
+              http://localhost:5000 
+              https://*.ingest.sentry.io;base-uri;
   img-src 'self' 
               data: 
               blob:
@@ -101,7 +102,7 @@ const nextConfig = withImages({
           },
           {
             key: "Content-Security-Policy",
-            value: inline(contentSecurityPolicy + " frame-ancestors 'akto.fr' 'opco-atlas.fr' 'ocapiat.fr' 'opco2i.fr';"),
+            value: inline(contentSecurityPolicy),
           },
           {
             key: "Referrer-Policy",
