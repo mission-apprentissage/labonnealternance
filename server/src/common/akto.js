@@ -22,9 +22,9 @@ const getToken = async (token = {}) => {
     const response = await axios.post(
       "https://login.microsoftonline.com/0285c9cb-dd17-4c1e-9621-c83e9204ad68/oauth2/v2.0/token",
       querystring.stringify({
-        grant_type: config.akto.grant_type,
-        client_id: config.akto.client_id,
-        client_secret: config.akto.client_secret,
+        grant_type: config.akto.grantType,
+        client_id: config.akto.clientId,
+        client_secret: config.akto.clientSecret,
         scope: config.akto.scope,
       }),
       {

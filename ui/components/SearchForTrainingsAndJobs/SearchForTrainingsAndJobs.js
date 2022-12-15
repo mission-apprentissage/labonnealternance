@@ -123,21 +123,25 @@ const SearchForTrainingsAndJobs = () => {
   }
 
   const findItem = ({ itemId, type, jobs, trainings }) => {
-    let item
-
-    if (type === "training") {
-      item = trainings.find((el) => el.id === itemId)
-    } else if (type === "peJob") {
-      item = jobs.peJobs.find((el) => el.job.id === itemId)
-    } else if (type === "lba") {
-      item = jobs.lbaCompanies.find((el) => el.company.siret === itemId)
-    } else if (type === "lbb") {
-      item = jobs.lbbCompanies.find((el) => el.company.siret === itemId)
-    } else if (type === "matcha") {
-      item = jobs.matchas.find((el) => el.job.id === itemId)
+    switch (type) {
+      case "training": {
+        return trainings?.find((el) => el.id === itemId)
+      }
+      case "peJob": {
+        return jobs?.peJobs?.find((el) => el.job.id === itemId)
+      }
+      case "lba": {
+        return jobs?.lbaCompanies?.find((el) => el.company.siret === itemId)
+      }
+      case "lbb": {
+        return jobs?.lbbCompanies?.find((el) => el.company.siret === itemId)
+      }
+      case "matcha": {
+        return jobs?.matchas?.find((el) => el.job.id === itemId)
+      }
+      default:
+        return
     }
-
-    return item
   }
 
   const flyToCenter = (values) => {

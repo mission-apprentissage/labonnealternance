@@ -1,4 +1,4 @@
-ARG DOCTRINA_ENV=production
+ARG LBA_ENV=production
 
 # Install packages
 FROM node:18-alpine AS deps
@@ -33,4 +33,4 @@ COPY . .
 EXPOSE 5000
 CMD ["yarn", "dev"]
 
-FROM server-${DOCTRINA_ENV} as final
+FROM server-${LBA_ENV} as final

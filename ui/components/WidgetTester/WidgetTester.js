@@ -4,7 +4,7 @@ import { Button, Col, Container, Row } from "reactstrap"
 import { fetchAddresses } from "../../services/baseAdresse"
 import domainChanged from "../../services/domainChanged"
 import { AutoCompleteField, autoCompleteToStringFunction, compareAutoCompleteValues } from "../AutoCompleteField/AutoCompleteField"
-import { RadioButton } from "../RadioButton"
+import RadioButton from "../RadioButton"
 
 const WidgetTester = () => {
   const [locationRadius, setLocationRadius] = useState(0)

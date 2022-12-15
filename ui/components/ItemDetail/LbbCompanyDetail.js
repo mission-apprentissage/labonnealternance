@@ -2,6 +2,7 @@ import { DisplayContext } from "../../context/DisplayContextProvider"
 import React, { useEffect } from "react"
 import { SendPlausibleEvent, SendTrackEvent } from "../../utils/plausible"
 import CandidatureSpontaneeExplanation from "./CandidatureSpontanee/CandidatureSpontaneeExplanation"
+import { Box } from "@chakra-ui/react"
 
 const LbbCompanyDetail = ({ lbb }) => {
   useEffect(() => {
@@ -22,14 +23,14 @@ const LbbCompanyDetail = ({ lbb }) => {
   const { formValues } = React.useContext(DisplayContext)
 
   return (
-    <div className="c-detail-body mt-4">
+    <Box pb="0px" mt={6} position="relative" background="white" padding={["1px 12px 50px 12px", "1px 24px 50px 24px", "1px 12px 24px 12px"]} mx={["0", "30px"]}>
       <div className="text-left" data-testid="lbb-component">
         <div className="mb-3">
           <CandidatureSpontaneeExplanation about={"what"} />
           <CandidatureSpontaneeExplanation about={"how"} />
         </div>
       </div>
-    </div>
+    </Box>
   )
 }
 

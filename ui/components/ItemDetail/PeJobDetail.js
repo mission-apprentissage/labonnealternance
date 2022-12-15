@@ -3,6 +3,7 @@ import ReactHtmlParser from "react-html-parser"
 import { formatDate } from "../../utils/strutils"
 import { SendPlausibleEvent, SendTrackEvent } from "../../utils/plausible"
 import { DisplayContext } from "../../context/DisplayContextProvider"
+import { Box, Text } from "@chakra-ui/react"
 
 let md = require("markdown-it")().disable(["link", "image"])
 
@@ -30,8 +31,10 @@ const PeJobDetail = ({ job }) => {
   const creationDate = formatDate(job?.job?.creationDate)
 
   return (
-    <div className="c-detail-body mt-4">
-      <h2 className="c-locationdetail-title mt-2">Description de l&apos;offre</h2>
+    <Box pb="0px" mt={6} position="relative" background="white" padding={["1px 12px 50px 12px", "1px 24px 50px 24px", "1px 12px 24px 12px"]} mx={["0", "30px"]}>
+      <Text as="h2" variant="itemDetailH2" mt={2}>
+        Description de l&apos;offre
+      </Text>
       <div className="c-matcha-detail-container">
         <div>
           <strong>Publiée le : </strong> {creationDate}
@@ -46,14 +49,14 @@ const PeJobDetail = ({ job }) => {
           <strong>Rythme :</strong> {contractRythm}
         </div>
       </div>
-      {description ? (
+      {description && (
         <div className="c-detail-description">
-          <div className="c-detail-description-text">{ReactHtmlParser(md.render(description))}</div>
+          <Box whiteSpace="pre-wrap" pl={4}>
+            {ReactHtmlParser(md.render(description))}
+          </Box>
         </div>
-      ) : (
-        ""
       )}
-    </div>
+    </Box>
   )
 }
 

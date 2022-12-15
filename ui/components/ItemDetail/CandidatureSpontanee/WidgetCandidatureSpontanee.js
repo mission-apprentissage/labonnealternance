@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react"
 import { useFormik } from "formik"
-import { Container } from "reactstrap"
 import CandidatureSpontaneeNominalBodyFooter from "./CandidatureSpontaneeNominalBodyFooter"
 import CandidatureSpontaneeWorked from "./CandidatureSpontaneeWorked"
 import CandidatureSpontaneeFailed from "./CandidatureSpontaneeFailed"
@@ -10,6 +9,7 @@ import { string_wrapper as with_str } from "../../../utils/wrapper_utils"
 import useLocalStorage from "./services/useLocalStorage"
 import hasAlreadySubmittedCandidature from "./services/hasAlreadySubmittedCandidature"
 import { getItemId } from "../../../utils/getItemId"
+import { Box, Container } from "@chakra-ui/react"
 
 const WidgetCandidatureSpontanee = (props) => {
   const [sendingState, setSendingState] = useState("not_sent")
@@ -63,40 +63,30 @@ const WidgetCandidatureSpontanee = (props) => {
   })
 
   return (
-    <div className="c-candidature c-candidature__widget" data-testid="CandidatureSpontanee">
-      <div>
-        <div className="my-3">
-          {!with_str(sendingState).amongst(["ok_sent"]) && hasAlreadySubmittedCandidature({ applied }) ? (
-            <>
-              <Container>{getAPostuleMessage()}</Container>
-            </>
-          ) : (
-            <form onSubmit={formik.handleSubmit} className="c-candidature-form">
-              {with_str(sendingState).amongst(["not_sent", "currently_sending"]) ? (
-                <CandidatureSpontaneeNominalBodyFooter
-                  formik={formik}
-                  sendingState={sendingState}
-                  company={props?.item?.company?.name}
-                  item={props?.item}
-                  kind={kind}
-                  fromWidget={true}
-                />
-              ) : (
-                <></>
-              )}
-
-              {with_str(sendingState).amongst(["ok_sent"]) ? <CandidatureSpontaneeWorked kind={kind} email={formik.values.email} company={props?.item?.company?.name} /> : <></>}
-
-              {with_str(sendingState).amongst(["not_sent_because_of_errors", "email temporaire non autorisé", "max candidatures atteint", "Too Many Requests"]) ? (
-                <CandidatureSpontaneeFailed sendingState={sendingState} />
-              ) : (
-                <></>
-              )}
-            </form>
+    <Box my={4} className="c-candidature__widget" data-testid="CandidatureSpontanee">
+      {!with_str(sendingState).amongst(["ok_sent"]) && hasAlreadySubmittedCandidature({ applied }) ? (
+        <Container maxW="2xl">{getAPostuleMessage()}</Container>
+      ) : (
+        <form onSubmit={formik.handleSubmit}>
+          {with_str(sendingState).amongst(["not_sent", "currently_sending"]) && (
+            <CandidatureSpontaneeNominalBodyFooter
+              formik={formik}
+              sendingState={sendingState}
+              company={props?.item?.company?.name}
+              item={props?.item}
+              kind={kind}
+              fromWidget={true}
+            />
           )}
-        </div>
-      </div>
-    </div>
+
+          {with_str(sendingState).amongst(["ok_sent"]) && <CandidatureSpontaneeWorked kind={kind} email={formik.values.email} company={props?.item?.company?.name} />}
+
+          {with_str(sendingState).amongst(["not_sent_because_of_errors", "email temporaire non autorisé", "max candidatures atteint", "Too Many Requests"]) && (
+            <CandidatureSpontaneeFailed sendingState={sendingState} />
+          )}
+        </form>
+      )}
+    </Box>
   )
 }
 

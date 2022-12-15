@@ -15,7 +15,7 @@ import { inviteEtablissementToPremium } from "./jobs/rdv/inviteEtablissementToPr
 import { inviteEtablissementToPremiumFollowUp } from "./jobs/rdv/inviteEtablissementToPremiumFollowUp.js"
 import { parcoursupEtablissementStat } from "./jobs/rdv/parcoursupEtablissementStat.js"
 import { syncEtablissementsAndFormations } from "./jobs/rdv/syncEtablissementsAndFormations.js"
-import importFormations from "./jobs/FormationsCatalogue/FormationsCatalogue.js"
+import importFormations from "./jobs/formationsCatalogue/formationsCatalogue.js"
 import updateSendinblueBlockedEmails from "./jobs/updateSendinblueBlockedEmails/updateSendinblueBlockedEmails.js"
 import anonymizeOldApplications from "./jobs/anonymizeOldApplications/anonymizeOldApplications.js"
 import { runScript } from "./jobs/scriptWrapper.js"

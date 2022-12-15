@@ -7,6 +7,7 @@ import { capitalizeFirstLetter } from "../../../utils/strutils"
 import { setSelectedMarker } from "../../../utils/mapTools"
 import bookIcon from "../../../public/images/icons/book.svg"
 import jobIcon from "../../../public/images/icons/job.svg"
+import { Flex, Image, Text } from "@chakra-ui/react"
 
 const MapPopup = ({ type, item, handleSelectItem, setSelectedItem, setSelectedMapPopupItem }) => {
   const openItemDetail = (item) => {
@@ -26,19 +27,23 @@ const MapPopup = ({ type, item, handleSelectItem, setSelectedItem, setSelectedMa
       if (type === "job") {
         return (
           <div className="c-mapbox-container">
-            <div className="ml-3 my-3">
-              <img className="cardIcon mr-2" src={jobIcon} alt="" />
-              <span className="mapboxPopupTitle">
-                Opportunité<span className={`${list.length > 1 ? "" : "d-none"}`}>s</span> d&apos;emploi :{" "}
-              </span>
-            </div>
+            <Flex ml="16px" my="16px" alignItems="center" direction="row">
+              <Image mr="8px" width="24px" src={jobIcon} alt="" />
+              <Text as="span" fontSize="16px" fontWeight={700} color="black">
+                {`Opportunité${list.length > 1 ? "s" : ""} d'emploi`}
+              </Text>
+            </Flex>
             <div className="c-mapbox-address mx-3 my-2 mb-3">{getJobAddress(list[0])}</div>
             <div className="c-mapbox-bg">
               <div className="ml-3">
                 <ul className="c-mapbox-list">
                   {list.map((job, idx) => (
                     <li className={`c-mapbox-list-item ${idx === list.length - 1 ? "is-last" : ""} ${idx === 0 ? "is-first" : ""}`} key={idx}>
-                      <button className={`c-mapboxpopup--link gtmSavoirPlus gtm${capitalizeFirstLetter(job.ideaType)} gtmMap`} onClick={() => openItemDetail(job)}>
+                      <button
+                        className={`c-mapboxpopup--link gtmSavoirPlus gtm${capitalizeFirstLetter(job.ideaType)} gtmMap`}
+                        aria-label="Accéder au détail de l'opportunité"
+                        onClick={() => openItemDetail(job)}
+                      >
                         {job.title}
                       </button>
                       {job.ideaType === "peJob" && job?.company?.name ? <span className="c-mapbox-companyname">- {job.company.name}</span> : ""}
@@ -52,10 +57,12 @@ const MapPopup = ({ type, item, handleSelectItem, setSelectedItem, setSelectedMa
       } else {
         return (
           <div className="mapboxPopupFormation">
-            <div className="ml-3 my-3">
-              <img className="cardIcon mr-2" src={bookIcon} alt="" />
-              <span className="mapboxPopupTitle">Formations : </span>
-            </div>
+            <Flex ml="16px" my="16px" alignItems="center" direction="row">
+              <Image mr="8px" width="24px" src={bookIcon} alt="" />
+              <Text as="span" fontSize="16px" fontWeight={700} color="black">
+                Formations :
+              </Text>
+            </Flex>
             <div className="mapboxPopupPlace mx-3 my-2">{list[0].company.name}</div>
             <div className="mapboxPopupAddress mx-3 my-2 mb-3">{list[0].place.fullAddress}</div>
             <div className="mapboxPopupBg">
@@ -94,7 +101,7 @@ const MapPopup = ({ type, item, handleSelectItem, setSelectedItem, setSelectedMa
         {list.map((training, idx) => (
           <li key={idx} className="c-mapboxpopup-li">
             <span>
-              <button className={`c-mapboxpopup--link gtmSavoirPlus gtmFormation gtmMap`} onClick={() => openItemDetail(training)}>
+              <button className={`c-mapboxpopup--link gtmSavoirPlus gtmFormation gtmMap`} aria-label="Accéder au détail de la formation" onClick={() => openItemDetail(training)}>
                 {training.title ? training.title : training.longTitle}
               </button>
             </span>

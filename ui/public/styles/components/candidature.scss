@@ -1,30 +1,3 @@
-.c-candidature-modal {
-  font-family: Marianne;
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 24px;
-  letter-spacing: 0em;
-}
-
-.c-candidature-modal .modal-content {
-  @media only screen and (min-width: 800px) {
-    width: 793px;
-  }
-}
-.c-candidature-modal.modal-dialog {
-  max-width: 793px;
-}
-
-.c-candidature-form {
-  // See https://stackoverflow.com/a/6046196/2595513
-  input,
-  label {
-    display: block;
-  }
-  margin-left: auto;
-  margin-right: auto;
-}
-
 .c-candidature-field input {
   border: none;
   background: #f0f0f0;
@@ -61,43 +34,6 @@ input:-webkit-autofill:active {
   box-shadow: 0 0 0 30px #f0f0f0 inset !important;
 }
 
-.c-candidature-modal .modal-content {
-  padding: 1rem 1rem 1rem 1rem;
-}
-.c-candidature-modal .modal-body {
-  padding: 0;
-}
-.c-candidature-modal .modal-footer {
-  border-top: none;
-}
-
-.c-candidature-modal button.close span::before {
-  content: "Fermer ";
-}
-.c-candidature-modal-header.modal-header {
-  border-bottom: none;
-  border-radius: 0;
-  button {
-    color: #000091;
-    opacity: 1;
-    font-family: Marianne;
-    font-size: 14px;
-    font-weight: 400;
-    line-height: 24px;
-    letter-spacing: 0em;
-    text-transform: capitalize;
-    padding: 0;
-  }
-}
-
-h1.c-candidature-title {
-  font-family: Marianne;
-  font-size: 24px;
-  font-weight: 700;
-  line-height: 32px;
-  letter-spacing: 0em;
-}
-
 .c-candidature-erreur {
   font-family: Marianne;
   font-size: 12px;
@@ -106,67 +42,6 @@ h1.c-candidature-title {
   color: #e10600;
 }
 
-.c-candidature-misspelled {
-  font-size: 12px;
-  color: #6a6a6a;
-  width: 90%;
-
-  @include media-breakpoint-up(md) {
-    width: 317px;
-  }
-
-  .c-candidature-misspelled__prompt {
-    margin-right: 10px;
-  }
-
-  .c-candidature-misspelled__suggestion {
-    text-align: center;
-    font-size: 12px;
-    line-height: 24px;
-    width: fit-content;
-    outline: none;
-    border: none;
-    margin-right: 5px;
-    padding-left: 5px;
-    padding-right: 5px;
-    color: #000091;
-    background: #e3e3fd;
-    border-radius: 40px;
-    margin-top: 3px;
-    padding-bottom: 3px;
-  }
-}
-
-.c-candidature-message-title {
-  font-family: Marianne;
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 24px;
-  letter-spacing: 0em;
-  color: #161616;
-}
-.c-candidature-message-title-optional {
-  font-size: 14px;
-  color: #6a6a6a;
-}
-
-.c-candidature-message-subtitle {
-  font-size: 14px;
-  color: #6a6a6a;
-}
-
-.c-candidature-message textarea {
-  border: none;
-  background: #f0f0f0;
-  border-radius: 4px 4px 0px 0px;
-  width: 90%;
-  height: 80px;
-  padding-left: 1rem;
-  @include media-breakpoint-up(md) {
-    width: 650px;
-    height: 110px;
-  }
-}
 .c-candidature-terms {
   max-width: 90%;
   label {
@@ -186,96 +61,6 @@ h1.c-candidature-title {
   input {
     outline: 2px solid #e10600;
   }
-}
-
-label.c-candidature-terms-text {
-  cursor: pointer;
-  input {
-    cursor: pointer;
-  }
-}
-
-h2.c-candidature-worked-title {
-  font-family: Marianne;
-  font-size: 20px;
-  font-style: normal;
-  font-weight: 700;
-  line-height: 28px;
-  letter-spacing: 0em;
-  text-align: left;
-}
-
-.c-candidature-worked-text {
-  font-family: Marianne;
-  font-size: 18px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 28px;
-  letter-spacing: 0em;
-  text-align: left;
-}
-
-span.c-candidature-worked-email {
-  font-weight: 700;
-  color: #f07f87;
-}
-span.c-candidature-worked-company {
-  font-size: 22px;
-  line-height: 36px;
-}
-.c-candidature-filedropzone {
-  border: 1px dashed #6a6a6a;
-  width: 90%;
-
-  padding: 20px;
-
-  @include media-breakpoint-up(md) {
-    width: 650px;
-  }
-
-  cursor: pointer;
-}
-
-.c-candidature-filedropzone-instruction {
-  margin-left: 0;
-
-  @include media-breakpoint-up(md) {
-    margin-left: 10%;
-  }
-}
-
-.c-candidature-filedropzone-instruction_title,
-.c-candidature-filedropzone-filename {
-  font-size: 14px;
-  font-weight: bold;
-  color: #383838;
-}
-
-.c-candidature-filedropzone-instruction_sub {
-  font-size: 12px;
-  color: #383838;
-}
-
-.c-candidature-filedropzone.c-candidature-filedropzone_selectedfile {
-  cursor: auto;
-}
-
-button.c-candidature-filedropzone-removefile {
-  color: $gray-700 !important;
-  background: none;
-  border: none;
-  padding-left: 0;
-  margin-left: 15px;
-  padding-right: 0;
-  padding-bottom: 2px;
-  padding-top: 0px;
-  border-bottom: 1px solid $gray-700;
-}
-
-.c-candidature-link,
-.c-candidature-link:hover {
-  color: #1e1e1e !important;
-  text-decoration: underline;
 }
 
 .btn.btn-blue {

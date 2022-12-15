@@ -20,12 +20,14 @@ export const PropositionOffreId = () => {
    */
   const copyInClipboard = () => {
     navigator.clipboard.writeText(
-      `https://doctrina${window.location.href.includes("recette") ? "-recette" : ""}/recherche-apprentissage?&display=list&page=fiche&type=matcha&itemId=${offre._id}`
+      `https://labonnealternance${
+        window.location.href.includes("recette") ? "-recette" : ""
+      }.apprentissage.beta.gouv.fr/recherche-apprentissage?&display=list&page=fiche&type=matcha&itemId=${offre._id}`
     )
     toast({
       title: "Lien copié.",
-      position: "bottom-right",
-      status: "info",
+      position: "top-right",
+      status: "success",
       duration: 5000,
     })
   }

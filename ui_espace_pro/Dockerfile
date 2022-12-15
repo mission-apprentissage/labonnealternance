@@ -1,4 +1,4 @@
-ARG DOCTRINA_ENV=production
+ARG LBA_ENV=production
 
 FROM node:18-bullseye AS base
 
@@ -34,4 +34,4 @@ ENV PORT 3000
 CMD ["yarn", "start"]
 
 # FROM ui-env as final
-FROM ui-${DOCTRINA_ENV} as final
+FROM ui-${LBA_ENV} as final

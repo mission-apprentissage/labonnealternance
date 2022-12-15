@@ -3,8 +3,6 @@ import { Box, Image, SimpleGrid, Text, Show } from "@chakra-ui/react"
 
 import ConnectionActions from "./ConnectionActions"
 import votrebesoinImage from "../../public/images/home_pics/illu-votrebesoin.svg"
-import ujusImage from "../../public/images/home_pics/1j1s.svg"
-import parcoursupImage from "../../public/images/home_pics/parcoursup.svg"
 
 const Entreprise = () => {
   return (
@@ -23,10 +21,8 @@ const Entreprise = () => {
           <ConnectionActions service="entreprise" />
         </Box>
         <Show above="md">
-          <Box position={"relative"}>
-            <Image src={votrebesoinImage} alt="Votre besoin" />
-            <Image src={ujusImage} alt="1 jeune 1 solution" position={"absolute"} top={"33%"} right={"0"} width={"100px"} />
-            <Image src={parcoursupImage} alt="parcoursup" position={"absolute"} top={"20%"} right={"0"} width={"100px"} />
+          <Box>
+            <Image src={votrebesoinImage} alt="" />
           </Box>
         </Show>
       </SimpleGrid>

@@ -27,10 +27,10 @@ const AccesRecruteur = () => (
     <Navigation currentPage="acces-recruteur" />
     <Breadcrumb forPage="acces-recruteur" label="Accès recruteur" />
 
-    <Container my={0} px={0} variant="pageContainer">
+    <Container my={0} px={0} variant="pageContainer" bg="white">
       <Entreprise />
 
-      <Box as="section" mb={5}>
+      <Box as="section" px={10} py={5} borderRadius={10} bg="grey.100">
         <PostezVotreOffre />
         <OffresGratuites />
         <OrganismesMandataires />

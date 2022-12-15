@@ -1,35 +1,30 @@
+import { Button, Flex, Spinner, Text } from "@chakra-ui/react"
 import React from "react"
-import { Spinner } from "reactstrap"
 import { amongst } from "../../../utils/arrayutils"
-import { capitalizeFirstLetter } from "../../../utils/strutils"
 
 const CandidatureSpontaneeSubmit = (props) => {
   const sendingState = props.sendingState
   const kind = props?.item?.ideaType || ""
 
-  let res = <></>
-  if (sendingState === "not_sent") {
-    res = (
-      <button
-        aria-label="je-postule"
-        className={`btn btn-dark btn-dark-action c-candidature-submit c-candidature-submit--default gtmEnvoiCandidature gtm${capitalizeFirstLetter(kind)}`}
-        type="submit"
-      >
-        {amongst(kind, ["lbb", "lba"]) ? "J'envoie ma candidature spontanée" : "J'envoie ma candidature"}
-      </button>
-    )
-  } else if (sendingState === "ok_sent") {
-    res = <span className="c-candidature-submit-ok">Succès</span>
-  } else if (sendingState === "currently_sending") {
-    res = (
-      <span className="c-candidature-submit-sending">
-        <Spinner color="primary" /> Veuillez patienter
-      </span>
-    )
-  } else if (sendingState === "not_sent_because_of_errors") {
-    res = <span className="c-candidature-submit-error">Erreur lors de l&apos;envoi, veuillez réessayer plus tard</span>
+  switch (sendingState) {
+    case "not_sent": {
+      return (
+        <Button aria-label="Envoyer la candidature spontanée" variant="blackButton" type="submit" data-testid="candidature-not-sent">
+          {amongst(kind, ["lbb", "lba"]) ? "J'envoie ma candidature spontanée" : "J'envoie ma candidature"}
+        </Button>
+      )
+    }
+    case "currently_sending": {
+      return (
+        <Flex alignItems="center" direction="row" data-testid="candidature-currently-sending">
+          <Spinner mr={4} />
+          <Text>Veuillez patienter</Text>
+        </Flex>
+      )
+    }
+    default:
+      return ""
   }
-  return res
 }
 
 export default CandidatureSpontaneeSubmit

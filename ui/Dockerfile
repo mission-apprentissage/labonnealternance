@@ -1,4 +1,4 @@
-ARG DOCTRINA_ENV=production
+ARG LBA_ENV=production
 
 #From https://github.com/vercel/next.js/blob/canary/examples/with-docker/Dockerfile
 # Install dependencies only when needed
@@ -55,4 +55,4 @@ EXPOSE 3000
 ENV PORT 3000
 CMD ["yarn", "docker-dev"]
 
-FROM ui-${DOCTRINA_ENV} as final
+FROM ui-${LBA_ENV} as final

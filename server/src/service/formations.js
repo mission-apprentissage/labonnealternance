@@ -325,13 +325,6 @@ const getAtLeastSomeFormations = async ({ romes, rncps, romeDomain, coords, radi
           result: "OK",
         })
       }
-
-      if (formations.results.length === 0 && !caller) {
-        await notifyToSlack({
-          subject: "FORMATION",
-          message: `Aucune formation trouvée pour les romes ${romes} ou le domaine ${romeDomain}. diploma : ${diploma}. coords: ${coords}. radius: ${currentRadius}`,
-        })
-      }
     }
 
     return formations
