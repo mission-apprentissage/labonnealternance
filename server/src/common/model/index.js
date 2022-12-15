@@ -53,7 +53,7 @@ const ParcoursupEtablissementStat = createModel("parcoursupEtablissementStat", s
 const Formulaire = createModel("formulaire", schema.formulaireSchema, { esIndexName: "formulaires", paginate: true })
 const Credential = createModel("credentials", schema.credentialsSchema)
 const Offre = createModel("offre", schema.offresSchema)
-const Optout = createModel("optout", schema.OptoutSchema, { paginate: true })
+const Optout = createModel("optout", schema.optoutSchema, { paginate: true })
 const ReferentielOpco = createModel("referentielOpco", schema.referentielOpcoSchema)
 const UserRecruteur = createModel("userRecruteur", schema.userRecruteurSchema, { paginate: true })
 
