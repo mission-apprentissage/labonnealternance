@@ -12,7 +12,8 @@ runScript(async () => {
 
   await Promise.all(
     jeunes.map(async (jeune) => {
-      const formation = await ConvertedFormation_0.find({
+      let formation = []
+      formation = await ConvertedFormation_0.find({
         $or: [
           {
             etablissement_formateur_siret: jeune.siret_etablissement,
@@ -34,6 +35,31 @@ runScript(async () => {
         published: true,
         catalogue_published: true,
       })
+
+      if (!formation.length) {
+        formation = await ConvertedFormation_0.find({
+          // $or: [
+          //   {
+          //     etablissement_formateur_siret: jeune.siret_etablissement,
+          //   },
+          //   {
+          //     etablissement_gestionnaire_siret: jeune.siret_etablissement,
+          //   },
+          // ],
+          $or: [
+            {
+              etablissement_formateur_uai: jeune.uai_etablissement,
+            },
+            {
+              etablissement_gestionnaire_uai: jeune.uai_etablissement,
+            },
+          ],
+          cfd: jeune.formation_cfd,
+          tags: { $in: ["2022"] },
+          published: true,
+          catalogue_published: true,
+        })
+      }
 
       console.log({ jeune: jeune.formation_cfd, siret: jeune.siret_etablissement, catalogue: formation.length })
 
