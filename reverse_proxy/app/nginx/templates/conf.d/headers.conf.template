@@ -2,6 +2,6 @@ server_tokens off;
 more_clear_headers Server;
 more_clear_headers "X-Powered-By";
 add_header Strict-Transport-Security "max-age=31536000; includeSubdomains" always;
-add_header X-Frame-Options "SAMEORIGIN" always;
+# add_header X-Frame-Options "ALLOW-FROM " always;
 add_header X-Content-Type-Options "nosniff" always;
 add_header Referrer-Policy "no-referrer-when-downgrade";
