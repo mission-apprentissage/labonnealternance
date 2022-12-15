@@ -101,7 +101,7 @@ const nextConfig = withImages({
           },
           {
             key: "Content-Security-Policy",
-            value: inline(contentSecurityPolicy),
+            value: inline(contentSecurityPolicy + " frame-ancestors 'akto.fr' 'opco-atlas.fr' 'ocapiat.fr' 'opco2i.fr';"),
           },
           {
             key: "Referrer-Policy",
