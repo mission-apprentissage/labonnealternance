@@ -1,3 +1,4 @@
+import { Box, Text } from "@chakra-ui/react"
 import React from "react"
 
 import { Collapse } from "reactstrap"
@@ -8,13 +9,16 @@ const MatchaDescription = ({ job }) => {
 
   const getText = () => {
     return (
-      <ul>
+      <Box pl="12px" mt={4}>
         {job?.job?.romeDetails?.definition.split("\\n").map((definition, i) => (
-          <li key={i} className="mt-2">
-            {definition}
-          </li>
+          <Box key={i} mt={2}>
+            &bull;
+            <Text as="span" ml={3}>
+              {definition}
+            </Text>
+          </Box>
         ))}
-      </ul>
+      </Box>
     )
   }
 

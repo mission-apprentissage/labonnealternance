@@ -1,17 +1,17 @@
 import express from "express"
-import passport from "passport"
 import Joi from "joi"
+import passport from "passport"
 import { Strategy as LocalAPIKeyStrategy } from "passport-localapikey"
+import { dayjs } from "../../../common/utils/dayjs.js"
 import config from "../../../config.js"
 import { tryCatch } from "../../middlewares/tryCatchMiddleware.js"
-import { dayjs } from "../../../common/utils/dayjs.js"
 
 /**
  * @description Checks "Sendinblue" token.
  * @return {NextFunction}
  */
 const checkWebhookToken = () => {
-  passport.use(new LocalAPIKeyStrategy({}, async (token, done) => done(null, config.smtp.sendinblueToken === token ? { apiKey: token } : false)))
+  passport.use(new LocalAPIKeyStrategy({}, async (token, done) => done(null, config.smtp.sendinblueWebhookApiKey === token ? { apiKey: token } : false)))
 
   return passport.authenticate("localapikey", { session: false, failWithError: true })
 }

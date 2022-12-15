@@ -1,12 +1,17 @@
 import { Box, Flex, Spinner, Text, useToast } from "@chakra-ui/react"
 import { useEffect } from "react"
-import { useNavigate, useParams } from "react-router-dom"
+import { useParams } from "react-router-dom"
 import { cancelOffre, fillOffre } from "../api"
 
 export default (props) => {
   const params = useParams()
-  const navigate = useNavigate()
   const toast = useToast()
+
+  const redirect = (ms) => {
+    setTimeout(() => {
+      window.location.replace("/")
+    }, 5000)
+  }
 
   const error = () => {
     toast({
@@ -17,7 +22,7 @@ export default (props) => {
       isClosable: false,
       duration: 5000,
     })
-    navigate("/")
+    redirect()
   }
 
   useEffect(() => {
@@ -30,34 +35,31 @@ export default (props) => {
     if (option === "cancel") {
       cancelOffre(idOffre)
         .then(() => {
-          navigate("/")
           toast({
             title: "Offre annulée.",
             description: "L'offre a bien été mise à jour.",
             position: "top",
             status: "success",
             isClosable: true,
-            duration: 7000,
+            duration: 5000,
           })
+          redirect()
         })
-        .catch((err) => {
-          console.log(err.response)
-          error()
-        })
+        .catch((err) => error())
     }
 
     if (option === "provided") {
       fillOffre(idOffre)
         .then(() => {
-          navigate("/")
           toast({
             title: "Offre pourvue.",
             description: "L'offre a bien été mise à jour",
             position: "top",
             status: "success",
             isClosable: true,
-            duration: 7000,
+            duration: 5000,
           })
+          redirect()
         })
         .catch(() => error())
     }

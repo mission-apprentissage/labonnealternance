@@ -5,9 +5,8 @@ import { debounce } from "lodash"
 import onInputValueChangeService from "./onInputValueChangeService"
 import highlightItem from "../../services/hightlightItem"
 import ReactHtmlParser from "react-html-parser"
-import { Spinner } from "reactstrap"
 import findExactItemRank from "./findExactItemRank"
-import { Box, Container, Flex, Input, Text, VStack } from "@chakra-ui/react"
+import { Box, Container, Flex, Input, Spinner, Text, VStack } from "@chakra-ui/react"
 
 let debouncedOnInputValueChange = null
 
@@ -255,10 +254,10 @@ export const AutoCompleteField = ({
                 )
               } else if (loadingState === "loading") {
                 return (
-                  <Box key={`spinner`} {...neutralItemProps}>
-                    <Spinner style={{ width: "1rem", height: "1rem" }} color="primary" />
-                    &nbsp;Veuillez patienter
-                  </Box>
+                  <Flex alignItems="center" direction="row" key={`spinner`} {...neutralItemProps}>
+                    <Spinner mr={3} width="1rem" height="1rem" />
+                    <Text>Veuillez patienter</Text>
+                  </Flex>
                 )
               } else if (inputValue.length > 0 && inputItems?.length === 0) {
                 let message = "Pas de résultat, veuillez modifier votre recherche"

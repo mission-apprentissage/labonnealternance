@@ -5,7 +5,7 @@ import { mailTemplate } from "../../assets/index.js"
 import { getAktoEstablishmentVerification } from "../../common/akto.js"
 import { getNearEtablissementsFromRomes } from "../../common/catalogue.js"
 import { CFA, etat_utilisateur, OPCOS, validation_utilisateur } from "../../common/constants.js"
-import { createUserToken } from "../../common/utils/jwtUtils.js"
+import { createUserRecruteurToken } from "../../common/utils/jwtUtils.js"
 import { checkIfUserEmailIsPrivate, checkIfUserMailExistInReferentiel, getAllDomainsFromEmailList } from "../../common/utils/mailUtils.js"
 import { notifyToSlack } from "../../common/utils/slackUtils.js"
 import config from "../../config.js"
@@ -408,7 +408,7 @@ export default ({ etablissementsRecruteur, usersRecruteur, formulaire, mailer })
       await usersRecruteur.registerUser(user.email)
 
       // Log the user in directly
-      return res.json({ token: createUserToken(user) })
+      return res.json({ token: createUserRecruteurToken(user) })
     })
   )
 

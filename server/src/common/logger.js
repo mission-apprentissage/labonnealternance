@@ -113,7 +113,7 @@ const createStreams = () => {
 }
 
 export const logger = bunyan.createLogger({
-  name: "doctrina",
+  name: "lba",
   serializers: {
     ...bunyan.stdSerializers,
     err: function (err) {

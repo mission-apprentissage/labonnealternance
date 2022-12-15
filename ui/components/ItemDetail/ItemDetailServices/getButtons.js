@@ -2,11 +2,26 @@ import React from "react"
 import { findIndex } from "lodash"
 import { useSwipeable } from "react-swipeable"
 
-import ExternalLink from "../../externalLink"
 import chevronLeft from "../../../public/images/chevronleft.svg"
 import chevronRight from "../../../public/images/chevronright.svg"
 import chevronClose from "../../../public/images/close.svg"
 import { SendPlausibleEvent } from "../../../utils/plausible"
+import { Box, Button, Image, Link } from "@chakra-ui/react"
+
+const navigationButtonProperties = {
+  background: "white",
+  border: "none",
+  padding: "0",
+  width: "30px",
+  height: "30px",
+  minWidth: "30px",
+  _hover: {
+    background: "white",
+  },
+  _active: {
+    background: "white",
+  },
+}
 
 export const buttonJePostuleShouldBeDisplayed = (oneKind, oneItem) => {
   return oneKind === "peJob" && oneItem?.url
@@ -23,15 +38,17 @@ export const buildPrdvButton = (training) => {
   }
 
   return (
-    <div
-      className="widget-prdv gtmPrdv"
+    <Box
+      className="widget-prdv"
       data-referrer="lba"
       data-id-cle-ministere-educatif={training.cleMinistereEducatif}
       data-id-rco-formation={training.idRcoFormation}
       onClick={onClickPrdv}
     >
-      <ExternalLink className="gtmPrdv" url={training.prdvUrl} title="Je prends rendez-vous" />
-    </div>
+      <Link variant="postuler" isExternal href={training.prdvUrl}>
+        Je prends rendez-vous
+      </Link>
+    </Box>
   )
 }
 
@@ -70,37 +87,37 @@ export const BuildSwipe = ({ currentList, handleSelectItem, selectedItem }) => {
 export const getNavigationButtons = ({ goPrev, goNext, setSeeInfo, handleClose }) => {
   return (
     <>
-      <div>
-        <button
-          className="c-tiny-btn"
+      <Box>
+        <Button
+          {...navigationButtonProperties}
           onClick={() => {
             goPrev()
           }}
         >
-          <img className="c-tiny-btn__image" src={chevronLeft} alt="Résultat précédent" />
-        </button>
-      </div>
-      <div className="ml-2">
-        <button
-          className="c-tiny-btn"
+          <Image width="30px" height="30px" src={chevronLeft} alt="Résultat précédent" />
+        </Button>
+      </Box>
+      <Box ml={2}>
+        <Button
+          {...navigationButtonProperties}
           onClick={() => {
             goNext()
           }}
         >
-          <img className="c-tiny-btn__image" src={chevronRight} alt="Résultat suivant" />
-        </button>
-      </div>
-      <div className="ml-2">
-        <button
-          className="c-tiny-btn"
+          <Image width="30px" height="30px" src={chevronRight} alt="Résultat suivant" />
+        </Button>
+      </Box>
+      <Box ml={2}>
+        <Button
+          {...navigationButtonProperties}
           onClick={() => {
             setSeeInfo(false)
             handleClose()
           }}
         >
-          <img className="c-tiny-btn__image" src={chevronClose} alt="Fermer la fenêtre" />
-        </button>
-      </div>
+          <Image width="30px" height="30px" src={chevronClose} alt="Fermer la fenêtre" />
+        </Button>
+      </Box>
     </>
   )
 }

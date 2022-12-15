@@ -25,9 +25,9 @@ const currentDirname = __dirname(import.meta.url)
 const publicUrl = config.publicUrl
 
 // const matchaApiEndpoint = `https://matcha${config.env === "production" ? "" : "-recette"}.apprentissage.beta.gouv.fr`;
-const matchaApiEndpoint = `https://doctrina${config.env === "production" ? "" : "-recette"}.apprentissage.beta.gouv.fr`
+const matchaApiEndpoint = `https://labonnealternance${config.env === "production" ? "" : "-recette"}.apprentissage.beta.gouv.fr`
 
-const imagePath = "https://doctrina-recette.apprentissage.beta.gouv.fr/images/emails/"
+const imagePath = "https://labonnealternance-recette.apprentissage.beta.gouv.fr/images/emails/"
 
 const images = {
   images: {

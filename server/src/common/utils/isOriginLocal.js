@@ -1,8 +1,14 @@
 import config from "../../config.js"
 
+/**
+ * @description : préciser l'usage de cet utils
+ */
+
 const localOrigin = [
   "https://labonnealternance.beta.pole-emploi.fr",
   "https://labonnealternance.pole-emploi.fr",
+  "https://labonnealternance.apprentissage.beta.gouv.fr",
+  "https://labonnealternance-recette.apprentissage.beta.gouv.fr",
   "https://doctrina.apprentissage.beta.gouv.fr",
   "https://doctrina-recette.apprentissage.beta.gouv.fr",
   "http://localhost:3003",

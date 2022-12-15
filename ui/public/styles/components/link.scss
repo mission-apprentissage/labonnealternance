@@ -1,10 +1,7 @@
-.c-nice-link {
+.c-nice-link,
+.c-nice-link:hover {
   font-weight: 400;
   color: #383838;
-  border-bottom: 1px solid #2a2a2a;
   display: inline-flex;
-}
-.c-nice-link:hover {
-  color: #383838;
-  text-decoration: none;
+  text-decoration: underline;
 }

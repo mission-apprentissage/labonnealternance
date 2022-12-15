@@ -2,62 +2,9 @@
   width: 24px;
 }
 
-.c-tiny-btn {
-  background: white;
-  border: none;
-  padding: 0;
-}
-
-.c-tiny-btn__image {
-  width: 30px;
-  height: 30px;
-}
-
-.c-detail-title {
-  font-size: 28px;
-  font-weight: 700;
-  line-height: 36px;
-  letter-spacing: 0em;
-  color: $pinksoft750;
-  margin-bottom: 11px;
-  padding-bottom: 0;
-  text-align: left;
-  word-break: break-word;
-}
-
-.c-detail--collapse-header-true .c-detail-title {
-  font-size: 20px;
-  line-height: 28px;
-}
-
 .c-detail-body.c-detail-body--inside {
   padding-left: 0;
   padding-right: 0;
-}
-
-.c-detail-title--formation {
-  color: $greensoft500;
-}
-
-.c-detail-title--lba,
-.c-detail-title--peJob,
-.c-detail-title--matcha {
-  color: $pinksoft750;
-}
-
-.c-detail-activity {
-  font-size: 16px;
-  font-weight: 700;
-  line-height: 24px;
-  letter-spacing: 0;
-  margin-bottom: 12px;
-  padding-bottom: 0;
-  text-align: left;
-  color: $gray-600;
-}
-
-.c-detail-activity__proposal {
-  font-weight: 400;
 }
 
 .c-detail-matcha-subtitle {
@@ -82,17 +29,6 @@
   height: 12px;
   line-height: 12px;
   background-color: $pinksoft750;
-}
-
-.c-detail-title.c-detail-title--matcha {
-  margin-bottom: 0;
-}
-
-.c-detail-address {
-  font-weight: 400;
-  font-size: 16px;
-  line-height: 24px;
-  color: #383838;
 }
 
 .c-detail-km {
@@ -125,33 +61,6 @@
 
 .c-detail-header {
   filter: drop-shadow(0px 4px 4px rgba(213, 213, 213, 0.25));
-}
-
-.c-detail-header-separator {
-  margin-bottom: 0;
-}
-
-.c-detail-body {
-  text-align: left;
-  position: relative;
-  background-color: white;
-  margin-bottom: 32px;
-  padding-bottom: 50px;
-  padding-left: 12px;
-  padding-right: 12px;
-  padding-top: 1px;
-  @include media-breakpoint-up(sm) {
-    padding-left: 24px;
-    padding-right: 24px;
-    margin-left: 30px;
-    margin-right: 30px;
-  }
-  @include media-breakpoint-up(md) {
-    padding-bottom: 24px;
-  }
-  a {
-    overflow-wrap: anywhere;
-  }
 }
 
 .c-detail-company {
@@ -202,29 +111,6 @@
   }
 }
 
-.c-detail-description-text {
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 19px;
-  letter-spacing: 0px;
-  text-align: left;
-  margin-bottom: 0;
-  margin-top: 21px;
-
-  p {
-    white-space: pre-wrap;
-  }
-}
-
-.c-detail-description-me {
-  text-align: left;
-  button {
-    padding: 8px 24px;
-    background: #000091;
-    border-radius: 8px;
-  }
-}
-
 .c-detail-description-title {
   font-size: 16px;
   font-weight: 700;
@@ -253,21 +139,6 @@
   margin-right: 7px;
 }
 
-.c-detail-pelink {
-  a,
-  button {
-    line-height: 19px;
-    letter-spacing: 0px;
-    text-align: left;
-    font-size: 16px;
-    font-weight: 500;
-    color: #ffffff;
-    text-decoration: underline solid $gray-750;
-    text-decoration-thickness: 2px;
-    text-underline-offset: 2px;
-  }
-}
-
 .c-detail-contactlink {
   a {
     line-height: 19px;
@@ -280,20 +151,6 @@
     text-decoration-thickness: 2px;
     text-underline-offset: 2px;
   }
-}
-
-.c-detail-newadvice {
-  text-align: left;
-  background: #f6f6f6;
-  border-radius: 8px;
-  padding: 10px;
-}
-
-.c-detail-newadvice-title {
-  font-size: 16px;
-  font-weight: 700;
-  line-height: 24px;
-  letter-spacing: 0em;
 }
 
 .c-detail-advice {
@@ -383,20 +240,6 @@
   font-size: 22px;
   font-weight: 700;
   line-height: 27px;
-  letter-spacing: 0px;
-  text-align: left;
-}
-
-.c-detail-lbb-minilist {
-  li + li {
-    margin-top: 1rem;
-  }
-}
-
-.c-detail-lbb-paragraph {
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 24px;
   letter-spacing: 0px;
   text-align: left;
 }
@@ -513,40 +356,8 @@ a.c-detail-lbb-siretbutton {
   margin-top: 4px;
 }
 
-.c-detail-header-separator.c-detail-header-separator--matcha {
-  margin: 0;
-}
-
-.c-detail-header-separator--upperformation {
-  border: 1px solid #e7e7e7;
-}
-
 .c-detail-sizetext.c-detail-sizetext--matcha {
   margin-bottom: 32px;
-}
-
-.c-detail-stickynav {
-  cursor: pointer;
-  position: sticky;
-  top: 0;
-  background-color: white;
-  height: 60px;
-  padding-left: 30px;
-  display: flex;
-  align-items: center;
-  font-size: 16px;
-  font-weight: 700;
-  line-height: 19px;
-  letter-spacing: 0px;
-  text-align: left;
-  box-shadow: 0px 2px 4px #e0e0e0;
-  text-overflow: ellipsis;
-  overflow: hidden;
-}
-
-.c-detail {
-  overflow-y: auto;
-  position: relative;
 }
 
 .c-detail-also {
