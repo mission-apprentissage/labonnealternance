@@ -73,7 +73,7 @@ const getRomesFromSiret = ({ siret }) => {
 
 const getFormationEsQueryIndexFragment = () => {
   return {
-    index: "convertedformations",
+    index: "formationcatalogues",
     size: 1000,
     _source_includes: ["rome_codes"],
   }
