@@ -3,37 +3,36 @@ import { parse } from "csv-parse"
 import { isEmpty, pickBy } from "lodash-es"
 import path from "path"
 import XLSX from "xlsx"
-import config from "../../config.js"
-
 import __dirname from "../../common/dirname.js"
+import config from "../../config.js"
 import { FTPClient } from "./ftpUtils.js"
 
-const readJsonFromCsvFile = (localPath) => {
+export const readJsonFromCsvFile = (localPath) => {
   return csvToJson.getJsonFromCsv(localPath)
 }
 
-const readXLSXFile = (localPath) => {
+export const readXLSXFile = (localPath) => {
   const workbook = XLSX.readFile(localPath, { codepage: 65001 })
   return { sheet_name_list: workbook.SheetNames, workbook }
 }
 
-const createXlsx = async (worksheets = []) => {
-  if (worksheets.length === 0) return
+export const createXLSXFile = (data, localPath) => {
+  const workbook = XLSX.utils.book_new()
+  XLSX.utils.book_append_sheet(workbook, XLSX.utils.json_to_sheet(data), "data")
 
-  const workbook = XLSX.utils.book_new() // Create a new blank workbook
-
-  for (let i = 0; i < worksheets.length; i++) {
-    const { name, content } = worksheets[i]
-    XLSX.utils.book_append_sheet(workbook, XLSX.utils.json_to_sheet(content), name) // Add the worksheet to the workbook
-  }
-  return workbook
+  XLSX.writeFileAsync(path.join(localPath), workbook, (e) => {
+    if (e) {
+      console.log(e)
+      throw new Error("La génération du fichier excel à échoué : ", e)
+    }
+  })
 }
 
-const convertIntoBuffer = (workbook) => {
+export const convertIntoBuffer = (workbook) => {
   return XLSX.write(workbook, { type: "buffer", bookType: "xlsx" })
 }
 
-const writeXlsxFile = async (workbook, filePath, fileName) => {
+export const writeXlsxFile = async (workbook, filePath, fileName) => {
   const execWrite = () =>
     new Promise((resolve) => {
       XLSX.writeFileAsync(path.join(__dirname(import.meta.url), `${filePath}/${fileName}`), workbook, (e) => {
@@ -48,19 +47,19 @@ const writeXlsxFile = async (workbook, filePath, fileName) => {
   await execWrite()
 }
 
-const removeLine = (data, regex) => {
+export const removeLine = (data, regex) => {
   return data
     .split("\n")
     .filter((val) => !regex.test(val))
     .join("\n")
 }
 
-const prepareMessageForMail = (data) => {
+export const prepareMessageForMail = (data) => {
   let result = data ? data.replace(/(<([^>]+)>)/gi, "") : data
   return result ? result.replace(/\r\n|\r|\n/gi, "<br />") : result
 }
 
-const parseCsv = (options = {}) => {
+export const parseCsv = (options = {}) => {
   return parse({
     trim: true,
     delimiter: ";",
@@ -74,7 +73,7 @@ const parseCsv = (options = {}) => {
   })
 }
 
-const fileDownloader = async (filePath, remoteFileName, { ftp = {} }) => {
+export const fileDownloader = async (filePath, remoteFileName, { ftp = {} }) => {
   const opt = {
     host: config.ftp.host,
     user: ftp.user,
@@ -88,5 +87,3 @@ const fileDownloader = async (filePath, remoteFileName, { ftp = {} }) => {
   await client.downloadFile(remoteFileName, filePath)
   await client.disconnect()
 }
-
-export { readJsonFromCsvFile, readXLSXFile, createXlsx, convertIntoBuffer, writeXlsxFile, removeLine, prepareMessageForMail, parseCsv, fileDownloader }
