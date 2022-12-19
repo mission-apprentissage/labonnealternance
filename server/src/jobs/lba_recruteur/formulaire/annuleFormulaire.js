@@ -1,10 +1,9 @@
-import axios from "axios"
 import moment from "moment"
 import dayjs from "../../../common/dayjs.js"
 import { logger } from "../../../common/logger.js"
 import { Formulaire } from "../../../common/model/index.js"
 import { asyncForEach } from "../../../common/utils/asyncUtils.js"
-import config from "../../../config.js"
+import { notifyToSlack } from "../../../common/utils/slackUtils.js"
 
 export const annuleFormulaire = async () => {
   const today = dayjs().startOf("day").utc(true)
@@ -28,28 +27,16 @@ export const annuleFormulaire = async () => {
     return acc
   }, [])
 
-  if (offersToCancel.length === 0) {
+  if (!offersToCancel.length) {
     logger.info("Aucune offre à annuler.")
-    await axios.post(config.slackWebhookUrl, {
-      text: `[${config.env.toUpperCase()} - JOB LBA - EXPIRATION] Aucune offre à annuler`,
-    })
+    notifyToSlack({ subject: "EXPIRATION OFFRE", message: "Aucune offre à annuler" })
     return
-  }
-
-  const stats = {
-    offersToCancel: offersToCancel.length,
-    totalCanceled: 0,
   }
 
   await asyncForEach(offersToCancel, async (offre) => {
     await Formulaire.findOneAndUpdate({ "offres._id": offre._id }, { $set: { "offres.$.statut": "Annulée" } })
-    stats.totalCanceled += 1
   })
 
-  if (offersToCancel.length > 0) {
-    logger.info(`${stats.totalCanceled} offres expirés`)
-    await axios.post(config.slackWebhookUrl, {
-      text: `[${config.env.toUpperCase()} - JOB LBA - EXPIRATION] *${stats.offersToCancel}/${stats.totalCanceled} offres* ont expirées et ont été annulées automatiquement`,
-    })
-  }
+  logger.info(`${stats.totalCanceled} offres expirés`)
+  notifyToSlack({ subject: "EXPIRATION OFFRE", message: `${offersToCancel.length} offres* ont expirées et ont été annulées automatiquement` })
 }
