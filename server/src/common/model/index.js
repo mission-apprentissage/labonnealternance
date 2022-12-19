@@ -24,11 +24,8 @@ const createModel = (modelName, descriptor, options = {}) => {
 const DomainesMetiers = createModel("domainesmetiers", schema.domainesMetiersSchema, {
   esIndexName: "domainesmetiers",
 })
-const ConvertedFormation_0 = createModel("convertedformation_0", schema.mnaFormationSchema, {
-  esIndexName: "convertedformation_0",
-})
-const ConvertedFormation_1 = createModel("convertedformation_1", schema.mnaFormationSchema, {
-  esIndexName: "convertedformation_1",
+const FormationCatalogue = createModel("formationcatalogues", schema.mnaFormationSchema, {
+  esIndexName: "formationcatalogues",
 })
 const DiplomesMetiers = createModel("diplomesmetiers", schema.diplomesMetiersSchema, {
   esIndexName: "diplomesmetiers",
@@ -58,8 +55,7 @@ const UserRecruteur = createModel("userRecruteur", schema.userRecruteurSchema, {
 
 export {
   DomainesMetiers,
-  ConvertedFormation_0,
-  ConvertedFormation_1,
+  FormationCatalogue,
   DiplomesMetiers,
   ApiCalls,
   Application,
