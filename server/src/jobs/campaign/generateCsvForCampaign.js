@@ -43,6 +43,16 @@ runScript(async () => {
       })
     }
 
+    if (formation.length === 0 || formation.length > 1) {
+      buffer.push({
+        email: jeune.email_contact,
+        lien: "https://labonnealternance.apprentissage.beta.gouv.fr",
+        prenom: jeune.prenom_apprenant,
+        libelle_formation: jeune.libelle_long_formation,
+        siret: jeune.siret_etablissement,
+      })
+    }
+
     if (formation.length === 1) {
       const x = formation[0]
 
@@ -52,7 +62,7 @@ runScript(async () => {
 
       const romes = x.rome_codes.toString()
       const [lat, long] = x.lieu_formation_geo_coordonnees.split(",")
-      const url = `https://labonnealternance.apprentissage.beta.gouv.fr/recherche-emploi?&display=list&romes=${romes}&radius=60&lat=${lat}&lon=${long}8&utm_source=campagne-mna&utm_medium=email&utm_campaign=jeunessanscontrat1222`
+      const url = `https://labonnealternance.apprentissage.beta.gouv.fr/recherche-emploi?&display=list&romes=${romes}&radius=60&lat=${lat}&lon=${long}&utm_source=campagne-mna&utm_medium=email&utm_campaign=jeunessanscontrat1222`
 
       buffer.push({
         email: jeune.email_contact,
