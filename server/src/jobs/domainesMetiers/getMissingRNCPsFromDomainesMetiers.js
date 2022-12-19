@@ -70,7 +70,7 @@ const getMissingRNCPsOfDomain = async (domain) => {
     }
 
     const response = await esClient.search({
-      index: "convertedformations",
+      index: "formationcatalogues",
       _source_includes: ["rncp_code", "rncp_intitule"],
       body,
     })
