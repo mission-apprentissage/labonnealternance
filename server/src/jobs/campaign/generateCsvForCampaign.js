@@ -1,5 +1,5 @@
 import __dirname from "../../common/dirname.js"
-import { ConvertedFormation_0 } from "../../common/model/index.js"
+import { FormationCatalogue } from "../../common/model/index.js"
 import { asyncForEach } from "../../common/utils/asyncUtils.js"
 import { createXLSXFile } from "../../common/utils/fileUtils.js"
 import { runScript } from "../scriptWrapper.js"
@@ -10,7 +10,7 @@ runScript(async () => {
 
   await asyncForEach(jeunes, async (jeune) => {
     let formation = []
-    formation = await ConvertedFormation_0.find({
+    formation = await FormationCatalogue.find({
       $or: [
         {
           etablissement_formateur_siret: jeune.siret_etablissement,
@@ -27,7 +27,7 @@ runScript(async () => {
     })
 
     if (!formation.length) {
-      formation = await ConvertedFormation_0.find({
+      formation = await FormationCatalogue.find({
         $or: [
           {
             etablissement_formateur_uai: jeune.uai_etablissement,
