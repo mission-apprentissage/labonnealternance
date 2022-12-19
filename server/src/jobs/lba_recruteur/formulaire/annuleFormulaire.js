@@ -38,5 +38,5 @@ export const annuleFormulaire = async () => {
   })
 
   logger.info(`${stats.totalCanceled} offres expirés`)
-  notifyToSlack({ subject: "EXPIRATION OFFRE", message: `${offersToCancel.length} offres* ont expirées et ont été annulées automatiquement` })
+  notifyToSlack({ subject: "EXPIRATION OFFRE", message: `*${offersToCancel.length} offres* ont expirées et ont été annulées automatiquement` })
 }
