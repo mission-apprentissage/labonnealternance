@@ -45,7 +45,6 @@ const BonnesBoites = createModel("bonnesboites", schema.bonneBoiteSchema, {
   esIndexName: "bonnesboites",
 })
 const User = createModel("user", schema.userSchema, { paginate: true })
-const UserEvent = createModel("userEvents", schema.userSchema, { paginate: true })
 const Appointment = createModel("appointment", schema.appointmentSchema, { paginate: true })
 const WidgetParameter = createModel("widgetParameter", schema.widgetParameterSchema, { paginate: true })
 const Etablissement = createModel("etablissement", schema.etablissementSchema, { paginate: true })
@@ -70,7 +69,6 @@ export {
   Opco,
   BonnesBoites,
   User,
-  UserEvent,
   Appointment,
   WidgetParameter,
   Etablissement,
