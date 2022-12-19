@@ -10,7 +10,6 @@ import { bonneBoiteSchema } from "./lbb/bonneBoite.js"
 import { emailBlacklist } from "./lbb/emailBlacklist.js"
 import { geoLocationSchema } from "./lbb/geoLocations.js"
 import { opco } from "./lbb/opco.js"
-import { logSchema } from "./log.js"
 import { mnaFormationSchema } from "./mnaFormation/mnaFormation.js"
 import { offreSchema } from "./offre.js"
 import { optoutSchema } from "./optout.js"
@@ -32,7 +31,6 @@ export default {
   geoLocationSchema,
   emailBlacklist,
   opco,
-  logSchema,
   userSchema,
   appointmentSchema,
   widgetParameterSchema,
