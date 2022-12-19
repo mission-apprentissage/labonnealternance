@@ -37,6 +37,6 @@ export const annuleFormulaire = async () => {
     await Formulaire.findOneAndUpdate({ "offres._id": offre._id }, { $set: { "offres.$.statut": "Annulée" } })
   })
 
-  logger.info(`${stats.totalCanceled} offres expirés`)
+  logger.info(`${offersToCancel.length} offres expirés`)
   notifyToSlack({ subject: "EXPIRATION OFFRE", message: `*${offersToCancel.length} offres* ont expirées et ont été annulées automatiquement` })
 }
