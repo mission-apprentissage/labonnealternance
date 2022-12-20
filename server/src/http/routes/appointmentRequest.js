@@ -116,12 +116,12 @@ export default ({ users, appointments, mailer, widgetParameters, etablissements 
    * @swagger
    * "/appointment-request/context/create":
    *  post:
-   *    summary: Crée un lien pointant vers le formulaire de prise de rendez-vous avec un CFA.
-   *    description: Génère un lien pointant vers le formulaire de mise en relation avec le contact d'une formation à partir des informations fournis.
+   *    summary: Génère un lien permettant d'accéder au formulaire de prise de rendez-vous avec un CFA.
+   *    description: A partir des informations fournies, on génère un lien d'accès à un formulaire de mise en relation entre un candidat à l'alternance et un contact en charge de la formation dans un CFA.
    *    tags:
    *        - Rendez-vous
    *    requestBody:
-   *      description: L'objet "rendez-vous".
+   *      description: L'objet "rendez-vous" doit être composé d'une clé ministère éducatif (identifiant de l'action de formation) et mentionner la provenance de la demande de mise en relation (referrer).
    *      required: true
    *      content:
    *        application/json:
@@ -133,7 +133,7 @@ export default ({ users, appointments, mailer, widgetParameters, etablissements 
    *                description: Clé Ministère Educatif
    *              referrer:
    *                type: string
-   *                description: Source demandante la génération du lien
+   *                description: Plateforme à l'initiative de la demande de génération du lien
    *                enum:
    *                  - affelnet
    *                  - parcoursup
@@ -170,7 +170,7 @@ export default ({ users, appointments, mailer, widgetParameters, etablissements 
    *                  example: 93170
    *                etablissement_formateur_siret:
    *                  type: string
-   *                  description: Siret de l'établissement foramteur
+   *                  description: Siret de l'établissement formateur
    *                  example: 35386977900036
    *                cfd:
    *                  type: string
@@ -190,7 +190,7 @@ export default ({ users, appointments, mailer, widgetParameters, etablissements 
    *                  example: 101249P01313538697790003635386977900036-93006#L01
    *                form_url:
    *                  type: string
-   *                  description: Lien généré pointant vers le formulaire.
+   *                  description: Lien généré permettant d'accéder au formulaire de mise en relation.
    *                  example: http://https://labonnealternance.apprentissage.beta.gouv.fr/espace-pro/form?referrer=parcoursup&cleMinistereEducatif=101249P01313538697790003635386977900036-93006%23L01
    */
   router.post(
