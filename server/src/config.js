@@ -102,6 +102,10 @@ const config = {
       role: env.get("LBA_USERS_DEFAULT_ADMIN_ROLE").default("administrator").asString(),
     },
   },
+  catalogueMe: {
+    username: env.get("LBA_CATALOGUE_ME_USERNAME").default("admin").asString(),
+    password: env.get("LBA_CATALOGUE_ME_PASSWORD").default("password").asString(),
+  },
 }
 
 export default config
