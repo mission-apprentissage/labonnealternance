@@ -20,5 +20,5 @@ http {
     resolver DNS_SERVER valid=5s;
 
     include /etc/nginx/conf.d/*.conf;
-    include env/conf.d/*.conf;
+    include /etc/nginx/conf.d/env/*.conf;
 }
