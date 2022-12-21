@@ -41,5 +41,32 @@ server {
 
     include includes/location_*.conf;
     include includes/env/location_*.conf;
+
 }
 
+server {
+    listen 443 ssl http2;
+
+    server_name labonnealternance.pole-emploi.fr;
+    set $always_redirect false;
+
+    ssl_certificate /data/pole-emploi-fullchain.pem;
+    ssl_certificate_key /data/pole-emploi-privkey.pem;
+    ssl_session_timeout 1d;
+    ssl_session_cache shared:MozSSL:10m;
+    ssl_session_tickets off;
+
+    ssl_dhparam /etc/ssl/certs/dhparam-${PROXY_SSL_DH_BITS}.pem;
+
+    ssl_protocols ${PROXY_SSL_PROTOCOLS};
+    ssl_ciphers ${PROXY_SSL_CIPHERS};
+    ssl_prefer_server_ciphers ${PROXY_SSL_PREFER_CIPHERS};
+
+    ssl_stapling ${PROXY_SSL_OCSP_STAPLING};
+    ssl_stapling_verify ${PROXY_SSL_OCSP_STAPLING};
+
+    ssl_verify_client ${PROXY_SSL_VERIFY};
+
+    include includes/location_*.conf;
+    include includes/env/location_*.conf;
+}
