@@ -54,13 +54,8 @@ const ResultLists = (props) => {
           )}
           {props.trainings.map((training, idx) => {
             const isCfa = isCfaEntreprise(training?.company?.siret, training?.company?.headquarter?.siret)
-            const hasAlsoJob = hasAlsoEmploi({
-              isCfa,
-              searchedMatchaJobs: props.jobs?.matchas,
-              company: training?.company,
-            })
 
-            return renderTraining(props.isTestMode, idx, training, props.handleSelectItem, props.searchForJobsOnNewCenter, hasAlsoJob, isCfa)
+            return renderTraining(props.isTestMode, idx, training, props.handleSelectItem, props.searchForJobsOnNewCenter, isCfa)
           })}
         </>
       )
