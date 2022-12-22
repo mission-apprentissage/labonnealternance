@@ -100,8 +100,8 @@ const APropos = () => (
           <Text as="p" mb={4}>
             7 employeurs sur 10 recrutent sans déposer d’offre d’emploi.
             <br />
-            Il est ainsi essentiel de diversifier vos démarches en répondant à des offres d'emploi ainsi qu'en envoyant des candidatures spontanées.
-            Nous vous conseillons également de cibler au mieux vos candidatures, et de les multiplier. Il faut envoyer en moyenne 30 candidatures personnalisées pour décrocher un entretien.
+            Il est ainsi essentiel de diversifier vos démarches en répondant à des offres d'emploi ainsi qu'en envoyant des candidatures spontanées. Nous vous conseillons également
+            de cibler au mieux vos candidatures, et de les multiplier. Il faut envoyer en moyenne 30 candidatures personnalisées pour décrocher un entretien.
           </Text>
           <Text as="p" mb={4}>
             Notre algorithme La bonne alternance analyse les offres et les recrutements des 6 dernières années pour vous proposer les entreprises qui recrutent régulièrement en
