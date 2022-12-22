@@ -85,7 +85,7 @@ const LocationDetail = ({ item, isCfa }) => {
             <Box width="30px" minWidth="30px" pl="1px" mr={2}>
               <Image mt="2px" mr={2} src="/images/icons/small_map_point.svg" alt="" />
             </Box>
-            <Link variant="basicUnderlined" url={getCompanyPathLink(item)}>
+            <Link isExternal variant="basicUnderlined" url={getCompanyPathLink(item)}>
               Obtenir l'itinéraire <ExternalLinkIcon mb="3px" ml="2px" />
             </Link>
           </Flex>
@@ -113,7 +113,7 @@ const LocationDetail = ({ item, isCfa }) => {
           <Box width="30px" minWidth="30px" pl="1px" mr={2}>
             <Image mt="2px" src="/images/icons/small_map_point.svg" alt="" />
           </Box>
-          <Link variant="basicUnderlined" href={getPathLink(item)}>
+          <Link isExternal variant="basicUnderlined" href={getPathLink(item)}>
             Obtenir l'itinéraire <ExternalLinkIcon mb="3px" ml="2px" />
           </Link>
         </Flex>
