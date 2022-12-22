@@ -65,7 +65,7 @@ const stats2 = () => (
         <iframe
           title="stats_candidatures_offres_lba"
           className="c-stats-iframe c-stats-iframe__lba"
-          src="https://labonnealternance.pole-emploi.fr/metabase/public/dashboard/9b0132ca-2629-4fa7-9be8-9183f2f7d98d"
+          src="https://labonnealternance.apprentissage.beta.gouv.fr/metabase/public/dashboard/9b0132ca-2629-4fa7-9be8-9183f2f7d98d"
           loading="lazy"
         />
       </div>
@@ -83,7 +83,7 @@ const stats2 = () => (
         <iframe
           title="stats_taux_reponse_candidatures"
           className="c-stats-iframe c-stats-iframe__lba"
-          src="https://labonnealternance.pole-emploi.fr/metabase/public/dashboard/7f66e10d-0f1a-4839-b905-09aac03750dc"
+          src="https://labonnealternance.apprentissage.beta.gouv.fr/metabase/public/dashboard/7f66e10d-0f1a-4839-b905-09aac03750dc"
           loading="lazy"
         />
       </div>
