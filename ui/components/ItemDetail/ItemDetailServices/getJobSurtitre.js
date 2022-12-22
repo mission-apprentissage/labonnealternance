@@ -44,7 +44,7 @@ export default function getJobSurtitre({ selectedItem, kind, isMandataire, isCol
               <Text as="span" fontWeight={400}>
                 {selectedItem?.nafs ? (
                   <>
-                    Une société du secteur&nbsp;<bold>${selectedItem.nafs[0].label}</bold>&nbsp;propose actuellement cette offre
+                    Une société du secteur&nbsp;<bold>{selectedItem.nafs[0].label}</bold>&nbsp;propose actuellement cette offre
                   </>
                 ) : (
                   "Une société ayant souhaité garder l'anonymat"
