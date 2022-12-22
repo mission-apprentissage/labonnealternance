@@ -11,11 +11,11 @@ export const renderJob = (isTestMode, idx, job, handleSelectItem, searchForJobsO
     return <Job key={idx} job={job} handleSelectItem={handleSelectItem} searchForTrainingsOnNewCenter={searchForJobsOnNewCenter} />
   }
 }
-export const renderTraining = (isTestMode, idx, training, handleSelectItem, searchForJobsOnNewCenter, hasAlsoJob, isCfa) => {
+export const renderTraining = (isTestMode, idx, training, handleSelectItem, searchForJobsOnNewCenter, isCfa) => {
   if (isTestMode) {
     return <Box key={idx} data-testid={`Training-${training?.id}`}></Box>
   } else {
-    return <Training key={idx} training={training} handleSelectItem={handleSelectItem} searchForJobsOnNewCenter={searchForJobsOnNewCenter} hasAlsoJob={hasAlsoJob} isCfa={isCfa} />
+    return <Training key={idx} training={training} handleSelectItem={handleSelectItem} searchForJobsOnNewCenter={searchForJobsOnNewCenter} isCfa={isCfa} />
   }
 }
 export const renderLbb = (isTestMode, idx, company, handleSelectItem, searchForTrainingsOnNewCenter) => {
