@@ -61,9 +61,14 @@ const CGU = () => {
               </Text>
               <Text as="p" mb="2">
                 Le site internet{" "}
-                <Link href="https://labonnealternance.apprentissage.beta.gouv.fr/" aria-label="Redirection vers la page d'accueil" title="labonnealternance.apprentissage.beta.gouv.fr" isExternal /> a pour
-                objet de faciliter les entrées en alternance des usagers en informant sur les formations en apprentissage ainsi que les offres d&apos;emplois et entreprises auprès
-                desquelles adresser une candidature.
+                <Link
+                  href="https://labonnealternance.apprentissage.beta.gouv.fr/"
+                  aria-label="Redirection vers la page d'accueil"
+                  title="labonnealternance.apprentissage.beta.gouv.fr"
+                  isExternal
+                />{" "}
+                a pour objet de faciliter les entrées en alternance des usagers en informant sur les formations en apprentissage ainsi que les offres d&apos;emplois et entreprises
+                auprès desquelles adresser une candidature.
               </Text>
               <Text as="p" mb="2">
                 L’utilisateur peut filtrer tout ou partie des informations à l’aide des filtres suivants : niveau de diplôme préparé, secteur d’emploi et secteur géographique.
@@ -92,8 +97,8 @@ const CGU = () => {
                 Recherche de formations et d’entreprises
               </Text>
               <Text as="p" mb="2">
-                Le service proposé sur le site labonnealternance.apprentissage.beta.gouv.fr permet à l’utilisateur de rechercher des formations et/ou entreprises susceptibles d’embaucher en
-                alternance des profils similaires au sien, en fonction des données qu’il a saisies (domaine/métier, niveau de diplôme, secteur géographique).
+                Le service proposé sur le site labonnealternance.apprentissage.beta.gouv.fr permet à l’utilisateur de rechercher des formations et/ou entreprises susceptibles
+                d’embaucher en alternance des profils similaires au sien, en fonction des données qu’il a saisies (domaine/métier, niveau de diplôme, secteur géographique).
               </Text>
               <Text as="p" mb="2">
                 Les résultats de recherche sont accessibles en liste et sur une carte. Ils sont classés en fonction de leur proximité géographique par rapport au périmètre défini
@@ -124,7 +129,11 @@ const CGU = () => {
               </Text>
               <Text as="p" mb="2">
                 Le service La bonne alternance permet à des personnes à la recherche d’une alternance d’envoyer des candidatures directement à partir du site internet{" "}
-                <Link href="https://labonnealternance.apprentissage.beta.gouv.fr/" aria-label="Redirection vers la page d'accueil" title="labonnealternance.apprentissage.beta.gouv.fr">
+                <Link
+                  href="https://labonnealternance.apprentissage.beta.gouv.fr/"
+                  aria-label="Redirection vers la page d'accueil"
+                  title="labonnealternance.apprentissage.beta.gouv.fr"
+                >
                   https://labonnealternance.apprentissage.beta.gouv.fr/
                 </Link>
                 . Et ce, à l’ensemble des entreprises pour lesquelles un email de contact est connu.
@@ -168,7 +177,11 @@ const CGU = () => {
                 <strong>5.2 L’Utilisateur</strong>
               </Text>
               L’utilisation du site internet{" "}
-              <Link href="https://labonnealternance.apprentissage.beta.gouv.fr/" aria-label="Redirection vers la page d'accueil" title="labonnealternance.apprentissage.beta.gouv.fr">
+              <Link
+                href="https://labonnealternance.apprentissage.beta.gouv.fr/"
+                aria-label="Redirection vers la page d'accueil"
+                title="labonnealternance.apprentissage.beta.gouv.fr"
+              >
                 labonnealternance.apprentissage.beta.gouv.fr
               </Link>{" "}
               est soumise au respect par l’utilisateur :
