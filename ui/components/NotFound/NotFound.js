@@ -18,7 +18,7 @@ const NotFound = () => (
               cliquant sur le lien ci-dessous.
             </p>
             <div className="mt-4 mb-5 mb-lg-0">
-              <a href="https://labonnealternance.pole-emploi.fr" className="btn btn-block btn-primary mb-2 mx-auto w-50">
+              <a href="https://labonnealternance.apprentissage.beta.gouv.fr" className="btn btn-block btn-primary mb-2 mx-auto w-50">
                 Page d&apos;accueil
               </a>
             </div>

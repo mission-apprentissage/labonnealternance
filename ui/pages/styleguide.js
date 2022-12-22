@@ -215,7 +215,7 @@ const Styleguide = () => {
 
         <p>
           Et voici{" "}
-          <a href="https://labonnealternance.pole-emploi.fr/" rel="noopener noreferrer">
+          <a href="https://labonnealternance.apprentissage.beta.gouv.fr/" rel="noopener noreferrer">
             un lien vers la home
           </a>
           .

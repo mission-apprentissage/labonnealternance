@@ -13,7 +13,7 @@ const OffresGratuites = () => {
           </Text>
           <Box variant="homeEditorialText">
             Elles sont mises en ligne sur les sites les plus visités par les candidats en recherche d’alternance :{" "}
-            <Link variant="homeEditorialLink" aria-label="Redirection vers la page d'accueil" href="https://labonnealternance.pole-emploi.fr" isExternal>
+            <Link variant="homeEditorialLink" aria-label="Redirection vers la page d'accueil" href="https://labonnealternance.apprentissage.beta.gouv.fr" isExternal>
               La bonne alternance
             </Link>
             ,{" "}

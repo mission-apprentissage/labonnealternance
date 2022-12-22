@@ -85,7 +85,7 @@ const Cookies = () => (
             </Text>
             <Text as="p" mb="2">
               Des cookies sont utilisés sur le site{" "}
-              <Link href="https://labonnealternance.pole-emploi.fr/" isExternal>
+              <Link href="https://labonnealternance.apprentissage.beta.gouv.fr/" isExternal>
                 La bonne alternance
               </Link>{" "}
               afin d’effectuer de la mesure d’audience, des analyses statistiques dans le but d&apos;améliorer l&apos;expérience utilisateur et la performance du site internet. Ces
@@ -119,7 +119,7 @@ const Cookies = () => (
               L’utilisateur dispose de différents moyens pour gérer ses choix en matière de cookies. Les modalités de gestion diffèrent selon que le cookie est soumis ou non à
               consentement préalable. L’utilisateur peut modifier ses choix à tout moment. Pour information, le paramétrage des cookies est susceptible de modifier les conditions
               de navigation sur le site internet{" "}
-              <ExternalLink url="https://labonnealternance.pole-emploi.fr/" aria-label="Redirection vers la page d'accueil" title="La bonne alternance" />, ainsi que les conditions
+              <ExternalLink url="https://labonnealternance.apprentissage.beta.gouv.fr/" aria-label="Redirection vers la page d'accueil" title="La bonne alternance" />, ainsi que les conditions
               d’accès à certains services et d’entrainer des dysfonctionnements de certaines fonctionnalités.
             </Text>
 
