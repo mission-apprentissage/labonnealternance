@@ -79,7 +79,7 @@ export const syncEtablissementsAndFormations = async ({ etablissements, widgetPa
             {
               id_catalogue: formation._id,
               email_rdv: emailRdv,
-              id_parcoursup: formationMinistereEducatif.parcoursup_id,
+              id_parcoursup: formationMinistereEducatif?.parcoursup_id,
               cle_ministere_educatif: formation.cle_ministere_educatif,
               etablissement_raison_sociale: formation.etablissement_formateur_entreprise_raison_sociale,
               formation_cfd: formation.cfd,
@@ -107,7 +107,7 @@ export const syncEtablissementsAndFormations = async ({ etablissements, widgetPa
           await widgetParameters.createParameter({
             id_catalogue: formation._id,
             email_rdv: emailRdv,
-            id_parcoursup: formationMinistereEducatif.parcoursup_id,
+            id_parcoursup: formationMinistereEducatif?.parcoursup_id,
             cle_ministere_educatif: formation.cle_ministere_educatif,
             etablissement_raison_sociale: formation.etablissement_formateur_entreprise_raison_sociale,
             formation_cfd: formation.cfd,
