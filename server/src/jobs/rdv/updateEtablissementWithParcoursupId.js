@@ -6,6 +6,7 @@ const getParcoursupId = async () => {
   const formations = await getFormationsFromCatalogueMe({
     limit: 1000,
     query: { parcoursup_id: { $ne: null }, parcoursup_statut: "publié", published: true, catalogue_published: true },
+    select: { parcoursup_id: 1 },
   })
 
   const countBeforeUpdate = await WidgetParameter.countDocuments({ id_parcoursup: { $eq: null } })
