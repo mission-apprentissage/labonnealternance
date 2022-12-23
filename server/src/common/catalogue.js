@@ -30,15 +30,14 @@ const createCatalogueMeAPI = async () => {
 
 export const catalogueMeAPI = await createCatalogueMeAPI()
 
-export const getFormationsFromCatalogueMe = async ({ query, limit, page = 1, allFormations = [] }) => {
-  let params = { page, limit, query }
+export const getFormationsFromCatalogueMe = async ({ query, limit, page = 1, select, allFormations = [] }) => {
+  let params = { page, limit, query, select }
 
   try {
     const response = await catalogueMeAPI.get(`/entity/formations`, { params })
 
     const { formations, pagination } = response.data
 
-    console.log(pagination)
     allFormations = allFormations.concat(formations)
 
     if (page < pagination.nombre_de_page) {
