@@ -60,6 +60,7 @@ services:
   smtp:
     image: mailhog/mailhog
     container_name: lba_mailhog
+    mem_limit: 256m
     ports:
       - "1025:1025"
     volumes:

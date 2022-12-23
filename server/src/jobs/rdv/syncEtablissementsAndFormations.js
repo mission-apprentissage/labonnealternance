@@ -1,7 +1,8 @@
-import { referrers } from "../../common/model/constants/referrers.js"
+import { getFormationsFromCatalogueMe } from "../../common/catalogue.js"
 import { logger } from "../../common/logger.js"
-import { dayjs } from "../../common/utils/dayjs.js"
+import { referrers } from "../../common/model/constants/referrers.js"
 import { getFormations } from "../../common/utils/catalogue.js"
+import { dayjs } from "../../common/utils/dayjs.js"
 import { isValidEmail } from "../../common/utils/isValidEmail.js"
 
 /**
@@ -30,19 +31,25 @@ export const syncEtablissementsAndFormations = async ({ etablissements, widgetPa
   const batchSize = 50
   let response
 
+  const catalogueMinistereEducatif = await getFormationsFromCatalogueMe({
+    limit: 1000,
+    query: { parcoursup_id: { $ne: null }, parcoursup_statut: "publié", published: true, catalogue_published: true },
+    select: { parcoursup_id: 1, cle_ministere_educatif: 1 },
+  })
+
   do {
     const page = response?.pagination?.page ? Number(response?.pagination?.page) + 1 : 1
 
-    logger.info(`Fetch catalogue page: ${page} / ${response?.pagination?.nombre_de_page}`)
     response = await getFormations({}, page, batchSize, false)
 
     await Promise.all(
       response.formations.map(async (formation) => {
-        const [widgetParameter, etablissement] = await Promise.all([
+        const [widgetParameter, etablissement, formationMinistereEducatif] = await Promise.all([
           widgetParameters.findOne({
             cle_ministere_educatif: formation.cle_ministere_educatif,
           }),
           etablissements.findOne({ siret_formateur: formation.etablissement_formateur_siret }),
+          catalogueMinistereEducatif.find((formationMe) => formationMe.cle_ministere_educatif === formation.cle_ministere_educatif),
         ])
 
         // Activate opt_out referrers
@@ -72,7 +79,7 @@ export const syncEtablissementsAndFormations = async ({ etablissements, widgetPa
             {
               id_catalogue: formation._id,
               email_rdv: emailRdv,
-              id_parcoursup: formation.parcoursup_id,
+              id_parcoursup: formationMinistereEducatif?.parcoursup_id,
               cle_ministere_educatif: formation.cle_ministere_educatif,
               etablissement_raison_sociale: formation.etablissement_formateur_entreprise_raison_sociale,
               formation_cfd: formation.cfd,
@@ -100,7 +107,7 @@ export const syncEtablissementsAndFormations = async ({ etablissements, widgetPa
           await widgetParameters.createParameter({
             id_catalogue: formation._id,
             email_rdv: emailRdv,
-            id_parcoursup: formation.parcoursup_id,
+            id_parcoursup: formationMinistereEducatif?.parcoursup_id,
             cle_ministere_educatif: formation.cle_ministere_educatif,
             etablissement_raison_sociale: formation.etablissement_formateur_entreprise_raison_sociale,
             formation_cfd: formation.cfd,
