@@ -1,10 +1,55 @@
 /* eslint-disable */
 // KBA 04/11/2022 :   1:17  error  "got" is not found  node/no-missing-import
 
+import axios from "axios"
 import got from "got"
 import { sortBy } from "lodash-es"
 import { getDistanceInKm } from "../common/geolib.js"
 import config from "../config.js"
+
+/**
+ * @description create an axios instance to connect to the ministère educatif catalogue
+ * @returns {instanceof<API>}
+ */
+const createCatalogueMeAPI = async () => {
+  const instance = axios.create({ baseURL: "https://catalogue.apprentissage.education.gouv.fr/api/v1" })
+
+  try {
+    const response = await axios.post("https://catalogue.apprentissage.education.gouv.fr/api/v1/auth/login", {
+      username: config.catalogueMe.username,
+      password: config.catalogueMe.password,
+    })
+
+    instance.defaults.headers.common["Cookie"] = response.headers["set-cookie"][0]
+  } catch (error) {
+    console.log(error)
+  }
+
+  return instance
+}
+
+export const catalogueMeAPI = await createCatalogueMeAPI()
+
+export const getFormationsFromCatalogueMe = async ({ query, limit, page = 1, select, allFormations = [] }) => {
+  let params = { page, limit, query, select }
+
+  try {
+    const response = await catalogueMeAPI.get(`/entity/formations`, { params })
+
+    const { formations, pagination } = response.data
+
+    allFormations = allFormations.concat(formations)
+
+    if (page < pagination.nombre_de_page) {
+      return getFormationsFromCatalogueMe({ page: page + 1, allFormations, limit, query, select })
+    } else {
+      return allFormations
+    }
+  } catch (error) {
+    logger.error(error)
+  }
+}
+
 /**
  * @description Returns wanted page number.
  * @param {number|undefined} responsePage Current page.

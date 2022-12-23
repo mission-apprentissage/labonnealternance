@@ -61,9 +61,14 @@ const CGU = () => {
               </Text>
               <Text as="p" mb="2">
                 Le site internet{" "}
-                <Link href="https://labonnealternance.pole-emploi.fr/" aria-label="Redirection vers la page d'accueil" title="labonnealternance.pole-emploi.fr" isExternal /> a pour
-                objet de faciliter les entrées en alternance des usagers en informant sur les formations en apprentissage ainsi que les offres d&apos;emplois et entreprises auprès
-                desquelles adresser une candidature.
+                <Link
+                  href="https://labonnealternance.apprentissage.beta.gouv.fr/"
+                  aria-label="Redirection vers la page d'accueil"
+                  title="labonnealternance.apprentissage.beta.gouv.fr"
+                  isExternal
+                />{" "}
+                a pour objet de faciliter les entrées en alternance des usagers en informant sur les formations en apprentissage ainsi que les offres d&apos;emplois et entreprises
+                auprès desquelles adresser une candidature.
               </Text>
               <Text as="p" mb="2">
                 L’utilisateur peut filtrer tout ou partie des informations à l’aide des filtres suivants : niveau de diplôme préparé, secteur d’emploi et secteur géographique.
@@ -92,8 +97,8 @@ const CGU = () => {
                 Recherche de formations et d’entreprises
               </Text>
               <Text as="p" mb="2">
-                Le service proposé sur le site labonnealternance.pole-emploi.fr permet à l’utilisateur de rechercher des formations et/ou entreprises susceptibles d’embaucher en
-                alternance des profils similaires au sien, en fonction des données qu’il a saisies (domaine/métier, niveau de diplôme, secteur géographique).
+                Le service proposé sur le site labonnealternance.apprentissage.beta.gouv.fr permet à l’utilisateur de rechercher des formations et/ou entreprises susceptibles
+                d’embaucher en alternance des profils similaires au sien, en fonction des données qu’il a saisies (domaine/métier, niveau de diplôme, secteur géographique).
               </Text>
               <Text as="p" mb="2">
                 Les résultats de recherche sont accessibles en liste et sur une carte. Ils sont classés en fonction de leur proximité géographique par rapport au périmètre défini
@@ -124,8 +129,12 @@ const CGU = () => {
               </Text>
               <Text as="p" mb="2">
                 Le service La bonne alternance permet à des personnes à la recherche d’une alternance d’envoyer des candidatures directement à partir du site internet{" "}
-                <Link href="https://labonnealternance.pole-emploi.fr/" aria-label="Redirection vers la page d'accueil" title="labonnealternance.pole-emploi.fr">
-                  https://labonnealternance.pole-emploi.fr/
+                <Link
+                  href="https://labonnealternance.apprentissage.beta.gouv.fr/"
+                  aria-label="Redirection vers la page d'accueil"
+                  title="labonnealternance.apprentissage.beta.gouv.fr"
+                >
+                  https://labonnealternance.apprentissage.beta.gouv.fr/
                 </Link>
                 . Et ce, à l’ensemble des entreprises pour lesquelles un email de contact est connu.
               </Text>
@@ -168,8 +177,12 @@ const CGU = () => {
                 <strong>5.2 L’Utilisateur</strong>
               </Text>
               L’utilisation du site internet{" "}
-              <Link href="https://labonnealternance.pole-emploi.fr/" aria-label="Redirection vers la page d'accueil" title="labonnealternance.pole-emploi.fr">
-                labonnealternance.pole-emploi.fr
+              <Link
+                href="https://labonnealternance.apprentissage.beta.gouv.fr/"
+                aria-label="Redirection vers la page d'accueil"
+                title="labonnealternance.apprentissage.beta.gouv.fr"
+              >
+                labonnealternance.apprentissage.beta.gouv.fr
               </Link>{" "}
               est soumise au respect par l’utilisateur :
               <UnorderedList mb="2">
@@ -189,7 +202,7 @@ const CGU = () => {
               </Text>
               <Text as="p" mb="2">
                 L’utilisation du moteur de recherche disponible sur le site internet{" "}
-                <Link href="https://labonnealternance.pole-emploi.fr/" aria-label="Redirection vers la page d'accueil" title="La bonne alternance">
+                <Link href="https://labonnealternance.apprentissage.beta.gouv.fr/" aria-label="Redirection vers la page d'accueil" title="La bonne alternance">
                   La bonne alternance
                 </Link>{" "}
                 nécessite d’indiquer le(s) métier(s) recherché(s), le périmètre géographique souhaité et de manière facultative le niveau d’études. Ces données sont collectées et
@@ -199,7 +212,7 @@ const CGU = () => {
               </Text>
               <Text as="p" mb="2">
                 Les données à caractère personnel de l’utilisateur mentionnées ci-dessus sont destinées aux agents de Pôle emploi en charge du service de{" "}
-                <Link href="https://labonnealternance.pole-emploi.fr/" aria-label="Redirection vers la page d'accueil" title="La bonne alternance">
+                <Link href="https://labonnealternance.apprentissage.beta.gouv.fr/" aria-label="Redirection vers la page d'accueil" title="La bonne alternance">
                   La bonne alternance
                 </Link>
                 .
@@ -210,7 +223,7 @@ const CGU = () => {
               </Text>
               <Text as="p" mb="2">
                 Les coordonnées de contact mentionnées ci-dessus sont destinées aux agents de Pôle emploi en charge du service et aux utilisateurs du service de{" "}
-                <Link href="https://labonnealternance.pole-emploi.fr/" aria-label="Redirection vers la page d'accueil" title="La bonne alternance">
+                <Link href="https://labonnealternance.apprentissage.beta.gouv.fr/" aria-label="Redirection vers la page d'accueil" title="La bonne alternance">
                   La bonne alternance
                 </Link>
                 .
@@ -253,8 +266,8 @@ const CGU = () => {
                 sans l&apos;autorisation expresse et préalable de Pôle emploi constitue un acte de contrefaçon, sanctionné en application de l’article L.716-1 du même code.
                 <br />
                 Par ailleurs, le site{" "}
-                <Link url="https://labonnealternance.pole-emploi.fr/" aria-label="Redirection vers la page d'accueil">
-                  labonnealternance.pole-emploi.fr
+                <Link url="https://labonnealternance.apprentissage.beta.gouv.fr/" aria-label="Redirection vers la page d'accueil">
+                  labonnealternance.apprentissage.beta.gouv.fr
                 </Link>{" "}
                 contient des contenus sur lesquels des tiers détiennent des droits de propriété intellectuelle (dessin, graphisme, marque, etc.) ou un droit à l’image (photo,
                 visuel mettant en scène une personne physique, vidéo, etc.). Les internautes ne sont pas autorisés à réutiliser ces contenus en l’absence de l’autorisation

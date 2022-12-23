@@ -12,7 +12,7 @@ const referrers = {
     code: 2,
     name: "LBA",
     full_name: "La bonne alternance",
-    url: "https://labonnealternance.pole-emploi.fr",
+    url: "https://labonnealternance.apprentissage.beta.gouv.fr",
   },
   PFR_PAYS_DE_LA_LOIRE: {
     code: 3,
