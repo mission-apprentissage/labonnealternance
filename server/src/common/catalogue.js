@@ -41,7 +41,7 @@ export const getFormationsFromCatalogueMe = async ({ query, limit, page = 1, sel
     allFormations = allFormations.concat(formations)
 
     if (page < pagination.nombre_de_page) {
-      return getFormationsFromCatalogueMe({ page: page + 1, allFormations, limit, query })
+      return getFormationsFromCatalogueMe({ page: page + 1, allFormations, limit, query, select })
     } else {
       return allFormations
     }
