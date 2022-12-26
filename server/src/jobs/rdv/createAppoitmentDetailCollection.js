@@ -16,8 +16,9 @@ runScript(async () => {
   const apt = await Appointment.find().lean()
 
   await asyncForEach(apt, async (rdv) => {
-    const filtApt = omit(rdv, ["_id", "_v", "__v"])
     const candidat = await User.findById(rdv.candidat_id).lean()
+
+    const filtApt = omit(rdv, ["_id", "_v", "__v"])
     const filtCandidat = omit(candidat, ["_id", "__v", "password"])
 
     filtCandidat.firstname = candidat?.firstname ? normalise(candidat.firstname) : null
