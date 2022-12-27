@@ -36,7 +36,7 @@ const referrers = {
     code: 6,
     name: "AFFELNET",
     full_name: "Affelnet",
-    url: "https://www.ac-versailles.fr/affelnet-lycee-121477",
+    url: "https://affectation3e.phm.education.gouv.fr/pna-public",
   },
 }
 
