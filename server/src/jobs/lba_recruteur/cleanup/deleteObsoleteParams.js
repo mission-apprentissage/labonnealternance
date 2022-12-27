@@ -1,6 +1,6 @@
 import { pick } from "lodash-es"
 import { logger } from "../../../common/logger.js"
-import { Formulaire, User } from "../../../common/model/index.js"
+import { Formulaire, UserRecruteur } from "../../../common/model/index.js"
 import { runScript } from "../../scriptWrapper.js"
 
 const updateFormulaire = async () => {
@@ -22,7 +22,7 @@ const updateFormulaire = async () => {
 
 const updateUser = async () => {
   // update record using MongoDB API to avoid timestamp automatic update
-  await User.collection.updateMany({}, { $unset: { username: "", mail_sent: "" } })
+  await UserRecruteur.collection.updateMany({}, { $unset: { username: "", mail_sent: "" } })
 }
 
 const format = (stat) => pick(stat, ["ns", "size", "count"])
@@ -34,11 +34,11 @@ const getStat = async (db) => {
 runScript(async () => {
   logger.info("Before :")
   console.log(await getStat(Formulaire))
-  console.log(await getStat(User))
+  console.log(await getStat(UserRecruteur))
   await updateFormulaire()
   await updateUser()
   logger.info("———————————————")
   logger.info("After :")
   console.log(await getStat(Formulaire))
-  console.log(await getStat(User))
+  console.log(await getStat(UserRecruteur))
 })
