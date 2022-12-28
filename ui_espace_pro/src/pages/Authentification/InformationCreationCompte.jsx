@@ -214,8 +214,8 @@ export default () => {
             {location.state?.informationSiret?.opco === undefined && !validateOpcoChoice && type === "ENTREPRISE" && (
               <SelectionManuelleOcpo opcoChoice={opcoChoice} setOpcoChoice={setOpcoChoice} setValidateOpcoChoice={setValidateOpcoChoice} />
             )}
-            {informationOpco && <InformationOpco disabled={location.state?.informationSiret.opco} informationOpco={informationOpco} resetOpcoChoice={resetOpcoChoice} />}
             <InformationLegaleEntreprise {...informationEntreprise} />
+            {informationOpco && <InformationOpco disabled={location.state?.informationSiret.opco} informationOpco={informationOpco} resetOpcoChoice={resetOpcoChoice} />}
           </Box>
         </SimpleGrid>
       </AuthentificationLayout>
