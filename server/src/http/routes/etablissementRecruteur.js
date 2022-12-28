@@ -102,17 +102,32 @@ export default ({ etablissementsRecruteur, usersRecruteur, formulaire, mailer })
 
       opcoResult = await etablissementsRecruteur.getOpco(req.params.siret)
 
-      if (opcoResult.data?.searchStatus === "NOT_FOUND") {
-        opcoResult = await etablissementsRecruteur.getIdcc(req.params.siret)
+      switch (opcoResult.data?.searchStatus) {
+        case "OK":
+          response.opco = opcoResult.data?.opcoName
+          response.idcc = opcoResult.data?.idcc
+          break
 
-        if (opcoResult.data[0].conventions?.length !== 0) {
-          const { num } = opcoResult.data[0]?.conventions[0]
-          opcoResult = await etablissementsRecruteur.getOpcoByIdcc(num)
-        }
+        case "MULTIPLE_OPCO":
+          response.opco = "Opco multiple"
+          response.idcc = "Opco multiple, IDCC non définit"
+          break
+
+        case "NOT_FOUND":
+          opcoResult = await etablissementsRecruteur.getIdcc(req.params.siret)
+          if (opcoResult.data[0].conventions?.length !== 0) {
+            const { num } = opcoResult.data[0]?.conventions[0]
+            opcoResult = await etablissementsRecruteur.getOpcoByIdcc(num)
+
+            response.opco = opcoResult.data?.opcoName ?? undefined
+            response.idcc = opcoResult.data?.idcc ?? undefined
+          }
+          break
+
+        default:
+          break
       }
 
-      response.opco = opcoResult.data?.opcoName ?? undefined
-      response.idcc = opcoResult.data?.idcc ?? undefined
       response.geo_coordonnees = await etablissementsRecruteur.getGeoCoordinates(`${response.rue}, ${response.code_postal}, ${response.commune}`)
 
       return res.json(response)
