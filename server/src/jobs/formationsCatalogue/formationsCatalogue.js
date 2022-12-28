@@ -1,14 +1,12 @@
 import Sentry from "@sentry/node"
 import { oleoduc, writeData } from "oleoduc"
-import { countFormations, fetchFormations } from "../../common/components/catalogue.js"
-import { getCurrentFormationsSourceIndex, updateFormationsIndexAlias, updateFormationsSourceIndex } from "../../common/components/indexSourceFormations.js"
+import { countFormations, getAllFormationsFromCatalogue } from "../../common/components/catalogue.js"
 import { logger } from "../../common/logger.js"
-import { ConvertedFormation_0, ConvertedFormation_1 } from "../../common/model/index.js"
-import { mongooseInstance } from "../../common/mongodb.js"
+import { FormationCatalogue } from "../../common/model/index.js"
 import { rebuildIndex, resetIndexAndDb } from "../../common/utils/esUtils.js"
 import { notifyToSlack } from "../../common/utils/slackUtils.js"
 
-const importFormations = async ({ workIndex, workMongo, formationCount }) => {
+const importFormations = async () => {
   logger.info(`Début import`)
 
   const stats = {
@@ -18,14 +16,13 @@ const importFormations = async ({ workIndex, workMongo, formationCount }) => {
   }
 
   try {
-    const db = mongooseInstance.connection
-
     await oleoduc(
-      await fetchFormations({ formationCount }),
+      await getAllFormationsFromCatalogue(),
       writeData(async (formation) => {
         stats.total++
         try {
-          await db.collections[workIndex].insertOne(formation)
+          // use MongoDB to add only add selected field from getAllFormationFromCatalogue() function and speedup the process
+          await FormationCatalogue.collection.insertOne(formation)
           stats.created++
         } catch (e) {
           stats.failed++
@@ -34,79 +31,35 @@ const importFormations = async ({ workIndex, workMongo, formationCount }) => {
       { parallel: 500 }
     )
 
-    await rebuildIndex(workMongo)
-
     return stats
-  } catch (e) {
+  } catch (error) {
     // stop here if not able to get trainings (keep existing ones)
-    logger.error(`Error fetching formations from Catalogue ${workIndex}`, e)
+    logger.error(`Error fetching formations from Catalogue`, error)
     throw new Error("Error fetching formations from Catalogue")
   }
 }
 
-export default async function (options) {
-  let workIndex, workMongo
-
-  const OnlyChangeMaster = options?.OnlyChangeMaster || false
-
+export default async function () {
   logger.info(" -- Import formations catalogue -- ")
 
   try {
-    const formationCount = await countFormations()
+    const countCatalogue = await countFormations()
 
-    logger.info(`${formationCount} à importer`)
+    // if catalogue is empty, stop the process
+    if (!countCatalogue) return
 
-    let stats = {
-      total: 0,
-      created: 0,
-      failed: 0,
-    }
+    await resetIndexAndDb("formationcatalogues", FormationCatalogue, { requireAsciiFolding: true })
 
-    if (formationCount > 0) {
-      const currentIndex = await getCurrentFormationsSourceIndex()
+    const stats = await importFormations()
 
-      logger.info(`Index courant : ${currentIndex}`)
+    await rebuildIndex(FormationCatalogue)
 
-      if (currentIndex === "convertedformation_0") {
-        workIndex = "convertedformation_1"
-        workMongo = ConvertedFormation_1
-      } else {
-        workIndex = "convertedformation_0"
-        workMongo = ConvertedFormation_0
-      }
-
-      logger.info(`Début process sur : ${workIndex}`)
-
-      if (!OnlyChangeMaster) {
-        await resetIndexAndDb(workIndex, workMongo, { requireAsciiFolding: true })
-
-        stats = await importFormations({ workIndex, workMongo, formationCount })
-      } else {
-        logger.info(`Permutation d'index seule`)
-      }
-
-      const savedSource = await updateFormationsSourceIndex(workIndex)
-
-      logger.info("Source mise à jour en base ", savedSource.currentIndex)
-
-      const savedIndexAliasResult = await updateFormationsIndexAlias({
-        masterIndex: workIndex,
-        indexToUnAlias: currentIndex,
-      })
-
-      if (savedIndexAliasResult === "ok") {
-        logger.info("Alias mis à jour dans l'ES ", workIndex)
-      } else {
-        logger.error("Alias pas mis à jour dans l'ES ", workIndex)
-      }
-    }
     logger.info(`Fin traitement`)
 
-    await notifyToSlack({ subject: "IMPORT FORMATION", message: `Import formations catalogue terminé sur ${workIndex}. ${stats.created} OK. ${stats.failed} erreur(s)` })
+    await notifyToSlack({ subject: "IMPORT FORMATION", message: `Import formations catalogue terminé. ${stats.created} OK. ${stats.failed} erreur(s)` })
 
     return {
       result: "Import formations catalogue terminé",
-      index_maitre: workIndex,
       nb_formations: stats.created,
       erreurs: stats.failed,
     }

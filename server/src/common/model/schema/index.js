@@ -16,7 +16,6 @@ import { optoutSchema } from "./optout.js"
 import { parcoursupEtablissementStatSchema } from "./parcoursupEtablissementStat.js"
 import { userRecruteurSchema } from "./recruteur/users.js"
 import { referentielOpcoSchema } from "./referentielOpco.js"
-import { sourceFormationsSchema } from "./sourceFormationsSchema.js"
 import { userSchema } from "./user.js"
 import { widgetParameterSchema } from "./widgetParameter.js"
 
@@ -26,7 +25,6 @@ export default {
   applicationSchema,
   apiCallSchema,
   mnaFormationSchema,
-  sourceFormationsSchema,
   bonneBoiteSchema,
   geoLocationSchema,
   emailBlacklist,

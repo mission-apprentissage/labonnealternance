@@ -45,7 +45,7 @@ export const resetIndexAndDb = async (index, model, { requireAsciiFolding = fals
   const client = getElasticInstance()
 
   try {
-    logger.info(`Clearing ${model} db...`)
+    logger.info(`Clearing ${model.collection.collectionName} db...`)
     await model.deleteMany({})
 
     const { body: hasIndex } = await client.indices.exists({ index })

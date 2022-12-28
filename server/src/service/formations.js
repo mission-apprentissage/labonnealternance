@@ -2,8 +2,8 @@ import Sentry from "@sentry/node"
 import axios from "axios"
 import crypto from "crypto"
 import _ from "lodash-es"
-import { getCurrentFormationsSourceCollection } from "../common/components/indexSourceFormations.js"
 import { getElasticInstance } from "../common/esClient/index.js"
+import { FormationCatalogue } from "../common/model/index.js"
 import { manageApiError } from "../common/utils/errorManager.js"
 import { regionCodeToDepartmentList } from "../common/utils/regionInseeCodes.js"
 import { trackApiCall } from "../common/utils/sendTrackingEvent.js"
@@ -154,8 +154,7 @@ const getFormation = async ({ id, caller }) => {
     if (id === "id-formation-test") {
       responseFormation = formationMock
     } else {
-      const Formation = await getCurrentFormationsSourceCollection()
-      responseFormation = await Formation.findOne({ cle_ministere_educatif: id })
+      responseFormation = await FormationCatalogue.findOne({ cle_ministere_educatif: id })
     }
 
     //throw new Error("BOOM");
@@ -649,7 +648,7 @@ const getFormationsParRegionQuery = async (query) => {
 const getFormationEsQueryIndexFragment = (limit) => {
   return {
     //index: "mnaformation",
-    index: "convertedformations",
+    index: "formationcatalogues",
     size: limit,
     _source_includes: [
       "etablissement_formateur_siret",
