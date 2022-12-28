@@ -4,7 +4,7 @@ import Job from "../../../components/ItemDetail/Job"
 import LbbCompany from "../../../components/ItemDetail/LbbCompany"
 import { Box } from "@chakra-ui/react"
 
-export const renderJob = (isTestMode, idx, job, handleSelectItem, searchForJobsOnNewCenter) => {
+export const renderJob = (isTestMode, idx, job, handleSelectItem, searchForTrainingsOnNewCenter) => {
   if (isTestMode) {
     return <Box key={idx} data-testid={`Job-${job?.id}`}></Box>
   } else {
