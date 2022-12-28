@@ -11,7 +11,6 @@ import { mergeJobs, mergeOpportunities } from "../../../utils/itemListUtils"
 import { isCfaEntreprise } from "../../../services/cfaEntreprise"
 
 import { renderJob, renderTraining, renderLbb } from "../services/renderOneResult"
-import hasAlsoEmploi from "../../ItemDetail/ItemDetailServices/hasAlsoEmploi"
 import { Box, Flex } from "@chakra-ui/react"
 
 const ResultLists = (props) => {
