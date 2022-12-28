@@ -72,7 +72,7 @@ export default ({ formulaire, etablissementsRecruteur, usersRecruteur }) => {
    *    description:
    *       Permet de récupérer les entreprises correspondant aux critères de filtrage <br/><br/>
    *       Le champ Query est une query Mongo stringify<br/><br/>
-   *       **Pour definir vos critères de recherche veuillez regarder le schéma de la collection formulaire (en bas de cette page)**
+   *       **Pour définir vos critères de recherche, veuillez regarder le schéma de la collection formulaire (en bas de cette page)**
    *    parameters:
    *       - in: query
    *         name: payload
@@ -282,7 +282,7 @@ export default ({ formulaire, etablissementsRecruteur, usersRecruteur }) => {
    * @swagger
    * "/offre/:formulaireId":
    *  post:
-   *    summary: Permet de créer une offre pour une entreprise donné
+   *    summary: Permet de créer une offre pour une entreprise donnée
    *    tags:
    *     - Offre
    *    parameters:
@@ -389,11 +389,11 @@ export default ({ formulaire, etablissementsRecruteur, usersRecruteur }) => {
    * @swagger\
    * "/rome/search":
    *  get:
-   *    summary: Permet de recherche le code ROME associé à un libellé métier.
+   *    summary: Permet de rechercher le code ROME associé à un libellé métier.
    *    tags:
    *     - Rome
    *    description:
-   *       Le code ROME ainsi que l'intitulé sont obligatoire pour créer une offre. </br><br/>
+   *       Le code ROME ainsi que l'intitulé sont obligatoires pour créer une offre. </br><br/>
    *       Cette méthode permet de récupérer le code ROME à partir d'une recherche textuelle.
    *    parameters:
    *       - in: query
@@ -409,7 +409,7 @@ export default ({ formulaire, etablissementsRecruteur, usersRecruteur }) => {
    *               example: '"{\"search\": \"développeur\"}"'
    *    responses:
    *      200:
-   *        description: une tableau contenant les couples intitulé/code ROME pour le métier recherché
+   *        description: un tableau contenant les couples intitulé/code ROME pour le métier recherché
    *        content:
    *          application/json:
    *            schema:
@@ -588,7 +588,7 @@ export default ({ formulaire, etablissementsRecruteur, usersRecruteur }) => {
    * @swagger
    * "/user/:userId":
    *  get:
-   *    summary: Permet de récupérer les informations d'un etablissement à partir de son identifiant MongoDB
+   *    summary: Permet de récupérer les informations d'un établissement à partir de son identifiant MongoDB
    *    tags:
    *     - Etablissement
    *    parameters:
@@ -597,7 +597,7 @@ export default ({ formulaire, etablissementsRecruteur, usersRecruteur }) => {
    *         required: true
    *    responses:
    *      200:
-   *        description: un objet contenant le l'utilisateur
+   *        description: un objet contenant l'utilisateur
    *        content:
    *          application/json:
    *            schema:
@@ -656,7 +656,7 @@ export default ({ formulaire, etablissementsRecruteur, usersRecruteur }) => {
    *              - idcc
    *    responses:
    *      200:
-   *        description: un objet contenant le l'utilisateur
+   *        description: un objet contenant l'utilisateur
    *        content:
    *          application/json:
    *            schema:
@@ -685,7 +685,7 @@ export default ({ formulaire, etablissementsRecruteur, usersRecruteur }) => {
         return res.status(400).json({
           status: "NOT_FOUND",
           error: true,
-          message: "L'organisme de formation n'a pas été trouvé parmis le catalogue des établissements",
+          message: "L'organisme de formation n'a pas été trouvé parmi le catalogue des établissements",
         })
       }
 
@@ -734,7 +734,7 @@ export default ({ formulaire, etablissementsRecruteur, usersRecruteur }) => {
    *                type: string
    *    responses:
    *      200:
-   *        description: l'objet contenant le l'utilisateur
+   *        description: l'objet contenant l'utilisateur
    *        content:
    *          application/json:
    *            schema:
@@ -764,7 +764,7 @@ export default ({ formulaire, etablissementsRecruteur, usersRecruteur }) => {
    * "/user/:userId":
    *  delete:
    *    summary: Permet de supprimer un utilisateur à partir de son identifiant
-   *    description: Supprime l'ensemble des données relatives à un utilisateur, formulaires et offres compris
+   *    description: Supprime l'ensemble des données relatives à un utilisateur, y compris formulaires et offres
    *    tags:
    *     - Etablissement
    *    parameters:

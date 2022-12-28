@@ -15,7 +15,10 @@ http {
     keepalive_timeout ${TIMEOUT};
     sendfile on;
 
+    server_names_hash_bucket_size 128;
+    
     resolver DNS_SERVER valid=5s;
 
     include /etc/nginx/conf.d/*.conf;
+    include /etc/nginx/conf.d/env/*.conf;
 }
