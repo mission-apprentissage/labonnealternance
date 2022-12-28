@@ -66,14 +66,14 @@ const swaggerOptions = {
     info: {
       title: "La bonne alternance - recruteur",
       version: "1.0.0",
-      description: `Vous trouverez ici la définition de l'api La bonne alternance recruteur<br/><br/>
+      description: `Vous trouverez ici la définition de l'API La bonne alternance recruteur<br/><br/>
       <h3><strong>${config.publicUrl}/api</strong></h3><br/>
       Contact:
       `,
       contact: {
         name: "Mission Nationale pour l'apprentissage",
         url: "https://mission-apprentissage.gitbook.io/general/",
-        email: "nepasrepondre@apprentissage.beta.gouv.fr",
+        email: "labonnealternance-contact@apprentissage.beta.gouv.fr",
       },
     },
     servers: [

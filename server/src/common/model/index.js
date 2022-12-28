@@ -52,6 +52,7 @@ const Offre = createModel("offre", schema.offresSchema)
 const Optout = createModel("optout", schema.optoutSchema, { paginate: true })
 const ReferentielOpco = createModel("referentielOpco", schema.referentielOpcoSchema)
 const UserRecruteur = createModel("userRecruteur", schema.userRecruteurSchema, { paginate: true })
+const AppointmentDetailed = createModel("appointmentDetailed", schema.appointmentSchema)
 
 export {
   DomainesMetiers,
@@ -75,4 +76,5 @@ export {
   Optout,
   ReferentielOpco,
   UserRecruteur,
+  AppointmentDetailed,
 }

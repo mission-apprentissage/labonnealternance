@@ -18,6 +18,11 @@ const CandidatureSpontanee = (props) => {
   const [sendingState, setSendingState] = useState("not_sent")
   const kind = props?.item?.ideaType || ""
 
+  const onModalClose = () => {
+    setSendingState("not_sent")
+    onClose()
+  }
+
   const uniqId = (kind, item) => {
     return `candidaturespontanee-${kind}-${getItemId(item)}`
   }
@@ -34,8 +39,7 @@ const CandidatureSpontanee = (props) => {
   const [applied, setApplied] = useLocalStorage(uniqId(kind, props.item), null, actualLocalStorage)
 
   useEffect(() => {
-    onClose()
-    setSendingState("not_sent")
+    onModalClose()
 
     // HACK HERE : reapply setApplied to currentUniqId to re-detect
     // if user already applied each time the user swap to another item.
@@ -91,7 +95,7 @@ const CandidatureSpontanee = (props) => {
               >
                 J&apos;envoie ma candidature{with_str(kind).amongst(["lbb", "lba"]) ? " spontanée" : ""}
               </Button>
-              <Modal isOpen={isOpen} onClose={onClose} closeOnOverlayClick={false} size="3xl">
+              <Modal isOpen={isOpen} onClose={onModalClose} closeOnOverlayClick={false} size="3xl">
                 <ModalOverlay />
                 <ModalContent>
                   <ModalHeader align="right" paddingTop="8px" paddingBottom="0">
@@ -111,7 +115,7 @@ const CandidatureSpontanee = (props) => {
                           background: "none",
                         },
                       }}
-                      onClick={onClose}
+                      onClick={onModalClose}
                     >
                       Fermer <CloseIcon w={2} h={2} ml={2} />
                     </Button>
