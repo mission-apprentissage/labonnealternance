@@ -115,7 +115,7 @@
                                 <% if (data.company_type == "matcha" ) { %>
                                     Vous recevez cette candidature car vous avez déposé une offre sur le  
                                     <a style="font-weight:bold; color:black" 
-                                        href="https://matcha.apprentissage.beta.gouv.fr/">
+                                        href="<%= data.publicUrl %>/acces-recruteur?utm_source=jecandidate&utm_medium=email&utm_campaign=jecandidaterecruteur">
                                         service de dépôt d'offre simplifié
                                     </a>
                                     de La bonne alternance.
@@ -155,15 +155,15 @@
 
                     <% if (data.company_type == "matcha" ) { %>
                         <mj-text font-size="16px" line-height="28px" padding-bottom="15px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                            <a class="link-black" href="<%= data.matchaApiEndpoint %>/offre/<%= data._id %>/provided">
+                            <a class="link-black" href="<%= data.publicUrl %>/espace-pro/offre/<%= data._id %>/provided">
                                 ✅ Indiquer que mon offre est pourvue</a>
                         </mj-text>
                         <mj-text font-size="16px" line-height="28px" padding-bottom="15px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                            <a class="link-black" href="<%= data.matchaApiEndpoint %>/offre/<%= data._id %>/cancel">
+                            <a class="link-black" href="<%= data.publicUrl %>/espace-pro/offre/<%= data._id %>/cancel">
                                 📝 Supprimer mon offre</a>
                         </mj-text>
                         <mj-text font-size="16px" line-height="28px" padding-bottom="15px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                            <a class="link-black" href="https://labonnealternance.apprentissage.beta.gouv.fr/faq?utm_source=jecandidate&utm_medium=email&utm_campaign=jecandidaterecruteur">
+                            <a class="link-black" href="<%= data.publicUrl %>/faq?utm_source=jecandidate&utm_medium=email&utm_campaign=jecandidaterecruteur">
                                 💬 Consulter la FAQ</a>
                         </mj-text>
                     <% } else { %>
@@ -172,11 +172,11 @@
                                 📝 Modifier ou supprimer les données de mon établissement</a>
                         </mj-text>
                         <mj-text font-size="16px" line-height="28px" padding-bottom="15px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                            <a class="link-black" href="https://labonnealternance.apprentissage.beta.gouv.fr/acces-recruteur?utm_source=jecandidate&utm_medium=email&utm_campaign=jecandidaterecruteur">
+                            <a class="link-black" href="<%= data.publicUrl %>/acces-recruteur?utm_source=jecandidate&utm_medium=email&utm_campaign=jecandidaterecruteur">
                                 🚀 Diffuser simplement et gratuitement une offre en alternance</a>
                         </mj-text>
                         <mj-text font-size="16px" line-height="28px" padding-bottom="15px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                            <a class="link-black" href="https://labonnealternance.apprentissage.beta.gouv.fr/faq?utm_source=jecandidate&utm_medium=email&utm_campaign=jecandidaterecruteur">
+                            <a class="link-black" href="<%= data.publicUrl %>/faq?utm_source=jecandidate&utm_medium=email&utm_campaign=jecandidaterecruteur">
                                 💬 Consulter la FAQ</a>
                         </mj-text>
                     <% } %>

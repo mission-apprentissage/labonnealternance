@@ -24,14 +24,10 @@ const currentDirname = __dirname(import.meta.url)
 
 const publicUrl = config.publicUrl
 
-// const matchaApiEndpoint = `https://matcha${config.env === "production" ? "" : "-recette"}.apprentissage.beta.gouv.fr`;
-const matchaApiEndpoint = `https://labonnealternance${config.env === "production" ? "" : "-recette"}.apprentissage.beta.gouv.fr`
-
 const imagePath = "https://labonnealternance-recette.apprentissage.beta.gouv.fr/images/emails/"
 
 const images = {
   images: {
-    //logo: `${config.publicUrl}/images/emails/logo_lba.png`,
     logo: `${imagePath}logo_lba.png`,
     logoRF: `${imagePath}logo_rf.png`,
     icoInfo: `${imagePath}icone_info.png`,
@@ -88,7 +84,6 @@ const initApplication = (query, companyEmail) => {
     job_title: query.job_title,
     job_id: query.job_id,
     caller: query.caller,
-    //interet_offres_mandataire: query.interet_offres_mandataire,
   })
 
   return res
@@ -225,7 +220,7 @@ const sendApplication = async ({ scan, mailer, query, referer, shouldCheckSecret
           to: application.company_email,
           subject: buildTopic(application.company_type, application.job_title),
           template: getEmailTemplate(emailTemplates.entreprise),
-          data: { ...application._doc, ...images, ...encryptedId, publicUrl, urlOfDetail, matchaApiEndpoint },
+          data: { ...application._doc, ...images, ...encryptedId, publicUrl, urlOfDetail },
           attachments: [
             {
               filename: application.applicant_file_name,
