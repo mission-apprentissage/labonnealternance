@@ -3,6 +3,7 @@ import { useRouter } from "next/router"
 import { ScopeContext } from "../../../context/ScopeContext"
 import { SearchResultContext } from "../../../context/SearchResultContextProvider"
 import { DisplayContext } from "../../../context/DisplayContextProvider"
+import { filterLayers } from "../../../utils/mapTools"
 import distance from "@turf/distance"
 import { scrollToTop, scrollToElementInContainer, getItemElement } from "../../../utils/tools"
 import ItemDetail from "../../../components/ItemDetail/ItemDetail"
@@ -92,12 +93,19 @@ const ChoiceColumn = ({
     unSelectItem("doNotSaveToHistory")
   }
 
+  const showAllResults = () => {
+    setActiveFilter("all")
+    filterLayers("all")
+  }
+
   const searchForJobsOnNewCenter = async (newCenter) => {
     searchOnNewCenter(newCenter, null, "jobs")
+    showAllResults()
   }
 
   const searchForTrainingsOnNewCenter = async (newCenter) => {
     searchOnNewCenter(newCenter, "trainings", null)
+    showAllResults()
   }
 
   const searchForJobsWithLooseRadius = async () => {
