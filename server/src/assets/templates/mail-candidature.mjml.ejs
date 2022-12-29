@@ -88,15 +88,15 @@
                         Que pensez-vous faire ?
                     </mj-text>
                     <mj-button
-                        href="<%= data.publicUrl %>/formulaire-intention?intention=entretien&id=<%= data.id %>&iv=<%= data.iv %>&fn=<%= data.applicant_first_name %>&ln=<%= data.applicant_last_name %>&utm_source=jecandidate&utm_medium=email&utm_campaign=jecandidatecandidat"
+                        href="<%= data.meetCandidateUrl %>"
                         css-class="intention-link" width="250px" border-color="#000091" color="#000091"
                         font-family="Roboto,Arial,sans-serif" font-size="14px" background-color="#FFFFFF" padding-left="0px" align="left" border="1px solid #000091">&nbsp;Rencontrer le candidat</mj-button>
                     <mj-button
-                        href="<%= data.publicUrl %>/formulaire-intention?intention=ne_sais_pas&id=<%= data.id %>&iv=<%= data.iv %>&fn=<%= data.applicant_first_name %>&ln=<%= data.applicant_last_name %>&utm_source=jecandidate&utm_medium=email&utm_campaign=jecandidatecandidat"
+                        href="<%= data.waitCandidateUrl %>"
                         css-class="intention-link" width="250px" border-color="#000091" color="#000091"
                         font-family="Roboto,Arial,sans-serif" font-size="14px" background-color="#FFFFFF" padding-left="0px" align="left" border="1px solid #000091">&nbsp;En attente de décision</mj-button>
                     <mj-button
-                        href="<%= data.publicUrl %>/formulaire-intention?intention=refus&id=<%= data.id %>&iv=<%= data.iv %>&fn=<%= data.applicant_first_name %>&ln=<%= data.applicant_last_name %>&utm_source=jecandidate&utm_medium=email&utm_campaign=jecandidatecandidat"
+                        href="<%= data.refuseCandidateUrl %>"
                         css-class="intention-link" width="250px" border-color="#000091" color="#000091"
                         font-family="Roboto,Arial,sans-serif" font-size="14px" background-color="#FFFFFF" padding-left="0px" align="left" border="1px solid #000091">&nbsp;Refuser la candidature</mj-button>
                 </mj-column>
@@ -114,7 +114,7 @@
                                 <% if (data.company_type == "matcha" ) { %>
                                     Vous recevez cette candidature car vous avez déposé une offre sur le  
                                     <a style="font-weight:bold; color:black" 
-                                        href="https://matcha.apprentissage.beta.gouv.fr/">
+                                        href="<%= data.lbaRecruiterUrl %>">
                                         service de dépôt d'offre simplifié
                                     </a>
                                     de La bonne alternance.
@@ -131,7 +131,7 @@
                                 <% } else { %>
                                     Vous recevez cette candidature car votre établissement est référencé sur 
                                     <a style="font-weight:bold; color:black" 
-                                        href="https://labonnealternance.apprentissage.beta.gouv.fr/">
+                                        href="<%= data.lbaUrl %>">
                                         La bonne alternance
                                     </a> puisqu'il a été identifié comme "à fort potentiel d'embauche en alternance" par un algorithme prédictif de Pôle emploi. 
                                     La bonne alternance, un site web conçu par Pôle emploi et porté par le Ministère de l’éducation nationale, de l’enseignement 
@@ -154,15 +154,15 @@
 
                     <% if (data.company_type == "matcha" ) { %>
                         <mj-text font-size="16px" line-height="28px" padding-bottom="15px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                            <a class="link-black" href="<%= data.matchaApiEndpoint %>/offre/<%= data._id %>/provided">
+                            <a class="link-black" href="<%= data.jobProvidedUrl %>">
                                 ✅ Indiquer que mon offre est pourvue</a>
                         </mj-text>
                         <mj-text font-size="16px" line-height="28px" padding-bottom="15px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                            <a class="link-black" href="<%= data.matchaApiEndpoint %>/offre/<%= data._id %>/cancel">
+                            <a class="link-black" href="<%= data.cancelJobUrl %>">
                                 📝 Supprimer mon offre</a>
                         </mj-text>
                         <mj-text font-size="16px" line-height="28px" padding-bottom="15px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                            <a class="link-black" href="https://labonnealternance.apprentissage.beta.gouv.fr/faq?utm_source=jecandidate&utm_medium=email&utm_campaign=jecandidaterecruteur">
+                            <a class="link-black" href="<%= data.faqUrl %>">
                                 💬 Consulter la FAQ</a>
                         </mj-text>
                     <% } else { %>
@@ -171,11 +171,11 @@
                                 📝 Modifier ou supprimer les données de mon établissement</a>
                         </mj-text>
                         <mj-text font-size="16px" line-height="28px" padding-bottom="15px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                            <a class="link-black" href="https://labonnealternance.apprentissage.beta.gouv.fr/acces-recruteur?utm_source=jecandidate&utm_medium=email&utm_campaign=jecandidaterecruteur">
+                            <a class="link-black" href="<%= data.lbaRecruiterUrl %>">
                                 🚀 Diffuser simplement et gratuitement une offre en alternance</a>
                         </mj-text>
                         <mj-text font-size="16px" line-height="28px" padding-bottom="15px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                            <a class="link-black" href="https://labonnealternance.apprentissage.beta.gouv.fr/faq?utm_source=jecandidate&utm_medium=email&utm_campaign=jecandidaterecruteur">
+                            <a class="link-black" href="<%= data.faqUrl %>">
                                 💬 Consulter la FAQ</a>
                         </mj-text>
                     <% } %>
