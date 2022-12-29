@@ -24,7 +24,7 @@ const MatchaAcces = ({ job }) => {
         <span className="c-accordion-button-plus">{isOpen ? "-" : "+"}</span>
       </button>
       <Collapse isOpen={isOpen} className="c-collapser">
-        {accesFormatted}
+        <span dangerouslySetInnerHTML={{ __html: accesFormatted }}></span>
       </Collapse>
     </div>
   )
