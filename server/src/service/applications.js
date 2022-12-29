@@ -23,6 +23,7 @@ import {
 const currentDirname = __dirname(import.meta.url)
 
 const publicUrl = config.publicUrl
+const publicUrlEspacePro = config.publicUrlEspacePro
 
 const imagePath = "https://labonnealternance-recette.apprentissage.beta.gouv.fr/images/emails/"
 
@@ -65,6 +66,25 @@ const buildUrlOfDetail = (aPublicUrl, aQuery) => {
   let kind = aQuery.company_type
 
   return `${aPublicUrl}/recherche-apprentissage?display=list&page=fiche&type=${kind}&itemId=${itemId}${moreParams}`
+}
+
+const buildRecruiterEmailUrls = ({ publicUrl, application, encryptedId }) => {
+  const utmRecruiterData = "&utm_source=jecandidate&utm_medium=email&utm_campaign=jecandidaterecruteur"
+  const candidateData = `&fn=${application._doc.applicant_first_name}&ln=${application._doc.applicant_last_name}`
+  const encryptedData = `&id=${encryptedId.id}&iv=${encryptedId.iv}`
+
+  let urls = {
+    meetCandidateUrl: `${publicUrl}/formulaire-intention?intention=entretien${encryptedData}${candidateData}${utmRecruiterData}`,
+    waitCandidateUrl: `${publicUrl}/formulaire-intention?intention=ne_sais_pas${encryptedData}${candidateData}${utmRecruiterData}`,
+    refuseCandidateUrl: `${publicUrl}/formulaire-intention?intention=refus${encryptedData}${candidateData}${utmRecruiterData}`,
+    lbaRecruiterUrl: `${publicUrl}/acces-recruteur?${utmRecruiterData}`,
+    lbaUrl: `${publicUrl}?${utmRecruiterData}`,
+    jobProvidedUrl: `${publicUrlEspacePro}/offre/${application._doc._id}/provided?${utmRecruiterData}`,
+    cancelJobUrl: `${publicUrlEspacePro}/offre/${application._doc._id}/cancel?${utmRecruiterData}`,
+    faqUrl: `${publicUrl}/faq?${utmRecruiterData}`,
+  }
+
+  return urls
 }
 
 const initApplication = (query, companyEmail) => {
@@ -191,6 +211,11 @@ const sendApplication = async ({ scan, mailer, query, referer, shouldCheckSecret
       const fileContent = query.applicant_file_content
 
       const urlOfDetail = buildUrlOfDetail(publicUrl, query)
+      const recruiterEmailUrls = buildRecruiterEmailUrls({
+        publicUrl,
+        application,
+        encryptedId,
+      })
 
       const buildTopic = (aCompanyType, aJobTitle) => {
         let res = "Candidature"
@@ -220,7 +245,7 @@ const sendApplication = async ({ scan, mailer, query, referer, shouldCheckSecret
           to: application.company_email,
           subject: buildTopic(application.company_type, application.job_title),
           template: getEmailTemplate(emailTemplates.entreprise),
-          data: { ...application._doc, ...images, ...encryptedId, publicUrl, urlOfDetail },
+          data: { ...application._doc, ...images, ...recruiterEmailUrls, urlOfDetail },
           attachments: [
             {
               filename: application.applicant_file_name,
