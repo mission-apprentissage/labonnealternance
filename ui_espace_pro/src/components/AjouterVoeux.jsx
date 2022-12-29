@@ -229,9 +229,7 @@ const AjouterVoeux = (props) => {
       })}
       onSubmit={props.fromDashboard ? (values, bag) => submitFromDashboard(values, bag) : (values) => submitFromDepotRapide(values)}
     >
-      {(formik) => {
-        let { values, setFieldValue, handleChange, errors, touched, isValid, isSubmitting, dirty, submitForm } = formik
-
+      {({ values, setFieldValue, handleChange, errors, touched, isValid, isSubmitting, dirty, submitForm }) => {
         return (
           <>
             <FormControl isRequired>
@@ -530,7 +528,7 @@ const RomeInformationDetail = ({ definition, competencesDeBase, libelle, appella
                     </AccordionButton>
                   </h2>
                   <AccordionPanel maxH="50%" pb={4}>
-                    <span dangerouslySetInnerHTML={{ __html: accesFormatted }}></span>
+                    {accesFormatted}
                   </AccordionPanel>
                 </>
               )}
