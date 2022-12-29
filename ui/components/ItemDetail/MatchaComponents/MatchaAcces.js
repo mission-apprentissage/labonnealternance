@@ -20,7 +20,7 @@ const MatchaAcces = ({ job }) => {
           setIsOpen(!isOpen)
         }}
       >
-        <span className="c-accordion-button-title">À qui se metier est-il accessible ?</span>
+        <span className="c-accordion-button-title">À qui ce métier est-il accessible ?</span>
         <span className="c-accordion-button-plus">{isOpen ? "-" : "+"}</span>
       </button>
       <Collapse isOpen={isOpen} className="c-collapser">

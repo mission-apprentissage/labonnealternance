@@ -445,9 +445,7 @@ const AjouterVoeux = (props) => {
   )
 }
 
-const RomeInformationDetail = (props) => {
-  let { definition, competencesDeBase, libelle, appellation, acces } = props
-
+const RomeInformationDetail = ({ definition, competencesDeBase, libelle, appellation, acces }) => {
   if (definition) {
     const definitionSplitted = definition.split("\\n")
     const accesFormatted = acces.split("\\n").join("<br><br>")
@@ -526,7 +524,7 @@ const RomeInformationDetail = (props) => {
                   <h2>
                     <AccordionButton>
                       <Text fontWeight="700" flex="1" textAlign="left">
-                        À qui se métier est-il accessible ?
+                        À qui ce métier est-il accessible ?
                       </Text>
                       {isExpanded ? <Minus color="bluefrance.500" /> : <Plus color="bluefrance.500" />}
                     </AccordionButton>
