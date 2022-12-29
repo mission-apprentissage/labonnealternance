@@ -130,7 +130,7 @@ export default (props) => {
               </Text>
             )}
 
-            <InfoTooltip description='La donnée "Opco" provient de CFADOCK puis est déduite du SIRET. Si cette information est erronée, merci de nous contacter.' />
+            <InfoTooltip description="La donnée IDCC (identifiant de la convention collective) provient de CFADOCK et est déduite du SIRET. Si cette information est erronée, merci de nous contacter" />
             {idcc && (
               <Button ml={3} type="submit" variant="secondary" leftIcon={<Copy width={5} />} onClick={() => copyInClipboard(idcc)}>
                 Copier
