@@ -229,7 +229,8 @@ const AjouterVoeux = (props) => {
       })}
       onSubmit={props.fromDashboard ? (values, bag) => submitFromDashboard(values, bag) : (values) => submitFromDepotRapide(values)}
     >
-      {({ values, setFieldValue, handleChange, errors, touched, isValid, isSubmitting, dirty, submitForm }) => {
+      {(formik) => {
+        let { values, setFieldValue, handleChange, errors, touched, isValid, isSubmitting, dirty, submitForm } = formik
         return (
           <>
             <FormControl isRequired>
