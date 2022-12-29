@@ -529,7 +529,7 @@ const RomeInformationDetail = ({ definition, competencesDeBase, libelle, appella
                     </AccordionButton>
                   </h2>
                   <AccordionPanel maxH="50%" pb={4}>
-                    {accesFormatted}
+                    <span dangerouslySetInnerHTML={{ __html: accesFormatted }}></span>
                   </AccordionPanel>
                 </>
               )}
