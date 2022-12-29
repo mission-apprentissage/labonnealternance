@@ -183,12 +183,6 @@ const APropos = () => (
 
           <SimpleGrid columns={[1, 1, 2]}>
             <StartupCard
-              logoUrl="/images/logo-memo.png"
-              url="https://memo.pole-emploi.fr/"
-              aria-label="Accès au site Mémo"
-              title="Organiser votre recherche d'emploi avec notre tableau de bord"
-            />
-            <StartupCard
               logoUrl={logoAvril}
               url="https://avril.pole-emploi.fr/"
               aria-label="Accès au site Avril"

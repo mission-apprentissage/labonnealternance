@@ -28,7 +28,14 @@
               Félicitations, votre compte La bonne alternance est désormais créé pour votre centre de formation :<br /><br />
             <% } %>
             <%= data.raison_sociale %><br /><br />
-            Vous pouvez désormais accéder à votre espace pour publier vos offres en quelques clics et les diffuser au plus près des jeunes : sur les sites Parcoursup, Affelnet, 1 Jeune 1 Solution et La bonne alternance<br /><br />
+            Vous pouvez désormais accéder à votre espace pour publier 
+            <% if(!data.mandataire){ %>
+              vos offres 
+            <% } %>
+            <% if(data.mandataire){ %>
+              les offres de vos entreprises partenaires 
+            <% } %>
+            en quelques clics et les diffuser au plus près des jeunes : sur les sites Parcoursup, Affelnet, 1 Jeune 1 Solution et La bonne alternance<br /><br />
             Votre identifiant : <%= data.email %>
           </mj-text>
         </mj-column>
