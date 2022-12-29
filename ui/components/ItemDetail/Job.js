@@ -42,7 +42,7 @@ const Job = ({ job, handleSelectItem, showTextOnly, searchForTrainingsOnNewCente
 
   const getCenterSearchOnJobButton = () => {
     return (
-      <Button variant="centerSearch" color="#01ac8c" title="Voir les entreprises proches" onClick={centerSearchOnJob}>
+      <Button variant="centerSearch" color="#01ac8c" title="Voir les formations proches" onClick={centerSearchOnJob}>
         <Image mb="2px" mr="5px" src={extendedSearchPin} alt="" />{" "}
         <Text textDecoration="underline" as="span">
           Voir les formations proches
