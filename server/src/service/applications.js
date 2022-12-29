@@ -23,15 +23,12 @@ import {
 const currentDirname = __dirname(import.meta.url)
 
 const publicUrl = config.publicUrl
-
-// const matchaApiEndpoint = `https://matcha${config.env === "production" ? "" : "-recette"}.apprentissage.beta.gouv.fr`;
-const matchaApiEndpoint = `https://labonnealternance${config.env === "production" ? "" : "-recette"}.apprentissage.beta.gouv.fr`
+const publicUrlEspacePro = config.publicUrlEspacePro
 
 const imagePath = "https://labonnealternance-recette.apprentissage.beta.gouv.fr/images/emails/"
 
 const images = {
   images: {
-    //logo: `${config.publicUrl}/images/emails/logo_lba.png`,
     logo: `${imagePath}logo_lba.png`,
     logoRF: `${imagePath}logo_rf.png`,
     icoInfo: `${imagePath}icone_info.png`,
@@ -71,6 +68,25 @@ const buildUrlOfDetail = (aPublicUrl, aQuery) => {
   return `${aPublicUrl}/recherche-apprentissage?display=list&page=fiche&type=${kind}&itemId=${itemId}${moreParams}`
 }
 
+const buildRecruiterEmailUrls = ({ publicUrl, application, encryptedId }) => {
+  const utmRecruiterData = "&utm_source=jecandidate&utm_medium=email&utm_campaign=jecandidaterecruteur"
+  const candidateData = `&fn=${application._doc.applicant_first_name}&ln=${application._doc.applicant_last_name}`
+  const encryptedData = `&id=${encryptedId.id}&iv=${encryptedId.iv}`
+
+  let urls = {
+    meetCandidateUrl: `${publicUrl}/formulaire-intention?intention=entretien${encryptedData}${candidateData}${utmRecruiterData}`,
+    waitCandidateUrl: `${publicUrl}/formulaire-intention?intention=ne_sais_pas${encryptedData}${candidateData}${utmRecruiterData}`,
+    refuseCandidateUrl: `${publicUrl}/formulaire-intention?intention=refus${encryptedData}${candidateData}${utmRecruiterData}`,
+    lbaRecruiterUrl: `${publicUrl}/acces-recruteur?${utmRecruiterData}`,
+    lbaUrl: `${publicUrl}?${utmRecruiterData}`,
+    jobProvidedUrl: `${publicUrlEspacePro}/offre/${application._doc._id}/provided?${utmRecruiterData}`,
+    cancelJobUrl: `${publicUrlEspacePro}/offre/${application._doc._id}/cancel?${utmRecruiterData}`,
+    faqUrl: `${publicUrl}/faq?${utmRecruiterData}`,
+  }
+
+  return urls
+}
+
 const initApplication = (query, companyEmail) => {
   let res = new Application({
     applicant_file_name: query.applicant_file_name,
@@ -88,7 +104,6 @@ const initApplication = (query, companyEmail) => {
     job_title: query.job_title,
     job_id: query.job_id,
     caller: query.caller,
-    //interet_offres_mandataire: query.interet_offres_mandataire,
   })
 
   return res
@@ -196,6 +211,11 @@ const sendApplication = async ({ scan, mailer, query, referer, shouldCheckSecret
       const fileContent = query.applicant_file_content
 
       const urlOfDetail = buildUrlOfDetail(publicUrl, query)
+      const recruiterEmailUrls = buildRecruiterEmailUrls({
+        publicUrl,
+        application,
+        encryptedId,
+      })
 
       const buildTopic = (aCompanyType, aJobTitle) => {
         let res = "Candidature"
@@ -225,7 +245,7 @@ const sendApplication = async ({ scan, mailer, query, referer, shouldCheckSecret
           to: application.company_email,
           subject: buildTopic(application.company_type, application.job_title),
           template: getEmailTemplate(emailTemplates.entreprise),
-          data: { ...application._doc, ...images, ...encryptedId, publicUrl, urlOfDetail, matchaApiEndpoint },
+          data: { ...application._doc, ...images, ...recruiterEmailUrls, urlOfDetail },
           attachments: [
             {
               filename: application.applicant_file_name,
