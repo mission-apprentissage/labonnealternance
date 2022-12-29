@@ -1,11 +1,12 @@
-import { DisplayContext } from "../../context/DisplayContextProvider"
+import { ExternalLinkIcon } from "@chakra-ui/icons"
+import { Box, Link, Text } from "@chakra-ui/react"
 import React, { useEffect } from "react"
+import { DisplayContext } from "../../context/DisplayContextProvider"
 import { SendPlausibleEvent, SendTrackEvent } from "../../utils/plausible"
 import { formatDate } from "../../utils/strutils"
+import MatchaAcces from "./MatchaComponents/MatchaAcces"
 import MatchaCompetences from "./MatchaComponents/MatchaCompetences"
 import MatchaDescription from "./MatchaComponents/MatchaDescription"
-import { Box, Link, Text } from "@chakra-ui/react"
-import { ExternalLinkIcon } from "@chakra-ui/icons"
 
 const getContractTypes = (contractTypes) => {
   return contractTypes instanceof Array ? contractTypes.join(", ") : contractTypes
@@ -111,6 +112,7 @@ const MatchaDetail = ({ job, seeInfo, setSeeInfo }) => {
             <div className="mb-3">
               <MatchaDescription job={job} />
               <MatchaCompetences job={job} />
+              <MatchaAcces job={job} />
             </div>
           </div>
         </Box>
