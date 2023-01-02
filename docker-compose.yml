@@ -33,6 +33,7 @@ services:
     build:
       context: ui
     mem_limit: 256m
+    restart: unless-stopped
     networks:
       - lba_network
     depends_on:

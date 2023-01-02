@@ -231,7 +231,6 @@ const AjouterVoeux = (props) => {
     >
       {(formik) => {
         let { values, setFieldValue, handleChange, errors, touched, isValid, isSubmitting, dirty, submitForm } = formik
-
         return (
           <>
             <FormControl isRequired>
@@ -445,11 +444,10 @@ const AjouterVoeux = (props) => {
   )
 }
 
-const Information = (props) => {
-  let { definition, competencesDeBase, libelle, appellation } = props
-
+const RomeInformationDetail = ({ definition, competencesDeBase, libelle, appellation, acces }) => {
   if (definition) {
     const definitionSplitted = definition.split("\\n")
+    const accesFormatted = acces.split("\\n").join("<br><br>")
 
     return (
       <>
@@ -514,6 +512,24 @@ const Information = (props) => {
                         </li>
                       ))}
                     </ul>
+                  </AccordionPanel>
+                </>
+              )}
+            </AccordionItem>
+            <hr />
+            <AccordionItem key={1}>
+              {({ isExpanded }) => (
+                <>
+                  <h2>
+                    <AccordionButton>
+                      <Text fontWeight="700" flex="1" textAlign="left">
+                        À qui ce métier est-il accessible ?
+                      </Text>
+                      {isExpanded ? <Minus color="bluefrance.500" /> : <Plus color="bluefrance.500" />}
+                    </AccordionButton>
+                  </h2>
+                  <AccordionPanel maxH="50%" pb={4}>
+                    <span dangerouslySetInnerHTML={{ __html: accesFormatted }}></span>
                   </AccordionPanel>
                 </>
               )}
@@ -590,7 +606,7 @@ export default (props) => {
             <Text>Recherche en cours...</Text>
           </Flex>
         ) : (
-          <Information {...romeInformation} />
+          <RomeInformationDetail {...romeInformation} />
         )}
       </Box>
     </SimpleGrid>

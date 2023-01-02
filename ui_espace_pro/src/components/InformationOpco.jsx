@@ -3,7 +3,7 @@ import { Edit2Fill, InfoCircle } from "../theme/components/icons"
 
 export default ({ disabled, informationOpco, resetOpcoChoice }) => {
   return (
-    <Box backgroundColor="#F5F5FE" p={5} mb={7}>
+    <Box backgroundColor="#F5F5FE" p={5} mt={7}>
       <SimpleGrid columns={1} spacing="20px">
         <Flex align="center" justify="space-between">
           <Text fontWeight="700" fontSize="20px">

@@ -1,5 +1,6 @@
-import { v4 as uuidv4 } from "uuid"
 import { mongooseInstance } from "../../mongodb.js"
+
+import { randomUUID } from "crypto"
 
 export const credentialSchema = mongooseInstance.Schema(
   {
@@ -23,9 +24,9 @@ export const credentialSchema = mongooseInstance.Schema(
       type: String,
       required: true,
     },
-    apiKey: {
+    api_key: {
       type: String,
-      default: () => `mna-${uuidv4()}`,
+      default: () => `mna-${randomUUID()}`,
       index: true,
       required: true,
     },
