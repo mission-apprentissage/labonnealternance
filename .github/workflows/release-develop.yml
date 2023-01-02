@@ -1,0 +1,39 @@
+name: Release version develop
+on:
+  push:
+    branches: [develop]
+
+jobs:
+  release:
+    if: "!startsWith(github.event.head_commit.message, 'chore(release')"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Setup nodeJS v18
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Get node_modules cache
+      - uses: actions/cache@v3
+        id: yarn-cache
+        with:
+          path: "**/node_modules"
+          key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-
+
+      - name: Install dependencies (yarn install)
+        if: steps.yarn-cache.outputs.cache-hit != 'true'
+        run: yarn install
+
+      - name: Bump release package number
+        run: yarn npm:release
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
