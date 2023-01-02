@@ -1,0 +1,157 @@
+name: Release version production
+on:
+  push:
+    branches: [main]
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Setup nodeJS v18
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Get node_modules cache
+        uses: actions/cache@v3
+        with:
+          path: "**/node_modules"
+          key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-
+
+      - name: Install dependencies
+        if: steps.yarn-cache.outputs.cache-hit != 'true'
+        run: yarn install
+
+      - name: Bump release package number
+        run: yarn npm:release
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+
+  # back-merge:
+  #   needs: release
+  #   if: "startsWith(github.event.head_commit.message, 'chore(release')"
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@master
+
+  #     - name: Merge main -> develop
+  #       uses: devmasx/merge-branch@v1.3.1
+  #       with:
+  #         type: now
+  #         from_branch: main
+  #         target_branch: develop
+  #         github_token: ${{ secrets.GH_TOKEN }}
+
+  # ciserver:
+  #   needs: release
+  #   if: "!startsWith(github.event.head_commit.message, 'chore(release')"
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout project
+  #       uses: actions/checkout@v3
+
+  #     - uses: actions/setup-node@v3
+  #       with:
+  #         node-version: 18
+  #     - uses: actions/cache@v3
+  #       with:
+  #         path: "**/node_modules"
+  #         key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+  #         restore-keys: |
+  #           ${{ runner.os }}-
+
+  #     # Install dependencies
+  #     - name: Install dependencies
+  #       if: steps.yarn-cache.outputs.cache-hit != 'true'
+  #       run: yarn install
+
+  #     # Install server dependencies
+  #     - name: Install SERVER dependencies
+  #       if: steps.yarn-cache.outputs.cache-hit != 'true'
+  #       run: yarn --cwd server install --frozen-lockfile
+
+  #     # Lint
+  #     - name: Run Lint
+  #       run: yarn lint
+
+  #     # Run mocha tests
+  #     - name: Run Tests
+  #       run: |
+  #         yarn --cwd server test:coverage
+  #       env:
+  #         CERFA_API_KEY: ${{ secrets.CERFA_API_KEY }}
+  #         CERFA_AUTH_PASSWORD_HASH_ROUNDS: ${{ secrets.CERFA_AUTH_PASSWORD_HASH_ROUNDS }}
+  #         CERFA_AUTH_USER_JWT_SECRET: ${{ secrets.CERFA_AUTH_USER_JWT_SECRET }}
+  #         CERFA_AUTH_PDS_JWT_SECRET: ${{ secrets.CERFA_AUTH_PDS_JWT_SECRET }}
+  #         CERFA_AUTH_ACTIVATION_JWT_SECRET: ${{ secrets.CERFA_AUTH_ACTIVATION_JWT_SECRET }}
+  #         CERFA_AUTH_PASSWORD_JWT_SECRET: ${{ secrets.CERFA_AUTH_PASSWORD_JWT_SECRET }}
+
+  #     # codecov
+  #     - name: Upload coverage to Codecov
+  #       uses: codecov/codecov-action@v2
+  #       with:
+  #         token: ${{ secrets.CODECOV_TOKEN }}
+  #         directory: ./server/coverage
+  #         name: codecov-server
+  #         verbose: true
+
+  # ciui:
+  #   needs: release
+  #   if: "!startsWith(github.event.head_commit.message, 'chore(release')"
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     # Checks-out the repository
+  #     - uses: actions/checkout@v2
+
+  #     # Install dependencies
+  #     - name: Run Yarn Install
+  #       run: |
+  #         yarn --cwd ui install
+
+  #     # Run tests
+  #     - name: Run Tests
+  #       run: |
+  #         yarn --cwd ui test:coverage
+
+  #     # codecov
+  #     # - name: Upload coverage to Codecov
+  #     #   uses: codecov/codecov-action@v2
+  #     #   with:
+  #     #     token: ${{ secrets.CODECOV_TOKEN }}
+  #     #     directory: ./ui/coverage
+  #     #     name: codecov-ui
+  #     #     verbose: true
+  # # deploy:
+  # #   needs: release
+  # #   if: "!startsWith(github.event.head_commit.message, 'chore(release')"
+  # #   runs-on: ubuntu-latest
+  # #   steps:
+  # #     - name: Checkout project
+  # #       uses: actions/checkout@v2
+
+  # #     - shell: bash
+  # #       run: echo 'CERFA_HEAD_REF=${{ github.head_ref }}' >> $GITHUB_ENV
+
+  # #     - shell: bash
+  # #       run: echo 'CERFA_REF=${{ github.ref }}' >> $GITHUB_ENV
+
+  # #     - name: Check output
+  # #       run: echo ${CERFA_REF:-${CERFA_REF##*/}}
+
+  # #     - name: Request deployment production
+  # #       uses: peter-evans/repository-dispatch@v1
+  # #       with:
+  # #         repository: mission-apprentissage/CERFA-infra
+  # #         token: ${{ secrets.DEVOPS_ACCESS_TOKEN }}
+  # #         event-type: deploy
+  # #         client-payload: '{"envName": "production", "branchName":"main"}'
+  # #       if: github.ref == 'refs/heads/main'
