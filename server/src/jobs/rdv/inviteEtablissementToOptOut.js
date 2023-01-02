@@ -1,9 +1,9 @@
+import { mailTemplate } from "../../assets/index.js"
 import { logger } from "../../common/logger.js"
 import { mailType, optMode } from "../../common/model/constants/etablissement.js"
 import { dayjs } from "../../common/utils/dayjs.js"
 import { isValidEmail } from "../../common/utils/isValidEmail.js"
 import config from "../../config.js"
-import { mailTemplate } from "../../assets/index.js"
 
 /**
  * @description Invite all "etablissements" without opt_mode to opt-out.
@@ -60,6 +60,7 @@ export const inviteEtablissementToOptOut = async ({ etablissements, widgetParame
       await etablissement.update({ email_decisionnaire: emailDecisionaire })
     }
 
+    // KBA 29122022 : Job can run only in production if specified in the ansible configuration, to be updated
     // Invite all etablissements only in production environment, for etablissement that have an "email_decisionnaire"
     if (["production", "local"].includes(config.env) && emailDecisionaire) {
       const willBeActivatedAt = dayjs().add(15, "days").format()

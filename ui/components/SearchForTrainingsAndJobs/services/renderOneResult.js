@@ -4,18 +4,18 @@ import Job from "../../../components/ItemDetail/Job"
 import LbbCompany from "../../../components/ItemDetail/LbbCompany"
 import { Box } from "@chakra-ui/react"
 
-export const renderJob = (isTestMode, idx, job, handleSelectItem, searchForJobsOnNewCenter) => {
+export const renderJob = (isTestMode, idx, job, handleSelectItem, searchForTrainingsOnNewCenter) => {
   if (isTestMode) {
     return <Box key={idx} data-testid={`Job-${job?.id}`}></Box>
   } else {
-    return <Job key={idx} job={job} handleSelectItem={handleSelectItem} searchForTrainingsOnNewCenter={searchForJobsOnNewCenter} />
+    return <Job key={idx} job={job} handleSelectItem={handleSelectItem} searchForTrainingsOnNewCenter={searchForTrainingsOnNewCenter} />
   }
 }
-export const renderTraining = (isTestMode, idx, training, handleSelectItem, searchForJobsOnNewCenter, hasAlsoJob, isCfa) => {
+export const renderTraining = (isTestMode, idx, training, handleSelectItem, searchForJobsOnNewCenter, isCfa) => {
   if (isTestMode) {
     return <Box key={idx} data-testid={`Training-${training?.id}`}></Box>
   } else {
-    return <Training key={idx} training={training} handleSelectItem={handleSelectItem} searchForJobsOnNewCenter={searchForJobsOnNewCenter} hasAlsoJob={hasAlsoJob} isCfa={isCfa} />
+    return <Training key={idx} training={training} handleSelectItem={handleSelectItem} searchForJobsOnNewCenter={searchForJobsOnNewCenter} isCfa={isCfa} />
   }
 }
 export const renderLbb = (isTestMode, idx, company, handleSelectItem, searchForTrainingsOnNewCenter) => {

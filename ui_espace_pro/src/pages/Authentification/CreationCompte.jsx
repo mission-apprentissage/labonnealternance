@@ -135,11 +135,11 @@ const InformationSiret = ({ type }) => {
                 <Link href="https://catalogue.apprentissage.beta.gouv.fr/recherche/etablissements" variant="classic" isExternal>
                   le catalogue des offres de formations en apprentissage.
                 </Link>
-              </span>{" "}
+              </span>
               Pour ajouter une offre de formation au Catalogue de l’offre de formation en apprentissage, merci de la déclarer auprès du Carif-Oref de votre région en allant sur la
-              page{" "}
+              page
               <a href="https://reseau.intercariforef.org/referencer-son-offre-de-formation" style={{ textDecoration: "underline" }} target="_blank">
-                "référencer son offre de formation "
+                référencer son offre de formation
               </a>
             </ListItem>
             <ListItem mx={10}>
@@ -150,7 +150,7 @@ const InformationSiret = ({ type }) => {
                 target="_blank"
               >
                 La certification
-              </a>{" "}
+              </a>
               Qualiopi est l’unique moyen d’accéder au fichier national des organismes de formation référencés et de permettre à vos entreprises clientes de faire financer vos
               actions avec les fonds publics.
             </ListItem>

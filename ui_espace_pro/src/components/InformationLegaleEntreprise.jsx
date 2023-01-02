@@ -1,16 +1,33 @@
-import { Box, Flex, Heading, Link, Stack, Text } from "@chakra-ui/react"
+import { Box, Button, Flex, Heading, Link, Stack, Text, useToast } from "@chakra-ui/react"
 import dayjs from "dayjs"
 import { AUTHTYPE } from "../common/contants"
 import useAuth from "../common/hooks/useAuth"
-import { InfoCircle } from "../theme/components/icons"
+import { Copy, InfoCircle } from "../theme/components/icons"
 import InfoPopover from "./InfoPopover"
 import InfoTooltip from "./InfoToolTip"
 
 export default (props) => {
+  const toast = useToast()
   const [auth] = useAuth()
-  const { enseigne, raison_sociale, rue, siret, commune, code_postal, opco, tranche_effectif, date_creation_etablissement, type, adresse, qualiopi } = props
+  const { enseigne, raison_sociale, rue, siret, commune, code_postal, opco, tranche_effectif, date_creation_etablissement, type, adresse, qualiopi, idcc } = props
+
+  console.log(props, opco)
 
   const RAISON_SOCIALE = raison_sociale.length > 30 ? raison_sociale.substring(0, 30) + "..." : raison_sociale ?? ""
+
+  /**
+   * @description Copy in clipboard.
+   * @return {Promise<void>}
+   */
+  const copyInClipboard = (idcc) => {
+    navigator.clipboard.writeText(idcc)
+    toast({
+      title: "IDCC copié.",
+      position: "top-right",
+      status: "success",
+      duration: 3000,
+    })
+  }
 
   return (
     <Box border="1px solid #000091" p={5}>
@@ -97,6 +114,28 @@ export default (props) => {
               {dayjs(date_creation_etablissement).format("DD/MM/YYYY")}
             </Text>
             <InfoTooltip description='La donnée "Date de création" provient de l’INSEE puis est déduite du SIRET. Si cette information est erronée, merci de leur signaler.' />
+          </Flex>
+        )}
+        {type === AUTHTYPE.ENTREPRISE && (
+          <Flex align="center">
+            <Text mr={3}>IDCC :</Text>
+
+            {idcc ? (
+              <Text bg="#F9F8F6" px="8px" py="2px" fontWeight={700} mr={2} noOfLines={1} maxW="60%">
+                {idcc}
+              </Text>
+            ) : (
+              <Text textTransform="uppercase" bg="#FFE9E9" textColor="#CE0500" px="8px" py="2px" fontWeight={700} mr={2} noOfLines={1}>
+                Non identifié
+              </Text>
+            )}
+
+            <InfoTooltip description="La donnée IDCC (identifiant de la convention collective) provient de CFADOCK et est déduite du SIRET. Si cette information est erronée, merci de nous contacter" />
+            {idcc && (
+              <Button ml={3} type="submit" variant="secondary" leftIcon={<Copy width={5} />} onClick={() => copyInClipboard(idcc)}>
+                Copier
+              </Button>
+            )}
           </Flex>
         )}
         {type === AUTHTYPE.ENTREPRISE && (

@@ -1,8 +1,8 @@
-import { v4 as uuidv4 } from "uuid"
+import { randomUUID } from "crypto"
 import { UserRecruteur } from "../model/index.js"
 
 export default () => ({
-  createApiKey: () => `mna-${uuidv4()}`,
+  createApiKey: () => `mna-${randomUUID()}`,
   getUsers: async (query, options, { page, limit }) => {
     const response = await UserRecruteur.paginate(query, {
       ...options,
@@ -28,7 +28,7 @@ export default () => ({
     if (!scope) {
       if (values.type === "CFA") {
         // generate user scope
-        let [key] = uuidv4().split("-")
+        let [key] = randomUUID().split("-")
         scope = `cfa-${key}`
       } else {
         scope = `etp-${values.raison_sociale.toLowerCase().replace(/ /g, "-")}`

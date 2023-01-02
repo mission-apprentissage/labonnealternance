@@ -6,6 +6,7 @@ import got from "got"
 import { sortBy } from "lodash-es"
 import { getDistanceInKm } from "../common/geolib.js"
 import config from "../config.js"
+import { logger } from "./logger.js"
 
 /**
  * @description create an axios instance to connect to the ministère educatif catalogue
@@ -22,19 +23,30 @@ const createCatalogueMeAPI = async () => {
 
     instance.defaults.headers.common["Cookie"] = response.headers["set-cookie"][0]
   } catch (error) {
-    console.log(error)
+    logger.error(error.response)
   }
 
   return instance
 }
 
-export const catalogueMeAPI = await createCatalogueMeAPI()
+/**
+ * KBA 20221227 : to be fixed to avoid calling it outside this file. Changed to a function because it's called automatically everytime the catalogue component is used.
+ * @returns CatalogueApi
+ */
+export const catalogueMeAPI = () => createCatalogueMeAPI()
 
 export const getFormationsFromCatalogueMe = async ({ query, limit, page = 1, select, allFormations = [] }) => {
+  // KBA 20221227 : find more elegant solution
+  let api = null
+
+  if (api === null) {
+    api = await catalogueMeAPI()
+  }
+
   let params = { page, limit, query, select }
 
   try {
-    const response = await catalogueMeAPI.get(`/entity/formations`, { params })
+    const response = await api.get(`/entity/formations`, { params })
 
     const { formations, pagination } = response.data
 
