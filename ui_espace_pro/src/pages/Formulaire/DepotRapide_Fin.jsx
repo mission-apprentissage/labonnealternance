@@ -107,7 +107,7 @@ export default () => {
           )}
           <Stack direction="column" spacing="16px" mt={fromDashboard ? 10 : 0}>
             <Heading fontSize="20px">Récapitulatif de votre besoin</Heading>
-            <Text>{offre.libelle}</Text>
+            <Text>{offre.rome_appellation_label}</Text>
             <Text>{offre.niveau}</Text>
             <Text>Date de début d'apprentissage souhaitée : {dayjs(offre.date_debut_apprentissage).format("DD/MM/YYYY")}</Text>
             <Text fontSize="14px">Votre annonce sera visible pendant 30 jours, renouvelables.</Text>
