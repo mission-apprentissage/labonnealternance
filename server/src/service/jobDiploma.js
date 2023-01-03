@@ -75,7 +75,7 @@ const getDiplomasForJobsQuery = async (query) => {
 
 const getFormationEsQueryIndexFragment = () => {
   return {
-    index: "convertedformations",
+    index: "formationcatalogues",
     size: 1000,
   }
 }

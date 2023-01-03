@@ -57,19 +57,22 @@ const neededFieldsFromCatalogue = {
   etablissement_gestionnaire_conventionne: 1,
 }
 
-const API = axios.create({ baseURL: `${config.catalogueUrl}` })
-
-const countFormations = async () => {
+export const countFormations = async () => {
   try {
-    const response = await API.get(`${config.formationsEndPoint}/count`)
+    const response = await axios.get(`${config.catalogueUrl}${config.formationsEndPoint}/count`)
     return response.data
   } catch (error) {
     logger.error(error)
   }
 }
 
-const fetchFormations = ({ formationCount }) => {
+export const getAllFormationsFromCatalogue = async () => {
+  const count = (await countFormations()) ?? null
   const query = { published: true, catalogue_published: true }
+
+  if (!count) return
+
+  logger.info(`${count} formation(s) à importer`)
 
   const streamFormations = async (query, options) => {
     const params = convertQueryIntoParams(query, options)
@@ -79,7 +82,7 @@ const fetchFormations = ({ formationCount }) => {
   }
 
   return streamFormations(query, {
-    limit: formationCount,
+    limit: count,
     select: neededFieldsFromCatalogue,
   })
 }
@@ -98,5 +101,3 @@ const convertQueryIntoParams = (query, options = {}) => {
     { encode: false }
   )
 }
-
-export { fetchFormations, countFormations }
