@@ -45,7 +45,7 @@ export const loadItem = async ({
       storeTrainingsInSession({ trainings: response.data.results, searchTimestamp })
 
       if (response.data.results.length) {
-        setTrainingMarkers(factorTrainingsForMap(response.data.results))
+        setTrainingMarkers({ trainingList: factorTrainingsForMap(response.data.results) })
       }
       setSelectedItem(response.data.results[0])
       setSelectedMarker(response.data.results[0])
@@ -151,7 +151,7 @@ export const loadItem = async ({
 
         setHasSearch(true)
 
-        setJobMarkers(factorJobsForMap(results), null)
+        setJobMarkers({ jobList: factorJobsForMap(results) })
 
         setSelectedItem(loadedItem)
         setSelectedMarker(loadedItem)
