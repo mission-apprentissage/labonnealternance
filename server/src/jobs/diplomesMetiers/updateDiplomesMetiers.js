@@ -74,7 +74,7 @@ const getIntitulesFormations = async () => {
      * KBA 30/11/2022 : TODO : use _scroll method from ES to get all data
      */
     const responseIntitulesFormations = await esClient.search({
-      index: "convertedformations",
+      index: "formationcatalogues",
       size,
       _sourceIncludes: ["_id", "intitule_long", "rome_codes", "rncp_code"],
       body,
