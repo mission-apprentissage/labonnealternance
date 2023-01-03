@@ -109,7 +109,7 @@ export const searchForJobsFunction = async ({
     setHasSearch(true)
     storeJobsInSession({ jobs: results, searchTimestamp })
 
-    setJobMarkers(factorJobsForMap(results), scopeContext.isTraining ? null : searchCenter)
+    setJobMarkers({ jobList: factorJobsForMap(results), searchCenter: scopeContext.isTraining ? null : searchCenter, hasTrainings: scopeContext.isTraining })
   } catch (err) {
     console.log(
       `Erreur interne lors de la recherche d'emplois (${err.response && err.response.status ? err.response.status : ""} : ${
