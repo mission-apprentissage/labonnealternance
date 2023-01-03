@@ -13,6 +13,7 @@ const localOrigin = [
   "https://doctrina-recette.apprentissage.beta.gouv.fr",
   "http://localhost:3003",
   "http://localhost:3000",
+  "http://localhost",
 ]
 
 const localOriginRegexp = /^https:\/\/labonnealternance(.*).apprentissage.beta.gouv.fr(.*)/i
