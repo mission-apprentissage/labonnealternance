@@ -160,7 +160,7 @@ export default () => {
         </Box>
         <Grid templateRows={["1fr", ".5fr 2fr"]} templateColumns={["1fr", "4fr 5fr"]} gap={6}>
           <GridItem>
-            <Heading>Vos informations de contact</Heading>
+            <Heading>Informations de contact</Heading>
             <Text fontSize="20px" textAlign="justify" mt={2}>
               il s’agit de l’entreprise qui vous a mandaté pour gérer ses offres d’emploi. Ces informations ne seront pas visibles sur l'offre.
             </Text>
