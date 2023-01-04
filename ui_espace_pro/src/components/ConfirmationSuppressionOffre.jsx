@@ -100,9 +100,6 @@ export default (props) => {
             <FormControl isRequired>
               <FormLabel>Raison de l'annulation</FormLabel>
               <Select variant="outline" placeholder="Selectionner une option" onChange={(v) => handleRaisonSelect(v.target.value)}>
-                <option defaultValue value="Mon offre est pourvue">
-                  Mon offre est pourvue
-                </option>
                 <option value="Je ne suis plus à la recherche">Je ne suis plus à la recherche</option>
                 <option value="Je ne reçois pas de candidature">Je ne reçois pas de candidature</option>
                 <option value="Les candidatures reçues ne sont pas assez qualifiées">Les candidatures reçues ne sont pas assez qualifiées</option>
