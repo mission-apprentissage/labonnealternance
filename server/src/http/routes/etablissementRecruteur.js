@@ -5,7 +5,7 @@ import { mailTemplate } from "../../assets/index.js"
 import { getAktoEstablishmentVerification } from "../../common/akto.js"
 import { getNearEtablissementsFromRomes } from "../../common/catalogue.js"
 import { CFA, etat_utilisateur, OPCOS, validation_utilisateur } from "../../common/constants.js"
-import { createUserRecruteurToken } from "../../common/utils/jwtUtils.js"
+import { createMagicLinkToken, createUserRecruteurToken } from "../../common/utils/jwtUtils.js"
 import { checkIfUserEmailIsPrivate, checkIfUserMailExistInReferentiel, getAllDomainsFromEmailList } from "../../common/utils/mailUtils.js"
 import { notifyToSlack } from "../../common/utils/slackUtils.js"
 import config from "../../config.js"
@@ -406,6 +406,8 @@ export default ({ etablissementsRecruteur, usersRecruteur, formulaire, mailer })
 
       const user = await usersRecruteur.getUser({ _id: req.body.id })
 
+      const magiclink = `${config.publicUrlEspacePro}/authentification/verification?token=${createMagicLinkToken(user.email)}`
+
       await mailer.sendEmail({
         to: user.email,
         subject: "Bienvenue sur La bonne alternance",
@@ -416,7 +418,7 @@ export default ({ etablissementsRecruteur, usersRecruteur, formulaire, mailer })
           prenom: user.prenom,
           email: user.email,
           mandataire: user.type === CFA,
-          url: `${config.publicUrlEspacePro}/authentification`,
+          url: magiclink,
         },
       })
 
