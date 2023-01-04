@@ -11,8 +11,6 @@ export default (props) => {
   const [auth] = useAuth()
   const { enseigne, raison_sociale, rue, siret, commune, code_postal, opco, tranche_effectif, date_creation_etablissement, type, adresse, qualiopi, idcc } = props
 
-  console.log(props, opco)
-
   const RAISON_SOCIALE = raison_sociale.length > 30 ? raison_sociale.substring(0, 30) + "..." : raison_sociale ?? ""
 
   /**
