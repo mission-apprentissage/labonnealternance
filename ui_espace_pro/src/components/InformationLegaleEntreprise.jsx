@@ -11,8 +11,6 @@ export default (props) => {
   const [auth] = useAuth()
   const { enseigne, raison_sociale, rue, siret, commune, code_postal, opco, tranche_effectif, date_creation_etablissement, type, adresse, qualiopi, idcc } = props
 
-  console.log(props, opco)
-
   const RAISON_SOCIALE = raison_sociale.length > 30 ? raison_sociale.substring(0, 30) + "..." : raison_sociale ?? ""
 
   /**
@@ -94,7 +92,7 @@ export default (props) => {
               <Text bg="#F9F8F6" px="8px" py="2px" fontWeight={700} mr={2} noOfLines={1}>
                 {commune}
               </Text>
-              <InfoTooltip description="La donnée “Adresse” provient de l’INSEE puis est déduite du SIRET. Si cette information est erronée, merci de leur signaler." />
+              <InfoTooltip description="La donnée “Commune” provient de l’INSEE puis est déduite du SIRET. Si cette information est erronée, merci de leur signaler." />
             </Flex>
           </>
         )}
@@ -107,7 +105,7 @@ export default (props) => {
             <InfoTooltip description='La donnée "Effectif” provient de l’INSEE puis est déduite du SIRET. Si cette information est erronée, merci de leur signaler.' />
           </Flex>
         )}
-        {type !== AUTHTYPE.ENTREPRISE && (
+        {type === AUTHTYPE.ENTREPRISE && (
           <Flex align="center">
             <Text mr={3}>Date de création :</Text>
             <Text bg="#F9F8F6" px="8px" py="2px" fontWeight={700} mr={2} noOfLines={1}>

@@ -56,6 +56,12 @@ export default (props) => {
         }, 1000)
         break
 
+      case AUTHTYPE.OPCO:
+        setTimeout(() => {
+          navigate("/administration/opco")
+        }, 1000)
+        break
+
       default:
         break
     }
