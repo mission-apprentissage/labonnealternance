@@ -1,8 +1,7 @@
 import React from "react"
 
-import { Collapse } from "reactstrap"
-import { Box, Link } from "@chakra-ui/react"
-import { ExternalLinkIcon } from "@chakra-ui/icons"
+import { Accordion, AccordionButton, AccordionItem, AccordionPanel, Box, Link } from "@chakra-ui/react"
+import { AddIcon, ExternalLinkIcon, MinusIcon } from "@chakra-ui/icons"
 
 const CandidatureSpontaneeExplanation = (props) => {
   // Collapse Open state
@@ -64,22 +63,22 @@ const CandidatureSpontaneeExplanation = (props) => {
   }
 
   return (
-    <>
-      <div className="c-accordion">
-        <button
-          className="c-accordion-button"
-          onClick={() => {
-            setIsOpen(!isOpen)
-          }}
-        >
-          <span className="c-accordion-button-title">{getTitle()}</span>
-          <span className="c-accordion-button-plus">{isOpen ? "-" : "+"}</span>
-        </button>
-        <Collapse isOpen={isOpen} className="c-collapser">
-          {getText()}
-        </Collapse>
-      </div>
-    </>
+    <Accordion allowToggle>
+      <AccordionItem>
+        {({ isExpanded }) => (
+          <>
+            <AccordionButton fontSize="1rem" fontWeight={700} color="#161616">
+              <Box as="span" flex="1" textAlign="left">
+                {getTitle()}
+              </Box>
+              {isExpanded ? <MinusIcon fontSize="10px" /> : <AddIcon fontSize="10px" />}
+            </AccordionButton>
+
+            <AccordionPanel pb={4}>{getText()}</AccordionPanel>
+          </>
+        )}
+      </AccordionItem>
+    </Accordion>
   )
 }
 
