@@ -39,20 +39,20 @@ const Formulaire = () => {
     // save info if not trusted from source
     postFormulaire(values)
       .then(({ data }) => {
+        setSubmitting(false)
         toast({
           title: "Entreprise créée avec succès.",
           position: "top-right",
           status: "success",
           duration: 4000,
         })
-        navigate(`/administration/entreprise/${data.id_form}`, {
+        navigate(`/administration/entreprise/${data.id_form}/offre/creation`, {
           replace: true,
+          state: { raison_sociale: data.raison_sociale },
         })
-
-        setSubmitting(false)
       })
       .catch((error) => {
-        setFieldError("email", error.response.data.message)
+        setFieldError("email", error.response?.data?.message)
         setSubmitting(false)
       })
   }
@@ -104,16 +104,7 @@ const Formulaire = () => {
           <Form>
             <CustomInput required={false} name="nom" label="Nom" type="text" value={informationForm.values.nom} />
             <CustomInput required={false} name="prenom" label="Prénom" type="text" value={informationForm.values.prenom} />
-            <CustomInput
-              required={false}
-              name="telephone"
-              label="Numéro de téléphone"
-              type="tel"
-              pattern="[0-9]{10}"
-              maxLength="10"
-              helper="Le numéro de téléphone sera visible sur l'offre d'emploi"
-              value={informationForm.values.telephone}
-            />
+            <CustomInput required={false} name="telephone" label="Numéro de téléphone" type="tel" pattern="[0-9]{10}" maxLength="10" value={informationForm.values.telephone} />
             <CustomInput required={false} name="email" label="Email" type="email" value={informationForm.values.email} />
             <Flex justifyContent="flex-end" alignItems="center" mt={5}>
               {!widget?.isWidget && (
@@ -160,7 +151,7 @@ export default () => {
         </Box>
         <Grid templateRows={["1fr", ".5fr 2fr"]} templateColumns={["1fr", "4fr 5fr"]} gap={6}>
           <GridItem>
-            <Heading>Vos informations de contact</Heading>
+            <Heading>Informations de contact</Heading>
             <Text fontSize="20px" textAlign="justify" mt={2}>
               il s’agit de l’entreprise qui vous a mandaté pour gérer ses offres d’emploi. Ces informations ne seront pas visibles sur l'offre.
             </Text>

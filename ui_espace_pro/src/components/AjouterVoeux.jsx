@@ -429,7 +429,7 @@ const AjouterVoeux = (props) => {
                 </FormHelperText>
               </FormControl>
             )}
-            <Flex justify="flex-end" mt={8}>
+            <Flex justify="flex-end" my={8}>
               <Button variant="secondary" onClick={() => navigate(-1)} mr={4}>
                 Annuler
               </Button>
