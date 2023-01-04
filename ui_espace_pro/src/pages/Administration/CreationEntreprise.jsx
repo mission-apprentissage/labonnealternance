@@ -17,9 +17,9 @@ const CreationCompte = ({ type }) => {
   const [auth] = useAuth()
 
   const submitSiret = ({ siret }, { setSubmitting, setFieldError }) => {
-    const formatedSiret = siret.split(" ").join("")
+    const formattedSiret = siret.split(" ").join("")
     // validate SIRET
-    getEntrepriseInformation(formatedSiret, { fromDashboardCfa: true, gestionnaire: auth.gestionnaire })
+    getEntrepriseInformation(formattedSiret, { fromDashboardCfa: true, gestionnaire: auth.gestionnaire })
       .then(({ data }) => {
         setSubmitting(true)
         navigate("/administration/entreprise/detail", {

@@ -16,11 +16,11 @@ const CreationCompte = ({ type, setQualiopi, setBandeau, setStatus }) => {
   const { origine } = useParams()
 
   const submitSiret = ({ siret }, { setSubmitting, setFieldError }) => {
-    const formatedSiret = siret.split(" ").join("")
+    const formattedSiret = siret.split(" ").join("")
     setBandeau(false)
     // validate SIRET
     if (type === AUTHTYPE.ENTREPRISE) {
-      getEntrepriseInformation(formatedSiret)
+      getEntrepriseInformation(formattedSiret)
         .then(({ data }) => {
           setSubmitting(true)
           navigate("/creation/detail", { state: { informationSiret: data, type, origine } })
@@ -31,7 +31,7 @@ const CreationCompte = ({ type, setQualiopi, setBandeau, setStatus }) => {
           setSubmitting(false)
         })
     } else {
-      getCfaInformation(formatedSiret)
+      getCfaInformation(formattedSiret)
         .then(({ data }) => {
           setSubmitting(false)
           navigate("/creation/detail", { state: { informationSiret: data, type, origine } })
