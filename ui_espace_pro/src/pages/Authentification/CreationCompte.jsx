@@ -16,10 +16,11 @@ const CreationCompte = ({ type, setQualiopi, setBandeau, setStatus }) => {
   const { origine } = useParams()
 
   const submitSiret = ({ siret }, { setSubmitting, setFieldError }) => {
+    const formatedSiret = siret.split(" ").join("")
     setBandeau(false)
     // validate SIRET
     if (type === AUTHTYPE.ENTREPRISE) {
-      getEntrepriseInformation(siret)
+      getEntrepriseInformation(formatedSiret)
         .then(({ data }) => {
           setSubmitting(true)
           navigate("/creation/detail", { state: { informationSiret: data, type, origine } })
@@ -30,7 +31,7 @@ const CreationCompte = ({ type, setQualiopi, setBandeau, setStatus }) => {
           setSubmitting(false)
         })
     } else {
-      getCfaInformation(siret)
+      getCfaInformation(formatedSiret)
         .then(({ data }) => {
           setSubmitting(false)
           navigate("/creation/detail", { state: { informationSiret: data, type, origine } })
@@ -77,6 +78,7 @@ const CreationCompte = ({ type, setQualiopi, setBandeau, setStatus }) => {
       initialValues={{ siret: undefined }}
       validationSchema={Yup.object().shape({
         siret: Yup.string()
+          .transform((value) => value.split(" ").join(""))
           .matches(/^[0-9]+$/, "Le siret est composé uniquement de chiffres")
           .min(14, "le siret est sur 14 chiffres")
           .max(14, "le siret est sur 14 chiffres")
@@ -88,7 +90,7 @@ const CreationCompte = ({ type, setQualiopi, setBandeau, setStatus }) => {
         return (
           <>
             <Form>
-              <CustomInput required={false} name="siret" label="SIRET" type="text" value={values.siret} maxLength="14" />
+              <CustomInput required={false} name="siret" label="SIRET" type="text" value={values.siret} />
               {isCfa && (
                 <Alert status="info" variant="top-accent">
                   <AlertIcon />
