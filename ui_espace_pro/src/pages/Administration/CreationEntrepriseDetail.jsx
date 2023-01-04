@@ -39,20 +39,20 @@ const Formulaire = () => {
     // save info if not trusted from source
     postFormulaire(values)
       .then(({ data }) => {
+        setSubmitting(false)
         toast({
           title: "Entreprise créée avec succès.",
           position: "top-right",
           status: "success",
           duration: 4000,
         })
-        navigate(`/administration/entreprise/${data.id_form}`, {
+        navigate(`/administration/entreprise/${data.id_form}/offre/creation`, {
           replace: true,
+          state: { raison_sociale: data.raison_sociale },
         })
-
-        setSubmitting(false)
       })
       .catch((error) => {
-        setFieldError("email", error.response.data.message)
+        setFieldError("email", error.response?.data?.message)
         setSubmitting(false)
       })
   }
