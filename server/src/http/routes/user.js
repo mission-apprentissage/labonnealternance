@@ -2,6 +2,7 @@ import express from "express"
 import { mailTemplate } from "../../assets/index.js"
 import { CFA } from "../../common/constants.js"
 import { Formulaire, UserRecruteur } from "../../common/model/index.js"
+import { createMagicLinkToken } from "../../common/utils/jwtUtils.js"
 import config from "../../config.js"
 import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
 
@@ -102,6 +103,8 @@ export default ({ usersRecruteur, mailer, formulaire }) => {
       // Validation de l'adresse mail de l'utilisateur
       await usersRecruteur.updateUser(user._id, { email_valide: true })
 
+      const magiclink = `${config.publicUrlEspacePro}/authentification/verification?token=${createMagicLinkToken(user.email)}`
+
       if (req.body.statut === "VALIDÉ") {
         // envoyer mail de bienvenue si validation de l'utilisateur
         await mailer.sendEmail({
@@ -114,7 +117,7 @@ export default ({ usersRecruteur, mailer, formulaire }) => {
             raison_sociale: user.raison_sociale,
             email: user.email,
             mandataire: user.type === CFA,
-            url: `${config.publicUrlEspacePro}/authentification`,
+            url: magiclink,
           },
         })
       }
