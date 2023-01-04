@@ -380,7 +380,7 @@ const transformFormationsForIdea = (formations) => {
 const transformFormationForIdea = (formation) => {
   let resultFormation = itemModel("formation")
 
-  resultFormation.title = _.get(formation, "source.intitule_long", formation.source.intitule_court)
+  resultFormation.title = formation.source?.intitule_long || formation.source.intitule_court
   resultFormation.longTitle = formation.source.intitule_long
   resultFormation.diplomaLevel = formation.source.niveau
   resultFormation.onisepUrl = formation.source.onisep_url
@@ -403,12 +403,13 @@ const transformFormationForIdea = (formation) => {
       email: formation.source.email,
     }
   }
+  const geoSource = formation.source.idea_geo_coordonnees_etablissement || formation.source.lieu_formation_geo_coordonnees
 
   resultFormation.place = {
     distance: formation.sort ? formation.sort[0] : null,
     fullAddress: getTrainingAddress(formation.source), // adresse postale reconstruite à partir des éléments d'adresse fournis
-    latitude: formation.source.idea_geo_coordonnees_etablissement ? formation.source.idea_geo_coordonnees_etablissement.split(",")[0] : null,
-    longitude: formation.source.idea_geo_coordonnees_etablissement ? formation.source.idea_geo_coordonnees_etablissement.split(",")[1] : null,
+    latitude: geoSource ? geoSource.split(",")[0] : null,
+    longitude: geoSource ? geoSource.split(",")[1] : null,
     //city: formation.source.etablissement_formateur_localite,
     city: formation.source.localite,
     address: `${formation.source.lieu_formation_adresse}`,
