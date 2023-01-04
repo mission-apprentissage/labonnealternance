@@ -104,16 +104,7 @@ const Formulaire = () => {
           <Form>
             <CustomInput required={false} name="nom" label="Nom" type="text" value={informationForm.values.nom} />
             <CustomInput required={false} name="prenom" label="Prénom" type="text" value={informationForm.values.prenom} />
-            <CustomInput
-              required={false}
-              name="telephone"
-              label="Numéro de téléphone"
-              type="tel"
-              pattern="[0-9]{10}"
-              maxLength="10"
-              helper="Le numéro de téléphone sera visible sur l'offre d'emploi"
-              value={informationForm.values.telephone}
-            />
+            <CustomInput required={false} name="telephone" label="Numéro de téléphone" type="tel" pattern="[0-9]{10}" maxLength="10" value={informationForm.values.telephone} />
             <CustomInput required={false} name="email" label="Email" type="email" value={informationForm.values.email} />
             <Flex justifyContent="flex-end" alignItems="center" mt={5}>
               {!widget?.isWidget && (
