@@ -1,6 +1,7 @@
 import { Box, Button, Flex, Heading, Text } from "@chakra-ui/react"
 import { useContext } from "react"
 import { useLocation } from "react-router-dom"
+import { AUTHTYPE } from "../../common/contants"
 import { AuthentificationLayout } from "../../components"
 import { WidgetContext } from "../../contextWidget"
 import { InfoCircle } from "../../theme/components/icons"
@@ -10,9 +11,9 @@ export default () => {
   const location = useLocation()
   const { widget } = useContext(WidgetContext)
 
-  const { email } = location.state
+  const { email, type } = location.state
 
-  const redirect = () => window.location.replace("/")
+  const redirect = () => (type === AUTHTYPE.CFA ? window.location.replace("/organisme-de-formation") : window.location.replace("/acces-recruteur"))
 
   return (
     <AuthentificationLayout onClose={redirect}>
