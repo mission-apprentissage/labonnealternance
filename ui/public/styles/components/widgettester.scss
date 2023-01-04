@@ -1,35 +1,7 @@
 .widgetTestPage {
   max-width: 99%;
 }
-.widgetTestPage .c-autocomplete__menu {
-  margin-left: 0px;
-  width: 100%;
-  max-width: 370px;
-  margin-top: 4px;
-  box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.2);
-}
-.widgetTestPage header {
-  background: none;
-  padding: 0px 10px;
-}
-.widgetTestPage .bold {
-  font-weight: bold;
-}
-.widgetTestPage form {
-  margin-top: 20px;
-}
-.widgetTestPage .hiddenResultList,
-.widgetTestPage .hiddenSearchForm,
-.widgetTestPage .hiddenItemDetail {
-  display: none;
-}
-.widgetTestPage .inFormIcon {
-  margin-top: 13px;
-  margin-left: 15px;
-}
-.widgetTestPage form .apiResult {
-  text-align: left;
-}
+
 .widgetTestPage form .shownValue {
   margin-bottom: 20px;
 }
@@ -54,9 +26,7 @@
   background: #fff;
   border-radius: 10px;
 }
-.widgetTestPage .c-logobar-formgroup:focus-within {
-  border: 1px solid #006aeb;
-}
+
 .widgetTestPage form .errorField {
   color: red;
   margin-top: -10px;

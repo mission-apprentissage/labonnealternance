@@ -42,36 +42,6 @@ input:-webkit-autofill:active {
   color: #e10600;
 }
 
-.c-candidature-terms {
-  max-width: 90%;
-  label {
-    display: flex;
-    align-items: baseline;
-  }
-  input {
-    flex: none;
-    margin-right: 10px;
-  }
-  @include media-breakpoint-up(md) {
-    max-width: 650px;
-  }
-}
-
-.c-candidature-terms.is-valid-false {
-  input {
-    outline: 2px solid #e10600;
-  }
-}
-
-.btn.btn-blue {
-  background-color: #000091;
-  text-decoration: none;
-  color: white;
-}
-.btn.btn-blue:hover {
-  background-color: #0000d1;
-}
-
 .c-candidature__widget {
   width: 100%;
 }

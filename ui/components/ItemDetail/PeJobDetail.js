@@ -32,29 +32,29 @@ const PeJobDetail = ({ job }) => {
 
   return (
     <Box pb="0px" mt={6} position="relative" background="white" padding={["1px 12px 50px 12px", "1px 24px 50px 24px", "1px 12px 24px 12px"]} mx={["0", "30px"]}>
-      <Text as="h2" variant="itemDetailH2" mt={2}>
+      <Text as="h2" variant="itemDetailH2" mt={2} mb={4}>
         Description de l&apos;offre
       </Text>
-      <div className="c-matcha-detail-container">
-        <div>
+      <Box p={4} mb={6} borderRadius="8px" background="#f6f6f6">
+        <Box mb={2}>
           <strong>Publiée le : </strong> {creationDate}
-        </div>
-        <div className="my-2">
+        </Box>
+        <Box mb={2}>
           <strong>Nature du contrat : </strong> Alternance
-        </div>
-        <div className="my-2">
+        </Box>
+        <Box mb={2}>
           <strong>Durée :</strong> {contractDuration}
-        </div>
-        <div>
+        </Box>
+        <Box>
           <strong>Rythme :</strong> {contractRythm}
-        </div>
-      </div>
+        </Box>
+      </Box>
       {description && (
-        <div className="c-detail-description">
+        <Box mt={8}>
           <Box whiteSpace="pre-wrap" pl={4}>
             {ReactHtmlParser(md.render(description))}
           </Box>
-        </div>
+        </Box>
       )}
     </Box>
   )

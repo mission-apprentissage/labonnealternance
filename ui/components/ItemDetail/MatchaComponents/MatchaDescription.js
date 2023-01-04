@@ -1,12 +1,8 @@
-import { Box, Text } from "@chakra-ui/react"
+import { AddIcon, MinusIcon } from "@chakra-ui/icons"
+import { Accordion, AccordionButton, AccordionItem, AccordionPanel, Box, Text } from "@chakra-ui/react"
 import React from "react"
 
-import { Collapse } from "reactstrap"
-
 const MatchaDescription = ({ job }) => {
-  // Collapse Open state
-  const [isOpen, setIsOpen] = React.useState(false)
-
   const getText = () => {
     return (
       <Box pl="12px" mt={4}>
@@ -22,25 +18,25 @@ const MatchaDescription = ({ job }) => {
     )
   }
 
-  return job?.job?.romeDetails?.definition ? (
-    <>
-      <div className="c-accordion">
-        <button
-          className="c-accordion-button"
-          onClick={() => {
-            setIsOpen(!isOpen)
-          }}
-        >
-          <span className="c-accordion-button-title">Description du métier</span>
-          <span className="c-accordion-button-plus">{isOpen ? "-" : "+"}</span>
-        </button>
-        <Collapse isOpen={isOpen} className="c-collapser">
-          {getText()}
-        </Collapse>
-      </div>
-    </>
-  ) : (
-    ""
+  return (
+    job?.job?.romeDetails?.definition && (
+      <Accordion allowToggle>
+        <AccordionItem>
+          {({ isExpanded }) => (
+            <>
+              <AccordionButton fontSize="1rem" fontWeight={700} color="#161616">
+                <Box as="span" flex="1" textAlign="left">
+                  Description du métier
+                </Box>
+                {isExpanded ? <MinusIcon fontSize="10px" /> : <AddIcon fontSize="10px" />}
+              </AccordionButton>
+
+              <AccordionPanel pb={4}>{getText()}</AccordionPanel>
+            </>
+          )}
+        </AccordionItem>
+      </Accordion>
+    )
   )
 }
 

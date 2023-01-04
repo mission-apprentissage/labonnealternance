@@ -1,11 +1,8 @@
 import React from "react"
-
-import { Collapse } from "reactstrap"
+import { AddIcon, MinusIcon } from "@chakra-ui/icons"
+import { Accordion, AccordionButton, AccordionItem, AccordionPanel, Box, Text } from "@chakra-ui/react"
 
 const MatchaAcces = ({ job }) => {
-  // Collapse Open state
-  const [isOpen, setIsOpen] = React.useState(false)
-
   const acces = job?.job?.romeDetails?.acces ?? null
 
   if (!acces) return ""
@@ -13,20 +10,24 @@ const MatchaAcces = ({ job }) => {
   const accesFormatted = acces.split("\\n").join("<br><br>")
 
   return (
-    <div className="c-accordion">
-      <button
-        className="c-accordion-button"
-        onClick={() => {
-          setIsOpen(!isOpen)
-        }}
-      >
-        <span className="c-accordion-button-title">À qui ce métier est-il accessible ?</span>
-        <span className="c-accordion-button-plus">{isOpen ? "-" : "+"}</span>
-      </button>
-      <Collapse isOpen={isOpen} className="c-collapser">
-        <span dangerouslySetInnerHTML={{ __html: accesFormatted }}></span>
-      </Collapse>
-    </div>
+    <Accordion allowToggle>
+      <AccordionItem>
+        {({ isExpanded }) => (
+          <>
+            <AccordionButton fontSize="1rem" fontWeight={700} color="#161616">
+              <Box as="span" flex="1" textAlign="left">
+                À qui ce métier est-il accessible ?
+              </Box>
+              {isExpanded ? <MinusIcon fontSize="10px" /> : <AddIcon fontSize="10px" />}
+            </AccordionButton>
+
+            <AccordionPanel pb={4}>
+              <Text as="span" dangerouslySetInnerHTML={{ __html: accesFormatted }}></Text>
+            </AccordionPanel>
+          </>
+        )}
+      </AccordionItem>
+    </Accordion>
   )
 }
 

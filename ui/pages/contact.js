@@ -30,7 +30,7 @@ const Contact = () => (
           <Text as="p">Vous avez une question sur nos outils ? Consultez notre foire aux questions. </Text>
           <Box align="center" my={12}>
             <NextLink href="/faq" passHref>
-              <Button as="a" variant="editorialPrimary" aria-label="Accès à la Foire aux questions" className="c-homecomponent-link c-homecomponent-link__first">
+              <Button as="a" variant="editorialPrimary" aria-label="Accès à la Foire aux questions">
                 Consulter la FAQ
               </Button>
             </NextLink>
