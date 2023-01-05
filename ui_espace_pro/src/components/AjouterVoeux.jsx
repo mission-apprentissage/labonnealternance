@@ -181,7 +181,9 @@ const AjouterVoeux = (props) => {
      */
     if (formulaire.geo_coordonnees === "NOT FOUND") {
       setHaveProposals(false)
+      return
     }
+
     const [latitude, longitude] = formulaire.geo_coordonnees.split(",")
 
     const { data } = await getRelatedEtablissementsFromRome({ rome, latitude, longitude })
