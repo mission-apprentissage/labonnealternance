@@ -8,7 +8,7 @@ import { AUTHTYPE } from "../../common/contants"
 import { AnimationContainer, AuthentificationLayout, CustomInput, InformationLegaleEntreprise } from "../../components"
 import { LogoContext } from "../../contextLogo"
 import { WidgetContext } from "../../contextWidget"
-import { InfoCircle, SearchLine } from "../../theme/components/icons"
+import { ExternalLinkLine, InfoCircle, SearchLine } from "../../theme/components/icons"
 
 const CreationCompte = ({ type, setQualiopi, setBandeau, setStatus }) => {
   const [isCfa, setIsCfa] = useState(false)
@@ -132,29 +132,27 @@ const InformationSiret = ({ type }) => {
           <Text>Pour créer le compte de votre organisme de formation, il faut :</Text>
           <UnorderedList>
             <ListItem mx={10} mb={5}>
-              <span style={{ fontWeight: "700" }}>
-                Être référencé dans
-                <Link href="https://catalogue.apprentissage.beta.gouv.fr/recherche/etablissements" variant="classic" isExternal>
-                  le catalogue des offres de formations en apprentissage.
-                </Link>
-              </span>
+              <span style={{ fontWeight: "700" }}>Être référencé dans</span>{" "}
+              <Link href="https://catalogue.apprentissage.beta.gouv.fr/recherche/etablissements" style={{ textDecoration: "underline" }} isExternal>
+                le catalogue des offres de formations en apprentissage. <ExternalLinkLine h={3} />
+              </Link>{" "}
               Pour ajouter une offre de formation au Catalogue de l’offre de formation en apprentissage, merci de la déclarer auprès du Carif-Oref de votre région en allant sur la
-              page
-              <a href="https://reseau.intercariforef.org/referencer-son-offre-de-formation" style={{ textDecoration: "underline" }} target="_blank">
-                référencer son offre de formation
-              </a>
+              page suivante :{" "}
+              <Link href="https://reseau.intercariforef.org/referencer-son-offre-de-formation" isExternal style={{ textDecoration: "underline" }}>
+                référencer son offre de formation <ExternalLinkLine h={3} />
+              </Link>
             </ListItem>
             <ListItem mx={10}>
               <span style={{ fontWeight: "700" }}>Être certifié Qualiopi.</span>{" "}
-              <a
+              <Link
                 href="https://travail-emploi.gouv.fr/formation-professionnelle/acteurs-cadre-et-qualite-de-la-formation-professionnelle/liste-organismes-certificateurs"
                 style={{ textDecoration: "underline" }}
-                target="_blank"
+                isExternal
               >
-                La certification
-              </a>
-              Qualiopi est l’unique moyen d’accéder au fichier national des organismes de formation référencés et de permettre à vos entreprises clientes de faire financer vos
-              actions avec les fonds publics.
+                La certification Qualiopi <ExternalLinkLine h={3} />
+              </Link>{" "}
+              est l’unique moyen d’accéder au fichier national des organismes de formation référencés et de permettre à vos entreprises clientes de faire financer vos actions avec
+              les fonds publics.
             </ListItem>
           </UnorderedList>
         </Stack>
@@ -167,17 +165,17 @@ const InformationSiret = ({ type }) => {
         {type === AUTHTYPE.ENTREPRISE ? (
           <Text textAlign="justify">
             Le numéro d’identification de votre entreprise peut être trouvé sur
-            <Link href="https://annuaire-entreprises.data.gouv.fr/" variant="classic" isExternal>
-              l’annuaire des entreprises
+            <Link href="https://annuaire-entreprises.data.gouv.fr/" style={{ textDecoration: "underline" }} isExternal>
+              l’annuaire des entreprises <ExternalLinkLine h={3} />
             </Link>
             ou bien sur les registres de votre entreprise.
           </Text>
         ) : (
           <Text>
-            Le numéro d’identification de votre organisme peut être trouvé sur le site
-            <Link href="https://catalogue.apprentissage.beta.gouv.fr/recherche/etablissements" variant="classic" isExternal>
-              Le catalogue des offres de formations en apprentissage
-            </Link>
+            Le numéro d’identification de votre organisme peut être trouvé sur le site{" "}
+            <Link href="https://catalogue.apprentissage.beta.gouv.fr/recherche/etablissements" style={{ textDecoration: "underline" }} isExternal>
+              Le catalogue des offres de formations en apprentissage <ExternalLinkLine h={3} />
+            </Link>{" "}
             ou bien sur les registres de votre organisme de formation.
           </Text>
         )}
