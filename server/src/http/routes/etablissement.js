@@ -1,12 +1,12 @@
 import Boom from "boom"
 import express from "express"
 import Joi from "joi"
+import { mailTemplate } from "../../assets/index.js"
 import { mailType } from "../../common/model/constants/etablissement.js"
 import { referrers } from "../../common/model/constants/referrers.js"
 import { dayjs } from "../../common/utils/dayjs.js"
 import config from "../../config.js"
 import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
-import { mailTemplate } from "../../assets/index.js"
 
 const optOutUnsubscribeSchema = Joi.object({
   opt_out_question: Joi.string().optional(),
@@ -74,7 +74,6 @@ export default ({ etablissements, mailer, widgetParameters, appointments }) => {
           },
           activationDate: dayjs().format("DD/MM"),
         },
-        from: config.rdvEmail,
       })
 
       const [widgetParametersFound] = await Promise.all([
@@ -152,7 +151,6 @@ export default ({ etablissements, mailer, widgetParameters, appointments }) => {
           },
           activationDate: dayjs().format("DD/MM"),
         },
-        from: config.rdvEmail,
       })
 
       await etablissements.findOneAndUpdate(
@@ -237,7 +235,7 @@ export default ({ etablissements, mailer, widgetParameters, appointments }) => {
         etablissement = await etablissements.findById(req.params.id)
 
         await mailer.sendEmail({
-          to: config.rdvEmail,
+          to: "nepasrepondre@apprentissage.beta.gouv.fr",
           subject: `Un CFA se pose une question concernant l'opt-out"`,
           template: mailTemplate["mail-rdva-optout-unsubscription-question"],
           data: {
@@ -299,7 +297,6 @@ export default ({ etablissements, mailer, widgetParameters, appointments }) => {
             destinataireEmail: etablissement.email_decisionnaire,
           },
         },
-        from: config.rdvEmail,
       })
 
       await etablissements.findOneAndUpdate(
