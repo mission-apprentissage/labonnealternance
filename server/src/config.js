@@ -49,8 +49,6 @@ const config = {
     sendinblueWebhookApiKey: env.get("LBA_SENDINBLUE_WEBHOOK_API_KEY").default("1234").asString(),
     sendinblueApiKey: env.get("LBA_SENDINBLUE_API_KEY").default("1234").asString(),
   },
-  matchaEmail: "matcha@apprentissage.beta.gouv.fr",
-  rdvEmail: "rdv_apprentissage@apprentissage.beta.gouv.fr",
   auth: {
     passwordHashRounds: env.get("LBA_AUTH_PASSWORD_HASH_ROUNDS").default(1001).asInt(),
     user: {
