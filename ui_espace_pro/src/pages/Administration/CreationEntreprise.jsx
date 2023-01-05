@@ -143,7 +143,7 @@ export default ({ type, widget, administration }) => {
           <Box>
             <Heading>Renseignements entreprise</Heading>
             <Text fontSize="20px" textAlign="justify" mt={2}>
-              Merci de renseigner le siret de votre entreprise partenaire.
+              Merci de renseigner le SIRET de votre entreprise partenaire afin de l'identifier.
             </Text>
             <Box mt={4}>
               <CreationCompte type={type} />

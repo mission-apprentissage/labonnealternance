@@ -153,7 +153,7 @@ export default () => {
           <GridItem>
             <Heading>Informations de contact</Heading>
             <Text fontSize="20px" textAlign="justify" mt={2}>
-              il s’agit de l’entreprise qui vous a mandaté pour gérer ses offres d’emploi. Ces informations ne seront pas visibles sur l'offre.
+              Il s’agit des informations de contact de votre entreprise partenaire. Ces informations ne seront pas visibles sur l’offre.
             </Text>
           </GridItem>
           <GridItem rowStart={["auto", 2]}>
