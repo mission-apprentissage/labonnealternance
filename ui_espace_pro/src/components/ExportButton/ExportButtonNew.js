@@ -17,7 +17,7 @@ export default ({ data, datasetName = "export" }) => {
 
   if (auth.type === AUTHTYPE.OPCO) {
     data.forEach((e) => {
-      if (e.offres_detail.length > 0) {
+      if (e.offres_detail?.length) {
         e.offres_detail.map((offre) => {
           buffer.push({ ...e, ...offre })
         })
