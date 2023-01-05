@@ -418,7 +418,7 @@ const notifyHardbounceToApplicant = async ({ mailer, application }) => {
 
 const warnMatchaTeamAboutBouncedEmail = async ({ application, mailer }) => {
   mailer.sendEmail({
-    to: config.matchaEmail,
+    to: "nepasrepondre@apprentissage.beta.gouv.fr",
     subject: `Hardbounce détecté pour ${application.company_name}`,
     template: getEmailTemplate("mail-matcha-hardbounce"),
     data: { ...application._doc, ...images },
