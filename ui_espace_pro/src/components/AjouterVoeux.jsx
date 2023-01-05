@@ -176,6 +176,12 @@ const AjouterVoeux = (props) => {
    * @return {Promise<void>}
    */
   const checkIfThereAreProposal = async (rome) => {
+    /**
+     * KBA 20220105: Issue comes from address API if it's down or no result is found
+     */
+    if (formulaire.geo_coordonnees === "NOT FOUND") {
+      setHaveProposals(false)
+    }
     const [latitude, longitude] = formulaire.geo_coordonnees.split(",")
 
     const { data } = await getRelatedEtablissementsFromRome({ rome, latitude, longitude })
