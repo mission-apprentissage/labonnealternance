@@ -11,25 +11,19 @@ const renderFile = promisify(ejs.renderFile)
 
 /**
  * @description Create transporter.
- * @param {Object} smtp
- * @param {String} smtp.host
- * @param {String} smtp.port
- * @param {Object} smtp.auth
- * @param {String} smtp.user
- * @param {String} smtp.pass
- * @returns {Mail}
+ * @returns {MailerInstance}
  */
-const createTransporter = (smtp) => {
+const createTransporter = () => {
   const needAuthentication = config.env === "production" ? true : false
 
-  const transporter = nodemailer.createTransport(needAuthentication ? smtp : omit(smtp, ["auth"]))
+  const transporter = nodemailer.createTransport(needAuthentication ? config.smtp : omit(config.smtp, ["auth"]))
 
   transporter.use("compile", htmlToText({ ignoreImage: true }))
 
   return transporter
 }
 
-export default function (config, transporter = createTransporter(config.smtp)) {
+export default function (transporter = createTransporter()) {
   const renderEmail = async (template, data = {}) => {
     const buffer = await renderFile(template, { data })
     const { html } = mjml(buffer.toString(), { minify: true })
@@ -53,7 +47,7 @@ export default function (config, transporter = createTransporter(config.smtp)) {
      * @param {undefined|string} cc
      * @returns {Promise<{messageId: string}>}
      */
-    sendEmail: async ({ to, subject, template, data, from = "nepasrepondre@apprentissage.beta.gouv.fr", cc = undefined, attachments }) => {
+    sendEmail: async ({ to, subject, template, data, from = config.transactionalEmail, cc = undefined, attachments }) => {
       return transporter.sendMail({
         from,
         to,

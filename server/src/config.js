@@ -9,6 +9,7 @@ const config = {
   formationsEndPoint: "/api/v1/entity/formations",
   maxApplicationPerDay: 100,
   elasticSearch: "http://localhost:9200",
+  transactionalEmail: "nepasrepondre@apprentissage.beta.gouv.fr",
   log: {
     level: env.get("LBA_LOG_LEVEL").default("info").asString(),
     format: env.get("LBA_LOG_FORMAT").default("pretty").asString(),
@@ -49,8 +50,6 @@ const config = {
     sendinblueWebhookApiKey: env.get("LBA_SENDINBLUE_WEBHOOK_API_KEY").default("1234").asString(),
     sendinblueApiKey: env.get("LBA_SENDINBLUE_API_KEY").default("1234").asString(),
   },
-  matchaEmail: "matcha@apprentissage.beta.gouv.fr",
-  rdvEmail: "rdv_apprentissage@apprentissage.beta.gouv.fr",
   auth: {
     passwordHashRounds: env.get("LBA_AUTH_PASSWORD_HASH_ROUNDS").default(1001).asInt(),
     user: {
