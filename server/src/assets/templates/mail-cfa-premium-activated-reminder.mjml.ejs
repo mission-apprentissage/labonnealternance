@@ -1,6 +1,6 @@
 <mjml>
     <mj-head>
-        <mj-title>La prise de rendez-vous est activée pour votre CFA sur La bonne alternance</mj-title>
+        <mj-title>Les jeunes peuvent prendre contact avec votre CFA sur Parcoursup</mj-title>
         <mj-font name="Work Sans" href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;700&display=swap" />
         <mj-style inline="inline">
             .grey {color: #1E1E1E;}
@@ -20,7 +20,7 @@
         <mj-section padding-top="0" padding-bottom="0">
             <mj-column width="350px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="25px 0 46px">
                 <mj-text color="#000091" font-size="18px" padding-right="0">
-                    <b>Recevez les demandes de contact des candidats directement dans les boîtes mails de votre CFA !</b>
+                    <b>Les candidats peuvent contacter votre CFA directement depuis Parcoursup !</b>
                 </mj-text>
             </mj-column>
             <mj-column width="250px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 0 21px 0">
@@ -30,8 +30,9 @@
         <mj-section padding-top="0">
             <mj-column width="600px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="0 10px 20px 10px">
                 <mj-text>
-                    Le <b><%= data.etablissement.optOutActivatedAtDate %></b>, votre établissement gestionnaire <b>mailgestionnaire@mail.com</b> a activé la fonctionnalité de prise de rendez-vous sur vos fiches formations publiées sur <a href="https://labonnealternance.apprentissage.beta.gouv.fr/" class="grey">La bonne alternance</a>. Il permettra aux candidats intéressés par vos formations de vous envoyer une demande de contact.
+                    Depuis le <b><%= data.etablissement.optOutActivatedAtDate %></b>, votre centre de formation bénéficie du service de prise de rendez-vous sur Parcoursup, proposé par <a href="https://labonnealternance.apprentissage.beta.gouv.fr/" class="grey">La bonne alternance</a>. Avec l’ouverture des voeux sur Parcoursup le 18 janvier 2023, des candidats potentiels peuvent vous contacter directement depuis vos fiches formations.
                 </mj-text>
+                <mj-image width="520px" src="<%= data.images.optOutLbaIntegrationExample %>" />
                 <mj-text>
                     Vous recevrez ces demandes pour l’organisme de formation suivant :
                     <br/>
@@ -44,7 +45,6 @@
                     <br /><br />Le contact qui recevra les demandes de rendez-vous sera :<br/>
                     <b><a class="blue" href="mailto:<%= data.user.destinataireEmail %>"><%= data.user.destinataireEmail %></a></b>
                 </mj-text>
-                <mj-image width="520px" src="<%= data.images.optOutLbaIntegrationExample %>" />
             </mj-column>
         </mj-section>
         <mj-section padding-top="24px">
@@ -68,6 +68,7 @@
             <mj-column width="600px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 10px">
                 <mj-text><b>Qui reçoit les demandes de rendez-vous ?</b><br/><br/>
                     Les demandes de rendez-vous envoyées par les candidats auprès de votre CFA sont reçues sur le mail formateur renseigné auprès de votre Carif-Oref pour vos fiches formation.<br/><br/>
+
                     <b>Vous souhaitez modifier le mail de la personne en charge de traiter les demandes de prise de RDV ?</b><br/><br/>
 
                     Merci de nous fournir les éléments suivants: <br/><br/>
