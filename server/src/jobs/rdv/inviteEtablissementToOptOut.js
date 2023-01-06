@@ -4,6 +4,7 @@ import { mailType, optMode } from "../../common/model/constants/etablissement.js
 import { dayjs } from "../../common/utils/dayjs.js"
 import { isValidEmail } from "../../common/utils/isValidEmail.js"
 import config from "../../config.js"
+import { uniq } from "lodash-es"
 
 /**
  * @description Invite all "etablissements" without opt_mode to opt-out.
@@ -107,6 +108,44 @@ export const inviteEtablissementToOptOut = async ({ etablissements, widgetParame
             },
           },
         }
+      )
+
+      let emails = formations.map((formation) => formation.email_rdv)
+      if (etablissement?.etablissement_formateur_courriel) {
+        emails.push(etablissement.etablissement_formateur_courriel)
+      }
+
+      emails = uniq(emails).filter((email) => email !== etablissement.email_decisionnaire)
+
+      await Promise.all(
+        emails.map((email) =>
+          mailer.sendEmail({
+            to: email,
+            subject: `La prise de rendez-vous est activée pour votre CFA sur La bonne alternance`,
+            template: mailTemplate["mail-cfa-optout-activated"],
+            data: {
+              images: {
+                logo: `${config.publicUrlEspacePro}/assets/logo-lba-recruteur-cfa.png?raw=true`,
+                logoFooter: `${config.publicUrlEspacePro}/assets/logo-republique-francaise.png?raw=true`,
+                peopleLaptop: `${config.publicUrlEspacePro}/assets/people-laptop.png?raw=true`,
+              },
+              etablissement: {
+                name: etablissement.raison_sociale,
+                address: etablissement.adresse,
+                postalCode: etablissement.code_postal,
+                ville: etablissement.localite,
+                siret: etablissement.siret_formateur,
+                email: etablissement.email_decisionnaire,
+                optOutActivatedAtDate: dayjs(etablissement.opt_out_activated_at).format("dd/mm"),
+                emailGestionnaire: etablissement.email_decisionnaire,
+              },
+              user: {
+                destinataireEmail: email,
+              },
+            },
+            from: config.email,
+          })
+        )
       )
 
       logger.info("Etablissement invited to opt-out.", {
