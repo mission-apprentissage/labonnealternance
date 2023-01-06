@@ -60,9 +60,8 @@ export const inviteEtablissementToOptOut = async ({ etablissements, widgetParame
       await etablissement.update({ email_decisionnaire: emailDecisionaire })
     }
 
-    // KBA 29122022 : Job can run only in production if specified in the ansible configuration, to be updated
     // Invite all etablissements only in production environment, for etablissement that have an "email_decisionnaire"
-    if (["production", "local"].includes(config.env) && emailDecisionaire) {
+    if (emailDecisionaire) {
       const willBeActivatedAt = dayjs().add(15, "days").format()
       const optOutWillBeActivatedAtDayjs = dayjs(willBeActivatedAt)
 
