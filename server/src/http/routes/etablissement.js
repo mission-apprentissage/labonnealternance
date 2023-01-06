@@ -1,5 +1,6 @@
 import Boom from "boom"
 import express from "express"
+import { uniq } from "lodash-es"
 import Joi from "joi"
 import { mailType } from "../../common/model/constants/etablissement.js"
 import { referrers } from "../../common/model/constants/referrers.js"
@@ -74,7 +75,7 @@ export default ({ etablissements, mailer, widgetParameters, appointments }) => {
           },
           activationDate: dayjs().format("DD/MM"),
         },
-        from: config.rdvEmail,
+        from: config.email,
       })
 
       const [widgetParametersFound] = await Promise.all([
@@ -94,6 +95,45 @@ export default ({ etablissements, mailer, widgetParameters, appointments }) => {
           }
         ),
       ])
+
+      // Gets all mails (formation email + formateur email), excepted "email_decisionnaire"
+      let emails = widgetParametersFound.map((widgetParameter) => widgetParameter.email_rdv)
+      if (etablissement?.etablissement_formateur_courriel) {
+        emails.push(etablissement.etablissement_formateur_courriel)
+      }
+
+      emails = uniq(emails).filter((email) => email !== etablissement.email_decisionnaire)
+
+      await Promise.all(
+        emails.map((email) =>
+          mailer.sendEmail({
+            to: email,
+            subject: `La prise de rendez-vous est activée pour votre CFA sur Parcoursup`,
+            template: mailTemplate["mail-cfa-premium-activated"],
+            data: {
+              images: {
+                logo: `${config.publicUrlEspacePro}/assets/logo-lba-recruteur-cfa.png?raw=true`,
+                logoFooter: `${config.publicUrlEspacePro}/assets/logo-republique-francaise.png?raw=true`,
+                peopleLaptop: `${config.publicUrlEspacePro}/assets/people-laptop.png?raw=true`,
+              },
+              etablissement: {
+                name: etablissement.raison_sociale,
+                address: etablissement.adresse,
+                postalCode: etablissement.code_postal,
+                ville: etablissement.localite,
+                siret: etablissement.siret_formateur,
+                email: etablissement.email_decisionnaire,
+                premiumActivatedDate: dayjs(etablissement.premium_activated_at).format("dd/mm"),
+                emailGestionnaire: etablissement.email_decisionnaire,
+              },
+              user: {
+                destinataireEmail: email,
+              },
+            },
+            from: config.email,
+          })
+        )
+      )
 
       const [etablissementUpdated] = await Promise.all([
         etablissements.findById(req.params.id),
@@ -152,7 +192,7 @@ export default ({ etablissements, mailer, widgetParameters, appointments }) => {
           },
           activationDate: dayjs().format("DD/MM"),
         },
-        from: config.rdvEmail,
+        from: config.email,
       })
 
       await etablissements.findOneAndUpdate(
@@ -237,7 +277,7 @@ export default ({ etablissements, mailer, widgetParameters, appointments }) => {
         etablissement = await etablissements.findById(req.params.id)
 
         await mailer.sendEmail({
-          to: config.rdvEmail,
+          to: config.email,
           subject: `Un CFA se pose une question concernant l'opt-out"`,
           template: mailTemplate["mail-rdva-optout-unsubscription-question"],
           data: {
@@ -299,7 +339,7 @@ export default ({ etablissements, mailer, widgetParameters, appointments }) => {
             destinataireEmail: etablissement.email_decisionnaire,
           },
         },
-        from: config.rdvEmail,
+        from: config.email,
       })
 
       await etablissements.findOneAndUpdate(

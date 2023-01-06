@@ -40,7 +40,7 @@ export const inviteEtablissementToPremium = async ({ etablissements, mailer }) =
           linkToForm: `${config.publicUrlEspacePro}/form/premium/${etablissement._id}`,
         },
       },
-      from: config.rdvEmail,
+      from: config.email,
     })
 
     await etablissements.updateOne(
