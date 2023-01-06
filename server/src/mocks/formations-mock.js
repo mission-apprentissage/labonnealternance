@@ -37,7 +37,7 @@ const formationMock = {
   etablissement_formateur_cedex: null,
   etablissement_formateur_entreprise_raison_sociale: "CAMPUS DE DUMMY",
   periode: ["2021-09-01T00:00:00.000Z", "2022-09-01T00:00:00.000Z"],
-  idea_geo_coordonnees_etablissement: "46.002614,6.15737772159091",
+  lieu_formation_geo_coordonnees: "46.002614,6.15737772159091",
   created_at: "2021-04-01T02:23:24.063Z",
   last_update_at: "2022-06-01T05:59:29.856Z",
   id: "5fd25616c67da3c3e6bd0810",

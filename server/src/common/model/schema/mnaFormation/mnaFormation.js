@@ -419,13 +419,6 @@ export const mnaFormationSchema = {
     description: "Formation à mette à jour lors du script d'enrichissement",
   },
 
-  // Product specific
-  idea_geo_coordonnees_etablissement: {
-    type: String,
-    implicit_type: "geo_point",
-    description: "Latitude et longitude de l'établissement recherchable dans Idea",
-  },
-
   update_error: {
     type: String,
     default: null,
