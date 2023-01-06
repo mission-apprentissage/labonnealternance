@@ -235,7 +235,7 @@ export default ({ etablissements, mailer, widgetParameters, appointments }) => {
         etablissement = await etablissements.findById(req.params.id)
 
         await mailer.sendEmail({
-          to: "nepasrepondre@apprentissage.beta.gouv.fr",
+          to: config.transactionalEmail,
           subject: `Un CFA se pose une question concernant l'opt-out"`,
           template: mailTemplate["mail-rdva-optout-unsubscription-question"],
           data: {
