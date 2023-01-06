@@ -68,7 +68,7 @@ export const activateOptOutEtablissementFormations = async ({ etablissements, wi
             destinataireEmail: etablissement.email_decisionnaire,
           },
         },
-        from: config.rdvEmail,
+        from: config.email,
       })
 
       await etablissements.findOneAndUpdate(
