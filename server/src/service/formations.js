@@ -87,7 +87,7 @@ const getFormations = async ({ romes, rncps, romeDomain, coords, radius, diploma
         useGeoLocation
           ? {
               _geo_distance: {
-                idea_geo_coordonnees_etablissement: [parseFloat(longitude), parseFloat(latitude)],
+                lieu_formation_geo_coordonnees: [parseFloat(longitude), parseFloat(latitude)],
                 order: "asc",
                 unit: "km",
                 mode: "min",
@@ -111,7 +111,7 @@ const getFormations = async ({ romes, rncps, romeDomain, coords, radius, diploma
       esQuery.query.bool.filter = {
         geo_distance: {
           distance: `${distance}km`,
-          idea_geo_coordonnees_etablissement: {
+          lieu_formation_geo_coordonnees: {
             lat: latitude,
             lon: longitude,
           },
@@ -403,7 +403,7 @@ const transformFormationForIdea = (formation) => {
       email: formation.source.email,
     }
   }
-  const geoSource = formation.source.idea_geo_coordonnees_etablissement || formation.source.lieu_formation_geo_coordonnees
+  const geoSource = formation.source.lieu_formation_geo_coordonnees
 
   resultFormation.place = {
     distance: formation.sort ? formation.sort[0] : null,
@@ -657,7 +657,7 @@ const getFormationEsQueryIndexFragment = (limit) => {
       "_id",
       "email",
       "niveau",
-      "idea_geo_coordonnees_etablissement",
+      "lieu_formation_geo_coordonnees",
       "intitule_long",
       "intitule_court",
       "lieu_formation_adresse",
