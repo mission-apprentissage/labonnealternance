@@ -1,4 +1,3 @@
-import config from "../../config.js"
 import createMailer from "../mailer.js"
 import { connectToMongo } from "../mongodb.js"
 import createApplication from "./application.js"
@@ -25,7 +24,7 @@ export default async function (options = {}) {
 
   return {
     db: options.db || (await connectToMongo()).db,
-    mailer: options.mailer || createMailer({ smtp: { ...config.smtp, secure: false } }),
+    mailer: options.mailer || createMailer(),
     scan,
     users,
     formulaire,

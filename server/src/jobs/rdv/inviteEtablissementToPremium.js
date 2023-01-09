@@ -1,8 +1,8 @@
+import { mailTemplate } from "../../assets/index.js"
 import { logger } from "../../common/logger.js"
 import { mailType } from "../../common/model/constants/etablissement.js"
 import { dayjs } from "../../common/utils/dayjs.js"
 import config from "../../config.js"
-import { mailTemplate } from "../../assets/index.js"
 
 /**
  * @description Invite all "etablissements" to Premium.
@@ -40,7 +40,6 @@ export const inviteEtablissementToPremium = async ({ etablissements, mailer }) =
           linkToForm: `${config.publicUrlEspacePro}/form/premium/${etablissement._id}`,
         },
       },
-      from: config.email,
     })
 
     await etablissements.updateOne(

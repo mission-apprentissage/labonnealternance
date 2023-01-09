@@ -6,10 +6,6 @@ import { testingParameters } from "../../../utils/testingParameters"
 const CandidatureSpontaneeWorked = ({ email, company, kind }) => {
   return (
     <Container data-testid="CandidatureSpontaneeWorked">
-      <Text as="h1" fontSize="24px" fontWeight={700} data-testid="CandidatureSpontaneeWorkedTitle">
-        {kind === "matcha" ? <>Postuler à l&apos;offre de {company}</> : <>Candidature spontanée</>}
-      </Text>
-
       <Flex direction="row" alignItems="center" my={12}>
         <Image src={paperplaneIcon} alt="" />
         <Box pl={4} ml={4}>
