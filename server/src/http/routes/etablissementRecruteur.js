@@ -110,7 +110,7 @@ export default ({ etablissementsRecruteur, usersRecruteur, formulaire, mailer })
 
         case "MULTIPLE_OPCO":
           response.opco = "Opco multiple"
-          response.idcc = "Opco multiple, IDCC non définit"
+          response.idcc = "Opco multiple, IDCC non défini"
           break
 
         case "NOT_FOUND":
