@@ -8,6 +8,7 @@ import isBetween from "dayjs/plugin/isBetween.js"
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore.js"
 import customParseFormat from "dayjs/plugin/customParseFormat.js"
 import isYesterday from "dayjs/plugin/isYesterday.js"
+import localizedFormat from "dayjs/plugin/localizedFormat.js"
 
 dayjs.extend(utc)
 dayjs.extend(duration)
@@ -18,6 +19,7 @@ dayjs.extend(isBetween)
 dayjs.extend(customParseFormat)
 dayjs.extend(advancedFormat)
 dayjs.extend(isYesterday)
+dayjs.extend(localizedFormat)
 
 /**
  * @description Formats date.
