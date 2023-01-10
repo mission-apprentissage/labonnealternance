@@ -12,18 +12,18 @@
         </mj-attributes>
     </mj-head>
     <mj-body background-color="#E5E5E5">
-        <mj-section padding-top="0" padding-bottom="0">
+        <mj-section padding-top="10px" padding-bottom="10px">
             <mj-column>
-                <mj-image src="<%= data.images.logo %>" width="150px"  alt="Logo" />
+                <mj-image src="<%= data.images.logo %>" width="200px"  alt="Logo" />
             </mj-column>
         </mj-section>
         <mj-section padding-top="0" padding-bottom="0">
-            <mj-column width="350px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="25px 0 46px">
-                <mj-text color="#000091" font-size="18px" padding-right="0">
+            <mj-column width="350px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="25px 0 46px 12px">
+                <mj-text color="#000091" font-size="18px" padding-right="0" padding-top="26px">
                     <b>Les candidats peuvent contacter votre CFA directement depuis Parcoursup !</b>
                 </mj-text>
             </mj-column>
-            <mj-column width="250px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 0 21px 0">
+            <mj-column width="250px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 0 37px 0">
                 <mj-image padding="10px 10px 4px 0" width="510px" src="<%= data.images.peopleLaptop %>" />
             </mj-column>
         </mj-section>
@@ -41,8 +41,6 @@
                         <%= data.etablissement.postalCode %> <%= data.etablissement.ville %> <br/>
                         SIRET: <%= data.etablissement.siret %>
                     </b>
-                    <br /><br />Le contact qui recevra les demandes de rendez-vous sera :<br/>
-                    <b><a class="blue" href="mailto:<%= data.user.destinataireEmail %>"><%= data.user.destinataireEmail %></a></b>
                 </mj-text>
             </mj-column>
         </mj-section>
@@ -50,8 +48,8 @@
             <mj-column width="600px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 10px">
                 <mj-text font-size="24px" font-weight="700">Vos engagements Parcoursup</mj-text>
                 <mj-text>Le service de prise de rendez-vous sur Parcoursup vous engage en tant que CFA à : <br/><br/>
-                    • ✉️ Contacter par mail ou téléphone tous les candidats qui feront une demande sur cette plateforme <br/>
-                    • ⏳ Dans un délai de 4 jours ouvrés après réception de la demande par e-mail
+                    • ✉️ <b>Contacter par mail ou téléphone tous les candidats</b> qui feront une demande sur cette plateforme <br/>
+                    • ⏳ <b>Dans un délai de 4 jours ouvrés</b> après réception de la demande par e-mail
                 </mj-text>
             </mj-column>
         </mj-section>
