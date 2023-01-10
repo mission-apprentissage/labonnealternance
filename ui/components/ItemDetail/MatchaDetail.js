@@ -35,7 +35,7 @@ const MatchaDetail = ({ job, seeInfo, setSeeInfo }) => {
   return (
     <>
       <Box pb="0px" mt={6} position="relative" background="white" padding={["1px 12px 50px 12px", "1px 24px 50px 24px", "1px 12px 24px 12px"]} mx={["0", "30px"]}>
-        <Text as="h2" variant="itemDetailH2" mt={2}>
+        <Text as="h2" variant="itemDetailH2" mt={2} mb={4}>
           Description de l&apos;offre
         </Text>
         <Box p={4} mb={6} borderRadius="8px" background="#f6f6f6">
