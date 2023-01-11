@@ -41,7 +41,7 @@ export const premiumActivatedReminder = async ({ etablissements, widgetParameter
 
     for (const email of emails) {
       const { messageId } = await mailer.sendEmail({
-        to: etablissement.email_decisionnaire,
+        to: email,
         subject: `Les jeunes peuvent prendre contact avec votre CFA sur Parcoursup`,
         template: mailTemplate["mail-cfa-premium-activated-reminder"],
         data: {
