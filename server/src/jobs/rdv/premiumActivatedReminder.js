@@ -23,7 +23,7 @@ export const premiumActivatedReminder = async ({ etablissements, widgetParameter
         },
       })
       .lean(),
-    widgetParameters.find({ id_parcoursup: { $ne: null } }).lean(),
+    widgetParameters.find({ id_parcoursup: { $ne: null }, email_rdv: { $ne: null } }).lean(),
   ])
 
   const etablissementWithParcoursup = etablissementsActivated.filter((etablissement) =>
