@@ -109,7 +109,8 @@ export default ({ etablissements, mailer, widgetParameters, appointments }) => {
       emails = _(emails)
         .uniq()
         .omitBy(_.isNil)
-        .filter((email) => email !== etablissement.email_decisionnaire)
+        .omitBy((item) => item === etablissement.email_decisionnaire)
+        .toArray()
 
       await Promise.all(
         emails.map((email) =>
