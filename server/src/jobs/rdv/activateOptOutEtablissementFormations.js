@@ -1,3 +1,4 @@
+import _ from "lodash-es"
 import { mailTemplate } from "../../assets/index.js"
 import { logger } from "../../common/logger.js"
 import { mailType } from "../../common/model/constants/etablissement.js"
@@ -69,6 +70,54 @@ export const activateOptOutEtablissementFormations = async ({ etablissements, wi
           },
         },
       })
+
+      const widgetParametersFound = await widgetParameters.find({
+        etablissement_siret: etablissement.siret_formateur,
+      })
+
+      // Gets all mails (formation email + formateur email), excepted "email_decisionnaire"
+      let emails = widgetParametersFound.map((widgetParameter) => widgetParameter.email_rdv)
+      if (etablissement?.etablissement_formateur_courriel) {
+        emails.push(etablissement.etablissement_formateur_courriel)
+      }
+
+      emails = _(emails)
+        .uniq()
+        .omitBy(_.isNil)
+        .omitBy((item) => item === etablissement.email_decisionnaire)
+        .toArray()
+
+      await Promise.all(
+        emails.map((email) =>
+          mailer.sendEmail({
+            to: email,
+            subject: `La prise de rendez-vous est activée pour votre CFA sur La bonne alternance`,
+            template: mailTemplate["mail-cfa-optout-activated"],
+            data: {
+              images: {
+                logo: `${config.publicUrlEspacePro}/assets/logo-lba.png?raw=true`,
+                logoFooter: `${config.publicUrlEspacePro}/assets/logo-republique-francaise.png?raw=true`,
+                peopleLaptop: `${config.publicUrlEspacePro}/assets/people-laptop.png?raw=true`,
+                optOutLbaIntegrationExample: `${config.publicUrlEspacePro}/assets/exemple_integration_lba.png?raw=true`,
+              },
+              etablissement: {
+                name: etablissement.raison_sociale,
+                address: etablissement.adresse,
+                postalCode: etablissement.code_postal,
+                ville: etablissement.localite,
+                siret: etablissement.siret_formateur,
+                email: etablissement.email_decisionnaire,
+                optOutActivatedAtDate: dayjs().format("DD/MM"),
+                emailGestionnaire: etablissement.email_decisionnaire,
+              },
+              user: {
+                destinataireEmail: email,
+              },
+            },
+            from: config.email,
+          })
+        )
+      )
 
       await etablissements.findOneAndUpdate(
         { _id: etablissement._id },
