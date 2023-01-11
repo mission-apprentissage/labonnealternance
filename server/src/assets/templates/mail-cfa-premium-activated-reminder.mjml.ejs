@@ -12,27 +12,30 @@
         </mj-attributes>
     </mj-head>
     <mj-body background-color="#E5E5E5">
-        <mj-section padding-top="0" padding-bottom="0">
-            <mj-column>
-                <mj-image src="<%= data.images.logoCfa %>" width="150px"  alt="Logo" />
+        <mj-section padding-top="20px" padding-bottom="20px">
+            <mj-column padding-left="0">
+                <mj-image src="<%= data.images.logo %>" width="200px"  alt="Logo" padding="0" align="left" />
+            </mj-column>
+            <mj-column padding-right="0">
+                <mj-image src="<%= data.images.logoParcoursup %>" width="200px"  alt="Logo" padding="12px 0 0 0" align="right" />
             </mj-column>
         </mj-section>
         <mj-section padding-top="0" padding-bottom="0">
-            <mj-column width="350px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="25px 0 46px">
-                <mj-text color="#000091" font-size="18px" padding-right="0">
+            <mj-column width="350px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="25px 0 46px 12px">
+                <mj-text color="#000091" font-size="18px" padding-right="0" padding-top="26px">
                     <b>Les candidats peuvent contacter votre CFA directement depuis Parcoursup !</b>
                 </mj-text>
             </mj-column>
-            <mj-column width="250px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 0 21px 0">
+            <mj-column width="250px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 0 37px 0">
                 <mj-image padding="10px 10px 4px 0" width="510px" src="<%= data.images.peopleLaptop %>" />
             </mj-column>
         </mj-section>
         <mj-section padding-top="0">
             <mj-column width="600px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="0 10px 20px 10px">
                 <mj-text>
-                    Depuis le <b><%= data.etablissement.optOutActivatedAtDate %></b>, votre centre de formation bénéficie du service de prise de rendez-vous sur Parcoursup, proposé par <a href="https://labonnealternance.apprentissage.beta.gouv.fr/" class="grey">La bonne alternance</a>. Avec l’ouverture des voeux sur Parcoursup le 18 janvier 2023, des candidats potentiels peuvent vous contacter directement depuis vos fiches formations.
+                    Depuis le <b><%= data.etablissement.premiumActivatedDate %></b>, votre centre de formation bénéficie du service de prise de rendez-vous sur Parcoursup, proposé par <a href="https://labonnealternance.apprentissage.beta.gouv.fr/" class="grey">La bonne alternance</a>. Avec l’ouverture des voeux sur Parcoursup le 18 janvier 2023, des candidats potentiels peuvent vous contacter directement depuis vos fiches formations.
                 </mj-text>
-                <mj-image width="520px" src="<%= data.images.optOutLbaIntegrationExample %>" />
+                <mj-image width="520px" src="<%= data.images.integrationExample %>" />
                 <mj-text>
                     Vous recevrez ces demandes pour l’organisme de formation suivant :
                     <br/>
@@ -42,8 +45,6 @@
                         <%= data.etablissement.postalCode %> <%= data.etablissement.ville %> <br/>
                         SIRET: <%= data.etablissement.siret %>
                     </b>
-                    <br /><br />Le contact qui recevra les demandes de rendez-vous sera :<br/>
-                    <b><a class="blue" href="mailto:<%= data.user.destinataireEmail %>"><%= data.user.destinataireEmail %></a></b>
                 </mj-text>
             </mj-column>
         </mj-section>
