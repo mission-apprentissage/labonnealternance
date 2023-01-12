@@ -39,7 +39,7 @@ const SearchForTrainingsAndJobs = () => {
 
   const { hasSearch, trainings, jobs, setTrainings, setJobs, selectedItem, setSelectedItem, setItemToScrollTo, setExtendedSearch, setHasSearch } = useContext(SearchResultContext)
 
-  const { opcoFilter, widgetParameters, useMock } = useContext(ParameterContext)
+  const { opcoFilter, widgetParameters, useMock, shouldExecuteSearch, setShouldExecuteSearch } = useContext(ParameterContext)
 
   const { formValues, setFormValues, visiblePane, setVisiblePane, isFormVisible, setIsFormVisible, setShouldMapBeVisible } = useContext(DisplayContext)
 
@@ -87,6 +87,25 @@ const SearchForTrainingsAndJobs = () => {
       router.events.off("routeChangeStart", handleRouteChange)
     }
   }, [trainings, jobs])
+
+  useEffect(() => {
+    if (shouldExecuteSearch) {
+      // provient du submit formulaire de la homepage
+      setShouldExecuteSearch(false)
+      executeSearch(formValues)
+    }
+  }, [])
+
+  const executeSearch = (values) => {
+    setIsLoading(true)
+    try {
+      handleSearchSubmit({ values })
+      setIsLoading(false)
+    } catch (err) {
+      setIsLoading(false)
+      logError("Search error", err)
+    }
+  }
 
   const selectItemFromHistory = (itemId, type) => {
     const item = findItem({ itemId, type, jobs, trainings })

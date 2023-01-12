@@ -15,7 +15,7 @@ let isMapInitialized = false
 const franceCenter = [2.2, 47]
 const zoomWholeFrance = 5
 
-const initializeMap = ({ mapContainer, unselectItem, trainings, jobs, selectItemOnMap, onMapHasMoved, unselectMapPopupItem, setSelectedItem, setSelectedMapPopupItem }) => {
+const initializeMap = ({ mapContainer, unselectItem, selectItemOnMap, onMapHasMoved, unselectMapPopupItem, setSelectedItem, setSelectedMapPopupItem }) => {
   isMapInitialized = true
 
   mapboxgl.accessToken = "pk.eyJ1IjoiYWxhbmxyIiwiYSI6ImNrYWlwYWYyZDAyejQzMHBpYzE0d2hoZWwifQ.FnAOzwsIKsYFRnTUwneUSA"
@@ -147,10 +147,6 @@ const initializeMap = ({ mapContainer, unselectItem, trainings, jobs, selectItem
         e.originalEvent.STOP = "STOP" // un classique stopPropagation ne suffit pour empêcher d'ouvrir deux popups si des points de deux layers se superposent
         e.originalEvent.STOP_SOURCE = "selected-job"
       })
-
-      if (jobs?.peJobs?.length || jobs?.lbaCompanies?.length || jobs?.lbbCompanies?.length || jobs?.matchas?.length) {
-        setJobMarkers({ jobList: factorJobsForMap(jobs) })
-      }
     }
 
     // ajout des layers et events liés aux formations
@@ -224,10 +220,6 @@ const initializeMap = ({ mapContainer, unselectItem, trainings, jobs, selectItem
         e.originalEvent.STOP = "STOP" // un classique stopPropagation ne suffit pour empêcher d'ouvrir deux popups si des points de deux layers se superposent
         e.originalEvent.STOP_SOURCE = "selected-training"
       })
-
-      if (trainings?.length) {
-        setTrainingMarkers({ trainingList: factorTrainingsForMap(trainings), options: { centerMapOnTraining: false } })
-      }
     }
   })
 
@@ -515,11 +507,13 @@ const setJobMarkers = async ({ jobList, searchCenter = null, hasTrainings = fals
     await waitForMapReadiness()
 
     // centrage et zoom si searchCenter est précisé (scope emploi seulement)
-    if (searchCenter) {
-      map.flyTo({ center: searchCenter, zoom: 9 })
-    } else if (!hasTrainings) {
-      // hack de contournement du bug d'initialisation de mapbox n'affichant pas les markers sur le niveau de zoom initial (part 2)
-      map.flyTo({ zoom: zoomWholeFrance })
+    if (!hasTrainings) {
+      if (searchCenter) {
+        map.flyTo({ center: searchCenter, zoom: 9 })
+      } else {
+        // hack de contournement du bug d'initialisation de mapbox n'affichant pas les markers sur le niveau de zoom initial (part 2)
+        map.flyTo({ center: franceCenter, zoom: zoomWholeFrance })
+      }
     }
 
     let features = []
@@ -620,7 +614,7 @@ const setTrainingMarkers = async ({ trainingList, options, tryCount = 0 }) => {
         map.flyTo({ center: trainingList[0].coords, zoom: newZoom })
       } else {
         // hack de contournement du bug d'initialisation de mapbox n'affichant pas les markers sur le niveau de zoom initial (part 3)
-        map.flyTo({ zoom: zoomWholeFrance })
+        map.flyTo({ center: franceCenter, zoom: zoomWholeFrance })
       }
 
       trainingList.map((training, idx) => {
