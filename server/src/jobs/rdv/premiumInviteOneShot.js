@@ -58,7 +58,6 @@ export const premiumInviteOneShot = async ({ etablissements, widgetParameters, m
           destinataireEmail: etablissement.email_decisionnaire,
         },
       },
-      from: config.email,
     })
 
     await etablissements.updateOne(

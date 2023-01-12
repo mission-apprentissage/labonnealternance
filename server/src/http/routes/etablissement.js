@@ -1,7 +1,7 @@
 import Boom from "boom"
 import express from "express"
-import _ from "lodash-es"
 import Joi from "joi"
+import _ from "lodash-es"
 import { mailTemplate } from "../../assets/index.js"
 import { mailType } from "../../common/model/constants/etablissement.js"
 import { referrers } from "../../common/model/constants/referrers.js"
@@ -138,7 +138,6 @@ export default ({ etablissements, mailer, widgetParameters, appointments }) => {
                 destinataireEmail: email,
               },
             },
-            from: config.email,
           })
         )
       )
