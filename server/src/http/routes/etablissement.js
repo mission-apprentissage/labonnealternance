@@ -1,6 +1,7 @@
 import Boom from "boom"
 import express from "express"
 import Joi from "joi"
+import _ from "lodash-es"
 import { mailTemplate } from "../../assets/index.js"
 import { mailType } from "../../common/model/constants/etablissement.js"
 import { referrers } from "../../common/model/constants/referrers.js"
@@ -60,7 +61,7 @@ export default ({ etablissements, mailer, widgetParameters, appointments }) => {
         template: mailTemplate["mail-cfa-premium-start"],
         data: {
           images: {
-            logoCandidat: `${config.publicUrlEspacePro}/assets/logo-lba-recruteur-candidat.png?raw=true`,
+            logoCandidat: `${config.publicUrlEspacePro}/assets/logo-lba.png?raw=true`,
             logoCfa: `${config.publicUrlEspacePro}/assets/logo-lba-recruteur-cfa.png?raw=true`,
             logoFooter: `${config.publicUrlEspacePro}/assets/logo-republique-francaise.png?raw=true`,
           },
@@ -76,8 +77,13 @@ export default ({ etablissements, mailer, widgetParameters, appointments }) => {
         },
       })
 
-      const [widgetParametersFound] = await Promise.all([
-        widgetParameters.find({ etablissement_siret: etablissement.siret_formateur }),
+      let [widgetParametersFound, etablissementUpdated] = await Promise.all([
+        widgetParameters.find({
+          etablissement_siret: etablissement.siret_formateur,
+          id_parcoursup: {
+            $ne: null,
+          },
+        }),
         etablissements.findOneAndUpdate(
           { _id: etablissement._id },
           {
@@ -94,10 +100,54 @@ export default ({ etablissements, mailer, widgetParameters, appointments }) => {
         ),
       ])
 
-      const [etablissementUpdated] = await Promise.all([
+      // Gets all mails (formation email + formateur email), excepted "email_decisionnaire"
+      let emails = widgetParametersFound.map((widgetParameter) => widgetParameter.email_rdv)
+      if (etablissement?.etablissement_formateur_courriel) {
+        emails.push(etablissement.etablissement_formateur_courriel)
+      }
+
+      emails = _(emails)
+        .uniq()
+        .omitBy(_.isNil)
+        .omitBy((item) => item === etablissement.email_decisionnaire)
+        .toArray()
+
+      await Promise.all(
+        emails.map((email) =>
+          mailer.sendEmail({
+            to: email,
+            subject: `La prise de rendez-vous est activée pour votre CFA sur Parcoursup`,
+            template: mailTemplate["mail-cfa-premium-activated"],
+            data: {
+              url: config.publicUrl,
+              replyTo: config.publicEmail,
+              images: {
+                logo: `${config.publicUrlEspacePro}/assets/logo-lba.png?raw=true`,
+                logoFooter: `${config.publicUrlEspacePro}/assets/logo-republique-francaise.png?raw=true`,
+                peopleLaptop: `${config.publicUrlEspacePro}/assets/people-laptop.png?raw=true`,
+              },
+              etablissement: {
+                name: etablissement.raison_sociale,
+                address: etablissement.adresse,
+                postalCode: etablissement.code_postal,
+                ville: etablissement.localite,
+                siret: etablissement.siret_formateur,
+                email: etablissement.email_decisionnaire,
+                premiumActivatedDate: dayjs(etablissementUpdated.premium_activated_at).format("DD/MM"),
+                emailGestionnaire: etablissement.email_decisionnaire,
+              },
+              user: {
+                destinataireEmail: email,
+              },
+            },
+          })
+        )
+      )
+
+      const [result] = await Promise.all([
         etablissements.findById(req.params.id),
         ...widgetParametersFound.map((widgetParameter) =>
-          widgetParameters.updateMany(
+          widgetParameters.update(
             { _id: widgetParameter._id, email_rdv: { $nin: [null, ""] } },
             {
               referrers: [...new Set([...widgetParameter.referrers, referrers.PARCOURSUP.code])],
@@ -106,7 +156,7 @@ export default ({ etablissements, mailer, widgetParameters, appointments }) => {
         ),
       ])
 
-      return res.send(etablissementUpdated)
+      return res.send(result)
     })
   )
 

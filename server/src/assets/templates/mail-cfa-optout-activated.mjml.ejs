@@ -1,0 +1,92 @@
+<mjml>
+    <mj-head>
+        <mj-title>La prise de rendez-vous est activée pour votre CFA sur La bonne alternance</mj-title>
+        <mj-font name="Work Sans" href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;700&display=swap" />
+        <mj-style inline="inline">
+            .grey {color: #1E1E1E;}
+            .blue {color: #000091;}
+        </mj-style>
+        <mj-attributes>
+            <mj-text color="#242424" font-family="Work Sans, Arial" font-size="16px" line-height="24px" />
+            <mj-button font-size="16px" line-height="24px" padding="8px 24px" font-family="Work Sans" height="40px" />
+        </mj-attributes>
+    </mj-head>
+    <mj-body background-color="#E5E5E5">
+        <mj-section padding-top="10px" padding-bottom="10px">
+            <mj-column>
+                <mj-image src="<%= data.images.logo %>" width="200px"  alt="Logo" />
+            </mj-column>
+        </mj-section>
+        <mj-section padding-top="0" padding-bottom="0">
+            <mj-column width="350px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="25px 0 46px 12px">
+                <mj-text color="#000091" font-size="18px" padding-right="0" padding-top="26px">
+                    <b>Recevez les demandes de contact des candidats directement dans les boîtes mails de votre CFA !</b>
+                </mj-text>
+            </mj-column>
+            <mj-column width="250px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 0 37px 0">
+                <mj-image padding="10px 10px 4px 0" width="510px" src="<%= data.images.peopleLaptop %>" />
+            </mj-column>
+        </mj-section>
+        <mj-section padding-top="0">
+            <mj-column width="600px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="0 10px 20px 10px">
+                <mj-text>
+                    Le <b><%= data.etablissement.optOutActivatedAtDate %></b>, votre établissement gestionnaire <b><%= data.etablissement.emailGestionnaire %></b> a activé la fonctionnalité de prise de rendez-vous sur vos fiches formations publiées sur <a href="https://labonnealternance.apprentissage.beta.gouv.fr/" class="grey">La bonne alternance</a>. Il permettra aux candidats intéressés par vos formations de vous envoyer une demande de contact.
+
+                </mj-text>
+                <mj-text>
+                    Vous recevrez ces demandes pour l’organisme de formation suivant :
+                    <br/>
+                    <b>
+                        <%= data.etablissement.name %> <br />
+                        <%= data.etablissement.address %><br/>
+                        <%= data.etablissement.postalCode %> <%= data.etablissement.ville %> <br/>
+                        SIRET: <%= data.etablissement.siret %>
+                    </b>
+                </mj-text>
+                <mj-image width="520px" src="<%= data.images.optOutLbaIntegrationExample %>" />
+            </mj-column>
+        </mj-section>
+        <mj-section padding-top="24px">
+            <mj-column width="600px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 10px">
+                <mj-text font-size="24px" font-weight="700">Qu’est ce que La bonne alternance ?</mj-text>
+                <mj-text><a href="<%= data.url %>" class="grey">La bonne alternance</a> a pour objectif d’aider les entreprises et les organismes de formation à <b>diffuser et gérer leurs offres de manière simplifiée</b>, et à faciliter la mise en relation entre les acteurs de l’apprentissage.<br/><br/>
+                    <b>Vos offres d’emploi et vos formations sont visibles sur les sites d’alternance les plus visités par les candidats</b>, notamment La bonne alternance, Affelnet, Parcoursup, 1jeune1solution. Les informations de vos entreprises partenaires ne sont pas exposées aux candidats. Vous recevez directement les candidatures afin de préserver votre exclusivité.
+                </mj-text>
+            </mj-column>
+        </mj-section>
+        <mj-section padding-top="24px">
+            <mj-column width="600px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 10px">
+                <mj-text><b>Qui reçoit les demandes de rendez-vous ?</b><br/><br/>
+                    Les demandes de rendez-vous envoyées par les candidats auprès de votre CFA sont reçues sur le mail formateur renseigné auprès de votre Carif-Oref pour vos fiches formation.<br/><br/>
+
+                    <b>Vous souhaitez modifier le mail de la personne en charge de traiter les demandes de prise de RDV ?</b><br/><br/>
+
+                    Merci de nous fournir les éléments suivants: <br/><br/>
+                    • SIRET de votre établissement, <br/>
+                    • nom de la/les formation(s) à modifier, <br/>
+                    • nouveau(x) mail(s) contact <br/><br/>
+                    à <a href="mailto:<%= data.replyTo %>" class="grey"><%= data.replyTo %></a> afin de nous permettre d’effectuer ces modifications.
+                </mj-text>
+            </mj-column>
+        </mj-section>
+        <mj-section padding-top="24px">
+            <mj-column width="600px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 10px">
+                <mj-text>
+                    Cordialement,<br/>
+                    L'équipe La bonne alternance,<br/>
+                    <a class="grey" href="https://mission-apprentissage.gitbook.io/general/">Mission interministérielle pour l'apprentissage et les trajectoires professionnelles</a>
+                </mj-text>
+            </mj-column>
+        </mj-section>
+        <mj-section padding-top="5px" text-align="left">
+            <mj-column width="200px">
+                <mj-image padding="0" src="<%= data.images.logoFooter %>"></mj-image>
+            </mj-column>
+            <mj-column width="400px" padding-left="30px">
+                <mj-text padding-bottom="15px" padding-right="0" font-size="12px">
+                    Cet email a été envoyé à <a class="grey" href="mailto:<%= data.user.destinataireEmail %>"><%= data.user.destinataireEmail %></a>
+                </mj-text>
+            </mj-column>
+        </mj-section>
+    </mj-body>
+</mjml>
