@@ -53,7 +53,7 @@ export const premiumInviteOneShot = async ({ etablissements, widgetParameters, m
           siret: etablissement.siret_formateur,
           email: etablissement.email_decisionnaire,
           linkToForm: `${config.publicUrlEspacePro}/form/premium/${etablissement._id}`,
-          optOutActivatedAtDate: dayjs(etablissement.opt_out_activated_at).format("D MMMM YYYY"),
+          optOutActivatedAtDate: dayjs(etablissement.opt_out_activated_at).format("DD/MM/YYYY"),
           emailGestionnaire: etablissement.email_decisionnaire,
         },
         user: {
