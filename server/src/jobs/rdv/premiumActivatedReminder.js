@@ -45,6 +45,7 @@ export const premiumActivatedReminder = async ({ etablissements, widgetParameter
         subject: `Les jeunes peuvent prendre contact avec votre CFA sur Parcoursup`,
         template: mailTemplate["mail-cfa-premium-activated-reminder"],
         data: {
+          url: config.publicUrl,
           images: {
             logo: `${config.publicUrlEspacePro}/assets/logo-lba.png?raw=true`,
             logoParcoursup: `${config.publicUrlEspacePro}/assets/logo-parcoursup.png?raw=true`,
