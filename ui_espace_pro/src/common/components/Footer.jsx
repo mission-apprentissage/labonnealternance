@@ -1,5 +1,5 @@
-import React from "react"
 import { Box, Container, Flex, Link, List, ListItem, Text } from "@chakra-ui/react"
+import React from "react"
 import { NavLink } from "react-router-dom"
 import { ExternalLinkLine } from "../../theme/components/icons"
 import { Logo } from "./LogoFooter"
@@ -11,8 +11,8 @@ import { Logo } from "./LogoFooter"
 const Footer = () => {
   return (
     <Box borderTop="1px solid" borderColor="bluefrance" color="#1E1E1E" fontSize="zeta" w="full">
-      <Container maxW="xl">
-        <Flex flexDirection={["column", "column", "row"]}>
+      <Container maxW="container.xl">
+        <Flex flexDirection={["column", "row", "row"]}>
           <Link as={NavLink} to="/" py={4} w={["100%", "100%", "50%"]}>
             <Logo size={"xl"} />
           </Link>
