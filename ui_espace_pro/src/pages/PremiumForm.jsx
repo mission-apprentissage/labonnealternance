@@ -1,11 +1,11 @@
+import { Box, Button, Container, Flex, Heading, Text } from "@chakra-ui/react"
 import React, { useEffect, useState } from "react"
-import { Box, Container, Flex, Text, Button, Heading } from "@chakra-ui/react"
 import { useParams } from "react-router-dom"
-import { SuccessCircle, InfoCircleFilled } from "../theme/components/icons"
-import { _get, _post } from "../common/httpClient"
 import { Breadcrumb } from "../common/components/Breadcrumb"
 import Layout from "../common/components/Layout"
+import { _get, _post } from "../common/httpClient"
 import { setTitle } from "../common/utils/pageUtils"
+import { InfoCircleFilled, SuccessCircle } from "../theme/components/icons"
 
 /**
  * @description Premium form component.
@@ -137,7 +137,7 @@ const PremiumForm = () => {
                 J’accepte les conditions
               </Button>
               <Button mt={5} variant="beta" onClick={refuse}>
-                Non je suis pas prêt
+                Non je ne suis pas prêt
               </Button>
               <Flex borderColor="pinksoft.400" borderLeftWidth="4px" mt={65} bg="grey.100" py={2}>
                 <Text>
