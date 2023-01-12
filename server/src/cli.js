@@ -15,6 +15,8 @@ import { inviteEtablissementToPremium } from "./jobs/rdv/inviteEtablissementToPr
 import { inviteEtablissementToPremiumFollowUp } from "./jobs/rdv/inviteEtablissementToPremiumFollowUp.js"
 import { parcoursupEtablissementStat } from "./jobs/rdv/parcoursupEtablissementStat.js"
 import { syncEtablissementsAndFormations } from "./jobs/rdv/syncEtablissementsAndFormations.js"
+import { premiumActivatedReminder } from "./jobs/rdv/premiumActivatedReminder.js"
+import { premiumInviteOneShot } from "./jobs/rdv/premiumInviteOneShot.js"
 import importFormations from "./jobs/formationsCatalogue/formationsCatalogue.js"
 import updateSendinblueBlockedEmails from "./jobs/updateSendinblueBlockedEmails/updateSendinblueBlockedEmails.js"
 import anonymizeOldApplications from "./jobs/anonymizeOldApplications/anonymizeOldApplications.js"
@@ -143,6 +145,20 @@ cli
   .description("Remonte des statistiques sur Parcoursup.")
   .action(() => {
     runScript((components) => parcoursupEtablissementStat(components))
+  })
+
+cli
+  .command("premium-activated-reminder")
+  .description("Envoi un email à tous les établissements premium pour les informer de l'ouverture des voeux sur Parcoursup")
+  .action(() => {
+    runScript((components) => premiumActivatedReminder(components))
+  })
+
+cli
+  .command("premium-invite-one-shot")
+  .description("Envoi un email à tous les établissements pas encore premium pour les inviter de nouveau")
+  .action(() => {
+    runScript((components) => premiumInviteOneShot(components))
   })
 
 cli

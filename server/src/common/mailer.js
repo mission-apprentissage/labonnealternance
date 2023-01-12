@@ -14,7 +14,7 @@ const renderFile = promisify(ejs.renderFile)
  * @returns {MailerInstance}
  */
 const createTransporter = () => {
-  const needAuthentication = config.env === "production" ? true : false
+  const needAuthentication = config.env === "production"
 
   const transporter = nodemailer.createTransport(needAuthentication ? config.smtp : omit(config.smtp, ["auth"]))
 

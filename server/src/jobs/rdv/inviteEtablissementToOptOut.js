@@ -1,3 +1,4 @@
+import { uniq } from "lodash-es"
 import { mailTemplate } from "../../assets/index.js"
 import { logger } from "../../common/logger.js"
 import { mailType, optMode } from "../../common/model/constants/etablissement.js"
@@ -60,9 +61,8 @@ export const inviteEtablissementToOptOut = async ({ etablissements, widgetParame
       await etablissement.update({ email_decisionnaire: emailDecisionaire })
     }
 
-    // KBA 29122022 : Job can run only in production if specified in the ansible configuration, to be updated
     // Invite all etablissements only in production environment, for etablissement that have an "email_decisionnaire"
-    if (["production", "local"].includes(config.env) && emailDecisionaire) {
+    if (emailDecisionaire) {
       const willBeActivatedAt = dayjs().add(15, "days").format()
       const optOutWillBeActivatedAtDayjs = dayjs(willBeActivatedAt)
 
@@ -107,6 +107,45 @@ export const inviteEtablissementToOptOut = async ({ etablissements, widgetParame
             },
           },
         }
+      )
+
+      let emails = formations.map((formation) => formation.email_rdv)
+      if (etablissement?.etablissement_formateur_courriel) {
+        emails.push(etablissement.etablissement_formateur_courriel)
+      }
+
+      emails = uniq(emails).filter((email) => email !== etablissement.email_decisionnaire)
+
+      await Promise.all(
+        emails.map((email) =>
+          mailer.sendEmail({
+            to: email,
+            subject: `La prise de rendez-vous est activée pour votre CFA sur La bonne alternance`,
+            template: mailTemplate["mail-cfa-optout-activated"],
+            data: {
+              url: config.publicUrl,
+              replyTo: config.publicEmail,
+              images: {
+                logo: `${config.publicUrlEspacePro}/assets/logo-lba-recruteur-cfa.png?raw=true`,
+                logoFooter: `${config.publicUrlEspacePro}/assets/logo-republique-francaise.png?raw=true`,
+                peopleLaptop: `${config.publicUrlEspacePro}/assets/people-laptop.png?raw=true`,
+              },
+              etablissement: {
+                name: etablissement.raison_sociale,
+                address: etablissement.adresse,
+                postalCode: etablissement.code_postal,
+                ville: etablissement.localite,
+                siret: etablissement.siret_formateur,
+                email: etablissement.email_decisionnaire,
+                optOutActivatedAtDate: dayjs(etablissement.opt_out_activated_at).format("dd/mm"),
+                emailGestionnaire: etablissement.email_decisionnaire,
+              },
+              user: {
+                destinataireEmail: email,
+              },
+            },
+          })
+        )
       )
 
       logger.info("Etablissement invited to opt-out.", {
