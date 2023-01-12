@@ -37,6 +37,7 @@ export const premiumInviteOneShot = async ({ etablissements, widgetParameters, m
       template: mailTemplate["mail-cfa-premium-invite-one-shot"],
       data: {
         replyTo: config.publicEmail,
+        url: config.publicUrl,
         images: {
           logo: `${config.publicUrlEspacePro}/assets/logo-lba.png?raw=true`,
           logoParcoursup: `${config.publicUrlEspacePro}/assets/logo-parcoursup.png?raw=true`,
