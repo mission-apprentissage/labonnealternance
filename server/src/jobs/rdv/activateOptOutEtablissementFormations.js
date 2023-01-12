@@ -94,6 +94,7 @@ export const activateOptOutEtablissementFormations = async ({ etablissements, wi
             subject: `La prise de rendez-vous est activée pour votre CFA sur La bonne alternance`,
             template: mailTemplate["mail-cfa-optout-activated"],
             data: {
+              url: config.publicUrl,
               replyTo: config.publicEmail,
               images: {
                 logo: `${config.publicUrlEspacePro}/assets/logo-lba.png?raw=true`,
