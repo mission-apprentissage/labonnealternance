@@ -119,6 +119,8 @@ export default ({ etablissements, mailer, widgetParameters, appointments }) => {
             subject: `La prise de rendez-vous est activée pour votre CFA sur Parcoursup`,
             template: mailTemplate["mail-cfa-premium-activated"],
             data: {
+              url: config.publicUrl,
+              replyTo: config.publicEmail,
               images: {
                 logo: `${config.publicUrlEspacePro}/assets/logo-lba.png?raw=true`,
                 logoFooter: `${config.publicUrlEspacePro}/assets/logo-republique-francaise.png?raw=true`,
