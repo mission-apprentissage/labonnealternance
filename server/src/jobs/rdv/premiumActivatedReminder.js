@@ -1,9 +1,9 @@
+import _ from "lodash-es"
 import { mailTemplate } from "../../assets/index.js"
 import { logger } from "../../common/logger.js"
 import { mailType } from "../../common/model/constants/etablissement.js"
 import { dayjs } from "../../common/utils/dayjs.js"
 import config from "../../config.js"
-import _ from "lodash-es"
 
 /**
  * @description Send a "Premium" reminder mail.
@@ -66,7 +66,6 @@ export const premiumActivatedReminder = async ({ etablissements, widgetParameter
             destinataireEmail: email,
           },
         },
-        from: config.email,
       })
 
       await etablissements.updateOne(

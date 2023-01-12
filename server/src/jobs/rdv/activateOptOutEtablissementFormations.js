@@ -114,7 +114,6 @@ export const activateOptOutEtablissementFormations = async ({ etablissements, wi
                 destinataireEmail: email,
               },
             },
-            from: config.email,
           })
         )
       )

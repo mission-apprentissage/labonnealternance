@@ -1,10 +1,10 @@
+import { uniq } from "lodash-es"
 import { mailTemplate } from "../../assets/index.js"
 import { logger } from "../../common/logger.js"
 import { mailType, optMode } from "../../common/model/constants/etablissement.js"
 import { dayjs } from "../../common/utils/dayjs.js"
 import { isValidEmail } from "../../common/utils/isValidEmail.js"
 import config from "../../config.js"
-import { uniq } from "lodash-es"
 
 /**
  * @description Invite all "etablissements" without opt_mode to opt-out.
@@ -142,7 +142,6 @@ export const inviteEtablissementToOptOut = async ({ etablissements, widgetParame
                 destinataireEmail: email,
               },
             },
-            from: config.email,
           })
         )
       )
