@@ -23,6 +23,8 @@ dayjs.extend(advancedFormat)
 dayjs.extend(isYesterday)
 dayjs.extend(localizedFormat)
 
+dayjs.locale("fr")
+
 /**
  * @description Formats date.
  * @param {string} date
