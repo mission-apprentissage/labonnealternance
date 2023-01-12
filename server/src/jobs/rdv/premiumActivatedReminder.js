@@ -46,6 +46,7 @@ export const premiumActivatedReminder = async ({ etablissements, widgetParameter
         template: mailTemplate["mail-cfa-premium-activated-reminder"],
         data: {
           url: config.publicUrl,
+          replyTo: config.publicEmail,
           images: {
             logo: `${config.publicUrlEspacePro}/assets/logo-lba.png?raw=true`,
             logoParcoursup: `${config.publicUrlEspacePro}/assets/logo-parcoursup.png?raw=true`,
