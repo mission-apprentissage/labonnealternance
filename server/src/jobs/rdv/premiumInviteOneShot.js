@@ -36,6 +36,7 @@ export const premiumInviteOneShot = async ({ etablissements, widgetParameters, m
       subject: `Activez la prise de rendez-vous apprentissage sur Parcoursup`,
       template: mailTemplate["mail-cfa-premium-invite-one-shot"],
       data: {
+        replyTo: config.publicEmail,
         images: {
           logo: `${config.publicUrlEspacePro}/assets/logo-lba.png?raw=true`,
           logoParcoursup: `${config.publicUrlEspacePro}/assets/logo-parcoursup.png?raw=true`,
