@@ -9,6 +9,7 @@ const config = {
   formationsEndPoint: "/api/v1/entity/formations",
   maxApplicationPerDay: 100,
   elasticSearch: "http://localhost:9200",
+  publicEmail: "labonnealternance@apprentissage.beta.gouv.fr",
   transactionalEmail: "nepasrepondre@apprentissage.beta.gouv.fr",
   log: {
     level: env.get("LBA_LOG_LEVEL").default("info").asString(),
