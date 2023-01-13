@@ -8,7 +8,8 @@ import swaggerUi from "swagger-ui-express"
 import __dirname from "../common/dirname.js"
 import { logger } from "../common/logger.js"
 import config from "../config.js"
-import { initWebhook } from "../service/sendinblue/webhookSendinBlue.js"
+import { initSendinblueWebhooks } from "../service/sendinblue/webhookSendinBlue.js"
+import campaignWebhook from "./routes/campaignWebhook.js"
 import authMiddleware from "./middlewares/authMiddleware.js"
 import { corsMiddleware } from "./middlewares/corsMiddleware.js"
 import { errorMiddleware } from "./middlewares/errorMiddleware.js"
@@ -184,6 +185,7 @@ export default async (components) => {
   app.use("/api/v1/metiers", limiter20PerSecond, metiers())
   app.use("/api/updateLBB", limiter1Per20Second, updateLBB())
   app.use("/api/mail", limiter1Per20Second, sendMail(components))
+  app.use("/api/campaign/webhook", campaignWebhook(components))
   app.use("/api/application", sendApplication(components))
   app.use("/api/V1/application", limiter5PerSecond, sendApplicationAPI(components))
 
@@ -221,7 +223,7 @@ export default async (components) => {
   app.use("/api/optout", optoutRoute())
   app.use("/api/etablissement", etablissementsRecruteurRoute(components))
 
-  initWebhook()
+  initSendinblueWebhooks()
 
   app.use(errorMiddleware())
 

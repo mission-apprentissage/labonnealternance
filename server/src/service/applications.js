@@ -448,7 +448,7 @@ const updateApplicationStatus = async ({ payload, mailer }) => {
       date: "2021-12-27 14:12:54",
       ts: 1640610774,
       message-id: "<48ea8e31-715e-d929-58af-ca0c457d2654@apprentissage.beta.gouv.fr>",
-      email:"alan.leruyet@free.fr",
+      email:"john.doe@mail.com",
       ts_event: 1640610774,
       subject: "Votre candidature chez PARIS BAGUETTE FRANCE CHATELET EN ABREGE",
       sending_ip: "93.23.252.236",
@@ -496,6 +496,22 @@ const updateApplicationStatus = async ({ payload, mailer }) => {
   }
 
   application.save()
+}
+
+const updateHardBounceEmails = async ({ payload }) => {
+  /* Format payload
+    { 
+      event : "hard_bounce",
+      email:"john.doe@mail.com",
+      ...
+    }*/
+
+  const event = payload.event
+
+  if (event === "hard_bounce") {
+    addEmailToBlacklist(payload.email, "campaign")
+    removeEmailFromBonnesBoites(payload.email)
+  }
 }
 
 const addEmailToBlacklist = async (email, source) => {
@@ -562,4 +578,5 @@ export {
   updateApplicationStatus,
   debugUpdateApplicationStatus,
   updateBlockedEmails,
+  updateHardBounceEmails,
 }
