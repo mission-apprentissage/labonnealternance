@@ -5,7 +5,13 @@ import { ScopeContext } from "../../../context/ScopeContext"
 const NoJobResult = () => {
   const scopeContext = useContext(ScopeContext)
 
-  return scopeContext.isJob ? <Box fw={700}>Aucune entreprise trouvée pour votre recherche</Box> : ""
+  return (
+    scopeContext.isJob && (
+      <Box id="jobList" fw={700}>
+        Aucune entreprise trouvée pour votre recherche
+      </Box>
+    )
+  )
 }
 
 export default NoJobResult

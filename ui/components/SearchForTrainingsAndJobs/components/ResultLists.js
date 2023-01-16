@@ -72,12 +72,16 @@ const ResultLists = (props) => {
       if (jobCount) {
         if (extendedSearch) {
           const mergedJobList = getMergedJobList()
-          return <Box bg="beige">{mergedJobList ? <>{mergedJobList}</> : ""}</Box>
+          return (
+            <Box bg="beige" id="jobList">
+              {mergedJobList ? <>{mergedJobList}</> : ""}
+            </Box>
+          )
         } else {
           const jobList = getJobList()
           const lbbCompanyList = getLbbCompanyList()
           return (
-            <Box bg="beige" textAlign="center">
+            <Box bg="beige" id="jobList" textAlign="center">
               {jobList || lbbCompanyList ? (
                 <>
                   {jobList}
