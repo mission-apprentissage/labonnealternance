@@ -1,10 +1,13 @@
 import React from "react"
+import { QueryClient, QueryClientProvider } from "react-query"
 import SearchResultContextProvider from "./SearchResultContextProvider"
 import ParameterContextProvider from "./ParameterContextProvider"
 import DisplayContextProvider from "./DisplayContextProvider"
 import PlausibleProvider from "next-plausible"
 import { ChakraProvider } from "@chakra-ui/react"
 import theme from "../theme/index"
+
+const queryClient = new QueryClient()
 
 const Providers = ({ env, children }) => {
   return (
@@ -17,7 +20,9 @@ const Providers = ({ env, children }) => {
       >
         <SearchResultContextProvider>
           <ParameterContextProvider>
-            <DisplayContextProvider>{children}</DisplayContextProvider>
+            <DisplayContextProvider>
+              <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+            </DisplayContextProvider>
           </ParameterContextProvider>
         </SearchResultContextProvider>
       </PlausibleProvider>

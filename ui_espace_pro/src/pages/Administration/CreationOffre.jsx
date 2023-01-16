@@ -33,7 +33,7 @@ export default () => {
             isClosable: true,
           })
         })
-        .finally(() => navigate(-1))
+        .finally(() => navigate(`/administration/entreprise/${params.id_form}`), { replace: true })
     } else {
       if (auth.type === AUTHTYPE.ENTREPRISE) {
         // Create the offer and return the form with the related offer created
@@ -54,7 +54,8 @@ export default () => {
           })
         })
         .then(() => client.invalidateQueries("offre-liste"))
-        .finally(() => navigate(-1))
+
+        .finally(() => navigate(`/administration/entreprise/${params.id_form}`), { replace: true })
     }
   }
 

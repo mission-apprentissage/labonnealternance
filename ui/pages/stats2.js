@@ -23,7 +23,7 @@ const stats2 = () => (
           <h3>Statistiques</h3>
           <p>
             La bonne alternance est une startup d’Etat incubée par beta.gouv. Nous développons un service à destination des publics selon les principes du{" "}
-            <a href="https://beta.gouv.fr/approche/manifeste">Manifeste de beta.gouv</a>
+            <a href="https://beta.gouv.fr/manifeste">Manifeste de beta.gouv</a>
           </p>
           <p>Nous mesurons l’impact de nos actions et publions en toute transparence nos statistiques :</p>
         </div>

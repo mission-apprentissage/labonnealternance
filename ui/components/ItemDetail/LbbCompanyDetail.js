@@ -23,13 +23,18 @@ const LbbCompanyDetail = ({ lbb }) => {
   const { formValues } = React.useContext(DisplayContext)
 
   return (
-    <Box pb="0px" mt={6} position="relative" background="white" padding={["1px 12px 50px 12px", "1px 24px 50px 24px", "1px 12px 24px 12px"]} mx={["0", "30px"]}>
-      <div className="text-left" data-testid="lbb-component">
-        <div className="mb-3">
-          <CandidatureSpontaneeExplanation about={"what"} />
-          <CandidatureSpontaneeExplanation about={"how"} />
-        </div>
-      </div>
+    <Box
+      data-testid="lbb-component"
+      pb="0px"
+      mt={6}
+      mb={8}
+      position="relative"
+      background="white"
+      padding={["1px 12px 12px 12px", "1px 24px 12px 24px", "1px 12px 12px 12px"]}
+      mx={["0", "30px"]}
+    >
+      <CandidatureSpontaneeExplanation about={"what"} />
+      <CandidatureSpontaneeExplanation about={"how"} />
     </Box>
   )
 }

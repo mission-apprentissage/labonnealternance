@@ -1,9 +1,9 @@
+import { mailTemplate } from "../../assets/index.js"
 import { logger } from "../../common/logger.js"
 import { mailType } from "../../common/model/constants/appointments.js"
 import { getReferrerById } from "../../common/model/constants/referrers.js"
 import { dayjs } from "../../common/utils/dayjs.js"
 import config from "../../config.js"
-import { mailTemplate } from "../../assets/index.js"
 
 /**
  * This cron has been "temporay" not trigger. This flow, is generating lots of emails to CFA.
@@ -101,7 +101,6 @@ export const candidatHaveYouBeenContacted = async ({ etablissements, widgetParam
             referrer: referrerObj.full_name,
           },
         },
-        from: config.rdvEmail,
       }),
     ])
 

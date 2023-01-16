@@ -5,11 +5,9 @@ import { fetchAddressFromCoordinates } from "services/baseAdresse"
 import { logError } from "utils/tools"
 
 import { ParameterContext } from "../../context/ParameterContextProvider"
-import { DisplayContext } from "../../context/DisplayContextProvider"
 
 const InitWidgetSearchParameters = ({ setIsLoading, handleSearchSubmit, handleItemLoad }) => {
-  const { widgetParameters, itemParameters, setWidgetParameters, setItemParameters, shouldExecuteSearch } = React.useContext(ParameterContext)
-  const { formValues } = React.useContext(DisplayContext)
+  const { widgetParameters, itemParameters, setWidgetParameters, setItemParameters } = React.useContext(ParameterContext)
 
   useEffect(() => {
     // initialisation par les query params
@@ -30,24 +28,6 @@ const InitWidgetSearchParameters = ({ setIsLoading, handleSearchSubmit, handleIt
       setIsLoading(false)
     }
   })
-
-  useEffect(() => {
-    if (shouldExecuteSearch) {
-      // provient du submit formulaire de la homepage
-      executeSearch(formValues)
-    }
-  }, [])
-
-  const executeSearch = (values) => {
-    setIsLoading(true)
-    try {
-      handleSearchSubmit({ values })
-      setIsLoading(false)
-    } catch (err) {
-      setIsLoading(false)
-      logError("Search error", err)
-    }
-  }
 
   const launchWidgetSearch = async ({ selectItem = false }) => {
     setIsLoading(true)

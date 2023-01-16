@@ -80,8 +80,8 @@ const Footer = () => {
                   paddingRight={{ base: 0, lg: 4 }}
                   paddingLeft={{ base: 0, lg: 4 }}
                 >
-                  <NextLink passHref href="/cookies">
-                    <Link aria-label="Accès à la page Cookies">Cookies</Link>
+                  <NextLink passHref href="/politique-de-confidentialite">
+                    <Link aria-label="Accès à la page Politique de confidentialité">Politique de confidentialité</Link>
                   </NextLink>
                 </ListItem>
                 <ListItem
