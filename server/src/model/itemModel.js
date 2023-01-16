@@ -21,8 +21,8 @@ export const itemModel = (type) => {
     place: {
       distance: null, // distance au centre de recherche en km. pe --> lieutTravail.distance recalculé par turf.js | formation --> sort[0] | lbb/lba -> distance | matcha -> sort[0]
       fullAddress: null, // adresse postale reconstruite à partir des éléments d'adresse fournis | matcha -> adresse | formation -> lieu_formation_adresse + code_postal + localite OU etablissement_formateur_adresse + ...complement_adresse + ...code_postal + ...localite + ...cedex OU etablissement_gestionnaire_adresse + ...complement_adresse + ...localite + ...cedex
-      latitude: null, // formation -> idea_geo_coordonnees_etablissement | pe -> lieuTravail.latitude | lbb/lba -> lat | matcha -> geo_coordonnees
-      longitude: null, // formation -> idea_geo_coordonnees_etablissement | pe -> lieuTravail.longitude | lbb/lba -> lon | matcha -> geo_coordonnees
+      latitude: null, // formation -> lieu_formation_geo_coordonnees | pe -> lieuTravail.latitude | lbb/lba -> lat | matcha -> geo_coordonnees
+      longitude: null, // formation -> lieu_formation_geo_coordonnees | pe -> lieuTravail.longitude | lbb/lba -> lon | matcha -> geo_coordonnees
       city: null, // pe -> lieuTravail.libelle | formation -> localite | pe -> city
       address: null, // formation -> etablissement_formateur_adresse, etablissement_formateur_complement_adresse | lbb / lba -> address | matcha -> adresse
       cedex: null, // formation -> etablissement_formateur_cedex

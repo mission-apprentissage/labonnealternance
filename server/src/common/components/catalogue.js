@@ -37,7 +37,6 @@ const neededFieldsFromCatalogue = {
   etablissement_formateur_id: 1,
   etablissement_formateur_uai: 1,
   etablissement_formateur_entreprise_raison_sociale: 1,
-  idea_geo_coordonnees_etablissement: 1,
   lieu_formation_geo_coordonnees: 1,
   num_departement: 1,
   region: 1,

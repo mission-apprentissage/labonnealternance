@@ -17,8 +17,9 @@ const CreationCompte = ({ type }) => {
   const [auth] = useAuth()
 
   const submitSiret = ({ siret }, { setSubmitting, setFieldError }) => {
+    const formattedSiret = siret.split(" ").join("")
     // validate SIRET
-    getEntrepriseInformation(siret, { fromDashboardCfa: true, gestionnaire: auth.gestionnaire })
+    getEntrepriseInformation(formattedSiret, { fromDashboardCfa: true, gestionnaire: auth.gestionnaire })
       .then(({ data }) => {
         setSubmitting(true)
         navigate("/administration/entreprise/detail", {
@@ -38,6 +39,7 @@ const CreationCompte = ({ type }) => {
       initialValues={{ siret: undefined }}
       validationSchema={Yup.object().shape({
         siret: Yup.string()
+          .transform((value) => value.split(" ").join(""))
           .matches(/^[0-9]+$/, "Le siret est composé uniquement de chiffres")
           .min(14, "le siret est sur 14 chiffres")
           .max(14, "le siret est sur 14 chiffres")
@@ -49,7 +51,7 @@ const CreationCompte = ({ type }) => {
         return (
           <>
             <Form>
-              <CustomInput required={false} name="siret" label="SIRET" type="text" value={values.siret} maxLength="14" />
+              <CustomInput required={false} name="siret" label="SIRET" type="text" value={values.siret} />
               {isCfa && (
                 <Alert status="info" variant="top-accent">
                   <AlertIcon />
@@ -141,7 +143,7 @@ export default ({ type, widget, administration }) => {
           <Box>
             <Heading>Renseignements entreprise</Heading>
             <Text fontSize="20px" textAlign="justify" mt={2}>
-              Merci de renseigner le siret de votre entreprise partenaire.
+              Merci de renseigner le SIRET de votre entreprise partenaire afin de l'identifier.
             </Text>
             <Box mt={4}>
               <CreationCompte type={type} />

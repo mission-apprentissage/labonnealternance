@@ -8,7 +8,8 @@ import swaggerUi from "swagger-ui-express"
 import __dirname from "../common/dirname.js"
 import { logger } from "../common/logger.js"
 import config from "../config.js"
-import { initWebhook } from "../service/sendinblue/webhookSendinBlue.js"
+import { initSendinblueWebhooks } from "../service/sendinblue/webhookSendinBlue.js"
+import campaignWebhook from "./routes/campaignWebhook.js"
 import authMiddleware from "./middlewares/authMiddleware.js"
 import { corsMiddleware } from "./middlewares/corsMiddleware.js"
 import { errorMiddleware } from "./middlewares/errorMiddleware.js"
@@ -30,7 +31,6 @@ import error500 from "./routes/error500.js"
 import esSearchRoute from "./routes/esSearch.js"
 import etablissementRoute from "./routes/etablissement.js"
 import etablissementsRecruteurRoute from "./routes/etablissementRecruteur.js"
-import faq from "./routes/faq.js"
 import formationRegionV1 from "./routes/formationRegionV1.js"
 import formationV1 from "./routes/formationV1.js"
 import formulaireRoute from "./routes/formulaire.js"
@@ -172,7 +172,6 @@ export default async (components) => {
    * LBACandidat
    */
   app.use("/api/version", limiter3PerSecond, version())
-  app.use("/api/faq", limiter5PerSecond, faq())
   app.use("/api/error500", limiter3PerSecond, error500())
   app.use("/api/v1/formations", limiter7PerSecond, formationV1())
   app.use("/api/romelabels", limiter10PerSecond, rome())
@@ -184,6 +183,7 @@ export default async (components) => {
   app.use("/api/v1/metiers", limiter20PerSecond, metiers())
   app.use("/api/updateLBB", limiter1Per20Second, updateLBB())
   app.use("/api/mail", limiter1Per20Second, sendMail(components))
+  app.use("/api/campaign/webhook", campaignWebhook(components))
   app.use("/api/application", sendApplication(components))
   app.use("/api/V1/application", limiter5PerSecond, sendApplicationAPI(components))
 
@@ -221,7 +221,7 @@ export default async (components) => {
   app.use("/api/optout", optoutRoute())
   app.use("/api/etablissement", etablissementsRecruteurRoute(components))
 
-  initWebhook()
+  initSendinblueWebhooks()
 
   app.use(errorMiddleware())
 

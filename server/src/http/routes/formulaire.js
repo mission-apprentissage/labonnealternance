@@ -258,7 +258,7 @@ export default ({ formulaire, mailer, etablissementsRecruteur, application, user
           template: mailTemplate["mail-cfa-delegation"],
           data: {
             enterpriseName: offreDocument.raison_sociale,
-            jobName: offre.libelle,
+            jobName: offre.rome_appellation_label,
             contractType: offre.type[0],
             trainingLevel: offre.niveau,
             startDate: dayjs(offre.date_debut_apprentissage).format("DD/MM/YYYY"),

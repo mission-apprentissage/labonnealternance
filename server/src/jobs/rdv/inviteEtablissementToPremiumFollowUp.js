@@ -1,9 +1,9 @@
+import { mailTemplate } from "../../assets/index.js"
 import { logger } from "../../common/logger.js"
 import { mailType, optMode } from "../../common/model/constants/etablissement.js"
 import { dayjs } from "../../common/utils/dayjs.js"
 import { isValidEmail } from "../../common/utils/isValidEmail.js"
 import config from "../../config.js"
-import { mailTemplate } from "../../assets/index.js"
 
 /**
  * @description Invite all "etablissements" to Premium (followup).
@@ -53,7 +53,6 @@ export const inviteEtablissementToPremiumFollowUp = async ({ etablissements, mai
           linkToForm: `${config.publicUrlEspacePro}/form/premium/${etablissement._id}`,
         },
       },
-      from: config.rdvEmail,
     })
 
     await etablissements.updateOne(

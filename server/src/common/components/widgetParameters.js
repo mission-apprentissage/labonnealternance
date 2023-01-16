@@ -133,12 +133,20 @@ export default () => ({
   deleteParameter: (id) => WidgetParameter.findByIdAndDelete(id),
 
   /**
-   * @description Update many documents.
+   * @description Update many documents (or upsert).
    * @param {Object} conditions
    * @param {Object} values
    * @returns {Promise<WidgetParameter>}
    */
   updateMany: (conditions, values) => WidgetParameter.updateMany(conditions, values, { new: true, upsert: true }),
+
+  /**
+   * @description Update many documents.
+   * @param {Object} conditions
+   * @param {Object} values
+   * @returns {Promise<WidgetParameter>}
+   */
+  update: (conditions, values) => WidgetParameter.updateMany(conditions, values, { new: true }),
 
   /**
    * @description Returns all formations that have

@@ -1,40 +1,32 @@
-import React, { useEffect, useState } from "react"
+import React from "react"
 import Navigation from "../components/navigation"
 import Breadcrumb from "../components/breadcrumb"
 import ScrollToTop from "../components/ScrollToTop"
 import { NextSeo } from "next-seo"
-import baseUrl from "../utils/baseUrl"
-import axios from "axios"
 import { NotionRenderer } from "react-notion-x"
 import Footer from "../components/footer"
-import { Box, Container, Divider, Grid, GridItem, Text, Spinner } from "@chakra-ui/react"
+import { Box, Container, Divider, Grid, GridItem, Text } from "@chakra-ui/react"
 import { Tabs, TabList, TabPanels, Tab, TabPanel } from "@chakra-ui/react"
 
-const FAQ = () => {
-  const [isLoading, setIsLoading] = useState(true)
-  const [recordMapNotionRecruteur, setRecordMapNotionRecruteur] = useState(null)
-  const [recordMapNotionOrganisme, setRecordMapNotionOrganisme] = useState(null)
-  const [recordMapNotionCandidat, setRecordMapNotionCandidat] = useState(null)
+import { fetchNotionPage } from "../services/fetchNotionPage"
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true)
+export async function getStaticProps() {
+  const [notionFAQrecruteur, notionFAQorganisme, notionFAQcandidat] = await Promise.all([
+    await fetchNotionPage("95ae35012c6d4a32851b6c7b031fd28e"),
+    await fetchNotionPage("b166d0ef1e6042f9a4bfd3a834f498d8"),
+    await fetchNotionPage("2543e456b94649e5aefeefa64398b9f9"),
+  ])
 
-      const [notionFAQrecruteur, notionFAQorganisme, notionFAQcandidat] = await Promise.all([
-        await axios.get(baseUrl + "/api/faq/recruteur"),
-        await axios.get(baseUrl + "/api/faq/organisme"),
-        await axios.get(baseUrl + "/api/faq/candidat"),
-      ])
+  return {
+    props: {
+      recruteur: notionFAQrecruteur,
+      organisme: notionFAQorganisme,
+      candidat: notionFAQcandidat,
+    },
+  }
+}
 
-      setRecordMapNotionRecruteur(notionFAQrecruteur.data)
-      setRecordMapNotionOrganisme(notionFAQorganisme.data)
-      setRecordMapNotionCandidat(notionFAQcandidat.data)
-
-      setIsLoading(false)
-    }
-    fetchData()
-  }, [])
-
+const FAQ = ({ recruteur, organisme, candidat }) => {
   return (
     <Box>
       <NextSeo title="F.A.Q | La bonne alternance | Trouvez votre alternance" description="Questions fréquemment posées. Résultats entreprises, résultats formations, etc." />
@@ -61,61 +53,48 @@ const FAQ = () => {
             <Divider variant="pageTitleDivider" my={12} />
           </GridItem>
           <GridItem px={4} colSpan={[12, 12, 12, 7]}>
-            {isLoading ? (
-              <>
-                <Box>
-                  <Spinner />
-                  <Box as="span" ml="2">
-                    Chargement en cours...
-                  </Box>
-                </Box>
-              </>
-            ) : (
-              <>
-                <Box>
-                  <Tabs>
-                    <TabList>
-                      <Tab>Candidat</Tab>
-                      <Tab>Recruteur</Tab>
-                      <Tab>Organisme de formation</Tab>
-                    </TabList>
+            <Box>
+              <Tabs>
+                <TabList>
+                  <Tab>Candidat</Tab>
+                  <Tab>Recruteur</Tab>
+                  <Tab>Organisme de formation</Tab>
+                </TabList>
 
-                    <TabPanels>
-                      <TabPanel height="auto" color="grey.800" padding="0 !important;">
-                        <NotionRenderer
-                          recordMap={recordMapNotionCandidat}
-                          fullPage={false}
-                          darkMode={false}
-                          disableHeader={true}
-                          rootDomain={process.env.REACT_APP_BASE_URL}
-                          bodyClassName="notion-body"
-                        />
-                      </TabPanel>
-                      <TabPanel height="auto" color="grey.800" padding="0 !important;">
-                        <NotionRenderer
-                          recordMap={recordMapNotionRecruteur}
-                          fullPage={false}
-                          darkMode={false}
-                          disableHeader={true}
-                          rootDomain={process.env.REACT_APP_BASE_URL}
-                          bodyClassName="notion-body"
-                        />
-                      </TabPanel>
-                      <TabPanel height="auto" color="grey.800" padding="0 !important;">
-                        <NotionRenderer
-                          recordMap={recordMapNotionOrganisme}
-                          fullPage={false}
-                          darkMode={false}
-                          disableHeader={true}
-                          rootDomain={process.env.REACT_APP_BASE_URL}
-                          bodyClassName="notion-body"
-                        />
-                      </TabPanel>
-                    </TabPanels>
-                  </Tabs>
-                </Box>
-              </>
-            )}
+                <TabPanels>
+                  <TabPanel height="auto" color="grey.800" padding="0 !important;">
+                    <NotionRenderer
+                      recordMap={candidat}
+                      fullPage={false}
+                      darkMode={false}
+                      disableHeader={true}
+                      rootDomain={process.env.REACT_APP_BASE_URL}
+                      bodyClassName="notion-body"
+                    />
+                  </TabPanel>
+                  <TabPanel height="auto" color="grey.800" padding="0 !important;">
+                    <NotionRenderer
+                      recordMap={recruteur}
+                      fullPage={false}
+                      darkMode={false}
+                      disableHeader={true}
+                      rootDomain={process.env.REACT_APP_BASE_URL}
+                      bodyClassName="notion-body"
+                    />
+                  </TabPanel>
+                  <TabPanel height="auto" color="grey.800" padding="0 !important;">
+                    <NotionRenderer
+                      recordMap={organisme}
+                      fullPage={false}
+                      darkMode={false}
+                      disableHeader={true}
+                      rootDomain={process.env.REACT_APP_BASE_URL}
+                      bodyClassName="notion-body"
+                    />
+                  </TabPanel>
+                </TabPanels>
+              </Tabs>
+            </Box>
           </GridItem>
         </Grid>
       </Container>

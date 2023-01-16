@@ -59,8 +59,11 @@ export const searchForTrainingsFunction = async ({
     setIsFormVisible(false)
 
     if (response.data.results.length) {
-      setTrainingMarkers(factorTrainingsForMap(response.data.results), {
-        centerMapOnTraining: hasLocation ? true : false,
+      setTrainingMarkers({
+        trainingList: factorTrainingsForMap(response.data.results),
+        options: {
+          centerMapOnTraining: hasLocation,
+        },
       })
 
       if (followUpItem?.parameters.type === "training") {

@@ -49,11 +49,12 @@ const scrollToTop = (elementId) => {
 }
 
 const scrollToElementInContainer = (containerId, el, yOffsett, behavior) => {
-  document.getElementById(containerId).scrollTo({
-    top: el.offsetTop - yOffsett,
-    left: 0,
-    behavior,
-  })
+  el &&
+    document.getElementById(containerId).scrollTo({
+      top: el.offsetTop - yOffsett,
+      left: 0,
+      behavior,
+    })
 }
 
 const getItemElement = (item) => {

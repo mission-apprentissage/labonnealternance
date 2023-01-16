@@ -67,7 +67,7 @@ function getHTML(text, link) {
   return `<div class="resultCard gtmWhisper">
             <div class="c-media">
               <div class="c-media-figure">
-                <img className="c-whisper-img" src="/images/whisper.svg" alt="" />
+                <img src="/images/whisper.svg" alt="" />
               </div>
               <div class="c-media-body">
                 <div class="row no-gutters">
