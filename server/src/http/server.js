@@ -31,7 +31,6 @@ import error500 from "./routes/error500.js"
 import esSearchRoute from "./routes/esSearch.js"
 import etablissementRoute from "./routes/etablissement.js"
 import etablissementsRecruteurRoute from "./routes/etablissementRecruteur.js"
-import faq from "./routes/faq.js"
 import formationRegionV1 from "./routes/formationRegionV1.js"
 import formationV1 from "./routes/formationV1.js"
 import formulaireRoute from "./routes/formulaire.js"
@@ -173,7 +172,6 @@ export default async (components) => {
    * LBACandidat
    */
   app.use("/api/version", limiter3PerSecond, version())
-  app.use("/api/faq", limiter5PerSecond, faq())
   app.use("/api/error500", limiter3PerSecond, error500())
   app.use("/api/v1/formations", limiter7PerSecond, formationV1())
   app.use("/api/romelabels", limiter10PerSecond, rome())
