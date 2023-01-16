@@ -101,6 +101,9 @@ const ChoiceColumn = ({
   const searchForJobsOnNewCenter = async (newCenter) => {
     searchOnNewCenter(newCenter, null, "jobs")
     showAllResults()
+    setTimeout(() => {
+      scrollToElementInContainer("resultList", document.getElementById("jobList"), 150, "auto")
+    }, 800)
   }
 
   const searchForTrainingsOnNewCenter = async (newCenter) => {
