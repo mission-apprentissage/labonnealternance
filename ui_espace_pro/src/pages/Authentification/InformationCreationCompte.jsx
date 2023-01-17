@@ -1,19 +1,11 @@
-import { Box, Button, Flex, Heading, SimpleGrid, Text, useBoolean, useDisclosure } from "@chakra-ui/react"
+import { Box, Button, Flex, FormControl, FormErrorMessage, FormHelperText, FormLabel, Heading, Select, SimpleGrid, Text, useBoolean, useDisclosure } from "@chakra-ui/react"
 import { Form, Formik } from "formik"
 import { useContext, useEffect, useState } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
 import * as Yup from "yup"
 import { createPartenaire } from "../../api"
 import { AUTHTYPE } from "../../common/contants"
-import {
-  AnimationContainer,
-  AuthentificationLayout,
-  ConfirmationCreationCompte,
-  CustomInput,
-  InformationLegaleEntreprise,
-  InformationOpco,
-  SelectionManuelleOcpo,
-} from "../../components"
+import { AnimationContainer, AuthentificationLayout, ConfirmationCreationCompte, CustomInput, InformationLegaleEntreprise, InformationOpco } from "../../components"
 import { WidgetContext } from "../../contextWidget"
 import { ArrowRightLine } from "../../theme/components/icons"
 import logosOpco from "../../theme/components/logos/logosOpco"
@@ -65,10 +57,12 @@ const Formulaire = ({ submitForm, validateOpcoChoice }) => {
           .min(10, "le téléphone est sur 10 chiffres")
           .max(10, "le téléphone est sur 10 chiffres")
           .required("champ obligatoire"),
+        type: Yup.string().default(type),
+        opco: Yup.string().when("type", { is: (v) => v === AUTHTYPE.ENTREPRISE, then: Yup.string().required("champ obligatoire") }),
       })}
       onSubmit={submitForm}
     >
-      {({ values, isValid, isSubmitting }) => {
+      {({ values, isValid, isSubmitting, setFieldValue, errors }) => {
         return (
           <Form>
             <CustomInput required={false} name="nom" label="Nom" type="text" value={values.nom} />
@@ -101,6 +95,30 @@ const Formulaire = ({ submitForm, validateOpcoChoice }) => {
                   : "Il s’agit de l’adresse qui vous permettra de vous connecter à votre compte. Privilégiez votre adresse professionnelle"
               }
             />
+            {type === AUTHTYPE.ENTREPRISE && opco === undefined && (
+              <FormControl>
+                <FormLabel>OPCO</FormLabel>
+                <FormHelperText pb={2}>Pour vous accompagner dans vos recrutements, votre OPCO accède à vos informations sur La bonne alternance.</FormHelperText>
+                <Select variant="outline" size="md" name="opco" mr={3} onChange={(e) => setFieldValue("opco", e.target.value)} defaultValue={values.opco}>
+                  <option value="" hidden>
+                    Sélectionnez un OPCO
+                  </option>
+                  <option value="AFDAS">AFDAS</option>
+                  <option value="AKTO / Opco entreprises et salariés des services à forte intensité de main d'oeuvre">AKTO</option>
+                  <option value="ATLAS">ATLAS</option>
+                  <option value="Constructys">Constructys</option>
+                  <option value="L'Opcommerce">L'Opcommerce</option>
+                  <option value="OCAPIAT">OCAPIAT</option>
+                  <option value="OPCO 2i">Opco 2i</option>
+                  <option value="Opco entreprises de proximité">Opco EP</option>
+                  <option value="Opco Mobilités">Opco Mobilités</option>
+                  <option value="Opco Santé">Opco Santé</option>
+                  <option value="Uniformation, l'Opco de la Cohésion sociale">Uniformation</option>
+                  <option value="inconnue">Je ne sais pas</option>
+                </Select>
+                <FormErrorMessage>{errors.opco}</FormErrorMessage>
+              </FormControl>
+            )}
             <Flex justifyContent="flex-end" alignItems="center" mt={5}>
               {!widget?.isWidget && (
                 <Button variant="link" sx={{ color: "black", fontWeight: 400 }} mr={5} onClick={() => navigate("/", { replace: true })}>
@@ -211,9 +229,6 @@ export default () => {
             </Box>
           </Box>
           <Box>
-            {location.state?.informationSiret?.opco === undefined && !validateOpcoChoice && type === "ENTREPRISE" && (
-              <SelectionManuelleOcpo opcoChoice={opcoChoice} setOpcoChoice={setOpcoChoice} setValidateOpcoChoice={setValidateOpcoChoice} />
-            )}
             <InformationLegaleEntreprise {...informationEntreprise} />
             {informationOpco && <InformationOpco disabled={location.state?.informationSiret.opco} informationOpco={informationOpco} resetOpcoChoice={resetOpcoChoice} />}
           </Box>
