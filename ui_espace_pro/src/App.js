@@ -17,7 +17,7 @@ import {
   CreationEntreprise,
   CreationEntrepriseDetail,
   CreationOffre,
-  DetailEntrepriseOpco,
+  DetailEntreprise,
   EditionEntrepriseContact,
   ListeEntreprise,
   ListeOffre,
@@ -108,9 +108,17 @@ const App = () => {
               </AdminRoute>
             }
           />
+          <Route
+            path="users/:userId"
+            element={
+              <AdminRoute>
+                <DetailEntreprise />
+              </AdminRoute>
+            }
+          />
           <Route index element={<ListeEntreprise />} />
           <Route path="opco" element={<AdministrationOpco />} />
-          <Route path="opco/entreprise/:userId" element={<DetailEntrepriseOpco />} />
+          <Route path="opco/entreprise/:userId" element={<DetailEntreprise />} />
           <Route path="opco/entreprise/:siret/:id_form" element={<ListeOffre />} />
           <Route path="opco/entreprise/:siret/:id_form/offre/:id_offre" element={<CreationOffre />} />
           <Route path="entreprise" element={<CreationEntreprise />} />
