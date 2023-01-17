@@ -1,10 +1,10 @@
 import { ErrorMessage, Field, Form, Formik } from "formik"
 import React, { useState } from "react"
-import { Button, Col, Container, Row } from "reactstrap"
 import { fetchAddresses } from "../../services/baseAdresse"
 import domainChanged from "../../services/domainChanged"
 import { AutoCompleteField, autoCompleteToStringFunction, compareAutoCompleteValues } from "../AutoCompleteField/AutoCompleteField"
 import RadioButton from "../RadioButton"
+import { GridItem, Grid, Container, Button, Box, Text, Link, Input } from "@chakra-ui/react"
 
 const WidgetTester = () => {
   const [locationRadius, setLocationRadius] = useState(0)
@@ -29,9 +29,9 @@ const WidgetTester = () => {
 
   const getRadioButton = (inputName, value, label, selectedValue, setFieldValue, handleChange) => {
     return (
-      <Col xs="4" className="radioButton">
+      <GridItem>
         <RadioButton inputName={inputName} handleChange={handleChange} value={value} label={label} selectedValue={selectedValue} setFieldValue={setFieldValue} />
-      </Col>
+      </GridItem>
     )
   }
 
@@ -79,14 +79,14 @@ const WidgetTester = () => {
 
   const showSearchCenter = () => {
     return shownSearchCenter && shownSearchCenter.value && shownSearchCenter.value.coordinates ? (
-      <div className="shownValue">{`Lat : ${shownSearchCenter.value.coordinates[1]} - Lon : ${shownSearchCenter.value.coordinates[0]}`}</div>
+      <Box>{`Lat : ${shownSearchCenter.value.coordinates[1]} - Lon : ${shownSearchCenter.value.coordinates[0]}`}</Box>
     ) : (
       ""
     )
   }
 
   const showSelectedRomes = () => {
-    return shownRomes && shownRomes.romes ? <div className="shownValue">{`Romes : ${shownRomes.romes.join()}`}</div> : ""
+    return shownRomes && shownRomes.romes ? <Box>{`Romes : ${shownRomes.romes.join()}`}</Box> : ""
   }
 
   const handleSearchSubmit = async (values) => {
@@ -160,191 +160,213 @@ const WidgetTester = () => {
         onSubmit={handleSearchSubmit}
       >
         {({ isSubmitting, setFieldValue }) => (
-          <Form>
-            <Row>
-              <Col xs="12">
-                <div className="formGroup">
-                  <label htmlFor="jobField">
-                    Métier (pour renseigner le champ <strong>romes</strong>)
-                  </label>
-                  <div className="fieldContainer">
-                    <AutoCompleteField
-                      items={[]}
-                      itemToStringFunction={autoCompleteToStringFunction}
-                      onSelectedItemChangeFunction={updateValuesFromJobAutoComplete}
-                      compareItemFunction={compareAutoCompleteValues}
-                      onInputValueChangeFunction={jobChanged}
-                      name="jobField"
-                      placeholder="Indiquez un métier ou diplôme"
-                      searchPlaceholder="Indiquez le métier recherché ci-dessus"
-                    />
-                  </div>
-                  {showSelectedRomes()}
-                  <ErrorMessage name="job" className="errorField" component="div" />
-                </div>
-              </Col>
+          <Container variant="responsiveContainer">
+            <Form>
+              <Grid>
+                <GridItem mt={8}>
+                  <Box>
+                    <Box as="label" htmlFor="jobField">
+                      <Text as="strong">Métier (pour renseigner le champ romes)</Text>
+                    </Box>
+                    <Box>
+                      <AutoCompleteField
+                        items={[]}
+                        itemToStringFunction={autoCompleteToStringFunction}
+                        onSelectedItemChangeFunction={updateValuesFromJobAutoComplete}
+                        compareItemFunction={compareAutoCompleteValues}
+                        onInputValueChangeFunction={jobChanged}
+                        name="jobField"
+                        placeholder="Indiquez un métier ou diplôme"
+                        inputVariant="homeAutocomplete"
+                        searchPlaceholder="Indiquez le métier recherché ci-dessus"
+                      />
+                    </Box>
+                    {showSelectedRomes()}
+                    <ErrorMessage name="job" component="Box" />
+                  </Box>
+                </GridItem>
 
-              <Col xs="12">
-                <div className="formGroup">
-                  <label htmlFor="placeField">
-                    Localité (pour renseigner <strong>lat</strong> et <strong>lon</strong>)
-                  </label>
-                  <div className="fieldContainer">
-                    <AutoCompleteField
-                      items={[]}
-                      itemToStringFunction={autoCompleteToStringFunction}
-                      onSelectedItemChangeFunction={updateValuesFromPlaceAutoComplete}
-                      compareItemFunction={compareAutoCompleteValues}
-                      onInputValueChangeFunction={addressChanged}
-                      scrollParentId="choiceColumn"
-                      name="placeField"
-                      placeholder="Adresse, ville ou code postal"
-                      searchPlaceholder="Indiquez le lieu recherché ci-dessus"
-                    />
-                  </div>
-                  {showSearchCenter()}
-                  <ErrorMessage name="location" className="errorField" component="div" />
-                </div>
-              </Col>
+                <GridItem mt={8}>
+                  <Box>
+                    <Box as="label" htmlFor="placeField">
+                      <Text as="strong">Localité (pour renseigner lat et lon)</Text>
+                    </Box>
+                    <Box>
+                      <AutoCompleteField
+                        items={[]}
+                        itemToStringFunction={autoCompleteToStringFunction}
+                        onSelectedItemChangeFunction={updateValuesFromPlaceAutoComplete}
+                        compareItemFunction={compareAutoCompleteValues}
+                        onInputValueChangeFunction={addressChanged}
+                        scrollParentId="choiceColumn"
+                        name="placeField"
+                        placeholder="Adresse, ville ou code postal"
+                        inputVariant="homeAutocomplete"
+                        searchPlaceholder="Indiquez le lieu recherché ci-dessus"
+                      />
+                    </Box>
+                    {showSearchCenter()}
+                    <ErrorMessage name="location" component="Box" />
+                  </Box>
+                </GridItem>
 
-              <Col xs="12">
-                <div className="formGroup">
-                  <label>
-                    Rayon de recherche (<strong>radius</strong>)
-                  </label>
-                  <Field type="hidden" value={locationRadius} name="locationRadius" />
-                  <div className="buttons">
-                    <Container>
-                      <Row>
-                        {getRadioButton("locationRadius", 0, "Non défini", locationRadius, setFieldValue, handleRadiusChange)}
-                        {getRadioButton("locationRadius", 10, "10km", locationRadius, setFieldValue, handleRadiusChange)}
-                        {getRadioButton("locationRadius", 30, "30km", locationRadius, setFieldValue, handleRadiusChange)}
-                        {getRadioButton("locationRadius", 60, "60km", locationRadius, setFieldValue, handleRadiusChange)}
-                        {getRadioButton("locationRadius", 100, "100km", locationRadius, setFieldValue, handleRadiusChange)}
-                      </Row>
-                    </Container>
-                  </div>
-                </div>
-              </Col>
+                <GridItem mt={8}>
+                  <Box>
+                    <Box as="label">
+                      <Text as="strong">Rayon de recherche (radius)</Text>
+                    </Box>
+                    <Field type="hidden" value={locationRadius} name="locationRadius" />
+                    <Box>
+                      <Grid templateColumns={{ base: "1fr", md: "repeat(3, 1fr)" }}>
+                        <GridItem  colSpan={{ base: 1, md: 1 }}>
+                          {getRadioButton("locationRadius", 0, "Non défini", locationRadius, setFieldValue, handleRadiusChange)}
+                        </GridItem>
+                        <GridItem  colSpan={{ base: 1, md: 1 }}>
+                          {getRadioButton("locationRadius", 10, "10km", locationRadius, setFieldValue, handleRadiusChange)}
+                        </GridItem>
+                        <GridItem  colSpan={{ base: 1, md: 1 }}>
+                          {getRadioButton("locationRadius", 30, "30km", locationRadius, setFieldValue, handleRadiusChange)}
+                        </GridItem>
+                        <GridItem  colSpan={{ base: 1, md: 1 }}>
+                          {getRadioButton("locationRadius", 60, "60km", locationRadius, setFieldValue, handleRadiusChange)}
+                        </GridItem>
+                        <GridItem  colSpan={{ base: 1, md: 1 }}>
+                          {getRadioButton("locationRadius", 100, "100km", locationRadius, setFieldValue, handleRadiusChange)}
+                        </GridItem>
+                      </Grid>
+                    </Box>
+                  </Box>
+                </GridItem>
 
-              <Col xs="12">
-                <div className="formGroup">
-                  <label>
-                    Périmètre (<strong>scope</strong>)
-                  </label>
-                  <Field type="hidden" value={scope} name="scope" />
-                  <div className="buttons">
-                    <Container>
-                      <Row>
-                        {getRadioButton("scope", "", "Tout", scope, setFieldValue, handleScopeChange)}
-                        {getRadioButton("scope", "training", "Formations uniquement", scope, setFieldValue, handleScopeChange)}
-                        {getRadioButton("scope", "job", "Emplois uniquement", scope, setFieldValue, handleScopeChange)}
-                      </Row>
-                    </Container>
-                  </div>
-                </div>
-              </Col>
+                <GridItem mt={8}>
+                  <Box>
+                    <Box as="label">
+                      <Text as="strong">Périmètre (scope)</Text>
+                    </Box>
+                    <Field type="hidden" value={scope} name="scope" />
+                    <Box>
+                      <Grid templateColumns={{ base: "1fr", md: "repeat(3, 1fr)" }}>
+                        <GridItem colSpan={{ base: 1, md: 1 }}>
+                          {getRadioButton("scope", "", "Tout", scope, setFieldValue, handleScopeChange)}
+                        </GridItem>
+                        <GridItem colSpan={{ base: 1, md: 1 }}>
+                          {getRadioButton("scope", "training", "Formations uniquement", scope, setFieldValue, handleScopeChange)}
+                        </GridItem>
+                        <GridItem colSpan={{ base: 1, md: 1 }}>
+                          {getRadioButton("scope", "job", "Emplois uniquement", scope, setFieldValue, handleScopeChange)}
+                        </GridItem>
+                      </Grid>
+                    </Box>
+                  </Box>
+                </GridItem>
 
-              <Col xs="12">
-                <div className="formGroup">
-                  <label>
-                    Identifiant appelant (<strong>caller</strong>)
-                  </label>
-                  <Field type="text" className="widgetTestPage--textInput" name="caller" />
-                </div>
-              </Col>
+                <GridItem mt={8}>
+                  <Box>
+                    <Box as="label">
+                      <Text as="strong">Identifiant appelant (caller)</Text>
+                    </Box>
+                    <Box>
+                      <Field as={Input} variant="outline" type="text" name="caller" />
+                    </Box>
+                  </Box>
+                </GridItem>
 
-              <Col xs="12">
-                <div className="formGroup">
-                  <label>
-                    Filtrage des opportunités d&apos;emploi pour un OPCO. Optionnel (<strong>opco</strong>)
-                  </label>
-                  <Field type="text" className="widgetTestPage--textInput" name="opco" />
-                </div>
-              </Col>
+                <GridItem mt={8}>
+                  <Box>
+                    <Box as="label">
+                      <Text as="strong">Filtrage des opportunités d&apos;emploi pour un OPCO. Optionnel (opco)</Text>
+                    </Box>
+                    <Field as={Input} variant="outline" type="text" name="opco" />
+                  </Box>
+                </GridItem>
 
-              <Col xs="12">
-                <div className="formGroup">
-                  <label>
-                    Le métier est il figé ? (<strong>frozen_job</strong>)
-                  </label>
-                  <Field type="hidden" value={scope} name="scope" />
-                  <div className="buttons">
-                    <Container>
-                      <Row>
-                        {getRadioButton("frozen_job", "", "Non", frozenJob, setFieldValue, handleFrozenChange)}
-                        {getRadioButton("frozen_job", "1", "Oui", frozenJob, setFieldValue, handleFrozenChange)}
-                      </Row>
-                    </Container>
-                  </div>
-                  <div className="widgetTestPage--notice">
-                    L&apos;utilisateur ne pourra pas faire une recherche sur d&apos;autres métiers (romes) que ceux que vous avez spécifiés.
-                  </div>
-                </div>
-              </Col>
+                <GridItem mt={8}>
+                  <Box>
+                    <Box as="label">
+                      <Text as="strong">Le métier est il figé ? (frozen_job)</Text>
+                    </Box>
+                    <Field type="hidden" value={scope} name="scope" />
+                    <Box>
+                      <Grid templateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }}>
+                        <GridItem colSpan={{ base: 1, md: 1 }}>
+                          {getRadioButton("frozen_job", "", "Non", frozenJob, setFieldValue, handleFrozenChange)}
+                        </GridItem>
+                        <GridItem colSpan={{ base: 1, md: 1 }}>
+                          {getRadioButton("frozen_job", "1", "Oui", frozenJob, setFieldValue, handleFrozenChange)}
+                        </GridItem>
+                      </Grid>
+                    </Box>
+                    <Text variant="defaultAutocomplete">
+                      L&apos;utilisateur ne pourra pas faire une recherche sur d&apos;autres métiers (romes) que ceux que vous avez spécifiés.
+                    </Text>
+                  </Box>
+                </GridItem>
 
-              <Col xs="12">
-                <div className="formGroup">
-                  <label>
-                    Nom du métier (<strong>job_name</strong>)
-                  </label>
-                  <Field type="text" className="widgetTestPage--textInput" name="jobName" />
-                  <div className="widgetTestPage--notice">
-                    La phrase suivante apparaîtra sur le formulaire: &quot;Vous souhaitez travailler dans le domaine de [votre saisie]&quot;.
-                  </div>
-                </div>
-              </Col>
-            </Row>
-
-            <Button className="submitButton" type="submit" disabled={isSubmitting}>
-              Mettre à jour les widgets
-            </Button>
-          </Form>
+                <GridItem mt={8}>
+                  <Box>
+                    <Box as="label">
+                      <Text as="strong">Nom du métier (job_name)</Text>
+                    </Box>
+                    <Field as={Input} variant="outline" type="text" name="jobName" />
+                    <Text variant="defaultAutocomplete">
+                      La phrase suivante apparaîtra sur le formulaire: &quot;Vous souhaitez travailler dans le domaine de [votre saisie]&quot;.
+                    </Text>
+                  </Box>
+                </GridItem>
+              </Grid>
+              <GridItem mt={8}>
+                <Button type="submit" variant="editorialPrimary" disabled={isSubmitting}>
+                  Mettre à jour les widgets
+                </Button>
+              </GridItem>
+            </Form>
+          </Container>
         )}
       </Formik>
     )
   }
 
   return (
-    <div className="page demoPage widgetTestPage">
+    <Box>
+      <Box>
+        <Text as="h1" pl={6}>Test du Widget La bonne alternance</Text>
+        <Text pl={6}>La documentation est ici :{" "}
+          <Link href="https://mission-apprentissage.gitbook.io/la-bonne-alternance/documentation" aria-label="Accès à la documentation" target="docIdea" isExternal fontSize={14} fontWeight={700} color="grey.425">
+            https://mission-apprentissage.gitbook.io/la-bonne-alternance/documentation
+          </Link>
+        </Text>
+      </Box>
       <Container>
-        <Row>
-          <Col xs="12">
-            <h1>Test du Widget La bonne alternance</h1>
-            <div>
-              La documentation est ici :{" "}
-              <a href="https://mission-apprentissage.gitbook.io/la-bonne-alternance/documentation" target="docIdea">
-                https://mission-apprentissage.gitbook.io/la-bonne-alternance/documentation
-              </a>
-            </div>
+        <Grid>
+          <GridItem>
             {getForm()}
-          </Col>
+          </GridItem>
 
-          <Col xs="12">
-            URL associée à l&apos;attribut <strong>src</strong> de l&apos;iframe : {getIdeaUrlWithParams()}
-          </Col>
-        </Row>
-        <Row className="widgetList">
-          <Col xs="12">
+          <GridItem mt={8}>
+            URL associée à l&apos;attribut <Text as="strong">src</Text> de l&apos;iframe : {getIdeaUrlWithParams()}
+          </GridItem>
+        </Grid>
+        <Grid>
+          <GridItem>
             <hr />
-            <h3>Largeur 360 px - hauteur 640 px</h3>
+            <Text as="h3">Largeur 360 px - hauteur 640 px</Text>
             {getWidget({
               title: "mobile",
               height: 640,
               width: 360,
             })}
-          </Col>
-          <Col xs="12">
+          </GridItem>
+          <GridItem>
             <hr />
-            <h3>Largeur 100% - hauteur 800 px</h3>
+            <Text as="h3">Largeur 100% - hauteur 800 px</Text>
             {getWidget({
               title: "desktop",
               height: 800,
             })}
-          </Col>
-        </Row>
+          </GridItem>
+        </Grid>
       </Container>
-    </div>
+    </Box>
   )
 }
 
