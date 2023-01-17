@@ -1,4 +1,24 @@
-import { Badge, Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, Button, Container, Flex, Heading, SimpleGrid, Stack, Text, useDisclosure, useToast } from "@chakra-ui/react"
+import {
+  Badge,
+  Box,
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  Button,
+  Container,
+  Flex,
+  FormControl,
+  FormErrorMessage,
+  FormHelperText,
+  FormLabel,
+  Heading,
+  Select,
+  SimpleGrid,
+  Stack,
+  Text,
+  useDisclosure,
+  useToast,
+} from "@chakra-ui/react"
 import { Form, Formik } from "formik"
 import { useMutation, useQuery, useQueryClient } from "react-query"
 import { useNavigate, useParams } from "react-router-dom"
@@ -10,6 +30,7 @@ import useUserHistoryUpdate from "../../common/hooks/useUserHistoryUpdate"
 import {
   AnimationContainer,
   ConfirmationDesactivationUtilisateur,
+  ConfirmationModificationOpco,
   CustomInput,
   InformationLegaleEntreprise,
   Layout,
@@ -20,13 +41,14 @@ import { ArrowDropRightLine, ArrowRightLine } from "../../theme/components/icons
 
 export default () => {
   const confirmationDesactivationUtilisateur = useDisclosure()
+  const confirmationModificationOpco = useDisclosure()
   const params = useParams()
   const navigate = useNavigate()
   const client = useQueryClient()
   const toast = useToast()
   const [auth] = useAuth()
 
-  const { data, isLoading } = useQuery("user", () => getUser(params.userId))
+  const { data, isLoading } = useQuery("user", () => getUser(params.userId), { cacheTime: 0 })
 
   const userMutation = useMutation(({ userId, formId, values }) => updateEntreprise(userId, formId, values), {
     onSuccess: () => {
@@ -94,6 +116,7 @@ export default () => {
   return (
     <AnimationContainer>
       <ConfirmationDesactivationUtilisateur {...confirmationDesactivationUtilisateur} raison_sociale={data.data.raison_sociale} _id={data.data._id} />
+
       <Layout displayNavigationMenu={false} header={false} footer={false}>
         <Container maxW="container.xl">
           <Box mt="16px" mb={6}>
@@ -132,6 +155,7 @@ export default () => {
               prenom: data.data.prenom,
               telephone: data.data.telephone,
               email: data.data.email,
+              opco: data.data.opco,
             }}
             validationSchema={Yup.object().shape({
               nom: Yup.string().required("champ obligatoire"),
@@ -142,6 +166,7 @@ export default () => {
                 .max(10, "le téléphone est sur 10 chiffres")
                 .required("champ obligatoire"),
               email: Yup.string().email("Insérez un email valide").required("champ obligatoire"),
+              opco: Yup.string().required("champ obligatoire"),
             })}
             onSubmit={async (values, { setSubmitting }) => {
               setSubmitting(true)
@@ -157,9 +182,16 @@ export default () => {
               setSubmitting(false)
             }}
           >
-            {({ values, isSubmitting, isValid }) => {
+            {({ values, isSubmitting, isValid, setFieldValue, errors }) => {
               return (
                 <>
+                  <ConfirmationModificationOpco
+                    {...confirmationModificationOpco}
+                    raison_sociale={data.data.raison_sociale}
+                    setFieldValue={setFieldValue}
+                    previousValue={data.data.opco}
+                    newValue={values.opco}
+                  />
                   <SimpleGrid columns={[1, 1, 1, 2]} spacing={[0, 10]}>
                     <Box>
                       <Text fontSize="20px" fontWeight="700">
@@ -171,6 +203,38 @@ export default () => {
                           <CustomInput name="prenom" label="Prénom" type="test" value={values.prenom} />
                           <CustomInput name="telephone" label="Téléphone" type="tel" pattern="[0-9]{10}" maxLength="10" value={values.telephone} />
                           <CustomInput name="email" label="Email" type="email" value={values.email} />
+                          <FormControl>
+                            <FormLabel>OPCO</FormLabel>
+                            <FormHelperText pb={2}>Pour vous accompagner dans vos recrutements, votre OPCO accède à vos informations sur La bonne alternance.</FormHelperText>
+                            <Select
+                              variant="outline"
+                              size="md"
+                              name="opco"
+                              mr={3}
+                              onChange={(e) => {
+                                setFieldValue("opco", e.target.value)
+                                confirmationModificationOpco.onOpen()
+                              }}
+                              defaultValue={values.opco}
+                            >
+                              <option value="" hidden>
+                                Sélectionnez un OPCO
+                              </option>
+                              <option value="AFDAS">AFDAS</option>
+                              <option value="AKTO / Opco entreprises et salariés des services à forte intensité de main d'oeuvre">AKTO</option>
+                              <option value="ATLAS">ATLAS</option>
+                              <option value="Constructys">Constructys</option>
+                              <option value="L'Opcommerce">L'Opcommerce</option>
+                              <option value="OCAPIAT">OCAPIAT</option>
+                              <option value="OPCO 2i">Opco 2i</option>
+                              <option value="Opco entreprises de proximité">Opco EP</option>
+                              <option value="Opco Mobilités">Opco Mobilités</option>
+                              <option value="Opco Santé">Opco Santé</option>
+                              <option value="Uniformation, l'Opco de la Cohésion sociale">Uniformation</option>
+                              <option value="inconnue">Je ne sais pas</option>
+                            </Select>
+                            <FormErrorMessage>{errors.opco}</FormErrorMessage>
+                          </FormControl>
                           <Flex justify="flex-end" mt={10}>
                             <Button type="submit" variant="form" leftIcon={<ArrowRightLine />} isActive={isValid} isDisabled={!isValid || isSubmitting} isLoading={isSubmitting}>
                               Enregistrer

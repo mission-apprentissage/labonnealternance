@@ -6,6 +6,7 @@ import BandeauAlert from "./BandeauAlert"
 import ConfirmationActivationUtilsateur from "./ConfirmationActivationUtilsateur"
 import ConfirmationCreationCompte from "./ConfirmationCreationCompte"
 import ConfirmationDesactivationUtilisateur from "./ConfirmationDesactivationUtilisateur"
+import ConfirmationModificationOpco from "./ConfirmationModificationOpco"
 import ConfirmationSuppressionEntreprise from "./ConfirmationSuppressionEntreprise"
 import ConfirmationSuppressionOffre from "./ConfirmationSuppressionOffre"
 import CustomInput from "./CustomInput"
@@ -62,4 +63,5 @@ export {
   UserValidationHistory,
   ConfirmationDesactivationUtilisateur,
   ConfirmationActivationUtilsateur,
+  ConfirmationModificationOpco,
 }
