@@ -41,8 +41,7 @@ export default ({ setOpcoChoice, setValidateOpcoChoice, opcoChoice }) => {
             <option value="Opco entreprises de proximité">Opco EP</option>
             <option value="Opco Mobilités">Opco Mobilités</option>
             <option value="Opco Santé">Opco Santé</option>
-            <option value="Uniformation, l'Opco de la Cohésion sociale">Uniformation</option>
-            <option value="inconnue">Je ne sais pas</option>
+            <option value="Uniformation, l'Opco de la Cohésion sociale">Uniformation, l'Opco de la Cohésion sociale</option>
           </Select>
           <Button isDisabled={opcoChoice === undefined} isActive={opcoChoice !== undefined} variant="form" px={5} onClick={setValidateOpcoChoice.toggle}>
             Valider
