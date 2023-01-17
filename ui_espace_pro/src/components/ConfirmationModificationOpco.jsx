@@ -49,7 +49,7 @@ export default (props) => {
         </ModalBody>
 
         <ModalFooter>
-          <Button variant="secondary" mr={3} onClick={() => onClose()}>
+          <Button variant="secondary" mr={3} onClick={() => handleClose()}>
             Annuler
           </Button>
           <Button variant="primary" onClick={() => handleUpdate()}>
