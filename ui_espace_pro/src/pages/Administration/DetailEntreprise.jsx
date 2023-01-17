@@ -107,6 +107,18 @@ export default () => {
     }
   }
 
+  const getUserNavigationContext = () => {
+    switch (auth.type) {
+      case AUTHTYPE.ADMIN:
+        return "/administration/users"
+      case AUTHTYPE.OPCO:
+        return "/administration/opco"
+
+      default:
+        break
+    }
+  }
+
   if (isLoading) {
     return <LoadingEmptySpace />
   }
@@ -116,13 +128,12 @@ export default () => {
   return (
     <AnimationContainer>
       <ConfirmationDesactivationUtilisateur {...confirmationDesactivationUtilisateur} raison_sociale={data.data.raison_sociale} _id={data.data._id} />
-
       <Layout displayNavigationMenu={false} header={false} footer={false}>
         <Container maxW="container.xl">
           <Box mt="16px" mb={6}>
             <Breadcrumb separator={<ArrowDropRightLine color="grey.600" />} textStyle="xs">
               <BreadcrumbItem>
-                <BreadcrumbLink textDecoration="underline" onClick={() => navigate(`/administration/opco`)} textStyle="xs">
+                <BreadcrumbLink textDecoration="underline" onClick={() => navigate(getUserNavigationContext())} textStyle="xs">
                   Entreprises
                 </BreadcrumbLink>
               </BreadcrumbItem>
@@ -215,7 +226,7 @@ export default () => {
                                 setFieldValue("opco", e.target.value)
                                 confirmationModificationOpco.onOpen()
                               }}
-                              defaultValue={values.opco}
+                              value={values.opco}
                             >
                               <option value="" hidden>
                                 Sélectionnez un OPCO
