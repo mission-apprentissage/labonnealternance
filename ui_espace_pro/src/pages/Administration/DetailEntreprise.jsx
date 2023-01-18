@@ -228,9 +228,7 @@ export default () => {
                               }}
                               value={values.opco}
                             >
-                              <option value="" hidden>
-                                Sélectionnez un OPCO
-                              </option>
+                              <option hidden>Sélectionnez un OPCO</option>
                               <option value="AFDAS">AFDAS</option>
                               <option value="AKTO / Opco entreprises et salariés des services à forte intensité de main d'oeuvre">AKTO</option>
                               <option value="ATLAS">ATLAS</option>
