@@ -1,4 +1,4 @@
-import { Box, Button, Center, Heading, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Stack, Text } from "@chakra-ui/react"
+import { Box, Button, Center, Flex, Heading, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Stack, Text } from "@chakra-ui/react"
 import { useNavigate } from "react-router-dom"
 import { deleteCfa, deleteEntreprise } from "../api"
 import { AUTHTYPE } from "../common/contants"
@@ -12,7 +12,7 @@ export default (props) => {
     onClose()
     navigate("/creation/offre", {
       replace: true,
-      state: { id_form: formulaire.id_form, email: user.email },
+      state: { id_form: formulaire.id_form, email: user.email, displayBanner: true },
     })
   }
 
@@ -39,10 +39,13 @@ export default (props) => {
         </ModalHeader>
         <ModalBody pb={6}>
           <Stack direction="column" spacing={4}>
-            <Text fontWeight="700">Vous avez renseigné une adresse email qui n’est pas référencée dans nos bases de données.</Text>
-            <Text>
-              En utilisant cette adresse email, votre demande de création de compte devra être vérifiée et validée par nos équipes avant que puissiez utiliser le service.
-            </Text>
+            <Flex>
+              <Text fontWeight="700">
+                Votre adresse email <span style={{ color: "#000091", background: "#F5F5FE", padding: "5px 5px" }}>{user?.email}</span> n’est pas référencée dans nos bases de
+                données.
+              </Text>
+            </Flex>
+            <Text>Votre demande de création de compte va être vérifiée et validée avant que vos offres soient visibles en ligne.</Text>
             <Text>Cela peut prendre quelques jours. Vous serez notifié dès que votre demande sera validée.</Text>
             <Box bg="#EEEEEE" h="62px">
               <Center h="100%">
