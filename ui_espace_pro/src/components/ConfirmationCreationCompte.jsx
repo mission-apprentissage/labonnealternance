@@ -10,7 +10,10 @@ export default (props) => {
 
   const validateAccountCreation = () => {
     onClose()
-    navigate("/authentification/en-attente", { replace: true, state: { email: user.email, type: user.type } })
+    navigate("/creation/offre", {
+      replace: true,
+      state: { id_form: formulaire.id_form, email: user.email },
+    })
   }
 
   const deleteAccount = () => {
