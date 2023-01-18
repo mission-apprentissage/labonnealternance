@@ -99,7 +99,7 @@ export default memo(() => {
         const { raison_sociale, siret, _id, opco } = data[id]
         return (
           <Flex direction="column">
-            <Link fontWeight="700" as={NavLink} to={`/administration/users/${_id}`}>
+            <Link fontWeight="700" as={NavLink} to={`/administration/users/${_id}`} aria-label="voir les informations">
               {raison_sociale}
             </Link>
             <Text color="#666666" fontSize="14px">
@@ -190,7 +190,7 @@ export default memo(() => {
                   </MenuButton>
                   <MenuList>
                     <MenuItem>
-                      <Link as={NavLink} to={`/administration/users/${row._id}`}>
+                      <Link as={NavLink} to={`/administration/users/${row._id}`} aria-label="voir les informations">
                         Voir les informations
                       </Link>
                     </MenuItem>
