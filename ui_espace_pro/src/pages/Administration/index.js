@@ -4,7 +4,7 @@ import AjouterUtilisateur from "./AjouterUtilisateur"
 import CreationEntreprise from "./CreationEntreprise"
 import CreationEntrepriseDetail from "./CreationEntrepriseDetail"
 import CreationOffre from "./CreationOffre"
-import DetailEntrepriseOpco from "./DetailEntrepriseOpco"
+import DetailEntreprise from "./DetailEntreprise"
 import EditionEntrepriseContact from "./EditionEntrepriseContact"
 import ListeCandidat from "./ListeCandidat"
 import ListeEntreprise from "./ListeEntreprise"
@@ -18,7 +18,7 @@ export {
   CreationEntreprise,
   CreationEntrepriseDetail,
   CreationOffre,
-  DetailEntrepriseOpco,
+  DetailEntreprise,
   EditionEntrepriseContact,
   ListeCandidat,
   ListeOffre,
