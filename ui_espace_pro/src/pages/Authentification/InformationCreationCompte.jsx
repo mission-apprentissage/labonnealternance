@@ -100,9 +100,7 @@ const Formulaire = ({ submitForm, validateOpcoChoice }) => {
                 <FormLabel>OPCO</FormLabel>
                 <FormHelperText pb={2}>Pour vous accompagner dans vos recrutements, votre OPCO accède à vos informations sur La bonne alternance.</FormHelperText>
                 <Select variant="outline" size="md" name="opco" mr={3} onChange={(e) => setFieldValue("opco", e.target.value)} defaultValue={values.opco}>
-                  <option value="" hidden>
-                    Sélectionnez un OPCO
-                  </option>
+                  <option hidden>Sélectionnez un OPCO</option>
                   <option value="AFDAS">AFDAS</option>
                   <option value="AKTO / Opco entreprises et salariés des services à forte intensité de main d'oeuvre">AKTO</option>
                   <option value="ATLAS">ATLAS</option>
