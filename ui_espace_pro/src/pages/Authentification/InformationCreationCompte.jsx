@@ -5,15 +5,7 @@ import { useLocation, useNavigate } from "react-router-dom"
 import * as Yup from "yup"
 import { createPartenaire } from "../../api"
 import { AUTHTYPE } from "../../common/contants"
-import {
-  AnimationContainer,
-  AuthentificationLayout,
-  ConfirmationCreationCompte,
-  CustomInput,
-  InformationLegaleEntreprise,
-  InformationOpco,
-  SelectionManuelleOcpo,
-} from "../../components"
+import { AnimationContainer, AuthentificationLayout, ConfirmationCreationCompte, CustomInput, InformationLegaleEntreprise, InformationOpco } from "../../components"
 import { WidgetContext } from "../../contextWidget"
 import { ArrowRightLine } from "../../theme/components/icons"
 import logosOpco from "../../theme/components/logos/logosOpco"
@@ -233,9 +225,6 @@ export default () => {
             </Box>
           </Box>
           <Box>
-            {location.state?.informationSiret?.opco === undefined && !validateOpcoChoice && type === "ENTREPRISE" && (
-              <SelectionManuelleOcpo opcoChoice={opcoChoice} setOpcoChoice={setOpcoChoice} setValidateOpcoChoice={setValidateOpcoChoice} />
-            )}
             <InformationLegaleEntreprise {...informationEntreprise} />
             {informationOpco && <InformationOpco disabled={location.state?.informationSiret.opco} informationOpco={informationOpco} resetOpcoChoice={resetOpcoChoice} />}
           </Box>
