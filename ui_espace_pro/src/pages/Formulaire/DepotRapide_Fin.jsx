@@ -1,23 +1,50 @@
 import { Box, Button, Flex, Heading, Link, SimpleGrid, Stack, Text, useToast } from "@chakra-ui/react"
 import dayjs from "dayjs"
-import { useContext, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { useQueryClient } from "react-query"
 import { useLocation, useNavigate } from "react-router-dom"
 import { sendValidationLink } from "../../api"
+import { USER_STATUS } from "../../common/contants"
 import { AuthentificationLayout } from "../../components"
 import { WidgetContext } from "../../contextWidget"
 import { InfoCircle } from "../../theme/components/icons"
 import { MailCloud } from "../../theme/components/logos"
 
 export default () => {
-  const location = useLocation()
   const [disableLink, setDisableLink] = useState(false)
+  const [title, setTitle] = useState("")
+  const location = useLocation()
   const navigate = useNavigate()
   const toast = useToast()
   const client = useQueryClient()
-  const { widget } = useContext(WidgetContext)
 
+  const { widget } = useContext(WidgetContext)
   const { offre, email, withDelegation, fromDashboard } = location.state
+
+  const getTextualContext = () => {
+    switch (withDelegation) {
+      case true:
+        if (USER_STATUS.ACTIVE) {
+          setTitle("Félicitations, votre offre a bien été créée et transmise aux organismes de formation que vous avez sélectionnés.")
+        } else {
+          setTitle(
+            "Félicitations, votre offre a bien été créée. Elle sera publiée et transmise aux organismes de formation que vous avez sélectionnés dès validation de votre compte."
+          )
+        }
+        break
+
+      case false:
+        if (USER_STATUS.ACTIVE) {
+          setTitle("Félicitations, votre offre a bien été créée!")
+        } else {
+          setTitle("Félicitations, votre offre a bien été créée. Elle sera publiée dès validation de votre compte.")
+        }
+        break
+
+      default:
+        break
+    }
+  }
 
   const resendMail = (email) => {
     sendValidationLink({ email })
@@ -68,23 +95,41 @@ export default () => {
     navigate(-1)
   }
 
+  const validatedAccountDescription = () => {
+    return (
+      <>
+        <Flex alignItems="flex-start" mb={6}>
+          <Stack>
+            <InfoCircle mr={2} mt={1} />
+            <Box>
+              <Heading>Confirmez votre email</Heading>
+              <Text textAlign="justify">
+                Afin de finaliser la diffusion de votre besoin auprès des jeunes, merci de confirmer votre adresse mail en cliquant sur le lien que nous venons de vous transmettre
+                à l’adresse suivante: <span style={{ fontWeight: "700" }}>{email}</span>.
+              </Text>
+            </Box>
+          </Stack>
+          <Flex align="center" ml={5} mb="16px">
+            <Text>Vous n’avez pas reçu le mail ? </Text>
+            <Button as={Link} variant="classic" textDecoration="underline" onClick={() => resendMail(email)} isDisabled={disableLink}>
+              Renvoyer le mail
+            </Button>
+          </Flex>
+        </Flex>
+      </>
+    )
+  }
+  const awaitingAccountDescription = () => {}
+
+  useEffect(() => getTextualContext(), [withDelegation])
+
   return (
     <AuthentificationLayout fromDashboard={fromDashboard} onClose={onClose}>
       <Flex direction={["column", widget?.mobile ? "column" : "row"]} align={widget?.mobile ? "center" : "flex-start"} border="1px solid #000091" mt={[4, 8]} p={[4, 8]}>
         <MailCloud style={{ paddingRight: "10px" }} />
         <Box pt={[3, 0]} ml={10}>
           <Heading fontSize="24px" mb="16px" mt={widget?.mobile ? "10px" : "0px"}>
-            {withDelegation ? (
-              <>
-                Félicitations, <br />
-                votre offre a bien été créée, et transmise aux acteurs de l’apprentissage que vous avez sélectionnés.
-              </>
-            ) : (
-              <>
-                Félicitations, <br />
-                votre offre a bien été créée!
-              </>
-            )}
+            {title}
           </Heading>
           {!fromDashboard && (
             <>
