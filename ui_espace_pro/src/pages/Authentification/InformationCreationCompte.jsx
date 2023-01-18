@@ -1,4 +1,4 @@
-import { Box, Button, Flex, Heading, SimpleGrid, Text, useBoolean, useDisclosure } from "@chakra-ui/react"
+import { Box, Button, Flex, FormControl, FormErrorMessage, FormHelperText, FormLabel, Heading, Select, SimpleGrid, Text, useBoolean, useDisclosure } from "@chakra-ui/react"
 import { Form, Formik } from "formik"
 import { useContext, useEffect, useState } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
@@ -68,7 +68,7 @@ const Formulaire = ({ submitForm, validateOpcoChoice }) => {
       })}
       onSubmit={submitForm}
     >
-      {({ values, isValid, isSubmitting }) => {
+      {({ values, isValid, isSubmitting, setFieldValue, errors }) => {
         return (
           <Form>
             <CustomInput required={false} name="nom" label="Nom" type="text" value={values.nom} />
