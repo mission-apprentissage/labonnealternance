@@ -57,6 +57,8 @@ const Formulaire = ({ submitForm, validateOpcoChoice }) => {
           .min(10, "le téléphone est sur 10 chiffres")
           .max(10, "le téléphone est sur 10 chiffres")
           .required("champ obligatoire"),
+        type: Yup.string().default(type),
+        opco: Yup.string().when("type", { is: (v) => v === AUTHTYPE.ENTREPRISE, then: Yup.string().required("champ obligatoire") }),
       })}
       onSubmit={submitForm}
     >
