@@ -112,7 +112,7 @@ const Formulaire = ({ submitForm, validateOpcoChoice }) => {
                   <option value="Opco Mobilités">Opco Mobilités</option>
                   <option value="Opco Santé">Opco Santé</option>
                   <option value="Uniformation, l'Opco de la Cohésion sociale">Uniformation</option>
-                  <option value="inconnue">Je ne sais pas</option>
+                  <option value="inconnu">Je ne sais pas</option>
                 </Select>
                 <FormErrorMessage>{errors.opco}</FormErrorMessage>
               </FormControl>
