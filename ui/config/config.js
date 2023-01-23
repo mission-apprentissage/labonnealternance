@@ -1,3 +1,3 @@
 export default {
-  shouldDisplayCallForHelp: true,
+  shouldDisplayCallForHelp: false,
 }
