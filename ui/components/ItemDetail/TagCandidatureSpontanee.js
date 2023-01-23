@@ -1,7 +1,7 @@
 import { Image, Text } from "@chakra-ui/react"
 import React from "react"
 
-import paperplaneIcon from "../../public/images/paperplane.svg"
+import briefcaseIcon from "../../public/images/briefcase.svg"
 
 const tagProperties = {
   color: "pinksoft.600",
@@ -11,7 +11,7 @@ const tagProperties = {
 const TagCandidatureSpontanee = () => {
   return (
     <Text as="span" variant="tag" {...tagProperties}>
-      <Image width="16px" mb="-2px" src={paperplaneIcon} alt="" />
+      <Image width="16px" mb="-2px" src={briefcaseIcon} alt="" />
       <Text whiteSpace="nowrap" as="span" ml={1}>
         Candidature spontanée
       </Text>
