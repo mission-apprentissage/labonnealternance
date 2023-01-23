@@ -218,21 +218,11 @@ const WidgetTester = () => {
                     <Field type="hidden" value={locationRadius} name="locationRadius" />
                     <Box>
                       <Grid templateColumns={{ base: "1fr", md: "repeat(3, 1fr)" }}>
-                        <GridItem  colSpan={{ base: 1, md: 1 }}>
-                          {getRadioButton("locationRadius", 0, "Non défini", locationRadius, setFieldValue, handleRadiusChange)}
-                        </GridItem>
-                        <GridItem  colSpan={{ base: 1, md: 1 }}>
-                          {getRadioButton("locationRadius", 10, "10km", locationRadius, setFieldValue, handleRadiusChange)}
-                        </GridItem>
-                        <GridItem  colSpan={{ base: 1, md: 1 }}>
-                          {getRadioButton("locationRadius", 30, "30km", locationRadius, setFieldValue, handleRadiusChange)}
-                        </GridItem>
-                        <GridItem  colSpan={{ base: 1, md: 1 }}>
-                          {getRadioButton("locationRadius", 60, "60km", locationRadius, setFieldValue, handleRadiusChange)}
-                        </GridItem>
-                        <GridItem  colSpan={{ base: 1, md: 1 }}>
-                          {getRadioButton("locationRadius", 100, "100km", locationRadius, setFieldValue, handleRadiusChange)}
-                        </GridItem>
+                        <GridItem colSpan={{ base: 1, md: 1 }}>{getRadioButton("locationRadius", 0, "Non défini", locationRadius, setFieldValue, handleRadiusChange)}</GridItem>
+                        <GridItem colSpan={{ base: 1, md: 1 }}>{getRadioButton("locationRadius", 10, "10km", locationRadius, setFieldValue, handleRadiusChange)}</GridItem>
+                        <GridItem colSpan={{ base: 1, md: 1 }}>{getRadioButton("locationRadius", 30, "30km", locationRadius, setFieldValue, handleRadiusChange)}</GridItem>
+                        <GridItem colSpan={{ base: 1, md: 1 }}>{getRadioButton("locationRadius", 60, "60km", locationRadius, setFieldValue, handleRadiusChange)}</GridItem>
+                        <GridItem colSpan={{ base: 1, md: 1 }}>{getRadioButton("locationRadius", 100, "100km", locationRadius, setFieldValue, handleRadiusChange)}</GridItem>
                       </Grid>
                     </Box>
                   </Box>
@@ -246,15 +236,9 @@ const WidgetTester = () => {
                     <Field type="hidden" value={scope} name="scope" />
                     <Box>
                       <Grid templateColumns={{ base: "1fr", md: "repeat(3, 1fr)" }}>
-                        <GridItem colSpan={{ base: 1, md: 1 }}>
-                          {getRadioButton("scope", "", "Tout", scope, setFieldValue, handleScopeChange)}
-                        </GridItem>
-                        <GridItem colSpan={{ base: 1, md: 1 }}>
-                          {getRadioButton("scope", "training", "Formations uniquement", scope, setFieldValue, handleScopeChange)}
-                        </GridItem>
-                        <GridItem colSpan={{ base: 1, md: 1 }}>
-                          {getRadioButton("scope", "job", "Emplois uniquement", scope, setFieldValue, handleScopeChange)}
-                        </GridItem>
+                        <GridItem colSpan={{ base: 1, md: 1 }}>{getRadioButton("scope", "", "Tout", scope, setFieldValue, handleScopeChange)}</GridItem>
+                        <GridItem colSpan={{ base: 1, md: 1 }}>{getRadioButton("scope", "training", "Formations uniquement", scope, setFieldValue, handleScopeChange)}</GridItem>
+                        <GridItem colSpan={{ base: 1, md: 1 }}>{getRadioButton("scope", "job", "Emplois uniquement", scope, setFieldValue, handleScopeChange)}</GridItem>
                       </Grid>
                     </Box>
                   </Box>
@@ -288,12 +272,8 @@ const WidgetTester = () => {
                     <Field type="hidden" value={scope} name="scope" />
                     <Box>
                       <Grid templateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }}>
-                        <GridItem colSpan={{ base: 1, md: 1 }}>
-                          {getRadioButton("frozen_job", "", "Non", frozenJob, setFieldValue, handleFrozenChange)}
-                        </GridItem>
-                        <GridItem colSpan={{ base: 1, md: 1 }}>
-                          {getRadioButton("frozen_job", "1", "Oui", frozenJob, setFieldValue, handleFrozenChange)}
-                        </GridItem>
+                        <GridItem colSpan={{ base: 1, md: 1 }}>{getRadioButton("frozen_job", "", "Non", frozenJob, setFieldValue, handleFrozenChange)}</GridItem>
+                        <GridItem colSpan={{ base: 1, md: 1 }}>{getRadioButton("frozen_job", "1", "Oui", frozenJob, setFieldValue, handleFrozenChange)}</GridItem>
                       </Grid>
                     </Box>
                     <Text variant="defaultAutocomplete">
@@ -329,18 +309,27 @@ const WidgetTester = () => {
   return (
     <Box>
       <Box>
-        <Text as="h1" pl={6}>Test du Widget La bonne alternance</Text>
-        <Text pl={6}>La documentation est ici :{" "}
-          <Link href="https://mission-apprentissage.gitbook.io/la-bonne-alternance/documentation" aria-label="Accès à la documentation" target="docIdea" isExternal fontSize={14} fontWeight={700} color="grey.425">
+        <Text as="h1" pl={6}>
+          Test du Widget La bonne alternance
+        </Text>
+        <Text pl={6}>
+          La documentation est ici :{" "}
+          <Link
+            href="https://mission-apprentissage.gitbook.io/la-bonne-alternance/documentation"
+            aria-label="Accès à la documentation"
+            target="docIdea"
+            isExternal
+            fontSize={14}
+            fontWeight={700}
+            color="grey.425"
+          >
             https://mission-apprentissage.gitbook.io/la-bonne-alternance/documentation
           </Link>
         </Text>
       </Box>
       <Container>
         <Grid>
-          <GridItem>
-            {getForm()}
-          </GridItem>
+          <GridItem>{getForm()}</GridItem>
 
           <GridItem mt={8}>
             URL associée à l&apos;attribut <Text as="strong">src</Text> de l&apos;iframe : {getIdeaUrlWithParams()}

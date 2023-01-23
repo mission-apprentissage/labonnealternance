@@ -3,6 +3,7 @@ import Navigation from "../components/navigation"
 import HomeHero from "../components/HomeHero"
 import HowTo from "../components/HowTo"
 import AlgoHome from "../components/HomeComponents/AlgoHome"
+import MetiersDAvenir from "../components/HomeComponents/MetiersDAvenir"
 import { initParametersFromQuery } from "../services/config"
 import Footer from "../components/footer"
 import { useRouter } from "next/router"
@@ -17,23 +18,24 @@ import { ParameterContext } from "../context/ParameterContextProvider"
 import AmeliorerLBA from "../components/HomeComponents/AmeliorerLBA"
 import { Box, Image } from "@chakra-ui/react"
 
-import config from "../config/config"
-
-const blockCssParameters = {
+const blockCssProperties = {
   position: "relative",
+  borderRadius: "10px",
   marginLeft: "auto",
   marginRight: "auto",
   maxWidth: "1310px",
-  borderRadius: "10px",
 }
 
-const imgCssParameters = {
+const circleImgCssProperties = {
   position: "absolute",
+  zIndex: 0,
   display: {
     base: "none",
     lg: "block",
   },
 }
+
+import config from "../config/config"
 
 const Home = () => {
   const router = useRouter()
@@ -48,21 +50,26 @@ const Home = () => {
     <Box>
       <ScrollToTop />
       <Navigation />
-      <Box background="beige" {...blockCssParameters}>
-        <Image src={howtocircle1} {...imgCssParameters} top="60px" left="50px" alt="" />
-        <Image src={howtocircle2} {...imgCssParameters} bottom="-28px" left="444px" alt="" />
-        <Image src={howtocircle3} {...imgCssParameters} top="182px" right="512px" alt="" />
-        <Image src={howtocircle4} {...imgCssParameters} top="12px" left="312px" alt="" />
-        <Image src={howtocircle5} {...imgCssParameters} bottom="112px" right="-12px" alt="" />
+      <Box background="beige" {...blockCssProperties}>
+        <Image src={howtocircle1} {...circleImgCssProperties} top="60px" left="50px" alt="" />
+        <Image src={howtocircle2} {...circleImgCssProperties} bottom="-28px" left="444px" alt="" />
+        <Image src={howtocircle3} {...circleImgCssProperties} top="182px" right="512px" alt="" />
+        <Image src={howtocircle4} {...circleImgCssProperties} top="12px" right="312px" alt="" />
+        <Image src={howtocircle5} {...circleImgCssProperties} bottom="112px" right="-12px" alt="" />
         <HomeHero />
         <HowTo />
       </Box>
-      <Box {...blockCssParameters} py={12}>
+
+      <Box {...blockCssProperties} pt={12} pb={0}>
+        <MetiersDAvenir />
+      </Box>
+
+      <Box {...blockCssProperties} py={12}>
         <AlgoHome />
       </Box>
 
       {config.shouldDisplayCallForHelp && (
-        <Box {...blockCssParameters}>
+        <Box {...blockCssProperties}>
           <AmeliorerLBA />
         </Box>
       )}
