@@ -23,33 +23,27 @@
           Bonjour <%= data.prenom %> <%= data.nom %>,
         </mj-text>
 
-          <mj-text>
-Félicitations, l'offre ci-dessous a bien été créée :
+        <mj-text>
+          Félicitations, l'offre ci-dessous a bien été créée :
+        </mj-text>
+
+        <mj-column width="500px" padding="0px 10px" background-color="#F6F6F6">
+          <mj-text padding-bottom="0px">Métier: <span font-weight="700"><% offre.rome_appellation_label %></span>
           </mj-text>
+          <mj-text padding-bottom="0px" padding-top="0px">Type de contrat: <mj-text font-weight="700"><% offre.type %></mj-text>
+          </mj-text>
+          <mj-text padding-bottom="0px" padding-top="0px">Niveau de formation: <mj-text font-weight="700"><% offre.niveau %></mj-text>
+          </mj-text>
+          <mj-text padding-top="0px">Date de début: <mj-text font-weight="700"><% offre.date_debut_apprentissage %></mj-text>
+          </mj-text>
+        </mj-column>
 
-
-        <mj-text font-weight="700">Rappel de l'offre :</mj-text>
-        <mj-table>
-          <tr style="border-bottom:1px solid #ecedee;text-align:left;padding:15px 0;">
-            <th style="padding: 0 15px 0 0;">Métier</th>
-            <th style="padding: 0 15px;">Type</th>
-
-          </tr>
-          <% for(let offre of data.offres) { %>
-          <tr>
-            <td style="padding: 0 15px 0 0;" rowspan="2"><%= offre.libelle %></td>
-            <td style="padding: 0 15px;" rowspan="2"><%= offre.type %></td>
-          <tr style="border-bottom: 1px dotted #000091;">
-          </tr>
-          <% } %>
-        </mj-table>
-
-         <mj-text font-weight="700">Afin de pouvoir diffuser votre offre et accéder à votre espace de gestion, merci de cliquer sur le lien ci-dessous pour valider votre adresse mail:</mj-text>
+        <mj-text font-weight="700">Afin de pouvoir diffuser votre offre et accéder à votre espace de gestion, merci de cliquer sur le lien ci-dessous pour valider votre adresse mail:</mj-text>
 
         <mj-button color="#ffffff" background-color="#000091" href="<%= data.confirmation_url %>">
           Vérifier mon adresse mail
         </mj-button>
-              <mj-text>Si le lien ne fonctionne pas, copier le lien suivant dans le navigateur : <a href="<%= data.confirmation_url %></"><%= data.confirmation_url %></a></mj-text>
+        <mj-text>Si le lien ne fonctionne pas, copier le lien suivant dans le navigateur : <a href="<%= data.confirmation_url %></"><%= data.confirmation_url %></a></mj-text>
         <mj-text>
           L'équipe La bonne alternance, <br>
           Mission interministérielle pour l'apprentissage et les trajectoires profesionnelles
@@ -58,7 +52,7 @@ Félicitations, l'offre ci-dessous a bien été créée :
     </mj-section>
     <mj-section padding-top="30px">
       <mj-column>
-        <mj-image src="https://labonnealternance.apprentissage.beta.gouv.fr/espace-pro/images/logo-republique-francaise.png" width="200px" align="left" ></mj-image>
+        <mj-image src="https://labonnealternance.apprentissage.beta.gouv.fr/espace-pro/images/logo-republique-francaise.png" width="200px" align="left"></mj-image>
       </mj-column>
     </mj-section>
   </mj-body>

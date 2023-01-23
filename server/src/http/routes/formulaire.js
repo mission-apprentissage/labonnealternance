@@ -1,4 +1,5 @@
 import express from "express"
+import { pick } from "lodash-es"
 import { mailTemplate } from "../../assets/index.js"
 import { getCatalogueEtablissements, getCatalogueFormations } from "../../common/catalogue.js"
 import dayjs from "../../common/dayjs.js"
@@ -185,7 +186,7 @@ export default ({ formulaire, mailer, etablissementsRecruteur, application, user
             prenom: user.prenom,
             email: user.email,
             confirmation_url: url,
-            offres: [offre],
+            offre: pick(offre, ["rome_appellation_label", "date_debut_apprentissage", "type", "niveau"]),
           },
         })
 
