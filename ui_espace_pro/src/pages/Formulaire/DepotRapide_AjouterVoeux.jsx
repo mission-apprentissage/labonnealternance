@@ -1,10 +1,23 @@
-import { Box, Container } from "@chakra-ui/react"
-import { AjouterVoeux } from "../../components"
+import { Box } from "@chakra-ui/react"
+import { useLocation } from "react-router-dom"
+import { AjouterVoeux, AuthentificationLayout, Bandeau } from "../../components"
 
-export default (props) => (
-  <Container maxW="container.xl">
-    <Box p={5}>
-      <AjouterVoeux {...props} />
-    </Box>
-  </Container>
-)
+export default (props) => {
+  const location = useLocation()
+  const { displayBanner } = location.state
+
+  return (
+    <AuthentificationLayout>
+      {displayBanner && (
+        <Bandeau
+          type="success"
+          header="Votre compte a été créé avec succès, et est en attente de vérification."
+          description="Vous pouvez d’ores et déjà créer une offre de recrutement."
+        />
+      )}
+      <Box mt={10}>
+        <AjouterVoeux {...props} />
+      </Box>
+    </AuthentificationLayout>
+  )
+}
