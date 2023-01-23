@@ -27,7 +27,6 @@ import login from "./routes/auth/login.js"
 import password from "./routes/auth/password.js"
 import catalogueRoute from "./routes/catalogue.js"
 import constantsRoute from "./routes/constants.js"
-import error500 from "./routes/error500.js"
 import esSearchRoute from "./routes/esSearch.js"
 import etablissementRoute from "./routes/etablissement.js"
 import etablissementsRecruteurRoute from "./routes/etablissementRecruteur.js"
@@ -172,7 +171,6 @@ export default async (components) => {
    * LBACandidat
    */
   app.use("/api/version", limiter3PerSecond, version())
-  app.use("/api/error500", limiter3PerSecond, error500())
   app.use("/api/v1/formations", limiter7PerSecond, formationV1())
   app.use("/api/romelabels", limiter10PerSecond, rome())
   app.use("/api/jobsdiplomas", limiter10PerSecond, jobDiploma())
