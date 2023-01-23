@@ -210,7 +210,7 @@ export default ({ formulaire, mailer, etablissementsRecruteur, application, user
           prenom: mandataire ? contactCFA.prenom : prenom,
           raison_sociale,
           mandataire: result.mandataire,
-          offres: [offre],
+          offre: pick(offre, ["rome_appellation_label", "date_debut_apprentissage", "type", "niveau"]),
           lba_url:
             config.env !== "recette"
               ? `https://labonnealternance.apprentissage.beta.gouv.fr/recherche-apprentissage?&display=list&page=fiche&type=matcha&itemId=${offre._id}`
