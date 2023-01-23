@@ -1,10 +1,9 @@
-import { Box, Button, Flex, Heading, Link, SimpleGrid, Stack, Text, useToast } from "@chakra-ui/react"
+import { Box, Button, Circle, Flex, Heading, Link, Stack, Text, useToast } from "@chakra-ui/react"
 import dayjs from "dayjs"
 import { useContext, useEffect, useState } from "react"
-import { useQueryClient } from "react-query"
+import { useQuery, useQueryClient } from "react-query"
 import { useLocation, useNavigate } from "react-router-dom"
-import { sendValidationLink } from "../../api"
-import { USER_STATUS } from "../../common/contants"
+import { getUser, sendValidationLink } from "../../api"
 import { AuthentificationLayout } from "../../components"
 import { WidgetContext } from "../../contextWidget"
 import { InfoCircle } from "../../theme/components/icons"
@@ -12,6 +11,7 @@ import { MailCloud } from "../../theme/components/logos"
 
 export default () => {
   const [disableLink, setDisableLink] = useState(false)
+  const [userIsValidated, setUserIsValidated] = useState(false)
   const [title, setTitle] = useState("")
   const location = useLocation()
   const navigate = useNavigate()
@@ -19,25 +19,33 @@ export default () => {
   const client = useQueryClient()
 
   const { widget } = useContext(WidgetContext)
-  const { offre, email, withDelegation, fromDashboard } = location.state
+  const { offre, email, withDelegation, fromDashboard, userId } = location.state
+
+  useQuery("userdetail", () => getUser(userId), {
+    onSuccess: (data) => {
+      if (data.data.etat_utilisateur[0].statut === "VALIDÉ") {
+        setUserIsValidated(true)
+      }
+    },
+  })
 
   const getTextualContext = () => {
     switch (withDelegation) {
       case true:
-        if (USER_STATUS.ACTIVE) {
-          setTitle("Félicitations, votre offre a bien été créée et transmise aux organismes de formation que vous avez sélectionnés.")
+        if (userIsValidated) {
+          setTitle("Félicitations,<br>votre offre a bien été créée et transmise aux organismes de formation que vous avez sélectionnés.")
         } else {
           setTitle(
-            "Félicitations, votre offre a bien été créée. Elle sera publiée et transmise aux organismes de formation que vous avez sélectionnés dès validation de votre compte."
+            "Félicitations,<br>votre offre a bien été créée.<br>Elle sera publiée et transmise aux organismes de formation que vous avez sélectionnés dès validation de votre compte."
           )
         }
         break
 
       case false:
-        if (USER_STATUS.ACTIVE) {
-          setTitle("Félicitations, votre offre a bien été créée!")
+        if (userIsValidated) {
+          setTitle("Félicitations,<br>votre offre a bien été créée!")
         } else {
-          setTitle("Félicitations, votre offre a bien été créée. Elle sera publiée dès validation de votre compte.")
+          setTitle("Félicitations,<br>votre offre a bien été créée.<br>Elle sera publiée dès validation de votre compte.")
         }
         break
 
@@ -95,7 +103,7 @@ export default () => {
     navigate(-1)
   }
 
-  const validatedAccountDescription = () => {
+  const ValidatedAccountDescription = () => {
     return (
       <>
         <Flex alignItems="flex-start" mb={6}>
@@ -119,7 +127,49 @@ export default () => {
       </>
     )
   }
-  const awaitingAccountDescription = () => {}
+  const AwaitingAccountDescription = () => {
+    return (
+      <Stack spacing={4} my={4}>
+        <Text>Voici les prochains étapes qui vous attendent :</Text>
+        <Stack direction="row" spacing={4}>
+          <Circle p={5} size="20px" bg="#E3E3FD" color="#000091" fontWeight="700">
+            1
+          </Circle>
+          <Box>
+            <Heading fontSize="18px">Confirmez votre email</Heading>
+            <Text>
+              Afin de finaliser la diffusion de votre besoin auprès des jeunes, merci de confirmer votre adresse mail en cliquant sur le lien que nous venons de vous transmettre à
+              l’adresse suivante: <span style={{ fontWeight: "700" }}>{email}</span>.
+            </Text>
+            <Flex align="center">
+              <Text>Vous n’avez pas reçu le mail ? </Text>
+              <Button as={Link} variant="classic" textDecoration="underline" onClick={() => resendMail(email)} isDisabled={disableLink}>
+                Renvoyer le mail
+              </Button>
+            </Flex>
+          </Box>
+        </Stack>
+        <Stack direction="row" spacing={4}>
+          <Circle p={5} size="20px" bg="#E3E3FD" color="#000091" fontWeight="700">
+            2
+          </Circle>
+          <Box>
+            <Heading fontSize="18px">Votre compte sera validé manuellement par nos équipes</Heading>
+            <Text>Vous serez notifié par email une fois que ce sera fait.</Text>
+          </Box>
+        </Stack>
+        <Stack direction="row" spacing={4}>
+          <Circle p={5} size="20px" bg="#E3E3FD" color="#000091" fontWeight="700">
+            3
+          </Circle>
+          <Box>
+            <Heading fontSize="18px">Votre offre est automatiquement publiée </Heading>
+            <Text>Une fois votre compte validé, votre offre est automatiquement publiée et partagée aux organismes de formation que vous avez sélectionnés.</Text>
+          </Box>
+        </Stack>
+      </Stack>
+    )
+  }
 
   useEffect(() => getTextualContext(), [withDelegation])
 
@@ -129,83 +179,26 @@ export default () => {
         <MailCloud style={{ paddingRight: "10px" }} />
         <Box pt={[3, 0]} ml={10}>
           <Heading fontSize="24px" mb="16px" mt={widget?.mobile ? "10px" : "0px"}>
-            {title}
+            <div dangerouslySetInnerHTML={{ __html: title }} />
           </Heading>
-          {!fromDashboard && (
-            <>
-              <Flex alignItems="flex-start" mb={6}>
-                <InfoCircle mr={2} mt={1} />
-                <Text textAlign="justify">
-                  Afin de finaliser la diffusion de votre besoin auprès des jeunes et vous connecter à votre espace de gestion,{" "}
-                  <span style={{ fontWeight: "700" }}>veuillez valider votre adresse mail</span> en cliquant sur le lien que nous venons de vous transmettre à l’adresse suivante:{" "}
-                  <span style={{ fontWeight: "700" }}>{email}</span>.
-                </Text>
-              </Flex>
-
-              <Flex align="center" ml={5} mb="16px">
-                <Text>Vous n’avez pas reçu le mail ? </Text>
-                <Button as={Link} variant="classic" textDecoration="underline" onClick={() => resendMail(email)} isDisabled={disableLink}>
-                  Renvoyer le mail
-                </Button>
-              </Flex>
-            </>
-          )}
-          <Stack direction="column" spacing="16px" mt={fromDashboard ? 10 : 0}>
-            <Heading fontSize="20px">Récapitulatif de votre besoin</Heading>
-            <Text>Poste : {offre.rome_appellation_label}</Text>
-            <Text>Niveau d'étude visé : {offre.niveau}</Text>
-            <Text>Date de début d'apprentissage souhaitée : {dayjs(offre.date_debut_apprentissage).format("DD/MM/YYYY")}</Text>
-            <Text fontSize="14px">Votre annonce sera visible pendant 30 jours, renouvelables.</Text>
-          </Stack>
+          {userIsValidated ? <ValidatedAccountDescription /> : <AwaitingAccountDescription />}
+          <Box bg="#F6F6F6" p={4}>
+            <Stack direction="column" spacing="16px" mt={fromDashboard ? 10 : 0}>
+              <Heading fontSize="20px">Récapitulatif de votre besoin</Heading>
+              <Text>
+                Poste : <span style={{ fontWeight: "700" }}>{offre.rome_appellation_label}</span>
+              </Text>
+              <Text>
+                Niveau d'étude visé : <span style={{ fontWeight: "700" }}>{offre.niveau}</span>
+              </Text>
+              <Text>
+                Date de début d'apprentissage souhaitée : <span style={{ fontWeight: "700" }}>{dayjs(offre.date_debut_apprentissage).format("DD/MM/YYYY")}</span>
+              </Text>
+              <Text fontSize="14px">Votre offre expirera après 30 jours à compter de sa publication</Text>
+            </Stack>
+          </Box>
         </Box>
       </Flex>
-    </AuthentificationLayout>
-  )
-
-  return (
-    <AuthentificationLayout>
-      <SimpleGrid columns={[1, 1, 1, 2]} spacing={4} mt={8}>
-        <Box>
-          <Heading fontSize="24px" mt={widget?.mobile ? "10px" : "0px"}>
-            {withDelegation ? (
-              <>
-                Félicitations, <br />
-                votre offre a bien été créée, et transmise aux acteurs de l’apprentissage que vous avez sélectionnés.
-              </>
-            ) : (
-              <>
-                Félicitations, <br />
-                votre offre a bien été créée!
-              </>
-            )}
-          </Heading>
-          {!fromDashboard && (
-            <>
-              <Text textAlign="justify" mt={5}>
-                Afin de finaliser la diffusion de votre besoin auprès des jeunes et vous connecter à votre espace de gestion,{" "}
-                <span style={{ fontWeight: "700" }}>veuillez valider votre adresse mail</span> en cliquant sur le lien que nous venons de vous transmettre à l’adresse suivante:{" "}
-                <span style={{ fontWeight: "700" }}>{email}</span>.
-              </Text>
-
-              <Flex direction={["column", "column", "column", "row"]} align="center" mt={5}>
-                <Text>Vous n’avez pas reçu le mail ? </Text>
-                <Button as={Link} variant="classic" textDecoration="underline" onClick={() => resendMail(email)} isDisabled={disableLink}>
-                  Renvoyer le mail
-                </Button>
-              </Flex>
-            </>
-          )}
-        </Box>
-        <Box border="1px solid #000091" p={["4", "8"]}>
-          <Stack direction="column" spacing="16px" mt={fromDashboard ? 10 : 0}>
-            <Heading fontSize="20px">Récapitulatif de votre offre</Heading>
-            <Text>{offre.libelle}</Text>
-            <Text>{offre.niveau}</Text>
-            <Text>Date de début d'apprentissage souhaitée : {dayjs(offre.date_debut_apprentissage).format("DD/MM/YYYY")}</Text>
-            <Text fontSize="14px">Votre annonce sera visible pendant 30 jours, renouvelables.</Text>
-          </Stack>
-        </Box>
-      </SimpleGrid>
     </AuthentificationLayout>
   )
 }
