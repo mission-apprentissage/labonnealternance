@@ -33,24 +33,16 @@
             <mj-text>Félicitations! Votre offre d'alternance pour l'entreprise <%= data.raison_sociale %> a bien été publiée. Elle est maintenant visible par les candidats sur les plateformes suivantes : La bonne alternance, 1 Jeune 1 Solution, Affelnet...</mj-text>
           <% } %>
 
-        <mj-text font-weight="700">Rappel de l'offre :</mj-text>
-        <mj-table>
-          <tr style="border-bottom:1px solid #ecedee;text-align:left;padding:15px 0;">
-            <th style="padding: 0 15px 0 0;">Métier</th>
-            <th style="padding: 0 15px;">Type</th>
-            <th style="padding: 0 0 0 15px;" colspan="2">Actions</th>
-          </tr>
-          <% for(let offre of data.offres) { %>
-          <tr>
-            <td style="padding: 0 15px 0 0;" rowspan="2"><%= offre.rome_appellation_label %></td>
-            <td style="padding: 0 15px;" rowspan="2"><%= offre.type %></td>
-            <td style="padding: 0 0 0 15px;"><a href="<%= offre.supprimer %>">Supprimer</a></td>
-          </tr>
-          <tr style="border-bottom: 1px dotted #000091;">
-            <td style="padding: 0 0 0 15px;"><a href="<%= offre.pourvue %>">Pourvue</a></td>
-          </tr>
-          <% } %>
-        </mj-table>
+          <mj-column width="500px" padding="0px 10px" background-color="#F6F6F6">
+            <mj-text padding-bottom="0px">Métier: <span font-weight="700"><% offre.rome_appellation_label %></span>
+            </mj-text>
+            <mj-text padding-bottom="0px" padding-top="0px">Type de contrat: <mj-text font-weight="700"><% offre.type %></mj-text>
+            </mj-text>
+            <mj-text padding-bottom="0px" padding-top="0px">Niveau de formation: <mj-text font-weight="700"><% offre.niveau %></mj-text>
+            </mj-text>
+            <mj-text padding-top="0px">Date de début: <mj-text font-weight="700"><% offre.date_debut_apprentissage %></mj-text>
+            </mj-text>
+          </mj-column>
 
          <mj-text>Voici le lien de votre annonce sur La bonne alternance</mj-text>
 
