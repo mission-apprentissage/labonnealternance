@@ -12,7 +12,7 @@ export default (props) => {
     onClose()
     navigate("/creation/offre", {
       replace: true,
-      state: { id_form: formulaire.id_form, email: user.email, displayBanner: true },
+      state: { id_form: formulaire.id_form, email: user.email, userId: user._id, displayBanner: true },
     })
   }
 

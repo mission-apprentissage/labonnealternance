@@ -16,7 +16,7 @@ const DepotRapide_AjouterVoeuxMiseEnRelation = () => {
   const [isSubmitButtonEnabled, setIsSubmitButtonEnabled] = useState(false)
   const [isSubmitLoading, setIsSubmitLoading] = useState(false)
 
-  const { offre, email, geo_coordonnees, fromDashboard } = location.state
+  const { offre, email, geo_coordonnees, fromDashboard, userId } = location.state
 
   /**
    * @description Handles all checkboxes.
@@ -37,7 +37,7 @@ const DepotRapide_AjouterVoeuxMiseEnRelation = () => {
   const skip = () =>
     navigate("/creation/fin", {
       replace: true,
-      state: { offre, email, withDelegation: false, fromDashboard },
+      state: { offre, email, withDelegation: false, fromDashboard, userId },
     })
 
   /**
