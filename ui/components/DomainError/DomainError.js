@@ -1,7 +1,16 @@
+import { Box, Button, Image } from "@chakra-ui/react"
 import React from "react"
 
 import domainErrorMainSvg from "./domain_error_main.svg"
 import domainErrorNoticeSvg from "./domain_error_notice.svg"
+
+const cssParameters = {
+  padding: "1rem",
+  background: "#fff1e5",
+  borderRadius: "10px",
+  fontWeight: 700,
+  fontSize: "20px",
+}
 
 export default function DomainError({ position, setDomainError, setDiplomaError }) {
   const reset = (e) => {
@@ -15,46 +24,46 @@ export default function DomainError({ position, setDomainError, setDiplomaError 
 
   const getResetButton = () => {
     return (
-      <button className="c-domainerror-reset mt-1 btn btn-dark" onClick={reset}>
+      <Button variant="blackButton" mt={1} onClick={reset}>
         Réessayer
-      </button>
+      </Button>
     )
   }
 
   const getInColumnError = () => {
     return (
-      <div className="c-domainerror px-3">
-        <div className="c-domainerror-img">
-          <img src={domainErrorMainSvg} alt="Ressource non trouvée" />
-        </div>
-        <div className="c-domainerror-notice mb-2">
-          <img className="c-domainerror-notice-img mr-2" src={domainErrorNoticeSvg} alt="Erreur technique momentanée" />
+      <Box px={4} data-testid="domainError">
+        <Box>
+          <Image src={domainErrorMainSvg} alt="" />
+        </Box>
+        <Box {...cssParameters} mb={2}>
+          <Image float="left" mr={2} src={domainErrorNoticeSvg} alt="" />
           Erreur technique momentanée
-        </div>
-        <div className="c-domainerror-texttitle">Pas de panique !</div>
-        <div className="c-domainerror-textline1">Il y a forcément un résultat qui vous attend,</div>
-        <div className="c-domainerror-textline2">
+        </Box>
+        <Box fontWeight={700}>Pas de panique !</Box>
+        <Box>Il y a forcément un résultat qui vous attend,</Box>
+        <Box>
           veuillez revenir ultérieurement
           <br />
           {getResetButton()}
-        </div>
-      </div>
+        </Box>
+      </Box>
     )
   }
 
   const getInHeaderError = () => {
     return (
-      <div className="c-domainerror">
-        <div className="c-domainerror-notice mb-2 float-left">
-          <img className="c-domainerror-notice-img mr-2" src={domainErrorNoticeSvg} alt="Erreur technique momentanée" />
+      <Box data-testid="domainError">
+        <Box {...cssParameters} mb={2} float="left">
+          <Image float="left" mr={2} src={domainErrorNoticeSvg} alt="" />
           Erreur technique momentanée
-        </div>
-        <div className="c-domainerror-texttitle float-left ml-4 mt-1">
+        </Box>
+        <Box float="left" ml={8} mt={1} fontWeight={700}>
           Veuillez réessayer ultérieurement
           <br />
           {getResetButton()}
-        </div>
-      </div>
+        </Box>
+      </Box>
     )
   }
 
