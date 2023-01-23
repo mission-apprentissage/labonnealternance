@@ -48,7 +48,7 @@ const contentSecurityPolicy = `
               https://in.hotjar.com 
               https://plausible.io 
               http://localhost:5000 
-              https://*.ingest.sentry.io;base-uri;
+              https://*.ingest.sentry.io;
   img-src 'self' 
               data: 
               blob:
