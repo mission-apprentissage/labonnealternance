@@ -90,8 +90,8 @@ const config = {
   diagoriente: {
     clientId: env.get("LBA_DIAGORIENTE_CLIENT_ID").default("").asString(),
     clientSecret: env.get("LBA_DIAGORIENTE_CLIENT_SECRET").default("").asString(),
-    queryUrl: env.get("LBA_DIAGORIENTE_QUERY_URL").default("http://oplc-staging.diagoriente.beta.gouv.fr/graphql").asString(),
-    realm: env.get("LBA_DIAGORIENTE_REALM").default("diagoriente-staging").asString(),
+    queryUrl: env.get("LBA_DIAGORIENTE_QUERY_URL").default("").asString(),
+    realm: env.get("LBA_DIAGORIENTE_REALM").default("").asString(),
   },
   poleEmploi: {
     clientId: env.get("LBA_POLE_EMPLOI_CLIENT_ID").default("").asString(),
