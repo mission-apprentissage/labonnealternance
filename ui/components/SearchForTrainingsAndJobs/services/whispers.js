@@ -64,22 +64,21 @@ function domInsertion(document, randomlyChosenResultCard, msg, indx = 0) {
 function getHTML(text, link) {
   window["SendTrackEvent"] = SendTrackEvent
 
-  return `<div class="resultCard gtmWhisper">
-            <div class="c-media">
-              <div class="c-media-figure">
+  return `<div style="margin-left: 25px; margin-right: 25px;margin-top: 25px; margin-bottom: 25px; text-align: left;">
+            <div style="display: flex">
+              <div style="width: 60px;min-width:40px;margin-right:4px">
                 <img src="/images/whisper.svg" alt="" />
               </div>
-              <div class="c-media-body">
-                <div class="row no-gutters">
-                  <div class="col-12 text-left">
-                    <div class="whisper-title d-inline-block">Psst, nous avons une <span class="whisper-title-special">info pour vous !</span>
-                    </div>
+              <div>
+                <div>
+                  <div style="font-size:20px; font-weight: 700;color:#3a3a3a;">
+                    Psst, nous avons une <span style="color:#0c0cd0">info pour vous !</span>
                   </div>
                 </div>
                 <div>
-                  <div class="cardText pt-2 whisper-text">
+                  <div style="color:#4a4a4a; font-size:14px; font-weight: 500;line-height:24px;margin-top: 6px;padding-right:16px;">
                     ${text}
-                    <span class="d-block mt-2">${!!link ? getHTMLLink(link) : ""}</span>
+                    <span style="margin-top: 6px;display: block;">${!!link ? getHTMLLink(link) : ""}</span>
                   </div>
                 </div>
               </div>
@@ -88,10 +87,10 @@ function getHTML(text, link) {
 }
 
 function getHTMLLink(link) {
-  return `<a href="${link}" target="_blank" class="gtmWhisperLink" rel="noopener noreferrer">
-                  <img className="mt-n1 ml-1" src="/images/square_link.svg" alt="Ouverture dans un nouvel onglet" />
-                  <span className="ml-1" aria-label="Accéder au détail de l'astuce">En savoir plus</span>
-                </a>`
+  return `<a href="${link}" target="_blank" rel="noopener noreferrer" style="display: flex;">
+            <span aria-label="Accéder au détail de l'astuce">En savoir plus</span>
+            <img style="margin-left: 5px" src="/images/square_link.svg" alt="Ouverture dans un nouvel onglet" />
+          </a>`
 }
 
 function insertAfter(referenceNode, newNode) {
