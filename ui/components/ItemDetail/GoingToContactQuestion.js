@@ -28,7 +28,7 @@ const GoingToContactQuestion = ({ kind, uniqId, item }) => {
       pb="0px"
       mt={6}
       alignItems="center"
-      justifyContent="center"
+      justifyContent="space-around"
       position="relative"
       background="white"
       padding={["6px 12px 8px 12px", "6px 24px 8px 24px", "6px 12px 8px 12px"]}
@@ -38,7 +38,7 @@ const GoingToContactQuestion = ({ kind, uniqId, item }) => {
         Allez-vous contacter {workplace} ?
       </Box>
       {thanks ? (
-        <Box borderRadius="10px" padding={6} background="grey.100" fontSize="16px" fontWeight={700}>
+        <Box borderRadius="10px" px="3" py="2" background="grey.100" fontSize="14px" fontWeight={700}>
           Merci pour votre réponse ! 👌
         </Box>
       ) : (

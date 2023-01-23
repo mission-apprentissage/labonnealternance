@@ -89,10 +89,10 @@ const ResultLists = (props) => {
                   {jobCount < 100 ? <ExtendedSearchButton title="Voir plus de résultats" handleExtendedSearch={props.handleExtendedSearch} /> : ""}
                 </>
               ) : (
-                <>
+                <Box align="left" ml="5">
                   <NoJobResult />
                   <ExtendedSearchButton title="Étendre la sélection" handleExtendedSearch={props.handleExtendedSearch} />
-                </>
+                </Box>
               )}
             </Box>
           )
