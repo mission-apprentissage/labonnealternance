@@ -7,7 +7,7 @@ import { capitalizeFirstLetter } from "../../../utils/strutils"
 import { setSelectedMarker } from "../../../utils/mapTools"
 import bookIcon from "../../../public/images/icons/book.svg"
 import jobIcon from "../../../public/images/icons/job.svg"
-import { Flex, Image, Text } from "@chakra-ui/react"
+import { Box, Flex, Image, Text } from "@chakra-ui/react"
 
 const MapPopup = ({ type, item, handleSelectItem, setSelectedItem, setSelectedMapPopupItem }) => {
   const openItemDetail = (item) => {
@@ -81,14 +81,14 @@ const MapPopup = ({ type, item, handleSelectItem, setSelectedItem, setSelectedMa
       return (
         <ErrorMessage
           message={
-            <div className="popupError">
+            <Box ml={2}>
               Le format de l&apos;élément sélectionné est erroné.
               <br />
               <br />
               Veuillez accepter nos excuses.
               <br />
               L&apos;équipe Labonnealternance.
-            </div>
+            </Box>
           }
         />
       )

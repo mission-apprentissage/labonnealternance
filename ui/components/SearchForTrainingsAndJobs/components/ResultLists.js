@@ -178,8 +178,8 @@ const ResultLists = (props) => {
       <ErrorMessage message="Erreur technique momentanée" type="column" />
     ) : (
       <>
-        {props.trainingSearchError ? <ErrorMessage message={props.trainingSearchError} /> : ""}
-        {props.jobSearchError ? <ErrorMessage message={props.jobSearchError} /> : ""}
+        {props.trainingSearchError && <ErrorMessage message={props.trainingSearchError} />}
+        {props.jobSearchError && <ErrorMessage message={props.jobSearchError} />}
       </>
     )
   }
