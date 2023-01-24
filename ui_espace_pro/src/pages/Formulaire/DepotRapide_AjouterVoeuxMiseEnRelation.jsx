@@ -55,7 +55,7 @@ const DepotRapide_AjouterVoeuxMiseEnRelation = () => {
 
     navigate("/creation/fin", {
       replace: true,
-      state: { offre, email, withDelegation: true, fromDashboard },
+      state: { offre, email, withDelegation: true, fromDashboard, userId },
     })
   }
 
