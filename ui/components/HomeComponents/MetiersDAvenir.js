@@ -5,6 +5,7 @@ import NextLink from "next/link"
 import { Text, Divider, GridItem, Grid, Container, Box, SimpleGrid, Link, Flex } from "@chakra-ui/react"
 import { ArrowForwardIcon } from "@chakra-ui/icons"
 import baseUrl from "../../utils/baseUrl"
+import { SendPlausibleEvent } from "../../utils/plausible"
 
 const jobCssProperties = {
   background: "beige",
@@ -26,11 +27,17 @@ const jobCssProperties = {
 const diagorienteLink = "https://diagoriente.gitbook.io/base-unifiee-competences-formations-metiers/presentation-generale/genese"
 
 const buildJobBlock = ({ idx, title, rome }) => {
+  const trackClick = () => {
+    SendPlausibleEvent("Clic suggestion métier avenir - Page d'accueil", {
+      metier: `${title} - ${rome}`,
+    })
+  }
+
   return (
     <NextLink key={idx} passHref href={`/recherche-apprentissage?&display=list&job_name=${title}&romes=${rome}&radius=60`}>
-      <Link {...jobCssProperties} title={`Voir la liste des formations et opportunités d'emploi en alternance pour le métier d'avenir ${title}`}>
+      <Link onClick={trackClick} {...jobCssProperties} title={`Voir la liste des formations et opportunités d'emploi en alternance pour le métier d'avenir ${title}`}>
         <Flex minHeight="70px" maxHeight="80px" padding={8} alignItems="center" direction="row">
-          <Text fontSize={title.length > 30 ? "16px" : "20px"} fontWeight={700} color="info">
+          <Text noOfLines={3} fontWeight={700} color="info">
             {title}
           </Text>
           <ArrowForwardIcon color="info" fontSize="20px" marginLeft="auto" />
