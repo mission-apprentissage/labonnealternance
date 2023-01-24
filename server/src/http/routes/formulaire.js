@@ -2,9 +2,10 @@ import express from "express"
 import { pick } from "lodash-es"
 import { mailTemplate } from "../../assets/index.js"
 import { getCatalogueEtablissements, getCatalogueFormations } from "../../common/catalogue.js"
+import { etat_utilisateur } from "../../common/constants.js"
 import dayjs from "../../common/dayjs.js"
 import { getElasticInstance } from "../../common/esClient/index.js"
-import { Formulaire, UserRecruteur } from "../../common/model/index.js"
+import { Formulaire } from "../../common/model/index.js"
 import config from "../../config.js"
 import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
 
@@ -159,13 +160,20 @@ export default ({ formulaire, mailer, etablissementsRecruteur, application, user
   router.post(
     "/:id_form/offre",
     tryCatch(async (req, res) => {
-      const result = await formulaire.createOffre(req.params.id_form, req.body)
+      const offre = req.body
+      // get user activation state
+      const user = await usersRecruteur.getUser({ id_form: req.params.id_form })
+      // if user is awaiting validation, update offre status to "En attente"
+      if (user.etat_utilisateur[0].statut === etat_utilisateur.ATTENTE) {
+        offre.statut = "En attente"
+      }
 
-      let { email, raison_sociale, prenom, nom, mandataire, gestionnaire, offres } = result
-      let offre = req.body
+      const updatedFormulaire = await formulaire.createOffre(req.params.id_form, req.body)
+
+      let { email, raison_sociale, prenom, nom, mandataire, gestionnaire, offres } = updatedFormulaire
       let contactCFA
 
-      offre._id = result.offres.filter((x) => x.libelle === offre.libelle)[0]._id
+      offre._id = updatedFormulaire.offres.filter((x) => x.libelle === offre.libelle)[0]._id
 
       offre.supprimer = `${config.publicUrlEspacePro}/offre/${offre._id}/cancel`
       offre.pourvue = `${config.publicUrlEspacePro}/offre/${offre._id}/provided`
@@ -190,12 +198,12 @@ export default ({ formulaire, mailer, etablissementsRecruteur, application, user
           },
         })
 
-        return res.json(result)
+        return res.json(updatedFormulaire)
       }
 
       // get CFA informations if formulaire is handled by a CFA
-      if (result.mandataire) {
-        contactCFA = await UserRecruteur.findOne({ siret: gestionnaire })
+      if (updatedFormulaire.mandataire) {
+        contactCFA = await usersRecruteur.getUser({ siret: gestionnaire })
       }
 
       // Send mail with action links to manage offers
@@ -209,7 +217,7 @@ export default ({ formulaire, mailer, etablissementsRecruteur, application, user
           nom: mandataire ? contactCFA.nom : nom,
           prenom: mandataire ? contactCFA.prenom : prenom,
           raison_sociale,
-          mandataire: result.mandataire,
+          mandataire: updatedFormulaire.mandataire,
           offre: pick(offre, ["rome_appellation_label", "date_debut_apprentissage", "type", "niveau"]),
           lba_url:
             config.env !== "recette"
@@ -218,7 +226,7 @@ export default ({ formulaire, mailer, etablissementsRecruteur, application, user
         },
       })
 
-      return res.json(result)
+      return res.json(updatedFormulaire)
     })
   )
 

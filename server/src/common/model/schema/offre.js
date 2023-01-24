@@ -58,7 +58,7 @@ export const offreSchema = mongooseInstance.Schema({
   statut: {
     type: String,
     default: "Active",
-    enum: ["Active", "Annulée", "Pourvue"],
+    enum: ["Active", "Annulée", "Pourvue", "En attente"],
     description: "Statut de l'offre",
   },
   raison_statut: {
