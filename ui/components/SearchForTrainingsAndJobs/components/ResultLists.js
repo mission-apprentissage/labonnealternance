@@ -47,7 +47,9 @@ const ResultLists = (props) => {
       return (
         <>
           {props.searchRadius < props.trainings[0].place.distance ? (
-            <div className="bold px-3 py-3">Aucune formation ne correspondait à votre zone de recherche, nous avons trouvé les plus proches</div>
+            <Box p={4} fontWeight={700}>
+              Aucune formation ne correspondait à votre zone de recherche, nous avons trouvé les plus proches
+            </Box>
           ) : (
             ""
           )}
@@ -59,7 +61,13 @@ const ResultLists = (props) => {
         </>
       )
     } else if (!props.isTrainingSearchLoading) {
-      return <ErrorMessage message="Problème momentané d'accès aux offres de formation" />
+      if (props.trainings.length === 0) {
+        return (
+          <Box mx={6} my={4} fontWeight={700}>
+            Aucune formation en alternance disponible pour ce métier
+          </Box>
+        )
+      } else return <ErrorMessage message="Problème momentané d'accès aux offres de formation" />
     }
   }
 
@@ -89,7 +97,7 @@ const ResultLists = (props) => {
                   {jobCount < 100 ? <ExtendedSearchButton title="Voir plus de résultats" handleExtendedSearch={props.handleExtendedSearch} /> : ""}
                 </>
               ) : (
-                <Box align="left" ml="5">
+                <Box m={6}>
                   <NoJobResult />
                   <ExtendedSearchButton title="Étendre la sélection" handleExtendedSearch={props.handleExtendedSearch} />
                 </Box>
@@ -101,10 +109,10 @@ const ResultLists = (props) => {
         if (extendedSearch) return <NoJobResult />
         else
           return (
-            <>
+            <Box m={6}>
               <NoJobResult />
               <ExtendedSearchButton title="Étendre la sélection" handleExtendedSearch={props.handleExtendedSearch} />
-            </>
+            </Box>
           )
       }
     } else {
