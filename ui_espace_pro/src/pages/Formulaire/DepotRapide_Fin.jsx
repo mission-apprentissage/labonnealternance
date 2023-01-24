@@ -1,6 +1,6 @@
 import { Box, Button, Circle, Flex, Heading, Link, Stack, Text, useToast } from "@chakra-ui/react"
 import dayjs from "dayjs"
-import { useContext, useEffect, useState } from "react"
+import { useContext, useState } from "react"
 import { useQuery, useQueryClient } from "react-query"
 import { useLocation, useNavigate } from "react-router-dom"
 import { getUser, sendValidationLink } from "../../api"
@@ -11,7 +11,7 @@ import { MailCloud } from "../../theme/components/logos"
 
 export default () => {
   const [disableLink, setDisableLink] = useState(false)
-  const [userIsValidated, setUserIsValidated] = useState(false)
+  const [userIsValidated, setUserIsValidated] = useState()
   const [title, setTitle] = useState("")
   const location = useLocation()
   const navigate = useNavigate()
@@ -22,37 +22,34 @@ export default () => {
   const { offre, email, withDelegation, fromDashboard, userId } = location.state
 
   useQuery("userdetail", () => getUser(userId), {
-    onSuccess: (data) => {
-      if (data.data.etat_utilisateur[0].statut === "VALIDÉ") {
-        setUserIsValidated(true)
+    onSettled: ({ data }) => {
+      const latestStatus = data.etat_utilisateur.pop().statut
+      switch (withDelegation) {
+        case true:
+          if (latestStatus === "VALIDÉ") {
+            setUserIsValidated(true)
+            setTitle("Félicitations,<br>votre offre a bien été créée et transmise aux organismes de formation que vous avez sélectionnés.")
+          } else {
+            setTitle(
+              "Félicitations,<br>votre offre a bien été créée.<br>Elle sera publiée et transmise aux organismes de formation que vous avez sélectionnés dès validation de votre compte."
+            )
+          }
+          break
+
+        case false:
+          if (latestStatus === "VALIDÉ") {
+            setUserIsValidated(true)
+            setTitle("Félicitations,<br>votre offre a bien été créée!")
+          } else {
+            setTitle("Félicitations,<br>votre offre a bien été créée.<br>Elle sera publiée dès validation de votre compte.")
+          }
+          break
+
+        default:
+          break
       }
     },
   })
-
-  const getTextualContext = () => {
-    switch (withDelegation) {
-      case true:
-        if (userIsValidated) {
-          setTitle("Félicitations,<br>votre offre a bien été créée et transmise aux organismes de formation que vous avez sélectionnés.")
-        } else {
-          setTitle(
-            "Félicitations,<br>votre offre a bien été créée.<br>Elle sera publiée et transmise aux organismes de formation que vous avez sélectionnés dès validation de votre compte."
-          )
-        }
-        break
-
-      case false:
-        if (userIsValidated) {
-          setTitle("Félicitations,<br>votre offre a bien été créée!")
-        } else {
-          setTitle("Félicitations,<br>votre offre a bien été créée.<br>Elle sera publiée dès validation de votre compte.")
-        }
-        break
-
-      default:
-        break
-    }
-  }
 
   const resendMail = (email) => {
     sendValidationLink({ email })
@@ -106,10 +103,12 @@ export default () => {
   const ValidatedAccountDescription = () => {
     return (
       <>
-        <Flex alignItems="flex-start" mb={6}>
+        <Flex alignItems="flex-start" mb={3}>
           <InfoCircle mr={2} mt={1} />
           <Box>
-            <Heading>Confirmez votre email</Heading>
+            <Heading fontSize="18px" pb={2}>
+              Confirmez votre email
+            </Heading>
             <Text textAlign="justify">
               Afin de finaliser la diffusion de votre besoin auprès des jeunes, merci de confirmer votre adresse mail en cliquant sur le lien que nous venons de vous transmettre à
               l’adresse suivante: <span style={{ fontWeight: "700" }}>{email}</span>.
@@ -128,7 +127,7 @@ export default () => {
   const AwaitingAccountDescription = () => {
     return (
       <Stack spacing={4} my={4}>
-        <Text>Voici les prochains étapes qui vous attendent :</Text>
+        <Text>Voici les prochaines étapes qui vous attendent :</Text>
         <Stack direction="row" spacing={4}>
           <Circle p={5} size="20px" bg="#E3E3FD" color="#000091" fontWeight="700">
             1
@@ -168,8 +167,6 @@ export default () => {
       </Stack>
     )
   }
-
-  useEffect(() => getTextualContext(), [withDelegation])
 
   return (
     <AuthentificationLayout fromDashboard={fromDashboard} onClose={onClose}>
