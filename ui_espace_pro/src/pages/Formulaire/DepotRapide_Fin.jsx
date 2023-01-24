@@ -107,22 +107,20 @@ export default () => {
     return (
       <>
         <Flex alignItems="flex-start" mb={6}>
-          <Stack>
-            <InfoCircle mr={2} mt={1} />
-            <Box>
-              <Heading>Confirmez votre email</Heading>
-              <Text textAlign="justify">
-                Afin de finaliser la diffusion de votre besoin auprès des jeunes, merci de confirmer votre adresse mail en cliquant sur le lien que nous venons de vous transmettre
-                à l’adresse suivante: <span style={{ fontWeight: "700" }}>{email}</span>.
-              </Text>
-            </Box>
-          </Stack>
-          <Flex align="center" ml={5} mb="16px">
-            <Text>Vous n’avez pas reçu le mail ? </Text>
-            <Button as={Link} variant="classic" textDecoration="underline" onClick={() => resendMail(email)} isDisabled={disableLink}>
-              Renvoyer le mail
-            </Button>
-          </Flex>
+          <InfoCircle mr={2} mt={1} />
+          <Box>
+            <Heading>Confirmez votre email</Heading>
+            <Text textAlign="justify">
+              Afin de finaliser la diffusion de votre besoin auprès des jeunes, merci de confirmer votre adresse mail en cliquant sur le lien que nous venons de vous transmettre à
+              l’adresse suivante: <span style={{ fontWeight: "700" }}>{email}</span>.
+            </Text>
+          </Box>
+        </Flex>
+        <Flex align="center" ml={5} mb="16px">
+          <Text>Vous n’avez pas reçu le mail ? </Text>
+          <Button as={Link} variant="classic" textDecoration="underline" onClick={() => resendMail(email)} isDisabled={disableLink}>
+            Renvoyer le mail
+          </Button>
         </Flex>
       </>
     )
