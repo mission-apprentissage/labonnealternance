@@ -163,8 +163,8 @@ export default ({ formulaire, mailer, etablissementsRecruteur, application, user
       const offre = req.body
       // get user activation state
       const user = await usersRecruteur.getUser({ id_form: req.params.id_form })
-      // if user is awaiting validation, update offre status to "En attente"
-      if (user.etat_utilisateur[0].statut === etat_utilisateur.ATTENTE) {
+      // upon user creation, if user is awaiting validation, update offre status to "En attente"
+      if (user.etat_utilisateur.length === 1 && user.etat_utilisateur[0].statut === etat_utilisateur.ATTENTE) {
         offre.statut = "En attente"
       }
 
