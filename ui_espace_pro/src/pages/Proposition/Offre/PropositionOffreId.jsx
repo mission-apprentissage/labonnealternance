@@ -1,14 +1,14 @@
 import { Accordion, AccordionButton, AccordionItem, AccordionPanel, Box, Button, Container, Flex, Heading, SimpleGrid, Stack, Text, useToast } from "@chakra-ui/react"
 import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
-import { getFormulaire } from "../../../api"
+import { getFormulaire, patchOffre } from "../../../api"
 import { dayjs } from "../../../common/dayjs"
 import { LoadingEmptySpace } from "../../../components"
 import style from "../../../components/Voeux.module.css"
 import { Copy, InfoCircle, Minus, Plus } from "../../../theme/components/icons"
 
 export const PropositionOffreId = () => {
-  const { idFormulaire, idOffre } = useParams()
+  const { idFormulaire, idOffre, siretFormateur } = useParams()
   const toast = useToast()
 
   const [offre, setOffre] = useState()
@@ -40,6 +40,14 @@ export const PropositionOffreId = () => {
     const { data } = await getFormulaire(idFormulaire)
 
     const offre = data.offres.find((offre) => offre._id === idOffre)
+
+    if (siretFormateur) {
+      await patchOffre({
+        formId: offre._id,
+        data: { cfa_read_company_detail_at: new Date() },
+        config: { params: { siret_formateur: siretFormateur } },
+      })
+    }
 
     setFormulaire(data)
     setOffre(offre)

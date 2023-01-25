@@ -240,9 +240,11 @@ export default ({ formulaire, mailer, etablissementsRecruteur, application, user
       const { idOffre } = req.params
 
       const offreDocument = await formulaire.getOffre(idOffre)
-      const offre = offreDocument.offres.find((offre) => offre._id.toString() === idOffre)
+      let offre = offreDocument.offres.find((offre) => offre._id.toString() === idOffre)
 
       const { etablissements } = await getCatalogueEtablissements({ _id: { $in: etablissementCatalogueIds } })
+
+      const delegations = []
 
       const promises = etablissements.map(async (etablissement) => {
         const { formations } = await getCatalogueFormations(
@@ -258,8 +260,12 @@ export default ({ formulaire, mailer, etablissementsRecruteur, application, user
             etablissement_gestionnaire_courriel: { $nin: [null, ""] },
             catalogue_published: true,
           },
-          { etablissement_gestionnaire_courriel: 1 }
+          { etablissement_gestionnaire_courriel: 1, etablissement_formateur_siret: 1 }
         )
+
+        const siret = formations[0].etablissement_formateur_siret
+
+        delegations.push({ siret })
 
         await mailer.sendEmail({
           to: formations[0].etablissement_gestionnaire_courriel,
@@ -273,13 +279,19 @@ export default ({ formulaire, mailer, etablissementsRecruteur, application, user
             startDate: dayjs(offre.date_debut_apprentissage).format("DD/MM/YYYY"),
             duration: offre.duree_contrat,
             rhythm: offre.rythme_alternance,
-            offerButton: `${config.publicUrlEspacePro}/proposition/formulaire/${offreDocument.id_form}/offre/${offre._id}`,
+            offerButton: `${config.publicUrlEspacePro}/proposition/formulaire/${offreDocument.id_form}/offre/${offre._id}/siret/${siret}`,
             createAccountButton: `${config.publicUrlEspacePro}/creation/cfa`,
           },
         })
       })
 
       await Promise.all(promises)
+
+      offre.delegate = true
+      offre.number_of_delegations = etablissements.length
+      offre.delegations = offre?.delegations.concat(delegations) || delegations
+
+      await formulaire.updateOffre(idOffre, offre)
 
       return res.json(offre)
     })

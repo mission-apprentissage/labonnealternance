@@ -12,7 +12,6 @@
 - sur Mac, s’assurer que Docker Desktop alloue suffisamment de ressources : CPUs: 6, Memory: 12GB, Swap: 3GB, Disk size image : 48GB. L'option est disponible sous Docker Desktop sous Preferences/Resources.
 - Alimenter les .env dans les dossiers "server" et "ui_espace_pro" - demander de l'aide à l'équipe.
 
-
 ## 2. Démarrage
 
 Pour créer l'application :
@@ -32,22 +31,18 @@ Il est possible qu'il y ait une erreur mémoire à la fin du make start, relance
 
 ## 4. Provision des données entreprises
 
- - Cette partie est manquante pour l'instant.
+- Cette partie est manquante pour l'instant.
 
 ## 5. Utiliser des bouchons
 
- - En utilisant le query parameter "useMock=true" dans l'URL, des bouchons sont renvoyés pour les formations et les entreprises.
+- En utilisant le query parameter "useMock=true" dans l'URL, des bouchons sont renvoyés pour les formations et les entreprises.
 
 ## 6. Accéder à l'UI en local
 
- - l'application est accessible à l'url [http://localhost](http://localhost)
+- l'application est accessible à l'url [http://localhost](http://localhost)
 
 ## 7. Accéder aux emails en local
 
- - localhost/smtp (authentification HTTP simple)
-
-
-
-
+- localhost/smtp (authentification HTTP simple)
 
 ![Marianne](https://avatars1.githubusercontent.com/u/63645182?s=200&v=4)

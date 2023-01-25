@@ -136,7 +136,11 @@ const App = () => {
         <Route path="/creation/offre" element={<DepotRapide_AjouterVoeux />} />
         <Route path="/creation/mise-en-relation" element={<DepotRapide_AjouterVoeuxMiseEnRelation />} />
         <Route path="/creation/fin" element={<DepotRapide_Fin />} />
+        {/* Deprecated route, can be deleted on 03/2023 */}
         <Route path="/proposition/formulaire/:idFormulaire/offre/:idOffre" element={<Layout displayNavigationMenu={false} />}>
+          <Route index element={<PropositionOffreId />} />
+        </Route>
+        <Route path="/proposition/formulaire/:idFormulaire/offre/:idOffre/siret/:siretFormateur" element={<Layout displayNavigationMenu={false} />}>
           <Route index element={<PropositionOffreId />} />
         </Route>
         <Route path="/authentification/confirmation" element={<ConfirmationCreationCompte />} />

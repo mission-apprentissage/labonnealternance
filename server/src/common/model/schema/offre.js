@@ -80,6 +80,31 @@ export const offreSchema = mongooseInstance.Schema({
     type: Boolean,
     description: "Definit si l'entreprise souhaite déléguer l'offre à un CFA",
   },
+  number_of_delegations: {
+    type: Number,
+    description: "Nombre de délégations",
+  },
+  delegations: {
+    type: "array",
+    description: "Liste des délégations",
+    required: false,
+    items: {
+      type: "object",
+      required: false,
+      properties: {
+        siret: {
+          type: "string",
+          default: null,
+          description: "SIRET de l'établissement",
+        },
+        cfa_read_company_detail_at: {
+          type: Date,
+          default: null,
+          description: "Date de consultation de l'offre",
+        },
+      },
+    },
+  },
   elligible_handicap: {
     type: Boolean,
     description: "Poste ouvert aux personnes en situation de handicap",
