@@ -43,8 +43,14 @@ export default ({ data, datasetName = "export" }) => {
       }
     })
     .map((x) => {
-      return { ...x, siret: `"${x.siret}"`, telephone: `"${x.telephone}"` }
+      return {
+        ...x,
+        siret: `"${x.siret}"`,
+        telephone: `"${x.telephone}"`,
+        description: x?.description ? x.description.replace(/(\n|\r|[,.!?;:'-])/g, " ") : undefined,
+      }
     })
+
   let fileName = `${datasetName}_${new Date().toJSON()}.csv`
 
   return (
