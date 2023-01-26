@@ -46,12 +46,10 @@ const ResultLists = (props) => {
     if (props.trainings.length) {
       return (
         <>
-          {props.searchRadius < props.trainings[0].place.distance ? (
-            <Box p={4} fontWeight={700}>
+          {props.searchRadius < props.trainings[0].place.distance && (
+            <Box fontWeight={700} ml={4} px={4} py={4}>
               Aucune formation ne correspondait à votre zone de recherche, nous avons trouvé les plus proches
             </Box>
-          ) : (
-            ""
           )}
           {props.trainings.map((training, idx) => {
             const isCfa = isCfaEntreprise(training?.company?.siret, training?.company?.headquarter?.siret)

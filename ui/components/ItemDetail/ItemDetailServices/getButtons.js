@@ -38,13 +38,7 @@ export const buildPrdvButton = (training) => {
   }
 
   return (
-    <Box
-      className="widget-prdv"
-      data-referrer="lba"
-      data-id-cle-ministere-educatif={training.cleMinistereEducatif}
-      data-id-rco-formation={training.idRcoFormation}
-      onClick={onClickPrdv}
-    >
+    <Box onClick={onClickPrdv}>
       <Link variant="postuler" isExternal href={training.prdvUrl}>
         Je prends rendez-vous
       </Link>

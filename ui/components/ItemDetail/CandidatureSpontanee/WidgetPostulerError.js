@@ -1,3 +1,4 @@
+import { Box } from "@chakra-ui/react"
 import React from "react"
 
 const WidgetPostulerError = ({ hasError }) => {
@@ -24,7 +25,13 @@ const WidgetPostulerError = ({ hasError }) => {
     }
   }
 
-  return hasError ? <div className="text-center my-2">{getErrorText()}</div> : ""
+  return (
+    hasError && (
+      <Box width="250px" textAlign="center" m="auto" my={8}>
+        {getErrorText()}
+      </Box>
+    )
+  )
 }
 
 export default WidgetPostulerError

@@ -9,10 +9,35 @@ import { isNonEmptyString } from "../../utils/strutils"
 import { getValueFromPath } from "../../utils/tools"
 import { testingParameters } from "../../utils/testingParameters"
 import { useRouter } from "next/router"
+import { Box, Button, Flex, FormLabel, Input, Spacer, Text, Textarea } from "@chakra-ui/react"
 
 let iv = null
 let id = null
 let intention = null
+
+const textAreaProperties = {
+  border: "none",
+  background: "grey.200",
+  borderRadius: "4px 4px 0px 0px",
+  width: "100%",
+  height: "110px",
+  paddingLeft: 4,
+  borderBottom: "2px solid",
+}
+
+const inputProperties = {
+  border: "none",
+  background: "grey.200",
+  borderRadius: "4px 4px 0px 0px",
+  width: { base: "100%", md: "280px", lg: "380px" },
+  height: "40px",
+  paddingLeft: 4,
+  borderBottom: "2px solid",
+}
+
+const getFieldColor = (status) => {
+  return status === "is-valid-true" ? "#008941" : status === "is-valid-false" ? "#e10600" : "grey.600"
+}
 
 const SatisfactionForm = ({ formType }) => {
   const router = useRouter()
@@ -33,42 +58,42 @@ const SatisfactionForm = ({ formType }) => {
     let firstName = fn
     let lastName = ln
     let text = (
-      <div className="mb-4">
-        <p className="pt-4">Merci beaucoup pour votre réponse.</p>
-        {intention === "entretien" ? (
-          <div>
-            <strong>Vous avez indiqué accepter la candidature de {`${firstName} ${lastName}`}.</strong>
-            <p className="pt-4 pb-0 mb-0">Planifiez une date de rencontre avec le candidat, en lui envoyant un message personnalisé.</p>
-            <p>
-              <small className="satisfaction-smallhint">Le candidat recevra votre message ainsi que vos coordonnées directement sur sa boîte mail.</small>
-            </p>
-          </div>
-        ) : (
-          ""
+      <Box width="100%" maxWidth="800px" mb={8}>
+        <Text pt={8}>Merci beaucoup pour votre réponse.</Text>
+        {intention === "entretien" && (
+          <Box>
+            <Text fontWeight={700}>Vous avez indiqué accepter la candidature de {`${firstName} ${lastName}`}.</Text>
+            <Text pt={8}>Planifiez une date de rencontre avec le candidat, en lui envoyant un message personnalisé.</Text>
+            <Text>
+              <Text as="small" color="grey.425">
+                Le candidat recevra votre message ainsi que vos coordonnées directement sur sa boîte mail.
+              </Text>
+            </Text>
+          </Box>
         )}
-        {intention === "ne_sais_pas" ? (
-          <div>
-            <strong>Vous avez indiqué temporiser la candidature de {`${firstName} ${lastName}`}.</strong>
-            <p className="pt-4 pb-0 mb-0">Précisez au candidat votre intérêt pour sa candidature, en lui envoyant un message personnalisé.</p>
-            <p>
-              <small className="satisfaction-smallhint">Le candidat recevra votre message ainsi que vos coordonnées directement sur sa boîte mail.</small>
-            </p>
-          </div>
-        ) : (
-          ""
+        {intention === "ne_sais_pas" && (
+          <Box>
+            <Text fontWeight={700}>Vous avez indiqué temporiser la candidature de {`${firstName} ${lastName}`}.</Text>
+            <Text pt={8}>Précisez au candidat votre intérêt pour sa candidature, en lui envoyant un message personnalisé.</Text>
+            <Text>
+              <Text as="small" color="grey.425">
+                Le candidat recevra votre message ainsi que vos coordonnées directement sur sa boîte mail.
+              </Text>
+            </Text>
+          </Box>
         )}
-        {intention === "refus" ? (
-          <div>
-            <strong>Vous avez indiqué refuser la candidature de {`${firstName} ${lastName}`}.</strong>
-            <p className="pt-4 pb-0 mb-0">Précisez les raisons de votre refus au candidat, en lui envoyant un message personnalisé.</p>
-            <p>
-              <small className="satisfaction-smallhint">Le candidat recevra votre message directement sur sa boîte mail.</small>
-            </p>
-          </div>
-        ) : (
-          ""
+        {intention === "refus" && (
+          <Box>
+            <Text fontWeight={700}>Vous avez indiqué refuser la candidature de {`${firstName} ${lastName}`}.</Text>
+            <Text pt={8}>Précisez les raisons de votre refus au candidat, en lui envoyant un message personnalisé.</Text>
+            <Text>
+              <Text as="small" color="grey.425">
+                Le candidat recevra votre message directement sur sa boîte mail.
+              </Text>
+            </Text>
+          </Box>
         )}
-      </div>
+      </Box>
     )
 
     return text
@@ -119,16 +144,20 @@ const SatisfactionForm = ({ formType }) => {
     },
   })
 
+  const getErrorForMessage = (message) => {
+    return (
+      <Box mb={message ? 2 : 0} lineHeight="20px" fontSize="12px" color="#e10600" visibility={message ? "visible" : "hidden !important"}>
+        {message || "pas d'erreur"}
+      </Box>
+    )
+  }
+
   const getFieldError = () => {
-    let errorMsg = ""
-    if (formik.touched.comment && formik.errors.comment) {
-      errorMsg = <div className="c-candidature-erreur mb-2 visible">{formik.errors.comment}</div>
-    } else if (sendingState === "not_sent_because_of_errors") {
-      errorMsg = <div className="c-candidature-erreur mb-2 visible">Une erreur technique empêche l&apos;enregistrement de votre avis. Merci de réessayer ultérieurement</div>
-    } else {
-      errorMsg = <div className="c-candidature-erreur invisible">{"pas d'erreur"}</div>
-    }
-    return errorMsg
+    let message = ""
+    if (formik.touched.comment && formik.errors.comment) message = formik.errors.comment
+    else if (sendingState === "not_sent_because_of_errors") message = "Une erreur technique empêche l'enregistrement de votre avis. Merci de réessayer ultérieurement"
+
+    return getErrorForMessage(message)
   }
 
   const getPlaceHolderText = () => {
@@ -146,7 +175,7 @@ const SatisfactionForm = ({ formType }) => {
     return res
   }
 
-  const getErrorClassFor = (formikObj, target) => {
+  const getFieldStatus = (formikObj, target) => {
     let res = "is-not-validated"
     if (formikObj.errors[target]) {
       res = "is-valid-false"
@@ -156,90 +185,84 @@ const SatisfactionForm = ({ formType }) => {
     return res
   }
 
+  const commentFieldStatus = getFieldStatus(formik, "comment")
+  const emailFieldStatus = getFieldStatus(formik, "email")
+  const phoneFieldStatus = getFieldStatus(formik, "phone")
+
   return (
-    <div className="c-formulaire-satisfaction">
+    <Box>
       <SatisfactionFormNavigation />
       {sendingState !== "ok_sent" ? (
-        <div className="container flex-center">
-          <div className="row flex-center py-5">
-            <div className="col col-lg-7 mx-auto">
-              {getFeedbackText()}
-              {isNonEmptyString(readIntention()) ? (
-                <form onSubmit={formik.handleSubmit} className="">
-                  <fieldset data-testid="fieldset-message" className={`pt-2 c-candidature-field ${getErrorClassFor(formik, "comment")}`}>
-                    <textarea
-                      id="comment"
-                      data-testid="comment"
-                      name="comment"
-                      placeholder={`${getPlaceHolderText()}`}
-                      onBlur={formik.handleBlur}
-                      onChange={formik.handleChange}
-                      value={formik.values.comment}
-                    />
-                  </fieldset>
-                  {getFieldError()}
+        <Flex direction="column" width="80%" maxWidth="992px" margin="auto" pt={12} alignItems="center" data-testid="SatisfactionFormSuccess">
+          {getFeedbackText()}
+          {isNonEmptyString(readIntention()) && (
+            <Box width="100%" maxWidth="800px">
+              <form onSubmit={formik.handleSubmit}>
+                <Box pt={2} data-testid="fieldset-message">
+                  <Textarea
+                    id="comment"
+                    data-testid="comment"
+                    name="comment"
+                    placeholder={`${getPlaceHolderText()}`}
+                    onBlur={formik.handleBlur}
+                    onChange={formik.handleChange}
+                    value={formik.values.comment}
+                    {...textAreaProperties}
+                    borderBottomColor={getFieldColor(commentFieldStatus)}
+                  />
+                </Box>
+                {getFieldError()}
 
-                  {readIntention() !== "refus" ? (
-                    <div className="c-candidature-personaldata d-flex flex-column flex-md-row justify-content-between">
-                      <div>
-                        <fieldset data-testid="fieldset-email" className={`mt-1 mt-md-0 mr-0 mr-md-3 c-candidature-field ${getErrorClassFor(formik, "email")}`}>
-                          <label htmlFor="email">E-mail *</label>
-                          <input
-                            id="email"
-                            className="w-100"
-                            data-testid="email"
-                            name="email"
-                            type="email"
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            value={formik.values.email || ""}
-                          />
-                          {formik.errors.email ? (
-                            <div className="c-candidature-erreur visible">{formik.errors.email}</div>
-                          ) : (
-                            <div className="c-candidature-erreur invisible">{"pas d'erreur"}</div>
-                          )}
-                          {testingParameters?.simulatedRecipient ? <div>Les emails seront envoyés à {testingParameters.simulatedRecipient}</div> : ""}
-                        </fieldset>
-                      </div>
+                {readIntention() !== "refus" && (
+                  <Flex direction={{ base: "column", md: "row" }}>
+                    <Box data-testid="fieldset-email" mt={{ base: 1, md: 0 }} mr={{ base: 0, md: 4 }}>
+                      <FormLabel htmlFor="email">E-mail *</FormLabel>
+                      <Input
+                        id="email"
+                        data-testid="email"
+                        name="email"
+                        type="email"
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        value={formik.values.email || ""}
+                        {...inputProperties}
+                        borderBottomColor={getFieldColor(emailFieldStatus)}
+                      />
+                      {getErrorForMessage(formik.errors.email)}
+                      {testingParameters?.simulatedRecipient ? <div>Les emails seront envoyés à {testingParameters.simulatedRecipient}</div> : ""}
+                    </Box>
+                    <Spacer minWidth={4} />
+                    <Box data-testid="fieldset-phone" mt={{ base: 1, md: 0 }} mr={{ base: 0, md: 4 }}>
+                      <FormLabel htmlFor="phone">Téléphone *</FormLabel>
+                      <Input
+                        id="phone"
+                        data-testid="phone"
+                        name="phone"
+                        type="text"
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        value={formik.values.phone || ""}
+                        {...inputProperties}
+                        borderBottomColor={getFieldColor(phoneFieldStatus)}
+                      />
+                      {getErrorForMessage(formik.errors.phone)}
+                    </Box>
+                  </Flex>
+                )}
 
-                      <div>
-                        <fieldset data-testid="fieldset-phone" className={`mt-1 mt-md-0 c-candidature-field ${getErrorClassFor(formik, "phone")}`}>
-                          <label htmlFor="email">Téléphone *</label>
-                          <input
-                            id="phone"
-                            className="w-100"
-                            data-testid="phone"
-                            name="phone"
-                            type="text"
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            value={formik.values.phone || ""}
-                          />
-                          {formik.errors.phone ? <div className="c-candidature-erreur visible">{formik.errors.phone}</div> : <div className="invisible">{"pas d'erreur"}</div>}
-                        </fieldset>
-                      </div>
-                    </div>
-                  ) : (
-                    ""
-                  )}
-
-                  <div className="d-flex flex-row-reverse">
-                    <button aria-label="Envoyer le message au candidat" className={`btn btn-dark btn-dark-action c-satisfaction-submit mt-3`} type="submit">
-                      {"Envoyer le message"}
-                    </button>
-                  </div>
-                </form>
-              ) : (
-                ""
-              )}
-            </div>
-          </div>
-        </div>
+                <Flex direction="row-reverse">
+                  <Button mt={4} variant="blackButton" aria-label="Envoyer le message au candidat" type="submit">
+                    {"Envoyer le message"}
+                  </Button>
+                </Flex>
+              </form>
+            </Box>
+          )}
+        </Flex>
       ) : (
         <SatisfactionFormSuccess />
       )}
-    </div>
+    </Box>
   )
 }
 

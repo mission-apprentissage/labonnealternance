@@ -1,7 +1,6 @@
 import ScrollToTop from "./ScrollToTop"
 import AutoCompleteField from "./AutoCompleteField"
-import LogoIdea from "./LogoIdea"
-import RadioButton from "./RadioButton"
+import LogoLBA from "./LogoLBA"
 import ErrorMessage from "./ErrorMessage"
 import LoadingScreen from "./LoadingScreen"
 import StartForm from "./StartForm"
@@ -10,10 +9,9 @@ import { ItemDetail, Job, PeJobDetail, MatchaDetail, Training, TrainingDetail, L
 
 export {
   ItemDetail,
-  RadioButton,
   AutoCompleteField,
   ScrollToTop,
-  LogoIdea,
+  LogoLBA,
   Job,
   MatchaDetail,
   PeJobDetail,

@@ -3,9 +3,9 @@ import React, { useEffect, useState } from "react"
 import { initPostulerParametersFromQuery } from "services/config"
 import WidgetPostulerError from "./WidgetPostulerError"
 
-import { Spinner } from "reactstrap"
 import { companyApi, matchaApi } from "../../SearchForTrainingsAndJobs/services/utils"
 import WidgetCandidatureSpontanee from "./WidgetCandidatureSpontanee"
+import { Flex, Spinner } from "@chakra-ui/react"
 
 const WidgetPostuler = () => {
   useEffect(() => {
@@ -63,10 +63,10 @@ const WidgetPostuler = () => {
   return hasError ? (
     <WidgetPostulerError hasError={hasError} />
   ) : isLoading ? (
-    <div className="text-center my-2">
-      <Spinner className="mb-3" />
+    <Flex alignItems="center" m="auto" width="250px" my={8}>
+      <Spinner mr={4} />
       Veuillez patienter
-    </div>
+    </Flex>
   ) : (
     <WidgetCandidatureSpontanee item={item} caller={caller} />
   )
