@@ -240,6 +240,9 @@ export default ({ formulaire, mailer, etablissementsRecruteur, application, user
       const { idOffre } = req.params
 
       const offreDocument = await formulaire.getOffre(idOffre)
+      const userDocument = await usersRecruteur.getUser({ id_form: offreDocument.id_form })
+      const userState = userDocument.etat_utilisateur.pop()
+
       let offre = offreDocument.offres.find((offre) => offre._id.toString() === idOffre)
 
       const { etablissements } = await getCatalogueEtablissements({ _id: { $in: etablissementCatalogueIds } })
@@ -263,26 +266,28 @@ export default ({ formulaire, mailer, etablissementsRecruteur, application, user
           { etablissement_gestionnaire_courriel: 1, etablissement_formateur_siret: 1 }
         )
 
-        const siret = formations[0].etablissement_formateur_siret
+        const { etablissement_formateur_siret: siret, etablissement_gestionnaire_courriel: email } = formations[0]
 
-        delegations.push({ siret })
+        delegations.push({ siret, email })
 
-        await mailer.sendEmail({
-          to: formations[0].etablissement_gestionnaire_courriel,
-          subject: `Une entreprise recrute dans votre domaine`,
-          template: mailTemplate["mail-cfa-delegation"],
-          data: {
-            enterpriseName: offreDocument.raison_sociale,
-            jobName: offre.rome_appellation_label,
-            contractType: offre.type[0],
-            trainingLevel: offre.niveau,
-            startDate: dayjs(offre.date_debut_apprentissage).format("DD/MM/YYYY"),
-            duration: offre.duree_contrat,
-            rhythm: offre.rythme_alternance,
-            offerButton: `${config.publicUrlEspacePro}/proposition/formulaire/${offreDocument.id_form}/offre/${offre._id}/siret/${siret}`,
-            createAccountButton: `${config.publicUrlEspacePro}/creation/cfa`,
-          },
-        })
+        if (userState.statut === etat_utilisateur.VALIDE) {
+          await mailer.sendEmail({
+            to: email,
+            subject: `Une entreprise recrute dans votre domaine`,
+            template: mailTemplate["mail-cfa-delegation"],
+            data: {
+              enterpriseName: offreDocument.raison_sociale,
+              jobName: offre.rome_appellation_label,
+              contractType: offre.type.join(", "),
+              trainingLevel: offre.niveau,
+              startDate: dayjs(offre.date_debut_apprentissage).format("DD/MM/YYYY"),
+              duration: offre.duree_contrat,
+              rhythm: offre.rythme_alternance,
+              offerButton: `${config.publicUrlEspacePro}/proposition/formulaire/${offreDocument.id_form}/offre/${offre._id}/siret/${siret}`,
+              createAccountButton: `${config.publicUrlEspacePro}/creation/cfa`,
+            },
+          })
+        }
       })
 
       await Promise.all(promises)
