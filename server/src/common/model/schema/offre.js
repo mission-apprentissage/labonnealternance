@@ -85,17 +85,22 @@ export const offreSchema = mongooseInstance.Schema({
     description: "Nombre de délégations",
   },
   delegations: {
-    type: "array",
+    type: Array,
     description: "Liste des délégations",
     required: false,
     items: {
-      type: "object",
+      type: Object,
       required: false,
       properties: {
         siret: {
-          type: "string",
+          type: String,
           default: null,
           description: "SIRET de l'établissement",
+        },
+        email: {
+          type: String,
+          default: null,
+          description: "Email gestionnaire de l'établissement",
         },
         cfa_read_company_detail_at: {
           type: Date,
