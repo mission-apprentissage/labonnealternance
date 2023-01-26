@@ -1,5 +1,4 @@
 import axios from "axios"
-import { SendTrackEvent } from "utils/plausible"
 import { logError } from "utils/tools"
 
 import { getRncpsFromParameters, getRomeFromParameters, trainingErrorText, trainingsApi } from "../../SearchForTrainingsAndJobs/services/utils"
@@ -41,16 +40,6 @@ export const searchForTrainingsFunction = async ({
     if (response.data.result === "error") {
       logError("Training Search Error", `${response.data.message}`)
       setTrainingSearchError(trainingErrorText)
-    } else {
-      if (values?.job?.type) {
-        try {
-          SendTrackEvent({
-            event: `Résultat recherche formation par ${values.job.type === "job" ? "Métier" : "Diplôme"}`,
-            label: values.job.label,
-            nb_formations: response.data.results.length,
-          })
-        } catch (err) {}
-      }
     }
 
     setTrainings(response.data.results)
