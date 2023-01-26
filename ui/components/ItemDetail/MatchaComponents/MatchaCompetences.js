@@ -2,10 +2,7 @@ import { AddIcon, MinusIcon } from "@chakra-ui/icons"
 import { Accordion, AccordionButton, AccordionItem, AccordionPanel, Box, Text } from "@chakra-ui/react"
 import React from "react"
 
-import { Collapse } from "reactstrap"
-
 const MatchaCompetences = ({ job }) => {
-  // Collapse Open state
   const [isOpen, setIsOpen] = React.useState(false)
 
   const getText = () => {

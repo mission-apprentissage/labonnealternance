@@ -90,6 +90,7 @@ const LbbCompany = ({ company, handleSelectItem, showTextOnly, searchForTraining
   const actualLink = `/recherche-apprentissage?display=list&page=fiche&${getItemQueryParameters(company)}&${getSearchQueryParameters(formValues)}`
 
   let cardProperties = {
+    display: "block",
     color: "grey.650",
     cursor: "pointer",
     bg: "white",

@@ -63,7 +63,7 @@ const WidgetCandidatureSpontanee = (props) => {
   })
 
   return (
-    <Box my={4} className="c-candidature__widget" data-testid="CandidatureSpontanee">
+    <Box my={4} width="100%" data-testid="CandidatureSpontanee">
       {!with_str(sendingState).amongst(["ok_sent"]) && hasAlreadySubmittedCandidature({ applied }) ? (
         <Container maxW="2xl">{getAPostuleMessage()}</Container>
       ) : (

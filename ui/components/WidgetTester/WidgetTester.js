@@ -3,11 +3,10 @@ import React, { useState } from "react"
 import { fetchAddresses } from "../../services/baseAdresse"
 import domainChanged from "../../services/domainChanged"
 import { AutoCompleteField, autoCompleteToStringFunction, compareAutoCompleteValues } from "../AutoCompleteField/AutoCompleteField"
-import RadioButton from "../RadioButton"
-import { GridItem, Grid, Container, Button, Box, Text, Link, Input } from "@chakra-ui/react"
+import { GridItem, Grid, Container, Button, Box, Text, Link, Input, Radio, RadioGroup, Stack } from "@chakra-ui/react"
 
 const WidgetTester = () => {
-  const [locationRadius, setLocationRadius] = useState(0)
+  const [locationRadius, setLocationRadius] = useState("0")
   const [scope, setScope] = useState("")
   const [frozenJob, setFrozenJob] = useState("")
   const [widgetParams, setWidgetParams] = useState(null)
@@ -25,14 +24,6 @@ const WidgetTester = () => {
     let res = await fetchAddresses(val)
     setLoadingState("done")
     return res
-  }
-
-  const getRadioButton = (inputName, value, label, selectedValue, setFieldValue, handleChange) => {
-    return (
-      <GridItem>
-        <RadioButton inputName={inputName} handleChange={handleChange} value={value} label={label} selectedValue={selectedValue} setFieldValue={setFieldValue} />
-      </GridItem>
-    )
   }
 
   const handleRadiusChange = (radius, setFieldValue) => {
@@ -78,15 +69,15 @@ const WidgetTester = () => {
   }
 
   const showSearchCenter = () => {
-    return shownSearchCenter && shownSearchCenter.value && shownSearchCenter.value.coordinates ? (
-      <Box>{`Lat : ${shownSearchCenter.value.coordinates[1]} - Lon : ${shownSearchCenter.value.coordinates[0]}`}</Box>
-    ) : (
-      ""
+    return (
+      shownSearchCenter &&
+      shownSearchCenter.value &&
+      shownSearchCenter.value.coordinates && <Box>{`Lat : ${shownSearchCenter.value.coordinates[1]} - Lon : ${shownSearchCenter.value.coordinates[0]}`}</Box>
     )
   }
 
   const showSelectedRomes = () => {
-    return shownRomes && shownRomes.romes ? <Box>{`Romes : ${shownRomes.romes.join()}`}</Box> : ""
+    return shownRomes && shownRomes.romes && <Box>{`Romes : ${shownRomes.romes.join()}`}</Box>
   }
 
   const handleSearchSubmit = async (values) => {
@@ -217,13 +208,21 @@ const WidgetTester = () => {
                     </Box>
                     <Field type="hidden" value={locationRadius} name="locationRadius" />
                     <Box>
-                      <Grid templateColumns={{ base: "1fr", md: "repeat(3, 1fr)" }}>
-                        <GridItem colSpan={{ base: 1, md: 1 }}>{getRadioButton("locationRadius", 0, "Non défini", locationRadius, setFieldValue, handleRadiusChange)}</GridItem>
-                        <GridItem colSpan={{ base: 1, md: 1 }}>{getRadioButton("locationRadius", 10, "10km", locationRadius, setFieldValue, handleRadiusChange)}</GridItem>
-                        <GridItem colSpan={{ base: 1, md: 1 }}>{getRadioButton("locationRadius", 30, "30km", locationRadius, setFieldValue, handleRadiusChange)}</GridItem>
-                        <GridItem colSpan={{ base: 1, md: 1 }}>{getRadioButton("locationRadius", 60, "60km", locationRadius, setFieldValue, handleRadiusChange)}</GridItem>
-                        <GridItem colSpan={{ base: 1, md: 1 }}>{getRadioButton("locationRadius", 100, "100km", locationRadius, setFieldValue, handleRadiusChange)}</GridItem>
-                      </Grid>
+                      <RadioGroup
+                        value={locationRadius}
+                        onChange={(value) => {
+                          setLocationRadius(value)
+                          handleRadiusChange(value, setFieldValue)
+                        }}
+                      >
+                        <Stack direction="row">
+                          <Radio value="0">Non défini</Radio>
+                          <Radio value="10">10km</Radio>
+                          <Radio value="30">30km</Radio>
+                          <Radio value="60">60km</Radio>
+                          <Radio value="100">100km</Radio>
+                        </Stack>
+                      </RadioGroup>
                     </Box>
                   </Box>
                 </GridItem>
@@ -235,11 +234,19 @@ const WidgetTester = () => {
                     </Box>
                     <Field type="hidden" value={scope} name="scope" />
                     <Box>
-                      <Grid templateColumns={{ base: "1fr", md: "repeat(3, 1fr)" }}>
-                        <GridItem colSpan={{ base: 1, md: 1 }}>{getRadioButton("scope", "", "Tout", scope, setFieldValue, handleScopeChange)}</GridItem>
-                        <GridItem colSpan={{ base: 1, md: 1 }}>{getRadioButton("scope", "training", "Formations uniquement", scope, setFieldValue, handleScopeChange)}</GridItem>
-                        <GridItem colSpan={{ base: 1, md: 1 }}>{getRadioButton("scope", "job", "Emplois uniquement", scope, setFieldValue, handleScopeChange)}</GridItem>
-                      </Grid>
+                      <RadioGroup
+                        value={scope}
+                        onChange={(value) => {
+                          setScope(value)
+                          handleScopeChange(value, setFieldValue)
+                        }}
+                      >
+                        <Stack direction="row">
+                          <Radio value="">Tout</Radio>
+                          <Radio value="training">Formations uniquement</Radio>
+                          <Radio value="job">Emplois uniquement</Radio>
+                        </Stack>
+                      </RadioGroup>
                     </Box>
                   </Box>
                 </GridItem>
@@ -271,10 +278,18 @@ const WidgetTester = () => {
                     </Box>
                     <Field type="hidden" value={scope} name="scope" />
                     <Box>
-                      <Grid templateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }}>
-                        <GridItem colSpan={{ base: 1, md: 1 }}>{getRadioButton("frozen_job", "", "Non", frozenJob, setFieldValue, handleFrozenChange)}</GridItem>
-                        <GridItem colSpan={{ base: 1, md: 1 }}>{getRadioButton("frozen_job", "1", "Oui", frozenJob, setFieldValue, handleFrozenChange)}</GridItem>
-                      </Grid>
+                      <RadioGroup
+                        value={frozenJob}
+                        onChange={(value) => {
+                          setFrozenJob(value)
+                          handleFrozenChange(value, setFieldValue)
+                        }}
+                      >
+                        <Stack direction="row">
+                          <Radio value="">Non</Radio>
+                          <Radio value="1">Oui</Radio>
+                        </Stack>
+                      </RadioGroup>
                     </Box>
                     <Text variant="defaultAutocomplete">
                       L&apos;utilisateur ne pourra pas faire une recherche sur d&apos;autres métiers (romes) que ceux que vous avez spécifiés.

@@ -374,7 +374,7 @@ const SearchForTrainingsAndJobs = () => {
   let mapDisplayParameters = visiblePane === "resultMap" ? "block" : ["none", "none", "block"]
 
   return (
-    <Flex direction="column" sx={{ height: "100vh" }} className="page demoPage">
+    <Flex direction="column" sx={{ height: "100vh" }}>
       <InitWidgetSearchParameters handleSearchSubmit={handleSearchSubmit} handleItemLoad={handleItemLoad} setIsLoading={setIsLoading} />
       <WidgetHeader handleSearchSubmit={handleSearchSubmit} />
       <Flex direction="row" overflow="hidden" height="100%">

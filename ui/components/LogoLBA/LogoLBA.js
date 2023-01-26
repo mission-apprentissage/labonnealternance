@@ -1,10 +1,11 @@
 import React from "react"
-import Link from "next/link"
+import NextLink from "next/link"
 import logoLBA from "../../public/images/logo-violet-seul.svg"
 import { useRouter } from "next/router"
 import { ParameterContext } from "../../context/ParameterContextProvider"
+import { Box, Flex, Image, Link } from "@chakra-ui/react"
 
-const LogoIdea = () => {
+const LogoLBA = () => {
   const router = useRouter()
 
   const { widgetParameters } = React.useContext(ParameterContext)
@@ -25,17 +26,17 @@ const LogoIdea = () => {
   }
 
   return (
-    <div className="mr-4 c-logoheader">
-      <Link href="/">
-        <a onClick={goToLbaHome} className="ml-3">
-          <img
+    <Flex display={{ base: "none", lg: "flex" }} alignItems="center" mr={8}>
+      <NextLink passHref href="/">
+        <Link as="a" onClick={goToLbaHome} ml={4}>
+          <Image
             src={widgetParameters && widgetParameters?.parameters?.returnLogoURL ? widgetParameters.parameters.returnLogoURL : logoLBA}
             alt="Retour page d'accueil de La bonne alternance"
           />
-        </a>
-      </Link>
-    </div>
+        </Link>
+      </NextLink>
+    </Flex>
   )
 }
 
-export default LogoIdea
+export default LogoLBA
