@@ -104,7 +104,6 @@ export const searchForJobsFunction = async ({
       setJobSearchError(jobErrorMessage)
     }
 
-    sendJobSearchTrackEvent(values, results)
     setJobs(results)
     setHasSearch(true)
     storeJobsInSession({ jobs: results, searchTimestamp })
@@ -122,19 +121,4 @@ export const searchForJobsFunction = async ({
   }
 
   setIsJobSearchLoading(false)
-}
-
-const sendJobSearchTrackEvent = (values, results) => {
-  if (values?.job?.type) {
-    try {
-      SendTrackEvent({
-        event: `Résultat recherche emploi par ${values.job.type === "job" ? "Métier" : "Diplôme"}`,
-        label: values.job.label,
-        nb_peJobs: results.peJobs.length,
-        nb_matchas: results.matchas.length,
-        nb_lbas: results.lbaCompanies.length,
-        nb_lbbs: results.lbbCompanies.length,
-      })
-    } catch (err) {}
-  }
 }

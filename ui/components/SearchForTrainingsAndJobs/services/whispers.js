@@ -2,7 +2,6 @@ import { chunk, forEach, includes, reject } from "lodash"
 import axios from "axios"
 import csvToArray from "../../../utils/csvToArray.js"
 import { randomWithin } from "../../../utils/arrayutils"
-import { SendTrackEvent } from "../../../utils/plausible"
 
 function anyMessageAmongst(messages, alreadyShownMessages = []) {
   if (alreadyShownMessages.length > 0 && alreadyShownMessages.length <= messages.length) {
@@ -62,8 +61,6 @@ function domInsertion(document, randomlyChosenResultCard, msg, indx = 0) {
 }
 
 function getHTML(text, link) {
-  window["SendTrackEvent"] = SendTrackEvent
-
   return `<div style="margin-left: 25px; margin-right: 25px;margin-top: 25px; margin-bottom: 25px; text-align: left;">
             <div style="display: flex">
               <div style="width: 60px;min-width:40px;margin-right:4px">
