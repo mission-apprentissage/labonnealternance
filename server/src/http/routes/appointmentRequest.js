@@ -241,12 +241,14 @@ export default ({ users, appointments, mailer, widgetParameters, etablissements 
         email_rdv: { $nin: [null, ""] },
       })
 
-      if (!isOpenForAppointments) {
-        return res.status(404).send(notAllowedResponse)
-      }
-
       if (!isValidEmail(isOpenForAppointments?.email_rdv)) {
         Sentry.captureException(new Error(`Formation "${widgetParameter.cle_ministere_educatif}" sans email de contact.`))
+      }
+
+      if (!isOpenForAppointments || !isValidEmail(isOpenForAppointments?.email_rdv)) {
+        return res.send({
+          error: "Prise de rendez-vous non disponible.",
+        })
       }
 
       res.send({
