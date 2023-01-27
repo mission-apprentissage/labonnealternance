@@ -1,7 +1,7 @@
 import React from "react"
 import distance from "@turf/distance"
 import { MapPopup } from "../components/SearchForTrainingsAndJobs/components"
-import ReactDOM from "react-dom"
+import { createRoot } from "react-dom/client"
 import * as mapboxgl from "mapbox-gl"
 import "mapbox-gl/dist/mapbox-gl.css"
 import { fetchAddresses } from "../services/baseAdresse"
@@ -294,12 +294,8 @@ const flyToLocation = (location) => {
 
 const buildPopup = ({ item, type, selectItemOnMap, setSelectedItem, setSelectedMapPopupItem }) => {
   const popupNode = document.createElement("div")
-
-  ReactDOM.render(
-    <MapPopup handleSelectItem={selectItemOnMap} setSelectedItem={setSelectedItem} setSelectedMapPopupItem={setSelectedMapPopupItem} type={type} item={item} />,
-    popupNode
-  )
-
+  const root = createRoot(popupNode)
+  root.render(<MapPopup handleSelectItem={selectItemOnMap} setSelectedItem={setSelectedItem} setSelectedMapPopupItem={setSelectedMapPopupItem} type={type} item={item} />)
   return popupNode
 }
 

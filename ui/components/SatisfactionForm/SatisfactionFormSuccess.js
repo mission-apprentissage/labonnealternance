@@ -1,6 +1,7 @@
 import React from "react"
 
 import { useRouter } from "next/router"
+import { Flex, Text } from "@chakra-ui/react"
 
 const SatisfactionFormSuccess = () => {
   const router = useRouter()
@@ -11,26 +12,20 @@ const SatisfactionFormSuccess = () => {
   }
 
   return (
-    <div className="container flex-center pt-5" data-testid="SatisfactionFormSuccess">
-      <div className="row flex-center py-5">
-        <div className="col col-lg-7 mx-auto">
-          <h1 className="h4 text-center">
-            <strong>Merci d&apos;avoir pris le temps d&apos;envoyer un message au candidat. </strong>
-          </h1>
-          {readIntention() === "ne_sais_pas" || readIntention() === "entretien" ? (
-            <>
-              <p className="pt-3 halflead text-center">Il dispose désormais de vos coordonnées pour poursuivre l&apos;échange.</p>
-            </>
-          ) : (
-            <>
-              <p className="pt-3 halflead text-center">
-                Cela permet aux futurs alternants de comprendre les raisons du refus, et de s&apos;améliorer pour leurs prochaines candidatures.
-              </p>
-            </>
-          )}
-        </div>
-      </div>
-    </div>
+    <Flex direction="column" width="80%" maxWidth="992px" margin="auto" pt={12} alignItems="center" textAlign="center" data-testid="SatisfactionFormSuccess">
+      <Text as="h1" fontSize="24px" fontWeight={700}>
+        Merci d&apos;avoir pris le temps d&apos;envoyer un message au candidat.
+      </Text>
+      {readIntention() === "ne_sais_pas" || readIntention() === "entretien" ? (
+        <Text fontSize="20px" pt={4}>
+          Il dispose désormais de vos coordonnées pour poursuivre l&apos;échange.
+        </Text>
+      ) : (
+        <Text fontSize="20px" pt={4}>
+          Cela permet aux futurs alternants de comprendre les raisons du refus, et de s&apos;améliorer pour leurs prochaines candidatures.
+        </Text>
+      )}
+    </Flex>
   )
 }
 

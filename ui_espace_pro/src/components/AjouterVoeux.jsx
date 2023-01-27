@@ -74,6 +74,7 @@ const AjouterVoeux = (props) => {
 
   const id_form = location.state?.id_form
   const email = location.state?.email
+  const userId = location.state?.userId
 
   const minDate = dayjs().format(DATE_FORMAT)
   const { organisation } = useContext(LogoContext)
@@ -102,13 +103,13 @@ const AjouterVoeux = (props) => {
     if (haveProposals) {
       return navigate("/creation/mise-en-relation", {
         replace: true,
-        state: { offre, email, geo_coordonnees: form.geo_coordonnees, fromDashboard },
+        state: { offre, email, geo_coordonnees: form.geo_coordonnees, fromDashboard, userId },
       })
     }
 
     navigate("/creation/fin", {
       replace: true,
-      state: { offre, email, withDelegation: false, fromDashboard },
+      state: { offre, email, withDelegation: false, fromDashboard, userId },
     })
   }
 

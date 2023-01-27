@@ -97,6 +97,7 @@ const Job = ({ job, handleSelectItem, showTextOnly, searchForTrainingsOnNewCente
   const actualLink = `/recherche-apprentissage?display=list&page=fiche&${getItemQueryParameters(job)}&${getSearchQueryParameters(formValues)}`
 
   let cardProperties = {
+    display: "block",
     color: "grey.650",
     cursor: "pointer",
     bg: "white",

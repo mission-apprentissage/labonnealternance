@@ -73,7 +73,6 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem, activeFilter 
         left: "0",
         display: "flex",
         width: "100%",
-        background: "#fff",
       }
     : {}
 
@@ -88,14 +87,15 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem, activeFilter 
         overflowY: "auto",
         position: "relative",
       }}
-      className="itemDetail"
       {...swipeHandlers}
     >
       <Box
         as="header"
         sx={{
           filter: "drop-shadow(0px 4px 4px rgba(213, 213, 213, 0.25))",
+          padding: "10px 20px 0px 10px",
         }}
+        background="white"
         {...stickyHeaderProperties}
       >
         <Box width="100%" pl={["0", 4]} pb={isCollapsedHeader ? "0" : 2}>

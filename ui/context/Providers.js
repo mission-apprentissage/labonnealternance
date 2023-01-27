@@ -7,7 +7,13 @@ import PlausibleProvider from "next-plausible"
 import { ChakraProvider } from "@chakra-ui/react"
 import theme from "../theme/index"
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+    },
+  },
+})
 
 const Providers = ({ env, children }) => {
   return (

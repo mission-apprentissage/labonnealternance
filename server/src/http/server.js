@@ -27,7 +27,6 @@ import login from "./routes/auth/login.js"
 import password from "./routes/auth/password.js"
 import catalogueRoute from "./routes/catalogue.js"
 import constantsRoute from "./routes/constants.js"
-import error500 from "./routes/error500.js"
 import esSearchRoute from "./routes/esSearch.js"
 import etablissementRoute from "./routes/etablissement.js"
 import etablissementsRecruteurRoute from "./routes/etablissementRecruteur.js"
@@ -38,6 +37,7 @@ import jobDiploma from "./routes/jobDiploma.js"
 import jobEtFormationV1 from "./routes/jobEtFormationV1.js"
 import jobV1 from "./routes/jobV1.js"
 import metiers from "./routes/metiers.js"
+import metiersDAvenir from "./routes/metiersDAvenir.js"
 import optoutRoute from "./routes/optout.js"
 import partnersRoute from "./routes/partners.js"
 import rome from "./routes/rome.js"
@@ -172,7 +172,6 @@ export default async (components) => {
    * LBACandidat
    */
   app.use("/api/version", limiter3PerSecond, version())
-  app.use("/api/error500", limiter3PerSecond, error500())
   app.use("/api/v1/formations", limiter7PerSecond, formationV1())
   app.use("/api/romelabels", limiter10PerSecond, rome())
   app.use("/api/jobsdiplomas", limiter10PerSecond, jobDiploma())
@@ -186,6 +185,7 @@ export default async (components) => {
   app.use("/api/campaign/webhook", campaignWebhook(components))
   app.use("/api/application", sendApplication(components))
   app.use("/api/V1/application", limiter5PerSecond, sendApplicationAPI(components))
+  app.use("/api/metiersdavenir", limiter3PerSecond, metiersDAvenir())
 
   /**
    * Admin / Auth

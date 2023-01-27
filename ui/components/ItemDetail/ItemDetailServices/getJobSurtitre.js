@@ -47,7 +47,7 @@ export default function getJobSurtitre({ selectedItem, kind, isMandataire, isCol
                     Une société du secteur&nbsp;<bold>{selectedItem.nafs[0].label}</bold>&nbsp;propose actuellement cette offre
                   </>
                 ) : (
-                  "Une société ayant souhaité garder l'anonymat"
+                  "Une société ayant souhaité garder l'anonymat propose actuellement cette offre"
                 )}
               </Text>
             </>

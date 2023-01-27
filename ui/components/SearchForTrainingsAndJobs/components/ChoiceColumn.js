@@ -238,7 +238,7 @@ const ChoiceColumn = ({
   const columnBackgroundProperty = shouldShowWelcomeMessage ? ["white", "white", "beige"] : "grey.100"
 
   return (
-    <Box id="choiceColumn" width="75%" background={columnBackgroundProperty} className="choiceCol">
+    <Box id="choiceColumn" width="75%" flex="1" background={columnBackgroundProperty} className="choiceCol">
       {isLoading ? (
         <LoadingScreen />
       ) : (
