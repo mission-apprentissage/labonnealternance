@@ -17,55 +17,55 @@
       </mj-column>
     </mj-section>
 
-    <mj-section padding-top="0">
-      <mj-column width="600px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 10px">
-        <mj-text>
-          Bonjour <%= data.prenom %> <%= data.nom %>,
-        </mj-text>
+    <mj-wrapper background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 10px">
 
-        <% if(!data.mandataire){ %>
+      <mj-section>
+        <mj-column padding-bottom="0px">
           <mj-text>
-            Félicitations! Votre offre d'alternance a bien été publiée. Elle maintenant visible par les candidats sur les plateformes suivantes : La bonne alternance, ParcourSup, 1 Jeune 1 Solution, Affelnet,...
+            Bonjour <%= data.prenom %> <%= data.nom %>,
           </mj-text>
+
+          <% if(!data.mandataire){ %>
+          <mj-text>Félicitations! Votre offre d'alternance a bien été publiée.</mj-text>
+          <mj-text> Elle est maintenant visible par les candidats sur les plateformes suivantes : La bonne alternance, 1 Jeune 1 Solution, Affelnet...</mj-text>
           <% } %>
 
           <% if(data.mandataire){ %>
-            <mj-text>Félicitations! Votre offre d'alternance pour l'entreprise <%= data.raison_sociale %> a bien été publiée. Elle est maintenant visible par les candidats sur les plateformes suivantes : La bonne alternance, 1 Jeune 1 Solution, Affelnet...</mj-text>
+          <mj-text>Félicitations! Votre offre d'alternance pour l'entreprise <%= data.raison_sociale %> a bien été publiée. </mj-text>
+          <mj-text> Elle est maintenant visible par les candidats sur les plateformes suivantes : La bonne alternance, 1 Jeune 1 Solution, Affelnet...</mj-text>
           <% } %>
+      </mj-section>
 
-        <mj-text font-weight="700">Rappel de l'offre :</mj-text>
-        <mj-table>
-          <tr style="border-bottom:1px solid #ecedee;text-align:left;padding:15px 0;">
-            <th style="padding: 0 15px 0 0;">Métier</th>
-            <th style="padding: 0 15px;">Type</th>
-            <th style="padding: 0 0 0 15px;" colspan="2">Actions</th>
-          </tr>
-          <% for(let offre of data.offres) { %>
-          <tr>
-            <td style="padding: 0 15px 0 0;" rowspan="2"><%= offre.rome_appellation_label %></td>
-            <td style="padding: 0 15px;" rowspan="2"><%= offre.type %></td>
-            <td style="padding: 0 0 0 15px;"><a href="<%= offre.supprimer %>">Supprimer</a></td>
-          </tr>
-          <tr style="border-bottom: 1px dotted #000091;">
-            <td style="padding: 0 0 0 15px;"><a href="<%= offre.pourvue %>">Pourvue</a></td>
-          </tr>
-          <% } %>
-        </mj-table>
+      <mj-section padding="0px">
+        <mj-column width="550px" padding="10px 0px" background-color="#F6F6F6">
+          <mj-text padding-bottom="0px">Métier: <b><%= data.offre.rome_appellation_label %></b>
+          </mj-text>
+          <mj-text padding-bottom="0px" padding-top="0px">Type de contrat: <b><%= data.offre.type %></b>
+          </mj-text>
+          <mj-text padding-bottom="0px" padding-top="0px">Niveau de formation: <b><%= data.offre.niveau %></b>
+          </mj-text>
+          <mj-text padding-top="0px">Date de début: <b><%= data.offre.date_debut_apprentissage %></b>
+          </mj-text>
+        </mj-column>
+      </mj-section>
 
-         <mj-text>Voici le lien de votre annonce sur La bonne alternance</mj-text>
+      <mj-section>
+        <mj-column>
+          <mj-text>Voici le lien de votre annonce sur La bonne alternance</mj-text>
+          <mj-button color="#ffffff" background-color="#000091" href="<%= data.lba_url %>">
+            Voir mon annonce
+          </mj-button>
+          <mj-text>
+            L'équipe La bonne alternance, <br>
+            Mission interministérielle pour l'apprentissage et les trajectoires profesionnelles
+          </mj-text>
+        </mj-column>
+      </mj-section>
 
-        <mj-button color="#ffffff" background-color="#000091" href="<%= data.lba_url %>">
-          Voir mon annonce
-        </mj-button>
-        <mj-text>
-          L'équipe La bonne alternance, <br>
-          Mission interministérielle pour l'apprentissage et les trajectoires profesionnelles
-        </mj-text>
-      </mj-column>
-    </mj-section>
+    </mj-wrapper>
     <mj-section padding-top="30px">
       <mj-column>
-        <mj-image src="https://labonnealternance.apprentissage.beta.gouv.fr/espace-pro/images/logo-republique-francaise.png" width="200px" align="left" ></mj-image>
+        <mj-image src="https://labonnealternance.apprentissage.beta.gouv.fr/espace-pro/images/logo-republique-francaise.png" width="200px" align="left"></mj-image>
       </mj-column>
     </mj-section>
   </mj-body>

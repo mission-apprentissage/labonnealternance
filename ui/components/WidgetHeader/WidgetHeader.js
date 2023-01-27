@@ -1,7 +1,7 @@
 import React, { useContext } from "react"
 
 import HeaderForm from "../../components/HeaderForm/HeaderForm"
-import LogoIdea from "../../components/LogoIdea/LogoIdea"
+import LogoLBA from "../../components/LogoLBA/LogoLBA"
 import { useRouter } from "next/router"
 import { includes } from "lodash"
 
@@ -23,7 +23,7 @@ const WidgetHeader = ({ handleSearchSubmit, isHome }) => {
   return (
     <Box zIndex={9} display={formDisplayValue} boxShadow={isHome ? "none" : "0 0 12px 2px rgb(0 0 0 / 21%)"} padding="8px">
       <Flex>
-        {!isHome && <LogoIdea />}
+        {!isHome && <LogoLBA />}
 
         <Box>
           {isHome && (

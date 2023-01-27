@@ -29,7 +29,7 @@ const imagePath = "https://labonnealternance-recette.apprentissage.beta.gouv.fr/
 
 const images = {
   images: {
-    logo: `${imagePath}logo_lba.png`,
+    logo: `${imagePath}logo_lba_recruteur.png`,
     logoRF: `${imagePath}logo_rf.png`,
     icoInfo: `${imagePath}icone_info.png`,
     icoCandidat: `${imagePath}icone_candidat.png`,

@@ -1,4 +1,4 @@
-import { Box, Flex, Heading, Link, Stack, Text, useToast } from "@chakra-ui/react"
+import { Box, Flex, Heading, Link, Stack, Text } from "@chakra-ui/react"
 import dayjs from "dayjs"
 import { AUTHTYPE } from "../common/contants"
 import useAuth from "../common/hooks/useAuth"
@@ -7,7 +7,6 @@ import InfoPopover from "./InfoPopover"
 import InfoTooltip from "./InfoToolTip"
 
 export default (props) => {
-  const toast = useToast()
   const [auth] = useAuth()
   const { enseigne, raison_sociale, rue, siret, commune, code_postal, opco, tranche_effectif, date_creation_etablissement, type, adresse, qualiopi } = props
 

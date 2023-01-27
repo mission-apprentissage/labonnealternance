@@ -3,6 +3,7 @@ import express from "express"
 import Joi from "joi"
 import { CFA, ENTREPRISE, REGEX } from "../../common/constants.js"
 import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
+import dayjs from "../../common/dayjs.js"
 
 export default ({ formulaire, etablissementsRecruteur, usersRecruteur }) => {
   const router = express.Router()
@@ -60,6 +61,14 @@ export default ({ formulaire, etablissementsRecruteur, usersRecruteur }) => {
     email: Joi.string().email().required(),
     telephone: Joi.string().regex(REGEX.TELEPHONE).required(),
     siret: Joi.string().pattern(REGEX.SIRET).required(),
+  })
+
+  const patchOfferOfferIdBody = Joi.object({
+    cfa_read_company_detail_at: Joi.date().optional(),
+  })
+
+  const patchOfferOfferIdQuery = Joi.object({
+    siret_formateur: Joi.string(),
   })
 
   /**
@@ -185,6 +194,79 @@ export default ({ formulaire, etablissementsRecruteur, usersRecruteur }) => {
   )
 
   /**
+   * @swagger\
+   * "/offre/:offreId":
+   *  patch:
+   *    summary: Update offer.
+   *    tags:
+   *     - Offre
+   *    parameters:
+   *       - in: _id
+   *         name: offreId
+   *         required: true
+   *         schema:
+   *           type: string
+   *           required:
+   *             - id
+   *           properties:
+   *             id:
+   *               type: string
+   *               example: '60646425184afd00e017c188'
+   *    responses:
+   *      200:
+   *        description: un objet contenant l'entreprise dont l'offre est recherché
+   *        content:
+   *          application/json:
+   *            schema:
+   *              $ref: "#/components/schemas/entreprise"
+   */
+  router.patch(
+    "/offre/:offreId",
+    tryCatch(async (req, res) => {
+      let { error } = patchOfferOfferIdBody.validate(req.body, { abortEarly: false })
+
+      if (error) {
+        return res.status(400).json({ status: "INPUT_VALIDATION_ERROR", message: error.message })
+      }
+
+      error = patchOfferOfferIdQuery.validate(req.query, { abortEarly: false })?.error
+
+      if (error) {
+        return res.status(400).json({ status: "INPUT_VALIDATION_ERROR", message: error.message })
+      }
+
+      const { offreId } = req.params
+      const { siret_formateur } = req.query
+      const { cfa_read_company_detail_at } = req.body
+
+      const form = await formulaire.getOffre(offreId)
+
+      if (!form) {
+        return res.status(404).json({ status: "NOT_FOUND", message: "Formulaire not found." })
+      }
+
+      const offre = form.offres.find((offre) => offre._id.toString() === offreId)
+
+      if (cfa_read_company_detail_at) {
+        for (const delegation of offre.delegations) {
+          if (siret_formateur === delegation.siret) {
+            // If the patch already have been done
+            if (delegation.cfa_read_company_detail_at) {
+              break
+            }
+
+            delegation.cfa_read_company_detail_at = dayjs().toDate()
+            await formulaire.updateOffre(offreId, offre)
+            break
+          }
+        }
+      }
+
+      return res.json(offre)
+    })
+  )
+
+  /**
    * @swagger/
    * "/formulaire/:userId":
    *  post:
@@ -244,13 +326,21 @@ export default ({ formulaire, etablissementsRecruteur, usersRecruteur }) => {
       const userExist = await usersRecruteur.getUser({ _id: req.params.userId })
 
       if (!userExist) {
-        return res.status(400).json({ status: "NOT_FOUND", error: true, message: "L'utilisateur mentionné n'a pas été trouvé" })
+        return res.status(400).json({
+          status: "NOT_FOUND",
+          error: true,
+          message: "L'utilisateur mentionné n'a pas été trouvé",
+        })
       }
 
       const siretInfo = await etablissementsRecruteur.getEtablissementFromGouv(req.body.siret)
 
       if (siretInfo.data?.etablissement.etat_administratif.value === "F") {
-        return res.status(400).json({ status: "CLOSED", error: true, message: "Cette entreprise est considérée comme fermée." })
+        return res.status(400).json({
+          status: "CLOSED",
+          error: true,
+          message: "Cette entreprise est considérée comme fermée.",
+        })
       }
 
       if (siretInfo.data?.etablissement.naf.startsWith("85")) {
@@ -744,7 +834,11 @@ export default ({ formulaire, etablissementsRecruteur, usersRecruteur }) => {
     "/user/:userId",
     tryCatch(async (req, res) => {
       if (!req.params.userId) {
-        return res.status(400).json({ status: "MISSING_PARAM", message: "L'identifiant utilisateur est absent", error: true })
+        return res.status(400).json({
+          status: "MISSING_PARAM",
+          message: "L'identifiant utilisateur est absent",
+          error: true,
+        })
       }
 
       const exist = await usersRecruteur.getUser({ _id: req.params.userId })
@@ -779,7 +873,11 @@ export default ({ formulaire, etablissementsRecruteur, usersRecruteur }) => {
     "/user/:userId",
     tryCatch(async (req, res) => {
       if (!req.params.userId) {
-        return res.status(400).json({ status: "MISSING_PARAM", message: "L'identifiant utilisateur est absent", error: true })
+        return res.status(400).json({
+          status: "MISSING_PARAM",
+          message: "L'identifiant utilisateur est absent",
+          error: true,
+        })
       }
 
       const user = await usersRecruteur.getUser({ _id: req.params.userId })

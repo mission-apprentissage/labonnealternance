@@ -1,6 +1,7 @@
 import express from "express"
 import { mailTemplate } from "../../assets/index.js"
-import { CFA } from "../../common/constants.js"
+import { CFA, etat_utilisateur } from "../../common/constants.js"
+import dayjs from "../../common/dayjs.js"
 import { Formulaire, UserRecruteur } from "../../common/model/index.js"
 import { createMagicLinkToken } from "../../common/utils/jwtUtils.js"
 import config from "../../config.js"
@@ -99,28 +100,68 @@ export default ({ usersRecruteur, mailer, formulaire }) => {
   router.put(
     "/:userId/history",
     tryCatch(async (req, res) => {
-      const user = await usersRecruteur.updateUserValidationHistory(req.params.userId, req.body)
-      // Validation de l'adresse mail de l'utilisateur
+      const history = req.body
+      const user = await usersRecruteur.updateUserValidationHistory(req.params.userId, history)
+
+      // if user is disable, return the user data directly
+      if (history.statut === etat_utilisateur.DESACTIVE) {
+        return res.json(user)
+      }
+
+      /**
+       * if user is validated :
+       * - activate offer
+       * - update expiration date to one month later
+       * - send email to delegation if available
+       */
+      const userFormulaire = await formulaire.getFormulaire({ id_form: user.id_form })
+      const offre = Object.assign(userFormulaire.offres[0], { statut: "Active", date_expiration: dayjs().add(1, "month").format("YYYY-MM-DD") })
+      await formulaire.updateOffre(offre._id, offre)
+
+      if (offre?.delegations && offre?.delegations.length) {
+        await Promise.all(
+          offre.delegations.map(
+            async (delegation) =>
+              await mailer.sendEmail({
+                to: delegation.email,
+                subject: `Une entreprise recrute dans votre domaine`,
+                template: mailTemplate["mail-cfa-delegation"],
+                data: {
+                  enterpriseName: userFormulaire.raison_sociale,
+                  jobName: offre.rome_appellation_label,
+                  contractType: offre.type.join(", "),
+                  trainingLevel: offre.niveau,
+                  startDate: dayjs(offre.date_debut_apprentissage).format("DD/MM/YYYY"),
+                  duration: offre.duree_contrat,
+                  rhythm: offre.rythme_alternance,
+                  offerButton: `${config.publicUrlEspacePro}/proposition/formulaire/${userFormulaire.id_form}/offre/${offre._id}/siret/${delegation.siret}`,
+                  createAccountButton: `${config.publicUrlEspacePro}/creation/cfa`,
+                },
+              })
+          )
+        )
+      }
+
+      // validate user email addresse
       await usersRecruteur.updateUser(user._id, { email_valide: true })
 
+      // get magiclink url
       const magiclink = `${config.publicUrlEspacePro}/authentification/verification?token=${createMagicLinkToken(user.email)}`
 
-      if (req.body.statut === "VALIDÉ") {
-        // envoyer mail de bienvenue si validation de l'utilisateur
-        await mailer.sendEmail({
-          to: user.email,
-          subject: "Bienvenue sur La bonne alternance",
-          template: mailTemplate["mail-bienvenue"],
-          data: {
-            nom: user.nom,
-            prenom: user.prenom,
-            raison_sociale: user.raison_sociale,
-            email: user.email,
-            mandataire: user.type === CFA,
-            url: magiclink,
-          },
-        })
-      }
+      // send welcome email to user
+      await mailer.sendEmail({
+        to: user.email,
+        subject: "Bienvenue sur La bonne alternance",
+        template: mailTemplate["mail-bienvenue"],
+        data: {
+          nom: user.nom,
+          prenom: user.prenom,
+          raison_sociale: user.raison_sociale,
+          email: user.email,
+          mandataire: user.type === CFA,
+          url: magiclink,
+        },
+      })
 
       return res.json(user)
     })

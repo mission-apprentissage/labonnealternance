@@ -2,10 +2,11 @@ import AdresseAutocomplete from "./AdresseAutocomplete"
 import AjouterVoeux from "./AjouterVoeux"
 import AnimationContainer from "./AnimationContainer"
 import AuthentificationLayout from "./AuthentificationLayout"
-import BandeauAlert from "./BandeauAlert"
+import Bandeau from "./Bandeau"
 import ConfirmationActivationUtilsateur from "./ConfirmationActivationUtilsateur"
 import ConfirmationCreationCompte from "./ConfirmationCreationCompte"
 import ConfirmationDesactivationUtilisateur from "./ConfirmationDesactivationUtilisateur"
+import ConfirmationModificationOpco from "./ConfirmationModificationOpco"
 import ConfirmationSuppressionEntreprise from "./ConfirmationSuppressionEntreprise"
 import ConfirmationSuppressionOffre from "./ConfirmationSuppressionOffre"
 import CustomInput from "./CustomInput"
@@ -49,7 +50,7 @@ export {
   AuthentificationLayout,
   Etablissement,
   MailActionsOnOffre,
-  BandeauAlert,
+  Bandeau,
   ConfirmationCreationCompte,
   Table,
   InfoPopover,
@@ -62,4 +63,5 @@ export {
   UserValidationHistory,
   ConfirmationDesactivationUtilisateur,
   ConfirmationActivationUtilsateur,
+  ConfirmationModificationOpco,
 }

@@ -58,7 +58,7 @@ export const offreSchema = mongooseInstance.Schema({
   statut: {
     type: String,
     default: "Active",
-    enum: ["Active", "Annulée", "Pourvue"],
+    enum: ["Active", "Annulée", "Pourvue", "En attente"],
     description: "Statut de l'offre",
   },
   raison_statut: {
@@ -79,6 +79,36 @@ export const offreSchema = mongooseInstance.Schema({
   delegate: {
     type: Boolean,
     description: "Definit si l'entreprise souhaite déléguer l'offre à un CFA",
+  },
+  number_of_delegations: {
+    type: Number,
+    description: "Nombre de délégations",
+  },
+  delegations: {
+    type: Array,
+    description: "Liste des délégations",
+    required: false,
+    items: {
+      type: Object,
+      required: false,
+      properties: {
+        siret: {
+          type: String,
+          default: null,
+          description: "SIRET de l'établissement",
+        },
+        email: {
+          type: String,
+          default: null,
+          description: "Email gestionnaire de l'établissement",
+        },
+        cfa_read_company_detail_at: {
+          type: Date,
+          default: null,
+          description: "Date de consultation de l'offre",
+        },
+      },
+    },
   },
   elligible_handicap: {
     type: Boolean,

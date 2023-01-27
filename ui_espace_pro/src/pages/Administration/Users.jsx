@@ -21,7 +21,7 @@ import {
 import dayjs from "dayjs"
 import { memo, useEffect, useState } from "react"
 import { useQuery } from "react-query"
-import { useLocation, useNavigate } from "react-router-dom"
+import { NavLink, useLocation, useNavigate } from "react-router-dom"
 import { getUsers } from "../../api"
 import { AUTHTYPE, USER_STATUS } from "../../common/contants"
 import useAuth from "../../common/hooks/useAuth"
@@ -99,7 +99,9 @@ export default memo(() => {
         const { raison_sociale, siret, _id, opco } = data[id]
         return (
           <Flex direction="column">
-            <Text fontWeight="700">{raison_sociale}</Text>
+            <Link fontWeight="700" as={NavLink} to={`/administration/users/${_id}`} aria-label="voir les informations">
+              {raison_sociale}
+            </Link>
             <Text color="#666666" fontSize="14px">
               SIRET {siret}
             </Text>
@@ -187,6 +189,11 @@ export default memo(() => {
                     <Icon as={Parametre} color="bluefrance.500" />
                   </MenuButton>
                   <MenuList>
+                    <MenuItem>
+                      <Link as={NavLink} to={`/administration/users/${row._id}`} aria-label="voir les informations">
+                        Voir les informations
+                      </Link>
+                    </MenuItem>
                     {tabIndex !== 1 && (
                       <MenuItem>
                         <Link

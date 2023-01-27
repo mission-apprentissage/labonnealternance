@@ -4,7 +4,8 @@ import HeadLaBonneAlternance from "../components/head"
 
 import Providers from "../context/Providers"
 
-import "../public/styles/application.scss"
+import "../public/styles/application.css"
+import "../public/styles/fonts.css"
 
 import PageTracker from "../components/pageTracker"
 import { getEnvFromProps } from "../utils/env"
@@ -17,7 +18,7 @@ class LaBonneAlternance extends App {
     return (
       <Providers env={env}>
         <PageTracker>
-          <main className="c-app">
+          <main>
             <HeadLaBonneAlternance />
             <Component {...pageProps} />
           </main>

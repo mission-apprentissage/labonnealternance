@@ -2,7 +2,7 @@ import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Flex, Image, Link, Text } from "@chakra-ui/react"
 import React, { useEffect } from "react"
 import { DisplayContext } from "../../context/DisplayContextProvider"
-import { SendPlausibleEvent, SendTrackEvent } from "../../utils/plausible"
+import { SendPlausibleEvent } from "../../utils/plausible"
 import { formatDate } from "../../utils/strutils"
 import MatchaAcces from "./MatchaComponents/MatchaAcces"
 import MatchaCompetences from "./MatchaComponents/MatchaCompetences"
@@ -21,10 +21,6 @@ const MatchaDetail = ({ job, seeInfo, setSeeInfo }) => {
   useEffect(() => {
     SendPlausibleEvent("Affichage - Fiche entreprise Offre LBA", {
       info_fiche: `${job?.job?.id}${formValues?.job?.label ? ` - ${formValues.job.label}` : ""}`,
-    })
-    SendTrackEvent({
-      event: `Résultats Affichage Offre Matcha - Consulter fiche entreprise`,
-      itemId: job?.job?.id,
     })
   }, [job?.job?.id])
 

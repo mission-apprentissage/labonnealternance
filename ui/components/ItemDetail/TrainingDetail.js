@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useState } from "react"
-import { Spinner } from "reactstrap"
 import { DisplayContext } from "../../context/DisplayContextProvider"
 import { SearchResultContext } from "../../context/SearchResultContextProvider"
 import academicCapIcon from "../../public/images/icons/training-academic-cap.svg"
@@ -10,10 +9,18 @@ import clipboardListIcon from "../../public/images/icons/traning-clipboard-list.
 import fetchPrdv from "../../services/fetchPrdv"
 import fetchTrainingDetails from "../../services/fetchTrainingDetails"
 import sendTrainingOpenedEventToCatalogue from "../../services/sendTrainingOpenedEventToCatalogue"
-import { SendPlausibleEvent, SendTrackEvent } from "../../utils/plausible"
+import { SendPlausibleEvent } from "../../utils/plausible"
 import { formatDate } from "../../utils/strutils"
-import { Box, Flex, Image, Link, Text } from "@chakra-ui/react"
+import { Box, Flex, Image, Link, Spinner, Text } from "@chakra-ui/react"
 import { ExternalLinkIcon } from "@chakra-ui/icons"
+
+// Read https://css-tricks.com/snippets/css/prevent-long-urls-from-breaking-out-of-container/
+const dontBreakOutCssParameters = {
+  overflowWrap: "break-word",
+  wordWrap: "break-word",
+  wordBreak: "break-word",
+  hyphens: "auto",
+}
 
 const TrainingDetail = ({ training, hasAlsoJob }) => {
   const [loading, setLoading] = useState(true)
@@ -22,11 +29,6 @@ const TrainingDetail = ({ training, hasAlsoJob }) => {
     SendPlausibleEvent("Affichage - Fiche formation", {
       info_fiche: `${training.cleMinistereEducatif}${formValues?.job?.label ? ` - ${formValues.job.label}` : ""}`,
     })
-    SendTrackEvent({
-      event: `Résultats Affichage formation - Consulter fiche formation`,
-      itemId: training.cleMinistereEducatif,
-    })
-
     setLoading(true)
   }, [training.id])
 
@@ -94,15 +96,13 @@ const TrainingDetail = ({ training, hasAlsoJob }) => {
   }
 
   const getLoading = () => {
-    return loading ? (
-      <span className="trainingColor">
-        <div className="searchLoading">
+    return (
+      loading && (
+        <Flex alignItems="center" m={4} color="greensoft.500">
           Chargement en cours
-          <Spinner />
-        </div>
-      </span>
-    ) : (
-      ""
+          <Spinner ml={3} />
+        </Flex>
+      )
     )
   }
 
@@ -166,54 +166,58 @@ const getTrainingDetails = (training) => {
 
   let res = (
     <>
-      {training.description ? (
-        <div className="c-detail-description is-first media">
-          <img src={clipboardListIcon} alt="" />
-          <div className="c-detail-training media-body">
-            <h3 className="c-detail-description-title mb-3 mt-0">Description de la formation</h3>
-            <span className="dont-break-out">{training.description}</span>
-          </div>
-        </div>
-      ) : (
-        ""
+      {training.description && (
+        <Flex alignItems="flex-start" mt={5}>
+          <Image src={clipboardListIcon} alt="" />
+          <Box pl={4} whiteSpace="pre-wrap">
+            <Text as="h3" mt="0" mb={4} fontWeight={700} color="grey.700">
+              Description de la formation
+            </Text>
+            <Text as="span" sx={dontBreakOutCssParameters}>
+              {training.description}
+            </Text>
+          </Box>
+        </Flex>
       )}
 
-      {training.objectif ? (
-        <div className="c-detail-description media">
-          <img src={targetIcon} alt="" />
-          <div className="c-detail-training media-body">
-            <h3 className="c-detail-description-title mb-3 mt-0">Objectifs</h3>
-            <span className="dont-break-out">{training.objectif}</span>
-          </div>
-        </div>
-      ) : (
-        ""
+      {training.objectif && (
+        <Flex alignItems="flex-start" mt={10}>
+          <Image src={targetIcon} alt="" />
+          <Box pl={4} whiteSpace="pre-wrap">
+            <Text as="h3" mt="0" mb={4} fontWeight={700} color="grey.700">
+              Objectifs
+            </Text>
+            <Text as="span" sx={dontBreakOutCssParameters}>
+              {training.objectif}
+            </Text>
+          </Box>
+        </Flex>
       )}
 
-      {training["duree-indicative"] ? (
-        <div className="c-detail-description media">
-          <img src={sablierIcon} alt="" />
-          <div className="c-detail-training media-body">
-            <h3 className="c-detail-description-title mb-3 mt-0">Durée</h3>
+      {training["duree-indicative"] && (
+        <Flex alignItems="flex-start" mt={10}>
+          <Image src={sablierIcon} alt="" />
+          <Box pl={4} whiteSpace="pre-wrap">
+            <Text as="h3" mt="0" mb={4} fontWeight={700} color="grey.700">
+              Durée
+            </Text>
             {training["duree-indicative"]}
-          </div>
-        </div>
-      ) : (
-        ""
+          </Box>
+        </Flex>
       )}
 
-      {training["sessions"] && training["sessions"].length ? (
-        <div className="c-detail-description media">
-          <img src={academicCapIcon} alt="" />
-          <div className="c-detail-training media-body">
-            <h3 className="c-detail-description-title mb-3 mt-0">Modalités alternance</h3>
+      {training["sessions"] && training["sessions"].length && (
+        <Flex alignItems="flex-start" mt={10}>
+          <Image src={academicCapIcon} alt="" />
+          <Box pl={4} whiteSpace="pre-wrap">
+            <Text as="h3" mt="0" mb={4} fontWeight={700} color="grey.700">
+              Modalités alternance
+            </Text>
             Heures en centre de formation : {training["sessions"][0]["nombre-heures-centre"] ? `${training["sessions"][0]["nombre-heures-centre"]}h` : "non renseigné"}
             <br />
             Heures en entreprise : {training["sessions"][0]["nombre-heures-entreprise"] ? `${training["sessions"][0]["nombre-heures-entreprise"]}h` : "non renseigné"}
-          </div>
-        </div>
-      ) : (
-        ""
+          </Box>
+        </Flex>
       )}
 
       {getTrainingSessions(training)}
@@ -235,23 +239,25 @@ const getTrainingSessions = (training) => {
       }
     })
 
-    return sessions.length ? (
-      <div className="c-detail-description media">
-        <img src={clipboardListIcon} alt="" />
-        <div className="c-detail-training media-body">
-          <h3 className="c-detail-description-title mb-3 mt-0">Sessions</h3>
-          {sessions.map((session, idx) => {
-            return (
-              <div key={`session${idx}`}>
-                Début : {formatDate(session.debut)} - Fin : {formatDate(session.fin)}
-              </div>
-            )
-          })}
-          <div>&nbsp;</div>
-        </div>
-      </div>
-    ) : (
-      ""
+    return (
+      sessions.length > 0 && (
+        <Flex alignItems="flex-start" mt={10}>
+          <Image src={clipboardListIcon} alt="" />
+          <Box pl={4} whiteSpace="pre-wrap">
+            <Text as="h3" mt="0" mb={4} fontWeight={700} color="grey.700">
+              Sessions
+            </Text>
+            {sessions.map((session, idx) => {
+              return (
+                <Box key={`session${idx}`}>
+                  Début : {formatDate(session.debut)} - Fin : {formatDate(session.fin)}
+                </Box>
+              )
+            })}
+            <Box>&nbsp;</Box>
+          </Box>
+        </Flex>
+      )
     )
   } else {
     return ""

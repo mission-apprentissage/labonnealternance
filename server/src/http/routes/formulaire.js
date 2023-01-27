@@ -1,9 +1,11 @@
 import express from "express"
+import { pick } from "lodash-es"
 import { mailTemplate } from "../../assets/index.js"
 import { getCatalogueEtablissements, getCatalogueFormations } from "../../common/catalogue.js"
+import { etat_utilisateur } from "../../common/constants.js"
 import dayjs from "../../common/dayjs.js"
 import { getElasticInstance } from "../../common/esClient/index.js"
-import { Formulaire, UserRecruteur } from "../../common/model/index.js"
+import { Formulaire } from "../../common/model/index.js"
 import config from "../../config.js"
 import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
 
@@ -158,13 +160,20 @@ export default ({ formulaire, mailer, etablissementsRecruteur, application, user
   router.post(
     "/:id_form/offre",
     tryCatch(async (req, res) => {
-      const result = await formulaire.createOffre(req.params.id_form, req.body)
+      const offre = req.body
+      // get user activation state
+      const user = await usersRecruteur.getUser({ id_form: req.params.id_form })
+      // upon user creation, if user is awaiting validation, update offre status to "En attente"
+      if (user.etat_utilisateur.length === 1 && user.etat_utilisateur[0].statut === etat_utilisateur.ATTENTE) {
+        offre.statut = "En attente"
+      }
 
-      let { email, raison_sociale, prenom, nom, mandataire, gestionnaire, offres } = result
-      let offre = req.body
+      const updatedFormulaire = await formulaire.createOffre(req.params.id_form, req.body)
+
+      let { email, raison_sociale, prenom, nom, mandataire, gestionnaire, offres } = updatedFormulaire
       let contactCFA
 
-      offre._id = result.offres.filter((x) => x.libelle === offre.libelle)[0]._id
+      offre._id = updatedFormulaire.offres.filter((x) => x.libelle === offre.libelle)[0]._id
 
       offre.supprimer = `${config.publicUrlEspacePro}/offre/${offre._id}/cancel`
       offre.pourvue = `${config.publicUrlEspacePro}/offre/${offre._id}/provided`
@@ -185,16 +194,16 @@ export default ({ formulaire, mailer, etablissementsRecruteur, application, user
             prenom: user.prenom,
             email: user.email,
             confirmation_url: url,
-            offres: [offre],
+            offre: pick(offre, ["rome_appellation_label", "date_debut_apprentissage", "type", "niveau"]),
           },
         })
 
-        return res.json(result)
+        return res.json(updatedFormulaire)
       }
 
       // get CFA informations if formulaire is handled by a CFA
-      if (result.mandataire) {
-        contactCFA = await UserRecruteur.findOne({ siret: gestionnaire })
+      if (updatedFormulaire.mandataire) {
+        contactCFA = await usersRecruteur.getUser({ siret: gestionnaire })
       }
 
       // Send mail with action links to manage offers
@@ -208,8 +217,8 @@ export default ({ formulaire, mailer, etablissementsRecruteur, application, user
           nom: mandataire ? contactCFA.nom : nom,
           prenom: mandataire ? contactCFA.prenom : prenom,
           raison_sociale,
-          mandataire: result.mandataire,
-          offres: [offre],
+          mandataire: updatedFormulaire.mandataire,
+          offre: pick(offre, ["rome_appellation_label", "date_debut_apprentissage", "type", "niveau"]),
           lba_url:
             config.env !== "recette"
               ? `https://labonnealternance.apprentissage.beta.gouv.fr/recherche-apprentissage?&display=list&page=fiche&type=matcha&itemId=${offre._id}`
@@ -217,7 +226,7 @@ export default ({ formulaire, mailer, etablissementsRecruteur, application, user
         },
       })
 
-      return res.json(result)
+      return res.json(updatedFormulaire)
     })
   )
 
@@ -231,9 +240,14 @@ export default ({ formulaire, mailer, etablissementsRecruteur, application, user
       const { idOffre } = req.params
 
       const offreDocument = await formulaire.getOffre(idOffre)
-      const offre = offreDocument.offres.find((offre) => offre._id.toString() === idOffre)
+      const userDocument = await usersRecruteur.getUser({ id_form: offreDocument.id_form })
+      const userState = userDocument.etat_utilisateur.pop()
+
+      let offre = offreDocument.offres.find((offre) => offre._id.toString() === idOffre)
 
       const { etablissements } = await getCatalogueEtablissements({ _id: { $in: etablissementCatalogueIds } })
+
+      const delegations = []
 
       const promises = etablissements.map(async (etablissement) => {
         const { formations } = await getCatalogueFormations(
@@ -249,28 +263,40 @@ export default ({ formulaire, mailer, etablissementsRecruteur, application, user
             etablissement_gestionnaire_courriel: { $nin: [null, ""] },
             catalogue_published: true,
           },
-          { etablissement_gestionnaire_courriel: 1 }
+          { etablissement_gestionnaire_courriel: 1, etablissement_formateur_siret: 1 }
         )
 
-        await mailer.sendEmail({
-          to: formations[0].etablissement_gestionnaire_courriel,
-          subject: `Une entreprise recrute dans votre domaine`,
-          template: mailTemplate["mail-cfa-delegation"],
-          data: {
-            enterpriseName: offreDocument.raison_sociale,
-            jobName: offre.rome_appellation_label,
-            contractType: offre.type[0],
-            trainingLevel: offre.niveau,
-            startDate: dayjs(offre.date_debut_apprentissage).format("DD/MM/YYYY"),
-            duration: offre.duree_contrat,
-            rhythm: offre.rythme_alternance,
-            offerButton: `${config.publicUrlEspacePro}/proposition/formulaire/${offreDocument.id_form}/offre/${offre._id}`,
-            createAccountButton: `${config.publicUrlEspacePro}/creation/cfa`,
-          },
-        })
+        const { etablissement_formateur_siret: siret, etablissement_gestionnaire_courriel: email } = formations[0]
+
+        delegations.push({ siret, email })
+
+        if (userState.statut === etat_utilisateur.VALIDE) {
+          await mailer.sendEmail({
+            to: email,
+            subject: `Une entreprise recrute dans votre domaine`,
+            template: mailTemplate["mail-cfa-delegation"],
+            data: {
+              enterpriseName: offreDocument.raison_sociale,
+              jobName: offre.rome_appellation_label,
+              contractType: offre.type.join(", "),
+              trainingLevel: offre.niveau,
+              startDate: dayjs(offre.date_debut_apprentissage).format("DD/MM/YYYY"),
+              duration: offre.duree_contrat,
+              rhythm: offre.rythme_alternance,
+              offerButton: `${config.publicUrlEspacePro}/proposition/formulaire/${offreDocument.id_form}/offre/${offre._id}/siret/${siret}`,
+              createAccountButton: `${config.publicUrlEspacePro}/creation/cfa`,
+            },
+          })
+        }
       })
 
       await Promise.all(promises)
+
+      offre.delegate = true
+      offre.number_of_delegations = etablissements.length
+      offre.delegations = offre?.delegations.concat(delegations) || delegations
+
+      await formulaire.updateOffre(idOffre, offre)
 
       return res.json(offre)
     })

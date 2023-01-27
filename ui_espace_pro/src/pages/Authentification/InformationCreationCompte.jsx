@@ -101,6 +101,28 @@ const Formulaire = ({ submitForm, validateOpcoChoice }) => {
                   : "Il s’agit de l’adresse qui vous permettra de vous connecter à votre compte. Privilégiez votre adresse professionnelle"
               }
             />
+            {type === AUTHTYPE.ENTREPRISE && opco === undefined && (
+              <FormControl>
+                <FormLabel>OPCO</FormLabel>
+                <FormHelperText pb={2}>Pour vous accompagner dans vos recrutements, votre OPCO accède à vos informations sur La bonne alternance.</FormHelperText>
+                <Select variant="outline" size="md" name="opco" mr={3} onChange={(e) => setFieldValue("opco", e.target.value)} defaultValue={values.opco}>
+                  <option hidden>Sélectionnez un OPCO</option>
+                  <option value="AFDAS">AFDAS</option>
+                  <option value="AKTO / Opco entreprises et salariés des services à forte intensité de main d'oeuvre">AKTO</option>
+                  <option value="ATLAS">ATLAS</option>
+                  <option value="Constructys">Constructys</option>
+                  <option value="L'Opcommerce">L'Opcommerce</option>
+                  <option value="OCAPIAT">OCAPIAT</option>
+                  <option value="OPCO 2i">Opco 2i</option>
+                  <option value="Opco entreprises de proximité">Opco EP</option>
+                  <option value="Opco Mobilités">Opco Mobilités</option>
+                  <option value="Opco Santé">Opco Santé</option>
+                  <option value="Uniformation, l'Opco de la Cohésion sociale">Uniformation</option>
+                  <option value="inconnu">Je ne sais pas</option>
+                </Select>
+                <FormErrorMessage>{errors.opco}</FormErrorMessage>
+              </FormControl>
+            )}
             <Flex justifyContent="flex-end" alignItems="center" mt={5}>
               {!widget?.isWidget && (
                 <Button variant="link" sx={{ color: "black", fontWeight: 400 }} mr={5} onClick={() => navigate("/", { replace: true })}>
@@ -164,7 +186,7 @@ export default () => {
             // Dépot simplifié
             navigate("/creation/offre", {
               replace: true,
-              state: { id_form: data.formulaire.id_form, email: data.user.email },
+              state: { id_form: data.formulaire.id_form, email: data.user.email, userId: data.user._id },
             })
           } else {
             navigate("/authentification/confirmation", { replace: true, state: { email: data.email } })

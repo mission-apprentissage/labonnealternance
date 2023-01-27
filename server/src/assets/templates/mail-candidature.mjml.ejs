@@ -64,8 +64,23 @@
                             Votre entreprise <span class="nom-societe"><%= data.company_name %></span> 
                             a été identifiée par notre algorithme comme entreprise recrutant régulièrement des alternants.
                         <% } %>
-
                     </mj-text>
+
+                    <mj-text padding-top="24px" padding-bottom="24px" font-size="16px" font-weight="700" line-height="24px" text-decoration="none" color="#383838">
+                        Nous vous invitons à répondre au candidat à l'aide de l'un de nos 3 formulaires de réponse rapide ci-dessous :
+                    </mj-text>
+
+                    <mj-button href="<%= data.meetCandidateUrl %>" css-class="intention-link" width="250px" color="#FFFFFF"
+                        font-family="Roboto,Arial,sans-serif" font-size="14px" font-weight="700" background-color="#000091" align="center">
+                        &nbsp;Rencontrer le candidat
+                    </mj-button>
+                    <mj-button href="<%= data.waitCandidateUrl %>" css-class="intention-link" width="250px" color="#FFFFFF"
+                        font-family="Roboto,Arial,sans-serif" font-size="14px" font-weight="700" background-color="#000091" align="center">
+                        &nbsp;En attente de décision</mj-button>
+                    <mj-button href="<%= data.refuseCandidateUrl %>" css-class="intention-link" width="250px" color="#FFFFFF"
+                        font-family="Roboto,Arial,sans-serif" font-size="14px" font-weight="700" background-color="#000091" align="center">&nbsp;Refuser la
+                        candidature</mj-button>
+
                 </mj-column>
             </mj-section>
         </mj-wrapper>
@@ -84,21 +99,6 @@
                     <mj-text font-size="13px" padding-bottom="15px"><img style="margin-bottom: -3px; margin-right:3px" src="<%= data.images.icoInfo %>" alt="" />&nbsp;&nbsp;Vous trouverez le curriculum vitae du candidat en pièce jointe.</mj-text>
                     <mj-text font-size="16px" padding-bottom="15px">Message du candidat : </mj-text>
                     <mj-text font-size="16px" padding-bottom="32px"><div class="form-msg" width="100%"> <%- data.message %> </div> </mj-text>
-                    <mj-text padding-bottom="16px" font-size="18px" padding="0px" font-weight="700" line-height="28px"text-decoration="none" color="#3A3A3A">
-                        Que pensez-vous faire ?
-                    </mj-text>
-                    <mj-button
-                        href="<%= data.meetCandidateUrl %>"
-                        css-class="intention-link" width="250px" border-color="#000091" color="#000091"
-                        font-family="Roboto,Arial,sans-serif" font-size="14px" background-color="#FFFFFF" padding-left="0px" align="left" border="1px solid #000091">&nbsp;Rencontrer le candidat</mj-button>
-                    <mj-button
-                        href="<%= data.waitCandidateUrl %>"
-                        css-class="intention-link" width="250px" border-color="#000091" color="#000091"
-                        font-family="Roboto,Arial,sans-serif" font-size="14px" background-color="#FFFFFF" padding-left="0px" align="left" border="1px solid #000091">&nbsp;En attente de décision</mj-button>
-                    <mj-button
-                        href="<%= data.refuseCandidateUrl %>"
-                        css-class="intention-link" width="250px" border-color="#000091" color="#000091"
-                        font-family="Roboto,Arial,sans-serif" font-size="14px" background-color="#FFFFFF" padding-left="0px" align="left" border="1px solid #000091">&nbsp;Refuser la candidature</mj-button>
                 </mj-column>
             </mj-section>
         </mj-wrapper>

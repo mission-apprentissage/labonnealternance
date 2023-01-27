@@ -1,5 +1,5 @@
 import React from "react"
-import { Box, Divider, Text, UnorderedList, ListItem, GridItem, Grid } from "@chakra-ui/react"
+import { Box, Divider, Text, UnorderedList, ListItem, GridItem, Grid, Image } from "@chakra-ui/react"
 
 const AlgoRecruiter = () => {
   return (
@@ -34,7 +34,7 @@ const AlgoRecruiter = () => {
           </GridItem>
           <GridItem colSpan={{ base: "2" }}>
             <Box display="flex" justifyContent="center" alignItems="center" pr={{ base: 0, lg: 12 }}>
-              <img className="" src="/images/icons/algo_recruiter.svg" alt="" />
+              <Image src="/images/icons/algo_recruiter.svg" alt="" />
             </Box>
           </GridItem>
         </Grid>
