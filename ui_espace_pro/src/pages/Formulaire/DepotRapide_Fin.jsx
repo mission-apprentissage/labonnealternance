@@ -4,7 +4,7 @@ import { useContext, useState } from "react"
 import { useQuery, useQueryClient } from "react-query"
 import { useLocation, useNavigate } from "react-router-dom"
 import { getUser, sendValidationLink } from "../../api"
-import { AuthentificationLayout } from "../../components"
+import { AuthentificationLayout, LoadingEmptySpace } from "../../components"
 import { WidgetContext } from "../../contextWidget"
 import { InfoCircle } from "../../theme/components/icons"
 import { MailCloud } from "../../theme/components/logos"
@@ -21,12 +21,17 @@ export default () => {
   const { widget } = useContext(WidgetContext)
   const { offre, email, withDelegation, fromDashboard, userId } = location.state
 
-  useQuery("userdetail", () => getUser(userId), {
-    onSettled: ({ data }) => {
-      const latestStatus = data.etat_utilisateur.pop().statut
+  /**
+   * KBA 20230130 : retry set to false to avoid waiting for failure if user is from dashboard (userId is not passed)
+   * - To be changed with userID in URL params
+   */
+  const { isFetched } = useQuery("userdetail", () => getUser(userId), {
+    retry: false,
+    onSettled: (data) => {
+      const latestStatus = data?.data?.etat_utilisateur.pop().statut || false
       switch (withDelegation) {
         case true:
-          if (latestStatus === "VALIDÉ") {
+          if (latestStatus === "VALIDÉ" || fromDashboard) {
             setUserIsValidated(true)
             setTitle("Félicitations,<br>votre offre a bien été créée et transmise aux organismes de formation que vous avez sélectionnés.")
           } else {
@@ -37,7 +42,7 @@ export default () => {
           break
 
         case false:
-          if (latestStatus === "VALIDÉ") {
+          if (latestStatus === "VALIDÉ" || fromDashboard) {
             setUserIsValidated(true)
             setTitle("Félicitations,<br>votre offre a bien été créée!")
           } else {
@@ -50,6 +55,10 @@ export default () => {
       }
     },
   })
+
+  if (!isFetched) {
+    return <LoadingEmptySpace />
+  }
 
   const resendMail = (email) => {
     sendValidationLink({ email })
@@ -178,7 +187,7 @@ export default () => {
           </Heading>
           {userIsValidated ? <ValidatedAccountDescription /> : <AwaitingAccountDescription />}
           <Box bg="#F6F6F6" p={4}>
-            <Stack direction="column" spacing="16px" mt={fromDashboard ? 10 : 0}>
+            <Stack direction="column" spacing="16px">
               <Heading fontSize="20px">Récapitulatif de votre besoin</Heading>
               <Text>
                 Poste : <span style={{ fontWeight: "700" }}>{offre.rome_appellation_label}</span>
