@@ -58,4 +58,5 @@ export default () => ({
   },
   registerUser: (email) => UserRecruteur.findOneAndUpdate({ email }, { last_connection: new Date() }),
   updateUserValidationHistory: (userId, state) => UserRecruteur.findByIdAndUpdate({ _id: userId }, { $push: { etat_utilisateur: state } }, { new: true }),
+  getUserValidationState: (stateArray) => stateArray.sort((a, b) => new Date(a) - new Date(b)).pop().statut,
 })
