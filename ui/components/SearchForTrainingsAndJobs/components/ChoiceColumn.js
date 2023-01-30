@@ -13,7 +13,7 @@ import ResultLists from "./ResultLists"
 import { setCurrentPage, setCurrentSearch, currentSearch } from "../../../utils/currentPage.js"
 import pushHistory from "../../../utils/pushHistory"
 import dosearchImage from "../../../public/images/dosearch.svg"
-import whispers from "../services/whispers.js"
+import { insertWhisper } from "../services/whispers.js"
 
 import { flyToMarker, flyToLocation, closeMapPopups, setSelectedMarker } from "../../../utils/mapTools"
 import { Box, Image, Text } from "@chakra-ui/react"
@@ -54,7 +54,7 @@ const ChoiceColumn = ({
   })
 
   useEffect(() => {
-    whispers.insertWhisper(document, isTrainingSearchLoading || isJobSearchLoading)
+    insertWhisper(document, isTrainingSearchLoading || isJobSearchLoading)
   })
 
   const handleSearchSubmitFunction = (values) => {
