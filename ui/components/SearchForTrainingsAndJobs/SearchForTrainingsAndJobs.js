@@ -378,7 +378,7 @@ const SearchForTrainingsAndJobs = () => {
       <InitWidgetSearchParameters handleSearchSubmit={handleSearchSubmit} handleItemLoad={handleItemLoad} setIsLoading={setIsLoading} />
       <WidgetHeader handleSearchSubmit={handleSearchSubmit} />
       <Flex direction="row" overflow="hidden" height="100%">
-        <Box flex="5" display={listDisplayParameters} height="100%" overflow="auto" direction="column">
+        <Box flex={{ base: 8, xl: 6 }} display={listDisplayParameters} height="100%" overflow="auto" direction="column">
           <ChoiceColumn
             shouldShowWelcomeMessage={shouldShowWelcomeMessage}
             handleSearchSubmit={handleSearchSubmit}
@@ -399,7 +399,7 @@ const SearchForTrainingsAndJobs = () => {
             activeFilter={activeFilter}
           />
         </Box>
-        <Box p="0" flex="7" display={mapDisplayParameters} position="relative">
+        <Box p="0" flex={{ base: 4, xl: 5 }} display={mapDisplayParameters} position="relative">
           <Map handleSearchSubmit={handleSearchSubmit} showSearchForm={showSearchForm} selectItemOnMap={selectItemOnMap} />
         </Box>
       </Flex>
