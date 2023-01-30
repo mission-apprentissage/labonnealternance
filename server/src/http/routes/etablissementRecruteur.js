@@ -405,6 +405,11 @@ export default ({ etablissementsRecruteur, usersRecruteur, formulaire, mailer })
       }
 
       const user = await usersRecruteur.getUser({ _id: req.body.id })
+      const isUserAwaiting = usersRecruteur.getUserValidationState(user.etat_utilisateur) === etat_utilisateur.ATTENTE
+
+      if (isUserAwaiting) {
+        return res.json({ isUserAwaiting: true })
+      }
 
       const magiclink = `${config.publicUrlEspacePro}/authentification/verification?token=${createMagicLinkToken(user.email)}`
 
