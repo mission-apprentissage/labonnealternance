@@ -1,4 +1,4 @@
-import { Box, Flex, Heading, Link, Spinner, Text, useBoolean } from "@chakra-ui/react"
+import { Box, Flex, Heading, Link, Spinner, Text, useBoolean, useToast } from "@chakra-ui/react"
 import { useEffect } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import { validationCompte } from "../../api"
@@ -32,12 +32,26 @@ export default (props) => {
   const { id } = useParams()
   const navigate = useNavigate()
   const [auth, setAuth] = useAuth()
+  const toast = useToast()
 
   useEffect(() => {
     // get user from params coming from email link
     validationCompte({ id })
       .then(({ data }) => {
-        setAuth(data?.token)
+        if (data?.isUserAwaiting) {
+          toast({
+            title: "Merci d’avoir confirmé votre email !",
+            description: "Nos équipes vont maintenant pouvoir valider votre compte.",
+            position: "top-right",
+            status: "success",
+            duration: 8000,
+            isClosable: true,
+          })
+          window.location.replace("/")
+        }
+        if (data?.token) {
+          setAuth(data?.token)
+        }
       })
       .catch(() => setIsValid.off())
   }, [id])
