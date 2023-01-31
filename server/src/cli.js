@@ -21,6 +21,7 @@ import importFormations from "./jobs/formationsCatalogue/formationsCatalogue.js"
 import updateSendinblueBlockedEmails from "./jobs/updateSendinblueBlockedEmails/updateSendinblueBlockedEmails.js"
 import anonymizeOldApplications from "./jobs/anonymizeOldApplications/anonymizeOldApplications.js"
 import { runScript } from "./jobs/scriptWrapper.js"
+import { removeEtablissementsOptIn } from "./jobs/rdv/removeEtablissementsOptIn.js"
 
 cli.addHelpText("after")
 
@@ -117,6 +118,13 @@ cli
   .description("Envoi un email au candidat afin de savoir si le CFA la contacté.")
   .action(() => {
     runScript((components) => candidatHaveYouBeenContacted(components))
+  })
+
+cli
+  .command("remove-etablissements-opt-in")
+  .description("Supprime le mode OPT_IN associé à l'établissement")
+  .action(() => {
+    runScript((components) => removeEtablissementsOptIn(components))
   })
 
 cli
