@@ -185,7 +185,7 @@ export default () => {
           <Heading fontSize="24px" mb="16px" mt={widget?.mobile ? "10px" : "0px"}>
             <div dangerouslySetInnerHTML={{ __html: title }} />
           </Heading>
-          {userIsValidated ? <ValidatedAccountDescription /> : <AwaitingAccountDescription />}
+          {userIsValidated ? fromDashboard ? null : <ValidatedAccountDescription /> : <AwaitingAccountDescription />}
           <Box bg="#F6F6F6" p={4}>
             <Stack direction="column" spacing="16px">
               <Heading fontSize="20px">Récapitulatif de votre besoin</Heading>
