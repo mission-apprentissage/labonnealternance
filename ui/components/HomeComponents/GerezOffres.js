@@ -4,12 +4,10 @@ import { Box, Image, SimpleGrid, Text, Show } from "@chakra-ui/react"
 const GerezOffres = () => {
   return (
     <Box as="section" py={24} backgroundColor="white">
-      <Box py={12} backgroundColor="grey.100" px={{ base: 12, md: 10 }} borderRadius={10}>
+      <Box backgroundColor="grey.100" p={{ base: 3, md: 6, lg: 12 }} borderRadius={10}>
         <SimpleGrid columns={{ sm: 1, md: 2 }} spacing="40px">
-          <Show above="md">
-            <Box>&nbsp;</Box>
-          </Show>
           <Box>
+            <Box>&nbsp;</Box>
             <Box as="span" background="linear-gradient(90deg,#6a11cb,#2575fc)" color="#fff" borderRadius="80" lineHeight="32px" px={9} py={2} fontSize="20px" fontWeight="700">
               Bientôt
             </Box>

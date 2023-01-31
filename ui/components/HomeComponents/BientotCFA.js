@@ -4,7 +4,7 @@ import { Box, Image, Grid, GridItem, Text } from "@chakra-ui/react"
 
 const BientotCFA = () => {
   return (
-    <Box bg="beige" mt="16" borderRadius="10" px="12" py={{ base: 12, lg: 0 }}>
+    <Box bg="beige" mt="16" borderRadius="10" px={{ base: 3, md: 6, lg: 12 }} py={{ base: 12, lg: 0 }}>
       <Grid templateColumns={{ base: "1fr", lg: "repeat(4, 1fr)" }} templateRows={{ base: "auto", lg: "repeat(12, 1fr)" }}>
         <GridItem gridColumn={{ base: "1fr", lg: "1 / 3" }} gridRow={{ base: "auto", lg: "1 / 7" }} order={{ base: "2", md: "auto" }} mt={{ base: 6, lg: 0 }}>
           <Box display="flex" alignItems="center" justifyContent="center" height="100%" mr={{ base: 0, lg: 6 }}>
@@ -16,7 +16,7 @@ const BientotCFA = () => {
             <Image src="/images/home_pics/illu-offrecouplee.svg" alt="" width={{ base: "320px", lg: "511px" }} />
           </Box>
         </GridItem>
-        <GridItem gridColumn={{ base: "1fr", lg: "3 / 5" }} gridRow={{ base: "auto", lg: "1 / 3" }} order={{ base: "1", md: "auto" }} mt={{ base: 6, lg: 0 }}>
+        <GridItem gridColumn={{ base: "1fr", lg: "3 / 5" }} gridRow={{ base: "auto", lg: "1 / 3" }} order={{ base: "1", md: "auto" }} mt={0}>
           <Box display="flex" alignItems="flex-end" justifyContent="flex-start" height="100%">
             <Text mb="2" bg="linear-gradient(90deg, #6A11CB 0%, #2575FC 100%);" color="white" borderRadius={40} fontSize={20} px={4} fontWeight={700}>
               Bientôt
