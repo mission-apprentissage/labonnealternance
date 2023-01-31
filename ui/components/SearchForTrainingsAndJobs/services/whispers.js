@@ -46,7 +46,7 @@ function domInsertion(document, randomlyChosenResultCard, msg, indx = 0) {
 function getHTML(text, link) {
   return `<div style="margin-left: 25px; margin-right: 25px;margin-top: 25px; margin-bottom: 25px; text-align: left;">
             <div style="display: flex">
-              <div style="width: 60px;min-width:40px;margin-right:4px">
+              <div style="min-width:40px;margin-right:4px">
                 <img src="/images/whisper.svg" alt="" />
               </div>
               <div>
@@ -71,8 +71,8 @@ function getHTMLLink(link) {
     link &&
     `<span style="margin-top: 6px;display: block;">
                   <a href="${link}" target="_blank" rel="noopener noreferrer" style="display: flex;">
-                    <span aria-label="Accéder au détail de l'astuce">En savoir plus</span>
-                    <img style="margin-left: 5px" src="/images/square_link.svg" alt="" />
+                    <span aria-label="Accéder au détail de l'astuce" style="color: #000091;">En savoir plus</span>
+                    <img style="margin-left: 5px" src="/images/square_link_blue.svg" alt=""/>
                   </a>
                 </span>`
   )
