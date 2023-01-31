@@ -4,7 +4,7 @@ import joi from "joi"
 import { mailTemplate } from "../../assets/index.js"
 import { getAktoEstablishmentVerification } from "../../common/akto.js"
 import { getNearEtablissementsFromRomes } from "../../common/catalogue.js"
-import { CFA, etat_utilisateur, OPCOS, validation_utilisateur } from "../../common/constants.js"
+import { CFA, ENTREPRISE, etat_utilisateur, OPCOS, validation_utilisateur } from "../../common/constants.js"
 import { createMagicLinkToken, createUserRecruteurToken } from "../../common/utils/jwtUtils.js"
 import { checkIfUserEmailIsPrivate, checkIfUserMailExistInReferentiel, getAllDomainsFromEmailList } from "../../common/utils/mailUtils.js"
 import { notifyToSlack } from "../../common/utils/slackUtils.js"
@@ -189,120 +189,86 @@ export default ({ etablissementsRecruteur, usersRecruteur, formulaire, mailer })
     "/creation",
     tryCatch(async (req, res) => {
       const exist = await usersRecruteur.getUser({ email: req.body.email })
-      const ENTREPRISE = req.body.type === "ENTREPRISE"
       let formulaireInfo, partenaire
 
       if (exist) {
         return res.status(403).json({ error: true, message: "L'adresse mail est déjà associée à un compte La bonne alternance." })
       }
 
-      if (ENTREPRISE) {
-        formulaireInfo = await formulaire.createFormulaire(req.body)
-        partenaire = await usersRecruteur.createUser({ ...req.body, id_form: formulaireInfo.id_form })
+      switch (req.body.type) {
+        case ENTREPRISE:
+          formulaireInfo = await formulaire.createFormulaire(req.body)
+          partenaire = await usersRecruteur.createUser({ ...req.body, id_form: formulaireInfo.id_form })
+          /**
+           * Check if siret is amoung the opco verified establishment
+           */
+          switch (req.body.opco) {
+            case OPCOS.AKTO:
+              const siren = req.body.siret.substr(0, 9)
+              const isValid = await getAktoEstablishmentVerification(siren, req.body.email, token)
 
-        /**
-         * Check if siret is amoung the opco verified establishment
-         */
+              if (isValid) {
+                partenaire = await usersRecruteur.updateUserValidationHistory(partenaire._id, {
+                  validation_type: validation_utilisateur.AUTO,
+                  user: "SERVEUR",
+                  statut: etat_utilisateur.VALIDE,
+                })
+              } else {
+                partenaire = await usersRecruteur.updateUserValidationHistory(partenaire._id, {
+                  validation_type: validation_utilisateur.MANUAL,
+                  user: "SERVEUR",
+                  statut: etat_utilisateur.ATTENTE,
+                })
+              }
 
-        switch (req.body.opco) {
-          case OPCOS.AKTO:
-            const siren = req.body.siret.substr(0, 9)
-            const isValid = await getAktoEstablishmentVerification(siren, req.body.email, token)
+              break
 
-            if (isValid) {
-              partenaire = await usersRecruteur.updateUserValidationHistory(partenaire._id, {
-                validation_type: validation_utilisateur.AUTO,
-                user: "SERVEUR",
-                statut: etat_utilisateur.VALIDE,
-              })
-            } else {
+            case OPCOS.CONSTRUCTYS:
+            case OPCOS.OCAPIAT:
+              const existInOpcoReferentiel = await etablissementsRecruteur.getEstablishmentFromOpcoReferentiel(req.body.opco, req.body.siret, req.body.email)
+
+              if (!existInOpcoReferentiel) {
+                partenaire = await usersRecruteur.updateUserValidationHistory(partenaire._id, {
+                  validation_type: validation_utilisateur.MANUAL,
+                  user: "SERVEUR",
+                  statut: etat_utilisateur.ATTENTE,
+                })
+              } else {
+                partenaire = await usersRecruteur.updateUserValidationHistory(partenaire._id, {
+                  validation_type: validation_utilisateur.AUTO,
+                  user: "SERVEUR",
+                  statut: etat_utilisateur.VALIDE,
+                })
+              }
+
+              break
+
+            default:
               partenaire = await usersRecruteur.updateUserValidationHistory(partenaire._id, {
                 validation_type: validation_utilisateur.MANUAL,
                 user: "SERVEUR",
                 statut: etat_utilisateur.ATTENTE,
               })
-            }
-
-            break
-
-          case OPCOS.CONSTRUCTYS:
-          case OPCOS.OCAPIAT:
-            const existInOpcoReferentiel = await etablissementsRecruteur.getEstablishmentFromOpcoReferentiel(req.body.opco, req.body.siret, req.body.email)
-
-            if (!existInOpcoReferentiel) {
-              partenaire = await usersRecruteur.updateUserValidationHistory(partenaire._id, {
-                validation_type: validation_utilisateur.MANUAL,
-                user: "SERVEUR",
-                statut: etat_utilisateur.ATTENTE,
-              })
-            } else {
-              partenaire = await usersRecruteur.updateUserValidationHistory(partenaire._id, {
-                validation_type: validation_utilisateur.AUTO,
-                user: "SERVEUR",
-                statut: etat_utilisateur.VALIDE,
-              })
-            }
-
-            break
-
-          default:
-            partenaire = await usersRecruteur.updateUserValidationHistory(partenaire._id, {
-              validation_type: validation_utilisateur.MANUAL,
-              user: "SERVEUR",
-              statut: etat_utilisateur.ATTENTE,
-            })
-            break
-        }
-
-        // Dépot simplifié : retourner les informations nécessaire à la suite du parcours
-        return res.json({ formulaire: formulaireInfo, user: partenaire })
-      } else {
-        /**
-         * Contrôle du mail avec le référentiel :
-         */
-
-        let referentiel = await etablissementsRecruteur.getEtablissementFromReferentiel(req.body.siret)
-
-        // Creation de l'utilisateur en base de données
-        partenaire = await usersRecruteur.createUser(req.body)
-
-        if (referentiel.data.contacts.length) {
-          const userMailExist = checkIfUserMailExistInReferentiel(referentiel.data.contacts, req.body.email)
-          const userMailisPrivate = checkIfUserEmailIsPrivate(req.body.email)
-
-          if (userMailExist) {
-            // Validation automatique de l'utilisateur
-            partenaire = await usersRecruteur.updateUserValidationHistory(partenaire._id, {
-              validation_type: validation_utilisateur.AUTO,
-              user: "SERVEUR",
-              statut: etat_utilisateur.VALIDE,
-            })
-
-            let { email, _id, nom, prenom } = partenaire
-
-            const url = etablissementsRecruteur.getValidationUrl(_id)
-
-            await mailer.sendEmail({
-              to: email,
-              subject: "La bonne alternance — Confirmer votre adresse mail",
-              template: mailTemplate["mail-confirmation-email"],
-              data: {
-                prenom,
-                nom,
-                confirmation_url: url,
-              },
-            })
-
-            // Keep the same structure as ENTREPRISE
-            return res.json({ user: partenaire })
+              break
           }
 
-          if (userMailisPrivate && !userMailExist) {
-            // Récupération des noms de domain
-            const domains = getAllDomainsFromEmailList(referentiel.data.contacts)
-            const userEmailDomain = req.body.email.split("@")[1]
+          // Dépot simplifié : retourner les informations nécessaire à la suite du parcours
+          return res.json({ formulaire: formulaireInfo, user: partenaire })
+        case CFA:
+          /**
+           * Contrôle du mail avec le référentiel :
+           */
 
-            if (domains.includes(userEmailDomain)) {
+          let referentiel = await etablissementsRecruteur.getEtablissementFromReferentiel(req.body.siret)
+
+          // Creation de l'utilisateur en base de données
+          partenaire = await usersRecruteur.createUser(req.body)
+
+          if (referentiel.data.contacts.length) {
+            const userMailExist = checkIfUserMailExistInReferentiel(referentiel.data.contacts, req.body.email)
+            const userMailisPrivate = checkIfUserEmailIsPrivate(req.body.email)
+
+            if (userMailExist) {
               // Validation automatique de l'utilisateur
               partenaire = await usersRecruteur.updateUserValidationHistory(partenaire._id, {
                 validation_type: validation_utilisateur.AUTO,
@@ -328,36 +294,71 @@ export default ({ etablissementsRecruteur, usersRecruteur, formulaire, mailer })
               // Keep the same structure as ENTREPRISE
               return res.json({ user: partenaire })
             }
+
+            if (userMailisPrivate && !userMailExist) {
+              // Récupération des noms de domain
+              const domains = getAllDomainsFromEmailList(referentiel.data.contacts)
+              const userEmailDomain = req.body.email.split("@")[1]
+
+              if (domains.includes(userEmailDomain)) {
+                // Validation automatique de l'utilisateur
+                partenaire = await usersRecruteur.updateUserValidationHistory(partenaire._id, {
+                  validation_type: validation_utilisateur.AUTO,
+                  user: "SERVEUR",
+                  statut: etat_utilisateur.VALIDE,
+                })
+
+                let { email, _id, nom, prenom } = partenaire
+
+                const url = etablissementsRecruteur.getValidationUrl(_id)
+
+                await mailer.sendEmail({
+                  to: email,
+                  subject: "La bonne alternance — Confirmer votre adresse mail",
+                  template: mailTemplate["mail-confirmation-email"],
+                  data: {
+                    prenom,
+                    nom,
+                    confirmation_url: url,
+                  },
+                })
+
+                // Keep the same structure as ENTREPRISE
+                return res.json({ user: partenaire })
+              }
+            }
+
+            // Validation manuelle de l'utilisateur à effectuer pas un administrateur
+            partenaire = await usersRecruteur.updateUserValidationHistory(partenaire._id, {
+              validation_type: validation_utilisateur.MANUAL,
+              user: "SERVEUR",
+              statut: etat_utilisateur.ATTENTE,
+            })
+
+            await notifyToSlack({
+              subject: "RECRUTEUR",
+              message: `Nouvel OF en attente de validation - ${partenaire.email} - https://referentiel.apprentissage.beta.gouv.fr/organismes/${partenaire.siret}`,
+            })
+
+            return res.json({ user: partenaire })
+          } else {
+            // Validation manuelle de l'utilisateur à effectuer pas un administrateur
+            partenaire = await usersRecruteur.updateUserValidationHistory(partenaire._id, {
+              validation_type: validation_utilisateur.MANUAL,
+              user: "SERVEUR",
+              statut: etat_utilisateur.ATTENTE,
+            })
+
+            await notifyToSlack({
+              subject: "RECRUTEUR",
+              message: `Nouvel OF en attente de validation - ${partenaire.email} - https://referentiel.apprentissage.beta.gouv.fr/organismes/${partenaire.siret}`,
+            })
+
+            return res.json({ user: partenaire })
           }
 
-          // Validation manuelle de l'utilisateur à effectuer pas un administrateur
-          partenaire = await usersRecruteur.updateUserValidationHistory(partenaire._id, {
-            validation_type: validation_utilisateur.MANUAL,
-            user: "SERVEUR",
-            statut: etat_utilisateur.ATTENTE,
-          })
-
-          await notifyToSlack({
-            subject: "RECRUTEUR",
-            message: `Nouvel OF en attente de validation - ${partenaire.email} - https://referentiel.apprentissage.beta.gouv.fr/organismes/${partenaire.siret}`,
-          })
-
-          return res.json({ user: partenaire })
-        } else {
-          // Validation manuelle de l'utilisateur à effectuer pas un administrateur
-          partenaire = await usersRecruteur.updateUserValidationHistory(partenaire._id, {
-            validation_type: validation_utilisateur.MANUAL,
-            user: "SERVEUR",
-            statut: etat_utilisateur.ATTENTE,
-          })
-
-          await notifyToSlack({
-            subject: "RECRUTEUR",
-            message: `Nouvel OF en attente de validation - ${partenaire.email} - https://referentiel.apprentissage.beta.gouv.fr/organismes/${partenaire.siret}`,
-          })
-
-          return res.json({ user: partenaire })
-        }
+        default:
+          break
       }
     })
   )
