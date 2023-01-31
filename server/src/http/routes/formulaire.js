@@ -164,8 +164,8 @@ export default ({ formulaire, mailer, etablissementsRecruteur, application, user
 
       // get user data
       const user = await usersRecruteur.getUser({ id_form: req.params.id_form })
-      // // get user activation state if not managed by a CFA
-      if (!req.body.mandataire) {
+      // get user activation state if not managed by a CFA
+      if (user) {
         const isUserAwaiting = usersRecruteur.getUserValidationState(user.etat_utilisateur) === etat_utilisateur.ATTENTE
         // upon user creation, if user is awaiting validation, update offre status to "En attente"
         if (isUserAwaiting) {
