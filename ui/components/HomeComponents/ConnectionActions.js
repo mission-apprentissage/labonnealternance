@@ -1,4 +1,4 @@
-import { Button, Stack } from "@chakra-ui/react"
+import { Button, Stack, Flex } from "@chakra-ui/react"
 import { useRouter } from "next/router"
 import React from "react"
 
@@ -6,21 +6,28 @@ const ConnectionActions = ({ service }) => {
   const router = useRouter()
 
   return (
-    <Stack direction="row" spacing={{ base: 1, sm: 2, md: 8 }} pt="30px">
+    <Flex direction={{ base: "column", md: "row" }} align="center" pt="30px">
       {service === "entreprise" && (
-        <Button variant="primary" aria-label="Déposer une offre" onClick={() => router.push("/espace-pro/creation/entreprise")}>
+        <Button width="185px" variant="primary" aria-label="Déposer une offre" onClick={() => router.push("/espace-pro/creation/entreprise")}>
           Déposer une offre
         </Button>
       )}
       {service === "cfa" && (
-        <Button variant="primary" aria-label="Créer mon espace dédié" onClick={() => router.push("/espace-pro/creation/cfa")}>
+        <Button width="235px" variant="primary" aria-label="Créer mon espace dédié" onClick={() => router.push("/espace-pro/creation/cfa")}>
           Créer mon espace dédié
         </Button>
       )}
-      <Button variant="secondary" aria-label="Me connecter" onClick={() => router.push("/espace-pro/authentification")}>
+      <Button
+        width="155px"
+        variant="secondary"
+        mt={{ base: "2", md: "0" }}
+        ml={{ base: "0", md: "2" }}
+        aria-label="Me connecter"
+        onClick={() => router.push("/espace-pro/authentification")}
+      >
         Me connecter
       </Button>
-    </Stack>
+    </Flex>
   )
 }
 export default ConnectionActions
