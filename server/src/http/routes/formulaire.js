@@ -161,13 +161,16 @@ export default ({ formulaire, mailer, etablissementsRecruteur, application, user
     "/:id_form/offre",
     tryCatch(async (req, res) => {
       const offre = req.body
+
       // get user data
       const user = await usersRecruteur.getUser({ id_form: req.params.id_form })
-      // // get user activation state
-      const isUserAwaiting = usersRecruteur.getUserValidationState(user.etat_utilisateur) === etat_utilisateur.ATTENTE
-      // upon user creation, if user is awaiting validation, update offre status to "En attente"
-      if (isUserAwaiting) {
-        offre.statut = "En attente"
+      // // get user activation state if not managed by a CFA
+      if (!req.body.mandataire) {
+        const isUserAwaiting = usersRecruteur.getUserValidationState(user.etat_utilisateur) === etat_utilisateur.ATTENTE
+        // upon user creation, if user is awaiting validation, update offre status to "En attente"
+        if (isUserAwaiting) {
+          offre.statut = "En attente"
+        }
       }
       // insert offre
       const updatedFormulaire = await formulaire.createOffre(req.params.id_form, offre)
@@ -175,7 +178,7 @@ export default ({ formulaire, mailer, etablissementsRecruteur, application, user
       let { email, raison_sociale, prenom, nom, mandataire, gestionnaire, offres } = updatedFormulaire
       let contactCFA
 
-      offre._id = updatedFormulaire.offres.filter((x) => x.libelle === offre.libelle)[0]._id
+      offre._id = updatedFormulaire.offres.pop()._id
 
       offre.supprimer = `${config.publicUrlEspacePro}/offre/${offre._id}/cancel`
       offre.pourvue = `${config.publicUrlEspacePro}/offre/${offre._id}/provided`
