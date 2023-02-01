@@ -1,7 +1,7 @@
 import { logger } from "../../common/logger.js"
 import updateDiplomesMetiers from "../diplomesMetiers/updateDiplomesMetiers.js"
 import updateDomainesMetiers from "../domainesMetiers/updateDomainesMetiers.js"
-import importFormationsCatalogue from "../formationsCatalogue/formationsCatalogue.js"
+import { importCatalogueFormationJob } from "../formationsCatalogue/formationsCatalogue.js"
 import { runScript } from "../scriptWrapper.js"
 
 runScript(async () => {
@@ -9,7 +9,7 @@ runScript(async () => {
   logger.info("Domaine Métier...")
   await updateDomainesMetiers()
   logger.info("Formation Catalogue...")
-  await importFormationsCatalogue()
+  await importCatalogueFormationJob()
   logger.info("Diplome Métier...")
   await updateDiplomesMetiers()
   logger.info("Import des données de référence terminé.")
