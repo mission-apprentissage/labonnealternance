@@ -1,4 +1,4 @@
-import { Box, Button, Circle, Flex, Heading, Link, Stack, Text, useToast } from "@chakra-ui/react"
+import { Box, Button, Circle, Flex, Heading, Stack, Text, useToast } from "@chakra-ui/react"
 import dayjs from "dayjs"
 import { useContext, useState } from "react"
 import { useQuery, useQueryClient } from "react-query"
@@ -111,7 +111,7 @@ export default () => {
 
   const ValidatedAccountDescription = () => {
     return (
-      <>
+      <Box mb={5}>
         <Flex alignItems="flex-start" mb={3}>
           <InfoCircle mr={2} mt={1} />
           <Box>
@@ -120,17 +120,17 @@ export default () => {
             </Heading>
             <Text textAlign="justify">
               Afin de finaliser la diffusion de votre besoin auprès des jeunes, merci de confirmer votre adresse mail en cliquant sur le lien que nous venons de vous transmettre à
-              l’adresse suivante: <span style={{ fontWeight: "700" }}>{email}</span>.
+              l’adresse suivante : <span style={{ fontWeight: "700" }}>{email}</span>.
             </Text>
           </Box>
         </Flex>
-        <Flex align="center" ml={5} mb="16px">
-          <Text>Vous n’avez pas reçu le mail ? </Text>
-          <Button as={Link} variant="classic" textDecoration="underline" onClick={() => resendMail(email)} isDisabled={disableLink}>
+        <Stack direction="row" align="center" spacing={4} mt={4} ml={6}>
+          <Text mr={10}>Vous n’avez pas reçu le mail ? </Text>
+          <Button variant="popover" textDecoration="underline" onClick={() => resendMail(email)} isDisabled={disableLink}>
             Renvoyer le mail
           </Button>
-        </Flex>
-      </>
+        </Stack>
+      </Box>
     )
   }
   const AwaitingAccountDescription = () => {
@@ -147,12 +147,12 @@ export default () => {
               Afin de finaliser la diffusion de votre besoin auprès des jeunes, merci de confirmer votre adresse mail en cliquant sur le lien que nous venons de vous transmettre à
               l’adresse suivante: <span style={{ fontWeight: "700" }}>{email}</span>.
             </Text>
-            <Flex align="center">
-              <Text>Vous n’avez pas reçu le mail ? </Text>
-              <Button as={Link} variant="classic" textDecoration="underline" onClick={() => resendMail(email)} isDisabled={disableLink}>
+            <Stack direction="row" align="center" spacing={4} mt={4}>
+              <Text mr={10}>Vous n’avez pas reçu le mail ? </Text>
+              <Button variant="popover" textDecoration="underline" onClick={() => resendMail(email)} isDisabled={disableLink}>
                 Renvoyer le mail
               </Button>
-            </Flex>
+            </Stack>
           </Box>
         </Stack>
         <Stack direction="row" spacing={4}>
