@@ -161,14 +161,19 @@ export default ({ formulaire, mailer, etablissementsRecruteur, application, user
     "/:id_form/offre",
     tryCatch(async (req, res) => {
       const offre = req.body
-      // get user activation state
+      let isUserAwaiting = false
+      // get user data
       const user = await usersRecruteur.getUser({ id_form: req.params.id_form })
-      // upon user creation, if user is awaiting validation, update offre status to "En attente"
-      if (user.etat_utilisateur.length === 1 && user.etat_utilisateur[0].statut === etat_utilisateur.ATTENTE) {
-        offre.statut = "En attente"
+      // get user activation state if not managed by a CFA
+      if (user) {
+        isUserAwaiting = usersRecruteur.getUserValidationState(user.etat_utilisateur) === etat_utilisateur.ATTENTE
+        // upon user creation, if user is awaiting validation, update offre status to "En attente"
+        if (isUserAwaiting) {
+          offre.statut = "En attente"
+        }
       }
-
-      const updatedFormulaire = await formulaire.createOffre(req.params.id_form, req.body)
+      // insert offre
+      const updatedFormulaire = await formulaire.createOffre(req.params.id_form, offre)
 
       let { email, raison_sociale, prenom, nom, mandataire, gestionnaire, offres } = updatedFormulaire
       let contactCFA
@@ -180,8 +185,6 @@ export default ({ formulaire, mailer, etablissementsRecruteur, application, user
 
       // if first offer creation for an Entreprise, send specific mail
       if (offres.length === 1 && mandataire === false) {
-        // Get user account
-        const user = await usersRecruteur.getUser({ email })
         // Get user account validation link
         const url = etablissementsRecruteur.getValidationUrl(user._id)
 
@@ -195,6 +198,7 @@ export default ({ formulaire, mailer, etablissementsRecruteur, application, user
             email: user.email,
             confirmation_url: url,
             offre: pick(offre, ["rome_appellation_label", "date_debut_apprentissage", "type", "niveau"]),
+            isUserAwaiting,
           },
         })
 

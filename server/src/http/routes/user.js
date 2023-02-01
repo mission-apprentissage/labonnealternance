@@ -1,6 +1,6 @@
 import express from "express"
 import { mailTemplate } from "../../assets/index.js"
-import { CFA, etat_utilisateur } from "../../common/constants.js"
+import { CFA, ENTREPRISE, etat_utilisateur } from "../../common/constants.js"
 import dayjs from "../../common/dayjs.js"
 import { Formulaire, UserRecruteur } from "../../common/model/index.js"
 import { createMagicLinkToken } from "../../common/utils/jwtUtils.js"
@@ -108,38 +108,40 @@ export default ({ usersRecruteur, mailer, formulaire }) => {
         return res.json(user)
       }
 
-      /**
-       * if user is validated :
-       * - activate offer
-       * - update expiration date to one month later
-       * - send email to delegation if available
-       */
-      const userFormulaire = await formulaire.getFormulaire({ id_form: user.id_form })
-      const offre = Object.assign(userFormulaire.offres[0], { statut: "Active", date_expiration: dayjs().add(1, "month").format("YYYY-MM-DD") })
-      await formulaire.updateOffre(offre._id, offre)
+      if (user.type === ENTREPRISE) {
+        /**
+         * if entreprise type of user is validated :
+         * - activate offer
+         * - update expiration date to one month later
+         * - send email to delegation if available
+         */
+        const userFormulaire = await formulaire.getFormulaire({ id_form: user.id_form })
+        const offre = Object.assign(userFormulaire.offres[0], { statut: "Active", date_expiration: dayjs().add(1, "month").format("YYYY-MM-DD") })
+        await formulaire.updateOffre(offre._id, offre)
 
-      if (offre?.delegations && offre?.delegations.length) {
-        await Promise.all(
-          offre.delegations.map(
-            async (delegation) =>
-              await mailer.sendEmail({
-                to: delegation.email,
-                subject: `Une entreprise recrute dans votre domaine`,
-                template: mailTemplate["mail-cfa-delegation"],
-                data: {
-                  enterpriseName: userFormulaire.raison_sociale,
-                  jobName: offre.rome_appellation_label,
-                  contractType: offre.type.join(", "),
-                  trainingLevel: offre.niveau,
-                  startDate: dayjs(offre.date_debut_apprentissage).format("DD/MM/YYYY"),
-                  duration: offre.duree_contrat,
-                  rhythm: offre.rythme_alternance,
-                  offerButton: `${config.publicUrlEspacePro}/proposition/formulaire/${userFormulaire.id_form}/offre/${offre._id}/siret/${delegation.siret}`,
-                  createAccountButton: `${config.publicUrlEspacePro}/creation/cfa`,
-                },
-              })
+        if (offre?.delegations && offre?.delegations.length) {
+          await Promise.all(
+            offre.delegations.map(
+              async (delegation) =>
+                await mailer.sendEmail({
+                  to: delegation.email,
+                  subject: `Une entreprise recrute dans votre domaine`,
+                  template: mailTemplate["mail-cfa-delegation"],
+                  data: {
+                    enterpriseName: userFormulaire.raison_sociale,
+                    jobName: offre.rome_appellation_label,
+                    contractType: offre.type.join(", "),
+                    trainingLevel: offre.niveau,
+                    startDate: dayjs(offre.date_debut_apprentissage).format("DD/MM/YYYY"),
+                    duration: offre.duree_contrat,
+                    rhythm: offre.rythme_alternance,
+                    offerButton: `${config.publicUrlEspacePro}/proposition/formulaire/${userFormulaire.id_form}/offre/${offre._id}/siret/${delegation.siret}`,
+                    createAccountButton: `${config.publicUrlEspacePro}/creation/cfa`,
+                  },
+                })
+            )
           )
-        )
+        }
       }
 
       // validate user email addresse

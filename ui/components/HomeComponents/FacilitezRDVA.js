@@ -5,7 +5,7 @@ const FacilitezRDVA = () => {
   return (
     <>
       <Box>
-        <Box bg="beige" borderRadius={10} p={12}>
+        <Box bg="beige" borderRadius={10} p={{ base: 3, md: 6, lg: 12 }}>
           <Grid templateColumns={{ base: "1fr", lg: "repeat(2, 1fr)" }}>
             <GridItem>
               <Box display="flex" alignItems="center" justifyContent={{ base: "center", lg: "flex-end" }} mr={{ base: 0, lg: 4 }} height="100%">

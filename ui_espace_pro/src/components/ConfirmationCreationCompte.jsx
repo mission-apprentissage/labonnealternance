@@ -9,11 +9,21 @@ export default (props) => {
   const navigate = useNavigate()
 
   const validateAccountCreation = () => {
+    switch (user.type) {
+      case AUTHTYPE.ENTREPRISE:
+        navigate("/creation/offre", {
+          replace: true,
+          state: { id_form: formulaire.id_form, email: user.email, userId: user._id, displayBanner: true },
+        })
+        break
+      case AUTHTYPE.CFA:
+        navigate("/authentification/en-attente", { replace: true, state: { email: user.email, type: user.type } })
+        break
+
+      default:
+        break
+    }
     onClose()
-    navigate("/creation/offre", {
-      replace: true,
-      state: { id_form: formulaire.id_form, email: user.email, userId: user._id, displayBanner: true },
-    })
   }
 
   const deleteAccount = () => {
