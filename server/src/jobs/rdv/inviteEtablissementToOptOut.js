@@ -1,4 +1,4 @@
-import { uniq } from "lodash-es"
+import _ from "lodash-es"
 import { mailTemplate } from "../../assets/index.js"
 import { logger } from "../../common/logger.js"
 import { mailType, optMode } from "../../common/model/constants/etablissement.js"
@@ -16,10 +16,10 @@ export const inviteEtablissementToOptOut = async ({ etablissements, widgetParame
   // Opt-out etablissement to activate
   const etablissementsWithouOptMode = await etablissements.find({
     opt_mode: null,
-    email_decisionnaire: {
-      $ne: null,
-    },
+    email_decisionnaire: { $nin: [null, ""] },
   })
+
+  logger.info(`Etablissements to invite: ${etablissementsWithouOptMode.length}`)
 
   for (const etablissement of etablissementsWithouOptMode) {
     const formations = await widgetParameters.find({
@@ -63,8 +63,7 @@ export const inviteEtablissementToOptOut = async ({ etablissements, widgetParame
 
     // Invite all etablissements only in production environment, for etablissement that have an "email_decisionnaire"
     if (emailDecisionaire) {
-      const willBeActivatedAt = dayjs().add(15, "days").format()
-      const optOutWillBeActivatedAtDayjs = dayjs(willBeActivatedAt)
+      const willBeActivatedAt = dayjs().add(15, "days")
 
       const { messageId } = await mailer.sendEmail({
         to: emailDecisionaire,
@@ -83,7 +82,7 @@ export const inviteEtablissementToOptOut = async ({ etablissements, widgetParame
             postalCode: etablissement.code_postal,
             ville: etablissement.localite,
             siret: etablissement?.siret_formateur,
-            optOutActivatedAtDate: optOutWillBeActivatedAtDayjs.format("DD/MM"),
+            optOutActivatedAtDate: willBeActivatedAt.format("DD/MM"),
             linkToUnsubscribe: `${config.publicUrlEspacePro}/form/opt-out/unsubscribe/${etablissement._id}`,
           },
           user: {
@@ -92,29 +91,29 @@ export const inviteEtablissementToOptOut = async ({ etablissements, widgetParame
         },
       })
 
-      await etablissements.updateOne(
-        { siret_formateur: etablissement.siret_formateur },
-        {
-          opt_mode: optMode.OPT_OUT,
-          opt_out_invited_at: dayjs().toDate(),
-          opt_out_will_be_activated_at: optOutWillBeActivatedAtDayjs.toDate(),
-          $push: {
-            mailing: {
-              campaign: mailType.OPT_OUT_INVITE,
-              status: null,
-              message_id: messageId,
-              email_sent_at: dayjs().toDate(),
-            },
+      await etablissement.update({
+        opt_mode: optMode.OPT_OUT,
+        opt_out_invited_at: dayjs().toDate(),
+        opt_out_will_be_activated_at: willBeActivatedAt.toDate(),
+        $push: {
+          mailing: {
+            campaign: mailType.OPT_OUT_INVITE,
+            status: null,
+            message_id: messageId,
+            email_sent_at: dayjs().toDate(),
           },
-        }
-      )
+        },
+      })
 
       let emails = formations.map((formation) => formation.email_rdv)
       if (etablissement?.etablissement_formateur_courriel) {
         emails.push(etablissement.etablissement_formateur_courriel)
       }
 
-      emails = uniq(emails).filter((email) => email !== etablissement.email_decisionnaire)
+      emails = _(emails)
+        .uniq(emails)
+        .filter((email) => email !== etablissement.email_decisionnaire)
+        .omitBy(_.isNil)
 
       await Promise.all(
         emails.map((email) =>
@@ -137,7 +136,7 @@ export const inviteEtablissementToOptOut = async ({ etablissements, widgetParame
                 ville: etablissement.localite,
                 siret: etablissement.siret_formateur,
                 email: etablissement.email_decisionnaire,
-                optOutActivatedAtDate: dayjs(etablissement.opt_out_activated_at).format("dd/mm"),
+                optOutActivatedAtDate: willBeActivatedAt.format("DD/MM"),
                 emailGestionnaire: etablissement.email_decisionnaire,
               },
               user: {
@@ -150,7 +149,7 @@ export const inviteEtablissementToOptOut = async ({ etablissements, widgetParame
 
       logger.info("Etablissement invited to opt-out.", {
         siretFormateur: etablissement.siret_formateur,
-        willBeActivatedAt,
+        willBeActivatedAt: willBeActivatedAt.format(),
         emailDecisionaire,
       })
     }
