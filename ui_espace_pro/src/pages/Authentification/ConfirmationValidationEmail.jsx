@@ -8,17 +8,20 @@ import { AuthentificationLayout } from "../../components"
 
 const EmailValide = () => (
   <Box pt={["6w", "12w"]} px={["6", "8"]}>
-    <Heading fontSize="28px" as="h1">
+    <Heading fontSize="28px" as="h1" mb={7}>
       Merci ! Votre adresse email est bien confirmée.
     </Heading>
-    <Text fontSize="18px">Nos équipes se chargent à présent de valider votre compte. Vous serez notifié par email dès que ce sera fait. À bientôt sur La bonne alternance !</Text>
-    <Text fontSize="18px">Vous allez être redirigé automatiquement dans 5 secondes.</Text>
+    <Text fontSize="18px">Nos équipes se chargent à présent de valider votre compte. Vous serez notifié par email dès que ce sera fait.</Text>
+    <Text fontSize="18px">À bientôt sur La bonne alternance !</Text>
+    <Text fontSize="18px" pt={3}>
+      Vous allez être redirigé automatiquement dans quelques instants...
+    </Text>
   </Box>
 )
 
 const EmailInvalide = () => (
   <Box pt={["6w", "12w"]} px={["6", "8"]}>
-    <Heading fontSize="28px" as="h1">
+    <Heading fontSize="28px" as="h1" mb={7}>
       Mail invalide
     </Heading>
     <Text fontSize="18px">
@@ -41,9 +44,10 @@ export default (props) => {
     // get user from params coming from email link
     validationCompte({ id })
       .then(({ data }) => {
+        console.log({ data })
         if (data?.isUserAwaiting) {
-          setIsAwaitingValidation(true)
-          setTimeout(() => window.location.replace("/"), 5000)
+          setIsAwaitingValidation.on()
+          setTimeout(() => window.location.replace("/"), 10000)
         }
         if (data?.token) {
           setAuth(data?.token)
