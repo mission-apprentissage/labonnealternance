@@ -66,8 +66,7 @@ const contentSecurityPolicy = `
   style-src 'self' https: 'unsafe-inline';
   frame-src https://rdv-cfa.apprentissage.beta.gouv.fr 
             https://matcha.apprentissage.beta.gouv.fr
-            https://doctrina.apprentissage.beta.gouv.fr 
-            https://doctrina-recette.apprentissage.beta.gouv.fr 
+ 
             https://plausible.io 
             https://vars.hotjar.com
             https://cdn.trustcommander.net
