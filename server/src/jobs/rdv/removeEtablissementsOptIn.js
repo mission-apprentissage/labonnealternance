@@ -6,7 +6,7 @@ import { optMode } from "../../common/model/constants/etablissement.js"
  * @returns {Promise<void>}
  */
 export const removeEtablissementsOptIn = async ({ etablissements }) => {
-  logger.info("Cron #removeEtablissementsOptIn started.")
+  logger.info("Cron #removeOptInEtablissements started.")
 
   const etablissementsToRemove = await etablissements.find({
     opt_mode: optMode.OPT_IN,
@@ -23,6 +23,5 @@ export const removeEtablissementsOptIn = async ({ etablissements }) => {
       { $unset: { opt_in_activated_at: 1 } }
     )
   }
-
-  logger.info("Cron #removeEtablissementsOptIn done.")
+  logger.info("Cron #removeOptInEtablissements done.")
 }
