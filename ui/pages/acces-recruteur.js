@@ -30,7 +30,7 @@ const AccesRecruteur = () => (
     <Container my={0} px={0} variant="pageContainer" bg="white">
       <Entreprise />
 
-      <Box as="section" px={10} py={5} borderRadius={10} bg="grey.100">
+      <Box as="section" p={{ base: 3, md: 6, lg: 12 }} borderRadius={10} bg="grey.100">
         <PostezVotreOffre />
         <OffresGratuites />
         <OrganismesMandataires />

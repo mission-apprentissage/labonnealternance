@@ -23,6 +23,5 @@ export const removeEtablissementsOptIn = async ({ etablissements }) => {
       { $unset: { opt_in_activated_at: 1 } }
     )
   }
-
   logger.info("Cron #removeOptInEtablissements done.")
 }

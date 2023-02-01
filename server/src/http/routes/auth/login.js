@@ -73,42 +73,42 @@ export default ({ users, usersRecruteur, etablissementsRecruteur, mailer }) => {
     "/confirmation-email",
     tryCatch(async (req, res) => {
       try {
-        await Joi.object({
+        const { email } = await Joi.object({
           email: Joi.string().email().required(),
         }).validateAsync(req.body, { abortEarly: false })
+
+        const user = await usersRecruteur.getUser({ email })
+
+        if (!user) {
+          return res.status(400).json({ error: true, reason: "UNKNOWN" })
+        }
+
+        let { _id, prenom, nom, email_valide } = user
+
+        if (email_valide) {
+          return res.status(400).json({ error: true, reason: "VERIFIED" })
+        }
+
+        const url = etablissementsRecruteur.getValidationUrl(_id)
+
+        await mailer.sendEmail({
+          to: email,
+          subject: "La bonne alternance - Confirmez votre adresse email",
+          template: mailTemplate["mail-confirmation-email"],
+          data: {
+            nom,
+            prenom,
+            confirmation_url: url,
+          },
+        })
+
+        return res.sendStatus(200)
       } catch (error) {
         return res.status(400).json({
           errorMessage: "l'adresse mail n'est pas valide.",
           details: error.details,
         })
       }
-
-      const user = await usersRecruteur.getUser({ email })
-
-      if (!user) {
-        return res.status(400).json({ error: true, reason: "UNKNOWN" })
-      }
-
-      let { _id, prenom, nom, email, email_valide } = user
-
-      if (email_valide) {
-        return res.status(400).json({ error: true, reason: "VERIFIED" })
-      }
-
-      const url = etablissementsRecruteur.getValidationUrl(_id)
-
-      await mailer.sendEmail({
-        to: email,
-        subject: "La bonne alternance - Confirmez votre adresse email",
-        template: mailTemplate["mail-confirmation-email"],
-        data: {
-          nom,
-          prenom,
-          confirmation_url: url,
-        },
-      })
-
-      return res.sendStatus(200)
     })
   )
 

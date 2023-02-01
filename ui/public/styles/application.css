@@ -52,7 +52,8 @@ canvas.mapboxgl-canvas:focus {
     display: none;
 }
 
-@media screen and (min-width: 576px) {
+
+@media screen and (min-width: 480px) {
     .mapboxgl-popup {
         min-width: 300px !important;
         max-width: 300px !important;
@@ -69,14 +70,22 @@ canvas.mapboxgl-canvas:focus {
     }   
 
     .mapboxgl-popup {
-        min-width: 400px !important;
-        max-width: 400px !important;
+        min-width: 200px !important;
+        max-width: 200px !important;
     }
 }
 
 @media screen and (min-width: 992px) {
     .mapboxgl-popup {
-        min-width: 600px !important;
-        max-width: 600px !important;
+        min-width: 250px !important;
+        max-width: 250px !important;
+    }
+}
+
+
+@media screen and (min-width: 1280px) {
+    .mapboxgl-popup {
+        min-width: 400px !important;
+        max-width: 400px !important;
     }
 }

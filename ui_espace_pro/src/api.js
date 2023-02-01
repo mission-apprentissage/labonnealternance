@@ -47,7 +47,7 @@ export const getUsers = async (query) => API.get("/user", { params: query })
 // export const getUsers = (query, options, limit, page) =>
 //   API.get('/user', { params: { query, options, limit, page } }).catch(errorHandler)
 
-export const getUser = async (userId) => await API.get(`/user/${userId}`).catch(errorHandler)
+export const getUser = async (userId) => await API.get(`/user/${userId}`)
 export const createUser = async (user) => await API.post("/user", user).catch(errorHandler)
 export const updateUser = async (userId, user) => await API.put(`user/${userId}`, user)
 export const updateUserValidationHistory = async (userId, state) => await API.put(`user/${userId}/history`, state).catch(errorHandler)

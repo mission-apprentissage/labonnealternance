@@ -30,7 +30,7 @@ const Organisme = () => {
           <FacilitezRDVA />
         </Box>
 
-        <Box as="section" bg="beige" borderRadius={10} px={12} py={6} mt={16}>
+        <Box as="section" bg="beige" borderRadius={10} p={{ base: 3, md: 6, lg: 12 }} mt={16}>
           <PostezVotreOffreAlternance />
           <GerezEntreprise />
           <OffresGratuites />

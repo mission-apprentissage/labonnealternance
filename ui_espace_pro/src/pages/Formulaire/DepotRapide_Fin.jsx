@@ -1,10 +1,10 @@
-import { Box, Button, Circle, Flex, Heading, Link, Stack, Text, useToast } from "@chakra-ui/react"
+import { Box, Button, Circle, Flex, Heading, Stack, Text, useToast } from "@chakra-ui/react"
 import dayjs from "dayjs"
 import { useContext, useState } from "react"
 import { useQuery, useQueryClient } from "react-query"
 import { useLocation, useNavigate } from "react-router-dom"
 import { getUser, sendValidationLink } from "../../api"
-import { AuthentificationLayout } from "../../components"
+import { AuthentificationLayout, LoadingEmptySpace } from "../../components"
 import { WidgetContext } from "../../contextWidget"
 import { InfoCircle } from "../../theme/components/icons"
 import { MailCloud } from "../../theme/components/logos"
@@ -21,12 +21,17 @@ export default () => {
   const { widget } = useContext(WidgetContext)
   const { offre, email, withDelegation, fromDashboard, userId } = location.state
 
-  useQuery("userdetail", () => getUser(userId), {
-    onSettled: ({ data }) => {
-      const latestStatus = data.etat_utilisateur.pop().statut
+  /**
+   * KBA 20230130 : retry set to false to avoid waiting for failure if user is from dashboard (userId is not passed)
+   * - To be changed with userID in URL params
+   */
+  const { isFetched } = useQuery("userdetail", () => getUser(userId), {
+    retry: false,
+    onSettled: (data) => {
+      const latestStatus = data?.data?.etat_utilisateur.pop().statut || false
       switch (withDelegation) {
         case true:
-          if (latestStatus === "VALIDÉ") {
+          if (latestStatus === "VALIDÉ" || fromDashboard) {
             setUserIsValidated(true)
             setTitle("Félicitations,<br>votre offre a bien été créée et transmise aux organismes de formation que vous avez sélectionnés.")
           } else {
@@ -37,7 +42,7 @@ export default () => {
           break
 
         case false:
-          if (latestStatus === "VALIDÉ") {
+          if (latestStatus === "VALIDÉ" || fromDashboard) {
             setUserIsValidated(true)
             setTitle("Félicitations,<br>votre offre a bien été créée!")
           } else {
@@ -50,6 +55,10 @@ export default () => {
       }
     },
   })
+
+  if (!isFetched) {
+    return <LoadingEmptySpace />
+  }
 
   const resendMail = (email) => {
     sendValidationLink({ email })
@@ -102,7 +111,7 @@ export default () => {
 
   const ValidatedAccountDescription = () => {
     return (
-      <>
+      <Box mb={5}>
         <Flex alignItems="flex-start" mb={3}>
           <InfoCircle mr={2} mt={1} />
           <Box>
@@ -111,17 +120,17 @@ export default () => {
             </Heading>
             <Text textAlign="justify">
               Afin de finaliser la diffusion de votre besoin auprès des jeunes, merci de confirmer votre adresse mail en cliquant sur le lien que nous venons de vous transmettre à
-              l’adresse suivante: <span style={{ fontWeight: "700" }}>{email}</span>.
+              l’adresse suivante : <span style={{ fontWeight: "700" }}>{email}</span>.
             </Text>
           </Box>
         </Flex>
-        <Flex align="center" ml={5} mb="16px">
-          <Text>Vous n’avez pas reçu le mail ? </Text>
-          <Button as={Link} variant="classic" textDecoration="underline" onClick={() => resendMail(email)} isDisabled={disableLink}>
+        <Stack direction="row" align="center" spacing={4} mt={4} ml={6}>
+          <Text mr={10}>Vous n’avez pas reçu le mail ? </Text>
+          <Button variant="popover" textDecoration="underline" onClick={() => resendMail(email)} isDisabled={disableLink}>
             Renvoyer le mail
           </Button>
-        </Flex>
-      </>
+        </Stack>
+      </Box>
     )
   }
   const AwaitingAccountDescription = () => {
@@ -138,12 +147,12 @@ export default () => {
               Afin de finaliser la diffusion de votre besoin auprès des jeunes, merci de confirmer votre adresse mail en cliquant sur le lien que nous venons de vous transmettre à
               l’adresse suivante: <span style={{ fontWeight: "700" }}>{email}</span>.
             </Text>
-            <Flex align="center">
-              <Text>Vous n’avez pas reçu le mail ? </Text>
-              <Button as={Link} variant="classic" textDecoration="underline" onClick={() => resendMail(email)} isDisabled={disableLink}>
+            <Stack direction="row" align="center" spacing={4} mt={4}>
+              <Text mr={10}>Vous n’avez pas reçu le mail ? </Text>
+              <Button variant="popover" textDecoration="underline" onClick={() => resendMail(email)} isDisabled={disableLink}>
                 Renvoyer le mail
               </Button>
-            </Flex>
+            </Stack>
           </Box>
         </Stack>
         <Stack direction="row" spacing={4}>
@@ -176,9 +185,9 @@ export default () => {
           <Heading fontSize="24px" mb="16px" mt={widget?.mobile ? "10px" : "0px"}>
             <div dangerouslySetInnerHTML={{ __html: title }} />
           </Heading>
-          {userIsValidated ? <ValidatedAccountDescription /> : <AwaitingAccountDescription />}
+          {userIsValidated ? fromDashboard ? null : <ValidatedAccountDescription /> : <AwaitingAccountDescription />}
           <Box bg="#F6F6F6" p={4}>
-            <Stack direction="column" spacing="16px" mt={fromDashboard ? 10 : 0}>
+            <Stack direction="column" spacing="16px">
               <Heading fontSize="20px">Récapitulatif de votre besoin</Heading>
               <Text>
                 Poste : <span style={{ fontWeight: "700" }}>{offre.rome_appellation_label}</span>

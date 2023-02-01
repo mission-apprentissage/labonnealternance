@@ -25,9 +25,16 @@
             Bonjour <%= data.prenom %> <%= data.nom %>,
           </mj-text>
 
+          <% if(!data.isUserAwaiting){ %>
           <mj-text>
             Félicitations, l'offre ci-dessous a bien été créée :
           </mj-text>
+          <% } %>
+          <% if(data.isUserAwaiting){ %>
+          <mj-text>
+            Félicitations, l'offre ci-dessous a bien été enregistrée :
+          </mj-text>
+          <% } %>
         </mj-column>
       </mj-section>
 
@@ -44,11 +51,64 @@
         </mj-column>
       </mj-section>
 
+      <% if(data.isUserAwaiting){ %>
+        <mj-section>
+          <mj-column>
+            <mj-text font-weigth="700">
+              Merci de cliquer sur le lien ci-dessous pour confirmer votre adresse mail, nous nous chargeons de vérifier votre compte :
+            </mj-text>
+            <mj-button color="#ffffff" background-color="#000091" href="<%= data.confirmation_url %>">
+              Confirmer mon adresse mail
+            </mj-button>
+            <mj-text>Si le lien ne fonctionne pas, copier le lien suivant dans le navigateur : <a href="<%= data.confirmation_url %></"><%= data.confirmation_url %></a></mj-text>
+          </mj-column>
+        </mj-section>
+  
+        <mj-section padding="0px">
+          <mj-column>
+            <mj-divider border-width="1px" border-color="#E3E3FD" />
+          </mj-column>
+        </mj-section>
+  
+        <mj-section>
+          <mj-column>
+            <mj-text font-weight="700" font-size="22px" padding-bottom="20px">
+              Quelles seront les prochaines étapes ?
+            </mj-text>
+            <mj-text font-weight="700" line-height="5px">
+              Votre compte sera validé manuellement par nos équipes
+            </mj-text>
+            <mj-text>Vous serez notifié par email une fois que ce sera fait.</mj-text>
+            <mj-text font-weight="700" padding-top="20px" line-height=".5px">
+              Votre offre sera alors automatiquement publiée
+            </mj-text>
+            <mj-text>Une fois votre compte validé, votre offre est automatiquement publiée et partagée aux organismes de formation que vous avez sélectionnés.</mj-text>
+  
+          </mj-column>
+        </mj-section>
+  
+        <mj-section padding="0px">
+          <mj-column>
+            <mj-divider border-width="1px" border-color="#E3E3FD" />
+          </mj-column>
+        </mj-section>
+  
+        <mj-section>
+          <mj-column>
+            <mj-text>
+              L'équipe La bonne alternance, <br>
+              Mission interministérielle pour l'apprentissage et les trajectoires profesionnelles
+            </mj-text>
+          </mj-column>
+        </mj-section>
+      <% } %>
+        
+      <% if(!data.isUserAwaiting){ %>
       <mj-section>
         <mj-column>
           <mj-text font-weight="700">Afin de pouvoir diffuser votre offre et accéder à votre espace de gestion, merci de cliquer sur le lien ci-dessous pour valider votre adresse mail:</mj-text>
           <mj-button color="#ffffff" background-color="#000091" href="<%= data.confirmation_url %>">
-            Vérifier mon adresse mail
+            Confirmer mon adresse mail
           </mj-button>
           <mj-text>Si le lien ne fonctionne pas, copier le lien suivant dans le navigateur : <a href="<%= data.confirmation_url %></"><%= data.confirmation_url %></a></mj-text>
           <mj-text>
@@ -57,6 +117,7 @@
           </mj-text>
         </mj-column>
       </mj-section>
+      <% } %>
       
     </mj-wrapper>
     <mj-section padding-top="30px">
