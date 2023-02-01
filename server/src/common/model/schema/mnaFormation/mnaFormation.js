@@ -441,6 +441,11 @@ export const mnaFormationSchema = {
     type: Boolean,
     description: "Renseigné si la formation peut être suivie entièrement à distance",
   },
+  catalogue_published: {
+    index: true,
+    type: Boolean,
+    description: "Formation éligible au catalogue générale",
+  },
   ...etablissementGestionnaireInfo,
   ...etablissementFormateurInfo,
   ...etablissementReferenceInfo,
