@@ -33,6 +33,7 @@
     "@chakra-ui/react": "2.3.6",
     "@emotion/react": "^11",
     "@emotion/styled": "^11",
+    "@socialgouv/matomo-next": "1.6.1",
     "@turf/distance": "^6.0.1",
     "axios": "1.1.2",
     "config": "3.3.3",

@@ -1,5 +1,5 @@
-import App from "next/app"
-import React from "react"
+import { init } from "@socialgouv/matomo-next"
+import React, { useEffect } from "react"
 import HeadLaBonneAlternance from "../components/head"
 
 import Providers from "../context/Providers"
@@ -9,22 +9,22 @@ import "../public/styles/fonts.css"
 
 import PageTracker from "../components/pageTracker"
 import { getEnvFromProps } from "../utils/env"
-class LaBonneAlternance extends App {
-  render() {
-    const { Component, pageProps } = this.props
 
-    const env = getEnvFromProps(this.props).env
+export default function LaBonneAlternance({ Component, pageProps }) {
+  useEffect(() => {
+    init({ url: process.env.LBA_MATOMO_URL, siteId: process.env.LBA_MATOMO_SITE_ID })
+  })
 
-    return (
-      <Providers env={env}>
-        <PageTracker>
-          <main>
-            <HeadLaBonneAlternance />
-            <Component {...pageProps} />
-          </main>
-        </PageTracker>
-      </Providers>
-    )
-  }
+  const env = getEnvFromProps(this.props).env
+
+  return (
+    <Providers env={env}>
+      <PageTracker>
+        <main>
+          <HeadLaBonneAlternance />
+          <Component {...pageProps} />
+        </main>
+      </PageTracker>
+    </Providers>
+  )
 }
-export default LaBonneAlternance
