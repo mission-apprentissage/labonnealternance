@@ -1,7 +1,8 @@
+import { oleoduc, writeData } from "oleoduc"
 import { getFormationsFromCatalogueMe } from "../../common/catalogue.js"
 import { logger } from "../../common/logger.js"
 import { referrers } from "../../common/model/constants/referrers.js"
-import { getFormations } from "../../common/utils/catalogue.js"
+import { FormationCatalogue } from "../../common/model/index.js"
 import { dayjs } from "../../common/utils/dayjs.js"
 import { isValidEmail } from "../../common/utils/isValidEmail.js"
 
@@ -28,8 +29,6 @@ const getEmailFromCatalogueField = (email) => {
  */
 export const syncEtablissementsAndFormations = async ({ etablissements, widgetParameters }) => {
   logger.info("Cron #syncEtablissementsAndFormations started.")
-  const batchSize = 50
-  let response
 
   const catalogueMinistereEducatif = await getFormationsFromCatalogueMe({
     limit: 1000,
@@ -37,13 +36,10 @@ export const syncEtablissementsAndFormations = async ({ etablissements, widgetPa
     select: { parcoursup_id: 1, cle_ministere_educatif: 1 },
   })
 
-  do {
-    const page = response?.pagination?.page ? Number(response?.pagination?.page) + 1 : 1
-
-    response = await getFormations({}, page, batchSize, false)
-
-    await Promise.all(
-      response.formations.map(async (formation) => {
+  await oleoduc(
+    FormationCatalogue.find({}).cursor(),
+    writeData(
+      async (formation) => {
         const [widgetParameter, etablissement, formationMinistereEducatif] = await Promise.all([
           widgetParameters.findOne({
             cle_ministere_educatif: formation.cle_ministere_educatif,
@@ -81,15 +77,17 @@ export const syncEtablissementsAndFormations = async ({ etablissements, widgetPa
               email_rdv: emailRdv,
               id_parcoursup: formationMinistereEducatif?.parcoursup_id,
               cle_ministere_educatif: formation.cle_ministere_educatif,
-              etablissement_raison_sociale: formation.etablissement_formateur_entreprise_raison_sociale,
               formation_cfd: formation.cfd,
               code_postal: formation.code_postal,
               formation_intitule: formation.intitule_long,
               referrers: emailRdv ? referrersToActivate : [],
-              etablissement_siret: formation.etablissement_formateur_siret,
               catalogue_published: formation.published,
               id_rco_formation: formation.id_rco_formation,
+              cfd: formation.cfd,
+              localite: formation.localite,
               last_catalogue_sync: dayjs().format(),
+              etablissement_siret: formation.etablissement_formateur_siret,
+              etablissement_raison_sociale: formation.etablissement_formateur_entreprise_raison_sociale,
               etablissement_formateur_adresse: formation.etablissement_formateur_adresse,
               etablissement_formateur_code_postal: formation.etablissement_formateur_code_postal,
               etablissement_formateur_nom_departement: formation.etablissement_formateur_nom_departement,
@@ -97,8 +95,6 @@ export const syncEtablissementsAndFormations = async ({ etablissements, widgetPa
               lieu_formation_adresse: formation.lieu_formation_adresse,
               etablissement_formateur_siret: formation.etablissement_formateur_siret,
               etablissement_gestionnaire_siret: formation.etablissement_gestionnaire_siret,
-              cfd: formation.cfd,
-              localite: formation.localite,
             }
           )
         } else {
@@ -109,24 +105,24 @@ export const syncEtablissementsAndFormations = async ({ etablissements, widgetPa
             email_rdv: emailRdv,
             id_parcoursup: formationMinistereEducatif?.parcoursup_id,
             cle_ministere_educatif: formation.cle_ministere_educatif,
-            etablissement_raison_sociale: formation.etablissement_formateur_entreprise_raison_sociale,
             formation_cfd: formation.cfd,
             code_postal: formation.code_postal,
             formation_intitule: formation.intitule_long,
             referrers: emailRdv ? referrersToActivate : [],
-            etablissement_siret: formation.etablissement_formateur_siret,
             catalogue_published: formation.published,
             id_rco_formation: formation.id_rco_formation,
             last_catalogue_sync: dayjs().format(),
+            cfd: formation.cfd,
+            localite: formation.localite,
+            lieu_formation_adresse: formation.lieu_formation_adresse,
+            etablissement_siret: formation.etablissement_formateur_siret,
+            etablissement_raison_sociale: formation.etablissement_formateur_entreprise_raison_sociale,
             etablissement_formateur_adresse: formation.etablissement_formateur_adresse,
             etablissement_formateur_code_postal: formation.etablissement_formateur_code_postal,
             etablissement_formateur_nom_departement: formation.etablissement_formateur_nom_departement,
             etablissement_formateur_localite: formation.etablissement_formateur_localite,
-            lieu_formation_adresse: formation.lieu_formation_adresse,
             etablissement_formateur_siret: formation.etablissement_formateur_siret,
             etablissement_gestionnaire_siret: formation.etablissement_gestionnaire_siret,
-            cfd: formation.cfd,
-            localite: formation.localite,
           })
         }
 
@@ -152,10 +148,10 @@ export const syncEtablissementsAndFormations = async ({ etablissements, widgetPa
             last_catalogue_sync: dayjs().format(),
           }
         )
-      })
+      },
+      { parallel: 500 }
     )
-  } while (Number(response.pagination.page) !== response?.pagination.nombre_de_page)
+  )
 
-  logger.info(`Formations upserted: ${response.pagination.nombre_de_page}`)
   logger.info("Cron #syncEtablissementsAndFormations done.")
 }
