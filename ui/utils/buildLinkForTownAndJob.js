@@ -33,10 +33,13 @@ export const buildLinkForTownAndJob = (town, job) => {
 
   result += "&job_name=" + encodeURIComponent(job.name)
   result += "&romes=" + job.romes.join(",")
-  result += "&radius=30&lat=" + town.lat + "&lon=" + town.lon
-  result += "&zipcode=" + town.zip
-  result += "&insee=" + town.insee
-  result += "&address=" + encodeURIComponent(town.name)
+
+  if (town.name !== "France") {
+    result += "&radius=30&lat=" + town.lat + "&lon=" + town.lon
+    result += "&zipcode=" + town.zip
+    result += "&insee=" + town.insee
+    result += "&address=" + encodeURIComponent(town.name)
+  }
 
   return result
 }

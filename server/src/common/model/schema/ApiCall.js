@@ -2,32 +2,32 @@ export const apiCallSchema = {
   caller: {
     type: String,
     default: null,
-    description: "...",
+    description: "Le service faisant appel à l'API",
   },
-  api: {
+  api_path: {
     type: String,
     default: null,
-    description: "...",
+    description: "Le endpoint appelé",
   },
-  result: {
+  response: {
     type: String,
     default: null,
-    description: "...",
+    description: "Le résultat de l'appel",
   },
-  nb_formations: {
+  training_count: {
     type: Number,
     default: 0,
-    description: "...",
+    description: "Le nombre de formations retournées",
   },
-  nb_emplois: {
+  job_count: {
     type: Number,
     default: 0,
-    description: "...",
+    description: "Le nombre d'opportunités d'emploi retournées",
   },
   result_count: {
     type: Number,
     default: 0,
-    description: "...",
+    description: "Le nombre total d'items retournés",
   },
   created_at: {
     type: Date,
