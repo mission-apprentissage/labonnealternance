@@ -19,36 +19,18 @@ export const applicationSchema = {
     default: null,
     description: "Téléphone du candidat",
   },
-  applicant_file_name: {
+  applicant_attachment_name: {
     type: String,
     default: null,
     description: "Nom du fichier du CV du candidat",
   },
-  message: {
+  applicant_message_to_company: {
     type: String,
     default: null,
     required: false,
     description: "Le message envoyé par le candidat",
   },
-  applicant_opinion: {
-    type: String,
-    default: null,
-    required: false,
-    description: "L'avis donné par le candidat",
-  },
-  applicant_feedback: {
-    type: String,
-    default: null,
-    required: false,
-    description: "Un commentaire concernant le produit",
-  },
-  applicant_feedback_date: {
-    type: Date,
-    default: null,
-    required: false,
-    description: "Date d'opinion donnée",
-  },
-  company_intention: {
+  company_recruitment_intention: {
     type: String,
     default: null,
     required: false,
@@ -91,7 +73,7 @@ export const applicationSchema = {
     default: null,
     description: "L'adresse physique de la société",
   },
-  company_type: {
+  job_origin: {
     type: String,
     default: null,
     description: "Le type de société / offre au sens source d'info La bonne alternance. Ex : lba, lbb, matcha, pejob",
@@ -111,36 +93,11 @@ export const applicationSchema = {
     default: null,
     description: "Identifiant chez le transporteur du mail envoyé au candidat",
   },
-  to_applicant_message_status: {
-    type: String,
-    default: null,
-    description: "Statut du mail envoyé au candidat",
-  },
   to_company_message_id: {
     type: String,
     default: null,
     description: "Identifiant chez le transporteur du mail envoyé à l'entreprise",
   },
-  to_company_message_status: {
-    type: String,
-    default: null,
-    description: "Statut du mail envoyé à l'entreprise",
-  },
-  to_applicant_update_message_id: {
-    type: String,
-    default: null,
-    description: "Identifiant chez le transporteur du mail envoyé au candidat suite à réponse de l'entreprise",
-  },
-  to_company_update_message_status: {
-    type: String,
-    default: null,
-    description: "Statut du mail envoyé au candidat suite à réponse de l'entreprise",
-  },
-  /*interet_offres_mandataire: {
-    type: Boolean,
-    default: false,
-    description: "Le candidat est il intéressé par les offres du CFA mandataire",
-  },*/
   caller: {
     type: String,
     default: null,

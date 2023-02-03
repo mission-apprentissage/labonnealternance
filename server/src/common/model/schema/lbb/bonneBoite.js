@@ -5,12 +5,12 @@ export const bonneBoiteSchema = {
     description: "Le Siret de la société",
     index: true,
   },
-  score: {
+  recruitment_potential: {
     type: Number,
     default: 0,
     description: "Le score de recrutement de la société",
   },
-  raisonsociale: {
+  raison_sociale: {
     type: String,
     default: null,
     description: "Raison sociale de l'entreprise",
@@ -20,47 +20,47 @@ export const bonneBoiteSchema = {
     default: null,
     description: "Enseigne de l'entreprise",
   },
-  code_naf: {
+  naf_code: {
     type: String,
     default: null,
     description: "Code NAF de l'entreprise",
   },
-  intitule_naf: {
+  naf_label: {
     type: String,
     default: null,
     description: "Intitulé du code NAF",
   },
-  romes: {
+  rome_codes: {
     type: [String],
     default: null,
     description: "Liste des codes ROMEs au sein de l'entreprise",
   },
-  numero_rue: {
+  street_number: {
     type: String,
     default: null,
     description: "Numéro dans la rue",
   },
-  libelle_rue: {
+  street_name: {
     type: String,
     default: null,
     description: "Nom de la rue",
   },
-  code_commune: {
+  insee_city_code: {
     type: String,
     default: null,
     description: "Code commune INSEE",
   },
-  code_postal: {
+  zip_code: {
     type: String,
     default: null,
     description: "Code postal",
   },
-  ville: {
+  city: {
     type: String,
     default: null,
     description: "Ville",
   },
-  geo_coordonnees: {
+  geo_coordinates: {
     type: String,
     implicit_type: "geo_point",
     description: "Latitude et longitude de l'établissement",
@@ -70,18 +70,18 @@ export const bonneBoiteSchema = {
     default: null,
     description: "Adresse email de contact",
   },
-  telephone: {
+  phone: {
     type: String,
     default: null,
     description: "Numéro de téléphone de contact",
   },
-  tranche_effectif: { type: String, default: null, description: "Tranche effectif de l'entreprise" },
+  company_size: { type: String, default: null, description: "Tranche effectif de l'entreprise" },
   website: {
     type: String,
     default: null,
     description: "URL du site Internet",
   },
-  type: {
+  algorithm_origin: {
     type: String,
     default: "lba",
     description: "Type de bonne boîte : lba | lbb",
@@ -92,12 +92,6 @@ export const bonneBoiteSchema = {
     description: "L'OPCO de la société",
     index: true,
   },
-  /*idcc: {
-    type: String,
-    default: null,
-    description: "L'IDCC de la société",
-    index: true,
-  },*/
   created_at: {
     type: Date,
     default: Date.now,

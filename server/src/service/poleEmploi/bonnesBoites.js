@@ -71,25 +71,25 @@ const transformLbbCompanyForIdea = ({ company, type, caller, contactAllowedOrigi
   }
 
   if (contactAllowedOrigin) {
-    resultCompany.contact.phone = company.telephone
+    resultCompany.contact.phone = company.phone
   }
 
   // format différent selon accès aux bonnes boîtes par recherche ou par siret
-  const address = `${company.numero_rue} ${company.libelle_rue}, ${company.code_postal} ${company.ville}`.trim()
+  const address = `${company.street_number} ${company.street_name}, ${company.zip_code} ${company.city}`.trim()
 
   resultCompany.place = {
     distance: company.distance?.length ? Math.round(10 * company.distance[0]) / 10 ?? 0 : null,
     fullAddress: address,
-    latitude: company.geo_coordonnees.split(",")[0],
-    longitude: company.geo_coordonnees.split(",")[1],
-    city: company.ville,
+    latitude: company.geo_coordinates.split(",")[0],
+    longitude: company.geo_coordinates.split(",")[1],
+    city: company.city,
     address,
   }
 
   resultCompany.company = {
     name: company.enseigne,
     siret: company.siret,
-    size: company.tranche_effectif,
+    size: company.company_size,
     //socialNetwork: company.social_network,
     url: company.website,
   }
@@ -105,8 +105,8 @@ const transformLbbCompanyForIdea = ({ company, type, caller, contactAllowedOrigi
 
   resultCompany.nafs = [
     {
-      code: company.code_naf,
-      label: company.intitule_naf,
+      code: company.naf_code,
+      label: company.naf_label,
     },
   ]
 
@@ -120,12 +120,12 @@ const getLbbCompanies = async ({ romes, latitude, longitude, radius, companyLimi
     let mustTerm = [
       {
         match: {
-          romes: romes.split(",").join(" "),
+          rome_codes: romes.split(",").join(" "),
         },
       },
       {
         match: {
-          type,
+          algorithm_origin: type,
         },
       },
     ]
@@ -145,7 +145,7 @@ const getLbbCompanies = async ({ romes, latitude, longitude, radius, companyLimi
         latitude || latitude === 0
           ? {
               _geo_distance: {
-                geo_coordonnees: [parseFloat(longitude), parseFloat(latitude)],
+                geo_coordinates: [parseFloat(longitude), parseFloat(latitude)],
                 order: "asc",
                 unit: "km",
                 mode: "min",
@@ -169,7 +169,7 @@ const getLbbCompanies = async ({ romes, latitude, longitude, radius, companyLimi
       esQuery.query.bool.filter = {
         geo_distance: {
           distance: `${distance}km`,
-          geo_coordonnees: {
+          geo_coordinates: {
             lat: latitude,
             lon: longitude,
           },
@@ -205,7 +205,7 @@ const getLbbCompanies = async ({ romes, latitude, longitude, radius, companyLimi
 
     return bonnesBoites
   } catch (error) {
-    return manageApiError({ error, api, caller, errorTitle: `getting bonnesBoites from local ES (${api})` })
+    return manageApiError({ error, api_path: api, caller, errorTitle: `getting bonnesBoites from local ES (${api})` })
   }
 }
 
@@ -256,7 +256,7 @@ const getCompanyFromSiret = async ({ siret, referer, caller, type }) => {
     } else {
       return manageApiError({
         error,
-        api: "jobV1/company",
+        api_path: "jobV1/company",
         caller,
         errorTitle: "getting company by Siret from local ES",
       })
@@ -271,22 +271,22 @@ const getBonnesBoitesEsQueryIndexFragment = (limit) => {
     size: limit,
     _source_includes: [
       "siret",
-      "score",
-      "raisonsociale",
+      "recruitment_potential",
+      "raison_sociale",
       "enseigne",
-      "code_naf",
-      "intitule_naf",
-      "romes",
-      "numero_rue",
-      "libelle_rue",
-      "code_commune",
-      "code_postal",
-      "ville",
-      "geo_coordonnees",
+      "naf_code",
+      "naf_label",
+      "rome_codes",
+      "street_number",
+      "street_name",
+      "insee_city_code",
+      "zip_code",
+      "city",
+      "geo_coordinates",
       "email",
-      "telephone",
-      "tranche_effectif",
-      "type",
+      "phone",
+      "company_size",
+      "algorithm_origin",
     ],
   }
 }

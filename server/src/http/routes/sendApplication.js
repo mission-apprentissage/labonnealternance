@@ -1,14 +1,6 @@
 import express from "express"
 import rateLimit from "express-rate-limit"
-import {
-  debugUpdateApplicationStatus,
-  saveApplicationFeedback,
-  saveApplicationFeedbackComment,
-  saveApplicationIntentionComment,
-  sendApplication,
-  updateApplicationStatus,
-  updateBlockedEmails,
-} from "../../service/applications.js"
+import { debugUpdateApplicationStatus, saveApplicationIntentionComment, sendApplication, updateApplicationStatus, updateBlockedEmails } from "../../service/applications.js"
 import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
 
 const limiter1Per5Second = rateLimit({
@@ -38,30 +30,6 @@ export default function (components) {
         }
       }
 
-      return res.json(result)
-    })
-  )
-
-  router.post(
-    "/feedback",
-    limiter1Per5Second,
-    tryCatch(async (req, res) => {
-      const result = await saveApplicationFeedback({
-        query: req.body,
-        ...components,
-      })
-      return res.json(result)
-    })
-  )
-
-  router.post(
-    "/feedbackComment",
-    limiter1Per5Second,
-    tryCatch(async (req, res) => {
-      const result = await saveApplicationFeedbackComment({
-        query: req.body,
-        ...components,
-      })
       return res.json(result)
     })
   )

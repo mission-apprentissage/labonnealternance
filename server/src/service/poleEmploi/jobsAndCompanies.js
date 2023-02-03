@@ -16,20 +16,20 @@ const getJobsQuery = async (query) => {
   const result = await getJobsFromApi({ query, api: "jobV1/jobs" })
 
   if (query.caller) {
-    let nb_emplois = 0
+    let job_count = 0
     if (result?.lbaCompanies?.results) {
-      nb_emplois += result.lbaCompanies.results.length
+      job_count += result.lbaCompanies.results.length
     }
 
     if (result?.peJobs?.results) {
-      nb_emplois += result.peJobs.results.length
+      job_count += result.peJobs.results.length
     }
 
     if (result?.matchas?.results) {
-      nb_emplois += result.matchas.results.length
+      job_count += result.matchas.results.length
     }
 
-    trackApiCall({ caller: query.caller, nb_emplois, result_count: nb_emplois, api: "jobV1/jobs", result: "OK" })
+    trackApiCall({ caller: query.caller, job_count, result_count: job_count, api_path: "jobV1/jobs", response: "OK" })
   }
 
   return result
@@ -43,14 +43,14 @@ const getPeJobQuery = async (query) => {
     })
 
     if (query.caller) {
-      trackApiCall({ caller: query.caller, nb_emplois: 1, result_count: 1, api: "jobV1/job", result: "OK" })
+      trackApiCall({ caller: query.caller, job_count: 1, result_count: 1, api_path: "jobV1/job", response: "OK" })
     }
     //throw new Error("BIG BANG");
     return job
   } catch (err) {
     Sentry.captureException(err)
     if (query.caller) {
-      trackApiCall({ caller: query.caller, api: "jobV1/job", result: "Error" })
+      trackApiCall({ caller: query.caller, api_path: "jobV1/job", response: "Error" })
     }
     return { error: "internal_error" }
   }
@@ -67,7 +67,7 @@ const getCompanyQuery = async (query) => {
 
     //throw new Error("BIG BANG");
     if (query.caller) {
-      trackApiCall({ caller: query.caller, api: "jobV1/company", nb_emplois: 1, result_count: 1, result: "OK" })
+      trackApiCall({ caller: query.caller, api_path: "jobV1/company", job_count: 1, result_count: 1, response: "OK" })
     }
 
     return company
@@ -75,7 +75,7 @@ const getCompanyQuery = async (query) => {
     console.error("Error ", err.message)
     Sentry.captureException(err)
     if (query.caller) {
-      trackApiCall({ caller: query.caller, api: "jobV1/company", result: "Error" })
+      trackApiCall({ caller: query.caller, api_path: "jobV1/company", response: "Error" })
     }
     return { error: "internal_error" }
   }
@@ -156,7 +156,7 @@ const getJobsFromApi = async ({ query, api }) => {
     Sentry.captureException(err)
 
     if (query.caller) {
-      trackApiCall({ caller: query.caller, api, result: "Error" })
+      trackApiCall({ caller: query.caller, api_path: api, response: "Error" })
     }
 
     return { error: "internal_error" }

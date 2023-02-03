@@ -21,21 +21,21 @@ export const itemModel = (type) => {
     place: {
       distance: null, // distance au centre de recherche en km. pe --> lieutTravail.distance recalculé par turf.js | formation --> sort[0] | lbb/lba -> distance | matcha -> sort[0]
       fullAddress: null, // adresse postale reconstruite à partir des éléments d'adresse fournis | matcha -> adresse | formation -> lieu_formation_adresse + code_postal + localite OU etablissement_formateur_adresse + ...complement_adresse + ...code_postal + ...localite + ...cedex OU etablissement_gestionnaire_adresse + ...complement_adresse + ...localite + ...cedex
-      latitude: null, // formation -> lieu_formation_geo_coordonnees | pe -> lieuTravail.latitude | lbb/lba -> lat | matcha -> geo_coordonnees
-      longitude: null, // formation -> lieu_formation_geo_coordonnees | pe -> lieuTravail.longitude | lbb/lba -> lon | matcha -> geo_coordonnees
-      city: null, // pe -> lieuTravail.libelle | formation -> localite | pe -> city
-      address: null, // formation -> etablissement_formateur_adresse, etablissement_formateur_complement_adresse | lbb / lba -> address | matcha -> adresse
+      latitude: null, // formation -> lieu_formation_geo_coordonnees | pe -> lieuTravail.latitude | lbb/lba -> geo_coordinates | matcha -> geo_coordonnees
+      longitude: null, // formation -> lieu_formation_geo_coordonnees | pe -> lieuTravail.longitude | lbb/lba -> geo_coordinates | matcha -> geo_coordonnees
+      city: null, // pe -> lieuTravail.libelle | formation -> localite | pe -> city | lba -> city
+      address: null, // formation -> etablissement_formateur_adresse, etablissement_formateur_complement_adresse | lbb / lba -> address -> street_number + street_name | matcha -> adresse
       cedex: null, // formation -> etablissement_formateur_cedex
-      zipCode: null, // formation -> etablissement_formateur_code_postal | pe -> lieuTravail.codePostal
-      insee: null, // pe -> lieuTravail.commune, training --> code_commune_insee
+      zipCode: null, // formation -> etablissement_formateur_code_postal | pe -> lieuTravail.codePostal | lba -> zip_code
+      insee: null, // pe -> lieuTravail.commune, training -> code_commune_insee, lba -> insee_city_code
       departementNumber: null, // formation -> num_departement
       region: null, // formation -> region
     },
 
     company: {
-      name: null, // pe -> entreprise.nom | formation -> etablissement_formateur_entreprise_raison_sociale | lbb/lba -> name | matcha -> enseigne > raison_sociale
+      name: null, // pe -> entreprise.nom | formation -> etablissement_formateur_entreprise_raison_sociale | lbb/lba -> enseigne / raison_sociale | matcha -> enseigne > raison_sociale
       siret: null, // lbb/lba -> siret | formation -> etablissement_formateur_siret | matcha -> siret | pe -> entreprise.siret réservé à notre front
-      size: null, // lbb/lba -> headcount_text | matcha -> tranche_effectif
+      size: null, // lbb/lba -> company_size | matcha -> tranche_effectif
       logo: null, // pe -> entreprise.logo
       description: null, // pe -> entreprise.description
       socialNetwork: null, // lbb / lba -> social_network
@@ -95,15 +95,15 @@ export const itemModel = (type) => {
 
     romes: null /*[
             {
-                code,              // pe -> romeCode | lbb/lba -> matched_rome_code | matcha -> offres.romes
+                code,              // pe -> romeCode | lbb/lba -> rome_codes | matcha -> offres.romes
                 label,             // pe -> appellationLibelle | lbb/lba -> matched_rome_label
             }
         ],*/,
 
     nafs: null /* [
             {
-                code,               // lbb/lba -> naf | pe -> secteurActivite	
-                label,              // lbb/lba -> naf_text | matcha -> libelle_naf | pe -> secteurActiviteLibelle
+                code,               // lbb/lba -> naf_code | pe -> secteurActivite	
+                label,              // lbb/lba -> naf_label | matcha -> libelle_naf | pe -> secteurActiviteLibelle
             }
         ],*/,
     training: null /* alimentation côté client à l'ouverture d'une formation
