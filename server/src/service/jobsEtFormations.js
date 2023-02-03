@@ -39,28 +39,28 @@ const getJobsEtFormationsQuery = async (query) => {
     }
 
     if (query.caller) {
-      let nb_emplois = 0
+      let job_count = 0
       if (jobs?.lbaCompanies?.results) {
-        nb_emplois += jobs.lbaCompanies.results.length
+        job_count += jobs.lbaCompanies.results.length
       }
 
       if (jobs?.peJobs?.results) {
-        nb_emplois += jobs.peJobs.results.length
+        job_count += jobs.peJobs.results.length
       }
 
       if (jobs?.matchas?.results) {
-        nb_emplois += jobs.matchas.results.length
+        job_count += jobs.matchas.results.length
       }
 
-      const nb_formations = formations?.results ? formations.results.length : 0
+      const training_count = formations?.results ? formations.results.length : 0
 
       trackApiCall({
         caller: query.caller,
-        api: "jobEtFormationV1",
-        nb_formations,
-        nb_emplois,
-        result_count: nb_emplois + nb_formations,
-        result: "OK",
+        api_path: "jobEtFormationV1",
+        training_count,
+        job_count,
+        result_count: job_count + training_count,
+        response: "OK",
       })
     }
 
@@ -70,7 +70,7 @@ const getJobsEtFormationsQuery = async (query) => {
     Sentry.captureException(err)
 
     if (query.caller) {
-      trackApiCall({ caller: query.caller, api: "jobEtFormationV1", result: "Error" })
+      trackApiCall({ caller: query.caller, api_path: "jobEtFormationV1", response: "Error" })
     }
 
     return { error: "internal_error" }

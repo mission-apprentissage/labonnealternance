@@ -101,12 +101,12 @@ const getScoreForCompany = async (siret) => {
 }
 
 const filterRomesFromNafHirings = (bonneBoite /*, romes*/) => {
-  const nafRomeHirings = nafScoreMap[bonneBoite.code_naf]
+  const nafRomeHirings = nafScoreMap[bonneBoite.naf_code]
 
   let filteredRomes = []
   if (nafRomeHirings) {
     filteredRomes = nafRomeHirings.romes.filter((rome) => {
-      return (bonneBoite.score * nafRomeHirings[rome]) / nafRomeHirings.hirings >= predictionByROMEThreshold
+      return (bonneBoite.recruitment_potential * nafRomeHirings[rome]) / nafRomeHirings.hirings >= predictionByROMEThreshold
     })
   }
 
@@ -114,10 +114,10 @@ const filterRomesFromNafHirings = (bonneBoite /*, romes*/) => {
 }
 
 const getGeoLocationForCompany = async (bonneBoite) => {
-  if (!bonneBoite.geo_coordonnees) {
+  if (!bonneBoite.geo_coordinates) {
     let sTime = new Date().getTime()
 
-    let geoKey = `${bonneBoite.numero_rue} ${bonneBoite.libelle_rue} ${bonneBoite.code_commune}`.trim().toUpperCase()
+    let geoKey = `${bonneBoite.street_number} ${bonneBoite.street_name} ${bonneBoite.insee_city_code}`.trim().toUpperCase()
 
     let result = await GeoLocation.findOne({ address: geoKey })
 
@@ -180,16 +180,16 @@ const initCompanyFromLine = (line) => {
     siret: terms[0].padStart(14, "0"),
     enseigne: terms[1],
     nom: terms[2],
-    code_naf: terms[3],
-    numero_rue: terms[4],
-    libelle_rue: terms[5],
-    code_commune: terms[6],
-    code_postal: terms[7],
+    naf_code: terms[3],
+    street_number: terms[4],
+    street_name: terms[5],
+    insee_city_code: terms[6],
+    zip_code: terms[7],
     email: terms[8].toUpperCase() !== "NULL" ? terms[8] : "",
-    telephone: terms[9] !== "NULL" ? terms[9] : "",
-    tranche_effectif: terms[10] !== "NULL" ? terms[10] : "",
+    phone: terms[9] !== "NULL" ? terms[9] : "",
+    company_size: terms[10] !== "NULL" ? terms[10] : "",
     website: terms[11] !== "NULL" ? terms[11] : "",
-    type: "lba",
+    algorithm_origin: "lba",
   }
 }
 
@@ -241,7 +241,7 @@ const removeSAVECompanies = async () => {
   Initialize bonneBoite from data, add missing data from maps, 
 */
 const buildAndFilterBonneBoiteFromData = async (company) => {
-  let score = company.score || (await getScoreForCompany(company.siret))
+  let score = company.recruitment_potential || (await getScoreForCompany(company.siret))
 
   if (!score) {
     return null
@@ -254,11 +254,11 @@ const buildAndFilterBonneBoiteFromData = async (company) => {
   findBBTime += eTime - sTime
 
   if (!bonneBoite) {
-    company.intitule_naf = nafMap[company.code_naf]
+    company.naf_label = nafMap[company.naf_code]
     bonneBoite = new BonnesBoites(company)
   }
 
-  bonneBoite.score = score
+  bonneBoite.recruitment_potential = score
 
   // TODO checker si suppression via support PE
 
@@ -268,18 +268,18 @@ const buildAndFilterBonneBoiteFromData = async (company) => {
   if (romes.length === 0) {
     return null
   } else {
-    bonneBoite.romes = romes
+    bonneBoite.rome_codes = romes
   }
 
   let geo = await getGeoLocationForCompany(bonneBoite)
 
-  if (!bonneBoite.geo_coordonnees) {
+  if (!bonneBoite.geo_coordinates) {
     if (!geo) {
       return null
     } else {
-      bonneBoite.ville = geo.city
-      bonneBoite.code_postal = geo.postcode
-      bonneBoite.geo_coordonnees = geo.geoLocation
+      bonneBoite.city = geo.city
+      bonneBoite.zip_code = geo.zip_code
+      bonneBoite.geo_coordinates = geo.geo_coordinates
     }
   }
 

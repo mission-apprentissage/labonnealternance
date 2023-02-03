@@ -1,7 +1,7 @@
 import Sentry from "@sentry/node"
 import { trackApiCall } from "./sendTrackingEvent.js"
 
-const manageApiError = ({ error, api, caller, errorTitle }) => {
+const manageApiError = ({ error, api_path, caller, errorTitle }) => {
   let errorObj = { result: "error", message: error.message }
   const status = error?.response?.status || ""
   error.name = `API error ${status ? status + " " : ""}${errorTitle}`
@@ -11,7 +11,7 @@ const manageApiError = ({ error, api, caller, errorTitle }) => {
   Sentry.captureException(error)
 
   if (caller) {
-    trackApiCall({ caller, api, result: "Error", status })
+    trackApiCall({ caller, api_path, response: "Error", status })
   }
 
   if (error.response) {

@@ -18,6 +18,7 @@ import { inviteEtablissementToPremiumFollowUp } from "./jobs/rdv/inviteEtablisse
 import { parcoursupEtablissementStat } from "./jobs/rdv/parcoursupEtablissementStat.js"
 import { premiumActivatedReminder } from "./jobs/rdv/premiumActivatedReminder.js"
 import { premiumInviteOneShot } from "./jobs/rdv/premiumInviteOneShot.js"
+import { refactorLBACFields } from "./jobs/cleanAndRenameDBFields/refactorLBACFields.js"
 import { removeEtablissementsOptIn } from "./jobs/rdv/removeEtablissementsOptIn.js"
 import { syncEtablissementsAndFormations } from "./jobs/rdv/syncEtablissementsAndFormations.js"
 import { runScript } from "./jobs/scriptWrapper.js"
@@ -196,6 +197,13 @@ cli
   .description("Anonymise toutes les candidatures de plus de an qui ne sont pas déjà anonymisées")
   .action(() => {
     runScript(() => anonymizeOldApplications())
+  })
+
+cli
+  .command("rename-lbac-fields")
+  .description("Renomme les champs des collections LBAC")
+  .action(() => {
+    runScript(() => refactorLBACFields())
   })
 
 cli.parse(process.argv)

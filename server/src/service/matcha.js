@@ -40,7 +40,7 @@ const getMatchaJobs = async ({ romes, radius, latitude, longitude, api, opco, ca
 
     return matchas
   } catch (error) {
-    return manageApiError({ error, api, caller, errorTitle: `getting jobs from Matcha (${api})` })
+    return manageApiError({ error, api_path: api, caller, errorTitle: `getting jobs from Matcha (${api})` })
   }
 }
 
@@ -80,12 +80,12 @@ const getMatchaJobById = async ({ id, caller }) => {
     })
 
     if (caller) {
-      trackApiCall({ caller: caller, nb_emplois: 1, result_count: 1, api: "jobV1/matcha", result: "OK" })
+      trackApiCall({ caller: caller, job_count: 1, result_count: 1, api_path: "jobV1/matcha", response: "OK" })
     }
 
     return { matchas: job }
   } catch (error) {
-    return manageApiError({ error, api: "jobV1/matcha", caller, errorTitle: "getting job by id from Matcha" })
+    return manageApiError({ error, api_path: "jobV1/matcha", caller, errorTitle: "getting job by id from Matcha" })
   }
 }
 

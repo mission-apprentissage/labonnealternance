@@ -26,7 +26,7 @@ const parseLine = (line) => {
     return {
       //code_rome: terms[0],
       //intitule_rome: terms[1],
-      code_naf: terms[2],
+      naf_code: terms[2],
       intitule_naf,
       //hirings: terms[terms.length - 1],
     }
@@ -35,9 +35,9 @@ const parseLine = (line) => {
   }
 }
 
-const computeLine = async ({ code_naf, intitule_naf }) => {
-  if (!nafMap[code_naf]) {
-    nafMap[code_naf] = intitule_naf
+const computeLine = async ({ naf_code, intitule_naf }) => {
+  if (!nafMap[naf_code]) {
+    nafMap[naf_code] = intitule_naf
   }
 }
 

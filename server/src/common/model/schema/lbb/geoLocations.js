@@ -11,12 +11,12 @@ export const geoLocationSchema = {
     default: null,
     description: "Ville",
   },
-  postcode: {
+  zip_code: {
     type: String,
     default: null,
     description: "Code postal",
   },
-  geoLocation: {
+  geo_coordinates: {
     type: String,
     default: null,
     description: "Les coordonnées latitude et longitude",
