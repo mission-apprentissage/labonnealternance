@@ -119,13 +119,13 @@ const parseUpdateLine = (line) => {
     sirets.forEach((siret) => {
       let company = {
         siret,
-        raisonsociale: name,
+        raison_sociale: name,
         enseigne: name,
         email,
-        telephone,
+        phone: telephone,
         website,
-        type,
-        romes,
+        algorithm_origin: type,
+        rome_codes: romes,
         removedRomes,
       }
 
@@ -167,22 +167,22 @@ const parseAddLine = (line) => {
 
     let company = {
       siret: terms[0].replace(/"/g, "").padStart(14, "0"),
-      raisonsociale: terms[1].replace(/"/g, ""),
+      raison_sociale: terms[1].replace(/"/g, ""),
       enseigne: terms[2].replace(/"/g, ""),
-      code_naf: terms[3].replace(/"/g, ""),
-      numero_rue: terms[4].replace(/"/g, ""),
-      libelle_rue: terms[5],
-      code_commune: terms[6].replace(/"/g, ""),
-      code_postal: terms[7].replace(/"/g, ""),
+      naf_code: terms[3].replace(/"/g, ""),
+      street_number: terms[4].replace(/"/g, ""),
+      street_name: terms[5],
+      insee_city_code: terms[6].replace(/"/g, ""),
+      zip_code: terms[7].replace(/"/g, ""),
       email: terms[8],
-      telephone: terms[9].replace(/"/g, ""),
+      phone: terms[9].replace(/"/g, ""),
       website: terms[10],
-      tranche_effectif: terms[16].replace(/"/g, ""),
-      type: lbaScore !== "0" ? "lba" : "lbb",
-      score,
+      company_size: terms[16].replace(/"/g, ""),
+      algorithm_origin: lbaScore !== "0" ? "lba" : "lbb",
+      recruitment_potential: score,
     }
 
-    company.enseigne = company.enseigne || company.raisonsociale
+    company.enseigne = company.enseigne || company.raison_sociale
 
     if (!company.enseigne) {
       logMessage("error", `Error adding company. Company ${company.siret} has no name`)

@@ -1,14 +1,14 @@
 import { ApiCalls } from "../../common/model/index.js"
 
-const trackApiCall = async ({ caller, api, nb_formations, nb_emplois, result_count, result }) => {
+const trackApiCall = async ({ caller, api_path, training_count, job_count, result_count, response }) => {
   try {
     let apiCall = new ApiCalls({
       caller,
-      api,
-      nb_formations,
-      nb_emplois,
+      api_path,
+      training_count,
+      job_count,
       result_count,
-      result,
+      response,
     })
 
     apiCall.save()

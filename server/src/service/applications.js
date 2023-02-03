@@ -89,18 +89,18 @@ const buildRecruiterEmailUrls = ({ publicUrl, application, encryptedId }) => {
 
 const initApplication = (query, companyEmail) => {
   let res = new Application({
-    applicant_file_name: query.applicant_file_name,
+    applicant_attachment_name: query.applicant_file_name,
     applicant_email: query.applicant_email.toLowerCase(),
     applicant_first_name: query.applicant_first_name,
     applicant_last_name: query.applicant_last_name,
     applicant_phone: query.applicant_phone,
-    message: prepareMessageForMail(query.message),
+    applicant_message_to_company: prepareMessageForMail(query.message),
     company_siret: query.company_siret,
     company_email: companyEmail.toLowerCase(),
     company_name: query.company_name,
     company_naf: query.company_naf,
     company_address: query.company_address,
-    company_type: query.company_type,
+    job_origin: query.company_type,
     job_title: query.job_title,
     job_id: query.job_id,
     caller: query.caller,
@@ -236,19 +236,19 @@ const sendApplication = async ({ scan, mailer, query, referer, shouldCheckSecret
           data: { ...application._doc, ...images, ...encryptedId, publicUrl },
           attachments: [
             {
-              filename: application.applicant_file_name,
+              filename: application.applicant_attachment_name,
               path: fileContent,
             },
           ],
         }),
         mailer.sendEmail({
           to: application.company_email,
-          subject: buildTopic(application.company_type, application.job_title),
+          subject: buildTopic(application.job_origin, application.job_title),
           template: getEmailTemplate(emailTemplates.entreprise),
           data: { ...application._doc, ...images, ...recruiterEmailUrls, urlOfDetail },
           attachments: [
             {
-              filename: application.applicant_file_name,
+              filename: application.applicant_attachment_name,
               path: fileContent,
             },
           ],
@@ -256,10 +256,8 @@ const sendApplication = async ({ scan, mailer, query, referer, shouldCheckSecret
       ])
 
       application.to_applicant_message_id = emailCandidat.messageId
-      application.to_applicant_message_status = emailCandidat?.accepted?.length ? "accepted" : "rejected"
       if (emailCompany?.accepted?.length) {
         application.to_company_message_id = emailCompany.messageId
-        application.to_company_message_status = "accepted"
       } else {
         logger.info(`Application email rejected. applicant_email=${application.applicant_email} company_email=${application.company_email}`)
         throw new Error("Application email rejected")
@@ -274,53 +272,13 @@ const sendApplication = async ({ scan, mailer, query, referer, shouldCheckSecret
       if (query?.caller) {
         manageApiError({
           error: err,
-          api: "applicationV1",
+          api_path: "applicationV1",
           caller: query.caller,
           errorTitle: "error_sending_application",
         })
       }
       return { error: "error_sending_application" }
     }
-  }
-}
-
-const saveApplicationFeedback = async ({ query }) => {
-  await validateFeedbackApplication({
-    id: query.id,
-    iv: query.iv,
-    avis: query.avis,
-  })
-
-  let decryptedId = decryptWithIV(query.id, query.iv)
-
-  try {
-    await Application.findOneAndUpdate({ _id: ObjectId(decryptedId) }, { applicant_opinion: query.avis, applicant_feedback_date: new Date() })
-
-    return { result: "ok", message: "opinion registered" }
-  } catch (err) {
-    console.log("err ", err)
-    Sentry.captureException(err)
-    return { error: "error_saving_opinion" }
-  }
-}
-
-const saveApplicationFeedbackComment = async ({ query }) => {
-  await validateFeedbackApplicationComment({
-    id: query.id,
-    iv: query.iv,
-    comment: query.comment,
-  })
-
-  let decryptedId = decryptWithIV(query.id, query.iv)
-
-  try {
-    await Application.findOneAndUpdate({ _id: ObjectId(decryptedId) }, { applicant_feedback: query.comment, applicant_feedback_date: new Date() })
-
-    return { result: "ok", message: "comment registered" }
-  } catch (err) {
-    console.log("err ", err)
-    Sentry.captureException(err)
-    return { error: "error_saving_comment" }
   }
 }
 
@@ -337,7 +295,7 @@ const saveApplicationIntentionComment = async ({ query, mailer }) => {
   try {
     const application = await Application.findOneAndUpdate(
       { _id: ObjectId(decryptedId) },
-      { company_intention: query.intention, company_feedback: query.comment, company_feedback_date: new Date() }
+      { company_recruitment_intention: query.intention, company_feedback: query.comment, company_feedback_date: new Date() }
     )
 
     sendNotificationToApplicant({
@@ -477,25 +435,16 @@ const updateApplicationStatus = async ({ payload, mailer }) => {
   }
 
   if (event === "hard_bounce" && messageType === "application") {
-    addEmailToBlacklist(payload.email, application.company_type)
+    addEmailToBlacklist(payload.email, application.job_origin)
 
-    if (application.company_type === "lbb" || application.company_type === "lba") {
+    if (application.job_origin === "lbb" || application.job_origin === "lba") {
       removeEmailFromBonnesBoites(payload.email)
-    } else if (application.company_type === "matcha") {
+    } else if (application.job_origin === "matcha") {
       warnMatchaTeamAboutBouncedEmail({ email: payload.email, application, mailer })
     }
 
     notifyHardbounceToApplicant({ application, mailer })
   }
-
-  // mise à jour du statut de l'email
-  if (messageType === "application") {
-    application.to_company_message_status = event
-  } else if (messageType === "applicationAck") {
-    application.to_applicant_message_status = event
-  }
-
-  application.save()
 }
 
 const updateHardBounceEmails = async ({ payload }) => {
@@ -514,11 +463,11 @@ const updateHardBounceEmails = async ({ payload }) => {
   }
 }
 
-const addEmailToBlacklist = async (email, source) => {
+const addEmailToBlacklist = async (email, blacklistingOrigin) => {
   try {
     await new EmailBlacklist({
       email,
-      source,
+      blacklisting_origin: blacklistingOrigin,
     }).save()
   } catch (err) {
     // catching unique address error
@@ -572,8 +521,6 @@ export {
   getApplications,
   sendTestMail,
   sendApplication,
-  saveApplicationFeedback,
-  saveApplicationFeedbackComment,
   saveApplicationIntentionComment,
   updateApplicationStatus,
   debugUpdateApplicationStatus,

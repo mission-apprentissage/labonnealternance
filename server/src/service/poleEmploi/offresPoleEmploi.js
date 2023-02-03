@@ -239,7 +239,7 @@ const getPeJobs = async ({ romes, insee, radius, jobLimit, caller, api = "jobV1"
 
     return jobs.data
   } catch (error) {
-    return manageApiError({ error, api, caller, errorTitle: `getting jobs from PE (${api})` })
+    return manageApiError({ error, api_path: api, caller, errorTitle: `getting jobs from PE (${api})` })
   }
 }
 
@@ -257,7 +257,7 @@ const getPeJobFromId = async ({ id, caller }) => {
 
     if (job.status === 204 || job.status === 400) {
       if (caller) {
-        trackApiCall({ caller, api: "jobV1/job", result: "Error" })
+        trackApiCall({ caller, api_path: "jobV1/job", response: "Error" })
       }
 
       return { result: "not_found", message: "Offre non trouvée" }
@@ -265,13 +265,13 @@ const getPeJobFromId = async ({ id, caller }) => {
       let peJob = transformPeJobForIdea({ job: job.data, caller })
 
       if (caller) {
-        trackApiCall({ caller, nb_emplois: 1, result_count: 1, api: "jobV1/job", result: "OK" })
+        trackApiCall({ caller, job_count: 1, result_count: 1, api_path: "jobV1/job", response: "OK" })
       }
 
       return { peJobs: [peJob] }
     }
   } catch (error) {
-    return manageApiError({ error, api: "jobV1/job", caller, errorTitle: "getting job by id from PE" })
+    return manageApiError({ error, api_path: "jobV1/job", caller, errorTitle: "getting job by id from PE" })
   }
 }
 

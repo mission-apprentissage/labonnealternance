@@ -11,8 +11,8 @@ const updateSAVECompanies = async ({ updateMap }) => {
     if (bonneBoite) {
       let shouldSave = true
       // remplacement pour une bonneBoite trouvée par les données modifiées dans la table update SAVE
-      if (company.raisonsociale) {
-        bonneBoite.raisonsociale = company.raisonsociale
+      if (company.raison_sociale) {
+        bonneBoite.raison_sociale = company.raison_sociale
       }
       if (company.enseigne) {
         bonneBoite.enseigne = company.enseigne
@@ -36,15 +36,15 @@ const updateSAVECompanies = async ({ updateMap }) => {
         bonneBoite.website = company.website
       }
 
-      bonneBoite.type = company.type
+      bonneBoite.algorithm_origin = company.algorithm_origin
 
-      if (company.romes) {
-        bonneBoite.romes = [...new Set(company.romes.concat(bonneBoite.romes))]
+      if (company.rome_codes) {
+        bonneBoite.rome_codes = [...new Set(company.rome_codes.concat(bonneBoite.rome_codes))]
       }
 
       if (company.removedRomes) {
-        bonneBoite.romes = bonneBoite.romes.filter((el) => !company.removedRomes.includes(el))
-        if (bonneBoite.romes.length === 0) {
+        bonneBoite.rome_codes = bonneBoite.rome_codes.filter((el) => !company.removedRomes.includes(el))
+        if (bonneBoite.rome_codes.length === 0) {
           logMessage("info", "suppression bb car pas de romes " + bonneBoite.siret)
           try {
             await bonneBoite.remove()

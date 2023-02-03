@@ -140,7 +140,7 @@ const getFormations = async ({ romes, rncps, romeDomain, coords, radius, diploma
   } catch (error) {
     return manageApiError({
       error,
-      api,
+      api_path: api,
       caller,
       errorTitle: `getting trainings from Catalogue (${api})`,
     })
@@ -165,7 +165,7 @@ const getFormation = async ({ id, caller }) => {
   } catch (error) {
     return manageApiError({
       error,
-      api: "formationV1/formation",
+      api_path: "formationV1/formation",
       caller,
       errorTitle: "getting training by id from Catalogue",
     })
@@ -190,7 +190,7 @@ const getOneFormationFromId = async ({ id, caller }) => {
   } catch (error) {
     return manageApiError({
       error,
-      api: "formationV1/formation",
+      api_path: "formationV1/formation",
       caller,
       errorTitle: "getting training by id from Catalogue",
     })
@@ -264,7 +264,7 @@ const getRegionFormations = async ({ romes, romeDomain, region, departement, dip
   } catch (error) {
     return manageApiError({
       error,
-      api: "formationRegionV1",
+      api_path: "formationRegionV1",
       caller,
       errorTitle: "getting trainings by regions from Catalogue",
     })
@@ -318,10 +318,10 @@ const getAtLeastSomeFormations = async ({ romes, rncps, romeDomain, coords, radi
       if (caller) {
         trackApiCall({
           caller: caller,
-          api: "formationV1",
-          nb_formations: formations?.results.length,
+          api_path: "formationV1",
+          training_count: formations?.results.length,
           result_count: formations?.results.length,
-          result: "OK",
+          response: "OK",
         })
       }
     }
@@ -330,7 +330,7 @@ const getAtLeastSomeFormations = async ({ romes, rncps, romeDomain, coords, radi
   } catch (error) {
     return manageApiError({
       error,
-      api: "formationV1",
+      api_path: "formationV1",
       caller,
       errorTitle: "getting trainings from Catalogue",
     })
@@ -518,7 +518,7 @@ const getFormationsQuery = async (query) => {
     console.error("Error ", err.message)
     Sentry.captureException(err)
     if (query.caller) {
-      trackApiCall({ caller: query.caller, api: "formationV1", result: "Error" })
+      trackApiCall({ caller: query.caller, api_path: "formationV1", response: "Error" })
     }
     return { error: "internal_error" }
   }
@@ -538,10 +538,10 @@ const getFormationQuery = async (query) => {
     if (query.caller) {
       trackApiCall({
         caller: query.caller,
-        api: "formationV1/formation",
-        nb_formations: 1,
+        api_path: "formationV1/formation",
+        training_count: 1,
         result_count: 1,
-        result: "OK",
+        response: "OK",
       })
     }
 
@@ -552,7 +552,7 @@ const getFormationQuery = async (query) => {
     Sentry.captureException(err)
 
     if (query.caller) {
-      trackApiCall({ caller: query.caller, api: "formationV1/formation", result: "Error" })
+      trackApiCall({ caller: query.caller, api_path: "formationV1/formation", response: "Error" })
     }
 
     return { error: "internal_error" }
@@ -625,10 +625,10 @@ const getFormationsParRegionQuery = async (query) => {
     if (query.caller) {
       trackApiCall({
         caller: query.caller,
-        api: "formationRegionV1",
-        nb_formations: formations.length,
+        api_path: "formationRegionV1",
+        training_count: formations.length,
         result_count: formations.length,
-        result: "OK",
+        response: "OK",
       })
     }
 
@@ -639,7 +639,7 @@ const getFormationsParRegionQuery = async (query) => {
     Sentry.captureException(err)
 
     if (query.caller) {
-      trackApiCall({ caller: query.caller, api: "formationRegionV1", result: "Error" })
+      trackApiCall({ caller: query.caller, api_path: "formationRegionV1", response: "Error" })
     }
 
     return { error: "internal_error" }

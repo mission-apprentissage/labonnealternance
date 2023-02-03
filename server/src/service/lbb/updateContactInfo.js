@@ -41,7 +41,7 @@ const updateContactInfo = async (query) => {
       }
 
       if (query.phone !== undefined) {
-        bonneBoite.telephone = query.phone
+        bonneBoite.phone = query.phone
       }
 
       await bonneBoite.save()

@@ -42,7 +42,7 @@
                     </mj-text>
                     <mj-text font-size="16px" line-height="24px">
                         
-                        <% if (data.company_type == "matcha") { %>
+                        <% if (data.job_origin == "matcha") { %>
                             Bonjour, 
                             <br /><br />
 
@@ -98,7 +98,7 @@
                     <mj-text font-size="16px" padding-bottom="15px">E-mail : <span class="form-value"> <%= data.applicant_email %> </span> </mj-text>
                     <mj-text font-size="13px" padding-bottom="15px"><img style="margin-bottom: -3px; margin-right:3px" src="<%= data.images.icoInfo %>" alt="" />&nbsp;&nbsp;Vous trouverez le curriculum vitae du candidat en pièce jointe.</mj-text>
                     <mj-text font-size="16px" padding-bottom="15px">Message du candidat : </mj-text>
-                    <mj-text font-size="16px" padding-bottom="32px"><div class="form-msg" width="100%"> <%- data.message %> </div> </mj-text>
+                    <mj-text font-size="16px" padding-bottom="32px"><div class="form-msg" width="100%"> <%- data.applicant_message_to_company %> </div> </mj-text>
                 </mj-column>
             </mj-section>
         </mj-wrapper>
@@ -111,7 +111,7 @@
                         <tr>
                             <td valign="top" style="padding-top:5px;"><img style="width:120px; height:48px;" src="<%= data.images.logo %>" alt="Logo du site La bonne alternance" /></td>
                             <td valign="top" style="font-family: Roboto,Arial,sans-serif; font-size:16px;line-height: 22px; padding-left: 40px; padding-top:0;">
-                                <% if (data.company_type == "matcha" ) { %>
+                                <% if (data.job_origin == "matcha" ) { %>
                                     Vous recevez cette candidature car vous avez déposé une offre sur le  
                                     <a style="font-weight:bold; color:black" 
                                         href="<%= data.lbaRecruiterUrl %>">
@@ -152,7 +152,7 @@
                         <span style="font-weight: bold">Une question ?</span>
                     </mj-text>
 
-                    <% if (data.company_type == "matcha" ) { %>
+                    <% if (data.job_origin == "matcha" ) { %>
                         <mj-text font-size="16px" line-height="28px" padding-bottom="15px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                             <a class="link-black" href="<%= data.jobProvidedUrl %>">
                                 ✅ Indiquer que mon offre est pourvue</a>

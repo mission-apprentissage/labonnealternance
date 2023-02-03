@@ -14,7 +14,6 @@ export default function extractCandidatureParams(applicant_h, company_h, caller)
   res["applicant_file_name"] = applicant_h?.fileName || "dummy.pdf"
   res["applicant_file_content"] = applicant_h?.fileContent || null
   res["company_type"] = company_h?.type || null
-  //res["interet_offres_mandataire"] = applicant_h?.interetOffresMandataire || false;
 
   // Optional fields
   res["company_siret"] = company_h?.siret || null
