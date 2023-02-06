@@ -46,7 +46,13 @@ export default async function () {
     const countCatalogue = await countFormations()
 
     // if catalogue is empty, stop the process
-    if (!countCatalogue) return
+    if (!countCatalogue) {
+      await notifyToSlack({
+        subject: "IMPORT FORMATION",
+        message: `Import formations catalogue annulée: aucunes formations recensées sur le catalogue. (Erreur disponibilité API catalogue)`,
+      })
+      return
+    }
 
     await resetIndexAndDb("formationcatalogues", FormationCatalogue, { requireAsciiFolding: true })
 
