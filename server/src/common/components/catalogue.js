@@ -62,6 +62,7 @@ export const countFormations = async () => {
     return response.data
   } catch (error) {
     logger.error(error)
+    return false
   }
 }
 
