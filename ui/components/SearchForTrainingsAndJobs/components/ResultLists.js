@@ -4,6 +4,7 @@ import { filterLayers } from "../../../utils/mapTools"
 import ExtendedSearchButton from "./ExtendedSearchButton"
 import ResultListsCounter from "./ResultListsCounter"
 import NoJobResult from "./NoJobResult"
+import DuoContainer from "./DuoContainer"
 import { ScopeContext } from "../../../context/ScopeContext"
 import { SearchResultContext } from "../../../context/SearchResultContextProvider"
 import { DisplayContext } from "../../../context/DisplayContextProvider"
@@ -223,8 +224,16 @@ const ResultLists = (props) => {
         display={props.shouldShowWelcomeMessage || props.selectedItem ? "none" : ""}
         bg="beige"
       >
-        {getTrainingResult()}
-        {getJobResult()}
+        {props.activeFilter != "duo" ? (
+          <>
+            {getTrainingResult()}
+            {getJobResult()}
+          </>
+        ) : (
+          <>
+            <DuoContainer />
+          </>
+        )}
       </Box>
     </Flex>
   )
