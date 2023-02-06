@@ -50,6 +50,7 @@ export default async function () {
       await notifyToSlack({
         subject: "IMPORT FORMATION",
         message: `Import formations catalogue annulée: aucunes formations recensées sur le catalogue. (Erreur disponibilité API catalogue)`,
+        error: true,
       })
       return
     }
@@ -62,7 +63,7 @@ export default async function () {
 
     logger.info(`Fin traitement`)
 
-    await notifyToSlack({ subject: "IMPORT FORMATION", message: `Import formations catalogue terminé. ${stats.created} OK. ${stats.failed} erreur(s)` })
+    await notifyToSlack({ subject: "IMPORT FORMATION", message: `Import formations catalogue terminé. ${stats.created} OK. ${stats.failed} erreur(s)`, error: false })
 
     return {
       result: "Import formations catalogue terminé",
@@ -72,6 +73,6 @@ export default async function () {
   } catch (error) {
     Sentry.captureException(error)
     logger.error(error)
-    await notifyToSlack({ subject: "IMPORT FORMATION", message: `ECHEC Import formations catalogue` })
+    await notifyToSlack({ subject: "IMPORT FORMATION", message: `ECHEC Import formations catalogue`, error: true })
   }
 }
