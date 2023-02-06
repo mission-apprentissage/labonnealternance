@@ -1,10 +1,6 @@
 import { Box, Text } from "@chakra-ui/react"
-import React, { useContext } from "react"
-import { ScopeContext } from "../../../context/ScopeContext"
 
 const DuoContainer = () => {
-  const scopeContext = useContext(ScopeContext)
-
   return (
     <Box id="duoContainer" mx="3" p="5" bg="white" borderRadius="10px">
       <Box>

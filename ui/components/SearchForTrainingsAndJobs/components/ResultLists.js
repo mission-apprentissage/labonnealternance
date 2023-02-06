@@ -13,6 +13,7 @@ import { isCfaEntreprise } from "../../../services/cfaEntreprise"
 
 import { renderJob, renderTraining, renderLbb } from "../services/renderOneResult"
 import { Box, Flex } from "@chakra-ui/react"
+import { SendPlausibleEvent } from "../../../utils/plausible"
 
 const ResultLists = (props) => {
   const scopeContext = useContext(ScopeContext)
@@ -29,6 +30,9 @@ const ResultLists = (props) => {
   const filterButtonClicked = (filterButton) => {
     props.setActiveFilter(filterButton)
     filterLayers(filterButton)
+    if (filterButton === "duo") {
+      SendPlausibleEvent("Clic onglet formations+emplois - Liste de résultats")
+    }
   }
 
   const getTrainingResult = () => {
@@ -224,7 +228,7 @@ const ResultLists = (props) => {
         display={props.shouldShowWelcomeMessage || props.selectedItem ? "none" : ""}
         bg="beige"
       >
-        {props.activeFilter != "duo" ? (
+        {props.activeFilter !== "duo" ? (
           <>
             {getTrainingResult()}
             {getJobResult()}
