@@ -39,7 +39,7 @@ const importFormations = async () => {
   }
 }
 
-export default async function () {
+export const importCatalogueFormationJob = async () => {
   logger.info(" -- Import formations catalogue -- ")
 
   try {

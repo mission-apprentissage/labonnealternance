@@ -1,4 +1,7 @@
 import { program as cli } from "commander"
+import anonymizeOldApplications from "./jobs/anonymizeOldApplications/anonymizeOldApplications.js"
+import refactorLBACFields from "./jobs/cleanAndRenameDBFields/refactorLBACFields.js"
+import { importCatalogueFormationJob } from "./jobs/formationsCatalogue/formationsCatalogue.js"
 import { createApiUser } from "./jobs/lba_recruteur/api/createApiUser.js"
 import { disableApiUser } from "./jobs/lba_recruteur/api/disableApiUser.js"
 import { resetApiKey } from "./jobs/lba_recruteur/api/resetApiKey.js"
@@ -14,15 +17,12 @@ import { inviteEtablissementToOptOut } from "./jobs/rdv/inviteEtablissementToOpt
 import { inviteEtablissementToPremium } from "./jobs/rdv/inviteEtablissementToPremium.js"
 import { inviteEtablissementToPremiumFollowUp } from "./jobs/rdv/inviteEtablissementToPremiumFollowUp.js"
 import { parcoursupEtablissementStat } from "./jobs/rdv/parcoursupEtablissementStat.js"
-import { syncEtablissementsAndFormations } from "./jobs/rdv/syncEtablissementsAndFormations.js"
 import { premiumActivatedReminder } from "./jobs/rdv/premiumActivatedReminder.js"
 import { premiumInviteOneShot } from "./jobs/rdv/premiumInviteOneShot.js"
-import refactorLBACFields from "./jobs/cleanAndRenameDBFields/refactorLBACFields.js"
-import importFormations from "./jobs/formationsCatalogue/formationsCatalogue.js"
-import updateSendinblueBlockedEmails from "./jobs/updateSendinblueBlockedEmails/updateSendinblueBlockedEmails.js"
-import anonymizeOldApplications from "./jobs/anonymizeOldApplications/anonymizeOldApplications.js"
-import { runScript } from "./jobs/scriptWrapper.js"
 import { removeEtablissementsOptIn } from "./jobs/rdv/removeEtablissementsOptIn.js"
+import { syncEtablissementsAndFormations } from "./jobs/rdv/syncEtablissementsAndFormations.js"
+import { runScript } from "./jobs/scriptWrapper.js"
+import updateSendinblueBlockedEmails from "./jobs/updateSendinblueBlockedEmails/updateSendinblueBlockedEmails.js"
 
 cli.addHelpText("after")
 
@@ -171,18 +171,17 @@ cli
   })
 
 cli
+  .command("sync-catalogue-trainings")
+  .description("Importe les formations depuis le Catalogue")
+  .action(() => {
+    runScript(() => importCatalogueFormationJob())
+  })
+
+cli
   .command("sync-etablissements-and-formations")
   .description("Récupère la liste de toutes les formations du Catalogue et les enregistre.")
   .action(() => {
     runScript((components) => syncEtablissementsAndFormations(components))
-  })
-
-cli
-  .command("sync-catalogue-trainings")
-  .option("-only-change-master, [OnlyChangeMaster]", "n'importe pas de nouvelles formations mais procède à une permutation de l'index master", false)
-  .description("Importe les formations depuis le Catalogue")
-  .action((options) => {
-    runScript(() => importFormations(options))
   })
 
 cli
