@@ -18,6 +18,7 @@ const config = {
     type: env.get("LBA_LOG_TYPE").default("console").asString(),
   },
   slackWebhookUrl: env.get("LBA_SLACK_WEBHOOK_URL").asString(),
+  jobSlackWebhook: env.get("LBA_JOB_SLACK_WEBHOOK").asString(),
   mongodb: {
     uri: env.get("LBA_MONGODB_URI").default("mongodb://127.0.0.1:27017/labonnealternance?retryWrites=true&w=majority").asString(),
   },
@@ -32,7 +33,6 @@ const config = {
   secretUpdateRomesMetiers: env.get("LBA_SECRET_UPDATE_ROMES_METIERS").default("1234").asString(), //TODO: rename
   secret1j1s: env.get("LBA_SECRET_1J1S").default("5678").asString(), //TODO: rearrange
   secretAkto: env.get("LBA_SECRET_AKTO").default("1234").asString(), //TODO: rearrange
-  jobSlackWebhook: env.get("LBA_JOB_SLACK_WEBHOOK").asString(),
   allowedSources: env.get("LBA_ALLOWED_SOURCES").default("allowed").asString(),
   awsAccessKeyId: env.get("LBA_AWS_ACCESS_KEY_ID").default("1234").asString(),
   awsSecretAccessKey: env.get("LBA_AWS_SECRET_ACCESS_KEY").default("1234").asString(),
