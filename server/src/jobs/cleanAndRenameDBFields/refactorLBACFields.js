@@ -1,6 +1,5 @@
 import { logger } from "../../common/logger.js"
 import { mongooseInstance } from "../../common/mongodb.js"
-import { runScript } from "../scriptWrapper.js"
 import { rebuildIndex } from "../../common/utils/esUtils.js"
 import { BonnesBoites } from "../../common/model/index.js"
 
@@ -86,7 +85,3 @@ export default async function refactorLBACFields() {
 
   logger.info("Refactorisation des champs LBAC terminée")
 }
-
-runScript(async () => {
-  await refactorLBACFields()
-})
