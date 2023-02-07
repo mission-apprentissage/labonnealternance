@@ -7,12 +7,14 @@ import { fetchStream } from "../utils/httpUtils.js"
 import { streamJsonArray } from "../utils/streamUtils.js"
 
 const neededFieldsFromCatalogue = {
+  _id: 1,
   published: 1,
   catalogue_published: 1,
   intitule_long: 1,
   intitule_court: 1,
   niveau: 1,
   onisep_url: 1,
+  parcoursup_id: 1,
   cle_ministere_educatif: 1,
   diplome: 1,
   cfd: 1,
@@ -28,6 +30,8 @@ const neededFieldsFromCatalogue = {
   lieu_formation_adresse: 1,
   code_postal: 1,
   localite: 1,
+  etablissement_formateur_nom_departement: 1,
+  etablissement_formateur_courriel: 1,
   etablissement_formateur_adresse: 1,
   etablissement_formateur_complement_adresse: 1,
   etablissement_formateur_localite: 1,
@@ -43,6 +47,7 @@ const neededFieldsFromCatalogue = {
   code_commune_insee: 1,
   rome_codes: 1,
   tags: 1,
+  etablissement_gestionnaire_courriel: 1,
   etablissement_gestionnaire_adresse: 1,
   etablissement_gestionnaire_complement_adresse: 1,
   etablissement_gestionnaire_localite: 1,

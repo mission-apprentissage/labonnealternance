@@ -33,14 +33,12 @@ const createCatalogueMeAPI = async () => {
  * KBA 20221227 : to be fixed to avoid calling it outside this file. Changed to a function because it's called automatically everytime the catalogue component is used.
  * @returns CatalogueApi
  */
-export const catalogueMeAPI = () => createCatalogueMeAPI()
 
+// KBA 20221227 : find more elegant solution
+let api = null
 export const getFormationsFromCatalogueMe = async ({ query, limit, page = 1, select, allFormations = [] }) => {
-  // KBA 20221227 : find more elegant solution
-  let api = null
-
   if (api === null) {
-    api = await catalogueMeAPI()
+    api = await createCatalogueMeAPI()
   }
 
   let params = { page, limit, query, select }

@@ -3,54 +3,10 @@ import { WidgetParameter } from "../model/index.js"
 export default () => ({
   /**
    * @description Creates new item.
-   * @param {String} etablissement_siret
-   * @param {String} etablissement_raison_sociale
-   * @param {String} formation_intitule
-   * @param {String} formation_cfd
-   * @param {String} email_rdv
-   * @param {String} code_postal
-   * @param {Number[]} referrers
-   * @param {String} id_rco_formation
-   * @param {String} catalogue_published
-   * @param {Date} last_catalogue_sync
-   * @param {String} id_parcoursup
-   * @param {String} cle_ministere_educatif
+   * @param {Object}
    * @returns {Promise<*>}
    */
-  createParameter: async ({
-    etablissement_siret,
-    etablissement_raison_sociale,
-    formation_intitule,
-    formation_cfd,
-    email_rdv,
-    code_postal,
-    referrers,
-    id_rco_formation,
-    catalogue_published,
-    last_catalogue_sync,
-    id_parcoursup,
-    cle_ministere_educatif,
-  }) => {
-    const widgetParameter = new WidgetParameter({
-      etablissement_siret,
-      etablissement_raison_sociale,
-      formation_intitule,
-      formation_cfd,
-      email_rdv,
-      referrers,
-      code_postal,
-      id_rco_formation,
-      catalogue_published,
-      last_catalogue_sync,
-      id_parcoursup,
-      cle_ministere_educatif,
-    })
-
-    await widgetParameter.save()
-
-    return widgetParameter.toObject()
-  },
-
+  createParameter: async (body) => await WidgetParameter.create(body),
   /**
    * @description Finds or creates a parameter.
    * @param {String} etablissement_siret
