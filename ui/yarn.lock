@@ -1722,6 +1722,11 @@
   dependencies:
     "@sinonjs/commons" "^1.7.0"
 
+"@socialgouv/matomo-next@1.6.1":
+  version "1.6.1"
+  resolved "https://registry.yarnpkg.com/@socialgouv/matomo-next/-/matomo-next-1.6.1.tgz#0080945dc0062fee7fe53e4c058dd40768a3c278"
+  integrity sha512-O2lxMKZHVzvXGZNsKOnsSS+hzqxIX35CPRuVkuU8Z+EFORuO2R/iiBBfyY1d+XvexIsJOA2uHnxhJxsdeFIrRw==
+
 "@swc/helpers@0.4.11":
   version "0.4.11"
   resolved "https://registry.yarnpkg.com/@swc/helpers/-/helpers-0.4.11.tgz#db23a376761b3d31c26502122f349a21b592c8de"
