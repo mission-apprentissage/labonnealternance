@@ -55,7 +55,7 @@ console.log("scan result EICAR String : ", isInfected, viruses);
 
   if (isInfected) {
     logger.error(`Virus detected ${viruses.toString()}`)
-    await notifyToSlack({ subject: "CLAMAV", message: `Virus detected ${viruses.toString()}` })
+    await notifyToSlack({ subject: "CLAMAV", message: `Virus detected ${viruses.toString()}`, error: true })
   }
 
   return isInfected
