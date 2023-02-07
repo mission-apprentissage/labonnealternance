@@ -11,9 +11,9 @@ const DuoContainer = () => {
       <Box mt="3" fontSize="14px">
         La bonne alternance souhaite à terme proposer aux candidats{" "}
         <Text as="span" color="pinksoft.600" fontWeight={700}>
-          des offres combinant formation et emploi
+          des offres combinant formation et emploi.
         </Text>
-        . Merci pour l'intérêt que vous y portez.
+        Merci pour l'intérêt que vous y portez.
       </Box>
     </Box>
   )
