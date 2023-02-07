@@ -17,7 +17,7 @@ import { parcoursupEtablissementStat } from "./jobs/rdv/parcoursupEtablissementS
 import { syncEtablissementsAndFormations } from "./jobs/rdv/syncEtablissementsAndFormations.js"
 import { premiumActivatedReminder } from "./jobs/rdv/premiumActivatedReminder.js"
 import { premiumInviteOneShot } from "./jobs/rdv/premiumInviteOneShot.js"
-import { refactorLBACFields } from "./jobs/cleanAndRenameDBFields/refactorLBACFields.js"
+import refactorLBACFields from "./jobs/cleanAndRenameDBFields/refactorLBACFields.js"
 import importFormations from "./jobs/formationsCatalogue/formationsCatalogue.js"
 import updateSendinblueBlockedEmails from "./jobs/updateSendinblueBlockedEmails/updateSendinblueBlockedEmails.js"
 import anonymizeOldApplications from "./jobs/anonymizeOldApplications/anonymizeOldApplications.js"
