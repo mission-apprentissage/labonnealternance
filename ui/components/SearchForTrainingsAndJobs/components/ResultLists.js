@@ -1,19 +1,19 @@
-import React, { useState, useContext } from "react"
+import React, { useContext, useState } from "react"
 import { ErrorMessage } from "../../../components"
-import { filterLayers } from "../../../utils/mapTools"
-import ExtendedSearchButton from "./ExtendedSearchButton"
-import ResultListsCounter from "./ResultListsCounter"
-import NoJobResult from "./NoJobResult"
-import DuoContainer from "./DuoContainer"
+import { DisplayContext } from "../../../context/DisplayContextProvider"
 import { ScopeContext } from "../../../context/ScopeContext"
 import { SearchResultContext } from "../../../context/SearchResultContextProvider"
-import { DisplayContext } from "../../../context/DisplayContextProvider"
-import { mergeJobs, mergeOpportunities } from "../../../utils/itemListUtils"
 import { isCfaEntreprise } from "../../../services/cfaEntreprise"
+import { mergeJobs, mergeOpportunities } from "../../../utils/itemListUtils"
+import { filterLayers } from "../../../utils/mapTools"
+import DuoContainer from "./DuoContainer"
+import ExtendedSearchButton from "./ExtendedSearchButton"
+import NoJobResult from "./NoJobResult"
+import ResultListsCounter from "./ResultListsCounter"
 
-import { renderJob, renderTraining, renderLbb } from "../services/renderOneResult"
 import { Box, Flex } from "@chakra-ui/react"
 import { SendPlausibleEvent } from "../../../utils/plausible"
+import { renderJob, renderLbb, renderTraining } from "../services/renderOneResult"
 
 const ResultLists = (props) => {
   const scopeContext = useContext(ScopeContext)
@@ -234,9 +234,7 @@ const ResultLists = (props) => {
             {getJobResult()}
           </>
         ) : (
-          <>
-            <DuoContainer />
-          </>
+          <DuoContainer />
         )}
       </Box>
     </Flex>
