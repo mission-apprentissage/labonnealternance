@@ -52,12 +52,10 @@ services:
 
   server:
     image: lba_server
-    #    volumes:
-    #      - /opt/labonnealternance/data/server/lbb/assets:/app/src/jobs/lbb/assets
     container_name: lba_server
     build:
       context: server
-    mem_limit: 1g
+    mem_limit: 2g
     restart: unless-stopped
     networks:
       - lba_network
@@ -70,7 +68,7 @@ services:
   mongodb:
     image: mongo:5.0.6-focal
     container_name: lba_mongodb
-    mem_limit: 3g
+    mem_limit: 4g
     restart: unless-stopped
     networks:
       - lba_network
@@ -91,7 +89,7 @@ services:
   clamav:
     image: clamav/clamav:0.105.0
     container_name: lba_clamav
-    mem_limit: 3g
+    mem_limit: 4g
     restart: unless-stopped
     networks:
       - lba_network
