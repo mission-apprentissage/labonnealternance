@@ -11,7 +11,12 @@ import { getFormationsBySiretFormateur, getFormationsByIdRcoFormationsRaw } from
 import { dayjs } from "../../../common/utils/dayjs.js"
 
 const widgetParameterIdPatchSchema = Joi.object({
-  is_custom_email_rdv: Joi.boolean(),
+  is_custom_email_rdv: Joi.boolean().optional(),
+  referrers: Joi.array().items(Joi.number()).optional(),
+  email_rdv: Joi.string()
+    .email({ tlds: { allow: false } })
+    .allow(null)
+    .optional(),
 })
 
 const widgetParameterSchema = Joi.object({
