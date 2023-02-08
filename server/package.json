@@ -11,7 +11,7 @@
     "node": ">=18.0.0"
   },
   "scripts": {
-    "dev": "nodemon --ext 'ts,js,cjs,json' --ignore 'tests/' --exec 'ts-node --esm src/index.ts'",
+    "dev": "nodemon --ext 'ts,js,cjs,json' --ignore 'tests/' --exec 'ts-node-esm src/index.ts'",
     "build": "yarn clean && tsc -p . && yarn copy-assets",
     "start": "node build/index.js",
     "copy-assets": "copyfiles -u 2 src/assets/api-docs/swagger.json src/assets/templates/*.ejs build/assets",
@@ -21,7 +21,7 @@
     "coverage": "nyc --temp-dir .coverage/.nyc_output --report-dir .coverage --reporter=lcov --reporter=html yarn test",
     "lint": "eslint src/ tests/",
     "lint:fix": "eslint src/ tests/ --fix",
-    "seed:reference": "dotenv node src/jobs/seed/candidat.seed.js"
+    "seed:reference": "dotenv ts-node-esm src/jobs/seed/candidat.seed.ts"
   },
   "dependencies": {
     "@elastic/elasticsearch": "7.9.1",
