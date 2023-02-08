@@ -1,4 +1,6 @@
-import baseUrl from "utils/baseUrl"
+import { getConfig } from "utils/config"
+
+const { baseUrl } = getConfig()
 
 const trainingsApi = baseUrl + "/api/v1/formations"
 const trainingApi = trainingsApi + "/formation"
