@@ -1,6 +1,6 @@
 const mainConfig = {
   branches: ["main", { name: "develop", channel: "beta", prerelease: "beta" }],
-  repositoryUrl: "https://github.com/mission-apprentissage/cerfa.git",
+  repositoryUrl: "https://github.com/mission-apprentissage/labonnealternance.git",
   plugins: [
     "@semantic-release/commit-analyzer",
     "@semantic-release/release-notes-generator",
@@ -60,7 +60,7 @@ const localConfig = {
       prerelease: channel,
     },
   ],
-  repositoryUrl: "https://github.com/mission-apprentissage/doctrina.git",
+  repositoryUrl: "https://github.com/mission-apprentissage/labonnealternance.git",
   plugins: ["@semantic-release/commit-analyzer"],
 }
 
