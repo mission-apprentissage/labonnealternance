@@ -112,13 +112,7 @@ const PremiumForm = () => {
                 <Box float="left" pt={1} pr={3}>
                   <SuccessCircle width={16} fillHexaColor="#00AC8C" />
                 </Box>{" "}
-                Contacter tous les candidats qui feront une demande sur cette plateforme
-              </Text>
-              <Text fontWeight="700">
-                <Box float="left" pt={1} pr={3}>
-                  <SuccessCircle width={16} fillHexaColor="#00AC8C" />
-                </Box>{" "}
-                En appelant chaque candidat ou en lui envoyant un e-mail
+                Contacter par email ou téléphone tous les candidats qui feront une demande sur cette plateforme
               </Text>
               <Text fontWeight="700">
                 <Box float="left" pt={1} pr={3}>
@@ -128,7 +122,7 @@ const PremiumForm = () => {
               </Text>
               <Text mt={6}>
                 Je prends acte du fait que la Mission interministérielle pour l’apprentissage pourra prendre toutes les mesures utiles pour mesurer le fait que cet engagement soit
-                tenu (dont enquêtes en ligne ou orale auprès des candidats et des CFA).
+                tenu (dont enquêtes en ligne ou orales auprès des candidats et des CFA).
               </Text>
               <Text mt={6}>
                 En cas de non-respect de mon engagement, je bénéficierai d’un avertissement m’invitant à remédier à cette défaillance puis d’une éventuelle suspension du service.
@@ -148,7 +142,7 @@ const PremiumForm = () => {
                 </Text>
               </Flex>
               <Box mt={14} mb={20}>
-                <Text mt="-7px">Le service sera activé sur toutes les formations référencés dans Parcoursup de l’organisme suivant :</Text>
+                <Text mt="-7px">Le service sera activé sur toutes les formations référencées dans Parcoursup de l’organisme suivant :</Text>
                 <Box bg="#E5E5E5" px={10} py={6} mt={3} lineHeight="38px" w="100%">
                   <Text>
                     Raison sociale :{" "}
