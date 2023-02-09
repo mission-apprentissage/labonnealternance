@@ -1,9 +1,9 @@
 import axios from "axios"
-import baseUrl from "../utils/baseUrl"
 import _ from "lodash"
+import { getConfig } from "../utils/config"
+import memoize from "../utils/memoize"
 import { isNonEmptyString } from "../utils/strutils"
 import { logError } from "../utils/tools"
-import memoize from "../utils/memoize"
 
 const filteredInput = (input) => {
   let res = []
@@ -12,6 +12,8 @@ const filteredInput = (input) => {
   }
   return res
 }
+
+const { baseUrl } = getConfig()
 
 const fetchDiplomas = memoize(async (arrayOfRome, arrayOfRncp, _baseUrl = baseUrl, _axios = axios, _window = window, _logError = logError) => {
   let res = []

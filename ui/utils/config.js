@@ -16,7 +16,7 @@ const config = {
   },
 }
 
-export const getEnvName = () => {
+const getEnvName = () => {
   let hostname = ""
   if (typeof window !== "undefined") {
     hostname = window.location.hostname
@@ -30,7 +30,9 @@ export const getEnvName = () => {
   return "local"
 }
 
-export const getConfig = (envName) => {
+export const getConfig = () => {
+  const envName = getEnvName()
+
   switch (envName) {
     case "prod":
       return config.prod
@@ -40,5 +42,3 @@ export const getConfig = (envName) => {
       return config.local
   }
 }
-
-export default getConfig(getEnvName())

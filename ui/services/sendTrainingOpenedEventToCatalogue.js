@@ -1,8 +1,10 @@
 import axios from "axios"
-import env from "../utils/env"
+import { getConfig } from "../utils/config"
 
 export default async function sendTrainingOpenedEventToCatalogue(cleMinistereEducatif) {
   if (!cleMinistereEducatif) return
+
+  const { env } = getConfig()
 
   const catalogueApi = `https://catalogue${env !== "production" ? "-recette" : ""}.apprentissage.beta.gouv.fr/api/stats`
   try {
