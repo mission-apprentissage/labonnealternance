@@ -22,7 +22,7 @@ export const astuces = [
     theme: "Aide",
     message:
       "Vous allez avoir besoin de matériel pour votre apprentissage (couteaux de cuisine, ciseaux de coiffure, ...) ? Il existe des aides financières au premier équipement !",
-    lien: "",
+    lien: "https://www.service-public.fr/particuliers/vosdroits/F32915",
   },
   {
     id: "AID_QUIT_DOMICILE",
