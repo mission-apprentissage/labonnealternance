@@ -1,7 +1,8 @@
 {
   "root": true,
-  "extends": ["eslint:recommended", "plugin:node/recommended-module", "plugin:prettier/recommended"],
+  "extends": ["eslint:recommended", "plugin:node/recommended-module", "plugin:prettier/recommended", "plugin:@typescript-eslint/recommended"],
   "plugins": ["mocha"],
+  "parser": "@typescript-eslint/parser",
   "ignorePatterns": ["/build"],
   "rules": {
     "mocha/no-skipped-tests": "error",
@@ -12,7 +13,7 @@
   },
   "overrides": [
     {
-      "files": ["**/*test.js", "**/*Tests.js", "tests/**/*.js"],
+      "files": ["**/*test.{js, ts}", "**/*Tests.{js, ts}", "tests/**/*.{js, ts}"],
       "rules": {
         "node/no-unpublished-require": 0,
         "no-nonoctal-decimal-escape": 0,
