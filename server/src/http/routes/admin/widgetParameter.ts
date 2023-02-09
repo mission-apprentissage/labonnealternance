@@ -1,17 +1,22 @@
+import Boom from "boom"
 import express from "express"
 import Joi from "joi"
 import json2csvParser from "json2csv"
-import Boom from "boom"
-import { tryCatch } from "../../middlewares/tryCatchMiddleware.js"
-import { WidgetParameter } from "../../../common/model/index.js"
 import { logger } from "../../../common/logger.js"
-import { getReferrerById } from "../../../common/model/constants/referrers.js"
 import { optMode } from "../../../common/model/constants/etablissement.js"
-import { getFormationsBySiretFormateur, getFormationsByIdRcoFormationsRaw } from "../../../common/utils/catalogue.js"
+import { getReferrerById } from "../../../common/model/constants/referrers.js"
+import { WidgetParameter } from "../../../common/model/index.js"
+import { getFormationsByIdRcoFormationsRaw, getFormationsBySiretFormateur } from "../../../common/utils/catalogue.js"
 import { dayjs } from "../../../common/utils/dayjs.js"
+import { tryCatch } from "../../middlewares/tryCatchMiddleware.js"
 
 const widgetParameterIdPatchSchema = Joi.object({
-  is_custom_email_rdv: Joi.boolean(),
+  is_custom_email_rdv: Joi.boolean().optional(),
+  referrers: Joi.array().items(Joi.number()).optional(),
+  email_rdv: Joi.string()
+    .email({ tlds: { allow: false } })
+    .allow(null)
+    .optional(),
 })
 
 const widgetParameterSchema = Joi.object({

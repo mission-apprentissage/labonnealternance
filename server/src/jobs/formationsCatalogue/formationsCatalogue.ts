@@ -50,7 +50,6 @@ export const importCatalogueFormationJob = async () => {
       await notifyToSlack({
         subject: "IMPORT FORMATION",
         message: `Import formations catalogue annulée: aucunes formations recensées sur le catalogue. (Erreur disponibilité API catalogue)`,
-        error: true,
       })
       return
     }
