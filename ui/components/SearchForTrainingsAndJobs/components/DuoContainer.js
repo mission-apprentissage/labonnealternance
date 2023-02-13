@@ -13,8 +13,8 @@ const DuoContainer = () => {
         <Text as="span" color="pinksoft.600" fontWeight={700}>
           des offres combinant formation et emploi.
         </Text>
-        Merci pour l'intérêt que vous y portez.
       </Box>
+      <Box fontSize="14px">Merci pour l'intérêt que vous y portez.</Box>
     </Box>
   )
 }
