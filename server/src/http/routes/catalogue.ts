@@ -1,7 +1,8 @@
 import express from "express"
 import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
-import { getFormations } from "../../common/utils/catalogue.js"
+
 import { getUniqueArray } from "../../common/utils/array.js"
+import { getFormations } from "../../services/catalogue.js"
 
 /**
  * @description Catalogue router.
@@ -17,10 +18,8 @@ export default () => {
     tryCatch(async (req, res) => {
       const qs = req.query
       const query = qs && qs.query ? JSON.parse(qs.query) : {}
-      const page = qs && qs.page ? parseInt(qs.page, 10) : 1
-      const limit = qs && qs.limit ? parseInt(qs.limit, 10) : 50
 
-      const response = await getFormations(query, page, limit)
+      const response = await getFormations(query)
 
       return res.send(response)
     })
@@ -35,20 +34,20 @@ export default () => {
       const qs = req.query
       const query = qs && qs.query ? JSON.parse(qs.query) : {}
 
-      const response = await getFormations(query, 1, 10000)
-      const totalFormations = response.formations.length
+      const formations = await getFormations(query)
+      const totalFormations = formations.length
 
       const criterias1 = ["etablissement_formateur_siret", "cfd"]
-      const arrayFiltered1 = getUniqueArray(response.formations, criterias1)
+      const arrayFiltered1 = getUniqueArray(formations, criterias1)
 
       const criterias2 = ["etablissement_formateur_siret", "etablissement_gestionnaire_siret", "cfd"]
-      const arrayFiltered2 = getUniqueArray(response.formations, criterias2)
+      const arrayFiltered2 = getUniqueArray(formations, criterias2)
 
       const criterias3 = ["etablissement_formateur_siret", "cfd", "code_postal"]
-      const arrayFiltered3 = getUniqueArray(response.formations, criterias3)
+      const arrayFiltered3 = getUniqueArray(formations, criterias3)
 
       const criterias4 = ["etablissement_formateur_siret", "etablissement_gestionnaire_siret", "cfd", "code_postal"]
-      const arrayFiltered4 = getUniqueArray(response.formations, criterias4)
+      const arrayFiltered4 = getUniqueArray(formations, criterias4)
 
       const mapper = (item) => ({
         intitule_long: item.intitule_long,

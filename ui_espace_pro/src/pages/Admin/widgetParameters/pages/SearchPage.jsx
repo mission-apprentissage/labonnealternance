@@ -1,9 +1,9 @@
-import React, { useState } from "react"
+import { Box, Button, Heading, Input, Text, useToast } from "@chakra-ui/react"
 import { Field, Form, Formik } from "formik"
-import { Box, Button, Container, Heading, Input, Text, useToast } from "@chakra-ui/react"
+import React, { useState } from "react"
+import { useNavigate } from "react-router-dom"
 import { Breadcrumb } from "../../../../common/components/Breadcrumb"
 import { setTitle } from "../../../../common/utils/pageUtils"
-import { useNavigate } from "react-router-dom"
 
 const SearchPage = () => {
   const [searchKeyword, setSearchKeyword] = useState("")
@@ -33,9 +33,9 @@ const SearchPage = () => {
         `/api/catalogue/formations?query={ "$or": [ { "etablissement_formateur_siret": "${keywordEncoded}" }, { "etablissement_formateur_uai": "${keywordEncoded}"}, { "id_rco_formation": "${keywordEncoded}"}, {"cle_ministere_educatif": "${keywordEncoded}"} ] }`
       )
 
-      const catalogueResult = await catalogueResponse.json()
+      const formations = await catalogueResponse.json()
 
-      if (!catalogueResult.formations.length) {
+      if (!formations.length) {
         toast({
           title: "Aucun établissement trouvé dans le catalogue.",
           status: "info",
@@ -43,7 +43,7 @@ const SearchPage = () => {
           position: "bottom-right",
         })
       } else {
-        navigate(`/admin/widget-parameters/edit/${catalogueResult.formations[0].etablissement_formateur_siret}`)
+        navigate(`/admin/widget-parameters/edit/${formations[0].etablissement_formateur_siret}`)
       }
     } catch (e) {
       toast({

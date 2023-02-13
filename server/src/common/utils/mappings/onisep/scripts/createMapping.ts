@@ -1,13 +1,10 @@
+// @ts-nocheck
 import csvToJson from "csvtojson"
 import fs from "fs"
 import { chunk } from "lodash-es"
-import { getFormationsById } from "../../../catalogue.js"
-import { logger } from "../../../../logger.js"
+import { getFormationsById } from "../../../../../services/catalogue.js"
 
-/**
- * @description Parses CSV file given from ONISEP and generate an hashmap "id" => "cle_ministere_educatif.
- * @returns {Promise<void>}
- */
+import { logger } from "../../../../logger.js"
 ;(async () => {
   const streamMappingFile = fs.createWriteStream("../mapping.js")
 
@@ -20,7 +17,7 @@ import { logger } from "../../../../logger.js"
   for (const chunk of catalogueCallsChunks) {
     await Promise.all(
       chunk.map(async ({ field1, field6 }) => {
-        const { formations } = await getFormationsById({ id: field1 })
+        const formations = await getFormationsById({ id: field1 })
 
         const [formation] = formations
 
