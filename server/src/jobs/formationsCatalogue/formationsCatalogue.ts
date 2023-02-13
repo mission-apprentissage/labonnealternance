@@ -1,10 +1,10 @@
 import Sentry from "@sentry/node"
 import { oleoduc, writeData } from "oleoduc"
-import { countFormations, getAllFormationsFromCatalogue } from "../../common/components/catalogue.js"
 import { logger } from "../../common/logger.js"
 import { FormationCatalogue } from "../../common/model/index.js"
 import { rebuildIndex, resetIndexAndDb } from "../../common/utils/esUtils.js"
 import { notifyToSlack } from "../../common/utils/slackUtils.js"
+import { countFormations, getAllFormationsFromCatalogue } from "../../services/catalogue.js"
 
 const importFormations = async () => {
   logger.info(`Début import`)
