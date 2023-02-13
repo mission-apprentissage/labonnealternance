@@ -1,10 +1,12 @@
+// @ts-nocheck
 import axios from "axios"
 import { compose } from "oleoduc"
 import queryString from "query-string"
-import config from "../../config.js"
-import { logger } from "../logger.js"
-import { fetchStream } from "../utils/httpUtils.js"
-import { streamJsonArray } from "../utils/streamUtils.js"
+import { logger } from "../common/logger.js"
+import { FormationCatalogue } from "../common/model/index.js"
+import { fetchStream } from "../common/utils/httpUtils.js"
+import { streamJsonArray } from "../common/utils/streamUtils.js"
+import config from "../config.js"
 
 const neededFieldsFromCatalogue = {
   _id: 1,
@@ -61,6 +63,40 @@ const neededFieldsFromCatalogue = {
   etablissement_gestionnaire_conventionne: 1,
 }
 
+/**
+ * @description Get formations by its identifier.
+ * @param {String} id
+ * @returns {Promise<Object[]>}
+ */
+export const getFormationsById = ({ id }: { id: string }): Promise<object[]> => FormationCatalogue.find({ _id: id })
+
+/**
+ * @description Get formations by "siret formateur".
+ * @param {String} siretFormateur
+ * @returns {Promise<Object[]>}
+ */
+export const getFormationsBySiretFormateur = ({ siretFormateur }: { siretFormateur: string[] }): Promise<object[]> =>
+  FormationCatalogue.find({ etablissement_formateur_siret: siretFormateur })
+
+/**
+ * @description Get formations by idRcoFormations.
+ * @param {String[]} idRcoFormations
+ * @returns {Promise<Object[]>}
+ */
+export const getFormationsByIdRcoFormations = ({ idRcoFormations }: { idRcoFormations: string[] }): Promise<object[]> =>
+  FormationCatalogue.find({ id_rco_formation: idRcoFormations })
+
+/**
+ * @description Get formations through the catalogue.
+ * @param {Object} query - Mongo query
+ * @returns {Promise<Object>}
+ */
+export const getFormations = (query: object): Promise<object[]> => FormationCatalogue.find(query)
+
+/**
+ * @description Get formations count through the CARIF OREF catalogue API.
+ * @returns {string}
+ */
 export const countFormations = async () => {
   try {
     const response = await axios.get(`${config.catalogueUrl}${config.formationsEndPoint}/count`)
@@ -71,6 +107,10 @@ export const countFormations = async () => {
   }
 }
 
+/**
+ * @description Get all formations through the CARIF OREF catalogue API.
+ * @returns {Stream<Object[]>}
+ */
 export const getAllFormationsFromCatalogue = async () => {
   const count = (await countFormations()) ?? null
   const query = { published: true, catalogue_published: true }
@@ -92,7 +132,12 @@ export const getAllFormationsFromCatalogue = async () => {
   })
 }
 
-const convertQueryIntoParams = (query, options = {}) => {
+/**
+ * @description Convert query into URL params
+ * @param {Object} query - Mongo query
+ * @returns {Promise<Object>}
+ */
+const convertQueryIntoParams = (query: object, options: object = {}): string => {
   return queryString.stringify(
     {
       query: JSON.stringify(query),
