@@ -2,7 +2,7 @@
 import csvToJson from "csvtojson"
 import fs from "fs"
 import { chunk } from "lodash-es"
-import { getFormationsById } from "../../../../../services/catalogue.service.js"
+import { getFormationById } from "../../../../../services/catalogue.service.js"
 import { logger } from "../../../../logger.js"
 
 const createMapping = async () => {
@@ -17,7 +17,7 @@ const createMapping = async () => {
   for (const chunk of catalogueCallsChunks) {
     await Promise.all(
       chunk.map(async ({ field1, field6 }) => {
-        const formations = await getFormationsById({ id: field1 })
+        const formations = await getFormationById(field1)
 
         const [formation] = formations
 
