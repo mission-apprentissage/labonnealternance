@@ -1,4 +1,11 @@
 {
+  "name": "mna-lba",
+  "description": "Plateforme de recherche de formation et d'offres en apprentissage",
+  "repository": "https://github.com/mission-apprentissage/labonnealternance.git",
+  "version": "1.0.0",
+  "author": "Mission apprentissage",
+  "license": "MIT",
+  "private": "false",
   "scripts": {
     "prepare": "husky install",
     "docker:start": "docker-compose up -d --build --force-recreate",
