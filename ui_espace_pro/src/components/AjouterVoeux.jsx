@@ -82,6 +82,7 @@ const AjouterVoeux = (props) => {
   const handleJobSearch = async (search) => {
     if (search.trim().length !== 0) {
       try {
+        // KBA 20230214 : update api call.
         const result = await fetch(`${URL_LBA}/metiers/intitule?label=${search}`)
         const data = await result.json()
         return data.coupleAppellationRomeMetier
