@@ -2,13 +2,12 @@
 import express from "express"
 import { pick } from "lodash-es"
 import { mailTemplate } from "../../assets/index.js"
-import { getCatalogueEtablissements } from "../../common/catalogue.js"
 import { etat_utilisateur } from "../../common/constants.js"
 import dayjs from "../../common/dayjs.js"
 import { getElasticInstance } from "../../common/esClient/index.js"
 import { Formulaire } from "../../common/model/index.js"
 import config from "../../config.js"
-import { getFormations } from "../../services/catalogue.service.js"
+import { getCatalogueEtablissements, getFormations } from "../../services/catalogue.service.js"
 import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
 
 const esClient = getElasticInstance()
