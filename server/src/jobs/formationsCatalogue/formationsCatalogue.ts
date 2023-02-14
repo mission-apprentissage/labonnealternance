@@ -4,7 +4,7 @@ import { logger } from "../../common/logger.js"
 import { FormationCatalogue } from "../../common/model/index.js"
 import { rebuildIndex, resetIndexAndDb } from "../../common/utils/esUtils.js"
 import { notifyToSlack } from "../../common/utils/slackUtils.js"
-import { countFormations, getAllFormationsFromCatalogue } from "../../services/catalogue.js"
+import { countFormations, getAllFormationsFromCatalogue } from "../../services/catalogue.service.js"
 
 const importFormations = async () => {
   logger.info(`Début import`)

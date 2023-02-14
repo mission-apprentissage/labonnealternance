@@ -4,7 +4,7 @@ import { logger } from "../../../common/logger.js"
 import { getEmailStatus } from "../../../common/model/constants/emails.js"
 import { getReferrerById, referrers } from "../../../common/model/constants/referrers.js"
 import { Appointment, User } from "../../../common/model/index.js"
-import { getFormationsByIdRcoFormations } from "../../../services/catalogue.js"
+import { getFormationsByIdRcoFormations } from "../../../services/catalogue.service.js"
 import { tryCatch } from "../../middlewares/tryCatchMiddleware.js"
 
 /**

@@ -2,7 +2,7 @@ import express from "express"
 import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
 
 import { getUniqueArray } from "../../common/utils/array.js"
-import { getFormations } from "../../services/catalogue.js"
+import { getFormations } from "../../services/catalogue.service.js"
 
 /**
  * @description Catalogue router.
