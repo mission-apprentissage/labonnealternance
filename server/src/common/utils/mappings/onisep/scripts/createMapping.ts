@@ -3,9 +3,9 @@ import csvToJson from "csvtojson"
 import fs from "fs"
 import { chunk } from "lodash-es"
 import { getFormationsById } from "../../../../../services/catalogue.js"
-
 import { logger } from "../../../../logger.js"
-;(async () => {
+
+const createMapping = async () => {
   const streamMappingFile = fs.createWriteStream("../mapping.js")
 
   const rows = await csvToJson({ noheader: true, delimiter: ";" }).fromFile("./raw_onisep_mapping.csv")
@@ -38,4 +38,4 @@ import { logger } from "../../../../logger.js"
   streamMappingFile.close()
 
   logger.info(`Mapping file successfully created.`)
-})()
+}
