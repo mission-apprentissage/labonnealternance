@@ -55,6 +55,7 @@ export const syncEtablissementsAndFormations = async ({ etablissements, widgetPa
           referrersToActivate.push(referrers.ONISEP.code)
           referrersToActivate.push(referrers.PFR_PAYS_DE_LA_LOIRE.code)
           referrersToActivate.push(referrers.AFFELNET.code)
+          referrersToActivate.push(referrers.JEUNE_1_SOLUTION.code)
         }
 
         // Activate premium referrers
