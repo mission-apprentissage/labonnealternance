@@ -8,7 +8,7 @@ import { optMode } from "../../../common/model/constants/etablissement.js"
 import { getReferrerById } from "../../../common/model/constants/referrers.js"
 import { WidgetParameter } from "../../../common/model/index.js"
 import { dayjs } from "../../../common/utils/dayjs.js"
-import { getFormationsByIdRcoFormations, getFormationsBySiretFormateur } from "../../../services/catalogue.js"
+import { getFormationsByIdRcoFormations, getFormationsBySiretFormateur } from "../../../services/catalogue.service.js"
 import { tryCatch } from "../../middlewares/tryCatchMiddleware.js"
 
 const widgetParameterIdPatchSchema = Joi.object({
