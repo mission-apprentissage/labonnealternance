@@ -67,9 +67,9 @@ const neededFieldsFromCatalogue = {
 /**
  * @description Get formations by its identifier.
  * @param {String} id
- * @returns {Promise<Object[]>}
+ * @returns {Promise<Object>}
  */
-export const getFormationsById = ({ id }: { id: string }): Promise<object[]> => FormationCatalogue.find({ _id: id })
+export const getFormationById = (id: string): Promise<object> => FormationCatalogue.findById(id)
 
 /**
  * @description Get formations by "siret formateur".
