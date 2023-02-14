@@ -4,7 +4,7 @@ import { logger } from "../../../common/logger.js"
 import { getEmailStatus } from "../../../common/model/constants/emails.js"
 import { getReferrerById, referrers } from "../../../common/model/constants/referrers.js"
 import { Appointment, User } from "../../../common/model/index.js"
-import { getFormationsByIdRcoFormationsRaw } from "../../../common/utils/catalogue.js"
+import { getFormationsByIdRcoFormations } from "../../../services/catalogue.service.js"
 import { tryCatch } from "../../middlewares/tryCatchMiddleware.js"
 
 /**
@@ -58,8 +58,7 @@ export default ({ etablissements, appointments, users }) => {
       // Get formations from catalogue by block of 40 id_rco_formations
       let formations = await Promise.all(
         idRcoFormationsChunks.map(async (idRcoFormations) => {
-          const { formations } = await getFormationsByIdRcoFormationsRaw({ idRcoFormations })
-
+          const formations = await getFormationsByIdRcoFormations({ idRcoFormations })
           return formations
         })
       )

@@ -7,6 +7,7 @@ exception="(package.json"
 exception="$exception|manifest.json|settings.json"
 exception="$exception|sample.json"
 exception="$exception|eslintrc.json|app.json"
+exception="$exception|tsconfig.json"
 exception="$exception)$"
 
 files=$(git diff --cached --name-only | grep -v -E "$exception" | grep -E "$sensible_files_pattern")

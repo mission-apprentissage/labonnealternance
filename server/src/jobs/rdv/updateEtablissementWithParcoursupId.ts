@@ -1,11 +1,11 @@
-import { getFormationsFromCatalogueMe } from "../../common/catalogue.js"
 import { WidgetParameter } from "../../common/model/index.js"
+import { getFormationsFromCatalogueMe } from "../../services/catalogue.service.js"
 import { runScript } from "../scriptWrapper.js"
 
 const getParcoursupId = async () => {
   const formations = await getFormationsFromCatalogueMe({
-    limit: 1000,
     query: { parcoursup_id: { $ne: null }, parcoursup_statut: "publié", published: true, catalogue_published: true },
+    limit: 1000,
     select: { parcoursup_id: 1 },
   })
 

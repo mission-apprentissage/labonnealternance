@@ -1,10 +1,10 @@
 import { oleoduc, writeData } from "oleoduc"
-import { getFormationsFromCatalogueMe } from "../../common/catalogue.js"
 import { logger } from "../../common/logger.js"
 import { referrers } from "../../common/model/constants/referrers.js"
 import { FormationCatalogue } from "../../common/model/index.js"
 import { dayjs } from "../../common/utils/dayjs.js"
 import { isValidEmail } from "../../common/utils/isValidEmail.js"
+import { getFormationsFromCatalogueMe } from "../../services/catalogue.service.js"
 
 /**
  * Gets email from catalogue field.
