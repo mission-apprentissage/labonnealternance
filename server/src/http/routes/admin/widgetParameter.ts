@@ -1,3 +1,4 @@
+// @ts-nocheck
 import Boom from "boom"
 import express from "express"
 import Joi from "joi"
@@ -6,8 +7,8 @@ import { logger } from "../../../common/logger.js"
 import { optMode } from "../../../common/model/constants/etablissement.js"
 import { getReferrerById } from "../../../common/model/constants/referrers.js"
 import { WidgetParameter } from "../../../common/model/index.js"
-import { getFormationsByIdRcoFormationsRaw, getFormationsBySiretFormateur } from "../../../common/utils/catalogue.js"
 import { dayjs } from "../../../common/utils/dayjs.js"
+import { getFormationsByIdRcoFormations, getFormationsBySiretFormateur } from "../../../services/catalogue.service.js"
 import { tryCatch } from "../../middlewares/tryCatchMiddleware.js"
 
 const widgetParameterIdPatchSchema = Joi.object({
@@ -106,10 +107,10 @@ export default ({ widgetParameters, etablissements }) => {
 
       const parameters = []
       for (const parameter of wigetParameters) {
-        let catalogueResponse = null
+        let formations = null
         // Note: "id_rco_formation" attribute isn't existing for oldest parameters
         if (parameter.id_rco_formation) {
-          catalogueResponse = await getFormationsByIdRcoFormationsRaw({
+          formations = await getFormationsByIdRcoFormations({
             idRcoFormations: [parameter.id_rco_formation],
           })
         }
@@ -124,7 +125,7 @@ export default ({ widgetParameters, etablissements }) => {
           cfd: parameter.formation_cfd,
           email: parameter.email_rdv,
           localite: parameter.localite,
-          email_catalogue: catalogueResponse?.formations.length ? catalogueResponse?.formations[0].email : "",
+          email_catalogue: formations.length ? formations[0].email : "",
           code_postal: parameter.code_postal,
           sources: parameter.referrers.map((referrer) => getReferrerById(referrer).full_name).join(", "),
         })
@@ -213,7 +214,7 @@ export default ({ widgetParameters, etablissements }) => {
 
       const result = []
       for (const parameter of body.parameters) {
-        const { formations } = await getFormationsBySiretFormateur({ siretFormateur: parameter.siret_formateur })
+        const formations = await getFormationsBySiretFormateur({ siretFormateur: parameter.siret_formateur })
 
         if (formations.length) {
           const widgetParametersCreated = await Promise.all(

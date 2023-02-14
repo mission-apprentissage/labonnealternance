@@ -3,12 +3,12 @@ import express from "express"
 import joi from "joi"
 import { mailTemplate } from "../../assets/index.js"
 import { getAktoEstablishmentVerification } from "../../common/akto.js"
-import { getNearEtablissementsFromRomes } from "../../common/catalogue.js"
 import { CFA, ENTREPRISE, etat_utilisateur, OPCOS, validation_utilisateur } from "../../common/constants.js"
 import { createMagicLinkToken, createUserRecruteurToken } from "../../common/utils/jwtUtils.js"
 import { checkIfUserEmailIsPrivate, checkIfUserMailExistInReferentiel, getAllDomainsFromEmailList } from "../../common/utils/mailUtils.js"
 import { notifyToSlack } from "../../common/utils/slackUtils.js"
 import config from "../../config.js"
+import { getNearEtablissementsFromRomes } from "../../services/catalogue.service.js"
 import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
 
 const getCfaRomeSchema = joi.object({
