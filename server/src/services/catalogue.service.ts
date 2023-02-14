@@ -1,5 +1,6 @@
 // @ts-nocheck
-import axios from "axios"
+import axios, { AxiosInstance } from "axios"
+import got from "got"
 import querystring from "node:querystring"
 import { compose } from "oleoduc"
 import { logger } from "../common/logger.js"
@@ -91,13 +92,13 @@ export const getFormationsByIdRcoFormations = ({ idRcoFormations }: { idRcoForma
  * @param {Object} query - Mongo query
  * @returns {Promise<Object>}
  */
-export const getFormations = (query: object): Promise<object[]> => FormationCatalogue.find(query)
+export const getFormations = (query: object, select?: object): Promise<object[]> => FormationCatalogue.find(query, select)
 
 /**
  * @description Get formations count through the CARIF OREF catalogue API.
  * @returns {string}
  */
-export const countFormations = async () => {
+export const countFormations = async (): number => {
   try {
     const response = await axios.get(`${config.catalogueUrl}${config.formationsEndPoint}/count`)
     return response.data
@@ -105,6 +106,67 @@ export const countFormations = async () => {
     logger.error(error)
     return false
   }
+}
+
+/**
+ * @description Returns etablissements.
+ * @param {Object} query
+ * @returns {Promise<Object[]>}
+ */
+export const getCatalogueEtablissements = (query: object = {}) =>
+  got(`${config.catalogueUrl}/api/v1/entity/etablissements`, {
+    method: "POST",
+    json: {
+      query,
+      limit: 100000,
+    },
+  }).json()
+
+/**
+ * @description Gets nearest "etablissements" from ROMEs.
+ * @param {string[]} rome
+ * @param {{latitude: string, longitude: string}} origin
+ * @returns {Promise<Object[]>}
+ */
+export const getNearEtablissementsFromRomes = async ({ rome, origin }: { rome: string; origin: object }) => {
+  const formations = await getFormations(
+    {
+      rome_codes: { $in: rome },
+      etablissement_gestionnaire_courriel: { $nin: [null, ""] },
+      catalogue_published: true,
+    },
+    {
+      etablissement_formateur_id: 1,
+      romes: 1,
+      geo_coordonnees_etablissement_formateur: 1,
+    }
+  )
+
+  const etablissementsToRetrieve = new Set()
+  formations.map((formation) => etablissementsToRetrieve.add(formation.etablissement_formateur_id))
+
+  const { etablissements } = await getCatalogueEtablissements({
+    _id: { $in: Array.from(etablissementsToRetrieve) },
+    certifie_qualite: true,
+  })
+
+  const etablissementsRefined = etablissements
+    .map((etablissement) => {
+      // This field can be null
+      if (!etablissement.geo_coordonnees) {
+        return
+      }
+
+      const [latitude, longitude] = etablissement.geo_coordonnees?.split(",")
+
+      return {
+        ...etablissement,
+        distance_en_km: getDistanceInKm({ origin, destination: { latitude, longitude } }),
+      }
+    })
+    .filter(Boolean)
+
+  return sortBy(etablissementsRefined, "distance_en_km")
 }
 
 /**
@@ -150,4 +212,73 @@ const convertQueryIntoParams = (query: object, options: object = {}): string => 
     },
     { encode: false }
   )
+}
+
+/**
+ * @description create an axios instance to connect to the ministère educatif catalogue
+ * @returns {instanceof<API>}
+ */
+const createCatalogueMeAPI = async (): Promise<AxiosInstance> => {
+  const instance = axios.create({ baseURL: "https://catalogue.apprentissage.education.gouv.fr/api/v1" })
+
+  try {
+    const response = await axios.post("https://catalogue.apprentissage.education.gouv.fr/api/v1/auth/login", {
+      username: config.catalogueMe.username,
+      password: config.catalogueMe.password,
+    })
+
+    instance.defaults.headers.common["Cookie"] = response.headers["set-cookie"][0]
+  } catch (error) {
+    logger.error(error.response)
+  }
+
+  return instance
+}
+
+/**
+ * @description: Get formations from the Ministère Educatif formation catalogue
+ * @param {Object} query
+ * @param {Object} limit
+ * @param {Number} page
+ * @param {Object} select
+ * @param {Array} allFormations
+ * @returns {Promise<Object[]>}
+ */
+
+// KBA 20221227 : find more elegant solution
+let api = null
+export const getFormationsFromCatalogueMe = async ({
+  query,
+  limit,
+  page = 1,
+  select,
+  allFormations = [],
+}: {
+  query: object
+  limit: number
+  page?: number
+  select: object
+  allFormations?: object[]
+}) => {
+  if (api === null) {
+    api = await createCatalogueMeAPI()
+  }
+
+  let params = { page, limit, query, select }
+
+  try {
+    const response = await api.get(`/entity/formations`, { params })
+
+    const { formations, pagination } = response.data
+
+    allFormations = allFormations.concat(formations)
+
+    if (page < pagination.nombre_de_page) {
+      return getFormationsFromCatalogueMe({ page: page + 1, allFormations, limit, query, select })
+    } else {
+      return allFormations
+    }
+  } catch (error) {
+    logger.error(error)
+  }
 }
