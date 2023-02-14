@@ -200,18 +200,15 @@ export const getAllFormationsFromCatalogue = async () => {
  * @returns {String}
  */
 const convertQueryIntoParams = (query: object, options: object = {}): string => {
-  return querystring.stringify(
-    {
-      query: JSON.stringify(query),
-      ...Object.keys(options).reduce((acc, key) => {
-        return {
-          ...acc,
-          [key]: JSON.stringify(options[key]),
-        }
-      }, {}),
-    },
-    { encode: false }
-  )
+  return querystring.stringify({
+    query: JSON.stringify(query),
+    ...Object.keys(options).reduce((acc, key) => {
+      return {
+        ...acc,
+        [key]: JSON.stringify(options[key]),
+      }
+    }, {}),
+  })
 }
 
 /**
