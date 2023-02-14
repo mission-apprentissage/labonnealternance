@@ -1,7 +1,7 @@
 // @ts-nocheck
 import axios from "axios"
+import querystring from "node:querystring"
 import { compose } from "oleoduc"
-import queryString from "query-string"
 import { logger } from "../common/logger.js"
 import { FormationCatalogue } from "../common/model/index.js"
 import { fetchStream } from "../common/utils/httpUtils.js"
@@ -135,10 +135,10 @@ export const getAllFormationsFromCatalogue = async () => {
 /**
  * @description Convert query into URL params
  * @param {Object} query - Mongo query
- * @returns {Promise<Object>}
+ * @returns {String}
  */
 const convertQueryIntoParams = (query: object, options: object = {}): string => {
-  return queryString.stringify(
+  return querystring.stringify(
     {
       query: JSON.stringify(query),
       ...Object.keys(options).reduce((acc, key) => {
