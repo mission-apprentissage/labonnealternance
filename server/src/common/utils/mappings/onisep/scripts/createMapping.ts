@@ -2,7 +2,7 @@
 import csvToJson from "csvtojson"
 import fs from "fs"
 import { chunk } from "lodash-es"
-import { getFormationsById } from "../../../../../services/catalogue.js"
+import { getFormationsById } from "../../../../../services/catalogue.service.js"
 import { logger } from "../../../../logger.js"
 
 const createMapping = async () => {
