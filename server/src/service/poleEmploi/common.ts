@@ -23,7 +23,7 @@ const paramPE = `${paramApisPE}${scopePE}`
 
 const peApiHeaders = { "Content-Type": "application/json", Accept: "application/json" } as AxiosRequestHeaders
 
-let tokens = {
+const tokens = {
   lbb: null,
   pe: null,
 }
@@ -76,7 +76,7 @@ const getAccessToken = async (api) => {
 
     if (currentToken) return currentToken
     else {
-      let paramApi = api === "lbb" ? paramLBB : api === "lba" ? paramLBA : paramPE
+      const paramApi = api === "lbb" ? paramLBB : api === "lba" ? paramLBA : paramPE
       const response = await axios.post(accessTokenEndpoint, paramApi, headers)
 
       if (response.data) {
@@ -97,7 +97,7 @@ const peJobApiEndpointReferentiel = "https://api.pole-emploi.io/partenaire/offre
 const getPeApiReferentiels = async (referentiel) => {
   try {
     const token = await getAccessToken("pe")
-    let headers = peApiHeaders
+    const headers = peApiHeaders
     headers.Authorization = `Bearer ${token}`
 
     const referentiels = await axios.get(`${peJobApiEndpointReferentiel}${referentiel}`, {

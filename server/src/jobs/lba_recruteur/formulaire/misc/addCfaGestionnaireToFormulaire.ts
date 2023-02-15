@@ -5,10 +5,10 @@ import { runScript } from "../../../scriptWrapper.js"
 runScript(async () => {
   const data = await Formulaire.find({ origine: /cfa-/, gestionnaire: { $exists: false } })
 
-  let stat = { total: data.length, error: 0, linked: 0 }
+  const stat = { total: data.length, error: 0, linked: 0 }
 
   await asyncForEach(data, async (form) => {
-    let { origine } = form
+    const { origine } = form
     const cfa = await UserRecruteur.findOne({ scope: origine })
 
     if (!cfa) {

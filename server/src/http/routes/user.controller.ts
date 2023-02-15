@@ -21,7 +21,7 @@ export default ({ usersRecruteur, mailer, formulaire }) => {
       const results = users.reduce((acc, user) => {
         acc.push({ ...user, offres: 0 })
 
-        let form = formulaires.find((x) => x.id_form === user.id_form)
+        const form = formulaires.find((x) => x.id_form === user.id_form)
 
         if (form) {
           const found = acc.findIndex((x) => x.id_form === form.id_form)

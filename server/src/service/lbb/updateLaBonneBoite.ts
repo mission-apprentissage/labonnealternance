@@ -10,7 +10,7 @@ const updateLaBonneBoite = async (query) => {
     return { error: "wrong_secret" }
   } else {
     try {
-      let params = {
+      const params = {
         shouldClearMongo: query?.shouldClearMongo === "false" ? false : true,
         shouldBuildIndex: query?.shouldBuildIndex === "false" ? false : true,
         shouldParseFiles: query?.shouldParseFiles === "false" ? false : true,
@@ -20,12 +20,12 @@ const updateLaBonneBoite = async (query) => {
 
       console.log(params)
 
-      let result = await updateLaBonneBoiteJob(params)
+      const result = await updateLaBonneBoiteJob(params)
       return result
     } catch (err) {
       Sentry.captureException(err)
 
-      let error_msg = _.get(err, "meta.body") ?? err.message
+      const error_msg = _.get(err, "meta.body") ?? err.message
 
       return { error: error_msg }
     }

@@ -57,7 +57,7 @@ httpTests(__filename(import.meta.url), ({ startServer }) => {
   it("Vérifie que les requêtes sans ROME et sans domaine ROME sont refusées", async () => {
     const { httpClient } = await startServer()
 
-    let response = await httpClient.get("/api/V1/formations?longitude=2.3752&latitude=48.845&radius=30")
+    const response = await httpClient.get("/api/V1/formations?longitude=2.3752&latitude=48.845&radius=30")
 
     assert.strictEqual(response.status, 400)
     assert.deepStrictEqual(response.data.error, "wrong_parameters")
@@ -67,7 +67,7 @@ httpTests(__filename(import.meta.url), ({ startServer }) => {
   it("Vérifie que les requêtes avec ROME et domaine ROME sont refusées", async () => {
     const { httpClient } = await startServer()
 
-    let response = await httpClient.get("/api/V1/formations?romes=F1603,I1308&romeDomain=A20&longitude=2.3752&latitude=48.845&radius=30")
+    const response = await httpClient.get("/api/V1/formations?romes=F1603,I1308&romeDomain=A20&longitude=2.3752&latitude=48.845&radius=30")
 
     assert.strictEqual(response.status, 400)
     assert.deepStrictEqual(response.data.error, "wrong_parameters")
@@ -77,7 +77,7 @@ httpTests(__filename(import.meta.url), ({ startServer }) => {
   it("Vérifie que les requêtes avec domaine ROME mal formé sont refusées", async () => {
     const { httpClient } = await startServer()
 
-    let response = await httpClient.get("/api/V1/formations?romeDomain=ABC&longitude=2.3752&latitude=48.845&radius=30")
+    const response = await httpClient.get("/api/V1/formations?romeDomain=ABC&longitude=2.3752&latitude=48.845&radius=30")
 
     assert.strictEqual(response.status, 400)
     assert.deepStrictEqual(response.data.error, "wrong_parameters")
@@ -89,7 +89,7 @@ httpTests(__filename(import.meta.url), ({ startServer }) => {
   it("Vérifie que les requêtes avec ROME mal formé sont refusées", async () => {
     const { httpClient } = await startServer()
 
-    let response = await httpClient.get("/api/V1/formations?romes=ABCDE&longitude=2.3752&latitude=48.845&radius=30")
+    const response = await httpClient.get("/api/V1/formations?romes=ABCDE&longitude=2.3752&latitude=48.845&radius=30")
 
     assert.strictEqual(response.status, 400)
     assert.deepStrictEqual(response.data.error, "wrong_parameters")
@@ -99,7 +99,7 @@ httpTests(__filename(import.meta.url), ({ startServer }) => {
   it("Vérifie que les requêtes avec trop de ROME sont refusées", async () => {
     const { httpClient } = await startServer()
 
-    let response = await httpClient.get(
+    const response = await httpClient.get(
       "/api/V1/formations?romes=ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE&longitude=2.3752&latitude=48.845&radius=30"
     )
 
@@ -111,7 +111,7 @@ httpTests(__filename(import.meta.url), ({ startServer }) => {
   it("Vérifie que les requêtes sans caller sont refusées", async () => {
     const { httpClient } = await startServer()
 
-    let response = await httpClient.get("/api/V1/formations?romes=F1603,I1308&longitude=2.3752&latitude=48.845&insee=12345")
+    const response = await httpClient.get("/api/V1/formations?romes=F1603,I1308&longitude=2.3752&latitude=48.845&insee=12345")
 
     assert.strictEqual(response.status, 400)
     assert.deepStrictEqual(response.data.error, "wrong_parameters")
@@ -121,7 +121,7 @@ httpTests(__filename(import.meta.url), ({ startServer }) => {
   it("Vérifie que les requêtes sans radius sont refusées", async () => {
     const { httpClient } = await startServer()
 
-    let response = await httpClient.get("/api/V1/formations?romes=F1603,I1308&longitude=2.3752&latitude=48.845&insee=12345")
+    const response = await httpClient.get("/api/V1/formations?romes=F1603,I1308&longitude=2.3752&latitude=48.845&insee=12345")
 
     assert.strictEqual(response.status, 400)
     assert.deepStrictEqual(response.data.error, "wrong_parameters")
@@ -131,7 +131,7 @@ httpTests(__filename(import.meta.url), ({ startServer }) => {
   it("Vérifie que les requêtes avec radius mal formé sont refusées", async () => {
     const { httpClient } = await startServer()
 
-    let response = await httpClient.get("/api/V1/formations?romes=F1603,I1308&longitude=2.3752&latitude=48.845&radius=XX&insee=12345")
+    const response = await httpClient.get("/api/V1/formations?romes=F1603,I1308&longitude=2.3752&latitude=48.845&radius=XX&insee=12345")
 
     assert.strictEqual(response.status, 400)
     assert.deepStrictEqual(response.data.error, "wrong_parameters")
@@ -141,7 +141,7 @@ httpTests(__filename(import.meta.url), ({ startServer }) => {
   it("Vérifie que les requêtes avec radius hors limite sont refusées", async () => {
     const { httpClient } = await startServer()
 
-    let response = await httpClient.get("/api/V1/formations?romes=F1603,I1308&longitude=2.3752&latitude=48.845&radius=201&insee=12345")
+    const response = await httpClient.get("/api/V1/formations?romes=F1603,I1308&longitude=2.3752&latitude=48.845&radius=201&insee=12345")
 
     assert.strictEqual(response.status, 400)
     assert.deepStrictEqual(response.data.error, "wrong_parameters")
@@ -151,7 +151,7 @@ httpTests(__filename(import.meta.url), ({ startServer }) => {
   it("Vérifie que les requêtes sans latitude sont refusées", async () => {
     const { httpClient } = await startServer()
 
-    let response = await httpClient.get("/api/V1/formations?romes=F1603,I1308&radius=0&longitude=2.3752&latitude=&insee=12345")
+    const response = await httpClient.get("/api/V1/formations?romes=F1603,I1308&radius=0&longitude=2.3752&latitude=&insee=12345")
 
     assert.strictEqual(response.status, 400)
     assert.deepStrictEqual(response.data.error, "wrong_parameters")
@@ -161,7 +161,7 @@ httpTests(__filename(import.meta.url), ({ startServer }) => {
   it("Vérifie que les requêtes avec latitude mal formée sont refusées", async () => {
     const { httpClient } = await startServer()
 
-    let response = await httpClient.get("/api/V1/formations?romes=F1603,I1308&radius=0&longitude=2.3752&latitude=AX&insee=12345")
+    const response = await httpClient.get("/api/V1/formations?romes=F1603,I1308&radius=0&longitude=2.3752&latitude=AX&insee=12345")
 
     assert.strictEqual(response.status, 400)
     assert.deepStrictEqual(response.data.error, "wrong_parameters")
@@ -171,7 +171,7 @@ httpTests(__filename(import.meta.url), ({ startServer }) => {
   it("Vérifie que les requêtes avec latitude hors limites sont refusées", async () => {
     const { httpClient } = await startServer()
 
-    let response = await httpClient.get("/api/V1/formations?romes=F1603,I1308&radius=0&longitude=2.3752&latitude=91&insee=12345")
+    const response = await httpClient.get("/api/V1/formations?romes=F1603,I1308&radius=0&longitude=2.3752&latitude=91&insee=12345")
 
     assert.strictEqual(response.status, 400)
     assert.deepStrictEqual(response.data.error, "wrong_parameters")
@@ -181,7 +181,7 @@ httpTests(__filename(import.meta.url), ({ startServer }) => {
   it("Vérifie que les requêtes sans longitude sont refusées", async () => {
     const { httpClient } = await startServer()
 
-    let response = await httpClient.get("/api/V1/formations?romes=F1603,I1308&radius=0&longitude=&latitude=2.3752&insee=12345")
+    const response = await httpClient.get("/api/V1/formations?romes=F1603,I1308&radius=0&longitude=&latitude=2.3752&insee=12345")
 
     assert.strictEqual(response.status, 400)
     assert.deepStrictEqual(response.data.error, "wrong_parameters")
@@ -191,7 +191,7 @@ httpTests(__filename(import.meta.url), ({ startServer }) => {
   it("Vérifie que les requêtes avec longitude mal formée sont refusées", async () => {
     const { httpClient } = await startServer()
 
-    let response = await httpClient.get("/api/V1/formations?romes=F1603,I1308&radius=0&longitude=AX&latitude=2.3752&insee=12345")
+    const response = await httpClient.get("/api/V1/formations?romes=F1603,I1308&radius=0&longitude=AX&latitude=2.3752&insee=12345")
 
     assert.strictEqual(response.status, 400)
     assert.deepStrictEqual(response.data.error, "wrong_parameters")
@@ -201,7 +201,7 @@ httpTests(__filename(import.meta.url), ({ startServer }) => {
   it("Vérifie que les requêtes avec longitude hors limites sont refusées", async () => {
     const { httpClient } = await startServer()
 
-    let response = await httpClient.get("/api/V1/formations?romes=F1603,I1308&radius=0&longitude=181&latitude=90&insee=12345")
+    const response = await httpClient.get("/api/V1/formations?romes=F1603,I1308&radius=0&longitude=181&latitude=90&insee=12345")
 
     assert.strictEqual(response.status, 400)
     assert.deepStrictEqual(response.data.error, "wrong_parameters")
@@ -211,7 +211,7 @@ httpTests(__filename(import.meta.url), ({ startServer }) => {
   it("Vérifie que les requêtes avec diploma mal formée sont refusées", async () => {
     const { httpClient } = await startServer()
 
-    let response = await httpClient.get("/api/V1/formations?romes=F1603,I1308&radius=0&longitude=180&latitude=90&diploma=lba,lbc")
+    const response = await httpClient.get("/api/V1/formations?romes=F1603,I1308&radius=0&longitude=180&latitude=90&diploma=lba,lbc")
 
     assert.strictEqual(response.status, 400)
     assert.deepStrictEqual(response.data.error, "wrong_parameters")

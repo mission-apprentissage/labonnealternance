@@ -14,7 +14,7 @@ export const checkIfUserMailExistInReferentiel = (contactList, userEmail) => con
  */
 export const getAllDomainsFromEmailList = (contactList) => {
   const domains = contactList.reduce((acc, contact) => {
-    let [, domain] = contact.email.split("@")
+    const [, domain] = contact.email.split("@")
     if (!acc.includes(domain)) {
       acc.push(domain)
     }

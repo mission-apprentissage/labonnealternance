@@ -7,7 +7,7 @@ const esClient = getElasticInstance()
 
 const getRomesFromCatalogue = async ({ cfd, siret }: { cfd?: string; siret?: string }) => {
   try {
-    let mustTerm = []
+    const mustTerm = []
 
     if (cfd) {
       mustTerm.push({
@@ -45,7 +45,7 @@ const getRomesFromCatalogue = async ({ cfd, siret }: { cfd?: string; siret?: str
       romes = romes.concat(formation._source.rome_codes)
     })
 
-    let result = { romes: romes }
+    const result = { romes: romes }
 
     if (!romes.length) {
       result.error = "No training found"
@@ -53,7 +53,7 @@ const getRomesFromCatalogue = async ({ cfd, siret }: { cfd?: string; siret?: str
 
     return result
   } catch (err) {
-    let error_msg = _.get(err, "meta.body", err.message)
+    const error_msg = _.get(err, "meta.body", err.message)
     console.error("Error getting trainings from romes ", error_msg)
     if (_.get(err, "meta.meta.connection.status") === "dead") {
       console.error("Elastic search is down or unreachable")

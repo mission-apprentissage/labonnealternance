@@ -77,7 +77,7 @@ export default ({ etablissements, mailer, widgetParameters, appointments }) => {
         },
       })
 
-      let [widgetParametersFound, etablissementUpdated] = await Promise.all([
+      const [widgetParametersFound, etablissementUpdated] = await Promise.all([
         widgetParameters.find({
           etablissement_siret: etablissement.siret_formateur,
           id_parcoursup: {

@@ -8,7 +8,7 @@ const filePath = path.join(currentDirname, "./assets/predictions.csv")
 
 const seuilElimination = 1
 
-let predictionMap = {}
+const predictionMap = {}
 let count = 0
 
 const parseLine = (line) => {

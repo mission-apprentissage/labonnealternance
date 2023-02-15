@@ -85,7 +85,7 @@ function getMapping(schema, requireAsciiFolding = false) {
         properties[key] = { type: "nested", properties: {} }
         for (let i = 0; i < Object.keys(schema.paths[key].caster.schema.paths).length; i++) {
           const subDocumentKey = Object.keys(schema.paths[key].caster.schema.paths)[i]
-          let { instance, caster } = schema.paths[key].caster.schema.paths[subDocumentKey]
+          const { instance, caster } = schema.paths[key].caster.schema.paths[subDocumentKey]
 
           properties[key].properties[subDocumentKey] = getProperties(instance, caster?.instance, requireAsciiFolding)
         }
@@ -181,9 +181,9 @@ function Mongoosastic(schema, options) {
     try {
       const exists = await esClient.indices.exists({ index: indexName })
 
-      let includeTypeNameParameters = isMappingNeedingGeoPoint || requireAsciiFolding ? { include_type_name: true } : {}
+      const includeTypeNameParameters = isMappingNeedingGeoPoint || requireAsciiFolding ? { include_type_name: true } : {}
 
-      let asciiFoldingParameters = requireAsciiFolding
+      const asciiFoldingParameters = requireAsciiFolding
         ? {
             body: {
               settings: {

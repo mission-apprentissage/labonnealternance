@@ -70,7 +70,7 @@ export default () => ({
   getIdcc: (siret) => axios.get(`https://siret2idcc.fabrique.social.gouv.fr/api/v2/${siret}`),
   getValidationUrl: (_id) => `${config.publicUrlEspacePro}/authentification/validation/${_id}`,
   validateEtablissementEmail: async (_id) => {
-    let exist = await UserRecruteur.findById(_id)
+    const exist = await UserRecruteur.findById(_id)
 
     if (!exist) {
       return false

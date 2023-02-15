@@ -2,7 +2,7 @@ import { logMessage } from "../../common/utils/logMessage.js"
 import miniget from "miniget"
 import { oleoduc, readLineByLine, transformData, writeData } from "oleoduc"
 
-let nafMap = {}
+const nafMap = {}
 let count = 0
 
 const parseLine = (line) => {

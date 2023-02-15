@@ -29,7 +29,7 @@ let i = 0
 let running = false
 
 const saveOpco = async (opcoData) => {
-  let opco = new Opco(opcoData)
+  const opco = new Opco(opcoData)
 
   try {
     await opco.save()
@@ -68,7 +68,7 @@ const getAADToken = async () => {
     },
   }
 
-  let res = await axios.post(aadTokenUrl, params, config)
+  const res = await axios.post(aadTokenUrl, params, config)
 
   return res.data.access_token
 }
@@ -132,7 +132,7 @@ export default async function () {
       }
     } catch (err) {
       resetContext()
-      let error_msg = _.get(err, "meta.body") ?? err.message
+      const error_msg = _.get(err, "meta.body") ?? err.message
       return { error: error_msg }
     }
   } else {

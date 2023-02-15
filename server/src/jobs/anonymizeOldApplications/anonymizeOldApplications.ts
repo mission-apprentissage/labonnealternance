@@ -7,7 +7,7 @@ import { notifyToSlack } from "../../common/utils/slackUtils.js"
 const anonymizeApplications = async () => {
   logger.info(`Début anonymisation`)
 
-  let lastYear = new Date()
+  const lastYear = new Date()
   lastYear.setFullYear(lastYear.getFullYear() - 1)
 
   const res = await Application.updateMany(
@@ -58,7 +58,7 @@ export default async function () {
   } catch (err) {
     Sentry.captureException(err)
     logger.error(err)
-    let error_msg = get(err, "meta.body") ?? err.message
+    const error_msg = get(err, "meta.body") ?? err.message
     await notifyToSlack({ subject: "ANONYMISATION CANDIDATURES", message: `ECHEC anonymisation des candidatures ${error_msg}`, error: true })
     return { error: error_msg }
   }

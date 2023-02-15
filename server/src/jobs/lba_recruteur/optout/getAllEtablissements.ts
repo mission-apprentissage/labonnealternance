@@ -51,9 +51,9 @@ runScript(async ({ etablissement }) => {
   const organismesFiltered = []
 
   // ajout de l'établissement pour lequels le contact est dans un seul établissement
-  for (let obj in siretListByEmail) {
+  for (const obj in siretListByEmail) {
     if (siretListByEmail[obj].length === 1) {
-      let found = organismesFiltered.find((x) => x.siret === siretListByEmail[obj][0].siret)
+      const found = organismesFiltered.find((x) => x.siret === siretListByEmail[obj][0].siret)
       if (!found) {
         organismesFiltered.push(...siretListByEmail[obj])
       }
@@ -67,7 +67,7 @@ runScript(async ({ etablissement }) => {
     })
   )
 
-  let count = await Optout.countDocuments()
+  const count = await Optout.countDocuments()
 
   return {
     total: referentiel.length,

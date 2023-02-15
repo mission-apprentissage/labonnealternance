@@ -4,7 +4,7 @@ import { isEmailBurner } from "burner-email-providers"
 import { Application } from "../common/model/index.js"
 
 const validateSendApplication = async (validable) => {
-  let schema = Yup.object().shape({
+  const schema = Yup.object().shape({
     fileName: Yup.string().nullable().required("⚠ La pièce jointe est requise"),
     fileContent: Yup.string().nullable().required("⚠ La pièce jointe est requise"),
     firstName: Yup.string().max(50, "⚠ Doit avoir 50 caractères ou moins").required("⚠ Le prénom est requis."),
@@ -14,7 +14,7 @@ const validateSendApplication = async (validable) => {
       .matches(/^[0-9]{10}$/, "⚠ Le numéro de téléphone doit avoir exactement 10 chiffres")
       .required("⚠ Le téléphone est requis"),
   })
-  let validation = await schema.validate(validable).catch(function () {
+  const validation = await schema.validate(validable).catch(function () {
     return "erreur"
   })
 
@@ -26,7 +26,7 @@ const validateSendApplication = async (validable) => {
 }
 
 const validateFileContent = async (validable, scan) => {
-  let schema = Yup.object().shape({
+  const schema = Yup.object().shape({
     fileName: Yup.string().matches(/((.*?))(\.)+(docx|pdf)$/i, "⚠ Seuls les fichiers docx et pdf sont autorisés"),
     fileContent: Yup.string().max(4215276, "⚠ La taille maximale de la pièce jointe est 3 Mo"),
   })
@@ -53,11 +53,11 @@ const validateFileContent = async (validable, scan) => {
 }
 
 const validateCompanyEmail = async (validable) => {
-  let schema = Yup.object().shape({
+  const schema = Yup.object().shape({
     companyEmail: Yup.string().email("⚠ Adresse e-mail société invalide.").required("⚠ L'adresse e-mail société est requise."),
     cryptedEmail: Yup.string().email("⚠ Adresse e-mail chiffrée invalide."),
   })
-  let validation = await schema.validate(validable).catch(function () {
+  const validation = await schema.validate(validable).catch(function () {
     return "erreur"
   })
   if (validation === "erreur") {
@@ -75,13 +75,13 @@ const validatePermanentEmail = async (validable) => {
 }
 
 const checkUserApplicationCount = async (applicantEmail) => {
-  let start = new Date()
+  const start = new Date()
   start.setHours(0, 0, 0, 0)
 
-  let end = new Date()
+  const end = new Date()
   end.setHours(23, 59, 59, 999)
 
-  let appCount = await Application.countDocuments({
+  const appCount = await Application.countDocuments({
     applicant_email: applicantEmail.toLowerCase(),
     created_at: { $gte: start, $lt: end },
   })
@@ -94,7 +94,7 @@ const checkUserApplicationCount = async (applicantEmail) => {
 }
 
 const validateFeedbackApplication = async (validable) => {
-  let schema = Yup.object().shape({
+  const schema = Yup.object().shape({
     id: Yup.string().required("⚠ ID manquant."),
     iv: Yup.string().required("⚠ IV manquant."),
     avis: Yup.string()
@@ -108,7 +108,7 @@ const validateFeedbackApplication = async (validable) => {
 }
 
 const validateFeedbackApplicationComment = async (validable) => {
-  let schema = Yup.object().shape({
+  const schema = Yup.object().shape({
     id: Yup.string().required("⚠ ID manquant."),
     iv: Yup.string().required("⚠ IV manquant."),
     comment: Yup.string().required("⚠ Commentaire manquant."),
@@ -120,7 +120,7 @@ const validateFeedbackApplicationComment = async (validable) => {
 }
 
 const validateIntentionApplication = async (validable) => {
-  let schema = Yup.object().shape({
+  const schema = Yup.object().shape({
     id: Yup.string().required("⚠ ID manquant."),
     iv: Yup.string().required("⚠ IV manquant."),
     intention: Yup.string()

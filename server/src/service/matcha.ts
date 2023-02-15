@@ -17,9 +17,9 @@ const getMatchaJobs = async ({ romes, radius, latitude, longitude, api, opco, ca
   try {
     const hasLocation = latitude === "" || latitude === undefined ? false : true
 
-    let distance = hasLocation ? radius || 10 : 21000
+    const distance = hasLocation ? radius || 10 : 21000
 
-    let params = {
+    const params = {
       romes: romes.split(","),
       distance,
       lat: hasLocation ? latitude : coordinatesOfFrance[1],
@@ -28,7 +28,7 @@ const getMatchaJobs = async ({ romes, radius, latitude, longitude, api, opco, ca
 
     const jobs = useMock === "true" ? { data: matchasMock } : await axios.post(`${recruteurEndpoint}/search`, params)
 
-    let matchas = transformMatchaJobsForIdea({ jobs: jobs.data, caller })
+    const matchas = transformMatchaJobsForIdea({ jobs: jobs.data, caller })
 
     // filtrage sur l'opco
     if (opco) {
@@ -47,13 +47,13 @@ const getMatchaJobs = async ({ romes, radius, latitude, longitude, api, opco, ca
 
 // update du contenu avec des résultats pertinents par rapport au rayon
 const transformMatchaJobsForIdea = ({ jobs, caller }) => {
-  let resultJobs = {
+  const resultJobs = {
     results: [],
   }
 
   if (jobs && jobs.length) {
     for (let i = 0; i < jobs.length; ++i) {
-      let companyJobs = transformMatchaJobForIdea({
+      const companyJobs = transformMatchaJobForIdea({
         job: jobs[i]._source,
         distance: jobs[i].sort[0],
         caller,
@@ -92,10 +92,10 @@ const getMatchaJobById = async ({ id, caller }) => {
 
 // Adaptation au modèle Idea et conservation des seules infos utilisées des offres
 const transformMatchaJobForIdea = ({ job, distance, caller }) => {
-  let resultJobs = []
+  const resultJobs = []
 
   job.offres.map((offre, idx) => {
-    let resultJob = itemModel("matcha")
+    const resultJob = itemModel("matcha")
 
     let email = {}
 

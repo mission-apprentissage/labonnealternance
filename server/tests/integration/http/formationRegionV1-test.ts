@@ -40,7 +40,7 @@ httpTests(__filename(import.meta.url), ({ startServer }) => {
   it("Vérifie que les requêtes avec region et departement sont refusées", async () => {
     const { httpClient } = await startServer()
 
-    let response = await httpClient.get("/api/V1/formationsParRegion?departement=44&region=01")
+    const response = await httpClient.get("/api/V1/formationsParRegion?departement=44&region=01")
 
     assert.strictEqual(response.status, 400)
     assert.deepStrictEqual(response.data.error, "wrong_parameters")
@@ -50,7 +50,7 @@ httpTests(__filename(import.meta.url), ({ startServer }) => {
   it("Vérifie que les requêtes avec departement mal formé sont refusées", async () => {
     const { httpClient } = await startServer()
 
-    let response = await httpClient.get("/api/V1/formationsParRegion?departement=9745")
+    const response = await httpClient.get("/api/V1/formationsParRegion?departement=9745")
 
     assert.strictEqual(response.status, 400)
     assert.deepStrictEqual(response.data.error, "wrong_parameters")
@@ -64,7 +64,7 @@ httpTests(__filename(import.meta.url), ({ startServer }) => {
   it("Vérifie que les requêtes avec region mal formée sont refusées", async () => {
     const { httpClient } = await startServer()
 
-    let response = await httpClient.get("/api/V1/formationsParRegion?region=123")
+    const response = await httpClient.get("/api/V1/formationsParRegion?region=123")
 
     assert.strictEqual(response.status, 400)
     assert.deepStrictEqual(response.data.error, "wrong_parameters")
@@ -74,7 +74,7 @@ httpTests(__filename(import.meta.url), ({ startServer }) => {
   it("Vérifie que les requêtes avec code region hors liste sont refusées", async () => {
     const { httpClient } = await startServer()
 
-    let response = await httpClient.get("/api/V1/formationsParRegion?region=07")
+    const response = await httpClient.get("/api/V1/formationsParRegion?region=07")
 
     assert.strictEqual(response.status, 400)
     assert.deepStrictEqual(response.data.error, "wrong_parameters")
@@ -84,7 +84,7 @@ httpTests(__filename(import.meta.url), ({ startServer }) => {
   it("Vérifie que les requêtes avec ROME et domaine ROME sont refusées", async () => {
     const { httpClient } = await startServer()
 
-    let response = await httpClient.get("/api/V1/formationsParRegion?romes=F1603,I1308&romeDomain=A20&region=01")
+    const response = await httpClient.get("/api/V1/formationsParRegion?romes=F1603,I1308&romeDomain=A20&region=01")
 
     assert.strictEqual(response.status, 400)
     assert.deepStrictEqual(response.data.error, "wrong_parameters")
@@ -94,7 +94,7 @@ httpTests(__filename(import.meta.url), ({ startServer }) => {
   it("Vérifie que les requêtes avec ROME mal formé sont refusées", async () => {
     const { httpClient } = await startServer()
 
-    let response = await httpClient.get("/api/V1/formationsParRegion?romes=ABCDE&region=01")
+    const response = await httpClient.get("/api/V1/formationsParRegion?romes=ABCDE&region=01")
 
     assert.strictEqual(response.status, 400)
     assert.deepStrictEqual(response.data.error, "wrong_parameters")
@@ -104,7 +104,7 @@ httpTests(__filename(import.meta.url), ({ startServer }) => {
   it("Vérifie que les requêtes avec trop de ROME sont refusées", async () => {
     const { httpClient } = await startServer()
 
-    let response = await httpClient.get(
+    const response = await httpClient.get(
       "/api/V1/formationsParRegion?romes=ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE&region=01"
     )
 
@@ -116,7 +116,7 @@ httpTests(__filename(import.meta.url), ({ startServer }) => {
   it("Vérifie que les requêtes sans caller sont refusées", async () => {
     const { httpClient } = await startServer()
 
-    let response = await httpClient.get("/api/V1/formationsParRegion?romes=F1603,I1308&region=01")
+    const response = await httpClient.get("/api/V1/formationsParRegion?romes=F1603,I1308&region=01")
 
     assert.strictEqual(response.status, 400)
     assert.deepStrictEqual(response.data.error, "wrong_parameters")
@@ -126,7 +126,7 @@ httpTests(__filename(import.meta.url), ({ startServer }) => {
   it("Vérifie que les requêtes sans region ou département et sans rome ou domaine rome sont refusées", async () => {
     const { httpClient } = await startServer()
 
-    let response = await httpClient.get("/api/V1/formationsParRegion")
+    const response = await httpClient.get("/api/V1/formationsParRegion")
 
     assert.strictEqual(response.status, 400)
     assert.deepStrictEqual(response.data.error, "wrong_parameters")
@@ -136,7 +136,7 @@ httpTests(__filename(import.meta.url), ({ startServer }) => {
   it("Vérifie que les requêtes avec diploma mal formée sont refusées", async () => {
     const { httpClient } = await startServer()
 
-    let response = await httpClient.get("/api/V1/formationsParRegion?romes=F1603,I1308&radius=0&longitude=180&latitude=90&diploma=lba,lbc")
+    const response = await httpClient.get("/api/V1/formationsParRegion?romes=F1603,I1308&radius=0&longitude=180&latitude=90&diploma=lba,lbc")
 
     assert.strictEqual(response.status, 400)
     assert.deepStrictEqual(response.data.error, "wrong_parameters")

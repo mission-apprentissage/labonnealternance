@@ -1,0 +1,35 @@
+{
+  "entryFile": "src/index.ts",
+  "noImplicitAdditionalProperties": "throw-on-extras",
+  "controllerPathGlobs": ["src/http/controllers/**/*.controller.ts"],
+  "spec": {
+    "name": "La bonne alternance",
+    "description": "Trouvez ici les formations en alternance et les entreprises qui recrutent régulièrement en alternance",
+    "outputDirectory": "./src/generated",
+    "specVersion": 3,
+    "contact": {
+      "name": "La bonne alternance",
+      "url": "https://labonnealternance.apprentissage.beta.gouv.fr"
+    },
+    "spec": {
+      "servers": [
+        {
+          "url": "https://labonnealternance.apprentissage.beta.gouv.fr",
+          "description": "Production"
+        },
+        {
+          "url": "https://labonnealternance-recette.apprentissage.beta.gouv.fr",
+          "description": "Recette"
+        },
+        {
+          "url": "http://localhost",
+          "description": "Localhost"
+        }
+      ]
+    }
+  },
+  "routes": {
+    "routesDir": "./src/generated",
+    "esm": true
+  }
+}

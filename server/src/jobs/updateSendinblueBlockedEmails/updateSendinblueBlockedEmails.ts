@@ -9,10 +9,10 @@ import { logger } from "../../common/logger.js"
 
 const saveBlacklistEmails = async (contacts) => {
   for (let i = 0; i < contacts.length; ++i) {
-    let email = contacts[i].email
+    const email = contacts[i].email
     let blackListedEmail = await EmailBlacklist.findOne({ email })
     if (!blackListedEmail) {
-      let companies = await BonnesBoites.find({ email })
+      const companies = await BonnesBoites.find({ email })
       await cleanCompanies(companies)
 
       blackListedEmail = new EmailBlacklist({
@@ -42,13 +42,13 @@ const cleanCompany = async (company) => {
 const updateBlockedEmails = async ({ AllAddresses }) => {
   logger.info(`Début mise à jour blacklist sendinblue`)
 
-  let defaultClient = SibApiV3Sdk.ApiClient.instance
-  let apiKey = defaultClient.authentications["api-key"]
+  const defaultClient = SibApiV3Sdk.ApiClient.instance
+  const apiKey = defaultClient.authentications["api-key"]
   apiKey.apiKey = config.smtp.sendinblueApiKey
 
-  let apiInstance = new SibApiV3Sdk.TransactionalEmailsApi()
+  const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi()
 
-  let yesterday = new Date()
+  const yesterday = new Date()
   yesterday.setDate(yesterday.getDate() - 1)
 
   const todayStr = `${yesterday.getFullYear()}-${yesterday.getMonth() < 9 ? "0" : ""}${yesterday.getMonth() + 1}-${yesterday.getDate() < 10 ? "0" : ""}${yesterday.getDate()}`
@@ -56,10 +56,10 @@ const updateBlockedEmails = async ({ AllAddresses }) => {
   const senders = ["no-reply@apprentissage.beta.gouv.fr"]
   let total = 0
   let offset = 0
-  let startDate = AllAddresses ? null : todayStr
-  let endDate = AllAddresses ? null : todayStr
+  const startDate = AllAddresses ? null : todayStr
+  const endDate = AllAddresses ? null : todayStr
 
-  let opts = {
+  const opts = {
     startDate,
     endDate,
     limit,
