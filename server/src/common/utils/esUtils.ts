@@ -15,7 +15,7 @@ export const rebuildIndex = async (model, { skipNotFound } = { skipNotFound: fal
   }
 
   logger.info(`Re-creating '${index}' index with mapping...`)
-  let requireAsciiFolding = true
+  const requireAsciiFolding = true
   await model.createMapping(requireAsciiFolding) // this explicit call of createMapping insures that the geo points fields will be treated accordingly during indexing
 
   logger.info(`Syncing '${index}' index ...`)
@@ -29,7 +29,7 @@ export const rebuildIndex = async (model, { skipNotFound } = { skipNotFound: fal
 export const getNestedQueryFilter = (nested) => {
   const filters = nested.query.bool.must[0].bool.must
 
-  let filt = filters
+  const filt = filters
     .map((item) => {
       if (item.nested) {
         return item.nested.query.bool.should[0].terms

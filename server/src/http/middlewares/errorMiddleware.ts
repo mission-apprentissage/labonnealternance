@@ -23,7 +23,7 @@ export function errorMiddleware() {
   return (rawError, req, res, next) => {
     req.err = rawError
 
-    let { output } = boomify(req.err)
+    const { output } = boomify(req.err)
     return res.status(output.statusCode).send(output.payload)
   }
 }

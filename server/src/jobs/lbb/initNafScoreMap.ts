@@ -5,7 +5,7 @@ import { logMessage } from "../../common/utils/logMessage.js"
 import __dirname from "../../common/dirname.js"
 const currentDirname = __dirname(import.meta.url)
 
-let nafRomeHiringMap = {}
+const nafRomeHiringMap = {}
 
 const filePath = path.join(currentDirname, "./assets/contrats_30j.csv")
 

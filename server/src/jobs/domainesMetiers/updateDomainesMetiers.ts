@@ -58,19 +58,19 @@ export default async function (optionalFileName?: string) {
     sousDomainesOnisep = []
   }
 
-  let avertissements = []
+  const avertissements = []
 
   logger.info(`Début traitement`)
 
-  let onglet = XLSX.utils.sheet_to_json(workbookDomainesMetiers.workbook.Sheets["Liste"])
+  const onglet = XLSX.utils.sheet_to_json(workbookDomainesMetiers.workbook.Sheets["Liste"])
 
   reset()
 
   try {
     for (let i = 0; i < onglet.length; i++) {
-      let row = onglet[i]
+      const row = onglet[i]
 
-      let {
+      const {
         metier,
         domaine,
         appellations_rome,
@@ -90,7 +90,7 @@ export default async function (optionalFileName?: string) {
         // cas de la ligne sur laquelle se trouve le nom du métier qui va marquer l'insertion d'une ligne dans la db
         step = 1
 
-        let domainesMetier = new DomainesMetiers({
+        const domainesMetier = new DomainesMetiers({
           domaine: domaine,
           sous_domaine: metier,
           mots_clefs_specifiques: [...new Set(motsClefsSpecifiques)].join(", "),

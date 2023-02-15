@@ -19,7 +19,7 @@ export default ({ etablissements, appointments, users }) => {
   router.get(
     "/appointments",
     tryCatch(async (req, res) => {
-      let qs = req.query
+      const qs = req.query
       const query = qs && qs.query ? JSON.parse(qs.query) : {}
       const page = qs && qs.page ? qs.page : 1
       const limit = qs && qs.limit ? parseInt(qs.limit, 50) : 50
@@ -43,7 +43,7 @@ export default ({ etablissements, appointments, users }) => {
   router.get(
     "/appointments/details",
     tryCatch(async (req, res) => {
-      let qs = req.query
+      const qs = req.query
       const query = qs && qs.query ? JSON.parse(qs.query) : {}
       const page = qs && qs.page ? qs.page : 1
       const limit = qs && qs.limit ? parseInt(qs.limit, 10) : 50
@@ -168,7 +168,7 @@ export default ({ etablissements, appointments, users }) => {
   router.get(
     "/appointments/count",
     tryCatch(async (req, res) => {
-      let qs = req.query
+      const qs = req.query
       const query = qs && qs.query ? JSON.parse(qs.query) : {}
       const total = await Appointment.countDocuments(query)
 
@@ -182,7 +182,7 @@ export default ({ etablissements, appointments, users }) => {
   router.get(
     "/",
     tryCatch(async (req, res) => {
-      let qs = req.query
+      const qs = req.query
       const query = qs && qs.query ? JSON.parse(qs.query) : {}
       const retrievedData = await Appointment.findOne(query)
       if (retrievedData) {

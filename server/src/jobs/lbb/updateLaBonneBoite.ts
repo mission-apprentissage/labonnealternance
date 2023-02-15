@@ -51,9 +51,9 @@ var fileSizeInBytes = stats.size;
 logMessage("info test montage", fileSizeInBytes);*/
 
 const findRomesForNaf = async (bonneBoite) => {
-  let sTime = new Date().getTime()
-  let romes = await filterRomesFromNafHirings(bonneBoite)
-  let eTime = new Date().getTime()
+  const sTime = new Date().getTime()
+  const romes = await filterRomesFromNafHirings(bonneBoite)
+  const eTime = new Date().getTime()
 
   findRomesForNafTime += eTime - sTime
   findRomesForNafCount++
@@ -89,10 +89,10 @@ const emptyMongo = async () => {
 }
 
 const getScoreForCompany = async (siret) => {
-  let sTime = new Date().getTime()
-  let companyScore = predictionMap[siret]
+  const sTime = new Date().getTime()
+  const companyScore = predictionMap[siret]
 
-  let eTime = new Date().getTime()
+  const eTime = new Date().getTime()
 
   getScoreForCompanyCount++
   getScoreForCompanyTime += eTime - sTime
@@ -115,9 +115,9 @@ const filterRomesFromNafHirings = (bonneBoite /*, romes*/) => {
 
 const getGeoLocationForCompany = async (bonneBoite) => {
   if (!bonneBoite.geo_coordinates) {
-    let sTime = new Date().getTime()
+    const sTime = new Date().getTime()
 
-    let geoKey = `${bonneBoite.street_number} ${bonneBoite.street_name} ${bonneBoite.insee_city_code}`.trim().toUpperCase()
+    const geoKey = `${bonneBoite.street_number} ${bonneBoite.street_name} ${bonneBoite.insee_city_code}`.trim().toUpperCase()
 
     let result = await GeoLocation.findOne({ address: geoKey })
 
@@ -125,7 +125,7 @@ const getGeoLocationForCompany = async (bonneBoite) => {
       result = await geoData.getFirstMatchUpdates(bonneBoite)
 
       if (result) {
-        let geoLocation = new GeoLocation({
+        const geoLocation = new GeoLocation({
           address: geoKey,
           ...result,
         })
@@ -139,7 +139,7 @@ const getGeoLocationForCompany = async (bonneBoite) => {
       }
     }
 
-    let eTime = new Date().getTime()
+    const eTime = new Date().getTime()
     getGeoCount++
     getGeoTime += eTime - sTime
 
@@ -198,7 +198,7 @@ const parseLine = async (line) => {
 
   printProgress()
 
-  let company = initCompanyFromLine(line)
+  const company = initCompanyFromLine(line)
 
   if (!company.enseigne) {
     logMessage("error", `Error processing company. Company ${company.siret} has no name`)
@@ -210,7 +210,7 @@ const parseLine = async (line) => {
     return null
   }
 
-  let bonneBoite = await buildAndFilterBonneBoiteFromData(company)
+  const bonneBoite = await buildAndFilterBonneBoiteFromData(company)
 
   return bonneBoite
 }
@@ -218,9 +218,9 @@ const parseLine = async (line) => {
 const insertSAVECompanies = async () => {
   logMessage("info", "Starting insertSAVECompanies")
   for (const key in addMap) {
-    let company = addMap[key]
+    const company = addMap[key]
 
-    let bonneBoite = await buildAndFilterBonneBoiteFromData(company)
+    const bonneBoite = await buildAndFilterBonneBoiteFromData(company)
 
     if (bonneBoite) {
       await bonneBoite.save()
@@ -241,15 +241,15 @@ const removeSAVECompanies = async () => {
   Initialize bonneBoite from data, add missing data from maps, 
 */
 const buildAndFilterBonneBoiteFromData = async (company) => {
-  let score = company.recruitment_potential || (await getScoreForCompany(company.siret))
+  const score = company.recruitment_potential || (await getScoreForCompany(company.siret))
 
   if (!score) {
     return null
   }
 
-  let sTime = new Date().getTime()
+  const sTime = new Date().getTime()
   let bonneBoite = await BonnesBoites.findOne({ siret: company.siret })
-  let eTime = new Date().getTime()
+  const eTime = new Date().getTime()
   findBBCount++
   findBBTime += eTime - sTime
 
@@ -262,7 +262,7 @@ const buildAndFilterBonneBoiteFromData = async (company) => {
 
   // TODO checker si suppression via support PE
 
-  let romes = await findRomesForNaf(bonneBoite)
+  const romes = await findRomesForNaf(bonneBoite)
 
   // filtrage des éléments inexploitables
   if (romes.length === 0) {
@@ -271,7 +271,7 @@ const buildAndFilterBonneBoiteFromData = async (company) => {
     bonneBoite.rome_codes = romes
   }
 
-  let geo = await getGeoLocationForCompany(bonneBoite)
+  const geo = await getGeoLocationForCompany(bonneBoite)
 
   if (!bonneBoite.geo_coordinates) {
     if (!geo) {
@@ -367,7 +367,7 @@ export default async function ({ shouldClearMongo, shouldBuildIndex, shouldParse
       }
     } catch (err) {
       logMessage("error", err)
-      let error_msg = _.get(err, "meta.body") ?? err.message
+      const error_msg = _.get(err, "meta.body") ?? err.message
 
       resetContext()
 

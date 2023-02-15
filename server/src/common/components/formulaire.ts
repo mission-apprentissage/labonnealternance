@@ -21,7 +21,7 @@ export default () => ({
   deleteFormulaireFromGestionnaire: (siret) => Formulaire.deleteMany({ gestionnaire: siret }),
   updateFormulaire: (id_form, payload) => Formulaire.findOneAndUpdate({ id_form }, payload, { new: true }),
   archiveFormulaire: async (id_form) => {
-    let form = await Formulaire.findOne({ id_form })
+    const form = await Formulaire.findOne({ id_form })
 
     form.offres.map((offre) => {
       offre.statut = "Annulée"

@@ -1,7 +1,7 @@
 import { validateRomes, validateRadius, validateLatitude, validateLongitude, validateInsee, validateApiSources, validateCaller } from "../queryValidators.js"
 
 const jobsQueryValidator = (query) => {
-  let error_messages = []
+  const error_messages = []
 
   // contrôle des paramètres
 

@@ -36,7 +36,7 @@ export default () => {
         return res.json(result.body)
       } else {
         result.body.hits.hits.forEach((x) => {
-          let offres = []
+          const offres = []
 
           if (x._source.offres.length === 0) {
             return
@@ -45,7 +45,7 @@ export default () => {
           x._source.mailing = undefined
           x._source.events = undefined
 
-          let filterKeys = Object.keys(filters).map((x) => x.split(".")[1])
+          const filterKeys = Object.keys(filters).map((x) => x.split(".")[1])
 
           let copy = x._source.offres
 
@@ -102,7 +102,7 @@ export default () => {
       const { index } = req.params
       logger.info(`Es scrool search ${index}`)
 
-      let qs = req.query
+      const qs = req.query
 
       let scrollId = null
       if (qs && qs.scroll_id) {

@@ -36,7 +36,7 @@ const getDiplomasForJobs = async (romes) => {
       },
     })
 
-    let diplomas = []
+    const diplomas = []
 
     responseDiplomas.body.aggregations.niveaux.buckets.forEach((diploma) => {
       diplomas.push(diploma.key)
@@ -46,7 +46,7 @@ const getDiplomasForJobs = async (romes) => {
   } catch (err) {
     Sentry.captureException(err)
 
-    let error_msg = _.get(err, "meta.body") ? err.meta.body : err.message
+    const error_msg = _.get(err, "meta.body") ? err.meta.body : err.message
     console.log("Error getting jobDiplomas from romes and rncps", error_msg)
     if (_.get(err, "meta.meta.connection.status") === "dead") {
       console.log("Elastic search is down or unreachable")

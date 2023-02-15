@@ -8,7 +8,7 @@ import __dirname from "../common/dirname.js"
  * @returns {object} filePaths
  */
 const createPaths = () => {
-  let paths = {}
+  const paths = {}
   const dirname = __dirname(import.meta.url)
 
   fs.readdirSync(path.join(dirname, "./templates")).forEach((file) => {

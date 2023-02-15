@@ -20,7 +20,7 @@ export default ({ etablissements, mailer }) => {
   router.get(
     "/",
     tryCatch(async (req, res) => {
-      let qs = req.query
+      const qs = req.query
       const query = qs && qs.query ? JSON.parse(qs.query) : {}
       const page = qs && qs.page ? qs.page : 1
       const limit = qs && qs.limit ? parseInt(qs.limit, 50) : 50

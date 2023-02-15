@@ -14,7 +14,7 @@ import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
 const isTokenValid = (token) => token.expire?.isAfter(dayjs())
 
 const getToken = async (token = {}) => {
-  let isValid = isTokenValid(token)
+  const isValid = isTokenValid(token)
 
   if (isValid) {
     return token
@@ -64,7 +64,7 @@ export default function () {
     tryCatch(async (req, res) => {
       token = await getToken(token)
 
-      let response = await axios.get(`https://api.pole-emploi.io/partenaire/rome/v1/metier/${req.params.rome}`, {
+      const response = await axios.get(`https://api.pole-emploi.io/partenaire/rome/v1/metier/${req.params.rome}`, {
         headers: {
           Authorization: `Bearer ${token.access_token}`,
         },

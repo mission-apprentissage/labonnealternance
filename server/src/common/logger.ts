@@ -7,7 +7,7 @@ import util from "util"
 import config from "../config.js"
 
 function prettyPrintStream(outputName) {
-  let levels = {
+  const levels = {
     10: chalk.grey.bold("TRACE"),
     20: chalk.green.bold("DEBUG"),
     30: chalk.blue.bold("INFO"),
@@ -18,9 +18,9 @@ function prettyPrintStream(outputName) {
 
   return compose(
     transformData((raw) => {
-      let stack = raw.err?.stack
-      let message = stack ? `${raw.msg}\n${stack}` : raw.msg
-      let rest = omit(raw, [
+      const stack = raw.err?.stack
+      const message = stack ? `${raw.msg}\n${stack}` : raw.msg
+      const rest = omit(raw, [
         //Bunyan core fields https://github.com/trentm/node-bunyan#core-fields
         "v",
         "level",
@@ -40,7 +40,7 @@ function prettyPrintStream(outputName) {
         "context",
       ])
 
-      let params = [util.format("[%s][%s][%s] %s", raw.time.toISOString()), levels[raw.level], raw.context || "global", message]
+      const params = [util.format("[%s][%s][%s] %s", raw.time.toISOString()), levels[raw.level], raw.context || "global", message]
       if (!isEmpty(rest)) {
         params.push(chalk.gray(`\n${util.inspect(rest, { depth: null })}`))
       }
@@ -98,7 +98,7 @@ function sendLogsToSlack() {
 }
 
 const createStreams = () => {
-  let availableDestinations = {
+  const availableDestinations = {
     stdout: () => sendLogsToConsole("stdout"),
     stderr: () => sendLogsToConsole("stderr"),
     slack: () => sendLogsToSlack(),
@@ -107,7 +107,7 @@ const createStreams = () => {
   return config.log.destinations
     .filter((type) => availableDestinations[type])
     .map((type) => {
-      let createDestination = availableDestinations[type]
+      const createDestination = availableDestinations[type]
       return createDestination()
     })
 }

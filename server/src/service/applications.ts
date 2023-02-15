@@ -47,7 +47,7 @@ const images = {
 }
 
 const buildUrlOfDetail = (aPublicUrl, aQuery) => {
-  let itemId = ((aCompanyType) => {
+  const itemId = ((aCompanyType) => {
     if (aCompanyType === "peJob") {
       return aQuery.job_id
     } else if (aCompanyType === "matcha") {
@@ -56,14 +56,14 @@ const buildUrlOfDetail = (aPublicUrl, aQuery) => {
       return aQuery.company_siret || "siret"
     }
   })(aQuery.company_type)
-  let moreParams = ((aCompanyType) => {
+  const moreParams = ((aCompanyType) => {
     let res = ""
     if (aCompanyType === "matcha") {
       res = "&utm_source=jecandidate&utm_medium=email&utm_campaign=jecandidaterecruteur"
     }
     return res
   })(aQuery.company_type)
-  let kind = aQuery.company_type
+  const kind = aQuery.company_type
 
   return `${aPublicUrl}/recherche-apprentissage?display=list&page=fiche&type=${kind}&itemId=${itemId}${moreParams}`
 }
@@ -73,7 +73,7 @@ const buildRecruiterEmailUrls = ({ publicUrl, application, encryptedId }) => {
   const candidateData = `&fn=${application._doc.applicant_first_name}&ln=${application._doc.applicant_last_name}`
   const encryptedData = `&id=${encryptedId.id}&iv=${encryptedId.iv}`
 
-  let urls = {
+  const urls = {
     meetCandidateUrl: `${publicUrl}/formulaire-intention?intention=entretien${encryptedData}${candidateData}${utmRecruiterData}`,
     waitCandidateUrl: `${publicUrl}/formulaire-intention?intention=ne_sais_pas${encryptedData}${candidateData}${utmRecruiterData}`,
     refuseCandidateUrl: `${publicUrl}/formulaire-intention?intention=refus${encryptedData}${candidateData}${utmRecruiterData}`,
@@ -88,7 +88,7 @@ const buildRecruiterEmailUrls = ({ publicUrl, application, encryptedId }) => {
 }
 
 const initApplication = (query, companyEmail) => {
-  let res = new Application({
+  const res = new Application({
     applicant_attachment_name: query.applicant_file_name,
     applicant_email: query.applicant_email.toLowerCase(),
     applicant_first_name: query.applicant_first_name,
@@ -183,8 +183,8 @@ const sendApplication = async ({ scan, mailer, query, referer, shouldCheckSecret
       return { error: validationResult }
     }
 
-    let companyEmail = shouldCheckSecret ? query.company_email : decryptWithIV(query.company_email, query.iv) // utilisation email de test ou decrypt vrai mail crypté
-    let cryptedEmail = shouldCheckSecret ? decryptWithIV(query.crypted_company_email, query.iv) : "" // présent uniquement pour les tests utilisateurs
+    const companyEmail = shouldCheckSecret ? query.company_email : decryptWithIV(query.company_email, query.iv) // utilisation email de test ou decrypt vrai mail crypté
+    const cryptedEmail = shouldCheckSecret ? decryptWithIV(query.crypted_company_email, query.iv) : "" // présent uniquement pour les tests utilisateurs
 
     validationResult = await validateCompanyEmail({
       companyEmail,
@@ -202,9 +202,9 @@ const sendApplication = async ({ scan, mailer, query, referer, shouldCheckSecret
     }
 
     try {
-      let application = initApplication(query, companyEmail)
+      const application = initApplication(query, companyEmail)
 
-      let encryptedId = encryptIdWithIV(application.id)
+      const encryptedId = encryptIdWithIV(application.id)
 
       const emailTemplates = getEmailTemplates(query.company_type)
 
@@ -290,7 +290,7 @@ const saveApplicationIntentionComment = async ({ query, mailer }) => {
     comment: query.comment,
   })
 
-  let decryptedId = decryptWithIV(query.id, query.iv)
+  const decryptedId = decryptWithIV(query.id, query.iv)
 
   try {
     const application = await Application.findOneAndUpdate(
@@ -423,7 +423,7 @@ const updateApplicationStatus = async ({ payload, mailer }) => {
     messageType = "applicationAck"
   }
 
-  let application = await findApplicationByTypeAndMessageId({
+  const application = await findApplicationByTypeAndMessageId({
     type: messageType,
     messageId: payload["message-id"],
     email: payload.email,

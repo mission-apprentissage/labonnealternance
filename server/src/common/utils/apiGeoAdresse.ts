@@ -9,7 +9,7 @@ class ApiGeoAdresse {
   async search(q, postcode = null) {
     try {
       const query = `${apiEndpoint}/search/?q=${q ? q : "a"}${postcode ? `&postcode=${postcode}` : ""}`
-      let response = await this.searchQuery(query)
+      const response = await this.searchQuery(query)
 
       return response
     } catch (error) {

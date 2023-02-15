@@ -56,7 +56,7 @@ export const removeLine = (data, regex) => {
 }
 
 export const prepareMessageForMail = (data) => {
-  let result = data ? data.replace(/(<([^>]+)>)/gi, "") : data
+  const result = data ? data.replace(/(<([^>]+)>)/gi, "") : data
   return result ? result.replace(/\r\n|\r|\n/gi, "<br />") : result
 }
 

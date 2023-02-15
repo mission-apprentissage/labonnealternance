@@ -15,47 +15,49 @@ import { corsMiddleware } from "./middlewares/corsMiddleware.js"
 import { errorMiddleware } from "./middlewares/errorMiddleware.js"
 import { logMiddleware } from "./middlewares/logMiddleware.js"
 import { tryCatch } from "./middlewares/tryCatchMiddleware.js"
-import admin from "./routes/admin/admin.js"
-import appointmentRoute from "./routes/admin/appointment.js"
-import adminEtablissementRoute from "./routes/admin/etablissement.js"
-import widgetParameterRoute from "./routes/admin/widgetParameter.js"
-import apiRoute from "./routes/api.js"
-import appointmentRequestRoute from "./routes/appointmentRequest.js"
-import authentified from "./routes/auth/authentified.js"
-import emailsRoute from "./routes/auth/emails.js"
-import login from "./routes/auth/login.js"
-import password from "./routes/auth/password.js"
-import campaignWebhook from "./routes/campaignWebhook.js"
-import catalogueRoute from "./routes/catalogue.js"
-import constantsRoute from "./routes/constants.js"
-import esSearchRoute from "./routes/esSearch.js"
-import etablissementRoute from "./routes/etablissement.js"
-import etablissementsRecruteurRoute from "./routes/etablissementRecruteur.js"
-import formationRegionV1 from "./routes/formationRegionV1.js"
-import formationV1 from "./routes/formationV1.js"
-import formulaireRoute from "./routes/formulaire.js"
-import jobDiploma from "./routes/jobDiploma.js"
-import jobEtFormationV1 from "./routes/jobEtFormationV1.js"
-import jobV1 from "./routes/jobV1.js"
-import metiers from "./routes/metiers.js"
-import metiersDAvenir from "./routes/metiersDAvenir.js"
-import optoutRoute from "./routes/optout.js"
-import partnersRoute from "./routes/partners.js"
-import rome from "./routes/rome.js"
-import sendApplication from "./routes/sendApplication.js"
-import sendApplicationAPI from "./routes/sendApplicationAPI.js"
-import sendMail from "./routes/sendMail.js"
-import supportRoute from "./routes/support.js"
-import updateLBB from "./routes/updateLBB.js"
-import userRoute from "./routes/user.js"
-import version from "./routes/version.js"
+import admin from "./routes/admin/admin.controller.js"
+import appointmentRoute from "./routes/admin/appointment.controller.js"
+import adminEtablissementRoute from "./routes/admin/etablissement.controller.js"
+import widgetParameterRoute from "./routes/admin/widgetParameter.controller.js"
+import apiRoute from "./routes/api.controller.js"
+import appointmentRequestRoute from "./routes/appointmentRequest.controller.js"
+import authentified from "./routes/auth/authentified.controller.js"
+import emailsRoute from "./routes/auth/emails.controller.js"
+import login from "./routes/auth/login.controller.js"
+import password from "./routes/auth/password.controller.js"
+import campaignWebhook from "./routes/campaignWebhook.controller.js"
+import catalogueRoute from "./routes/catalogue.controller.js"
+import constantsRoute from "./routes/constants.controller.js"
+import esSearchRoute from "./routes/esSearch.controller.js"
+import etablissementRoute from "./routes/etablissement.controller.js"
+import etablissementsRecruteurRoute from "./routes/etablissementRecruteur.controller.js"
+import formationRegionV1 from "./routes/formationRegionV1.controller.js"
+import formationV1 from "./routes/formationV1.controller.js"
+import formulaireRoute from "./routes/formulaire.controller.js"
+import jobDiploma from "./routes/jobDiploma.controller.js"
+import jobEtFormationV1 from "./routes/jobEtFormationV1.controller.js"
+import jobV1 from "./routes/jobV1.controller.js"
+import metiers from "./routes/metiers.controller.js"
+import metiersDAvenir from "./routes/metiersDAvenir.controller.js"
+import optoutRoute from "./routes/optout.controller.js"
+import partnersRoute from "./routes/partners.controller.js"
+import rome from "./routes/rome.controller.js"
+import sendApplication from "./routes/sendApplication.controller.js"
+import sendApplicationAPI from "./routes/sendApplicationAPI.controller.js"
+import sendMail from "./routes/sendMail.controller.js"
+import supportRoute from "./routes/support.controller.js"
+import updateLBB from "./routes/updateLBB.controller.js"
+import userRoute from "./routes/user.controller.js"
+import version from "./routes/version.controller.js"
 import { limiter10PerSecond, limiter1Per20Second, limiter20PerSecond, limiter3PerSecond, limiter5PerSecond, limiter7PerSecond } from "./utils/rateLimiters.js"
+import { RegisterRoutes } from "../generated/routes.js"
 
 /**
  * LBA-Candidat Swagger file
  */
 const dirname = __dirname(import.meta.url)
-const swaggerDocument = JSON.parse(readFileSync(path.resolve(dirname, "../assets/api-docs/swagger.json")))
+const deprecatedSwaggerDocument = JSON.parse(readFileSync(path.resolve(dirname, "../assets/api-docs/swagger.json")))
+const swaggerDocument = JSON.parse(readFileSync(path.resolve(dirname, "../generated/swagger.json")))
 
 /**
  * LBA-Recruteur Swagger configuration
@@ -166,8 +168,12 @@ export default async (components) => {
   app.get("/api-docs/swagger.json", (req, res) => {
     res.sendFile(path.resolve(dirname, "../assets/api-docs/swagger.json"))
   })
-  app.use("/api/v1/lba-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument, swaggerUIOptions))
+
+  app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument))
+  app.use("/api/v1/lba-docs", swaggerUi.serve, swaggerUi.setup(deprecatedSwaggerDocument, swaggerUIOptions))
   app.use("/api/v1/lbar-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpecification, swaggerUIOptions))
+
+  RegisterRoutes(app)
 
   /**
    * LBACandidat

@@ -52,7 +52,7 @@ const createToGeolocateFile = (addressesToGeolocate, sourceFileCount) => {
 }
 
 const saveGeoData = async (geoData) => {
-  let geoLocation = new GeoLocation(geoData)
+  const geoLocation = new GeoLocation(geoData)
   if ((await GeoLocation.countDocuments({ address: geoLocation.address })) === 0) {
     await geoLocation.save()
   }
@@ -65,7 +65,7 @@ const clearingFiles = () => {
 const geolocateCsvHeader = "rue;citycode"
 
 export default async function () {
-  let step = 0
+  const step = 0
 
   try {
     logMessage("info", " -- Start bulk geolocations -- ")
@@ -159,7 +159,7 @@ export default async function () {
   } catch (err) {
     console.log("error step ", step, err)
     logMessage("error", err)
-    let error_msg = _.get(err, "meta.body") ?? err.message
+    const error_msg = _.get(err, "meta.body") ?? err.message
     return { error: error_msg }
   }
 }

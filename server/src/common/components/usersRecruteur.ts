@@ -29,16 +29,16 @@ export default () => ({
     if (!scope) {
       if (values.type === "CFA") {
         // generate user scope
-        let [key] = randomUUID().split("-")
+        const [key] = randomUUID().split("-")
         scope = `cfa-${key}`
       } else {
         scope = `etp-${values.raison_sociale.toLowerCase().replace(/ /g, "-")}`
       }
     }
 
-    let isAdmin = values.isAdmin ?? false
+    const isAdmin = values.isAdmin ?? false
 
-    let user = new UserRecruteur({
+    const user = new UserRecruteur({
       ...values,
       isAdmin: isAdmin,
       scope: scope,

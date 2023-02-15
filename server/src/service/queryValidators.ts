@@ -85,7 +85,7 @@ const validateInsee = (insee, error_messages) => {
 const validateApiSources = (apiSources, error_messages, allowedSources = ["formations", "lbb", "lba", "offres", "matcha"]) => {
   // source mal formée si présente
   if (apiSources) {
-    let sources = apiSources.split(",")
+    const sources = apiSources.split(",")
     let areSourceOk = true
     sources.forEach((source) => {
       if (allowedSources.indexOf(source) < 0) areSourceOk = false

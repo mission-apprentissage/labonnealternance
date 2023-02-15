@@ -12,8 +12,8 @@ const esClient = getElasticInstance()
 const getSomeLbbCompanies = async ({ romes, latitude, longitude, radius, type, referer, caller, opco, api = "jobV1", useMock }) => {
   const hasLocation = latitude === undefined ? false : true
   let companies = null
-  let currentRadius = hasLocation ? radius : 21000
-  let companyLimit = 150 //TODO: query params options or default value from properties -> size || 100
+  const currentRadius = hasLocation ? radius : 21000
+  const companyLimit = 150 //TODO: query params options or default value from properties -> size || 100
 
   if (useMock && useMock !== "false") {
     return { results: [lbbMock] }
@@ -39,7 +39,7 @@ const getSomeLbbCompanies = async ({ romes, latitude, longitude, radius, type, r
 }
 
 const transformLbbCompaniesForIdea = ({ companies, type, referer, caller }) => {
-  let resultCompanies = {
+  const resultCompanies = {
     results: [],
   }
 
@@ -47,7 +47,7 @@ const transformLbbCompaniesForIdea = ({ companies, type, referer, caller }) => {
     const contactAllowedOrigin = isAllowedSource({ referer, caller })
 
     for (let i = 0; i < companies.length; ++i) {
-      let company = transformLbbCompanyForIdea({
+      const company = transformLbbCompanyForIdea({
         company: companies[i],
         type,
         contactAllowedOrigin,
@@ -62,10 +62,10 @@ const transformLbbCompaniesForIdea = ({ companies, type, referer, caller }) => {
 
 // Adaptation au modèle Idea et conservation des seules infos utilisées des offres
 const transformLbbCompanyForIdea = ({ company, type, caller, contactAllowedOrigin }) => {
-  let resultCompany = itemModel(type)
+  const resultCompany = itemModel(type)
 
   resultCompany.title = company.enseigne
-  let email = encryptMailWithIV({ value: company.email !== "null" ? company.email : "", caller })
+  const email = encryptMailWithIV({ value: company.email !== "null" ? company.email : "", caller })
 
   resultCompany.contact = {
     ...email,
@@ -118,7 +118,7 @@ const getLbbCompanies = async ({ romes, latitude, longitude, radius, companyLimi
   try {
     const distance = radius || 10
 
-    let mustTerm = [
+    const mustTerm = [
       {
         match: {
           rome_codes: romes.split(",").join(" "),
@@ -141,7 +141,7 @@ const getLbbCompanies = async ({ romes, latitude, longitude, radius, companyLimi
 
     const esQueryIndexFragment = getBonnesBoitesEsQueryIndexFragment(companyLimit)
 
-    let esQuerySort = {
+    const esQuerySort = {
       sort: [
         latitude || latitude === 0
           ? {
@@ -192,7 +192,7 @@ const getLbbCompanies = async ({ romes, latitude, longitude, radius, companyLimi
       },
     })
 
-    let bonnesBoites = []
+    const bonnesBoites = []
 
     responseBonnesBoites.body.hits.hits.forEach((bonneBoite) => {
       bonnesBoites.push({ ...bonneBoite._source, distance: latitude || latitude === 0 ? bonneBoite.sort : null })
@@ -212,7 +212,7 @@ const getLbbCompanies = async ({ romes, latitude, longitude, radius, companyLimi
 
 const getCompanyFromSiret = async ({ siret, referer, caller, type }) => {
   try {
-    let mustTerm = [
+    const mustTerm = [
       {
         match: {
           siret,
@@ -233,14 +233,14 @@ const getCompanyFromSiret = async ({ siret, referer, caller, type }) => {
       },
     })
 
-    let bonnesBoites = []
+    const bonnesBoites = []
 
     responseBonnesBoites.body.hits.hits.forEach((bonneBoite) => {
       bonnesBoites.push({ ...bonneBoite._source, distance: bonneBoite.sort })
     })
 
     if (responseBonnesBoites.body.hits.hits.length) {
-      let company = transformLbbCompanyForIdea({
+      const company = transformLbbCompanyForIdea({
         company: { ...responseBonnesBoites.body.hits.hits[0]._source, distance: 0 },
         type,
         contactAllowedOrigin: isAllowedSource({ referer, caller }),

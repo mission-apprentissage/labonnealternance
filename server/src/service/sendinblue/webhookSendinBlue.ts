@@ -3,10 +3,10 @@ import { logger } from "../../common/logger.js"
 import config from "../../config.js"
 const defaultClient = SibApiV3Sdk.ApiClient.instance
 
-let apiKey = defaultClient.authentications["api-key"]
+const apiKey = defaultClient.authentications["api-key"]
 apiKey.apiKey = config.smtp.sendinblueApiKey
 
-let apiInstance = new SibApiV3Sdk.WebhooksApi()
+const apiInstance = new SibApiV3Sdk.WebhooksApi()
 
 let applicationStatusWebhook = new SibApiV3Sdk.CreateWebhook()
 
