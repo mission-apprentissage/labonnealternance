@@ -1,3 +1,4 @@
+// @ts-nocheck
 import moment from "moment"
 import { mailTemplate } from "../../../assets/index.js"
 import { logger } from "../../../common/logger.js"

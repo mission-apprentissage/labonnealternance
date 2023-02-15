@@ -4,13 +4,13 @@ import { Formulaire } from "../model/index.js"
 
 export default () => ({
   getFormulaires: async (query, options, { page, limit }) => {
-    const response = await Formulaire.paginate(query, { ...options, page, limit, lean: true })
+    const response = await Formulaire.paginate({ query, ...options, page, limit, lean: true })
     return {
       pagination: {
         page: response.page,
         result_per_page: limit,
-        number_of_page: response.pages,
-        total: response.total,
+        number_of_page: response.totalPages,
+        total: response.totalDocs,
       },
       data: response.docs,
     }

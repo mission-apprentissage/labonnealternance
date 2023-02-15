@@ -65,34 +65,32 @@ const neededFieldsFromCatalogue = {
 }
 
 /**
- * @description Get formations by its identifier.
+ * @description Get formation by its identifier.
  * @param {String} id
  * @returns {Promise<Object>}
  */
-export const getFormationById = (id: string): Promise<object> => FormationCatalogue.findById(id)
+export const getFormationById = (id: string) => FormationCatalogue.findById(id)
 
 /**
  * @description Get formations by "siret formateur".
  * @param {String} siretFormateur
  * @returns {Promise<Object[]>}
  */
-export const getFormationsBySiretFormateur = ({ siretFormateur }: { siretFormateur: string[] }): Promise<object[]> =>
-  FormationCatalogue.find({ etablissement_formateur_siret: siretFormateur })
+export const getFormationsBySiretFormateur = ({ siretFormateur }: { siretFormateur: string[] }) => FormationCatalogue.find({ etablissement_formateur_siret: siretFormateur })
 
 /**
  * @description Get formations by idRcoFormations.
  * @param {String[]} idRcoFormations
  * @returns {Promise<Object[]>}
  */
-export const getFormationsByIdRcoFormations = ({ idRcoFormations }: { idRcoFormations: string[] }): Promise<object[]> =>
-  FormationCatalogue.find({ id_rco_formation: idRcoFormations })
+export const getFormationsByIdRcoFormations = ({ idRcoFormations }: { idRcoFormations: string[] }) => FormationCatalogue.find({ id_rco_formation: idRcoFormations })
 
 /**
- * @description Get formations through the catalogue.
+ * @description Get formations from the formation catalogue collection.
  * @param {Object} query - Mongo query
  * @returns {Promise<Object>}
  */
-export const getFormations = (query: object, select?: object): Promise<object[]> => FormationCatalogue.find(query, select)
+export const getFormations = (query: object, select?: object) => FormationCatalogue.find(query, select)
 
 /**
  * @description Get formations count through the CARIF OREF catalogue API.

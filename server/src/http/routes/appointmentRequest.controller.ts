@@ -317,23 +317,5 @@ export default ({ users, appointments, mailer, widgetParameters, etablissements 
     })
   )
 
-  router.get(
-    "/:id/candidat",
-    tryCatch(async (req, res) => {
-      const itemId = req.params.id
-      await appointments.updateStatusMailOpenedByCandidat(itemId)
-      res.json("OK")
-    })
-  )
-
-  router.get(
-    "/:id/centre",
-    tryCatch(async (req, res) => {
-      const itemId = req.params.id
-      await appointments.updateStatusMailOpenedByCentre(itemId)
-      res.json("OK")
-    })
-  )
-
   return router
 }

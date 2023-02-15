@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { pick } from "lodash-es"
 import { logger } from "../../../common/logger.js"
 import { Formulaire, UserRecruteur } from "../../../common/model/index.js"
