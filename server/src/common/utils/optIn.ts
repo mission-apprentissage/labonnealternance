@@ -23,7 +23,7 @@ const enableAllEtablissementFormations = async (siret, referrers = []) => {
 
   await Promise.all(promises)
 
-  const etablissement = await Etablissement.updateOne({ siret_formateur: siret }, { opt_mode: optMode.OPT_IN, opt_in_activated_at: dayjs().format()).toDate()
+  const etablissement = await Etablissement.updateOne({ siret_formateur: siret }, { opt_mode: optMode.OPT_IN, opt_in_activated_at: dayjs().toDate() })
 
   logger.info(`Opt-in mode enabled for etablissement "${siret}".`)
 
