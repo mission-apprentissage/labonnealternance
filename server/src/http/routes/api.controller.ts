@@ -112,7 +112,7 @@ export default ({ formulaire, etablissementsRecruteur, usersRecruteur }) => {
         return res.status(400).json({ status: "INPUT_VALIDATION_ERROR", message: error.message })
       }
 
-      let qs = req.query
+      const qs = req.query
       const query = qs && qs.query ? JSON.parse(qs.query) : {}
       const page = qs && qs.page ? qs.page : 1
       const limit = qs && qs.limit ? parseInt(qs.limit, 10) : 100
@@ -351,10 +351,10 @@ export default ({ formulaire, etablissementsRecruteur, usersRecruteur }) => {
         })
       }
 
-      let formattedSiretInfo = etablissementsRecruteur.formatEntrepriseData(siretInfo.data.etablissement)
+      const formattedSiretInfo = etablissementsRecruteur.formatEntrepriseData(siretInfo.data.etablissement)
 
-      let opcoResult = await etablissementsRecruteur.getOpco(req.params.siret)
-      let geo_coordonnees = await etablissementsRecruteur.getGeoCoordinates(`${formattedSiretInfo.adresse}, ${formattedSiretInfo.code_postal}, ${formattedSiretInfo.commune}`)
+      const opcoResult = await etablissementsRecruteur.getOpco(req.params.siret)
+      const geo_coordonnees = await etablissementsRecruteur.getGeoCoordinates(`${formattedSiretInfo.adresse}, ${formattedSiretInfo.code_postal}, ${formattedSiretInfo.commune}`)
 
       const response = await formulaire.updateFormulaire({
         gestionnaire: userExist.siret,
@@ -787,9 +787,9 @@ export default ({ formulaire, etablissementsRecruteur, usersRecruteur }) => {
         })
       }
 
-      let formattedSiretInfo = etablissementsRecruteur.formatCatalogueData(siretInfo)
+      const formattedSiretInfo = etablissementsRecruteur.formatCatalogueData(siretInfo)
 
-      let newUser = await usersRecruteur.createUser({ type: "CFA", ...formattedSiretInfo, ...req.body })
+      const newUser = await usersRecruteur.createUser({ type: "CFA", ...formattedSiretInfo, ...req.body })
 
       return res.json(newUser)
     })
@@ -886,7 +886,7 @@ export default ({ formulaire, etablissementsRecruteur, usersRecruteur }) => {
         return res.status(400).json({ statut: "NOT_FOUND", message: "L'utilisateur n'existe pas", error: true })
       }
 
-      let { _id, siret, id_form, type } = user
+      const { _id, siret, id_form, type } = user
 
       switch (type) {
         case ENTREPRISE:

@@ -9,9 +9,9 @@ const updateFilePath = path.join(currentDirname, "./assets/lba_save_etablissemen
 const removeFilePath = path.join(currentDirname, "./assets/lba_save_etablissements_admin_remove.csv")
 const addFilePath = path.join(currentDirname, "./assets/lba_save_etablissements_admin_add.csv")
 
-let removeMap = {}
-let updateMap = {}
-let addMap = {}
+const removeMap = {}
+const updateMap = {}
+const addMap = {}
 
 let removeCount = 0
 let addCount = 0
@@ -60,7 +60,7 @@ const parseUpdateLine = (line) => {
     "new_office_name"
     */
 
-    let companies = []
+    const companies = []
 
     let sirets = terms[1].replace(/"/g, "").trim().split(/,|\s/g)
     sirets = sirets.map((siret) => siret.padStart(14, "0"))
@@ -69,24 +69,24 @@ const parseUpdateLine = (line) => {
     let telephone = terms[4]?.replace(/"/g, "")?.trim()
     let website = terms[5]?.replace(/"/g, "")?.trim()
 
-    let removeEmail = terms[6] // "0" | "1"
-    let removePhone = terms[7]
-    let removeWebsite = terms[8]
+    const removeEmail = terms[6] // "0" | "1"
+    const removePhone = terms[7]
+    const removeWebsite = terms[8]
 
-    let romesToBoost = terms[11]?.replace(/"/g, "")
+    const romesToBoost = terms[11]?.replace(/"/g, "")
 
-    let romesToRemove = terms[13]?.replace(/"/g, "")
+    const romesToRemove = terms[13]?.replace(/"/g, "")
 
-    let emailAlternance = terms[15]?.replace(/"/g, "")
-    let romesAlternance = terms[16]?.replace(/"/g, "")
+    const emailAlternance = terms[15]?.replace(/"/g, "")
+    const romesAlternance = terms[16]?.replace(/"/g, "")
 
-    let romesAlternanceToRemove = terms[18]?.replace(/"/g, "")
+    const romesAlternanceToRemove = terms[18]?.replace(/"/g, "")
 
-    let scoreAlternance = terms[20]
-    let phoneAlternance = terms[22]?.replace(/"/g, "")
-    let websiteAlternance = terms[23]
-    let newCompanyName = terms[27]?.replace(/"/g, "")
-    let newOfficeName = terms[28]?.replace(/"/g, "")
+    const scoreAlternance = terms[20]
+    const phoneAlternance = terms[22]?.replace(/"/g, "")
+    const websiteAlternance = terms[23]
+    const newCompanyName = terms[27]?.replace(/"/g, "")
+    const newOfficeName = terms[28]?.replace(/"/g, "")
 
     website = websiteAlternance ? websiteAlternance : website
     telephone = phoneAlternance ? phoneAlternance : telephone
@@ -114,10 +114,10 @@ const parseUpdateLine = (line) => {
       removedRomes = [...new Set((romesToRemove ? romesToRemove.split(",") : []).concat(romesAlternanceToRemove ? romesAlternanceToRemove.split(",") : []))]
     }
 
-    let name = newCompanyName || newOfficeName
+    const name = newCompanyName || newOfficeName
 
     sirets.forEach((siret) => {
-      let company = {
+      const company = {
         siret,
         raison_sociale: name,
         enseigne: name,
@@ -161,11 +161,11 @@ const parseAddLine = (line) => {
     */
 
   if (addCount > 1) {
-    let lbbScore = terms[17].replace(/"/g, "")
-    let lbaScore = terms[26].replace(/"/g, "")
-    let score = lbaScore !== "0" ? lbaScore : lbbScore
+    const lbbScore = terms[17].replace(/"/g, "")
+    const lbaScore = terms[26].replace(/"/g, "")
+    const score = lbaScore !== "0" ? lbaScore : lbbScore
 
-    let company = {
+    const company = {
       siret: terms[0].replace(/"/g, "").padStart(14, "0"),
       raison_sociale: terms[1].replace(/"/g, ""),
       enseigne: terms[2].replace(/"/g, ""),

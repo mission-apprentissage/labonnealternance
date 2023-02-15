@@ -63,7 +63,7 @@ export default ({ widgetParameters, etablissements }) => {
   router.get(
     "/parameters",
     tryCatch(async (req, res) => {
-      let qs = req.query
+      const qs = req.query
       const query = qs && qs.query ? JSON.parse(qs.query) : {}
       const page = qs && qs.page ? qs.page : 1
       const limit = qs && qs.limit ? parseInt(qs.limit, 10) : 50
@@ -100,7 +100,7 @@ export default ({ widgetParameters, etablissements }) => {
   router.get(
     "/parameters/export",
     tryCatch(async (req, res) => {
-      let qs = req.query
+      const qs = req.query
       const query = qs && qs.query ? JSON.parse(qs.query) : {}
 
       const wigetParameters = await WidgetParameter.find(query)
@@ -151,7 +151,7 @@ export default ({ widgetParameters, etablissements }) => {
   router.get(
     "/parameters/count",
     tryCatch(async (req, res) => {
-      let qs = req.query
+      const qs = req.query
       const query = qs && qs.query ? JSON.parse(qs.query) : {}
       const total = await WidgetParameter.countDocuments(query)
 
@@ -165,7 +165,7 @@ export default ({ widgetParameters, etablissements }) => {
   router.get(
     "/",
     tryCatch(async (req, res) => {
-      let qs = req.query
+      const qs = req.query
       const query = qs && qs.query ? JSON.parse(qs.query) : {}
       const retrievedData = await WidgetParameter.findOne(query)
       if (retrievedData) {

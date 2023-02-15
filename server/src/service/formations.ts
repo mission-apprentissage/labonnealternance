@@ -47,7 +47,7 @@ const getFormations = async ({ romes, rncps, romeDomain, coords, radius, diploma
     const latitude = coords ? coords[1] : null
     const longitude = coords ? coords[0] : null
 
-    let mustTerm = [
+    const mustTerm = [
       romes
         ? {
             match: {
@@ -82,7 +82,7 @@ const getFormations = async ({ romes, rncps, romeDomain, coords, radius, diploma
       })
     }
 
-    let esQuerySort = {
+    const esQuerySort = {
       sort: [
         useGeoLocation
           ? {
@@ -99,7 +99,7 @@ const getFormations = async ({ romes, rncps, romeDomain, coords, radius, diploma
       ],
     }
 
-    let esQuery = {
+    const esQuery = {
       query: {
         bool: {
           must: mustTerm,
@@ -130,7 +130,7 @@ const getFormations = async ({ romes, rncps, romeDomain, coords, radius, diploma
     })
 
     //throw new Error("BOOM");
-    let formations = []
+    const formations = []
 
     responseFormations.body.hits.hits.forEach((formation) => {
       formations.push({ source: formation._source, sort: formation.sort, id: formation._id })
@@ -158,7 +158,7 @@ const getFormation = async ({ id, caller }) => {
     }
 
     //throw new Error("BOOM");
-    let formations = []
+    const formations = []
     formations.push({ source: responseFormation })
 
     return formations
@@ -199,7 +199,7 @@ const getOneFormationFromId = async ({ id, caller }) => {
 
 const getRegionFormations = async ({ romes, romeDomain, region, departement, diploma, limit = formationResultLimit, caller }) => {
   try {
-    let mustTerm = []
+    const mustTerm = []
 
     if (departement)
       mustTerm.push({
@@ -250,7 +250,7 @@ const getRegionFormations = async ({ romes, romeDomain, region, departement, dip
       },
     })
 
-    let formations = []
+    const formations = []
 
     responseFormations.body.hits.hits.forEach((formation) => {
       formations.push({ source: formation._source, sort: formation.sort, id: formation._id })
@@ -363,7 +363,7 @@ const deduplicateFormations = (formations) => {
 
 const transformFormationsForIdea = (formations) => {
   //console.log("formations , ", formations);
-  let resultFormations = {
+  const resultFormations = {
     results: [],
   }
 
@@ -378,7 +378,7 @@ const transformFormationsForIdea = (formations) => {
 
 // Adaptation au modèle Idea et conservation des seules infos utilisées des offres
 const transformFormationForIdea = (formation) => {
-  let resultFormation = itemModel("formation")
+  const resultFormation = itemModel("formation")
 
   resultFormation.title = formation.source?.intitule_long || formation.source.intitule_court
   resultFormation.longTitle = formation.source.intitule_long
@@ -481,7 +481,7 @@ const getTrainingAddress = (school) => {
 }
 
 const getTrainingSchoolName = (school) => {
-  let schoolName = school.etablissement_formateur_entreprise_raison_sociale
+  const schoolName = school.etablissement_formateur_entreprise_raison_sociale
     ? school.etablissement_formateur_entreprise_raison_sociale
     : school.etablissement_gestionnaire_entreprise_raison_sociale
 
@@ -566,7 +566,7 @@ const getLbfQueryParams = (params) => {
 
   let queryParams = `user=LBA&uid=${params.id}&timestamp=${date}`
 
-  var hmac = crypto.createHmac("md5", config.laBonneFormationPassword)
+  const hmac = crypto.createHmac("md5", config.laBonneFormationPassword)
   const data = hmac.update(queryParams)
   const signature = data.digest("hex")
 
@@ -703,7 +703,7 @@ const getFormationEsQueryIndexFragment = (limit) => {
 }
 
 const getEsRegionTermFragment = (region) => {
-  let departements = []
+  const departements = []
 
   regionCodeToDepartmentList[region].forEach((departement) => {
     departements.push({

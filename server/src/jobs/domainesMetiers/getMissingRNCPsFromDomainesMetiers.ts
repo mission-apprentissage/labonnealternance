@@ -28,7 +28,7 @@ const saveResultToFile = (json) => {
     console.log("error removing file : ", err.message)
   }
 
-  let wsResult = [["Domaine", "Total_formations", "Total_formations_perdues", "Code_rncp", "Lbelle_rncp", "Rncp_dans_autres_metiers"]]
+  const wsResult = [["Domaine", "Total_formations", "Total_formations_perdues", "Code_rncp", "Lbelle_rncp", "Rncp_dans_autres_metiers"]]
 
   json.map(({ metier, missingRNCPs }) => {
     if (metier) {
@@ -46,15 +46,15 @@ const saveResultToFile = (json) => {
   })
 
   // Ecriture résultat
-  let wb = XLSX.utils.book_new()
+  const wb = XLSX.utils.book_new()
 
   XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(wsResult), "Rncps_manquants")
 
   XLSX.writeFile(wb, FILEPATH_MISSING_RNCP)
 }
 
-let inDomainRNCPs = new Set()
-let domainsOfRNCPs = {}
+const inDomainRNCPs = new Set()
+const domainsOfRNCPs = {}
 
 const getMissingRNCPsOfDomain = async (domain) => {
   try {
@@ -76,8 +76,8 @@ const getMissingRNCPsOfDomain = async (domain) => {
       body,
     })
 
-    let missingRNCPs = []
-    let missingRNCPsWithLabel = []
+    const missingRNCPs = []
+    const missingRNCPsWithLabel = []
     let missingTrainingCount = 0
 
     response.body.hits.hits.forEach((training) => {
@@ -85,7 +85,7 @@ const getMissingRNCPsOfDomain = async (domain) => {
         missingTrainingCount++
         if (missingRNCPs.indexOf(training._source.rncp_code) < 0) {
           missingRNCPs.push(training._source.rncp_code)
-          let missinRNCPWithLabel = {
+          const missinRNCPWithLabel = {
             libelle: training._source.rncp_intitule,
             code: training._source.rncp_code,
           }
@@ -102,7 +102,7 @@ const getMissingRNCPsOfDomain = async (domain) => {
       RNCPsManquants: missingRNCPsWithLabel,
     }
   } catch (err) {
-    let error_msg = get(err, "meta.body") ?? err.message
+    const error_msg = get(err, "meta.body") ?? err.message
 
     if (get(err, "meta.meta.connection.status") === "dead") {
       logger.error(`Elastic search is down or unreachable. error_message=${error_msg}`)
@@ -158,7 +158,7 @@ export default async (optionalFileName) => {
     libellesFAPs,
     sousDomainesOnisep
 
-  let missingRNCPs = []
+  const missingRNCPs = []
 
   const reset = () => {
     codesROMEs = []
@@ -177,14 +177,14 @@ export default async (optionalFileName) => {
 
   logger.info(`Début traitement`)
 
-  let onglet = XLSX.utils.sheet_to_json(workbookDomainesMetiers.workbook.Sheets["Liste"])
+  const onglet = XLSX.utils.sheet_to_json(workbookDomainesMetiers.workbook.Sheets["Liste"])
 
   reset()
 
   try {
     for (let i = 0; i < onglet.length; i++) {
-      let row = onglet[i]
-      let {
+      const row = onglet[i]
+      const {
         metier,
         domaine,
         appellations_rome,
@@ -205,7 +205,7 @@ export default async (optionalFileName) => {
 
         step = 1
 
-        let domainesMetier = new DomainesMetiers({
+        const domainesMetier = new DomainesMetiers({
           domaine: domaine,
           sous_domaine: metier,
           mots_clefs_specifiques: [...new Set(motsClefsSpecifiques)].join(", "),
@@ -232,7 +232,7 @@ export default async (optionalFileName) => {
           }
         })
 
-        let missingRNCPsOfDomain = await getMissingRNCPsOfDomain(domainesMetier)
+        const missingRNCPsOfDomain = await getMissingRNCPsOfDomain(domainesMetier)
 
         missingRNCPs.push({
           metier: domainesMetier.sous_domaine,

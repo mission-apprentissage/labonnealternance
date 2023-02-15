@@ -83,7 +83,7 @@ export default ({ users, usersRecruteur, etablissementsRecruteur, mailer }) => {
           return res.status(400).json({ error: true, reason: "UNKNOWN" })
         }
 
-        let { _id, prenom, nom, email_valide } = user
+        const { _id, prenom, nom, email_valide } = user
 
         if (email_valide) {
           return res.status(400).json({ error: true, reason: "VERIFIED" })
@@ -155,7 +155,7 @@ export default ({ users, usersRecruteur, etablissementsRecruteur, mailer }) => {
       }
 
       if (user.email_valide === false) {
-        let { email, _id, prenom, nom } = user
+        const { email, _id, prenom, nom } = user
 
         const url = etablissementsRecruteur.getValidationUrl(_id)
 

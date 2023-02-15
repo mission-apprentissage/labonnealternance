@@ -12,7 +12,7 @@ import {
 } from "./queryValidators.js"
 
 const formationsQueryValidator = (query) => {
-  let error_messages = []
+  const error_messages = []
 
   // contrôle des paramètres
 
@@ -40,7 +40,7 @@ const formationsQueryValidator = (query) => {
 }
 
 const formationsRegionQueryValidator = (query) => {
-  let error_messages = []
+  const error_messages = []
 
   // contrôle des paramètres
 

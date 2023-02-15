@@ -23,7 +23,7 @@ export const relanceFormulaire = async (mailer, threshold) => {
       // The payload is smaller than not filtering it.
       .filter((x) => x.statut === "Active")
       .forEach((offre) => {
-        let remainingDays = moment(offre.date_expiration).diff(moment(), "days")
+        const remainingDays = moment(offre.date_expiration).diff(moment(), "days")
 
         // if the number of days to the expiration date is strictly above the threshold, do nothing
         if (remainingDays !== threshold) return

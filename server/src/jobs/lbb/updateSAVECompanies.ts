@@ -4,9 +4,9 @@ import { logMessage } from "../../common/utils/logMessage.js"
 const updateSAVECompanies = async ({ updateMap }) => {
   logMessage("info", "Starting updateSAVECompanies")
   for (const key in updateMap) {
-    let company = updateMap[key]
+    const company = updateMap[key]
 
-    let bonneBoite = await BonnesBoites.findOne({ siret: company.siret })
+    const bonneBoite = await BonnesBoites.findOne({ siret: company.siret })
 
     if (bonneBoite) {
       let shouldSave = true

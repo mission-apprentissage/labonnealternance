@@ -15,7 +15,7 @@ export default () => {
   router.get(
     "/",
     tryCatch(async (req, res) => {
-      let data = await parseChangelog(path.join(currentDirname, "../../../CHANGELOG.md"))
+      const data = await parseChangelog(path.join(currentDirname, "../../../CHANGELOG.md"))
       return res.json(get(data, "versions.0", {}))
     })
   )

@@ -2,7 +2,7 @@ import { ApiCalls } from "../../common/model/index.js"
 
 const trackApiCall = async ({ caller, api_path, training_count, job_count, result_count, response }) => {
   try {
-    let apiCall = new ApiCalls({
+    const apiCall = new ApiCalls({
       caller,
       api_path,
       training_count,

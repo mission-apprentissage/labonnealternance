@@ -21,7 +21,7 @@ export default ({ formulaire, mailer, etablissementsRecruteur, application, user
   router.get(
     "/",
     tryCatch(async (req, res) => {
-      let query = JSON.parse(req.query.query)
+      const query = JSON.parse(req.query.query)
       const results = await Formulaire.find(query).lean()
 
       return res.json(results)
@@ -35,7 +35,7 @@ export default ({ formulaire, mailer, etablissementsRecruteur, application, user
   router.get(
     "/:id_form",
     tryCatch(async (req, res) => {
-      let result = await formulaire.getFormulaire({ id_form: req.params.id_form })
+      const result = await formulaire.getFormulaire({ id_form: req.params.id_form })
 
       if (!result) {
         return res.sendStatus(401)
@@ -43,7 +43,7 @@ export default ({ formulaire, mailer, etablissementsRecruteur, application, user
 
       await Promise.all(
         result.offres.map(async (offre) => {
-          let candidatures = await application.getApplication(offre._id)
+          const candidatures = await application.getApplication(offre._id)
 
           if (candidatures) {
             offre.candidatures = candidatures.length > 0 ? candidatures.length : undefined
@@ -69,7 +69,7 @@ export default ({ formulaire, mailer, etablissementsRecruteur, application, user
        * HOTFIX 18/02 : dans le modèle précédent du widget, les utilisateurs n'était pas créé dans la collection UserRecruteur.
        */
       if (req.body.origine === "akto") {
-        let exist = await usersRecruteur.getUser({ email: req.body.email })
+        const exist = await usersRecruteur.getUser({ email: req.body.email })
 
         if (!exist) {
           await usersRecruteur.createUser({
@@ -176,7 +176,7 @@ export default ({ formulaire, mailer, etablissementsRecruteur, application, user
       // insert offre
       const updatedFormulaire = await formulaire.createOffre(req.params.id_form, offre)
 
-      let { email, raison_sociale, prenom, nom, mandataire, gestionnaire, offres } = updatedFormulaire
+      const { email, raison_sociale, prenom, nom, mandataire, gestionnaire, offres } = updatedFormulaire
       let contactCFA
 
       offre._id = updatedFormulaire.offres.filter((x) => x.libelle === offre.libelle)[0]._id
@@ -248,7 +248,7 @@ export default ({ formulaire, mailer, etablissementsRecruteur, application, user
       const userDocument = await usersRecruteur.getUser({ id_form: offreDocument.id_form })
       const userState = userDocument.etat_utilisateur.pop()
 
-      let offre = offreDocument.offres.find((offre) => offre._id.toString() === idOffre)
+      const offre = offreDocument.offres.find((offre) => offre._id.toString() === idOffre)
 
       const { etablissements } = await getCatalogueEtablissements({ _id: { $in: etablissementCatalogueIds } })
 
@@ -400,7 +400,7 @@ export default ({ formulaire, mailer, etablissementsRecruteur, application, user
         })
       }
 
-      let body = {
+      const body = {
         query: {
           bool: {
             must: [
@@ -450,7 +450,7 @@ export default ({ formulaire, mailer, etablissementsRecruteur, application, user
 
       const filtered = await Promise.all(
         result.body.hits.hits.map(async (x) => {
-          let offres = []
+          const offres = []
           let cfa = {}
 
           if (x._source.offres.length === 0) {

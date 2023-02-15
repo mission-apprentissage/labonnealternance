@@ -11,7 +11,7 @@ import { getRomesFromCfd, getRomesFromSiret } from "./romesFromCatalogue.js"
 export const getRomesAndLabelsFromTitleQuery = async (query) => {
   if (!query.title) return { error: "title_missing" }
   else {
-    let [romesMetiers, romesDiplomes] = await Promise.all([getLabelsAndRomes(query.title, query.withRomeLabels), getLabelsAndRomesForDiplomas(query.title)])
+    const [romesMetiers, romesDiplomes] = await Promise.all([getLabelsAndRomes(query.title, query.withRomeLabels), getLabelsAndRomesForDiplomas(query.title)])
     return { ...romesMetiers, ...romesDiplomes }
   }
 }
@@ -81,7 +81,7 @@ export const getMetiers = async ({ title = null, romes = null, rncps = null }) =
     }
   } else {
     try {
-      let terms = []
+      const terms = []
 
       if (title) {
         title.split(" ").forEach((term, idx) => {
@@ -130,7 +130,7 @@ export const getMetiers = async ({ title = null, romes = null, rncps = null }) =
         },
       })
 
-      let labelsAndRomes = []
+      const labelsAndRomes = []
 
       response.body.hits.hits.forEach((labelAndRome) => {
         labelsAndRomes.push({
@@ -150,7 +150,7 @@ export const getMetiers = async ({ title = null, romes = null, rncps = null }) =
 
 const getLabelsAndRomes = async (searchKeyword, withRomeLabels) => {
   try {
-    let terms = []
+    const terms = []
 
     searchKeyword.split(" ").forEach((term, idx) => {
       if (idx === 0 || term.length > 2) {
@@ -160,7 +160,7 @@ const getLabelsAndRomes = async (searchKeyword, withRomeLabels) => {
 
     const esClient = getElasticInstance()
 
-    let sources = ["sous_domaine", "codes_romes", "codes_rncps"]
+    const sources = ["sous_domaine", "codes_romes", "codes_rncps"]
     if (withRomeLabels) {
       sources.push("couples_romes_metiers")
     }
@@ -178,10 +178,10 @@ const getLabelsAndRomes = async (searchKeyword, withRomeLabels) => {
       },
     })
 
-    let labelsAndRomes = []
+    const labelsAndRomes = []
 
     response.body.hits.hits.forEach((labelAndRome) => {
-      let metier = {
+      const metier = {
         label: labelAndRome._source.sous_domaine,
         romes: labelAndRome._source.codes_romes,
         rncps: labelAndRome._source.codes_rncps,
@@ -212,7 +212,7 @@ export const getCoupleAppellationRomeIntitule = async (searchKeyword) => {
   try {
     const esClient = getElasticInstance()
 
-    let body = {
+    const body = {
       query: {
         bool: {
           must: [
@@ -249,7 +249,7 @@ export const getCoupleAppellationRomeIntitule = async (searchKeyword) => {
       coupleAppellationRomeMetier.push([...item._source.couples_appellations_rome_metier])
     })
 
-    let intitulesAndRomesUnique = _.uniqBy(_.flatten(coupleAppellationRomeMetier), "appellation")
+    const intitulesAndRomesUnique = _.uniqBy(_.flatten(coupleAppellationRomeMetier), "appellation")
 
     coupleAppellationRomeMetier = matchSorter(intitulesAndRomesUnique, searchKeyword, {
       keys: ["appellation"],
@@ -264,7 +264,7 @@ export const getCoupleAppellationRomeIntitule = async (searchKeyword) => {
 
 const getLabelsAndRomesForDiplomas = async (searchKeyword) => {
   try {
-    let terms = []
+    const terms = []
 
     searchKeyword.split(" ").forEach((term, idx) => {
       if (idx === 0 || term.length > 2) {
@@ -307,11 +307,11 @@ const getLabelsAndRomesForDiplomas = async (searchKeyword) => {
 }
 
 const removeDuplicateDiplomas = (diplomas) => {
-  let labelsAndRomesForDiplomas = []
-  let diplomasWithoutLevel = []
+  const labelsAndRomesForDiplomas = []
+  const diplomasWithoutLevel = []
 
   diplomas.forEach((diploma) => {
-    let diplomaWithoutLevel = diploma.label.indexOf("(") > 0 ? diploma.label.substring(0, diploma.label.indexOf("(")).trim() : diploma.label
+    const diplomaWithoutLevel = diploma.label.indexOf("(") > 0 ? diploma.label.substring(0, diploma.label.indexOf("(")).trim() : diploma.label
 
     if (diplomasWithoutLevel.indexOf(diplomaWithoutLevel) < 0) {
       labelsAndRomesForDiplomas.push({ ...diploma, label: diplomaWithoutLevel })
@@ -329,12 +329,12 @@ export const getMissingRNCPs = async (query) => {
     return { error: "wrong_secret" }
   } else {
     try {
-      let result = await getMissingRNCPsFromDomainesMetiers(query.fileName)
+      const result = await getMissingRNCPsFromDomainesMetiers(query.fileName)
       return result
     } catch (err) {
       Sentry.captureException(err)
 
-      let error_msg = _.get(err, "meta.body") ?? err.message
+      const error_msg = _.get(err, "meta.body") ?? err.message
 
       return { error: error_msg }
     }
@@ -342,7 +342,7 @@ export const getMissingRNCPs = async (query) => {
 }
 
 export const getMetiersPourCfd = async ({ cfd }) => {
-  let romeResponse = await getRomesFromCfd({ cfd })
+  const romeResponse = await getRomesFromCfd({ cfd })
 
   if (romeResponse.error) {
     romeResponse.metiers = []
@@ -351,13 +351,13 @@ export const getMetiersPourCfd = async ({ cfd }) => {
 
   const romes = [...new Set(romeResponse.romes)]
 
-  let metiers = await getMetiersFromRomes(romes)
+  const metiers = await getMetiersFromRomes(romes)
 
   return metiers
 }
 
 export const getMetiersPourEtablissement = async ({ siret }) => {
-  let romeResponse = await getRomesFromSiret({ siret })
+  const romeResponse = await getRomesFromSiret({ siret })
 
   if (romeResponse.error) {
     romeResponse.metiers = []
@@ -366,7 +366,7 @@ export const getMetiersPourEtablissement = async ({ siret }) => {
 
   const romes = [...new Set(romeResponse.romes)]
 
-  let metiers = await getMetiersFromRomes(romes)
+  const metiers = await getMetiersFromRomes(romes)
 
   return metiers
 }
@@ -391,7 +391,7 @@ const getMetiersFromRomes = async (romes) => {
       },
     })
 
-    let metiers = []
+    const metiers = []
 
     response.body.hits.hits.forEach((metier) => {
       metiers.push(metier._source.sous_domaine)
@@ -421,7 +421,7 @@ export const getTousLesMetiers = async () => {
       },
     })
 
-    let metiers = []
+    const metiers = []
 
     response.body.hits.hits.forEach((metier) => {
       metiers.push(metier._source.sous_domaine)

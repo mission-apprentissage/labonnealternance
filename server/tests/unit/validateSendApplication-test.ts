@@ -35,7 +35,7 @@ describe(__filename(import.meta.url), () => {
     ).to.equal("ok")
   })
   it("validateCompanyEmail : Passe si emails cryptés valides", async () => {
-    let companyEmail = decryptWithIV("28b99996da3c4ae72df064bec394754a3791", "1ac16072b289a73dc1c940b06d728933")
+    const companyEmail = decryptWithIV("28b99996da3c4ae72df064bec394754a3791", "1ac16072b289a73dc1c940b06d728933")
 
     expect(
       await validateCompanyEmail({
@@ -45,7 +45,7 @@ describe(__filename(import.meta.url), () => {
     ).to.equal("ok")
   })
   it("validateCompanyEmail : Passe si emails cryptés valides", async () => {
-    let companyEmail = decryptWithIV("fake_crypted_email", "1ac16072b289a73dc1c940b06d728933")
+    const companyEmail = decryptWithIV("fake_crypted_email", "1ac16072b289a73dc1c940b06d728933")
 
     expect(
       await validateCompanyEmail({

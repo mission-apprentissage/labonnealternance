@@ -7,7 +7,7 @@ const currentDirname = __dirname(import.meta.url)
 
 const filePath = path.join(currentDirname, "./assets/tirage_LBA_170621.csv")
 
-let predictionMap = {}
+const predictionMap = {}
 let count = 0
 
 const parseLine = (line) => {

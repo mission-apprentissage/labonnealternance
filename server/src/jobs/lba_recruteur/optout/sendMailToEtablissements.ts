@@ -23,7 +23,7 @@ runScript(async ({ mailer }) => {
   await asyncForEach(etablissementsToContact, async (etablissement) => {
     // Filter contact that have already recieved an invitation from the contacts array
     const contact = etablissement.contacts.filter((contact) => {
-      let found = etablissement.mail.find((y) => y.email === contact.email)
+      const found = etablissement.mail.find((y) => y.email === contact.email)
       if (!found) {
         return contact
       }

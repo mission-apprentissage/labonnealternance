@@ -7,7 +7,7 @@ import config from "../../config.js"
 const validationError = "error - validation of data failed"
 
 const validateSiretAndEmail = async (validable) => {
-  let schema = Yup.object().shape({
+  const schema = Yup.object().shape({
     email: Yup.string().nullable().email("email_format"),
     siret: Yup.string().required("siret_missing"),
   })
@@ -25,7 +25,7 @@ const updateEmail = async (query) => {
   } else {
     try {
       await validateSiretAndEmail({ siret: query.siret, email: query.email })
-      let bonneBoite = await BonnesBoites.findOne({ siret: query.siret })
+      const bonneBoite = await BonnesBoites.findOne({ siret: query.siret })
       bonneBoite.email = query.email
 
       await bonneBoite.save()
@@ -37,7 +37,7 @@ const updateEmail = async (query) => {
       } else {
         Sentry.captureException(err)
 
-        let error_msg = _.get(err, "meta.body") ?? err.message
+        const error_msg = _.get(err, "meta.body") ?? err.message
 
         return { error: error_msg }
       }
