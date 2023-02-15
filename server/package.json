@@ -12,9 +12,11 @@
   },
   "scripts": {
     "dev": "nodemon --ext 'ts,js,cjs,json' --ignore 'tests/' --exec 'ts-node-esm src/index.ts'",
-    "build": "yarn clean && tsoa spec-and-routes && tsc -p . && yarn copy-assets",
+    "build": "yarn clean && yarn tsoa && tsc -p . && yarn copy-assets && yarn copy-swagger",
+    "tsoa": "tsoa spec-and-routes",
     "start": "node build/index.js",
     "copy-assets": "copyfiles -u 2 src/assets/api-docs/swagger.json src/assets/templates/*.ejs build/assets",
+    "copy-swagger": "copyfiles -u 2 src/generated/swagger.json build/generated",
     "clean": "rimraf build/",
     "test": "mocha --recursive --exit --timeout 5000 tests/",
     "cli": "LBA_LOG_DESTINATIONS=stderr node src/cli.js",
