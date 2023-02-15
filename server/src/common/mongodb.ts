@@ -1,11 +1,11 @@
 import mongoose from "mongoose"
-import { mongoosePagination, PaginationModel } from "mongoose-paginate-ts"
+import { mongoosePagination, Pagination } from "mongoose-paginate-ts"
 import config from "../config.js"
 
 export const mongooseInstance = mongoose
 export const { model, Schema } = mongoose
-const Pagination = PaginationModel
 export { mongoosePagination, Pagination }
+
 export const connectToMongo = (mongoUri = config.mongodb.uri, mongooseInst = null) => {
   return new Promise((resolve, reject) => {
     console.log(`MongoDB: Connection to ${mongoUri}`)
