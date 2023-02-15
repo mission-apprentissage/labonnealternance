@@ -1,7 +1,7 @@
 import { validate } from "email-validator"
-import { WidgetParameter, Etablissement } from "../model/index.js"
-import { optMode } from "../model/constants/etablissement.js"
 import { logger } from "../logger.js"
+import { optMode } from "../model/constants/etablissement.js"
+import { Etablissement, WidgetParameter } from "../model/index.js"
 import { dayjs } from "../utils/dayjs.js"
 
 /**
@@ -23,7 +23,7 @@ const enableAllEtablissementFormations = async (siret, referrers = []) => {
 
   await Promise.all(promises)
 
-  const etablissement = await Etablissement.updateOne({ siret_formateur: siret }, { opt_mode: optMode.OPT_IN, opt_in_activated_at: dayjs().format() })
+  const etablissement = await Etablissement.updateOne({ siret_formateur: siret }, { opt_mode: optMode.OPT_IN, opt_in_activated_at: dayjs().format()).toDate()
 
   logger.info(`Opt-in mode enabled for etablissement "${siret}".`)
 

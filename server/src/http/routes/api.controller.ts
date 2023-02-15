@@ -117,7 +117,7 @@ export default ({ formulaire, etablissementsRecruteur, usersRecruteur }) => {
       const page = qs && qs.page ? qs.page : 1
       const limit = qs && qs.limit ? parseInt(qs.limit, 10) : 100
 
-      const response = await formulaire.getFormulaires(query, { page, limit })
+      const response = await formulaire.getFormulaires({ query, page, limit })
 
       return res.json(response)
     })

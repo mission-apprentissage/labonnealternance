@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * @description For metabase stats only
  */
