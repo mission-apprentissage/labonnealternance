@@ -1,7 +1,7 @@
 import { randomUUID } from "crypto"
 import { getElasticInstance, mongoosastic } from "../../../esClient/index.js"
-import { model, mongoosePagination, Pagination, Schema } from "../../../mongodb.js"
-import offreSchema from "../offre/offre.schema.js"
+import { model, mongoosePagination, Schema } from "../../../mongodb.js"
+import { offreSchema } from "../offre/offre.schema.js"
 import { IFormulaire } from "./formulaire.types.js"
 
 export const formulaireSchema = new Schema<IFormulaire>(

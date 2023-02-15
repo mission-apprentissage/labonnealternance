@@ -1,7 +1,7 @@
 import { model, Schema } from "../../../mongodb.js"
 import { IOffre } from "./offre.types.js"
 
-const offreSchema = new Schema<IOffre>({
+export const offreSchema = new Schema<IOffre>({
   libelle: { type: String, default: null, description: "Libellé du métier concerné" },
   rome_appellation_label: { type: String, default: null, description: "Libellé de l'appelation ROME" },
   niveau: {
