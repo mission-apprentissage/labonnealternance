@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Formulaire, UserRecruteur } from "../../../../common/model/index.js"
 import { runScript } from "../../../scriptWrapper.js"
 

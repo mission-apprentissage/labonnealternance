@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { BonnesBoites } from "../../common/model/index.js"
 import { logMessage } from "../../common/utils/logMessage.js"
 
@@ -25,9 +26,9 @@ const updateSAVECompanies = async ({ updateMap }) => {
       }
 
       if (company?.telephone === "remove") {
-        bonneBoite.telephone = ""
+        bonneBoite.phone = ""
       } else if (company.telephone && company.telephone != "NULL") {
-        bonneBoite.telephone = company.telephone
+        bonneBoite.phone = company.telephone
       }
 
       if (company?.website === "remove") {

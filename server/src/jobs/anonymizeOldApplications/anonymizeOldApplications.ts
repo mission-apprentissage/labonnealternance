@@ -35,7 +35,7 @@ const anonymizeApplications = async () => {
     }
   )
 
-  return res.nModified
+  return res.upserted
 }
 
 export default async function () {

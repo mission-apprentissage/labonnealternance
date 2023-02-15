@@ -1,3 +1,4 @@
+// @ts-nocheck
 import Sentry from "@sentry/node"
 import { oleoduc, writeData } from "oleoduc"
 import { logger } from "../../common/logger.js"

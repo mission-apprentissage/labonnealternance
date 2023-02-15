@@ -24,14 +24,14 @@ export default ({ etablissements, appointments, users }) => {
       const page = qs && qs.page ? qs.page : 1
       const limit = qs && qs.limit ? parseInt(qs.limit, 50) : 50
 
-      const allData = await Appointment.paginate(query, { page, limit })
+      const allData = await Appointment.paginate({ query, page, limit })
       return res.send({
         appointments: allData.docs,
         pagination: {
           page: allData.page,
           resultats_par_page: limit,
-          nombre_de_page: allData.pages,
-          total: allData.total,
+          nombre_de_page: allData.totalPages,
+          total: allData.totalDocs,
         },
       })
     })
@@ -48,7 +48,7 @@ export default ({ etablissements, appointments, users }) => {
       const page = qs && qs.page ? qs.page : 1
       const limit = qs && qs.limit ? parseInt(qs.limit, 10) : 50
 
-      const allData = await Appointment.paginate(query, { page, limit, sort: { created_at: -1 } })
+      const allData = await Appointment.paginate({ query, page, limit, sort: { created_at: -1 } })
 
       const idRcoFormations = [...new Set(allData.docs.map((document) => document.id_rco_formation))]
 
@@ -85,9 +85,9 @@ export default ({ etablissements, appointments, users }) => {
         }
 
         return {
-          ...document._doc,
-          email_premiere_demande_candidat_statut: getEmailStatus(document._doc?.email_premiere_demande_candidat_statut),
-          email_premiere_demande_cfa_statut: getEmailStatus(document._doc?.email_premiere_demande_cfa_statut),
+          ...document,
+          email_premiere_demande_candidat_statut: getEmailStatus(document?.email_premiere_demande_candidat_statut),
+          email_premiere_demande_cfa_statut: getEmailStatus(document?.email_premiere_demande_cfa_statut),
           referrer: getReferrerById(document.referrer),
           formation,
           etablissement,
@@ -108,8 +108,8 @@ export default ({ etablissements, appointments, users }) => {
         pagination: {
           page: allData.page,
           resultats_par_page: limit,
-          nombre_de_page: allData.pages,
-          total: allData.total,
+          nombre_de_page: allData.totalPages,
+          total: allData.totalDocs,
         },
       })
     })

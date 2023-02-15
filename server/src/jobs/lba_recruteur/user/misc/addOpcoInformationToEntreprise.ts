@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { logger } from "../../../../common/logger.js"
 import { Formulaire, User } from "../../../../common/model/index.js"
 import { asyncForEach } from "../../../../common/utils/asyncUtils.js"

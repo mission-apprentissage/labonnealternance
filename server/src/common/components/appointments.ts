@@ -71,32 +71,6 @@ export default () => ({
   findOneAndUpdate: (conditions, values) => Appointment.findOneAndUpdate(conditions, values, { new: true }),
 
   /**
-   * @description Updates opened mail status for candidate.
-   * @param {String} id
-   * @returns {Promise<*>}
-   */
-  updateStatusMailOpenedByCandidat: async (id) => {
-    const retrievedData = await Appointment.findById(id)
-
-    retrievedData.email_premiere_demande_candidat_ouvert = true
-
-    return Appointment.findOneAndUpdate({ _id: id }, retrievedData, { new: true })
-  },
-
-  /**
-   * @description Updates opened mail status for the CFA.
-   * @param {String} id
-   * @returns {Promise<*>}
-   */
-  updateStatusMailOpenedByCentre: async (id) => {
-    const retrievedData = await Appointment.findById(id)
-
-    retrievedData.email_premiere_demande_cfa_ouvert = true
-
-    return Appointment.findOneAndUpdate({ _id: id }, retrievedData, { new: true })
-  },
-
-  /**
    * @description Updates an appointment from its id.
    * @param {ObjectId} id
    * @param {Object} values

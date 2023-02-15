@@ -25,15 +25,15 @@ export default ({ etablissements, mailer }) => {
       const page = qs && qs.page ? qs.page : 1
       const limit = qs && qs.limit ? parseInt(qs.limit, 50) : 50
 
-      const allData = await Etablissement.paginate(query, { page, limit })
+      const allData = await Etablissement.paginate({ query, page, limit })
 
       return res.send({
         etablissements: allData.docs,
         pagination: {
           page: allData.page,
           resultats_par_page: limit,
-          nombre_de_page: allData.pages,
-          total: allData.total,
+          nombre_de_page: allData.totalPages,
+          total: allData.totalDocs,
         },
       })
     })
