@@ -20,7 +20,7 @@ type TCreateContextBody = {
   idRcoFormation?: string
   idActionFormation?: string
   idCleMinistereEducatif?: string
-  trainingHasJob?: string
+  trainingHasJob?: boolean
   referrer: string
 }
 
