@@ -1,6 +1,7 @@
 import { randomUUID } from "crypto"
+import { mongoosePagination, Pagination } from "mongoose-paginate-ts"
 import { getElasticInstance, mongoosastic } from "../../../esClient/index.js"
-import { model, mongoosePagination, Pagination, Schema } from "../../../mongodb.js"
+import { model, Schema } from "../../../mongodb.js"
 import { offreSchema } from "../offre/offre.schema.js"
 import { IFormulaire } from "./formulaire.types.js"
 
