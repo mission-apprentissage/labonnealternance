@@ -1,8 +1,9 @@
-// @ts-nocheck
 import axios, { AxiosInstance } from "axios"
 import got from "got"
+import { sortBy } from "lodash-es"
 import querystring from "node:querystring"
 import { compose } from "oleoduc"
+import { getDistanceInKm } from "../common/geolib.js"
 import { logger } from "../common/logger.js"
 import { FormationCatalogue } from "../common/model/index.js"
 import { fetchStream } from "../common/utils/httpUtils.js"
@@ -96,7 +97,7 @@ export const getFormations = (query: object, select?: object) => FormationCatalo
  * @description Get formations count through the CARIF OREF catalogue API.
  * @returns {string}
  */
-export const countFormations = async (): number => {
+export const countFormations = async (): Promise<number | boolean> => {
   try {
     const response = await axios.get(`${config.catalogueUrl}${config.formationsEndPoint}/count`)
     return response.data
@@ -111,7 +112,7 @@ export const countFormations = async (): number => {
  * @param {Object} query
  * @returns {Promise<Object[]>}
  */
-export const getCatalogueEtablissements = (query: object = {}) =>
+export const getCatalogueEtablissements = (query: object = {}): Promise<any> =>
   got(`${config.catalogueUrl}/api/v1/entity/etablissements`, {
     method: "POST",
     json: {
