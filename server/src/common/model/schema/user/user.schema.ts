@@ -1,4 +1,5 @@
-import { model, mongoosePagination, Pagination, Schema } from "../../../mongodb.js"
+import { mongoosePagination, Pagination } from "mongoose-paginate-ts"
+import { model, Schema } from "../../../mongodb.js"
 import { IUser } from "./user.types.js"
 
 export const userSchema = new Schema<IUser>({
