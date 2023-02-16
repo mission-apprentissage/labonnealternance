@@ -4,7 +4,7 @@
   "description": "API La bonne alternance",
   "repository": "https://github.com/mission-apprentissage/labonnealternance.git",
   "private": false,
-  "author": "MNA",
+  "author": "Mission apprentissage",
   "license": "MIT",
   "type": "module",
   "engines": {
