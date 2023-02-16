@@ -4,7 +4,7 @@
   "description": "Interface de gestion pour les entreprises, organismes de formation et candidats en apprentissage",
   "repository": "https://github.com/mission-apprentissage/labonnealternance.git",
   "private": false,
-  "author": "MNA",
+  "author": "Mission apprentissage",
   "license": "MIT",
   "main": "src/index.js",
   "homepage": "/espace-pro",

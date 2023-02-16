@@ -2,6 +2,8 @@
   "name": "ui",
   "version": "1.0.0",
   "private": false,
+  "license": "MIT",
+  "author": "Mission apprentissage",
   "repository": "https://github.com/mission-apprentissage/labonnealternance.git",
   "scripts": {
     "docker-dev": "yarn install && yarn dev",
