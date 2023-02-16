@@ -21,4 +21,4 @@ export const emailBlacklistSchema = new Schema<IEmailBlacklist>({
   },
 })
 
-export default model<IEmailBlacklist>("", emailBlacklistSchema)
+export default model<IEmailBlacklist>("emailblacklist", emailBlacklistSchema)
