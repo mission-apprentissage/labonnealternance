@@ -5,7 +5,7 @@ import { SendPlausibleEvent } from "../utils/plausible"
 import { logError } from "../utils/tools"
 import extractCandidatureParams from "./extractCandidatureParams"
 
-const { baseUrl } = getConfig
+const { baseUrl } = getConfig()
 
 export default async function postCandidature(applicant_h, company_h, caller, _baseUrl = baseUrl, _axios = axios, _window = window, _logError = logError) {
   let res = ""
