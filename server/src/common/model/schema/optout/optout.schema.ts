@@ -1,4 +1,5 @@
-import { model, mongooseInstance, mongoosePagination, Pagination, Schema } from "../../../mongodb.js"
+import { mongoosePagination, Pagination } from "mongoose-paginate-ts"
+import { model, mongooseInstance, Schema } from "../../../mongodb.js"
 import { IOptout } from "./optout.types.js"
 
 export const optoutSchema = new Schema<IOptout>(

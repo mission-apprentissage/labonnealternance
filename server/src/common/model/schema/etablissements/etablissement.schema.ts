@@ -1,4 +1,5 @@
-import { model, mongoosePagination, Pagination, Schema } from "../../../mongodb.js"
+import { mongoosePagination, Pagination } from "mongoose-paginate-ts"
+import { model, Schema } from "../../../mongodb.js"
 import { optMode } from "../../constants/etablissement.js"
 import { IEtablissement } from "./etablissement.types.js"
 
