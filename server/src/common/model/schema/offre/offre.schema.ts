@@ -139,4 +139,4 @@ export const offreSchema = new Schema<IOffre>({
   },
 })
 
-export default model<IOffre>("offres", offreSchema)
+export default model<IOffre>("offre", offreSchema)
