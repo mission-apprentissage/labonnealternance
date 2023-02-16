@@ -1,5 +1,6 @@
 import ApiCalls from "./schema/apiCall/apiCall.schema.js"
 import Application from "./schema/application/applications.schema.js"
+import AppointmentDetailed from "./schema/appointmentDetailed/appointmentDetailed.schema.js"
 import Appointment from "./schema/appointments/appointment.schema.js"
 import BonnesBoites from "./schema/bonneboite/bonneBoite.schema.js"
 import Credential from "./schema/credentials/credential.schema.js"
@@ -18,8 +19,6 @@ import ReferentielOpco from "./schema/referentielOpco/referentielOpco.schema.js"
 import User from "./schema/user/user.schema.js"
 import UserRecruteur from "./schema/userRecruteur/usersRecruteur.schema.js"
 import WidgetParameter from "./schema/widgetParameter/widgetParameter.schema.js"
-
-const AppointmentDetailed = Appointment
 
 export {
   DomainesMetiers,
