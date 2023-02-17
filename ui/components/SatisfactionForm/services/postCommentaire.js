@@ -1,9 +1,7 @@
 import axios from "axios"
 import _ from "lodash"
-import { getConfig } from "../../../utils/config"
 import { logError } from "../../../utils/tools"
-
-const { baseUrl } = getConfig()
+import { baseUrl } from "../../../config/config"
 
 export default async function postCommentaire(params, _baseUrl = baseUrl, _axios = axios, _window = window, _logError = logError) {
   let res = ""
