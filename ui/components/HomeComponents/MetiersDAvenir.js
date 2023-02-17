@@ -4,8 +4,8 @@ import axios from "axios"
 import NextLink from "next/link"
 import React from "react"
 import { useQuery } from "react-query"
-import { getConfig } from "../../utils/config"
 import { SendPlausibleEvent } from "../../utils/plausible"
+import { baseUrl } from "../../config/config"
 
 const jobCssProperties = {
   background: "beige",
@@ -23,8 +23,6 @@ const jobCssProperties = {
     textDecoration: "none",
   },
 }
-
-const { baseUrl } = getConfig()
 
 const diagorienteLink = "https://diagoriente.gitbook.io/base-unifiee-competences-formations-metiers/presentation-generale/genese"
 

@@ -9,14 +9,12 @@ import "../public/styles/fonts.css"
 
 import PageTracker from "../components/pageTracker"
 
-import { getConfig } from "../utils/config"
+import { env } from "../config/config"
 
 export default function LaBonneAlternance({ Component, pageProps }) {
   useEffect(() => {
-    init({ url: process.env.LBA_MATOMO_URL, siteId: process.env.LBA_MATOMO_SITE_ID })
+    init({ url: process.env.NEXT_PUBLIC_LBA_MATOMO_URL, siteId: process.env.NEXT_PUBLIC_LBA_MATOMO_SITE_ID })
   })
-
-  const { env } = getConfig()
 
   return (
     <Providers env={env}>
