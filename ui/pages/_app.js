@@ -16,6 +16,8 @@ export default function LaBonneAlternance({ Component, pageProps }) {
     init({ url: process.env.NEXT_PUBLIC_LBA_MATOMO_URL, siteId: process.env.NEXT_PUBLIC_LBA_MATOMO_SITE_ID })
   })
 
+  console.log(process.env)
+
   return (
     <Providers env={env}>
       <PageTracker>
