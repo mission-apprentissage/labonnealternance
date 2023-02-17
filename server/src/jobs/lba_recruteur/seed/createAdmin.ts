@@ -1,18 +1,7 @@
 import { logger } from "../../../common/logger.js"
 import { runScript } from "../../scriptWrapper.js"
 
-const admin = [
-  {
-    nom: "Barnoin",
-    prenom: "Kevin",
-    email: "***REMOVED***@beta.gouv.fr",
-  },
-  { nom: "Metayer", prenom: "François", email: "françois.metayer@beta.gouv.fr" },
-  { nom: "Bouhend", prenom: "Abdellah", email: "abdellah.bouhend@beta.gouv.fr" },
-  { nom: "Radisson", prenom: "Leo", email: "leo.radisson@beta.gouv.fr" },
-  { nom: "Arnaud", prenom: "Claire", email: "claire.arnaud@beta.gouv.fr" },
-  { nom: "Guillet", prenom: "Marion", email: "marion.guillet@beta.gouv.fr" },
-]
+const admin = []
 
 runScript(async ({ usersRecruteur }) => {
   await Promise.all(
