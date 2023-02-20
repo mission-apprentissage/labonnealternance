@@ -422,7 +422,7 @@ const transformFormationForIdea = (formation) => {
   }
 
   resultFormation.company = {
-    name: getTrainingSchoolName(formation.source), // pe -> entreprise.nom | formation -> etablissement_formateur_entreprise_raison_sociale | lbb/lba -> name
+    name: getTrainingSchoolName(formation.source), // pe -> entreprise.nom | formation -> etablissement_formateur_enseigne | lbb/lba -> name
     siret: formation.source.etablissement_formateur_siret,
     id: formation.source.etablissement_formateur_id,
     uai: formation.source.etablissement_formateur_uai,
@@ -481,16 +481,10 @@ const getTrainingAddress = (school) => {
 }
 
 const getTrainingSchoolName = (school) => {
-  const schoolName = school.etablissement_formateur_entreprise_raison_sociale
-    ? school.etablissement_formateur_entreprise_raison_sociale
-    : school.etablissement_gestionnaire_entreprise_raison_sociale
-
-  return schoolName
+  return school.etablissement_formateur_enseigne || school.etablissement_formateur_entreprise_raison_sociale || school.etablissement_gestionnaire_entreprise_raison_sociale
 }
 
 const getFormationsQuery = async (query) => {
-  //console.log("query : ", query);
-
   const queryValidationResult = formationsQueryValidator(query)
 
   if (queryValidationResult.error) return queryValidationResult
