@@ -110,6 +110,6 @@ export const formulaireSchema = new Schema<IFormulaire>(
 )
 
 formulaireSchema.plugin(mongoosePagination)
-formulaireSchema.plugin(mongoosastic, { esClient: getElasticInstance(), index: "formulaire" })
+formulaireSchema.plugin(mongoosastic, { esClient: getElasticInstance(), index: "formulaires" })
 
 export default model<IFormulaire, Pagination<IFormulaire>>("formulaire", formulaireSchema)
