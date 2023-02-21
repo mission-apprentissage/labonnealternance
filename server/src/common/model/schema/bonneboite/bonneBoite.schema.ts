@@ -110,4 +110,4 @@ export const bonneBoiteSchema = new Schema<IBonneBoite>({
 
 bonneBoiteSchema.plugin(mongoosastic, { esClient: getElasticInstance(), index: "bonnesboites" })
 
-export default model<IBonneBoite>("bonneboites", bonneBoiteSchema)
+export default model<IBonneBoite>("bonnesboites", bonneBoiteSchema)
