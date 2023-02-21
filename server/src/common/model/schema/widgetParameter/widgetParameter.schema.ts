@@ -118,6 +118,10 @@ export const widgetParameterSchema = new Schema<IWidgetParameter>({
     default: Date.now,
     description: "Date de création du document",
   },
+  historization_date: {
+    type: Date,
+    description: "Date d'historisation",
+  },
 })
 
 widgetParameterSchema.plugin(mongoosePagination)
