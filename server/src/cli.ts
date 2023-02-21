@@ -13,6 +13,7 @@ import { relanceOpco } from "./jobs/lba_recruteur/opco/relanceOpco.js"
 import { createOffreCollection } from "./jobs/lba_recruteur/seed/createOffre.js"
 import { activateOptOutEtablissementFormations } from "./jobs/rdv/activateOptOutEtablissementFormations.js"
 import { candidatHaveYouBeenContacted } from "./jobs/rdv/candidatHaveYouBeenContacted.js"
+import { controlAvailableFormationWithCatalogue } from "./jobs/rdv/controlAvailableFormationWithCatalogue.js"
 import { inviteEtablissementToOptOut } from "./jobs/rdv/inviteEtablissementToOptOut.js"
 import { inviteEtablissementToPremium } from "./jobs/rdv/inviteEtablissementToPremium.js"
 import { inviteEtablissementToPremiumFollowUp } from "./jobs/rdv/inviteEtablissementToPremiumFollowUp.js"
@@ -25,6 +26,14 @@ import { runScript } from "./jobs/scriptWrapper.js"
 import updateSendinblueBlockedEmails from "./jobs/updateSendinblueBlockedEmails/updateSendinblueBlockedEmails.js"
 
 cli.addHelpText("after", null)
+
+/**
+ *
+ *
+ * JOB RECRUTEUR
+ *
+ *
+ */
 
 cli
   .command("index")
@@ -107,6 +116,14 @@ cli
     runScript(({ mailer }) => relanceOpco(mailer))
   })
 
+/**
+ *
+ *
+ * JOB ORGANISME DE FORMATION
+ *
+ *
+ */
+
 cli
   .command("activate-opt-out-etablissement-formations")
   .description("Active tous les établissements qui ont souscrits à l'opt-out.")
@@ -171,17 +188,32 @@ cli
   })
 
 cli
-  .command("sync-catalogue-trainings")
-  .description("Importe les formations depuis le Catalogue")
-  .action(() => {
-    runScript(() => importCatalogueFormationJob())
-  })
-
-cli
   .command("sync-etablissements-and-formations")
   .description("Récupère la liste de toutes les formations du Catalogue et les enregistre.")
   .action(() => {
     runScript((components) => syncEtablissementsAndFormations(components))
+  })
+
+cli
+  .command("control-elligible-training")
+  .description("Contrôle l'egibilité d'une formation à la prise de rendez-vous avec le Catalogue des formations")
+  .action(() => {
+    runScript(() => controlAvailableFormationWithCatalogue())
+  })
+
+/**
+ *
+ *
+ * JOB CANDIDAT
+ *
+ *
+ */
+
+cli
+  .command("sync-catalogue-trainings")
+  .description("Importe les formations depuis le Catalogue")
+  .action(() => {
+    runScript(() => importCatalogueFormationJob())
   })
 
 cli
