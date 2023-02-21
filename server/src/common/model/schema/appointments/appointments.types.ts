@@ -36,6 +36,7 @@ interface IAppointments {
   created_at: Date
   last_update_at: Date
   email_cfa: string
+  is_anonymized: boolean
 }
 
 export { IAppointments, IMailing }
