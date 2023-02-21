@@ -8,8 +8,7 @@ services:
 
   ui:
     build:
-      args:
-        LBA_ENV: dev
+      dockerfile: Dockerfile.local
     volumes:
       - ./ui:/app:z
       - /app/node_modules/
@@ -63,11 +62,8 @@ services:
     mem_limit: 256m
     ports:
       - "1025:1025"
-    volumes:
-      - ./mailhog-auth.txt:/app/mailhog-auth.txt
     environment:
       - MH_UI_WEB_PATH=smtp
-      - MH_AUTH_FILE=/app/mailhog-auth.txt
     networks:
       - lba_network
 

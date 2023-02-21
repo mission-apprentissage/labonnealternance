@@ -284,8 +284,8 @@ export default memo(() => {
           <Box mx={8}>
             <TabList>
               <Tab width="300px">En attente de vérification ({awaitingValidationUserList.data.data.length})</Tab>
-              <Tab width="300px">Actifs {activeUserList.isFetched && `(${activeUserList.data.data.length})`}</Tab>
-              <Tab width="300px">Désactivés {disableUserList.isFetched && `(${disableUserList.data.data.length})`}</Tab>
+              <Tab width="300px">Actives {activeUserList.isFetched && `(${activeUserList.data.data.length})`}</Tab>
+              <Tab width="300px">Désactivées {disableUserList.isFetched && `(${disableUserList.data.data.length})`}</Tab>
             </TabList>
           </Box>
           <TabPanels mt={3}>

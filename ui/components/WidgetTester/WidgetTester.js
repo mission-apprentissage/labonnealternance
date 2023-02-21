@@ -342,7 +342,7 @@ const WidgetTester = () => {
           </Link>
         </Text>
       </Box>
-      <Container>
+      <Container variant="responsiveContainer">
         <Grid>
           <GridItem>{getForm()}</GridItem>
 

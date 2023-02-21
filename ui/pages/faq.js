@@ -68,7 +68,7 @@ const FAQ = ({ recruteur, organisme, candidat }) => {
                       fullPage={false}
                       darkMode={false}
                       disableHeader={true}
-                      rootDomain={process.env.REACT_APP_BASE_URL}
+                      rootDomain={process.env.NEXT_PUBLIC_BASE_URL}
                       bodyClassName="notion-body"
                     />
                   </TabPanel>
@@ -78,7 +78,7 @@ const FAQ = ({ recruteur, organisme, candidat }) => {
                       fullPage={false}
                       darkMode={false}
                       disableHeader={true}
-                      rootDomain={process.env.REACT_APP_BASE_URL}
+                      rootDomain={process.env.NEXT_PUBLIC_BASE_URL}
                       bodyClassName="notion-body"
                     />
                   </TabPanel>
@@ -88,7 +88,7 @@ const FAQ = ({ recruteur, organisme, candidat }) => {
                       fullPage={false}
                       darkMode={false}
                       disableHeader={true}
-                      rootDomain={process.env.REACT_APP_BASE_URL}
+                      rootDomain={process.env.NEXT_PUBLIC_BASE_URL}
                       bodyClassName="notion-body"
                     />
                   </TabPanel>
