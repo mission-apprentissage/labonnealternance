@@ -1,7 +1,7 @@
 import axios from "axios"
 import _ from "lodash"
-import baseUrl from "../utils/baseUrl.js"
 import { logError } from "../utils/tools.js"
+import { baseUrl } from "../config/config"
 
 /**
  * @description Returns "RDV" link.

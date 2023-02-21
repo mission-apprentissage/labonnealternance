@@ -174,15 +174,6 @@ const APropos = () => (
               title="Trouver des entreprises qui recrutent sans déposer d'offres d'emploi"
             />
             <StartupCard
-              logoUrl={logoMaintenant}
-              url="https://maintenant.pole-emploi.fr/"
-              aria-label="Accès au site Maintenant"
-              title="Vous valez plus qu'un CV ! Trouvez le bon job en moins de 5 minutes"
-            />
-          </SimpleGrid>
-
-          <SimpleGrid columns={[1, 1, 2]}>
-            <StartupCard
               logoUrl={logoAvril}
               url="https://avril.pole-emploi.fr/"
               aria-label="Accès au site Avril"

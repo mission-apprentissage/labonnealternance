@@ -1,11 +1,11 @@
-import React from "react"
-import axios from "axios"
-import { useQuery } from "react-query"
-import NextLink from "next/link"
-import { Text, Divider, GridItem, Grid, Container, Box, SimpleGrid, Link, Flex } from "@chakra-ui/react"
 import { ArrowForwardIcon } from "@chakra-ui/icons"
-import baseUrl from "../../utils/baseUrl"
+import { Box, Container, Divider, Flex, Grid, GridItem, Link, SimpleGrid, Text } from "@chakra-ui/react"
+import axios from "axios"
+import NextLink from "next/link"
+import React from "react"
+import { useQuery } from "react-query"
 import { SendPlausibleEvent } from "../../utils/plausible"
+import { baseUrl } from "../../config/config"
 
 const jobCssProperties = {
   background: "beige",

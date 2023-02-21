@@ -51,6 +51,13 @@ export default function ForJob(props) {
             Formations en apprentissage en CAP, Bac pro, Mention complémentaire, BTS, BUT, DEUST, Licence, Master en <i>{currentJob.name}</i>
           </Text>
 
+          <Text marginTop="0px" mb={[2, 2, 2, 0]}>
+            <Text as="span">Emploi en alternance et formation en alternance en </Text>
+            <Link textDecoration="underline" fontWeight={700} href={`/metiers/${currentJob.slug}/france`}>
+              {currentJob.name} sur l'ensemble du territoire
+            </Link>
+          </Text>
+
           {sortedTowns.map((currentTown, index) => {
             return (
               <Text key={index} marginTop="0px" mb={[2, 2, 2, 0]}>

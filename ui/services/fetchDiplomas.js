@@ -1,9 +1,9 @@
 import axios from "axios"
-import baseUrl from "../utils/baseUrl"
 import _ from "lodash"
+import memoize from "../utils/memoize"
 import { isNonEmptyString } from "../utils/strutils"
 import { logError } from "../utils/tools"
-import memoize from "../utils/memoize"
+import { baseUrl } from "../config/config"
 
 const filteredInput = (input) => {
   let res = []

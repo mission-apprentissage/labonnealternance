@@ -1,10 +1,10 @@
 import axios from "axios"
-import baseUrl from "../utils/baseUrl"
 import _ from "lodash"
-import { isNonEmptyString } from "../utils/strutils"
-import { logError } from "../utils/tools"
 import memoize from "../utils/memoize"
 import { SendPlausibleEvent } from "../utils/plausible"
+import { isNonEmptyString } from "../utils/strutils"
+import { logError } from "../utils/tools"
+import { baseUrl } from "../config/config"
 let cancelToken
 
 export const fetchRomes = memoize(async (value, errorCallbackFn = _.noop, _baseUrl = baseUrl, _axios = axios, _window = window, _logError = logError) => {

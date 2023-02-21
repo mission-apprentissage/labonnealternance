@@ -54,7 +54,7 @@ const Navigation = ({ currentPage }) => {
                 <Show above="md">
                   <NextLink passHref href={{ pathname: getLogoTargetUrl() }}>
                     <Link aria-label="Retour">
-                      <Image src={`/images/${getLogo()}`} alt="Redirection vers la page d'accueil" width="150" height="57" ml={4} />
+                      <Image src={`/images/${getLogo()}`} alt="Redirection vers la page d'accueil" width="150" height="37" ml={4} />
                     </Link>
                   </NextLink>
                 </Show>

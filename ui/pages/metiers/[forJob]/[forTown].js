@@ -25,8 +25,12 @@ export default function ForTown(props) {
   return (
     <Box>
       <NextSeo
-        title={`Tous les emplois et formations en alternance en ${currentJob.name} à ${currentTown.name} | La bonne alternance | Trouvez votre alternance`}
-        description={`Chercher des emplois et formations en alternance pour le métier ${currentJob.name} dans la ville de ${currentTown.name}`}
+        title={`Tous les emplois et formations en alternance en ${currentJob.name} ${
+          currentTown.name === "France" ? "sur l'ensemble du territoire" : `à ${currentTown.name}`
+        } | La bonne alternance | Trouvez votre alternance`}
+        description={`Chercher des emplois et formations en alternance pour le métier ${currentJob.name} ${
+          currentTown.name === "France" ? "sur l'ensemble du territoire" : `dans la ville de ${currentTown.name}`
+        }`}
       />
       <Navigation />
       <Breadcrumb items={navigationItems} />
@@ -42,10 +46,18 @@ export default function ForTown(props) {
         <Divider variant="pageTitleDivider" my={12} />
 
         <Text mb={2} as="p">
-          Vous voulez travailler en contrat d&apos;apprentissage ou en contrat de professionnalisation en <i>{currentJob.name}</i> à proximité de <i>{currentTown.name}</i> ?
+          Vous voulez travailler en contrat d&apos;apprentissage ou en contrat de professionnalisation en{" "}
+          <i>
+            {currentJob.name} {currentTown.name === "France" ? "sur l'ensemble du territoire" : `à proximité de ${currentTown.name}`}
+          </i>{" "}
+          ?
         </Text>
         <Text mb={2} as="p">
-          Vous voulez obtenir un diplôme en alternance en <i>{currentJob.name}</i> à proximité de <i>{currentTown.name}</i> ?
+          Vous voulez obtenir un diplôme en alternance en{" "}
+          <i>
+            {currentJob.name} {currentTown.name === "France" ? "sur l'ensemble du territoire" : `à proximité de ${currentTown.name}`}
+          </i>{" "}
+          ?
         </Text>
         <Text mb={2} as="p">
           Cliquez sur &quot;lancer cette recherche&quot; pour accéder aux résultats que La bonne alternance a trouvés pour vous !
@@ -69,6 +81,7 @@ export async function getStaticPaths() {
 
   const dataJobs = getStaticMetiers(path, fs, txtDirectory)
   const dataTowns = getStaticVilles(path, fs, txtDirectory)
+  dataTowns.push({ slug: "france", name: "France" })
   const flatten = require("lodash").flatten
 
   const mapped_pathes = flatten(
@@ -97,8 +110,9 @@ export async function getStaticProps() {
   const fs = require("fs")
   const txtDirectory = path.join(process.cwd(), "config")
 
-  const dataTowns = getStaticVilles(path, fs, txtDirectory)
+  let dataTowns = getStaticVilles(path, fs, txtDirectory)
   const dataJobs = getStaticMetiers(path, fs, txtDirectory)
+  dataTowns.push({ slug: "france", name: "France" })
 
   return {
     props: {

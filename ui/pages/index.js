@@ -17,6 +17,7 @@ import howtocircle5 from "../public/images/howtocircle5.svg"
 import { ParameterContext } from "../context/ParameterContextProvider"
 import AmeliorerLBA from "../components/HomeComponents/AmeliorerLBA"
 import { Box, Image } from "@chakra-ui/react"
+import config from "../config/config"
 
 const blockCssProperties = {
   position: "relative",
@@ -34,8 +35,6 @@ const circleImgCssProperties = {
     lg: "block",
   },
 }
-
-import config from "../config/config"
 
 const Home = () => {
   const router = useRouter()

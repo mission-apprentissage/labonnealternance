@@ -16,6 +16,8 @@ const FilterButton = ({ type, count, isActive, handleFilterButtonClicked }) => {
       res = `Entreprises (${count})`
     } else if (type === "all") {
       res = `Tout (${count})`
+    } else if (type === "duo") {
+      res = `Duo (3)`
     }
     return res
   }
