@@ -39,6 +39,16 @@ export const userSchema = new Schema<IUser>({
     default: null,
     description: "candidat | cfa | administrator",
   },
+  last_action_date: {
+    type: Date,
+    default: Date.now(),
+    description: "Date de dernière candidature",
+  },
+  is_anonymized: {
+    type: Boolean,
+    default: false,
+    description: "Si l'enregistrement est anonymisé",
+  },
 })
 
 userSchema.plugin(mongoosePagination)
