@@ -85,6 +85,7 @@ const ResultListsCounter = (props) => {
               <FilterButton type="all" count={jobCount + trainingCount} isActive={activeFilter === "all"} handleFilterButtonClicked={filterButtonClicked} />
               <FilterButton type="jobs" count={jobCount} isActive={activeFilter === "jobs"} handleFilterButtonClicked={filterButtonClicked} />
               <FilterButton type="trainings" count={trainingCount} isActive={activeFilter === "trainings"} handleFilterButtonClicked={filterButtonClicked} />
+              <FilterButton type="duo" isActive={activeFilter === "duo"} handleFilterButtonClicked={filterButtonClicked} />
               <Button
                 background="none"
                 border="none"

@@ -18,16 +18,4 @@ const getTrainingAddress = (school, lowerCase) => {
   return schoolAddress
 }
 
-/*
-const getTrainingSchoolName = (school, lowerCase) => {
-  let schoolName = school.etablissement_formateur_entreprise_raison_sociale
-    ? school.etablissement_formateur_entreprise_raison_sociale
-    : school.etablissement_responsable_entreprise_raison_sociale;
-
-  if (lowerCase) schoolName = schoolName.toLowerCase();
-
-  return schoolName;
-};
-*/
-
-export { getTrainingAddress /*, getTrainingSchoolName*/ }
+export { getTrainingAddress }

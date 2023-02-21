@@ -46,7 +46,7 @@ const MentionsLegales = ({ recordMap }) => {
                 fullPage={false}
                 darkMode={false}
                 disableHeader={true}
-                rootDomain={process.env.REACT_APP_BASE_URL}
+                rootDomain={process.env.NEXT_PUBLIC_BASE_URL}
                 bodyClassName="notion-body"
               />
             </Box>
