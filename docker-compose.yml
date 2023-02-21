@@ -32,8 +32,6 @@ services:
     container_name: lba_ui
     build:
       context: ui
-      args:
-        - DOCKER_BUILDKIT=1
     mem_limit: 256m
     restart: unless-stopped
     networks:
