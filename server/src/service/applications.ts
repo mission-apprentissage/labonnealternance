@@ -434,16 +434,16 @@ const updateApplicationStatus = async ({ payload, mailer }) => {
     return
   }
 
-  if (event === "hard_bounce" && messageType === "application") {
-    addEmailToBlacklist(payload.email, application.job_origin)
+  if (event === SendinblueEventStatus.HARD_BOUNCE && messageType === "application") {
+    await addEmailToBlacklist(payload.email, application.job_origin)
 
     if (application.job_origin === "lbb" || application.job_origin === "lba") {
-      removeEmailFromBonnesBoites(payload.email)
+      await removeEmailFromBonnesBoites(payload.email)
     } else if (application.job_origin === "matcha") {
-      warnMatchaTeamAboutBouncedEmail({ application, mailer })
+      await warnMatchaTeamAboutBouncedEmail({ application, mailer })
     }
 
-    notifyHardbounceToApplicant({ application, mailer })
+    await notifyHardbounceToApplicant({ application, mailer })
   }
 }
 
@@ -457,7 +457,7 @@ const updateHardBounceEmails = async ({ payload }) => {
 
   const event = payload.event
 
-  if (event === "hard_bounce") {
+  if (event === SendinblueEventStatus.HARD_BOUNCE) {
     addEmailToBlacklist(payload.email, "campaign")
     removeEmailFromBonnesBoites(payload.email)
   }
@@ -474,6 +474,13 @@ const addEmailToBlacklist = async (email, blacklistingOrigin) => {
     logger.error(`Failed to save email to blacklist (${email}). Reason : ${err}`)
   }
 }
+
+/**
+ * @description Check if an email if blacklisted.
+ * @param {string} email - Email
+ * @return {Promise<boolean>}
+ */
+const isEmailBlacklisted = async (email: string): Promise<boolean> => !!(await EmailBlacklist.findOne({ email }))
 
 const sendTestMail = async ({ mailer, query }) => {
   if (!query.secret) {
@@ -518,6 +525,8 @@ const updateBlockedEmails = async ({ query, shouldCheckSecret }) => {
 }
 
 export {
+  addEmailToBlacklist,
+  isEmailBlacklisted,
   getApplications,
   sendTestMail,
   sendApplication,

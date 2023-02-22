@@ -5,6 +5,7 @@ import { FormationCatalogue } from "../../common/model/index.js"
 import { dayjs } from "../../common/utils/dayjs.js"
 import { isValidEmail } from "../../common/utils/isValidEmail.js"
 import { getFormationsFromCatalogueMe } from "../../services/catalogue.service.js"
+import { isEmailBlacklisted } from "../../service/applications.js"
 
 /**
  * Gets email from catalogue field.
@@ -13,6 +14,10 @@ import { getFormationsFromCatalogueMe } from "../../services/catalogue.service.j
  * @return {string|null}
  */
 const getEmailFromCatalogueField = (email) => {
+  if (!email) {
+    return null
+  }
+
   const divider = "##"
   if (email?.includes(divider)) {
     const emailSplit = email.split(divider).at(-1).toLowerCase()
@@ -32,7 +37,12 @@ export const syncEtablissementsAndFormations = async ({ etablissements, widgetPa
 
   const catalogueMinistereEducatif = await getFormationsFromCatalogueMe({
     limit: 1000,
-    query: { parcoursup_id: { $ne: null }, parcoursup_statut: "publié", published: true, catalogue_published: true },
+    query: {
+      parcoursup_id: { $ne: null },
+      parcoursup_statut: "publié",
+      published: true,
+      catalogue_published: true,
+    },
     select: { parcoursup_id: 1, cle_ministere_educatif: 1 },
   })
 
@@ -71,6 +81,8 @@ export const syncEtablissementsAndFormations = async ({ etablissements, widgetPa
             emailRdv = getEmailFromCatalogueField(formation.email) || getEmailFromCatalogueField(formation.etablissement_formateur_courriel) || widgetParameter.email_rdv
           }
 
+          const emailBlacklisted = await isEmailBlacklisted(emailRdv)
+
           await widgetParameters.updateMany(
             { cle_ministere_educatif: formation.cle_ministere_educatif },
             {
@@ -81,7 +93,7 @@ export const syncEtablissementsAndFormations = async ({ etablissements, widgetPa
               formation_cfd: formation.cfd,
               code_postal: formation.code_postal,
               formation_intitule: formation.intitule_long,
-              referrers: emailRdv ? referrersToActivate : [],
+              referrers: emailRdv && !emailBlacklisted ? referrersToActivate : [],
               catalogue_published: formation.published,
               id_rco_formation: formation.id_rco_formation,
               cfd: formation.cfd,
@@ -101,6 +113,8 @@ export const syncEtablissementsAndFormations = async ({ etablissements, widgetPa
         } else {
           const emailRdv = getEmailFromCatalogueField(formation.etablissement_formateur_courriel)
 
+          const emailBlacklisted = await isEmailBlacklisted(emailRdv)
+
           await widgetParameters.createParameter({
             id_catalogue: formation._id,
             email_rdv: emailRdv,
@@ -109,7 +123,7 @@ export const syncEtablissementsAndFormations = async ({ etablissements, widgetPa
             formation_cfd: formation.cfd,
             code_postal: formation.code_postal,
             formation_intitule: formation.intitule_long,
-            referrers: emailRdv ? referrersToActivate : [],
+            referrers: emailRdv && !emailBlacklisted ? referrersToActivate : [],
             catalogue_published: formation.published,
             id_rco_formation: formation.id_rco_formation,
             last_catalogue_sync: dayjs().format(),
