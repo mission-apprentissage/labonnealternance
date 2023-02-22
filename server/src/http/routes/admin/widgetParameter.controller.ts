@@ -68,7 +68,7 @@ export default ({ widgetParameters, etablissements }) => {
       const page = qs && qs.page ? qs.page : 1
       const limit = qs && qs.limit ? parseInt(qs.limit, 10) : 50
 
-      const allData = await WidgetParameter.paginate(query, { page, limit })
+      const allData = await WidgetParameter.paginate({ query, page, limit })
 
       const parameters = await Promise.all(
         allData.docs.map(async (parameter) => {
