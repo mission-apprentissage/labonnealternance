@@ -119,7 +119,7 @@ export default ({ users, usersRecruteur, etablissementsRecruteur, mailer }) => {
         email: Joi.string().email().required(),
       }).validateAsync(req.body, { abortEarly: false })
 
-      const user = await usersRecruteur.getUser({ email })
+      const user = await usersRecruteur.getUser({ email: new RegExp(`^${email}$`, "i") })
 
       if (!user) {
         return res.status(400).json({ error: true, reason: "UNKNOWN" })
@@ -176,7 +176,7 @@ export default ({ users, usersRecruteur, etablissementsRecruteur, mailer }) => {
         })
       }
 
-      const magiclink = `${config.publicUrlEspacePro}/authentification/verification?token=${createMagicLinkToken(email)}`
+      const magiclink = `${config.publicUrlEspacePro}/authentification/verification?token=${createMagicLinkToken(user.email)}`
 
       await mailer.sendEmail({
         to: user.email,
