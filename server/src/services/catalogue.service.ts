@@ -260,7 +260,7 @@ export const getFormationsFromCatalogueMe = async ({
     api = await createCatalogueMeAPI()
   }
 
-  let params = { page, limit, query: JSON.stringify(query), select: JSON.stringify(select) }
+  const params = { page, limit, query: JSON.stringify(query), select: JSON.stringify(select) }
 
   try {
     const response = await api.get(`/entity/formations`, { params })
