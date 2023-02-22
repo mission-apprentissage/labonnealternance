@@ -2,8 +2,6 @@ location / {
     set $upstream http://ui:3000;
     include includes/proxy.conf;
 
-    client_max_body_size 0;
-
     if ($always_redirect = on) {
         return 301 https://$host$request_uri;
     }
