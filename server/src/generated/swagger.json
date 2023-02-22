@@ -70,7 +70,7 @@
 						"type": "string"
 					},
 					"trainingHasJob": {
-						"type": "string"
+						"type": "boolean"
 					},
 					"idCleMinistereEducatif": {
 						"type": "string"
