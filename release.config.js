@@ -10,7 +10,6 @@ const mainConfig = {
         changelogFile: "CHANGELOG.md",
       },
     ],
-    "@semantic-release/npm",
     [
       "@semantic-release/exec",
       {
