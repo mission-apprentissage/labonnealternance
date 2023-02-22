@@ -1,3 +1,5 @@
+import { SendinblueEventStatus } from "../../sendinblue.js"
+
 const emailStatus = {
   request: "Envoyé",
   click: "Clické",
@@ -6,7 +8,7 @@ const emailStatus = {
   soft_bounce: "Rejecté (soft)",
   spam: "Spam",
   unique_opened: "Ouverture unique",
-  hard_bounce: "Rejeté (hard)",
+  [SendinblueEventStatus.HARD_BOUNCE]: "Rejeté (hard)",
   unsubscribed: "Désinscrit",
   opened: "Ouvert",
   invalid_email: "Email invalide",

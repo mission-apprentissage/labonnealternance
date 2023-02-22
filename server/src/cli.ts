@@ -19,7 +19,6 @@ import { inviteEtablissementToPremiumFollowUp } from "./jobs/rdv/inviteEtablisse
 import { parcoursupEtablissementStat } from "./jobs/rdv/parcoursupEtablissementStat.js"
 import { premiumActivatedReminder } from "./jobs/rdv/premiumActivatedReminder.js"
 import { premiumInviteOneShot } from "./jobs/rdv/premiumInviteOneShot.js"
-import { removeEtablissementsOptIn } from "./jobs/rdv/removeEtablissementsOptIn.js"
 import { syncEtablissementsAndFormations } from "./jobs/rdv/syncEtablissementsAndFormations.js"
 import { runScript } from "./jobs/scriptWrapper.js"
 import updateSendinblueBlockedEmails from "./jobs/updateSendinblueBlockedEmails/updateSendinblueBlockedEmails.js"
@@ -119,13 +118,6 @@ cli
   .description("Envoi un email au candidat afin de savoir si le CFA la contacté.")
   .action(() => {
     runScript((components) => candidatHaveYouBeenContacted(components))
-  })
-
-cli
-  .command("remove-etablissements-opt-in")
-  .description("Supprime le mode OPT_IN associé à l'établissement")
-  .action(() => {
-    runScript((components) => removeEtablissementsOptIn(components))
   })
 
 cli

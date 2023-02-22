@@ -76,7 +76,7 @@ export default ({ widgetParameters, etablissements }) => {
 
           return {
             etablissement_raison_sociale: etablissement?.raison_sociale || "N/C",
-            ...parameter._doc,
+            ...parameter,
             referrers: parameter.referrers.map(getReferrerById),
           }
         })

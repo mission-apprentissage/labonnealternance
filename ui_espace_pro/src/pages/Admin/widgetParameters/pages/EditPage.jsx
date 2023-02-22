@@ -197,7 +197,7 @@ const EditPage = () => {
                         <Td>
                           {parameter?.id_catalogue ? (
                             <a
-                              href={`https://catalogue.apprentissage.beta.gouv.fr/formation/${parameter.id_catalogue}`}
+                              href={`https://catalogue-apprentissage.intercariforef.org/recherche/formations?SEARCH=%22${encodeURIComponent(parameter.cle_ministere_educatif)}%22`}
                               title="Lien vers la formation du Catalogue"
                               target="_blank"
                               rel="noreferrer"
@@ -208,7 +208,7 @@ const EditPage = () => {
                             "N/C"
                           )}
                         </Td>
-                        <Td>{parameter?.cle_ministere_educatif}</Td>
+                        <Td>{parameter?.cle_ministere_educatif || "N/C"}</Td>
                         <Td>{parameter.formation_intitule}</Td>
                         <Td>{parameter.code_postal}</Td>
                         <Td>{parameter.localite}</Td>

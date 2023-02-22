@@ -5,6 +5,9 @@ import { Strategy as LocalAPIKeyStrategy } from "passport-localapikey"
 import { dayjs } from "../../../common/utils/dayjs.js"
 import config from "../../../config.js"
 import { tryCatch } from "../../middlewares/tryCatchMiddleware.js"
+import { logger } from "../../../common/logger.js"
+import { addEmailToBlacklist } from "../../../service/applications.js"
+import { SendinblueEventStatus } from "../../../common/sendinblue.js"
 
 /**
  * @description Checks "Sendinblue" token.
@@ -20,9 +23,10 @@ const checkWebhookToken = () => {
  * @description Email controllers.
  * @param {Appointment} appointments
  * @param {Etablissement} etablissements
+ * @param {WidgetParameter} widgetParameters
  * @return {Router}
  */
-export default ({ appointments, etablissements }) => {
+export default ({ appointments, etablissements, widgetParameters }) => {
   const router = express.Router()
 
   /**
@@ -68,6 +72,20 @@ export default ({ appointments, etablissements }) => {
             email_premiere_demande_cfa_statut: parameters.event,
             email_premiere_demande_candidat_statut_date: eventDate,
           })
+
+          // Disable widgetParameters in case of hard_bounce
+          if (parameters.event === SendinblueEventStatus.HARD_BOUNCE) {
+            const widgetParametersWithEmail = await widgetParameters.find({ email_rdv: appointment.email_cfa })
+
+            await Promise.all(
+              widgetParametersWithEmail.map(async (widgetParameter) => {
+                await widgetParameter.update({ referrers: [] })
+
+                logger.info('Widget parameters disabled for "hard_bounce" reason', { widgetParameterId: widgetParameter._id, email: appointment.email_cfa })
+              })
+            )
+            await addEmailToBlacklist(appointment.email_cfa, "rdv-transactional")
+          }
         }
       }
 
