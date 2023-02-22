@@ -5,13 +5,7 @@ import { UserRecruteur } from "../model/index.js"
 export default () => ({
   createApiKey: () => `mna-${randomUUID()}`,
   getUsers: async (query, options, { page, limit }) => {
-    const response = await UserRecruteur.paginate(query, {
-      ...options,
-      page,
-      limit,
-      lean: true,
-      select: "-password",
-    })
+    const response = await UserRecruteur.paginate({ query, ...options, page, limit, lean: true, select: "-password" })
     return {
       pagination: {
         page: response.page,
