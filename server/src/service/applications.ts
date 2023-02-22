@@ -118,7 +118,7 @@ const getApplications = async (qs) => {
     limit = 200
   }
 
-  const response = await Application.paginate(query, { page, limit, lean: true })
+  const response = await Application.paginate({ query, page, limit, lean: true })
   return {
     data: response.docs,
     pagination: {
