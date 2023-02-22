@@ -226,7 +226,7 @@ const AjouterVoeux = (props) => {
         rome_detail: {},
         elligible_handicap: props.elligible_handicap ?? false,
         quantite: props.quantite ?? 1,
-        duree_contrat: props.duree_contrat ?? 1,
+        duree_contrat: props.duree_contrat ?? 6,
         rythme_alternance: props.rythme_alternance ?? undefined,
         custom_adress: props.custom_adress ?? undefined,
       }}
@@ -236,11 +236,13 @@ const AjouterVoeux = (props) => {
         date_debut_apprentissage: Yup.date().required("Champ obligatoire"),
         type: Yup.array().required("Champ obligatoire"),
         multi_diffuser: Yup.boolean(),
+        duree_contrat: Yup.number().max(99).min(6),
       })}
       onSubmit={props.fromDashboard ? (values, bag) => submitFromDashboard(values, bag) : (values) => submitFromDepotRapide(values)}
     >
       {(formik) => {
         let { values, setFieldValue, handleChange, errors, touched, isValid, isSubmitting, dirty, submitForm } = formik
+        console.log(formik, errors)
         return (
           <>
             <FormControl isRequired>
@@ -351,7 +353,13 @@ const AjouterVoeux = (props) => {
               <ChampNombre max={10} name="quantite" value={values.quantite} label="Nombre de poste(s) disponible(s)" handleChange={setFieldValue} />
             </FormControl>
             <FormControl mt={6}>
-              <ChampNombre max={4} name="duree_contrat" value={values.duree_contrat} label="Durée du contrat (année)" handleChange={setFieldValue} />
+              <Flex align="center">
+                <Text flexGrow={2}>Durée du contrat (mois)</Text>
+                <Stack direction="row" align="center">
+                  <Input name="duree_contrat" value={values.duree_contrat} onChange={(e) => setFieldValue("duree_contrat", parseInt(e.target.value))} />
+                </Stack>
+              </Flex>
+              {errors.duree_contrat || (touched.duree_contrat && <FormErrorMessage>{errors.duree_contrat}</FormErrorMessage>)}
             </FormControl>
             {auth.type !== AUTHTYPE.ENTREPRISE && (
               <FormControl mt={6}>
@@ -477,7 +485,7 @@ const RomeInformationDetail = ({ definition, competencesDeBase, libelle, appella
           </Flex>
 
           <Accordion defaultIndex={[0]} allowMultiple>
-            <AccordionItem key={0}>
+            <AccordionItem key={0} id="metier">
               {({ isExpanded }) => (
                 <>
                   <h2>
@@ -490,9 +498,9 @@ const RomeInformationDetail = ({ definition, competencesDeBase, libelle, appella
                   </h2>
                   <AccordionPanel pb={4} ml={6} mr={3}>
                     <ul className={style.voeux}>
-                      {definitionSplitted.map((x, index) => {
+                      {definitionSplitted.map((x) => {
                         return (
-                          <li className={style.voeux} key={index}>
+                          <li className={style.voeux} key={x}>
                             {x}
                           </li>
                         )
@@ -503,7 +511,7 @@ const RomeInformationDetail = ({ definition, competencesDeBase, libelle, appella
               )}
             </AccordionItem>
             <hr />
-            <AccordionItem key={1}>
+            <AccordionItem key={1} id="competence">
               {({ isExpanded }) => (
                 <>
                   <h2>
@@ -517,7 +525,7 @@ const RomeInformationDetail = ({ definition, competencesDeBase, libelle, appella
                   <AccordionPanel maxH="50%" pb={4} ml={6} mr={3}>
                     <ul className={style.voeux}>
                       {competencesDeBase.map((x) => (
-                        <li className={style.voeux} key={x.codeRome}>
+                        <li className={style.voeux} key={x.libelle}>
                           {x.libelle}
                         </li>
                       ))}
@@ -527,7 +535,7 @@ const RomeInformationDetail = ({ definition, competencesDeBase, libelle, appella
               )}
             </AccordionItem>
             <hr />
-            <AccordionItem key={1}>
+            <AccordionItem key={2} id="accessibilite">
               {({ isExpanded }) => (
                 <>
                   <h2>
