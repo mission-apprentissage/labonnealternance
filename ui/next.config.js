@@ -14,38 +14,20 @@ const contentSecurityPolicy = `
   script-src 'self' 
               'unsafe-inline' 
               'unsafe-eval' 
-              https://cdn.tagcommander.com
-              https://cdn.trustcommander.net/
-              https://static.hotjar.com
-              https://script.hotjar.com
-              https://www.googletagmanager.com
-              https://www.google-analytics.com
-              https://client.crisp.chat
               https://plausible.io 
               http://localhost:3000 
+              https://stats.data.gouv.fr
               blob:; 
   script-src-attr 'none';
   connect-src 'self'
               https://labonnealternance.apprentissage.beta.gouv.fr 
               https://labonnealternance-recette.apprentissage.beta.gouv.fr
               https://labonnealternance.pole-emploi.fr
-              https://rdv-cfa.apprentissage.beta.gouv.fr 
-              https://rdv-cfa-recette.apprentissage.beta.gouv.fr 
-              https://catalogue.apprentissage.beta.gouv.fr 
-              https://catalogue-recette.apprentissage.beta.gouv.fr 
+              https://catalogue-apprentissage.intercariforef.org
               https://api-adresse.data.gouv.fr 
               https://api.mapbox.com 
+              https://stats.data.gouv.fr
               https://events.mapbox.com 
-              https://raw.githubusercontent.com 
-              https://privacy.trustcommander.net 
-              https://privacy.commander1.com 
-              https://stats.g.doubleclick.net 
-              https://*.hotjar.com 
-              wss://*.hotjar.com 
-              wss://client.relay.crisp.chat 
-              https://*.hotjar.io 
-              https://www.google-analytics.com 
-              https://in.hotjar.com 
               https://plausible.io 
               http://localhost:5000 
               https://*.ingest.sentry.io;
@@ -53,23 +35,15 @@ const contentSecurityPolicy = `
               data: 
               blob:
               https://www.notion.so
-              https://www.google-analytics.com
               https://www.google.com
-              https://www.google.fr
-              https://script.hotjar.com
-              https://manager.tagcommander.com; 
+              https://www.google.fr; 
   object-src 'self' data: 
               https://labonnealternance.apprentissage.beta.gouv.fr
               https://labonnealternance-recette.apprentissage.beta.gouv.fr
               https://labonnealternance.pole-emploi.fr;
   font-src 'self' https: data:;
   style-src 'self' https: 'unsafe-inline';
-  frame-src https://rdv-cfa.apprentissage.beta.gouv.fr 
-            https://matcha.apprentissage.beta.gouv.fr
- 
-            https://plausible.io 
-            https://vars.hotjar.com
-            https://cdn.trustcommander.net
+  frame-src https://plausible.io 
             https://labonnealternance.pole-emploi.fr
             https://labonnealternance.apprentissage.beta.gouv.fr
             https://labonnealternance-recette.apprentissage.beta.gouv.fr;
