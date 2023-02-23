@@ -33,7 +33,7 @@ import { AUTHTYPE } from "../common/contants"
 import useAuth from "../common/hooks/useAuth"
 import { LogoContext } from "../contextLogo"
 import { WidgetContext } from "../contextWidget"
-import { ArrowRightLine, ExternalLinkLine, InfoCircle, Minus, Plus } from "../theme/components/icons"
+import { ArrowRightLine, ExternalLinkLine, InfoCircle, Minus, Plus, Warning } from "../theme/components/icons"
 import { J1S, LbaCandidat, Parcoursup } from "../theme/components/logos"
 import DropdownCombobox from "./DropdownCombobox"
 import style from "./Voeux.module.css"
@@ -235,8 +235,8 @@ const AjouterVoeux = (props) => {
         niveau: Yup.string().required("Champ obligatoire"),
         date_debut_apprentissage: Yup.date().required("Champ obligatoire"),
         type: Yup.array().required("Champ obligatoire"),
+        duree_contrat: Yup.number().max(36, "Durée maximale du contrat : 36 mois").min(6, "Durée minimal du contrat : 6 mois").typeError("Durée minimal du contrat : 6 mois"),
         multi_diffuser: Yup.boolean(),
-        duree_contrat: Yup.number().max(99).min(6),
       })}
       onSubmit={props.fromDashboard ? (values, bag) => submitFromDashboard(values, bag) : (values) => submitFromDepotRapide(values)}
     >
@@ -316,31 +316,6 @@ const AjouterVoeux = (props) => {
               <FormLabel>Date de début</FormLabel>
               <Input type="date" name="date_debut_apprentissage" min={minDate} defaultValue={values.date_debut_apprentissage} onChange={handleChange} />
             </FormControl>
-            {/* <FormControl mt={8}>
-              <Box p={3} bg='beige' borderBottom='4px solid #000091'>
-                <FormLabel>
-                  Avez-vous déjà déposé cette offre sur une autre plateforme (Pôle Emploi, Indeed ...) ?
-                </FormLabel>
-                <Stack align='flex-start' spacing={5} my={5}>
-                  <Button
-                    leftIcon={<ThumbUp />}
-                    variant='secondary'
-                    isActive={values.multi_diffuser === true ? true : false}
-                    onClick={() => setFieldValue('multi_diffuser', true)}
-                  >
-                    Oui, l'offre est également ailleurs
-                  </Button>
-                  <Button
-                    leftIcon={<ThumbDown />}
-                    variant='secondary'
-                    isActive={values.multi_diffuser === false ? true : false}
-                    onClick={() => setFieldValue('multi_diffuser', false)}
-                  >
-                    Non, l'offre est uniquement sur La bonne alternance
-                  </Button>
-                </Stack>
-              </Box>
-            </FormControl> */}
             {organisation !== "atlas" && (
               <FormControl mt={6}>
                 <Checkbox name="elligible_handicap" value={values.elligible_handicap} isChecked={values.elligible_handicap} onChange={handleChange}>
@@ -352,14 +327,22 @@ const AjouterVoeux = (props) => {
             <FormControl mt={6}>
               <ChampNombre max={10} name="quantite" value={values.quantite} label="Nombre de poste(s) disponible(s)" handleChange={setFieldValue} />
             </FormControl>
-            <FormControl mt={6}>
+            <FormControl mt={6} isInvalid={errors.duree_contrat}>
               <Flex align="center">
                 <Text flexGrow={2}>Durée du contrat (mois)</Text>
-                <Stack direction="row" align="center">
-                  <Input name="duree_contrat" value={values.duree_contrat} onChange={(e) => setFieldValue("duree_contrat", parseInt(e.target.value))} />
-                </Stack>
+                <Input
+                  maxW="27%"
+                  name="duree_contrat"
+                  value={values.duree_contrat}
+                  onChange={(e) => (e.target.value > 0 ? setFieldValue("duree_contrat", parseInt(e.target.value)) : setFieldValue("duree_contrat", null))}
+                />
               </Flex>
-              {errors.duree_contrat || (touched.duree_contrat && <FormErrorMessage>{errors.duree_contrat}</FormErrorMessage>)}
+              <FormErrorMessage>
+                <Flex direction="row" alignItems="center">
+                  <Warning m={0} />
+                  <Flex ml={1}>{errors.duree_contrat}</Flex>
+                </Flex>
+              </FormErrorMessage>
             </FormControl>
             {auth.type !== AUTHTYPE.ENTREPRISE && (
               <FormControl mt={6}>
