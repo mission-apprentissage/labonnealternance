@@ -140,7 +140,7 @@ export default () => ({
     code_naf: d.naf,
     libelle_naf: d.libelle_naf,
     tranche_effectif: d.tranche_effectif_salarie_etablissement.intitule,
-    date_creation_etablissement: new Date(d.date_creation_etablissement),
+    date_creation_etablissement: new Date(d.date_creation_etablissement * 1000),
   }),
   formatEntrepriseDatav3: (d) => ({
     etat: d.unite_legale.etat_administratif, // F pour fermé ou A pour actif
