@@ -1,15 +1,15 @@
-import React, { useState, useContext } from "react"
-import { fetchAddresses } from "../../services/baseAdresse"
-import extendedSearchPin from "../../public/images/icons/jobPin.svg"
+import { Box, Button, Flex, Image, Link, Text } from "@chakra-ui/react"
+import React, { useContext, useState } from "react"
+import { DisplayContext } from "../../context/DisplayContextProvider"
 import { ScopeContext } from "../../context/ScopeContext"
-import TagCfaDEntreprise from "./TagCfaDEntreprise"
-import TagFormation from "./TagFormation"
-import { setSelectedMarker } from "../../utils/mapTools"
+import { SearchResultContext } from "../../context/SearchResultContextProvider"
+import extendedSearchPin from "../../public/images/icons/jobPin.svg"
+import { fetchAddresses } from "../../services/baseAdresse"
 import { getItemQueryParameters } from "../../utils/getItemId"
 import { getSearchQueryParameters } from "../../utils/getSearchParameters"
-import { SearchResultContext } from "../../context/SearchResultContextProvider"
-import { DisplayContext } from "../../context/DisplayContextProvider"
-import { Box, Button, Flex, Image, Link, Text } from "@chakra-ui/react"
+import { setSelectedMarker } from "../../utils/mapTools"
+import TagCfaDEntreprise from "./TagCfaDEntreprise"
+import TagFormation from "./TagFormation"
 
 const Training = ({ training, handleSelectItem, showTextOnly, searchForJobsOnNewCenter, isCfa }) => {
   const { selectedMapPopupItem } = React.useContext(SearchResultContext)
@@ -131,7 +131,7 @@ const Training = ({ training, handleSelectItem, showTextOnly, searchForJobsOnNew
             {training.place.fullAddress}
           </Box>
           <Text display="flex" fs="14px" color="grey.600" as="span" pt={1}>
-            {training.place.distance !== null && `${Math.round(training.place.distance)} km(s) du lieu de recherche`}
+            {training.place.distance && `${Math.round(training.place.distance)} km(s) du lieu de recherche`}
             {!showTextOnly && (
               <Text ml="auto" as="span" display={["none", "none", "block"]}>
                 <Button variant="knowMore" aria-label="Accéder au détail de la formation">
