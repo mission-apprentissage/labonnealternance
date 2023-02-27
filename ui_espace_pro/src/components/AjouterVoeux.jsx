@@ -75,6 +75,7 @@ const AjouterVoeux = (props) => {
   const id_form = location.state?.id_form
   const email = location.state?.email
   const userId = location.state?.userId
+  const type = location.state?.type
 
   const minDate = dayjs().format(DATE_FORMAT)
   const { organisation } = useContext(LogoContext)
@@ -242,7 +243,7 @@ const AjouterVoeux = (props) => {
     >
       {(formik) => {
         let { values, setFieldValue, handleChange, errors, touched, isValid, isSubmitting, dirty, submitForm } = formik
-        console.log(formik, errors)
+
         return (
           <>
             <FormControl isRequired>
@@ -344,7 +345,7 @@ const AjouterVoeux = (props) => {
                 </Flex>
               </FormErrorMessage>
             </FormControl>
-            {auth.type !== AUTHTYPE.ENTREPRISE && (
+            {auth.type !== AUTHTYPE.ENTREPRISE || type !== AUTHTYPE.ENTREPRISE ? (
               <FormControl mt={6}>
                 <FormLabel>Rythme de l'alternance (formation / entreprise)</FormLabel>
                 <FormHelperText pb={2}>Facultatif</FormHelperText>
@@ -360,7 +361,7 @@ const AjouterVoeux = (props) => {
                 </Select>
                 {errors.rythme_alternance && touched.rythme_alternance && <FormErrorMessage>{errors.rythme_alternance}</FormErrorMessage>}
               </FormControl>
-            )}
+            ) : null}
             {/* <FormControl mt={6}>
               <FormLabel fontWeight="bold">Lieu d’exécution de l’emploi</FormLabel>
               <Text fontSize="16px" mt={2} mb={4}>

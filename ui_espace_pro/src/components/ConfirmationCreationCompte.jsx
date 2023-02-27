@@ -13,7 +13,7 @@ export default (props) => {
       case AUTHTYPE.ENTREPRISE:
         navigate("/creation/offre", {
           replace: true,
-          state: { id_form: formulaire.id_form, email: user.email, userId: user._id, displayBanner: true },
+          state: { id_form: formulaire.id_form, email: user.email, type: user.type, userId: user._id, displayBanner: true },
         })
         break
       case AUTHTYPE.CFA:
