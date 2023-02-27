@@ -131,7 +131,7 @@ const Training = ({ training, handleSelectItem, showTextOnly, searchForJobsOnNew
             {training.place.fullAddress}
           </Box>
           <Text display="flex" fs="14px" color="grey.600" as="span" pt={1}>
-            {training.place.distance && `${Math.round(training.place.distance)} km(s) du lieu de recherche`}
+            {training.place.distance !== null && `${Math.round(training.place.distance)} km(s) du lieu de recherche`}
             {!showTextOnly && (
               <Text ml="auto" as="span" display={["none", "none", "block"]}>
                 <Button variant="knowMore" aria-label="Accéder au détail de la formation">
