@@ -110,7 +110,7 @@ const transformMatchaJobForIdea = ({ job, distance, caller }) => {
       phone: job.telephone,
     }
 
-    resultJob.place.distance = distance ? roundDistance(distance) : 0
+    resultJob.place.distance = distance ? roundDistance(distance) : null
     resultJob.place.fullAddress = job.adresse
     resultJob.place.address = job.adresse
     resultJob.place.latitude = job.geo_coordonnees.split(",")[0]
