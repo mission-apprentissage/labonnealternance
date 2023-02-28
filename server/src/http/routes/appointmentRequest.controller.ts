@@ -57,7 +57,7 @@ export default ({ users, appointments, mailer, widgetParameters, etablissements 
 
       // Updates firstname and last name if the user already exists
       if (user) {
-        user = await users.update(user._id, { firstname, lastname, phone })
+        user = await users.update(user._id, { firstname, lastname, phone, last_action_date: dayjs().format() })
         const appointment = await appointments.findOne({
           candidat_id: user._id,
           cle_ministere_educatif: widgetParameter.cle_ministere_educatif,
@@ -80,6 +80,7 @@ export default ({ users, appointments, mailer, widgetParameters, etablissements 
           phone,
           email,
           role: roles.candidat,
+          last_action_date: dayjs().format(),
         })
       }
 
