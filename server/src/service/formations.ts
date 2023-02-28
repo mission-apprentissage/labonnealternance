@@ -3,6 +3,7 @@ import Sentry from "@sentry/node"
 import axios from "axios"
 import crypto from "crypto"
 import { getElasticInstance } from "../common/esClient/index.js"
+import { roundDistance } from "../common/geolib.js"
 import { FormationCatalogue } from "../common/model/index.js"
 import { manageApiError } from "../common/utils/errorManager.js"
 import { regionCodeToDepartmentList } from "../common/utils/regionInseeCodes.js"
@@ -406,7 +407,7 @@ const transformFormationForIdea = (formation) => {
   const geoSource = formation.source.lieu_formation_geo_coordonnees
 
   resultFormation.place = {
-    distance: formation.sort ? formation.sort[0] : null,
+    distance: formation.sort ? roundDistance(formation.sort[0]) : null,
     fullAddress: getTrainingAddress(formation.source), // adresse postale reconstruite à partir des éléments d'adresse fournis
     latitude: geoSource ? geoSource.split(",")[0] : null,
     longitude: geoSource ? geoSource.split(",")[1] : null,
