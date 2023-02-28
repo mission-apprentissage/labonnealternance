@@ -212,6 +212,11 @@ export const appointmentSchema = new Schema<IAppointments>({
     default: null,
     description: "Adresse email CFA",
   },
+  is_anonymized: {
+    type: Boolean,
+    default: false,
+    description: "Si l'enregistrement est anonymisé",
+  },
 })
 
 appointmentSchema.plugin(mongoosePagination)
