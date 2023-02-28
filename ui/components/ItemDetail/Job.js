@@ -1,16 +1,16 @@
+import { Box, Button, Flex, Image, Link, Text } from "@chakra-ui/react"
 import React, { useState } from "react"
-import TagOffreEmploi from "./TagOffreEmploi"
-import { isDepartmentJob } from "../../utils/itemListUtils"
-import extendedSearchPin from "../../public/images/icons/trainingPin.svg"
 import ReactHtmlParser from "react-html-parser"
+import { DisplayContext } from "../../context/DisplayContextProvider"
+import { SearchResultContext } from "../../context/SearchResultContextProvider"
+import extendedSearchPin from "../../public/images/icons/trainingPin.svg"
 import { fetchAddresses } from "../../services/baseAdresse"
-import { setSelectedMarker } from "../../utils/mapTools"
 import { getItemQueryParameters } from "../../utils/getItemId"
 import { getSearchQueryParameters } from "../../utils/getSearchParameters"
+import { isDepartmentJob } from "../../utils/itemListUtils"
+import { setSelectedMarker } from "../../utils/mapTools"
 import TagFormationAssociee from "./TagFormationAssociee"
-import { SearchResultContext } from "../../context/SearchResultContextProvider"
-import { DisplayContext } from "../../context/DisplayContextProvider"
-import { Box, Button, Flex, Image, Link, Text } from "@chakra-ui/react"
+import TagOffreEmploi from "./TagOffreEmploi"
 
 const Job = ({ job, handleSelectItem, showTextOnly, searchForTrainingsOnNewCenter }) => {
   const { selectedMapPopupItem } = React.useContext(SearchResultContext)
@@ -158,7 +158,7 @@ const Job = ({ job, handleSelectItem, showTextOnly, searchForTrainingsOnNewCente
               </Text>
             )}
           </Text>
-          {Math.round(job.place.distance) > currentSearchRadius ? getCenterSearchOnJobButton() : ""}
+          {job.place.distance > currentSearchRadius ? getCenterSearchOnJobButton() : ""}
         </Box>
       </Flex>
     </Link>
