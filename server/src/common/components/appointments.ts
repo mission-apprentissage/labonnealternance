@@ -3,21 +3,21 @@ import { Appointment } from "../model/index.js"
 export default () => ({
   /**
    * @description Crates an appointment.
-   * @param {String} candidat_id
+   * @param {String} applicant_id
    * @param {String} formation_id
-   * @param {String} etablissement_id
+   * @param {String} cfa_gestionnaire_siret
    * @param {String} formation_id
-   * @param {String} motivations
+   * @param {String} applicant_message_to_cfa
    * @param {Number} referrer
    * @param {String} id_rco_formation
    * @param {String} cle_ministere_educatif
    * @returns {Promise<Appointment>}
    */
-  createAppointment: async ({ candidat_id, etablissement_id, formation_id, motivations, referrer, id_rco_formation, cle_ministere_educatif }) => {
+  createAppointment: async ({ applicant_id, cfa_gestionnaire_siret, formation_id, applicant_message_to_cfa, referrer, id_rco_formation, cle_ministere_educatif }) => {
     const appointment = new Appointment({
-      candidat_id,
-      motivations,
-      etablissement_id,
+      applicant_id,
+      applicant_message_to_cfa,
+      cfa_gestionnaire_siret,
       formation_id,
       referrer,
       id_rco_formation,

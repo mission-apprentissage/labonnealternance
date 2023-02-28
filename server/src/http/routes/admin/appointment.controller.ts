@@ -1,7 +1,6 @@
 import express from "express"
 import { chunk } from "lodash-es"
 import { logger } from "../../../common/logger.js"
-import { getEmailStatus } from "../../../common/model/constants/emails.js"
 import { getReferrerById, referrers } from "../../../common/model/constants/referrers.js"
 import { Appointment, User } from "../../../common/model/index.js"
 import { getFormationsByIdRcoFormations } from "../../../services/catalogue.service.js"
@@ -66,12 +65,12 @@ export default ({ etablissements, appointments, users }) => {
       formations = formations.flat()
 
       const appointmentsPromises = allData.docs.map(async (document) => {
-        const user = await User.findById(document.candidat_id)
+        const user = await User.findById(document.applicant_id)
 
         // Get right formation from dataset
         const catalogueFormation = formations.find((item) => item.id_rco_formation === document.id_rco_formation)
 
-        const etablissement = await etablissements.findOne({ siret_formateur: document.etablissement_id })
+        const etablissement = await etablissements.findOne({ siret_formateur: document.cfa_gestionnaire_siret })
 
         let formation = {}
         if (catalogueFormation) {
@@ -86,9 +85,7 @@ export default ({ etablissements, appointments, users }) => {
 
         return {
           ...document,
-          email_premiere_demande_candidat_statut: getEmailStatus(document?.email_premiere_demande_candidat_statut),
-          email_premiere_demande_cfa_statut: getEmailStatus(document?.email_premiere_demande_cfa_statut),
-          referrer: getReferrerById(document.referrer),
+          appointment_origin: getReferrerById(document.appointment_origin),
           formation,
           etablissement,
           candidat: {
@@ -112,53 +109,6 @@ export default ({ etablissements, appointments, users }) => {
           total: allData.totalDocs,
         },
       })
-    })
-  )
-
-  /**
-   * Export appointments in csv.
-   */
-  router.get(
-    "/appointments/details/export",
-    tryCatch(async (req, res) => {
-      const appointmentList = await appointments.find(
-        {
-          id_rco_formation: {
-            $ne: null,
-          },
-          referrer: referrers.PARCOURSUP.code,
-        },
-        {
-          id_rco_formation: 1,
-          candidat_id: 1,
-          referrer: 1,
-          created_at: 1,
-          email_cfa: 1,
-          motivations: 1,
-        }
-      )
-
-      const output = []
-      for (const appointmentListChunck of chunk(appointmentList, 100)) {
-        const result = await Promise.all(
-          appointmentListChunck.map(async (appointment) => {
-            const candidat = await users.getUserById(appointment.candidat_id)
-
-            return {
-              id_rco_formation: appointment.id_rco_formation,
-              created_at: appointment.created_at,
-              motivations: appointment.motivations,
-              candidat_firstname: candidat.firstname,
-              candidat_lastname: candidat.lastname,
-              candidat_email: candidat.email,
-              candidat_phone: candidat.phone,
-            }
-          })
-        )
-        output.push(result)
-      }
-
-      return res.send(output)
     })
   )
 

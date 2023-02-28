@@ -12,20 +12,20 @@ export const parcoursupEtablissementStat = async ({ etablissements, appointments
 
   await parcoursupEtablissementStats.deleteAll()
 
-  const [allAppointments, allEtablissements] = await Promise.all([appointments.find({ referrer: referrers.PARCOURSUP.code }).lean(), etablissements.find().lean()])
+  const [allAppointments, allEtablissements] = await Promise.all([appointments.find({ appointment_origin: referrers.PARCOURSUP.name }).lean(), etablissements.find().lean()])
 
   const stats = allEtablissements
     .filter((etablissement) => etablissement.premium_activated_at)
     .map((etablissement) => {
       const relatedAppointments = allAppointments.filter((appointment) => appointment.etablissement_id === etablissement.siret_formateur)
 
-      const openedAppointments = relatedAppointments.filter((appointment) => appointment.cfa_read_appointment_details_at)
-      const notopenedAppointments = relatedAppointments.filter((appointment) => !appointment.cfa_read_appointment_details_at)
+      const openedAppointments = relatedAppointments.filter((appointment) => appointment.cfa_read_appointment_details_date)
+      const notopenedAppointments = relatedAppointments.filter((appointment) => !appointment.cfa_read_appointment_details_date)
 
       const openedAppointmentsDuration = openedAppointments.map((appointment) => ({
-        openedDurationInMinute: dayjs(appointment.cfa_read_appointment_details_at).diff(dayjs(appointment.created_at), "minutes"),
-        openedDurationInHour: dayjs(appointment.cfa_read_appointment_details_at).diff(dayjs(appointment.created_at), "hours"),
-        openedDurationDay: dayjs(appointment.cfa_read_appointment_details_at).diff(dayjs(appointment.created_at), "days"),
+        openedDurationInMinute: dayjs(appointment.cfa_read_appointment_details_date).diff(dayjs(appointment.created_at), "minutes"),
+        openedDurationInHour: dayjs(appointment.cfa_read_appointment_details_date).diff(dayjs(appointment.created_at), "hours"),
+        openedDurationDay: dayjs(appointment.cfa_read_appointment_details_date).diff(dayjs(appointment.created_at), "days"),
       }))
 
       const totalAppointments = relatedAppointments.length

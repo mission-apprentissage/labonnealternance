@@ -133,18 +133,6 @@ export default () => ({
   getParameterByIdRcoFormationWithNotEmptyReferrers: ({ idRcoFormation }) => WidgetParameter.findOne({ id_rco_formation: idRcoFormation, referrers: { $not: { $size: 0 } } }),
 
   /**
-   * @description Returns item through its "id_rco_formation".
-   * @param {String} idRcoFormation
-   * @param {Number} referrer
-   * @returns {Promise<WidgetParameter>}
-   */
-  getParameterByIdRcoFormationReferrer: ({ idRcoFormation, referrer }) =>
-    WidgetParameter.findOne({
-      id_rco_formation: idRcoFormation,
-      referrers: { $in: [referrer] },
-    }),
-
-  /**
    * @description Checks if widget is enabled or not.
    * @param {String} idRcoFormation
    * @param {Number} referrer

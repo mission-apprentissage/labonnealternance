@@ -249,8 +249,8 @@ export default ({ etablissements, mailer, widgetParameters, appointments }) => {
       }
 
       // Save current date
-      if (!appointment.cfa_read_appointment_details_at && has_been_read) {
-        await appointment.update({ cfa_read_appointment_details_at: dayjs().toDate() })
+      if (!appointment.cfa_read_appointment_details_date && has_been_read) {
+        await appointment.update({ cfa_read_appointment_details_date: dayjs().toDate() })
       }
 
       appointment = await appointments.findById(appointmentId)

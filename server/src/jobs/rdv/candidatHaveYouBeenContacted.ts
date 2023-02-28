@@ -62,7 +62,7 @@ export const candidatHaveYouBeenContacted = async ({ etablissements, widgetParam
           appointment: {
             createdAt: dayjs(appointment.created_at).format("DD/MM/YYYY"),
             referrerLink: referrerObj.url,
-            referrer: referrerObj.full_name,
+            appointment_origin: referrerObj.full_name,
           },
           links: {
             confirm: `${config.publicUrlEspacePro}/appointment/candidat/follow-up/${appointment._id}/confirm`,
@@ -96,9 +96,9 @@ export const candidatHaveYouBeenContacted = async ({ etablissements, widgetParam
           },
           appointment: {
             createdAt: dayjs(appointment.created_at).format("DD/MM/YYYY"),
-            motivation: appointment.motivations,
+            applicant_message_to_cfa: appointment.applicant_message_to_cfa,
             referrerLink: referrerObj.url,
-            referrer: referrerObj.full_name,
+            appointment_origin: referrerObj.full_name,
           },
         },
       }),
@@ -108,13 +108,13 @@ export const candidatHaveYouBeenContacted = async ({ etablissements, widgetParam
       { _id: appointment._id },
       {
         $push: {
-          candidat_mailing: {
+          to_applicant_mails: {
             campaign: mailType.CANDIDAT_HAVE_YOU_BEEN_CONTACTED,
             status: null,
             message_id: mailCandidat.messageId,
             email_sent_at: dayjs().toDate(),
           },
-          cfa_mailing: {
+          to_cfa_mails: {
             campaign: mailType.CFA_REMINDER_RESEND_APPOINTMENT,
             status: null,
             message_id: mailCfa.messageId,

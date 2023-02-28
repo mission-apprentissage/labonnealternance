@@ -52,9 +52,6 @@ export default ({ appointments, etablissements, widgetParameters }) => {
       const appointment = await appointments.findOne({
         $or: [
           {
-            email_premiere_demande_candidat_message_id: messageId,
-          },
-          {
             email_premiere_demande_cfa_message_id: messageId,
           },
         ],
@@ -62,29 +59,23 @@ export default ({ appointments, etablissements, widgetParameters }) => {
 
       // If mail sent from appointment model
       if (appointment) {
-        if (appointment.email_premiere_demande_candidat_message_id === messageId) {
-          await appointments.updateAppointment(appointment._id, {
-            email_premiere_demande_candidat_statut: parameters.event,
-            email_premiere_demande_cfa_statut_date: eventDate,
-          })
-        } else if (appointment.email_premiere_demande_cfa_message_id === messageId) {
+        if (appointment.email_premiere_demande_cfa_message_id === messageId) {
           await appointments.updateAppointment(appointment._id, {
             email_premiere_demande_cfa_statut: parameters.event,
-            email_premiere_demande_candidat_statut_date: eventDate,
           })
 
           // Disable widgetParameters in case of hard_bounce
           if (parameters.event === SendinblueEventStatus.HARD_BOUNCE) {
-            const widgetParametersWithEmail = await widgetParameters.find({ email_rdv: appointment.email_cfa })
+            const widgetParametersWithEmail = await widgetParameters.find({ cfa_recipient_email: appointment.cfa_recipient_email })
 
             await Promise.all(
               widgetParametersWithEmail.map(async (widgetParameter) => {
                 await widgetParameter.update({ referrers: [] })
 
-                logger.info('Widget parameters disabled for "hard_bounce" reason', { widgetParameterId: widgetParameter._id, email: appointment.email_cfa })
+                logger.info('Widget parameters disabled for "hard_bounce" reason', { widgetParameterId: widgetParameter._id, cfa_recipient_email: appointment.cfa_recipient_email })
               })
             )
-            await addEmailToBlacklist(appointment.email_cfa, "rdv-transactional")
+            await addEmailToBlacklist(appointment.cfa_recipient_email, "rdv-transactional")
           }
         }
       }
@@ -117,7 +108,7 @@ export default ({ appointments, etablissements, widgetParameters }) => {
 
         await appointmentCandidatFound.update({
           $push: {
-            candidat_mailing: {
+            to_applicant_mails: {
               campaign: previousEmail.campaign,
               status: parameters.event,
               message_id: previousEmail.message_id,
@@ -135,7 +126,7 @@ export default ({ appointments, etablissements, widgetParameters }) => {
 
         await appointmentCfaFound.update({
           $push: {
-            cfa_mailing: {
+            to_cfa_mails: {
               campaign: previousEmail.campaign,
               status: parameters.event,
               message_id: previousEmail.message_id,

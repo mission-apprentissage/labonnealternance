@@ -14,9 +14,9 @@ const getRandomSiretEtablissement = () => new RandExp(/^[0-9]{14}$/).gen().toUpp
  */
 const createRandomAppointment = () => {
   return {
-    candidat_id: faker.random.uuid(),
+    applicant_id: faker.random.uuid(),
     motivations: faker.lorem.sentence(),
-    etablissement_id: getRandomUaiEtablissement(),
+    cfa_gestionnaire_siret: getRandomUaiEtablissement(),
     formation_id: getRandomIdFormation(),
     referrer: faker.random.objectElement(referrers).name,
   }

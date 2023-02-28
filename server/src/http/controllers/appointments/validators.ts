@@ -9,7 +9,7 @@ const contextCreateSchema = Joi.alternatives().try(
     idActionFormation: Joi.string().allow(""),
     idCleMinistereEducatif: Joi.string().allow(""),
     trainingHasJob: Joi.boolean().allow(""),
-    referrer: Joi.string()
+    appointment_origin: Joi.string()
       .valid(
         referrers.PARCOURSUP.name.toLowerCase(),
         referrers.LBA.name.toLowerCase(),
@@ -27,7 +27,7 @@ const contextCreateSchema = Joi.alternatives().try(
     idParcoursup: Joi.string().allow(""),
     idCleMinistereEducatif: Joi.string().allow(""),
     trainingHasJob: Joi.boolean().allow(""),
-    referrer: Joi.string()
+    appointment_origin: Joi.string()
       .valid(
         referrers.PARCOURSUP.name.toLowerCase(),
         referrers.LBA.name.toLowerCase(),
@@ -45,7 +45,7 @@ const contextCreateSchema = Joi.alternatives().try(
     idParcoursup: Joi.string().allow(""),
     idCleMinistereEducatif: Joi.string().allow(""),
     trainingHasJob: Joi.boolean().allow(""),
-    referrer: Joi.string()
+    appointment_origin: Joi.string()
       .valid(
         referrers.PARCOURSUP.name.toLowerCase(),
         referrers.LBA.name.toLowerCase(),
@@ -63,7 +63,7 @@ const contextCreateSchema = Joi.alternatives().try(
     idActionFormation: Joi.string().allow(""),
     idParcoursup: Joi.string().allow(""),
     trainingHasJob: Joi.boolean().allow(""),
-    referrer: Joi.string()
+    appointment_origin: Joi.string()
       .valid(
         referrers.PARCOURSUP.name.toLowerCase(),
         referrers.LBA.name.toLowerCase(),

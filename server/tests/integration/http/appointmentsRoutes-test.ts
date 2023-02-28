@@ -12,8 +12,8 @@ httpTests(__filename(import.meta.url), ({ startServer }) => {
 
     // Add item
     await components.appointments.createAppointment({
-      candidat_id: sampleAppointment.candidat_id,
-      etablissement_id: sampleAppointment.etablissement_id,
+      applicant_id: sampleAppointment.applicant_id,
+      cfa_gestionnaire_siret: sampleAppointment.cfa_gestionnaire_siret,
       formation_id: sampleAppointment.formation_id,
       motivations: sampleAppointment.motivations,
       referrer: sampleAppointment.referrer,
@@ -43,8 +43,8 @@ httpTests(__filename(import.meta.url), ({ startServer }) => {
     // Add item
     await components.appointments.createAppointment({
       id_rco_formation: sampleAppointment.id_rco_formation,
-      candidat_id: candidat._id,
-      etablissement_id: sampleAppointment.etablissement_id,
+      applicant_id: candidat._id,
+      cfa_gestionnaire_siret: sampleAppointment.cfa_gestionnaire_siret,
       formation_id: sampleAppointment.formation_id,
       motivations: sampleAppointment.motivations,
       referrer: referrers.LBA.code,
@@ -64,8 +64,8 @@ httpTests(__filename(import.meta.url), ({ startServer }) => {
 
     // Add item
     await components.appointments.createAppointment({
-      candidat_id: sampleAppointment.candidat_id,
-      etablissement_id: sampleAppointment.etablissement_id,
+      applicant_id: sampleAppointment.applicant_id,
+      cfa_gestionnaire_siret: sampleAppointment.cfa_gestionnaire_siret,
       formation_id: sampleAppointment.formation_id,
       motivations: sampleAppointment.motivations,
       referrer: sampleAppointment.referrer,
@@ -107,21 +107,21 @@ httpTests(__filename(import.meta.url), ({ startServer }) => {
 
     // Add item
     await components.appointments.createAppointment({
-      candidat_id: sampleAppointment.candidat_id,
-      etablissement_id: sampleAppointment.etablissement_id,
+      applicant_id: sampleAppointment.applicant_id,
+      cfa_gestionnaire_siret: sampleAppointment.cfa_gestionnaire_siret,
       formation_id: sampleAppointment.formation_id,
       motivations: sampleAppointment.motivations,
       referrer: sampleAppointment.referrer,
     })
 
     const bearerToken = await createAndLogUser("userAdmin", "password", { role: roles.administrator })
-    const response = await httpClient.get("/api/appointment/", { headers: bearerToken }, { data: { etablissement_id: sampleAppointment.etablissement_id } })
+    const response = await httpClient.get("/api/appointment/", { headers: bearerToken }, { data: { cfa_gestionnaire_siret: sampleAppointment.cfa_gestionnaire_siret } })
 
     // Check API Response
     assert.deepStrictEqual(response.status, 200)
     assert.ok(response.data._id)
     assert.deepStrictEqual(response.data.candidat_id, sampleAppointment.candidat_id)
-    assert.deepStrictEqual(response.data.etablissement_id, sampleAppointment.etablissement_id)
+    assert.deepStrictEqual(response.data.cfa_gestionnaire_siret, sampleAppointment.cfa_gestionnaire_siret)
     assert.deepStrictEqual(response.data.formation_id, sampleAppointment.formation_id)
     assert.deepStrictEqual(response.data.motivations, sampleAppointment.motivations)
     assert.deepStrictEqual(response.data.referrer, sampleAppointment.referrer)
@@ -217,8 +217,8 @@ httpTests(__filename(import.meta.url), ({ startServer }) => {
 
     await components.appointments.createAppointment({
       id_rco_formation: sampleAppointment.id_rco_formation,
-      candidat_id: candidat._id,
-      etablissement_id: sampleAppointment.etablissement_id,
+      applicant_id: candidat._id,
+      cfa_gestionnaire_siret: sampleAppointment.cfa_gestionnaire_siret,
       formation_id: sampleAppointment.formation_id,
       motivations: sampleAppointment.motivations,
       referrer: referrers.LBA.code,
