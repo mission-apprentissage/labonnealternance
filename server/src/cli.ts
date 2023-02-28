@@ -12,6 +12,8 @@ import { generateIndexes } from "./jobs/lba_recruteur/indexes/generateIndexes.js
 import { relanceOpco } from "./jobs/lba_recruteur/opco/relanceOpco.js"
 import { createOffreCollection } from "./jobs/lba_recruteur/seed/createOffre.js"
 import { activateOptOutEtablissementFormations } from "./jobs/rdv/activateOptOutEtablissementFormations.js"
+import { anonimizeAppointments } from "./jobs/rdv/anonymizeAppointments.js"
+import { anonimizeUsers } from "./jobs/rdv/anonymizeUsers.js"
 import { candidatHaveYouBeenContacted } from "./jobs/rdv/candidatHaveYouBeenContacted.js"
 import { inviteEtablissementToOptOut } from "./jobs/rdv/inviteEtablissementToOptOut.js"
 import { inviteEtablissementToPremium } from "./jobs/rdv/inviteEtablissementToPremium.js"
@@ -174,6 +176,20 @@ cli
   .description("Récupère la liste de toutes les formations du Catalogue et les enregistre.")
   .action(() => {
     runScript((components) => syncEtablissementsAndFormations(components))
+  })
+
+cli
+  .command("anonimize-appointments")
+  .description("anonimisation des prises de rendez-vous de plus d'un an")
+  .action(() => {
+    runScript(() => anonimizeAppointments())
+  })
+
+cli
+  .command("anonimize-users")
+  .description("anonimisation des utilisateurs n'ayant effectué aucun rendez-vous de plus d'un an")
+  .action(() => {
+    runScript(() => anonimizeUsers())
   })
 
 cli
