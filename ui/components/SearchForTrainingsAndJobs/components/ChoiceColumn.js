@@ -1,22 +1,24 @@
-import React, { useEffect, useContext } from "react"
-import { useRouter } from "next/router"
-import { ScopeContext } from "../../../context/ScopeContext"
-import { SearchResultContext } from "../../../context/SearchResultContextProvider"
-import { DisplayContext } from "../../../context/DisplayContextProvider"
-import { filterLayers } from "../../../utils/mapTools"
 import distance from "@turf/distance"
-import { scrollToTop, scrollToElementInContainer, getItemElement } from "../../../utils/tools"
+import { useRouter } from "next/router"
+import React, { useContext, useEffect } from "react"
 import ItemDetail from "../../../components/ItemDetail/ItemDetail"
 import LoadingScreen from "../../../components/LoadingScreen"
-import SearchForm from "./SearchForm"
-import ResultLists from "./ResultLists"
-import { setCurrentPage, setCurrentSearch, currentSearch } from "../../../utils/currentPage.js"
-import pushHistory from "../../../utils/pushHistory"
+import { DisplayContext } from "../../../context/DisplayContextProvider"
+import { ScopeContext } from "../../../context/ScopeContext"
+import { SearchResultContext } from "../../../context/SearchResultContextProvider"
 import dosearchImage from "../../../public/images/dosearch.svg"
+import { currentSearch, setCurrentPage, setCurrentSearch } from "../../../utils/currentPage.js"
+import { filterLayers } from "../../../utils/mapTools"
+import pushHistory from "../../../utils/pushHistory"
+import { getItemElement, scrollToElementInContainer, scrollToTop } from "../../../utils/tools"
 import { insertWhisper } from "../services/whispers.js"
+import ResultLists from "./ResultLists"
+import SearchForm from "./SearchForm"
 
-import { flyToMarker, flyToLocation, closeMapPopups, setSelectedMarker } from "../../../utils/mapTools"
 import { Box, Image, Text } from "@chakra-ui/react"
+import { closeMapPopups, flyToLocation, flyToMarker, setSelectedMarker } from "../../../utils/mapTools"
+
+import { round } from "lodash"
 
 const ChoiceColumn = ({
   showResultList,
@@ -165,7 +167,7 @@ const ChoiceColumn = ({
   const updateTrainingDistanceWithNewCenter = (coordinates) => {
     for (let i = 0; i < trainings.length; ++i) {
       //const trainingCoords = [trainings[i].place.longitude, trainings[i].place.latitude];
-      trainings[i].place.distance = Math.round(10 * distance(coordinates, [trainings[i].place.longitude, trainings[i].place.latitude])) / 10
+      trainings[i].place.distance = round(distance(coordinates, [trainings[i].place.longitude, trainings[i].place.latitude]), 2)
     }
     setTrainings(trainings)
   }

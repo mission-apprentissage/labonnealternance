@@ -1,14 +1,14 @@
-import React, { useState } from "react"
-import TagCandidatureSpontanee from "./TagCandidatureSpontanee"
-import { fetchAddresses } from "../../services/baseAdresse"
-import extendedSearchPin from "../../public/images/icons/trainingPin.svg"
+import { Box, Button, Flex, Image, Link, Text } from "@chakra-ui/react"
 import { get } from "lodash"
-import { setSelectedMarker } from "../../utils/mapTools"
+import React, { useState } from "react"
+import { DisplayContext } from "../../context/DisplayContextProvider"
+import { SearchResultContext } from "../../context/SearchResultContextProvider"
+import extendedSearchPin from "../../public/images/icons/trainingPin.svg"
+import { fetchAddresses } from "../../services/baseAdresse"
 import { getItemQueryParameters } from "../../utils/getItemId"
 import { getSearchQueryParameters } from "../../utils/getSearchParameters"
-import { SearchResultContext } from "../../context/SearchResultContextProvider"
-import { DisplayContext } from "../../context/DisplayContextProvider"
-import { Box, Button, Flex, Image, Link, Text } from "@chakra-ui/react"
+import { setSelectedMarker } from "../../utils/mapTools"
+import TagCandidatureSpontanee from "./TagCandidatureSpontanee"
 
 const LbbCompany = ({ company, handleSelectItem, showTextOnly, searchForTrainingsOnNewCenter }) => {
   const { selectedMapPopupItem } = React.useContext(SearchResultContext)
@@ -148,7 +148,7 @@ const LbbCompany = ({ company, handleSelectItem, showTextOnly, searchForTraining
               </Text>
             )}
           </Text>
-          {!showTextOnly && Math.round(company.place.distance) > currentSearchRadius && <>{getCenterSearchOnCompanyButton()}</>}
+          {!showTextOnly && company.place.distance > currentSearchRadius && <>{getCenterSearchOnCompanyButton()}</>}
         </Box>
       </Flex>
     </Link>
