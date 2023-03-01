@@ -9,18 +9,18 @@ export default () => ({
    * @param {String} formation_id
    * @param {String} applicant_message_to_cfa
    * @param {Number} referrer
-   * @param {String} id_rco_formation
+   * @param {String} rco_formation_id
    * @param {String} cle_ministere_educatif
    * @returns {Promise<Appointment>}
    */
-  createAppointment: async ({ applicant_id, cfa_gestionnaire_siret, formation_id, applicant_message_to_cfa, referrer, id_rco_formation, cle_ministere_educatif }) => {
+  createAppointment: async ({ applicant_id, cfa_gestionnaire_siret, formation_id, applicant_message_to_cfa, referrer, rco_formation_id, cle_ministere_educatif }) => {
     const appointment = new Appointment({
       applicant_id,
       applicant_message_to_cfa,
       cfa_gestionnaire_siret,
       formation_id,
       referrer,
-      id_rco_formation,
+      rco_formation_id,
       cle_ministere_educatif,
     })
     await appointment.save()

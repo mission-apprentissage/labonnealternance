@@ -91,7 +91,7 @@ export default ({ users, appointments, mailer, widgetParameters, etablissements 
           formation_id: widgetParameter.formation_cfd,
           applicant_message_to_cfa: applicantMessageToCfa,
           appointment_origin: referrerObj.name,
-          id_rco_formation: widgetParameter.id_rco_formation,
+          rco_formation_id: widgetParameter.rco_formation_id,
           cle_ministere_educatif: widgetParameter.cle_ministere_educatif,
         }),
         etablissements.findOne({
@@ -187,7 +187,7 @@ export default ({ users, appointments, mailer, widgetParameters, etablissements 
       // Note: id_rco_formation will be removed soon
       if (!widgetParameter) {
         widgetParameter = await widgetParameters.getParameterByIdRcoFormation({
-          idRcoFormation: appointment.id_rco_formation,
+          rco_formation_id: appointment.rco_formation_id,
         })
       }
 
@@ -252,7 +252,7 @@ export default ({ users, appointments, mailer, widgetParameters, etablissements 
 
       const [user, widgetParameter] = await Promise.all([
         users.findOne({ _id: appointment.candidat_id }),
-        widgetParameters.findOne({ id_rco_formation: appointment.id_rco_formation }),
+        widgetParameters.findOne({ rco_formation_id: appointment.rco_formation_id }),
       ])
 
       if (action === candidatFollowUpType.RESEND) {

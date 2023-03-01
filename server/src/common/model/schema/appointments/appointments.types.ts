@@ -18,7 +18,7 @@ interface IAppointments {
   to_applicant_mails: IMailing[]
   to_cfa_mails: IMailing[]
   email_premiere_demande_cfa_message_id: string
-  id_rco_formation: string
+  rco_formation_id: string
   cle_ministere_educatif: string
   created_at: Date
   last_update_at: Date

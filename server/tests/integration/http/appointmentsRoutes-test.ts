@@ -220,8 +220,8 @@ httpTests(__filename(import.meta.url), ({ startServer }) => {
       applicant_id: candidat._id,
       cfa_gestionnaire_siret: sampleAppointment.cfa_gestionnaire_siret,
       formation_id: sampleAppointment.formation_id,
-      motivations: sampleAppointment.motivations,
-      referrer: referrers.LBA.code,
+      applicant_message_to_cfa: sampleAppointment.applicant_message_to_cfa,
+      referrer: referrers.LBA.name,
     })
 
     const bearerToken = await createAndLogUser("userAdmin", "password", { role: roles.administrator })

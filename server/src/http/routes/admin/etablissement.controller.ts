@@ -4,7 +4,6 @@ import { mailType, optMode } from "../../../common/model/constants/etablissement
 import { referrers } from "../../../common/model/constants/referrers.js"
 import { Etablissement } from "../../../common/model/index.js"
 import { dayjs } from "../../../common/utils/dayjs.js"
-import { enableAllEtablissementFormations } from "../../../common/utils/optIn.js"
 import config from "../../../config.js"
 import { tryCatch } from "../../middlewares/tryCatchMiddleware.js"
 
@@ -99,14 +98,7 @@ export default ({ etablissements, mailer }) => {
       const etablissement = await etablissements.findById(params.id)
 
       let output
-      // Enable all formations that have a catalogue email
-      if (etablissement?.opt_mode === null && body?.opt_mode === optMode.OPT_IN) {
-        await enableAllEtablissementFormations(
-          etablissement.siret_formateur,
-          Object.values(referrers).map((referrer) => referrer.code)
-        )
-        output = await etablissements.findById(params.id)
-      } else if (etablissement?.opt_mode === null && body?.opt_mode === optMode.OPT_OUT) {
+      if (etablissement?.opt_mode === null && body?.opt_mode === optMode.OPT_OUT) {
         const optOutWillBeActivatedAt = body?.opt_out_will_be_activated_at || dayjs().add(15, "days").format()
         const optOutWillBeActivatedAtDayjs = dayjs(optOutWillBeActivatedAt)
 

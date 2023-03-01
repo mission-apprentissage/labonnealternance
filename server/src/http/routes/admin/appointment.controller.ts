@@ -49,18 +49,13 @@ export default ({ etablissements, appointments, users }) => {
 
       const allData = await Appointment.paginate({ query, page, limit, sort: { created_at: -1 } })
 
-      const idRcoFormations = [...new Set(allData.docs.map((document) => document.id_rco_formation))]
+      const idRcoFormations = [...new Set(allData.docs.map((document) => document.rco_formation_id))]
 
       // Split array by chunk to avoid sending unit calls to the catalogue
       const idRcoFormationsChunks = chunk(idRcoFormations, 40)
 
       // Get formations from catalogue by block of 40 id_rco_formations
-      let formations = await Promise.all(
-        idRcoFormationsChunks.map(async (idRcoFormations) => {
-          const formations = await getFormationsByIdRcoFormations({ idRcoFormations })
-          return formations
-        })
-      )
+      let formations = await Promise.all(idRcoFormationsChunks.map((idRcoFormations) => getFormationsByIdRcoFormations({ idRcoFormations })))
 
       formations = formations.flat()
 
@@ -68,7 +63,7 @@ export default ({ etablissements, appointments, users }) => {
         const user = await User.findById(document.applicant_id)
 
         // Get right formation from dataset
-        const catalogueFormation = formations.find((item) => item.id_rco_formation === document.id_rco_formation)
+        const catalogueFormation = formations.find((item) => item.id_rco_formation === document.rco_formation_id)
 
         const etablissement = await etablissements.findOne({ siret_formateur: document.cfa_gestionnaire_siret })
 

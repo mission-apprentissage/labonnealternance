@@ -62,11 +62,6 @@ export default async function cleanAndRenameFields() {
   const appointments = await db.collections.appointments.find({})
   await Promise.all(appointments.map((appointment) => appointment.update({ referrer: getReferrerById(appointment.referrer).name })))
 
-
-
-
-
-
   let res = await db.collections.geolocations.updateMany({}, { $rename: { postcode: "zip_code", geoLocation: "geo_coordinates" } })
   logger.info(`Fin renommage champs de la collection geolocation (${res.result.nModified} items mis à jour)`)
 

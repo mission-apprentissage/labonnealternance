@@ -7,7 +7,7 @@ interface IWidgetParameter {
   email_rdv: string
   is_custom_email_rdv: boolean
   referrers: object[]
-  id_rco_formation: string
+  rco_formation_id: string
   catalogue_published: boolean
   last_catalogue_sync: Date
   id_parcoursup: string

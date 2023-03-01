@@ -121,7 +121,7 @@ export const appointmentSchema = new Schema<IAppointments>({
     default: null,
     description: "Identifiant externe du mail envoyé au CFA",
   },
-  id_rco_formation: {
+  rco_formation_id: {
     type: String,
     default: null,
     description: "Id RCO formation",

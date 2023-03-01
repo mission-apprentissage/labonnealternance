@@ -31,7 +31,7 @@ const widgetParameterSchema = Joi.object({
     .allow(null)
     .required(),
   referrers: Joi.array().items(Joi.number()),
-  id_rco_formation: Joi.string().required(),
+  rco_formation_id: Joi.string().required(),
   cle_ministere_educatif: Joi.string().required(),
 })
 
@@ -109,9 +109,9 @@ export default ({ widgetParameters, etablissements }) => {
       for (const parameter of wigetParameters) {
         let formations = null
         // Note: "id_rco_formation" attribute isn't existing for oldest parameters
-        if (parameter.id_rco_formation) {
+        if (parameter.rco_formation_id) {
           formations = await getFormationsByIdRcoFormations({
-            idRcoFormations: [parameter.id_rco_formation],
+            idRcoFormations: [parameter.rco_formation_id],
           })
         }
 
@@ -120,7 +120,7 @@ export default ({ widgetParameters, etablissements }) => {
         parameters.push({
           siret: parameter.etablissement_siret,
           raison_sociale: etablissement?.raison_sociale,
-          id_rco_formation: parameter.id_rco_formation,
+          rco_formation_id: parameter.rco_formation_id,
           formation: parameter.formation_intitule,
           cfd: parameter.formation_cfd,
           email: parameter.email_rdv,
@@ -220,7 +220,7 @@ export default ({ widgetParameters, etablissements }) => {
           const widgetParametersCreated = await Promise.all(
             formations.map(async (formation) => {
               const parameterExists = await widgetParameters.getParameterByIdRcoFormationWithNotEmptyReferrers({
-                idRcoFormation: formation.id_rco_formation,
+                idRcoFormation: formation.rco_formation_id,
               })
 
               if (!parameterExists) {
@@ -228,7 +228,7 @@ export default ({ widgetParameters, etablissements }) => {
                   email_rdv: parameter.email,
                   referrers: parameter.referrers,
                   etablissement_siret: parameter.siret_formateur,
-                  id_rco_formation: formation.id_rco_formation,
+                  rco_formation_id: formation.rco_formation_id,
                   code_postal: formation.code_postal,
                   etablissement_raison_sociale: formation.etablissement_formateur_entreprise_raison_sociale,
                   formation_cfd: formation.cfd,

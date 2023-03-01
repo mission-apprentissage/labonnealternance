@@ -38,16 +38,16 @@ export class AppointmentsController extends Controller {
 
     const widgetParametersService = WidgetParameters()
 
-    const { idRcoFormation, idParcoursup, idActionFormation, referrer, idCleMinistereEducatif } = body
+    const { idRcoFormation, idParcoursup, idActionFormation, appointment_origin, idCleMinistereEducatif } = body
 
-    const referrerObj = getReferrerByKeyName(referrer)
+    const referrerObj = getReferrerByKeyName(appointment_origin)
 
     let widgetParameter
     if (idCleMinistereEducatif) {
       widgetParameter = await widgetParametersService.findOne({ cle_ministere_educatif: idCleMinistereEducatif })
     } else if (idRcoFormation) {
       widgetParameter = await widgetParametersService.findOne({
-        id_rco_formation: idRcoFormation,
+        rco_formation_id: idRcoFormation,
         cle_ministere_educatif: {
           $ne: null,
         },
@@ -102,9 +102,9 @@ export class AppointmentsController extends Controller {
       etablissement_formateur_siret: widgetParameter.etablissement_siret,
       cfd: widgetParameter.formation_cfd,
       localite: widgetParameter.localite,
-      id_rco_formation: widgetParameter.id_rco_formation,
+      id_rco_formation: widgetParameter.rco_formation_id,
       cle_ministere_educatif: widgetParameter?.cle_ministere_educatif,
-      form_url: `${config.publicUrlEspacePro}/form?referrer=${referrer}&cleMinistereEducatif=${encodeURIComponent(widgetParameter.cle_ministere_educatif)}`,
+      form_url: `${config.publicUrlEspacePro}/form?referrer=${appointment_origin}&cleMinistereEducatif=${encodeURIComponent(widgetParameter.cle_ministere_educatif)}`,
     }
   }
 }

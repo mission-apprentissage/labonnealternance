@@ -43,7 +43,7 @@ export const widgetParameterSchema = new Schema<IWidgetParameter>({
     default: [],
     description: "Liste des sites autorisés",
   },
-  id_rco_formation: {
+  rco_formation_id: {
     type: String,
     default: null,
     description: "Id RCO formation",

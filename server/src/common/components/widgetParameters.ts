@@ -29,7 +29,7 @@ export default () => ({
     email_rdv,
     email_decisionnaire,
     code_postal,
-    id_rco_formation,
+    rco_formation_id,
     referrers,
     cle_ministere_educatif,
   }) => {
@@ -41,12 +41,12 @@ export default () => ({
       email_rdv,
       email_decisionnaire,
       code_postal,
-      id_rco_formation,
+      rco_formation_id,
       referrers,
       cle_ministere_educatif,
     }
 
-    const widgetParameterFind = await WidgetParameter.findOne({ id_rco_formation })
+    const widgetParameterFind = await WidgetParameter.findOne({ rco_formation_id })
 
     if (widgetParameterFind) {
       return WidgetParameter.findOneAndUpdate({ _id: widgetParameterFind._id }, parameter, { new: true })
@@ -116,7 +116,7 @@ export default () => ({
    * @param {String} idRcoFormation
    * @returns {Promise<WidgetParameter>}
    */
-  getParameterByIdRcoFormation: ({ idRcoFormation }) => WidgetParameter.findOne({ id_rco_formation: idRcoFormation }),
+  getParameterByIdRcoFormation: ({ rco_formation_id }) => WidgetParameter.findOne({ rco_formation_id }),
 
   /**
    * @description Returns item from its "cle_ministere_educatif".
@@ -130,7 +130,7 @@ export default () => ({
    * @param {String} idRcoFormation
    * @returns {Promise<WidgetParameter>}
    */
-  getParameterByIdRcoFormationWithNotEmptyReferrers: ({ idRcoFormation }) => WidgetParameter.findOne({ id_rco_formation: idRcoFormation, referrers: { $not: { $size: 0 } } }),
+  getParameterByIdRcoFormationWithNotEmptyReferrers: ({ idRcoFormation }) => WidgetParameter.findOne({ rco_formation_id: idRcoFormation, referrers: { $not: { $size: 0 } } }),
 
   /**
    * @description Checks if widget is enabled or not.
@@ -140,7 +140,7 @@ export default () => ({
    */
   isWidgetVisible: async ({ idRcoFormation, referrer }) => {
     const widgetParameter = await WidgetParameter.findOne({
-      id_rco_formation: idRcoFormation,
+      rco_formation_id: idRcoFormation,
       referrers: { $in: [referrer] },
     })
 

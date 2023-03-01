@@ -21,7 +21,7 @@ const models: TsoaRoute.Models = {
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "TCreateContextBody": {
         "dataType": "refAlias",
-        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"referrer":{"dataType":"string","required":true},"trainingHasJob":{"dataType":"boolean"},"idCleMinistereEducatif":{"dataType":"string"},"idActionFormation":{"dataType":"string"},"idRcoFormation":{"dataType":"string"},"idParcoursup":{"dataType":"string"}},"validators":{}},
+        "type": {"dataType":"nestedObjectLiteral","nestedProperties":{"appointment_origin":{"dataType":"string","required":true},"trainingHasJob":{"dataType":"boolean"},"idCleMinistereEducatif":{"dataType":"string"},"idActionFormation":{"dataType":"string"},"idRcoFormation":{"dataType":"string"},"idParcoursup":{"dataType":"string"}},"validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 };

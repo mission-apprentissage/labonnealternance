@@ -30,7 +30,7 @@ export const candidatHaveYouBeenContacted = async ({ etablissements, widgetParam
 
     const [user, widgetParameter, etablissement] = await Promise.all([
       users.findOne({ _id: appointment.candidat_id }),
-      widgetParameters.findOne({ id_rco_formation: appointment.id_rco_formation }),
+      widgetParameters.findOne({ rco_formation_id: appointment.rco_formation_id }),
       etablissements.findOne({ siret_formateur: appointment.etablissement_id }),
     ])
 
