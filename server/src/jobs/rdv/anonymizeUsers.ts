@@ -23,5 +23,5 @@ export const anonimizeUsers = async () => {
   )
   logger.info("job #anonimizeUsers done")
 
-  return result.upserted
+  return result
 }
