@@ -9,6 +9,23 @@ import { checkIfUserEmailIsPrivate, checkIfUserMailExistInReferentiel, getAllDom
 import { notifyToSlack } from "../../common/utils/slackUtils.js"
 import config from "../../config.js"
 import { getNearEtablissementsFromRomes } from "../../services/catalogue.service.js"
+import {
+  formatEntrepriseData,
+  formatReferentielData,
+  getEstablishmentFromOpcoReferentiel,
+  getEtablissement,
+  getEtablissementFromGouv,
+  getEtablissementFromReferentiel,
+  getGeoCoordinates,
+  getIdcc,
+  getMatchingDomainFromContactList,
+  getMatchingEmailFromContactList,
+  getOpco,
+  getOpcoByIdcc,
+  getValidationUrl,
+  validateEtablissementEmail,
+} from "../../services/etablissement.service.js"
+import { ICFADock, ISIRET2IDCC } from "../../services/etablissement.service.types.js"
 import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
 
 const getCfaRomeSchema = joi.object({
@@ -19,7 +36,7 @@ const getCfaRomeSchema = joi.object({
 
 let token = {}
 
-export default ({ etablissementsRecruteur, usersRecruteur, formulaire, mailer }) => {
+export default ({ usersRecruteur, formulaire, mailer }) => {
   const router = express.Router()
 
   /**
@@ -56,81 +73,82 @@ export default ({ etablissementsRecruteur, usersRecruteur, formulaire, mailer })
         return res.status(400).json({ error: true, message: "Le numéro siret est obligatoire." })
       }
 
-      const result = await etablissementsRecruteur.getEtablissementFromGouv(req.params.siret)
+      try {
+        const result = await getEtablissementFromGouv(req.params.siret)
 
-      if (result?.error === true) {
-        return res.status(400).json({ error: true, message: "Le service est momentanément indisponible." })
-      }
-
-      if (!result) {
-        return res.status(400).json({ error: true, message: "Le numéro siret est invalide." })
-      }
-
-      if (result.data?.etablissement.etat_administratif.value === "F") {
-        return res.status(400).json({ error: true, message: "Cette entreprise est considérée comme fermée." })
-      }
-
-      // Check if a CFA already has the company as partenaire
-      if (req.query.fromDashboardCfa) {
-        const exist = await formulaire.getFormulaire({
-          siret: req.params.siret,
-          gestionnaire: req.query.gestionnaire,
-          statut: "Actif",
-        })
-
-        if (exist) {
-          return res.status(400).json({
-            error: true,
-            message: "L'entreprise est déjà référencée comme partenaire.",
-          })
+        if (!result) {
+          return res.status(400).json({ error: true, message: "Le numéro siret est invalide." })
         }
-      }
 
-      // Allow cfa to add themselves as a company
-      if (!req.query.fromDashboardCfa) {
-        if (result.data?.etablissement.naf.startsWith("85")) {
-          return res.status(400).json({
-            error: true,
-            message: "Le numéro siret n'est pas référencé comme une entreprise.",
-            isCfa: true,
-          })
+        if (result.etablissement.etat_administratif.value === "F") {
+          return res.status(400).json({ error: true, message: "Cette entreprise est considérée comme fermée." })
         }
-      }
 
-      let response = etablissementsRecruteur.formatEntrepriseData(result.data.etablissement)
-      let opcoResult
+        // Check if a CFA already has the company as partenaire
+        if (req.query.fromDashboardCfa) {
+          const exist = await formulaire.getFormulaire({
+            siret: req.params.siret,
+            gestionnaire: req.query.gestionnaire,
+            statut: "Actif",
+          })
 
-      opcoResult = await etablissementsRecruteur.getOpco(req.params.siret)
-
-      switch (opcoResult.data?.searchStatus) {
-        case "OK":
-          response.opco = opcoResult.data?.opcoName
-          response.idcc = opcoResult.data?.idcc
-          break
-
-        case "MULTIPLE_OPCO":
-          response.opco = "Opco multiple"
-          response.idcc = "Opco multiple, IDCC non défini"
-          break
-
-        case "NOT_FOUND":
-          opcoResult = await etablissementsRecruteur.getIdcc(req.params.siret)
-          if (opcoResult.data[0].conventions?.length !== 0) {
-            const { num } = opcoResult.data[0]?.conventions[0]
-            opcoResult = await etablissementsRecruteur.getOpcoByIdcc(num)
-
-            response.opco = opcoResult.data?.opcoName ?? undefined
-            response.idcc = opcoResult.data?.idcc ?? undefined
+          if (exist) {
+            return res.status(400).json({
+              error: true,
+              message: "L'entreprise est déjà référencée comme partenaire.",
+            })
           }
-          break
+        }
 
-        default:
-          break
+        // Allow cfa to add themselves as a company
+        if (!req.query.fromDashboardCfa) {
+          if (result.etablissement.naf.startsWith("85")) {
+            return res.status(400).json({
+              error: true,
+              message: "Le numéro siret n'est pas référencé comme une entreprise.",
+              isCfa: true,
+            })
+          }
+        }
+
+        const entrepriseData = formatEntrepriseData(result.etablissement)
+        const geo_coordonnees = await getGeoCoordinates(`${entrepriseData.rue}, ${entrepriseData.code_postal}, ${entrepriseData.commune}`)
+
+        let opcoResult: ICFADock | ISIRET2IDCC = await getOpco(req.params.siret)
+        let opcoData = { opco: undefined, idcc: undefined }
+
+        switch (opcoResult?.searchStatus) {
+          case "OK":
+            opcoData.opco = opcoResult.opcoName
+            opcoData.idcc = opcoResult.idcc
+            break
+
+          case "MULTIPLE_OPCO":
+            opcoData.opco = "Opco multiple"
+            opcoData.idcc = "Opco multiple, IDCC non défini"
+            break
+
+          case "NOT_FOUND":
+            opcoResult = await getIdcc(req.params.siret)
+            console.log(opcoResult)
+            if (opcoResult[0].conventions.length) {
+              const { num } = opcoResult[0]?.conventions[0]
+              opcoResult = await getOpcoByIdcc(num)
+
+              opcoData.opco = opcoResult.opcoName
+              opcoData.idcc = opcoResult.idcc
+            }
+            break
+
+          default:
+            break
+        }
+
+        res.json({ ...entrepriseData, ...opcoData, geo_coordonnees })
+      } catch (error) {
+        console.log({ error })
+        res.status(400).json({ error: true, message: "Le service est momentanément indisponible." })
       }
-
-      response.geo_coordonnees = await etablissementsRecruteur.getGeoCoordinates(`${response.rue}, ${response.code_postal}, ${response.commune}`)
-
-      return res.json(response)
     })
   )
 
@@ -144,7 +162,7 @@ export default ({ etablissementsRecruteur, usersRecruteur, formulaire, mailer })
         return res.status(400).json({ error: true, message: "Le numéro siret est obligatoire." })
       }
 
-      const exist = await etablissementsRecruteur.getEtablissement({ siret: req.params.siret, type: CFA })
+      const exist = await getEtablissement({ siret: req.params.siret, type: CFA })
 
       if (exist) {
         return res.status(403).json({
@@ -153,7 +171,7 @@ export default ({ etablissementsRecruteur, usersRecruteur, formulaire, mailer })
         })
       }
 
-      const referentiel = await etablissementsRecruteur.getEtablissementFromReferentiel(req.params.siret)
+      const referentiel = await getEtablissementFromReferentiel(req.params.siret)
 
       if (!referentiel) {
         return res.status(400).json({
@@ -162,22 +180,22 @@ export default ({ etablissementsRecruteur, usersRecruteur, formulaire, mailer })
         })
       }
 
-      if (referentiel?.data?.etat_administratif === "fermé") {
+      if (referentiel?.etat_administratif === "fermé") {
         return res.status(400).json({
           error: true,
           reason: "CLOSED",
         })
       }
 
-      if (!referentiel?.data?.qualiopi) {
+      if (!referentiel?.qualiopi) {
         return res.status(400).json({
-          data: { ...etablissementsRecruteur.formatReferentielData(referentiel.data) },
+          data: { ...formatReferentielData(referentiel) },
           error: true,
           reason: "QUALIOPI",
         })
       }
 
-      return res.json({ ...etablissementsRecruteur.formatReferentielData(referentiel.data) })
+      return res.json({ ...formatReferentielData(referentiel) })
     })
   )
 
@@ -223,32 +241,37 @@ export default ({ etablissementsRecruteur, usersRecruteur, formulaire, mailer })
 
               break
 
-            case OPCOS.CONSTRUCTYS:
-            case OPCOS.OCAPIAT:
-              const existInOpcoReferentiel = await etablissementsRecruteur.getEstablishmentFromOpcoReferentiel(req.body.opco, req.body.siret, req.body.email)
+            default:
+              const existInOpcoReferentiel = await getEstablishmentFromOpcoReferentiel(req.body.siret)
 
-              if (!existInOpcoReferentiel) {
-                partenaire = await usersRecruteur.updateUserValidationHistory(partenaire._id, {
-                  validation_type: validation_utilisateur.MANUAL,
-                  user: "SERVEUR",
-                  statut: etat_utilisateur.ATTENTE,
-                })
-              } else {
-                partenaire = await usersRecruteur.updateUserValidationHistory(partenaire._id, {
-                  validation_type: validation_utilisateur.AUTO,
-                  user: "SERVEUR",
-                  statut: etat_utilisateur.VALIDE,
-                })
+              if (existInOpcoReferentiel) {
+                const asMatchingEmail = getMatchingEmailFromContactList(partenaire.email, existInOpcoReferentiel.emails)
+
+                if (asMatchingEmail) {
+                  partenaire = await usersRecruteur.updateUserValidationHistory(partenaire._id, {
+                    validation_type: validation_utilisateur.AUTO,
+                    user: "SERVEUR",
+                    statut: etat_utilisateur.VALIDE,
+                  })
+                } else {
+                  const asMatchingDomain = getMatchingDomainFromContactList(partenaire.email, existInOpcoReferentiel.emails)
+
+                  if (asMatchingDomain) {
+                    partenaire = await usersRecruteur.updateUserValidationHistory(partenaire._id, {
+                      validation_type: validation_utilisateur.AUTO,
+                      user: "SERVEUR",
+                      statut: etat_utilisateur.VALIDE,
+                    })
+                  }
+                }
               }
 
-              break
-
-            default:
               partenaire = await usersRecruteur.updateUserValidationHistory(partenaire._id, {
                 validation_type: validation_utilisateur.MANUAL,
                 user: "SERVEUR",
                 statut: etat_utilisateur.ATTENTE,
               })
+
               break
           }
 
@@ -259,13 +282,13 @@ export default ({ etablissementsRecruteur, usersRecruteur, formulaire, mailer })
            * Contrôle du mail avec le référentiel :
            */
 
-          let referentiel = await etablissementsRecruteur.getEtablissementFromReferentiel(req.body.siret)
+          let referentiel = await getEtablissementFromReferentiel(req.body.siret)
 
           // Creation de l'utilisateur en base de données
           partenaire = await usersRecruteur.createUser(req.body)
 
-          if (referentiel.data.contacts.length) {
-            const userMailExist = checkIfUserMailExistInReferentiel(referentiel.data.contacts, req.body.email)
+          if (referentiel.contacts.length) {
+            const userMailExist = checkIfUserMailExistInReferentiel(referentiel.contacts, req.body.email)
             const userMailisPrivate = checkIfUserEmailIsPrivate(req.body.email)
 
             if (userMailExist) {
@@ -278,7 +301,7 @@ export default ({ etablissementsRecruteur, usersRecruteur, formulaire, mailer })
 
               let { email, _id, nom, prenom } = partenaire
 
-              const url = etablissementsRecruteur.getValidationUrl(_id)
+              const url = getValidationUrl(_id)
 
               await mailer.sendEmail({
                 to: email,
@@ -297,7 +320,7 @@ export default ({ etablissementsRecruteur, usersRecruteur, formulaire, mailer })
 
             if (userMailisPrivate && !userMailExist) {
               // Récupération des noms de domain
-              const domains = getAllDomainsFromEmailList(referentiel.data.contacts)
+              const domains = getAllDomainsFromEmailList(referentiel.contacts)
               const userEmailDomain = req.body.email.split("@")[1]
 
               if (domains.includes(userEmailDomain)) {
@@ -310,7 +333,7 @@ export default ({ etablissementsRecruteur, usersRecruteur, formulaire, mailer })
 
                 let { email, _id, nom, prenom } = partenaire
 
-                const url = etablissementsRecruteur.getValidationUrl(_id)
+                const url = getValidationUrl(_id)
 
                 await mailer.sendEmail({
                   to: email,
@@ -395,8 +418,17 @@ export default ({ etablissementsRecruteur, usersRecruteur, formulaire, mailer })
         return res.status(400)
       }
 
+      const exist = await getEtablissement({ _id: id })
+
+      if (!exist) {
+        return res.status(400).json({
+          error: true,
+          message: "L'utilisateur n'existe pas.",
+        })
+      }
+
       // Validate email
-      const validation = await etablissementsRecruteur.validateEtablissementEmail(id)
+      const validation = await validateEtablissementEmail(id)
 
       if (!validation) {
         return res.status(400).json({
