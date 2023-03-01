@@ -195,9 +195,9 @@ const computeJobDistanceToSearchCenter = (job, lat, long) => {
   // si la distance au centre du point de recherche n'est pas connue, on la calcule avec l'utilitaire distance de turf.js
   if (job.lieuTravail && job.lieuTravail.latitude && job.lieuTravail.longitude) {
     return roundDistance(distance([long, lat], [job.lieuTravail.longitude, job.lieuTravail.latitude]))
-  } else {
-    return null
-  }
+  } 
+  
+  return null
 }
 
 const peJobsApiEndpoint = "https://api.pole-emploi.io/partenaire/offresdemploi/v2/offres/search"
