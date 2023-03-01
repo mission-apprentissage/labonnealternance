@@ -41,7 +41,7 @@ const createRandomCandidat = () => {
 /**
  * Random widget parameter
  */
-const createRandomWidgetParameter = () => {
+const createRandomEligibleTrainingsForAppointment = () => {
   return {
     etablissement_siret: getRandomSiretEtablissement(),
     etablissement_raison_sociale: faker.lorem.word().toUpperCase(),
@@ -71,7 +71,7 @@ const createRandomListOf =
 
 // Random lists
 const createRandomAppointmentsList = createRandomListOf(createRandomAppointment)
-const createRandomWidgetParametersList = createRandomListOf(createRandomWidgetParameter)
+const createRandomEligibleTrainingsForAppointmentsList = createRandomListOf(createRandomEligibleTrainingsForAppointment)
 const createRandomCandidatsList = createRandomListOf(createRandomCandidat)
 
-export { createRandomWidgetParametersList, createRandomAppointmentsList, createRandomCandidatsList }
+export { createRandomEligibleTrainingsForAppointmentsList, createRandomAppointmentsList, createRandomCandidatsList }

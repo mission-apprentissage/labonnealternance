@@ -9,10 +9,10 @@ import { isValidEmail } from "../../common/utils/isValidEmail.js"
  * @description Send a "Premium" reminder mail.
  * @returns {Promise<void>}
  */
-export const premiumInviteOneShot = async ({ etablissements, widgetParameters, mailer }) => {
+export const premiumInviteOneShot = async ({ etablissements, eligibleTrainingsForAppointments, mailer }) => {
   logger.info("Cron #premiumInviteOneShot started.")
 
-  const [etablissementsActivated, widgetParametersFound] = await Promise.all([
+  const [etablissementsActivated, eligibleTrainingsForAppointmentsFound] = await Promise.all([
     etablissements
       .find({
         gestionnaire_email: {
@@ -24,11 +24,11 @@ export const premiumInviteOneShot = async ({ etablissements, widgetParameters, m
         premium_activation_date: null,
       })
       .lean(),
-    widgetParameters.find({ parcoursup_id: { $ne: null }, lieu_formation_email: { $ne: null } }).lean(),
+    eligibleTrainingsForAppointments.find({ parcoursup_id: { $ne: null }, lieu_formation_email: { $ne: null } }).lean(),
   ])
 
   const etablissementWithParcoursup = etablissementsActivated.filter((etablissement) =>
-    widgetParametersFound.find((widgetParameter) => widgetParameter.etablissement_formateur_siret === etablissement.formateur_siret)
+    eligibleTrainingsForAppointmentsFound.find((eligibleTrainingsForAppointment) => eligibleTrainingsForAppointment.etablissement_formateur_siret === etablissement.formateur_siret)
   )
 
   for (const etablissement of etablissementWithParcoursup) {

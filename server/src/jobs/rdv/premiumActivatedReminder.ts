@@ -10,10 +10,10 @@ import { isValidEmail } from "../../common/utils/isValidEmail.js"
  * @description Send a "Premium" reminder mail.
  * @returns {Promise<void>}
  */
-export const premiumActivatedReminder = async ({ etablissements, widgetParameters, mailer }) => {
+export const premiumActivatedReminder = async ({ etablissements, eligibleTrainingsForAppointments, mailer }) => {
   logger.info("Cron #premiumActivatedReminder started.")
 
-  const [etablissementsActivated, widgetParametersFound] = await Promise.all([
+  const [etablissementsActivated, eligibleTrainingsForAppointmentsFound] = await Promise.all([
     etablissements
       .find({
         gestionnaire_email: {
@@ -24,18 +24,18 @@ export const premiumActivatedReminder = async ({ etablissements, widgetParameter
         },
       })
       .lean(),
-    widgetParameters.find({ parcoursup_id: { $ne: null }, lieu_formation_email: { $ne: null } }).lean(),
+    eligibleTrainingsForAppointments.find({ parcoursup_id: { $ne: null }, lieu_formation_email: { $ne: null } }).lean(),
   ])
 
   const etablissementWithParcoursup = etablissementsActivated.filter((etablissement) =>
-    widgetParametersFound.find((widgetParameter) => widgetParameter.etablissement_formateur_siret === etablissement.formateur_siret)
+    eligibleTrainingsForAppointmentsFound.find((eligibleTrainingsForAppointment) => eligibleTrainingsForAppointment.etablissement_formateur_siret === etablissement.formateur_siret)
   )
 
   for (const etablissement of etablissementWithParcoursup) {
     // Retrieve all emails
-    let emails = widgetParametersFound
-      .filter((widgetParameter) => widgetParameter.etablissement_formateur_siret === etablissement.formateur_siret)
-      .map((widgetParameter) => widgetParameter.lieu_formation_email)
+    let emails = eligibleTrainingsForAppointmentsFound
+      .filter((eligibleTrainingsForAppointment) => eligibleTrainingsForAppointment.etablissement_formateur_siret === etablissement.formateur_siret)
+      .map((eligibleTrainingsForAppointment) => eligibleTrainingsForAppointment.lieu_formation_email)
       .concat([etablissement.gestionnaire_email, etablissement.etablissement_formateur_courriel])
 
     emails = _(emails).uniq().omitBy(_.isNil).toArray()

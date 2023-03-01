@@ -10,7 +10,7 @@ import config from "../../config.js"
  * @description Active all etablissement's formations that have subscribed to opt-out.
  * @returns {Promise<void>}
  */
-export const activateOptOutEtablissementFormations = async ({ etablissements, widgetParameters, mailer }) => {
+export const activateOptOutEtablissementFormations = async ({ etablissements, eligibleTrainingsForAppointments, mailer }) => {
   logger.info("Cron #activateOptOutEtablissementFormations started.")
 
   // Opt-out etablissement to activate
@@ -26,7 +26,7 @@ export const activateOptOutEtablissementFormations = async ({ etablissements, wi
   await Promise.all(
     etablissementsToActivate.map(async (etablissement) => {
       await Promise.all([
-        widgetParameters.updateMany(
+        eligibleTrainingsForAppointments.updateMany(
           {
             etablissement_siret: etablissement.formateur_siret,
             lieu_formation_email: { $nin: [null, ""] },
@@ -71,12 +71,12 @@ export const activateOptOutEtablissementFormations = async ({ etablissements, wi
         },
       })
 
-      const widgetParametersFound = await widgetParameters.find({
+      const eligibleTrainingsForAppointmentsFound = await eligibleTrainingsForAppointments.find({
         etablissement_siret: etablissement.formateur_siret,
       })
 
       // Gets all mails (formation email + formateur email), excepted "email_decisionnaire"
-      let emails = widgetParametersFound.map((widgetParameter) => widgetParameter.lieu_formation_email)
+      let emails = eligibleTrainingsForAppointmentsFound.map((eligibleTrainingsForAppointment) => eligibleTrainingsForAppointment.lieu_formation_email)
       if (etablissement?.etablissement_formateur_courriel) {
         emails.push(etablissement.etablissement_formateur_courriel)
       }

@@ -1,8 +1,8 @@
 import { mongoosePagination, Pagination } from "mongoose-paginate-ts"
 import { model, Schema } from "../../../mongodb.js"
-import { IWidgetParameter } from "./widgetParameter.types.js"
+import { IEligibleTrainingsForAppointment } from "./eligibleTrainingsForAppointment.types.js"
 
-export const widgetParameterSchema = new Schema<IWidgetParameter>({
+export const eligibleTrainingsForAppointmentSchema = new Schema<IEligibleTrainingsForAppointment>({
   training_id_catalogue: {
     type: String,
     default: null,
@@ -119,6 +119,6 @@ export const widgetParameterSchema = new Schema<IWidgetParameter>({
   },
 })
 
-widgetParameterSchema.plugin(mongoosePagination)
+eligibleTrainingsForAppointmentSchema.plugin(mongoosePagination)
 
-export default model<IWidgetParameter, Pagination<IWidgetParameter>>("widgetParameter", widgetParameterSchema)
+export default model<IEligibleTrainingsForAppointment, Pagination<IEligibleTrainingsForAppointment>>("eligible_trainings_for_appointments", eligibleTrainingsForAppointmentSchema)

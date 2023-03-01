@@ -10,7 +10,7 @@ import config from "../../config.js"
  * @description Invite all "etablissements" without opt_mode to opt-out.
  * @returns {Promise<void>}
  */
-export const inviteEtablissementToOptOut = async ({ etablissements, widgetParameters, mailer }) => {
+export const inviteEtablissementToOptOut = async ({ etablissements, eligibleTrainingsForAppointments, mailer }) => {
   logger.info("Cron #inviteEtablissementToOptOut started.")
 
   // Opt-out etablissement to activate
@@ -22,7 +22,7 @@ export const inviteEtablissementToOptOut = async ({ etablissements, widgetParame
   logger.info(`Etablissements to invite: ${etablissementsWithouOptMode.length}`)
 
   for (const etablissement of etablissementsWithouOptMode) {
-    const formations = await widgetParameters.find({
+    const formations = await eligibleTrainingsForAppointments.find({
       etablissement_siret: etablissement.formateur_siret,
     })
 

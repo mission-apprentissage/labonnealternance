@@ -5,11 +5,11 @@ import Joi from "joi"
 import json2csvParser from "json2csv"
 import { logger } from "../../../common/logger.js"
 import { getReferrerById } from "../../../common/model/constants/referrers.js"
-import { WidgetParameter } from "../../../common/model/index.js"
+import { EligibleTrainingsForAppointment } from "../../../common/model/index.js"
 import { getFormationsByIdRcoFormations, getFormationsBySiretFormateur } from "../../../services/catalogue.service.js"
 import { tryCatch } from "../../middlewares/tryCatchMiddleware.js"
 
-const widgetParameterIdPatchSchema = Joi.object({
+const eligibleTrainingsForAppointmentIdPatchSchema = Joi.object({
   is_lieu_formation_email_customized: Joi.boolean().optional(),
   referrers: Joi.array().items(Joi.number()).optional(),
   lieu_formation_email: Joi.string()
@@ -18,7 +18,7 @@ const widgetParameterIdPatchSchema = Joi.object({
     .optional(),
 })
 
-const widgetParameterSchema = Joi.object({
+const eligibleTrainingsForAppointmentSchema = Joi.object({
   etablissement_siret: Joi.string().required(),
   etablissement_raison_sociale: Joi.string().required(),
   formation_intitule: Joi.string().required(),
@@ -33,7 +33,7 @@ const widgetParameterSchema = Joi.object({
   cle_ministere_educatif: Joi.string().required(),
 })
 
-const widgetParameterImportSchema = Joi.object({
+const eligibleTrainingsForAppointmentImportSchema = Joi.object({
   parameters: Joi.array()
     .items(
       Joi.object({
@@ -45,18 +45,18 @@ const widgetParameterImportSchema = Joi.object({
     .required(),
 })
 
-const widgetParameterReferrerUpdateBatchSchema = Joi.object({
+const eligibleTrainingsForAppointmentReferrerUpdateBatchSchema = Joi.object({
   referrers: Joi.array().items(Joi.number()).required(),
 })
 
 /**
  * Sample entity route module for GET
  */
-export default ({ widgetParameters, etablissements }) => {
+export default ({ eligibleTrainingsForAppointments, etablissements }) => {
   const router = express.Router()
 
   /**
-   * Get all widgetParameters widgetParameters GET
+   * Get all eligibleTrainingsForAppointments eligibleTrainingsForAppointments GET
    * */
   router.get(
     "/parameters",
@@ -66,7 +66,7 @@ export default ({ widgetParameters, etablissements }) => {
       const page = qs && qs.page ? qs.page : 1
       const limit = qs && qs.limit ? parseInt(qs.limit, 10) : 50
 
-      const allData = await WidgetParameter.paginate({ query, page, limit })
+      const allData = await EligibleTrainingsForAppointment.paginate({ query, page, limit })
 
       const parameters = await Promise.all(
         allData.docs.map(async (parameter) => {
@@ -101,7 +101,7 @@ export default ({ widgetParameters, etablissements }) => {
       const qs = req.query
       const query = qs && qs.query ? JSON.parse(qs.query) : {}
 
-      const wigetParameters = await WidgetParameter.find(query)
+      const wigetParameters = await EligibleTrainingsForAppointment.find(query)
 
       const parameters = []
       for (const parameter of wigetParameters) {
@@ -144,28 +144,28 @@ export default ({ widgetParameters, etablissements }) => {
   )
 
   /**
-   * Get all widgetParameters widgetParameters/count GET
+   * Get all eligibleTrainingsForAppointments eligibleTrainingsForAppointments/count GET
    */
   router.get(
     "/parameters/count",
     tryCatch(async (req, res) => {
       const qs = req.query
       const query = qs && qs.query ? JSON.parse(qs.query) : {}
-      const total = await WidgetParameter.countDocuments(query)
+      const total = await EligibleTrainingsForAppointment.countDocuments(query)
 
       res.send({ total })
     })
   )
 
   /**
-   * Get widgetParameter widgetParameters / GET
+   * Get eligibleTrainingsForAppointment eligibleTrainingsForAppointments / GET
    */
   router.get(
     "/",
     tryCatch(async (req, res) => {
       const qs = req.query
       const query = qs && qs.query ? JSON.parse(qs.query) : {}
-      const retrievedData = await WidgetParameter.findOne(query)
+      const retrievedData = await EligibleTrainingsForAppointment.findOne(query)
       if (retrievedData) {
         res.send(retrievedData)
       } else {
@@ -175,13 +175,13 @@ export default ({ widgetParameters, etablissements }) => {
   )
 
   /**
-   * Get widgetParameters by id getWidgetParametersById /{id} GET
+   * Get eligibleTrainingsForAppointments by id getEligibleTrainingsForAppointmentsById /{id} GET
    */
   router.get(
     "/:id",
     tryCatch(async (req, res) => {
       const itemId = req.params.id
-      const retrievedData = await WidgetParameter.findById(itemId)
+      const retrievedData = await EligibleTrainingsForAppointment.findById(itemId)
       if (retrievedData) {
         res.send(retrievedData)
       } else {
@@ -191,13 +191,13 @@ export default ({ widgetParameters, etablissements }) => {
   )
 
   /**
-   * Add/Post an item validated by schema createParameter /widgetParameter POST
+   * Add/Post an item validated by schema createParameter /eligibleTrainingsForAppointment POST
    */
   router.post(
     "/",
     tryCatch(async ({ body }, res) => {
-      await widgetParameterSchema.validateAsync(body, { abortEarly: false })
-      const result = await widgetParameters.findUpdateOrCreate(body)
+      await eligibleTrainingsForAppointmentSchema.validateAsync(body, { abortEarly: false })
+      const result = await eligibleTrainingsForAppointments.findUpdateOrCreate(body)
       res.send(result)
     })
   )
@@ -208,21 +208,21 @@ export default ({ widgetParameters, etablissements }) => {
   router.post(
     "/import",
     tryCatch(async ({ body }, res) => {
-      await widgetParameterImportSchema.validateAsync(body, { abortEarly: false })
+      await eligibleTrainingsForAppointmentImportSchema.validateAsync(body, { abortEarly: false })
 
       const result = []
       for (const parameter of body.parameters) {
         const formations = await getFormationsBySiretFormateur({ siretFormateur: parameter.formateur_siret })
 
         if (formations.length) {
-          const widgetParametersCreated = await Promise.all(
+          const eligibleTrainingsForAppointmentsCreated = await Promise.all(
             formations.map(async (formation) => {
-              const parameterExists = await widgetParameters.getParameterByIdRcoFormationWithNotEmptyReferrers({
+              const parameterExists = await eligibleTrainingsForAppointments.getParameterByIdRcoFormationWithNotEmptyReferrers({
                 idRcoFormation: formation.rco_formation_id,
               })
 
               if (!parameterExists) {
-                return widgetParameters.findUpdateOrCreate({
+                return eligibleTrainingsForAppointments.findUpdateOrCreate({
                   lieu_formation_email: parameter.lieu_formation_email,
                   referrers: parameter.referrers,
                   etablissement_siret: parameter.formateur_siret,
@@ -238,7 +238,7 @@ export default ({ widgetParameters, etablissements }) => {
 
           result.push({
             ...parameter,
-            formations: widgetParametersCreated.filter(Boolean),
+            formations: eligibleTrainingsForAppointmentsCreated.filter(Boolean),
           })
         } else {
           result.push({
@@ -253,18 +253,18 @@ export default ({ widgetParameters, etablissements }) => {
   )
 
   /**
-   * Updates all widgetParameter referrers.
+   * Updates all eligibleTrainingsForAppointment referrers.
    */
   router.put(
     "/referrers",
     tryCatch(async ({ body }, res) => {
-      await widgetParameterReferrerUpdateBatchSchema.validateAsync(body, { abortEarly: false })
+      await eligibleTrainingsForAppointmentReferrerUpdateBatchSchema.validateAsync(body, { abortEarly: false })
       logger.info("Updating items: ", body)
 
       // Throw an error if referrer code isn't existing
       body.referrers.map(getReferrerById)
 
-      const parameters = await widgetParameters.updateMany({ referrers: { $ne: [] } }, { referrers: body.referrers })
+      const parameters = await eligibleTrainingsForAppointments.updateMany({ referrers: { $ne: [] } }, { referrers: body.referrers })
 
       res.send(parameters)
     })
@@ -276,9 +276,9 @@ export default ({ widgetParameters, etablissements }) => {
   router.put(
     "/:id",
     tryCatch(async ({ body, params }, res) => {
-      await widgetParameterSchema.validateAsync(body, { abortEarly: false })
+      await eligibleTrainingsForAppointmentSchema.validateAsync(body, { abortEarly: false })
       logger.info("Updating new item: ", body)
-      const result = await widgetParameters.updateParameter(params.id, body)
+      const result = await eligibleTrainingsForAppointments.updateParameter(params.id, body)
       res.send(result)
     })
   )
@@ -289,22 +289,22 @@ export default ({ widgetParameters, etablissements }) => {
   router.patch(
     "/:id",
     tryCatch(async ({ body, params }, res) => {
-      await widgetParameterIdPatchSchema.validateAsync(body, { abortEarly: false })
+      await eligibleTrainingsForAppointmentIdPatchSchema.validateAsync(body, { abortEarly: false })
 
-      const result = await widgetParameters.updateParameter(params.id, body)
+      const result = await eligibleTrainingsForAppointments.updateParameter(params.id, body)
 
       res.send(result)
     })
   )
 
   /**
-   * Delete an item by id deleteParameter widgetParameter/{id} DELETE
+   * Delete an item by id deleteParameter eligibleTrainingsForAppointment/{id} DELETE
    */
   router.delete(
     "/:id",
     tryCatch(async ({ params }, res) => {
       logger.info("Deleting new item: ", params.id)
-      await widgetParameters.deleteParameter(params.id)
+      await eligibleTrainingsForAppointments.deleteParameter(params.id)
       res.send({ message: `Item ${params.id} deleted !` })
     })
   )

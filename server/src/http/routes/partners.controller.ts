@@ -5,7 +5,7 @@ import { referrers } from "../../common/model/constants/referrers.js"
 /**
  * @description Partners router.
  */
-export default ({ widgetParameters }) => {
+export default ({ eligibleTrainingsForAppointments }) => {
   const router = express.Router()
 
   /**
@@ -14,7 +14,7 @@ export default ({ widgetParameters }) => {
   router.get(
     "/parcoursup/formations",
     tryCatch(async (req, res) => {
-      const ids = await widgetParameters.find(
+      const ids = await eligibleTrainingsForAppointments.find(
         {
           parcoursup_id: {
             $ne: null,
@@ -24,7 +24,7 @@ export default ({ widgetParameters }) => {
         { parcoursup_id: 1 }
       )
 
-      return res.send({ ids: ids.map((widgetParameter) => widgetParameter.parcoursup_id) })
+      return res.send({ ids: ids.map((eligibleTrainingsForAppointment) => eligibleTrainingsForAppointment.parcoursup_id) })
     })
   )
 

@@ -3,23 +3,23 @@ import { omit } from "lodash-es"
 import httpTests from "../../utils/httpTests.js"
 import { roles } from "../../../src/common/roles.js"
 import { sampleParameter, sampleUpdateParameter } from "../../data/samples.js"
-import { WidgetParameter } from "../../../src/common/model/index.js"
+import { EligibleTrainingsForAppointment } from "../../../src/common/model/index.js"
 import { referrers } from "../../../src/common/model/constants/referrers.js"
 import __filename from "../../../src/common/filename.js"
 
 httpTests(__filename(import.meta.url), ({ startServer }) => {
-  const sampleWidgetParameter = omit(sampleParameter, ["id_parcoursup"])
+  const sampleEligibleTrainingsForAppointment = omit(sampleParameter, ["id_parcoursup"])
 
   it("Vérifie qu'on peut consulter la liste des parametres de widget en tant qu'admin via la Route", async () => {
     const { httpClient, createAndLogUser, components } = await startServer()
 
     // Add parameter
-    await components.widgetParameters.createParameter({
-      etablissement_siret: sampleWidgetParameter.etablissement_siret,
-      formation_intitule: sampleWidgetParameter.formation_intitule,
-      formation_cfd: sampleWidgetParameter.formation_cfd,
-      email_rdv: sampleWidgetParameter.email_rdv,
-      referrers: sampleWidgetParameter.referrers,
+    await components.eligibleTrainingsForAppointments.createParameter({
+      etablissement_siret: sampleEligibleTrainingsForAppointment.etablissement_siret,
+      formation_intitule: sampleEligibleTrainingsForAppointment.formation_intitule,
+      formation_cfd: sampleEligibleTrainingsForAppointment.formation_cfd,
+      email_rdv: sampleEligibleTrainingsForAppointment.email_rdv,
+      referrers: sampleEligibleTrainingsForAppointment.referrers,
     })
 
     const bearerToken = await createAndLogUser("userAdmin", "password", { role: roles.administrator })
@@ -36,12 +36,12 @@ httpTests(__filename(import.meta.url), ({ startServer }) => {
     const { httpClient, createAndLogUser, components } = await startServer()
 
     // Add parameter
-    await components.widgetParameters.createParameter({
-      etablissement_siret: sampleWidgetParameter.etablissement_siret,
-      formation_intitule: sampleWidgetParameter.formation_intitule,
-      formation_cfd: sampleWidgetParameter.formation_cfd,
-      email_rdv: sampleWidgetParameter.email_rdv,
-      referrers: sampleWidgetParameter.referrers,
+    await components.eligibleTrainingsForAppointments.createParameter({
+      etablissement_siret: sampleEligibleTrainingsForAppointment.etablissement_siret,
+      formation_intitule: sampleEligibleTrainingsForAppointment.formation_intitule,
+      formation_cfd: sampleEligibleTrainingsForAppointment.formation_cfd,
+      email_rdv: sampleEligibleTrainingsForAppointment.email_rdv,
+      referrers: sampleEligibleTrainingsForAppointment.referrers,
     })
 
     const bearerToken = await createAndLogUser("userAdmin", "password", { role: roles.administrator })
@@ -60,8 +60,8 @@ httpTests(__filename(import.meta.url), ({ startServer }) => {
       {
         parameters: [
           {
-            formateur_siret: sampleWidgetParameter.etablissement_siret,
-            email: sampleWidgetParameter.email_rdv,
+            formateur_siret: sampleEligibleTrainingsForAppointment.etablissement_siret,
+            email: sampleEligibleTrainingsForAppointment.email_rdv,
             referrers: [referrers.LBA.code],
           },
         ],
@@ -71,74 +71,78 @@ httpTests(__filename(import.meta.url), ({ startServer }) => {
 
     // Check API Response
     assert.deepStrictEqual(response.status, 200)
-    assert.deepStrictEqual(response.data.result[0].formateur_siret, sampleWidgetParameter.etablissement_siret)
-    assert.deepStrictEqual(response.data.result[0].email, sampleWidgetParameter.email_rdv)
+    assert.deepStrictEqual(response.data.result[0].formateur_siret, sampleEligibleTrainingsForAppointment.etablissement_siret)
+    assert.deepStrictEqual(response.data.result[0].email, sampleEligibleTrainingsForAppointment.email_rdv)
     assert.deepStrictEqual(response.data.result[0].referrers, [referrers.LBA.code])
-    assert.deepStrictEqual(response.data.result[0].formations[0].email_rdv, sampleWidgetParameter.email_rdv)
+    assert.deepStrictEqual(response.data.result[0].formations[0].email_rdv, sampleEligibleTrainingsForAppointment.email_rdv)
     assert.deepStrictEqual(response.data.result[0].formations[0].referrers, [referrers.LBA.code])
   })
 
   it("Vérifie qu'on peut ajouter un parametre de widget en tant qu'admin via la Route", async () => {
     const { httpClient, createAndLogUser } = await startServer()
     const bearerToken = await createAndLogUser("userAdmin", "password", { role: roles.administrator })
-    const response = await httpClient.post("/api/widget-parameters/", sampleWidgetParameter, { headers: bearerToken })
+    const response = await httpClient.post("/api/widget-parameters/", sampleEligibleTrainingsForAppointment, { headers: bearerToken })
 
     // Check API Response
     assert.deepStrictEqual(response.status, 200)
     assert.ok(response.data._id)
-    assert.deepStrictEqual(response.data.etablissement_siret, sampleWidgetParameter.etablissement_siret)
-    assert.deepStrictEqual(response.data.formation_intitule, sampleWidgetParameter.formation_intitule)
-    assert.deepStrictEqual(response.data.formation_cfd, sampleWidgetParameter.formation_cfd)
-    assert.deepStrictEqual(response.data.email_rdv, sampleWidgetParameter.email_rdv)
+    assert.deepStrictEqual(response.data.etablissement_siret, sampleEligibleTrainingsForAppointment.etablissement_siret)
+    assert.deepStrictEqual(response.data.formation_intitule, sampleEligibleTrainingsForAppointment.formation_intitule)
+    assert.deepStrictEqual(response.data.formation_cfd, sampleEligibleTrainingsForAppointment.formation_cfd)
+    assert.deepStrictEqual(response.data.email_rdv, sampleEligibleTrainingsForAppointment.email_rdv)
     assert.deepStrictEqual(response.data.referrers.includes(referrers.LBA.code), true)
 
     // Check query db
-    const found = await WidgetParameter.findById(response.data._id)
-    assert.deepStrictEqual(found.etablissement_siret, sampleWidgetParameter.etablissement_siret)
-    assert.deepStrictEqual(found.formation_intitule, sampleWidgetParameter.formation_intitule)
-    assert.deepStrictEqual(found.formation_cfd, sampleWidgetParameter.formation_cfd)
-    assert.deepStrictEqual(found.email_rdv, sampleWidgetParameter.email_rdv)
+    const found = await EligibleTrainingsForAppointment.findById(response.data._id)
+    assert.deepStrictEqual(found.etablissement_siret, sampleEligibleTrainingsForAppointment.etablissement_siret)
+    assert.deepStrictEqual(found.formation_intitule, sampleEligibleTrainingsForAppointment.formation_intitule)
+    assert.deepStrictEqual(found.formation_cfd, sampleEligibleTrainingsForAppointment.formation_cfd)
+    assert.deepStrictEqual(found.email_rdv, sampleEligibleTrainingsForAppointment.email_rdv)
   })
 
   it("Vérifie qu'on peut récupérer un parametre de widget avec une requete en tant qu'admin via la Route", async () => {
     const { httpClient, createAndLogUser, components } = await startServer()
 
     // Add parameter
-    await components.widgetParameters.createParameter({
-      etablissement_siret: sampleWidgetParameter.etablissement_siret,
-      formation_intitule: sampleWidgetParameter.formation_intitule,
-      formation_cfd: sampleWidgetParameter.formation_cfd,
-      email_rdv: sampleWidgetParameter.email_rdv,
-      referrers: sampleWidgetParameter.referrers,
+    await components.eligibleTrainingsForAppointments.createParameter({
+      etablissement_siret: sampleEligibleTrainingsForAppointment.etablissement_siret,
+      formation_intitule: sampleEligibleTrainingsForAppointment.formation_intitule,
+      formation_cfd: sampleEligibleTrainingsForAppointment.formation_cfd,
+      email_rdv: sampleEligibleTrainingsForAppointment.email_rdv,
+      referrers: sampleEligibleTrainingsForAppointment.referrers,
     })
 
     const bearerToken = await createAndLogUser("userAdmin", "password", { role: roles.administrator })
-    const response = await httpClient.get("/api/widget-parameters/", { headers: bearerToken }, { data: { etablissement_siret: sampleWidgetParameter.etablissement_siret } })
+    const response = await httpClient.get(
+      "/api/widget-parameters/",
+      { headers: bearerToken },
+      { data: { etablissement_siret: sampleEligibleTrainingsForAppointment.etablissement_siret } }
+    )
 
     // Check API Response
     assert.deepStrictEqual(response.status, 200)
     assert.ok(response.data._id)
-    assert.deepStrictEqual(response.data.etablissement_siret, sampleWidgetParameter.etablissement_siret)
-    assert.deepStrictEqual(response.data.formation_intitule, sampleWidgetParameter.formation_intitule)
-    assert.deepStrictEqual(response.data.formation_cfd, sampleWidgetParameter.formation_cfd)
-    assert.deepStrictEqual(response.data.email_rdv, sampleWidgetParameter.email_rdv)
+    assert.deepStrictEqual(response.data.etablissement_siret, sampleEligibleTrainingsForAppointment.etablissement_siret)
+    assert.deepStrictEqual(response.data.formation_intitule, sampleEligibleTrainingsForAppointment.formation_intitule)
+    assert.deepStrictEqual(response.data.formation_cfd, sampleEligibleTrainingsForAppointment.formation_cfd)
+    assert.deepStrictEqual(response.data.email_rdv, sampleEligibleTrainingsForAppointment.email_rdv)
     assert.deepStrictEqual(response.data.referrers.includes(referrers.LBA.code), true)
   })
 
   it("Vérifie qu'on peut récupérer un parametre de widget par son id en tant qu'admin via la Route", async () => {
     const { httpClient, createAndLogUser } = await startServer()
     const bearerToken = await createAndLogUser("userAdmin", "password", { role: roles.administrator })
-    const addedResponse = await httpClient.post("/api/widget-parameters/", sampleWidgetParameter, {
+    const addedResponse = await httpClient.post("/api/widget-parameters/", sampleEligibleTrainingsForAppointment, {
       headers: bearerToken,
     })
 
     // Check API Response
     assert.deepStrictEqual(addedResponse.status, 200)
     assert.ok(addedResponse.data._id)
-    assert.deepStrictEqual(addedResponse.data.etablissement_siret, sampleWidgetParameter.etablissement_siret)
-    assert.deepStrictEqual(addedResponse.data.formation_intitule, sampleWidgetParameter.formation_intitule)
-    assert.deepStrictEqual(addedResponse.data.formation_cfd, sampleWidgetParameter.formation_cfd)
-    assert.deepStrictEqual(addedResponse.data.email_rdv, sampleWidgetParameter.email_rdv)
+    assert.deepStrictEqual(addedResponse.data.etablissement_siret, sampleEligibleTrainingsForAppointment.etablissement_siret)
+    assert.deepStrictEqual(addedResponse.data.formation_intitule, sampleEligibleTrainingsForAppointment.formation_intitule)
+    assert.deepStrictEqual(addedResponse.data.formation_cfd, sampleEligibleTrainingsForAppointment.formation_cfd)
+    assert.deepStrictEqual(addedResponse.data.email_rdv, sampleEligibleTrainingsForAppointment.email_rdv)
     assert.deepStrictEqual(addedResponse.data.referrers.includes(referrers.LBA.code), true)
 
     // Check query db
@@ -146,27 +150,27 @@ httpTests(__filename(import.meta.url), ({ startServer }) => {
       headers: bearerToken,
     })
     assert.deepStrictEqual(getByIdResponse.status, 200)
-    assert.deepStrictEqual(getByIdResponse.data.etablissement_siret, sampleWidgetParameter.etablissement_siret)
-    assert.deepStrictEqual(getByIdResponse.data.formation_intitule, sampleWidgetParameter.formation_intitule)
-    assert.deepStrictEqual(getByIdResponse.data.formation_cfd, sampleWidgetParameter.formation_cfd)
-    assert.deepStrictEqual(getByIdResponse.data.email_rdv, sampleWidgetParameter.email_rdv)
+    assert.deepStrictEqual(getByIdResponse.data.etablissement_siret, sampleEligibleTrainingsForAppointment.etablissement_siret)
+    assert.deepStrictEqual(getByIdResponse.data.formation_intitule, sampleEligibleTrainingsForAppointment.formation_intitule)
+    assert.deepStrictEqual(getByIdResponse.data.formation_cfd, sampleEligibleTrainingsForAppointment.formation_cfd)
+    assert.deepStrictEqual(getByIdResponse.data.email_rdv, sampleEligibleTrainingsForAppointment.email_rdv)
     assert.deepStrictEqual(getByIdResponse.data.referrers.includes(referrers.LBA.code), true)
   })
 
   it("Vérifie qu'on peut mettre à jour un parametre de widget par son id en tant qu'admin via la Route", async () => {
     const { httpClient, createAndLogUser } = await startServer()
     const bearerToken = await createAndLogUser("userAdmin", "password", { role: roles.administrator })
-    const addedResponse = await httpClient.post("/api/widget-parameters/", sampleWidgetParameter, {
+    const addedResponse = await httpClient.post("/api/widget-parameters/", sampleEligibleTrainingsForAppointment, {
       headers: bearerToken,
     })
 
     // Check API Response
     assert.deepStrictEqual(addedResponse.status, 200)
     assert.ok(addedResponse.data._id)
-    assert.deepStrictEqual(addedResponse.data.etablissement_siret, sampleWidgetParameter.etablissement_siret)
-    assert.deepStrictEqual(addedResponse.data.formation_intitule, sampleWidgetParameter.formation_intitule)
-    assert.deepStrictEqual(addedResponse.data.formation_cfd, sampleWidgetParameter.formation_cfd)
-    assert.deepStrictEqual(addedResponse.data.email_rdv, sampleWidgetParameter.email_rdv)
+    assert.deepStrictEqual(addedResponse.data.etablissement_siret, sampleEligibleTrainingsForAppointment.etablissement_siret)
+    assert.deepStrictEqual(addedResponse.data.formation_intitule, sampleEligibleTrainingsForAppointment.formation_intitule)
+    assert.deepStrictEqual(addedResponse.data.formation_cfd, sampleEligibleTrainingsForAppointment.formation_cfd)
+    assert.deepStrictEqual(addedResponse.data.email_rdv, sampleEligibleTrainingsForAppointment.email_rdv)
     assert.deepStrictEqual(addedResponse.data.referrers.includes(referrers.LBA.code), true)
 
     // Check query db
@@ -184,17 +188,17 @@ httpTests(__filename(import.meta.url), ({ startServer }) => {
   it("Vérifie qu'on peut supprimer un parametre de widget par son id en tant qu'admin via la Route", async () => {
     const { httpClient, createAndLogUser } = await startServer()
     const bearerToken = await createAndLogUser("userAdmin", "password", { role: roles.administrator })
-    const addedResponse = await httpClient.post("/api/widget-parameters/", sampleWidgetParameter, {
+    const addedResponse = await httpClient.post("/api/widget-parameters/", sampleEligibleTrainingsForAppointment, {
       headers: bearerToken,
     })
 
     // Check API Response
     assert.deepStrictEqual(addedResponse.status, 200)
     assert.ok(addedResponse.data._id)
-    assert.deepStrictEqual(addedResponse.data.etablissement_siret, sampleWidgetParameter.etablissement_siret)
-    assert.deepStrictEqual(addedResponse.data.formation_intitule, sampleWidgetParameter.formation_intitule)
-    assert.deepStrictEqual(addedResponse.data.formation_cfd, sampleWidgetParameter.formation_cfd)
-    assert.deepStrictEqual(addedResponse.data.email_rdv, sampleWidgetParameter.email_rdv)
+    assert.deepStrictEqual(addedResponse.data.etablissement_siret, sampleEligibleTrainingsForAppointment.etablissement_siret)
+    assert.deepStrictEqual(addedResponse.data.formation_intitule, sampleEligibleTrainingsForAppointment.formation_intitule)
+    assert.deepStrictEqual(addedResponse.data.formation_cfd, sampleEligibleTrainingsForAppointment.formation_cfd)
+    assert.deepStrictEqual(addedResponse.data.email_rdv, sampleEligibleTrainingsForAppointment.email_rdv)
     assert.deepStrictEqual(addedResponse.data.referrers.includes(referrers.LBA.code), true)
 
     // Check query db
@@ -204,19 +208,19 @@ httpTests(__filename(import.meta.url), ({ startServer }) => {
     assert.deepStrictEqual(deleteResponse.status, 200)
 
     // Check deletion
-    const found = await WidgetParameter.findById(addedResponse.data._id)
+    const found = await EligibleTrainingsForAppointment.findById(addedResponse.data._id)
     assert.strictEqual(found, null)
   })
 
   it("Vérifie qu'on peut mettre à jours l'ensemble des referrers de toutes les formations", async () => {
     const { httpClient, createAndLogUser, components } = await startServer()
 
-    await components.widgetParameters.createParameter({
-      etablissement_siret: sampleWidgetParameter.etablissement_siret,
-      formation_intitule: sampleWidgetParameter.formation_intitule,
-      formation_cfd: sampleWidgetParameter.formation_cfd,
-      email_rdv: sampleWidgetParameter.email_rdv,
-      referrers: sampleWidgetParameter.referrers,
+    await components.eligibleTrainingsForAppointments.createParameter({
+      etablissement_siret: sampleEligibleTrainingsForAppointment.etablissement_siret,
+      formation_intitule: sampleEligibleTrainingsForAppointment.formation_intitule,
+      formation_cfd: sampleEligibleTrainingsForAppointment.formation_cfd,
+      email_rdv: sampleEligibleTrainingsForAppointment.email_rdv,
+      referrers: sampleEligibleTrainingsForAppointment.referrers,
     })
 
     const bearerToken = await createAndLogUser("userAdmin", "password", { role: roles.administrator })
@@ -240,12 +244,12 @@ httpTests(__filename(import.meta.url), ({ startServer }) => {
   it("Vérifie qu'on peut exporter les paramètres en csv", async () => {
     const { httpClient, createAndLogUser, components } = await startServer()
 
-    await components.widgetParameters.createParameter({
-      etablissement_siret: sampleWidgetParameter.etablissement_siret,
-      formation_intitule: sampleWidgetParameter.formation_intitule,
-      formation_cfd: sampleWidgetParameter.formation_cfd,
-      email_rdv: sampleWidgetParameter.email_rdv,
-      referrers: sampleWidgetParameter.referrers,
+    await components.eligibleTrainingsForAppointments.createParameter({
+      etablissement_siret: sampleEligibleTrainingsForAppointment.etablissement_siret,
+      formation_intitule: sampleEligibleTrainingsForAppointment.formation_intitule,
+      formation_cfd: sampleEligibleTrainingsForAppointment.formation_cfd,
+      email_rdv: sampleEligibleTrainingsForAppointment.email_rdv,
+      referrers: sampleEligibleTrainingsForAppointment.referrers,
     })
 
     const bearerToken = await createAndLogUser("userAdmin", "password", { role: roles.administrator })

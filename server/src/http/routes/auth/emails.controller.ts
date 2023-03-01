@@ -23,10 +23,10 @@ const checkWebhookToken = () => {
  * @description Email controllers.
  * @param {Appointment} appointments
  * @param {Etablissement} etablissements
- * @param {WidgetParameter} widgetParameters
+ * @param {EligibleTrainingsForAppointment} eligibleTrainingsForAppointments
  * @return {Router}
  */
-export default ({ appointments, etablissements, widgetParameters }) => {
+export default ({ appointments, etablissements, eligibleTrainingsForAppointments }) => {
   const router = express.Router()
 
   /**
@@ -64,15 +64,18 @@ export default ({ appointments, etablissements, widgetParameters }) => {
             email_premiere_demande_cfa_statut: parameters.event,
           })
 
-          // Disable widgetParameters in case of hard_bounce
+          // Disable eligibleTrainingsForAppointments in case of hard_bounce
           if (parameters.event === SendinblueEventStatus.HARD_BOUNCE) {
-            const widgetParametersWithEmail = await widgetParameters.find({ cfa_recipient_email: appointment.cfa_recipient_email })
+            const eligibleTrainingsForAppointmentsWithEmail = await eligibleTrainingsForAppointments.find({ cfa_recipient_email: appointment.cfa_recipient_email })
 
             await Promise.all(
-              widgetParametersWithEmail.map(async (widgetParameter) => {
-                await widgetParameter.update({ referrers: [] })
+              eligibleTrainingsForAppointmentsWithEmail.map(async (eligibleTrainingsForAppointment) => {
+                await eligibleTrainingsForAppointment.update({ referrers: [] })
 
-                logger.info('Widget parameters disabled for "hard_bounce" reason', { widgetParameterId: widgetParameter._id, cfa_recipient_email: appointment.cfa_recipient_email })
+                logger.info('Widget parameters disabled for "hard_bounce" reason', {
+                  eligibleTrainingsForAppointmentId: eligibleTrainingsForAppointment._id,
+                  cfa_recipient_email: appointment.cfa_recipient_email,
+                })
               })
             )
             await addEmailToBlacklist(appointment.cfa_recipient_email, "rdv-transactional")

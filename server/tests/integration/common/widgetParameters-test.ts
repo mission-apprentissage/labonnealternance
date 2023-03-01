@@ -1,16 +1,16 @@
 import assert from "assert"
 import integrationTests from "../../utils/integrationTests.js"
-import widgetParameters from "../../../src/common/components/widgetParameters.js"
-import { WidgetParameter } from "../../../src/common/model/index.js"
+import eligibleTrainingsForAppointments from "../../../src/common/components/eligibleTrainingsForAppointments.js"
+import { EligibleTrainingsForAppointment } from "../../../src/common/model/index.js"
 import { referrers } from "../../../src/common/model/constants/referrers.js"
 import { sampleParameter, sampleUpdateParameter } from "../../data/samples.js"
 import __filename from "../../../src/common/filename.js"
 
 integrationTests(__filename(import.meta.url), () => {
   it("Permet de créer un paramètre de Widget", async () => {
-    const { createParameter } = await widgetParameters()
+    const { create } = await eligibleTrainingsForAppointments()
 
-    const created = await createParameter({
+    const created = await create({
       etablissement_siret: sampleParameter.etablissement_siret,
       formation_intitule: sampleParameter.formation_intitule,
       formation_cfd: sampleParameter.formation_cfd,
@@ -26,7 +26,7 @@ integrationTests(__filename(import.meta.url), () => {
     assert.deepStrictEqual(created.referrers.includes(referrers.LBA.code), true)
 
     // Check query db
-    const found = await WidgetParameter.findById(created._id)
+    const found = await EligibleTrainingsForAppointment.findById(created._id)
     assert.deepStrictEqual(found.etablissement_siret, sampleParameter.etablissement_siret)
     assert.deepStrictEqual(found.formation_intitule, sampleParameter.formation_intitule)
     assert.deepStrictEqual(found.formation_cfd, sampleParameter.formation_cfd)
@@ -35,9 +35,9 @@ integrationTests(__filename(import.meta.url), () => {
   })
 
   it("Permet de supprimer un paramètres de Widget", async () => {
-    const { createParameter, deleteParameter } = await widgetParameters()
+    const { create, deleteParameter } = await eligibleTrainingsForAppointments()
 
-    const created = await createParameter({
+    const created = await create({
       etablissement_siret: sampleParameter.etablissement_siret,
       formation_intitule: sampleParameter.formation_intitule,
       formation_cfd: sampleParameter.formation_cfd,
@@ -55,14 +55,14 @@ integrationTests(__filename(import.meta.url), () => {
     await deleteParameter(created._id)
 
     // Check deletion
-    const found = await WidgetParameter.findById(created._id)
+    const found = await EligibleTrainingsForAppointment.findById(created._id)
     assert.strictEqual(found, null)
   })
 
   it("Permet de modifier un paramètre de Widget", async () => {
-    const { createParameter, updateParameter } = await widgetParameters()
+    const { create, updateParameter } = await eligibleTrainingsForAppointments()
 
-    const created = await createParameter({
+    const created = await create({
       etablissement_siret: sampleParameter.etablissement_siret,
       formation_intitule: sampleParameter.formation_intitule,
       formation_cfd: sampleParameter.formation_cfd,
@@ -80,7 +80,7 @@ integrationTests(__filename(import.meta.url), () => {
     await updateParameter(created._id, sampleUpdateParameter)
 
     // Check update
-    const found = await WidgetParameter.findById(created._id)
+    const found = await EligibleTrainingsForAppointment.findById(created._id)
     assert.deepStrictEqual(found.etablissement_siret, sampleUpdateParameter.etablissement_siret)
     assert.deepStrictEqual(found.formation_intitule, sampleUpdateParameter.formation_intitule)
     assert.deepStrictEqual(found.formation_cfd, sampleUpdateParameter.formation_cfd)
@@ -89,9 +89,9 @@ integrationTests(__filename(import.meta.url), () => {
   })
 
   it("Permet de vérifier que le widget doit etre visible pour un paramètre valide", async () => {
-    const { createParameter, isWidgetVisible } = await widgetParameters()
+    const { create, isWidgetVisible } = await eligibleTrainingsForAppointments()
 
-    const created = await createParameter({
+    const created = await create({
       etablissement_siret: sampleParameter.etablissement_siret,
       formation_intitule: sampleParameter.formation_intitule,
       formation_cfd: sampleParameter.formation_cfd,
@@ -117,9 +117,9 @@ integrationTests(__filename(import.meta.url), () => {
   })
 
   it("Permet de vérifier que le widget ne doit pas etre visible pour de mauvais paramètres", async () => {
-    const { createParameter, isWidgetVisible } = await widgetParameters()
+    const { create, isWidgetVisible } = await eligibleTrainingsForAppointments()
 
-    const created = await createParameter({
+    const created = await create({
       etablissement_siret: sampleParameter.etablissement_siret,
       formation_intitule: sampleParameter.formation_intitule,
       formation_cfd: sampleParameter.formation_cfd,

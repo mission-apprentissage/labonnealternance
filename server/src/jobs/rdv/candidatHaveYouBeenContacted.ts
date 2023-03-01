@@ -10,7 +10,7 @@ import config from "../../config.js"
  * @description Sends a mail to the candidat in order to know if he has been contacter or not.
  * @returns {Promise<void>}
  */
-export const candidatHaveYouBeenContacted = async ({ etablissements, widgetParameters, mailer, appointments, users }) => {
+export const candidatHaveYouBeenContacted = async ({ etablissements, eligibleTrainingsForAppointments, mailer, appointments, users }) => {
   logger.info("Cron #candidatHaveYouBeenContacted started.")
 
   // Appointments created there are less than 5 days
@@ -28,9 +28,9 @@ export const candidatHaveYouBeenContacted = async ({ etablissements, widgetParam
   const promises = appointmentsToTrigger.map(async (appointment) => {
     const referrerObj = getReferrerById(appointment.referrer)
 
-    const [user, widgetParameter, etablissement] = await Promise.all([
+    const [user, eligibleTrainingsForAppointment, etablissement] = await Promise.all([
       users.findOne({ _id: appointment.candidat_id }),
-      widgetParameters.findOne({ rco_formation_id: appointment.rco_formation_id }),
+      eligibleTrainingsForAppointments.findOne({ rco_formation_id: appointment.rco_formation_id }),
       etablissements.findOne({ formateur_siret: appointment.formateur_siret }),
     ])
 
@@ -49,10 +49,10 @@ export const candidatHaveYouBeenContacted = async ({ etablissements, widgetParam
             address: etablissement.adresse,
             postalCode: etablissement.zip_code,
             ville: etablissement.city,
-            email: widgetParameter.lieu_formation_email,
+            email: eligibleTrainingsForAppointment.lieu_formation_email,
           },
           formation: {
-            intitule: widgetParameter.training_intitule_long,
+            intitule: eligibleTrainingsForAppointment.training_intitule_long,
           },
           user: {
             firstname: user.firstname,
@@ -71,7 +71,7 @@ export const candidatHaveYouBeenContacted = async ({ etablissements, widgetParam
         },
       }),
       mailer.sendEmail({
-        to: widgetParameter.lieu_formation_email,
+        to: eligibleTrainingsForAppointment.lieu_formation_email,
         subject: `[RDV via ${referrerObj.full_name}] 🛎 ️Pouvez-vous contacter ce candidat ?`,
         template: mailTemplate["mail-cfa-relance-demande-de-contact"],
         data: {
@@ -86,7 +86,7 @@ export const candidatHaveYouBeenContacted = async ({ etablissements, widgetParam
             ville: etablissement.city,
           },
           formation: {
-            intitule: widgetParameter.training_intitule_long,
+            intitule: eligibleTrainingsForAppointment.training_intitule_long,
           },
           user: {
             firstname: user.firstname,

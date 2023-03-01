@@ -19,7 +19,7 @@ import { tryCatch } from "./middlewares/tryCatchMiddleware.js"
 import admin from "./routes/admin/admin.controller.js"
 import appointmentRoute from "./routes/admin/appointment.controller.js"
 import adminEtablissementRoute from "./routes/admin/etablissement.controller.js"
-import widgetParameterRoute from "./routes/admin/widgetParameter.controller.js"
+import eligibleTrainingsForAppointmentRoute from "./routes/admin/eligibleTrainingsForAppointment.controller.js"
 import apiRoute from "./routes/api.controller.js"
 import appointmentRequestRoute from "./routes/appointmentRequest.controller.js"
 import authentified from "./routes/auth/authentified.controller.js"
@@ -209,7 +209,7 @@ export default async (components) => {
   app.use("/api/appointment-request", appointmentRequestRoute(components))
   app.use("/api/catalogue", catalogueRoute())
   app.use("/api/constants", constantsRoute())
-  app.use("/api/widget-parameters", widgetParameterRoute(components))
+  app.use("/api/widget-parameters", eligibleTrainingsForAppointmentRoute(components))
   app.use("/api/partners", partnersRoute(components))
   app.use("/api/emails", emailsRoute(components))
   app.use("/api/support", supportRoute())

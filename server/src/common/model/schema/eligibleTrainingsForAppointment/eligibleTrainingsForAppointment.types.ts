@@ -1,4 +1,4 @@
-interface IWidgetParameter {
+interface IEligibleTrainingsForAppointment {
   training_id_catalogue: string
   etablissement_siret: string
   training_intitule_long: string
@@ -24,4 +24,4 @@ interface IWidgetParameter {
   historization_date: Date
 }
 
-export { IWidgetParameter }
+export { IEligibleTrainingsForAppointment }

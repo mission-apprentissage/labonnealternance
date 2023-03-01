@@ -97,8 +97,8 @@ export default async function cleanAndRenameFields() {
   )
   logger.info(`Fin renommage champs de la collection etablissements (${res.result.nModified} items mis à jour)`)
 
-  // WidgetParameters: deletions
-  res = await db.collections.widgetParameters.updateMany(
+  // EligibleTrainingsForAppointments: deletions
+  res = await db.collections.eligibleTrainingsForAppointments.updateMany(
     {},
     {
       $unset: {
@@ -106,10 +106,10 @@ export default async function cleanAndRenameFields() {
       },
     }
   )
-  logger.info(`Fin suppression champs de la collection widgetParameters (${res.result.nModified} items mis à jour)`)
+  logger.info(`Fin suppression champs de la collection eligibleTrainingsForAppointments (${res.result.nModified} items mis à jour)`)
 
-  // WidgetParameters: renames
-  res = await db.collections.widgetParameters.updateMany(
+  // EligibleTrainingsForAppointments: renames
+  res = await db.collections.eligibleTrainingsForAppointments.updateMany(
     {},
     {
       $rename: {
@@ -132,5 +132,7 @@ export default async function cleanAndRenameFields() {
       },
     }
   )
-  logger.info(`Fin renommage champs de la collection widgetParameters (${res.result.nModified} items mis à jour)`)
+  logger.info(`Fin renommage champs de la collection eligibleTrainingsForAppointments (${res.result.nModified} items mis à jour)`)
+
+  db.eligibleTrainingsForAppointments.renameCollection("eligible_trainings_for_appointments")
 }

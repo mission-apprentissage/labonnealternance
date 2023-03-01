@@ -20,7 +20,7 @@ const patchEtablissementIdAppointmentIdReadAppointSchema = Joi.object({
 /**
  * @description Etablissement Router.
  */
-export default ({ etablissements, mailer, widgetParameters, appointments }) => {
+export default ({ etablissements, mailer, eligibleTrainingsForAppointments, appointments }) => {
   const router = express.Router()
 
   /**
@@ -77,8 +77,8 @@ export default ({ etablissements, mailer, widgetParameters, appointments }) => {
         },
       })
 
-      const [widgetParametersFound, etablissementUpdated] = await Promise.all([
-        widgetParameters.find({
+      const [eligibleTrainingsForAppointmentsFound, etablissementUpdated] = await Promise.all([
+        eligibleTrainingsForAppointments.find({
           etablissement_siret: etablissement.formateur_siret,
           parcoursup_id: {
             $ne: null,
@@ -101,7 +101,7 @@ export default ({ etablissements, mailer, widgetParameters, appointments }) => {
       ])
 
       // Gets all mails (formation email + formateur email), excepted "email_decisionnaire"
-      let emails = widgetParametersFound.map((widgetParameter) => widgetParameter.lieu_formation_email)
+      let emails = eligibleTrainingsForAppointmentsFound.map((eligibleTrainingsForAppointment) => eligibleTrainingsForAppointment.lieu_formation_email)
       if (etablissement?.etablissement_formateur_courriel) {
         emails.push(etablissement.etablissement_formateur_courriel)
       }
@@ -146,11 +146,11 @@ export default ({ etablissements, mailer, widgetParameters, appointments }) => {
 
       const [result] = await Promise.all([
         etablissements.findById(req.params.id),
-        ...widgetParametersFound.map((widgetParameter) =>
-          widgetParameters.update(
-            { _id: widgetParameter._id, lieu_formation_email: { $nin: [null, ""] } },
+        ...eligibleTrainingsForAppointmentsFound.map((eligibleTrainingsForAppointment) =>
+          eligibleTrainingsForAppointments.update(
+            { _id: eligibleTrainingsForAppointment._id, lieu_formation_email: { $nin: [null, ""] } },
             {
-              referrers: [...new Set([...widgetParameter.referrers, referrers.PARCOURSUP.code])],
+              referrers: [...new Set([...eligibleTrainingsForAppointment.referrers, referrers.PARCOURSUP.code])],
             }
           )
         ),
@@ -309,7 +309,7 @@ export default ({ etablissements, mailer, widgetParameters, appointments }) => {
       // If opt-out is already running but user unsubscribe, disable all formations
       if (etablissement.optout_activation_date && dayjs(etablissement.optout_activation_date).isBefore(dayjs())) {
         // Disable all formations
-        await widgetParameters.updateMany(
+        await eligibleTrainingsForAppointments.updateMany(
           {
             etablissement_siret: etablissement.formateur_siret,
           },

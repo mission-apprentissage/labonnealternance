@@ -30,7 +30,7 @@ const appointmentIdFollowUpSchema = Joi.object({
   action: Joi.string().valid(candidatFollowUpType.CONFIRM, candidatFollowUpType.RESEND).required(),
 })
 
-export default ({ users, appointments, mailer, widgetParameters, etablissements }) => {
+export default ({ users, appointments, mailer, eligibleTrainingsForAppointments, etablissements }) => {
   const router = express.Router()
 
   router.post(
@@ -44,12 +44,12 @@ export default ({ users, appointments, mailer, widgetParameters, etablissements 
 
       const referrerObj = getReferrerByKeyName(referrer)
 
-      const widgetParameter = await widgetParameters.findOne({
+      const eligibleTrainingsForAppointment = await eligibleTrainingsForAppointments.findOne({
         cle_ministere_educatif: cleMinistereEducatif,
         referrers: { $in: [referrerObj.code] },
       })
 
-      if (!widgetParameter) {
+      if (!eligibleTrainingsForAppointment) {
         throw Boom.badRequest("Formation introuvable.")
       }
 
@@ -60,7 +60,7 @@ export default ({ users, appointments, mailer, widgetParameters, etablissements 
         user = await users.update(user._id, { firstname, lastname, phone, last_action_date: dayjs().format() })
         const appointment = await appointments.findOne({
           applicant_id: user._id,
-          cle_ministere_educatif: widgetParameter.cle_ministere_educatif,
+          cle_ministere_educatif: eligibleTrainingsForAppointment.cle_ministere_educatif,
           created_at: {
             $gte: dayjs().subtract(4, "days").toDate(),
           },
@@ -87,15 +87,15 @@ export default ({ users, appointments, mailer, widgetParameters, etablissements 
       const [createdAppointement, etablissement] = await Promise.all([
         appointments.createAppointment({
           applicant_id: user._id,
-          cfa_gestionnaire_siret: widgetParameter.etablissement_formateur_siret,
-          formation_id: widgetParameter.training_code_formation_diplome,
+          cfa_gestionnaire_siret: eligibleTrainingsForAppointment.etablissement_formateur_siret,
+          formation_id: eligibleTrainingsForAppointment.training_code_formation_diplome,
           applicant_message_to_cfa: applicantMessageToCfa,
           appointment_origin: referrerObj.name,
-          rco_formation_id: widgetParameter.rco_formation_id,
-          cle_ministere_educatif: widgetParameter.cle_ministere_educatif,
+          rco_formation_id: eligibleTrainingsForAppointment.rco_formation_id,
+          cle_ministere_educatif: eligibleTrainingsForAppointment.cle_ministere_educatif,
         }),
         etablissements.findOne({
-          formateur_siret: widgetParameter.etablissement_formateur_siret,
+          formateur_siret: eligibleTrainingsForAppointment.etablissement_formateur_siret,
         }),
       ])
 
@@ -109,14 +109,14 @@ export default ({ users, appointments, mailer, widgetParameters, etablissements 
           applicant_message_to_cfa: createdAppointement.applicant_message_to_cfa,
         },
         etablissement: {
-          name: widgetParameter.etablissement_formateur_raison_sociale,
-          address: widgetParameter.lieu_formation_street,
-          postalCode: widgetParameter.etablissement_formateur_zip_code,
-          ville: widgetParameter.city,
-          email: widgetParameter.lieu_formation_email,
+          name: eligibleTrainingsForAppointment.etablissement_formateur_raison_sociale,
+          address: eligibleTrainingsForAppointment.lieu_formation_street,
+          postalCode: eligibleTrainingsForAppointment.etablissement_formateur_zip_code,
+          ville: eligibleTrainingsForAppointment.city,
+          email: eligibleTrainingsForAppointment.lieu_formation_email,
         },
         formation: {
-          intitule: widgetParameter.training_intitule_long,
+          intitule: eligibleTrainingsForAppointment.training_intitule_long,
         },
         appointment: {
           referrerLink: referrerObj.url,
@@ -140,7 +140,7 @@ export default ({ users, appointments, mailer, widgetParameters, etablissements 
           data: mailData,
         }),
         mailer.sendEmail({
-          to: widgetParameter.lieu_formation_email,
+          to: eligibleTrainingsForAppointment.lieu_formation_email,
           subject: `[RDV via ${referrerObj.full_name}] Un candidat souhaite être contacté`,
           template: mailTemplate["mail-cfa-demande-de-contact"],
           data: mailData,
@@ -149,7 +149,7 @@ export default ({ users, appointments, mailer, widgetParameters, etablissements 
 
       await appointments.updateAppointment(createdAppointement._id, {
         email_premiere_demande_cfa_message_id: emailCfa.messageId,
-        cfa_recipient_email: widgetParameter.lieu_formation_email,
+        cfa_recipient_email: eligibleTrainingsForAppointment.lieu_formation_email,
       })
 
       res.json({
@@ -177,16 +177,16 @@ export default ({ users, appointments, mailer, widgetParameters, etablissements 
 
       const appointment = await appointments.getAppointmentById(appointmentId)
 
-      let [widgetParameter, user] = await Promise.all([
-        widgetParameters.getParameterByCleMinistereEducatif({
+      let [eligibleTrainingsForAppointment, user] = await Promise.all([
+        eligibleTrainingsForAppointments.getParameterByCleMinistereEducatif({
           cleMinistereEducatif: appointment.cle_ministere_educatif,
         }),
         users.getUserById(appointment.candidat_id),
       ])
 
       // Note: id_rco_formation will be removed soon
-      if (!widgetParameter) {
-        widgetParameter = await widgetParameters.getParameterByIdRcoFormation({
+      if (!eligibleTrainingsForAppointment) {
+        eligibleTrainingsForAppointment = await eligibleTrainingsForAppointments.getParameterByIdRcoFormation({
           rco_formation_id: appointment.rco_formation_id,
         })
       }
@@ -198,9 +198,9 @@ export default ({ users, appointments, mailer, widgetParameters, etablissements 
         },
         user: user._doc,
         etablissement: {
-          email: widgetParameter.lieu_formation_email || "",
-          intitule_long: widgetParameter.training_intitule_long,
-          etablissement_formateur_entreprise_raison_sociale: widgetParameter.etablissement_formateur_raison_sociale,
+          email: eligibleTrainingsForAppointment.lieu_formation_email || "",
+          intitule_long: eligibleTrainingsForAppointment.training_intitule_long,
+          etablissement_formateur_entreprise_raison_sociale: eligibleTrainingsForAppointment.etablissement_formateur_raison_sociale,
         },
       })
     })
@@ -250,16 +250,16 @@ export default ({ users, appointments, mailer, widgetParameters, etablissements 
         return res.sendStatus(400)
       }
 
-      const [user, widgetParameter] = await Promise.all([
+      const [user, eligibleTrainingsForAppointment] = await Promise.all([
         users.findOne({ _id: appointment.candidat_id }),
-        widgetParameters.findOne({ rco_formation_id: appointment.rco_formation_id }),
+        eligibleTrainingsForAppointments.findOne({ rco_formation_id: appointment.rco_formation_id }),
       ])
 
       if (action === candidatFollowUpType.RESEND) {
         const referrerObj = getReferrerById(appointment.referrer)
 
         const { messageId } = await mailer.sendEmail({
-          to: widgetParameter.lieu_formation_email,
+          to: eligibleTrainingsForAppointment.lieu_formation_email,
           subject: `[RDV via ${referrerObj.full_name}] Relance - Un candidat souhaite être contacté`,
           template: mailTemplate["mail-cfa-demande-de-contact"],
           data: {
@@ -271,13 +271,13 @@ export default ({ users, appointments, mailer, widgetParameters, etablissements 
               applicant_message_to_cfa: appointment.applicant_message_to_cfa,
             },
             etablissement: {
-              name: widgetParameter.etablissement_formateur_raison_sociale,
-              address: widgetParameter.lieu_formation_street,
-              postalCode: widgetParameter.etablissement_formateur_zip_code,
-              ville: widgetParameter.city,
+              name: eligibleTrainingsForAppointment.etablissement_formateur_raison_sociale,
+              address: eligibleTrainingsForAppointment.lieu_formation_street,
+              postalCode: eligibleTrainingsForAppointment.etablissement_formateur_zip_code,
+              ville: eligibleTrainingsForAppointment.city,
             },
             formation: {
-              intitule: widgetParameter.training_intitule_long,
+              intitule: eligibleTrainingsForAppointment.training_intitule_long,
             },
             appointment: {
               referrerLink: referrerObj.url,

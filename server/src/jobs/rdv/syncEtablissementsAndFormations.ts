@@ -32,7 +32,7 @@ const getEmailFromCatalogueField = (email) => {
  * @description Gets Catalogue etablissments informations and insert in etablissement collection.
  * @returns {Promise<void>}
  */
-export const syncEtablissementsAndFormations = async ({ etablissements, widgetParameters }) => {
+export const syncEtablissementsAndFormations = async ({ etablissements, eligibleTrainingsForAppointments }) => {
   logger.info("Cron #syncEtablissementsAndFormations started.")
 
   const catalogueMinistereEducatif = await getFormationsFromCatalogueMe({
@@ -50,8 +50,8 @@ export const syncEtablissementsAndFormations = async ({ etablissements, widgetPa
     FormationCatalogue.find({}).cursor(),
     writeData(
       async (formation) => {
-        const [widgetParameter, etablissement, formationMinistereEducatif] = await Promise.all([
-          widgetParameters.findOne({
+        const [eligibleTrainingsForAppointment, etablissement, formationMinistereEducatif] = await Promise.all([
+          eligibleTrainingsForAppointments.findOne({
             cle_ministere_educatif: formation.cle_ministere_educatif,
           }),
           etablissements.findOne({ formateur_siret: formation.etablissement_formateur_siret }),
@@ -72,17 +72,20 @@ export const syncEtablissementsAndFormations = async ({ etablissements, widgetPa
           referrersToActivate.push(referrers.PARCOURSUP.code)
         }
 
-        if (widgetParameter) {
-          let emailRdv = widgetParameter.lieu_formation_email
+        if (eligibleTrainingsForAppointment) {
+          let emailRdv = eligibleTrainingsForAppointment.lieu_formation_email
 
           // Don't override "email" if this field is true
-          if (!widgetParameter?.is_lieu_formation_email_customized) {
-            emailRdv = getEmailFromCatalogueField(formation.email) || getEmailFromCatalogueField(formation.etablissement_formateur_courriel) || widgetParameter.lieu_formation_email
+          if (!eligibleTrainingsForAppointment?.is_lieu_formation_email_customized) {
+            emailRdv =
+              getEmailFromCatalogueField(formation.email) ||
+              getEmailFromCatalogueField(formation.etablissement_formateur_courriel) ||
+              eligibleTrainingsForAppointment.lieu_formation_email
           }
 
           const emailBlacklisted = await isEmailBlacklisted(emailRdv)
 
-          await widgetParameters.updateMany(
+          await eligibleTrainingsForAppointments.updateMany(
             { cle_ministere_educatif: formation.cle_ministere_educatif },
             {
               training_id_catalogue: formation._id,
@@ -114,7 +117,7 @@ export const syncEtablissementsAndFormations = async ({ etablissements, widgetPa
 
           const emailBlacklisted = await isEmailBlacklisted(emailRdv)
 
-          await widgetParameters.createParameter({
+          await eligibleTrainingsForAppointments.createParameter({
             training_id_catalogue: formation._id,
             lieu_formation_email: emailRdv,
             parcoursup_id: formationMinistereEducatif?.parcoursup_id,

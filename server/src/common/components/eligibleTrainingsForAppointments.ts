@@ -1,12 +1,11 @@
-import { WidgetParameter } from "../model/index.js"
+import { EligibleTrainingsForAppointment } from "../model/index.js"
 
 export default () => ({
   /**
    * @description Creates new item.
-   * @param {Object}
    * @returns {Promise<*>}
    */
-  createParameter: async (body) => await WidgetParameter.create(body),
+  create: async (body) => await EligibleTrainingsForAppointment.create(body),
   /**
    * @description Finds or creates a parameter.
    * @param {String} etablissement_siret
@@ -19,7 +18,7 @@ export default () => ({
    * @param {String} rco_formation_id
    * @param {String} referrers
    * @param {String} cle_ministere_educatif
-   * @returns {Promise<WidgetParameter>}
+   * @returns {Promise<EligibleTrainingsForAppointment>}
    */
   findUpdateOrCreate: async ({
     etablissement_siret,
@@ -46,91 +45,92 @@ export default () => ({
       cle_ministere_educatif,
     }
 
-    const widgetParameterFind = await WidgetParameter.findOne({ rco_formation_id })
+    const eligibleTrainingsForAppointmentFind = await EligibleTrainingsForAppointment.findOne({ rco_formation_id })
 
-    if (widgetParameterFind) {
-      return WidgetParameter.findOneAndUpdate({ _id: widgetParameterFind._id }, parameter, { new: true })
+    if (eligibleTrainingsForAppointmentFind) {
+      return EligibleTrainingsForAppointment.findOneAndUpdate({ _id: eligibleTrainingsForAppointmentFind._id }, parameter, { new: true })
     }
 
-    const widgetParameter = new WidgetParameter(parameter)
-    await widgetParameter.save()
+    const eligibleTrainingsForAppointment = new EligibleTrainingsForAppointment(parameter)
+    await eligibleTrainingsForAppointment.save()
 
-    return widgetParameter.toObject()
+    return eligibleTrainingsForAppointment.toObject()
   },
 
   /**
    * @description Returns items.
    * @param {Object} conditions
    * @param {Object} options
-   * @returns {Promise<WidgetParameter[]>}
+   * @returns {Promise<EligibleTrainingsForAppointment[]>}
    */
-  find: (conditions, options = {}) => WidgetParameter.find(conditions, options),
+  find: (conditions, options = {}) => EligibleTrainingsForAppointment.find(conditions, options),
 
   /**
    * @description Returns one item.
    * @param {Object} conditions
-   * @returns {Promise<WidgetParameter>}
+   * @returns {Promise<EligibleTrainingsForAppointment>}
    */
-  findOne: (conditions) => WidgetParameter.findOne(conditions),
+  findOne: (conditions) => EligibleTrainingsForAppointment.findOne(conditions),
 
   /**
    * @description Updates item.
    * @param {String} id
-   * @param {WidgetParameter} body
+   * @param {EligibleTrainingsForAppointment} body
    * @returns {Promise<*>}
    */
-  updateParameter: (id, body) => WidgetParameter.findOneAndUpdate({ _id: id }, body, { new: true }),
+  updateParameter: (id, body) => EligibleTrainingsForAppointment.findOneAndUpdate({ _id: id }, body, { new: true }),
 
   /**
    * @description Deletes an item.
    * @param {String} id
    * @returns {Promise<*>}
    */
-  deleteParameter: (id) => WidgetParameter.findByIdAndDelete(id),
+  deleteParameter: (id) => EligibleTrainingsForAppointment.findByIdAndDelete(id),
 
   /**
    * @description Update many documents (or upsert).
    * @param {Object} conditions
    * @param {Object} values
-   * @returns {Promise<WidgetParameter>}
+   * @returns {Promise<EligibleTrainingsForAppointment>}
    */
-  updateMany: (conditions, values) => WidgetParameter.updateMany(conditions, values, { new: true, upsert: true }),
+  updateMany: (conditions, values) => EligibleTrainingsForAppointment.updateMany(conditions, values, { new: true, upsert: true }),
 
   /**
    * @description Update many documents.
    * @param {Object} conditions
    * @param {Object} values
-   * @returns {Promise<WidgetParameter>}
+   * @returns {Promise<EligibleTrainingsForAppointment>}
    */
-  update: (conditions, values) => WidgetParameter.updateMany(conditions, values, { new: true }),
+  update: (conditions, values) => EligibleTrainingsForAppointment.updateMany(conditions, values, { new: true }),
 
   /**
    * @description Returns all formations that have
    * @param {String} etablissement_siret
-   * @returns {Promise<WidgetParameter>}
+   * @returns {Promise<EligibleTrainingsForAppointment>}
    */
-  getParametersBySiret: ({ etablissement_siret }) => WidgetParameter.find({ etablissement_siret }),
+  getParametersBySiret: ({ etablissement_siret }) => EligibleTrainingsForAppointment.find({ etablissement_siret }),
 
   /**
    * @description Returns item from its "id_rco_formation".
    * @param {String} idRcoFormation
-   * @returns {Promise<WidgetParameter>}
+   * @returns {Promise<EligibleTrainingsForAppointment>}
    */
-  getParameterByIdRcoFormation: ({ rco_formation_id }) => WidgetParameter.findOne({ rco_formation_id }),
+  getParameterByIdRcoFormation: ({ rco_formation_id }) => EligibleTrainingsForAppointment.findOne({ rco_formation_id }),
 
   /**
    * @description Returns item from its "cle_ministere_educatif".
    * @param {String} cleMinistereEducatif
-   * @returns {Promise<WidgetParameter>}
+   * @returns {Promise<EligibleTrainingsForAppointment>}
    */
-  getParameterByCleMinistereEducatif: ({ cleMinistereEducatif }) => WidgetParameter.findOne({ cle_ministere_educatif: cleMinistereEducatif }),
+  getParameterByCleMinistereEducatif: ({ cleMinistereEducatif }) => EligibleTrainingsForAppointment.findOne({ cle_ministere_educatif: cleMinistereEducatif }),
 
   /**
    * @description Returns items from its "id_rco_formation" have referrer item.
    * @param {String} idRcoFormation
-   * @returns {Promise<WidgetParameter>}
+   * @returns {Promise<EligibleTrainingsForAppointment>}
    */
-  getParameterByIdRcoFormationWithNotEmptyReferrers: ({ idRcoFormation }) => WidgetParameter.findOne({ rco_formation_id: idRcoFormation, referrers: { $not: { $size: 0 } } }),
+  getParameterByIdRcoFormationWithNotEmptyReferrers: ({ idRcoFormation }) =>
+    EligibleTrainingsForAppointment.findOne({ rco_formation_id: idRcoFormation, referrers: { $not: { $size: 0 } } }),
 
   /**
    * @description Checks if widget is enabled or not.
@@ -139,11 +139,11 @@ export default () => ({
    * @returns {Promise<Boolean>}
    */
   isWidgetVisible: async ({ idRcoFormation, referrer }) => {
-    const widgetParameter = await WidgetParameter.findOne({
+    const eligibleTrainingsForAppointment = await EligibleTrainingsForAppointment.findOne({
       rco_formation_id: idRcoFormation,
       referrers: { $in: [referrer] },
     })
 
-    return !!(widgetParameter && widgetParameter.lieu_formation_email)
+    return !!(eligibleTrainingsForAppointment && eligibleTrainingsForAppointment.lieu_formation_email)
   },
 })
