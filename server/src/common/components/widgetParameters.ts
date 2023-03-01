@@ -10,12 +10,12 @@ export default () => ({
   /**
    * @description Finds or creates a parameter.
    * @param {String} etablissement_siret
-   * @param {String} etablissement_raison_sociale
-   * @param {String} formation_intitule
-   * @param {String} formation_cfd
-   * @param {String} email_rdv
+   * @param {String} etablissement_formateur_raison_sociale
+   * @param {String} training_intitule_long
+   * @param {String} training_code_formation_diplome
+   * @param {String} lieu_formation_email
    * @param {String} gestionnaire_email
-   * @param {String} zip_code
+   * @param {String} etablissement_formateur_zip_code
    * @param {String} rco_formation_id
    * @param {String} referrers
    * @param {String} cle_ministere_educatif
@@ -23,24 +23,24 @@ export default () => ({
    */
   findUpdateOrCreate: async ({
     etablissement_siret,
-    etablissement_raison_sociale,
-    formation_intitule,
-    formation_cfd,
-    email_rdv,
+    etablissement_formateur_raison_sociale,
+    training_intitule_long,
+    training_code_formation_diplome,
+    lieu_formation_email,
     gestionnaire_email,
-    zip_code,
+    etablissement_formateur_zip_code,
     rco_formation_id,
     referrers,
     cle_ministere_educatif,
   }) => {
     const parameter = {
       etablissement_siret,
-      etablissement_raison_sociale,
-      formation_intitule,
-      formation_cfd,
-      email_rdv,
+      etablissement_formateur_raison_sociale,
+      training_intitule_long,
+      training_code_formation_diplome,
+      lieu_formation_email,
       gestionnaire_email,
-      zip_code,
+      etablissement_formateur_zip_code,
       rco_formation_id,
       referrers,
       cle_ministere_educatif,
@@ -144,6 +144,6 @@ export default () => ({
       referrers: { $in: [referrer] },
     })
 
-    return !!(widgetParameter && widgetParameter.email_rdv)
+    return !!(widgetParameter && widgetParameter.lieu_formation_email)
   },
 })

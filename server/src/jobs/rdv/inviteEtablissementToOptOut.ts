@@ -32,14 +32,14 @@ export const inviteEtablissementToOptOut = async ({ etablissements, widgetParame
     if (!etablissement.gestionnaire_email || !isValidEmail(emailDecisionaire)) {
       // If "email_rdv" exists, add 1 occurrence, otherwise set counter to 1
       const emailCounter: object = {}
-      formations.map(({ email_rdv }) => {
+      formations.map(({ lieu_formation_email }) => {
         // Ignore null, empty or not valid email
-        if (!email_rdv || !isValidEmail(email_rdv)) {
-          logger.info("Invalid email", { email: email_rdv, formateur_siret: etablissement.formateur_siret })
+        if (!lieu_formation_email || !isValidEmail(lieu_formation_email)) {
+          logger.info("Invalid email", { email: lieu_formation_email, formateur_siret: etablissement.formateur_siret })
           return
         }
 
-        return emailCounter[email_rdv] ? emailCounter[email_rdv]++ : (emailCounter[email_rdv] = 1)
+        return emailCounter[lieu_formation_email] ? emailCounter[lieu_formation_email]++ : (emailCounter[lieu_formation_email] = 1)
       })
 
       // Ignore etablissement without formation emails
@@ -104,7 +104,7 @@ export const inviteEtablissementToOptOut = async ({ etablissements, widgetParame
         },
       })
 
-      let emails = formations.map((formation) => formation.email_rdv)
+      let emails = formations.map((formation) => formation.lieu_formation_email)
       if (etablissement?.etablissement_formateur_courriel) {
         emails.push(etablissement.etablissement_formateur_courriel)
       }

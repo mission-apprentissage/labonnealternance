@@ -16,15 +16,15 @@ export default ({ widgetParameters }) => {
     tryCatch(async (req, res) => {
       const ids = await widgetParameters.find(
         {
-          id_parcoursup: {
+          parcoursup_id: {
             $ne: null,
           },
           referrers: { $in: [referrers.PARCOURSUP.code] },
         },
-        { id_parcoursup: 1 }
+        { parcoursup_id: 1 }
       )
 
-      return res.send({ ids: ids.map((widgetParameter) => widgetParameter.id_parcoursup) })
+      return res.send({ ids: ids.map((widgetParameter) => widgetParameter.parcoursup_id) })
     })
   )
 

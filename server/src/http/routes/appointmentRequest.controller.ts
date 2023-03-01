@@ -88,7 +88,7 @@ export default ({ users, appointments, mailer, widgetParameters, etablissements 
         appointments.createAppointment({
           applicant_id: user._id,
           cfa_gestionnaire_siret: widgetParameter.etablissement_formateur_siret,
-          formation_id: widgetParameter.formation_cfd,
+          formation_id: widgetParameter.training_code_formation_diplome,
           applicant_message_to_cfa: applicantMessageToCfa,
           appointment_origin: referrerObj.name,
           rco_formation_id: widgetParameter.rco_formation_id,
@@ -109,14 +109,14 @@ export default ({ users, appointments, mailer, widgetParameters, etablissements 
           applicant_message_to_cfa: createdAppointement.applicant_message_to_cfa,
         },
         etablissement: {
-          name: widgetParameter.etablissement_raison_sociale,
-          address: widgetParameter.lieu_formation_adresse,
-          postalCode: widgetParameter.zip_code,
+          name: widgetParameter.etablissement_formateur_raison_sociale,
+          address: widgetParameter.lieu_formation_street,
+          postalCode: widgetParameter.etablissement_formateur_zip_code,
           ville: widgetParameter.city,
-          email: widgetParameter.email_rdv,
+          email: widgetParameter.lieu_formation_email,
         },
         formation: {
-          intitule: widgetParameter.formation_intitule,
+          intitule: widgetParameter.training_intitule_long,
         },
         appointment: {
           referrerLink: referrerObj.url,
@@ -140,7 +140,7 @@ export default ({ users, appointments, mailer, widgetParameters, etablissements 
           data: mailData,
         }),
         mailer.sendEmail({
-          to: widgetParameter.email_rdv,
+          to: widgetParameter.lieu_formation_email,
           subject: `[RDV via ${referrerObj.full_name}] Un candidat souhaite être contacté`,
           template: mailTemplate["mail-cfa-demande-de-contact"],
           data: mailData,
@@ -149,7 +149,7 @@ export default ({ users, appointments, mailer, widgetParameters, etablissements 
 
       await appointments.updateAppointment(createdAppointement._id, {
         email_premiere_demande_cfa_message_id: emailCfa.messageId,
-        cfa_recipient_email: widgetParameter.email_rdv,
+        cfa_recipient_email: widgetParameter.lieu_formation_email,
       })
 
       res.json({
@@ -198,9 +198,9 @@ export default ({ users, appointments, mailer, widgetParameters, etablissements 
         },
         user: user._doc,
         etablissement: {
-          email: widgetParameter.email_rdv || "",
-          intitule_long: widgetParameter.formation_intitule,
-          etablissement_formateur_entreprise_raison_sociale: widgetParameter.etablissement_raison_sociale,
+          email: widgetParameter.lieu_formation_email || "",
+          intitule_long: widgetParameter.training_intitule_long,
+          etablissement_formateur_entreprise_raison_sociale: widgetParameter.etablissement_formateur_raison_sociale,
         },
       })
     })
@@ -259,7 +259,7 @@ export default ({ users, appointments, mailer, widgetParameters, etablissements 
         const referrerObj = getReferrerById(appointment.referrer)
 
         const { messageId } = await mailer.sendEmail({
-          to: widgetParameter.email_rdv,
+          to: widgetParameter.lieu_formation_email,
           subject: `[RDV via ${referrerObj.full_name}] Relance - Un candidat souhaite être contacté`,
           template: mailTemplate["mail-cfa-demande-de-contact"],
           data: {
@@ -271,13 +271,13 @@ export default ({ users, appointments, mailer, widgetParameters, etablissements 
               applicant_message_to_cfa: appointment.applicant_message_to_cfa,
             },
             etablissement: {
-              name: widgetParameter.etablissement_raison_sociale,
-              address: widgetParameter.lieu_formation_adresse,
-              postalCode: widgetParameter.zip_code,
+              name: widgetParameter.etablissement_formateur_raison_sociale,
+              address: widgetParameter.lieu_formation_street,
+              postalCode: widgetParameter.etablissement_formateur_zip_code,
               ville: widgetParameter.city,
             },
             formation: {
-              intitule: widgetParameter.formation_intitule,
+              intitule: widgetParameter.training_intitule_long,
             },
             appointment: {
               referrerLink: referrerObj.url,

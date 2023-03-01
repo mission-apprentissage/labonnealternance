@@ -80,7 +80,7 @@ export default ({ etablissements, mailer, widgetParameters, appointments }) => {
       const [widgetParametersFound, etablissementUpdated] = await Promise.all([
         widgetParameters.find({
           etablissement_siret: etablissement.formateur_siret,
-          id_parcoursup: {
+          parcoursup_id: {
             $ne: null,
           },
         }),
@@ -101,7 +101,7 @@ export default ({ etablissements, mailer, widgetParameters, appointments }) => {
       ])
 
       // Gets all mails (formation email + formateur email), excepted "email_decisionnaire"
-      let emails = widgetParametersFound.map((widgetParameter) => widgetParameter.email_rdv)
+      let emails = widgetParametersFound.map((widgetParameter) => widgetParameter.lieu_formation_email)
       if (etablissement?.etablissement_formateur_courriel) {
         emails.push(etablissement.etablissement_formateur_courriel)
       }
@@ -148,7 +148,7 @@ export default ({ etablissements, mailer, widgetParameters, appointments }) => {
         etablissements.findById(req.params.id),
         ...widgetParametersFound.map((widgetParameter) =>
           widgetParameters.update(
-            { _id: widgetParameter._id, email_rdv: { $nin: [null, ""] } },
+            { _id: widgetParameter._id, lieu_formation_email: { $nin: [null, ""] } },
             {
               referrers: [...new Set([...widgetParameter.referrers, referrers.PARCOURSUP.code])],
             }

@@ -9,15 +9,15 @@ const getParcoursupId = async () => {
     select: { parcoursup_id: 1 },
   })
 
-  const countBeforeUpdate = await WidgetParameter.countDocuments({ id_parcoursup: { $eq: null } })
+  const countBeforeUpdate = await WidgetParameter.countDocuments({ parcoursup_id: { $eq: null } })
 
   await Promise.all(
     formations.map(async (formation) => {
-      await WidgetParameter.updateMany({ cle_ministere_educatif: formation.cle_ministere_educatif }, { $set: { id_parcoursup: formation.parcoursup_id } })
+      await WidgetParameter.updateMany({ cle_ministere_educatif: formation.cle_ministere_educatif }, { $set: { parcoursup_id: formation.parcoursup_id } })
     })
   )
 
-  const countAfterUpdate = await WidgetParameter.countDocuments({ id_parcoursup: { $eq: null } })
+  const countAfterUpdate = await WidgetParameter.countDocuments({ parcoursup_id: { $eq: null } })
 
   console.log({ before: countBeforeUpdate, after: countAfterUpdate, updated: countBeforeUpdate - countAfterUpdate, totalME: formations.length })
 }

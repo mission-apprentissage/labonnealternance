@@ -49,10 +49,10 @@ export const candidatHaveYouBeenContacted = async ({ etablissements, widgetParam
             address: etablissement.adresse,
             postalCode: etablissement.zip_code,
             ville: etablissement.city,
-            email: widgetParameter.email_rdv,
+            email: widgetParameter.lieu_formation_email,
           },
           formation: {
-            intitule: widgetParameter.formation_intitule,
+            intitule: widgetParameter.training_intitule_long,
           },
           user: {
             firstname: user.firstname,
@@ -71,7 +71,7 @@ export const candidatHaveYouBeenContacted = async ({ etablissements, widgetParam
         },
       }),
       mailer.sendEmail({
-        to: widgetParameter.email_rdv,
+        to: widgetParameter.lieu_formation_email,
         subject: `[RDV via ${referrerObj.full_name}] 🛎 ️Pouvez-vous contacter ce candidat ?`,
         template: mailTemplate["mail-cfa-relance-demande-de-contact"],
         data: {
@@ -86,7 +86,7 @@ export const candidatHaveYouBeenContacted = async ({ etablissements, widgetParam
             ville: etablissement.city,
           },
           formation: {
-            intitule: widgetParameter.formation_intitule,
+            intitule: widgetParameter.training_intitule_long,
           },
           user: {
             firstname: user.firstname,

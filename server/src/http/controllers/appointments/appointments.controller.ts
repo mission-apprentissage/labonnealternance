@@ -4,7 +4,6 @@ import WidgetParameters from "../../../common/components/widgetParameters.js"
 import { getReferrerByKeyName } from "../../../common/model/constants/referrers.js"
 import { isValidEmail } from "../../../common/utils/isValidEmail.js"
 import { getCleMinistereEducatifFromIdActionFormation } from "../../../common/utils/mappings/onisep.js"
-import { sentryCaptureException } from "../../../common/utils/sentryUtils.js"
 import config from "../../../config.js"
 import { TCreateContextBody, TCreateContextResponse, TCreateContextResponseError } from "./types.js"
 import { contextCreateSchema } from "./validators.js"
@@ -54,7 +53,7 @@ export class AppointmentsController extends Controller {
       })
     } else if (idParcoursup) {
       widgetParameter = await widgetParametersService.findOne({
-        id_parcoursup: idParcoursup,
+        parcoursup_id: idParcoursup,
         cle_ministere_educatif: {
           $ne: null,
         },
@@ -81,26 +80,26 @@ export class AppointmentsController extends Controller {
     const isOpenForAppointments = await widgetParametersService.findOne({
       cle_ministere_educatif: widgetParameter.cle_ministere_educatif,
       referrers: { $in: [referrerObj.code] },
-      email_rdv: { $nin: [null, ""] },
+      lieu_formation_email: { $nin: [null, ""] },
     })
 
-    if (!isValidEmail(isOpenForAppointments?.email_rdv)) {
-      sentryCaptureException(new Error(`Formation "${widgetParameter.cle_ministere_educatif}" sans email de contact.`))
+    if (!isValidEmail(isOpenForAppointments?.lieu_formation_email)) {
+      Sentry.captureException(new Error(`Formation "${widgetParameter.cle_ministere_educatif}" sans email de contact.`))
     }
 
-    if (!isOpenForAppointments || !isValidEmail(isOpenForAppointments?.email_rdv)) {
+    if (!isOpenForAppointments || !isValidEmail(isOpenForAppointments?.lieu_formation_email)) {
       return {
         error: "Prise de rendez-vous non disponible.",
       }
     }
 
     return {
-      etablissement_formateur_entreprise_raison_sociale: widgetParameter.etablissement_raison_sociale,
-      intitule_long: widgetParameter.formation_intitule,
-      lieu_formation_adresse: widgetParameter.lieu_formation_adresse,
-      code_postal: widgetParameter.zip_code,
+      etablissement_formateur_entreprise_raison_sociale: widgetParameter.etablissement_formateur_raison_sociale,
+      intitule_long: widgetParameter.training_intitule_long,
+      lieu_formation_adresse: widgetParameter.lieu_formation_street,
+      code_postal: widgetParameter.etablissement_formateur_zip_code,
       etablissement_formateur_siret: widgetParameter.etablissement_siret,
-      cfd: widgetParameter.formation_cfd,
+      cfd: widgetParameter.training_code_formation_diplome,
       localite: widgetParameter.city,
       id_rco_formation: widgetParameter.rco_formation_id,
       cle_ministere_educatif: widgetParameter?.cle_ministere_educatif,

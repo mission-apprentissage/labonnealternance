@@ -29,7 +29,7 @@ export const activateOptOutEtablissementFormations = async ({ etablissements, wi
         widgetParameters.updateMany(
           {
             etablissement_siret: etablissement.formateur_siret,
-            email_rdv: { $nin: [null, ""] },
+            lieu_formation_email: { $nin: [null, ""] },
           },
           {
             referrers: Object.values(referrers)
@@ -76,7 +76,7 @@ export const activateOptOutEtablissementFormations = async ({ etablissements, wi
       })
 
       // Gets all mails (formation email + formateur email), excepted "email_decisionnaire"
-      let emails = widgetParametersFound.map((widgetParameter) => widgetParameter.email_rdv)
+      let emails = widgetParametersFound.map((widgetParameter) => widgetParameter.lieu_formation_email)
       if (etablissement?.etablissement_formateur_courriel) {
         emails.push(etablissement.etablissement_formateur_courriel)
       }

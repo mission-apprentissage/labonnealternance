@@ -72,9 +72,9 @@ export default ({ etablissements, appointments, users }) => {
           formation = {
             etablissement_formateur_entreprise_raison_sociale: catalogueFormation.etablissement_formateur_entreprise_raison_sociale,
             intitule_long: catalogueFormation.intitule_long,
-            etablissement_formateur_adresse: catalogueFormation.etablissement_formateur_adresse,
-            etablissement_formateur_code_postal: catalogueFormation.etablissement_formateur_code_postal,
-            etablissement_formateur_nom_departement: catalogueFormation.etablissement_formateur_nom_departement,
+            etablissement_formateur_street: catalogueFormation.etablissement_formateur_adresse,
+            etablissement_formateur_zip_code: catalogueFormation.etablissement_formateur_code_postal,
+            departement_etablissement_formateur: catalogueFormation.etablissement_formateur_nom_departement,
           }
         }
 

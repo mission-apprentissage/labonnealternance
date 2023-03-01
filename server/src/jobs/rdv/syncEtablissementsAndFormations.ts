@@ -73,11 +73,11 @@ export const syncEtablissementsAndFormations = async ({ etablissements, widgetPa
         }
 
         if (widgetParameter) {
-          let emailRdv = widgetParameter.email_rdv
+          let emailRdv = widgetParameter.lieu_formation_email
 
           // Don't override "email" if this field is true
-          if (!widgetParameter?.is_custom_email_rdv) {
-            emailRdv = getEmailFromCatalogueField(formation.email) || getEmailFromCatalogueField(formation.etablissement_formateur_courriel) || widgetParameter.email_rdv
+          if (!widgetParameter?.is_lieu_formation_email_customized) {
+            emailRdv = getEmailFromCatalogueField(formation.email) || getEmailFromCatalogueField(formation.etablissement_formateur_courriel) || widgetParameter.lieu_formation_email
           }
 
           const emailBlacklisted = await isEmailBlacklisted(emailRdv)
@@ -85,26 +85,26 @@ export const syncEtablissementsAndFormations = async ({ etablissements, widgetPa
           await widgetParameters.updateMany(
             { cle_ministere_educatif: formation.cle_ministere_educatif },
             {
-              id_catalogue: formation._id,
-              email_rdv: emailRdv,
-              id_parcoursup: formationMinistereEducatif?.parcoursup_id,
+              training_id_catalogue: formation._id,
+              lieu_formation_email: emailRdv,
+              parcoursup_id: formationMinistereEducatif?.parcoursup_id,
               cle_ministere_educatif: formation.cle_ministere_educatif,
-              formation_cfd: formation.cfd,
+              training_code_formation_diplome: formation.cfd,
               zip_code: formation.code_postal,
-              formation_intitule: formation.intitule_long,
+              training_intitule_long: formation.intitule_long,
               referrers: emailRdv && !emailBlacklisted ? referrersToActivate : [],
-              catalogue_published: formation.published,
+              is_catalogue_published: formation.published,
               rco_formation_id: formation.id_rco_formation,
               cfd: formation.cfd,
               city: formation.localite,
               last_catalogue_sync_date: dayjs().format(),
               etablissement_siret: formation.etablissement_formateur_siret,
-              etablissement_raison_sociale: formation.etablissement_formateur_entreprise_raison_sociale,
-              etablissement_formateur_adresse: formation.etablissement_formateur_adresse,
-              etablissement_formateur_code_postal: formation.etablissement_formateur_code_postal,
-              etablissement_formateur_nom_departement: formation.etablissement_formateur_nom_departement,
-              etablissement_formateur_localite: formation.etablissement_formateur_localite,
-              lieu_formation_adresse: formation.lieu_formation_adresse,
+              etablissement_formateur_raison_sociale: formation.etablissement_formateur_entreprise_raison_sociale,
+              etablissement_formateur_street: formation.etablissement_formateur_adresse,
+              etablissement_formateur_zip_code: formation.etablissement_formateur_code_postal,
+              departement_etablissement_formateur: formation.etablissement_formateur_nom_departement,
+              etablissement_formateur_city: formation.etablissement_formateur_localite,
+              lieu_formation_street: formation.lieu_formation_adresse,
               etablissement_formateur_siret: formation.etablissement_formateur_siret,
               etablissement_gestionnaire_siret: formation.etablissement_gestionnaire_siret,
             }
@@ -115,26 +115,26 @@ export const syncEtablissementsAndFormations = async ({ etablissements, widgetPa
           const emailBlacklisted = await isEmailBlacklisted(emailRdv)
 
           await widgetParameters.createParameter({
-            id_catalogue: formation._id,
-            email_rdv: emailRdv,
-            id_parcoursup: formationMinistereEducatif?.parcoursup_id,
+            training_id_catalogue: formation._id,
+            lieu_formation_email: emailRdv,
+            parcoursup_id: formationMinistereEducatif?.parcoursup_id,
             cle_ministere_educatif: formation.cle_ministere_educatif,
-            formation_cfd: formation.cfd,
+            training_code_formation_diplome: formation.cfd,
             zip_code: formation.code_postal,
-            formation_intitule: formation.intitule_long,
+            training_intitule_long: formation.intitule_long,
             referrers: emailRdv && !emailBlacklisted ? referrersToActivate : [],
-            catalogue_published: formation.published,
+            is_catalogue_published: formation.published,
             rco_formation_id: formation.id_rco_formation,
             last_catalogue_sync_date: dayjs().format(),
             cfd: formation.cfd,
             city: formation.localite,
-            lieu_formation_adresse: formation.lieu_formation_adresse,
+            lieu_formation_street: formation.lieu_formation_adresse,
             etablissement_siret: formation.etablissement_formateur_siret,
-            etablissement_raison_sociale: formation.etablissement_formateur_entreprise_raison_sociale,
-            etablissement_formateur_adresse: formation.etablissement_formateur_adresse,
-            etablissement_formateur_code_postal: formation.etablissement_formateur_code_postal,
-            etablissement_formateur_nom_departement: formation.etablissement_formateur_nom_departement,
-            etablissement_formateur_localite: formation.etablissement_formateur_localite,
+            etablissement_formateur_raison_sociale: formation.etablissement_formateur_entreprise_raison_sociale,
+            etablissement_formateur_street: formation.etablissement_formateur_adresse,
+            etablissement_formateur_zip_code: formation.etablissement_formateur_code_postal,
+            departement_etablissement_formateur: formation.etablissement_formateur_nom_departement,
+            etablissement_formateur_city: formation.etablissement_formateur_localite,
             etablissement_formateur_siret: formation.etablissement_formateur_siret,
             etablissement_gestionnaire_siret: formation.etablissement_gestionnaire_siret,
           })

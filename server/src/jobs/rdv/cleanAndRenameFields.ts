@@ -56,10 +56,10 @@ export default async function cleanAndRenameFields() {
       },
     }
   )
-  logger.info(`Fin renommage champs de la collection geolocation (${res.result.nModified} items mis à jour)`)
+  logger.info(`Fin renommage champs de la collection appointments (${res.result.nModified} items mis à jour)`)
 
-  // Etablissement: deletions
-  res = await db.collections.appointments.updateMany(
+  // Etablissements: deletions
+  res = await db.collections.etablissements.updateMany(
     {},
     {
       $unset: {
@@ -70,10 +70,10 @@ export default async function cleanAndRenameFields() {
       },
     }
   )
-  logger.info(`Fin suppression champs de la collection appointments (${res.result.nModified} items mis à jour)`)
+  logger.info(`Fin suppression champs de la collection etablissements (${res.result.nModified} items mis à jour)`)
 
-  // Appointments: renames
-  res = await db.collections.appointments.updateMany(
+  // Etablissements: renames
+  res = await db.collections.etablissements.updateMany(
     {},
     {
       $rename: {
@@ -95,87 +95,42 @@ export default async function cleanAndRenameFields() {
       },
     }
   )
-  logger.info(`Fin renommage champs de la collection geolocation (${res.result.nModified} items mis à jour)`)
+  logger.info(`Fin renommage champs de la collection etablissements (${res.result.nModified} items mis à jour)`)
 
-  // Rename "referrer" id (number) to string name
-  const appointments = await db.collections.appointments.find({})
-  await Promise.all(appointments.map((appointment) => appointment.update({ referrer: getReferrerById(appointment.referrer).name })))
-
-  let res = await db.collections.geolocations.updateMany({}, { $rename: { postcode: "zip_code", geoLocation: "geo_coordinates" } })
-  logger.info(`Fin renommage champs de la collection geolocation (${res.result.nModified} items mis à jour)`)
-
-  res = await db.collections.emailblacklists.updateMany({}, { $rename: { source: "blacklisting_origin" } })
-  logger.info(`Fin renommage champs de la collection emailblacklists (${res.result.nModified} items mis à jour)`)
-
-  res = await db.collections.applications.updateMany(
-    {},
-    {
-      $rename: {
-        company_type: "job_origin",
-        applicant_file_name: "applicant_attachment_name",
-        message: "applicant_message_to_company",
-        company_intention: "company_recruitment_intention",
-      },
-    }
-  )
-  logger.info(`Fin renommage champs de la collection applications (${res.result.nModified} items mis à jour)`)
-
-  res = await db.collections.applications.updateMany(
+  // WidgetParameters: deletions
+  res = await db.collections.widgetParameters.updateMany(
     {},
     {
       $unset: {
-        to_applicant_message_status: "",
-        applicant_opinion: "",
-        applicant_feedback_date: "",
-        applicant_feedback: "",
-        to_company_message_status: "",
-        to_company_update_message_status: "",
-        interet_offres_mandataire: "",
-        to_applicant_update_message_id: "",
+        code_postal: "",
       },
     }
   )
-  logger.info(`Fin suppression champs de la collection applications (${res.result.nModified} items mis à jour)`)
+  logger.info(`Fin suppression champs de la collection widgetParameters (${res.result.nModified} items mis à jour)`)
 
-  res = await db.collections.apicalls.updateMany(
+  // WidgetParameters: renames
+  res = await db.collections.widgetParameters.updateMany(
     {},
     {
       $rename: {
-        api: "api_path",
-        nb_emplois: "job_count",
-        nb_formations: "training_count",
-        result: "response",
+        etablissement_formateur_code_postal: "etablissement_formateur_zip_code",
+        etablissement_raison_sociale: "etablissement_formateur_raison_sociale",
+        etablissement_formateur_localite: "etablissement_formateur_city",
+        formation_intitule: "training_intitule_long",
+        last_catalogue_sync: "last_catalogue_sync_date",
+        etablissement_formateur_adresse: "etablissement_formateur_street",
+        formation_cfd: "training_code_formation_diplome",
+        catalogue_published: "is_catalogue_published",
+        id_rco_formation: "training_id_rco_catalogue",
+        id_parcoursup: "parcoursup_id",
+        email_rdv: "lieu_formation_email",
+        localite: "city",
+        is_custom_email_rdv: "is_lieu_formation_email_customized",
+        etablissement_formateur_nom_departement: "departement_etablissement_formateur",
+        lieu_formation_adresse: "lieu_formation_street",
+        id_catalogue: "training_id_catalogue",
       },
     }
   )
-  logger.info(`Fin renommage champs de la collection apicalls (${res.result.nModified} items mis à jour)`)
-
-  res = await db.collections.bonnesboites.updateMany(
-    {},
-    {
-      $rename: {
-        type: "algorithm_origin",
-        geo_coordonnees: "geo_coordinates",
-        telephone: "phone",
-        code_postal: "zip_code",
-        ville: "city",
-        romes: "rome_codes",
-        code_commune: "insee_city_code",
-        score: "recruitment_potential",
-        intitule_naf: "naf_label",
-        libelle_rue: "street_name",
-        numero_rue: "street_number",
-        raisonsociale: "raison_sociale",
-        code_naf: "naf_code",
-        tranche_effectif: "company_size",
-      },
-    }
-  )
-  logger.info(`Fin renommage champs de la collection bonnesboites (${res.result.nModified} items mis à jour)`)
-
-  logger.info("Début réindexation des bonnes boites")
-  await rebuildIndex(BonnesBoites, { skipNotFound: true })
-  logger.info("Fin réindexation des bonnes boites")
-
-  logger.info("Refactorisation des champs LBAC terminée")
+  logger.info(`Fin renommage champs de la collection widgetParameters (${res.result.nModified} items mis à jour)`)
 }

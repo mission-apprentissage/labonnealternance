@@ -10,9 +10,9 @@ import { getFormationsByIdRcoFormations, getFormationsBySiretFormateur } from ".
 import { tryCatch } from "../../middlewares/tryCatchMiddleware.js"
 
 const widgetParameterIdPatchSchema = Joi.object({
-  is_custom_email_rdv: Joi.boolean().optional(),
+  is_lieu_formation_email_customized: Joi.boolean().optional(),
   referrers: Joi.array().items(Joi.number()).optional(),
-  email_rdv: Joi.string()
+  lieu_formation_email: Joi.string()
     .email({ tlds: { allow: false } })
     .allow(null)
     .optional(),
@@ -24,7 +24,7 @@ const widgetParameterSchema = Joi.object({
   formation_intitule: Joi.string().required(),
   formation_cfd: Joi.string().required(),
   code_postal: Joi.string().required(),
-  email_rdv: Joi.string()
+  lieu_formation_email: Joi.string()
     .email({ tlds: { allow: false } })
     .allow(null)
     .required(),
@@ -119,12 +119,12 @@ export default ({ widgetParameters, etablissements }) => {
           siret: parameter.etablissement_siret,
           raison_sociale: etablissement?.raison_sociale,
           rco_formation_id: parameter.rco_formation_id,
-          formation: parameter.formation_intitule,
-          cfd: parameter.formation_cfd,
-          email: parameter.email_rdv,
+          formation: parameter.training_intitule_long,
+          cfd: parameter.training_code_formation_diplome,
+          email: parameter.lieu_formation_email,
           localite: parameter.city,
           email_catalogue: formations.length ? formations[0].email : "",
-          code_postal: parameter.zip_code,
+          code_postal: parameter.etablissement_formateur_zip_code,
           sources: parameter.referrers.map((referrer) => getReferrerById(referrer).full_name).join(", "),
         })
       }
@@ -223,7 +223,7 @@ export default ({ widgetParameters, etablissements }) => {
 
               if (!parameterExists) {
                 return widgetParameters.findUpdateOrCreate({
-                  email_rdv: parameter.email,
+                  lieu_formation_email: parameter.lieu_formation_email,
                   referrers: parameter.referrers,
                   etablissement_siret: parameter.formateur_siret,
                   rco_formation_id: formation.rco_formation_id,

@@ -24,7 +24,7 @@ export const premiumInviteOneShot = async ({ etablissements, widgetParameters, m
         premium_activation_date: null,
       })
       .lean(),
-    widgetParameters.find({ id_parcoursup: { $ne: null }, email_rdv: { $ne: null } }).lean(),
+    widgetParameters.find({ parcoursup_id: { $ne: null }, lieu_formation_email: { $ne: null } }).lean(),
   ])
 
   const etablissementWithParcoursup = etablissementsActivated.filter((etablissement) =>
