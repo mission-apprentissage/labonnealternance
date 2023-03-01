@@ -31,7 +31,7 @@ export const candidatHaveYouBeenContacted = async ({ etablissements, widgetParam
     const [user, widgetParameter, etablissement] = await Promise.all([
       users.findOne({ _id: appointment.candidat_id }),
       widgetParameters.findOne({ rco_formation_id: appointment.rco_formation_id }),
-      etablissements.findOne({ siret_formateur: appointment.etablissement_id }),
+      etablissements.findOne({ formateur_siret: appointment.formateur_siret }),
     ])
 
     const [mailCandidat, mailCfa] = await Promise.all([
@@ -47,8 +47,8 @@ export const candidatHaveYouBeenContacted = async ({ etablissements, widgetParam
           etablissement: {
             name: etablissement.raison_sociale,
             address: etablissement.adresse,
-            postalCode: etablissement.code_postal,
-            ville: etablissement.localite,
+            postalCode: etablissement.zip_code,
+            ville: etablissement.city,
             email: widgetParameter.email_rdv,
           },
           formation: {
@@ -82,8 +82,8 @@ export const candidatHaveYouBeenContacted = async ({ etablissements, widgetParam
           etablissement: {
             name: etablissement.raison_sociale,
             address: etablissement.adresse,
-            postalCode: etablissement.code_postal,
-            ville: etablissement.localite,
+            postalCode: etablissement.zip_code,
+            ville: etablissement.city,
           },
           formation: {
             intitule: widgetParameter.formation_intitule,

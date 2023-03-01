@@ -58,6 +58,45 @@ export default async function cleanAndRenameFields() {
   )
   logger.info(`Fin renommage champs de la collection geolocation (${res.result.nModified} items mis à jour)`)
 
+  // Etablissement: deletions
+  res = await db.collections.appointments.updateMany(
+    {},
+    {
+      $unset: {
+        opt_out_question: "",
+        opt_in_activated_at: "",
+        opt_mode: "",
+        etablissement_formateur_courriel: "",
+      },
+    }
+  )
+  logger.info(`Fin suppression champs de la collection appointments (${res.result.nModified} items mis à jour)`)
+
+  // Appointments: renames
+  res = await db.collections.appointments.updateMany(
+    {},
+    {
+      $rename: {
+        adresse: "address",
+        code_postal: "zip_code",
+        premium_invited_at: "premium_invitation_date",
+        opt_out_will_be_activated_at: "optout_activation_scheduled_date",
+        opt_out_invited_at: "optout_invitation_date",
+        siret_gestionnaire: "gestionnaire_siret",
+        premium_refused_at: "premium_refusal_date",
+        last_catalogue_sync: "last_catalogue_sync_date",
+        localite: "city",
+        opt_out_activated_at: "optout_activation_date",
+        premium_activated_at: "premium_activation_date",
+        opt_out_refused_at: "optout_refusal_date",
+        siret_formateur: "formateur_siret",
+        email_decisionnaire: "gestionnaire_email",
+        mailing: "to_etablissement_emails",
+      },
+    }
+  )
+  logger.info(`Fin renommage champs de la collection geolocation (${res.result.nModified} items mis à jour)`)
+
   // Rename "referrer" id (number) to string name
   const appointments = await db.collections.appointments.find({})
   await Promise.all(appointments.map((appointment) => appointment.update({ referrer: getReferrerById(appointment.referrer).name })))

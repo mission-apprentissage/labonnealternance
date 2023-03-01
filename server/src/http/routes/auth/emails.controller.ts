@@ -84,11 +84,11 @@ export default ({ appointments, etablissements, widgetParameters }) => {
 
       // If mail sent from etablissement model
       if (etablissementFound) {
-        const previousEmail = etablissementFound.mailing.find((mail) => mail.message_id.includes(messageId))
+        const previousEmail = etablissementFound.to_etablissement_emails.find((mail) => mail.message_id.includes(messageId))
 
         await etablissementFound.update({
           $push: {
-            mailing: {
+            to_etablissement_emails: {
               campaign: previousEmail.campaign,
               status: parameters.event,
               message_id: previousEmail.message_id,
@@ -104,7 +104,7 @@ export default ({ appointments, etablissements, widgetParameters }) => {
 
       // If mail sent from appointment (to the candidat)
       if (appointmentCandidatFound) {
-        const previousEmail = appointmentCandidatFound.mailing.find((mail) => mail.message_id.includes(messageId))
+        const previousEmail = appointmentCandidatFound.to_applicant_mails.find((mail) => mail.message_id.includes(messageId))
 
         await appointmentCandidatFound.update({
           $push: {
@@ -121,8 +121,8 @@ export default ({ appointments, etablissements, widgetParameters }) => {
       const [appointmentCfaFound] = await appointments.find({ "cfa_mailing.message_id": { $regex: messageId } })
 
       // If mail sent from appointment (to the CFA)
-      if (appointmentCfaFound && appointmentCfaFound?.mailing) {
-        const previousEmail = appointmentCfaFound.mailing.find((mail) => mail.message_id.includes(messageId))
+      if (appointmentCfaFound && appointmentCfaFound?.to_cfa_mails) {
+        const previousEmail = appointmentCfaFound.to_cfa_mails.find((mail) => mail.message_id.includes(messageId))
 
         await appointmentCfaFound.update({
           $push: {

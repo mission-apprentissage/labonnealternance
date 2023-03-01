@@ -95,7 +95,7 @@ export default ({ users, appointments, mailer, widgetParameters, etablissements 
           cle_ministere_educatif: widgetParameter.cle_ministere_educatif,
         }),
         etablissements.findOne({
-          siret_formateur: widgetParameter.etablissement_formateur_siret,
+          formateur_siret: widgetParameter.etablissement_formateur_siret,
         }),
       ])
 
@@ -111,8 +111,8 @@ export default ({ users, appointments, mailer, widgetParameters, etablissements 
         etablissement: {
           name: widgetParameter.etablissement_raison_sociale,
           address: widgetParameter.lieu_formation_adresse,
-          postalCode: widgetParameter.code_postal,
-          ville: widgetParameter.localite,
+          postalCode: widgetParameter.zip_code,
+          ville: widgetParameter.city,
           email: widgetParameter.email_rdv,
         },
         formation: {
@@ -215,7 +215,7 @@ export default ({ users, appointments, mailer, widgetParameters, etablissements 
         return res.sendStatus(400)
       }
 
-      const etablissement = await etablissements.findOne({ siret_formateur: appointment.etablissement_id })
+      const etablissement = await etablissements.findOne({ formateur_siret: appointment.etablissement_id })
 
       // Check if the RESEND action has already been triggered
       const cfaMailResendExists = appointment.to_cfa_mails.find((mail) => mail.campaign === mailType.CFA_REMINDER_RESEND_APPOINTMENT)
@@ -225,8 +225,8 @@ export default ({ users, appointments, mailer, widgetParameters, etablissements 
         etablissement: {
           raison_sociale: etablissement.raison_sociale,
           adresse: etablissement.adresse,
-          code_postal: etablissement.code_postal,
-          localite: etablissement.localite,
+          zip_code: etablissement.zip_code,
+          localite: etablissement.city,
         },
       })
     })
@@ -273,8 +273,8 @@ export default ({ users, appointments, mailer, widgetParameters, etablissements 
             etablissement: {
               name: widgetParameter.etablissement_raison_sociale,
               address: widgetParameter.lieu_formation_adresse,
-              postalCode: widgetParameter.code_postal,
-              ville: widgetParameter.localite,
+              postalCode: widgetParameter.zip_code,
+              ville: widgetParameter.city,
             },
             formation: {
               intitule: widgetParameter.formation_intitule,

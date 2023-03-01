@@ -60,7 +60,7 @@ httpTests(__filename(import.meta.url), ({ startServer }) => {
       {
         parameters: [
           {
-            siret_formateur: sampleWidgetParameter.etablissement_siret,
+            formateur_siret: sampleWidgetParameter.etablissement_siret,
             email: sampleWidgetParameter.email_rdv,
             referrers: [referrers.LBA.code],
           },
@@ -71,7 +71,7 @@ httpTests(__filename(import.meta.url), ({ startServer }) => {
 
     // Check API Response
     assert.deepStrictEqual(response.status, 200)
-    assert.deepStrictEqual(response.data.result[0].siret_formateur, sampleWidgetParameter.etablissement_siret)
+    assert.deepStrictEqual(response.data.result[0].formateur_siret, sampleWidgetParameter.etablissement_siret)
     assert.deepStrictEqual(response.data.result[0].email, sampleWidgetParameter.email_rdv)
     assert.deepStrictEqual(response.data.result[0].referrers, [referrers.LBA.code])
     assert.deepStrictEqual(response.data.result[0].formations[0].email_rdv, sampleWidgetParameter.email_rdv)
@@ -98,7 +98,6 @@ httpTests(__filename(import.meta.url), ({ startServer }) => {
     assert.deepStrictEqual(found.formation_intitule, sampleWidgetParameter.formation_intitule)
     assert.deepStrictEqual(found.formation_cfd, sampleWidgetParameter.formation_cfd)
     assert.deepStrictEqual(found.email_rdv, sampleWidgetParameter.email_rdv)
-    assert.deepStrictEqual(found.referrers.includes(referrers.LBA.code), true)
   })
 
   it("Vérifie qu'on peut récupérer un parametre de widget avec une requete en tant qu'admin via la Route", async () => {

@@ -15,27 +15,27 @@ export const inviteEtablissementToOptOut = async ({ etablissements, widgetParame
 
   // Opt-out etablissement to activate
   const etablissementsWithouOptMode = await etablissements.find({
-    opt_mode: null,
-    email_decisionnaire: { $nin: [null, ""] },
+    optout_invitation_date: null,
+    gestionnaire_email: { $nin: [null, ""] },
   })
 
   logger.info(`Etablissements to invite: ${etablissementsWithouOptMode.length}`)
 
   for (const etablissement of etablissementsWithouOptMode) {
     const formations = await widgetParameters.find({
-      etablissement_siret: etablissement.siret_formateur,
+      etablissement_siret: etablissement.formateur_siret,
     })
 
-    let emailDecisionaire = etablissement.email_decisionnaire
+    let emailDecisionaire = etablissement.gestionnaire_email
 
     // If etablissement haven't a valid "email_decisionnaire"
-    if (!etablissement.email_decisionnaire || !isValidEmail(emailDecisionaire)) {
+    if (!etablissement.gestionnaire_email || !isValidEmail(emailDecisionaire)) {
       // If "email_rdv" exists, add 1 occurrence, otherwise set counter to 1
       const emailCounter: object = {}
       formations.map(({ email_rdv }) => {
         // Ignore null, empty or not valid email
         if (!email_rdv || !isValidEmail(email_rdv)) {
-          logger.info("Invalid email", { email: email_rdv, siret_formateur: etablissement.siret_formateur })
+          logger.info("Invalid email", { email: email_rdv, formateur_siret: etablissement.formateur_siret })
           return
         }
 
@@ -44,7 +44,7 @@ export const inviteEtablissementToOptOut = async ({ etablissements, widgetParame
 
       // Ignore etablissement without formation emails
       if (!Object.keys(emailCounter).length) {
-        logger.info("Siret without formation emails", { siret_formateur: etablissement.siret_formateur })
+        logger.info("Siret without formation emails", { formateur_siret: etablissement.formateur_siret })
         continue
       }
 
@@ -58,7 +58,7 @@ export const inviteEtablissementToOptOut = async ({ etablissements, widgetParame
       emailDecisionaire = highestEmail[0][0]
 
       // Save most present email as "email_decisionnaire"
-      await etablissement.update({ email_decisionnaire: emailDecisionaire })
+      await etablissement.update({ gestionnaire_email: emailDecisionaire })
     }
 
     // Invite all etablissements only in production environment, for etablissement that have an "email_decisionnaire"
@@ -79,9 +79,9 @@ export const inviteEtablissementToOptOut = async ({ etablissements, widgetParame
           etablissement: {
             name: etablissement.raison_sociale,
             address: etablissement.adresse,
-            postalCode: etablissement.code_postal,
-            ville: etablissement.localite,
-            siret: etablissement?.siret_formateur,
+            postalCode: etablissement.zip_code,
+            ville: etablissement.city,
+            siret: etablissement?.formateur_siret,
             optOutActivatedAtDate: willBeActivatedAt.format("DD/MM"),
             linkToUnsubscribe: `${config.publicUrlEspacePro}/form/opt-out/unsubscribe/${etablissement._id}`,
           },
@@ -92,11 +92,10 @@ export const inviteEtablissementToOptOut = async ({ etablissements, widgetParame
       })
 
       await etablissement.update({
-        opt_mode: optMode.OPT_OUT,
-        opt_out_invited_at: dayjs().toDate(),
-        opt_out_will_be_activated_at: willBeActivatedAt.toDate(),
+        optout_invitation_date: dayjs().toDate(),
+        optout_activation_scheduled_date: willBeActivatedAt.toDate(),
         $push: {
-          mailing: {
+          to_etablissement_emails: {
             campaign: mailType.OPT_OUT_INVITE,
             status: null,
             message_id: messageId,
@@ -112,7 +111,7 @@ export const inviteEtablissementToOptOut = async ({ etablissements, widgetParame
 
       emails = _(emails)
         .uniq(emails)
-        .filter((email) => email !== etablissement.email_decisionnaire)
+        .filter((email) => email !== etablissement.gestionnaire_email)
         .omitBy(_.isNil)
 
       await Promise.all(
@@ -132,12 +131,12 @@ export const inviteEtablissementToOptOut = async ({ etablissements, widgetParame
               etablissement: {
                 name: etablissement.raison_sociale,
                 address: etablissement.adresse,
-                postalCode: etablissement.code_postal,
-                ville: etablissement.localite,
-                siret: etablissement.siret_formateur,
-                email: etablissement.email_decisionnaire,
+                postalCode: etablissement.zip_code,
+                ville: etablissement.city,
+                siret: etablissement.formateur_siret,
+                email: etablissement.gestionnaire_email,
                 optOutActivatedAtDate: willBeActivatedAt.format("DD/MM"),
-                emailGestionnaire: etablissement.email_decisionnaire,
+                emailGestionnaire: etablissement.gestionnaire_email,
               },
               user: {
                 destinataireEmail: email,
@@ -148,7 +147,7 @@ export const inviteEtablissementToOptOut = async ({ etablissements, widgetParame
       )
 
       logger.info("Etablissement invited to opt-out.", {
-        siretFormateur: etablissement.siret_formateur,
+        siretFormateur: etablissement.formateur_siret,
         willBeActivatedAt: willBeActivatedAt.format(),
         emailDecisionaire,
       })

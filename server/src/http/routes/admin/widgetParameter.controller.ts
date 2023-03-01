@@ -4,10 +4,8 @@ import express from "express"
 import Joi from "joi"
 import json2csvParser from "json2csv"
 import { logger } from "../../../common/logger.js"
-import { optMode } from "../../../common/model/constants/etablissement.js"
 import { getReferrerById } from "../../../common/model/constants/referrers.js"
 import { WidgetParameter } from "../../../common/model/index.js"
-import { dayjs } from "../../../common/utils/dayjs.js"
 import { getFormationsByIdRcoFormations, getFormationsBySiretFormateur } from "../../../services/catalogue.service.js"
 import { tryCatch } from "../../middlewares/tryCatchMiddleware.js"
 
@@ -39,7 +37,7 @@ const widgetParameterImportSchema = Joi.object({
   parameters: Joi.array()
     .items(
       Joi.object({
-        siret_formateur: Joi.string().required(),
+        formateur_siret: Joi.string().required(),
         referrers: Joi.array().items(Joi.number()),
         email: Joi.string().required(),
       })
@@ -72,7 +70,7 @@ export default ({ widgetParameters, etablissements }) => {
 
       const parameters = await Promise.all(
         allData.docs.map(async (parameter) => {
-          const etablissement = await etablissements.findOne({ siret_formateur: parameter.etablissement_siret })
+          const etablissement = await etablissements.findOne({ formateur_siret: parameter.etablissement_siret })
 
           return {
             etablissement_raison_sociale: etablissement?.raison_sociale || "N/C",
@@ -115,7 +113,7 @@ export default ({ widgetParameters, etablissements }) => {
           })
         }
 
-        const etablissement = await etablissements.findOne({ siret_formateur: parameter.etablissement_siret })
+        const etablissement = await etablissements.findOne({ formateur_siret: parameter.etablissement_siret })
 
         parameters.push({
           siret: parameter.etablissement_siret,
@@ -124,9 +122,9 @@ export default ({ widgetParameters, etablissements }) => {
           formation: parameter.formation_intitule,
           cfd: parameter.formation_cfd,
           email: parameter.email_rdv,
-          localite: parameter.localite,
+          localite: parameter.city,
           email_catalogue: formations.length ? formations[0].email : "",
-          code_postal: parameter.code_postal,
+          code_postal: parameter.zip_code,
           sources: parameter.referrers.map((referrer) => getReferrerById(referrer).full_name).join(", "),
         })
       }
@@ -214,7 +212,7 @@ export default ({ widgetParameters, etablissements }) => {
 
       const result = []
       for (const parameter of body.parameters) {
-        const formations = await getFormationsBySiretFormateur({ siretFormateur: parameter.siret_formateur })
+        const formations = await getFormationsBySiretFormateur({ siretFormateur: parameter.formateur_siret })
 
         if (formations.length) {
           const widgetParametersCreated = await Promise.all(
@@ -227,7 +225,7 @@ export default ({ widgetParameters, etablissements }) => {
                 return widgetParameters.findUpdateOrCreate({
                   email_rdv: parameter.email,
                   referrers: parameter.referrers,
-                  etablissement_siret: parameter.siret_formateur,
+                  etablissement_siret: parameter.formateur_siret,
                   rco_formation_id: formation.rco_formation_id,
                   code_postal: formation.code_postal,
                   etablissement_raison_sociale: formation.etablissement_formateur_entreprise_raison_sociale,
@@ -238,7 +236,6 @@ export default ({ widgetParameters, etablissements }) => {
             })
           )
 
-          await etablissements.findOneAndUpdate({ siret_formateur: parameter.siret_formateur, opt_mode: null }, { opt_mode: optMode.OPT_IN, opt_in_activated_at: dayjs().format() })
           result.push({
             ...parameter,
             formations: widgetParametersCreated.filter(Boolean),

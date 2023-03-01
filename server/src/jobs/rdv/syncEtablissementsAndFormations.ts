@@ -54,13 +54,13 @@ export const syncEtablissementsAndFormations = async ({ etablissements, widgetPa
           widgetParameters.findOne({
             cle_ministere_educatif: formation.cle_ministere_educatif,
           }),
-          etablissements.findOne({ siret_formateur: formation.etablissement_formateur_siret }),
+          etablissements.findOne({ formateur_siret: formation.etablissement_formateur_siret }),
           catalogueMinistereEducatif.find((formationMe) => formationMe.cle_ministere_educatif === formation.cle_ministere_educatif),
         ])
 
         // Activate opt_out referrers
         const referrersToActivate = []
-        if (etablissement?.opt_out_activated_at) {
+        if (etablissement?.optout_activation_date) {
           referrersToActivate.push(referrers.LBA.code)
           referrersToActivate.push(referrers.ONISEP.code)
           referrersToActivate.push(referrers.PFR_PAYS_DE_LA_LOIRE.code)
@@ -68,7 +68,7 @@ export const syncEtablissementsAndFormations = async ({ etablissements, widgetPa
         }
 
         // Activate premium referrers
-        if (etablissement?.premium_activated_at) {
+        if (etablissement?.premium_activation_date) {
           referrersToActivate.push(referrers.PARCOURSUP.code)
         }
 
@@ -90,14 +90,14 @@ export const syncEtablissementsAndFormations = async ({ etablissements, widgetPa
               id_parcoursup: formationMinistereEducatif?.parcoursup_id,
               cle_ministere_educatif: formation.cle_ministere_educatif,
               formation_cfd: formation.cfd,
-              code_postal: formation.code_postal,
+              zip_code: formation.code_postal,
               formation_intitule: formation.intitule_long,
               referrers: emailRdv && !emailBlacklisted ? referrersToActivate : [],
               catalogue_published: formation.published,
               rco_formation_id: formation.id_rco_formation,
               cfd: formation.cfd,
-              localite: formation.localite,
-              last_catalogue_sync: dayjs().format(),
+              city: formation.localite,
+              last_catalogue_sync_date: dayjs().format(),
               etablissement_siret: formation.etablissement_formateur_siret,
               etablissement_raison_sociale: formation.etablissement_formateur_entreprise_raison_sociale,
               etablissement_formateur_adresse: formation.etablissement_formateur_adresse,
@@ -120,14 +120,14 @@ export const syncEtablissementsAndFormations = async ({ etablissements, widgetPa
             id_parcoursup: formationMinistereEducatif?.parcoursup_id,
             cle_ministere_educatif: formation.cle_ministere_educatif,
             formation_cfd: formation.cfd,
-            code_postal: formation.code_postal,
+            zip_code: formation.code_postal,
             formation_intitule: formation.intitule_long,
             referrers: emailRdv && !emailBlacklisted ? referrersToActivate : [],
             catalogue_published: formation.published,
             rco_formation_id: formation.id_rco_formation,
-            last_catalogue_sync: dayjs().format(),
+            last_catalogue_sync_date: dayjs().format(),
             cfd: formation.cfd,
-            localite: formation.localite,
+            city: formation.localite,
             lieu_formation_adresse: formation.lieu_formation_adresse,
             etablissement_siret: formation.etablissement_formateur_siret,
             etablissement_raison_sociale: formation.etablissement_formateur_entreprise_raison_sociale,
@@ -140,7 +140,7 @@ export const syncEtablissementsAndFormations = async ({ etablissements, widgetPa
           })
         }
 
-        let emailDecisionnaire = etablissement?.email_decisionnaire
+        let emailDecisionnaire = etablissement?.gestionnaire_email
         if (formation.etablissement_gestionnaire_courriel && isValidEmail(formation.etablissement_gestionnaire_courriel)) {
           emailDecisionnaire = formation.etablissement_gestionnaire_courriel.toLowerCase()
         }
@@ -148,18 +148,18 @@ export const syncEtablissementsAndFormations = async ({ etablissements, widgetPa
         // Update etablissement model (upsert)
         return etablissements.updateMany(
           {
-            siret_formateur: formation.etablissement_formateur_siret,
+            formateur_siret: formation.etablissement_formateur_siret,
           },
           {
-            siret_formateur: formation.etablissement_formateur_siret,
-            siret_gestionnaire: formation.etablissement_gestionnaire_siret,
-            email_decisionnaire: emailDecisionnaire,
+            formateur_siret: formation.etablissement_formateur_siret,
+            gestionnaire_siret: formation.etablissement_gestionnaire_siret,
+            gestionnaire_email: emailDecisionnaire,
             raison_sociale: formation.etablissement_formateur_entreprise_raison_sociale,
             etablissement_formateur_courriel: formation.etablissement_formateur_courriel,
             adresse: formation.etablissement_formateur_adresse,
-            code_postal: formation.etablissement_formateur_code_postal,
-            localite: formation.etablissement_formateur_localite,
-            last_catalogue_sync: dayjs().format(),
+            zip_code: formation.etablissement_formateur_code_postal,
+            city: formation.etablissement_formateur_localite,
+            last_catalogue_sync_date: dayjs().format(),
           }
         )
       },

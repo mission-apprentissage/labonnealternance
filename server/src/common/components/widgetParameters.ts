@@ -14,9 +14,9 @@ export default () => ({
    * @param {String} formation_intitule
    * @param {String} formation_cfd
    * @param {String} email_rdv
-   * @param {String} email_decisionnaire
-   * @param {String} code_postal
-   * @param {String} id_rco_formation
+   * @param {String} gestionnaire_email
+   * @param {String} zip_code
+   * @param {String} rco_formation_id
    * @param {String} referrers
    * @param {String} cle_ministere_educatif
    * @returns {Promise<WidgetParameter>}
@@ -27,8 +27,8 @@ export default () => ({
     formation_intitule,
     formation_cfd,
     email_rdv,
-    email_decisionnaire,
-    code_postal,
+    gestionnaire_email,
+    zip_code,
     rco_formation_id,
     referrers,
     cle_ministere_educatif,
@@ -39,8 +39,8 @@ export default () => ({
       formation_intitule,
       formation_cfd,
       email_rdv,
-      email_decisionnaire,
-      code_postal,
+      gestionnaire_email,
+      zip_code,
       rco_formation_id,
       referrers,
       cle_ministere_educatif,

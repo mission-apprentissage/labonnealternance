@@ -15,9 +15,9 @@ export const parcoursupEtablissementStat = async ({ etablissements, appointments
   const [allAppointments, allEtablissements] = await Promise.all([appointments.find({ appointment_origin: referrers.PARCOURSUP.name }).lean(), etablissements.find().lean()])
 
   const stats = allEtablissements
-    .filter((etablissement) => etablissement.premium_activated_at)
+    .filter((etablissement) => etablissement.premium_activation_date)
     .map((etablissement) => {
-      const relatedAppointments = allAppointments.filter((appointment) => appointment.etablissement_id === etablissement.siret_formateur)
+      const relatedAppointments = allAppointments.filter((appointment) => appointment.etablissement_id === etablissement.formateur_siret)
 
       const openedAppointments = relatedAppointments.filter((appointment) => appointment.cfa_read_appointment_details_date)
       const notopenedAppointments = relatedAppointments.filter((appointment) => !appointment.cfa_read_appointment_details_date)
@@ -32,9 +32,9 @@ export const parcoursupEtablissementStat = async ({ etablissements, appointments
       const totalOpenedAppointments = openedAppointments.length
 
       return {
-        siret_formateur: etablissement.siret_formateur,
+        formateur_siret: etablissement.formateur_siret,
         raison_sociale: etablissement.raison_sociale,
-        premium_activation_date: etablissement.premium_activated_at,
+        premium_activation_date: etablissement.premium_activation_date,
         total_appointments: relatedAppointments.length,
         applicants_details_checked: openedAppointments.length,
         applicants_details_not_checked: notopenedAppointments.length,

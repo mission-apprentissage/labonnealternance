@@ -51,12 +51,12 @@ export default ({ etablissements, mailer, widgetParameters, appointments }) => {
         throw Boom.badRequest("Etablissement not found.")
       }
 
-      if (etablissement.premium_activated_at) {
+      if (etablissement.premium_activation_date) {
         throw Boom.badRequest("Premium already activated.")
       }
 
       const { messageId } = await mailer.sendEmail({
-        to: etablissement.email_decisionnaire,
+        to: etablissement.gestionnaire_email,
         subject: `Activation du service “RDV Apprentissage” sur Parcoursup`,
         template: mailTemplate["mail-cfa-premium-start"],
         data: {
@@ -68,10 +68,10 @@ export default ({ etablissements, mailer, widgetParameters, appointments }) => {
           etablissement: {
             name: etablissement.raison_sociale,
             address: etablissement.adresse,
-            postalCode: etablissement.code_postal,
-            ville: etablissement.localite,
-            siret: etablissement.siret_formateur,
-            email: etablissement.email_decisionnaire,
+            postalCode: etablissement.zip_code,
+            ville: etablissement.city,
+            siret: etablissement.formateur_siret,
+            email: etablissement.gestionnaire_email,
           },
           activationDate: dayjs().format("DD/MM"),
         },
@@ -79,7 +79,7 @@ export default ({ etablissements, mailer, widgetParameters, appointments }) => {
 
       const [widgetParametersFound, etablissementUpdated] = await Promise.all([
         widgetParameters.find({
-          etablissement_siret: etablissement.siret_formateur,
+          etablissement_siret: etablissement.formateur_siret,
           id_parcoursup: {
             $ne: null,
           },
@@ -88,14 +88,14 @@ export default ({ etablissements, mailer, widgetParameters, appointments }) => {
           { _id: etablissement._id },
           {
             $push: {
-              mailing: {
+              to_etablissement_emails: {
                 campaign: mailType.PREMIUM_STARTING,
                 status: null,
                 message_id: messageId,
                 email_sent_at: dayjs().toDate(),
               },
             },
-            premium_activated_at: dayjs().toDate(),
+            premium_activation_date: dayjs().toDate(),
           }
         ),
       ])
@@ -109,7 +109,7 @@ export default ({ etablissements, mailer, widgetParameters, appointments }) => {
       emails = _(emails)
         .uniq()
         .omitBy(_.isNil)
-        .omitBy((item) => item === etablissement.email_decisionnaire)
+        .omitBy((item) => item === etablissement.gestionnaire_email)
         .toArray()
 
       await Promise.all(
@@ -128,13 +128,13 @@ export default ({ etablissements, mailer, widgetParameters, appointments }) => {
               },
               etablissement: {
                 name: etablissement.raison_sociale,
-                address: etablissement.adresse,
-                postalCode: etablissement.code_postal,
-                ville: etablissement.localite,
-                siret: etablissement.siret_formateur,
-                email: etablissement.email_decisionnaire,
-                premiumActivatedDate: dayjs(etablissementUpdated.premium_activated_at).format("DD/MM"),
-                emailGestionnaire: etablissement.email_decisionnaire,
+                address: etablissement.address,
+                postalCode: etablissement.zip_code,
+                ville: etablissement.city,
+                siret: etablissement.formateur_siret,
+                email: etablissement.gestionnaire_email,
+                premiumActivatedDate: dayjs(etablissementUpdated.premium_activation_date).format("DD/MM"),
+                emailGestionnaire: etablissement.gestionnaire_email,
               },
               user: {
                 destinataireEmail: email,
@@ -172,16 +172,16 @@ export default ({ etablissements, mailer, widgetParameters, appointments }) => {
         throw Boom.badRequest("Etablissement not found.")
       }
 
-      if (etablissement.premium_refused_at) {
+      if (etablissement.premium_refusal_date) {
         throw Boom.badRequest("Premium already refused.")
       }
 
-      if (etablissement.premium_activated_at) {
+      if (etablissement.premium_activation_date) {
         throw Boom.badRequest("Premium already activated.")
       }
 
       const { messageId } = await mailer.sendEmail({
-        to: etablissement.email_decisionnaire,
+        to: etablissement.gestionnaire_email,
         subject: `Le service “RDV Apprentissage” ne sera pas activé sur Parcoursup`,
         template: mailTemplate["mail-cfa-premium-refused"],
         data: {
@@ -194,10 +194,10 @@ export default ({ etablissements, mailer, widgetParameters, appointments }) => {
           etablissement: {
             name: etablissement.raison_sociale,
             address: etablissement.adresse,
-            postalCode: etablissement.code_postal,
-            ville: etablissement.localite,
-            siret: etablissement.siret_formateur,
-            email: etablissement.email_decisionnaire,
+            postalCode: etablissement.zip_code,
+            ville: etablissement.city,
+            siret: etablissement.formateur_siret,
+            email: etablissement.gestionnaire_email,
           },
           activationDate: dayjs().format("DD/MM"),
         },
@@ -207,14 +207,14 @@ export default ({ etablissements, mailer, widgetParameters, appointments }) => {
         { _id: etablissement._id },
         {
           $push: {
-            mailing: {
+            to_etablissement_emails: {
               campaign: mailType.PREMIUM_REFUSED,
               status: null,
               message_id: messageId,
               email_sent_at: dayjs().toDate(),
             },
           },
-          premium_refused_at: dayjs().toDate(),
+          premium_refusal_date: dayjs().toDate(),
         }
       )
 
@@ -244,7 +244,7 @@ export default ({ etablissements, mailer, widgetParameters, appointments }) => {
         throw Boom.badRequest("Etablissement not found.")
       }
 
-      if (!appointment || appointment.etablissement_id !== etablissement.siret_formateur) {
+      if (!appointment || appointment.etablissement_id !== etablissement.formateur_siret) {
         throw Boom.badRequest("Appointment not found.")
       }
 
@@ -273,15 +273,11 @@ export default ({ etablissements, mailer, widgetParameters, appointments }) => {
         return res.sendStatus(404)
       }
 
-      if (etablissement.opt_out_refused_at) {
+      if (etablissement.optout_refusal_date) {
         return res.sendStatus(400)
       }
 
       if (opt_out_question) {
-        await etablissements.findByIdAndUpdate(req.params.id, {
-          opt_out_question,
-        })
-
         etablissement = await etablissements.findById(req.params.id)
 
         await mailer.sendEmail({
@@ -296,26 +292,26 @@ export default ({ etablissements, mailer, widgetParameters, appointments }) => {
             etablissement: {
               name: etablissement.raison_sociale,
               address: etablissement.adresse,
-              postalCode: etablissement.code_postal,
-              ville: etablissement.localite,
-              opt_out_question: etablissement.opt_out_question,
+              postalCode: etablissement.zip_code,
+              ville: etablissement.city,
+              opt_out_question,
             },
             user: {
-              destinataireEmail: etablissement.email_decisionnaire,
+              destinataireEmail: etablissement.gestionnaire_email,
             },
           },
-          from: etablissement.email_decisionnaire,
+          from: etablissement.gestionnaire_email,
         })
 
         return res.send(etablissement)
       }
 
       // If opt-out is already running but user unsubscribe, disable all formations
-      if (etablissement.opt_out_activated_at && dayjs(etablissement.opt_out_activated_at).isBefore(dayjs())) {
+      if (etablissement.optout_activation_date && dayjs(etablissement.optout_activation_date).isBefore(dayjs())) {
         // Disable all formations
         await widgetParameters.updateMany(
           {
-            etablissement_siret: etablissement.siret_formateur,
+            etablissement_siret: etablissement.formateur_siret,
           },
           {
             referrers: [],
@@ -324,11 +320,11 @@ export default ({ etablissements, mailer, widgetParameters, appointments }) => {
       }
 
       await etablissements.findByIdAndUpdate(req.params.id, {
-        opt_out_refused_at: dayjs().toDate(),
+        optout_refusal_date: dayjs().toDate(),
       })
 
       const { messageId } = await mailer.sendEmail({
-        to: etablissement.email_decisionnaire,
+        to: etablissement.gestionnaire_email,
         subject: `Désincription au service “RDV Apprentissage”`,
         template: mailTemplate["mail-cfa-optout-unsubscription"],
         data: {
@@ -338,13 +334,13 @@ export default ({ etablissements, mailer, widgetParameters, appointments }) => {
           },
           etablissement: {
             name: etablissement.raison_sociale,
-            address: etablissement.adresse,
-            postalCode: etablissement.code_postal,
-            ville: etablissement.localite,
-            siret: etablissement.siret_formateur,
+            address: etablissement.address,
+            postalCode: etablissement.zip_code,
+            ville: etablissement.city,
+            siret: etablissement.formateur_siret,
           },
           user: {
-            destinataireEmail: etablissement.email_decisionnaire,
+            destinataireEmail: etablissement.gestionnaire_email,
           },
         },
       })
@@ -353,7 +349,7 @@ export default ({ etablissements, mailer, widgetParameters, appointments }) => {
         { _id: etablissement._id },
         {
           $push: {
-            mailing: {
+            to_etablissement_emails: {
               campaign: mailType.OPT_OUT_UNSUBSCRIPTION_CONFIRMATION,
               status: null,
               message_id: messageId,

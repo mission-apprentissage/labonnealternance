@@ -18,7 +18,7 @@ export const widgetParameterSchema = new Schema<IWidgetParameter>({
     default: null,
     description: "Intitulé long de la formation autorisée",
   },
-  code_postal: {
+  zip_code: {
     type: String,
     default: null,
     description: "Code postal du lieu de formation",
@@ -53,7 +53,7 @@ export const widgetParameterSchema = new Schema<IWidgetParameter>({
     default: null,
     description: "Si la formation est publiée sur le Catalogue",
   },
-  last_catalogue_sync: {
+  last_catalogue_sync_date: {
     type: Date,
     default: Date.now,
     description: "Date de la dernière synchronisation avec le Catalogue",
@@ -108,7 +108,7 @@ export const widgetParameterSchema = new Schema<IWidgetParameter>({
     default: null,
     description: "Siret gestionnaire",
   },
-  localite: {
+  city: {
     type: String,
     default: null,
     description: "Localité de la formation",
