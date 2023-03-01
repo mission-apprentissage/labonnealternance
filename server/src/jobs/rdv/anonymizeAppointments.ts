@@ -22,5 +22,5 @@ export const anonimizeAppointments = async () => {
   )
   logger.info("job #anonimizeAppointments done")
 
-  return result.upserted
+  return result
 }
