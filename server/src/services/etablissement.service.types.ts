@@ -1,4 +1,9 @@
-export interface IApiEntreprise {
+export interface IAPIEtablissement {
+  etablissement: IEtablissementGouv
+  gateway_error: boolean
+}
+
+export interface IEtablissementGouv {
   siege_social: boolean
   siret: string
   naf: string

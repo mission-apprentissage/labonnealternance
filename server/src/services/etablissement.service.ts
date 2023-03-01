@@ -6,7 +6,8 @@ import { IEtablissement } from "../common/model/schema/etablissements/etablissem
 import { IReferentielOpco } from "../common/model/schema/referentielOpco/referentielOpco.types.js"
 import { IUserRecruteur } from "../common/model/schema/userRecruteur/userRecruteur.types.js"
 import config from "../config.js"
-import { IAPIAdresse, IApiEntreprise, ICFADock, IEtablissementCatalogue, IReferentiel, ISIRET2IDCC } from "./etablissement.service.types.js"
+
+import { IAPIAdresse, IAPIEtablissement, ICFADock, IEtablissementCatalogue, IEtablissementGouv, IReferentiel, ISIRET2IDCC } from "./etablissement.service.types.js"
 
 const apiParams = {
   token: config.apiEntrepriseKey,
@@ -107,21 +108,42 @@ export const getEtablissement = async (query: object): Promise<IUserRecruteur> =
  * @param {String} siret
  * @returns {Promise<Object>}
  */
-export const getOpco = (siret: string): Promise<ICFADock> => axios.get(`https://www.cfadock.fr/api/opcos?siret=${siret}`)
+export const getOpco = async (siret: string): Promise<ICFADock> => {
+  try {
+    const { data } = await axios.get<ICFADock>(`https://www.cfadock.fr/api/opcos?siret=${siret}`)
+    return data
+  } catch (error) {
+    throw error
+  }
+}
 
 /**
  * @description Get opco details from CFADOCK API from a given IDCC
  * @param {Number} idcc
  * @returns {Promise<Object>}
  */
-export const getOpcoByIdcc = (idcc: number): Promise<ICFADock> => axios.get(`https://www.cfadock.fr/api/opcos?idcc=${idcc}`)
+export const getOpcoByIdcc = async (idcc: number): Promise<ICFADock> => {
+  try {
+    const { data } = await axios.get<ICFADock>(`https://www.cfadock.fr/api/opcos?idcc=${idcc}`)
+    return data
+  } catch (error) {
+    throw error
+  }
+}
 
 /**
  * @description Get idcc number from SIRET2IDCC API from a given SIRET
  * @param {String} siret
  * @returns {Promise<Object>}
  */
-export const getIdcc = (siret: string): Promise<ISIRET2IDCC> => axios.get(`https://siret2idcc.fabrique.social.gouv.fr/api/v2/${siret}`)
+export const getIdcc = async (siret: string): Promise<ISIRET2IDCC> => {
+  try {
+    const { data } = await axios.get<ISIRET2IDCC>(`https://siret2idcc.fabrique.social.gouv.fr/api/v2/${siret}`)
+    return data
+  } catch (error) {
+    throw error
+  }
+}
 /**
  * @description Get the establishment validation url for a given SIRET
  * @param {String} _id
@@ -139,16 +161,16 @@ export const validateEtablissementEmail = async (_id: string): Promise<IUserRecr
  * @param {String} siret
  * @returns {Promise<IApiEntreprise>}
  */
-export const getEtablissementFromGouv = async (siret: string): Promise<IApiEntreprise | { error: boolean }> => {
+export const getEtablissementFromGouv = async (siret: string): Promise<IAPIEtablissement> => {
   try {
-    const result: IApiEntreprise = await axios.get(`https://entreprise.api.gouv.fr/v2/etablissements/${siret}`, {
+    const { data } = await axios.get<IAPIEtablissement>(`https://entreprise.api.gouv.fr/v2/etablissements/${siret}`, {
       params: apiParams,
     })
 
-    return result
+    return data
   } catch (error) {
     Sentry.captureException(error)
-    return { error: true }
+    throw error
   }
 }
 /**
@@ -156,15 +178,13 @@ export const getEtablissementFromGouv = async (siret: string): Promise<IApiEntre
  * @param {String} siret
  * @returns {Promise<IReferentiel>}
  */
-export const getEtablissementFromReferentiel = async (siret: string): Promise<IReferentiel | null> => {
+export const getEtablissementFromReferentiel = async (siret: string): Promise<IReferentiel> => {
   try {
-    const response: IReferentiel = await axios.get(`https://referentiel.apprentissage.beta.gouv.fr/api/v1/organismes/${siret}`)
-    return response
+    const { data } = await axios.get<IReferentiel>(`https://referentiel.apprentissage.beta.gouv.fr/api/v1/organismes/${siret}`)
+    return data
   } catch (error) {
     Sentry.captureException(error)
-    if (error.response.status === 404) {
-      return null
-    }
+    throw error
   }
 }
 /**
@@ -202,18 +222,36 @@ export const getGeoCoordinates = async (adresse: string): Promise<string> => {
 }
 /**
  * @description Get matching records from the ReferentielOpco collection for a given siret & email)
- * @param {String} siret_code
- * @param {String} email
+ * @param {String} siretCode
  * @returns {Promise<IReferentielOpco>}
  */
-export const getEstablishmentFromOpcoReferentiel = async (siret_code: string, email: string): Promise<IReferentielOpco> =>
-  await ReferentielOpco.findOne({ siret_code, emails: { $in: [email] } })
+export const getEstablishmentFromOpcoReferentiel = async (siretCode: string): Promise<IReferentielOpco> => await ReferentielOpco.findOne({ siret_code: siretCode })
+/**
+ * @description Chech if a given email is included in the given email list array
+ * @param {String} email
+ * @param {String[]} emailList
+ * @returns {Boolean}
+ */
+export const getMatchingEmailFromContactList = (email: string, emailList: string[]): boolean => emailList.includes(email)
+/**
+ * @description Check if the email domain is included in the givne email list array
+ * @param {String} email
+ * @param {String[]} emailList
+ * @returns {Boolean}
+ */
+export const getMatchingDomainFromContactList = (email: string, emailList: string[]): boolean => {
+  const [_, domain] = email.split("@")
+
+  const regex = new RegExp(`/${domain}/i`)
+
+  return emailList.some(regex.test)
+}
 /**
  * @description Format Entreprise data
  * @param {Object} d
  * @returns {Object}
  */
-export const formatEntrepriseData = (d: IApiEntreprise): object => ({
+export const formatEntrepriseData = (d: IEtablissementGouv) => ({
   enseigne: d.enseigne,
   etat: d.etat_administratif.value, // F pour fermé ou A pour actif
   siret: d.siret,
@@ -233,7 +271,7 @@ export const formatEntrepriseData = (d: IApiEntreprise): object => ({
  * @param {Object} d
  * @returns {Object}
  */
-export const formatReferentielData = (d: IReferentiel): object => ({
+export const formatReferentielData = (d: IReferentiel) => ({
   etat: d.etat_administratif,
   qualiopi: d.qualiopi,
   siret: d.siret,
@@ -252,7 +290,7 @@ export const formatReferentielData = (d: IReferentiel): object => ({
  * @param {Object} d
  * @returns {Object}
  */
-export const formatCatalogueData = (d: IEtablissementCatalogue): object => ({
+export const formatCatalogueData = (d: IEtablissementCatalogue) => ({
   etat: d.ferme === false ? etat_etablissements.FERME : etat_etablissements.ACTIF,
   siret: d.siret,
   raison_sociale: d.entreprise_raison_sociale,
