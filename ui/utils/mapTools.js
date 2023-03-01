@@ -1,12 +1,13 @@
-import React from "react"
 import distance from "@turf/distance"
-import { MapPopup } from "../components/SearchForTrainingsAndJobs/components"
-import { createRoot } from "react-dom/client"
+import { round } from "lodash"
 import * as mapboxgl from "mapbox-gl"
 import "mapbox-gl/dist/mapbox-gl.css"
+import React from "react"
+import { createRoot } from "react-dom/client"
+import { MapPopup } from "../components/SearchForTrainingsAndJobs/components"
 import { fetchAddresses } from "../services/baseAdresse"
-import { scrollToElementInContainer, getItemElement } from "./tools"
 import { isArea } from "./isArea"
+import { getItemElement, scrollToElementInContainer } from "./tools"
 
 let currentPopup = null
 let map = null
@@ -448,7 +449,7 @@ const computeMissingPositionAndDistance = async (searchCenter, jobs) => {
           job.place.longitude = addresses[0].value.coordinates[0]
           job.place.latitude = addresses[0].value.coordinates[1]
           if (searchCenter) {
-            job.place.distance = Math.round(10 * distance(searchCenter, [job.place.longitude, job.place.latitude])) / 10
+            job.place.distance = round(distance(searchCenter, [job.place.longitude, job.place.latitude]))
           }
         }
       }
