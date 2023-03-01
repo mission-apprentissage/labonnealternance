@@ -1,8 +1,6 @@
 // @ts-nocheck
 import { logger } from "../../common/logger.js"
-import { BonnesBoites } from "../../common/model/index.js"
 import { mongooseInstance } from "../../common/mongodb.js"
-import { rebuildIndex } from "../../common/utils/esUtils.js"
 import { getReferrerById } from "../../common/model/constants/referrers.js"
 
 export default async function cleanAndRenameFields() {
@@ -57,6 +55,10 @@ export default async function cleanAndRenameFields() {
     }
   )
   logger.info(`Fin renommage champs de la collection appointments (${res.result.nModified} items mis à jour)`)
+
+  // Rename "referrer" id (number) to string name
+  const appointments = await db.collections.appointments.find({})
+  await Promise.all(appointments.map((appointment) => appointment.update({ referrer: getReferrerById(appointment.referrer).name })))
 
   // Etablissements: deletions
   res = await db.collections.etablissements.updateMany(
@@ -134,5 +136,10 @@ export default async function cleanAndRenameFields() {
   )
   logger.info(`Fin renommage champs de la collection eligibleTrainingsForAppointments (${res.result.nModified} items mis à jour)`)
 
-  db.eligibleTrainingsForAppointments.renameCollection("eligible_trainings_for_appointments")
+  // Rename "referrers" ids (number) to string name
+  const eligibleTrainingsForAppointments = await db.collections.eligibleTrainingsForAppointments.find({})
+  await Promise.all(eligibleTrainingsForAppointments.map((item) => item.update({ referrers: item.referrers.map((referrer) => getReferrerById(referrer).name) })))
+
+  // Rename collection
+  await db.eligibleTrainingsForAppointments.renameCollection("eligible_trainings_for_appointments")
 }
