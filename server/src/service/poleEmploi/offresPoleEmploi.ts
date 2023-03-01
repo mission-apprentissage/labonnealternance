@@ -1,6 +1,7 @@
 // @ts-nocheck
 import distance from "@turf/distance"
 import axios from "axios"
+import { roundDistance } from "../../common/geolib.js"
 import { manageApiError } from "../../common/utils/errorManager.js"
 import { trackApiCall } from "../../common/utils/sendTrackingEvent.js"
 import { itemModel } from "../../model/itemModel.js"
@@ -192,9 +193,11 @@ const transformPeJobForIdea = ({ job, lat = null, long = null, caller = null }) 
 
 const computeJobDistanceToSearchCenter = (job, lat, long) => {
   // si la distance au centre du point de recherche n'est pas connue, on la calcule avec l'utilitaire distance de turf.js
-  if (job.lieuTravail && job.lieuTravail.latitude && job.lieuTravail.longitude)
-    return Math.round(10 * distance([long, lat], [job.lieuTravail.longitude, job.lieuTravail.latitude])) / 10
-  else return null
+  if (job.lieuTravail && job.lieuTravail.latitude && job.lieuTravail.longitude) {
+    return roundDistance(distance([long, lat], [job.lieuTravail.longitude, job.lieuTravail.latitude]))
+  } 
+  
+  return null
 }
 
 const peJobsApiEndpoint = "https://api.pole-emploi.io/partenaire/offresdemploi/v2/offres/search"
