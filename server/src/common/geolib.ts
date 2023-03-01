@@ -1,4 +1,5 @@
 import distance from "@turf/distance"
+import { round } from "lodash-es"
 
 /**
  * @description Returns number of kilometers between two geo points.
@@ -10,3 +11,5 @@ export const getDistanceInKm = (coordinate) => {
 
   return Math.ceil(distanceInKm)
 }
+
+export const roundDistance = (distance: number, precision: number = 2): number => round(distance, precision)
