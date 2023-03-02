@@ -1,6 +1,5 @@
 import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Flex, Image, Link, Text } from "@chakra-ui/react"
-import { round } from "lodash"
 import React from "react"
 import { endsWithNumber } from "../../utils/strutils"
 import { getCompanyPathLink, getPathLink } from "../../utils/tools"
@@ -79,7 +78,7 @@ const LocationDetail = ({ item, isCfa }) => {
           <Box mt={3} color="grey.700">
             {item?.company?.place?.city}
           </Box>
-          {item?.place?.distance && <Box fontSize="14px" color="grey.600">{`${round(item.place.distance, 1)} km(s) du lieu de recherche`}</Box>}
+          {item?.place?.distance !== null && <Box fontSize="14px" color="grey.600">{`${item?.place?.distance} km(s) du lieu de recherche`}</Box>}
 
           <Flex mt={4} alignItems="center" direction="row">
             <Box width="30px" minWidth="30px" pl="1px" mr={2}>
@@ -107,7 +106,7 @@ const LocationDetail = ({ item, isCfa }) => {
           {item?.place?.fullAddress}
         </Box>
 
-        {item?.place?.distance && !item?.company?.mandataire && <Box color="grey.600" fontSize="14px">{`${round(item.place.distance, 1)} km(s) du lieu de recherche`}</Box>}
+        {item?.place?.distance !== null && !item?.company?.mandataire && <Box color="grey.600" fontSize="14px">{`${item?.place?.distance} km(s) du lieu de recherche`}</Box>}
 
         <Flex mt={4} alignItems="center" direction="row">
           <Box width="30px" minWidth="30px" pl="1px" mr={2}>

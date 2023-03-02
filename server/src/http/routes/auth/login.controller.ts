@@ -6,6 +6,7 @@ import { ExtractJwt, Strategy } from "passport-jwt"
 import { Strategy as LocalStrategy } from "passport-local"
 import { mailTemplate } from "../../../assets/index.js"
 import { CFA, ENTREPRISE, etat_utilisateur } from "../../../common/constants.js"
+import { UserRecruteur } from "../../../common/model/index.js"
 import { createMagicLinkToken, createUserRecruteurToken, createUserToken } from "../../../common/utils/jwtUtils.js"
 import config from "../../../config.js"
 import { tryCatch } from "../../middlewares/tryCatchMiddleware.js"
@@ -119,7 +120,9 @@ export default ({ users, usersRecruteur, etablissementsRecruteur, mailer }) => {
         email: Joi.string().email().required(),
       }).validateAsync(req.body, { abortEarly: false })
 
-      const user = await usersRecruteur.getUser({ email })
+      const user = await UserRecruteur.findOne({ email }).collation({ locale: "fr", strength: 2 })
+
+      console.log(user)
 
       if (!user) {
         return res.status(400).json({ error: true, reason: "UNKNOWN" })
@@ -176,7 +179,7 @@ export default ({ users, usersRecruteur, etablissementsRecruteur, mailer }) => {
         })
       }
 
-      const magiclink = `${config.publicUrlEspacePro}/authentification/verification?token=${createMagicLinkToken(email)}`
+      const magiclink = `${config.publicUrlEspacePro}/authentification/verification?token=${createMagicLinkToken(user.email)}`
 
       await mailer.sendEmail({
         to: user.email,

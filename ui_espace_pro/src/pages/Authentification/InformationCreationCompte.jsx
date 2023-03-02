@@ -180,7 +180,7 @@ export default () => {
             // Dépot simplifié
             navigate("/creation/offre", {
               replace: true,
-              state: { id_form: data.formulaire.id_form, email: data.user.email, userId: data.user._id },
+              state: { id_form: data.formulaire.id_form, type, email: data.user.email, userId: data.user._id },
             })
           } else {
             navigate("/authentification/confirmation", { replace: true, state: { email: data.email } })

@@ -11,6 +11,7 @@ const recruteurEndpoint = `https://labonnealternance${config.env === "production
 
 const coordinatesOfFrance = [2.213749, 46.227638]
 
+import { roundDistance } from "../common/geolib.js"
 import { matchaMock, matchaMockMandataire, matchasMock } from "../mocks/matchas-mock.js"
 
 const getMatchaJobs = async ({ romes, radius, latitude, longitude, api, opco, caller, useMock }) => {
@@ -102,14 +103,14 @@ const transformMatchaJobForIdea = ({ job, distance, caller }) => {
     email = encryptMailWithIV({ value: job.email, caller })
 
     resultJob.id = `${job.id_form}-${idx}`
-    resultJob.title = offre.libelle
+    resultJob.title = offre.rome_appellation_label ?? offre.libelle
     resultJob.contact = {
       ...email,
       name: job.prenom + " " + job.nom,
       phone: job.telephone,
     }
 
-    resultJob.place.distance = distance ? Math.round(10 * distance) / 10 : 0
+    resultJob.place.distance = distance ? roundDistance(distance) : null
     resultJob.place.fullAddress = job.adresse
     resultJob.place.address = job.adresse
     resultJob.place.latitude = job.geo_coordonnees.split(",")[0]

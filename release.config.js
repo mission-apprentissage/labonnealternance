@@ -10,11 +10,10 @@ const mainConfig = {
         changelogFile: "CHANGELOG.md",
       },
     ],
-    "@semantic-release/npm",
     [
       "@semantic-release/exec",
       {
-        prepareCmd: "./scripts/prepare-release.sh ${nextRelease.version}",
+        prepareCmd: "./script/prepare-release.sh ${nextRelease.version}",
       },
     ],
     [

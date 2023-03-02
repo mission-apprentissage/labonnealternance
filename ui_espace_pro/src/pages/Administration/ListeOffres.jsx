@@ -215,12 +215,7 @@ export default () => {
                       </Link>
                     </MenuItem>
                     <MenuItem>
-                      <Link
-                        isExternal
-                        href={`https://labonnealternance${
-                          window.location.href.includes("recette") ? "-recette" : ""
-                        }.apprentissage.beta.gouv.fr/recherche-apprentissage?&type=matcha&itemId=${row._id}`}
-                      >
+                      <Link isExternal href={`${process.env.REACT_APP_BASE_URL}/recherche-apprentissage?&type=matcha&itemId=${row._id}`}>
                         Voir l'offre en ligne
                         <ExternalLinkLine ml={1} color="bluefrance.500" />
                       </Link>
@@ -228,10 +223,7 @@ export default () => {
                     {auth.type !== AUTHTYPE.CFA && (
                       <>
                         <MenuItem>
-                          <Link
-                            isExternal
-                            href={`https://labonnealternance.apprentissage.beta.gouv.fr/recherche-apprentissage-formation?&caller=matcha&romes=${row.romes}&lon=${lon}&lat=${lat}`}
-                          >
+                          <Link isExternal href={`${process.env.REACT_APP_BASE_URL}/recherche-apprentissage-formation?&caller=matcha&romes=${row.romes}&lon=${lon}&lat=${lat}`}>
                             Voir les centres de formations
                           </Link>
                         </MenuItem>
