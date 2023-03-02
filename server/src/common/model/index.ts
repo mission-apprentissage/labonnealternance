@@ -19,6 +19,7 @@ import ReferentielOpco from "./schema/referentielOpco/referentielOpco.schema.js"
 import User from "./schema/user/user.schema.js"
 import UserRecruteur from "./schema/userRecruteur/usersRecruteur.schema.js"
 import WidgetParameter from "./schema/widgetParameter/widgetParameter.schema.js"
+import WidgetParameterHistoric from "./schema/widgetParameterHistoric/widgetParamertHistoric.schema.js"
 
 export {
   DomainesMetiers,
@@ -42,4 +43,5 @@ export {
   ReferentielOpco,
   UserRecruteur,
   AppointmentDetailed,
+  WidgetParameterHistoric,
 }

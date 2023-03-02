@@ -3,8 +3,8 @@ import { Icon } from "@chakra-ui/react"
 export function LbaCandidat(props) {
   return (
     <Icon width="353px" height="91px" viewBox="0 0 353 135" {...props}>
-      <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="localsvg" fill-rule="nonzero">
+      <g id="Page-1" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
+        <g id="localsvg" fillRule="nonzero">
           <path
             d="M41.4,90.36 C64.2646,90.36 82.8,82.7847 82.8,73.44 C82.8,64.0954 64.2646,56.52 41.4,56.52 C18.5354,56.52 0,64.0954 0,73.44 C0,82.7847 18.5354,90.36 41.4,90.36 Z"
             id="Shape"

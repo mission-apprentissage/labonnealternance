@@ -5,6 +5,7 @@ import { manageApiError } from "../../common/utils/errorManager.js"
 import { isAllowedSource } from "../../common/utils/isAllowedSource.js"
 import { itemModel } from "../../model/itemModel.js"
 
+import { roundDistance } from "../../common/geolib.js"
 import { lbbMock } from "../../mocks/lbbs-mock.js"
 
 const esClient = getElasticInstance()
@@ -79,7 +80,7 @@ const transformLbbCompanyForIdea = ({ company, type, caller, contactAllowedOrigi
   const address = `${company.street_number} ${company.street_name}, ${company.zip_code} ${company.city}`.trim()
 
   resultCompany.place = {
-    distance: company.distance?.length ? Math.round(10 * company.distance[0]) / 10 ?? 0 : null,
+    distance: company.distance?.length ? roundDistance(company.distance[0]) ?? 0 : null,
     fullAddress: address,
     latitude: company.geo_coordinates.split(",")[0],
     longitude: company.geo_coordinates.split(",")[1],

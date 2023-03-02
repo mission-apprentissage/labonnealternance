@@ -22,6 +22,7 @@ interface IWidgetParameter {
   etablissement_gestionnaire_siret: string
   localite: string
   created_at: Date
+  historization_date: Date
 }
 
 export { IWidgetParameter }

@@ -2,7 +2,7 @@ export const itemModel = (type) => {
   return {
     ideaType: type, // type de l'item :  formation | lbb | lba | peJob | matcha
 
-    title: null, // pe -> intitule | lbb/lba -> enseigne | formation -> intitule_long OU intitule_court | matcha -> offres.libelle
+    title: null, // pe -> intitule | lbb/lba -> enseigne | formation -> intitule_long OU intitule_court | matcha -> offres.libelle || offres.rome_appellation_label
     longTitle: null, // formation -> intitule_long,
     id: null, // formation -> id | matcha -> id_form
     idRco: null, // formation -> id_formation
