@@ -254,13 +254,22 @@ export default ({ usersRecruteur, formulaire, mailer }) => {
                     statut: etat_utilisateur.VALIDE,
                   })
                 } else {
-                  const asMatchingDomain = getMatchingDomainFromContactList(partenaire.email, existInOpcoReferentiel.emails)
+                  const isPrivateDomain = checkIfUserEmailIsPrivate(partenaire.email)
+                  if (isPrivateDomain) {
+                    const asMatchingDomain = getMatchingDomainFromContactList(partenaire.email, existInOpcoReferentiel.emails)
 
-                  if (asMatchingDomain) {
+                    if (asMatchingDomain) {
+                      partenaire = await usersRecruteur.updateUserValidationHistory(partenaire._id, {
+                        validation_type: validation_utilisateur.AUTO,
+                        user: "SERVEUR",
+                        statut: etat_utilisateur.VALIDE,
+                      })
+                    }
+                  } else {
                     partenaire = await usersRecruteur.updateUserValidationHistory(partenaire._id, {
-                      validation_type: validation_utilisateur.AUTO,
+                      validation_type: validation_utilisateur.MANUAL,
                       user: "SERVEUR",
-                      statut: etat_utilisateur.VALIDE,
+                      statut: etat_utilisateur.ATTENTE,
                     })
                   }
                 }
