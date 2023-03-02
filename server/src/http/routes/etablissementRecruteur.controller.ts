@@ -264,13 +264,13 @@ export default ({ usersRecruteur, formulaire, mailer }) => {
                     })
                   }
                 }
+              } else {
+                partenaire = await usersRecruteur.updateUserValidationHistory(partenaire._id, {
+                  validation_type: validation_utilisateur.MANUAL,
+                  user: "SERVEUR",
+                  statut: etat_utilisateur.ATTENTE,
+                })
               }
-
-              partenaire = await usersRecruteur.updateUserValidationHistory(partenaire._id, {
-                validation_type: validation_utilisateur.MANUAL,
-                user: "SERVEUR",
-                statut: etat_utilisateur.ATTENTE,
-              })
 
               break
           }
