@@ -242,9 +242,7 @@ export const getMatchingEmailFromContactList = (email: string, emailList: string
 export const getMatchingDomainFromContactList = (email: string, emailList: string[]): boolean => {
   const [_, domain] = email.split("@")
 
-  const regex = new RegExp(`/${domain}/i`)
-
-  return emailList.some(regex.test)
+  return emailList.some((e) => e.includes(domain))
 }
 /**
  * @description Format Entreprise data
