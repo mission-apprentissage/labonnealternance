@@ -5,7 +5,7 @@ import mailController from "company-email-validator"
  * @param {string} userEmail
  * @returns {boolean}
  */
-export const checkIfUserMailExistInReferentiel = (contactList, userEmail) => contactList.map((x) => x.email.toLowerCase()).includes(userEmail.toLowerCase())
+export const checkIfUserMailExistInReferentiel = (contactList, userEmail): boolean => contactList.map((x) => x.email.toLowerCase()).includes(userEmail.toLowerCase())
 
 /**
  * @description get all domains from an array of emails
