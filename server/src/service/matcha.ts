@@ -103,7 +103,7 @@ const transformMatchaJobForIdea = ({ job, distance, caller }) => {
     email = encryptMailWithIV({ value: job.email, caller })
 
     resultJob.id = `${job.id_form}-${idx}`
-    resultJob.title = offre.libelle
+    resultJob.title = offre.rome_appellation_label ?? offre.libelle
     resultJob.contact = {
       ...email,
       name: job.prenom + " " + job.nom,
