@@ -245,20 +245,15 @@ export default ({ usersRecruteur, formulaire, mailer }) => {
               const existInOpcoReferentiel = await getEstablishmentFromOpcoReferentiel(req.body.siret)
 
               if (existInOpcoReferentiel) {
-                const asMatchingEmail = getMatchingEmailFromContactList(partenaire.email, existInOpcoReferentiel.emails)
-
-                if (asMatchingEmail) {
+                if (getMatchingEmailFromContactList(partenaire.email, existInOpcoReferentiel.emails)) {
                   partenaire = await usersRecruteur.updateUserValidationHistory(partenaire._id, {
                     validation_type: validation_utilisateur.AUTO,
                     user: "SERVEUR",
                     statut: etat_utilisateur.VALIDE,
                   })
                 } else {
-                  const isPrivateDomain = checkIfUserEmailIsPrivate(partenaire.email)
-                  if (isPrivateDomain) {
-                    const asMatchingDomain = getMatchingDomainFromContactList(partenaire.email, existInOpcoReferentiel.emails)
-
-                    if (asMatchingDomain) {
+                  if (checkIfUserEmailIsPrivate(partenaire.email)) {
+                    if (getMatchingDomainFromContactList(partenaire.email, existInOpcoReferentiel.emails)) {
                       partenaire = await usersRecruteur.updateUserValidationHistory(partenaire._id, {
                         validation_type: validation_utilisateur.AUTO,
                         user: "SERVEUR",
@@ -287,20 +282,60 @@ export default ({ usersRecruteur, formulaire, mailer }) => {
           // Dépot simplifié : retourner les informations nécessaire à la suite du parcours
           return res.json({ formulaire: formulaireInfo, user: partenaire })
         case CFA:
-          /**
-           * Contrôle du mail avec le référentiel :
-           */
-
+          // Contrôle du mail avec le référentiel :
           let referentiel = await getEtablissementFromReferentiel(req.body.siret)
-
           // Creation de l'utilisateur en base de données
           partenaire = await usersRecruteur.createUser(req.body)
 
-          if (referentiel.contacts.length) {
-            const userMailExist = checkIfUserMailExistInReferentiel(referentiel.contacts, req.body.email)
-            const userMailisPrivate = checkIfUserEmailIsPrivate(req.body.email)
+          if (!referentiel.contacts.length) {
+            // Validation manuelle de l'utilisateur à effectuer pas un administrateur
+            partenaire = await usersRecruteur.updateUserValidationHistory(partenaire._id, {
+              validation_type: validation_utilisateur.MANUAL,
+              user: "SERVEUR",
+              statut: etat_utilisateur.ATTENTE,
+            })
 
-            if (userMailExist) {
+            await notifyToSlack({
+              subject: "RECRUTEUR",
+              message: `Nouvel OF en attente de validation - ${partenaire.email} - https://referentiel.apprentissage.beta.gouv.fr/organismes/${partenaire.siret}`,
+            })
+
+            return res.json({ user: partenaire })
+          }
+
+          if (checkIfUserMailExistInReferentiel(referentiel.contacts, req.body.email)) {
+            // Validation automatique de l'utilisateur
+            partenaire = await usersRecruteur.updateUserValidationHistory(partenaire._id, {
+              validation_type: validation_utilisateur.AUTO,
+              user: "SERVEUR",
+              statut: etat_utilisateur.VALIDE,
+            })
+
+            let { email, _id, nom, prenom } = partenaire
+
+            const url = getValidationUrl(_id)
+
+            await mailer.sendEmail({
+              to: email,
+              subject: "La bonne alternance — Confirmer votre adresse mail",
+              template: mailTemplate["mail-confirmation-email"],
+              data: {
+                prenom,
+                nom,
+                confirmation_url: url,
+              },
+            })
+
+            // Keep the same structure as ENTREPRISE
+            return res.json({ user: partenaire })
+          }
+
+          if (checkIfUserEmailIsPrivate(req.body.email)) {
+            // Récupération des noms de domain
+            const domains = getAllDomainsFromEmailList(referentiel.contacts)
+            const userEmailDomain = req.body.email.split("@")[1]
+
+            if (domains.includes(userEmailDomain)) {
               // Validation automatique de l'utilisateur
               partenaire = await usersRecruteur.updateUserValidationHistory(partenaire._id, {
                 validation_type: validation_utilisateur.AUTO,
@@ -326,71 +361,22 @@ export default ({ usersRecruteur, formulaire, mailer }) => {
               // Keep the same structure as ENTREPRISE
               return res.json({ user: partenaire })
             }
-
-            if (userMailisPrivate && !userMailExist) {
-              // Récupération des noms de domain
-              const domains = getAllDomainsFromEmailList(referentiel.contacts)
-              const userEmailDomain = req.body.email.split("@")[1]
-
-              if (domains.includes(userEmailDomain)) {
-                // Validation automatique de l'utilisateur
-                partenaire = await usersRecruteur.updateUserValidationHistory(partenaire._id, {
-                  validation_type: validation_utilisateur.AUTO,
-                  user: "SERVEUR",
-                  statut: etat_utilisateur.VALIDE,
-                })
-
-                let { email, _id, nom, prenom } = partenaire
-
-                const url = getValidationUrl(_id)
-
-                await mailer.sendEmail({
-                  to: email,
-                  subject: "La bonne alternance — Confirmer votre adresse mail",
-                  template: mailTemplate["mail-confirmation-email"],
-                  data: {
-                    prenom,
-                    nom,
-                    confirmation_url: url,
-                  },
-                })
-
-                // Keep the same structure as ENTREPRISE
-                return res.json({ user: partenaire })
-              }
-            }
-
-            // Validation manuelle de l'utilisateur à effectuer pas un administrateur
-            partenaire = await usersRecruteur.updateUserValidationHistory(partenaire._id, {
-              validation_type: validation_utilisateur.MANUAL,
-              user: "SERVEUR",
-              statut: etat_utilisateur.ATTENTE,
-            })
-
-            await notifyToSlack({
-              subject: "RECRUTEUR",
-              message: `Nouvel OF en attente de validation - ${partenaire.email} - https://referentiel.apprentissage.beta.gouv.fr/organismes/${partenaire.siret}`,
-            })
-
-            return res.json({ user: partenaire })
-          } else {
-            // Validation manuelle de l'utilisateur à effectuer pas un administrateur
-            partenaire = await usersRecruteur.updateUserValidationHistory(partenaire._id, {
-              validation_type: validation_utilisateur.MANUAL,
-              user: "SERVEUR",
-              statut: etat_utilisateur.ATTENTE,
-            })
-
-            await notifyToSlack({
-              subject: "RECRUTEUR",
-              message: `Nouvel OF en attente de validation - ${partenaire.email} - https://referentiel.apprentissage.beta.gouv.fr/organismes/${partenaire.siret}`,
-            })
-
-            return res.json({ user: partenaire })
           }
 
-        default:
-          break
+          // Validation manuelle de l'utilisateur à effectuer pas un administrateur
+          partenaire = await usersRecruteur.updateUserValidationHistory(partenaire._id, {
+            validation_type: validation_utilisateur.MANUAL,
+            user: "SERVEUR",
+            statut: etat_utilisateur.ATTENTE,
+          })
+
+          await notifyToSlack({
+            subject: "RECRUTEUR",
+            message: `Nouvel OF en attente de validation - ${partenaire.email} - https://referentiel.apprentissage.beta.gouv.fr/organismes/${partenaire.siret}`,
+          })
+
+          // Keep the same structure as ENTREPRISE
+          return res.json({ user: partenaire })
       }
     })
   )
