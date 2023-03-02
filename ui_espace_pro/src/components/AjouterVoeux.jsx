@@ -33,7 +33,7 @@ import { AUTHTYPE } from "../common/contants"
 import useAuth from "../common/hooks/useAuth"
 import { LogoContext } from "../contextLogo"
 import { WidgetContext } from "../contextWidget"
-import { ArrowRightLine, ExternalLinkLine, InfoCircle, Minus, Plus } from "../theme/components/icons"
+import { ArrowRightLine, ExternalLinkLine, InfoCircle, Minus, Plus, Warning } from "../theme/components/icons"
 import { J1S, LbaCandidat, Parcoursup } from "../theme/components/logos"
 import DropdownCombobox from "./DropdownCombobox"
 import style from "./Voeux.module.css"
@@ -75,6 +75,7 @@ const AjouterVoeux = (props) => {
   const id_form = location.state?.id_form
   const email = location.state?.email
   const userId = location.state?.userId
+  const type = location.state?.type
 
   const minDate = dayjs().format(DATE_FORMAT)
   const { organisation } = useContext(LogoContext)
@@ -226,7 +227,7 @@ const AjouterVoeux = (props) => {
         rome_detail: {},
         elligible_handicap: props.elligible_handicap ?? false,
         quantite: props.quantite ?? 1,
-        duree_contrat: props.duree_contrat ?? 1,
+        duree_contrat: props.duree_contrat ?? 6,
         rythme_alternance: props.rythme_alternance ?? undefined,
         custom_adress: props.custom_adress ?? undefined,
       }}
@@ -235,12 +236,14 @@ const AjouterVoeux = (props) => {
         niveau: Yup.string().required("Champ obligatoire"),
         date_debut_apprentissage: Yup.date().required("Champ obligatoire"),
         type: Yup.array().required("Champ obligatoire"),
+        duree_contrat: Yup.number().max(36, "Durée maximale du contrat : 36 mois").min(6, "Durée minimal du contrat : 6 mois").typeError("Durée minimal du contrat : 6 mois"),
         multi_diffuser: Yup.boolean(),
       })}
       onSubmit={props.fromDashboard ? (values, bag) => submitFromDashboard(values, bag) : (values) => submitFromDepotRapide(values)}
     >
       {(formik) => {
         let { values, setFieldValue, handleChange, errors, touched, isValid, isSubmitting, dirty, submitForm } = formik
+
         return (
           <>
             <FormControl isRequired>
@@ -314,31 +317,6 @@ const AjouterVoeux = (props) => {
               <FormLabel>Date de début</FormLabel>
               <Input type="date" name="date_debut_apprentissage" min={minDate} defaultValue={values.date_debut_apprentissage} onChange={handleChange} />
             </FormControl>
-            {/* <FormControl mt={8}>
-              <Box p={3} bg='beige' borderBottom='4px solid #000091'>
-                <FormLabel>
-                  Avez-vous déjà déposé cette offre sur une autre plateforme (Pôle Emploi, Indeed ...) ?
-                </FormLabel>
-                <Stack align='flex-start' spacing={5} my={5}>
-                  <Button
-                    leftIcon={<ThumbUp />}
-                    variant='secondary'
-                    isActive={values.multi_diffuser === true ? true : false}
-                    onClick={() => setFieldValue('multi_diffuser', true)}
-                  >
-                    Oui, l'offre est également ailleurs
-                  </Button>
-                  <Button
-                    leftIcon={<ThumbDown />}
-                    variant='secondary'
-                    isActive={values.multi_diffuser === false ? true : false}
-                    onClick={() => setFieldValue('multi_diffuser', false)}
-                  >
-                    Non, l'offre est uniquement sur La bonne alternance
-                  </Button>
-                </Stack>
-              </Box>
-            </FormControl> */}
             {organisation !== "atlas" && (
               <FormControl mt={6}>
                 <Checkbox name="elligible_handicap" value={values.elligible_handicap} isChecked={values.elligible_handicap} onChange={handleChange}>
@@ -350,10 +328,24 @@ const AjouterVoeux = (props) => {
             <FormControl mt={6}>
               <ChampNombre max={10} name="quantite" value={values.quantite} label="Nombre de poste(s) disponible(s)" handleChange={setFieldValue} />
             </FormControl>
-            <FormControl mt={6}>
-              <ChampNombre max={4} name="duree_contrat" value={values.duree_contrat} label="Durée du contrat (année)" handleChange={setFieldValue} />
+            <FormControl mt={6} isInvalid={errors.duree_contrat}>
+              <Flex align="center">
+                <Text flexGrow={2}>Durée du contrat (mois)</Text>
+                <Input
+                  maxW="27%"
+                  name="duree_contrat"
+                  value={values.duree_contrat}
+                  onChange={(e) => (e.target.value > 0 ? setFieldValue("duree_contrat", parseInt(e.target.value)) : setFieldValue("duree_contrat", null))}
+                />
+              </Flex>
+              <FormErrorMessage>
+                <Flex direction="row" alignItems="center">
+                  <Warning m={0} />
+                  <Flex ml={1}>{errors.duree_contrat}</Flex>
+                </Flex>
+              </FormErrorMessage>
             </FormControl>
-            {auth.type !== AUTHTYPE.ENTREPRISE && (
+            {auth.type !== AUTHTYPE.ENTREPRISE || type !== AUTHTYPE.ENTREPRISE ? (
               <FormControl mt={6}>
                 <FormLabel>Rythme de l'alternance (formation / entreprise)</FormLabel>
                 <FormHelperText pb={2}>Facultatif</FormHelperText>
@@ -369,7 +361,7 @@ const AjouterVoeux = (props) => {
                 </Select>
                 {errors.rythme_alternance && touched.rythme_alternance && <FormErrorMessage>{errors.rythme_alternance}</FormErrorMessage>}
               </FormControl>
-            )}
+            ) : null}
             {/* <FormControl mt={6}>
               <FormLabel fontWeight="bold">Lieu d’exécution de l’emploi</FormLabel>
               <Text fontSize="16px" mt={2} mb={4}>
@@ -477,7 +469,7 @@ const RomeInformationDetail = ({ definition, competencesDeBase, libelle, appella
           </Flex>
 
           <Accordion defaultIndex={[0]} allowMultiple>
-            <AccordionItem key={0}>
+            <AccordionItem key={0} id="metier">
               {({ isExpanded }) => (
                 <>
                   <h2>
@@ -490,9 +482,9 @@ const RomeInformationDetail = ({ definition, competencesDeBase, libelle, appella
                   </h2>
                   <AccordionPanel pb={4} ml={6} mr={3}>
                     <ul className={style.voeux}>
-                      {definitionSplitted.map((x, index) => {
+                      {definitionSplitted.map((x) => {
                         return (
-                          <li className={style.voeux} key={index}>
+                          <li className={style.voeux} key={x}>
                             {x}
                           </li>
                         )
@@ -503,7 +495,7 @@ const RomeInformationDetail = ({ definition, competencesDeBase, libelle, appella
               )}
             </AccordionItem>
             <hr />
-            <AccordionItem key={1}>
+            <AccordionItem key={1} id="competence">
               {({ isExpanded }) => (
                 <>
                   <h2>
@@ -517,7 +509,7 @@ const RomeInformationDetail = ({ definition, competencesDeBase, libelle, appella
                   <AccordionPanel maxH="50%" pb={4} ml={6} mr={3}>
                     <ul className={style.voeux}>
                       {competencesDeBase.map((x) => (
-                        <li className={style.voeux} key={x.codeRome}>
+                        <li className={style.voeux} key={x.libelle}>
                           {x.libelle}
                         </li>
                       ))}
@@ -527,7 +519,7 @@ const RomeInformationDetail = ({ definition, competencesDeBase, libelle, appella
               )}
             </AccordionItem>
             <hr />
-            <AccordionItem key={1}>
+            <AccordionItem key={2} id="accessibilite">
               {({ isExpanded }) => (
                 <>
                   <h2>
