@@ -11,7 +11,7 @@ import config from "../../../config.js"
 export const relanceOpco = async (mailer) => {
   const userAwaitingValidation = await UserRecruteur.find({
     $expr: { $eq: [{ $arrayElemAt: ["$etat_utilisateur.statut", -1] }, etat_utilisateur.ATTENTE] },
-    opco: { $ne: null },
+    opco: { $nin: [null, "Opco multiple"] },
   }).lean()
 
   // Cancel the job if there's no users awaiting validation
