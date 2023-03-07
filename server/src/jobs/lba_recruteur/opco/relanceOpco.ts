@@ -1,6 +1,7 @@
 import { mailTemplate } from "../../../assets/index.js"
 import { etat_utilisateur } from "../../../common/constants.js"
 import { UserRecruteur } from "../../../common/model/index.js"
+import { asyncForEach } from "../../../common/utils/asyncUtils.js"
 import config from "../../../config.js"
 
 /**
@@ -31,15 +32,19 @@ export const relanceOpco = async (mailer) => {
     // Get related user to send the email
     const user = await UserRecruteur.findOne({ scope: opco, type: "OPCO" })
 
-    // send mail to recipient
-    await mailer.sendEmail({
-      to: user.email,
-      subject: "La bonne alternance - Vos entreprises souhaitent déposer des offres",
-      template: mailTemplate["mail-relance-opco"],
-      data: {
-        count: userList[opco],
-        url: `${config.publicUrlEspacePro}/authentification`,
-      },
+    const users = await UserRecruteur.find({ scope: opco, type: "OPCO" })
+
+    await asyncForEach(users, async (user) => {
+      // send mail to recipient
+      await mailer.sendEmail({
+        to: user.email,
+        subject: "La bonne alternance - Vos entreprises souhaitent déposer des offres",
+        template: mailTemplate["mail-relance-opco"],
+        data: {
+          count: userList[opco],
+          url: `${config.publicUrlEspacePro}/authentification`,
+        },
+      })
     })
   }
 }
