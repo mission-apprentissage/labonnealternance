@@ -5,6 +5,7 @@ interface IFormulaire {
   raison_sociale: string
   enseigne: string
   siret: string
+  adresse_detail: object
   adresse: string
   geo_coordonnees: string
   mandataire: boolean

@@ -28,6 +28,10 @@ export const formulaireSchema = new Schema<IFormulaire>(
       default: null,
       description: "Numéro SIRET de l'entreprise",
     },
+    adresse_detail: {
+      type: Object,
+      description: "Détail de l'adresse de l'entreprise",
+    },
     adresse: {
       type: String,
       default: null,

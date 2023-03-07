@@ -62,6 +62,10 @@ const userRecruteurSchema = new Schema<IUserRecruteur>(
       type: String,
       description: "Siret de l'établissement",
     },
+    adresse_detail: {
+      type: Object,
+      description: "Detail de l'adresse de l'établissement",
+    },
     adresse: {
       type: String,
       description: "Adresse de l'établissement",
