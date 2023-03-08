@@ -8,4 +8,3 @@ cd ../ui_espace_pro
 npm version ${next_version}
 cd ../server
 npm version ${next_version}
-cd
