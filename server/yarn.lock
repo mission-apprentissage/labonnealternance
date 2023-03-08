@@ -5772,10 +5772,10 @@
   dependencies:
     "mongoose" "^6.9.1"
 
-"mongoose@*", "mongoose@5.13.15":
-  "integrity" "sha512-cxp1Gbb8yUWkaEbajdhspSaKzAvsIvOtRlYD87GN/P2QEUhpd6bIvebi36T6M0tIVAMauNaK9SPA055N3PwF8Q=="
-  "resolved" "https://registry.npmjs.org/mongoose/-/mongoose-5.13.15.tgz"
-  "version" "5.13.15"
+mongoose@5.13.16:
+  version "5.13.16"
+  resolved "https://registry.yarnpkg.com/mongoose/-/mongoose-5.13.16.tgz#df317c87de6762ae5dc0c363aff9f8e357074ebb"
+  integrity sha512-kBNB+BfaQjn3Jjh1SfdZZub70pde9dI0sA8VN6AnnCOeK4TzbLDyB0lBmPBOajppm6U9orde5YfTRyyVa1U45w==
   dependencies:
     "@types/bson" "1.x || 4.0.x"
     "@types/mongodb" "^3.5.27"

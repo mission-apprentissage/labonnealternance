@@ -3,7 +3,7 @@ import { logger } from "../../common/logger.js"
 import { mongooseInstance } from "../../common/mongodb.js"
 import { getReferrerById } from "../../common/model/constants/referrers.js"
 
-export default async function cleanAndRenameFields() {
+export const cleanAndRenameFields = async ({ appointments, eligibleTrainingsForAppointments }) => {
   logger.info(`#cleanAndRenameFields start.`)
   const db = mongooseInstance.connection
 
@@ -57,8 +57,8 @@ export default async function cleanAndRenameFields() {
   logger.info(`Fin renommage champs de la collection appointments (${res.result.nModified} items mis à jour)`)
 
   // Rename "referrer" id (number) to string name
-  const appointments = await db.collections.appointments.find({})
-  await Promise.all(appointments.map((appointment) => appointment.update({ referrer: getReferrerById(appointment.referrer).name })))
+  const allAppointments = await appointments.find()
+  await Promise.all(allAppointments.map((appointment) => appointment.update({ appointment_origin: getReferrerById(appointment.appointment_origin).name })))
 
   // Etablissements: deletions
   res = await db.collections.etablissements.updateMany(
@@ -99,8 +99,13 @@ export default async function cleanAndRenameFields() {
   )
   logger.info(`Fin renommage champs de la collection etablissements (${res.result.nModified} items mis à jour)`)
 
+  // Rename collection
+  await db
+    .collection("widgetparameters")
+    .rename("eligible_trainings_for_appointments")
+
   // EligibleTrainingsForAppointments: deletions
-  res = await db.collections.eligibleTrainingsForAppointments.updateMany(
+  res = await db.collection("eligible_trainings_for_appointments").updateMany(
     {},
     {
       $unset: {
@@ -111,7 +116,7 @@ export default async function cleanAndRenameFields() {
   logger.info(`Fin suppression champs de la collection eligibleTrainingsForAppointments (${res.result.nModified} items mis à jour)`)
 
   // EligibleTrainingsForAppointments: renames
-  res = await db.collections.eligibleTrainingsForAppointments.updateMany(
+  res = await db.collection("eligible_trainings_for_appointments").updateMany(
     {},
     {
       $rename: {
@@ -137,9 +142,6 @@ export default async function cleanAndRenameFields() {
   logger.info(`Fin renommage champs de la collection eligibleTrainingsForAppointments (${res.result.nModified} items mis à jour)`)
 
   // Rename "referrers" ids (number) to string name
-  const eligibleTrainingsForAppointments = await db.collections.eligibleTrainingsForAppointments.find({})
-  await Promise.all(eligibleTrainingsForAppointments.map((item) => item.update({ referrers: item.referrers.map((referrer) => getReferrerById(referrer).name) })))
-
-  // Rename collection
-  await db.eligibleTrainingsForAppointments.renameCollection("eligible_trainings_for_appointments")
+  const allEligibleTrainingsForAppointments = await eligibleTrainingsForAppointments.find({})
+  await Promise.all(allEligibleTrainingsForAppointments.map((item) => item.update({ referrers: item.referrers.map((referrer) => getReferrerById(referrer).name) })))
 }
