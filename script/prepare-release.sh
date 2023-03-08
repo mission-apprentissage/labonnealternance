@@ -2,6 +2,9 @@
 
 next_version="${1}"
 
+pwd
+ls
+
 cd ../ui
 npm version ${next_version}
 cd ../ui_espace_pro
