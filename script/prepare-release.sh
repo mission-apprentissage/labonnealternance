@@ -2,10 +2,7 @@
 
 next_version="${1}"
 
-pwd
-ls
-
-cd ../ui
+cd ./ui
 npm version ${next_version}
 cd ../ui_espace_pro
 npm version ${next_version}
