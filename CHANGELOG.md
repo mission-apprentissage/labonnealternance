@@ -1,3 +1,10 @@
+# [1.0.0-beta.2](https://github.com/mission-apprentissage/labonnealternance/compare/v1.0.0-beta.1...v1.0.0-beta.2) (2023-03-08)
+
+
+### Bug Fixes
+
+* broken action loop ([c8feaf5](https://github.com/mission-apprentissage/labonnealternance/commit/c8feaf5c4252e1e2da722de0e8ec9aa67f0818db))
+
 # 1.0.0-beta.1 (2023-03-08)
 
 
