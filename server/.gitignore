@@ -2,3 +2,5 @@
 .coverage/
 .env
 .nyc_output/
+bonnesboites.json
+*SAVE.json

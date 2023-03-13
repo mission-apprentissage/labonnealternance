@@ -8,7 +8,10 @@ class ApiGeoAdresse {
 
   async search(q, postcode = null) {
     try {
-      const query = `${apiEndpoint}/search/?q=${q ? q : "a"}${postcode ? `&postcode=${postcode}` : ""}`
+      if (!q) {
+        throw new Error("missing mandatory query")
+      }
+      const query = `${apiEndpoint}/search/?q=${q}${postcode ? `&postcode=${postcode}` : ""}`
       const response = await this.searchQuery(query)
 
       return response
@@ -37,12 +40,12 @@ class ApiGeoAdresse {
     return response?.data
   }
 
-  async searchPostcodeOnly(q, postcode = null) {
+  async searchPostcodeOnly(postcode = null) {
     try {
-      const response = await axios.get(`${apiEndpoint}/search/?q=${q}${postcode ? `&postcode=${postcode}` : ""}`)
+      const response = await axios.get(`${apiEndpoint}/search/?q=${postcode}&postcode=${postcode}`)
       return response.data
     } catch (error) {
-      console.log(`geo searchPostcodeOnly error : #${q}# ${postcode} ${error}`)
+      console.log(`geo searchPostcodeOnly error : ${postcode} ${error}`)
       return null
     }
   }

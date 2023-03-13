@@ -3,18 +3,6 @@ import apiGeoAdresse from "./apiGeoAdresse.js"
 class GeoData {
   constructor() {}
 
-  async getUpdates({ numero_rue, type_voie, street_name, zip_code }) {
-    const responseApiAdresse = await apiGeoAdresse.search(`${numero_rue}+${type_voie}+${street_name}`, zip_code)
-    if (responseApiAdresse.features.length !== 1) {
-      return false
-    }
-    const geojson = { ...responseApiAdresse }
-
-    return {
-      geo_coordinates: `${geojson.features[0].geometry.coordinates[1]},${geojson.features[0].geometry.coordinates[0]}`, // format "lat,long"
-    }
-  }
-
   getAddress(street_number, type_voie, street_name, zip_code, city) {
     return `https://api-adresse.data.gouv.fr/search/?q=${street_number ? street_number + "+" : ""}${type_voie ? type_voie + "+" : ""}+${
       street_name ? street_name : ""
@@ -47,39 +35,28 @@ class GeoData {
       return false
     }
 
-    let responseApiAdresse = await apiGeoAdresse.search(
-      `${street_number ? street_number + "+" : ""}${type_voie ? type_voie + "+" : ""}${street_name ? street_name : ""}`,
-      this.refineZipCode(zip_code)
-    )
+    let responseApiAdresse = null
 
-    // si pas de réponse deuxième recherche sur ville et code postal
-    if (!responseApiAdresse || responseApiAdresse.features.length === 0) {
-      //console.log(`Second geoloc call with postcode \t ${code_postal}`);
-      responseApiAdresse = await apiGeoAdresse.searchPostcodeOnly(
-        `${city ? city : "a"}`, // hack si ville absente
+    if (street_name) {
+      responseApiAdresse = await apiGeoAdresse.search(
+        `${street_number ? street_number + "+" : ""}${type_voie ? type_voie + "+" : ""}${street_name ? street_name : ""}`,
         this.refineZipCode(zip_code)
       )
     }
 
-    if (!responseApiAdresse) return false
+    // si pas de réponse deuxième recherche sur ville et code postal
+    if (!responseApiAdresse || responseApiAdresse.features.length === 0) {
+      responseApiAdresse = await apiGeoAdresse.searchPostcodeOnly(this.refineZipCode(zip_code))
+    }
+
+    if (!responseApiAdresse) {
+      return false
+    }
 
     if (responseApiAdresse.features.length === 0) {
       console.log(`No geoloc result for establishment.\t${this.getAddress(street_number, type_voie, street_name, zip_code, city)}`)
       return false
     }
-
-    // signalement des cas avec ambiguité
-    /*if (responseApiAdresse.features.length > 1) {
-      console.log(
-        `Multiple geoloc results for establishment.\t${this.getAddress(
-          numero_rue,
-          type_voie,
-          libelle_rue,
-          code_postal,
-          localite
-        )}\t${responseApiAdresse.features[0].properties.label} ${responseApiAdresse.features[0].properties.postcode}`
-      );
-    }*/
 
     const geojson = { ...responseApiAdresse }
 

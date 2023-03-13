@@ -96,6 +96,18 @@ export const bonneBoiteSchema = new Schema<IBonneBoite>({
     description: "L'OPCO de la société",
     index: true,
   },
+  opco_short_name: {
+    type: String,
+    default: null,
+    index: true,
+    description: "Nom court de l'opco",
+  },
+  opco_url: {
+    type: String,
+    default: null,
+    description: "L'URL spécifique liée à l'OPCO de la société",
+    index: true,
+  },
   created_at: {
     type: Date,
     default: Date.now,
