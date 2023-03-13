@@ -12,7 +12,7 @@ import { getNearEtablissementsFromRomes } from "../../services/catalogue.service
 import {
   formatEntrepriseData,
   formatReferentielData,
-  getEstablishmentFromOpcoReferentiel,
+  getAllEstablishmentFromOpcoReferentiel,
   getEtablissement,
   getEtablissementFromGouv,
   getEtablissementFromReferentiel,
@@ -215,6 +215,7 @@ export default ({ usersRecruteur, formulaire, mailer }) => {
 
       switch (req.body.type) {
         case ENTREPRISE:
+          const siren = req.body.siret.substr(0, 9)
           formulaireInfo = await formulaire.createFormulaire(req.body)
           partenaire = await usersRecruteur.createUser({ ...req.body, id_form: formulaireInfo.id_form })
           /**
@@ -222,7 +223,6 @@ export default ({ usersRecruteur, formulaire, mailer }) => {
            */
           switch (req.body.opco) {
             case OPCOS.AKTO:
-              const siren = req.body.siret.substr(0, 9)
               const isValid = await getAktoEstablishmentVerification(siren, req.body.email, token)
 
               if (isValid) {
@@ -242,10 +242,18 @@ export default ({ usersRecruteur, formulaire, mailer }) => {
               break
 
             default:
-              const existInOpcoReferentiel = await getEstablishmentFromOpcoReferentiel(req.body.siret)
+              // Get all corresponding records using the SIREN number
+              const sirenExistInOpcoReferentiel = await getAllEstablishmentFromOpcoReferentiel({ siret_code: { $regex: siren } })
+              // Create a single array with all emails
+              const emailList: string[] = sirenExistInOpcoReferentiel.reduce((acc: string[], item) => {
+                item.emails.map((x) => acc.push(x))
+                return acc
+              }, [])
+              // Duplicate free email list
+              const emailListUnique = [...new Set(emailList)]
 
-              if (existInOpcoReferentiel) {
-                if (getMatchingEmailFromContactList(partenaire.email, existInOpcoReferentiel.emails)) {
+              if (sirenExistInOpcoReferentiel.length) {
+                if (getMatchingEmailFromContactList(partenaire.email, emailListUnique)) {
                   partenaire = await usersRecruteur.updateUserValidationHistory(partenaire._id, {
                     validation_type: validation_utilisateur.AUTO,
                     user: "SERVEUR",
@@ -253,7 +261,7 @@ export default ({ usersRecruteur, formulaire, mailer }) => {
                   })
                 } else {
                   if (checkIfUserEmailIsPrivate(partenaire.email)) {
-                    if (getMatchingDomainFromContactList(partenaire.email, existInOpcoReferentiel.emails)) {
+                    if (getMatchingDomainFromContactList(partenaire.email, emailListUnique)) {
                       partenaire = await usersRecruteur.updateUserValidationHistory(partenaire._id, {
                         validation_type: validation_utilisateur.AUTO,
                         user: "SERVEUR",
@@ -278,7 +286,6 @@ export default ({ usersRecruteur, formulaire, mailer }) => {
 
               break
           }
-
           // Dépot simplifié : retourner les informations nécessaire à la suite du parcours
           return res.json({ formulaire: formulaireInfo, user: partenaire })
         case CFA:
