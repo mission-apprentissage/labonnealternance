@@ -96,6 +96,13 @@ export const setUseMock = ({ parameterContext }) => {
   }
 }
 
+export const setDisplayMap = ({ parameterContext }) => {
+  let displayMap = getValueFromPath("displayMap")
+  if(displayMap!==null) {
+    parameterContext.setDisplayMap(displayMap==="false"?false:true)
+  }
+}
+
 export const initTestingParameters = () => {
   if (!testingParameters?.secret) {
     let p = getValueFromPath("secret")
@@ -168,6 +175,7 @@ export const initParametersFromQuery = ({ router, shouldPush, parameterContext }
 
   getOpcoFilter({ parameterContext })
   setUseMock({ parameterContext })
+  setDisplayMap({ parameterContext })
 
   const itemParameters = getItemParameters()
   if (itemParameters && (itemParameters.applyItemParameters || itemParameters.mode)) {

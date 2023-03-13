@@ -16,6 +16,7 @@ import {
   flyToLocation,
   flyToMarker,
   isMapInitialized,
+  refreshLocationMarkers,
   resizeMap,
   setJobMarkers,
   setSelectedMarker,
@@ -39,7 +40,7 @@ const SearchForTrainingsAndJobs = () => {
 
   const { hasSearch, trainings, jobs, setTrainings, setJobs, selectedItem, setSelectedItem, setItemToScrollTo, setExtendedSearch, setHasSearch } = useContext(SearchResultContext)
 
-  const { opcoFilter, opcoUrlFilter, widgetParameters, useMock, shouldExecuteSearch, setShouldExecuteSearch } = useContext(ParameterContext)
+  const { displayMap, opcoFilter, opcoUrlFilter, widgetParameters, useMock, shouldExecuteSearch, setDisplayMap, setShouldExecuteSearch } = useContext(ParameterContext)
 
   const { formValues, setFormValues, visiblePane, setVisiblePane, isFormVisible, setIsFormVisible, setShouldMapBeVisible } = useContext(DisplayContext)
 
@@ -300,6 +301,11 @@ const SearchForTrainingsAndJobs = () => {
     if (e) {
       e.stopPropagation()
     }
+    
+    if(!displayMap) {
+      setDisplayMap(true)
+      refreshLocationMarkers( { jobs, trainings, scopeContext } )
+    }
 
     if (!isMapInitialized) {
       setShouldMapBeVisible(true)
@@ -400,9 +406,9 @@ const SearchForTrainingsAndJobs = () => {
             activeFilter={activeFilter}
           />
         </Box>
-        <Box p="0" flex={{ base: 4, xl: 5 }} display={mapDisplayParameters} position="relative">
+        {displayMap?<Box p="0" flex={{ base: 4, xl: 5 }} display={mapDisplayParameters} position="relative">
           <Map handleSearchSubmit={handleSearchSubmit} showSearchForm={showSearchForm} selectItemOnMap={selectItemOnMap} />
-        </Box>
+        </Box>:""}
       </Flex>
       <MapListSwitchButton showSearchForm={showSearchForm} showResultMap={showResultMap} showResultList={showResultList} isFormVisible={isFormVisible} />
     </Flex>

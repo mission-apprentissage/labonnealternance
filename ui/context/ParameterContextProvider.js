@@ -7,6 +7,7 @@ const initialState = {
   opcoFilter: null,
   opcoUrlFilter: null,
   useMock: false,
+  displayMap: true,
 }
 
 const actions = {
@@ -15,6 +16,7 @@ const actions = {
   SET_ITEM_PARAMETERS: "SET_ITEM_PARAMETERS",
   SET_OPCO_FILTER: "SET_OPCO_FILTER",
   SET_USE_MOCK: "SET_USE_MOCK",
+  SET_DISPLAY_MAP: "SET_DISPLAY_MAP",
 }
 
 const reducer = (state, action) => {
@@ -35,6 +37,9 @@ const reducer = (state, action) => {
     }
     case actions.SET_USE_MOCK: {
       return { ...state_copy, useMock: action.useMock }
+    }
+    case actions.SET_DISPLAY_MAP: {
+      return { ...state_copy, displayMap: action.displayMap }
     }
 
     default:
@@ -63,6 +68,10 @@ const ParameterContextProvider = ({ children }) => {
     },
     setUseMock: (useMock = null) => {
       dispatch({ type: actions.SET_USE_MOCK, useMock })
+    },
+    setDisplayMap: (displayMap = true) => {
+      console.log("setting display map : ",displayMap)
+      dispatch({ type: actions.SET_DISPLAY_MAP, displayMap })
     },
   }
 
