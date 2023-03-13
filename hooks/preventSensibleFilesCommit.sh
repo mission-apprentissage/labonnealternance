@@ -5,7 +5,7 @@
 sensible_files_pattern="\.(csv|xls|xls(x?)|json|env)$"
 exception="(package.json"
 exception="$exception|manifest.json|settings.json"
-exception="$exception|sample.json"
+exception="$exception|sample.json|swagger.json"
 exception="$exception|eslintrc.json|app.json"
 exception="$exception|tsconfig.json"
 exception="$exception)$"

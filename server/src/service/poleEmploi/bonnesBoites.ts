@@ -10,7 +10,7 @@ import { lbbMock } from "../../mocks/lbbs-mock.js"
 
 const esClient = getElasticInstance()
 
-const getSomeLbbCompanies = async ({ romes, latitude, longitude, radius, type, referer, caller, opco, api = "jobV1", useMock }) => {
+const getSomeLbbCompanies = async ({ romes, latitude, longitude, radius, type, referer, caller, opco, opcoUrl, api = "jobV1", useMock }) => {
   const hasLocation = latitude === undefined ? false : true
   let companies = null
   const currentRadius = hasLocation ? radius : 21000
@@ -29,6 +29,7 @@ const getSomeLbbCompanies = async ({ romes, latitude, longitude, radius, type, r
       caller,
       api,
       opco,
+      opcoUrl,
     })
 
     if (companies && companies.length) {
@@ -94,6 +95,10 @@ const transformLbbCompanyForIdea = ({ company, type, caller, contactAllowedOrigi
     size: company.company_size,
     //socialNetwork: company.social_network,
     url: company.website,
+    opco: {
+      label: company.opco,
+      url: company.opco_url,
+    },
   }
 
   //resultCompany.url = company.url;
@@ -115,7 +120,7 @@ const transformLbbCompanyForIdea = ({ company, type, caller, contactAllowedOrigi
   return resultCompany
 }
 
-const getLbbCompanies = async ({ romes, latitude, longitude, radius, companyLimit, type, caller, opco, api = "jobV1" }) => {
+const getLbbCompanies = async ({ romes, latitude, longitude, radius, companyLimit, type, caller, opco, opcoUrl, api = "jobV1" }) => {
   try {
     const distance = radius || 10
 
@@ -135,7 +140,15 @@ const getLbbCompanies = async ({ romes, latitude, longitude, radius, companyLimi
     if (opco) {
       mustTerm.push({
         match: {
-          opco,
+          opco_short_name: opco.toUpperCase(),
+        },
+      })
+    }
+
+    if (opcoUrl) {
+      mustTerm.push({
+        match: {
+          opco_url: opcoUrl.toLowerCase(),
         },
       })
     }
@@ -289,6 +302,8 @@ const getBonnesBoitesEsQueryIndexFragment = (limit) => {
       "phone",
       "company_size",
       "algorithm_origin",
+      "opco",
+      "opco_url",
     ],
   }
 }

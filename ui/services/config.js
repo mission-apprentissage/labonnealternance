@@ -81,9 +81,10 @@ export const getItemParameters = () => {
 }
 
 export const getOpcoFilter = ({ parameterContext }) => {
-  let opcoFilter = getValueFromPath("opco")
-  if (opcoFilter) {
-    parameterContext.setOpcoFilter(opcoFilter)
+  const opcoFilter = getValueFromPath("opco")
+  const opcoUrlFilter = getValueFromPath("opcoUrl")
+  if (opcoFilter || opcoUrlFilter) {
+    parameterContext.setOpcoFilter(opcoFilter, opcoUrlFilter)
   }
 }
 
@@ -113,7 +114,6 @@ export const initTestingParameters = () => {
 export const buildFormValuesFromParameterString = (urlParams) => 
 {
   let params = {};
-
   params.lat = parseFloat(urlParams.get("lat"));
   params.lon = parseFloat(urlParams.get("lon"));
   params.jobName = urlParams.get("job_name");
@@ -123,7 +123,6 @@ export const buildFormValuesFromParameterString = (urlParams) =>
   params.address = urlParams.get("address");
   params.romes = urlParams.get("romes");
   params.radius = urlParams.get("radius");
-
   return buildFormValuesFromParameters(params);
 }*/
 
@@ -188,7 +187,7 @@ export const initPostulerParametersFromQuery = () => {
 
   const caller = getValueFromPath("caller") // ex : diagoriente
   const itemId = getValueFromPath("itemId")
-  const type = getValueFromPath("type") // matcha | lba | lbb
+  const type = getValueFromPath("type") // matcha | lba | lbb
 
   if (!caller) {
     throw new Error("missing_caller_parameter")
