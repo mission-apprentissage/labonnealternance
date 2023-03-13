@@ -221,11 +221,17 @@ export const getGeoCoordinates = async (adresse: string): Promise<string> => {
   }
 }
 /**
- * @description Get matching records from the ReferentielOpco collection for a given siret & email)
+ * @description Get matching records from the ReferentielOpco collection for a given siret & email
  * @param {String} siretCode
  * @returns {Promise<IReferentielOpco>}
  */
 export const getEstablishmentFromOpcoReferentiel = async (siretCode: string): Promise<IReferentielOpco> => await ReferentielOpco.findOne({ siret_code: siretCode })
+/**
+ * @description Get all matching records from the ReferentielOpco collection for a given siret & email
+ * @param {String} siretCode
+ * @returns {Promise<IReferentielOpco[]>}
+ */
+export const getAllEstablishmentFromOpcoReferentiel = async (query: object): Promise<IReferentielOpco[]> => await ReferentielOpco.find(query).lean()
 /**
  * @description Chech if a given email is included in the given email list array
  * @param {String} email
