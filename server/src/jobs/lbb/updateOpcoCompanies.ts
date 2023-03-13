@@ -1,141 +1,109 @@
-import axios from "axios"
-import fs from "fs"
+import { oleoduc, writeData } from "oleoduc"
 import _ from "lodash-es"
-import fetch from "node-fetch"
-import { oleoduc, readLineByLine, transformData, writeData } from "oleoduc"
-import path from "path"
 import { Opco } from "../../common/model/index.js"
-import config from "../../config.js"
-//const opcoAktoSirenFilePath = path.join(__dirname, "./assets/20220301-Akto_SIREN.csv");
+import { logMessage } from "../../common/utils/logMessage.js"
 import __dirname from "../../common/dirname.js"
-import { notifyToSlack } from "../../common/utils/slackUtils.js"
-const currentDirname = __dirname(import.meta.url)
-
+import { downloadAlgoCompanyFile, getMemoizedOpcoShortName, readCompaniesFromJson, removePredictionFile } from "./bonnesBoitesUtils.js"
 import { logger } from "../../common/logger.js"
+import { saveOpco } from "../../service/opco.js"
+import { CFADOCK_FILTER_LIMIT, fetchOpcosFromCFADock } from "../../service/cfaDock/fetchOpcosFromCFADock.js"
+let errorCount = 0
 
-const opcoSirenFile = path.join(currentDirname, "./assets/opco_sirens.csv")
-
-/**
- * KBA 20230208 : Move to config
- */
-const aadTokenUrl = "https://login.microsoftonline.com/0285c9cb-dd17-4c1e-9621-c83e9204ad68/oauth2/v2.0/token"
-const grantType = "client_credentials"
-const clientId = "c6a6b396-82b9-4ab1-acc0-21b1c0ad8ae3"
-const scope = "api://ef286853-e767-4dd1-8de3-67116195eaad/.default"
-const clientSecret = config.secretAkto
-const opcoDumpUrl = "https://api.akto.fr/referentiel/api/v1/Dump/Adherents"
+let sirenSet = new Set()
+let sirenWithoutOpco = new Set()
 
 let i = 0
-let running = false
 
-const saveOpco = async (opcoData) => {
-  const opco = new Opco(opcoData)
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+
+const getSirenOpcosFromCFADock = async () => {
+  logger.info(`find and save opcos for ${CFADOCK_FILTER_LIMIT} siren`)
 
   try {
-    await opco.save()
-  } catch (err) {
-    //do nothing
-  }
+    const response = await fetchOpcosFromCFADock(sirenSet)
 
-  i++
-  if (i % 10000 === 0) {
-    logger.info(`${i} sirens inserted`)
-  }
-}
-
-const resetContext = () => {
-  running = false
-  i = 0
-}
-
-const parseOpco = (line) => {
-  return {
-    siren: line,
-    opco: "akto",
-  }
-}
-
-const getAADToken = async () => {
-  const params = new URLSearchParams()
-  params.append("grant_type", grantType)
-  params.append("client_id", clientId)
-  params.append("client_secret", clientSecret)
-  params.append("scope", scope)
-
-  const config = {
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-  }
-
-  const res = await axios.post(aadTokenUrl, params, config)
-
-  return res.data.access_token
-}
-
-const fetchOpcoFile = async () => {
-  const token = await getAADToken()
-
-  const headers = { Authorization: `Bearer ${token}` }
-
-  await fetch(opcoDumpUrl, { headers }).then(
-    (res) =>
-      new Promise((resolve, reject) => {
-        logger.info("Receiving SIREN file")
-        const dest = fs.createWriteStream(opcoSirenFile)
-        res.body.pipe(dest)
-        dest.on("close", resolve)
-        dest.on("error", reject)
+    if (response?.data?.found) {
+      response.data.found.forEach(async (sirenFilterObj) => {
+        if (
+          (await saveOpco({
+            siren: sirenFilterObj.filters.siret,
+            opco: sirenFilterObj.opcoName,
+            opco_short_name: getMemoizedOpcoShortName(sirenFilterObj.opcoName),
+            url: sirenFilterObj.url,
+            idcc: sirenFilterObj.idcc,
+          })) === "ok"
+        ) {
+          i++
+          if (i % 10000 === 0) {
+            logger.info(`${i} sirens inserted`)
+          }
+        }
       })
-  )
-}
 
-const removeOpcoFile = async () => {
-  logger.info("Removing SIREN file")
-  try {
-    await fs.unlinkSync(opcoSirenFile)
-  } catch (err) {
-    console.log(err)
-  }
-}
-
-export default async function () {
-  if (!running) {
-    running = true
-    try {
-      logger.info(" -- Start inserting opco sirens -- ")
-
-      await removeOpcoFile()
-
-      await fetchOpcoFile()
-
-      await Opco.deleteMany({})
-
-      // extraction de la liste des sirens de l'opco Akto
-      await oleoduc(
-        fs.createReadStream(opcoSirenFile),
-        readLineByLine(),
-        transformData((line) => parseOpco(line)),
-        writeData(async (opco) => {
-          await saveOpco(opco)
-        })
-      )
-
-      logger.info(`End inserting opco sirens (${i})`)
-
-      await notifyToSlack({ subject: "REFERENTIEL OPCO", message: `Fin d'insertion des SIRENs akto (${i})` })
-
-      resetContext()
-
-      return {
-        result: "Table mise à jour",
-      }
-    } catch (err) {
-      resetContext()
-      const error_msg = _.get(err, "meta.body") ?? err.message
-      return { error: error_msg }
+      response.data.notFound.forEach(async (sirenFilterObj) => {
+        errorCount++
+        sirenWithoutOpco.add(sirenFilterObj.filters.siret)
+      })
+    } else {
+      logger.error("CFA Dock returned no found/notFound opcos")
     }
-  } else {
-    logger.info("Opco job already running")
+  } catch (err) {
+    logger.error("CFA Dock Error for siren set")
+    logger.error(err)
   }
+
+  // rate limiter 30 query / 60 seconds
+  await sleep(2000)
+
+  sirenSet = new Set()
+}
+
+const cleanUp = () => {
+  i = 0
+  errorCount = 0
+  sirenWithoutOpco = new Set()
+}
+
+export default async function updateOpcoCompanies({ ClearMongo = false }) {
+  try {
+    logMessage("info", " -- Start bulk opco determination -- ")
+
+    await downloadAlgoCompanyFile()
+
+    if (ClearMongo) {
+      logMessage("info", `Clearing opcos db...`)
+      await Opco.deleteMany({})
+    }
+
+    await oleoduc(
+      await readCompaniesFromJson(),
+      writeData(async (company) => {
+        const siren = company.siret.toString().padStart(14, "0").substring(0, 9)
+
+        if (!sirenWithoutOpco.has(siren)) {
+          sirenSet.add(siren)
+        }
+
+        if (sirenSet.size > 0 && sirenSet.size % CFADOCK_FILTER_LIMIT === 0) {
+          await getSirenOpcosFromCFADock()
+        }
+      })
+    )
+
+    if (sirenSet.size > 0) {
+      await getSirenOpcosFromCFADock()
+    }
+
+    logMessage("info", `Sirens opco not found ${errorCount}`)
+
+    logMessage("info", `End bulk opco determination`)
+
+    await removePredictionFile()
+
+    logMessage("info", `Temporary files removed`)
+  } catch (err) {
+    logMessage("error", err)
+    logMessage("error", "Bulk opco determination interrupted")
+  }
+  await cleanUp()
 }

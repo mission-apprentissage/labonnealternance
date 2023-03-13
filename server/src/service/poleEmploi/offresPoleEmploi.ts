@@ -10,10 +10,10 @@ import filterJobsByOpco from "../filterJobsByOpco.js"
 //const poleEmploi = require("./common.js");
 import { getAccessToken, getRoundedRadius, peApiHeaders } from "./common.js"
 
-const getSomePeJobs = async ({ romes, insee, radius, lat, long, caller, opco, api }) => {
+const getSomePeJobs = async ({ romes, insee, radius, lat, long, caller, opco, opcoUrl, api }) => {
   // la liste des romes peut être supérieure au maximum de trois autorisés par l'api offre de PE
   // on segmente les romes en blocs de max 3 et lance autant d'appels parallèles que nécessaires
-  const chunkedRomes = []
+  let chunkedRomes = []
   let i = 0,
     k = 0
   while (i < romes.length) {
@@ -62,8 +62,8 @@ const getSomePeJobs = async ({ romes, insee, radius, lat, long, caller, opco, ap
   }
 
   // filtrage sur l'opco
-  if (opco) {
-    jobs[0].results = await filterJobsByOpco({ opco, jobs: jobs[0].results })
+  if (opco || opcoUrl) {
+    jobs[0].results = await filterJobsByOpco({ opco, opcoUrl, jobs: jobs[0].results })
   }
 
   return jobs[0]
@@ -72,8 +72,8 @@ const getSomePeJobs = async ({ romes, insee, radius, lat, long, caller, opco, ap
 // appel de l'api offres pour un bloc de 1 à 3 romes
 const getSomePeJobsForChunkedRomes = async ({ romes, insee, radius, lat, long, caller, api }) => {
   let jobResult = null
-  const currentRadius = radius || 20000
-  const jobLimit = 50 //TODO: query params options or default value from properties -> size || 50
+  let currentRadius = radius || 20000
+  let jobLimit = 50 //TODO: query params options or default value from properties -> size || 50
 
   let trys = 0
 
@@ -97,14 +97,14 @@ const getSomePeJobsForChunkedRomes = async ({ romes, insee, radius, lat, long, c
 
 // update du contenu avec des résultats pertinents par rapport au rayon
 const transformPeJobsForIdea = ({ jobs, radius, lat, long, caller }) => {
-  const resultJobs = {
+  let resultJobs = {
     results: [],
   }
 
   if (jobs.resultats && jobs.resultats.length) {
     for (let i = 0; i < jobs.resultats.length; ++i) {
       //console.log("jobs.resultat : ",jobs.resultats[i]);
-      const job = transformPeJobForIdea({ job: jobs.resultats[i], lat, long, caller })
+      let job = transformPeJobForIdea({ job: jobs.resultats[i], lat, long, caller })
 
       if (job.place.distance < getRoundedRadius(radius)) {
         resultJobs.results.push(job)
@@ -117,7 +117,7 @@ const transformPeJobsForIdea = ({ jobs, radius, lat, long, caller }) => {
 
 // Adaptation au modèle Idea et conservation des seules infos utilisées des offres
 const transformPeJobForIdea = ({ job, lat = null, long = null, caller = null }) => {
-  const resultJob = itemModel("peJob")
+  let resultJob = itemModel("peJob")
 
   resultJob.title = job.intitule
 
@@ -210,7 +210,7 @@ const getPeJobs = async ({ romes, insee, radius, jobLimit, caller, api = "jobV1"
 
     const hasLocation = insee ? true : false
 
-    const headers = peApiHeaders
+    let headers = peApiHeaders
     headers.Authorization = `Bearer ${token}`
 
     // hack : les codes insee des villes à arrondissement retournent une erreur. il faut utiliser un code insee d'arrondissement
@@ -221,7 +221,7 @@ const getPeJobs = async ({ romes, insee, radius, jobLimit, caller, api = "jobV1"
 
     const distance = radius || 10
 
-    const params = {
+    let params = {
       codeROME: romes,
       commune: codeInsee,
       sort: hasLocation ? 2 : 0, //sort: 0, TODO: remettre sort 0 après expérimentation CBS
@@ -250,7 +250,7 @@ const getPeJobs = async ({ romes, insee, radius, jobLimit, caller, api = "jobV1"
 const getPeJobFromId = async ({ id, caller }) => {
   try {
     const token = await getAccessToken("pe")
-    const headers = peApiHeaders
+    let headers = peApiHeaders
     headers.Authorization = `Bearer ${token}`
 
     const job = await axios.get(`${peJobApiEndpoint}${id}`, {
@@ -266,7 +266,7 @@ const getPeJobFromId = async ({ id, caller }) => {
 
       return { result: "not_found", message: "Offre non trouvée" }
     } else {
-      const peJob = transformPeJobForIdea({ job: job.data, caller })
+      let peJob = transformPeJobForIdea({ job: job.data, caller })
 
       if (caller) {
         trackApiCall({ caller, job_count: 1, result_count: 1, api_path: "jobV1/job", response: "OK" })

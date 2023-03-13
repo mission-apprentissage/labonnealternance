@@ -43,7 +43,9 @@ const contentSecurityPolicy = `
               https://labonnealternance.pole-emploi.fr;
   font-src 'self' https: data:;
   style-src 'self' https: 'unsafe-inline';
-  frame-src https://plausible.io 
+  frame-src http://localhost
+            http://localhost:3000
+            https://plausible.io             
             https://labonnealternance.pole-emploi.fr
             https://labonnealternance.apprentissage.beta.gouv.fr
             https://labonnealternance-recette.apprentissage.beta.gouv.fr;

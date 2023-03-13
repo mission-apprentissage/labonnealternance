@@ -62,6 +62,10 @@ export const itemModel = (type) => {
                 },
                 name,              // formation -> etablissement_gestionnaire_entreprise_raison_sociale
             },*/,
+      opco: null /*
+            label,  // lba -> opco
+            url,    // lba -> opco_url
+        */,
     },
 
     diplomaLevel: null, // formation -> niveau  | matcha -> offres.niveau
