@@ -1,7 +1,7 @@
-import Sentry from "@sentry/node"
 import _ from "lodash-es"
 import Yup from "yup"
 import { BonnesBoites } from "../../common/model/index.js"
+import { sentryCaptureException } from "../../common/utils/sentryUtils.js"
 import config from "../../config.js"
 
 const validationError = "error - validation of data failed"
@@ -51,7 +51,7 @@ const updateContactInfo = async (query) => {
       if (err === validationError) {
         return { error: "wrong_parameters" }
       } else {
-        Sentry.captureException(err)
+        sentryCaptureException(err)
 
         const error_msg = _.get(err, "meta.body") ?? err.message
 

@@ -1,5 +1,4 @@
 // @ts-nocheck
-import Sentry from "@sentry/node"
 import { ObjectId } from "mongodb"
 import { oleoduc, writeData } from "oleoduc"
 import path from "path"
@@ -9,6 +8,7 @@ import { Application, BonnesBoites, EmailBlacklist } from "../common/model/index
 import { decryptWithIV, encryptIdWithIV } from "../common/utils/encryptString.js"
 import { manageApiError } from "../common/utils/errorManager.js"
 import { prepareMessageForMail } from "../common/utils/fileUtils.js"
+import { sentryCaptureException } from "../common/utils/sentryUtils.js"
 import config from "../config.js"
 import updateSendinblueBlockedEmails from "../jobs/updateSendinblueBlockedEmails/updateSendinblueBlockedEmails.js"
 import { validateCaller } from "./queryValidators.js"
@@ -20,8 +20,8 @@ import {
   validatePermanentEmail,
   validateSendApplication,
 } from "./validateSendApplication.js"
-const currentDirname = __dirname(import.meta.url)
 
+const currentDirname = __dirname(import.meta.url)
 const publicUrl = config.publicUrl
 const publicUrlEspacePro = config.publicUrlEspacePro
 
@@ -270,7 +270,7 @@ const sendApplication = async ({ scan, mailer, query, referer, shouldCheckSecret
       return { result: "ok", message: "messages sent" }
     } catch (err) {
       logger.error(`Error sending application. Reason : ${err}`)
-      Sentry.captureException(err)
+      sentryCaptureException(err)
       if (query?.caller) {
         manageApiError({
           error: err,
@@ -312,7 +312,7 @@ const saveApplicationIntentionComment = async ({ query, mailer }) => {
     return { result: "ok", message: "comment registered" }
   } catch (err) {
     console.log("err ", err)
-    Sentry.captureException(err)
+    sentryCaptureException(err)
     return { error: "error_saving_comment" }
   }
 }
@@ -506,7 +506,7 @@ const sendTestMail = async ({ mailer, query }) => {
         data: mailData,
       })
     } catch (err) {
-      Sentry.captureException(err)
+      sentryCaptureException(err)
       return { error: "error_sending_test_mail" }
     }
   }
