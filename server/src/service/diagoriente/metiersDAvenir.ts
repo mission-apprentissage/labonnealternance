@@ -1,6 +1,6 @@
-import Sentry from "@sentry/node"
 import axios from "axios"
 import dayjs from "dayjs"
+import { sentryCaptureException } from "../../common/utils/sentryUtils.js"
 import config from "../../config.js"
 
 let diagorienteToken = null
@@ -52,7 +52,7 @@ export const getMetiersDAvenir = async () => {
     )
     return job.data.data
   } catch (error) {
-    Sentry.captureException(error)
+    sentryCaptureException(error)
     return {
       error: "Error fetching suggestionsMetiersAvenir",
     }

@@ -1,7 +1,7 @@
 // @ts-nocheck
-import Sentry from "@sentry/node"
 
 import { trackApiCall } from "../../common/utils/sendTrackingEvent.js"
+import { sentryCaptureException } from "../../common/utils/sentryUtils.js"
 import { getMatchaJobs } from "../matcha.js"
 import { getCompanyFromSiret, getSomeLbbCompanies } from "./bonnesBoites.js"
 import { jobsQueryValidator } from "./jobsQueryValidator.js"
@@ -49,7 +49,7 @@ const getPeJobQuery = async (query) => {
     //throw new Error("BIG BANG");
     return job
   } catch (err) {
-    Sentry.captureException(err)
+    sentryCaptureException(err)
     if (query.caller) {
       trackApiCall({ caller: query.caller, api_path: "jobV1/job", response: "Error" })
     }
@@ -74,7 +74,7 @@ const getCompanyQuery = async (query) => {
     return company
   } catch (err) {
     console.error("Error ", err.message)
-    Sentry.captureException(err)
+    sentryCaptureException(err)
     if (query.caller) {
       trackApiCall({ caller: query.caller, api_path: "jobV1/company", response: "Error" })
     }
@@ -158,7 +158,7 @@ const getJobsFromApi = async ({ query, api }) => {
     return { peJobs, matchas, lbaCompanies, lbbCompanies }
   } catch (err) {
     console.log("Error ", err.message)
-    Sentry.captureException(err)
+    sentryCaptureException(err)
 
     if (query.caller) {
       trackApiCall({ caller: query.caller, api_path: api, response: "Error" })

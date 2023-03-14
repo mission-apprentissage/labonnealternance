@@ -30,8 +30,6 @@ export const relanceOpco = async (mailer) => {
 
   for (const opco in userList) {
     // Get related user to send the email
-    const user = await UserRecruteur.findOne({ scope: opco, type: "OPCO" })
-
     const users = await UserRecruteur.find({ scope: opco, type: "OPCO" })
 
     await asyncForEach(users, async (user) => {
