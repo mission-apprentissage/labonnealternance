@@ -7,12 +7,13 @@ import dayjs from "../../common/dayjs.js"
 import { getElasticInstance } from "../../common/esClient/index.js"
 import { Formulaire } from "../../common/model/index.js"
 import config from "../../config.js"
+import { getApplication } from "../../services/application.service.js"
 import { getCatalogueEtablissements, getFormations } from "../../services/catalogue.service.js"
 import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
 
 const esClient = getElasticInstance()
 
-export default ({ formulaire, mailer, etablissementsRecruteur, application, usersRecruteur }) => {
+export default ({ formulaire, mailer, etablissementsRecruteur, usersRecruteur }) => {
   const router = express.Router()
 
   /**
@@ -43,7 +44,7 @@ export default ({ formulaire, mailer, etablissementsRecruteur, application, user
 
       await Promise.all(
         result.offres.map(async (offre) => {
-          const candidatures = await application.getApplication(offre._id)
+          const candidatures = await getApplication(offre._id)
 
           if (candidatures) {
             offre.candidatures = candidatures.length > 0 ? candidatures.length : undefined

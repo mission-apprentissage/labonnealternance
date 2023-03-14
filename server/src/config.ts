@@ -112,6 +112,14 @@ const config = {
     username: env.get("LBA_CATALOGUE_ME_USERNAME").default("admin").asString(),
     password: env.get("LBA_CATALOGUE_ME_PASSWORD").default("password").asString(),
   },
+  algoBonnesBoites: {
+    accessKeyId: env.get("LBA_ALGO_LBB_ACCESSKEYID").default("*****").asString(),
+    secretAccessKey: env.get("LBA_ALGO_LBB_SECRETACCESSKEY").default("*****").asString(),
+    s3Endpoint: env.get("LBA_ALGO_LBB_S3ENDPOINT").default("https://").asString(),
+    s3Region: env.get("LBA_ALGO_LBB_S3REGION").default("ABC").asString(),
+    s3Bucket: env.get("LBA_ALGO_LBB_S3BUCKET").default("Bucket").asString(),
+    s3File: env.get("LBA_ALGO_LBB_S3FILE").default("filepath").asString(),
+  },
 }
 
 export default config

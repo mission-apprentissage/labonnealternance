@@ -1,67 +1,122 @@
 // @ts-nocheck
 import { BonnesBoites } from "../../common/model/index.js"
 import { logMessage } from "../../common/utils/logMessage.js"
+import { downloadSAVEFile, getCompanyMissingData, initMaps, streamSAVECompanies } from "./bonnesBoitesUtils.js"
+import { oleoduc, transformData, writeData } from "oleoduc"
 
-const updateSAVECompanies = async ({ updateMap }) => {
+export const updateSAVECompanies = async () => {
   logMessage("info", "Starting updateSAVECompanies")
-  for (const key in updateMap) {
-    const company = updateMap[key]
 
-    const bonneBoite = await BonnesBoites.findOne({ siret: company.siret })
+  const key = "updateSAVE.json"
+  await downloadSAVEFile({ key })
 
-    if (bonneBoite) {
-      let shouldSave = true
-      // remplacement pour une bonneBoite trouvée par les données modifiées dans la table update SAVE
-      if (company.raison_sociale) {
-        bonneBoite.raison_sociale = company.raison_sociale
-      }
-      if (company.enseigne) {
-        bonneBoite.enseigne = company.enseigne
-      }
+  await oleoduc(
+    await streamSAVECompanies({ key }),
+    transformData(
+      (company) => {
+        company.siret = company.siret.toString().padStart(14, "0")
+        return company
+      },
+      { parallel: 8 }
+    ),
+    writeData(async (company) => {
+      try {
+        const bonneBoite = await BonnesBoites.findOne({ siret: company.siret })
 
-      if (company?.email === "remove") {
-        bonneBoite.email = ""
-      } else if (company.email && company.email != "NULL") {
-        bonneBoite.email = company.email
-      }
-
-      if (company?.telephone === "remove") {
-        bonneBoite.phone = ""
-      } else if (company.telephone && company.telephone != "NULL") {
-        bonneBoite.phone = company.telephone
-      }
-
-      if (company?.website === "remove") {
-        bonneBoite.website = ""
-      } else if (company.website && company.website != "NULL") {
-        bonneBoite.website = company.website
-      }
-
-      bonneBoite.algorithm_origin = company.algorithm_origin
-
-      if (company.rome_codes) {
-        bonneBoite.rome_codes = [...new Set(company.rome_codes.concat(bonneBoite.rome_codes))]
-      }
-
-      if (company.removedRomes) {
-        bonneBoite.rome_codes = bonneBoite.rome_codes.filter((el) => !company.removedRomes.includes(el))
-        if (bonneBoite.rome_codes.length === 0) {
-          logMessage("info", "suppression bb car pas de romes " + bonneBoite.siret)
-          try {
-            await bonneBoite.remove()
-          } catch (err) {
-            //console.log("not found when removing ",bonneBoite.siret);
+        if (bonneBoite) {
+          if (company.raison_sociale) {
+            bonneBoite.raison_sociale = company.raison_sociale
+            bonneBoite.eneigne = company.raison_sociale
           }
-          shouldSave = false
-        }
-      }
+          if (company.email !== undefined) {
+            bonneBoite.email = company.email
+          }
+          if (company.phone !== undefined) {
+            bonneBoite.phone = company.phone
+          }
+          if (company.website !== undefined) {
+            bonneBoite.website = company.website
+          }
+          if (company.rome_codes !== undefined) {
+            bonneBoite.rome_codes = company.rome_codes
+          } else if (company.removedRomes != undefined) {
+            bonneBoite.rome_codes = bonneBoite.rome_codes.filter((el) => !company.removedRomes.includes(el))
+            if (bonneBoite.rome_codes.length === 0) {
+              logMessage("info", "suppression bb car pas de romes " + bonneBoite.siret)
+            }
+          }
 
-      if (shouldSave) {
-        await bonneBoite.save()
+          if (bonneBoite.rome_codes?.length) {
+            await bonneBoite.save()
+          } else {
+            await bonneBoite.remove()
+          }
+        }
+        //else company no more in collection => doing nothing
+      } catch (err) {
+        logMessage("error", err)
       }
-    }
-  }
+    })
+  )
+
   logMessage("info", "Ended updateSAVECompanies")
 }
 
-export { updateSAVECompanies }
+export const insertSAVECompanies = async () => {
+  logMessage("info", "Starting insertSAVECompanies")
+
+  const key = "addSAVE.json"
+  await downloadSAVEFile({ key })
+
+  await initMaps()
+
+  await oleoduc(
+    await streamSAVECompanies({ key }),
+    transformData(
+      (company) => {
+        company.siret = company.siret.toString().padStart(14, "0")
+        return company
+      },
+      { parallel: 2 }
+    ),
+    writeData(async (rawCompany) => {
+      const company = await getCompanyMissingData(rawCompany)
+      if (company) {
+        try {
+          let bonneBoite = await BonnesBoites.findOne({ siret: company.siret })
+          if (!bonneBoite) {
+            bonneBoite = new BonnesBoites(company)
+            await bonneBoite.save()
+          }
+        } catch (err) {
+          logMessage("error", err)
+        }
+      }
+    })
+  )
+
+  logMessage("info", "Ended insertSAVECompanies")
+}
+
+export const removeSAVECompanies = async () => {
+  logMessage("info", "Starting removeSAVECompanies")
+
+  const key = "removeSAVE.json"
+  await downloadSAVEFile({ key })
+
+  await oleoduc(
+    await streamSAVECompanies({ key }),
+    transformData(
+      (company) => {
+        company.siret = company.siret.toString().padStart(14, "0")
+        return company
+      },
+      { parallel: 8 }
+    ),
+    writeData(async (company) => {
+      await BonnesBoites.deleteOne({ siret: company.siret })
+    })
+  )
+
+  logMessage("info", "Ended removeSAVECompanies")
+}

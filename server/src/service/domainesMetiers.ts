@@ -7,10 +7,17 @@ import { sentryCaptureException } from "../common/utils/sentryUtils.js"
 import config from "../config.js"
 import getMissingRNCPsFromDomainesMetiers from "../jobs/domainesMetiers/getMissingRNCPsFromDomainesMetiers.js"
 import { getRomesFromCfd, getRomesFromSiret } from "./romesFromCatalogue.js"
+import { mockedLabelsAndRomes } from "../mocks/labelsAndRomes-mock.ts"
 
 export const getRomesAndLabelsFromTitleQuery = async (query) => {
-  if (!query.title) return { error: "title_missing" }
-  else {
+  if (!query.title) {
+    // error case
+    return { error: "title_missing" }
+  } else if (query.useMock) {
+    // mock case
+    return mockedLabelsAndRomes
+  } else {
+    // nominal case
     const [romesMetiers, romesDiplomes] = await Promise.all([getLabelsAndRomes(query.title, query.withRomeLabels), getLabelsAndRomesForDiplomas(query.title)])
     return { ...romesMetiers, ...romesDiplomes }
   }

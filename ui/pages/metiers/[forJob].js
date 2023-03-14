@@ -1,3 +1,4 @@
+import NextLink from "next/link"
 import { Box, Container, Divider, Link, Text, VStack } from "@chakra-ui/react"
 import { NextSeo } from "next-seo"
 import { useRouter } from "next/router"
@@ -6,6 +7,7 @@ import { getStaticMetiers, getStaticVilles } from "utils/getStaticData"
 import Breadcrumb from "../../components/breadcrumb"
 import Footer from "../../components/footer"
 import Navigation from "../../components/navigation"
+import { buildLinkForTownAndJob } from "../../utils/buildLinkForTownAndJob"
 
 export default function ForJob(props) {
   const router = useRouter()
@@ -53,18 +55,22 @@ export default function ForJob(props) {
 
           <Text marginTop="0px" mb={[2, 2, 2, 0]}>
             <Text as="span">Emploi en alternance et formation en alternance en </Text>
-            <Link textDecoration="underline" fontWeight={700} href={`/metiers/${currentJob.slug}/france`}>
-              {currentJob.name} sur l'ensemble du territoire
-            </Link>
+            <NextLink href={buildLinkForTownAndJob({name:"France"}, currentJob)} passHref>
+              <Link title={`Voir les emplois en alternance et formation en alternance en ${currentJob.name} sur l'ensemble du territoire`} textDecoration="underline" fontWeight={700}>
+                {currentJob.name} sur l'ensemble du territoire
+              </Link>
+            </NextLink>
           </Text>
 
           {sortedTowns.map((currentTown, index) => {
             return (
               <Text key={index} marginTop="0px" mb={[2, 2, 2, 0]}>
                 <Text as="span">Emploi en alternance et formation en alternance en </Text>
-                <Link textDecoration="underline" fontWeight={700} href={`/metiers/${currentJob.slug}/${currentTown.slug}`}>
-                  {currentJob.name} à {currentTown.name}
-                </Link>
+                <NextLink href={buildLinkForTownAndJob(currentTown, currentJob)} passHref>
+                  <Link title={`Voir les emplois en alternance et formation en alternance en ${currentJob.name} à ${currentTown.name}`} textDecoration="underline" fontWeight={700} href={buildLinkForTownAndJob(currentTown, currentJob)}>
+                    {currentJob.name} à {currentTown.name}
+                  </Link>
+                </NextLink>
               </Text>
             )
           })}

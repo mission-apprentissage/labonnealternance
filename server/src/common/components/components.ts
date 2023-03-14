@@ -1,7 +1,6 @@
 // @ts-nocheck
 import createMailer from "../mailer.js"
 import { connectToMongo } from "../mongodb.js"
-import createApplication from "./application.js"
 import createAppointements from "./appointments.js"
 import scan from "./clamav.js"
 import createEtablissements from "./etablissement.js"
@@ -21,7 +20,6 @@ export default async function (options = {}) {
   const usersRecruteur = await createUserRecruteur()
   const formulaire = await createFormulaire()
   const etablissementsRecruteur = await createEtablissementRecruteur()
-  const application = await createApplication()
 
   return {
     db: options.db || (await connectToMongo()).db,
@@ -29,7 +27,6 @@ export default async function (options = {}) {
     scan,
     users,
     formulaire,
-    application,
     appointments,
     usersRecruteur,
     etablissements,

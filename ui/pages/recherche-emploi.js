@@ -5,6 +5,7 @@ import SearchForTrainingsAndJobs from "../components/SearchForTrainingsAndJobs"
 import { ParameterContext } from "../context/ParameterContextProvider"
 import { ScopeContextProvider } from "../context/ScopeContext.js"
 import { initParametersFromQuery } from "../services/config"
+import { getSeoDescription, getSeoTitle } from "../utils/seoUtils.js"
 
 const RechercheEmploi = () => {
   const router = useRouter()
@@ -17,7 +18,7 @@ const RechercheEmploi = () => {
 
   return (
     <>
-      <NextSeo title="Recherche d'emploi | La bonne alternance | Trouvez votre alternance" description="Recherche d'emploi sur le site de La bonne alternance." />
+      <NextSeo title={getSeoTitle({parameterContext,page:"Emplois"})} description={getSeoDescription({parameterContext,page:"Emplois"})} />
       <ScopeContextProvider value={{ isJob: true, isTraining: false, path: "/recherche-emploi" }}>
         <SearchForTrainingsAndJobs />
       </ScopeContextProvider>

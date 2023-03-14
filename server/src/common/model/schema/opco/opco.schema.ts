@@ -15,6 +15,12 @@ export const opcoSchema = new Schema<IOpco>({
     index: true,
     description: "Nom de l'opco",
   },
+  opco_short_name: {
+    type: String,
+    default: null,
+    index: true,
+    description: "Nom court de de l'opco servant de clef dans notre table de constantes",
+  },
   idcc: {
     type: String,
     default: null,

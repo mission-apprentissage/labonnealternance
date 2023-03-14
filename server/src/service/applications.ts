@@ -25,12 +25,14 @@ const currentDirname = __dirname(import.meta.url)
 const publicUrl = config.publicUrl
 const publicUrlEspacePro = config.publicUrlEspacePro
 
-const imagePath = "https://labonnealternance-recette.apprentissage.beta.gouv.fr/images/emails/"
+const imagePath = `${config.publicUrl.indexOf("local") >= 0 ? config.publicUrl : "https://labonnealternance-recette.apprentissage.beta.gouv.fr"}/images/emails/`
+// const imagePath = "https://labonnealternance-recette.apprentissage.beta.gouv.fr/images/emails/"
 
 const images = {
   images: {
     logo: `${imagePath}logo_lba_recruteur.png`,
     logoRF: `${imagePath}logo_rf.png`,
+    logoGrimp: `${imagePath}logo_grimp.png`,
     icoInfo: `${imagePath}icone_info.png`,
     icoCandidat: `${imagePath}icone_candidat.png`,
     nspp: `${imagePath}nspp.png`,
@@ -233,7 +235,7 @@ const sendApplication = async ({ scan, mailer, query, referer, shouldCheckSecret
           to: application.applicant_email,
           subject: `Votre candidature chez ${application.company_name}`,
           template: getEmailTemplate(emailTemplates.candidat),
-          data: { ...application._doc, ...images, ...encryptedId, publicUrl },
+          data: { ...application._doc, ...images, ...encryptedId, publicUrl, urlOfDetail },
           attachments: [
             {
               filename: application.applicant_attachment_name,

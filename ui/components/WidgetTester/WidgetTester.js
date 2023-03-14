@@ -4,6 +4,7 @@ import { fetchAddresses } from "../../services/baseAdresse"
 import domainChanged from "../../services/domainChanged"
 import { AutoCompleteField, autoCompleteToStringFunction, compareAutoCompleteValues } from "../AutoCompleteField/AutoCompleteField"
 import { GridItem, Grid, Container, Button, Box, Text, Link, Input, Radio, RadioGroup, Stack } from "@chakra-ui/react"
+import { baseUrl } from "../../config/config"
 
 const WidgetTester = () => {
   const [locationRadius, setLocationRadius] = useState("0")
@@ -89,6 +90,7 @@ const WidgetTester = () => {
     res.scope = values.scope || null
     res.caller = values.caller || null
     res.opco = values.opco || null
+    res.opcoUrl = values.opcoUrl || null
     res.jobName = values.jobName || null
     res.frozenJob = values.frozen_job || null
 
@@ -96,7 +98,8 @@ const WidgetTester = () => {
   }
 
   const getIdeaUrlWithParams = () => {
-    let ideaUrl = typeof window !== "undefined" ? window.location.origin : "https://labonnealternance.apprentissage.beta.gouv.fr"
+    let ideaUrl = baseUrl
+    ideaUrl = ideaUrl.replace("5", "3")
 
     let path = "recherche-apprentissage"
 
@@ -113,6 +116,7 @@ const WidgetTester = () => {
       ideaUrl += widgetParams.location ? `&lon=${widgetParams.location[0]}&lat=${widgetParams.location[1]}` : ""
       ideaUrl += widgetParams.radius ? `&radius=${widgetParams.radius}` : ""
       ideaUrl += widgetParams.opco ? `&opco=${encodeURIComponent(widgetParams.opco)}` : ""
+      ideaUrl += widgetParams.opcoUrl ? `&opcoUrl=${encodeURIComponent(widgetParams.opcoUrl)}` : ""
       ideaUrl += widgetParams.jobName ? `&job_name=${encodeURIComponent(widgetParams.jobName)}` : ""
       ideaUrl += widgetParams.frozenJob ? "&frozen_job=1" : ""
     } else ideaUrl = `${ideaUrl}/${path}`
@@ -147,6 +151,7 @@ const WidgetTester = () => {
           scope: "",
           caller: "adresse_contact@mail.com identifiant_appelant",
           opco: "",
+          opcoUrl: "",
         }}
         onSubmit={handleSearchSubmit}
       >
@@ -268,6 +273,15 @@ const WidgetTester = () => {
                       <Text as="strong">Filtrage des opportunités d&apos;emploi pour un OPCO. Optionnel (opco)</Text>
                     </Box>
                     <Field as={Input} variant="outline" type="text" name="opco" />
+                  </Box>
+                </GridItem>
+
+                <GridItem mt={8}>
+                  <Box>
+                    <Box as="label">
+                      <Text as="strong">Filtrage des opportunités d&apos;emploi par un site d'OPCO. Optionnel (opcoUrl)</Text>
+                    </Box>
+                    <Field as={Input} variant="outline" type="text" name="opcoUrl" />
                   </Box>
                 </GridItem>
 

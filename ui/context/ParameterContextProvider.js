@@ -5,7 +5,9 @@ const initialState = {
   widgetParameters: null,
   itemParameters: null,
   opcoFilter: null,
+  opcoUrlFilter: null,
   useMock: false,
+  displayMap: true,
 }
 
 const actions = {
@@ -14,6 +16,7 @@ const actions = {
   SET_ITEM_PARAMETERS: "SET_ITEM_PARAMETERS",
   SET_OPCO_FILTER: "SET_OPCO_FILTER",
   SET_USE_MOCK: "SET_USE_MOCK",
+  SET_DISPLAY_MAP: "SET_DISPLAY_MAP",
 }
 
 const reducer = (state, action) => {
@@ -30,10 +33,13 @@ const reducer = (state, action) => {
       return { ...state_copy, itemParameters: action.itemParameters }
     }
     case actions.SET_OPCO_FILTER: {
-      return { ...state_copy, opcoFilter: action.opcoFilter }
+      return { ...state_copy, opcoFilter: action.opcoFilter, opcoUrlFilter: action.opcoUrlFilter }
     }
     case actions.SET_USE_MOCK: {
       return { ...state_copy, useMock: action.useMock }
+    }
+    case actions.SET_DISPLAY_MAP: {
+      return { ...state_copy, displayMap: action.displayMap }
     }
 
     default:
@@ -57,11 +63,15 @@ const ParameterContextProvider = ({ children }) => {
     setItemParameters: (itemParameters = null) => {
       dispatch({ type: actions.SET_ITEM_PARAMETERS, itemParameters })
     },
-    setOpcoFilter: (opcoFilter = null) => {
-      dispatch({ type: actions.SET_OPCO_FILTER, opcoFilter })
+    setOpcoFilter: (opcoFilter = null, opcoUrlFilter = null) => {
+      dispatch({ type: actions.SET_OPCO_FILTER, opcoFilter, opcoUrlFilter })
     },
     setUseMock: (useMock = null) => {
       dispatch({ type: actions.SET_USE_MOCK, useMock })
+    },
+    setDisplayMap: (displayMap = true) => {
+      console.log("setting display map : ",displayMap)
+      dispatch({ type: actions.SET_DISPLAY_MAP, displayMap })
     },
   }
 

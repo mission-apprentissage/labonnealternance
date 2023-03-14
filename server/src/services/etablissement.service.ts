@@ -221,11 +221,17 @@ export const getGeoCoordinates = async (adresse: string): Promise<string> => {
   }
 }
 /**
- * @description Get matching records from the ReferentielOpco collection for a given siret & email)
+ * @description Get matching records from the ReferentielOpco collection for a given siret & email
  * @param {String} siretCode
  * @returns {Promise<IReferentielOpco>}
  */
 export const getEstablishmentFromOpcoReferentiel = async (siretCode: string): Promise<IReferentielOpco> => await ReferentielOpco.findOne({ siret_code: siretCode })
+/**
+ * @description Get all matching records from the ReferentielOpco collection for a given siret & email
+ * @param {String} siretCode
+ * @returns {Promise<IReferentielOpco[]>}
+ */
+export const getAllEstablishmentFromOpcoReferentiel = async (query: object): Promise<IReferentielOpco[]> => await ReferentielOpco.find(query).lean()
 /**
  * @description Chech if a given email is included in the given email list array
  * @param {String} email
@@ -254,6 +260,7 @@ export const formatEntrepriseData = (d: IEtablissementGouv) => ({
   etat: d.etat_administratif.value, // F pour fermé ou A pour actif
   siret: d.siret,
   raison_sociale: d.adresse.l1,
+  adresse_detail: d.adresse,
   adresse: `${d.adresse.l4 ?? ""} ${d.adresse.code_postal} ${d.adresse.localite}`,
   rue: d.adresse.l4,
   commune: d.adresse.localite,
@@ -275,6 +282,7 @@ export const formatReferentielData = (d: IReferentiel) => ({
   siret: d.siret,
   raison_sociale: d.raison_sociale,
   contacts: d.contacts,
+  adresse_detail: d.adresse,
   adresse: d.adresse?.label,
   rue: d.adresse?.label?.split(`${d.adresse?.code_postal}`)[0].trim() || d.lieux_de_formation[0].adresse.label.split(`${d.lieux_de_formation[0].adresse.code_postal}`)[0].trim(),
   commune: d.adresse?.localite || d.lieux_de_formation[0].adresse.localite,
