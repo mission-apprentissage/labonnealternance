@@ -1,9 +1,9 @@
 // @ts-nocheck
-import Sentry from "@sentry/node"
 import { getElasticInstance } from "../../common/esClient/index.js"
 import { logger } from "../../common/logger.js"
 import { DiplomesMetiers } from "../../common/model/index.js"
 import { resetIndexAndDb } from "../../common/utils/esUtils.js"
+import { sentryCaptureException } from "../../common/utils/sentryUtils.js"
 
 const motsIgnores = ["a", "au", "aux", "l", "le", "la", "les", "d", "de", "du", "des", "et", "en"]
 const diplomesMetiers = []
@@ -104,7 +104,7 @@ const getIntitulesFormations = async () => {
 
     return intitules
   } catch (error) {
-    Sentry.captureException(error)
+    sentryCaptureException(error)
     logger.error("Erreur lors de la récupération des codes formations depuis l'ES")
     logger.error(error)
   }

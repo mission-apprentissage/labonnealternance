@@ -1,8 +1,8 @@
-import Sentry from "@sentry/node"
 import axios from "axios"
 import dayjs from "dayjs"
 import querystring from "querystring"
 import config from "../config.js"
+import { sentryCaptureException } from "./utils/sentryUtils.js"
 
 const isTokenValid = (token) => dayjs().isAfter(dayjs(token.expire))
 
@@ -39,7 +39,7 @@ const getToken = async (token = {}) => {
       expire: dayjs().add(response.data.expires_in - 10, "s"),
     }
   } catch (error) {
-    Sentry.captureException(error)
+    sentryCaptureException(error)
     return error
   }
 }
@@ -63,7 +63,7 @@ export const getAktoEstablishmentVerification = async (siren, email, token) => {
 
     return data.data.match
   } catch (error) {
-    Sentry.captureException(error)
+    sentryCaptureException(error)
     return error
   }
 }

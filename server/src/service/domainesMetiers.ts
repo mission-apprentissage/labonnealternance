@@ -1,9 +1,9 @@
 // @ts-nocheck
-import Sentry from "@sentry/node"
 import _ from "lodash-es"
 import { matchSorter } from "match-sorter"
 import { getElasticInstance } from "../common/esClient/index.js"
 import { logger } from "../common/logger.js"
+import { sentryCaptureException } from "../common/utils/sentryUtils.js"
 import config from "../config.js"
 import getMissingRNCPsFromDomainesMetiers from "../jobs/domainesMetiers/getMissingRNCPsFromDomainesMetiers.js"
 import { getRomesFromCfd, getRomesFromSiret } from "./romesFromCatalogue.js"
@@ -17,7 +17,7 @@ export const getRomesAndLabelsFromTitleQuery = async (query) => {
 }
 
 const manageError = ({ error, msgToLog }) => {
-  Sentry.captureException(error)
+  sentryCaptureException(error)
   let error_msg = _.get(error, "meta.body") ?? error.message
 
   if (typeof error_msg === "object") {
@@ -332,7 +332,7 @@ export const getMissingRNCPs = async (query) => {
       const result = await getMissingRNCPsFromDomainesMetiers(query.fileName)
       return result
     } catch (err) {
-      Sentry.captureException(err)
+      sentryCaptureException(err)
 
       const error_msg = _.get(err, "meta.body") ?? err.message
 

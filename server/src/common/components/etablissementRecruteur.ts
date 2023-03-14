@@ -1,8 +1,8 @@
-import Sentry from "@sentry/node"
 import axios from "axios"
 import config from "../../config.js"
 import { etat_etablissements } from "../constants.js"
 import { ReferentielOpco, UserRecruteur } from "../model/index.js"
+import { sentryCaptureException } from "../utils/sentryUtils.js"
 
 const apiParams = {
   token: config.apiEntrepriseKey,
@@ -88,7 +88,7 @@ export default () => ({
 
       return result
     } catch (error) {
-      Sentry.captureException(error)
+      sentryCaptureException(error)
       return { error: true }
     }
   },
@@ -97,7 +97,7 @@ export default () => ({
       const response = await axios.get(`https://referentiel.apprentissage.beta.gouv.fr/api/v1/organismes/${siret}`)
       return response
     } catch (error) {
-      Sentry.captureException(error)
+      sentryCaptureException(error)
       if (error.response.status === 404) {
         return null
       }
@@ -112,7 +112,7 @@ export default () => ({
       })
       return result
     } catch (error) {
-      Sentry.captureException(error)
+      sentryCaptureException(error)
       return error
     }
   },
@@ -122,7 +122,7 @@ export default () => ({
       const coordinates = response.data.features[0] ? response.data.features[0].geometry.coordinates.reverse().join(",") : "NOT FOUND"
       return coordinates
     } catch (error) {
-      Sentry.captureException(error)
+      sentryCaptureException(error)
       return "NOT FOUND"
     }
   },
