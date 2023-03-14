@@ -10,7 +10,7 @@ interface IAppointments {
   applicant_id: string
   applicant_message_to_cfa: string
   cfa_gestionnaire_siret: string
-  formation_id: string
+  cfa_formateur_siret: string
   appointment_origin: string
   admin_comment: string
   cfa_callback_intention_date: Date

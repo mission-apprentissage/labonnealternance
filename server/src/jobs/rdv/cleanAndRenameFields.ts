@@ -51,6 +51,7 @@ export const cleanAndRenameFields = async ({ appointments, eligibleTrainingsForA
         motivations: "applicant_message_to_cfa",
         champs_libre_commentaire: "admin_comment",
         email_cfa: "cfa_recipient_email",
+        formation_id: "cfa_formateur_siret",
       },
     }
   )

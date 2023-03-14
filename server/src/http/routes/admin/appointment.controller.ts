@@ -1,15 +1,13 @@
 import express from "express"
-import { chunk } from "lodash-es"
 import { logger } from "../../../common/logger.js"
-import { getReferrerById, referrers } from "../../../common/model/constants/referrers.js"
 import { Appointment, User } from "../../../common/model/index.js"
-import { getFormationsByIdRcoFormations } from "../../../services/catalogue.service.js"
+import { getFormationsByCleMinistereEducatif } from "../../../services/catalogue.service.js"
 import { tryCatch } from "../../middlewares/tryCatchMiddleware.js"
 
 /**
  * Sample entity route module for GET
  */
-export default ({ etablissements, appointments, users }) => {
+export default () => {
   const router = express.Router()
 
   /**
@@ -47,42 +45,20 @@ export default ({ etablissements, appointments, users }) => {
       const page = qs && qs.page ? qs.page : 1
       const limit = qs && qs.limit ? parseInt(qs.limit, 10) : 50
 
-      const allData = await Appointment.paginate({ query, page, limit, sort: { created_at: -1 } })
+      const allAppointments = await Appointment.paginate({ query, page, limit, sort: { created_at: -1 } })
 
-      const idRcoFormations = [...new Set(allData.docs.map((document) => document.rco_formation_id))]
+      const cleMinistereEducatifs = [...new Set(allAppointments.docs.map((document) => document.cle_ministere_educatif))]
 
-      // Split array by chunk to avoid sending unit calls to the catalogue
-      const idRcoFormationsChunks = chunk(idRcoFormations, 40)
+      const formations = await getFormationsByCleMinistereEducatif({ cleMinistereEducatifs })
 
-      // Get formations from catalogue by block of 40 id_rco_formations
-      let formations = await Promise.all(idRcoFormationsChunks.map((idRcoFormations) => getFormationsByIdRcoFormations({ idRcoFormations })))
-
-      formations = formations.flat()
-
-      const appointmentsPromises = allData.docs.map(async (document) => {
+      const appointmentsPromises = allAppointments.docs.map(async (document) => {
         const user = await User.findById(document.applicant_id)
-
-        // Get right formation from dataset
-        const catalogueFormation = formations.find((item) => item.id_rco_formation === document.rco_formation_id)
-
-        const etablissement = await etablissements.findOne({ siret_formateur: document.cfa_gestionnaire_siret })
-
-        let formation = {}
-        if (catalogueFormation) {
-          formation = {
-            etablissement_formateur_entreprise_raison_sociale: catalogueFormation.etablissement_formateur_entreprise_raison_sociale,
-            intitule_long: catalogueFormation.intitule_long,
-            etablissement_formateur_street: catalogueFormation.etablissement_formateur_adresse,
-            etablissement_formateur_zip_code: catalogueFormation.etablissement_formateur_code_postal,
-            departement_etablissement_formateur: catalogueFormation.etablissement_formateur_nom_departement,
-          }
-        }
+        const formation = formations.find((item) => item.cle_ministere_educatif === document.cle_ministere_educatif)
 
         return {
           ...document,
-          appointment_origin: getReferrerById(document.appointment_origin),
+          appointment_origin: document.appointment_origin,
           formation,
-          etablissement,
           candidat: {
             _id: user._id,
             firstname: user.firstname,
@@ -98,10 +74,10 @@ export default ({ etablissements, appointments, users }) => {
       return res.send({
         appointments,
         pagination: {
-          page: allData.page,
+          page: allAppointments.page,
           resultats_par_page: limit,
-          nombre_de_page: allData.totalPages,
-          total: allData.totalDocs,
+          nombre_de_page: allAppointments.totalPages,
+          total: allAppointments.totalDocs,
         },
       })
     })

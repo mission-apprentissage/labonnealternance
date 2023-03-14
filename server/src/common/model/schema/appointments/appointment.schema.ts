@@ -19,10 +19,10 @@ export const appointmentSchema = new Schema<IAppointments>({
     default: null,
     description: "SIRET gestionnaire",
   },
-  formation_id: {
+  cfa_formateur_siret: {
     type: String,
     default: null,
-    description: "L'identifiant de la formation",
+    description: "SIRET formateur",
   },
   appointment_origin: {
     type: String,
