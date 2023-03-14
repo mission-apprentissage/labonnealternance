@@ -6,8 +6,8 @@ import { logger } from "../common/logger.js"
 import { sentryCaptureException } from "../common/utils/sentryUtils.js"
 import config from "../config.js"
 import getMissingRNCPsFromDomainesMetiers from "../jobs/domainesMetiers/getMissingRNCPsFromDomainesMetiers.js"
+import { mockedLabelsAndRomes } from "../mocks/labelsAndRomes-mock.js"
 import { getRomesFromCfd, getRomesFromSiret } from "./romesFromCatalogue.js"
-import { mockedLabelsAndRomes } from "../mocks/labelsAndRomes-mock.ts"
 
 export const getRomesAndLabelsFromTitleQuery = async (query) => {
   if (!query.title) {
