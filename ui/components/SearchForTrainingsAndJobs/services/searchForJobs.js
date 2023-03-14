@@ -21,6 +21,7 @@ export const searchForJobsFunction = async ({
   followUpItem,
   selectFollowUpItem,
   opcoFilter,
+  opcoUrlFilter,
   useMock,
 }) => {
   setIsJobSearchLoading(true)
@@ -39,6 +40,7 @@ export const searchForJobsFunction = async ({
         zipcode: values?.location?.zipcode,
         radius: values.radius || 30,
         opco: opcoFilter,
+        opcoUrl: opcoUrlFilter,
         useMock: useMock,
       },
     })

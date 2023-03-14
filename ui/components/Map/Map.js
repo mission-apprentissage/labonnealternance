@@ -127,7 +127,8 @@ const Map = ({ handleSearchSubmit, showSearchForm, selectItemOnMap }) => {
   }, [trainings, jobs, shouldMapBeVisible])
 
   useEffect(() => {
-    //hack pour recharger la map après navigation back / forward navigateur
+    //hack pour recharger la map après navigation back / forward navigateur ou activation manuel de l'affichage
+
     if (!mapInitialized && isMapInitialized) {
       setMapInitialized(true)
       setTimeout(() => {

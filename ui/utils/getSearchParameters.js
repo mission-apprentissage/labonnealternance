@@ -11,7 +11,7 @@ export const getSearchQueryParameters = (searchParameters) => {
           searchParameters.location.insee || ""
         }&address=${searchParameters.location.label ? encodeURIComponent(searchParameters.location.label) : ""}`
       : ""
-  }${searchParameters?.opcoFiter ? `&opco=${searchParameters.opcoFiter}` : ""}`
+  }${searchParameters?.opcoFilter ? `&opco=${searchParameters.opcoFilter}` : ""}${searchParameters?.opcoUrlFilter ? `&opcoUrl=${searchParameters.opcoUrlFilter}` : ""}`
 
   return result
 }

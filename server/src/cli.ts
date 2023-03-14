@@ -24,7 +24,10 @@ import { premiumActivatedReminder } from "./jobs/rdv/premiumActivatedReminder.js
 import { premiumInviteOneShot } from "./jobs/rdv/premiumInviteOneShot.js"
 import { syncEtablissementsAndFormations } from "./jobs/rdv/syncEtablissementsAndFormations.js"
 import { runScript } from "./jobs/scriptWrapper.js"
+import updateBonnesBoites from "./jobs/lbb/updateBonnesBoites.js"
+import updateGeoLocations from "./jobs/lbb/updateGeoLocations.js"
 import updateSendinblueBlockedEmails from "./jobs/updateSendinblueBlockedEmails/updateSendinblueBlockedEmails.js"
+import updateOpcoCompanies from "./jobs/lbb/updateOpcoCompanies.js"
 
 cli.addHelpText("after", null)
 
@@ -244,6 +247,31 @@ cli
   .description("Renomme les champs des collections LBAC")
   .action(() => {
     runScript(() => refactorLBACFields())
+  })
+
+cli
+  .command("update-companies")
+  .option("-clear-mongo, [ClearMongo]", "vide la collection des bonnes alternances", false)
+  .option("-build-index, [BuildIndex]", "réindex les bonnes boîtes", false)
+  .option("-use-save, [UseSave]", "pour appliquer les données SAVE", false)
+  .description("Met à jour la liste des sociétés bonnes alternances")
+  .action((options) => {
+    runScript(() => updateBonnesBoites(options))
+  })
+
+cli
+  .command("update-geo-locations")
+  .description("Procède à la géolocalisation de masse des sociétés dans le fichier des bonnes alternances")
+  .action(() => {
+    runScript(() => updateGeoLocations())
+  })
+
+cli
+  .command("update-opcos")
+  .option("-clear-mongo, [ClearMongo]", "vide la collection des opcos", false)
+  .description("Procède à la résolution des opcos des sociétés dans le fichier des bonnes alternances")
+  .action((options) => {
+    runScript(() => updateOpcoCompanies(options))
   })
 
 cli.parse(process.argv)

@@ -3,3 +3,5 @@ export const asyncForEach = async (array, callback) => {
     await callback(array[index], index, array)
   }
 }
+
+export const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))

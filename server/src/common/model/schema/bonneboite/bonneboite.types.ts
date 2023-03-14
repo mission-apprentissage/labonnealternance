@@ -18,6 +18,8 @@ interface IBonneBoite {
   website: string
   algorithm_origin: string
   opco: string
+  opco_short_name: string
+  opco_url: string
   created_at: Date
   last_update_at: Date
 }
