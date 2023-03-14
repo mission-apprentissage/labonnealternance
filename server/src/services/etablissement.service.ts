@@ -1,10 +1,10 @@
-import Sentry from "@sentry/node"
 import axios, { AxiosResponse } from "axios"
 import { etat_etablissements } from "../common/constants.js"
 import { Etablissement, ReferentielOpco, UserRecruteur } from "../common/model/index.js"
 import { IEtablissement } from "../common/model/schema/etablissements/etablissement.types.js"
 import { IReferentielOpco } from "../common/model/schema/referentielOpco/referentielOpco.types.js"
 import { IUserRecruteur } from "../common/model/schema/userRecruteur/userRecruteur.types.js"
+import { sentryCaptureException } from "../common/utils/sentryUtils.js"
 import config from "../config.js"
 
 import { IAPIAdresse, IAPIEtablissement, ICFADock, IEtablissementCatalogue, IEtablissementGouv, IReferentiel, ISIRET2IDCC } from "./etablissement.service.types.js"
@@ -169,7 +169,7 @@ export const getEtablissementFromGouv = async (siret: string): Promise<IAPIEtabl
 
     return data
   } catch (error) {
-    Sentry.captureException(error)
+    sentryCaptureException(error)
     throw error
   }
 }
@@ -183,7 +183,7 @@ export const getEtablissementFromReferentiel = async (siret: string): Promise<IR
     const { data } = await axios.get<IReferentiel>(`https://referentiel.apprentissage.beta.gouv.fr/api/v1/organismes/${siret}`)
     return data
   } catch (error) {
-    Sentry.captureException(error)
+    sentryCaptureException(error)
     throw error
   }
 }
@@ -201,7 +201,7 @@ export const getEtablissementFromCatalogue = async (siret: string): Promise<IEta
     })
     return result
   } catch (error) {
-    Sentry.captureException(error)
+    sentryCaptureException(error)
     return error
   }
 }
@@ -216,7 +216,7 @@ export const getGeoCoordinates = async (adresse: string): Promise<string> => {
     const coordinates = response.data.features[0] ? response.data.features[0].geometry.coordinates.reverse().join(",") : "NOT FOUND"
     return coordinates
   } catch (error) {
-    Sentry.captureException(error)
+    sentryCaptureException(error)
     return "NOT FOUND"
   }
 }

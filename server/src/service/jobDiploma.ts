@@ -1,6 +1,6 @@
-import Sentry from "@sentry/node"
 import _ from "lodash-es"
 import { getElasticInstance } from "../common/esClient/index.js"
+import { sentryCaptureException } from "../common/utils/sentryUtils.js"
 
 const esClient = getElasticInstance()
 
@@ -44,7 +44,7 @@ const getDiplomasForJobs = async (romes) => {
 
     return diplomas
   } catch (err) {
-    Sentry.captureException(err)
+    sentryCaptureException(err)
 
     const error_msg = _.get(err, "meta.body") ? err.meta.body : err.message
     console.log("Error getting jobDiplomas from romes and rncps", error_msg)

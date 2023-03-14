@@ -1,5 +1,5 @@
-import Sentry from "@sentry/node"
 import _ from "lodash-es"
+import { sentryCaptureException } from "../../common/utils/sentryUtils.js"
 import config from "../../config.js"
 import updateGeoLocationJob from "../../jobs/lbb/updateGeoLocations.js"
 
@@ -13,7 +13,7 @@ const updateGeoLocations = async (query) => {
       const result = await updateGeoLocationJob()
       return result
     } catch (err) {
-      Sentry.captureException(err)
+      sentryCaptureException(err)
 
       const error_msg = _.get(err, "meta.body") ?? err.message
 

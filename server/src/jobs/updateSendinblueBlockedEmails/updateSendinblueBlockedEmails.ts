@@ -1,11 +1,10 @@
 // @ts-nocheck
-import Sentry from "@sentry/node"
-import { BonnesBoites, EmailBlacklist } from "../../common/model/index.js"
-import { notifyToSlack } from "../../common/utils/slackUtils.js"
-import config from "../../config.js"
-
 import SibApiV3Sdk from "sib-api-v3-sdk"
 import { logger } from "../../common/logger.js"
+import { BonnesBoites, EmailBlacklist } from "../../common/model/index.js"
+import { sentryCaptureException } from "../../common/utils/sentryUtils.js"
+import { notifyToSlack } from "../../common/utils/slackUtils.js"
+import config from "../../config.js"
 
 const saveBlacklistEmails = async (contacts) => {
   for (let i = 0; i < contacts.length; ++i) {
@@ -102,7 +101,7 @@ export default async function ({ AllAddresses }) {
 
     logger.info(`Fin traitement`)
   } catch (error) {
-    Sentry.captureException(error)
+    sentryCaptureException(error)
     logger.error(error)
     await notifyToSlack({ subject: "SENDINBLUE", message: `Échec de la mise à jour des adresses emails bloquées` })
   }
