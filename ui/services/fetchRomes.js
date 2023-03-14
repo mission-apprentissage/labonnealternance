@@ -4,7 +4,7 @@ import memoize from "../utils/memoize"
 import { SendPlausibleEvent } from "../utils/plausible"
 import { isNonEmptyString } from "../utils/strutils"
 import { logError } from "../utils/tools"
-import { baseUrl } from "../config/config"
+import { baseUrl } from "../config/config"
 let cancelToken
 
 export const fetchRomes = memoize(async (value, errorCallbackFn = _.noop, _baseUrl = baseUrl, _axios = axios, _window = window, _logError = logError) => {
@@ -22,8 +22,12 @@ export const fetchRomes = memoize(async (value, errorCallbackFn = _.noop, _baseU
 
   const romeLabelsApi = _baseUrl + "/api/romelabels"
 
+  const params = new Proxy(new URLSearchParams(window.location.search), {
+    get: (searchParams, prop) => searchParams.get(prop),
+  })
+
   try {
-    const response = await _axios.get(romeLabelsApi, { params: { title: value }, cancelToken: cancelToken.token })
+    const response = await _axios.get(romeLabelsApi, { params: { title: value, useMock: params.useMock }, cancelToken: cancelToken.token })
 
     const isAxiosError = !!_.get(response, "data.error")
     const hasNoLabelsAndRomes = !_.get(response, "data.labelsAndRomes") && !_.get(response, "data.labelsAndRomesForDiplomas")
