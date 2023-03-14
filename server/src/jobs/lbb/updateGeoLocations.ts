@@ -3,44 +3,43 @@ import FormData from "form-data"
 import axios from "axios"
 import path from "path"
 import { oleoduc, readLineByLine, transformData, writeData } from "oleoduc"
-import initPredictionMap from "./initPredictionMap.js"
 import { GeoLocation } from "../../common/model/index.js"
 import _ from "lodash-es"
 import fsExtra from "fs-extra"
 import { logMessage } from "../../common/utils/logMessage.js"
 import __dirname from "../../common/dirname.js"
+import { downloadAlgoCompanyFile, readCompaniesFromJson, removePredictionFile } from "./bonnesBoitesUtils.js"
+
 const currentDirname = __dirname(import.meta.url)
 
 const tempDir = "./assets/geoLocations/"
-const etablissementFilePath = path.join(currentDirname, "./assets/etablissements.csv")
 
-let predictionMap = {}
-
-const parseAdressesEtablissements = (line) => {
-  const terms = line.split(";")
-
-  if (terms[4] !== "numerorue") {
-    return {
-      siret: terms[0],
-      numerorue: terms[4].toUpperCase(),
-      libellerue: terms[5].toUpperCase(),
-      citycode: terms[6],
-    }
-  } else {
-    return null
-  }
-}
+let errorCount = 0
 
 // traite un fichier de retour geoloc de la ban
 const parseGeoLoc = (line) => {
-  //rue;postcode;latitude;longitude;result_label;result_score;result_type;result_id;result_housenumber;result_name;result_street;result_postcode;result_city;result_context;result_citycode;result_oldcitycode;result_oldcity;result_district
+  //rue;citycode;latitude;longitude;result_label;result_score;result_score_next;result_type;result_id;result_housenumber;result_name;result_street;result_postcode;result_city;result_context;result_citycode;result_oldcitycode;result_oldcity;result_district;result_status
+  //140 RUE EXEMPLE;00100;51.110199;1.960737;140 Rue Exemple 00100 Uneville;0.9706772727272726;;housenumber;80001_0430_00140;140;140 Rue du Exemple;Rue Exemple;00100;Uneville;00, Dept, Region;00001;;;;ok
+
   const terms = line.split(";")
 
-  const result = {
-    address: `${terms[0].trim()} ${terms[1]}`.toUpperCase(),
-    city: terms[12],
-    zip_code: terms[11],
-    geo_coordinates: `${terms[2]},${terms[3]}`,
+  if (terms[19] === "result_status") {
+    // ligne en-tête
+    return null
+  }
+
+  const result =
+    terms[19] === "ok"
+      ? {
+          address: `${terms[0].trim()} ${terms[1]}`.toUpperCase(),
+          city: terms[13],
+          zip_code: terms[12],
+          geo_coordinates: `${terms[2]},${terms[3]}`,
+        }
+      : null
+
+  if (result === null) {
+    errorCount++
   }
 
   return result
@@ -54,25 +53,26 @@ const createToGeolocateFile = (addressesToGeolocate, sourceFileCount) => {
 const saveGeoData = async (geoData) => {
   const geoLocation = new GeoLocation(geoData)
   if ((await GeoLocation.countDocuments({ address: geoLocation.address })) === 0) {
-    await geoLocation.save()
+    try {
+      await geoLocation.save()
+    } catch (err) {
+      console.log("error saving geoloc probably from duplicate restriction: ", geoLocation.address)
+    }
   }
 }
 
-const clearingFiles = () => {
+const clearingFiles = async () => {
   fsExtra.emptyDirSync(path.join(currentDirname, tempDir))
+  await removePredictionFile()
 }
 
 const geolocateCsvHeader = "rue;citycode"
 
-export default async function () {
-  const step = 0
-
+export default async function updateGeoLocations() {
   try {
     logMessage("info", " -- Start bulk geolocations -- ")
 
-    predictionMap = await initPredictionMap()
-
-    clearingFiles()
+    await clearingFiles()
 
     let sourceFileCount = 0
 
@@ -87,14 +87,16 @@ export default async function () {
       adressesToGeolocate = `${geolocateCsvHeader}\r\n`
     }
 
+    await downloadAlgoCompanyFile()
+
     // extraction depuis les établissements des adresses à géolocaliser
     await oleoduc(
-      fs.createReadStream(etablissementFilePath),
-      readLineByLine(),
-      transformData((line) => parseAdressesEtablissements(line), { parallel: 10 }),
-      writeData((line) => {
-        if (predictionMap[line.siret]) {
-          adressesToGeolocate += `${line.numerorue} ${line.libellerue};${line.citycode}\r\n`
+      await readCompaniesFromJson(),
+      writeData((company) => {
+        if (company.zip_code) {
+          adressesToGeolocate += `${company.street_number ? company.street_number.toUpperCase() : ""} ${company.street_name ? company.street_name.toUpperCase() : ""};${
+            company.zip_code
+          }\r\n`
           adressesToGeolocateCount++
 
           if (adressesToGeolocateCount % 1000 === 0) {
@@ -119,47 +121,46 @@ export default async function () {
     for (let i = 0; i < sourceFileCount; ++i) {
       logMessage("info", `Géolocalisation fichier d'adressses (${i + 1}/${sourceFileCount})`)
 
-      const sourceFilePath = path.join(currentDirname, `${tempDir}geolocatesource-${i}.csv`)
-      const form = new FormData()
-      const stream = fs.createReadStream(sourceFilePath)
-      form.append("data", stream, `geolocatesource-${i}.csv`)
+      try {
+        const sourceFilePath = path.join(currentDirname, `${tempDir}geolocatesource-${i}.csv`)
+        const form = new FormData()
+        const stream = fs.createReadStream(sourceFilePath)
+        form.append("data", stream, `geolocatesource-${i}.csv`)
 
-      const res = await axios.post("https://api-adresse.data.gouv.fr/search/csv/", form, {
-        headers: {
-          ...form.getHeaders(),
-        },
-      })
-
-      const destFilePath = path.join(currentDirname, `${tempDir}geolocated-${i}.csv`)
-      fs.writeFileSync(destFilePath, res.data)
-
-      await oleoduc(
-        fs.createReadStream(destFilePath),
-        readLineByLine(),
-        transformData((line) => parseGeoLoc(line), { parallel: 8 }),
-        writeData(
-          (geoData) => {
-            saveGeoData(geoData)
+        const res = await axios.post("https://api-adresse.data.gouv.fr/search/csv/", form, {
+          headers: {
+            ...form.getHeaders(),
           },
-          { parallel: 8 }
+        })
+
+        const destFilePath = path.join(currentDirname, `${tempDir}geolocated-${i}.csv`)
+        fs.writeFileSync(destFilePath, res.data)
+
+        await oleoduc(
+          fs.createReadStream(destFilePath),
+          readLineByLine(),
+          transformData((line) => parseGeoLoc(line), { parallel: 8 }),
+          writeData(
+            async (geoData) => {
+              await saveGeoData(geoData)
+            },
+            { parallel: 8 }
+          )
         )
-      )
+      } catch (err) {
+        logMessage("error", `Error processing file ${i}. error=${err}`)
+      }
     }
+
+    logMessage("info", `Erreurs de geolocalisatio ${errorCount}`)
 
     logMessage("info", `End bulk geolocation`)
 
-    clearingFiles()
-    predictionMap = null
+    await clearingFiles()
 
     logMessage("info", `Temporary files removed`)
-
-    return {
-      result: "Table mise à jour",
-    }
   } catch (err) {
-    console.log("error step ", step, err)
     logMessage("error", err)
-    const error_msg = _.get(err, "meta.body") ?? err.message
-    return { error: error_msg }
+    logMessage("error", "Bulk geolocation interrupted")
   }
 }

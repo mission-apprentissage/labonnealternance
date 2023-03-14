@@ -2,10 +2,10 @@
 
 # A hook script to verify that we don't commit files that could contain sensible data or credentials like json, csv, xls(x) or .env
 
-sensible_files_pattern="\.(csv|xls|xls(x?)|json|env)$"
+sensible_files_pattern="\.(csv|xls(x?)|json|env|txt)$"
 exception="(package.json"
 exception="$exception|manifest.json|settings.json"
-exception="$exception|sample.json"
+exception="$exception|sample.json|swagger.json"
 exception="$exception|eslintrc.json|app.json"
 exception="$exception|tsconfig.json"
 exception="$exception)$"

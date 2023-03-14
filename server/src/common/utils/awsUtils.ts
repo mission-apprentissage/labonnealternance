@@ -13,11 +13,15 @@ const s3 = new AWS.S3({
   },
 })
 
-const getFileFromS3 = (key) => {
+export const getFileFromS3 = (key) => {
   return s3.getObject({ Bucket: "mna-bucket", Key: key }).createReadStream()
 }
 
-const downloadAndSaveFileFromS3 = (from, to) => {
+export const getFileFromS3Bucket = ({ s3Repository, bucket, key }) => {
+  return s3Repository.getObject({ Bucket: bucket, Key: key }).createReadStream()
+}
+
+export const downloadAndSaveFileFromS3 = (from, to) => {
   logger.info(`Downloading and save file from S3 Bucket...`)
 
   return new Promise((r) => {
@@ -29,4 +33,14 @@ const downloadAndSaveFileFromS3 = (from, to) => {
   })
 }
 
-export { getFileFromS3, downloadAndSaveFileFromS3 }
+export const uploadFileToS3 = async ({ s3Repository, bucket, key, filePath }) => {
+  const blob = fs.readFileSync(filePath)
+
+  await s3Repository
+    .upload({
+      Key: key,
+      Body: blob,
+      Bucket: bucket,
+    })
+    .promise()
+}
