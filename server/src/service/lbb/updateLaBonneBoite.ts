@@ -1,5 +1,5 @@
-import Sentry from "@sentry/node"
 import _ from "lodash-es"
+import { sentryCaptureException } from "../../common/utils/sentryUtils.js"
 import config from "../../config.js"
 import updateLaBonneBoiteJob from "../../jobs/lbb/updateLaBonneBoite.js"
 
@@ -23,7 +23,7 @@ const updateLaBonneBoite = async (query) => {
       const result = await updateLaBonneBoiteJob(params)
       return result
     } catch (err) {
-      Sentry.captureException(err)
+      sentryCaptureException(err)
 
       const error_msg = _.get(err, "meta.body") ?? err.message
 
