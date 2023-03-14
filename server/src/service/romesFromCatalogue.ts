@@ -1,7 +1,7 @@
 // @ts-nocheck
-import Sentry from "@sentry/node"
 import _ from "lodash-es"
 import { getElasticInstance } from "../common/esClient/index.js"
+import { sentryCaptureException } from "../common/utils/sentryUtils.js"
 
 const esClient = getElasticInstance()
 
@@ -58,7 +58,7 @@ const getRomesFromCatalogue = async ({ cfd, siret }: { cfd?: string; siret?: str
     if (_.get(err, "meta.meta.connection.status") === "dead") {
       console.error("Elastic search is down or unreachable")
     }
-    Sentry.captureException(err)
+    sentryCaptureException(err)
 
     return { romes: [], error: error_msg, message: error_msg }
   }

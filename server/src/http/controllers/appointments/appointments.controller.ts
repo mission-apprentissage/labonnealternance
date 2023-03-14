@@ -1,12 +1,12 @@
-import { Controller, Route, SuccessResponse, Tags, OperationId, Post, Request, Response, Body, Example } from "tsoa"
 import * as express from "express"
-import { getReferrerByKeyName } from "../../../common/model/constants/referrers.js"
-import { getCleMinistereEducatifFromIdActionFormation } from "../../../common/utils/mappings/onisep.js"
-import { isValidEmail } from "../../../common/utils/isValidEmail.js"
-import Sentry from "@sentry/node"
-import config from "../../../config.js"
+import { Body, Controller, Example, OperationId, Post, Request, Response, Route, SuccessResponse, Tags } from "tsoa"
 import WidgetParameters from "../../../common/components/widgetParameters.js"
-import { TCreateContextBody, TCreateContextResponseError, TCreateContextResponse } from "./types.js"
+import { getReferrerByKeyName } from "../../../common/model/constants/referrers.js"
+import { isValidEmail } from "../../../common/utils/isValidEmail.js"
+import { getCleMinistereEducatifFromIdActionFormation } from "../../../common/utils/mappings/onisep.js"
+import { sentryCaptureException } from "../../../common/utils/sentryUtils.js"
+import config from "../../../config.js"
+import { TCreateContextBody, TCreateContextResponse, TCreateContextResponseError } from "./types.js"
 import { contextCreateSchema } from "./validators.js"
 
 @Tags("RDV")
@@ -85,7 +85,7 @@ export class AppointmentsController extends Controller {
     })
 
     if (!isValidEmail(isOpenForAppointments?.email_rdv)) {
-      Sentry.captureException(new Error(`Formation "${widgetParameter.cle_ministere_educatif}" sans email de contact.`))
+      sentryCaptureException(new Error(`Formation "${widgetParameter.cle_ministere_educatif}" sans email de contact.`))
     }
 
     if (!isOpenForAppointments || !isValidEmail(isOpenForAppointments?.email_rdv)) {

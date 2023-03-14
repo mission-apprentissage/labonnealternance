@@ -1,9 +1,9 @@
 // @ts-nocheck
-import Sentry from "@sentry/node"
 import { oleoduc, writeData } from "oleoduc"
 import { logger } from "../../common/logger.js"
 import { FormationCatalogue } from "../../common/model/index.js"
 import { rebuildIndex, resetIndexAndDb } from "../../common/utils/esUtils.js"
+import { sentryCaptureException } from "../../common/utils/sentryUtils.js"
 import { notifyToSlack } from "../../common/utils/slackUtils.js"
 import { countFormations, getAllFormationsFromCatalogue } from "../../services/catalogue.service.js"
 
@@ -71,7 +71,7 @@ export const importCatalogueFormationJob = async () => {
       erreurs: stats.failed,
     }
   } catch (error) {
-    Sentry.captureException(error)
+    sentryCaptureException(error)
     logger.error(error)
     await notifyToSlack({ subject: "IMPORT FORMATION", message: `ECHEC Import formations catalogue`, error: true })
   }
