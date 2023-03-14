@@ -100,9 +100,7 @@ export const cleanAndRenameFields = async ({ appointments, eligibleTrainingsForA
   logger.info(`Fin renommage champs de la collection etablissements (${res.result.nModified} items mis à jour)`)
 
   // Rename collection
-  await db
-    .collection("widgetparameters")
-    .rename("eligible_trainings_for_appointments")
+  await db.collection("widgetparameters").rename("eligible_trainings_for_appointments")
 
   // EligibleTrainingsForAppointments: deletions
   res = await db.collection("eligible_trainings_for_appointments").updateMany(
