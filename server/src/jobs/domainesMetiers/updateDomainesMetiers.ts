@@ -1,5 +1,4 @@
 // @ts-nocheck
-import Sentry from "@sentry/node"
 import fs from "fs"
 import { oleoduc } from "oleoduc"
 import path from "path"
@@ -10,6 +9,7 @@ import { DomainesMetiers } from "../../common/model/index.js"
 import { getFileFromS3 } from "../../common/utils/awsUtils.js"
 import { resetIndexAndDb } from "../../common/utils/esUtils.js"
 import { readXLSXFile } from "../../common/utils/fileUtils.js"
+import { sentryCaptureException } from "../../common/utils/sentryUtils.js"
 
 const currentDirname = __dirname(import.meta.url)
 const FILEPATH = path.join(currentDirname, "../../assets/domainesMetiers_S3.xlsx")
@@ -214,7 +214,7 @@ export default async function (optionalFileName?: string) {
       avertissements,
     }
   } catch (error) {
-    Sentry.captureException(error)
+    sentryCaptureException(error)
     logger.error(`error step ${step}`)
     logger.error(error)
     return { error, fileName: optionalFileName ? optionalFileName : "currentDomainesMetiers.xlsx" }

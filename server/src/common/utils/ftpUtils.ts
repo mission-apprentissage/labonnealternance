@@ -1,7 +1,7 @@
 // @ts-nocheck
-import Sentry from "@sentry/node"
 import Ftp from "basic-ftp"
 import { logger } from "../logger.js"
+import { sentryCaptureException } from "./sentryUtils.js"
 
 class FTPClient {
   constructor() {
@@ -18,7 +18,7 @@ class FTPClient {
     try {
       await this.client.access(options)
     } catch (error) {
-      Sentry.captureException(error)
+      sentryCaptureException(error)
       logger.error("FTP connection failed", error)
     }
   }
@@ -48,7 +48,7 @@ class FTPClient {
       this.client.trackProgress()
       logger.info(`File successfully downloaded.`)
     } catch (error) {
-      Sentry.captureException(error)
+      sentryCaptureException(error)
       logger.error("Download failed:", error)
     }
   }

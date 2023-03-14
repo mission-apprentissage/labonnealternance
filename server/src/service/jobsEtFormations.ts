@@ -1,7 +1,7 @@
 // @ts-nocheck
-import Sentry from "@sentry/node"
 
 import { trackApiCall } from "../common/utils/sendTrackingEvent.js"
+import { sentryCaptureException } from "../common/utils/sentryUtils.js"
 import { deduplicateFormations, getFormations, transformFormationsForIdea } from "./formations.js"
 import { jobsEtFormationsQueryValidator } from "./jobsEtFormationsQueryValidator.js"
 import { getJobsFromApi } from "./poleEmploi/jobsAndCompanies.js"
@@ -68,7 +68,7 @@ const getJobsEtFormationsQuery = async (query) => {
     return { formations, jobs }
   } catch (err) {
     console.log("Error ", err.message)
-    Sentry.captureException(err)
+    sentryCaptureException(err)
 
     if (query.caller) {
       trackApiCall({ caller: query.caller, api_path: "jobEtFormationV1", response: "Error" })
