@@ -7,9 +7,7 @@ import useAuth from "./common/hooks/useAuth"
 import { isUserAdmin } from "./common/utils/rolesUtils"
 import { Layout, MailActionsOnOffre } from "./components"
 import DashboardPage from "./pages/Admin/DashboardPage"
-import BulkPage from "./pages/Admin/widgetParameters/pages/BulkPage"
 import WidgetParametersEditPage from "./pages/Admin/widgetParameters/pages/EditPage"
-import WidgetParametersPage from "./pages/Admin/widgetParameters/pages/MainPage"
 import WidgetParametersSearchPage from "./pages/Admin/widgetParameters/pages/SearchPage"
 import {
   Account,
@@ -159,7 +157,6 @@ const App = () => {
         <Route path="/appointment/candidat/follow-up/:id/:action(confirm|resend)" element={<AppointmentFollowUpPage />} />
         <Route path="/widget/tutorial" element={<Widget />} />
         <Route path="/establishment/:establishmentId/appointments/:appointmentId" element={<CfaCandidatInformationPage />} />
-
         <Route
           path="/admin"
           element={
@@ -169,14 +166,6 @@ const App = () => {
           }
         />
         <Route path="/admin/login" element={<LoginPage />} />
-        <Route
-          path="/admin/widget-parameters"
-          element={
-            <AdminRdvaRoute>
-              <WidgetParametersPage />
-            </AdminRdvaRoute>
-          }
-        />
         <Route
           path="/admin/widget-parameters/search"
           element={
@@ -193,15 +182,6 @@ const App = () => {
             </AdminRdvaRoute>
           }
         />
-        <Route
-          path="/admin/widget-parameters/bulk"
-          element={
-            <AdminRdvaRoute>
-              <BulkPage />
-            </AdminRdvaRoute>
-          }
-        />
-
         <Route path="*" element={<RedirectTo404 />} />
       </Routes>
     </AnimatePresence>
