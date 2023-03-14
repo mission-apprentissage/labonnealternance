@@ -9,6 +9,7 @@ import swaggerUi from "swagger-ui-express"
 import __dirname from "../common/dirname.js"
 import { logger } from "../common/logger.js"
 import config from "../config.js"
+import { RegisterRoutes } from "../generated/routes.js"
 import { initSendinblueWebhooks } from "../service/sendinblue/webhookSendinBlue.js"
 import authMiddleware from "./middlewares/authMiddleware.js"
 import { corsMiddleware } from "./middlewares/corsMiddleware.js"
@@ -50,7 +51,6 @@ import updateLBB from "./routes/updateLBB.controller.js"
 import userRoute from "./routes/user.controller.js"
 import version from "./routes/version.controller.js"
 import { limiter10PerSecond, limiter1Per20Second, limiter20PerSecond, limiter3PerSecond, limiter5PerSecond, limiter7PerSecond } from "./utils/rateLimiters.js"
-import { RegisterRoutes } from "../generated/routes.js"
 
 /**
  * LBA-Candidat Swagger file
@@ -229,6 +229,8 @@ export default async (components) => {
   app.use("/api/etablissement", etablissementsRecruteurRoute(components))
 
   initSendinblueWebhooks()
+
+  app.use(Sentry.Handlers.errorHandler())
 
   app.use(errorMiddleware())
 

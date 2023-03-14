@@ -1,5 +1,4 @@
 // @ts-nocheck
-import Sentry from "@sentry/node"
 import fs from "fs"
 import { get } from "lodash-es"
 import { oleoduc } from "oleoduc"
@@ -11,6 +10,7 @@ import { logger } from "../../common/logger.js"
 import { DomainesMetiers } from "../../common/model/index.js"
 import { getFileFromS3 } from "../../common/utils/awsUtils.js"
 import { readXLSXFile } from "../../common/utils/fileUtils.js"
+import { sentryCaptureException } from "../../common/utils/sentryUtils.js"
 import config from "../../config.js"
 
 const currentDirname = __dirname(import.meta.url)
@@ -342,7 +342,7 @@ export default async (optionalFileName) => {
     }
   } catch (error) {
     console.log(`script failed on step ${step}`)
-    Sentry.captureException(error)
+    sentryCaptureException(error)
     logger.error(error)
   }
 }

@@ -1,5 +1,4 @@
 // @ts-nocheck
-import Sentry from "@sentry/node"
 import axios from "axios"
 import crypto from "crypto"
 import { getElasticInstance } from "../common/esClient/index.js"
@@ -8,6 +7,7 @@ import { FormationCatalogue } from "../common/model/index.js"
 import { manageApiError } from "../common/utils/errorManager.js"
 import { regionCodeToDepartmentList } from "../common/utils/regionInseeCodes.js"
 import { trackApiCall } from "../common/utils/sendTrackingEvent.js"
+import { sentryCaptureException } from "../common/utils/sentryUtils.js"
 import { notifyToSlack } from "../common/utils/slackUtils.js"
 import config from "../config.js"
 import { formationMock, formationsMock, lbfFormationMock } from "../mocks/formations-mock.js"
@@ -511,7 +511,7 @@ const getFormationsQuery = async (query) => {
     return formations
   } catch (err) {
     console.error("Error ", err.message)
-    Sentry.captureException(err)
+    sentryCaptureException(err)
     if (query.caller) {
       trackApiCall({ caller: query.caller, api_path: "formationV1", response: "Error" })
     }
@@ -544,7 +544,7 @@ const getFormationQuery = async (query) => {
     return formation
   } catch (err) {
     console.error("Error ", err.message)
-    Sentry.captureException(err)
+    sentryCaptureException(err)
 
     if (query.caller) {
       trackApiCall({ caller: query.caller, api_path: "formationV1/formation", response: "Error" })
@@ -631,7 +631,7 @@ const getFormationsParRegionQuery = async (query) => {
     return formations
   } catch (err) {
     console.error("Error ", err.message)
-    Sentry.captureException(err)
+    sentryCaptureException(err)
 
     if (query.caller) {
       trackApiCall({ caller: query.caller, api_path: "formationRegionV1", response: "Error" })
