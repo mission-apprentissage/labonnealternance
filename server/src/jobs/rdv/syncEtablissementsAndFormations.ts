@@ -46,6 +46,8 @@ export const syncEtablissementsAndFormations = async ({ etablissements, eligible
     select: { parcoursup_id: 1, cle_ministere_educatif: 1 },
   })
 
+  console.log(JSON.stringify(catalogueMinistereEducatif, null, 2))
+
   await oleoduc(
     FormationCatalogue.find({}).cursor(),
     writeData(
@@ -69,10 +71,11 @@ export const syncEtablissementsAndFormations = async ({ etablissements, eligible
 
         // Activate premium referrers
         if (etablissement?.premium_activation_date) {
-          referrersToActivate.push(referrers.PARCOURSUP.code)
+          referrersToActivate.push(referrers.PARCOURSUP.name)
         }
 
         if (eligibleTrainingsForAppointment) {
+          logger.info("update formation:", formation.cle_ministere_educatif)
           let emailRdv = eligibleTrainingsForAppointment.lieu_formation_email
 
           // Don't override "email" if this field is true
@@ -93,18 +96,15 @@ export const syncEtablissementsAndFormations = async ({ etablissements, eligible
               parcoursup_id: formationMinistereEducatif?.parcoursup_id,
               cle_ministere_educatif: formation.cle_ministere_educatif,
               training_code_formation_diplome: formation.cfd,
-              zip_code: formation.code_postal,
+              etablissement_formateur_zip_code: formation.code_postal,
               training_intitule_long: formation.intitule_long,
               referrers: emailRdv && !emailBlacklisted ? referrersToActivate : [],
               is_catalogue_published: formation.published,
               rco_formation_id: formation.id_rco_formation,
-              cfd: formation.cfd,
               city: formation.localite,
               last_catalogue_sync_date: dayjs().format(),
-              etablissement_siret: formation.etablissement_formateur_siret,
               etablissement_formateur_raison_sociale: formation.etablissement_formateur_entreprise_raison_sociale,
               etablissement_formateur_street: formation.etablissement_formateur_adresse,
-              etablissement_formateur_zip_code: formation.etablissement_formateur_code_postal,
               departement_etablissement_formateur: formation.etablissement_formateur_nom_departement,
               etablissement_formateur_city: formation.etablissement_formateur_localite,
               lieu_formation_street: formation.lieu_formation_adresse,
@@ -113,26 +113,23 @@ export const syncEtablissementsAndFormations = async ({ etablissements, eligible
             }
           )
         } else {
+          logger.info("create new formation:", formation.cle_ministere_educatif)
           const emailRdv = getEmailFromCatalogueField(formation.etablissement_formateur_courriel)
 
           const emailBlacklisted = await isEmailBlacklisted(emailRdv)
 
-          await eligibleTrainingsForAppointments.createParameter({
+          await eligibleTrainingsForAppointments.create({
             training_id_catalogue: formation._id,
             lieu_formation_email: emailRdv,
             parcoursup_id: formationMinistereEducatif?.parcoursup_id,
             cle_ministere_educatif: formation.cle_ministere_educatif,
             training_code_formation_diplome: formation.cfd,
-            zip_code: formation.code_postal,
             training_intitule_long: formation.intitule_long,
             referrers: emailRdv && !emailBlacklisted ? referrersToActivate : [],
             is_catalogue_published: formation.published,
             rco_formation_id: formation.id_rco_formation,
             last_catalogue_sync_date: dayjs().format(),
-            cfd: formation.cfd,
-            city: formation.localite,
             lieu_formation_street: formation.lieu_formation_adresse,
-            etablissement_siret: formation.etablissement_formateur_siret,
             etablissement_formateur_raison_sociale: formation.etablissement_formateur_entreprise_raison_sociale,
             etablissement_formateur_street: formation.etablissement_formateur_adresse,
             etablissement_formateur_zip_code: formation.etablissement_formateur_code_postal,
@@ -154,12 +151,11 @@ export const syncEtablissementsAndFormations = async ({ etablissements, eligible
             formateur_siret: formation.etablissement_formateur_siret,
           },
           {
-            formateur_siret: formation.etablissement_formateur_siret,
             gestionnaire_siret: formation.etablissement_gestionnaire_siret,
             gestionnaire_email: emailDecisionnaire,
             raison_sociale: formation.etablissement_formateur_entreprise_raison_sociale,
             etablissement_formateur_courriel: formation.etablissement_formateur_courriel,
-            adresse: formation.etablissement_formateur_adresse,
+            address: formation.etablissement_formateur_adresse,
             zip_code: formation.etablissement_formateur_code_postal,
             city: formation.etablissement_formateur_localite,
             last_catalogue_sync_date: dayjs().format(),

@@ -18,7 +18,7 @@ export const etablissementSchema = new Schema<IEtablissement>({
     default: null,
     description: "Raison sociale",
   },
-  adresse: {
+  address: {
     type: String,
     default: null,
     description: "Adresse",

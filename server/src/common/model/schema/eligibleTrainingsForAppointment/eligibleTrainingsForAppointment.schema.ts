@@ -8,11 +8,6 @@ export const eligibleTrainingsForAppointmentSchema = new Schema<IEligibleTrainin
     default: null,
     description: "Identifiant d'une formation Catalogue",
   },
-  etablissement_siret: {
-    type: String,
-    default: null,
-    description: "Siret formateur",
-  },
   training_intitule_long: {
     type: String,
     default: null,
