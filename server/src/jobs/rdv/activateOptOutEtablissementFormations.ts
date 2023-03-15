@@ -28,13 +28,13 @@ export const activateOptOutEtablissementFormations = async ({ etablissements, el
       await Promise.all([
         eligibleTrainingsForAppointments.updateMany(
           {
-            etablissement_siret: etablissement.formateur_siret,
+            etablissement_formateur_siret: etablissement.formateur_siret,
             lieu_formation_email: { $nin: [null, ""] },
           },
           {
             referrers: Object.values(referrers)
-              .map((referrer) => referrer.code)
-              .filter((referrer) => referrer !== referrers.PARCOURSUP.code),
+              .map((referrer) => referrer.name)
+              .filter((referrer) => referrer !== referrers.PARCOURSUP.name),
           }
         ),
         etablissements.findOneAndUpdate(
@@ -59,7 +59,7 @@ export const activateOptOutEtablissementFormations = async ({ etablissements, el
           },
           etablissement: {
             name: etablissement.raison_sociale,
-            address: etablissement.adresse,
+            address: etablissement.address,
             postalCode: etablissement.zip_code,
             ville: etablissement.city,
             siret: etablissement.formateur_siret,
@@ -72,7 +72,7 @@ export const activateOptOutEtablissementFormations = async ({ etablissements, el
       })
 
       const eligibleTrainingsForAppointmentsFound = await eligibleTrainingsForAppointments.find({
-        etablissement_siret: etablissement.formateur_siret,
+        etablissement_formateur_siret: etablissement.formateur_siret,
       })
 
       // Gets all mails (formation email + formateur email), excepted "email_decisionnaire"
@@ -104,7 +104,7 @@ export const activateOptOutEtablissementFormations = async ({ etablissements, el
               },
               etablissement: {
                 name: etablissement.raison_sociale,
-                address: etablissement.adresse,
+                address: etablissement.address,
                 postalCode: etablissement.zip_code,
                 ville: etablissement.city,
                 siret: etablissement.formateur_siret,

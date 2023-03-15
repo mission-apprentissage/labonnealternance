@@ -224,7 +224,7 @@ export default ({ users, appointments, mailer, eligibleTrainingsForAppointments,
         formAlreadySubmit: !!(appointment.candidat_contacted_at || cfaMailResendExists),
         etablissement: {
           raison_sociale: etablissement.raison_sociale,
-          adresse: etablissement.adresse,
+          adresse: etablissement.address,
           zip_code: etablissement.zip_code,
           localite: etablissement.city,
         },

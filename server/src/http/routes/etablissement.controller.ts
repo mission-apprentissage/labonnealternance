@@ -67,7 +67,7 @@ export default ({ etablissements, mailer, eligibleTrainingsForAppointments, appo
           },
           etablissement: {
             name: etablissement.raison_sociale,
-            address: etablissement.adresse,
+            address: etablissement.address,
             postalCode: etablissement.zip_code,
             ville: etablissement.city,
             siret: etablissement.formateur_siret,
@@ -193,7 +193,7 @@ export default ({ etablissements, mailer, eligibleTrainingsForAppointments, appo
           },
           etablissement: {
             name: etablissement.raison_sociale,
-            address: etablissement.adresse,
+            address: etablissement.address,
             postalCode: etablissement.zip_code,
             ville: etablissement.city,
             siret: etablissement.formateur_siret,
@@ -291,7 +291,7 @@ export default ({ etablissements, mailer, eligibleTrainingsForAppointments, appo
             },
             etablissement: {
               name: etablissement.raison_sociale,
-              address: etablissement.adresse,
+              address: etablissement.address,
               postalCode: etablissement.zip_code,
               ville: etablissement.city,
               opt_out_question,
