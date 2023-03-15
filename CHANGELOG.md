@@ -1,3 +1,11 @@
+# [1.1.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.0.0...v1.1.0) (2023-03-15)
+
+
+### Features
+
+* add affelnet field ([#292](https://github.com/mission-apprentissage/labonnealternance/issues/292)) ([2ec5c8d](https://github.com/mission-apprentissage/labonnealternance/commit/2ec5c8dee1076ec229e5e33bdaeac896102160d7))
+* remove affelnet referrer ([#291](https://github.com/mission-apprentissage/labonnealternance/issues/291)) ([2c7dca6](https://github.com/mission-apprentissage/labonnealternance/commit/2c7dca64841ae60972f25f66d28497baa2a0537a))
+
 # 1.0.0 (2023-03-14)
 
 ### Bug Fixes
