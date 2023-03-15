@@ -4,8 +4,8 @@ import { referrers } from "../../common/model/constants/referrers.js"
 import { FormationCatalogue } from "../../common/model/index.js"
 import { dayjs } from "../../common/utils/dayjs.js"
 import { isValidEmail } from "../../common/utils/isValidEmail.js"
-import { getFormationsFromCatalogueMe } from "../../services/catalogue.service.js"
 import { isEmailBlacklisted } from "../../service/applications.js"
+import { getFormationsFromCatalogueMe } from "../../services/catalogue.service.js"
 
 /**
  * Gets email from catalogue field.
@@ -64,7 +64,6 @@ export const syncEtablissementsAndFormations = async ({ etablissements, widgetPa
           referrersToActivate.push(referrers.LBA.code)
           referrersToActivate.push(referrers.ONISEP.code)
           referrersToActivate.push(referrers.PFR_PAYS_DE_LA_LOIRE.code)
-          referrersToActivate.push(referrers.AFFELNET.code)
           referrersToActivate.push(referrers.JEUNE_1_SOLUTION.code)
         }
 
