@@ -92,58 +92,18 @@ export default ({ etablissements, mailer }) => {
   /**
    * Updates an etablissement.
    */
-  router.put(
+  router.patch(
     "/:id",
     tryCatch(async ({ body, params }, res) => {
       const etablissement = await etablissements.findById(params.id)
 
-      const optOutWillBeActivatedAt = body?.optout_activation_scheduled_date || dayjs().add(15, "days").format()
-      const optOutWillBeActivatedAtDayjs = dayjs(optOutWillBeActivatedAt)
+      if (!etablissement) {
+        return res.sendStatus(404)
+      }
 
-      const { messageId } = await mailer.sendEmail({
-        to: etablissement.gestionnaire_email,
-        subject: `Améliorer le sourcing de vos candidats !`,
-        template: mailTemplate["mail-cfa-optout-invitation"],
-        data: {
-          images: {
-            peopleLaptop: `${config.publicUrlEspacePro}/assets/girl_laptop.png?raw=true`,
-            optOutLbaIntegrationExample: `${config.publicUrlEspacePro}/assets/exemple_integration_lba.png?raw=true`,
-            gouvernementLogo: `${config.publicUrlEspacePro}/assets/gouvernement_logo.png?raw=true`,
-          },
-          etablissement: {
-            name: etablissement.raison_sociale,
-            address: etablissement.adresse,
-            postalCode: etablissement.zip_code,
-            ville: etablissement.city,
-            optOutActivatedAtDate: optOutWillBeActivatedAtDayjs.format("DD/MM"),
-            linkToUnsubscribe: `${config.publicUrlEspacePro}/form/opt-out/unsubscribe/${etablissement._id}`,
-          },
-          user: {
-            destinataireEmail: etablissement.gestionnaire_email,
-          },
-        },
-      })
+      const result = await etablissements.findByIdAndUpdate(params.id, body)
 
-      await Etablissement.updateOne(
-        { formateur_siret: etablissement.siret_formateur },
-        {
-          opt_mode: optMode.OPT_OUT,
-          optout_invitation_date: dayjs().toDate(),
-          optout_activation_scheduled_date: optOutWillBeActivatedAtDayjs.toDate(),
-          $push: {
-            to_etablissement_emails: {
-              campaign: mailType.OPT_OUT_INVITE,
-              status: null,
-              message_id: messageId,
-              email_sent_at: dayjs().toDate(),
-            },
-          },
-        }
-      )
-
-      const response = await etablissements.findById(params.id)
-
-      return res.send(response)
+      res.send(result)
     })
   )
 

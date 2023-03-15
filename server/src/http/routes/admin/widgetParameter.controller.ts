@@ -11,7 +11,7 @@ import { tryCatch } from "../../middlewares/tryCatchMiddleware.js"
 
 const eligibleTrainingsForAppointmentIdPatchSchema = Joi.object({
   is_lieu_formation_email_customized: Joi.boolean().optional(),
-  referrers: Joi.array().items(Joi.number()).optional(),
+  referrers: Joi.array().items(Joi.string()).optional(),
   lieu_formation_email: Joi.string()
     .email({ tlds: { allow: false } })
     .allow(null)
@@ -56,7 +56,7 @@ export default ({ eligibleTrainingsForAppointments, etablissements }) => {
   const router = express.Router()
 
   /**
-   * Get all eligibleTrainingsForAppointments eligibleTrainingsForAppointments GET
+   * Get all eligibleTrainingsForAppointments GET
    * */
   router.get(
     "/parameters",
@@ -70,12 +70,12 @@ export default ({ eligibleTrainingsForAppointments, etablissements }) => {
 
       const parameters = await Promise.all(
         allData.docs.map(async (parameter) => {
-          const etablissement = await etablissements.findOne({ formateur_siret: parameter.etablissement_siret })
+          const etablissement = await etablissements.findOne({ formateur_siret: parameter.etablissement_formateur_siret })
 
           return {
             etablissement_raison_sociale: etablissement?.raison_sociale || "N/C",
             ...parameter,
-            referrers: parameter.referrers.map(getReferrerById),
+            referrers: parameter.referrers,
           }
         })
       )

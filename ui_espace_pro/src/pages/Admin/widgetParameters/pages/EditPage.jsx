@@ -37,7 +37,7 @@ const EditPage = () => {
 
       setParametersResult(parametersResponse)
       setReferrers(referrers)
-      setEtablissement(etablissementResponse.etablissements[0])
+      setEtablissement(etablissementResponse)
     } catch (error) {
       toast({
         title: "Une erreur est survenue durant la récupération des informations.",
@@ -72,14 +72,14 @@ const EditPage = () => {
    * @param {String} id
    * @returns {Promise<*>}
    */
-  const getParameters = (id) => _get(`/api/widget-parameters/parameters?query={"etablissement_siret":"${id}"}&limit=1000`)
+  const getParameters = (id) => _get(`/api/widget-parameters/parameters?query={"etablissement_formateur_siret":"${id}"}&limit=1000`)
 
   /**
    * @description Returns etablissement from its SIRET.
    * @param {String} siret
    * @returns {Promise<*>}
    */
-  const getEtablissement = (siret) => _get(`/api/admin/etablissements/?query={"siret_formateur":"${siret}"}`)
+  const getEtablissement = (siret) => _get(`/api/admin/etablissements/siret-formateur/${siret}`)
 
   /**
    * @description Returns all referrers.
@@ -118,7 +118,8 @@ const EditPage = () => {
     }
 
     await patchParameter(parameterId, {
-      email_rdv: email,
+      lieu_formation_email: email,
+      is_lieu_formation_email_customized: true,
     })
 
     toast({
@@ -140,12 +141,12 @@ const EditPage = () => {
     // Add referrer
     if (checked) {
       await patchParameter(parameter._id, {
-        referrers: parameter.referrers.map((ref) => ref.code).concat(referrer.code),
+        referrers: parameter.referrers.map((ref) => ref).concat(referrer.name),
       })
       await refreshParameters()
     } else {
       await patchParameter(parameter._id, {
-        referrers: parameter.referrers.map((ref) => ref.code).filter((item) => item !== referrer.code),
+        referrers: parameter.referrers.map((ref) => ref).filter((item) => item !== referrer.name),
       })
       await refreshParameters()
     }
@@ -177,15 +178,13 @@ const EditPage = () => {
                   <Td textStyle="sm">CLE MINISTERE EDUCATIF</Td>
                   <Td textStyle="sm">INTITULE</Td>
                   <Td textStyle="sm">CODE POSTAL</Td>
-                  <Td textStyle="sm">LOCALITE</Td>
-                  <Td textStyle="sm">EMAIL</Td>
+                  <Td textStyle="sm">ADRESSE</Td>
+                  <Td textStyle="sm">LIEU FORMATION EMAIL</Td>
                   <Td textStyle="sm">DESACTIVER L'ECRASEMENT DU MAIL VIA LA SYNCHRONISATION CATALOGUE</Td>
                   <Td textStyle="sm">PUBLIE SUR LE CATALOGUE</Td>
                   <Td textStyle="sm">PARCOURSUP ID</Td>
                   <Td textStyle="sm">DERNIERE SYNCHRONISATION CATALOGUE</Td>
-                  <Td textStyle="sm">
-                    SOURCE <br />
-                  </Td>
+                  <Td textStyle="sm">SOURCE</Td>
                 </Thead>
                 <Tbody>
                   {parametersResult.parameters.map((parameter) => {
@@ -195,26 +194,22 @@ const EditPage = () => {
                     return (
                       <Tr key={parameter._id} _hover={{ bg: "#f4f4f4", transition: "0.5s" }} transition="0.5s">
                         <Td>
-                          {parameter?.id_catalogue ? (
-                            <a
-                              href={`https://catalogue-apprentissage.intercariforef.org/recherche/formations?SEARCH=%22${encodeURIComponent(parameter.cle_ministere_educatif)}%22`}
-                              title="Lien vers la formation du Catalogue"
-                              target="_blank"
-                              rel="noreferrer"
-                            >
-                              <ExternalLinkIcon w={6} h={6} />
-                            </a>
-                          ) : (
-                            "N/C"
-                          )}
+                          <a
+                            href={`https://catalogue-apprentissage.intercariforef.org/recherche/formations?SEARCH=%22${encodeURIComponent(parameter.cle_ministere_educatif)}%22`}
+                            title="Lien vers la formation du Catalogue"
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            <ExternalLinkIcon w={6} h={6} />
+                          </a>
                         </Td>
-                        <Td>{parameter?.cle_ministere_educatif || "N/C"}</Td>
-                        <Td>{parameter.formation_intitule}</Td>
-                        <Td>{parameter.code_postal}</Td>
-                        <Td>{parameter.localite}</Td>
+                        <Td>{parameter?.cle_ministere_educatif}</Td>
+                        <Td>{parameter.training_intitule_long}</Td>
+                        <Td>{parameter.etablissement_formateur_zip_code}</Td>
+                        <Td>{parameter.etablissement_formateur_street}</Td>
                         <Td onClick={() => emailFocusRef.current.focus()}>
                           <Editable
-                            defaultValue={parameter?.email_rdv}
+                            defaultValue={parameter?.lieu_formation_email}
                             style={{
                               border: "solid #dee2e6 1px",
                               padding: 5,
@@ -232,24 +227,23 @@ const EditPage = () => {
                         </Td>
                         <Td align="center">
                           <Checkbox
-                            checked={parameter?.is_custom_email_rdv}
+                            checked={parameter?.is_lieu_formation_email_customized}
                             icon={<Check w="20px" h="18px" />}
-                            defaultIsChecked={parameter?.is_custom_email_rdv}
-                            onChange={(event) => patchParameter(parameter._id, { is_custom_email_rdv: event.target.checked })}
+                            defaultIsChecked={parameter?.is_lieu_formation_email_customized}
+                            onChange={(event) => patchParameter(parameter._id, { is_lieu_formation_email_customized: event.target.checked })}
                           />
                         </Td>
-                        <Td>{parameter?.catalogue_published ? "Oui" : "Non"}</Td>
-                        <Td>{parameter?.id_parcoursup || "N/C"}</Td>
-                        <Td>{parameter?.last_catalogue_sync ? formatDate(parameter?.last_catalogue_sync) : "N/A"}</Td>
+                        <Td>{parameter?.is_catalogue_published ? "Oui" : "Non"}</Td>
+                        <Td>{parameter?.parcoursup_id || "N/C"}</Td>
+                        <Td>{parameter?.last_catalogue_sync_date ? formatDate(parameter?.last_catalogue_sync_date) : "N/A"}</Td>
                         <Td>
                           {referrers.map((referrer) => {
-                            const parameterReferrers = parameter.referrers?.find((parameterReferrer) => parameterReferrer.code === referrer.code)
-
+                            const parameterReferrers = parameter.referrers?.find((parameterReferrer) => parameterReferrer === referrer.name)
                             return (
                               <>
                                 <Flex mt={1}>
                                   <Checkbox
-                                    key={referrer.code}
+                                    key={referrer.name}
                                     checked={!!parameterReferrers}
                                     value={!!parameterReferrers}
                                     icon={<Check w="20px" h="18px" />}
