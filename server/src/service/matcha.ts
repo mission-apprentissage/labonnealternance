@@ -13,23 +13,28 @@ const coordinatesOfFrance = [2.213749, 46.227638]
 
 import { roundDistance } from "../common/geolib.js"
 import { matchaMock, matchaMockMandataire, matchasMock } from "../mocks/matchas-mock.js"
+import { NIVEAUX_POUR_LBA } from "../common/constants.js"
 
-const getMatchaJobs = async ({ romes, radius, latitude, longitude, api, opco, opcoUrl, caller, useMock }) => {
+const getMatchaJobs = async ({ romes, radius, latitude, longitude, api, opco, opcoUrl, diploma, caller, useMock }) => {
   try {
     const hasLocation = latitude === "" || latitude === undefined ? false : true
 
-    let distance = hasLocation ? radius || 10 : 21000
+    const distance = hasLocation ? radius || 10 : 21000
 
-    let params = {
+    const params = {
       romes: romes.split(","),
       distance,
       lat: hasLocation ? latitude : coordinatesOfFrance[1],
       lon: hasLocation ? longitude : coordinatesOfFrance[0],
     }
 
+    if (diploma) {
+      params.niveau = NIVEAUX_POUR_LBA[diploma]
+    }
+
     const jobs = useMock === "true" ? { data: matchasMock } : await axios.post(`${recruteurEndpoint}/search`, params)
 
-    let matchas = transformMatchaJobsForIdea({ jobs: jobs.data, caller })
+    const matchas = transformMatchaJobsForIdea({ jobs: jobs.data, caller })
 
     // filtrage sur l'opco
     if (opco || opcoUrl) {

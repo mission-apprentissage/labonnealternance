@@ -1,6 +1,7 @@
 // @ts-nocheck
 import distance from "@turf/distance"
 import axios from "axios"
+import { NIVEAUX_POUR_OFFRES_PE } from "../../common/constants.js"
 import { roundDistance } from "../../common/geolib.js"
 import { manageApiError } from "../../common/utils/errorManager.js"
 import { trackApiCall } from "../../common/utils/sendTrackingEvent.js"
@@ -10,7 +11,7 @@ import filterJobsByOpco from "../filterJobsByOpco.js"
 //const poleEmploi = require("./common.js");
 import { getAccessToken, getRoundedRadius, peApiHeaders } from "./common.js"
 
-const getSomePeJobs = async ({ romes, insee, radius, lat, long, caller, opco, opcoUrl, api }) => {
+const getSomePeJobs = async ({ romes, insee, radius, lat, long, caller, diploma, opco, opcoUrl, api }) => {
   // la liste des romes peut être supérieure au maximum de trois autorisés par l'api offre de PE
   // on segmente les romes en blocs de max 3 et lance autant d'appels parallèles que nécessaires
   let chunkedRomes = []
@@ -31,6 +32,7 @@ const getSomePeJobs = async ({ romes, insee, radius, lat, long, caller, opco, op
         lat,
         long,
         caller,
+        diploma,
         api,
       })
       return res
@@ -70,7 +72,7 @@ const getSomePeJobs = async ({ romes, insee, radius, lat, long, caller, opco, op
 }
 
 // appel de l'api offres pour un bloc de 1 à 3 romes
-const getSomePeJobsForChunkedRomes = async ({ romes, insee, radius, lat, long, caller, api }) => {
+const getSomePeJobsForChunkedRomes = async ({ romes, insee, radius, lat, long, caller, diploma, api }) => {
   let jobResult = null
   let currentRadius = radius || 20000
   let jobLimit = 50 //TODO: query params options or default value from properties -> size || 50
@@ -78,7 +80,7 @@ const getSomePeJobsForChunkedRomes = async ({ romes, insee, radius, lat, long, c
   let trys = 0
 
   while (trys < 3) {
-    jobResult = await getPeJobs({ romes, insee, radius: currentRadius, jobLimit, caller, api })
+    jobResult = await getPeJobs({ romes, insee, radius: currentRadius, jobLimit, caller, diploma, api })
 
     if (jobResult.status === 429) {
       console.log("PE jobs api quota exceeded. Retrying : ", trys + 1)
@@ -195,8 +197,8 @@ const computeJobDistanceToSearchCenter = (job, lat, long) => {
   // si la distance au centre du point de recherche n'est pas connue, on la calcule avec l'utilitaire distance de turf.js
   if (job.lieuTravail && job.lieuTravail.latitude && job.lieuTravail.longitude) {
     return roundDistance(distance([long, lat], [job.lieuTravail.longitude, job.lieuTravail.latitude]))
-  } 
-  
+  }
+
   return null
 }
 
@@ -204,7 +206,7 @@ const peJobsApiEndpoint = "https://api.pole-emploi.io/partenaire/offresdemploi/v
 const peJobApiEndpoint = "https://api.pole-emploi.io/partenaire/offresdemploi/v2/offres/"
 const peContratsAlternances = "E2,FS" //E2 -> Contrat d'Apprentissage, FS -> contrat de professionalisation
 
-const getPeJobs = async ({ romes, insee, radius, jobLimit, caller, api = "jobV1" }) => {
+const getPeJobs = async ({ romes, insee, radius, jobLimit, caller, diploma, api = "jobV1" }) => {
   try {
     const token = await getAccessToken("pe")
 
@@ -221,12 +223,22 @@ const getPeJobs = async ({ romes, insee, radius, jobLimit, caller, api = "jobV1"
 
     const distance = radius || 10
 
-    let params = {
+    //console.log("diploma ? ",diploma)
+
+    const params = {
       codeROME: romes,
       commune: codeInsee,
       sort: hasLocation ? 2 : 0, //sort: 0, TODO: remettre sort 0 après expérimentation CBS
       natureContrat: peContratsAlternances,
       range: `0-${jobLimit - 1}`,
+    }
+
+    if (diploma) {
+      const niveauRequis = NIVEAUX_POUR_OFFRES_PE[diploma]
+      if (niveauRequis && niveauRequis !== "NV5") {
+        // pas de filtrage sur niveau requis NV5 car pas de résultats
+        params.niveauFormation = niveauRequis
+      }
     }
 
     if (hasLocation) {
