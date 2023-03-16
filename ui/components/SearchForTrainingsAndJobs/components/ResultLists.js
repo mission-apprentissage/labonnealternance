@@ -3,6 +3,7 @@ import { ErrorMessage } from "../../../components"
 import { DisplayContext } from "../../../context/DisplayContextProvider"
 import { ScopeContext } from "../../../context/ScopeContext"
 import { SearchResultContext } from "../../../context/SearchResultContextProvider"
+import { ParameterContext } from "../../../context/ParameterContextProvider"
 import { isCfaEntreprise } from "../../../services/cfaEntreprise"
 import { mergeJobs, mergeOpportunities } from "../../../utils/itemListUtils"
 import { filterLayers } from "../../../utils/mapTools"
@@ -10,8 +11,12 @@ import DuoContainer from "./DuoContainer"
 import ExtendedSearchButton from "./ExtendedSearchButton"
 import NoJobResult from "./NoJobResult"
 import ResultListsCounter from "./ResultListsCounter"
+import purpleFilterIcon from "../../../public/images/icons/purpleFilter.svg"
+import switchOnImage from "../../../public/images/switch-on.svg"
+import switchOffImage from "../../../public/images/switch-off.svg"
+import { refreshLocationMarkers } from "../../../utils/mapTools"
 
-import { Box, Flex } from "@chakra-ui/react"
+import { Box, Button, Flex, FormControl, Image, Text } from "@chakra-ui/react"
 import { SendPlausibleEvent } from "../../../utils/plausible"
 import { renderJob, renderLbb, renderTraining } from "../services/renderOneResult"
 
@@ -22,6 +27,16 @@ const ResultLists = (props) => {
 
   ;({ isFormVisible } = useContext(DisplayContext))
   ;({ extendedSearch, hasSearch } = useContext(SearchResultContext))
+  const { displayMap, setDisplayMap } = useContext(ParameterContext)
+  
+  const toggleMapDisplay = () => {
+    const shouldRefreshLocationMarkers = !displayMap
+    setDisplayMap(shouldRefreshLocationMarkers)
+
+    if(shouldRefreshLocationMarkers) {
+      refreshLocationMarkers( { jobs, trainings, scopeContext } )      
+    }
+  }
 
   if (props.isTestMode) {
     ;[extendedSearch, hasSearch, isFormVisible] = [props.stubbedExtendedSearch, props.stubbedHasSearch, props.stubbedIsFormVisible]
@@ -203,6 +218,32 @@ const ResultLists = (props) => {
   return (
     <Flex direction="column" height={props.selectedItem ? "0%" : "100%"} display={isFormVisible ? "none" : "flex"}>
       <Box bg="beige" display={props.shouldShowWelcomeMessage || props.selectedItem ? "none" : ""}>
+        <Flex flex="1 auto" mb={2} alignItems="center" >
+          <Button
+            background="none"
+            border="none"
+            title="Accéder aux filtrage des résultats"
+            display={["flex", "flex", "none"]}
+            mt="-10px"
+            ml="auto"
+            mr="30px"
+            pt="15px"
+            onClick={props.showSearchForm}
+          >
+            <Image width="24px" height="24px" src={purpleFilterIcon} alt="" />
+          </Button>
+        </Flex>
+        <Flex flex="1 auto" mb={2} alignItems="center" justifyContent="flex-end" display={["none", "none", "flex"]}>
+          <FormControl  flex="0" justifyContent="flex-end" alignItems='center'>
+            <Button mr={[4,4,4,12]} mt={0} display='flex' _hover={{ bg: "none" }} _focus={{ bg: "none" }} background="none" border="none" onClick={toggleMapDisplay}>
+              <Text as="span" fontWeight={400} mr={8} mb='0' fontSize="1rem" >
+                Afficher la carte
+              </Text>
+              {" "}
+              <Image mb="2px" mr="5px" src={displayMap ? switchOnImage : switchOffImage} alt={`Cliquer pour ${displayMap?"masquer":"afficher"} la carte`} />
+            </Button>
+          </FormControl>
+        </Flex>
         <ResultListsCounter
           scopeContext={scopeContext}
           filterButtonClicked={filterButtonClicked}
@@ -215,7 +256,6 @@ const ResultLists = (props) => {
           jobs={props.jobs}
           trainings={props.trainings}
           activeFilter={props.activeFilter}
-          showSearchForm={props.showSearchForm}
         />
         {getErrorMessages()}
       </Box>
