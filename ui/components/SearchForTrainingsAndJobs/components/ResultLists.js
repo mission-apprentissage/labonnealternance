@@ -1,4 +1,5 @@
 import React, { useContext, useState } from "react"
+import { useRouter } from "next/router"
 import { ErrorMessage } from "../../../components"
 import { DisplayContext } from "../../../context/DisplayContextProvider"
 import { ScopeContext } from "../../../context/ScopeContext"
@@ -6,6 +7,7 @@ import { SearchResultContext } from "../../../context/SearchResultContextProvide
 import { ParameterContext } from "../../../context/ParameterContextProvider"
 import { isCfaEntreprise } from "../../../services/cfaEntreprise"
 import { mergeJobs, mergeOpportunities } from "../../../utils/itemListUtils"
+import { currentSearch } from "../../../utils/currentPage.js"
 import { filterLayers } from "../../../utils/mapTools"
 import DuoContainer from "./DuoContainer"
 import ExtendedSearchButton from "./ExtendedSearchButton"
@@ -19,9 +21,13 @@ import { refreshLocationMarkers } from "../../../utils/mapTools"
 import { Box, Button, Flex, FormControl, Image, Text } from "@chakra-ui/react"
 import { SendPlausibleEvent } from "../../../utils/plausible"
 import { renderJob, renderLbb, renderTraining } from "../services/renderOneResult"
+import pushHistory from "../../../utils/pushHistory"
 
 const ResultLists = (props) => {
+  const router = useRouter()
+
   const scopeContext = useContext(ScopeContext)
+  const { formValues } = useContext(DisplayContext)
 
   let [extendedSearch, hasSearch, isFormVisible] = [false, false, false]
 
@@ -34,8 +40,17 @@ const ResultLists = (props) => {
     setDisplayMap(shouldRefreshLocationMarkers)
 
     if(shouldRefreshLocationMarkers) {
-      refreshLocationMarkers( { jobs, trainings, scopeContext } )      
+      refreshLocationMarkers( { jobs: props.jobs, trainings: props.trainings, scopeContext } )      
     }
+
+    pushHistory({
+      router,
+      scopeContext,
+      display: "list",
+      searchParameters: formValues,
+      searchTimestamp: currentSearch,
+      displayMap: shouldRefreshLocationMarkers,
+    })
   }
 
   if (props.isTestMode) {
@@ -218,7 +233,7 @@ const ResultLists = (props) => {
   return (
     <Flex direction="column" height={props.selectedItem ? "0%" : "100%"} display={isFormVisible ? "none" : "flex"}>
       <Box bg="beige" display={props.shouldShowWelcomeMessage || props.selectedItem ? "none" : ""}>
-        <Flex flex="1 auto" mb={2} alignItems="center" >
+        <Flex flex="1 auto" my={[2,2,0]} alignItems="center" >
           <Button
             background="none"
             border="none"
@@ -233,7 +248,7 @@ const ResultLists = (props) => {
             <Image width="24px" height="24px" src={purpleFilterIcon} alt="" />
           </Button>
         </Flex>
-        <Flex flex="1 auto" mb={2} alignItems="center" justifyContent="flex-end" display={["none", "none", "flex"]}>
+        <Flex flex="1 auto" mt={[0,0,2]} alignItems="center" justifyContent="flex-end" display={["none", "none", "flex"]}>
           <FormControl  flex="0" justifyContent="flex-end" alignItems='center'>
             <Button mr={[4,4,4,12]} mt={0} display='flex' _hover={{ bg: "none" }} _focus={{ bg: "none" }} background="none" border="none" onClick={toggleMapDisplay}>
               <Text as="span" fontWeight={400} mr={8} mb='0' fontSize="1rem" >

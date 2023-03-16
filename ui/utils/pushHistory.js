@@ -3,6 +3,10 @@ import { getSearchQueryParameters } from "../utils/getSearchParameters"
 import { getCampaignParameters } from "../utils/campaignParameters"
 
 const pushHistory = ({ router, scopeContext, item, page, display, searchParameters, searchTimestamp, isReplace, displayMap }) => {
+
+  console.log("displayMap dans pushHistory : ",displayMap)
+
+
   let params = `${display ? `&display=${display}` : ""}${page ? `&page=${page}` : ""}${item ? `&${getItemQueryParameters(item)}` : ""}${
     searchParameters ? `&${getSearchQueryParameters(searchParameters)}` : ""
   }${searchTimestamp ? `&s=${searchTimestamp}` : ""}${getCampaignParameters()}${displayMap===false?"&displayMap=false":""}`
