@@ -4,7 +4,6 @@ import React, { useContext, useEffect } from "react"
 import ItemDetail from "../../../components/ItemDetail/ItemDetail"
 import LoadingScreen from "../../../components/LoadingScreen"
 import { DisplayContext } from "../../../context/DisplayContextProvider"
-import { ParameterContext } from "../../../context/ParameterContextProvider"
 import { ScopeContext } from "../../../context/ScopeContext"
 import { SearchResultContext } from "../../../context/SearchResultContextProvider"
 import dosearchImage from "../../../public/images/dosearch.svg"
@@ -44,8 +43,7 @@ const ChoiceColumn = ({
   const scopeContext = useContext(ScopeContext)
   const { trainings, jobs, setTrainings, setJobs, setSelectedItem, selectedItem, itemToScrollTo, setItemToScrollTo, setExtendedSearch } = useContext(SearchResultContext)
   const { formValues, setFormValues } = useContext(DisplayContext)
-  const { displayMap } = useContext(ParameterContext)
-
+  
   useEffect(() => {
     if (itemToScrollTo) {
       const itemElement = getItemElement(itemToScrollTo)
