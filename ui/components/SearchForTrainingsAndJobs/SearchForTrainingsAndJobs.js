@@ -137,6 +137,7 @@ const SearchForTrainingsAndJobs = () => {
           searchParameters: formValues,
           searchTimestamp,
           isReplace: true,
+          displayMap,
         })
       } catch (err) {}
     }
@@ -196,7 +197,7 @@ const SearchForTrainingsAndJobs = () => {
     }
     setIsFormVisible(false)
 
-    pushHistory({ router, scopeContext, display: "list", searchParameters: values, searchTimestamp })
+    pushHistory({ router, scopeContext, display: "list", searchParameters: values, searchTimestamp, displayMap })
     setCurrentSearch(searchTimestamp)
   }
 
@@ -293,6 +294,7 @@ const SearchForTrainingsAndJobs = () => {
         display: "form",
         searchParameters: formValues,
         searchTimestamp: currentSearch,
+        displayMap,
       })
     }
   }
@@ -319,6 +321,7 @@ const SearchForTrainingsAndJobs = () => {
         display: "map",
         searchParameters: formValues,
         searchTimestamp: currentSearch,
+        displayMap,
       })
     }
 
@@ -347,6 +350,7 @@ const SearchForTrainingsAndJobs = () => {
         display: "list",
         searchParameters: formValues,
         searchTimestamp: currentSearch,
+        displayMap,
       })
     }
   }
@@ -362,6 +366,7 @@ const SearchForTrainingsAndJobs = () => {
       display: "list",
       searchParameters: formValues,
       searchTimestamp: currentSearch,
+      displayMap,
     })
   }
 
@@ -373,7 +378,7 @@ const SearchForTrainingsAndJobs = () => {
     }
 
     if (!doNotSaveToHistory) {
-      pushHistory({ router, scopeContext, searchParameters: formValues, searchTimestamp: currentSearch })
+      pushHistory({ router, scopeContext, searchParameters: formValues, searchTimestamp: currentSearch, displayMap, })
     }
   }
 
