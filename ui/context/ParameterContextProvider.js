@@ -70,7 +70,6 @@ const ParameterContextProvider = ({ children }) => {
       dispatch({ type: actions.SET_USE_MOCK, useMock })
     },
     setDisplayMap: (displayMap = true) => {
-      console.log("setting display map : ",displayMap)
       dispatch({ type: actions.SET_DISPLAY_MAP, displayMap })
     },
   }

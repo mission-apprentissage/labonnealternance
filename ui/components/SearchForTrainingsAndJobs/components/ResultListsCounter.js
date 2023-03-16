@@ -73,7 +73,7 @@ const ResultListsCounter = (props) => {
         {jobLoading}
       </Box>
 
-      <Flex direction={["column", "column", "column", "row"]} wrap="wrap" mt={4} {...filterZoneProperties}>
+      <Flex direction={["column", "column", "column", "row"]} wrap="wrap" {...filterZoneProperties}>
         {!trainingLoading && !jobLoading && scopeContext.isJob && scopeContext.isTraining ? (
           <>
             <Flex flexFlow="row wrap" justifyContent="flex-end" width="100%">
