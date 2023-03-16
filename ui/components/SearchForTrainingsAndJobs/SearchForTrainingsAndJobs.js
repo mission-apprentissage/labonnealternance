@@ -321,7 +321,7 @@ const SearchForTrainingsAndJobs = () => {
         display: "map",
         searchParameters: formValues,
         searchTimestamp: currentSearch,
-        displayMap,
+        displayMap:true,
       })
     }
 
