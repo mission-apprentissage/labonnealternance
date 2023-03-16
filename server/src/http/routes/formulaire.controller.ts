@@ -386,12 +386,8 @@ export default ({ formulaire, mailer, etablissementsRecruteur, usersRecruteur })
               bool: {
                 must: [
                   {
-                    match: {
-                      "offres.niveau": {
-                        query: niveau,
-                        fuzziness: 0,
-                        operator: "AND",
-                      },
+                    match_phrase: {
+                      "offres.niveau": niveau,
                     },
                   },
                 ],
@@ -477,7 +473,9 @@ export default ({ formulaire, mailer, etablissementsRecruteur, usersRecruteur })
           x._source.offres.forEach((o) => {
             if (romes.some((item) => o.romes.includes(item)) && o.statut === "Active") {
               o.libelle = o.rome_appellation_label ?? o.libelle
-              offres.push(o)
+              if (!niveau || niveau === "Indifférent" || niveau === o.niveau) {
+                offres.push(o)
+              }
             }
           })
 

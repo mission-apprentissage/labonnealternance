@@ -1,5 +1,4 @@
 import axios from "axios"
-import { SendTrackEvent } from "utils/plausible"
 import { logError } from "utils/tools"
 
 import { allJobSearchErrorText, getRomeFromParameters, jobsApi, partialJobSearchErrorText, technicalErrorText } from "../../SearchForTrainingsAndJobs/services/utils"
@@ -39,6 +38,7 @@ export const searchForJobsFunction = async ({
         insee: values?.location?.insee,
         zipcode: values?.location?.zipcode,
         radius: values.radius || 30,
+        diploma: values.diploma,
         opco: opcoFilter,
         opcoUrl: opcoUrlFilter,
         useMock: useMock,

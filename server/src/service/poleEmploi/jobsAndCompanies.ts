@@ -86,7 +86,7 @@ const getJobsFromApi = async ({ query, api }) => {
   try {
     const sources = !query.sources ? ["lba", "lbb", "offres", "matcha"] : query.sources.split(",")
 
-    let [peJobs, lbaCompanies, lbbCompanies, matchas] = await Promise.all([
+    const [peJobs, lbaCompanies, lbbCompanies, matchas] = await Promise.all([
       sources.indexOf("offres") >= 0
         ? getSomePeJobs({
             romes: query.romes.split(","),
@@ -95,6 +95,7 @@ const getJobsFromApi = async ({ query, api }) => {
             lat: query.latitude,
             long: query.longitude,
             caller: query.caller,
+            diploma: query.diploma,
             api,
             opco: query.opco,
             opcoUrl: query.opcoUrl,
@@ -138,6 +139,7 @@ const getJobsFromApi = async ({ query, api }) => {
             radius: parseInt(query.radius),
             api,
             caller: query.caller,
+            diploma: query.diploma,
             opco: query.opco,
             opcoUrl: query.opcoUrl,
             useMock: query.useMock,
@@ -170,12 +172,12 @@ const getJobsFromApi = async ({ query, api }) => {
 
 const deduplicateCompanies = (lbaCompanies, lbbCompanies) => {
   if (lbaCompanies.results && lbbCompanies.results) {
-    let lbaSirets = []
+    const lbaSirets = []
     for (let i = 0; i < lbaCompanies.results.length; ++i) {
       lbaSirets.push(lbaCompanies.results[i].company.siret)
     }
 
-    let deduplicatedLbbCompanies = []
+    const deduplicatedLbbCompanies = []
     for (let i = 0; i < lbbCompanies.results.length; ++i) {
       if (lbaSirets.indexOf(lbbCompanies.results[i].company.siret) < 0) deduplicatedLbbCompanies.push(lbbCompanies.results[i])
     }

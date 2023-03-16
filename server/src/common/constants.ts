@@ -46,3 +46,18 @@ export const OPCOS = {
   SANTE: "Opco Santé",
   UNIFORMATION: "Uniformation, l'Opco de la Cohésion sociale",
 }
+
+export const NIVEAUX_POUR_LBA = {
+  "3 (CAP...)": "Cap, autres formations niveau (Infrabac)",
+  "4 (BAC...)": "BP, Bac, autres formations niveau (Bac)",
+  "5 (BTS, DEUST...)": "BTS, DEUST, autres formations niveau (Bac+2)",
+  "6 (Licence, BUT...)": "Licence, autres formations niveau (Bac+3)",
+  "7 (Master, titre ingénieur...)": "Master, titre ingénieur, autres formations niveau (Bac+5)",
+}
+
+export const NIVEAUX_POUR_OFFRES_PE = {
+  "4 (BAC...)": "NV5",
+  "5 (BTS, DEUST...)": "NV4",
+  "6 (Licence, BUT...)": "NV3",
+  "7 (Master, titre ingénieur...)": "NV2",
+}
