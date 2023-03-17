@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.1.0...v1.2.0) (2023-03-17)
+
+
+### Features
+
+* filtrage par diplôme pour les offres PE et LBA ([#295](https://github.com/mission-apprentissage/labonnealternance/issues/295)) ([565ca7a](https://github.com/mission-apprentissage/labonnealternance/commit/565ca7ad3bd908b58b85aa356d7af248219daa7a)), closes [#291](https://github.com/mission-apprentissage/labonnealternance/issues/291) [#292](https://github.com/mission-apprentissage/labonnealternance/issues/292)
+
 # [1.1.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.0.0...v1.1.0) (2023-03-15)
 
 
