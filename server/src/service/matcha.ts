@@ -138,19 +138,19 @@ const transformMatchaJobForIdea = ({ job, distance, caller }) => {
 
     resultJob.job = {
       id: offre._id,
-      description: offre.description,
+      description: offre.description || "",
       creationDate: job.createdAt,
       contractType: offre.type.join(", "),
       jobStartDate: offre.date_debut_apprentissage,
       romeDetails: offre.rome_detail,
-      rythmeAlternance: offre.rythme_alternance,
+      rythmeAlternance: offre.rythme_alternance || null,
       dureeContrat: offre.duree_contrat,
       quantiteContrat: offre.quantite,
       elligibleHandicap: offre.elligible_handicap,
     }
 
     resultJob.romes = []
-    offre.romes.map((code) => resultJob.romes.push({ code }))
+    offre.romes.map((code) => resultJob.romes.push({ code, label: null }))
 
     resultJobs.push(resultJob)
   })
