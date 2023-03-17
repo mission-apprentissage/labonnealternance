@@ -167,7 +167,7 @@ const transformPeJobForIdea = ({ job, lat = null, long = null, caller = null }) 
   resultJob.job = {
     id: job.id,
     creationDate: job.dateCreation,
-    description: job.description,
+    description: job.description || "",
     contractType: job.typeContrat,
     contractDescription: job.typeContratLibelle,
     duration: job.dureeTravailLibelle,
