@@ -35,7 +35,6 @@ import etablissementsRecruteurRoute from "./routes/etablissementRecruteur.contro
 import formationRegionV1 from "./routes/formationRegionV1.controller.js"
 import formationV1 from "./routes/formationV1.controller.js"
 import formulaireRoute from "./routes/formulaire.controller.js"
-import jobDiploma from "./routes/jobDiploma.controller.js"
 import jobEtFormationV1 from "./routes/jobEtFormationV1.controller.js"
 import jobV1 from "./routes/jobV1.controller.js"
 import metiers from "./routes/metiers.controller.js"
@@ -181,7 +180,6 @@ export default async (components) => {
   app.use("/api/version", limiter3PerSecond, version())
   app.use("/api/v1/formations", limiter7PerSecond, formationV1())
   app.use("/api/romelabels", limiter10PerSecond, rome())
-  app.use("/api/jobsdiplomas", limiter10PerSecond, jobDiploma())
   app.use("/api/v1/formationsParRegion", limiter5PerSecond, formationRegionV1())
   app.use("/api/v1/jobs", limiter5PerSecond, jobV1())
   app.use("/api/v1/jobsEtFormations", limiter5PerSecond, jobEtFormationV1())

@@ -93,7 +93,7 @@ const SearchForm = (props) => {
                     hasError={errors.job}
                     initialSelectedItem={contextFormValues?.job || null}
                     itemToStringFunction={autoCompleteToStringFunction}
-                    onSelectedItemChangeFunction={partialRight(updateValuesFromJobAutoComplete, setDiplomas)}
+                    onSelectedItemChangeFunction={updateValuesFromJobAutoComplete}
                     compareItemFunction={compareAutoCompleteValues}
                     onInputValueChangeFunction={jobChanged}
                     name="jobField"
