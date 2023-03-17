@@ -98,10 +98,10 @@ const getMatchaJobById = async ({ id, caller }) => {
 
 // Adaptation au modèle Idea et conservation des seules infos utilisées des offres
 const transformMatchaJobForIdea = ({ job, distance, caller }) => {
-  let resultJobs = []
+  const resultJobs = []
 
   job.offres.map((offre, idx) => {
-    let resultJob = itemModel("matcha")
+    const resultJob = itemModel("matcha")
 
     let email = {}
 
@@ -140,7 +140,7 @@ const transformMatchaJobForIdea = ({ job, distance, caller }) => {
       id: offre._id,
       description: offre.description,
       creationDate: job.createdAt,
-      contractType: offre.type,
+      contractType: offre.type.join(", "),
       jobStartDate: offre.date_debut_apprentissage,
       romeDetails: offre.rome_detail,
       rythmeAlternance: offre.rythme_alternance,
