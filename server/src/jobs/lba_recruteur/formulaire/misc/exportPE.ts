@@ -1,17 +1,35 @@
 import { createWriteStream } from "fs"
 import { oleoduc, transformData, transformIntoCSV } from "oleoduc"
+import { Readable } from "stream"
 import dayjs from "../../../../common/dayjs.js"
+import { UserRecruteur } from "../../../../common/model/index.js"
+import { asyncForEach } from "../../../../common/utils/asyncUtils.js"
 import { runScript } from "../../../scriptWrapper.js"
 
-const stat = { ok: 0, ko: 0 }
+const stat = {
+  ok: 0,
+  ko: 0,
+  matchingAppellation: 0,
+  romeDetailVide: 0,
+  adresse: 0,
+  geoCoord: 0,
+}
 
 const formatToPe = (x) => {
   const appellation = x.rome_detail.appellations.find((v) => v.libelle === x.rome_appellation_label)
   const adresse = x.adresse_detail
   const [latitude, longitude] = x.geo_coordonnees.split(",")
 
-  if (!appellation || !adresse || !latitude || !longitude) {
-    stat.ko++
+  if (!appellation) {
+    stat.matchingAppellation++
+    return
+  }
+  if (!adresse) {
+    stat.adresse++
+    return
+  }
+  if (!latitude || !longitude) {
+    stat.geoCoord++
     return
   }
 
@@ -76,7 +94,7 @@ const formatToPe = (x) => {
     Off_THO_commentaire: null,
     NTC_cle: "CDD",
     NTC_libelle: null,
-    TCO_cle: " “APP” ou “PRO” + dupliquer l’offre si le recruteur a indiqué les 2 types de contrats sur LBA nomenclature à revérifier",
+    TCO_cle: x.type,
     TCO_libelle: null,
     Off_contrat_duree_MO: x.duree_contrat,
     Off_contrat_duree_JO: null,
@@ -129,14 +147,14 @@ const formatToPe = (x) => {
     Prenom_correspondant: null,
     Tel_correspondant: null,
     Mail_correspondant: null,
-    Libelle_etab: " Userrecruteurs.Raison_Sociale associée au SIRET gestionnaire",
-    Num_voie_etab: " Numéro de la voie où se situe l’entreprise, issue de l’API Adresse et liée au SIRET gestionnaire",
-    Type_voie_etab: " Type de la voie où se situe l’entreprise, issue de l’API Adresse et liée au SIRET gestionnaire",
-    Lib_voie_etab: " Libellé de la voie où se situe l’entreprise, issue de l’API Adresse et liée au SIRET gestionnaire",
+    Libelle_etab: x.raisonSocialCfa,
+    Num_voie_etab: adresse.numero_voie,
+    Type_voie_etab: adresse.type_voie,
+    Lib_voie_etab: adresse.nom_voie,
     Cplt_adresse_1: null,
     Cplt_adresse_2: null,
     Code_postal_etab: null,
-    Code_commune_etab: " Code INSEE de l acommune où se situe l’entreprise, issue de l’API Adresse et liée au SIRET gestionnaire",
+    Code_commune_etab: adresse.code_insee_localite,
     Serviceb: null,
     Mode_diffusion: "O",
     Rappel_b: null,
@@ -147,9 +165,19 @@ const formatToPe = (x) => {
 
 runScript(async ({ db }) => {
   const path = new URL("./exportPE.csv", import.meta.url)
+  const buffer = []
+
+  const offres = await db.collection("offres").find({}).toArray()
+
+  await asyncForEach(offres, async (item) => {
+    const user = await UserRecruteur.findOne({ siret: item.gestionnaire })
+    item.type.map(async (type) => {
+      buffer.push({ ...item, type: type, raisonSocialCfa: user?.raison_sociale ?? null })
+    })
+  })
 
   await oleoduc(
-    db.collection("offres").find({}),
+    Readable.from(buffer),
     transformData((value) => {
       if (value.rome_detail) {
         stat.ok++
