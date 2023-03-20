@@ -1,3 +1,15 @@
+# [1.3.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.2.1...v1.3.0) (2023-03-20)
+
+
+### Bug Fixes
+
+* ajustements retours api jobs ([#307](https://github.com/mission-apprentissage/labonnealternance/issues/307)) ([228836a](https://github.com/mission-apprentissage/labonnealternance/commit/228836a377b7cfc11ce4ebef70d22d7a49dfa33e))
+
+
+### Features
+
+* check if data is present before job ([#306](https://github.com/mission-apprentissage/labonnealternance/issues/306)) ([d9e85c0](https://github.com/mission-apprentissage/labonnealternance/commit/d9e85c09bbf2bce5f29e3c7936f2516325aee76e))
+
 ## [1.2.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.2.0...v1.2.1) (2023-03-20)
 
 
