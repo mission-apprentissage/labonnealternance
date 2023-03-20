@@ -11,6 +11,12 @@ import dayjs from "../../common/dayjs.js"
 export const controlAvailableFormationWithCatalogue = async () => {
   logger.info("Cron #controlAvailableFormationWithCatalogue started.")
 
+  const control = await FormationCatalogue.countDocuments()
+
+  if (control === 0) {
+    return
+  }
+
   const stats = {
     AncientElligibleTrainingCount: 0,
     NewElligibleTrainingCount: 0,
