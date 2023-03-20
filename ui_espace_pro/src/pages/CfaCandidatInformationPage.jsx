@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom"
-import { Box, Text } from "@chakra-ui/react"
+import { Box, Text, UnorderedList, ListItem } from "@chakra-ui/react"
 import { FormLayoutComponent } from "./Candidat/layout/FormLayoutComponent"
 import { useFetch } from "../common/hooks/useFetch"
 import { useEffect } from "react"
@@ -45,7 +45,7 @@ export const CfaCandidatInformationPage = () => {
               <Text as="span" color="bluefrance" textStyle="h6">
                 Voici les coordonnées du candidat
               </Text>
-              <Box mt={6} pb={10} borderBottom="solid 1px #D0C9C4">
+              <Box mt={6} pb={8} borderBottom="solid 1px #D0C9C4">
                 <Text>
                   Nom :{" "}
                   <Text as="span">
@@ -71,16 +71,27 @@ export const CfaCandidatInformationPage = () => {
                   </Text>
                 </Text>
               </Box>
-              <Text mt={10}>
+              <Text mt={8}>
                 Il ou elle souhaite aborder avec vous le(s) sujet(s) suivant :
-                <br />"{data.appointment.motivations}" <br /> à propos de la formation :{" "}
-                <Text as="span">
-                  <b>{data.etablissement.intitule_long}</b>
+                <UnorderedList>
+                  <ListItem fontSize="16px" my="2" lineHeight="24px" fontWeight="700">
+                    Modalités d'inscription
+                  </ListItem>
+                  <ListItem fontSize="16px" mb="2" lineHeight="24px" fontWeight="700">
+                    Portes ouvertes
+                  </ListItem>
+                  <ListItem fontSize="16px" mb="2" lineHeight="24px" fontWeight="700">
+                    Autre sujet :
+                  </ListItem>
+                </UnorderedList>
+                <Text as="p" bg="#F6F6F6" color="#2A2A2A" fontSize="16px" lineHeight="24px" fontWeight="700" px="4" py="2">
+                  {data.appointment.motivations}
                 </Text>
-                <br />
-                dispensée par :{" "}
-                <Text as="span">
-                  <b>{data.etablissement.etablissement_formateur_entreprise_raison_sociale}</b>
+                <Text as="p" mt="2">
+                  à propos de la formation : <strong>{data.etablissement.intitule_long}</strong>
+                </Text>
+                <Text as="p" mt="1">
+                  dispensée par : <strong>{data.etablissement.etablissement_formateur_entreprise_raison_sociale}</strong>
                 </Text>
               </Text>
             </Box>
