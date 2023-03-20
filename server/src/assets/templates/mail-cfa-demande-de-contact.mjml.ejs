@@ -27,11 +27,28 @@
                 <mj-button color="#ffffff" background-color="#000091" href="<%= data.appointment.link %>">
                     Voir les coordonnées du candidat
                 </mj-button>
-                <mj-text>
-                    Il ou elle souhaite aborder avec vous le(s) sujet(s) suivant :<br />
-                    <b>"<%= data.user.motivations %>"</b><br />
-                    à propos de la formation : <b><%= data.formation.intitule %></b><br />
-                    dispensée par : <b><%= data.etablissement.name %>, <%= data.etablissement.address %>, <%= data.etablissement.postalCode %> <%= data.etablissement.ville %></b>
+                <mj-text margin-top="20px">
+                    Il ou elle souhaite aborder avec vous le(s) sujet(s) suivant :
+                    <ul>
+                        <li style="font-size: 16px; margin: 8px 0px; line-height: 24px; font-weight: 700;">
+                            Modalités d'inscription
+                        </li>
+                        <li style="font-size: 16px; margin: 8px 0px; line-height: 24px; font-weight: 700;">
+                            Portes ouvertes
+                        </li>
+                        <li style="font-size: 16px; margin: 8px 0px; line-height: 24px; font-weight: 700;">
+                            Autre sujet :
+                        </li>
+                    </ul>
+                    <p style="background-color: #F6F6F6;color:#2A2A2A;font-size: 16px;line-height: 24px; font-weight: 700;padding: 8px 4px;">
+                        <%= data.user.motivations %>
+                    </p>
+                    <mj-text mt="2">
+                        à propos de la formation : <strong><%= data.formation.intitule %></strong>
+                    </mj-text>
+                    <mj-text mt="1">
+                        dispensée par : <strong><%= data.etablissement.name %>, <%= data.etablissement.address %>, <%= data.etablissement.postalCode %><%= data.etablissement.ville %></strong>
+                    </mj-text>
                 </mj-text>
             </mj-column>
         </mj-section>
