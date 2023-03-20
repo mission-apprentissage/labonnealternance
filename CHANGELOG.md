@@ -1,3 +1,10 @@
+## [1.2.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.2.0...v1.2.1) (2023-03-20)
+
+
+### Bug Fixes
+
+* dead import ([620db35](https://github.com/mission-apprentissage/labonnealternance/commit/620db350a1fd6cffc57436ce2b15425171e8a206))
+
 # [1.2.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.1.0...v1.2.0) (2023-03-17)
 
 
