@@ -1,11 +1,10 @@
 import { logger } from "../../../common/logger.js"
 import { UserRecruteur } from "../../../common/model/index.js"
 import { runScript } from "../../scriptWrapper.js"
-import { userList } from "./opcoUsers.js"
 
 runScript(async () => {
   await Promise.all(
-    userList.map(async (user) => {
+    [].map(async (user) => {
       const exist = await UserRecruteur.findOne({ email: user.email, type: "OPCO" }).lean()
 
       if (exist) {
