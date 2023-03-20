@@ -1,13 +1,12 @@
 <mjml>
     <mj-head>
         <mj-title>Un candidat souhaite être contacté</mj-title>
-        <mj-font name="Work Sans" href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;700&display=swap" />
         <mj-style inline="inline">
             .grey {color: #1E1E1E;}
         </mj-style>
         <mj-attributes>
-            <mj-text color="#242424" font-family="Work Sans, Arial" font-size="16px" line-height="24px" />
-            <mj-button font-size="16px" line-height="24px" padding="8px 24px" font-family="Work Sans" height="40px" />
+            <mj-text color="#242424" font-family="Arial,sans-serif" font-size="16px" line-height="24px" />
+            <mj-button font-size="16px" line-height="24px" padding="8px 24px" font-family="Arial" height="40px" />
         </mj-attributes>
     </mj-head>
     <mj-body background-color="#E5E5E5">
@@ -30,18 +29,18 @@
                 <mj-text margin-top="20px">
                     Il ou elle souhaite aborder avec vous le(s) sujet(s) suivant :
                     <ul>
-                        <li style="font-size: 16px; margin: 8px 0px; line-height: 24px; font-weight: 700;">
-                            Modalités d'inscription
+                        <li style="font-size: 16px; margin: 8px 0px; line-height: 24px;">
+                            <strong>Modalités d'inscription</strong>
                         </li>
-                        <li style="font-size: 16px; margin: 8px 0px; line-height: 24px; font-weight: 700;">
-                            Portes ouvertes
+                        <li style="font-size: 16px; margin: 8px 0px; line-height: 24px;">
+                            <strong>Portes ouvertes</strong>
                         </li>
-                        <li style="font-size: 16px; margin: 8px 0px; line-height: 24px; font-weight: 700;">
-                            Autre sujet :
+                        <li style="font-size: 16px; margin: 8px 0px; line-height: 24px;">
+                            <strong>Autre sujet :</strong>
                         </li>
                     </ul>
-                    <p style="background-color: #F6F6F6;color:#2A2A2A;font-size: 16px;line-height: 24px; font-weight: 700;padding: 8px 4px;">
-                        <%= data.user.motivations %>
+                    <p style="background-color: #F6F6F6;color:#2A2A2A;font-size: 16px;line-height: 24px;padding: 8px 4px;">
+                        <strong><%= data.user.motivations %></strong>
                     </p>
                     <p style="margin-top: 4px;margin-bottom: 0;">
                         à propos de la formation : <strong><%= data.formation.intitule %></strong>
