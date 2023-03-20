@@ -31,6 +31,7 @@ const imagePath = `${config.publicUrl.indexOf("local") >= 0 ? config.publicUrl :
 const images = {
   images: {
     logo: `${imagePath}logo_lba_recruteur.png`,
+    logoCandidat: `${imagePath}logo_LBA_candidat.png`,
     logoRF: `${imagePath}logo_rf.png`,
     logoGrimp: `${imagePath}logo_grimp.png`,
     icoInfo: `${imagePath}icone_info.png`,
@@ -213,6 +214,7 @@ const sendApplication = async ({ scan, mailer, query, referer, shouldCheckSecret
       const fileContent = query.applicant_file_content
 
       const urlOfDetail = buildUrlOfDetail(publicUrl, query)
+      const urlOfDetailNoUtm = urlOfDetail.replace(/(?<=&|\?)utm_.*?(&|$)/gim, "")
       const recruiterEmailUrls = buildRecruiterEmailUrls({
         publicUrl,
         application,
@@ -235,7 +237,7 @@ const sendApplication = async ({ scan, mailer, query, referer, shouldCheckSecret
           to: application.applicant_email,
           subject: `Votre candidature chez ${application.company_name}`,
           template: getEmailTemplate(emailTemplates.candidat),
-          data: { ...application._doc, ...images, ...encryptedId, publicUrl, urlOfDetail },
+          data: { ...application._doc, ...images, ...encryptedId, publicUrl, urlOfDetail, urlOfDetailNoUtm },
           attachments: [
             {
               filename: application.applicant_attachment_name,
@@ -247,7 +249,7 @@ const sendApplication = async ({ scan, mailer, query, referer, shouldCheckSecret
           to: application.company_email,
           subject: buildTopic(application.job_origin, application.job_title),
           template: getEmailTemplate(emailTemplates.entreprise),
-          data: { ...application._doc, ...images, ...recruiterEmailUrls, urlOfDetail },
+          data: { ...application._doc, ...images, ...recruiterEmailUrls, urlOfDetail, urlOfDetailNoUtm },
           attachments: [
             {
               filename: application.applicant_attachment_name,
