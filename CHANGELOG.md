@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.3.0...v1.4.0) (2023-03-21)
+
+
+### Features
+
+* affichage systématique de tous les niveaux de filtrage par diplôme ([#311](https://github.com/mission-apprentissage/labonnealternance/issues/311)) ([167fdf3](https://github.com/mission-apprentissage/labonnealternance/commit/167fdf308f61004082c1cfe081d2267583904e88))
+
 # [1.3.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.2.1...v1.3.0) (2023-03-20)
 
 
