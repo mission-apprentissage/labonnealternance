@@ -1,3 +1,29 @@
+# [1.4.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.3.0...v1.4.0) (2023-03-21)
+
+
+### Features
+
+* affichage systématique de tous les niveaux de filtrage par diplôme ([#311](https://github.com/mission-apprentissage/labonnealternance/issues/311)) ([167fdf3](https://github.com/mission-apprentissage/labonnealternance/commit/167fdf308f61004082c1cfe081d2267583904e88))
+
+# [1.3.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.2.1...v1.3.0) (2023-03-20)
+
+
+### Bug Fixes
+
+* ajustements retours api jobs ([#307](https://github.com/mission-apprentissage/labonnealternance/issues/307)) ([228836a](https://github.com/mission-apprentissage/labonnealternance/commit/228836a377b7cfc11ce4ebef70d22d7a49dfa33e))
+
+
+### Features
+
+* check if data is present before job ([#306](https://github.com/mission-apprentissage/labonnealternance/issues/306)) ([d9e85c0](https://github.com/mission-apprentissage/labonnealternance/commit/d9e85c09bbf2bce5f29e3c7936f2516325aee76e))
+
+## [1.2.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.2.0...v1.2.1) (2023-03-20)
+
+
+### Bug Fixes
+
+* dead import ([620db35](https://github.com/mission-apprentissage/labonnealternance/commit/620db350a1fd6cffc57436ce2b15425171e8a206))
+
 # [1.2.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.1.0...v1.2.0) (2023-03-17)
 
 
