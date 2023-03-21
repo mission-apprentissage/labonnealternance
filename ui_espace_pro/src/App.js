@@ -1,4 +1,5 @@
-import { AnimatePresence } from "framer-motion"
+import { Box } from "@chakra-ui/react"
+
 import { useEffect } from "react"
 import { Helmet } from "react-helmet"
 import { Navigate, Route, Routes } from "react-router-dom"
@@ -79,7 +80,7 @@ const AdminRdvaRoute = ({ children }) => {
 
 const App = () => {
   return (
-    <AnimatePresence>
+    <Box>
       <Helmet>
         <script defer data-domain={window.location.hostname} src="https://plausible.io/js/script.local.hash.outbound-links.js" />
       </Helmet>
@@ -204,7 +205,7 @@ const App = () => {
 
         <Route path="*" element={<RedirectTo404 />} />
       </Routes>
-    </AnimatePresence>
+    </Box>
   )
 }
 
