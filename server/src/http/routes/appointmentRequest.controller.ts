@@ -185,22 +185,19 @@ export default ({ users, appointments, mailer, eligibleTrainingsForAppointments,
     tryCatch(async (req, res) => {
       const { appointmentId } = req.query
 
-      const appointment = await appointments.findById(appointmentId)
+      const appointment = await appointments.findById(appointmentId).lean()
 
       const [eligibleTrainingsForAppointment, user] = await Promise.all([
         eligibleTrainingsForAppointments.getParameterByCleMinistereEducatif({
           cleMinistereEducatif: appointment.cle_ministere_educatif,
         }),
-        users.getUserById(appointment.candidat_id),
+        users.getUserById(appointment.applicant_id),
       ])
 
-      console.log("=================================")
-      console.log(JSON.stringify(appointment, null, 2))
-      console.log(JSON.stringify(getReferrerByKeyName(appointment.referrer), null, 2))
       res.json({
         appointment: {
           ...appointment,
-          appointment_origin_detailed: getReferrerByKeyName(appointment.referrer),
+          appointment_origin_detailed: getReferrerByKeyName(appointment.appointment_origin),
         },
         user,
         eligibleTrainingsForAppointment,
@@ -253,7 +250,7 @@ export default ({ users, appointments, mailer, eligibleTrainingsForAppointments,
       }
 
       const [user, eligibleTrainingsForAppointment] = await Promise.all([
-        users.findOne({ _id: appointment.candidat_id }),
+        users.findOne({ _id: appointment.applicant_id }),
         eligibleTrainingsForAppointments.findOne({ rco_formation_id: appointment.rco_formation_id }),
       ])
 
