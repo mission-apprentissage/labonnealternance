@@ -186,6 +186,16 @@ export const appointmentSchema = new Schema<IAppointments>({
     default: null,
     description: "Date du dernier statut",
   },
+  email_reponse_cfa_date: {
+    type: Date,
+    default: null,
+    description: "Date d'envoi de la réponse du CFA à la demande de RDV",
+  },
+  email_reponse_cfa_body: {
+    type: String,
+    default: null,
+    description: "Message de réponse du CFA à la demande de RDV",
+  },
   id_rco_formation: {
     type: String,
     default: null,

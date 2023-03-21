@@ -107,7 +107,12 @@ export const CfaCandidatInformationPage = () => {
                   <Text fontWeight="400" color="#666666" fontSize="12px" lineHeight="20px" mt="1">
                     Le candidat recevra votre réponse directement dans sa boîte mail.
                   </Text>
-                  <Textarea my="2" borderRadius="4px 4px 0px 0px" height="200px" width="100%" value={`Bonjour,
+                  <Textarea
+                    my="2"
+                    borderRadius="4px 4px 0px 0px"
+                    height="200px"
+                    width="100%"
+                    value={`Bonjour,
 
 Merci pour l'intérêt que vous portez à notre formation. Voici les réponses aux points qui vous intéressent :
 
