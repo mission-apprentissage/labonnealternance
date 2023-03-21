@@ -17,7 +17,7 @@ export const CfaCandidatInformationPage = () => {
 
   const formik = useFormik({
     initialValues: {
-      vvv: "",
+      message: "",
     },
     onSubmit: (values) => {
       console.log(JSON.stringify(values, null, 2))
@@ -115,14 +115,14 @@ export const CfaCandidatInformationPage = () => {
                     Le candidat recevra votre réponse directement dans sa boîte mail.
                   </Text>
                   <Textarea
-                    id="vvv"
-                    name="vvv"
+                    id="message"
+                    name="message"
                     my="2"
                     borderRadius="4px 4px 0px 0px"
                     height="200px"
                     width="100%"
                     onChange={formik.handleChange}
-                    value={formik.values.vvv}
+                    value={formik.values.message}
                     placeholder={`Bonjour,
 
 Merci pour l'intérêt que vous portez à notre formation. Voici les réponses aux points qui vous intéressent :
