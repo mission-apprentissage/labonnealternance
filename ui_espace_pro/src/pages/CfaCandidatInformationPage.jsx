@@ -20,7 +20,7 @@ export const CfaCandidatInformationPage = () => {
       vvv: "",
     },
     onSubmit: (values) => {
-      alert(JSON.stringify(values, null, 2))
+      console.log(JSON.stringify(values, null, 2))
     },
   })
 
@@ -144,6 +144,7 @@ Pour toute demande complémentaire ou pour vous inscrire, vous pouvez contacter 
                         },
                       }}
                       aria-label="Envoyer la réponse"
+                      type="submit"
                     >
                       Envoyer ma réponse
                     </Button>
