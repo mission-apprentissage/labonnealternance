@@ -72,28 +72,26 @@ export const CfaCandidatInformationPage = () => {
                 </Text>
               </Box>
               <Box mt={8} pb={8} borderBottom="solid 1px #D0C9C4">
-                <Text>
-                  Il ou elle souhaite aborder avec vous le(s) sujet(s) suivant :
-                  <UnorderedList>
-                    <ListItem fontSize="16px" my="2" lineHeight="24px" fontWeight="700">
-                      Modalités d'inscription
-                    </ListItem>
-                    <ListItem fontSize="16px" mb="2" lineHeight="24px" fontWeight="700">
-                      Portes ouvertes
-                    </ListItem>
-                    <ListItem fontSize="16px" mb="2" lineHeight="24px" fontWeight="700">
-                      Autre sujet :
-                    </ListItem>
-                  </UnorderedList>
-                  <Text as="p" bg="#F6F6F6" color="#2A2A2A" fontSize="16px" lineHeight="24px" fontWeight="700" px="4" py="2">
-                    {data.appointment.motivations}
-                  </Text>
-                  <Text as="p" mt="2">
-                    à propos de la formation : <strong>{data.etablissement.intitule_long}</strong>
-                  </Text>
-                  <Text as="p" mt="1">
-                    dispensée par : <strong>{data.etablissement.etablissement_formateur_entreprise_raison_sociale}</strong>
-                  </Text>
+                Il ou elle souhaite aborder avec vous le(s) sujet(s) suivant :
+                <UnorderedList>
+                  <ListItem fontSize="16px" my="2" lineHeight="24px" fontWeight="700">
+                    Modalités d'inscription
+                  </ListItem>
+                  <ListItem fontSize="16px" mb="2" lineHeight="24px" fontWeight="700">
+                    Portes ouvertes
+                  </ListItem>
+                  <ListItem fontSize="16px" mb="2" lineHeight="24px" fontWeight="700">
+                    Autre sujet :
+                  </ListItem>
+                </UnorderedList>
+                <Text as="p" bg="#F6F6F6" color="#2A2A2A" fontSize="16px" lineHeight="24px" fontWeight="700" px="4" py="2">
+                  {data.appointment.motivations}
+                </Text>
+                <Text as="p" mt="2">
+                  à propos de la formation : <strong>{data.etablissement.intitule_long}</strong>
+                </Text>
+                <Text as="p" mt="1">
+                  dispensée par : <strong>{data.etablissement.etablissement_formateur_entreprise_raison_sociale}</strong>
                 </Text>
               </Box>
               <Box mt={8}>
@@ -112,7 +110,7 @@ export const CfaCandidatInformationPage = () => {
                     borderRadius="4px 4px 0px 0px"
                     height="200px"
                     width="100%"
-                    value={`Bonjour,
+                    placeholder={`Bonjour,
 
 Merci pour l'intérêt que vous portez à notre formation. Voici les réponses aux points qui vous intéressent :
 
