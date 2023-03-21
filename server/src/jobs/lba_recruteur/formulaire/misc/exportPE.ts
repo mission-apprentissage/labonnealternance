@@ -1,9 +1,12 @@
+import axios from "axios"
 import { createWriteStream } from "fs"
+import { pick } from "lodash-es"
 import { oleoduc, transformData, transformIntoCSV } from "oleoduc"
 import { Readable } from "stream"
 import dayjs from "../../../../common/dayjs.js"
+import { logger } from "../../../../common/logger.js"
 import { UserRecruteur } from "../../../../common/model/index.js"
-import { asyncForEach } from "../../../../common/utils/asyncUtils.js"
+import { asyncForEach, delay } from "../../../../common/utils/asyncUtils.js"
 import { runScript } from "../../../scriptWrapper.js"
 
 const stat = {
@@ -15,10 +18,27 @@ const stat = {
   geoCoord: 0,
 }
 
-const formatToPe = (x) => {
+const getRegion = async (dept) => {
+  await delay(400)
+  const { status, data } = await axios.get(
+    `https://data.enseignementsup-recherche.gouv.fr/api/records/1.0/search/?dataset=fr-esr-referentiel-geographique&q=${dept}&facet=reg_nom&facet=dep_nom`
+  )
+  if (status !== 200) return null
+  return data.records[0].fields.reg_id
+}
+
+const formatDate = (date) => dayjs(date).format("JJ/MM/AAAA")
+
+const regex = /^(.*) (\d{4,5}) (.*)$/
+
+const splitter = (str) => str.split(regex).filter(String)
+
+const formatToPe = async (x) => {
   const appellation = x.rome_detail.appellations.find((v) => v.libelle === x.rome_appellation_label)
   const adresse = x.adresse_detail
   const [latitude, longitude] = x.geo_coordonnees.split(",")
+
+  const [rue, code_postal, ville] = x.mandataire && x.cfa?.adresse_detail?.label ? splitter(x.cfa.adresse_detail.label) : []
 
   if (!appellation) {
     stat.matchingAppellation++
@@ -32,8 +52,6 @@ const formatToPe = (x) => {
     stat.geoCoord++
     return
   }
-
-  const formatDate = (date) => dayjs(date).format("JJ/MM/AAAA")
 
   return {
     Par_ref_offre: x.id_offre,
@@ -109,8 +127,8 @@ const formatToPe = (x) => {
     COM_libelle: null,
     DEP_cle: adresse.code_postal.slice(0, 2),
     DEP_libelle: null,
-    REG_cle: null,
-    REG_libelle: adresse.localite,
+    REG_cle: await getRegion(adresse.code_postal.slice(0, 2)),
+    REG_libelle: null,
     Pay_cle: null,
     Pay_libelle: adresse.l7,
     CON_cle: null,
@@ -146,14 +164,14 @@ const formatToPe = (x) => {
     Prenom_correspondant: null,
     Tel_correspondant: null,
     Mail_correspondant: null,
-    Libelle_etab: x.raisonSocialCfa,
-    Num_voie_etab: adresse.numero_voie,
-    Type_voie_etab: adresse.type_voie,
-    Lib_voie_etab: adresse.nom_voie,
-    Cplt_adresse_1: null,
+    Libelle_etab: x.cfa?.raison_sociale ?? null,
+    Num_voie_etab: null,
+    Type_voie_etab: rue ?? null,
+    Lib_voie_etab: rue ?? null,
+    Cplt_adresse_1: ville,
     Cplt_adresse_2: null,
-    Code_postal_etab: null,
-    Code_commune_etab: adresse.code_insee_localite,
+    Code_postal_etab: code_postal,
+    Code_commune_etab: null,
     Serviceb: null,
     Mode_diffusion: "O",
     Rappel_b: null,
@@ -168,13 +186,16 @@ runScript(async ({ db }) => {
 
   const offres = await db.collection("offres").find({}).toArray()
 
-  await asyncForEach(offres, async (item) => {
-    const user = await UserRecruteur.findOne({ siret: item.gestionnaire })
+  logger.info("get info from user...")
+  await asyncForEach(offres, async (item, index) => {
+    let user = item.mandataire ? await UserRecruteur.findOne({ siret: item.gestionnaire }) : null
+
     item.type.map(async (type) => {
-      buffer.push({ ...item, type: type, raisonSocialCfa: user?.raison_sociale ?? null })
+      buffer.push({ ...item, type: type, cfa: user ? pick(user, ["adresse_detail", "raison_sociale"]) : null })
     })
   })
 
+  logger.info("Start stream to CSV...")
   await oleoduc(
     Readable.from(buffer),
     transformData((value) => {
