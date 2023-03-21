@@ -101,10 +101,10 @@ export default ({ eligibleTrainingsForAppointments, etablissements }) => {
       const qs = req.query
       const query = qs && qs.query ? JSON.parse(qs.query) : {}
 
-      const wigetParameters = await EligibleTrainingsForAppointment.find(query)
+      const eligibleTrainings = await EligibleTrainingsForAppointment.find(query)
 
-      const parameters = []
-      for (const parameter of wigetParameters) {
+      const trainings = []
+      for (const parameter of eligibleTrainings) {
         let formations = null
         // Note: "id_rco_formation" attribute isn't existing for oldest parameters
         if (parameter.rco_formation_id) {
@@ -115,7 +115,7 @@ export default ({ eligibleTrainingsForAppointments, etablissements }) => {
 
         const etablissement = await etablissements.findOne({ formateur_siret: parameter.etablissement_siret })
 
-        parameters.push({
+        trainings.push({
           siret: parameter.etablissement_siret,
           raison_sociale: etablissement?.raison_sociale,
           rco_formation_id: parameter.rco_formation_id,
@@ -129,12 +129,12 @@ export default ({ eligibleTrainingsForAppointments, etablissements }) => {
         })
       }
 
-      if (!parameters.length) {
+      if (!trainings.length) {
         throw Boom.badRequest("Aucune information a exporter.")
       }
 
       const csv2json = new json2csvParser.Parser()
-      const csv = csv2json.parse(parameters)
+      const csv = csv2json.parse(trainings)
 
       res.setHeader("Content-disposition", "attachment; filename=parametres.csv")
       res.set("Content-Type", "text/csv")

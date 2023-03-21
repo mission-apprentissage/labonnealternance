@@ -68,10 +68,10 @@ export default ({ etablissements, mailer, eligibleTrainingsForAppointments, appo
           etablissement: {
             name: etablissement.raison_sociale,
             address: etablissement.address,
-            postalCode: etablissement.zip_code,
-            ville: etablissement.city,
-            siret: etablissement.formateur_siret,
-            email: etablissement.gestionnaire_email,
+            zip_code: etablissement.zip_code,
+            city: etablissement.city,
+            formateur_siret: etablissement.formateur_siret,
+            gestionnaire_email: etablissement.gestionnaire_email,
           },
           activationDate: dayjs().format("DD/MM"),
         },
@@ -79,7 +79,7 @@ export default ({ etablissements, mailer, eligibleTrainingsForAppointments, appo
 
       const [eligibleTrainingsForAppointmentsFound, etablissementUpdated] = await Promise.all([
         eligibleTrainingsForAppointments.find({
-          etablissement_siret: etablissement.formateur_siret,
+          etablissement_formateur_siret: etablissement.formateur_siret,
           parcoursup_id: {
             $ne: null,
           },
@@ -150,7 +150,7 @@ export default ({ etablissements, mailer, eligibleTrainingsForAppointments, appo
           eligibleTrainingsForAppointments.update(
             { _id: eligibleTrainingsForAppointment._id, lieu_formation_email: { $nin: [null, ""] } },
             {
-              referrers: [...new Set([...eligibleTrainingsForAppointment.referrers, referrers.PARCOURSUP.code])],
+              referrers: [...new Set([...eligibleTrainingsForAppointment.referrers, referrers.PARCOURSUP.name])],
             }
           )
         ),
@@ -192,11 +192,11 @@ export default ({ etablissements, mailer, eligibleTrainingsForAppointments, appo
             logoFooter: `${config.publicUrlEspacePro}/assets/logo-republique-francaise.png?raw=true`,
           },
           etablissement: {
-            name: etablissement.raison_sociale,
+            raison_sociale: etablissement.raison_sociale,
             address: etablissement.address,
-            postalCode: etablissement.zip_code,
-            ville: etablissement.city,
-            siret: etablissement.formateur_siret,
+            zip_code: etablissement.zip_code,
+            city: etablissement.city,
+            formateur_siret: etablissement.formateur_siret,
             email: etablissement.gestionnaire_email,
           },
           activationDate: dayjs().format("DD/MM"),
