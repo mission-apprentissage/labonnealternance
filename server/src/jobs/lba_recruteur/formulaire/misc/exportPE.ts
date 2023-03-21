@@ -121,7 +121,7 @@ const formatToPe = async (x) => {
     Off_adr_compl_1: null,
     Off_adr_compl_2: null,
     Off_adr_no_voie: adresse.numero_voie,
-    Off_adr_nom_voie: `${adresse.type_voie} ${adresse.nom_voie}`,
+    Off_adr_nom_voie: `${adresse.type_voie ?? ""} ${adresse.nom_voie ?? ""}`,
     CPO_cle: null,
     COM_cle: adresse.code_insee_localite,
     COM_libelle: null,
