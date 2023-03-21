@@ -77,7 +77,7 @@ const getFormations = async ({ romes, rncps, romeDomain, coords, radius, diploma
 
     if (diploma) {
       mustTerm.push({
-        match: {
+        match_phrase: {
           niveau: getDiplomaKey(diploma),
         },
       })
