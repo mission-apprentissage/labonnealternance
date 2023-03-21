@@ -4,7 +4,7 @@ import { FormLayoutComponent } from "./Candidat/layout/FormLayoutComponent"
 import { useFetch } from "../common/hooks/useFetch"
 import { useEffect } from "react"
 import { _patch } from "../common/httpClient"
-
+import { useFormik } from "formik"
 /**
  * @description CfaCandidatInformationPage component.
  * @returns {JSX.Element}
@@ -14,6 +14,15 @@ export const CfaCandidatInformationPage = () => {
   const [data, loading] = useFetch(`/api/appointment-request/context/recap?appointmentId=${appointmentId}`)
 
   const utmSource = new URLSearchParams(window.location.search).get("utm_source")
+
+  const formik = useFormik({
+    initialValues: {
+      vvv: "",
+    },
+    onSubmit: (values) => {
+      alert(JSON.stringify(values, null, 2))
+    },
+  })
 
   /**
    * @description Set has "read" if there is utm_source=mail query string.
@@ -94,8 +103,8 @@ export const CfaCandidatInformationPage = () => {
                   dispensée par : <strong>{data.etablissement.etablissement_formateur_entreprise_raison_sociale}</strong>
                 </Text>
               </Box>
-              <Box mt={8}>
-                <Box p={6} backgroundColor="#F5F5FE;">
+              <form onSubmit={formik.handleSubmit}>
+                <Box mt={8} p={6} backgroundColor="#F5F5FE;">
                   <Text as="h2" fontWeight="700" color="#000091" fontSize="22px" lineHeight="36px">
                     Votre réponse au candidat
                   </Text>
@@ -106,10 +115,14 @@ export const CfaCandidatInformationPage = () => {
                     Le candidat recevra votre réponse directement dans sa boîte mail.
                   </Text>
                   <Textarea
+                    id="vvv"
+                    name="vvv"
                     my="2"
                     borderRadius="4px 4px 0px 0px"
                     height="200px"
                     width="100%"
+                    onChange={formik.handleChange}
+                    value={formik.values.vvv}
                     placeholder={`Bonjour,
 
 Merci pour l'intérêt que vous portez à notre formation. Voici les réponses aux points qui vous intéressent :
@@ -146,7 +159,7 @@ Pour toute demande complémentaire ou pour vous inscrire, vous pouvez contacter 
                     </Link>
                   </Box>
                 </Box>
-              </Box>
+              </form>
             </Box>
           )}
         </>
