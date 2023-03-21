@@ -1,3 +1,10 @@
+## [1.5.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.5.0...v1.5.1) (2023-03-21)
+
+
+### Bug Fixes
+
+* update out of scope contract duration ([#313](https://github.com/mission-apprentissage/labonnealternance/issues/313)) ([e30349c](https://github.com/mission-apprentissage/labonnealternance/commit/e30349c1f4900387bff0b489cd63c2416e12e1bd))
+
 # [1.5.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.4.0...v1.5.0) (2023-03-21)
 
 
