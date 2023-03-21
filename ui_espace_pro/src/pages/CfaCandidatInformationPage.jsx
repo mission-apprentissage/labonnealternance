@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom"
 import { Box, Text, UnorderedList, ListItem, Textarea, Button, Link, FormErrorMessage, FormControl } from "@chakra-ui/react"
 import { FormLayoutComponent } from "./Candidat/layout/FormLayoutComponent"
 import { useFetch } from "../common/hooks/useFetch"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { _patch } from "../common/httpClient"
 import { useFormik } from "formik"
 
@@ -15,6 +15,8 @@ export const CfaCandidatInformationPage = () => {
   const { establishmentId, appointmentId } = useParams()
   const [data, loading] = useFetch(`/api/appointment-request/context/recap?appointmentId=${appointmentId}`)
 
+  const [sendingState, setSendingState] = useState("not_sent")
+
   const utmSource = new URLSearchParams(window.location.search).get("utm_source")
 
   const formik = useFormik({
@@ -22,8 +24,8 @@ export const CfaCandidatInformationPage = () => {
       message: "",
     },
     validationSchema: Yup.object({ message: Yup.string().required("Veuillez remplir le message") }),
-    onSubmit: (values) => {
-      console.log(JSON.stringify(values, null, 2))
+    onSubmit: async (values) => {
+      await submitCandidature({ values, setSendingState })
     },
   })
 
