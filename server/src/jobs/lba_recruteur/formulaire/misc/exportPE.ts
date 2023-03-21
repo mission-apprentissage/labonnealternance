@@ -27,7 +27,7 @@ const getRegion = async (dept) => {
   return data.records[0].fields.reg_id
 }
 
-const formatDate = (date) => dayjs(date).format("JJ/MM/AAAA")
+const formatDate = (date) => dayjs(date).format("DD/MM/YYYY")
 
 const regex = /^(.*) (\d{4,5}) (.*)$/
 
