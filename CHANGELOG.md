@@ -1,3 +1,10 @@
+# [1.5.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.4.0...v1.5.0) (2023-03-21)
+
+
+### Features
+
+* conservation du paramètre displayMap lors de la navigation ([4a7dce8](https://github.com/mission-apprentissage/labonnealternance/commit/4a7dce87062a9af20eddaa55a29e4cac30c6e4a0))
+
 # [1.4.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.3.0...v1.4.0) (2023-03-21)
 
 
