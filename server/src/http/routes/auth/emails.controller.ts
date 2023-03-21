@@ -49,37 +49,38 @@ export default ({ appointments, etablissements, eligibleTrainingsForAppointments
       const messageId = parameters["message-id"]
       const eventDate = dayjs.utc(parameters["date"]).tz("Europe/Paris").toDate()
 
-      const appointment = await appointments.findOne({
-        $or: [
-          {
-            email_premiere_demande_cfa_message_id: messageId,
-          },
-        ],
-      })
+      const [appointment] = await appointments.find({ "to_cfa_mails.message_id": { $regex: messageId } })
 
       // If mail sent from appointment model
       if (appointment) {
-        if (appointment.email_premiere_demande_cfa_message_id === messageId) {
-          await appointments.updateAppointment(appointment._id, {
-            email_premiere_demande_cfa_statut: parameters.event,
-          })
+        const previousEmail = appointment.to_cfa_mails.find((mail) => mail.message_id.includes(messageId))
 
-          // Disable eligibleTrainingsForAppointments in case of hard_bounce
-          if (parameters.event === SendinblueEventStatus.HARD_BOUNCE) {
-            const eligibleTrainingsForAppointmentsWithEmail = await eligibleTrainingsForAppointments.find({ cfa_recipient_email: appointment.cfa_recipient_email })
+        await appointment.update({
+          $push: {
+            to_etablissement_emails: {
+              campaign: previousEmail.campaign,
+              status: parameters.event,
+              message_id: previousEmail.message_id,
+              webhook_status_at: eventDate,
+            },
+          },
+        })
 
-            await Promise.all(
-              eligibleTrainingsForAppointmentsWithEmail.map(async (eligibleTrainingsForAppointment) => {
-                await eligibleTrainingsForAppointment.update({ referrers: [] })
+        // Disable eligibleTrainingsForAppointments in case of hard_bounce
+        if (parameters.event === SendinblueEventStatus.HARD_BOUNCE) {
+          const eligibleTrainingsForAppointmentsWithEmail = await eligibleTrainingsForAppointments.find({ cfa_recipient_email: appointment.cfa_recipient_email })
 
-                logger.info('Widget parameters disabled for "hard_bounce" reason', {
-                  eligibleTrainingsForAppointmentId: eligibleTrainingsForAppointment._id,
-                  cfa_recipient_email: appointment.cfa_recipient_email,
-                })
+          await Promise.all(
+            eligibleTrainingsForAppointmentsWithEmail.map(async (eligibleTrainingsForAppointment) => {
+              await eligibleTrainingsForAppointment.update({ referrers: [] })
+
+              logger.info('Widget parameters disabled for "hard_bounce" reason', {
+                eligibleTrainingsForAppointmentId: eligibleTrainingsForAppointment._id,
+                cfa_recipient_email: appointment.cfa_recipient_email,
               })
-            )
-            await addEmailToBlacklist(appointment.cfa_recipient_email, "rdv-transactional")
-          }
+            })
+          )
+          await addEmailToBlacklist(appointment.cfa_recipient_email, "rdv-transactional")
         }
       }
 
@@ -102,7 +103,7 @@ export default ({ appointments, etablissements, eligibleTrainingsForAppointments
       }
 
       const [appointmentCandidatFound] = await appointments.find({
-        "candidat_mailing.message_id": { $regex: messageId },
+        "to_applicant_mails.message_id": { $regex: messageId },
       })
 
       // If mail sent from appointment (to the candidat)
@@ -121,7 +122,7 @@ export default ({ appointments, etablissements, eligibleTrainingsForAppointments
         })
       }
 
-      const [appointmentCfaFound] = await appointments.find({ "cfa_mailing.message_id": { $regex: messageId } })
+      const [appointmentCfaFound] = await appointments.find({ "to_cfa_mails.message_id": { $regex: messageId } })
 
       // If mail sent from appointment (to the CFA)
       if (appointmentCfaFound && appointmentCfaFound?.to_cfa_mails) {

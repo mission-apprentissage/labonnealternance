@@ -37,9 +37,9 @@ export class AppointmentsController extends Controller {
 
     const eligibleTrainingsForAppointmentsService = EligibleTrainingsForAppointments()
 
-    const { idRcoFormation, idParcoursup, idActionFormation, appointment_origin, idCleMinistereEducatif } = body
+    const { idRcoFormation, idParcoursup, idActionFormation, referrer, idCleMinistereEducatif } = body
 
-    const referrerObj = getReferrerByKeyName(appointment_origin)
+    const referrerObj = getReferrerByKeyName(referrer)
 
     let eligibleTrainingsForAppointment
     if (idCleMinistereEducatif) {
@@ -79,7 +79,7 @@ export class AppointmentsController extends Controller {
 
     const isOpenForAppointments = await eligibleTrainingsForAppointmentsService.findOne({
       cle_ministere_educatif: eligibleTrainingsForAppointment.cle_ministere_educatif,
-      referrers: { $in: [referrerObj.code] },
+      referrers: { $in: [referrerObj.name] },
       lieu_formation_email: { $nin: [null, ""] },
     })
 
@@ -103,7 +103,7 @@ export class AppointmentsController extends Controller {
       localite: eligibleTrainingsForAppointment.city,
       id_rco_formation: eligibleTrainingsForAppointment.rco_formation_id,
       cle_ministere_educatif: eligibleTrainingsForAppointment?.cle_ministere_educatif,
-      form_url: `${config.publicUrlEspacePro}/form?referrer=${appointment_origin}&cleMinistereEducatif=${encodeURIComponent(
+      form_url: `${config.publicUrlEspacePro}/form?referrer=${referrerObj.name.toLowerCase()}&cleMinistereEducatif=${encodeURIComponent(
         eligibleTrainingsForAppointment.cle_ministere_educatif
       )}`,
     }

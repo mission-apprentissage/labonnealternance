@@ -21,8 +21,10 @@ export const cleanAndRenameFields = async ({ appointments, eligibleTrainingsForA
         email_premiere_demande_candidat_message_id: "",
         email_premiere_demande_candidat_statut_date: "",
         champs_libre_status: "",
+        cfa_pris_contact_candidat_date: "",
         email_premiere_demande_cfa_envoye: "",
         date_de_reponse_cfa: "",
+        email_premiere_demande_cfa_message_id: "",
         referrer_link: "",
         cfa_pris_contact_candidat: "",
         email_premiere_demande_candidat_ouvert: "",
@@ -31,6 +33,7 @@ export const cleanAndRenameFields = async ({ appointments, eligibleTrainingsForA
         numero_de_la_demande: "",
         email_premiere_demande_candidat_statut: "",
         last_updated_at: "",
+        champs_libre_commentaire: "",
       },
     }
   )
@@ -43,13 +46,11 @@ export const cleanAndRenameFields = async ({ appointments, eligibleTrainingsForA
       $rename: {
         etablissement_id: "cfa_gestionnaire_siret",
         candidat_id: "applicant_id",
-        cfa_pris_contact_candidat_date: "cfa_callback_intention_date",
         cfa_read_appointment_details_at: "cfa_read_appointment_details_date",
         cfa_mailing: "to_cfa_mails",
         candidat_mailing: "to_applicant_mails",
         referrer: "appointment_origin",
         motivations: "applicant_message_to_cfa",
-        champs_libre_commentaire: "admin_comment",
         email_cfa: "cfa_recipient_email",
         formation_id: "cfa_formateur_siret",
       },

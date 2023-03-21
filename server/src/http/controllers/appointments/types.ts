@@ -21,7 +21,7 @@ type TCreateContextBody = {
   idActionFormation?: string
   idCleMinistereEducatif?: string
   trainingHasJob?: boolean
-  appointment_origin: string
+  referrer: string
 }
 
 export { TCreateContextResponseError, TCreateContextResponse, TCreateContextBody }

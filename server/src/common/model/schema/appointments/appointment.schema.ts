@@ -29,16 +29,6 @@ export const appointmentSchema = new Schema<IAppointments>({
     default: null,
     description: "Le nom du site parent",
   },
-  admin_comment: {
-    type: String,
-    default: null,
-    description: "Champs libre qui sert de notes supplémentaires",
-  },
-  cfa_callback_intention_date: {
-    type: Date,
-    default: null,
-    description: "La date de la première prise de contact du cfa vers le candidat",
-  },
   cfa_read_appointment_details_date: {
     type: Date,
     default: null,
@@ -115,11 +105,6 @@ export const appointmentSchema = new Schema<IAppointments>({
         },
       },
     },
-  },
-  email_premiere_demande_cfa_message_id: {
-    type: String,
-    default: null,
-    description: "Identifiant externe du mail envoyé au CFA",
   },
   rco_formation_id: {
     type: String,

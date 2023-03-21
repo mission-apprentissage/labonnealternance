@@ -16,14 +16,7 @@ const userRequestSchema = Joi.object({
   email: Joi.string().required(),
   applicantMessageToCfa: Joi.string().allow(null, ""),
   cleMinistereEducatif: Joi.string().required(),
-  appointment_origin: Joi.string().required(),
-})
-
-const appointmentItemSchema = Joi.object({
-  appointmentId: Joi.string().required(),
-  cfaAPrisContact: Joi.boolean().optional(),
-  champsLibreStatut: Joi.string().optional().allow(""),
-  champsLibreCommentaires: Joi.string().optional().allow(""),
+  appointmentOrigin: Joi.string().required(),
 })
 
 const appointmentIdFollowUpSchema = Joi.object({
@@ -38,15 +31,15 @@ export default ({ users, appointments, mailer, eligibleTrainingsForAppointments,
     tryCatch(async (req, res) => {
       await userRequestSchema.validateAsync(req.body, { abortEarly: false })
 
-      let { firstname, lastname, phone, email, applicantMessageToCfa, referrer, cleMinistereEducatif } = req.body
+      let { firstname, lastname, phone, email, applicantMessageToCfa, appointmentOrigin, cleMinistereEducatif } = req.body
 
       email = email.toLowerCase()
 
-      const referrerObj = getReferrerByKeyName(referrer)
+      const referrerObj = getReferrerByKeyName(appointmentOrigin)
 
       const eligibleTrainingsForAppointment = await eligibleTrainingsForAppointments.findOne({
         cle_ministere_educatif: cleMinistereEducatif,
-        referrers: { $in: [referrerObj.code] },
+        referrers: { $in: [referrerObj.name] },
       })
 
       if (!eligibleTrainingsForAppointment) {
@@ -87,8 +80,9 @@ export default ({ users, appointments, mailer, eligibleTrainingsForAppointments,
       const [createdAppointement, etablissement] = await Promise.all([
         appointments.createAppointment({
           applicant_id: user._id,
-          cfa_gestionnaire_siret: eligibleTrainingsForAppointment.etablissement_formateur_siret,
-          formation_id: eligibleTrainingsForAppointment.training_code_formation_diplome,
+          cfa_recipient_email: eligibleTrainingsForAppointment.lieu_formation_email,
+          cfa_gestionnaire_siret: eligibleTrainingsForAppointment.etablissement_gestionnaire_siret,
+          cfa_formateur_siret: eligibleTrainingsForAppointment.etablissement_formateur_siret,
           applicant_message_to_cfa: applicantMessageToCfa,
           appointment_origin: referrerObj.name,
           rco_formation_id: eligibleTrainingsForAppointment.rco_formation_id,
@@ -147,26 +141,42 @@ export default ({ users, appointments, mailer, eligibleTrainingsForAppointments,
         }),
       ])
 
-      await appointments.updateAppointment(createdAppointement._id, {
-        email_premiere_demande_cfa_message_id: emailCfa.messageId,
-        cfa_recipient_email: eligibleTrainingsForAppointment.lieu_formation_email,
-      })
+      // Save in database SIB message-id for tracking
+      await Promise.all([
+        await appointments.findOneAndUpdate(
+          { _id: createdAppointement._id },
+          {
+            $push: {
+              to_applicant_mails: {
+                campaign: mailType.CANDIDAT_APPOINTMENT,
+                status: null,
+                message_id: emailCandidat.messageId,
+                email_sent_at: dayjs().toDate(),
+              },
+            },
+          }
+        ),
+        await appointments.findOneAndUpdate(
+          { _id: createdAppointement._id },
+          {
+            $push: {
+              to_cfa_mails: {
+                campaign: mailType.CANDIDAT_APPOINTMENT,
+                status: null,
+                message_id: emailCfa.messageId,
+                email_sent_at: dayjs().toDate(),
+              },
+            },
+          }
+        ),
+      ])
+
+      const appointmentUpdated = await appointments.findById(createdAppointement._id)
 
       res.json({
         userId: user._id,
-        appointment: createdAppointement,
+        appointment: appointmentUpdated,
       })
-    })
-  )
-
-  router.post(
-    "/edit",
-    tryCatch(async (req, res) => {
-      await appointmentItemSchema.validateAsync(req.body, { abortEarly: false })
-      const paramsAppointementItem = req.body
-
-      await appointments.updateAppointment(paramsAppointementItem.appointmentId, paramsAppointementItem)
-      res.json({})
     })
   )
 
@@ -175,33 +185,25 @@ export default ({ users, appointments, mailer, eligibleTrainingsForAppointments,
     tryCatch(async (req, res) => {
       const { appointmentId } = req.query
 
-      const appointment = await appointments.getAppointmentById(appointmentId)
+      const appointment = await appointments.findById(appointmentId)
 
-      let [eligibleTrainingsForAppointment, user] = await Promise.all([
+      const [eligibleTrainingsForAppointment, user] = await Promise.all([
         eligibleTrainingsForAppointments.getParameterByCleMinistereEducatif({
           cleMinistereEducatif: appointment.cle_ministere_educatif,
         }),
         users.getUserById(appointment.candidat_id),
       ])
 
-      // Note: id_rco_formation will be removed soon
-      if (!eligibleTrainingsForAppointment) {
-        eligibleTrainingsForAppointment = await eligibleTrainingsForAppointments.getParameterByIdRcoFormation({
-          rco_formation_id: appointment.rco_formation_id,
-        })
-      }
-
+      console.log("=================================")
+      console.log(JSON.stringify(appointment, null, 2))
+      console.log(JSON.stringify(getReferrerByKeyName(appointment.referrer), null, 2))
       res.json({
         appointment: {
           ...appointment,
-          appointment_origin: getReferrerById(appointment.referrer),
+          appointment_origin_detailed: getReferrerByKeyName(appointment.referrer),
         },
-        user: user._doc,
-        etablissement: {
-          email: eligibleTrainingsForAppointment.lieu_formation_email || "",
-          intitule_long: eligibleTrainingsForAppointment.training_intitule_long,
-          etablissement_formateur_entreprise_raison_sociale: eligibleTrainingsForAppointment.etablissement_formateur_raison_sociale,
-        },
+        user,
+        eligibleTrainingsForAppointment,
       })
     })
   )

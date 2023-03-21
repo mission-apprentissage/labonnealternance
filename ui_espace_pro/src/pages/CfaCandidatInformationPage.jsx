@@ -73,7 +73,7 @@ export const CfaCandidatInformationPage = () => {
               </Box>
               <Text mt={10}>
                 Il ou elle souhaite aborder avec vous le(s) sujet(s) suivant :
-                <br />"{data.appointment.motivations}" <br /> à propos de la formation :{" "}
+                <br />"{data.appointment.applicant_message_to_cfa}" <br /> à propos de la formation :{" "}
                 <Text as="span">
                   <b>{data.etablissement.intitule_long}</b>
                 </Text>

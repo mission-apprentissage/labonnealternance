@@ -3,26 +3,11 @@ import { Appointment } from "../model/index.js"
 export default () => ({
   /**
    * @description Crates an appointment.
-   * @param {String} applicant_id
-   * @param {String} formation_id
-   * @param {String} cfa_gestionnaire_siret
-   * @param {String} formation_id
-   * @param {String} applicant_message_to_cfa
-   * @param {Number} referrer
-   * @param {String} rco_formation_id
-   * @param {String} cle_ministere_educatif
+   * @param {Appointment} params
    * @returns {Promise<Appointment>}
    */
-  createAppointment: async ({ applicant_id, cfa_gestionnaire_siret, formation_id, applicant_message_to_cfa, referrer, rco_formation_id, cle_ministere_educatif }) => {
-    const appointment = new Appointment({
-      applicant_id,
-      applicant_message_to_cfa,
-      cfa_gestionnaire_siret,
-      formation_id,
-      referrer,
-      rco_formation_id,
-      cle_ministere_educatif,
-    })
+  createAppointment: async (params) => {
+    const appointment = new Appointment(params)
     await appointment.save()
 
     return appointment.toObject()

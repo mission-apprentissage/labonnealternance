@@ -108,9 +108,9 @@ export const FormCreatePage = (props) => {
         lastname: values.lastname,
         phone: values.phone,
         email: values.email,
-        motivations: values.motivations,
+        applicantMessageToCfa: values.applicantMessageToCfa,
         cleMinistereEducatif,
-        referrer,
+        appointmentOrigin: referrer,
       })
 
       if (error) {
@@ -175,14 +175,14 @@ export const FormCreatePage = (props) => {
               lastname: "",
               phone: "",
               email: "",
-              motivations: "",
+              applicantMessageToCfa: "",
             }}
             validationSchema={Yup.object().shape({
               firstname: Yup.string().required("Requis"),
               lastname: Yup.string().required("Requis"),
               phone: Yup.number().required("Requis"),
               email: Yup.string().required("Requis"),
-              motivations: Yup.string(),
+              applicantMessageToCfa: Yup.string(),
             })}
             onSubmit={sendNewRequest}
           >
@@ -241,7 +241,7 @@ export const FormCreatePage = (props) => {
                   <Text mt={5} pb={2}>
                     Quel sujet souhaitez-vous aborder ?
                   </Text>
-                  <Field name="motivations">
+                  <Field name="applicantMessageToCfa">
                     {({ field, meta }) => {
                       return <Input placeholder="période d’inscription, horaires, etc." {...field} {...feedback(meta, "Désolée, ce champs est nécessaire")} />
                     }}

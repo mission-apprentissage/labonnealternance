@@ -1,7 +1,7 @@
 import Joi from "joi"
 import { referrers } from "../../../common/model/constants/referrers.js"
 
-const contextCreateSchema = Joi.alternatives().try(
+const contextCreateSchema = Joi.alternatives(
   // Find through "idParcoursup"
   Joi.object().keys({
     idParcoursup: Joi.string().required(),
@@ -9,7 +9,7 @@ const contextCreateSchema = Joi.alternatives().try(
     idActionFormation: Joi.string().allow(""),
     idCleMinistereEducatif: Joi.string().allow(""),
     trainingHasJob: Joi.boolean().allow(""),
-    appointment_origin: Joi.string()
+    referrer: Joi.string()
       .valid(
         referrers.PARCOURSUP.name.toLowerCase(),
         referrers.LBA.name.toLowerCase(),
@@ -27,7 +27,7 @@ const contextCreateSchema = Joi.alternatives().try(
     idParcoursup: Joi.string().allow(""),
     idCleMinistereEducatif: Joi.string().allow(""),
     trainingHasJob: Joi.boolean().allow(""),
-    appointment_origin: Joi.string()
+    referrer: Joi.string()
       .valid(
         referrers.PARCOURSUP.name.toLowerCase(),
         referrers.LBA.name.toLowerCase(),
@@ -45,7 +45,7 @@ const contextCreateSchema = Joi.alternatives().try(
     idParcoursup: Joi.string().allow(""),
     idCleMinistereEducatif: Joi.string().allow(""),
     trainingHasJob: Joi.boolean().allow(""),
-    appointment_origin: Joi.string()
+    referrer: Joi.string()
       .valid(
         referrers.PARCOURSUP.name.toLowerCase(),
         referrers.LBA.name.toLowerCase(),
@@ -63,7 +63,7 @@ const contextCreateSchema = Joi.alternatives().try(
     idActionFormation: Joi.string().allow(""),
     idParcoursup: Joi.string().allow(""),
     trainingHasJob: Joi.boolean().allow(""),
-    appointment_origin: Joi.string()
+    referrer: Joi.string()
       .valid(
         referrers.PARCOURSUP.name.toLowerCase(),
         referrers.LBA.name.toLowerCase(),
