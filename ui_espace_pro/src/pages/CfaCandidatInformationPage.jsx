@@ -1,10 +1,12 @@
+import * as Yup from "yup"
 import { useParams } from "react-router-dom"
-import { Box, Text, UnorderedList, ListItem, Textarea, Button, Link } from "@chakra-ui/react"
+import { Box, Text, UnorderedList, ListItem, Textarea, Button, Link, FormErrorMessage, FormControl } from "@chakra-ui/react"
 import { FormLayoutComponent } from "./Candidat/layout/FormLayoutComponent"
 import { useFetch } from "../common/hooks/useFetch"
 import { useEffect } from "react"
 import { _patch } from "../common/httpClient"
 import { useFormik } from "formik"
+
 /**
  * @description CfaCandidatInformationPage component.
  * @returns {JSX.Element}
@@ -19,6 +21,7 @@ export const CfaCandidatInformationPage = () => {
     initialValues: {
       message: "",
     },
+    validationSchema: Yup.object({ message: Yup.string().required("Veuillez remplir le message") }),
     onSubmit: (values) => {
       console.log(JSON.stringify(values, null, 2))
     },
@@ -114,21 +117,24 @@ export const CfaCandidatInformationPage = () => {
                   <Text fontWeight="400" color="#666666" fontSize="12px" lineHeight="20px" mt="1">
                     Le candidat recevra votre réponse directement dans sa boîte mail.
                   </Text>
-                  <Textarea
-                    id="message"
-                    name="message"
-                    my="2"
-                    borderRadius="4px 4px 0px 0px"
-                    height="200px"
-                    width="100%"
-                    onChange={formik.handleChange}
-                    value={formik.values.message}
-                    placeholder={`Bonjour,
+                  <FormControl isInvalid={formik.touched.message && formik.errors.message}>
+                    <Textarea
+                      id="message"
+                      name="message"
+                      my="2"
+                      borderRadius="4px 4px 0px 0px"
+                      height="200px"
+                      width="100%"
+                      onChange={formik.handleChange}
+                      value={formik.values.message}
+                      placeholder={`Bonjour,
 
-Merci pour l'intérêt que vous portez à notre formation. Voici les réponses aux points qui vous intéressent :
+  Merci pour l'intérêt que vous portez à notre formation. Voici les réponses aux points qui vous intéressent :
 
-Pour toute demande complémentaire ou pour vous inscrire, vous pouvez contacter mon collègue à l'adresse suivante`}
-                  />
+  Pour toute demande complémentaire ou pour vous inscrire, vous pouvez contacter mon collègue à l'adresse suivante`}
+                    />
+                    <FormErrorMessage>{formik.errors.message}</FormErrorMessage>
+                  </FormControl>
                   <Box>
                     <Button
                       ml={1}
