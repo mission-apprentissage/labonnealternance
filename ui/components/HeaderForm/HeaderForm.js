@@ -76,7 +76,7 @@ const HeaderForm = ({ handleSearchSubmit, isHome }) => {
                   hasError={errors.job}
                   initialSelectedItem={contextFormValues?.job || null}
                   itemToStringFunction={autoCompleteToStringFunction}
-                  onSelectedItemChangeFunction={partialRight(updateValuesFromJobAutoComplete, setDiplomas)}
+                  onSelectedItemChangeFunction={updateValuesFromJobAutoComplete}
                   compareItemFunction={compareAutoCompleteValues}
                   onInputValueChangeFunction={jobChanged}
                   isDisabled={widgetParameters?.parameters?.jobName && widgetParameters?.parameters?.romes && widgetParameters?.parameters?.frozenJob}
