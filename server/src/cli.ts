@@ -28,6 +28,7 @@ import { premiumInviteOneShot } from "./jobs/rdv/premiumInviteOneShot.js"
 import { syncEtablissementsAndFormations } from "./jobs/rdv/syncEtablissementsAndFormations.js"
 import { runScript } from "./jobs/scriptWrapper.js"
 import updateSendinblueBlockedEmails from "./jobs/updateSendinblueBlockedEmails/updateSendinblueBlockedEmails.js"
+import { cleanAndRenameFields } from "./jobs/rdv/cleanAndRenameFields.js"
 
 cli.addHelpText("after", null)
 
@@ -210,6 +211,13 @@ cli
   .description("Contrôle l'egibilité d'une formation à la prise de rendez-vous avec le Catalogue des formations")
   .action(() => {
     runScript(() => controlAvailableFormationWithCatalogue())
+  })
+
+cli
+  .command("clean-and-rename-fields-rdv")
+  .description("Renomme les champs des collections sur la prise de rendez-vous")
+  .action(() => {
+    runScript((components) => cleanAndRenameFields(components))
   })
 
 /**
