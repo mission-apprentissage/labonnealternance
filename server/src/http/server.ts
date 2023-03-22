@@ -22,7 +22,6 @@ import adminEtablissementRoute from "./routes/admin/etablissement.controller.js"
 import eligibleTrainingsForAppointmentRoute from "./routes/admin/widgetParameter.controller.js"
 import apiRoute from "./routes/api.controller.js"
 import appointmentRequestRoute from "./routes/appointmentRequest.controller.js"
-import authentified from "./routes/auth/authentified.controller.js"
 import emailsRoute from "./routes/auth/emails.controller.js"
 import login from "./routes/auth/login.controller.js"
 import password from "./routes/auth/password.controller.js"
@@ -197,7 +196,6 @@ export default async (components) => {
    */
   app.use("/api/login", login(components))
   app.use("/api/password", password(components))
-  app.use("/api/authentified", checkJwtToken, authentified())
   app.use("/api/admin", admin())
 
   /**
