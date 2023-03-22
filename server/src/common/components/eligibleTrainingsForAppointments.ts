@@ -85,7 +85,7 @@ export default () => ({
    * @param {String} id
    * @returns {Promise<*>}
    */
-  deleteParameter: (id) => EligibleTrainingsForAppointment.findByIdAndDelete(id),
+  remove: (id) => EligibleTrainingsForAppointment.findByIdAndDelete(id),
 
   /**
    * @description Update many documents (or upsert).
@@ -123,27 +123,4 @@ export default () => ({
    * @returns {Promise<EligibleTrainingsForAppointment>}
    */
   getParameterByCleMinistereEducatif: ({ cleMinistereEducatif }) => EligibleTrainingsForAppointment.findOne({ cle_ministere_educatif: cleMinistereEducatif }),
-
-  /**
-   * @description Returns items from its "id_rco_formation" have referrer item.
-   * @param {String} idRcoFormation
-   * @returns {Promise<EligibleTrainingsForAppointment>}
-   */
-  getParameterByIdRcoFormationWithNotEmptyReferrers: ({ idRcoFormation }) =>
-    EligibleTrainingsForAppointment.findOne({ rco_formation_id: idRcoFormation, referrers: { $not: { $size: 0 } } }),
-
-  /**
-   * @description Checks if widget is enabled or not.
-   * @param {String} idRcoFormation
-   * @param {Number} referrer
-   * @returns {Promise<Boolean>}
-   */
-  isWidgetVisible: async ({ idRcoFormation, referrer }) => {
-    const eligibleTrainingsForAppointment = await EligibleTrainingsForAppointment.findOne({
-      rco_formation_id: idRcoFormation,
-      referrers: { $in: [referrer] },
-    })
-
-    return !!(eligibleTrainingsForAppointment && eligibleTrainingsForAppointment.lieu_formation_email)
-  },
 })

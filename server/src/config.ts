@@ -42,8 +42,8 @@ const config = {
     score50Level: env.get("LBA_LBB_SCORE_50").default(1).asFloatPositive(), //TODO: rename
   },
   smtp: {
-    host: "smtp", //env.get("LBA_SMTP_HOST").default("smtp").asString(),
-    port: "1025", //env.get("LBA_SMTP_PORT").default("1025").asString(),
+    host: env.get("LBA_SMTP_HOST").default("127.0.0.1").asString(),
+    port: env.get("LBA_SMTP_PORT").default("1025").asString(),
     auth: {
       user: env.get("LBA_SMTP_AUTH_USER").default("").asString(),
       pass: env.get("LBA_SMTP_AUTH_PASS").default("").asString(),

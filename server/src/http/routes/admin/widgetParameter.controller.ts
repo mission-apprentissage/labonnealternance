@@ -236,7 +236,7 @@ export default ({ eligibleTrainingsForAppointments, etablissements }) => {
     "/:id",
     tryCatch(async ({ params }, res) => {
       logger.info("Deleting new item: ", params.id)
-      await eligibleTrainingsForAppointments.deleteParameter(params.id)
+      await eligibleTrainingsForAppointments.remove(params.id)
       res.send({ message: `Item ${params.id} deleted !` })
     })
   )
