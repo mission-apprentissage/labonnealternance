@@ -125,7 +125,7 @@ const CandidatureSpontanee = (props) => {
                       <CandidatureSpontaneeNominalBodyFooter formik={formik} sendingState={sendingState} company={props?.item?.company?.name} item={props?.item} kind={kind} />
                     )}
                     {with_str(sendingState).amongst(["ok_sent"]) && <CandidatureSpontaneeWorked kind={kind} email={formik.values.email} company={props?.item?.company?.name} />}
-                    {with_str(sendingState).amongst(["not_sent_because_of_errors", "email temporaire non autorisé", "max candidatures atteint", "Too Many Requests"]) && (
+                    {with_str(sendingState).amongst(["not_sent_because_of_errors", "email temporaire non autorisé", "max candidatures atteint", "Too Many Requests", "Internal Server Error"]) && (
                       <CandidatureSpontaneeFailed sendingState={sendingState} />
                     )}
                   </form>
