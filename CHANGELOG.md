@@ -1,3 +1,10 @@
+## [1.5.2](https://github.com/mission-apprentissage/labonnealternance/compare/v1.5.1...v1.5.2) (2023-03-22)
+
+
+### Bug Fixes
+
+* returned referentiel catched error ([#316](https://github.com/mission-apprentissage/labonnealternance/issues/316)) ([29f455c](https://github.com/mission-apprentissage/labonnealternance/commit/29f455ca2234f84eb6b41ee3ec4dcbaa50a66a13))
+
 ## [1.5.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.5.0...v1.5.1) (2023-03-21)
 
 
