@@ -49,20 +49,12 @@ const scrollToTop = (elementId) => {
 }
 
 const scrollToElementInContainer = (containerId, el, yOffsett, behavior) => {
-<<<<<<< HEAD
   el &&
     document.getElementById(containerId).scrollTo({
       top: el.offsetTop - yOffsett,
       left: 0,
       behavior,
     })
-=======
-  document.getElementById(containerId).scrollTo({
-    top: el.offsetTop - yOffsett,
-    left: 0,
-    behavior,
-  })
->>>>>>> 7869fce2 (Feat: root configuration & prettier project (#45))
 }
 
 const getItemElement = (item) => {
@@ -100,15 +92,8 @@ const getItemElement = (item) => {
 const logError = (title, error) => {
   let err = error instanceof Error ? error : new Error(error)
   err.name = title
-<<<<<<< HEAD
 
   console.log(`Error ${title} sent to Sentry`)
 }
 
-=======
-  //Sentry.captureException(err);
-  console.log(`Error ${title} sent to Sentry`)
-}
-
->>>>>>> 7869fce2 (Feat: root configuration & prettier project (#45))
 export { getPathLink, getCompanyPathLink, getValueFromPath, scrollToTop, scrollToElementInContainer, getItemElement, logError }
