@@ -184,7 +184,9 @@ export const getEtablissementFromReferentiel = async (siret: string): Promise<IR
     return data
   } catch (error) {
     sentryCaptureException(error)
-    throw error
+    if (error.response.status === 404) {
+      return null
+    }
   }
 }
 /**
