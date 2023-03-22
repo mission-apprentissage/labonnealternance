@@ -138,7 +138,12 @@ const CandidatureSpontaneeNominalBodyFooter = ({ formik, sendingState, company, 
             <Link href="/cgu" color="grey.800" textDecoration="underline" target="_blank">
               Conditions générales d&apos;utilisation.
             </Link>{" "}
-            du service La bonne alternance et acceptez le partage de vos informations avec l&apos;établissement {company}
+            du service La bonne alternance et acceptez le partage de vos informations avec l&apos;établissement {company}.
+            Pour plus d'informations sur le traitement de vos données à caractère personnel, veuillez consulter la{" "}
+            <Link href="/politique-de-confidentialite" color="grey.800" textDecoration="underline" target="_blank">
+              Politique de confidentialité
+            </Link>{" "}
+            de La bonne alternance.
           </Text>
         </Box>
       </PostulerBody>
