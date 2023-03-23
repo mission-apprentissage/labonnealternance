@@ -276,7 +276,7 @@ const onLayerClick = (e, layer, selectItemOnMap, unselectItem, unselectMapPopupI
     })
 
     unselectItem()
-    scrollToElementInContainer("resultList", getItemElement(item), 150, "smooth")
+    scrollToElementInContainer("resultList", getItemElement(item), 210, "smooth")
     setSelectedMarker(item)
   }
 }
