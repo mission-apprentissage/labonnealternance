@@ -39,7 +39,7 @@ export default ({ users, appointments, mailer, eligibleTrainingsForAppointments,
 
       const eligibleTrainingsForAppointment = await eligibleTrainingsForAppointments.findOne({
         cle_ministere_educatif: cleMinistereEducatif,
-        referrers: { $in: [referrerObj.name] },
+        referrers: { $in: [referrerObj.code] },
       })
 
       if (!eligibleTrainingsForAppointment) {
