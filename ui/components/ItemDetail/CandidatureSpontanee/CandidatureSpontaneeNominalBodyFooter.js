@@ -146,7 +146,7 @@ const CandidatureSpontaneeNominalBodyFooter = ({ formik, sendingState, company, 
             de La bonne alternance.
           </Text>
           <Text mb={2} fontSize="14px" color="grey.600">
-          * Champs obligatoires
+            * Champs obligatoires
           </Text>
         </Box>
       </PostulerBody>
