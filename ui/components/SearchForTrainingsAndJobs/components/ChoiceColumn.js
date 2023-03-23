@@ -51,7 +51,7 @@ const ChoiceColumn = ({
       const itemElement = getItemElement(itemToScrollTo)
 
       if (itemElement) {
-        scrollToElementInContainer("resultList", itemElement, 210, "auto")
+        scrollToElementInContainer({containerId:"resultList", el:itemElement})
         setItemToScrollTo(null)
       }
     }
@@ -108,7 +108,7 @@ const ChoiceColumn = ({
     searchOnNewCenter(newCenter, null, "jobs")
     showAllResults()
     setTimeout(() => {
-      scrollToElementInContainer("resultList", document.getElementById("jobList"), 210, "auto")
+      scrollToElementInContainer({containerId:"resultList", el:document.getElementById("jobList")})
     }, 800)
   }
 
