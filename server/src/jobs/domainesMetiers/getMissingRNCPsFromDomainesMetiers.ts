@@ -8,7 +8,7 @@ import __dirname from "../../common/dirname.js"
 import { getElasticInstance } from "../../common/esClient/index.js"
 import { logger } from "../../common/logger.js"
 import { DomainesMetiers } from "../../common/model/index.js"
-import { getFileFromS3 } from "../../common/utils/awsUtils.js"
+import { getFileFromS3Bucket } from "../../common/utils/awsUtils.js"
 import { readXLSXFile } from "../../common/utils/fileUtils.js"
 import { sentryCaptureException } from "../../common/utils/sentryUtils.js"
 import config from "../../config.js"
@@ -131,7 +131,7 @@ const searchForMissingRNCPsInOtherDomains = (missingRNCPs) => {
 const downloadAndSaveFile = (optionalFileName) => {
   logger.info(`Downloading and save file ${optionalFileName ? optionalFileName : "currentDomainesMetiers.xlsx"} from S3 Bucket...`)
   return oleoduc(
-    getFileFromS3(`mna-services/features/domainesMetiers/${optionalFileName ? optionalFileName : "currentDomainesMetiers.xlsx"}`),
+    getFileFromS3Bucket(`mna-services/features/domainesMetiers/${optionalFileName ? optionalFileName : "currentDomainesMetiers.xlsx"}`),
     fs.createWriteStream(FILEPATH_DOMAINES_METIERS)
   )
 }
