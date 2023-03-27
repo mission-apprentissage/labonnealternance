@@ -197,6 +197,7 @@ export default ({ users, appointments, mailer, widgetParameters, etablissements 
             logo: `${config.publicUrlEspacePro}/assets/logo-lba-cfa-candidat.png`,
             prenom: user.firstname,
             nom: user.lastname,
+            message: paramsAppointementItem.email_reponse_cfa_body,
           },
         }),
       ])
