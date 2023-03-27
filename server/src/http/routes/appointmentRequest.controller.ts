@@ -200,7 +200,7 @@ export default ({ users, appointments, mailer, eligibleTrainingsForAppointments,
           appointment_origin_detailed: getReferrerByKeyName(appointment.appointment_origin),
         },
         user,
-        eligibleTrainingsForAppointment,
+        etablissement: { ...eligibleTrainingsForAppointment },
       })
     })
   )
