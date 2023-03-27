@@ -8,6 +8,7 @@ import { _patch } from "../../common/httpClient"
 import { useFormik } from "formik"
 import { CfaCandidatInformationForm } from "./CfaCandidatInformationForm"
 import { CfaCandidatInformationAnswered } from "./CfaCandidatInformationAnswered"
+import { CfaCandidatInformationOther } from "./CfaCandidatInformationOther"
 
 /**
  * @description CfaCandidatInformationPage component.
@@ -113,8 +114,9 @@ export const CfaCandidatInformationPage = () => {
                   dispensée par : <strong>{data.etablissement.etablissement_formateur_entreprise_raison_sociale}</strong>
                 </Text>
               </Box>
-              {currentState === "initial" ? <CfaCandidatInformationForm formik={formik} /> : <></>}
+              {currentState === "initial" ? <CfaCandidatInformationForm formik={formik} setCurrentState={setCurrentState} /> : <></>}
               {currentState === "answered" ? <CfaCandidatInformationAnswered msg={formik.values.message} /> : <></>}
+              {currentState === "other" ? <CfaCandidatInformationOther /> : <></>}
             </Box>
           )}
         </>

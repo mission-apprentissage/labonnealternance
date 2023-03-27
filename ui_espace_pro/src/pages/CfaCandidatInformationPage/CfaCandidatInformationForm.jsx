@@ -6,6 +6,13 @@ import { Box, Text, Textarea, Button, Link, FormErrorMessage, FormControl } from
  */
 export const CfaCandidatInformationForm = (props) => {
   const formik = props.formik
+  const setCurrentState = props.setCurrentState
+
+  const otherClicked = () => {
+    console.log("clicked!!!")
+    setCurrentState("other")
+  }
+
   return (
     <form onSubmit={formik.handleSubmit}>
       <Box mt={8} p={6} backgroundColor="#F5F5FE;">
@@ -57,9 +64,9 @@ export const CfaCandidatInformationForm = (props) => {
           </Button>
         </Box>
         <Box mt={6}>
-          <Link to="" fontWeight="500" color="bluefrance.500" fontSize="16px" lineHeight="24px">
+          <Button onClick={otherClicked} fontWeight="500" color="bluefrance.500" fontSize="16px" lineHeight="24px" p="0" bg="none">
             J'ai répondu au candidat par un autre canal (mail ou téléphone)
-          </Link>
+          </Button>
         </Box>
         <Box mt={2}>
           <Link to="" fontWeight="500" color="bluefrance.500" fontSize="16px" lineHeight="24px">
