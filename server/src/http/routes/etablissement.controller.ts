@@ -238,8 +238,6 @@ export default ({ etablissements, mailer, eligibleTrainingsForAppointments, appo
 
       let [etablissement, appointment] = await Promise.all([etablissements.findById(id), appointments.findById(appointmentId)])
 
-      console.log({ etablissement, appointment })
-
       if (!etablissement) {
         throw Boom.badRequest("Etablissement not found.")
       }
