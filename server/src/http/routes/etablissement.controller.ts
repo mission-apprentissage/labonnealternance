@@ -244,7 +244,7 @@ export default ({ etablissements, mailer, eligibleTrainingsForAppointments, appo
         throw Boom.badRequest("Etablissement not found.")
       }
 
-      if (!appointment || appointment.etablissement_id !== etablissement.formateur_siret) {
+      if (!appointment || appointment.cfa_formateur_siret !== etablissement.formateur_siret) {
         throw Boom.badRequest("Appointment not found.")
       }
 
