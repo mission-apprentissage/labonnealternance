@@ -1,10 +1,10 @@
 import { Box, Text, Textarea, Button, Link, FormErrorMessage, FormControl } from "@chakra-ui/react"
 
 /**
- * @description CfaCandidatInformationPageForm component.
+ * @description CfaCandidatInformationForm component.
  * @returns {JSX.Element}
  */
-export const CfaCandidatInformationPageForm = (props) => {
+export const CfaCandidatInformationForm = (props) => {
   const formik = props.formik
   return (
     <form onSubmit={formik.handleSubmit}>
