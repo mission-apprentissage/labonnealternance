@@ -2,6 +2,8 @@ import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 import { NBR_EXPIRATION_J7 } from "../contants"
 
+export const formatDate = (date) => dayjs(date).format("YYYY-MM-DD")
+
 export const getCurrentDate = (separator = "/") => {
   let newDate = new Date()
   let date = newDate.getDate()

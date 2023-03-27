@@ -4,12 +4,13 @@ import { Box, Text, UnorderedList, ListItem } from "@chakra-ui/react"
 import { FormLayoutComponent } from "../Candidat/layout/FormLayoutComponent"
 import { useFetch } from "../../common/hooks/useFetch"
 import { useEffect, useState } from "react"
-import { _patch } from "../../common/httpClient"
+import { _patch, _post } from "../../common/httpClient"
 import { useFormik } from "formik"
 import { CfaCandidatInformationForm } from "./CfaCandidatInformationForm"
 import { CfaCandidatInformationAnswered } from "./CfaCandidatInformationAnswered"
 import { CfaCandidatInformationOther } from "./CfaCandidatInformationOther"
 import { CfaCandidatInformationUnreachable } from "./CfaCandidatInformationUnreachable"
+import { formatDate } from "../../common/utils/dateUtils"
 
 /**
  * @description CfaCandidatInformationPage component.
@@ -30,9 +31,11 @@ export const CfaCandidatInformationPage = () => {
     validationSchema: Yup.object({ message: Yup.string().required("Veuillez remplir le message") }),
     onSubmit: async (values) => {
       setCurrentState("answered")
-      console.log("submit")
-      console.log(values)
-      console.log(formik)
+      await _post("/api/appointment-request/reply", {
+        appointmentId: appointmentId,
+        email_reponse_cfa_body: values.message,
+        email_reponse_cfa_date: formatDate(new Date()),
+      })
     },
   })
 

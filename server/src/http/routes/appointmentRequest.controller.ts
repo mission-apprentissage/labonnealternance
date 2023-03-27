@@ -26,6 +26,12 @@ const appointmentItemSchema = Joi.object({
   champsLibreCommentaires: Joi.string().optional().allow(""),
 })
 
+const appointmentReplySchema = Joi.object({
+  appointmentId: Joi.string().required(),
+  email_reponse_cfa_date: Joi.date().required(),
+  email_reponse_cfa_body: Joi.string().required(),
+})
+
 const appointmentIdFollowUpSchema = Joi.object({
   action: Joi.string().valid(candidatFollowUpType.CONFIRM, candidatFollowUpType.RESEND).required(),
 })
@@ -170,6 +176,18 @@ export default ({ users, appointments, mailer, widgetParameters, etablissements 
 
       await appointments.updateAppointment(paramsAppointementItem.appointmentId, paramsAppointementItem)
       res.json({})
+    })
+  )
+
+  router.post(
+    "/reply",
+    tryCatch(async (req, res) => {
+      console.log('------------------------------------------------------req.body', req.body);
+      await appointmentReplySchema.validateAsync(req.body, { abortEarly: false })
+      const paramsAppointementItem = req.body
+
+      // await appointments.updateAppointment(paramsAppointementItem.appointmentId, paramsAppointementItem)
+      res.json({ paramsAppointementItem: paramsAppointementItem })
     })
   )
 

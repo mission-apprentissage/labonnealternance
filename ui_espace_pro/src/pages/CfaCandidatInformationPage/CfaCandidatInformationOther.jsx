@@ -1,7 +1,5 @@
 import { Box, Text } from "@chakra-ui/react"
 
-import { getCurrentDate, getCurrentHourMinute } from "../../common/utils/dateUtils"
-
 /**
  * @description CfaCandidatInformationOther component.
  * @returns {JSX.Element}
