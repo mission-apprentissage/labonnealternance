@@ -75,12 +75,12 @@ export const CfaCandidatInformationPage = () => {
                 Il ou elle souhaite aborder avec vous le(s) sujet(s) suivant :
                 <br />"{data.appointment.applicant_message_to_cfa}" <br /> à propos de la formation :{" "}
                 <Text as="span">
-                  <b>{data.etablissement.intitule_long}</b>
+                  <b>{data.etablissement.training_intitule_long}</b>
                 </Text>
                 <br />
                 dispensée par :{" "}
                 <Text as="span">
-                  <b>{data.etablissement.etablissement_formateur_entreprise_raison_sociale}</b>
+                  <b>{data.etablissement.etablissement_formateur_raison_sociale}</b>
                 </Text>
               </Text>
             </Box>
