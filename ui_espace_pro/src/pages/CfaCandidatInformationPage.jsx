@@ -25,7 +25,7 @@ export const CfaCandidatInformationPage = () => {
     },
     validationSchema: Yup.object({ message: Yup.string().required("Veuillez remplir le message") }),
     onSubmit: async (values) => {
-      await submitCandidature({ values, setSendingState })
+      console.log("submit")
     },
   })
 
