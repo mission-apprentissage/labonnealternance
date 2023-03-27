@@ -29,6 +29,8 @@ export const CfaCandidatInformationPage = () => {
     onSubmit: async (values) => {
       setCurrentState("answered")
       console.log("submit")
+      console.log(values)
+      console.log(formik)
     },
   })
 
@@ -112,7 +114,7 @@ export const CfaCandidatInformationPage = () => {
                 </Text>
               </Box>
               {currentState === "initial" ? <CfaCandidatInformationForm formik={formik} /> : <></>}
-              {currentState === "answered" ? <CfaCandidatInformationAnswered /> : <></>}
+              {currentState === "answered" ? <CfaCandidatInformationAnswered vv={formik.values} msg={formik.values.message} /> : <></>}
             </Box>
           )}
         </>
