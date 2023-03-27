@@ -188,19 +188,21 @@ export default ({ users, appointments, mailer, widgetParameters, etablissements 
       const appointment = await appointments.getAppointmentById(paramsAppointementItem.appointmentId)
       const user = await users.getUserById(appointment.candidat_id)
 
-      const [emailCandidat] = await Promise.all([
-        mailer.sendEmail({
-          to: user.email,
-          subject: `[La bonne alternance] Le centre de formation vous répond`,
-          template: mailTemplate["mail-reponse-cfa"],
-          data: {
-            logo: `${config.publicUrlEspacePro}/assets/logo-lba-cfa-candidat.png`,
-            prenom: user.firstname,
-            nom: user.lastname,
-            message: paramsAppointementItem.email_reponse_cfa_body,
-          },
-        }),
-      ])
+      const widgetParameter = await widgetParameters.findOne({ id_rco_formation: appointment.id_rco_formation })
+
+      await mailer.sendEmail({
+        to: user.email,
+        subject: `[La bonne alternance] Le centre de formation vous répond`,
+        template: mailTemplate["mail-reponse-cfa"],
+        data: {
+          logo: `${config.publicUrlEspacePro}/assets/logo-lba-cfa-candidat.png`,
+          prenom: user.firstname,
+          nom: user.lastname,
+          message: paramsAppointementItem.email_reponse_cfa_body,
+          nom_formation: widgetParameter.formation_intitule,
+          nom_cfa: widgetParameter.etablissement_raison_sociale,
+        },
+      })
       await appointments.updateAppointment(paramsAppointementItem.appointmentId, paramsAppointementItem)
       res.json({ paramsAppointementItem: paramsAppointementItem })
     })

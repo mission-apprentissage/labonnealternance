@@ -24,7 +24,7 @@
                         Bonjour <%= data.prenom %> <%= data.nom %>,
                     </mj-text>
                     <mj-text font-size="16px" line-height="24px">
-                        Voici la réponse du centre de formation <strong>{nom de CFA}</strong> à propos de la formation <strong>{nom de la formation}</strong> :
+                        Voici la réponse du centre de formation <strong><%= data.nom_cfa %></strong> à propos de la formation <strong><%= data.nom_formation %></strong> :
                     </mj-text>
                     <mj-section padding="10px" margin="10px" background-color="#F6F6F6">
                         <mj-column>
@@ -54,5 +54,14 @@
                 </mj-column>
             </mj-section>
         </mj-wrapper>
+
+        <mj-section>
+            <mj-column>
+                <mj-image
+                    src="https://labonnealternance.apprentissage.beta.gouv.fr/espace-pro/images/logo-republique-francaise.png"
+                    width="200px" align="left"></mj-image>
+            </mj-column>
+        </mj-section>
+
     </mj-body>
 </mjml>
