@@ -182,11 +182,11 @@ export default ({ users, appointments, mailer, widgetParameters, etablissements 
   router.post(
     "/reply",
     tryCatch(async (req, res) => {
-      console.log('------------------------------------------------------req.body', req.body);
+      console.log("------------------------------------------------------req.body", req.body)
       await appointmentReplySchema.validateAsync(req.body, { abortEarly: false })
       const paramsAppointementItem = req.body
 
-      // await appointments.updateAppointment(paramsAppointementItem.appointmentId, paramsAppointementItem)
+      await appointments.updateAppointment(paramsAppointementItem.appointmentId, paramsAppointementItem)
       res.json({ paramsAppointementItem: paramsAppointementItem })
     })
   )
