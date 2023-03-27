@@ -182,10 +182,22 @@ export default ({ users, appointments, mailer, widgetParameters, etablissements 
   router.post(
     "/reply",
     tryCatch(async (req, res) => {
-      console.log("------------------------------------------------------req.body", req.body)
       await appointmentReplySchema.validateAsync(req.body, { abortEarly: false })
       const paramsAppointementItem = req.body
 
+      const appointment = await appointments.getAppointmentById(paramsAppointementItem.appointmentId)
+      const user = await users.getUserById(appointment.candidat_id)
+
+      const [emailCandidat] = await Promise.all([
+        mailer.sendEmail({
+          to: user.email,
+          subject: `[La bonne alternance] Le centre de formation vous répond`,
+          template: mailTemplate["mail-candidat-confirmation-rdv"],
+          data: {},
+        }),
+      ])
+      console.log("emailCandidat--------------------------------------")
+      console.log(emailCandidat)
       await appointments.updateAppointment(paramsAppointementItem.appointmentId, paramsAppointementItem)
       res.json({ paramsAppointementItem: paramsAppointementItem })
     })
