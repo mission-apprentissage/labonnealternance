@@ -122,5 +122,5 @@ export default () => ({
    * @param {String} cleMinistereEducatif
    * @returns {Promise<EligibleTrainingsForAppointment>}
    */
-  getParameterByCleMinistereEducatif: ({ cleMinistereEducatif }) => EligibleTrainingsForAppointment.findOne({ cle_ministere_educatif: cleMinistereEducatif }),
+  getParameterByCleMinistereEducatif: ({ cleMinistereEducatif }) => EligibleTrainingsForAppointment.findOne({ cle_ministere_educatif: cleMinistereEducatif }).lean(),
 })
