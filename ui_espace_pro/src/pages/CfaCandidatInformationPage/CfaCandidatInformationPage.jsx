@@ -30,12 +30,13 @@ export const CfaCandidatInformationPage = () => {
     },
     validationSchema: Yup.object({ message: Yup.string().required("Veuillez remplir le message") }),
     onSubmit: async (values) => {
-      setCurrentState("answered")
+      setCurrentState("sending")
       await _post("/api/appointment-request/reply", {
         appointmentId: appointmentId,
         email_reponse_cfa_body: values.message,
         email_reponse_cfa_date: formatDate(new Date()),
       })
+      setCurrentState("answered")
     },
   })
 
@@ -119,6 +120,7 @@ export const CfaCandidatInformationPage = () => {
                 </Text>
               </Box>
               {currentState === "initial" ? <CfaCandidatInformationForm formik={formik} setCurrentState={setCurrentState} /> : <></>}
+              {currentState === "sending" ? <div>Envoi en cours...</div> : <></>}
               {currentState === "answered" ? <CfaCandidatInformationAnswered msg={formik.values.message} /> : <></>}
               {currentState === "other" ? <CfaCandidatInformationOther /> : <></>}
               {currentState === "unreachable" ? <CfaCandidatInformationUnreachable /> : <></>}
