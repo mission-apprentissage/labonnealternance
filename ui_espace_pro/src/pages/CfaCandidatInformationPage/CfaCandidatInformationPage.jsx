@@ -1,10 +1,10 @@
 import * as Yup from "yup"
 import { useParams } from "react-router-dom"
 import { Box, Text, UnorderedList, ListItem, Textarea, Button, Link, FormErrorMessage, FormControl } from "@chakra-ui/react"
-import { FormLayoutComponent } from "./Candidat/layout/FormLayoutComponent"
-import { useFetch } from "../common/hooks/useFetch"
+import { FormLayoutComponent } from "../Candidat/layout/FormLayoutComponent"
+import { useFetch } from "../../common/hooks/useFetch"
 import { useEffect, useState } from "react"
-import { _patch } from "../common/httpClient"
+import { _patch } from "../../common/httpClient"
 import { useFormik } from "formik"
 
 /**

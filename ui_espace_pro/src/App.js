@@ -37,7 +37,7 @@ import {
 } from "./pages/Authentification"
 import { FormCreatePage } from "./pages/Candidat/FormCreatePage"
 import { FormRecapPage } from "./pages/Candidat/FormRecapPage"
-import { CfaCandidatInformationPage } from "./pages/CfaCandidatInformationPage"
+import { CfaCandidatInformationPage } from "./pages/CfaCandidatInformationPage/CfaCandidatInformationPage"
 import { DepotRapide_AjouterVoeux, DepotRapide_AjouterVoeuxMiseEnRelation, DepotRapide_Fin } from "./pages/Formulaire"
 import Layout2 from "./pages/Layout"
 import LoginPage from "./pages/LoginPage"
