@@ -9,6 +9,7 @@ import { useFormik } from "formik"
 import { CfaCandidatInformationForm } from "./CfaCandidatInformationForm"
 import { CfaCandidatInformationAnswered } from "./CfaCandidatInformationAnswered"
 import { CfaCandidatInformationOther } from "./CfaCandidatInformationOther"
+import { CfaCandidatInformationUnreachable } from "./CfaCandidatInformationUnreachable"
 
 /**
  * @description CfaCandidatInformationPage component.
@@ -117,6 +118,7 @@ export const CfaCandidatInformationPage = () => {
               {currentState === "initial" ? <CfaCandidatInformationForm formik={formik} setCurrentState={setCurrentState} /> : <></>}
               {currentState === "answered" ? <CfaCandidatInformationAnswered msg={formik.values.message} /> : <></>}
               {currentState === "other" ? <CfaCandidatInformationOther /> : <></>}
+              {currentState === "unreachable" ? <CfaCandidatInformationUnreachable /> : <></>}
             </Box>
           )}
         </>

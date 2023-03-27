@@ -1,4 +1,4 @@
-import { Box, Text, Textarea, Button, Link, FormErrorMessage, FormControl } from "@chakra-ui/react"
+import { Box, Text, Textarea, Button, FormErrorMessage, FormControl } from "@chakra-ui/react"
 
 /**
  * @description CfaCandidatInformationForm component.
@@ -9,8 +9,10 @@ export const CfaCandidatInformationForm = (props) => {
   const setCurrentState = props.setCurrentState
 
   const otherClicked = () => {
-    console.log("clicked!!!")
     setCurrentState("other")
+  }
+  const unreachableClicked = () => {
+    setCurrentState("unreachable")
   }
 
   return (
@@ -69,9 +71,9 @@ export const CfaCandidatInformationForm = (props) => {
           </Button>
         </Box>
         <Box mt={2}>
-          <Link to="" fontWeight="500" color="bluefrance.500" fontSize="16px" lineHeight="24px">
+          <Button onClick={unreachableClicked} fontWeight="500" color="bluefrance.500" fontSize="16px" lineHeight="24px" p="0" bg="none">
             Le candidat n'est pas joignable
-          </Link>
+          </Button>
         </Box>
       </Box>
     </form>
