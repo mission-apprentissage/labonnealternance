@@ -13,6 +13,8 @@ export const CfaCandidatInformationPage = () => {
   const { establishmentId, appointmentId } = useParams()
   const [data, loading] = useFetch(`/api/appointment-request/context/recap?appointmentId=${appointmentId}`)
 
+  console.log(data)
+
   const utmSource = new URLSearchParams(window.location.search).get("utm_source")
 
   /**
