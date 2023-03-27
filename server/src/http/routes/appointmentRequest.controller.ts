@@ -130,7 +130,7 @@ export default ({ users, appointments, mailer, widgetParameters, etablissements 
           link: `${config.publicUrlEspacePro}/establishment/${etablissement._id}/appointments/${createdAppointement._id}?utm_source=mail`,
         },
         images: {
-          logoLbaCfaCandidat: `${config.publicUrlEspacePro}/assets/logo-lba-cfa-candidat.png?raw=true`,
+          logoCandidat: `${config.publicUrlEspacePro}/assets/logo-lba-recruteur-candidat.png?raw=true`,
           logoCfa: `${config.publicUrlEspacePro}/assets/logo-lba-recruteur-cfa.png?raw=true`,
           logoFooter: `${config.publicUrlEspacePro}/assets/logo-republique-francaise.png?raw=true`,
           peopleLaptop: `${config.publicUrlEspacePro}/assets/people-laptop.png?raw=true`,
