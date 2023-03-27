@@ -1,29 +1,12 @@
-import { Box, Text, Textarea, Button, Link, FormErrorMessage, FormControl } from "@chakra-ui/react"
+import { Box, Text } from "@chakra-ui/react"
+
+import { getCurrentDate, getCurrentHourMinute } from "../../common/utils/dateUtils"
 
 /**
  * @description CfaCandidatInformationAnswered component.
  * @returns {JSX.Element}
  */
 export const CfaCandidatInformationAnswered = (props) => {
-  console.log("")
-  console.log("---------------props")
-  console.log(props)
-
-  function getCurrentDate(separator = "/") {
-    let newDate = new Date()
-    let date = newDate.getDate()
-    let month = newDate.getMonth() + 1
-    let year = newDate.getFullYear()
-    return `${year}${separator}${month < 10 ? `0${month}` : `${month}`}${separator}${date}`
-  }
-
-  function getCurrentHourMinute(separator = "h") {
-    let newDate = new Date()
-    let minutes = newDate.getMinutes()
-    let hour = newDate.getHours()
-    return `${hour}${separator}${minutes < 10 ? `0${minutes}` : `${minutes}`}`
-  }
-
   return (
     <>
       <Box mt={8} p={6} backgroundColor="#F5F5FE;">
