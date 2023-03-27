@@ -114,7 +114,7 @@ export const CfaCandidatInformationPage = () => {
                 </Text>
               </Box>
               {currentState === "initial" ? <CfaCandidatInformationForm formik={formik} /> : <></>}
-              {currentState === "answered" ? <CfaCandidatInformationAnswered vv={formik.values} msg={formik.values.message} /> : <></>}
+              {currentState === "answered" ? <CfaCandidatInformationAnswered msg={formik.values.message} /> : <></>}
             </Box>
           )}
         </>
