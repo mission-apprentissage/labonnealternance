@@ -130,7 +130,7 @@ export default ({ users, appointments, mailer, widgetParameters, etablissements 
           link: `${config.publicUrlEspacePro}/establishment/${etablissement._id}/appointments/${createdAppointement._id}?utm_source=mail`,
         },
         images: {
-          logoCandidat: `${config.publicUrlEspacePro}/assets/logo-lba-recruteur-candidat.png?raw=true`,
+          logoLbaCfaCandidat: `${config.publicUrlEspacePro}/assets/logo-lba-cfa-candidat.png?raw=true`,
           logoCfa: `${config.publicUrlEspacePro}/assets/logo-lba-recruteur-cfa.png?raw=true`,
           logoFooter: `${config.publicUrlEspacePro}/assets/logo-republique-francaise.png?raw=true`,
           peopleLaptop: `${config.publicUrlEspacePro}/assets/people-laptop.png?raw=true`,
@@ -194,13 +194,12 @@ export default ({ users, appointments, mailer, widgetParameters, etablissements 
           subject: `[La bonne alternance] Le centre de formation vous répond`,
           template: mailTemplate["mail-reponse-cfa"],
           data: {
-            prenom: user.prenom,
-            nom: user.nom,
+            logo: `${config.publicUrlEspacePro}/assets/logo-lba-cfa-candidat.png`,
+            prenom: user.firstname,
+            nom: user.lastname,
           },
         }),
       ])
-      console.log("emailCandidat--------------------------------------")
-      console.log(emailCandidat)
       await appointments.updateAppointment(paramsAppointementItem.appointmentId, paramsAppointementItem)
       res.json({ paramsAppointementItem: paramsAppointementItem })
     })

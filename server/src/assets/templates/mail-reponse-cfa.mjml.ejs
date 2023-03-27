@@ -10,11 +10,21 @@
             <mj-button font-size="16px" line-height="24px" padding="8px 24px" font-family="Arial" height="40px" />
         </mj-attributes>
     </mj-head>
-    <mj-body background-color="#E5E5E5">
-        <mj-section padding-top="0">
-            <mj-column width="600px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 10px">
-                <mj-text> Bonjour <%= data.prenom %> <%= data.nom %>, </mj-text>
+    <mj-body background-color="#EDF0F2">
+        <mj-section padding-bottom="10px">
+            <mj-column padding="0px" vertical-align="middle">
+                <mj-image padding="0px" width="150px" src="<%= data.logo %>"
+                    alt="Logo du site La bonne alternance" />
             </mj-column>
         </mj-section>
+        <mj-wrapper background-color="#ffffff" padding="0px" border-radius="10px">
+            <mj-section padding="15px">
+                <mj-column>
+                    <mj-text padding="0px" font-size="16px" line-height="20px">
+                        Bonjour <%= data.prenom %> <%= data.nom %>
+                    </mj-text>
+                </mj-column>
+            </mj-section>
+        </mj-wrapper>
     </mj-body>
 </mjml>
