@@ -188,17 +188,19 @@ export default ({ users, appointments, mailer, widgetParameters, etablissements 
       const appointment = await appointments.getAppointmentById(paramsAppointementItem.appointmentId)
       const user = await users.getUserById(appointment.candidat_id)
 
-      console.log("emailCandidat--------------------------------------")
-      console.log(emailCandidat)
-      
       const [emailCandidat] = await Promise.all([
         mailer.sendEmail({
           to: user.email,
           subject: `[La bonne alternance] Le centre de formation vous répond`,
           template: mailTemplate["mail-reponse-cfa"],
-          data: {},
+          data: {
+            prenom: user.prenom,
+            nom: user.nom,
+          },
         }),
       ])
+      console.log("emailCandidat--------------------------------------")
+      console.log(emailCandidat)
       await appointments.updateAppointment(paramsAppointementItem.appointmentId, paramsAppointementItem)
       res.json({ paramsAppointementItem: paramsAppointementItem })
     })
