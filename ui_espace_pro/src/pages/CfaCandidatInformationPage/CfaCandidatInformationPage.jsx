@@ -7,6 +7,7 @@ import { useEffect, useState } from "react"
 import { _patch } from "../../common/httpClient"
 import { useFormik } from "formik"
 import { CfaCandidatInformationForm } from "./CfaCandidatInformationForm"
+import { CfaCandidatInformationAnswered } from "./CfaCandidatInformationAnswered"
 
 /**
  * @description CfaCandidatInformationPage component.
@@ -16,7 +17,7 @@ export const CfaCandidatInformationPage = () => {
   const { establishmentId, appointmentId } = useParams()
   const [data, loading] = useFetch(`/api/appointment-request/context/recap?appointmentId=${appointmentId}`)
 
-  const [sendingState, setSendingState] = useState("not_sent")
+  const [currentState, setCurrentState] = useState("initial")
 
   const utmSource = new URLSearchParams(window.location.search).get("utm_source")
 
@@ -26,6 +27,7 @@ export const CfaCandidatInformationPage = () => {
     },
     validationSchema: Yup.object({ message: Yup.string().required("Veuillez remplir le message") }),
     onSubmit: async (values) => {
+      setCurrentState("answered")
       console.log("submit")
     },
   })
@@ -109,7 +111,8 @@ export const CfaCandidatInformationPage = () => {
                   dispensée par : <strong>{data.etablissement.etablissement_formateur_entreprise_raison_sociale}</strong>
                 </Text>
               </Box>
-              <CfaCandidatInformationForm formik={formik} />
+              {currentState === "initial" ? <CfaCandidatInformationForm formik={formik} /> : <></>}
+              {currentState === "answered" ? <CfaCandidatInformationAnswered /> : <></>}
             </Box>
           )}
         </>
