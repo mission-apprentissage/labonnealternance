@@ -1,4 +1,4 @@
-import { Grid, GridItem, Box, Flex, Image, Link } from "@chakra-ui/react"
+import { Grid, GridItem, Box, Flex, Image, Link, Text } from "@chakra-ui/react"
 
 export const FormCreatePageFooter = (props) => {
   return (
@@ -15,8 +15,12 @@ export const FormCreatePageFooter = (props) => {
           </GridItem>
           <GridItem colSpan={{ base: 1, lg: 2 }}>
             <Box pl={{ base: 0, lg: 4 }} mt={{ base: 8, lg: 0 }}>
-              <Box fontSize="14px" color="grey.800">
-                La bonne alternance. Trouvez votre alternance.
+              <Box fontSize="12px" color="#161616">
+                <Text as="strong">Le service de prise de rendez-vous</Text> proposé par{" "}
+                <Link href="https://labonnealternance.apprentissage.beta.gouv.fr/" aria-label="Accès au site labonnealternance" isExternal textDecoration="underline">
+                  La bonne alternance
+                </Link>
+                . Il est développé par la Mission interministérielle pour l'apprentissage
               </Box>
               <Box fontSize="14px" color="grey.800" mt="6">
                 La bonne alternance est proposée par les services suivants :
