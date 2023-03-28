@@ -3,7 +3,6 @@ import { logger } from "../../common/logger.js"
 import { mongooseInstance } from "../../common/mongodb.js"
 import { getReferrerById } from "../../common/model/constants/referrers.js"
 import { mailType } from "../../common/model/constants/appointments.js"
-import { dayjs } from "../../common/utils/dayjs.js"
 
 export const cleanAndRenameFields = async ({ appointments, eligibleTrainingsForAppointments }) => {
   logger.info(`#cleanAndRenameFields start.`)
@@ -14,19 +13,6 @@ export const cleanAndRenameFields = async ({ appointments, eligibleTrainingsForA
     {},
     {
       $unset: {
-        // email_premiere_demande_cfa_ouvert: "",
-        // email_premiere_demande_candidat_envoye: "",
-        // email_premiere_demande_cfa_date: "",
-        // email_premiere_demande_cfa_statut: "",
-        // email_premiere_demande_cfa_message_id: "",
-        // email_premiere_demande_cfa_envoye: "",
-        // email_premiere_demande_cfa_statut_date: "",
-        // email_premiere_demande_candidat_message_id: "",
-        // email_premiere_demande_candidat_statut_date: "",
-        // email_premiere_demande_candidat_ouvert: "",
-        // email_premiere_demande_candidat_date: "",
-        // email_premiere_demande_candidat_statut: "",
-
         candidat_contacted_at: "",
         champs_libre_status: "",
         cfa_pris_contact_candidat_date: "",
