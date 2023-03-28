@@ -80,7 +80,7 @@ export class AppointmentsController extends Controller {
 
     const isOpenForAppointments = await eligibleTrainingsForAppointmentsService.findOne({
       cle_ministere_educatif: eligibleTrainingsForAppointment.cle_ministere_educatif,
-      referrers: { $in: [referrerObj.code] },
+      referrers: { $in: [referrerObj.name] },
       lieu_formation_email: { $nin: [null, ""] },
     })
 
