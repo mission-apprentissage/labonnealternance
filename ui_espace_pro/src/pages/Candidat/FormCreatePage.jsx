@@ -253,23 +253,6 @@ export const FormCreatePage = (props) => {
                         return <Input placeholder="période d’inscription, horaires, etc." {...field} {...feedback(meta, "Désolée, ce champs est nécessaire")} />
                       }}
                     </Field>
-                    {/*<Flex mt={8}>*/}
-                    {/*  <Box w="40px">*/}
-                    {/*    <Box sx={{ position: "absolute" }}>*/}
-                    {/*      <InfoCircle width="20px" />*/}
-                    {/*    </Box>*/}
-                    {/*  </Box>*/}
-                    {/*  <Box>*/}
-                    {/*    <Text pl={4} pt={1}>*/}
-                    {/*      Ce centre de formation propose également des offres d’emploi en lien avec la formation qui vous*/}
-                    {/*      intéresse.*/}
-                    {/*      <Text as="span" fontWeight="600">*/}
-                    {/*        Vous pouvez demander des renseignements sur la formation même si vous avez déjà trouvé votre*/}
-                    {/*        entreprise par ailleurs.*/}
-                    {/*      </Text>*/}
-                    {/*    </Text>*/}
-                    {/*  </Box>*/}
-                    {/*</Flex>*/}
                     <Flex mt={8} bg="#F6F6F6" py="9px" px="18px">
                       <Box w="430px">
                         <Text fontWeight="600">Souhaiteriez-vous recevoir des offres d’emploi en lien avec cette formation ?</Text>
