@@ -7,7 +7,7 @@ export const generateIndexes = async (indexList = "formulaires,formationcatalogu
   await list.map(async (index) => {
     switch (index) {
       case "domainesmetiers": {
-        //await DomainesMetiers.syncIndexes()
+        await DomainesMetiers.syncIndexes()
         await rebuildIndex(DomainesMetiers, { skipNotFound: true })
         break
       }
