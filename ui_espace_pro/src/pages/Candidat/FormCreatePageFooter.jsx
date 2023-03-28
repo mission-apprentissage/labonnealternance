@@ -20,25 +20,11 @@ export const FormCreatePageFooter = (props) => {
                 <Link href="https://labonnealternance.apprentissage.beta.gouv.fr/" aria-label="Accès au site labonnealternance" isExternal textDecoration="underline">
                   La bonne alternance
                 </Link>
-                . Il est développé par la Mission interministérielle pour l'apprentissage
+                . Il est développé par la{" "}
+                <Link href="https://mission-apprentissage.gitbook.io/general/" aria-label="Lien vers la mission interministérielle" isExternal textDecoration="underline">
+                  Mission interministérielle pour l'apprentissage
+                </Link>
               </Box>
-              <Box fontSize="14px" color="grey.800" mt="6">
-                La bonne alternance est proposée par les services suivants :
-              </Box>
-              <Flex flexDirection={{ base: "column", lg: "row" }} mt="6">
-                <Link href="https://pole-emploi.fr" aria-label="Accès au site de Pôle emploi" isExternal fontSize={14} fontWeight={700} color="grey.425" mr={4}>
-                  pole-emploi.fr
-                </Link>
-                <Link href="https://gouvernement.fr" aria-label="Accès au site gouvernement.fr" isExternal fontSize={14} fontWeight={700} color="grey.425" mr={4}>
-                  gouvernement.fr
-                </Link>
-                <Link href="https://service-public.fr" aria-label="Accès au site service-public.fr" isExternal fontSize={14} fontWeight={700} color="grey.425" mr={4}>
-                  service-public.fr
-                </Link>
-                <Link href="https://data.gouv.fr" aria-label="Accès au site data.gouv" isExternal fontSize={14} fontWeight={700} color="grey.425" mr={4}>
-                  data.gouv.fr
-                </Link>
-              </Flex>
             </Box>
           </GridItem>
         </Grid>
