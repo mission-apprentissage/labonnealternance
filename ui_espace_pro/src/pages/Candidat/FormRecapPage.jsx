@@ -29,7 +29,7 @@ export const FormRecapPage = () => {
               </Text>
               <Text fontWeight="700" color="grey.750" mt={6}>
                 {" "}
-                {data.eligibleTrainingsForAppointment.etablissement_formateur_raison_sociale} pourra donc vous contacter au{" "}
+                {data.etablissement.etablissement_formateur_raison_sociale} pourra donc vous contacter au{" "}
                 <Text as="span" color="info">
                   {" "}
                   {data.user.phone.match(/.{1,2}/g).join(".")}
@@ -44,12 +44,12 @@ export const FormRecapPage = () => {
               <Text mt={10}>Vous allez recevoir un email de confirmation de votre demande de contact sur votre adresse email.</Text>
               <Box borderBottom="1px solid #D0C9C4" mt={10} />
               <Box mt={10}>
-                {data.eligibleTrainingsForAppointment?.lieu_formation_email && (
+                {data.etablissement?.lieu_formation_email && (
                   <Text fontSize="14px">
                     Vous souhaitez modifier ou annuler cette demande ? <br />
                     Envoyez un email à{" "}
                     <u>
-                      <a href={`mailto:${data.eligibleTrainingsForAppointment.lieu_formation_email}`}>{data.eligibleTrainingsForAppointment.lieu_formation_email}</a>
+                      <a href={`mailto:${data.etablissement.lieu_formation_email}`}>{data.etablissement.lieu_formation_email}</a>
                     </u>
                   </Text>
                 )}
