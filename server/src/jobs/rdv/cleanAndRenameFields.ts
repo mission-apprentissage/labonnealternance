@@ -2,6 +2,8 @@
 import { logger } from "../../common/logger.js"
 import { mongooseInstance } from "../../common/mongodb.js"
 import { getReferrerById } from "../../common/model/constants/referrers.js"
+import { mailType } from "../../common/model/constants/appointments.js"
+import { dayjs } from "../../common/utils/dayjs.js"
 
 export const cleanAndRenameFields = async ({ appointments, eligibleTrainingsForAppointments }) => {
   logger.info(`#cleanAndRenameFields start.`)
@@ -12,27 +14,29 @@ export const cleanAndRenameFields = async ({ appointments, eligibleTrainingsForA
     {},
     {
       $unset: {
-        email_premiere_demande_cfa_ouvert: "",
-        email_premiere_demande_candidat_envoye: "",
-        email_premiere_demande_cfa_date: "",
-        email_premiere_demande_cfa_statut: "",
+        // email_premiere_demande_cfa_ouvert: "",
+        // email_premiere_demande_candidat_envoye: "",
+        // email_premiere_demande_cfa_date: "",
+        // email_premiere_demande_cfa_statut: "",
+        // email_premiere_demande_cfa_message_id: "",
+        // email_premiere_demande_cfa_envoye: "",
+        // email_premiere_demande_cfa_statut_date: "",
+        // email_premiere_demande_candidat_message_id: "",
+        // email_premiere_demande_candidat_statut_date: "",
+        // email_premiere_demande_candidat_ouvert: "",
+        // email_premiere_demande_candidat_date: "",
+        // email_premiere_demande_candidat_statut: "",
+
         candidat_contacted_at: "",
-        email_premiere_demande_cfa_statut_date: "",
-        email_premiere_demande_candidat_message_id: "",
-        email_premiere_demande_candidat_statut_date: "",
         champs_libre_status: "",
         cfa_pris_contact_candidat_date: "",
-        email_premiere_demande_cfa_envoye: "",
         date_de_reponse_cfa: "",
-        email_premiere_demande_cfa_message_id: "",
         referrer_link: "",
         cfa_pris_contact_candidat: "",
-        email_premiere_demande_candidat_ouvert: "",
         statut_general: "",
-        email_premiere_demande_candidat_date: "",
         numero_de_la_demande: "",
-        email_premiere_demande_candidat_statut: "",
         last_updated_at: "",
+        last_update_at: "",
         champs_libre_commentaire: "",
       },
     }
@@ -61,6 +65,54 @@ export const cleanAndRenameFields = async ({ appointments, eligibleTrainingsForA
   // Rename "referrer" id (number) to string name
   const allAppointments = await appointments.find()
   await Promise.all(allAppointments.map((appointment) => appointment.update({ appointment_origin: getReferrerById(appointment.appointment_origin).name })))
+
+  // Migrate all emails
+  await Promise.all(
+    allAppointments.map((appointment) => {
+      return appointments.findOneAndUpdate(
+        { _id: appointment._id },
+        {
+          $push: {
+            to_cfa_mails: {
+              campaign: mailType.CANDIDAT_APPOINTMENT,
+              status: appointment.email_premiere_demande_cfa_statut,
+              message_id: appointment.email_premiere_demande_cfa_message_id,
+              email_sent_at: appointment.email_premiere_demande_cfa_statut_date,
+            },
+            to_applicant_mails: {
+              campaign: mailType.CANDIDAT_APPOINTMENT,
+              status: appointment.email_premiere_demande_candidat_statut,
+              message_id: appointment.email_premiere_demande_candidat_message_id,
+              email_sent_at: appointment.email_premiere_demande_candidat_statut_date,
+            },
+          },
+        }
+      )
+    })
+  )
+  logger.info(`Fin de la migration des emails.`)
+
+  // Appointments: deletions
+  res = await db.collections.appointments.updateMany(
+    {},
+    {
+      $unset: {
+        email_premiere_demande_cfa_ouvert: "",
+        email_premiere_demande_candidat_envoye: "",
+        email_premiere_demande_cfa_date: "",
+        email_premiere_demande_cfa_statut: "",
+        email_premiere_demande_cfa_message_id: "",
+        email_premiere_demande_cfa_envoye: "",
+        email_premiere_demande_cfa_statut_date: "",
+        email_premiere_demande_candidat_message_id: "",
+        email_premiere_demande_candidat_statut_date: "",
+        email_premiere_demande_candidat_ouvert: "",
+        email_premiere_demande_candidat_date: "",
+        email_premiere_demande_candidat_statut: "",
+      },
+    }
+  )
+  logger.info(`Fin suppression champs de la collection appointments (${res.result.nModified} items mis à jour)`)
 
   // Etablissements: deletions
   res = await db.collections.etablissements.updateMany(

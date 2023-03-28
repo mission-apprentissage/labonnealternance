@@ -121,11 +121,6 @@ export const appointmentSchema = new Schema<IAppointments>({
     default: Date.now,
     description: "La date création de la demande",
   },
-  last_update_at: {
-    type: Date,
-    default: Date.now,
-    description: "Date de dernières mise à jour",
-  },
   cfa_recipient_email: {
     type: String,
     required: false,
