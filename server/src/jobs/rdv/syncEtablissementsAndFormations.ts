@@ -63,10 +63,10 @@ export const syncEtablissementsAndFormations = async ({ etablissements, eligible
         // Activate opt_out referrers
         const referrersToActivate = []
         if (etablissement?.optout_activation_date) {
-          referrersToActivate.push(referrers.LBA.code)
-          referrersToActivate.push(referrers.ONISEP.code)
-          referrersToActivate.push(referrers.PFR_PAYS_DE_LA_LOIRE.code)
-          referrersToActivate.push(referrers.JEUNE_1_SOLUTION.code)
+          referrersToActivate.push(referrers.LBA.name)
+          referrersToActivate.push(referrers.ONISEP.name)
+          referrersToActivate.push(referrers.PFR_PAYS_DE_LA_LOIRE.name)
+          referrersToActivate.push(referrers.JEUNE_1_SOLUTION.name)
         }
 
         // Activate premium referrers

@@ -10,6 +10,7 @@ export default ({ eligibleTrainingsForAppointments }) => {
 
   /**
    * @description Returns all available parcoursup ids.
+   * This endpoint is used by Parcoursup.
    */
   router.get(
     "/parcoursup/formations",
