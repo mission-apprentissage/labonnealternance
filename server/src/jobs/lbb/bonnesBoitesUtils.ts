@@ -9,7 +9,7 @@ import config from "../../config.js"
 import __dirname from "../../common/dirname.js"
 import { compose, oleoduc } from "oleoduc"
 import geoData from "../../common/utils/geoData.js"
-import { GeoLocation, BonnesBoites, Opco } from "../../common/model/index.js"
+import { EmailBlacklist, BonnesBoites, GeoLocation, Opco } from "../../common/model/index.js"
 import initNafMap from "./initNafMap.js"
 import initNafScoreMap from "./initNafScoreMap.js"
 import { OPCOS } from "../../common/constants.js"
@@ -110,7 +110,20 @@ export const getCompanyMissingData = async (rawCompany) => {
     company.opco_short_name = opcoData.opco_short_name
   }
 
+  let companyAvant = company.email
+  company.email = company.email && (await getNotBlacklistedEmail(company.email))
+  let companyApres = company.email
+
+  if(companyApres!==companyAvant)
+  {
+    console.log("Email filtré : ",companyAvant,companyApres)
+  }
+
   return company
+}
+
+const getNotBlacklistedEmail = async (email) => {
+  return (await EmailBlacklist.findOne({ email })) ? null : email
 }
 
 const getGeoLocationForCompany = async (company) => {
