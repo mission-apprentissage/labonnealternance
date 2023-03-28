@@ -28,6 +28,8 @@ import updateBonnesBoites from "./jobs/lbb/updateBonnesBoites.js"
 import updateGeoLocations from "./jobs/lbb/updateGeoLocations.js"
 import updateSendinblueBlockedEmails from "./jobs/updateSendinblueBlockedEmails/updateSendinblueBlockedEmails.js"
 import updateOpcoCompanies from "./jobs/lbb/updateOpcoCompanies.js"
+import updateDiplomesMetiers from "./jobs/diplomesMetiers/updateDiplomesMetiers.js"
+import updateDomainesMetiers from "./jobs/domainesMetiers/updateDomainesMetiers.js"
 
 cli.addHelpText("after", null)
 
@@ -272,6 +274,20 @@ cli
   .description("Procède à la résolution des opcos des sociétés dans le fichier des bonnes alternances")
   .action((options) => {
     runScript(() => updateOpcoCompanies(options))
+  })
+
+cli
+  .command("update-domaines-metiers")
+  .description("Procède à l'import du fichier domaines metiers")
+  .action(() => {
+    runScript(() => updateDomainesMetiers())
+  })
+
+cli
+  .command("update-dilomes-metiers")
+  .description("Procède à l'associsation des diplômes par métiers")
+  .action(() => {
+    runScript(() => updateDiplomesMetiers())
   })
 
 cli.parse(process.argv)
