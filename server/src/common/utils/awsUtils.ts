@@ -3,24 +3,20 @@ import AWS from "aws-sdk"
 import fs from "fs"
 import config from "../../config.js"
 
-const endPoint = config.s3.endpoint
-const region = config.s3.region
-const defaultBucket = config.s3.bucket
-const accessKeyId = config.s3.accessKeyId
-const secretAccessKey = config.s3.secretAccessKey
+const { endpoint, region, bucket, accessKeyId, secretAccessKey } = config.s3
 
 AWS.config.update({
   accessKeyId,
   secretAccessKey,
 })
 
-const defaultRepository = new AWS.S3({ endpoint: endPoint, region: region })
+const repository = new AWS.S3({ endpoint, region })
 
-export const getFileFromS3Bucket = ({ repository = defaultRepository, bucket = defaultBucket, key }) => {
+export const getFileFromS3Bucket = ({ key }) => {
   return repository.getObject({ Bucket: bucket, Key: key }).createReadStream()
 }
 
-export const uploadFileToS3 = async ({ repository = defaultRepository, bucket = defaultBucket, key, filePath }) => {
+export const uploadFileToS3 = async ({ key, filePath }) => {
   const blob = fs.readFileSync(filePath)
 
   await repository
