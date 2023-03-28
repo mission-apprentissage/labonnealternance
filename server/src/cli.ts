@@ -8,7 +8,7 @@ import { resetApiKey } from "./jobs/lba_recruteur/api/resetApiKey.js"
 import { annuleFormulaire } from "./jobs/lba_recruteur/formulaire/annuleFormulaire.js"
 import { createUser } from "./jobs/lba_recruteur/formulaire/createUser.js"
 import { relanceFormulaire } from "./jobs/lba_recruteur/formulaire/relanceFormulaire.js"
-import { generateIndexes } from "./jobs/lba_recruteur/indexes/generateIndexes.js"
+import { generateIndex, generateIndexes } from "./jobs/lba_recruteur/indexes/generateIndexes.js"
 import { relanceOpco } from "./jobs/lba_recruteur/opco/relanceOpco.js"
 import { createOffreCollection } from "./jobs/lba_recruteur/seed/createOffre.js"
 import { activateOptOutEtablissementFormations } from "./jobs/rdv/activateOptOutEtablissementFormations.js"
@@ -42,10 +42,10 @@ cli.addHelpText("after", null)
  */
 
 cli
-  .command("index")
-  .description("Synchronise les index des collections mongo & reconstruit l'index elasticsearch")
-  .action(() => {
-    runScript(() => generateIndexes())
+  .command("index [index_list]")
+  .description("Synchronise les index des collections mongo & reconstruit les index elasticsearch. <index_list> est la liste des index séparés par des , ")
+  .action((index_list) => {
+    runScript(() => generateIndexes(index_list))
   })
 
 cli
