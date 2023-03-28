@@ -5,7 +5,7 @@ export const FormCreatePageFooter = (props) => {
   return (
     <>
       <Box as="nav" pl={{ base: 8, lg: 0 }} mt="12" borderTop="2px solid #3A55D1">
-        <Grid templateColumns={{ base: "1fr", lg: "repeat(4, 1fr)" }} mb={{ base: 8, lg: 0 }}>
+        <Grid templateColumns={{ base: "1fr", lg: "repeat(4, 1fr)" }} mb={{ base: 8, lg: 0 }} px={{ base: 3, lg: 10 }}>
           <GridItem colSpan={{ base: 1, lg: 1 }}>
             <Image src="/images/marianne.svg#svgView(viewBox(12 0 162 78))" alt="" width="290" height="130" />
           </GridItem>
@@ -35,7 +35,7 @@ export const FormCreatePageFooter = (props) => {
         <Box as="nav">
           <Grid>
             <GridItem borderTop="1px solid #E5E5E5">
-              <UnorderedList pt={{ base: 3, lg: 5 }} pl={{ base: 8, lg: 0 }} listStyleType="none" color="grey.425" fontSize={12} marginInlineStart={0}>
+              <UnorderedList pt={{ base: 3, lg: 5 }} pl={{ base: 8, lg: 0 }} px={{ base: 12, lg: 10 }} listStyleType="none" color="grey.425" fontSize={12} marginInlineStart={0}>
                 <ListItem
                   mt={{ base: 3, lg: 0 }}
                   display={{ base: "inherit", lg: "inline-block" }}
@@ -91,7 +91,7 @@ export const FormCreatePageFooter = (props) => {
                   paddingRight={{ base: 0, lg: 1 }}
                   paddingLeft={{ base: 0, lg: 1 }}
                 >
-                  <Link as={NavLink} to="/contact" passHref aria-label="Accès à la page Contact">
+                  <Link as={NavLink} to="/contact" aria-label="Accès à la page Contact">
                     Contact
                   </Link>
                 </ListItem>
@@ -107,7 +107,7 @@ export const FormCreatePageFooter = (props) => {
               </UnorderedList>
             </GridItem>
             <GridItem>
-              <Box color="grey.425" fontSize={12} mt={6} pb={12} pl={{ base: 8, lg: 0 }}>
+              <Box color="grey.425" fontSize={12} mt={6} pb={12} pl={{ base: 12, lg: 10 }}>
                 Sauf mention contraire, tous les contenus de ce site sont sous licence{" "}
                 <Link
                   href="https://www.etalab.gouv.fr/licence-version-2-0-de-la-licence-ouverte-suite-a-la-consultation-et-presentation-du-decret"
