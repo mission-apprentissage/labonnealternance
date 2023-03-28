@@ -284,8 +284,8 @@ cli
   })
 
 cli
-  .command("update-dilomes-metiers")
-  .description("Procède à l'associsation des diplômes par métiers")
+  .command("update-diplomes-metiers")
+  .description("Procède à l'association des diplômes par métiers")
   .action(() => {
     runScript(() => updateDiplomesMetiers())
   })
