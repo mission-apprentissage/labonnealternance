@@ -161,6 +161,11 @@ export const FormCreatePage = (props) => {
             </Text>
           </>
         }
+        prefooter={
+          <>
+            <FormCreatePageFooter />
+          </>
+        }
         bg="white"
       >
         {loading && <Spinner display="block" mx="auto" size="xl" mt="10rem" />}
@@ -318,7 +323,6 @@ export const FormCreatePage = (props) => {
             </Formik>
           </Box>
         )}
-        <FormCreatePageFooter />
       </FormLayoutComponent>
     </>
   )

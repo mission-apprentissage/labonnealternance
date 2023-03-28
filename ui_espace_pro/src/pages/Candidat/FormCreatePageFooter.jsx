@@ -5,7 +5,7 @@ export const FormCreatePageFooter = (props) => {
   return (
     <>
       <Box as="nav" pl={{ base: 8, lg: 0 }} mt="12" borderTop="2px solid #3A55D1">
-        <Grid templateColumns={{ base: "1fr", lg: "repeat(4, 1fr)" }}>
+        <Grid templateColumns={{ base: "1fr", lg: "repeat(4, 1fr)" }} mb={{ base: 8, lg: 0 }}>
           <GridItem colSpan={{ base: 1, lg: 1 }}>
             <Image src="/images/marianne.svg#svgView(viewBox(12 0 162 78))" alt="" width="290" height="130" />
           </GridItem>
@@ -15,8 +15,8 @@ export const FormCreatePageFooter = (props) => {
             </Box>
           </GridItem>
           <GridItem colSpan={{ base: 1, lg: 2 }}>
-            <Box pl={{ base: 0, lg: 4 }} mt={{ base: 8, lg: 0 }} height="100%" display="flex" alignItems="center">
-              <Box fontSize="12px" color="#161616" pl="5">
+            <Box pl={{ base: 0, lg: 4 }} mt={{ base: 8, lg: 0 }} height="100%" display="flex" alignItems={{ base: "start", lg: "center" }}>
+              <Box fontSize="12px" color="#161616" pl={{ base: 0, lg: 5 }}>
                 <Text as="strong">Le service de prise de rendez-vous</Text> proposé par{" "}
                 <Link href="https://labonnealternance.apprentissage.beta.gouv.fr/" aria-label="Accès au site labonnealternance" isExternal textDecoration="underline">
                   La bonne alternance
@@ -31,17 +31,17 @@ export const FormCreatePageFooter = (props) => {
           </GridItem>
         </Grid>
       </Box>
-      <Box mx="auto" pl={{ base: 0, lg: 6 }}>
-        <Box as="nav" pl={{ base: 8, lg: 0 }}>
+      <Box mx="auto">
+        <Box as="nav">
           <Grid>
-            <GridItem>
-              <UnorderedList listStyleType="none" color="grey.425" fontSize={12} marginInlineStart={0}>
+            <GridItem borderTop="1px solid #E5E5E5">
+              <UnorderedList pt={{ base: 3, lg: 5 }} pl={{ base: 8, lg: 0 }} listStyleType="none" color="grey.425" fontSize={12} marginInlineStart={0}>
                 <ListItem
                   mt={{ base: 3, lg: 0 }}
                   display={{ base: "inherit", lg: "inline-block" }}
                   borderRight={{ base: "none", lg: "1px solid" }}
                   borderRightColor={{ base: "none", lg: "grey.300" }}
-                  paddingRight={{ base: 0, lg: 4 }}
+                  paddingRight={{ base: 0, lg: 1 }}
                 >
                   <Link as={NavLink} to={`/mentions-legales`}>
                     Mentions légales
@@ -52,10 +52,10 @@ export const FormCreatePageFooter = (props) => {
                   display={{ base: "inherit", lg: "inline-block" }}
                   borderRight={{ base: "none", lg: "1px solid" }}
                   borderRightColor={{ base: "none", lg: "grey.300" }}
-                  paddingRight={{ base: 0, lg: 4 }}
-                  paddingLeft={{ base: 0, lg: 4 }}
+                  paddingRight={{ base: 0, lg: 1 }}
+                  paddingLeft={{ base: 0, lg: 1 }}
                 >
-                  <Link as={NavLink} to={`/cgu`} aria-label="Accès aux conditions générales d'utilisation">
+                  <Link as={NavLink} to="/cgu" aria-label="Accès aux conditions générales d'utilisation">
                     CGU
                   </Link>
                 </ListItem>
@@ -64,10 +64,10 @@ export const FormCreatePageFooter = (props) => {
                   display={{ base: "inherit", lg: "inline-block" }}
                   borderRight={{ base: "none", lg: "1px solid" }}
                   borderRightColor={{ base: "none", lg: "grey.300" }}
-                  paddingRight={{ base: 0, lg: 4 }}
-                  paddingLeft={{ base: 0, lg: 4 }}
+                  paddingRight={{ base: 0, lg: 1 }}
+                  paddingLeft={{ base: 0, lg: 1 }}
                 >
-                  <Link as={NavLink} to={`/politique-de-confidentialite`} aria-label="Accès à la page Politique de confidentialité">
+                  <Link as={NavLink} to="/politique-de-confidentialite" aria-label="Accès à la page Politique de confidentialité">
                     Politique de confidentialité
                   </Link>
                 </ListItem>
@@ -76,8 +76,8 @@ export const FormCreatePageFooter = (props) => {
                   display={{ base: "inherit", lg: "inline-block" }}
                   borderRight={{ base: "none", lg: "1px solid" }}
                   borderRightColor={{ base: "none", lg: "grey.300" }}
-                  paddingRight={{ base: 0, lg: 4 }}
-                  paddingLeft={{ base: 0, lg: 4 }}
+                  paddingRight={{ base: 0, lg: 1 }}
+                  paddingLeft={{ base: 0, lg: 1 }}
                 >
                   <Link as={NavLink} to={`/faq`} aria-label="Accès à la foire aux questions">
                     FAQ
@@ -88,27 +88,26 @@ export const FormCreatePageFooter = (props) => {
                   display={{ base: "inherit", lg: "inline-block" }}
                   borderRight={{ base: "none", lg: "1px solid" }}
                   borderRightColor={{ base: "none", lg: "grey.300" }}
-                  paddingRight={{ base: 0, lg: 4 }}
-                  paddingLeft={{ base: 0, lg: 4 }}
+                  paddingRight={{ base: 0, lg: 1 }}
+                  paddingLeft={{ base: 0, lg: 1 }}
                 >
-                  <Link as={NavLink} to={`/contact`} aria-label="Accès à la page Contact">
+                  <Link as={NavLink} to="/contact" passHref aria-label="Accès à la page Contact">
                     Contact
                   </Link>
                 </ListItem>
                 <ListItem
                   mt={{ base: 3, lg: 0 }}
                   display={{ base: "inherit", lg: "inline-block" }}
-                  borderRight={{ base: "none", lg: "1px solid" }}
                   borderRightColor={{ base: "none", lg: "grey.300" }}
-                  paddingRight={{ base: 0, lg: 4 }}
-                  paddingLeft={{ base: 0, lg: 4 }}
+                  paddingRight={{ base: 0, lg: 0 }}
+                  paddingLeft={{ base: 0, lg: 1 }}
                 >
                   Accessibilité : non conforme
                 </ListItem>
               </UnorderedList>
             </GridItem>
             <GridItem>
-              <Box color="grey.425" fontSize={12} mt={6} pb={12}>
+              <Box color="grey.425" fontSize={12} mt={6} pb={12} pl={{ base: 8, lg: 0 }}>
                 Sauf mention contraire, tous les contenus de ce site sont sous licence{" "}
                 <Link
                   href="https://www.etalab.gouv.fr/licence-version-2-0-de-la-licence-ouverte-suite-a-la-consultation-et-presentation-du-decret"
