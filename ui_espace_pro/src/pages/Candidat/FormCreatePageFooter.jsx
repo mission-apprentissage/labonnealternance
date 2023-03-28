@@ -1,4 +1,5 @@
-import { Grid, GridItem, Box, Flex, Image, Link, Text } from "@chakra-ui/react"
+import { Grid, GridItem, Box, Image, Link, Text, UnorderedList, ListItem } from "@chakra-ui/react"
+import { NavLink } from "react-router-dom"
 
 export const FormCreatePageFooter = (props) => {
   return (
@@ -29,6 +30,99 @@ export const FormCreatePageFooter = (props) => {
             </Box>
           </GridItem>
         </Grid>
+      </Box>
+      <Box mx="auto" pl={{ base: 0, lg: 6 }}>
+        <Box as="nav" pl={{ base: 8, lg: 0 }}>
+          <Grid>
+            <GridItem>
+              <UnorderedList listStyleType="none" color="grey.425" fontSize={12} marginInlineStart={0}>
+                <ListItem
+                  mt={{ base: 3, lg: 0 }}
+                  display={{ base: "inherit", lg: "inline-block" }}
+                  borderRight={{ base: "none", lg: "1px solid" }}
+                  borderRightColor={{ base: "none", lg: "grey.300" }}
+                  paddingRight={{ base: 0, lg: 4 }}
+                >
+                  <Link as={NavLink} to={`/mentions-legales`}>
+                    Mentions légales
+                  </Link>
+                </ListItem>
+                <ListItem
+                  mt={{ base: 3, lg: 0 }}
+                  display={{ base: "inherit", lg: "inline-block" }}
+                  borderRight={{ base: "none", lg: "1px solid" }}
+                  borderRightColor={{ base: "none", lg: "grey.300" }}
+                  paddingRight={{ base: 0, lg: 4 }}
+                  paddingLeft={{ base: 0, lg: 4 }}
+                >
+                  <Link as={NavLink} to={`/cgu`} aria-label="Accès aux conditions générales d'utilisation">
+                    CGU
+                  </Link>
+                </ListItem>
+                <ListItem
+                  mt={{ base: 3, lg: 0 }}
+                  display={{ base: "inherit", lg: "inline-block" }}
+                  borderRight={{ base: "none", lg: "1px solid" }}
+                  borderRightColor={{ base: "none", lg: "grey.300" }}
+                  paddingRight={{ base: 0, lg: 4 }}
+                  paddingLeft={{ base: 0, lg: 4 }}
+                >
+                  <Link as={NavLink} to={`/politique-de-confidentialite`} aria-label="Accès à la page Politique de confidentialité">
+                    Politique de confidentialité
+                  </Link>
+                </ListItem>
+                <ListItem
+                  mt={{ base: 3, lg: 0 }}
+                  display={{ base: "inherit", lg: "inline-block" }}
+                  borderRight={{ base: "none", lg: "1px solid" }}
+                  borderRightColor={{ base: "none", lg: "grey.300" }}
+                  paddingRight={{ base: 0, lg: 4 }}
+                  paddingLeft={{ base: 0, lg: 4 }}
+                >
+                  <Link as={NavLink} to={`/faq`} aria-label="Accès à la foire aux questions">
+                    FAQ
+                  </Link>
+                </ListItem>
+                <ListItem
+                  mt={{ base: 3, lg: 0 }}
+                  display={{ base: "inherit", lg: "inline-block" }}
+                  borderRight={{ base: "none", lg: "1px solid" }}
+                  borderRightColor={{ base: "none", lg: "grey.300" }}
+                  paddingRight={{ base: 0, lg: 4 }}
+                  paddingLeft={{ base: 0, lg: 4 }}
+                >
+                  <Link as={NavLink} to={`/contact`} aria-label="Accès à la page Contact">
+                    Contact
+                  </Link>
+                </ListItem>
+                <ListItem
+                  mt={{ base: 3, lg: 0 }}
+                  display={{ base: "inherit", lg: "inline-block" }}
+                  borderRight={{ base: "none", lg: "1px solid" }}
+                  borderRightColor={{ base: "none", lg: "grey.300" }}
+                  paddingRight={{ base: 0, lg: 4 }}
+                  paddingLeft={{ base: 0, lg: 4 }}
+                >
+                  Accessibilité : non conforme
+                </ListItem>
+              </UnorderedList>
+            </GridItem>
+            <GridItem>
+              <Box color="grey.425" fontSize={12} mt={6} pb={12}>
+                Sauf mention contraire, tous les contenus de ce site sont sous licence{" "}
+                <Link
+                  href="https://www.etalab.gouv.fr/licence-version-2-0-de-la-licence-ouverte-suite-a-la-consultation-et-presentation-du-decret"
+                  aria-label="Accès au site Etalab"
+                  textDecor="underline"
+                  isExternal="true"
+                >
+                  etalab-2.0
+                  <Image src="/images/square_link.svg" alt="Ouverture dans un nouvel onglet" display="inline-block" pl="1" />
+                </Link>
+              </Box>
+            </GridItem>
+          </Grid>
+        </Box>
       </Box>
     </>
   )
