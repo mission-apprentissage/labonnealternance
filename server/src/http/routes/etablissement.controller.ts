@@ -279,7 +279,7 @@ export default ({ etablissements, mailer, eligibleTrainingsForAppointments, appo
         etablissement = await etablissements.findById(req.params.id)
 
         await mailer.sendEmail({
-          to: config.transactionalEmail,
+          to: config.publicEmail,
           subject: `Un CFA se pose une question concernant l'opt-out"`,
           template: mailTemplate["mail-rdva-optout-unsubscription-question"],
           data: {
@@ -298,7 +298,7 @@ export default ({ etablissements, mailer, eligibleTrainingsForAppointments, appo
               destinataireEmail: etablissement.gestionnaire_email,
             },
           },
-          from: etablissement.gestionnaire_email,
+          from: config.transactionalEmail,
         })
 
         return res.send(etablissement)
