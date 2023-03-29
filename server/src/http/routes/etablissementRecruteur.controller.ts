@@ -255,8 +255,11 @@ export default ({ usersRecruteur, formulaire, mailer }) => {
                 return acc
               }, [])
 
+              // Create a single array with all emails
+              const bonneBoiteEmailList: string[] = bonneBoiteList.map(({ email }) => email)
+
               // Duplicate free email list
-              const emailListUnique = [...new Set(...referentielOpcoEmailList, ...bonneBoiteList)]
+              const emailListUnique = [...new Set(...referentielOpcoEmailList, ...bonneBoiteEmailList)]
 
               if (referentielOpcoList.length) {
                 if (getMatchingEmailFromContactList(partenaire.email, emailListUnique)) {
