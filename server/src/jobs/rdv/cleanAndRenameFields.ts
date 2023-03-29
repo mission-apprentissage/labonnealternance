@@ -24,6 +24,7 @@ export const cleanAndRenameFields = async ({ appointments, eligibleTrainingsForA
         last_updated_at: "",
         last_update_at: "",
         champs_libre_commentaire: "",
+        id_rco_formation: "",
       },
     }
   )
@@ -49,32 +50,27 @@ export const cleanAndRenameFields = async ({ appointments, eligibleTrainingsForA
   logger.info(`Fin renommage champs de la collection appointments (${res.result.nModified} items mis à jour)`)
 
   // Rename "referrer" id (number) to string name
-  const allAppointments = await appointments.find()
-  await Promise.all(allAppointments.map((appointment) => appointment.update({ appointment_origin: getReferrerById(appointment.appointment_origin).name })))
-
-  // Migrate all emails
+  const allAppointments = await appointments.find({})
   await Promise.all(
-    allAppointments.map((appointment) => {
-      return appointments.findOneAndUpdate(
-        { _id: appointment._id },
-        {
-          $push: {
-            to_cfa_mails: {
-              campaign: mailType.CANDIDAT_APPOINTMENT,
-              status: appointment.email_premiere_demande_cfa_statut,
-              message_id: appointment.email_premiere_demande_cfa_message_id,
-              email_sent_at: appointment.email_premiere_demande_cfa_statut_date,
-            },
-            to_applicant_mails: {
-              campaign: mailType.CANDIDAT_APPOINTMENT,
-              status: appointment.email_premiere_demande_candidat_statut,
-              message_id: appointment.email_premiere_demande_candidat_message_id,
-              email_sent_at: appointment.email_premiere_demande_candidat_statut_date,
-            },
+    allAppointments.map((appointment) =>
+      appointment.update({
+        appointment_origin: getReferrerById(appointment.appointment_origin).name,
+        $push: {
+          to_cfa_mails: {
+            campaign: mailType.CANDIDAT_APPOINTMENT,
+            status: appointment.email_premiere_demande_cfa_statut,
+            message_id: appointment.email_premiere_demande_cfa_message_id,
+            email_sent_at: appointment.email_premiere_demande_cfa_date,
           },
-        }
-      )
-    })
+          to_applicant_mails: {
+            campaign: mailType.CANDIDAT_APPOINTMENT,
+            status: appointment.email_premiere_demande_candidat_statut,
+            message_id: appointment.email_premiere_demande_candidat_message_id,
+            email_sent_at: appointment.email_premiere_demande_candidat_date,
+          },
+        },
+      })
+    )
   )
   logger.info(`Fin de la migration des emails.`)
 
