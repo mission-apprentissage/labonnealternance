@@ -25,7 +25,7 @@ export const inviteEtablissementToPremiumFollowUp = async ({ etablissements, mai
       $ne: null,
       $lte: dayjs().subtract(10, "days").toDate(),
     },
-    "mailing.campaign": {
+    "to_etablissement_emails.campaign": {
       $ne: mailType.PREMIUM_INVITE_FOLLOW_UP,
     },
   })

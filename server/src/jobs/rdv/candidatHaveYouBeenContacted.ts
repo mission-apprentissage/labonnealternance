@@ -21,7 +21,7 @@ export const candidatHaveYouBeenContacted = async ({ etablissements, widgetParam
         // Excludes very older appointments
         $gte: dayjs("2021-12-01T00:00:00.486Z").toDate(),
       },
-      "candidat_mailing.campaign": { $ne: mailType.CANDIDAT_HAVE_YOU_BEEN_CONTACTED },
+      "to_applicant_mails.campaign": { $ne: mailType.CANDIDAT_HAVE_YOU_BEEN_CONTACTED },
     })
     .lean()
 

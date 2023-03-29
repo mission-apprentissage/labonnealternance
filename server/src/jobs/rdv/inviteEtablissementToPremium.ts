@@ -19,7 +19,7 @@ export const inviteEtablissementToPremium = async ({ etablissements, mailer }) =
       $ne: null,
       $lte: dayjs().subtract(1, "day").toDate(),
     },
-    "mailing.campaign": { $ne: mailType.PREMIUM_INVITE },
+    "to_etablissement_emails.campaign": { $ne: mailType.PREMIUM_INVITE },
   })
 
   for (const etablissement of etablissementsActivated) {
