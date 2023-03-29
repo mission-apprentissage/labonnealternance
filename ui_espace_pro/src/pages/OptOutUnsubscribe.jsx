@@ -50,7 +50,7 @@ const OptOutUnsubscribe = () => {
   useEffect(async () => {
     const etablissement = await _get(`/api/etablissements/${id}`)
 
-    if (etablissement.opt_out_refused_at) {
+    if (etablissement.optout_refusal_date) {
       setHasBeenUnsubscribed(true)
     }
 
