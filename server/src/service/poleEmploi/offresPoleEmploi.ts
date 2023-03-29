@@ -11,7 +11,7 @@ import filterJobsByOpco from "../filterJobsByOpco.js"
 //const poleEmploi = require("./common.js");
 import { getAccessToken, getRoundedRadius, peApiHeaders } from "./common.js"
 
-const blackListedCompanies = ["iscod", "oktogone"]
+const blackListedCompanies = ["iscod", "oktogone", "institut europeen f 2i"]
 
 const getSomePeJobs = async ({ romes, insee, radius, lat, long, caller, diploma, opco, opcoUrl, api }) => {
   // la liste des romes peut être supérieure au maximum de trois autorisés par l'api offre de PE
