@@ -184,28 +184,6 @@
             </mj-section>
         </mj-wrapper>
         
-        <% if (data.job_origin == "lba" ) { %>
-            <mj-text font-size="12px" line-height="20px" font-weight="400" color="#242424">
-                La bonne alternance est un site développé par la <a class="link-black" href="https://mission-apprentissage.gitbook.io/general/">
-                Mission interministérielle pour l'apprentissage</a>, au sein de l’État, conformément aux missions d’intérêt public du ministère du Travail. 
-            </mj-text>
-            <mj-text font-size="12px" line-height="20px" font-weight="400" color="#242424">
-                Nous souhaitons vous proposer des candidats à l'alternance. 
-                Par ailleurs, nous ne faisons aucune utilisation commerciale de vos données. 
-                Conformément à l’article L.34-5 du code des postes et communications électroniques, vous bénéficiez d’un droit d’opposition 
-                que vous pouvez utiliser à tout moment via l’adresse 
-                <a class="link-black" href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Droit%20opposition%20entreprise%20-%20Candidature%20spontanée">
-                    labonnealternance@apprentissage.beta.gouv.fr</a>. 
-            </mj-text>
-            <mj-text font-size="12px" line-height="20px" font-weight="400" color="#242424">
-                Votre adresse e-mail sera dès lors supprimée de notre base de données et vous ne serez plus contacté.
-                Si vous pensez que vos droits ne sont pas respectés, vous pouvez à tout moment introduire une réclamation auprès de la CNIL. 
-                Pour plus d’informations sur le traitement de vos données, vous pouvez vous rendre sur la 
-                <a class="link-black" href="https://labonnealternance.apprentissage.beta.gouv.fr/politique-de-confidentialite">
-                    politique de confidentialité de La bonne alternance</a>.
-            </mj-text>
-        <% } %>
-
         <mj-wrapper padding="0px" border-radius="10px" padding-bottom="50px">
             <mj-section>
                 <mj-column>
@@ -213,6 +191,30 @@
                     <tr>
                     <td valign="top" style="padding-top:5px;"><img width="89" height="auto" src="<%= data.images.logoRF %>" alt="Logo République française" /></td>
                     <td valign="top" style="line-height: 22px; padding-left: 40px; padding-top:0;">
+
+                        <% if (data.job_origin == "lba" ) { %>
+                            <mj-text font-size="12px" line-height="20px" font-weight="400" color="#242424">
+                                La bonne alternance est un site développé par la <a class="link-black" href="https://mission-apprentissage.gitbook.io/general/">
+                                Mission interministérielle pour l'apprentissage</a>, au sein de l’État, conformément aux missions d’intérêt public du ministère du Travail. 
+                            </mj-text>
+                            <mj-text font-size="12px" line-height="20px" font-weight="400" color="#242424">
+                                Nous souhaitons vous proposer des candidats à l'alternance. 
+                                Par ailleurs, nous ne faisons aucune utilisation commerciale de vos données. 
+                                Conformément à l’article L.34-5 du code des postes et communications électroniques, vous bénéficiez d’un droit d’opposition 
+                                que vous pouvez utiliser à tout moment via l’adresse 
+                                <a class="link-black" href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Droit%20opposition%20entreprise%20-%20Candidature%20spontanée">
+                                    labonnealternance@apprentissage.beta.gouv.fr</a>. 
+                            </mj-text>
+                            <mj-text font-size="12px" line-height="20px" font-weight="400" color="#242424">
+                                Votre adresse e-mail sera dès lors supprimée de notre base de données et vous ne serez plus contacté.
+                                Si vous pensez que vos droits ne sont pas respectés, vous pouvez à tout moment introduire une réclamation auprès de la CNIL. 
+                                Pour plus d’informations sur le traitement de vos données, vous pouvez vous rendre sur la 
+                                <a class="link-black" href="https://labonnealternance.apprentissage.beta.gouv.fr/politique-de-confidentialite">
+                                    politique de confidentialité de La bonne alternance</a>.
+                            </mj-text>
+                            <br /><br />
+                        <% } %>
+
                         Cet e-mail a été envoyé à <%= data.company_email %>
                         <br  />
                         Merci de ne pas répondre à cet e-mail. Pour toute question ou besoin d’aide, vous pouvez écrire à labonnealternance@apprentissage.beta.gouv.fr
