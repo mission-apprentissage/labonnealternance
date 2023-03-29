@@ -1,5 +1,6 @@
 import { BonnesBoites, DiplomesMetiers, DomainesMetiers, FormationCatalogue, Formulaire } from "../../../common/model/index.js"
 import { rebuildIndex } from "../../../common/utils/esUtils.js"
+import { logger } from "../../../common/logger.js"
 
 export const generateIndexes = async (indexList = "formulaires,formationcatalogues,bonnesboites,diplomesmetiers,domainesmetiers") => {
   const list = indexList.split(",")
@@ -32,8 +33,10 @@ export const generateIndexes = async (indexList = "formulaires,formationcatalogu
           await rebuildIndex(Formulaire, { skipNotFound: true })
           break
         }
-        default:
+        default: {
+          logger.error(`Attention l'index "${index}" ne fait pas partie de la liste elligible`)
           break
+        }
       }
     })
   )
