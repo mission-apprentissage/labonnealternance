@@ -1,3 +1,10 @@
+# [1.7.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.6.0...v1.7.0) (2023-03-29)
+
+
+### Features
+
+* update RGPD Je candidate ([#314](https://github.com/mission-apprentissage/labonnealternance/issues/314)) ([b62c78e](https://github.com/mission-apprentissage/labonnealternance/commit/b62c78ea065e4b1664b9c73df77fa26435ee1d19))
+
 # [1.6.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.5.2...v1.6.0) (2023-03-29)
 
 
