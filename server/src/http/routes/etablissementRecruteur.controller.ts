@@ -259,9 +259,9 @@ export default ({ usersRecruteur, formulaire, mailer }) => {
               const bonneBoiteEmailList: string[] = bonneBoiteList.map(({ email }) => email)
 
               // Duplicate free email list
-              const emailListUnique = [...new Set(...referentielOpcoEmailList, ...bonneBoiteEmailList)]
+              const emailListUnique = [...new Set([...referentielOpcoEmailList, ...bonneBoiteEmailList])]
 
-              if (referentielOpcoList.length) {
+              if (emailListUnique.length) {
                 if (getMatchingEmailFromContactList(partenaire.email, emailListUnique)) {
                   partenaire = await usersRecruteur.updateUserValidationHistory(partenaire._id, {
                     validation_type: validation_utilisateur.AUTO,
