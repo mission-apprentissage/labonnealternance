@@ -1,3 +1,11 @@
+## [1.8.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.8.0...v1.8.1) (2023-03-29)
+
+
+### Bug Fixes
+
+* ajustement scroll vertical trop court à la sélection d'un élément ([e57a7a0](https://github.com/mission-apprentissage/labonnealternance/commit/e57a7a0a2657b8706a711ef67cd554fc77d6b3ce))
+* gestion erreur serveur générique pour l'envoi de candidature ([c573a17](https://github.com/mission-apprentissage/labonnealternance/commit/c573a17082bcb35545c293f79af1b5e51666edaa))
+
 # [1.8.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.7.0...v1.8.0) (2023-03-29)
 
 
