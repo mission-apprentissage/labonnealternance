@@ -1,3 +1,10 @@
+# [1.6.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.5.2...v1.6.0) (2023-03-29)
+
+
+### Features
+
+* filtrage des offres de sociétés suspectes ([#329](https://github.com/mission-apprentissage/labonnealternance/issues/329)) ([6824061](https://github.com/mission-apprentissage/labonnealternance/commit/6824061d250b6054e06effaa41651e9956751271))
+
 ## [1.5.2](https://github.com/mission-apprentissage/labonnealternance/compare/v1.5.1...v1.5.2) (2023-03-22)
 
 ### Bug Fixes
