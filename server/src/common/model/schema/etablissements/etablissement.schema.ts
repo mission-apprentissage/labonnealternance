@@ -38,11 +38,6 @@ export const etablissementSchema = new Schema<IEtablissement>({
     default: null,
     description: "Email du decisionnaire de l'établissement",
   },
-  etablissement_formateur_courriel: {
-    type: String,
-    default: null,
-    description: "Email du formateur",
-  },
   premium_invitation_date: {
     type: Date,
     default: null,

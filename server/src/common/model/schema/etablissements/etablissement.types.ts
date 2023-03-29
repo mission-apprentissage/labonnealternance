@@ -8,7 +8,6 @@ interface IEtablissement {
   zip_code: string
   city: string
   gestionnaire_email: string
-  etablissement_formateur_courriel: string
   premium_invitation_date: Date
   premium_activation_date: Date
   premium_refusal_date: Date

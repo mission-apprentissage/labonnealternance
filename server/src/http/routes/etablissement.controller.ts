@@ -102,8 +102,8 @@ export default ({ etablissements, mailer, eligibleTrainingsForAppointments, appo
 
       // Gets all mails (formation email + formateur email), excepted "email_decisionnaire"
       let emails = eligibleTrainingsForAppointmentsFound.map((eligibleTrainingsForAppointment) => eligibleTrainingsForAppointment.lieu_formation_email)
-      if (etablissement?.etablissement_formateur_courriel) {
-        emails.push(etablissement.etablissement_formateur_courriel)
+      if (etablissement?.gestionnaire_email) {
+        emails.push(etablissement.gestionnaire_email)
       }
 
       emails = _(emails)

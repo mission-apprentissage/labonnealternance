@@ -105,8 +105,8 @@ export const inviteEtablissementToOptOut = async ({ etablissements, eligibleTrai
       })
 
       let emails = formations.map((formation) => formation.lieu_formation_email)
-      if (etablissement?.etablissement_formateur_courriel) {
-        emails.push(etablissement.etablissement_formateur_courriel)
+      if (etablissement?.gestionnaire_email) {
+        emails.push(etablissement.gestionnaire_email)
       }
 
       emails = _(emails)
