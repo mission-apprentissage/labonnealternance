@@ -309,7 +309,7 @@ export default ({ etablissements, mailer, eligibleTrainingsForAppointments, appo
         // Disable all formations
         await eligibleTrainingsForAppointments.updateMany(
           {
-            etablissement_siret: etablissement.formateur_siret,
+            etablissement_formateur_siret: etablissement.formateur_siret,
           },
           {
             referrers: [],
