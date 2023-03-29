@@ -240,7 +240,7 @@ export const getAllEstablishmentFromOpcoReferentiel = async (query: object): Pro
  * @param {Object} query
  * @returns {Promise<IBonneBoite[]>}
  */
-export const getAllEstablishmentFromBonneBoiteLegacy = async (query: object): Promise<IReferentielOpco[]> => await BonneBoiteLegacy.find(query).select({ email: 1 }).lean()
+export const getAllEstablishmentFromBonneBoiteLegacy = async (query: object): Promise<IBonneBoite[]> => await BonneBoiteLegacy.find(query).select({ email: 1, _id: 0 }).lean()
 /**
  * @description Chech if a given email is included in the given email list array
  * @param {String} email
