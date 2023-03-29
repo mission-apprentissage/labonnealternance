@@ -12,6 +12,7 @@ import { getNearEtablissementsFromRomes } from "../../services/catalogue.service
 import {
   formatEntrepriseData,
   formatReferentielData,
+  getAllEstablishmentFromBonneBoiteLegacy,
   getAllEstablishmentFromOpcoReferentiel,
   getEtablissement,
   getEtablissementFromGouv,
@@ -243,16 +244,21 @@ export default ({ usersRecruteur, formulaire, mailer }) => {
 
             default:
               // Get all corresponding records using the SIREN number
-              const sirenExistInOpcoReferentiel = await getAllEstablishmentFromOpcoReferentiel({ siret_code: { $regex: siren } })
+              const [referentielOpcoList, bonneBoiteList] = await Promise.all([
+                getAllEstablishmentFromOpcoReferentiel({ siret_code: { $regex: siren } }),
+                getAllEstablishmentFromBonneBoiteLegacy({ siret: { $regex: siren }, email: { $nin: ["", undefined] } }),
+              ])
+
               // Create a single array with all emails
-              const emailList: string[] = sirenExistInOpcoReferentiel.reduce((acc: string[], item) => {
+              const referentielOpcoEmailList: string[] = referentielOpcoList.reduce((acc: string[], item) => {
                 item.emails.map((x) => acc.push(x))
                 return acc
               }, [])
-              // Duplicate free email list
-              const emailListUnique = [...new Set(emailList)]
 
-              if (sirenExistInOpcoReferentiel.length) {
+              // Duplicate free email list
+              const emailListUnique = [...new Set(...referentielOpcoEmailList, ...bonneBoiteList)]
+
+              if (referentielOpcoList.length) {
                 if (getMatchingEmailFromContactList(partenaire.email, emailListUnique)) {
                   partenaire = await usersRecruteur.updateUserValidationHistory(partenaire._id, {
                     validation_type: validation_utilisateur.AUTO,
