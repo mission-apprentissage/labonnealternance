@@ -1,4 +1,3 @@
-import { getElasticInstance, mongoosastic } from "../../../esClient/index.js"
 import { model, Schema } from "../../../mongodb.js"
 import { IBonneBoite } from "../bonneboite/bonneboite.types.js"
 
@@ -119,7 +118,5 @@ export const bonneBoiteLegacySchema = new Schema<IBonneBoite>({
     description: "Date de dernières mise à jour",
   },
 })
-
-bonneBoiteLegacySchema.plugin(mongoosastic, { esClient: getElasticInstance(), index: "bonnesboites" })
 
 export default model<IBonneBoite>("bonnesboiteslegacy", bonneBoiteLegacySchema)
