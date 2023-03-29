@@ -11,6 +11,8 @@ import filterJobsByOpco from "../filterJobsByOpco.js"
 //const poleEmploi = require("./common.js");
 import { getAccessToken, getRoundedRadius, peApiHeaders } from "./common.js"
 
+const blackListedCompanies = ["iscod", "oktogone", "institut europeen f 2i"]
+
 const getSomePeJobs = async ({ romes, insee, radius, lat, long, caller, diploma, opco, opcoUrl, api }) => {
   // la liste des romes peut être supérieure au maximum de trois autorisés par l'api offre de PE
   // on segmente les romes en blocs de max 3 et lance autant d'appels parallèles que nécessaires
@@ -99,17 +101,19 @@ const getSomePeJobsForChunkedRomes = async ({ romes, insee, radius, lat, long, c
 
 // update du contenu avec des résultats pertinents par rapport au rayon
 const transformPeJobsForIdea = ({ jobs, radius, lat, long, caller }) => {
-  let resultJobs = {
+  const resultJobs = {
     results: [],
   }
 
   if (jobs.resultats && jobs.resultats.length) {
     for (let i = 0; i < jobs.resultats.length; ++i) {
       //console.log("jobs.resultat : ",jobs.resultats[i]);
-      let job = transformPeJobForIdea({ job: jobs.resultats[i], lat, long, caller })
+      const job = transformPeJobForIdea({ job: jobs.resultats[i], lat, long, caller })
 
       if (job.place.distance < getRoundedRadius(radius)) {
-        resultJobs.results.push(job)
+        if (!job?.company?.name || blackListedCompanies.indexOf(job.company.name.toLowerCase()) < 0) {
+          resultJobs.results.push(job)
+        }
       }
     }
   }
