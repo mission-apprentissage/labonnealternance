@@ -1,3 +1,10 @@
+# [1.8.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.7.0...v1.8.0) (2023-03-29)
+
+
+### Features
+
+* ajout job manquant à seed et index manquants à generateIndex ([#327](https://github.com/mission-apprentissage/labonnealternance/issues/327)) ([9df17fa](https://github.com/mission-apprentissage/labonnealternance/commit/9df17fadb29483c796856277c8d07ac5d99762fd))
+
 # [1.7.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.6.0...v1.7.0) (2023-03-29)
 
 
