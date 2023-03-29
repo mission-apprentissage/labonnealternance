@@ -96,7 +96,7 @@ export const syncEtablissementsAndFormations = async ({ etablissements, eligible
               parcoursup_id: formationMinistereEducatif?.parcoursup_id,
               cle_ministere_educatif: formation.cle_ministere_educatif,
               training_code_formation_diplome: formation.cfd,
-              etablissement_formateur_zip_code: formation.code_postal,
+              etablissement_formateur_zip_code: formation.etablissement_formateur_code_postal,
               training_intitule_long: formation.intitule_long,
               referrers: emailRdv && !emailBlacklisted ? referrersToActivate : [],
               is_catalogue_published: formation.published,
