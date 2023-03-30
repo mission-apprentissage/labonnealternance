@@ -6,7 +6,7 @@ import XLSX from "xlsx"
 import __dirname from "../../common/dirname.js"
 import { logger } from "../../common/logger.js"
 import { DomainesMetiers } from "../../common/model/index.js"
-import { getFileFromS3 } from "../../common/utils/awsUtils.js"
+import { getFileFromS3Bucket } from "../../common/utils/awsUtils.js"
 import { resetIndexAndDb } from "../../common/utils/esUtils.js"
 import { readXLSXFile } from "../../common/utils/fileUtils.js"
 import { sentryCaptureException } from "../../common/utils/sentryUtils.js"
@@ -14,9 +14,10 @@ import { sentryCaptureException } from "../../common/utils/sentryUtils.js"
 const currentDirname = __dirname(import.meta.url)
 const FILEPATH = path.join(currentDirname, "../../assets/domainesMetiers_S3.xlsx")
 
-const downloadAndSaveFile = (optionalFileName) => {
-  logger.info(`Downloading and save file ${optionalFileName ? optionalFileName : "currentDomainesMetiers.xlsx"} from S3 Bucket...`)
-  return oleoduc(getFileFromS3(`mna-services/features/domainesMetiers/${optionalFileName ? optionalFileName : "currentDomainesMetiers.xlsx"}`), fs.createWriteStream(FILEPATH))
+const downloadAndSaveFile = async (from = "currentDomainesMetiers.xlsx") => {
+  logger.info(`Downloading and save file ${from} from S3 Bucket...`)
+
+  await oleoduc(getFileFromS3Bucket({ key: from }), fs.createWriteStream(FILEPATH))
 }
 
 export default async function (optionalFileName?: string) {
@@ -24,9 +25,9 @@ export default async function (optionalFileName?: string) {
 
   logger.info(" -- Start of DomainesMetiers initializer -- ")
 
-  await resetIndexAndDb("domainesmetiers", DomainesMetiers, { requireAsciiFolding: true })
-
   await downloadAndSaveFile(optionalFileName)
+  
+  await resetIndexAndDb("domainesmetiers", DomainesMetiers, { requireAsciiFolding: true })
 
   const workbookDomainesMetiers = readXLSXFile(FILEPATH)
 

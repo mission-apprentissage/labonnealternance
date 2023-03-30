@@ -1,5 +1,4 @@
 // @ts-nocheck
-import AWS from "aws-sdk"
 import memoize from "memoizee"
 import { getFileFromS3Bucket, uploadFileToS3 } from "../../common/utils/awsUtils.js"
 import { streamJsonArray } from "../../common/utils/streamUtils.js"
@@ -18,11 +17,6 @@ import { OPCOS } from "../../common/constants.js"
 const currentDirname = __dirname(import.meta.url)
 
 const PREDICTION_FILE = path.join(currentDirname, "../../assets/bonnesboites.json")
-const accessKeyId = config.algoBonnesBoites.accessKeyId
-const secretAccessKey = config.algoBonnesBoites.secretAccessKey
-const s3Endpoint = config.algoBonnesBoites.s3Endpoint
-const s3Region = config.algoBonnesBoites.s3Region
-const s3Bucket = config.algoBonnesBoites.s3Bucket
 const s3File = config.algoBonnesBoites.s3File
 
 export const removePredictionFile = async () => {
@@ -37,14 +31,7 @@ export const removePredictionFile = async () => {
 export const pushFileToBucket = async ({ key, filePath }) => {
   logger.info(`Uploading SAVE file ${key} to S3 Bucket...`)
 
-  AWS.config.update({
-    accessKeyId,
-    secretAccessKey,
-  })
-
-  const s3Repository = new AWS.S3({ endpoint: s3Endpoint, region: s3Region })
-
-  await uploadFileToS3({ s3Repository, filePath, key, bucket: s3Bucket })
+  await uploadFileToS3({ filePath, key })
 }
 
 export const downloadAlgoCompanyFile = async () => {
@@ -60,14 +47,7 @@ export const downloadSAVEFile = async ({ key }) => {
 }
 
 export const downloadFile = async ({ from, to }) => {
-  AWS.config.update({
-    accessKeyId,
-    secretAccessKey,
-  })
-
-  const s3Repository = new AWS.S3({ endpoint: s3Endpoint, region: s3Region })
-
-  await oleoduc(getFileFromS3Bucket({ s3Repository, bucket: s3Bucket, key: from }), fs.createWriteStream(to))
+  await oleoduc(getFileFromS3Bucket({ key: from }), fs.createWriteStream(to))
 }
 
 export const streamSAVECompanies = async ({ key }) => {
