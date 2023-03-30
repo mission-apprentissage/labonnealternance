@@ -12,6 +12,7 @@ const tempDir = "./assets/"
 const updateFilePath = path.join(currentDirname, "./assets/lba_save_etablissements_admin_update.csv")
 const removeFilePath = path.join(currentDirname, "./assets/lba_save_etablissements_admin_remove.csv")
 const addFilePath = path.join(currentDirname, "./assets/lba_save_etablissements_admin_add.csv")
+const nafHiringFilePath = path.join(currentDirname, "../../assets/contrats_30j.csv")
 
 const removeMap = {}
 const updateMap = {}
@@ -324,8 +325,13 @@ const initSAVEUpdateFile = async () => {
   return updateMap
 }
 
+const copyNafHiringsToS3 = async () => {
+  await pushFileToBucket({ key: "contrats_30j.csv", filePath: nafHiringFilePath })
+}
+
 export default async function buildSAVE() {
   await initSAVERemoveFile()
   await initSAVEAddFile()
   await initSAVEUpdateFile()
+  await copyNafHiringsToS3()
 }
