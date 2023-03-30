@@ -1,9 +1,8 @@
-
-import path from "path"
 import fs from "fs"
 import { oleoduc, readLineByLine, transformData, writeData } from "oleoduc"
-import { logMessage } from "../../common/utils/logMessage.js"
+import path from "path"
 import __dirname from "../../common/dirname.js"
+import { logMessage } from "../../common/utils/logMessage.js"
 const currentDirname = __dirname(import.meta.url)
 
 const nafRomeHiringMap = {}

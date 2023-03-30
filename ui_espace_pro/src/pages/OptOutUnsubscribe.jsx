@@ -1,11 +1,11 @@
+import { Box, Button, Container, Flex, Heading, Radio, RadioGroup, Stack, Text, Textarea } from "@chakra-ui/react"
 import React, { useEffect, useState } from "react"
-import { Box, Container, Flex, Text, RadioGroup, Stack, Radio, Textarea, Button, Heading } from "@chakra-ui/react"
 import { useParams } from "react-router-dom"
-import { SuccessCircle } from "../theme/components/icons"
-import { _get, _post } from "../common/httpClient"
 import { Breadcrumb } from "../common/components/Breadcrumb"
-import { setTitle } from "../common/utils/pageUtils"
 import Layout from "../common/components/Layout"
+import { _get, _post } from "../common/httpClient"
+import { setTitle } from "../common/utils/pageUtils"
+import { SuccessCircle } from "../theme/components/icons"
 
 /**
  * @description OptOutUnsubscribe component.
@@ -50,7 +50,7 @@ const OptOutUnsubscribe = () => {
   useEffect(async () => {
     const etablissement = await _get(`/api/etablissements/${id}`)
 
-    if (etablissement.opt_out_refused_at) {
+    if (etablissement.optout_refusal_date) {
       setHasBeenUnsubscribed(true)
     }
 
@@ -116,25 +116,25 @@ const OptOutUnsubscribe = () => {
                         <Text>
                           SIRET :{" "}
                           <Text as="span" fontWeight="700">
-                            {etablissement.siret_formateur}
+                            {etablissement.formateur_siret}
                           </Text>
                         </Text>
                         <Text>
                           Adresse :{" "}
                           <Text as="span" fontWeight="700">
-                            {etablissement.adresse}
+                            {etablissement.address}
                           </Text>
                         </Text>
                         <Text>
                           Code postal :{" "}
                           <Text as="span" fontWeight="700">
-                            {etablissement.code_postal}
+                            {etablissement.zip_code}
                           </Text>
                         </Text>
                         <Text>
                           Ville :{" "}
                           <Text as="span" fontWeight="700">
-                            {etablissement.localite}
+                            {etablissement.city}
                           </Text>
                         </Text>
                       </Box>

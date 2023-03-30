@@ -86,6 +86,14 @@ export const getFormationsBySiretFormateur = ({ siretFormateur }: { siretFormate
  * @param {String[]} idRcoFormations
  * @returns {Promise<Object[]>}
  */
+export const getFormationsByCleMinistereEducatif = ({ cleMinistereEducatifs }: { cleMinistereEducatifs: string[] }) =>
+  FormationCatalogue.find({ cle_ministere_educatif: cleMinistereEducatifs })
+
+/**
+ * @description Get formations by idRcoFormations.
+ * @param {String[]} idRcoFormations
+ * @returns {Promise<Object[]>}
+ */
 export const getFormationsByIdRcoFormations = ({ idRcoFormations }: { idRcoFormations: string[] }) => FormationCatalogue.find({ id_rco_formation: idRcoFormations })
 
 /**

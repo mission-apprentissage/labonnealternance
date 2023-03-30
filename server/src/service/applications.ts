@@ -25,8 +25,7 @@ const currentDirname = __dirname(import.meta.url)
 const publicUrl = config.publicUrl
 const publicUrlEspacePro = config.publicUrlEspacePro
 
-const imagePath = `${config.publicUrl.indexOf("local") >= 0 ? config.publicUrl : "https://labonnealternance-recette.apprentissage.beta.gouv.fr"}/images/emails/`
-// const imagePath = "https://labonnealternance-recette.apprentissage.beta.gouv.fr/images/emails/"
+const imagePath = `${config.publicUrl}/images/emails/`
 
 const images = {
   images: {

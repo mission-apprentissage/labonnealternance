@@ -1,14 +1,14 @@
 import assert from "assert"
 import httpTests from "../../utils/httpTests.js"
-import widgetParameters from "../../../src/common/components/widgetParameters.js"
+import eligibleTrainingsForAppointments from "../../../src/common/components/eligibleTrainingsForAppointments.js"
 import { sampleParameter } from "../../data/samples.js"
 import __filename from "../../../src/common/filename.js"
 
 httpTests(__filename(import.meta.url), ({ startServer }) => {
   it("Vérifie qu'on peut récupérer les infos de context via idRcoFormation and cleMinistereEducatif", async () => {
-    const { createParameter } = widgetParameters()
+    const { create } = eligibleTrainingsForAppointments()
 
-    await createParameter(sampleParameter)
+    await create(sampleParameter)
 
     const { httpClient } = await startServer()
 
@@ -34,9 +34,9 @@ httpTests(__filename(import.meta.url), ({ startServer }) => {
   })
 
   it("Vérifie qu'on peut récupérer les infos de context via idRcoFormation", async () => {
-    const { createParameter } = widgetParameters()
+    const { create } = eligibleTrainingsForAppointments()
 
-    await createParameter(sampleParameter)
+    await create(sampleParameter)
     const { httpClient } = await startServer()
 
     const { status, data } = await httpClient.post(`/api/appointment-request/context/create`, {
@@ -60,9 +60,9 @@ httpTests(__filename(import.meta.url), ({ startServer }) => {
   })
 
   it("Vérifie qu'on peut récupérer les infos de context via idCleMinistereEducatif", async () => {
-    const { createParameter } = widgetParameters()
+    const { create } = eligibleTrainingsForAppointments()
 
-    await createParameter(sampleParameter)
+    await create(sampleParameter)
     const { httpClient } = await startServer()
 
     const { status, data } = await httpClient.post(`/api/appointment-request/context/create`, {
@@ -86,9 +86,9 @@ httpTests(__filename(import.meta.url), ({ startServer }) => {
   })
 
   it("Vérifie qu'on peut récupérer les infos de context via idParcoursup", async () => {
-    const { createParameter } = widgetParameters()
+    const { create } = eligibleTrainingsForAppointments()
 
-    await createParameter(sampleParameter)
+    await create(sampleParameter)
     const { httpClient } = await startServer()
 
     const response = await httpClient.post(`/api/appointment-request/context/create`, {

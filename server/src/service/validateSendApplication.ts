@@ -1,7 +1,7 @@
-import Yup from "yup"
-import config from "../config.js"
 import { isEmailBurner } from "burner-email-providers"
+import Yup from "yup"
 import { Application } from "../common/model/index.js"
+import config from "../config.js"
 
 const validateSendApplication = async (validable) => {
   const schema = Yup.object().shape({

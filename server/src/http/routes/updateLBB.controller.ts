@@ -1,6 +1,7 @@
+// @ts-nocheck
 import express from "express"
-import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
 import { updateContactInfo } from "../../service/lbb/updateContactInfo.js"
+import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
 
 export default function () {
   const router = express.Router()

@@ -1,9 +1,9 @@
+import { Box, Container, Divider, Flex, Text } from "@chakra-ui/react"
 import { useEffect, useState } from "react"
-import { Box, Container, Flex, Text, Divider } from "@chakra-ui/react"
 import { useParams } from "react-router-dom"
-import { _get, _post } from "../common/httpClient"
-import Rocket from "../common/components/Rocket"
 import LocationIcon from "../common/components/LocationIcon"
+import Rocket from "../common/components/Rocket"
+import { _get, _post } from "../common/httpClient"
 
 /**
  * @description AppointmentFollowUpPage component.

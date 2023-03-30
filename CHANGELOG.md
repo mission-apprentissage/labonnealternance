@@ -1,45 +1,46 @@
-# [1.9.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.8.2...v1.9.0) (2023-03-30)
+## [1.9.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.9.0...v1.9.1) (2023-03-30)
 
+
+### Bug Fixes
+
+* manage empty string params ([0d6eefc](https://github.com/mission-apprentissage/labonnealternance/commit/0d6eefcf015d6be9e0f74145533bccfccb86e3dd))
+
+# [1.9.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.8.2...v1.9.0) (2023-03-30)
 
 ### Features
 
-* centralisation des ressources sur un seul s3 ([71c57fe](https://github.com/mission-apprentissage/labonnealternance/commit/71c57fe086017254a9e4d1cbc9e1c23f3c542de8))
+- centralisation des ressources sur un seul s3 ([71c57fe](https://github.com/mission-apprentissage/labonnealternance/commit/71c57fe086017254a9e4d1cbc9e1c23f3c542de8))
 
 ## [1.8.2](https://github.com/mission-apprentissage/labonnealternance/compare/v1.8.1...v1.8.2) (2023-03-30)
 
-
 ### Bug Fixes
 
-* augmentation limite de formations retournées ([1eb46b5](https://github.com/mission-apprentissage/labonnealternance/commit/1eb46b5419edd77a79de4f90e4f0a51cb1a148a4))
+- augmentation limite de formations retournées ([1eb46b5](https://github.com/mission-apprentissage/labonnealternance/commit/1eb46b5419edd77a79de4f90e4f0a51cb1a148a4))
 
 ## [1.8.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.8.0...v1.8.1) (2023-03-29)
 
-
 ### Bug Fixes
 
-* ajustement scroll vertical trop court à la sélection d'un élément ([e57a7a0](https://github.com/mission-apprentissage/labonnealternance/commit/e57a7a0a2657b8706a711ef67cd554fc77d6b3ce))
-* gestion erreur serveur générique pour l'envoi de candidature ([c573a17](https://github.com/mission-apprentissage/labonnealternance/commit/c573a17082bcb35545c293f79af1b5e51666edaa))
+- ajustement scroll vertical trop court à la sélection d'un élément ([e57a7a0](https://github.com/mission-apprentissage/labonnealternance/commit/e57a7a0a2657b8706a711ef67cd554fc77d6b3ce))
+- gestion erreur serveur générique pour l'envoi de candidature ([c573a17](https://github.com/mission-apprentissage/labonnealternance/commit/c573a17082bcb35545c293f79af1b5e51666edaa))
 
 # [1.8.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.7.0...v1.8.0) (2023-03-29)
 
-
 ### Features
 
-* ajout job manquant à seed et index manquants à generateIndex ([#327](https://github.com/mission-apprentissage/labonnealternance/issues/327)) ([9df17fa](https://github.com/mission-apprentissage/labonnealternance/commit/9df17fadb29483c796856277c8d07ac5d99762fd))
+- ajout job manquant à seed et index manquants à generateIndex ([#327](https://github.com/mission-apprentissage/labonnealternance/issues/327)) ([9df17fa](https://github.com/mission-apprentissage/labonnealternance/commit/9df17fadb29483c796856277c8d07ac5d99762fd))
 
 # [1.7.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.6.0...v1.7.0) (2023-03-29)
 
-
 ### Features
 
-* update RGPD Je candidate ([#314](https://github.com/mission-apprentissage/labonnealternance/issues/314)) ([b62c78e](https://github.com/mission-apprentissage/labonnealternance/commit/b62c78ea065e4b1664b9c73df77fa26435ee1d19))
+- update RGPD Je candidate ([#314](https://github.com/mission-apprentissage/labonnealternance/issues/314)) ([b62c78e](https://github.com/mission-apprentissage/labonnealternance/commit/b62c78ea065e4b1664b9c73df77fa26435ee1d19))
 
 # [1.6.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.5.2...v1.6.0) (2023-03-29)
 
-
 ### Features
 
-* filtrage des offres de sociétés suspectes ([#329](https://github.com/mission-apprentissage/labonnealternance/issues/329)) ([6824061](https://github.com/mission-apprentissage/labonnealternance/commit/6824061d250b6054e06effaa41651e9956751271))
+- filtrage des offres de sociétés suspectes ([#329](https://github.com/mission-apprentissage/labonnealternance/issues/329)) ([6824061](https://github.com/mission-apprentissage/labonnealternance/commit/6824061d250b6054e06effaa41651e9956751271))
 
 ## [1.5.2](https://github.com/mission-apprentissage/labonnealternance/compare/v1.5.1...v1.5.2) (2023-03-22)
 

@@ -3,9 +3,9 @@ import React, { useEffect, useState } from "react"
 import { initPostulerParametersFromQuery } from "services/config"
 import WidgetPostulerError from "./WidgetPostulerError"
 
+import { Flex, Spinner } from "@chakra-ui/react"
 import { companyApi, matchaApi } from "../../SearchForTrainingsAndJobs/services/utils"
 import WidgetCandidatureSpontanee from "./WidgetCandidatureSpontanee"
-import { Flex, Spinner } from "@chakra-ui/react"
 
 const WidgetPostuler = () => {
   useEffect(() => {

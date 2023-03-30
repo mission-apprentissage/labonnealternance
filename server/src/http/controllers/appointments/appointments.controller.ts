@@ -1,10 +1,10 @@
+import Sentry from "@sentry/node"
 import * as express from "express"
 import { Body, Controller, Example, OperationId, Post, Request, Response, Route, SuccessResponse, Tags } from "tsoa"
-import WidgetParameters from "../../../common/components/widgetParameters.js"
+import EligibleTrainingsForAppointments from "../../../common/components/eligibleTrainingsForAppointments.js"
 import { getReferrerByKeyName } from "../../../common/model/constants/referrers.js"
 import { isValidEmail } from "../../../common/utils/isValidEmail.js"
 import { getCleMinistereEducatifFromIdActionFormation } from "../../../common/utils/mappings/onisep.js"
-import { sentryCaptureException } from "../../../common/utils/sentryUtils.js"
 import config from "../../../config.js"
 import { TCreateContextBody, TCreateContextResponse, TCreateContextResponseError } from "./types.js"
 import { contextCreateSchema } from "./validators.js"
@@ -36,25 +36,25 @@ export class AppointmentsController extends Controller {
   public async createContext(@Body() body: TCreateContextBody): Promise<TCreateContextResponse | TCreateContextResponseError | string> {
     await contextCreateSchema.validateAsync(body, { abortEarly: false })
 
-    const widgetParametersService = WidgetParameters()
+    const eligibleTrainingsForAppointmentsService = EligibleTrainingsForAppointments()
 
     const { idRcoFormation, idParcoursup, idActionFormation, referrer, idCleMinistereEducatif } = body
 
     const referrerObj = getReferrerByKeyName(referrer)
 
-    let widgetParameter
+    let eligibleTrainingsForAppointment
     if (idCleMinistereEducatif) {
-      widgetParameter = await widgetParametersService.findOne({ cle_ministere_educatif: idCleMinistereEducatif })
+      eligibleTrainingsForAppointment = await eligibleTrainingsForAppointmentsService.findOne({ cle_ministere_educatif: idCleMinistereEducatif })
     } else if (idRcoFormation) {
-      widgetParameter = await widgetParametersService.findOne({
-        id_rco_formation: idRcoFormation,
+      eligibleTrainingsForAppointment = await eligibleTrainingsForAppointmentsService.findOne({
+        rco_formation_id: idRcoFormation,
         cle_ministere_educatif: {
           $ne: null,
         },
       })
     } else if (idParcoursup) {
-      widgetParameter = await widgetParametersService.findOne({
-        id_parcoursup: idParcoursup,
+      eligibleTrainingsForAppointment = await eligibleTrainingsForAppointmentsService.findOne({
+        parcoursup_id: idParcoursup,
         cle_ministere_educatif: {
           $ne: null,
         },
@@ -67,44 +67,46 @@ export class AppointmentsController extends Controller {
         return "Formation introuvable."
       }
 
-      widgetParameter = await widgetParametersService.findOne({ cle_ministere_educatif: cleMinistereEducatif })
+      eligibleTrainingsForAppointment = await eligibleTrainingsForAppointmentsService.findOne({ cle_ministere_educatif: cleMinistereEducatif })
     } else {
       this.setStatus(400)
       return "Critère de recherche non conforme."
     }
 
-    if (!widgetParameter) {
+    if (!eligibleTrainingsForAppointment) {
       this.setStatus(404)
       return "Formation introuvable."
     }
 
-    const isOpenForAppointments = await widgetParametersService.findOne({
-      cle_ministere_educatif: widgetParameter.cle_ministere_educatif,
-      referrers: { $in: [referrerObj.code] },
-      email_rdv: { $nin: [null, ""] },
+    const isOpenForAppointments = await eligibleTrainingsForAppointmentsService.findOne({
+      cle_ministere_educatif: eligibleTrainingsForAppointment.cle_ministere_educatif,
+      referrers: { $in: [referrerObj.name] },
+      lieu_formation_email: { $nin: [null, ""] },
     })
 
-    if (!isValidEmail(isOpenForAppointments?.email_rdv)) {
-      sentryCaptureException(new Error(`Formation "${widgetParameter.cle_ministere_educatif}" sans email de contact.`))
+    if (!isValidEmail(isOpenForAppointments?.lieu_formation_email)) {
+      Sentry.captureException(new Error(`Formation "${eligibleTrainingsForAppointment.cle_ministere_educatif}" sans email de contact.`))
     }
 
-    if (!isOpenForAppointments || !isValidEmail(isOpenForAppointments?.email_rdv)) {
+    if (!isOpenForAppointments || !isValidEmail(isOpenForAppointments?.lieu_formation_email)) {
       return {
         error: "Prise de rendez-vous non disponible.",
       }
     }
 
     return {
-      etablissement_formateur_entreprise_raison_sociale: widgetParameter.etablissement_raison_sociale,
-      intitule_long: widgetParameter.formation_intitule,
-      lieu_formation_adresse: widgetParameter.lieu_formation_adresse,
-      code_postal: widgetParameter.code_postal,
-      etablissement_formateur_siret: widgetParameter.etablissement_siret,
-      cfd: widgetParameter.formation_cfd,
-      localite: widgetParameter.localite,
-      id_rco_formation: widgetParameter.id_rco_formation,
-      cle_ministere_educatif: widgetParameter?.cle_ministere_educatif,
-      form_url: `${config.publicUrlEspacePro}/form?referrer=${referrer}&cleMinistereEducatif=${encodeURIComponent(widgetParameter.cle_ministere_educatif)}`,
+      etablissement_formateur_entreprise_raison_sociale: eligibleTrainingsForAppointment.etablissement_formateur_raison_sociale,
+      intitule_long: eligibleTrainingsForAppointment.training_intitule_long,
+      lieu_formation_adresse: eligibleTrainingsForAppointment.lieu_formation_street,
+      code_postal: eligibleTrainingsForAppointment.etablissement_formateur_zip_code,
+      etablissement_formateur_siret: eligibleTrainingsForAppointment.etablissement_siret,
+      cfd: eligibleTrainingsForAppointment.training_code_formation_diplome,
+      localite: eligibleTrainingsForAppointment.city,
+      id_rco_formation: eligibleTrainingsForAppointment.rco_formation_id,
+      cle_ministere_educatif: eligibleTrainingsForAppointment?.cle_ministere_educatif,
+      form_url: `${config.publicUrlEspacePro}/form?referrer=${referrerObj.name.toLowerCase()}&cleMinistereEducatif=${encodeURIComponent(
+        eligibleTrainingsForAppointment.cle_ministere_educatif
+      )}`,
     }
   }
 }

@@ -13,32 +13,31 @@ export const inviteEtablissementToPremiumFollowUp = async ({ etablissements, mai
   logger.info("Cron #inviteEtablissementToPremiumFollowUp started.")
 
   const etablissementsFound = await etablissements.find({
-    email_decisionnaire: {
+    gestionnaire_email: {
       $ne: null,
     },
-    opt_mode: optMode.OPT_OUT,
-    opt_out_will_be_activated_at: {
+    optout_activation_scheduled_date: {
       $ne: null,
     },
-    premium_activated_at: null,
-    premium_refused_at: null,
-    premium_invited_at: {
+    premium_activation_date: null,
+    premium_refusal_date: null,
+    premium_invitation_date: {
       $ne: null,
       $lte: dayjs().subtract(10, "days").toDate(),
     },
-    "mailing.campaign": {
+    "to_etablissement_emails.campaign": {
       $ne: mailType.PREMIUM_INVITE_FOLLOW_UP,
     },
   })
 
   for (const etablissement of etablissementsFound) {
-    if (!etablissement.email_decisionnaire || !isValidEmail(etablissement.email_decisionnaire)) {
+    if (!etablissement.gestionnaire_email || !isValidEmail(etablissement.gestionnaire_email)) {
       continue
     }
 
     // Invite all etablissements only in production environment
     const { messageId } = await mailer.sendEmail({
-      to: etablissement.email_decisionnaire,
+      to: etablissement.gestionnaire_email,
       subject: `Rendez-vous Apprentissage est disponible sur Parcoursup`,
       template: mailTemplate["mail-cfa-premium-invite-followup"],
       data: {
@@ -48,19 +47,19 @@ export const inviteEtablissementToPremiumFollowUp = async ({ etablissements, mai
           parcoursupIntegrationExample: `${config.publicUrlEspacePro}/assets/exemple_integration_parcoursup.jpg?raw=true`,
         },
         etablissement: {
-          email: etablissement.email_decisionnaire,
-          activatedAt: dayjs(etablissement.opt_out_will_be_activated_at).format("DD/MM"),
+          email: etablissement.gestionnaire_email,
+          activatedAt: dayjs(etablissement.optout_activation_scheduled_date).format("DD/MM"),
           linkToForm: `${config.publicUrlEspacePro}/form/premium/${etablissement._id}`,
         },
       },
     })
 
     await etablissements.updateOne(
-      { siret_formateur: etablissement.siret_formateur },
+      { formateur_siret: etablissement.formateur_siret },
       {
-        premium_invited_at: dayjs().toDate(),
+        premium_invitation_date: dayjs().toDate(),
         $push: {
-          mailing: {
+          to_etablissement_emails: {
             campaign: mailType.PREMIUM_INVITE_FOLLOW_UP,
             status: null,
             message_id: messageId,

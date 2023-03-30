@@ -1,6 +1,6 @@
+import { Box, Grid, GridItem, Image, Show, Text } from "@chakra-ui/react"
 import React from "react"
 import ConnectionActions from "./ConnectionActions"
-import { Box, Grid, GridItem, Image, Show, Text } from "@chakra-ui/react"
 
 const CFA = () => {
   return (

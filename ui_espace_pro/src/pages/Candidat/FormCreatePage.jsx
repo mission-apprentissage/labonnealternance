@@ -1,14 +1,13 @@
-import { useEffect, useState } from "react"
-import { Field, Form, Formik } from "formik"
-import * as Yup from "yup"
+import { Box, Button, Center, Flex, Input, Spinner, Text } from "@chakra-ui/react"
 import * as emailValidator from "email-validator"
+import { Field, Form, Formik } from "formik"
 import * as qs from "query-string"
-import { useNavigate, useLocation } from "react-router-dom"
-import { Input, Button, Box, Spinner, Text, Center, Flex } from "@chakra-ui/react"
+import { useEffect, useState } from "react"
+import { useLocation, useNavigate } from "react-router-dom"
+import * as Yup from "yup"
+import { _post } from "../../common/httpClient"
 import { ContactCfaComponent } from "./layout/ContactCfaComponent"
 import { FormLayoutComponent } from "./layout/FormLayoutComponent"
-import { _post } from "../../common/httpClient"
-import { AnimationContainer } from "../../components"
 
 /**
  * @description Form appointment page.
@@ -109,9 +108,9 @@ export const FormCreatePage = (props) => {
         lastname: values.lastname,
         phone: values.phone,
         email: values.email,
-        motivations: values.motivations,
+        applicantMessageToCfa: values.applicantMessageToCfa,
         cleMinistereEducatif,
-        referrer,
+        appointmentOrigin: referrer,
       })
 
       if (error) {
@@ -176,14 +175,14 @@ export const FormCreatePage = (props) => {
               lastname: "",
               phone: "",
               email: "",
-              motivations: "",
+              applicantMessageToCfa: "",
             }}
             validationSchema={Yup.object().shape({
               firstname: Yup.string().required("Requis"),
               lastname: Yup.string().required("Requis"),
               phone: Yup.number().required("Requis"),
               email: Yup.string().required("Requis"),
-              motivations: Yup.string(),
+              applicantMessageToCfa: Yup.string(),
             })}
             onSubmit={sendNewRequest}
           >
@@ -242,7 +241,7 @@ export const FormCreatePage = (props) => {
                   <Text mt={5} pb={2}>
                     Quel sujet souhaitez-vous aborder ?
                   </Text>
-                  <Field name="motivations">
+                  <Field name="applicantMessageToCfa">
                     {({ field, meta }) => {
                       return <Input placeholder="période d’inscription, horaires, etc." {...field} {...feedback(meta, "Désolée, ce champs est nécessaire")} />
                     }}

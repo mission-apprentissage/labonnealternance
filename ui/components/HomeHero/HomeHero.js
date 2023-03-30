@@ -1,6 +1,6 @@
+import { Box, Container } from "@chakra-ui/react"
 import React from "react"
 import StartForm from "../StartForm"
-import { Container, Box } from "@chakra-ui/react"
 
 const HomeHero = () => {
   return (

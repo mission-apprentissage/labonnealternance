@@ -1,8 +1,8 @@
-import { logMessage } from "../../common/utils/logMessage.js"
-import { oleoduc, accumulateData, readLineByLine, transformData, writeData } from "oleoduc"
 import fs from "fs"
+import { accumulateData, oleoduc, readLineByLine, transformData, writeData } from "oleoduc"
 import path from "path"
 import __dirname from "../../common/dirname.js"
+import { logMessage } from "../../common/utils/logMessage.js"
 const currentDirname = __dirname(import.meta.url)
 
 const updateFilePath = path.join(currentDirname, "./assets/lba_save_etablissements_admin_update.csv")

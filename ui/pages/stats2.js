@@ -3,8 +3,8 @@ import Breadcrumb from "../components/breadcrumb"
 import Navigation from "../components/navigation"
 import ScrollToTop from "../components/ScrollToTop"
 
-import Footer from "../components/footer"
 import { Box, Container, Divider, Grid, GridItem, Link, Text } from "@chakra-ui/react"
+import Footer from "../components/footer"
 
 const stats2 = () => (
   <Box>

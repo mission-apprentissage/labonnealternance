@@ -151,27 +151,33 @@ const PremiumForm = () => {
                     </Text>
                   </Text>
                   <Text>
-                    SIRET :{" "}
+                    SIRET Gestionnaire :{" "}
                     <Text as="span" fontWeight="700">
-                      {etablissement.siret_formateur}
+                      {etablissement.gestionnaire_siret}
+                    </Text>
+                  </Text>
+                  <Text>
+                    SIRET Formateur :{" "}
+                    <Text as="span" fontWeight="700">
+                      {etablissement.formateur_siret}
                     </Text>
                   </Text>
                   <Text>
                     Adresse :{" "}
                     <Text as="span" fontWeight="700">
-                      {etablissement.adresse}
+                      {etablissement.address}
                     </Text>
                   </Text>
                   <Text>
                     Code postal :{" "}
                     <Text as="span" fontWeight="700">
-                      {etablissement.code_postal}
+                      {etablissement.zip_code}
                     </Text>
                   </Text>
                   <Text>
                     Ville :{" "}
                     <Text as="span" fontWeight="700">
-                      {etablissement.localite}
+                      {etablissement.city}
                     </Text>
                   </Text>
                 </Box>

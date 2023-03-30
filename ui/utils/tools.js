@@ -48,7 +48,7 @@ const scrollToTop = (elementId) => {
   }
 }
 
-const scrollToElementInContainer = ({containerId, el, yOffsett=250, behavior="auto"}) => {
+const scrollToElementInContainer = ({ containerId, el, yOffsett = 250, behavior = "auto" }) => {
   el &&
     document.getElementById(containerId).scrollTo({
       top: el.offsetTop - yOffsett,
