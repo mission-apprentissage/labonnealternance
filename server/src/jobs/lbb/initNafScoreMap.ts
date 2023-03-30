@@ -4,11 +4,13 @@ import fs from "fs"
 import { oleoduc, readLineByLine, transformData, writeData } from "oleoduc"
 import { logMessage } from "../../common/utils/logMessage.js"
 import __dirname from "../../common/dirname.js"
+import { downloadFile } from "./bonnesBoitesUtils.js"
+import { logger } from "../../common/logger.js"
+
+const hiringFileName = "contrats_30j.csv"
 const currentDirname = __dirname(import.meta.url)
-
+const hiringFilePath = path.join(currentDirname, `../../assets/${hiringFileName}`)
 const nafRomeHiringMap = {}
-
-const filePath = path.join(currentDirname, "../../assets/contrats_30j.csv")
 
 let count = 0
 
@@ -45,14 +47,18 @@ const computeLine = async ({ rome, naf, hirings }) => {
   nafRomeHiringMap[naf] = nafHirings
 }
 
+const downloadNafHiringFile = async () => {
+  logger.info(`Downloading Naf Hirings file from S3 Bucket...`)
+  await downloadFile({ from: hiringFileName, to: hiringFilePath })
+}
+
 export default async function () {
   try {
     try {
-
-      console.log("filePath : ",filePath)
+      await downloadNafHiringFile()
 
       await oleoduc(
-        fs.createReadStream(filePath),
+        fs.createReadStream(hiringFilePath),
         readLineByLine(),
         transformData((line) => parseLine(line)),
         writeData(async (line) => computeLine(line))
