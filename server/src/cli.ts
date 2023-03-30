@@ -253,7 +253,7 @@ cli
 
 cli
   .command("update-companies")
-  .option("-use-algo, [UseAlgoFile]", "télécharge et traite le fichier issu de l'algo", false)
+  .option("-use-algo-file, [UseAlgoFile]", "télécharge et traite le fichier issu de l'algo", false)
   .option("-clear-mongo, [ClearMongo]", "vide la collection des bonnes alternances", false)
   .option("-build-index, [BuildIndex]", "réindex les bonnes boîtes", false)
   .option("-use-save, [UseSave]", "pour appliquer les données SAVE", false)

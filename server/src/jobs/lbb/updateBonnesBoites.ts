@@ -61,7 +61,7 @@ export default async function updateBonnesBoites({ UseAlgoFile = false, ClearMon
   try {
     logMessage("info", " -- Start updating lbb db with new algo -- ")
 
-    console.log("UseAlgoFile : ", UseAlgoFile, "ClearMongo : ", ClearMongo, " - BuildIndex : ", BuildIndex, " - UseSave : ", UseSave)
+    console.log("UseAlgoFile : ", UseAlgoFile, " - ClearMongo : ", ClearMongo, " - BuildIndex : ", BuildIndex, " - UseSave : ", UseSave)
 
     if (UseAlgoFile) {
       await downloadAlgoCompanyFile()
