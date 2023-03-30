@@ -1,3 +1,10 @@
+# [1.10.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.9.2...v1.10.0) (2023-03-30)
+
+
+### Features
+
+* modification bouton test combo en parternariat ([c562a65](https://github.com/mission-apprentissage/labonnealternance/commit/c562a65fd67298c22cee1ccff51a479f15556e5e))
+
 ## [1.9.2](https://github.com/mission-apprentissage/labonnealternance/compare/v1.9.1...v1.9.2) (2023-03-30)
 
 
