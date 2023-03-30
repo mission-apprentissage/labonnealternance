@@ -1,3 +1,10 @@
+# [1.9.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.8.2...v1.9.0) (2023-03-30)
+
+
+### Features
+
+* centralisation des ressources sur un seul s3 ([71c57fe](https://github.com/mission-apprentissage/labonnealternance/commit/71c57fe086017254a9e4d1cbc9e1c23f3c542de8))
+
 ## [1.8.2](https://github.com/mission-apprentissage/labonnealternance/compare/v1.8.1...v1.8.2) (2023-03-30)
 
 
