@@ -21,7 +21,7 @@ const s3File = config.algoBonnesBoites.s3File
 
 export const removePredictionFile = async () => {
   try {
-    logger.info("Deleting downloaded file frome assets")
+    logger.info("Deleting downloaded file from assets")
     await fs.unlinkSync(PREDICTION_FILE)
   } catch (err) {
     logger.error("Error removing company algo file", err)
