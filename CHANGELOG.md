@@ -1,3 +1,10 @@
+## [1.8.2](https://github.com/mission-apprentissage/labonnealternance/compare/v1.8.1...v1.8.2) (2023-03-30)
+
+
+### Bug Fixes
+
+* augmentation limite de formations retournées ([1eb46b5](https://github.com/mission-apprentissage/labonnealternance/commit/1eb46b5419edd77a79de4f90e4f0a51cb1a148a4))
+
 ## [1.8.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.8.0...v1.8.1) (2023-03-29)
 
 
