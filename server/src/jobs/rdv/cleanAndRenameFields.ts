@@ -144,6 +144,7 @@ export const cleanAndRenameFields = async ({ appointments, eligibleTrainingsForA
     {
       $unset: {
         code_postal: "",
+        etablissement_siret: "",
       },
     }
   )
