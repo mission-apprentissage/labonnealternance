@@ -1,3 +1,10 @@
+## [1.9.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.9.0...v1.9.1) (2023-03-30)
+
+
+### Bug Fixes
+
+* manage empty string params ([0d6eefc](https://github.com/mission-apprentissage/labonnealternance/commit/0d6eefcf015d6be9e0f74145533bccfccb86e3dd))
+
 # [1.9.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.8.2...v1.9.0) (2023-03-30)
 
 ### Features
