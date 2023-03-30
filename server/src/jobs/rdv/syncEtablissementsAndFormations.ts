@@ -46,8 +46,6 @@ export const syncEtablissementsAndFormations = async ({ etablissements, eligible
     select: { parcoursup_id: 1, cle_ministere_educatif: 1 },
   })
 
-  console.log(JSON.stringify(catalogueMinistereEducatif, null, 2))
-
   await oleoduc(
     FormationCatalogue.find({}).cursor(),
     writeData(
