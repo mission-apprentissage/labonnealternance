@@ -8,7 +8,7 @@ const currentDirname = __dirname(import.meta.url)
 
 const nafRomeHiringMap = {}
 
-const filePath = path.join(currentDirname, "./assets/contrats_30j.csv")
+const filePath = path.join(currentDirname, "../../assets/contrats_30j.csv")
 
 let count = 0
 
