@@ -57,20 +57,24 @@ const processCompanies = async () => {
   )
 }
 
-export default async function updateBonnesBoites({ ClearMongo = false, BuildIndex = false, UseSave = false }) {
+export default async function updateBonnesBoites({ UseAlgoFile = false, ClearMongo = false, BuildIndex = false, UseSave = false }) {
   try {
     logMessage("info", " -- Start updating lbb db with new algo -- ")
 
-    console.log(ClearMongo, BuildIndex, UseSave)
+    console.log("UseAlgoFile : ", UseAlgoFile, " - ClearMongo : ", ClearMongo, " - BuildIndex : ", BuildIndex, " - UseSave : ", UseSave)
 
-    await downloadAlgoCompanyFile()
+    if (UseAlgoFile) {
+      await downloadAlgoCompanyFile()
+    }
 
     if (ClearMongo) {
       logMessage("info", `Clearing bonnesboites db...`)
       await BonnesBoites.deleteMany({})
     }
 
-    await processCompanies()
+    if (UseAlgoFile) {
+      await processCompanies()
+    }
 
     if (UseSave) {
       await insertSAVECompanies()

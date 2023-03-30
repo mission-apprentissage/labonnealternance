@@ -9,7 +9,7 @@ import config from "../../config.js"
 import __dirname from "../../common/dirname.js"
 import { compose, oleoduc } from "oleoduc"
 import geoData from "../../common/utils/geoData.js"
-import { GeoLocation, BonnesBoites, Opco } from "../../common/model/index.js"
+import { EmailBlacklist, BonnesBoites, GeoLocation, Opco } from "../../common/model/index.js"
 import initNafMap from "./initNafMap.js"
 import initNafScoreMap from "./initNafScoreMap.js"
 import { OPCOS } from "../../common/constants.js"
@@ -21,7 +21,7 @@ const s3File = config.algoBonnesBoites.s3File
 
 export const removePredictionFile = async () => {
   try {
-    logger.info("Deleting downloaded file frome assets")
+    logger.info("Deleting downloaded file from assets")
     await fs.unlinkSync(PREDICTION_FILE)
   } catch (err) {
     logger.error("Error removing company algo file", err)
@@ -110,7 +110,13 @@ export const getCompanyMissingData = async (rawCompany) => {
     company.opco_short_name = opcoData.opco_short_name
   }
 
+  company.email = company.email && (await getNotBlacklistedEmail(company.email))
+
   return company
+}
+
+const getNotBlacklistedEmail = async (email) => {
+  return (await EmailBlacklist.findOne({ email })) ? null : email
 }
 
 const getGeoLocationForCompany = async (company) => {
