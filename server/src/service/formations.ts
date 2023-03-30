@@ -566,6 +566,26 @@ const getLbfQueryParams = (params) => {
   return queryParams
 }
 
+const removeEmailFromLBFData = (data) => {
+  if (data.error) {
+    return data
+  }
+
+  if (data?.organisme?.contact?.email) {
+    data.organisme.contact.email = ""
+  }
+
+  if (data?.sessions?.length) {
+    data.sessions.forEach((session, idx) => {
+      if (data.sessions[idx]?.contact?.email) {
+        data.sessions[idx].contact.email = ""
+      }
+    })
+  }
+
+  return data
+}
+
 const getFormationDescriptionQuery = async (params) => {
   try {
     let formationDescription = null
@@ -576,7 +596,7 @@ const getFormationDescriptionQuery = async (params) => {
       formationDescription = await axios.get(`${lbfDescriptionUrl}?${getLbfQueryParams(params)}`)
     }
 
-    return formationDescription.data
+    return removeEmailFromLBFData(formationDescription.data)
   } catch (error) {
     manageApiError({
       error,
