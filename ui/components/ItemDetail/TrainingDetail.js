@@ -155,8 +155,7 @@ const updateTrainingFromLbf = (training, detailsFromLbf) => {
     training.contact = training.contact || {}
 
     training.contact.phone = contactLbf.tel || training.contact.phone
-    training.contact.email = contactLbf.email || training.contact.email
-
+    
     training.company.url = contactLbf.url || training.company.url
   }
 }
