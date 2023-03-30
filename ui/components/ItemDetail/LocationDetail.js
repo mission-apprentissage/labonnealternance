@@ -38,16 +38,9 @@ const LocationDetail = ({ item, isCfa }) => {
 
   const shouldDisplayEmail = (oneItem) => {
     let res = false
-    const oneKind = oneItem?.ideaType
-    if (oneKind === "matcha") {
+    if (oneItem?.ideaType === "matcha") {
       res = !!item?.company?.mandataire
-    } else if (oneKind === "lbb" || oneKind === "lba") {
-      res = false
-    } else if (oneKind === "peJob") {
-      res = false
-    } else {
-      res = !!item?.contact?.email && !item?.prdvUrl
-    }
+    } 
     if (res) {
       // au cas où : on n'affiche l'email que si il n'est pas chiffré
       res = with_str("@").in(item?.contact?.email)
