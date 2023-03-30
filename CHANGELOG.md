@@ -1,3 +1,10 @@
+# [1.11.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.10.0...v1.11.0) (2023-03-30)
+
+
+### Features
+
+* masquage des informations d'emails des formations ([#338](https://github.com/mission-apprentissage/labonnealternance/issues/338)) ([1f4eb8f](https://github.com/mission-apprentissage/labonnealternance/commit/1f4eb8f5e65231316597b6d8baf4508086b3093d))
+
 # [1.10.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.9.2...v1.10.0) (2023-03-30)
 
 
