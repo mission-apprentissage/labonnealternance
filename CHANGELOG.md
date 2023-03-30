@@ -1,3 +1,10 @@
+## [1.9.2](https://github.com/mission-apprentissage/labonnealternance/compare/v1.9.1...v1.9.2) (2023-03-30)
+
+
+### Bug Fixes
+
+* exploitation des emails hardbunce lors de l'import ([93f253f](https://github.com/mission-apprentissage/labonnealternance/commit/93f253f4469b84e4a823e1b978565f34dd7be813))
+
 ## [1.9.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.9.0...v1.9.1) (2023-03-30)
 
 
