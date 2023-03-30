@@ -139,7 +139,7 @@ const transformPeJobForIdea = ({ job, lat = null, long = null, caller = null }) 
   }
 
   resultJob.place = {
-    distance: lat === null ? 0 : computeJobDistanceToSearchCenter(job, lat, long),
+    distance: lat === null || lat === "" ? 0 : computeJobDistanceToSearchCenter(job, lat, long),
     insee: job.lieuTravail.commune,
     zipCode: job.lieuTravail.codePostal,
     city: job.lieuTravail.libelle,
