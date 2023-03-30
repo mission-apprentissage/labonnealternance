@@ -219,6 +219,12 @@ export default ({ usersRecruteur, formulaire, mailer }) => {
           const siren = req.body.siret.substr(0, 9)
           formulaireInfo = await formulaire.createFormulaire(req.body)
           partenaire = await usersRecruteur.createUser({ ...req.body, id_form: formulaireInfo.id_form })
+
+          // Get all corresponding records using the SIREN number in BonneBoiteLegacy collection
+          const bonneBoiteList = await getAllEstablishmentFromBonneBoiteLegacy({ siret: { $regex: siren }, email: { $nin: ["", undefined] } })
+          // Create a single array with all emails
+          const bonneBoiteEmailList: string[] = bonneBoiteList.map(({ email }) => email)
+
           /**
            * Check if siret is amoung the opco verified establishment
            */
@@ -233,30 +239,50 @@ export default ({ usersRecruteur, formulaire, mailer }) => {
                   statut: etat_utilisateur.VALIDE,
                 })
               } else {
-                partenaire = await usersRecruteur.updateUserValidationHistory(partenaire._id, {
-                  validation_type: validation_utilisateur.MANUAL,
-                  user: "SERVEUR",
-                  statut: etat_utilisateur.ATTENTE,
-                })
+                if (bonneBoiteEmailList.length) {
+                  if (getMatchingEmailFromContactList(partenaire.email, bonneBoiteEmailList)) {
+                    partenaire = await usersRecruteur.updateUserValidationHistory(partenaire._id, {
+                      validation_type: validation_utilisateur.AUTO,
+                      user: "SERVEUR",
+                      statut: etat_utilisateur.VALIDE,
+                    })
+                  } else {
+                    if (checkIfUserEmailIsPrivate(partenaire.email)) {
+                      if (getMatchingDomainFromContactList(partenaire.email, bonneBoiteEmailList)) {
+                        partenaire = await usersRecruteur.updateUserValidationHistory(partenaire._id, {
+                          validation_type: validation_utilisateur.AUTO,
+                          user: "SERVEUR",
+                          statut: etat_utilisateur.VALIDE,
+                        })
+                      }
+                    } else {
+                      partenaire = await usersRecruteur.updateUserValidationHistory(partenaire._id, {
+                        validation_type: validation_utilisateur.MANUAL,
+                        user: "SERVEUR",
+                        statut: etat_utilisateur.ATTENTE,
+                      })
+                    }
+                  }
+                } else {
+                  partenaire = await usersRecruteur.updateUserValidationHistory(partenaire._id, {
+                    validation_type: validation_utilisateur.MANUAL,
+                    user: "SERVEUR",
+                    statut: etat_utilisateur.ATTENTE,
+                  })
+                }
               }
 
               break
 
             default:
               // Get all corresponding records using the SIREN number
-              const [referentielOpcoList, bonneBoiteList] = await Promise.all([
-                getAllEstablishmentFromOpcoReferentiel({ siret_code: { $regex: siren } }),
-                getAllEstablishmentFromBonneBoiteLegacy({ siret: { $regex: siren }, email: { $nin: ["", undefined] } }),
-              ])
+              const referentielOpcoList = await getAllEstablishmentFromOpcoReferentiel({ siret_code: { $regex: siren } })
 
               // Create a single array with all emails
               const referentielOpcoEmailList: string[] = referentielOpcoList.reduce((acc: string[], item) => {
                 item.emails.map((x) => acc.push(x))
                 return acc
               }, [])
-
-              // Create a single array with all emails
-              const bonneBoiteEmailList: string[] = bonneBoiteList.map(({ email }) => email)
 
               // Duplicate free email list
               const emailListUnique = [...new Set([...referentielOpcoEmailList, ...bonneBoiteEmailList])]
