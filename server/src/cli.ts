@@ -13,7 +13,6 @@ import { relanceOpco } from "./jobs/lba_recruteur/opco/relanceOpco.js"
 import { createOffreCollection } from "./jobs/lba_recruteur/seed/createOffre.js"
 import updateBonnesBoites from "./jobs/lbb/updateBonnesBoites.js"
 import updateGeoLocations from "./jobs/lbb/updateGeoLocations.js"
-import updateOpcoCompanies from "./jobs/lbb/updateOpcoCompanies.js"
 import { activateOptOutEtablissementFormations } from "./jobs/rdv/activateOptOutEtablissementFormations.js"
 import { anonimizeAppointments } from "./jobs/rdv/anonymizeAppointments.js"
 import { anonimizeUsers } from "./jobs/rdv/anonymizeUsers.js"
@@ -28,6 +27,9 @@ import { premiumInviteOneShot } from "./jobs/rdv/premiumInviteOneShot.js"
 import { syncEtablissementsAndFormations } from "./jobs/rdv/syncEtablissementsAndFormations.js"
 import { runScript } from "./jobs/scriptWrapper.js"
 import updateSendinblueBlockedEmails from "./jobs/updateSendinblueBlockedEmails/updateSendinblueBlockedEmails.js"
+import updateOpcoCompanies from "./jobs/lbb/updateOpcoCompanies.js"
+import updateDiplomesMetiers from "./jobs/diplomesMetiers/updateDiplomesMetiers.js"
+import updateDomainesMetiers from "./jobs/domainesMetiers/updateDomainesMetiers.js"
 import { cleanAndRenameFields } from "./jobs/rdv/cleanAndRenameFields.js"
 
 cli.addHelpText("after", null)
@@ -41,10 +43,10 @@ cli.addHelpText("after", null)
  */
 
 cli
-  .command("index")
-  .description("Synchronise les index des collections mongo & reconstruit l'index elasticsearch")
-  .action(() => {
-    runScript(() => generateIndexes())
+  .command("index [index_list]")
+  .description("Synchronise les index des collections mongo & reconstruit les index elasticsearch. <index_list> est la liste des index séparés par des , ")
+  .action((index_list) => {
+    runScript(() => generateIndexes(index_list))
   })
 
 cli
@@ -280,6 +282,20 @@ cli
   .description("Procède à la résolution des opcos des sociétés dans le fichier des bonnes alternances")
   .action((options) => {
     runScript(() => updateOpcoCompanies(options))
+  })
+
+cli
+  .command("update-domaines-metiers")
+  .description("Procède à l'import du fichier domaines metiers")
+  .action(() => {
+    runScript(() => updateDomainesMetiers())
+  })
+
+cli
+  .command("update-diplomes-metiers")
+  .description("Procède à l'association des diplômes par métiers")
+  .action(() => {
+    runScript(() => updateDiplomesMetiers())
   })
 
 cli.parse(process.argv)

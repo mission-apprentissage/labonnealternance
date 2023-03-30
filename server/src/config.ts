@@ -34,8 +34,6 @@ const config = {
   secret1j1s: env.get("LBA_SECRET_1J1S").default("5678").asString(), //TODO: rearrange
   secretAkto: env.get("LBA_SECRET_AKTO").default("1234").asString(), //TODO: rearrange
   allowedSources: env.get("LBA_ALLOWED_SOURCES").default("allowed").asString(),
-  awsAccessKeyId: env.get("LBA_AWS_ACCESS_KEY_ID").default("1234").asString(),
-  awsSecretAccessKey: env.get("LBA_AWS_SECRET_ACCESS_KEY").default("1234").asString(),
   esdClientId: env.get("LBA_ESD_CLIENT_ID").default("1234").asString(),
   esdClientSecret: env.get("LBA_ESD_CLIENT_SECRET").default("1234").asString(),
   lbb: {
@@ -113,12 +111,14 @@ const config = {
     password: env.get("LBA_CATALOGUE_ME_PASSWORD").default("Missionapprentissage2022*").asString(),
   },
   algoBonnesBoites: {
-    accessKeyId: env.get("LBA_ALGO_LBB_ACCESSKEYID").default("*****").asString(),
-    secretAccessKey: env.get("LBA_ALGO_LBB_SECRETACCESSKEY").default("*****").asString(),
-    s3Endpoint: env.get("LBA_ALGO_LBB_S3ENDPOINT").default("https://").asString(),
-    s3Region: env.get("LBA_ALGO_LBB_S3REGION").default("ABC").asString(),
-    s3Bucket: env.get("LBA_ALGO_LBB_S3BUCKET").default("Bucket").asString(),
     s3File: env.get("LBA_ALGO_LBB_S3FILE").default("filepath").asString(),
+  },
+  s3: {
+    accessKeyId: env.get("LBA_S3_ACCESSKEYID").default("*****").asString(),
+    secretAccessKey: env.get("LBA_S3_SECRETACCESSKEY").default("*****").asString(),
+    endpoint: env.get("LBA_S3_ENDPOINT").default("https://").asString(),
+    region: env.get("LBA_S3_REGION").default("ABC").asString(),
+    bucket: env.get("LBA_S3_BUCKET").default("Bucket").asString(),
   },
 }
 

@@ -1,57 +1,92 @@
-## [1.5.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.5.0...v1.5.1) (2023-03-21)
+# [1.9.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.8.2...v1.9.0) (2023-03-30)
 
+### Features
+
+- centralisation des ressources sur un seul s3 ([71c57fe](https://github.com/mission-apprentissage/labonnealternance/commit/71c57fe086017254a9e4d1cbc9e1c23f3c542de8))
+
+## [1.8.2](https://github.com/mission-apprentissage/labonnealternance/compare/v1.8.1...v1.8.2) (2023-03-30)
 
 ### Bug Fixes
 
-* update out of scope contract duration ([#313](https://github.com/mission-apprentissage/labonnealternance/issues/313)) ([e30349c](https://github.com/mission-apprentissage/labonnealternance/commit/e30349c1f4900387bff0b489cd63c2416e12e1bd))
+- augmentation limite de formations retournées ([1eb46b5](https://github.com/mission-apprentissage/labonnealternance/commit/1eb46b5419edd77a79de4f90e4f0a51cb1a148a4))
+
+## [1.8.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.8.0...v1.8.1) (2023-03-29)
+
+### Bug Fixes
+
+- ajustement scroll vertical trop court à la sélection d'un élément ([e57a7a0](https://github.com/mission-apprentissage/labonnealternance/commit/e57a7a0a2657b8706a711ef67cd554fc77d6b3ce))
+- gestion erreur serveur générique pour l'envoi de candidature ([c573a17](https://github.com/mission-apprentissage/labonnealternance/commit/c573a17082bcb35545c293f79af1b5e51666edaa))
+
+# [1.8.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.7.0...v1.8.0) (2023-03-29)
+
+### Features
+
+- ajout job manquant à seed et index manquants à generateIndex ([#327](https://github.com/mission-apprentissage/labonnealternance/issues/327)) ([9df17fa](https://github.com/mission-apprentissage/labonnealternance/commit/9df17fadb29483c796856277c8d07ac5d99762fd))
+
+# [1.7.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.6.0...v1.7.0) (2023-03-29)
+
+### Features
+
+- update RGPD Je candidate ([#314](https://github.com/mission-apprentissage/labonnealternance/issues/314)) ([b62c78e](https://github.com/mission-apprentissage/labonnealternance/commit/b62c78ea065e4b1664b9c73df77fa26435ee1d19))
+
+# [1.6.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.5.2...v1.6.0) (2023-03-29)
+
+### Features
+
+- filtrage des offres de sociétés suspectes ([#329](https://github.com/mission-apprentissage/labonnealternance/issues/329)) ([6824061](https://github.com/mission-apprentissage/labonnealternance/commit/6824061d250b6054e06effaa41651e9956751271))
+
+## [1.5.2](https://github.com/mission-apprentissage/labonnealternance/compare/v1.5.1...v1.5.2) (2023-03-22)
+
+### Bug Fixes
+
+- returned referentiel catched error ([#316](https://github.com/mission-apprentissage/labonnealternance/issues/316)) ([29f455c](https://github.com/mission-apprentissage/labonnealternance/commit/29f455ca2234f84eb6b41ee3ec4dcbaa50a66a13))
+
+## [1.5.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.5.0...v1.5.1) (2023-03-21)
+
+### Bug Fixes
+
+- update out of scope contract duration ([#313](https://github.com/mission-apprentissage/labonnealternance/issues/313)) ([e30349c](https://github.com/mission-apprentissage/labonnealternance/commit/e30349c1f4900387bff0b489cd63c2416e12e1bd))
 
 # [1.5.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.4.0...v1.5.0) (2023-03-21)
 
-
 ### Features
 
-* conservation du paramètre displayMap lors de la navigation ([4a7dce8](https://github.com/mission-apprentissage/labonnealternance/commit/4a7dce87062a9af20eddaa55a29e4cac30c6e4a0))
+- conservation du paramètre displayMap lors de la navigation ([4a7dce8](https://github.com/mission-apprentissage/labonnealternance/commit/4a7dce87062a9af20eddaa55a29e4cac30c6e4a0))
 
 # [1.4.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.3.0...v1.4.0) (2023-03-21)
 
-
 ### Features
 
-* affichage systématique de tous les niveaux de filtrage par diplôme ([#311](https://github.com/mission-apprentissage/labonnealternance/issues/311)) ([167fdf3](https://github.com/mission-apprentissage/labonnealternance/commit/167fdf308f61004082c1cfe081d2267583904e88))
+- affichage systématique de tous les niveaux de filtrage par diplôme ([#311](https://github.com/mission-apprentissage/labonnealternance/issues/311)) ([167fdf3](https://github.com/mission-apprentissage/labonnealternance/commit/167fdf308f61004082c1cfe081d2267583904e88))
 
 # [1.3.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.2.1...v1.3.0) (2023-03-20)
 
-
 ### Bug Fixes
 
-* ajustements retours api jobs ([#307](https://github.com/mission-apprentissage/labonnealternance/issues/307)) ([228836a](https://github.com/mission-apprentissage/labonnealternance/commit/228836a377b7cfc11ce4ebef70d22d7a49dfa33e))
-
+- ajustements retours api jobs ([#307](https://github.com/mission-apprentissage/labonnealternance/issues/307)) ([228836a](https://github.com/mission-apprentissage/labonnealternance/commit/228836a377b7cfc11ce4ebef70d22d7a49dfa33e))
 
 ### Features
 
-* check if data is present before job ([#306](https://github.com/mission-apprentissage/labonnealternance/issues/306)) ([d9e85c0](https://github.com/mission-apprentissage/labonnealternance/commit/d9e85c09bbf2bce5f29e3c7936f2516325aee76e))
+- check if data is present before job ([#306](https://github.com/mission-apprentissage/labonnealternance/issues/306)) ([d9e85c0](https://github.com/mission-apprentissage/labonnealternance/commit/d9e85c09bbf2bce5f29e3c7936f2516325aee76e))
 
 ## [1.2.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.2.0...v1.2.1) (2023-03-20)
 
-
 ### Bug Fixes
 
-* dead import ([620db35](https://github.com/mission-apprentissage/labonnealternance/commit/620db350a1fd6cffc57436ce2b15425171e8a206))
+- dead import ([620db35](https://github.com/mission-apprentissage/labonnealternance/commit/620db350a1fd6cffc57436ce2b15425171e8a206))
 
 # [1.2.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.1.0...v1.2.0) (2023-03-17)
 
-
 ### Features
 
-* filtrage par diplôme pour les offres PE et LBA ([#295](https://github.com/mission-apprentissage/labonnealternance/issues/295)) ([565ca7a](https://github.com/mission-apprentissage/labonnealternance/commit/565ca7ad3bd908b58b85aa356d7af248219daa7a)), closes [#291](https://github.com/mission-apprentissage/labonnealternance/issues/291) [#292](https://github.com/mission-apprentissage/labonnealternance/issues/292)
+- filtrage par diplôme pour les offres PE et LBA ([#295](https://github.com/mission-apprentissage/labonnealternance/issues/295)) ([565ca7a](https://github.com/mission-apprentissage/labonnealternance/commit/565ca7ad3bd908b58b85aa356d7af248219daa7a)), closes [#291](https://github.com/mission-apprentissage/labonnealternance/issues/291) [#292](https://github.com/mission-apprentissage/labonnealternance/issues/292)
 
 # [1.1.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.0.0...v1.1.0) (2023-03-15)
 
-
 ### Features
 
-* add affelnet field ([#292](https://github.com/mission-apprentissage/labonnealternance/issues/292)) ([2ec5c8d](https://github.com/mission-apprentissage/labonnealternance/commit/2ec5c8dee1076ec229e5e33bdaeac896102160d7))
-* remove affelnet referrer ([#291](https://github.com/mission-apprentissage/labonnealternance/issues/291)) ([2c7dca6](https://github.com/mission-apprentissage/labonnealternance/commit/2c7dca64841ae60972f25f66d28497baa2a0537a))
+- add affelnet field ([#292](https://github.com/mission-apprentissage/labonnealternance/issues/292)) ([2ec5c8d](https://github.com/mission-apprentissage/labonnealternance/commit/2ec5c8dee1076ec229e5e33bdaeac896102160d7))
+- remove affelnet referrer ([#291](https://github.com/mission-apprentissage/labonnealternance/issues/291)) ([2c7dca6](https://github.com/mission-apprentissage/labonnealternance/commit/2c7dca64841ae60972f25f66d28497baa2a0537a))
 
 # 1.0.0 (2023-03-14)
 

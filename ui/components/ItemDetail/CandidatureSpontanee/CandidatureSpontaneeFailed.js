@@ -24,6 +24,11 @@ const sendingStateValues = {
     text: "Vous pourrez en envoyer de nouveau demain",
     dataTestId: "CandidatureSpontaneeFailedTempEmailTitle",
   },
+  "Internal Server Error": {
+    title: "Erreur technique",
+    text: "Veuillez patienter quelques instants et réessayer. Si l'erreur persiste merci de nous contacter.",
+    dataTestId: "CandidatureSpontaneeFailedTempEmailTitle",
+  },
 }
 
 const CandidatureSpontaneeFailed = ({ sendingState }) => {

@@ -14,7 +14,7 @@ import { formationMock, formationsMock, lbfFormationMock } from "../mocks/format
 import { itemModel } from "../model/itemModel.js"
 import { formationsQueryValidator, formationsRegionQueryValidator } from "./formationsQueryValidator.js"
 
-const formationResultLimit = 150
+const formationResultLimit = 500
 
 const lbfDescriptionUrl = "https://labonneformation.pole-emploi.fr/api/v1/detail"
 

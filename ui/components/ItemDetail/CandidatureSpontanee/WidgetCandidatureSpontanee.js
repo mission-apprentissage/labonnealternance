@@ -81,9 +81,7 @@ const WidgetCandidatureSpontanee = (props) => {
 
           {with_str(sendingState).amongst(["ok_sent"]) && <CandidatureSpontaneeWorked kind={kind} email={formik.values.email} company={props?.item?.company?.name} />}
 
-          {with_str(sendingState).amongst(["not_sent_because_of_errors", "email temporaire non autorisé", "max candidatures atteint", "Too Many Requests"]) && (
-            <CandidatureSpontaneeFailed sendingState={sendingState} />
-          )}
+          {!with_str(sendingState).amongst(["not_sent", "ok_sent", "currently_sending"]) && <CandidatureSpontaneeFailed sendingState={sendingState} />}
         </form>
       )}
     </Box>

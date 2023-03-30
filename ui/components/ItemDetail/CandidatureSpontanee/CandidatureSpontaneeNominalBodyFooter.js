@@ -133,12 +133,21 @@ const CandidatureSpontaneeNominalBodyFooter = ({ formik, sendingState, company, 
         </Box>
 
         <Box width="95%" my={4}>
+          <Text mb={2} fontSize="14px" color="grey.600">
+            * Champs obligatoires
+          </Text>
           <Text>
             En remplissant ce formulaire, vous acceptez les{" "}
             <Link href="/cgu" color="grey.800" textDecoration="underline" target="_blank">
-              Conditions générales d&apos;utilisation.
+              Conditions générales d&apos;utilisation
             </Link>{" "}
-            du service La bonne alternance et acceptez le partage de vos informations avec l&apos;établissement {company}
+            du service La bonne alternance et acceptez le partage de vos informations avec l&apos;établissement {company}.
+            <br />
+            Pour plus d'informations sur le traitement de vos données à caractère personnel, veuillez consulter la{" "}
+            <Link href="/politique-de-confidentialite" color="grey.800" textDecoration="underline" target="_blank">
+              Politique de confidentialité
+            </Link>{" "}
+            de La bonne alternance.
           </Text>
         </Box>
       </PostulerBody>
