@@ -49,30 +49,30 @@ export const cleanAndRenameFields = async ({ appointments, eligibleTrainingsForA
   )
   logger.info(`Fin renommage champs de la collection appointments (${res.result.nModified} items mis à jour)`)
 
-  // Rename "referrer" id (number) to string name
+  // Rename "referrer" id (number) and migrate to mailing collections
   const allAppointments = await appointments.find({})
-  await Promise.all(
-    allAppointments.map((appointment) =>
-      appointment.update({
-        appointment_origin: getReferrerById(appointment.appointment_origin).name,
-        $push: {
-          to_cfa_mails: {
-            campaign: mailType.CANDIDAT_APPOINTMENT,
-            status: appointment.email_premiere_demande_cfa_statut,
-            message_id: appointment.email_premiere_demande_cfa_message_id,
-            email_sent_at: appointment.email_premiere_demande_cfa_date,
-          },
-          to_applicant_mails: {
-            campaign: mailType.CANDIDAT_APPOINTMENT,
-            status: appointment.email_premiere_demande_candidat_statut,
-            message_id: appointment.email_premiere_demande_candidat_message_id,
-            email_sent_at: appointment.email_premiere_demande_candidat_date,
-          },
+
+  for (const appointment of allAppointments) {
+    await appointment.update({
+      appointment_origin: getReferrerById(appointment.appointment_origin).name,
+      $push: {
+        to_cfa_mails: {
+          campaign: mailType.CANDIDAT_APPOINTMENT,
+          status: appointment.email_premiere_demande_cfa_statut,
+          message_id: appointment.email_premiere_demande_cfa_message_id,
+          email_sent_at: appointment.email_premiere_demande_cfa_date,
         },
-      })
-    )
-  )
-  logger.info(`Fin de la migration des emails.`)
+        to_applicant_mails: {
+          campaign: mailType.CANDIDAT_APPOINTMENT,
+          status: appointment.email_premiere_demande_candidat_statut,
+          message_id: appointment.email_premiere_demande_candidat_message_id,
+          email_sent_at: appointment.email_premiere_demande_candidat_date,
+        },
+      },
+    })
+  }
+
+  logger.info(`Fin de la migration des emails et des referrers.`)
 
   // Appointments: deletions
   res = await db.collections.appointments.updateMany(
@@ -177,5 +177,9 @@ export const cleanAndRenameFields = async ({ appointments, eligibleTrainingsForA
 
   // Rename "referrers" ids (number) to string name
   const allEligibleTrainingsForAppointments = await eligibleTrainingsForAppointments.find({})
-  await Promise.all(allEligibleTrainingsForAppointments.map((item) => item.update({ referrers: item.referrers.map((referrer) => getReferrerById(referrer).name) })))
+
+  for (const item of allEligibleTrainingsForAppointments) {
+    await item.update({ referrers: item.referrers.map((referrer) => getReferrerById(referrer).name) })
+  }
+  logger.info(`Fin de migration des referrers pour les "eligibleTrainingsForAppointments"`)
 }
