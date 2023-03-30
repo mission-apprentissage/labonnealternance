@@ -48,6 +48,9 @@ const computeLine = async ({ rome, naf, hirings }) => {
 export default async function () {
   try {
     try {
+
+      console.log("filePath : ",filePath)
+
       await oleoduc(
         fs.createReadStream(filePath),
         readLineByLine(),
