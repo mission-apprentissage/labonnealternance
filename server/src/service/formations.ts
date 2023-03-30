@@ -399,11 +399,6 @@ const transformFormationForIdea = (formation) => {
   resultFormation.idRcoFormation = formation.source.id_rco_formation
   resultFormation.cleMinistereEducatif = formation.source.cle_ministere_educatif
 
-  if (formation.source.email) {
-    resultFormation.contact = {
-      email: formation.source.email,
-    }
-  }
   const geoSource = formation.source.lieu_formation_geo_coordonnees
 
   resultFormation.place = {
