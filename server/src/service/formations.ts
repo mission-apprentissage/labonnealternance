@@ -48,6 +48,9 @@ const getFormations = async ({ romes, rncps, romeDomain, coords, radius, diploma
     const latitude = coords ? coords[1] : null
     const longitude = coords ? coords[0] : null
 
+    const now = new Date()
+    const tags = [now.getFullYear(), now.getFullYear() + 1, now.getFullYear() + (now.getMonth() < 8 ? -1 : 2)]
+
     const mustTerm = [
       romes
         ? {
@@ -65,15 +68,11 @@ const getFormations = async ({ romes, rncps, romeDomain, coords, radius, diploma
           },
     ]
 
-    if (rncps) {
-      /*
-        FIXME: En attente listing des RNCPs à jour
-        mustTerm.push({
-        match: {
-          rncp_code: rncps.join(" "),
-        },
-      });*/
-    }
+    mustTerm.push({
+      match: {
+        tags: tags.join(" "),
+      },
+    })
 
     if (diploma) {
       mustTerm.push({
