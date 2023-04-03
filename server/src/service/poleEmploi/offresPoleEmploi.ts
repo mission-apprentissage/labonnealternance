@@ -70,6 +70,14 @@ const getSomePeJobs = async ({ romes, insee, radius, lat, long, caller, diploma,
     jobs[0].results = await filterJobsByOpco({ opco, opcoUrl, jobs: jobs[0].results })
   }
 
+  // suppression du siret pour les appels par API. On ne remonte le siret que dans le cadre du front LBA.
+  if (caller) {
+    // on ne remonte le siret que dans le cadre du front LBA. Cette info n'est pas remontée par API
+    jobs[0].results.forEach((job, idx) => {
+      jobs[0].results[idx].company.siret = null
+    })
+  }
+
   return jobs[0]
 }
 
@@ -160,10 +168,7 @@ const transformPeJobForIdea = ({ job, lat = null, long = null, caller = null }) 
     if (job.entreprise.description) {
       resultJob.company.description = job.entreprise.description
     }
-    if (!caller && job.entreprise.siret) {
-      // on ne remonte le siret que dans le cadre du front LBA. Cette info n'est pas remontée par API
-      resultJob.company.siret = job.entreprise.siret
-    }
+    resultJob.company.siret = job.entreprise.siret
   }
 
   resultJob.url = `https://candidat.pole-emploi.fr/offres/recherche/detail/${job.id}?at_medium=CMP&at_campaign=labonnealternance_candidater_a_une_offre`
@@ -282,10 +287,12 @@ const getPeJobFromId = async ({ id, caller }) => {
 
       return { result: "not_found", message: "Offre non trouvée" }
     } else {
-      let peJob = transformPeJobForIdea({ job: job.data, caller })
+      const peJob = transformPeJobForIdea({ job: job.data, caller })
 
       if (caller) {
         trackApiCall({ caller, job_count: 1, result_count: 1, api_path: "jobV1/job", response: "OK" })
+        // on ne remonte le siret que dans le cadre du front LBA. Cette info n'est pas remontée par API
+        peJob.company.siret = null
       }
 
       return { peJobs: [peJob] }
