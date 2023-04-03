@@ -43,9 +43,7 @@ export const FormCreatePageFooter = (props) => {
                   borderRightColor={{ base: "none", lg: "grey.300" }}
                   paddingRight={{ base: 0, lg: 1 }}
                 >
-                  <Link as={NavLink} to={`/mentions-legales`}>
-                    Mentions légales
-                  </Link>
+                  <Link href={`/mentions-legales`}>Mentions légales</Link>
                 </ListItem>
                 <ListItem
                   mt={{ base: 3, lg: 0 }}
@@ -55,7 +53,7 @@ export const FormCreatePageFooter = (props) => {
                   paddingRight={{ base: 0, lg: 1 }}
                   paddingLeft={{ base: 0, lg: 1 }}
                 >
-                  <Link as={NavLink} to="/cgu" aria-label="Accès aux conditions générales d'utilisation">
+                  <Link href="/cgu" aria-label="Accès aux conditions générales d'utilisation">
                     CGU
                   </Link>
                 </ListItem>
@@ -67,7 +65,7 @@ export const FormCreatePageFooter = (props) => {
                   paddingRight={{ base: 0, lg: 1 }}
                   paddingLeft={{ base: 0, lg: 1 }}
                 >
-                  <Link as={NavLink} to="/politique-de-confidentialite" aria-label="Accès à la page Politique de confidentialité">
+                  <Link href="/politique-de-confidentialite" aria-label="Accès à la page Politique de confidentialité">
                     Politique de confidentialité
                   </Link>
                 </ListItem>
@@ -79,7 +77,7 @@ export const FormCreatePageFooter = (props) => {
                   paddingRight={{ base: 0, lg: 1 }}
                   paddingLeft={{ base: 0, lg: 1 }}
                 >
-                  <Link as={NavLink} to={`/faq`} aria-label="Accès à la foire aux questions">
+                  <Link href={`/faq`} aria-label="Accès à la foire aux questions">
                     FAQ
                   </Link>
                 </ListItem>
@@ -91,7 +89,7 @@ export const FormCreatePageFooter = (props) => {
                   paddingRight={{ base: 0, lg: 1 }}
                   paddingLeft={{ base: 0, lg: 1 }}
                 >
-                  <Link as={NavLink} to="/contact" aria-label="Accès à la page Contact">
+                  <Link href="/contact" aria-label="Accès à la page Contact">
                     Contact
                   </Link>
                 </ListItem>

@@ -2,6 +2,7 @@ import { useParams } from "react-router-dom"
 import { Box, Text } from "@chakra-ui/react"
 import { FormLayoutComponent } from "./layout/FormLayoutComponent"
 import { useFetch } from "../../common/hooks/useFetch"
+import { FormCreatePageFooter } from "./FormCreatePageFooter"
 
 export const FormRecapPage = () => {
   const { id: appointmentId } = useParams()
@@ -16,6 +17,11 @@ export const FormRecapPage = () => {
           <Text textStyle="h2" as="span" color="grey.700">
             au centre de formation
           </Text>
+        </>
+      }
+      prefooter={
+        <>
+          <FormCreatePageFooter />
         </>
       }
     >
