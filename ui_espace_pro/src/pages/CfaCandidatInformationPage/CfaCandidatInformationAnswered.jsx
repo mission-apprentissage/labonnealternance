@@ -9,7 +9,7 @@ import { getCurrentDate, getCurrentHourMinute } from "../../common/utils/dateUti
 export const CfaCandidatInformationAnswered = (props) => {
   return (
     <>
-      <Box mt={8} p={6} backgroundColor="#F5F5FE;">
+      <Box mt={8} p={6} backgroundColor="#F5F5FE">
         <Text as="h2" fontWeight="700" color="#000091" fontSize="22px" lineHeight="36px">
           Votre réponse au candidat
         </Text>
