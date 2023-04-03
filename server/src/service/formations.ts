@@ -48,8 +48,8 @@ const getFormations = async ({ romes, rncps, romeDomain, coords, radius, diploma
     const latitude = coords ? coords[1] : null
     const longitude = coords ? coords[0] : null
 
-    const now = new Date()
-    const tags = [now.getFullYear(), now.getFullYear() + 1, now.getFullYear() + (now.getMonth() < 8 ? -1 : 2)]
+    const now: date = new Date()
+    const tags: string[] = [now.getFullYear(), now.getFullYear() + 1, now.getFullYear() + (now.getMonth() < 8 ? -1 : 2)]
 
     const mustTerm = [
       romes
