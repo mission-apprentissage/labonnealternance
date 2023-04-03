@@ -179,7 +179,7 @@ export const getAllFormationsFromCatalogue = async () => {
   const tags: number[] = [now.getFullYear(), now.getFullYear() + 1, now.getFullYear() + (now.getMonth() < 8 ? -1 : 2)]
 
   const count = (await countFormations()) ?? null
-  const query = { published: true, catalogue_published: true, tags: tags.map(String) }
+  const query = { published: true, catalogue_published: true, tags: { $in: tags.map(String) } }
 
   if (!count) return
 
