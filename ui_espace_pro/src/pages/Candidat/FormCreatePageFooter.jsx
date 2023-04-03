@@ -16,7 +16,7 @@ export const FormCreatePageFooter = (props) => {
           <GridItem colSpan={{ base: 1, lg: 2 }}>
             <Box pl={{ base: 0, lg: 4 }} mt={{ base: 8, lg: 0 }} height="100%" display="flex" alignItems={{ base: "start", lg: "center" }}>
               <Box fontSize="12px" color="#161616" pl={{ base: 0, lg: 5 }}>
-                <Text as="strong">Le service de prise de rendez-vous</Text> proposé par{" "}
+                <Text as="strong">Le service de prise de rendez-vous</Text> est proposé par{" "}
                 <Link href="https://labonnealternance.apprentissage.beta.gouv.fr/" aria-label="Accès au site labonnealternance" isExternal textDecoration="underline">
                   La bonne alternance
                 </Link>

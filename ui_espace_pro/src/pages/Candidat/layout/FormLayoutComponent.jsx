@@ -1,6 +1,5 @@
 import { Box, Container } from "@chakra-ui/react"
 import Proptypes from "prop-types"
-import { FooterComponent } from "./FooterComponent"
 import { FormHeaderComponent } from "./FormHeaderComponent"
 
 /**
@@ -19,7 +18,6 @@ export const FormLayoutComponent = ({ children, headerText, prefooter, ...rest }
       </Box>
       {prefooter}
       <Box height="150px" />
-      <FooterComponent />
     </Container>
   )
 }
