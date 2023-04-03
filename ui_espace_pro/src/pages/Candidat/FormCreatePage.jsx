@@ -8,7 +8,6 @@ import { Input, Button, Box, Spinner, Text, Center, Flex } from "@chakra-ui/reac
 import { ContactCfaComponent } from "./layout/ContactCfaComponent"
 import { FormLayoutComponent } from "./layout/FormLayoutComponent"
 import { _post } from "../../common/httpClient"
-import { FormCreatePageFooter } from "./FormCreatePageFooter"
 
 /**
  * @description Form appointment page.
