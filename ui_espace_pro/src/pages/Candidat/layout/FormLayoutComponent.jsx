@@ -1,6 +1,7 @@
 import { Box, Container } from "@chakra-ui/react"
 import Proptypes from "prop-types"
 import { FormHeaderComponent } from "./FormHeaderComponent"
+import { FormCreatePageFooter } from "../FormCreatePageFooter"
 
 /**
  * @description FormLayoutComponent.
@@ -9,14 +10,14 @@ import { FormHeaderComponent } from "./FormHeaderComponent"
  * @param {Object} rest
  * @returns {JSX.Element}
  */
-export const FormLayoutComponent = ({ children, headerText, prefooter, ...rest }) => {
+export const FormLayoutComponent = ({ children, headerText, ...rest }) => {
   return (
     <Container maxW="full" p={0} {...rest} boxShadow="0px 0px 24px rgba(30, 30, 30, 0.24)" maxWidth="82ch">
       <FormHeaderComponent>{headerText}</FormHeaderComponent>
       <Box mx={["2rem", "2rem", "6rem"]} minH={"63vh"}>
         {children}
       </Box>
-      {prefooter}
+      <FormCreatePageFooter />
     </Container>
   )
 }

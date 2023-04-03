@@ -160,11 +160,6 @@ export const FormCreatePage = (props) => {
           </Text>
         </>
       }
-      prefooter={
-        <>
-          <FormCreatePageFooter />
-        </>
-      }
       bg="white"
     >
       {loading && <Spinner display="block" mx="auto" size="xl" mt="10rem" />}

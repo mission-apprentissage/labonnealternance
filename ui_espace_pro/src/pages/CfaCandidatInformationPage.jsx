@@ -37,11 +37,6 @@ export const CfaCandidatInformationPage = () => {
           </Text>
         </>
       }
-      prefooter={
-        <>
-          <FormCreatePageFooter />
-        </>
-      }
     >
       {loading && <span>Chargement des données...</span>}
       {data && (

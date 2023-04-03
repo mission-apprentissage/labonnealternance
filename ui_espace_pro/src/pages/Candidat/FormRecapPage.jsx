@@ -19,11 +19,6 @@ export const FormRecapPage = () => {
           </Text>
         </>
       }
-      prefooter={
-        <>
-          <FormCreatePageFooter />
-        </>
-      }
     >
       {loading && <span>Chargement des données...</span>}
       {data && (
