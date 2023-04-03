@@ -5,18 +5,12 @@ import { NBR_EXPIRATION_J7 } from "../contants"
 export const formatDate = (date) => dayjs(date).format("YYYY-MM-DD")
 
 export const getCurrentDate = (separator = "/") => {
-  let newDate = new Date()
-  let date = newDate.getDate()
-  let month = newDate.getMonth() + 1
-  let year = newDate.getFullYear()
-  return `${year}${separator}${month < 10 ? `0${month}` : `${month}`}${separator}${date}`
+  return dayjs(new Date()).format(`YYYY${separator}MM${separator}DD`)
 }
 
 export const getCurrentHourMinute = (separator = "h") => {
-  let newDate = new Date()
-  let minutes = newDate.getMinutes()
-  let hour = newDate.getHours()
-  return `${hour}${separator}${minutes < 10 ? `0${minutes}` : `${minutes}`}`
+  const d = new Date()
+  return dayjs(d).format(`HH`) + separator + dayjs(d).format(`mm`)
 }
 
 export const willExpire = (date_expiration) => {
