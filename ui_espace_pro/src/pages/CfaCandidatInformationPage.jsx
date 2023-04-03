@@ -1,6 +1,7 @@
 import { useParams } from "react-router-dom"
 import { Box, Text } from "@chakra-ui/react"
 import { FormLayoutComponent } from "./Candidat/layout/FormLayoutComponent"
+import { FormCreatePageFooter } from "./Candidat/FormCreatePageFooter"
 import { useFetch } from "../common/hooks/useFetch"
 import { useEffect } from "react"
 import { _patch } from "../common/httpClient"
@@ -34,6 +35,11 @@ export const CfaCandidatInformationPage = () => {
           <Text textStyle="h2" as="span" color="grey.700">
             par votre centre de formation
           </Text>
+        </>
+      }
+      prefooter={
+        <>
+          <FormCreatePageFooter />
         </>
       }
     >
