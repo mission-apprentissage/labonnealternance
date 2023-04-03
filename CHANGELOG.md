@@ -1,3 +1,10 @@
+## [1.12.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.12.0...v1.12.1) (2023-04-03)
+
+
+### Bug Fixes
+
+* déport de la suppression du siret pour les cas non légitimes ([#340](https://github.com/mission-apprentissage/labonnealternance/issues/340)) ([fe9b606](https://github.com/mission-apprentissage/labonnealternance/commit/fe9b6063a36eba5c44c08c9fc88ff1f32ab0eedd))
+
 # [1.12.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.11.0...v1.12.0) (2023-04-03)
 
 
