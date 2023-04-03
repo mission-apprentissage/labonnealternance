@@ -17,7 +17,6 @@ export const FormLayoutComponent = ({ children, headerText, prefooter, ...rest }
         {children}
       </Box>
       {prefooter}
-      <Box height="150px" />
     </Container>
   )
 }
