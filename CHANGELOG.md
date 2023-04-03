@@ -1,3 +1,10 @@
+# [1.12.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.11.0...v1.12.0) (2023-04-03)
+
+
+### Features
+
+* affichage des formations seulement si tags années actuelles ([#339](https://github.com/mission-apprentissage/labonnealternance/issues/339)) ([4cb9fb1](https://github.com/mission-apprentissage/labonnealternance/commit/4cb9fb1c87280293ed6c8a376ae33f44354c7a20))
+
 # [1.11.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.10.0...v1.11.0) (2023-03-30)
 
 
