@@ -1,189 +1,197 @@
 {
-  "components": {
-    "examples": {},
-    "headers": {},
-    "parameters": {},
-    "requestBodies": {},
-    "responses": {},
-    "schemas": {
-      "TCreateContextResponse": {
-        "properties": {
-          "form_url": {
-            "type": "string"
-          },
-          "cle_ministere_educatif": {
-            "type": "string"
-          },
-          "id_rco_formation": {
-            "type": "string"
-          },
-          "localite": {
-            "type": "string"
-          },
-          "cfd": {
-            "type": "string"
-          },
-          "etablissement_formateur_siret": {
-            "type": "string"
-          },
-          "code_postal": {
-            "type": "string"
-          },
-          "lieu_formation_adresse": {
-            "type": "string"
-          },
-          "intitule_long": {
-            "type": "string"
-          },
-          "etablissement_formateur_entreprise_raison_sociale": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "form_url",
-          "cle_ministere_educatif",
-          "id_rco_formation",
-          "localite",
-          "cfd",
-          "etablissement_formateur_siret",
-          "code_postal",
-          "lieu_formation_adresse",
-          "intitule_long",
-          "etablissement_formateur_entreprise_raison_sociale"
-        ],
-        "type": "object"
-      },
-      "TCreateContextResponseError": {
-        "properties": {
-          "error": {
-            "type": "string"
-          }
-        },
-        "required": ["error"],
-        "type": "object"
-      },
-      "TCreateContextBody": {
-        "properties": {
-          "referrer": {
-            "type": "string"
-          },
-          "trainingHasJob": {
-            "type": "boolean"
-          },
-          "idCleMinistereEducatif": {
-            "type": "string"
-          },
-          "idActionFormation": {
-            "type": "string"
-          },
-          "idRcoFormation": {
-            "type": "string"
-          },
-          "idParcoursup": {
-            "type": "string"
-          }
-        },
-        "required": ["referrer"],
-        "type": "object"
-      }
-    },
-    "securitySchemes": {}
-  },
-  "info": {
-    "title": "La bonne alternance",
-    "version": "1.9.0",
-    "description": "Trouvez ici les formations en alternance et les entreprises qui recrutent régulièrement en alternance",
-    "license": {
-      "name": "MIT"
-    },
-    "contact": {
-      "name": "La bonne alternance",
-      "url": "https://labonnealternance.apprentissage.beta.gouv.fr"
-    }
-  },
-  "openapi": "3.0.0",
-  "paths": {
-    "/api/appointment-request/context/create": {
-      "post": {
-        "operationId": "appointmentCreateContext",
-        "responses": {
-          "200": {
-            "description": "Ok",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/TCreateContextResponse"
-                    },
-                    {
-                      "$ref": "#/components/schemas/TCreateContextResponseError"
-                    },
-                    {
-                      "type": "string"
-                    }
-                  ]
-                },
-                "examples": {
-                  "Example 1": {
-                    "value": {
-                      "etablissement_formateur_entreprise_raison_sociale": "CAMPUS FONDERIE DE L'IMAGE",
-                      "intitule_long": "METIERS D'ART ET DU DESIGN (DN)",
-                      "lieu_formation_adresse": "80 Rue Jules Ferry",
-                      "code_postal": "93170",
-                      "etablissement_formateur_siret": "35386977900036",
-                      "cfd": "24113401",
-                      "localite": "Bagnolet",
-                      "id_rco_formation": "14_AF_0000095539|14_SE_0000501120##14_SE_0000598458##14_SE_0000642556##14_SE_0000642557##14_SE_0000825379##14_SE_0000825382|101249",
-                      "cle_ministere_educatif": "101249P01313538697790003635386977900036-93006#L01",
-                      "form_url": "https://labonnealternance.apprentissage.beta.gouv.fr/espace-pro/form?referrer=affelnet&cleMinistereEducatif=101249P01313538697790003635386977900036-93006%23L01"
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string",
-                  "enum": ["Formation introuvable."],
-                  "nullable": false
-                }
-              }
-            }
-          }
-        },
-        "tags": ["RDV"],
-        "security": [],
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/TCreateContextBody"
-              }
-            }
-          }
-        }
-      }
-    }
-  },
-  "servers": [
-    {
-      "url": "https://labonnealternance.apprentissage.beta.gouv.fr",
-      "description": "Production"
-    },
-    {
-      "url": "https://labonnealternance-recette.apprentissage.beta.gouv.fr",
-      "description": "Recette"
-    },
-    {
-      "url": "http://localhost",
-      "description": "Localhost"
-    }
-  ]
+	"components": {
+		"examples": {},
+		"headers": {},
+		"parameters": {},
+		"requestBodies": {},
+		"responses": {},
+		"schemas": {
+			"TCreateContextResponse": {
+				"properties": {
+					"form_url": {
+						"type": "string"
+					},
+					"cle_ministere_educatif": {
+						"type": "string"
+					},
+					"id_rco_formation": {
+						"type": "string"
+					},
+					"localite": {
+						"type": "string"
+					},
+					"cfd": {
+						"type": "string"
+					},
+					"etablissement_formateur_siret": {
+						"type": "string"
+					},
+					"code_postal": {
+						"type": "string"
+					},
+					"lieu_formation_adresse": {
+						"type": "string"
+					},
+					"intitule_long": {
+						"type": "string"
+					},
+					"etablissement_formateur_entreprise_raison_sociale": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"form_url",
+					"cle_ministere_educatif",
+					"id_rco_formation",
+					"localite",
+					"cfd",
+					"etablissement_formateur_siret",
+					"code_postal",
+					"lieu_formation_adresse",
+					"intitule_long",
+					"etablissement_formateur_entreprise_raison_sociale"
+				],
+				"type": "object"
+			},
+			"TCreateContextResponseError": {
+				"properties": {
+					"error": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"error"
+				],
+				"type": "object"
+			},
+			"TCreateContextBody": {
+				"properties": {
+					"referrer": {
+						"type": "string"
+					},
+					"trainingHasJob": {
+						"type": "boolean"
+					},
+					"idCleMinistereEducatif": {
+						"type": "string"
+					},
+					"idActionFormation": {
+						"type": "string"
+					},
+					"idRcoFormation": {
+						"type": "string"
+					},
+					"idParcoursup": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"referrer"
+				],
+				"type": "object"
+			}
+		},
+		"securitySchemes": {}
+	},
+	"info": {
+		"title": "La bonne alternance",
+		"version": "1.9.1",
+		"description": "Trouvez ici les formations en alternance et les entreprises qui recrutent régulièrement en alternance",
+		"license": {
+			"name": "MIT"
+		},
+		"contact": {
+			"name": "La bonne alternance",
+			"url": "https://labonnealternance.apprentissage.beta.gouv.fr"
+		}
+	},
+	"openapi": "3.0.0",
+	"paths": {
+		"/api/appointment-request/context/create": {
+			"post": {
+				"operationId": "appointmentCreateContext",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"$ref": "#/components/schemas/TCreateContextResponse"
+										},
+										{
+											"$ref": "#/components/schemas/TCreateContextResponseError"
+										},
+										{
+											"type": "string"
+										}
+									]
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"etablissement_formateur_entreprise_raison_sociale": "CAMPUS FONDERIE DE L'IMAGE",
+											"intitule_long": "METIERS D'ART ET DU DESIGN (DN)",
+											"lieu_formation_adresse": "80 Rue Jules Ferry",
+											"code_postal": "93170",
+											"etablissement_formateur_siret": "35386977900036",
+											"cfd": "24113401",
+											"localite": "Bagnolet",
+											"id_rco_formation": "14_AF_0000095539|14_SE_0000501120##14_SE_0000598458##14_SE_0000642556##14_SE_0000642557##14_SE_0000825379##14_SE_0000825382|101249",
+											"cle_ministere_educatif": "101249P01313538697790003635386977900036-93006#L01",
+											"form_url": "https://labonnealternance.apprentissage.beta.gouv.fr/espace-pro/form?referrer=affelnet&cleMinistereEducatif=101249P01313538697790003635386977900036-93006%23L01"
+										}
+									}
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string",
+									"enum": [
+										"Formation introuvable."
+									],
+									"nullable": false
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"RDV"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/TCreateContextBody"
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+	"servers": [
+		{
+			"url": "https://labonnealternance.apprentissage.beta.gouv.fr",
+			"description": "Production"
+		},
+		{
+			"url": "https://labonnealternance-recette.apprentissage.beta.gouv.fr",
+			"description": "Recette"
+		},
+		{
+			"url": "http://localhost",
+			"description": "Localhost"
+		}
+	]
 }

@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { logger } from "../../common/logger"
+import { logger } from "../../common/logger.js"
 import { mongooseInstance } from "../../common/mongodb.js"
 import { getReferrerById } from "../../common/model/constants/referrers.js"
 import { mailType } from "../../common/model/constants/appointments.js"
