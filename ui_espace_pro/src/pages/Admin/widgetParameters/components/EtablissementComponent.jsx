@@ -158,7 +158,7 @@ const EtablissementComponent = ({ id }) => {
             <br />
             <br />
             <Text as="span" fontWeight="400">
-              {etablissement?.address}
+              {etablissement?.formateur_address}
             </Text>
           </Text>
         </Box>
