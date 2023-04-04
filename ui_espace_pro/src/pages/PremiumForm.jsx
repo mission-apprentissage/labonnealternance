@@ -43,11 +43,13 @@ const PremiumForm = () => {
   useEffect(async () => {
     const etablissement = await _get(`/api/etablissements/${id}`)
 
-    if (etablissement.premium_refused_at) {
+    console.log(JSON.stringify(etablissement, null, 2))
+
+    if (etablissement.premium_refusal_date) {
       setHasRefused(true)
     }
 
-    if (etablissement.premium_activated_at) {
+    if (etablissement.premium_activation_date) {
       setHasAccepted(true)
     }
 
@@ -177,7 +179,7 @@ const PremiumForm = () => {
                   <Text>
                     Ville :{" "}
                     <Text as="span" fontWeight="700">
-                      {etablissement.city}
+                      {etablissement.formateur_city}
                     </Text>
                   </Text>
                 </Box>

@@ -11,7 +11,7 @@ import config from "../../config.js"
 export const inviteEtablissementToPremium = async ({ etablissements, mailer }) => {
   logger.info("Cron #inviteEtablissementToPremium started.")
 
-  const etablissementsActivated = await etablissements.find({
+  const etablissementsToInvite = await etablissements.find({
     gestionnaire_email: {
       $ne: null,
     },
@@ -19,10 +19,11 @@ export const inviteEtablissementToPremium = async ({ etablissements, mailer }) =
       $ne: null,
       $lte: dayjs().subtract(1, "day").toDate(),
     },
+    premium_activation_date: null,
     "to_etablissement_emails.campaign": { $ne: mailType.PREMIUM_INVITE },
   })
 
-  for (const etablissement of etablissementsActivated) {
+  for (const etablissement of etablissementsToInvite) {
     // Invite all etablissements only in production environment
     const { messageId } = await mailer.sendEmail({
       to: etablissement.gestionnaire_email,

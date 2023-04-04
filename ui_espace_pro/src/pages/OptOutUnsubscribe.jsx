@@ -134,7 +134,7 @@ const OptOutUnsubscribe = () => {
                         <Text>
                           Ville :{" "}
                           <Text as="span" fontWeight="700">
-                            {etablissement.city}
+                            {etablissement.formateur_city}
                           </Text>
                         </Text>
                       </Box>
