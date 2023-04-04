@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { logger } from "../../common/logger.js"
+import { logger } from "../../common/logger"
 import { mongooseInstance } from "../../common/mongodb.js"
 import { getReferrerById } from "../../common/model/constants/referrers.js"
 import { mailType } from "../../common/model/constants/appointments.js"
@@ -25,6 +25,7 @@ export const cleanAndRenameFields = async ({ appointments, eligibleTrainingsForA
         last_update_at: "",
         champs_libre_commentaire: "",
         id_rco_formation: "",
+        cfa_gestionnaire_siret: "",
       },
     }
   )

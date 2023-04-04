@@ -81,11 +81,9 @@ export default ({ users, appointments, mailer, eligibleTrainingsForAppointments,
         appointments.createAppointment({
           applicant_id: user._id,
           cfa_recipient_email: eligibleTrainingsForAppointment.lieu_formation_email,
-          cfa_gestionnaire_siret: eligibleTrainingsForAppointment.etablissement_gestionnaire_siret,
           cfa_formateur_siret: eligibleTrainingsForAppointment.etablissement_formateur_siret,
           applicant_message_to_cfa: applicantMessageToCfa,
           appointment_origin: referrerObj.name,
-          rco_formation_id: eligibleTrainingsForAppointment.rco_formation_id,
           cle_ministere_educatif: eligibleTrainingsForAppointment.cle_ministere_educatif,
         }),
         etablissements.findOne({
@@ -251,7 +249,7 @@ export default ({ users, appointments, mailer, eligibleTrainingsForAppointments,
 
       const [user, eligibleTrainingsForAppointment] = await Promise.all([
         users.findOne({ _id: appointment.applicant_id }),
-        eligibleTrainingsForAppointments.findOne({ rco_formation_id: appointment.rco_formation_id }),
+        eligibleTrainingsForAppointments.findOne({ cle_ministere_educatif: appointment.cle_ministere_educatif }),
       ])
 
       if (action === candidatFollowUpType.RESEND) {

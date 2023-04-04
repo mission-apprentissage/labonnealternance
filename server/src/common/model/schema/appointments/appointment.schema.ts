@@ -14,11 +14,6 @@ export const appointmentSchema = new Schema<IAppointments>({
     required: false,
     description: "Les motivations du candidat",
   },
-  cfa_gestionnaire_siret: {
-    type: String,
-    default: null,
-    description: "SIRET gestionnaire",
-  },
   cfa_formateur_siret: {
     type: String,
     default: null,
@@ -105,11 +100,6 @@ export const appointmentSchema = new Schema<IAppointments>({
         },
       },
     },
-  },
-  rco_formation_id: {
-    type: String,
-    default: null,
-    description: "Id RCO formation",
   },
   cle_ministere_educatif: {
     type: String,

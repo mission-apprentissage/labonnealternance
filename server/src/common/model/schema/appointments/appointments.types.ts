@@ -9,13 +9,11 @@ interface IMailing {
 interface IAppointments {
   applicant_id: string
   applicant_message_to_cfa: string
-  cfa_gestionnaire_siret: string
   cfa_formateur_siret: string
   appointment_origin: string
   cfa_read_appointment_details_date: Date
   to_applicant_mails: IMailing[]
   to_cfa_mails: IMailing[]
-  rco_formation_id: string
   cle_ministere_educatif: string
   created_at: Date
   last_update_at: Date

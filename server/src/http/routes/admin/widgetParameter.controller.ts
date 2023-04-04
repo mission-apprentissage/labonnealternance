@@ -1,12 +1,8 @@
 // @ts-nocheck
-import Boom from "boom"
 import express from "express"
 import Joi from "joi"
-import json2csvParser from "json2csv"
 import { logger } from "../../../common/logger.js"
-import { getReferrerById } from "../../../common/model/constants/referrers.js"
 import { EligibleTrainingsForAppointment } from "../../../common/model/index.js"
-import { getFormationsByIdRcoFormations, getFormationsBySiretFormateur } from "../../../services/catalogue.service.js"
 import { tryCatch } from "../../middlewares/tryCatchMiddleware.js"
 
 const eligibleTrainingsForAppointmentIdPatchSchema = Joi.object({
@@ -31,22 +27,6 @@ const eligibleTrainingsForAppointmentSchema = Joi.object({
   referrers: Joi.array().items(Joi.number()),
   rco_formation_id: Joi.string().required(),
   cle_ministere_educatif: Joi.string().required(),
-})
-
-const eligibleTrainingsForAppointmentImportSchema = Joi.object({
-  parameters: Joi.array()
-    .items(
-      Joi.object({
-        formateur_siret: Joi.string().required(),
-        referrers: Joi.array().items(Joi.number()),
-        email: Joi.string().required(),
-      })
-    )
-    .required(),
-})
-
-const eligibleTrainingsForAppointmentReferrerUpdateBatchSchema = Joi.object({
-  referrers: Joi.array().items(Joi.number()).required(),
 })
 
 /**
@@ -89,57 +69,6 @@ export default ({ eligibleTrainingsForAppointments, etablissements }) => {
           total: allData.total,
         },
       })
-    })
-  )
-
-  /**
-   * Download in CSV.
-   */
-  router.get(
-    "/parameters/export",
-    tryCatch(async (req, res) => {
-      const qs = req.query
-      const query = qs && qs.query ? JSON.parse(qs.query) : {}
-
-      const eligibleTrainings = await EligibleTrainingsForAppointment.find(query)
-
-      const trainings = []
-      for (const parameter of eligibleTrainings) {
-        let formations = null
-        // Note: "id_rco_formation" attribute isn't existing for oldest parameters
-        if (parameter.rco_formation_id) {
-          formations = await getFormationsByIdRcoFormations({
-            idRcoFormations: [parameter.rco_formation_id],
-          })
-        }
-
-        const etablissement = await etablissements.findOne({ formateur_siret: parameter.etablissement_siret })
-
-        trainings.push({
-          siret: parameter.etablissement_siret,
-          raison_sociale: etablissement?.raison_sociale,
-          rco_formation_id: parameter.rco_formation_id,
-          formation: parameter.training_intitule_long,
-          cfd: parameter.training_code_formation_diplome,
-          email: parameter.lieu_formation_email,
-          localite: parameter.city,
-          email_catalogue: formations.length ? formations[0].email : "",
-          code_postal: parameter.etablissement_formateur_zip_code,
-          sources: parameter.referrers.map((referrer) => getReferrerById(referrer).full_name).join(", "),
-        })
-      }
-
-      if (!trainings.length) {
-        throw Boom.badRequest("Aucune information a exporter.")
-      }
-
-      const csv2json = new json2csvParser.Parser()
-      const csv = csv2json.parse(trainings)
-
-      res.setHeader("Content-disposition", "attachment; filename=parametres.csv")
-      res.set("Content-Type", "text/csv")
-
-      return res.send(csv)
     })
   )
 
@@ -187,18 +116,6 @@ export default ({ eligibleTrainingsForAppointments, etablissements }) => {
       } else {
         res.send({ message: `Item ${itemId} doesn't exist` })
       }
-    })
-  )
-
-  /**
-   * Add/Post an item validated by schema createParameter /eligibleTrainingsForAppointment POST
-   */
-  router.post(
-    "/",
-    tryCatch(async ({ body }, res) => {
-      await eligibleTrainingsForAppointmentSchema.validateAsync(body, { abortEarly: false })
-      const result = await eligibleTrainingsForAppointments.findUpdateOrCreate(body)
-      res.send(result)
     })
   )
 
