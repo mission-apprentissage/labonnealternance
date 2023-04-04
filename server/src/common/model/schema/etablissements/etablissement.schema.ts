@@ -18,20 +18,20 @@ export const etablissementSchema = new Schema<IEtablissement>({
     default: null,
     description: "Raison sociale",
   },
-  address: {
+  formateur_address: {
     type: String,
     default: null,
-    description: "Adresse",
+    description: "Adresse formateur",
   },
-  zip_code: {
+  formateur_zip_code: {
     type: String,
     default: null,
-    description: "Code postal",
+    description: "Code postal formateur",
   },
-  city: {
+  formateur_city: {
     type: String,
     default: null,
-    description: "Localité",
+    description: "Ville formateur",
   },
   gestionnaire_email: {
     type: String,

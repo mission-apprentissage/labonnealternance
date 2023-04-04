@@ -46,7 +46,7 @@ export const candidatHaveYouBeenContacted = async ({ etablissements, widgetParam
           },
           etablissement: {
             name: etablissement.raison_sociale,
-            address: etablissement.adresse,
+            formateur_address: etablissement.formateur_address,
             postalCode: etablissement.code_postal,
             ville: etablissement.localite,
             email: widgetParameter.email_rdv,
@@ -81,7 +81,7 @@ export const candidatHaveYouBeenContacted = async ({ etablissements, widgetParam
           },
           etablissement: {
             name: etablissement.raison_sociale,
-            address: etablissement.adresse,
+            formateur_address: etablissement.formateur_address,
             postalCode: etablissement.code_postal,
             ville: etablissement.localite,
           },

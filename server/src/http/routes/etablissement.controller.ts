@@ -67,7 +67,7 @@ export default ({ etablissements, mailer, eligibleTrainingsForAppointments, appo
           },
           etablissement: {
             name: etablissement.raison_sociale,
-            address: etablissement.address,
+            formateur_address: etablissement.formateur_address,
             zip_code: etablissement.zip_code,
             city: etablissement.city,
             formateur_siret: etablissement.formateur_siret,
@@ -128,7 +128,7 @@ export default ({ etablissements, mailer, eligibleTrainingsForAppointments, appo
               },
               etablissement: {
                 name: etablissement.raison_sociale,
-                address: etablissement.address,
+                formateur_address: etablissement.formateur_address,
                 postalCode: etablissement.zip_code,
                 ville: etablissement.city,
                 siret: etablissement.formateur_siret,
@@ -193,7 +193,7 @@ export default ({ etablissements, mailer, eligibleTrainingsForAppointments, appo
           },
           etablissement: {
             raison_sociale: etablissement.raison_sociale,
-            address: etablissement.address,
+            formateur_address: etablissement.formateur_address,
             zip_code: etablissement.zip_code,
             city: etablissement.city,
             formateur_siret: etablissement.formateur_siret,
@@ -289,7 +289,7 @@ export default ({ etablissements, mailer, eligibleTrainingsForAppointments, appo
             },
             etablissement: {
               name: etablissement.raison_sociale,
-              address: etablissement.address,
+              formateur_address: etablissement.formateur_address,
               postalCode: etablissement.zip_code,
               ville: etablissement.city,
               opt_out_question,
@@ -332,7 +332,7 @@ export default ({ etablissements, mailer, eligibleTrainingsForAppointments, appo
           },
           etablissement: {
             name: etablissement.raison_sociale,
-            address: etablissement.address,
+            formateur_address: etablissement.formateur_address,
             postalCode: etablissement.zip_code,
             ville: etablissement.city,
             siret: etablissement.formateur_siret,

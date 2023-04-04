@@ -78,7 +78,7 @@ export const inviteEtablissementToOptOut = async ({ etablissements, eligibleTrai
           },
           etablissement: {
             name: etablissement.raison_sociale,
-            address: etablissement.address,
+            formateur_address: etablissement.formateur_address,
             postalCode: etablissement.zip_code,
             ville: etablissement.city,
             siret: etablissement?.formateur_siret,
@@ -130,7 +130,7 @@ export const inviteEtablissementToOptOut = async ({ etablissements, eligibleTrai
               },
               etablissement: {
                 name: etablissement.raison_sociale,
-                address: etablissement.address,
+                formateur_address: etablissement.formateur_address,
                 postalCode: etablissement.zip_code,
                 ville: etablissement.city,
                 siret: etablissement.formateur_siret,

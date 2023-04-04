@@ -116,7 +116,7 @@ export const cleanAndRenameFields = async ({ appointments, eligibleTrainingsForA
     {},
     {
       $rename: {
-        adresse: "address",
+        adresse: "formateur_address",
         code_postal: "zip_code",
         premium_invited_at: "premium_invitation_date",
         opt_out_will_be_activated_at: "optout_activation_scheduled_date",

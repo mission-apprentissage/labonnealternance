@@ -152,9 +152,9 @@ export const syncEtablissementsAndFormations = async ({ etablissements, eligible
             gestionnaire_siret: formation.etablissement_gestionnaire_siret,
             gestionnaire_email: emailDecisionnaire,
             raison_sociale: formation.etablissement_formateur_entreprise_raison_sociale,
-            address: formation.etablissement_formateur_adresse,
-            zip_code: formation.etablissement_formateur_code_postal,
-            city: formation.etablissement_formateur_localite,
+            formateur_address: formation.etablissement_formateur_adresse,
+            formateur_zip_code: formation.etablissement_formateur_code_postal,
+            formateur_city: formation.etablissement_formateur_localite,
             last_catalogue_sync_date: dayjs().format(),
           }
         )
