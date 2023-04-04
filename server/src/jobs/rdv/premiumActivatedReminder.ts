@@ -65,7 +65,7 @@ export const premiumActivatedReminder = async ({ etablissements, eligibleTrainin
               name: etablissement.raison_sociale,
               formateur_address: etablissement.formateur_address,
               formateur_zip_code: etablissement.formateur_zip_code,
-              ville: etablissement.city,
+              formateur_city: etablissement.formateur_city,
               siret: etablissement.formateur_siret,
               email: etablissement.gestionnaire_email,
               premiumActivatedDate: dayjs(etablissement.premium_activation_date).format("DD/MM/YYYY"),

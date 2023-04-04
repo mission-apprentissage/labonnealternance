@@ -101,7 +101,7 @@ export class AppointmentsController extends Controller {
       code_postal: eligibleTrainingsForAppointment.etablissement_formateur_zip_code,
       etablissement_formateur_siret: eligibleTrainingsForAppointment.etablissement_siret,
       cfd: eligibleTrainingsForAppointment.training_code_formation_diplome,
-      localite: eligibleTrainingsForAppointment.city,
+      localite: eligibleTrainingsForAppointment.lieu_formation_city,
       id_rco_formation: eligibleTrainingsForAppointment.rco_formation_id,
       cle_ministere_educatif: eligibleTrainingsForAppointment?.cle_ministere_educatif,
       form_url: `${config.publicUrlEspacePro}/form?referrer=${referrerObj.name.toLowerCase()}&cleMinistereEducatif=${encodeURIComponent(

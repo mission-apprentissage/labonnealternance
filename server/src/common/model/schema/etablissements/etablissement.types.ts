@@ -6,7 +6,7 @@ interface IEtablissement {
   raison_sociale: string
   adresse: string
   formateur_zip_code: string
-  city: string
+  formateur_city: string
   gestionnaire_email: string
   premium_invitation_date: Date
   premium_activation_date: Date

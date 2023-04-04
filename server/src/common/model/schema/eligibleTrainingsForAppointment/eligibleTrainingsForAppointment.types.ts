@@ -19,7 +19,7 @@ interface IEligibleTrainingsForAppointment {
   lieu_formation_street: string
   etablissement_formateur_siret: string
   etablissement_gestionnaire_siret: string
-  city: string
+  lieu_formation_city: string
   created_at: Date
   historization_date: Date
 }

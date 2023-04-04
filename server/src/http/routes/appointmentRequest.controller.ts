@@ -103,8 +103,8 @@ export default ({ users, appointments, mailer, eligibleTrainingsForAppointments,
         etablissement: {
           name: eligibleTrainingsForAppointment.etablissement_formateur_raison_sociale,
           formateur_address: eligibleTrainingsForAppointment.lieu_formation_street,
-          postalCode: eligibleTrainingsForAppointment.etablissement_formateur_zip_code,
-          ville: eligibleTrainingsForAppointment.city,
+          formateur_zip_code: eligibleTrainingsForAppointment.etablissement_formateur_zip_code,
+          formateur_city: eligibleTrainingsForAppointment.lieu_formation_city,
           email: eligibleTrainingsForAppointment.lieu_formation_email,
         },
         formation: {
@@ -223,7 +223,7 @@ export default ({ users, appointments, mailer, eligibleTrainingsForAppointments,
           raison_sociale: etablissement.raison_sociale,
           formateur_address: etablissement.formateur_address,
           formateur_zip_code: etablissement.formateur_zip_code,
-          localite: etablissement.city,
+          formateur_city: etablissement.formateur_city,
         },
       })
     })
@@ -270,8 +270,8 @@ export default ({ users, appointments, mailer, eligibleTrainingsForAppointments,
             etablissement: {
               name: eligibleTrainingsForAppointment.etablissement_formateur_raison_sociale,
               formateur_address: eligibleTrainingsForAppointment.lieu_formation_street,
-              postalCode: eligibleTrainingsForAppointment.etablissement_formateur_zip_code,
-              ville: eligibleTrainingsForAppointment.city,
+              formateur_zip_code: eligibleTrainingsForAppointment.etablissement_formateur_zip_code,
+              formateur_city: eligibleTrainingsForAppointment.lieu_formation_city,
             },
             formation: {
               intitule: eligibleTrainingsForAppointment.training_intitule_long,

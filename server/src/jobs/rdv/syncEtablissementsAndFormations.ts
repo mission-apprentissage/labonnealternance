@@ -99,7 +99,7 @@ export const syncEtablissementsAndFormations = async ({ etablissements, eligible
               referrers: emailRdv && !emailBlacklisted ? referrersToActivate : [],
               is_catalogue_published: formation.published,
               rco_formation_id: formation.id_rco_formation,
-              city: formation.localite,
+              lieu_formation_city: formation.lieu_formation_city,
               last_catalogue_sync_date: dayjs().format(),
               etablissement_formateur_raison_sociale: formation.etablissement_formateur_entreprise_raison_sociale,
               etablissement_formateur_street: formation.etablissement_formateur_adresse,

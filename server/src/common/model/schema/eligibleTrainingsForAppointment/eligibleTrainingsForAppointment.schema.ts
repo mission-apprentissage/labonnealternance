@@ -98,7 +98,7 @@ export const eligibleTrainingsForAppointmentSchema = new Schema<IEligibleTrainin
     default: null,
     description: "Siret gestionnaire",
   },
-  city: {
+  lieu_formation_city: {
     type: String,
     default: null,
     description: "Localité de la formation",

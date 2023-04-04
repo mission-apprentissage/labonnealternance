@@ -47,8 +47,8 @@ export const candidatHaveYouBeenContacted = async ({ etablissements, widgetParam
           etablissement: {
             name: etablissement.raison_sociale,
             formateur_address: etablissement.formateur_address,
-            postalCode: etablissement.code_postal,
-            ville: etablissement.localite,
+            formateur_zip_code: etablissement.formateur_zip_code,
+            formateur_city: etablissement.formateur_city,
             email: widgetParameter.email_rdv,
           },
           formation: {
@@ -82,8 +82,8 @@ export const candidatHaveYouBeenContacted = async ({ etablissements, widgetParam
           etablissement: {
             name: etablissement.raison_sociale,
             formateur_address: etablissement.formateur_address,
-            postalCode: etablissement.code_postal,
-            ville: etablissement.localite,
+            formateur_zip_code: etablissement.formateur_zip_code,
+            formateur_city: etablissement.formateur_city,
           },
           formation: {
             intitule: widgetParameter.formation_intitule,

@@ -193,8 +193,8 @@ export const FormCreatePage = (props) => {
                     entrepriseRaisonSociale={data.etablissement_formateur_entreprise_raison_sociale}
                     intitule={data.intitule_long}
                     adresse={data.lieu_formation_adresse}
-                    codePostal={data.code_postal}
-                    ville={data.localite}
+                    codePostal={data.formateur_zip_code}
+                    ville={data.formateur_city}
                   />
                   <Text textStyle="h6" color="info">
                     Bonjour,
