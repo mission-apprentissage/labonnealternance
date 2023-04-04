@@ -64,7 +64,7 @@ export const premiumActivatedReminder = async ({ etablissements, eligibleTrainin
             etablissement: {
               name: etablissement.raison_sociale,
               formateur_address: etablissement.formateur_address,
-              postalCode: etablissement.zip_code,
+              formateur_zip_code: etablissement.formateur_zip_code,
               ville: etablissement.city,
               siret: etablissement.formateur_siret,
               email: etablissement.gestionnaire_email,

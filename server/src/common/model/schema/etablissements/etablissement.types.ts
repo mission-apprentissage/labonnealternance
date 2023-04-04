@@ -5,7 +5,7 @@ interface IEtablissement {
   gestionnaire_siret: string
   raison_sociale: string
   adresse: string
-  zip_code: string
+  formateur_zip_code: string
   city: string
   gestionnaire_email: string
   premium_invitation_date: Date

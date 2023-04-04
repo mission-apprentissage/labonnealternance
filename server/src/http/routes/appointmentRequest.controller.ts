@@ -222,7 +222,7 @@ export default ({ users, appointments, mailer, eligibleTrainingsForAppointments,
         etablissement: {
           raison_sociale: etablissement.raison_sociale,
           formateur_address: etablissement.formateur_address,
-          zip_code: etablissement.zip_code,
+          formateur_zip_code: etablissement.formateur_zip_code,
           localite: etablissement.city,
         },
       })

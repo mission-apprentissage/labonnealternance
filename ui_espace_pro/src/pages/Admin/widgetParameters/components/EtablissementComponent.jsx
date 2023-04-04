@@ -167,7 +167,7 @@ const EtablissementComponent = ({ id }) => {
             Code postal <br />
             <br />
             <Text as="span" fontWeight="400">
-              {etablissement?.zip_code}
+              {etablissement?.formateur_zip_code}
             </Text>
           </Text>
         </Box>

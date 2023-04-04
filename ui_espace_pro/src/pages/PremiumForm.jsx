@@ -171,7 +171,7 @@ const PremiumForm = () => {
                   <Text>
                     Code postal :{" "}
                     <Text as="span" fontWeight="700">
-                      {etablissement.zip_code}
+                      {etablissement.formateur_zip_code}
                     </Text>
                   </Text>
                   <Text>
