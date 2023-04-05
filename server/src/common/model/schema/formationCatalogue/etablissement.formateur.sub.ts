@@ -51,7 +51,7 @@ export const etablissementFormateurInfo = {
     type: String,
     description: "Code commune insee établissement formateur",
   },
-  etablissement_formateur_localite: {
+  etablissement_formateur_city: {
     type: String,
     description: "Localité établissement formateur",
   },

@@ -1,8 +1,8 @@
 import React from "react"
+import { NotionRenderer } from "react-notion-x"
 import Breadcrumb from "../components/breadcrumb"
 import Navigation from "../components/navigation"
 import ScrollToTop from "../components/ScrollToTop"
-import { NotionRenderer } from "react-notion-x"
 
 import { NextSeo } from "next-seo"
 

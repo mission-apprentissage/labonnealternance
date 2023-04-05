@@ -68,7 +68,7 @@ export default ({ formulaire, etablissementsRecruteur, usersRecruteur }) => {
   })
 
   const patchOfferOfferIdQuery = Joi.object({
-    siret_formateur: Joi.string(),
+    formateur_siret: Joi.string(),
   })
 
   /**
@@ -236,7 +236,7 @@ export default ({ formulaire, etablissementsRecruteur, usersRecruteur }) => {
       }
 
       const { offreId } = req.params
-      const { siret_formateur } = req.query
+      const { formateur_siret } = req.query
       const { cfa_read_company_detail_at } = req.body
 
       const form = await formulaire.getOffre(offreId)
@@ -249,7 +249,7 @@ export default ({ formulaire, etablissementsRecruteur, usersRecruteur }) => {
 
       if (cfa_read_company_detail_at) {
         for (const delegation of offre.delegations) {
-          if (siret_formateur === delegation.siret) {
+          if (formateur_siret === delegation.siret) {
             // If the patch already have been done
             if (delegation.cfa_read_company_detail_at) {
               break

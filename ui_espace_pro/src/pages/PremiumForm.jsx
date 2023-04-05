@@ -43,11 +43,13 @@ const PremiumForm = () => {
   useEffect(async () => {
     const etablissement = await _get(`/api/etablissements/${id}`)
 
-    if (etablissement.premium_refused_at) {
+    console.log(JSON.stringify(etablissement, null, 2))
+
+    if (etablissement.premium_refusal_date) {
       setHasRefused(true)
     }
 
-    if (etablissement.premium_activated_at) {
+    if (etablissement.premium_activation_date) {
       setHasAccepted(true)
     }
 
@@ -151,27 +153,33 @@ const PremiumForm = () => {
                     </Text>
                   </Text>
                   <Text>
-                    SIRET :{" "}
+                    SIRET Gestionnaire :{" "}
                     <Text as="span" fontWeight="700">
-                      {etablissement.siret_formateur}
+                      {etablissement.gestionnaire_siret}
+                    </Text>
+                  </Text>
+                  <Text>
+                    SIRET Formateur :{" "}
+                    <Text as="span" fontWeight="700">
+                      {etablissement.formateur_siret}
                     </Text>
                   </Text>
                   <Text>
                     Adresse :{" "}
                     <Text as="span" fontWeight="700">
-                      {etablissement.adresse}
+                      {etablissement.formateur_address}
                     </Text>
                   </Text>
                   <Text>
                     Code postal :{" "}
                     <Text as="span" fontWeight="700">
-                      {etablissement.code_postal}
+                      {etablissement.formateur_zip_code}
                     </Text>
                   </Text>
                   <Text>
                     Ville :{" "}
                     <Text as="span" fontWeight="700">
-                      {etablissement.localite}
+                      {etablissement.formateur_city}
                     </Text>
                   </Text>
                 </Box>

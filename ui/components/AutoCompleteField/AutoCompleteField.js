@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from "react"
-import { useFormikContext } from "formik"
-import { useCombobox } from "downshift" //https://github.com/downshift-js/downshift/tree/master/src/hooks/useCombobox
-import { debounce } from "lodash"
-import onInputValueChangeService from "./onInputValueChangeService"
-import highlightItem from "../../services/hightlightItem"
-import ReactHtmlParser from "react-html-parser"
-import findExactItemRank from "./findExactItemRank"
 import { Box, Container, Flex, Input, Spinner, Text, VStack } from "@chakra-ui/react"
+import { useCombobox } from "downshift" //https://github.com/downshift-js/downshift/tree/master/src/hooks/useCombobox
+import { useFormikContext } from "formik"
+import { debounce } from "lodash"
+import React, { useEffect, useState } from "react"
+import ReactHtmlParser from "react-html-parser"
+import highlightItem from "../../services/hightlightItem"
+import findExactItemRank from "./findExactItemRank"
+import onInputValueChangeService from "./onInputValueChangeService"
 
 let debouncedOnInputValueChange = null
 

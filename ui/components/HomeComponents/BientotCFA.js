@@ -1,6 +1,6 @@
 import React from "react"
 
-import { Box, Image, Grid, GridItem, Text } from "@chakra-ui/react"
+import { Box, Grid, GridItem, Image, Text } from "@chakra-ui/react"
 
 const BientotCFA = () => {
   return (

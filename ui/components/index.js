@@ -1,11 +1,11 @@
-import ScrollToTop from "./ScrollToTop"
 import AutoCompleteField from "./AutoCompleteField"
-import LogoLBA from "./LogoLBA"
-import ErrorMessage from "./ErrorMessage"
-import LoadingScreen from "./LoadingScreen"
-import StartForm from "./StartForm"
 import DomainError from "./DomainError"
-import { ItemDetail, Job, PeJobDetail, MatchaDetail, Training, TrainingDetail, LbbCompany, LbbCompanyDetail } from "./ItemDetail"
+import ErrorMessage from "./ErrorMessage"
+import { ItemDetail, Job, LbbCompany, LbbCompanyDetail, MatchaDetail, PeJobDetail, Training, TrainingDetail } from "./ItemDetail"
+import LoadingScreen from "./LoadingScreen"
+import LogoLBA from "./LogoLBA"
+import ScrollToTop from "./ScrollToTop"
+import StartForm from "./StartForm"
 
 export {
   ItemDetail,

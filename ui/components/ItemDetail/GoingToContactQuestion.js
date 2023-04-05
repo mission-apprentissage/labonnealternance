@@ -1,9 +1,9 @@
 import React from "react"
 
-import { useSessionStorage } from "../../utils/useSessionStorage"
+import { Box, Button, Flex } from "@chakra-ui/react"
 import { getItemId } from "../../utils/getItemId"
 import { SendPlausibleEvent } from "../../utils/plausible"
-import { Box, Button, Flex } from "@chakra-ui/react"
+import { useSessionStorage } from "../../utils/useSessionStorage"
 
 const GoingToContactQuestion = ({ kind, uniqId, item }) => {
   const [thanks, setThanks] = useSessionStorage(uniqId, false)

@@ -1,7 +1,7 @@
 import React from "react"
 
-import { Accordion, AccordionButton, AccordionItem, AccordionPanel, Box, Link } from "@chakra-ui/react"
 import { AddIcon, ExternalLinkIcon, MinusIcon } from "@chakra-ui/icons"
+import { Accordion, AccordionButton, AccordionItem, AccordionPanel, Box, Link } from "@chakra-ui/react"
 
 const CandidatureSpontaneeExplanation = (props) => {
   // Collapse Open state

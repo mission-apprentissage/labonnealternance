@@ -14,9 +14,9 @@ integrationTests(__filename(import.meta.url), () => {
     const createdCandidat = await createUser("userCandidat", "password", { role: roles.candidat })
 
     const created = await createAppointment({
-      candidat_id: createdCandidat._id,
+      applicant_id: createdCandidat._id,
       motivations: "Test Motivation",
-      etablissement_id: "0751475W",
+      cfa_gestionnaire_siret: "0751475W",
       formation_id: "45025516",
       referrer: "TEST",
     })
@@ -26,7 +26,7 @@ integrationTests(__filename(import.meta.url), () => {
     assert.strictEqual(created.referrer, "TEST")
 
     const foundAppointment = await Appointment.findOne({
-      etablissement_id: "0751475W",
+      cfa_gestionnaire_siret: "0751475W",
       formation_id: "45025516",
       referrer: "TEST",
     })
@@ -41,7 +41,7 @@ integrationTests(__filename(import.meta.url), () => {
     const created = await createAppointment({
       candidatId: createdCandidat._id,
       motivations: "Test Motivation",
-      etablissement_id: "0751475W",
+      cfa_gestionnaire_siret: "0751475W",
       formation_id: "45025516",
       referrer: "TEST",
     })
@@ -61,7 +61,7 @@ integrationTests(__filename(import.meta.url), () => {
     const created = await createAppointment({
       candidatId: createdCandidat._id,
       motivations: "Test Motivation",
-      etablissement_id: "0751475W",
+      cfa_gestionnaire_siret: "0751475W",
       formation_id: "45025516",
       referrer: "TEST",
     })
@@ -69,7 +69,7 @@ integrationTests(__filename(import.meta.url), () => {
     const updated = await updateAppointment(created._id, {
       candidatId: createdCandidat._id,
       motivations: "Updated",
-      etablissement_id: "Updated",
+      cfa_gestionnaire_siret: "Updated",
       formation_id: "Updated",
       referrer: "Updated",
     })

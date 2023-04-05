@@ -1,4 +1,4 @@
-import { baseUrl } from "../../../config/config"
+import { baseUrl } from "../../../config/config"
 
 const trainingsApi = baseUrl + "/api/v1/formations"
 const trainingApi = trainingsApi + "/formation"

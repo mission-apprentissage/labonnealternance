@@ -1,12 +1,10 @@
 import { oleoduc, writeData } from "oleoduc"
-import _ from "lodash-es"
+import { logger } from "../../common/logger.js"
 import { Opco } from "../../common/model/index.js"
 import { logMessage } from "../../common/utils/logMessage.js"
-import __dirname from "../../common/dirname.js"
-import { downloadAlgoCompanyFile, getMemoizedOpcoShortName, readCompaniesFromJson, removePredictionFile } from "./bonnesBoitesUtils.js"
-import { logger } from "../../common/logger.js"
-import { saveOpco } from "../../service/opco.js"
 import { CFADOCK_FILTER_LIMIT, fetchOpcosFromCFADock } from "../../service/cfaDock/fetchOpcosFromCFADock.js"
+import { saveOpco } from "../../service/opco.js"
+import { downloadAlgoCompanyFile, getMemoizedOpcoShortName, readCompaniesFromJson, removePredictionFile } from "./bonnesBoitesUtils.js"
 let errorCount = 0
 
 let sirenSet = new Set()

@@ -9,7 +9,6 @@ import logoPrdv from "../public/images/logo_prdv.svg"
 
 import logoAvril from "../public/images/logo-avril.svg"
 import logoLbb from "../public/images/logo-lbb.svg"
-import logoMaintenant from "../public/images/logo-maintenant.svg"
 
 import Footer from "../components/footer"
 

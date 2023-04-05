@@ -1,13 +1,13 @@
-import { useEffect, useState } from "react"
-import { Field, Form, Formik } from "formik"
-import * as Yup from "yup"
+import { Box, Button, Center, Flex, Input, Spinner, Text } from "@chakra-ui/react"
 import * as emailValidator from "email-validator"
+import { Field, Form, Formik } from "formik"
 import * as qs from "query-string"
-import { useNavigate, useLocation } from "react-router-dom"
-import { Input, Button, Box, Spinner, Text, Center, Flex } from "@chakra-ui/react"
+import { useEffect, useState } from "react"
+import { useLocation, useNavigate } from "react-router-dom"
+import * as Yup from "yup"
+import { _post } from "../../common/httpClient"
 import { ContactCfaComponent } from "./layout/ContactCfaComponent"
 import { FormLayoutComponent } from "./layout/FormLayoutComponent"
-import { _post } from "../../common/httpClient"
 
 /**
  * @description Form appointment page.
@@ -108,9 +108,9 @@ export const FormCreatePage = (props) => {
         lastname: values.lastname,
         phone: values.phone,
         email: values.email,
-        motivations: values.motivations,
+        applicantMessageToCfa: values.applicantMessageToCfa,
         cleMinistereEducatif,
-        referrer,
+        appointmentOrigin: referrer,
       })
 
       if (error) {
@@ -175,14 +175,14 @@ export const FormCreatePage = (props) => {
               lastname: "",
               phone: "",
               email: "",
-              motivations: "",
+              applicantMessageToCfa: "",
             }}
             validationSchema={Yup.object().shape({
               firstname: Yup.string().required("Requis"),
               lastname: Yup.string().required("Requis"),
               phone: Yup.number().required("Requis"),
               email: Yup.string().required("Requis"),
-              motivations: Yup.string(),
+              applicantMessageToCfa: Yup.string(),
             })}
             onSubmit={sendNewRequest}
           >
@@ -193,8 +193,8 @@ export const FormCreatePage = (props) => {
                     entrepriseRaisonSociale={data.etablissement_formateur_entreprise_raison_sociale}
                     intitule={data.intitule_long}
                     adresse={data.lieu_formation_adresse}
-                    codePostal={data.code_postal}
-                    ville={data.localite}
+                    codePostal={data.formateur_zip_code}
+                    ville={data.formateur_city}
                   />
                   <Text textStyle="h6" color="info">
                     Bonjour,
@@ -241,11 +241,28 @@ export const FormCreatePage = (props) => {
                   <Text mt={5} pb={2}>
                     Quel sujet souhaitez-vous aborder ?
                   </Text>
-                  <Field name="motivations">
+                  <Field name="applicantMessageToCfa">
                     {({ field, meta }) => {
                       return <Input placeholder="période d’inscription, horaires, etc." {...field} {...feedback(meta, "Désolée, ce champs est nécessaire")} />
                     }}
                   </Field>
+                  {/*<Flex mt={8}>*/}
+                  {/*  <Box w="40px">*/}
+                  {/*    <Box sx={{ position: "absolute" }}>*/}
+                  {/*      <InfoCircle width="20px" />*/}
+                  {/*    </Box>*/}
+                  {/*  </Box>*/}
+                  {/*  <Box>*/}
+                  {/*    <Text pl={4} pt={1}>*/}
+                  {/*      Ce centre de formation propose également des offres d’emploi en lien avec la formation qui vous*/}
+                  {/*      intéresse.*/}
+                  {/*      <Text as="span" fontWeight="600">*/}
+                  {/*        Vous pouvez demander des renseignements sur la formation même si vous avez déjà trouvé votre*/}
+                  {/*        entreprise par ailleurs.*/}
+                  {/*      </Text>*/}
+                  {/*    </Text>*/}
+                  {/*  </Box>*/}
+                  {/*</Flex>*/}
                   <Flex mt={8} bg="#F6F6F6" py="9px" px="18px">
                     <Box w="430px">
                       <Text fontWeight="600">Souhaiteriez-vous recevoir des offres d’emploi en lien avec cette formation ?</Text>

@@ -26,7 +26,7 @@ export default async function (optionalFileName?: string) {
   logger.info(" -- Start of DomainesMetiers initializer -- ")
 
   await downloadAndSaveFile(optionalFileName)
-  
+
   await resetIndexAndDb("domainesmetiers", DomainesMetiers, { requireAsciiFolding: true })
 
   const workbookDomainesMetiers = readXLSXFile(FILEPATH)
