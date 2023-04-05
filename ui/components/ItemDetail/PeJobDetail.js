@@ -1,9 +1,9 @@
+import { Box, Text } from "@chakra-ui/react"
 import React, { useEffect } from "react"
 import ReactHtmlParser from "react-html-parser"
-import { formatDate } from "../../utils/strutils"
-import { SendPlausibleEvent } from "../../utils/plausible"
 import { DisplayContext } from "../../context/DisplayContextProvider"
-import { Box, Text } from "@chakra-ui/react"
+import { SendPlausibleEvent } from "../../utils/plausible"
+import { formatDate } from "../../utils/strutils"
 
 let md = require("markdown-it")().disable(["link", "image"])
 

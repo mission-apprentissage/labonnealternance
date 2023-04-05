@@ -45,6 +45,9 @@
           },
           {
             "$ref": "#/parameters/caller"
+          },
+          {
+            "$ref": "#/parameters/opco"
           }
         ],
 
@@ -139,9 +142,6 @@
           },
           {
             "$ref": "#/parameters/opco"
-          },
-          {
-            "$ref": "#/parameters/opcoUrl"
           }
         ],
 
@@ -194,9 +194,6 @@
           },
           {
             "$ref": "#/parameters/opco"
-          },
-          {
-            "$ref": "#/parameters/opcoUrl"
           }
         ],
 
@@ -513,17 +510,8 @@
       "in": "query",
       "required": false,
       "type": "string",
-      "description": "Un filtre sur les sociétés affectées à un opérateur de compétences.",
-      "example": "AKTO|AFDAS|ATLAS|CONSTRUCTYS|OPCOMMERCE|OCAPIAT|OPCO2I|EP|MOBILITE|SANTE|UNIFORMATION"
-    },
-
-    "opcoUrl": {
-      "name": "opcoUrl",
-      "in": "query",
-      "required": false,
-      "type": "string",
-      "description": "Un filtre sur les sociétés affectées à un sous-ensemble d'un opérateur de compétences liés à un des sites Internet de l'opco. Il faut utiliser strictement les valeurs retournées par l'API CFADOCK.",
-      "example": "www.concepteursdavenirs.fr"
+      "description": "Un filtre sur les sociétés affectées à un opérateur de compétences. Valeurs acceptées : akto",
+      "example": "akto"
     },
 
     "rncps": {

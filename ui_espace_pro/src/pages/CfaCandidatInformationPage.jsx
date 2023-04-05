@@ -1,9 +1,9 @@
-import { useParams } from "react-router-dom"
 import { Box, Text } from "@chakra-ui/react"
-import { FormLayoutComponent } from "./Candidat/layout/FormLayoutComponent"
-import { useFetch } from "../common/hooks/useFetch"
 import { useEffect } from "react"
+import { useParams } from "react-router-dom"
+import { useFetch } from "../common/hooks/useFetch"
 import { _patch } from "../common/httpClient"
+import { FormLayoutComponent } from "./Candidat/layout/FormLayoutComponent"
 
 /**
  * @description CfaCandidatInformationPage component.
@@ -73,14 +73,14 @@ export const CfaCandidatInformationPage = () => {
               </Box>
               <Text mt={10}>
                 Il ou elle souhaite aborder avec vous le(s) sujet(s) suivant :
-                <br />"{data.appointment.motivations}" <br /> à propos de la formation :{" "}
+                <br />"{data.appointment.applicant_message_to_cfa}" <br /> à propos de la formation :{" "}
                 <Text as="span">
-                  <b>{data.etablissement.intitule_long}</b>
+                  <b>{data.etablissement.training_intitule_long}</b>
                 </Text>
                 <br />
                 dispensée par :{" "}
                 <Text as="span">
-                  <b>{data.etablissement.etablissement_formateur_entreprise_raison_sociale}</b>
+                  <b>{data.etablissement.etablissement_formateur_raison_sociale}</b>
                 </Text>
               </Text>
             </Box>

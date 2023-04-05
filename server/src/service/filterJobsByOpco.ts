@@ -1,9 +1,9 @@
 // @ts-nocheck
-import { Opco } from "../common/model/index.js"
 import { OPCOS } from "../common/constants.js"
-import { fetchOpcosFromCFADock, CFADOCK_FILTER_LIMIT } from "./cfaDock/fetchOpcosFromCFADock.js"
-import { saveOpco } from "./opco.js"
+import { Opco } from "../common/model/index.js"
 import { getMemoizedOpcoShortName } from "../jobs/lbb/bonnesBoitesUtils.js"
+import { CFADOCK_FILTER_LIMIT, fetchOpcosFromCFADock } from "./cfaDock/fetchOpcosFromCFADock.js"
+import { saveOpco } from "./opco.js"
 
 /**
  * Filtre une liste de jobs pour ne laisser que ceux qui ont la valeur opcoUrl ou opco
@@ -34,7 +34,7 @@ export default async function ({ jobs, opco, opcoUrl }) {
 
   let opcoFilteredSirens = []
 
-  const foundInMongoOpcoSirens = foundInMongoOpcos.map((opco) =>  opco.siren)
+  const foundInMongoOpcoSirens = foundInMongoOpcos.map((opco) => opco.siren)
 
   opcoFilteredSirens = opcoFilteredSirens.concat(foundInMongoOpcoSirens)
 

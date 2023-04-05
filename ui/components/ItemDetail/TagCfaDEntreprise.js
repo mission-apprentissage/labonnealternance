@@ -1,6 +1,6 @@
+import { Image, Text } from "@chakra-ui/react"
 import React from "react"
 import smileyIcon from "../../public/images/smiley.svg"
-import { Image, Text } from "@chakra-ui/react"
 
 const tagProperties = {
   color: "greensoft.600",

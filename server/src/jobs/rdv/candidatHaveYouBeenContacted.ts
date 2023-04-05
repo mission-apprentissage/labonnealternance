@@ -21,7 +21,7 @@ export const candidatHaveYouBeenContacted = async ({ etablissements, widgetParam
         // Excludes very older appointments
         $gte: dayjs("2021-12-01T00:00:00.486Z").toDate(),
       },
-      "candidat_mailing.campaign": { $ne: mailType.CANDIDAT_HAVE_YOU_BEEN_CONTACTED },
+      "to_applicant_mails.campaign": { $ne: mailType.CANDIDAT_HAVE_YOU_BEEN_CONTACTED },
     })
     .lean()
 
@@ -46,9 +46,9 @@ export const candidatHaveYouBeenContacted = async ({ etablissements, widgetParam
           },
           etablissement: {
             name: etablissement.raison_sociale,
-            address: etablissement.adresse,
-            postalCode: etablissement.code_postal,
-            ville: etablissement.localite,
+            formateur_address: etablissement.formateur_address,
+            formateur_zip_code: etablissement.formateur_zip_code,
+            formateur_city: etablissement.formateur_city,
             email: widgetParameter.email_rdv,
           },
           formation: {
@@ -81,9 +81,9 @@ export const candidatHaveYouBeenContacted = async ({ etablissements, widgetParam
           },
           etablissement: {
             name: etablissement.raison_sociale,
-            address: etablissement.adresse,
-            postalCode: etablissement.code_postal,
-            ville: etablissement.localite,
+            formateur_address: etablissement.formateur_address,
+            formateur_zip_code: etablissement.formateur_zip_code,
+            formateur_city: etablissement.formateur_city,
           },
           formation: {
             intitule: widgetParameter.formation_intitule,

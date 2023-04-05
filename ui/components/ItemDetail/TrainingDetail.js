@@ -1,3 +1,5 @@
+import { ExternalLinkIcon } from "@chakra-ui/icons"
+import { Box, Flex, Image, Link, Spinner, Text } from "@chakra-ui/react"
 import React, { useContext, useEffect, useState } from "react"
 import { DisplayContext } from "../../context/DisplayContextProvider"
 import { SearchResultContext } from "../../context/SearchResultContextProvider"
@@ -11,8 +13,6 @@ import fetchTrainingDetails from "../../services/fetchTrainingDetails"
 import sendTrainingOpenedEventToCatalogue from "../../services/sendTrainingOpenedEventToCatalogue"
 import { SendPlausibleEvent } from "../../utils/plausible"
 import { formatDate } from "../../utils/strutils"
-import { Box, Flex, Image, Link, Spinner, Text } from "@chakra-ui/react"
-import { ExternalLinkIcon } from "@chakra-ui/icons"
 
 // Read https://css-tricks.com/snippets/css/prevent-long-urls-from-breaking-out-of-container/
 const dontBreakOutCssParameters = {
@@ -155,7 +155,7 @@ const updateTrainingFromLbf = (training, detailsFromLbf) => {
     training.contact = training.contact || {}
 
     training.contact.phone = contactLbf.tel || training.contact.phone
-    
+
     training.company.url = contactLbf.url || training.company.url
   }
 }

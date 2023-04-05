@@ -10,33 +10,33 @@ import { isValidEmail } from "../../common/utils/isValidEmail.js"
  * @description Send a "Premium" reminder mail.
  * @returns {Promise<void>}
  */
-export const premiumActivatedReminder = async ({ etablissements, widgetParameters, mailer }) => {
+export const premiumActivatedReminder = async ({ etablissements, eligibleTrainingsForAppointments, mailer }) => {
   logger.info("Cron #premiumActivatedReminder started.")
 
-  const [etablissementsActivated, widgetParametersFound] = await Promise.all([
+  const [etablissementsActivated, eligibleTrainingsForAppointmentsFound] = await Promise.all([
     etablissements
       .find({
-        email_decisionnaire: {
+        gestionnaire_email: {
           $ne: null,
         },
-        premium_activated_at: {
+        premium_activation_date: {
           $ne: null,
         },
       })
       .lean(),
-    widgetParameters.find({ id_parcoursup: { $ne: null }, email_rdv: { $ne: null } }).lean(),
+    eligibleTrainingsForAppointments.find({ parcoursup_id: { $ne: null }, lieu_formation_email: { $ne: null } }).lean(),
   ])
 
   const etablissementWithParcoursup = etablissementsActivated.filter((etablissement) =>
-    widgetParametersFound.find((widgetParameter) => widgetParameter.etablissement_formateur_siret === etablissement.siret_formateur)
+    eligibleTrainingsForAppointmentsFound.find((eligibleTrainingsForAppointment) => eligibleTrainingsForAppointment.etablissement_formateur_siret === etablissement.formateur_siret)
   )
 
   for (const etablissement of etablissementWithParcoursup) {
     // Retrieve all emails
-    let emails = widgetParametersFound
-      .filter((widgetParameter) => widgetParameter.etablissement_formateur_siret === etablissement.siret_formateur)
-      .map((widgetParameter) => widgetParameter.email_rdv)
-      .concat([etablissement.email_decisionnaire, etablissement.etablissement_formateur_courriel])
+    let emails = eligibleTrainingsForAppointmentsFound
+      .filter((eligibleTrainingsForAppointment) => eligibleTrainingsForAppointment.etablissement_formateur_siret === etablissement.formateur_siret)
+      .map((eligibleTrainingsForAppointment) => eligibleTrainingsForAppointment.lieu_formation_email)
+      .concat([etablissement.gestionnaire_email])
 
     emails = _(emails).uniq().omitBy(_.isNil).toArray()
 
@@ -63,13 +63,13 @@ export const premiumActivatedReminder = async ({ etablissements, widgetParameter
             },
             etablissement: {
               name: etablissement.raison_sociale,
-              address: etablissement.adresse,
-              postalCode: etablissement.code_postal,
-              ville: etablissement.localite,
-              siret: etablissement.siret_formateur,
-              email: etablissement.email_decisionnaire,
-              premiumActivatedDate: dayjs(etablissement.premium_activated_at).format("DD/MM/YYYY"),
-              emailGestionnaire: etablissement.email_decisionnaire,
+              formateur_address: etablissement.formateur_address,
+              formateur_zip_code: etablissement.formateur_zip_code,
+              formateur_city: etablissement.formateur_city,
+              siret: etablissement.formateur_siret,
+              email: etablissement.gestionnaire_email,
+              premiumActivatedDate: dayjs(etablissement.premium_activation_date).format("DD/MM/YYYY"),
+              emailGestionnaire: etablissement.gestionnaire_email,
             },
             user: {
               destinataireEmail: email,
@@ -78,11 +78,11 @@ export const premiumActivatedReminder = async ({ etablissements, widgetParameter
         })
 
         await etablissements.updateOne(
-          { siret_formateur: etablissement.siret_formateur },
+          { formateur_siret: etablissement.formateur_siret },
           {
-            premium_invited_at: dayjs().toDate(),
+            premium_invitation_date: dayjs().toDate(),
             $push: {
-              mailing: {
+              to_etablissement_emails: {
                 campaign: mailType.PREMIUM_ACTIVATED_REMINDER,
                 status: null,
                 message_id: messageId,

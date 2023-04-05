@@ -10,15 +10,11 @@ httpTests(__filename(import.meta.url), ({ startServer }) => {
     const emailStatus = "delivered"
 
     const appointment = await components.appointments.createAppointment({
-      candidat_id: sampleAppointment.candidat_id,
-      etablissement_id: sampleAppointment.etablissement_id,
+      applicant_id: sampleAppointment.applicant_id,
+      cfa_gestionnaire_siret: sampleAppointment.cfa_gestionnaire_siret,
       formation_id: sampleAppointment.formation_id,
       motivations: sampleAppointment.motivations,
       referrer: sampleAppointment.referrer,
-    })
-
-    await components.appointments.updateAppointment(appointment._id, {
-      email_premiere_demande_candidat_message_id: messageId,
     })
 
     const response = await httpClient.post(`/api/emails/webhook?apikey=1234`, {
@@ -44,8 +40,8 @@ httpTests(__filename(import.meta.url), ({ startServer }) => {
     const emailStatus = "delivered"
 
     const appointment = await components.appointments.createAppointment({
-      candidat_id: sampleAppointment.candidat_id,
-      etablissement_id: sampleAppointment.etablissement_id,
+      applicant_id: sampleAppointment.applicant_id,
+      cfa_gestionnaire_siret: sampleAppointment.cfa_gestionnaire_siret,
       formation_id: sampleAppointment.formation_id,
       motivations: sampleAppointment.motivations,
       referrer: sampleAppointment.referrer,

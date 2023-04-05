@@ -53,13 +53,13 @@ const getMatchaJobs = async ({ romes, radius, latitude, longitude, api, opco, op
 
 // update du contenu avec des résultats pertinents par rapport au rayon
 const transformMatchaJobsForIdea = ({ jobs, caller }) => {
-  let resultJobs = {
+  const resultJobs = {
     results: [],
   }
 
   if (jobs && jobs.length) {
     for (let i = 0; i < jobs.length; ++i) {
-      let companyJobs = transformMatchaJobForIdea({
+      const companyJobs = transformMatchaJobForIdea({
         job: jobs[i]._source,
         distance: jobs[i].sort[0],
         caller,

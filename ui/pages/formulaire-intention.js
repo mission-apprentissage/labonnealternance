@@ -1,6 +1,6 @@
+import { NextSeo } from "next-seo"
 import React from "react"
 import SatisfactionForm from "../components/SatisfactionForm/SatisfactionForm.js"
-import { NextSeo } from "next-seo"
 
 const FormulaireIntention = () => {
   return (

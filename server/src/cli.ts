@@ -11,6 +11,8 @@ import { relanceFormulaire } from "./jobs/lba_recruteur/formulaire/relanceFormul
 import { generateIndexes } from "./jobs/lba_recruteur/indexes/generateIndexes.js"
 import { relanceOpco } from "./jobs/lba_recruteur/opco/relanceOpco.js"
 import { createOffreCollection } from "./jobs/lba_recruteur/seed/createOffre.js"
+import updateBonnesBoites from "./jobs/lbb/updateBonnesBoites.js"
+import updateGeoLocations from "./jobs/lbb/updateGeoLocations.js"
 import { activateOptOutEtablissementFormations } from "./jobs/rdv/activateOptOutEtablissementFormations.js"
 import { anonimizeAppointments } from "./jobs/rdv/anonymizeAppointments.js"
 import { anonimizeUsers } from "./jobs/rdv/anonymizeUsers.js"
@@ -24,9 +26,8 @@ import { premiumActivatedReminder } from "./jobs/rdv/premiumActivatedReminder.js
 import { premiumInviteOneShot } from "./jobs/rdv/premiumInviteOneShot.js"
 import { syncEtablissementsAndFormations } from "./jobs/rdv/syncEtablissementsAndFormations.js"
 import { runScript } from "./jobs/scriptWrapper.js"
-import updateBonnesBoites from "./jobs/lbb/updateBonnesBoites.js"
-import updateGeoLocations from "./jobs/lbb/updateGeoLocations.js"
 import updateSendinblueBlockedEmails from "./jobs/updateSendinblueBlockedEmails/updateSendinblueBlockedEmails.js"
+import { cleanAndRenameFields } from "./jobs/rdv/cleanAndRenameFields.js"
 import updateOpcoCompanies from "./jobs/lbb/updateOpcoCompanies.js"
 import updateDiplomesMetiers from "./jobs/diplomesMetiers/updateDiplomesMetiers.js"
 import updateDomainesMetiers from "./jobs/domainesMetiers/updateDomainesMetiers.js"
@@ -212,6 +213,13 @@ cli
   .description("Contrôle l'egibilité d'une formation à la prise de rendez-vous avec le Catalogue des formations")
   .action(() => {
     runScript(() => controlAvailableFormationWithCatalogue())
+  })
+
+cli
+  .command("clean-and-rename-fields-rdv")
+  .description("Renomme les champs des collections sur la prise de rendez-vous")
+  .action(() => {
+    runScript((components) => cleanAndRenameFields(components))
   })
 
 /**

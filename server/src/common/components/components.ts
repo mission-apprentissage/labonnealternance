@@ -9,12 +9,12 @@ import createFormulaire from "./formulaire.js"
 import createParcoursupEtablissementStats from "./parcoursupEtablissementStat.js"
 import createUsers from "./users.js"
 import createUserRecruteur from "./usersRecruteur.js"
-import createWidgetParameters from "./widgetParameters.js"
+import createEligibleTrainingsForAppointments from "./eligibleTrainingsForAppointments.js"
 
 export default async function (options = {}) {
   const users = await createUsers()
   const appointments = await createAppointements()
-  const widgetParameters = await createWidgetParameters()
+  const eligibleTrainingsForAppointments = await createEligibleTrainingsForAppointments()
   const etablissements = await createEtablissements()
   const parcoursupEtablissementStats = await createParcoursupEtablissementStats()
   const usersRecruteur = await createUserRecruteur()
@@ -30,7 +30,7 @@ export default async function (options = {}) {
     appointments,
     usersRecruteur,
     etablissements,
-    widgetParameters,
+    eligibleTrainingsForAppointments,
     etablissementsRecruteur,
     parcoursupEtablissementStats,
   }

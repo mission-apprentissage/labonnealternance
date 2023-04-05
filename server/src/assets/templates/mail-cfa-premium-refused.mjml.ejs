@@ -24,10 +24,10 @@
                 <mj-text>
                     A votre demande, le service RDV Apprentissage ne sera pas activé sur Parcoursup pour l’organisme suivant : <br/><br/>
                     <b>
-                        <%= data.etablissement.name %> <br />
-                        <%= data.etablissement.address %><br/>
-                        <%= data.etablissement.postalCode %> <%= data.etablissement.ville %><br/>
-                        SIRET : <%= data.etablissement.siret %>
+                        <%= data.etablissement.raison_sociale %> <br />
+                        <%= data.etablissement.formateur_address %><br/>
+                        <%= data.etablissement.formateur_zip_code %> <%= data.etablissement.formateur_city %><br/>
+                        SIRET : <%= data.etablissement.formateur_siret %>
                     </b>
                 </mj-text>
             </mj-column>

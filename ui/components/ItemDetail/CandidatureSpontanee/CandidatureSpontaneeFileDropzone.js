@@ -1,7 +1,7 @@
+import { Box, Button, Flex, FormControl, FormErrorMessage, Image, Input, Spinner, Text } from "@chakra-ui/react"
 import React, { useState } from "react"
 import { useDropzone } from "react-dropzone"
 import dropzoneIco from "../../../public/images/icons/candidature_file_upload.svg"
-import { Box, Button, Flex, FormControl, FormErrorMessage, Image, Input, Spinner, Text } from "@chakra-ui/react"
 
 const CandidatureSpontaneeFileDropzone = ({ setFileValue, formik }) => {
   const [fileData, setFileData] = useState(formik.values.fileName ? { fileName: formik.values.fileName, fileContent: formik.values.fileContent } : null)
