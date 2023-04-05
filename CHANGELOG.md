@@ -1,3 +1,10 @@
+# [1.13.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.12.2...v1.13.0) (2023-04-05)
+
+
+### Features
+
+* RGPD RDVA ([#328](https://github.com/mission-apprentissage/labonnealternance/issues/328)) ([416715a](https://github.com/mission-apprentissage/labonnealternance/commit/416715aa3a252e2be9ae09570470fb83cb372eb5))
+
 ## [1.12.2](https://github.com/mission-apprentissage/labonnealternance/compare/v1.12.1...v1.12.2) (2023-04-05)
 
 
