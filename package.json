@@ -14,10 +14,11 @@
     "lint:staged": "lint-staged",
     "prettier:fix": "prettier --write ./server ./ui ./ui_espace_pro",
     "prettier:check": "prettier --check ./server ./ui ./ui_espace_pro",
-    "hook:pre-commit": "bash ./hooks/preventSensibleFilesCommit.sh && yarn lint-staged",
+    "hook:pre-commit": "bash ./hooks/preventSensibleFilesCommit.sh && yarn lint-staged && yarn node-talisman --githook pre-commit",
     "hook:commit-msg": "commitlint --config package.json --edit ${1}",
     "npm:release": "semantic-release",
-    "npm:release:local": "CI=true LOCAL_RELEASE=true semantic-release"
+    "npm:release:local": "CI=true LOCAL_RELEASE=true semantic-release",
+    "talisman:add-exception": "yarn node-talisman --githook pre-commit -i"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.1.2",
@@ -35,6 +36,7 @@
     "eslint-plugin-prettier": "^4.2.1",
     "husky": "^8.0.2",
     "lint-staged": "^13.0.3",
+    "node-talisman": "^1.29.9",
     "prettier": "^2.7.1",
     "semantic-release": "^19.0.5",
     "semantic-release-slack-bot": "^3.5.3"
