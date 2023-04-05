@@ -1,3 +1,10 @@
+## [1.12.2](https://github.com/mission-apprentissage/labonnealternance/compare/v1.12.1...v1.12.2) (2023-04-05)
+
+
+### Bug Fixes
+
+* month instead of year ([#346](https://github.com/mission-apprentissage/labonnealternance/issues/346)) ([8db49c1](https://github.com/mission-apprentissage/labonnealternance/commit/8db49c175e30df0a0233f71fbac1c4b72ee1717d))
+
 ## [1.12.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.12.0...v1.12.1) (2023-04-03)
 
 
