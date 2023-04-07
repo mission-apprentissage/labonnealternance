@@ -1,6 +1,11 @@
 <mjml>
     <mj-head>
-        <mj-title>La prise de rendez-vous est activée pour votre CFA sur Parcoursup</mj-title>
+        <% if(data.isParcoursup){ %>
+            <mj-title>La prise de rendez-vous est activée pour votre CFA sur Parcoursup</mj-title>
+        <% } %>
+        <% if(data.isAffelnet){ %>
+            <mj-title>La prise de rendez-vous est activée pour votre CFA sur Choisir son affectation après la 3e</mj-title>
+        <% } %>
         <mj-font name="Work Sans" href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;700&display=swap" />
         <mj-style inline="inline">
             .grey {color: #1E1E1E;}
@@ -20,7 +25,12 @@
         <mj-section padding-top="0" padding-bottom="0">
             <mj-column width="350px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="25px 0 46px 12px">
                 <mj-text color="#000091" font-size="18px" padding-right="0" padding-top="26px">
-                    <b>Les candidats peuvent contacter votre CFA directement depuis Parcoursup !</b>
+                    <% if(data.isParcoursup){ %>
+                            <b>Les candidats peuvent contacter votre CFA directement depuis Parcoursup !</b>
+                    <% } %>
+                    <% if(data.isAffelnet){ %>
+                            <b>Les candidats peuvent contacter votre CFA directement depuis Choisir son affectation après la 3e !</b>
+                    <% } %>
                 </mj-text>
             </mj-column>
             <mj-column width="250px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 0 37px 0">
@@ -30,7 +40,12 @@
         <mj-section padding-top="0">
             <mj-column width="600px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="0 10px 20px 10px">
                 <mj-text>
-                    Le <b><%= data.etablissement.premiumActivatedDate %></b>, votre établissement gestionnaire <b><%= data.etablissement.emailGestionnaire %></b> a activé la fonctionnalité de prise de rendez-vous sur vos fiches formations publiées sur <a href="https://www.parcoursup.fr" class="grey">Parcoursup</a>. Il permettra aux candidats intéressés par vos formations de vous envoyer une demande de contact.
+                <% if(data.isParcoursup){ %>
+                        Le <b><%= data.etablissement.premiumActivatedDate %></b>, votre établissement gestionnaire <b><%= data.etablissement.emailGestionnaire %></b> a activé la fonctionnalité de prise de rendez-vous sur vos fiches formations publiées sur <a href="https://www.parcoursup.fr" class="grey">Parcoursup</a>. Elle permettra aux candidats intéressés par vos formations de vous envoyer une demande de contact.
+                <% } %>
+                <% if(data.isAffelnet){ %>
+                        Le <b><%= data.etablissement.premiumActivatedDate %></b>, votre établissement gestionnaire <b><%= data.etablissement.emailGestionnaire %></b> a activé la fonctionnalité de prise de rendez-vous sur vos fiches formations publiées sur <a href="https://affectation3e.phm.education.gouv.fr/pna-public/" class="grey">Choisir son affectation après la 3e</a>. Elle permettra aux candidats intéressés par vos formations de vous envoyer une demande de contact.
+                <% } %>
                 </mj-text>
                 <mj-text>
                     Vous recevrez ces demandes pour l’organisme de formation suivant :
@@ -46,11 +61,20 @@
         </mj-section>
         <mj-section padding-top="24px">
             <mj-column width="600px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 10px">
-                <mj-text font-size="24px" font-weight="700">Vos engagements Parcoursup</mj-text>
-                <mj-text>Le service de prise de rendez-vous sur Parcoursup vous engage en tant que CFA à : <br/><br/>
-                    • ✉️ <b>Contacter par mail ou téléphone tous les candidats</b> qui feront une demande sur cette plateforme <br/>
-                    • ⏳ <b>Dans un délai de 4 jours ouvrés</b> après réception de la demande par e-mail
-                </mj-text>
+                <% if(data.isParcoursup){ %>
+                    <mj-text font-size="24px" font-weight="700">Vos engagements "Parcoursup"</mj-text>
+                    <mj-text>Le service de prise de rendez-vous sur Parcoursup vous engage en tant que CFA à : <br/><br/>
+                        • ✉️ <b>Contacter par mail ou téléphone tous les candidats</b> qui feront une demande sur cette plateforme <br/>
+                        • ⏳ <b>Répondre dans un délai de 4 jours ouvrés</b> après réception de la demande par e-mail
+                    </mj-text>
+                <% } %>
+                <% if(data.isAffelnet){ %>
+                    <mj-text font-size="24px" font-weight="700">Vos engagements "Choisir son affectation après la 3e"</mj-text>
+                     <mj-text>Le service de prise de rendez-vous sur Choisir son affectation après la 3e vous engage en tant que CFA à : <br/><br/>
+                        • ✉️ <b>Contacter par mail ou téléphone tous les candidats</b> qui feront une demande sur cette plateforme <br/>
+                        • ⏳ <b>Répondre dans un délai de 4 jours ouvrés</b> après réception de la demande par e-mail
+                    </mj-text>
+                <% } %>
             </mj-column>
         </mj-section>
         <mj-section padding-top="24px">
@@ -70,8 +94,8 @@
 
                     Merci de nous fournir les éléments suivants: <br/><br/>
                     • SIRET de votre établissement, <br/>
-                    • nom de la/les formation(s) à modifier, <br/>
-                    • nouveau(x) mail(s) contact <br/><br/>
+                    • Nom de la/les formation(s) à modifier, <br/>
+                    • Nouveau(x) mail(s) contact <br/><br/>
                     à <a href="mailto:<%= data.replyTo %>" class="grey"><%= data.replyTo %></a> afin de nous permettre d’effectuer ces modifications.
                 </mj-text>
             </mj-column>

@@ -42,10 +42,15 @@ export const CfaCandidatInformationPage = () => {
         <>
           {data.user && (
             <Box mt={10}>
-              <Text as="span" color="bluefrance" textStyle="h6">
-                Voici les coordonnées du candidat
+              <Text as="span" color="bluefrance.500" fontWeight="700" fontSize="22px">
+                Voici les coordonnées du contact :
               </Text>
               <Box mt={6} pb={10} borderBottom="solid 1px #D0C9C4">
+                {data.user?.type && (
+                  <Text fontWeight="700" mb={4}>
+                    {data.user.type === "parent" ? "Le parent" : "L'étudiant"}
+                  </Text>
+                )}
                 <Text>
                   Nom :{" "}
                   <Text as="span">
@@ -73,14 +78,16 @@ export const CfaCandidatInformationPage = () => {
               </Box>
               <Text mt={10}>
                 Il ou elle souhaite aborder avec vous le(s) sujet(s) suivant :
-                <br />"{data.appointment.applicant_message_to_cfa}" <br /> à propos de la formation :{" "}
-                <Text as="span">
-                  <b>{data.etablissement.training_intitule_long}</b>
+                <br />"{data.appointment.applicant_message_to_cfa}"
+                <Text>
+                  à propos de la formation : <b>{data.etablissement.training_intitule_long}</b>
                 </Text>
-                <br />
-                dispensée par :{" "}
-                <Text as="span">
-                  <b>{data.etablissement.etablissement_formateur_raison_sociale}</b>
+                <Text>
+                  dispensée par :{" "}
+                  <b>
+                    {data.etablissement.etablissement_formateur_raison_sociale}, {data.etablissement.lieu_formation_street}, {data.etablissement.lieu_formation_zip_code},{" "}
+                    {data.etablissement.lieu_formation_city}
+                  </b>
                 </Text>
               </Text>
             </Box>

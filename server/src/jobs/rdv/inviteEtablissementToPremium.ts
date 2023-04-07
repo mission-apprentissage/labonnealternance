@@ -21,6 +21,7 @@ export const inviteEtablissementToPremium = async ({ etablissements, mailer }) =
     },
     premium_activation_date: null,
     "to_etablissement_emails.campaign": { $ne: mailType.PREMIUM_INVITE },
+    affelnet_perimetre: null,
   })
 
   for (const etablissement of etablissementsToInvite) {
@@ -30,11 +31,8 @@ export const inviteEtablissementToPremium = async ({ etablissements, mailer }) =
       subject: `Optimisez le sourcing de vos candidats sur Parcoursup !`,
       template: mailTemplate["mail-cfa-premium-invite"],
       data: {
-        images: {
-          logoCfa: `${config.publicUrlEspacePro}/assets/logo-lba-recruteur-cfa.png?raw=true`,
-          logoFooter: `${config.publicUrlEspacePro}/assets/logo-republique-francaise.png?raw=true`,
-          parcoursupIntegrationExample: `${config.publicUrlEspacePro}/assets/exemple_integration_parcoursup.jpg?raw=true`,
-        },
+        isParcoursup: true,
+        images: `${config.publicUrlEspacePro}/assets/exemple_integration_parcoursup.jpg?raw=true`,
         etablissement: {
           email: etablissement.gestionnaire_email,
           activatedAt: dayjs(etablissement.optout_activation_scheduled_date).format("DD/MM"),

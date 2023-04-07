@@ -253,7 +253,7 @@ export const getFormationsFromCatalogueMe = async ({
   query: object
   limit: number
   page?: number
-  select: object
+  select?: object
   allFormations?: object[]
 }) => {
   if (api === null) {

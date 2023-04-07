@@ -11,6 +11,9 @@ interface IEtablissement {
   premium_invitation_date: Date
   premium_activation_date: Date
   premium_refusal_date: Date
+  premium_affelnet_invitation_date: Date
+  premium_affelnet_activation_date: Date
+  premium_affelnet_refusal_date: Date
   optout_invitation_date: Date
   optout_activation_scheduled_date: Date
   optout_activation_date: Date
@@ -18,6 +21,7 @@ interface IEtablissement {
   mailing: IMailing[]
   last_catalogue_sync_date: Date
   created_at: Date
+  affelnet_perimetre: boolean
 }
 
 export { IEtablissement }

@@ -1,4 +1,4 @@
-import { Box, Button, Center, Flex, Input, Spinner, Text } from "@chakra-ui/react"
+import { Box, Button, Center, Flex, Input, Radio, RadioGroup, Spinner, Stack, Text } from "@chakra-ui/react"
 import * as emailValidator from "email-validator"
 import { Field, Form, Formik } from "formik"
 import * as qs from "query-string"
@@ -108,6 +108,7 @@ export const FormCreatePage = (props) => {
         lastname: values.lastname,
         phone: values.phone,
         email: values.email,
+        type: values.applicantType,
         applicantMessageToCfa: values.applicantMessageToCfa,
         cleMinistereEducatif,
         appointmentOrigin: referrer,
@@ -176,6 +177,7 @@ export const FormCreatePage = (props) => {
               phone: "",
               email: "",
               applicantMessageToCfa: "",
+              applicantType: "parent",
             }}
             validationSchema={Yup.object().shape({
               firstname: Yup.string().required("Requis"),
@@ -183,6 +185,7 @@ export const FormCreatePage = (props) => {
               phone: Yup.number().required("Requis"),
               email: Yup.string().required("Requis"),
               applicantMessageToCfa: Yup.string(),
+              applicantType: Yup.string(),
             })}
             onSubmit={sendNewRequest}
           >
@@ -200,12 +203,26 @@ export const FormCreatePage = (props) => {
                     Bonjour,
                   </Text>
                   <Text mt={7} pb={2}>
-                    Vous êtes
+                    Vous êtes{" "}
                     <Text color="redmarianne" as="span">
                       *
                     </Text>{" "}
                     :
                   </Text>
+                  <Field name="applicantType">
+                    {({ field }) => (
+                      <RadioGroup {...field} my={4}>
+                        <Stack direction="row" spacing={3}>
+                          <Radio {...field} size="lg" value="parent">
+                            Le parent
+                          </Radio>
+                          <Radio {...field} size="lg" value="etudiant">
+                            L'étudiant
+                          </Radio>
+                        </Stack>
+                      </RadioGroup>
+                    )}
+                  </Field>
                   <Field name="firstname">{({ field, meta }) => <Input placeholder="votre prénom" {...field} {...feedback(meta, "Prénom invalide")} />}</Field>
                   <Field name="lastname">{({ field, meta }) => <Input mt={2} placeholder="votre nom" {...field} {...feedback(meta, "Nom invalide")} />}</Field>
                   {data.intitule_long && (
@@ -214,7 +231,7 @@ export const FormCreatePage = (props) => {
                       <b>
                         <u>{data.intitule_long.toUpperCase()}</u>
                       </b>
-                      , laissez votre numéro et votre adresse email au centre de formation
+                      , laissez votre numéro et votre adresse email au centre de formation{" "}
                       <Text color="redmarianne" as="span">
                         *
                       </Text>{" "}
@@ -263,29 +280,34 @@ export const FormCreatePage = (props) => {
                   {/*    </Text>*/}
                   {/*  </Box>*/}
                   {/*</Flex>*/}
-                  <Flex mt={8} bg="#F6F6F6" py="9px" px="18px">
-                    <Box w="430px">
-                      <Text fontWeight="600">Souhaiteriez-vous recevoir des offres d’emploi en lien avec cette formation ?</Text>
-                    </Box>
-                    <Center w="150px" pl="20px">
-                      <Text
-                        as="span"
-                        pr="28px"
-                        onClick={() => setPlausibleFeedback(plausibleFeebackEnum.OUI)}
-                        fontWeight={plausibleFeedback === plausibleFeebackEnum.OUI ? "600" : "none"}
-                        sx={{ cursor: "pointer" }}
-                      >
-                        👍 Oui
-                      </Text>
-                      <Text
-                        onClick={() => setPlausibleFeedback(plausibleFeebackEnum.NON)}
-                        fontWeight={plausibleFeedback === plausibleFeebackEnum.NON ? "600" : "none"}
-                        sx={{ cursor: "pointer" }}
-                      >
-                        👎 Non
-                      </Text>
-                    </Center>
-                  </Flex>
+                  <Text mt={10}>
+                    <span style={{ color: "#B34000", paddingRight: "5px" }}>*</span>champ obligatoire
+                  </Text>
+                  {referrer !== "affelnet" && referrer !== "parcoursup" && (
+                    <Flex mt={8} bg="#F6F6F6" py="9px" px="18px">
+                      <Box w="430px">
+                        <Text fontWeight="600">Souhaiteriez-vous recevoir des offres d’emploi en lien avec cette formation ?</Text>
+                      </Box>
+                      <Center w="150px" pl="20px">
+                        <Text
+                          as="span"
+                          pr="28px"
+                          onClick={() => setPlausibleFeedback(plausibleFeebackEnum.OUI)}
+                          fontWeight={plausibleFeedback === plausibleFeebackEnum.OUI ? "600" : "none"}
+                          sx={{ cursor: "pointer" }}
+                        >
+                          👍 Oui
+                        </Text>
+                        <Text
+                          onClick={() => setPlausibleFeedback(plausibleFeebackEnum.NON)}
+                          fontWeight={plausibleFeedback === plausibleFeebackEnum.NON ? "600" : "none"}
+                          sx={{ cursor: "pointer" }}
+                        >
+                          👎 Non
+                        </Text>
+                      </Center>
+                    </Flex>
+                  )}
                   <Button
                     variant="unstyled"
                     type={"submit"}

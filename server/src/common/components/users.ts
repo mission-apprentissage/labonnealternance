@@ -74,7 +74,7 @@ export default () => ({
    */
   createUser: async (username, password, options = {}) => {
     const hash = options.hash || sha512Utils.hash(password)
-    const { firstname, lastname, phone, email, role } = options
+    const { firstname, lastname, phone, email, role, type } = options
 
     const user = new User({
       username,
@@ -84,6 +84,7 @@ export default () => ({
       phone,
       email,
       role,
+      type,
     })
 
     await user.save()

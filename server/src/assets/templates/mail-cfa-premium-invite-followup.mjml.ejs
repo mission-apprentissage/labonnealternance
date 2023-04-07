@@ -1,6 +1,11 @@
 <mjml>
     <mj-head>
-        <mj-title>RDV Apprentissage est disponible sur Parcoursup</mj-title>
+        <% if(data.isParcoursup){ %>
+            <mj-title>RDV Apprentissage est disponible sur Parcoursup</mj-title>
+        <% } %>
+        <% if(data.isAffelnet){ %>
+            <mj-title>RDV Apprentissage est disponible sur Choisir son affectation après la 3e</mj-title>
+        <% } %>
         <mj-font name="Work Sans" href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;700&display=swap" />
         <mj-style inline="inline">
             .grey {color: #1E1E1E;}
@@ -19,18 +24,37 @@
         <mj-section padding-top="0">
             <mj-column width="600px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 10px">
                 <mj-text color="#000091" font-size="18px" padding-bottom="20px">
-                    <b>RDV Apprentissage est disponible sur Parcoursup !</b>
+                    <% if(data.isParcoursup){ %>
+                        <b>RDV Apprentissage est disponible sur Parcoursup !</b>
+                    <% } %>
+        
+                    <% if(data.isAffelnet){ %>
+                        <b>RDV Apprentissage est disponible sur Choisir son affectation après la 3e !</b>
+                    <% } %>
                 </mj-text>
                 <mj-text>
                     Depuis le <%= data.etablissement.activatedAt %>, vous êtes inscrit au service RDV Apprentissage qui vous permet de recevoir des demandes de
                     contact de candidats depuis <a class="grey" href="https://labonnealternance.apprentissage.beta.gouv.fr/">La bonne alternance</a>.
                 </mj-text>
                 <mj-text>
-                    Plus de 1 400 établissements ont déjà fait le choix d’activer le service RDV Apprentissage sur Parcoursup.
-                    Comme eux, ne manquez pas cette opportunité de donner de la visibilité à vos formations auprès des jeunes en quelques clics !
+                    <% if(data.isParcoursup){ %>
+                        Plus de 1 400 établissements ont déjà fait le choix d’activer le service RDV Apprentissage sur Parcoursup.
+                        Comme eux, ne manquez pas cette opportunité de donner de la visibilité à vos formations auprès des jeunes en quelques clics !
+                    <% } %>
+
+                    <% if(data.isAffelnet){ %>
+                        Plus de 1 400 établissements ont déjà fait le choix d’activer le service RDV Apprentissage sur Choisir son affectation après la 3e.
+                        Comme eux, ne manquez pas cette opportunité de donner de la visibilité à vos formations auprès des jeunes en quelques clics !
+                    <% } %>
                 </mj-text>
                 <mj-text>
-                    <b>Pour recevoir des demandes depuis Parcoursup, vous pouvez dès aujourd’hui activer le service RDV Apprentissage.</b>
+                    <% if(data.isParcoursup){ %>
+                        <b>Pour recevoir des demandes depuis Parcoursup, vous pouvez dès aujourd’hui activer le service RDV Apprentissage.</b>
+                    <% } %>
+        
+                    <% if(data.isAffelnet){ %>
+                        <b>Pour recevoir des demandes depuis Choisir son affectation après la 3e, vous pouvez dès aujourd’hui activer le service RDV Apprentissage.</b>
+                    <% } %>
                 </mj-text>
                 <mj-button color="#ffffff" padding-top="20px" padding-bottom="20px" background-color="#000091" href="<%= data.etablissement.linkToForm %>">
                     Je souhaite activer le service sur Parcoursup

@@ -14,6 +14,7 @@ const userRequestSchema = Joi.object({
   lastname: Joi.string().required(),
   phone: Joi.string().required(),
   email: Joi.string().required(),
+  type: Joi.string(),
   applicantMessageToCfa: Joi.string().allow(null, ""),
   cleMinistereEducatif: Joi.string().required(),
   appointmentOrigin: Joi.string().required(),
@@ -31,7 +32,7 @@ export default ({ users, appointments, mailer, eligibleTrainingsForAppointments,
     tryCatch(async (req, res) => {
       await userRequestSchema.validateAsync(req.body, { abortEarly: false })
 
-      let { firstname, lastname, phone, email, applicantMessageToCfa, appointmentOrigin, cleMinistereEducatif } = req.body
+      let { firstname, lastname, phone, email, applicantMessageToCfa, type, appointmentOrigin, cleMinistereEducatif } = req.body
 
       email = email.toLowerCase()
 
@@ -50,7 +51,7 @@ export default ({ users, appointments, mailer, eligibleTrainingsForAppointments,
 
       // Updates firstname and last name if the user already exists
       if (user) {
-        user = await users.update(user._id, { firstname, lastname, phone, last_action_date: dayjs().format() })
+        user = await users.update(user._id, { firstname, lastname, phone, type, last_action_date: dayjs().format() })
         const appointment = await appointments.findOne({
           applicant_id: user._id,
           cle_ministere_educatif: eligibleTrainingsForAppointment.cle_ministere_educatif,
@@ -72,6 +73,7 @@ export default ({ users, appointments, mailer, eligibleTrainingsForAppointments,
           lastname,
           phone,
           email,
+          type,
           role: roles.candidat,
           last_action_date: dayjs().format(),
         })

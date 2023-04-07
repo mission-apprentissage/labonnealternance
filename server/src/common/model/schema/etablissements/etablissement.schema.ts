@@ -53,6 +53,21 @@ export const etablissementSchema = new Schema<IEtablissement>({
     default: null,
     description: "Date de refus de l'offre Premium",
   },
+  premium_affelnet_invitation_date: {
+    type: Date,
+    default: null,
+    description: "Date d'invitation au Premium (Affelnet)",
+  },
+  premium_affelnet_activation_date: {
+    type: Date,
+    default: null,
+    description: "Date d'acceptation au Premium (Affelnet)",
+  },
+  premium_affelnet_refusal_date: {
+    type: Date,
+    default: null,
+    description: "Date de refus au Premium (Affelnet)",
+  },
   optout_invitation_date: {
     type: Date,
     default: null,
@@ -118,6 +133,10 @@ export const etablissementSchema = new Schema<IEtablissement>({
     type: Date,
     default: Date.now,
     description: "Date de création de la collection",
+  },
+  affelnet_perimetre: {
+    type: Boolean,
+    description: "L'établissement a été traité par la synchronisation Affelnet",
   },
 })
 

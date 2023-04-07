@@ -1,6 +1,11 @@
 <mjml>
     <mj-head>
-        <mj-title>Le service RDV Apprentissage ne sera pas activé sur Parcoursup !</mj-title>
+        <% if(data.isParcoursup){ %>
+            <mj-title>Le service RDV Apprentissage ne sera pas activé sur Parcoursup !</mj-title>
+        <% } %>
+        <% if(data.isAffelnet){ %>
+            <mj-title>Le service RDV Apprentissage ne sera pas activé sur Choisir son affectation après la 3e !</mj-title>
+        <% } %>        
         <mj-font name="Work Sans" href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;700&display=swap" />
         <mj-style inline="inline">
             .grey {color: #1E1E1E;}
@@ -19,14 +24,19 @@
         <mj-section padding-top="0" padding-bottom="0">
             <mj-column width="600px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 10px 0 10px">
                 <mj-text color="#000091" font-size="18px" padding-bottom="20px">
-                    <b>Le service RDV Apprentissage ne sera pas activé sur Parcoursup !</b>
+                    <% if(data.isParcoursup){ %>
+                        <b>Le service RDV Apprentissage ne sera pas activé sur Parcoursup !</b>
+                    <% } %>
+                    <% if(data.isAffelnet){ %>
+                        <b>Le service RDV Apprentissage ne sera pas activé sur Choisir son affectation après la 3e !</b>
+                    <% } %>
                 </mj-text>
                 <mj-text>
                     A votre demande, le service RDV Apprentissage ne sera pas activé sur Parcoursup pour l’organisme suivant : <br/><br/>
                     <b>
                         <%= data.etablissement.raison_sociale %> <br />
                         <%= data.etablissement.formateur_address %><br/>
-                        <%= data.etablissement.formateur_zip_code %> <%= data.etablissement.formateur_city %><br/>
+                        <%= data.etablissement.formateur_zip_code %>, <%= data.etablissement.formateur_city %><br/>
                         SIRET : <%= data.etablissement.formateur_siret %>
                     </b>
                 </mj-text>
@@ -38,24 +48,14 @@
             </mj-column>
             <mj-column width="480px" background-color="#EEEEEE" vertical-align="middle" padding-left="0">
                 <mj-text>
-                    Cette action n’aura aucun impact sur le référencement de vos formations dans Parcoursup.
+                    Cette action n’aura aucun impact sur le référencement de vos formations.
                 </mj-text>
             </mj-column>
         </mj-section>
-        <mj-section padding-top="30px">
+        <mj-section>
             <mj-column width="600px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 10px">
                 <mj-text>
-                    Si vous avez des questions ou si vous souhaitez vous désinscrire du service, envoyez un email à <a class="grey" href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Email%20CFA%20Premium%20refuse%20-%20Question">labonnealternance@apprentissage.beta.gouv.fr</a>
-                </mj-text>
-                <mj-text>
-                    Cette demande à été réalisée sur le site La bonne alternance
-                </mj-text>
-            </mj-column>
-        </mj-section>
-        <mj-section padding-top="30px">
-            <mj-column width="600px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 10px">
-                <mj-text>
-                    A très bientôt,<br/>
+                    Cordialement,<br/>
                     L'équipe <a class="grey" href="https://labonnealternance.apprentissage.beta.gouv.fr/organisme-de-formation">La bonne alternance</a>,<br/>
                     <a class="grey" href="https://mission-apprentissage.gitbook.io/general/">Mission interministérielle pour l'apprentissage</a>
                 </mj-text>

@@ -13,22 +13,19 @@ export const inviteEtablissementToPremiumFollowUp = async ({ etablissements, mai
   logger.info("Cron #inviteEtablissementToPremiumFollowUp started.")
 
   const etablissementsFound = await etablissements.find({
+    affelnet_perimetre: true,
     gestionnaire_email: {
       $ne: null,
     },
-    optout_activation_scheduled_date: {
+    premium_affelnet_activation_date: null,
+    premium_affelnet_refusal_date: null,
+    premium_affelnet_invitation_date: {
       $ne: null,
-    },
-    premium_activation_date: null,
-    premium_refusal_date: null,
-    premium_invitation_date: {
-      $ne: null,
-      $lte: dayjs().subtract(10, "days").toDate(),
+      $lte: dayjs().subtract(7, "days").toDate(),
     },
     "to_etablissement_emails.campaign": {
       $ne: mailType.PREMIUM_INVITE_FOLLOW_UP,
     },
-    affelnet_perimetre: null,
   })
 
   for (const etablissement of etablissementsFound) {
@@ -39,18 +36,18 @@ export const inviteEtablissementToPremiumFollowUp = async ({ etablissements, mai
     // Invite all etablissements only in production environment
     const { messageId } = await mailer.sendEmail({
       to: etablissement.gestionnaire_email,
-      subject: `Rendez-vous Apprentissage est disponible sur Parcoursup`,
+      subject: `Rendez-vous Apprentissage est disponible sur Choisir son affectation après la 3e`,
       template: mailTemplate["mail-cfa-premium-invite-followup"],
       data: {
-        isParcoursup: true,
+        isAffelnet: true,
         images: {
           logoCfa: `${config.publicUrlEspacePro}/assets/logo-lba-recruteur-cfa.png?raw=true`,
           logoFooter: `${config.publicUrlEspacePro}/assets/logo-republique-francaise.png?raw=true`,
-          parcoursupIntegrationExample: `${config.publicUrlEspacePro}/assets/exemple_integration_parcoursup.jpg?raw=true`,
+          parcoursupIntegrationExample: `${config.publicUrlEspacePro}/assets/exemple_integration_affelnet.jpg?raw=true`,
         },
         etablissement: {
           email: etablissement.gestionnaire_email,
-          activatedAt: dayjs(etablissement.optout_activation_scheduled_date).format("DD/MM"),
+          activatedAt: dayjs(etablissement.created_at).format("DD/MM"),
           linkToForm: `${config.publicUrlEspacePro}/form/premium/${etablissement._id}`,
         },
       },
@@ -59,7 +56,7 @@ export const inviteEtablissementToPremiumFollowUp = async ({ etablissements, mai
     await etablissements.updateOne(
       { formateur_siret: etablissement.formateur_siret },
       {
-        premium_invitation_date: dayjs().toDate(),
+        premium_affelnet_invitation_date: dayjs().toDate(),
         $push: {
           to_etablissement_emails: {
             campaign: mailType.PREMIUM_INVITE_FOLLOW_UP,
