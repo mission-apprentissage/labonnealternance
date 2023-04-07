@@ -26,6 +26,7 @@ import { inviteEtablissementToOptOut } from "./jobs/rdv/inviteEtablissementToOpt
 import { inviteEtablissementToPremium } from "./jobs/rdv/inviteEtablissementToPremium.js"
 import { inviteEtablissementAffelnetToPremium } from "./jobs/rdv/inviteEtablissementToPremiumAffelnet.js"
 import { inviteEtablissementToPremiumFollowUp } from "./jobs/rdv/inviteEtablissementToPremiumFollowUp.js"
+import { inviteEtablissementAffelnetToPremiumFollowUp } from "./jobs/rdv/inviteEtablissementToPremiumFollowUpAffelnet.js"
 import { parcoursupEtablissementStat } from "./jobs/rdv/parcoursupEtablissementStat.js"
 import { premiumActivatedReminder } from "./jobs/rdv/premiumActivatedReminder.js"
 import { premiumInviteOneShot } from "./jobs/rdv/premiumInviteOneShot.js"
@@ -173,6 +174,13 @@ cli
   .description("(Relance) Invite les établissements (via email décisionnaire) au premium (Parcoursup)")
   .action(() => {
     runScript((components) => inviteEtablissementToPremiumFollowUp(components))
+  })
+
+cli
+  .command("invite-etablissement-affelnet-to-premium-follow-up")
+  .description("(Relance) Invite les établissements (via email décisionnaire) au premium (Affelnet)")
+  .action(() => {
+    runScript((components) => inviteEtablissementAffelnetToPremiumFollowUp(components))
   })
 
 cli
