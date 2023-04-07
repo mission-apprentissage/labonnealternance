@@ -9,8 +9,8 @@ import config from "../../config.js"
  * @description Invite all "etablissements" to Premium (followup).
  * @returns {Promise<void>}
  */
-export const inviteEtablissementToPremiumFollowUp = async ({ etablissements, mailer }) => {
-  logger.info("Cron #inviteEtablissementToPremiumFollowUp started.")
+export const inviteEtablissementAffelnetToPremiumFollowUp = async ({ etablissements, mailer }) => {
+  logger.info("Cron #inviteEtablissementAffelnetToPremiumFollowUp started.")
 
   const etablissementsFound = await etablissements.find({
     affelnet_perimetre: true,
@@ -69,5 +69,5 @@ export const inviteEtablissementToPremiumFollowUp = async ({ etablissements, mai
     )
   }
 
-  logger.info("Cron #inviteEtablissementToPremiumFollowUp done.")
+  logger.info("Cron #inviteEtablissementAffelnetToPremiumFollowUp done.")
 }
