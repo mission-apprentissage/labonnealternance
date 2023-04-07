@@ -12,6 +12,7 @@ import { getNearEtablissementsFromRomes } from "../../services/catalogue.service
 import {
   formatEntrepriseData,
   formatReferentielData,
+  getAllEstablishmentFromBonneBoite,
   getAllEstablishmentFromBonneBoiteLegacy,
   getAllEstablishmentFromOpcoReferentiel,
   getEtablissement,
@@ -221,9 +222,15 @@ export default ({ usersRecruteur, formulaire, mailer }) => {
           partenaire = await usersRecruteur.createUser({ ...req.body, id_form: formulaireInfo.id_form })
 
           // Get all corresponding records using the SIREN number in BonneBoiteLegacy collection
-          const bonneBoiteList = await getAllEstablishmentFromBonneBoiteLegacy({ siret: { $regex: siren }, email: { $nin: ["", undefined] } })
+          const [bonneBoiteLegacyList, bonneBoiteList] = await Promise.all([
+            getAllEstablishmentFromBonneBoiteLegacy({ siret: { $regex: siren }, email: { $nin: ["", undefined] } }),
+            getAllEstablishmentFromBonneBoite({ siret: { $regex: siren }, email: { $nin: ["", undefined] } }),
+          ])
           // Create a single array with all emails
+          const bonneBoiteLegacyEmailList: string[] = bonneBoiteLegacyList.map(({ email }) => email)
           const bonneBoiteEmailList: string[] = bonneBoiteList.map(({ email }) => email)
+
+          const bonneBoiteFullList: string[] = [...new Set([...bonneBoiteLegacyEmailList, ...bonneBoiteEmailList])]
 
           /**
            * Check if siret is amoung the opco verified establishment
@@ -239,8 +246,8 @@ export default ({ usersRecruteur, formulaire, mailer }) => {
                   statut: etat_utilisateur.VALIDE,
                 })
               } else {
-                if (bonneBoiteEmailList.length) {
-                  if (getMatchingEmailFromContactList(partenaire.email, bonneBoiteEmailList)) {
+                if (bonneBoiteFullList.length) {
+                  if (getMatchingEmailFromContactList(partenaire.email, bonneBoiteFullList)) {
                     partenaire = await usersRecruteur.updateUserValidationHistory(partenaire._id, {
                       validation_type: validation_utilisateur.AUTO,
                       user: "SERVEUR",
@@ -248,7 +255,7 @@ export default ({ usersRecruteur, formulaire, mailer }) => {
                     })
                   } else {
                     if (checkIfUserEmailIsPrivate(partenaire.email)) {
-                      if (getMatchingDomainFromContactList(partenaire.email, bonneBoiteEmailList)) {
+                      if (getMatchingDomainFromContactList(partenaire.email, bonneBoiteFullList)) {
                         partenaire = await usersRecruteur.updateUserValidationHistory(partenaire._id, {
                           validation_type: validation_utilisateur.AUTO,
                           user: "SERVEUR",
@@ -285,7 +292,7 @@ export default ({ usersRecruteur, formulaire, mailer }) => {
               }, [])
 
               // Duplicate free email list
-              const emailListUnique = [...new Set([...referentielOpcoEmailList, ...bonneBoiteEmailList])]
+              const emailListUnique = [...new Set([...referentielOpcoEmailList, ...bonneBoiteFullList])]
 
               if (emailListUnique.length) {
                 if (getMatchingEmailFromContactList(partenaire.email, emailListUnique)) {

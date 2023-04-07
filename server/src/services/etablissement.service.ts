@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from "axios"
 import { etat_etablissements } from "../common/constants.js"
-import { BonneBoiteLegacy, Etablissement, ReferentielOpco, UserRecruteur } from "../common/model/index.js"
+import { BonneBoiteLegacy, BonnesBoites, Etablissement, ReferentielOpco, UserRecruteur } from "../common/model/index.js"
 import { IBonneBoite } from "../common/model/schema/bonneboite/bonneboite.types.js"
 import { IEtablissement } from "../common/model/schema/etablissements/etablissement.types.js"
 import { IReferentielOpco } from "../common/model/schema/referentielOpco/referentielOpco.types.js"
@@ -230,17 +230,23 @@ export const getGeoCoordinates = async (adresse: string): Promise<string> => {
  */
 export const getEstablishmentFromOpcoReferentiel = async (siretCode: string): Promise<IReferentielOpco> => await ReferentielOpco.findOne({ siret_code: siretCode })
 /**
- * @description Get all matching records from the ReferentielOpco collection for a given siret & email
+ * @description Get all matching records from the ReferentielOpco collection
  * @param {Object} query
  * @returns {Promise<IReferentielOpco[]>}
  */
 export const getAllEstablishmentFromOpcoReferentiel = async (query: object): Promise<IReferentielOpco[]> => await ReferentielOpco.find(query).lean()
 /**
- * @description Get all matching records from the ReferentielOpco collection for a given siret & email
+ * @description Get all matching records from the BonneBoiteLegacy collection
  * @param {Object} query
  * @returns {Promise<IBonneBoite[]>}
  */
 export const getAllEstablishmentFromBonneBoiteLegacy = async (query: object): Promise<IBonneBoite[]> => await BonneBoiteLegacy.find(query).select({ email: 1, _id: 0 }).lean()
+/**
+ * @description Get all matching records from the BonnesBoites collection
+ * @param {Object} query
+ * @returns {Promise<IBonneBoite[]>}
+ */
+export const getAllEstablishmentFromBonneBoite = async (query: object): Promise<IBonneBoite[]> => await BonnesBoites.find(query).select({ email: 1, _id: 0 }).lean()
 /**
  * @description Chech if a given email is included in the given email list array
  * @param {String} email
