@@ -34,6 +34,11 @@ export const userSchema = new Schema<IUser>({
     default: null,
     description: "L'email du candidat",
   },
+  type: {
+    type: String,
+    enum: ["parent", "etudiant"],
+    description: "Type d'utilisateur (parent, etudiant)",
+  },
   role: {
     type: String,
     default: null,

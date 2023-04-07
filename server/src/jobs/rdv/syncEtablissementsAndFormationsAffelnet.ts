@@ -1,11 +1,34 @@
 import { oleoduc, writeData } from "oleoduc"
+import { Readable } from "stream"
 import { logger } from "../../common/logger.js"
 import { referrers } from "../../common/model/constants/referrers.js"
-import { FormationCatalogue } from "../../common/model/index.js"
 import { dayjs } from "../../common/utils/dayjs.js"
 import { isValidEmail } from "../../common/utils/isValidEmail.js"
 import { isEmailBlacklisted } from "../../service/applications.js"
 import { getFormationsFromCatalogueMe } from "../../services/catalogue.service.js"
+
+const select = {
+  _id: 1,
+  email: 1,
+  cfd: 1,
+  parcoursup_id: 1,
+  cle_ministere_educatif: 1,
+  etablissement_formateur_siret: 1,
+  etablissement_formateur_courriel: 1,
+  etablissement_formateur_code_postal: 1,
+  intitule_long: 1,
+  published: 1,
+  adresse: 1,
+  localite: 1,
+  code_postal: 1,
+  lieu_formation_adresse: 1,
+  etablissement_formateur_entreprise_raison_sociale: 1,
+  etablissement_formateur_adresse: 1,
+  etablissement_formateur_nom_departement: 1,
+  etablissement_formateur_localite: 1,
+  etablissement_gestionnaire_siret: 1,
+  etablissement_gestionnaire_courriel: 1,
+}
 
 /**
  * Gets email from catalogue field.
@@ -32,48 +55,32 @@ const getEmailFromCatalogueField = (email) => {
  * @description Gets Catalogue etablissments informations and insert in etablissement collection.
  * @returns {Promise<void>}
  */
-export const syncEtablissementsAndFormations = async ({ etablissements, eligibleTrainingsForAppointments }) => {
-  logger.info("Cron #syncEtablissementsAndFormations started.")
+export const syncAffelnetFormationsFromCatalogueME = async ({ etablissements, eligibleTrainingsForAppointments }) => {
+  logger.info("Cron #syncEtablissementsAndFormationsAffelnet started.")
+
+  const referrersToActivate = [referrers.AFFELNET.name]
 
   const catalogueMinistereEducatif = await getFormationsFromCatalogueMe({
     limit: 1000,
     query: {
-      parcoursup_id: { $ne: null },
-      parcoursup_statut: "publié",
-      published: true,
-      catalogue_published: true,
+      affelnet_perimetre: true,
+      affelnet_statut: { $in: ["publié", "en attente de publication"] },
     },
-    select: { parcoursup_id: 1, cle_ministere_educatif: 1 },
+    select,
   })
 
   await oleoduc(
-    FormationCatalogue.find({}).cursor(),
+    Readable.from(catalogueMinistereEducatif),
     writeData(
       async (formation) => {
-        const [eligibleTrainingsForAppointment, etablissement, formationMinistereEducatif] = await Promise.all([
+        const [eligibleTrainingsForAppointment, etablissement] = await Promise.all([
           eligibleTrainingsForAppointments.findOne({
             cle_ministere_educatif: formation.cle_ministere_educatif,
           }),
           etablissements.findOne({ formateur_siret: formation.etablissement_formateur_siret }),
-          catalogueMinistereEducatif.find((formationMe) => formationMe.cle_ministere_educatif === formation.cle_ministere_educatif),
         ])
 
-        // Activate opt_out referrers
-        const referrersToActivate = []
-        if (etablissement?.optout_activation_date) {
-          referrersToActivate.push(referrers.LBA.name)
-          referrersToActivate.push(referrers.ONISEP.name)
-          referrersToActivate.push(referrers.PFR_PAYS_DE_LA_LOIRE.name)
-          referrersToActivate.push(referrers.JEUNE_1_SOLUTION.name)
-        }
-
-        // Activate premium referrers
-        if (etablissement?.premium_activation_date) {
-          referrersToActivate.push(referrers.PARCOURSUP.name)
-        }
-
         if (eligibleTrainingsForAppointment) {
-          logger.info("update formation:", formation.cle_ministere_educatif)
           let emailRdv = eligibleTrainingsForAppointment.lieu_formation_email
 
           // Don't override "email" if this field is true
@@ -91,7 +98,7 @@ export const syncEtablissementsAndFormations = async ({ etablissements, eligible
             {
               training_id_catalogue: formation._id,
               lieu_formation_email: emailRdv,
-              parcoursup_id: formationMinistereEducatif?.parcoursup_id,
+              parcoursup_id: formation.parcoursup_id,
               cle_ministere_educatif: formation.cle_ministere_educatif,
               training_code_formation_diplome: formation.cfd,
               etablissement_formateur_zip_code: formation.etablissement_formateur_code_postal,
@@ -112,7 +119,6 @@ export const syncEtablissementsAndFormations = async ({ etablissements, eligible
             }
           )
         } else {
-          logger.info("create new formation:", formation.cle_ministere_educatif)
           const emailRdv = getEmailFromCatalogueField(formation.etablissement_formateur_courriel)
 
           const emailBlacklisted = await isEmailBlacklisted(emailRdv)
@@ -120,7 +126,7 @@ export const syncEtablissementsAndFormations = async ({ etablissements, eligible
           await eligibleTrainingsForAppointments.create({
             training_id_catalogue: formation._id,
             lieu_formation_email: emailRdv,
-            parcoursup_id: formationMinistereEducatif?.parcoursup_id,
+            parcoursup_id: formation.parcoursup_id,
             cle_ministere_educatif: formation.cle_ministere_educatif,
             training_code_formation_diplome: formation.cfd,
             training_intitule_long: formation.intitule_long,
@@ -152,6 +158,7 @@ export const syncEtablissementsAndFormations = async ({ etablissements, eligible
             formateur_siret: formation.etablissement_formateur_siret,
           },
           {
+            affelnet_perimetre: true,
             gestionnaire_siret: formation.etablissement_gestionnaire_siret,
             gestionnaire_email: emailDecisionnaire,
             raison_sociale: formation.etablissement_formateur_entreprise_raison_sociale,
@@ -167,5 +174,5 @@ export const syncEtablissementsAndFormations = async ({ etablissements, eligible
     )
   )
 
-  logger.info("Cron #syncEtablissementsAndFormations done.")
+  logger.info("Cron #syncEtablissementsAndFormationsAffelnet done.")
 }

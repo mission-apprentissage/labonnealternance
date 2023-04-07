@@ -1,6 +1,8 @@
 import { program as cli } from "commander"
 import anonymizeOldApplications from "./jobs/anonymizeOldApplications/anonymizeOldApplications.js"
 import refactorLBACFields from "./jobs/cleanAndRenameDBFields/refactorLBACFields.js"
+import updateDiplomesMetiers from "./jobs/diplomesMetiers/updateDiplomesMetiers.js"
+import updateDomainesMetiers from "./jobs/domainesMetiers/updateDomainesMetiers.js"
 import { importCatalogueFormationJob } from "./jobs/formationsCatalogue/formationsCatalogue.js"
 import { createApiUser } from "./jobs/lba_recruteur/api/createApiUser.js"
 import { disableApiUser } from "./jobs/lba_recruteur/api/disableApiUser.js"
@@ -13,24 +15,24 @@ import { relanceOpco } from "./jobs/lba_recruteur/opco/relanceOpco.js"
 import { createOffreCollection } from "./jobs/lba_recruteur/seed/createOffre.js"
 import updateBonnesBoites from "./jobs/lbb/updateBonnesBoites.js"
 import updateGeoLocations from "./jobs/lbb/updateGeoLocations.js"
+import updateOpcoCompanies from "./jobs/lbb/updateOpcoCompanies.js"
 import { activateOptOutEtablissementFormations } from "./jobs/rdv/activateOptOutEtablissementFormations.js"
 import { anonimizeAppointments } from "./jobs/rdv/anonymizeAppointments.js"
 import { anonimizeUsers } from "./jobs/rdv/anonymizeUsers.js"
 import { candidatHaveYouBeenContacted } from "./jobs/rdv/candidatHaveYouBeenContacted.js"
+import { cleanAndRenameFields } from "./jobs/rdv/cleanAndRenameFields.js"
 import { controlAvailableFormationWithCatalogue } from "./jobs/rdv/controlAvailableFormationWithCatalogue.js"
 import { inviteEtablissementToOptOut } from "./jobs/rdv/inviteEtablissementToOptOut.js"
 import { inviteEtablissementToPremium } from "./jobs/rdv/inviteEtablissementToPremium.js"
+import { inviteEtablissementAffelnetToPremium } from "./jobs/rdv/inviteEtablissementToPremiumAffelnet.js"
 import { inviteEtablissementToPremiumFollowUp } from "./jobs/rdv/inviteEtablissementToPremiumFollowUp.js"
 import { parcoursupEtablissementStat } from "./jobs/rdv/parcoursupEtablissementStat.js"
 import { premiumActivatedReminder } from "./jobs/rdv/premiumActivatedReminder.js"
 import { premiumInviteOneShot } from "./jobs/rdv/premiumInviteOneShot.js"
 import { syncEtablissementsAndFormations } from "./jobs/rdv/syncEtablissementsAndFormations.js"
+import { syncAffelnetFormationsFromCatalogueME } from "./jobs/rdv/syncEtablissementsAndFormationsAffelnet.js"
 import { runScript } from "./jobs/scriptWrapper.js"
 import updateSendinblueBlockedEmails from "./jobs/updateSendinblueBlockedEmails/updateSendinblueBlockedEmails.js"
-import { cleanAndRenameFields } from "./jobs/rdv/cleanAndRenameFields.js"
-import updateOpcoCompanies from "./jobs/lbb/updateOpcoCompanies.js"
-import updateDiplomesMetiers from "./jobs/diplomesMetiers/updateDiplomesMetiers.js"
-import updateDomainesMetiers from "./jobs/domainesMetiers/updateDomainesMetiers.js"
 
 cli.addHelpText("after", null)
 
@@ -160,6 +162,13 @@ cli
   })
 
 cli
+  .command("invite-etablissement-affelnet-to-premium")
+  .description("Invite les établissements (via email décisionnaire) au premium (Affelnet)")
+  .action(() => {
+    runScript((components) => inviteEtablissementAffelnetToPremium(components))
+  })
+
+cli
   .command("invite-etablissement-to-premium-follow-up")
   .description("(Relance) Invite les établissements (via email décisionnaire) au premium (Parcoursup)")
   .action(() => {
@@ -192,6 +201,13 @@ cli
   .description("Récupère la liste de toutes les formations du Catalogue et les enregistre.")
   .action(() => {
     runScript((components) => syncEtablissementsAndFormations(components))
+  })
+
+cli
+  .command("sync-etablissements-and-formations-affelnet")
+  .description("Récupère la liste de toutes les formations du Catalogue ME du scope AFFELNET et les enregistre.")
+  .action(() => {
+    runScript((components) => syncAffelnetFormationsFromCatalogueME(components))
   })
 
 cli

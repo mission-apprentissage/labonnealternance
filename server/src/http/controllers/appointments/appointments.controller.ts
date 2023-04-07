@@ -99,7 +99,7 @@ export class AppointmentsController extends Controller {
       intitule_long: eligibleTrainingsForAppointment.training_intitule_long,
       lieu_formation_adresse: eligibleTrainingsForAppointment.lieu_formation_street,
       code_postal: eligibleTrainingsForAppointment.lieu_formation_zip_code,
-      etablissement_formateur_siret: eligibleTrainingsForAppointment.etablissement_siret,
+      etablissement_formateur_siret: eligibleTrainingsForAppointment.etablissement_formateur_siret,
       cfd: eligibleTrainingsForAppointment.training_code_formation_diplome,
       localite: eligibleTrainingsForAppointment.lieu_formation_city,
       id_rco_formation: eligibleTrainingsForAppointment.rco_formation_id,

@@ -1,6 +1,12 @@
 <mjml>
     <mj-head>
-        <mj-title>Vous avez activé le service RDV Apprentissage sur Parcoursup !</mj-title>
+        <% if(data.isParcoursup){ %>
+            <mj-title>Vous avez activé le service RDV Apprentissage sur Parcoursup !</mj-title>
+        <% } %>
+        <% if(data.isAffelnet){ %>
+            <mj-title>Vous avez activé le service RDV Apprentissage sur Choisir son affectation après la 3e !</mj-title>
+        <% } %>
+        
         <mj-font name="Work Sans" href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;700&display=swap" />
         <mj-style inline="inline">
             .grey {color: #1E1E1E;}
@@ -19,7 +25,12 @@
         <mj-section padding-top="0">
             <mj-column width="600px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 10px">
                 <mj-text color="#000091" font-size="18px" padding-bottom="20px">
-                    <b>Vous avez activé le service RDV Apprentissage sur Parcoursup !</b>
+                    <% if(data.isParcoursup){ %>
+                        <b>Vous avez activé le service RDV Apprentissage sur Parcoursup !</b>
+                    <% } %>
+                    <% if(data.isAffelnet){ %>
+                        <b>Vous avez activé le service RDV Apprentissage sur Choisir son affectation après la 3e !</b>
+                    <% } %>
                 </mj-text>
                 <mj-text>
                     A votre demande, le service RDV Apprentissage sera activé à partir du <%= data.activationDate %> sur Parcoursup pour l’organisme suivant :<br/><br/>
@@ -32,17 +43,10 @@
                 </mj-text>
             </mj-column>
         </mj-section>
-        <mj-section padding-top="30px">
+        <mj-section>
             <mj-column width="600px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 10px">
                 <mj-text>
-                    Si vous avez des questions ou si vous souhaitez vous désinscrire du service, envoyez un email à <a class="grey" href="mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Email%20CFA%20Premium%20-%20Question">labonnealternance@apprentissage.beta.gouv.fr</a>
-                </mj-text>
-            </mj-column>
-        </mj-section>
-        <mj-section padding-top="30px">
-            <mj-column width="600px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 10px">
-                <mj-text>
-                    A très bientôt,<br/>
+                    Cordialement,<br/>
                     L'équipe <a class="grey" href="https://labonnealternance.apprentissage.beta.gouv.fr/organisme-de-formation">La bonne alternance</a>,<br/>
                     <a class="grey" href="https://mission-apprentissage.gitbook.io/general/">Mission interministérielle pour l'apprentissage</a>
                 </mj-text>

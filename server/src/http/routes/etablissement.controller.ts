@@ -55,108 +55,222 @@ export default ({ etablissements, mailer, eligibleTrainingsForAppointments, appo
         throw Boom.badRequest("Premium already activated.")
       }
 
-      const { messageId } = await mailer.sendEmail({
-        to: etablissement.gestionnaire_email,
-        subject: `Activation du service “RDV Apprentissage” sur Parcoursup`,
-        template: mailTemplate["mail-cfa-premium-start"],
-        data: {
-          images: {
-            logoCandidat: `${config.publicUrlEspacePro}/assets/logo-lba.png?raw=true`,
-            logoCfa: `${config.publicUrlEspacePro}/assets/logo-lba-recruteur-cfa.png?raw=true`,
-            logoFooter: `${config.publicUrlEspacePro}/assets/logo-republique-francaise.png?raw=true`,
-          },
-          etablissement: {
-            name: etablissement.raison_sociale,
-            formateur_address: etablissement.formateur_address,
-            formateur_zip_code: etablissement.formateur_zip_code,
-            formateur_city: etablissement.formateur_city,
-            formateur_siret: etablissement.formateur_siret,
-            gestionnaire_email: etablissement.gestionnaire_email,
-          },
-          activationDate: dayjs().format("DD/MM"),
-        },
-      })
-
-      const [eligibleTrainingsForAppointmentsFound, etablissementUpdated] = await Promise.all([
-        eligibleTrainingsForAppointments.find({
-          etablissement_formateur_siret: etablissement.formateur_siret,
-          parcoursup_id: {
-            $ne: null,
-          },
-        }),
-        etablissements.findOneAndUpdate(
-          { _id: etablissement._id },
-          {
-            $push: {
-              to_etablissement_emails: {
-                campaign: mailType.PREMIUM_STARTING,
-                status: null,
-                message_id: messageId,
-                email_sent_at: dayjs().toDate(),
-              },
-            },
-            premium_activation_date: dayjs().toDate(),
-          }
-        ),
-      ])
-
-      // Gets all mails (formation email + formateur email), excepted "email_decisionnaire"
-      let emails = eligibleTrainingsForAppointmentsFound.map((eligibleTrainingsForAppointment) => eligibleTrainingsForAppointment.lieu_formation_email)
-      if (etablissement?.gestionnaire_email) {
-        emails.push(etablissement.gestionnaire_email)
-      }
-
-      emails = _(emails)
-        .uniq()
-        .omitBy(_.isNil)
-        .omitBy((item) => item === etablissement.gestionnaire_email)
-        .toArray()
-
-      await Promise.all(
-        emails.map((email) =>
-          mailer.sendEmail({
-            to: email,
-            subject: `La prise de rendez-vous est activée pour votre CFA sur Parcoursup`,
-            template: mailTemplate["mail-cfa-premium-activated"],
+      switch (etablissement.affelnet_perimetre) {
+        /**
+         * Formation AFFELNET
+         */
+        case true:
+          const mailAffelnet = await mailer.sendEmail({
+            to: etablissement.gestionnaire_email,
+            subject: `Activation du service “RDV Apprentissage” sur Choisir son affectation après la 3e`,
+            template: mailTemplate["mail-cfa-premium-start"],
             data: {
-              url: config.publicUrl,
-              replyTo: config.publicEmail,
+              isAffelnet: true,
               images: {
-                logo: `${config.publicUrlEspacePro}/assets/logo-lba.png?raw=true`,
+                logoCandidat: `${config.publicUrlEspacePro}/assets/logo-lba.png?raw=true`,
+                logoCfa: `${config.publicUrlEspacePro}/assets/logo-lba-recruteur-cfa.png?raw=true`,
                 logoFooter: `${config.publicUrlEspacePro}/assets/logo-republique-francaise.png?raw=true`,
-                peopleLaptop: `${config.publicUrlEspacePro}/assets/people-laptop.png?raw=true`,
               },
               etablissement: {
                 name: etablissement.raison_sociale,
                 formateur_address: etablissement.formateur_address,
                 formateur_zip_code: etablissement.formateur_zip_code,
                 formateur_city: etablissement.formateur_city,
-                siret: etablissement.formateur_siret,
-                email: etablissement.gestionnaire_email,
-                premiumActivatedDate: dayjs(etablissementUpdated.premium_activation_date).format("DD/MM"),
-                emailGestionnaire: etablissement.gestionnaire_email,
+                formateur_siret: etablissement.formateur_siret,
+                gestionnaire_email: etablissement.gestionnaire_email,
               },
-              user: {
-                destinataireEmail: email,
-              },
+              activationDate: dayjs().format("DD/MM"),
             },
           })
-        )
-      )
 
-      const [result] = await Promise.all([
-        etablissements.findById(req.params.id),
-        ...eligibleTrainingsForAppointmentsFound.map((eligibleTrainingsForAppointment) =>
-          eligibleTrainingsForAppointments.update(
-            { _id: eligibleTrainingsForAppointment._id, lieu_formation_email: { $nin: [null, ""] } },
-            {
-              referrers: [...new Set([...eligibleTrainingsForAppointment.referrers, referrers.PARCOURSUP.name])],
-            }
+          const [eligibleTrainingsForAppointmentsAffelnetFound, etablissementAffelnetUpdated] = await Promise.all([
+            eligibleTrainingsForAppointments.find({
+              etablissement_formateur_siret: etablissement.formateur_siret,
+            }),
+            etablissements.findOneAndUpdate(
+              { _id: etablissement._id },
+              {
+                $push: {
+                  to_etablissement_emails: {
+                    campaign: mailType.PREMIUM_STARTING,
+                    status: null,
+                    message_id: mailAffelnet.messageId,
+                    email_sent_at: dayjs().toDate(),
+                  },
+                },
+                premium_affelnet_activation_date: dayjs().toDate(),
+              }
+            ),
+          ])
+
+          // Gets all mails (formation email + formateur email), excepted "email_decisionnaire"
+          let emailsAffelnet = eligibleTrainingsForAppointmentsAffelnetFound.map((eligibleTrainingsForAppointment) => eligibleTrainingsForAppointment.lieu_formation_email)
+          if (etablissement?.gestionnaire_email) {
+            emailsAffelnet.push(etablissement.gestionnaire_email)
+          }
+
+          emailsAffelnet = _(emailsAffelnet)
+            .uniq()
+            .omitBy(_.isNil)
+            .omitBy((item) => item === etablissement.gestionnaire_email)
+            .toArray()
+
+          await Promise.all(
+            emailsAffelnet.map((email) =>
+              mailer.sendEmail({
+                to: email,
+                subject: `La prise de rendez-vous est activée pour votre CFA sur Choisir son affectation après la 3e`,
+                template: mailTemplate["mail-cfa-premium-activated"],
+                data: {
+                  isAffelnet: true,
+                  url: config.publicUrl,
+                  replyTo: `${config.publicEmail}?subject=Email%20CFA%20Premium%20invite%20-%20MAJ%20contact%20formation`,
+                  images: {
+                    logo: `${config.publicUrlEspacePro}/assets/logo-lba.png?raw=true`,
+                    logoFooter: `${config.publicUrlEspacePro}/assets/logo-republique-francaise.png?raw=true`,
+                    peopleLaptop: `${config.publicUrlEspacePro}/assets/people-laptop.png?raw=true`,
+                  },
+                  etablissement: {
+                    name: etablissement.raison_sociale,
+                    formateur_address: etablissement.formateur_address,
+                    formateur_zip_code: etablissement.formateur_zip_code,
+                    formateur_city: etablissement.formateur_city,
+                    siret: etablissement.formateur_siret,
+                    email: etablissement.gestionnaire_email,
+                    premiumActivatedDate: dayjs(etablissementAffelnetUpdated.premium_affelnet_activation_date).format("DD/MM"),
+                    emailGestionnaire: etablissement.gestionnaire_email,
+                  },
+                  user: {
+                    destinataireEmail: email,
+                  },
+                },
+              })
+            )
           )
-        ),
-      ])
 
-      return res.send(result)
+          const [resultAffelnet] = await Promise.all([
+            etablissements.findById(req.params.id),
+            ...eligibleTrainingsForAppointmentsAffelnetFound.map((eligibleTrainingsForAppointment) =>
+              eligibleTrainingsForAppointments.update(
+                { _id: eligibleTrainingsForAppointment._id, lieu_formation_email: { $nin: [null, ""] } },
+                {
+                  referrers: [...new Set([...eligibleTrainingsForAppointment.referrers, referrers.AFFELNET.name])],
+                }
+              )
+            ),
+          ])
+
+          return res.send(resultAffelnet)
+
+        /**
+         * Formation PARCOURSUP
+         */
+        default:
+          const mailParcoursup = await mailer.sendEmail({
+            to: etablissement.gestionnaire_email,
+            subject: `Activation du service “RDV Apprentissage” sur Parcoursup`,
+            template: mailTemplate["mail-cfa-premium-start"],
+            data: {
+              isParcoursup: true,
+              images: {
+                logoCandidat: `${config.publicUrlEspacePro}/assets/logo-lba.png?raw=true`,
+                logoCfa: `${config.publicUrlEspacePro}/assets/logo-lba-recruteur-cfa.png?raw=true`,
+                logoFooter: `${config.publicUrlEspacePro}/assets/logo-republique-francaise.png?raw=true`,
+              },
+              etablissement: {
+                name: etablissement.raison_sociale,
+                formateur_address: etablissement.formateur_address,
+                formateur_zip_code: etablissement.formateur_zip_code,
+                formateur_city: etablissement.formateur_city,
+                formateur_siret: etablissement.formateur_siret,
+                gestionnaire_email: etablissement.gestionnaire_email,
+              },
+              activationDate: dayjs().format("DD/MM"),
+            },
+          })
+
+          const [eligibleTrainingsForAppointmentsParcoursupFound, etablissementParcoursupUpdated] = await Promise.all([
+            eligibleTrainingsForAppointments.find({
+              etablissement_formateur_siret: etablissement.formateur_siret,
+              parcoursup_id: {
+                $ne: null,
+              },
+            }),
+            etablissements.findOneAndUpdate(
+              { _id: etablissement._id },
+              {
+                $push: {
+                  to_etablissement_emails: {
+                    campaign: mailType.PREMIUM_STARTING,
+                    status: null,
+                    message_id: mailParcoursup.messageId,
+                    email_sent_at: dayjs().toDate(),
+                  },
+                },
+                premium_activation_date: dayjs().toDate(),
+              }
+            ),
+          ])
+
+          // Gets all mails (formation email + formateur email), excepted "email_decisionnaire"
+          let emailsParcoursup = eligibleTrainingsForAppointmentsParcoursupFound.map((eligibleTrainingsForAppointment) => eligibleTrainingsForAppointment.lieu_formation_email)
+          if (etablissement?.gestionnaire_email) {
+            emailsParcoursup.push(etablissement.gestionnaire_email)
+          }
+
+          emailsParcoursup = _(emailsParcoursup)
+            .uniq()
+            .omitBy(_.isNil)
+            .omitBy((item) => item === etablissement.gestionnaire_email)
+            .toArray()
+
+          await Promise.all(
+            emailsParcoursup.map((email) =>
+              mailer.sendEmail({
+                to: email,
+                subject: `La prise de rendez-vous est activée pour votre CFA sur Parcoursup`,
+                template: mailTemplate["mail-cfa-premium-activated"],
+                data: {
+                  isParcoursup: true,
+                  url: config.publicUrl,
+                  replyTo: `${config.publicEmail}?subject=Email%20CFA%20Premium%20invite%20-%20MAJ%20contact%20formation`,
+                  images: {
+                    logo: `${config.publicUrlEspacePro}/assets/logo-lba.png?raw=true`,
+                    logoFooter: `${config.publicUrlEspacePro}/assets/logo-republique-francaise.png?raw=true`,
+                    peopleLaptop: `${config.publicUrlEspacePro}/assets/people-laptop.png?raw=true`,
+                  },
+                  etablissement: {
+                    name: etablissement.raison_sociale,
+                    formateur_address: etablissement.formateur_address,
+                    formateur_zip_code: etablissement.formateur_zip_code,
+                    formateur_city: etablissement.formateur_city,
+                    siret: etablissement.formateur_siret,
+                    email: etablissement.gestionnaire_email,
+                    premiumActivatedDate: dayjs(etablissementParcoursupUpdated.premium_activation_date).format("DD/MM"),
+                    emailGestionnaire: etablissement.gestionnaire_email,
+                  },
+                  user: {
+                    destinataireEmail: email,
+                  },
+                },
+              })
+            )
+          )
+
+          const [result] = await Promise.all([
+            etablissements.findById(req.params.id),
+            ...eligibleTrainingsForAppointmentsParcoursupFound.map((eligibleTrainingsForAppointment) =>
+              eligibleTrainingsForAppointments.update(
+                { _id: eligibleTrainingsForAppointment._id, lieu_formation_email: { $nin: [null, ""] } },
+                {
+                  referrers: [...new Set([...eligibleTrainingsForAppointment.referrers, referrers.PARCOURSUP.name])],
+                }
+              )
+            ),
+          ])
+
+          return res.send(result)
+      }
     })
   )
 
@@ -180,47 +294,101 @@ export default ({ etablissements, mailer, eligibleTrainingsForAppointments, appo
         throw Boom.badRequest("Premium already activated.")
       }
 
-      const { messageId } = await mailer.sendEmail({
-        to: etablissement.gestionnaire_email,
-        subject: `Le service “RDV Apprentissage” ne sera pas activé sur Parcoursup`,
-        template: mailTemplate["mail-cfa-premium-refused"],
-        data: {
-          images: {
-            informationIcon: `${config.publicUrlEspacePro}/assets/icon-information-blue.png?raw=true`,
-            logoCandidat: `${config.publicUrlEspacePro}/assets/logo-lba-recruteur-candidat.png?raw=true`,
-            logoCfa: `${config.publicUrlEspacePro}/assets/logo-lba-recruteur-cfa.png?raw=true`,
-            logoFooter: `${config.publicUrlEspacePro}/assets/logo-republique-francaise.png?raw=true`,
-          },
-          etablissement: {
-            raison_sociale: etablissement.raison_sociale,
-            formateur_address: etablissement.formateur_address,
-            formateur_zip_code: etablissement.formateur_zip_code,
-            formateur_city: etablissement.formateur_city,
-            formateur_siret: etablissement.formateur_siret,
-            email: etablissement.gestionnaire_email,
-          },
-          activationDate: dayjs().format("DD/MM"),
-        },
-      })
-
-      await etablissements.findOneAndUpdate(
-        { _id: etablissement._id },
-        {
-          $push: {
-            to_etablissement_emails: {
-              campaign: mailType.PREMIUM_REFUSED,
-              status: null,
-              message_id: messageId,
-              email_sent_at: dayjs().toDate(),
+      switch (etablissement.affelnet_perimetre) {
+        /**
+         * Formation AFFELNET
+         */
+        case true:
+          const mailAffelnet = await mailer.sendEmail({
+            to: etablissement.gestionnaire_email,
+            subject: `Le service “RDV Apprentissage” ne sera pas activé sur Choisir son affectation après la 3e`,
+            template: mailTemplate["mail-cfa-premium-refused"],
+            data: {
+              isAffelnet: true,
+              images: {
+                informationIcon: `${config.publicUrlEspacePro}/assets/icon-information-blue.png?raw=true`,
+                logoCandidat: `${config.publicUrlEspacePro}/assets/logo-lba-recruteur-candidat.png?raw=true`,
+                logoCfa: `${config.publicUrlEspacePro}/assets/logo-lba-recruteur-cfa.png?raw=true`,
+                logoFooter: `${config.publicUrlEspacePro}/assets/logo-republique-francaise.png?raw=true`,
+              },
+              etablissement: {
+                raison_sociale: etablissement.raison_sociale,
+                formateur_address: etablissement.formateur_address,
+                formateur_zip_code: etablissement.formateur_zip_code,
+                formateur_city: etablissement.formateur_city,
+                formateur_siret: etablissement.formateur_siret,
+                email: etablissement.gestionnaire_email,
+              },
+              activationDate: dayjs().format("DD/MM"),
             },
-          },
-          premium_refusal_date: dayjs().toDate(),
-        }
-      )
+          })
 
-      const etablissementUpdated = await etablissements.findById(req.params.id)
+          await etablissements.findOneAndUpdate(
+            { _id: etablissement._id },
+            {
+              $push: {
+                to_etablissement_emails: {
+                  campaign: mailType.PREMIUM_REFUSED,
+                  status: null,
+                  message_id: mailAffelnet.messageId,
+                  email_sent_at: dayjs().toDate(),
+                },
+              },
+              premium_affelnet_refusal_date: dayjs().toDate(),
+            }
+          )
 
-      return res.send(etablissementUpdated)
+          const etablissementAffelnetUpdated = await etablissements.findById(req.params.id)
+
+          return res.send(etablissementAffelnetUpdated)
+
+        /**
+         * Formation PARCOURSUP
+         */
+        default:
+          const mailParcoursup = await mailer.sendEmail({
+            to: etablissement.gestionnaire_email,
+            subject: `Le service “RDV Apprentissage” ne sera pas activé sur Parcoursup`,
+            template: mailTemplate["mail-cfa-premium-refused"],
+            data: {
+              isParcoursup: true,
+              images: {
+                informationIcon: `${config.publicUrlEspacePro}/assets/icon-information-blue.png?raw=true`,
+                logoCandidat: `${config.publicUrlEspacePro}/assets/logo-lba-recruteur-candidat.png?raw=true`,
+                logoCfa: `${config.publicUrlEspacePro}/assets/logo-lba-recruteur-cfa.png?raw=true`,
+                logoFooter: `${config.publicUrlEspacePro}/assets/logo-republique-francaise.png?raw=true`,
+              },
+              etablissement: {
+                raison_sociale: etablissement.raison_sociale,
+                formateur_address: etablissement.formateur_address,
+                formateur_zip_code: etablissement.formateur_zip_code,
+                formateur_city: etablissement.formateur_city,
+                formateur_siret: etablissement.formateur_siret,
+                email: etablissement.gestionnaire_email,
+              },
+              activationDate: dayjs().format("DD/MM"),
+            },
+          })
+
+          await etablissements.findOneAndUpdate(
+            { _id: etablissement._id },
+            {
+              $push: {
+                to_etablissement_emails: {
+                  campaign: mailType.PREMIUM_REFUSED,
+                  status: null,
+                  message_id: mailParcoursup.messageId,
+                  email_sent_at: dayjs().toDate(),
+                },
+              },
+              premium_refusal_date: dayjs().toDate(),
+            }
+          )
+
+          const etablissementParcoursupUpdated = await etablissements.findById(req.params.id)
+
+          return res.send(etablissementParcoursupUpdated)
+      }
     })
   )
 

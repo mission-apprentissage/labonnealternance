@@ -1,7 +1,7 @@
 import _ from "lodash-es"
 import { mailTemplate } from "../../assets/index.js"
 import { logger } from "../../common/logger.js"
-import { mailType, optMode } from "../../common/model/constants/etablissement.js"
+import { mailType } from "../../common/model/constants/etablissement.js"
 import { dayjs } from "../../common/utils/dayjs.js"
 import { isValidEmail } from "../../common/utils/isValidEmail.js"
 import config from "../../config.js"
@@ -17,6 +17,7 @@ export const inviteEtablissementToOptOut = async ({ etablissements, eligibleTrai
   const etablissementsWithouOptMode = await etablissements.find({
     optout_invitation_date: null,
     gestionnaire_email: { $nin: [null, ""] },
+    affelnet_perimetre: null,
   })
 
   logger.info(`Etablissements to invite: ${etablissementsWithouOptMode.length}`)
