@@ -164,17 +164,17 @@ const InformationSiret = ({ type }) => {
         <InfoCircle mr={2} mt={1} />
         {type === AUTHTYPE.ENTREPRISE ? (
           <Text textAlign="justify">
-            Le numéro d’identification de votre entreprise peut être trouvé sur
+            Le numéro d’identification de votre entreprise peut être trouvé sur{" "}
             <Link href="https://annuaire-entreprises.data.gouv.fr/" style={{ textDecoration: "underline" }} isExternal>
               l’annuaire des entreprises <ExternalLinkLine h={3} />
-            </Link>
+            </Link>{" "}
             ou bien sur les registres de votre entreprise.
           </Text>
         ) : (
           <Text>
-            Le numéro d’identification de votre organisme peut être trouvé sur le site{" "}
+            Le numéro d’identification de votre organisme peut être trouvé sur{" "}
             <Link href="https://catalogue.apprentissage.beta.gouv.fr/recherche/etablissements" style={{ textDecoration: "underline" }} isExternal>
-              Le catalogue des offres de formations en apprentissage <ExternalLinkLine h={3} />
+              le catalogue des offres de formations en apprentissage <ExternalLinkLine h={3} />
             </Link>{" "}
             ou bien sur les registres de votre organisme de formation.
           </Text>
