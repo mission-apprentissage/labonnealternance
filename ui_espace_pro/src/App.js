@@ -40,6 +40,7 @@ import Layout2 from "./pages/Layout"
 import LoginPage from "./pages/LoginPage"
 import OptOutUnsubscribe from "./pages/OptOutUnsubscribe"
 import PremiumForm from "./pages/PremiumForm"
+import PremiumAffelnetForm from "./pages/PremiumAffelnetForm"
 import { PropositionOffreId } from "./pages/Proposition/Offre/PropositionOffreId"
 import Widget from "./pages/Widget"
 
@@ -153,6 +154,7 @@ const App = () => {
         <Route path="/form" element={<FormCreatePage />} />
         <Route path="/form/confirm/:id" element={<FormRecapPage />} />
         <Route path="/form/opt-out/unsubscribe/:id" element={<OptOutUnsubscribe />} />
+        <Route path="/form/premium/affelnet/:id" element={<PremiumAffelnetForm />} />
         <Route path="/form/premium/:id" element={<PremiumForm />} />
         <Route path="/appointment/candidat/follow-up/:id/:action(confirm|resend)" element={<AppointmentFollowUpPage />} />
         <Route path="/widget/tutorial" element={<Widget />} />
