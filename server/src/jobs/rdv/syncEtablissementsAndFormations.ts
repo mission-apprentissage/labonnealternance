@@ -142,8 +142,8 @@ export const syncEtablissementsAndFormations = async ({ etablissements, eligible
         }
 
         let emailDecisionnaire = etablissement?.gestionnaire_email
-        if (formation.etablissement_gestionnaire_courriel && isValidEmail(formation.etablissement_gestionnaire_courriel)) {
-          emailDecisionnaire = formation.etablissement_gestionnaire_courriel.toLowerCase()
+        if (getEmailFromCatalogueField(formation.etablissement_gestionnaire_courriel)) {
+          emailDecisionnaire = getEmailFromCatalogueField(formation.etablissement_gestionnaire_courriel).toLowerCase()
         }
 
         // Update etablissement model (upsert)

@@ -15,13 +15,8 @@ export const inviteEtablissementToPremium = async ({ etablissements, mailer }) =
     gestionnaire_email: {
       $ne: null,
     },
-    optout_activation_scheduled_date: {
-      $ne: null,
-      $lte: dayjs().subtract(1, "day").toDate(),
-    },
     premium_activation_date: null,
     "to_etablissement_emails.campaign": { $ne: mailType.PREMIUM_INVITE },
-    affelnet_perimetre: null,
   })
 
   for (const etablissement of etablissementsToInvite) {

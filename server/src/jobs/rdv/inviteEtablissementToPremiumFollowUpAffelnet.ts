@@ -24,7 +24,7 @@ export const inviteEtablissementAffelnetToPremiumFollowUp = async ({ etablisseme
       $lte: dayjs().subtract(7, "days").toDate(),
     },
     "to_etablissement_emails.campaign": {
-      $ne: mailType.PREMIUM_INVITE_FOLLOW_UP,
+      $ne: mailType.PREMIUM_AFFELNET_INVITE_FOLLOW_UP,
     },
   })
 
@@ -43,12 +43,12 @@ export const inviteEtablissementAffelnetToPremiumFollowUp = async ({ etablisseme
         images: {
           logoCfa: `${config.publicUrlEspacePro}/assets/logo-lba-recruteur-cfa.png?raw=true`,
           logoFooter: `${config.publicUrlEspacePro}/assets/logo-republique-francaise.png?raw=true`,
-          parcoursupIntegrationExample: `${config.publicUrlEspacePro}/assets/exemple_integration_affelnet.jpg?raw=true`,
+          integrationExample: `${config.publicUrlEspacePro}/assets/exemple_integration_affelnet.png?raw=true`,
         },
         etablissement: {
           email: etablissement.gestionnaire_email,
           activatedAt: dayjs(etablissement.created_at).format("DD/MM"),
-          linkToForm: `${config.publicUrlEspacePro}/form/premium/${etablissement._id}`,
+          linkToForm: `${config.publicUrlEspacePro}/form/premium/affelnet/${etablissement._id}`,
         },
       },
     })
@@ -59,7 +59,7 @@ export const inviteEtablissementAffelnetToPremiumFollowUp = async ({ etablisseme
         premium_affelnet_invitation_date: dayjs().toDate(),
         $push: {
           to_etablissement_emails: {
-            campaign: mailType.PREMIUM_INVITE_FOLLOW_UP,
+            campaign: mailType.PREMIUM_AFFELNET_INVITE_FOLLOW_UP,
             status: null,
             message_id: messageId,
             email_sent_at: dayjs().toDate(),

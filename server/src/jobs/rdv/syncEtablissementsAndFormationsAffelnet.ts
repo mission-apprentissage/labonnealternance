@@ -61,7 +61,7 @@ export const syncAffelnetFormationsFromCatalogueME = async ({ etablissements, el
   const referrersToActivate = [referrers.AFFELNET.name]
 
   const catalogueMinistereEducatif = await getFormationsFromCatalogueMe({
-    limit: 1000,
+    limit: 500,
     query: {
       affelnet_perimetre: true,
       affelnet_statut: { $in: ["publié", "en attente de publication"] },
@@ -148,8 +148,8 @@ export const syncAffelnetFormationsFromCatalogueME = async ({ etablissements, el
         }
 
         let emailDecisionnaire = etablissement?.gestionnaire_email
-        if (formation.etablissement_gestionnaire_courriel && isValidEmail(formation.etablissement_gestionnaire_courriel)) {
-          emailDecisionnaire = formation.etablissement_gestionnaire_courriel.toLowerCase()
+        if (getEmailFromCatalogueField(formation.etablissement_gestionnaire_courriel)) {
+          emailDecisionnaire = getEmailFromCatalogueField(formation.etablissement_gestionnaire_courriel).toLowerCase()
         }
 
         // Update etablissement model (upsert)

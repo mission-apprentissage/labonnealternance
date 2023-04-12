@@ -28,7 +28,7 @@ export const inviteEtablissementAffelnetToPremium = async ({ mailer }) => {
         etablissement: {
           email: etablissement.gestionnaire_email,
           activatedAt: dayjs(etablissement.created_at).format("DD/MM"),
-          linkToForm: `${config.publicUrlEspacePro}/form/premium/${etablissement._id}`,
+          linkToForm: `${config.publicUrlEspacePro}/form/premium/affelnet/${etablissement._id}`,
         },
       },
     })
@@ -39,7 +39,7 @@ export const inviteEtablissementAffelnetToPremium = async ({ mailer }) => {
         premium_affelnet_invitation_date: dayjs().toDate(),
         $push: {
           to_etablissement_emails: {
-            campaign: mailType.PREMIUM_INVITE,
+            campaign: mailType.PREMIUM_AFFELNET_INVITE,
             status: null,
             message_id: messageId,
             email_sent_at: dayjs().toDate(),

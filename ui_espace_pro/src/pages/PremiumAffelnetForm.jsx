@@ -10,13 +10,13 @@ import { InfoCircleFilled, SuccessCircle } from "../theme/components/icons"
  * @description Premium form component.
  * @returns {JSX.Element}
  */
-const PremiumForm = () => {
+const PremiumAffelnetForm = () => {
   const { id } = useParams()
   const [hasRefused, setHasRefused] = useState(false)
   const [hasAccepted, setHasAccepted] = useState(false)
   const [etablissement, setEtablissement] = useState()
 
-  const title = "Parcoursup"
+  const title = "Affelnet"
   setTitle(title)
 
   /**
@@ -24,17 +24,17 @@ const PremiumForm = () => {
    * @returns {Promise<void>}
    */
   const accept = async () => {
-    await _post(`/api/etablissements/${id}/premium/accept`)
+    await _post(`/api/etablissements/${id}/premium/affelnet/accept`)
     setHasAccepted(true)
     window.scrollTo(0, 0)
   }
 
   /**
-   * @description Refuse invite.
+   * @description Refuse terms.
    * @returns {Promise<void>}
    */
   const refuse = async () => {
-    await _post(`/api/etablissements/${id}/premium/refuse`)
+    await _post(`/api/etablissements/${id}/premium/affelnet/refuse`)
     setHasRefused(true)
     window.scrollTo(0, 0)
   }
@@ -42,11 +42,11 @@ const PremiumForm = () => {
   useEffect(async () => {
     const etablissement = await _get(`/api/etablissements/${id}`)
 
-    if (etablissement.premium_refusal_date) {
+    if (etablissement.premium_affelnet_refusal_date) {
       setHasRefused(true)
     }
 
-    if (etablissement.premium_activation_date) {
+    if (etablissement.premium_affelnet_activation_date) {
       setHasAccepted(true)
     }
 
@@ -56,8 +56,6 @@ const PremiumForm = () => {
   if (!etablissement) {
     return null
   }
-
-  console.log(etablissement)
 
   return (
     <Layout>
@@ -85,7 +83,7 @@ const PremiumForm = () => {
                   Félicitations, votre choix a bien été pris en compte.
                 </Text>
                 <Text mt={4} color="grey.800" ml={2}>
-                  Le service RDV Apprentissage est désormais activé sur Parcoursup.
+                  Le service RDV Apprentissage est désormais activé sur Choisir sont affectation après la 3e.
                   <br />
                   Afin de recevoir les demandes de RDV, assurez-vous que vos coordonnées de contact CARIF FOREF soient à jour.
                 </Text>
@@ -96,11 +94,11 @@ const PremiumForm = () => {
             <>
               <Box>
                 <Text textStyle="h3" fontSize="24px" fontWeight="bold" color="grey.800">
-                  Activation du service “RDV Apprentissage” sur Parcoursup
+                  Activation du service “RDV Apprentissage” sur Choisir son affectation après la 3e
                 </Text>
               </Box>
               <Text fontWeight="700" my={5}>
-                Afin de bénéficier de la parution du service RDV Apprentissage, je m'engage auprès de Parcoursup à
+                Afin de bénéficier de la parution du service RDV Apprentissage, je m'engage auprès de Choisir son affectation après la 3e à
               </Text>
               <Stack direction="row" align="center">
                 <SuccessCircle fillHexaColor="#00AC8C" />
@@ -131,11 +129,11 @@ const PremiumForm = () => {
                   <Box float="left" pr={3} pl={3}>
                     <InfoCircleFilled width={6} fillHexaColor="#FF8D7E" />
                   </Box>{" "}
-                  Cette action n’aura aucun impact sur le référencement de vos formations dans Parcoursup
+                  Cette action n’aura aucun impact sur le référencement de vos formations dans Choisir son affectation après la 3e
                 </Text>
               </Flex>
               <Box>
-                <Text mt="-7px">Le service sera activé sur toutes les formations référencées dans Parcoursup de l’organisme suivant :</Text>
+                <Text mt="-7px">Le service sera activé sur toutes les formations référencées dans Choisir son affectation après la 3e de l’organisme suivant :</Text>
                 <Stack dir="column" bg="#F9F8F6" px={10} py={6} mt={3} spacing={4}>
                   <Text>
                     Raison sociale :{" "}
@@ -183,4 +181,4 @@ const PremiumForm = () => {
   )
 }
 
-export default PremiumForm
+export default PremiumAffelnetForm
