@@ -63,7 +63,7 @@ const MetiersDAvenir = () => {
             Les métiers
           </Text>
           <Text as="span" display="block" mb={1} variant="editorialContentH1">
-            d'avenir
+            qui recrutent
           </Text>
         </Text>
         <Divider variant="pageTitleDivider" my={[4, 4, 8]} />
