@@ -10,8 +10,8 @@ export default () => (
       </GridItem>
       <GridItem>
         <Text pb={4}>
-          De nombreux jeunes motivés et disponibles tout de suite cherchent actuellement un contrat d'apprentissage. Ils peuvent correspondre à vos besoins immédiats de
-          recrutement.
+          « RDV Apprentissage » est un module destiné à s’intégrer aux plateformes et portails exposant les formations en apprentissage pour faciliter le premier contact entre les
+          candidats à l’apprentissage et les Centres de Formation des Apprentis (CFA)
         </Text>
         <Text pb={4}>L'apprentissage, c'est la garantie de transmettre votre savoir-faire et d'embaucher une future recrue tout en bénéficiant du soutien de l'État.</Text>
         <Stack direction={["column", "row"]} spacing={[5, 10]}>

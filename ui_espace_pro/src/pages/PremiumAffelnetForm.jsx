@@ -83,7 +83,7 @@ const PremiumAffelnetForm = () => {
                   Félicitations, votre choix a bien été pris en compte.
                 </Text>
                 <Text mt={4} color="grey.800" ml={2}>
-                  Le service RDV Apprentissage est désormais activé sur Choisir sont affectation après la 3e.
+                  Le service RDV Apprentissage est désormais activé sur Choisir son affectation après la 3e.
                   <br />
                   Afin de recevoir les demandes de RDV, assurez-vous que vos coordonnées de contact CARIF FOREF soient à jour.
                 </Text>

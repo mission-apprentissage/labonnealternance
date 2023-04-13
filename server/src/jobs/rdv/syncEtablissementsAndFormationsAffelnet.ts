@@ -58,10 +58,8 @@ const getEmailFromCatalogueField = (email) => {
 export const syncAffelnetFormationsFromCatalogueME = async ({ etablissements, eligibleTrainingsForAppointments }) => {
   logger.info("Cron #syncEtablissementsAndFormationsAffelnet started.")
 
-  const referrersToActivate = [referrers.AFFELNET.name]
-
   const catalogueMinistereEducatif = await getFormationsFromCatalogueMe({
-    limit: 500,
+    limit: 200,
     query: {
       affelnet_perimetre: true,
       affelnet_statut: { $in: ["publié", "en attente de publication"] },
@@ -79,6 +77,13 @@ export const syncAffelnetFormationsFromCatalogueME = async ({ etablissements, el
           }),
           etablissements.findOne({ formateur_siret: formation.etablissement_formateur_siret }),
         ])
+
+        const referrersToActivate = eligibleTrainingsForAppointment?.referrers || []
+
+        // Activate "Premium Affelnet" referrers
+        if (etablissement?.premium_affelnet_activation_date && !referrersToActivate.includes(referrers.AFFELNET.name)) {
+          referrersToActivate.push(referrers.AFFELNET.name)
+        }
 
         if (eligibleTrainingsForAppointment) {
           let emailRdv = eligibleTrainingsForAppointment.lieu_formation_email
@@ -103,7 +108,7 @@ export const syncAffelnetFormationsFromCatalogueME = async ({ etablissements, el
               training_code_formation_diplome: formation.cfd,
               etablissement_formateur_zip_code: formation.etablissement_formateur_code_postal,
               training_intitule_long: formation.intitule_long,
-              referrers: emailRdv && !emailBlacklisted ? referrersToActivate : [],
+              referrers: emailRdv && !emailBlacklisted ? referrers : [],
               is_catalogue_published: formation.published,
               rco_formation_id: formation.id_rco_formation,
               last_catalogue_sync_date: dayjs().format(),
@@ -130,7 +135,7 @@ export const syncAffelnetFormationsFromCatalogueME = async ({ etablissements, el
             cle_ministere_educatif: formation.cle_ministere_educatif,
             training_code_formation_diplome: formation.cfd,
             training_intitule_long: formation.intitule_long,
-            referrers: emailRdv && !emailBlacklisted ? referrersToActivate : [],
+            referrers: emailRdv && !emailBlacklisted ? referrers : [],
             is_catalogue_published: formation.published,
             rco_formation_id: formation.id_rco_formation,
             last_catalogue_sync_date: dayjs().format(),
