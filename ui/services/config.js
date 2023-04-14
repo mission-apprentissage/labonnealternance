@@ -103,6 +103,16 @@ export const setDisplayMap = ({ parameterContext }) => {
   }
 }
 
+export const setShowCombinedJob = ({ router, parameterContext }) => {
+  const showCombinedJob = getValueFromPath("showCombinedJob")
+  if (showCombinedJob !== null) {
+    parameterContext.setShowCombinedJob(showCombinedJob === "false" ? false : true)
+  }
+  else if(router.pathname==="/recherche-emploi") {
+    parameterContext.setShowCombinedJob(false)
+  }
+}
+
 export const initTestingParameters = () => {
   if (!testingParameters?.secret) {
     let p = getValueFromPath("secret")
@@ -176,6 +186,7 @@ export const initParametersFromQuery = ({ router, shouldPush, parameterContext }
   getOpcoFilter({ parameterContext })
   setUseMock({ parameterContext })
   setDisplayMap({ parameterContext })
+  setShowCombinedJob({ router, parameterContext })
 
   const itemParameters = getItemParameters()
   if (itemParameters && (itemParameters.applyItemParameters || itemParameters.mode)) {

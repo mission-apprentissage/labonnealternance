@@ -22,6 +22,7 @@ export const searchForJobsFunction = async ({
   opcoFilter,
   opcoUrlFilter,
   useMock,
+  showCombinedJob,
 }) => {
   setIsJobSearchLoading(true)
   setJobSearchError("")
@@ -60,6 +61,10 @@ export const searchForJobsFunction = async ({
         matchas: response.data.matchas.result && response.data.matchas.result === "error" ? null : response.data.matchas.results,
         lbbCompanies: response.data.lbbCompanies.result && response.data.lbbCompanies.result === "error" ? null : response.data.lbbCompanies.results,
         lbaCompanies: response.data.lbaCompanies.result && response.data.lbaCompanies.result === "error" ? null : response.data.lbaCompanies.results,
+      }
+
+      if(!showCombinedJob && results.matchas?.length) {
+        results.matchas = results.matchas.filter(matcha=>!matcha.company.mandataire)
       }
 
       if (followUpItem && followUpItem.parameters.type !== "training") {

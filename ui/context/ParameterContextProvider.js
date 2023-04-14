@@ -8,6 +8,7 @@ const initialState = {
   opcoUrlFilter: null,
   useMock: false,
   displayMap: true,
+  showCombinedJob: true,
 }
 
 const actions = {
@@ -17,6 +18,7 @@ const actions = {
   SET_OPCO_FILTER: "SET_OPCO_FILTER",
   SET_USE_MOCK: "SET_USE_MOCK",
   SET_DISPLAY_MAP: "SET_DISPLAY_MAP",
+  SET_SHOW_COMBINED_JOB: "SET_SHOW_COMBINED_JOB",
 }
 
 const reducer = (state, action) => {
@@ -40,6 +42,9 @@ const reducer = (state, action) => {
     }
     case actions.SET_DISPLAY_MAP: {
       return { ...state_copy, displayMap: action.displayMap }
+    }
+    case actions.SET_SHOW_COMBINED_JOB: {
+      return { ...state_copy, showCombinedJob: action.showCombinedJob }
     }
 
     default:
@@ -71,6 +76,9 @@ const ParameterContextProvider = ({ children }) => {
     },
     setDisplayMap: (displayMap = true) => {
       dispatch({ type: actions.SET_DISPLAY_MAP, displayMap })
+    },
+    setShowCombinedJob: (showCombinedJob = true) => {
+      dispatch({ type: actions.SET_SHOW_COMBINED_JOB, showCombinedJob })
     },
   }
 
