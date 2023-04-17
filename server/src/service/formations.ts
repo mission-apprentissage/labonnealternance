@@ -158,10 +158,11 @@ const getFormation = async ({ id, caller }) => {
     }
 
     //throw new Error("BOOM");
-    const formations = []
-    formations.push({ source: responseFormation })
-
-    return formations
+    if (responseFormation) {
+      return [{ source: responseFormation }]
+    } else {
+      return { error: "not_found", status: 404, result: "not_found", message: "Formation non trouvée" }
+    }
   } catch (error) {
     return manageApiError({
       error,
@@ -537,7 +538,6 @@ const getFormationQuery = async (query) => {
     //throw new Error("BIG BANG");
     return formation
   } catch (err) {
-    console.error("Error ", err.message)
     sentryCaptureException(err)
 
     if (query.caller) {

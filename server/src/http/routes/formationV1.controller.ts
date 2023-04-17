@@ -38,7 +38,7 @@ export default () => {
         } else if (result.error === "not_found") {
           res.status(404)
         } else {
-          res.status(500)
+          res.status(result.status || 500)
         }
       }
 

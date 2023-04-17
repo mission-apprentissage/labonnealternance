@@ -4,7 +4,7 @@ import { trackApiCall } from "./sendTrackingEvent.js"
 import { sentryCaptureException } from "./sentryUtils.js"
 
 const manageApiError = ({ error, api_path, caller, errorTitle }) => {
-  const errorObj = { result: "error", message: error.message }
+  const errorObj = { result: "error", error: "error", message: error.message }
   const status = error?.response?.status || ""
   error.name = `API error ${status ? status + " " : ""}${errorTitle}`
   if (error?.config) {
@@ -19,6 +19,7 @@ const manageApiError = ({ error, api_path, caller, errorTitle }) => {
   if (error.response) {
     errorObj.status = error.response.status
     errorObj.statusText = error.response.statusText
+    errorObj.error = error.response.statusText
   }
 
   console.log(`error ${errorTitle}`, errorObj)
