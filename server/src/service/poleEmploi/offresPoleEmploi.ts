@@ -274,18 +274,18 @@ const getPeJobFromId = async ({ id, caller }) => {
     const headers = peApiHeaders
     headers.Authorization = `Bearer ${token}`
 
+    //throw new Error("boom");
+
     const job = await axios.get(`${peJobApiEndpoint}${id}`, {
       headers,
     })
-
-    //throw new Error("boom");
 
     if (job.status === 204 || job.status === 400) {
       if (caller) {
         trackApiCall({ caller, api_path: "jobV1/job", response: "Error" })
       }
 
-      return { result: "not_found", message: "Offre non trouvée" }
+      return { error: "not_found", result: "not_found", message: "Offre non trouvée" }
     } else {
       const peJob = transformPeJobForIdea({ job: job.data, caller })
 

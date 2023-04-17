@@ -7,6 +7,7 @@ import { itemModel } from "../../model/itemModel.js"
 
 import { roundDistance } from "../../common/geolib.js"
 import { lbbMock } from "../../mocks/lbbs-mock.js"
+import { BonnesBoites } from "../../common/model/index.js"
 
 const esClient = getElasticInstance()
 
@@ -226,36 +227,11 @@ const getLbbCompanies = async ({ romes, latitude, longitude, radius, companyLimi
 
 const getCompanyFromSiret = async ({ siret, referer, caller, type }) => {
   try {
-    const mustTerm = [
-      {
-        match: {
-          siret,
-        },
-      },
-    ]
+    const bonneBoite = await BonnesBoites.findOne({ siret })
 
-    const esQueryIndexFragment = getBonnesBoitesEsQueryIndexFragment(1)
-
-    const responseBonnesBoites = await esClient.search({
-      ...esQueryIndexFragment,
-      body: {
-        query: {
-          bool: {
-            must: mustTerm,
-          },
-        },
-      },
-    })
-
-    const bonnesBoites = []
-
-    responseBonnesBoites.body.hits.hits.forEach((bonneBoite) => {
-      bonnesBoites.push({ ...bonneBoite._source, distance: bonneBoite.sort })
-    })
-
-    if (responseBonnesBoites.body.hits.hits.length) {
+    if (bonneBoite) {
       const company = transformLbbCompanyForIdea({
-        company: { ...responseBonnesBoites.body.hits.hits[0]._source, distance: 0 },
+        company: bonneBoite,
         type,
         contactAllowedOrigin: isAllowedSource({ referer, caller }),
         caller,
@@ -263,19 +239,15 @@ const getCompanyFromSiret = async ({ siret, referer, caller, type }) => {
 
       return type === "lbb" ? { lbbCompanies: [company] } : { lbaCompanies: [company] }
     } else {
-      return { result: "not_found", message: "Société non trouvée" }
+      return { error: "not_found", status: 404, result: "not_found", message: "Société non trouvée" }
     }
   } catch (error) {
-    if (error?.response?.status === 404) {
-      return { result: "not_found", message: "Société non trouvée" }
-    } else {
-      return manageApiError({
-        error,
-        api_path: "jobV1/company",
-        caller,
-        errorTitle: "getting company by Siret from local ES",
-      })
-    }
+    return manageApiError({
+      error,
+      api_path: "jobV1/company",
+      caller,
+      errorTitle: "getting company by Siret from local ES",
+    })
   }
 }
 
