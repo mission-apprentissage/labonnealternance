@@ -92,15 +92,6 @@ export default (props) => {
         )}
         {type === AUTHTYPE.ENTREPRISE && (
           <Flex align="center">
-            <Text mr={3}>Date de création :</Text>
-            <Text bg="#F9F8F6" px="8px" py="2px" fontWeight={700} mr={2} noOfLines={1}>
-              {dayjs(date_creation_etablissement).format("DD/MM/YYYY")}
-            </Text>
-            <InfoTooltip description='La donnée "Date de création" provient de l’INSEE puis est déduite du SIRET. Si cette information est erronée, merci de leur signaler.' />
-          </Flex>
-        )}
-        {type === AUTHTYPE.ENTREPRISE && (
-          <Flex align="center">
             <Text mr={3}>Opco de référence :</Text>
 
             {opco ? (

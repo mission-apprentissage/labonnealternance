@@ -62,11 +62,6 @@ const LocationDetail = ({ item, isCfa }) => {
           <Box mt={2}>
             <strong>Secteur d&apos;activité :&nbsp;</strong> {item?.nafs[0]?.label}
           </Box>
-          {item?.company?.creationDate && !isNaN(new Date(item.company.creationDate)) && (
-            <Box mt={2}>
-              <strong>Année de création de l&apos;entreprise :&nbsp;</strong> {new Date(item.company.creationDate).getFullYear()}
-            </Box>
-          )}
 
           <Box mt={3} color="grey.700">
             {item?.company?.place?.city}
