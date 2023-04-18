@@ -191,7 +191,7 @@ export default () => {
       })
       .catch((error) => {
         console.log(error)
-        setFieldError("email", error.response.data.message)
+        setFieldError("email", error?.response?.data?.message)
         setSubmitting(false)
       })
   }
