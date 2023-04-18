@@ -1,4 +1,5 @@
 /* eslint-disable */
+import { logger } from "../../common/logger.js"
 import express from "express"
 import joi from "joi"
 import { mailTemplate } from "../../assets/index.js"
@@ -40,6 +41,19 @@ let token = {}
 
 export default ({ usersRecruteur, formulaire, mailer }) => {
   const router = express.Router()
+
+
+  const autoValidateUser = async (userId) => await  usersRecruteur.updateUserValidationHistory(userId, {
+    validation_type: validation_utilisateur.AUTO,
+    user: "SERVEUR",
+    statut: etat_utilisateur.VALIDE,
+  })
+
+  const setManualValidation = async (userId) => await usersRecruteur.updateUserValidationHistory(userId, {
+    validation_type: validation_utilisateur.MANUAL,
+    user: "SERVEUR",
+    statut: etat_utilisateur.ATTENTE,
+  })
 
   /**
    * Retourne la liste de tous les CFA ayant une formation avec les ROME passés..
@@ -232,6 +246,8 @@ export default ({ usersRecruteur, formulaire, mailer }) => {
 
           const bonneBoiteFullList: string[] = [...new Set([...bonneBoiteLegacyEmailList, ...bonneBoiteEmailList])]
 
+          let userValidationType = validation_utilisateur.MANUAL
+          
           /**
            * Check if siret is amoung the opco verified establishment
            */
@@ -240,42 +256,13 @@ export default ({ usersRecruteur, formulaire, mailer }) => {
               const isValid = await getAktoEstablishmentVerification(siren, req.body.email, token)
 
               if (isValid) {
-                partenaire = await usersRecruteur.updateUserValidationHistory(partenaire._id, {
-                  validation_type: validation_utilisateur.AUTO,
-                  user: "SERVEUR",
-                  statut: etat_utilisateur.VALIDE,
-                })
-              } else {
-                if (bonneBoiteFullList.length) {
-                  if (getMatchingEmailFromContactList(partenaire.email, bonneBoiteFullList)) {
-                    partenaire = await usersRecruteur.updateUserValidationHistory(partenaire._id, {
-                      validation_type: validation_utilisateur.AUTO,
-                      user: "SERVEUR",
-                      statut: etat_utilisateur.VALIDE,
-                    })
-                  } else {
-                    if (checkIfUserEmailIsPrivate(partenaire.email)) {
-                      if (getMatchingDomainFromContactList(partenaire.email, bonneBoiteFullList)) {
-                        partenaire = await usersRecruteur.updateUserValidationHistory(partenaire._id, {
-                          validation_type: validation_utilisateur.AUTO,
-                          user: "SERVEUR",
-                          statut: etat_utilisateur.VALIDE,
-                        })
-                      }
-                    } else {
-                      partenaire = await usersRecruteur.updateUserValidationHistory(partenaire._id, {
-                        validation_type: validation_utilisateur.MANUAL,
-                        user: "SERVEUR",
-                        statut: etat_utilisateur.ATTENTE,
-                      })
-                    }
-                  }
-                } else {
-                  partenaire = await usersRecruteur.updateUserValidationHistory(partenaire._id, {
-                    validation_type: validation_utilisateur.MANUAL,
-                    user: "SERVEUR",
-                    statut: etat_utilisateur.ATTENTE,
-                  })
+                userValidationType = validation_utilisateur.AUTO
+              } else if (bonneBoiteFullList.length) {
+                if (getMatchingEmailFromContactList(partenaire.email, bonneBoiteFullList)) {
+                  userValidationType = validation_utilisateur.AUTO
+                } else if (checkIfUserEmailIsPrivate(partenaire.email) && 
+                           getMatchingDomainFromContactList(partenaire.email, bonneBoiteFullList)) {
+                  userValidationType = validation_utilisateur.AUTO
                 }
               }
 
@@ -296,38 +283,22 @@ export default ({ usersRecruteur, formulaire, mailer }) => {
 
               if (emailListUnique.length) {
                 if (getMatchingEmailFromContactList(partenaire.email, emailListUnique)) {
-                  partenaire = await usersRecruteur.updateUserValidationHistory(partenaire._id, {
-                    validation_type: validation_utilisateur.AUTO,
-                    user: "SERVEUR",
-                    statut: etat_utilisateur.VALIDE,
-                  })
-                } else {
-                  if (checkIfUserEmailIsPrivate(partenaire.email)) {
-                    if (getMatchingDomainFromContactList(partenaire.email, emailListUnique)) {
-                      partenaire = await usersRecruteur.updateUserValidationHistory(partenaire._id, {
-                        validation_type: validation_utilisateur.AUTO,
-                        user: "SERVEUR",
-                        statut: etat_utilisateur.VALIDE,
-                      })
-                    }
-                  } else {
-                    partenaire = await usersRecruteur.updateUserValidationHistory(partenaire._id, {
-                      validation_type: validation_utilisateur.MANUAL,
-                      user: "SERVEUR",
-                      statut: etat_utilisateur.ATTENTE,
-                    })
-                  }
-                }
-              } else {
-                partenaire = await usersRecruteur.updateUserValidationHistory(partenaire._id, {
-                  validation_type: validation_utilisateur.MANUAL,
-                  user: "SERVEUR",
-                  statut: etat_utilisateur.ATTENTE,
-                })
+                  userValidationType = validation_utilisateur.AUTO
+                } else if (checkIfUserEmailIsPrivate(partenaire.email) && getMatchingDomainFromContactList(partenaire.email, emailListUnique)) {
+                  userValidationType = validation_utilisateur.AUTO
+                } 
               }
 
               break
           }
+          
+          if(userValidationType === validation_utilisateur.AUTO) {
+            partenaire = await autoValidateUser(partenaire._id)
+          }
+          else {
+            partenaire = await setManualValidation(partenaire._id)
+          }
+
           // Dépot simplifié : retourner les informations nécessaire à la suite du parcours
           return res.json({ formulaire: formulaireInfo, user: partenaire })
         case CFA:
@@ -338,11 +309,7 @@ export default ({ usersRecruteur, formulaire, mailer }) => {
 
           if (!referentiel.contacts.length) {
             // Validation manuelle de l'utilisateur à effectuer pas un administrateur
-            partenaire = await usersRecruteur.updateUserValidationHistory(partenaire._id, {
-              validation_type: validation_utilisateur.MANUAL,
-              user: "SERVEUR",
-              statut: etat_utilisateur.ATTENTE,
-            })
+            partenaire = await setManualValidation(partenaire._id)
 
             await notifyToSlack({
               subject: "RECRUTEUR",
@@ -354,11 +321,7 @@ export default ({ usersRecruteur, formulaire, mailer }) => {
 
           if (checkIfUserMailExistInReferentiel(referentiel.contacts, req.body.email)) {
             // Validation automatique de l'utilisateur
-            partenaire = await usersRecruteur.updateUserValidationHistory(partenaire._id, {
-              validation_type: validation_utilisateur.AUTO,
-              user: "SERVEUR",
-              statut: etat_utilisateur.VALIDE,
-            })
+            partenaire = await autoValidateUser(partenaire._id)
 
             let { email, _id, nom, prenom } = partenaire
 
@@ -386,11 +349,7 @@ export default ({ usersRecruteur, formulaire, mailer }) => {
 
             if (domains.includes(userEmailDomain)) {
               // Validation automatique de l'utilisateur
-              partenaire = await usersRecruteur.updateUserValidationHistory(partenaire._id, {
-                validation_type: validation_utilisateur.AUTO,
-                user: "SERVEUR",
-                statut: etat_utilisateur.VALIDE,
-              })
+              partenaire = await autoValidateUser(partenaire._id)
 
               let { email, _id, nom, prenom } = partenaire
 
@@ -413,11 +372,7 @@ export default ({ usersRecruteur, formulaire, mailer }) => {
           }
 
           // Validation manuelle de l'utilisateur à effectuer pas un administrateur
-          partenaire = await usersRecruteur.updateUserValidationHistory(partenaire._id, {
-            validation_type: validation_utilisateur.MANUAL,
-            user: "SERVEUR",
-            statut: etat_utilisateur.ATTENTE,
-          })
+          partenaire = await setManualValidation(partenaire._id)
 
           await notifyToSlack({
             subject: "RECRUTEUR",
