@@ -105,7 +105,7 @@ const OptOutUnsubscribe = () => {
                 <RadioGroup marginTop={10} alignItems={"normal"} onChange={setRadioValue} value={radioValue}>
                   <Stack>
                     <Radio value={radioOptions.UNSUBSCRIBE_NO_DETAILS} pb={5} alignItems={"normal"}>
-                      <Text mt="-7px">Je confirme que je ne souhaite pas activer le service RDV Apprentissage sur toutes les formations de l’organisme suivant :</Text>
+                      <Text mt="-7px">Je confirme ne pas souhaiter activer le service RDV Apprentissage sur toutes les formations de l’organisme suivant :</Text>
                       <Box bg="#E5E5E5" px={10} py={6} mt={6} lineHeight="38px">
                         <Text>
                           Raison sociale :{" "}
