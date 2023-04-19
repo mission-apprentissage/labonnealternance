@@ -63,8 +63,8 @@ export const searchForJobsFunction = async ({
         lbaCompanies: response.data.lbaCompanies.result && response.data.lbaCompanies.result === "error" ? null : response.data.lbaCompanies.results,
       }
 
-      if(!showCombinedJob && results.matchas?.length) {
-        results.matchas = results.matchas.filter(matcha=>!matcha.company.mandataire)
+      if (!showCombinedJob && results.matchas?.length) {
+        results.matchas = results.matchas.filter((matcha) => !matcha.company.mandataire)
       }
 
       if (followUpItem && followUpItem.parameters.type !== "training") {

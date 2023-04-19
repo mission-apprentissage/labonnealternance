@@ -2,6 +2,7 @@
 import { logger } from "../../common/logger.js"
 import express from "express"
 import joi from "joi"
+import { createFormulaire, getFormulaire } from "../../services/formulaire.service.js"
 import { mailTemplate } from "../../assets/index.js"
 import { getAktoEstablishmentVerification } from "../../common/akto.js"
 import { CFA, ENTREPRISE, etat_utilisateur, OPCOS, validation_utilisateur } from "../../common/constants.js"
@@ -39,21 +40,22 @@ const getCfaRomeSchema = joi.object({
 
 let token = {}
 
-export default ({ usersRecruteur, formulaire, mailer }) => {
+export default ({ usersRecruteur, mailer }) => {
   const router = express.Router()
 
+  const autoValidateUser = async (userId) =>
+    await usersRecruteur.updateUserValidationHistory(userId, {
+      validation_type: validation_utilisateur.AUTO,
+      user: "SERVEUR",
+      statut: etat_utilisateur.VALIDE,
+    })
 
-  const autoValidateUser = async (userId) => await  usersRecruteur.updateUserValidationHistory(userId, {
-    validation_type: validation_utilisateur.AUTO,
-    user: "SERVEUR",
-    statut: etat_utilisateur.VALIDE,
-  })
-
-  const setManualValidation = async (userId) => await usersRecruteur.updateUserValidationHistory(userId, {
-    validation_type: validation_utilisateur.MANUAL,
-    user: "SERVEUR",
-    statut: etat_utilisateur.ATTENTE,
-  })
+  const setManualValidation = async (userId) =>
+    await usersRecruteur.updateUserValidationHistory(userId, {
+      validation_type: validation_utilisateur.MANUAL,
+      user: "SERVEUR",
+      statut: etat_utilisateur.ATTENTE,
+    })
 
   /**
    * Retourne la liste de tous les CFA ayant une formation avec les ROME passés..
@@ -102,7 +104,7 @@ export default ({ usersRecruteur, formulaire, mailer }) => {
 
         // Check if a CFA already has the company as partenaire
         if (req.query.fromDashboardCfa) {
-          const exist = await formulaire.getFormulaire({
+          const exist = await getFormulaire({
             siret: req.params.siret,
             gestionnaire: req.query.gestionnaire,
             statut: "Actif",
@@ -232,7 +234,7 @@ export default ({ usersRecruteur, formulaire, mailer }) => {
       switch (req.body.type) {
         case ENTREPRISE:
           const siren = req.body.siret.substr(0, 9)
-          formulaireInfo = await formulaire.createFormulaire(req.body)
+          formulaireInfo = await createFormulaire(req.body)
           partenaire = await usersRecruteur.createUser({ ...req.body, id_form: formulaireInfo.id_form })
 
           // Get all corresponding records using the SIREN number in BonneBoiteLegacy collection
@@ -247,7 +249,7 @@ export default ({ usersRecruteur, formulaire, mailer }) => {
           const bonneBoiteFullList: string[] = [...new Set([...bonneBoiteLegacyEmailList, ...bonneBoiteEmailList])]
 
           let userValidationType = validation_utilisateur.MANUAL
-          
+
           /**
            * Check if siret is amoung the opco verified establishment
            */
@@ -260,8 +262,7 @@ export default ({ usersRecruteur, formulaire, mailer }) => {
               } else if (bonneBoiteFullList.length) {
                 if (getMatchingEmailFromContactList(partenaire.email, bonneBoiteFullList)) {
                   userValidationType = validation_utilisateur.AUTO
-                } else if (checkIfUserEmailIsPrivate(partenaire.email) && 
-                           getMatchingDomainFromContactList(partenaire.email, bonneBoiteFullList)) {
+                } else if (checkIfUserEmailIsPrivate(partenaire.email) && getMatchingDomainFromContactList(partenaire.email, bonneBoiteFullList)) {
                   userValidationType = validation_utilisateur.AUTO
                 }
               }
@@ -286,16 +287,15 @@ export default ({ usersRecruteur, formulaire, mailer }) => {
                   userValidationType = validation_utilisateur.AUTO
                 } else if (checkIfUserEmailIsPrivate(partenaire.email) && getMatchingDomainFromContactList(partenaire.email, emailListUnique)) {
                   userValidationType = validation_utilisateur.AUTO
-                } 
+                }
               }
 
               break
           }
-          
-          if(userValidationType === validation_utilisateur.AUTO) {
+
+          if (userValidationType === validation_utilisateur.AUTO) {
             partenaire = await autoValidateUser(partenaire._id)
-          }
-          else {
+          } else {
             partenaire = await setManualValidation(partenaire._id)
           }
 

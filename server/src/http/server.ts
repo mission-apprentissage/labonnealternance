@@ -20,7 +20,6 @@ import admin from "./routes/admin/admin.controller.js"
 import appointmentRoute from "./routes/admin/appointment.controller.js"
 import adminEtablissementRoute from "./routes/admin/etablissement.controller.js"
 import eligibleTrainingsForAppointmentRoute from "./routes/admin/widgetParameter.controller.js"
-import apiRoute from "./routes/api.controller.js"
 import appointmentRequestRoute from "./routes/appointmentRequest.controller.js"
 import emailsRoute from "./routes/auth/emails.controller.js"
 import login from "./routes/auth/login.controller.js"
@@ -215,8 +214,6 @@ export default async (components) => {
   /**
    * LBA-Recruteur
    */
-  app.use("/api/v1", apiRoute(components))
-
   app.use("/api/user", userRoute(components))
   app.use("/api/formulaire", formulaireRoute(components))
   app.use("/api/es/search", esSearchRoute())
