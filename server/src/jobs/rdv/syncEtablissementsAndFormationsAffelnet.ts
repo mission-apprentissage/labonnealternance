@@ -59,7 +59,7 @@ export const syncAffelnetFormationsFromCatalogueME = async ({ etablissements, el
   logger.info("Cron #syncEtablissementsAndFormationsAffelnet started.")
 
   const catalogueMinistereEducatif = await getFormationsFromCatalogueMe({
-    limit: 200,
+    limit: 500,
     query: {
       affelnet_perimetre: true,
       affelnet_statut: { $in: ["publié", "en attente de publication"] },
@@ -125,6 +125,8 @@ export const syncAffelnetFormationsFromCatalogueME = async ({ etablissements, el
           )
         } else {
           const emailRdv = getEmailFromCatalogueField(formation.etablissement_formateur_courriel)
+
+          const emailBlacklisted = await isEmailBlacklisted(emailRdv)
 
           await eligibleTrainingsForAppointments.create({
             training_id_catalogue: formation._id,
