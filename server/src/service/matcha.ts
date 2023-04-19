@@ -1,19 +1,16 @@
 // @ts-nocheck
-import axios from "axios"
 import { encryptMailWithIV } from "../common/utils/encryptString.js"
 import { manageApiError } from "../common/utils/errorManager.js"
 import { trackApiCall } from "../common/utils/sendTrackingEvent.js"
-import config from "../config.js"
 import { itemModel } from "../model/itemModel.js"
 import filterJobsByOpco from "./filterJobsByOpco.js"
 
-const recruteurEndpoint = `https://labonnealternance${config.env === "production" ? "" : "-recette"}.apprentissage.beta.gouv.fr/api/formulaire`
-
 const coordinatesOfFrance = [2.213749, 46.227638]
 
+import { NIVEAUX_POUR_LBA } from "../common/constants.js"
 import { roundDistance } from "../common/geolib.js"
 import { matchaMock, matchaMockMandataire, matchasMock } from "../mocks/matchas-mock.js"
-import { NIVEAUX_POUR_LBA } from "../common/constants.js"
+import { getOffreAvecInfoMandataire, getJobsFromElasticSearch } from "../services/formulaire.service.js"
 
 const getMatchaJobs = async ({ romes, radius, latitude, longitude, api, opco, opcoUrl, diploma, caller, useMock }) => {
   try {
@@ -32,9 +29,9 @@ const getMatchaJobs = async ({ romes, radius, latitude, longitude, api, opco, op
       params.niveau = NIVEAUX_POUR_LBA[diploma]
     }
 
-    const jobs = useMock === "true" ? { data: matchasMock } : await axios.post(`${recruteurEndpoint}/search`, params)
+    const jobs = useMock === "true" ? matchasMock : await getJobsFromElasticSearch(params)
 
-    const matchas = transformMatchaJobsForIdea({ jobs: jobs.data, caller })
+    const matchas = transformMatchaJobsForIdea({ jobs, caller })
 
     // filtrage sur l'opco
     if (opco || opcoUrl) {
@@ -75,14 +72,15 @@ const getMatchaJobById = async ({ id, caller }) => {
   try {
     let jobs = null
     if (id === "id-matcha-test") {
-      jobs = { data: matchaMock._source }
+      jobs = matchaMock._source
     } else if (id === "id-matcha-test2") {
-      jobs = { data: matchaMockMandataire._source }
+      jobs = matchaMockMandataire._source
     } else {
-      jobs = await axios.get(`${recruteurEndpoint}/offre/${id}`)
+      jobs = await getOffreAvecInfoMandataire(id)
     }
+
     const job = transformMatchaJobForIdea({
-      job: jobs.data,
+      job: jobs,
       caller,
     })
 

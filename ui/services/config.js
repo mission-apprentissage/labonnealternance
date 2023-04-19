@@ -107,8 +107,7 @@ export const setShowCombinedJob = ({ router, parameterContext }) => {
   const showCombinedJob = getValueFromPath("showCombinedJob")
   if (showCombinedJob !== null) {
     parameterContext.setShowCombinedJob(showCombinedJob === "false" ? false : true)
-  }
-  else if(router.pathname==="/recherche-emploi") {
+  } else if (router.pathname === "/recherche-emploi") {
     parameterContext.setShowCombinedJob(false)
   }
 }

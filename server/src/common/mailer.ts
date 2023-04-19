@@ -45,9 +45,26 @@ export default function (transporter = createTransporter()) {
      * @param {Object} data
      * @param {string} from
      * @param {undefined|string} cc
+     * @param {Object[]} attachments
      * @returns {Promise<{messageId: string}>}
      */
-    sendEmail: async ({ to, subject, template, data, from = config.transactionalEmail, cc = undefined, attachments }) => {
+    sendEmail: async ({
+      to,
+      subject,
+      template,
+      data,
+      from = config.transactionalEmail,
+      cc = undefined,
+      attachments,
+    }: {
+      to: string
+      subject: string
+      template: string
+      data: object
+      from?: string
+      cc?: string
+      attachments?: object[]
+    }) => {
       return transporter.sendMail({
         from,
         to,

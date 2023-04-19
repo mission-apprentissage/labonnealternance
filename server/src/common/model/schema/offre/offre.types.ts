@@ -4,6 +4,7 @@ interface IDelegation {
   cfa_read_company_detail_at: Date
 }
 interface IOffre {
+  _id: string
   libelle: string
   rome_appellation_label: string
   niveau: string

@@ -66,7 +66,7 @@ const DepotRapide_AjouterVoeuxMiseEnRelation = () => {
   useEffect(() => {
     const [latitude, longitude] = geo_coordonnees.split(",")
 
-    getRelatedEtablissementsFromRome({ rome: offre.rome_detail.code, latitude, longitude }).then(({ data }) => {
+    getRelatedEtablissementsFromRome({ rome: offre?.rome_detail?.code || offre?.romes[0], latitude, longitude }).then(({ data }) => {
       const etablissementUpdated = data.slice(0, 10).map((data, index) => ({
         ...data,
         checked: index < 3,
