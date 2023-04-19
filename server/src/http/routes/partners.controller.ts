@@ -20,7 +20,7 @@ export default ({ eligibleTrainingsForAppointments }) => {
           parcoursup_id: {
             $ne: null,
           },
-          referrers: { $in: [referrers.PARCOURSUP.code] },
+          referrers: { $in: [referrers.PARCOURSUP.name] },
         },
         { parcoursup_id: 1 }
       )

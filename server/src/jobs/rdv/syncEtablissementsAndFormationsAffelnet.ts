@@ -108,7 +108,7 @@ export const syncAffelnetFormationsFromCatalogueME = async ({ etablissements, el
               training_code_formation_diplome: formation.cfd,
               etablissement_formateur_zip_code: formation.etablissement_formateur_code_postal,
               training_intitule_long: formation.intitule_long,
-              referrers: emailRdv && !emailBlacklisted ? referrers : [],
+              referrers: emailRdv && !emailBlacklisted ? eligibleTrainingsForAppointment.referrers : [],
               is_catalogue_published: formation.published,
               rco_formation_id: formation.id_rco_formation,
               last_catalogue_sync_date: dayjs().format(),
@@ -126,8 +126,6 @@ export const syncAffelnetFormationsFromCatalogueME = async ({ etablissements, el
         } else {
           const emailRdv = getEmailFromCatalogueField(formation.etablissement_formateur_courriel)
 
-          const emailBlacklisted = await isEmailBlacklisted(emailRdv)
-
           await eligibleTrainingsForAppointments.create({
             training_id_catalogue: formation._id,
             lieu_formation_email: emailRdv,
@@ -135,7 +133,7 @@ export const syncAffelnetFormationsFromCatalogueME = async ({ etablissements, el
             cle_ministere_educatif: formation.cle_ministere_educatif,
             training_code_formation_diplome: formation.cfd,
             training_intitule_long: formation.intitule_long,
-            referrers: emailRdv && !emailBlacklisted ? referrers : [],
+            referrers: [],
             is_catalogue_published: formation.published,
             rco_formation_id: formation.id_rco_formation,
             last_catalogue_sync_date: dayjs().format(),
