@@ -380,7 +380,7 @@ const notifyHardbounceToApplicant = async ({ mailer, application }) => {
 const warnMatchaTeamAboutBouncedEmail = async ({ application, mailer }) => {
   mailer.sendEmail({
     to: config.transactionalEmail,
-    subject: `Hardbounce détecté pour ${application.company_name}`,
+    subject: `${application.company_name} n'a pas reçu votre candidature sur La bonne alternance`,
     template: getEmailTemplate("mail-matcha-hardbounce"),
     data: { ...application._doc, ...images },
   })
