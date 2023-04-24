@@ -10,13 +10,14 @@ import { Formulaire } from "../common/model/index.js"
 import { IFormulaire } from "../common/model/schema/formulaire/formulaire.types.js"
 import { IOffre } from "../common/model/schema/offre/offre.types.js"
 import { IUserRecruteur } from "../common/model/schema/userRecruteur/userRecruteur.types.js"
+import { asyncForEach } from "../common/utils/asyncUtils.js"
 import config from "../config.js"
 import { getCatalogueEtablissements, getFormations } from "./catalogue.service.js"
 import { getEtablissement, getValidationUrl } from "./etablissement.service.js"
 
 const esClient = getElasticInstance()
-const mailer = await createMailer()
 const usersRecruteur = await createUserRecruteur()
+const mailer = await createMailer()
 
 interface IFormulaireExtended extends IFormulaire {
   entreprise_localite: string
@@ -423,12 +424,36 @@ export const updateFormulaire = async (id_form: string, payload: object): Promis
 export const archiveFormulaire = async (id_form: string): Promise<boolean> => {
   const form = await Formulaire.findOne({ id_form })
 
+  form.statut = "Archivé"
+
   form.offres.map((offre) => {
     offre.statut = "Annulée"
   })
 
-  form.statut = "Archivé"
   await form.save()
+
+  return true
+}
+
+/**
+ * @description Archive existing delegated formulaires and cancel all its job offers
+ * @param {string} id_form
+ * @returns {Promise<boolean>}
+ */
+export const archiveDelegatedFormulaire = async (siret: string): Promise<boolean> => {
+  const formulaires = await Formulaire.find({ gestionnaire: siret }).lean()
+
+  if (!formulaires.length) return
+
+  await asyncForEach(formulaires, async (form) => {
+    form.statut = "Archivé"
+
+    form.offres.map((offre) => {
+      offre.statut = "Annulée"
+    })
+
+    await Formulaire.findByIdAndUpdate(form._id, form)
+  })
 
   return true
 }

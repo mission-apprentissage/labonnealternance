@@ -23,6 +23,7 @@ export const getFormulaire = (formId) => API.get(`/formulaire/${formId}`).catch(
 export const postFormulaire = (form) => API.post(`/formulaire`, form).catch(errorHandler)
 export const putFormulaire = (formId, form) => API.put(`/formulaire/${formId}`, form)
 export const archiveFormulaire = (formId) => API.delete(`/formulaire/${formId}`).catch(errorHandler)
+export const archiveDelegatedFormulaire = (siret) => API.delete(`/formulaire/delegated/${siret}`).catch(errorHandler)
 
 /**
  * Offre API
