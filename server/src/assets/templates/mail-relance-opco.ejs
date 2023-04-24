@@ -1,6 +1,6 @@
 <mjml>
   <mj-head>
-    <mj-title>La bonne alternance - Expiration prochaine de vos offres</mj-title>
+    <mj-title>Comptes entreprises à valider - La bonne alternance</mj-title>
     <mj-font name="Work Sans" href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;700&display=swap"></mj-font>
     <mj-style inline="inline"> .grey {color: #1E1E1E;} </mj-style>
     <mj-attributes>
@@ -24,17 +24,20 @@
           <strong><%= data.count %></strong> nouvelles entreprises dépendant de votre OPCO se sont connectées pour la première fois cette semaine à La bonne alternance pour
           exprimer un besoin en recrutement.
         </mj-text>
+        <mj-text>
+          <b>Nous vous invitons à vérifier leurs coordonnées en vous connectant à votre espace OPCO.</b> Vous pourrez alors valider leur compte pour que leurs offres apparaissent
+          sur les plateformes de recherche d'alternance les plus consultées des jeunes (1jeune 1solution, Parcoursup, Affelnet, ONISEP,...).
+        </mj-text>
         <% } %> <% if(data.count === 1) { %>
         <mj-text>
           <strong><%= data.count %></strong> nouvelle entreprise dépendant de votre OPCO s'est connectée pour la première fois cette semaine à La bonne alternance pour exprimer un
           besoin en recrutement.
         </mj-text>
-        <% } %>
         <mj-text>
-          <b>Nous vous invitons à vérifier leurs coordonnées en vous connectant à votre espace OPCO.</b> Vous pourrez alors valider leur compte pour que leurs offres apparaissent
+          <b>Nous vous invitons à vérifier ses coordonnées en vous connectant à votre espace OPCO.</b> Vous pourrez alors valider son compte pour que ses offres apparaissent
           sur les plateformes de recherche d'alternance les plus consultées des jeunes (1jeune 1solution, Parcoursup, Affelnet, ONISEP,...).
         </mj-text>
-
+        <% } %>
         <mj-button color="#ffffff" background-color="#000091" href="<%= data.url %>"> Accéder à mon espace </mj-button>
 
         <mj-text>
@@ -48,7 +51,7 @@
           ></mj-text
         >
 
-        <mj-text>Pour activer la vérification automatique, vous pouvez vous rapprocher de nos équipes.</mj-text>
+        <mj-text>Pour activer la vérification automatique, vous pouvez vous rapprocher de nos équipes par mail à l'adresse labonnealternance@apprentissage.beta.gouv.fr</mj-text>
 
         <mj-text>
           L'équipe La bonne alternance, <br />
