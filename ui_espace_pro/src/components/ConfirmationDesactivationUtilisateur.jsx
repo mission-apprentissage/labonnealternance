@@ -1,16 +1,25 @@
 import { Button, FormControl, FormLabel, Heading, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Select, Text } from "@chakra-ui/react"
 import { useState } from "react"
-import { USER_STATUS } from "../common/contants"
+import { archiveDelegatedFormulaire, archiveFormulaire } from "../api"
+import { AUTHTYPE, USER_STATUS } from "../common/contants"
 import useUserHistoryUpdate from "../common/hooks/useUserHistoryUpdate"
 import { Close } from "../theme/components/icons"
 
 export default (props) => {
-  const { isOpen, onClose, raison_sociale, _id } = props
+  const { isOpen, onClose, raison_sociale, _id, type, id_form, siret } = props
   const [motif, setMotif] = useState()
   const disableUser = useUserHistoryUpdate(_id, USER_STATUS.DISABLED, motif)
 
-  const handleUpdate = () => {
-    disableUser()
+  const handleUpdate = async () => {
+    switch (type) {
+      case AUTHTYPE.ENTREPRISE:
+        await Promise.all([archiveFormulaire(id_form), disableUser()])
+        break
+
+      case AUTHTYPE.CFA:
+        await Promise.all([archiveDelegatedFormulaire(siret), disableUser()])
+        break
+    }
     onClose()
   }
 

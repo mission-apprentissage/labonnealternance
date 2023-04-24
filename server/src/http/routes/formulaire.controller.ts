@@ -1,8 +1,9 @@
 // @ts-nocheck
 import express from "express"
-import { getApplication } from "../../services/application.service.js"
 import { Formulaire } from "../../common/model/index.js"
+import { getApplication } from "../../services/application.service.js"
 import {
+  archiveDelegatedFormulaire,
   archiveFormulaire,
   cancelOffre,
   checkOffreExists,
@@ -101,6 +102,14 @@ export default ({ mailer, usersRecruteur }) => {
     "/:id_form",
     tryCatch(async (req, res) => {
       await archiveFormulaire(req.params.id_form)
+      return res.sendStatus(200)
+    })
+  )
+
+  router.delete(
+    "/delegated/:siret",
+    tryCatch(async (req, res) => {
+      await archiveDelegatedFormulaire(req.params.siret)
       return res.sendStatus(200)
     })
   )
