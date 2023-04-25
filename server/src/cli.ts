@@ -3,6 +3,7 @@ import anonymizeOldApplications from "./jobs/anonymizeOldApplications/anonymizeO
 import refactorLBACFields from "./jobs/cleanAndRenameDBFields/refactorLBACFields.js"
 import updateDiplomesMetiers from "./jobs/diplomesMetiers/updateDiplomesMetiers.js"
 import updateDomainesMetiers from "./jobs/domainesMetiers/updateDomainesMetiers.js"
+import updateDomainesMetiersFile from "./jobs/domainesMetiers/updateDomainesMetiersFile.js"
 import { importCatalogueFormationJob } from "./jobs/formationsCatalogue/formationsCatalogue.js"
 import { createApiUser } from "./jobs/lba_recruteur/api/createApiUser.js"
 import { disableApiUser } from "./jobs/lba_recruteur/api/disableApiUser.js"
@@ -314,6 +315,13 @@ cli
   .description("Procède à l'import du fichier domaines metiers")
   .action(() => {
     runScript(() => updateDomainesMetiers())
+  })
+
+cli
+  .command("update-domaines-metiers-file <filename> [key]")
+  .description("Enregistre le fichier spécifié présent dans /assets sur le repository distant. Si key n'est pas précisé il remplacera le fichier par défaut.")
+  .action((filename: string, key: string) => {
+    runScript(() => updateDomainesMetiersFile({ filename, key }))
   })
 
 cli
