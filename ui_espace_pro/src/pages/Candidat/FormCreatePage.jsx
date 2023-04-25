@@ -1,4 +1,4 @@
-import { Box, Button, Center, Flex, Input, Radio, RadioGroup, Spinner, Stack, Text } from "@chakra-ui/react"
+import { Box, Button, Center, Flex, Input, Radio, RadioGroup, Spinner, Stack, Text, CheckboxGroup, Checkbox } from "@chakra-ui/react"
 import * as emailValidator from "email-validator"
 import { Field, Form, Formik } from "formik"
 import * as qs from "query-string"
@@ -8,6 +8,7 @@ import * as Yup from "yup"
 import { _post } from "../../common/httpClient"
 import { ContactCfaComponent } from "./layout/ContactCfaComponent"
 import { FormLayoutComponent } from "./layout/FormLayoutComponent"
+import { getReasonText, getDefaultReasonsAsFalse, getReasons } from "../../common/utils/reasonsUtils"
 
 /**
  * @description Form appointment page.
@@ -27,6 +28,7 @@ export const FormCreatePage = (props) => {
   const [error, setError] = useState()
   const [errorPhone, setErrorPhone] = useState()
   const [loading, setLoading] = useState(false)
+  const [displayMessage, setDisplayMessage] = useState(false)
 
   const { cleMinistereEducatif, referrer } = qs.parse(location.search)
 
@@ -111,6 +113,7 @@ export const FormCreatePage = (props) => {
         type: values.applicantType,
         applicantMessageToCfa: values.applicantMessageToCfa,
         cleMinistereEducatif,
+        applicantReasons: getReasons().filter((e) => checkedState[e]),
         appointmentOrigin: referrer,
       })
 
@@ -133,7 +136,7 @@ export const FormCreatePage = (props) => {
     return meta.touched && meta.error
       ? {
           feedback: message,
-          invalid: true,
+          invalid: "true",
         }
       : {}
   }
@@ -147,6 +150,28 @@ export const FormCreatePage = (props) => {
     window.plausible("souhaitez-vous-recevoir-des-offres-en-lien-avec-cette-formation", {
       props: { interessé: interested },
     })
+  }
+
+  const [checkedState, setCheckedState] = useState(getDefaultReasonsAsFalse())
+
+  /**
+   * @description Handle the check of a checkbox, according to the name of the checkbox
+   */
+  const handleOnChange = (checkboxName) => {
+    const copyOfCheckedState = JSON.parse(JSON.stringify(checkedState))
+    copyOfCheckedState[checkboxName] = !copyOfCheckedState[checkboxName]
+    setCheckedState(copyOfCheckedState)
+    setDisplayMessage(copyOfCheckedState["autre"])
+  }
+
+  const checkboxLine = (reason) => {
+    return (
+      <Checkbox iconSize="24px" value={reason} isChecked={checkedState[reason]} onChange={() => handleOnChange(reason)}>
+        <Text as="span" lineHeight="24px">
+          {getReasonText(reason)}
+        </Text>
+      </Checkbox>
+    )
   }
 
   return (
@@ -255,31 +280,27 @@ export const FormCreatePage = (props) => {
                       return <Input placeholder="votre adresse email" type="email" {...field} {...feedback(meta, "Adresse email invalide")} />
                     }}
                   </Field>
-                  <Text mt={5} pb={2}>
+                  <Text mt={6} pb={4}>
                     Quel sujet souhaitez-vous aborder ?
                   </Text>
-                  <Field name="applicantMessageToCfa">
-                    {({ field, meta }) => {
-                      return <Input placeholder="période d’inscription, horaires, etc." {...field} {...feedback(meta, "Désolée, ce champs est nécessaire")} />
-                    }}
-                  </Field>
-                  {/*<Flex mt={8}>*/}
-                  {/*  <Box w="40px">*/}
-                  {/*    <Box sx={{ position: "absolute" }}>*/}
-                  {/*      <InfoCircle width="20px" />*/}
-                  {/*    </Box>*/}
-                  {/*  </Box>*/}
-                  {/*  <Box>*/}
-                  {/*    <Text pl={4} pt={1}>*/}
-                  {/*      Ce centre de formation propose également des offres d’emploi en lien avec la formation qui vous*/}
-                  {/*      intéresse.*/}
-                  {/*      <Text as="span" fontWeight="600">*/}
-                  {/*        Vous pouvez demander des renseignements sur la formation même si vous avez déjà trouvé votre*/}
-                  {/*        entreprise par ailleurs.*/}
-                  {/*      </Text>*/}
-                  {/*    </Text>*/}
-                  {/*  </Box>*/}
-                  {/*</Flex>*/}
+                  <CheckboxGroup>
+                    <Stack direction="column" spacing={3}>
+                      {getReasons().map((reason) => {
+                        return checkboxLine(reason)
+                      })}
+                    </Stack>
+                  </CheckboxGroup>
+
+                  {displayMessage ? (
+                    <Field name="applicantMessageToCfa">
+                      {({ field, meta }) => {
+                        return <Input placeholder="période d’inscription, horaires, etc." {...field} {...feedback(meta, "Désolé, ce champs est nécessaire")} />
+                      }}
+                    </Field>
+                  ) : (
+                    <></>
+                  )}
+
                   <Text mt={10}>
                     <span style={{ color: "#B34000", paddingRight: "5px" }}>*</span>champ obligatoire
                   </Text>
@@ -311,7 +332,7 @@ export const FormCreatePage = (props) => {
                   <Button
                     variant="unstyled"
                     type={"submit"}
-                    loading={submitLoading}
+                    loading={submitLoading.toString()}
                     disabled={submitLoading}
                     bg={"grey.750"}
                     borderRadius="10px"

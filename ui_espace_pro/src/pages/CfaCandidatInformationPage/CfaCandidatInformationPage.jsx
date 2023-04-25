@@ -11,6 +11,7 @@ import { CfaCandidatInformationAnswered } from "./CfaCandidatInformationAnswered
 import { CfaCandidatInformationOther } from "./CfaCandidatInformationOther"
 import { CfaCandidatInformationUnreachable } from "./CfaCandidatInformationUnreachable"
 import { formatDate } from "../../common/utils/dateUtils"
+import { getReasonText } from "../../common/utils/reasonsUtils"
 
 /**
  * @description CfaCandidatInformationPage component.
@@ -123,11 +124,22 @@ export const CfaCandidatInformationPage = () => {
           </Box>
           <Box mt={8} pb={8} borderBottom="solid 1px #D0C9C4">
             <Text as="p" my="2">
-              Il ou elle souhaite aborder avec vous le(s) sujet(s) suivant :
+              Il ou elle souhaite aborder avec vous le(s) sujet(s) suivant(s) :
             </Text>
-            <Text as="p" bg="#F6F6F6" color="#2A2A2A" fontSize="16px" lineHeight="24px" fontWeight="700" px="4" py="2">
-              {data.appointment.applicant_message_to_cfa}
+            <Text as="p" my="2">
+              <UnorderedList>
+                {(data.appointment.applicant_reasons || []).map((reason) => {
+                  return <ListItem>{getReasonText(reason)}</ListItem>
+                })}
+              </UnorderedList>
             </Text>
+            {data.appointment.applicant_reasons.includes("autre") ? (
+              <Text as="p" bg="#F6F6F6" color="#2A2A2A" fontSize="16px" lineHeight="24px" fontWeight="700" px="4" py="2">
+                {data.appointment.applicant_message_to_cfa}
+              </Text>
+            ) : (
+              <Text as="div" marginTop={2}></Text>
+            )}
             <Text as="p" mt="2">
               à propos de la formation : <strong>{data.etablissement.training_intitule_long}</strong>
             </Text>

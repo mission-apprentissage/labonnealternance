@@ -16,6 +16,7 @@ const userRequestSchema = Joi.object({
   email: Joi.string().required(),
   type: Joi.string(),
   applicantMessageToCfa: Joi.string().allow(null, ""),
+  applicantReasons: Joi.array().items(Joi.string().valid("modalite", "contenu", "porte", "frais", "place", "horaire", "plus", "accompagnement", "lieu", "suivi", "autre")),
   cleMinistereEducatif: Joi.string().required(),
   appointmentOrigin: Joi.string().required(),
 })
@@ -39,7 +40,7 @@ export default ({ users, appointments, mailer, eligibleTrainingsForAppointments,
     tryCatch(async (req, res) => {
       await userRequestSchema.validateAsync(req.body, { abortEarly: false })
 
-      let { firstname, lastname, phone, email, applicantMessageToCfa, type, appointmentOrigin, cleMinistereEducatif } = req.body
+      let { firstname, lastname, phone, email, applicantMessageToCfa, applicantReasons, type, appointmentOrigin, cleMinistereEducatif } = req.body
 
       email = email.toLowerCase()
 
@@ -92,6 +93,7 @@ export default ({ users, appointments, mailer, eligibleTrainingsForAppointments,
           cfa_recipient_email: eligibleTrainingsForAppointment.lieu_formation_email,
           cfa_formateur_siret: eligibleTrainingsForAppointment.etablissement_formateur_siret,
           applicant_message_to_cfa: applicantMessageToCfa,
+          applicant_reasons: applicantReasons,
           appointment_origin: referrerObj.name,
           cle_ministere_educatif: eligibleTrainingsForAppointment.cle_ministere_educatif,
         }),
@@ -120,6 +122,7 @@ export default ({ users, appointments, mailer, eligibleTrainingsForAppointments,
           intitule: eligibleTrainingsForAppointment.training_intitule_long,
         },
         appointment: {
+          reasons: createdAppointement.applicant_reasons,
           referrerLink: referrerObj.url,
           appointment_origin: referrerObj.full_name,
           link: `${config.publicUrlEspacePro}/establishment/${etablissement._id}/appointments/${createdAppointement._id}?utm_source=mail`,

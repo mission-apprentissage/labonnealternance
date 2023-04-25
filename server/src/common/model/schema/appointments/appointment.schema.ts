@@ -1,6 +1,6 @@
 import { mongoosePagination, Pagination } from "mongoose-paginate-ts"
 import { model, Schema } from "../../../mongodb.js"
-import { IAppointments } from "./appointments.types.js"
+import { IAppointments, EReasons } from "./appointments.types.js"
 
 export const appointmentSchema = new Schema<IAppointments>({
   applicant_id: {
@@ -28,6 +28,12 @@ export const appointmentSchema = new Schema<IAppointments>({
     default: null,
     required: false,
     description: "Les motivations du candidat",
+  },
+  applicant_reasons: {
+    type: "array",
+    default: null,
+    required: false,
+    description: "Les raisons qui poussent le candidat à écrire",
   },
   cfa_gestionnaire_siret: {
     type: String,
