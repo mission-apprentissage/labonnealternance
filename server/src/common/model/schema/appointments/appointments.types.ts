@@ -1,3 +1,17 @@
+enum EReasons {
+  "modalite",
+  "contenu",
+  "porte",
+  "frais",
+  "place",
+  "horaire",
+  "plus",
+  "accompagnement",
+  "lieu",
+  "suivi",
+  "autre",
+}
+
 interface IMailing {
   campaign: string
   message_id: string
@@ -9,6 +23,7 @@ interface IMailing {
 interface IAppointments {
   applicant_id: string
   applicant_message_to_cfa: string
+  applicant_reasons: EReasons[]
   cfa_formateur_siret: string
   appointment_origin: string
   cfa_read_appointment_details_date: Date
@@ -22,4 +37,4 @@ interface IAppointments {
   cfa_recipient_email: string
 }
 
-export { IAppointments, IMailing }
+export { IAppointments, IMailing, EReasons }

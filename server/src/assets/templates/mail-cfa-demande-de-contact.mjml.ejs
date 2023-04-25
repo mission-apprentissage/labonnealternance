@@ -31,13 +31,45 @@
                     Voir les coordonnées du candidat
                 </mj-button>
                 <mj-text margin-top="20px">
-                    Il ou elle souhaite aborder avec vous le(s) sujet(s) suivant :
-                    <p
-                        style="background-color: #F6F6F6;color:#2A2A2A;font-size: 16px;line-height: 24px;padding: 8px 4px;">
-                        <strong>
-                            <%= data.user.applicant_message_to_cfa %>
-                        </strong>
-                    </p>
+                    Il ou elle souhaite aborder avec vous le(s) sujet(s) suivant(s) :
+                    <ul style="padding: 0;margin-bottom: 0;">
+                        <% data.appointment.reasons.forEach((reason) => { %>
+                            <li style="margin-top: .25rem;">
+                                <strong>
+                                    <% if (reason == 'modalite') { %>
+                                        Modalités d'inscription
+                                    <% } else if (reason == 'contenu') { %>
+                                        Contenu de la formation
+                                    <% } else if (reason == 'porte') { %>
+                                        Portes ouvertes
+                                    <% } else if (reason == 'frais') { %>
+                                        Frais d'inscription
+                                    <% } else if (reason == 'place') { %>
+                                        Places disponibles
+                                    <% } else if (reason == 'horaire') { %>
+                                        Horaires / rythme de la formation
+                                    <% } else if (reason == 'plus') { %>
+                                        En savoir plus sur l'alternance
+                                    <% } else if (reason == 'accompagnement') { %>
+                                        Accompagnement dans la recherche d'entreprise
+                                    <% } else if (reason == 'lieu') { %>
+                                        Lieu de la formation
+                                    <% } else if (reason == 'suivi') { %>
+                                        Suivi de ma candidature
+                                    <% } else if (reason == 'autre') { %>
+                                        Autre :
+                                    <% } %>
+                                </strong>
+                            </li>
+                        <% }); %>
+                    </ul>
+                    <% if(data.user.applicant_message_to_cfa){ %>
+                        <p style="background-color: #F6F6F6;color:#2A2A2A;font-size: 16px;line-height: 24px;padding: 8px 4px;">
+                                <%= data.user.applicant_message_to_cfa %>
+                        </p>
+                    <% } else { %>
+                        <div style="margin-top: 12px;"> </div>
+                    <% } %>
                     <p style="margin-top: 4px;margin-bottom: 0;">
                         à propos de la formation : <strong>
                             <%= data.formation.intitule %>
