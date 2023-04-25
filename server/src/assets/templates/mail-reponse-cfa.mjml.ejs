@@ -1,0 +1,72 @@
+<mjml>
+  <mj-head>
+    <mj-title>[La bonne alternance] Le centre de formation vous répond</mj-title>
+    <mj-font name="Arial" href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;700&display=swap" />
+    <mj-style inline="inline">
+      .grey {color: #1E1E1E;}
+    </mj-style>
+    <mj-attributes>
+      <mj-text color="#242424" font-family="Arial" font-size="16px" line-height="24px" />
+      <mj-button font-size="16px" line-height="24px" padding="8px 24px" font-family="Arial" height="40px" />
+    </mj-attributes>
+  </mj-head>
+  <mj-body background-color="#EDF0F2">
+    <mj-section padding-bottom="10px">
+      <mj-column padding="0px" vertical-align="middle">
+        <mj-image padding="0px" width="150px" src="<%= data.logo %>" alt="Logo du site La bonne alternance" />
+      </mj-column>
+    </mj-section>
+    <mj-wrapper background-color="#ffffff" padding="0px" border-radius="10px">
+      <mj-section padding="15px">
+        <mj-column>
+          <mj-text font-size="16px" line-height="24px">
+            Bonjour <%= data.prenom %>
+              <%= data.nom %>,
+          </mj-text>
+          <mj-text font-size="16px" line-height="24px">
+            Voici la réponse du centre de formation <strong>
+              <%= data.nom_cfa %>
+            </strong> à propos de la formation <strong>
+              <%= data.nom_formation %>
+            </strong> :
+          </mj-text>
+          <mj-section padding="10px" margin="10px" background-color="#F6F6F6">
+            <mj-column>
+              <mj-text font-size="16px" line-height="24px" color="#161616">
+                <%= data.message %>
+              </mj-text>
+            </mj-column>
+          </mj-section>
+        </mj-column>
+      </mj-section>
+    </mj-wrapper>
+
+    <mj-section padding-bottom="20px"></mj-section>
+
+    <mj-wrapper background-color="#ffffff" padding="0px" border-radius="10px" margin-top="24px">
+      <mj-section padding="15px">
+        <mj-column>
+          <mj-text font-size="16px" line-height="24px">
+            Cordialement,
+          </mj-text>
+          <mj-text font-size="16px" line-height="24px">
+            L'équipe La bonne alternance,
+          </mj-text>
+          <mj-text font-size="16px" line-height="24px">
+            <a href="https://mission-apprentissage.gitbook.io/general/">Mission interministérielle pour l'apprentissage
+              et les trajectoires professionnelles</a>
+          </mj-text>
+        </mj-column>
+      </mj-section>
+    </mj-wrapper>
+
+    <mj-section>
+      <mj-column>
+        <mj-image
+          src="https://labonnealternance.apprentissage.beta.gouv.fr/espace-pro/images/logo-republique-francaise.png"
+          width="200px" align="left"></mj-image>
+      </mj-column>
+    </mj-section>
+
+  </mj-body>
+</mjml>
