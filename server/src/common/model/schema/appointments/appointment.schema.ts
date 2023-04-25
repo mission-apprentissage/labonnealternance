@@ -8,6 +8,21 @@ export const appointmentSchema = new Schema<IAppointments>({
     default: null,
     description: "Id candidat",
   },
+  cfa_intention_to_applicant: {
+    type: String,
+    default: null,
+    description: "Type de réponse du CFA à la demande de RDV (personalised_answer/other_channel/no_answer)",
+  },
+  cfa_message_to_applicant_date: {
+    type: Date,
+    default: null,
+    description: "Date d'envoi de la réponse du CFA à la demande de RDV",
+  },
+  cfa_message_to_applicant: {
+    type: String,
+    default: null,
+    description: "Message de réponse du CFA à la demande de RDV",
+  },
   applicant_message_to_cfa: {
     type: String,
     default: null,

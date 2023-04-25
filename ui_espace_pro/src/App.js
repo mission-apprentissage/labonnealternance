@@ -1,4 +1,4 @@
-import { AnimatePresence } from "framer-motion"
+import { Box } from "@chakra-ui/react"
 import { useEffect } from "react"
 import { Helmet } from "react-helmet"
 import { Navigate, Route, Routes } from "react-router-dom"
@@ -34,7 +34,7 @@ import {
 } from "./pages/Authentification"
 import { FormCreatePage } from "./pages/Candidat/FormCreatePage"
 import { FormRecapPage } from "./pages/Candidat/FormRecapPage"
-import { CfaCandidatInformationPage } from "./pages/CfaCandidatInformationPage"
+import { CfaCandidatInformationPage } from "./pages/CfaCandidatInformationPage/CfaCandidatInformationPage"
 import { DepotRapide_AjouterVoeux, DepotRapide_AjouterVoeuxMiseEnRelation, DepotRapide_Fin } from "./pages/Formulaire"
 import Layout2 from "./pages/Layout"
 import LoginPage from "./pages/LoginPage"
@@ -78,7 +78,7 @@ const AdminRdvaRoute = ({ children }) => {
 
 const App = () => {
   return (
-    <AnimatePresence>
+    <Box>
       <Helmet>
         <script defer data-domain={window.location.hostname} src="https://plausible.io/js/script.local.hash.outbound-links.js" />
       </Helmet>
@@ -186,7 +186,7 @@ const App = () => {
         />
         <Route path="*" element={<RedirectTo404 />} />
       </Routes>
-    </AnimatePresence>
+    </Box>
   )
 }
 

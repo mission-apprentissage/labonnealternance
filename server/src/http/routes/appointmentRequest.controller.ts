@@ -24,6 +24,13 @@ const appointmentIdFollowUpSchema = Joi.object({
   action: Joi.string().valid(candidatFollowUpType.CONFIRM, candidatFollowUpType.RESEND).required(),
 })
 
+const appointmentReplySchema = Joi.object({
+  appointment_id: Joi.string().required(),
+  cfa_intention_to_applicant: Joi.string().required(),
+  cfa_message_to_applicant_date: Joi.date().required(),
+  cfa_message_to_applicant: Joi.string().allow("").optional(),
+})
+
 export default ({ users, appointments, mailer, eligibleTrainingsForAppointments, etablissements }) => {
   const router = express.Router()
 
@@ -202,6 +209,41 @@ export default ({ users, appointments, mailer, eligibleTrainingsForAppointments,
         user,
         etablissement: { ...eligibleTrainingsForAppointment },
       })
+    })
+  )
+
+  router.post(
+    "/reply",
+    tryCatch(async (req, res) => {
+      await appointmentReplySchema.validateAsync(req.body, { abortEarly: false })
+      const { appointment_id, cfa_intention_to_applicant, cfa_message_to_applicant, cfa_message_to_applicant_date } = req.body
+
+      const appointment = await appointments.findById(appointment_id).lean()
+
+      const [eligibleTrainingsForAppointment, user] = await Promise.all([
+        eligibleTrainingsForAppointments.getParameterByCleMinistereEducatif({
+          cleMinistereEducatif: appointment.cle_ministere_educatif,
+        }),
+        users.getUserById(appointment.applicant_id),
+      ])
+
+      if (cfa_intention_to_applicant === "personalised_answer") {
+        await mailer.sendEmail({
+          to: user.email,
+          subject: `[La bonne alternance] Le centre de formation vous répond`,
+          template: mailTemplate["mail-reponse-cfa"],
+          data: {
+            logo: `${config.publicUrlEspacePro}/assets/logo-lba-cfa-candidat.png`,
+            prenom: user.firstname,
+            nom: user.lastname,
+            message: cfa_message_to_applicant,
+            nom_formation: eligibleTrainingsForAppointment.training_intitule_long,
+            nom_cfa: eligibleTrainingsForAppointment.etablissement_formateur_raison_sociale,
+          },
+        })
+      }
+      await appointments.updateAppointment(appointment_id, { cfa_intention_to_applicant, cfa_message_to_applicant, cfa_message_to_applicant_date })
+      res.json({ appointment_id, cfa_intention_to_applicant, cfa_message_to_applicant, cfa_message_to_applicant_date })
     })
   )
 
