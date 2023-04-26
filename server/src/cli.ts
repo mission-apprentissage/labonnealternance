@@ -22,7 +22,8 @@ import { anonimizeAppointments } from "./jobs/rdv/anonymizeAppointments.js"
 import { anonimizeUsers } from "./jobs/rdv/anonymizeUsers.js"
 import { candidatHaveYouBeenContacted } from "./jobs/rdv/candidatHaveYouBeenContacted.js"
 import { cleanAndRenameFields } from "./jobs/rdv/cleanAndRenameFields.js"
-import { controlAvailableFormationWithCatalogue } from "./jobs/rdv/controlAvailableFormationWithCatalogue.js"
+import { controlAvailableTrainingsWithCatalogue } from "./jobs/rdv/controlAvailableTrainingsWithCatalogue.js"
+import { controlAvailableAffelnetTrainingsWithCatalogueME } from "./jobs/rdv/controlAvailableTrainingsWithCatalogueME.js"
 import { inviteEtablissementToOptOut } from "./jobs/rdv/inviteEtablissementToOptOut.js"
 import { inviteEtablissementToPremium } from "./jobs/rdv/inviteEtablissementToPremium.js"
 import { inviteEtablissementAffelnetToPremium } from "./jobs/rdv/inviteEtablissementToPremiumAffelnet.js"
@@ -237,7 +238,14 @@ cli
   .command("control-elligible-training")
   .description("Contrôle l'egibilité d'une formation à la prise de rendez-vous avec le Catalogue des formations")
   .action(() => {
-    runScript(() => controlAvailableFormationWithCatalogue())
+    runScript(() => controlAvailableTrainingsWithCatalogue())
+  })
+
+cli
+  .command("control-elligible-affelnet-training")
+  .description("Contrôle l'egibilité d'une formation Affelnet à la prise de rendez-vous avec le Catalogue des formations ministere educatif")
+  .action(() => {
+    runScript(() => controlAvailableAffelnetTrainingsWithCatalogueME())
   })
 
 cli
