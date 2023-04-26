@@ -99,6 +99,10 @@ const config = {
     application: env.get("LBA_APPLICATION_NAME").default("").asString(),
     apiKey: env.get("LBA_APPLICATION_ACCESS_KEY").default("").asString(),
   },
+  bal: {
+    baseUrl: env.get("LBA_BAL_ENV_URL").default("https://bal-recette.apprentissage.beta.gouv.fr/api/v1").asString(),
+    apiKey: env.get("LBA_BAL_API_KEY").default("").asString(),
+  },
   users: {
     defaultAdmin: {
       name: env.get("LBA_USERS_DEFAULT_ADMIN_NAME").default("admin").asString(),

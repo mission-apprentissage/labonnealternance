@@ -1,10 +1,8 @@
 /* eslint-disable */
-import { logger } from "../../common/logger.js"
 import express from "express"
 import joi from "joi"
 import { createFormulaire, getFormulaire } from "../../services/formulaire.service.js"
 import { mailTemplate } from "../../assets/index.js"
-import { getAktoEstablishmentVerification } from "../../common/akto.js"
 import { CFA, ENTREPRISE, etat_utilisateur, OPCOS, validation_utilisateur } from "../../common/constants.js"
 import { createMagicLinkToken, createUserRecruteurToken } from "../../common/utils/jwtUtils.js"
 import { checkIfUserEmailIsPrivate, checkIfUserMailExistInReferentiel, getAllDomainsFromEmailList } from "../../common/utils/mailUtils.js"
@@ -31,6 +29,9 @@ import {
 } from "../../services/etablissement.service.js"
 import { ICFADock, ISIRET2IDCC } from "../../services/etablissement.service.types.js"
 import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
+import { validationOrganisation } from "../../common/bal.js"
+import Joi from "joi"
+import { siretSchema } from "../utils/validators.js"
 
 const getCfaRomeSchema = joi.object({
   latitude: joi.number().required(),
@@ -224,18 +225,27 @@ export default ({ usersRecruteur, mailer }) => {
   router.post(
     "/creation",
     tryCatch(async (req, res) => {
-      const exist = await usersRecruteur.getUser({ email: req.body.email })
+      let body = await Joi.object({
+        email: Joi.string().email().required(),
+        type: Joi.string().allow(ENTREPRISE, CFA).required(),
+        siret: siretSchema().required(),
+      })
+        .unknown()
+        .validateAsync(req.body, { abortEarly: false })
+      const { email, type, siret } = body
+
+      const exist = await usersRecruteur.getUser({ email })
       let formulaireInfo, partenaire
 
       if (exist) {
         return res.status(403).json({ error: true, message: "L'adresse mail est déjà associée à un compte La bonne alternance." })
       }
 
-      switch (req.body.type) {
+      switch (type) {
         case ENTREPRISE:
-          const siren = req.body.siret.substr(0, 9)
-          formulaireInfo = await createFormulaire(req.body)
-          partenaire = await usersRecruteur.createUser({ ...req.body, id_form: formulaireInfo.id_form })
+          const siren = siret.substr(0, 9)
+          formulaireInfo = await createFormulaire(body)
+          partenaire = await usersRecruteur.createUser({ ...body, id_form: formulaireInfo.id_form })
 
           // Get all corresponding records using the SIREN number in BonneBoiteLegacy collection
           const [bonneBoiteLegacyList, bonneBoiteList] = await Promise.all([
@@ -250,14 +260,15 @@ export default ({ usersRecruteur, mailer }) => {
 
           let userValidationType = validation_utilisateur.MANUAL
 
+          // Check BAL API for validation
+          const balControl = await validationOrganisation(siret, email)
+
           /**
            * Check if siret is amoung the opco verified establishment
            */
-          switch (req.body.opco) {
+          switch (body.opco) {
             case OPCOS.AKTO:
-              const isValid = await getAktoEstablishmentVerification(siren, req.body.email, token)
-
-              if (isValid) {
+              if (balControl.is_valid) {
                 userValidationType = validation_utilisateur.AUTO
               } else if (bonneBoiteFullList.length) {
                 if (getMatchingEmailFromContactList(partenaire.email, bonneBoiteFullList)) {
@@ -282,7 +293,9 @@ export default ({ usersRecruteur, mailer }) => {
               // Duplicate free email list
               const emailListUnique = [...new Set([...referentielOpcoEmailList, ...bonneBoiteFullList])]
 
-              if (emailListUnique.length) {
+              if (balControl.is_valid) {
+                userValidationType = validation_utilisateur.AUTO
+              } else if (emailListUnique.length) {
                 if (getMatchingEmailFromContactList(partenaire.email, emailListUnique)) {
                   userValidationType = validation_utilisateur.AUTO
                 } else if (checkIfUserEmailIsPrivate(partenaire.email) && getMatchingDomainFromContactList(partenaire.email, emailListUnique)) {
@@ -303,9 +316,9 @@ export default ({ usersRecruteur, mailer }) => {
           return res.json({ formulaire: formulaireInfo, user: partenaire })
         case CFA:
           // Contrôle du mail avec le référentiel :
-          let referentiel = await getEtablissementFromReferentiel(req.body.siret)
+          let referentiel = await getEtablissementFromReferentiel(siret)
           // Creation de l'utilisateur en base de données
-          partenaire = await usersRecruteur.createUser(req.body)
+          partenaire = await usersRecruteur.createUser(body)
 
           if (!referentiel.contacts.length) {
             // Validation manuelle de l'utilisateur à effectuer pas un administrateur
@@ -319,7 +332,7 @@ export default ({ usersRecruteur, mailer }) => {
             return res.json({ user: partenaire })
           }
 
-          if (checkIfUserMailExistInReferentiel(referentiel.contacts, req.body.email)) {
+          if (checkIfUserMailExistInReferentiel(referentiel.contacts, email)) {
             // Validation automatique de l'utilisateur
             partenaire = await autoValidateUser(partenaire._id)
 
@@ -342,10 +355,10 @@ export default ({ usersRecruteur, mailer }) => {
             return res.json({ user: partenaire })
           }
 
-          if (checkIfUserEmailIsPrivate(req.body.email)) {
+          if (checkIfUserEmailIsPrivate(email)) {
             // Récupération des noms de domain
             const domains = getAllDomainsFromEmailList(referentiel.contacts)
-            const userEmailDomain = req.body.email.split("@")[1]
+            const userEmailDomain = email.split("@")[1]
 
             if (domains.includes(userEmailDomain)) {
               // Validation automatique de l'utilisateur

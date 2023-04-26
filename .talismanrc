@@ -1,13 +1,18 @@
-scopeconfig:
-  - scope: node
-custom_patterns:
-  - (?s)[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}
-allowed_patterns:
-  - key
-  - secret
 fileignoreconfig:
-  - filename: server/src/assets/templates/mail-cfa-premium-invite.mjml.ejs
-    checksum: 8ade564d819d0605848db7f594c756a9f113ee0356f357c3bd41723f12cc7eb0
-  - filename: server/src/assets/templates/mail-cfa-premium-invite.mjml.ejs
+- filename: server/src/assets/templates/mail-cfa-premium-invite.mjml.ejs
+  checksum: 8ade564d819d0605848db7f594c756a9f113ee0356f357c3bd41723f12cc7eb0
+- filename: server/src/assets/templates/mail-cfa-premium-invite.mjml.ejs
   checksum: 07f77c50203a70eeb951810250e4218e943d8d78e77495b91f6c0a20c32ff82e
+scopeconfig:
+- scope: node
+custom_patterns:
+- (?s)[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}
+allowed_patterns:
+- key
+- secret
+- SECRET
+- password
+- Password
+- pass
+- apiKey
 version: "1.0"
