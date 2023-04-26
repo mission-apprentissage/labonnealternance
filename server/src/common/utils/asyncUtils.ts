@@ -5,3 +5,8 @@ export const asyncForEach = async (array, callback) => {
 }
 
 export const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+
+export function timeout(promise, millis) {
+  const timeout = new Promise((resolve, reject) => setTimeout(() => reject(`Timed out after ${millis} ms.`), millis))
+  return Promise.race([promise, timeout]).finally(() => clearTimeout(timeout as any))
+}
