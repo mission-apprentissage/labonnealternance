@@ -24,7 +24,8 @@ const getRegion = async (dept) => {
     `https://data.enseignementsup-recherche.gouv.fr/api/records/1.0/search/?dataset=fr-esr-referentiel-geographique&q=${dept}&facet=reg_nom&facet=dep_nom`
   )
   if (status !== 200) return null
-  return data.records[0].fields.reg_id
+
+  return data.records[0].fields.reg_id.substring(1)
 }
 
 const formatDate = (date) => dayjs(date).format("DD/MM/YYYY")
@@ -39,6 +40,8 @@ const formatToPe = async (x) => {
   const [latitude, longitude] = x.geo_coordonnees.split(",")
 
   const [rue, code_postal, ville] = x.mandataire && x.cfa?.adresse_detail?.label ? splitter(x.cfa.adresse_detail.label) : []
+
+  const ntcCle = x.type === "Apprentissage" ? "E2" : "FS"
 
   if (!appellation) {
     stat.matchingAppellation++
@@ -110,9 +113,9 @@ const formatToPe = async (x) => {
     THO_cle: null,
     THO_libelle: null,
     Off_THO_commentaire: null,
-    NTC_cle: "CDD",
+    NTC_cle: ntcCle,
     NTC_libelle: null,
-    TCO_cle: x.type,
+    TCO_cle: "CDD",
     TCO_libelle: null,
     Off_contrat_duree_MO: x.duree_contrat,
     Off_contrat_duree_JO: null,
