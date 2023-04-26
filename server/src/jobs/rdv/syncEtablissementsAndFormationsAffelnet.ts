@@ -5,30 +5,7 @@ import { referrers } from "../../common/model/constants/referrers.js"
 import { dayjs } from "../../common/utils/dayjs.js"
 import { isValidEmail } from "../../common/utils/isValidEmail.js"
 import { isEmailBlacklisted } from "../../service/applications.js"
-import { getFormationsFromCatalogueMe } from "../../services/catalogue.service.js"
-
-const select = {
-  _id: 1,
-  email: 1,
-  cfd: 1,
-  parcoursup_id: 1,
-  cle_ministere_educatif: 1,
-  etablissement_formateur_siret: 1,
-  etablissement_formateur_courriel: 1,
-  etablissement_formateur_code_postal: 1,
-  intitule_long: 1,
-  published: 1,
-  adresse: 1,
-  localite: 1,
-  code_postal: 1,
-  lieu_formation_adresse: 1,
-  etablissement_formateur_entreprise_raison_sociale: 1,
-  etablissement_formateur_adresse: 1,
-  etablissement_formateur_nom_departement: 1,
-  etablissement_formateur_localite: 1,
-  etablissement_gestionnaire_siret: 1,
-  etablissement_gestionnaire_courriel: 1,
-}
+import { affelnetSelectedFields, getFormationsFromCatalogueMe } from "../../services/catalogue.service.js"
 
 /**
  * Gets email from catalogue field.
@@ -64,7 +41,7 @@ export const syncAffelnetFormationsFromCatalogueME = async ({ etablissements, el
       affelnet_perimetre: true,
       affelnet_statut: { $in: ["publié", "en attente de publication"] },
     },
-    select,
+    select: affelnetSelectedFields,
   })
 
   await oleoduc(
@@ -86,6 +63,7 @@ export const syncAffelnetFormationsFromCatalogueME = async ({ etablissements, el
         }
 
         if (eligibleTrainingsForAppointment) {
+          logger.info("update formation:", formation.cle_ministere_educatif)
           let emailRdv = eligibleTrainingsForAppointment.lieu_formation_email
 
           // Don't override "email" if this field is true
@@ -124,6 +102,7 @@ export const syncAffelnetFormationsFromCatalogueME = async ({ etablissements, el
             }
           )
         } else {
+          logger.info("create new formation:", formation.cle_ministere_educatif)
           const emailRdv = getEmailFromCatalogueField(formation.etablissement_formateur_courriel)
 
           const emailBlacklisted = await isEmailBlacklisted(emailRdv)
