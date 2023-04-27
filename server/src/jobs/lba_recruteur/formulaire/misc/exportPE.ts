@@ -57,7 +57,7 @@ const formatToPe = async (x) => {
   }
 
   return {
-    Par_ref_offre: x.id_offre,
+    Par_ref_offre: `${ntcCle}-${x.id_offre}`,
     Par_cle: "LA BONNEALTERNANCE",
     Par_nom: "LA BONNEALTERNANCE",
     Par_URL_offre: `https://labonnealternance.apprentissage.beta.gouv.fr/recherche-apprentissage?&type=matcha&itemId=${x.id_offre}`,
@@ -78,8 +78,8 @@ const formatToPe = async (x) => {
     SCN_libelle: x.libelle_naf,
     Tfm_cle_1: null,
     Tfm_libelle_1: null,
-    Dfm_cle_1: x.rome_detail.domaineProfessionnel.code,
-    Dfm_libelle_1: x.rome_detail.domaineProfessionnel.libelle,
+    Dfm_cle_1: null,
+    Dfm_libelle_1: null,
     Dfm_exi_cle_1: null,
     Dfm_exi_libelle_1: null,
     Tfm_cle_2: null,
@@ -151,7 +151,7 @@ const formatToPe = async (x) => {
     OST_poste_restant_nb: x.quantite,
     Off_client_final_siret: x.siret,
     Off_client_final_nom: adresse.l7,
-    Off_etab_enseigne: null,
+    Off_etab_enseigne: x.cfa ? x.cfa.raison_sociale : x.raison_sociale,
     Col_cle: null,
     Col_nom: null,
     Col_URL_offre: null,
@@ -167,7 +167,7 @@ const formatToPe = async (x) => {
     Prenom_correspondant: null,
     Tel_correspondant: null,
     Mail_correspondant: null,
-    Libelle_etab: x.cfa?.raison_sociale ?? null,
+    Libelle_etab: null,
     Num_voie_etab: null,
     Type_voie_etab: rue ?? null,
     Lib_voie_etab: rue ?? null,
@@ -175,11 +175,11 @@ const formatToPe = async (x) => {
     Cplt_adresse_2: null,
     Code_postal_etab: code_postal,
     Code_commune_etab: null,
-    Serviceb: null,
+    Service: null,
     Mode_diffusion: "O",
-    Rappel_b: null,
-    Mode_presentationb: null,
-    Emploi_metier_iscob: null,
+    Rappel: null,
+    Mode_presentation: null,
+    Emploi_metier_isco: null,
   }
 }
 
