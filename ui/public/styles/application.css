@@ -1,5 +1,3 @@
-
-
 body {
     overscroll-behavior: none;
   }
@@ -88,4 +86,15 @@ canvas.mapboxgl-canvas:focus {
         min-width: 400px !important;
         max-width: 400px !important;
     }
+}
+
+
+/**
+PAGE NOTION
+*/
+.disable-chakra {
+    all: revert
+}
+.disable-chakra * {
+    all: revert
 }
