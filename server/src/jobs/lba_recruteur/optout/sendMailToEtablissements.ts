@@ -58,6 +58,9 @@ runScript(async ({ mailer }) => {
         subject: "Vous êtes invité à rejoindre La bonne alternance",
         template: mailTemplate["mail-optout"],
         data: {
+          images: {
+            logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
+          },
           raison_sociale: etablissement.raison_sociale,
           url: accessLink,
         },

@@ -67,6 +67,9 @@ export const relanceFormulaire = async (mailer, threshold) => {
       subject: "La bonne alternance - Vos offres vont expirer prochainement",
       template: mailTemplate["mail-expiration-offres"],
       data: {
+        images: {
+          logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
+        },
         nom: mandataire ? contactCFA.nom : nom,
         prenom: mandataire ? contactCFA.prenom : prenom,
         raison_sociale,

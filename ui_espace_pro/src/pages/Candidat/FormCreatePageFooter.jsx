@@ -10,7 +10,7 @@ export const FormCreatePageFooter = (props) => {
           </GridItem>
           <GridItem colSpan={{ base: 1, lg: 1 }}>
             <Box pl={{ base: 0, lg: 2 }} height="100%" display="flex" alignItems="center">
-              <Image src="/images/logo_LBA_u2.svg" alt="" width="135" height="35" />
+              <Image src="/images/logo_LBA.svg" alt="" width="135px" maxWidth="135px" />
             </Box>
           </GridItem>
           <GridItem colSpan={{ base: 1, lg: 2 }}>

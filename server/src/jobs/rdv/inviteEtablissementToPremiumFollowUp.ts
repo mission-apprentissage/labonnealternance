@@ -44,7 +44,7 @@ export const inviteEtablissementToPremiumFollowUp = async ({ etablissements, mai
       data: {
         isParcoursup: true,
         images: {
-          logoCfa: `${config.publicUrlEspacePro}/assets/logo-lba-recruteur-cfa.png?raw=true`,
+          logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
           logoFooter: `${config.publicUrlEspacePro}/assets/logo-republique-francaise.png?raw=true`,
           integrationExample: `${config.publicUrlEspacePro}/assets/exemple_integration_parcoursup.jpg?raw=true`,
         },

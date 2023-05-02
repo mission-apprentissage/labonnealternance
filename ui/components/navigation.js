@@ -5,15 +5,7 @@ import { CloseIcon, HamburgerIcon, LockIcon } from "@chakra-ui/icons"
 
 const Navigation = ({ currentPage }) => {
   const getLogo = () => {
-    let logo = "logo_LBA_candidat.svg"
-
-    if (currentPage === "acces-recruteur") {
-      logo = "logo_LBA_recruteur.svg"
-    } else if (currentPage === "organisme-de-formation") {
-      logo = "logo_LBA_cfa.svg"
-    }
-
-    return logo
+    return "logo_LBA.svg"
   }
 
   const getLogoTargetUrl = () => {

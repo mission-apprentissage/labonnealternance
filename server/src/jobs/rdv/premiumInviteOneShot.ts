@@ -46,7 +46,7 @@ export const premiumInviteOneShot = async ({ etablissements, eligibleTrainingsFo
           replyTo: config.publicEmail,
           url: config.publicUrl,
           images: {
-            logo: `${config.publicUrlEspacePro}/assets/logo-lba.png?raw=true`,
+            logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
             logoParcoursup: `${config.publicUrlEspacePro}/assets/logo-parcoursup.png?raw=true`,
             logoFooter: `${config.publicUrlEspacePro}/assets/logo-republique-francaise.png?raw=true`,
             peopleLaptop: `${config.publicUrlEspacePro}/assets/people-laptop.png?raw=true`,

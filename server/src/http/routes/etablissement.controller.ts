@@ -62,8 +62,7 @@ export default ({ etablissements, mailer, eligibleTrainingsForAppointments, appo
         data: {
           isAffelnet: true,
           images: {
-            logoCandidat: `${config.publicUrlEspacePro}/assets/logo-lba.png?raw=true`,
-            logoCfa: `${config.publicUrlEspacePro}/assets/logo-lba-recruteur-cfa.png?raw=true`,
+            logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
             logoFooter: `${config.publicUrlEspacePro}/assets/logo-republique-francaise.png?raw=true`,
           },
           etablissement: {
@@ -121,7 +120,7 @@ export default ({ etablissements, mailer, eligibleTrainingsForAppointments, appo
               url: config.publicUrl,
               replyTo: `${config.publicEmail}?subject=Email%20CFA%20Premium%20invite%20-%20MAJ%20contact%20formation`,
               images: {
-                logo: `${config.publicUrlEspacePro}/assets/logo-lba.png?raw=true`,
+                logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
                 logoFooter: `${config.publicUrlEspacePro}/assets/logo-republique-francaise.png?raw=true`,
                 peopleLaptop: `${config.publicUrlEspacePro}/assets/people-laptop.png?raw=true`,
               },
@@ -182,8 +181,7 @@ export default ({ etablissements, mailer, eligibleTrainingsForAppointments, appo
         data: {
           isParcoursup: true,
           images: {
-            logoCandidat: `${config.publicUrlEspacePro}/assets/logo-lba.png?raw=true`,
-            logoCfa: `${config.publicUrlEspacePro}/assets/logo-lba-recruteur-cfa.png?raw=true`,
+            logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
             logoFooter: `${config.publicUrlEspacePro}/assets/logo-republique-francaise.png?raw=true`,
           },
           etablissement: {
@@ -244,7 +242,7 @@ export default ({ etablissements, mailer, eligibleTrainingsForAppointments, appo
               url: config.publicUrl,
               replyTo: `${config.publicEmail}?subject=Email%20CFA%20Premium%20invite%20-%20MAJ%20contact%20formation`,
               images: {
-                logo: `${config.publicUrlEspacePro}/assets/logo-lba.png?raw=true`,
+                logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
                 logoFooter: `${config.publicUrlEspacePro}/assets/logo-republique-francaise.png?raw=true`,
                 peopleLaptop: `${config.publicUrlEspacePro}/assets/people-laptop.png?raw=true`,
               },
@@ -310,8 +308,7 @@ export default ({ etablissements, mailer, eligibleTrainingsForAppointments, appo
           isAffelnet: true,
           images: {
             informationIcon: `${config.publicUrlEspacePro}/assets/icon-information-blue.png?raw=true`,
-            logoCandidat: `${config.publicUrlEspacePro}/assets/logo-lba-recruteur-candidat.png?raw=true`,
-            logoCfa: `${config.publicUrlEspacePro}/assets/logo-lba-recruteur-cfa.png?raw=true`,
+            logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
             logoFooter: `${config.publicUrlEspacePro}/assets/logo-republique-francaise.png?raw=true`,
           },
           etablissement: {
@@ -375,8 +372,7 @@ export default ({ etablissements, mailer, eligibleTrainingsForAppointments, appo
           isParcoursup: true,
           images: {
             informationIcon: `${config.publicUrlEspacePro}/assets/icon-information-blue.png?raw=true`,
-            logoCandidat: `${config.publicUrlEspacePro}/assets/logo-lba-recruteur-candidat.png?raw=true`,
-            logoCfa: `${config.publicUrlEspacePro}/assets/logo-lba-recruteur-cfa.png?raw=true`,
+            logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
             logoFooter: `${config.publicUrlEspacePro}/assets/logo-republique-francaise.png?raw=true`,
           },
           etablissement: {
@@ -472,7 +468,7 @@ export default ({ etablissements, mailer, eligibleTrainingsForAppointments, appo
           template: mailTemplate["mail-rdva-optout-unsubscription-question"],
           data: {
             images: {
-              logoCfa: `${config.publicUrlEspacePro}/assets/logo-lba-recruteur-cfa.png?raw=true`,
+              logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
               logoFooter: `${config.publicUrlEspacePro}/assets/logo-republique-francaise.png?raw=true`,
             },
             etablissement: {
@@ -515,7 +511,7 @@ export default ({ etablissements, mailer, eligibleTrainingsForAppointments, appo
         template: mailTemplate["mail-cfa-optout-unsubscription"],
         data: {
           images: {
-            logoCfa: `${config.publicUrlEspacePro}/assets/logo-lba-recruteur-cfa.png?raw=true`,
+            logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
             logoFooter: `${config.publicUrlEspacePro}/assets/logo-republique-francaise.png?raw=true`,
           },
           etablissement: {
