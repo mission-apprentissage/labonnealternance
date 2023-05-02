@@ -1,4 +1,3 @@
-const path = require("path")
 const withImages = require("next-images")
 
 /**
@@ -56,9 +55,6 @@ const contentSecurityPolicy = `
 
 /** @type {import('next').NextConfig} */
 const nextConfig = withImages({
-  sassOptions: {
-    includePaths: [path.join(__dirname, "/public/styles")],
-  },
   reactStrictMode: true,
   output: "standalone",
   eslint: {
