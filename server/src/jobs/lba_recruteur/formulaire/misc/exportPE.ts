@@ -24,7 +24,7 @@ const regex = /^(.*) (\d{4,5}) (.*)$/
 
 /**
  * @description get Region from public API
- * @param {string }dept
+ * @param {string} dept
  * @returns {Promise<void>}
  */
 const getRegion = async (dept) => {
