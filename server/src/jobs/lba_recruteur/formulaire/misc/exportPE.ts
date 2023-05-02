@@ -18,6 +18,15 @@ const stat = {
   geoCoord: 0,
 }
 
+const formatDate = (date) => dayjs(date).format("DD/MM/YYYY")
+const splitter = (str) => str.split(regex).filter(String)
+const regex = /^(.*) (\d{4,5}) (.*)$/
+
+/**
+ * @description get Region from public API
+ * @param {string }dept
+ * @returns {Promise<void>}
+ */
 const getRegion = async (dept) => {
   await delay(400)
   const { status, data } = await axios.get(
@@ -28,21 +37,20 @@ const getRegion = async (dept) => {
   return data.records[0].fields.reg_id.substring(1)
 }
 
-const formatDate = (date) => dayjs(date).format("DD/MM/YYYY")
+/**
+ * @description format data into Pole Emploi specific fields
+ * @param {object} offre
+ * @returns {Promise<void>}
+ */
+const formatToPe = async (offre) => {
+  logger.info(`${offre.id_offre} processing...`)
+  const appellation = offre.rome_detail.appellations.find((v) => v.libelle === offre.rome_appellation_label)
+  const adresse = offre.adresse_detail
+  const [latitude, longitude] = offre.geo_coordonnees.split(",")
 
-const regex = /^(.*) (\d{4,5}) (.*)$/
+  const [rue, code_postal, ville] = offre.mandataire && offre.cfa?.adresse_detail?.label ? splitter(offre.cfa.adresse_detail.label) : []
 
-const splitter = (str) => str.split(regex).filter(String)
-
-const formatToPe = async (x) => {
-  logger.info(`${x.id_offre} processing...`)
-  const appellation = x.rome_detail.appellations.find((v) => v.libelle === x.rome_appellation_label)
-  const adresse = x.adresse_detail
-  const [latitude, longitude] = x.geo_coordonnees.split(",")
-
-  const [rue, code_postal, ville] = x.mandataire && x.cfa?.adresse_detail?.label ? splitter(x.cfa.adresse_detail.label) : []
-
-  const ntcCle = x.type === "Apprentissage" ? "E2" : "FS"
+  const ntcCle = offre.type === "Apprentissage" ? "E2" : "FS"
 
   if (!appellation) {
     stat.matchingAppellation++
@@ -58,14 +66,14 @@ const formatToPe = async (x) => {
   }
 
   return {
-    Par_ref_offre: `${ntcCle}-${x.id_offre}`,
+    Par_ref_offre: `${ntcCle}-${offre.id_offre}`,
     Par_cle: "LA BONNEALTERNANCE",
     Par_nom: "LA BONNEALTERNANCE",
-    Par_URL_offre: `https://labonnealternance.apprentissage.beta.gouv.fr/recherche-apprentissage?&type=matcha&itemId=${x.id_offre}`,
-    Code_rome: x.romes[0],
+    Par_URL_offre: `https://labonnealternance.apprentissage.beta.gouv.fr/recherche-apprentissage?&type=matcha&itemId=${offre.id_offre}`,
+    Code_rome: offre.romes[0],
     Code_OGR: appellation.code,
     Libelle_metier_OGR: appellation.libelle,
-    Description: x.rome_detail.definition,
+    Description: offre.rome_detail.definition,
     Off_experience_duree_min: null,
     Off_experience_duree_max: null,
     Exp_cle: "D",
@@ -75,8 +83,8 @@ const formatToPe = async (x) => {
     Off_experience_commentaire: null,
     Qua_cle: null,
     Qua_libelle: null,
-    SCN_cle: x.code_naf,
-    SCN_libelle: x.libelle_naf,
+    SCN_cle: offre.code_naf,
+    SCN_libelle: offre.libelle_naf,
     Tfm_cle_1: null,
     Tfm_libelle_1: null,
     Dfm_cle_1: null,
@@ -118,7 +126,7 @@ const formatToPe = async (x) => {
     NTC_libelle: null,
     TCO_cle: "CDD",
     TCO_libelle: null,
-    Off_contrat_duree_MO: x.duree_contrat,
+    Off_contrat_duree_MO: offre.duree_contrat,
     Off_contrat_duree_JO: null,
     Off_adr_id: null,
     Off_adr_norme: null,
@@ -147,21 +155,21 @@ const formatToPe = async (x) => {
     PCO_libelle_2: null,
     PCO_exi_cle_2: null,
     PCO_exi_libelle_2: null,
-    Off_date_creation: formatDate(x.date_creation),
-    Off_date_modification: formatDate(x.date_mise_a_jour),
-    OST_poste_restant_nb: x.quantite,
-    Off_client_final_siret: x.siret,
+    Off_date_creation: formatDate(offre.date_creation),
+    Off_date_modification: formatDate(offre.date_mise_a_jour),
+    OST_poste_restant_nb: offre.quantite,
+    Off_client_final_siret: offre.siret,
     Off_client_final_nom: adresse.l7,
-    Off_etab_enseigne: x.cfa ? x.cfa?.raison_sociale : x.raison_sociale ?? null,
+    Off_etab_enseigne: offre.cfa ? offre.cfa?.raison_sociale : offre.raison_sociale ?? null,
     Col_cle: null,
     Col_nom: null,
     Col_URL_offre: null,
     Version: null,
     Type_mouvement: "C",
-    Date_debut_contrat: formatDate(x.date_debut_apprentissage),
+    Date_debut_contrat: formatDate(offre.date_debut_apprentissage),
     Motif_suppression: null,
-    Description_entreprise: x.description ?? null,
-    Off_etab_siret: x.gestionnaire,
+    Description_entreprise: offre.description ?? null,
+    Off_etab_siret: offre.gestionnaire,
     Id_recruteur: null,
     Civ_correspondant: null,
     Nom_correspondant: null,
@@ -184,6 +192,9 @@ const formatToPe = async (x) => {
   }
 }
 
+/**
+ * @description Generate a CSV with elligible offers for Pole Emploi integration
+ */
 runScript(async ({ db }) => {
   const path = new URL("./exportPE.csv", import.meta.url)
   const buffer = []
