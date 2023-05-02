@@ -59,7 +59,6 @@
     "react-notion-x": "4.12.0",
     "react-query": "3.39.2",
     "react-swipeable": "6.1.0",
-    "sass": "1.55.0",
     "yup": "0.32.9"
   },
   "devDependencies": {
