@@ -18,7 +18,7 @@
     <mj-body background-color="#E5E5E5">
       <mj-section>
         <mj-column>
-          <mj-image width="150px" src="https://labonnealternance.apprentissage.beta.gouv.fr/espace-pro/images/logo-lba-recruteur-violet.png" />
+          <mj-image src="<%= data.images.logoLba %>" width="150px"  alt="Logo du site La bonne alternance" />
         </mj-column>
       </mj-section>
       <mj-section padding-top="0">
@@ -47,7 +47,7 @@
           <mj-button color="#ffffff" padding-top="20px" padding-bottom="20px" background-color="#000091" href="<%= data.etablissement.linkToForm %>">
             Je souhaite activer le service
           </mj-button>
-          <mj-image width="520px" src="<%= data.images %>" alt="Intégration du service" />
+          <mj-image width="520px" src="<%= data.images.exempleParcoursup %>" alt="Intégration du service" />
           <mj-button color="#000091" padding-top="20px" background-color="#ffffff" border="1px solid #000091" href="https://mission-apprentissage.gitbook.io/general/les-services-en-devenir/la-recherche-simultanee-dune-formation-et-dun-emploi-en-apprentissage/prise-de-rendez-vous">
             Je souhaite en savoir plus sur ce service
           </mj-button>

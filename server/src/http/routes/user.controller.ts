@@ -129,6 +129,9 @@ export default ({ usersRecruteur, mailer }) => {
                   subject: `Une entreprise recrute dans votre domaine`,
                   template: mailTemplate["mail-cfa-delegation"],
                   data: {
+                    images: {
+                      logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
+                    },
                     enterpriseName: userFormulaire.raison_sociale,
                     jobName: offre.rome_appellation_label,
                     contractType: offre.type.join(", "),
@@ -157,6 +160,9 @@ export default ({ usersRecruteur, mailer }) => {
         subject: "Bienvenue sur La bonne alternance",
         template: mailTemplate["mail-bienvenue"],
         data: {
+          images: {
+            logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
+          },
           nom: user.nom,
           prenom: user.prenom,
           raison_sociale: user.raison_sociale,

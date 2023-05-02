@@ -52,7 +52,7 @@ export const activateOptOutEtablissementFormations = async ({ etablissements, el
         template: mailTemplate["mail-cfa-optout-start"],
         data: {
           images: {
-            logoCfa: `${config.publicUrlEspacePro}/assets/logo-lba-recruteur-cfa.png?raw=true`,
+            logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
             logoFooter: `${config.publicUrlEspacePro}/assets/logo-republique-francaise.png?raw=true`,
             optOutLbaIntegrationExample: `${config.publicUrlEspacePro}/assets/exemple_integration_lba.png?raw=true`,
             informationIcon: `${config.publicUrlEspacePro}/assets/icon-information-blue.png?raw=true`,
@@ -97,7 +97,7 @@ export const activateOptOutEtablissementFormations = async ({ etablissements, el
               url: config.publicUrl,
               replyTo: config.publicEmail,
               images: {
-                logo: `${config.publicUrlEspacePro}/assets/logo-lba.png?raw=true`,
+                logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
                 logoFooter: `${config.publicUrlEspacePro}/assets/logo-republique-francaise.png?raw=true`,
                 peopleLaptop: `${config.publicUrlEspacePro}/assets/people-laptop.png?raw=true`,
                 optOutLbaIntegrationExample: `${config.publicUrlEspacePro}/assets/exemple_integration_lba.png?raw=true`,

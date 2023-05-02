@@ -39,6 +39,9 @@ export const relanceOpco = async (mailer) => {
         subject: "La bonne alternance - Vos entreprises souhaitent déposer des offres",
         template: mailTemplate["mail-relance-opco"],
         data: {
+          images: {
+            logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
+          },
           count: userList[opco],
           url: `${config.publicUrlEspacePro}/authentification`,
         },

@@ -27,7 +27,10 @@ export const inviteEtablissementToPremium = async ({ etablissements, mailer }) =
       template: mailTemplate["mail-cfa-premium-invite"],
       data: {
         isParcoursup: true,
-        images: `${config.publicUrlEspacePro}/assets/exemple_integration_parcoursup.jpg?raw=true`,
+        images: {
+          logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
+          exempleParcoursup: `${config.publicUrlEspacePro}/assets/exemple_integration_parcoursup.jpg?raw=true`,
+        },
         etablissement: {
           email: etablissement.gestionnaire_email,
           activatedAt: dayjs(etablissement.optout_activation_scheduled_date).format("DD/MM"),

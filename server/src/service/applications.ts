@@ -29,8 +29,7 @@ const imagePath = `${config.publicUrl}/images/emails/`
 
 const images = {
   images: {
-    logo: `${imagePath}logo_lba_recruteur.png`,
-    logoCandidat: `${imagePath}logo_LBA_candidat.png`,
+    logoLba: `${imagePath}logo_LBA.png`,
     logoRF: `${imagePath}logo_rf.png`,
     logoGrimp: `${imagePath}logo_grimp.png`,
     icoInfo: `${imagePath}icone_info.png`,

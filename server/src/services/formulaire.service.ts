@@ -263,6 +263,9 @@ export const createJob = async ({ offre, id_form }: { offre: IOffreExtended; id_
       subject: "La bonne alternance - Merci de valider votre adresse mail pour diffuser votre offre",
       template: mailTemplate["mail-nouvelle-offre-depot-simplifie"],
       data: {
+        images: {
+          logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
+        },
         nom: user.nom,
         prenom: user.prenom,
         email: user.email,
@@ -288,6 +291,9 @@ export const createJob = async ({ offre, id_form }: { offre: IOffreExtended; id_
       : `La bonne alternance - Votre offre d'alternance a bien été publiée`,
     template: mailTemplate["mail-nouvelle-offre"],
     data: {
+      images: {
+        logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
+      },
       nom: mandataire ? contactCFA.nom : nom,
       prenom: mandataire ? contactCFA.prenom : prenom,
       raison_sociale,
@@ -347,6 +353,9 @@ export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }:
         subject: `Une entreprise recrute dans votre domaine`,
         template: mailTemplate["mail-cfa-delegation"],
         data: {
+          images: {
+            logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
+          },
           enterpriseName: offreDocument.raison_sociale,
           jobName: offre.rome_appellation_label,
           contractType: offre.type.join(", "),

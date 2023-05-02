@@ -41,7 +41,7 @@ export const candidatHaveYouBeenContacted = async ({ etablissements, widgetParam
         template: mailTemplate["mail-candidat-rdv-have-you-been-contacted"],
         data: {
           images: {
-            logoCandidat: `${config.publicUrlEspacePro}/assets/logo-lba-recruteur-candidat.png?raw=true`,
+            logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
             logoFooter: `${config.publicUrlEspacePro}/assets/logo-republique-francaise.png?raw=true`,
           },
           etablissement: {
@@ -76,7 +76,7 @@ export const candidatHaveYouBeenContacted = async ({ etablissements, widgetParam
         template: mailTemplate["mail-cfa-relance-demande-de-contact"],
         data: {
           images: {
-            logoCfa: `${config.publicUrlEspacePro}/assets/logo-lba-recruteur-candidat.png?raw=true`,
+            logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
             logoFooter: `${config.publicUrlEspacePro}/assets/logo-republique-francaise.png?raw=true`,
           },
           etablissement: {

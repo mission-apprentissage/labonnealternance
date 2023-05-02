@@ -7,7 +7,7 @@ const SatisfactionFormNavigation = () => {
     <Flex width="80%" maxWidth="800px" margin="auto" pt={12}>
       <NextLink passHref href="/">
         <Link title="Retournez à la page d'accueil de La bonne alternance">
-          <Image src="/images/logo_LBA_recruteur.svg" alt="" minWidth="160px" width="160px" />
+          <Image src="/images/logo_LBA.svg" alt="" minWidth="160px" width="160px" />
         </Link>
       </NextLink>
       <Spacer minWidth={8} />

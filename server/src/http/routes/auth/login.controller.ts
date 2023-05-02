@@ -97,6 +97,9 @@ export default ({ users, usersRecruteur, etablissementsRecruteur, mailer }) => {
           subject: "La bonne alternance - Confirmez votre adresse email",
           template: mailTemplate["mail-confirmation-email"],
           data: {
+            images: {
+              logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
+            },
             nom,
             prenom,
             confirmation_url: url,
@@ -165,6 +168,9 @@ export default ({ users, usersRecruteur, etablissementsRecruteur, mailer }) => {
           subject: "La bonne alternance - Confirmez votre adresse email",
           template: mailTemplate["mail-confirmation-email"],
           data: {
+            images: {
+              logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
+            },
             nom,
             prenom,
             confirmation_url: url,
@@ -184,6 +190,9 @@ export default ({ users, usersRecruteur, etablissementsRecruteur, mailer }) => {
         subject: "La bonne alternance - Lien de connexion",
         template: mailTemplate["mail-connexion"],
         data: {
+          images: {
+            logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
+          },
           nom: user.nom,
           prenom: user.prenom,
           connexion_url: magiclink,

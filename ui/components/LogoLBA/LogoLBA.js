@@ -3,7 +3,7 @@ import NextLink from "next/link"
 import logoLBA from "../../public/images/logo-violet-seul.svg"
 import { useRouter } from "next/router"
 import { ParameterContext } from "../../context/ParameterContextProvider"
-import { Box, Flex, Image, Link } from "@chakra-ui/react"
+import { Flex, Image, Link } from "@chakra-ui/react"
 
 const LogoLBA = () => {
   const router = useRouter()
