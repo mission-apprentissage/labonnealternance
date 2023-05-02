@@ -25,7 +25,7 @@ const regex = /^(.*) (\d{4,5}) (.*)$/
 /**
  * @description get Region from public API
  * @param {string} dept
- * @returns {Promise<void>}
+ * @returns {Promise<string>}
  */
 const getRegion = async (dept) => {
   await delay(400)
@@ -40,7 +40,7 @@ const getRegion = async (dept) => {
 /**
  * @description format data into Pole Emploi specific fields
  * @param {object} offre
- * @returns {Promise<void>}
+ * @returns {Promise<object>}
  */
 const formatToPe = async (offre) => {
   logger.info(`${offre.id_offre} processing...`)
