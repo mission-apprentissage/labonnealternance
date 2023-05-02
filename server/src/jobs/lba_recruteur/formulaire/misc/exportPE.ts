@@ -35,6 +35,7 @@ const regex = /^(.*) (\d{4,5}) (.*)$/
 const splitter = (str) => str.split(regex).filter(String)
 
 const formatToPe = async (x) => {
+  logger.info(`${x.id_offre} processing...`)
   const appellation = x.rome_detail.appellations.find((v) => v.libelle === x.rome_appellation_label)
   const adresse = x.adresse_detail
   const [latitude, longitude] = x.geo_coordonnees.split(",")
@@ -151,7 +152,7 @@ const formatToPe = async (x) => {
     OST_poste_restant_nb: x.quantite,
     Off_client_final_siret: x.siret,
     Off_client_final_nom: adresse.l7,
-    Off_etab_enseigne: x.cfa ? x.cfa.raison_sociale : x.raison_sociale,
+    Off_etab_enseigne: x.cfa ? x.cfa?.raison_sociale : x.raison_sociale ?? null,
     Col_cle: null,
     Col_nom: null,
     Col_URL_offre: null,
@@ -190,25 +191,24 @@ runScript(async ({ db }) => {
   const offres = await db.collection("offres").find({}).toArray()
 
   logger.info("get info from user...")
-  await asyncForEach(offres, async (item, index) => {
-    let user = item.mandataire ? await UserRecruteur.findOne({ siret: item.gestionnaire }) : null
+  await asyncForEach(offres, async (offre) => {
+    let user = offre.mandataire ? await UserRecruteur.findOne({ siret: offre.gestionnaire }) : null
 
-    item.type.map(async (type) => {
-      buffer.push({ ...item, type: type, cfa: user ? pick(user, ["adresse_detail", "raison_sociale"]) : null })
-    })
+    if (typeof offre.rome_detail !== "string" && offre.rome_detail) {
+      offre.type.map(async (type) => {
+        if (offre.rome_detail && typeof offre.rome_detail !== "string") {
+          buffer.push({ ...offre, type: type, cfa: user ? pick(user, ["adresse_detail", "raison_sociale"]) : null })
+        } else {
+          stat.ko++
+        }
+      })
+    }
   })
 
   logger.info("Start stream to CSV...")
   await oleoduc(
     Readable.from(buffer),
-    transformData((value) => {
-      if (value.rome_detail) {
-        stat.ok++
-        return formatToPe(value)
-      } else {
-        stat.ko++
-      }
-    }),
+    transformData((value) => formatToPe(value)),
     transformIntoCSV(),
     createWriteStream(path)
   )
