@@ -67,8 +67,8 @@ const formatToPe = async (offre) => {
 
   return {
     Par_ref_offre: `${ntcCle}-${offre.id_offre}`,
-    Par_cle: "LA BONNEALTERNANCE",
-    Par_nom: "LA BONNEALTERNANCE",
+    Par_cle: "LABONNEALTERNANCE",
+    Par_nom: "LABONNEALTERNANCE",
     Par_URL_offre: `https://labonnealternance.apprentissage.beta.gouv.fr/recherche-apprentissage?&type=matcha&itemId=${offre.id_offre}`,
     Code_rome: offre.romes[0],
     Code_OGR: appellation.code,
