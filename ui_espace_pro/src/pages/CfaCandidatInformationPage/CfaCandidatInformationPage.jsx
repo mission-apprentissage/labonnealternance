@@ -128,12 +128,12 @@ export const CfaCandidatInformationPage = () => {
             </Text>
             <Text as="p" my="2">
               <UnorderedList>
-                {(data.appointment.applicant_reasons || []).map((reason) => {
+                {(data.appointment?.applicant_reasons || []).map((reason) => {
                   return <ListItem>{getReasonText(reason)}</ListItem>
                 })}
               </UnorderedList>
             </Text>
-            {data.appointment.applicant_reasons.includes("autre") ? (
+            {(data.appointment?.applicant_reasons || []).includes("autre") ? (
               <Text as="p" bg="#F6F6F6" color="#2A2A2A" fontSize="16px" lineHeight="24px" fontWeight="700" px="4" py="2">
                 {data.appointment.applicant_message_to_cfa}
               </Text>
