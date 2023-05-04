@@ -199,7 +199,11 @@ runScript(async ({ db }) => {
   const path = new URL("./exportPE.csv", import.meta.url)
   const buffer = []
 
-  const offres = await db.collection("offres").find({}).toArray()
+  const [lowerLimit, upperLimit] = [dayjs().subtract(90, "days").toDate(), dayjs().toDate()]
+  const offres = await db
+    .collection("offres")
+    .find({ date_creation: { $gt: lowerLimit, $lt: upperLimit } })
+    .toArray()
 
   logger.info("get info from user...")
   await asyncForEach(offres, async (offre) => {
@@ -220,7 +224,7 @@ runScript(async ({ db }) => {
   await oleoduc(
     Readable.from(buffer),
     transformData((value) => formatToPe(value)),
-    transformIntoCSV(),
+    transformIntoCSV({ separator: "|" }),
     createWriteStream(path)
   )
 
