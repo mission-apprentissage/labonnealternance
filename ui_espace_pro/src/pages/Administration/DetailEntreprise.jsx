@@ -259,7 +259,7 @@ export default () => {
                       <InformationLegaleEntreprise {...data.data} />
                     </Box>
                   </SimpleGrid>
-                  {auth.type === AUTHTYPE.OPCO && (
+                  {(auth.type === AUTHTYPE.OPCO || auth.type === AUTHTYPE.ADMIN) && (
                     <Box mb={12}>
                       <UserValidationHistory histories={data.data.etat_utilisateur} />
                     </Box>
