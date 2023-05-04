@@ -13,7 +13,7 @@ import {
 } from "../../../../services/etablissement.service.js"
 import { validation_utilisateur, etat_utilisateur } from "../../../../common/constants.js"
 
-runScript(async ({ usersRecruteur }) => {
+const runValidation = async (usersRecruteur) => {
   logger.info(`Start update missing validation state for entreprise...`)
 
   const autoValidateUser = async (userId) =>
@@ -33,8 +33,15 @@ runScript(async ({ usersRecruteur }) => {
   const entreprises = await UserRecruteur.find({ type: "ENTREPRISE", etat_utilisateur: [] })
 
   logger.info(`${entreprises.length} etp à mettre à jour...`)
-  await asyncForEach(entreprises, async (etp) => {
+  await asyncForEach(entreprises, async (etp, index) => {
+    logger.info(`${entreprises.length}/${index}`)
     const found = await Formulaire.findOne({ id_form: etp.id_form })
+
+    if (!found) {
+      await UserRecruteur.findByIdAndDelete(etp._id)
+      return
+    }
+
     const siren = etp.siret.substr(0, 9)
 
     const [bonneBoiteLegacyList, bonneBoiteList, referentielOpcoList] = await Promise.all([
@@ -73,13 +80,25 @@ runScript(async ({ usersRecruteur }) => {
         await setManualValidation(etp._id)
       }
     }
-
-    if (found) {
-      await UserRecruteur.findOneAndUpdate({ _id: etp._id }, { $push: { etat_utilisateur: { validation_type: "AUTOMATIQUE", user: "SERVEUR", statut: "VALIDÉ" } } })
-    } else {
-      await UserRecruteur.findByIdAndDelete(etp._id)
-    }
   })
 
   logger.info(`Done.`)
+}
+
+const resetUserValidation = async (db) => {
+  const users = await db.collection("usertemps").find({}).toArray()
+
+  await asyncForEach(users, async (user) => {
+    const id = user.ID.trim()
+    await UserRecruteur.findByIdAndUpdate(id, { $set: { etat_utilisateur: [] } }, { new: true })
+    console.log(`${user.ID} updated`)
+  })
+}
+
+runScript(async ({ usersRecruteur, db }) => {
+  logger.info("#start reset validation for specific users")
+  await resetUserValidation(db)
+
+  logger.info("#start validation for specific users")
+  await runValidation(usersRecruteur)
 })
