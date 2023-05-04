@@ -39,8 +39,6 @@ const getCfaRomeSchema = joi.object({
   rome: joi.array().items(joi.string()).required(),
 })
 
-let token = {}
-
 export default ({ usersRecruteur, mailer }) => {
   const router = express.Router()
 
@@ -248,68 +246,42 @@ export default ({ usersRecruteur, mailer }) => {
           partenaire = await usersRecruteur.createUser({ ...body, id_form: formulaireInfo.id_form })
 
           // Get all corresponding records using the SIREN number in BonneBoiteLegacy collection
-          const [bonneBoiteLegacyList, bonneBoiteList] = await Promise.all([
+          const [bonneBoiteLegacyList, bonneBoiteList, referentielOpcoList] = await Promise.all([
             getAllEstablishmentFromBonneBoiteLegacy({ siret: { $regex: siren }, email: { $nin: ["", undefined] } }),
             getAllEstablishmentFromBonneBoite({ siret: { $regex: siren }, email: { $nin: ["", undefined] } }),
+            getAllEstablishmentFromOpcoReferentiel({ siret_code: { $regex: siren } }),
           ])
-          // Create a single array with all emails
-          const bonneBoiteLegacyEmailList: string[] = bonneBoiteLegacyList.map(({ email }) => email)
-          const bonneBoiteEmailList: string[] = bonneBoiteList.map(({ email }) => email)
 
-          const bonneBoiteFullList: string[] = [...new Set([...bonneBoiteLegacyEmailList, ...bonneBoiteEmailList])]
+          // Format arrays to get only the emails
+          const [bonneBoiteLegacyEmailList, bonneBoiteEmailList, referentielOpcoEmailList] = await Promise.all([
+            bonneBoiteLegacyList.map(({ email }) => email),
+            bonneBoiteList.map(({ email }) => email),
+            referentielOpcoList.reduce((acc: string[], item) => {
+              item.emails.map((x) => acc.push(x))
+              return acc
+            }, []),
+          ])
 
-          let userValidationType = validation_utilisateur.MANUAL
+          // Create a single array with all emails duplicate free
+          const emailListUnique = [...new Set([...referentielOpcoEmailList, ...bonneBoiteLegacyEmailList, ...bonneBoiteEmailList])]
 
           // Check BAL API for validation
           const balControl = await validationOrganisation(siret, email)
 
-          /**
-           * Check if siret is amoung the opco verified establishment
-           */
-          switch (body.opco) {
-            case OPCOS.AKTO:
-              if (balControl.is_valid) {
-                userValidationType = validation_utilisateur.AUTO
-              } else if (bonneBoiteFullList.length) {
-                if (getMatchingEmailFromContactList(partenaire.email, bonneBoiteFullList)) {
-                  userValidationType = validation_utilisateur.AUTO
-                } else if (checkIfUserEmailIsPrivate(partenaire.email) && getMatchingDomainFromContactList(partenaire.email, bonneBoiteFullList)) {
-                  userValidationType = validation_utilisateur.AUTO
-                }
-              }
-
-              break
-
-            default:
-              // Get all corresponding records using the SIREN number
-              const referentielOpcoList = await getAllEstablishmentFromOpcoReferentiel({ siret_code: { $regex: siren } })
-
-              // Create a single array with all emails
-              const referentielOpcoEmailList: string[] = referentielOpcoList.reduce((acc: string[], item) => {
-                item.emails.map((x) => acc.push(x))
-                return acc
-              }, [])
-
-              // Duplicate free email list
-              const emailListUnique = [...new Set([...referentielOpcoEmailList, ...bonneBoiteFullList])]
-
-              if (balControl.is_valid) {
-                userValidationType = validation_utilisateur.AUTO
-              } else if (emailListUnique.length) {
-                if (getMatchingEmailFromContactList(partenaire.email, emailListUnique)) {
-                  userValidationType = validation_utilisateur.AUTO
-                } else if (checkIfUserEmailIsPrivate(partenaire.email) && getMatchingDomainFromContactList(partenaire.email, emailListUnique)) {
-                  userValidationType = validation_utilisateur.AUTO
-                }
-              }
-
-              break
-          }
-
-          if (userValidationType === validation_utilisateur.AUTO) {
+          if (balControl.is_valid) {
             partenaire = await autoValidateUser(partenaire._id)
           } else {
-            partenaire = await setManualValidation(partenaire._id)
+            if (emailListUnique.length) {
+              if (getMatchingEmailFromContactList(partenaire.email, emailListUnique)) {
+                partenaire = await autoValidateUser(partenaire._id)
+              } else if (checkIfUserEmailIsPrivate(partenaire.email) && getMatchingDomainFromContactList(partenaire.email, emailListUnique)) {
+                partenaire = await autoValidateUser(partenaire._id)
+              } else {
+                partenaire = await setManualValidation(partenaire._id)
+              }
+            } else {
+              partenaire = await setManualValidation(partenaire._id)
+            }
           }
 
           // Dépot simplifié : retourner les informations nécessaire à la suite du parcours

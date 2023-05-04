@@ -5,7 +5,7 @@ import getApiClient from "./client.js"
 
 interface IBALResponse {
   is_valid: boolean
-  on: ("email" | "domain")[]
+  on?: ("email" | "domain")[]
 }
 
 /**
@@ -45,6 +45,7 @@ export const validationOrganisation = async (siret: string, email: string): Prom
       return data // is_valid: boolean, on: string "domain"|"email"
     } catch (error: any) {
       sentryCaptureException(error)
+      return { is_valid: false }
       throw new ApiError("Api BAL", `${error.message} for siret=${siret}`, error.code || error.response?.status)
     }
   })
