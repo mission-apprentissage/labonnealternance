@@ -207,7 +207,7 @@ runScript(async ({ db }) => {
 
   logger.info("get info from user...")
   await asyncForEach(offres, async (offre) => {
-    let user = offre.mandataire ? await UserRecruteur.findOne({ siret: offre.gestionnaire }) : null
+    const user = offre.mandataire ? await UserRecruteur.findOne({ siret: offre.gestionnaire }) : null
 
     if (typeof offre.rome_detail !== "string" && offre.rome_detail) {
       offre.type.map(async (type) => {

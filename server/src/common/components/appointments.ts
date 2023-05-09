@@ -56,6 +56,14 @@ export default () => ({
   findOneAndUpdate: (conditions, values) => Appointment.findOneAndUpdate(conditions, values, { new: true }),
 
   /**
+   * @description Update many documents.
+   * @param {Object} conditions
+   * @param {Object} values
+   * @returns {Promise<Appointment[]>}
+   */
+  updateMany: (conditions, values) => Appointment.updateMany(conditions, values),
+
+  /**
    * @description Updates an appointment from its id.
    * @param {ObjectId} id
    * @param {Object} values
