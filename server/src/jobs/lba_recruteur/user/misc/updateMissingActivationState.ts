@@ -30,7 +30,7 @@ const runValidation = async (usersRecruteur) => {
       statut: etat_utilisateur.ATTENTE,
     })
 
-  const entreprises = await UserRecruteur.find({ type: "ENTREPRISE", etat_utilisateur: [] })
+  const entreprises = await UserRecruteur.find({ type: "ENTREPRISE", etat_utilisateur: { $size: 1 }, "etat_utilisateur.statut": "EN ATTENTE DE VALIDATION" })
 
   logger.info(`${entreprises.length} etp à mettre à jour...`)
   await asyncForEach(entreprises, async (etp, index) => {
@@ -96,8 +96,8 @@ const resetUserValidation = async (db) => {
 }
 
 runScript(async ({ usersRecruteur, db }) => {
-  logger.info("#start reset validation for specific users")
-  await resetUserValidation(db)
+  // logger.info("#start reset validation for specific users")
+  // await resetUserValidation(db)
 
   logger.info("#start validation for specific users")
   await runValidation(usersRecruteur)
