@@ -1,0 +1,34 @@
+config:
+  target: "https://labonnealternance-recette.apprentissage.beta.gouv.fr"
+  phases:
+    - duration: 40
+      arrivalRate: 20
+      name: Warm up
+    #- duration: 120
+    #  arrivalRate: 5
+    #  rampTo: 50
+    #  name: Ramp up load
+    #- duration: 600
+    #  arrivalRate: 50
+    #  name: Sustained load
+  payload:
+    path: "metiers.csv"
+    fields:
+      - "metier"
+
+scenarios:
+  - name: "Recherche métier"
+    flow:
+      - get:
+          url: "/"
+      - think: 1
+      - get:
+          url: "/api/metiersdavenir"
+      - think: 5
+      - get:
+          url: "/api/romelabels?title={{ keyword }}"
+      - think: 5
+      - get:
+          url: "/api/romelabels?title={{ keyword }}"
+
+
