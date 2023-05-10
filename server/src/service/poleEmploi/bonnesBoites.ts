@@ -79,7 +79,7 @@ const transformLbbCompanyForIdea = ({ company, type, caller, contactAllowedOrigi
   }
 
   // format différent selon accès aux bonnes boîtes par recherche ou par siret
-  const address = `${company.street_number} ${company.street_name}, ${company.zip_code} ${company.city}`.trim()
+  const address = `${company.street_name ? `${company.street_number ? `${company.street_number} ` : ""}${company.street_name}, ` : ""}${company.zip_code} ${company.city}`.trim()
 
   resultCompany.place = {
     distance: company.distance?.length ? roundDistance(company.distance[0]) ?? 0 : null,
