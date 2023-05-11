@@ -30,7 +30,9 @@ const runValidation = async (usersRecruteur) => {
       statut: etat_utilisateur.ATTENTE,
     })
 
-  const entreprises = await UserRecruteur.find({ type: "ENTREPRISE", etat_utilisateur: { $size: 1 }, "etat_utilisateur.statut": "EN ATTENTE DE VALIDATION" })
+  const entreprises = await UserRecruteur.find({
+    $expr: { $eq: [{ $arrayElemAt: ["$etat_utilisateur.statut", -1] }, "EN ATTENTE DE VALIDATION"] },
+  })
 
   logger.info(`${entreprises.length} etp à mettre à jour...`)
   await asyncForEach(entreprises, async (etp, index) => {
@@ -64,6 +66,8 @@ const runValidation = async (usersRecruteur) => {
 
     // Check BAL API for validation
     const balControl = await validationOrganisation(etp.siret, etp.email)
+
+    logger.info(`${etp._id}: ${JSON.stringify(balControl)}`)
 
     if (balControl.is_valid) {
       await autoValidateUser(etp._id)
