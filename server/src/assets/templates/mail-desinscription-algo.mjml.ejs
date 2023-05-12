@@ -1,0 +1,71 @@
+<mjml>
+    <mj-head>
+        <mj-title>Demande de déréférencement du service La bonne alternance</mj-title>
+        <mj-font name="Roboto" href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;200;300;400;500;600;700;800;900&display=swap" />
+        <mj-style inline="inline">
+            a:link,a:visited, a:hover, a:active {color: #206BC4;}, a {color: #3A55D1;}, body{background: #F9F8F6;}
+            a.purple {color: #3A55D1; text-decoration: none}
+            .link-black { color: #000; text-decoration: underline; }
+            .link-black:hover { color: #000; text-decoration: underline; }            
+        </mj-style>
+        <mj-attributes>
+            <mj-text padding="0px" font-family="Roboto,Arial,sans-serif" color="#232E3C" font-size="16px" line-height="23px" />
+            <mj-divider padding="0px" />
+        </mj-attributes>
+    </mj-head>
+    <mj-body background-color="#EDF0F2">
+        <mj-section padding-bottom="30px">
+            <mj-column padding="0px" vertical-align="middle">
+                <mj-image padding="0px" width="150px" src="<%= data.images.logoLba %>" alt="Logo du site La bonne alternance" />
+            </mj-column>
+        </mj-section>
+
+        <mj-wrapper background-color="#ffffff" padding="10px 0 15px" border-radius="10px">
+            <mj-section padding="15px">
+                <mj-column>
+                    <mj-text font-style="normal" padding-bottom="32px" font-size="18px" padding="0px" font-weight="700" line-height="24px" text-decoration="none" color="#000091">
+                        Votre demande de déréférencement du service La bonne alternance a bien été prise en compte
+                    </mj-text>
+                    <mj-text font-size="16px" line-height="24px">
+                        <strong>Votre établissement vient d'être déréférencé du volet candidature spontanée de La bonne alternance.</strong>
+                        <br />
+                        Si vous n'êtes pas à l'origine de cette demande, vous pouvez nous contacter à <a class="link-black" href="mailto:labonnealternance@apprentissage.beta.gouv.fr">labonnealternance@apprentissage.beta.gouv.fr</a>
+                    </mj-text>
+                </mj-column>
+            </mj-section>
+        </mj-wrapper>
+
+        <mj-section padding-bottom="20px"></mj-section>
+        <mj-wrapper background-color="#ffffff" padding="10px 0 15px" border-radius="10px">
+            <mj-section padding="15px">
+                <mj-column>
+                    <mj-text font-size="16px" padding="0px" text-decoration="none" color="#383838">
+                        Cordialement,
+                        <br /><br />
+                        L'équipe La bonne alternance,
+                        <br />
+                        <a class="link-black" href="https://mission-apprentissage.gitbook.io/general/">Mission interministérielle pour l'apprentissage</a>
+                    </mj-text>
+                </mj-column>
+            </mj-section>
+        </mj-wrapper>
+        
+        <mj-wrapper padding="0px" border-radius="10px" padding-bottom="20px">
+            <mj-section>
+                <mj-column>
+                    <mj-table line-height="100%">
+                    <tr>
+                    <td valign="top" style="padding-top:5px;"><img width="89" height="auto" src="<%= data.images.logoRF %>" alt="Logo République française" /></td>
+                    <td valign="top" style="line-height: 22px; padding-left: 40px; padding-top:0;">
+                        Si vous avez des questions ou si vous souhaitez vous ré-inscrire au service, envoyez un email à 
+                        <a class="link-black" href="mailto:labonnealternance@apprentissage.beta.gouv.fr">labonnealternance@apprentissage.beta.gouv.fr</a>
+                        <br /><br />
+                        Cette demande à été réalisée sur le site <a class="link-black" href="https://labonnealternance.apprentissage.beta.gouv.fr/">La bonne alternance</a>
+                    </td>
+                    </tr>
+                    </mj-table>
+                </mj-column>
+            </mj-section>
+        </mj-wrapper>
+    </mj-body>
+</mjml>

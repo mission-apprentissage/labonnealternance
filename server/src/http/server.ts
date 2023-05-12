@@ -11,7 +11,6 @@ import { logger } from "../common/logger.js"
 import config from "../config.js"
 import { RegisterRoutes } from "../generated/routes.js"
 import { initSendinblueWebhooks } from "../service/sendinblue/webhookSendinBlue.js"
-import authMiddleware from "./middlewares/authMiddleware.js"
 import { corsMiddleware } from "./middlewares/corsMiddleware.js"
 import { errorMiddleware } from "./middlewares/errorMiddleware.js"
 import { logMiddleware } from "./middlewares/logMiddleware.js"
@@ -42,6 +41,7 @@ import partnersRoute from "./routes/partners.controller.js"
 import rome from "./routes/rome.controller.js"
 import sendApplication from "./routes/sendApplication.controller.js"
 import sendApplicationAPI from "./routes/sendApplicationAPI.controller.js"
+import unsubscribeBonneBoite from "./routes/unsubscribeBonneBoite.controller.js"
 import sendMail from "./routes/sendMail.controller.js"
 import supportRoute from "./routes/support.controller.js"
 import updateLBB from "./routes/updateLBB.controller.js"
@@ -104,8 +104,6 @@ const swaggerUIOptions = {
 
 export default async (components) => {
   const app = express()
-
-  const checkJwtToken = authMiddleware(components)
 
   Sentry.init({
     dsn: config.serverSentryDsn,
@@ -189,6 +187,7 @@ export default async (components) => {
   app.use("/api/application", sendApplication(components))
   app.use("/api/V1/application", limiter5PerSecond, sendApplicationAPI(components))
   app.use("/api/metiersdavenir", limiter3PerSecond, metiersDAvenir())
+  app.use("/api/unsubscribe", unsubscribeBonneBoite(components))
 
   /**
    * Admin / Auth

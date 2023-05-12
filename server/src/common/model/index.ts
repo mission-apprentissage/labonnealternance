@@ -4,6 +4,7 @@ import AppointmentDetailed from "./schema/appointmentDetailed/appointmentDetaile
 import Appointment from "./schema/appointments/appointment.schema.js"
 import BonnesBoites from "./schema/bonneboite/bonneBoite.schema.js"
 import BonneBoiteLegacy from "./schema/bonneboitelegacy/bonneBoiteLegacy.schema.js"
+import UnsubscribedBonneBoite from "./schema/unsubscribedBonneboite/unsubscribedBonneBoite.schema.js"
 import Credential from "./schema/credentials/credential.schema.js"
 import DiplomesMetiers from "./schema/diplomesmetiers/diplomesmetiers.schema.js"
 import DomainesMetiers from "./schema/domainesmetiers/domainesmetiers.schema.js"
@@ -46,4 +47,5 @@ export {
   AppointmentDetailed,
   eligibleTrainingsForAppointmentHistoric,
   BonneBoiteLegacy,
+  UnsubscribedBonneBoite,
 }
