@@ -1,7 +1,8 @@
-import { Box, Divider, Grid, GridItem, Image, ListItem, Text, UnorderedList } from "@chakra-ui/react"
+import { Box, Divider, Grid, GridItem, Image, Link, ListItem, Text, UnorderedList } from "@chakra-ui/react"
+import NextLink from "next/link"
 import React from "react"
 
-const AlgoRecruiter = () => {
+const AlgoRecruiter = ({ withLinks }) => {
   return (
     <Box as="section" pb={24} backgroundColor="white">
       <Box py={12} backgroundColor="#f5f5fe">
@@ -31,6 +32,14 @@ const AlgoRecruiter = () => {
                 est de rendre accessible le marché caché de l’emploi, et ainsi faciliter les démarches de candidatures spontanées des usagers du service.
               </ListItem>
             </UnorderedList>
+            {withLinks && (
+              <NextLink passHref href="/desinscription">
+                <Link variant="editorialContentLink" as="a" aria-label="Accès au formulaire de désinscription au service d'envoi de candidatures spontanées">
+                  Je ne souhaite plus recevoir de candidature spontanée
+                  <Image ml={1} display="inline" src="/images/icons/arrow_right.svg" alt="" />
+                </Link>
+              </NextLink>
+            )}
           </GridItem>
           <GridItem colSpan={{ base: "2" }}>
             <Box display="flex" justifyContent="center" alignItems="center" pr={{ base: 0, lg: 12 }}>

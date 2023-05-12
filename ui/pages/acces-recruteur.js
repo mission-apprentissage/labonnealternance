@@ -39,7 +39,7 @@ const AccesRecruteur = () => (
       <GerezOffres />
 
       <Box>
-        <AlgoRecruiter />
+        <AlgoRecruiter withLinks={true} />
       </Box>
 
       <Box as="section" pb={24} backgroundColor="white">

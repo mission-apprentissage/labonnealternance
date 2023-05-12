@@ -79,6 +79,7 @@ const buildRecruiterEmailUrls = ({ publicUrl, application, encryptedId }) => {
     waitCandidateUrl: `${publicUrl}/formulaire-intention?intention=ne_sais_pas${encryptedData}${candidateData}${utmRecruiterData}`,
     refuseCandidateUrl: `${publicUrl}/formulaire-intention?intention=refus${encryptedData}${candidateData}${utmRecruiterData}`,
     lbaRecruiterUrl: `${publicUrl}/acces-recruteur?${utmRecruiterData}`,
+    unsubscribeUrl: `${publicUrl}/desinscription?email=${application.company_email}${utmRecruiterData}`,
     lbaUrl: `${publicUrl}?${utmRecruiterData}`,
     jobProvidedUrl: `${publicUrlEspacePro}/offre/${application._doc._id}/provided?${utmRecruiterData}`,
     cancelJobUrl: `${publicUrlEspacePro}/offre/${application._doc._id}/cancel?${utmRecruiterData}`,
