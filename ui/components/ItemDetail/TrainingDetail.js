@@ -8,11 +8,13 @@ import questionmarkIcon from "../../public/images/icons/training-questionmark.sv
 import sablierIcon from "../../public/images/icons/training-sablier.svg"
 import targetIcon from "../../public/images/icons/training-target.svg"
 import clipboardListIcon from "../../public/images/icons/traning-clipboard-list.svg"
+import fetchInserJeuneStats from "../../services/fetchInserJeuneStats"
 import fetchPrdv from "../../services/fetchPrdv"
 import fetchTrainingDetails from "../../services/fetchTrainingDetails"
 import sendTrainingOpenedEventToCatalogue from "../../services/sendTrainingOpenedEventToCatalogue"
 import { SendPlausibleEvent } from "../../utils/plausible"
 import { formatDate } from "../../utils/strutils"
+import StatsInserJeunes from "./StatsInserJeunes"
 
 // Read https://css-tricks.com/snippets/css/prevent-long-urls-from-breaking-out-of-container/
 const dontBreakOutCssParameters = {
@@ -24,12 +26,22 @@ const dontBreakOutCssParameters = {
 
 const TrainingDetail = ({ training, hasAlsoJob }) => {
   const [loading, setLoading] = useState(true)
+  const [IJStats, setIJStats] = useState(null) 
 
   useEffect(() => {
     SendPlausibleEvent("Affichage - Fiche formation", {
       info_fiche: `${training.cleMinistereEducatif}${formValues?.job?.label ? ` - ${formValues.job.label}` : ""}`,
     })
     setLoading(true)
+  }, [training.id])
+
+  useEffect(() => {
+    async function getStats() {
+      setIJStats(null)
+      const stats = await fetchInserJeuneStats(training)
+      setIJStats(stats)
+    }
+    getStats()
   }, [training.id])
 
   const { trainings, setTrainingsAndSelectedItem } = useContext(SearchResultContext)
@@ -107,7 +119,7 @@ const TrainingDetail = ({ training, hasAlsoJob }) => {
   }
 
   return (
-    <Box pb="0px" mt={6} position="relative" background="white" padding={["1px 12px 50px 12px", "1px 24px 50px 24px", "1px 12px 24px 12px"]} mx={["0", "30px"]}>
+    <Box pb="0px" mt={6} position="relative" background="white" padding={["1px 12px 36px 12px", "1px 24px 36px 24px", "1px 12px 24px 12px"]} mx={["0", "30px"]}>
       {getLoading()}
       {getTrainingDetails(training.training)}
       <Box background="#f6f6f6" borderRadius="8px" mt={8} pl={8} py="10px" pr="10px">
@@ -141,6 +153,7 @@ const TrainingDetail = ({ training, hasAlsoJob }) => {
           </Link>
         </Box>
       </Box>
+      {IJStats && <StatsInserJeunes stats={IJStats} />}
     </Box>
   )
 }
