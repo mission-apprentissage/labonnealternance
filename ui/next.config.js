@@ -28,7 +28,8 @@ const contentSecurityPolicy = `
               https://stats.data.gouv.fr
               https://events.mapbox.com 
               https://plausible.io 
-              http://localhost:5000 
+              http://localhost:5000
+              https://trajectoires-pro.apprentissage.beta.gouv.fr 
               https://*.ingest.sentry.io;
   img-src 'self' 
               data: 
