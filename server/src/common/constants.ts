@@ -69,6 +69,7 @@ export const UNSUBSCRIBE_REASON = {
   PAS_BUDGET: "Mon entreprise n’a pas la capacité financière pour recruter un alternant",
   PAS_ALTERNANT: "Mon entreprise ne recrute pas en alternance",
   ENTREPRISE_FERMEE: "L’entreprise est fermée",
+  AUTRE: "Autre",
 }
 
 export const UNSUBSCRIBE_EMAIL_ERRORS = {
