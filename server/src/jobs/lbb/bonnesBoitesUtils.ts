@@ -1,13 +1,13 @@
 // @ts-nocheck
 import memoize from "memoizee"
-import { getFileFromS3Bucket, uploadFileToS3 } from "../../common/utils/awsUtils.js"
+import { getFileFromS3Bucket, getS3FileLastUpdate, uploadFileToS3 } from "../../common/utils/awsUtils.js"
 import { streamJsonArray } from "../../common/utils/streamUtils.js"
 import { logger } from "../../common/logger.js"
 import fs from "fs"
 import path from "path"
 import config from "../../config.js"
 import __dirname from "../../common/dirname.js"
-import { compose, oleoduc } from "oleoduc"
+import { compose, oleoduc, writeData } from "oleoduc"
 import geoData from "../../common/utils/geoData.js"
 import { EmailBlacklist, BonnesBoites, GeoLocation, Opco } from "../../common/model/index.js"
 import initNafMap from "./initNafMap.js"
@@ -26,6 +26,23 @@ export const removePredictionFile = async () => {
   } catch (err) {
     logger.error("Error removing company algo file", err)
   }
+}
+
+export const checkIfAlgoFileIsNew = async (): void => {
+  const algoFileLastModificationDate = await getFileLastModificationDate()
+  const currentDbCreatedDate = await getCurrentDbCreatedDate()
+
+  if (algoFileLastModificationDate.getTime() < currentDbCreatedDate.getTime()) {
+    throw new Error("Sociétés issues de l'algo déjà à jour")
+  }
+}
+
+const getCurrentDbCreatedDate = async (): Date => {
+  return (await BonnesBoites.findOne({}).select({ created_at: 1, _id: 0 })).created_at
+}
+
+const getFileLastModificationDate = async (): Date => {
+  return await getS3FileLastUpdate({ key: s3File })
 }
 
 export const pushFileToBucket = async ({ key, filePath }) => {
@@ -66,26 +83,29 @@ export const readCompaniesFromJson = async () => {
   return streamCompanies()
 }
 
+export const countCompaniesInFile = async (): number => {
+  let count = 0
+  await oleoduc(
+    await readCompaniesFromJson(),
+    writeData(() => {
+      count++
+    })
+  )
+  return count
+}
+
 /*
 Initialize bonneBoite from data, add missing data from maps, 
 */
 export const getCompanyMissingData = async (rawCompany) => {
-  let company = await BonnesBoites.findOne({ siret: rawCompany.siret })
-
-  if (!company) {
-    company = new BonnesBoites(rawCompany)
-  }
-
+  const company = new BonnesBoites(rawCompany)
   const geo = await getGeoLocationForCompany(company)
-
-  if (!company.geo_coordinates) {
-    if (!geo) {
-      return null
-    } else {
-      company.city = geo.city
-      company.zip_code = geo.zip_code
-      company.geo_coordinates = geo.geo_coordinates
-    }
+  if (!geo) {
+    return null
+  } else {
+    company.city = geo.city
+    company.zip_code = geo.zip_code
+    company.geo_coordinates = geo.geo_coordinates
   }
 
   if (rawCompany.rome_codes) {
@@ -102,12 +122,14 @@ export const getCompanyMissingData = async (rawCompany) => {
     }
   }
 
-  const opcoData = await getOpcoForCompany(company)
+  if (!company.opco) {
+    const opcoData = await getOpcoForCompany(company)
 
-  if (opcoData) {
-    company.opco = opcoData.opco
-    company.opco_url = opcoData.url
-    company.opco_short_name = opcoData.opco_short_name
+    if (opcoData) {
+      company.opco = opcoData.opco
+      company.opco_url = opcoData.url
+      company.opco_short_name = opcoData.opco_short_name
+    }
   }
 
   company.email = company.email && (await getNotBlacklistedEmail(company.email))
@@ -120,31 +142,33 @@ const getNotBlacklistedEmail = async (email) => {
 }
 
 const getGeoLocationForCompany = async (company) => {
-  if (!company.geo_coordinates) {
-    const geoKey = `${company.street_number} ${company.street_name} ${company.zip_code}`.trim().toUpperCase()
+  const geoKey = `${company.street_number} ${company.street_name} ${company.zip_code}`.trim().toUpperCase()
 
-    let result = await GeoLocation.findOne({ address: geoKey })
+  // a t on déjà une geoloc pour cette adresse
+  let result = await GeoLocation.findOne({ address: geoKey })
+
+  // si pas de geoloc on en recherche une avec la ban
+  if (!result) {
+    result = await geoData.getFirstMatchUpdates(company)
 
     if (!result) {
-      result = await geoData.getFirstMatchUpdates(company)
-
-      if (result) {
-        const geoLocation = new GeoLocation({
-          address: geoKey,
-          ...result,
-        })
-        try {
-          await geoLocation.save()
-        } catch (err) {
-          //ignore duplicate error
-        }
-      } else {
-        return null
+      return null
+    } else {
+      const geoLocation = new GeoLocation({
+        address: geoKey,
+        ...result,
+      })
+      try {
+        // on enregistre la geoloc trouvée
+        await geoLocation.save()
+      } catch (err) {
+        //ignore duplicate error
       }
     }
+  }
 
-    return result
-  } else return null
+  // retour de la geoloc trouvée
+  return result
 }
 
 const getOpcoForCompany = async (bonneBoite) => {

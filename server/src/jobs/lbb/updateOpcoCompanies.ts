@@ -1,10 +1,11 @@
+import { notifyToSlack } from "../../common/utils/slackUtils.js"
 import { oleoduc, writeData } from "oleoduc"
 import { logger } from "../../common/logger.js"
 import { Opco } from "../../common/model/index.js"
 import { logMessage } from "../../common/utils/logMessage.js"
 import { CFADOCK_FILTER_LIMIT, fetchOpcosFromCFADock } from "../../service/cfaDock/fetchOpcosFromCFADock.js"
 import { saveOpco } from "../../service/opco.js"
-import { downloadAlgoCompanyFile, getMemoizedOpcoShortName, readCompaniesFromJson, removePredictionFile } from "./bonnesBoitesUtils.js"
+import { checkIfAlgoFileIsNew, downloadAlgoCompanyFile, getMemoizedOpcoShortName, readCompaniesFromJson, removePredictionFile } from "./bonnesBoitesUtils.js"
 let errorCount = 0
 
 let sirenSet = new Set()
@@ -62,9 +63,13 @@ const cleanUp = () => {
   sirenWithoutOpco = new Set()
 }
 
-export default async function updateOpcoCompanies({ ClearMongo = false }) {
+export default async function updateOpcoCompanies({ ClearMongo = false, ForceRecreate = false }) {
   try {
     logMessage("info", " -- Start bulk opco determination -- ")
+
+    if (!ForceRecreate) {
+      await checkIfAlgoFileIsNew()
+    }
 
     await downloadAlgoCompanyFile()
 
@@ -78,10 +83,9 @@ export default async function updateOpcoCompanies({ ClearMongo = false }) {
       writeData(async (company) => {
         const siren = company.siret.toString().padStart(14, "0").substring(0, 9)
 
-        if (!sirenWithoutOpco.has(siren)) {
+        if ((await Opco.countDocuments({ siren })) === 0 && !sirenWithoutOpco.has(siren)) {
           sirenSet.add(siren)
         }
-
         if (sirenSet.size > 0 && sirenSet.size % CFADOCK_FILTER_LIMIT === 0) {
           await getSirenOpcosFromCFADock()
         }
@@ -95,6 +99,8 @@ export default async function updateOpcoCompanies({ ClearMongo = false }) {
     logMessage("info", `Sirens opco not found ${errorCount}`)
 
     logMessage("info", `End bulk opco determination`)
+
+    await notifyToSlack({ subject: "RESOLUTION OPCOS", message: `Collecte des opcos par Siret terminée. ${i} OK. ${errorCount} not found`, error: false })
 
     await removePredictionFile()
 
