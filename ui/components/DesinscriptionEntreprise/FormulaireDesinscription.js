@@ -12,6 +12,7 @@ const UNSUBSCRIBE_REASON = {
   PAS_BUDGET: "Mon entreprise n’a pas la capacité financière pour recruter un alternant",
   PAS_ALTERNANT: "Mon entreprise ne recrute pas en alternance",
   ENTREPRISE_FERMEE: "L’entreprise est fermée",
+  AUTRE: "Autre",
 }
 
 const getSupportMailto = ( complement ) => (<Link textDecoration="underline" href={`mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Candidature%20spontanée%20-%20Déréférencement%20-%20${complement}`}>
