@@ -1,4 +1,5 @@
 import axios from "axios"
+import { notifyToSlack } from "../../common/utils/slackUtils.js"
 import FormData from "form-data"
 import fs from "fs"
 import fsExtra from "fs-extra"
@@ -7,7 +8,7 @@ import path from "path"
 import __dirname from "../../common/dirname.js"
 import { GeoLocation } from "../../common/model/index.js"
 import { logMessage } from "../../common/utils/logMessage.js"
-import { downloadAlgoCompanyFile, readCompaniesFromJson, removePredictionFile } from "./bonnesBoitesUtils.js"
+import { checkIfAlgoFileIsNew, downloadAlgoCompanyFile, readCompaniesFromJson, removePredictionFile } from "./bonnesBoitesUtils.js"
 
 const currentDirname = __dirname(import.meta.url)
 
@@ -67,9 +68,13 @@ const clearingFiles = async () => {
 
 const geolocateCsvHeader = "rue;citycode"
 
-export default async function updateGeoLocations() {
+export default async function updateGeoLocations({ ForceRecreate = false }) {
   try {
     logMessage("info", " -- Start bulk geolocations -- ")
+
+    if (!ForceRecreate) {
+      await checkIfAlgoFileIsNew()
+    }
 
     await clearingFiles()
 
@@ -154,6 +159,12 @@ export default async function updateGeoLocations() {
     logMessage("info", `Erreurs de geolocalisatio ${errorCount}`)
 
     logMessage("info", `End bulk geolocation`)
+
+    await notifyToSlack({
+      subject: "GEOLOCALISATION DE MASSE",
+      message: `Géolocalisation de masse terminée. ${adressesToGeolocateCount} adresses à géolocaliser. ${errorCount} erreurs`,
+      error: false,
+    })
 
     await clearingFiles()
 
