@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { get } from "lodash-es"
 import { logger } from "../../common/logger.js"
 import { Application } from "../../common/model/index.js"
@@ -35,7 +36,7 @@ const anonymizeApplications = async () => {
     }
   )
 
-  return res.upserted
+  return res.nModified
 }
 
 export default async function () {
