@@ -19,22 +19,22 @@ export const getMetier = (search) => Axios.get(`https://labonnealternance.appren
  * Formulaire API
  */
 export const getFormulaires = (query, options, limit, page) => API.get("/formulaire", { params: { query, options, limit, page } }).catch(errorHandler)
-export const getFormulaire = (formId) => API.get(`/formulaire/${formId}`).catch(errorHandler)
+export const getFormulaire = (establishment_id) => API.get(`/formulaire/${establishment_id}`).catch(errorHandler)
 export const postFormulaire = (form) => API.post(`/formulaire`, form).catch(errorHandler)
-export const putFormulaire = (formId, form) => API.put(`/formulaire/${formId}`, form)
-export const archiveFormulaire = (formId) => API.delete(`/formulaire/${formId}`).catch(errorHandler)
+export const putFormulaire = (establishment_id, form) => API.put(`/formulaire/${establishment_id}`, form)
+export const archiveFormulaire = (establishment_id) => API.delete(`/formulaire/${establishment_id}`).catch(errorHandler)
 export const archiveDelegatedFormulaire = (siret) => API.delete(`/formulaire/delegated/${siret}`).catch(errorHandler)
 
 /**
  * Offre API
  */
-export const getOffre = (idOffre) => API.get(`/formulaire/offre/f/${idOffre}`)
-export const postOffre = (formId, offre) => API.post(`/formulaire/${formId}/offre`, offre).catch(errorHandler)
-export const putOffre = (offreId, offre) => API.put(`/formulaire/offre/${offreId}`, { ...offre, date_mise_a_jour: Date() }).catch(errorHandler)
-export const patchOffre = ({ formId, data, config }) => API.patch(`/v1/offre/${formId}`, data, config).catch(errorHandler)
-export const cancelOffre = (offreId) => API.put(`/formulaire/offre/${offreId}/cancel`)
-export const fillOffre = (offreId) => API.put(`/formulaire/offre/${offreId}/provided`)
-export const createEtablissementDelegation = ({ data, offreId }) => API.post(`/formulaire/offre/${offreId}/delegation`, data)
+export const getOffre = (jobId) => API.get(`/formulaire/offre/f/${jobId}`)
+export const postOffre = (establishment_id, offre) => API.post(`/formulaire/${establishment_id}/offre`, offre).catch(errorHandler)
+export const putOffre = (jobId, offre) => API.put(`/formulaire/offre/${jobId}`, { ...offre, date_mise_a_jour: Date() }).catch(errorHandler)
+export const patchOffre = ({ establishment_id, data, config }) => API.patch(`/v1/offre/${establishment_id}`, data, config).catch(errorHandler)
+export const cancelOffre = (jobId) => API.put(`/formulaire/offre/${jobId}/cancel`)
+export const fillOffre = (jobId) => API.put(`/formulaire/offre/${jobId}/provided`)
+export const createEtablissementDelegation = ({ data, jobId }) => API.post(`/formulaire/offre/${jobId}/delegation`, data)
 
 /**
  * User API
@@ -53,10 +53,13 @@ export const createUser = async (user) => await API.post("/user", user).catch(er
 export const updateUser = async (userId, user) => await API.put(`user/${userId}`, user)
 export const updateUserValidationHistory = async (userId, state) => await API.put(`user/${userId}/history`, state).catch(errorHandler)
 export const deleteCfa = async (userId) => await API.delete(`/user`, { params: { userId } }).catch(errorHandler)
-export const deleteEntreprise = async (userId, formId) => await API.delete(`/user`, { params: { userId, formId } }).catch(errorHandler)
+export const deleteEntreprise = async (userId, recruiterId) => await API.delete(`/user`, { params: { userId, recruiterId } }).catch(errorHandler)
 
 // Temporaire, en attendant d'ajuster le modèle pour n'avoir qu'une seul source de données pour les entreprises
-export const updateEntreprise = async (userId, formId, values) => await Promise.all([updateUser(userId, values), putFormulaire(formId, values)])
+/**
+ * KBA 20230511 : (migration db) : casting des valueurs coté collection recruiter, car les champs ne sont plus identiques avec la collection userRecruteur.
+ */
+export const updateEntreprise = async (userId, establishment_id, values) => await Promise.all([updateUser(userId, values), putFormulaire(establishment_id, values)])
 
 /**
  * Auth API

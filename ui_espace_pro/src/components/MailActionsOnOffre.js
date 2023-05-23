@@ -26,14 +26,14 @@ export default (props) => {
   }
 
   useEffect(() => {
-    let { idOffre, option } = params
+    let { jobId, option } = params
 
-    if (!idOffre || !option) {
+    if (!jobId || !option) {
       error()
     }
 
     if (option === "cancel") {
-      cancelOffre(idOffre)
+      cancelOffre(jobId)
         .then(() => {
           toast({
             title: "Offre annulée.",
@@ -49,7 +49,7 @@ export default (props) => {
     }
 
     if (option === "provided") {
-      fillOffre(idOffre)
+      fillOffre(jobId)
         .then(() => {
           toast({
             title: "Offre pourvue.",

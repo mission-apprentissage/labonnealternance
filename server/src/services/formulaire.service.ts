@@ -6,24 +6,26 @@ import { ANNULEE, POURVUE, etat_utilisateur } from "../common/constants.js"
 import dayjs from "../common/dayjs.js"
 import { getElasticInstance } from "../common/esClient/index.js"
 import createMailer from "../common/mailer.js"
-import { Formulaire } from "../common/model/index.js"
-import { IFormulaire } from "../common/model/schema/formulaire/formulaire.types.js"
-import { IOffre } from "../common/model/schema/offre/offre.types.js"
+import { Recruiter } from "../common/model/index.js"
+import { IRecruiter } from "../common/model/schema/recruiter/recruiter.types.js"
+import { IJobs } from "../common/model/schema/jobs/jobs.types.js"
 import { IUserRecruteur } from "../common/model/schema/userRecruteur/userRecruteur.types.js"
 import { asyncForEach } from "../common/utils/asyncUtils.js"
 import config from "../config.js"
 import { getCatalogueEtablissements, getFormations } from "./catalogue.service.js"
 import { getEtablissement, getValidationUrl } from "./etablissement.service.js"
+import { ModelUpdateOptions, UpdateQuery } from "mongoose"
+import { Filter } from "mongodb"
 
 const esClient = getElasticInstance()
 const usersRecruteur = await createUserRecruteur()
 const mailer = await createMailer()
 
-interface IFormulaireExtended extends IFormulaire {
+interface IFormulaireExtended extends IRecruiter {
   entreprise_localite: string
 }
 
-interface IOffreExtended extends IOffre {
+interface IOffreExtended extends IJobs {
   candidatures: number
   pourvue: string
   supprimer: string
@@ -31,12 +33,13 @@ interface IOffreExtended extends IOffre {
 
 /**
  * @description get filtered jobs from elastic search index
- * @param {{number}} distance
- * @param {{string}} lat
- * @param {{string}} long
- * @param {{string[]}} romes
- * @param {{string}} niveau
- * @returns {Promise<IFormulaire[]>}
+ * @param {Object} payload
+ * @param {number} payload.distance
+ * @param {string} payload.lat
+ * @param {string} payload.long
+ * @param {string[]} payload.romes
+ * @param {string} payload.niveau
+ * @returns {Promise<IRecruiter[]>}
  */
 export const getJobsFromElasticSearch = async ({
   distance,
@@ -50,12 +53,12 @@ export const getJobsFromElasticSearch = async ({
   lon: string
   romes: string[]
   niveau: string
-}): Promise<IFormulaire[]> => {
+}): Promise<IRecruiter[]> => {
   const filter: Array<object> = [
     {
       geo_distance: {
         distance: `${distance}km`,
-        geo_coordonnees: {
+        geo_coordinates: {
           lat,
           lon,
         },
@@ -66,13 +69,13 @@ export const getJobsFromElasticSearch = async ({
   if (niveau && niveau !== "Indifférent") {
     filter.push({
       nested: {
-        path: "offres",
+        path: "jobs",
         query: {
           bool: {
             must: [
               {
                 match_phrase: {
-                  "offres.niveau": niveau,
+                  "jobs.job_level_label": niveau,
                 },
               },
             ],
@@ -88,18 +91,18 @@ export const getJobsFromElasticSearch = async ({
         must: [
           {
             nested: {
-              path: "offres",
+              path: "jobs",
               query: {
                 bool: {
                   must: [
                     {
                       match: {
-                        "offres.romes": romes.join(" "),
+                        "jobs.rome_code": romes.join(" "),
                       },
                     },
                     {
                       match: {
-                        "offres.statut": "Active",
+                        "jobs.job_status": "Active",
                       },
                     },
                   ],
@@ -114,7 +117,7 @@ export const getJobsFromElasticSearch = async ({
     sort: [
       {
         _geo_distance: {
-          geo_coordonnees: {
+          geo_coordinates: {
             lat,
             lon,
           },
@@ -128,43 +131,40 @@ export const getJobsFromElasticSearch = async ({
     ],
   }
 
-  const result = await esClient.search({ index: "formulaires", body })
+  const result = await esClient.search({ index: "recruiters", body })
 
   const filteredJobs = await Promise.all(
     result.body.hits.hits.map(async (x) => {
-      const offres = []
+      const jobs = []
       let cfa = <IUserRecruteur>{}
 
-      if (x._source.offres.length === 0) {
+      if (x._source.jobs.length === 0) {
         return
       }
 
-      x._source.mailing = undefined
-      x._source.events = undefined
+      if (x._source.is_delegated) {
+        const [establishment_location] = x._source.address.match(/([0-9]{5})[ ,] ?([a-zA-Z-]*)/) ?? [""]
+        cfa = await getEtablissement({ establishment_siret: x._source.cfa_delegated_siret })
 
-      if (x._source.mandataire === true) {
-        const [entreprise_localite] = x._source.adresse.match(/([0-9]{5})[ ,] ?([a-zA-Z-]*)/) ?? [""]
-        cfa = await getEtablissement({ siret: x._source.gestionnaire })
-
-        x._source.telephone = cfa.telephone
+        x._source.phone = cfa.phone
         x._source.email = cfa.email
-        x._source.nom = cfa.nom
-        x._source.prenom = cfa.prenom
-        x._source.raison_sociale = cfa.raison_sociale
-        x._source.adresse = cfa.adresse
-        x._source.entreprise_localite = entreprise_localite
+        x._source.last_name = cfa.last_name
+        x._source.first_name = cfa.first_name
+        x._source.establishment_raison_sociale = cfa.establishment_raison_sociale
+        x._source.address = cfa.address
+        x._source.establishment_location = establishment_location
       }
 
-      x._source.offres.forEach((o) => {
-        if (romes.some((item) => o.romes.includes(item)) && o.statut === "Active") {
-          o.libelle = o.rome_appellation_label ?? o.libelle
-          if (!niveau || niveau === "Indifférent" || niveau === o.niveau) {
-            offres.push(o)
+      x._source.jobs.forEach((o) => {
+        if (romes.some((item) => o.rome_code.includes(item)) && o.job_status === "Active") {
+          o.rome_label = o.rome_appellation_label ?? o.rome_label
+          if (!niveau || niveau === "Indifférent" || niveau === o.job_level_label) {
+            jobs.push(o)
           }
         }
       })
 
-      x._source.offres = offres
+      x._source.jobs = jobs
       return x
     })
   )
@@ -174,28 +174,28 @@ export const getJobsFromElasticSearch = async ({
 
 /**
  * @description get formulaire by offer id
- * @param {{string}} jobId
+ * @param {IJobs["_id"]} id
  * @returns {Promise<IFormulaireExtended>}
  */
-export const getOffreAvecInfoMandataire = async (jobId: string): Promise<IFormulaireExtended> => {
-  const result = await getOffre(jobId)
+export const getOffreAvecInfoMandataire = async (id: IJobs["_id"]): Promise<IFormulaireExtended> => {
+  const result = await getOffre(id)
 
   if (!result) {
     return result
   }
 
-  result.offres = result.offres.filter((x) => x._id == jobId)
+  result.jobs = result.jobs.filter((x) => x._id == id)
 
-  if (result.mandataire === true) {
-    const [entreprise_localite] = result.adresse.match(/([0-9]{5})[ ,] ?([A-zÀ-ÿ]*)/) ?? [""]
-    const cfa = await getEtablissement({ siret: result.gestionnaire })
+  if (result.is_delegated) {
+    const [entreprise_localite] = result.address.match(/([0-9]{5})[ ,] ?([A-zÀ-ÿ]*)/) ?? [""]
+    const cfa = await getEtablissement({ siret: result.cfa_delegated_siret })
 
-    result.telephone = cfa.telephone
+    result.phone = cfa.phone
     result.email = cfa.email
-    result.nom = cfa.nom
-    result.prenom = cfa.prenom
-    result.raison_sociale = cfa.raison_sociale
-    result.adresse = cfa.adresse
+    result.last_name = cfa.last_name
+    result.first_name = cfa.first_name
+    result.establishment_raison_sociale = cfa.establishment_raison_sociale
+    result.address = cfa.address
     result.entreprise_localite = entreprise_localite
   }
 
@@ -204,14 +204,15 @@ export const getOffreAvecInfoMandataire = async (jobId: string): Promise<IFormul
 
 /**
  * @description Get formulaire list with mondodb paginate query
- * @param {{string}} query
- * @param {{object}} options
- * @param {{number}} page
- * @param {{number}} limit
+ * @param {Object} payload
+ * @param {Filter<IRecruiter>} payload.query
+ * @param {object} payload.options
+ * @param {number} payload.page
+ * @param {number} payload.limit
  * @returns {Promise<object>}
  */
-export const getFormulaires = async (query: string, options: object, { page, limit }: { page: number; limit: number }): Promise<object> => {
-  const response = await Formulaire.paginate({ query, ...options, page, limit, lean: true })
+export const getFormulaires = async (query: Filter<IRecruiter>, options: object, { page, limit }: { page: number; limit: number }): Promise<object> => {
+  const response = await Recruiter.paginate({ query, ...options, page, limit, lean: true })
 
   return {
     pagination: {
@@ -226,35 +227,35 @@ export const getFormulaires = async (query: string, options: object, { page, lim
 
 /**
  * @description Create job offer for formulaire
- * @param {{IOffreExtended}} offre
- * @param {{string}} id_form
- * @returns {Promise<IFormulaire>}
+ * @param {Object} payload
+ * @param {IOffreExtended} payload.job
+ * @param {IUserRecruteur["establishment_id"]} payload.id
+ * @returns {Promise<IRecruiter>}
  */
-export const createJob = async ({ offre, id_form }: { offre: IOffreExtended; id_form: string }): Promise<IFormulaire> => {
+export const createJob = async ({ job, id }: { job: IOffreExtended; id: IUserRecruteur["establishment_id"] }): Promise<IRecruiter> => {
   let isUserAwaiting = false
   // get user data
-  const user = await usersRecruteur.getUser({ id_form })
+  const user = await usersRecruteur.getUser({ establishment_id: id })
   // get user activation state if not managed by a CFA
   if (user) {
-    isUserAwaiting = usersRecruteur.getUserValidationState(user.etat_utilisateur) === etat_utilisateur.ATTENTE
-    // upon user creation, if user is awaiting validation, update offre status to "En attente"
+    isUserAwaiting = usersRecruteur.getUserValidationState(user.status) === etat_utilisateur.ATTENTE
+    // upon user creation, if user is awaiting validation, update job status to "En attente"
     if (isUserAwaiting) {
-      offre.statut = "En attente"
+      job.job_status = "En attente"
     }
   }
-  // insert offre
-  const updatedFormulaire = await createOffre(id_form, offre)
+  // insert job
+  const updatedFormulaire = await createOffre(id, job)
 
-  const { email, raison_sociale, prenom, nom, mandataire, gestionnaire, offres } = updatedFormulaire
-  let contactCFA
+  const { email, establishment_raison_sociale, first_name, last_name, is_delegated, cfa_delegated_siret, jobs } = updatedFormulaire
 
-  offre._id = updatedFormulaire.offres.filter((x) => x.libelle === offre.libelle)[0]._id
+  job._id = updatedFormulaire.jobs.filter((x) => x.rome_label === job.rome_label)[0]._id
 
-  offre.supprimer = `${config.publicUrlEspacePro}/offre/${offre._id}/cancel`
-  offre.pourvue = `${config.publicUrlEspacePro}/offre/${offre._id}/provided`
+  job.supprimer = `${config.publicUrlEspacePro}/offre/${job._id}/cancel`
+  job.pourvue = `${config.publicUrlEspacePro}/offre/${job._id}/provided`
 
   // if first offer creation for an Entreprise, send specific mail
-  if (offres.length === 1 && mandataire === false) {
+  if (jobs.length === 1 && is_delegated === false) {
     // Get user account validation link
     const url = getValidationUrl(user._id)
 
@@ -266,11 +267,11 @@ export const createJob = async ({ offre, id_form }: { offre: IOffreExtended; id_
         images: {
           logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
         },
-        nom: user.nom,
-        prenom: user.prenom,
+        nom: user.last_name,
+        prenom: user.first_name,
         email: user.email,
         confirmation_url: url,
-        offre: pick(offre, ["rome_appellation_label", "date_debut_apprentissage", "type", "niveau"]),
+        offre: pick(job, ["rome_appellation_label", "job_start_date", "type", "job_level_label"]),
         isUserAwaiting,
       },
     })
@@ -279,30 +280,28 @@ export const createJob = async ({ offre, id_form }: { offre: IOffreExtended; id_
   }
 
   // get CFA informations if formulaire is handled by a CFA
-  if (updatedFormulaire.mandataire) {
-    contactCFA = await usersRecruteur.getUser({ siret: gestionnaire })
-  }
+  const contactCFA = is_delegated && (await usersRecruteur.getUser({ establishment_siret: cfa_delegated_siret }))
 
   // Send mail with action links to manage offers
   await mailer.sendEmail({
-    to: mandataire ? contactCFA.email : email,
-    subject: mandataire
-      ? `La bonne alternance - Votre offre d'alternance pour ${raison_sociale} a bien été publiée`
+    to: is_delegated ? contactCFA.email : email,
+    subject: is_delegated
+      ? `La bonne alternance - Votre offre d'alternance pour ${establishment_raison_sociale} a bien été publiée`
       : `La bonne alternance - Votre offre d'alternance a bien été publiée`,
     template: mailTemplate["mail-nouvelle-offre"],
     data: {
       images: {
         logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
       },
-      nom: mandataire ? contactCFA.nom : nom,
-      prenom: mandataire ? contactCFA.prenom : prenom,
-      raison_sociale,
-      mandataire: updatedFormulaire.mandataire,
-      offre: pick(offre, ["rome_appellation_label", "date_debut_apprentissage", "type", "niveau"]),
+      nom: is_delegated ? contactCFA.last_name : last_name,
+      prenom: is_delegated ? contactCFA.first_name : first_name,
+      raison_sociale: establishment_raison_sociale,
+      mandataire: updatedFormulaire.is_delegated,
+      offre: pick(job, ["rome_appellation_label", "job_start_date", "type", "job_level_label"]),
       lba_url:
         config.env !== "recette"
-          ? `https://labonnealternance.apprentissage.beta.gouv.fr/recherche-apprentissage?&display=list&page=fiche&type=matcha&itemId=${offre._id}`
-          : `https://labonnealternance-recette.apprentissage.beta.gouv.fr/recherche-apprentissage?&display=list&page=fiche&type=matcha&itemId=${offre._id}`,
+          ? `https://labonnealternance.apprentissage.beta.gouv.fr/recherche-apprentissage?&display=list&page=fiche&type=matcha&itemId=${job._id}`
+          : `https://labonnealternance-recette.apprentissage.beta.gouv.fr/recherche-apprentissage?&display=list&page=fiche&type=matcha&itemId=${job._id}`,
     },
   })
 
@@ -311,16 +310,17 @@ export const createJob = async ({ offre, id_form }: { offre: IOffreExtended; id_
 
 /**
  * @description Create job delegations
- * @param {{string}} jobId
- * @param {{string[]}} etablissementCatalogueIds
- * @returns {Promise<IFormulaire>}
+ * @param {Object} payload
+ * @param {IJobs["_id"]} payload.jobId
+ * @param {string[]} payload.etablissementCatalogueIds
+ * @returns {Promise<IRecruiter>}
  */
-export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }: { jobId: string; etablissementCatalogueIds: string[] }): Promise<IFormulaire> => {
+export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }: { jobId: IJobs["_id"]; etablissementCatalogueIds: string[] }): Promise<IRecruiter> => {
   const offreDocument = await getOffre(jobId)
-  const userDocument = await usersRecruteur.getUser({ id_form: offreDocument.id_form })
-  const userState = userDocument.etat_utilisateur.pop()
+  const userDocument = await usersRecruteur.getUser({ establishment_id: offreDocument.establishment_id })
+  const userState = userDocument.status.pop()
 
-  const offre = offreDocument.offres.find((offre) => offre._id.toString() === jobId)
+  const offre = offreDocument.jobs.find((job) => job._id.toString() === jobId)
 
   const { etablissements } = await getCatalogueEtablissements({ _id: { $in: etablissementCatalogueIds } })
 
@@ -343,11 +343,11 @@ export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }:
       { etablissement_gestionnaire_courriel: 1, etablissement_formateur_siret: 1 }
     )
 
-    const { etablissement_formateur_siret: siret, etablissement_gestionnaire_courriel: email } = formations[0]
+    const { etablissement_formateur_siret: siret_code, etablissement_gestionnaire_courriel: email } = formations[0]
 
-    delegations.push({ siret, email })
+    delegations.push({ siret_code, email })
 
-    if (userState.statut === etat_utilisateur.VALIDE) {
+    if (userState.status === etat_utilisateur.VALIDE) {
       await mailer.sendEmail({
         to: email,
         subject: `Une entreprise recrute dans votre domaine`,
@@ -356,14 +356,14 @@ export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }:
           images: {
             logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
           },
-          enterpriseName: offreDocument.raison_sociale,
+          enterpriseName: offreDocument.establishment_raison_sociale,
           jobName: offre.rome_appellation_label,
-          contractType: offre.type.join(", "),
-          trainingLevel: offre.niveau,
-          startDate: dayjs(offre.date_debut_apprentissage).format("DD/MM/YYYY"),
-          duration: offre.duree_contrat,
-          rhythm: offre.rythme_alternance,
-          offerButton: `${config.publicUrlEspacePro}/proposition/formulaire/${offreDocument.id_form}/offre/${offre._id}/siret/${siret}`,
+          contractType: offre.job_type.join(", "),
+          trainingLevel: offre.job_level_label,
+          startDate: dayjs(offre.job_start_date).format("DD/MM/YYYY"),
+          duration: offre.job_duration,
+          rhythm: offre.job_rythm,
+          offerButton: `${config.publicUrlEspacePro}/proposition/formulaire/${offreDocument.establishment_id}/offre/${offre._id}/siret/${siret_code}`,
           createAccountButton: `${config.publicUrlEspacePro}/creation/cfa`,
         },
       })
@@ -372,8 +372,8 @@ export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }:
 
   await Promise.all(promises)
 
-  offre.delegate = true
-  offre.number_of_delegations = etablissements.length
+  offre.is_delegated = true
+  offre.job_prolongation_count = etablissements.length
   offre.delegations = offre?.delegations.concat(delegations) || delegations
 
   return await updateOffre(jobId, offre)
@@ -381,62 +381,65 @@ export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }:
 
 /**
  * @description Check if job offer exists
- * @param {string} id
- * @returns {Promise<IFormulaire>}
+ * @param {IJobs['_id']} id
+ * @returns {Promise<IRecruiter>}
  */
-export const checkOffreExists = async (id: string): Promise<boolean> => {
+export const checkOffreExists = async (id: IJobs["_id"]): Promise<boolean> => {
   const offre = await getOffre(id)
   return offre ? true : false
 }
 
 /**
  * @description Find formulaire by query
- * @param {object} query
- * @returns {Promise<IFormulaire>}
+ * @param {Filter<IRecruiter>} query
+ * @returns {Promise<IRecruiter>}
  */
-export const getFormulaire = async (query: object): Promise<IFormulaire> => Formulaire.findOne(query).lean()
+export const getFormulaire = async (query: Filter<IRecruiter>): Promise<IRecruiter> => Recruiter.findOne(query).lean()
 
 /**
  * @description Create new formulaire
- * @param {object} payload
- * @returns {Promise<IFormulaire>}
+ * @param {IRecruiter} payload
+ * @returns {Promise<IRecruiter>}
  */
-export const createFormulaire = async (payload: object): Promise<IFormulaire> => await Formulaire.create(payload)
+export const createFormulaire = async (payload: IRecruiter): Promise<IRecruiter> => await Recruiter.create(payload)
 
 /**
  * @description Remove formulaire by id
- * @param {string} id_form
- * @returns {Promise<object>}
+ * @param {IRecruiter["establishment_id"]} id
+ * @returns {Promise<IRecruiter>}
  */
-export const deleteFormulaire = async (id_form: string): Promise<object> => await Formulaire.findByIdAndDelete(id_form)
+export const deleteFormulaire = async (id: IRecruiter["_id"]): Promise<IRecruiter> => await Recruiter.findByIdAndDelete(id)
 
 /**
  * @description Remove all formulaires belonging to gestionnaire
- * @param {string} siret
- * @returns {Promise<object>}
+ * @param {IUserRecruteur["establishment_siret"]} establishment_siret
+ * @returns {Promise<IRecruiter>}
  */
-export const deleteFormulaireFromGestionnaire = async (siret: string): Promise<object> => await Formulaire.deleteMany({ gestionnaire: siret })
+export const deleteFormulaireFromGestionnaire = async (siret: IUserRecruteur["establishment_siret"]): Promise<IRecruiter> =>
+  await Recruiter.deleteMany({ cfa_delegated_siret: siret })
 
 /**
  * @description Update existing formulaire and return updated version
- * @param {string} id_offre
- * @param {object} payload
- * @returns {Promise<IFormulaire>}
+ * @param {IRecruiter["establishment_id"]} id
+ * @param {UpdateQuery<IRecruiter>} payload
+ * @param {ModelUpdateOptions} [options={new:true}]
+ * @returns {Promise<IRecruiter>}
  */
-export const updateFormulaire = async (id_form: string, payload: object): Promise<IFormulaire> => await Formulaire.findOneAndUpdate({ id_form }, payload, { new: true })
+export const updateFormulaire = async (id: IRecruiter["establishment_id"], payload: UpdateQuery<IRecruiter>, options: ModelUpdateOptions = { new: true }): Promise<IRecruiter> =>
+  await Recruiter.findOneAndUpdate({ establishment_id: id }, payload, options)
 
 /**
  * @description Archive existing formulaire and cancel all its job offers
- * @param {string} id_form
+ * @param {IRecruiter["establishment_id"]} establishment_id
  * @returns {Promise<boolean>}
  */
-export const archiveFormulaire = async (id_form: string): Promise<boolean> => {
-  const form = await Formulaire.findOne({ id_form })
+export const archiveFormulaire = async (id: IRecruiter["establishment_id"]): Promise<boolean> => {
+  const form = await Recruiter.findOne({ establishment_id: id })
 
-  form.statut = "Archivé"
+  form.status = "Archivé"
 
-  form.offres.map((offre) => {
-    offre.statut = "Annulée"
+  form.jobs.map((job) => {
+    job.job_status = "Annulée"
   })
 
   await form.save()
@@ -446,22 +449,22 @@ export const archiveFormulaire = async (id_form: string): Promise<boolean> => {
 
 /**
  * @description Archive existing delegated formulaires and cancel all its job offers
- * @param {string} id_form
+ * @param {IUserRecruteur["establishment_siret"]} establishment_siret
  * @returns {Promise<boolean>}
  */
-export const archiveDelegatedFormulaire = async (siret: string): Promise<boolean> => {
-  const formulaires = await Formulaire.find({ gestionnaire: siret }).lean()
+export const archiveDelegatedFormulaire = async (siret: IUserRecruteur["establishment_siret"]): Promise<boolean> => {
+  const formulaires = await Recruiter.find({ cfa_delegated_siret: siret }).lean()
 
   if (!formulaires.length) return
 
-  await asyncForEach(formulaires, async (form) => {
-    form.statut = "Archivé"
+  await asyncForEach(formulaires, async (form: IRecruiter) => {
+    form.status = "Archivé"
 
-    form.offres.map((offre) => {
-      offre.statut = "Annulée"
+    form.jobs.map((job) => {
+      job.job_status = "Annulée"
     })
 
-    await Formulaire.findByIdAndUpdate(form._id, form)
+    await Recruiter.findByIdAndUpdate(form._id, form)
   })
 
   return true
@@ -469,48 +472,49 @@ export const archiveDelegatedFormulaire = async (siret: string): Promise<boolean
 
 /**
  * @description Get job offer by job id
- * @param {string} id
+ * @param {IJobs["_id"]} id
  * @returns {Promise<IFormulaireExtended>}
  */
-export const getOffre = async (id: string): Promise<IFormulaireExtended> => await Formulaire.findOne({ "offres._id": id }).lean()
+export const getOffre = async (id: IJobs["_id"]): Promise<IFormulaireExtended> => await Recruiter.findOne({ "jobs._id": id }).lean()
 
 /**
  * @description Create job offer on existing formulaire
- * @param {string} id_offre
- * @param {object} payload
- * @returns {Promise<IFormulaire>}
+ * @param {IRecruiter["establishment_id"]} id
+ * @param {UpdateQuery<IJobs>} payload
+ * @param {ModelUpdateOptions} [options={new:true}]
+ * @returns {Promise<IRecruiter>}
  */
-export const createOffre = async (id_form: string, payload: object): Promise<IFormulaire> =>
-  await Formulaire.findOneAndUpdate({ id_form }, { $push: { offres: payload } }, { new: true })
+export const createOffre = async (id: IRecruiter["establishment_id"], payload: UpdateQuery<IJobs>, options: ModelUpdateOptions = { new: true }): Promise<IRecruiter> =>
+  await Recruiter.findOneAndUpdate({ establishment_id: id }, { $push: { jobs: payload } }, options)
 
 /**
  * @description Update existing job offer
- * @param {string} id_offre
+ * @param {IJobs["_id"]} id
  * @param {object} payload
- * @returns {Promise<IFormulaire>}
+ * @returns {Promise<IRecruiter>}
  */
-export const updateOffre = async (id_offre: string, payload: object): Promise<IFormulaire> =>
-  await Formulaire.findOneAndUpdate(
-    { "offres._id": id_offre },
+export const updateOffre = async (id: IJobs["_id"], payload: UpdateQuery<IJobs>, options: ModelUpdateOptions = { new: true }): Promise<IRecruiter> =>
+  await Recruiter.findOneAndUpdate(
+    { "jobs._id": id },
     {
       $set: {
-        "offres.$": payload,
+        "jobs.$": payload,
       },
     },
-    { new: true }
+    options
   )
 
 /**
  * @description Change job status to provided
- * @param {string} id_offre
+ * @param {IJobs["_id"]} id
  * @returns {Promise<boolean>}
  */
-export const provideOffre = async (id_offre: string): Promise<boolean> => {
-  await Formulaire.findOneAndUpdate(
-    { "offres._id": id_offre },
+export const provideOffre = async (id: IJobs["_id"]): Promise<boolean> => {
+  await Recruiter.findOneAndUpdate(
+    { "jobs._id": id },
     {
       $set: {
-        "offres.$.statut": POURVUE,
+        "jobs.$.job_status": POURVUE,
       },
     }
   )
@@ -519,15 +523,15 @@ export const provideOffre = async (id_offre: string): Promise<boolean> => {
 
 /**
  * @description Cancel job
- * @param {string} id_offre
+ * @param {IJobs["_id"]} id
  * @returns {Promise<boolean>}
  */
-export const cancelOffre = async (id_offre: string): Promise<boolean> => {
-  await Formulaire.findOneAndUpdate(
-    { "offres._id": id_offre },
+export const cancelOffre = async (id: IJobs["_id"]): Promise<boolean> => {
+  await Recruiter.findOneAndUpdate(
+    { "jobs._id": id },
     {
       $set: {
-        "offres.$.statut": ANNULEE,
+        "jobs.$.job_status": ANNULEE,
       },
     }
   )
@@ -536,18 +540,18 @@ export const cancelOffre = async (id_offre: string): Promise<boolean> => {
 
 /**
  * @description Extends job duration by 1 month.
- * @param {string} id_offre
+ * @param {IJobs["_id"]} id
  * @returns {Promise<boolean>}
  */
-export const extendOffre = async (id_offre: string): Promise<boolean> => {
-  await Formulaire.findOneAndUpdate(
-    { "offres._id": id_offre },
+export const extendOffre = async (id: IJobs["_id"]): Promise<boolean> => {
+  await Recruiter.findOneAndUpdate(
+    { "jobs._id": id },
     {
       $set: {
-        "offres.$.date_expiration": moment().add(1, "months").format("YYYY-MM-DD"),
-        "offres.$.date_derniere_prolongation": Date.now(),
+        "jobs.$.job_expiration_date": moment().add(1, "months").format("YYYY-MM-DD"),
+        "jobs.$.job_last_prolongation_date": Date.now(),
       },
-      $inc: { "offres.$.nombre_prolongation": 1 },
+      $inc: { "jobs.$.job_prolongation_count": 1 },
     }
   )
   return true

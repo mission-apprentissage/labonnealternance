@@ -65,31 +65,31 @@ export default () => {
 
   dayjs.extend(relativeTime)
 
-  let { data, isLoading } = useQuery("offre-liste", () => getFormulaire(params.id_form))
+  let { data, isLoading } = useQuery("offre-liste", () => getFormulaire(params.establishment_id))
 
   if (isLoading) {
     return <LoadingEmptySpace label="Chargement en cours..." />
   }
 
-  const getUserNavigationContext = ({ siret, id_form }) => {
+  const getUserNavigationContext = ({ establishment_siret, establishment_id }) => {
     switch (auth.type) {
       case AUTHTYPE.OPCO:
-        return `/administration/opco/entreprise/${siret}/${id_form}/offre/creation`
+        return `/administration/opco/entreprise/${establishment_siret}/${establishment_id}/offre/creation`
       default:
-        return `/administration/entreprise/${data.data.id_form}/offre/creation`
+        return `/administration/entreprise/${establishment_id}/offre/creation`
     }
   }
 
-  if (data.data.offres.length === 0) {
+  if (data.data.jobs.length === 0) {
     return (
       <Container maxW="container.xl" my={12}>
         <Flex justify="space-between" align="center">
           <Text fontSize="2rem" fontWeight={700}>
-            {data.data.raison_sociale}
+            {data.data.establishment_raison_sociale}
           </Text>
           <Box>
             {auth.type !== AUTHTYPE.OPCO && (
-              <Button mr={5} variant="secondary" leftIcon={<Building />} onClick={() => navigate(`/administration/entreprise/${data.data.id_form}/edition`)}>
+              <Button mr={5} variant="secondary" leftIcon={<Building />} onClick={() => navigate(`/administration/entreprise/${data.data.establishment_id}/edition`)}>
                 Modifier l'entreprise
               </Button>
             )}
@@ -98,7 +98,7 @@ export default () => {
               leftIcon={<Plus />}
               onClick={() => {
                 navigate(getUserNavigationContext(data.data), {
-                  state: { raison_sociale: data.data.raison_sociale },
+                  state: { establishment_raison_sociale: data.data.establishment_raison_sociale },
                 })
               }}
             >
@@ -111,42 +111,42 @@ export default () => {
     )
   }
 
-  const offres = data.data?.offres?.map((offre) => ({ ...offre, geo_coordonnees: data.data.geo_coordonnees }))
+  const jobs = data.data?.jobs?.map((job) => ({ ...job, geo_coordinates: data.data.geo_coordinates }))
 
-  const offresTermine = offres.filter((x) => x.statut === "Annulée")
-  const offresTermineNbr = offres.filter((x) => x.statut === "Annulée").length
-  const offresActive = offres.filter((x) => x.statut === "Active")
-  const offresActiveNbr = offres.filter((x) => x.statut === "Active").length
-  const offresPourvue = offres.filter((x) => x.statut === "Pourvue")
-  const offresPourvueNbr = offres.filter((x) => x.statut === "Pourvue").length
+  const offresTermine = jobs.filter((x) => x.job_status === "Annulée")
+  const offresTermineNbr = jobs.filter((x) => x.job_status === "Annulée").length
+  const offresActive = jobs.filter((x) => x.job_status === "Active")
+  const offresActiveNbr = jobs.filter((x) => x.job_status === "Active").length
+  const offresPourvue = jobs.filter((x) => x.job_status === "Pourvue")
+  const offresPourvueNbr = jobs.filter((x) => x.job_status === "Pourvue").length
 
   const columns = [
     {
       Header: "Métier",
-      accessor: "libelle",
+      accessor: "rome_label",
       Cell: ({
         data,
         cell: {
           row: { id },
         },
       }) => {
-        const { libelle, rome_appellation_label } = data[id]
-        return rome_appellation_label ?? libelle
+        const { rome_label, rome_appellation_label } = data[id]
+        return rome_appellation_label ?? rome_label
       },
       width: "500",
       maxWidth: "500",
     },
     {
       Header: "Postée le",
-      id: "createdAt",
-      sortType: (a, b) => sortReactTableDate(a.original.date_creation, b.original.date_creation),
-      accessor: ({ date_creation }) => dayjs(date_creation).format("DD/MM/YYYY"),
+      id: "job_creation_date",
+      sortType: (a, b) => sortReactTableDate(a.original.job_creation_date, b.original.job_creation_date),
+      accessor: ({ job_creation_date }) => dayjs(job_creation_date).format("DD/MM/YYYY"),
     },
     {
       Header: "Expire dans",
-      id: "date_expiration",
-      sortType: (a, b) => sortReactTableDate(a.original.date_expiration, b.original.date_expiration),
-      accessor: ({ date_expiration }) => dayjs(new Date()).to(date_expiration, true),
+      id: "job_expiration_date",
+      sortType: (a, b) => sortReactTableDate(a.original.job_expiration_date, b.original.job_expiration_date),
+      accessor: ({ job_expiration_date }) => dayjs(new Date()).to(job_expiration_date, true),
     },
     {
       Header: "Candidat(s)",
@@ -167,8 +167,8 @@ export default () => {
       disableFilters: true,
       disableSortBy: true,
       accessor: (row) => {
-        const [lat, lon] = row.geo_coordonnees.split(",")
-        const isDisable = row.statut === "Annulée" || row.statut === "Pourvue" ? true : false
+        const [lat, lon] = row.geo_coordinates.split(",")
+        const isDisable = row.job_status === "Annulée" || row.job_status === "Pourvue" ? true : false
 
         return (
           <Box display={["none", isDisable ? "none" : "block"]}>
@@ -182,8 +182,8 @@ export default () => {
                     <MenuItem>
                       <Link
                         onClick={() =>
-                          navigate(`/administration/entreprise/${params.id_form}/offre/${row._id}`, {
-                            state: { raison_sociale: data.data.raison_sociale },
+                          navigate(`/administration/entreprise/${params.establishment_id}/offre/${row._id}`, {
+                            state: { establishment_raison_sociale: data.data.establishment_raison_sociale },
                           })
                         }
                       >
@@ -195,9 +195,9 @@ export default () => {
                         onClick={() => {
                           putOffre(row._id, {
                             ...row,
-                            date_expiration: dayjs().add(1, "month").format("YYYY-MM-DD"),
-                            date_derniere_prolongation: Date(),
-                            nombre_prolongation: row.nombre_prolongation >= 0 ? row.nombre_prolongation + 1 : 1,
+                            job_expiration_date: dayjs().add(1, "month").format("YYYY-MM-DD"),
+                            job_last_prolongation_date: Date(),
+                            job_prolongation_count: row.job_prolongation_count >= 0 ? row.job_prolongation_count + 1 : 1,
                           })
                             .then(() =>
                               toast({
@@ -223,7 +223,7 @@ export default () => {
                     {auth.type !== AUTHTYPE.CFA && (
                       <>
                         <MenuItem>
-                          <Link isExternal href={`${process.env.REACT_APP_BASE_URL}/recherche-apprentissage-formation?&caller=matcha&romes=${row.romes}&lon=${lon}&lat=${lat}`}>
+                          <Link isExternal href={`${process.env.REACT_APP_BASE_URL}/recherche-apprentissage-formation?&caller=matcha&romes=${row.rome_code}&lon=${lon}&lat=${lat}`}>
                             Voir les centres de formations
                           </Link>
                         </MenuItem>
@@ -262,7 +262,7 @@ export default () => {
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbItem>
-                <BreadcrumbLink textStyle="xs">{data.data.raison_sociale}</BreadcrumbLink>
+                <BreadcrumbLink textStyle="xs">{data.data.establishment_raison_sociale}</BreadcrumbLink>
               </BreadcrumbItem>
             </Breadcrumb>
           )}
@@ -274,7 +274,11 @@ export default () => {
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbItem>
-                {data.data._id ? <BreadcrumbLink textStyle="xs">{data.data.raison_sociale}</BreadcrumbLink> : <BreadcrumbLink textStyle="xs">Nouvelle entreprise</BreadcrumbLink>}
+                {data.data._id ? (
+                  <BreadcrumbLink textStyle="xs">{data.data.establishment_raison_sociale}</BreadcrumbLink>
+                ) : (
+                  <BreadcrumbLink textStyle="xs">Nouvelle entreprise</BreadcrumbLink>
+                )}
               </BreadcrumbItem>
             </Breadcrumb>
           )}
@@ -282,11 +286,11 @@ export default () => {
       </Box>
       <Flex justify="space-between" align="center">
         <Text fontSize="2rem" fontWeight={700}>
-          {data.data.raison_sociale}
+          {data.data.establishment_raison_sociale}
         </Text>
         <Box>
           {auth.type !== AUTHTYPE.OPCO && (
-            <Button mr={5} variant="secondary" leftIcon={<Building />} onClick={() => navigate(`/administration/entreprise/${data.data.id_form}/edition`)}>
+            <Button mr={5} variant="secondary" leftIcon={<Building />} onClick={() => navigate(`/administration/entreprise/${data.data.establishment_id}/edition`)}>
               {auth.type === AUTHTYPE.ENTREPRISE ? "Mes informations" : "Modifier l'entreprise"}
             </Button>
           )}
@@ -295,7 +299,7 @@ export default () => {
             leftIcon={<Plus />}
             onClick={() =>
               navigate(getUserNavigationContext(data.data), {
-                state: { raison_sociale: data.data.raison_sociale },
+                state: { establishment_raison_sociale: data.data.establishment_raison_sociale },
               })
             }
           >

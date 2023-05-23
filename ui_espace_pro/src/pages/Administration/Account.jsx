@@ -18,7 +18,7 @@ export default () => {
   const getUserNavigationContext = () => {
     switch (auth.type) {
       case AUTHTYPE.ENTREPRISE:
-        return `/administration/entreprise/${auth.id_form}`
+        return `/administration/entreprise/${auth.establishment_id}`
       case AUTHTYPE.CFA:
         return `/administration`
       default:
@@ -28,7 +28,7 @@ export default () => {
 
   const { data, isLoading } = useQuery("user", () => getUser(auth.id))
 
-  const userMutation = useMutation(({ userId, formId, values }) => updateEntreprise(userId, formId, values), {
+  const userMutation = useMutation(({ userId, establishment_id, values }) => updateEntreprise(userId, establishment_id, values), {
     onSuccess: () => {
       client.invalidateQueries("user")
     },
@@ -65,15 +65,15 @@ export default () => {
             validateOnMount={true}
             enableReinitialize={true}
             initialValues={{
-              nom: data.data.nom,
-              prenom: data.data.prenom,
-              telephone: data.data.telephone,
+              last_name: data.data.last_name,
+              first_name: data.data.first_name,
+              phone: data.data.phone,
               email: data.data.email,
             }}
             validationSchema={Yup.object().shape({
-              nom: Yup.string().required("champ obligatoire"),
-              prenom: Yup.string().required("champ obligatoire"),
-              telephone: Yup.string()
+              last_name: Yup.string().required("champ obligatoire"),
+              first_name: Yup.string().required("champ obligatoire"),
+              phone: Yup.string()
                 .matches(/^[0-9]+$/, "Le téléphone est composé uniquement de chiffres")
                 .min(10, "le téléphone est sur 10 chiffres")
                 .max(10, "le téléphone est sur 10 chiffres")
@@ -83,7 +83,7 @@ export default () => {
             onSubmit={async (values, { setSubmitting }) => {
               setSubmitting(true)
               if (auth.type === AUTHTYPE.ENTREPRISE) {
-                userMutation.mutate({ userId: data.data._id, formId: auth.id_form, values })
+                userMutation.mutate({ userId: data.data._id, establishment_id: auth.establishment_id, values })
               } else {
                 partenaireMutation.mutate({ userId: data.data._id, values })
               }
@@ -115,9 +115,9 @@ export default () => {
                       )}
                       <Box mt={4}>
                         <Form>
-                          <CustomInput name="nom" label="Nom" type="text" value={values.nom} />
-                          <CustomInput name="prenom" label="Prénom" type="test" value={values.prenom} />
-                          <CustomInput name="telephone" label="Téléphone" type="tel" pattern="[0-9]{10}" maxLength="10" value={values.telephone} />
+                          <CustomInput name="last_name" label="Nom" type="text" value={values.last_name} />
+                          <CustomInput name="first_name" label="Prénom" type="test" value={values.first_name} />
+                          <CustomInput name="phone" label="Téléphone" type="tel" pattern="[0-9]{10}" maxLength="10" value={values.phone} />
                           <CustomInput name="email" label="Email" type="email" value={values.email} />
                           <Flex justify="flex-end" mt={10}>
                             <Button type="submit" variant="form" leftIcon={<ArrowRightLine />} isActive={isValid} isDisabled={!isValid || isSubmitting} isLoading={isSubmitting}>

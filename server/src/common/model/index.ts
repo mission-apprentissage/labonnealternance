@@ -13,9 +13,9 @@ import eligibleTrainingsForAppointmentHistoric from "./schema/eligibleTrainingsF
 import EmailBlacklist from "./schema/emailBlacklist/emailBlacklist.schema.js"
 import Etablissement from "./schema/etablissements/etablissement.schema.js"
 import FormationCatalogue from "./schema/formationCatalogue/formationCatalogue.schema.js"
-import Formulaire from "./schema/formulaire/formulaire.schema.js"
+import Recruiter from "./schema/recruiter/recruiter.schema.js"
 import GeoLocation from "./schema/geolocation/geolocation.schema.js"
-import Offre from "./schema/offre/offre.schema.js"
+import Job from "./schema/jobs/jobs.schema.js"
 import Opco from "./schema/opco/opco.schema.js"
 import Optout from "./schema/optout/optout.schema.js"
 import ParcoursupEtablissementStat from "./schema/parcoursupEtablissementStat/parcoursupEtablissementStat.schema.js"
@@ -38,9 +38,9 @@ export {
   EligibleTrainingsForAppointment,
   Etablissement,
   ParcoursupEtablissementStat,
-  Formulaire,
+  Recruiter,
   Credential,
-  Offre,
+  Job,
   Optout,
   ReferentielOpco,
   UserRecruteur,

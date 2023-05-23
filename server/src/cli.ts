@@ -55,22 +55,22 @@ cli
   })
 
 cli
-  .command("create-user <prenom> <nom> <email> <scope> <raison_sociale> [siret] [telephone] [adresse]")
+  .command("create-user <first_name> <last_name> <email> <scope> <establishment_raison_sociale> [establishment_siret] [phone] [address]")
   .option("-admin, [isAdmin]", "utilisateur administrateur", false)
   .requiredOption("-type, <type>", "type d'utilisateur")
   .requiredOption("-email_valide, <email_valide>", "email valide", true)
   .description("Permet de créer un accès utilisateur à l'espace partenaire")
-  .action((prenom, nom, email, scope, raison_sociale, siret, telephone, adresse, options) => {
+  .action((first_name, last_name, email, scope, establishment_raison_sociale, establishment_siret, phone, address, options) => {
     runScript(({ usersRecruteur }) => {
       createUser(
         usersRecruteur,
         {
-          prenom,
-          nom,
-          siret,
-          raison_sociale,
-          telephone,
-          adresse,
+          first_name,
+          last_name,
+          establishment_siret,
+          establishment_raison_sociale,
+          phone,
+          address,
           email,
           scope,
         },
@@ -118,7 +118,7 @@ cli
   .command("creer-offre-metabase")
   .description("Permet de créer une collection dédiée aux offres pour metabase")
   .action(() => {
-    runScript(({ application }) => createOffreCollection(application))
+    runScript(() => createOffreCollection())
   })
 
 cli

@@ -1,5 +1,4 @@
-/* eslint-disable */
-import express from "express"
+import express, { Request } from "express"
 import joi from "joi"
 import { createFormulaire, getFormulaire } from "../../services/formulaire.service.js"
 import { mailTemplate } from "../../assets/index.js"
@@ -32,6 +31,8 @@ import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
 import { validationOrganisation } from "../../common/bal.js"
 import Joi from "joi"
 import { siretSchema } from "../utils/validators.js"
+import { IUserRecruteur } from "../../common/model/schema/userRecruteur/userRecruteur.types.js"
+import { IRecruiter } from "../../common/model/schema/recruiter/recruiter.types.js"
 
 const getCfaRomeSchema = joi.object({
   latitude: joi.number().required(),
@@ -46,14 +47,14 @@ export default ({ usersRecruteur, mailer }) => {
     await usersRecruteur.updateUserValidationHistory(userId, {
       validation_type: validation_utilisateur.AUTO,
       user: "SERVEUR",
-      statut: etat_utilisateur.VALIDE,
+      status: etat_utilisateur.VALIDE,
     })
 
   const setManualValidation = async (userId) =>
     await usersRecruteur.updateUserValidationHistory(userId, {
       validation_type: validation_utilisateur.MANUAL,
       user: "SERVEUR",
-      statut: etat_utilisateur.ATTENTE,
+      status: etat_utilisateur.ATTENTE,
     })
 
   /**
@@ -104,9 +105,9 @@ export default ({ usersRecruteur, mailer }) => {
         // Check if a CFA already has the company as partenaire
         if (req.query.fromDashboardCfa) {
           const exist = await getFormulaire({
-            siret: req.params.siret,
-            gestionnaire: req.query.gestionnaire,
-            statut: "Actif",
+            establishment_siret: req.params.siret,
+            cfa_delegated_siret: req.query.cfa_delegated_siret,
+            status: "Actif",
           })
 
           if (exist) {
@@ -129,7 +130,7 @@ export default ({ usersRecruteur, mailer }) => {
         }
 
         const entrepriseData = formatEntrepriseData(result.etablissement)
-        const geo_coordonnees = await getGeoCoordinates(`${entrepriseData.rue}, ${entrepriseData.code_postal}, ${entrepriseData.commune}`)
+        const geo_coordinates = await getGeoCoordinates(`${entrepriseData.address_detail.l4}, ${entrepriseData.address_detail.l6}`)
 
         let opcoResult: ICFADock | ISIRET2IDCC = await getOpco(req.params.siret)
         let opcoData = { opco: undefined, idcc: undefined }
@@ -161,7 +162,7 @@ export default ({ usersRecruteur, mailer }) => {
             break
         }
 
-        res.json({ ...entrepriseData, ...opcoData, geo_coordonnees })
+        res.json({ ...entrepriseData, ...opcoData, geo_coordinates })
       } catch (error) {
         console.log({ error })
         res.status(400).json({ error: true, message: "Le service est momentanément indisponible." })
@@ -179,7 +180,7 @@ export default ({ usersRecruteur, mailer }) => {
         return res.status(400).json({ error: true, message: "Le numéro siret est obligatoire." })
       }
 
-      const exist = await getEtablissement({ siret: req.params.siret, type: CFA })
+      const exist = await getEtablissement({ establishment_siret: req.params.siret, type: CFA })
 
       if (exist) {
         return res.status(403).json({
@@ -222,28 +223,18 @@ export default ({ usersRecruteur, mailer }) => {
 
   router.post(
     "/creation",
-    tryCatch(async (req, res) => {
-      let body = await Joi.object({
-        email: Joi.string().email().required(),
-        type: Joi.string().allow(ENTREPRISE, CFA).required(),
-        siret: siretSchema().required(),
-      })
-        .unknown()
-        .validateAsync(req.body, { abortEarly: false })
-      const { email, type, siret } = body
-
-      const exist = await usersRecruteur.getUser({ email })
-      let formulaireInfo, partenaire
+    tryCatch(async (req: Request<{}, {}, IUserRecruteur & IRecruiter>, res) => {
+      const exist = await usersRecruteur.getUser({ email: req.body.email })
 
       if (exist) {
         return res.status(403).json({ error: true, message: "L'adresse mail est déjà associée à un compte La bonne alternance." })
       }
 
-      switch (type) {
+      switch (req.body.type) {
         case ENTREPRISE:
-          const siren = siret.substr(0, 9)
-          formulaireInfo = await createFormulaire(body)
-          partenaire = await usersRecruteur.createUser({ ...body, id_form: formulaireInfo.id_form })
+          const siren = req.body.establishment_siret.slice(0, 9)
+          const formulaireInfo = await createFormulaire(req.body)
+          let newEntreprise: IUserRecruteur = await usersRecruteur.createUser({ ...req.body, establishment_id: formulaireInfo.establishment_id })
 
           // Get all corresponding records using the SIREN number in BonneBoiteLegacy collection
           const [bonneBoiteLegacyList, bonneBoiteList, referentielOpcoList] = await Promise.all([
@@ -266,49 +257,49 @@ export default ({ usersRecruteur, mailer }) => {
           const emailListUnique = [...new Set([...referentielOpcoEmailList, ...bonneBoiteLegacyEmailList, ...bonneBoiteEmailList])]
 
           // Check BAL API for validation
-          const balControl = await validationOrganisation(siret, email)
+          const balControl = await validationOrganisation(req.body.establishment_siret, req.body.email)
 
           if (balControl.is_valid) {
-            partenaire = await autoValidateUser(partenaire._id)
+            newEntreprise = await autoValidateUser(newEntreprise._id)
           } else {
             if (emailListUnique.length) {
-              if (getMatchingEmailFromContactList(partenaire.email, emailListUnique)) {
-                partenaire = await autoValidateUser(partenaire._id)
-              } else if (checkIfUserEmailIsPrivate(partenaire.email) && getMatchingDomainFromContactList(partenaire.email, emailListUnique)) {
-                partenaire = await autoValidateUser(partenaire._id)
+              if (getMatchingEmailFromContactList(newEntreprise.email, emailListUnique)) {
+                newEntreprise = await autoValidateUser(newEntreprise._id)
+              } else if (checkIfUserEmailIsPrivate(newEntreprise.email) && getMatchingDomainFromContactList(newEntreprise.email, emailListUnique)) {
+                newEntreprise = await autoValidateUser(newEntreprise._id)
               } else {
-                partenaire = await setManualValidation(partenaire._id)
+                newEntreprise = await setManualValidation(newEntreprise._id)
               }
             } else {
-              partenaire = await setManualValidation(partenaire._id)
+              newEntreprise = await setManualValidation(newEntreprise._id)
             }
           }
 
           // Dépot simplifié : retourner les informations nécessaire à la suite du parcours
-          return res.json({ formulaire: formulaireInfo, user: partenaire })
+          return res.json({ formulaire: formulaireInfo, user: newEntreprise })
         case CFA:
           // Contrôle du mail avec le référentiel :
-          let referentiel = await getEtablissementFromReferentiel(siret)
+          let referentiel = await getEtablissementFromReferentiel(req.body.establishment_siret)
           // Creation de l'utilisateur en base de données
-          partenaire = await usersRecruteur.createUser(body)
+          let newCfa: IUserRecruteur = await usersRecruteur.createUser(req.body)
 
           if (!referentiel.contacts.length) {
             // Validation manuelle de l'utilisateur à effectuer pas un administrateur
-            partenaire = await setManualValidation(partenaire._id)
+            newCfa = await setManualValidation(newCfa._id)
 
             await notifyToSlack({
               subject: "RECRUTEUR",
-              message: `Nouvel OF en attente de validation - ${partenaire.email} - https://referentiel.apprentissage.beta.gouv.fr/organismes/${partenaire.siret}`,
+              message: `Nouvel OF en attente de validation - ${newCfa.email} - https://referentiel.apprentissage.beta.gouv.fr/organismes/${newCfa.establishment_siret}`,
             })
 
-            return res.json({ user: partenaire })
+            return res.json({ user: newCfa })
           }
 
-          if (checkIfUserMailExistInReferentiel(referentiel.contacts, email)) {
+          if (checkIfUserMailExistInReferentiel(referentiel.contacts, req.body.email)) {
             // Validation automatique de l'utilisateur
-            partenaire = await autoValidateUser(partenaire._id)
+            newCfa = await autoValidateUser(newCfa._id)
 
-            let { email, _id, nom, prenom } = partenaire
+            let { email, _id, last_name, first_name } = newCfa
 
             const url = getValidationUrl(_id)
 
@@ -320,26 +311,26 @@ export default ({ usersRecruteur, mailer }) => {
                 images: {
                   logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
                 },
-                prenom,
-                nom,
+                first_name,
+                last_name,
                 confirmation_url: url,
               },
             })
 
             // Keep the same structure as ENTREPRISE
-            return res.json({ user: partenaire })
+            return res.json({ user: newCfa })
           }
 
-          if (checkIfUserEmailIsPrivate(email)) {
+          if (checkIfUserEmailIsPrivate(req.body.email)) {
             // Récupération des noms de domain
             const domains = getAllDomainsFromEmailList(referentiel.contacts)
-            const userEmailDomain = email.split("@")[1]
+            const userEmailDomain = req.body.email.split("@")[1]
 
             if (domains.includes(userEmailDomain)) {
               // Validation automatique de l'utilisateur
-              partenaire = await autoValidateUser(partenaire._id)
+              newCfa = await autoValidateUser(newCfa._id)
 
-              let { email, _id, nom, prenom } = partenaire
+              let { email, _id, last_name, first_name } = newCfa
 
               const url = getValidationUrl(_id)
 
@@ -351,27 +342,27 @@ export default ({ usersRecruteur, mailer }) => {
                   images: {
                     logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
                   },
-                  prenom,
-                  nom,
+                  first_name,
+                  last_name,
                   confirmation_url: url,
                 },
               })
 
               // Keep the same structure as ENTREPRISE
-              return res.json({ user: partenaire })
+              return res.json({ user: newCfa })
             }
           }
 
           // Validation manuelle de l'utilisateur à effectuer pas un administrateur
-          partenaire = await setManualValidation(partenaire._id)
+          newCfa = await setManualValidation(newCfa._id)
 
           await notifyToSlack({
             subject: "RECRUTEUR",
-            message: `Nouvel OF en attente de validation - ${partenaire.email} - https://referentiel.apprentissage.beta.gouv.fr/organismes/${partenaire.siret}`,
+            message: `Nouvel OF en attente de validation - ${newCfa.email} - https://referentiel.apprentissage.beta.gouv.fr/organismes/${newCfa.establishment_siret}`,
           })
 
           // Keep the same structure as ENTREPRISE
-          return res.json({ user: partenaire })
+          return res.json({ user: newCfa })
       }
     })
   )
@@ -381,9 +372,9 @@ export default ({ usersRecruteur, mailer }) => {
    */
 
   router.get(
-    "/:siret",
+    "/:establishment_siret",
     tryCatch(async (req, res) => {
-      const partenaire = await usersRecruteur.getUser({ siret: req.params.siret })
+      const partenaire = await usersRecruteur.getUser({ establishment_siret: req.params.establishment_siret })
       res.json(partenaire)
     })
   )
@@ -394,7 +385,7 @@ export default ({ usersRecruteur, mailer }) => {
   router.put(
     "/:id",
     tryCatch(async (req, res) => {
-      let result = await usersRecruteur.updateUser(req.params.id, req.body)
+      let result = await usersRecruteur.updateUser({ _id: req.params.id }, req.body)
       return res.json(result)
     })
   )
@@ -427,8 +418,8 @@ export default ({ usersRecruteur, mailer }) => {
         })
       }
 
-      const user = await usersRecruteur.getUser({ _id: req.body.id })
-      const isUserAwaiting = usersRecruteur.getUserValidationState(user.etat_utilisateur) === etat_utilisateur.ATTENTE
+      const user: IUserRecruteur = await usersRecruteur.getUser({ _id: req.body.id })
+      const isUserAwaiting = usersRecruteur.getUserValidationState(user.status) === etat_utilisateur.ATTENTE
 
       if (isUserAwaiting) {
         return res.json({ isUserAwaiting: true })
@@ -436,24 +427,26 @@ export default ({ usersRecruteur, mailer }) => {
 
       const magiclink = `${config.publicUrlEspacePro}/authentification/verification?token=${createMagicLinkToken(user.email)}`
 
+      const { email, first_name, last_name, establishment_raison_sociale, type } = user
+
       await mailer.sendEmail({
-        to: user.email,
+        to: email,
         subject: "Bienvenue sur La bonne alternance",
         template: mailTemplate["mail-bienvenue"],
         data: {
           images: {
             logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
           },
-          raison_sociale: user.raison_sociale,
-          nom: user.nom,
-          prenom: user.prenom,
-          email: user.email,
-          mandataire: user.type === CFA,
+          establishment_raison_sociale,
+          last_name,
+          first_name,
+          email,
+          is_delegated: type === CFA,
           url: magiclink,
         },
       })
 
-      await usersRecruteur.registerUser(user.email)
+      await usersRecruteur.registerUser(email)
 
       // Log the user in directly
       return res.json({ token: createUserRecruteurToken(user) })

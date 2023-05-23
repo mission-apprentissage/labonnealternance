@@ -50,7 +50,7 @@ export default () => {
 
   const { data, isLoading } = useQuery("user", () => getUser(params.userId), { cacheTime: 0 })
 
-  const userMutation = useMutation(({ userId, formId, values }) => updateEntreprise(userId, formId, values), {
+  const userMutation = useMutation(({ userId, establishment_id, values }) => updateEntreprise(userId, establishment_id, values), {
     onSuccess: () => {
       client.invalidateQueries("user")
     },
@@ -75,7 +75,7 @@ export default () => {
   }
 
   const getActionButtons = (userHistory, userId) => {
-    switch (userHistory.statut) {
+    switch (userHistory.status) {
       case USER_STATUS.WAITING:
         return (
           <>
@@ -94,7 +94,7 @@ export default () => {
   }
 
   const getUserBadge = (userHistory) => {
-    switch (userHistory.statut) {
+    switch (userHistory.status) {
       case USER_STATUS.WAITING:
         return <Badge variant="awaiting">À VERIFIER</Badge>
       case USER_STATUS.ACTIVE:
@@ -103,7 +103,7 @@ export default () => {
         return <Badge variant="inactive">INACTIF</Badge>
 
       default:
-        return <Badge>{userHistory.statut}</Badge>
+        return <Badge>{userHistory.status}</Badge>
     }
   }
 
@@ -123,11 +123,11 @@ export default () => {
     return <LoadingEmptySpace />
   }
 
-  const [lastUserState] = data.data.etat_utilisateur.slice(-1)
+  const [lastUserState] = data.data.status.slice(-1)
 
   return (
     <AnimationContainer>
-      <ConfirmationDesactivationUtilisateur {...confirmationDesactivationUtilisateur} raison_sociale={data.data.raison_sociale} _id={data.data._id} />
+      <ConfirmationDesactivationUtilisateur {...confirmationDesactivationUtilisateur} raison_sociale={data.data.establishment_raison_sociale} _id={data.data._id} />
       <Layout displayNavigationMenu={false} header={false} footer={false}>
         <Container maxW="container.xl">
           <Box mt="16px" mb={6}>
@@ -138,7 +138,7 @@ export default () => {
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbItem>
-                <BreadcrumbLink textStyle="xs">{data.data.raison_sociale}</BreadcrumbLink>
+                <BreadcrumbLink textStyle="xs">{data.data.establishment_raison_sociale}</BreadcrumbLink>
               </BreadcrumbItem>
             </Breadcrumb>
           </Box>
@@ -146,15 +146,29 @@ export default () => {
             <Flex align="center" justify="space-between" mb={5}>
               <Flex align="center" justify="flex-start" maxW="50%">
                 <Heading fontSize="32px" noOfLines={2}>
-                  {data.data.raison_sociale}
+                  {data.data.establishment_raison_sociale}
                 </Heading>
                 <Box ml={5}>{getUserBadge(lastUserState)}</Box>
               </Flex>
               <Stack direction={["column", "column", "column", "row"]} spacing="10px">
                 {getActionButtons(lastUserState, data.data._id)}
-                <Button variant="secondary" onClick={() => navigate(`/administration/opco/entreprise/${data.data.siret}/${data.data.id_form}`)}>
-                  Voir les offres
-                </Button>
+                {data.data.type === AUTHTYPE.ENTREPRISE ? (
+                  data.data.jobs.length ? (
+                    lastUserState.status === USER_STATUS.WAITING ? (
+                      <Button variant="secondary" isDisabled={true}>
+                        Offre en attente de validation
+                      </Button>
+                    ) : (
+                      <Button variant="secondary" onClick={() => navigate(`/administration/opco/entreprise/${data.data.establishment_siret}/${data.data.establishment_id}`)}>
+                        Voir les offres
+                      </Button>
+                    )
+                  ) : (
+                    <Button variant="secondary" isDisabled={true}>
+                      Pas d'offre(s) déposé
+                    </Button>
+                  )
+                ) : null}
               </Stack>
             </Flex>
           </Box>
@@ -162,16 +176,16 @@ export default () => {
             validateOnMount={true}
             enableReinitialize={true}
             initialValues={{
-              nom: data.data.nom,
-              prenom: data.data.prenom,
-              telephone: data.data.telephone,
+              last_name: data.data.last_name,
+              first_name: data.data.first_name,
+              phone: data.data.phone,
               email: data.data.email,
               opco: data.data.opco,
             }}
             validationSchema={Yup.object().shape({
-              nom: Yup.string().required("champ obligatoire"),
-              prenom: Yup.string().required("champ obligatoire"),
-              telephone: Yup.string()
+              last_name: Yup.string().required("champ obligatoire"),
+              first_name: Yup.string().required("champ obligatoire"),
+              phone: Yup.string()
                 .matches(/^[0-9]+$/, "Le téléphone est composé uniquement de chiffres")
                 .min(10, "le téléphone est sur 10 chiffres")
                 .max(10, "le téléphone est sur 10 chiffres")
@@ -183,7 +197,7 @@ export default () => {
             onSubmit={async (values, { setSubmitting }) => {
               setSubmitting(true)
               // For companies we update the User Collection and the Formulaire collection at the same time
-              userMutation.mutate({ userId: data.data._id, formId: data.data.id_form, values })
+              userMutation.mutate({ userId: data.data._id, establishment_id: data.data.establishment_id, values })
               toast({
                 title: "Mise à jour enregistrée avec succès",
                 position: "top-right",
@@ -199,7 +213,7 @@ export default () => {
                 <>
                   <ConfirmationModificationOpco
                     {...confirmationModificationOpco}
-                    raison_sociale={data.data.raison_sociale}
+                    establishment_raison_sociale={data.data.establishment_raison_sociale}
                     setFieldValue={setFieldValue}
                     previousValue={data.data.opco}
                     newValue={values.opco}
@@ -211,9 +225,9 @@ export default () => {
                       </Text>
                       <Box mt={4}>
                         <Form>
-                          <CustomInput name="nom" label="Nom" type="text" value={values.nom} />
-                          <CustomInput name="prenom" label="Prénom" type="test" value={values.prenom} />
-                          <CustomInput name="telephone" label="Téléphone" type="tel" pattern="[0-9]{10}" maxLength="10" value={values.telephone} />
+                          <CustomInput name="last_name" label="Nom" type="text" value={values.last_name} />
+                          <CustomInput name="first_name" label="Prénom" type="test" value={values.first_name} />
+                          <CustomInput name="phone" label="Téléphone" type="tel" pattern="[0-9]{10}" maxLength="10" value={values.phone} />
                           <CustomInput name="email" label="Email" type="email" value={values.email} />
                           {data.data.type === AUTHTYPE.ENTREPRISE && (
                             <FormControl>
@@ -261,7 +275,7 @@ export default () => {
                   </SimpleGrid>
                   {(auth.type === AUTHTYPE.OPCO || auth.type === AUTHTYPE.ADMIN) && (
                     <Box mb={12}>
-                      <UserValidationHistory histories={data.data.etat_utilisateur} />
+                      <UserValidationHistory histories={data.data.status} />
                     </Box>
                   )}
                 </>

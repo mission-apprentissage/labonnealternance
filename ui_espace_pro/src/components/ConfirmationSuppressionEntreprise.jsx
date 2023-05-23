@@ -3,11 +3,11 @@ import { archiveFormulaire } from "../api"
 import { ArrowRightLine, Close } from "../theme/components/icons"
 
 export default (props) => {
-  let { isOpen, onClose, raison_sociale, id_form } = props
+  let { isOpen, onClose, establishment_raison_sociale, establishment_id } = props
   const toast = useToast()
 
   const SupprimerFormulaire = () => {
-    archiveFormulaire(id_form)
+    archiveFormulaire(establishment_id)
       .then(() => {
         toast({
           title: "Suppression réussie",
@@ -43,7 +43,7 @@ export default (props) => {
                 <ArrowRightLine boxSize={26} />
               </Text>
               <Text as={"span"} ml={4}>
-                Supprimer {raison_sociale ?? ""}
+                Supprimer {establishment_raison_sociale ?? ""}
               </Text>
             </Flex>
           </Heading>

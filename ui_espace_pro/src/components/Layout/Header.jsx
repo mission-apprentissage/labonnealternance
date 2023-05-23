@@ -45,7 +45,7 @@ export default () => {
                     <Icon as={RiAccountCircleLine} color="bluefrance.500" />
                     <Box display={["none", "block"]} ml={2}>
                       <Text color="bluefrance.500">
-                        {auth.prenom} {auth.nom}
+                        {auth.first_name} {auth.last_name}
                       </Text>
                     </Box>
                   </Flex>
@@ -62,7 +62,7 @@ export default () => {
                       )}
                     </>
                   )}
-                  {auth.permissions?.isAdmin && (
+                  {auth.type === AUTHTYPE.ADMIN && (
                     <>
                       <MenuItem onClick={() => navigate("/administration/users")}>Gestion des utilisateurs</MenuItem>
                       <MenuDivider />

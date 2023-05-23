@@ -9,6 +9,8 @@ import { sentryCaptureException } from "../common/utils/sentryUtils.js"
 import config from "../config.js"
 
 import { IAPIAdresse, IAPIEtablissement, ICFADock, IEtablissementCatalogue, IEtablissementGouv, IReferentiel, ISIRET2IDCC } from "./etablissement.service.types.js"
+import { IRecruiter } from "../common/model/schema/recruiter/recruiter.types.js"
+import { Filter } from "mongodb"
 
 const apiParams = {
   token: config.apiEntrepriseKey,
@@ -102,7 +104,7 @@ export const findByIdAndDelete = async (id): Promise<IEtablissement> => Etabliss
  * @param {Object} query
  * @returns {Promise<void>}
  */
-export const getEtablissement = async (query: object): Promise<IUserRecruteur> => UserRecruteur.findOne(query)
+export const getEtablissement = async (query: Filter<IUserRecruteur>): Promise<IUserRecruteur> => UserRecruteur.findOne(query)
 
 /**
  * @description Get opco details from CFADOCK API for a given SIRET
@@ -147,16 +149,16 @@ export const getIdcc = async (siret: string): Promise<ISIRET2IDCC> => {
 }
 /**
  * @description Get the establishment validation url for a given SIRET
- * @param {String} _id
+ * @param {IRecruiter["_id"]} _id
  * @returns {String}
  */
-export const getValidationUrl = (_id: string): string => `${config.publicUrlEspacePro}/authentification/validation/${_id}`
+export const getValidationUrl = (_id: IRecruiter["_id"]): string => `${config.publicUrlEspacePro}/authentification/validation/${_id}`
 /**
  * @description Validate the establishment email for a given ID
- * @param {String} _id
+ * @param {IUserRecruteur["_id"]} _id
  * @returns {Promise<void>}
  */
-export const validateEtablissementEmail = async (_id: string): Promise<IUserRecruteur> => UserRecruteur.findByIdAndUpdate(_id, { email_valide: true })
+export const validateEtablissementEmail = async (_id: IUserRecruteur["_id"]): Promise<IUserRecruteur> => UserRecruteur.findByIdAndUpdate(_id, { is_email_checked: true })
 /**
  * @description Get the establishment information from the ENTREPRISE API for a given SIRET
  * @param {String} siret
@@ -225,28 +227,30 @@ export const getGeoCoordinates = async (adresse: string): Promise<string> => {
 }
 /**
  * @description Get matching records from the ReferentielOpco collection for a given siret & email
- * @param {String} siretCode
+ * @param {IReferentielOpco["siret_code"]} siretCode
  * @returns {Promise<IReferentielOpco>}
  */
-export const getEstablishmentFromOpcoReferentiel = async (siretCode: string): Promise<IReferentielOpco> => await ReferentielOpco.findOne({ siret_code: siretCode })
+export const getEstablishmentFromOpcoReferentiel = async (siretCode: IReferentielOpco["siret_code"]): Promise<IReferentielOpco> =>
+  await ReferentielOpco.findOne({ siret_code: siretCode })
 /**
  * @description Get all matching records from the ReferentielOpco collection
- * @param {Object} query
+ * @param {Filter<IReferentielOpco>} query
  * @returns {Promise<IReferentielOpco[]>}
  */
-export const getAllEstablishmentFromOpcoReferentiel = async (query: object): Promise<IReferentielOpco[]> => await ReferentielOpco.find(query).lean()
+export const getAllEstablishmentFromOpcoReferentiel = async (query: Filter<IReferentielOpco>): Promise<IReferentielOpco[]> => await ReferentielOpco.find(query).lean()
 /**
  * @description Get all matching records from the BonneBoiteLegacy collection
- * @param {Object} query
- * @returns {Promise<IBonneBoite[]>}
+ * @param {Filter<IBonneBoite>} query
+ * @returns {Promise<IBonneBoite["email"]>}
  */
-export const getAllEstablishmentFromBonneBoiteLegacy = async (query: object): Promise<IBonneBoite[]> => await BonneBoiteLegacy.find(query).select({ email: 1, _id: 0 }).lean()
+export const getAllEstablishmentFromBonneBoiteLegacy = async (query: Filter<IBonneBoite>): Promise<IBonneBoite[]> =>
+  await BonneBoiteLegacy.find(query).select({ email: 1, _id: 0 }).lean()
 /**
  * @description Get all matching records from the BonnesBoites collection
- * @param {Object} query
- * @returns {Promise<IBonneBoite[]>}
+ * @param {Filter<IBonneBoite>} query
+ * @returns {Promise<IBonneBoite["email"]>}
  */
-export const getAllEstablishmentFromBonneBoite = async (query: object): Promise<IBonneBoite[]> => await BonnesBoites.find(query).select({ email: 1, _id: 0 }).lean()
+export const getAllEstablishmentFromBonneBoite = async (query: Filter<IBonneBoite>): Promise<IBonneBoite[]> => await BonnesBoites.find(query).select({ email: 1, _id: 0 }).lean()
 /**
  * @description Chech if a given email is included in the given email list array
  * @param {String} email
@@ -265,60 +269,68 @@ export const getMatchingDomainFromContactList = (email: string, emailList: strin
 
   return emailList.some((e) => e.includes(domain))
 }
+
+interface IFormatAPIEntreprise
+  extends Pick<
+    IRecruiter,
+    | "establishment_enseigne"
+    | "establishment_siret"
+    | "establishment_raison_sociale"
+    | "address_detail"
+    | "address"
+    | "naf_code"
+    | "naf_label"
+    | "establishment_size"
+    | "establishment_creation_date"
+  > {
+  establishment_state: string
+  contacts: object[]
+  qualiopi?: boolean
+  geo_coordinates?: string
+}
 /**
  * @description Format Entreprise data
- * @param {Object} data
- * @returns {Object}
+ * @param {IEtablissementGouv} data
+ * @returns {IFormatAPIEntreprise}
  */
-export const formatEntrepriseData = (d: IEtablissementGouv) => ({
-  enseigne: d.enseigne,
-  etat: d.etat_administratif.value, // F pour fermé ou A pour actif
-  siret: d.siret,
-  raison_sociale: d.adresse.l1,
-  adresse_detail: d.adresse,
-  adresse: `${d.adresse.l4 ?? ""} ${d.adresse.code_postal} ${d.adresse.localite}`,
-  rue: d.adresse.l4,
-  commune: d.adresse.localite,
-  code_postal: d.adresse.code_postal,
+export const formatEntrepriseData = (d: IEtablissementGouv): IFormatAPIEntreprise => ({
+  establishment_enseigne: d.enseigne,
+  establishment_state: d.etat_administratif.value, // F pour fermé ou A pour actif
+  establishment_siret: d.siret,
+  establishment_raison_sociale: d.adresse.l1,
+  address_detail: d.adresse,
+  address: `${d.adresse.l4 ?? ""} ${d.adresse.code_postal} ${d.adresse.localite}`,
+  // rue: d.adresse.l4,
+  // commune: d.adresse.localite,
+  // code_postal: d.adresse.code_postal,
   contacts: [], // conserve la coherence avec l'UI
-  code_naf: d.naf,
-  libelle_naf: d.libelle_naf,
-  tranche_effectif: d.tranche_effectif_salarie_etablissement.intitule,
-  date_creation_etablissement: new Date(d.date_creation_etablissement * 1000),
+  naf_code: d.naf,
+  naf_label: d.libelle_naf,
+  establishment_size: d.tranche_effectif_salarie_etablissement.intitule,
+  establishment_creation_date: new Date(d.date_creation_etablissement * 1000),
 })
+interface IFormatAPIReferentiel
+  extends Pick<IUserRecruteur, "establishment_raison_sociale" | "establishment_siret" | "is_qualiopi" | "address_detail" | "geo_coordinates" | "address"> {
+  establishment_state: string
+  contacts: object[]
+}
 /**
  * @description Format Referentiel data
- * @param {Object} d
+ * @param {IReferentiel} d
  * @returns {Object}
  */
-export const formatReferentielData = (d: IReferentiel) => ({
-  etat: d.etat_administratif,
-  qualiopi: d.qualiopi,
-  siret: d.siret,
-  raison_sociale: d.raison_sociale,
+export const formatReferentielData = (d: IReferentiel): IFormatAPIReferentiel => ({
+  establishment_state: d.etat_administratif,
+  is_qualiopi: d.qualiopi,
+  establishment_siret: d.siret,
+  establishment_raison_sociale: d.raison_sociale,
   contacts: d.contacts,
-  adresse_detail: d.adresse,
-  adresse: d.adresse?.label,
-  rue: d.adresse?.label?.split(`${d.adresse?.code_postal}`)[0].trim() || d.lieux_de_formation[0].adresse.label.split(`${d.lieux_de_formation[0].adresse.code_postal}`)[0].trim(),
-  commune: d.adresse?.localite || d.lieux_de_formation[0].adresse.localite,
-  code_postal: d.adresse?.code_postal || d.lieux_de_formation[0].adresse.code_postal,
-  geo_coordonnees: d.adresse
+  address_detail: d.adresse,
+  address: d.adresse?.label,
+  // rue: d.adresse?.label?.split(`${d.adresse?.code_postal}`)[0].trim() || d.lieux_de_formation[0].adresse.label.split(`${d.lieux_de_formation[0].adresse.code_postal}`)[0].trim(),
+  // commune: d.adresse?.localite || d.lieux_de_formation[0].adresse.localite,
+  // code_postal: d.adresse?.code_postal || d.lieux_de_formation[0].adresse.code_postal,
+  geo_coordinates: d.adresse
     ? `${d.adresse?.geojson.geometry.coordinates[1]},${d.adresse?.geojson.geometry.coordinates[0]}`
     : `${d.lieux_de_formation[0].adresse.geojson?.geometry.coordinates[0]},${d.lieux_de_formation[0].adresse.geojson?.geometry.coordinates[1]}`,
-})
-/**
- * @description Format Catalogue data
- * @param {Object} d
- * @returns {Object}
- */
-export const formatCatalogueData = (d: IEtablissementCatalogue) => ({
-  etat: d.ferme === false ? etat_etablissements.FERME : etat_etablissements.ACTIF,
-  siret: d.siret,
-  raison_sociale: d.entreprise_raison_sociale,
-  contacts: [], // les tco n'ont pas d'information de contact, mais conserve un standard pour l'ui,
-  commune: d.localite,
-  code_postal: d.code_postal,
-  adresse: `${d.numero_voie === null ? "" : d.numero_voie} ${d.type_voie} ${d.nom_voie} ${d.code_postal} ${d.localite}`,
-  rue: `${d.numero_voie === null ? "" : d.numero_voie} ${d.type_voie} ${d.nom_voie}`,
-  geo_coordonnees: d.geo_coordonnees,
 })

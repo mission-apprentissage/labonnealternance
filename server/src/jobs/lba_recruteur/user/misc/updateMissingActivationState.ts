@@ -1,5 +1,5 @@
 import { logger } from "../../../../common/logger.js"
-import { Formulaire, UserRecruteur } from "../../../../common/model/index.js"
+import { Recruiter, UserRecruteur } from "../../../../common/model/index.js"
 import { asyncForEach } from "../../../../common/utils/asyncUtils.js"
 import { runScript } from "../../../scriptWrapper.js"
 import { validationOrganisation } from "../../../../common/bal.js"
@@ -37,10 +37,10 @@ const runValidation = async (usersRecruteur) => {
   logger.info(`${entreprises.length} etp à mettre à jour...`)
   await asyncForEach(entreprises, async (etp, index) => {
     logger.info(`${entreprises.length}/${index}`)
-    const found = await Formulaire.findOne({ id_form: etp.id_form })
+    const found = await Recruiter.findOne({ establishment_id: etp.establishment_id })
 
     if (!found) {
-      await UserRecruteur.findByIdAndDelete(etp._id)
+      await UserRecruteur.findByIdAndDelete(etp.establishment_id)
       return
     }
 
@@ -94,7 +94,7 @@ const resetUserValidation = async (db) => {
 
   await asyncForEach(users, async (user) => {
     const id = user.ID.trim()
-    await UserRecruteur.findByIdAndUpdate(id, { $set: { etat_utilisateur: [] } }, { new: true })
+    await UserRecruteur.findByIdAndUpdate(id, { $set: { status: [] } }, { new: true })
     console.log(`${user.ID} updated`)
   })
 }

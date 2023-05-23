@@ -15,44 +15,56 @@ const Formulaire = ({ submitForm, validateOpcoChoice }) => {
   const location = useLocation()
   const { widget } = useContext(WidgetContext)
 
-  const { raison_sociale, adresse, email, contacts, siret, geo_coordonnees, opco, idcc, code_naf, libelle_naf, tranche_effectif, date_creation_etablissement } =
-    location.state?.informationSiret
-  const { type, origine } = location.state
+  const {
+    establishment_raison_sociale,
+    address,
+    email,
+    contacts,
+    establishment_siret,
+    geo_coordinates,
+    opco,
+    idcc,
+    naf_code,
+    naf_label,
+    establishment_size,
+    establishment_creation_date,
+  } = location.state?.informationSiret
+  const { type, origin } = location.state
 
   return (
     <Formik
       validateOnMount={true}
       initialValues={{
-        siret: siret,
-        raison_sociale: raison_sociale,
-        adresse: adresse,
+        establishment_siret: establishment_siret,
+        establishment_raison_sociale: establishment_raison_sociale,
+        address: address,
         contacts: contacts,
-        geo_coordonnees: geo_coordonnees,
+        geo_coordinates: geo_coordinates,
         opco: opco,
         idcc: idcc,
         type: type,
-        code_naf: code_naf,
-        libelle_naf: libelle_naf,
-        tranche_effectif: tranche_effectif,
-        date_creation_etablissement: date_creation_etablissement,
-        origine: origine ?? "matcha",
-        nom: undefined,
-        prenom: undefined,
-        telephone: undefined,
+        naf_code: naf_code,
+        naf_label: naf_label,
+        establishment_size: establishment_size,
+        establishment_creation_date: establishment_creation_date,
+        origin: origin ?? "matcha",
+        last_name: undefined,
+        first_name: undefined,
+        phone: undefined,
         email: email ? email : undefined,
       }}
       validationSchema={Yup.object().shape({
-        raison_sociale: Yup.string().required("champs obligatoire"),
-        siret: Yup.string()
+        establishment_raison_sociale: Yup.string().required("champs obligatoire"),
+        establishment_siret: Yup.string()
           .matches(/^[0-9]+$/, "Le siret est composé uniquement de chiffres")
           .min(14, "le siret est sur 14 chiffres")
           .max(14, "le siret est sur 14 chiffres")
           .required("champs obligatoire"),
-        adresse: Yup.string().required("champ obligatoire"),
+        address: Yup.string().required("champ obligatoire"),
         email: Yup.string().email("Insérez un email valide").lowercase().required("champ obligatoire"),
-        nom: Yup.string().required("champ obligatoire"),
-        prenom: Yup.string().required("champ obligatoire"),
-        telephone: Yup.string()
+        last_name: Yup.string().required("champ obligatoire"),
+        first_name: Yup.string().required("champ obligatoire"),
+        phone: Yup.string()
           .matches(/^[0-9]+$/, "Le téléphone est composé uniquement de chiffres")
           .min(10, "le téléphone est sur 10 chiffres")
           .max(10, "le téléphone est sur 10 chiffres")
@@ -65,11 +77,11 @@ const Formulaire = ({ submitForm, validateOpcoChoice }) => {
       {({ values, isValid, isSubmitting, setFieldValue, errors }) => {
         return (
           <Form>
-            <CustomInput required={false} name="nom" label="Nom" type="text" value={values.nom} />
-            <CustomInput required={false} name="prenom" label="Prénom" type="text" value={values.prenom} />
+            <CustomInput required={false} name="last_name" label="Nom" type="text" value={values.last_name} />
+            <CustomInput required={false} name="first_name" label="Prénom" type="text" value={values.first_name} />
             <CustomInput
               required={false}
-              name="telephone"
+              name="phone"
               label="Numéro de téléphone"
               type="tel"
               pattern="[0-9]{10}"
@@ -79,7 +91,7 @@ const Formulaire = ({ submitForm, validateOpcoChoice }) => {
                   ? "Le numéro de téléphone sera visible sur l'offre d'emploi"
                   : "Le numéro de téléphone sera visible sur l’offre d’emploi de vos entreprises partenaires"
               }
-              value={values.telephone}
+              value={values.phone}
             />
             <CustomInput
               sx={{ textTransform: "lowercase" }}
@@ -172,7 +184,7 @@ export default () => {
     // save info if not trusted from source
     createPartenaire(values)
       .then(({ data }) => {
-        if (data.user.etat_utilisateur[0].statut === "EN ATTENTE DE VALIDATION") {
+        if (data.user.status[0].status === "EN ATTENTE DE VALIDATION") {
           validationPopup.onOpen()
           setUserData(data)
         } else {
@@ -180,7 +192,7 @@ export default () => {
             // Dépot simplifié
             navigate("/creation/offre", {
               replace: true,
-              state: { id_form: data.formulaire.id_form, type, email: data.user.email, userId: data.user._id },
+              state: { establishment_id: data.formulaire.establishment_id, type, email: data.user.email, userId: data.user._id },
             })
           } else {
             navigate("/authentification/confirmation", { replace: true, state: { email: data.email } })

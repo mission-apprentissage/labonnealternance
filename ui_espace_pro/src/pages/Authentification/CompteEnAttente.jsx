@@ -11,9 +11,7 @@ export default () => {
   const location = useLocation()
   const { widget } = useContext(WidgetContext)
 
-  const { email, type } = location.state
-
-  const redirect = () => (type === AUTHTYPE.CFA ? window.location.replace("/organisme-de-formation") : window.location.replace("/acces-recruteur"))
+  const redirect = () => window.location.replace("/organisme-de-formation")
 
   return (
     <AuthentificationLayout onClose={redirect}>

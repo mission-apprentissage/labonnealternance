@@ -10,6 +10,7 @@ import { UserRecruteur } from "../../../common/model/index.js"
 import { createMagicLinkToken, createUserRecruteurToken, createUserToken } from "../../../common/utils/jwtUtils.js"
 import config from "../../../config.js"
 import { tryCatch } from "../../middlewares/tryCatchMiddleware.js"
+import { IUserRecruteur } from "../../../common/model/schema/userRecruteur/userRecruteur.types.js"
 
 const checkToken = (usersRecruteur) => {
   passport.use(
@@ -78,15 +79,15 @@ export default ({ users, usersRecruteur, etablissementsRecruteur, mailer }) => {
           email: Joi.string().email().required(),
         }).validateAsync(req.body, { abortEarly: false })
 
-        const user = await usersRecruteur.getUser({ email })
+        const user: IUserRecruteur = await usersRecruteur.getUser({ email })
 
         if (!user) {
           return res.status(400).json({ error: true, reason: "UNKNOWN" })
         }
 
-        const { _id, prenom, nom, email_valide } = user
+        const { _id, first_name, last_name, is_email_checked } = user
 
-        if (email_valide) {
+        if (is_email_checked) {
           return res.status(400).json({ error: true, reason: "VERIFIED" })
         }
 
@@ -100,8 +101,8 @@ export default ({ users, usersRecruteur, etablissementsRecruteur, mailer }) => {
             images: {
               logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
             },
-            nom,
-            prenom,
+            last_name,
+            first_name,
             confirmation_url: url,
           },
         })
@@ -124,20 +125,21 @@ export default ({ users, usersRecruteur, etablissementsRecruteur, mailer }) => {
       }).validateAsync(req.body, { abortEarly: false })
 
       const user = await UserRecruteur.findOne({ email }).collation({ locale: "fr", strength: 2 })
+      const { email: userEmail, _id, first_name, last_name, is_email_checked } = user || {}
 
       if (!user) {
         return res.status(400).json({ error: true, reason: "UNKNOWN" })
       }
 
-      const [lastValidationEntry] = user.etat_utilisateur.slice(-1)
+      const [lastValidationEntry] = user.status.slice(-1)
 
       switch (user.type) {
         case CFA:
-          if (lastValidationEntry.statut === etat_utilisateur.ATTENTE) {
+          if (lastValidationEntry.status === etat_utilisateur.ATTENTE) {
             return res.status(400).json({ error: true, reason: "VALIDATION" })
           }
 
-          if (lastValidationEntry.statut === etat_utilisateur.DESACTIVE) {
+          if (lastValidationEntry.status === etat_utilisateur.DESACTIVE) {
             return res.status(400).json({
               error: true,
               reason: "DISABLED",
@@ -145,11 +147,11 @@ export default ({ users, usersRecruteur, etablissementsRecruteur, mailer }) => {
           }
           break
         case ENTREPRISE:
-          if (lastValidationEntry.statut === etat_utilisateur.ATTENTE) {
+          if (lastValidationEntry.status === etat_utilisateur.ATTENTE) {
             return res.status(400).json({ error: true, reason: "VALIDATION" })
           }
 
-          if (lastValidationEntry.statut === etat_utilisateur.DESACTIVE) {
+          if (lastValidationEntry.status === etat_utilisateur.DESACTIVE) {
             return res.status(400).json({
               error: true,
               reason: "DISABLED",
@@ -158,21 +160,19 @@ export default ({ users, usersRecruteur, etablissementsRecruteur, mailer }) => {
           break
       }
 
-      if (user.email_valide === false) {
-        const { email, _id, prenom, nom } = user
-
+      if (!is_email_checked) {
         const url = etablissementsRecruteur.getValidationUrl(_id)
 
         await mailer.sendEmail({
-          to: email,
+          to: userEmail,
           subject: "La bonne alternance - Confirmez votre adresse email",
           template: mailTemplate["mail-confirmation-email"],
           data: {
             images: {
               logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
             },
-            nom,
-            prenom,
+            last_name,
+            first_name,
             confirmation_url: url,
           },
         })
@@ -183,18 +183,18 @@ export default ({ users, usersRecruteur, etablissementsRecruteur, mailer }) => {
         })
       }
 
-      const magiclink = `${config.publicUrlEspacePro}/authentification/verification?token=${createMagicLinkToken(user.email)}`
+      const magiclink = `${config.publicUrlEspacePro}/authentification/verification?token=${createMagicLinkToken(userEmail)}`
 
       await mailer.sendEmail({
-        to: user.email,
+        to: userEmail,
         subject: "La bonne alternance - Lien de connexion",
         template: mailTemplate["mail-connexion"],
         data: {
           images: {
             logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
           },
-          nom: user.nom,
-          prenom: user.prenom,
+          last_name,
+          first_name,
           connexion_url: magiclink,
         },
       })

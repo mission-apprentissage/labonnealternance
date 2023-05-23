@@ -66,7 +66,7 @@ function PrivateRoute({ children }) {
 function AdminRoute({ children }) {
   let [auth] = useAuth()
 
-  return auth.permissions.isAdmin ? children : <Navigate to="/" />
+  return auth.type === AUTHTYPE.ADMIN ? children : <Navigate to="/" />
 }
 
 const AdminRdvaRoute = ({ children }) => {
@@ -118,28 +118,28 @@ const App = () => {
           <Route index element={<ListeEntreprise />} />
           <Route path="opco" element={<AdministrationOpco />} />
           <Route path="opco/entreprise/:userId" element={<DetailEntreprise />} />
-          <Route path="opco/entreprise/:siret/:id_form" element={<ListeOffre />} />
-          <Route path="opco/entreprise/:siret/:id_form/offre/:id_offre" element={<CreationOffre />} />
+          <Route path="opco/entreprise/:siret/:establishment_id" element={<ListeOffre />} />
+          <Route path="opco/entreprise/:siret/:establishment_id/offre/:jobId" element={<CreationOffre />} />
           <Route path="entreprise" element={<CreationEntreprise />} />
-          <Route path="entreprise/:id_form" element={<ListeOffre />} />
-          <Route path="entreprise/:id_form/offre/:id_offre" element={<CreationOffre />} />
+          <Route path="entreprise/:establishment_id" element={<ListeOffre />} />
+          <Route path="entreprise/:establishment_id/offre/:jobId" element={<CreationOffre />} />
           <Route path="entreprise/detail" element={<CreationEntrepriseDetail />} />
-          <Route path="entreprise/:id_form/edition" element={<EditionEntrepriseContact />} />
+          <Route path="entreprise/:establishment_id/edition" element={<EditionEntrepriseContact />} />
         </Route>
         <Route path="/authentification" element={<Connexion />} />
         <Route path="/creation/entreprise" element={<CreationCompte type={AUTHTYPE.ENTREPRISE} widget={false} />} />
-        <Route path="/creation/entreprise/:origine" element={<CreationCompte type={AUTHTYPE.ENTREPRISE} widget={false} />} />
+        <Route path="/creation/entreprise/:origin" element={<CreationCompte type={AUTHTYPE.ENTREPRISE} widget={false} />} />
         <Route path="/creation/cfa" element={<CreationCompte type={AUTHTYPE.CFA} />} />
-        <Route path="/creation/cfa/:origine" element={<CreationCompte type={AUTHTYPE.CFA} />} />
+        <Route path="/creation/cfa/:origin" element={<CreationCompte type={AUTHTYPE.CFA} />} />
         <Route path="/creation/detail" element={<InformationCreationCompte />} />
         <Route path="/creation/offre" element={<DepotRapide_AjouterVoeux />} />
         <Route path="/creation/mise-en-relation" element={<DepotRapide_AjouterVoeuxMiseEnRelation />} />
         <Route path="/creation/fin" element={<DepotRapide_Fin />} />
         {/* Deprecated route, can be deleted on 03/2023 */}
-        <Route path="/proposition/formulaire/:idFormulaire/offre/:idOffre" element={<Layout displayNavigationMenu={false} />}>
+        <Route path="/proposition/formulaire/:idFormulaire/offre/:jobId" element={<Layout displayNavigationMenu={false} />}>
           <Route index element={<PropositionOffreId />} />
         </Route>
-        <Route path="/proposition/formulaire/:idFormulaire/offre/:idOffre/siret/:siretFormateur" element={<Layout displayNavigationMenu={false} />}>
+        <Route path="/proposition/formulaire/:idFormulaire/offre/:jobId/siret/:siretFormateur" element={<Layout displayNavigationMenu={false} />}>
           <Route index element={<PropositionOffreId />} />
         </Route>
         <Route path="/authentification/confirmation" element={<ConfirmationCreationCompte />} />
@@ -148,8 +148,8 @@ const App = () => {
         <Route path="/authentification/optout/verification" element={<OptOutValidation />} />
         <Route path="/authentification/en-attente" element={<CompteEnAttente />} />
         <Route path="/" element={<RedirectToLba />} />
-        <Route path="/offre/:idOffre/:option" element={<MailActionsOnOffre />} />
-        <Route path="/widget/:origine" element={<CreationCompte type={AUTHTYPE.ENTREPRISE} widget={true} />} />
+        <Route path="/offre/:jobId/:option" element={<MailActionsOnOffre />} />
+        <Route path="/widget/:origin" element={<CreationCompte type={AUTHTYPE.ENTREPRISE} widget={true} />} />
         {/* RDVA */}
         <Route path="/form" element={<FormCreatePage />} />
         <Route path="/form/confirm/:id" element={<FormRecapPage />} />

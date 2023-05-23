@@ -20,24 +20,24 @@
     <mj-section padding-top="0">
       <mj-column width="600px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 10px">
         <mj-text>
-          Bonjour <%= data.prenom %> <%= data.nom %>,
+          Bonjour <%= data.first_name %> <%= data.last_name %>,
         </mj-text>
-        <% if(!data.mandataire && data.threshold === 7){ %>
+        <% if(!data.is_delegated && data.threshold === 7){ %>
           <mj-text>
           La diffusion de votre offre d'alternance expire dans 7 jours et ne sera bientôt plus visible par les jeunes.
           </mj-text>
         <% } %>
 
-        <% if(!data.mandataire && data.threshold === 1){ %>
+        <% if(!data.is_delegated && data.threshold === 1){ %>
         <mj-text>La diffusion de votre offre d'alternance expire demain et ne sera bientôt plus visible par les jeunes.</mj-text>
         <% } %>
 
-        <% if(data.mandataire && data.threshold === 7){ %>
-        <mj-text>L'offre d'alternance que vous avez publié pour <%= data.raison_sociale %> expire dans 7 jours</mj-text>
+        <% if(data.is_delegated && data.threshold === 7){ %>
+        <mj-text>L'offre d'alternance que vous avez publié pour <%= data.establishment_raison_sociale %> expire dans 7 jours</mj-text>
         <% } %>
 
-        <% if(data.mandataire && data.threshold === 1){ %>
-          <mj-text>L'offre d'alternance que vous avez publié pour <%= data.raison_sociale %> expire demain</mj-text>
+        <% if(data.is_delegated && data.threshold === 1){ %>
+          <mj-text>L'offre d'alternance que vous avez publié pour <%= data.establishment_raison_sociale %> expire demain</mj-text>
         <% } %>
 
         <mj-text>Connectez-vous à votre espace afin de gérer vos offres ou sélectionnez l'une des actions ci-dessous.</mj-text>

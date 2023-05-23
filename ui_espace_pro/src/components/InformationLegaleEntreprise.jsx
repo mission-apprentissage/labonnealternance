@@ -6,11 +6,16 @@ import { InfoCircle } from "../theme/components/icons"
 import InfoPopover from "./InfoPopover"
 import InfoTooltip from "./InfoToolTip"
 
+/**
+ * KBA 20230511 : use address_detail field to display address information :
+ * Migrate CFA entries in collection to have the same format as companies
+ * Use the address API for all type of establishment
+ */
 export default (props) => {
   const [auth] = useAuth()
-  const { enseigne, raison_sociale, rue, siret, commune, code_postal, opco, tranche_effectif, date_creation_etablissement, type, adresse, qualiopi } = props
+  const { establishment_enseigne, establishment_raison_sociale, rue, establishment_siret, commune, code_postal, opco, establishment_size, type, address, is_qualiopi } = props
 
-  const RAISON_SOCIALE = raison_sociale.length > 30 ? raison_sociale.substring(0, 30) + "..." : raison_sociale ?? ""
+  const RAISON_SOCIALE = establishment_raison_sociale.length > 30 ? establishment_raison_sociale.substring(0, 30) + "..." : establishment_raison_sociale ?? ""
 
   return (
     <Box border="1px solid #000091" p={5}>
@@ -27,7 +32,7 @@ export default (props) => {
         <Flex align="center">
           <Text mr={3}>SIRET :</Text>
           <Text bg="#F9F8F6" px="8px" py="2px" fontWeight={700} mr={2} noOfLines={1}>
-            {siret}
+            {establishment_siret}
           </Text>
           {type === AUTHTYPE.ENTREPRISE ? (
             <InfoPopover>
@@ -40,11 +45,11 @@ export default (props) => {
             <InfoTooltip description="La donnée “SIRET Organisme”  provient des bases “Carif-Oref”. Si cette information est erronée, merci de le signaler au Carif-Oref de votre région." />
           )}
         </Flex>
-        {enseigne && (
+        {establishment_enseigne && (
           <Flex align="center">
             <Text mr={3}>Enseigne :</Text>
             <Text bg="#F9F8F6" px="8px" py="2px" mr={2} fontWeight={700} noOfLines={1}>
-              {enseigne}
+              {establishment_enseigne}
             </Text>
             <InfoTooltip description="La donnée “Enseigne” provient de l’INSEE puis est déduite du SIREN. Si cette information est erronée, merci de leur signaler." />
           </Flex>
@@ -59,7 +64,7 @@ export default (props) => {
         <Flex align="center">
           <Text mr={3}>Adresse :</Text>
           <Text bg="#F9F8F6" px="8px" py="2px" fontWeight={700} mr={2} noOfLines={1}>
-            {rue ?? adresse}
+            {rue ?? address}
           </Text>
           <InfoTooltip description="La donnée “Adresse” provient de l’INSEE puis est déduite du SIRET. Si cette information est erronée, merci de leur signaler." />
         </Flex>{" "}
@@ -81,11 +86,11 @@ export default (props) => {
             </Flex>
           </>
         )}
-        {type !== AUTHTYPE.ENTREPRISE && tranche_effectif && (
+        {type !== AUTHTYPE.ENTREPRISE && establishment_size && (
           <Flex align="center">
             <Text mr={3}>Effectif :</Text>
             <Text bg="#F9F8F6" px="8px" py="2px" fontWeight={700} mr={2} noOfLines={1}>
-              {tranche_effectif}
+              {establishment_size}
             </Text>
             <InfoTooltip description='La donnée "Effectif” provient de l’INSEE puis est déduite du SIRET. Si cette information est erronée, merci de leur signaler.' />
           </Flex>
@@ -110,7 +115,7 @@ export default (props) => {
         {type === AUTHTYPE.CFA && (
           <Flex align="center">
             <Text mr={3}>Qualiopi :</Text>
-            {qualiopi ? (
+            {is_qualiopi ? (
               <Text bg="#F9F8F6" px="8px" py="2px" fontWeight={700} mr={2} noOfLines={1}>
                 OUI
               </Text>

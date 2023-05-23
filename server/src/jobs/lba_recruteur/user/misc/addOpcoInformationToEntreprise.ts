@@ -1,16 +1,16 @@
 // @ts-nocheck
 import { logger } from "../../../../common/logger.js"
-import { Formulaire, User } from "../../../../common/model/index.js"
+import { Recruiter, UserRecruteur } from "../../../../common/model/index.js"
 import { asyncForEach } from "../../../../common/utils/asyncUtils.js"
 import { runScript } from "../../../scriptWrapper.js"
 
 runScript(async () => {
-  const entreprises = await User.find({ type: "ENTREPRISE", opco: { $exists: false } }).lean()
+  const entreprises = await UserRecruteur.find({ type: "ENTREPRISE", opco: { $exists: false } }).lean()
 
   logger.info(`${entreprises.length} etp à mettre à jour...`)
 
   await asyncForEach(entreprises, async (etp) => {
-    const form = await Formulaire.findOne({ siret: etp.siret })
+    const form = await Recruiter.findOne({ establishment_siret: etp.establishment_siret })
 
     if (form?.opco) {
       // logger.info(`updating ${etp.siret} : opco: ${form.opco} — idcc: ${form.idcc} `);

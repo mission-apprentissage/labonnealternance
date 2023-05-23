@@ -55,7 +55,7 @@ export default memo(() => {
   const awaitingValidationUserList = useQuery("awaitingValidationUserList", () =>
     getUsers({
       users: {
-        $expr: { $eq: [{ $arrayElemAt: ["$etat_utilisateur.statut", -1] }, USER_STATUS.WAITING] },
+        $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, USER_STATUS.WAITING] },
         $or: [{ type: AUTHTYPE.CFA }, { type: AUTHTYPE.ENTREPRISE }],
       },
     })
@@ -64,7 +64,7 @@ export default memo(() => {
   const activeUserList = useQuery("activeUserList", () =>
     getUsers({
       users: {
-        $expr: { $eq: [{ $arrayElemAt: ["$etat_utilisateur.statut", -1] }, USER_STATUS.ACTIVE] },
+        $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, USER_STATUS.ACTIVE] },
         $or: [{ type: AUTHTYPE.CFA }, { type: AUTHTYPE.ENTREPRISE }],
       },
     })
@@ -73,7 +73,7 @@ export default memo(() => {
   const disableUserList = useQuery("disableUserList", () =>
     getUsers({
       users: {
-        $expr: { $eq: [{ $arrayElemAt: ["$etat_utilisateur.statut", -1] }, USER_STATUS.DISABLED] },
+        $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, USER_STATUS.DISABLED] },
         $or: [{ type: AUTHTYPE.CFA }, { type: AUTHTYPE.ENTREPRISE }],
       },
     })
@@ -86,24 +86,24 @@ export default memo(() => {
   const columns = [
     {
       Header: "Etablissement",
-      id: "raison_sociale",
+      id: "establishment_raison_sociale",
       width: "300",
-      accessor: "raison_sociale",
-      sortType: (a, b) => sortReactTableString(a.original.raison_sociale, b.original.raison_sociale),
+      accessor: "establishment_raison_sociale",
+      sortType: (a, b) => sortReactTableString(a.original.establishment_raison_sociale, b.original.establishment_raison_sociale),
       Cell: ({
         data,
         cell: {
           row: { id },
         },
       }) => {
-        const { raison_sociale, siret, _id, opco } = data[id]
+        const { establishment_raison_sociale, establishment_siret, _id, opco } = data[id]
         return (
           <Flex direction="column">
             <Link fontWeight="700" as={NavLink} to={`/administration/users/${_id}`} aria-label="voir les informations">
-              {raison_sociale}
+              {establishment_raison_sociale}
             </Link>
             <Text color="#666666" fontSize="14px">
-              SIRET {siret}
+              SIRET {establishment_siret}
             </Text>
             <Text color="redmarianne" fontSize="14px">
               {opco}
@@ -126,9 +126,9 @@ export default memo(() => {
     {
       Header: "Nom",
       id: "nom",
-      accessor: ({ nom, prenom }) => (
+      accessor: ({ last_name, first_name }) => (
         <Text color="#666666" fontSize="14px">
-          {prenom} {nom}
+          {first_name} {last_name}
         </Text>
       ),
     },
@@ -145,7 +145,7 @@ export default memo(() => {
     },
     {
       Header: "Téléphone",
-      accessor: "telephone",
+      accessor: "phone",
       Cell: ({ value }) => (
         <Text color="#666666" fontSize="14px">
           {value}
@@ -166,7 +166,7 @@ export default memo(() => {
     },
     {
       Header: "Origine",
-      accessor: "origine",
+      accessor: "origin",
       Cell: ({ value }) => (
         <Text color="#666666" fontSize="14px" noOfLines={2}>
           {value}

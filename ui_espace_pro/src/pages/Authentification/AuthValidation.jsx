@@ -17,10 +17,6 @@ export default () => {
   let token = params.get("token")
 
   useEffect(() => {
-    // if (!token) {
-    //   navigate('/')
-    // }
-
     // send token to back office
     validateToken({ token })
       .then(({ data }) => {
@@ -32,11 +28,10 @@ export default () => {
   }, [token])
 
   useEffect(() => {
-    // if (auth.sub !== 'anonymous') {
     switch (auth.type) {
       case AUTHTYPE.ENTREPRISE:
         setTimeout(() => {
-          navigate(`/administration/entreprise/${auth.id_form}`, {
+          navigate(`/administration/entreprise/${auth.establishment_id}`, {
             state: { offerPopup: fromEntrepriseCreation ? true : false },
           })
         }, 1000)
@@ -63,7 +58,6 @@ export default () => {
       default:
         break
     }
-    // }
   }, [auth])
 
   return (
