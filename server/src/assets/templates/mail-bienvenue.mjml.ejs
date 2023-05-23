@@ -20,19 +20,19 @@
       <mj-section padding="0px 0px">
         <mj-column>
           <mj-text>
-            Bonjour <%= data.prenom %> <%= data.nom %>,<br /><br />
-            <% if(!data.mandataire){ %>
+            Bonjour <%= data.first_name %> <%= data.last_name %>,<br /><br />
+            <% if(!data.is_delegated){ %>
               Félicitations, votre compte La bonne alternance est désormais créé pour l'entreprise :<br /><br />
             <% } %>
-            <% if(data.mandataire){ %>
+            <% if(data.is_delegated){ %>
               Félicitations, votre compte La bonne alternance est désormais créé pour votre centre de formation :<br /><br />
             <% } %>
-            <%= data.raison_sociale %><br /><br />
+            <%= data.establishment_raison_sociale %><br /><br />
             Vous pouvez désormais accéder à votre espace pour publier 
-            <% if(!data.mandataire){ %>
+            <% if(!data.is_delegated){ %>
               vos offres 
             <% } %>
-            <% if(data.mandataire){ %>
+            <% if(data.is_delegated){ %>
               les offres de vos entreprises partenaires 
             <% } %>
             en quelques clics et les diffuser au plus près des jeunes : sur les sites Parcoursup, Affelnet, 1 Jeune 1 Solution et La bonne alternance<br /><br />

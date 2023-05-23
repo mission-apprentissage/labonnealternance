@@ -19,7 +19,7 @@ export default () => {
   const client = useQueryClient()
 
   const { widget } = useContext(WidgetContext)
-  const { offre, email, withDelegation, fromDashboard, userId } = location.state
+  const { job, email, withDelegation, fromDashboard, userId } = location.state
 
   /**
    * KBA 20230130 : retry set to false to avoid waiting for failure if user is from dashboard (userId is not passed)
@@ -28,7 +28,7 @@ export default () => {
   const { isFetched } = useQuery("userdetail", () => getUser(userId), {
     retry: false,
     onSettled: (data) => {
-      const latestStatus = data?.data?.etat_utilisateur.pop().statut || false
+      const latestStatus = data?.data?.status.pop().status || false
       switch (withDelegation) {
         case true:
           if (latestStatus === "VALIDÉ" || fromDashboard) {
@@ -190,13 +190,13 @@ export default () => {
             <Stack direction="column" spacing="16px">
               <Heading fontSize="20px">Récapitulatif de votre besoin</Heading>
               <Text>
-                Poste : <span style={{ fontWeight: "700" }}>{offre.rome_appellation_label}</span>
+                Poste : <span style={{ fontWeight: "700" }}>{job.rome_appellation_label}</span>
               </Text>
               <Text>
-                Niveau d'étude visé : <span style={{ fontWeight: "700" }}>{offre.niveau}</span>
+                Niveau d'étude visé : <span style={{ fontWeight: "700" }}>{job.job_level_label}</span>
               </Text>
               <Text>
-                Date de début d'apprentissage souhaitée : <span style={{ fontWeight: "700" }}>{dayjs(offre.date_debut_apprentissage).format("DD/MM/YYYY")}</span>
+                Date de début d'apprentissage souhaitée : <span style={{ fontWeight: "700" }}>{dayjs(job.job_start_date).format("DD/MM/YYYY")}</span>
               </Text>
               <Text fontSize="14px">Votre offre expirera après 30 jours à compter de sa publication</Text>
             </Stack>

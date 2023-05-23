@@ -22,7 +22,7 @@ export default () => {
     // send token to back office
     validateOptOutToken(token)
       .then(({ data }) => {
-        navigate("/creation/detail", { state: { informationSiret: data, type: AUTHTYPE.CFA, origine: "optout" } })
+        navigate("/creation/detail", { state: { informationSiret: data, type: AUTHTYPE.CFA, origin: "optout" } })
       })
       .catch(({ response }) => {
         switch (response.data.reason) {

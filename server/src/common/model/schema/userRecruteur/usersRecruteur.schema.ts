@@ -9,12 +9,12 @@ const userValidationSchema = new Schema<IUserValidation>(
       enum: ["AUTOMATIQUE", "MANUELLE"],
       description: "Processus de validation lors de l'inscription de l'utilisateur",
     },
-    statut: {
+    status: {
       type: String,
       enum: ["EN ATTENTE DE VALIDATION", "VALIDÉ", "DESACTIVÉ"],
       description: "Statut de l'utilisateur",
     },
-    motif: {
+    reason: {
       type: String,
       description: "Raison du changement de statut",
     },
@@ -33,11 +33,11 @@ const userValidationSchema = new Schema<IUserValidation>(
 
 const userRecruteurSchema = new Schema<IUserRecruteur>(
   {
-    nom: {
+    last_name: {
       type: String,
       description: "Nom de l'utilisateur",
     },
-    prenom: {
+    first_name: {
       type: String,
       description: "Prénom de l'utilisateur",
     },
@@ -49,33 +49,33 @@ const userRecruteurSchema = new Schema<IUserRecruteur>(
       type: String,
       description: "Identifiant convention collective de l'entreprise",
     },
-    raison_sociale: {
+    establishment_raison_sociale: {
       type: String,
       description: "Raison social de l'établissement",
     },
-    enseigne: {
+    establishment_enseigne: {
       type: String,
       default: null,
       description: "Enseigne de l'établissement",
     },
-    siret: {
+    establishment_siret: {
       type: String,
       description: "Siret de l'établissement",
     },
-    adresse_detail: {
+    address_detail: {
       type: Object,
       description: "Detail de l'adresse de l'établissement",
     },
-    adresse: {
+    address: {
       type: String,
       description: "Adresse de l'établissement",
     },
-    geo_coordonnees: {
+    geo_coordinates: {
       type: String,
       default: null,
       description: "Latitude/Longitude de l'adresse de l'entreprise",
     },
-    telephone: {
+    phone: {
       type: String,
       description: "Téléphone de l'établissement",
     },
@@ -85,17 +85,12 @@ const userRecruteurSchema = new Schema<IUserRecruteur>(
       description: "L'email de l'utilisateur",
       unique: true,
     },
-    isAdmin: {
-      type: Boolean,
-      default: false,
-      description: "true si l'utilisateur est administrateur",
-    },
     scope: {
       type: String,
       default: null,
       description: "Scope accessible par l'utilisateur",
     },
-    email_valide: {
+    is_email_checked: {
       type: Boolean,
       default: false,
       description: "Indicateur de confirmation de l'adresse mail par l'utilisateur",
@@ -105,7 +100,7 @@ const userRecruteurSchema = new Schema<IUserRecruteur>(
       enum: ["ENTREPRISE", "CFA", "OPCO", "ADMIN"],
       description: "Type d'utilisateur",
     },
-    id_form: {
+    establishment_id: {
       type: String,
       description: "Si l'utilisateur est une entreprise, l'objet doit contenir un identifiant de formulaire unique",
     },
@@ -114,15 +109,15 @@ const userRecruteurSchema = new Schema<IUserRecruteur>(
       default: null,
       description: "Date de dernière connexion",
     },
-    origine: {
+    origin: {
       type: String,
       description: "Origine de la creation de l'utilisateur (ex: Campagne mail, lien web, etc...) pour suivi",
     },
-    etat_utilisateur: {
+    status: {
       type: [userValidationSchema],
       description: "Tableau des modifications de statut de l'utilisateur",
     },
-    qualiopi: {
+    is_qualiopi: {
       type: Boolean,
       default: true,
       description: "Statut qualiopi du CFA (forcément true, sinon l'inscription n'est pas possibe)",

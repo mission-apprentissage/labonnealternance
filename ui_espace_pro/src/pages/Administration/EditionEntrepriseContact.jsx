@@ -9,13 +9,16 @@ import useAuth from "../../common/hooks/useAuth"
 import { AnimationContainer, CustomInput, InformationLegaleEntreprise, LoadingEmptySpace } from "../../components"
 import { ArrowDropRightLine, ArrowRightLine } from "../../theme/components/icons"
 
-const Formulaire = ({ nom, prenom, telephone, email, id_form }) => {
+const Formulaire = ({ last_name, first_name, phone, email, establishment_id }) => {
   const toast = useToast()
   const [auth] = useAuth()
   const navigate = useNavigate()
   const client = useQueryClient()
 
-  const entrepriseMutation = useMutation(({ userId, formId, values }) => updateEntreprise(userId, formId, values), {
+  /**
+   * KBA 20230511 : values for recruiter collection are casted in api.js file directly. form values must remain as awaited in userRecruteur collection
+   */
+  const entrepriseMutation = useMutation(({ userId, establishment_id, values }) => updateEntreprise(userId, establishment_id, values), {
     onSuccess: () => {
       toast({
         title: "Entreprise mise à jour avec succès.",
@@ -23,14 +26,14 @@ const Formulaire = ({ nom, prenom, telephone, email, id_form }) => {
         status: "success",
         duration: 4000,
       })
-      navigate(`/administration/entreprise/${id_form}`, {
+      navigate(`/administration/entreprise/${establishment_id}`, {
         replace: true,
       })
       client.invalidateQueries("formulaire-edition")
     },
   })
 
-  const cfaMutation = useMutation(({ formId, values }) => putFormulaire(formId, values), {
+  const cfaMutation = useMutation(({ establishment_id, values }) => putFormulaire(establishment_id, values), {
     onSuccess: () => {
       toast({
         title: "Entreprise mise à jour avec succès.",
@@ -38,7 +41,7 @@ const Formulaire = ({ nom, prenom, telephone, email, id_form }) => {
         status: "success",
         duration: 4000,
       })
-      navigate(`/administration/entreprise/${id_form}`, {
+      navigate(`/administration/entreprise/${establishment_id}`, {
         replace: true,
       })
       client.invalidateQueries("formulaire-edition")
@@ -48,7 +51,7 @@ const Formulaire = ({ nom, prenom, telephone, email, id_form }) => {
   const submitForm = async (values, { setSubmitting, setFieldError }) => {
     if (auth.type === AUTHTYPE.ENTREPRISE) {
       entrepriseMutation.mutate(
-        { userId: auth.id, formId: id_form, values },
+        { userId: auth.id, establishment_id: establishment_id, values },
         {
           onError: (error) => {
             switch (error.response.data.reason) {
@@ -63,7 +66,7 @@ const Formulaire = ({ nom, prenom, telephone, email, id_form }) => {
         }
       )
     } else {
-      cfaMutation.mutate({ formId: id_form, values })
+      cfaMutation.mutate({ establishment_id: establishment_id, values })
     }
 
     setSubmitting(false)
@@ -73,16 +76,16 @@ const Formulaire = ({ nom, prenom, telephone, email, id_form }) => {
     <Formik
       validateOnMount={true}
       initialValues={{
-        nom,
-        prenom,
-        telephone,
+        last_name,
+        first_name,
+        phone,
         email,
       }}
       validationSchema={Yup.object().shape({
         email: Yup.string().email("Insérez un email valide").required("champ obligatoire"),
-        nom: Yup.string().required("champ obligatoire"),
-        prenom: Yup.string().required("champ obligatoire"),
-        telephone: Yup.string()
+        last_name: Yup.string().required("champ obligatoire"),
+        first_name: Yup.string().required("champ obligatoire"),
+        phone: Yup.string()
           .matches(/^[0-9]+$/, "Le téléphone est composé uniquement de chiffres")
           .min(10, "le téléphone est sur 10 chiffres")
           .max(10, "le téléphone est sur 10 chiffres")
@@ -93,17 +96,17 @@ const Formulaire = ({ nom, prenom, telephone, email, id_form }) => {
       {(informationForm) => {
         return (
           <Form>
-            <CustomInput required={false} name="nom" label="Nom" type="text" value={informationForm.values.nom} />
-            <CustomInput required={false} name="prenom" label="Prénom" type="text" value={informationForm.values.prenom} />
+            <CustomInput required={false} name="last_name" label="Nom" type="text" value={informationForm.values.last_name} />
+            <CustomInput required={false} name="first_name" label="Prénom" type="text" value={informationForm.values.first_name} />
             <CustomInput
               required={false}
-              name="telephone"
+              name="phone"
               label="Numéro de téléphone"
               type="tel"
               pattern="[0-9]{10}"
               maxLength="10"
               info="Le numéro de téléphone sera visible sur l'offre d'emploi"
-              value={informationForm.values.telephone}
+              value={informationForm.values.phone}
             />
             <CustomInput
               required={false}
@@ -141,7 +144,7 @@ export default () => {
   const params = useParams()
   const [auth] = useAuth()
 
-  let { data, isLoading } = useQuery("formulaire-edition", () => getFormulaire(params.id_form), { cacheTime: 0 })
+  let { data, isLoading } = useQuery("formulaire-edition", () => getFormulaire(params.establishment_id), { cacheTime: 0 })
 
   if (isLoading) {
     return <LoadingEmptySpace />
@@ -162,7 +165,7 @@ export default () => {
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbItem>
-                <BreadcrumbLink textStyle="xs">{data.data.raison_sociale}</BreadcrumbLink>
+                <BreadcrumbLink textStyle="xs">{data.data.establishment_raison_sociale}</BreadcrumbLink>
               </BreadcrumbItem>
             </Breadcrumb>
           </Breadcrumb>

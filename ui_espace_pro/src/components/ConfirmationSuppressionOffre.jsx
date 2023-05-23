@@ -22,35 +22,35 @@ import { putOffre } from "../api"
 import { ArrowRightLine, Close } from "../theme/components/icons"
 
 export default (props) => {
-  const [raison_statut, setRaisonStatut] = useState("")
+  const [job_status_comment, SetjobStatusComment] = useState("")
   const extraOption = useDisclosure()
-  const raison = useDisclosure()
+  const reason = useDisclosure()
   const toast = useToast()
   const client = useQueryClient()
 
   let { isOpen, onClose, offre } = props
 
   const resetState = () => {
-    setRaisonStatut("")
-    raison.onClose()
+    SetjobStatusComment("")
+    reason.onClose()
     extraOption.onClose()
     onClose()
   }
 
-  const handleRaisonSelect = (raison) => {
-    if (raison === "Autre") {
-      setRaisonStatut("")
+  const handleReasonSelect = (reason) => {
+    if (reason === "Autre") {
+      SetjobStatusComment("")
       extraOption.onOpen()
     } else {
-      setRaisonStatut(raison)
+      SetjobStatusComment(reason)
     }
   }
 
-  const updateOffer = (statut) => {
-    putOffre(offre._id, { ...offre, statut, raison_statut: raison_statut ?? undefined })
+  const updateOffer = (job_status) => {
+    putOffre(offre._id, { ...offre, job_status, job_status_comment: job_status_comment ?? undefined })
       .then(() => {
         toast({
-          title: `Offre ${statut}`,
+          title: `Offre ${job_status}`,
           position: "top-right",
           status: "success",
           duration: 2000,
@@ -85,9 +85,9 @@ export default (props) => {
         </ModalHeader>
         <ModalBody pb={6}></ModalBody>
 
-        {!raison.isOpen && (
+        {!reason.isOpen && (
           <ModalFooter>
-            <Button variant="secondary" mr={3} onClick={() => raison.onOpen()}>
+            <Button variant="secondary" mr={3} onClick={() => reason.onOpen()}>
               Non
             </Button>
             <Button variant="primary" onClick={() => updateOffer("Pourvue")}>
@@ -95,18 +95,18 @@ export default (props) => {
             </Button>
           </ModalFooter>
         )}
-        {raison.isOpen && !extraOption.isOpen && (
+        {reason.isOpen && !extraOption.isOpen && (
           <ModalFooter alignItems="flex-end">
             <FormControl isRequired>
               <FormLabel>Raison de l'annulation</FormLabel>
-              <Select variant="outline" placeholder="Selectionner une option" onChange={(v) => handleRaisonSelect(v.target.value)}>
+              <Select variant="outline" placeholder="Selectionner une option" onChange={(v) => handleReasonSelect(v.target.value)}>
                 <option value="Je ne suis plus à la recherche">Je ne suis plus à la recherche</option>
                 <option value="Je ne reçois pas de candidature">Je ne reçois pas de candidature</option>
                 <option value="Les candidatures reçues ne sont pas assez qualifiées">Les candidatures reçues ne sont pas assez qualifiées</option>
                 <option value="Autre">Autre</option>
               </Select>
             </FormControl>
-            <Button variant="secondary" ml={3} onClick={() => updateOffer("Annulée")} isDisabled={raison_statut.length < 3}>
+            <Button variant="secondary" ml={3} onClick={() => updateOffer("Annulée")} isDisabled={job_status_comment.length < 3}>
               Enregistrer
             </Button>
           </ModalFooter>
@@ -116,10 +116,10 @@ export default (props) => {
           <ModalBody isRequired>
             <FormLabel>Raison de l'annulation</FormLabel>
             <FormControl isRequired>
-              <Input onChange={(e) => setRaisonStatut(e.target.value)} isRequired minLength="3" />
+              <Input onChange={(e) => SetjobStatusComment(e.target.value)} isRequired minLength="3" />
             </FormControl>
             <Flex justify="flex-end">
-              <Button variant="secondary" mt={3} onClick={() => updateOffer("Annulée")} isDisabled={raison_statut.length < 3}>
+              <Button variant="secondary" mt={3} onClick={() => updateOffer("Annulée")} isDisabled={job_status_comment.length < 3}>
                 Enregistrer
               </Button>
             </Flex>

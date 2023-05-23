@@ -69,7 +69,7 @@ export default memo(() => {
     }
   }, [])
 
-  const { data, isLoading } = useQuery("listeEntreprise", () => getFormulaires({ statut: "Actif", gestionnaire: auth.gestionnaire }))
+  const { data, isLoading } = useQuery("listeEntreprise", () => getFormulaires({ status: "Actif", cfa_delegated_siret: auth.cfa_delegated_siret }))
 
   if (isLoading) {
     return <LoadingEmptySpace />
@@ -78,13 +78,13 @@ export default memo(() => {
   const columns = [
     {
       Header: "Entreprise",
-      id: "raison_sociale",
+      id: "establishment_raison_sociale",
       width: "500",
       maxWidth: "500",
-      sortType: (a, b) => sortReactTableString(a.original.raison_sociale, b.original.raison_sociale),
-      accessor: ({ id_form, raison_sociale }) => (
-        <Link as={NavLink} to={`/administration/entreprise/${id_form}`}>
-          {raison_sociale}
+      sortType: (a, b) => sortReactTableString(a.original.establishment_raison_sociale, b.original.establishment_raison_sociale),
+      accessor: ({ establishment_id, establishment_raison_sociale }) => (
+        <Link as={NavLink} to={`/administration/entreprise/${establishment_id}`}>
+          {establishment_raison_sociale}
         </Link>
       ),
     },
@@ -98,17 +98,17 @@ export default memo(() => {
       Header: "Offres",
       id: "nombre_offres",
       sortType: "basic",
-      accessor: ({ offres }) => offres.length,
+      accessor: ({ jobs }) => jobs.length,
     },
     {
       Header: "Dernière offre créée le",
       id: "date_creation_offre",
       disableSortBy: true,
       width: "225",
-      accessor: ({ offres }) => {
-        if (offres.length > 0) {
-          let last = offres.pop()
-          return dayjs(last.date_creation).format("DD/MM/YYYY")
+      accessor: ({ jobs }) => {
+        if (jobs.length > 0) {
+          let last = jobs.pop()
+          return dayjs(last.job_creation_date).format("DD/MM/YYYY")
         } else {
           return ""
         }
@@ -130,7 +130,7 @@ export default memo(() => {
                   </MenuButton>
                   <MenuList>
                     <MenuItem>
-                      <Link as={NavLink} to={`/administration/entreprise/${row.id_form}`}>
+                      <Link as={NavLink} to={`/administration/entreprise/${row.establishment_id}`}>
                         Voir les offres
                       </Link>
                     </MenuItem>

@@ -1,5 +1,5 @@
 import { logger } from "../../../../common/logger.js"
-import { Formulaire, UserRecruteur } from "../../../../common/model/index.js"
+import { Recruiter, UserRecruteur } from "../../../../common/model/index.js"
 import { asyncForEach } from "../../../../common/utils/asyncUtils.js"
 import { runScript } from "../../../scriptWrapper.js"
 
@@ -21,20 +21,20 @@ const getStat = async () => {
       switch (user.type) {
         case "ENTREPRISE":
           stat.ETP++
-          const formulaire = await Formulaire.findOne({ id_form: user.id_form, "offres.statut": "Active" })
+          const formulaire = await Recruiter.findOne({ establishment_id: user.establishment_id, "jobs.job_status": "Active" })
 
           if (formulaire) {
-            const nbrOffre = formulaire.offres.filter((x) => x.statut === "Active")
+            const nbrOffre = formulaire.jobs.filter((job) => job.job_status === "Active")
             stat.offreActive += nbrOffre.length
-            nbrOffre.map((x) => stat.dateExpiration.push(x.date_expiration))
-            stat.user.push({ email: user.email, id_form: user.id_form })
+            nbrOffre.map((x) => stat.dateExpiration.push(x.job_expiration_date))
+            stat.user.push({ email: user.email, establishment_id: user.establishment_id })
           }
 
           break
 
         case "CFA":
           stat.CFA++
-          const formulaireCFA = await Formulaire.find({ gestionnaire: user.siret, "offres.statut": "Active" })
+          const formulaireCFA = await Recruiter.find({ cfa_delegated_siret: user.establishment_siret, "jobs.jobs_status": "Active" })
 
           console.log("CFA", formulaireCFA.length)
 
@@ -64,16 +64,16 @@ runScript(async () => {
         { email: user.email },
         {
           $push: {
-            etat_utilisateur: {
+            status: {
               validation_type: "AUTOMATIQUE",
-              statut: "DESACTIVÉ",
-              motif: `Utilisateur en doublon (traitement des majuscules ${new Date()}`,
+              status: "DESACTIVÉ",
+              reason: `Utilisateur en doublon (traitement des majuscules ${new Date()}`,
               user: "SERVEUR",
             },
           },
         }
       )
-      await Formulaire.findOneAndUpdate({ id_form: user.id_form }, { $set: { statut: "Archivé" } })
+      await Recruiter.findOneAndUpdate({ establishment_id: user.establishment_id }, { $set: { status: "Archivé" } })
 
       return
     } else {

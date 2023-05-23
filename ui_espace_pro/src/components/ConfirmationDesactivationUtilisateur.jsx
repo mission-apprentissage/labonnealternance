@@ -6,14 +6,14 @@ import useUserHistoryUpdate from "../common/hooks/useUserHistoryUpdate"
 import { Close } from "../theme/components/icons"
 
 export default (props) => {
-  const { isOpen, onClose, raison_sociale, _id, type, id_form, siret } = props
-  const [motif, setMotif] = useState()
-  const disableUser = useUserHistoryUpdate(_id, USER_STATUS.DISABLED, motif)
+  const { isOpen, onClose, establishment_raison_sociale, _id, type, establishment_id, siret } = props
+  const [reason, setReason] = useState()
+  const disableUser = useUserHistoryUpdate(_id, USER_STATUS.DISABLED, reason)
 
   const handleUpdate = async () => {
     switch (type) {
       case AUTHTYPE.ENTREPRISE:
-        await Promise.all([archiveFormulaire(id_form), disableUser()])
+        await Promise.all([archiveFormulaire(establishment_id), disableUser()])
         break
 
       case AUTHTYPE.CFA:
@@ -40,12 +40,12 @@ export default (props) => {
         </ModalHeader>
         <ModalBody pb={6}>
           <Text>
-            Vous êtes sur le point de désactiver le compte de l’entreprise {raison_sociale}. Une fois le compte inactif, l’entreprise ne pourra plus accéder au service de dépot
-            d’offres et modifier ses informations.
+            Vous êtes sur le point de désactiver le compte de l’entreprise {establishment_raison_sociale}. Une fois le compte inactif, l’entreprise ne pourra plus accéder au
+            service de dépot d’offres et modifier ses informations.
           </Text>
           <FormControl isRequired mt={5}>
             <FormLabel>Motif de refus</FormLabel>
-            <Select onChange={(e) => setMotif(e.target.value)}>
+            <Select onChange={(e) => setReason(e.target.value)}>
               <option value="" hidden>
                 Sélectionnez un motif
               </option>
@@ -63,12 +63,12 @@ export default (props) => {
             mr={3}
             onClick={() => {
               onClose()
-              setMotif(null)
+              setReason(null)
             }}
           >
             Annuler
           </Button>
-          <Button variant="primary" onClick={() => handleUpdate()} isDisabled={!motif}>
+          <Button variant="primary" onClick={() => handleUpdate()} isDisabled={!reason}>
             Supprimer
           </Button>
         </ModalFooter>

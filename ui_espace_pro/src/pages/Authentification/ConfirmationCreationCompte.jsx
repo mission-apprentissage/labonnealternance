@@ -6,11 +6,7 @@ import { AuthentificationLayout } from "../../components"
 
 export default (props) => {
   const location = useLocation()
-  const [email, setEmail] = useState("")
-
-  useEffect(() => {
-    setEmail(location.state.email)
-  })
+  const { email } = location.state
 
   return (
     <AuthentificationLayout>

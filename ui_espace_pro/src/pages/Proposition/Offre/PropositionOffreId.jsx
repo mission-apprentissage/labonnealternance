@@ -8,10 +8,10 @@ import style from "../../../components/Voeux.module.css"
 import { Copy, InfoCircle, Minus, Plus } from "../../../theme/components/icons"
 
 export const PropositionOffreId = () => {
-  const { idFormulaire, idOffre, siretFormateur } = useParams()
+  const { idFormulaire, jobId, siretFormateur } = useParams()
   const toast = useToast()
 
-  const [offre, setOffre] = useState()
+  const [job, setJob] = useState()
   const [formulaire, setFormulaire] = useState()
 
   /**
@@ -22,7 +22,7 @@ export const PropositionOffreId = () => {
     navigator.clipboard.writeText(
       `https://labonnealternance${
         window.location.href.includes("recette") ? "-recette" : ""
-      }.apprentissage.beta.gouv.fr/recherche-apprentissage?&display=list&page=fiche&type=matcha&itemId=${offre._id}`
+      }.apprentissage.beta.gouv.fr/recherche-apprentissage?&display=list&page=fiche&type=matcha&itemId=${job._id}`
     )
     toast({
       title: "Lien copié.",
@@ -39,21 +39,21 @@ export const PropositionOffreId = () => {
   useEffect(async () => {
     const { data } = await getFormulaire(idFormulaire)
 
-    const offre = data.offres.find((offre) => offre._id === idOffre)
+    const job = data.jobs.find((job) => job._id === jobId)
 
     if (siretFormateur) {
       await patchOffre({
-        formId: offre._id,
+        establishment_id: job._id,
         data: { cfa_read_company_detail_at: new Date() },
         config: { params: { siret_formateur: siretFormateur } },
       })
     }
 
     setFormulaire(data)
-    setOffre(offre)
+    setJob(job)
   }, [])
 
-  if (!offre) {
+  if (!job) {
     return <LoadingEmptySpace />
   }
 
@@ -83,37 +83,37 @@ export const PropositionOffreId = () => {
             <Flex align="center">
               <Text mr={3}>Métier :</Text>
               <Text bg="#F9F8F6" px="8px" py="2px" mr={2} fontWeight={700} noOfLines={1} maxW="80%">
-                {offre.libelle}
+                {job.rome_label}
               </Text>
             </Flex>
             <Flex align="center">
               <Text mr={3}>Type de contrat :</Text>
               <Text bg="#F9F8F6" px="8px" py="2px" mr={2} fontWeight={700} noOfLines={1}>
-                {offre.type.join(",")}
+                {job.job_type.join(",")}
               </Text>
             </Flex>
             <Flex align="center">
               <Text mr={3}>Niveau de formation : </Text>
               <Text bg="#F9F8F6" px="8px" py="2px" mr={2} fontWeight={700} noOfLines={1}>
-                {offre.niveau}
+                {job.job_level_label}
               </Text>
             </Flex>
             <Flex align="center">
               <Text mr={3}>Date de début :</Text>
               <Text bg="#F9F8F6" px="8px" py="2px" mr={2} fontWeight={700} noOfLines={1}>
-                {dayjs(offre.date_debut_apprentissage).format("DD/MM/YYYY")}
+                {dayjs(job.job_start_date).format("DD/MM/YYYY")}
               </Text>
             </Flex>
             <Flex align="center">
               <Text mr={3}>Durée du contrat :</Text>
               <Text bg="#F9F8F6" px="8px" py="2px" mr={2} fontWeight={700} noOfLines={1}>
-                {offre.duree_contrat > 1 ? `${offre.duree_contrat} ans` : `${offre.duree_contrat} an`}
+                {`${job.job_duration} mois`}
               </Text>
             </Flex>
             <Flex align="center">
               <Text mr={3}>Nombre de postes :</Text>
               <Text bg="#F9F8F6" px="8px" py="2px" mr={2} fontWeight={700} noOfLines={1}>
-                {offre.quantite}
+                {job.job_count}
               </Text>
             </Flex>
           </Stack>
@@ -132,7 +132,7 @@ export const PropositionOffreId = () => {
             <Flex align="center">
               <Text mr={3}>Téléphone :</Text>
               <Text bg="#F9F8F6" px="8px" py="2px" mr={2} fontWeight={700} noOfLines={1}>
-                {formulaire.telephone}
+                {formulaire.phone}
               </Text>
             </Flex>
             <hr />
@@ -142,27 +142,27 @@ export const PropositionOffreId = () => {
             <Flex align="center">
               <Text mr={3}>SIRET :</Text>
               <Text bg="#F9F8F6" px="8px" py="2px" mr={2} fontWeight={700} noOfLines={1}>
-                {formulaire.siret}
+                {formulaire.establishment_siret}
               </Text>
             </Flex>
-            {formulaire.enseigne && (
+            {formulaire.establishment_enseigne && (
               <Flex align="center">
                 <Text mr={3}>Enseigne :</Text>
                 <Text bg="#F9F8F6" px="8px" py="2px" mr={2} fontWeight={700} noOfLines={1}>
-                  {formulaire.enseigne}
+                  {formulaire.establishment_enseigne}
                 </Text>
               </Flex>
             )}
             <Flex align="center">
               <Text mr={3}>Raison sociale :</Text>
               <Text bg="#F9F8F6" px="8px" py="2px" mr={2} fontWeight={700} noOfLines={1}>
-                {formulaire.raison_sociale}
+                {formulaire.establishment_raison_sociale}
               </Text>
             </Flex>
             <Flex align="center">
               <Text mr={3}>Adresse :</Text>
               <Text bg="#F9F8F6" px="8px" py="2px" mr={2} fontWeight={700} noOfLines={1}>
-                {formulaire.adresse}
+                {formulaire.address}
               </Text>
             </Flex>
           </Stack>
@@ -171,7 +171,7 @@ export const PropositionOffreId = () => {
       <SimpleGrid columns={2} spacing={10} mt={10}>
         <Box>
           <Heading fontSize="24px" mb={10}>
-            {offre.rome_detail.libelle}
+            {job.rome_detail.libelle}
           </Heading>
           <Flex alignItems="flex-start">
             <InfoCircle mr={2} mt={2} color="bluefrance.500" />
@@ -190,7 +190,7 @@ export const PropositionOffreId = () => {
                     </AccordionButton>
                   </h2>
                   <AccordionPanel pb={4} ml={6} mr={3}>
-                    {offre.rome_detail.definition.split("\\n").map((line) => (
+                    {job.rome_detail.definition.split("\\n").map((line) => (
                       <Text>{line}</Text>
                     ))}
                   </AccordionPanel>
@@ -211,7 +211,7 @@ export const PropositionOffreId = () => {
                   </h2>
                   <AccordionPanel maxH="50%" pb={4} ml={6} mr={3}>
                     <ul className={style.voeux}>
-                      {offre?.rome_detail?.competencesDeBase.map((competance, index) => (
+                      {job?.rome_detail?.competencesDeBase.map((competance, index) => (
                         <li key={index}>{competance.libelle}</li>
                       ))}
                     </ul>

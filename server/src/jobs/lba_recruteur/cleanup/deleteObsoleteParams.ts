@@ -1,12 +1,12 @@
 // @ts-nocheck
 import { pick } from "lodash-es"
 import { logger } from "../../../common/logger.js"
-import { Formulaire, UserRecruteur } from "../../../common/model/index.js"
+import { Recruiter, UserRecruteur } from "../../../common/model/index.js"
 import { runScript } from "../../scriptWrapper.js"
 
 const updateFormulaire = async () => {
   // update record using MongoDB API to avoid timestamp automatic update
-  await Formulaire.collection.updateMany({}, { $unset: { events: "", mailing: "", "offres.relance_mail_sent": "" } })
+  await Recruiter.collection.updateMany({}, { $unset: { events: "", mailing: "", "offres.relance_mail_sent": "" } })
   /**
    * To be clarified before further work on rome_detail field
    */

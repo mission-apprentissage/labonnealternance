@@ -1,6 +1,7 @@
 import { mailTemplate } from "../../../assets/index.js"
 import { etat_utilisateur } from "../../../common/constants.js"
 import { UserRecruteur } from "../../../common/model/index.js"
+import { IUserRecruteur } from "../../../common/model/schema/userRecruteur/userRecruteur.types.js"
 import { asyncForEach } from "../../../common/utils/asyncUtils.js"
 import config from "../../../config.js"
 
@@ -11,7 +12,7 @@ import config from "../../../config.js"
  */
 export const relanceOpco = async (mailer) => {
   const userAwaitingValidation = await UserRecruteur.find({
-    $expr: { $eq: [{ $arrayElemAt: ["$etat_utilisateur.statut", -1] }, etat_utilisateur.ATTENTE] },
+    $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, etat_utilisateur.ATTENTE] },
     opco: { $nin: [null, "Opco multiple", "inconnu"] },
   }).lean()
 
@@ -32,7 +33,7 @@ export const relanceOpco = async (mailer) => {
     // Get related user to send the email
     const users = await UserRecruteur.find({ scope: opco, type: "OPCO" })
 
-    await asyncForEach(users, async (user) => {
+    await asyncForEach(users, async (user: IUserRecruteur) => {
       // send mail to recipient
       await mailer.sendEmail({
         to: user.email,

@@ -66,14 +66,12 @@ const AjouterVoeux = (props) => {
   const [inputJobItems, setInputJobItems] = useState([])
   const [formulaire, setFormulaire] = useState()
   const [haveProposals, setHaveProposals] = useState()
-  const [toggleChangeAddress, setToggleChangeAddress] = useState(false)
-  const [customAddress, setCustomAddress] = useState()
   const location = useLocation()
   const navigate = useNavigate()
   const params = useParams()
   const [auth] = useAuth()
 
-  const id_form = location.state?.id_form
+  const establishment_id = location.state?.establishment_id
   const email = location.state?.email
   const userId = location.state?.userId
   const type = location.state?.type
@@ -102,36 +100,18 @@ const AjouterVoeux = (props) => {
    * @param {boolean} fromDashboard - Becomes from connected interface or anonymous.
    * @return {void}
    */
-  const handleRedirectionAfterSubmit = (form, offre, fromDashboard) => {
+  const handleRedirectionAfterSubmit = (form, job, fromDashboard) => {
     if (haveProposals) {
       return navigate("/creation/mise-en-relation", {
         replace: true,
-        state: { offre, email, geo_coordonnees: form.geo_coordonnees, fromDashboard, userId },
+        state: { job, email, geo_coordinates: form.geo_coordinates, fromDashboard, userId },
       })
     }
 
     navigate("/creation/fin", {
       replace: true,
-      state: { offre, email, withDelegation: false, fromDashboard, userId },
+      state: { job, email, withDelegation: false, fromDashboard, userId },
     })
-  }
-
-  /**
-   * @description Add custom address if user set it.
-   * @param {Object} values - Form
-   * @return {Object} - Form
-   */
-  const addCustomAddressIfSet = (values) => {
-    // If the user changed its offer address
-    if (toggleChangeAddress && customAddress) {
-      values.custom_adress = customAddress.name
-      values.custom_gps_coordinates = customAddress.geo_coordonnees
-    } else {
-      values.custom_adress = null
-      values.custom_gps_coordinates = null
-    }
-
-    return values
   }
 
   /**
@@ -141,8 +121,6 @@ const AjouterVoeux = (props) => {
    * @return {Promise<void>}
    */
   const submitFromDashboard = async (values, { resetForm }) => {
-    values = addCustomAddressIfSet(values)
-
     if (auth.type !== AUTHTYPE.ENTREPRISE) {
       await props.handleSave(values)
     } else {
@@ -165,13 +143,10 @@ const AjouterVoeux = (props) => {
    * @return {Promise<void>}
    */
   const submitFromDepotRapide = async (values) => {
-    // If the user changed its offer address
-    values = addCustomAddressIfSet(values)
-
-    const { data } = await postOffre(id_form, values)
-    data.offres.slice(-1)
-    const [offre] = data.offres.slice(-1)
-    await handleRedirectionAfterSubmit(data, offre, false)
+    const { data } = await postOffre(establishment_id, values)
+    data.jobs.slice(-1)
+    const [job] = data.jobs.slice(-1)
+    await handleRedirectionAfterSubmit(data, job, false)
   }
 
   /**
@@ -183,29 +158,20 @@ const AjouterVoeux = (props) => {
     /**
      * KBA 20220105: Issue comes from address API if it's down or no result is found
      */
-    if (formulaire.geo_coordonnees === "NOT FOUND") {
+    if (formulaire.geo_coordinates === "NOT FOUND") {
       setHaveProposals(false)
       return
     }
 
-    const [latitude, longitude] = formulaire.geo_coordonnees.split(",")
+    const [latitude, longitude] = formulaire.geo_coordinates.split(",")
 
     const { data } = await getRelatedEtablissementsFromRome({ rome, latitude, longitude })
     setHaveProposals(!!data.length)
   }
 
   useEffect(async () => {
-    const { data } = await getFormulaire(id_form || params.id_form)
+    const { data } = await getFormulaire(establishment_id || params.establishment_id)
     setFormulaire(data)
-
-    // Display custom address autocomplete
-    if (params.id_offre) {
-      const offre = data.offres.find((offre) => offre._id === params.id_offre)
-
-      if (offre && offre.custom_adress) {
-        setToggleChangeAddress(true)
-      }
-    }
   }, [])
 
   return (
@@ -213,32 +179,31 @@ const AjouterVoeux = (props) => {
       validateOnMount
       enableReinitialize={true}
       initialValues={{
-        libelle: props.libelle ?? "",
+        rome_label: props.rome_label ?? "",
         rome_appellation_label: props.rome_appellation_label ?? "",
-        romes: props.romes ?? [],
-        niveau: props.niveau ?? "",
-        date_debut_apprentissage: props.date_debut_apprentissage ? dayjs(props.date_debut_apprentissage).format(DATE_FORMAT) : "",
-        description: props.description ?? undefined,
-        date_creation: props.date_creation ?? dayjs().format(DATE_FORMAT),
-        date_expiration: props.date_expiration ?? dayjs().add(1, "month").format(DATE_FORMAT),
-        statut: props.statut ?? "Active",
-        type: props.type ?? ["Apprentissage"],
-        multi_diffuser: props.multi_diffuser ?? undefined,
-        delegate: props.delegate ?? undefined,
+        rome_code: props.rome_code ?? [],
+        job_level_label: props.job_level_label ?? "",
+        job_start_date: props.job_start_date ? dayjs(props.job_start_date).format(DATE_FORMAT) : "",
+        job_description: props.job_description ?? undefined,
+        job_creation_date: props.job_creation_date ?? dayjs().format(DATE_FORMAT),
+        job_expiration_date: props.job_expiration_date ?? dayjs().add(1, "month").format(DATE_FORMAT),
+        job_status: props.job_status ?? "Active",
+        job_type: props.job_type ?? ["Apprentissage"],
+        is_multi_published: props.is_multi_published ?? undefined,
+        delegations: props.delegations ?? undefined,
         rome_detail: {},
-        elligible_handicap: props.elligible_handicap ?? false,
-        quantite: props.quantite ?? 1,
-        duree_contrat: props.duree_contrat ?? 6,
-        rythme_alternance: props.rythme_alternance ?? undefined,
-        custom_adress: props.custom_adress ?? undefined,
+        is_disabled_elligible: props.is_disabled_elligible ?? false,
+        job_count: props.job_count ?? 1,
+        job_duration: props.job_duration ?? 6,
+        job_rythm: props.job_rythm ?? undefined,
       }}
       validationSchema={Yup.object().shape({
-        libelle: Yup.string().required("Champ obligatoire"),
-        niveau: Yup.string().required("Champ obligatoire"),
-        date_debut_apprentissage: Yup.date().required("Champ obligatoire"),
-        type: Yup.array().required("Champ obligatoire"),
-        duree_contrat: Yup.number().max(36, "Durée maximale du contrat : 36 mois").min(6, "Durée minimale du contrat : 6 mois").typeError("Durée minimal du contrat : 6 mois"),
-        multi_diffuser: Yup.boolean(),
+        rome_label: Yup.string().required("Champ obligatoire"),
+        job_level_label: Yup.string().required("Champ obligatoire"),
+        job_start_date: Yup.date().required("Champ obligatoire"),
+        job_type: Yup.array().required("Champ obligatoire"),
+        job_duration: Yup.number().max(36, "Durée maximale du contrat : 36 mois").min(6, "Durée minimale du contrat : 6 mois").typeError("Durée minimal du contrat : 6 mois"),
+        is_multi_published: Yup.boolean(),
       })}
       onSubmit={props.fromDashboard ? (values, bag) => submitFromDashboard(values, bag) : (values) => submitFromDepotRapide(values)}
     >
@@ -260,14 +225,14 @@ const AjouterVoeux = (props) => {
                    */
                   setTimeout(async () => {
                     await checkIfThereAreProposal(values.codeRome)
-                    setFieldValue("libelle", values.intitule)
+                    setFieldValue("rome_label", values.intitule)
                     setFieldValue("rome_appellation_label", values.appellation)
-                    setFieldValue("romes", [values.codeRome])
+                    setFieldValue("rome_code", [values.codeRome])
                   }, 0)
 
                   props.getRomeInformation(values.codeRome, values.appellation, formik)
                 }}
-                name="libelle"
+                name="rome_label"
                 value={values.rome_appellation_label}
                 placeholder="Rechercher un métier.."
               />
@@ -288,9 +253,9 @@ const AjouterVoeux = (props) => {
               </FormLabel>
               <CheckboxGroup
                 onChange={(value) => {
-                  setFieldValue("type", value)
+                  setFieldValue("job_type", value)
                 }}
-                value={values.type}
+                value={values.job_type}
                 defaultValue={["Apprentissage"]}
               >
                 <Stack direction="row" spacing={5}>
@@ -301,7 +266,7 @@ const AjouterVoeux = (props) => {
             </FormControl>
             <FormControl mt={6} isRequired>
               <FormLabel>Niveau visé en fin d’études</FormLabel>
-              <Select variant="outline" size="md" name="niveau" defaultValue={values.niveau} onChange={handleChange}>
+              <Select variant="outline" size="md" name="job_level_label" defaultValue={values.job_level_label} onChange={handleChange}>
                 <option value="" hidden>
                   Choisissez un niveau
                 </option>
@@ -312,37 +277,37 @@ const AjouterVoeux = (props) => {
                 <option value="Licence, autres formations niveau (Bac+3)">Licence, autres formations niveau (Bac+3)</option>
                 <option value="Master, titre ingénieur, autres formations niveau (Bac+5)">Master, titre ingénieur, autres formations niveau (Bac+5)</option>
               </Select>
-              {errors.niveau && touched.niveau && <FormErrorMessage>{errors.niveau}</FormErrorMessage>}
+              {errors.job_level_label && touched.job_level_label && <FormErrorMessage>{errors.job_level_label}</FormErrorMessage>}
             </FormControl>
             <FormControl mt={6} isRequired>
               <FormLabel>Date de début</FormLabel>
-              <Input type="date" name="date_debut_apprentissage" min={minDate} defaultValue={values.date_debut_apprentissage} onChange={handleChange} />
+              <Input type="date" name="job_start_date" min={minDate} defaultValue={values.job_start_date} onChange={handleChange} />
             </FormControl>
             {organisation !== "atlas" && (
               <FormControl mt={6}>
-                <Checkbox name="elligible_handicap" value={values.elligible_handicap} isChecked={values.elligible_handicap} onChange={handleChange}>
+                <Checkbox name="is_disabled_elligible" value={values.is_disabled_elligible} isChecked={values.is_disabled_elligible} onChange={handleChange}>
                   Je souhaite faire figurer sur l’offre la mention suivante: <br />
                   "À compétences égales, une attention particulière sera apportée aux personnes en situation de handicap."
                 </Checkbox>
               </FormControl>
             )}
             <FormControl mt={6}>
-              <ChampNombre max={10} name="quantite" value={values.quantite} label="Nombre de poste(s) disponible(s)" handleChange={setFieldValue} />
+              <ChampNombre max={10} name="job_count" value={values.job_count} label="Nombre de poste(s) disponible(s)" handleChange={setFieldValue} />
             </FormControl>
-            <FormControl mt={6} isInvalid={errors.duree_contrat}>
+            <FormControl mt={6} isInvalid={errors.job_duration}>
               <Flex align="center">
                 <Text flexGrow={2}>Durée du contrat (mois)</Text>
                 <Input
                   maxW="27%"
-                  name="duree_contrat"
-                  value={values.duree_contrat}
-                  onChange={(e) => (e.target.value > 0 ? setFieldValue("duree_contrat", parseInt(e.target.value)) : setFieldValue("duree_contrat", null))}
+                  name="job_duration"
+                  value={values.job_duration}
+                  onChange={(e) => (e.target.value > 0 ? setFieldValue("job_duration", parseInt(e.target.value)) : setFieldValue("job_duration", null))}
                 />
               </Flex>
               <FormErrorMessage>
                 <Flex direction="row" alignItems="center">
                   <Warning m={0} />
-                  <Flex ml={1}>{errors.duree_contrat}</Flex>
+                  <Flex ml={1}>{errors.job_duration}</Flex>
                 </Flex>
               </FormErrorMessage>
             </FormControl>
@@ -350,7 +315,7 @@ const AjouterVoeux = (props) => {
               <FormControl mt={6}>
                 <FormLabel>Rythme de l'alternance (formation / entreprise)</FormLabel>
                 <FormHelperText pb={2}>Facultatif</FormHelperText>
-                <Select variant="outline" size="md" name="rythme_alternance" defaultValue={values.rythme_alternance} onChange={handleChange}>
+                <Select variant="outline" size="md" name="job_rythm" defaultValue={values.job_rythm} onChange={handleChange}>
                   <option value="" hidden>
                     Choisissez un rythme
                   </option>
@@ -360,73 +325,14 @@ const AjouterVoeux = (props) => {
                   <option value="2 semaines / 3 semaines">2 semaines / 3 semaines</option>
                   <option value="6 semaines / 6 semaines">6 semaines / 6 semaines</option>
                 </Select>
-                {errors.rythme_alternance && touched.rythme_alternance && <FormErrorMessage>{errors.rythme_alternance}</FormErrorMessage>}
+                {errors.job_rythm && touched.job_rythm && <FormErrorMessage>{errors.job_rythm}</FormErrorMessage>}
               </FormControl>
             ) : null}
-            {/* <FormControl mt={6}>
-              <FormLabel fontWeight="bold">Lieu d’exécution de l’emploi</FormLabel>
-              <Text fontSize="16px" mt={2} mb={4}>
-                Par défaut, l’adresse utilisée pour localiser l’offre est celle figurant dans les informations légales de l’entreprise.
-              </Text>
-              {!toggleChangeAddress ? (
-                <>
-                  <Text
-                    variant="highlight"
-                    sx={{
-                      paddingTop: "8px",
-                      paddingBottom: "8px",
-                      marginTop: 2,
-                      marginBottom: 4,
-                      textTransform: "capitalize",
-                      fontSize: "16px",
-                    }}
-                  >
-                    {formulaire?.adresse}
-                  </Text>
-                  <Link
-                    textColor="bluefrance.500"
-                    onClick={() => setToggleChangeAddress(!toggleChangeAddress)}
-                    sx={{
-                      textDecoration: "none !important",
-                      borderBottom: "solid 1px",
-                      marginLeft: 1,
-                    }}
-                  >
-                    <Pen />
-                    Modifier l’adresse postale
-                  </Link>
-                </>
-              ) : (
-                <>
-                  <Box mb={5}>
-                    <AdresseAutocomplete
-                      handleValues={(address) => {
-                        setCustomAddress(address)
-                        setFieldValue("custom_adress", address.name)
-                      }}
-                      defaultValue={values?.custom_adress || ""}
-                      setFieldTouched={Function}
-                      name="custom_adress"
-                      required={true}
-                    />
-                  </Box>
-                  <Link
-                    textColor="bluefrance.500"
-                    textDecoration="none"
-                    onClick={() => setToggleChangeAddress(!toggleChangeAddress)}
-                    sx={{ textDecoration: "none !important", borderBottom: "solid 1px", marginLeft: 1 }}
-                  >
-                    <Revert />
-                    Utiliser l’adresse par défaut
-                  </Link>
-                </>
-              )}
-            </FormControl> */}
             <Divider mt={5} />
-            {(values.description || organisation?.includes("akto")) && (
+            {(values.job_description || organisation?.includes("akto")) && (
               <FormControl mt={6}>
                 <FormLabel>Description</FormLabel>
-                <Textarea rows="6" name="description" defaultValue={values.description} onChange={handleChange} />
+                <Textarea rows="6" name="job_description" defaultValue={values.job_description} onChange={handleChange} />
                 <FormHelperText>
                   Insérer ici une description de l'offre d'apprentissage, un lien vers la fiche de poste ou tout élément permettant de présenter le poste à pourvoir.
                 </FormHelperText>

@@ -1,3 +1,4 @@
 import { Application } from "../common/model/index.js"
+import { IJobs } from "../common/model/schema/jobs/jobs.types.js"
 
-export const getApplication = (offreId: string) => Application.find({ job_id: offreId }).lean()
+export const getApplication = (job_id: IJobs["_id"]) => Application.find({ job_id }).lean()

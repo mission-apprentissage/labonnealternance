@@ -1,35 +1,38 @@
+import { Types } from "mongoose"
+import { IAdresse, IAdresseCFA } from "../_shared/shared.types.js"
+
 interface IUserValidation {
   validation_type: string
-  statut: string
-  motif: string
+  status: string
+  reason: string
   user: string
   date: Date
 }
 
 interface IUserRecruteur {
-  nom: string
-  prenom: string
+  _id: Types.ObjectId
+  last_name: string
+  first_name: string
   opco: string
   idcc: string
-  raison_sociale: string
-  enseigne: string
-  siret: string
-  adresse_detail: object
-  adresse: string
-  geo_coordonnees: string
-  telephone: string
+  establishment_raison_sociale: string
+  establishment_enseigne: string
+  establishment_siret: string
+  address_detail: IAdresse | IAdresseCFA
+  address: string
+  geo_coordinates: string
+  phone: string
   email: string
   scope: string
   type: string
-  id_form: string
-  origine: string
-  isAdmin: boolean
-  email_valide: boolean
-  qualiopi: boolean
+  establishment_id: string
+  origin: string
+  is_email_checked: boolean
+  is_qualiopi: boolean
+  status: IUserValidation[]
   last_connection: Date
   createdAt: Date
   updatedAt: Date
-  etat_utilisateur: IUserValidation[]
 }
 
 export { IUserRecruteur, IUserValidation }

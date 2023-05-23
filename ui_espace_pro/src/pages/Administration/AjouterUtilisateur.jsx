@@ -36,35 +36,31 @@ export default (props) => {
     <Formik
       enableReinitialize={true}
       initialValues={{
-        nom: props.nom ?? "",
-        prenom: props.prenom ?? "",
-        siret: props.siret ?? "",
-        raison_sociale: props.raison_sociale ?? "",
-        telephone: props.telephone ?? "",
-        adresse: props.adresse ?? "",
-        organization: props.organization ?? "",
+        last_name: props.last_name ?? "",
+        first_name: props.first_name ?? "",
+        establishment_siret: props.establishment_siret ?? "",
+        establishment_raison_sociale: props.establishment_raison_sociale ?? "",
+        phone: props.phone ?? "",
+        address: props.address ?? "",
         scope: props.scope ?? "",
         email: props.email ?? "",
-        isAdmin: props.isAdmin?.toString() ?? "false",
       }}
       validationSchema={Yup.object().shape({
-        nom: Yup.string().required("Champ obligatoire"),
-        prenom: Yup.string().required("Champ obligatoire"),
-        siret: Yup.string()
+        last_name: Yup.string().required("Champ obligatoire"),
+        first_name: Yup.string().required("Champ obligatoire"),
+        establishment_siret: Yup.string()
           .matches(/^[0-9]+$/, "Le siret est composé uniquement de chiffres")
           .min(14, "le siret est sur 14 chiffres")
           .max(14, "le siret est sur 14 chiffres"),
-        raison_sociale: Yup.string(),
-        telephone: Yup.string()
+        establishment_raison_sociale: Yup.string(),
+        phone: Yup.string()
           .matches(/^[0-9]+$/, "Le téléphone est composé uniquement de chiffres")
           .min(10, "le téléphone est sur 10 chiffres")
           .max(10, "le téléphone est sur 10 chiffres")
           .required("champ obligatoire"),
-        adresse: Yup.string(),
-        organization: Yup.string(),
+        address: Yup.string(),
         scope: Yup.string().required("Champs obligatoire"),
         email: Yup.string().email("Insérez un email valide").required("Champ obligatoire"),
-        isAdmin: Yup.string(),
       })}
       onSubmit={async (values, { resetForm }) => {
         await handleSave(values)
@@ -73,7 +69,7 @@ export default (props) => {
       }}
     >
       {(props) => {
-        let { values, setFieldValue, handleChange, errors, touched, isValid, isSubmitting, dirty, submitForm } = props
+        let { values, isValid, isSubmitting, dirty, submitForm } = props
         return (
           <Form>
             <Modal closeOnOverlayClick={false} blockScrollOnMount={true} initialFocusRef={initialRef} finalFocusRef={finalRef} isOpen={isOpen} onClose={onClose}>
@@ -100,12 +96,11 @@ export default (props) => {
                 </ModalHeader>
                 <ModalBody pb={6}>
                   <Stack direction="row">
-                    <CustomInput name="nom" label="Nom" type="text" value={values.nom} />
-                    <CustomInput name="prenom" label="Prénom" type="text" value={values.prenom} />
+                    <CustomInput name="last_name" label="Nom" type="text" value={values.last_name} />
+                    <CustomInput name="first_name" label="Prénom" type="text" value={values.first_name} />
                   </Stack>
 
                   <CustomInput name="email" label="Email" type="email" value={values.email} />
-                  <CustomInput name="organization" label="Organisation" type="text" value={values.organization} />
                   <CustomInput
                     name="scope"
                     label="Origine de référence"
@@ -113,16 +108,6 @@ export default (props) => {
                     value={values.scope}
                     helper="Rattache une origine spécifique à l'utilisateur. [all = full access]"
                   />
-
-                  <FormControl mt={4}>
-                    <FormLabel>Administrateur</FormLabel>
-                    <RadioGroup onChange={(checked) => setFieldValue("isAdmin", checked)} value={values.isAdmin}>
-                      <Stack spacing={10} direction="row">
-                        <Radio value={"true" || true}>Oui</Radio>
-                        <Radio value={"false" || false}>Non</Radio>
-                      </Stack>
-                    </RadioGroup>
-                  </FormControl>
 
                   <Accordion allowToggle my={5}>
                     <AccordionItem>
@@ -135,10 +120,10 @@ export default (props) => {
                         </AccordionButton>
                       </h2>
                       <AccordionPanel pb={4}>
-                        <CustomInput name="siret" label="Siret" type="text" value={values.siret} maxLength="14" />
-                        <CustomInput name="raison_sociale" label="Raison Sociale" type="text" value={values.raison_sociale} />
-                        <CustomInput name="adresse" label="Adresse" type="text" value={values.adresse} />
-                        <CustomInput name="telephone" label="Téléphone" type="text" value={values.telephone} maxLength="10" />
+                        <CustomInput name="establishment_siret" label="Siret" type="text" value={values.establishment_siret} maxLength="14" />
+                        <CustomInput name="establishment_raison_sociale" label="Raison Sociale" type="text" value={values.establishment_raison_sociale} />
+                        <CustomInput name="address" label="Adresse" type="text" value={values.address} />
+                        <CustomInput name="phone" label="Téléphone" type="text" value={values.phone} maxLength="10" />
                       </AccordionPanel>
                     </AccordionItem>
                   </Accordion>

@@ -8,6 +8,9 @@ import { logger } from "../../../../common/logger.js"
 import { UserRecruteur } from "../../../../common/model/index.js"
 import { asyncForEach, delay } from "../../../../common/utils/asyncUtils.js"
 import { runScript } from "../../../scriptWrapper.js"
+import { IJobs } from "../../../../common/model/schema/jobs/jobs.types.js"
+import { IRecruiter } from "../../../../common/model/schema/recruiter/recruiter.types.js"
+import { IUserRecruteur } from "../../../../common/model/schema/userRecruteur/userRecruteur.types.js"
 
 const stat = {
   ok: 0,
@@ -43,12 +46,12 @@ const getRegion = async (dept) => {
  * @returns {Promise<object>}
  */
 const formatToPe = async (offre) => {
-  logger.info(`${offre.id_offre} processing...`)
-  const appellation = offre.rome_detail.appellations.find((v) => v.libelle === offre.rome_appellation_label)
+  logger.info(`${offre.jobId} processing...`)
+  const appellation = offre.rome_detail.appellations.find((v) => v.rome_label === offre.rome_appellation_label)
   const adresse = offre.adresse_detail
-  const [latitude, longitude] = offre.geo_coordonnees.split(",")
+  const [latitude, longitude] = offre.geo_coordinates.split(",")
 
-  const [rue, code_postal, ville] = offre.mandataire && offre.cfa?.adresse_detail?.label ? splitter(offre.cfa.adresse_detail.label) : []
+  const [rue, code_postal, ville] = offre.is_delegated && offre.cfa?.address_detail?.label ? splitter(offre.cfa.address_detail.label) : []
 
   const ntcCle = offre.type === "Apprentissage" ? "E2" : "FS"
 
@@ -66,11 +69,11 @@ const formatToPe = async (offre) => {
   }
 
   return {
-    Par_ref_offre: `${ntcCle}-${offre.id_offre}`,
+    Par_ref_offre: `${ntcCle}-${offre.jobId}`,
     Par_cle: "LABONNEALTERNANCE",
     Par_nom: "LABONNEALTERNANCE",
-    Par_URL_offre: `https://labonnealternance.apprentissage.beta.gouv.fr/recherche-apprentissage?&type=matcha&itemId=${offre.id_offre}`,
-    Code_rome: offre.romes[0],
+    Par_URL_offre: `https://labonnealternance.apprentissage.beta.gouv.fr/recherche-apprentissage?&type=matcha&itemId=${offre.jobId}`,
+    Code_rome: offre.rome_code[0],
     Code_OGR: appellation.code,
     Libelle_metier_OGR: appellation.libelle,
     Description: offre.rome_detail.definition,
@@ -83,8 +86,8 @@ const formatToPe = async (offre) => {
     Off_experience_commentaire: null,
     Qua_cle: null,
     Qua_libelle: null,
-    SCN_cle: offre.code_naf,
-    SCN_libelle: offre.libelle_naf,
+    SCN_cle: offre.naf_code,
+    SCN_libelle: offre.naf_label,
     Tfm_cle_1: null,
     Tfm_libelle_1: null,
     Dfm_cle_1: null,
@@ -126,7 +129,7 @@ const formatToPe = async (offre) => {
     NTC_libelle: null,
     TCO_cle: "CDD",
     TCO_libelle: null,
-    Off_contrat_duree_MO: offre.duree_contrat,
+    Off_contrat_duree_MO: offre.job_duration,
     Off_contrat_duree_JO: null,
     Off_adr_id: null,
     Off_adr_norme: null,
@@ -155,21 +158,21 @@ const formatToPe = async (offre) => {
     PCO_libelle_2: null,
     PCO_exi_cle_2: null,
     PCO_exi_libelle_2: null,
-    Off_date_creation: formatDate(offre.date_creation),
-    Off_date_modification: formatDate(offre.date_mise_a_jour),
-    OST_poste_restant_nb: offre.quantite,
-    Off_client_final_siret: offre.siret,
+    Off_date_creation: formatDate(offre.job_creation_date),
+    Off_date_modification: formatDate(offre.job_update_date),
+    OST_poste_restant_nb: offre.job_count,
+    Off_client_final_siret: offre.establishment_siret,
     Off_client_final_nom: adresse.l7,
-    Off_etab_enseigne: offre.cfa ? offre.cfa?.raison_sociale : offre.raison_sociale ?? null,
+    Off_etab_enseigne: offre.cfa ? offre.cfa?.establishment_raison_sociale : offre.establishment_raison_sociale ?? null,
     Col_cle: null,
     Col_nom: null,
     Col_URL_offre: null,
     Version: null,
     Type_mouvement: "C",
-    Date_debut_contrat: formatDate(offre.date_debut_apprentissage),
+    Date_debut_contrat: formatDate(offre.job_start_date),
     Motif_suppression: null,
-    Description_entreprise: offre.description ?? null,
-    Off_etab_siret: offre.gestionnaire,
+    Description_entreprise: offre.job_description ?? null,
+    Off_etab_siret: offre.cfa_delegated_siret,
     Id_recruteur: null,
     Civ_correspondant: null,
     Nom_correspondant: null,
@@ -201,18 +204,18 @@ runScript(async ({ db }) => {
 
   const [lowerLimit, upperLimit] = [dayjs().subtract(90, "days").toDate(), dayjs().toDate()]
   const offres = await db
-    .collection("offres")
-    .find({ date_creation: { $gt: lowerLimit, $lt: upperLimit } })
+    .collection("jobs")
+    .find({ job_creation_date: { $gt: lowerLimit, $lt: upperLimit } })
     .toArray()
 
   logger.info("get info from user...")
   await asyncForEach(offres, async (offre) => {
-    const user = offre.mandataire ? await UserRecruteur.findOne({ siret: offre.gestionnaire }) : null
+    let user: IUserRecruteur = offre.is_delegated ? await UserRecruteur.findOne({ siret: offre.cfa_delegated_siret }) : null
 
     if (typeof offre.rome_detail !== "string" && offre.rome_detail) {
-      offre.type.map(async (type) => {
+      offre.job_type.map(async (type) => {
         if (offre.rome_detail && typeof offre.rome_detail !== "string") {
-          buffer.push({ ...offre, type: type, cfa: user ? pick(user, ["adresse_detail", "raison_sociale"]) : null })
+          buffer.push({ ...offre, type: type, cfa: user ? pick(user, ["address_detail", "establishment_raison_sociale"]) : null })
         } else {
           stat.ko++
         }

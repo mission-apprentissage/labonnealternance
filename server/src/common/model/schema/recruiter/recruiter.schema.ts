@@ -2,66 +2,66 @@ import { randomUUID } from "crypto"
 import { mongoosePagination, Pagination } from "mongoose-paginate-ts"
 import { getElasticInstance, mongoosastic } from "../../../esClient/index.js"
 import { model, Schema } from "../../../mongodb.js"
-import { offreSchema } from "../offre/offre.schema.js"
-import { IFormulaire } from "./formulaire.types.js"
+import { jobsSchema } from "../jobs/jobs.schema.js"
+import { IRecruiter } from "./recruiter.types.js"
 
-export const formulaireSchema = new Schema<IFormulaire>(
+export const recruiterSchema = new Schema<IRecruiter>(
   {
-    id_form: {
+    establishment_id: {
       type: String,
       default: () => randomUUID(),
       description: "Identifiant de formulaire unique",
       index: true,
     },
-    raison_sociale: {
+    establishment_raison_sociale: {
       type: String,
       default: null,
       description: "Raison social de l'entreprise",
     },
-    enseigne: {
+    establishment_enseigne: {
       type: String,
       default: null,
       description: "Enseigne de l'entreprise",
     },
-    siret: {
+    establishment_siret: {
       type: String,
       default: null,
       description: "Numéro SIRET de l'entreprise",
     },
-    adresse_detail: {
+    address_detail: {
       type: Object,
       description: "Détail de l'adresse de l'entreprise",
     },
-    adresse: {
+    address: {
       type: String,
       default: null,
       description: "Adresse de l'entreprise",
     },
-    geo_coordonnees: {
+    geo_coordinates: {
       type: String,
       default: null,
       description: "Latitude/Longitude (inversion lié à LBA) de l'adresse de l'entreprise",
     },
-    mandataire: {
+    is_delegated: {
       type: Boolean,
       default: false,
       description: "le formulaire est-il géré par un mandataire ?",
     },
-    gestionnaire: {
+    cfa_delegated_siret: {
       type: String,
       description: "Siret de l'organisme de formation gestionnaire des offres de l'entreprise",
     },
-    nom: {
+    last_name: {
       type: String,
       default: null,
       description: "Nom du contact",
     },
-    prenom: {
+    first_name: {
       type: String,
       default: null,
       description: "Prénom du contact",
     },
-    telephone: {
+    phone: {
       type: String,
       default: null,
       description: "Téléphone du contact",
@@ -71,8 +71,8 @@ export const formulaireSchema = new Schema<IFormulaire>(
       default: null,
       description: "Email du contact",
     },
-    offres: [{ type: offreSchema, default: {}, description: "Liste des offres d'apprentissage" }],
-    origine: {
+    jobs: [{ type: jobsSchema, default: {}, description: "Liste des offres d'apprentissage" }],
+    origin: {
       type: String,
       default: null,
       description: "Origine/organisme lié au formulaire",
@@ -85,25 +85,25 @@ export const formulaireSchema = new Schema<IFormulaire>(
       type: String,
       description: "Identifiant convention collective de l'entreprise",
     },
-    statut: {
+    status: {
       type: String,
       enum: ["Actif", "Archivé", "En attente de validation"],
       default: "Actif",
       description: "Statut du formulaire",
     },
-    code_naf: {
+    naf_code: {
       type: String,
       description: "code NAF de l'entreprise",
     },
-    libelle_naf: {
+    naf_label: {
       type: String,
       description: "Libelle du code NAF de l'entreprise",
     },
-    tranche_effectif: {
+    establishment_size: {
       type: String,
       description: "Tranche d'effectif salariale de l'entreprise",
     },
-    date_creation_etablissement: {
+    establishment_creation_date: {
       type: Date,
       description: "Date de creation de l'entreprise",
     },
@@ -113,7 +113,7 @@ export const formulaireSchema = new Schema<IFormulaire>(
   }
 )
 
-formulaireSchema.plugin(mongoosePagination)
-formulaireSchema.plugin(mongoosastic, { esClient: getElasticInstance(), index: "formulaires" })
+recruiterSchema.plugin(mongoosePagination)
+recruiterSchema.plugin(mongoosastic, { esClient: getElasticInstance(), index: "recruiters" })
 
-export default model<IFormulaire, Pagination<IFormulaire>>("formulaire", formulaireSchema)
+export default model<IRecruiter, Pagination<IRecruiter>>("recruiter", recruiterSchema)

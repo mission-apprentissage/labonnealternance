@@ -26,7 +26,6 @@ import password from "./routes/auth/password.controller.js"
 import campaignWebhook from "./routes/campaignWebhook.controller.js"
 import catalogueRoute from "./routes/catalogue.controller.js"
 import constantsRoute from "./routes/constants.controller.js"
-import esSearchRoute from "./routes/esSearch.controller.js"
 import etablissementRoute from "./routes/etablissement.controller.js"
 import etablissementsRecruteurRoute from "./routes/etablissementRecruteur.controller.js"
 import formationRegionV1 from "./routes/formationRegionV1.controller.js"
@@ -215,7 +214,6 @@ export default async (components) => {
    */
   app.use("/api/user", userRoute(components))
   app.use("/api/formulaire", formulaireRoute(components))
-  app.use("/api/es/search", esSearchRoute())
   app.use("/api/rome", rome())
   app.use("/api/optout", optoutRoute())
   app.use("/api/etablissement", etablissementsRecruteurRoute(components))

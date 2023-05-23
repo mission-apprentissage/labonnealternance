@@ -98,57 +98,58 @@ const getMatchaJobById = async ({ id, caller }) => {
 const transformMatchaJobForIdea = ({ job, distance, caller }) => {
   const resultJobs = []
 
-  job.offres.map((offre, idx) => {
+  console.log(job)
+
+  job.jobs.map((offre, idx) => {
     const resultJob = itemModel("matcha")
 
     let email = {}
 
     email = encryptMailWithIV({ value: job.email, caller })
 
-    resultJob.id = `${job.id_form}-${idx}`
-    resultJob.title = offre.rome_appellation_label ?? offre.libelle
+    resultJob.id = `${job.establishment_id}-${idx}`
+    resultJob.title = offre.rome_appellation_label ?? offre.rome_label
     resultJob.contact = {
       ...email,
-      name: job.prenom + " " + job.nom,
-      phone: job.telephone,
+      name: job.first_name + " " + job.last_name,
+      phone: job.phone,
     }
 
     resultJob.place.distance = distance ? roundDistance(distance) : null
-    resultJob.place.fullAddress = job.adresse
-    resultJob.place.address = job.adresse
-    resultJob.place.latitude = job.geo_coordonnees.split(",")[0]
-    resultJob.place.longitude = job.geo_coordonnees.split(",")[1]
+    resultJob.place.fullAddress = job.address
+    resultJob.place.address = job.address
+    resultJob.place.latitude = job.geo_coordinates.split(",")[0]
+    resultJob.place.longitude = job.geo_coordinates.split(",")[1]
 
-    resultJob.company.siret = job.siret
-    resultJob.company.name = job.enseigne || job.raison_sociale || "Enseigne inconnue"
-    resultJob.company.size = job.tranche_effectif
+    resultJob.company.siret = job.establishment_siret
+    resultJob.company.name = job.establishment_enseigne || job.establishment_raison_sociale || "Enseigne inconnue"
+    resultJob.company.size = job.establishment_size
 
-    resultJob.company.mandataire = job.mandataire
-    resultJob.company.place = { city: job.entreprise_localite }
+    resultJob.company.mandataire = job.is_delegated
+    resultJob.company.place = { city: job.establishment_location }
 
-    resultJob.nafs = [{ label: job.libelle_naf }]
-    resultJob.company.mandataire = job.mandataire
-    resultJob.company.creationDate = job.date_creation_etablissement
+    resultJob.nafs = [{ label: job.naf_label }]
+    resultJob.company.creationDate = job.establishment_creation_date
 
-    resultJob.diplomaLevel = offre.niveau
-    resultJob.createdAt = job.createdAt
-    resultJob.lastUpdateAt = job.updatedAt
+    resultJob.diplomaLevel = offre.job_level_label
+    resultJob.createdAt = job.job_creation_date
+    resultJob.lastUpdateAt = job.job_update_date
 
     resultJob.job = {
       id: offre._id,
-      description: offre.description || "",
-      creationDate: job.createdAt,
-      contractType: offre.type.join(", "),
-      jobStartDate: offre.date_debut_apprentissage,
+      description: offre.job_description || "",
+      creationDate: offre.job_creation_date,
+      contractType: offre.job_type.join(", "),
+      jobStartDate: offre.job_start_date,
       romeDetails: offre.rome_detail,
-      rythmeAlternance: offre.rythme_alternance || null,
-      dureeContrat: offre.duree_contrat,
-      quantiteContrat: offre.quantite,
-      elligibleHandicap: offre.elligible_handicap,
+      rythmeAlternance: offre.job_rythm || null,
+      dureeContrat: offre.job_duration,
+      quantiteContrat: offre.job_count,
+      elligibleHandicap: offre.is_disabled_elligible,
     }
 
     resultJob.romes = []
-    offre.romes.map((code) => resultJob.romes.push({ code, label: null }))
+    offre.rome_code.map((code) => resultJob.romes.push({ code, label: null }))
 
     resultJobs.push(resultJob)
   })

@@ -4,7 +4,7 @@ import { useQueryClient } from "react-query"
 import { updateUserValidationHistory } from "../../api"
 import useAuth from "./useAuth"
 
-export default function useUserHistoryUpdate(userId, statut, motif = undefined) {
+export default function useUserHistoryUpdate(userId, status, reason = undefined) {
   const [auth] = useAuth()
   const client = useQueryClient()
   const toast = useToast()
@@ -13,13 +13,13 @@ export default function useUserHistoryUpdate(userId, statut, motif = undefined) 
     updateUserValidationHistory(userId, {
       validation_type: "MANUELLE",
       user: auth.id,
-      statut: statut,
-      motif,
+      status,
+      reason,
     })
       .then(() => ["awaitingValidationUserList", "activeUserList", "disableUserList", "user"].map((x) => client.invalidateQueries(x)))
       .then(() =>
         toast({
-          description: `Utilisateur ${statut}`,
+          description: `Utilisateur ${status}`,
           position: "top-right",
           status: "success",
           duration: 4000,

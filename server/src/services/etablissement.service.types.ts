@@ -1,3 +1,5 @@
+import { IAdresse, IAdresseCFA } from "../common/model/schema/_shared/shared.types.js"
+
 export interface IAPIEtablissement {
   etablissement: IEtablissementGouv
   gateway_error: boolean
@@ -18,24 +20,6 @@ export interface IEtablissementGouv {
   enseigne: null
   adresse: IAdresse
   etat_administratif: IEtatAdministratif
-}
-
-export interface IAdresse {
-  l1: string
-  l2: null
-  l3: string
-  l4: string
-  l5: null
-  l6: string
-  l7: string
-  numero_voie: string
-  type_voie: string
-  nom_voie: string
-  complement_adresse: string
-  code_postal: string
-  localite: string
-  code_insee_localite: string
-  cedex: null
 }
 
 export interface IImplantation {
@@ -71,7 +55,7 @@ export interface IReferentiel {
   forme_juridique: IFormeJuridique
   raison_sociale: string
   siege_social: boolean
-  adresse: IAdresse
+  adresse: IAdresseCFA
   nature: string
   numero_declaration_activite: string
   qualiopi: boolean
@@ -94,38 +78,6 @@ export interface Anomaly {
   job: string
   sources: string[]
   date_collecte: Date
-}
-
-export interface IAdresse {
-  academie: Academie
-  code_insee: string
-  code_postal: string
-  departement: Academie
-  geojson: Geojson
-  label: string
-  localite: string
-  region: Academie
-}
-
-export interface Academie {
-  code: string
-  nom: string
-}
-
-export interface Geojson {
-  geometry: IGeometry
-  properties: IProperties
-  type: string
-}
-
-export interface IGeometry {
-  coordinates: number[]
-  type: string
-}
-
-export interface IProperties {
-  score: number
-  source: string
 }
 
 export interface ICertification {
@@ -151,7 +103,7 @@ export interface IFormeJuridique {
 
 export interface ILieuxDeFormation {
   code: string
-  adresse?: IAdresse
+  adresse?: IAdresseCFA
   sources: string[]
   date_collecte: Date
   label?: string

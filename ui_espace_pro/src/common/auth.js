@@ -3,7 +3,7 @@ import { subscribeToHttpEvent } from "./httpClient"
 import decodeJWT from "./utils/decodeJWT"
 
 const anonymous = { sub: "anonymous", permissions: {} }
-let token = sessionStorage.getItem("matcha:token")
+let token = sessionStorage.getItem("lba:token")
 
 const { useGlobalState, getGlobalState, setGlobalState } = createGlobalState({
   auth: token ? decodeJWT(token) : anonymous,

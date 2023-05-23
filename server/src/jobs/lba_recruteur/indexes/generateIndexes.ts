@@ -1,8 +1,8 @@
-import { BonnesBoites, DiplomesMetiers, DomainesMetiers, FormationCatalogue, Formulaire } from "../../../common/model/index.js"
+import { BonnesBoites, DiplomesMetiers, DomainesMetiers, FormationCatalogue, Recruiter } from "../../../common/model/index.js"
 import { rebuildIndex } from "../../../common/utils/esUtils.js"
 import { logger } from "../../../common/logger.js"
 
-export const generateIndexes = async (indexList = "formulaires,formationcatalogues,bonnesboites,diplomesmetiers,domainesmetiers") => {
+export const generateIndexes = async (indexList = "recruiters,formationcatalogues,bonnesboites,diplomesmetiers,domainesmetiers") => {
   const list = indexList.split(",")
 
   await Promise.all(
@@ -28,9 +28,9 @@ export const generateIndexes = async (indexList = "formulaires,formationcatalogu
           await rebuildIndex(FormationCatalogue, { skipNotFound: true })
           break
         }
-        case "formulaires": {
-          await Formulaire.syncIndexes()
-          await rebuildIndex(Formulaire, { skipNotFound: true })
+        case "recruiters": {
+          await Recruiter.syncIndexes()
+          await rebuildIndex(Recruiter, { skipNotFound: true })
           break
         }
         default: {

@@ -1,7 +1,8 @@
 import { logger } from "../../../common/logger.js"
+import { IUserRecruteur } from "../../../common/model/schema/userRecruteur/userRecruteur.types.js"
 
-export const createUser = async (usersRecruteur, { prenom, nom, siret, raison_sociale, telephone, adresse, email, scope }, { options }) => {
-  const { Type, Admin, Email_valide } = options
+export const createUser = async (usersRecruteur, { first_name, last_name, establishment_siret, establishment_raison_sociale, phone, address, email, scope }, { options }) => {
+  const { Type, Email_valide } = options
   const exist = await usersRecruteur.getUser({ email })
 
   if (exist) {
@@ -10,20 +11,19 @@ export const createUser = async (usersRecruteur, { prenom, nom, siret, raison_so
   }
 
   const payload = {
-    prenom,
-    nom,
-    siret,
-    raison_sociale,
-    telephone,
-    adresse,
+    first_name,
+    last_name,
+    establishment_siret,
+    establishment_raison_sociale,
+    phone,
+    address,
     email,
     scope,
     type: Type,
-    isAdmin: Admin,
-    email_valide: Email_valide,
+    is_email_checked: Email_valide,
   }
 
   await usersRecruteur.createUser(payload)
 
-  logger.info(`User created : ${email} — ${scope} - admin: ${Admin}`)
+  logger.info(`User created : ${email} — ${scope} - admin: ${Type === "ADMIN"}`)
 }

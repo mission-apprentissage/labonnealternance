@@ -16,10 +16,11 @@ const CreationCompte = ({ type }) => {
   const navigate = useNavigate()
   const [auth] = useAuth()
 
-  const submitSiret = ({ siret }, { setSubmitting, setFieldError }) => {
-    const formattedSiret = siret.split(" ").join("")
+  const submitSiret = ({ establishment_siret }, { setSubmitting, setFieldError }) => {
+    const formattedSiret = establishment_siret.split(" ").join("")
+
     // validate SIRET
-    getEntrepriseInformation(formattedSiret, { fromDashboardCfa: true, gestionnaire: auth.gestionnaire })
+    getEntrepriseInformation(formattedSiret, { fromDashboardCfa: true, cfa_delegated_siret: auth.cfa_delegated_siret })
       .then(({ data }) => {
         setSubmitting(true)
         navigate("/administration/entreprise/detail", {
@@ -27,7 +28,7 @@ const CreationCompte = ({ type }) => {
         })
       })
       .catch(({ response }) => {
-        setFieldError("siret", response.data.message)
+        setFieldError("establishment_siret", response.data.message)
         setIsCfa(response.data?.isCfa)
         setSubmitting(false)
       })
@@ -36,9 +37,9 @@ const CreationCompte = ({ type }) => {
   return (
     <Formik
       validateOnMount
-      initialValues={{ siret: undefined }}
+      initialValues={{ establishment_siret: undefined }}
       validationSchema={Yup.object().shape({
-        siret: Yup.string()
+        establishment_siret: Yup.string()
           .transform((value) => value.split(" ").join(""))
           .matches(/^[0-9]+$/, "Le siret est composé uniquement de chiffres")
           .min(14, "le siret est sur 14 chiffres")
@@ -51,18 +52,17 @@ const CreationCompte = ({ type }) => {
         return (
           <>
             <Form>
-              <CustomInput required={false} name="siret" label="SIRET" type="text" value={values.siret} />
+              <CustomInput required={false} name="establishment_siret" label="SIRET" type="text" value={values.establishment_siret} />
               {isCfa && (
                 <Alert status="info" variant="top-accent">
                   <AlertIcon />
-                  {/* <Flex> */}
                   <Text>
                     Pour les organismes de formation,{" "}
                     <Link
                       variant="classic"
                       onClick={() => {
                         setIsCfa(false)
-                        setFieldValue("siret", values.siret)
+                        setFieldValue("establishment_siret", values.establishment_siret)
                         navigate("/creation/cfa")
                         submitForm()
                       }}
@@ -70,7 +70,6 @@ const CreationCompte = ({ type }) => {
                       veuillez utiliser ce lien
                     </Link>
                   </Text>
-                  {/* </Flex> */}
                 </Alert>
               )}
               <Flex justify="flex-end" mt={5}>

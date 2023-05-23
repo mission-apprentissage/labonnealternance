@@ -26,16 +26,15 @@ const createUserToken = (user, options = {}) => {
 
 const createUserRecruteurToken = (user, options = {}) => {
   const payload = {
-    permissions: pick(user, ["isAdmin"]),
     opco: user.opco,
     scope: user.scope,
-    nom: user.nom,
-    prenom: user.prenom,
+    last_name: user.last_name,
+    first_name: user.first_name,
     type: user.type,
-    siret: user.siret,
-    id_form: user.id_form,
-    mandataire: user.type === CFA ? true : false,
-    gestionnaire: user.type === CFA ? user.siret : undefined,
+    establishment_siret: user.establishment_siret,
+    establishment_id: user.establishment_id,
+    is_delegated: user.type === CFA ? true : false,
+    cfa_delegated_siret: user.type === CFA ? user.establishment_siret : undefined,
     id: user._id,
   }
 

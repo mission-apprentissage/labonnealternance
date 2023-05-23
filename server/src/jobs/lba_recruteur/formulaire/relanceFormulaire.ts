@@ -2,43 +2,45 @@
 import moment from "moment"
 import { mailTemplate } from "../../../assets/index.js"
 import { logger } from "../../../common/logger.js"
-import { Formulaire, UserRecruteur } from "../../../common/model/index.js"
+import { Recruiter, UserRecruteur } from "../../../common/model/index.js"
 import { asyncForEach } from "../../../common/utils/asyncUtils.js"
 import { notifyToSlack } from "../../../common/utils/slackUtils.js"
 import config from "../../../config.js"
+import { IRecruiter } from "../../../common/model/schema/recruiter/recruiter.types.js"
+import { IUserRecruteur } from "../../../common/model/schema/userRecruteur/userRecruteur.types.js"
 
 export const relanceFormulaire = async (mailer, threshold) => {
   // number of days to expiration for the reminder email to be sent
 
-  const forms = await Formulaire.find({
-    $nor: [{ offres: { $exists: false } }, { offres: { $size: 0 } }],
-    "offres.statut": "Active",
+  const forms = await Recruiter.find({
+    $nor: [{ jobs: { $exists: false } }, { jobs: { $size: 0 } }],
+    "jobs.job_status": "Active",
   }).lean()
 
   // reduce formulaire with eligible offers
   const format = forms.reduce((acc, formulaire) => {
     acc[formulaire._id] = { ...formulaire, offres: [] }
 
-    formulaire.offres
+    formulaire.jobs
       // The query returns all offers included in the form, regardless of the status filter in the query.
       // The payload is smaller than not filtering it.
-      .filter((x) => x.statut === "Active")
-      .forEach((offre) => {
-        const remainingDays = moment(offre.date_expiration).diff(moment(), "days")
+      .filter((x) => x.job_status === "Active")
+      .forEach((job) => {
+        const remainingDays = moment(job.date_expiration).diff(moment(), "days")
 
         // if the number of days to the expiration date is strictly above the threshold, do nothing
         if (remainingDays !== threshold) return
 
-        offre.supprimer = `${config.publicUrlEspacePro}/offre/${offre._id}/cancel`
-        offre.pourvue = `${config.publicUrlEspacePro}/offre/${offre._id}/provided`
+        job.supprimer = `${config.publicUrlEspacePro}/job/${job._id}/cancel`
+        job.pourvue = `${config.publicUrlEspacePro}/job/${job._id}/provided`
 
-        acc[formulaire._id].offres.push(offre)
+        acc[formulaire._id].jobs.push(job)
       })
     return acc
   }, {})
 
   // format array and remove formulaire without offers
-  const formulaireToExpire = Object.values(format).filter((x: any) => x.offres.length !== 0)
+  const formulaireToExpire = Object.values(format).filter((x: any) => x.jobs.length !== 0)
 
   if (formulaireToExpire.length === 0) {
     logger.info("Aucune offre à relancer aujourd'hui.")
@@ -46,34 +48,32 @@ export const relanceFormulaire = async (mailer, threshold) => {
     return
   }
 
-  const nbOffres = formulaireToExpire.reduce((acc: number, formulaire: any) => (acc += formulaire.offres.length), 0)
+  const nbOffres = formulaireToExpire.reduce((acc: number, formulaire: any) => (acc += formulaire.jobs.length), 0)
 
   if (nbOffres > 0) {
     logger.info(`${nbOffres} offres relancé aujourd'hui.`)
     await notifyToSlack({ subject: `RELANCE J+${threshold}`, message: `*${nbOffres} offres* (${formulaireToExpire.length} formulaires) ont été relancés.` })
   }
 
-  await asyncForEach(formulaireToExpire, async (formulaire) => {
-    const { email, raison_sociale, nom, prenom, offres, mandataire, gestionnaire } = formulaire
-    let contactCFA
+  await asyncForEach(formulaireToExpire, async (formulaire: IRecruiter) => {
+    const { email, establishment_raison_sociale, last_name, first_name, jobs, is_delegated, cfa_delegated_siret } = formulaire
 
     // get CFA informations if formulaire is handled by a CFA
-    if (mandataire) {
-      contactCFA = await UserRecruteur.findOne({ siret: gestionnaire })
-    }
+    const contactCFA: IUserRecruteur = is_delegated && (await UserRecruteur.findOne({ establishment_siret: cfa_delegated_siret }))
 
     await mailer.sendEmail({
-      to: mandataire ? contactCFA.email : email,
+      to: contactCFA?.email ?? email,
       subject: "La bonne alternance - Vos offres vont expirer prochainement",
       template: mailTemplate["mail-expiration-offres"],
       data: {
         images: {
           logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
         },
-        nom: mandataire ? contactCFA.nom : nom,
-        prenom: mandataire ? contactCFA.prenom : prenom,
-        raison_sociale,
-        offres,
+        last_name: contactCFA?.last_name ?? last_name,
+        first_name: contactCFA?.first_name ?? first_name,
+        establishment_raison_sociale,
+        is_delegated,
+        jobs,
         threshold,
         url: `${config.publicUrlEspacePro}/authentification`,
       },

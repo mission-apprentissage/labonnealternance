@@ -1,6 +1,6 @@
 // @ts-nocheck
 import express from "express"
-import { Formulaire } from "../../common/model/index.js"
+import { Recruiter } from "../../common/model/index.js"
 import { getApplication } from "../../services/application.service.js"
 import {
   archiveDelegatedFormulaire,
@@ -29,7 +29,7 @@ export default ({ mailer, usersRecruteur }) => {
     "/",
     tryCatch(async (req, res) => {
       const query = JSON.parse(req.query.query)
-      const results = await Formulaire.find(query).lean()
+      const results = await Recruiter.find(query).lean()
 
       return res.json(results)
     })
@@ -39,23 +39,23 @@ export default ({ mailer, usersRecruteur }) => {
    * Get form from id
    */
   router.get(
-    "/:id_form",
+    "/:establishment_id",
     tryCatch(async (req, res) => {
-      const result = await getFormulaire({ id_form: req.params.id_form })
+      const result = await getFormulaire({ establishment_id: req.params.establishment_id })
 
       if (!result) {
         return res.sendStatus(401)
       }
 
       await Promise.all(
-        result.offres.map(async (offre) => {
-          const candidatures = await getApplication(offre._id)
+        result.jobs.map(async (job) => {
+          const candidatures = await getApplication(job._id)
 
           if (candidatures) {
-            offre.candidatures = candidatures.length > 0 ? candidatures.length : undefined
+            job.candidatures = candidatures.length > 0 ? candidatures.length : undefined
           }
 
-          return offre
+          return job
         })
       )
 
@@ -78,8 +78,8 @@ export default ({ mailer, usersRecruteur }) => {
           await usersRecruteur.createUser({
             ...req.body,
             type: "ENTREPRISE",
-            id_form: response.id_form,
-            email_valide: true,
+            establishment_id: response.establishment_id,
+            is_email_checked: true,
           })
         }
       }
@@ -91,25 +91,25 @@ export default ({ mailer, usersRecruteur }) => {
    * Put form
    */
   router.put(
-    "/:id_form",
+    "/:establishment_id",
     tryCatch(async (req, res) => {
-      const result = await updateFormulaire(req.params.id_form, req.body)
+      const result = await updateFormulaire(req.params.establishment_id, req.body)
       return res.json(result)
     })
   )
 
   router.delete(
-    "/:id_form",
+    "/:establishment_id",
     tryCatch(async (req, res) => {
-      await archiveFormulaire(req.params.id_form)
+      await archiveFormulaire(req.params.establishment_id)
       return res.sendStatus(200)
     })
   )
 
   router.delete(
-    "/delegated/:siret",
+    "/delegated/:establishment_siret",
     tryCatch(async (req, res) => {
-      await archiveDelegatedFormulaire(req.params.siret)
+      await archiveDelegatedFormulaire(req.params.establishment_siret)
       return res.sendStatus(200)
     })
   )
@@ -120,12 +120,11 @@ export default ({ mailer, usersRecruteur }) => {
    *
    */
   router.get(
-    "/offre/f/:id_offre",
+    "/offre/f/:jobId",
     tryCatch(async (req, res) => {
       // Note pour PR quel traitement de getJobById empêche de l'utiliser ici ?
-
-      const result = await getOffre(req.params.id_offre)
-      const offre = result.offres.filter((x) => x._id == req.params.id_offre)
+      const result = await getOffre(req.params.jobId)
+      const offre = result.jobs.filter((job) => job._id == req.params.jobId)
 
       res.json(offre)
     })
@@ -135,11 +134,9 @@ export default ({ mailer, usersRecruteur }) => {
    * Create new offer
    */
   router.post(
-    "/:id_form/offre",
+    "/:establishment_id/offre",
     tryCatch(async (req, res) => {
-      const offre = req.body
-      const id_form = req.params.id_form
-      const updatedFormulaire = await createJob({ offre, id_form })
+      const updatedFormulaire = await createJob({ job: req.body, id: req.params.establishment_id })
       return res.json(updatedFormulaire)
     })
   )
@@ -148,12 +145,12 @@ export default ({ mailer, usersRecruteur }) => {
    * Create offer delegations
    */
   router.post(
-    "/offre/:idOffre/delegation",
+    "/offre/:jobId/delegation",
     tryCatch(async (req, res) => {
       const { etablissementCatalogueIds } = req.body
-      const { idOffre } = req.params
-      const offre = await createJobDelegations({ jobId: idOffre, etablissementCatalogueIds, mailer })
-      return res.json(offre)
+      const { jobId } = req.params
+      const job = await createJobDelegations({ jobId, etablissementCatalogueIds })
+      return res.json(job)
     })
   )
 
@@ -161,9 +158,9 @@ export default ({ mailer, usersRecruteur }) => {
    * Put existing offer from id
    */
   router.put(
-    "/offre/:id_offre",
+    "/offre/:jobId",
     tryCatch(async (req, res) => {
-      const result = await updateOffre(req.params.id_offre, req.body)
+      const result = await updateOffre(req.params.jobId, req.body)
       return res.json(result)
     })
   )
@@ -172,16 +169,15 @@ export default ({ mailer, usersRecruteur }) => {
    * Permet de passer une offre en statut ANNULER (mail transactionnel)
    */
   router.put(
-    "/offre/:offreId/cancel",
+    "/offre/:jobId/cancel",
     tryCatch(async (req, res) => {
-      const exists = await checkOffreExists(req.params.offreId)
+      const exists = await checkOffreExists(req.params.jobId)
 
       if (!exists) {
-        return res.status(400).json({ status: "INVALID_RESSOURCE", message: "Offre does not exist" })
+        return res.status(400).json({ status: "INVALID_RESSOURCE", message: "L'offre n'existe pas" })
       }
 
-      await cancelOffre(req.params.offreId)
-
+      await cancelOffre(req.params.jobId)
       return res.sendStatus(200)
     })
   )
@@ -190,16 +186,15 @@ export default ({ mailer, usersRecruteur }) => {
    * Permet de passer une offre en statut POURVUE (mail transactionnel)
    */
   router.put(
-    "/offre/:offreId/provided",
+    "/offre/:jobId/provided",
     tryCatch(async (req, res) => {
-      const exists = await checkOffreExists(req.params.offreId)
+      const exists = await checkOffreExists(req.params.jobId)
 
       if (!exists) {
-        return res.status(400).json({ status: "INVALID_RESSOURCE", message: "Offre does not exist" })
+        return res.status(400).json({ status: "INVALID_RESSOURCE", message: "L'offre n'existe pas" })
       }
 
-      await provideOffre(req.params.offreId)
-
+      await provideOffre(req.params.jobId)
       return res.sendStatus(200)
     })
   )

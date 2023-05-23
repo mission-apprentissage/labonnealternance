@@ -5,28 +5,28 @@ import { useNavigate, useParams, useSearchParams } from "react-router-dom"
 import * as Yup from "yup"
 import { getCfaInformation, getEntrepriseInformation } from "../../api"
 import { AUTHTYPE } from "../../common/contants"
-import { AnimationContainer, AuthentificationLayout, CustomInput, InformationLegaleEntreprise } from "../../components"
+import { AnimationContainer, AuthentificationLayout, CustomInput, InformationLegaleEntreprise, Bandeau } from "../../components"
 import { LogoContext } from "../../contextLogo"
 import { WidgetContext } from "../../contextWidget"
 import { ExternalLinkLine, InfoCircle, SearchLine } from "../../theme/components/icons"
 
-const CreationCompte = ({ type, setQualiopi, setBandeau, setStatus }) => {
+const CreationCompte = ({ type, setQualiopi, setBandeau }) => {
   const [isCfa, setIsCfa] = useState(false)
   const navigate = useNavigate()
-  const { origine } = useParams()
+  const { origin } = useParams()
 
-  const submitSiret = ({ siret }, { setSubmitting, setFieldError }) => {
-    const formattedSiret = siret.split(" ").join("")
+  const submitSiret = ({ establishment_siret }, { setSubmitting, setFieldError }) => {
+    const formattedSiret = establishment_siret.split(" ").join("")
     setBandeau(false)
-    // validate SIRET
+    // validate establishment_siret
     if (type === AUTHTYPE.ENTREPRISE) {
       getEntrepriseInformation(formattedSiret)
         .then(({ data }) => {
           setSubmitting(true)
-          navigate("/creation/detail", { state: { informationSiret: data, type, origine } })
+          navigate("/creation/detail", { state: { informationSiret: data, type, origin } })
         })
         .catch(({ response }) => {
-          setFieldError("siret", response.data.message)
+          setFieldError("establishment_siret", response.data.message)
           setIsCfa(response.data?.isCfa)
           setSubmitting(false)
         })
@@ -34,32 +34,35 @@ const CreationCompte = ({ type, setQualiopi, setBandeau, setStatus }) => {
       getCfaInformation(formattedSiret)
         .then(({ data }) => {
           setSubmitting(false)
-          navigate("/creation/detail", { state: { informationSiret: data, type, origine } })
+          navigate("/creation/detail", { state: { informationSiret: data, type, origin } })
         })
         .catch(({ response }) => {
           if (response.data.error) {
             if (response.data.reason === "EXIST") {
-              setFieldError("siret", "Ce numéro siret est déjà associé à un compte utilisateur.")
+              setFieldError("establishment_siret", "Ce numéro siret est déjà associé à un compte utilisateur.")
             }
             if (response.data.reason === "QUALIOPI") {
-              setFieldError("siret", "L’organisme rattaché à ce SIRET n’est pas certifié Qualiopi")
+              setFieldError("establishment_siret", "L’organisme rattaché à ce SIRET n’est pas certifié Qualiopi")
               setQualiopi(response.data.data)
               setBandeau({
+                type: "error",
                 header: "Votre centre de formation n’est pas certifié Qualiopi.",
                 description: "Pour obtenir la certification, faites la démarche auprès d’un organisme certificateur : ",
                 lien: "https://travail-emploi.gouv.fr/formation-professionnelle/acteurs-cadre-et-qualite-de-la-formation-professionnelle/liste-organismes-certificateurs",
               })
             }
             if (response.data.reason === "CLOSED") {
-              setFieldError("siret", "Le numéro siret indique un établissement fermé.")
+              setFieldError("establishment_siret", "Le numéro siret indique un établissement fermé.")
               setBandeau({
+                type: "error",
                 header: "Votre centre de formation est renseigné comme fermé.",
                 description: "Pour modifier les caractéristiques de votre organisme, vous pouvez vous rapprocher de l’INSEE afin de réaliser les modifications à la source.",
               })
             }
             if (response.data.reason === "UNKNOWN") {
-              setFieldError("siret", "Le numéro siret n'est pas référencé comme centre de formation.")
+              setFieldError("establishment_siret", "Le numéro siret n'est pas référencé comme centre de formation.")
               setBandeau({
+                type: "error",
                 header: "Votre centre de formation n’est pas référencé dans notre catalogue.",
                 description: "Pour ajouter une offre de formation au catalogue, renseignez-vous auprès du Carif-Oref de votre région : ",
                 lien: "https://reseau.intercariforef.org/referencer-son-offre-de-formation",
@@ -75,9 +78,9 @@ const CreationCompte = ({ type, setQualiopi, setBandeau, setStatus }) => {
   return (
     <Formik
       validateOnMount
-      initialValues={{ siret: undefined }}
+      initialValues={{ establishment_siret: undefined }}
       validationSchema={Yup.object().shape({
-        siret: Yup.string()
+        establishment_siret: Yup.string()
           .transform((value) => value.split(" ").join(""))
           .matches(/^[0-9]+$/, "Le siret est composé uniquement de chiffres")
           .min(14, "le siret est sur 14 chiffres")
@@ -90,7 +93,7 @@ const CreationCompte = ({ type, setQualiopi, setBandeau, setStatus }) => {
         return (
           <>
             <Form>
-              <CustomInput required={false} name="siret" label="SIRET" type="text" value={values.siret} />
+              <CustomInput required={false} name="establishment_siret" label="SIRET" type="text" value={values.establishment_siret} />
               {isCfa && (
                 <Alert status="info" variant="top-accent">
                   <AlertIcon />
@@ -100,7 +103,7 @@ const CreationCompte = ({ type, setQualiopi, setBandeau, setStatus }) => {
                       variant="classic"
                       onClick={() => {
                         setIsCfa(false)
-                        setFieldValue("siret", values.siret)
+                        setFieldValue("establishment_siret", values.establishment_siret)
                         navigate("/creation/cfa")
                         submitForm()
                       }}
@@ -188,7 +191,6 @@ export default ({ type, widget }) => {
   const { setWidget, widget: wid } = useContext(WidgetContext)
   const { setOrganisation } = useContext(LogoContext)
   const [qualiopi, setQualiopi] = useState()
-  const [alert, setAlert] = useState()
   const [bandeau, setBandeau] = useState()
   const params = useParams()
   const [searchParams] = useSearchParams()
@@ -198,13 +200,14 @@ export default ({ type, widget }) => {
   useState(() => {
     if (widget) {
       setWidget((prev) => ({ ...prev, isWidget: true, mobile: mobile ?? false }))
-      setOrganisation(params.origine ?? "matcha")
+      setOrganisation(params.origin ?? "matcha")
     }
   }, [])
 
   return (
     <AuthentificationLayout>
       <AnimationContainer>
+        {bandeau && <Bandeau {...bandeau} />}
         <SimpleGrid columns={[1, 1, 1, 2]} spacing={[0, 0, 0, "75px"]} mt={wid.isWidget ? 0 : 12}>
           <Box>
             {wid.isWidget && (
@@ -216,7 +219,7 @@ export default ({ type, widget }) => {
             <Text fontSize="20px" textAlign="justify" mt={2} mb={4}>
               Nous avons besoin du numéro SIRET de votre {type === AUTHTYPE.ENTREPRISE ? "entreprise" : "organisme de formation"} afin de vous identifier.
             </Text>
-            <CreationCompte type={type} setQualiopi={setQualiopi} setBandeau={setBandeau} setAlert={setAlert} />
+            <CreationCompte type={type} setQualiopi={setQualiopi} setBandeau={setBandeau} />
           </Box>
           <Box mt={[4, 4, 4, 0]}>{qualiopi ? <InformationLegaleEntreprise {...qualiopi} /> : <InformationSiret type={type} />}</Box>
         </SimpleGrid>

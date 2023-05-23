@@ -30,8 +30,19 @@ const Formulaire = () => {
   let navigate = useNavigate()
   let location = useLocation()
   const { widget } = useContext(WidgetContext)
-  const { raison_sociale, adresse, contacts, siret, geo_coordonnees, opco, idcc, code_naf, libelle_naf, tranche_effectif, date_creation_etablissement } =
-    location.state?.informationSiret
+  const {
+    establishment_raison_sociale,
+    address,
+    contacts,
+    establishment_siret,
+    geo_coordinates,
+    opco,
+    idcc,
+    naf_code,
+    naf_label,
+    establishment_size,
+    establishment_creation_date,
+  } = location.state?.informationSiret
   const toast = useToast()
   const [auth] = useAuth()
 
@@ -46,9 +57,9 @@ const Formulaire = () => {
           status: "success",
           duration: 4000,
         })
-        navigate(`/administration/entreprise/${data.id_form}/offre/creation`, {
+        navigate(`/administration/entreprise/${data.establishment_id}/offre/creation`, {
           replace: true,
-          state: { raison_sociale: data.raison_sociale },
+          state: { establishment_raison_sociale: data.establishment_raison_sociale },
         })
       })
       .catch((error) => {
@@ -61,37 +72,37 @@ const Formulaire = () => {
     <Formik
       validateOnMount={true}
       initialValues={{
-        mandataire: true,
-        gestionnaire: auth.gestionnaire,
-        siret: siret,
-        raison_sociale: raison_sociale,
-        adresse: adresse,
+        is_delegated: true,
+        cfa_delegated_siret: auth.cfa_delegated_siret,
+        establishment_siret: establishment_siret,
+        establishment_raison_sociale: establishment_raison_sociale,
+        address: address,
         contacts: contacts,
-        geo_coordonnees: geo_coordonnees,
+        geo_coordinates: geo_coordinates,
         opco: opco,
         idcc: idcc,
-        code_naf: code_naf,
-        libelle_naf: libelle_naf,
-        tranche_effectif: tranche_effectif,
-        date_creation_etablissement: date_creation_etablissement,
-        origine: auth.scope,
-        nom: undefined,
-        prenom: undefined,
-        telephone: undefined,
+        naf_code: naf_code,
+        naf_label: naf_label,
+        establishment_size: establishment_size,
+        establishment_creation_date: establishment_creation_date,
+        origin: auth.scope,
+        last_name: undefined,
+        first_name: undefined,
+        phone: undefined,
         email: undefined,
       }}
       validationSchema={Yup.object().shape({
-        raison_sociale: Yup.string().required("champs obligatoire"),
-        siret: Yup.string()
+        establishment_raison_sociale: Yup.string().required("champs obligatoire"),
+        establishment_siret: Yup.string()
           .matches(/^[0-9]+$/, "Le siret est composé uniquement de chiffres")
           .min(14, "le siret est sur 14 chiffres")
           .max(14, "le siret est sur 14 chiffres")
           .required("champs obligatoire"),
-        adresse: Yup.string().required("champ obligatoire"),
+        address: Yup.string().required("champ obligatoire"),
         email: Yup.string().email("Insérez un email valide").required("champ obligatoire"),
-        nom: Yup.string().required("champ obligatoire"),
-        prenom: Yup.string().required("champ obligatoire"),
-        telephone: Yup.string()
+        last_name: Yup.string().required("champ obligatoire"),
+        first_name: Yup.string().required("champ obligatoire"),
+        phone: Yup.string()
           .matches(/^[0-9]+$/, "Le téléphone est composé uniquement de chiffres")
           .min(10, "le téléphone est sur 10 chiffres")
           .max(10, "le téléphone est sur 10 chiffres")
@@ -102,9 +113,9 @@ const Formulaire = () => {
       {(informationForm) => {
         return (
           <Form>
-            <CustomInput required={false} name="nom" label="Nom" type="text" value={informationForm.values.nom} />
-            <CustomInput required={false} name="prenom" label="Prénom" type="text" value={informationForm.values.prenom} />
-            <CustomInput required={false} name="telephone" label="Numéro de téléphone" type="tel" pattern="[0-9]{10}" maxLength="10" value={informationForm.values.telephone} />
+            <CustomInput required={false} name="last_name" label="Nom" type="text" value={informationForm.values.last_name} />
+            <CustomInput required={false} name="first_name" label="Prénom" type="text" value={informationForm.values.first_name} />
+            <CustomInput required={false} name="phone" label="Numéro de téléphone" type="tel" pattern="[0-9]{10}" maxLength="10" value={informationForm.values.phone} />
             <CustomInput required={false} name="email" label="Email" type="email" value={informationForm.values.email} />
             <Flex justifyContent="flex-end" alignItems="center" mt={5}>
               {!widget?.isWidget && (

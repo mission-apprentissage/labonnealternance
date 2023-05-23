@@ -6,10 +6,10 @@ export default function useAuth() {
 
   let setAuthFromToken = (token) => {
     if (!token) {
-      sessionStorage.removeItem("matcha:token")
+      sessionStorage.removeItem("lba:token")
       setAuth(anonymous)
     } else {
-      sessionStorage.setItem("matcha:token", token)
+      sessionStorage.setItem("lba:token", token)
       setAuth(decodeJWT(token))
     }
   }

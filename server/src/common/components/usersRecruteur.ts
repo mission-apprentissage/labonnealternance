@@ -1,22 +1,24 @@
-// @ts-nocheck
 import { randomUUID } from "crypto"
 import { UserRecruteur } from "../model/index.js"
+import { ModelUpdateOptions, UpdateQuery } from "mongoose"
+import { IUserRecruteur } from "../model/schema/userRecruteur/userRecruteur.types.js"
+import { Filter } from "mongodb"
 
 export default () => ({
   createApiKey: () => `mna-${randomUUID()}`,
-  getUsers: async (query, options, { page, limit }) => {
+  getUsers: async (query: Filter<IUserRecruteur>, options, { page, limit }) => {
     const response = await UserRecruteur.paginate({ query, ...options, page, limit, lean: true, select: "-password" })
     return {
       pagination: {
         page: response.page,
         result_per_page: limit,
-        number_of_page: response.pages,
-        total: response.total,
+        number_of_page: response.totalPages,
+        total: response.totalDocs,
       },
       data: response.docs,
     }
   },
-  getUser: (query) => UserRecruteur.findOne(query),
+  getUser: (query: Filter<IUserRecruteur>) => UserRecruteur.findOne(query),
   createUser: async (values) => {
     let scope = values.scope ?? undefined
 
@@ -26,24 +28,21 @@ export default () => ({
         const [key] = randomUUID().split("-")
         scope = `cfa-${key}`
       } else {
-        scope = `etp-${values.raison_sociale.toLowerCase().replace(/ /g, "-")}`
+        scope = `etp-${values.establishment_raison_sociale.toLowerCase().replace(/ /g, "-")}`
       }
     }
 
-    const isAdmin = values.isAdmin ?? false
-
     const user = new UserRecruteur({
       ...values,
-      isAdmin: isAdmin,
       scope: scope,
     })
 
     await user.save()
-    user.password = undefined
     return user.toObject()
   },
-  updateUser: (userId, userPayload) => UserRecruteur.findOneAndUpdate({ _id: userId }, userPayload, { new: true }),
-  removeUser: async (id) => {
+  updateUser: (query: Filter<IUserRecruteur>, update: UpdateQuery<IUserRecruteur>, options: ModelUpdateOptions = { new: true }) =>
+    UserRecruteur.findOneAndUpdate(query, update, options),
+  removeUser: async (id: IUserRecruteur["_id"]) => {
     const user = await UserRecruteur.findById(id)
     if (!user) {
       throw new Error(`Unable to find user ${id}`)
@@ -51,7 +50,8 @@ export default () => ({
 
     return await user.deleteOne({ _id: id })
   },
-  registerUser: (email) => UserRecruteur.findOneAndUpdate({ email }, { last_connection: new Date() }),
-  updateUserValidationHistory: (userId, state) => UserRecruteur.findByIdAndUpdate({ _id: userId }, { $push: { etat_utilisateur: state } }, { new: true }),
-  getUserValidationState: (stateArray) => stateArray.sort((a, b) => new Date(a) - new Date(b)).pop().statut,
+  registerUser: (email: IUserRecruteur["email"]) => UserRecruteur.findOneAndUpdate({ email }, { last_connection: new Date() }),
+  updateUserValidationHistory: (userId: IUserRecruteur["_id"], state: UpdateQuery<IUserRecruteur["status"]>, options: ModelUpdateOptions = { new: true }) =>
+    UserRecruteur.findByIdAndUpdate({ _id: userId }, { $push: { status: state } }, options),
+  getUserValidationState: (stateArray: IUserRecruteur["status"]) => stateArray.sort((a, b) => new Date(a.date).valueOf() - new Date(b.date).valueOf()).pop().status,
 })

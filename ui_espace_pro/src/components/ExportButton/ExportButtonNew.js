@@ -17,9 +17,9 @@ export default ({ data, datasetName = "export" }) => {
 
   if (auth.type === AUTHTYPE.OPCO) {
     data.forEach((e) => {
-      if (e.offres_detail?.length) {
-        e.offres_detail.map((offre) => {
-          buffer.push({ ...e, ...offre })
+      if (e.job_detail?.length) {
+        e.job_detail.map((job) => {
+          buffer.push({ ...e, ...job })
         })
       } else {
         buffer.push(e)
@@ -29,25 +29,25 @@ export default ({ data, datasetName = "export" }) => {
 
   const format = buffer
     .flat()
-    .map((x) => _.omit(x, ["_id", "etat_utilisateur", "__v", "isAdmin", "type", "scope", "email_valide", "id_form", "offres_detail", "qualiopi"]))
+    .map((x) => _.omit(x, ["_id", "status", "__v", "type", "scope", "is_email_checked", "establishment_id", "job_detail", "is_qualiopi"]))
     .map((x) => {
       return {
         ...x,
         createdAt: formatDate(x.createdAt),
         updatedAt: formatDate(x.updatedAt),
-        date_debut_apprentissage: formatDate(x.date_debut_apprentissage),
-        date_creation: formatDate(x.date_creation),
-        date_expiration: formatDate(x.date_expiration),
-        date_mise_a_jour: formatDate(x.date_mise_a_jour),
-        date_derniere_prolongation: formatDate(x.date_derniere_prolongation),
+        date_debut_apprentissage: formatDate(x.job_start_date),
+        date_creation: formatDate(x.job_creation_date),
+        date_expiration: formatDate(x.job_expiration_date),
+        date_mise_a_jour: formatDate(x.job_update_date),
+        date_derniere_prolongation: formatDate(x.job_last_prolongation_date),
       }
     })
     .map((x) => {
       return {
         ...x,
-        siret: `"${x.siret}"`,
-        telephone: `"${x.telephone}"`,
-        description: x?.description ? x.description.replace(/(\n|\r|[,.!?;:'-])/g, " ") : undefined,
+        siret: `"${x.establishment_siret}"`,
+        telephone: `"${x.phone}"`,
+        description: x?.job_description ? x.job_description.replace(/(\n|\r|[,.!?;:'-])/g, " ") : undefined,
       }
     })
 

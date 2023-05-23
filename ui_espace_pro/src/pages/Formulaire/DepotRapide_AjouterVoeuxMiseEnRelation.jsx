@@ -16,7 +16,7 @@ const DepotRapide_AjouterVoeuxMiseEnRelation = () => {
   const [isSubmitButtonEnabled, setIsSubmitButtonEnabled] = useState(false)
   const [isSubmitLoading, setIsSubmitLoading] = useState(false)
 
-  const { offre, email, geo_coordonnees, fromDashboard, userId } = location.state
+  const { job, email, geo_coordinates, fromDashboard, userId } = location.state
 
   /**
    * @description Handles all checkboxes.
@@ -37,7 +37,7 @@ const DepotRapide_AjouterVoeuxMiseEnRelation = () => {
   const skip = () =>
     navigate("/creation/fin", {
       replace: true,
-      state: { offre, email, withDelegation: false, fromDashboard, userId },
+      state: { job, email, withDelegation: false, fromDashboard, userId },
     })
 
   /**
@@ -49,13 +49,13 @@ const DepotRapide_AjouterVoeuxMiseEnRelation = () => {
     const etablissementCatalogueIds = etablissements.filter((etablissement) => etablissement.checked).map((etablissement) => etablissement._id)
 
     await createEtablissementDelegation({
-      offreId: location.state.offre._id,
+      jobId: location.state.job._id,
       data: { etablissementCatalogueIds },
     }).finally(() => setIsSubmitLoading(false))
 
     navigate("/creation/fin", {
       replace: true,
-      state: { offre, email, withDelegation: true, fromDashboard, userId },
+      state: { job, email, withDelegation: true, fromDashboard, userId },
     })
   }
 
@@ -64,9 +64,9 @@ const DepotRapide_AjouterVoeuxMiseEnRelation = () => {
    * @returns {void}
    */
   useEffect(() => {
-    const [latitude, longitude] = geo_coordonnees.split(",")
+    const [latitude, longitude] = geo_coordinates.split(",")
 
-    getRelatedEtablissementsFromRome({ rome: offre?.rome_detail?.code || offre?.romes[0], latitude, longitude }).then(({ data }) => {
+    getRelatedEtablissementsFromRome({ rome: job?.rome_detail?.code || job?.rome_code[0], latitude, longitude }).then(({ data }) => {
       const etablissementUpdated = data.slice(0, 10).map((data, index) => ({
         ...data,
         checked: index < 3,

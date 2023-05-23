@@ -13,8 +13,8 @@ export default memo(({ histories }) => {
         if (user.user !== "SERVEUR") {
           try {
             let result = await getUser(user.user)
-            user.prenom = result.data.prenom
-            user.nom = result.data.nom
+            user.first_name = result.data.first_name
+            user.last_name = result.data.last_name
             return user
           } catch (error) {
             console.log(error)
@@ -35,16 +35,16 @@ export default memo(({ histories }) => {
     return <LoadingEmptySpace />
   }
 
-  const getStatut = (statut) => {
-    switch (statut) {
+  const getStatut = (status) => {
+    switch (status) {
       case "VALIDÉ":
-        return <Badge variant="active">{statut}</Badge>
+        return <Badge variant="active">{status}</Badge>
       case "EN ATTENTE DE VALIDATION":
-        return <Badge variant="awaiting">{statut}</Badge>
+        return <Badge variant="awaiting">{status}</Badge>
       case "DESACTIVÉ":
-        return <Badge variant="inactive">{statut}</Badge>
+        return <Badge variant="inactive">{status}</Badge>
       default:
-        return <Badge>{statut}</Badge>
+        return <Badge>{status}</Badge>
     }
   }
 
@@ -69,15 +69,15 @@ export default memo(({ histories }) => {
             </Thead>
             <Tbody>
               {historic
-                .map(({ date, statut, prenom, nom, validation_type, motif, user }, i) => {
+                .map(({ date, status, first_name, last_name, validation_type, reason, user }, i) => {
                   return (
                     <Tr>
                       <Td>{i + 1}</Td>
                       <Td>{dayjs(date).format("DD/MM/YYYY")}</Td>
-                      <Td>{getStatut(statut)}</Td>
+                      <Td>{getStatut(status)}</Td>
                       <Td>{validation_type}</Td>
-                      <Td>{prenom && nom ? `${prenom} ${nom}` : <Badge>{user}</Badge>}</Td>
-                      <Td>{motif}</Td>
+                      <Td>{first_name && last_name ? `${first_name} ${last_name}` : <Badge>{user}</Badge>}</Td>
+                      <Td>{reason}</Td>
                     </Tr>
                   )
                 })

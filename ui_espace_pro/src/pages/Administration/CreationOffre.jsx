@@ -15,15 +15,15 @@ export default () => {
   const client = useQueryClient()
   const [auth] = useAuth()
 
-  const { data, isLoading } = useQuery("offre", () => getOffre(params.id_offre), {
-    enabled: params.id_offre !== "creation" ? true : false,
+  const { data, isLoading } = useQuery("offre", () => getOffre(params.jobId), {
+    enabled: params.jobId !== "creation" ? true : false,
     cacheTime: 0,
   })
 
   const handleSave = (values) => {
     // Updates an offer
-    if (params.id_offre !== "creation") {
-      putOffre(params.id_offre, values)
+    if (params.jobId !== "creation") {
+      putOffre(params.jobId, values)
         .then(() => {
           toast({
             title: "Offre mise à jour avec succès.",
@@ -33,17 +33,17 @@ export default () => {
             isClosable: true,
           })
         })
-        .finally(() => navigate(`/administration/entreprise/${params.id_form}`), { replace: true })
+        .finally(() => navigate(`/administration/entreprise/${params.establishment_id}`), { replace: true })
     } else {
       if (auth.type === AUTHTYPE.ENTREPRISE) {
         // Create the offer and return the form with the related offer created
-        return postOffre(params.id_form, values).then(({ data }) => ({
+        return postOffre(params.establishment_id, values).then(({ data }) => ({
           form: data,
-          offre: data.offres.slice(-1).shift(),
+          offre: data.jobs.slice(-1).shift(),
         }))
       }
 
-      postOffre(params.id_form, values)
+      postOffre(params.establishment_id, values)
         .then(() => {
           toast({
             title: "Offre enregistrée avec succès.",
@@ -55,7 +55,7 @@ export default () => {
         })
         .then(() => client.invalidateQueries("offre-liste"))
 
-        .finally(() => navigate(`/administration/entreprise/${params.id_form}`), { replace: true })
+        .finally(() => navigate(`/administration/entreprise/${params.establishment_id}`), { replace: true })
     }
   }
 

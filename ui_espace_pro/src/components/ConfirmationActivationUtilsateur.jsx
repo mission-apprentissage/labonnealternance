@@ -4,7 +4,7 @@ import useUserHistoryUpdate from "../common/hooks/useUserHistoryUpdate"
 import { Close } from "../theme/components/icons"
 
 export default (props) => {
-  let { isOpen, onClose, raison_sociale, _id } = props
+  let { isOpen, onClose, establishment_raison_social, _id } = props
   const updateUserHistory = useUserHistoryUpdate(_id, USER_STATUS.ACTIVE)
 
   const activateUser = () => {
@@ -29,8 +29,8 @@ export default (props) => {
         </ModalHeader>
         <ModalBody pb={6}>
           <Text>
-            Vous êtes sur le point d’activer le compte de l’entreprise {raison_sociale}. Une fois le compte validé, l’entreprise pourra accéder au service de dépot d’offres et
-            modifier ses informations.
+            Vous êtes sur le point d’activer le compte de l’entreprise {establishment_raison_social}. Une fois le compte validé, l’entreprise pourra accéder au service de dépot
+            d’offres et modifier ses informations.
           </Text>
         </ModalBody>
 

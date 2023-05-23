@@ -81,7 +81,7 @@ export default memo(() => {
   const awaitingValidationUserList = useQuery("awaitingValidationUserList", () =>
     getOpcoUsers({
       userQuery: {
-        $expr: { $eq: [{ $arrayElemAt: ["$etat_utilisateur.statut", -1] }, USER_STATUS.WAITING] },
+        $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, USER_STATUS.WAITING] },
         opco: auth.scope,
       },
       formulaireQuery: { opco: auth.scope },
@@ -91,7 +91,7 @@ export default memo(() => {
   const activeUserList = useQuery("activeUserList", () =>
     getOpcoUsers({
       userQuery: {
-        $expr: { $eq: [{ $arrayElemAt: ["$etat_utilisateur.statut", -1] }, USER_STATUS.ACTIVE] },
+        $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, USER_STATUS.ACTIVE] },
         opco: auth.scope,
       },
       formulaireQuery: { opco: auth.scope },
@@ -101,7 +101,7 @@ export default memo(() => {
   const disableUserList = useQuery("disableUserList", () =>
     getOpcoUsers({
       userQuery: {
-        $expr: { $eq: [{ $arrayElemAt: ["$etat_utilisateur.statut", -1] }, USER_STATUS.DISABLED] },
+        $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, USER_STATUS.DISABLED] },
         opco: auth.scope,
       },
       formulaireQuery: { opco: auth.scope },
@@ -115,21 +115,21 @@ export default memo(() => {
   const columns = [
     {
       Header: "Entreprise",
-      id: "raison_sociale",
+      id: "establishment_raison_sociale",
       width: "300",
-      accessor: "raison_sociale",
-      sortType: (a, b) => sortReactTableString(a.original.raison_sociale, b.original.raison_sociale),
+      accessor: "establishment_raison_sociale",
+      sortType: (a, b) => sortReactTableString(a.original.establishment_raison_sociale, b.original.establishment_raison_sociale),
       Cell: ({
         data,
         cell: {
           row: { id },
         },
       }) => {
-        const { raison_sociale, siret, _id } = data[id]
+        const { establishment_raison_sociale, siret, _id } = data[id]
         return (
           <Flex direction="column">
             <Link fontWeight="700" as={NavLink} to={`/administration/opco/entreprise/${_id}`}>
-              {raison_sociale}
+              {establishment_raison_sociale}
             </Link>
             <Text color="#666666" fontSize="14px">
               SIRET {siret}
@@ -141,10 +141,10 @@ export default memo(() => {
     },
     {
       Header: "Nom",
-      id: "nom",
-      accessor: ({ nom, prenom }) => (
+      id: "first_name",
+      accessor: ({ last_name, first_name }) => (
         <Text color="#666666" fontSize="14px">
-          {prenom} {nom}
+          {first_name} {last_name}
         </Text>
       ),
     },
@@ -161,7 +161,7 @@ export default memo(() => {
     },
     {
       Header: "Téléphone",
-      accessor: "telephone",
+      accessor: "phone",
       Cell: ({ value }) => (
         <Text color="#666666" fontSize="14px">
           {value}
@@ -182,13 +182,13 @@ export default memo(() => {
     },
     {
       Header: "Origine",
-      accessor: "origine",
+      accessor: "origin",
       Cell: ({ value }) => (
         <Text color="#666666" fontSize="14px" noOfLines={2}>
           {value}
         </Text>
       ),
-      id: "origine",
+      id: "origin",
     },
     {
       Header: "Offres",
@@ -196,7 +196,7 @@ export default memo(() => {
       id: "nombre_offres",
       disableSortBy: true,
       sortType: "basic",
-      accessor: ({ offres }) => offres,
+      accessor: ({ jobs }) => jobs,
     },
     {
       Header: "Actions",
@@ -219,7 +219,7 @@ export default memo(() => {
                       </Link>
                     </MenuItem>
                     <MenuItem>
-                      <Link as={NavLink} to={`/administration/opco/entreprise/${row.siret}/${row.id_form}`}>
+                      <Link as={NavLink} to={`/administration/opco/entreprise/${row.establishment_siret}/${row.establishment_id}`}>
                         Voir les offres
                       </Link>
                     </MenuItem>

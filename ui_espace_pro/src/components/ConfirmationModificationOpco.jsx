@@ -2,7 +2,7 @@ import { Button, Heading, Modal, ModalBody, ModalContent, ModalFooter, ModalHead
 import { Close } from "../theme/components/icons"
 
 export default (props) => {
-  const { isOpen, onClose, setFieldValue, previousValue, newValue, raison_sociale } = props
+  const { isOpen, onClose, setFieldValue, previousValue, newValue, establishment_raison_sociale } = props
 
   const handleUpdate = () => {
     setFieldValue("opco", newValue)
@@ -26,7 +26,7 @@ export default (props) => {
         </Button>
         <ModalHeader>
           <Heading as="h2" fontSize="1.5rem">
-            <Text>Changement d’OPCO pour l’entreprise {raison_sociale}</Text>
+            <Text>Changement d’OPCO pour l’entreprise {establishment_raison_sociale}</Text>
           </Heading>
         </ModalHeader>
         <ModalBody pb={6}>

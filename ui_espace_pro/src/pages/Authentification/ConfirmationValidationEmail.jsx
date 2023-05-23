@@ -44,7 +44,6 @@ export default (props) => {
     // get user from params coming from email link
     validationCompte({ id })
       .then(({ data }) => {
-        console.log({ data })
         if (data?.isUserAwaiting) {
           setIsAwaitingValidation.on()
           setTimeout(() => window.location.replace("/"), 10000)
@@ -60,7 +59,7 @@ export default (props) => {
     switch (auth.type) {
       case AUTHTYPE.ENTREPRISE:
         setTimeout(() => {
-          navigate(`/administration/entreprise/${auth.id_form}`, { state: { newUser: true } })
+          navigate(`/administration/entreprise/${auth.establishment_id}`, { state: { newUser: true } })
         }, 1000)
         break
 

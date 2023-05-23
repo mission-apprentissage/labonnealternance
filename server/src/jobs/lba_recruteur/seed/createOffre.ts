@@ -1,35 +1,31 @@
 // @ts-nocheck
-/* eslint-disable */
 import { omit } from "lodash-es"
 import { logger } from "../../../common/logger.js"
-import { Formulaire, Offre } from "../../../common/model/index.js"
+import { Recruiter, Job } from "../../../common/model/index.js"
 
-const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
-
-export const createOffreCollection = async (application) => {
+export const createOffreCollection = async () => {
   logger.info("Deleting offres collections...")
-  await Offre.deleteMany({})
+  await Job.deleteMany({})
 
   logger.info("Creating offres collections...")
-  let formulaires = await Formulaire.find({}).lean()
+  let recruiters = await Recruiter.find({}).lean()
 
   await Promise.all(
-    formulaires.map(async (form) => {
+    recruiters.map(async (form) => {
       await Promise.all(
-        form.offres.map(async (offre) => {
-          const filtOffre = omit(offre, ["_id"])
-          const filtForm = omit(form, ["_id", "offres", "mailing", "events", "statut"])
-          filtForm.statutFormulaire = form.statut
-          filtOffre.id_offre = offre._id
+        form.jobs.map(async (job) => {
+          const filtOffre = omit(job, ["_id"])
+          const filtForm = omit(form, ["_id", "jobs", "status"])
+          filtForm.recruiterStatus = form.status
+          filtOffre.jobId = job._id
 
-          await Offre.collection.insertOne({ ...filtOffre, ...filtForm })
-          // await delay(300);
+          await Job.collection.insertOne({ ...filtOffre, ...filtForm })
         })
       )
     })
   )
 
-  let offres = await Offre.countDocuments()
+  let jobs = await Job.countDocuments()
 
-  return { offres }
+  return { jobs }
 }
