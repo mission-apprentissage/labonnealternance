@@ -39,6 +39,7 @@ export const syncAffelnetFormationsFromCatalogueME = async ({ etablissements, el
     limit: 500,
     query: {
       affelnet_perimetre: true,
+      cle_ministere_educatif: { $ne: null },
       affelnet_statut: { $in: ["publié", "en attente de publication"] },
     },
     select: affelnetSelectedFields,
