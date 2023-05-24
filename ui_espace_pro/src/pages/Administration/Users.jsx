@@ -96,7 +96,7 @@ export default memo(() => {
           row: { id },
         },
       }) => {
-        const { establishment_raison_sociale, establishment_siret, _id, opco_label } = data[id]
+        const { establishment_raison_sociale, establishment_siret, _id, opco } = data[id]
         return (
           <Flex direction="column">
             <Link fontWeight="700" as={NavLink} to={`/administration/users/${_id}`} aria-label="voir les informations">
@@ -106,7 +106,7 @@ export default memo(() => {
               SIRET {establishment_siret}
             </Text>
             <Text color="redmarianne" fontSize="14px">
-              {opco_label}
+              {opco}
             </Text>
           </Flex>
         )

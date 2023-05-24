@@ -18,7 +18,7 @@ const migrateUserRecruteurCollection = async (db) => {
     }
   )
   logger.info(`Fin suppression champs de la collection userRecruteur (${res.result.nModified} items mis à jour)`)
-
+  const halo = await db.collection("userrecruteurs").updateMany({}, { $rename: { opco_label: "opco" } })
   logger.info("———— [UserRecruteur] Renaming")
   res = await db.collection("userrecruteurs").updateMany(
     {},
@@ -26,7 +26,7 @@ const migrateUserRecruteurCollection = async (db) => {
       $rename: {
         nom: "last_name",
         prenom: "first_name",
-        opco: "opco_label",
+        opco: "opco",
         raison_sociale: "establishment_raison_sociale",
         enseigne: "establishment_enseigne",
         siret: "establishment_siret",
