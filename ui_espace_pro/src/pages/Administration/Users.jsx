@@ -106,7 +106,7 @@ export default memo(() => {
               SIRET {establishment_siret}
             </Text>
             <Text color="redmarianne" fontSize="14px">
-              {opco}
+              {opco_label}
             </Text>
           </Flex>
         )
