@@ -39,6 +39,7 @@ export const syncEtablissementsAndFormations = async ({ etablissements, eligible
     limit: 1000,
     query: {
       parcoursup_id: { $ne: null },
+      cle_ministere_educatif: { $ne: null },
       parcoursup_statut: "publié",
       published: true,
       catalogue_published: true,
@@ -47,7 +48,9 @@ export const syncEtablissementsAndFormations = async ({ etablissements, eligible
   })
 
   await oleoduc(
-    FormationCatalogue.find({}).cursor(),
+    FormationCatalogue.find({
+      cle_ministere_educatif: { $ne: null },
+    }).cursor(),
     writeData(
       async (formation) => {
         const [eligibleTrainingsForAppointment, etablissement, formationMinistereEducatif] = await Promise.all([
