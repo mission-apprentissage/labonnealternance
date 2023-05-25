@@ -165,7 +165,7 @@ export default () => {
                     )
                   ) : (
                     <Button variant="secondary" isDisabled={true}>
-                      Pas d'offre(s) déposé
+                      Pas d'offre(s) déposée(s)
                     </Button>
                   )
                 ) : null}
