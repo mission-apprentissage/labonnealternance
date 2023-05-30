@@ -322,7 +322,7 @@ export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }:
 
   const offre = offreDocument.jobs.find((job) => job._id.toString() === jobId)
 
-  const { etablissements } = await getCatalogueEtablissements({ _id: { $in: etablissementCatalogueIds } })
+  const { etablissements } = await getCatalogueEtablissements({ _id: { $in: etablissementCatalogueIds } }, { _id: 1 })
 
   const delegations = []
 
