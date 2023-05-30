@@ -46,9 +46,8 @@ const getRegion = async (dept) => {
  * @returns {Promise<object>}
  */
 const formatToPe = async (offre) => {
-  logger.info(`${offre.jobId} processing...`)
-  const appellation = offre.rome_detail.appellations.find((v) => v.rome_label === offre.rome_appellation_label)
-  const adresse = offre.adresse_detail
+  const appellation = offre.rome_detail.appellations.find((v) => v.libelle === offre.rome_appellation_label)
+  const adresse = offre.address_detail
   const [latitude, longitude] = offre.geo_coordinates.split(",")
 
   const [rue, code_postal, ville] = offre.is_delegated && offre.cfa?.address_detail?.label ? splitter(offre.cfa.address_detail.label) : []
@@ -230,7 +229,8 @@ export const exportPE = async ({ db }): Promise<void> => {
 
   logger.info("get info from user...")
   await asyncForEach(offres, async (offre) => {
-    const user: IUserRecruteur = offre.is_delegated ? await UserRecruteur.findOne({ siret: offre.cfa_delegated_siret }) : null
+    const user: IUserRecruteur = offre.is_delegated ? await UserRecruteur.findOne({ establishment_siret: offre.cfa_delegated_siret }) : null
+
 
     if (typeof offre.rome_detail !== "string" && offre.rome_detail) {
       offre.job_type.map(async (type) => {
@@ -251,7 +251,9 @@ export const exportPE = async ({ db }): Promise<void> => {
     createWriteStream(csvPath)
   )
 
+  logger.info("Stats: ", stat)
   logger.info("Send CSV...")
+
   const response = await sendCsvToPE(path.resolve(csvPath.pathname))
 
   logger.info(`CSV sent (${response})`)
