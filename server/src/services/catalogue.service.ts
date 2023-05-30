@@ -132,11 +132,12 @@ export const countFormations = async (): Promise<number | boolean> => {
  * @param {Object} query
  * @returns {Promise<Object[]>}
  */
-export const getCatalogueEtablissements = (query: object = {}): Promise<any> =>
+export const getCatalogueEtablissements = (query: object = {}, select: object = {}): Promise<any> =>
   got(`${config.catalogueUrl}/api/v1/entity/etablissements`, {
     method: "POST",
     json: {
       query,
+      select,
       limit: 100000,
     },
   }).json()
@@ -164,10 +165,13 @@ export const getNearEtablissementsFromRomes = async ({ rome, origin }: { rome: s
   const etablissementsToRetrieve = new Set()
   formations.map((formation) => etablissementsToRetrieve.add(formation.etablissement_formateur_id))
 
-  const { etablissements } = await getCatalogueEtablissements({
-    _id: { $in: Array.from(etablissementsToRetrieve) },
-    certifie_qualite: true,
-  })
+  const { etablissements } = await getCatalogueEtablissements(
+    {
+      _id: { $in: Array.from(etablissementsToRetrieve) },
+      certifie_qualite: true,
+    },
+    { _id: 1, numero_voie: 1, type_voie: 1, nom_voie: 1, code_postal: 1, nom_departement: 1, entreprise_raison_sociale: 1 }
+  )
 
   const etablissementsRefined = etablissements
     .map((etablissement) => {
