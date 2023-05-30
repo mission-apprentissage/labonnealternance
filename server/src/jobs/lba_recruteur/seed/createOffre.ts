@@ -8,7 +8,7 @@ export const createOffreCollection = async () => {
   await Job.deleteMany({})
 
   logger.info("Creating offres collections...")
-  let recruiters = await Recruiter.find({}).lean()
+  const recruiters = await Recruiter.find({}).lean()
 
   await Promise.all(
     recruiters.map(async (form) => {
@@ -25,7 +25,7 @@ export const createOffreCollection = async () => {
     })
   )
 
-  let jobs = await Job.countDocuments()
+  const jobs = await Job.countDocuments()
 
   return { jobs }
 }

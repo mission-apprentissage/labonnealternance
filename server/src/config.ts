@@ -95,6 +95,11 @@ const config = {
     clientId: env.get("LBA_POLE_EMPLOI_CLIENT_ID").default("").asString(),
     clientSecret: env.get("LBA_POLE_EMPOI_CLIENT_SECRET").default("").asString(),
   },
+  poleEmploiDepotOffres: {
+    login: env.get("LBA_POLE_EMPLOI_DEPOT_OFFRES_LOGIN").default("").asString(),
+    password: env.get("LBA_POLE_EMPLOI_DEPOT_OFFRES_PASSWORD").default("").asString(),
+    nomFlux: "LABONATA",
+  },
   lba: {
     application: env.get("LBA_APPLICATION_NAME").default("").asString(),
     apiKey: env.get("LBA_APPLICATION_ACCESS_KEY").default("").asString(),

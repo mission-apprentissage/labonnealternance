@@ -1,5 +1,7 @@
+import path from "path"
 import axios from "axios"
-import { createWriteStream } from "fs"
+import FormData from "form-data"
+import { createWriteStream, createReadStream } from "fs"
 import { pick } from "lodash-es"
 import { oleoduc, transformData, transformIntoCSV } from "oleoduc"
 import { Readable } from "stream"
@@ -7,10 +9,8 @@ import dayjs from "../../../../common/dayjs.js"
 import { logger } from "../../../../common/logger.js"
 import { UserRecruteur } from "../../../../common/model/index.js"
 import { asyncForEach, delay } from "../../../../common/utils/asyncUtils.js"
-import { runScript } from "../../../scriptWrapper.js"
-import { IJobs } from "../../../../common/model/schema/jobs/jobs.types.js"
-import { IRecruiter } from "../../../../common/model/schema/recruiter/recruiter.types.js"
 import { IUserRecruteur } from "../../../../common/model/schema/userRecruteur/userRecruteur.types.js"
+import config from "../../../../config.js"
 
 const stat = {
   ok: 0,
@@ -196,10 +196,30 @@ const formatToPe = async (offre) => {
 }
 
 /**
- * @description Generate a CSV with elligible offers for Pole Emploi integration
+ * Sends CSV file to Pole Emploi API through a "form data".
  */
-runScript(async ({ db }) => {
-  const path = new URL("./exportPE.csv", import.meta.url)
+const sendCsvToPE = async (csvPath: string): Promise<void> => {
+  const form = new FormData()
+  form.append("login", config.poleEmploiDepotOffres.login)
+  form.append("password", config.poleEmploiDepotOffres.password)
+  form.append("nomFlux", config.poleEmploiDepotOffres.nomFlux)
+  form.append("fichierAenvoyer", createReadStream(csvPath))
+  form.append("periodeRef", "")
+
+  const { data } = await axios.post("https://portail-partenaire.pole-emploi.fr/partenaire/depotcurl", form, {
+    headers: {
+      ...form.getHeaders(),
+    },
+  })
+
+  return data
+}
+
+/**
+ * @description Generate a CSV with eligible offers for Pole Emploi integration
+ */
+export const exportPE = async ({ db }): Promise<void> => {
+  const csvPath = new URL("./exportPE.csv", import.meta.url)
   const buffer = []
 
   const [lowerLimit, upperLimit] = [dayjs().subtract(90, "days").toDate(), dayjs().toDate()]
@@ -210,7 +230,7 @@ runScript(async ({ db }) => {
 
   logger.info("get info from user...")
   await asyncForEach(offres, async (offre) => {
-    let user: IUserRecruteur = offre.is_delegated ? await UserRecruteur.findOne({ siret: offre.cfa_delegated_siret }) : null
+    const user: IUserRecruteur = offre.is_delegated ? await UserRecruteur.findOne({ siret: offre.cfa_delegated_siret }) : null
 
     if (typeof offre.rome_detail !== "string" && offre.rome_detail) {
       offre.job_type.map(async (type) => {
@@ -228,8 +248,11 @@ runScript(async ({ db }) => {
     Readable.from(buffer),
     transformData((value) => formatToPe(value)),
     transformIntoCSV({ separator: "|" }),
-    createWriteStream(path)
+    createWriteStream(csvPath)
   )
 
-  return stat
-})
+  logger.info("Send CSV...")
+  const response = await sendCsvToPE(path.resolve(csvPath.pathname))
+
+  logger.info(`CSV sent (${response})`)
+}

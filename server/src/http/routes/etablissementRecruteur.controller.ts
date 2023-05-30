@@ -133,7 +133,7 @@ export default ({ usersRecruteur, mailer }) => {
         const geo_coordinates = await getGeoCoordinates(`${entrepriseData.address_detail.l4}, ${entrepriseData.address_detail.l6}`)
 
         let opcoResult: ICFADock | ISIRET2IDCC = await getOpco(req.params.siret)
-        let opcoData = { opco: undefined, idcc: undefined }
+        const opcoData = { opco: undefined, idcc: undefined }
 
         switch (opcoResult?.searchStatus) {
           case "OK":
@@ -279,7 +279,7 @@ export default ({ usersRecruteur, mailer }) => {
           return res.json({ formulaire: formulaireInfo, user: newEntreprise })
         case CFA:
           // Contrôle du mail avec le référentiel :
-          let referentiel = await getEtablissementFromReferentiel(req.body.establishment_siret)
+          const referentiel = await getEtablissementFromReferentiel(req.body.establishment_siret)
           // Creation de l'utilisateur en base de données
           let newCfa: IUserRecruteur = await usersRecruteur.createUser(req.body)
 
@@ -299,7 +299,7 @@ export default ({ usersRecruteur, mailer }) => {
             // Validation automatique de l'utilisateur
             newCfa = await autoValidateUser(newCfa._id)
 
-            let { email, _id, last_name, first_name } = newCfa
+            const { email, _id, last_name, first_name } = newCfa
 
             const url = getValidationUrl(_id)
 
@@ -330,7 +330,7 @@ export default ({ usersRecruteur, mailer }) => {
               // Validation automatique de l'utilisateur
               newCfa = await autoValidateUser(newCfa._id)
 
-              let { email, _id, last_name, first_name } = newCfa
+              const { email, _id, last_name, first_name } = newCfa
 
               const url = getValidationUrl(_id)
 
@@ -385,7 +385,7 @@ export default ({ usersRecruteur, mailer }) => {
   router.put(
     "/:id",
     tryCatch(async (req, res) => {
-      let result = await usersRecruteur.updateUser({ _id: req.params.id }, req.body)
+      const result = await usersRecruteur.updateUser({ _id: req.params.id }, req.body)
       return res.json(result)
     })
   )
