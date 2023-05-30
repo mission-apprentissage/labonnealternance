@@ -13,6 +13,7 @@ import { createUser } from "./jobs/lba_recruteur/formulaire/createUser.js"
 import { relanceFormulaire } from "./jobs/lba_recruteur/formulaire/relanceFormulaire.js"
 import { generateIndexes } from "./jobs/lba_recruteur/indexes/generateIndexes.js"
 import { relanceOpco } from "./jobs/lba_recruteur/opco/relanceOpco.js"
+import { exportPE } from "./jobs/lba_recruteur/formulaire/misc/exportPE.js"
 import { createOffreCollection } from "./jobs/lba_recruteur/seed/createOffre.js"
 import updateBonnesBoites from "./jobs/lbb/updateBonnesBoites.js"
 import updateGeoLocations from "./jobs/lbb/updateGeoLocations.js"
@@ -126,6 +127,13 @@ cli
   .description("Relance les opco avec le nombre d'utilisateur en attente de validation")
   .action(() => {
     runScript(({ mailer }) => relanceOpco(mailer))
+  })
+
+cli
+  .command("export-offre-pole-emploi")
+  .description("Exporte les offres vers Pôle Emploi")
+  .action(() => {
+    runScript((components) => exportPE(components))
   })
 
 /**
