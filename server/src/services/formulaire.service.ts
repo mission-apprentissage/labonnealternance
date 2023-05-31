@@ -188,15 +188,17 @@ export const getOffreAvecInfoMandataire = async (id: IJobs["_id"]): Promise<IFor
 
   if (result.is_delegated) {
     const [entreprise_localite] = result.address.match(/([0-9]{5})[ ,] ?([A-zÀ-ÿ]*)/) ?? [""]
-    const cfa = await getEtablissement({ siret: result.cfa_delegated_siret })
+    const cfa = await getEtablissement({ establishment_siret: result.cfa_delegated_siret })
 
-    result.phone = cfa.phone
-    result.email = cfa.email
-    result.last_name = cfa.last_name
-    result.first_name = cfa.first_name
-    result.establishment_raison_sociale = cfa.establishment_raison_sociale
-    result.address = cfa.address
-    result.entreprise_localite = entreprise_localite
+    if(cfa) {
+      result.phone = cfa.phone
+      result.email = cfa.email
+      result.last_name = cfa.last_name
+      result.first_name = cfa.first_name
+      result.establishment_raison_sociale = cfa.establishment_raison_sociale
+      result.address = cfa.address
+      result.entreprise_localite = entreprise_localite
+    }
   }
 
   return result
