@@ -147,9 +147,11 @@ export const FormCreatePage = (props) => {
    * @return {void}
    */
   const sendPlausibleFeedback = (interested) => {
-    window.plausible("souhaitez-vous-recevoir-des-offres-en-lien-avec-cette-formation", {
-      props: { interessé: interested },
-    })
+    typeof window !== "undefined" &&
+      window?.plausible &&
+      window.plausible("souhaitez-vous-recevoir-des-offres-en-lien-avec-cette-formation", {
+        props: { interessé: interested },
+      })
   }
 
   const [checkedState, setCheckedState] = useState(getDefaultReasonsAsFalse())
