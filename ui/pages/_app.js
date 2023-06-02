@@ -6,6 +6,7 @@ import Providers from "../context/Providers"
 
 import "../public/styles/application.css"
 import "../public/styles/fonts.css"
+import "../public/styles/notion.css"
 
 import PageTracker from "../components/pageTracker"
 
