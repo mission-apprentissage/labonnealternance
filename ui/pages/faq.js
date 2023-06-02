@@ -25,6 +25,28 @@ export async function getStaticProps() {
   }
 }
 
+const selectedTabParams = {
+  color: "#1d1d1d",
+  background: "white",
+  borderBottom: "none",
+  borderTop: "1px solid",
+  borderTopColor: "#ddd",
+  borderLeft: "1px solid",
+  borderRight: "1px solid",
+  borderRightColor: "#ddd",
+  borderLeftColor: "#ddd",
+}
+
+const tabParams = {
+  color: "bluefrance.500",
+  background: "grey.100",  
+  marginRight: 2,
+  p: { base: 1, sm: 4 },
+}
+
+// écrase l'effet de focus trop massif de chakra
+const focusedTabParams = {}
+
 const FAQ = ({ recruteur, organisme, candidat }) => {
   return (
     <Box>
@@ -35,9 +57,9 @@ const FAQ = ({ recruteur, organisme, candidat }) => {
 
       <Breadcrumb forPage="faq" label="FAQ" />
 
-      <Container p={12} my={0} mb={[0, 12]} variant="pageContainer">
+      <Container p={{base:2, md: 12}} my={0} mb={[0, 12]} variant="pageContainer">
         <Grid templateColumns="repeat(12, 1fr)">
-          <GridItem px={4} colSpan={[12, 12, 12, 5]}>
+          <GridItem px={0} colSpan={[12, 12, 12, 5]}>
             <Box as="h1">
               <Text as="span" display="block" mb={1} variant="editorialContentH1" color="#2a2a2a">
                 Questions
@@ -51,13 +73,13 @@ const FAQ = ({ recruteur, organisme, candidat }) => {
             </Box>
             <Divider variant="pageTitleDivider" my={12} />
           </GridItem>
-          <GridItem px={4} colSpan={[12, 12, 12, 7]}>
+          <GridItem px={0} colSpan={[12, 12, 12, 7]}>
             <Box>
-              <Tabs>
-                <TabList>
-                  <Tab>Candidat</Tab>
-                  <Tab>Recruteur</Tab>
-                  <Tab>Organisme de formation</Tab>
+              <Tabs variant="unstyled">
+                <TabList px={0}>
+                  <Tab {...tabParams} _focus={focusedTabParams} _selected={selectedTabParams}>Candidat</Tab>
+                  <Tab {...tabParams} _focus={focusedTabParams} _selected={selectedTabParams}>Recruteur</Tab>
+                  <Tab {...tabParams} _focus={focusedTabParams} _selected={selectedTabParams}>Organisme de formation</Tab>
                 </TabList>
 
                 <TabPanels>
