@@ -15,7 +15,7 @@ const contentSecurityPolicy = `
               'unsafe-eval' 
               https://plausible.io 
               http://localhost:3000 
-              https://stats.data.gouv.fr
+              https://stats.beta.gouv.fr
               blob:; 
   script-src-attr 'none';
   connect-src 'self'
