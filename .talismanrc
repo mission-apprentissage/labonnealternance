@@ -11,6 +11,9 @@ fileignoreconfig:
   - filename: server/src/generated/routes.ts
     checksum: 2f6de2887e054b2ed80c490519724d6cbca85a1c30dc0695471621161a78863c
     ignore_detectors: ["filename", "filesize", "filecontent"]
+  - filename: CHANGELOG.md
+    checksum: d6981eb077fcbf1c6858393e2f5cada971b297db3c0103853338f9f4b6211e0d
+    ignore_detectors: ["filename", "filesize", "filecontent"]
 scopeconfig:
   - scope: node
 custom_patterns:
