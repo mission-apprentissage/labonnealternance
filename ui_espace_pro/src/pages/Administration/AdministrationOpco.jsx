@@ -125,14 +125,14 @@ export default memo(() => {
           row: { id },
         },
       }) => {
-        const { establishment_raison_sociale, siret, _id } = data[id]
+        const { establishment_raison_sociale, establishment_siret, _id } = data[id]
         return (
           <Flex direction="column">
             <Link fontWeight="700" as={NavLink} to={`/administration/opco/entreprise/${_id}`}>
               {establishment_raison_sociale}
             </Link>
             <Text color="#666666" fontSize="14px">
-              SIRET {siret}
+              SIRET {establishment_siret}
             </Text>
           </Flex>
         )
