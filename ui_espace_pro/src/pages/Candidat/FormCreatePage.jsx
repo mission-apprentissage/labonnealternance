@@ -269,7 +269,7 @@ export const FormCreatePage = (props) => {
                     {({ field, meta }) => {
                       return (
                         <Box>
-                          <Input mt={2} type="tel" placeholder="votre numéro" {...field} />
+                          <Input mt={2} type="tel" placeholder="votre numéro de téléphone" {...field} />
                           <Text color="red" mt={2} mb={3}>
                             {errorPhone}
                           </Text>

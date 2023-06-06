@@ -65,7 +65,7 @@ const FormulaireDesinscription = ({ handleUnsubscribeSuccess }) => {
             Vous êtes une entreprise
           </Text>
           <Text as="h2" variant="homeEditorialH2" mb={{ base: "3", lg: "5" }}>
-            Vous souhaitez ne plus recevoir de candidatures spontanées de La bonne alternance
+            Vous ne souhaitez plus recevoir de candidatures spontanées de La bonne alternance
           </Text>
           <Box fontWeight={"500"}>Veuillez remplir le formulaire ci-contre.</Box>
         </Box>
