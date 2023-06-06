@@ -1,3 +1,10 @@
+# [1.15.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.14.1...v1.15.0) (2023-06-06)
+
+
+### Features
+
+* coins carrés formulaires lba ([#412](https://github.com/mission-apprentissage/labonnealternance/issues/412)) ([0e14cfa](https://github.com/mission-apprentissage/labonnealternance/commit/0e14cfae662e33250d1b90344c18eef852890a63))
+
 ## [1.14.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.14.0...v1.14.1) (2023-06-06)
 
 
