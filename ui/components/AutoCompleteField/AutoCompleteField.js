@@ -213,7 +213,6 @@ export const AutoCompleteField = ({
     position: "relative",
     width: { lg: "232px" },
     direction: "column",
-    borderRadius: "10px",
     padding: "0.1rem",
     sx: { borderColor: `${hasError ? "warning" : "grey.300"} !important`, border: "1px solid" },
     className: "containerIdentity",
