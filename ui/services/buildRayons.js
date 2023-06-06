@@ -23,7 +23,6 @@ export function buildRayonsOptions() {
 
 const buttonProperties = {
   border: "1px solid",
-  borderColor: "grey.400",
   marginTop: "2px",
   width: "fit-content",
   borderRadius: "40px",
@@ -44,7 +43,8 @@ export function buildRayonsButtons(locationRadius, onClickCallback) {
             value={key}
             {...buttonProperties}
             color={locationRadius?.toString() === key ? "white" : "grey.750"}
-            background={locationRadius?.toString() === key ? "blue" : "white"}
+            background={locationRadius?.toString() === key ? "#6a6af4" : "white"}
+            borderColor={locationRadius?.toString() === key ? "#6a6af4" : "grey.400"}
             onClick={(evt) => {
               evt.currentTarget.value = key
               onClickCallback(evt, key)

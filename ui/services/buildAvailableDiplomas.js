@@ -44,7 +44,6 @@ function copyDeep(obj) {
 
 const buttonProperties = {
   border: "1px solid",
-  borderColor: "grey.400",
   marginTop: "2px",
   width: "fit-content",
   borderRadius: "40px",
@@ -81,7 +80,8 @@ export function buildAvailableDiplomasButtons(currentDiploma, diplomas, onClickC
             value={diplomaValue(key)}
             {...buttonProperties}
             color={localDiploma === key ? "white" : "grey.750"}
-            background={localDiploma === key ? "blue" : "white"}
+            background={localDiploma === key ? "#6a6af4" : "white"}
+            borderColor={localDiploma === key ? "#6a6af4" : "grey.400"}
             onClick={(evt) => {
               evt.currentTarget.value = diplomaValue(key)
               onClickCallback(evt, key)

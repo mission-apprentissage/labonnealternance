@@ -127,7 +127,7 @@ const SearchForm = (props) => {
                   <ErrorMessage name="location" className="onErrorFieldColumn" component="div" />
                 </Box>
                 <Box mb={4}>
-                  <Box display={["none", "none", "block"]} border="1px solid" borderColor="grey.300" borderRadius="10px" padding="0.1rem">
+                  <Box display={["none", "none", "block"]} border="1px solid" borderColor="grey.300" padding="0.1rem">
                     <Text as="label" htmlFor="locationRadius" variant="defaultAutocomplete">
                       Rayon
                     </Text>
@@ -150,7 +150,7 @@ const SearchForm = (props) => {
                   </Box>
                 </Box>
                 <Box mb={10}>
-                  <Box display={["none", "none", "block"]} border="1px solid" borderColor="grey.300" borderRadius="10px" padding="0.1rem">
+                  <Box display={["none", "none", "block"]} border="1px solid" borderColor="grey.300" padding="0.1rem">
                     <Text as="label" htmlFor="diploma" variant="defaultAutocomplete">
                       Niveau d&apos;études visé
                     </Text>
@@ -176,6 +176,7 @@ const SearchForm = (props) => {
                     width="100%"
                     margin="auto"
                     variant="blackButton"
+                    borderRadius="unset"
                     disabled={isSubmitting}
                     alt="Lancer la recherche"
                   >

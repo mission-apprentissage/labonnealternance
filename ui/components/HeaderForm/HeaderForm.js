@@ -107,7 +107,7 @@ const HeaderForm = ({ handleSearchSubmit, isHome }) => {
                   />
                 </Box>
               </Box>
-              <Box ml={3} border="1px solid" borderColor="grey.300" borderRadius="10px" padding="0.1rem">
+              <Box ml={3} border="1px solid" borderColor="grey.300" padding="0.1rem">
                 <Text as="label" htmlFor="locationRadius" variant="defaultAutocomplete">
                   Rayon
                 </Text>
@@ -123,7 +123,7 @@ const HeaderForm = ({ handleSearchSubmit, isHome }) => {
                   </Select>
                 </Box>
               </Box>
-              <Box ml={3} border="1px solid" borderColor="grey.300" borderRadius="10px" padding="0.1rem">
+              <Box ml={3} border="1px solid" borderColor="grey.300" padding="0.1rem">
                 <Text as="label" htmlFor="diploma" variant="defaultAutocomplete">
                   Niveau d&apos;études visé
                 </Text>
@@ -134,7 +134,7 @@ const HeaderForm = ({ handleSearchSubmit, isHome }) => {
                 </Box>
               </Box>
               <Box ml={[1, 1, 1, 3]}>
-                <Button type="submit" variant="blackButton" disabled={isSubmitting} alt="Lancer la recherche" height="57px" paddingTop="3px">
+                <Button type="submit" variant="blackButton" borderRadius="unset" disabled={isSubmitting} alt="Lancer la recherche" height="57px" paddingTop="3px">
                   <Image maxWidth="unset" alt="Lancer la recherche" src={glassImage} />
                   {isHome && (
                     <Box fontSize="18px" mx={3} display={{ base: "none", xl: "inline-block" }}>
