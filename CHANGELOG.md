@@ -1,3 +1,10 @@
+## [1.15.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.15.0...v1.15.1) (2023-06-06)
+
+
+### Bug Fixes
+
+* docker version ([#417](https://github.com/mission-apprentissage/labonnealternance/issues/417)) ([748d937](https://github.com/mission-apprentissage/labonnealternance/commit/748d937701dc360f0851a618cb81cdc92d74144f))
+
 # [1.15.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.14.1...v1.15.0) (2023-06-06)
 
 
