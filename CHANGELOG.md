@@ -1,3 +1,10 @@
+## [1.14.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.14.0...v1.14.1) (2023-06-06)
+
+
+### Bug Fixes
+
+* correction ortho suite démo ([#420](https://github.com/mission-apprentissage/labonnealternance/issues/420)) ([4386ad9](https://github.com/mission-apprentissage/labonnealternance/commit/4386ad9286ca0f722c4635cffabc90f2c73a2187))
+
 # [1.14.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.13.0...v1.14.0) (2023-06-02)
 
 ### Bug Fixes
