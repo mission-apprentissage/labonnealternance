@@ -1,6 +1,6 @@
 ARG LBA_ENV=production
 
-FROM node:18-bullseye AS base
+FROM node:18-alpine AS base
 
 ARG REACT_APP_BASE_URL
 ARG REACT_APP_METABASE_URL
