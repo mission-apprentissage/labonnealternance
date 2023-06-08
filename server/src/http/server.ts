@@ -46,6 +46,7 @@ import supportRoute from "./routes/support.controller.js"
 import updateLBB from "./routes/updateLBB.controller.js"
 import userRoute from "./routes/user.controller.js"
 import version from "./routes/version.controller.js"
+import trainingLinks from "./routes/trainingLinks.controller.js"
 import { limiter10PerSecond, limiter1Per20Second, limiter20PerSecond, limiter3PerSecond, limiter5PerSecond, limiter7PerSecond } from "./utils/rateLimiters.js"
 
 /**
@@ -217,6 +218,11 @@ export default async (components) => {
   app.use("/api/rome", rome())
   app.use("/api/optout", optoutRoute())
   app.use("/api/etablissement", etablissementsRecruteurRoute(components))
+
+  /**
+   * Tools
+   */
+   app.use("/api/trainingLinks", limiter3PerSecond, trainingLinks())
 
   initSendinblueWebhooks()
 

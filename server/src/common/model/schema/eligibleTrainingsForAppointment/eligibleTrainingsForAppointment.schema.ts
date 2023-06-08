@@ -62,6 +62,7 @@ export const eligibleTrainingsForAppointmentSchema = new Schema<IEligibleTrainin
     type: String,
     default: null,
     description: "Identifiant unique d'une formation",
+    index: true,
   },
   etablissement_formateur_raison_sociale: {
     type: String,
