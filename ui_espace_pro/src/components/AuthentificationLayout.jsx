@@ -1,4 +1,4 @@
-import { Button, Container, Flex } from "@chakra-ui/react"
+import { Button, Container, Flex, Box } from "@chakra-ui/react"
 import { useContext } from "react"
 import { WidgetContext } from "../contextWidget"
 import { Close } from "../theme/components/icons"
@@ -19,7 +19,7 @@ export default (props) => {
   }
 
   if (widget?.isWidget) {
-    return props.children
+    return <Box m={2}>{props.children}</Box>
   }
 
   return (

@@ -126,7 +126,9 @@ const CreationCompte = ({ type, setQualiopi, setBandeau }) => {
   )
 }
 
-const InformationSiret = ({ type }) => {
+const InformationSiret = ({ type, widget }) => {
+  const navigate = useNavigate()
+
   return (
     <Box border="1px solid #000091" p={["4", "8"]}>
       {type === AUTHTYPE.CFA && (
@@ -183,6 +185,17 @@ const InformationSiret = ({ type }) => {
           </Text>
         )}
       </Flex>
+      {widget && (
+        <Box mt={5}>
+          <Heading fontSize="24px" mb={3}>
+            Vous avez déjà déposé une offre en alternance par le passé ?
+          </Heading>
+          <Text>Connectez-vous à votre compte entreprise pour publier de nouvelles offres et administrer vos offres existantes.</Text>
+          <Button variant="primary" mt={4} onClick={() => navigate("/authentification")}>
+            Me connecter
+          </Button>
+        </Box>
+      )}
     </Box>
   )
 }
@@ -221,7 +234,7 @@ export default ({ type, widget }) => {
             </Text>
             <CreationCompte type={type} setQualiopi={setQualiopi} setBandeau={setBandeau} />
           </Box>
-          <Box mt={[4, 4, 4, 0]}>{qualiopi ? <InformationLegaleEntreprise {...qualiopi} /> : <InformationSiret type={type} />}</Box>
+          <Box mt={[4, 4, 4, 0]}>{qualiopi ? <InformationLegaleEntreprise {...qualiopi} /> : <InformationSiret type={type} widget={wid} />}</Box>
         </SimpleGrid>
       </AnimationContainer>
     </AuthentificationLayout>
