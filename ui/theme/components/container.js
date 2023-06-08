@@ -8,6 +8,10 @@ const Container = {
       maxWidth: ["480px", "540px", "720px", "960px", "1140px"],
       borderRadius: ["0px", "0px", "10px"],
     },
+    whitePageContainer: {
+      maxWidth: ["480px", "540px", "720px", "960px", "1140px"],
+      borderRadius: ["0px", "0px", "10px"],
+    },
     defaultAutocomplete: {
       borderRadius: "8px",
       width: "100%",
