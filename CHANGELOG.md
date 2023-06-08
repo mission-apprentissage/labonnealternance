@@ -1,3 +1,10 @@
+# [1.16.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.15.1...v1.16.0) (2023-06-08)
+
+
+### Features
+
+* revamp de la page /stats ([#404](https://github.com/mission-apprentissage/labonnealternance/issues/404)) ([ffacbc8](https://github.com/mission-apprentissage/labonnealternance/commit/ffacbc85029f8cfe8a06b3ba306edea556988a1e))
+
 ## [1.15.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.15.0...v1.15.1) (2023-06-06)
 
 
