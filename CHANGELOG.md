@@ -1,3 +1,10 @@
+# [1.18.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.17.0...v1.18.0) (2023-06-08)
+
+
+### Features
+
+* update ui ([#426](https://github.com/mission-apprentissage/labonnealternance/issues/426)) ([181f266](https://github.com/mission-apprentissage/labonnealternance/commit/181f266225c5cd21382331b69aca6e09451c3172))
+
 # [1.17.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.16.0...v1.17.0) (2023-06-08)
 
 
