@@ -1,3 +1,10 @@
+# [1.17.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.16.0...v1.17.0) (2023-06-08)
+
+
+### Features
+
+* génération des liens vers LBA et prdv en fonction des voeux ([#406](https://github.com/mission-apprentissage/labonnealternance/issues/406)) ([00e7879](https://github.com/mission-apprentissage/labonnealternance/commit/00e78798d14c461a3298bd5564517bc9ac5d94e2))
+
 # [1.16.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.15.1...v1.16.0) (2023-06-08)
 
 
