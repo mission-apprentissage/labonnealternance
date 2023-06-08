@@ -88,6 +88,7 @@ const neededFieldsFromCatalogue = {
   etablissement_gestionnaire_type: 1,
   etablissement_gestionnaire_conventionne: 1,
   affelnet_statut: 1,
+  bcn_mefs_10: 1,
 }
 
 /**
