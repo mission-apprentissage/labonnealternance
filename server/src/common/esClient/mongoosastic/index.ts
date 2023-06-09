@@ -57,6 +57,14 @@ function getProperties(type, instance = null, requireAsciiFolding = false) {
     if (instance === "Mixed") {
       return { type: "nested" }
     }
+
+    if (instance === "Boolean") {
+      return { type: "boolean" }
+    }
+
+    if (instance === "Date") {
+      return { type: "date" }
+    }
   }
 }
 

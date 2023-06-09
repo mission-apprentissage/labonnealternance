@@ -211,10 +211,18 @@ const mnaFormationSchema = new Schema<IFormationCatalogue>({
     type: [String],
     description: "Codes ROME",
   },
-  /* commenté tant que pas utilisé periode: {
+  date_debut: {
     type: [Date],
-    description: "Période d'inscription à la formation",
-  },*/
+    description: "Dates de début de session",
+  },
+  date_fin: {
+    type: [Date],
+    description: "Dates de fin de session",
+  },
+  modalites_entrees_sorties: {
+    type: [Boolean],
+    description: "Session en entrée / sortie permanente",
+  },
   capacite: {
     type: String,
     description: "Capacité d'accueil",
@@ -448,6 +456,14 @@ const mnaFormationSchema = new Schema<IFormationCatalogue>({
     index: true,
     type: Boolean,
     description: "Formation éligible au catalogue générale",
+  },
+  contenu: {
+    type: String,
+    description: "Le descriptif de la formation",
+  },
+  objectif: {
+    type: String,
+    description: "Les objectifs de la formation",
   },
   ...etablissementGestionnaireInfo,
   ...etablissementFormateurInfo,

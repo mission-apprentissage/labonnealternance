@@ -15,14 +15,19 @@ const UNSUBSCRIBE_REASON = {
   AUTRE: "Autre",
 }
 
-const getSupportMailto = ( complement ) => (<Link textDecoration="underline" href={`mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Candidature%20spontanée%20-%20Déréférencement%20-%20${complement}`}>
+const getSupportMailto = (complement) => (
+  <Link textDecoration="underline" href={`mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Candidature%20spontanée%20-%20Déréférencement%20-%20${complement}`}>
     support
-  </Link>)
+  </Link>
+)
 
 const EMAIL_ERRORS = {
   NON_RECONNU: <>Votre établissement n’est pas reconnu. Veuillez saisir une adresse email valide. Vous pouvez aussi contacter notre {getSupportMailto("Email%20inconnu")}.</>,
   ETABLISSEMENTS_MULTIPLES: (
-    <>Plusieurs établissements correspondent à cet email, veuillez contacter notre {getSupportMailto("Plusieurs%20établissements")} pour procéder au déréférencement de tout ou partie de ces établissements</>
+    <>
+      Plusieurs établissements correspondent à cet email, veuillez contacter notre {getSupportMailto("Plusieurs%20établissements")} pour procéder au déréférencement de tout ou
+      partie de ces établissements
+    </>
   ),
   unexpected_error: <>Une erreur technique s'est produite. Veuillez réessayer ultérieurement. Vous pouvez aussi contacter notre {getSupportMailto("Erreur%20technique")}</>,
 }
@@ -81,8 +86,8 @@ const FormulaireDesinscription = ({ handleUnsubscribeSuccess }) => {
           >
             {({ isSubmitting, errors, touched, submitCount }) => (
               <Form>
-                <FormControl isInvalid={errors.email && touched && submitCount>0}>
-                  <FormLabel color={touched && submitCount>0 && errors.email ? "red.500" : "gray.800"}>Email de l'établissement</FormLabel>
+                <FormControl isInvalid={errors.email && touched && submitCount > 0}>
+                  <FormLabel color={touched && submitCount > 0 && errors.email ? "red.500" : "gray.800"}>Email de l'établissement</FormLabel>
                   <FormHelperText pb={2}>Indiquer l'email sur lequel sont actuellement reçues les candidatures</FormHelperText>
                   <Field name="email">
                     {({ field }) => {
@@ -97,11 +102,11 @@ const FormulaireDesinscription = ({ handleUnsubscribeSuccess }) => {
                       </Text>
                     </Flex>
                   )}
-                  {touched && submitCount>0 && errors.email && !emailError && <FormErrorMessage mb={2}>{errors.email}</FormErrorMessage>}
+                  {touched && submitCount > 0 && errors.email && !emailError && <FormErrorMessage mb={2}>{errors.email}</FormErrorMessage>}
                 </FormControl>
 
-                <FormControl mt={3} isInvalid={errors.reason && touched && submitCount>0}>
-                  <FormLabel color={touched && submitCount>0 && errors.reason ? "red.500" : "gray.800"}>Motif</FormLabel>
+                <FormControl mt={3} isInvalid={errors.reason && touched && submitCount > 0}>
+                  <FormLabel color={touched && submitCount > 0 && errors.reason ? "red.500" : "gray.800"}>Motif</FormLabel>
                   <FormHelperText pb={2}>Indiquer la raison pour laquelle vous ne souhaitez plus recevoir de candidature?</FormHelperText>
                   <Field name="reason">
                     {({ field }) => {
@@ -112,7 +117,7 @@ const FormulaireDesinscription = ({ handleUnsubscribeSuccess }) => {
                       )
                     }}
                   </Field>
-                  {touched && submitCount>0 && errors.reason && <FormErrorMessage>{errors.reason}</FormErrorMessage>}
+                  {touched && submitCount > 0 && errors.reason && <FormErrorMessage>{errors.reason}</FormErrorMessage>}
                 </FormControl>
 
                 <Flex mt={5} justifyContent="space-between">

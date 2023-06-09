@@ -28,25 +28,28 @@ const SuccesDesinscription = () => (
           Pour cela, nous exposons différents types d'entreprises :
         </Text>
         <UnorderedList mt={4}>
-          <ListItem mb="3">Celles ayant diffusé une offre d'emploi sur notre{" "}
-            <Link aria-label="Accéder au formulaire de dépôt simplifié de La bonne alternance"
-                  variant="basicUnderlined"
-                  href={`${baseUrl}/acces-recruteur`}
-            >formulaire de dépôt simplifié</Link>
+          <ListItem mb="3">
+            Celles ayant diffusé une offre d'emploi sur notre{" "}
+            <Link aria-label="Accéder au formulaire de dépôt simplifié de La bonne alternance" variant="basicUnderlined" href={`${baseUrl}/acces-recruteur`}>
+              formulaire de dépôt simplifié
+            </Link>
           </ListItem>
-          <ListItem mb="3">Celles ayant diffusé une offre d'emploi sur{" "}
-            <Link aria-label="Accéder au site de Pôle emploi"
-                  variant="basicUnderlined"
-                  isExternal
-                  href="https://www.pole-emploi.fr"
-            >Pôle emploi<ExternalLinkIcon mx="2px" /></Link>
-            {" "}ou ses{" "}
-            <Link aria-label="Accéder au site de Pôle emploi"
-                  variant="basicUnderlined"
-                  isExternal
-                  href="https://www.pole-emploi.fr/candidat/vos-services-en-ligne/des-partenaires-pour-vous-propos.html"
-            >sites 
-            partenaires<ExternalLinkIcon mx="2px" /></Link>
+          <ListItem mb="3">
+            Celles ayant diffusé une offre d'emploi sur{" "}
+            <Link aria-label="Accéder au site de Pôle emploi" variant="basicUnderlined" isExternal href="https://www.pole-emploi.fr">
+              Pôle emploi
+              <ExternalLinkIcon mx="2px" />
+            </Link>{" "}
+            ou ses{" "}
+            <Link
+              aria-label="Accéder au site de Pôle emploi"
+              variant="basicUnderlined"
+              isExternal
+              href="https://www.pole-emploi.fr/candidat/vos-services-en-ligne/des-partenaires-pour-vous-propos.html"
+            >
+              sites partenaires
+              <ExternalLinkIcon mx="2px" />
+            </Link>
           </ListItem>
           <ListItem mb="3">
             Celles n'ayant pas diffusé d'offres, mais ayant été identifiées comme "à fort potentiel d'embauche en alternance" par un algorithme prédictif de Pôle emploi.

@@ -10,7 +10,7 @@ import { trackApiCall } from "../common/utils/sendTrackingEvent.js"
 import { sentryCaptureException } from "../common/utils/sentryUtils.js"
 import { notifyToSlack } from "../common/utils/slackUtils.js"
 import config from "../config.js"
-import { formationMock, formationsMock, lbfFormationMock } from "../mocks/formations-mock.js"
+import { formationMock, formationsMock, formationDetailMock } from "../mocks/formations-mock.js"
 import { itemModel } from "../model/itemModel.js"
 import { formationsQueryValidator, formationsRegionQueryValidator } from "./formationsQueryValidator.js"
 
@@ -36,7 +36,7 @@ const getDiplomaKey = (value) => {
   }
 }
 
-const getFormations = async ({ romes, rncps, romeDomain, coords, radius, diploma, limit, caller, api = "formationV1", useMock }) => {
+const getFormations = async ({ romes, romeDomain, coords, radius, diploma, limit, caller, api = "formationV1", options, useMock }) => {
   try {
     if (useMock && useMock !== "false") {
       return formationsMock
@@ -119,7 +119,7 @@ const getFormations = async ({ romes, rncps, romeDomain, coords, radius, diploma
       }
     }
 
-    const esQueryIndexFragment = getFormationEsQueryIndexFragment(limit)
+    const esQueryIndexFragment = getFormationEsQueryIndexFragment(limit, options)
 
     const responseFormations = await esClient.search({
       ...esQueryIndexFragment,
@@ -198,7 +198,7 @@ const getOneFormationFromId = async ({ id, caller }) => {
   }
 }
 
-const getRegionFormations = async ({ romes, romeDomain, region, departement, diploma, limit = formationResultLimit, caller }) => {
+const getRegionFormations = async ({ romes, romeDomain, region, departement, diploma, limit = formationResultLimit, options, caller }) => {
   try {
     const mustTerm = []
 
@@ -238,7 +238,7 @@ const getRegionFormations = async ({ romes, romeDomain, region, departement, dip
         },
       })
 
-    const esQueryIndexFragment = getFormationEsQueryIndexFragment(limit)
+    const esQueryIndexFragment = getFormationEsQueryIndexFragment(limit, options)
 
     const responseFormations = await esClient.search({
       ...esQueryIndexFragment,
@@ -273,7 +273,7 @@ const getRegionFormations = async ({ romes, romeDomain, region, departement, dip
 }
 
 // tente de récupérer des formatiosn dans le rayon de recherche, si sans succès cherche les maxOutLimitFormation les plus proches du centre de recherche
-const getAtLeastSomeFormations = async ({ romes, rncps, romeDomain, coords, radius, diploma, maxOutLimitFormation, caller, useMock }) => {
+const getAtLeastSomeFormations = async ({ romes, romeDomain, coords, radius, diploma, maxOutLimitFormation, caller, options, useMock }) => {
   try {
     let formations = []
     let currentRadius = radius
@@ -281,13 +281,13 @@ const getAtLeastSomeFormations = async ({ romes, rncps, romeDomain, coords, radi
 
     formations = await getFormations({
       romes,
-      rncps,
       romeDomain,
       coords,
       radius: currentRadius,
       diploma,
       limit: formationLimit,
       caller,
+      options,
       useMock,
     })
 
@@ -297,13 +297,13 @@ const getAtLeastSomeFormations = async ({ romes, rncps, romeDomain, coords, radi
       currentRadius = 20000
       formations = await getFormations({
         romes,
-        rncps,
         romeDomain,
         coords,
         radius: currentRadius,
         diploma,
         limit: formationLimit,
         caller,
+        options,
         useMock,
       })
     }
@@ -312,7 +312,7 @@ const getAtLeastSomeFormations = async ({ romes, rncps, romeDomain, coords, radi
       formations = deduplicateFormations(formations)
 
       //throw new Error("BANG");
-      formations = transformFormationsForIdea(formations)
+      formations = transformFormationsForIdea(formations, options)
 
       sortFormations(formations)
 
@@ -363,7 +363,6 @@ const deduplicateFormations = (formations) => {
 }
 
 const transformFormationsForIdea = (formations) => {
-  //console.log("formations , ", formations);
   const resultFormations = {
     results: [],
   }
@@ -391,7 +390,6 @@ const transformFormationForIdea = (formation) => {
   resultFormation.rncpCode = formation.source.rncp_code
   resultFormation.rncpLabel = formation.source.rncp_intitule
   resultFormation.rncpEligibleApprentissage = formation.source.rncp_eligible_apprentissage
-  //resultFormation.period = formation.source.periode;
   resultFormation.capacity = formation.source.capacite
   resultFormation.createdAt = formation.source.created_at
   resultFormation.lastUpdateAt = formation.source.last_update_at
@@ -415,6 +413,7 @@ const transformFormationForIdea = (formation) => {
     departementNumber: formation.source.num_departement,
     region: formation.source.region,
     insee: formation.source.code_commune_insee,
+    remoteOnly: formation.source.entierement_a_distance,
   }
 
   resultFormation.company = {
@@ -450,7 +449,27 @@ const transformFormationForIdea = (formation) => {
     formation.source.rome_codes.forEach((rome) => resultFormation.romes.push({ code: rome }))
   }
 
+  resultFormation.training = {
+    objectif: formation.source.objectif,
+    description: formation.source.contenu,
+    sessions: setSessions(formation.source),
+  }
+
   return resultFormation
+}
+const setSessions = (formation) => {
+  const sessions = []
+  if (formation?.date_debut?.length) {
+    formation.date_debut.forEach((startDate, idx) => {
+      sessions.push({
+        startDate,
+        endDate: formation.date_fin[idx],
+        isPermanentEntry: formation.modalites_entrees_sorties[idx],
+      })
+    })
+  }
+
+  return sessions
 }
 
 const getTrainingAddress = (school) => {
@@ -488,7 +507,6 @@ const getFormationsQuery = async (query) => {
   try {
     const formations = await getAtLeastSomeFormations({
       romes: query.romes ? query.romes.split(",") : null,
-      rncps: query.rncps ? query.rncps.split(",") : null,
       coords: query.longitude ? [query.longitude, query.latitude] : null,
       radius: query.radius,
       diploma: query.diploma,
@@ -496,6 +514,7 @@ const getFormationsQuery = async (query) => {
       romeDomain: query.romeDomain,
       caller: query.caller,
       useMock: query.useMock,
+      options: query.options ? query.options.split(",") : [],
     })
 
     if (formations?.result === "error") {
@@ -621,6 +640,7 @@ const getFormationsParRegionQuery = async (query) => {
       diploma: query.diploma,
       romeDomain: query.romeDomain,
       caller: query.caller,
+      options: query.options ? query.options.split(",") : [],
     })
 
     if (formations?.result === "error") {
@@ -655,7 +675,7 @@ const getFormationsParRegionQuery = async (query) => {
   }
 }
 
-const getFormationEsQueryIndexFragment = (limit) => {
+const getFormationEsQueryIndexFragment = (limit, options) => {
   return {
     //index: "mnaformation",
     index: "formationcatalogues",
@@ -702,12 +722,14 @@ const getFormationEsQueryIndexFragment = (limit) => {
       "rncp_code",
       "rncp_intitule",
       "rncp_eligible_apprentissage",
-      "periode",
+      "modalites_entrees_sorties",
+      "date_debut",
+      "date_fin",
       "capacite",
       "id_rco_formation",
       "id_formation",
       "cle_ministere_educatif",
-    ],
+    ].concat(options.indexOf("with_description") >= 0 ? ["objectif", "contenu"] : []),
   }
 }
 

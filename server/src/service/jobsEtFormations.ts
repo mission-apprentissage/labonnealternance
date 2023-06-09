@@ -18,7 +18,6 @@ const getJobsEtFormationsQuery = async (query) => {
       sources.indexOf("formations") >= 0
         ? getFormations({
             romes: query.romes ? query.romes.split(",") : null,
-            rncps: query.rncps ? query.rncps.split(",") : null,
             coords: query.longitude || query.longitude ? [query.longitude, query.latitude] : null,
             radius: query.radius,
             diploma: query.diploma,
@@ -26,6 +25,7 @@ const getJobsEtFormationsQuery = async (query) => {
             romeDomain: query.romeDomain,
             caller: query.caller,
             api: "jobEtFormationV1",
+            options: query.options ? query.options.split(",") : [],
             useMock: query.useMock,
           })
         : null,

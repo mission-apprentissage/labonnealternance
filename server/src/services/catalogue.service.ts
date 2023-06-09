@@ -88,6 +88,12 @@ const neededFieldsFromCatalogue = {
   etablissement_gestionnaire_type: 1,
   etablissement_gestionnaire_conventionne: 1,
   affelnet_statut: 1,
+  entierement_a_distance: 1,
+  contenu: 1,
+  objectif: 1,
+  date_debut: 1,
+  date_fin: 1,
+  modalites_entrees_sorties: 1,
   bcn_mefs_10: 1,
 }
 
@@ -112,7 +118,7 @@ export const getFormationsByCleMinistereEducatif = ({ cleMinistereEducatifs }: {
  * @param {Object} select
  * @returns {Promise<Object>}
  */
-export const getFormations = (query: object, select?: object) => FormationCatalogue.find(query, select)
+export const getCatalogueFormations = (query: object, select?: object) => FormationCatalogue.find(query, select)
 
 /**
  * @description Get formations count through the CARIF OREF catalogue API.
@@ -150,7 +156,7 @@ export const getCatalogueEtablissements = (query: object = {}, select: object = 
  * @returns {Promise<Object[]>}
  */
 export const getNearEtablissementsFromRomes = async ({ rome, origin }: { rome: string; origin: object }) => {
-  const formations = await getFormations(
+  const formations = await getCatalogueFormations(
     {
       rome_codes: { $in: rome },
       etablissement_gestionnaire_courriel: { $nin: [null, ""] },
@@ -206,7 +212,7 @@ export const getAllFormationsFromCatalogue = async () => {
 
   if (!count) return
 
-  logger.info(`${count} formation(s) à importer`)
+  logger.info(`${count} formation(s) à importer from ${config.catalogueUrl}${config.formationsEndPoint}.json`)
 
   const streamFormations = async (query, options) => {
     const params = convertQueryIntoParams(query, options)

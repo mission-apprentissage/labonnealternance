@@ -12,7 +12,7 @@ import { IJobs } from "../common/model/schema/jobs/jobs.types.js"
 import { IUserRecruteur } from "../common/model/schema/userRecruteur/userRecruteur.types.js"
 import { asyncForEach } from "../common/utils/asyncUtils.js"
 import config from "../config.js"
-import { getCatalogueEtablissements, getFormations } from "./catalogue.service.js"
+import { getCatalogueEtablissements, getCatalogueFormations } from "./catalogue.service.js"
 import { getEtablissement, getValidationUrl } from "./etablissement.service.js"
 import { ModelUpdateOptions, UpdateQuery } from "mongoose"
 import { Filter } from "mongodb"
@@ -329,7 +329,7 @@ export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }:
   const delegations = []
 
   const promises = etablissements.map(async (etablissement) => {
-    const formations = await getFormations(
+    const formations = await getCatalogueFormations(
       {
         $or: [
           {
