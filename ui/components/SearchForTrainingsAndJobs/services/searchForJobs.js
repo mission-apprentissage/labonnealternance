@@ -59,7 +59,6 @@ export const searchForJobsFunction = async ({
       results = {
         peJobs: response.data.peJobs.result && response.data.peJobs.result === "error" ? null : peJobs,
         matchas: response.data.matchas.result && response.data.matchas.result === "error" ? null : response.data.matchas.results,
-        lbbCompanies: response.data.lbbCompanies.result && response.data.lbbCompanies.result === "error" ? null : response.data.lbbCompanies.results,
         lbaCompanies: response.data.lbaCompanies.result && response.data.lbaCompanies.result === "error" ? null : response.data.lbaCompanies.results,
       }
 
@@ -82,7 +81,6 @@ export const searchForJobsFunction = async ({
     if (
       response.data.peJobs.result === "error" &&
       //response.data.matchas.result === "error" &&
-      response.data.lbbCompanies.result === "error" &&
       response.data.lbaCompanies.result === "error"
     ) {
       //TODO: définition niveau d'erreur JOB total
@@ -90,18 +88,16 @@ export const searchForJobsFunction = async ({
       jobErrorMessage = allJobSearchErrorText
       logError(
         "Job Search Error",
-        `All job sources in error. PE : ${response.data.peJobs.message} - LBB : ${response.data.lbbCompanies.message} - LBA : ${response.data.lbaCompanies.message}`
+        `All job sources in error. PE : ${response.data.peJobs.message} - LBA : ${response.data.lbaCompanies.message}`
       )
     } else {
       if (
         response.data.peJobs.result === "error" ||
         //response.data.matchas.result === "error" ||
-        response.data.lbbCompanies.result === "error" ||
         response.data.lbaCompanies.result === "error"
       ) {
         jobErrorMessage = partialJobSearchErrorText
         if (response.data.peJobs.result === "error") logError("Job Search Error", `PE Error : ${response.data.peJobs.message}`)
-        if (response.data.lbbCompanies.result === "error") logError("Job Search Error", `LBB Error : ${response.data.lbbCompanies.message}`)
         if (response.data.lbaCompanies.result === "error") logError("Job Search Error", `LBA Error : ${response.data.lbaCompanies.message}`)
         if (response.data.matchas.result === "error") logError("Job Search Error", `Matcha Error : ${response.data.matchas.message}`)
       }

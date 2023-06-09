@@ -11,6 +11,7 @@ import { NIVEAUX_POUR_LBA } from "../common/constants.js"
 import { roundDistance } from "../common/geolib.js"
 import { matchaMock, matchaMockMandataire, matchasMock } from "../mocks/matchas-mock.js"
 import { getOffreAvecInfoMandataire, getJobsFromElasticSearch } from "../services/formulaire.service.js"
+import { getApplicationByJobCount } from "../services/application.service.js"
 
 const getMatchaJobs = async ({ romes, radius, latitude, longitude, api, opco, opcoUrl, diploma, caller, useMock }) => {
   try {
@@ -31,7 +32,11 @@ const getMatchaJobs = async ({ romes, radius, latitude, longitude, api, opco, op
 
     const jobs = useMock === "true" ? matchasMock : await getJobsFromElasticSearch(params)
 
-    const matchas = transformMatchaJobsForIdea({ jobs, caller })
+    const ids = jobs.map(({ _source }) => _source.jobs.map(({ _id }) => _id)).flat()
+
+    const matchaApplicationCountByJob = await getApplicationByJobCount(ids)
+
+    const matchas = transformMatchaJobsForIdea({ jobs, caller, matchaApplicationCountByJob })
 
     // filtrage sur l'opco
     if (opco || opcoUrl) {
@@ -49,7 +54,7 @@ const getMatchaJobs = async ({ romes, radius, latitude, longitude, api, opco, op
 }
 
 // update du contenu avec des résultats pertinents par rapport au rayon
-const transformMatchaJobsForIdea = ({ jobs, caller }) => {
+const transformMatchaJobsForIdea = ({ jobs, caller, matchaApplicationCountByJob }) => {
   const resultJobs = {
     results: [],
   }
@@ -59,6 +64,7 @@ const transformMatchaJobsForIdea = ({ jobs, caller }) => {
       const companyJobs = transformMatchaJobForIdea({
         job: jobs[i]._source,
         distance: jobs[i].sort[0],
+        matchaApplicationCountByJob,
         caller,
       })
       companyJobs.map((job) => resultJobs.results.push(job))
@@ -79,9 +85,12 @@ const getMatchaJobById = async ({ id, caller }) => {
       jobs = await getOffreAvecInfoMandataire(id)
     }
 
+    const matchaApplicationCountByJob = await getApplicationByJobCount([id])
+
     const job = transformMatchaJobForIdea({
       job: jobs,
       caller,
+      matchaApplicationCountByJob,
     })
 
     if (caller) {
@@ -95,10 +104,8 @@ const getMatchaJobById = async ({ id, caller }) => {
 }
 
 // Adaptation au modèle Idea et conservation des seules infos utilisées des offres
-const transformMatchaJobForIdea = ({ job, distance, caller }) => {
+const transformMatchaJobForIdea = ({ job, distance, caller, matchaApplicationCountByJob }) => {
   const resultJobs = []
-
-  console.log(job)
 
   job.jobs.map((offre, idx) => {
     const resultJob = itemModel("matcha")
@@ -151,6 +158,8 @@ const transformMatchaJobForIdea = ({ job, distance, caller }) => {
     resultJob.romes = []
     offre.rome_code.map((code) => resultJob.romes.push({ code, label: null }))
 
+    const applicationCount = matchaApplicationCountByJob.find((job) => job._id == offre._id)
+    resultJob.applicationCount = applicationCount?.count || 0
     resultJobs.push(resultJob)
   })
 

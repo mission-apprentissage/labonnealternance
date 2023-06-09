@@ -86,7 +86,6 @@ export const loadItem = async ({
     } else {
       let results = {
         peJobs: null,
-        lbbCompanies: null,
         lbaCompanies: null,
         matchas: null,
       }
@@ -133,11 +132,10 @@ export const loadItem = async ({
 
           // gestion des erreurs
           if (!response?.data?.message) {
-            let companies = item.type === "lbb" ? response.data.lbbCompanies : response.data.lbaCompanies
+            let companies = response.data.lbaCompanies
 
             loadedItem = companies[0]
-            results.lbbCompanies = item.type === "lbb" ? companies : null
-            results.lbaCompanies = item.type === "lba" ? companies : null
+            results.lbaCompanies = companies
           } else {
             errorMessage = `${item.type} Error : ${response.data.message}`
             responseResult = response.data.result

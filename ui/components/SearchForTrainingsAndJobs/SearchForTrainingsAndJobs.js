@@ -155,9 +155,6 @@ const SearchForTrainingsAndJobs = () => {
       case "lba": {
         return jobs?.lbaCompanies?.find((el) => el.company.siret === itemId)
       }
-      case "lbb": {
-        return jobs?.lbbCompanies?.find((el) => el.company.siret === itemId)
-      }
       case "matcha": {
         return jobs?.matchas?.find((el) => el.job.id === itemId)
       }

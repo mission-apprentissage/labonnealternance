@@ -19,7 +19,7 @@ export const mergeJobs = (jobs) => {
 export const mergeOpportunities = (jobs, onlyLbbLbaCompanies) => {
   let mergedArray = []
   if (jobs) {
-    let sources = [jobs.lbbCompanies, jobs.lbaCompanies]
+    let sources = [jobs.lbaCompanies]
     if (!onlyLbbLbaCompanies) {
       sources.push(jobs.peJobs)
       sources.push(jobs.matchas)

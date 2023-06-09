@@ -8,6 +8,7 @@ import { itemModel } from "../../model/itemModel.js"
 import { roundDistance } from "../../common/geolib.js"
 import { lbbMock } from "../../mocks/lbbs-mock.js"
 import { BonnesBoites } from "../../common/model/index.js"
+import { getApplicationByCompanyCount } from "../../services/application.service.js"
 
 const esClient = getElasticInstance()
 
@@ -34,14 +35,17 @@ const getSomeLbbCompanies = async ({ romes, latitude, longitude, radius, type, r
     })
 
     if (companies && companies.length) {
-      companies = transformLbbCompaniesForIdea({ companies, radius, type, referer, caller })
+      const sirets = companies.map(({ siret }) => siret)
+      const applicationCountByCompany = await getApplicationByCompanyCount(sirets)
+
+      companies = transformLbbCompaniesForIdea({ companies, radius, type, referer, caller, applicationCountByCompany })
     }
 
     return companies
   }
 }
 
-const transformLbbCompaniesForIdea = ({ companies, type, referer, caller }) => {
+const transformLbbCompaniesForIdea = ({ companies, type, referer, caller, applicationCountByCompany }) => {
   const resultCompanies = {
     results: [],
   }
@@ -55,6 +59,7 @@ const transformLbbCompaniesForIdea = ({ companies, type, referer, caller }) => {
         type,
         contactAllowedOrigin,
         caller,
+        applicationCountByCompany,
       })
       resultCompanies.results.push(company)
     }
@@ -64,7 +69,7 @@ const transformLbbCompaniesForIdea = ({ companies, type, referer, caller }) => {
 }
 
 // Adaptation au modèle Idea et conservation des seules infos utilisées des offres
-const transformLbbCompanyForIdea = ({ company, type, caller, contactAllowedOrigin }) => {
+const transformLbbCompanyForIdea = ({ company, type, caller, contactAllowedOrigin, applicationCountByCompany }) => {
   const resultCompany = itemModel(type)
 
   resultCompany.title = company.enseigne
@@ -117,6 +122,9 @@ const transformLbbCompanyForIdea = ({ company, type, caller, contactAllowedOrigi
       label: company.naf_label,
     },
   ]
+
+  const applicationCount = applicationCountByCompany.find((cmp) => company.siret == cmp._id)
+  resultCompany.applicationCount = applicationCount?.count || 0
 
   return resultCompany
 }
@@ -230,11 +238,14 @@ const getCompanyFromSiret = async ({ siret, referer, caller, type }) => {
     const bonneBoite = await BonnesBoites.findOne({ siret })
 
     if (bonneBoite) {
+      const applicationCountByCompany = await getApplicationByCompanyCount([bonneBoite.siret])
+
       const company = transformLbbCompanyForIdea({
         company: bonneBoite,
         type,
         contactAllowedOrigin: isAllowedSource({ referer, caller }),
         caller,
+        applicationCountByCompany,
       })
 
       return type === "lbb" ? { lbbCompanies: [company] } : { lbaCompanies: [company] }

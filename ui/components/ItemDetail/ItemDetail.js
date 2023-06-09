@@ -25,6 +25,7 @@ import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Divider, Flex, Link, Text } from "@chakra-ui/react"
 import { SendPlausibleEvent } from "../../utils/plausible"
 import GoingToContactQuestion, { getGoingtoId } from "./GoingToContactQuestion"
+import getJobPublishedTimeAndApplications from "./ItemDetailServices/getJobPublishedTimeAndApplications"
 
 const ItemDetail = ({ selectedItem, handleClose, handleSelectItem, activeFilter }) => {
   const kind = selectedItem?.ideaType
@@ -113,6 +114,7 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem, activeFilter 
             </Text>
           )}
 
+          {!isCollapsedHeader && getJobPublishedTimeAndApplications({ item: selectedItem })}
           {!isCollapsedHeader && getJobSurtitre({ selectedItem, kind, isMandataire })}
 
           <Text

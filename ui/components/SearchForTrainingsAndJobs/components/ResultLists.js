@@ -133,7 +133,6 @@ const ResultLists = (props) => {
     if (jobs) {
       if (jobs.peJobs) jobCount += jobs.peJobs.length
       if (jobs.matchas) jobCount += jobs.matchas.length
-      if (jobs.lbbCompanies) jobCount += jobs.lbbCompanies.length
       if (jobs.lbaCompanies) jobCount += jobs.lbaCompanies.length
     }
 

@@ -56,6 +56,7 @@ export const applicationSchema = new Schema<IApplication>({
     type: String,
     default: null,
     description: "Le siret de l'établissement",
+    index: true,
   },
   company_email: {
     type: String,
@@ -91,6 +92,7 @@ export const applicationSchema = new Schema<IApplication>({
     type: String,
     default: null,
     description: "L'id externe de l'offre d'emploi",
+    index: true,
   },
   to_applicant_message_id: {
     type: String,

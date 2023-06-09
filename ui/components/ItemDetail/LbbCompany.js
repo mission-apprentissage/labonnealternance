@@ -9,6 +9,7 @@ import { getItemQueryParameters } from "../../utils/getItemId"
 import { getSearchQueryParameters } from "../../utils/getSearchParameters"
 import { setSelectedMarker } from "../../utils/mapTools"
 import TagCandidatureSpontanee from "./TagCandidatureSpontanee"
+import eclair from "../../public/images/eclair.svg"
 
 const LbbCompany = ({ company, handleSelectItem, showTextOnly, searchForTrainingsOnNewCenter }) => {
   const { selectedMapPopupItem } = React.useContext(SearchResultContext)
@@ -131,23 +132,30 @@ const LbbCompany = ({ company, handleSelectItem, showTextOnly, searchForTraining
             </Box>
           </Flex>
 
-          <Box pt={2} fw={500} fs="14px" lineHeight="24px">
+          <Box pt={2} fw={500} fontSize="14px">
             Secteur d'activité : {get(company, "nafs[0].label", "")}
           </Box>
-          <Box pt={2} fw={500} fs="14px" lineHeight="24px">
+          <Box pt={2} fw={500} fontSize="12px">
             {company.place.fullAddress}
           </Box>
 
-          <Text display="flex" fs="14px" color="grey.600" as="span" pt={1}>
-            {company.place.distance && `${company.place.distance} km(s) du lieu de recherche`}
+          <Box as="span" fontSize="12px" color="grey.600" pt={1}>
+            {company.place.distance && <Text display="flex" >{company.place.distance} km(s) du lieu de recherche</Text>}
             {!showTextOnly && (
-              <Text ml="auto" as="span" display={["none", "none", "block"]}>
-                <Button variant="knowMore" aria-label="Accéder au détail de l'entreprise">
-                  En savoir plus
-                </Button>
-              </Text>
+              <Flex mt={4} alignItems="center">
+                <Flex alignItems="center">
+                  <Image mr={1} src={eclair} alt="" />
+                  <Text color="#0063CB" display="flex" fontSize="12px" whiteSpace="nowrap" mr={2}>{company.applicationCount} candidature(s)</Text>
+                </Flex>
+                
+                <Text ml="auto" display={["none", "none", "block"]}>
+                  <Button variant="knowMore" aria-label="Accéder au détail de l'entreprise">
+                    En savoir plus
+                  </Button>
+                </Text>
+              </Flex>
             )}
-          </Text>
+          </Box>
           {!showTextOnly && company.place.distance > currentSearchRadius && <>{getCenterSearchOnCompanyButton()}</>}
         </Box>
       </Flex>
