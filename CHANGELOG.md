@@ -1,3 +1,10 @@
+# [1.20.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.19.0...v1.20.0) (2023-06-09)
+
+
+### Features
+
+* affichage date de publications et nombres de candidatures ([#419](https://github.com/mission-apprentissage/labonnealternance/issues/419)) ([f0f748a](https://github.com/mission-apprentissage/labonnealternance/commit/f0f748af7995f0a4a4143eb53f84c8b96f439b27))
+
 # [1.19.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.18.0...v1.19.0) (2023-06-09)
 
 
