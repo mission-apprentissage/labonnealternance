@@ -1,3 +1,10 @@
+# [1.19.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.18.0...v1.19.0) (2023-06-09)
+
+
+### Features
+
+* use more fields from catalogue ([#369](https://github.com/mission-apprentissage/labonnealternance/issues/369)) ([9cf61c3](https://github.com/mission-apprentissage/labonnealternance/commit/9cf61c3259ffae79c974989cfe0ae5c3bf1d73c8))
+
 # [1.18.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.17.0...v1.18.0) (2023-06-08)
 
 
