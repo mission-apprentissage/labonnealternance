@@ -359,10 +359,6 @@ const factorJobsForMap = (lists) => {
     sortedList = lists.peJobs
   }
 
-  if (lists.lbbCompanies) {
-    sortedList = sortedList.length ? sortedList.concat(lists.lbbCompanies) : lists.lbbCompanies
-  }
-
   if (lists.lbaCompanies) {
     sortedList = sortedList.length ? sortedList.concat(lists.lbaCompanies) : lists.lbaCompanies
   }

@@ -124,16 +124,16 @@ const Training = ({ training, handleSelectItem, showTextOnly, searchForJobsOnNew
             </Box>
           </Flex>
 
-          <Box pt={[4, 4, 4, 1]} fw={500} fs="14px" lineHeight="24px">
+          <Box pt={[4, 4, 4, 1]} fw={500} fontSize="14px">
             {training.company.name}
           </Box>
-          <Box pt={2} fw={500} fs="14px" lineHeight="24px">
+          <Box pt={2} fw={500} fontSize="12px">
             {training.place.fullAddress}
           </Box>
-          <Text display="flex" fs="14px" color="grey.600" as="span" pt={1}>
+          <Text display="flex" fontSize="12px" color="grey.600" as="span" pt={1}>
             {training?.place?.distance !== null && `${training.place.distance} km(s) du lieu de recherche`}
             {!showTextOnly && (
-              <Text ml="auto" as="span" display={["none", "none", "block"]}>
+              <Text mt={4} ml="auto" as="span" fontSize="14px" display={["none", "none", "block"]}>
                 <Button variant="knowMore" aria-label="Accéder au détail de la formation">
                   En savoir plus
                 </Button>

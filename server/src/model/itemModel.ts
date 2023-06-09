@@ -26,7 +26,7 @@ export const itemModel = (type) => {
       city: null, // pe -> lieuTravail.libelle | formation -> localite | pe -> city | lba -> city
       address: null, // formation -> etablissement_formateur_adresse, etablissement_formateur_complement_adresse | lbb / lba -> address -> street_number + street_name | matcha -> adresse
       cedex: null, // formation -> etablissement_formateur_cedex
-      zipCode: null, // formation -> etablissement_formateur_code_postal | pe -> lieuTravail.codePostal | lba -> zip_code
+      zipCode: null, // formation -> etablissement_formateur_code_postal | pe -> lieuTravail.codePostal | lba -> zip_code
       insee: null, // pe -> lieuTravail.commune, training -> code_commune_insee, lba -> insee_city_code
       departementNumber: null, // formation -> num_departement
       region: null, // formation -> region
@@ -121,5 +121,6 @@ export const itemModel = (type) => {
             ]
         }
     */,
+    applicationCount: null, // lba / matcha -> calcul en fonction du nombre de candidatures enregistrées
   }
 }

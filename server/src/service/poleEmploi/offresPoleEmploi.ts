@@ -130,7 +130,7 @@ const transformPeJobsForIdea = ({ jobs, radius, lat, long, caller }) => {
 }
 
 // Adaptation au modèle Idea et conservation des seules infos utilisées des offres
-const transformPeJobForIdea = ({ job, lat = null, long = null, caller = null }) => {
+const transformPeJobForIdea = ({ job, lat = null, long = null }) => {
   const resultJob = itemModel("peJob")
 
   resultJob.title = job.intitule

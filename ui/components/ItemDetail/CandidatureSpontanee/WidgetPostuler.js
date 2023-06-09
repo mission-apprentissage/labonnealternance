@@ -33,7 +33,7 @@ const WidgetPostuler = () => {
       default: {
         const response = await axios.get(`${companyApi}/${parameters.itemId}?type=${parameters.type}`)
         if (!response?.data?.message) {
-          let companies = parameters.type === "lbb" ? response.data.lbbCompanies : response.data.lbaCompanies
+          let companies = response.data.lbaCompanies
           item = companies[0]
         }
 

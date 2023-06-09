@@ -4,7 +4,9 @@ import ReactHtmlParser from "react-html-parser"
 import { DisplayContext } from "../../context/DisplayContextProvider"
 import { SearchResultContext } from "../../context/SearchResultContextProvider"
 import extendedSearchPin from "../../public/images/icons/trainingPin.svg"
+import eclair from "../../public/images/eclair.svg"
 import { fetchAddresses } from "../../services/baseAdresse"
+import { getDaysSinceDate } from "../../utils/dateUtils"
 import { getItemQueryParameters } from "../../utils/getItemId"
 import { getSearchQueryParameters } from "../../utils/getSearchParameters"
 import { isDepartmentJob } from "../../utils/itemListUtils"
@@ -114,6 +116,8 @@ const Job = ({ job, handleSelectItem, showTextOnly, searchForTrainingsOnNewCente
     cardProperties.filter = "drop-shadow(0px 0px 8px rgba(30, 30, 30, 0.25))"
   }
 
+  const daysPublished = getDaysSinceDate(job.job.creationDate)
+
   return (
     <Link
       as="a"
@@ -139,25 +143,37 @@ const Job = ({ job, handleSelectItem, showTextOnly, searchForTrainingsOnNewCente
             </Box>
           </Flex>
 
-          <Box pt={2} fw={500} fs="14px" lineHeight="24px">
+          <Box pt={2} fw={500} fontSize="14px">
             {job.company && job.company.name ? job.company.name : ReactHtmlParser("<i>Offre anonyme</i>")}
           </Box>
-          <Box pt={2} fw={500} fs="14px" lineHeight="24px">
+          <Box pt={2} fw={500} fontSize="12px">
             {job.place.fullAddress}
           </Box>
 
-          <Text display="flex" fs="14px" color="grey.600" as="span" pt={1}>
-            {hasLocation ? isDepartmentJob(job) ? "Dans votre zone de recherche" : <>{job.place.distance} km(s) du lieu de recherche</> : ""}
-            {showTextOnly ? (
-              ""
-            ) : (
-              <Text ml="auto" as="span" display={["none", "none", "block"]}>
-                <Button variant="knowMore" aria-label="Accéder au détail de l'offre">
-                  En savoir plus
-                </Button>
-              </Text>
+          <Box fontSize="12px" color="grey.600" as="span" pt={1}>
+            {hasLocation ? isDepartmentJob(job) ? "Dans votre zone de recherche" : `${job.place.distance} km(s) du lieu de recherche` : ""}
+            {!showTextOnly && (
+              <Flex mt={4} alignItems="center">
+                {job?.job?.creationDate &&                  
+                  <Text color="grey.600" fontSize="12px" mr={4}>
+                    Publiée {`${daysPublished?`depuis ${daysPublished} jour(s)`:"aujourd'hui"}`}
+                  </Text>
+                }
+                {
+                  kind === "matcha" &&
+                  <Flex alignItems="center">
+                    <Image mr={1} src={eclair} alt="" />
+                    <Text color="#0063CB" display="flex" fontSize="12px" whiteSpace="nowrap" mr={2}>{job.applicationCount} candidature(s)</Text>
+                  </Flex>
+                }
+                <Text ml="auto" as="span" display={["none", "none", "block"]}>
+                  <Button variant="knowMore" aria-label="Accéder au détail de l'offre">
+                    En savoir plus
+                  </Button>
+                </Text>
+              </Flex>
             )}
-          </Text>
+          </Box>
           {job.place.distance > currentSearchRadius ? getCenterSearchOnJobButton() : ""}
         </Box>
       </Flex>
