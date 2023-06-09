@@ -5,7 +5,6 @@ import { DisplayContext } from "../../context/DisplayContextProvider"
 import { SearchResultContext } from "../../context/SearchResultContextProvider"
 import academicCapIcon from "../../public/images/icons/training-academic-cap.svg"
 import questionmarkIcon from "../../public/images/icons/training-questionmark.svg"
-import sablierIcon from "../../public/images/icons/training-sablier.svg"
 import targetIcon from "../../public/images/icons/training-target.svg"
 import clipboardListIcon from "../../public/images/icons/traning-clipboard-list.svg"
 import fetchInserJeuneStats from "../../services/fetchInserJeuneStats"
@@ -26,7 +25,7 @@ const dontBreakOutCssParameters = {
 
 const TrainingDetail = ({ training, hasAlsoJob }) => {
   const [loading, setLoading] = useState(true)
-  const [IJStats, setIJStats] = useState(null) 
+  const [IJStats, setIJStats] = useState(null)
 
   useEffect(() => {
     SendPlausibleEvent("Affichage - Fiche formation", {
@@ -63,25 +62,27 @@ const TrainingDetail = ({ training, hasAlsoJob }) => {
   }, [training.id])
 
   useEffect(() => {
-    if (training && !training.lbfLoaded) {
-      loadDataFromLbf()
+    if (training && !training.descriptionLoaded) {
+      loadTrainingDetails()
       sendTrainingOpenedEventToCatalogue(training.cleMinistereEducatif)
     } else {
       setLoading(false)
     }
   }, [training.cleMinistereEducatif])
 
-  const loadDataFromLbf = () => {
+  const loadTrainingDetails = () => {
     let updatedTrainings = trainings
     updatedTrainings.forEach(async (v) => {
       if (v.id === training.id) {
-        if (!v.lbfLoaded) {
-          v.lbfLoaded = true
-
+        if (!v.descriptionLoaded) {
           try {
-            const trainingDetail = await fetchTrainingDetails(training)
-
-            updateTrainingFromLbf(v, trainingDetail)
+            const trainingWithDetails = await fetchTrainingDetails(training)
+            if (trainingWithDetails) {
+              v.training = trainingWithDetails.training
+              v.contact = trainingWithDetails.contact
+              v.company = trainingWithDetails.company
+            }
+            v.descriptionLoaded = true
             setTrainingsAndSelectedItem(updatedTrainings, v)
           } catch (err) {}
         }
@@ -158,21 +159,6 @@ const TrainingDetail = ({ training, hasAlsoJob }) => {
   )
 }
 
-const updateTrainingFromLbf = (training, detailsFromLbf) => {
-  if (training && detailsFromLbf && detailsFromLbf.organisme) {
-    training.training = detailsFromLbf
-
-    // remplacement des coordonnées de contact catalogue par celles de lbf
-    const contactLbf = detailsFromLbf.organisme.contact
-
-    training.contact = training.contact || {}
-
-    training.contact.phone = contactLbf.tel || training.contact.phone
-
-    training.company.url = contactLbf.url || training.company.url
-  }
-}
-
 const getTrainingDetails = (training) => {
   if (!training) return ""
 
@@ -206,28 +192,21 @@ const getTrainingDetails = (training) => {
         </Flex>
       )}
 
-      {training["duree-indicative"] && (
-        <Flex alignItems="flex-start" mt={10}>
-          <Image src={sablierIcon} alt="" />
-          <Box pl={4} whiteSpace="pre-wrap">
-            <Text as="h3" mt="0" mb={4} fontWeight={700} color="grey.700">
-              Durée
-            </Text>
-            {training["duree-indicative"]}
-          </Box>
-        </Flex>
-      )}
-
       {training["sessions"] && training["sessions"].length && (
         <Flex alignItems="flex-start" mt={10}>
           <Image src={academicCapIcon} alt="" />
           <Box pl={4} whiteSpace="pre-wrap">
             <Text as="h3" mt="0" mb={4} fontWeight={700} color="grey.700">
-              Modalités alternance
+              Sessions de formation
             </Text>
-            Heures en centre de formation : {training["sessions"][0]["nombre-heures-centre"] ? `${training["sessions"][0]["nombre-heures-centre"]}h` : "non renseigné"}
-            <br />
-            Heures en entreprise : {training["sessions"][0]["nombre-heures-entreprise"] ? `${training["sessions"][0]["nombre-heures-entreprise"]}h` : "non renseigné"}
+            {training["sessions"][0].isPermanentEntry
+              ? "Il est possible de s’inscrire à cette formation tout au long de l’année."
+              : training["sessions"].map((session) => (
+                  <>
+                    du {formatDate(session.startDate)} au {formatDate(session.endDate)}
+                    <br />
+                  </>
+                ))}
           </Box>
         </Flex>
       )}

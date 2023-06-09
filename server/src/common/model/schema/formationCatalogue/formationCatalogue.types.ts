@@ -151,6 +151,11 @@ interface IFormationCatalogue extends IEtablissementFormateur, IEtablissementGes
   niveau_entree_obligatoire: number
   entierement_a_distance: boolean
   catalogue_published: boolean
+  contenu: string
+  objectif: string
+  date_debut: Date[]
+  date_fin: Date[]
+  modalites_entrees_sorties: boolean[]
 }
 
 export { IEtablissementFormateur, IEtablissementGestionnaire, IEtablissementReference, IFormationCatalogue }

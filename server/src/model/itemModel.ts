@@ -114,8 +114,11 @@ export const itemModel = (type) => {
         {
             description,
             objectif,
-            duree-indicative,
-            sessions,
+            sessions : [
+                startTime,
+                endTime,
+                isPermanentEntry,
+            ]
         }
     */,
   }

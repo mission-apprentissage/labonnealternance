@@ -211,10 +211,6 @@ const mnaFormationSchema = new Schema<IFormationCatalogue>({
     type: [String],
     description: "Codes ROME",
   },
-  /* commenté tant que pas utilisé periode: {
-    type: [Date],
-    description: "Période d'inscription à la formation",
-  },*/
   capacite: {
     type: String,
     description: "Capacité d'accueil",
