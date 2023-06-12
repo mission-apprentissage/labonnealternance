@@ -69,6 +69,8 @@ const stats = () => (
         1. Mesurer l’exposition de l’information,<br />
         2. Mesurer le nombre de mises en relation générées par nos services,<br />
         3. Mesurer que ces mises en relation se convertissent en recrutements effectifs.
+        <br /><br />
+        Pour visualiser correctement cette page, veuillez désactiver votre bloqueur de publicité
       </Text>
 
       <Box mt={6}>
