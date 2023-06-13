@@ -1,14 +1,35 @@
-// @ts-nocheck
-import { OPCOS } from "../common/constants.js"
+import memoize from "memoizee"
+import { IOpco } from "../common/model/schema/opco/opco.types.js"
 import { Opco } from "../common/model/index.js"
-import { getMemoizedOpcoShortName } from "../jobs/lbb/bonnesBoitesUtils.js"
-import { CFADOCK_FILTER_LIMIT, fetchOpcosFromCFADock } from "./cfaDock/fetchOpcosFromCFADock.js"
-import { saveOpco } from "./opco.js"
+import { OPCOS } from "../common/constants.js"
+import { CFADOCK_FILTER_LIMIT, fetchOpcosFromCFADock } from "../service/cfaDock/fetchOpcosFromCFADock.js"
 
 /**
- * Filtre une liste de jobs pour ne laisser que ceux qui ont la valeur opcoUrl ou opco
+ * @description tente d'ajouter un opco en base et retourne une string indiquant le résultat
+ * @param {IOpco} opcoData
+ * @returns {Promise<IOpco>}
  */
-export default async function ({ jobs, opco, opcoUrl }) {
+export const saveOpco = async (opcoData: IOpco): Promise<IOpco> => Opco.findOneAndUpdate({ siren: opcoData.siren }, opcoData, { upsert: true })
+
+/**
+ * @description retourne le nom court d'un opco en paramètre
+ * @param {string} longName
+ * @returns {string}
+ */
+const getOpcoShortName = (longName: string): string => {
+  return Object.keys(OPCOS).find((k) => OPCOS[k] === longName)
+}
+
+export const getMemoizedOpcoShortName = memoize(getOpcoShortName)
+
+/**
+ * @description Filtre une liste de jobs pour ne laisser que ceux qui ont la valeur opcoUrl ou opco
+ * @param {any[]} jobs
+ * @param {string} opco
+ * @param {string} opcoUrl
+ * @returns {Promise<any[]>}
+ */
+export const filterJobsByOpco = async ({ jobs, opco, opcoUrl }: { jobs: any[]; opco?: string; opcoUrl?: string }): Promise<any[]> => {
   let sirensToFind = []
 
   jobs.forEach((job) => {
@@ -23,7 +44,7 @@ export default async function ({ jobs, opco, opcoUrl }) {
   }
 
   // STEP 1 identifier les sociétés présentent dans notre base
-  const searchForOpcoParams = { siren: { $in: sirensToFind } }
+  const searchForOpcoParams: any = { siren: { $in: sirensToFind } }
   if (opcoUrl) {
     searchForOpcoParams.url = opcoUrl.toLowerCase()
   } else {

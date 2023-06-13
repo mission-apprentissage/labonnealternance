@@ -1,5 +1,4 @@
 // @ts-nocheck
-import memoize from "memoizee"
 import { getFileFromS3Bucket, getS3FileLastUpdate, uploadFileToS3 } from "../../common/utils/awsUtils.js"
 import { streamJsonArray } from "../../common/utils/streamUtils.js"
 import { logger } from "../../common/logger.js"
@@ -12,7 +11,6 @@ import geoData from "../../common/utils/geoData.js"
 import { EmailBlacklist, BonnesBoites, GeoLocation, Opco } from "../../common/model/index.js"
 import initNafMap from "./initNafMap.js"
 import initNafScoreMap from "./initNafScoreMap.js"
-import { OPCOS } from "../../common/constants.js"
 
 const currentDirname = __dirname(import.meta.url)
 
@@ -196,9 +194,3 @@ const filterRomesFromNafHirings = (bonneBoite) => {
 
   return filteredRomes
 }
-
-const getOpcoShortName = (longName) => {
-  return Object.keys(OPCOS).find((k) => OPCOS[k] === longName)
-}
-
-export const getMemoizedOpcoShortName = memoize(getOpcoShortName)
