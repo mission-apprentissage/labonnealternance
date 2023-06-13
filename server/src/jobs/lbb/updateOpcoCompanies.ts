@@ -4,14 +4,12 @@ import { logger } from "../../common/logger.js"
 import { Opco } from "../../common/model/index.js"
 import { logMessage } from "../../common/utils/logMessage.js"
 import { CFADOCK_FILTER_LIMIT, fetchOpcosFromCFADock } from "../../service/cfaDock/fetchOpcosFromCFADock.js"
-import { saveOpco } from "../../service/opco.js"
-import { checkIfAlgoFileIsNew, downloadAlgoCompanyFile, getMemoizedOpcoShortName, readCompaniesFromJson, removePredictionFile } from "./bonnesBoitesUtils.js"
+import { checkIfAlgoFileIsNew, downloadAlgoCompanyFile, readCompaniesFromJson, removePredictionFile } from "./bonnesBoitesUtils.js"
+import { getMemoizedOpcoShortName, saveOpco } from "../../services/opco.service.js"
 let errorCount = 0
 
 let sirenSet = new Set()
 let sirenWithoutOpco = new Set()
-
-let i = 0
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
@@ -23,20 +21,13 @@ const getSirenOpcosFromCFADock = async () => {
 
     if (response?.data?.found) {
       response.data.found.forEach(async (sirenFilterObj) => {
-        if (
-          (await saveOpco({
-            siren: sirenFilterObj.filters.siret,
-            opco: sirenFilterObj.opcoName,
-            opco_short_name: getMemoizedOpcoShortName(sirenFilterObj.opcoName),
-            url: sirenFilterObj.url,
-            idcc: sirenFilterObj.idcc,
-          })) === "ok"
-        ) {
-          i++
-          if (i % 10000 === 0) {
-            logger.info(`${i} sirens inserted`)
-          }
-        }
+        await saveOpco({
+          siren: sirenFilterObj.filters.siret,
+          opco: sirenFilterObj.opcoName,
+          opco_short_name: getMemoizedOpcoShortName(sirenFilterObj.opcoName),
+          url: sirenFilterObj.url,
+          idcc: sirenFilterObj.idcc,
+        })
       })
 
       response.data.notFound.forEach(async (sirenFilterObj) => {
@@ -58,7 +49,6 @@ const getSirenOpcosFromCFADock = async () => {
 }
 
 const cleanUp = () => {
-  i = 0
   errorCount = 0
   sirenWithoutOpco = new Set()
 }

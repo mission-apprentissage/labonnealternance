@@ -3,7 +3,7 @@ import { encryptMailWithIV } from "../common/utils/encryptString.js"
 import { manageApiError } from "../common/utils/errorManager.js"
 import { trackApiCall } from "../common/utils/sendTrackingEvent.js"
 import { itemModel } from "../model/itemModel.js"
-import filterJobsByOpco from "./filterJobsByOpco.js"
+import { filterJobsByOpco } from "../services/opco.service.js"
 
 const coordinatesOfFrance = [2.213749, 46.227638]
 
