@@ -1,3 +1,10 @@
+# [1.21.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.20.0...v1.21.0) (2023-06-13)
+
+
+### Features
+
+* déplacement service opco ([#427](https://github.com/mission-apprentissage/labonnealternance/issues/427)) ([1d2db92](https://github.com/mission-apprentissage/labonnealternance/commit/1d2db92f492213da2cabe417a8d8dead0af177b0))
+
 # [1.20.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.19.0...v1.20.0) (2023-06-09)
 
 
