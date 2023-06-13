@@ -90,7 +90,7 @@ export default async function updateOpcoCompanies({ ClearMongo = false, ForceRec
 
     logMessage("info", `End bulk opco determination`)
 
-    await notifyToSlack({ subject: "RESOLUTION OPCOS", message: `Collecte des opcos par Siret terminée. ${i} OK. ${errorCount} not found`, error: false })
+    await notifyToSlack({ subject: "RESOLUTION OPCOS", message: `Collecte des opcos par Siret terminée. ${errorCount} not found`, error: false })
 
     await removePredictionFile()
 
