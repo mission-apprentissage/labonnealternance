@@ -1,3 +1,10 @@
+## [1.21.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.21.0...v1.21.1) (2023-06-13)
+
+
+### Bug Fixes
+
+* removed var ([#430](https://github.com/mission-apprentissage/labonnealternance/issues/430)) ([8cfa442](https://github.com/mission-apprentissage/labonnealternance/commit/8cfa442a1bdccd9adb98a453c2658ffcbe30307a))
+
 # [1.21.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.20.0...v1.21.0) (2023-06-13)
 
 
