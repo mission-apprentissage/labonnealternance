@@ -1,3 +1,10 @@
+## [1.24.2](https://github.com/mission-apprentissage/labonnealternance/compare/v1.24.1...v1.24.2) (2023-06-14)
+
+
+### Bug Fixes
+
+* temporary fix job duplicate route ([5b05359](https://github.com/mission-apprentissage/labonnealternance/commit/5b05359d3b276bd3ebfc94e2c5784eb2536e8bee))
+
 ## [1.24.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.24.0...v1.24.1) (2023-06-14)
 
 
