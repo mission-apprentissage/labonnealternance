@@ -814,6 +814,148 @@
 				"type": "object",
 				"additionalProperties": false
 			},
+			"IMetiers": {
+				"properties": {
+					"metiers": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					},
+					"error": {
+						"type": "string"
+					}
+				},
+				"type": "object",
+				"additionalProperties": false
+			},
+			"TGetMetiersResponseSuccess": {
+				"$ref": "#/components/schemas/IMetiers"
+			},
+			"IRomeWithLabel": {
+				"properties": {
+					"codeRome": {
+						"type": "string"
+					},
+					"intitule": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"codeRome",
+					"intitule"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IMetierEnrichi": {
+				"properties": {
+					"label": {
+						"type": "string"
+					},
+					"romes": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					},
+					"rncps": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					},
+					"type": {
+						"type": "string"
+					},
+					"romeTitles": {
+						"items": {
+							"$ref": "#/components/schemas/IRomeWithLabel"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"label",
+					"romes"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IMetiersEnrichis": {
+				"properties": {
+					"labelsAndRomes": {
+						"items": {
+							"$ref": "#/components/schemas/IMetierEnrichi"
+						},
+						"type": "array"
+					},
+					"labelsAndRomesForDiplomas": {
+						"items": {
+							"$ref": "#/components/schemas/IMetierEnrichi"
+						},
+						"type": "array"
+					},
+					"error": {
+						"type": "string"
+					},
+					"error_messages": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					}
+				},
+				"type": "object",
+				"additionalProperties": false
+			},
+			"TGetMetiersEnrichisResponseSuccess": {
+				"$ref": "#/components/schemas/IMetiersEnrichis"
+			},
+			"IAppellationRome": {
+				"properties": {
+					"codeRome": {
+						"type": "string"
+					},
+					"intitule": {
+						"type": "string"
+					},
+					"appellation": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"codeRome",
+					"intitule",
+					"appellation"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IAppellationsRomes": {
+				"properties": {
+					"coupleAppellationRomeMetier": {
+						"items": {
+							"$ref": "#/components/schemas/IAppellationRome"
+						},
+						"type": "array"
+					},
+					"error": {
+						"type": "string"
+					},
+					"error_messages": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					}
+				},
+				"type": "object",
+				"additionalProperties": false
+			},
+			"TGetAppellationsRomesResponseSuccess": {
+				"$ref": "#/components/schemas/IAppellationsRomes"
+			},
 			"IMetierDavenir": {
 				"properties": {
 					"codeROME": {
@@ -859,7 +1001,7 @@
 	},
 	"info": {
 		"title": "La bonne alternance",
-		"version": "1.22.0",
+		"version": "1.23.0",
 		"description": "Trouvez ici les formations en alternance et les entreprises qui recrutent régulièrement en alternance",
 		"license": {
 			"name": "MIT"
@@ -1548,6 +1690,296 @@
 						}
 					}
 				}
+			}
+		},
+		"/api/v1/metiers/metiersParFormation/{cfd}": {
+			"get": {
+				"operationId": "getMetiersParCfd",
+				"responses": {
+					"200": {
+						"description": "List retrieved",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"$ref": "#/components/schemas/TGetMetiersResponseSuccess"
+										},
+										{
+											"$ref": "#/components/schemas/TResponseError"
+										}
+									]
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string",
+									"enum": [
+										"List unavailable"
+									],
+									"nullable": false
+								}
+							}
+						}
+					}
+				},
+				"description": "Retourne la liste des métiers associé à une formation identifiée par son CFD dans le chemin de l'appel",
+				"tags": [
+					"Metiers"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "cfd",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/v1/metiers/metiersParEtablissement/{siret}": {
+			"get": {
+				"operationId": "getMetiersParEtablissement",
+				"responses": {
+					"200": {
+						"description": "List retrieved",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"$ref": "#/components/schemas/TGetMetiersResponseSuccess"
+										},
+										{
+											"$ref": "#/components/schemas/TResponseError"
+										}
+									]
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string",
+									"enum": [
+										"List unavailable"
+									],
+									"nullable": false
+								}
+							}
+						}
+					}
+				},
+				"description": "Retourne la liste des métiers associé à un établissment identifié par son siret dans le chemin de l'appel",
+				"tags": [
+					"Metiers"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "siret",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/v1/metiers/all": {
+			"get": {
+				"operationId": "getTousLesMetiers",
+				"responses": {
+					"200": {
+						"description": "List retrieved",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"$ref": "#/components/schemas/TGetMetiersResponseSuccess"
+										},
+										{
+											"$ref": "#/components/schemas/TResponseError"
+										}
+									]
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string",
+									"enum": [
+										"List unavailable"
+									],
+									"nullable": false
+								}
+							}
+						}
+					}
+				},
+				"description": "Retourne la liste de tous les métiers référencés sur LBA",
+				"tags": [
+					"Metiers"
+				],
+				"security": [],
+				"parameters": []
+			}
+		},
+		"/api/v1/metiers": {
+			"get": {
+				"operationId": "getMetiers",
+				"responses": {
+					"200": {
+						"description": "List retrieved",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/TGetMetiersEnrichisResponseSuccess"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string",
+									"enum": [
+										"Missing parameters"
+									],
+									"nullable": false
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string",
+									"enum": [
+										"List unavailable"
+									],
+									"nullable": false
+								}
+							}
+						}
+					}
+				},
+				"description": "Retourne une liste de métiers enrichis avec les codes romes associés correspondant aux critères en paramètres",
+				"tags": [
+					"Metiers"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"description": "le(s) terme(s) de recherche",
+						"in": "query",
+						"name": "title",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "(optionnel) critère de codes romes",
+						"in": "query",
+						"name": "romes",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "(optionnel) critère de codes RNCPs",
+						"in": "query",
+						"name": "rncps",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/v1/metiers/intitule": {
+			"get": {
+				"operationId": "getCoupleAppellationRomeIntitule",
+				"responses": {
+					"200": {
+						"description": "List retrieved",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/TGetAppellationsRomesResponseSuccess"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string",
+									"enum": [
+										"Missing parameters"
+									],
+									"nullable": false
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string",
+									"enum": [
+										"List unavailable"
+									],
+									"nullable": false
+								}
+							}
+						}
+					}
+				},
+				"description": "Retourne une liste de métiers enrichis avec les codes romes associés correspondant aux critères en paramètres",
+				"tags": [
+					"Metiers"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"description": "le(s) terme(s) de recherche",
+						"in": "query",
+						"name": "label",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
 			}
 		}
 	},

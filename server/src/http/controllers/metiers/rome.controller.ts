@@ -2,10 +2,10 @@
 import axios from "axios"
 import express from "express"
 import querystring from "querystring"
-import dayjs from "../../common/dayjs.js"
-import config from "../../config.js"
-import { getRomesAndLabelsFromTitleQuery } from "../../service/domainesMetiers.js"
-import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
+import dayjs from "../../../common/dayjs.js"
+import config from "../../../config.js"
+import { getRomesAndLabelsFromTitleQuery } from "../../../services/metiers.service.js"
+import { tryCatch } from "../../middlewares/tryCatchMiddleware.js"
 
 /**
  * API romes

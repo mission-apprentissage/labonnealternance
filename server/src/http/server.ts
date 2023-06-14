@@ -33,10 +33,11 @@ import formationV1 from "./routes/formationV1.controller.js"
 import formulaireRoute from "./routes/formulaire.controller.js"
 import jobEtFormationV1 from "./routes/jobEtFormationV1.controller.js"
 import jobV1 from "./routes/jobV1.controller.js"
+import metiersDAvenir from "./routes/metiersDAvenir.controller.js"
 import metiers from "./routes/metiers.controller.js"
 import optoutRoute from "./routes/optout.controller.js"
 import partnersRoute from "./routes/partners.controller.js"
-import rome from "./routes/rome.controller.js"
+import rome from "./controllers/metiers/rome.controller.js"
 import sendApplication from "./routes/sendApplication.controller.js"
 import sendApplicationAPI from "./routes/sendApplicationAPI.controller.js"
 import unsubscribeBonneBoite from "./routes/unsubscribeBonneBoite.controller.js"
@@ -167,6 +168,12 @@ export default async (components) => {
   app.use("/api/v1/lba-docs", swaggerUi.serve, swaggerUi.setup(deprecatedSwaggerDocument, swaggerUIOptions))
   app.use("/api/v1/lbar-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpecification, swaggerUIOptions))
 
+  /**
+   * rate limiter sur les routes routes
+   */
+  app.use("/api/v1/metiers", limiter20PerSecond)
+  //app.use("/api/romelabels", limiter10PerSecond)
+
   RegisterRoutes(app)
 
   /**
@@ -178,8 +185,6 @@ export default async (components) => {
   app.use("/api/v1/formationsParRegion", limiter5PerSecond, formationRegionV1())
   app.use("/api/v1/jobs", limiter5PerSecond, jobV1())
   app.use("/api/v1/jobsEtFormations", limiter5PerSecond, jobEtFormationV1())
-  app.use("/api/metiers", limiter20PerSecond, metiers())
-  app.use("/api/v1/metiers", limiter20PerSecond, metiers())
   app.use("/api/updateLBB", limiter1Per20Second, updateLBB())
   app.use("/api/mail", limiter1Per20Second, sendMail(components))
   app.use("/api/campaign/webhook", campaignWebhook(components))

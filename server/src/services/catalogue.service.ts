@@ -8,7 +8,10 @@ import { logger } from "../common/logger.js"
 import { FormationCatalogue } from "../common/model/index.js"
 import { fetchStream } from "../common/utils/httpUtils.js"
 import { streamJsonArray } from "../common/utils/streamUtils.js"
+import _ from "lodash-es"
+import { getElasticInstance } from "../common/esClient/index.js"
 import config from "../config.js"
+import { sentryCaptureException } from "../common/utils/sentryUtils.js"
 
 export const affelnetSelectedFields = {
   _id: 1,
@@ -310,5 +313,104 @@ export const getFormationsFromCatalogueMe = async ({
     }
   } catch (error) {
     logger.error(error)
+  }
+}
+
+const esClient = getElasticInstance()
+
+export interface IRomeResult {
+  romes?: string[]
+  error?: string
+  message?: string
+}
+
+/**
+ * @description récupère les romes associés à un cfd de formation ou à un siret d'établissement
+ * @param {string} cfd
+ * @param {string} siret
+ * @returns {Promise<IRomeResult>}
+ */
+const getRomesFromCatalogue = async ({ cfd, siret }: { cfd?: string; siret?: string }): Promise<IRomeResult> => {
+  try {
+    const mustTerm = []
+
+    if (cfd) {
+      mustTerm.push({
+        match: {
+          cfd,
+        },
+      })
+    }
+
+    if (siret) {
+      mustTerm.push({
+        match: {
+          etablissement_formateur_siret: siret,
+        },
+      })
+    }
+
+    const esQueryIndexFragment = getFormationEsQueryIndexFragment()
+
+    const responseFormations = await esClient.search({
+      ...esQueryIndexFragment,
+      body: {
+        query: {
+          bool: {
+            must: mustTerm,
+          },
+        },
+      },
+    })
+
+    //throw new Error("BOOM");
+    let romes = []
+
+    responseFormations.body.hits.hits.forEach((formation) => {
+      romes = romes.concat(formation._source.rome_codes)
+    })
+
+    const result: IRomeResult = { romes: romes }
+
+    if (!romes.length) {
+      result.error = "No training found"
+    }
+
+    return result
+  } catch (err) {
+    const error_msg = _.get(err, "meta.body", err.message)
+    console.error("Error getting trainings from romes ", error_msg)
+    if (_.get(err, "meta.meta.connection.status") === "dead") {
+      console.error("Elastic search is down or unreachable")
+    }
+    sentryCaptureException(err)
+
+    return { romes: [], error: error_msg, message: error_msg }
+  }
+}
+
+/**
+ * @description retourne une liste de romes associés à un code cfd à partir des formations du catalogue
+ * @param {string} cfd
+ * @returns {IRomeResult}
+ */
+export const getRomesFromCfd = ({ cfd }: { cfd: string }): Promise<IRomeResult> => {
+  return getRomesFromCatalogue({ cfd })
+}
+
+/**
+ * @description retourne une liste de romes associés à un numéro de siret à partir des formations du catalogue
+ * @param {string} siret
+ * @returns {IRomeResult}
+ */
+export const getRomesFromSiret = ({ siret }: { siret: string }): Promise<IRomeResult> => {
+  return getRomesFromCatalogue({ siret })
+}
+
+const getFormationEsQueryIndexFragment = () => {
+  return {
+    index: "formationcatalogues",
+    size: 1000,
+    _source_includes: ["rome_codes"],
   }
 }
