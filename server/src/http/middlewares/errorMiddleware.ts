@@ -5,10 +5,10 @@ function boomify(rawError) {
   let error
   if (rawError.isBoom) {
     error = rawError
-  } else if (rawError.name === "ValidationError") {
+  } else if (["ValidationError", "ValidateError"].includes(rawError.name)) {
     //This is a joi validation error
     error = Boom.badRequest("Erreur de validation")
-    error.output.payload.details = rawError.details
+    error.output.payload.details = rawError.details || rawError?.fields
   } else {
     error = Boom.boomify(rawError, {
       statusCode: rawError.status || 500,

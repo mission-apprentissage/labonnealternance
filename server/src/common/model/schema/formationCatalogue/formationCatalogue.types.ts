@@ -67,6 +67,7 @@ interface IEtablissementReference {
 }
 
 interface IFormationCatalogue extends IEtablissementFormateur, IEtablissementGestionnaire, IEtablissementReference {
+  _id: string
   cle_ministere_educatif: string
   cfd: string
   cfd_specialite: object

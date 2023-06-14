@@ -1,9 +1,9 @@
 import { logger } from "../../../common/logger.js"
-import { IUserRecruteur } from "../../../common/model/schema/userRecruteur/userRecruteur.types.js"
+import { getUser, createUser } from "../../../services/userRecruteur.service.js"
 
-export const createUser = async (usersRecruteur, { first_name, last_name, establishment_siret, establishment_raison_sociale, phone, address, email, scope }, { options }) => {
+export const createUserFromCLI = async ({ first_name, last_name, establishment_siret, establishment_raison_sociale, phone, address, email, scope }, { options }) => {
   const { Type, Email_valide } = options
-  const exist = await usersRecruteur.getUser({ email })
+  const exist = await getUser({ email })
 
   if (exist) {
     logger.error(`Users ${email} already exist - ${exist._id}`)
@@ -23,7 +23,7 @@ export const createUser = async (usersRecruteur, { first_name, last_name, establ
     is_email_checked: Email_valide,
   }
 
-  await usersRecruteur.createUser(payload)
+  await createUser(payload)
 
   logger.info(`User created : ${email} — ${scope} - admin: ${Type === "ADMIN"}`)
 }

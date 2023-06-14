@@ -1,7 +1,6 @@
 import { pick } from "lodash-es"
 import moment from "moment"
 import { mailTemplate } from "../assets/index.js"
-import createUserRecruteur from "../common/components/usersRecruteur.js"
 import { ANNULEE, POURVUE, etat_utilisateur } from "../common/constants.js"
 import dayjs from "../common/dayjs.js"
 import { getElasticInstance } from "../common/esClient/index.js"
@@ -16,9 +15,9 @@ import { getCatalogueEtablissements, getCatalogueFormations } from "./catalogue.
 import { getEtablissement, getValidationUrl } from "./etablissement.service.js"
 import { ModelUpdateOptions, UpdateQuery } from "mongoose"
 import { Filter } from "mongodb"
+import { getUser, getUserValidationState } from "./userRecruteur.service.js"
 
 const esClient = getElasticInstance()
-const usersRecruteur = await createUserRecruteur()
 const mailer = await createMailer()
 
 interface IFormulaireExtended extends IRecruiter {
@@ -213,8 +212,8 @@ export const getOffreAvecInfoMandataire = async (id: IJobs["_id"]): Promise<IFor
  * @param {number} payload.limit
  * @returns {Promise<object>}
  */
-export const getFormulaires = async (query: Filter<IRecruiter>, options: object, { page, limit }: { page: number; limit: number }): Promise<object> => {
-  const response = await Recruiter.paginate({ query, ...options, page, limit, lean: true })
+export const getFormulaires = async (query: Filter<IRecruiter>, select: object, { page, limit }: { page: number; limit: number }): Promise<object> => {
+  const response = await Recruiter.paginate({ query, ...select, page, limit, lean: true })
 
   return {
     pagination: {
@@ -234,13 +233,13 @@ export const getFormulaires = async (query: Filter<IRecruiter>, options: object,
  * @param {IUserRecruteur["establishment_id"]} payload.id
  * @returns {Promise<IRecruiter>}
  */
-export const createJob = async ({ job, id }: { job: IOffreExtended; id: IUserRecruteur["establishment_id"] }): Promise<IRecruiter> => {
+export const createJob = async ({ job, id }: { job: Partial<IOffreExtended>; id: IUserRecruteur["establishment_id"] }): Promise<IRecruiter> => {
   let isUserAwaiting = false
   // get user data
-  const user = await usersRecruteur.getUser({ establishment_id: id })
+  const user = await getUser({ establishment_id: id })
   // get user activation state if not managed by a CFA
   if (user) {
-    isUserAwaiting = usersRecruteur.getUserValidationState(user.status) === etat_utilisateur.ATTENTE
+    isUserAwaiting = getUserValidationState(user.status) === etat_utilisateur.ATTENTE
     // upon user creation, if user is awaiting validation, update job status to "En attente"
     if (isUserAwaiting) {
       job.job_status = "En attente"
@@ -282,7 +281,7 @@ export const createJob = async ({ job, id }: { job: IOffreExtended; id: IUserRec
   }
 
   // get CFA informations if formulaire is handled by a CFA
-  const contactCFA = is_delegated && (await usersRecruteur.getUser({ establishment_siret: cfa_delegated_siret }))
+  const contactCFA = is_delegated && (await getUser({ establishment_siret: cfa_delegated_siret }))
 
   // Send mail with action links to manage offers
   await mailer.sendEmail({
@@ -319,7 +318,7 @@ export const createJob = async ({ job, id }: { job: IOffreExtended; id: IUserRec
  */
 export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }: { jobId: IJobs["_id"]; etablissementCatalogueIds: string[] }): Promise<IRecruiter> => {
   const offreDocument = await getOffre(jobId)
-  const userDocument = await usersRecruteur.getUser({ establishment_id: offreDocument.establishment_id })
+  const userDocument = await getUser({ establishment_id: offreDocument.establishment_id })
   const userState = userDocument.status.pop()
 
   const offre = offreDocument.jobs.find((job) => job._id.toString() === jobId)
@@ -505,6 +504,27 @@ export const updateOffre = async (id: IJobs["_id"], payload: UpdateQuery<IJobs>,
     },
     options
   )
+
+/**
+ * @description Update specific field(s) in an existing job offer
+ * @param {IJobs["_id"]} id
+ * @param {object} payload
+ * @returns {Promise<IRecruiter>}
+ */
+export const patchOffre = async (id: IJobs["_id"], payload: UpdateQuery<IJobs>, options: ModelUpdateOptions = { new: true }): Promise<IRecruiter> => {
+  const fields = {}
+  for (const key in payload) {
+    fields[`jobs.$.${key}`] = payload[key]
+  }
+
+  return await Recruiter.findOneAndUpdate(
+    { "jobs._id": id },
+    {
+      $set: fields,
+    },
+    options
+  )
+}
 
 /**
  * @description Change job status to provided

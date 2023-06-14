@@ -33,6 +33,7 @@ import Joi from "joi"
 import { siretSchema } from "../utils/validators.js"
 import { IUserRecruteur } from "../../common/model/schema/userRecruteur/userRecruteur.types.js"
 import { IRecruiter } from "../../common/model/schema/recruiter/recruiter.types.js"
+import { updateUserValidationHistory, getUser, createUser, updateUser, getUserValidationState, registerUser } from "../../services/userRecruteur.service.js"
 
 const getCfaRomeSchema = joi.object({
   latitude: joi.number().required(),
@@ -40,18 +41,18 @@ const getCfaRomeSchema = joi.object({
   rome: joi.array().items(joi.string()).required(),
 })
 
-export default ({ usersRecruteur, mailer }) => {
+export default ({ mailer }) => {
   const router = express.Router()
 
   const autoValidateUser = async (userId) =>
-    await usersRecruteur.updateUserValidationHistory(userId, {
+    await updateUserValidationHistory(userId, {
       validation_type: validation_utilisateur.AUTO,
       user: "SERVEUR",
       status: etat_utilisateur.VALIDE,
     })
 
   const setManualValidation = async (userId) =>
-    await usersRecruteur.updateUserValidationHistory(userId, {
+    await updateUserValidationHistory(userId, {
       validation_type: validation_utilisateur.MANUAL,
       user: "SERVEUR",
       status: etat_utilisateur.ATTENTE,
@@ -224,7 +225,7 @@ export default ({ usersRecruteur, mailer }) => {
   router.post(
     "/creation",
     tryCatch(async (req: Request<{}, {}, IUserRecruteur & IRecruiter>, res) => {
-      const exist = await usersRecruteur.getUser({ email: req.body.email })
+      const exist = await getUser({ email: req.body.email })
 
       if (exist) {
         return res.status(403).json({ error: true, message: "L'adresse mail est déjà associée à un compte La bonne alternance." })
@@ -234,7 +235,7 @@ export default ({ usersRecruteur, mailer }) => {
         case ENTREPRISE:
           const siren = req.body.establishment_siret.slice(0, 9)
           const formulaireInfo = await createFormulaire(req.body)
-          let newEntreprise: IUserRecruteur = await usersRecruteur.createUser({ ...req.body, establishment_id: formulaireInfo.establishment_id })
+          let newEntreprise: IUserRecruteur = await createUser({ ...req.body, establishment_id: formulaireInfo.establishment_id })
 
           // Get all corresponding records using the SIREN number in BonneBoiteLegacy collection
           const [bonneBoiteLegacyList, bonneBoiteList, referentielOpcoList] = await Promise.all([
@@ -281,7 +282,7 @@ export default ({ usersRecruteur, mailer }) => {
           // Contrôle du mail avec le référentiel :
           const referentiel = await getEtablissementFromReferentiel(req.body.establishment_siret)
           // Creation de l'utilisateur en base de données
-          let newCfa: IUserRecruteur = await usersRecruteur.createUser(req.body)
+          let newCfa: IUserRecruteur = await createUser(req.body)
 
           if (!referentiel.contacts.length) {
             // Validation manuelle de l'utilisateur à effectuer pas un administrateur
@@ -374,7 +375,7 @@ export default ({ usersRecruteur, mailer }) => {
   router.get(
     "/:establishment_siret",
     tryCatch(async (req, res) => {
-      const partenaire = await usersRecruteur.getUser({ establishment_siret: req.params.establishment_siret })
+      const partenaire = await getUser({ establishment_siret: req.params.establishment_siret })
       res.json(partenaire)
     })
   )
@@ -385,7 +386,7 @@ export default ({ usersRecruteur, mailer }) => {
   router.put(
     "/:id",
     tryCatch(async (req, res) => {
-      const result = await usersRecruteur.updateUser({ _id: req.params.id }, req.body)
+      let result = await updateUser({ _id: req.params.id }, req.body)
       return res.json(result)
     })
   )
@@ -418,8 +419,8 @@ export default ({ usersRecruteur, mailer }) => {
         })
       }
 
-      const user: IUserRecruteur = await usersRecruteur.getUser({ _id: req.body.id })
-      const isUserAwaiting = usersRecruteur.getUserValidationState(user.status) === etat_utilisateur.ATTENTE
+      const user: IUserRecruteur = await getUser({ _id: req.body.id })
+      const isUserAwaiting = getUserValidationState(user.status) === etat_utilisateur.ATTENTE
 
       if (isUserAwaiting) {
         return res.json({ isUserAwaiting: true })
@@ -446,7 +447,7 @@ export default ({ usersRecruteur, mailer }) => {
         },
       })
 
-      await usersRecruteur.registerUser(email)
+      await registerUser(email)
 
       // Log the user in directly
       return res.json({ token: createUserRecruteurToken(user) })

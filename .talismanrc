@@ -11,6 +11,12 @@ fileignoreconfig:
   - filename: server/src/generated/routes.ts
     checksum: 2f6de2887e054b2ed80c490519724d6cbca85a1c30dc0695471621161a78863c
     ignore_detectors: ["filename", "filesize", "filecontent"]
+  - filename: server/src/jobs/lba_recruteur/api/resetApiKey.ts
+    checksum: a3fa687c1f7c387def5428d934cd1a427b0edf2603aac78c62c8aab140be9b30
+  - filename: server/src/services/userRecruteur.service.ts
+    checksum: 0e426e336e82553c4a737b4832732903cefb01b2f9ee2024f1759293827bf813
+  - filename: server/src/http/controllers/jobs/jobs.controller.ts
+    checksum: d7a5e33a4e9bd43ccfd2758ec08a1a491957e27566c50e235f9232f744a392ca
   - filename: CHANGELOG.md
     checksum: d6981eb077fcbf1c6858393e2f5cada971b297db3c0103853338f9f4b6211e0d
     ignore_detectors: ["filename", "filesize", "filecontent"]

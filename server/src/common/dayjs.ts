@@ -17,4 +17,5 @@ dayjs.extend(isBetween)
 dayjs.extend(customParseFormat)
 dayjs.extend(advancedFormat)
 
+export type TDayjs = dayjs.Dayjs
 export default dayjs

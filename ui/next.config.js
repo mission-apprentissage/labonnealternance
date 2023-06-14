@@ -25,7 +25,7 @@ const contentSecurityPolicy = `
               https://catalogue-apprentissage.intercariforef.org
               https://api-adresse.data.gouv.fr 
               https://api.mapbox.com 
-              https://stats.data.gouv.fr
+              https://stats.beta.gouv.fr
               https://events.mapbox.com 
               https://plausible.io 
               http://localhost:5000
