@@ -83,7 +83,7 @@ const AjouterVoeux = (props) => {
     if (search.trim().length !== 0) {
       try {
         // KBA 20230214 : update api call.
-        const result = await fetch(`${URL_LBA}/metiers/intitule?label=${search}`)
+        const result = await fetch(`${URL_LBA}/v1/metiers/intitule?label=${search}`)
         const data = await result.json()
         return data.coupleAppellationRomeMetier
       } catch (error) {

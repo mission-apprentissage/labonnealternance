@@ -1,24 +1,39 @@
-// @ts-nocheck
 import _ from "lodash-es"
 import { matchSorter } from "match-sorter"
 import { getElasticInstance } from "../common/esClient/index.js"
 import { logger } from "../common/logger.js"
 import { sentryCaptureException } from "../common/utils/sentryUtils.js"
-import config from "../config.js"
-import getMissingRNCPsFromDomainesMetiers from "../jobs/domainesMetiers/getMissingRNCPsFromDomainesMetiers.js"
 import { mockedLabelsAndRomes } from "../mocks/labelsAndRomes-mock.js"
-import { getRomesFromCfd, getRomesFromSiret } from "./romesFromCatalogue.js"
+import { getRomesFromCfd, getRomesFromSiret } from "../services/catalogue.service.js"
+import { IAppellationRome } from "./metiers.service.types.js"
+import { IAppellationsRomes } from "./metiers.service.types.js"
+import { IMetierEnrichi, IMetiers, IMetiersEnrichis } from "./metiers.service.types.js"
 
-export const getRomesAndLabelsFromTitleQuery = async (query) => {
-  if (!query.title) {
+/**
+ * Retourne un ensemble de métiers et/ou diplômes et leurs codes romes et rncps associés en fonction de terme de recherches
+ * @param {string} title : le terme de recherche (préfixe | mot entier | plusieurs mots ou préfixes)
+ * @param {string} withRomeLabels : (optionel) flag indiquant qu'il faut également retourner les libellé associés aux codes romes
+ * @param {string} useMock : (optionel) flag indiquant qu'il faut retourner des données mockées
+ * @returns {Promise<IMetiersEnrichis>}
+ */
+export const getRomesAndLabelsFromTitleQuery = async ({
+  title,
+  useMock,
+  withRomeLabels,
+}: {
+  title: string
+  useMock: string
+  withRomeLabels: string
+}): Promise<IMetiersEnrichis> => {
+  if (!title) {
     // error case
     return { error: "title_missing" }
-  } else if (query.useMock) {
+  } else if (useMock) {
     // mock case
     return mockedLabelsAndRomes
   } else {
     // nominal case
-    const [romesMetiers, romesDiplomes] = await Promise.all([getLabelsAndRomes(query.title, query.withRomeLabels), getLabelsAndRomesForDiplomas(query.title)])
+    const [romesMetiers, romesDiplomes] = await Promise.all([getLabelsAndRomes(title, withRomeLabels), getLabelsAndRomesForDiplomas(title)])
     return { ...romesMetiers, ...romesDiplomes }
   }
 }
@@ -80,7 +95,14 @@ const getMultiMatchTermForDiploma = (term) => {
   }
 }
 
-export const getMetiers = async ({ title = null, romes = null, rncps = null }) => {
+/**
+ * retourne une liste de métiers avec leurs codes romes et codes RNCPs associés. le retour respecte strictement les critères
+ * @param {string} title : un préfixe, un mot ou un ensemble de préfixes ou mots sur lesquels fonder une recherche de métiers
+ * @param {undefined | string[]} romes : un tableau optionnel de codes ROME pour lesquels limiter la recherche
+ * @param {undefined | string[]} rncps: un tableau optionnel de codes RNCP pour lesquels limiter la recherche
+ * @returns {Promise<IMetiersEnrichis>}
+ */
+export const getMetiers = async ({ title = null, romes = null, rncps = null }: { title: string; romes?: string; rncps?: string }): Promise<IMetiersEnrichis> => {
   if (!title && !romes && !rncps) {
     return {
       error: "missing_parameters",
@@ -155,11 +177,17 @@ export const getMetiers = async ({ title = null, romes = null, rncps = null }) =
   }
 }
 
-const getLabelsAndRomes = async (searchKeyword, withRomeLabels) => {
+/**
+ * retourne une liste de métiers avec leurs codes romes et codes RNCPs associés. Le retour s'approche au mieux des critères.
+ * @param {string} searchTerm : un préfixe, un mot ou un ensemble de préfixes ou mots sur lesquels fonder une recherche de métiers
+ * @param {undefined | string} withRomeLabels : indique s'il faut que la fonction retourne également les labels associés aux romes
+ * @returns {Promise<IMetiersEnrichis>}
+ */
+const getLabelsAndRomes = async (searchTerm: string, withRomeLabels?: string): Promise<IMetiersEnrichis> => {
   try {
     const terms = []
 
-    searchKeyword.split(" ").forEach((term, idx) => {
+    searchTerm.split(" ").forEach((term, idx) => {
       if (idx === 0 || term.length > 2) {
         terms.push(getMultiMatchTerm(term))
       }
@@ -188,7 +216,7 @@ const getLabelsAndRomes = async (searchKeyword, withRomeLabels) => {
     const labelsAndRomes = []
 
     response.body.hits.hits.forEach((labelAndRome) => {
-      const metier = {
+      const metier: IMetierEnrichi = {
         label: labelAndRome._source.sous_domaine,
         romes: labelAndRome._source.codes_romes,
         rncps: labelAndRome._source.codes_rncps,
@@ -208,8 +236,13 @@ const getLabelsAndRomes = async (searchKeyword, withRomeLabels) => {
   }
 }
 
-export const getCoupleAppellationRomeIntitule = async (searchKeyword) => {
-  if (!searchKeyword) {
+/**
+ * Retourne les appellations, initués et codes romes correspondant au terme de recherche
+ * @param {string} searchTerm un mot ou un préfixe sur lequel doit se baser la recherche
+ * @returns {Promise<IAppellationsRomes>}
+ */
+export const getCoupleAppellationRomeIntitule = async (searchTerm: string): Promise<IAppellationsRomes> => {
+  if (!searchTerm) {
     return {
       error: "missing_parameters",
       error_messages: ["Parameters must include a label to search for."],
@@ -232,7 +265,7 @@ export const getCoupleAppellationRomeIntitule = async (searchKeyword) => {
                       {
                         match: {
                           "couples_appellations_rome_metier.appellation": {
-                            query: searchKeyword,
+                            query: searchTerm,
                             fuzziness: 4,
                             operator: "and",
                           },
@@ -258,7 +291,7 @@ export const getCoupleAppellationRomeIntitule = async (searchKeyword) => {
 
     const intitulesAndRomesUnique = _.uniqBy(_.flatten(coupleAppellationRomeMetier), "appellation")
 
-    coupleAppellationRomeMetier = matchSorter(intitulesAndRomesUnique, searchKeyword, {
+    coupleAppellationRomeMetier = matchSorter(intitulesAndRomesUnique, searchTerm, {
       keys: ["appellation"],
       threshold: matchSorter.rankings.NO_MATCH,
     })
@@ -269,11 +302,16 @@ export const getCoupleAppellationRomeIntitule = async (searchKeyword) => {
   }
 }
 
-const getLabelsAndRomesForDiplomas = async (searchKeyword) => {
+/**
+ * retourne une liste de diplômes avec leurs codes romes et codes RNCPs associés. Le retour s'approche au mieux des critères.
+ * @param {string} searchTerm : un préfixe, un mot ou un ensemble de préfixes ou mots sur lesquels fonder une recherche de métiers
+ * @returns {Promise<IMetiersEnrichis>}
+ */
+const getLabelsAndRomesForDiplomas = async (searchTerm: string): Promise<IMetiersEnrichis> => {
   try {
     const terms = []
 
-    searchKeyword.split(" ").forEach((term, idx) => {
+    searchTerm.split(" ").forEach((term, idx) => {
       if (idx === 0 || term.length > 2) {
         terms.push(getMultiMatchTermForDiploma(term))
       }
@@ -294,7 +332,7 @@ const getLabelsAndRomesForDiplomas = async (searchKeyword) => {
       },
     })
 
-    let labelsAndRomesForDiplomas = []
+    let labelsAndRomesForDiplomas: IMetierEnrichi[] = []
 
     response.body.hits.hits.forEach((labelAndRomeForDiploma) => {
       labelsAndRomesForDiplomas.push({
@@ -329,31 +367,19 @@ const removeDuplicateDiplomas = (diplomas) => {
   return labelsAndRomesForDiplomas
 }
 
-export const getMissingRNCPs = async (query) => {
-  if (!query.secret) {
-    return { error: "secret_missing" }
-  } else if (query.secret !== config.secretUpdateRomesMetiers) {
-    return { error: "wrong_secret" }
-  } else {
-    try {
-      const result = await getMissingRNCPsFromDomainesMetiers(query.fileName)
-      return result
-    } catch (err) {
-      sentryCaptureException(err)
-
-      const error_msg = _.get(err, "meta.body") ?? err.message
-
-      return { error: error_msg }
-    }
-  }
-}
-
-export const getMetiersPourCfd = async ({ cfd }) => {
+/**
+ * Récupère la liste des métiers associés à une formation en paramètre identifiée par son CFD
+ * @param {string} cfd
+ * @returns {Promise<IMetiers>}
+ */
+export const getMetiersPourCfd = async ({ cfd }: { cfd: string }): Promise<IMetiers> => {
   const romeResponse = await getRomesFromCfd({ cfd })
 
   if (romeResponse.error) {
-    romeResponse.metiers = []
-    return romeResponse
+    return {
+      ...romeResponse,
+      metiers: [],
+    }
   }
 
   const romes = [...new Set(romeResponse.romes)]
@@ -363,12 +389,19 @@ export const getMetiersPourCfd = async ({ cfd }) => {
   return metiers
 }
 
-export const getMetiersPourEtablissement = async ({ siret }) => {
+/**
+ * Récupère la liste des métiers associés à un établissement en paramètre identifié par son SIRET
+ * @param {string} siret
+ * @returns {Promise<IMetiers>}
+ */
+export const getMetiersPourEtablissement = async ({ siret }: { siret: string }): Promise<IMetiers> => {
   const romeResponse = await getRomesFromSiret({ siret })
 
   if (romeResponse.error) {
-    romeResponse.metiers = []
-    return romeResponse
+    return {
+      ...romeResponse,
+      metiers: [],
+    }
   }
 
   const romes = [...new Set(romeResponse.romes)]
@@ -378,10 +411,12 @@ export const getMetiersPourEtablissement = async ({ siret }) => {
   return metiers
 }
 
-const getMetiersFromRomes = async (romes) => {
-  /**
-   * récupère dans la table custo tous les métiers qui correspondent au tableau de romes en paramètres
-   */
+/**
+ * Récupère la liste des métiers dans la table domaines / métiers correspondant à un tableau de codes ROME
+ * @param {string[]} romes
+ * @returns {IMetiers}
+ */
+const getMetiersFromRomes = async (romes: string[]): Promise<IMetiers> => {
   try {
     const esClient = getElasticInstance()
 
@@ -410,10 +445,11 @@ const getMetiersFromRomes = async (romes) => {
   }
 }
 
-export const getTousLesMetiers = async () => {
-  /**
-   * récupère dans la table custo tous les métiers
-   */
+/**
+ * Récupère la liste de tous les métiers dans la table domaines / métiers
+ * @returns {IMetiers}
+ */
+export const getTousLesMetiers = async (): Promise<IMetiers> => {
   try {
     const esClient = getElasticInstance()
 
@@ -428,7 +464,7 @@ export const getTousLesMetiers = async () => {
       },
     })
 
-    const metiers = []
+    const metiers: string[] = []
 
     response.body.hits.hits.forEach((metier) => {
       metiers.push(metier._source.sous_domaine)

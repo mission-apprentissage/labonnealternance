@@ -7,6 +7,8 @@ import { AppointmentsController } from './../http/controllers/appointments/appoi
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { JobsController } from './../http/controllers/jobs/jobs.controller.js';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+import { MetiersController } from './../http/controllers/metiers/metiers.controller.js';
+// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { MetiersDAvenirController } from './../http/controllers/metiersdavenir/metiersDAvenir.controller.js';
 import { expressAuthentication } from './../http/authentication.js';
 // @ts-ignore - no great way to install types from subpackage
@@ -244,6 +246,82 @@ const models: TsoaRoute.Models = {
             "establishmentIds": {"dataType":"array","array":{"dataType":"string"},"required":true},
         },
         "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "IMetiers": {
+        "dataType": "refObject",
+        "properties": {
+            "metiers": {"dataType":"array","array":{"dataType":"string"}},
+            "error": {"dataType":"string"},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "TGetMetiersResponseSuccess": {
+        "dataType": "refAlias",
+        "type": {"ref":"IMetiers","validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "IRomeWithLabel": {
+        "dataType": "refObject",
+        "properties": {
+            "codeRome": {"dataType":"string","required":true},
+            "intitule": {"dataType":"string","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "IMetierEnrichi": {
+        "dataType": "refObject",
+        "properties": {
+            "label": {"dataType":"string","required":true},
+            "romes": {"dataType":"array","array":{"dataType":"string"},"required":true},
+            "rncps": {"dataType":"array","array":{"dataType":"string"}},
+            "type": {"dataType":"string"},
+            "romeTitles": {"dataType":"array","array":{"dataType":"refObject","ref":"IRomeWithLabel"}},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "IMetiersEnrichis": {
+        "dataType": "refObject",
+        "properties": {
+            "labelsAndRomes": {"dataType":"array","array":{"dataType":"refObject","ref":"IMetierEnrichi"}},
+            "labelsAndRomesForDiplomas": {"dataType":"array","array":{"dataType":"refObject","ref":"IMetierEnrichi"}},
+            "error": {"dataType":"string"},
+            "error_messages": {"dataType":"array","array":{"dataType":"string"}},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "TGetMetiersEnrichisResponseSuccess": {
+        "dataType": "refAlias",
+        "type": {"ref":"IMetiersEnrichis","validators":{}},
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "IAppellationRome": {
+        "dataType": "refObject",
+        "properties": {
+            "codeRome": {"dataType":"string","required":true},
+            "intitule": {"dataType":"string","required":true},
+            "appellation": {"dataType":"string","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "IAppellationsRomes": {
+        "dataType": "refObject",
+        "properties": {
+            "coupleAppellationRomeMetier": {"dataType":"array","array":{"dataType":"refObject","ref":"IAppellationRome"}},
+            "error": {"dataType":"string"},
+            "error_messages": {"dataType":"array","array":{"dataType":"string"}},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "TGetAppellationsRomesResponseSuccess": {
+        "dataType": "refAlias",
+        "type": {"ref":"IAppellationsRomes","validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
     "IMetierDavenir": {
@@ -541,6 +619,132 @@ export function RegisterRoutes(app: Router) {
 
               const promise = controller.extendJobExpiration.apply(controller, validatedArgs as any);
               promiseHandler(controller, promise, response, 204, next);
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.get('/api/v1/metiers/metiersParFormation/:cfd',
+            ...(fetchMiddlewares<RequestHandler>(MetiersController)),
+            ...(fetchMiddlewares<RequestHandler>(MetiersController.prototype.getMetiersParCFD)),
+
+            function MetiersController_getMetiersParCFD(request: any, response: any, next: any) {
+            const args = {
+                    cfd: {"in":"path","name":"cfd","required":true,"dataType":"string"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = getValidatedArgs(args, request, response);
+
+                const controller = new MetiersController();
+
+
+              const promise = controller.getMetiersParCFD.apply(controller, validatedArgs as any);
+              promiseHandler(controller, promise, response, 200, next);
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.get('/api/v1/metiers/metiersParEtablissement/:siret',
+            ...(fetchMiddlewares<RequestHandler>(MetiersController)),
+            ...(fetchMiddlewares<RequestHandler>(MetiersController.prototype.getMetiersParEtablissement)),
+
+            function MetiersController_getMetiersParEtablissement(request: any, response: any, next: any) {
+            const args = {
+                    siret: {"in":"path","name":"siret","required":true,"dataType":"string"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = getValidatedArgs(args, request, response);
+
+                const controller = new MetiersController();
+
+
+              const promise = controller.getMetiersParEtablissement.apply(controller, validatedArgs as any);
+              promiseHandler(controller, promise, response, 200, next);
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.get('/api/v1/metiers/all',
+            ...(fetchMiddlewares<RequestHandler>(MetiersController)),
+            ...(fetchMiddlewares<RequestHandler>(MetiersController.prototype.getTousLesMetiers)),
+
+            function MetiersController_getTousLesMetiers(request: any, response: any, next: any) {
+            const args = {
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = getValidatedArgs(args, request, response);
+
+                const controller = new MetiersController();
+
+
+              const promise = controller.getTousLesMetiers.apply(controller, validatedArgs as any);
+              promiseHandler(controller, promise, response, 200, next);
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.get('/api/v1/metiers',
+            ...(fetchMiddlewares<RequestHandler>(MetiersController)),
+            ...(fetchMiddlewares<RequestHandler>(MetiersController.prototype.getMetiers)),
+
+            function MetiersController_getMetiers(request: any, response: any, next: any) {
+            const args = {
+                    title: {"in":"query","name":"title","required":true,"dataType":"string"},
+                    romes: {"in":"query","name":"romes","dataType":"string"},
+                    rncps: {"in":"query","name":"rncps","dataType":"string"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = getValidatedArgs(args, request, response);
+
+                const controller = new MetiersController();
+
+
+              const promise = controller.getMetiers.apply(controller, validatedArgs as any);
+              promiseHandler(controller, promise, response, 200, next);
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.get('/api/v1/metiers/intitule',
+            ...(fetchMiddlewares<RequestHandler>(MetiersController)),
+            ...(fetchMiddlewares<RequestHandler>(MetiersController.prototype.getCoupleAppelationRomeIntitule)),
+
+            function MetiersController_getCoupleAppelationRomeIntitule(request: any, response: any, next: any) {
+            const args = {
+                    label: {"in":"query","name":"label","required":true,"dataType":"string"},
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = getValidatedArgs(args, request, response);
+
+                const controller = new MetiersController();
+
+
+              const promise = controller.getCoupleAppelationRomeIntitule.apply(controller, validatedArgs as any);
+              promiseHandler(controller, promise, response, 200, next);
             } catch (err) {
                 return next(err);
             }
