@@ -450,8 +450,8 @@ const transformFormationForIdea = (formation) => {
   }
 
   resultFormation.training = {
-    objectif: formation.source.objectif,
-    description: formation.source.contenu,
+    objectif: formation.source?.objectif?.trim(),
+    description: formation.source?.contenu?.trim(),
     sessions: setSessions(formation.source),
   }
 
