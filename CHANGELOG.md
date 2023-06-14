@@ -1,3 +1,10 @@
+# [1.24.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.23.0...v1.24.0) (2023-06-14)
+
+
+### Features
+
+* move route métier + typing + tsoa ([#435](https://github.com/mission-apprentissage/labonnealternance/issues/435)) ([113b398](https://github.com/mission-apprentissage/labonnealternance/commit/113b39847af45103abfc6dbda4735e2c532048b9))
+
 # [1.23.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.22.0...v1.23.0) (2023-06-14)
 
 
