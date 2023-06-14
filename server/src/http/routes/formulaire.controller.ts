@@ -18,8 +18,9 @@ import {
   updateOffre,
 } from "../../services/formulaire.service.js"
 import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
+import { getUser, createUser } from "../../services/userRecruteur.service.js"
 
-export default ({ mailer, usersRecruteur }) => {
+export default ({ mailer }) => {
   const router = express.Router()
 
   /**
@@ -72,10 +73,10 @@ export default ({ mailer, usersRecruteur }) => {
       const response = await createFormulaire(req.body)
 
       if (req.body.origine === "akto") {
-        const exist = await usersRecruteur.getUser({ email: payload.email })
+        const exist = await getUser({ email: payload.email })
 
         if (!exist) {
-          await usersRecruteur.createUser({
+          await createUser({
             ...req.body,
             type: "ENTREPRISE",
             establishment_id: response.establishment_id,

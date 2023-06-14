@@ -12,19 +12,20 @@ import {
   getAllEstablishmentFromOpcoReferentiel,
 } from "../../../../services/etablissement.service.js"
 import { validation_utilisateur, etat_utilisateur } from "../../../../common/constants.js"
+import { updateUserValidationHistory } from "../../../../services/userRecruteur.service.js"
 
-const runValidation = async (usersRecruteur) => {
+const runValidation = async () => {
   logger.info(`Start update missing validation state for entreprise...`)
 
   const autoValidateUser = async (userId) =>
-    await usersRecruteur.updateUserValidationHistory(userId, {
+    await updateUserValidationHistory(userId, {
       validation_type: validation_utilisateur.AUTO,
       user: "SERVEUR",
       statut: etat_utilisateur.VALIDE,
     })
 
   const setManualValidation = async (userId) =>
-    await usersRecruteur.updateUserValidationHistory(userId, {
+    await updateUserValidationHistory(userId, {
       validation_type: validation_utilisateur.MANUAL,
       user: "SERVEUR",
       statut: etat_utilisateur.ATTENTE,
@@ -99,10 +100,7 @@ const resetUserValidation = async (db) => {
   })
 }
 
-runScript(async ({ usersRecruteur, db }) => {
-  // logger.info("#start reset validation for specific users")
-  // await resetUserValidation(db)
-
+runScript(async () => {
   logger.info("#start validation for specific users")
-  await runValidation(usersRecruteur)
+  await runValidation()
 })

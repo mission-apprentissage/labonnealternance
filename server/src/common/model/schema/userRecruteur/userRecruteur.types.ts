@@ -1,4 +1,3 @@
-import { Types } from "mongoose"
 import { IAdresse, IAdresseCFA } from "../_shared/shared.types.js"
 
 interface IUserValidation {
@@ -10,7 +9,7 @@ interface IUserValidation {
 }
 
 interface IUserRecruteur {
-  _id: Types.ObjectId
+  _id: string
   last_name: string
   first_name: string
   opco: string

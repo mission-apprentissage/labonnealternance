@@ -9,7 +9,7 @@ import { createApiUser } from "./jobs/lba_recruteur/api/createApiUser.js"
 import { disableApiUser } from "./jobs/lba_recruteur/api/disableApiUser.js"
 import { resetApiKey } from "./jobs/lba_recruteur/api/resetApiKey.js"
 import { annuleFormulaire } from "./jobs/lba_recruteur/formulaire/annuleFormulaire.js"
-import { createUser } from "./jobs/lba_recruteur/formulaire/createUser.js"
+import { createUserFromCLI } from "./jobs/lba_recruteur/formulaire/createUser.js"
 import { relanceFormulaire } from "./jobs/lba_recruteur/formulaire/relanceFormulaire.js"
 import { generateIndexes } from "./jobs/lba_recruteur/indexes/generateIndexes.js"
 import { relanceOpco } from "./jobs/lba_recruteur/opco/relanceOpco.js"
@@ -62,9 +62,8 @@ cli
   .requiredOption("-email_valide, <email_valide>", "email valide", true)
   .description("Permet de créer un accès utilisateur à l'espace partenaire")
   .action((first_name, last_name, email, scope, establishment_raison_sociale, establishment_siret, phone, address, options) => {
-    runScript(({ usersRecruteur }) => {
-      createUser(
-        usersRecruteur,
+    runScript(() => {
+      createUserFromCLI(
         {
           first_name,
           last_name,
@@ -91,7 +90,7 @@ cli
   .command("reset-api-user <email>")
   .description("Permet de réinitialiser la clé API d'un utilisateur")
   .action((email) => {
-    runScript(({ usersRecruteur }) => resetApiKey(usersRecruteur, email))
+    runScript(() => resetApiKey(email))
   })
 
 cli

@@ -11,8 +11,9 @@ import { createMagicLinkToken, createUserRecruteurToken, createUserToken } from 
 import config from "../../../config.js"
 import { tryCatch } from "../../middlewares/tryCatchMiddleware.js"
 import { IUserRecruteur } from "../../../common/model/schema/userRecruteur/userRecruteur.types.js"
+import { getUser, registerUser } from "../../../services/userRecruteur.service.js"
 
-const checkToken = (usersRecruteur) => {
+const checkToken = () => {
   passport.use(
     "jwt",
     new Strategy(
@@ -21,8 +22,7 @@ const checkToken = (usersRecruteur) => {
         secretOrKey: config.auth.magiclink.jwtSecret,
       },
       (jwt_payload, done) => {
-        return usersRecruteur
-          .getUser({ email: jwt_payload.sub })
+        return getUser({ email: jwt_payload.sub })
           .then((user) => {
             if (!user) {
               return done(null, false, { message: "User not found" })
@@ -37,7 +37,7 @@ const checkToken = (usersRecruteur) => {
   return passport.authenticate("jwt", { session: false, failWithError: true })
 }
 
-export default ({ users, usersRecruteur, etablissementsRecruteur, mailer }) => {
+export default ({ users, etablissementsRecruteur, mailer }) => {
   const router = express.Router() // eslint-disable-line new-cap
   passport.use(
     new LocalStrategy(
@@ -79,7 +79,7 @@ export default ({ users, usersRecruteur, etablissementsRecruteur, mailer }) => {
           email: Joi.string().email().required(),
         }).validateAsync(req.body, { abortEarly: false })
 
-        const user: IUserRecruteur = await usersRecruteur.getUser({ email })
+        const user: IUserRecruteur = await getUser({ email })
 
         if (!user) {
           return res.status(400).json({ error: true, reason: "UNKNOWN" })
@@ -205,10 +205,10 @@ export default ({ users, usersRecruteur, etablissementsRecruteur, mailer }) => {
 
   router.post(
     "/verification",
-    checkToken(usersRecruteur),
+    checkToken(),
     tryCatch(async (req, res) => {
       const user = req.user
-      await usersRecruteur.registerUser(user.email)
+      await registerUser(user.email)
       return res.json({ token: createUserRecruteurToken(user) })
     })
   )

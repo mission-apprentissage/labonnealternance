@@ -7,8 +7,9 @@ import { Recruiter, UserRecruteur } from "../../common/model/index.js"
 import { createMagicLinkToken } from "../../common/utils/jwtUtils.js"
 import config from "../../config.js"
 import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
+import { createUser, updateUser, updateUserValidationHistory, removeUser } from "../../services/userRecruteur.service.js"
 
-export default ({ usersRecruteur, mailer }) => {
+export default ({ mailer }) => {
   const router = express.Router()
 
   router.get(
@@ -60,7 +61,7 @@ export default ({ usersRecruteur, mailer }) => {
       // const page = qs && qs.page ? qs.page : 1;
       // const limit = qs && qs.limit ? parseInt(qs.limit, 10) : 100;
 
-      // const result = await usersRecruteur.getUsers(query, options, { page, limit });
+      // const result = await getUsers(query, options, { page, limit });
       // return res.json(result);
     })
   )
@@ -82,7 +83,7 @@ export default ({ usersRecruteur, mailer }) => {
   router.post(
     "/",
     tryCatch(async (req, res) => {
-      const user = await usersRecruteur.createUser(req.body)
+      const user = await createUser(req.body)
       return res.json(user)
     })
   )
@@ -99,7 +100,7 @@ export default ({ usersRecruteur, mailer }) => {
         return res.status(400).json({ error: true, reason: "EMAIL_TAKEN" })
       }
 
-      const user = await usersRecruteur.updateUser({ _id: userId }, userPayload)
+      const user = await updateUser({ _id: userId }, userPayload)
       return res.json(user)
     })
   )
@@ -108,7 +109,7 @@ export default ({ usersRecruteur, mailer }) => {
     "/:userId/history",
     tryCatch(async (req, res) => {
       const history = req.body
-      const user = await usersRecruteur.updateUserValidationHistory(req.params.userId, history)
+      const user = await updateUserValidationHistory(req.params.userId, history)
 
       // if user is disable, return the user data directly
       if (history.status === etat_utilisateur.DESACTIVE) {
@@ -155,12 +156,12 @@ export default ({ usersRecruteur, mailer }) => {
       }
 
       // validate user email addresse
-      await usersRecruteur.updateUser({ _id: user._id }, { is_email_checked: true })
+      await updateUser({ _id: user._id }, { is_email_checked: true })
 
       // get magiclink url
       const magiclink = `${config.publicUrlEspacePro}/authentification/verification?token=${createMagicLinkToken(user.email)}`
 
-      const { email, last_name, first_name, establishment_raison_sociale, type, is_delegated } = user
+      const { email, last_name, first_name, establishment_raison_sociale, type } = user
 
       // send welcome email to user
       await mailer.sendEmail({
@@ -189,7 +190,7 @@ export default ({ usersRecruteur, mailer }) => {
     tryCatch(async (req, res) => {
       const { userId, recruiterId } = req.query
 
-      await usersRecruteur.removeUser(userId)
+      await removeUser(userId)
 
       if (recruiterId) {
         await deleteFormulaire(recruiterId)

@@ -1,42 +1,6 @@
 import { model, Schema } from "../../../mongodb.js"
 import { IJobs } from "./jobs.types.js"
 
-const MAPPING_TOBEREMOVED = {
-  libelle: "rome_label",
-  niveau: "job_level_label",
-  date_debut_apprentissage: "job_start_date",
-  description: "job_description",
-  romes: "rome_code",
-  rome_detail: "",
-  date_creation: "job_creation_date",
-  date_expiration: "job_expiration_date",
-  date_mise_a_jour: "job_update_date",
-  date_derniere_prolongation: "job_last_prolongation_date",
-  nombre_prolongation: "job_prolongation_count",
-  statut: "job_status",
-  raison_statut: "job_status_comment",
-  type: "job_type",
-  multi_diffuser: "is_multi_published",
-  delegate: "is_delegated",
-  number_of_delegations: "job_delegation_count",
-  elligible_handicap: "is_disabled_elligible",
-  quantite: "job_count",
-  duree_contrat: "job_duration",
-  rythme_alternance: "job_rythm",
-  custom_adress: "custom_address",
-  custom_gps_coordinates: "custom_geo_coordinates",
-
-  rome_appellation_label: "", // already renamed
-  relance_mail_sent: "", // to delete
-
-  delegations: "",
-  items: "",
-  properties: "",
-  siret: "siret_code",
-  email: "",
-  cfa_read_company_detail_at: "",
-}
-
 export const jobsSchema = new Schema<IJobs>({
   rome_label: { type: String, default: null, description: "Libellé du métier concerné" },
   rome_appellation_label: { type: String, default: null, description: "Libellé de l'appelation ROME" },
@@ -53,6 +17,10 @@ export const jobsSchema = new Schema<IJobs>({
   job_description: {
     type: String,
     description: "Description de l'offre d'alternance",
+  },
+  job_employer_description: {
+    type: String,
+    description: "Description de l'employer proposant l'offre d'alternance",
   },
   rome_code: {
     type: [String],

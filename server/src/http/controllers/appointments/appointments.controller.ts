@@ -10,7 +10,7 @@ import config from "../../../config.js"
 import { TCreateContextBody, TCreateContextResponse, TCreateContextResponseError } from "./types.js"
 import { contextCreateSchema } from "./validators.js"
 
-@Tags("RDV")
+@Tags("Appointment Request")
 @Route("/api/appointment-request")
 export class AppointmentsController extends Controller {
   /**

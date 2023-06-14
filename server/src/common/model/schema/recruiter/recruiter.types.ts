@@ -1,9 +1,8 @@
 import { IAdresse, IAdresseCFA } from "../_shared/shared.types.js"
 import { IJobs } from "../jobs/jobs.types.js"
-import { Types } from "mongoose"
 
 interface IRecruiter {
-  _id: Types.ObjectId
+  _id: string
   establishment_id: string
   establishment_raison_sociale: string
   establishment_enseigne: string

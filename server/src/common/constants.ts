@@ -76,3 +76,16 @@ export const UNSUBSCRIBE_EMAIL_ERRORS = {
   NON_RECONNU: "NON_RECONNU",
   ETABLISSEMENTS_MULTIPLES: "ETABLISSEMENTS_MULTIPLES",
 }
+
+export const TRAINING_CONTRACT_TYPE = {
+  APPRENTISSAGE: "Apprentissage",
+  PROFESSIONALISATION: "Professionalisation",
+}
+
+export const TRAINING_RYTHM = {
+  INDIFFERENT: "Indifférent",
+  "2J3J": "2 jours / 3 jours",
+  "1S1S": "1 semaine / 1 semaine",
+  "2S3S": "2 semaines / 3 semaines",
+  "6S6S": "6 semaines / 6 semaines",
+}

@@ -11,6 +11,13 @@
       "name": "La bonne alternance",
       "url": "https://labonnealternance.apprentissage.beta.gouv.fr"
     },
+    "securityDefinitions": {
+      "api_key": {
+        "type": "apiKey",
+        "name": "Authorization",
+        "in": "header"
+      }
+    },
     "spec": {
       "servers": [
         {
@@ -22,6 +29,10 @@
           "description": "Recette"
         },
         {
+          "url": "https://labonnealternance-develop.apprentissage.beta.gouv.fr",
+          "description": "Developpement"
+        },
+        {
           "url": "http://localhost",
           "description": "Localhost"
         }
@@ -29,6 +40,7 @@
     }
   },
   "routes": {
+    "authenticationModule": "./src/http/authentication.ts",
     "routesDir": "./src/generated",
     "esm": true
   }
