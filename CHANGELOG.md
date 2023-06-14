@@ -1,3 +1,10 @@
+# [1.23.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.22.0...v1.23.0) (2023-06-14)
+
+
+### Features
+
+* déplacement service diagoriente ([#425](https://github.com/mission-apprentissage/labonnealternance/issues/425)) ([0e745c1](https://github.com/mission-apprentissage/labonnealternance/commit/0e745c11bd0c80cce2369e8aa90d07bac7669631))
+
 # [1.22.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.21.2...v1.22.0) (2023-06-14)
 
 
