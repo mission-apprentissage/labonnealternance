@@ -1,3 +1,10 @@
+## [1.21.2](https://github.com/mission-apprentissage/labonnealternance/compare/v1.21.1...v1.21.2) (2023-06-14)
+
+
+### Bug Fixes
+
+* conf ([d98393b](https://github.com/mission-apprentissage/labonnealternance/commit/d98393b7592350cff8283be46216bc305229f03b))
+
 ## [1.21.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.21.0...v1.21.1) (2023-06-13)
 
 
