@@ -59,33 +59,35 @@ const SatisfactionForm = ({ formType }) => {
     let lastName = ln
     let text = (
       <Box width="100%" maxWidth="800px" mb={8}>
-        <Text pt={8}>Merci beaucoup pour votre réponse.</Text>
         {intention === "entretien" && (
           <Box>
-            <Text fontWeight={700}>Vous avez indiqué accepter la candidature de {`${firstName} ${lastName}`}.</Text>
-            <Text pt={8}>Planifiez une date de rencontre avec le candidat, en lui envoyant un message personnalisé.</Text>
+            <Text pt={8}>Vous souhaitez rencontrer le/la candidat(e) ?</Text>
+            <Text fontWeight={700}>Répondez à {`${firstName} ${lastName}`} et proposez-lui une date de rencontre.</Text>
+            <Text pt={8}>Rédigez votre réponse personnalisée.</Text>
             <Text>
               <Text as="small" color="grey.425">
-                Le candidat recevra votre message ainsi que vos coordonnées directement sur sa boîte mail.
+                Le candidat recevra votre commentaire ainsi que vos coordonnées directement sur sa boîte mail.
               </Text>
             </Text>
           </Box>
         )}
         {intention === "ne_sais_pas" && (
           <Box>
-            <Text fontWeight={700}>Vous avez indiqué temporiser la candidature de {`${firstName} ${lastName}`}.</Text>
-            <Text pt={8}>Précisez au candidat votre intérêt pour sa candidature, en lui envoyant un message personnalisé.</Text>
+            <Text pt={8}>La candidature de {`${firstName} ${lastName}`} vous intéresse, mais vous ne souhaitez pas prendre votre décision aujourd’hui ?</Text>
+            <Text fontWeight={700}>Indiquez-lui que vous lui apporterez une réponse prochainement.</Text>
+            <Text pt={8}>Rédigez votre réponse personnalisée.</Text>
             <Text>
               <Text as="small" color="grey.425">
-                Le candidat recevra votre message ainsi que vos coordonnées directement sur sa boîte mail.
+                Le candidat recevra votre commentaire ainsi que vos coordonnées directement sur sa boîte mail.
               </Text>
             </Text>
           </Box>
         )}
         {intention === "refus" && (
           <Box>
-            <Text fontWeight={700}>Vous avez indiqué refuser la candidature de {`${firstName} ${lastName}`}.</Text>
-            <Text pt={8}>Précisez les raisons de votre refus au candidat, en lui envoyant un message personnalisé.</Text>
+            <Text pt={8}>Vous souhaitez refuser la candidature ?</Text>
+            <Text fontWeight={700}>Indiquez au candidat {`${firstName} ${lastName}`} les raisons de ce refus. Une réponse personnalisée l’aidera pour ses futures recherches.</Text>
+            <Text pt={8}>Rédigez votre réponse personnalisée.</Text>
             <Text>
               <Text as="small" color="grey.425">
                 Le candidat recevra votre message directement sur sa boîte mail.
@@ -164,10 +166,10 @@ const SatisfactionForm = ({ formType }) => {
     const { intention } = router?.query ? router.query : { intention: "intention" }
     let res = ""
     if (intention === "ne_sais_pas") {
-      res = "Bonjour, Merci pour l'intérêt que vous portez à notre établissement. Votre candidature a retenu toute notre attention mais nous ne sommes actuellement pas ..."
+      res = "Bonjour, Merci pour l'intérêt que vous portez à notre établissement. Votre candidature a retenu toute notre attention et nous vous répondrons ..."
     } else if (intention === "entretien") {
       res =
-        "Bonjour, Merci pour l'intérêt que vous portez à notre établissement. Votre candidature a retenu toute notre attention et nous souhaiterions échanger avec vous. Seriez-vous disponible le ..."
+        "Bonjour, Merci pour l'intérêt que vous portez à notre établissement. Votre candidature a retenu toute notre attention et nous souhaiterions échanger avec vous. Seriez-vous disponible le ... "
     } else {
       res =
         "Bonjour, Merci pour l'intérêt que vous portez à notre établissement. Nous ne sommes malheureusement pas en mesure de donner une suite favorable à votre candidature car ..."
