@@ -1,7 +1,8 @@
 import axios from "axios"
 import dayjs from "dayjs"
-import { sentryCaptureException } from "../../common/utils/sentryUtils.js"
-import config from "../../config.js"
+import { sentryCaptureException } from "../common/utils/sentryUtils.js"
+import config from "../config.js"
+import { ISuggestionMetiersDavenir } from "./diagoriente.service.types.js"
 
 let diagorienteToken = null
 
@@ -29,7 +30,11 @@ const getAccessToken = async () => {
   } else throw new Error("diagoriente_token_error")
 }
 
-export const getMetiersDAvenir = async () => {
+/**
+ * @description Interroge l'api Diagoriente pour récupérer des suggestions de métiers d'avenir
+ * @returns {Promise<ISuggestionMetiersDavenir>}
+ */
+export const getMetiersDAvenir = async (): Promise<ISuggestionMetiersDavenir> => {
   try {
     const token = await getAccessToken()
     const headers = {
@@ -37,7 +42,7 @@ export const getMetiersDAvenir = async () => {
       Authorization: `Bearer ${token}`,
     }
 
-    const job = await axios.post(
+    const { data } = await axios.post(
       diagorienteUrl,
       JSON.stringify({
         query: `{
@@ -50,7 +55,7 @@ export const getMetiersDAvenir = async () => {
         headers,
       }
     )
-    return job.data.data
+    return data.data
   } catch (error) {
     sentryCaptureException(error)
     return {

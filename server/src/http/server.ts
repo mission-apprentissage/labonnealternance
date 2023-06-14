@@ -34,7 +34,6 @@ import formulaireRoute from "./routes/formulaire.controller.js"
 import jobEtFormationV1 from "./routes/jobEtFormationV1.controller.js"
 import jobV1 from "./routes/jobV1.controller.js"
 import metiers from "./routes/metiers.controller.js"
-import metiersDAvenir from "./routes/metiersDAvenir.controller.js"
 import optoutRoute from "./routes/optout.controller.js"
 import partnersRoute from "./routes/partners.controller.js"
 import rome from "./routes/rome.controller.js"
@@ -186,7 +185,6 @@ export default async (components) => {
   app.use("/api/campaign/webhook", campaignWebhook(components))
   app.use("/api/application", sendApplication(components))
   app.use("/api/V1/application", limiter5PerSecond, sendApplicationAPI(components))
-  app.use("/api/metiersdavenir", limiter3PerSecond, metiersDAvenir())
   app.use("/api/unsubscribe", unsubscribeBonneBoite(components))
 
   /**
