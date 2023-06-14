@@ -1,3 +1,10 @@
+## [1.24.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.24.0...v1.24.1) (2023-06-14)
+
+
+### Bug Fixes
+
+* disable excessive slack notification ([e57ff35](https://github.com/mission-apprentissage/labonnealternance/commit/e57ff3515ca4b09d7eb797ac57d76ed27e31d525))
+
 # [1.24.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.23.0...v1.24.0) (2023-06-14)
 
 
