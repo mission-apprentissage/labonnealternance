@@ -57,11 +57,11 @@ export default function ({ mailer }) {
           },
         })
 
-        await notifyToSlack({
-          subject: "Désinscription société issue de l'algo",
-          message: `La société avec le siret ${bonnesBoitesToUnsubscribe[0].siret} a été désinscrite des sociétés issues de l'algo`,
-          error: false,
-        })
+        // await notifyToSlack({
+        //   subject: "Désinscription société issue de l'algo",
+        //   message: `La société avec le siret ${bonnesBoitesToUnsubscribe[0].siret} a été désinscrite des sociétés issues de l'algo`,
+        //   error: false,
+        // })
       }
 
       return res.json(result)
