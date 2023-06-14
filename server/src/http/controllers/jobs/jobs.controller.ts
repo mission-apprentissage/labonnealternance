@@ -17,7 +17,7 @@ import { delay } from "../../../common/utils/asyncUtils.js"
 import { ICredential } from "../../../common/model/schema/credentials/credential.types.js"
 
 @Tags("Jobs")
-@Route("/api/v1/jobs")
+@Route("/api/v1/temp-jobs")
 @Security("api_key")
 export class JobsController extends Controller {
   /**
