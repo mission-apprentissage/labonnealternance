@@ -5,7 +5,7 @@ import chaiAsPromised from "chai-as-promised"
 chai.use(chaiAsPromised)
 
 import __filename from "../../src/common/filename.js"
-import { validateCompanyEmail, validateFeedbackApplication, validatePermanentEmail, validateSendApplication } from "../../src/service/validateSendApplication.js"
+import { validateCompanyEmail, validatePermanentEmail, validateSendApplication } from "../../src/services/application.service.js"
 
 import { decryptWithIV } from "../../src/common/utils/encryptString.js"
 
@@ -53,20 +53,5 @@ describe(__filename(import.meta.url), () => {
         cryptedEmail: companyEmail,
       })
     ).to.equal("email société invalide")
-  })
-  it("validateFeedbackApplication : Echoue si mauvais argument passé en param", async () => {
-    await expect(validateFeedbackApplication()).to.be.rejectedWith("error - validation of data failed")
-  })
-  it("validateFeedbackApplication : Echoue si un des champs ne passe pas la validation", async () => {
-    await expect(validateFeedbackApplication({ id: "aaa", iv: "aaa", avis: "avis non conforme" })).to.be.rejectedWith("error - validation of data failed")
-  })
-  it("validateFeedbackApplication : Passe si tous les champs sont valides", async () => {
-    expect(
-      await validateFeedbackApplication({
-        id: "aaaa",
-        iv: "aaaa",
-        avis: "utile",
-      })
-    ).to.equal("ok")
   })
 })

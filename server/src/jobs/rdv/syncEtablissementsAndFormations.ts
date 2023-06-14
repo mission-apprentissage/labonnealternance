@@ -4,7 +4,7 @@ import { referrers } from "../../common/model/constants/referrers.js"
 import { FormationCatalogue } from "../../common/model/index.js"
 import { dayjs } from "../../common/utils/dayjs.js"
 import { isValidEmail } from "../../common/utils/isValidEmail.js"
-import { isEmailBlacklisted } from "../../service/applications.js"
+import { isEmailBlacklisted } from "../../services/application.service.js"
 import { getFormationsFromCatalogueMe } from "../../services/catalogue.service.js"
 
 /**

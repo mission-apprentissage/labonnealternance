@@ -172,8 +172,7 @@ export const getEtablissementFromGouv = async (siret: string): Promise<IAPIEtabl
 
     return data
   } catch (error) {
-
-    if(error.response.status == "404" || error.response.status == "422") {
+    if (error.response.status == "404" || error.response.status == "422") {
       return null
     }
 

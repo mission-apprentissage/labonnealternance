@@ -189,7 +189,7 @@ export const getOffreAvecInfoMandataire = async (id: IJobs["_id"]): Promise<IFor
     const [entreprise_localite] = result.address.match(/([0-9]{5})[ ,] ?([A-zÀ-ÿ]*)/) ?? [""]
     const cfa = await getEtablissement({ establishment_siret: result.cfa_delegated_siret })
 
-    if(cfa) {
+    if (cfa) {
       result.phone = cfa.phone
       result.email = cfa.email
       result.last_name = cfa.last_name

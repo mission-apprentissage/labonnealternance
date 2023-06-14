@@ -222,7 +222,7 @@ export default async (components) => {
   /**
    * Tools
    */
-   app.use("/api/trainingLinks", limiter3PerSecond, trainingLinks())
+  app.use("/api/trainingLinks", limiter3PerSecond, trainingLinks())
 
   initSendinblueWebhooks()
 

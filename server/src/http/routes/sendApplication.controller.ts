@@ -1,7 +1,12 @@
+// @ts-nocheck
 import express from "express"
 import rateLimit from "express-rate-limit"
-import { debugUpdateApplicationStatus, saveApplicationIntentionComment, sendApplication, updateApplicationStatus, updateBlockedEmails } from "../../service/applications.js"
+import { ObjectId } from "mongodb"
+import { Application } from "../../common/model/index.js"
+import { sendApplication, sendNotificationToApplicant, updateApplicationStatus, validateFeedbackApplicationComment } from "../../services/application.service.js"
 import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
+import { decryptWithIV } from "../../common/utils/encryptString.js"
+import { sentryCaptureException } from "../../common/utils/sentryUtils.js"
 
 const limiter1Per5Second = rateLimit({
   windowMs: 5000, // 5 seconds
@@ -38,18 +43,42 @@ export default function (components) {
     "/intentionComment",
     limiter1Per5Second,
     tryCatch(async (req, res) => {
-      const result = await saveApplicationIntentionComment({
-        query: req.body,
-        ...components,
+      // email and phone should appear
+      await validateFeedbackApplicationComment({
+        id: req.body.id,
+        iv: req.body.iv,
+        comment: req.body.comment,
       })
-      return res.json(result)
+
+      const decryptedId = decryptWithIV(req.body.id, req.body.iv)
+
+      try {
+        const application = await Application.findOneAndUpdate(
+          { _id: ObjectId(decryptedId) },
+          { company_recruitment_intention: req.body.intention, company_feedback: req.body.comment, company_feedback_date: new Date() }
+        )
+
+        sendNotificationToApplicant({
+          application,
+          intention: req.body.intention,
+          email: req.body.email,
+          phone: req.body.phone,
+          comment: req.body.comment,
+        })
+
+        return res.json({ result: "ok", message: "comment registered" })
+      } catch (err) {
+        console.log("err ", err)
+        sentryCaptureException(err)
+        return res.json({ error: "error_saving_comment" })
+      }
     })
   )
 
   router.post(
     "/webhook",
     tryCatch(async (req, res) => {
-      updateApplicationStatus({ payload: req.body, ...components })
+      updateApplicationStatus({ payload: req.body })
       return res.json({ result: "ok" })
     })
   )
@@ -57,15 +86,14 @@ export default function (components) {
   router.get(
     "/webhook",
     tryCatch(async (req, res) => {
-      debugUpdateApplicationStatus({ shouldCheckSecret: true, query: req.query, ...components })
-      return res.json({ result: "ok" })
-    })
-  )
+      if (!req.query.secret) {
+        logger.error("Debugging sendinblue webhook : secret missing")
+      } else if (req.query.secret !== config.secretUpdateRomesMetiers) {
+        logger.error("Debugging sendinblue webhook : wrong secret")
+      } else {
+        updateApplicationStatus({ payload: { ...query, secret: "" } })
+      }
 
-  router.get(
-    "/updateBlockedEmails",
-    tryCatch(async (req, res) => {
-      updateBlockedEmails({ shouldCheckSecret: true, query: req.query, ...components })
       return res.json({ result: "ok" })
     })
   )
