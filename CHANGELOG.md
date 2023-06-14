@@ -1,3 +1,15 @@
+# [1.22.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.21.2...v1.22.0) (2023-06-14)
+
+
+### Bug Fixes
+
+* gestion cas description vide mais avec des espaces ([#437](https://github.com/mission-apprentissage/labonnealternance/issues/437)) ([d4b64ad](https://github.com/mission-apprentissage/labonnealternance/commit/d4b64ad88ead38cd7401ff2c3c40bb5c2fba01d3))
+
+
+### Features
+
+* migration service application -> services  application.services ([#398](https://github.com/mission-apprentissage/labonnealternance/issues/398)) ([fc7653f](https://github.com/mission-apprentissage/labonnealternance/commit/fc7653fd5e8c27e5d8d6e82c3f690708d2df65d3))
+
 ## [1.21.2](https://github.com/mission-apprentissage/labonnealternance/compare/v1.21.1...v1.21.2) (2023-06-14)
 
 
