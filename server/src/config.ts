@@ -116,8 +116,8 @@ const config = {
     },
   },
   catalogueMe: {
-    username: env.get("LBA_CATALOGUE_ME_USERNAME").default("***REMOVED***").asString(),
-    password: env.get("LBA_CATALOGUE_ME_PASSWORD").default("***REMOVED***").asString(),
+    username: env.get("LBA_CATALOGUE_ME_USERNAME").default("admin").asString(),
+    password: env.get("LBA_CATALOGUE_ME_PASSWORD").default("password").asString(),
   },
   algoBonnesBoites: {
     s3File: env.get("LBA_ALGO_LBB_S3FILE").default("filepath").asString(),
