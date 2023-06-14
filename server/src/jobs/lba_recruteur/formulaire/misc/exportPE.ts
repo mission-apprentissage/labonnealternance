@@ -231,7 +231,6 @@ export const exportPE = async ({ db }): Promise<void> => {
   await asyncForEach(offres, async (offre) => {
     const user: IUserRecruteur = offre.is_delegated ? await UserRecruteur.findOne({ establishment_siret: offre.cfa_delegated_siret }) : null
 
-
     if (typeof offre.rome_detail !== "string" && offre.rome_detail) {
       offre.job_type.map(async (type) => {
         if (offre.rome_detail && typeof offre.rome_detail !== "string") {

@@ -20,7 +20,7 @@ import {
 import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
 import { getUser, createUser } from "../../services/userRecruteur.service.js"
 
-export default ({ mailer }) => {
+export default () => {
   const router = express.Router()
 
   /**

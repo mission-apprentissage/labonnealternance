@@ -4,7 +4,7 @@ import { logger } from "../../common/logger.js"
 import { referrers } from "../../common/model/constants/referrers.js"
 import { dayjs } from "../../common/utils/dayjs.js"
 import { isValidEmail } from "../../common/utils/isValidEmail.js"
-import { isEmailBlacklisted } from "../../service/applications.js"
+import { isEmailBlacklisted } from "../../services/application.service.js"
 import { affelnetSelectedFields, getFormationsFromCatalogueMe } from "../../services/catalogue.service.js"
 
 /**

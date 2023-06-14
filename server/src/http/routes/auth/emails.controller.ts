@@ -6,7 +6,7 @@ import { logger } from "../../../common/logger.js"
 import { SendinblueEventStatus } from "../../../common/sendinblue.js"
 import { dayjs } from "../../../common/utils/dayjs.js"
 import config from "../../../config.js"
-import { addEmailToBlacklist } from "../../../service/applications.js"
+import { addEmailToBlacklist } from "../../../services/application.service.js"
 import { tryCatch } from "../../middlewares/tryCatchMiddleware.js"
 
 /**
