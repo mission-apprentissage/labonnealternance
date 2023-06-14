@@ -813,6 +813,40 @@
 				],
 				"type": "object",
 				"additionalProperties": false
+			},
+			"IMetierDavenir": {
+				"properties": {
+					"codeROME": {
+						"type": "string"
+					},
+					"title": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"codeROME",
+					"title"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ISuggestionMetiersDavenir": {
+				"properties": {
+					"suggestionsMetiersDavenir": {
+						"items": {
+							"$ref": "#/components/schemas/IMetierDavenir"
+						},
+						"type": "array"
+					},
+					"error": {
+						"type": "string"
+					}
+				},
+				"type": "object",
+				"additionalProperties": false
+			},
+			"TGetMetiersDAvenirResponseSuccess": {
+				"$ref": "#/components/schemas/ISuggestionMetiersDavenir"
 			}
 		},
 		"securitySchemes": {
@@ -825,7 +859,7 @@
 	},
 	"info": {
 		"title": "La bonne alternance",
-		"version": "1.21.2",
+		"version": "1.22.0",
 		"description": "Trouvez ici les formations en alternance et les entreprises qui recrutent régulièrement en alternance",
 		"license": {
 			"name": "MIT"

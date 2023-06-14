@@ -6,6 +6,8 @@ import { Controller, ValidationService, FieldErrors, ValidateError, TsoaRoute, H
 import { AppointmentsController } from './../http/controllers/appointments/appointments.controller.js';
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 import { JobsController } from './../http/controllers/jobs/jobs.controller.js';
+// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+import { MetiersDAvenirController } from './../http/controllers/metiersdavenir/metiersDAvenir.controller.js';
 import { expressAuthentication } from './../http/authentication.js';
 // @ts-ignore - no great way to install types from subpackage
 import promiseAny from 'promise.any';
@@ -242,6 +244,29 @@ const models: TsoaRoute.Models = {
             "establishmentIds": {"dataType":"array","array":{"dataType":"string"},"required":true},
         },
         "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "IMetierDavenir": {
+        "dataType": "refObject",
+        "properties": {
+            "codeROME": {"dataType":"string","required":true},
+            "title": {"dataType":"string","required":true},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "ISuggestionMetiersDavenir": {
+        "dataType": "refObject",
+        "properties": {
+            "suggestionsMetiersDavenir": {"dataType":"array","array":{"dataType":"refObject","ref":"IMetierDavenir"}},
+            "error": {"dataType":"string"},
+        },
+        "additionalProperties": false,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "TGetMetiersDAvenirResponseSuccess": {
+        "dataType": "refAlias",
+        "type": {"ref":"ISuggestionMetiersDavenir","validators":{}},
     },
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 };
@@ -516,6 +541,30 @@ export function RegisterRoutes(app: Router) {
 
               const promise = controller.extendJobExpiration.apply(controller, validatedArgs as any);
               promiseHandler(controller, promise, response, 204, next);
+            } catch (err) {
+                return next(err);
+            }
+        });
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        app.get('/api/metiersdavenir',
+            ...(fetchMiddlewares<RequestHandler>(MetiersDAvenirController)),
+            ...(fetchMiddlewares<RequestHandler>(MetiersDAvenirController.prototype.getMetiersDAvenir)),
+
+            function MetiersDAvenirController_getMetiersDAvenir(request: any, response: any, next: any) {
+            const args = {
+            };
+
+            // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+
+            let validatedArgs: any[] = [];
+            try {
+                validatedArgs = getValidatedArgs(args, request, response);
+
+                const controller = new MetiersDAvenirController();
+
+
+              const promise = controller.getMetiersDAvenir.apply(controller, validatedArgs as any);
+              promiseHandler(controller, promise, response, 201, next);
             } catch (err) {
                 return next(err);
             }
