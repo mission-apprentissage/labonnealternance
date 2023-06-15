@@ -1,3 +1,10 @@
+# [1.25.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.24.3...v1.25.0) (2023-06-15)
+
+
+### Features
+
+* update validation script main query ([4c17d1d](https://github.com/mission-apprentissage/labonnealternance/commit/4c17d1dfa7cc76faac924d13fac2f1409c25064a))
+
 ## [1.24.3](https://github.com/mission-apprentissage/labonnealternance/compare/v1.24.2...v1.24.3) (2023-06-15)
 
 
