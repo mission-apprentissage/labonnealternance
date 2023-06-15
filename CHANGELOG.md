@@ -1,3 +1,10 @@
+## [1.24.3](https://github.com/mission-apprentissage/labonnealternance/compare/v1.24.2...v1.24.3) (2023-06-15)
+
+
+### Bug Fixes
+
+* remove extra params & fix required fields ([4f8cdef](https://github.com/mission-apprentissage/labonnealternance/commit/4f8cdef3b0db584330123ff7f6622f60ed098860))
+
 ## [1.24.2](https://github.com/mission-apprentissage/labonnealternance/compare/v1.24.1...v1.24.2) (2023-06-14)
 
 
