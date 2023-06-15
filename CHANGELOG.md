@@ -1,3 +1,10 @@
+## [1.25.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.25.0...v1.25.1) (2023-06-15)
+
+
+### Bug Fixes
+
+* field name in status recovery script ([d85af4a](https://github.com/mission-apprentissage/labonnealternance/commit/d85af4ac2ccc030e1fe375836f9d3d0adca3a76b))
+
 # [1.25.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.24.3...v1.25.0) (2023-06-15)
 
 
