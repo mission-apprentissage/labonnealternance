@@ -31,9 +31,11 @@ const runValidation = async () => {
       statut: etat_utilisateur.ATTENTE,
     })
 
-  const entreprises = await UserRecruteur.find({
-    $expr: { $eq: [{ $arrayElemAt: ["$etat_utilisateur.statut", -1] }, "EN ATTENTE DE VALIDATION"] },
-  })
+  // const entreprises = await UserRecruteur.find({
+  //   $expr: { $eq: [{ $arrayElemAt: ["$etat_utilisateur.statut", -1] }, "EN ATTENTE DE VALIDATION"] },
+  // })
+
+  const entreprises = await UserRecruteur.find({ type: "ENTREPRISE", status: { $size: 1 }, "status.status": "EN ATTENTE DE VALIDATION" })
 
   logger.info(`${entreprises.length} etp à mettre à jour...`)
   await asyncForEach(entreprises, async (etp, index) => {
