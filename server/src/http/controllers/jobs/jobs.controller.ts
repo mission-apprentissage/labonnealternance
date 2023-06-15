@@ -55,7 +55,6 @@ export class JobsController extends Controller {
    * origin parameter is always prefixed with you identification name declared at the API user creation.
    * it is a string in tiny case of your organism name. example: BETA GOUV with an origin set to "campaign2023" will be betagouv-campaign2023.
    * @param {string} establishment_siret
-   * @param {string} establishment_raison_sociale
    * @param {string} first_name
    * @param {string} last_name
    * @param {string} phone
