@@ -40,7 +40,7 @@ export const createJobSchema = Joi.object({
   is_disabled_elligible: Joi.boolean().default(false),
   job_count: Joi.number().default(1),
   job_rythm: Joi.string().valid("Indifférent", "2 jours / 3 jours", "1 semaine / 1 semaine", "2 semaines / 3 semaines", "6 semaines / 6 semaines").default("Indifférent"),
-  job_duration: Joi.number().min(6).max(36).default(6),
+  job_duration: Joi.number().min(6).max(36).required(),
   job_description: Joi.string().required(),
   job_employer_description: Joi.string(),
 })
