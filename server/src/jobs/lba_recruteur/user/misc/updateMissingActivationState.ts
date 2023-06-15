@@ -47,7 +47,7 @@ const runValidation = async () => {
       return
     }
 
-    const siren = etp.siret.substr(0, 9)
+    const siren = etp.establishment_siret.substr(0, 9)
 
     const [bonneBoiteLegacyList, bonneBoiteList, referentielOpcoList] = await Promise.all([
       getAllEstablishmentFromBonneBoiteLegacy({ siret: { $regex: siren }, email: { $nin: ["", undefined] } }),
@@ -68,7 +68,7 @@ const runValidation = async () => {
     const emailListUnique = [...new Set([...referentielOpcoEmailList, ...bonneBoiteLegacyEmailList, ...bonneBoiteEmailList])]
 
     // Check BAL API for validation
-    const balControl = await validationOrganisation(etp.siret, etp.email)
+    const balControl = await validationOrganisation(etp.establishment_siret, etp.email)
 
     logger.info(`${etp._id}: ${JSON.stringify(balControl)}`)
 
