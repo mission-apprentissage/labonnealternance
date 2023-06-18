@@ -1,3 +1,10 @@
+## [1.27.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.27.0...v1.27.1) (2023-06-18)
+
+
+### Bug Fixes
+
+* remove unecessary tsoa files ([f2b54ca](https://github.com/mission-apprentissage/labonnealternance/commit/f2b54cad14adfa9ba119b8a15e74a0ffd1a5feb8))
+
 # [1.27.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.26.0...v1.27.0) (2023-06-18)
 
 ### Features
