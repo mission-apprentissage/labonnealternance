@@ -2,7 +2,7 @@ import memoize from "memoizee"
 import { IOpco } from "../common/model/schema/opco/opco.types.js"
 import { Opco } from "../common/model/index.js"
 import { OPCOS } from "../common/constants.js"
-import { CFADOCK_FILTER_LIMIT, fetchOpcosFromCFADock } from "../service/cfaDock/fetchOpcosFromCFADock.js"
+import { CFADOCK_FILTER_LIMIT, fetchOpcosFromCFADock } from "../services/cfadock.service.js"
 
 /**
  * @description tente d'ajouter un opco en base et retourne une string indiquant le résultat
