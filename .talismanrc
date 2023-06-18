@@ -20,6 +20,8 @@ fileignoreconfig:
   - filename: CHANGELOG.md
     checksum: d6981eb077fcbf1c6858393e2f5cada971b297db3c0103853338f9f4b6211e0d
     ignore_detectors: ["filename", "filesize", "filecontent"]
+  - filename: server/src/jobs/seed/referentielRome/unix_fiche_emploi_metier_v450_iso8859-15.xml
+    checksum: 7257a3a49d3170754fd55316bf78b680866465400c46e11727daa5da00863347
 scopeconfig:
   - scope: node
 custom_patterns:
