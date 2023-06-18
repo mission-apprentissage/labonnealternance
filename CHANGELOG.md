@@ -1,3 +1,10 @@
+# [1.26.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.25.1...v1.26.0) (2023-06-18)
+
+
+### Features
+
+* move cfadock services ([#441](https://github.com/mission-apprentissage/labonnealternance/issues/441)) ([48c1b40](https://github.com/mission-apprentissage/labonnealternance/commit/48c1b40a57f774997d5f12100a9774ff9c14bace))
+
 ## [1.25.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.25.0...v1.25.1) (2023-06-15)
 
 
