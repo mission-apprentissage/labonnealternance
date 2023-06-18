@@ -1,3 +1,10 @@
+# [1.28.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.27.1...v1.28.0) (2023-06-18)
+
+
+### Features
+
+* ignore tsoa files ([90ef50c](https://github.com/mission-apprentissage/labonnealternance/commit/90ef50ca4c95ace023fd895943b415878ba61925))
+
 ## [1.27.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.27.0...v1.27.1) (2023-06-18)
 
 
