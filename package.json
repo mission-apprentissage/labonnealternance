@@ -18,14 +18,20 @@
     "hook:commit-msg": "commitlint --config package.json --edit ${1}",
     "npm:release": "semantic-release",
     "npm:release:local": "CI=true LOCAL_RELEASE=true semantic-release",
-    "talisman:add-exception": "yarn node-talisman --githook pre-commit -i"
+    "talisman:add-exception": "yarn node-talisman --githook pre-commit -i",
+    "e2e": "cypress open",
+    "e2e:headless": "cypress run",
+    "e2e:convert": "chrome-recorder cypress/records/ui/*.json --output=cypress/e2e/ui; chrome-recorder cypress/records/ui_espace_pro/*.json --output=cypress/e2e/ui_espace_pro"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.1.2",
     "@commitlint/config-conventional": "^17.1.0",
+    "@cypress/chrome-recorder": "^2.3.1",
     "@semantic-release/changelog": "^6.0.2",
     "@semantic-release/exec": "^6.0.3",
     "@semantic-release/git": "^10.0.1",
+    "cypress": "^12.14.0",
+    "dotenv": "^16.1.4",
     "eslint": "^8.27.0",
     "eslint-config-next": "^13.0.3",
     "eslint-config-prettier": "^8.5.0",
