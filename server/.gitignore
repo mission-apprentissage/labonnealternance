@@ -4,3 +4,4 @@
 .nyc_output/
 bonnesboites.json
 *SAVE.json
+src/generated
