@@ -8,6 +8,8 @@ import { referrers } from "../../common/model/constants/referrers.js"
 import { dayjs } from "../../common/utils/dayjs.js"
 import config from "../../config.js"
 import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
+import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service.js"
+import * as appointmentService from "../../services/appointment.service.js"
 
 const optOutUnsubscribeSchema = Joi.object({
   opt_out_question: Joi.string().optional(),
@@ -20,7 +22,7 @@ const patchEtablissementIdAppointmentIdReadAppointSchema = Joi.object({
 /**
  * @description Etablissement Router.
  */
-export default ({ etablissements, mailer, eligibleTrainingsForAppointments, appointments }) => {
+export default ({ etablissements, mailer }) => {
   const router = express.Router()
 
   /**
@@ -78,7 +80,7 @@ export default ({ etablissements, mailer, eligibleTrainingsForAppointments, appo
       })
 
       const [eligibleTrainingsForAppointmentsAffelnetFound, etablissementAffelnetUpdated] = await Promise.all([
-        eligibleTrainingsForAppointments.find({
+        eligibleTrainingsForAppointmentService.find({
           etablissement_formateur_siret: etablissement.formateur_siret,
         }),
         etablissements.findOneAndUpdate(
@@ -145,7 +147,7 @@ export default ({ etablissements, mailer, eligibleTrainingsForAppointments, appo
       const [resultAffelnet] = await Promise.all([
         etablissements.findById(req.params.id),
         ...eligibleTrainingsForAppointmentsAffelnetFound.map((eligibleTrainingsForAppointment) =>
-          eligibleTrainingsForAppointments.update(
+          eligibleTrainingsForAppointmentService.update(
             { _id: eligibleTrainingsForAppointment._id, lieu_formation_email: { $nin: [null, ""] } },
             {
               referrers: [...new Set([...eligibleTrainingsForAppointment.referrers, referrers.AFFELNET.name])],
@@ -197,7 +199,7 @@ export default ({ etablissements, mailer, eligibleTrainingsForAppointments, appo
       })
 
       const [eligibleTrainingsForAppointmentsParcoursupFound, etablissementParcoursupUpdated] = await Promise.all([
-        eligibleTrainingsForAppointments.find({
+        eligibleTrainingsForAppointmentService.find({
           etablissement_formateur_siret: etablissement.formateur_siret,
           parcoursup_id: {
             $ne: null,
@@ -267,7 +269,7 @@ export default ({ etablissements, mailer, eligibleTrainingsForAppointments, appo
       const [result] = await Promise.all([
         etablissements.findById(req.params.id),
         ...eligibleTrainingsForAppointmentsParcoursupFound.map((eligibleTrainingsForAppointment) =>
-          eligibleTrainingsForAppointments.update(
+          eligibleTrainingsForAppointmentService.update(
             { _id: eligibleTrainingsForAppointment._id, lieu_formation_email: { $nin: [null, ""] } },
             {
               referrers: [...new Set([...eligibleTrainingsForAppointment.referrers, referrers.PARCOURSUP.name])],
@@ -420,7 +422,7 @@ export default ({ etablissements, mailer, eligibleTrainingsForAppointments, appo
 
       const { id, appointmentId } = params
 
-      let [etablissement, appointment] = await Promise.all([etablissements.findById(id), appointments.findById(appointmentId)])
+      let [etablissement, appointment] = await Promise.all([etablissements.findById(id), appointmentService.findById(appointmentId)])
 
       if (!etablissement) {
         throw Boom.badRequest("Etablissement not found.")
@@ -435,7 +437,7 @@ export default ({ etablissements, mailer, eligibleTrainingsForAppointments, appo
         await appointment.update({ cfa_read_appointment_details_date: dayjs().toDate() })
       }
 
-      appointment = await appointments.findById(appointmentId)
+      appointment = await appointmentService.findById(appointmentId)
 
       res.send(appointment)
     })
@@ -491,7 +493,7 @@ export default ({ etablissements, mailer, eligibleTrainingsForAppointments, appo
       // If opt-out is already running but user unsubscribe, disable all formations
       if (etablissement.optout_activation_date && dayjs(etablissement.optout_activation_date).isBefore(dayjs())) {
         // Disable all formations
-        await eligibleTrainingsForAppointments.updateMany(
+        await eligibleTrainingsForAppointmentService.updateMany(
           {
             etablissement_formateur_siret: etablissement.formateur_siret,
           },

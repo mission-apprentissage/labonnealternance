@@ -8,6 +8,8 @@ import { dayjs } from "../../../common/utils/dayjs.js"
 import config from "../../../config.js"
 import { addEmailToBlacklist } from "../../../services/application.service.js"
 import { tryCatch } from "../../middlewares/tryCatchMiddleware.js"
+import * as eligibleTrainingsForAppointmentService from "../../../services/eligibleTrainingsForAppointment.service.js"
+import * as appointmentService from "../../../services/appointment.service.js"
 
 /**
  * @description Checks "Sendinblue" token.
@@ -20,13 +22,9 @@ const checkWebhookToken = () => {
 }
 
 /**
- * @description Email controllers.
- * @param {Appointment} appointments
- * @param {Etablissement} etablissements
- * @param {EligibleTrainingsForAppointment} eligibleTrainingsForAppointments
- * @return {Router}
+ * Email controllers.
  */
-export default ({ appointments, etablissements, eligibleTrainingsForAppointments }) => {
+export default ({ etablissements }) => {
   const router = express.Router()
 
   /**
@@ -49,7 +47,7 @@ export default ({ appointments, etablissements, eligibleTrainingsForAppointments
       const messageId = parameters["message-id"]
       const eventDate = dayjs.utc(parameters["date"]).tz("Europe/Paris").toDate()
 
-      const [appointment] = await appointments.find({ "to_cfa_mails.message_id": { $regex: messageId } })
+      const [appointment] = await appointmentService.find({ "to_cfa_mails.message_id": { $regex: messageId } })
 
       // If mail sent from appointment model
       if (appointment) {
@@ -68,7 +66,7 @@ export default ({ appointments, etablissements, eligibleTrainingsForAppointments
 
         // Disable eligibleTrainingsForAppointments in case of hard_bounce
         if (parameters.event === SendinblueEventStatus.HARD_BOUNCE) {
-          const eligibleTrainingsForAppointmentsWithEmail = await eligibleTrainingsForAppointments.find({ cfa_recipient_email: appointment.cfa_recipient_email })
+          const eligibleTrainingsForAppointmentsWithEmail = await eligibleTrainingsForAppointmentService.find({ cfa_recipient_email: appointment.cfa_recipient_email })
 
           await Promise.all(
             eligibleTrainingsForAppointmentsWithEmail.map(async (eligibleTrainingsForAppointment) => {
@@ -102,7 +100,7 @@ export default ({ appointments, etablissements, eligibleTrainingsForAppointments
         })
       }
 
-      const [appointmentCandidatFound] = await appointments.find({
+      const [appointmentCandidatFound] = await appointmentService.find({
         "to_applicant_mails.message_id": { $regex: messageId },
       })
 
@@ -122,7 +120,7 @@ export default ({ appointments, etablissements, eligibleTrainingsForAppointments
         })
       }
 
-      const [appointmentCfaFound] = await appointments.find({ "to_cfa_mails.message_id": { $regex: messageId } })
+      const [appointmentCfaFound] = await appointmentService.find({ "to_cfa_mails.message_id": { $regex: messageId } })
 
       // If mail sent from appointment (to the CFA)
       if (appointmentCfaFound && appointmentCfaFound?.to_cfa_mails) {

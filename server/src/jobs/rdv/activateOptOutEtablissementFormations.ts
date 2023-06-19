@@ -5,12 +5,13 @@ import { mailType } from "../../common/model/constants/etablissement.js"
 import { referrers } from "../../common/model/constants/referrers.js"
 import { dayjs } from "../../common/utils/dayjs.js"
 import config from "../../config.js"
+import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service.js"
 
 /**
  * @description Active all etablissement's formations that have subscribed to opt-out.
  * @returns {Promise<void>}
  */
-export const activateOptOutEtablissementFormations = async ({ etablissements, eligibleTrainingsForAppointments, mailer }) => {
+export const activateOptOutEtablissementFormations = async ({ etablissements, mailer }) => {
   logger.info("Cron #activateOptOutEtablissementFormations started.")
 
   // Opt-out etablissement to activate
@@ -26,7 +27,7 @@ export const activateOptOutEtablissementFormations = async ({ etablissements, el
   await Promise.all(
     etablissementsToActivate.map(async (etablissement) => {
       await Promise.all([
-        eligibleTrainingsForAppointments.updateMany(
+        eligibleTrainingsForAppointmentService.updateMany(
           {
             etablissement_formateur_siret: etablissement.formateur_siret,
             lieu_formation_email: { $nin: [null, ""] },
@@ -71,7 +72,7 @@ export const activateOptOutEtablissementFormations = async ({ etablissements, el
         },
       })
 
-      const eligibleTrainingsForAppointmentsFound = await eligibleTrainingsForAppointments.find({
+      const eligibleTrainingsForAppointmentsFound = await eligibleTrainingsForAppointmentService.find({
         etablissement_formateur_siret: etablissement.formateur_siret,
       })
 

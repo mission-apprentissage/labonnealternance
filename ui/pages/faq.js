@@ -39,7 +39,7 @@ const selectedTabParams = {
 
 const tabParams = {
   color: "bluefrance.500",
-  background: "grey.100",  
+  background: "grey.100",
   marginRight: 2,
   p: { base: 1, sm: 4 },
 }
@@ -57,7 +57,7 @@ const FAQ = ({ recruteur, organisme, candidat }) => {
 
       <Breadcrumb forPage="faq" label="FAQ" />
 
-      <Container p={{base:2, md: 12}} my={0} mb={[0, 12]} variant="pageContainer">
+      <Container p={{ base: 2, md: 12 }} my={0} mb={[0, 12]} variant="pageContainer">
         <Grid templateColumns="repeat(12, 1fr)">
           <GridItem px={0} colSpan={[12, 12, 12, 5]}>
             <Box as="h1">
@@ -77,9 +77,15 @@ const FAQ = ({ recruteur, organisme, candidat }) => {
             <Box>
               <Tabs variant="unstyled">
                 <TabList px={0}>
-                  <Tab {...tabParams} _focus={focusedTabParams} _selected={selectedTabParams}>Candidat</Tab>
-                  <Tab {...tabParams} _focus={focusedTabParams} _selected={selectedTabParams}>Recruteur</Tab>
-                  <Tab {...tabParams} _focus={focusedTabParams} _selected={selectedTabParams}>Organisme de formation</Tab>
+                  <Tab {...tabParams} _focus={focusedTabParams} _selected={selectedTabParams}>
+                    Candidat
+                  </Tab>
+                  <Tab {...tabParams} _focus={focusedTabParams} _selected={selectedTabParams}>
+                    Recruteur
+                  </Tab>
+                  <Tab {...tabParams} _focus={focusedTabParams} _selected={selectedTabParams}>
+                    Organisme de formation
+                  </Tab>
                 </TabList>
 
                 <TabPanels>

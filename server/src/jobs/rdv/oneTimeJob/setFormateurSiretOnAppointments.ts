@@ -1,13 +1,12 @@
 import { oleoduc, writeData } from "oleoduc"
 import { logger } from "../../../common/logger.js"
-import { Appointment } from "../../../common/model/index.js"
 import { getFormationsFromCatalogueMe } from "../../../services/catalogue.service.js"
+import * as appointmentService from "../../../services/appointment.service.js"
 
 /**
- * @description Updates all appointments.cfa_formateur_siret fields.
- * @returns {Promise<void>}
+ * @description Updates all appointments and set "cfa_formateur_siret" value.
  */
-export const setFormateurSiretOnAppointments = async ({ appointments }) => {
+export const setFormateurSiretOnAppointments = async (): Promise<void> => {
   logger.info("Job #setFormateurSiretOnAppointments started.")
 
   const catalogueMinistereEducatif = await getFormationsFromCatalogueMe({
@@ -17,13 +16,13 @@ export const setFormateurSiretOnAppointments = async ({ appointments }) => {
   })
 
   await oleoduc(
-    appointments.find({ cle_ministere_educatif: { $nin: [null, ""] } }).cursor(),
+    appointmentService.find({ cle_ministere_educatif: { $nin: [null, ""] } }).cursor(),
     writeData(
       async (appointment) => {
         const formation = catalogueMinistereEducatif.find((item) => item.cle_ministere_educatif === appointment.cle_ministere_educatif)
 
         if (formation) {
-          await appointments.updateMany(
+          await appointmentService.updateMany(
             { cle_ministere_educatif: formation.cle_ministere_educatif },
             {
               cfa_formateur_siret: formation.etablissement_formateur_siret,

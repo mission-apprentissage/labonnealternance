@@ -4,12 +4,13 @@ import { mailType } from "../../common/model/constants/etablissement.js"
 import { dayjs } from "../../common/utils/dayjs.js"
 import config from "../../config.js"
 import { isValidEmail } from "../../common/utils/isValidEmail.js"
+import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service.js"
 
 /**
  * @description Send a "Premium" reminder mail.
  * @returns {Promise<void>}
  */
-export const premiumInviteOneShot = async ({ etablissements, eligibleTrainingsForAppointments, mailer }) => {
+export const premiumInviteOneShot = async ({ etablissements, mailer }) => {
   logger.info("Cron #premiumInviteOneShot started.")
 
   const [etablissementsActivated, eligibleTrainingsForAppointmentsFound] = await Promise.all([
@@ -24,7 +25,7 @@ export const premiumInviteOneShot = async ({ etablissements, eligibleTrainingsFo
         premium_activation_date: null,
       })
       .lean(),
-    eligibleTrainingsForAppointments.find({ parcoursup_id: { $ne: null }, lieu_formation_email: { $ne: null } }).lean(),
+    eligibleTrainingsForAppointmentService.find({ parcoursup_id: { $ne: null }, lieu_formation_email: { $ne: null } }).lean(),
   ])
 
   const etablissementWithParcoursup = etablissementsActivated.filter((etablissement) =>

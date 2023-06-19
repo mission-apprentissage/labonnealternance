@@ -5,12 +5,13 @@ import { mailType } from "../../common/model/constants/etablissement.js"
 import { dayjs } from "../../common/utils/dayjs.js"
 import { isValidEmail } from "../../common/utils/isValidEmail.js"
 import config from "../../config.js"
+import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service.js"
 
 /**
  * @description Invite all "etablissements" without opt_mode to opt-out.
  * @returns {Promise<void>}
  */
-export const inviteEtablissementToOptOut = async ({ etablissements, eligibleTrainingsForAppointments, mailer }) => {
+export const inviteEtablissementToOptOut = async ({ etablissements, mailer }) => {
   logger.info("Cron #inviteEtablissementToOptOut started.")
 
   // Opt-out etablissement to activate
@@ -23,7 +24,7 @@ export const inviteEtablissementToOptOut = async ({ etablissements, eligibleTrai
   logger.info(`Etablissements to invite: ${etablissementsWithouOptMode.length}`)
 
   for (const etablissement of etablissementsWithouOptMode) {
-    const formations = await eligibleTrainingsForAppointments.find({
+    const formations = await eligibleTrainingsForAppointmentService.find({
       etablissement_siret: etablissement.formateur_siret,
     })
 

@@ -1,7 +1,7 @@
 import Sentry from "@sentry/node"
 import * as express from "express"
 import { Body, Controller, Example, OperationId, Post, Request, Response, Route, SuccessResponse, Tags } from "tsoa"
-import EligibleTrainingsForAppointments from "../../../common/components/eligibleTrainingsForAppointments.js"
+import * as eligibleTrainingsForAppointmentService from "../../../services/eligibleTrainingsForAppointment.service.js"
 import Etablissement from "../../../common/components/etablissement.js"
 import { getReferrerByKeyName } from "../../../common/model/constants/referrers.js"
 import { isValidEmail } from "../../../common/utils/isValidEmail.js"
@@ -37,24 +37,22 @@ export class AppointmentsController extends Controller {
   public async createContext(@Body() body: TCreateContextBody): Promise<TCreateContextResponse | TCreateContextResponseError | string> {
     await contextCreateSchema.validateAsync(body, { abortEarly: false })
 
-    const eligibleTrainingsForAppointmentsService = EligibleTrainingsForAppointments()
-
     const { idRcoFormation, idParcoursup, idActionFormation, referrer, idCleMinistereEducatif } = body
 
     const referrerObj = getReferrerByKeyName(referrer)
 
     let eligibleTrainingsForAppointment
     if (idCleMinistereEducatif) {
-      eligibleTrainingsForAppointment = await eligibleTrainingsForAppointmentsService.findOne({ cle_ministere_educatif: idCleMinistereEducatif })
+      eligibleTrainingsForAppointment = await eligibleTrainingsForAppointmentService.findOne({ cle_ministere_educatif: idCleMinistereEducatif })
     } else if (idRcoFormation) {
-      eligibleTrainingsForAppointment = await eligibleTrainingsForAppointmentsService.findOne({
+      eligibleTrainingsForAppointment = await eligibleTrainingsForAppointmentService.findOne({
         rco_formation_id: idRcoFormation,
         cle_ministere_educatif: {
           $ne: null,
         },
       })
     } else if (idParcoursup) {
-      eligibleTrainingsForAppointment = await eligibleTrainingsForAppointmentsService.findOne({
+      eligibleTrainingsForAppointment = await eligibleTrainingsForAppointmentService.findOne({
         parcoursup_id: idParcoursup,
         cle_ministere_educatif: {
           $ne: null,
@@ -68,7 +66,7 @@ export class AppointmentsController extends Controller {
         return "Formation introuvable."
       }
 
-      eligibleTrainingsForAppointment = await eligibleTrainingsForAppointmentsService.findOne({ cle_ministere_educatif: cleMinistereEducatif })
+      eligibleTrainingsForAppointment = await eligibleTrainingsForAppointmentService.findOne({ cle_ministere_educatif: cleMinistereEducatif })
     } else {
       this.setStatus(400)
       return "Critère de recherche non conforme."
@@ -79,7 +77,7 @@ export class AppointmentsController extends Controller {
       return "Formation introuvable."
     }
 
-    const isOpenForAppointments = await eligibleTrainingsForAppointmentsService.findOne({
+    const isOpenForAppointments = await eligibleTrainingsForAppointmentService.findOne({
       cle_ministere_educatif: eligibleTrainingsForAppointment.cle_ministere_educatif,
       referrers: { $in: [referrerObj.name] },
       lieu_formation_email: { $nin: [null, ""] },

@@ -21,8 +21,6 @@ import updateOpcoCompanies from "./jobs/lbb/updateOpcoCompanies.js"
 import { activateOptOutEtablissementFormations } from "./jobs/rdv/activateOptOutEtablissementFormations.js"
 import { anonimizeAppointments } from "./jobs/rdv/anonymizeAppointments.js"
 import { anonimizeUsers } from "./jobs/rdv/anonymizeUsers.js"
-import { candidatHaveYouBeenContacted } from "./jobs/rdv/candidatHaveYouBeenContacted.js"
-import { cleanAndRenameFields } from "./jobs/rdv/cleanAndRenameFields.js"
 import { controlAvailableTrainingsWithCatalogue } from "./jobs/rdv/controlAvailableTrainingsWithCatalogue.js"
 import { controlAvailableAffelnetTrainingsWithCatalogueME } from "./jobs/rdv/controlAvailableTrainingsWithCatalogueME.js"
 import { inviteEtablissementToOptOut } from "./jobs/rdv/inviteEtablissementToOptOut.js"
@@ -30,7 +28,6 @@ import { inviteEtablissementToPremium } from "./jobs/rdv/inviteEtablissementToPr
 import { inviteEtablissementAffelnetToPremium } from "./jobs/rdv/inviteEtablissementToPremiumAffelnet.js"
 import { inviteEtablissementToPremiumFollowUp } from "./jobs/rdv/inviteEtablissementToPremiumFollowUp.js"
 import { inviteEtablissementAffelnetToPremiumFollowUp } from "./jobs/rdv/inviteEtablissementToPremiumFollowUpAffelnet.js"
-import { parcoursupEtablissementStat } from "./jobs/rdv/parcoursupEtablissementStat.js"
 import { premiumActivatedReminder } from "./jobs/rdv/premiumActivatedReminder.js"
 import { premiumInviteOneShot } from "./jobs/rdv/premiumInviteOneShot.js"
 import { syncEtablissementsAndFormations } from "./jobs/rdv/syncEtablissementsAndFormations.js"
@@ -151,13 +148,6 @@ cli
   })
 
 cli
-  .command("candidat-have-you-been-contacted")
-  .description("Envoi un email au candidat afin de savoir si le CFA la contacté.")
-  .action(() => {
-    runScript((components) => candidatHaveYouBeenContacted(components))
-  })
-
-cli
   .command("invite-etablissement-to-opt-out")
   .description("Invite les établissements (via email décisionnaire) à l'opt-out.")
   .action(() => {
@@ -190,13 +180,6 @@ cli
   .description("(Relance) Invite les établissements (via email décisionnaire) au premium (Affelnet)")
   .action(() => {
     runScript((components) => inviteEtablissementAffelnetToPremiumFollowUp(components))
-  })
-
-cli
-  .command("parcoursup-etablissement-stat")
-  .description("Remonte des statistiques sur Parcoursup.")
-  .action(() => {
-    runScript((components) => parcoursupEtablissementStat(components))
   })
 
 cli
@@ -253,13 +236,6 @@ cli
   .description("Contrôle l'egibilité d'une formation Affelnet à la prise de rendez-vous avec le Catalogue des formations ministere educatif")
   .action(() => {
     runScript(() => controlAvailableAffelnetTrainingsWithCatalogueME())
-  })
-
-cli
-  .command("clean-and-rename-fields-rdv")
-  .description("Renomme les champs des collections sur la prise de rendez-vous")
-  .action(() => {
-    runScript((components) => cleanAndRenameFields(components))
   })
 
 /**
