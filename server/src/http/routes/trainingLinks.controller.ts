@@ -12,6 +12,17 @@ export default () => {
       const params = req.body
 
       await Joi.array()
+        .items(
+          Joi.object({
+            id: Joi.string().required(),
+            cle_ministere_educatif: Joi.string().allow(""),
+            mef: Joi.string().allow(""),
+            cfd: Joi.string().allow(""),
+            rncp: Joi.string().allow(""),
+            code_postal: Joi.string().allow(""),
+            uai: Joi.string().allow(""),
+          })
+        )
         .max(100)
         .messages({
           "array.base": "body must be an Array",
