@@ -24,7 +24,7 @@ const userValidationSchema = new Schema<IUserValidation>(
     },
     date: {
       type: Date,
-      default: new Date(),
+      default: () => new Date(),
       description: "Date de l'évènement",
     },
   },
