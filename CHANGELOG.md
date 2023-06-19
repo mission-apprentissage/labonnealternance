@@ -1,3 +1,10 @@
+# [1.29.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.28.0...v1.29.0) (2023-06-19)
+
+
+### Features
+
+* only etablissements to parcoursup if at least there is a formation available ([#379](https://github.com/mission-apprentissage/labonnealternance/issues/379)) ([177175d](https://github.com/mission-apprentissage/labonnealternance/commit/177175d3e01bc54a305f974fae22894824a31461))
+
 # [1.28.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.27.1...v1.28.0) (2023-06-18)
 
 
