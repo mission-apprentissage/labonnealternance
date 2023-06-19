@@ -1,4 +1,6 @@
-const formationMock = {
+import { IFormationCatalogue } from "../common/model/schema/formationCatalogue/formationCatalogue.types.js"
+
+const formationMock: Partial<IFormationCatalogue> = {
   cle_ministere_educatif: "id-formation-test",
   cfd: "50020007",
   nom: null,
@@ -21,7 +23,7 @@ const formationMock = {
   capacite: null,
   id_rco_formation: "id-formation-test|03_0000173##03_1200005|80003",
   id_formation: "id-formation-test",
-  etablissement_gestionnaire_id: "5e8df92120ff3b216126872a",
+  etablissement_gestionnaire_id: "1234",
   etablissement_gestionnaire_uai: "0700008G",
   etablissement_gestionnaire_type: null,
   etablissement_gestionnaire_conventionne: null,
@@ -29,7 +31,7 @@ const formationMock = {
   etablissement_gestionnaire_complement_adresse: null,
   etablissement_gestionnaire_cedex: null,
   etablissement_gestionnaire_entreprise_raison_sociale: "CAMPUS DE DUMMY",
-  etablissement_formateur_id: "5e8df92120ff3b216126872a",
+  etablissement_formateur_id: "1234",
   etablissement_formateur_siret: "30000000000018",
   etablissement_formateur_uai: "0700008G",
   etablissement_formateur_adresse: "126 CHE DES METIERS",
@@ -37,9 +39,9 @@ const formationMock = {
   etablissement_formateur_cedex: null,
   etablissement_formateur_entreprise_raison_sociale: "CAMPUS DE DUMMY",
   lieu_formation_geo_coordonnees: "46.002614,6.15737772159091",
-  created_at: "2021-04-01T02:23:24.063Z",
-  last_update_at: "2022-06-01T05:59:29.856Z",
-  id: "5fd25616c67da3c3e6bd0810",
+  created_at: new Date("2021-04-01T02:23:24.063Z"),
+  last_update_at: new Date("2022-06-01T05:59:29.856Z"),
+  _id: "1234",
   email: "labonnealternance@apprentissage.beta.gouv.fr",
   lieu_formation_adresse: "126 route des emplois",
   code_postal: "74570",
@@ -47,16 +49,10 @@ const formationMock = {
   rome_codes: ["D1102"],
   contenu: "",
   objectif: "",
-  date_debut: ["2022-09-01T00:00:00.000Z", "2022-09-01T00:00:00.000Z"],
-  date_fin: ["2022-09-01T00:00:00.000Z", "2022-09-01T00:00:00.000Z"],
+  date_debut: [new Date("2022-09-01T00:00:00.000Z"), new Date("2022-09-01T00:00:00.000Z")],
+  date_fin: [new Date("2022-09-01T00:00:00.000Z"), new Date("2022-09-01T00:00:00.000Z")],
   modalites_entrees_sorties: [false, false],
 }
-
-const formationsMock = [
-  { source: formationMock, id: formationMock.id, sort: [5] },
-  { source: formationMock, id: formationMock.id, sort: [10] },
-  { source: { ...formationMock, intitule_long: "PATISSIER (CAP)" }, id: formationMock.id, sort: [15] },
-]
 
 const formationDetailMock = {
   data: {
@@ -96,5 +92,11 @@ const formationDetailMock = {
     },*/
   },
 }
+
+const formationsMock = [
+  { source: formationMock, id: formationMock._id, sort: [5] },
+  { source: formationMock, id: formationMock._id, sort: [10] },
+  { source: { ...formationMock, intitule_long: "PATISSIER (CAP)" }, id: formationMock._id, sort: [15] },
+]
 
 export { formationMock, formationsMock, formationDetailMock }
