@@ -1,3 +1,10 @@
+# [1.31.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.30.0...v1.31.0) (2023-06-19)
+
+
+### Features
+
+* move service maj info bonneboite ([#444](https://github.com/mission-apprentissage/labonnealternance/issues/444)) ([db5bfa2](https://github.com/mission-apprentissage/labonnealternance/commit/db5bfa2f5fbec59867477517a95d98b503b9be96))
+
 # [1.30.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.29.0...v1.30.0) (2023-06-19)
 
 
