@@ -62,7 +62,7 @@ export const optoutSchema = new Schema<IOptout>(
           },
           date: {
             type: Date,
-            default: new Date(),
+            default: () => new Date(),
           },
         },
       ],
