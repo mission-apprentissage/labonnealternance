@@ -84,7 +84,8 @@ const runValidation = async () => {
           await setManualValidation(etp._id)
         }
       } else {
-        await setManualValidation(etp._id)
+        // keep awaiting status
+        return
       }
     }
   })
