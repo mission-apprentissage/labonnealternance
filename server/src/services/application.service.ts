@@ -411,6 +411,8 @@ export const validateSendApplication = async (validable: Partial<IApplicationPar
     job_id: Joi.optional(),
     caller: Joi.optional(),
     message: Joi.optional(),
+    secret: Joi.optional(),
+    crypted_company_email: Joi.optional(),
   })
   try {
     await schema.validateAsync(validable)
