@@ -1,3 +1,10 @@
+## [1.32.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.32.0...v1.32.1) (2023-06-19)
+
+
+### Bug Fixes
+
+* avoid date freeze from server startup ([0019b50](https://github.com/mission-apprentissage/labonnealternance/commit/0019b50fb52d2f68a1f1b760e81e8ecb583eae02))
+
 # [1.32.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.31.0...v1.32.0) (2023-06-19)
 
 
