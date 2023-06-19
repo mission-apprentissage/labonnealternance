@@ -8,7 +8,7 @@ import config from "../../config.js"
  * @description Invite all "etablissements" to Premium.
  * @returns {Promise<void>}
  */
-export const inviteEtablissementToPremium = async ({ etablissements, mailer }) => {
+export const inviteEtablissementToPremium = async ({ etablissements, mailer, eligibleTrainingsForAppointments }) => {
   logger.info("Cron #inviteEtablissementToPremium started.")
 
   const etablissementsToInvite = await etablissements.find({
@@ -20,6 +20,19 @@ export const inviteEtablissementToPremium = async ({ etablissements, mailer }) =
   })
 
   for (const etablissement of etablissementsToInvite) {
+    // Only send an invite if the "etablissement" have at least one available Parcoursup "formation"
+    const hasOneAvailableFormation = await eligibleTrainingsForAppointments
+      .findOne({
+        etablissement_formateur_siret: etablissement.formateur_siret,
+        lieu_formation_email: { $ne: null },
+        parcoursup_id: { $ne: null },
+      })
+      .lean()
+
+    if (!hasOneAvailableFormation) {
+      continue
+    }
+
     // Invite all etablissements only in production environment
     const { messageId } = await mailer.sendEmail({
       to: etablissement.gestionnaire_email,
