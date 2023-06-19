@@ -77,8 +77,8 @@ const stats = () => (
         <Tabs variant="unstyled">
           <TabList px={{base:0, sm: 4}}>
             <Tab {...tabParams} _focus={focusedTabParams} _selected={selectedTabParams}>Exposition</Tab>
-            <Tab {...tabParams} _focus={focusedTabParams} _selected={selectedTabParams}>Mise en action</Tab>
-            <Tab {...tabParams} _focus={focusedTabParams} _selected={selectedTabParams}>Transformation</Tab>
+            <Tab {...tabParams} _focus={focusedTabParams} _selected={selectedTabParams}>Mise en relation</Tab>
+            <Tab {...tabParams} _focus={focusedTabParams} _selected={selectedTabParams}>Conversion</Tab>
           </TabList>
 
           <TabPanels mt={6}>
