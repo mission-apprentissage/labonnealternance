@@ -1,5 +1,5 @@
 import assert from "assert"
-import { deduplicateFormations } from "../../src/service/formations.js"
+import { deduplicateFormations } from "../../src/services/formation.service.js"
 import __filename from "../../src/common/filename.js"
 
 describe(__filename(import.meta.url), () => {
