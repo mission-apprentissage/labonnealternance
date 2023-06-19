@@ -4,6 +4,7 @@ import Joi from "joi"
 import { logger } from "../../../common/logger.js"
 import { EligibleTrainingsForAppointment } from "../../../common/model/index.js"
 import { tryCatch } from "../../middlewares/tryCatchMiddleware.js"
+import * as eligibleTrainingsForAppointmentService from "../../../services/eligibleTrainingsForAppointment.service.js"
 
 const eligibleTrainingsForAppointmentIdPatchSchema = Joi.object({
   is_lieu_formation_email_customized: Joi.boolean().optional(),
@@ -32,7 +33,7 @@ const eligibleTrainingsForAppointmentSchema = Joi.object({
 /**
  * Sample entity route module for GET
  */
-export default ({ eligibleTrainingsForAppointments, etablissements }) => {
+export default ({ etablissements }) => {
   const router = express.Router()
 
   /**
@@ -127,7 +128,7 @@ export default ({ eligibleTrainingsForAppointments, etablissements }) => {
     tryCatch(async ({ body, params }, res) => {
       await eligibleTrainingsForAppointmentSchema.validateAsync(body, { abortEarly: false })
       logger.info("Updating new item: ", body)
-      const result = await eligibleTrainingsForAppointments.updateParameter(params.id, body)
+      const result = await eligibleTrainingsForAppointmentService.updateParameter(params.id, body)
       res.send(result)
     })
   )
@@ -140,7 +141,7 @@ export default ({ eligibleTrainingsForAppointments, etablissements }) => {
     tryCatch(async ({ body, params }, res) => {
       await eligibleTrainingsForAppointmentIdPatchSchema.validateAsync(body, { abortEarly: false })
 
-      const result = await eligibleTrainingsForAppointments.updateParameter(params.id, body)
+      const result = await eligibleTrainingsForAppointmentService.updateParameter(params.id, body)
 
       res.send(result)
     })
@@ -153,7 +154,7 @@ export default ({ eligibleTrainingsForAppointments, etablissements }) => {
     "/:id",
     tryCatch(async ({ params }, res) => {
       logger.info("Deleting new item: ", params.id)
-      await eligibleTrainingsForAppointments.remove(params.id)
+      await eligibleTrainingsForAppointmentService.remove(params.id)
       res.send({ message: `Item ${params.id} deleted !` })
     })
   )

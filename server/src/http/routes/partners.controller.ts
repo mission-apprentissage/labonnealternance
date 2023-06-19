@@ -1,11 +1,12 @@
 import express from "express"
 import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
 import { referrers } from "../../common/model/constants/referrers.js"
+import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service.js"
 
 /**
  * @description Partners router.
  */
-export default ({ eligibleTrainingsForAppointments }) => {
+export default () => {
   const router = express.Router()
 
   /**
@@ -15,7 +16,7 @@ export default ({ eligibleTrainingsForAppointments }) => {
   router.get(
     "/parcoursup/formations",
     tryCatch(async (req, res) => {
-      const ids = await eligibleTrainingsForAppointments.find(
+      const ids = await eligibleTrainingsForAppointmentService.find(
         {
           parcoursup_id: {
             $ne: null,

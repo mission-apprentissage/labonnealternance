@@ -2,8 +2,9 @@ import passport from "passport"
 import { Strategy, ExtractJwt } from "passport-jwt"
 import { compose } from "compose-middleware"
 import config from "../../config.js"
+import * as users from "../../services/user.service.js"
 
-export default ({ users }) => {
+export default () => {
   passport.use(
     new Strategy(
       {

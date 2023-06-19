@@ -21,7 +21,6 @@ import {
   ListeOffre,
   Users,
 } from "./pages/Administration"
-import AppointmentFollowUpPage from "./pages/AppointmentFollowUpPage"
 import {
   AuthValidation,
   CompteEnAttente,
@@ -156,7 +155,6 @@ const App = () => {
         <Route path="/form/opt-out/unsubscribe/:id" element={<OptOutUnsubscribe />} />
         <Route path="/form/premium/affelnet/:id" element={<PremiumAffelnetForm />} />
         <Route path="/form/premium/:id" element={<PremiumForm />} />
-        <Route path="/appointment/candidat/follow-up/:id/:action(confirm|resend)" element={<AppointmentFollowUpPage />} />
         <Route path="/widget/tutorial" element={<Widget />} />
         <Route path="/establishment/:establishmentId/appointments/:appointmentId" element={<CfaCandidatInformationPage />} />
         <Route

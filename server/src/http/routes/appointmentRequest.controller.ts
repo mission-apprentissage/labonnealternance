@@ -2,12 +2,15 @@ import Boom from "boom"
 import express from "express"
 import Joi from "joi"
 import { mailTemplate } from "../../assets/index.js"
-import { candidatFollowUpType, mailType } from "../../common/model/constants/appointments.js"
-import { getReferrerById, getReferrerByKeyName } from "../../common/model/constants/referrers.js"
+import * as appointmentService from "../../services/appointment.service.js"
+import { mailType } from "../../common/model/constants/appointments.js"
+import { getReferrerByKeyName } from "../../common/model/constants/referrers.js"
 import { roles } from "../../common/roles.js"
 import { dayjs } from "../../common/utils/dayjs.js"
 import config from "../../config.js"
 import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
+import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service.js"
+import * as users from "../../services/user.service.js"
 
 const userRequestSchema = Joi.object({
   firstname: Joi.string().required(),
@@ -21,10 +24,6 @@ const userRequestSchema = Joi.object({
   appointmentOrigin: Joi.string().required(),
 })
 
-const appointmentIdFollowUpSchema = Joi.object({
-  action: Joi.string().valid(candidatFollowUpType.CONFIRM, candidatFollowUpType.RESEND).required(),
-})
-
 const appointmentReplySchema = Joi.object({
   appointment_id: Joi.string().required(),
   cfa_intention_to_applicant: Joi.string().required(),
@@ -32,7 +31,7 @@ const appointmentReplySchema = Joi.object({
   cfa_message_to_applicant: Joi.string().allow("").optional(),
 })
 
-export default ({ users, appointments, mailer, eligibleTrainingsForAppointments, etablissements }) => {
+export default ({ mailer, etablissements }) => {
   const router = express.Router()
 
   router.post(
@@ -40,13 +39,12 @@ export default ({ users, appointments, mailer, eligibleTrainingsForAppointments,
     tryCatch(async (req, res) => {
       await userRequestSchema.validateAsync(req.body, { abortEarly: false })
 
-      let { firstname, lastname, phone, email, applicantMessageToCfa, applicantReasons, type, appointmentOrigin, cleMinistereEducatif } = req.body
-
-      email = email.toLowerCase()
+      const { firstname, lastname, phone, applicantMessageToCfa, applicantReasons, type, appointmentOrigin, cleMinistereEducatif } = req.body
+      const email = req.body.email.toLowerCase()
 
       const referrerObj = getReferrerByKeyName(appointmentOrigin)
 
-      const eligibleTrainingsForAppointment = await eligibleTrainingsForAppointments.findOne({
+      const eligibleTrainingsForAppointment = await eligibleTrainingsForAppointmentService.findOne({
         cle_ministere_educatif: cleMinistereEducatif,
         referrers: { $in: [referrerObj.name] },
       })
@@ -60,7 +58,7 @@ export default ({ users, appointments, mailer, eligibleTrainingsForAppointments,
       // Updates firstname and last name if the user already exists
       if (user) {
         user = await users.update(user._id, { firstname, lastname, phone, type, last_action_date: dayjs().format() })
-        const appointment = await appointments.findOne({
+        const appointment = await appointmentService.findOne({
           applicant_id: user._id,
           cle_ministere_educatif: eligibleTrainingsForAppointment.cle_ministere_educatif,
           created_at: {
@@ -71,7 +69,7 @@ export default ({ users, appointments, mailer, eligibleTrainingsForAppointments,
         if (appointment) {
           return res.send({
             error: {
-              message: `Une demande de prise de RDV en date du ${dayjs(appointment.createdAt).format("DD/MM/YYYY")} est actuellement est cours de traitement.`,
+              message: `Une demande de prise de RDV en date du ${dayjs(appointment.created_at).format("DD/MM/YYYY")} est actuellement est cours de traitement.`,
             },
           })
         }
@@ -83,12 +81,12 @@ export default ({ users, appointments, mailer, eligibleTrainingsForAppointments,
           email,
           type,
           role: roles.candidat,
-          last_action_date: dayjs().format(),
+          last_action_date: dayjs().toDate(),
         })
       }
 
       const [createdAppointement, etablissement] = await Promise.all([
-        appointments.createAppointment({
+        appointmentService.createAppointment({
           applicant_id: user._id,
           cfa_recipient_email: eligibleTrainingsForAppointment.lieu_formation_email,
           cfa_formateur_siret: eligibleTrainingsForAppointment.etablissement_formateur_siret,
@@ -134,6 +132,12 @@ export default ({ users, appointments, mailer, eligibleTrainingsForAppointments,
         },
       }
 
+      let emailCfaSubject = `[${referrerObj.full_name}] - Un candidat a un message pour vous`
+
+      if (eligibleTrainingsForAppointment.lieu_formation_zip_code) {
+        emailCfaSubject = `${emailCfaSubject} - [${eligibleTrainingsForAppointment.lieu_formation_zip_code.slice(0, 2)}]`
+      }
+
       // Sends email to "candidate" and "formation"
       const [emailCandidat, emailCfa] = await Promise.all([
         mailer.sendEmail({
@@ -144,7 +148,7 @@ export default ({ users, appointments, mailer, eligibleTrainingsForAppointments,
         }),
         mailer.sendEmail({
           to: eligibleTrainingsForAppointment.lieu_formation_email,
-          subject: `[RDV via ${referrerObj.full_name}] Un candidat souhaite être contacté`,
+          subject: emailCfaSubject,
           template: mailTemplate["mail-cfa-demande-de-contact"],
           data: mailData,
         }),
@@ -152,7 +156,7 @@ export default ({ users, appointments, mailer, eligibleTrainingsForAppointments,
 
       // Save in database SIB message-id for tracking
       await Promise.all([
-        await appointments.findOneAndUpdate(
+        await appointmentService.findOneAndUpdate(
           { _id: createdAppointement._id },
           {
             $push: {
@@ -165,7 +169,7 @@ export default ({ users, appointments, mailer, eligibleTrainingsForAppointments,
             },
           }
         ),
-        await appointments.findOneAndUpdate(
+        await appointmentService.findOneAndUpdate(
           { _id: createdAppointement._id },
           {
             $push: {
@@ -180,7 +184,7 @@ export default ({ users, appointments, mailer, eligibleTrainingsForAppointments,
         ),
       ])
 
-      const appointmentUpdated = await appointments.findById(createdAppointement._id)
+      const appointmentUpdated = await appointmentService.findById(createdAppointement._id)
 
       res.json({
         userId: user._id,
@@ -194,10 +198,10 @@ export default ({ users, appointments, mailer, eligibleTrainingsForAppointments,
     tryCatch(async (req, res) => {
       const { appointmentId } = req.query
 
-      const appointment = await appointments.findById(appointmentId).lean()
+      const appointment = await appointmentService.findById(appointmentId).lean()
 
       const [eligibleTrainingsForAppointment, user] = await Promise.all([
-        eligibleTrainingsForAppointments.getParameterByCleMinistereEducatif({
+        eligibleTrainingsForAppointmentService.getParameterByCleMinistereEducatif({
           cleMinistereEducatif: appointment.cle_ministere_educatif,
         }),
         users.getUserById(appointment.applicant_id),
@@ -220,10 +224,10 @@ export default ({ users, appointments, mailer, eligibleTrainingsForAppointments,
       await appointmentReplySchema.validateAsync(req.body, { abortEarly: false })
       const { appointment_id, cfa_intention_to_applicant, cfa_message_to_applicant, cfa_message_to_applicant_date } = req.body
 
-      const appointment = await appointments.findById(appointment_id).lean()
+      const appointment = await appointmentService.findById(appointment_id).lean()
 
       const [eligibleTrainingsForAppointment, user] = await Promise.all([
-        eligibleTrainingsForAppointments.getParameterByCleMinistereEducatif({
+        eligibleTrainingsForAppointmentService.getParameterByCleMinistereEducatif({
           cleMinistereEducatif: appointment.cle_ministere_educatif,
         }),
         users.getUserById(appointment.applicant_id),
@@ -235,7 +239,7 @@ export default ({ users, appointments, mailer, eligibleTrainingsForAppointments,
           subject: `[La bonne alternance] Le centre de formation vous répond`,
           template: mailTemplate["mail-reponse-cfa"],
           data: {
-            logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png`,
+            logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
             prenom: user.firstname,
             nom: user.lastname,
             message: cfa_message_to_applicant,
@@ -244,110 +248,8 @@ export default ({ users, appointments, mailer, eligibleTrainingsForAppointments,
           },
         })
       }
-      await appointments.updateAppointment(appointment_id, { cfa_intention_to_applicant, cfa_message_to_applicant, cfa_message_to_applicant_date })
+      await appointmentService.updateAppointment(appointment_id, { cfa_intention_to_applicant, cfa_message_to_applicant, cfa_message_to_applicant_date })
       res.json({ appointment_id, cfa_intention_to_applicant, cfa_message_to_applicant, cfa_message_to_applicant_date })
-    })
-  )
-
-  router.get(
-    "/:id/candidat/follow-up",
-    tryCatch(async (req, res) => {
-      const appointment = await appointments.findOne({ _id: req.params.id })
-
-      if (!appointment) {
-        return res.sendStatus(400)
-      }
-
-      const etablissement = await etablissements.findOne({ formateur_siret: appointment.etablissement_id })
-
-      // Check if the RESEND action has already been triggered
-      const cfaMailResendExists = appointment.to_cfa_mails.find((mail) => mail.campaign === mailType.CFA_REMINDER_RESEND_APPOINTMENT)
-
-      res.send({
-        formAlreadySubmit: !!(appointment.candidat_contacted_at || cfaMailResendExists),
-        etablissement: {
-          raison_sociale: etablissement.raison_sociale,
-          formateur_address: etablissement.formateur_address,
-          formateur_zip_code: etablissement.formateur_zip_code,
-          formateur_city: etablissement.formateur_city,
-        },
-      })
-    })
-  )
-
-  router.post(
-    "/:id/candidat/follow-up",
-    tryCatch(async (req, res) => {
-      const { action } = await appointmentIdFollowUpSchema.validateAsync(req.body, { abortEarly: false })
-
-      const appointment = await appointments.findOne({ _id: req.params.id })
-
-      if (!appointment) {
-        return res.sendStatus(400)
-      }
-
-      // Check if the RESEND action has already been triggered
-      const cfaMailResendExists = appointment.to_cfa_mails.find((mail) => mail.campaign === mailType.CFA_REMINDER_RESEND_APPOINTMENT)
-
-      if (appointment.candidat_contacted_at || cfaMailResendExists) {
-        return res.sendStatus(400)
-      }
-
-      const [user, eligibleTrainingsForAppointment] = await Promise.all([
-        users.findOne({ _id: appointment.applicant_id }),
-        eligibleTrainingsForAppointments.findOne({ cle_ministere_educatif: appointment.cle_ministere_educatif }),
-      ])
-
-      if (action === candidatFollowUpType.RESEND) {
-        const referrerObj = getReferrerById(appointment.referrer)
-
-        const { messageId } = await mailer.sendEmail({
-          to: eligibleTrainingsForAppointment.lieu_formation_email,
-          subject: `[RDV via ${referrerObj.full_name}] Relance - Un candidat souhaite être contacté`,
-          template: mailTemplate["mail-cfa-demande-de-contact"],
-          data: {
-            user: {
-              firstname: user.firstname,
-              lastname: user.lastname,
-              phone: user.phone.match(/.{1,2}/g).join("."),
-              email: user.email,
-              applicant_message_to_cfa: appointment.applicant_message_to_cfa,
-            },
-            etablissement: {
-              name: eligibleTrainingsForAppointment.etablissement_formateur_raison_sociale,
-              formateur_address: eligibleTrainingsForAppointment.lieu_formation_street,
-              formateur_zip_code: eligibleTrainingsForAppointment.lieu_formation_zip_code,
-              formateur_city: eligibleTrainingsForAppointment.lieu_formation_city,
-            },
-            formation: {
-              intitule: eligibleTrainingsForAppointment.training_intitule_long,
-            },
-            appointment: {
-              referrerLink: referrerObj.url,
-              appointment_origin: referrerObj.full_name,
-            },
-            images: {
-              peopleLaptop: `${config.publicUrlEspacePro}/assets/girl_laptop.png?raw=true`,
-            },
-          },
-        })
-
-        await appointments.findOneAndUpdate(
-          { _id: appointment._id },
-          {
-            $push: {
-              to_cfa_mails: {
-                campaign: mailType.CFA_REMINDER_RESEND_APPOINTMENT,
-                status: null,
-                message_id: messageId,
-                email_sent_at: dayjs().toDate(),
-              },
-            },
-          }
-        )
-      }
-
-      res.sendStatus(200)
     })
   )
 

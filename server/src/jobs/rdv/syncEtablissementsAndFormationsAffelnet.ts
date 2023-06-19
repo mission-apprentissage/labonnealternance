@@ -6,6 +6,7 @@ import { dayjs } from "../../common/utils/dayjs.js"
 import { isValidEmail } from "../../common/utils/isValidEmail.js"
 import { isEmailBlacklisted } from "../../services/application.service.js"
 import { affelnetSelectedFields, getFormationsFromCatalogueMe } from "../../services/catalogue.service.js"
+import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service.js"
 
 /**
  * Gets email from catalogue field.
@@ -32,7 +33,7 @@ const getEmailFromCatalogueField = (email) => {
  * @description Gets Catalogue etablissments informations and insert in etablissement collection.
  * @returns {Promise<void>}
  */
-export const syncAffelnetFormationsFromCatalogueME = async ({ etablissements, eligibleTrainingsForAppointments }) => {
+export const syncAffelnetFormationsFromCatalogueME = async ({ etablissements }) => {
   logger.info("Cron #syncEtablissementsAndFormationsAffelnet started.")
 
   const catalogueMinistereEducatif = await getFormationsFromCatalogueMe({
@@ -50,7 +51,7 @@ export const syncAffelnetFormationsFromCatalogueME = async ({ etablissements, el
     writeData(
       async (formation) => {
         const [eligibleTrainingsForAppointment, etablissement] = await Promise.all([
-          eligibleTrainingsForAppointments.findOne({
+          eligibleTrainingsForAppointmentService.findOne({
             cle_ministere_educatif: formation.cle_ministere_educatif,
           }),
           etablissements.findOne({ formateur_siret: formation.etablissement_formateur_siret }),
@@ -77,7 +78,7 @@ export const syncAffelnetFormationsFromCatalogueME = async ({ etablissements, el
 
           const emailBlacklisted = await isEmailBlacklisted(emailRdv)
 
-          await eligibleTrainingsForAppointments.updateMany(
+          await eligibleTrainingsForAppointmentService.updateMany(
             { cle_ministere_educatif: formation.cle_ministere_educatif },
             {
               training_id_catalogue: formation._id,
@@ -108,7 +109,7 @@ export const syncAffelnetFormationsFromCatalogueME = async ({ etablissements, el
 
           const emailBlacklisted = await isEmailBlacklisted(emailRdv)
 
-          await eligibleTrainingsForAppointments.create({
+          await eligibleTrainingsForAppointmentService.create({
             training_id_catalogue: formation._id,
             lieu_formation_email: emailRdv,
             parcoursup_id: formation.parcoursup_id,
@@ -118,7 +119,6 @@ export const syncAffelnetFormationsFromCatalogueME = async ({ etablissements, el
             referrers: emailRdv && !emailBlacklisted ? referrersToActivate : [],
             is_catalogue_published: formation.published,
             rco_formation_id: formation.id_rco_formation,
-            last_catalogue_sync_date: dayjs().format(),
             lieu_formation_street: formation.lieu_formation_adresse,
             lieu_formation_city: formation.localite,
             lieu_formation_zip_code: formation.code_postal,

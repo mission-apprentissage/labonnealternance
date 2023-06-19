@@ -34,7 +34,7 @@ export const eligibleTrainingsForAppointmentSchema = new Schema<IEligibleTrainin
     description: "Spécifie si la synchronisation avec le catalogue ne doit pas écraser l'email_rdv",
   },
   referrers: {
-    type: [Object],
+    type: [String],
     default: [],
     description: "Liste des sites autorisés",
   },

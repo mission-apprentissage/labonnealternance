@@ -1,10 +1,9 @@
-// @ts-nocheck
 import NodeClam from "clamscan"
 import { Readable } from "stream"
 import tcpPortUsed from "tcp-port-used"
-import config from "../../config.js"
-import { logger } from "../logger.js"
-import { notifyToSlack } from "../utils/slackUtils.js"
+import config from "../config.js"
+import { logger } from "../common/logger.js"
+import { notifyToSlack } from "../common/utils/slackUtils.js"
 
 let scanner = null
 
@@ -13,13 +12,17 @@ const setScanner = async () => {
   logger.info("Clamav scanner initialized")
 }
 
-const initScanner = async () => {
+/**
+ * @description Initialize clamav scanner.
+ * @returns {Promise<unknown>}
+ */
+const initScanner = (): Promise<unknown> => {
   const port = 3310
   const host = config.env === "local" ? "localhost" : "clamav"
 
   return new Promise((resolve, reject) => {
     tcpPortUsed
-      .waitUntilUsedOnHost(parseInt(port), host, 500, 30000)
+      .waitUntilUsedOnHost(port, host, 500, 30000)
       .then(() => {
         const params = {
           //debugMode: config.env === "local" ? true : false, // This will put some debug info in your js console
@@ -37,17 +40,12 @@ const initScanner = async () => {
   })
 }
 
-const scanString = async (fileContent) => {
-  /*
-const eicarStr = "X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*";
-const utf8Encode = new TextEncoder();
-const eicarByteArray = utf8Encode.encode(eicarStr);
-const eicarBuffer = Buffer.from(eicarByteArray);
-const rs = Readable.from(eicarBuffer);
-let { isInfected, viruses } = await clamscan.scanStream(rs);
-console.log("scan result EICAR String : ", isInfected, viruses);
-*/
-
+/**
+ * @description Scan a "string".
+ * @param {string} fileContent
+ * @returns {Promise<boolean>}
+ */
+const scanString = async (fileContent: string): Promise<boolean> => {
   // le fichier est encodé en base 64 à la suite d'un en-tête.
   const decodedAscii = Readable.from(Buffer.from(fileContent.substring(fileContent.indexOf(";base64,") + 8), "base64").toString("ascii"))
   const rs = Readable.from(decodedAscii)
@@ -62,22 +60,26 @@ console.log("scan result EICAR String : ", isInfected, viruses);
   return isInfected
 }
 
-export default function (fileContent) {
-  async function scan(fileContent) {
-    if (scanner) {
-      return scanString(fileContent)
-    } else {
-      try {
-        logger.info("Initalizing clamav")
-        await setScanner() //await new NodeClam().init(params);
-        return scanString(fileContent)
-      } catch (err) {
-        logger.error("Error initializing clamav " + err)
-
-        return false
-      }
-    }
+/**
+ * @description Scan a file.
+ * @param {string} fileContent
+ * @returns {Promise<boolean>}
+ */
+const scan = async (fileContent: string): Promise<boolean> => {
+  if (scanner) {
+    return scanString(fileContent)
   }
 
-  return scan(fileContent)
+  try {
+    logger.info("Initalizing Clamav")
+    await setScanner()
+
+    return scanString(fileContent)
+  } catch (err) {
+    logger.error("Error initializing Clamav " + err)
+
+    return false
+  }
 }
+
+export { scan }

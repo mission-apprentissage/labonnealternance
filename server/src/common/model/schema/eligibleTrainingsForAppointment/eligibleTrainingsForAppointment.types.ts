@@ -9,7 +9,7 @@ interface IEligibleTrainingsForAppointment {
   lieu_formation_city: string
   lieu_formation_zip_code: string
   is_lieu_formation_email_customized: boolean
-  referrers: object[]
+  referrers: string[]
   rco_formation_id: string
   is_catalogue_published: boolean
   last_catalogue_sync_date: Date
