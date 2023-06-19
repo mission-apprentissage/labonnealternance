@@ -1,3 +1,15 @@
+# [1.30.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.29.0...v1.30.0) (2023-06-19)
+
+
+### Bug Fixes
+
+* ajout champs optionnels utiles pour tester les candidatures en prod ([#442](https://github.com/mission-apprentissage/labonnealternance/issues/442)) ([14c0ed2](https://github.com/mission-apprentissage/labonnealternance/commit/14c0ed29c6ee025ad4fcf73e25c16746d05569c5))
+
+
+### Features
+
+* optimisations algo et filtrage prdv sans email ([#443](https://github.com/mission-apprentissage/labonnealternance/issues/443)) ([7c48992](https://github.com/mission-apprentissage/labonnealternance/commit/7c48992aa22867619edac4e74649a2efce873c9b))
+
 # [1.29.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.28.0...v1.29.0) (2023-06-19)
 
 
