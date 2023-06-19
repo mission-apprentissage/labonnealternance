@@ -1,3 +1,10 @@
+# [1.32.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.31.0...v1.32.0) (2023-06-19)
+
+
+### Features
+
+* keep state is unsolved ([96193b5](https://github.com/mission-apprentissage/labonnealternance/commit/96193b5581ec120db3610f9a45f7ff9702f8dded))
+
 # [1.31.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.30.0...v1.31.0) (2023-06-19)
 
 
