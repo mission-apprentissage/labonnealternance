@@ -4,6 +4,8 @@ import { IFormationCatalogue } from "../common/model/schema/formationCatalogue/f
 import apiGeoAdresse from "../common/utils/apiGeoAdresse.js"
 import { URL } from "url"
 
+const utmData = "&utm_source=lba&utm_medium=email&utm_campaign=promotion-emploi-jeunes-voeux"
+
 interface IWish {
   id: string
   cle_ministere_educatif: string
@@ -28,8 +30,20 @@ const getPrdvLink = async (training: Partial<IWish>): Promise<string> => {
   if (!training.cle_ministere_educatif) {
     return ""
   } else {
-    const elligibleFormation = await EligibleTrainingsForAppointment.findOne({ cle_ministere_educatif: training.cle_ministere_educatif }, { _id: 1 })
-    return elligibleFormation ? new URL(`${lbaDomain}/espace-pro/form?referrer=lba&cleMinistereEducatif=${encodeURIComponent(training.cle_ministere_educatif)}`).toString() : ""
+    const elligibleFormation = await EligibleTrainingsForAppointment.findOne(
+      {
+        cle_ministere_educatif: training.cle_ministere_educatif,
+        lieu_formation_email: {
+          $ne: null,
+          $exists: true,
+          $not: /^$/,
+        },
+      },
+      { _id: 1 }
+    )
+    return elligibleFormation
+      ? new URL(`${lbaDomain}/espace-pro/form?referrer=lba&cleMinistereEducatif=${encodeURIComponent(training.cle_ministere_educatif)}${utmData}`).toString()
+      : ""
   }
 }
 
@@ -44,31 +58,8 @@ const getLBALink = async (training: Partial<IWish>): Promise<string> => {
     }
   }
 
-  // identification du lieu
-  let lat = null
-  let lon = null
-  if (training.uai) {
-    formations = await FormationCatalogue.findOne(
-      {
-        etablissement_formateur_uai: training.uai,
-      },
-      {
-        lieu_formation_geo_coordonnees: 1,
-        _id: 0,
-      }
-    )
-
-    if (formations) {
-      lat = formations.lieu_formation_geo_coordonnees.split(",")[0]
-      lon = formations.lieu_formation_geo_coordonnees.split(",")[1]
-    } else if (training.code_postal) {
-      const responseApiAdresse = await apiGeoAdresse.searchPostcodeOnly(training.code_postal)
-      if (responseApiAdresse && responseApiAdresse.features.length) {
-        lat = responseApiAdresse.features[0].geometry.coordinates[1]
-        lon = responseApiAdresse.features[0].geometry.coordinates[0]
-      }
-    }
-  }
+  // pas de formation trouvée. on utilise les autres paramètres fournis pour construire le lien lbac
+  const lbaLink = new URL(`${lbaDomain}/recherche-emploi`)
 
   // identification des romes
   let romes = null
@@ -100,10 +91,37 @@ const getLBALink = async (training: Partial<IWish>): Promise<string> => {
     romes = Array.from(romeSet)
   }
 
-  const lbaLink = new URL(`${lbaDomain}/recherche-emploi`)
+  if (!romes?.length) {
+    lbaLink.search = utmData
+    return lbaLink.toString()
+  } else {
+    // identification du lieu
+    let lat = null
+    let lon = null
+    if (training.uai) {
+      formations = await FormationCatalogue.findOne(
+        {
+          etablissement_formateur_uai: training.uai,
+        },
+        {
+          lieu_formation_geo_coordonnees: 1,
+          _id: 0,
+        }
+      )
 
-  if (romes) {
-    lbaLink.search = `romes=${romes}${lat && lon ? `&lat=${lat}&lon=${lon}&radius=60` : ""}`
+      if (formations) {
+        lat = formations.lieu_formation_geo_coordonnees.split(",")[0]
+        lon = formations.lieu_formation_geo_coordonnees.split(",")[1]
+      } else if (training.code_postal) {
+        const responseApiAdresse = await apiGeoAdresse.searchPostcodeOnly(training.code_postal)
+        if (responseApiAdresse && responseApiAdresse.features.length) {
+          lat = responseApiAdresse.features[0].geometry.coordinates[1]
+          lon = responseApiAdresse.features[0].geometry.coordinates[0]
+        }
+      }
+    }
+
+    lbaLink.search = `romes=${romes}${lat && lon ? `&lat=${lat}&lon=${lon}&radius=60` : ""}${utmData}`
   }
 
   return lbaLink.toString()
@@ -111,7 +129,7 @@ const getLBALink = async (training: Partial<IWish>): Promise<string> => {
 
 const buildLbaLinkFromFormation = (formation: IFormationCatalogue): string => {
   const latLon = formation.lieu_formation_geo_coordonnees.split(",")
-  return new URL(`${lbaDomain}/recherche-emploi?&romes=${formation.rome_codes}&lat=${latLon[0]}&lon=${latLon[1]}&radius=60`).toString()
+  return new URL(`${lbaDomain}/recherche-emploi?&romes=${formation.rome_codes}&lat=${latLon[0]}&lon=${latLon[1]}&radius=60${utmData}`).toString()
 }
 
 /**
@@ -122,20 +140,8 @@ const buildLbaLinkFromFormation = (formation: IFormationCatalogue): string => {
 export const getTrainingLinks = async (params: IWish[]): Promise<ILinks[]> => {
   const results = []
   await asyncForEach(params, async (training) => {
-    if (!(training.id ?? null)) {
-      results.push({
-        error: true,
-        message: "id is missing",
-      })
-    } else {
-      const result: Partial<ILinks> = { id: training.id }
-      const [lien_prdv, lien_lba] = await Promise.all([getPrdvLink(training), getLBALink(training)])
-
-      result.lien_prdv = lien_prdv
-      result.lien_lba = lien_lba
-
-      results.push(result)
-    }
+    const [lien_prdv, lien_lba] = await Promise.all([getPrdvLink(training), getLBALink(training)])
+    results.push({ id: training.id, lien_prdv, lien_lba })
   })
   return results
 }
