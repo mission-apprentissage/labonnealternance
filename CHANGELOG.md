@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.0.0...v1.0.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* reference userRecruteurs in components ([#448](https://github.com/mission-apprentissage/labonnealternance/issues/448)) ([3c91c7d](https://github.com/mission-apprentissage/labonnealternance/commit/3c91c7d18f0da916788d6edfec74f51f5f47aec0))
+
 # 1.0.0 (2023-06-19)
 
 
