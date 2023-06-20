@@ -21,14 +21,7 @@ const userRequestSchema = Joi.object({
   applicantMessageToCfa: Joi.string().allow(null, ""),
   applicantReasons: Joi.array().items(Joi.string().valid("modalite", "contenu", "porte", "frais", "place", "horaire", "plus", "accompagnement", "lieu", "suivi", "autre")),
   cleMinistereEducatif: Joi.string().required(),
-  referrer: Joi.string().required(),
-})
-
-const appointmentItemSchema = Joi.object({
-  appointmentId: Joi.string().required(),
-  cfaAPrisContact: Joi.boolean().optional(),
-  champsLibreStatut: Joi.string().optional().allow(""),
-  champsLibreCommentaires: Joi.string().optional().allow(""),
+  appointmentOrigin: Joi.string().required(),
 })
 
 const appointmentReplySchema = Joi.object({
@@ -49,14 +42,14 @@ export default ({ mailer, etablissements }) => {
       const { firstname, lastname, phone, applicantMessageToCfa, applicantReasons, type, appointmentOrigin, cleMinistereEducatif } = req.body
       const email = req.body.email.toLowerCase()
 
-      const referrerObj = getReferrerByKeyName(referrer)
+      const referrerObj = getReferrerByKeyName(appointmentOrigin)
 
       const eligibleTrainingsForAppointment = await eligibleTrainingsForAppointmentService.findOne({
         cle_ministere_educatif: cleMinistereEducatif,
-        referrers: { $in: [referrerObj.code] },
+        referrers: { $in: [referrerObj.name] },
       })
 
-      if (!widgetParameter) {
+      if (!eligibleTrainingsForAppointment) {
         throw Boom.badRequest("Formation introuvable.")
       }
 
@@ -103,7 +96,7 @@ export default ({ mailer, etablissements }) => {
           cle_ministere_educatif: eligibleTrainingsForAppointment.cle_ministere_educatif,
         }),
         etablissements.findOne({
-          siret_formateur: widgetParameter.etablissement_formateur_siret,
+          formateur_siret: eligibleTrainingsForAppointment.etablissement_formateur_siret,
         }),
       ])
 
@@ -114,22 +107,22 @@ export default ({ mailer, etablissements }) => {
           lastname: user.lastname,
           phone: user.phone.match(/.{1,2}/g).join("."),
           email: user.email,
-          motivations: createdAppointement.motivations,
+          applicant_message_to_cfa: createdAppointement.applicant_message_to_cfa,
         },
         etablissement: {
-          name: widgetParameter.etablissement_raison_sociale,
-          address: widgetParameter.lieu_formation_adresse,
-          postalCode: widgetParameter.code_postal,
-          ville: widgetParameter.localite,
-          email: widgetParameter.email_rdv,
+          name: eligibleTrainingsForAppointment.etablissement_formateur_raison_sociale,
+          formateur_address: eligibleTrainingsForAppointment.lieu_formation_street,
+          formateur_zip_code: eligibleTrainingsForAppointment.lieu_formation_zip_code,
+          formateur_city: eligibleTrainingsForAppointment.lieu_formation_city,
+          email: eligibleTrainingsForAppointment.lieu_formation_email,
         },
         formation: {
-          intitule: widgetParameter.formation_intitule,
+          intitule: eligibleTrainingsForAppointment.training_intitule_long,
         },
         appointment: {
           reasons: createdAppointement.applicant_reasons,
           referrerLink: referrerObj.url,
-          referrer: referrerObj.full_name,
+          appointment_origin: referrerObj.full_name,
           link: `${config.publicUrlEspacePro}/establishment/${etablissement._id}/appointments/${createdAppointement._id}?utm_source=mail`,
         },
         images: {
@@ -195,19 +188,8 @@ export default ({ mailer, etablissements }) => {
 
       res.json({
         userId: user._id,
-        appointment: createdAppointement,
+        appointment: appointmentUpdated,
       })
-    })
-  )
-
-  router.post(
-    "/edit",
-    tryCatch(async (req, res) => {
-      await appointmentItemSchema.validateAsync(req.body, { abortEarly: false })
-      const paramsAppointementItem = req.body
-
-      await appointments.updateAppointment(paramsAppointementItem.appointmentId, paramsAppointementItem)
-      res.json({})
     })
   )
 
@@ -222,27 +204,16 @@ export default ({ mailer, etablissements }) => {
         eligibleTrainingsForAppointmentService.getParameterByCleMinistereEducatif({
           cleMinistereEducatif: appointment.cle_ministere_educatif,
         }),
-        users.getUserById(appointment.candidat_id),
+        users.getUserById(appointment.applicant_id),
       ])
-
-      // Note: id_rco_formation will be removed soon
-      if (!widgetParameter) {
-        widgetParameter = await widgetParameters.getParameterByIdRcoFormation({
-          idRcoFormation: appointment.id_rco_formation,
-        })
-      }
 
       res.json({
         appointment: {
           ...appointment,
-          referrer: getReferrerById(appointment.referrer),
+          appointment_origin_detailed: getReferrerByKeyName(appointment.appointment_origin),
         },
-        user: user._doc,
-        etablissement: {
-          email: widgetParameter.email_rdv || "",
-          intitule_long: widgetParameter.formation_intitule,
-          etablissement_formateur_entreprise_raison_sociale: widgetParameter.etablissement_raison_sociale,
-        },
+        user,
+        etablissement: { ...eligibleTrainingsForAppointment },
       })
     })
   )

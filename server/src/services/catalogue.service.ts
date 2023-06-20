@@ -108,22 +108,17 @@ const neededFieldsFromCatalogue = {
 export const getFormationById = (id: string) => FormationCatalogue.findById(id)
 
 /**
- * @description Get formations by "siret formateur".
- * @param {String} siretFormateur
- * @returns {Promise<Object[]>}
- */
-export const getFormationsBySiretFormateur = ({ siretFormateur }: { siretFormateur: string[] }) => FormationCatalogue.find({ etablissement_formateur_siret: siretFormateur })
-
-/**
  * @description Get formations by idRcoFormations.
  * @param {String[]} idRcoFormations
  * @returns {Promise<Object[]>}
  */
-export const getFormationsByIdRcoFormations = ({ idRcoFormations }: { idRcoFormations: string[] }) => FormationCatalogue.find({ id_rco_formation: idRcoFormations })
+export const getFormationsByCleMinistereEducatif = ({ cleMinistereEducatifs }: { cleMinistereEducatifs: string[] }) =>
+  FormationCatalogue.find({ cle_ministere_educatif: cleMinistereEducatifs })
 
 /**
  * @description Get formations from the formation catalogue collection.
  * @param {Object} query - Mongo query
+ * @param {Object} select
  * @returns {Promise<Object>}
  */
 export const getCatalogueFormations = (query: object, select?: object) => FormationCatalogue.find(query, select)

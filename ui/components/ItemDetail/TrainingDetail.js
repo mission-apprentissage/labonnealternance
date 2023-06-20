@@ -1,3 +1,5 @@
+import { ExternalLinkIcon } from "@chakra-ui/icons"
+import { Box, Flex, Image, Link, Spinner, Text } from "@chakra-ui/react"
 import React, { useContext, useEffect, useState } from "react"
 import { DisplayContext } from "../../context/DisplayContextProvider"
 import { SearchResultContext } from "../../context/SearchResultContextProvider"

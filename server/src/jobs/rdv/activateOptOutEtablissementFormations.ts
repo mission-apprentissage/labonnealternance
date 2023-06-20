@@ -16,7 +16,7 @@ export const activateOptOutEtablissementFormations = async ({ etablissements, ma
 
   // Opt-out etablissement to activate
   const etablissementsToActivate = await etablissements.find({
-    opt_out_will_be_activated_at: {
+    optout_activation_scheduled_date: {
       $lte: dayjs().toDate(),
     },
     opt_out_refused_at: null,
@@ -29,26 +29,26 @@ export const activateOptOutEtablissementFormations = async ({ etablissements, ma
       await Promise.all([
         eligibleTrainingsForAppointmentService.updateMany(
           {
-            etablissement_siret: etablissement.siret_formateur,
-            email_rdv: { $nin: [null, ""] },
+            etablissement_formateur_siret: etablissement.formateur_siret,
+            lieu_formation_email: { $nin: [null, ""] },
           },
           {
             referrers: Object.values(referrers)
-              .map((referrer) => referrer.code)
-              .filter((referrer) => referrer !== referrers.PARCOURSUP.code),
+              .map((referrer) => referrer.name)
+              .filter((referrer) => referrer !== referrers.PARCOURSUP.name),
           }
         ),
         etablissements.findOneAndUpdate(
           {
             _id: etablissement._id,
           },
-          { opt_out_activated_at: dayjs().toDate() }
+          { optout_activation_date: dayjs().toDate() }
         ),
       ])
 
       // Send email
       const { messageId } = await mailer.sendEmail({
-        to: etablissement.email_decisionnaire,
+        to: etablissement.gestionnaire_email,
         subject: `C'est parti pour améliorer le sourcing de vos candidats !`,
         template: mailTemplate["mail-cfa-optout-start"],
         data: {
@@ -60,14 +60,14 @@ export const activateOptOutEtablissementFormations = async ({ etablissements, ma
           },
           etablissement: {
             name: etablissement.raison_sociale,
-            address: etablissement.adresse,
-            postalCode: etablissement.code_postal,
-            ville: etablissement.localite,
-            siret: etablissement.siret_formateur,
+            formateur_address: etablissement.formateur_address,
+            formateur_zip_code: etablissement.formateur_zip_code,
+            formateur_city: etablissement.formateur_city,
+            formateur_siret: etablissement.formateur_siret,
             linkToUnsubscribe: `${config.publicUrlEspacePro}/form/opt-out/unsubscribe/${etablissement._id}`,
           },
           user: {
-            destinataireEmail: etablissement.email_decisionnaire,
+            destinataireEmail: etablissement.gestionnaire_email,
           },
         },
       })
@@ -77,15 +77,15 @@ export const activateOptOutEtablissementFormations = async ({ etablissements, ma
       })
 
       // Gets all mails (formation email + formateur email), excepted "email_decisionnaire"
-      let emails = widgetParametersFound.map((widgetParameter) => widgetParameter.email_rdv)
-      if (etablissement?.etablissement_formateur_courriel) {
-        emails.push(etablissement.etablissement_formateur_courriel)
+      let emails = eligibleTrainingsForAppointmentsFound.map((eligibleTrainingsForAppointment) => eligibleTrainingsForAppointment.lieu_formation_email)
+      if (etablissement?.gestionnaire_email) {
+        emails.push(etablissement.gestionnaire_email)
       }
 
       emails = _(emails)
         .uniq()
         .omitBy(_.isNil)
-        .omitBy((item) => item === etablissement.email_decisionnaire)
+        .omitBy((item) => item === etablissement.gestionnaire_email)
         .toArray()
 
       await Promise.all(
@@ -105,13 +105,13 @@ export const activateOptOutEtablissementFormations = async ({ etablissements, ma
               },
               etablissement: {
                 name: etablissement.raison_sociale,
-                address: etablissement.adresse,
-                postalCode: etablissement.code_postal,
-                ville: etablissement.localite,
-                siret: etablissement.siret_formateur,
-                email: etablissement.email_decisionnaire,
+                formateur_address: etablissement.formateur_address,
+                formateur_zip_code: etablissement.formateur_zip_code,
+                formateur_city: etablissement.formateur_city,
+                siret: etablissement.formateur_siret,
+                email: etablissement.gestionnaire_email,
                 optOutActivatedAtDate: dayjs().format("DD/MM"),
-                emailGestionnaire: etablissement.email_decisionnaire,
+                emailGestionnaire: etablissement.gestionnaire_email,
               },
               user: {
                 destinataireEmail: email,
@@ -125,7 +125,7 @@ export const activateOptOutEtablissementFormations = async ({ etablissements, ma
         { _id: etablissement._id },
         {
           $push: {
-            mailing: {
+            to_etablissement_emails: {
               campaign: mailType.OPT_OUT_STARTING,
               status: null,
               message_id: messageId,

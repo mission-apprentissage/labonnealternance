@@ -1,8 +1,8 @@
+import { Box, Image, Show, SimpleGrid, Text } from "@chakra-ui/react"
 import React from "react"
-import { Box, Image, SimpleGrid, Text, Show } from "@chakra-ui/react"
 
-import ConnectionActions from "./ConnectionActions"
 import votrebesoinImage from "../../public/images/home_pics/illu-votrebesoin.svg"
+import ConnectionActions from "./ConnectionActions"
 
 const Entreprise = () => {
   return (

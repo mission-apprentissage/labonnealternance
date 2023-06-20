@@ -31,7 +31,7 @@ export const FormRecapPage = () => {
               </Text>
               <Text fontWeight="700" color="grey.750" mt={6}>
                 {" "}
-                {data.etablissement.etablissement_formateur_entreprise_raison_sociale} pourra donc vous contacter au{" "}
+                {data.etablissement.etablissement_formateur_raison_sociale} pourra donc vous contacter au{" "}
                 <Text as="span" color="info">
                   {" "}
                   {data.user.phone.match(/.{1,2}/g).join(".")}
@@ -65,12 +65,12 @@ export const FormRecapPage = () => {
               </Flex>
               <Box borderBottom="1px solid #D0C9C4" mt={10} />
               <Box mt={10}>
-                {data.etablissement && (
+                {data.etablissement?.lieu_formation_email && (
                   <Text fontSize="14px">
                     Vous souhaitez modifier ou annuler cette demande ? <br />
                     Envoyez un email à{" "}
                     <u>
-                      <a href={`mailto:${data.etablissement.email}`}>{data.etablissement.email}</a>
+                      <a href={`mailto:${data.etablissement.lieu_formation_email}`}>{data.etablissement.lieu_formation_email}</a>
                     </u>
                   </Text>
                 )}

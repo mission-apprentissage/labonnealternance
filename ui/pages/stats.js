@@ -5,7 +5,6 @@ import ScrollToTop from "../components/ScrollToTop"
 
 import { Box, Container, Divider, SimpleGrid, Tab, TabList, TabPanel, TabPanels, Tabs, Text } from "@chakra-ui/react"
 import Footer from "../components/footer"
-import { Box, Grid, GridItem, Text, Container, Divider, Link } from "@chakra-ui/react"
 
 const metabaseIframeOnLoad = (ev) => {
   try {

@@ -4,7 +4,6 @@ const expect = chai.expect
 import chaiAsPromised from "chai-as-promised"
 chai.use(chaiAsPromised)
 
-import { validateSendApplication, validateFeedbackApplication, validatePermanentEmail, validateCompanyEmail } from "../../src/service/validateSendApplication.js"
 import __filename from "../../src/common/filename.js"
 import { validateCompanyEmail, validatePermanentEmail, validateSendApplication } from "../../src/services/application.service.js"
 

@@ -103,7 +103,13 @@ const resetUserValidation = async (db) => {
   })
 }
 
+const removeDuplicateAwaitingStatus = async () => {
+  const users = await UserRecruteur.find({ $expr: { $ne: [{ $arrayElemAt: ["$etat_utilisateur.statut", -1] }, "VALIDÉ"] } })
+  console.log(users.map((x) => x.status))
+}
+
 runScript(async () => {
   logger.info("#start validation for specific users")
-  await runValidation()
+  // await runValidation()
+  await removeDuplicateAwaitingStatus()
 })

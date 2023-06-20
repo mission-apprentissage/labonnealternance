@@ -1,10 +1,10 @@
+import { Box } from "@chakra-ui/react"
 import { amongst } from "../../../utils/arrayutils"
 import TagCandidatureSpontanee from "../TagCandidatureSpontanee"
-import TagOffreEmploi from "../TagOffreEmploi"
 import TagCfaDEntreprise from "../TagCfaDEntreprise"
-import TagFormationAssociee from "../TagFormationAssociee"
 import TagFormation from "../TagFormation"
-import { Box } from "@chakra-ui/react"
+import TagFormationAssociee from "../TagFormationAssociee"
+import TagOffreEmploi from "../TagOffreEmploi"
 
 export default function getTags({ kind, isCfa, isMandataire }) {
   return (

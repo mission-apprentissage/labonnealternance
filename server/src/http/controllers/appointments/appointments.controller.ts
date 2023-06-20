@@ -1,3 +1,4 @@
+import Sentry from "@sentry/node"
 import * as express from "express"
 import { Body, Controller, Example, OperationId, Post, Request, Response, Route, SuccessResponse, Tags } from "tsoa"
 import * as eligibleTrainingsForAppointmentService from "../../../services/eligibleTrainingsForAppointment.service.js"
@@ -5,7 +6,6 @@ import Etablissement from "../../../common/components/etablissement.js"
 import { getReferrerByKeyName } from "../../../common/model/constants/referrers.js"
 import { isValidEmail } from "../../../common/utils/isValidEmail.js"
 import { getCleMinistereEducatifFromIdActionFormation } from "../../../common/utils/mappings/onisep.js"
-import { sentryCaptureException } from "../../../common/utils/sentryUtils.js"
 import config from "../../../config.js"
 import { TCreateContextBody, TCreateContextResponse, TCreateContextResponseError } from "./types.js"
 import { contextCreateSchema } from "./validators.js"
@@ -41,7 +41,7 @@ export class AppointmentsController extends Controller {
 
     const referrerObj = getReferrerByKeyName(referrer)
 
-    let widgetParameter
+    let eligibleTrainingsForAppointment
     if (idCleMinistereEducatif) {
       eligibleTrainingsForAppointment = await eligibleTrainingsForAppointmentService.findOne({ cle_ministere_educatif: idCleMinistereEducatif })
     } else if (idRcoFormation) {
@@ -72,7 +72,7 @@ export class AppointmentsController extends Controller {
       return "Critère de recherche non conforme."
     }
 
-    if (!widgetParameter) {
+    if (!eligibleTrainingsForAppointment) {
       this.setStatus(404)
       return "Formation introuvable."
     }
@@ -83,11 +83,11 @@ export class AppointmentsController extends Controller {
       lieu_formation_email: { $nin: [null, ""] },
     })
 
-    if (!isValidEmail(isOpenForAppointments?.email_rdv)) {
-      sentryCaptureException(new Error(`Formation "${widgetParameter.cle_ministere_educatif}" sans email de contact.`))
+    if (!isValidEmail(isOpenForAppointments?.lieu_formation_email)) {
+      Sentry.captureException(new Error(`Formation "${eligibleTrainingsForAppointment.cle_ministere_educatif}" sans email de contact.`))
     }
 
-    if (!isOpenForAppointments || !isValidEmail(isOpenForAppointments?.email_rdv)) {
+    if (!isOpenForAppointments || !isValidEmail(isOpenForAppointments?.lieu_formation_email)) {
       return {
         error: "Prise de rendez-vous non disponible.",
       }

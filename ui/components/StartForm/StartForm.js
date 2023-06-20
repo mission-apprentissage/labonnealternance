@@ -5,10 +5,10 @@ import { useRouter } from "next/router"
 import { DisplayContext } from "../../context/DisplayContextProvider"
 import { ParameterContext } from "../../context/ParameterContextProvider"
 
+import { Box } from "@chakra-ui/react"
 import { pick } from "lodash"
 import SearchForm from "../../components/SearchForTrainingsAndJobs/components/SearchForm"
 import WidgetHeader from "../../components/WidgetHeader/WidgetHeader"
-import { Box } from "@chakra-ui/react"
 
 const StartForm = () => {
   const router = useRouter()

@@ -69,11 +69,11 @@ export default ({ etablissements, mailer }) => {
           },
           etablissement: {
             name: etablissement.raison_sociale,
-            address: etablissement.adresse,
-            postalCode: etablissement.code_postal,
-            ville: etablissement.localite,
-            siret: etablissement.siret_formateur,
-            email: etablissement.email_decisionnaire,
+            formateur_address: etablissement.formateur_address,
+            formateur_zip_code: etablissement.formateur_zip_code,
+            formateur_city: etablissement.formateur_city,
+            formateur_siret: etablissement.formateur_siret,
+            gestionnaire_email: etablissement.gestionnaire_email,
           },
           activationDate: dayjs().format("DD/MM"),
         },
@@ -209,14 +209,14 @@ export default ({ etablissements, mailer }) => {
           { _id: etablissement._id },
           {
             $push: {
-              mailing: {
+              to_etablissement_emails: {
                 campaign: mailType.PREMIUM_STARTING,
                 status: null,
                 message_id: mailParcoursup.messageId,
                 email_sent_at: dayjs().toDate(),
               },
             },
-            premium_activated_at: dayjs().toDate(),
+            premium_activation_date: dayjs().toDate(),
           }
         ),
       ])
@@ -230,7 +230,7 @@ export default ({ etablissements, mailer }) => {
       emailsParcoursup = _(emailsParcoursup)
         .uniq()
         .omitBy(_.isNil)
-        .omitBy((item) => item === etablissement.email_decisionnaire)
+        .omitBy((item) => item === etablissement.gestionnaire_email)
         .toArray()
 
       await Promise.all(
@@ -272,7 +272,7 @@ export default ({ etablissements, mailer }) => {
           eligibleTrainingsForAppointmentService.update(
             { _id: eligibleTrainingsForAppointment._id, lieu_formation_email: { $nin: [null, ""] } },
             {
-              referrers: [...new Set([...widgetParameter.referrers, referrers.PARCOURSUP.code])],
+              referrers: [...new Set([...eligibleTrainingsForAppointment.referrers, referrers.PARCOURSUP.name])],
             }
           )
         ),
@@ -378,12 +378,12 @@ export default ({ etablissements, mailer }) => {
             logoFooter: `${config.publicUrlEspacePro}/assets/logo-republique-francaise.png?raw=true`,
           },
           etablissement: {
-            name: etablissement.raison_sociale,
-            address: etablissement.adresse,
-            postalCode: etablissement.code_postal,
-            ville: etablissement.localite,
-            siret: etablissement.siret_formateur,
-            email: etablissement.email_decisionnaire,
+            raison_sociale: etablissement.raison_sociale,
+            formateur_address: etablissement.formateur_address,
+            formateur_zip_code: etablissement.formateur_zip_code,
+            formateur_city: etablissement.formateur_city,
+            formateur_siret: etablissement.formateur_siret,
+            email: etablissement.gestionnaire_email,
           },
           activationDate: dayjs().format("DD/MM"),
         },
@@ -393,14 +393,14 @@ export default ({ etablissements, mailer }) => {
         { _id: etablissement._id },
         {
           $push: {
-            mailing: {
+            to_etablissement_emails: {
               campaign: mailType.PREMIUM_REFUSED,
               status: null,
               message_id: mailParcoursup.messageId,
               email_sent_at: dayjs().toDate(),
             },
           },
-          premium_refused_at: dayjs().toDate(),
+          premium_refusal_date: dayjs().toDate(),
         }
       )
 
@@ -424,19 +424,17 @@ export default ({ etablissements, mailer }) => {
 
       let [etablissement, appointment] = await Promise.all([etablissements.findById(id), appointmentService.findById(appointmentId)])
 
-      console.log({ etablissement, appointment })
-
       if (!etablissement) {
         throw Boom.badRequest("Etablissement not found.")
       }
 
-      if (!appointment || appointment.etablissement_id !== etablissement.siret_formateur) {
+      if (!appointment || appointment.cfa_formateur_siret !== etablissement.formateur_siret) {
         throw Boom.badRequest("Appointment not found.")
       }
 
       // Save current date
-      if (!appointment.cfa_read_appointment_details_at && has_been_read) {
-        await appointment.update({ cfa_read_appointment_details_at: dayjs().toDate() })
+      if (!appointment.cfa_read_appointment_details_date && has_been_read) {
+        await appointment.update({ cfa_read_appointment_details_date: dayjs().toDate() })
       }
 
       appointment = await appointmentService.findById(appointmentId)
@@ -459,19 +457,15 @@ export default ({ etablissements, mailer }) => {
         return res.sendStatus(404)
       }
 
-      if (etablissement.opt_out_refused_at) {
+      if (etablissement.optout_refusal_date) {
         return res.sendStatus(400)
       }
 
       if (opt_out_question) {
-        await etablissements.findByIdAndUpdate(req.params.id, {
-          opt_out_question,
-        })
-
         etablissement = await etablissements.findById(req.params.id)
 
         await mailer.sendEmail({
-          to: config.transactionalEmail,
+          to: config.publicEmail,
           subject: `Un CFA se pose une question concernant l'opt-out"`,
           template: mailTemplate["mail-rdva-optout-unsubscription-question"],
           data: {
@@ -481,27 +475,27 @@ export default ({ etablissements, mailer }) => {
             },
             etablissement: {
               name: etablissement.raison_sociale,
-              address: etablissement.adresse,
-              postalCode: etablissement.code_postal,
-              ville: etablissement.localite,
-              opt_out_question: etablissement.opt_out_question,
+              formateur_address: etablissement.formateur_address,
+              formateur_zip_code: etablissement.formateur_zip_code,
+              formateur_city: etablissement.formateur_city,
+              opt_out_question,
             },
             user: {
-              destinataireEmail: etablissement.email_decisionnaire,
+              destinataireEmail: etablissement.gestionnaire_email,
             },
           },
-          from: etablissement.email_decisionnaire,
+          from: config.transactionalEmail,
         })
 
         return res.send(etablissement)
       }
 
       // If opt-out is already running but user unsubscribe, disable all formations
-      if (etablissement.opt_out_activated_at && dayjs(etablissement.opt_out_activated_at).isBefore(dayjs())) {
+      if (etablissement.optout_activation_date && dayjs(etablissement.optout_activation_date).isBefore(dayjs())) {
         // Disable all formations
         await eligibleTrainingsForAppointmentService.updateMany(
           {
-            etablissement_siret: etablissement.siret_formateur,
+            etablissement_formateur_siret: etablissement.formateur_siret,
           },
           {
             referrers: [],
@@ -510,11 +504,11 @@ export default ({ etablissements, mailer }) => {
       }
 
       await etablissements.findByIdAndUpdate(req.params.id, {
-        opt_out_refused_at: dayjs().toDate(),
+        optout_refusal_date: dayjs().toDate(),
       })
 
       const { messageId } = await mailer.sendEmail({
-        to: etablissement.email_decisionnaire,
+        to: etablissement.gestionnaire_email,
         subject: `Désincription au service “RDV Apprentissage”`,
         template: mailTemplate["mail-cfa-optout-unsubscription"],
         data: {
@@ -524,13 +518,13 @@ export default ({ etablissements, mailer }) => {
           },
           etablissement: {
             name: etablissement.raison_sociale,
-            address: etablissement.adresse,
-            postalCode: etablissement.code_postal,
-            ville: etablissement.localite,
-            siret: etablissement.siret_formateur,
+            formateur_address: etablissement.formateur_address,
+            formateur_zip_code: etablissement.formateur_zip_code,
+            formateur_city: etablissement.formateur_city,
+            siret: etablissement.formateur_siret,
           },
           user: {
-            destinataireEmail: etablissement.email_decisionnaire,
+            destinataireEmail: etablissement.gestionnaire_email,
           },
         },
       })
@@ -539,7 +533,7 @@ export default ({ etablissements, mailer }) => {
         { _id: etablissement._id },
         {
           $push: {
-            mailing: {
+            to_etablissement_emails: {
               campaign: mailType.OPT_OUT_UNSUBSCRIPTION_CONFIRMATION,
               status: null,
               message_id: messageId,

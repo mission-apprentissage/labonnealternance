@@ -8,7 +8,6 @@ import { MapPin2Fill } from "../../../theme/components/icons"
  * @param {String} props.intitule
  * @param {String} props.adresse
  * @param {String} props.code_postal
- * @param {String} props.ville
  * @returns {JSX.Element}
  */
 export const ContactCfaComponent = (props) => {

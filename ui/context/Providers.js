@@ -1,11 +1,11 @@
+import { ChakraProvider } from "@chakra-ui/react"
+import PlausibleProvider from "next-plausible"
 import React from "react"
 import { QueryClient, QueryClientProvider } from "react-query"
-import SearchResultContextProvider from "./SearchResultContextProvider"
-import ParameterContextProvider from "./ParameterContextProvider"
-import DisplayContextProvider from "./DisplayContextProvider"
-import PlausibleProvider from "next-plausible"
-import { ChakraProvider } from "@chakra-ui/react"
 import theme from "../theme/index"
+import DisplayContextProvider from "./DisplayContextProvider"
+import ParameterContextProvider from "./ParameterContextProvider"
+import SearchResultContextProvider from "./SearchResultContextProvider"
 
 const queryClient = new QueryClient({
   defaultOptions: {

@@ -16,7 +16,7 @@ const blackListedCompanies = ["iscod", "oktogone", "institut europeen f 2i"]
 const getSomePeJobs = async ({ romes, insee, radius, lat, long, caller, diploma, opco, opcoUrl, api }) => {
   // la liste des romes peut être supérieure au maximum de trois autorisés par l'api offre de PE
   // on segmente les romes en blocs de max 3 et lance autant d'appels parallèles que nécessaires
-  let chunkedRomes = []
+  const chunkedRomes = []
   let i = 0,
     k = 0
   while (i < romes.length) {
@@ -84,8 +84,8 @@ const getSomePeJobs = async ({ romes, insee, radius, lat, long, caller, diploma,
 // appel de l'api offres pour un bloc de 1 à 3 romes
 const getSomePeJobsForChunkedRomes = async ({ romes, insee, radius, lat, long, caller, diploma, api }) => {
   let jobResult = null
-  let currentRadius = radius || 20000
-  let jobLimit = 50 //TODO: query params options or default value from properties -> size || 50
+  const currentRadius = radius || 20000
+  const jobLimit = 50 //TODO: query params options or default value from properties -> size || 50
 
   let trys = 0
 
@@ -221,7 +221,7 @@ const getPeJobs = async ({ romes, insee, radius, jobLimit, caller, diploma, api 
 
     const hasLocation = insee ? true : false
 
-    let headers = peApiHeaders
+    const headers = peApiHeaders
     headers.Authorization = `Bearer ${token}`
 
     // hack : les codes insee des villes à arrondissement retournent une erreur. il faut utiliser un code insee d'arrondissement
@@ -271,7 +271,7 @@ const getPeJobs = async ({ romes, insee, radius, jobLimit, caller, diploma, api 
 const getPeJobFromId = async ({ id, caller }) => {
   try {
     const token = await getAccessToken("pe")
-    let headers = peApiHeaders
+    const headers = peApiHeaders
     headers.Authorization = `Bearer ${token}`
 
     //throw new Error("boom");

@@ -11,8 +11,8 @@ import config from "../../config.js"
 export const inviteEtablissementToPremium = async ({ etablissements, mailer, eligibleTrainingsForAppointments }) => {
   logger.info("Cron #inviteEtablissementToPremium started.")
 
-  const etablissementsActivated = await etablissements.find({
-    email_decisionnaire: {
+  const etablissementsToInvite = await etablissements.find({
+    gestionnaire_email: {
       $ne: null,
     },
     premium_activation_date: null,
@@ -35,7 +35,7 @@ export const inviteEtablissementToPremium = async ({ etablissements, mailer, eli
 
     // Invite all etablissements only in production environment
     const { messageId } = await mailer.sendEmail({
-      to: etablissement.email_decisionnaire,
+      to: etablissement.gestionnaire_email,
       subject: `Optimisez le sourcing de vos candidats sur Parcoursup !`,
       template: mailTemplate["mail-cfa-premium-invite"],
       data: {
@@ -45,19 +45,19 @@ export const inviteEtablissementToPremium = async ({ etablissements, mailer, eli
           exempleParcoursup: `${config.publicUrlEspacePro}/assets/exemple_integration_parcoursup.jpg?raw=true`,
         },
         etablissement: {
-          email: etablissement.email_decisionnaire,
-          activatedAt: dayjs(etablissement.opt_out_will_be_activated_at).format("DD/MM"),
+          email: etablissement.gestionnaire_email,
+          activatedAt: dayjs(etablissement.optout_activation_scheduled_date).format("DD/MM"),
           linkToForm: `${config.publicUrlEspacePro}/form/premium/${etablissement._id}`,
         },
       },
     })
 
     await etablissements.updateOne(
-      { siret_formateur: etablissement.siret_formateur },
+      { formateur_siret: etablissement.formateur_siret },
       {
-        premium_invited_at: dayjs().toDate(),
+        premium_invitation_date: dayjs().toDate(),
         $push: {
-          mailing: {
+          to_etablissement_emails: {
             campaign: mailType.PREMIUM_INVITE,
             status: null,
             message_id: messageId,

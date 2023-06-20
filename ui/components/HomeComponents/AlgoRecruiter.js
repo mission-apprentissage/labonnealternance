@@ -1,7 +1,6 @@
 import { Box, Divider, Grid, GridItem, Image, Link, ListItem, Text, UnorderedList } from "@chakra-ui/react"
 import NextLink from "next/link"
 import React from "react"
-import { Box, Divider, Text, UnorderedList, ListItem, GridItem, Grid, Image } from "@chakra-ui/react"
 
 const AlgoRecruiter = ({ withLinks }) => {
   return (

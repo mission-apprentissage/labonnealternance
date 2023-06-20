@@ -3,7 +3,7 @@ import { model, Schema } from "../../../mongodb.js"
 import { IParcoursupEtablissementStat } from "./parcoursupEtablissementStat.types.js"
 
 export const parcoursupEtablissementStatSchema = new Schema<IParcoursupEtablissementStat>({
-  siret_formateur: {
+  formateur_siret: {
     type: String,
     default: null,
     description: "Siret formateur",

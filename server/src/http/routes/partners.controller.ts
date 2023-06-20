@@ -11,21 +11,22 @@ export default () => {
 
   /**
    * @description Returns all available parcoursup ids.
+   * This endpoint is used by Parcoursup.
    */
   router.get(
     "/parcoursup/formations",
     tryCatch(async (req, res) => {
       const ids = await eligibleTrainingsForAppointmentService.find(
         {
-          id_parcoursup: {
+          parcoursup_id: {
             $ne: null,
           },
           referrers: { $in: [referrers.PARCOURSUP.name] },
         },
-        { id_parcoursup: 1 }
+        { parcoursup_id: 1 }
       )
 
-      return res.send({ ids: ids.map((widgetParameter) => widgetParameter.id_parcoursup) })
+      return res.send({ ids: ids.map((eligibleTrainingsForAppointment) => eligibleTrainingsForAppointment.parcoursup_id) })
     })
   )
 

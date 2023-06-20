@@ -1,12 +1,11 @@
-import React from "react"
-import Navigation from "../components/navigation"
-import Breadcrumb from "../components/breadcrumb"
-import ScrollToTop from "../components/ScrollToTop"
+import { Box, Container, Divider, Grid, GridItem, Tab, TabList, TabPanel, TabPanels, Tabs, Text } from "@chakra-ui/react"
 import { NextSeo } from "next-seo"
+import React from "react"
 import { NotionRenderer } from "react-notion-x"
+import Breadcrumb from "../components/breadcrumb"
 import Footer from "../components/footer"
-import { Box, Container, Divider, Grid, GridItem, Text } from "@chakra-ui/react"
-import { Tabs, TabList, TabPanels, Tab, TabPanel } from "@chakra-ui/react"
+import Navigation from "../components/navigation"
+import ScrollToTop from "../components/ScrollToTop"
 
 import { fetchNotionPage } from "../services/fetchNotionPage"
 

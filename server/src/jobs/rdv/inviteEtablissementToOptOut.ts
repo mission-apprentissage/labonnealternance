@@ -28,25 +28,25 @@ export const inviteEtablissementToOptOut = async ({ etablissements, mailer }) =>
       etablissement_siret: etablissement.formateur_siret,
     })
 
-    let emailDecisionaire = etablissement.email_decisionnaire
+    let emailDecisionaire = etablissement.gestionnaire_email
 
     // If etablissement haven't a valid "email_decisionnaire"
-    if (!etablissement.email_decisionnaire || !isValidEmail(emailDecisionaire)) {
+    if (!etablissement.gestionnaire_email || !isValidEmail(emailDecisionaire)) {
       // If "email_rdv" exists, add 1 occurrence, otherwise set counter to 1
       const emailCounter: object = {}
-      formations.map(({ email_rdv }) => {
+      formations.map(({ lieu_formation_email }) => {
         // Ignore null, empty or not valid email
-        if (!email_rdv || !isValidEmail(email_rdv)) {
-          logger.info("Invalid email", { email: email_rdv, siret_formateur: etablissement.siret_formateur })
+        if (!lieu_formation_email || !isValidEmail(lieu_formation_email)) {
+          logger.info("Invalid email", { email: lieu_formation_email, formateur_siret: etablissement.formateur_siret })
           return
         }
 
-        return emailCounter[email_rdv] ? emailCounter[email_rdv]++ : (emailCounter[email_rdv] = 1)
+        return emailCounter[lieu_formation_email] ? emailCounter[lieu_formation_email]++ : (emailCounter[lieu_formation_email] = 1)
       })
 
       // Ignore etablissement without formation emails
       if (!Object.keys(emailCounter).length) {
-        logger.info("Siret without formation emails", { siret_formateur: etablissement.siret_formateur })
+        logger.info("Siret without formation emails", { formateur_siret: etablissement.formateur_siret })
         continue
       }
 
@@ -60,7 +60,7 @@ export const inviteEtablissementToOptOut = async ({ etablissements, mailer }) =>
       emailDecisionaire = highestEmail[0][0]
 
       // Save most present email as "email_decisionnaire"
-      await etablissement.update({ email_decisionnaire: emailDecisionaire })
+      await etablissement.update({ gestionnaire_email: emailDecisionaire })
     }
 
     // Invite all etablissements only in production environment, for etablissement that have an "email_decisionnaire"
@@ -80,10 +80,10 @@ export const inviteEtablissementToOptOut = async ({ etablissements, mailer }) =>
           },
           etablissement: {
             name: etablissement.raison_sociale,
-            address: etablissement.adresse,
-            postalCode: etablissement.code_postal,
-            ville: etablissement.localite,
-            siret: etablissement?.siret_formateur,
+            formateur_address: etablissement.formateur_address,
+            formateur_zip_code: etablissement.formateur_zip_code,
+            formateur_city: etablissement.formateur_city,
+            siret: etablissement?.formateur_siret,
             optOutActivatedAtDate: willBeActivatedAt.format("DD/MM"),
             linkToUnsubscribe: `${config.publicUrlEspacePro}/form/opt-out/unsubscribe/${etablissement._id}`,
           },
@@ -94,11 +94,10 @@ export const inviteEtablissementToOptOut = async ({ etablissements, mailer }) =>
       })
 
       await etablissement.update({
-        opt_mode: optMode.OPT_OUT,
-        opt_out_invited_at: dayjs().toDate(),
-        opt_out_will_be_activated_at: willBeActivatedAt.toDate(),
+        optout_invitation_date: dayjs().toDate(),
+        optout_activation_scheduled_date: willBeActivatedAt.toDate(),
         $push: {
-          mailing: {
+          to_etablissement_emails: {
             campaign: mailType.OPT_OUT_INVITE,
             status: null,
             message_id: messageId,
@@ -107,14 +106,14 @@ export const inviteEtablissementToOptOut = async ({ etablissements, mailer }) =>
         },
       })
 
-      let emails = formations.map((formation) => formation.email_rdv)
-      if (etablissement?.etablissement_formateur_courriel) {
-        emails.push(etablissement.etablissement_formateur_courriel)
+      let emails = formations.map((formation) => formation.lieu_formation_email)
+      if (etablissement?.gestionnaire_email) {
+        emails.push(etablissement.gestionnaire_email)
       }
 
       emails = _(emails)
         .uniq(emails)
-        .filter((email) => email !== etablissement.email_decisionnaire)
+        .filter((email) => email !== etablissement.gestionnaire_email)
         .omitBy(_.isNil)
 
       await Promise.all(
@@ -133,13 +132,13 @@ export const inviteEtablissementToOptOut = async ({ etablissements, mailer }) =>
               },
               etablissement: {
                 name: etablissement.raison_sociale,
-                address: etablissement.adresse,
-                postalCode: etablissement.code_postal,
-                ville: etablissement.localite,
-                siret: etablissement.siret_formateur,
-                email: etablissement.email_decisionnaire,
+                formateur_address: etablissement.formateur_address,
+                formateur_zip_code: etablissement.formateur_zip_code,
+                formateur_city: etablissement.formateur_city,
+                siret: etablissement.formateur_siret,
+                email: etablissement.gestionnaire_email,
                 optOutActivatedAtDate: willBeActivatedAt.format("DD/MM"),
-                emailGestionnaire: etablissement.email_decisionnaire,
+                emailGestionnaire: etablissement.gestionnaire_email,
               },
               user: {
                 destinataireEmail: email,
@@ -150,7 +149,7 @@ export const inviteEtablissementToOptOut = async ({ etablissements, mailer }) =>
       )
 
       logger.info("Etablissement invited to opt-out.", {
-        siretFormateur: etablissement.siret_formateur,
+        siretFormateur: etablissement.formateur_siret,
         willBeActivatedAt: willBeActivatedAt.format(),
         emailDecisionaire,
       })

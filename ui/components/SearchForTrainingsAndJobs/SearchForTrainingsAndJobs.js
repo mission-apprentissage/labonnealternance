@@ -302,10 +302,10 @@ const SearchForTrainingsAndJobs = () => {
     if (e) {
       e.stopPropagation()
     }
-    
-    if(!displayMap) {
+
+    if (!displayMap) {
       setDisplayMap(true)
-      refreshLocationMarkers( { jobs, trainings, scopeContext } )
+      refreshLocationMarkers({ jobs, trainings, scopeContext })
     }
 
     if (!isMapInitialized) {
@@ -320,7 +320,7 @@ const SearchForTrainingsAndJobs = () => {
         display: "map",
         searchParameters: formValues,
         searchTimestamp: currentSearch,
-        displayMap:true,
+        displayMap: true,
       })
     }
 
@@ -377,7 +377,7 @@ const SearchForTrainingsAndJobs = () => {
     }
 
     if (!doNotSaveToHistory) {
-      pushHistory({ router, scopeContext, searchParameters: formValues, searchTimestamp: currentSearch, displayMap, })
+      pushHistory({ router, scopeContext, searchParameters: formValues, searchTimestamp: currentSearch, displayMap })
     }
   }
 
@@ -410,9 +410,13 @@ const SearchForTrainingsAndJobs = () => {
             activeFilter={activeFilter}
           />
         </Box>
-        {displayMap?<Box p="0" flex={{ base: 4, xl: 5 }} display={mapDisplayParameters} position="relative">
-          <Map handleSearchSubmit={handleSearchSubmit} showSearchForm={showSearchForm} selectItemOnMap={selectItemOnMap} />
-        </Box>:""}
+        {displayMap ? (
+          <Box p="0" flex={{ base: 4, xl: 5 }} display={mapDisplayParameters} position="relative">
+            <Map handleSearchSubmit={handleSearchSubmit} showSearchForm={showSearchForm} selectItemOnMap={selectItemOnMap} />
+          </Box>
+        ) : (
+          ""
+        )}
       </Flex>
       <MapListSwitchButton showSearchForm={showSearchForm} showResultMap={showResultMap} showResultList={showResultList} isFormVisible={isFormVisible} />
     </Flex>

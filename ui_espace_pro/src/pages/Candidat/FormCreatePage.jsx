@@ -1,13 +1,14 @@
-import { useEffect, useState } from "react"
-import { Field, Form, Formik } from "formik"
-import * as Yup from "yup"
+import { Box, Button, Center, Flex, Input, Radio, RadioGroup, Spinner, Stack, Text, CheckboxGroup, Checkbox } from "@chakra-ui/react"
 import * as emailValidator from "email-validator"
+import { Field, Form, Formik } from "formik"
 import * as qs from "query-string"
-import { useNavigate, useLocation } from "react-router-dom"
-import { Input, Button, Box, Spinner, Text, Center, Flex } from "@chakra-ui/react"
+import { useEffect, useState } from "react"
+import { useLocation, useNavigate } from "react-router-dom"
+import * as Yup from "yup"
+import { _post } from "../../common/httpClient"
 import { ContactCfaComponent } from "./layout/ContactCfaComponent"
 import { FormLayoutComponent } from "./layout/FormLayoutComponent"
-import { _post } from "../../common/httpClient"
+import { getReasonText, getDefaultReasonsAsFalse, getReasons } from "../../common/utils/reasonsUtils"
 
 /**
  * @description Form appointment page.
@@ -109,9 +110,11 @@ export const FormCreatePage = (props) => {
         lastname: values.lastname,
         phone: values.phone,
         email: values.email,
-        motivations: values.motivations,
+        type: values.applicantType,
+        applicantMessageToCfa: values.applicantMessageToCfa,
         cleMinistereEducatif,
-        referrer,
+        applicantReasons: getReasons().filter((e) => checkedState[e]),
+        appointmentOrigin: referrer,
       })
 
       if (error) {
@@ -200,14 +203,16 @@ export const FormCreatePage = (props) => {
               lastname: "",
               phone: "",
               email: "",
-              motivations: "",
+              applicantMessageToCfa: "",
+              applicantType: "parent",
             }}
             validationSchema={Yup.object().shape({
               firstname: Yup.string().required("Requis"),
               lastname: Yup.string().required("Requis"),
               phone: Yup.number().required("Requis"),
               email: Yup.string().required("Requis"),
-              motivations: Yup.string(),
+              applicantMessageToCfa: Yup.string(),
+              applicantType: Yup.string(),
             })}
             onSubmit={sendNewRequest}
           >
@@ -280,34 +285,52 @@ export const FormCreatePage = (props) => {
                   <Text mt={6} pb={4}>
                     Quel sujet souhaitez-vous aborder ?
                   </Text>
-                  <Field name="motivations">
-                    {({ field, meta }) => {
-                      return <Input placeholder="période d’inscription, horaires, etc." {...field} {...feedback(meta, "Désolée, ce champs est nécessaire")} />
-                    }}
-                  </Field>
-                  <Flex mt={8} bg="#F6F6F6" py="9px" px="18px">
-                    <Box w="430px">
-                      <Text fontWeight="600">Souhaiteriez-vous recevoir des offres d’emploi en lien avec cette formation ?</Text>
-                    </Box>
-                    <Center w="150px" pl="20px">
-                      <Text
-                        as="span"
-                        pr="28px"
-                        onClick={() => setPlausibleFeedback(plausibleFeebackEnum.OUI)}
-                        fontWeight={plausibleFeedback === plausibleFeebackEnum.OUI ? "600" : "none"}
-                        sx={{ cursor: "pointer" }}
-                      >
-                        👍 Oui
-                      </Text>
-                      <Text
-                        onClick={() => setPlausibleFeedback(plausibleFeebackEnum.NON)}
-                        fontWeight={plausibleFeedback === plausibleFeebackEnum.NON ? "600" : "none"}
-                        sx={{ cursor: "pointer" }}
-                      >
-                        👎 Non
-                      </Text>
-                    </Center>
-                  </Flex>
+                  <CheckboxGroup>
+                    <Stack direction="column" spacing={3}>
+                      {getReasons().map((reason) => {
+                        return checkboxLine(reason)
+                      })}
+                    </Stack>
+                  </CheckboxGroup>
+
+                  {displayMessage ? (
+                    <Field name="applicantMessageToCfa">
+                      {({ field, meta }) => {
+                        return <Input placeholder="période d’inscription, horaires, etc." {...field} {...feedback(meta, "Désolé, ce champs est nécessaire")} />
+                      }}
+                    </Field>
+                  ) : (
+                    <></>
+                  )}
+
+                  <Text mt={10}>
+                    <span style={{ color: "#B34000", paddingRight: "5px" }}>*</span>champ obligatoire
+                  </Text>
+                  {referrer !== "affelnet" && referrer !== "parcoursup" && (
+                    <Flex mt={8} bg="#F6F6F6" py="9px" px="18px">
+                      <Box w="430px">
+                        <Text fontWeight="600">Souhaiteriez-vous recevoir des offres d’emploi en lien avec cette formation ?</Text>
+                      </Box>
+                      <Center w="150px" pl="20px">
+                        <Text
+                          as="span"
+                          pr="28px"
+                          onClick={() => setPlausibleFeedback(plausibleFeebackEnum.OUI)}
+                          fontWeight={plausibleFeedback === plausibleFeebackEnum.OUI ? "600" : "none"}
+                          sx={{ cursor: "pointer" }}
+                        >
+                          👍 Oui
+                        </Text>
+                        <Text
+                          onClick={() => setPlausibleFeedback(plausibleFeebackEnum.NON)}
+                          fontWeight={plausibleFeedback === plausibleFeebackEnum.NON ? "600" : "none"}
+                          sx={{ cursor: "pointer" }}
+                        >
+                          👎 Non
+                        </Text>
+                      </Center>
+                    </Flex>
+                  )}
                   <Button
                     variant="unstyled"
                     type={"submit"}

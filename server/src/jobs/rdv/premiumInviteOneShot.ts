@@ -13,23 +13,23 @@ import * as eligibleTrainingsForAppointmentService from "../../services/eligible
 export const premiumInviteOneShot = async ({ etablissements, mailer }) => {
   logger.info("Cron #premiumInviteOneShot started.")
 
-  const [etablissementsActivated, widgetParametersFound] = await Promise.all([
+  const [etablissementsActivated, eligibleTrainingsForAppointmentsFound] = await Promise.all([
     etablissements
       .find({
-        email_decisionnaire: {
+        gestionnaire_email: {
           $ne: null,
         },
-        opt_out_activated_at: {
+        optout_activation_date: {
           $ne: null,
         },
-        premium_activated_at: null,
+        premium_activation_date: null,
       })
       .lean(),
     eligibleTrainingsForAppointmentService.find({ parcoursup_id: { $ne: null }, lieu_formation_email: { $ne: null } }).lean(),
   ])
 
   const etablissementWithParcoursup = etablissementsActivated.filter((etablissement) =>
-    widgetParametersFound.find((widgetParameter) => widgetParameter.etablissement_formateur_siret === etablissement.siret_formateur)
+    eligibleTrainingsForAppointmentsFound.find((eligibleTrainingsForAppointment) => eligibleTrainingsForAppointment.etablissement_formateur_siret === etablissement.formateur_siret)
   )
 
   for (const etablissement of etablissementWithParcoursup) {
@@ -40,7 +40,7 @@ export const premiumInviteOneShot = async ({ etablissements, mailer }) => {
       }
 
       const { messageId } = await mailer.sendEmail({
-        to: etablissement.email_decisionnaire,
+        to: etablissement.gestionnaire_email,
         subject: `Activez la prise de rendez-vous apprentissage sur Parcoursup`,
         template: mailTemplate["mail-cfa-premium-invite-one-shot"],
         data: {
@@ -55,27 +55,27 @@ export const premiumInviteOneShot = async ({ etablissements, mailer }) => {
           },
           etablissement: {
             name: etablissement.raison_sociale,
-            address: etablissement.adresse,
-            postalCode: etablissement.code_postal,
-            ville: etablissement.localite,
-            siret: etablissement.siret_formateur,
-            email: etablissement.email_decisionnaire,
+            formateur_address: etablissement.formateur_address,
+            formateur_zip_code: etablissement.formateur_zip_code,
+            formateur_city: etablissement.formateur_city,
+            siret: etablissement.formateur_siret,
+            email: etablissement.gestionnaire_email,
             linkToForm: `${config.publicUrlEspacePro}/form/premium/${etablissement._id}`,
-            optOutActivatedAtDate: dayjs(etablissement.opt_out_activated_at).format("DD/MM/YYYY"),
-            emailGestionnaire: etablissement.email_decisionnaire,
+            optOutActivatedAtDate: dayjs(etablissement.optout_activation_date).format("DD/MM/YYYY"),
+            emailGestionnaire: etablissement.gestionnaire_email,
           },
           user: {
-            destinataireEmail: etablissement.email_decisionnaire,
+            destinataireEmail: etablissement.gestionnaire_email,
           },
         },
       })
 
       await etablissements.updateOne(
-        { siret_formateur: etablissement.siret_formateur },
+        { formateur_siret: etablissement.formateur_siret },
         {
-          premium_invited_at: dayjs().toDate(),
+          premium_invitation_date: dayjs().toDate(),
           $push: {
-            mailing: {
+            to_etablissement_emails: {
               campaign: mailType.PREMIUM_INVITE_ONE_SHOT_2023,
               status: null,
               message_id: messageId,
