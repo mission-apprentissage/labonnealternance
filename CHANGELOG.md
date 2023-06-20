@@ -1,3 +1,15 @@
+# [1.1.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.0.1...v1.1.0) (2023-06-20)
+
+
+### Features
+
+* reinstate main ([2c56bf6](https://github.com/mission-apprentissage/labonnealternance/commit/2c56bf6d09db4e0f98ba8fd7781f746b23235093))
+
+
+### Reverts
+
+* Revert "feat: mongodb rdv fields (#334)" ([fe93ec6](https://github.com/mission-apprentissage/labonnealternance/commit/fe93ec61247a2a8546d933585598a84755d91455)), closes [#334](https://github.com/mission-apprentissage/labonnealternance/issues/334)
+
 ## [1.0.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.0.0...v1.0.1) (2023-06-20)
 
 
