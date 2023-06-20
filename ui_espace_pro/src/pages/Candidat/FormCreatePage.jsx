@@ -300,7 +300,7 @@ export const FormCreatePage = (props) => {
                   )}
 
                   <Text mt={10}>
-                    <span style={{ color: "#B34000", paddingRight: "5px" }}>*</span>champ obligatoire
+                    <span style={{ color: "#B34000", paddingRight: "5px" }}>*</span>champs obligatoires
                   </Text>
                   <Button
                     variant="unstyled"
