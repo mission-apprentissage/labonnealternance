@@ -24,10 +24,16 @@ const Layout2 = (props) => {
             {auth.sub !== subAnonymous && (
               <Box>
                 <Menu isLazy>
-                  <MenuButton>Menu</MenuButton>
+                  <MenuButton>Paramètres</MenuButton>
                   <MenuList>
+                    <Link href="/espace-pro/admin/widget-parameters">
+                      <MenuItem>Liste</MenuItem>
+                    </Link>
                     <Link href="/espace-pro/admin/widget-parameters/search">
-                      <MenuItem>Rechercher / modifier un siret formateur</MenuItem>
+                      <MenuItem>Ajouter - Via recherche</MenuItem>
+                    </Link>
+                    <Link href="/espace-pro/admin/widget-parameters/bulk">
+                      <MenuItem>Actions groupés</MenuItem>
                     </Link>
                   </MenuList>
                 </Menu>

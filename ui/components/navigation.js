@@ -1,4 +1,4 @@
-import { Box, Container, Flex, Image, keyframes, Link, Show, Stack, useDisclosure, usePrefersReducedMotion } from "@chakra-ui/react"
+import { Box, Flex, Image, Link, useDisclosure, Stack, Show, Container, keyframes, usePrefersReducedMotion } from "@chakra-ui/react"
 import NextLink from "next/link"
 
 import { CloseIcon, HamburgerIcon, LockIcon } from "@chakra-ui/icons"

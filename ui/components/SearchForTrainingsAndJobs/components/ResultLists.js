@@ -1,12 +1,10 @@
 import React, { useContext, useState } from "react"
 
 import { ErrorMessage } from "../../../components"
-import DisplayMapButton from "../../../components/DisplayMapButton/displayMapButton"
 import { DisplayContext } from "../../../context/DisplayContextProvider"
 import { ParameterContext } from "../../../context/ParameterContextProvider"
 import { ScopeContext } from "../../../context/ScopeContext"
 import { SearchResultContext } from "../../../context/SearchResultContextProvider"
-import purpleFilterIcon from "../../../public/images/icons/purpleFilter.svg"
 import { isCfaEntreprise } from "../../../services/cfaEntreprise"
 import { mergeJobs, mergeOpportunities } from "../../../utils/itemListUtils"
 import { filterLayers } from "../../../utils/mapTools"
@@ -14,19 +12,22 @@ import DuoContainer from "./DuoContainer"
 import ExtendedSearchButton from "./ExtendedSearchButton"
 import NoJobResult from "./NoJobResult"
 import ResultListsCounter from "./ResultListsCounter"
+import purpleFilterIcon from "../../../public/images/icons/purpleFilter.svg"
+import DisplayMapButton from "../../../components/DisplayMapButton/displayMapButton"
 
 import { Box, Button, Flex, Image } from "@chakra-ui/react"
 import { SendPlausibleEvent } from "../../../utils/plausible"
 import { renderJob, renderLbb, renderTraining } from "../services/renderOneResult"
 
 const ResultLists = (props) => {
-  const scopeContext = useContext(ScopeContext)
 
+  const scopeContext = useContext(ScopeContext)
+  
   let [extendedSearch, hasSearch, isFormVisible] = [false, false, false]
 
   ;({ isFormVisible } = useContext(DisplayContext))
   ;({ extendedSearch, hasSearch } = useContext(SearchResultContext))
-
+  
   if (props.isTestMode) {
     ;[extendedSearch, hasSearch, isFormVisible] = [props.stubbedExtendedSearch, props.stubbedHasSearch, props.stubbedIsFormVisible]
   }
@@ -206,7 +207,7 @@ const ResultLists = (props) => {
   return (
     <Flex direction="column" height={props.selectedItem ? "0%" : "100%"} display={isFormVisible ? "none" : "flex"}>
       <Box bg="beige" display={props.shouldShowWelcomeMessage || props.selectedItem ? "none" : ""}>
-        <Flex flex="1 auto" my={[2, 2, 0]} alignItems="center">
+        <Flex flex="1 auto" my={[2,2,0]} alignItems="center" >
           <Button
             background="none"
             border="none"
@@ -221,7 +222,8 @@ const ResultLists = (props) => {
             <Image width="24px" height="24px" src={purpleFilterIcon} alt="" />
           </Button>
         </Flex>
-        <DisplayMapButton jobs={props.jobs} trainings={props.trainings} />
+        <DisplayMapButton jobs={props.jobs}
+                          trainings={props.trainings} />
         <ResultListsCounter
           scopeContext={scopeContext}
           filterButtonClicked={filterButtonClicked}

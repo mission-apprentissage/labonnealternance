@@ -1,12 +1,12 @@
 import React, { useContext } from "react"
 
-import { includes } from "lodash"
-import { useRouter } from "next/router"
 import HeaderForm from "../../components/HeaderForm/HeaderForm"
 import LogoLBA from "../../components/LogoLBA/LogoLBA"
+import { useRouter } from "next/router"
+import { includes } from "lodash"
 
-import { Box, Flex, Text } from "@chakra-ui/react"
 import { SearchResultContext } from "../../context/SearchResultContextProvider"
+import { Box, Flex, Text } from "@chakra-ui/react"
 
 const WidgetHeader = ({ handleSearchSubmit, isHome }) => {
   const router = useRouter()

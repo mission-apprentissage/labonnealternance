@@ -14,13 +14,13 @@ import * as eligibleTrainingsForAppointmentService from "../../services/eligible
 export const premiumActivatedReminder = async ({ etablissements, mailer }) => {
   logger.info("Cron #premiumActivatedReminder started.")
 
-  const [etablissementsActivated, eligibleTrainingsForAppointmentsFound] = await Promise.all([
+  const [etablissementsActivated, widgetParametersFound] = await Promise.all([
     etablissements
       .find({
-        gestionnaire_email: {
+        email_decisionnaire: {
           $ne: null,
         },
-        premium_activation_date: {
+        premium_activated_at: {
           $ne: null,
         },
       })
@@ -29,15 +29,15 @@ export const premiumActivatedReminder = async ({ etablissements, mailer }) => {
   ])
 
   const etablissementWithParcoursup = etablissementsActivated.filter((etablissement) =>
-    eligibleTrainingsForAppointmentsFound.find((eligibleTrainingsForAppointment) => eligibleTrainingsForAppointment.etablissement_formateur_siret === etablissement.formateur_siret)
+    widgetParametersFound.find((widgetParameter) => widgetParameter.etablissement_formateur_siret === etablissement.siret_formateur)
   )
 
   for (const etablissement of etablissementWithParcoursup) {
     // Retrieve all emails
-    let emails = eligibleTrainingsForAppointmentsFound
-      .filter((eligibleTrainingsForAppointment) => eligibleTrainingsForAppointment.etablissement_formateur_siret === etablissement.formateur_siret)
-      .map((eligibleTrainingsForAppointment) => eligibleTrainingsForAppointment.lieu_formation_email)
-      .concat([etablissement.gestionnaire_email])
+    let emails = widgetParametersFound
+      .filter((widgetParameter) => widgetParameter.etablissement_formateur_siret === etablissement.siret_formateur)
+      .map((widgetParameter) => widgetParameter.email_rdv)
+      .concat([etablissement.email_decisionnaire, etablissement.etablissement_formateur_courriel])
 
     emails = _(emails).uniq().omitBy(_.isNil).toArray()
 
@@ -64,13 +64,13 @@ export const premiumActivatedReminder = async ({ etablissements, mailer }) => {
             },
             etablissement: {
               name: etablissement.raison_sociale,
-              formateur_address: etablissement.formateur_address,
-              formateur_zip_code: etablissement.formateur_zip_code,
-              formateur_city: etablissement.formateur_city,
-              siret: etablissement.formateur_siret,
-              email: etablissement.gestionnaire_email,
-              premiumActivatedDate: dayjs(etablissement.premium_activation_date).format("DD/MM/YYYY"),
-              emailGestionnaire: etablissement.gestionnaire_email,
+              address: etablissement.adresse,
+              postalCode: etablissement.code_postal,
+              ville: etablissement.localite,
+              siret: etablissement.siret_formateur,
+              email: etablissement.email_decisionnaire,
+              premiumActivatedDate: dayjs(etablissement.premium_activated_at).format("DD/MM/YYYY"),
+              emailGestionnaire: etablissement.email_decisionnaire,
             },
             user: {
               destinataireEmail: email,
@@ -79,11 +79,11 @@ export const premiumActivatedReminder = async ({ etablissements, mailer }) => {
         })
 
         await etablissements.updateOne(
-          { formateur_siret: etablissement.formateur_siret },
+          { siret_formateur: etablissement.siret_formateur },
           {
-            premium_invitation_date: dayjs().toDate(),
+            premium_invited_at: dayjs().toDate(),
             $push: {
-              to_etablissement_emails: {
+              mailing: {
                 campaign: mailType.PREMIUM_ACTIVATED_REMINDER,
                 status: null,
                 message_id: messageId,

@@ -1,6 +1,6 @@
 import assert from "assert"
-import __filename from "../../../src/common/filename.js"
 import httpTests from "../../utils/httpTests.js"
+import __filename from "../../../src/common/filename.js"
 
 httpTests(__filename(import.meta.url), ({ startServer }) => {
   it("Vérifie que la route formations répond", async () => {

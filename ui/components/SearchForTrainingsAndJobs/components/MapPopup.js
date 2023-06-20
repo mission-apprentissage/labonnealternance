@@ -1,13 +1,13 @@
 import React, { useEffect } from "react"
 
-import { Box, Button, ChakraProvider, Flex, Image, Text, VStack } from "@chakra-ui/react"
+import { getJobAddress } from "../../../utils/jobs"
+import { logError } from "../../../utils/tools"
 import { ErrorMessage } from "../.."
+import { setSelectedMarker } from "../../../utils/mapTools"
 import bookIcon from "../../../public/images/icons/book.svg"
 import jobIcon from "../../../public/images/icons/job.svg"
+import { Box, Button, ChakraProvider, Flex, Image, Text, VStack } from "@chakra-ui/react"
 import theme from "../../../theme"
-import { getJobAddress } from "../../../utils/jobs"
-import { setSelectedMarker } from "../../../utils/mapTools"
-import { logError } from "../../../utils/tools"
 
 const MapPopup = ({ type, item, handleSelectItem, setSelectedItem, setSelectedMapPopupItem }) => {
   const openItemDetail = (item) => {

@@ -1,17 +1,17 @@
-import { CloseIcon } from "@chakra-ui/icons"
-import { Box, Button, Image, Modal, ModalContent, ModalHeader, ModalOverlay, Text, useDisclosure } from "@chakra-ui/react"
+import React, { useState, useEffect } from "react"
 import { useFormik } from "formik"
-import React, { useEffect, useState } from "react"
-import { getItemId } from "../../../utils/getItemId"
-import { SendPlausibleEvent } from "../../../utils/plausible"
-import { string_wrapper as with_str } from "../../../utils/wrapper_utils"
-import CandidatureSpontaneeFailed from "./CandidatureSpontaneeFailed"
 import CandidatureSpontaneeNominalBodyFooter from "./CandidatureSpontaneeNominalBodyFooter"
 import CandidatureSpontaneeWorked from "./CandidatureSpontaneeWorked"
-import { getInitialSchemaValues, getValidationSchema } from "./services/getSchema"
-import hasAlreadySubmittedCandidature from "./services/hasAlreadySubmittedCandidature"
+import CandidatureSpontaneeFailed from "./CandidatureSpontaneeFailed"
 import submitCandidature from "./services/submitCandidature"
+import { getValidationSchema, getInitialSchemaValues } from "./services/getSchema"
+import { string_wrapper as with_str } from "../../../utils/wrapper_utils"
 import useLocalStorage from "./services/useLocalStorage"
+import hasAlreadySubmittedCandidature from "./services/hasAlreadySubmittedCandidature"
+import { getItemId } from "../../../utils/getItemId"
+import { SendPlausibleEvent } from "../../../utils/plausible"
+import { Box, Button, Image, Modal, ModalContent, ModalHeader, ModalOverlay, Text, useDisclosure } from "@chakra-ui/react"
+import { CloseIcon } from "@chakra-ui/icons"
 
 const CandidatureSpontanee = (props) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -125,7 +125,9 @@ const CandidatureSpontanee = (props) => {
                       <CandidatureSpontaneeNominalBodyFooter formik={formik} sendingState={sendingState} company={props?.item?.company?.name} item={props?.item} kind={kind} />
                     )}
                     {with_str(sendingState).amongst(["ok_sent"]) && <CandidatureSpontaneeWorked kind={kind} email={formik.values.email} company={props?.item?.company?.name} />}
-                    {!with_str(sendingState).amongst(["not_sent", "ok_sent", "currently_sending"]) && <CandidatureSpontaneeFailed sendingState={sendingState} />}
+                    {!(with_str(sendingState).amongst(["not_sent", "ok_sent", "currently_sending"])) && (
+                      <CandidatureSpontaneeFailed sendingState={sendingState} />
+                    )}
                   </form>
                 </ModalContent>
               </Modal>

@@ -1,6 +1,6 @@
 import React from "react"
 
-import { Box, Grid, GridItem, Image, Link, Text } from "@chakra-ui/react"
+import { Text, Link, Image, Grid, GridItem, Box } from "@chakra-ui/react"
 
 const FollowLinkedIn = () => {
   return (

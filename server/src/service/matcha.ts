@@ -61,7 +61,7 @@ const transformMatchaJobsForIdea = ({ jobs, caller, matchaApplicationCountByJob 
 
   if (jobs && jobs.length) {
     for (let i = 0; i < jobs.length; ++i) {
-      const companyJobs = transformMatchaJobForIdea({
+      let companyJobs = transformMatchaJobForIdea({
         job: jobs[i]._source,
         distance: jobs[i].sort[0],
         matchaApplicationCountByJob,

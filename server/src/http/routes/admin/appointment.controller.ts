@@ -1,13 +1,16 @@
 import express from "express"
+import { chunk } from "lodash-es"
 import { logger } from "../../../common/logger.js"
+import { getEmailStatus } from "../../../common/model/constants/emails.js"
+import { getReferrerById, referrers } from "../../../common/model/constants/referrers.js"
 import { Appointment, User } from "../../../common/model/index.js"
-import { getFormationsByCleMinistereEducatif } from "../../../services/catalogue.service.js"
+import { getFormationsByIdRcoFormations } from "../../../services/catalogue.service.js"
 import { tryCatch } from "../../middlewares/tryCatchMiddleware.js"
 
 /**
  * Sample entity route module for GET
  */
-export default () => {
+export default ({ etablissements, appointments, users }) => {
   const router = express.Router()
 
   /**
@@ -45,20 +48,49 @@ export default () => {
       const page = qs && qs.page ? qs.page : 1
       const limit = qs && qs.limit ? parseInt(qs.limit, 10) : 50
 
-      const allAppointments = await Appointment.paginate({ query, page, limit, sort: { created_at: -1 } })
+      const allData = await Appointment.paginate({ query, page, limit, sort: { created_at: -1 } })
 
-      const cleMinistereEducatifs = [...new Set(allAppointments.docs.map((document) => document.cle_ministere_educatif))]
+      const idRcoFormations = [...new Set(allData.docs.map((document) => document.id_rco_formation))]
 
-      const formations = await getFormationsByCleMinistereEducatif({ cleMinistereEducatifs })
+      // Split array by chunk to avoid sending unit calls to the catalogue
+      const idRcoFormationsChunks = chunk(idRcoFormations, 40)
 
-      const appointmentsPromises = allAppointments.docs.map(async (document) => {
-        const user = await User.findById(document.applicant_id)
-        const formation = formations.find((item) => item.cle_ministere_educatif === document.cle_ministere_educatif)
+      // Get formations from catalogue by block of 40 id_rco_formations
+      let formations = await Promise.all(
+        idRcoFormationsChunks.map(async (idRcoFormations) => {
+          const formations = await getFormationsByIdRcoFormations({ idRcoFormations })
+          return formations
+        })
+      )
+
+      formations = formations.flat()
+
+      const appointmentsPromises = allData.docs.map(async (document) => {
+        const user = await User.findById(document.candidat_id)
+
+        // Get right formation from dataset
+        const catalogueFormation = formations.find((item) => item.id_rco_formation === document.id_rco_formation)
+
+        const etablissement = await etablissements.findOne({ siret_formateur: document.etablissement_id })
+
+        let formation = {}
+        if (catalogueFormation) {
+          formation = {
+            etablissement_formateur_entreprise_raison_sociale: catalogueFormation.etablissement_formateur_entreprise_raison_sociale,
+            intitule_long: catalogueFormation.intitule_long,
+            etablissement_formateur_adresse: catalogueFormation.etablissement_formateur_adresse,
+            etablissement_formateur_code_postal: catalogueFormation.etablissement_formateur_code_postal,
+            etablissement_formateur_nom_departement: catalogueFormation.etablissement_formateur_nom_departement,
+          }
+        }
 
         return {
           ...document,
-          appointment_origin: document.appointment_origin,
+          email_premiere_demande_candidat_statut: getEmailStatus(document?.email_premiere_demande_candidat_statut),
+          email_premiere_demande_cfa_statut: getEmailStatus(document?.email_premiere_demande_cfa_statut),
+          referrer: getReferrerById(document.referrer),
           formation,
+          etablissement,
           candidat: {
             _id: user._id,
             firstname: user.firstname,
@@ -74,12 +106,59 @@ export default () => {
       return res.send({
         appointments,
         pagination: {
-          page: allAppointments.page,
+          page: allData.page,
           resultats_par_page: limit,
-          nombre_de_page: allAppointments.totalPages,
-          total: allAppointments.totalDocs,
+          nombre_de_page: allData.totalPages,
+          total: allData.totalDocs,
         },
       })
+    })
+  )
+
+  /**
+   * Export appointments in csv.
+   */
+  router.get(
+    "/appointments/details/export",
+    tryCatch(async (req, res) => {
+      const appointmentList = await appointments.find(
+        {
+          id_rco_formation: {
+            $ne: null,
+          },
+          referrer: referrers.PARCOURSUP.code,
+        },
+        {
+          id_rco_formation: 1,
+          candidat_id: 1,
+          referrer: 1,
+          created_at: 1,
+          email_cfa: 1,
+          motivations: 1,
+        }
+      )
+
+      const output = []
+      for (const appointmentListChunck of chunk(appointmentList, 100)) {
+        const result = await Promise.all(
+          appointmentListChunck.map(async (appointment) => {
+            const candidat = await users.getUserById(appointment.candidat_id)
+
+            return {
+              id_rco_formation: appointment.id_rco_formation,
+              created_at: appointment.created_at,
+              motivations: appointment.motivations,
+              candidat_firstname: candidat.firstname,
+              candidat_lastname: candidat.lastname,
+              candidat_email: candidat.email,
+              candidat_phone: candidat.phone,
+            }
+          })
+        )
+        output.push(result)
+      }
+
+      return res.send(output)
     })
   )
 

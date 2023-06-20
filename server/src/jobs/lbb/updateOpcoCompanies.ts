@@ -1,7 +1,7 @@
 //@ts-nocheck
 import { notifyToSlack } from "../../common/utils/slackUtils.js"
 import { oleoduc, writeData } from "oleoduc"
-import { logger } from "../../common/logger.js"
+import _ from "lodash-es"
 import { Opco } from "../../common/model/index.js"
 import { logMessage } from "../../common/utils/logMessage.js"
 import { CFADOCK_FILTER_LIMIT, fetchOpcosFromCFADock } from "../../services/cfadock.service.js"

@@ -1,5 +1,5 @@
-import { Image, Text } from "@chakra-ui/react"
 import React from "react"
+import { Image, Text } from "@chakra-ui/react"
 
 import bookIcon from "../../public/images/book.svg"
 

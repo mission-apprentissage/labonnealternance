@@ -127,6 +127,8 @@ export default ({ users, etablissementsRecruteur, mailer }) => {
       const user = await UserRecruteur.findOne({ email }).collation({ locale: "fr", strength: 2 })
       const { email: userEmail, _id, first_name, last_name, is_email_checked } = user || {}
 
+      console.log(user)
+
       if (!user) {
         return res.status(400).json({ error: true, reason: "UNKNOWN" })
       }

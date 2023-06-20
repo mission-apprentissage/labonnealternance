@@ -15,8 +15,6 @@ import { generateIndexes } from "./jobs/lba_recruteur/indexes/generateIndexes.js
 import { relanceOpco } from "./jobs/lba_recruteur/opco/relanceOpco.js"
 import { exportPE } from "./jobs/lba_recruteur/formulaire/misc/exportPE.js"
 import { createOffreCollection } from "./jobs/lba_recruteur/seed/createOffre.js"
-import updateBonnesBoites from "./jobs/lbb/updateBonnesBoites.js"
-import updateGeoLocations from "./jobs/lbb/updateGeoLocations.js"
 import updateOpcoCompanies from "./jobs/lbb/updateOpcoCompanies.js"
 import { activateOptOutEtablissementFormations } from "./jobs/rdv/activateOptOutEtablissementFormations.js"
 import { anonimizeAppointments } from "./jobs/rdv/anonymizeAppointments.js"
@@ -33,6 +31,8 @@ import { premiumInviteOneShot } from "./jobs/rdv/premiumInviteOneShot.js"
 import { syncEtablissementsAndFormations } from "./jobs/rdv/syncEtablissementsAndFormations.js"
 import { syncAffelnetFormationsFromCatalogueME } from "./jobs/rdv/syncEtablissementsAndFormationsAffelnet.js"
 import { runScript } from "./jobs/scriptWrapper.js"
+import updateBonnesBoites from "./jobs/lbb/updateBonnesBoites.js"
+import updateGeoLocations from "./jobs/lbb/updateGeoLocations.js"
 import updateSendinblueBlockedEmails from "./jobs/updateSendinblueBlockedEmails/updateSendinblueBlockedEmails.js"
 
 cli.addHelpText("after", null)

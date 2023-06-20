@@ -1,7 +1,7 @@
 import Joi from "joi"
 import { referrers } from "../../../common/model/constants/referrers.js"
 
-const contextCreateSchema = Joi.alternatives(
+const contextCreateSchema = Joi.alternatives().try(
   // Find through "idParcoursup"
   Joi.object().keys({
     idParcoursup: Joi.string().required(),

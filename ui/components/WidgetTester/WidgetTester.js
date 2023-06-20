@@ -1,10 +1,10 @@
-import { Box, Button, Container, Grid, GridItem, Input, Link, Radio, RadioGroup, Stack, Text } from "@chakra-ui/react"
 import { ErrorMessage, Field, Form, Formik } from "formik"
 import React, { useState } from "react"
-import { baseUrl } from "../../config/config"
 import { fetchAddresses } from "../../services/baseAdresse"
 import domainChanged from "../../services/domainChanged"
 import { AutoCompleteField, autoCompleteToStringFunction, compareAutoCompleteValues } from "../AutoCompleteField/AutoCompleteField"
+import { GridItem, Grid, Container, Button, Box, Text, Link, Input, Radio, RadioGroup, Stack } from "@chakra-ui/react"
+import { baseUrl } from "../../config/config"
 
 const WidgetTester = () => {
   const [locationRadius, setLocationRadius] = useState("0")

@@ -40,7 +40,7 @@ const LocationDetail = ({ item, isCfa }) => {
     let res = false
     if (oneItem?.ideaType === "matcha") {
       res = !!item?.company?.mandataire
-    }
+    } 
     if (res) {
       // au cas où : on n'affiche l'email que si il n'est pas chiffré
       res = with_str("@").in(item?.contact?.email)

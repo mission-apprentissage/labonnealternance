@@ -46,7 +46,7 @@ const PremiumForm = () => {
       setHasRefused(true)
     }
 
-    if (etablissement.premium_activation_date) {
+    if (etablissement.premium_activated_at) {
       setHasAccepted(true)
     }
 
@@ -144,33 +144,27 @@ const PremiumForm = () => {
                     </Text>
                   </Text>
                   <Text>
-                    SIRET Gestionnaire :{" "}
+                    SIRET :{" "}
                     <Text as="span" fontWeight="700">
-                      {etablissement.gestionnaire_siret}
-                    </Text>
-                  </Text>
-                  <Text>
-                    SIRET Formateur :{" "}
-                    <Text as="span" fontWeight="700">
-                      {etablissement.formateur_siret}
+                      {etablissement.siret_formateur}
                     </Text>
                   </Text>
                   <Text>
                     Adresse :{" "}
                     <Text as="span" fontWeight="700">
-                      {etablissement.formateur_address}
+                      {etablissement.adresse}
                     </Text>
                   </Text>
                   <Text>
                     Code postal :{" "}
                     <Text as="span" fontWeight="700">
-                      {etablissement.formateur_zip_code}
+                      {etablissement.code_postal}
                     </Text>
                   </Text>
                   <Text>
                     Ville :{" "}
                     <Text as="span" fontWeight="700">
-                      {etablissement.formateur_city}
+                      {etablissement.localite}
                     </Text>
                   </Text>
                 </Stack>

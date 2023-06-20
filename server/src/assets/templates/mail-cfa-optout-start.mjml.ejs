@@ -28,9 +28,9 @@
                     <br/>
                     <b>
                         <%= data.etablissement.name %> <br />
-                        <%= data.etablissement.formateur_address %><br/>
-                        <%= data.etablissement.formateur_zip_code %> <%= data.etablissement.formateur_city %><br/>
-                        SIRET : <%= data.etablissement.formateur_siret %>
+                        <%= data.etablissement.address %><br/>
+                        <%= data.etablissement.postalCode %> <%= data.etablissement.ville %><br/>
+                        SIRET : <%= data.etablissement.siret %>
                     </b>
                 </mj-text>
                 <mj-image width="520px" src="<%= data.images.optOutLbaIntegrationExample %>" />
@@ -84,7 +84,7 @@
             </mj-column>
             <mj-column width="400px" padding-left="30px">
                 <mj-text padding-bottom="15px" padding-right="0" font-size="12px">
-                    Cet email a été envoyé à <a class="grey" href="mailto:<%= data.etablissement.gestionnaire_email %>"><%= data.etablissement.gestionnaire_email %></a>.
+                    Cet email a été envoyé à <a class="grey" href="mailto:<%= data.etablissement.email %>"><%= data.etablissement.email %></a>.
                 </mj-text>
             </mj-column>
         </mj-section>

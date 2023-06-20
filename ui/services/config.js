@@ -1,6 +1,6 @@
+import { getValueFromPath } from "../utils/tools"
 import { campaignParameters } from "../utils/campaignParameters"
 import { testingParameters } from "../utils/testingParameters"
-import { getValueFromPath } from "../utils/tools"
 
 export const getWidgetParameters = () => {
   let widgetParameters = { parameters: null, applyWidgetParameters: false }
@@ -98,8 +98,8 @@ export const setUseMock = ({ parameterContext }) => {
 
 export const setDisplayMap = ({ parameterContext }) => {
   let displayMap = getValueFromPath("displayMap")
-  if (displayMap !== null) {
-    parameterContext.setDisplayMap(displayMap === "false" ? false : true)
+  if(displayMap!==null) {
+    parameterContext.setDisplayMap(displayMap==="false"?false:true)
   }
 }
 

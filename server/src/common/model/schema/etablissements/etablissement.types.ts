@@ -1,8 +1,8 @@
 import { IMailing } from "../appointments/appointments.types.js"
 
 interface IEtablissement {
-  formateur_siret: string
-  gestionnaire_siret: string
+  siret_formateur: string
+  siret_gestionnaire: string
   raison_sociale: string
   adresse: string
   formateur_zip_code: string
@@ -19,7 +19,7 @@ interface IEtablissement {
   optout_activation_date: Date
   optout_refusal_date: Date
   mailing: IMailing[]
-  last_catalogue_sync_date: Date
+  last_catalogue_sync: Date
   created_at: Date
   affelnet_perimetre: boolean
 }

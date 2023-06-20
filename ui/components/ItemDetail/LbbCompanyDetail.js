@@ -1,8 +1,8 @@
-import { Box } from "@chakra-ui/react"
-import React, { useEffect } from "react"
 import { DisplayContext } from "../../context/DisplayContextProvider"
+import React, { useEffect } from "react"
 import { SendPlausibleEvent } from "../../utils/plausible"
 import CandidatureSpontaneeExplanation from "./CandidatureSpontanee/CandidatureSpontaneeExplanation"
+import { Box } from "@chakra-ui/react"
 
 const LbbCompanyDetail = ({ lbb }) => {
   useEffect(() => {

@@ -1,14 +1,14 @@
-import { Box } from "@chakra-ui/react"
-import { ScopeContext } from "context/ScopeContext"
+import React, { useState, useEffect, useRef, useContext } from "react"
 import { useRouter } from "next/router"
-import React, { useContext, useEffect, useRef, useState } from "react"
-import { currentPage, currentSearch, setCurrentPage } from "utils/currentPage.js"
-import { initializeMap, isMapInitialized, map, setSelectedMarker } from "utils/mapTools"
+import { currentPage, setCurrentPage, currentSearch } from "utils/currentPage.js"
+import { ScopeContext } from "context/ScopeContext"
 import pushHistory from "utils/pushHistory"
-import { DisplayContext } from "../../context/DisplayContextProvider"
-import { SearchResultContext } from "../../context/SearchResultContextProvider"
-import { fetchAddressFromCoordinates } from "../../services/baseAdresse"
 import MapSearchButton from "./MapSearchButton"
+import { map, initializeMap, isMapInitialized, setSelectedMarker } from "utils/mapTools"
+import { fetchAddressFromCoordinates } from "../../services/baseAdresse"
+import { SearchResultContext } from "../../context/SearchResultContextProvider"
+import { DisplayContext } from "../../context/DisplayContextProvider"
+import { Box } from "@chakra-ui/react"
 
 let mapPosition = {
   lat: null,

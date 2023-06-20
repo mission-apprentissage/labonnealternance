@@ -1,8 +1,8 @@
+import React from "react"
 import { render } from "@testing-library/react"
+import AutoCompleteField from "./AutoCompleteField"
 import { Formik } from "formik"
 import { noop } from "lodash/noop"
-import React from "react"
-import AutoCompleteField from "./AutoCompleteField"
 
 describe("AutoCompleteField", () => {
   it("Renders static image and text", () => {

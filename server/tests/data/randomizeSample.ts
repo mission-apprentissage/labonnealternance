@@ -14,9 +14,9 @@ const getRandomSiretEtablissement = () => new RandExp(/^[0-9]{14}$/).gen().toUpp
  */
 const createRandomAppointment = () => {
   return {
-    applicant_id: faker.random.uuid(),
+    candidat_id: faker.random.uuid(),
     motivations: faker.lorem.sentence(),
-    cfa_gestionnaire_siret: getRandomUaiEtablissement(),
+    etablissement_id: getRandomUaiEtablissement(),
     formation_id: getRandomIdFormation(),
     referrer: faker.random.objectElement(referrers).name,
   }
@@ -41,7 +41,7 @@ const createRandomCandidat = () => {
 /**
  * Random widget parameter
  */
-const createRandomEligibleTrainingsForAppointment = () => {
+const createRandomWidgetParameter = () => {
   return {
     etablissement_siret: getRandomSiretEtablissement(),
     etablissement_raison_sociale: faker.lorem.word().toUpperCase(),
@@ -71,7 +71,7 @@ const createRandomListOf =
 
 // Random lists
 const createRandomAppointmentsList = createRandomListOf(createRandomAppointment)
-const createRandomEligibleTrainingsForAppointmentsList = createRandomListOf(createRandomEligibleTrainingsForAppointment)
+const createRandomWidgetParametersList = createRandomListOf(createRandomWidgetParameter)
 const createRandomCandidatsList = createRandomListOf(createRandomCandidat)
 
-export { createRandomEligibleTrainingsForAppointmentsList, createRandomAppointmentsList, createRandomCandidatsList }
+export { createRandomWidgetParametersList, createRandomAppointmentsList, createRandomCandidatsList }

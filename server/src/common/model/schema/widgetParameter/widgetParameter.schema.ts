@@ -1,34 +1,39 @@
 import { mongoosePagination, Pagination } from "mongoose-paginate-ts"
 import { model, Schema } from "../../../mongodb.js"
-import { IEligibleTrainingsForAppointment } from "./eligibleTrainingsForAppointment.types.js"
+import { IWidgetParameter } from "./widgetParameter.types.js"
 
-export const eligibleTrainingsForAppointmentSchema = new Schema<IEligibleTrainingsForAppointment>({
-  training_id_catalogue: {
+export const widgetParameterSchema = new Schema<IWidgetParameter>({
+  id_catalogue: {
     type: String,
     default: null,
     description: "Identifiant d'une formation Catalogue",
   },
-  training_intitule_long: {
+  etablissement_siret: {
+    type: String,
+    default: null,
+    description: "Siret formateur",
+  },
+  formation_intitule: {
     type: String,
     default: null,
     description: "Intitulé long de la formation autorisée",
   },
-  etablissement_formateur_zip_code: {
+  code_postal: {
     type: String,
     default: null,
     description: "Code postal du lieu de formation",
   },
-  training_code_formation_diplome: {
+  formation_cfd: {
     type: String,
     default: null,
     description: "CFD de la formation autorisée",
   },
-  lieu_formation_email: {
+  email_rdv: {
     type: String,
     default: null,
     description: "Adresse email pour la prise de RDV",
   },
-  is_lieu_formation_email_customized: {
+  is_custom_email_rdv: {
     type: Boolean,
     default: null,
     description: "Spécifie si la synchronisation avec le catalogue ne doit pas écraser l'email_rdv",
@@ -38,22 +43,22 @@ export const eligibleTrainingsForAppointmentSchema = new Schema<IEligibleTrainin
     default: [],
     description: "Liste des sites autorisés",
   },
-  rco_formation_id: {
+  id_rco_formation: {
     type: String,
     default: null,
     description: "Id RCO formation",
   },
-  is_catalogue_published: {
+  catalogue_published: {
     type: Boolean,
     default: null,
     description: "Si la formation est publiée sur le Catalogue",
   },
-  last_catalogue_sync_date: {
+  last_catalogue_sync: {
     type: Date,
     default: Date.now,
     description: "Date de la dernière synchronisation avec le Catalogue",
   },
-  parcoursup_id: {
+  id_parcoursup: {
     type: String,
     default: null,
     description: "Identifiant Parcoursup",
@@ -64,40 +69,35 @@ export const eligibleTrainingsForAppointmentSchema = new Schema<IEligibleTrainin
     description: "Identifiant unique d'une formation",
     index: true,
   },
-  etablissement_formateur_raison_sociale: {
+  etablissement_raison_sociale: {
     type: String,
     default: null,
     description: "Raison sociale de l'établissement",
   },
-  etablissement_formateur_street: {
+  etablissement_formateur_adresse: {
     type: String,
     default: null,
     description: "Adresse de l'établissement formateur",
   },
-  departement_etablissement_formateur: {
+  etablissement_formateur_code_postal: {
+    type: String,
+    default: null,
+    description: "Code postal de l'établissement formateur",
+  },
+  etablissement_formateur_nom_departement: {
     type: String,
     default: null,
     description: "Département de l'établissement formateur",
   },
-  etablissement_formateur_city: {
+  etablissement_formateur_localite: {
     type: String,
     default: null,
     description: "Localité de l'établissement formateur",
   },
-  lieu_formation_street: {
+  lieu_formation_adresse: {
     type: String,
     default: null,
     description: "Adresse du lieux de formation",
-  },
-  lieu_formation_city: {
-    type: String,
-    default: null,
-    description: "Localité de la formation",
-  },
-  lieu_formation_zip_code: {
-    type: String,
-    default: null,
-    description: "Localité de la formation code postal",
   },
   etablissement_formateur_siret: {
     type: String,
@@ -108,6 +108,11 @@ export const eligibleTrainingsForAppointmentSchema = new Schema<IEligibleTrainin
     type: String,
     default: null,
     description: "Siret gestionnaire",
+  },
+  localite: {
+    type: String,
+    default: null,
+    description: "Localité de la formation",
   },
   created_at: {
     type: Date,
@@ -120,6 +125,6 @@ export const eligibleTrainingsForAppointmentSchema = new Schema<IEligibleTrainin
   },
 })
 
-eligibleTrainingsForAppointmentSchema.plugin(mongoosePagination)
+widgetParameterSchema.plugin(mongoosePagination)
 
-export default model<IEligibleTrainingsForAppointment, Pagination<IEligibleTrainingsForAppointment>>("eligible_trainings_for_appointments", eligibleTrainingsForAppointmentSchema)
+export default model<IWidgetParameter, Pagination<IWidgetParameter>>("widgetParameter", widgetParameterSchema)

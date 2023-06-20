@@ -1,5 +1,5 @@
-import { Box, Image, SimpleGrid, Text } from "@chakra-ui/react"
 import React from "react"
+import { Box, Image, Text, SimpleGrid } from "@chakra-ui/react"
 
 const PostezVotreOffreAlternance = () => {
   return (

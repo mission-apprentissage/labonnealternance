@@ -1,4 +1,3 @@
-import { Box, Container, Grid, GridItem, Image, Show, Text } from "@chakra-ui/react"
 import React from "react"
 import howto1 from "../../public/images/howto1.svg"
 import howto2 from "../../public/images/howto2.svg"
@@ -7,6 +6,7 @@ import howtoline1 from "../../public/images/howtoline1.svg"
 import howtoline2a from "../../public/images/howtoline2a.svg"
 import howtoline3a from "../../public/images/howtoline3a.svg"
 import howtoline3b from "../../public/images/howtoline3b.svg"
+import { Image, Text, GridItem, Grid, Container, Box, Show } from "@chakra-ui/react"
 
 const HowTo = () => {
   return (

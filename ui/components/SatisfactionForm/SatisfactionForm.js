@@ -1,15 +1,15 @@
-import { useFormik } from "formik"
 import React, { useEffect, useState } from "react"
 import * as Yup from "yup"
-import { isNonEmptyString } from "../../utils/strutils"
-import SatisfactionFormNavigation from "./SatisfactionFormNavigation.js"
-import SatisfactionFormSuccess from "./SatisfactionFormSuccess.js"
+import { useFormik } from "formik"
 import submitCommentaire from "./services/submitCommentaire.js"
+import SatisfactionFormSuccess from "./SatisfactionFormSuccess.js"
+import SatisfactionFormNavigation from "./SatisfactionFormNavigation.js"
+import { isNonEmptyString } from "../../utils/strutils"
 
-import { Box, Button, Flex, FormLabel, Input, Spacer, Text, Textarea } from "@chakra-ui/react"
-import { useRouter } from "next/router"
-import { testingParameters } from "../../utils/testingParameters"
 import { getValueFromPath } from "../../utils/tools"
+import { testingParameters } from "../../utils/testingParameters"
+import { useRouter } from "next/router"
+import { Box, Button, Flex, FormLabel, Input, Spacer, Text, Textarea } from "@chakra-ui/react"
 
 let iv = null
 let id = null

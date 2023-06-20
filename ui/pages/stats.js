@@ -5,24 +5,22 @@ import ScrollToTop from "../components/ScrollToTop"
 
 import { Box, Container, Divider, SimpleGrid, Tab, TabList, TabPanel, TabPanels, Tabs, Text } from "@chakra-ui/react"
 import Footer from "../components/footer"
+import { Box, Grid, GridItem, Text, Container, Divider, Link } from "@chakra-ui/react"
 
 const metabaseIframeOnLoad = (ev) => {
-  try
-  {
+  try {
     const ifr = ev.target
-    if(ifr.contentWindow)
-    {
+    if (ifr.contentWindow) {
       const doc = ifr.contentWindow.document
-      const footer  = doc.getElementsByClassName("EmbedFrame-footer")
+      const footer = doc.getElementsByClassName("EmbedFrame-footer")
       footer.length && footer[0].remove()
-      setTimeout(()=> {
+      setTimeout(() => {
         // hack pour supprimer le bloc titre qui n'est pas rendu immédiatement
         const header = doc.getElementsByClassName("EmbedFrame-header")
         header.length && header[0].remove()
-      },1500)    
+      }, 1500)
     }
-  }
-  catch(err){
+  } catch (err) {
     // evite un affichage d'erreur sur des environnements où le nom de domaine ne colle pas à celui du metabase
   }
 }
@@ -41,7 +39,7 @@ const selectedTabParams = {
 
 const tabParams = {
   color: "#161616",
-  background: "#E3E3FD",  
+  background: "#E3E3FD",
   marginRight: 2,
 }
 
@@ -54,37 +52,45 @@ const stats = () => (
     <Navigation />
     <Breadcrumb forPage="stats" label="Statistiques" />
 
-    <Container px={{base:2, sm: 4, md: 12}} py={8} my={0} mb={[0, 12]} variant="whitePageContainer">
+    <Container px={{ base: 2, sm: 4, md: 12 }} py={8} my={0} mb={[0, 12]} variant="whitePageContainer">
       <Box as="h1" mb={12}>
         <Text as="span" display="block" mb={1} variant="editorialContentH1">
           Statistiques
-        </Text>        
+        </Text>
       </Box>
       <Text maxWidth="780px">
-        La bonne alternance est une startup d’Etat incubée par beta.gouv. 
-        Nous développons un service à destination des publics selon les principes du Manifeste de beta.gouv. 
-        Nous mesurons l’impact de nos actions et publions en toute transparence nos statistiques.
-        <br /><br />
+        La bonne alternance est une startup d’Etat incubée par beta.gouv. Nous développons un service à destination des publics selon les principes du Manifeste de beta.gouv. Nous
+        mesurons l’impact de nos actions et publions en toute transparence nos statistiques.
+        <br />
+        <br />
         Notre méthode de calcul d’impact se base sur 3 étapes :<br />
-        1. Mesurer l’exposition de l’information,<br />
-        2. Mesurer le nombre de mises en relation générées par nos services,<br />
+        1. Mesurer l’exposition de l’information,
+        <br />
+        2. Mesurer le nombre de mises en relation générées par nos services,
+        <br />
         3. Mesurer que ces mises en relation se convertissent en recrutements effectifs.
-        <br /><br />
+        <br />
+        <br />
         Pour visualiser correctement cette page, veuillez désactiver votre bloqueur de publicité
       </Text>
 
       <Box mt={6}>
         <Tabs variant="unstyled">
-          <TabList px={{base:0, sm: 4}}>
-            <Tab {...tabParams} _focus={focusedTabParams} _selected={selectedTabParams}>Exposition</Tab>
-            <Tab {...tabParams} _focus={focusedTabParams} _selected={selectedTabParams}>Mise en relation</Tab>
-            <Tab {...tabParams} _focus={focusedTabParams} _selected={selectedTabParams}>Conversion</Tab>
+          <TabList px={{ base: 0, sm: 4 }}>
+            <Tab {...tabParams} _focus={focusedTabParams} _selected={selectedTabParams}>
+              Exposition
+            </Tab>
+            <Tab {...tabParams} _focus={focusedTabParams} _selected={selectedTabParams}>
+              Mise en relation
+            </Tab>
+            <Tab {...tabParams} _focus={focusedTabParams} _selected={selectedTabParams}>
+              Conversion
+            </Tab>
           </TabList>
 
           <TabPanels mt={6}>
             <TabPanel height="auto" color="grey.800" padding="0 !important;">
-              
-              <Box mb={8} px={{base:1, sm:2, md:4}} py={4} border="2px solid #E5E5E5" borderRadius="5px">
+              <Box mb={8} px={{ base: 1, sm: 2, md: 4 }} py={4} border="2px solid #E5E5E5" borderRadius="5px">
                 <Text mb={8} fontWeight={700} fontSize="28px" color="bluefrance.500" as="h3">
                   Les visites
                 </Text>
@@ -100,7 +106,7 @@ const stats = () => (
                 ></iframe>
               </Box>
 
-              <Box mb={8} px={{base:1, sm:2, md:4}} py={4} border="2px solid #E5E5E5" borderRadius="5px">
+              <Box mb={8} px={{ base: 1, sm: 2, md: 4 }} py={4} border="2px solid #E5E5E5" borderRadius="5px">
                 <Text mb={8} fontWeight={700} fontSize="28px" color="bluefrance.500" as="h3">
                   Les offres d'emploi
                 </Text>
@@ -116,7 +122,7 @@ const stats = () => (
                 ></iframe>
               </Box>
 
-              <Box mb={8} px={{base:1, sm:2, md:4}} py={4} border="2px solid #E5E5E5" borderRadius="5px">
+              <Box mb={8} px={{ base: 1, sm: 2, md: 4 }} py={4} border="2px solid #E5E5E5" borderRadius="5px">
                 <Text mb={8} fontWeight={700} fontSize="28px" color="bluefrance.500" as="h3">
                   Les formations
                 </Text>
@@ -134,8 +140,7 @@ const stats = () => (
             </TabPanel>
 
             <TabPanel height="auto" color="grey.800" padding="0 !important;">
-              
-              <Box mb={8} px={{base:1, sm:2, md:4}} py={4} border="2px solid #E5E5E5" borderRadius="5px">
+              <Box mb={8} px={{ base: 1, sm: 2, md: 4 }} py={4} border="2px solid #E5E5E5" borderRadius="5px">
                 <Text mb={8} fontWeight={700} fontSize="28px" color="bluefrance.500" as="h3">
                   Les candidatures
                 </Text>
@@ -151,7 +156,7 @@ const stats = () => (
                 ></iframe>
               </Box>
 
-              <Box mb={8} px={{base:1, sm:2, md:4}} py={4} border="2px solid #E5E5E5" borderRadius="5px">
+              <Box mb={8} px={{ base: 1, sm: 2, md: 4 }} py={4} border="2px solid #E5E5E5" borderRadius="5px">
                 <Text mb={8} fontWeight={700} fontSize="28px" color="bluefrance.500" as="h3">
                   Les demandes de rendez-vous
                 </Text>
@@ -167,7 +172,7 @@ const stats = () => (
                 ></iframe>
               </Box>
 
-              <Box mb={8} px={{base:1, sm:2, md:4}} py={4} border="2px solid #E5E5E5" borderRadius="5px">
+              <Box mb={8} px={{ base: 1, sm: 2, md: 4 }} py={4} border="2px solid #E5E5E5" borderRadius="5px">
                 <Text mb={8} fontWeight={700} fontSize="28px" color="bluefrance.500" as="h3">
                   Les modules pédagogiques
                 </Text>
@@ -183,10 +188,12 @@ const stats = () => (
                 ></iframe>
               </Box>
 
-              <SimpleGrid columns={{base:1, md: 2}} spacing={6}>
-                <Box mb={8} px={{base:1, sm:2, md:4}} py={4} border="2px solid #E5E5E5" borderRadius="5px">
+              <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
+                <Box mb={8} px={{ base: 1, sm: 2, md: 4 }} py={4} border="2px solid #E5E5E5" borderRadius="5px">
                   <Text mb={8} fontWeight={700} fontSize="28px" color="bluefrance.500" as="h3">
-                    Les réponses des<br />recruteurs
+                    Les réponses des
+                    <br />
+                    recruteurs
                   </Text>
                   <Divider variant="pageTitleDivider" mt={6} mb={2} />
                   <iframe
@@ -201,9 +208,9 @@ const stats = () => (
                   ></iframe>
                 </Box>
 
-                <Box mb={8} px={{base:1, sm:2, md:4}} py={4} border="2px solid #E5E5E5" borderRadius="5px">
+                <Box mb={8} px={{ base: 1, sm: 2, md: 4 }} py={4} border="2px solid #E5E5E5" borderRadius="5px">
                   <Text mb={8} fontWeight={700} fontSize="28px" color="bluefrance.500" as="h3">
-                    Les réponses des organismes de formation 
+                    Les réponses des organismes de formation
                   </Text>
                   <Divider variant="pageTitleDivider" mt={6} mb={2} />
                   <iframe
@@ -217,13 +224,13 @@ const stats = () => (
                     loading="lazy"
                   ></iframe>
                 </Box>
-              </SimpleGrid>        
+              </SimpleGrid>
             </TabPanel>
             <TabPanel height="auto" color="grey.800" padding="0 !important;">
-              <SimpleGrid columns={{base:1, md: 2}} spacing={6}>
-                <Box mb={8} px={{base:1, sm:2, md:4}} py={4} border="2px solid #E5E5E5" borderRadius="5px">
+              <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6}>
+                <Box mb={8} px={{ base: 1, sm: 2, md: 4 }} py={4} border="2px solid #E5E5E5" borderRadius="5px">
                   <Text mb={8} fontWeight={700} fontSize="28px" color="bluefrance.500" as="h3">
-                    Les signatures de contrat 
+                    Les signatures de contrat
                   </Text>
                   <Divider variant="pageTitleDivider" mt={6} mb={2} />
                   <iframe
@@ -238,7 +245,7 @@ const stats = () => (
                   ></iframe>
                 </Box>
 
-                <Box mb={8} px={{base:1, sm:2, md:4}} py={4} border="2px solid #E5E5E5" borderRadius="5px">
+                <Box mb={8} px={{ base: 1, sm: 2, md: 4 }} py={4} border="2px solid #E5E5E5" borderRadius="5px">
                   <Text mb={8} fontWeight={700} fontSize="28px" color="bluefrance.500" as="h3">
                     Les inscriptions en formation
                   </Text>
@@ -259,9 +266,8 @@ const stats = () => (
           </TabPanels>
         </Tabs>
       </Box>
-
     </Container>
-    
+
     <Footer />
   </Box>
 )

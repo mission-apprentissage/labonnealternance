@@ -1,5 +1,5 @@
 interface IParcoursupEtablissementStat {
-  formateur_siret: string
+  siret_formateur: string
   raison_sociale: string
   premium_activation_date: Date
   total_appointments: number

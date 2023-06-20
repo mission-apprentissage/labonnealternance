@@ -1,14 +1,15 @@
 import { mongoosePagination, Pagination } from "mongoose-paginate-ts"
 import { model, Schema } from "../../../mongodb.js"
+import { optMode } from "../../constants/etablissement.js"
 import { IEtablissement } from "./etablissement.types.js"
 
 export const etablissementSchema = new Schema<IEtablissement>({
-  formateur_siret: {
+  siret_formateur: {
     type: String,
     default: null,
     description: "Siret formateur",
   },
-  gestionnaire_siret: {
+  siret_gestionnaire: {
     type: String,
     default: null,
     description: "Siret gestionnaire",
@@ -18,37 +19,42 @@ export const etablissementSchema = new Schema<IEtablissement>({
     default: null,
     description: "Raison sociale",
   },
-  formateur_address: {
+  adresse: {
     type: String,
     default: null,
-    description: "Adresse formateur",
+    description: "Adresse",
   },
-  formateur_zip_code: {
+  code_postal: {
     type: String,
     default: null,
-    description: "Code postal formateur",
+    description: "Code postal",
   },
-  formateur_city: {
+  localite: {
     type: String,
     default: null,
-    description: "Ville formateur",
+    description: "Localité",
   },
-  gestionnaire_email: {
+  email_decisionnaire: {
     type: String,
     default: null,
     description: "Email du decisionnaire de l'établissement",
   },
-  premium_invitation_date: {
+  etablissement_formateur_courriel: {
+    type: String,
+    default: null,
+    description: "Email du formateur",
+  },
+  premium_invited_at: {
     type: Date,
     default: null,
     description: "Date d'invitation au Premium (Publication sur Parcoursup)",
   },
-  premium_activation_date: {
+  premium_activated_at: {
     type: Date,
     default: null,
     description: "Date d'acceptation de l'offre Premium",
   },
-  premium_refusal_date: {
+  premium_refused_at: {
     type: Date,
     default: null,
     description: "Date de refus de l'offre Premium",
@@ -73,22 +79,27 @@ export const etablissementSchema = new Schema<IEtablissement>({
     default: null,
     description: "Date d'invitation de l'opt-out",
   },
-  optout_activation_scheduled_date: {
+  opt_out_will_be_activated_at: {
     type: Date,
     default: null,
     description: "Date à laquelle l'activation sera effective",
   },
-  optout_activation_date: {
+  opt_out_activated_at: {
     type: Date,
     default: null,
     description: "Date d'activation de l'opt-out",
   },
-  optout_refusal_date: {
+  opt_out_refused_at: {
     type: Date,
     default: null,
     description: "Date de refus de l'opt-out",
   },
-  to_etablissement_emails: {
+  opt_out_question: {
+    type: String,
+    default: null,
+    description: "Question du décisionnaire quand il se rends sur le formulaire de désinscript à l'opt-out",
+  },
+  mailing: {
     type: "array",
     description: "Liste des évènements MAIL récupéré par le serveur",
     required: false,
@@ -124,7 +135,7 @@ export const etablissementSchema = new Schema<IEtablissement>({
       },
     },
   },
-  last_catalogue_sync_date: {
+  last_catalogue_sync: {
     type: Date,
     default: null,
     description: "Date de la dernière synchronisation avec le Catalogue",

@@ -1,19 +1,19 @@
-import { NextSeo } from "next-seo"
 import React from "react"
-import Breadcrumb from "../components/breadcrumb"
 import Navigation from "../components/navigation"
+import Breadcrumb from "../components/breadcrumb"
+import { NextSeo } from "next-seo"
 
-import { Box, Container, Text } from "@chakra-ui/react"
 import Footer from "../components/footer"
-import BientotCFA from "../components/HomeComponents/BientotCFA"
 import CFA from "../components/HomeComponents/CFA"
 import ConnectionActions from "../components/HomeComponents/ConnectionActions"
-import FacilitezRDVA from "../components/HomeComponents/FacilitezRDVA"
-import FollowLinkedIn from "../components/HomeComponents/FollowLinkedIn"
-import GerezEntreprise from "../components/HomeComponents/GerezEntreprise"
-import OffresGratuites from "../components/HomeComponents/OffresGratuites"
 import PostezVotreOffreAlternance from "../components/HomeComponents/PostezVotreOffreAlternance"
+import FacilitezRDVA from "../components/HomeComponents/FacilitezRDVA"
+import OffresGratuites from "../components/HomeComponents/OffresGratuites"
 import ReseauEntreprise from "../components/HomeComponents/ReseauEntreprise"
+import GerezEntreprise from "../components/HomeComponents/GerezEntreprise"
+import BientotCFA from "../components/HomeComponents/BientotCFA"
+import FollowLinkedIn from "../components/HomeComponents/FollowLinkedIn"
+import { Box, Container, Text } from "@chakra-ui/react"
 
 const Organisme = () => {
   return (

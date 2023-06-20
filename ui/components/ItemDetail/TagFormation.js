@@ -1,6 +1,6 @@
-import { Image, Text } from "@chakra-ui/react"
-import bookIcon from "public/images/book.svg"
 import React from "react"
+import bookIcon from "public/images/book.svg"
+import { Image, Text } from "@chakra-ui/react"
 
 const tagProperties = {
   color: "greensoft.600",

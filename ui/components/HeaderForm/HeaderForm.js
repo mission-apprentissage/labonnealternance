@@ -1,23 +1,23 @@
-import { Form, Formik } from "formik"
-import { partialRight } from "lodash"
-import React, { useEffect, useState } from "react"
-import { AutoCompleteField } from ".."
-import { DomainError } from "../../components"
+import React, { useState, useEffect } from "react"
 import glassImage from "../../public/images/glass_white.svg"
+import { Formik, Form } from "formik"
+import { AutoCompleteField } from ".."
 import { buildAvailableDiplomasOptions } from "../../services/buildAvailableDiplomas"
 import { buildRayonsOptions } from "../../services/buildRayons"
+import { partialRight } from "lodash"
+import { DomainError } from "../../components"
 
 import domainChanged from "../../services/domainChanged"
+import updateValuesFromJobAutoComplete from "../../services/updateValuesFromJobAutoComplete"
 import formikUpdateValue from "../../services/formikUpdateValue"
 import handleSelectChange from "../../services/handleSelectChange"
-import updateValuesFromJobAutoComplete from "../../services/updateValuesFromJobAutoComplete"
 
-import { Box, Button, Flex, Image, Select, Text } from "@chakra-ui/react"
-import { DisplayContext } from "../../context/DisplayContextProvider"
-import { ParameterContext } from "../../context/ParameterContextProvider"
-import { autoCompleteToStringFunction, compareAutoCompleteValues } from "../../services/autoCompleteUtilities"
 import { fetchAddresses } from "../../services/baseAdresse"
+import { autoCompleteToStringFunction, compareAutoCompleteValues } from "../../services/autoCompleteUtilities"
 import validateFormik from "../../services/validateFormik"
+import { ParameterContext } from "../../context/ParameterContextProvider"
+import { DisplayContext } from "../../context/DisplayContextProvider"
+import { Box, Button, Flex, Image, Select, Text } from "@chakra-ui/react"
 
 const selectProperties = {
   fontSize: "14px",

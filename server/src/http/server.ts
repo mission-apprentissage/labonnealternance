@@ -20,6 +20,7 @@ import appointmentRoute from "./routes/admin/appointment.controller.js"
 import adminEtablissementRoute from "./routes/admin/etablissement.controller.js"
 import eligibleTrainingsForAppointmentRoute from "./routes/admin/widgetParameter.controller.js"
 import appointmentRequestRoute from "./routes/appointmentRequest.controller.js"
+import authentified from "./routes/auth/authentified.controller.js"
 import emailsRoute from "./routes/auth/emails.controller.js"
 import login from "./routes/auth/login.controller.js"
 import password from "./routes/auth/password.controller.js"
@@ -197,6 +198,7 @@ export default async (components) => {
    */
   app.use("/api/login", login(components))
   app.use("/api/password", password(components))
+  app.use("/api/authentified", checkJwtToken, authentified())
   app.use("/api/admin", admin())
 
   /**
@@ -208,7 +210,7 @@ export default async (components) => {
   app.use("/api/appointment-request", appointmentRequestRoute(components))
   app.use("/api/catalogue", catalogueRoute())
   app.use("/api/constants", constantsRoute())
-  app.use("/api/widget-parameters", eligibleTrainingsForAppointmentRoute(components))
+  app.use("/api/widget-parameters", widgetParameterRoute(components))
   app.use("/api/partners", partnersRoute(components))
   app.use("/api/emails", emailsRoute(components))
   app.use("/api/support", supportRoute())

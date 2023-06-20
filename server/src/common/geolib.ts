@@ -12,4 +12,4 @@ export const getDistanceInKm = (coordinate) => {
   return Math.ceil(distanceInKm)
 }
 
-export const roundDistance = (distance: number, precision = 2): number => round(distance, precision)
+export const roundDistance = (distance: number, precision: number = 2): number => round(distance, precision)

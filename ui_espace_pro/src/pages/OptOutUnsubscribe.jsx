@@ -1,11 +1,11 @@
-import { Box, Button, Container, Flex, Heading, Radio, RadioGroup, Stack, Text, Textarea } from "@chakra-ui/react"
 import React, { useEffect, useState } from "react"
+import { Box, Container, Flex, Text, RadioGroup, Stack, Radio, Textarea, Button, Heading } from "@chakra-ui/react"
 import { useParams } from "react-router-dom"
-import { Breadcrumb } from "../common/components/Breadcrumb"
-import Layout from "../common/components/Layout"
-import { _get, _post } from "../common/httpClient"
-import { setTitle } from "../common/utils/pageUtils"
 import { SuccessCircle } from "../theme/components/icons"
+import { _get, _post } from "../common/httpClient"
+import { Breadcrumb } from "../common/components/Breadcrumb"
+import { setTitle } from "../common/utils/pageUtils"
+import Layout from "../common/components/Layout"
 
 /**
  * @description OptOutUnsubscribe component.
@@ -50,7 +50,7 @@ const OptOutUnsubscribe = () => {
   useEffect(async () => {
     const etablissement = await _get(`/api/etablissements/${id}`)
 
-    if (etablissement.optout_refusal_date) {
+    if (etablissement.opt_out_refused_at) {
       setHasBeenUnsubscribed(true)
     }
 
@@ -116,25 +116,25 @@ const OptOutUnsubscribe = () => {
                         <Text>
                           SIRET :{" "}
                           <Text as="span" fontWeight="700">
-                            {etablissement.formateur_siret}
+                            {etablissement.siret_formateur}
                           </Text>
                         </Text>
                         <Text>
                           Adresse :{" "}
                           <Text as="span" fontWeight="700">
-                            {etablissement.formateur_address}
+                            {etablissement.adresse}
                           </Text>
                         </Text>
                         <Text>
                           Code postal :{" "}
                           <Text as="span" fontWeight="700">
-                            {etablissement.formateur_zip_code}
+                            {etablissement.code_postal}
                           </Text>
                         </Text>
                         <Text>
                           Ville :{" "}
                           <Text as="span" fontWeight="700">
-                            {etablissement.formateur_city}
+                            {etablissement.localite}
                           </Text>
                         </Text>
                       </Box>

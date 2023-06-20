@@ -27,7 +27,7 @@
                 <mj-text>
                     <ul>
                         <li>dispensée par : <b><%= data.etablissement.name %></b></li>
-                        <li>localisée au : <b><%= data.etablissement.formateur_address %>, <%= data.etablissement.formateur_zip_code %> <%= data.etablissement.formateur_city %></b></li>
+                        <li>localisée au : <b><%= data.etablissement.address %>, <%= data.etablissement.postalCode %> <%= data.etablissement.ville %></b></li>
                     </ul>
                 </mj-text>
                 <mj-text>L'établissement prendra contact avec vous très prochainement au <a class="grey" href="tel:<%= data.user.phone %>"><%= data.user.phone %></a> ou sur <a class="grey" href="mailto:<%= data.user.email %>"><%= data.user.email %></a></mj-text>
@@ -36,7 +36,7 @@
         <mj-section padding-top="30px">
             <mj-column width="600px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 10px">
                 <mj-text>
-                    Vous avez fait cette demande sur le site <a class="grey" href="<%= data.appointment.referrerLink %>"><%= data.appointment.appointment_origin %></a>.<br/><b>Vous souhaitez modifier ou annuler votre demande ?</b><br/> Envoyez un email à <a class="grey" href="mailto:<%= data.etablissement.email %>">
+                    Vous avez fait cette demande sur le site <a class="grey" href="<%= data.appointment.referrerLink %>"><%= data.appointment.referrer %></a>.<br/><b>Vous souhaitez modifier ou annuler votre demande ?</b><br/> Envoyez un email à <a class="grey" href="mailto:<%= data.etablissement.email %>">
                         <%= data.etablissement.email %>
                     </a>
                 </mj-text>

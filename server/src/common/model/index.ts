@@ -8,8 +8,6 @@ import UnsubscribedBonneBoite from "./schema/unsubscribedBonneboite/unsubscribed
 import Credential from "./schema/credentials/credential.schema.js"
 import DiplomesMetiers from "./schema/diplomesmetiers/diplomesmetiers.schema.js"
 import DomainesMetiers from "./schema/domainesmetiers/domainesmetiers.schema.js"
-import EligibleTrainingsForAppointment from "./schema/eligibleTrainingsForAppointment/eligibleTrainingsForAppointment.schema.js"
-import eligibleTrainingsForAppointmentHistoric from "./schema/eligibleTrainingsForAppointmentHistoric/eligibleTrainingsForAppointmentHistoric.schema.js"
 import EmailBlacklist from "./schema/emailBlacklist/emailBlacklist.schema.js"
 import Etablissement from "./schema/etablissements/etablissement.schema.js"
 import FormationCatalogue from "./schema/formationCatalogue/formationCatalogue.schema.js"
@@ -22,6 +20,8 @@ import ParcoursupEtablissementStat from "./schema/parcoursupEtablissementStat/pa
 import ReferentielOpco from "./schema/referentielOpco/referentielOpco.schema.js"
 import User from "./schema/user/user.schema.js"
 import UserRecruteur from "./schema/userRecruteur/usersRecruteur.schema.js"
+import WidgetParameter from "./schema/widgetParameter/widgetParameter.schema.js"
+import WidgetParameterHistoric from "./schema/widgetParameterHistoric/widgetParamertHistoric.schema.js"
 
 export {
   DomainesMetiers,
@@ -35,7 +35,7 @@ export {
   BonnesBoites,
   User,
   Appointment,
-  EligibleTrainingsForAppointment,
+  WidgetParameter,
   Etablissement,
   ParcoursupEtablissementStat,
   Recruiter,
@@ -45,7 +45,7 @@ export {
   ReferentielOpco,
   UserRecruteur,
   AppointmentDetailed,
-  eligibleTrainingsForAppointmentHistoric,
+  WidgetParameterHistoric,
   BonneBoiteLegacy,
   UnsubscribedBonneBoite,
 }

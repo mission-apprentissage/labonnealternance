@@ -276,7 +276,7 @@ const onLayerClick = (e, layer, selectItemOnMap, unselectItem, unselectMapPopupI
     })
 
     unselectItem()
-    scrollToElementInContainer({ containerId: "resultList", el: getItemElement(item), behavior: "smooth" })
+    scrollToElementInContainer({containerId: "resultList", el: getItemElement(item), behavior: "smooth"})
     setSelectedMarker(item)
   }
 }
@@ -637,8 +637,8 @@ const setTrainingMarkers = async ({ trainingList, options, tryCount = 0 }) => {
 
 const coordinatesOfFrance = [2.213749, 46.227638]
 
-const refreshLocationMarkers = ({ jobs, trainings, scopeContext }) => {
-  setTimeout(() => {
+const refreshLocationMarkers = ( {jobs, trainings, scopeContext} ) => {
+  setTimeout(()=> {
     if (scopeContext.isJob) {
       setJobMarkers({ jobList: factorJobsForMap(jobs), hasTrainings: trainings })
     }
@@ -646,7 +646,7 @@ const refreshLocationMarkers = ({ jobs, trainings, scopeContext }) => {
       setTrainingMarkers({ trainingList: factorTrainingsForMap(trainings) })
     }
   }, 1000)
-}
+} 
 
 export {
   map,

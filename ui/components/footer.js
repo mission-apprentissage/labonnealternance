@@ -1,6 +1,6 @@
-import { Box, Divider, Flex, Grid, GridItem, Image, Link, ListItem, UnorderedList } from "@chakra-ui/react"
-import NextLink from "next/link"
 import React from "react"
+import { Box, Image, GridItem, Grid, Link, UnorderedList, ListItem, Flex, Divider } from "@chakra-ui/react"
+import NextLink from "next/link"
 
 const Footer = () => {
   return (

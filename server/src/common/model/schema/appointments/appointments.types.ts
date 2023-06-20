@@ -34,7 +34,6 @@ interface IAppointments {
   last_update_at: Date
   email_cfa: string
   is_anonymized: boolean
-  cfa_recipient_email: string
 }
 
 export { IAppointments, IMailing, EReasons }
