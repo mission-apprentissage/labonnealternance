@@ -29,7 +29,8 @@ const contentSecurityPolicy = `
               https://events.mapbox.com 
               https://plausible.io 
               http://localhost:5000
-              https://trajectoires-pro.apprentissage.beta.gouv.fr 
+              https://exposition-recette.inserjeunes.beta.gouv.fr 
+              https://exposition.inserjeunes.beta.gouv.fr 
               https://*.ingest.sentry.io;
   img-src 'self' 
               data: 
