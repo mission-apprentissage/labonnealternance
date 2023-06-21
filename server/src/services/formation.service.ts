@@ -673,7 +673,7 @@ const removeEmailFromLBFData = (data: any): any => {
   }
 
   if (data?.sessions?.length) {
-    data.sessions.forEach((session, idx) => {
+    data.sessions.forEach((_, idx) => {
       if (data.sessions[idx]?.contact?.email) {
         data.sessions[idx].contact.email = ""
       }
@@ -713,7 +713,7 @@ export const getFormationDescriptionQuery = async ({ id }): Promise<IApiError | 
  * Retourne les formations matchant les critères dans la requête
  * TODO: déporter les ctrls dans le controller, appeler directement getRegionFormations depuis le controller
  * @param {any} query la requête http
- * @returns {Promise< IApiError | ILbaItem[] >}
+ * @returns {Promise< IApiError | ILbaItem[] >}
  */
 export const getFormationsParRegionQuery = async (query: any): Promise<IApiError | { results: ILbaItem[] }> => {
   const queryValidationResult = formationsRegionQueryValidator(query)
