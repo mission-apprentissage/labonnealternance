@@ -733,7 +733,7 @@ export const getFormationsParRegionQuery = async (query: any): Promise<IApiError
       options: query.options ? query.options.split(",") : [],
     })
 
-    const formations: ILbaItem[] = transformFormationsForIdea(rawEsFormations)
+    const formations = transformFormationsForIdea(rawEsFormations)
     sortFormations(formations)
 
     return { results: formations }
