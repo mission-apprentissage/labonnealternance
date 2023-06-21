@@ -11,3 +11,4 @@ process.on("uncaughtException", (e) => logger.error(e, "An unexpected error occu
   const http = await server(components)
   http.listen(5000, () => logger.info(`Server ready and listening on port ${5000}`))
 })()
+//
