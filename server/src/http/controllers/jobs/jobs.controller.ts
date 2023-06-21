@@ -21,6 +21,27 @@ import { ICredential } from "../../../common/model/schema/credentials/credential
 @Security("api_key")
 export class JobsController extends Controller {
   /**
+   * Get existing establishment id from siret & email
+   * @param {String} siret Establishment siret
+   * @param {String} email Establishment email
+   * @returns {Promise<TEstablishmentResponseSuccess["establishment_id"]>} response
+   */
+  @Response<"Establishment not found">(400)
+  @SuccessResponse("200", "Establishment found")
+  @Get("/establishment")
+  public async getEstablishment(@Body() body: { siret: string; email: string }): Promise<TEstablishmentResponseSuccess["establishment_id"] | TResponseError> {
+    const establishment = await Recruiter.findOne({ establishment_siret: body.siret, email: body.email })
+
+    if (!establishment) {
+      this.setStatus(400)
+      return { error: true, message: "Establishment not found" }
+    }
+
+    this.setStatus(200)
+    return establishment.establishment_id
+  }
+
+  /**
    * Get all jobs related to my organization
    * @param {Filter<IRecruiter>} query mongodb query allowing specific filtering, JSON stringified.
    * @param {Object} select fields to return, ex {_id: 1, first_name:1, last_name:0}
