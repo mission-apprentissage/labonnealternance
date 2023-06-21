@@ -1,6 +1,6 @@
 import { Controller, Get, Path, OperationId, Response, Route, SuccessResponse, Tags, Query } from "tsoa"
 import { getCoupleAppellationRomeIntitule, getMetiers, getMetiersPourCfd, getMetiersPourEtablissement, getTousLesMetiers } from "../../../services/metiers.service.js"
-import { TResponseError } from "../shared.controllers.types.js"
+import { TResponseError } from "../shared.types.js"
 import { TGetAppellationsRomesResponseSuccess, TGetMetiersEnrichisResponseSuccess, TGetMetiersResponseSuccess } from "./type.js"
 
 @Tags("Metiers")

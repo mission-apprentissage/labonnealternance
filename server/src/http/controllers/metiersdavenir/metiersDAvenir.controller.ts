@@ -1,6 +1,6 @@
 import { getMetiersDAvenir } from "../../../services/diagoriente.service.js"
 import { Controller, Get, Hidden, OperationId, Response, Route, SuccessResponse, Tags } from "tsoa"
-import { TResponseError } from "../shared.controllers.types.js"
+import { TResponseError } from "../shared.types.js"
 import { TGetMetiersDAvenirResponseSuccess } from "./metiersDAvenir.type.js"
 
 @Tags("MetiersDAvenir")
