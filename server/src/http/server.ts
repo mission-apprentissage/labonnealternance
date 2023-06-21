@@ -10,7 +10,6 @@ import __dirname from "../common/dirname.js"
 import { logger } from "../common/logger.js"
 import config from "../config.js"
 import { RegisterRoutes } from "../generated/routes.js"
-import { initSendinblueWebhooks } from "../service/sendinblue/webhookSendinBlue.js"
 import { corsMiddleware } from "./middlewares/corsMiddleware.js"
 import { errorMiddleware } from "./middlewares/errorMiddleware.js"
 import { logMiddleware } from "./middlewares/logMiddleware.js"
@@ -33,8 +32,6 @@ import formationV1 from "./routes/formationV1.controller.js"
 import formulaireRoute from "./routes/formulaire.controller.js"
 import jobEtFormationV1 from "./routes/jobEtFormationV1.controller.js"
 import jobV1 from "./routes/jobV1.controller.js"
-import metiersDAvenir from "./routes/metiersDAvenir.controller.js"
-import metiers from "./routes/metiers.controller.js"
 import optoutRoute from "./routes/optout.controller.js"
 import partnersRoute from "./routes/partners.controller.js"
 import rome from "./controllers/metiers/rome.controller.js"
@@ -48,6 +45,7 @@ import userRoute from "./routes/user.controller.js"
 import version from "./routes/version.controller.js"
 import trainingLinks from "./routes/trainingLinks.controller.js"
 import { limiter10PerSecond, limiter1Per20Second, limiter20PerSecond, limiter3PerSecond, limiter5PerSecond, limiter7PerSecond } from "./utils/rateLimiters.js"
+import { initBrevoWebhooks } from "../services/brevo.service.js"
 
 /**
  * LBA-Candidat Swagger file
@@ -227,7 +225,7 @@ export default async (components) => {
    */
   app.use("/api/trainingLinks", limiter3PerSecond, trainingLinks())
 
-  initSendinblueWebhooks()
+  initBrevoWebhooks()
 
   app.use(Sentry.Handlers.errorHandler())
 

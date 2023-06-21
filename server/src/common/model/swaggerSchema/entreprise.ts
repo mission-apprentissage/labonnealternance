@@ -68,24 +68,24 @@ export default {
             messageId: {
               type: "string",
               default: "string",
-              description: "Identifiant sendinblue",
+              description: "Identifiant Brevo",
             },
             code: {
               type: "string",
               default: "string",
-              description: "Code erreur sendinblue",
+              description: "Code erreur Brevo",
             },
             message: {
               type: "string",
               default: "string",
-              description: "Message erreur sendinblue",
+              description: "Message erreur Brevo",
             },
           },
         },
       },
       events: {
         type: "array",
-        description: "Liste des évènements sendinblue géré par le serveur",
+        description: "Liste des évènements Brevo gérés par le serveur",
       },
       origine: {
         type: "string",

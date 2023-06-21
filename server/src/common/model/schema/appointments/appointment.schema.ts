@@ -71,17 +71,17 @@ export const appointmentSchema = new Schema<IAppointments>({
         message_id: {
           type: "string",
           default: null,
-          description: "Identifiant Sendinblue",
+          description: "Identifiant Brevo",
         },
         status: {
           type: "string",
           default: null,
-          description: "Code erreur Sendinblue",
+          description: "Code erreur Brevo",
         },
         webhook_status_at: {
           type: Date,
           default: null,
-          description: "Date fournie par les webhooks Sendinblue lors de la réception d'un event",
+          description: "Date fournie par les webhooks Brevo lors de la réception d'un event",
         },
         email_sent_at: {
           type: Date,
@@ -107,17 +107,17 @@ export const appointmentSchema = new Schema<IAppointments>({
         message_id: {
           type: "string",
           default: null,
-          description: "Identifiant Sendinblue",
+          description: "Identifiant Brevo",
         },
         status: {
           type: "string",
           default: null,
-          description: "Code erreur Sendinblue",
+          description: "Code erreur Brevo",
         },
         webhook_status_at: {
           type: Date,
           default: null,
-          description: "Date fournie par les webhooks Sendinblue lors de la réception d'un event",
+          description: "Date fournie par les webhooks Brevo lors de la réception d'un event",
         },
         email_sent_at: {
           type: Date,

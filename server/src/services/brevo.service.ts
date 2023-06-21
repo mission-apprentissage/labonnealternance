@@ -1,14 +1,18 @@
 import SibApiV3Sdk from "sib-api-v3-sdk"
-import { logger } from "../../common/logger.js"
-import config from "../../config.js"
+import { logger } from "../common/logger.js"
+import config from "../config.js"
 const defaultClient = SibApiV3Sdk.ApiClient.instance
 
 const apiKey = defaultClient.authentications["api-key"]
-apiKey.apiKey = config.smtp.sendinblueApiKey
+apiKey.apiKey = config.smtp.brevoApiAccessCode
 
 const apiInstance = new SibApiV3Sdk.WebhooksApi()
 
 let applicationStatusWebhook = new SibApiV3Sdk.CreateWebhook()
+
+export const enum BrevoEventStatus {
+  HARD_BOUNCE = "hard_bounce",
+}
 
 applicationStatusWebhook = {
   description: "Changements d'états des emails de candidatures",
@@ -26,23 +30,24 @@ campaignHarbounceWebhook = {
   type: "marketing",
 }
 
-const initSendinblueWebhooks = () => {
+/**
+ * Initialise les webhooks Brevo au démarrage du docker server. Echoue sans conséquences s'ils existent déjà
+ */
+export const initBrevoWebhooks = () => {
   apiInstance.createWebhook(applicationStatusWebhook).then(
     function (data) {
-      logger.info("Sendinblue webhook API called successfully for application email status changes. Returned data: " + JSON.stringify(data))
+      logger.info("Brevo webhook API called successfully for application email status changes. Returned data: " + JSON.stringify(data))
     },
     function (error) {
-      logger.error("Sendinblue webhook API Error for application email status changes. Returned data: " + error.response.res.text)
+      logger.error("Brevo webhook API Error for application email status changes. Returned data: " + error.response.res.text)
     }
   )
   apiInstance.createWebhook(campaignHarbounceWebhook).then(
     function (data) {
-      logger.info("Sendinblue webhook API called successfully for campaign hardbounce detection. Returned data: " + JSON.stringify(data))
+      logger.info("Brevo webhook API called successfully for campaign hardbounce detection. Returned data: " + JSON.stringify(data))
     },
     function (error) {
-      logger.error("Sendinblue webhook API Error for campaign hardbounce detection. Returned data: " + error.response.res.text)
+      logger.error("Brevo webhook API Error for campaign hardbounce detection. Returned data: " + error.response.res.text)
     }
   )
 }
-
-export { initSendinblueWebhooks }

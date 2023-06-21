@@ -16,7 +16,7 @@ const saveBlacklistEmails = async (contacts) => {
 
       blackListedEmail = new EmailBlacklist({
         email,
-        blacklisting_origin: "sendinblue",
+        blacklisting_origin: "brevo",
       })
       await blackListedEmail.save()
       blacklistedAddressCount++
@@ -39,11 +39,11 @@ const cleanCompany = async (company) => {
 }
 
 const updateBlockedEmails = async ({ AllAddresses }) => {
-  logger.info(`Début mise à jour blacklist sendinblue`)
+  logger.info(`Début mise à jour blacklist Brevo`)
 
   const defaultClient = SibApiV3Sdk.ApiClient.instance
   const apiKey = defaultClient.authentications["api-key"]
-  apiKey.apiKey = config.smtp.sendinblueApiKey
+  apiKey.apiKey = config.smtp.brevoApiAccessCode
 
   const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi()
 
@@ -95,7 +95,7 @@ export default async function ({ AllAddresses }) {
     await updateBlockedEmails({ AllAddresses })
 
     await notifyToSlack({
-      subject: "SENDINBLUE",
+      subject: "BREVO",
       message: `Mise à jour des adresses emails bloquées terminée. ${blacklistedAddressCount} adresse(s) bloquée(s). ${modifiedCompanyCount} société(s) impactée(s).`,
     })
 
@@ -103,6 +103,6 @@ export default async function ({ AllAddresses }) {
   } catch (error) {
     sentryCaptureException(error)
     logger.error(error)
-    await notifyToSlack({ subject: "SENDINBLUE", message: `Échec de la mise à jour des adresses emails bloquées` })
+    await notifyToSlack({ subject: "BREVO", message: `Échec de la mise à jour des adresses emails bloquées` })
   }
 }

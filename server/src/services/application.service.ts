@@ -9,7 +9,7 @@ import { logger } from "../common/logger.js"
 import { prepareMessageForMail } from "../common/utils/fileUtils.js"
 import config from "../config.js"
 import __dirname from "../common/dirname.js"
-import { SendinblueEventStatus } from "../common/sendinblue.js"
+import { BrevoEventStatus } from "./brevo.service.js"
 import { mailer } from "./mailer.service.js"
 import { sentryCaptureException } from "../common/utils/sentryUtils.js"
 import { IApplication } from "../common/model/schema/application/applications.types.js"
@@ -614,7 +614,7 @@ export const updateApplicationStatus = async ({ payload }: { payload: any }): Pr
     return
   }
 
-  if (event === SendinblueEventStatus.HARD_BOUNCE && messageType === "application") {
+  if (event === BrevoEventStatus.HARD_BOUNCE && messageType === "application") {
     await addEmailToBlacklist(payload.email, application.job_origin)
 
     if (application.job_origin === "lbb" || application.job_origin === "lba") {
