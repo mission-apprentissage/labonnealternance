@@ -1,0 +1,51 @@
+name: TypeScript Server Build
+
+on:
+  pull_request:
+    branches:
+      - master
+    paths:
+      - "server/**/*.ts"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+
+      - name: Check if cache exists
+        id: yarn-cache
+        uses: actions/cache@v3
+        with:
+          path: "./server/node_modules"
+          key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn
+
+      - name: Install dependencies
+        working-directory: ./server
+        if: steps.yarn-cache.outputs.cache-hit != 'true'
+        run: yarn
+
+      - name: Check build status
+        id: check-build
+        run: |
+          exitCode=$?
+          if [ $exitCode -ne 0 ]; then
+            echo "::set-output name=build-failed::true"
+          fi
+
+      - name: Comment on pull request
+        uses: pullreminders/github-pull-request-comment@v1
+        if: steps.check-build.outputs.build-failed == 'true'
+        with:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          message: "The build failed. Please fix the issues before merging."
+          context: "Build Failure"
