@@ -1,3 +1,10 @@
+# [1.33.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.32.1...v1.33.0) (2023-06-21)
+
+
+### Features
+
+* reset versionning ([7e2a0ea](https://github.com/mission-apprentissage/labonnealternance/commit/7e2a0ea781c24d2dd7df8459a1569d4c1bce2599))
+
 # 1.0.0 (2023-06-20)
 
 
