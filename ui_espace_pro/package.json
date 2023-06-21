@@ -1,6 +1,6 @@
 {
   "name": "ui_espace_pro",
-  "version": "1.0.0",
+  "version": "1.32.1",
   "description": "Interface de gestion pour les entreprises, organismes de formation et candidats en apprentissage",
   "repository": "https://github.com/mission-apprentissage/labonnealternance.git",
   "private": false,
@@ -10,7 +10,7 @@
   "homepage": "/espace-pro",
   "scripts": {
     "analyze": "source-map-explorer 'build/static/js/*.js'",
-    "start": "react-scripts start",
+    "start": "NODE_OPTIONS=--openssl-legacy-provider react-scripts start",
     "build": "react-scripts build",
     "lint": "eslint src/",
     "serve": "ws --port 3000 -d /site --log.format dev --spa espace-pro/index.html",

@@ -2,7 +2,7 @@
   "name": "mna-lba",
   "description": "Plateforme de recherche de formation et d'offres en apprentissage",
   "repository": "https://github.com/mission-apprentissage/labonnealternance.git",
-  "version": "1.0.0",
+  "version": "1.32.1",
   "author": "Mission apprentissage",
   "license": "MIT",
   "private": "false",
