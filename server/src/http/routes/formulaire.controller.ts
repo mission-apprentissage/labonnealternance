@@ -181,10 +181,9 @@ export default () => {
         return res.status(400).json({ status: "INVALID_RESOURCE", message: "L'offre n'existe pas." })
       }
 
-      const offre = await getOffre(jobId)
+      const offre = await getJob(jobId)
 
-      const jobFound = offre.jobs.find((job) => job._id.toString() === jobId)
-      const delegationFound = jobFound.delegations.find((delegation) => delegation.siret_code == req.query.siret_formateur)
+      const delegationFound = offre.delegations.find((delegation) => delegation.siret_code == req.query.siret_formateur)
 
       if (!delegationFound) {
         return res.status(400).json({ status: "INVALID_RESOURCE", message: `Le siret formateur n'a pas été proposé à l'offre.` })
