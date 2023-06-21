@@ -13,7 +13,7 @@ import config from "../config.js"
 import { formationMock, formationsMock, formationDetailMock } from "../mocks/formations-mock.js"
 import { formationsQueryValidator, formationsRegionQueryValidator } from "../service/formationsQueryValidator.js"
 import { IFormationEsResult } from "./formation.service.types.js"
-import { ILbaItem, ILbaItemTrainingSession, LbaItem } from "./shared.service.types.js"
+import { ILbaItem, ILbaItemTrainingSession, LbaItem } from "./lbaitem.shared.service.types.js"
 
 const formationResultLimit = 500
 
