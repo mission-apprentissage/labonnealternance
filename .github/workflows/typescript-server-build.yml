@@ -32,7 +32,7 @@ jobs:
       - name: Install dependencies
         working-directory: ./server
         if: steps.yarn-cache.outputs.cache-hit != 'true'
-        run: yarn
+        run: yarn install
 
       - name: Build Typescript
         working-directory: ./server
@@ -47,9 +47,8 @@ jobs:
           fi
 
       - name: Comment on pull request
-        uses: pullreminders/github-pull-request-comment@v1
+        uses: peter-evans/create-or-update-comment@v3
         if: steps.check-build.outputs.build-failed == 'true'
         with:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-          message: "The build failed. Please fix the issues before merging."
-          context: "Build Failure"
+          body: "The build failed. Please fix the issues before merging."
