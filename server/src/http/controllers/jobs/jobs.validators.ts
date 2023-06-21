@@ -39,9 +39,11 @@ export const createJobSchema = Joi.object({
   job_type: Joi.array().items(Joi.string().valid("Apprentissage", "Professionalisation").required()),
   is_disabled_elligible: Joi.boolean().default(false),
   job_count: Joi.number().default(1),
-  job_rythm: Joi.string().valid("Indifférent", "2 jours / 3 jours", "1 semaine / 1 semaine", "2 semaines / 3 semaines", "6 semaines / 6 semaines").default("Indifférent"),
+  job_rythm: Joi.string()
+    .valid("Indifférent", "2 jours / 3 jours", "1 semaine / 1 semaine", "2 semaines / 3 semaines", "6 semaines / 6 semaines", "Non renseigné")
+    .default("Non renseigné"),
   job_duration: Joi.number().min(6).max(36).required(),
-  job_description: Joi.string().required(),
+  job_description: Joi.string(),
   job_employer_description: Joi.string(),
 })
 
