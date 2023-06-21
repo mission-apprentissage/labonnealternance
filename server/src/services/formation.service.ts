@@ -382,7 +382,7 @@ const getAtLeastSomeFormations = async ({
 
   rawEsFormations = deduplicateFormations(rawEsFormations)
 
-  const formations: ILbaItem[] = transformFormationsForIdea(rawEsFormations)
+  const formations = transformFormationsForIdea(rawEsFormations)
 
   sortFormations(formations)
 
