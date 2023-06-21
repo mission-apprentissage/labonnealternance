@@ -17,7 +17,7 @@ import { ILbaItem, ILbaItemTrainingSession, LbaItem } from "./lbaitem.shared.ser
 
 const formationResultLimit = 500
 
-const lbfDescriptionUrl = "https://labonneformation.pole-emploi.fr/api/v1/detail"
+const lbfDescriptionUrl = `${config.laBonneFormationApiUrl}/api/v1/detail`
 
 const esClient = getElasticInstance()
 
