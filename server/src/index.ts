@@ -1,6 +1,6 @@
 import "dotenv/config"
 import server from "./http/server.js"
-
+import { logger } from "./common/logger.js"
 import createComponents from "./common/components/components.js"
 
 process.on("unhandledRejection", (e) => logger.error(e, "An unexpected error occurred"))
