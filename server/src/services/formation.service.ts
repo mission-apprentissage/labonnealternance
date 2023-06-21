@@ -85,8 +85,8 @@ export const getFormations = async ({
     const latitude = coords ? coords[1] : null
     const longitude = coords ? coords[0] : null
 
-    const now: Date = new Date()
-    const tags: number[] = [now.getFullYear(), now.getFullYear() + 1, now.getFullYear() + (now.getMonth() < 8 ? -1 : 2)]
+    const now = new Date()
+    const tags = [now.getFullYear(), now.getFullYear() + 1, now.getFullYear() + (now.getMonth() < 8 ? -1 : 2)]
 
     const mustTerm: object[] = [
       romes
