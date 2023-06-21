@@ -46,8 +46,8 @@ const config = {
       user: env.get("LBA_SMTP_AUTH_USER").default("xxxxx").asString(),
       pass: env.get("LBA_SMTP_AUTH_PASS").default("12345").asString(),
     },
-    brevoWebhookApiAccessCode: env.get("LBA_BREVO_WEBHOOK_API_KEY").default("1234").asString(),
-    brevoApiAccessCode: env.get("LBA_BREVO_API_KEY").default("1234").asString(),
+    brevoWebhookApiKey: env.get("LBA_BREVO_WEBHOOK_API_KEY").default("1234").asString(),
+    brevoApiKey: env.get("LBA_BREVO_API_KEY").default("1234").asString(),
   },
   auth: {
     passwordHashRounds: env.get("LBA_AUTH_PASSWORD_HASH_ROUNDS").default(1001).asInt(),

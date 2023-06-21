@@ -16,7 +16,7 @@ import * as appointmentService from "../../../services/appointment.service.js"
  * @return {NextFunction}
  */
 const checkWebhookToken = () => {
-  passport.use(new LocalAPIKeyStrategy({}, async (token, done) => done(null, config.smtp.brevoWebhookApiAccessCode === token ? { apiKey: token } : false)))
+  passport.use(new LocalAPIKeyStrategy({}, async (token, done) => done(null, config.smtp.brevoWebhookApiKey === token ? { apiKey: token } : false)))
 
   return passport.authenticate("localapikey", { session: false, failWithError: true })
 }

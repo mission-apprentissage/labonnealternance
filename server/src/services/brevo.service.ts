@@ -4,7 +4,7 @@ import config from "../config.js"
 const defaultClient = SibApiV3Sdk.ApiClient.instance
 
 const apiKey = defaultClient.authentications["api-key"]
-apiKey.apiKey = config.smtp.brevoApiAccessCode
+apiKey.apiKey = config.smtp.brevoApiKey
 
 const apiInstance = new SibApiV3Sdk.WebhooksApi()
 
