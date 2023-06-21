@@ -1,7 +1,5 @@
 import "dotenv/config"
-
-import { logger } from "./common/logger.js"
-import createComponents from "./common/components/components.js"
+import server from "./http/server.js"
 
 process.on("unhandledRejection", (e) => logger.error(e, "An unexpected error occurred"))
 process.on("uncaughtException", (e) => logger.error(e, "An unexpected error occurred"))
