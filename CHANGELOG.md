@@ -1,3 +1,10 @@
+# [1.34.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.33.0...v1.34.0) (2023-06-21)
+
+
+### Features
+
+* simplify gh action ([3fc4015](https://github.com/mission-apprentissage/labonnealternance/commit/3fc4015758a2dcd1031ce872a5bab78bc10893b8))
+
 # [1.33.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.32.1...v1.33.0) (2023-06-21)
 
 ### Features
