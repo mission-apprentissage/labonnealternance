@@ -34,6 +34,10 @@ jobs:
         if: steps.yarn-cache.outputs.cache-hit != 'true'
         run: yarn
 
+      - name: Build Typescript
+        working-directory: ./server
+        run: yarn build
+
       - name: Check build status
         id: check-build
         run: |
