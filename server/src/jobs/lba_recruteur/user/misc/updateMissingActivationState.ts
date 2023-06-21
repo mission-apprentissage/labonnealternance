@@ -2,7 +2,7 @@ import { logger } from "../../../../common/logger.js"
 import { Recruiter, UserRecruteur } from "../../../../common/model/index.js"
 import { asyncForEach } from "../../../../common/utils/asyncUtils.js"
 import { runScript } from "../../../scriptWrapper.js"
-import { validationOrganisation } from "../../../../common/bal.js"
+import { validationOrganisation } from "../../../../services/bal.service.js"
 import { checkIfUserEmailIsPrivate } from "../../../../common/utils/mailUtils.js"
 import {
   getMatchingEmailFromContactList,
@@ -93,23 +93,7 @@ const runValidation = async () => {
   logger.info(`Done.`)
 }
 
-const resetUserValidation = async (db) => {
-  const users = await db.collection("usertemps").find({}).toArray()
-
-  await asyncForEach(users, async (user) => {
-    const id = user.ID.trim()
-    await UserRecruteur.findByIdAndUpdate(id, { $set: { status: [] } }, { new: true })
-    console.log(`${user.ID} updated`)
-  })
-}
-
-const removeDuplicateAwaitingStatus = async () => {
-  const users = await UserRecruteur.find({ $expr: { $ne: [{ $arrayElemAt: ["$etat_utilisateur.statut", -1] }, "VALIDÉ"] } })
-  console.log(users.map((x) => x.status))
-}
-
 runScript(async () => {
   logger.info("#start validation for specific users")
-  // await runValidation()
-  await removeDuplicateAwaitingStatus()
+  await runValidation()
 })
