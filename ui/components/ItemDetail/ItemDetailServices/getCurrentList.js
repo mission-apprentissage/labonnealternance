@@ -9,10 +9,10 @@ export default function getCurrentList({ store, activeFilter, extendedSearch }) 
   let jobList = []
   let companyList = []
   if (amongst(activeFilter, ["all", "jobs"])) {
-    if (extendedSearch) jobList = mergeOpportunities(get(picked, "jobs"))
+    if (extendedSearch) jobList = mergeOpportunities({ jobs: get(picked, "jobs") })
     else {
       jobList = mergeJobs(get(picked, "jobs"))
-      companyList = mergeOpportunities(get(picked, "jobs"), "onlyLbbLba")
+      companyList = mergeOpportunities({ jobs: get(picked, "jobs"), onlyLbbLbaCompanies: "onlyLbbLba" })
     }
   }
   let fullList = concat([], trainingsArray, jobList, companyList)

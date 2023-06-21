@@ -1,13 +1,13 @@
 // retourne les offres issues du dépôt d'offre simplifié (ex Matcha) triées par ordre croissant de distance au centre de recherche
 // suivi des offres pe triées par ordre croissant de distance au centre de recherche.
-export const mergeJobs = (jobs) => {
+export const mergeJobs = (jobs, filter) => {
   let mergedArray = []
 
   if (jobs) {
     if (jobs.matchas && jobs.matchas.length) {
       mergedArray = mergedArray.concat(sortMergedSources(jobs.matchas))
     }
-    if (jobs.peJobs && jobs.peJobs.length) {
+    if (filter !== "duo" && jobs.peJobs && jobs.peJobs.length) {
       mergedArray = mergedArray.concat(sortMergedSources(jobs.peJobs))
     }
   }
@@ -16,7 +16,7 @@ export const mergeJobs = (jobs) => {
 }
 
 // fusionne les résultats lbb et lba et les trie par ordre croissant de distance, optionnellement intègre aussi les offres PE et matchas
-export const mergeOpportunities = (jobs, onlyLbbLbaCompanies) => {
+export const mergeOpportunities = ({ jobs, onlyLbbLbaCompanies }) => {
   let mergedArray = []
   if (jobs) {
     let sources = [jobs.lbaCompanies]

@@ -28,7 +28,7 @@ const ResultListsCounter = (props) => {
         </Flex>
       )
     } else if (!allJobSearchError) {
-      jobCount = getJobCount(jobs)
+      jobCount = getJobCount(jobs, activeFilter)
     }
   }
 
