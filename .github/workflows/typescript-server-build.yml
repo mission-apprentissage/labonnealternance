@@ -27,7 +27,7 @@ jobs:
           path: "./server/node_modules"
           key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
-            ${{ runner.os }}-yarn
+            ${{ runner.os }}-
 
       - name: Install dependencies
         working-directory: ./server
@@ -37,18 +37,3 @@ jobs:
       - name: Build Typescript
         working-directory: ./server
         run: yarn build
-
-      - name: Check build status
-        id: check-build
-        run: |
-          exitCode=$?
-          if [ $exitCode -ne 0 ]; then
-            echo "::set-output name=build-failed::true"
-          fi
-
-      - name: Comment on pull request
-        uses: peter-evans/create-or-update-comment@v3
-        if: steps.check-build.outputs.build-failed == 'true'
-        with:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-          body: "The build failed. Please fix the issues before merging."
