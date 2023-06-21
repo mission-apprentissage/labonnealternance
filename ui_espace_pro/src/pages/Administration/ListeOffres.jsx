@@ -98,7 +98,7 @@ export default () => {
               leftIcon={<Plus />}
               onClick={() => {
                 navigate(getUserNavigationContext(data.data), {
-                  state: { establishment_raison_sociale: data.data.establishment_raison_sociale },
+                  state: { establishment_raison_sociale: data.data.establishment_raison_sociale, userId: auth.type === "ENTREPRISE" ? auth.id : null },
                 })
               }}
             >
