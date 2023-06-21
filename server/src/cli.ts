@@ -256,7 +256,7 @@ cli
 cli
   .command("sync-sib-blocked")
   .option("-all-addresses, [AllAddresses]", "pour récupérer toutes les adresses bloquées", false)
-  .description("Récupère auprès de Sendinblue la liste des adresses emails bloquées le jour précédent (défaut) ou toutes les adresses bloquées (option)")
+  .description("Récupère auprès de Brevo la liste des adresses emails bloquées le jour précédent (défaut) ou toutes les adresses bloquées (option)")
   .action((options) => {
     runScript(() => updateBrevoBlockedEmails(options))
   })
