@@ -9,8 +9,7 @@ export default async function fetchInserJeuneStats(training, _baseUrl = baseUrl,
   if (!training) {
     return res
   }
-  const ijApi = `${inserJeuneApiUrl}/api/inserjeunes/regionales/${training.place.zipCode}/certifications/${training.cfd}`
-  const response = await _axios.get(ijApi)
+  const response = await _axios.get(`${inserJeuneApiUrl}/api/inserjeunes/regionales/${training.place.zipCode}/certifications/${training.cfd}`)
 
   const isAxiosError = !!_.get(response, "data.error")
 
