@@ -1,3 +1,10 @@
+# [1.36.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.35.0...v1.36.0) (2023-06-22)
+
+
+### Features
+
+* prettying things ([#462](https://github.com/mission-apprentissage/labonnealternance/issues/462)) ([5aef696](https://github.com/mission-apprentissage/labonnealternance/commit/5aef6966673963b3d763779faa1447fc9c60120c))
+
 # [1.35.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.34.0...v1.35.0) (2023-06-22)
 
 
