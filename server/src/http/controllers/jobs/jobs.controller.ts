@@ -29,8 +29,8 @@ export class JobsController extends Controller {
   @Response<"Establishment not found">(400)
   @SuccessResponse("200", "Establishment found")
   @Get("/establishment")
-  public async getEstablishment(@Body() body: { siret: string; email: string }): Promise<TEstablishmentResponseSuccess["establishment_id"] | TResponseError> {
-    const establishment = await Recruiter.findOne({ establishment_siret: body.siret, email: body.email })
+  public async getEstablishment(@Body() { siret, email }: { siret: string; email: string }): Promise<TEstablishmentResponseSuccess["establishment_id"] | TResponseError> {
+    const establishment = await Recruiter.findOne({ establishment_siret: siret, email: email })
 
     if (!establishment) {
       this.setStatus(400)
