@@ -1,11 +1,11 @@
 import { Box, Flex, Spinner, Text } from "@chakra-ui/react"
 import React from "react"
+import { getJobCount, getPartnerJobCount } from "../services/utils"
 import FilterButton from "./FilterButton"
 
 const ResultListsCounter = (props) => {
   const scopeContext = props.scopeContext
   const filterButtonClicked = props.filterButtonClicked
-  const getJobCount = props.getJobCount
   const allJobSearchError = props.allJobSearchError
   const trainingSearchError = props.trainingSearchError
   const isTrainingSearchLoading = props.isTrainingSearchLoading
@@ -18,6 +18,7 @@ const ResultListsCounter = (props) => {
 
   let jobLoading = ""
   let jobCount = 0
+  let partnerJobCount = 0
 
   if (scopeContext.isJob) {
     if (isJobSearchLoading) {
@@ -28,7 +29,8 @@ const ResultListsCounter = (props) => {
         </Flex>
       )
     } else if (!allJobSearchError) {
-      jobCount = getJobCount(jobs, activeFilter)
+      jobCount = getJobCount(jobs, "excludepartners")
+      partnerJobCount = getPartnerJobCount(jobs)
     }
   }
 
@@ -84,7 +86,7 @@ const ResultListsCounter = (props) => {
                 <FilterButton type="all" count={jobCount + trainingCount} isActive={activeFilter === "all"} handleFilterButtonClicked={filterButtonClicked} />
                 <FilterButton type="jobs" count={jobCount} isActive={activeFilter === "jobs"} handleFilterButtonClicked={filterButtonClicked} />
                 <FilterButton type="trainings" count={trainingCount} isActive={activeFilter === "trainings"} handleFilterButtonClicked={filterButtonClicked} />
-                <FilterButton type="duo" isActive={activeFilter === "duo"} handleFilterButtonClicked={filterButtonClicked} />
+                <FilterButton type="duo" count={partnerJobCount} isActive={activeFilter === "duo"} handleFilterButtonClicked={filterButtonClicked} />
               </Flex>
             </Flex>
           </>
