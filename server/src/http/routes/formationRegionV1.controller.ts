@@ -1,6 +1,7 @@
 // @ts-nocheck
+import { trackApiCall } from "../../common/utils/sendTrackingEvent.js"
 import express from "express"
-import { getFormationsParRegionQuery } from "../../service/formations.js"
+import { getFormationsParRegionQuery } from "../../services/formation.service.js"
 import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
 
 export default function () {
@@ -14,6 +15,17 @@ export default function () {
       if (result.error) {
         if (result.error === "wrong_parameters") res.status(400)
         else res.status(500)
+      } else {
+        const caller = req.query.caller
+        if (caller) {
+          trackApiCall({
+            caller,
+            api_path: "formationRegionV1",
+            training_count: result.results.length,
+            result_count: result.results.length,
+            response: "OK",
+          })
+        }
       }
 
       return res.json(result)
