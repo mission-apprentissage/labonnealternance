@@ -131,7 +131,7 @@ const config = {
   },
   test: {
     login: "azdazdazd@gmail.com",
-    password: "ezfgtrerbgjivkmezjfpoaefjkzepofjezpockzepokzeocfkzepczeok,c^p",
+    password: "52a92a9b-4945-4afa-877b-1b75fea691f8",
   },
 }
 
