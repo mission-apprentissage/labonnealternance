@@ -1,4 +1,3 @@
-import { IJobs } from "../../../common/model/schema/jobs/jobs.types.js"
 import { IRecruiter } from "../../../common/model/schema/recruiter/recruiter.types.js"
 
 export type TResponseError = {
