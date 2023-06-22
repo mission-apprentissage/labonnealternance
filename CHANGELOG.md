@@ -1,3 +1,10 @@
+# [1.35.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.34.0...v1.35.0) (2023-06-22)
+
+
+### Features
+
+* test gitguardian ([#463](https://github.com/mission-apprentissage/labonnealternance/issues/463)) ([4d319dc](https://github.com/mission-apprentissage/labonnealternance/commit/4d319dcaac681c7671acf60b1bd85b1795e87c62))
+
 # [1.34.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.33.0...v1.34.0) (2023-06-21)
 
 
