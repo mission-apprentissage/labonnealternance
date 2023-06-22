@@ -24,6 +24,8 @@ fileignoreconfig:
     checksum: 7257a3a49d3170754fd55316bf78b680866465400c46e11727daa5da00863347
   - filename: server/src/config.ts
     checksum: 936ab034b4ef4228b377301733f76dff41cd75215f8ea06e873626bbccfd603d
+  - filename: .github/workflows/gitguardian.yml
+    checksum: 6570536d75569b3826026d9126cff26fc4de473afbab8adbfc9fab833362fb79
 scopeconfig:
   - scope: node
 custom_patterns:
