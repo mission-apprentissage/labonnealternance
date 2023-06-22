@@ -1,3 +1,10 @@
+# [1.38.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.37.0...v1.38.0) (2023-06-22)
+
+
+### Features
+
+* prettier ([b83050e](https://github.com/mission-apprentissage/labonnealternance/commit/b83050e780abd2b51c0b34c450daceae27f445ae))
+
 # [1.37.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.36.0...v1.37.0) (2023-06-22)
 
 
