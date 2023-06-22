@@ -13,10 +13,67 @@ import { IRecruiter } from "../common/model/schema/recruiter/recruiter.types.js"
 import { Filter } from "mongodb"
 
 const apiParams = {
-  token: config.apiEntrepriseKey,
-  context: "Matcha MNA",
-  recipient: "12000101100010", // Siret Dinum
-  object: "Consolidation des données",
+  token: config.entreprise.apiKey,
+  context: config.entreprise.context,
+  recipient: config.entreprise.recipient, // Siret Dinum
+  object: config.entreprise.object,
+}
+
+/**
+ * Get company size by code
+ * @param {string} code
+ * @returns {string}
+ */
+const getEffectif = (code) => {
+  switch (code) {
+    case "00":
+      return "0 salarié"
+
+    case "01":
+      return "1 ou 2 salariés"
+
+    case "02":
+      return "3 à 5 salariés"
+
+    case "03":
+      return "6 à 9 salariés"
+
+    case "11":
+      return "10 à 19 salariés"
+
+    case "12":
+      return "20 à 49 salariés"
+
+    case "21":
+      return "50 à 99 salariés"
+
+    case "22":
+      return "100 à 199 salariés"
+
+    case "31":
+      return "200 à 249 salariés"
+
+    case "32":
+      return "250 à 499 salariés"
+
+    case "41":
+      return "500 à 999 salariés"
+
+    case "42":
+      return "1 000 à 1 999 salariés"
+
+    case "51":
+      return "2 000 à 4 999 salariés"
+
+    case "52":
+      return "5 000 à 9 999 salariés"
+
+    case "53":
+      return "10 000 salariés et plus"
+
+    default:
+      return "Non diffusé"
+  }
 }
 
 /**
@@ -166,7 +223,7 @@ export const validateEtablissementEmail = async (_id: IUserRecruteur["_id"]): Pr
  */
 export const getEtablissementFromGouv = async (siret: string): Promise<IAPIEtablissement> => {
   try {
-    const { data } = await axios.get<IAPIEtablissement>(`https://entreprise.api.gouv.fr/v2/etablissements/${siret}`, {
+    const { data } = await axios.get<IAPIEtablissement>(`${config.entreprise.baseUrl}/sirene/etablissements/${siret}`, {
       params: apiParams,
     })
 
@@ -299,19 +356,19 @@ interface IFormatAPIEntreprise
  */
 export const formatEntrepriseData = (d: IEtablissementGouv): IFormatAPIEntreprise => ({
   establishment_enseigne: d.enseigne,
-  establishment_state: d.etat_administratif.value, // F pour fermé ou A pour actif
+  establishment_state: d.etat_administratif, // F pour fermé ou A pour actif
   establishment_siret: d.siret,
-  establishment_raison_sociale: d.adresse.l1,
+  establishment_raison_sociale: d.unite_legale.personne_morale_attributs.raison_sociale,
   address_detail: d.adresse,
   address: `${d.adresse.l4 ?? ""} ${d.adresse.code_postal} ${d.adresse.localite}`,
   // rue: d.adresse.l4,
   // commune: d.adresse.localite,
   // code_postal: d.adresse.code_postal,
   contacts: [], // conserve la coherence avec l'UI
-  naf_code: d.naf,
-  naf_label: d.libelle_naf,
-  establishment_size: d.tranche_effectif_salarie_etablissement.intitule,
-  establishment_creation_date: new Date(d.date_creation_etablissement * 1000),
+  naf_code: d.activite_principale.code,
+  naf_label: d.activite_principale.libelle,
+  establishment_size: getEffectif(d.unite_legale.tranche_effectif_salarie.code),
+  establishment_creation_date: new Date(d.unite_legale.date_creation * 1000).toISOString(),
 })
 interface IFormatAPIReferentiel
   extends Pick<IUserRecruteur, "establishment_raison_sociale" | "establishment_siret" | "is_qualiopi" | "address_detail" | "geo_coordinates" | "address"> {

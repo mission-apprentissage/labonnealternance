@@ -8,7 +8,7 @@ interface IRecruiter {
   establishment_enseigne: string
   establishment_siret: string
   establishment_size: string
-  establishment_creation_date: Date
+  establishment_creation_date: string
   address_detail: IAdresse | (IAdresseCFA & IAdresse)
   address: string
   geo_coordinates: string

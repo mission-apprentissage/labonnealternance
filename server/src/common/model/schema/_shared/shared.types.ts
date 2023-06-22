@@ -30,7 +30,7 @@ interface IAdresseCFA {
   region: Academie
 }
 
-interface IAdresse {
+interface IAdresseV2 {
   l1: string // raison_social | enseigne
   l2: null
   l3: string // lieu dit
@@ -48,4 +48,33 @@ interface IAdresse {
   cedex: null
 }
 
-export { IAdresse, IAdresseCFA }
+interface IAdresseV3 {
+  status_diffusion: string
+  complement_adresse: string
+  numero_voie: string
+  indice_repetition_voie: string
+  type_voie: string
+  libelle_voie: string
+  code_postal: string
+  libelle_commune: string
+  libelle_commune_etranger: string
+  distribution_speciale: string
+  code_commune: string
+  code_cedex: string
+  libelle_cedex: string
+  code_pays_etranger: string
+  libelle_pays_etranger: string
+  acheminement_postal: AcheminementPostal
+}
+
+interface AcheminementPostal {
+  l1: string
+  l2: string
+  l3: string
+  l4: string
+  l5: string
+  l6: string
+  l7: string
+}
+
+export { IAdresseV2, IAdresseV3, IAdresseCFA }

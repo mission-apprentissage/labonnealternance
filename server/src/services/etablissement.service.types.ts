@@ -1,26 +1,126 @@
-import { IAdresse, IAdresseCFA } from "../common/model/schema/_shared/shared.types.js"
+import { IAdresseCFA, IAdresseV2, IAdresseV3 } from "../common/model/schema/_shared/shared.types.js"
 
 export interface IAPIEtablissement {
-  etablissement: IEtablissementGouv
-  gateway_error: boolean
+  data: IEtablissementGouv
+  links: Links
+  meta: Meta
 }
 
 export interface IEtablissementGouv {
-  siege_social: boolean
   siret: string
-  naf: string
-  libelle_naf: string
-  date_mise_a_jour: number
-  tranche_effectif_salarie_etablissement: ITrancheEffectifSalarieEtablissement
-  date_creation_etablissement: number
-  region_implantation: IImplantation
-  commune_implantation: IImplantation
-  pays_implantation: IImplantation
+  siege_social: boolean
+  etat_administratif: string
+  date_fermeture: any
+  enseigne: any
+  activite_principale: ActivitePrincipale
+  tranche_effectif_salarie: TrancheEffectifSalarie
   diffusable_commercialement: boolean
-  enseigne: null
-  adresse: IAdresse
-  etat_administratif: IEtatAdministratif
+  status_diffusion: string
+  date_creation: number
+  unite_legale: UniteLegale
+  adresse: IAdresseV2V3
 }
+
+interface IAdresseV2V3 extends IAdresseV2, IAdresseV3 {}
+
+interface ActivitePrincipale {
+  code: string
+  nomenclature: string
+  libelle: string
+}
+
+interface TrancheEffectifSalarie {
+  de: any
+  a: any
+  code: string
+  date_reference: any
+  intitule: string
+}
+
+interface UniteLegale {
+  siren: string
+  rna: any
+  siret_siege_social: string
+  type: string
+  personne_morale_attributs: PersonneMoraleAttributs
+  personne_physique_attributs: PersonnePhysiqueAttributs
+  categorie_entreprise: string
+  status_diffusion: string
+  diffusable_commercialement: boolean
+  forme_juridique: FormeJuridique
+  activite_principale: ActivitePrincipale2
+  tranche_effectif_salarie: TrancheEffectifSalarie2
+  economie_sociale_et_solidaire: any
+  date_creation: number
+  etat_administratif: string
+}
+
+interface PersonneMoraleAttributs {
+  raison_sociale: string
+  sigle: any
+}
+
+interface PersonnePhysiqueAttributs {
+  pseudonyme: any
+  prenom_usuel: any
+  prenom_1: any
+  prenom_2: any
+  prenom_3: any
+  prenom_4: any
+  nom_usage: any
+  nom_naissance: any
+  sexe: any
+}
+
+interface FormeJuridique {
+  code: string
+  libelle: string
+}
+
+interface ActivitePrincipale2 {
+  code: string
+  nomenclature: string
+  libelle: string
+}
+
+interface TrancheEffectifSalarie2 {
+  de: any
+  a: any
+  code: string
+  date_reference: any
+  intitule: string
+}
+
+interface Links {
+  unite_legale: string
+}
+
+interface Meta {
+  date_derniere_mise_a_jour: number
+  redirect_from_siret: any
+}
+
+// export interface IAPIEtablissement {
+//   etablissement: IEtablissementGouv
+//   gateway_error: boolean
+// }
+
+// export interface IEtablissementGouv {
+//   siege_social: boolean
+//   siret: string
+//   naf: string
+//   libelle_naf: string
+//   date_mise_a_jour: number
+//   tranche_effectif_salarie_etablissement: ITrancheEffectifSalarieEtablissement
+//   date_creation_etablissement: number
+//   region_implantation: IImplantation
+//   commune_implantation: IImplantation
+//   pays_implantation: IImplantation
+//   diffusable_commercialement: boolean
+//   enseigne: null
+//   adresse: IAdresse
+//   etat_administratif: IEtatAdministratif
+// }
 
 export interface IImplantation {
   code: string
