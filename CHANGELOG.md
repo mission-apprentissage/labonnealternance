@@ -1,3 +1,10 @@
+## [1.38.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.38.0...v1.38.1) (2023-06-22)
+
+
+### Bug Fixes
+
+* optimize build ts ([#465](https://github.com/mission-apprentissage/labonnealternance/issues/465)) ([01fb96d](https://github.com/mission-apprentissage/labonnealternance/commit/01fb96d0e3a8a3d762c253f1fd0a9cdbb540674b))
+
 # [1.38.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.37.0...v1.38.0) (2023-06-22)
 
 
