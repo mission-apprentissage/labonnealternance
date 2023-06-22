@@ -1,20 +1,17 @@
 import { concat, pick, get } from "lodash"
-import { amongst } from "../../../utils/arrayutils"
 import { mergeJobs, mergeOpportunities } from "../../../utils/itemListUtils"
 
 export default function getCurrentList({ store, activeFilter, extendedSearch }) {
   let picked = pick(store, ["trainings", "jobs"])
-  let trainingsArray = amongst(activeFilter, ["all", "trainings"]) ? get(picked, "trainings", []) : []
-
-  let partnerList = []
+  let trainingsArray = ["all", "trainings"].includes(activeFilter) ? get(picked, "trainings", []) : []
   let jobList = []
   let companyList = []
 
-  if (amongst(activeFilter, ["all", "duo"])) {
+  if (["all", "duo"].includes(activeFilter)) {
     partnerList = jobs.matchas.length ? jobs.matchas.filter((job) => job.company?.mandataire) : []
   }
 
-  if (amongst(activeFilter, ["all", "jobs"])) {
+  if (["all", "jobs"].includes(activeFilter)) {
     if (extendedSearch) {
       jobList = mergeOpportunities({ jobs: get(picked, "jobs") })
     } else {
