@@ -113,3 +113,5 @@ src/**/*.css.map
 */**/CHANGELOG.md
 
 *.inc
+
+*.json
