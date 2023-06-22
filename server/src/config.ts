@@ -129,6 +129,10 @@ const config = {
     region: env.get("LBA_S3_REGION").default("ABC").asString(),
     bucket: env.get("LBA_S3_BUCKET").default("Bucket").asString(),
   },
+  test: {
+    login: "azdazdazd@gmail.com",
+    password: "ezfgtrerbgjivkmezjfpoaefjkzepofjezpockzepokzeocfkzepczeok,c^p",
+  },
 }
 
 export default config

@@ -22,6 +22,8 @@ fileignoreconfig:
     ignore_detectors: ["filename", "filesize", "filecontent"]
   - filename: server/src/jobs/seed/referentielRome/unix_fiche_emploi_metier_v450_iso8859-15.xml
     checksum: 7257a3a49d3170754fd55316bf78b680866465400c46e11727daa5da00863347
+  - filename: server/src/config.ts
+    checksum: 936ab034b4ef4228b377301733f76dff41cd75215f8ea06e873626bbccfd603d
 scopeconfig:
   - scope: node
 custom_patterns:
