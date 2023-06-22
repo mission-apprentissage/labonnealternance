@@ -22,8 +22,8 @@ import { ICredential } from "../../../common/model/schema/credentials/credential
 export class JobsController extends Controller {
   /**
    * Get existing establishment id from siret & email
-   * @param {String} siret Establishment siret
-   * @param {String} email Establishment email
+   * @param {string} siret Establishment siret
+   * @param {string} email Establishment email
    * @returns {Promise<TEstablishmentResponseSuccess["establishment_id"]>} response
    */
   @Response<"Establishment not found">(400)
@@ -250,7 +250,7 @@ export class JobsController extends Controller {
    * Get related training organization related to a job offer.
    * A job ID is required
    *
-   * @param {String} jobId
+   * @param {string} jobId
    */
   @Response<"Get delegations failed">(400)
   @SuccessResponse("200", "Get Delegations success")
@@ -303,7 +303,7 @@ export class JobsController extends Controller {
    * Update a job offer status to "Provided".
    * A job ID is required
    *
-   * @param {String} jobId
+   * @param {string} jobId
    */
   @Response<"Job update failed">(400)
   @SuccessResponse("204", "Job updated")
@@ -326,7 +326,7 @@ export class JobsController extends Controller {
    * Update a job offer status to "Canceled".
    * A job ID is required
    *
-   * @param {String} jobId
+   * @param {string} jobId
    */
   @Response<"Job update failed">(400)
   @SuccessResponse("204", "Job updated")
@@ -349,7 +349,7 @@ export class JobsController extends Controller {
    * Update a job expiration date by 30 days.
    * A job ID is required
    *
-   * @param {String} jobId
+   * @param {string} jobId
    */
   @Response<"Job update failed">(400)
   @SuccessResponse("204", "Job updated")
