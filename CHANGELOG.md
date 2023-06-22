@@ -1,3 +1,10 @@
+# [1.37.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.36.0...v1.37.0) (2023-06-22)
+
+
+### Features
+
+* move service formations ([#451](https://github.com/mission-apprentissage/labonnealternance/issues/451)) ([2c27e77](https://github.com/mission-apprentissage/labonnealternance/commit/2c27e77f768d05cc78e0cda836e2b33b51ba065a))
+
 # [1.36.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.35.0...v1.36.0) (2023-06-22)
 
 
