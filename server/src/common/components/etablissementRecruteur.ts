@@ -5,10 +5,10 @@ import { ReferentielOpco, UserRecruteur } from "../model/index.js"
 import { sentryCaptureException } from "../utils/sentryUtils.js"
 
 const apiParams = {
-  token: config.apiEntrepriseKey,
-  context: "Matcha MNA",
-  recipient: "12000101100010", // Siret Dinum
-  object: "Consolidation des données",
+  token: config.entreprise.apiKey,
+  context: config.entreprise.context,
+  recipient: config.entreprise.recipient, // Siret Dinum
+  object: config.entreprise.object,
 }
 
 const getEffectif = (code) => {
