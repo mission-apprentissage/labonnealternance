@@ -20,12 +20,12 @@ jobs:
         with:
           node-version: "18"
 
-      - name: Check if cache exists
-        id: yarn-cache
+      - name: Get node_modules cache
         uses: actions/cache@v3
+        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
         with:
-          path: "./server/node_modules"
-          key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+          path: "**/node_modules"
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-
 

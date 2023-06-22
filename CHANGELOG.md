@@ -1,37 +1,38 @@
-# [1.38.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.37.0...v1.38.0) (2023-06-22)
+## [1.38.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.38.0...v1.38.1) (2023-06-22)
 
+### Bug Fixes
+
+- optimize build ts ([#465](https://github.com/mission-apprentissage/labonnealternance/issues/465)) ([01fb96d](https://github.com/mission-apprentissage/labonnealternance/commit/01fb96d0e3a8a3d762c253f1fd0a9cdbb540674b))
+
+# [1.38.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.37.0...v1.38.0) (2023-06-22)
 
 ### Features
 
-* prettier ([b83050e](https://github.com/mission-apprentissage/labonnealternance/commit/b83050e780abd2b51c0b34c450daceae27f445ae))
+- prettier ([b83050e](https://github.com/mission-apprentissage/labonnealternance/commit/b83050e780abd2b51c0b34c450daceae27f445ae))
 
 # [1.37.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.36.0...v1.37.0) (2023-06-22)
 
-
 ### Features
 
-* move service formations ([#451](https://github.com/mission-apprentissage/labonnealternance/issues/451)) ([2c27e77](https://github.com/mission-apprentissage/labonnealternance/commit/2c27e77f768d05cc78e0cda836e2b33b51ba065a))
+- move service formations ([#451](https://github.com/mission-apprentissage/labonnealternance/issues/451)) ([2c27e77](https://github.com/mission-apprentissage/labonnealternance/commit/2c27e77f768d05cc78e0cda836e2b33b51ba065a))
 
 # [1.36.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.35.0...v1.36.0) (2023-06-22)
 
-
 ### Features
 
-* prettying things ([#462](https://github.com/mission-apprentissage/labonnealternance/issues/462)) ([5aef696](https://github.com/mission-apprentissage/labonnealternance/commit/5aef6966673963b3d763779faa1447fc9c60120c))
+- prettying things ([#462](https://github.com/mission-apprentissage/labonnealternance/issues/462)) ([5aef696](https://github.com/mission-apprentissage/labonnealternance/commit/5aef6966673963b3d763779faa1447fc9c60120c))
 
 # [1.35.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.34.0...v1.35.0) (2023-06-22)
 
-
 ### Features
 
-* test gitguardian ([#463](https://github.com/mission-apprentissage/labonnealternance/issues/463)) ([4d319dc](https://github.com/mission-apprentissage/labonnealternance/commit/4d319dcaac681c7671acf60b1bd85b1795e87c62))
+- test gitguardian ([#463](https://github.com/mission-apprentissage/labonnealternance/issues/463)) ([4d319dc](https://github.com/mission-apprentissage/labonnealternance/commit/4d319dcaac681c7671acf60b1bd85b1795e87c62))
 
 # [1.34.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.33.0...v1.34.0) (2023-06-21)
 
-
 ### Features
 
-* simplify gh action ([3fc4015](https://github.com/mission-apprentissage/labonnealternance/commit/3fc4015758a2dcd1031ce872a5bab78bc10893b8))
+- simplify gh action ([3fc4015](https://github.com/mission-apprentissage/labonnealternance/commit/3fc4015758a2dcd1031ce872a5bab78bc10893b8))
 
 # [1.33.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.32.1...v1.33.0) (2023-06-21)
 

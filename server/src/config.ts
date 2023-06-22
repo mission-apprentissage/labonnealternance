@@ -136,10 +136,6 @@ const config = {
     object: "Consolidation des données",
     apiKey: env.get("LBA_ENTREPRISE_API_KEY").default("1234").asString(),
   },
-  test: {
-    login: "azdazdazd@gmail.com",
-    password: "52a92a9b-4945-4afa-877b-1b75fea691f8",
-  },
 }
 
 export default config
