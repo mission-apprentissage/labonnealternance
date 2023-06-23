@@ -29,7 +29,7 @@ const ResultListsCounter = (props) => {
         </Flex>
       )
     } else if (!allJobSearchError) {
-      jobCount = getJobCount(jobs, "excludepartners")
+      jobCount = getJobCount(jobs)
       partnerJobCount = getPartnerJobCount(jobs)
     }
   }
@@ -84,7 +84,7 @@ const ResultListsCounter = (props) => {
               </Box>
               <Flex width="100%" flex="2 auto">
                 <FilterButton type="all" count={jobCount + trainingCount} isActive={activeFilter === "all"} handleFilterButtonClicked={filterButtonClicked} />
-                <FilterButton type="jobs" count={jobCount} isActive={activeFilter === "jobs"} handleFilterButtonClicked={filterButtonClicked} />
+                <FilterButton type="jobs" count={jobCount-partnerJobCount} isActive={activeFilter === "jobs"} handleFilterButtonClicked={filterButtonClicked} />
                 <FilterButton type="trainings" count={trainingCount} isActive={activeFilter === "trainings"} handleFilterButtonClicked={filterButtonClicked} />
                 <FilterButton type="duo" count={partnerJobCount} isActive={activeFilter === "duo"} handleFilterButtonClicked={filterButtonClicked} />
               </Flex>
