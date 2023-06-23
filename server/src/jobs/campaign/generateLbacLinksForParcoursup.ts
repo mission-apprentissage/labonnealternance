@@ -6,7 +6,7 @@ import { asyncForEach } from "../../common/utils/asyncUtils.js"
 import { URL } from "url"
 
 const lbaDomain = "https://labonnealternance.apprentissage.beta.gouv.fr"
-const utmData = "&utm_source=lba&utm_medium=email&utm_campaign=promotion-emploi-jeunes-voeux"
+const utmData = "&utm_source=lba&utm_medium=email&utm_campaign=promotion-emploi-jeunes-rdva-ps"
 
 const aggregateQuery = [
   {
