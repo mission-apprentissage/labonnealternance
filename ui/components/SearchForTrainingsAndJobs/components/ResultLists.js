@@ -16,6 +16,7 @@ import ResultListsCounter from "./ResultListsCounter"
 import { Box, Button, Flex, Image } from "@chakra-ui/react"
 import { SendPlausibleEvent } from "../../../utils/plausible"
 import { renderJob, renderLbb, renderTraining } from "../services/renderOneResult"
+import { getJobCount } from "../services/utils"
 
 const ResultLists = ({
   activeFilter,
@@ -102,10 +103,16 @@ const ResultLists = ({
     if (hasSearch && !isJobSearchLoading && ["all", "duo", "jobs"].includes(activeFilter)) {
       if (allJobSearchError) return ""
 
-      const jobCount = getJobCount(jobs, activeFilter)
+      const jobCount = getJobCount(jobs)
 
       if (jobCount) {
-        if (extendedSearch) {
+        if (activeFilter === "duo") {
+          return (
+            <Box bg="beige" id="jobList">
+              {getPartnerJobList()}
+            </Box>
+          )
+        } else if (extendedSearch) {
           const mergedJobList = getMergedJobList()
           return (
             <Box bg="beige" id="jobList">
@@ -114,7 +121,7 @@ const ResultLists = ({
           )
         } else {
           const jobList = getJobList()
-          const lbbCompanyList = activeFilter !== "duo" && getLbbCompanyList()
+          const lbbCompanyList = getLbbCompanyList()
           return (
             <Box bg="beige" id="jobList" textAlign="center">
               {jobList || lbbCompanyList ? (
@@ -133,8 +140,9 @@ const ResultLists = ({
           )
         }
       } else {
-        if (extendedSearch) return <NoJobResult />
-        else
+        if (extendedSearch) {
+          return <NoJobResult />
+        } else
           return (
             <Box m={6}>
               <NoJobResult />
@@ -147,21 +155,23 @@ const ResultLists = ({
     }
   }
 
-  const getJobCount = (jobs, filter) => {
-    console.log("active filter", filter)
-    let jobCount = 0
-
-    if (jobs) {
-      if (jobs.peJobs) jobCount += jobs.peJobs.length
-      if (jobs.matchas) jobCount += jobs.matchas.length
-      if (jobs.lbaCompanies) jobCount += jobs.lbaCompanies.length
+  const getPartnerJobList = () => {
+    const partnerJobs = jobs.matchas.filter((job) => job.company?.mandataire)
+    if (partnerJobs.length) {
+      return (
+        <>
+          {mergedJobs.map((job, idx) => {
+            return renderJob(isTestMode, idx, job, handleSelectItem, searchForTrainingsOnNewCenter)
+          })}
+        </>
+      )
+    } else {
+      return ""
     }
-
-    return jobCount
   }
 
   const getJobList = () => {
-    const mergedJobs = mergeJobs(jobs, activeFilter)
+    const mergedJobs = mergeJobs(jobs)
     if (mergedJobs.length) {
       return (
         <>
@@ -251,7 +261,6 @@ const ResultLists = ({
           isJobSearchLoading={isJobSearchLoading}
           isTrainingSearchLoading={isTrainingSearchLoading}
           displayCount={displayCount}
-          getJobCount={getJobCount}
           jobs={jobs}
           trainings={trainings}
           activeFilter={activeFilter}
