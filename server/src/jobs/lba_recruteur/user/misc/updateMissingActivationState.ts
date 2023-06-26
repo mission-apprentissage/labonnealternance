@@ -13,31 +13,31 @@ import {
 } from "../../../../services/etablissement.service.js"
 import { validation_utilisateur, etat_utilisateur } from "../../../../common/constants.js"
 import { updateUserValidationHistory } from "../../../../services/userRecruteur.service.js"
+import { notifyToSlack } from "../../../../common/utils/slackUtils.js"
+
+const autoValidateUser = async (userId) =>
+  await updateUserValidationHistory(userId, {
+    validation_type: validation_utilisateur.AUTO,
+    user: "SERVEUR",
+    status: etat_utilisateur.VALIDE,
+  })
+
+const stat = { validated: 0, notFound: 0, total: 0 }
 
 const runValidation = async () => {
   logger.info(`Start update missing validation state for entreprise...`)
 
-  const autoValidateUser = async (userId) =>
-    await updateUserValidationHistory(userId, {
-      validation_type: validation_utilisateur.AUTO,
-      user: "SERVEUR",
-      statut: etat_utilisateur.VALIDE,
-    })
-
-  const setManualValidation = async (userId) =>
-    await updateUserValidationHistory(userId, {
-      validation_type: validation_utilisateur.MANUAL,
-      user: "SERVEUR",
-      statut: etat_utilisateur.ATTENTE,
-    })
-
-  // const entreprises = await UserRecruteur.find({
-  //   $expr: { $eq: [{ $arrayElemAt: ["$etat_utilisateur.statut", -1] }, "EN ATTENTE DE VALIDATION"] },
-  // })
-
   const entreprises = await UserRecruteur.find({ type: "ENTREPRISE", status: { $size: 1 }, "status.status": "EN ATTENTE DE VALIDATION" })
 
+  if (!entreprises.length) {
+    notifyToSlack({ subject: "USER VALIDATION", message: "Aucunes entreprises à contrôler" })
+    return
+  }
+
+  stat.total = entreprises.length
+
   logger.info(`${entreprises.length} etp à mettre à jour...`)
+
   await asyncForEach(entreprises, async (etp, index) => {
     logger.info(`${entreprises.length}/${index}`)
     const found = await Recruiter.findOne({ establishment_id: etp.establishment_id })
@@ -70,46 +70,34 @@ const runValidation = async () => {
     // Check BAL API for validation
     const balControl = await validationOrganisation(etp.establishment_siret, etp.email)
 
-    logger.info(`${etp._id}: ${JSON.stringify(balControl)}`)
-
     if (balControl.is_valid) {
       await autoValidateUser(etp._id)
+      stat.validated++
     } else {
       if (emailListUnique.length) {
         if (getMatchingEmailFromContactList(etp.email, emailListUnique)) {
           await autoValidateUser(etp._id)
+          stat.validated++
         } else if (checkIfUserEmailIsPrivate(etp.email) && getMatchingDomainFromContactList(etp.email, emailListUnique)) {
           await autoValidateUser(etp._id)
+          stat.validated++
         } else {
-          await setManualValidation(etp._id)
+          stat.notFound++
         }
       } else {
-        // keep awaiting status
-        return
+        stat.notFound++
       }
     }
   })
 
-  logger.info(`Done.`)
-}
+  notifyToSlack({ subject: "USER VALIDATION", message: `${stat.validated} entreprises validées sur un total de ${stat.total} (${stat.notFound} reste à valider manuellement)` })
 
-const resetUserValidation = async (db) => {
-  const users = await db.collection("usertemps").find({}).toArray()
-
-  await asyncForEach(users, async (user) => {
-    const id = user.ID.trim()
-    await UserRecruteur.findByIdAndUpdate(id, { $set: { status: [] } }, { new: true })
-    console.log(`${user.ID} updated`)
-  })
-}
-
-const removeDuplicateAwaitingStatus = async () => {
-  const users = await UserRecruteur.find({ $expr: { $ne: [{ $arrayElemAt: ["$etat_utilisateur.statut", -1] }, "VALIDÉ"] } })
-  console.log(users.map((x) => x.status))
+  return stat
 }
 
 runScript(async () => {
   logger.info("#start validation for specific users")
-  // await runValidation()
-  await removeDuplicateAwaitingStatus()
+  const stat = await runValidation()
+  logger.info(`Done.`)
+  return stat
 })
