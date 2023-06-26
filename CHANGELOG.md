@@ -1,3 +1,10 @@
+# [1.40.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.39.1...v1.40.0) (2023-06-26)
+
+
+### Features
+
+* mise à jour de l'api inserjeune ([#453](https://github.com/mission-apprentissage/labonnealternance/issues/453)) ([88ee9d2](https://github.com/mission-apprentissage/labonnealternance/commit/88ee9d225a638867a9c12a6fbf58db0d89192f24))
+
 ## [1.39.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.39.0...v1.39.1) (2023-06-26)
 
 
