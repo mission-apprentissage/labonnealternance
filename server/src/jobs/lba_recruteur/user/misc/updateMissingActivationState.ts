@@ -102,10 +102,11 @@ export const checkAwaitingCompaniesValidation = async ({ mailer }) => {
 
     if (hasBeenValidated) {
       /**
-       * if entreprise type of user is validated :
        * - activate offer
        * - update expiration date to one month later
        * - send email to delegation if available
+       * - send welcome email
+       * - validate email check
        */
 
       const userFormulaire = await getFormulaire({ establishment_id: etp.establishment_id })
