@@ -248,8 +248,16 @@ const getCompanyFromSiret = async ({ siret, referer, caller, type }) => {
         applicationCountByCompany,
       })
 
+      if (caller) {
+        trackApiCall({ caller, api_path: "jobV1/company", job_count: 1, result_count: 1, response: "OK" })
+      }
+
       return type === "lbb" ? { lbbCompanies: [company] } : { lbaCompanies: [company] }
     } else {
+      if (caller) {
+        trackApiCall({ caller, api_path: "jobV1/company", job_count: 0, result_count: 0, response: "OK" })
+      }
+
       return { error: "not_found", status: 404, result: "not_found", message: "Société non trouvée" }
     }
   } catch (error) {

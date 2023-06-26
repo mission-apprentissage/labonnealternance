@@ -1,5 +1,5 @@
 import * as express from "express"
-import { Body, Controller, Get, OperationId, Patch, Path, Post, Query, Request, Response, Route, Security, SuccessResponse, Tags } from "tsoa"
+import { Body, Controller, Get, Header, Hidden, OperationId, Patch, Path, Post, Query, Request, Response, Route, Security, SuccessResponse, Tags } from "tsoa"
 import { ICreateDelegation, ICreateJobBody, IGetDelegation, TCreateEstablishmentBody, TEstablishmentResponseSuccess, TJob, TResponseError } from "./jobs.types.js"
 import { createDelegationSchema, createJobEntitySchema, createJobSchema, updateJobSchema } from "./jobs.validators.js"
 import { formatEntrepriseData, getEtablissement, getEtablissementFromGouv, getGeoCoordinates } from "../../../services/etablissement.service.js"
@@ -15,6 +15,9 @@ import { getNearEtablissementsFromRomes } from "../../../services/catalogue.serv
 import { ENTREPRISE, etat_utilisateur, validation_utilisateur } from "../../../common/constants.js"
 import { delay } from "../../../common/utils/asyncUtils.js"
 import { ICredential } from "../../../common/model/schema/credentials/credential.types.js"
+import { IApiError } from "../../../common/utils/errorManager.js"
+import { ILbaItem } from "../../../services/lbaitem.shared.service.types.js"
+import { getCompanyFromSiret } from "../../../service/poleEmploi/bonnesBoites.js"
 
 @Tags("Jobs")
 @Route("/api/v1/jobs")
@@ -353,5 +356,45 @@ export class JobsController extends Controller {
 
     this.setStatus(204)
     return
+  }
+
+  /**
+   * Get one company identified by it's siret
+   * @param {string} siret the siret number of the company.
+   * @param {string} caller the consumer id.
+   * @param {string} type the type of the company
+   * @param {string} referer the referer provided in the HTTP query headers
+   * @returns {Promise<IApiError | { lbbCompanies: ILbaItem[] } | { lbaCompanies: ILbaItem[] }>} response
+   */
+  @Response<"Company not found">(404)
+  @Response<"Internal error">(500)
+  @SuccessResponse("200", "Get company success")
+  @Get("/company/{siret}")
+  @OperationId("getCompany")
+  public async getCompany(
+    @Path() siret: string,
+    @Header() @Hidden() referer: string,
+    @Query() caller?: string,
+    @Query() type?: string
+  ): Promise<IApiError | { lbbCompanies: ILbaItem[] } | { lbaCompanies: ILbaItem[] }> {
+    console.log(referer, caller, type, siret)
+    const result = await getCompanyFromSiret({
+      siret,
+      type,
+      referer,
+      caller,
+    })
+
+    if (result.error) {
+      if (result.error === "wrong_parameters") {
+        this.setStatus(400)
+      } else if (result.error === "not_found") {
+        this.setStatus(404)
+      } else {
+        this.setStatus(result.status || 500)
+      }
+    }
+
+    return result
   }
 }
