@@ -2,7 +2,7 @@
 import distance from "@turf/distance"
 import axios from "axios"
 import { NIVEAUX_POUR_OFFRES_PE } from "../../common/constants.js"
-import { roundDistance } from "../../common/geolib.js"
+import { roundDistance } from "../../common/utils/geolib.js"
 import { manageApiError } from "../../common/utils/errorManager.js"
 import { trackApiCall } from "../../common/utils/sendTrackingEvent.js"
 import { itemModel } from "../../model/itemModel.js"
