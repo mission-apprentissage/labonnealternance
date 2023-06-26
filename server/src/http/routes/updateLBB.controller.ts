@@ -27,8 +27,9 @@ export default function () {
         if (result === "not_found") {
           return res.status(404).json(result)
         }
+
+        return res.json(result)
       }
-      return res.json(result)
     })
   )
 
