@@ -1,3 +1,10 @@
+## [1.39.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.39.0...v1.39.1) (2023-06-26)
+
+
+### Bug Fixes
+
+* erreur de positionnement de return ([#469](https://github.com/mission-apprentissage/labonnealternance/issues/469)) ([cd7678e](https://github.com/mission-apprentissage/labonnealternance/commit/cd7678ece6fe0524d90490cd67db3618bc55b2b4))
+
 # [1.39.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.38.2...v1.39.0) (2023-06-26)
 
 
