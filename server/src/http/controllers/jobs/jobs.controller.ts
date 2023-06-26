@@ -20,6 +20,8 @@ import { ILbaItem } from "../../../services/lbaitem.shared.service.types.js"
 import { getCompanyFromSiret } from "../../../service/poleEmploi/bonnesBoites.js"
 import { getMatchaJobById } from "../../../service/matcha.js"
 import { getPeJobFromId } from "../../../service/poleEmploi/offresPoleEmploi.js"
+import { getJobsQuery } from "../../../service/poleEmploi/jobsAndCompanies.js"
+import { jobsQueryValidator } from "../../../service/poleEmploi/jobsQueryValidator.js"
 
 @Tags("Jobs")
 @Route("/api/v1/jobs")
@@ -361,6 +363,53 @@ export class JobsController extends Controller {
   }
 
   /**
+   * Get job opportunities matching the query parameters
+   * @param {string} referer the referer provided in the HTTP query headers
+   * @param {string} caller the consumer id.
+   * @param {string} romes some rome codes separated by commas
+   * @param {string} latitude search center latitude
+   * @param {string} longitude search center longitude
+   * @param {number} radius the search radius
+   * @param {string} insee search center insee code
+   * @param {string} sources optional: comma separated list of job opportunities sources
+   * @param {string} diploma optional: targeted diploma
+   * @param {string} opco optional: filter opportunities on opco name
+   * @param {string} opcoUrl optional: filter opportunities on opco url
+   * @param {string} useMock optional: wether to return mocked values or not
+   * @returns {Promise<IApiError | { lbbCompanies: ILbaItem[] } | { lbaCompanies: ILbaItem[] }>} response
+   */
+  @Response<"Wrong parameters">(400)
+  @Response<"Internal error">(500)
+  @SuccessResponse("200", "Get job opportunities success")
+  @Get("/")
+  @OperationId("getJobOpportunities")
+  public async getJobOpportunities(
+    @Header() @Hidden() referer: string,
+    @Query() caller?: string,
+    @Query() romes?: string,
+    @Query() latitude?: string,
+    @Query() longitude?: string,
+    @Query() radius?: number,
+    @Query() insee?: string,
+    @Query() sources?: string,
+    @Query() diploma?: string,
+    @Query() opco?: string,
+    @Query() opcoUrl?: string,
+    @Query() @Hidden() useMock?: string
+  ): Promise<IApiError | { lbbCompanies: ILbaItem[] } | { lbaCompanies: ILbaItem[] }> {
+
+    console.log("ICI : ",romes)
+
+    const result = await getJobsQuery({ romes, caller, referer, latitude, longitude, radius, insee, sources, diploma, opco, opcoUrl, useMock })
+
+    if (result.error) {
+      this.setStatus(500)
+    }
+
+    return result
+  }
+
+  /**
    * Get one company identified by it's siret
    * @param {string} siret the siret number of the company looked for.
    * @param {string} caller the consumer id.
@@ -388,7 +437,7 @@ export class JobsController extends Controller {
       caller,
     })
 
-    if (result.error) {
+    if ("error" in result) {
       if (result.error === "wrong_parameters") {
         this.setStatus(400)
       } else if (result.error === "not_found") {
@@ -420,7 +469,7 @@ export class JobsController extends Controller {
       caller,
     })
 
-    if (result.error) {
+    if ("error" in result) {
       if (result.error === "wrong_parameters") {
         this.setStatus(400)
       } else if (result.error === "not_found") {
@@ -452,7 +501,7 @@ export class JobsController extends Controller {
       caller,
     })
 
-    if (result.error) {
+    if ("error" in result) {
       if (result.error === "wrong_parameters") {
         this.setStatus(400)
       } else if (result.error === "not_found") {

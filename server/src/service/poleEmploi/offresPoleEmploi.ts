@@ -268,7 +268,7 @@ const getPeJobs = async ({ romes, insee, radius, jobLimit, caller, diploma, api 
   }
 }
 
-const getPeJobFromId = async ({ id, caller }): IApiError | { peJobs: ILbaItem[] } => {
+const getPeJobFromId = async ({ id, caller }: { id: string; caller: string }): IApiError | { peJobs: ILbaItem[] } => {
   try {
     const token = await getAccessToken("pe")
     const headers = peApiHeaders
