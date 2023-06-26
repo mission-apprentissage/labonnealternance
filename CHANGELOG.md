@@ -1,3 +1,10 @@
+# [1.39.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.38.2...v1.39.0) (2023-06-26)
+
+
+### Features
+
+* add cleaning script ([#470](https://github.com/mission-apprentissage/labonnealternance/issues/470)) ([6bcd7fc](https://github.com/mission-apprentissage/labonnealternance/commit/6bcd7fcace7dd6c3ee6c5fd7b558d48c63ca5907))
+
 ## [1.38.2](https://github.com/mission-apprentissage/labonnealternance/compare/v1.38.1...v1.38.2) (2023-06-26)
 
 
