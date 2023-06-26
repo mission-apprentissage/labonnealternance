@@ -1,3 +1,10 @@
+## [1.40.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.40.0...v1.40.1) (2023-06-26)
+
+
+### Bug Fixes
+
+* codcov ([062565d](https://github.com/mission-apprentissage/labonnealternance/commit/062565d2ef2dff0918d7acb2b94b6b03825af03e))
+
 # [1.40.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.39.1...v1.40.0) (2023-06-26)
 
 
