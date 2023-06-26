@@ -1,3 +1,10 @@
+## [1.38.2](https://github.com/mission-apprentissage/labonnealternance/compare/v1.38.1...v1.38.2) (2023-06-26)
+
+
+### Bug Fixes
+
+* scan is not a component anymore ([#466](https://github.com/mission-apprentissage/labonnealternance/issues/466)) ([a978516](https://github.com/mission-apprentissage/labonnealternance/commit/a978516522664a6634982dc9688c11026d9a0b14))
+
 ## [1.38.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.38.0...v1.38.1) (2023-06-22)
 
 
