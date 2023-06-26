@@ -1,3 +1,4 @@
+import dayjs from "../../../../common/dayjs.js"
 import { logger } from "../../../../common/logger.js"
 import { Recruiter, UserRecruteur } from "../../../../common/model/index.js"
 import { asyncForEach } from "../../../../common/utils/asyncUtils.js"
@@ -10,9 +11,13 @@ import {
   getAllEstablishmentFromBonneBoiteLegacy,
   getAllEstablishmentFromOpcoReferentiel,
 } from "../../../../services/etablissement.service.js"
-import { validation_utilisateur, etat_utilisateur } from "../../../../common/constants.js"
-import { updateUserValidationHistory } from "../../../../services/userRecruteur.service.js"
+import { validation_utilisateur, etat_utilisateur, CFA } from "../../../../common/constants.js"
+import { updateUser, updateUserValidationHistory } from "../../../../services/userRecruteur.service.js"
 import { notifyToSlack } from "../../../../common/utils/slackUtils.js"
+import { getFormulaire, updateOffre } from "../../../../services/formulaire.service.js"
+import { mailTemplate } from "../../../../assets/index.js"
+import { createMagicLinkToken } from "../../../../common/utils/jwtUtils.js"
+import config from "../../../../config.js"
 
 const autoValidateUser = async (userId) =>
   await updateUserValidationHistory(userId, {
@@ -23,10 +28,12 @@ const autoValidateUser = async (userId) =>
 
 const stat = { validated: 0, notFound: 0, total: 0 }
 
-export const checkAwaitingCompaniesValidation = async () => {
+export const checkAwaitingCompaniesValidation = async ({ mailer }) => {
   logger.info(`Start update missing validation state for companies...`)
 
   const entreprises = await UserRecruteur.find({ type: "ENTREPRISE", status: { $size: 1 }, "status.status": "EN ATTENTE DE VALIDATION" })
+
+  let hasBeenValidated = false
 
   if (!entreprises.length) {
     notifyToSlack({ subject: "USER VALIDATION", message: "Aucunes entreprises à contrôler" })
@@ -39,9 +46,9 @@ export const checkAwaitingCompaniesValidation = async () => {
 
   await asyncForEach(entreprises, async (etp, index) => {
     logger.info(`${entreprises.length}/${index}`)
-    const found = await Recruiter.findOne({ establishment_id: etp.establishment_id })
+    const userFormulaire = await getFormulaire({ establishment_id: etp.establishment_id })
 
-    if (!found) {
+    if (!userFormulaire) {
       await UserRecruteur.findByIdAndDelete(etp.establishment_id)
       return
     }
@@ -72,20 +79,91 @@ export const checkAwaitingCompaniesValidation = async () => {
     if (balControl.is_valid) {
       await autoValidateUser(etp._id)
       stat.validated++
+      hasBeenValidated = true
     } else {
       if (emailListUnique.length) {
         if (getMatchingEmailFromContactList(etp.email, emailListUnique)) {
           await autoValidateUser(etp._id)
           stat.validated++
+          hasBeenValidated = true
         } else if (checkIfUserEmailIsPrivate(etp.email) && getMatchingDomainFromContactList(etp.email, emailListUnique)) {
           await autoValidateUser(etp._id)
           stat.validated++
+          hasBeenValidated = true
         } else {
+          hasBeenValidated = false
           stat.notFound++
         }
       } else {
+        hasBeenValidated = false
         stat.notFound++
       }
+    }
+
+    if (hasBeenValidated) {
+      /**
+       * if entreprise type of user is validated :
+       * - activate offer
+       * - update expiration date to one month later
+       * - send email to delegation if available
+       */
+
+      const userFormulaire = await getFormulaire({ establishment_id: etp.establishment_id })
+      const job = Object.assign(userFormulaire.jobs[0], { job_status: "Active", job_expiration_date: dayjs().add(1, "month").format("YYYY-MM-DD") })
+      await updateOffre(job._id, job)
+
+      if (job?.delegations && job?.delegations.length) {
+        await Promise.all(
+          job.delegations.map(
+            async (delegation) =>
+              await mailer.sendEmail({
+                to: delegation.email,
+                subject: `Une entreprise recrute dans votre domaine`,
+                template: mailTemplate["mail-cfa-delegation"],
+                data: {
+                  images: {
+                    logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
+                  },
+                  enterpriseName: userFormulaire.establishment_raison_sociale,
+                  jobName: job.rome_appellation_label,
+                  contractType: job.job_type.join(", "),
+                  trainingLevel: job.job_level_label,
+                  startDate: dayjs(job.job_start_date).format("DD/MM/YYYY"),
+                  duration: job.job_duration,
+                  rhythm: job.job_rythm,
+                  offerButton: `${config.publicUrlEspacePro}/proposition/formulaire/${userFormulaire.establishment_id}/offre/${job._id}/siret/${delegation.siret_code}`,
+                  createAccountButton: `${config.publicUrlEspacePro}/creation/cfa`,
+                },
+              })
+          )
+        )
+      }
+
+      // validate user email addresse
+      await updateUser({ _id: etp._id }, { is_email_checked: true })
+
+      // get magiclink url
+      const magiclink = `${config.publicUrlEspacePro}/authentification/verification?token=${createMagicLinkToken(etp.email)}`
+
+      const { email, last_name, first_name, establishment_raison_sociale, type } = etp
+
+      // send welcome email to user
+      await mailer.sendEmail({
+        to: email,
+        subject: "Bienvenue sur La bonne alternance",
+        template: mailTemplate["mail-bienvenue"],
+        data: {
+          images: {
+            logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
+          },
+          last_name,
+          first_name,
+          establishment_raison_sociale,
+          email,
+          is_delegated: etp.type === CFA,
+          url: magiclink,
+        },
+      })
     }
   })
 

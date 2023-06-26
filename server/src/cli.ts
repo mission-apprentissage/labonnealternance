@@ -137,7 +137,7 @@ cli
   .command("validate-user")
   .description("Contrôle de validation des entreprises en attente de validation")
   .action(() => {
-    runScript(() => checkAwaitingCompaniesValidation())
+    runScript((components) => checkAwaitingCompaniesValidation(components))
   })
 
 /**
