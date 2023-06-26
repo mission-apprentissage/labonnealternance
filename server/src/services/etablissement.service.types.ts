@@ -1,9 +1,9 @@
-import { IAdresseCFA, IAdresseV2, IAdresseV3 } from "../common/model/schema/_shared/shared.types.js"
+import { IAdresseCFA, IAdresseV2, IAdresseV3, IGlobalAdress } from "../common/model/schema/_shared/shared.types.js"
 
 export interface IAPIEtablissement {
   data: IEtablissementGouv
-  links: Links
-  meta: Meta
+  links: ILinks
+  meta: IMetaAPIEtablissement
 }
 
 export interface IEtablissementGouv {
@@ -12,24 +12,22 @@ export interface IEtablissementGouv {
   etat_administratif: string
   date_fermeture: any
   enseigne: any
-  activite_principale: ActivitePrincipale
-  tranche_effectif_salarie: TrancheEffectifSalarie
+  activite_principale: IActivitePrincipale
+  tranche_effectif_salarie: ITrancheEffectifSalarie
   diffusable_commercialement: boolean
   status_diffusion: string
   date_creation: number
-  unite_legale: UniteLegale
-  adresse: IAdresseV2V3
+  unite_legale: IUniteLegale
+  adresse: IGlobalAdress //IAdresseV3
 }
 
-interface IAdresseV2V3 extends IAdresseV2, IAdresseV3 {}
-
-interface ActivitePrincipale {
+interface IActivitePrincipale {
   code: string
   nomenclature: string
   libelle: string
 }
 
-interface TrancheEffectifSalarie {
+interface ITrancheEffectifSalarie {
   de: any
   a: any
   code: string
@@ -37,30 +35,30 @@ interface TrancheEffectifSalarie {
   intitule: string
 }
 
-interface UniteLegale {
+interface IUniteLegale {
   siren: string
   rna: any
   siret_siege_social: string
   type: string
-  personne_morale_attributs: PersonneMoraleAttributs
-  personne_physique_attributs: PersonnePhysiqueAttributs
+  personne_morale_attributs: IPersonneMoraleAttributs
+  personne_physique_attributs: IPersonnePhysiqueAttributs
   categorie_entreprise: string
   status_diffusion: string
   diffusable_commercialement: boolean
-  forme_juridique: FormeJuridique
-  activite_principale: ActivitePrincipale2
-  tranche_effectif_salarie: TrancheEffectifSalarie2
+  forme_juridique: IFormeJuridique
+  activite_principale: IActivitePrincipale2
+  tranche_effectif_salarie: ITrancheEffectifSalarie2
   economie_sociale_et_solidaire: any
   date_creation: number
   etat_administratif: string
 }
 
-interface PersonneMoraleAttributs {
+interface IPersonneMoraleAttributs {
   raison_sociale: string
   sigle: any
 }
 
-interface PersonnePhysiqueAttributs {
+interface IPersonnePhysiqueAttributs {
   pseudonyme: any
   prenom_usuel: any
   prenom_1: any
@@ -72,18 +70,13 @@ interface PersonnePhysiqueAttributs {
   sexe: any
 }
 
-interface FormeJuridique {
-  code: string
-  libelle: string
-}
-
-interface ActivitePrincipale2 {
+interface IActivitePrincipale2 {
   code: string
   nomenclature: string
   libelle: string
 }
 
-interface TrancheEffectifSalarie2 {
+interface ITrancheEffectifSalarie2 {
   de: any
   a: any
   code: string
@@ -91,36 +84,14 @@ interface TrancheEffectifSalarie2 {
   intitule: string
 }
 
-interface Links {
+interface ILinks {
   unite_legale: string
 }
 
-interface Meta {
+interface IMetaAPIEtablissement {
   date_derniere_mise_a_jour: number
   redirect_from_siret: any
 }
-
-// export interface IAPIEtablissement {
-//   etablissement: IEtablissementGouv
-//   gateway_error: boolean
-// }
-
-// export interface IEtablissementGouv {
-//   siege_social: boolean
-//   siret: string
-//   naf: string
-//   libelle_naf: string
-//   date_mise_a_jour: number
-//   tranche_effectif_salarie_etablissement: ITrancheEffectifSalarieEtablissement
-//   date_creation_etablissement: number
-//   region_implantation: IImplantation
-//   commune_implantation: IImplantation
-//   pays_implantation: IImplantation
-//   diffusable_commercialement: boolean
-//   enseigne: null
-//   adresse: IAdresse
-//   etat_administratif: IEtatAdministratif
-// }
 
 export interface IImplantation {
   code: string
@@ -142,7 +113,7 @@ export interface ITrancheEffectifSalarieEtablissement {
 
 export interface IReferentiel {
   siret: string
-  _meta: IMeta
+  _meta: IMetaReferentiel
   certifications: ICertification[]
   contacts: IContact[]
   diplomes: ICertification[]
@@ -162,7 +133,7 @@ export interface IReferentiel {
   uai: string
 }
 
-export interface IMeta {
+export interface IMetaReferentiel {
   anomalies: Anomaly[]
   date_import: Date
   date_dernier_import: Date
