@@ -17,8 +17,7 @@ import { delay } from "../../../common/utils/asyncUtils.js"
 import { ICredential } from "../../../common/model/schema/credentials/credential.types.js"
 
 @Tags("Jobs")
-@Route("/api/v1/temp-jobs")
-@Security("api_key")
+@Route("/api/v1/jobs")
 export class JobsController extends Controller {
   /**
    * Get all jobs related to my organization
@@ -30,8 +29,9 @@ export class JobsController extends Controller {
    */
   @Response<"Get all jobs failed">(400)
   @SuccessResponse("200", "Get all jobs success")
-  @Get("/")
+  @Get("/bulk")
   @OperationId("getJobs")
+  @Security("api_key")
   public async getJobs(
     @Request() request: express.Request | any,
     @Query() query = "{}",
@@ -67,6 +67,7 @@ export class JobsController extends Controller {
   @SuccessResponse("201", "Establishment created")
   @Post("/establishment")
   @OperationId("createEstablishment")
+  @Security("api_key")
   public async createEstablishment(@Request() request: express.Request | any, @Body() body: TCreateEstablishmentBody): Promise<TEstablishmentResponseSuccess | TResponseError> {
     const { first_name, last_name, phone, email, origin, establishment_siret } = body
     const user: ICredential = request.user
@@ -140,6 +141,7 @@ export class JobsController extends Controller {
   @SuccessResponse("201", "Job created")
   @Post("/{establishmentId}")
   @OperationId("createJob")
+  @Security("api_key")
   public async createJob(@Body() body: ICreateJobBody, @Path() establishmentId: IUserRecruteur["establishment_id"]): Promise<TEstablishmentResponseSuccess | TResponseError> {
     // Check if entity exists
     const establishmentExists = await getFormulaire({ establishment_id: establishmentId })
@@ -210,6 +212,7 @@ export class JobsController extends Controller {
   @SuccessResponse("200", "Job updated")
   @Patch("/{jobId}")
   @OperationId("updateJob")
+  @Security("api_key")
   public async updateJob(@Body() body: TJob, @Path() jobId: IJobs["_id"]): Promise<TEstablishmentResponseSuccess | TResponseError> {
     const jobExists = await getOffre(jobId)
 
@@ -235,6 +238,7 @@ export class JobsController extends Controller {
   @SuccessResponse("200", "Get Delegations success")
   @Get("/delegations/{jobId}")
   @OperationId("getDelegation")
+  @Security("api_key")
   public async getDelegation(@Path() jobId: IJobs["_id"]): Promise<IGetDelegation | TResponseError> {
     const jobExists = await getOffre(jobId)
 
@@ -263,6 +267,7 @@ export class JobsController extends Controller {
   @SuccessResponse("200", "Delegation created")
   @Post("/delegations/{jobId}")
   @OperationId("createDelegation")
+  @Security("api_key")
   public async createDelegation(@Body() body: ICreateDelegation, @Path() jobId: IJobs["_id"]): Promise<TEstablishmentResponseSuccess | TResponseError> {
     const jobExists = await getOffre(jobId)
 
@@ -288,6 +293,7 @@ export class JobsController extends Controller {
   @SuccessResponse("204", "Job updated")
   @Post("/provided")
   @OperationId("setJobAsProvided")
+  @Security("api_key")
   public async setJobAsProvided(@Body() body: { jobId: IJobs["_id"] }): Promise<{} | TResponseError> {
     const jobExists = await getOffre(body.jobId)
 
@@ -311,6 +317,7 @@ export class JobsController extends Controller {
   @SuccessResponse("204", "Job updated")
   @Post("/canceled")
   @OperationId("setJobAsCanceled")
+  @Security("api_key")
   public async setJobAsCanceled(@Body() body: { jobId: IJobs["_id"] }): Promise<{} | TResponseError> {
     const jobExists = await getOffre(body.jobId)
 
@@ -334,6 +341,7 @@ export class JobsController extends Controller {
   @SuccessResponse("204", "Job updated")
   @Post("/extend")
   @OperationId("extendJobExpiration")
+  @Security("api_key")
   public async extendJobExpiration(@Body() body: { jobId: IJobs["_id"] }): Promise<{} | TResponseError> {
     const jobExists = await getOffre(body.jobId)
 
