@@ -1,7 +1,6 @@
 import { logger } from "../../../../common/logger.js"
 import { Recruiter, UserRecruteur } from "../../../../common/model/index.js"
 import { asyncForEach } from "../../../../common/utils/asyncUtils.js"
-import { runScript } from "../../../scriptWrapper.js"
 import { validationOrganisation } from "../../../../common/bal.js"
 import { checkIfUserEmailIsPrivate } from "../../../../common/utils/mailUtils.js"
 import {
@@ -24,8 +23,8 @@ const autoValidateUser = async (userId) =>
 
 const stat = { validated: 0, notFound: 0, total: 0 }
 
-const runValidation = async () => {
-  logger.info(`Start update missing validation state for entreprise...`)
+export const checkAwaitingCompaniesValidation = async () => {
+  logger.info(`Start update missing validation state for companies...`)
 
   const entreprises = await UserRecruteur.find({ type: "ENTREPRISE", status: { $size: 1 }, "status.status": "EN ATTENTE DE VALIDATION" })
 
@@ -92,12 +91,6 @@ const runValidation = async () => {
 
   notifyToSlack({ subject: "USER VALIDATION", message: `${stat.validated} entreprises validées sur un total de ${stat.total} (${stat.notFound} reste à valider manuellement)` })
 
-  return stat
-}
-
-runScript(async () => {
-  logger.info("#start validation for specific users")
-  const stat = await runValidation()
   logger.info(`Done.`)
   return stat
-})
+}
