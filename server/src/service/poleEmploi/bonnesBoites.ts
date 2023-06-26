@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { getElasticInstance } from "../../common/esClient/index.js"
 import { encryptMailWithIV } from "../../common/utils/encryptString.js"
-import { manageApiError } from "../../common/utils/errorManager.js"
+import { IApiError, manageApiError } from "../../common/utils/errorManager.js"
 import { isAllowedSource } from "../../common/utils/isAllowedSource.js"
 import { itemModel } from "../../model/itemModel.js"
 

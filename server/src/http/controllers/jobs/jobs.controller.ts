@@ -19,6 +19,7 @@ import { IApiError } from "../../../common/utils/errorManager.js"
 import { ILbaItem } from "../../../services/lbaitem.shared.service.types.js"
 import { getCompanyFromSiret } from "../../../service/poleEmploi/bonnesBoites.js"
 import { getMatchaJobById } from "../../../service/matcha.js"
+import { getPeJobFromId } from "../../../service/poleEmploi/offresPoleEmploi.js"
 
 @Tags("Jobs")
 @Route("/api/v1/jobs")
@@ -367,6 +368,7 @@ export class JobsController extends Controller {
    * @param {string} referer the referer provided in the HTTP query headers
    * @returns {Promise<IApiError | { lbbCompanies: ILbaItem[] } | { lbaCompanies: ILbaItem[] }>} response
    */
+  @Response<"Wrong parameters">(400)
   @Response<"Company not found">(404)
   @Response<"Internal error">(500)
   @SuccessResponse("200", "Get company success")
@@ -405,14 +407,47 @@ export class JobsController extends Controller {
    * @param {string} caller the consumer id.
    * @returns {Promise<IApiError | { matchas: ILbaItem[] }>} response
    */
-  @Response<"Company not found">(404)
+  @Response<"Wrong parameters">(400)
+  @Response<"Job not found">(404)
   @Response<"Internal error">(500)
-  @SuccessResponse("200", "Get company success")
+  @SuccessResponse("200", "Get job success")
   @Get("/matcha/{id}")
   @OperationId("getLbaJob")
   public async getLbaJob(@Path() id: string, @Query() caller?: string): Promise<IApiError | { matchas: ILbaItem[] }> {
     console.log(caller, id)
     const result = await getMatchaJobById({
+      id,
+      caller,
+    })
+
+    if (result.error) {
+      if (result.error === "wrong_parameters") {
+        this.setStatus(400)
+      } else if (result.error === "not_found") {
+        this.setStatus(404)
+      } else {
+        this.setStatus(result.status || 500)
+      }
+    }
+
+    return result
+  }
+
+  /**
+   * Get one pe job identified by it's id
+   * @param {string} id the id the pe job looked for.
+   * @param {string} caller the consumer id.
+   * @returns {Promise<IApiError | { matchas: ILbaItem[] }>} response
+   */
+  @Response<"Wrong parameters">(400)
+  @Response<"Job not found">(404)
+  @Response<"Internal error">(500)
+  @SuccessResponse("200", "Get job success")
+  @Get("/job/{id}")
+  @OperationId("getPeJob")
+  public async getPeJob(@Path() id: string, @Query() caller?: string): Promise<IApiError | { peJobs: ILbaItem[] }> {
+    console.log(caller, id)
+    const result = await getPeJobFromId({
       id,
       caller,
     })

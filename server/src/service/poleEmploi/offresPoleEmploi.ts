@@ -3,7 +3,7 @@ import distance from "@turf/distance"
 import axios from "axios"
 import { NIVEAUX_POUR_OFFRES_PE } from "../../common/constants.js"
 import { roundDistance } from "../../common/geolib.js"
-import { manageApiError } from "../../common/utils/errorManager.js"
+import { IApiError, manageApiError } from "../../common/utils/errorManager.js"
 import { trackApiCall } from "../../common/utils/sendTrackingEvent.js"
 import { itemModel } from "../../model/itemModel.js"
 import { filterJobsByOpco } from "../../services/opco.service.js"
@@ -268,7 +268,7 @@ const getPeJobs = async ({ romes, insee, radius, jobLimit, caller, diploma, api 
   }
 }
 
-const getPeJobFromId = async ({ id, caller }) => {
+const getPeJobFromId = async ({ id, caller }): IApiError | { peJobs: ILbaItem[] } => {
   try {
     const token = await getAccessToken("pe")
     const headers = peApiHeaders
