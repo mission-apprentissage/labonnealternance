@@ -74,7 +74,7 @@ const transformMatchaJobsForIdea = ({ jobs, caller, matchaApplicationCountByJob 
   return resultJobs
 }
 
-const getMatchaJobById = async ({ id, caller }) => {
+const getMatchaJobById = async ({ id, caller }): IApiError | { matchas: ILbaItem[] } => {
   try {
     let jobs = null
     if (id === "id-matcha-test") {

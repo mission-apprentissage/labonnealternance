@@ -1,6 +1,5 @@
 // @ts-nocheck
 import express from "express"
-import { getMatchaJobById } from "../../service/matcha.js"
 import { getJobsQuery, getPeJobQuery } from "../../service/poleEmploi/jobsAndCompanies.js"
 import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
 
@@ -27,28 +26,6 @@ export default function () {
       const result = await getPeJobQuery({
         id: req.params.id,
         referer: req.headers.referer,
-        caller: req.query.caller,
-      })
-
-      if (result.error) {
-        if (result.error === "wrong_parameters") {
-          res.status(400)
-        } else if (result.error === "not_found") {
-          res.status(404)
-        } else {
-          res.status(result.status || 500)
-        }
-      }
-
-      return res.json(result)
-    })
-  )
-
-  router.get(
-    "/matcha/:id",
-    tryCatch(async (req, res) => {
-      const result = await getMatchaJobById({
-        id: req.params.id,
         caller: req.query.caller,
       })
 
