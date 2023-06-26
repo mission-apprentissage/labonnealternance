@@ -53,14 +53,17 @@ export const checkAwaitingCompaniesValidation = async ({ mailer }) => {
       return
     }
 
+    // Extract SIREN from SIRET
     const siren = etp.establishment_siret.substr(0, 9)
 
+    // Get all matching entries from internal dictionnaires
     const [bonneBoiteLegacyList, bonneBoiteList, referentielOpcoList] = await Promise.all([
       getAllEstablishmentFromBonneBoiteLegacy({ siret: { $regex: siren }, email: { $nin: ["", undefined] } }),
       getAllEstablishmentFromBonneBoite({ siret: { $regex: siren }, email: { $nin: ["", undefined] } }),
       getAllEstablishmentFromOpcoReferentiel({ siret_code: { $regex: siren } }),
     ])
 
+    // Tranform into single array of emails
     const [bonneBoiteLegacyEmailList, bonneBoiteEmailList, referentielOpcoEmailList] = await Promise.all([
       bonneBoiteLegacyList.map(({ email }) => email),
       bonneBoiteList.map(({ email }) => email),
@@ -76,6 +79,7 @@ export const checkAwaitingCompaniesValidation = async ({ mailer }) => {
     // Check BAL API for validation
     const balControl = await validationOrganisation(etp.establishment_siret, etp.email)
 
+    // Control based on data available
     if (balControl.is_valid) {
       await autoValidateUser(etp._id)
       stat.validated++
@@ -101,18 +105,12 @@ export const checkAwaitingCompaniesValidation = async ({ mailer }) => {
     }
 
     if (hasBeenValidated) {
-      /**
-       * - activate offer
-       * - update expiration date to one month later
-       * - send email to delegation if available
-       * - send welcome email
-       * - validate email check
-       */
-
-      const userFormulaire = await getFormulaire({ establishment_id: etp.establishment_id })
+      // Get job and update it's expiration date
       const job = Object.assign(userFormulaire.jobs[0], { job_status: "Active", job_expiration_date: dayjs().add(1, "month").format("YYYY-MM-DD") })
+      // save job
       await updateOffre(job._id, job)
 
+      // Send delegation if any
       if (job?.delegations && job?.delegations.length) {
         await Promise.all(
           job.delegations.map(
@@ -140,15 +138,15 @@ export const checkAwaitingCompaniesValidation = async ({ mailer }) => {
         )
       }
 
-      // validate user email addresse
+      // Validate user email addresse
       await updateUser({ _id: etp._id }, { is_email_checked: true })
 
-      // get magiclink url
+      // Get magiclink url
       const magiclink = `${config.publicUrlEspacePro}/authentification/verification?token=${createMagicLinkToken(etp.email)}`
 
       const { email, last_name, first_name, establishment_raison_sociale, type } = etp
 
-      // send welcome email to user
+      // Send welcome email to user
       await mailer.sendEmail({
         to: email,
         subject: "Bienvenue sur La bonne alternance",
