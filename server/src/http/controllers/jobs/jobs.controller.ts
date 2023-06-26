@@ -385,8 +385,8 @@ export class JobsController extends Controller {
   @OperationId("getJobOpportunities")
   public async getJobOpportunities(
     @Header() @Hidden() referer: string,
+    @Query() romes: string,
     @Query() caller?: string,
-    @Query() romes?: string,
     @Query() latitude?: string,
     @Query() longitude?: string,
     @Query() radius?: number,
@@ -397,9 +397,6 @@ export class JobsController extends Controller {
     @Query() opcoUrl?: string,
     @Query() @Hidden() useMock?: string
   ): Promise<IApiError | { lbbCompanies: ILbaItem[] } | { lbaCompanies: ILbaItem[] }> {
-
-    console.log("ICI : ",romes)
-
     const result = await getJobsQuery({ romes, caller, referer, latitude, longitude, radius, insee, sources, diploma, opco, opcoUrl, useMock })
 
     if (result.error) {
