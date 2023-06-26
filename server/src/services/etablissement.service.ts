@@ -1,5 +1,4 @@
 import axios, { AxiosResponse } from "axios"
-import { etat_etablissements } from "../common/constants.js"
 import { BonneBoiteLegacy, BonnesBoites, Etablissement, ReferentielOpco, UserRecruteur } from "../common/model/index.js"
 import { IBonneBoite } from "../common/model/schema/bonneboite/bonneboite.types.js"
 import { IEtablissement } from "../common/model/schema/etablissements/etablissement.types.js"
@@ -8,7 +7,17 @@ import { IUserRecruteur } from "../common/model/schema/userRecruteur/userRecrute
 import { sentryCaptureException } from "../common/utils/sentryUtils.js"
 import config from "../config.js"
 
-import { IAPIAdresse, IAPIEtablissement, ICFADock, IEtablissementCatalogue, IEtablissementGouv, IReferentiel, ISIRET2IDCC } from "./etablissement.service.types.js"
+import {
+  IAPIAdresse,
+  IAPIEtablissement,
+  ICFADock,
+  IEtablissementCatalogue,
+  IEtablissementGouv,
+  IFormatAPIEntreprise,
+  IFormatAPIReferentiel,
+  IReferentiel,
+  ISIRET2IDCC,
+} from "./etablissement.service.types.js"
 import { IRecruiter } from "../common/model/schema/recruiter/recruiter.types.js"
 import { Filter } from "mongodb"
 
@@ -331,24 +340,6 @@ export const getMatchingDomainFromContactList = (email: string, emailList: strin
   return emailList.some((e) => e.includes(domain))
 }
 
-interface IFormatAPIEntreprise
-  extends Pick<
-    IRecruiter,
-    | "establishment_enseigne"
-    | "establishment_siret"
-    | "establishment_raison_sociale"
-    | "address_detail"
-    | "address"
-    | "naf_code"
-    | "naf_label"
-    | "establishment_size"
-    | "establishment_creation_date"
-  > {
-  establishment_state: string
-  contacts: object[]
-  qualiopi?: boolean
-  geo_coordinates?: string
-}
 /**
  * @description Format Entreprise data
  * @param {IEtablissementGouv} data
@@ -360,21 +351,14 @@ export const formatEntrepriseData = (d: IEtablissementGouv): IFormatAPIEntrepris
   establishment_siret: d.siret,
   establishment_raison_sociale: d.unite_legale.personne_morale_attributs.raison_sociale,
   address_detail: d.adresse,
-  address: `${d.adresse.l4 ?? ""} ${d.adresse.code_postal} ${d.adresse.localite}`,
-  // rue: d.adresse.l4,
-  // commune: d.adresse.localite,
-  // code_postal: d.adresse.code_postal,
+  address: `${d.adresse.acheminement_postal.l4} ${d.adresse.acheminement_postal.l6}`,
   contacts: [], // conserve la coherence avec l'UI
   naf_code: d.activite_principale.code,
   naf_label: d.activite_principale.libelle,
   establishment_size: getEffectif(d.unite_legale.tranche_effectif_salarie.code),
   establishment_creation_date: new Date(d.unite_legale.date_creation * 1000).toISOString(),
 })
-interface IFormatAPIReferentiel
-  extends Pick<IUserRecruteur, "establishment_raison_sociale" | "establishment_siret" | "is_qualiopi" | "address_detail" | "geo_coordinates" | "address"> {
-  establishment_state: string
-  contacts: object[]
-}
+
 /**
  * @description Format Referentiel data
  * @param {IReferentiel} d
@@ -388,9 +372,6 @@ export const formatReferentielData = (d: IReferentiel): IFormatAPIReferentiel =>
   contacts: d.contacts,
   address_detail: d.adresse,
   address: d.adresse?.label,
-  // rue: d.adresse?.label?.split(`${d.adresse?.code_postal}`)[0].trim() || d.lieux_de_formation[0].adresse.label.split(`${d.lieux_de_formation[0].adresse.code_postal}`)[0].trim(),
-  // commune: d.adresse?.localite || d.lieux_de_formation[0].adresse.localite,
-  // code_postal: d.adresse?.code_postal || d.lieux_de_formation[0].adresse.code_postal,
   geo_coordinates: d.adresse
     ? `${d.adresse?.geojson.geometry.coordinates[1]},${d.adresse?.geojson.geometry.coordinates[0]}`
     : `${d.lieux_de_formation[0].adresse.geojson?.geometry.coordinates[0]},${d.lieux_de_formation[0].adresse.geojson?.geometry.coordinates[1]}`,

@@ -34,6 +34,7 @@ import { siretSchema } from "../utils/validators.js"
 import { IUserRecruteur } from "../../common/model/schema/userRecruteur/userRecruteur.types.js"
 import { IRecruiter } from "../../common/model/schema/recruiter/recruiter.types.js"
 import { updateUserValidationHistory, getUser, createUser, updateUser, getUserValidationState, registerUser } from "../../services/userRecruteur.service.js"
+import { IAdresseV3 } from "../../common/model/schema/_shared/shared.types.js"
 
 const getCfaRomeSchema = joi.object({
   latitude: joi.number().required(),

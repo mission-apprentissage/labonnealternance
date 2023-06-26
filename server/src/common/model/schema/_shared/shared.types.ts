@@ -19,6 +19,16 @@ interface IProperties {
   source: string
 }
 
+interface AcheminementPostal {
+  l1: string // raison_social | enseigne
+  l2: string
+  l3: string // lieu dit
+  l4: string // numéro et rue
+  l5: string
+  l6: string // code postal et ville
+  l7: string // pays
+}
+
 interface IAdresseCFA {
   academie: Academie
   code_insee: string
@@ -28,16 +38,10 @@ interface IAdresseCFA {
   label: string
   localite: string
   region: Academie
+  acheminement_postal?: AcheminementPostal
 }
 
-interface IAdresseV2 {
-  l1: string // raison_social | enseigne
-  l2: null
-  l3: string // lieu dit
-  l4: string // numéro et rue
-  l5: null
-  l6: string // code postal et ville
-  l7: string // pays
+interface IAdresseV2 extends AcheminementPostal {
   numero_voie: string
   type_voie: string
   nom_voie: string
@@ -46,6 +50,7 @@ interface IAdresseV2 {
   localite: string
   code_insee_localite: string
   cedex: null
+  acheminement_postal?: AcheminementPostal
 }
 
 interface IAdresseV3 {
@@ -64,17 +69,11 @@ interface IAdresseV3 {
   libelle_cedex: string
   code_pays_etranger: string
   libelle_pays_etranger: string
-  acheminement_postal: AcheminementPostal
+  acheminement_postal?: AcheminementPostal
 }
 
-interface AcheminementPostal {
-  l1: string
-  l2: string
-  l3: string
-  l4: string
-  l5: string
-  l6: string
-  l7: string
-}
+declare function getAddressInterface(): IAdresseCFA | IAdresseV2 | IAdresseV3
 
-export { IAdresseV2, IAdresseV3, IAdresseCFA }
+type IGlobalAddress = IAdresseCFA | IAdresseV2 | IAdresseV3
+
+export { IAdresseV2, IAdresseV3, IAdresseCFA, IGlobalAddress, getAddressInterface }

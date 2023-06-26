@@ -18,13 +18,13 @@ runScript(async () => {
 
     try {
       await delay(500)
-      const { etablissement } = await getEtablissementFromGouv(user.establishment_siret)
+      const { data } = await getEtablissementFromGouv(user.establishment_siret)
       const formulaire: any = await Recruiter.findOne({ establishment_id: user.establishment_id })
 
-      if (!etablissement) return
+      if (!data) return
 
-      user.address_detail = etablissement.adresse
-      formulaire.address_detail = etablissement.adresse
+      user.address_detail = data.adresse
+      formulaire.address_detail = data.adresse
 
       await Promise.all([user.save(), formulaire.save()])
     } catch (error) {

@@ -1,5 +1,30 @@
-import { IAdresseCFA, IAdresseV2, IAdresseV3, IGlobalAdress } from "../common/model/schema/_shared/shared.types.js"
+import { IAdresseCFA, IAdresseV3, IGlobalAddress } from "../common/model/schema/_shared/shared.types.js"
+import { IRecruiter } from "../common/model/schema/recruiter/recruiter.types.js"
+import { IUserRecruteur } from "../common/model/schema/userRecruteur/userRecruteur.types.js"
 
+export interface IFormatAPIReferentiel
+  extends Pick<IUserRecruteur, "establishment_raison_sociale" | "establishment_siret" | "is_qualiopi" | "address_detail" | "geo_coordinates" | "address"> {
+  establishment_state: string
+  contacts: object[]
+}
+export interface IFormatAPIEntreprise
+  extends Pick<
+    IRecruiter,
+    | "establishment_enseigne"
+    | "establishment_siret"
+    | "establishment_raison_sociale"
+    | "address_detail"
+    | "address"
+    | "naf_code"
+    | "naf_label"
+    | "establishment_size"
+    | "establishment_creation_date"
+  > {
+  establishment_state: string
+  contacts: object[]
+  qualiopi?: boolean
+  geo_coordinates?: string
+}
 export interface IAPIEtablissement {
   data: IEtablissementGouv
   links: ILinks
@@ -18,7 +43,7 @@ export interface IEtablissementGouv {
   status_diffusion: string
   date_creation: number
   unite_legale: IUniteLegale
-  adresse: IGlobalAdress //IAdresseV3
+  adresse: IAdresseV3
 }
 
 interface IActivitePrincipale {
@@ -93,24 +118,6 @@ interface IMetaAPIEtablissement {
   redirect_from_siret: any
 }
 
-export interface IImplantation {
-  code: string
-  value: string
-}
-
-export interface IEtatAdministratif {
-  value: string
-  date_fermeture: null
-}
-
-export interface ITrancheEffectifSalarieEtablissement {
-  de: number
-  a: number
-  code: string
-  date_reference: string
-  intitule: string
-}
-
 export interface IReferentiel {
   siret: string
   _meta: IMetaReferentiel
@@ -133,7 +140,7 @@ export interface IReferentiel {
   uai: string
 }
 
-export interface IMetaReferentiel {
+interface IMetaReferentiel {
   anomalies: Anomaly[]
   date_import: Date
   date_dernier_import: Date
@@ -142,7 +149,7 @@ export interface IMetaReferentiel {
   nouveau: boolean
 }
 
-export interface Anomaly {
+interface Anomaly {
   key: string
   type: string
   details: string
@@ -151,7 +158,7 @@ export interface Anomaly {
   date_collecte: Date
 }
 
-export interface ICertification {
+interface ICertification {
   type: string
   code: string
   label: string
@@ -160,19 +167,19 @@ export interface ICertification {
   niveau?: string
 }
 
-export interface IContact {
+interface IContact {
   email: string
   confirmé: boolean
   sources: string[]
   date_collecte: Date
 }
 
-export interface IFormeJuridique {
+interface IFormeJuridique {
   code: string
   label: string
 }
 
-export interface ILieuxDeFormation {
+interface ILieuxDeFormation {
   code: string
   adresse?: IAdresseCFA
   sources: string[]
@@ -180,7 +187,7 @@ export interface ILieuxDeFormation {
   label?: string
 }
 
-export interface IUaiPotentiel {
+interface IUaiPotentiel {
   uai: string
   sources: string[]
   date_collecte: Date
@@ -300,18 +307,18 @@ export interface IAPIAdresse {
   limit: number
 }
 
-export interface IFeature {
+interface IFeature {
   type: string
   geometry: IGeometry
   properties: IProperties
 }
 
-export interface IGeometry {
+interface IGeometry {
   type: string
   coordinates: number[]
 }
 
-export interface IProperties {
+interface IProperties {
   label: string
   score: number
   housenumber: string
@@ -339,7 +346,7 @@ export interface ICFADock {
   url: string
 }
 
-export interface IFilters {
+interface IFilters {
   idcc: null
   siret: string
 }
@@ -349,7 +356,7 @@ export interface ISIRET2IDCC {
   siret: string
 }
 
-export interface IConvention {
+interface IConvention {
   active: boolean
   date_publi?: Date
   effectif?: number

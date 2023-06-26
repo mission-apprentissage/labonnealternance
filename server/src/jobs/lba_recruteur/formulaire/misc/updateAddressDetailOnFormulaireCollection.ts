@@ -17,11 +17,11 @@ runScript(async () => {
     logger.info(`${index}/${formulaires.length} - ${formulaire.cfa_delegated_siret ? "delegate" : "entreprise"}`)
     try {
       await delay(500)
-      const { etablissement } = await getEtablissementFromGouv(formulaire.establishment_siret)
+      const { data } = await getEtablissementFromGouv(formulaire.establishment_siret)
 
-      if (!etablissement) return
+      if (!data) return
 
-      formulaire.address_detail = etablissement.adresse
+      formulaire.address_detail = data.adresse
 
       await formulaire.save()
     } catch (error) {
