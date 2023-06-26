@@ -233,7 +233,7 @@ const getLbbCompanies = async ({ romes, latitude, longitude, radius, companyLimi
   }
 }
 
-const getCompanyFromSiret = async ({ siret, referer, caller, type }) => {
+const getCompanyFromSiret = async ({ siret, referer, caller, type }): IApiError | { lbbCompanies: ILbaItem[] } | { lbaCompanies: ILbaItem[] } => {
   try {
     const bonneBoite = await BonnesBoites.findOne({ siret })
 
