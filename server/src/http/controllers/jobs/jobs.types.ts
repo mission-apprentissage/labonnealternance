@@ -13,11 +13,11 @@ export type TJob = {
   job_duration: number
   job_type: string[]
   is_disabled_elligible: boolean
-  job_count: number
-  job_rythm: string
+  job_count?: number
+  job_rythm?: string
   job_start_date: string
   job_employer_description?: string
-  job_description: string
+  job_description?: string
 }
 
 export interface ICreateJobBody extends TJob {
@@ -33,6 +33,7 @@ export interface IGetDelegation {
   nom_departement: string
   entreprise_raison_sociale: string
   geo_coordonnees: string
+  distance_en_km: string
 }
 export interface ICreateDelegation {
   establishmentIds: string[]

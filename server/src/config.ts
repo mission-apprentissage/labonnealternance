@@ -24,6 +24,7 @@ const config = {
   },
   apiKey: env.get("LBA_API_KEY").default("12345").asString(), //TODO: check usefulness
   laBonneFormationPassword: env.get("LBA_LABONNEFORMATION_PASSWORD").default("12345").asString(),
+  laBonneFormationApiUrl: "https://labonneformation.pole-emploi.fr",
   catalogueUrl: env.get("LBA_CATALOGUE_URL").default("https://catalogue-apprentissage.intercariforef.org").asString(),
   matcha: {
     apiKey: env.get("LBA_MATCHA_ACCESS_KEY").default("1234").asString(),

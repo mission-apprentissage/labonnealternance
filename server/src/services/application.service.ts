@@ -18,6 +18,7 @@ import { IBonneBoite } from "../common/model/schema/bonneboite/bonneboite.types.
 
 import { Document } from "mongoose"
 import Joi from "joi"
+import { scan } from "./clamav.service.js"
 
 const publicUrl = config.publicUrl
 const publicUrlEspacePro = config.publicUrlEspacePro
@@ -119,13 +120,12 @@ export const removeEmailFromBonnesBoites = async (email: string) => {
 
 /**
  * @description Send an application email to a company and a confirmation email to the applicant
- * @param {any} scan
  * @param {any} query
  * @param {string} referer
  * @param {boolean} shouldCheckSecret
  * @return {Promise<any>}
  */
-export const sendApplication = async ({ scan, query, referer, shouldCheckSecret }: { scan: any; query: any; referer: string; shouldCheckSecret: boolean }): Promise<any> => {
+export const sendApplication = async ({ query, referer, shouldCheckSecret }: { query: any; referer: string; shouldCheckSecret: boolean }): Promise<any> => {
   if (shouldCheckSecret && !query.secret) {
     return { error: "secret_missing" }
   } else if (shouldCheckSecret && query.secret !== config.secretUpdateRomesMetiers) {
@@ -145,7 +145,7 @@ export const sendApplication = async ({ scan, query, referer, shouldCheckSecret 
       return { error: validationResult }
     }
 
-    validationResult = await scanFileContent(query, scan)
+    validationResult = await scanFileContent(query)
 
     if (validationResult !== "ok") {
       return { error: validationResult }
@@ -426,10 +426,9 @@ export const validateSendApplication = async (validable: Partial<IApplicationPar
 /**
  * @description checks if attachment is corrupted
  * @param {Partial<IApplicationParameters>} validable
- * @param {any} scan
  * @return {Promise<string>}
  */
-const scanFileContent = async (validable: Partial<IApplicationParameters>, scan: any): Promise<string> => {
+const scanFileContent = async (validable: Partial<IApplicationParameters>): Promise<string> => {
   return (await scan(validable.applicant_file_content)) ? "pièce jointe invalide" : "ok"
 }
 

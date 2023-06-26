@@ -11,6 +11,7 @@ import {
   validateRomeOrDomain,
 } from "./queryValidators.js"
 
+//TODO: remplacer par joi validateAsync
 const formationsQueryValidator = (query) => {
   const error_messages = []
 

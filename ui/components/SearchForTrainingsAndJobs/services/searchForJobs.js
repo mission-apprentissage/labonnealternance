@@ -86,10 +86,7 @@ export const searchForJobsFunction = async ({
       //TODO: définition niveau d'erreur JOB total
       setAllJobSearchError(true)
       jobErrorMessage = allJobSearchErrorText
-      logError(
-        "Job Search Error",
-        `All job sources in error. PE : ${response.data.peJobs.message} - LBA : ${response.data.lbaCompanies.message}`
-      )
+      logError("Job Search Error", `All job sources in error. PE : ${response.data.peJobs.message} - LBA : ${response.data.lbaCompanies.message}`)
     } else {
       if (
         response.data.peJobs.result === "error" ||

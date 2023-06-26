@@ -140,14 +140,16 @@ const LbbCompany = ({ company, handleSelectItem, showTextOnly, searchForTraining
           </Box>
 
           <Box as="span" fontSize="12px" color="grey.600" pt={1}>
-            {company.place.distance && <Text display="flex" >{company.place.distance} km(s) du lieu de recherche</Text>}
+            {company.place.distance && <Text display="flex">{company.place.distance} km(s) du lieu de recherche</Text>}
             {!showTextOnly && (
               <Flex mt={4} alignItems="center">
                 <Flex alignItems="center">
                   <Image mr={1} src={eclair} alt="" />
-                  <Text color="#0063CB" display="flex" fontSize="12px" whiteSpace="nowrap" mr={2}>{company.applicationCount} candidature(s)</Text>
+                  <Text color="#0063CB" display="flex" fontSize="12px" whiteSpace="nowrap" mr={2}>
+                    {company.applicationCount} candidature(s)
+                  </Text>
                 </Flex>
-                
+
                 <Text ml="auto" display={["none", "none", "block"]}>
                   <Button variant="knowMore" aria-label="Accéder au détail de l'entreprise">
                     En savoir plus
