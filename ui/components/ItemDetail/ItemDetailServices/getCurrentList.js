@@ -8,16 +8,16 @@ export default function getCurrentList({ store, activeFilter, extendedSearch }) 
   let companyList = []
   let partnerList = []
 
-  if (["all", "duo"].includes(activeFilter)) {
+  if ("duo" === activeFilter) {
     partnerList = jobs?.matchas?.length ? jobs.matchas.filter((job) => job.company?.mandataire) : []
   }
 
   if (["all", "jobs"].includes(activeFilter)) {
     if (extendedSearch) {
-      jobList = mergeOpportunities({ jobs })
+      jobList = mergeOpportunities({ jobs, activeFilter })
     } else {
-      jobList = mergeJobs(jobs)
-      companyList = mergeOpportunities({ jobs, onlyLbbLbaCompanies: "onlyLbbLba" })
+      jobList = mergeJobs({ jobs, activeFilter })
+      companyList = mergeOpportunities({ jobs, activeFilter, onlyLbbLbaCompanies: "onlyLbbLba" })
     }
   }
   let fullList = trainingsArray.concat(jobList).concat(companyList).concat(partnerList)

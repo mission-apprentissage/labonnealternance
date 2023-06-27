@@ -160,7 +160,7 @@ const ResultLists = ({
     if (partnerJobs.length) {
       return (
         <>
-          {mergedJobs.map((job, idx) => {
+          {partnerJobs.map((job, idx) => {
             return renderJob(isTestMode, idx, job, handleSelectItem, searchForTrainingsOnNewCenter)
           })}
         </>
@@ -171,7 +171,7 @@ const ResultLists = ({
   }
 
   const getJobList = () => {
-    const mergedJobs = mergeJobs(jobs)
+    const mergedJobs = mergeJobs({ jobs, activeFilter })
     if (mergedJobs.length) {
       return (
         <>
@@ -184,7 +184,7 @@ const ResultLists = ({
   }
 
   const getLbbCompanyList = () => {
-    const mergedLbaLbbCompanies = mergeOpportunities({ jobs, onlyLbbLbaCompanies: "onlyLbbLba" })
+    const mergedLbaLbbCompanies = mergeOpportunities({ jobs, activeFilter, onlyLbbLbaCompanies: "onlyLbbLba" })
     if (mergedLbaLbbCompanies.length) {
       return (
         <>
@@ -198,7 +198,7 @@ const ResultLists = ({
 
   // retourne le bloc construit des items lbb, lba, matcha et pe triés par ordre de distance
   const getMergedJobList = () => {
-    const mergedOpportunities = mergeOpportunities({ jobs })
+    const mergedOpportunities = mergeOpportunities({ jobs, activeFilter })
 
     if (mergedOpportunities.length) {
       return (
