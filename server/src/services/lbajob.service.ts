@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { encryptMailWithIV } from "../common/utils/encryptString.js"
 import { IApiError, manageApiError } from "../common/utils/errorManager.js"
 import { trackApiCall } from "../common/utils/sendTrackingEvent.js"
@@ -57,7 +56,7 @@ export const getLbaJobs = async ({
 
     const distance = hasLocation ? radius || 10 : 21000
 
-    const params = {
+    const params: any = {
       romes: romes.split(","),
       distance,
       lat: hasLocation ? latitude : coordinatesOfFrance[1],
@@ -70,7 +69,7 @@ export const getLbaJobs = async ({
 
     const jobs = useMock === "true" ? matchasMock : await getJobsFromElasticSearch(params)
 
-    const ids = jobs.map(({ _source }) => _source.jobs.map(({ _id }) => _id)).flat()
+    const ids: string[] = jobs.map(({ _source }) => _source.jobs.map(({ _id }) => _id)).flat()
 
     const applicationCountByJob = await getApplicationByJobCount(ids)
 
@@ -118,7 +117,13 @@ const transformLbaJobs = ({ jobs, caller, applicationCountByJob }: { jobs: IRecr
   return resultJobs
 }
 
-export const getLbaJobById = async ({ id, caller }): IApiError | { matchas: ILbaItem[] } => {
+/**
+ * Retourne une offre LBA identifiée par son id
+ * @param {string} id l'identifiant mongo de l'offre LBA
+ * @param {string} caller optionnel. l'identifiant de l'utilisateur de l'api
+ * @return {Promise<IApiError | { matchas: ILbaItem[] }>}
+ */
+export const getLbaJobById = async ({ id, caller }: { id: string; caller: string }): Promise<IApiError | { matchas: ILbaItem[] }> => {
   try {
     let jobs = null
     if (id === "id-matcha-test") {
