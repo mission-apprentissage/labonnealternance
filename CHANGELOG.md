@@ -1,3 +1,10 @@
+# [1.42.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.41.0...v1.42.0) (2023-06-27)
+
+
+### Features
+
+* move sendinblue service to brevo services ([#452](https://github.com/mission-apprentissage/labonnealternance/issues/452)) ([ffdec23](https://github.com/mission-apprentissage/labonnealternance/commit/ffdec231fec8736687bfa68791db4c6a01f9a0de))
+
 # [1.41.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.40.1...v1.41.0) (2023-06-27)
 
 
