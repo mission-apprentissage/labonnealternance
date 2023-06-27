@@ -3,17 +3,17 @@ import { encryptMailWithIV } from "../common/utils/encryptString.js"
 import { IApiError, manageApiError } from "../common/utils/errorManager.js"
 import { trackApiCall } from "../common/utils/sendTrackingEvent.js"
 import { itemModel } from "../model/itemModel.js"
-import { filterJobsByOpco } from "../services/opco.service.js"
+import { filterJobsByOpco } from "./opco.service.js"
 
 const coordinatesOfFrance = [2.213749, 46.227638]
 
 import { NIVEAUX_POUR_LBA } from "../common/constants.js"
 import { roundDistance } from "../common/geolib.js"
 import { matchaMock, matchaMockMandataire, matchasMock } from "../mocks/matchas-mock.js"
-import { getOffreAvecInfoMandataire, getJobsFromElasticSearch } from "../services/formulaire.service.js"
-import { getApplicationByJobCount } from "../services/application.service.js"
+import { getOffreAvecInfoMandataire, getJobsFromElasticSearch } from "./formulaire.service.js"
+import { getApplicationByJobCount } from "./application.service.js"
 
-const getMatchaJobs = async ({ romes, radius, latitude, longitude, api, opco, opcoUrl, diploma, caller, useMock }) => {
+export const getLbaJobs = async ({ romes, radius, latitude, longitude, api, opco, opcoUrl, diploma, caller, useMock }) => {
   try {
     const hasLocation = latitude === "" || latitude === undefined ? false : true
 
@@ -36,7 +36,7 @@ const getMatchaJobs = async ({ romes, radius, latitude, longitude, api, opco, op
 
     const matchaApplicationCountByJob = await getApplicationByJobCount(ids)
 
-    const matchas = transformMatchaJobsForIdea({ jobs, caller, matchaApplicationCountByJob })
+    const matchas = transformLbaJobs({ jobs, caller, matchaApplicationCountByJob })
 
     // filtrage sur l'opco
     if (opco || opcoUrl) {
@@ -44,7 +44,7 @@ const getMatchaJobs = async ({ romes, radius, latitude, longitude, api, opco, op
     }
 
     if (!hasLocation) {
-      sortMatchas(matchas)
+      sortLbaJobs(matchas)
     }
 
     return matchas
@@ -54,14 +54,14 @@ const getMatchaJobs = async ({ romes, radius, latitude, longitude, api, opco, op
 }
 
 // update du contenu avec des résultats pertinents par rapport au rayon
-const transformMatchaJobsForIdea = ({ jobs, caller, matchaApplicationCountByJob }) => {
+const transformLbaJobs = ({ jobs, caller, matchaApplicationCountByJob }) => {
   const resultJobs = {
     results: [],
   }
 
   if (jobs && jobs.length) {
     for (let i = 0; i < jobs.length; ++i) {
-      const companyJobs = transformMatchaJobForIdea({
+      const companyJobs = transformLbaJob({
         job: jobs[i]._source,
         distance: jobs[i].sort[0],
         matchaApplicationCountByJob,
@@ -74,7 +74,7 @@ const transformMatchaJobsForIdea = ({ jobs, caller, matchaApplicationCountByJob 
   return resultJobs
 }
 
-const getMatchaJobById = async ({ id, caller }): IApiError | { matchas: ILbaItem[] } => {
+export const getLbaJobById = async ({ id, caller }): IApiError | { matchas: ILbaItem[] } => {
   try {
     let jobs = null
     if (id === "id-matcha-test") {
@@ -87,7 +87,7 @@ const getMatchaJobById = async ({ id, caller }): IApiError | { matchas: ILbaItem
 
     const matchaApplicationCountByJob = await getApplicationByJobCount([id])
 
-    const job = transformMatchaJobForIdea({
+    const job = transformLbaJob({
       job: jobs,
       caller,
       matchaApplicationCountByJob,
@@ -104,7 +104,7 @@ const getMatchaJobById = async ({ id, caller }): IApiError | { matchas: ILbaItem
 }
 
 // Adaptation au modèle Idea et conservation des seules infos utilisées des offres
-const transformMatchaJobForIdea = ({ job, distance, caller, matchaApplicationCountByJob }) => {
+const transformLbaJob = ({ job, distance, caller, matchaApplicationCountByJob }) => {
   const resultJobs = []
 
   job.jobs.map((offre, idx) => {
@@ -166,7 +166,7 @@ const transformMatchaJobForIdea = ({ job, distance, caller, matchaApplicationCou
   return resultJobs
 }
 
-const sortMatchas = (matchas) => {
+const sortLbaJobs = (matchas) => {
   matchas.results.sort((a, b) => {
     if (a?.title?.toLowerCase() < b?.title?.toLowerCase()) {
       return -1
@@ -185,5 +185,3 @@ const sortMatchas = (matchas) => {
     return 0
   })
 }
-
-export { getMatchaJobById, getMatchaJobs }
