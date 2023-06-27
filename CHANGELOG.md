@@ -1,3 +1,10 @@
+# [1.41.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.40.1...v1.41.0) (2023-06-27)
+
+
+### Features
+
+* merge jobs route  ([#467](https://github.com/mission-apprentissage/labonnealternance/issues/467)) ([8208697](https://github.com/mission-apprentissage/labonnealternance/commit/8208697261d2bf82848b86f0acfa6b8df58b6f3f))
+
 ## [1.40.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.40.0...v1.40.1) (2023-06-26)
 
 
