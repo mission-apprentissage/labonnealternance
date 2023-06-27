@@ -7,6 +7,7 @@ import { IApiError, manageApiError } from "../../common/utils/errorManager.js"
 import { trackApiCall } from "../../common/utils/sendTrackingEvent.js"
 import { itemModel } from "../../model/itemModel.js"
 import { filterJobsByOpco } from "../../services/opco.service.js"
+import { ILbaItem } from "../../services/lbaitem.shared.service.types.js"
 
 //const poleEmploi = require("./common.js");
 import { getAccessToken, getRoundedRadius, peApiHeaders } from "./common.js"
