@@ -190,7 +190,7 @@ export default () => {
       }
 
       await patchOffre(jobId, {
-        delegations: jobFound.delegations.map((delegation) => {
+        delegations: offre.delegations.map((delegation) => {
           // Save the date of the first read of the company detail
           if (delegation.siret_code === delegationFound.siret_code && !delegation.cfa_read_company_detail_at) {
             return {
