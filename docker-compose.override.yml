@@ -48,8 +48,6 @@ services:
     restart: unless-stopped
     ports:
       - "27017:27017"
-    volumes:
-      - lba_mongodb_data:/data:z
     networks:
       - lba_network
 
