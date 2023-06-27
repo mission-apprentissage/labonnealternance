@@ -3,7 +3,7 @@ import Joi from "joi"
 import passport from "passport"
 import { Strategy as LocalAPIKeyStrategy } from "passport-localapikey"
 import { logger } from "../../../common/logger.js"
-import { SendinblueEventStatus } from "../../../common/sendinblue.js"
+import { BrevoEventStatus } from "../../../services/brevo.service.js"
 import { dayjs } from "../../../common/utils/dayjs.js"
 import config from "../../../config.js"
 import { addEmailToBlacklist } from "../../../services/application.service.js"
@@ -12,11 +12,11 @@ import * as eligibleTrainingsForAppointmentService from "../../../services/eligi
 import * as appointmentService from "../../../services/appointment.service.js"
 
 /**
- * @description Checks "Sendinblue" token.
+ * @description Checks "Brevo" token.
  * @return {NextFunction}
  */
 const checkWebhookToken = () => {
-  passport.use(new LocalAPIKeyStrategy({}, async (token, done) => done(null, config.smtp.sendinblueWebhookApiKey === token ? { apiKey: token } : false)))
+  passport.use(new LocalAPIKeyStrategy({}, async (token, done) => done(null, config.smtp.brevoWebhookApiKey === token ? { apiKey: token } : false)))
 
   return passport.authenticate("localapikey", { session: false, failWithError: true })
 }
@@ -65,7 +65,7 @@ export default ({ etablissements }) => {
         })
 
         // Disable eligibleTrainingsForAppointments in case of hard_bounce
-        if (parameters.event === SendinblueEventStatus.HARD_BOUNCE) {
+        if (parameters.event === BrevoEventStatus.HARD_BOUNCE) {
           const eligibleTrainingsForAppointmentsWithEmail = await eligibleTrainingsForAppointmentService.find({ cfa_recipient_email: appointment.cfa_recipient_email })
 
           await Promise.all(
