@@ -11,9 +11,47 @@ import { NIVEAUX_POUR_LBA } from "../common/constants.js"
 import { roundDistance } from "../common/geolib.js"
 import { matchaMock, matchaMockMandataire, matchasMock } from "../mocks/matchas-mock.js"
 import { getOffreAvecInfoMandataire, getJobsFromElasticSearch } from "./formulaire.service.js"
-import { getApplicationByJobCount } from "./application.service.js"
+import { getApplicationByJobCount, IApplicationCount } from "./application.service.js"
+import { ILbaItem } from "./lbaitem.shared.service.types.js"
+import { IRecruiter } from "../common/model/schema/recruiter/recruiter.types.js"
 
-export const getLbaJobs = async ({ romes, radius, latitude, longitude, api, opco, opcoUrl, diploma, caller, useMock }) => {
+/**
+ * Retourne les offres LBA correspondantes aux critères de recherche
+ * @param {string} romes une liste de codes romes séparée par des virgules
+ * @param {number} radius optionnel: le rayon de recherche pour une recherche centrée sur un point géographique
+ * @param {string} latitude optionnel: la latitude du centre de recherche
+ * @param {string} longitude optionnel: la longitude du centre de recherche
+ * @param {string} api le nom de l'api à des fins de traçage des actions
+ * @param {string} opco optionnel: le nom d'un opco pour ne retourner que les offres des sociétés affiliées à cet opco
+ * @param {string} opcoUrl optionnel: l'url d'un opco pour ne retourner que les offres des sociétés affiliées à cet opcoUrl
+ * @param {string} diploma optionnel: un fitre pour ne remonter ques les offres aboutissant à l'obtention du diplôme
+ * @param {string} caller optionnel: l'identifiant de l'utilisateur de l'api
+ * @param {string} useMock optionnel: un flag indiquant s'il faut retourner une valeur réelle ou une valeur mockée
+ * @returns {Promise<IApiError | { results: ILbaItem[] }>}
+ */
+export const getLbaJobs = async ({
+  romes,
+  radius,
+  latitude,
+  longitude,
+  api,
+  opco,
+  opcoUrl,
+  diploma,
+  caller,
+  useMock,
+}: {
+  romes: string
+  radius?: number
+  latitude?: string
+  longitude?: string
+  api: string
+  opco?: string
+  opcoUrl?: string
+  diploma?: string
+  caller?: string
+  useMock?: string
+}): Promise<IApiError | { results: ILbaItem[] }> => {
   try {
     const hasLocation = latitude === "" || latitude === undefined ? false : true
 
@@ -53,8 +91,14 @@ export const getLbaJobs = async ({ romes, radius, latitude, longitude, api, opco
   }
 }
 
-// update du contenu avec des résultats pertinents par rapport au rayon
-const transformLbaJobs = ({ jobs, caller, applicationCountByJob }) => {
+/**
+ * Converti les offres issues de l'elasticsearch ou de la mongo en objet de type ILbaItem
+ * @param {IRecruiter[]} jobs offres issues de l'elasticsearch ou de la mogon
+ * @param {string} caller l'identifiant de l'utilisateur de l'api
+ * @param {IApplicationCount[]} applicationCountByJob les décomptes de candidatures par identifiant d'offres
+ * @returns {ILbaItem[]}
+ */
+const transformLbaJobs = ({ jobs, caller, applicationCountByJob }: { jobs: IRecruiter[]; caller?: string; applicationCountByJob: IApplicationCount[] }): ILbaItem[] => {
   const resultJobs = {
     results: [],
   }
