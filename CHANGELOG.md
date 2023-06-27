@@ -1,3 +1,10 @@
+# [1.44.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.43.0...v1.44.0) (2023-06-27)
+
+
+### Features
+
+* déplacement service validation bal ([#456](https://github.com/mission-apprentissage/labonnealternance/issues/456)) ([c76b3d7](https://github.com/mission-apprentissage/labonnealternance/commit/c76b3d7dfd7cda23828e6f2052a4a5b4ee745d3b))
+
 # [1.43.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.42.0...v1.43.0) (2023-06-27)
 
 
