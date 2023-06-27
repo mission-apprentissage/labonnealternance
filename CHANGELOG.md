@@ -1,3 +1,10 @@
+# [1.45.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.44.0...v1.45.0) (2023-06-27)
+
+
+### Features
+
+* LBAC-1163 ([#457](https://github.com/mission-apprentissage/labonnealternance/issues/457)) ([13be8e9](https://github.com/mission-apprentissage/labonnealternance/commit/13be8e9e6000e480638563d94f5073ffa909171a))
+
 # [1.44.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.43.0...v1.44.0) (2023-06-27)
 
 
