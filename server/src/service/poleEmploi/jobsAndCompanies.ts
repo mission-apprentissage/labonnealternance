@@ -3,9 +3,9 @@
 import { trackApiCall } from "../../common/utils/sendTrackingEvent.js"
 import { sentryCaptureException } from "../../common/utils/sentryUtils.js"
 import { getMatchaJobs } from "../matcha.js"
-import { getCompanyFromSiret, getSomeLbbCompanies } from "./bonnesBoites.js"
+import { getSomeLbbCompanies } from "./bonnesBoites.js"
 import { jobsQueryValidator } from "./jobsQueryValidator.js"
-import { getPeJobFromId, getSomePeJobs } from "./offresPoleEmploi.js"
+import { getSomePeJobs } from "./offresPoleEmploi.js"
 
 const getJobsQuery = async (query) => {
   const queryValidationResult = jobsQueryValidator(query)
@@ -34,52 +34,6 @@ const getJobsQuery = async (query) => {
   }
 
   return result
-}
-
-const getPeJobQuery = async (query) => {
-  try {
-    const job = await getPeJobFromId({
-      id: query.id,
-      caller: query.caller,
-    })
-
-    if (query.caller) {
-      trackApiCall({ caller: query.caller, job_count: 1, result_count: 1, api_path: "jobV1/job", response: "OK" })
-    }
-    //throw new Error("BIG BANG");
-    return job
-  } catch (err) {
-    sentryCaptureException(err)
-    if (query.caller) {
-      trackApiCall({ caller: query.caller, api_path: "jobV1/job", response: "Error" })
-    }
-    return { error: "internal_error" }
-  }
-}
-
-const getCompanyQuery = async (query) => {
-  try {
-    const company = await getCompanyFromSiret({
-      siret: query.siret,
-      referer: query.referer,
-      type: query.type,
-      caller: query.caller,
-    })
-
-    //throw new Error("BIG BANG");
-    if (query.caller) {
-      trackApiCall({ caller: query.caller, api_path: "jobV1/company", job_count: 1, result_count: 1, response: "OK" })
-    }
-
-    return company
-  } catch (err) {
-    console.error("Error ", err.message)
-    sentryCaptureException(err)
-    if (query.caller) {
-      trackApiCall({ caller: query.caller, api_path: "jobV1/company", response: "Error" })
-    }
-    return { error: "internal_error" }
-  }
 }
 
 const getJobsFromApi = async ({ query, api }) => {
@@ -185,4 +139,4 @@ const deduplicateCompanies = (lbaCompanies, lbbCompanies) => {
   }
 }
 
-export { getJobsFromApi, getJobsQuery, getPeJobQuery, getCompanyQuery }
+export { getJobsFromApi, getJobsQuery }

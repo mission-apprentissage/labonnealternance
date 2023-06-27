@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { encryptMailWithIV } from "../common/utils/encryptString.js"
-import { manageApiError } from "../common/utils/errorManager.js"
+import { IApiError, manageApiError } from "../common/utils/errorManager.js"
 import { trackApiCall } from "../common/utils/sendTrackingEvent.js"
 import { itemModel } from "../model/itemModel.js"
 import { filterJobsByOpco } from "../services/opco.service.js"
@@ -74,7 +74,7 @@ const transformMatchaJobsForIdea = ({ jobs, caller, matchaApplicationCountByJob 
   return resultJobs
 }
 
-const getMatchaJobById = async ({ id, caller }) => {
+const getMatchaJobById = async ({ id, caller }): IApiError | { matchas: ILbaItem[] } => {
   try {
     let jobs = null
     if (id === "id-matcha-test") {
