@@ -170,7 +170,7 @@ export default async (components) => {
    */
   app.use("/api/v1/metiers", limiter20PerSecond)
   app.use("/api/v1/jobs", limiter5PerSecond)
-  //app.use("/api/romelabels", limiter10PerSecond)
+  //app.use("/api/romelabels", limiter10PerSecond) 
 
   RegisterRoutes(app)
 
