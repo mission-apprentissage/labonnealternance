@@ -1,7 +1,7 @@
 import * as express from "express"
 import { Body, Controller, Get, Header, Hidden, OperationId, Patch, Path, Post, Query, Request, Response, Route, Security, SuccessResponse, Tags } from "tsoa"
 import { ICreateDelegation, ICreateJobBody, IGetDelegation, TCreateEstablishmentBody, TEstablishmentResponseSuccess, TJob, TResponseError } from "./jobs.types.js"
-import { createDelegationSchema, createJobEntitySchema, createJobSchema, updateJobSchema } from "./jobs.validators.js"
+import { createDelegationSchema, createJobEntitySchema, createJobSchema, getEstablishmentEntitySchema, updateJobSchema } from "./jobs.validators.js"
 import { formatEntrepriseData, getEtablissement, getEtablissementFromGouv, getGeoCoordinates } from "../../../services/etablissement.service.js"
 import { Recruiter } from "../../../common/model/index.js"
 import { createUser, updateUserValidationHistory } from "../../../services/userRecruteur.service.js"
@@ -35,8 +35,11 @@ export class JobsController extends Controller {
   @Response<"Establishment not found">(400)
   @SuccessResponse("200", "Establishment found")
   @Get("/establishment")
-  public async getEstablishment(@Query() siret: string, @Query() email: string): Promise<TEstablishmentResponseSuccess["establishment_id"] | TResponseError> {
-    const establishment = await Recruiter.findOne({ establishment_siret: siret, email: email })
+  @Security("api_key")
+  public async getEstablishment(@Query() establishment_siret: string, @Query() email: string): Promise<TEstablishmentResponseSuccess["establishment_id"] | TResponseError> {
+    await getEstablishmentEntitySchema.validateAsync({ establishment_siret, email }, { abortEarly: false })
+
+    const establishment = await Recruiter.findOne({ establishment_siret, email })
 
     if (!establishment) {
       this.setStatus(400)
