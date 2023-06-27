@@ -41,10 +41,17 @@ services:
       - LBA_LOG_LEVEL=debug
 
   mongodb:
+    image: mongo:5.0.6-focal
+    container_name: lba_mongodb
+    mem_limit: 5g
+    command: --wiredTigerCacheSizeGB 4
+    restart: unless-stopped
     ports:
       - "27017:27017"
     volumes:
       - lba_mongodb_data:/data:z
+    networks:
+      - lba_network
 
   elasticsearch:
     ports:
