@@ -87,9 +87,9 @@ export default function (components) {
     "/webhook",
     tryCatch(async (req, res) => {
       if (!req.query.secret) {
-        logger.error("Debugging sendinblue webhook : secret missing")
+        logger.error("Debugging Brevo webhook : secret missing")
       } else if (req.query.secret !== config.secretUpdateRomesMetiers) {
-        logger.error("Debugging sendinblue webhook : wrong secret")
+        logger.error("Debugging Brevo webhook : wrong secret")
       } else {
         updateApplicationStatus({ payload: { ...query, secret: "" } })
       }

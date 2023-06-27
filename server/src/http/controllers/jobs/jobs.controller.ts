@@ -1,5 +1,5 @@
 import * as express from "express"
-import { Body, Controller, Get, OperationId, Patch, Path, Post, Query, Request, Response, Route, Security, SuccessResponse, Tags } from "tsoa"
+import { Body, Controller, Get, Header, Hidden, OperationId, Patch, Path, Post, Query, Request, Response, Route, Security, SuccessResponse, Tags } from "tsoa"
 import { ICreateDelegation, ICreateJobBody, IGetDelegation, TCreateEstablishmentBody, TEstablishmentResponseSuccess, TJob, TResponseError } from "./jobs.types.js"
 import { createDelegationSchema, createJobEntitySchema, createJobSchema, updateJobSchema } from "./jobs.validators.js"
 import { formatEntrepriseData, getEtablissement, getEtablissementFromGouv, getGeoCoordinates } from "../../../services/etablissement.service.js"
@@ -15,10 +15,16 @@ import { getNearEtablissementsFromRomes } from "../../../services/catalogue.serv
 import { ENTREPRISE, etat_utilisateur, validation_utilisateur } from "../../../common/constants.js"
 import { delay } from "../../../common/utils/asyncUtils.js"
 import { ICredential } from "../../../common/model/schema/credentials/credential.types.js"
+import { IApiError } from "../../../common/utils/errorManager.js"
+import { ILbaItem } from "../../../services/lbaitem.shared.service.types.js"
+import { getCompanyFromSiret } from "../../../service/poleEmploi/bonnesBoites.js"
+import { getMatchaJobById } from "../../../service/matcha.js"
+import { getPeJobFromId } from "../../../service/poleEmploi/offresPoleEmploi.js"
+import { getJobsQuery } from "../../../service/poleEmploi/jobsAndCompanies.js"
+import { jobsQueryValidator } from "../../../service/poleEmploi/jobsQueryValidator.js"
 
 @Tags("Jobs")
-@Route("/api/v1/temp-jobs")
-@Security("api_key")
+@Route("/api/v1/jobs")
 export class JobsController extends Controller {
   /**
    * Get existing establishment id from siret & email
@@ -51,8 +57,9 @@ export class JobsController extends Controller {
    */
   @Response<"Get all jobs failed">(400)
   @SuccessResponse("200", "Get all jobs success")
-  @Get("/")
+  @Get("/bulk")
   @OperationId("getJobs")
+  @Security("api_key")
   public async getJobs(
     @Request() request: express.Request | any,
     @Query() query = "{}",
@@ -88,6 +95,7 @@ export class JobsController extends Controller {
   @SuccessResponse("201", "Establishment created")
   @Post("/establishment")
   @OperationId("createEstablishment")
+  @Security("api_key")
   public async createEstablishment(@Request() request: express.Request | any, @Body() body: TCreateEstablishmentBody): Promise<TEstablishmentResponseSuccess | TResponseError> {
     const { first_name, last_name, phone, email, origin, establishment_siret } = body
     const user: ICredential = request.user
@@ -161,6 +169,7 @@ export class JobsController extends Controller {
   @SuccessResponse("201", "Job created")
   @Post("/{establishmentId}")
   @OperationId("createJob")
+  @Security("api_key")
   public async createJob(@Body() body: ICreateJobBody, @Path() establishmentId: IUserRecruteur["establishment_id"]): Promise<TEstablishmentResponseSuccess | TResponseError> {
     // Check if entity exists
     const establishmentExists = await getFormulaire({ establishment_id: establishmentId })
@@ -231,6 +240,7 @@ export class JobsController extends Controller {
   @SuccessResponse("200", "Job updated")
   @Patch("/{jobId}")
   @OperationId("updateJob")
+  @Security("api_key")
   public async updateJob(@Body() body: TJob, @Path() jobId: IJobs["_id"]): Promise<TEstablishmentResponseSuccess | TResponseError> {
     const jobExists = await getOffre(jobId)
 
@@ -256,6 +266,7 @@ export class JobsController extends Controller {
   @SuccessResponse("200", "Get Delegations success")
   @Get("/delegations/{jobId}")
   @OperationId("getDelegation")
+  @Security("api_key")
   public async getDelegation(@Path() jobId: IJobs["_id"]): Promise<IGetDelegation | TResponseError> {
     const jobExists = await getOffre(jobId)
 
@@ -284,6 +295,7 @@ export class JobsController extends Controller {
   @SuccessResponse("200", "Delegation created")
   @Post("/delegations/{jobId}")
   @OperationId("createDelegation")
+  @Security("api_key")
   public async createDelegation(@Body() body: ICreateDelegation, @Path() jobId: IJobs["_id"]): Promise<TEstablishmentResponseSuccess | TResponseError> {
     const jobExists = await getOffre(jobId)
 
@@ -309,6 +321,7 @@ export class JobsController extends Controller {
   @SuccessResponse("204", "Job updated")
   @Post("/provided")
   @OperationId("setJobAsProvided")
+  @Security("api_key")
   public async setJobAsProvided(@Body() body: { jobId: IJobs["_id"] }): Promise<{} | TResponseError> {
     const jobExists = await getOffre(body.jobId)
 
@@ -332,6 +345,7 @@ export class JobsController extends Controller {
   @SuccessResponse("204", "Job updated")
   @Post("/canceled")
   @OperationId("setJobAsCanceled")
+  @Security("api_key")
   public async setJobAsCanceled(@Body() body: { jobId: IJobs["_id"] }): Promise<{} | TResponseError> {
     const jobExists = await getOffre(body.jobId)
 
@@ -355,6 +369,7 @@ export class JobsController extends Controller {
   @SuccessResponse("204", "Job updated")
   @Post("/extend")
   @OperationId("extendJobExpiration")
+  @Security("api_key")
   public async extendJobExpiration(@Body() body: { jobId: IJobs["_id"] }): Promise<{} | TResponseError> {
     const jobExists = await getOffre(body.jobId)
 
@@ -366,5 +381,151 @@ export class JobsController extends Controller {
 
     this.setStatus(204)
     return
+  }
+
+  /**
+   * Get job opportunities matching the query parameters
+   * @param {string} referer the referer provided in the HTTP query headers
+   * @param {string} caller the consumer id.
+   * @param {string} romes some rome codes separated by commas
+   * @param {string} latitude search center latitude
+   * @param {string} longitude search center longitude
+   * @param {number} radius the search radius
+   * @param {string} insee search center insee code
+   * @param {string} sources optional: comma separated list of job opportunities sources
+   * @param {string} diploma optional: targeted diploma
+   * @param {string} opco optional: filter opportunities on opco name
+   * @param {string} opcoUrl optional: filter opportunities on opco url
+   * @param {string} useMock optional: wether to return mocked values or not
+   * @returns {Promise<IApiError | { lbbCompanies: ILbaItem[] } | { lbaCompanies: ILbaItem[] }>} response
+   */
+  @Response<"Wrong parameters">(400)
+  @Response<"Internal error">(500)
+  @SuccessResponse("200", "Get job opportunities success")
+  @Get("/")
+  @OperationId("getJobOpportunities")
+  public async getJobOpportunities(
+    @Query() romes: string,
+    @Header() @Hidden() referer?: string,
+    @Query() caller?: string,
+    @Query() latitude?: string,
+    @Query() longitude?: string,
+    @Query() radius?: number,
+    @Query() insee?: string,
+    @Query() sources?: string,
+    @Query() diploma?: string,
+    @Query() opco?: string,
+    @Query() opcoUrl?: string,
+    @Query() @Hidden() useMock?: string
+  ): Promise<IApiError | { lbbCompanies: ILbaItem[] } | { lbaCompanies: ILbaItem[] }> {
+    const result = await getJobsQuery({ romes, caller, referer, latitude, longitude, radius, insee, sources, diploma, opco, opcoUrl, useMock })
+
+    if (result.error) {
+      this.setStatus(500)
+    }
+
+    return result
+  }
+
+  /**
+   * Get one company identified by it's siret
+   * @param {string} siret the siret number of the company looked for.
+   * @param {string} caller the consumer id.
+   * @param {string} type the type of the company
+   * @param {string} referer the referer provided in the HTTP query headers
+   * @returns {Promise<IApiError | { lbbCompanies: ILbaItem[] } | { lbaCompanies: ILbaItem[] }>} response
+   */
+  @Response<"Wrong parameters">(400)
+  @Response<"Company not found">(404)
+  @Response<"Internal error">(500)
+  @SuccessResponse("200", "Get company success")
+  @Get("/company/{siret}")
+  @OperationId("getCompany")
+  public async getCompany(
+    @Path() siret: string,
+    @Header() @Hidden() referer?: string,
+    @Query() caller?: string,
+    @Query() type?: string
+  ): Promise<IApiError | { lbbCompanies: ILbaItem[] } | { lbaCompanies: ILbaItem[] }> {
+    const result = await getCompanyFromSiret({
+      siret,
+      type,
+      referer,
+      caller,
+    })
+
+    if ("error" in result) {
+      if (result.error === "wrong_parameters") {
+        this.setStatus(400)
+      } else if (result.error === "not_found") {
+        this.setStatus(404)
+      } else {
+        this.setStatus(result.status || 500)
+      }
+    }
+
+    return result
+  }
+
+  /**
+   * Get one lba job identified by it's id
+   * @param {string} id the id the lba job looked for.
+   * @param {string} caller the consumer id.
+   * @returns {Promise<IApiError | { matchas: ILbaItem[] }>} response
+   */
+  @Response<"Wrong parameters">(400)
+  @Response<"Job not found">(404)
+  @Response<"Internal error">(500)
+  @SuccessResponse("200", "Get job success")
+  @Get("/matcha/{id}")
+  @OperationId("getLbaJob")
+  public async getLbaJob(@Path() id: string, @Query() caller?: string): Promise<IApiError | { matchas: ILbaItem[] }> {
+    const result = await getMatchaJobById({
+      id,
+      caller,
+    })
+
+    if ("error" in result) {
+      if (result.error === "wrong_parameters") {
+        this.setStatus(400)
+      } else if (result.error === "not_found") {
+        this.setStatus(404)
+      } else {
+        this.setStatus(result.status || 500)
+      }
+    }
+
+    return result
+  }
+
+  /**
+   * Get one pe job identified by it's id
+   * @param {string} id the id the pe job looked for.
+   * @param {string} caller the consumer id.
+   * @returns {Promise<IApiError | { matchas: ILbaItem[] }>} response
+   */
+  @Response<"Wrong parameters">(400)
+  @Response<"Job not found">(404)
+  @Response<"Internal error">(500)
+  @SuccessResponse("200", "Get job success")
+  @Get("/job/{id}")
+  @OperationId("getPeJob")
+  public async getPeJob(@Path() id: string, @Query() caller?: string): Promise<IApiError | { peJobs: ILbaItem[] }> {
+    const result = await getPeJobFromId({
+      id,
+      caller,
+    })
+
+    if ("error" in result) {
+      if (result.error === "wrong_parameters") {
+        this.setStatus(400)
+      } else if (result.error === "not_found") {
+        this.setStatus(404)
+      } else {
+        this.setStatus(result.status || 500)
+      }
+    }
+
+    return result
   }
 }
