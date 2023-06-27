@@ -275,8 +275,6 @@ const getPeJobFromId = async ({ id, caller }: { id: string; caller: string }): I
     const headers = peApiHeaders
     headers.Authorization = `Bearer ${token}`
 
-    //throw new Error("boom");
-
     const job = await axios.get(`${peJobApiEndpoint}${id}`, {
       headers,
     })

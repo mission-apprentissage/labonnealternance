@@ -9,6 +9,7 @@ import { roundDistance } from "../../common/geolib.js"
 import { lbbMock } from "../../mocks/lbbs-mock.js"
 import { BonnesBoites } from "../../common/model/index.js"
 import { getApplicationByCompanyCount } from "../../services/application.service.js"
+import { trackApiCall } from "../../common/utils/sendTrackingEvent.js"
 
 const esClient = getElasticInstance()
 

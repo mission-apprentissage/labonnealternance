@@ -384,8 +384,8 @@ export class JobsController extends Controller {
   @Get("/")
   @OperationId("getJobOpportunities")
   public async getJobOpportunities(
-    @Header() @Hidden() referer: string,
     @Query() romes: string,
+    @Header() @Hidden() referer?: string,
     @Query() caller?: string,
     @Query() latitude?: string,
     @Query() longitude?: string,
@@ -422,11 +422,10 @@ export class JobsController extends Controller {
   @OperationId("getCompany")
   public async getCompany(
     @Path() siret: string,
-    @Header() @Hidden() referer: string,
+    @Header() @Hidden() referer?: string,
     @Query() caller?: string,
     @Query() type?: string
   ): Promise<IApiError | { lbbCompanies: ILbaItem[] } | { lbaCompanies: ILbaItem[] }> {
-    console.log(referer, caller, type, siret)
     const result = await getCompanyFromSiret({
       siret,
       type,
@@ -460,7 +459,6 @@ export class JobsController extends Controller {
   @Get("/matcha/{id}")
   @OperationId("getLbaJob")
   public async getLbaJob(@Path() id: string, @Query() caller?: string): Promise<IApiError | { matchas: ILbaItem[] }> {
-    console.log(caller, id)
     const result = await getMatchaJobById({
       id,
       caller,
@@ -492,7 +490,6 @@ export class JobsController extends Controller {
   @Get("/job/{id}")
   @OperationId("getPeJob")
   public async getPeJob(@Path() id: string, @Query() caller?: string): Promise<IApiError | { peJobs: ILbaItem[] }> {
-    console.log(caller, id)
     const result = await getPeJobFromId({
       id,
       caller,
