@@ -1,3 +1,10 @@
+# [1.43.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.42.0...v1.43.0) (2023-06-27)
+
+
+### Features
+
+* add route security and query validation ([3d5debb](https://github.com/mission-apprentissage/labonnealternance/commit/3d5debbfb8153a3514efea361fa68f7486934892))
+
 # [1.42.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.41.0...v1.42.0) (2023-06-27)
 
 

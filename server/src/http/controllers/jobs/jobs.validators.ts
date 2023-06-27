@@ -1,5 +1,14 @@
 import Joi from "joi"
 
+export const getEstablishmentEntitySchema = Joi.object({
+  establishment_siret: Joi.string()
+    .pattern(/^[0-9]+$/, "Le siret est composé uniquement de chiffres")
+    .min(14)
+    .max(14)
+    .required(),
+  email: Joi.string().email().required(),
+})
+
 export const createJobEntitySchema = Joi.object({
   establishment_siret: Joi.string()
     .pattern(/^[0-9]+$/, "Le siret est composé uniquement de chiffres")
