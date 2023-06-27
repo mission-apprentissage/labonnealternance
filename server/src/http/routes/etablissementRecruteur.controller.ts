@@ -28,9 +28,7 @@ import {
 } from "../../services/etablissement.service.js"
 import { ICFADock, ISIRET2IDCC } from "../../services/etablissement.service.types.js"
 import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
-import { validationOrganisation } from "../../common/bal.js"
-import Joi from "joi"
-import { siretSchema } from "../utils/validators.js"
+import { validationOrganisation } from "../../services/bal.service.js"
 import { IUserRecruteur } from "../../common/model/schema/userRecruteur/userRecruteur.types.js"
 import { IRecruiter } from "../../common/model/schema/recruiter/recruiter.types.js"
 import { updateUserValidationHistory, getUser, createUser, updateUser, getUserValidationState, registerUser } from "../../services/userRecruteur.service.js"
@@ -232,7 +230,7 @@ export default ({ mailer }) => {
       }
 
       switch (req.body.type) {
-        case ENTREPRISE:
+        case ENTREPRISE: {
           const siren = req.body.establishment_siret.slice(0, 9)
           const formulaireInfo = await createFormulaire(req.body)
           let newEntreprise: IUserRecruteur = await createUser({ ...req.body, establishment_id: formulaireInfo.establishment_id })
@@ -278,7 +276,8 @@ export default ({ mailer }) => {
 
           // Dépot simplifié : retourner les informations nécessaire à la suite du parcours
           return res.json({ formulaire: formulaireInfo, user: newEntreprise })
-        case CFA:
+        }
+        case CFA: {
           // Contrôle du mail avec le référentiel :
           const referentiel = await getEtablissementFromReferentiel(req.body.establishment_siret)
           // Creation de l'utilisateur en base de données
@@ -364,6 +363,7 @@ export default ({ mailer }) => {
 
           // Keep the same structure as ENTREPRISE
           return res.json({ user: newCfa })
+        }
       }
     })
   )

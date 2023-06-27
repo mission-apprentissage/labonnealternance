@@ -1,7 +1,7 @@
 import config from "../config.js"
-import { ApiError, apiRateLimiter } from "./utils/apiUtils.js"
-import { sentryCaptureException } from "./utils/sentryUtils.js"
-import getApiClient from "./client.js"
+import { ApiError, apiRateLimiter } from "../common/utils/apiUtils.js"
+import { sentryCaptureException } from "../common/utils/sentryUtils.js"
+import getApiClient from "../common/client.js"
 
 interface IBALResponse {
   is_valid: boolean
