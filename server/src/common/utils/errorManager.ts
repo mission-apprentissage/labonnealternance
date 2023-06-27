@@ -6,7 +6,7 @@ export interface IApiError {
   result?: string
   error?: string
   message?: any
-  status?: string | number
+  status?: string | number
   statusText?: string
 }
 
