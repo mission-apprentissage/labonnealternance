@@ -34,9 +34,9 @@ export const getLbaJobs = async ({ romes, radius, latitude, longitude, api, opco
 
     const ids = jobs.map(({ _source }) => _source.jobs.map(({ _id }) => _id)).flat()
 
-    const matchaApplicationCountByJob = await getApplicationByJobCount(ids)
+    const applicationCountByJob = await getApplicationByJobCount(ids)
 
-    const matchas = transformLbaJobs({ jobs, caller, matchaApplicationCountByJob })
+    const matchas = transformLbaJobs({ jobs, caller, applicationCountByJob })
 
     // filtrage sur l'opco
     if (opco || opcoUrl) {
@@ -54,7 +54,7 @@ export const getLbaJobs = async ({ romes, radius, latitude, longitude, api, opco
 }
 
 // update du contenu avec des résultats pertinents par rapport au rayon
-const transformLbaJobs = ({ jobs, caller, matchaApplicationCountByJob }) => {
+const transformLbaJobs = ({ jobs, caller, applicationCountByJob }) => {
   const resultJobs = {
     results: [],
   }
@@ -64,7 +64,7 @@ const transformLbaJobs = ({ jobs, caller, matchaApplicationCountByJob }) => {
       const companyJobs = transformLbaJob({
         job: jobs[i]._source,
         distance: jobs[i].sort[0],
-        matchaApplicationCountByJob,
+        applicationCountByJob,
         caller,
       })
       companyJobs.map((job) => resultJobs.results.push(job))
@@ -104,7 +104,7 @@ export const getLbaJobById = async ({ id, caller }): IApiError | { matchas: ILba
 }
 
 // Adaptation au modèle Idea et conservation des seules infos utilisées des offres
-const transformLbaJob = ({ job, distance, caller, matchaApplicationCountByJob }) => {
+const transformLbaJob = ({ job, distance, caller, applicationCountByJob }) => {
   const resultJobs = []
 
   job.jobs.map((offre, idx) => {
@@ -158,7 +158,7 @@ const transformLbaJob = ({ job, distance, caller, matchaApplicationCountByJob })
     resultJob.romes = []
     offre.rome_code.map((code) => resultJob.romes.push({ code, label: null }))
 
-    const applicationCount = matchaApplicationCountByJob.find((job) => job._id == offre._id)
+    const applicationCount = applicationCountByJob.find((job) => job._id == offre._id)
     resultJob.applicationCount = applicationCount?.count || 0
     resultJobs.push(resultJob)
   })
