@@ -375,7 +375,7 @@ export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }:
 
   offre.is_delegated = true
   offre.delegations = offre?.delegations.concat(delegations) || delegations
-  offre.job_delegation_count = offre?.delegations.length || 0
+  offre.job_delegation_count = offre.delegations.length
 
   return updateOffre(jobId, offre)
 }
