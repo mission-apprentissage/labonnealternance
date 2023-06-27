@@ -386,7 +386,7 @@ export default ({ mailer }) => {
   router.put(
     "/:id",
     tryCatch(async (req, res) => {
-      let result = await updateUser({ _id: req.params.id }, req.body)
+      const result = await updateUser({ _id: req.params.id }, req.body)
       return res.json(result)
     })
   )

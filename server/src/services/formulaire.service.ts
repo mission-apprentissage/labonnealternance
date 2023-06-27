@@ -374,10 +374,10 @@ export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }:
   await Promise.all(promises)
 
   offre.is_delegated = true
-  offre.job_prolongation_count = etablissements.length
   offre.delegations = offre?.delegations.concat(delegations) || delegations
+  offre.job_delegation_count = offre?.delegations.length || 0
 
-  return await updateOffre(jobId, offre)
+  return updateOffre(jobId, offre)
 }
 
 /**
@@ -517,7 +517,7 @@ export const patchOffre = async (id: IJobs["_id"], payload: UpdateQuery<IJobs>, 
     fields[`jobs.$.${key}`] = payload[key]
   }
 
-  return await Recruiter.findOneAndUpdate(
+  return Recruiter.findOneAndUpdate(
     { "jobs._id": id },
     {
       $set: fields,
@@ -577,4 +577,15 @@ export const extendOffre = async (id: IJobs["_id"]): Promise<boolean> => {
     }
   )
   return true
+}
+
+/**
+ * @description Get job offer by its id.
+ * @param {IJobs["_id"]} id - Job id
+ * @returns {Promise<IJobs>}
+ */
+export const getJob = async (id: IJobs["_id"]): Promise<IJobs> => {
+  const offre = await getOffre(id)
+
+  return offre.jobs.find((job) => job._id.toString() == id)
 }

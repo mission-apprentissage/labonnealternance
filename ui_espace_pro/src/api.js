@@ -31,7 +31,7 @@ export const archiveDelegatedFormulaire = (siret) => API.delete(`/formulaire/del
 export const getOffre = (jobId) => API.get(`/formulaire/offre/f/${jobId}`)
 export const postOffre = (establishment_id, offre) => API.post(`/formulaire/${establishment_id}/offre`, offre).catch(errorHandler)
 export const putOffre = (jobId, offre) => API.put(`/formulaire/offre/${jobId}`, { ...offre, date_mise_a_jour: Date() }).catch(errorHandler)
-export const patchOffre = ({ establishment_id, data, config }) => API.patch(`/v1/offre/${establishment_id}`, data, config).catch(errorHandler)
+export const patchOffre = (jobId, data, config) => API.patch(`/formulaire/offre/${jobId}`, data, config).catch(errorHandler)
 export const cancelOffre = (jobId) => API.put(`/formulaire/offre/${jobId}/cancel`)
 export const fillOffre = (jobId) => API.put(`/formulaire/offre/${jobId}/provided`)
 export const createEtablissementDelegation = ({ data, jobId }) => API.post(`/formulaire/offre/${jobId}/delegation`, data)
