@@ -11,7 +11,7 @@ import { roundDistance } from "../common/geolib.js"
 import { matchaMock, matchaMockMandataire, matchasMock } from "../mocks/matchas-mock.js"
 import { getOffreAvecInfoMandataire, getJobsFromElasticSearch } from "./formulaire.service.js"
 import { getApplicationByJobCount, IApplicationCount } from "./application.service.js"
-import { ILbaItem } from "./lbaitem.shared.service.types.js"
+import { ILbaItem, LbaItem } from "./lbaitem.shared.service.types.js"
 import { IRecruiter } from "../common/model/schema/recruiter/recruiter.types.js"
 import { ILbaJobEsResult } from "./lbajob.service.types.js"
 
@@ -163,7 +163,7 @@ export const getLbaJobById = async ({ id, caller }: { id: string; caller: string
 
 /**
  * Adaptation au modèle LBAC et conservation des seules infos utilisées de l'offre
- * @param {ILbaJobEsResult} job l'offre retournée d'ES ou de la mongo
+ * @param {Partial<IRecruiter>} job l'offre retournée d'ES ou de la mongo
  * @param {number} distance optionnel: la distance du lieu de l'offre au centre de la recherche
  * @param {string} caller optionnel: l'id de l'utilisateur de l'api
  * @param {IApplicationCount[]} applicationCountByJob le tableau des décomptes de candidatures par offre
@@ -175,7 +175,7 @@ const transformLbaJob = ({
   caller,
   applicationCountByJob,
 }: {
-  job: ILbaJobEsResult
+  job: Partial<IRecruiter>
   distance?: number
   caller?: string
   applicationCountByJob: IApplicationCount[]
@@ -183,8 +183,7 @@ const transformLbaJob = ({
   const resultJobs = []
 
   job.jobs.map((offre, idx) => {
-    const resultJob = itemModel("matcha")
-
+    const resultJob = new LbaItem("matcha")
     let email = {}
 
     email = encryptMailWithIV({ value: job.email, caller })
@@ -208,14 +207,14 @@ const transformLbaJob = ({
     resultJob.company.size = job.establishment_size
 
     resultJob.company.mandataire = job.is_delegated
-    resultJob.company.place = { city: job.establishment_location }
+    resultJob.company.place = { city: job.address_detail.localite }
 
     resultJob.nafs = [{ label: job.naf_label }]
     resultJob.company.creationDate = job.establishment_creation_date
 
     resultJob.diplomaLevel = offre.job_level_label
-    resultJob.createdAt = job.job_creation_date
-    resultJob.lastUpdateAt = job.job_update_date
+    resultJob.createdAt = job.createdAt
+    resultJob.lastUpdateAt = job.updatedAt
 
     resultJob.job = {
       id: offre._id,
