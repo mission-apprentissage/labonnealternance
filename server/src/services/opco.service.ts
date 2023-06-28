@@ -1,7 +1,7 @@
 import memoize from "memoizee"
 import { IOpco } from "../common/model/schema/opco/opco.types.js"
 import { Opco } from "../common/model/index.js"
-import { OPCOS } from "./constants.js"
+import { OPCOS } from "./constant.service.js"
 import { CFADOCK_FILTER_LIMIT, fetchOpcosFromCFADock } from "../services/cfadock.service.js"
 
 /**

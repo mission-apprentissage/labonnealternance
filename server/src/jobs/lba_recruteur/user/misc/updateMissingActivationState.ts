@@ -11,7 +11,7 @@ import {
   getAllEstablishmentFromBonneBoiteLegacy,
   getAllEstablishmentFromOpcoReferentiel,
 } from "../../../../services/etablissement.service.js"
-import { validation_utilisateur, etat_utilisateur } from "../../../../services/constants.js"
+import { validation_utilisateur, etat_utilisateur } from "../../../../services/constant.service.js"
 import { updateUserValidationHistory } from "../../../../services/userRecruteur.service.js"
 
 const runValidation = async () => {

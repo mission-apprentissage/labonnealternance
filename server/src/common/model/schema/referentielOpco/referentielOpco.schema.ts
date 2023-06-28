@@ -1,4 +1,4 @@
-import { OPCOS } from "../../../../services/constants.js"
+import { OPCOS } from "../../../../services/constant.service.js"
 import { model, Schema } from "../../../mongodb.js"
 import { IReferentielOpco } from "./referentielOpco.types.js"
 

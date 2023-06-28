@@ -1,7 +1,7 @@
 // @ts-nocheck
 import distance from "@turf/distance"
 import axios from "axios"
-import { NIVEAUX_POUR_OFFRES_PE } from "../../services/constants.js"
+import { NIVEAUX_POUR_OFFRES_PE } from "../../services/constant.service.js"
 import { roundDistance } from "../../common/geolib.js"
 import { IApiError, manageApiError } from "../../common/utils/errorManager.js"
 import { trackApiCall } from "../../common/utils/sendTrackingEvent.js"

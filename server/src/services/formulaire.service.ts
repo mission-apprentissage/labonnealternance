@@ -1,7 +1,7 @@
 import { pick } from "lodash-es"
 import moment from "moment"
 import { mailTemplate } from "../assets/index.js"
-import { ANNULEE, POURVUE, etat_utilisateur } from "./constants.js"
+import { ANNULEE, POURVUE, etat_utilisateur } from "./constant.service.js"
 import dayjs from "../common/dayjs.js"
 import { getElasticInstance } from "../common/esClient/index.js"
 import createMailer from "../common/mailer.js"
