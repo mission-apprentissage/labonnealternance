@@ -22,10 +22,6 @@ export const ETAT_UTILISATEUR = {
   DESACTIVE: "DESACTIVÉ",
   ATTENTE: "EN ATTENTE DE VALIDATION",
 }
-export const ETAT_ETABLISSEMENT = {
-  ACTIF: "actif",
-  FERME: "fermé",
-}
 export const ENTREPRISE = "ENTREPRISE"
 export const CFA = "CFA"
 export const REGEX = {
