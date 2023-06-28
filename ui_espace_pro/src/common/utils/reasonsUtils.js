@@ -9,7 +9,7 @@ const reasons = {
   accompagnement: "Accompagnement dans la recherche d'entreprise",
   lieu: "Lieu de la formation",
   suivi: "Suivi de ma candidature",
-  autre: "Autres :",
+  autre: "Autre :",
 }
 
 /**
