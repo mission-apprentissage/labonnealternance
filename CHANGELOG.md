@@ -1,3 +1,10 @@
+# [1.46.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.45.0...v1.46.0) (2023-06-28)
+
+
+### Features
+
+* lbac-1201 ([#475](https://github.com/mission-apprentissage/labonnealternance/issues/475)) ([d29a66e](https://github.com/mission-apprentissage/labonnealternance/commit/d29a66ea49e48b245509b68d7dbacbacaa3a62af))
+
 # [1.45.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.44.0...v1.45.0) (2023-06-27)
 
 
