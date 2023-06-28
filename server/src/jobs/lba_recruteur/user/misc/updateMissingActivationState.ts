@@ -11,7 +11,7 @@ import {
   getAllEstablishmentFromBonneBoiteLegacy,
   getAllEstablishmentFromOpcoReferentiel,
 } from "../../../../services/etablissement.service.js"
-import { validation_utilisateur, etat_utilisateur } from "../../../../services/constant.service.js"
+import { VALIDATION_UTILISATEUR, ETAT_UTILISATEUR } from "../../../../services/constant.service.js"
 import { updateUserValidationHistory } from "../../../../services/userRecruteur.service.js"
 
 const runValidation = async () => {
@@ -19,16 +19,16 @@ const runValidation = async () => {
 
   const autoValidateUser = async (userId) =>
     await updateUserValidationHistory(userId, {
-      validation_type: validation_utilisateur.AUTO,
+      validation_type: VALIDATION_UTILISATEUR.AUTO,
       user: "SERVEUR",
-      statut: etat_utilisateur.VALIDE,
+      statut: ETAT_UTILISATEUR.VALIDE,
     })
 
   const setManualValidation = async (userId) =>
     await updateUserValidationHistory(userId, {
-      validation_type: validation_utilisateur.MANUAL,
+      validation_type: VALIDATION_UTILISATEUR.MANUAL,
       user: "SERVEUR",
-      statut: etat_utilisateur.ATTENTE,
+      statut: ETAT_UTILISATEUR.ATTENTE,
     })
 
   // const entreprises = await UserRecruteur.find({

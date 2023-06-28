@@ -1,7 +1,7 @@
 import express from "express"
 import { deleteFormulaire, getFormulaire, updateOffre } from "../../services/formulaire.service.js"
 import { mailTemplate } from "../../assets/index.js"
-import { CFA, ENTREPRISE, etat_utilisateur } from "../../services/constant.service.js"
+import { CFA, ENTREPRISE, ETAT_UTILISATEUR } from "../../services/constant.service.js"
 import dayjs from "../../common/dayjs.js"
 import { Recruiter, UserRecruteur } from "../../common/model/index.js"
 import { createMagicLinkToken } from "../../common/utils/jwtUtils.js"
@@ -112,7 +112,7 @@ export default ({ mailer }) => {
       const user = await updateUserValidationHistory(req.params.userId, history)
 
       // if user is disable, return the user data directly
-      if (history.status === etat_utilisateur.DESACTIVE) {
+      if (history.status === ETAT_UTILISATEUR.DESACTIVE) {
         return res.json(user)
       }
 

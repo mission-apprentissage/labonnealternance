@@ -1,5 +1,5 @@
 import { mailTemplate } from "../../../assets/index.js"
-import { etat_utilisateur } from "../../../services/constant.service.js"
+import { ETAT_UTILISATEUR } from "../../../services/constant.service.js"
 import { UserRecruteur } from "../../../common/model/index.js"
 import { IUserRecruteur } from "../../../common/model/schema/userRecruteur/userRecruteur.types.js"
 import { asyncForEach } from "../../../common/utils/asyncUtils.js"
@@ -12,7 +12,7 @@ import config from "../../../config.js"
  */
 export const relanceOpco = async (mailer) => {
   const userAwaitingValidation = await UserRecruteur.find({
-    $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, etat_utilisateur.ATTENTE] },
+    $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, ETAT_UTILISATEUR.ATTENTE] },
     opco: { $nin: [null, "Opco multiple", "inconnu"] },
   }).lean()
 

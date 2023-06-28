@@ -12,17 +12,17 @@ export const KEY_GENERATOR_PARAMS = ({ length, symbols, numbers }) => {
     exclude: '!"_%£$€*¨^=+~ß(){}[]§;,./:`@#&|<>?"',
   }
 }
-export const validation_utilisateur = {
+export const VALIDATION_UTILISATEUR = {
   AUTO: "AUTOMATIQUE",
   MANUAL: "MANUELLE",
 }
 export const ENTREPRISE_DELEGATION = "ENTREPRISE_DELEGATION"
-export const etat_utilisateur = {
+export const ETAT_UTILISATEUR = {
   VALIDE: "VALIDÉ",
   DESACTIVE: "DESACTIVÉ",
   ATTENTE: "EN ATTENTE DE VALIDATION",
 }
-export const etat_etablissements = {
+export const ETAT_ETABLISSEMENT = {
   ACTIF: "actif",
   FERME: "fermé",
 }
