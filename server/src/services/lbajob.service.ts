@@ -206,7 +206,8 @@ const transformLbaJob = ({
     resultJob.company.size = job.establishment_size
 
     resultJob.company.mandataire = job.is_delegated
-    resultJob.company.place = { city: job.address_detail.localite }
+
+    resultJob.company.place = { city: job?.address_detail?.localite }
 
     resultJob.nafs = [{ label: job.naf_label }]
     resultJob.company.creationDate = job.establishment_creation_date
