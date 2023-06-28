@@ -1,4 +1,4 @@
-import { IAdresse, IAdresseCFA } from "../_shared/shared.types.js"
+import { IGlobalAddress } from "../_shared/shared.types.js"
 
 interface IUserValidation {
   validation_type: string
@@ -17,7 +17,7 @@ interface IUserRecruteur {
   establishment_raison_sociale: string
   establishment_enseigne: string
   establishment_siret: string
-  address_detail: IAdresse | IAdresseCFA
+  address_detail: IGlobalAddress
   address: string
   geo_coordinates: string
   phone: string

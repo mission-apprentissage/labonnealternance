@@ -32,6 +32,7 @@ import { validationOrganisation } from "../../services/bal.service.js"
 import { IUserRecruteur } from "../../common/model/schema/userRecruteur/userRecruteur.types.js"
 import { IRecruiter } from "../../common/model/schema/recruiter/recruiter.types.js"
 import { updateUserValidationHistory, getUser, createUser, updateUser, getUserValidationState, registerUser } from "../../services/userRecruteur.service.js"
+import { IAdresseV3 } from "../../common/model/schema/_shared/shared.types.js"
 
 const getCfaRomeSchema = joi.object({
   latitude: joi.number().required(),
@@ -97,7 +98,7 @@ export default ({ mailer }) => {
           return res.status(400).json({ error: true, message: "Le numéro siret est invalide." })
         }
 
-        if (result.etablissement.etat_administratif.value === "F") {
+        if (result.data.etat_administratif === "F") {
           return res.status(400).json({ error: true, message: "Cette entreprise est considérée comme fermée." })
         }
 
@@ -119,7 +120,7 @@ export default ({ mailer }) => {
 
         // Allow cfa to add themselves as a company
         if (!req.query.fromDashboardCfa) {
-          if (result.etablissement.naf.startsWith("85")) {
+          if (result.data.activite_principale.code.startsWith("85")) {
             return res.status(400).json({
               error: true,
               message: "Le numéro siret n'est pas référencé comme une entreprise.",
@@ -128,8 +129,8 @@ export default ({ mailer }) => {
           }
         }
 
-        const entrepriseData = formatEntrepriseData(result.etablissement)
-        const geo_coordinates = await getGeoCoordinates(`${entrepriseData.address_detail.l4}, ${entrepriseData.address_detail.l6}`)
+        const entrepriseData = formatEntrepriseData(result.data)
+        const geo_coordinates = await getGeoCoordinates(`${entrepriseData.address_detail.acheminement_postal.l4}, ${entrepriseData.address_detail.acheminement_postal.l6}`)
 
         let opcoResult: ICFADock | ISIRET2IDCC = await getOpco(req.params.siret)
         const opcoData = { opco: undefined, idcc: undefined }

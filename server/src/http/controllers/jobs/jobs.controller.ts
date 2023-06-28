@@ -116,7 +116,7 @@ export class JobsController extends Controller {
     const establishmentInformations = await getEtablissementFromGouv(establishment_siret)
 
     // If establishment is closed, throw error
-    if (establishmentInformations.etablissement.etat_administratif.value === "F") {
+    if (establishmentInformations.data.etat_administratif === "F") {
       return { error: true, message: "Establishment is closed" }
     }
 
@@ -131,11 +131,11 @@ export class JobsController extends Controller {
       type: ENTREPRISE,
       is_email_checked: true,
       is_qualiopi: false,
-      ...formatEntrepriseData(establishmentInformations.etablissement),
+      ...formatEntrepriseData(establishmentInformations.data),
     }
 
     // Get geocoordinates
-    establishment.geo_coordinates = await getGeoCoordinates(`${establishment.address_detail.l4}, ${establishment.address_detail.l6}`)
+    establishment.geo_coordinates = await getGeoCoordinates(`${establishment.address_detail.acheminement_postal.l4}, ${establishment.address_detail.acheminement_postal.l6}`)
 
     /**
      *  KBA 25052023 : Bellow logic will be update with the global refactoring of the service logic
