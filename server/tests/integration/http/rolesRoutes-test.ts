@@ -1,6 +1,6 @@
 import assert from "assert"
 import httpTests from "../../utils/httpTests.js"
-import { roles } from "../../../src/common/roles.js"
+import { roles } from "../../../src/common/constants.js"
 import __filename from "../../../src/common/filename.js"
 
 httpTests(__filename(import.meta.url), ({ startServer }) => {
