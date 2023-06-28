@@ -105,14 +105,14 @@ export interface ILbaItemJob {
   creationDate: string | Date // pe -> dateCreation | matcha -> createdAt
   id: string // pe -> id | matcha -> id mongo offre
   contractType: string // pe -> typeContrat | matcha -> offres.type
-  contractDescription: string // pe -> typeContratLibelle
-  duration: string // pe -> dureeTravailLibelle
-  jobStartDate: string // matcha -> offres.date_debut_apprentissage
-  romeDetails: string // matcha -> offres.rome_detail -> détail du code ROME
+  contractDescription?: string // pe -> typeContratLibelle
+  duration?: string // pe -> dureeTravailLibelle
+  jobStartDate: string | Date // matcha -> offres.date_debut_apprentissage
+  romeDetails: object // matcha -> offres.rome_detail -> détail du code ROME
   rythmeAlternance: string // matcha -> offres.rythme_alternance
-  elligibleHandicap: string // matcha -> offres.elligible_handicap
+  elligibleHandicap?: boolean // matcha -> offres.is_disabled_elligible
   dureeContrat: string // matcha -> offres.duree_contrat
-  quantiteContrat: string // matcha -> offres.quantite
+  quantiteContrat?: number // matcha -> offres.quantite
 }
 
 export interface ILbaItemRome {

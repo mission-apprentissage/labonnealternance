@@ -224,7 +224,7 @@ const transformLbaJob = ({
       jobStartDate: offre.job_start_date,
       romeDetails: offre.rome_detail,
       rythmeAlternance: offre.job_rythm || null,
-      dureeContrat: offre.job_duration,
+      dureeContrat: "" + offre.job_duration,
       quantiteContrat: offre.job_count,
       elligibleHandicap: offre.is_disabled_elligible,
     }
