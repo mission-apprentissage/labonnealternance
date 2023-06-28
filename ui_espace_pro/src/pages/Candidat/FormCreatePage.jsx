@@ -131,9 +131,9 @@ export const FormCreatePage = (props) => {
   const feedback = (meta, message) => {
     return meta.touched && meta.error
       ? {
-        feedback: message,
-        invalid: "true",
-      }
+          feedback: message,
+          invalid: "true",
+        }
       : {}
   }
 
@@ -144,10 +144,10 @@ export const FormCreatePage = (props) => {
    */
   const sendPlausibleFeedback = (interested) => {
     typeof window !== "undefined" &&
-    window?.plausible &&
-    window.plausible("souhaitez-vous-recevoir-des-offres-en-lien-avec-cette-formation", {
-      props: { interessé: interested },
-    })
+      window?.plausible &&
+      window.plausible("souhaitez-vous-recevoir-des-offres-en-lien-avec-cette-formation", {
+        props: { interessé: interested },
+      })
   }
 
   const [checkedState, setCheckedState] = useState(getDefaultReasonsAsFalse())
