@@ -1,4 +1,4 @@
-import { Box, Button, Center, Flex, Input, Radio, RadioGroup, Spinner, Stack, Text, CheckboxGroup, Checkbox } from "@chakra-ui/react"
+import { Box, Button, Input, Radio, RadioGroup, Spinner, Stack, Text, CheckboxGroup, Checkbox } from "@chakra-ui/react"
 import * as emailValidator from "email-validator"
 import { Field, Form, Formik } from "formik"
 import * as qs from "query-string"
@@ -17,14 +17,11 @@ import { getReasonText, getDefaultReasonsAsFalse, getReasons } from "../../commo
  * @constructor
  */
 export const FormCreatePage = (props) => {
-  const plausibleFeebackEnum = { OUI: "Oui", NON: "Non" }
-
   const navigate = useNavigate()
   const location = useLocation()
 
   const [data, setData] = useState()
   const [submitLoading, setSubmitLoading] = useState(false)
-  const [plausibleFeedback, setPlausibleFeedback] = useState("Non renseigné")
   const [error, setError] = useState()
   const [errorPhone, setErrorPhone] = useState()
   const [loading, setLoading] = useState(false)
@@ -122,7 +119,6 @@ export const FormCreatePage = (props) => {
         return
       }
 
-      sendPlausibleFeedback(plausibleFeedback)
       navigate(`/form/confirm/${appointment._id}`)
       setTimeout(() => window.scroll({ top: 0, behavior: "smooth" }), 500)
     } catch (e) {
@@ -135,9 +131,9 @@ export const FormCreatePage = (props) => {
   const feedback = (meta, message) => {
     return meta.touched && meta.error
       ? {
-          feedback: message,
-          invalid: "true",
-        }
+        feedback: message,
+        invalid: "true",
+      }
       : {}
   }
 
@@ -148,10 +144,10 @@ export const FormCreatePage = (props) => {
    */
   const sendPlausibleFeedback = (interested) => {
     typeof window !== "undefined" &&
-      window?.plausible &&
-      window.plausible("souhaitez-vous-recevoir-des-offres-en-lien-avec-cette-formation", {
-        props: { interessé: interested },
-      })
+    window?.plausible &&
+    window.plausible("souhaitez-vous-recevoir-des-offres-en-lien-avec-cette-formation", {
+      props: { interessé: interested },
+    })
   }
 
   const [checkedState, setCheckedState] = useState(getDefaultReasonsAsFalse())
@@ -304,33 +300,8 @@ export const FormCreatePage = (props) => {
                   )}
 
                   <Text mt={10}>
-                    <span style={{ color: "#B34000", paddingRight: "5px" }}>*</span>champ obligatoire
+                    <span style={{ color: "#B34000", paddingRight: "5px" }}>*</span>champs obligatoires
                   </Text>
-                  {referrer !== "affelnet" && referrer !== "parcoursup" && (
-                    <Flex mt={8} bg="#F6F6F6" py="9px" px="18px">
-                      <Box w="430px">
-                        <Text fontWeight="600">Souhaiteriez-vous recevoir des offres d’emploi en lien avec cette formation ?</Text>
-                      </Box>
-                      <Center w="150px" pl="20px">
-                        <Text
-                          as="span"
-                          pr="28px"
-                          onClick={() => setPlausibleFeedback(plausibleFeebackEnum.OUI)}
-                          fontWeight={plausibleFeedback === plausibleFeebackEnum.OUI ? "600" : "none"}
-                          sx={{ cursor: "pointer" }}
-                        >
-                          👍 Oui
-                        </Text>
-                        <Text
-                          onClick={() => setPlausibleFeedback(plausibleFeebackEnum.NON)}
-                          fontWeight={plausibleFeedback === plausibleFeebackEnum.NON ? "600" : "none"}
-                          sx={{ cursor: "pointer" }}
-                        >
-                          👎 Non
-                        </Text>
-                      </Center>
-                    </Flex>
-                  )}
                   <Button
                     variant="unstyled"
                     type={"submit"}
