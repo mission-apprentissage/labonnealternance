@@ -1,7 +1,6 @@
 import { encryptMailWithIV } from "../common/utils/encryptString.js"
 import { IApiError, manageApiError } from "../common/utils/errorManager.js"
 import { trackApiCall } from "../common/utils/sendTrackingEvent.js"
-import { itemModel } from "../model/itemModel.js"
 import { filterJobsByOpco } from "./opco.service.js"
 
 const coordinatesOfFrance = [2.213749, 46.227638]
@@ -240,8 +239,12 @@ const transformLbaJob = ({
   return resultJobs
 }
 
-const sortLbaJobs = (matchas) => {
-  matchas.results.sort((a, b) => {
+/**
+ * tri des ofres selon l'ordre alphabétique du titre (primaire) puis du nom de société (secondaire)
+ * @param {{ results: ILbaItem[] }}
+ */
+const sortLbaJobs = (jobs: { results: ILbaItem[] }) => {
+  jobs.results.sort((a, b) => {
     if (a?.title?.toLowerCase() < b?.title?.toLowerCase()) {
       return -1
     }
