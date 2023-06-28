@@ -1,5 +1,5 @@
 import { mailTemplate } from "../../../assets/index.js"
-import { etat_utilisateur } from "../../../common/constants.js"
+import { etat_utilisateur } from "../../../services/constants.js"
 import { UserRecruteur } from "../../../common/model/index.js"
 import { IUserRecruteur } from "../../../common/model/schema/userRecruteur/userRecruteur.types.js"
 import { asyncForEach } from "../../../common/utils/asyncUtils.js"

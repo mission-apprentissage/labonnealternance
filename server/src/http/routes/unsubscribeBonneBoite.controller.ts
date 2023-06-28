@@ -2,7 +2,7 @@ import { BonnesBoites, UnsubscribedBonneBoite } from "../../common/model/index.j
 import express from "express"
 import rateLimit from "express-rate-limit"
 import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
-import { UNSUBSCRIBE_EMAIL_ERRORS } from "../../common/constants.js"
+import { UNSUBSCRIBE_EMAIL_ERRORS } from "../../services/constants.js"
 import config from "../../config.js"
 import path from "path"
 import __dirname from "../../common/dirname.js"

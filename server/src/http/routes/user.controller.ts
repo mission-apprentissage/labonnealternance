@@ -1,7 +1,7 @@
 import express from "express"
 import { deleteFormulaire, getFormulaire, updateOffre } from "../../services/formulaire.service.js"
 import { mailTemplate } from "../../assets/index.js"
-import { CFA, ENTREPRISE, etat_utilisateur } from "../../common/constants.js"
+import { CFA, ENTREPRISE, etat_utilisateur } from "../../services/constants.js"
 import dayjs from "../../common/dayjs.js"
 import { Recruiter, UserRecruteur } from "../../common/model/index.js"
 import { createMagicLinkToken } from "../../common/utils/jwtUtils.js"
