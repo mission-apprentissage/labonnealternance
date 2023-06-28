@@ -13,6 +13,7 @@ import { getOffreAvecInfoMandataire, getJobsFromElasticSearch } from "./formulai
 import { getApplicationByJobCount, IApplicationCount } from "./application.service.js"
 import { ILbaItem } from "./lbaitem.shared.service.types.js"
 import { IRecruiter } from "../common/model/schema/recruiter/recruiter.types.js"
+import { ILbaJobEsResult } from "./lbajob.service.types.js"
 
 /**
  * Retourne les offres LBA correspondantes aux critères de recherche
@@ -92,12 +93,20 @@ export const getLbaJobs = async ({
 
 /**
  * Converti les offres issues de l'elasticsearch ou de la mongo en objet de type ILbaItem
- * @param {IRecruiter[]} jobs offres issues de l'elasticsearch ou de la mogon
+ * @param {ILbaJobEsResult[]} jobs offres issues de l'elasticsearch ou de la mogon
  * @param {string} caller l'identifiant de l'utilisateur de l'api
  * @param {IApplicationCount[]} applicationCountByJob les décomptes de candidatures par identifiant d'offres
- * @returns {ILbaItem[]}
+ * @returns {{ results: ILbaItem[] }}
  */
-const transformLbaJobs = ({ jobs, caller, applicationCountByJob }: { jobs: IRecruiter[]; caller?: string; applicationCountByJob: IApplicationCount[] }): ILbaItem[] => {
+const transformLbaJobs = ({
+  jobs,
+  caller,
+  applicationCountByJob,
+}: {
+  jobs: ILbaJobEsResult[]
+  caller?: string
+  applicationCountByJob: IApplicationCount[]
+}): { results: ILbaItem[] } => {
   const resultJobs = {
     results: [],
   }
@@ -125,21 +134,21 @@ const transformLbaJobs = ({ jobs, caller, applicationCountByJob }: { jobs: IRecr
  */
 export const getLbaJobById = async ({ id, caller }: { id: string; caller: string }): Promise<IApiError | { matchas: ILbaItem[] }> => {
   try {
-    let jobs = null
+    let rawJob = null
     if (id === "id-matcha-test") {
-      jobs = matchaMock._source
+      rawJob = matchaMock._source
     } else if (id === "id-matcha-test2") {
-      jobs = matchaMockMandataire._source
+      rawJob = matchaMockMandataire._source
     } else {
-      jobs = await getOffreAvecInfoMandataire(id)
+      rawJob = await getOffreAvecInfoMandataire(id)
     }
 
-    const matchaApplicationCountByJob = await getApplicationByJobCount([id])
+    const applicationCountByJob = await getApplicationByJobCount([id])
 
     const job = transformLbaJob({
-      job: jobs,
+      job: rawJob,
       caller,
-      matchaApplicationCountByJob,
+      applicationCountByJob,
     })
 
     if (caller) {
@@ -152,8 +161,25 @@ export const getLbaJobById = async ({ id, caller }: { id: string; caller: string
   }
 }
 
-// Adaptation au modèle Idea et conservation des seules infos utilisées des offres
-const transformLbaJob = ({ job, distance, caller, applicationCountByJob }) => {
+/**
+ * Adaptation au modèle LBAC et conservation des seules infos utilisées de l'offre
+ * @param {ILbaJobEsResult} job l'offre retournée d'ES ou de la mongo
+ * @param {number} distance optionnel: la distance du lieu de l'offre au centre de la recherche
+ * @param {string} caller optionnel: l'id de l'utilisateur de l'api
+ * @param {IApplicationCount[]} applicationCountByJob le tableau des décomptes de candidatures par offre
+ * @returns {ILbaItem[]}
+ */
+const transformLbaJob = ({
+  job,
+  distance,
+  caller,
+  applicationCountByJob,
+}: {
+  job: ILbaJobEsResult
+  distance?: number
+  caller?: string
+  applicationCountByJob: IApplicationCount[]
+}): ILbaItem[] => {
   const resultJobs = []
 
   job.jobs.map((offre, idx) => {
