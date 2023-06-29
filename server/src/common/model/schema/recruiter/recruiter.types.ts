@@ -27,6 +27,7 @@ interface IRecruiter {
   naf_label: string
   createdAt: Date
   updatedAt: Date
+  establishment_location?: string
 }
 
 export { IRecruiter }
