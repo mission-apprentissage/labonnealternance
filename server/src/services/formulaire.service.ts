@@ -16,6 +16,7 @@ import { getEtablissement, getValidationUrl } from "./etablissement.service.js"
 import { ModelUpdateOptions, UpdateQuery } from "mongoose"
 import { Filter } from "mongodb"
 import { getUser, getUserValidationState } from "./userRecruteur.service.js"
+import { ILbaJobEsResult } from "./lbajob.service.types.js"
 
 const esClient = getElasticInstance()
 const mailer = await createMailer()
@@ -38,7 +39,7 @@ interface IOffreExtended extends IJobs {
  * @param {string} payload.long
  * @param {string[]} payload.romes
  * @param {string} payload.niveau
- * @returns {Promise<IRecruiter[]>}
+ * @returns {Promise<ILbaJobEsResult[]>}
  */
 export const getJobsFromElasticSearch = async ({
   distance,
@@ -52,7 +53,7 @@ export const getJobsFromElasticSearch = async ({
   lon: string
   romes: string[]
   niveau: string
-}): Promise<IRecruiter[]> => {
+}): Promise<ILbaJobEsResult[]> => {
   const filter: Array<object> = [
     {
       geo_distance: {
