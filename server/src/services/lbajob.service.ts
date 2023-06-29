@@ -183,9 +183,7 @@ const transformLbaJob = ({
 
   job.jobs.map((offre, idx) => {
     const resultJob = new LbaItem("matcha")
-    let email = {}
-
-    email = encryptMailWithIV({ value: job.email, caller })
+    const email = encryptMailWithIV({ value: job.email, caller })
 
     resultJob.id = `${job.establishment_id}-${idx}`
     resultJob.title = offre.rome_appellation_label ?? offre.rome_label
