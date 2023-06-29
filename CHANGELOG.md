@@ -1,3 +1,10 @@
+## [1.48.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.48.0...v1.48.1) (2023-06-29)
+
+
+### Reverts
+
+* Revert "feat: move matcha search job service (#477)" ([61be1a9](https://github.com/mission-apprentissage/labonnealternance/commit/61be1a9d641faab1de78941b8519f82de9c67fae)), closes [#477](https://github.com/mission-apprentissage/labonnealternance/issues/477)
+
 # [1.48.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.47.0...v1.48.0) (2023-06-29)
 
 
