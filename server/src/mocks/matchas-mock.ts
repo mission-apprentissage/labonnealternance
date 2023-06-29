@@ -23,7 +23,7 @@ const matchaMockMandataire: ILbaJobEsResult = {
     naf_code: "7830Z",
     naf_label: "Autre mise à disposition de ressources humaines",
     establishment_size: "20 à 49 salariés",
-    establishment_creation_date: new Date("1970-01-14T03:34:30.000Z"),
+    establishment_creation_date: "1970-01-14T03:34:30.000Z",
     establishment_id: "_k5X_bClnWGazgpWny6sI",
     jobs: [
       /*{
@@ -162,7 +162,7 @@ const matchaMock: ILbaJobEsResult = {
     naf_code: "6201Z",
     naf_label: "Programmation informatique",
     establishment_size: "1 ou 2 salariés",
-    establishment_creation_date: new Date("1970-01-17T00:14:20.400Z"),
+    establishment_creation_date: "1970-01-17T00:14:20.400Z",
     updatedAt: new Date("2022-07-09T19:12:50.593Z"),
     createdAt: new Date("2022-07-09T18:58:05.497Z"),
   },

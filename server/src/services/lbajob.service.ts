@@ -5,7 +5,7 @@ import { filterJobsByOpco } from "./opco.service.js"
 
 const coordinatesOfFrance = [2.213749, 46.227638]
 
-import { NIVEAUX_POUR_LBA } from "../common/constants.js"
+import { NIVEAUX_POUR_LBA } from "./constant.service.js"
 import { roundDistance } from "../common/geolib.js"
 import { matchaMock, matchaMockMandataire, matchasMock } from "../mocks/matchas-mock.js"
 import { getOffreAvecInfoMandataire, getJobsFromElasticSearch } from "./formulaire.service.js"
@@ -197,10 +197,8 @@ const transformLbaJob = ({
 
     resultJob.company.mandataire = job.is_delegated
 
-    resultJob.company.place = { city: job?.address_detail?.localite }
-
     resultJob.nafs = [{ label: job.naf_label }]
-    resultJob.company.creationDate = job.establishment_creation_date
+    resultJob.company.creationDate = new Date(job.establishment_creation_date)
 
     resultJob.diplomaLevel = offre.job_level_label
     resultJob.createdAt = job.createdAt
