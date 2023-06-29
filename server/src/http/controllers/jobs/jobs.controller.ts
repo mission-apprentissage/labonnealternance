@@ -12,7 +12,7 @@ import dayjs from "../../../common/dayjs.js"
 import { getAppellationDetailsFromAPI, getRomeDetailsFromAPI } from "../../../services/rome.service.js"
 import { getOffre } from "../../../services/formulaire.service.js"
 import { getNearEtablissementsFromRomes } from "../../../services/catalogue.service.js"
-import { ENTREPRISE, etat_utilisateur, validation_utilisateur } from "../../../common/constants.js"
+import { ENTREPRISE, ETAT_UTILISATEUR, VALIDATION_UTILISATEUR } from "../../../services/constant.service.js"
 import { delay } from "../../../common/utils/asyncUtils.js"
 import { ICredential } from "../../../common/model/schema/credentials/credential.types.js"
 import { IApiError } from "../../../common/utils/errorManager.js"
@@ -146,9 +146,9 @@ export class JobsController extends Controller {
     const newUser = await createUser({ ...establishment, establishment_id: newEstablishment.establishment_id })
     // Update user status to valid
     await updateUserValidationHistory(newUser._id, {
-      validation_type: validation_utilisateur.AUTO,
+      validation_type: VALIDATION_UTILISATEUR.AUTO,
       user: "SERVEUR",
-      status: etat_utilisateur.VALIDE,
+      status: ETAT_UTILISATEUR.VALIDE,
     })
 
     this.setStatus(201)

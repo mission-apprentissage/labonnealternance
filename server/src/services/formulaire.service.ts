@@ -1,7 +1,7 @@
 import { pick } from "lodash-es"
 import moment from "moment"
 import { mailTemplate } from "../assets/index.js"
-import { ANNULEE, POURVUE, etat_utilisateur } from "../common/constants.js"
+import { ANNULEE, POURVUE, ETAT_UTILISATEUR } from "./constant.service.js"
 import dayjs from "../common/dayjs.js"
 import { getElasticInstance } from "../common/esClient/index.js"
 import createMailer from "../common/mailer.js"
@@ -239,7 +239,7 @@ export const createJob = async ({ job, id }: { job: Partial<IOffreExtended>; id:
   const user = await getUser({ establishment_id: id })
   // get user activation state if not managed by a CFA
   if (user) {
-    isUserAwaiting = getUserValidationState(user.status) === etat_utilisateur.ATTENTE
+    isUserAwaiting = getUserValidationState(user.status) === ETAT_UTILISATEUR.ATTENTE
     // upon user creation, if user is awaiting validation, update job status to "En attente"
     if (isUserAwaiting) {
       job.job_status = "En attente"
@@ -348,7 +348,7 @@ export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }:
 
     delegations.push({ siret_code, email })
 
-    if (userState.status === etat_utilisateur.VALIDE) {
+    if (userState.status === ETAT_UTILISATEUR.VALIDE) {
       await mailer.sendEmail({
         to: email,
         subject: `Une entreprise recrute dans votre domaine`,

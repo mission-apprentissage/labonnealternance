@@ -7,7 +7,7 @@ import { filterJobsByOpco } from "../services/opco.service.js"
 
 const coordinatesOfFrance = [2.213749, 46.227638]
 
-import { NIVEAUX_POUR_LBA } from "../common/constants.js"
+import { NIVEAUX_POUR_LBA } from "../services/constant.service.js"
 import { roundDistance } from "../common/geolib.js"
 import { matchaMock, matchaMockMandataire, matchasMock } from "../mocks/matchas-mock.js"
 import { getOffreAvecInfoMandataire, getJobsFromElasticSearch } from "../services/formulaire.service.js"

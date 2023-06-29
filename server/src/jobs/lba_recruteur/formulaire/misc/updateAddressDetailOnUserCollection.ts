@@ -1,4 +1,4 @@
-import { CFA, ENTREPRISE } from "../../../../common/constants.js"
+import { CFA, ENTREPRISE } from "../../../../services/constant.service.js"
 import { logger } from "../../../../common/logger.js"
 import { Recruiter, UserRecruteur } from "../../../../common/model/index.js"
 import { asyncForEach, delay } from "../../../../common/utils/asyncUtils.js"
