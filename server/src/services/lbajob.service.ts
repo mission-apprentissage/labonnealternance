@@ -109,23 +109,14 @@ const transformLbaJobs = ({
   caller?: string
   applicationCountByJob: IApplicationCount[]
 }): { results: ILbaItem[] } => {
-  const resultJobs = {
-    results: [],
-  }
-
-  if (jobs && jobs.length) {
-    for (let i = 0; i < jobs.length; ++i) {
-      const companyJobs = transformLbaJob({
-        job: jobs[i]._source,
-        distance: jobs[i].sort[0],
+return {
+  results: jobs.flatMap(job => transformLbaJob({
+        job: job._source,
+        distance: job.sort[0],
         applicationCountByJob,
         caller,
-      })
-      companyJobs.map((job) => resultJobs.results.push(job))
-    }
-  }
-
-  return resultJobs
+      }))
+}
 }
 
 /**
