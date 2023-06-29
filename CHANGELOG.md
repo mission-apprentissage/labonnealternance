@@ -1,3 +1,10 @@
+# [1.48.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.47.0...v1.48.0) (2023-06-29)
+
+
+### Features
+
+* move matcha search job service ([#477](https://github.com/mission-apprentissage/labonnealternance/issues/477)) ([341c053](https://github.com/mission-apprentissage/labonnealternance/commit/341c0539ddad34951f3e1bc2146faf774992e3f5))
+
 # [1.47.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.46.0...v1.47.0) (2023-06-29)
 
 
