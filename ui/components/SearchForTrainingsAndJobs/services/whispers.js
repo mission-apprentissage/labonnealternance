@@ -1,4 +1,4 @@
-import { chunk, forEach, includes, reject } from "lodash"
+import { chunk, forEach, includes, reject, result } from "lodash"
 import { astuces } from "../../../config/astuces"
 import { randomWithin } from "../../../utils/arrayutils"
 
@@ -14,14 +14,19 @@ function anyMessageAmongst(messages, alreadyShownMessages = []) {
 }
 
 export async function insertWhisper(document, isLoadingData) {
-  if (isLoadingData) return "loading data : no change"
+  if (isLoadingData) {
+    return "loading data : no change"
+  }
 
-  const whisperSize = document.getElementsByClassName("whisper").length
   const resultCards = document.getElementsByClassName("resultCard")
-  const resultCardSize = resultCards.length
 
-  if (whisperSize > 0) return "whisper already exists : no change"
-  if (resultCardSize === 0) return "no resultCard found : no change"
+  document.querySelectorAll('.whisper').forEach(element => {
+    element.remove()
+  })
+
+  if (resultCards.length === 0) { 
+    return "no resultCard found"
+  }
 
   const resultCardsBlocks = chunk(resultCards, 20)
   let alreadyShownMessages = []
