@@ -51,6 +51,9 @@ export const getLbaJobs = async ({
   caller?: string
   useMock?: string
 }): Promise<IApiError | { results: ILbaItem[] }> => {
+  if (radius === 0) {
+    radius = 10
+  }
   try {
     const hasLocation = Boolean(latitude)
 
