@@ -233,10 +233,8 @@ const transformLbaJob = ({
 
     const applicationCount = applicationCountByJob.find((job) => job._id == offre._id)
     resultJob.applicationCount = applicationCount?.count || 0
-    resultJobs.push(resultJob)
+     return resultJob
   })
-
-  return resultJobs
 }
 
 /**
