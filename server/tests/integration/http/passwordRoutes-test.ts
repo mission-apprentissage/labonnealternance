@@ -4,13 +4,13 @@ import jwt from "jsonwebtoken"
 import config from "../../../src/config.js"
 import httpTests from "../../utils/httpTests.js"
 import { createPasswordToken } from "../../../src/common/utils/jwtUtils.js"
-import { roles } from "../../../src/common/constants.js"
+import { ROLES } from "../../../src/services/constant.service.js"
 import __filename from "../../../src/common/filename.js"
 
 httpTests(__filename(import.meta.url), ({ startServer }) => {
   it("Vérifie qu'un utilisateur peut faire une demande de réinitialisation de mot de passe", async () => {
     const { httpClient, createAndLogUser } = await startServer()
-    await createAndLogUser("user", "password", { role: roles.administrator })
+    await createAndLogUser("user", "password", { role: ROLES.administrator })
 
     const response = await httpClient.post("/api/password/forgotten-password", {
       username: "user",
@@ -22,7 +22,7 @@ httpTests(__filename(import.meta.url), ({ startServer }) => {
 
   it("Vérifie qu'on ne peut pas demander la réinitialisation du mot de passe pour un utilisateur inconnu", async () => {
     const { httpClient, createAndLogUser } = await startServer()
-    await createAndLogUser("admin", "password", { role: roles.administrator })
+    await createAndLogUser("admin", "password", { role: ROLES.administrator })
 
     const response = await httpClient.post("/api/password/forgotten-password", {
       username: "inconnu",
@@ -45,7 +45,7 @@ httpTests(__filename(import.meta.url), ({ startServer }) => {
 
   it("Vérifie qu'un utilisateur peut changer son mot de passe", async () => {
     const { httpClient, createAndLogUser } = await startServer()
-    await createAndLogUser("admin", "password", { role: roles.administrator })
+    await createAndLogUser("admin", "password", { role: ROLES.administrator })
 
     const response = await httpClient.post("/api/password/reset-password", {
       passwordToken: createPasswordToken("admin"),
@@ -59,13 +59,13 @@ httpTests(__filename(import.meta.url), ({ startServer }) => {
     assert.deepStrictEqual(omit(decoded, ["iat", "exp"]), {
       sub: "admin",
       iss: config.appName,
-      role: roles.administrator,
+      role: ROLES.administrator,
     })
   })
 
   it("Vérifie qu'on doit spécifier un mot de passe valide", async () => {
     const { httpClient, createAndLogUser } = await startServer()
-    await createAndLogUser("admin", "password", { role: roles.administrator })
+    await createAndLogUser("admin", "password", { role: ROLES.administrator })
 
     const response = await httpClient.post("/api/password/reset-password", {
       passwordToken: createPasswordToken("admin"),

@@ -86,9 +86,8 @@ export const TRAINING_RYTHM = {
   "6S6S": "6 semaines / 6 semaines",
 }
 
-export const roles = {
+export const ROLES = {
   candidat: "candidat",
   cfa: "cfa",
   administrator: "administrator",
 }
-
