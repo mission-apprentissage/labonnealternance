@@ -1,3 +1,10 @@
+# [1.47.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.46.0...v1.47.0) (2023-06-29)
+
+
+### Features
+
+* add delegation count recovery script ([#484](https://github.com/mission-apprentissage/labonnealternance/issues/484)) ([94ee2eb](https://github.com/mission-apprentissage/labonnealternance/commit/94ee2eb05a57b65a56eb36f017055ff9ce8803b9))
+
 # [1.46.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.45.0...v1.46.0) (2023-06-28)
 
 
