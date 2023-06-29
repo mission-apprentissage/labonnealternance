@@ -30,7 +30,7 @@ import { ILbaJobEsResult } from "./lbajob.service.types.js"
  */
 export const getLbaJobs = async ({
   romes,
-  radius,
+  radius = 10,
   latitude,
   longitude,
   api,
