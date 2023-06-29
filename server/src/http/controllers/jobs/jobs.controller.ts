@@ -18,7 +18,7 @@ import { ICredential } from "../../../common/model/schema/credentials/credential
 import { IApiError } from "../../../common/utils/errorManager.js"
 import { ILbaItem } from "../../../services/lbaitem.shared.service.types.js"
 import { getCompanyFromSiret } from "../../../service/poleEmploi/bonnesBoites.js"
-import { getLbaJobById } from "../../../services/lbajob.service.js"
+import { getMatchaJobById } from "../../../service/matcha.js"
 import { getPeJobFromId } from "../../../service/poleEmploi/offresPoleEmploi.js"
 import { getJobsQuery } from "../../../service/poleEmploi/jobsAndCompanies.js"
 import { jobsQueryValidator } from "../../../service/poleEmploi/jobsQueryValidator.js"
@@ -483,7 +483,7 @@ export class JobsController extends Controller {
   @Get("/matcha/{id}")
   @OperationId("getLbaJob")
   public async getLbaJob(@Path() id: string, @Query() caller?: string): Promise<IApiError | { matchas: ILbaItem[] }> {
-    const result = await getLbaJobById({
+    const result = await getMatchaJobById({
       id,
       caller,
     })
