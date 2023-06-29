@@ -2,7 +2,7 @@ import assert from "assert"
 import integrationTests from "../../utils/integrationTests.js"
 import users from "../../../src/common/components/users.js"
 import { User } from "../../../src/common/model/index.js"
-import { roles } from "../../../src/common/roles.js"
+import { roles } from "../../../src/common/constants.js"
 import __filename from "../../../src/common/filename.js"
 
 integrationTests(__filename(import.meta.url), () => {
