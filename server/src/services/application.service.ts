@@ -654,7 +654,7 @@ const warnMatchaTeamAboutBouncedEmail = async ({ application }: { application: I
   })
 }
 
-interface IApplicationCount {
+export interface IApplicationCount {
   _id: string
   count: number
 }
