@@ -69,7 +69,7 @@ export const getLbaJobs = async ({
 
     const jobs = useMock === "true" ? matchasMock : await getJobsFromElasticSearch(params)
 
-    const ids: string[] = jobs.map(({ _source }) => _source.jobs.map(({ _id }) => _id)).flat()
+    const ids: string[] = jobs.flatMap(({ _source }) => _source.jobs.map(({ _id }) => _id))
 
     const applicationCountByJob = await getApplicationByJobCount(ids)
 
