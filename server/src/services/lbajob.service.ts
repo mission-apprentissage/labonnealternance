@@ -182,9 +182,7 @@ const transformLbaJob = ({
   caller?: string
   applicationCountByJob: IApplicationCount[]
 }): ILbaItem[] => {
-  const resultJobs = []
-
-  job.jobs.map((offre, idx) => {
+  return job.jobs.map((offre, idx) => {
     const resultJob = new LbaItem("matcha")
     const email = encryptMailWithIV({ value: job.email, caller })
 
