@@ -57,7 +57,7 @@ export const getLbaJobs = async ({
   try {
     const hasLocation = Boolean(latitude)
 
-    const distance = hasLocation ? radius || 10 : 21000
+    const distance = hasLocation ? radius : 21000
 
     const params: any = {
       romes: romes.split(","),
