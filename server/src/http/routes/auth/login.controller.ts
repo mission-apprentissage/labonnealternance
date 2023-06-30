@@ -39,7 +39,7 @@ const checkToken = () => {
   return passport.authenticate("jwt", { session: false, failWithError: true })
 }
 
-export default ({ etablissementsRecruteur, mailer }) => {
+export default ({ mailer }) => {
   const router = express.Router() // eslint-disable-line new-cap
   passport.use(
     new LocalStrategy(
