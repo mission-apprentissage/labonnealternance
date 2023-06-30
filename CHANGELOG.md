@@ -1,3 +1,10 @@
+## [1.48.2](https://github.com/mission-apprentissage/labonnealternance/compare/v1.48.1...v1.48.2) (2023-06-30)
+
+
+### Bug Fixes
+
+* connexion impossible pour utilisateurs avec emails non validés ([#487](https://github.com/mission-apprentissage/labonnealternance/issues/487)) ([124743f](https://github.com/mission-apprentissage/labonnealternance/commit/124743f4ce7031ca4f51063d0ff158dec84be760))
+
 ## [1.48.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.48.0...v1.48.1) (2023-06-29)
 
 
