@@ -13,6 +13,7 @@ import { tryCatch } from "../../middlewares/tryCatchMiddleware.js"
 import { IUserRecruteur } from "../../../common/model/schema/userRecruteur/userRecruteur.types.js"
 import { getUser, registerUser } from "../../../services/userRecruteur.service.js"
 import * as users from "../../../services/user.service.js"
+import { getValidationUrl } from "../../../services/etablissement.service.js"
 
 const checkToken = () => {
   passport.use(
@@ -162,7 +163,7 @@ export default ({ etablissementsRecruteur, mailer }) => {
       }
 
       if (!is_email_checked) {
-        const url = etablissementsRecruteur.getValidationUrl(_id)
+        const url = getValidationUrl(_id)
 
         await mailer.sendEmail({
           to: userEmail,
