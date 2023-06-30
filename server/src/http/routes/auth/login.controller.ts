@@ -93,7 +93,7 @@ export default ({ etablissementsRecruteur, mailer }) => {
           return res.status(400).json({ error: true, reason: "VERIFIED" })
         }
 
-        const url = etablissementsRecruteur.getValidationUrl(_id)
+        const url = getValidationUrl(_id)
 
         await mailer.sendEmail({
           to: email,
