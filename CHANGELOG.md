@@ -1,3 +1,10 @@
+## [1.48.3](https://github.com/mission-apprentissage/labonnealternance/compare/v1.48.2...v1.48.3) (2023-07-03)
+
+
+### Bug Fixes
+
+* if raison_social is missing ([881b016](https://github.com/mission-apprentissage/labonnealternance/commit/881b0167ae9b40f13a71c3447ac29fe6a5a2666e))
+
 ## [1.48.2](https://github.com/mission-apprentissage/labonnealternance/compare/v1.48.1...v1.48.2) (2023-06-30)
 
 
