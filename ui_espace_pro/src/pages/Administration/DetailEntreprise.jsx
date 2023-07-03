@@ -127,7 +127,7 @@ export default () => {
 
   return (
     <AnimationContainer>
-      <ConfirmationDesactivationUtilisateur {...confirmationDesactivationUtilisateur} raison_sociale={data.data.establishment_raison_sociale} _id={data.data._id} />
+      <ConfirmationDesactivationUtilisateur {...confirmationDesactivationUtilisateur} {...data.data} />
       <Layout displayNavigationMenu={false} header={false} footer={false}>
         <Container maxW="container.xl">
           <Box mt="16px" mb={6}>
