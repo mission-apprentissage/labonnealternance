@@ -1,3 +1,10 @@
+## [1.48.4](https://github.com/mission-apprentissage/labonnealternance/compare/v1.48.3...v1.48.4) (2023-07-04)
+
+
+### Bug Fixes
+
+* **admin:** le bouton 'désactiver le compte' doit fonctionner ([#489](https://github.com/mission-apprentissage/labonnealternance/issues/489)) ([9558c35](https://github.com/mission-apprentissage/labonnealternance/commit/9558c35a0e73c8223693fd4d407ebcbb66e88890))
+
 ## [1.48.3](https://github.com/mission-apprentissage/labonnealternance/compare/v1.48.2...v1.48.3) (2023-07-03)
 
 
