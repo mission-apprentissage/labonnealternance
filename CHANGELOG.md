@@ -1,3 +1,10 @@
+## [1.48.5](https://github.com/mission-apprentissage/labonnealternance/compare/v1.48.4...v1.48.5) (2023-07-04)
+
+
+### Bug Fixes
+
+* **docker:** update memory usage on containers ([#488](https://github.com/mission-apprentissage/labonnealternance/issues/488)) ([afa50d8](https://github.com/mission-apprentissage/labonnealternance/commit/afa50d85a4b05d3ae6b4ed9ed45b225845859590))
+
 ## [1.48.4](https://github.com/mission-apprentissage/labonnealternance/compare/v1.48.3...v1.48.4) (2023-07-04)
 
 
