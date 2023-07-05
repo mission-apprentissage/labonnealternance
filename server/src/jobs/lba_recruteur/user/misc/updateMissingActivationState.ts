@@ -45,7 +45,6 @@ export const checkAwaitingCompaniesValidation = async ({ mailer }) => {
   logger.info(`${entreprises.length} etp à mettre à jour...`)
 
   await asyncForEach(entreprises, async (etp, index) => {
-    logger.info(`${entreprises.length}/${index}`)
     const userFormulaire = await getFormulaire({ establishment_id: etp.establishment_id })
 
     if (!userFormulaire) {
