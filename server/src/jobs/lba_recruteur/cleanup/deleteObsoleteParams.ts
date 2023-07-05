@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { pick } from "lodash-es"
 import { logger } from "../../../common/logger.js"
-import { Recruiter, UserRecruteur } from "../../../common/model/index.js"
+import { Recruiter, UserRecruteur } from "../../../db/index.js"
 import { runScript } from "../../scriptWrapper.js"
 
 const updateFormulaire = async () => {

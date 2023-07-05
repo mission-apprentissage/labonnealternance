@@ -1,7 +1,7 @@
 //@ts-nocheck
 import { get } from "lodash-es"
 import { logger } from "../../common/logger.js"
-import { Application } from "../../common/model/index.js"
+import { Application } from "../../db/index.js"
 import { sentryCaptureException } from "../../common/utils/sentryUtils.js"
 import { notifyToSlack } from "../../common/utils/slackUtils.js"
 

@@ -17,7 +17,7 @@ const connectToMongoForTests = async () => {
   return mongoHolder
 }
 
-import * as models from "../../src/common/model/index.js"
+import * as models from "../../src/db"
 
 const cleanAll = () => {
   return Promise.all([emptyDir(testDataDir), ...Object.values(models).map((m) => m.deleteMany())])

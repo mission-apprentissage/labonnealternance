@@ -1,6 +1,6 @@
 import { mailTemplate } from "../../assets/index.js"
 import { logger } from "../../common/logger.js"
-import { mailType } from "../../common/model/constants/etablissement.js"
+import { mailType } from "../../db/constants/etablissement.js"
 import { dayjs } from "../../common/utils/dayjs.js"
 import config from "../../config.js"
 

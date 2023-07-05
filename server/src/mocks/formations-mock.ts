@@ -1,4 +1,4 @@
-import { IFormationCatalogue } from "../common/model/schema/formationCatalogue/formationCatalogue.types.js"
+import { IFormationCatalogue } from "../db/schema/formationCatalogue/formationCatalogue.types.js"
 
 const formationMock: Partial<IFormationCatalogue> = {
   cle_ministere_educatif: "id-formation-test",

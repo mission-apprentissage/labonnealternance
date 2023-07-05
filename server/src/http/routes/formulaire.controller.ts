@@ -1,6 +1,6 @@
 // @ts-nocheck
 import express from "express"
-import { Recruiter } from "../../common/model/index.js"
+import { Recruiter } from "../../db/index.js"
 import { getApplication } from "../../services/application.service.js"
 import {
   archiveDelegatedFormulaire,

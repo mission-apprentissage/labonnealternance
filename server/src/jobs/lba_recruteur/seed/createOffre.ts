@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { omit } from "lodash-es"
 import { logger } from "../../../common/logger.js"
-import { Recruiter, Job } from "../../../common/model/index.js"
+import { Recruiter, Job } from "../../../db/index.js"
 
 export const createOffreCollection = async () => {
   logger.info("Deleting offres collections...")

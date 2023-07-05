@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { Recruiter, UserRecruteur } from "../../../../common/model/index.js"
+import { Recruiter, UserRecruteur } from "../../../../db/index.js"
 import { runScript } from "../../../scriptWrapper.js"
 
 runScript(async ({ etablissement }) => {

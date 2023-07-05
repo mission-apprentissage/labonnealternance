@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { getElasticInstance } from "../../common/esClient/index.js"
 import { logger } from "../../common/logger.js"
-import { DiplomesMetiers } from "../../common/model/index.js"
+import { DiplomesMetiers } from "../../db/index.js"
 import { resetIndexAndDb } from "../../common/utils/esUtils.js"
 import { sentryCaptureException } from "../../common/utils/sentryUtils.js"
 

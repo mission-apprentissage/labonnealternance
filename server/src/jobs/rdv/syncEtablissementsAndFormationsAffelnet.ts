@@ -1,7 +1,7 @@
 import { oleoduc, writeData } from "oleoduc"
 import { Readable } from "stream"
 import { logger } from "../../common/logger.js"
-import { referrers } from "../../common/model/constants/referrers.js"
+import { referrers } from "../../db/constants/referrers.js"
 import { dayjs } from "../../common/utils/dayjs.js"
 import { isValidEmail } from "../../common/utils/isValidEmail.js"
 import { isEmailBlacklisted } from "../../services/application.service.js"

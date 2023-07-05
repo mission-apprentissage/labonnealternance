@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { oleoduc, writeData } from "oleoduc"
 import { logger } from "../../common/logger.js"
-import { FormationCatalogue } from "../../common/model/index.js"
+import { FormationCatalogue } from "../../db/index.js"
 import { rebuildIndex, resetIndexAndDb } from "../../common/utils/esUtils.js"
 import { sentryCaptureException } from "../../common/utils/sentryUtils.js"
 import { notifyToSlack } from "../../common/utils/slackUtils.js"

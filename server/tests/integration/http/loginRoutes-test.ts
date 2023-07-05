@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken"
 import { omit } from "lodash-es"
 import config from "../../../src/config.js"
 import httpTests from "../../utils/httpTests.js"
-import { User } from "../../../src/common/model/index.js"
+import { User } from "../../../src/db"
 import { hash } from "../../../src/common/utils/sha512Utils.js"
 import __filename from "../../../src/common/filename.js"
 

@@ -7,9 +7,9 @@ import { oleoduc, transformData, transformIntoCSV } from "oleoduc"
 import { Readable } from "stream"
 import dayjs from "../../../../common/dayjs.js"
 import { logger } from "../../../../common/logger.js"
-import { UserRecruteur } from "../../../../common/model/index.js"
+import { UserRecruteur } from "../../../../db/index.js"
 import { asyncForEach, delay } from "../../../../common/utils/asyncUtils.js"
-import { IUserRecruteur } from "../../../../common/model/schema/userRecruteur/userRecruteur.types.js"
+import { IUserRecruteur } from "../../../../db/schema/userRecruteur/userRecruteur.types.js"
 import config from "../../../../config.js"
 
 const stat = {

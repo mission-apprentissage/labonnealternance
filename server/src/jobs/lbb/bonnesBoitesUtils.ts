@@ -8,7 +8,7 @@ import config from "../../config.js"
 import __dirname from "../../common/dirname.js"
 import { compose, oleoduc, writeData } from "oleoduc"
 import geoData from "../../common/utils/geoData.js"
-import { EmailBlacklist, BonnesBoites, GeoLocation, Opco } from "../../common/model/index.js"
+import { EmailBlacklist, BonnesBoites, GeoLocation, Opco } from "../../db/index.js"
 import initNafMap from "./initNafMap.js"
 import initNafScoreMap from "./initNafScoreMap.js"
 
@@ -93,7 +93,7 @@ export const countCompaniesInFile = async (): number => {
 }
 
 /*
-Initialize bonneBoite from data, add missing data from maps, 
+Initialize bonneBoite from data, add missing data from maps,
 */
 export const getCompanyMissingData = async (rawCompany) => {
   const company = new BonnesBoites(rawCompany)

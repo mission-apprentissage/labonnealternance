@@ -29,10 +29,10 @@ import {
 import { ICFADock, ISIRET2IDCC } from "../../services/etablissement.service.types.js"
 import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
 import { validationOrganisation } from "../../services/bal.service.js"
-import { IUserRecruteur } from "../../common/model/schema/userRecruteur/userRecruteur.types.js"
-import { IRecruiter } from "../../common/model/schema/recruiter/recruiter.types.js"
+import { IUserRecruteur } from "../../db/schema/userRecruteur/userRecruteur.types.js"
+import { IRecruiter } from "../../db/schema/recruiter/recruiter.types.js"
 import { updateUserValidationHistory, getUser, createUser, updateUser, getUserValidationState, registerUser } from "../../services/userRecruteur.service.js"
-import { IAdresseV3 } from "../../common/model/schema/_shared/shared.types.js"
+import { IAdresseV3 } from "../../db/schema/_shared/shared.types.js"
 
 const getCfaRomeSchema = joi.object({
   latitude: joi.number().required(),

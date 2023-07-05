@@ -1,6 +1,6 @@
-import { EligibleTrainingsForAppointment, FormationCatalogue } from "../common/model/index.js"
+import { EligibleTrainingsForAppointment, FormationCatalogue } from "../db/index.js"
 import { asyncForEach } from "../common/utils/asyncUtils.js"
-import { IFormationCatalogue } from "../common/model/schema/formationCatalogue/formationCatalogue.types.js"
+import { IFormationCatalogue } from "../db/schema/formationCatalogue/formationCatalogue.types.js"
 import apiGeoAdresse from "../common/utils/apiGeoAdresse.js"
 import { URL } from "url"
 

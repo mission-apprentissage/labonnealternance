@@ -1,6 +1,6 @@
 import express from "express"
 import { logger } from "../../../common/logger.js"
-import { Appointment, User } from "../../../common/model/index.js"
+import { Appointment, User } from "../../../db/index.js"
 import { getFormationsByCleMinistereEducatif } from "../../../services/catalogue.service.js"
 import { tryCatch } from "../../middlewares/tryCatchMiddleware.js"
 

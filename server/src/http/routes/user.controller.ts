@@ -3,7 +3,7 @@ import { deleteFormulaire, getFormulaire, updateOffre } from "../../services/for
 import { mailTemplate } from "../../assets/index.js"
 import { CFA, ENTREPRISE, etat_utilisateur } from "../../common/constants.js"
 import dayjs from "../../common/dayjs.js"
-import { Recruiter, UserRecruteur } from "../../common/model/index.js"
+import { Recruiter, UserRecruteur } from "../../db/index.js"
 import { createMagicLinkToken } from "../../common/utils/jwtUtils.js"
 import config from "../../config.js"
 import { tryCatch } from "../middlewares/tryCatchMiddleware.js"

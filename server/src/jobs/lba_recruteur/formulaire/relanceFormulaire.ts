@@ -2,12 +2,12 @@
 import moment from "moment"
 import { mailTemplate } from "../../../assets/index.js"
 import { logger } from "../../../common/logger.js"
-import { Recruiter, UserRecruteur } from "../../../common/model/index.js"
+import { Recruiter, UserRecruteur } from "../../../db/index.js"
 import { asyncForEach } from "../../../common/utils/asyncUtils.js"
 import { notifyToSlack } from "../../../common/utils/slackUtils.js"
 import config from "../../../config.js"
-import { IRecruiter } from "../../../common/model/schema/recruiter/recruiter.types.js"
-import { IUserRecruteur } from "../../../common/model/schema/userRecruteur/userRecruteur.types.js"
+import { IRecruiter } from "../../../db/schema/recruiter/recruiter.types.js"
+import { IUserRecruteur } from "../../../db/schema/userRecruteur/userRecruteur.types.js"
 
 export const relanceFormulaire = async (mailer, threshold) => {
   // number of days to expiration for the reminder email to be sent

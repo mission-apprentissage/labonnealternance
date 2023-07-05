@@ -1,6 +1,6 @@
 import { logger } from "../../../../common/logger.js"
-import { Recruiter } from "../../../../common/model/index.js"
-import { IRecruiter } from "../../../../common/model/schema/recruiter/recruiter.types.js"
+import { Recruiter } from "../../../../db/index.js"
+import { IRecruiter } from "../../../../db/schema/recruiter/recruiter.types.js"
 import { asyncForEach, delay } from "../../../../common/utils/asyncUtils.js"
 import { getEtablissementFromGouv } from "../../../../services/etablissement.service.js"
 import { runScript } from "../../../scriptWrapper.js"

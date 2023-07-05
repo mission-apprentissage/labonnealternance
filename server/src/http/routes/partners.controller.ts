@@ -1,6 +1,6 @@
 import express from "express"
 import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
-import { referrers } from "../../common/model/constants/referrers.js"
+import { referrers } from "../../db/constants/referrers.js"
 import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service.js"
 
 /**

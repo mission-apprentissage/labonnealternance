@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { oleoduc, transformData, writeData } from "oleoduc"
 import _ from "lodash-es"
-import { BonnesBoites, UnsubscribedBonneBoite } from "../../common/model/index.js"
+import { BonnesBoites, UnsubscribedBonneBoite } from "../../db/index.js"
 import { rebuildIndex } from "../../common/utils/esUtils.js"
 import { logMessage } from "../../common/utils/logMessage.js"
 import { insertSAVECompanies, updateSAVECompanies, removeSAVECompanies } from "./updateSAVECompanies.js"

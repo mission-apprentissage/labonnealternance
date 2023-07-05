@@ -1,9 +1,9 @@
 import axios, { AxiosResponse } from "axios"
-import { BonneBoiteLegacy, BonnesBoites, Etablissement, ReferentielOpco, UserRecruteur } from "../common/model/index.js"
-import { IBonneBoite } from "../common/model/schema/bonneboite/bonneboite.types.js"
-import { IEtablissement } from "../common/model/schema/etablissements/etablissement.types.js"
-import { IReferentielOpco } from "../common/model/schema/referentielOpco/referentielOpco.types.js"
-import { IUserRecruteur } from "../common/model/schema/userRecruteur/userRecruteur.types.js"
+import { BonneBoiteLegacy, BonnesBoites, Etablissement, ReferentielOpco, UserRecruteur } from "../db/index.js"
+import { IBonneBoite } from "../db/schema/bonneboite/bonneboite.types.js"
+import { IEtablissement } from "../db/schema/etablissements/etablissement.types.js"
+import { IReferentielOpco } from "../db/schema/referentielOpco/referentielOpco.types.js"
+import { IUserRecruteur } from "../db/schema/userRecruteur/userRecruteur.types.js"
 import { sentryCaptureException } from "../common/utils/sentryUtils.js"
 import config from "../config.js"
 
@@ -18,7 +18,7 @@ import {
   IReferentiel,
   ISIRET2IDCC,
 } from "./etablissement.service.types.js"
-import { IRecruiter } from "../common/model/schema/recruiter/recruiter.types.js"
+import { IRecruiter } from "../db/schema/recruiter/recruiter.types.js"
 import { Filter } from "mongodb"
 
 const apiParams = {

@@ -1,5 +1,5 @@
 import dayjs from "../../../common/dayjs.js"
-import { User } from "../../../common/model/index.js"
+import { User } from "../../../db/index.js"
 import { roles } from "../../../common/roles.js"
 import { runScript } from "../../scriptWrapper.js"
 

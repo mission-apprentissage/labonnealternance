@@ -1,4 +1,4 @@
-import { IFormationCatalogue } from "../common/model/schema/formationCatalogue/formationCatalogue.types.js"
+import { IFormationCatalogue } from "../db/schema/formationCatalogue/formationCatalogue.types.js"
 
 export interface IFormationEsResult {
   source: Partial<IFormationCatalogue>

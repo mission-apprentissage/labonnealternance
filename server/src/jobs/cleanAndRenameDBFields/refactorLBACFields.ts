@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { logger } from "../../common/logger.js"
-import { BonnesBoites } from "../../common/model/index.js"
+import { BonnesBoites } from "../../db/index.js"
 import { mongooseInstance } from "../../common/mongodb.js"
 import { rebuildIndex } from "../../common/utils/esUtils.js"
 

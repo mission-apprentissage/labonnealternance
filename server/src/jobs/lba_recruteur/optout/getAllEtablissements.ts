@@ -1,6 +1,6 @@
 import axios from "axios"
 import { differenceBy } from "lodash-es"
-import { Optout } from "../../../common/model/index.js"
+import { Optout } from "../../../db/index.js"
 import { runScript } from "../../scriptWrapper.js"
 
 /**

@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { oleoduc, transformData, writeData } from "oleoduc"
-import { BonnesBoites } from "../../common/model/index.js"
+import { BonnesBoites } from "../../db/index.js"
 import { logMessage } from "../../common/utils/logMessage.js"
 import { downloadSAVEFile, getCompanyMissingData, initMaps, streamSAVECompanies } from "./bonnesBoitesUtils.js"
 

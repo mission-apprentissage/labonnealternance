@@ -1,4 +1,4 @@
-import { EligibleTrainingsForAppointment } from "../../common/model/index.js"
+import { EligibleTrainingsForAppointment } from "../../db/index.js"
 import { getFormationsFromCatalogueMe } from "../../services/catalogue.service.js"
 import { runScript } from "../scriptWrapper.js"
 

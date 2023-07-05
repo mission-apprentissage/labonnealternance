@@ -1,6 +1,6 @@
 import { oleoduc, writeData } from "oleoduc"
 import { logger } from "../../common/logger.js"
-import { EligibleTrainingsForAppointment, eligibleTrainingsForAppointmentHistoric, FormationCatalogue } from "../../common/model/index.js"
+import { EligibleTrainingsForAppointment, eligibleTrainingsForAppointmentHistoric, FormationCatalogue } from "../../db/index.js"
 import { affelnetSelectedFields, getFormationsFromCatalogueMe } from "../../services/catalogue.service.js"
 import dayjs from "../../common/dayjs.js"
 import { pick } from "lodash-es"

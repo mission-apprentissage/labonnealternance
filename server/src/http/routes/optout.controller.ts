@@ -1,7 +1,7 @@
 // @ts-nocheck
 import express from "express"
 import jwt from "jsonwebtoken"
-import { Optout } from "../../common/model/index.js"
+import { Optout } from "../../db/index.js"
 import config from "../../config.js"
 
 export default () => {
