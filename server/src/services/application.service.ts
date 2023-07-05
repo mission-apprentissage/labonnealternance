@@ -306,8 +306,8 @@ const buildRecruiterEmailUrls = ({
     lbaRecruiterUrl: `${publicUrl}/acces-recruteur?${utmRecruiterData}`,
     unsubscribeUrl: `${publicUrl}/desinscription?email=${application.company_email}${utmRecruiterData}`,
     lbaUrl: `${publicUrl}?${utmRecruiterData}`,
-    jobProvidedUrl: `${publicUrlEspacePro}/offre/${application.toObject()._id}/provided?${utmRecruiterData}`,
-    cancelJobUrl: `${publicUrlEspacePro}/offre/${application.toObject()._id}/cancel?${utmRecruiterData}`,
+    jobProvidedUrl: `${publicUrlEspacePro}/offre/${application.job_id}/provided?${utmRecruiterData}`,
+    cancelJobUrl: `${publicUrlEspacePro}/offre/${application.job_id}/cancel?${utmRecruiterData}`,
     faqUrl: `${publicUrl}/faq?${utmRecruiterData}`,
   }
 
