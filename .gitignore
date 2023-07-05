@@ -2,6 +2,9 @@
 build/
 .idea/
 
+# Generated files
+src/jobs/lba_recruteur/formulaire/misc/exportPE.csv
+
 # dependencies
 /node_modules
 /.pnp
