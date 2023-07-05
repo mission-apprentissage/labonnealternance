@@ -72,7 +72,7 @@ export const syncEtablissementsAndFormations = async ({ etablissements }) => {
         }
 
         // Activate premium referrers
-        if (etablissement?.premium_activation_date) {
+        if (etablissement?.premium_activation_date && formationMinistereEducatif?.parcoursup_id) {
           referrersToActivate.push(referrers.PARCOURSUP.name)
         }
 
