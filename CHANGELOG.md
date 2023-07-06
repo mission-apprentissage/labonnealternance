@@ -1,3 +1,10 @@
+## [1.48.6](https://github.com/mission-apprentissage/labonnealternance/compare/v1.48.5...v1.48.6) (2023-07-06)
+
+
+### Bug Fixes
+
+* local docker server memory upgrade ([2353734](https://github.com/mission-apprentissage/labonnealternance/commit/23537349beb30a203ca8ac741781e37f3f0cbb59))
+
 ## [1.48.5](https://github.com/mission-apprentissage/labonnealternance/compare/v1.48.4...v1.48.5) (2023-07-04)
 
 ### Bug Fixes

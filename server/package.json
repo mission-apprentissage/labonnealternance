@@ -1,6 +1,6 @@
 {
   "name": "mna-lba-server",
-  "version": "1.48.5",
+  "version": "1.48.6",
   "description": "API La bonne alternance",
   "repository": "https://github.com/mission-apprentissage/labonnealternance.git",
   "private": false,
