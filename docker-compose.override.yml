@@ -29,7 +29,7 @@ services:
     stdin_open: true
 
   server:
-    mem_limit: 512m
+    mem_limit: 2g
     build:
       args:
         LBA_ENV: dev
