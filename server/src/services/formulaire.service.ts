@@ -1,21 +1,21 @@
 import { pick } from "lodash-es"
 import moment from "moment"
-import { mailTemplate } from "../assets/index.js"
-import { ANNULEE, POURVUE, etat_utilisateur } from "../common/constants.js"
-import dayjs from "../common/dayjs.js"
-import { getElasticInstance } from "../common/esClient/index.js"
-import createMailer from "../common/mailer.js"
-import { Recruiter } from "../common/model/index.js"
-import { IRecruiter } from "../common/model/schema/recruiter/recruiter.types.js"
-import { IJobs } from "../common/model/schema/jobs/jobs.types.js"
-import { IUserRecruteur } from "../common/model/schema/userRecruteur/userRecruteur.types.js"
-import { asyncForEach } from "../common/utils/asyncUtils.js"
-import config from "../config.js"
-import { getCatalogueEtablissements, getCatalogueFormations } from "./catalogue.service.js"
-import { getEtablissement, getValidationUrl } from "./etablissement.service.js"
+import { mailTemplate } from "../assets/index.ts"
+import { ANNULEE, POURVUE, etat_utilisateur } from "../common/constants.ts"
+import dayjs from "../common/dayjs.ts"
+import { getElasticInstance } from "../common/esClient/index.ts"
+import createMailer from "../common/mailer.ts"
+import { Recruiter, UnsubscribeOF } from "../common/model/index.ts"
+import { IRecruiter } from "../common/model/schema/recruiter/recruiter.types.ts"
+import { IJobs } from "../common/model/schema/jobs/jobs.types.ts"
+import { IUserRecruteur } from "../common/model/schema/userRecruteur/userRecruteur.types.ts"
+import { asyncForEach } from "../common/utils/asyncUtils.ts"
+import config from "../config.ts"
+import { getCatalogueEtablissements, getCatalogueFormations } from "./catalogue.service.ts"
+import { getEtablissement, getValidationUrl } from "./etablissement.service.ts"
 import { ModelUpdateOptions, UpdateQuery } from "mongoose"
 import { Filter } from "mongodb"
-import { getUser, getUserValidationState } from "./userRecruteur.service.js"
+import { getUser, getUserValidationState } from "./userRecruteur.service.ts"
 
 const esClient = getElasticInstance()
 const mailer = await createMailer()
@@ -349,25 +349,7 @@ export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }:
     delegations.push({ siret_code, email })
 
     if (userState.status === etat_utilisateur.VALIDE) {
-      await mailer.sendEmail({
-        to: email,
-        subject: `Une entreprise recrute dans votre domaine`,
-        template: mailTemplate["mail-cfa-delegation"],
-        data: {
-          images: {
-            logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
-          },
-          enterpriseName: offreDocument.establishment_raison_sociale,
-          jobName: offre.rome_appellation_label,
-          contractType: offre.job_type.join(", "),
-          trainingLevel: offre.job_level_label,
-          startDate: dayjs(offre.job_start_date).format("DD/MM/YYYY"),
-          duration: offre.job_duration,
-          rhythm: offre.job_rythm,
-          offerButton: `${config.publicUrlEspacePro}/proposition/formulaire/${offreDocument.establishment_id}/offre/${offre._id}/siret/${siret_code}`,
-          createAccountButton: `${config.publicUrlEspacePro}/creation/cfa`,
-        },
-      })
+      await sendCFADelegationMail(email, offre, offreDocument, siret_code)
     }
   })
 
@@ -588,4 +570,32 @@ export const getJob = async (id: IJobs["_id"]): Promise<IJobs> => {
   const offre = await getOffre(id)
 
   return offre.jobs.find((job) => job._id.toString() == id)
+}
+
+/**
+ * @description Sends the mail informing the CFA that a company wants the CFA to handle the offer.
+ */
+export const sendCFADelegationMail = async (email: string, offre: IJobs, recruiter: { establishment_raison_sociale: string; establishment_id: string }, siret_code: string) => {
+  const unsubscribeOF = await UnsubscribeOF.findOne({ siret: siret_code })
+  if (unsubscribeOF) return
+  await mailer.sendEmail({
+    to: email,
+    subject: `Une entreprise recrute dans votre domaine`,
+    template: mailTemplate["mail-cfa-delegation"],
+    data: {
+      images: {
+        logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
+      },
+      enterpriseName: recruiter.establishment_raison_sociale,
+      jobName: offre.rome_appellation_label,
+      contractType: offre.job_type.join(", "),
+      trainingLevel: offre.job_level_label,
+      startDate: dayjs(offre.job_start_date).format("DD/MM/YYYY"),
+      duration: offre.job_duration,
+      rhythm: offre.job_rythm,
+      offerButton: `${config.publicUrlEspacePro}/proposition/formulaire/${recruiter.establishment_id}/offre/${offre._id}/siret/${siret_code}`,
+      createAccountButton: `${config.publicUrlEspacePro}/creation/cfa`,
+      unsubscribeUrl: `${config.publicUrlEspacePro}/proposition/formulaire/${recruiter.establishment_id}/offre/${offre._id}/siret/${siret_code}/unsubscribe`,
+    },
+  })
 }

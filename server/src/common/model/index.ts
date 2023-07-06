@@ -22,6 +22,7 @@ import ParcoursupEtablissementStat from "./schema/parcoursupEtablissementStat/pa
 import ReferentielOpco from "./schema/referentielOpco/referentielOpco.schema.js"
 import User from "./schema/user/user.schema.js"
 import UserRecruteur from "./schema/userRecruteur/usersRecruteur.schema.js"
+import UnsubscribeOF from "./schema/unsubscribedOF/unsubscribeOF.schema.js"
 
 export {
   DomainesMetiers,
@@ -48,4 +49,5 @@ export {
   eligibleTrainingsForAppointmentHistoric,
   BonneBoiteLegacy,
   UnsubscribedBonneBoite,
+  UnsubscribeOF,
 }

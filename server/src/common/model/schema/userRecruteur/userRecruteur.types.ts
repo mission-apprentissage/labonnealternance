@@ -1,4 +1,4 @@
-import { IGlobalAddress } from "../_shared/shared.types.js"
+import { IGlobalAddress } from "../_shared/shared.types.ts"
 
 interface IUserValidation {
   validation_type: string
@@ -32,6 +32,7 @@ interface IUserRecruteur {
   last_connection: Date
   createdAt: Date
   updatedAt: Date
+  disablePropositionDelegation: boolean
 }
 
 export { IUserRecruteur, IUserValidation }

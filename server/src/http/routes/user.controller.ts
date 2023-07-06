@@ -1,13 +1,13 @@
 import express from "express"
-import { deleteFormulaire, getFormulaire, updateOffre } from "../../services/formulaire.service.js"
-import { mailTemplate } from "../../assets/index.js"
-import { CFA, ENTREPRISE, etat_utilisateur } from "../../common/constants.js"
-import dayjs from "../../common/dayjs.js"
-import { Recruiter, UserRecruteur } from "../../common/model/index.js"
-import { createMagicLinkToken } from "../../common/utils/jwtUtils.js"
-import config from "../../config.js"
-import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
-import { createUser, updateUser, updateUserValidationHistory, removeUser } from "../../services/userRecruteur.service.js"
+import { deleteFormulaire, getFormulaire, sendCFADelegationMail, updateOffre } from "../../services/formulaire.service.ts"
+import { mailTemplate } from "../../assets/index.ts"
+import { CFA, ENTREPRISE, etat_utilisateur } from "../../common/constants.ts"
+import dayjs from "../../common/dayjs.ts"
+import { Recruiter, UserRecruteur } from "../../common/model/index.ts"
+import { createMagicLinkToken } from "../../common/utils/jwtUtils.ts"
+import config from "../../config.ts"
+import { tryCatch } from "../middlewares/tryCatchMiddleware.ts"
+import { createUser, updateUser, updateUserValidationHistory, removeUser } from "../../services/userRecruteur.service.ts"
 
 export default ({ mailer }) => {
   const router = express.Router()
@@ -128,30 +128,7 @@ export default ({ mailer }) => {
         await updateOffre(job._id, job)
 
         if (job?.delegations && job?.delegations.length) {
-          await Promise.all(
-            job.delegations.map(
-              async (delegation) =>
-                await mailer.sendEmail({
-                  to: delegation.email,
-                  subject: `Une entreprise recrute dans votre domaine`,
-                  template: mailTemplate["mail-cfa-delegation"],
-                  data: {
-                    images: {
-                      logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
-                    },
-                    enterpriseName: userFormulaire.establishment_raison_sociale,
-                    jobName: job.rome_appellation_label,
-                    contractType: job.job_type.join(", "),
-                    trainingLevel: job.job_level_label,
-                    startDate: dayjs(job.job_start_date).format("DD/MM/YYYY"),
-                    duration: job.job_duration,
-                    rhythm: job.job_rythm,
-                    offerButton: `${config.publicUrlEspacePro}/proposition/formulaire/${userFormulaire.establishment_id}/offre/${job._id}/siret/${delegation.siret_code}`,
-                    createAccountButton: `${config.publicUrlEspacePro}/creation/cfa`,
-                  },
-                })
-            )
-          )
+          await Promise.all(job.delegations.map(async (delegation) => await sendCFADelegationMail(email, job, userFormulaire, delegation.siret_code)))
         }
       }
 

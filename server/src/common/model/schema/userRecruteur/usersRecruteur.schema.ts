@@ -1,6 +1,6 @@
 import { mongoosePagination, Pagination } from "mongoose-paginate-ts"
-import { model, Schema } from "../../../mongodb.js"
-import { IUserRecruteur, IUserValidation } from "./userRecruteur.types.js"
+import { model, Schema } from "../../../mongodb.ts"
+import { IUserRecruteur, IUserValidation } from "./userRecruteur.types.ts"
 
 const userValidationSchema = new Schema<IUserValidation>(
   {
@@ -121,6 +121,11 @@ const userRecruteurSchema = new Schema<IUserRecruteur>(
       type: Boolean,
       default: true,
       description: "Statut qualiopi du CFA (forcément true, sinon l'inscription n'est pas possibe)",
+    },
+    disablePropositionDelegation: {
+      type: Boolean,
+      default: false,
+      description: "Si true, désactive les mails de proposition de délégation venant des entreprises créant des offres",
     },
   },
   {

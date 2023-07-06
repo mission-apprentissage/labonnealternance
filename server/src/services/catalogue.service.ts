@@ -183,22 +183,21 @@ export const getNearEtablissementsFromRomes = async ({ rome, origin }: { rome: s
     { _id: 1, numero_voie: 1, type_voie: 1, nom_voie: 1, code_postal: 1, nom_departement: 1, entreprise_raison_sociale: 1, geo_coordonnees: 1 }
   )
 
-  const etablissementsRefined = etablissements
-    .map((etablissement) => {
-      // This field can be null
-      if (!etablissement.geo_coordonnees) {
-        return
-      }
+  const etablissementsRefined = etablissements.flatMap((etablissement) => {
+    // This field can be null
+    if (!etablissement.geo_coordonnees) {
+      return []
+    }
 
-      const [latitude, longitude] = etablissement.geo_coordonnees?.split(",")
+    const [latitude, longitude] = etablissement.geo_coordonnees?.split(",")
 
-      return {
+    return [
+      {
         ...etablissement,
         distance_en_km: getDistanceInKm({ origin, destination: { latitude, longitude } }),
-      }
-    })
-    .filter(Boolean)
-
+      },
+    ]
+  })
   return sortBy(etablissementsRefined, "distance_en_km")
 }
 

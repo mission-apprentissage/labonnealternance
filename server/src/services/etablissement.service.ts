@@ -1,12 +1,11 @@
 import axios, { AxiosResponse } from "axios"
-import { BonneBoiteLegacy, BonnesBoites, Etablissement, ReferentielOpco, UserRecruteur } from "../common/model/index.js"
-import { IBonneBoite } from "../common/model/schema/bonneboite/bonneboite.types.js"
-import { IEtablissement } from "../common/model/schema/etablissements/etablissement.types.js"
-import { IReferentielOpco } from "../common/model/schema/referentielOpco/referentielOpco.types.js"
-import { IUserRecruteur } from "../common/model/schema/userRecruteur/userRecruteur.types.js"
-import { sentryCaptureException } from "../common/utils/sentryUtils.js"
-import config from "../config.js"
-
+import { BonneBoiteLegacy, BonnesBoites, Etablissement, ReferentielOpco, UnsubscribeOF, UserRecruteur } from "../common/model/index.ts"
+import { IBonneBoite } from "../common/model/schema/bonneboite/bonneboite.types.ts"
+import { IEtablissement } from "../common/model/schema/etablissements/etablissement.types.ts"
+import { IReferentielOpco } from "../common/model/schema/referentielOpco/referentielOpco.types.ts"
+import { IUserRecruteur } from "../common/model/schema/userRecruteur/userRecruteur.types.ts"
+import { sentryCaptureException } from "../common/utils/sentryUtils.ts"
+import config from "../config.ts"
 import {
   IAPIAdresse,
   IAPIEtablissement,
@@ -17,9 +16,11 @@ import {
   IFormatAPIReferentiel,
   IReferentiel,
   ISIRET2IDCC,
-} from "./etablissement.service.types.js"
-import { IRecruiter } from "../common/model/schema/recruiter/recruiter.types.js"
+} from "./etablissement.service.types.ts"
+import { IRecruiter } from "../common/model/schema/recruiter/recruiter.types.ts"
 import { Filter } from "mongodb"
+import { getUser, updateUser } from "./userRecruteur.service.js"
+import { IUnsubscribedOF } from "common/model/schema/unsubscribedOF/unsubscribeOF.types.js"
 
 const apiParams = {
   token: config.entreprise.apiKey,
@@ -178,12 +179,8 @@ export const getEtablissement = async (query: Filter<IUserRecruteur>): Promise<I
  * @returns {Promise<Object>}
  */
 export const getOpco = async (siret: string): Promise<ICFADock> => {
-  try {
-    const { data } = await axios.get<ICFADock>(`https://www.cfadock.fr/api/opcos?siret=${siret}`)
-    return data
-  } catch (error) {
-    throw error
-  }
+  const { data } = await axios.get<ICFADock>(`https://www.cfadock.fr/api/opcos?siret=${siret}`)
+  return data
 }
 
 /**
@@ -192,12 +189,8 @@ export const getOpco = async (siret: string): Promise<ICFADock> => {
  * @returns {Promise<Object>}
  */
 export const getOpcoByIdcc = async (idcc: number): Promise<ICFADock> => {
-  try {
-    const { data } = await axios.get<ICFADock>(`https://www.cfadock.fr/api/opcos?idcc=${idcc}`)
-    return data
-  } catch (error) {
-    throw error
-  }
+  const { data } = await axios.get<ICFADock>(`https://www.cfadock.fr/api/opcos?idcc=${idcc}`)
+  return data
 }
 
 /**
@@ -206,12 +199,8 @@ export const getOpcoByIdcc = async (idcc: number): Promise<ICFADock> => {
  * @returns {Promise<Object>}
  */
 export const getIdcc = async (siret: string): Promise<ISIRET2IDCC> => {
-  try {
-    const { data } = await axios.get<ISIRET2IDCC>(`https://siret2idcc.fabrique.social.gouv.fr/api/v2/${siret}`)
-    return data
-  } catch (error) {
-    throw error
-  }
+  const { data } = await axios.get<ISIRET2IDCC>(`https://siret2idcc.fabrique.social.gouv.fr/api/v2/${siret}`)
+  return data
 }
 /**
  * @description Get the establishment validation url for a given SIRET
@@ -376,3 +365,15 @@ export const formatReferentielData = (d: IReferentiel): IFormatAPIReferentiel =>
     ? `${d.adresse?.geojson.geometry.coordinates[1]},${d.adresse?.geojson.geometry.coordinates[0]}`
     : `${d.lieux_de_formation[0].adresse.geojson?.geometry.coordinates[0]},${d.lieux_de_formation[0].adresse.geojson?.geometry.coordinates[1]}`,
 })
+
+export const etablissementUnsubscribeDemandeDelegation = async (etablissementSiret: string) => {
+  const userQuery = { siret: etablissementSiret }
+  let unsubscribeOF: IUnsubscribedOF = await UnsubscribeOF.findOne(userQuery)
+  if (!unsubscribeOF) {
+    unsubscribeOF = {
+      siret: etablissementSiret,
+      unsubscribe_date: new Date(),
+    }
+    await UnsubscribeOF.create(unsubscribeOF)
+  }
+}
