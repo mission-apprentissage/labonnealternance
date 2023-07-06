@@ -33,8 +33,8 @@ import { premiumInviteOneShot } from "./jobs/rdv/premiumInviteOneShot.js"
 import { syncEtablissementsAndFormations } from "./jobs/rdv/syncEtablissementsAndFormations.js"
 import { syncAffelnetFormationsFromCatalogueME } from "./jobs/rdv/syncEtablissementsAndFormationsAffelnet.js"
 import { runScript } from "./jobs/scriptWrapper.js"
-import updateSendinblueBlockedEmails from "./jobs/updateSendinblueBlockedEmails/updateSendinblueBlockedEmails.js"
 import { checkAwaitingCompaniesValidation } from "./jobs/lba_recruteur/user/misc/updateMissingActivationState.js"
+import updateBrevoBlockedEmails from "./jobs/updateBrevoBlockedEmails/updateBrevoBlockedEmails.js"
 
 cli.addHelpText("after", null)
 
@@ -264,9 +264,9 @@ cli
 cli
   .command("sync-sib-blocked")
   .option("-all-addresses, [AllAddresses]", "pour récupérer toutes les adresses bloquées", false)
-  .description("Récupère auprès de Sendinblue la liste des adresses emails bloquées le jour précédent (défaut) ou toutes les adresses bloquées (option)")
+  .description("Récupère auprès de Brevo la liste des adresses emails bloquées le jour précédent (défaut) ou toutes les adresses bloquées (option)")
   .action((options) => {
-    runScript(() => updateSendinblueBlockedEmails(options))
+    runScript(() => updateBrevoBlockedEmails(options))
   })
 
 cli

@@ -38,4 +38,6 @@ allowed_patterns:
   - Password
   - pass
   - apiKey
+  - ApiKey
+  - APIKey
 version: "1.0"

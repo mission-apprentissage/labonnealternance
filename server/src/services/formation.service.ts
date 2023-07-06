@@ -30,7 +30,7 @@ const diplomaMap = {
 }
 
 const getDiplomaIndexName = (value) => {
-    return value ? diplomaMap[value[0]] : ""
+  return value ? diplomaMap[value[0]] : ""
 }
 
 /**

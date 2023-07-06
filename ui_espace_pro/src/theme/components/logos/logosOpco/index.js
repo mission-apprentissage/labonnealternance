@@ -19,7 +19,7 @@ export default [
   },
   {
     nom: "AKTO / Opco entreprises et salariés des services à forte intensité de main d'oeuvre",
-    description: "A​KTO est l’opérateur de compétences des services à forte intensité de main-d’œuvre, dont la restauration, l’entretien, et la manutention par exemples.",
+    description: "A​KTO est l’opérateur de compétences des services à forte intensité de main-d’œuvre, dont la restauration, l’entretien, et la manutention par exemple.",
     image: opcoakto,
   },
   {

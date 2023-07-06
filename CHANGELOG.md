@@ -1,79 +1,146 @@
-## [1.40.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.40.0...v1.40.1) (2023-06-26)
-
+## [1.48.5](https://github.com/mission-apprentissage/labonnealternance/compare/v1.48.4...v1.48.5) (2023-07-04)
 
 ### Bug Fixes
 
-* codcov ([062565d](https://github.com/mission-apprentissage/labonnealternance/commit/062565d2ef2dff0918d7acb2b94b6b03825af03e))
+- **docker:** update memory usage on containers ([#488](https://github.com/mission-apprentissage/labonnealternance/issues/488)) ([afa50d8](https://github.com/mission-apprentissage/labonnealternance/commit/afa50d85a4b05d3ae6b4ed9ed45b225845859590))
+
+## [1.48.4](https://github.com/mission-apprentissage/labonnealternance/compare/v1.48.3...v1.48.4) (2023-07-04)
+
+### Bug Fixes
+
+- **admin:** le bouton 'désactiver le compte' doit fonctionner ([#489](https://github.com/mission-apprentissage/labonnealternance/issues/489)) ([9558c35](https://github.com/mission-apprentissage/labonnealternance/commit/9558c35a0e73c8223693fd4d407ebcbb66e88890))
+
+## [1.48.3](https://github.com/mission-apprentissage/labonnealternance/compare/v1.48.2...v1.48.3) (2023-07-03)
+
+### Bug Fixes
+
+- if raison_social is missing ([881b016](https://github.com/mission-apprentissage/labonnealternance/commit/881b0167ae9b40f13a71c3447ac29fe6a5a2666e))
+
+## [1.48.2](https://github.com/mission-apprentissage/labonnealternance/compare/v1.48.1...v1.48.2) (2023-06-30)
+
+### Bug Fixes
+
+- connexion impossible pour utilisateurs avec emails non validés ([#487](https://github.com/mission-apprentissage/labonnealternance/issues/487)) ([124743f](https://github.com/mission-apprentissage/labonnealternance/commit/124743f4ce7031ca4f51063d0ff158dec84be760))
+
+## [1.48.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.48.0...v1.48.1) (2023-06-29)
+
+### Reverts
+
+- Revert "feat: move matcha search job service (#477)" ([61be1a9](https://github.com/mission-apprentissage/labonnealternance/commit/61be1a9d641faab1de78941b8519f82de9c67fae)), closes [#477](https://github.com/mission-apprentissage/labonnealternance/issues/477)
+
+# [1.48.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.47.0...v1.48.0) (2023-06-29)
+
+### Features
+
+- move matcha search job service ([#477](https://github.com/mission-apprentissage/labonnealternance/issues/477)) ([341c053](https://github.com/mission-apprentissage/labonnealternance/commit/341c0539ddad34951f3e1bc2146faf774992e3f5))
+
+# [1.47.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.46.0...v1.47.0) (2023-06-29)
+
+### Features
+
+- add delegation count recovery script ([#484](https://github.com/mission-apprentissage/labonnealternance/issues/484)) ([94ee2eb](https://github.com/mission-apprentissage/labonnealternance/commit/94ee2eb05a57b65a56eb36f017055ff9ce8803b9))
+
+# [1.46.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.45.0...v1.46.0) (2023-06-28)
+
+### Features
+
+- lbac-1201 ([#475](https://github.com/mission-apprentissage/labonnealternance/issues/475)) ([d29a66e](https://github.com/mission-apprentissage/labonnealternance/commit/d29a66ea49e48b245509b68d7dbacbacaa3a62af))
+
+# [1.45.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.44.0...v1.45.0) (2023-06-27)
+
+### Features
+
+- LBAC-1163 ([#457](https://github.com/mission-apprentissage/labonnealternance/issues/457)) ([13be8e9](https://github.com/mission-apprentissage/labonnealternance/commit/13be8e9e6000e480638563d94f5073ffa909171a))
+
+# [1.44.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.43.0...v1.44.0) (2023-06-27)
+
+### Features
+
+- déplacement service validation bal ([#456](https://github.com/mission-apprentissage/labonnealternance/issues/456)) ([c76b3d7](https://github.com/mission-apprentissage/labonnealternance/commit/c76b3d7dfd7cda23828e6f2052a4a5b4ee745d3b))
+
+# [1.43.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.42.0...v1.43.0) (2023-06-27)
+
+### Features
+
+- add route security and query validation ([3d5debb](https://github.com/mission-apprentissage/labonnealternance/commit/3d5debbfb8153a3514efea361fa68f7486934892))
+
+# [1.42.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.41.0...v1.42.0) (2023-06-27)
+
+### Features
+
+- move sendinblue service to brevo services ([#452](https://github.com/mission-apprentissage/labonnealternance/issues/452)) ([ffdec23](https://github.com/mission-apprentissage/labonnealternance/commit/ffdec231fec8736687bfa68791db4c6a01f9a0de))
+
+# [1.41.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.40.1...v1.41.0) (2023-06-27)
+
+### Features
+
+- merge jobs route ([#467](https://github.com/mission-apprentissage/labonnealternance/issues/467)) ([8208697](https://github.com/mission-apprentissage/labonnealternance/commit/8208697261d2bf82848b86f0acfa6b8df58b6f3f))
+
+## [1.40.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.40.0...v1.40.1) (2023-06-26)
+
+### Bug Fixes
+
+- codcov ([062565d](https://github.com/mission-apprentissage/labonnealternance/commit/062565d2ef2dff0918d7acb2b94b6b03825af03e))
 
 # [1.40.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.39.1...v1.40.0) (2023-06-26)
 
-
 ### Features
 
-* mise à jour de l'api inserjeune ([#453](https://github.com/mission-apprentissage/labonnealternance/issues/453)) ([88ee9d2](https://github.com/mission-apprentissage/labonnealternance/commit/88ee9d225a638867a9c12a6fbf58db0d89192f24))
+- mise à jour de l'api inserjeune ([#453](https://github.com/mission-apprentissage/labonnealternance/issues/453)) ([88ee9d2](https://github.com/mission-apprentissage/labonnealternance/commit/88ee9d225a638867a9c12a6fbf58db0d89192f24))
 
 ## [1.39.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.39.0...v1.39.1) (2023-06-26)
 
-
 ### Bug Fixes
 
-* erreur de positionnement de return ([#469](https://github.com/mission-apprentissage/labonnealternance/issues/469)) ([cd7678e](https://github.com/mission-apprentissage/labonnealternance/commit/cd7678ece6fe0524d90490cd67db3618bc55b2b4))
+- erreur de positionnement de return ([#469](https://github.com/mission-apprentissage/labonnealternance/issues/469)) ([cd7678e](https://github.com/mission-apprentissage/labonnealternance/commit/cd7678ece6fe0524d90490cd67db3618bc55b2b4))
 
 # [1.39.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.38.2...v1.39.0) (2023-06-26)
 
-
 ### Features
 
-* add cleaning script ([#470](https://github.com/mission-apprentissage/labonnealternance/issues/470)) ([6bcd7fc](https://github.com/mission-apprentissage/labonnealternance/commit/6bcd7fcace7dd6c3ee6c5fd7b558d48c63ca5907))
+- add cleaning script ([#470](https://github.com/mission-apprentissage/labonnealternance/issues/470)) ([6bcd7fc](https://github.com/mission-apprentissage/labonnealternance/commit/6bcd7fcace7dd6c3ee6c5fd7b558d48c63ca5907))
 
 ## [1.38.2](https://github.com/mission-apprentissage/labonnealternance/compare/v1.38.1...v1.38.2) (2023-06-26)
 
-
 ### Bug Fixes
 
-* scan is not a component anymore ([#466](https://github.com/mission-apprentissage/labonnealternance/issues/466)) ([a978516](https://github.com/mission-apprentissage/labonnealternance/commit/a978516522664a6634982dc9688c11026d9a0b14))
+- scan is not a component anymore ([#466](https://github.com/mission-apprentissage/labonnealternance/issues/466)) ([a978516](https://github.com/mission-apprentissage/labonnealternance/commit/a978516522664a6634982dc9688c11026d9a0b14))
 
 ## [1.38.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.38.0...v1.38.1) (2023-06-22)
 
-
 ### Bug Fixes
 
-* optimize build ts ([#465](https://github.com/mission-apprentissage/labonnealternance/issues/465)) ([01fb96d](https://github.com/mission-apprentissage/labonnealternance/commit/01fb96d0e3a8a3d762c253f1fd0a9cdbb540674b))
+- optimize build ts ([#465](https://github.com/mission-apprentissage/labonnealternance/issues/465)) ([01fb96d](https://github.com/mission-apprentissage/labonnealternance/commit/01fb96d0e3a8a3d762c253f1fd0a9cdbb540674b))
 
 # [1.38.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.37.0...v1.38.0) (2023-06-22)
 
-
 ### Features
 
-* prettier ([b83050e](https://github.com/mission-apprentissage/labonnealternance/commit/b83050e780abd2b51c0b34c450daceae27f445ae))
+- prettier ([b83050e](https://github.com/mission-apprentissage/labonnealternance/commit/b83050e780abd2b51c0b34c450daceae27f445ae))
 
 # [1.37.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.36.0...v1.37.0) (2023-06-22)
 
-
 ### Features
 
-* move service formations ([#451](https://github.com/mission-apprentissage/labonnealternance/issues/451)) ([2c27e77](https://github.com/mission-apprentissage/labonnealternance/commit/2c27e77f768d05cc78e0cda836e2b33b51ba065a))
+- move service formations ([#451](https://github.com/mission-apprentissage/labonnealternance/issues/451)) ([2c27e77](https://github.com/mission-apprentissage/labonnealternance/commit/2c27e77f768d05cc78e0cda836e2b33b51ba065a))
 
 # [1.36.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.35.0...v1.36.0) (2023-06-22)
 
-
 ### Features
 
-* prettying things ([#462](https://github.com/mission-apprentissage/labonnealternance/issues/462)) ([5aef696](https://github.com/mission-apprentissage/labonnealternance/commit/5aef6966673963b3d763779faa1447fc9c60120c))
+- prettying things ([#462](https://github.com/mission-apprentissage/labonnealternance/issues/462)) ([5aef696](https://github.com/mission-apprentissage/labonnealternance/commit/5aef6966673963b3d763779faa1447fc9c60120c))
 
 # [1.35.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.34.0...v1.35.0) (2023-06-22)
 
-
 ### Features
 
-* test gitguardian ([#463](https://github.com/mission-apprentissage/labonnealternance/issues/463)) ([4d319dc](https://github.com/mission-apprentissage/labonnealternance/commit/4d319dcaac681c7671acf60b1bd85b1795e87c62))
+- test gitguardian ([#463](https://github.com/mission-apprentissage/labonnealternance/issues/463)) ([4d319dc](https://github.com/mission-apprentissage/labonnealternance/commit/4d319dcaac681c7671acf60b1bd85b1795e87c62))
 
 # [1.34.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.33.0...v1.34.0) (2023-06-21)
 
-
 ### Features
 
-* simplify gh action ([3fc4015](https://github.com/mission-apprentissage/labonnealternance/commit/3fc4015758a2dcd1031ce872a5bab78bc10893b8))
+- simplify gh action ([3fc4015](https://github.com/mission-apprentissage/labonnealternance/commit/3fc4015758a2dcd1031ce872a5bab78bc10893b8))
 
 # [1.33.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.32.1...v1.33.0) (2023-06-21)
 

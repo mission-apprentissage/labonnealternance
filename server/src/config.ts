@@ -29,7 +29,6 @@ const config = {
   matcha: {
     apiKey: env.get("LBA_MATCHA_ACCESS_KEY").default("1234").asString(),
   },
-  apiEntrepriseKey: env.get("LBA_ENTREPRISE_API_KEY").default("1234").asString(),
   serverSentryDsn: env.get("LBA_SERVER_SENTRY_DSN").default("https://61156c2d46b54369b777900d475ee0f9@o154210.ingest.sentry.io/5562203").asString(),
   secretUpdateRomesMetiers: env.get("LBA_SECRET_UPDATE_ROMES_METIERS").default("1234").asString(), //TODO: rename
   secret1j1s: env.get("LBA_SECRET_1J1S").default("5678").asString(), //TODO: rearrange
@@ -47,8 +46,8 @@ const config = {
       user: env.get("LBA_SMTP_AUTH_USER").default("xxxxx").asString(),
       pass: env.get("LBA_SMTP_AUTH_PASS").default("12345").asString(),
     },
-    sendinblueWebhookApiKey: env.get("LBA_SENDINBLUE_WEBHOOK_API_KEY").default("1234").asString(),
-    sendinblueApiKey: env.get("LBA_SENDINBLUE_API_KEY").default("1234").asString(),
+    brevoWebhookApiKey: env.get("LBA_BREVO_WEBHOOK_API_KEY").default("1234").asString(),
+    brevoApiKey: env.get("LBA_BREVO_API_KEY").default("1234").asString(),
   },
   auth: {
     passwordHashRounds: env.get("LBA_AUTH_PASSWORD_HASH_ROUNDS").default(1001).asInt(),
@@ -129,6 +128,13 @@ const config = {
     endpoint: env.get("LBA_S3_ENDPOINT").default("https://").asString(),
     region: env.get("LBA_S3_REGION").default("ABC").asString(),
     bucket: env.get("LBA_S3_BUCKET").default("Bucket").asString(),
+  },
+  entreprise: {
+    baseUrl: "https://entreprise.api.gouv.fr/v3/insee",
+    context: "Matcha MNA",
+    recipient: "12000101100010", // Siret Dinum
+    object: "Consolidation des données",
+    apiKey: env.get("LBA_ENTREPRISE_API_KEY").default("1234").asString(),
   },
 }
 

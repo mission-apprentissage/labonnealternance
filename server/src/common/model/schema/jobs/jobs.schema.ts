@@ -87,6 +87,7 @@ export const jobsSchema = new Schema<IJobs>({
   },
   job_delegation_count: {
     type: Number,
+    default: 0,
     description: "Nombre de délégations",
   },
   delegations: {

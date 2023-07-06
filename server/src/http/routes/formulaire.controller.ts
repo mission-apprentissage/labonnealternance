@@ -11,8 +11,10 @@ import {
   createJob,
   createJobDelegations,
   getFormulaire,
+  getJob,
   getJobsFromElasticSearch,
   getOffre,
+  patchOffre,
   provideOffre,
   updateFormulaire,
   updateOffre,
@@ -163,6 +165,45 @@ export default () => {
     tryCatch(async (req, res) => {
       const result = await updateOffre(req.params.jobId, req.body)
       return res.json(result)
+    })
+  )
+
+  /**
+   * Permet de passer une offre en statut ANNULER (mail transactionnel)
+   */
+  router.patch(
+    "/offre/:jobId",
+    tryCatch(async (req, res) => {
+      const { jobId } = req.params
+      const exists = await checkOffreExists(jobId)
+
+      if (!exists) {
+        return res.status(400).json({ status: "INVALID_RESOURCE", message: "L'offre n'existe pas." })
+      }
+
+      const offre = await getJob(jobId)
+
+      const delegationFound = offre.delegations.find((delegation) => delegation.siret_code == req.query.siret_formateur)
+
+      if (!delegationFound) {
+        return res.status(400).json({ status: "INVALID_RESOURCE", message: `Le siret formateur n'a pas été proposé à l'offre.` })
+      }
+
+      await patchOffre(jobId, {
+        delegations: offre.delegations.map((delegation) => {
+          // Save the date of the first read of the company detail
+          if (delegation.siret_code === delegationFound.siret_code && !delegation.cfa_read_company_detail_at) {
+            return {
+              ...delegation,
+              cfa_read_company_detail_at: new Date(),
+            }
+          }
+          return delegation
+        }),
+      })
+
+      const jobUpdated = await getJob(jobId)
+      return res.send(jobUpdated)
     })
   )
 

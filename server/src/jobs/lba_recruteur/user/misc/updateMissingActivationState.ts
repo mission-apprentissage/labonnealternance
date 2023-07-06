@@ -1,8 +1,8 @@
 import dayjs from "../../../../common/dayjs.js"
 import { logger } from "../../../../common/logger.js"
-import { Recruiter, UserRecruteur } from "../../../../common/model/index.js"
+import { UserRecruteur } from "../../../../common/model/index.js"
 import { asyncForEach } from "../../../../common/utils/asyncUtils.js"
-import { validationOrganisation } from "../../../../common/bal.js"
+import { validationOrganisation } from "../../../../services/bal.service.js"
 import { checkIfUserEmailIsPrivate } from "../../../../common/utils/mailUtils.js"
 import {
   getMatchingEmailFromContactList,

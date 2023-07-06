@@ -28,12 +28,11 @@ import {
 } from "../../services/etablissement.service.js"
 import { ICFADock, ISIRET2IDCC } from "../../services/etablissement.service.types.js"
 import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
-import { validationOrganisation } from "../../common/bal.js"
-import Joi from "joi"
-import { siretSchema } from "../utils/validators.js"
+import { validationOrganisation } from "../../services/bal.service.js"
 import { IUserRecruteur } from "../../common/model/schema/userRecruteur/userRecruteur.types.js"
 import { IRecruiter } from "../../common/model/schema/recruiter/recruiter.types.js"
 import { updateUserValidationHistory, getUser, createUser, updateUser, getUserValidationState, registerUser } from "../../services/userRecruteur.service.js"
+import { IAdresseV3 } from "../../common/model/schema/_shared/shared.types.js"
 
 const getCfaRomeSchema = joi.object({
   latitude: joi.number().required(),
@@ -99,7 +98,7 @@ export default ({ mailer }) => {
           return res.status(400).json({ error: true, message: "Le numéro siret est invalide." })
         }
 
-        if (result.etablissement.etat_administratif.value === "F") {
+        if (result.data.etat_administratif === "F") {
           return res.status(400).json({ error: true, message: "Cette entreprise est considérée comme fermée." })
         }
 
@@ -121,7 +120,7 @@ export default ({ mailer }) => {
 
         // Allow cfa to add themselves as a company
         if (!req.query.fromDashboardCfa) {
-          if (result.etablissement.naf.startsWith("85")) {
+          if (result.data.activite_principale.code.startsWith("85")) {
             return res.status(400).json({
               error: true,
               message: "Le numéro siret n'est pas référencé comme une entreprise.",
@@ -130,8 +129,8 @@ export default ({ mailer }) => {
           }
         }
 
-        const entrepriseData = formatEntrepriseData(result.etablissement)
-        const geo_coordinates = await getGeoCoordinates(`${entrepriseData.address_detail.l4}, ${entrepriseData.address_detail.l6}`)
+        const entrepriseData = formatEntrepriseData(result.data)
+        const geo_coordinates = await getGeoCoordinates(`${entrepriseData.address_detail.acheminement_postal.l4}, ${entrepriseData.address_detail.acheminement_postal.l6}`)
 
         let opcoResult: ICFADock | ISIRET2IDCC = await getOpco(req.params.siret)
         const opcoData = { opco: undefined, idcc: undefined }
@@ -232,7 +231,7 @@ export default ({ mailer }) => {
       }
 
       switch (req.body.type) {
-        case ENTREPRISE:
+        case ENTREPRISE: {
           const siren = req.body.establishment_siret.slice(0, 9)
           const formulaireInfo = await createFormulaire(req.body)
           let newEntreprise: IUserRecruteur = await createUser({ ...req.body, establishment_id: formulaireInfo.establishment_id })
@@ -278,7 +277,8 @@ export default ({ mailer }) => {
 
           // Dépot simplifié : retourner les informations nécessaire à la suite du parcours
           return res.json({ formulaire: formulaireInfo, user: newEntreprise })
-        case CFA:
+        }
+        case CFA: {
           // Contrôle du mail avec le référentiel :
           const referentiel = await getEtablissementFromReferentiel(req.body.establishment_siret)
           // Creation de l'utilisateur en base de données
@@ -364,6 +364,7 @@ export default ({ mailer }) => {
 
           // Keep the same structure as ENTREPRISE
           return res.json({ user: newCfa })
+        }
       }
     })
   )
@@ -386,7 +387,7 @@ export default ({ mailer }) => {
   router.put(
     "/:id",
     tryCatch(async (req, res) => {
-      let result = await updateUser({ _id: req.params.id }, req.body)
+      const result = await updateUser({ _id: req.params.id }, req.body)
       return res.json(result)
     })
   )

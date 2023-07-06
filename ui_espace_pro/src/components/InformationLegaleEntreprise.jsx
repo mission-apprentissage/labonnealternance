@@ -15,7 +15,8 @@ export default (props) => {
   const [auth] = useAuth()
   const { establishment_enseigne, establishment_raison_sociale, rue, establishment_siret, commune, code_postal, opco, establishment_size, type, address, is_qualiopi } = props
 
-  const RAISON_SOCIALE = establishment_raison_sociale.length > 30 ? establishment_raison_sociale.substring(0, 30) + "..." : establishment_raison_sociale ?? ""
+  const RAISON_SOCIALE =
+    establishment_raison_sociale && establishment_raison_sociale.length > 30 ? establishment_raison_sociale.substring(0, 30) + "..." : establishment_raison_sociale ?? ""
 
   return (
     <Box border="1px solid #000091" p={5}>
@@ -56,11 +57,17 @@ export default (props) => {
         )}
         <Flex align="center">
           <Text mr={3}>Raison sociale :</Text>
-          <Text bg="#F9F8F6" px="8px" py="2px" mr={2} fontWeight={700} noOfLines={1}>
-            {RAISON_SOCIALE}
-          </Text>
+          {establishment_raison_sociale ? (
+            <Text bg="#F9F8F6" px="8px" py="2px" mr={2} fontWeight={700} noOfLines={1}>
+              {RAISON_SOCIALE}
+            </Text>
+          ) : (
+            <Text textTransform="uppercase" bg="#FFE9E9" textColor="#CE0500" px="8px" py="2px" fontWeight={700} mr={2} noOfLines={1}>
+              Non identifié
+            </Text>
+          )}
           <InfoTooltip description="La donnée “Raison sociale” provient de l’INSEE puis est déduite du SIREN. Si cette information est erronée, merci de leur signaler." />
-        </Flex>{" "}
+        </Flex>
         <Flex align="center">
           <Text mr={3}>Adresse :</Text>
           <Text bg="#F9F8F6" px="8px" py="2px" fontWeight={700} mr={2} noOfLines={1}>

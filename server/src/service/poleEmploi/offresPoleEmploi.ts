@@ -3,10 +3,11 @@ import distance from "@turf/distance"
 import axios from "axios"
 import { NIVEAUX_POUR_OFFRES_PE } from "../../common/constants.js"
 import { roundDistance } from "../../common/geolib.js"
-import { manageApiError } from "../../common/utils/errorManager.js"
+import { IApiError, manageApiError } from "../../common/utils/errorManager.js"
 import { trackApiCall } from "../../common/utils/sendTrackingEvent.js"
 import { itemModel } from "../../model/itemModel.js"
 import { filterJobsByOpco } from "../../services/opco.service.js"
+import { ILbaItem } from "../../services/lbaitem.shared.service.types.js"
 
 //const poleEmploi = require("./common.js");
 import { getAccessToken, getRoundedRadius, peApiHeaders } from "./common.js"
@@ -268,13 +269,11 @@ const getPeJobs = async ({ romes, insee, radius, jobLimit, caller, diploma, api 
   }
 }
 
-const getPeJobFromId = async ({ id, caller }) => {
+const getPeJobFromId = async ({ id, caller }: { id: string; caller: string }): IApiError | { peJobs: ILbaItem[] } => {
   try {
     const token = await getAccessToken("pe")
     const headers = peApiHeaders
     headers.Authorization = `Bearer ${token}`
-
-    //throw new Error("boom");
 
     const job = await axios.get(`${peJobApiEndpoint}${id}`, {
       headers,

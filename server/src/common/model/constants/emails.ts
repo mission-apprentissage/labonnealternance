@@ -1,4 +1,4 @@
-import { SendinblueEventStatus } from "../../sendinblue.js"
+import { BrevoEventStatus } from "../../../services/brevo.service.js"
 
 const emailStatus = {
   request: "Envoyé",
@@ -8,7 +8,7 @@ const emailStatus = {
   soft_bounce: "Rejecté (soft)",
   spam: "Spam",
   unique_opened: "Ouverture unique",
-  [SendinblueEventStatus.HARD_BOUNCE]: "Rejeté (hard)",
+  [BrevoEventStatus.HARD_BOUNCE]: "Rejeté (hard)",
   unsubscribed: "Désinscrit",
   opened: "Ouvert",
   invalid_email: "Email invalide",
