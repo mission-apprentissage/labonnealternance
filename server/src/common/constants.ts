@@ -1,5 +1,6 @@
 export const POURVUE = "Pourvue"
 export const ANNULEE = "Annulée"
+export const ACTIVE = "Active"
 export const KEY_GENERATOR_PARAMS = ({ length, symbols, numbers }) => {
   return {
     length: length ?? 50,
