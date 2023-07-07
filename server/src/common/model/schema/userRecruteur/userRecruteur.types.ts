@@ -1,4 +1,4 @@
-import { IGlobalAddress } from "../_shared/shared.types.ts"
+import { IGlobalAddress } from "../_shared/shared.types.js"
 
 interface IUserValidation {
   validation_type: string

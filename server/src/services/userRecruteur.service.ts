@@ -1,8 +1,8 @@
 import { randomUUID } from "crypto"
 import { ModelUpdateOptions, UpdateQuery } from "mongoose"
 import { Filter } from "mongodb"
-import { UserRecruteur } from "../common/model/index.ts"
-import { IUserRecruteur } from "../common/model/schema/userRecruteur/userRecruteur.types.ts"
+import { UserRecruteur } from "../common/model/index.js"
+import { IUserRecruteur } from "../common/model/schema/userRecruteur/userRecruteur.types.js"
 
 /**
  * @description generate an API key

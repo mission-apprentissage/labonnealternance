@@ -1,6 +1,6 @@
 import { mongoosePagination, Pagination } from "mongoose-paginate-ts"
-import { model, Schema } from "../../../mongodb.ts"
-import { IUserRecruteur, IUserValidation } from "./userRecruteur.types.ts"
+import { model, Schema } from "../../../mongodb.js"
+import { IUserRecruteur, IUserValidation } from "./userRecruteur.types.js"
 
 const userValidationSchema = new Schema<IUserValidation>(
   {

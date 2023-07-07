@@ -1,11 +1,11 @@
 import axios, { AxiosResponse } from "axios"
-import { BonneBoiteLegacy, BonnesBoites, Etablissement, ReferentielOpco, UnsubscribeOF, UserRecruteur } from "../common/model/index.ts"
-import { IBonneBoite } from "../common/model/schema/bonneboite/bonneboite.types.ts"
-import { IEtablissement } from "../common/model/schema/etablissements/etablissement.types.ts"
-import { IReferentielOpco } from "../common/model/schema/referentielOpco/referentielOpco.types.ts"
-import { IUserRecruteur } from "../common/model/schema/userRecruteur/userRecruteur.types.ts"
-import { sentryCaptureException } from "../common/utils/sentryUtils.ts"
-import config from "../config.ts"
+import { BonneBoiteLegacy, BonnesBoites, Etablissement, ReferentielOpco, UnsubscribeOF, UserRecruteur } from "../common/model/index.js"
+import { IBonneBoite } from "../common/model/schema/bonneboite/bonneboite.types.js"
+import { IEtablissement } from "../common/model/schema/etablissements/etablissement.types.js"
+import { IReferentielOpco } from "../common/model/schema/referentielOpco/referentielOpco.types.js"
+import { IUserRecruteur } from "../common/model/schema/userRecruteur/userRecruteur.types.js"
+import { sentryCaptureException } from "../common/utils/sentryUtils.js"
+import config from "../config.js"
 import {
   IAPIAdresse,
   IAPIEtablissement,
@@ -16,8 +16,8 @@ import {
   IFormatAPIReferentiel,
   IReferentiel,
   ISIRET2IDCC,
-} from "./etablissement.service.types.ts"
-import { IRecruiter } from "../common/model/schema/recruiter/recruiter.types.ts"
+} from "./etablissement.service.types.js"
+import { IRecruiter } from "../common/model/schema/recruiter/recruiter.types.js"
 import { Filter } from "mongodb"
 import { IUnsubscribedOF } from "common/model/schema/unsubscribedOF/unsubscribeOF.types.js"
 
