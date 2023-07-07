@@ -4,7 +4,6 @@ import { IUnsubscribedOF } from "./unsubscribeOF.types.js"
 const unsubscribedOF = new Schema<IUnsubscribedOF>({
   siret: {
     type: String,
-    default: null,
     description: "Le Siret de la société",
     index: true,
   },
