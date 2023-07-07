@@ -1,3 +1,10 @@
+## [1.48.7](https://github.com/mission-apprentissage/labonnealternance/compare/v1.48.6...v1.48.7) (2023-07-07)
+
+
+### Bug Fixes
+
+* job status api route update ([bd5f0ab](https://github.com/mission-apprentissage/labonnealternance/commit/bd5f0abdfa2d2c51f22a26abfdc84eab79f55471))
+
 ## [1.48.6](https://github.com/mission-apprentissage/labonnealternance/compare/v1.48.5...v1.48.6) (2023-07-06)
 
 
