@@ -1,15 +1,15 @@
 import { Box, Flex, Spinner, useToast } from "@chakra-ui/react"
 import { useQuery } from "react-query"
 import { useParams } from "react-router-dom"
-import axios from "axios"
 import { useEffect } from "react"
+import { etablissementUnsubscribeDemandeDelegation } from "../../../api"
 
 export const PropositionOffreUnsubscribe = () => {
   const { siretFormateur } = useParams()
   const toast = useToast()
   const { isLoading, isError, isSuccess } = useQuery("proposition-offre-unsubscribe", async () => {
     if (!siretFormateur) return
-    await axios.post(`/api/etablissement/${siretFormateur}/proposition/unsubscribe`)
+    await etablissementUnsubscribeDemandeDelegation(siretFormateur)
   })
   useEffect(() => {
     if (isError) {
