@@ -54,7 +54,15 @@ const EmptySpace = () => (
   </Stack>
 )
 
-export default () => {
+const NumberCell = ({ children }) => {
+  return (
+    <Box as="span" textAlign="right" w="100%" pr={5}>
+      {children}
+    </Box>
+  )
+}
+
+export const ListeOffres = () => {
   const navigate = useNavigate()
   const params = useParams()
   const confirmationSuppression = useDisclosure()
@@ -111,14 +119,14 @@ export default () => {
     )
   }
 
-  const jobs = data.data?.jobs?.map((job) => ({ ...job, geo_coordinates: data.data.geo_coordinates }))
+  const jobs = data.data?.jobs?.map((job) => ({ ...job, geo_coordinates: data.data.geo_coordinates })) ?? []
 
   const offresTermine = jobs.filter((x) => x.job_status === "Annulée")
-  const offresTermineNbr = jobs.filter((x) => x.job_status === "Annulée").length
+  const offresTermineNbr = offresTermine.length
   const offresActive = jobs.filter((x) => x.job_status === "Active")
-  const offresActiveNbr = jobs.filter((x) => x.job_status === "Active").length
+  const offresActiveNbr = offresActive.length
   const offresPourvue = jobs.filter((x) => x.job_status === "Pourvue")
-  const offresPourvueNbr = jobs.filter((x) => x.job_status === "Pourvue").length
+  const offresPourvueNbr = offresPourvue.length
 
   const columns = [
     {
@@ -149,16 +157,27 @@ export default () => {
       accessor: ({ job_expiration_date }) => dayjs(new Date()).to(job_expiration_date, true),
     },
     {
+      Header: "Recherches",
+      id: "searches",
+      width: "150",
+      accessor: (row) => {
+        return <NumberCell>0</NumberCell>
+      },
+    },
+    {
+      Header: "Vues",
+      id: "views",
+      width: "90",
+      accessor: (row) => {
+        console.log(row)
+        return <NumberCell>0</NumberCell>
+      },
+    },
+    {
       Header: "Candidat(s)",
       id: "candidat",
-      width: "225",
-      accessor: (row) => {
-        if (row.candidatures && row.candidatures > 0) {
-          return row.candidatures
-        } else {
-          return 0
-        }
-      },
+      width: "150",
+      accessor: (row) => <NumberCell>{row.candidatures ?? 0}</NumberCell>,
     },
     {
       Header: "",
@@ -335,3 +354,5 @@ export default () => {
     </Container>
   )
 }
+
+export default ListeOffres

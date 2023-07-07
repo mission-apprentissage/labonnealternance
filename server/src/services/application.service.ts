@@ -53,6 +53,12 @@ const images: object = {
 export const getApplication = (job_id: IJobs["_id"]) => Application.find({ job_id }).lean()
 
 /**
+ * @description Get applications count by job id
+ * @param {IJobs["_id"]} job_id
+ */
+export const getApplicationCount = (job_id: IJobs["_id"]) => Application.count({ job_id }).lean()
+
+/**
  * @description Check if an email if blacklisted.
  * @param {string} email - Email
  * @return {Promise<boolean>}
