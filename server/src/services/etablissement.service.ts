@@ -198,7 +198,7 @@ export const getOpcoByIdcc = async (idcc: number): Promise<ICFADock> => {
  * @returns {Promise<Object>}
  */
 export const getIdcc = async (siret: string): Promise<ISIRET2IDCC> => {
-  const { data } = await axios.get<ISIRET2IDCC>(`https://siret2idcc.fabrique.social.gouv.fr/api/v2/${siret}`)
+  const { data } = await axios.get<ISIRET2IDCC>(`https://siret2idcc.fabrique.social.gouv.fr/api/v2/${encodeURIComponent(siret)}`)
   return data
 }
 /**
@@ -220,7 +220,7 @@ export const validateEtablissementEmail = async (_id: IUserRecruteur["_id"]): Pr
  */
 export const getEtablissementFromGouv = async (siret: string): Promise<IAPIEtablissement> => {
   try {
-    const { data } = await axios.get<IAPIEtablissement>(`${config.entreprise.baseUrl}/sirene/etablissements/${encoreUriComponent(siret)}`, {
+    const { data } = await axios.get<IAPIEtablissement>(`${config.entreprise.baseUrl}/sirene/etablissements/${encodeURIComponent(siret)}`, {
       params: apiParams,
     })
 
