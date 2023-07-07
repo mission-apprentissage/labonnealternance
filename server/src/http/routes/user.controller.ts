@@ -1,13 +1,13 @@
 import express from "express"
-import { deleteFormulaire, getFormulaire, sendCFADelegationMail, updateOffre } from "../../services/formulaire.service.ts"
-import { mailTemplate } from "../../assets/index.ts"
-import { CFA, ENTREPRISE, etat_utilisateur } from "../../common/constants.ts"
-import dayjs from "../../common/dayjs.ts"
-import { Recruiter, UserRecruteur } from "../../common/model/index.ts"
-import { createMagicLinkToken } from "../../common/utils/jwtUtils.ts"
-import config from "../../config.ts"
-import { tryCatch } from "../middlewares/tryCatchMiddleware.ts"
-import { createUser, updateUser, updateUserValidationHistory, removeUser } from "../../services/userRecruteur.service.ts"
+import { deleteFormulaire, getFormulaire, sendCFADelegationMail, updateOffre } from "../../services/formulaire.service.js"
+import { mailTemplate } from "../../assets/index.js"
+import { CFA, ENTREPRISE, etat_utilisateur } from "../../common/constants.js"
+import dayjs from "../../common/dayjs.js"
+import { Recruiter, UserRecruteur } from "../../common/model/index.js"
+import { createMagicLinkToken } from "../../common/utils/jwtUtils.js"
+import config from "../../config.js"
+import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
+import { createUser, updateUser, updateUserValidationHistory, removeUser } from "../../services/userRecruteur.service.js"
 
 export default ({ mailer }) => {
   const router = express.Router()
