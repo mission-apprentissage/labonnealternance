@@ -9,7 +9,6 @@ const unsubscribedOF = new Schema<IUnsubscribedOF>({
   },
   unsubscribe_date: {
     type: Date,
-    default: Date.now,
     description: "Date de désinscription",
   },
 })
