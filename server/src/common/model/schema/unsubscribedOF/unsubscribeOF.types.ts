@@ -1,4 +1,4 @@
 export interface IUnsubscribedOF {
-  siret: string
+  establishment_siret: string
   unsubscribe_date: Date
 }

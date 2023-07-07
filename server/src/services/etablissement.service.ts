@@ -19,7 +19,6 @@ import {
 } from "./etablissement.service.types.ts"
 import { IRecruiter } from "../common/model/schema/recruiter/recruiter.types.ts"
 import { Filter } from "mongodb"
-import { getUser, updateUser } from "./userRecruteur.service.js"
 import { IUnsubscribedOF } from "common/model/schema/unsubscribedOF/unsubscribeOF.types.js"
 
 const apiParams = {
@@ -367,13 +366,11 @@ export const formatReferentielData = (d: IReferentiel): IFormatAPIReferentiel =>
 })
 
 export const etablissementUnsubscribeDemandeDelegation = async (etablissementSiret: string) => {
-  const userQuery = { siret: etablissementSiret }
-  let unsubscribeOF: IUnsubscribedOF = await UnsubscribeOF.findOne(userQuery)
+  const unsubscribeOF: IUnsubscribedOF = await UnsubscribeOF.findOne({ establishment_siret: etablissementSiret })
   if (!unsubscribeOF) {
-    unsubscribeOF = {
-      siret: etablissementSiret,
+    await UnsubscribeOF.create({
+      establishment_siret: etablissementSiret,
       unsubscribe_date: new Date(),
-    }
-    await UnsubscribeOF.create(unsubscribeOF)
+    })
   }
 }

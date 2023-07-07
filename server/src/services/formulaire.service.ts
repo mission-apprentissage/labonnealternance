@@ -576,7 +576,7 @@ export const getJob = async (id: IJobs["_id"]): Promise<IJobs> => {
  * @description Sends the mail informing the CFA that a company wants the CFA to handle the offer.
  */
 export const sendCFADelegationMail = async (email: string, offre: IJobs, recruiter: { establishment_raison_sociale: string; establishment_id: string }, siret_code: string) => {
-  const unsubscribeOF = await UnsubscribeOF.findOne({ siret: siret_code })
+  const unsubscribeOF = await UnsubscribeOF.findOne({ establishment_siret: siret_code })
   if (unsubscribeOF) return
   await mailer.sendEmail({
     to: email,
