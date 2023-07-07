@@ -221,7 +221,7 @@ export const validateEtablissementEmail = async (_id: IUserRecruteur["_id"]): Pr
  */
 export const getEtablissementFromGouv = async (siret: string): Promise<IAPIEtablissement> => {
   try {
-    const { data } = await axios.get<IAPIEtablissement>(`${config.entreprise.baseUrl}/sirene/etablissements/${siret}`, {
+    const { data } = await axios.get<IAPIEtablissement>(`${config.entreprise.baseUrl}/sirene/etablissements/${encoreUriComponent(siret)}`, {
       params: apiParams,
     })
 
