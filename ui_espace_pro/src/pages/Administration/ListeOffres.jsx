@@ -143,7 +143,7 @@ export default () => {
       accessor: ({ job_creation_date }) => dayjs(job_creation_date).format("DD/MM/YYYY"),
     },
     {
-      Header: "Date d'expiration",
+      Header: "Expire le",
       id: "job_expiration_date",
       width: "175",
       sortType: (a, b) => sortReactTableDate(a.original.job_expiration_date, b.original.job_expiration_date),
