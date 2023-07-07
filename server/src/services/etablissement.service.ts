@@ -365,6 +365,10 @@ export const formatReferentielData = (d: IReferentiel): IFormatAPIReferentiel =>
     : `${d.lieux_de_formation[0].adresse.geojson?.geometry.coordinates[0]},${d.lieux_de_formation[0].adresse.geojson?.geometry.coordinates[1]}`,
 })
 
+/**
+ * Taggue l'organisme de formation pour qu'il ne reçoive plus de demande de délégation
+ * @param etablissementSiret siret de l'organisme de formation ne souhaitant plus recevoir les demandes
+ */
 export const etablissementUnsubscribeDemandeDelegation = async (etablissementSiret: string) => {
   const unsubscribeOF: IUnsubscribedOF = await UnsubscribeOF.findOne({ establishment_siret: etablissementSiret })
   if (!unsubscribeOF) {
