@@ -5,7 +5,7 @@ on:
       - "cypress/records/**"
 
 jobs:
-  release:
+  cypress-convert:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout project
