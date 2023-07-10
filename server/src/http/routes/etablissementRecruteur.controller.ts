@@ -2,7 +2,7 @@ import express, { Request } from "express"
 import joi from "joi"
 import { createFormulaire, getFormulaire } from "../../services/formulaire.service.js"
 import { mailTemplate } from "../../assets/index.js"
-import { CFA, ENTREPRISE, etat_utilisateur, OPCOS, validation_utilisateur } from "../../common/constants.js"
+import { CFA, ENTREPRISE, etat_utilisateur, validation_utilisateur } from "../../common/constants.js"
 import { createMagicLinkToken, createUserRecruteurToken } from "../../common/utils/jwtUtils.js"
 import { checkIfUserEmailIsPrivate, checkIfUserMailExistInReferentiel, getAllDomainsFromEmailList } from "../../common/utils/mailUtils.js"
 import { notifyToSlack } from "../../common/utils/slackUtils.js"
@@ -33,6 +33,7 @@ import { validationOrganisation } from "../../services/bal.service.js"
 import { IUserRecruteur } from "../../common/model/schema/userRecruteur/userRecruteur.types.js"
 import { IRecruiter } from "../../common/model/schema/recruiter/recruiter.types.js"
 import { updateUserValidationHistory, getUser, createUser, updateUser, getUserValidationState, registerUser } from "../../services/userRecruteur.service.js"
+import UnsubscribeOF from "../../common/model/schema/unsubscribedOF/unsubscribeOF.schema.js"
 
 const getCfaRomeSchema = joi.object({
   latitude: joi.number().required(),
@@ -60,11 +61,12 @@ export default ({ mailer }) => {
   /**
    * Retourne la liste de tous les CFA ayant une formation avec les ROME passés..
    * Resultats triés par proximité (km).
+   * @param filterUnsubscribed si true, les organismes qui ne veulent pas de proposition de délégation sont retirés
    */
   router.get(
     "/cfa/rome",
     tryCatch(async (req, res) => {
-      const { latitude, longitude, rome } = req.query
+      const { latitude, longitude, rome, filterUnsubscribed = false } = req.query
 
       await getCfaRomeSchema.validateAsync(
         {
@@ -75,7 +77,13 @@ export default ({ mailer }) => {
         { abortEarly: false }
       )
 
-      const etablissements = await getNearEtablissementsFromRomes({ rome, origin: { latitude, longitude } })
+      let etablissements = await getNearEtablissementsFromRomes({ rome, origin: { latitude, longitude } })
+      if (filterUnsubscribed) {
+        const unsubscribedEtablissements = await UnsubscribeOF.find({ catalogue_id: { $in: etablissements.map((_) => _._id) } })
+        const unsubscribedIds = unsubscribedEtablissements.map((_) => _.catalogue_id)
+        etablissements = etablissements.filter((etablissement) => !unsubscribedIds.includes(etablissement._id))
+        etablissements = etablissements.slice(0, 20)
+      }
 
       res.send(etablissements)
     })

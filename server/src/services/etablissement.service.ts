@@ -20,6 +20,7 @@ import {
 import { IRecruiter } from "../common/model/schema/recruiter/recruiter.types.js"
 import { Filter } from "mongodb"
 import { IUnsubscribedOF } from "common/model/schema/unsubscribedOF/unsubscribeOF.types.js"
+import { getCatalogueEtablissements } from "./catalogue.service.js"
 
 const apiParams = {
   token: config.entreprise.apiKey,
@@ -372,7 +373,16 @@ export const formatReferentielData = (d: IReferentiel): IFormatAPIReferentiel =>
 export const etablissementUnsubscribeDemandeDelegation = async (etablissementSiret: string) => {
   const unsubscribeOF: IUnsubscribedOF = await UnsubscribeOF.findOne({ establishment_siret: etablissementSiret })
   if (!unsubscribeOF) {
+    const { etablissements } = await getCatalogueEtablissements(
+      {
+        siret: etablissementSiret,
+      },
+      { _id: 1 }
+    )
+    const [{ _id }] = etablissements
+    if (!_id) return
     await UnsubscribeOF.create({
+      catalogue_id: _id,
       establishment_siret: etablissementSiret,
       unsubscribe_date: new Date(),
     })

@@ -78,7 +78,8 @@ export const getPartenaire = (siret) => API.get(`etablissement/${siret}`)
 export const createPartenaire = (partenaire) => API.post("/etablissement/creation", partenaire)
 export const updatePartenaire = (id, partenaire) => API.put(`/etablissement/${id}`, partenaire)
 export const getRomeDetail = (rome) => API.get(`/rome/detail/${rome}`)
-export const getRelatedEtablissementsFromRome = ({ rome, latitude, longitude }) => API.get(`/etablissement/cfa/rome?rome[]=${rome}&latitude=${latitude}&longitude=${longitude}`)
+export const getRelatedEtablissementsFromRome = ({ rome, latitude, longitude, filterUnsubscribed = false }) =>
+  API.get(`/etablissement/cfa/rome?rome[]=${rome}&latitude=${latitude}&longitude=${longitude}&filterUnsubscribed=${filterUnsubscribed}`)
 export const validateOptOutToken = (token) =>
   API.get(`/optout/validate`, {
     headers: {
