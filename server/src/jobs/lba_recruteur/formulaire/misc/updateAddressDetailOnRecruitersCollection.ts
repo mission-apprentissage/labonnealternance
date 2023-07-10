@@ -7,7 +7,7 @@ import { runScript } from "../../../scriptWrapper.js"
 
 runScript(async () => {
   logger.info("Start update user adresse detail")
-  const etablissements = await Recruiter.find({ adresse_detail: { $eq: null } })
+  const etablissements = await Recruiter.find({ address_detail: { $eq: null } })
 
   logger.info(`${etablissements.length} entries to update...`)
 

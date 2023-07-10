@@ -22,6 +22,8 @@ runScript(async () => {
 
       if (!data) return
 
+      user.address_detail = data.adresse
+
       if (user.type !== ENTREPRISE) {
         await user.save()
         return
@@ -29,7 +31,6 @@ runScript(async () => {
 
       const formulaire = await Recruiter.findOne({ establishment_id: user.establishment_id })
 
-      user.address_detail = data.adresse
       formulaire.address_detail = formulaire ? data.adresse : undefined
 
       await Promise.all([user.save(), formulaire.save()])
