@@ -28,6 +28,7 @@ const Formulaire = ({ submitForm, validateOpcoChoice }) => {
     naf_label,
     establishment_size,
     establishment_creation_date,
+    address_detail,
   } = location.state?.informationSiret
   const { type, origin } = location.state
 
@@ -38,6 +39,7 @@ const Formulaire = ({ submitForm, validateOpcoChoice }) => {
         establishment_siret: establishment_siret,
         establishment_raison_sociale: establishment_raison_sociale,
         address: address,
+        address_detail: address_detail,
         contacts: contacts,
         geo_coordinates: geo_coordinates,
         opco: opco,
