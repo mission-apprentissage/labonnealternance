@@ -33,7 +33,6 @@ import { validationOrganisation } from "../../services/bal.service.js"
 import { IUserRecruteur } from "../../common/model/schema/userRecruteur/userRecruteur.types.js"
 import { IRecruiter } from "../../common/model/schema/recruiter/recruiter.types.js"
 import { updateUserValidationHistory, getUser, createUser, updateUser, getUserValidationState, registerUser } from "../../services/userRecruteur.service.js"
-import UnsubscribeOF from "../../common/model/schema/unsubscribedOF/unsubscribeOF.schema.js"
 
 const getCfaRomeSchema = joi.object({
   latitude: joi.number().required(),
