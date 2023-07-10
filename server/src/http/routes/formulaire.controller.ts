@@ -1,7 +1,7 @@
 // @ts-nocheck
 import express from "express"
-import { Recruiter } from "../../common/model/index.ts"
-import { getApplicationCount } from "../../services/application.service.ts"
+import { Recruiter } from "../../common/model/index.js"
+import { getApplicationCount } from "../../services/application.service.js"
 import {
   archiveDelegatedFormulaire,
   archiveFormulaire,
@@ -18,9 +18,9 @@ import {
   provideOffre,
   updateFormulaire,
   updateOffre,
-} from "../../services/formulaire.service.ts"
-import { createUser, getUser } from "../../services/userRecruteur.service.ts"
-import { tryCatch } from "../middlewares/tryCatchMiddleware.ts"
+} from "../../services/formulaire.service.js"
+import { createUser, getUser } from "../../services/userRecruteur.service.js"
+import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
 
 export default () => {
   const router = express.Router()
