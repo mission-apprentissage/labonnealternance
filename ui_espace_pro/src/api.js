@@ -87,7 +87,7 @@ export const validateOptOutToken = (token) =>
   })
 
 export const getWithQS = (payload) => API.get("/formulaire", { params: { query: JSON.stringify(payload.query), ...payload } })
-export const etablissementUnsubscribeDemandeDelegation = (establishmentSiret) => API.post(`/${establishmentSiret}/proposition/unsubscribe`)
+export const etablissementUnsubscribeDemandeDelegation = (establishmentSiret) => API.post(`/etablissement/${establishmentSiret}/proposition/unsubscribe`)
 
 /**
  * Administration OPCO
