@@ -1,3 +1,10 @@
+## [1.49.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.49.0...v1.49.1) (2023-07-10)
+
+
+### Bug Fixes
+
+* recovery script ([2fdd26c](https://github.com/mission-apprentissage/labonnealternance/commit/2fdd26cad904117bb137e7da9ad37daaada9f48e))
+
 # [1.49.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.48.8...v1.49.0) (2023-07-10)
 
 
