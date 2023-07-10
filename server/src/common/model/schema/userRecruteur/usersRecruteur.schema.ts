@@ -122,11 +122,6 @@ const userRecruteurSchema = new Schema<IUserRecruteur>(
       default: true,
       description: "Statut qualiopi du CFA (forcément true, sinon l'inscription n'est pas possibe)",
     },
-    disablePropositionDelegation: {
-      type: Boolean,
-      default: false,
-      description: "Si true, désactive les mails de proposition de délégation venant des entreprises créant des offres",
-    },
   },
   {
     timestamps: true,

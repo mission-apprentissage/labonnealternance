@@ -32,7 +32,6 @@ interface IUserRecruteur {
   last_connection: Date
   createdAt: Date
   updatedAt: Date
-  disablePropositionDelegation: boolean
 }
 
 export { IUserRecruteur, IUserValidation }
