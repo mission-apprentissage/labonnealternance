@@ -1,3 +1,10 @@
+## [1.48.8](https://github.com/mission-apprentissage/labonnealternance/compare/v1.48.7...v1.48.8) (2023-07-10)
+
+
+### Bug Fixes
+
+* export csv ([#496](https://github.com/mission-apprentissage/labonnealternance/issues/496)) ([ee08cf6](https://github.com/mission-apprentissage/labonnealternance/commit/ee08cf646a427dc8c771e7477d53ef6e8e299df6))
+
 ## [1.48.7](https://github.com/mission-apprentissage/labonnealternance/compare/v1.48.6...v1.48.7) (2023-07-07)
 
 
