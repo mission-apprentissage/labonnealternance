@@ -17,7 +17,9 @@
 import "./commands"
 
 beforeEach(() => {
-  cy.intercept("https://api.mapbox.com/**", (req) => {
-    req.reply({}) // Empty response
+  ;["https://api.mapbox.com/**", "https://plausible.io/**"].map((url) => {
+    cy.intercept(url, (req) => {
+      req.reply({}) // Empty response
+    })
   })
 })
