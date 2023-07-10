@@ -1,3 +1,10 @@
+# [1.49.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.48.8...v1.49.0) (2023-07-10)
+
+
+### Features
+
+* ajout de la page de maintenance ([#490](https://github.com/mission-apprentissage/labonnealternance/issues/490)) ([4f37d56](https://github.com/mission-apprentissage/labonnealternance/commit/4f37d5643d16d89ab49ab463fce481d8e47a4d65))
+
 ## [1.48.8](https://github.com/mission-apprentissage/labonnealternance/compare/v1.48.7...v1.48.8) (2023-07-10)
 
 
