@@ -28,7 +28,7 @@ const Formulaire = ({ submitForm, validateOpcoChoice }) => {
     naf_label,
     establishment_size,
     establishment_creation_date,
-    address_detail
+    address_detail,
   } = location.state?.informationSiret
   const { type, origin } = location.state
 
