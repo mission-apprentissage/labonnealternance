@@ -61,12 +61,11 @@ export default ({ mailer }) => {
   /**
    * Retourne la liste de tous les CFA ayant une formation avec les ROME passés..
    * Resultats triés par proximité (km).
-   * @param filterUnsubscribed si true, les organismes qui ne veulent pas de proposition de délégation sont retirés
    */
   router.get(
     "/cfa/rome",
     tryCatch(async (req, res) => {
-      const { latitude, longitude, rome, filterUnsubscribed = false } = req.query
+      const { latitude, longitude, rome } = req.query
 
       await getCfaRomeSchema.validateAsync(
         {
@@ -77,14 +76,7 @@ export default ({ mailer }) => {
         { abortEarly: false }
       )
 
-      let etablissements = await getNearEtablissementsFromRomes({ rome, origin: { latitude, longitude } })
-      if (filterUnsubscribed) {
-        const unsubscribedEtablissements = await UnsubscribeOF.find({ catalogue_id: { $in: etablissements.map((_) => _._id) } })
-        const unsubscribedIds = unsubscribedEtablissements.map((_) => _.catalogue_id)
-        etablissements = etablissements.filter((etablissement) => !unsubscribedIds.includes(etablissement._id))
-        etablissements = etablissements.slice(0, 20)
-      }
-
+      const etablissements = await getNearEtablissementsFromRomes({ rome, origin: { latitude, longitude } })
       res.send(etablissements)
     })
   )
