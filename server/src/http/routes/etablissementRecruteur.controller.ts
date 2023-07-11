@@ -370,17 +370,6 @@ export default ({ mailer }) => {
   )
 
   /**
-   * Récupérer les informations d'un partenaire
-   */
-
-  router.get(
-    "/:establishment_siret",
-    tryCatch(async (req, res) => {
-      const partenaire = await getUser({ establishment_siret: req.params.establishment_siret })
-      res.json(partenaire)
-    })
-  )
-  /**
    * Mise à jour d'un partenaire
    */
 
