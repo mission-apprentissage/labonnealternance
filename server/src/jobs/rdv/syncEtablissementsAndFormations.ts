@@ -140,7 +140,6 @@ export const syncEtablissementsAndFormations = async ({ etablissements }) => {
             etablissement_formateur_city: formation.etablissement_formateur_localite,
             etablissement_formateur_siret: formation.etablissement_formateur_siret,
             etablissement_gestionnaire_siret: formation.etablissement_gestionnaire_siret,
-            is_affelnet_scope: false,
           })
         }
 
@@ -163,7 +162,6 @@ export const syncEtablissementsAndFormations = async ({ etablissements }) => {
             formateur_zip_code: formation.etablissement_formateur_code_postal,
             formateur_city: formation.etablissement_formateur_localite,
             last_catalogue_sync_date: dayjs().format(),
-            is_affelnet_scope: false,
           }
         )
       },

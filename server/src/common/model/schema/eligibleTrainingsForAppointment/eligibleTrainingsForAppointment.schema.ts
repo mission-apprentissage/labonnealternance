@@ -118,10 +118,6 @@ export const eligibleTrainingsForAppointmentSchema = new Schema<IEligibleTrainin
     type: Date,
     description: "Date d'historisation",
   },
-  is_affelnet_scope: {
-    type: Boolean,
-    description: "Est une formation dans le périmètre Affelnet (Catalogue ME)",
-  },
 })
 
 eligibleTrainingsForAppointmentSchema.plugin(mongoosePagination)

@@ -21,8 +21,7 @@ import updateOpcoCompanies from "./jobs/lbb/updateOpcoCompanies.js"
 import { activateOptOutEtablissementFormations } from "./jobs/rdv/activateOptOutEtablissementFormations.js"
 import { anonimizeAppointments } from "./jobs/rdv/anonymizeAppointments.js"
 import { anonimizeUsers } from "./jobs/rdv/anonymizeUsers.js"
-import { controlAvailableTrainingsWithCatalogue } from "./jobs/rdv/controlAvailableTrainingsWithCatalogue.js"
-import { controlAvailableAffelnetTrainingsWithCatalogueME } from "./jobs/rdv/controlAvailableTrainingsWithCatalogueME.js"
+import { eligibleTrainingsForAppointmentsHistoryWithCatalogue } from "./jobs/rdv/eligibleTrainingsForAppointmentsHistoryWithCatalogue.js"
 import { inviteEtablissementToOptOut } from "./jobs/rdv/inviteEtablissementToOptOut.js"
 import { inviteEtablissementToPremium } from "./jobs/rdv/inviteEtablissementToPremium.js"
 import { inviteEtablissementAffelnetToPremium } from "./jobs/rdv/inviteEtablissementToPremiumAffelnet.js"
@@ -233,17 +232,10 @@ cli
   })
 
 cli
-  .command("control-elligible-training")
-  .description("Contrôle l'egibilité d'une formation à la prise de rendez-vous avec le Catalogue des formations")
+  .command("history-eligible-trainings-for-appointments-catalogue")
+  .description("Historise l'egibilité d'une formation à la prise de rendez-vous avec le Catalogue des formations (RCO)")
   .action(() => {
-    runScript(() => controlAvailableTrainingsWithCatalogue())
-  })
-
-cli
-  .command("control-elligible-affelnet-training")
-  .description("Contrôle l'egibilité d'une formation Affelnet à la prise de rendez-vous avec le Catalogue des formations ministere educatif")
-  .action(() => {
-    runScript(() => controlAvailableAffelnetTrainingsWithCatalogueME())
+    runScript(() => eligibleTrainingsForAppointmentsHistoryWithCatalogue())
   })
 
 /**
