@@ -1,3 +1,10 @@
+## [1.49.3](https://github.com/mission-apprentissage/labonnealternance/compare/v1.49.2...v1.49.3) (2023-07-11)
+
+
+### Bug Fixes
+
+* active on parcoursup if parcoursup_id is existing and etablissement.premium_activation_date ([#494](https://github.com/mission-apprentissage/labonnealternance/issues/494)) ([0cb6645](https://github.com/mission-apprentissage/labonnealternance/commit/0cb66458aa0d08018ed6ffe1491ea9535b57caa3))
+
 ## [1.49.2](https://github.com/mission-apprentissage/labonnealternance/compare/v1.49.1...v1.49.2) (2023-07-11)
 
 
