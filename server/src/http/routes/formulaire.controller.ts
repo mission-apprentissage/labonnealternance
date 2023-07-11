@@ -21,6 +21,7 @@ import {
 } from "../../services/formulaire.service.js"
 import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
 import { getUser, createUser } from "../../services/userRecruteur.service.js"
+import { authMiddleware } from "../../auth/passport-strategy.js"
 
 export default () => {
   const router = express.Router()
@@ -30,6 +31,7 @@ export default () => {
    */
   router.get(
     "/",
+    authMiddleware("jwt-bearer"),
     tryCatch(async (req, res) => {
       const query = JSON.parse(req.query.query)
       const results = await Recruiter.find(query).lean()
@@ -238,24 +240,6 @@ export default () => {
 
       await provideOffre(req.params.jobId)
       return res.sendStatus(200)
-    })
-  )
-
-  /**
-   * LBA ENDPOINT
-   */
-  router.post(
-    "/search",
-    tryCatch(async (req, res) => {
-      const { distance, lat, lon, romes, niveau } = req.body
-
-      if (!distance || !lat || !lon || !romes) {
-        return res.status(400).json({ error: "Argument is missing (distance, lat, lon, romes)" })
-      }
-
-      const jobs = await getJobsFromElasticSearch({ distance, lat, lon, romes, niveau })
-
-      return res.json(jobs)
     })
   )
 

@@ -1,9 +1,5 @@
-import { compose } from "compose-middleware"
 import express from "express"
 import Joi from "joi"
-import passport from "passport"
-import { ExtractJwt, Strategy } from "passport-jwt"
-import { Strategy as LocalStrategy } from "passport-local"
 import { mailTemplate } from "../../../assets/index.js"
 import { CFA, ENTREPRISE, etat_utilisateur } from "../../../common/constants.js"
 import { UserRecruteur } from "../../../common/model/index.js"
@@ -12,65 +8,20 @@ import config from "../../../config.js"
 import { tryCatch } from "../../middlewares/tryCatchMiddleware.js"
 import { IUserRecruteur } from "../../../common/model/schema/userRecruteur/userRecruteur.types.js"
 import { getUser, registerUser } from "../../../services/userRecruteur.service.js"
-import * as users from "../../../services/user.service.js"
 import { getValidationUrl } from "../../../services/etablissement.service.js"
-
-const checkToken = () => {
-  passport.use(
-    "jwt",
-    new Strategy(
-      {
-        jwtFromRequest: ExtractJwt.fromBodyField("token"),
-        secretOrKey: config.auth.magiclink.jwtSecret,
-      },
-      (jwt_payload, done) => {
-        return getUser({ email: jwt_payload.sub })
-          .then((user) => {
-            if (!user) {
-              return done(null, false, { message: "User not found" })
-            }
-            return done(null, user)
-          })
-          .catch((err) => done(err))
-      }
-    )
-  )
-
-  return passport.authenticate("jwt", { session: false, failWithError: true })
-}
+import { authMiddleware } from "../../../auth/passport-strategy.js"
 
 export default ({ mailer }) => {
   const router = express.Router() // eslint-disable-line new-cap
-  passport.use(
-    new LocalStrategy(
-      {
-        usernameField: "username",
-        passwordField: "password",
-      },
-      function (username, password, cb) {
-        return users
-          .authenticate(username, password)
-          .then((user) => {
-            if (!user) {
-              return cb(null, false)
-            }
-            return cb(null, user)
-          })
-          .catch((err) => cb(err))
-      }
-    )
-  )
 
   router.post(
     "/",
-    compose([
-      passport.authenticate("local", { session: false, failWithError: true }),
-      tryCatch(async (req, res) => {
-        const user = req.user
-        const token = createUserToken(user)
-        return res.json({ token })
-      }),
-    ])
+    authMiddleware("basic"),
+    tryCatch(async (req, res) => {
+      const user = req.user
+      const token = createUserToken(user)
+      return res.json({ token })
+    })
   )
 
   router.post(
@@ -207,7 +158,7 @@ export default ({ mailer }) => {
 
   router.post(
     "/verification",
-    checkToken(),
+    authMiddleware("jwt-token"),
     tryCatch(async (req, res) => {
       const user = req.user
       await registerUser(user.email)

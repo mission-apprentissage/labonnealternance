@@ -8,6 +8,7 @@ import { createMagicLinkToken } from "../../common/utils/jwtUtils.js"
 import config from "../../config.js"
 import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
 import { createUser, updateUser, updateUserValidationHistory, removeUser } from "../../services/userRecruteur.service.js"
+import { authMiddleware } from "../../auth/passport-strategy.js"
 
 export default ({ mailer }) => {
   const router = express.Router()
@@ -44,6 +45,7 @@ export default ({ mailer }) => {
 
   router.get(
     "/",
+    authMiddleware("jwt-bearer"),
     tryCatch(async (req, res) => {
       const query = JSON.parse(req.query.users)
 

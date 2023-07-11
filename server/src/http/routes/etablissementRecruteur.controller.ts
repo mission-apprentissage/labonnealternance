@@ -33,6 +33,7 @@ import { IUserRecruteur } from "../../common/model/schema/userRecruteur/userRecr
 import { IRecruiter } from "../../common/model/schema/recruiter/recruiter.types.js"
 import { updateUserValidationHistory, getUser, createUser, updateUser, getUserValidationState, registerUser } from "../../services/userRecruteur.service.js"
 import { IAdresseV3 } from "../../common/model/schema/_shared/shared.types.js"
+import { authMiddleware } from "../../auth/passport-strategy.js"
 
 const getCfaRomeSchema = joi.object({
   latitude: joi.number().required(),
@@ -375,6 +376,7 @@ export default ({ mailer }) => {
 
   router.put(
     "/:id",
+    authMiddleware("jwt-bearer"),
     tryCatch(async (req, res) => {
       const result = await updateUser({ _id: req.params.id }, req.body)
       return res.json(result)
