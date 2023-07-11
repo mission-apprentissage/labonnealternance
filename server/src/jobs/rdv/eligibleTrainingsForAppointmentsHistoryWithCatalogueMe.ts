@@ -9,8 +9,8 @@ import { pick } from "lodash-es"
  * @description Check if an Affelnet training is still available for appointments again it's presence in the ministere educatif catalogue
  * @return {void}
  */
-export const controlAvailableAffelnetTrainingsWithCatalogueME = async () => {
-  logger.info("Cron #controlAvailableAffelnetFormationWithCatalogueME started.")
+export const eligibleTrainingsForAppointmentsHistoryWithCatalogueMe = async () => {
+  logger.info("Cron #eligibleTrainingsForAppointmentsHistoryWithCatalogueMe started.")
 
   const catalogueMinistereEducatif = await getFormationsFromCatalogueMe({
     limit: 500,
@@ -33,13 +33,12 @@ export const controlAvailableAffelnetTrainingsWithCatalogueME = async () => {
   stats.AncientElligibleTrainingCount = await EligibleTrainingsForAppointment.countDocuments()
 
   await oleoduc(
-    EligibleTrainingsForAppointment.find({}).lean().cursor(),
+    EligibleTrainingsForAppointment.find({ is_affelnet_scope: true }).lean().cursor(),
     writeData(
       async (formation) => {
         const exist = await catalogueMinistereEducatif.find(({ cle_ministere_educatif }) => cle_ministere_educatif === formation.cle_ministere_educatif)
 
         if (!exist) {
-          logger.info(`training historized: ${formation.cle_ministere_educatif}`)
           await eligibleTrainingsForAppointmentHistoric.create({ ...formation, email_rdv: undefined, historization_date: dayjs().format() })
           await EligibleTrainingsForAppointment.findOneAndRemove({ cle_ministere_educatif: formation.cle_ministere_educatif })
         }
@@ -50,7 +49,7 @@ export const controlAvailableAffelnetTrainingsWithCatalogueME = async () => {
 
   stats.NewElligibleTrainingCount = await EligibleTrainingsForAppointment.countDocuments()
 
-  logger.info("Cron #controlAvailableAffelnetFormationWithCatalogueME done.")
+  logger.info("Cron #eligibleTrainingsForAppointmentsHistoryWithCatalogueMe done.")
 
   return stats
 }
