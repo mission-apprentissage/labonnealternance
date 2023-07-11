@@ -1,3 +1,10 @@
+## [1.49.2](https://github.com/mission-apprentissage/labonnealternance/compare/v1.49.1...v1.49.2) (2023-07-11)
+
+
+### Bug Fixes
+
+* remove obsolete route ([6fe1579](https://github.com/mission-apprentissage/labonnealternance/commit/6fe15792b8d06821c25d4b4f17fa5e69456e2c66))
+
 ## [1.49.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.49.0...v1.49.1) (2023-07-10)
 
 
