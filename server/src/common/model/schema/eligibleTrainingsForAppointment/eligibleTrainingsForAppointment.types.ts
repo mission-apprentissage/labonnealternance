@@ -23,6 +23,7 @@ interface IEligibleTrainingsForAppointment {
   etablissement_gestionnaire_siret: string
   created_at: Date
   historization_date: Date
+  is_affelnet_scope: boolean
 }
 
 export { IEligibleTrainingsForAppointment }
