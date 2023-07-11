@@ -25,9 +25,7 @@ export const eligibleTrainingsForAppointmentsHistoryWithCatalogue = async () => 
   stats.AncientElligibleTrainingCount = await EligibleTrainingsForAppointment.countDocuments()
 
   await oleoduc(
-    EligibleTrainingsForAppointment.find({ is_affelnet_scope: { $in: [null, false] } })
-      .lean()
-      .cursor(),
+    EligibleTrainingsForAppointment.find({}).lean().cursor(),
     writeData(
       async (formation) => {
         const exist = await FormationCatalogue.findOne({ cle_ministere_educatif: formation.cle_ministere_educatif })
