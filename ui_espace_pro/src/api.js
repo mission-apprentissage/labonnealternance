@@ -74,7 +74,7 @@ export const validationCompte = (id) => API.post("/etablissement/validation", id
  */
 export const getCfaInformation = async (siret) => await API.get(`/etablissement/cfa/${siret}`)
 export const getEntrepriseInformation = async (siret, options) => await API.get(`/etablissement/entreprise/${siret}`, { params: options })
-export const getPartenaire = (siret) => API.get(`etablissement/${siret}`)
+
 export const createPartenaire = (partenaire) => API.post("/etablissement/creation", partenaire)
 export const updatePartenaire = (id, partenaire) => API.put(`/etablissement/${id}`, partenaire)
 export const getRomeDetail = (rome) => API.get(`/rome/detail/${rome}`)

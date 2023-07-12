@@ -214,11 +214,9 @@ export default () => {
     "/offre/:jobId/cancel",
     tryCatch(async (req, res) => {
       const exists = await checkOffreExists(req.params.jobId)
-
       if (!exists) {
         return res.status(400).json({ status: "INVALID_RESSOURCE", message: "L'offre n'existe pas" })
       }
-
       await cancelOffre(req.params.jobId)
       return res.sendStatus(200)
     })
@@ -231,11 +229,9 @@ export default () => {
     "/offre/:jobId/provided",
     tryCatch(async (req, res) => {
       const exists = await checkOffreExists(req.params.jobId)
-
       if (!exists) {
         return res.status(400).json({ status: "INVALID_RESSOURCE", message: "L'offre n'existe pas" })
       }
-
       await provideOffre(req.params.jobId)
       return res.sendStatus(200)
     })
@@ -248,13 +244,10 @@ export default () => {
     "/search",
     tryCatch(async (req, res) => {
       const { distance, lat, lon, romes, niveau } = req.body
-
       if (!distance || !lat || !lon || !romes) {
         return res.status(400).json({ error: "Argument is missing (distance, lat, lon, romes)" })
       }
-
       const jobs = await getJobsFromElasticSearch({ distance, lat, lon, romes, niveau })
-
       return res.json(jobs)
     })
   )

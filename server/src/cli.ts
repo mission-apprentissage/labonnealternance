@@ -33,6 +33,7 @@ import { premiumInviteOneShot } from "./jobs/rdv/premiumInviteOneShot.js"
 import { syncEtablissementsAndFormations } from "./jobs/rdv/syncEtablissementsAndFormations.js"
 import { syncAffelnetFormationsFromCatalogueME } from "./jobs/rdv/syncEtablissementsAndFormationsAffelnet.js"
 import { runScript } from "./jobs/scriptWrapper.js"
+import { checkAwaitingCompaniesValidation } from "./jobs/lba_recruteur/user/misc/updateMissingActivationState.js"
 import updateBrevoBlockedEmails from "./jobs/updateBrevoBlockedEmails/updateBrevoBlockedEmails.js"
 
 cli.addHelpText("after", null)
@@ -130,6 +131,13 @@ cli
   .description("Exporte les offres vers Pôle Emploi")
   .action(() => {
     runScript((components) => exportPE(components))
+  })
+
+cli
+  .command("validate-user")
+  .description("Contrôle de validation des entreprises en attente de validation")
+  .action(() => {
+    runScript((components) => checkAwaitingCompaniesValidation(components))
   })
 
 /**

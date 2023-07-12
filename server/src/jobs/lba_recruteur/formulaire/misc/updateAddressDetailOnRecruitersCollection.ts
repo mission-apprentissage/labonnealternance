@@ -7,23 +7,23 @@ import { runScript } from "../../../scriptWrapper.js"
 
 runScript(async () => {
   logger.info("Start update user adresse detail")
-  const formulaires = await Recruiter.find({ adresse_detail: { $eq: null } })
+  const etablissements = await Recruiter.find({ address_detail: { $eq: null } })
 
-  logger.info(`${formulaires.length} entries to update...`)
+  logger.info(`${etablissements.length} entries to update...`)
 
-  if (!formulaires.length) return
+  if (!etablissements.length) return
 
-  await asyncForEach(formulaires, async (formulaire, index) => {
-    logger.info(`${index}/${formulaires.length} - ${formulaire.cfa_delegated_siret ? "delegate" : "entreprise"}`)
+  await asyncForEach(etablissements, async (etb, index) => {
+    logger.info(`${index}/${etablissements.length} - ${etb.cfa_delegated_siret ? "delegate" : "entreprise"}`)
     try {
       await delay(500)
-      const { data } = await getEtablissementFromGouv(formulaire.establishment_siret)
+      const { data } = await getEtablissementFromGouv(etb.establishment_siret)
 
       if (!data) return
 
-      formulaire.address_detail = data.adresse
+      etb.address_detail = data.adresse
 
-      await formulaire.save()
+      await etb.save()
     } catch (error) {
       const { errors } = error.response.data
 
@@ -32,8 +32,8 @@ runScript(async () => {
           errors.includes("Le numéro de siret n'est pas correctement formatté") ||
           errors.includes("Le siret ou siren indiqué n'existe pas, n'est pas connu ou ne comporte aucune information pour cet appel")
         ) {
-          console.log(`Invalid siret DELETED : ${formulaire.establishment_siret}`)
-          await Recruiter.findByIdAndDelete(formulaire._id)
+          console.log(`Invalid siret DELETED : ${etb.establishment_siret}`)
+          await Recruiter.findByIdAndDelete(etb._id)
           return
         }
       } else {

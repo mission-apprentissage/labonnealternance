@@ -29,7 +29,9 @@ export default ({ data, datasetName = "export" }) => {
 
   const format = buffer
     .flat()
-    .map((x) => _.omit(x, ["_id", "status", "__v", "type", "scope", "is_email_checked", "establishment_id", "job_detail", "is_qualiopi"]))
+    .map((x) =>
+      _.omit(x, ["_id", "status", "__v", "type", "scope", "is_email_checked", "establishment_id", "job_detail", "is_qualiopi", "address_detail", "delegations", "rome_detail"])
+    )
     .map((x) => {
       return {
         ...x,
@@ -45,9 +47,9 @@ export default ({ data, datasetName = "export" }) => {
     .map((x) => {
       return {
         ...x,
-        siret: `"${x.establishment_siret}"`,
-        telephone: `"${x.phone}"`,
-        description: x?.job_description ? x.job_description.replace(/(\n|\r|[,.!?;:'-])/g, " ") : undefined,
+        establishment_siret: `"${x.establishment_siret}"`,
+        phone: `"${x.phone}"`,
+        job_description: x?.job_description ? x.job_description.replace(/(\n|\r|[,.!?;:'-])/g, " ") : undefined,
       }
     })
 
