@@ -23,7 +23,7 @@ export const createEstablishmentSchema = Joi.object({
     .min(10)
     .max(10)
     .required(),
-  idcc: Joi.string().required(),
+  idcc: Joi.string(),
   origin: Joi.string(),
 })
 

@@ -21,7 +21,7 @@ interface IRecruiter {
   jobs: IJobs[]
   origin: string
   opco: string
-  idcc: string
+  idcc?: string
   status: string
   naf_code: string
   naf_label: string
