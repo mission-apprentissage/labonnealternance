@@ -14,8 +14,12 @@
 // ***********************************************************
 
 // Import commands.js using ES2015 syntax:
-import "./commands";
+import "./commands"
 
 beforeEach(() => {
-  //
-});
+  ;["https://api.mapbox.com/**", "https://plausible.io/**"].map((url) => {
+    cy.intercept(url, (req) => {
+      req.reply({}) // Empty response
+    })
+  })
+})
