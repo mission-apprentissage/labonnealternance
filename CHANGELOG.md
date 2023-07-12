@@ -1,3 +1,10 @@
+# [1.55.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.54.0...v1.55.0) (2023-07-12)
+
+
+### Features
+
+* history eligible training for appointments ([#503](https://github.com/mission-apprentissage/labonnealternance/issues/503)) ([76f18f1](https://github.com/mission-apprentissage/labonnealternance/commit/76f18f1770e1a9b93a6dfcfa2d0e8483fd0795a7))
+
 # [1.54.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.53.0...v1.54.0) (2023-07-12)
 
 
