@@ -1,3 +1,10 @@
+## [1.51.3](https://github.com/mission-apprentissage/labonnealternance/compare/v1.51.2...v1.51.3) (2023-07-12)
+
+
+### Bug Fixes
+
+* import ([28d1aaf](https://github.com/mission-apprentissage/labonnealternance/commit/28d1aaf76630136ea1071588d1c455e06c009cf3))
+
 ## [1.51.2](https://github.com/mission-apprentissage/labonnealternance/compare/v1.51.1...v1.51.2) (2023-07-12)
 
 
