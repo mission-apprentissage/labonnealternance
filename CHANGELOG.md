@@ -1,3 +1,10 @@
+# [1.51.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.50.0...v1.51.0) (2023-07-12)
+
+
+### Features
+
+* **OF:** permet aux OF de se désinscrire des mises en relation ([#495](https://github.com/mission-apprentissage/labonnealternance/issues/495)) ([4e3c6a6](https://github.com/mission-apprentissage/labonnealternance/commit/4e3c6a6f7818e8a162d15aa5858d15c4c3d82953))
+
 # [1.50.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.49.4...v1.50.0) (2023-07-12)
 
 ### Features
