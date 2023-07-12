@@ -30,6 +30,7 @@ import {
   CreationCompte,
   InformationCreationCompte,
   OptOutValidation,
+  RedirectAfterAuth,
 } from "./pages/Authentification"
 import { FormCreatePage } from "./pages/Candidat/FormCreatePage"
 import { FormRecapPage } from "./pages/Candidat/FormRecapPage"
@@ -144,6 +145,7 @@ const App = () => {
         <Route path="/authentification/confirmation" element={<ConfirmationCreationCompte />} />
         <Route path="/authentification/validation/:id" element={<ConfirmationValidationEmail />} />
         <Route path="/authentification/verification" element={<AuthValidation />} />
+        <Route path="/authentification/validation" element={<RedirectAfterAuth />} />
         <Route path="/authentification/optout/verification" element={<OptOutValidation />} />
         <Route path="/authentification/en-attente" element={<CompteEnAttente />} />
         <Route path="/" element={<RedirectToLba />} />
