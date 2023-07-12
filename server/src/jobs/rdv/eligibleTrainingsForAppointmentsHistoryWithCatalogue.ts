@@ -8,8 +8,8 @@ import dayjs from "../../common/dayjs.js"
  * @description Check if a training is still available for appointments again it's presence in the training catalogue
  * @return {void}
  */
-export const controlAvailableTrainingsWithCatalogue = async () => {
-  logger.info("Cron #controlAvailableFormationWithCatalogue started.")
+export const eligibleTrainingsForAppointmentsHistoryWithCatalogue = async () => {
+  logger.info("Cron #eligibleTrainingsForAppointmentsHistoryWithCatalogue started.")
 
   const control = await FormationCatalogue.countDocuments()
 
@@ -31,7 +31,6 @@ export const controlAvailableTrainingsWithCatalogue = async () => {
         const exist = await FormationCatalogue.findOne({ cle_ministere_educatif: formation.cle_ministere_educatif })
 
         if (!exist) {
-          logger.info(`training historized: ${formation.cle_ministere_educatif}`)
           await eligibleTrainingsForAppointmentHistoric.create({ ...formation, email_rdv: undefined, historization_date: dayjs().format() })
           await EligibleTrainingsForAppointment.findOneAndRemove({ cle_ministere_educatif: formation.cle_ministere_educatif })
         }
@@ -42,7 +41,7 @@ export const controlAvailableTrainingsWithCatalogue = async () => {
 
   stats.NewElligibleTrainingCount = await EligibleTrainingsForAppointment.countDocuments()
 
-  logger.info("Cron #controlAvailableFormationWithCatalogue done.")
+  logger.info("Cron #eligibleTrainingsForAppointmentsHistoryWithCatalogue done.")
 
   return stats
 }

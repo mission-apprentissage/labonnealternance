@@ -77,7 +77,6 @@ export const syncEtablissementsAndFormations = async ({ etablissements }) => {
         }
 
         if (eligibleTrainingsForAppointment) {
-          logger.info("update formation:", formation.cle_ministere_educatif)
           let emailRdv = eligibleTrainingsForAppointment.lieu_formation_email
 
           // Don't override "email" if this field is true
