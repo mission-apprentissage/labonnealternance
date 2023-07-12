@@ -17,6 +17,8 @@ export type TJob = {
   job_start_date: string
   job_employer_description?: string
   job_description?: string
+  custom_address?: string
+  custom_geo_coordinates?: string
 }
 
 export interface ICreateJobBody extends TJob {

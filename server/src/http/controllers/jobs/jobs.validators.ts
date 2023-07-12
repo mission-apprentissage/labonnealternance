@@ -53,6 +53,8 @@ export const createJobSchema = Joi.object({
   job_duration: Joi.number().min(6).max(36).required(),
   job_description: Joi.string(),
   job_employer_description: Joi.string(),
+  custom_address: Joi.string(),
+  custom_geo_coordinates: Joi.string().when("custom_address", { is: Joi.exist(), then: Joi.required() }),
 })
 
 export const updateJobSchema = Joi.object({
