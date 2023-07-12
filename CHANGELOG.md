@@ -1,3 +1,10 @@
+## [1.51.2](https://github.com/mission-apprentissage/labonnealternance/compare/v1.51.1...v1.51.2) (2023-07-12)
+
+
+### Bug Fixes
+
+* jobs type ([7d0fd57](https://github.com/mission-apprentissage/labonnealternance/commit/7d0fd577136f1ae2c8e9de6549dc95460477309e))
+
 ## [1.51.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.51.0...v1.51.1) (2023-07-12)
 
 
