@@ -1,3 +1,10 @@
+# [1.50.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.49.4...v1.50.0) (2023-07-12)
+
+
+### Features
+
+* espace recruteur: modification des messages liés à la date d'expiration d'une offre ([#492](https://github.com/mission-apprentissage/labonnealternance/issues/492)) ([6f2aab2](https://github.com/mission-apprentissage/labonnealternance/commit/6f2aab2956cd41af896124c97dc25c24c901e68b))
+
 ## [1.49.4](https://github.com/mission-apprentissage/labonnealternance/compare/v1.49.3...v1.49.4) (2023-07-12)
 
 
