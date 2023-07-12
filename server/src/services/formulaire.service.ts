@@ -109,6 +109,11 @@ export const getJobsFromElasticSearch = async ({
               },
             },
           },
+          {
+            match: {
+              status: "Actif",
+            },
+          },
         ],
         filter: filter,
       },
