@@ -1,3 +1,10 @@
+## [1.51.4](https://github.com/mission-apprentissage/labonnealternance/compare/v1.51.3...v1.51.4) (2023-07-12)
+
+
+### Bug Fixes
+
+* remove github action ([61a893d](https://github.com/mission-apprentissage/labonnealternance/commit/61a893ddb3008fc71e64604bcb3668140924c8ff))
+
 ## [1.51.3](https://github.com/mission-apprentissage/labonnealternance/compare/v1.51.2...v1.51.3) (2023-07-12)
 
 
