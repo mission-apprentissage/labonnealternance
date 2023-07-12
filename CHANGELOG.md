@@ -1,65 +1,56 @@
 # [1.50.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.49.4...v1.50.0) (2023-07-12)
 
-
 ### Features
 
-* espace recruteur: modification des messages liés à la date d'expiration d'une offre ([#492](https://github.com/mission-apprentissage/labonnealternance/issues/492)) ([6f2aab2](https://github.com/mission-apprentissage/labonnealternance/commit/6f2aab2956cd41af896124c97dc25c24c901e68b))
+- espace recruteur: modification des messages liés à la date d'expiration d'une offre ([#492](https://github.com/mission-apprentissage/labonnealternance/issues/492)) ([6f2aab2](https://github.com/mission-apprentissage/labonnealternance/commit/6f2aab2956cd41af896124c97dc25c24c901e68b))
 
 ## [1.49.4](https://github.com/mission-apprentissage/labonnealternance/compare/v1.49.3...v1.49.4) (2023-07-12)
 
-
 ### Bug Fixes
 
-* **offre:** suppression d'une offre ([#491](https://github.com/mission-apprentissage/labonnealternance/issues/491)) ([d3f37ad](https://github.com/mission-apprentissage/labonnealternance/commit/d3f37ad837c247c6300b33d20d26fc3124315cfb))
+- **offre:** suppression d'une offre ([#491](https://github.com/mission-apprentissage/labonnealternance/issues/491)) ([d3f37ad](https://github.com/mission-apprentissage/labonnealternance/commit/d3f37ad837c247c6300b33d20d26fc3124315cfb))
 
 ## [1.49.3](https://github.com/mission-apprentissage/labonnealternance/compare/v1.49.2...v1.49.3) (2023-07-11)
 
-
 ### Bug Fixes
 
-* active on parcoursup if parcoursup_id is existing and etablissement.premium_activation_date ([#494](https://github.com/mission-apprentissage/labonnealternance/issues/494)) ([0cb6645](https://github.com/mission-apprentissage/labonnealternance/commit/0cb66458aa0d08018ed6ffe1491ea9535b57caa3))
+- active on parcoursup if parcoursup_id is existing and etablissement.premium_activation_date ([#494](https://github.com/mission-apprentissage/labonnealternance/issues/494)) ([0cb6645](https://github.com/mission-apprentissage/labonnealternance/commit/0cb66458aa0d08018ed6ffe1491ea9535b57caa3))
 
 ## [1.49.2](https://github.com/mission-apprentissage/labonnealternance/compare/v1.49.1...v1.49.2) (2023-07-11)
 
-
 ### Bug Fixes
 
-* remove obsolete route ([6fe1579](https://github.com/mission-apprentissage/labonnealternance/commit/6fe15792b8d06821c25d4b4f17fa5e69456e2c66))
+- remove obsolete route ([6fe1579](https://github.com/mission-apprentissage/labonnealternance/commit/6fe15792b8d06821c25d4b4f17fa5e69456e2c66))
 
 ## [1.49.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.49.0...v1.49.1) (2023-07-10)
 
-
 ### Bug Fixes
 
-* recovery script ([2fdd26c](https://github.com/mission-apprentissage/labonnealternance/commit/2fdd26cad904117bb137e7da9ad37daaada9f48e))
+- recovery script ([2fdd26c](https://github.com/mission-apprentissage/labonnealternance/commit/2fdd26cad904117bb137e7da9ad37daaada9f48e))
 
 # [1.49.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.48.8...v1.49.0) (2023-07-10)
 
-
 ### Features
 
-* ajout de la page de maintenance ([#490](https://github.com/mission-apprentissage/labonnealternance/issues/490)) ([4f37d56](https://github.com/mission-apprentissage/labonnealternance/commit/4f37d5643d16d89ab49ab463fce481d8e47a4d65))
+- ajout de la page de maintenance ([#490](https://github.com/mission-apprentissage/labonnealternance/issues/490)) ([4f37d56](https://github.com/mission-apprentissage/labonnealternance/commit/4f37d5643d16d89ab49ab463fce481d8e47a4d65))
 
 ## [1.48.8](https://github.com/mission-apprentissage/labonnealternance/compare/v1.48.7...v1.48.8) (2023-07-10)
 
-
 ### Bug Fixes
 
-* export csv ([#496](https://github.com/mission-apprentissage/labonnealternance/issues/496)) ([ee08cf6](https://github.com/mission-apprentissage/labonnealternance/commit/ee08cf646a427dc8c771e7477d53ef6e8e299df6))
+- export csv ([#496](https://github.com/mission-apprentissage/labonnealternance/issues/496)) ([ee08cf6](https://github.com/mission-apprentissage/labonnealternance/commit/ee08cf646a427dc8c771e7477d53ef6e8e299df6))
 
 ## [1.48.7](https://github.com/mission-apprentissage/labonnealternance/compare/v1.48.6...v1.48.7) (2023-07-07)
 
-
 ### Bug Fixes
 
-* job status api route update ([bd5f0ab](https://github.com/mission-apprentissage/labonnealternance/commit/bd5f0abdfa2d2c51f22a26abfdc84eab79f55471))
+- job status api route update ([bd5f0ab](https://github.com/mission-apprentissage/labonnealternance/commit/bd5f0abdfa2d2c51f22a26abfdc84eab79f55471))
 
 ## [1.48.6](https://github.com/mission-apprentissage/labonnealternance/compare/v1.48.5...v1.48.6) (2023-07-06)
 
-
 ### Bug Fixes
 
-* local docker server memory upgrade ([2353734](https://github.com/mission-apprentissage/labonnealternance/commit/23537349beb30a203ca8ac741781e37f3f0cbb59))
+- local docker server memory upgrade ([2353734](https://github.com/mission-apprentissage/labonnealternance/commit/23537349beb30a203ca8ac741781e37f3f0cbb59))
 
 ## [1.48.5](https://github.com/mission-apprentissage/labonnealternance/compare/v1.48.4...v1.48.5) (2023-07-04)
 
