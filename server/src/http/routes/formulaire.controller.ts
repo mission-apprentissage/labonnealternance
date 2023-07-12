@@ -48,7 +48,7 @@ export default () => {
 
       if (!recruiter) {
         res.status(404)
-        return res.json({ error: "cet etablissement n'existe pas" })
+        return res.json({ error: "cet établissement n'existe pas" })
       }
 
       const result = await Promise.all(
