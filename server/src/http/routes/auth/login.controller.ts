@@ -126,7 +126,9 @@ export default ({ mailer }) => {
         email: Joi.string().email().required(),
       }).validateAsync(req.body, { abortEarly: false })
 
-      const user = await UserRecruteur.findOne({ email }).collation({ locale: "fr", strength: 2 })
+      const formatedEmail = email.toLowerCase()
+
+      const user = await UserRecruteur.findOne({ email: formatedEmail })
       const { email: userEmail, _id, first_name, last_name, is_email_checked } = user || {}
 
       if (!user) {

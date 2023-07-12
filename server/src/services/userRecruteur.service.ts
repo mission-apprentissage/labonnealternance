@@ -47,6 +47,8 @@ export const getUser = async (query: Filter<IUserRecruteur>) => UserRecruteur.fi
 export const createUser = async (values) => {
   let scope = values.scope ?? undefined
 
+  const formatedEmail = values.email.toLocaleLowerCase()
+
   if (!scope) {
     if (values.type === "CFA") {
       // generate user scope
@@ -60,6 +62,7 @@ export const createUser = async (values) => {
   const user = new UserRecruteur({
     ...values,
     scope: scope,
+    email: formatedEmail,
   })
 
   await user.save()

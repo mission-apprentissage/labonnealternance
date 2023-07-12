@@ -233,7 +233,8 @@ export default ({ mailer }) => {
         case ENTREPRISE: {
           const siren = req.body.establishment_siret.slice(0, 9)
           const formulaireInfo = await createFormulaire(req.body)
-          let newEntreprise: IUserRecruteur = await createUser({ ...req.body, establishment_id: formulaireInfo.establishment_id })
+          const formatedEmail = req.body.email.toLocaleLowerCase()
+          let newEntreprise: IUserRecruteur = await createUser({ ...req.body, establishment_id: formulaireInfo.establishment_id, email: formatedEmail })
 
           // Get all corresponding records using the SIREN number in BonneBoiteLegacy collection
           const [bonneBoiteLegacyList, bonneBoiteList, referentielOpcoList] = await Promise.all([
