@@ -1,3 +1,10 @@
+## [1.51.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.51.0...v1.51.1) (2023-07-12)
+
+
+### Bug Fixes
+
+* naming & remove unwanted parameter ([6bd7b18](https://github.com/mission-apprentissage/labonnealternance/commit/6bd7b18244b971d220363d183682b89290b1cd2a))
+
 # [1.51.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.50.0...v1.51.0) (2023-07-12)
 
 
