@@ -12,7 +12,6 @@ import {
   createJobDelegations,
   getFormulaire,
   getJob,
-  getJobsFromElasticSearch,
   getOffre,
   patchOffre,
   provideOffre,
@@ -21,7 +20,7 @@ import {
 } from "../../services/formulaire.service.js"
 import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
 import { getUser, createUser } from "../../services/userRecruteur.service.js"
-import { authMiddleware } from "../../auth/passport-strategy.js"
+import authMiddleware from "../middlewares/authMiddleware.js"
 
 export default () => {
   const router = express.Router()

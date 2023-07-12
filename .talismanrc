@@ -29,7 +29,7 @@ fileignoreconfig:
   - filename: server/src/auth/passport-strategy.ts
     checksum: 9986e0643ef89aca68ad0d29db14bece58801a27335658db27bfc20b4fe15257
   - filename: server/src/http/routes/auth/password.controller.ts
-    checksum: 7f06d5dc474e5619f4bd1a9d4fe18bcc40679d750b15cdc4a948fb17d6cc223e
+    checksum: 9d27a293e44bed47969f818e2c8abff95d429f219780900e580bfb409c5d4985
 version: ""
 scopeconfig:
   - scope: node

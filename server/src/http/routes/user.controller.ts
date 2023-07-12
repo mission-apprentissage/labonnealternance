@@ -8,7 +8,7 @@ import { createMagicLinkToken } from "../../common/utils/jwtUtils.js"
 import config from "../../config.js"
 import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
 import { createUser, updateUser, updateUserValidationHistory, removeUser } from "../../services/userRecruteur.service.js"
-import { authMiddleware } from "../../auth/passport-strategy.js"
+import authMiddleware from "../middlewares/authMiddleware.js"
 
 export default ({ mailer }) => {
   const router = express.Router()

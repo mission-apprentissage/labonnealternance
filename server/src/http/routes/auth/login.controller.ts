@@ -9,7 +9,7 @@ import { tryCatch } from "../../middlewares/tryCatchMiddleware.js"
 import { IUserRecruteur } from "../../../common/model/schema/userRecruteur/userRecruteur.types.js"
 import { getUser, registerUser } from "../../../services/userRecruteur.service.js"
 import { getValidationUrl } from "../../../services/etablissement.service.js"
-import { authMiddleware } from "../../../auth/passport-strategy.js"
+import authMiddleware from "../../middlewares/authMiddleware.js"
 
 export default ({ mailer }) => {
   const router = express.Router() // eslint-disable-line new-cap

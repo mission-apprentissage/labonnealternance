@@ -91,7 +91,3 @@ passport.use(
     }
   )
 )
-
-type TStrategy = "api-key" | "basic" | "jwt-password" | "jwt-bearer" | "jwt-token"
-
-export const authMiddleware = (strategyName: TStrategy) => passport.authenticate(strategyName, { session: false })

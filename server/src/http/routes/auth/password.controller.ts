@@ -7,7 +7,7 @@ import { createUserToken } from "../../../common/utils/jwtUtils.js"
 import * as validators from "../../utils/validators.js"
 import { createPasswordToken } from "../../../common/utils/jwtUtils.js"
 import * as users from "../../../services/user.service.js"
-import { authMiddleware } from "../../../auth/passport-strategy.js"
+import authMiddleware from "../../middlewares/authMiddleware.js"
 
 export default () => {
   const router = express.Router() // eslint-disable-line new-cap

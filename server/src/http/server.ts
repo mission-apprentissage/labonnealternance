@@ -2,6 +2,7 @@
 import Sentry from "@sentry/node"
 import Tracing from "@sentry/tracing"
 import express from "express"
+import bodyParser from "body-parser"
 import { readFileSync } from "fs"
 import path from "path"
 import swaggerDoc from "swagger-jsdoc"
@@ -45,6 +46,8 @@ import version from "./routes/version.controller.js"
 import trainingLinks from "./routes/trainingLinks.controller.js"
 import { limiter10PerSecond, limiter1Per20Second, limiter20PerSecond, limiter3PerSecond, limiter5PerSecond, limiter7PerSecond } from "./utils/rateLimiters.js"
 import { initBrevoWebhooks } from "../services/brevo.service.js"
+
+import "../auth/passport-strategy.js"
 
 /**
  * LBA-Candidat Swagger file

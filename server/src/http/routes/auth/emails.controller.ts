@@ -8,7 +8,7 @@ import { addEmailToBlacklist } from "../../../services/application.service.js"
 import { tryCatch } from "../../middlewares/tryCatchMiddleware.js"
 import * as eligibleTrainingsForAppointmentService from "../../../services/eligibleTrainingsForAppointment.service.js"
 import * as appointmentService from "../../../services/appointment.service.js"
-import { authMiddleware } from "../../../auth/passport-strategy.js"
+import authMiddleware from "../../middlewares/authMiddleware.js"
 
 /**
  * Email controllers.
