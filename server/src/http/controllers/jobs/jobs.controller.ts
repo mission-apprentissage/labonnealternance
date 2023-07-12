@@ -1,7 +1,7 @@
 import * as express from "express"
 import { Body, Controller, Get, Header, Hidden, OperationId, Patch, Path, Post, Query, Request, Response, Route, Security, SuccessResponse, Tags } from "tsoa"
 import { ICreateDelegation, ICreateJobBody, IGetDelegation, TCreateEstablishmentBody, TEstablishmentResponseSuccess, TJob, TResponseError } from "./jobs.types.js"
-import { createDelegationSchema, createJobEntitySchema, createJobSchema, getEstablishmentEntitySchema, updateJobSchema } from "./jobs.validators.js"
+import { createDelegationSchema, createEstablishmentSchema, createJobEntitySchema, createJobSchema, getEstablishmentEntitySchema, updateJobSchema } from "./jobs.validators.js"
 import { formatEntrepriseData, getEtablissement, getEtablissementFromGouv, getGeoCoordinates } from "../../../services/etablissement.service.js"
 import { Recruiter } from "../../../common/model/index.js"
 import { createUser, updateUserValidationHistory } from "../../../services/userRecruteur.service.js"
@@ -119,7 +119,7 @@ export class JobsController extends Controller {
       return { error: true, message: "Email is already linked with an establishment" }
     }
     // Validate establishment parameters
-    await createJobEntitySchema.validateAsync(body, { abortEarly: false })
+    await createEstablishmentSchema.validateAsync(body, { abortEarly: false })
 
     // Get siret information from API
     const establishmentInformations = await getEtablissementFromGouv(establishment_siret)
