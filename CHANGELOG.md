@@ -1,3 +1,10 @@
+## [1.49.4](https://github.com/mission-apprentissage/labonnealternance/compare/v1.49.3...v1.49.4) (2023-07-12)
+
+
+### Bug Fixes
+
+* **offre:** suppression d'une offre ([#491](https://github.com/mission-apprentissage/labonnealternance/issues/491)) ([d3f37ad](https://github.com/mission-apprentissage/labonnealternance/commit/d3f37ad837c247c6300b33d20d26fc3124315cfb))
+
 ## [1.49.3](https://github.com/mission-apprentissage/labonnealternance/compare/v1.49.2...v1.49.3) (2023-07-11)
 
 
