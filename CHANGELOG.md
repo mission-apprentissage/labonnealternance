@@ -1,3 +1,10 @@
+# [1.53.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.52.0...v1.53.0) (2023-07-12)
+
+
+### Features
+
+* idcc optional in API job ([daa6e05](https://github.com/mission-apprentissage/labonnealternance/commit/daa6e050fa91885bfc2740abd77716e76430414c))
+
 # [1.52.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.51.4...v1.52.0) (2023-07-12)
 
 
