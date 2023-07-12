@@ -1,3 +1,10 @@
+# [1.52.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.51.4...v1.52.0) (2023-07-12)
+
+
+### Features
+
+* add custom address & geoloc API job ([c4d3c96](https://github.com/mission-apprentissage/labonnealternance/commit/c4d3c96054ac9ed22dff2cd7ca8808c4f7295f3a))
+
 ## [1.51.4](https://github.com/mission-apprentissage/labonnealternance/compare/v1.51.3...v1.51.4) (2023-07-12)
 
 
