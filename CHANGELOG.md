@@ -1,3 +1,10 @@
+# [1.54.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.53.0...v1.54.0) (2023-07-12)
+
+
+### Features
+
+* phone not required API job ([bd1a642](https://github.com/mission-apprentissage/labonnealternance/commit/bd1a64205a17b761afede2befeebc650755efd1f))
+
 # [1.53.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.52.0...v1.53.0) (2023-07-12)
 
 
