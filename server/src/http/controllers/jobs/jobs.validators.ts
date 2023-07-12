@@ -21,8 +21,7 @@ export const createEstablishmentSchema = Joi.object({
   phone: Joi.string()
     .pattern(/^[0-9]+$/)
     .min(10)
-    .max(10)
-    .required(),
+    .max(10),
   idcc: Joi.string(),
   origin: Joi.string(),
 })
