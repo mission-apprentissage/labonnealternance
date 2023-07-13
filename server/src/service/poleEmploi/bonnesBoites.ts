@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { getElasticInstance } from "../../common/esClient/index.js"
 import { encryptMailWithIV } from "../../common/utils/encryptString.js"
-import { manageApiError } from "../../common/utils/errorManager.js"
+import { IApiError, manageApiError } from "../../common/utils/errorManager.js"
 import { isAllowedSource } from "../../common/utils/isAllowedSource.js"
 import { itemModel } from "../../model/itemModel.js"
 
@@ -9,6 +9,7 @@ import { roundDistance } from "../../common/utils/geolib.js"
 import { lbbMock } from "../../mocks/lbbs-mock.js"
 import { BonnesBoites } from "../../common/model/index.js"
 import { getApplicationByCompanyCount } from "../../services/application.service.js"
+import { trackApiCall } from "../../common/utils/sendTrackingEvent.js"
 
 const esClient = getElasticInstance()
 
@@ -233,7 +234,7 @@ const getLbbCompanies = async ({ romes, latitude, longitude, radius, companyLimi
   }
 }
 
-const getCompanyFromSiret = async ({ siret, referer, caller, type }) => {
+const getCompanyFromSiret = async ({ siret, referer, caller, type }): IApiError | { lbbCompanies: ILbaItem[] } | { lbaCompanies: ILbaItem[] } => {
   try {
     const bonneBoite = await BonnesBoites.findOne({ siret })
 
@@ -248,8 +249,16 @@ const getCompanyFromSiret = async ({ siret, referer, caller, type }) => {
         applicationCountByCompany,
       })
 
+      if (caller) {
+        trackApiCall({ caller, api_path: "jobV1/company", job_count: 1, result_count: 1, response: "OK" })
+      }
+
       return type === "lbb" ? { lbbCompanies: [company] } : { lbaCompanies: [company] }
     } else {
+      if (caller) {
+        trackApiCall({ caller, api_path: "jobV1/company", job_count: 0, result_count: 0, response: "OK" })
+      }
+
       return { error: "not_found", status: 404, result: "not_found", message: "Société non trouvée" }
     }
   } catch (error) {

@@ -21,8 +21,7 @@ import updateOpcoCompanies from "./jobs/lbb/updateOpcoCompanies.js"
 import { activateOptOutEtablissementFormations } from "./jobs/rdv/activateOptOutEtablissementFormations.js"
 import { anonimizeAppointments } from "./jobs/rdv/anonymizeAppointments.js"
 import { anonimizeUsers } from "./jobs/rdv/anonymizeUsers.js"
-import { controlAvailableTrainingsWithCatalogue } from "./jobs/rdv/controlAvailableTrainingsWithCatalogue.js"
-import { controlAvailableAffelnetTrainingsWithCatalogueME } from "./jobs/rdv/controlAvailableTrainingsWithCatalogueME.js"
+import { eligibleTrainingsForAppointmentsHistoryWithCatalogue } from "./jobs/rdv/eligibleTrainingsForAppointmentsHistoryWithCatalogue.js"
 import { inviteEtablissementToOptOut } from "./jobs/rdv/inviteEtablissementToOptOut.js"
 import { inviteEtablissementToPremium } from "./jobs/rdv/inviteEtablissementToPremium.js"
 import { inviteEtablissementAffelnetToPremium } from "./jobs/rdv/inviteEtablissementToPremiumAffelnet.js"
@@ -33,7 +32,8 @@ import { premiumInviteOneShot } from "./jobs/rdv/premiumInviteOneShot.js"
 import { syncEtablissementsAndFormations } from "./jobs/rdv/syncEtablissementsAndFormations.js"
 import { syncAffelnetFormationsFromCatalogueME } from "./jobs/rdv/syncEtablissementsAndFormationsAffelnet.js"
 import { runScript } from "./jobs/scriptWrapper.js"
-import updateSendinblueBlockedEmails from "./jobs/updateSendinblueBlockedEmails/updateSendinblueBlockedEmails.js"
+import { checkAwaitingCompaniesValidation } from "./jobs/lba_recruteur/user/misc/updateMissingActivationState.js"
+import updateBrevoBlockedEmails from "./jobs/updateBrevoBlockedEmails/updateBrevoBlockedEmails.js"
 
 cli.addHelpText("after", null)
 
@@ -132,6 +132,13 @@ cli
     runScript((components) => exportPE(components))
   })
 
+cli
+  .command("validate-user")
+  .description("Contrôle de validation des entreprises en attente de validation")
+  .action(() => {
+    runScript((components) => checkAwaitingCompaniesValidation(components))
+  })
+
 /**
  *
  *
@@ -225,17 +232,10 @@ cli
   })
 
 cli
-  .command("control-elligible-training")
-  .description("Contrôle l'egibilité d'une formation à la prise de rendez-vous avec le Catalogue des formations")
+  .command("history-eligible-trainings-for-appointments-catalogue")
+  .description("Historise l'egibilité d'une formation à la prise de rendez-vous avec le Catalogue des formations (RCO)")
   .action(() => {
-    runScript(() => controlAvailableTrainingsWithCatalogue())
-  })
-
-cli
-  .command("control-elligible-affelnet-training")
-  .description("Contrôle l'egibilité d'une formation Affelnet à la prise de rendez-vous avec le Catalogue des formations ministere educatif")
-  .action(() => {
-    runScript(() => controlAvailableAffelnetTrainingsWithCatalogueME())
+    runScript(() => eligibleTrainingsForAppointmentsHistoryWithCatalogue())
   })
 
 /**
@@ -256,9 +256,9 @@ cli
 cli
   .command("sync-sib-blocked")
   .option("-all-addresses, [AllAddresses]", "pour récupérer toutes les adresses bloquées", false)
-  .description("Récupère auprès de Sendinblue la liste des adresses emails bloquées le jour précédent (défaut) ou toutes les adresses bloquées (option)")
+  .description("Récupère auprès de Brevo la liste des adresses emails bloquées le jour précédent (défaut) ou toutes les adresses bloquées (option)")
   .action((options) => {
-    runScript(() => updateSendinblueBlockedEmails(options))
+    runScript(() => updateBrevoBlockedEmails(options))
   })
 
 cli

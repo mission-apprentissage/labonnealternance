@@ -1,4 +1,4 @@
-import { IAdresse, IAdresseCFA } from "../_shared/shared.types.js"
+import { IGlobalAddress } from "../_shared/shared.types.js"
 import { IJobs } from "../jobs/jobs.types.js"
 
 interface IRecruiter {
@@ -8,20 +8,20 @@ interface IRecruiter {
   establishment_enseigne: string
   establishment_siret: string
   establishment_size: string
-  establishment_creation_date: Date
-  address_detail: IAdresse | (IAdresseCFA & IAdresse)
+  establishment_creation_date: string
+  address_detail: IGlobalAddress
   address: string
   geo_coordinates: string
   is_delegated: boolean
   cfa_delegated_siret: string
   last_name: string
   first_name: string
-  phone: string
+  phone?: string
   email: string
   jobs: IJobs[]
   origin: string
   opco: string
-  idcc: string
+  idcc?: string
   status: string
   naf_code: string
   naf_label: string

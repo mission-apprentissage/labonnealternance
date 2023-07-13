@@ -1,22 +1,89 @@
 import axios, { AxiosResponse } from "axios"
-import { etat_etablissements } from "../common/constants.js"
-import { BonneBoiteLegacy, BonnesBoites, Etablissement, ReferentielOpco, UserRecruteur } from "../common/model/index.js"
+import { BonneBoiteLegacy, BonnesBoites, Etablissement, ReferentielOpco, UnsubscribeOF, UserRecruteur } from "../common/model/index.js"
 import { IBonneBoite } from "../common/model/schema/bonneboite/bonneboite.types.js"
 import { IEtablissement } from "../common/model/schema/etablissements/etablissement.types.js"
 import { IReferentielOpco } from "../common/model/schema/referentielOpco/referentielOpco.types.js"
 import { IUserRecruteur } from "../common/model/schema/userRecruteur/userRecruteur.types.js"
 import { sentryCaptureException } from "../common/utils/sentryUtils.js"
 import config from "../config.js"
-
-import { IAPIAdresse, IAPIEtablissement, ICFADock, IEtablissementCatalogue, IEtablissementGouv, IReferentiel, ISIRET2IDCC } from "./etablissement.service.types.js"
+import {
+  IAPIAdresse,
+  IAPIEtablissement,
+  ICFADock,
+  IEtablissementCatalogue,
+  IEtablissementGouv,
+  IFormatAPIEntreprise,
+  IFormatAPIReferentiel,
+  IReferentiel,
+  ISIRET2IDCC,
+} from "./etablissement.service.types.js"
 import { IRecruiter } from "../common/model/schema/recruiter/recruiter.types.js"
 import { Filter } from "mongodb"
+import { IUnsubscribedOF } from "common/model/schema/unsubscribedOF/unsubscribeOF.types.js"
+import { getCatalogueEtablissements } from "./catalogue.service.js"
 
 const apiParams = {
-  token: config.apiEntrepriseKey,
-  context: "Matcha MNA",
-  recipient: "12000101100010", // Siret Dinum
-  object: "Consolidation des données",
+  token: config.entreprise.apiKey,
+  context: config.entreprise.context,
+  recipient: config.entreprise.recipient, // Siret Dinum
+  object: config.entreprise.object,
+}
+
+/**
+ * Get company size by code
+ * @param {string} code
+ * @returns {string}
+ */
+const getEffectif = (code) => {
+  switch (code) {
+    case "00":
+      return "0 salarié"
+
+    case "01":
+      return "1 ou 2 salariés"
+
+    case "02":
+      return "3 à 5 salariés"
+
+    case "03":
+      return "6 à 9 salariés"
+
+    case "11":
+      return "10 à 19 salariés"
+
+    case "12":
+      return "20 à 49 salariés"
+
+    case "21":
+      return "50 à 99 salariés"
+
+    case "22":
+      return "100 à 199 salariés"
+
+    case "31":
+      return "200 à 249 salariés"
+
+    case "32":
+      return "250 à 499 salariés"
+
+    case "41":
+      return "500 à 999 salariés"
+
+    case "42":
+      return "1 000 à 1 999 salariés"
+
+    case "51":
+      return "2 000 à 4 999 salariés"
+
+    case "52":
+      return "5 000 à 9 999 salariés"
+
+    case "53":
+      return "10 000 salariés et plus"
+
+    default:
+      return "Non diffusé"
+  }
 }
 
 /**
@@ -112,12 +179,8 @@ export const getEtablissement = async (query: Filter<IUserRecruteur>): Promise<I
  * @returns {Promise<Object>}
  */
 export const getOpco = async (siret: string): Promise<ICFADock> => {
-  try {
-    const { data } = await axios.get<ICFADock>(`https://www.cfadock.fr/api/opcos?siret=${siret}`)
-    return data
-  } catch (error) {
-    throw error
-  }
+  const { data } = await axios.get<ICFADock>(`https://www.cfadock.fr/api/opcos?siret=${siret}`)
+  return data
 }
 
 /**
@@ -126,12 +189,8 @@ export const getOpco = async (siret: string): Promise<ICFADock> => {
  * @returns {Promise<Object>}
  */
 export const getOpcoByIdcc = async (idcc: number): Promise<ICFADock> => {
-  try {
-    const { data } = await axios.get<ICFADock>(`https://www.cfadock.fr/api/opcos?idcc=${idcc}`)
-    return data
-  } catch (error) {
-    throw error
-  }
+  const { data } = await axios.get<ICFADock>(`https://www.cfadock.fr/api/opcos?idcc=${idcc}`)
+  return data
 }
 
 /**
@@ -140,12 +199,8 @@ export const getOpcoByIdcc = async (idcc: number): Promise<ICFADock> => {
  * @returns {Promise<Object>}
  */
 export const getIdcc = async (siret: string): Promise<ISIRET2IDCC> => {
-  try {
-    const { data } = await axios.get<ISIRET2IDCC>(`https://siret2idcc.fabrique.social.gouv.fr/api/v2/${siret}`)
-    return data
-  } catch (error) {
-    throw error
-  }
+  const { data } = await axios.get<ISIRET2IDCC>(`https://siret2idcc.fabrique.social.gouv.fr/api/v2/${encodeURIComponent(siret)}`)
+  return data
 }
 /**
  * @description Get the establishment validation url for a given SIRET
@@ -166,7 +221,7 @@ export const validateEtablissementEmail = async (_id: IUserRecruteur["_id"]): Pr
  */
 export const getEtablissementFromGouv = async (siret: string): Promise<IAPIEtablissement> => {
   try {
-    const { data } = await axios.get<IAPIEtablissement>(`https://entreprise.api.gouv.fr/v2/etablissements/${siret}`, {
+    const { data } = await axios.get<IAPIEtablissement>(`${config.entreprise.baseUrl}/sirene/etablissements/${encodeURIComponent(siret)}`, {
       params: apiParams,
     })
 
@@ -274,24 +329,6 @@ export const getMatchingDomainFromContactList = (email: string, emailList: strin
   return emailList.some((e) => e.includes(domain))
 }
 
-interface IFormatAPIEntreprise
-  extends Pick<
-    IRecruiter,
-    | "establishment_enseigne"
-    | "establishment_siret"
-    | "establishment_raison_sociale"
-    | "address_detail"
-    | "address"
-    | "naf_code"
-    | "naf_label"
-    | "establishment_size"
-    | "establishment_creation_date"
-  > {
-  establishment_state: string
-  contacts: object[]
-  qualiopi?: boolean
-  geo_coordinates?: string
-}
 /**
  * @description Format Entreprise data
  * @param {IEtablissementGouv} data
@@ -299,25 +336,18 @@ interface IFormatAPIEntreprise
  */
 export const formatEntrepriseData = (d: IEtablissementGouv): IFormatAPIEntreprise => ({
   establishment_enseigne: d.enseigne,
-  establishment_state: d.etat_administratif.value, // F pour fermé ou A pour actif
+  establishment_state: d.etat_administratif, // F pour fermé ou A pour actif
   establishment_siret: d.siret,
-  establishment_raison_sociale: d.adresse.l1,
+  establishment_raison_sociale: d.unite_legale.personne_morale_attributs.raison_sociale,
   address_detail: d.adresse,
-  address: `${d.adresse.l4 ?? ""} ${d.adresse.code_postal} ${d.adresse.localite}`,
-  // rue: d.adresse.l4,
-  // commune: d.adresse.localite,
-  // code_postal: d.adresse.code_postal,
+  address: `${d.adresse.acheminement_postal.l4} ${d.adresse.acheminement_postal.l6}`,
   contacts: [], // conserve la coherence avec l'UI
-  naf_code: d.naf,
-  naf_label: d.libelle_naf,
-  establishment_size: d.tranche_effectif_salarie_etablissement.intitule,
-  establishment_creation_date: new Date(d.date_creation_etablissement * 1000),
+  naf_code: d.activite_principale.code,
+  naf_label: d.activite_principale.libelle,
+  establishment_size: getEffectif(d.unite_legale.tranche_effectif_salarie.code),
+  establishment_creation_date: new Date(d.unite_legale.date_creation * 1000).toISOString(),
 })
-interface IFormatAPIReferentiel
-  extends Pick<IUserRecruteur, "establishment_raison_sociale" | "establishment_siret" | "is_qualiopi" | "address_detail" | "geo_coordinates" | "address"> {
-  establishment_state: string
-  contacts: object[]
-}
+
 /**
  * @description Format Referentiel data
  * @param {IReferentiel} d
@@ -331,10 +361,30 @@ export const formatReferentielData = (d: IReferentiel): IFormatAPIReferentiel =>
   contacts: d.contacts,
   address_detail: d.adresse,
   address: d.adresse?.label,
-  // rue: d.adresse?.label?.split(`${d.adresse?.code_postal}`)[0].trim() || d.lieux_de_formation[0].adresse.label.split(`${d.lieux_de_formation[0].adresse.code_postal}`)[0].trim(),
-  // commune: d.adresse?.localite || d.lieux_de_formation[0].adresse.localite,
-  // code_postal: d.adresse?.code_postal || d.lieux_de_formation[0].adresse.code_postal,
   geo_coordinates: d.adresse
     ? `${d.adresse?.geojson.geometry.coordinates[1]},${d.adresse?.geojson.geometry.coordinates[0]}`
     : `${d.lieux_de_formation[0].adresse.geojson?.geometry.coordinates[0]},${d.lieux_de_formation[0].adresse.geojson?.geometry.coordinates[1]}`,
 })
+
+/**
+ * Taggue l'organisme de formation pour qu'il ne reçoive plus de demande de délégation
+ * @param etablissementSiret siret de l'organisme de formation ne souhaitant plus recevoir les demandes
+ */
+export const etablissementUnsubscribeDemandeDelegation = async (etablissementSiret: string) => {
+  const unsubscribeOF: IUnsubscribedOF = await UnsubscribeOF.findOne({ establishment_siret: etablissementSiret })
+  if (!unsubscribeOF) {
+    const { etablissements } = await getCatalogueEtablissements(
+      {
+        siret: etablissementSiret,
+      },
+      { _id: 1 }
+    )
+    const [{ _id }] = etablissements
+    if (!_id) return
+    await UnsubscribeOF.create({
+      catalogue_id: _id,
+      establishment_siret: etablissementSiret,
+      unsubscribe_date: new Date(),
+    })
+  }
+}

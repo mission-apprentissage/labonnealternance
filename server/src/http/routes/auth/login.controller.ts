@@ -12,6 +12,8 @@ import config from "../../../config.js"
 import { tryCatch } from "../../middlewares/tryCatchMiddleware.js"
 import { IUserRecruteur } from "../../../common/model/schema/userRecruteur/userRecruteur.types.js"
 import { getUser, registerUser } from "../../../services/userRecruteur.service.js"
+import * as users from "../../../services/user.service.js"
+import { getValidationUrl } from "../../../services/etablissement.service.js"
 
 const checkToken = () => {
   passport.use(
@@ -37,7 +39,7 @@ const checkToken = () => {
   return passport.authenticate("jwt", { session: false, failWithError: true })
 }
 
-export default ({ users, etablissementsRecruteur, mailer }) => {
+export default ({ mailer }) => {
   const router = express.Router() // eslint-disable-line new-cap
   passport.use(
     new LocalStrategy(
@@ -91,7 +93,7 @@ export default ({ users, etablissementsRecruteur, mailer }) => {
           return res.status(400).json({ error: true, reason: "VERIFIED" })
         }
 
-        const url = etablissementsRecruteur.getValidationUrl(_id)
+        const url = getValidationUrl(_id)
 
         await mailer.sendEmail({
           to: email,
@@ -161,7 +163,7 @@ export default ({ users, etablissementsRecruteur, mailer }) => {
       }
 
       if (!is_email_checked) {
-        const url = etablissementsRecruteur.getValidationUrl(_id)
+        const url = getValidationUrl(_id)
 
         await mailer.sendEmail({
           to: userEmail,

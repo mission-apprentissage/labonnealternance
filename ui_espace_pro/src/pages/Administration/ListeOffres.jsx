@@ -143,10 +143,11 @@ export default () => {
       accessor: ({ job_creation_date }) => dayjs(job_creation_date).format("DD/MM/YYYY"),
     },
     {
-      Header: "Expire dans",
+      Header: "Expire le",
       id: "job_expiration_date",
+      width: "175",
       sortType: (a, b) => sortReactTableDate(a.original.job_expiration_date, b.original.job_expiration_date),
-      accessor: ({ job_expiration_date }) => dayjs(new Date()).to(job_expiration_date, true),
+      accessor: ({ job_expiration_date }) => dayjs(job_expiration_date).format("DD/MM/YYYY"),
     },
     {
       Header: "Candidat(s)",
@@ -193,15 +194,16 @@ export default () => {
                     <MenuItem>
                       <Link
                         onClick={() => {
+                          const newExpirationDate = dayjs().add(1, "month")
                           putOffre(row._id, {
                             ...row,
-                            job_expiration_date: dayjs().add(1, "month").format("YYYY-MM-DD"),
+                            job_expiration_date: newExpirationDate.format("YYYY-MM-DD"),
                             job_last_prolongation_date: Date(),
                             job_prolongation_count: row.job_prolongation_count >= 0 ? row.job_prolongation_count + 1 : 1,
                           })
                             .then(() =>
                               toast({
-                                title: "Offre prolongée d'un mois.",
+                                title: `Date d'expiration : ${newExpirationDate.format("DD/MM/YYYY")}`,
                                 position: "top-right",
                                 status: "success",
                                 duration: 2000,

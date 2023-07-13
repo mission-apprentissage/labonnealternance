@@ -9,7 +9,7 @@ import Credential from "./schema/credentials/credential.schema.js"
 import DiplomesMetiers from "./schema/diplomesmetiers/diplomesmetiers.schema.js"
 import DomainesMetiers from "./schema/domainesmetiers/domainesmetiers.schema.js"
 import EligibleTrainingsForAppointment from "./schema/eligibleTrainingsForAppointment/eligibleTrainingsForAppointment.schema.js"
-import eligibleTrainingsForAppointmentHistoric from "./schema/eligibleTrainingsForAppointmentHistoric/eligibleTrainingsForAppointmentHistoric.schema.js"
+import eligibleTrainingsForAppointmentHistoric from "./schema/eligibleTrainingsForAppointmentsHistory/eligibleTrainingsForAppointmentHistory.schema.js"
 import EmailBlacklist from "./schema/emailBlacklist/emailBlacklist.schema.js"
 import Etablissement from "./schema/etablissements/etablissement.schema.js"
 import FormationCatalogue from "./schema/formationCatalogue/formationCatalogue.schema.js"
@@ -22,6 +22,7 @@ import ParcoursupEtablissementStat from "./schema/parcoursupEtablissementStat/pa
 import ReferentielOpco from "./schema/referentielOpco/referentielOpco.schema.js"
 import User from "./schema/user/user.schema.js"
 import UserRecruteur from "./schema/userRecruteur/usersRecruteur.schema.js"
+import UnsubscribeOF from "./schema/unsubscribedOF/unsubscribeOF.schema.js"
 
 export {
   DomainesMetiers,
@@ -48,4 +49,5 @@ export {
   eligibleTrainingsForAppointmentHistoric,
   BonneBoiteLegacy,
   UnsubscribedBonneBoite,
+  UnsubscribeOF,
 }

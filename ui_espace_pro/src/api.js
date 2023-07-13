@@ -31,7 +31,7 @@ export const archiveDelegatedFormulaire = (siret) => API.delete(`/formulaire/del
 export const getOffre = (jobId) => API.get(`/formulaire/offre/f/${jobId}`)
 export const postOffre = (establishment_id, offre) => API.post(`/formulaire/${establishment_id}/offre`, offre).catch(errorHandler)
 export const putOffre = (jobId, offre) => API.put(`/formulaire/offre/${jobId}`, { ...offre, date_mise_a_jour: Date() }).catch(errorHandler)
-export const patchOffre = ({ establishment_id, data, config }) => API.patch(`/v1/offre/${establishment_id}`, data, config).catch(errorHandler)
+export const patchOffre = (jobId, data, config) => API.patch(`/formulaire/offre/${jobId}`, data, config).catch(errorHandler)
 export const cancelOffre = (jobId) => API.put(`/formulaire/offre/${jobId}/cancel`)
 export const fillOffre = (jobId) => API.put(`/formulaire/offre/${jobId}/provided`)
 export const createEtablissementDelegation = ({ data, jobId }) => API.post(`/formulaire/offre/${jobId}/delegation`, data)
@@ -74,7 +74,7 @@ export const validationCompte = (id) => API.post("/etablissement/validation", id
  */
 export const getCfaInformation = async (siret) => await API.get(`/etablissement/cfa/${siret}`)
 export const getEntrepriseInformation = async (siret, options) => await API.get(`/etablissement/entreprise/${siret}`, { params: options })
-export const getPartenaire = (siret) => API.get(`etablissement/${siret}`)
+
 export const createPartenaire = (partenaire) => API.post("/etablissement/creation", partenaire)
 export const updatePartenaire = (id, partenaire) => API.put(`/etablissement/${id}`, partenaire)
 export const getRomeDetail = (rome) => API.get(`/rome/detail/${rome}`)
@@ -87,6 +87,7 @@ export const validateOptOutToken = (token) =>
   })
 
 export const getWithQS = (payload) => API.get("/formulaire", { params: { query: JSON.stringify(payload.query), ...payload } })
+export const etablissementUnsubscribeDemandeDelegation = (establishmentSiret) => API.post(`/etablissement/${establishmentSiret}/proposition/unsubscribe`)
 
 /**
  * Administration OPCO

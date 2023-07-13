@@ -1,4 +1,3 @@
-import { IJobs } from "../../../common/model/schema/jobs/jobs.types.js"
 import { IRecruiter } from "../../../common/model/schema/recruiter/recruiter.types.js"
 
 export type TResponseError = {
@@ -7,7 +6,7 @@ export type TResponseError = {
 }
 export type TEstablishmentResponseSuccess = IRecruiter
 
-export type TCreateEstablishmentBody = Pick<IRecruiter, "establishment_siret" | "establishment_raison_sociale" | "first_name" | "last_name" | "phone" | "email" | "idcc" | "origin">
+export type TCreateEstablishmentBody = Pick<IRecruiter, "establishment_siret" | "first_name" | "last_name" | "phone" | "email" | "idcc" | "origin">
 export type TJob = {
   job_level_label: string
   job_duration: number
@@ -18,6 +17,8 @@ export type TJob = {
   job_start_date: string
   job_employer_description?: string
   job_description?: string
+  custom_address?: string
+  custom_geo_coordinates?: string
 }
 
 export interface ICreateJobBody extends TJob {

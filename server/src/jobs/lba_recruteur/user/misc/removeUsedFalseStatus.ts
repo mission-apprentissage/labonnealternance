@@ -7,7 +7,7 @@ import { runScript } from "../../../scriptWrapper.js"
 runScript(async () => {
   const users = await UserRecruteur.find({ "status.status": null, type: "ENTREPRISE" })
 
-  let stat = { updated: 0, total: users.length }
+  const stat = { updated: 0, total: users.length }
 
   await asyncForEach(users, async (user) => {
     const lastState = user.status.pop()
