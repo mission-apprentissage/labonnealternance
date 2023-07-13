@@ -92,7 +92,7 @@ export const activateOptOutEtablissementFormations = async ({ etablissements, ma
         emails.map((email) =>
           mailer.sendEmail({
             to: email,
-            subject: `La prise de rendez-vous est activée pour votre CFA sur La bonne alternance`,
+            subject: `La prise de RDV est activée pour votre CFA sur La bonne alternance`,
             template: mailTemplate["mail-cfa-optout-activated"],
             data: {
               url: config.publicUrl,
