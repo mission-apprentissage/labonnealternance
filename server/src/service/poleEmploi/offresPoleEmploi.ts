@@ -84,7 +84,7 @@ const getSomePeJobs = async ({ romes, insee, radius, lat, long, caller, diploma,
 
 // appel de l'api offres pour un bloc de 1 à 3 romes
 const getSomePeJobsForChunkedRomes = async ({ romes, insee, radius, lat, long, caller, diploma, api }) => {
-  let jobResult = null
+  let jobResult: PEResponse | IApiError = null
   const currentRadius = radius || 20000
   const jobLimit = 50 //TODO: query params options or default value from properties -> size || 50
 
@@ -110,7 +110,7 @@ const getSomePeJobsForChunkedRomes = async ({ romes, insee, radius, lat, long, c
 
 // update du contenu avec des résultats pertinents par rapport au rayon
 const transformPeJobsForIdea = ({ jobs, radius, lat, long, caller }) => {
-  const resultJobs = {
+  const resultJobs: { results: PEJob[] } = {
     results: [],
   }
 
@@ -131,7 +131,7 @@ const transformPeJobsForIdea = ({ jobs, radius, lat, long, caller }) => {
 }
 
 // Adaptation au modèle Idea et conservation des seules infos utilisées des offres
-const transformPeJobForIdea = ({ job, lat = null, long = null }) => {
+const transformPeJobForIdea = ({ job, lat = null, long = null }): PEJob => {
   const resultJob = itemModel("peJob")
 
   resultJob.title = job.intitule
@@ -216,7 +216,58 @@ const peJobsApiEndpoint = "https://api.pole-emploi.io/partenaire/offresdemploi/v
 const peJobApiEndpoint = "https://api.pole-emploi.io/partenaire/offresdemploi/v2/offres/"
 const peContratsAlternances = "E2,FS" //E2 -> Contrat d'Apprentissage, FS -> contrat de professionalisation
 
-const getPeJobs = async ({ romes, insee, radius, jobLimit, caller, diploma, api = "jobV1" }) => {
+// warning: type écrit à partir d'un échantillon de données
+export type PEJob = {
+  id: string
+  intitule: string
+  description: string
+
+  dateCreation: string
+  dateActualisation: string
+  lieuTravail: object[]
+  romeCode: string
+  romeLibelle: string
+  appellationlibelle: string
+  entreprise: object[]
+  typeContrat: string
+  typeContratLibelle: string
+  natureContrat: string
+  experienceExige: string
+  experienceLibelle: string
+  competences?: [][]
+  salaire: object[] | object
+  dureeTravailLibelle?: string
+  dureeTravailLibelleConverti?: string
+  alternance: boolean
+  contact?: object[] | object
+  agence?: object[]
+  nombrePostes: number
+  accessibleTH: boolean
+  deplacementCode?: string
+  deplacementLibelle?: string
+  qualificationCode?: string
+  qualificationLibelle?: string
+  codeNAF?: string
+  secteurActivite?: string
+  secteurActiviteLibelle?: string
+  qualitesProfessionnelles?: [][]
+  origineOffre: object[]
+  offresManqueCandidats?: boolean
+
+  formations?: [][]
+  langues?: [][]
+  complementExercice?: string
+}
+
+export type PEResponse = {
+  resultats: PEJob[]
+  filtresPossibles: {
+    filtre: string
+    agregation: [][]
+  }[]
+}
+
+const getPeJobs = async ({ romes, insee, radius, jobLimit, caller, diploma, api = "jobV1" }): Promise<PEResponse | IApiError> => {
   try {
     const token = await getAccessToken("pe")
 

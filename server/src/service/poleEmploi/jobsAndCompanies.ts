@@ -7,33 +7,47 @@ import { getSomeLbbCompanies } from "./bonnesBoites.js"
 import { jobsQueryValidator } from "./jobsQueryValidator.js"
 import { getSomePeJobs } from "./offresPoleEmploi.js"
 
-const getJobsQuery = async (query) => {
+export type JobSearchQuery = {
+  romes: string
+  referer?: string
+  caller?: string
+  latitude?: string
+  longitude?: string
+  radius?: number
+  insee?: string
+  sources?: string
+  diploma?: string
+  opco?: string
+  opcoUrl?: string
+  useMock?: string
+}
+
+const getJobsQuery = async (query: JobSearchQuery) => {
   const queryValidationResult = jobsQueryValidator(query)
 
-  if (queryValidationResult.error) {
+  if ("error" in queryValidationResult) {
     return queryValidationResult
   }
 
   const result = await getJobsFromApi({ query, api: "jobV1/jobs" })
 
+  let job_count = 0
+  if (result?.lbaCompanies?.results) {
+    job_count += result.lbaCompanies.results.length
+  }
+
+  if (result?.peJobs?.results) {
+    job_count += result.peJobs.results.length
+  }
+
+  if (result?.matchas?.results) {
+    job_count += result.matchas.results.length
+  }
   if (query.caller) {
-    let job_count = 0
-    if (result?.lbaCompanies?.results) {
-      job_count += result.lbaCompanies.results.length
-    }
-
-    if (result?.peJobs?.results) {
-      job_count += result.peJobs.results.length
-    }
-
-    if (result?.matchas?.results) {
-      job_count += result.matchas.results.length
-    }
-
     trackApiCall({ caller: query.caller, job_count, result_count: job_count, api_path: "jobV1/jobs", response: "OK" })
   }
 
-  return result
+  return { ...result, job_count }
 }
 
 const getJobsFromApi = async ({ query, api }) => {

@@ -12,7 +12,7 @@ export default function () {
 
   router.get(
     "/",
-    tryCatch(async (req, res) => {
+    tryCatch(async (req: express.Request, res) => {
       const query = { ...req.query, referer: req.headers.referer }
       let result = jobsEtFormationsQueryValidator(query)
 

@@ -15,14 +15,13 @@ const esClient = getElasticInstance()
 
 const getSomeLbbCompanies = async ({ romes, latitude, longitude, radius, type, referer, caller, opco, opcoUrl, api = "jobV1", useMock }) => {
   const hasLocation = latitude === undefined ? false : true
-  let companies = null
   const currentRadius = hasLocation ? radius : 21000
   const companyLimit = 150 //TODO: query params options or default value from properties -> size || 100
 
   if (useMock && useMock !== "false") {
     return { results: [lbbMock] }
   } else {
-    companies = await getLbbCompanies({
+    const companies = await getLbbCompanies({
       romes,
       latitude,
       longitude,
@@ -34,39 +33,31 @@ const getSomeLbbCompanies = async ({ romes, latitude, longitude, radius, type, r
       opco,
       opcoUrl,
     })
-
     if (companies && companies.length) {
       const sirets = companies.map(({ siret }) => siret)
       const applicationCountByCompany = await getApplicationByCompanyCount(sirets)
-
-      companies = transformLbbCompaniesForIdea({ companies, radius, type, referer, caller, applicationCountByCompany })
+      return transformLbbCompaniesForIdea({ companies, radius, type, referer, caller, applicationCountByCompany })
     }
-
     return companies
   }
 }
 
-const transformLbbCompaniesForIdea = ({ companies, type, referer, caller, applicationCountByCompany }) => {
-  const resultCompanies = {
-    results: [],
+const transformLbbCompaniesForIdea = ({ companies = [], type, referer, caller, applicationCountByCompany }) => {
+  if (!companies?.length) {
+    return { results: [] }
   }
-
-  if (companies && companies.length) {
-    const contactAllowedOrigin = isAllowedSource({ referer, caller })
-
-    for (let i = 0; i < companies.length; ++i) {
-      const company = transformLbbCompanyForIdea({
-        company: companies[i],
+  return {
+    results: companies.map((company) => {
+      const contactAllowedOrigin = isAllowedSource({ referer, caller })
+      return transformLbbCompanyForIdea({
+        company,
         type,
         contactAllowedOrigin,
         caller,
         applicationCountByCompany,
       })
-      resultCompanies.results.push(company)
-    }
+    }),
   }
-
-  return resultCompanies
 }
 
 // Adaptation au modèle Idea et conservation des seules infos utilisées des offres

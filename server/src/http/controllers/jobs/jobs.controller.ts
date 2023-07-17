@@ -21,6 +21,7 @@ import { getCompanyFromSiret } from "../../../service/poleEmploi/bonnesBoites.js
 import { getMatchaJobById } from "../../../service/matcha.js"
 import { getPeJobFromId } from "../../../service/poleEmploi/offresPoleEmploi.js"
 import { getJobsQuery } from "../../../service/poleEmploi/jobsAndCompanies.js"
+import { MatomoPayload, matomoClient } from "../../../common/utils/MatomoClient.js"
 
 @Tags("Jobs")
 @Route("/api/v1/jobs")
@@ -407,7 +408,8 @@ export class JobsController extends Controller {
   @Get("/")
   @OperationId("getJobOpportunities")
   public async getJobOpportunities(
-    @Query() romes: string,
+    @Request() request: express.Request,
+    @Query() romes: string[],
     @Header() @Hidden() referer?: string,
     @Query() caller?: string,
     @Query() latitude?: string,
@@ -420,12 +422,42 @@ export class JobsController extends Controller {
     @Query() opcoUrl?: string,
     @Query() @Hidden() useMock?: string
   ): Promise<IApiError | { lbbCompanies: ILbaItem[] } | { lbaCompanies: ILbaItem[] }> {
-    const result = await getJobsQuery({ romes, caller, referer, latitude, longitude, radius, insee, sources, diploma, opco, opcoUrl, useMock })
+    const result = await getJobsQuery({ romes: romes.join(","), caller, referer, latitude, longitude, radius, insee, sources, diploma, opco, opcoUrl, useMock })
 
-    if (result.error) {
+    if ("error" in result) {
       this.setStatus(500)
+      return result
     }
-
+    const { matchas } = result
+    const searchQuery = {
+      romes,
+      radius,
+      geo: {
+        latitude,
+        longitude,
+      },
+      diploma,
+    }
+    Object.entries(searchQuery).map(([key, value]) => {
+      const payload: Partial<MatomoPayload> = {
+        search: `${key}:${JSON.stringify(value)}`,
+        search_cat: "Offres",
+      }
+      matomoClient.sendFromRequest(request, payload)
+    })
+    matomoClient.sendFromRequest(request, {
+      e_c: "Emploi",
+      e_n: "Offre LBA - Recherche",
+    })
+    if ("results" in matchas) {
+      matchas.results.map((matchaOffre) => {
+        matomoClient.sendFromRequest(request, {
+          e_c: "Emploi",
+          e_n: "Offre LBA - Recherche",
+          e_a: matchaOffre.id,
+        })
+      })
+    }
     return result
   }
 
