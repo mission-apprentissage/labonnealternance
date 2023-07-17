@@ -84,9 +84,7 @@ export class MatomoClient {
       console.info("MatomoClient connected", this.props)
     }
     this.agent = axios.create({
-      httpsAgent: new https.Agent({
-        rejectUnauthorized: false,
-      }),
+      httpsAgent: new https.Agent(),
     })
   }
 
