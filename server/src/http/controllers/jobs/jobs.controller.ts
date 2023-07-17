@@ -489,7 +489,7 @@ export class JobsController extends Controller {
         matomoClient.sendFromRequest(request, {
           e_c: "Emploi",
           e_n: "Offre LBA - Recherche",
-          e_a: matchaOffre.id,
+          e_a: matchaOffre.job.id,
         })
       })
     }
