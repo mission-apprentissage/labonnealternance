@@ -177,7 +177,7 @@ export const ListeOffres = () => {
       Header: "Candidat(s)",
       id: "candidat",
       width: "150",
-      accessor: (row) => <NumberCell>{row.candidatures ?? 0}</NumberCell>,
+      accessor: ({ candidatures = 0 }) => <NumberCell>{Math.max(candidatures, 0)}</NumberCell>,
     },
     {
       Header: "",
