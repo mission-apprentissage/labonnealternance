@@ -70,7 +70,6 @@ const ChoiceColumn = ({
     flyToMarker(item, 12)
     closeMapPopups()
     setSelectedItem(item)
-    console.log({ item })
     notifyOffreDetailView(item.job.id)
 
     setSelectedMarker(item)
