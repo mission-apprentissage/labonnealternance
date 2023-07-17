@@ -2,13 +2,14 @@ import express, { Request } from "express"
 import joi from "joi"
 import { createFormulaire, getFormulaire } from "../../services/formulaire.service.js"
 import { mailTemplate } from "../../assets/index.js"
-import { CFA, ENTREPRISE, etat_utilisateur, OPCOS, validation_utilisateur } from "../../common/constants.js"
+import { CFA, ENTREPRISE, etat_utilisateur, validation_utilisateur } from "../../common/constants.js"
 import { createMagicLinkToken, createUserRecruteurToken } from "../../common/utils/jwtUtils.js"
 import { checkIfUserEmailIsPrivate, checkIfUserMailExistInReferentiel, getAllDomainsFromEmailList } from "../../common/utils/mailUtils.js"
 import { notifyToSlack } from "../../common/utils/slackUtils.js"
 import config from "../../config.js"
 import { getNearEtablissementsFromRomes } from "../../services/catalogue.service.js"
 import {
+  etablissementUnsubscribeDemandeDelegation,
   formatEntrepriseData,
   formatReferentielData,
   getAllEstablishmentFromBonneBoite,
@@ -32,7 +33,6 @@ import { validationOrganisation } from "../../services/bal.service.js"
 import { IUserRecruteur } from "../../common/model/schema/userRecruteur/userRecruteur.types.js"
 import { IRecruiter } from "../../common/model/schema/recruiter/recruiter.types.js"
 import { updateUserValidationHistory, getUser, createUser, updateUser, getUserValidationState, registerUser } from "../../services/userRecruteur.service.js"
-import { IAdresseV3 } from "../../common/model/schema/_shared/shared.types.js"
 
 const getCfaRomeSchema = joi.object({
   latitude: joi.number().required(),
@@ -76,7 +76,6 @@ export default ({ mailer }) => {
       )
 
       const etablissements = await getNearEtablissementsFromRomes({ rome, origin: { latitude, longitude } })
-
       res.send(etablissements)
     })
   )
@@ -370,16 +369,18 @@ export default ({ mailer }) => {
   )
 
   /**
-   * Récupérer les informations d'un partenaire
+   * Désactiver les mises en relations avec les entreprises
    */
 
-  router.get(
-    "/:establishment_siret",
+  router.post(
+    "/:establishment_siret/proposition/unsubscribe",
     tryCatch(async (req, res) => {
-      const partenaire = await getUser({ establishment_siret: req.params.establishment_siret })
-      res.json(partenaire)
+      await etablissementUnsubscribeDemandeDelegation(req.params.establishment_siret)
+      res.status(200)
+      return res.json({ ok: true })
     })
   )
+
   /**
    * Mise à jour d'un partenaire
    */

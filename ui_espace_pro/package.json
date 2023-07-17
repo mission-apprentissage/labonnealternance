@@ -1,6 +1,6 @@
 {
   "name": "ui_espace_pro",
-  "version": "1.48.6",
+  "version": "1.55.0",
   "description": "Interface de gestion pour les entreprises, organismes de formation et candidats en apprentissage",
   "repository": "https://github.com/mission-apprentissage/labonnealternance.git",
   "private": false,

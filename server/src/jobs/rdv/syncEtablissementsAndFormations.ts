@@ -72,12 +72,11 @@ export const syncEtablissementsAndFormations = async ({ etablissements }) => {
         }
 
         // Activate premium referrers
-        if (etablissement?.premium_activation_date) {
+        if (etablissement?.premium_activation_date && formationMinistereEducatif?.parcoursup_id) {
           referrersToActivate.push(referrers.PARCOURSUP.name)
         }
 
         if (eligibleTrainingsForAppointment) {
-          logger.info("update formation:", formation.cle_ministere_educatif)
           let emailRdv = eligibleTrainingsForAppointment.lieu_formation_email
 
           // Don't override "email" if this field is true

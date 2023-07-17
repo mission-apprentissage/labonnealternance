@@ -1,18 +1,28 @@
 import * as express from "express"
 import { Body, Controller, Get, Header, Hidden, OperationId, Patch, Path, Post, Query, Request, Response, Route, Security, SuccessResponse, Tags } from "tsoa"
 import { ICreateDelegation, ICreateJobBody, IGetDelegation, TCreateEstablishmentBody, TEstablishmentResponseSuccess, TJob, TResponseError } from "./jobs.types.js"
-import { createDelegationSchema, createJobEntitySchema, createJobSchema, getEstablishmentEntitySchema, updateJobSchema } from "./jobs.validators.js"
+import { createDelegationSchema, createEstablishmentSchema, createJobSchema, getEstablishmentEntitySchema, updateJobSchema } from "./jobs.validators.js"
 import { formatEntrepriseData, getEtablissement, getEtablissementFromGouv, getGeoCoordinates } from "../../../services/etablissement.service.js"
 import { Recruiter } from "../../../common/model/index.js"
 import { createUser, updateUserValidationHistory } from "../../../services/userRecruteur.service.js"
 import { IUserRecruteur } from "../../../common/model/schema/userRecruteur/userRecruteur.types.js"
-import { cancelOffre, createJobDelegations, createOffre, extendOffre, getFormulaire, getFormulaires, patchOffre, provideOffre } from "../../../services/formulaire.service.js"
+import {
+  cancelOffre,
+  createJobDelegations,
+  createOffre,
+  extendOffre,
+  getFormulaire,
+  getFormulaires,
+  getJob,
+  patchOffre,
+  provideOffre,
+} from "../../../services/formulaire.service.js"
 import { IJobs } from "../../../common/model/schema/jobs/jobs.types.js"
 import dayjs from "../../../common/dayjs.js"
 import { getAppellationDetailsFromAPI, getRomeDetailsFromAPI } from "../../../services/rome.service.js"
 import { getOffre } from "../../../services/formulaire.service.js"
 import { getNearEtablissementsFromRomes } from "../../../services/catalogue.service.js"
-import { ENTREPRISE, etat_utilisateur, validation_utilisateur } from "../../../common/constants.js"
+import { ACTIVE, ANNULEE, ENTREPRISE, POURVUE, etat_utilisateur, validation_utilisateur } from "../../../common/constants.js"
 import { delay } from "../../../common/utils/asyncUtils.js"
 import { ICredential } from "../../../common/model/schema/credentials/credential.types.js"
 import { IApiError } from "../../../common/utils/errorManager.js"
@@ -110,7 +120,7 @@ export class JobsController extends Controller {
       return { error: true, message: "Email is already linked with an establishment" }
     }
     // Validate establishment parameters
-    await createJobEntitySchema.validateAsync(body, { abortEarly: false })
+    await createEstablishmentSchema.validateAsync(body, { abortEarly: false })
 
     // Get siret information from API
     const establishmentInformations = await getEtablissementFromGouv(establishment_siret)
@@ -274,6 +284,7 @@ export class JobsController extends Controller {
     const jobExists = await getOffre(jobId)
 
     if (!jobExists) {
+      this.setStatus(400)
       return { error: true, message: "Job does not exists" }
     }
 
@@ -303,6 +314,7 @@ export class JobsController extends Controller {
     const jobExists = await getOffre(jobId)
 
     if (!jobExists) {
+      this.setStatus(400)
       return { error: true, message: "Job does not exists" }
     }
 
@@ -322,19 +334,25 @@ export class JobsController extends Controller {
    */
   @Response<"Job update failed">(400)
   @SuccessResponse("204", "Job updated")
-  @Post("/provided")
+  @Post("/provided/{jobId}")
   @OperationId("setJobAsProvided")
   @Security("api_key")
-  public async setJobAsProvided(@Body() body: { jobId: IJobs["_id"] }): Promise<{} | TResponseError> {
-    const jobExists = await getOffre(body.jobId)
+  public async setJobAsProvided(@Path() jobId: IJobs["_id"]): Promise<{} | TResponseError> {
+    const job = await getJob(jobId)
 
-    if (!jobExists) {
+    if (!job) {
+      this.setStatus(400)
       return { error: true, message: "Job does not exists" }
     }
 
-    await provideOffre(body.jobId)
+    if (job.job_status === POURVUE) {
+      this.setStatus(400)
+      return { error: true, message: "Job is already provided" }
+    }
 
-    this.setStatus(204)
+    await provideOffre(jobId)
+
+    this.setStatus(200)
     return
   }
 
@@ -346,19 +364,25 @@ export class JobsController extends Controller {
    */
   @Response<"Job update failed">(400)
   @SuccessResponse("204", "Job updated")
-  @Post("/canceled")
+  @Post("/canceled/{jobId}")
   @OperationId("setJobAsCanceled")
   @Security("api_key")
-  public async setJobAsCanceled(@Body() body: { jobId: IJobs["_id"] }): Promise<{} | TResponseError> {
-    const jobExists = await getOffre(body.jobId)
+  public async setJobAsCanceled(@Path() jobId: IJobs["_id"]): Promise<{} | TResponseError> {
+    const job = await getJob(jobId)
 
-    if (!jobExists) {
+    if (!job) {
+      this.setStatus(400)
       return { error: true, message: "Job does not exists" }
     }
 
-    await cancelOffre(body.jobId)
+    if (job.job_status === ANNULEE) {
+      this.setStatus(400)
+      return { error: true, message: "Job is already canceled" }
+    }
 
-    this.setStatus(204)
+    await cancelOffre(jobId)
+
+    this.setStatus(200)
     return
   }
 
@@ -370,19 +394,30 @@ export class JobsController extends Controller {
    */
   @Response<"Job update failed">(400)
   @SuccessResponse("204", "Job updated")
-  @Post("/extend")
+  @Post("/extend/{jobId}")
   @OperationId("extendJobExpiration")
   @Security("api_key")
-  public async extendJobExpiration(@Body() body: { jobId: IJobs["_id"] }): Promise<{} | TResponseError> {
-    const jobExists = await getOffre(body.jobId)
+  public async extendJobExpiration(@Path() jobId: IJobs["_id"]): Promise<{} | TResponseError> {
+    const job = await getJob(jobId)
 
-    if (!jobExists) {
+    if (!job) {
+      this.setStatus(400)
       return { error: true, message: "Job does not exists" }
     }
 
-    await extendOffre(body.jobId)
+    if (dayjs().add(1, "month").isSame(dayjs(job.job_expiration_date), "day")) {
+      this.setStatus(400)
+      return { error: true, message: "Job is already extended up to a month" }
+    }
 
-    this.setStatus(204)
+    if (job.job_status !== ACTIVE) {
+      this.setStatus(400)
+      return { error: true, message: "Job cannot be extended as it is not enabled" }
+    }
+
+    await extendOffre(jobId)
+
+    this.setStatus(200)
     return
   }
 

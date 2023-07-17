@@ -1,0 +1,59 @@
+{
+    "title": "test",
+    "steps": [
+        {
+            "type": "setViewport",
+            "width": 1220,
+            "height": 1304,
+            "deviceScaleFactor": 1,
+            "isMobile": false,
+            "hasTouch": false,
+            "isLandscape": false
+        },
+        {
+            "type": "navigate",
+            "url": "https://labonnealternance.apprentissage.beta.gouv.fr/",
+            "assertedEvents": [
+                {
+                    "type": "navigation",
+                    "url": "https://labonnealternance.apprentissage.beta.gouv.fr/",
+                    "title": "La bonne alternance | Trouvez votre alternance"
+                }
+            ]
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "aria/Accès à la page A propos"
+                ],
+                [
+                    "li:nth-of-type(8) > a"
+                ],
+                [
+                    "xpath///*[@id=\"__next\"]/main/div/footer/div[2]/nav/div/div[1]/ul/li[8]/a"
+                ],
+                [
+                    "text/A propos"
+                ]
+            ],
+            "offsetY": 8.296875,
+            "offsetX": 8.234375
+        },
+        {
+            "type": "waitForElement",
+            "target": "main",
+            "selectors": [
+                [
+                    "aria/A propos de La bonne alternance",
+                    "aria/[role=\"generic\"]"
+                ],
+                "main > div > div.chakra-container span",
+                "xpath///*[@id=\"__next\"]/main/div/div[3]/div/div[1]/h1/span",
+                "pierce/main > div > div.chakra-container span",
+                "text/A propos de"
+            ]
+        }
+    ]
+}

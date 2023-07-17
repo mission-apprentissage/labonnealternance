@@ -1,12 +1,11 @@
 import axios, { AxiosResponse } from "axios"
-import { BonneBoiteLegacy, BonnesBoites, Etablissement, ReferentielOpco, UserRecruteur } from "../common/model/index.js"
+import { BonneBoiteLegacy, BonnesBoites, Etablissement, ReferentielOpco, UnsubscribeOF, UserRecruteur } from "../common/model/index.js"
 import { IBonneBoite } from "../common/model/schema/bonneboite/bonneboite.types.js"
 import { IEtablissement } from "../common/model/schema/etablissements/etablissement.types.js"
 import { IReferentielOpco } from "../common/model/schema/referentielOpco/referentielOpco.types.js"
 import { IUserRecruteur } from "../common/model/schema/userRecruteur/userRecruteur.types.js"
 import { sentryCaptureException } from "../common/utils/sentryUtils.js"
 import config from "../config.js"
-
 import {
   IAPIAdresse,
   IAPIEtablissement,
@@ -20,6 +19,8 @@ import {
 } from "./etablissement.service.types.js"
 import { IRecruiter } from "../common/model/schema/recruiter/recruiter.types.js"
 import { Filter } from "mongodb"
+import { IUnsubscribedOF } from "common/model/schema/unsubscribedOF/unsubscribeOF.types.js"
+import { getCatalogueEtablissements } from "./catalogue.service.js"
 
 const apiParams = {
   token: config.entreprise.apiKey,
@@ -178,12 +179,8 @@ export const getEtablissement = async (query: Filter<IUserRecruteur>): Promise<I
  * @returns {Promise<Object>}
  */
 export const getOpco = async (siret: string): Promise<ICFADock> => {
-  try {
-    const { data } = await axios.get<ICFADock>(`https://www.cfadock.fr/api/opcos?siret=${siret}`)
-    return data
-  } catch (error) {
-    throw error
-  }
+  const { data } = await axios.get<ICFADock>(`https://www.cfadock.fr/api/opcos?siret=${siret}`)
+  return data
 }
 
 /**
@@ -192,12 +189,8 @@ export const getOpco = async (siret: string): Promise<ICFADock> => {
  * @returns {Promise<Object>}
  */
 export const getOpcoByIdcc = async (idcc: number): Promise<ICFADock> => {
-  try {
-    const { data } = await axios.get<ICFADock>(`https://www.cfadock.fr/api/opcos?idcc=${idcc}`)
-    return data
-  } catch (error) {
-    throw error
-  }
+  const { data } = await axios.get<ICFADock>(`https://www.cfadock.fr/api/opcos?idcc=${idcc}`)
+  return data
 }
 
 /**
@@ -206,12 +199,8 @@ export const getOpcoByIdcc = async (idcc: number): Promise<ICFADock> => {
  * @returns {Promise<Object>}
  */
 export const getIdcc = async (siret: string): Promise<ISIRET2IDCC> => {
-  try {
-    const { data } = await axios.get<ISIRET2IDCC>(`https://siret2idcc.fabrique.social.gouv.fr/api/v2/${siret}`)
-    return data
-  } catch (error) {
-    throw error
-  }
+  const { data } = await axios.get<ISIRET2IDCC>(`https://siret2idcc.fabrique.social.gouv.fr/api/v2/${encodeURIComponent(siret)}`)
+  return data
 }
 /**
  * @description Get the establishment validation url for a given SIRET
@@ -232,7 +221,7 @@ export const validateEtablissementEmail = async (_id: IUserRecruteur["_id"]): Pr
  */
 export const getEtablissementFromGouv = async (siret: string): Promise<IAPIEtablissement> => {
   try {
-    const { data } = await axios.get<IAPIEtablissement>(`${config.entreprise.baseUrl}/sirene/etablissements/${siret}`, {
+    const { data } = await axios.get<IAPIEtablissement>(`${config.entreprise.baseUrl}/sirene/etablissements/${encodeURIComponent(siret)}`, {
       params: apiParams,
     })
 
@@ -376,3 +365,26 @@ export const formatReferentielData = (d: IReferentiel): IFormatAPIReferentiel =>
     ? `${d.adresse?.geojson.geometry.coordinates[1]},${d.adresse?.geojson.geometry.coordinates[0]}`
     : `${d.lieux_de_formation[0].adresse.geojson?.geometry.coordinates[0]},${d.lieux_de_formation[0].adresse.geojson?.geometry.coordinates[1]}`,
 })
+
+/**
+ * Taggue l'organisme de formation pour qu'il ne reçoive plus de demande de délégation
+ * @param etablissementSiret siret de l'organisme de formation ne souhaitant plus recevoir les demandes
+ */
+export const etablissementUnsubscribeDemandeDelegation = async (etablissementSiret: string) => {
+  const unsubscribeOF: IUnsubscribedOF = await UnsubscribeOF.findOne({ establishment_siret: etablissementSiret })
+  if (!unsubscribeOF) {
+    const { etablissements } = await getCatalogueEtablissements(
+      {
+        siret: etablissementSiret,
+      },
+      { _id: 1 }
+    )
+    const [{ _id }] = etablissements
+    if (!_id) return
+    await UnsubscribeOF.create({
+      catalogue_id: _id,
+      establishment_siret: etablissementSiret,
+      unsubscribe_date: new Date(),
+    })
+  }
+}
