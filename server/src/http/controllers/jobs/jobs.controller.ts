@@ -480,17 +480,10 @@ export class JobsController extends Controller {
       }
       matomoClient.sendFromRequest(request, payload)
     })
-    matomoClient.sendFromRequest(request, {
-      e_c: "Emploi",
-      e_n: "Offre LBA - Recherche",
-    })
+
     if ("results" in matchas) {
       matchas.results.map((matchaOffre) => {
-        matomoClient.sendFromRequest(request, {
-          e_c: "Emploi",
-          e_n: "Offre LBA - Recherche",
-          e_a: matchaOffre.job.id,
-        })
+        // TODO store view
       })
     }
     return result
