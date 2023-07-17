@@ -18,6 +18,7 @@ import SearchForm from "./SearchForm"
 
 import { Box, Image, Text } from "@chakra-ui/react"
 import { closeMapPopups, flyToLocation, flyToMarker, setSelectedMarker } from "../../../utils/mapTools"
+import { notifyOffreDetailView } from "../../../services/notifyOffreDetailView"
 
 import { round } from "lodash"
 
@@ -69,6 +70,8 @@ const ChoiceColumn = ({
     flyToMarker(item, 12)
     closeMapPopups()
     setSelectedItem(item)
+    console.log({ item })
+    notifyOffreDetailView(item.job.id)
 
     setSelectedMarker(item)
 

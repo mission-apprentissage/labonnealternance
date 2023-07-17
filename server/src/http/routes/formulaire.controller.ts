@@ -1,7 +1,7 @@
 // @ts-nocheck
 import express from "express"
 import { Recruiter } from "../../common/model/index.js"
-import { getApplicationCount } from "../../services/application.service.js"
+import { getApplication } from "../../services/application.service.js"
 import {
   archiveDelegatedFormulaire,
   archiveFormulaire,
@@ -19,8 +19,8 @@ import {
   updateFormulaire,
   updateOffre,
 } from "../../services/formulaire.service.js"
-import { createUser, getUser } from "../../services/userRecruteur.service.js"
 import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
+import { getUser, createUser } from "../../services/userRecruteur.service.js"
 
 export default () => {
   const router = express.Router()
@@ -44,17 +44,21 @@ export default () => {
   router.get(
     "/:establishment_id",
     tryCatch(async (req, res) => {
-      const recruiter = await getFormulaire({ establishment_id: req.params.establishment_id })
+      const result = await getFormulaire({ establishment_id: req.params.establishment_id })
 
-      if (!recruiter) {
-        res.status(404)
-        return res.json({ error: "cet établissement n'existe pas" })
+      if (!result) {
+        return res.sendStatus(401)
       }
 
-      const result = await Promise.all(
-        recruiter.jobs.map(async (job) => {
-          const candidatures = await getApplicationCount(job._id)
-          return { ...job, candidatures }
+      await Promise.all(
+        result.jobs.map(async (job) => {
+          const candidatures = await getApplication(job._id)
+
+          if (candidatures) {
+            job.candidatures = candidatures.length > 0 ? candidatures.length : undefined
+          }
+
+          return job
         })
       )
 

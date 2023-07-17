@@ -28,7 +28,7 @@ import { ICredential } from "../../../common/model/schema/credentials/credential
 import { IApiError } from "../../../common/utils/errorManager.js"
 import { ILbaItem } from "../../../services/lbaitem.shared.service.types.js"
 import { getCompanyFromSiret } from "../../../service/poleEmploi/bonnesBoites.js"
-import { getMatchaJobById } from "../../../service/matcha.js"
+import { addMatchaDetailView, addMatchaSearchView, getMatchaJobById } from "../../../service/matcha.js"
 import { getPeJobFromId } from "../../../service/poleEmploi/offresPoleEmploi.js"
 import { getJobsQuery } from "../../../service/poleEmploi/jobsAndCompanies.js"
 import { MatomoPayload, matomoClient } from "../../../common/utils/MatomoClient.js"
@@ -483,7 +483,8 @@ export class JobsController extends Controller {
 
     if ("results" in matchas) {
       matchas.results.map((matchaOffre) => {
-        // TODO store view
+        // non bloquant
+        addMatchaSearchView(matchaOffre.job.id)
       })
     }
     return result
@@ -558,6 +559,22 @@ export class JobsController extends Controller {
     }
 
     return result
+  }
+
+  /**
+   * Notifies that the detail of a matcha job has been viewed
+   * @param {string} id the id the lba job looked for.
+   * @returns {Promise<IApiError | undefined>} response
+   */
+  @Response<"Wrong parameters">(400)
+  @Response<"Job not found">(404)
+  @Response<"Internal error">(500)
+  @SuccessResponse("200", "success")
+  @Post("/matcha/{id}/stats/view-details")
+  @OperationId("statsViewLbaJob")
+  public async statsViewLbaJob(@Path() id: string): Promise<IApiError | undefined> {
+    await addMatchaDetailView(id)
+    return
   }
 
   /**

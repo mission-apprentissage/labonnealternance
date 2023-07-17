@@ -161,17 +161,16 @@ export const ListeOffres = () => {
       Header: "Recherches",
       id: "searches",
       width: "150",
-      accessor: (row) => {
-        return <NumberCell>0</NumberCell>
+      accessor: ({ stats_search_view = 0 }) => {
+        return <NumberCell>{stats_search_view}</NumberCell>
       },
     },
     {
       Header: "Vues",
       id: "views",
       width: "90",
-      accessor: (row) => {
-        console.log(row)
-        return <NumberCell>0</NumberCell>
+      accessor: ({ stats_detail_view = 0 }) => {
+        return <NumberCell>{stats_detail_view}</NumberCell>
       },
     },
     {
