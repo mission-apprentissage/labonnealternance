@@ -1,6 +1,6 @@
 import { oleoduc, writeData } from "oleoduc"
 import { logger } from "../../common/logger.js"
-import { EligibleTrainingsForAppointment, eligibleTrainingsForAppointmentHistoric, FormationCatalogue } from "../../common/model/index.js"
+import { EligibleTrainingsForAppointment, eligibleTrainingsForAppointmentHistory, FormationCatalogue } from "../../common/model/index.js"
 
 import dayjs from "../../common/dayjs.js"
 
@@ -31,7 +31,7 @@ export const eligibleTrainingsForAppointmentsHistoryWithCatalogue = async () => 
         const exist = await FormationCatalogue.findOne({ cle_ministere_educatif: formation.cle_ministere_educatif })
 
         if (!exist) {
-          await eligibleTrainingsForAppointmentHistoric.create({ ...formation, email_rdv: undefined, historization_date: dayjs().format() })
+          await eligibleTrainingsForAppointmentHistory.create({ ...formation, email_rdv: undefined, historization_date: dayjs().format() })
           await EligibleTrainingsForAppointment.findOneAndRemove({ cle_ministere_educatif: formation.cle_ministere_educatif })
         }
       },

@@ -9,7 +9,7 @@ import Credential from "./schema/credentials/credential.schema.js"
 import DiplomesMetiers from "./schema/diplomesmetiers/diplomesmetiers.schema.js"
 import DomainesMetiers from "./schema/domainesmetiers/domainesmetiers.schema.js"
 import EligibleTrainingsForAppointment from "./schema/eligibleTrainingsForAppointment/eligibleTrainingsForAppointment.schema.js"
-import eligibleTrainingsForAppointmentHistoric from "./schema/eligibleTrainingsForAppointmentsHistory/eligibleTrainingsForAppointmentHistory.schema.js"
+import eligibleTrainingsForAppointmentHistory from "./schema/eligibleTrainingsForAppointmentsHistory/eligibleTrainingsForAppointmentHistory.schema.js"
 import EmailBlacklist from "./schema/emailBlacklist/emailBlacklist.schema.js"
 import Etablissement from "./schema/etablissements/etablissement.schema.js"
 import FormationCatalogue from "./schema/formationCatalogue/formationCatalogue.schema.js"
@@ -46,7 +46,7 @@ export {
   ReferentielOpco,
   UserRecruteur,
   AppointmentDetailed,
-  eligibleTrainingsForAppointmentHistoric,
+  eligibleTrainingsForAppointmentHistory,
   BonneBoiteLegacy,
   UnsubscribedBonneBoite,
   UnsubscribeOF,
