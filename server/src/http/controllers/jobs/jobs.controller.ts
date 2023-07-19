@@ -31,7 +31,6 @@ import { getCompanyFromSiret } from "../../../service/poleEmploi/bonnesBoites.js
 import { addMatchaDetailView, addMatchaSearchView, getMatchaJobById } from "../../../service/matcha.js"
 import { getPeJobFromId } from "../../../service/poleEmploi/offresPoleEmploi.js"
 import { getJobsQuery } from "../../../service/poleEmploi/jobsAndCompanies.js"
-import { MatomoPayload, matomoClient } from "../../../common/utils/MatomoClient.js"
 
 @Tags("Jobs")
 @Route("/api/v1/jobs")
@@ -463,25 +462,8 @@ export class JobsController extends Controller {
       this.setStatus(500)
       return result
     }
-    const { matchas } = result
-    const searchQuery = {
-      romes,
-      radius,
-      geo: {
-        latitude,
-        longitude,
-      },
-      diploma,
-    }
-    Object.entries(searchQuery).map(([key, value]) => {
-      const payload: Partial<MatomoPayload> = {
-        search: `${key}:${JSON.stringify(value)}`,
-        search_cat: "Offres",
-      }
-      matomoClient.sendFromRequest(request, payload)
-    })
-
     if ("results" in matchas) {
+      const { matchas } = result
       matchas.results.map((matchaOffre) => {
         // non bloquant
         addMatchaSearchView(matchaOffre.job.id)

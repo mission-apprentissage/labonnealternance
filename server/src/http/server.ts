@@ -129,7 +129,6 @@ export default async (components) => {
   app.use(corsMiddleware())
 
   app.use(logMiddleware())
-  app.use(matomoMiddleware())
 
   app.get(
     "/api",

@@ -1,4 +1,5 @@
 import {
+  Badge,
   Box,
   Breadcrumb,
   BreadcrumbItem,
@@ -57,7 +58,7 @@ const EmptySpace = () => (
 const NumberCell = ({ children }) => {
   return (
     <Box as="span" textAlign="right" w="100%" pr={5}>
-      {children}
+      <Badge colorScheme="blue">{children}</Badge>
     </Box>
   )
 }
