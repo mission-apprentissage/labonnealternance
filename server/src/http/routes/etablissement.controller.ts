@@ -509,7 +509,7 @@ export default ({ etablissements, mailer }) => {
 
       const { messageId } = await mailer.sendEmail({
         to: etablissement.gestionnaire_email,
-        subject: `Désincription au service “RDV Apprentissage”`,
+        subject: `La prise de RDV ne sera pas activée pour votre CFA sur La bonne alternance`,
         template: mailTemplate["mail-cfa-optout-unsubscription"],
         data: {
           images: {
