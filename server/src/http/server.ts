@@ -45,7 +45,6 @@ import version from "./routes/version.controller.js"
 import trainingLinks from "./routes/trainingLinks.controller.js"
 import { limiter10PerSecond, limiter1Per20Second, limiter20PerSecond, limiter3PerSecond, limiter5PerSecond, limiter7PerSecond } from "./utils/rateLimiters.js"
 import { initBrevoWebhooks } from "../services/brevo.service.js"
-import { matomoMiddleware } from "./middlewares/matomoMiddleware.js"
 
 /**
  * LBA-Candidat Swagger file
