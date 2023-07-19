@@ -20,7 +20,7 @@ export const inviteEtablissementAffelnetToPremium = async ({ mailer }) => {
     // send the invitation mail
     const { messageId } = await mailer.sendEmail({
       to: etablissement.gestionnaire_email,
-      subject: `Optimisez le sourcing de vos candidats sur Choisir son affectation après la 3e !`,
+      subject: `Sourcez vos candidats sur Choisir son affectation après la 3e !`,
       template: mailTemplate["mail-cfa-premium-invite"],
       data: {
         isAffelnet: true,
