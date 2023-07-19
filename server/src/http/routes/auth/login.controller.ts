@@ -189,7 +189,7 @@ export default ({ mailer }) => {
 
       await mailer.sendEmail({
         to: userEmail,
-        subject: "La bonne alternance - Lien de connexion",
+        subject: "Lien de connexion",
         template: mailTemplate["mail-connexion"],
         data: {
           images: {
