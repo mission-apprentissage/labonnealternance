@@ -462,8 +462,8 @@ export class JobsController extends Controller {
       this.setStatus(500)
       return result
     }
+    const { matchas } = result
     if ("results" in matchas) {
-      const { matchas } = result
       matchas.results.map((matchaOffre) => {
         // non bloquant
         addMatchaSearchView(matchaOffre.job.id)
