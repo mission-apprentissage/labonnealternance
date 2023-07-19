@@ -19,8 +19,8 @@ export const activateOptOutEtablissementFormations = async ({ etablissements, ma
     optout_activation_scheduled_date: {
       $lte: dayjs().toDate(),
     },
-    opt_out_refused_at: null,
-    opt_out_activated_at: null,
+    optout_refusal_date: null,
+    optout_activation_date: null,
   })
 
   // Activate all formations, for all referrers that have a mail
