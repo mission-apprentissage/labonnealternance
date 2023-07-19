@@ -37,7 +37,7 @@ export const relanceOpco = async (mailer) => {
       // send mail to recipient
       await mailer.sendEmail({
         to: user.email,
-        subject: "La bonne alternance - Vos entreprises souhaitent déposer des offres",
+        subject: "Nouveaux comptes entreprises à valider",
         template: mailTemplate["mail-relance-opco"],
         data: {
           images: {
