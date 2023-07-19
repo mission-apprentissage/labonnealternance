@@ -50,7 +50,7 @@ export const premiumActivatedReminder = async ({ etablissements, mailer }) => {
 
         const { messageId } = await mailer.sendEmail({
           to: email,
-          subject: `Les jeunes peuvent prendre contact avec votre CFA sur Parcoursup`,
+          subject: `Rappel - Les jeunes peuvent prendre contact avec votre CFA sur Parcoursup`,
           template: mailTemplate["mail-cfa-premium-activated-reminder"],
           data: {
             url: config.publicUrl,
