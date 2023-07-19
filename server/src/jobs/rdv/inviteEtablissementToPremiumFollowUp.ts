@@ -39,7 +39,7 @@ export const inviteEtablissementToPremiumFollowUp = async ({ etablissements, mai
     // Invite all etablissements only in production environment
     const { messageId } = await mailer.sendEmail({
       to: etablissement.gestionnaire_email,
-      subject: `Trouvez et recrutez vos candidats avec Parcoursup`,
+      subject: `Trouvez et recrutez vos candidats sur Parcoursup`,
       template: mailTemplate["mail-cfa-premium-invite-followup"],
       data: {
         isParcoursup: true,
