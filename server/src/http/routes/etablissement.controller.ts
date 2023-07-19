@@ -304,7 +304,7 @@ export default ({ etablissements, mailer }) => {
 
       const mailAffelnet = await mailer.sendEmail({
         to: etablissement.gestionnaire_email,
-        subject: `Le service “RDV Apprentissage” ne sera pas activé sur Choisir son affectation après la 3e`,
+        subject: `La prise de RDV ne sera pas activée pour votre CFA sur Choisir son affectation après la 3e`,
         template: mailTemplate["mail-cfa-premium-refused"],
         data: {
           isAffelnet: true,
@@ -368,7 +368,7 @@ export default ({ etablissements, mailer }) => {
 
       const mailParcoursup = await mailer.sendEmail({
         to: etablissement.gestionnaire_email,
-        subject: `Le service “RDV Apprentissage” ne sera pas activé sur Parcoursup`,
+        subject: `La prise de RDV ne sera pas activée pour votre CFA sur Parcoursup`,
         template: mailTemplate["mail-cfa-premium-refused"],
         data: {
           isParcoursup: true,
