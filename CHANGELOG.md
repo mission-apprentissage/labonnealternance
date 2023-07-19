@@ -1,3 +1,10 @@
+# [1.56.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.55.1...v1.56.0) (2023-07-19)
+
+
+### Features
+
+* useless logs removed ([#507](https://github.com/mission-apprentissage/labonnealternance/issues/507)) ([f21ee46](https://github.com/mission-apprentissage/labonnealternance/commit/f21ee46f720e3a8224ba787eb5e6922ea48050c9))
+
 ## [1.55.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.55.0...v1.55.1) (2023-07-19)
 
 
