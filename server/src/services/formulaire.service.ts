@@ -292,8 +292,8 @@ export const createJob = async ({ job, id }: { job: Partial<IOffreExtended>; id:
   await mailer.sendEmail({
     to: is_delegated ? contactCFA.email : email,
     subject: is_delegated
-      ? `La bonne alternance - Votre offre d'alternance pour ${establishment_raison_sociale} a bien été publiée`
-      : `La bonne alternance - Votre offre d'alternance a bien été publiée`,
+      ? `Votre offre d'alternance pour ${establishment_raison_sociale} est publiée`
+      : `Votre offre d'alternance est publiée`,
     template: mailTemplate["mail-nouvelle-offre"],
     data: {
       images: {
