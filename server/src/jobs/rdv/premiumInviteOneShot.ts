@@ -41,7 +41,7 @@ export const premiumInviteOneShot = async ({ etablissements, mailer }) => {
 
       const { messageId } = await mailer.sendEmail({
         to: etablissement.gestionnaire_email,
-        subject: `Trouvez et recrutez vos candidats avec Parcoursup`,
+        subject: `Trouvez et recrutez vos candidats sur Parcoursup`,
         template: mailTemplate["mail-cfa-premium-invite-one-shot"],
         data: {
           replyTo: config.publicEmail,
