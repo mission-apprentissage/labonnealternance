@@ -267,7 +267,7 @@ export const createJob = async ({ job, id }: { job: Partial<IOffreExtended>; id:
 
     await mailer.sendEmail({
       to: email,
-      subject: "La bonne alternance - Merci de valider votre adresse mail pour diffuser votre offre",
+      subject: "Confirmez votre adresse mail",
       template: mailTemplate["mail-nouvelle-offre-depot-simplifie"],
       data: {
         images: {
