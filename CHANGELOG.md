@@ -1,3 +1,10 @@
+## [1.55.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.55.0...v1.55.1) (2023-07-19)
+
+
+### Bug Fixes
+
+* attributes renamed ([#508](https://github.com/mission-apprentissage/labonnealternance/issues/508)) ([9040d34](https://github.com/mission-apprentissage/labonnealternance/commit/9040d3480f4676af24e26ebd83aba249c53e69aa))
+
 # [1.55.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.54.0...v1.55.0) (2023-07-12)
 
 
