@@ -65,7 +65,6 @@ export const syncAffelnetFormationsFromCatalogueME = async ({ etablissements }) 
         }
 
         if (eligibleTrainingsForAppointment) {
-          logger.info("update formation:", formation.cle_ministere_educatif)
           let emailRdv = eligibleTrainingsForAppointment.lieu_formation_email
 
           // Don't override "email" if this field is true
@@ -104,7 +103,6 @@ export const syncAffelnetFormationsFromCatalogueME = async ({ etablissements }) 
             }
           )
         } else {
-          logger.info("create new formation:", formation.cle_ministere_educatif)
           const emailRdv = getEmailFromCatalogueField(formation.etablissement_formateur_courriel)
 
           const emailBlacklisted = await isEmailBlacklisted(emailRdv)

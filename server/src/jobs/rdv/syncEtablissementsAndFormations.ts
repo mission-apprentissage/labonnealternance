@@ -115,7 +115,6 @@ export const syncEtablissementsAndFormations = async ({ etablissements }) => {
             }
           )
         } else {
-          logger.info("create new formation:", formation.cle_ministere_educatif)
           const emailRdv = getEmailFromCatalogueField(formation.etablissement_formateur_courriel)
 
           const emailBlacklisted = await isEmailBlacklisted(emailRdv)
