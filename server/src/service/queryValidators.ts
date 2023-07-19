@@ -1,4 +1,4 @@
-const validateRomes = (romes: string, error_messages: string[], romeLimit = 15) => {
+const validateRomes = (romes: string | null | undefined, error_messages: string[], romeLimit = 15) => {
   // codes ROME : romes
   if (!romes) error_messages.push("romes : Rome codes are missing. At least 1.")
   else if (romes.split(",").length > romeLimit) error_messages.push(`romes : Too many rome codes. Maximum is ${romeLimit}.`)
