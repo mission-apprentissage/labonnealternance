@@ -115,7 +115,7 @@ export default ({ etablissements, mailer }) => {
         emailsAffelnet.map((email) =>
           mailer.sendEmail({
             to: email,
-            subject: `La prise de rendez-vous est activée pour votre CFA sur Choisir son affectation après la 3e`,
+            subject: `La prise de RDV est activée pour votre CFA sur Choisir son affectation après la 3e`,
             template: mailTemplate["mail-cfa-premium-activated"],
             data: {
               isAffelnet: true,
@@ -237,7 +237,7 @@ export default ({ etablissements, mailer }) => {
         emailsParcoursup.map((email) =>
           mailer.sendEmail({
             to: email,
-            subject: `La prise de rendez-vous est activée pour votre CFA sur Parcoursup`,
+            subject: `La prise de RDV est activée pour votre CFA sur Parcoursup`,
             template: mailTemplate["mail-cfa-premium-activated"],
             data: {
               isParcoursup: true,
