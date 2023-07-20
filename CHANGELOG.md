@@ -1,3 +1,10 @@
+## [1.57.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.57.0...v1.57.1) (2023-07-20)
+
+
+### Bug Fixes
+
+* flow recruteur pour déposer une offre ([#510](https://github.com/mission-apprentissage/labonnealternance/issues/510)) ([ca6f82e](https://github.com/mission-apprentissage/labonnealternance/commit/ca6f82e63f298ab708da5cf51f14b6b88c72da19))
+
 # [1.57.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.56.1...v1.57.0) (2023-07-20)
 
 
