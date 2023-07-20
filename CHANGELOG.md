@@ -1,3 +1,10 @@
+## [1.57.2](https://github.com/mission-apprentissage/labonnealternance/compare/v1.57.1...v1.57.2) (2023-07-20)
+
+
+### Bug Fixes
+
+* ui_espace_pro: remove lint rule as it breaks the build ([#511](https://github.com/mission-apprentissage/labonnealternance/issues/511)) ([83605fd](https://github.com/mission-apprentissage/labonnealternance/commit/83605fd8f029fe5fe38a931bbcb6f3d92d524bf7))
+
 ## [1.57.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.57.0...v1.57.1) (2023-07-20)
 
 
