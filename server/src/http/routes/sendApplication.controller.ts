@@ -68,7 +68,7 @@ export default function (components) {
 
         return res.json({ result: "ok", message: "comment registered" })
       } catch (err) {
-        console.log("err ", err)
+        console.error("err ", err)
         sentryCaptureException(err)
         return res.json({ error: "error_saving_comment" })
       }

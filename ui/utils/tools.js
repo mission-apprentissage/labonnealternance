@@ -93,7 +93,7 @@ const logError = (title, error) => {
   let err = error instanceof Error ? error : new Error(error)
   err.name = title
 
-  console.log(`Error ${title} sent to Sentry`)
+  console.error(`Error ${title} sent to Sentry`)
 }
 
 export { getPathLink, getCompanyPathLink, getValueFromPath, scrollToTop, scrollToElementInContainer, getItemElement, logError }

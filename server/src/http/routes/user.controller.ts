@@ -128,7 +128,7 @@ export default ({ mailer }) => {
         await updateOffre(job._id, job)
 
         if (job?.delegations && job?.delegations.length) {
-          await Promise.all(job.delegations.map(async (delegation) => await sendCFADelegationMail(email, job, userFormulaire, delegation.siret_code)))
+          await Promise.all(job.delegations.map(async (delegation) => await sendCFADelegationMail(delegation.email, job, userFormulaire, delegation.siret_code)))
         }
       }
 
@@ -138,7 +138,7 @@ export default ({ mailer }) => {
       // get magiclink url
       const magiclink = `${config.publicUrlEspacePro}/authentification/verification?token=${createMagicLinkToken(user.email)}`
 
-      const { email, last_name, first_name, establishment_raison_sociale, type } = user
+      const { email, last_name, first_name, establishment_raison_sociale } = user
 
       // send welcome email to user
       await mailer.sendEmail({

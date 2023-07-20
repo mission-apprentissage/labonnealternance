@@ -69,7 +69,7 @@ export default function () {
 
           result = { formations, jobs }
         } catch (err) {
-          console.log("Error ", err.message)
+          console.error("Error ", err.message)
           sentryCaptureException(err)
 
           if (query.caller) {

@@ -9,7 +9,8 @@
     "mocha/no-exclusive-tests": "error",
     "no-nonoctal-decimal-escape": 0,
     "no-unsafe-optional-chaining": 0,
-    "node/exports-style": ["error", "exports"]
+    "node/exports-style": ["error", "exports"],
+    "no-use-before-define": "error"
   },
   "overrides": [
     {

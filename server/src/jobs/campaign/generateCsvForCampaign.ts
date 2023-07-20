@@ -117,7 +117,7 @@ runScript(async () => {
         // Delay calls to avoid BAN from api-adresse.data.gouv.fr
         await delay(800)
       } catch (error) {
-        console.log(error)
+        console.error(error)
       }
     }
 
