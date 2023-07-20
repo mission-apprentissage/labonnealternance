@@ -6,7 +6,7 @@ const API = Axios.create({
 
 const errorHandler = (error) => {
   if (error.response && error.response.data) {
-    console.log("Erreur de l'API :", error)
+    console.error("Erreur de l'API :", error)
   }
 }
 

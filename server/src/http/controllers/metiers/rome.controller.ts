@@ -42,7 +42,7 @@ const getToken = async (token = {}) => {
       expire: dayjs().add(response.data.expires_in - 10, "s"),
     }
   } catch (error) {
-    console.log(error)
+    console.error(error)
     return error.response.data
   }
 }

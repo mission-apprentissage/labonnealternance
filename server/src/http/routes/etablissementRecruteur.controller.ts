@@ -27,12 +27,13 @@ import {
   getValidationUrl,
   validateEtablissementEmail,
 } from "../../services/etablissement.service.js"
-import { ICFADock, ISIRET2IDCC } from "../../services/etablissement.service.types.js"
+import { ICFADock } from "../../services/etablissement.service.types.js"
 import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
 import { validationOrganisation } from "../../services/bal.service.js"
 import { IUserRecruteur } from "../../common/model/schema/userRecruteur/userRecruteur.types.js"
 import { IRecruiter } from "../../common/model/schema/recruiter/recruiter.types.js"
 import { updateUserValidationHistory, getUser, createUser, updateUser, getUserValidationState, registerUser } from "../../services/userRecruteur.service.js"
+import { sentryCaptureException } from "../../common/utils/sentryUtils.js"
 
 const getCfaRomeSchema = joi.object({
   latitude: joi.number().required(),
@@ -89,7 +90,6 @@ export default ({ mailer }) => {
       if (!req.params.siret) {
         return res.status(400).json({ error: true, message: "Le numéro siret est obligatoire." })
       }
-
       try {
         const result = await getEtablissementFromGouv(req.params.siret)
 
@@ -131,40 +131,39 @@ export default ({ mailer }) => {
         const entrepriseData = formatEntrepriseData(result.data)
         const geo_coordinates = await getGeoCoordinates(`${entrepriseData.address_detail.acheminement_postal.l4}, ${entrepriseData.address_detail.acheminement_postal.l6}`)
 
-        let opcoResult: ICFADock | ISIRET2IDCC = await getOpco(req.params.siret)
-        const opcoData = { opco: undefined, idcc: undefined }
+        const opcoResult: ICFADock | null = await getOpco(req.params.siret)
+        const opcoData: { opco?: string; idcc?: string | number } = {}
 
         switch (opcoResult?.searchStatus) {
-          case "OK":
+          case "OK": {
             opcoData.opco = opcoResult.opcoName
             opcoData.idcc = opcoResult.idcc
             break
-
-          case "MULTIPLE_OPCO":
+          }
+          case "MULTIPLE_OPCO": {
             opcoData.opco = "Opco multiple"
             opcoData.idcc = "Opco multiple, IDCC non défini"
             break
-
-          case "NOT_FOUND":
-            opcoResult = await getIdcc(req.params.siret)
-            console.log(opcoResult)
-            if (opcoResult[0].conventions.length) {
+          }
+          case null:
+          case "NOT_FOUND": {
+            const idccResult = await getIdcc(req.params.siret)
+            if (idccResult[0].conventions.length) {
               const { num } = opcoResult[0]?.conventions[0]
-              opcoResult = await getOpcoByIdcc(num)
-
-              opcoData.opco = opcoResult.opcoName
-              opcoData.idcc = opcoResult.idcc
+              const opcoByIdccResult = await getOpcoByIdcc(num)
+              if (opcoByIdccResult) {
+                opcoData.opco = opcoByIdccResult.opcoName
+                opcoData.idcc = opcoByIdccResult.idcc
+              }
             }
             break
-
-          default:
-            break
+          }
         }
 
         res.json({ ...entrepriseData, ...opcoData, geo_coordinates })
       } catch (error) {
-        console.log({ error })
-        res.status(400).json({ error: true, message: "Le service est momentanément indisponible." })
+        sentryCaptureException(error)
+        res.status(500).json({ error: true, message: "Le service est momentanément indisponible." })
       }
     })
   )
@@ -363,6 +362,9 @@ export default ({ mailer }) => {
 
           // Keep the same structure as ENTREPRISE
           return res.json({ user: newCfa })
+        }
+        default: {
+          return res.status(400).json({ error: "unsupported type" })
         }
       }
     })
