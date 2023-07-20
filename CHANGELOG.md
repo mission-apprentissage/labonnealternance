@@ -1,3 +1,10 @@
+## [1.56.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.56.0...v1.56.1) (2023-07-20)
+
+
+### Bug Fixes
+
+* fix Docker deployment for ui project ([#509](https://github.com/mission-apprentissage/labonnealternance/issues/509)) ([e25c979](https://github.com/mission-apprentissage/labonnealternance/commit/e25c9792b104b5fcc96311b8e33aadf0fda51922))
+
 # [1.56.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.55.1...v1.56.0) (2023-07-19)
 
 
