@@ -221,7 +221,6 @@ export type PEJob = {
   id: string
   intitule: string
   description: string
-
   dateCreation: string
   dateActualisation: string
   lieuTravail: object[]
@@ -253,7 +252,6 @@ export type PEJob = {
   qualitesProfessionnelles?: [][]
   origineOffre: object[]
   offresManqueCandidats?: boolean
-
   formations?: [][]
   langues?: [][]
   complementExercice?: string

@@ -186,16 +186,23 @@ const sortMatchas = (matchas) => {
   })
 }
 
-const addMatchaDetailView = async (jobId: string) => {
+/**
+ * Incrémente le compteur de vue de la page de détail
+ * @param jobId
+ */
+const addOffreDetailView = async (jobId: string) => {
   await incrementOffre(jobId, {
     stats_detail_view: 1,
   })
 }
 
-const addMatchaSearchView = async (jobId: string) => {
+/**
+ * Incrémente le compteur de vue de la page de recherche
+ * @param jobId
+ */
+const addOffreSearchView = async (jobId: string) => {
   await incrementOffre(jobId, {
     stats_search_view: 1,
   })
 }
-
-export { getMatchaJobById, getMatchaJobs, addMatchaDetailView, addMatchaSearchView }
+export { getMatchaJobById, getMatchaJobs, addOffreDetailView, addOffreSearchView }
