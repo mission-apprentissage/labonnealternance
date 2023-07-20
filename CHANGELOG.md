@@ -1,3 +1,10 @@
+# [1.57.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.56.1...v1.57.0) (2023-07-20)
+
+
+### Features
+
+* **recruteur:** LBAC-985 ajout des nombres de vues sur les offres ([#499](https://github.com/mission-apprentissage/labonnealternance/issues/499)) ([224a8fa](https://github.com/mission-apprentissage/labonnealternance/commit/224a8fa8b74e0b24048ce8e33d3af57873344818))
+
 ## [1.56.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.56.0...v1.56.1) (2023-07-20)
 
 
