@@ -28,7 +28,7 @@ import { ICredential } from "../../../common/model/schema/credentials/credential
 import { IApiError } from "../../../common/utils/errorManager.js"
 import { ILbaItem } from "../../../services/lbaitem.shared.service.types.js"
 import { getCompanyFromSiret } from "../../../service/poleEmploi/bonnesBoites.js"
-import { getMatchaJobById } from "../../../service/matcha.js"
+import { addOffreDetailView, addOffreSearchView, getMatchaJobById } from "../../../service/matcha.js"
 import { getPeJobFromId } from "../../../service/poleEmploi/offresPoleEmploi.js"
 import { getJobsQuery } from "../../../service/poleEmploi/jobsAndCompanies.js"
 
@@ -442,7 +442,8 @@ export class JobsController extends Controller {
   @Get("/")
   @OperationId("getJobOpportunities")
   public async getJobOpportunities(
-    @Query() romes: string,
+    @Request() request: express.Request,
+    @Query() romes: string[],
     @Header() @Hidden() referer?: string,
     @Query() caller?: string,
     @Query() latitude?: string,
@@ -455,12 +456,16 @@ export class JobsController extends Controller {
     @Query() opcoUrl?: string,
     @Query() @Hidden() useMock?: string
   ): Promise<IApiError | { lbbCompanies: ILbaItem[] } | { lbaCompanies: ILbaItem[] }> {
-    const result = await getJobsQuery({ romes, caller, referer, latitude, longitude, radius, insee, sources, diploma, opco, opcoUrl, useMock })
+    const result = await getJobsQuery({ romes: romes.join(","), caller, referer, latitude, longitude, radius, insee, sources, diploma, opco, opcoUrl, useMock })
 
-    if (result.error) {
+    if ("error" in result) {
       this.setStatus(500)
+      return result
     }
-
+    const { matchas } = result
+    if ("results" in matchas) {
+      matchas.results.map((matchaOffre) => addOffreSearchView(matchaOffre.job.id))
+    }
     return result
   }
 
@@ -533,6 +538,22 @@ export class JobsController extends Controller {
     }
 
     return result
+  }
+
+  /**
+   * Notifies that the detail of a matcha job has been viewed
+   * @param {string} id the id the lba job looked for.
+   * @returns {Promise<IApiError | void>} response
+   */
+  @Response<"Wrong parameters">(400)
+  @Response<"Job not found">(404)
+  @Response<"Internal error">(500)
+  @SuccessResponse("200", "success")
+  @Post("/matcha/{id}/stats/view-details")
+  @OperationId("statsViewLbaJob")
+  public async statsViewLbaJob(@Path() id: string): Promise<IApiError | undefined> {
+    await addOffreDetailView(id)
+    return
   }
 
   /**

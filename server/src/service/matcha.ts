@@ -10,7 +10,7 @@ const coordinatesOfFrance = [2.213749, 46.227638]
 import { NIVEAUX_POUR_LBA } from "../common/constants.js"
 import { roundDistance } from "../common/geolib.js"
 import { matchaMock, matchaMockMandataire, matchasMock } from "../mocks/matchas-mock.js"
-import { getOffreAvecInfoMandataire, getJobsFromElasticSearch } from "../services/formulaire.service.js"
+import { getOffreAvecInfoMandataire, getJobsFromElasticSearch, incrementOffre } from "../services/formulaire.service.js"
 import { getApplicationByJobCount } from "../services/application.service.js"
 
 const getMatchaJobs = async ({ romes, radius, latitude, longitude, api, opco, opcoUrl, diploma, caller, useMock }) => {
@@ -186,4 +186,23 @@ const sortMatchas = (matchas) => {
   })
 }
 
-export { getMatchaJobById, getMatchaJobs }
+/**
+ * Incrémente le compteur de vue de la page de détail
+ * @param jobId
+ */
+const addOffreDetailView = async (jobId: string) => {
+  await incrementOffre(jobId, {
+    stats_detail_view: 1,
+  })
+}
+
+/**
+ * Incrémente le compteur de vue de la page de recherche
+ * @param jobId
+ */
+const addOffreSearchView = async (jobId: string) => {
+  await incrementOffre(jobId, {
+    stats_search_view: 1,
+  })
+}
+export { getMatchaJobById, getMatchaJobs, addOffreDetailView, addOffreSearchView }

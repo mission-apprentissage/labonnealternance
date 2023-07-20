@@ -1,4 +1,7 @@
-const validateRomes = (romes, error_messages, romeLimit = 15) => {
+import { regionCodeToDepartmentList } from "../common/utils/regionInseeCodes.js"
+import { isOriginLocal } from "../common/utils/isOriginLocal.js"
+
+const validateRomes = (romes: string | null | undefined, error_messages: string[], romeLimit = 15) => {
   // codes ROME : romes
   if (!romes) error_messages.push("romes : Rome codes are missing. At least 1.")
   else if (romes.split(",").length > romeLimit) error_messages.push(`romes : Too many rome codes. Maximum is ${romeLimit}.`)
@@ -25,8 +28,6 @@ const validateRomeOrDomain = ({ romes, romeDomain, romeLimit = 15, optional }, e
 const validateOptionalRomeOrDomain = ({ romes, romeDomain, romeLimit = 15 }, error_messages) => {
   validateRomeOrDomain({ romes, romeDomain, romeLimit, optional: true }, error_messages)
 }
-
-import { regionCodeToDepartmentList } from "../common/utils/regionInseeCodes.js"
 
 const validateOptionalRegion = ({ region, departement }, error_messages) => {
   // codes ROME : romes
@@ -94,8 +95,6 @@ const validateApiSources = (apiSources, error_messages, allowedSources = ["forma
       error_messages.push(`sources : Optional sources argument used with wrong value. Should contains comma separated values among '${allowedSources.join("', '")}'.`)
   }
 }
-
-import { isOriginLocal } from "../common/utils/isOriginLocal.js"
 
 // contrôle sur la présence d'un appelant valide
 const validateCaller = ({ caller, referer }, error_messages = []) => {

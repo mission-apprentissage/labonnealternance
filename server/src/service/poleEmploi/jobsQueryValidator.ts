@@ -1,6 +1,16 @@
 import { validateApiSources, validateCaller, validateInsee, validateLatitude, validateLongitude, validateRadius, validateRomes } from "../queryValidators.js"
+import { JobSearchQuery } from "./jobsAndCompanies.js"
 
-const jobsQueryValidator = ({ caller, referer, romes, latitude, longitude, insee, radius, sources }) => {
+const jobsQueryValidator = ({
+  caller,
+  referer,
+  romes,
+  latitude,
+  longitude,
+  insee,
+  radius,
+  sources,
+}: JobSearchQuery): { result: "passed" } | { error: string; error_messages: string[] } => {
   const error_messages = []
 
   // contrôle des paramètres

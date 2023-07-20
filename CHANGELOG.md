@@ -21,66 +21,57 @@
 
 # [1.55.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.54.0...v1.55.0) (2023-07-12)
 
-
 ### Features
 
-* history eligible training for appointments ([#503](https://github.com/mission-apprentissage/labonnealternance/issues/503)) ([76f18f1](https://github.com/mission-apprentissage/labonnealternance/commit/76f18f1770e1a9b93a6dfcfa2d0e8483fd0795a7))
+- history eligible training for appointments ([#503](https://github.com/mission-apprentissage/labonnealternance/issues/503)) ([76f18f1](https://github.com/mission-apprentissage/labonnealternance/commit/76f18f1770e1a9b93a6dfcfa2d0e8483fd0795a7))
 
 # [1.54.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.53.0...v1.54.0) (2023-07-12)
 
-
 ### Features
 
-* phone not required API job ([bd1a642](https://github.com/mission-apprentissage/labonnealternance/commit/bd1a64205a17b761afede2befeebc650755efd1f))
+- phone not required API job ([bd1a642](https://github.com/mission-apprentissage/labonnealternance/commit/bd1a64205a17b761afede2befeebc650755efd1f))
 
 # [1.53.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.52.0...v1.53.0) (2023-07-12)
 
-
 ### Features
 
-* idcc optional in API job ([daa6e05](https://github.com/mission-apprentissage/labonnealternance/commit/daa6e050fa91885bfc2740abd77716e76430414c))
+- idcc optional in API job ([daa6e05](https://github.com/mission-apprentissage/labonnealternance/commit/daa6e050fa91885bfc2740abd77716e76430414c))
 
 # [1.52.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.51.4...v1.52.0) (2023-07-12)
 
-
 ### Features
 
-* add custom address & geoloc API job ([c4d3c96](https://github.com/mission-apprentissage/labonnealternance/commit/c4d3c96054ac9ed22dff2cd7ca8808c4f7295f3a))
+- add custom address & geoloc API job ([c4d3c96](https://github.com/mission-apprentissage/labonnealternance/commit/c4d3c96054ac9ed22dff2cd7ca8808c4f7295f3a))
 
 ## [1.51.4](https://github.com/mission-apprentissage/labonnealternance/compare/v1.51.3...v1.51.4) (2023-07-12)
 
-
 ### Bug Fixes
 
-* remove github action ([61a893d](https://github.com/mission-apprentissage/labonnealternance/commit/61a893ddb3008fc71e64604bcb3668140924c8ff))
+- remove github action ([61a893d](https://github.com/mission-apprentissage/labonnealternance/commit/61a893ddb3008fc71e64604bcb3668140924c8ff))
 
 ## [1.51.3](https://github.com/mission-apprentissage/labonnealternance/compare/v1.51.2...v1.51.3) (2023-07-12)
 
-
 ### Bug Fixes
 
-* import ([28d1aaf](https://github.com/mission-apprentissage/labonnealternance/commit/28d1aaf76630136ea1071588d1c455e06c009cf3))
+- import ([28d1aaf](https://github.com/mission-apprentissage/labonnealternance/commit/28d1aaf76630136ea1071588d1c455e06c009cf3))
 
 ## [1.51.2](https://github.com/mission-apprentissage/labonnealternance/compare/v1.51.1...v1.51.2) (2023-07-12)
 
-
 ### Bug Fixes
 
-* jobs type ([7d0fd57](https://github.com/mission-apprentissage/labonnealternance/commit/7d0fd577136f1ae2c8e9de6549dc95460477309e))
+- jobs type ([7d0fd57](https://github.com/mission-apprentissage/labonnealternance/commit/7d0fd577136f1ae2c8e9de6549dc95460477309e))
 
 ## [1.51.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.51.0...v1.51.1) (2023-07-12)
 
-
 ### Bug Fixes
 
-* naming & remove unwanted parameter ([6bd7b18](https://github.com/mission-apprentissage/labonnealternance/commit/6bd7b18244b971d220363d183682b89290b1cd2a))
+- naming & remove unwanted parameter ([6bd7b18](https://github.com/mission-apprentissage/labonnealternance/commit/6bd7b18244b971d220363d183682b89290b1cd2a))
 
 # [1.51.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.50.0...v1.51.0) (2023-07-12)
 
-
 ### Features
 
-* **OF:** permet aux OF de se désinscrire des mises en relation ([#495](https://github.com/mission-apprentissage/labonnealternance/issues/495)) ([4e3c6a6](https://github.com/mission-apprentissage/labonnealternance/commit/4e3c6a6f7818e8a162d15aa5858d15c4c3d82953))
+- **OF:** permet aux OF de se désinscrire des mises en relation ([#495](https://github.com/mission-apprentissage/labonnealternance/issues/495)) ([4e3c6a6](https://github.com/mission-apprentissage/labonnealternance/commit/4e3c6a6f7818e8a162d15aa5858d15c4c3d82953))
 
 # [1.50.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.49.4...v1.50.0) (2023-07-12)
 

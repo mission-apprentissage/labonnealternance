@@ -493,6 +493,23 @@ export const updateOffre = async (id: IJobs["_id"], payload: UpdateQuery<IJobs>,
   )
 
 /**
+ * @description Increment field in existing job offer
+ * @param {IJobs["_id"]} id
+ * @param {object} payload
+ * @returns {Promise<IRecruiter>}
+ */
+export const incrementOffre = async (id: IJobs["_id"], payload: Record<keyof IJobs, number>, options: ModelUpdateOptions = { new: true }): Promise<IRecruiter> => {
+  const incPayload = Object.fromEntries(Object.entries(payload).map(([key, value]) => [`jobs.$.${key}`, value]))
+  return Recruiter.findOneAndUpdate(
+    { "jobs._id": id },
+    {
+      $inc: incPayload,
+    },
+    options
+  )
+}
+
+/**
  * @description Update specific field(s) in an existing job offer
  * @param {IJobs["_id"]} id
  * @param {object} payload
