@@ -15,7 +15,7 @@ import DidYouKnow from "./DidYouKnow"
 import getActualTitle from "./ItemDetailServices/getActualTitle"
 import { buildPrdvButton, BuildSwipe, buttonJePostuleShouldBeDisplayed, buttonPRDVShouldBeDisplayed, getNavigationButtons } from "./ItemDetailServices/getButtons"
 import getCurrentList from "./ItemDetailServices/getCurrentList"
-import getJobSurtitre from "./ItemDetailServices/getJobSurtitre"
+import { JobSurtitre } from "./ItemDetailServices/JobSurtitre"
 import getSoustitre from "./ItemDetailServices/getSoustitre"
 import getTags from "./ItemDetailServices/getTags"
 import hasAlsoEmploi from "./ItemDetailServices/hasAlsoEmploi"
@@ -77,6 +77,11 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem, activeFilter 
       }
     : {}
 
+  if (!selectedItem) {
+    return null
+  }
+  const isActive = selectedItem.job.isActive || false
+
   return (
     <Box
       as="section"
@@ -115,7 +120,7 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem, activeFilter 
           )}
 
           {!isCollapsedHeader && getJobPublishedTimeAndApplications({ item: selectedItem })}
-          {!isCollapsedHeader && getJobSurtitre({ selectedItem, kind, isMandataire })}
+          {!isCollapsedHeader && <JobSurtitre selectedItem={selectedItem} kind={kind} isMandataire={isMandataire} />}
 
           <Text
             as="h1"
@@ -142,7 +147,7 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem, activeFilter 
             </Box>
           )}
 
-          {isCandidatureSpontanee(selectedItem) && (
+          {isActive && isCandidatureSpontanee(selectedItem) && (
             <>
               <Divider my={2} />
               <CandidatureSpontanee item={selectedItem} />

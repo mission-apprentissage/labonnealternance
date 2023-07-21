@@ -537,7 +537,7 @@ export class JobsController extends Controller {
       }
     }
 
-    return result
+    return { matchas: [result] }
   }
 
   /**

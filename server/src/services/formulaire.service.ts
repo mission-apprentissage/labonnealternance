@@ -179,13 +179,13 @@ export const getJobsFromElasticSearch = async ({
 /**
  * @description get formulaire by offer id
  * @param {IJobs["_id"]} id
- * @returns {Promise<IFormulaireExtended>}
+ * @returns {Promise<IFormulaireExtended | null>}
  */
-export const getOffreAvecInfoMandataire = async (id: IJobs["_id"]): Promise<IFormulaireExtended> => {
+export const getOffreAvecInfoMandataire = async (id: IJobs["_id"]): Promise<IFormulaireExtended | null> => {
   const result = await getOffre(id)
 
   if (!result) {
-    return result
+    return null
   }
 
   result.jobs = result.jobs.filter((x) => x._id == id)
@@ -461,9 +461,9 @@ export const archiveDelegatedFormulaire = async (siret: IUserRecruteur["establis
 /**
  * @description Get job offer by job id
  * @param {IJobs["_id"]} id
- * @returns {Promise<IFormulaireExtended>}
+ * @returns {Promise<IFormulaireExtended | null>}
  */
-export const getOffre = async (id: IJobs["_id"]): Promise<IFormulaireExtended> => await Recruiter.findOne({ "jobs._id": id }).lean()
+export const getOffre = async (id: IJobs["_id"]): Promise<IFormulaireExtended | null> => await Recruiter.findOne({ "jobs._id": id }).lean()
 
 /**
  * @description Create job offer on existing formulaire

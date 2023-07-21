@@ -74,40 +74,51 @@ const transformMatchaJobsForIdea = ({ jobs, caller, matchaApplicationCountByJob 
   return resultJobs
 }
 
-const getMatchaJobById = async ({ id, caller }): IApiError | { matchas: ILbaItem[] } => {
+const getMatchaJobById = async ({ id, caller }): IApiError | ILbaItem => {
   try {
-    let jobs = null
+    let formulaireRaw = null
     if (id === "id-matcha-test") {
-      jobs = matchaMock._source
+      formulaireRaw = matchaMock._source
     } else if (id === "id-matcha-test2") {
-      jobs = matchaMockMandataire._source
+      formulaireRaw = matchaMockMandataire._source
     } else {
-      jobs = await getOffreAvecInfoMandataire(id)
+      formulaireRaw = await getOffreAvecInfoMandataire(id)
     }
-
+    const [jobRaw] = formulaireRaw.jobs
     const matchaApplicationCountByJob = await getApplicationByJobCount([id])
-
-    const job = transformMatchaJobForIdea({
-      job: jobs,
+    const [transformedJob] = transformMatchaJobForIdea({
+      job: formulaireRaw,
       caller,
       matchaApplicationCountByJob,
     })
-
+    transformedJob.job.isActive = jobRaw.job_status === "Active"
     if (caller) {
       trackApiCall({ caller: caller, job_count: 1, result_count: 1, api_path: "jobV1/matcha", response: "OK" })
     }
-
-    return { matchas: job }
+    return transformedJob
   } catch (error) {
     return manageApiError({ error, api_path: "jobV1/matcha", caller, errorTitle: "getting job by id from Matcha" })
   }
 }
 
 // Adaptation au modèle Idea et conservation des seules infos utilisées des offres
-const transformMatchaJobForIdea = ({ job, distance, caller, matchaApplicationCountByJob }) => {
-  const resultJobs = []
-
-  job.jobs.map((offre, idx) => {
+const transformMatchaJobForIdea = ({
+  job,
+  distance,
+  caller,
+  matchaApplicationCountByJob,
+}: {
+  distance: number
+  job: {
+    jobs: Record<string, any>[]
+  }
+  caller: string
+  matchaApplicationCountByJob: {
+    _id: string
+    count: number
+  }[]
+}) => {
+  return job.jobs.map((offre, idx) => {
     const resultJob = itemModel("matcha")
 
     let email = {}
@@ -160,10 +171,8 @@ const transformMatchaJobForIdea = ({ job, distance, caller, matchaApplicationCou
 
     const applicationCount = matchaApplicationCountByJob.find((job) => job._id == offre._id)
     resultJob.applicationCount = applicationCount?.count || 0
-    resultJobs.push(resultJob)
+    return resultJob
   })
-
-  return resultJobs
 }
 
 const sortMatchas = (matchas) => {
