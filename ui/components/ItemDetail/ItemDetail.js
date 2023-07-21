@@ -80,7 +80,7 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem, activeFilter 
   if (!selectedItem) {
     return null
   }
-  const isActive = selectedItem.job.isActive || false
+  const isActive = selectedItem.job.isActive ?? true
 
   return (
     <Box
