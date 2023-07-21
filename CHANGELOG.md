@@ -1,3 +1,10 @@
+## [1.57.3](https://github.com/mission-apprentissage/labonnealternance/compare/v1.57.2...v1.57.3) (2023-07-21)
+
+
+### Reverts
+
+* Revert "fix: fix Docker deployment for ui project (#509)" (#512) ([aa50387](https://github.com/mission-apprentissage/labonnealternance/commit/aa5038749f7fe5cac7edea85e63460e782a1bbaa)), closes [#509](https://github.com/mission-apprentissage/labonnealternance/issues/509) [#512](https://github.com/mission-apprentissage/labonnealternance/issues/512)
+
 ## [1.57.2](https://github.com/mission-apprentissage/labonnealternance/compare/v1.57.1...v1.57.2) (2023-07-20)
 
 
