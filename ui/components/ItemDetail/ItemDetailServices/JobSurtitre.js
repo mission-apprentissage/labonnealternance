@@ -12,10 +12,8 @@ const detailActivityProperties = {
 
 const Content = ({ selectedItem, kind, isMandataire }) => {
   let companyName = selectedItem?.company?.name || ""
-  const {
-    job: { isActive },
-    nafs,
-  } = selectedItem ?? {}
+  const { job, nafs } = selectedItem ?? {}
+  const { isActive = true } = job
   const [firstNaf] = nafs
 
   if (!isActive) {
