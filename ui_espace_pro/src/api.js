@@ -6,7 +6,7 @@ const API = Axios.create({
 
 const errorHandler = (error) => {
   if (error.response && error.response.data) {
-    console.log("Erreur de l'API :", error)
+    console.error("Erreur de l'API :", error)
   }
 }
 
@@ -74,7 +74,7 @@ export const validationCompte = (id) => API.post("/etablissement/validation", id
  */
 export const getCfaInformation = async (siret) => await API.get(`/etablissement/cfa/${siret}`)
 export const getEntrepriseInformation = async (siret, options) => await API.get(`/etablissement/entreprise/${siret}`, { params: options })
-export const getPartenaire = (siret) => API.get(`etablissement/${siret}`)
+
 export const createPartenaire = (partenaire) => API.post("/etablissement/creation", partenaire)
 export const updatePartenaire = (id, partenaire) => API.put(`/etablissement/${id}`, partenaire)
 export const getRomeDetail = (rome) => API.get(`/rome/detail/${rome}`)
@@ -87,6 +87,7 @@ export const validateOptOutToken = (token) =>
   })
 
 export const getWithQS = (payload) => API.get("/formulaire", { params: { query: JSON.stringify(payload.query), ...payload } })
+export const etablissementUnsubscribeDemandeDelegation = (establishmentSiret) => API.post(`/etablissement/${establishmentSiret}/proposition/unsubscribe`)
 
 /**
  * Administration OPCO

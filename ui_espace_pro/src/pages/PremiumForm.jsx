@@ -57,8 +57,6 @@ const PremiumForm = () => {
     return null
   }
 
-  console.log(etablissement)
-
   return (
     <Layout>
       <Box w="100%" pt={[4, 8]} px={[1, 1, 12, 24]}>

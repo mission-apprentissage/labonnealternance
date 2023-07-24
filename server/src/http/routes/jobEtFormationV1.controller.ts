@@ -12,7 +12,7 @@ export default function () {
 
   router.get(
     "/",
-    tryCatch(async (req, res) => {
+    tryCatch(async (req: express.Request, res) => {
       const query = { ...req.query, referer: req.headers.referer }
       let result = jobsEtFormationsQueryValidator(query)
 
@@ -69,7 +69,7 @@ export default function () {
 
           result = { formations, jobs }
         } catch (err) {
-          console.log("Error ", err.message)
+          console.error("Error ", err.message)
           sentryCaptureException(err)
 
           if (query.caller) {

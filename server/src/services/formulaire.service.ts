@@ -5,7 +5,7 @@ import { ANNULEE, POURVUE, ETAT_UTILISATEUR } from "./constant.service.js"
 import dayjs from "../common/dayjs.js"
 import { getElasticInstance } from "../common/esClient/index.js"
 import createMailer from "../common/mailer.js"
-import { Recruiter } from "../common/model/index.js"
+import { Recruiter, UnsubscribeOF } from "../common/model/index.js"
 import { IRecruiter } from "../common/model/schema/recruiter/recruiter.types.js"
 import { IJobs } from "../common/model/schema/jobs/jobs.types.js"
 import { IUserRecruteur } from "../common/model/schema/userRecruteur/userRecruteur.types.js"
@@ -108,6 +108,11 @@ export const getJobsFromElasticSearch = async ({
                   ],
                 },
               },
+            },
+          },
+          {
+            match: {
+              status: "Actif",
             },
           },
         ],
@@ -349,26 +354,8 @@ export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }:
 
     delegations.push({ siret_code, email })
 
-    if (userState.status === ETAT_UTILISATEUR.VALIDE) {
-      await mailer.sendEmail({
-        to: email,
-        subject: `Une entreprise recrute dans votre domaine`,
-        template: mailTemplate["mail-cfa-delegation"],
-        data: {
-          images: {
-            logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
-          },
-          enterpriseName: offreDocument.establishment_raison_sociale,
-          jobName: offre.rome_appellation_label,
-          contractType: offre.job_type.join(", "),
-          trainingLevel: offre.job_level_label,
-          startDate: dayjs(offre.job_start_date).format("DD/MM/YYYY"),
-          duration: offre.job_duration,
-          rhythm: offre.job_rythm,
-          offerButton: `${config.publicUrlEspacePro}/proposition/formulaire/${offreDocument.establishment_id}/offre/${offre._id}/siret/${siret_code}`,
-          createAccountButton: `${config.publicUrlEspacePro}/creation/cfa`,
-        },
-      })
+    if (userState.status === etat_utilisateur.VALIDE) {
+      await sendCFADelegationMail(email, offre, offreDocument, siret_code)
     }
   })
 
@@ -507,6 +494,23 @@ export const updateOffre = async (id: IJobs["_id"], payload: UpdateQuery<IJobs>,
   )
 
 /**
+ * @description Increment field in existing job offer
+ * @param {IJobs["_id"]} id
+ * @param {object} payload
+ * @returns {Promise<IRecruiter>}
+ */
+export const incrementOffre = async (id: IJobs["_id"], payload: Record<keyof IJobs, number>, options: ModelUpdateOptions = { new: true }): Promise<IRecruiter> => {
+  const incPayload = Object.fromEntries(Object.entries(payload).map(([key, value]) => [`jobs.$.${key}`, value]))
+  return Recruiter.findOneAndUpdate(
+    { "jobs._id": id },
+    {
+      $inc: incPayload,
+    },
+    options
+  )
+}
+
+/**
  * @description Update specific field(s) in an existing job offer
  * @param {IJobs["_id"]} id
  * @param {object} payload
@@ -589,4 +593,32 @@ export const getJob = async (id: IJobs["_id"]): Promise<IJobs> => {
   const offre = await getOffre(id)
 
   return offre.jobs.find((job) => job._id.toString() == id)
+}
+
+/**
+ * @description Sends the mail informing the CFA that a company wants the CFA to handle the offer.
+ */
+export const sendCFADelegationMail = async (email: string, offre: IJobs, recruiter: { establishment_raison_sociale: string; establishment_id: string }, siret_code: string) => {
+  const unsubscribeOF = await UnsubscribeOF.findOne({ establishment_siret: siret_code })
+  if (unsubscribeOF) return
+  await mailer.sendEmail({
+    to: email,
+    subject: `Une entreprise recrute dans votre domaine`,
+    template: mailTemplate["mail-cfa-delegation"],
+    data: {
+      images: {
+        logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
+      },
+      enterpriseName: recruiter.establishment_raison_sociale,
+      jobName: offre.rome_appellation_label,
+      contractType: offre.job_type.join(", "),
+      trainingLevel: offre.job_level_label,
+      startDate: dayjs(offre.job_start_date).format("DD/MM/YYYY"),
+      duration: offre.job_duration,
+      rhythm: offre.job_rythm,
+      offerButton: `${config.publicUrlEspacePro}/proposition/formulaire/${recruiter.establishment_id}/offre/${offre._id}/siret/${siret_code}`,
+      createAccountButton: `${config.publicUrlEspacePro}/creation/cfa`,
+      unsubscribeUrl: `${config.publicUrlEspacePro}/proposition/formulaire/${recruiter.establishment_id}/offre/${offre._id}/siret/${siret_code}/unsubscribe`,
+    },
+  })
 }

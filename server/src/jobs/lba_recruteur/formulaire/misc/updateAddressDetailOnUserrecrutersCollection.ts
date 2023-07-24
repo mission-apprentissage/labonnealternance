@@ -7,24 +7,31 @@ import { runScript } from "../../../scriptWrapper.js"
 
 runScript(async () => {
   logger.info("Start update user adresse detail")
-  const users = await UserRecruteur.find({ type: { $in: [ENTREPRISE, CFA] }, adresse_detail: { $eq: null } })
+  const users = await UserRecruteur.find({ type: { $in: [ENTREPRISE, CFA] }, address_detail: { $eq: null } })
 
   logger.info(`${users.length} entries to update...`)
 
   if (!users.length) return
 
   await asyncForEach(users, async (user, index) => {
-    console.log(`${index}/${users.length} - ${user.type}`)
+    console.log(`${index}/${users.length} - ${user.type} - ${user.establishment_siret} - ${user._id}`)
 
     try {
       await delay(500)
       const { data } = await getEtablissementFromGouv(user.establishment_siret)
-      const formulaire: any = await Recruiter.findOne({ establishment_id: user.establishment_id })
 
       if (!data) return
 
       user.address_detail = data.adresse
-      formulaire.address_detail = data.adresse
+
+      if (user.type !== ENTREPRISE) {
+        await user.save()
+        return
+      }
+
+      const formulaire = await Recruiter.findOne({ establishment_id: user.establishment_id })
+
+      formulaire.address_detail = formulaire ? data.adresse : undefined
 
       await Promise.all([user.save(), formulaire.save()])
     } catch (error) {

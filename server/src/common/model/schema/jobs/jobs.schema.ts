@@ -142,6 +142,14 @@ export const jobsSchema = new Schema<IJobs>({
     default: null,
     description: "Latitude/Longitude de l'adresse personnalisée de l'entreprise",
   },
+  stats_detail_view: {
+    type: Number,
+    description: "Nombre de vues de la page de détail",
+  },
+  stats_search_view: {
+    type: Number,
+    description: "Nombre de vues sur une page de recherche",
+  },
 })
 
 export default model<IJobs>("job", jobsSchema)

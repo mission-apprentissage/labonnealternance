@@ -9,22 +9,20 @@ export const getEstablishmentEntitySchema = Joi.object({
   email: Joi.string().email().required(),
 })
 
-export const createJobEntitySchema = Joi.object({
+export const createEstablishmentSchema = Joi.object({
   establishment_siret: Joi.string()
     .pattern(/^[0-9]+$/, "Le siret est composé uniquement de chiffres")
     .min(14)
     .max(14)
     .required(),
-  establishment_raison_sociale: Joi.string().required(),
   first_name: Joi.string().required(),
   last_name: Joi.string().required(),
   email: Joi.string().email().required(),
   phone: Joi.string()
     .pattern(/^[0-9]+$/)
     .min(10)
-    .max(10)
-    .required(),
-  idcc: Joi.string().required(),
+    .max(10),
+  idcc: Joi.string(),
   origin: Joi.string(),
 })
 
@@ -54,6 +52,8 @@ export const createJobSchema = Joi.object({
   job_duration: Joi.number().min(6).max(36).required(),
   job_description: Joi.string(),
   job_employer_description: Joi.string(),
+  custom_address: Joi.string(),
+  custom_geo_coordinates: Joi.string().when("custom_address", { is: Joi.exist(), then: Joi.required() }),
 })
 
 export const updateJobSchema = Joi.object({

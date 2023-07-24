@@ -4,7 +4,7 @@ import { deleteCfa, deleteEntreprise } from "../api"
 import { AUTHTYPE } from "../common/contants"
 import { InfoCircle } from "../theme/components/icons"
 
-export default (props) => {
+export const ConfirmationCreationCompte = (props) => {
   let { isOpen, onClose, user, formulaire } = props
   const navigate = useNavigate()
 
@@ -78,3 +78,5 @@ export default (props) => {
     </Modal>
   )
 }
+
+export default ConfirmationCreationCompte
