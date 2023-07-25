@@ -1,3 +1,10 @@
+## [1.57.4](https://github.com/mission-apprentissage/labonnealternance/compare/v1.57.3...v1.57.4) (2023-07-25)
+
+
+### Bug Fixes
+
+* pole emploi export ([#515](https://github.com/mission-apprentissage/labonnealternance/issues/515)) ([e58a12c](https://github.com/mission-apprentissage/labonnealternance/commit/e58a12c5c2ed1cd6bf628f6b05c6092a4c65b1ff))
+
 ## [1.57.3](https://github.com/mission-apprentissage/labonnealternance/compare/v1.57.2...v1.57.3) (2023-07-21)
 
 
