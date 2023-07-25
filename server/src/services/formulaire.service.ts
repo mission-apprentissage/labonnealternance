@@ -499,7 +499,7 @@ export const updateOffre = async (id: IJobs["_id"], payload: UpdateQuery<IJobs>,
  * @param {object} payload
  * @returns {Promise<IRecruiter>}
  */
-export const incrementOffre = async (id: IJobs["_id"], payload: Record<keyof IJobs, number>, options: ModelUpdateOptions = { new: true }): Promise<IRecruiter> => {
+export const incrementLbaJobViewCount = async (id: IJobs["_id"], payload: object, options: ModelUpdateOptions = { new: true }): Promise<IRecruiter> => {
   const incPayload = Object.fromEntries(Object.entries(payload).map(([key, value]) => [`jobs.$.${key}`, value]))
   return Recruiter.findOneAndUpdate(
     { "jobs._id": id },

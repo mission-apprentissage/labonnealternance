@@ -28,8 +28,7 @@ import { ICredential } from "../../../common/model/schema/credentials/credential
 import { IApiError } from "../../../common/utils/errorManager.js"
 import { ILbaItem } from "../../../services/lbaitem.shared.service.types.js"
 import { getCompanyFromSiret } from "../../../service/poleEmploi/bonnesBoites.js"
-import { getLbaJobById } from "../../../services/lbajob.service.js"
-import { addOffreDetailView, addOffreSearchView, getMatchaJobById } from "../../../service/matcha.js"
+import { addOffreDetailView, addOffreSearchView, getLbaJobById } from "../../../services/lbajob.service.js"
 import { getPeJobFromId } from "../../../service/poleEmploi/offresPoleEmploi.js"
 import { getJobsQuery } from "../../../service/poleEmploi/jobsAndCompanies.js"
 

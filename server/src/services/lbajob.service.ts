@@ -8,7 +8,7 @@ const coordinatesOfFrance = [2.213749, 46.227638]
 import { NIVEAUX_POUR_LBA } from "./constant.service.js"
 import { roundDistance } from "../common/geolib.js"
 import { matchaMock, matchaMockMandataire, matchasMock } from "../mocks/matchas-mock.js"
-import { getOffreAvecInfoMandataire, getJobsFromElasticSearch } from "./formulaire.service.js"
+import { getOffreAvecInfoMandataire, getJobsFromElasticSearch, incrementLbaJobViewCount } from "./formulaire.service.js"
 import { getApplicationByJobCount, IApplicationCount } from "./application.service.js"
 import { ILbaItem, LbaItem } from "./lbaitem.shared.service.types.js"
 import { IRecruiter } from "../common/model/schema/recruiter/recruiter.types.js"
@@ -249,5 +249,25 @@ const sortLbaJobs = (jobs: { results: ILbaItem[] }) => {
     }
 
     return 0
+  })
+}
+
+/**
+ * Incrémente le compteur de vue de la page de détail d'une offre LBA
+ * @param {string} jobId
+ */
+export const addOffreDetailView = async (jobId: string) => {
+  await incrementLbaJobViewCount(jobId, {
+    stats_detail_view: 1,
+  })
+}
+
+/**
+ * Incrémente le compteur de vue de la page de recherche d'une offre LBA
+ * @param {string} jobId
+ */
+export const addOffreSearchView = async (jobId: string) => {
+  await incrementLbaJobViewCount(jobId, {
+    stats_search_view: 1,
   })
 }
