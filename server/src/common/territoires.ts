@@ -1427,7 +1427,12 @@ const departmentsRegionAndAcademieCode: IDepartmentsRegionAndAcademieCode[] = [
  * @return {IDepartmentsRegionAndAcademieCode | undefined}
  */
 const getDepartmentByZipCode = (zipCode: string): IDepartmentsRegionAndAcademieCode | undefined => {
-  const result = departmentsRegionAndAcademieCode.find((departement) => departement.code === zipCode)
+  let result = departmentsRegionAndAcademieCode.find((departement) => departement.code === zipCode.slice(0, 2))
+
+  // If not department found, with two firsts digits, try with three firsts digits
+  if (!result) {
+    result = departmentsRegionAndAcademieCode.find((departement) => departement.code === zipCode.slice(0, 3))
+  }
 
   if (!result) {
     logger.error("Unable to return department from zip code", { zipCode })
