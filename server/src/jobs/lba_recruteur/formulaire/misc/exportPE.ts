@@ -127,7 +127,7 @@ const formatToPe = async (offre) => {
     COM_libelle: null,
     DEP_cle: adresse.code_postal.slice(0, 2),
     DEP_libelle: null,
-    REG_cle: getDepartmentByZipCode(adresse.code_postal.slice(0, 3))?.region.code,
+    REG_cle: getDepartmentByZipCode(adresse.code_postal)?.region.code,
     REG_libelle: null,
     Pay_cle: null,
     Pay_libelle: adresse.l7,
