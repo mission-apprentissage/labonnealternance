@@ -8,9 +8,10 @@ import { Readable } from "stream"
 import dayjs from "../../../../common/dayjs.js"
 import { logger } from "../../../../common/logger.js"
 import { UserRecruteur } from "../../../../common/model/index.js"
-import { asyncForEach, delay } from "../../../../common/utils/asyncUtils.js"
+import { asyncForEach } from "../../../../common/utils/asyncUtils.js"
 import { IUserRecruteur } from "../../../../common/model/schema/userRecruteur/userRecruteur.types.js"
 import config from "../../../../config.js"
+import { getDepartmentByZipCode } from "../../../../common/territoires.js"
 
 const stat = {
   ok: 0,
@@ -24,21 +25,6 @@ const stat = {
 const formatDate = (date) => dayjs(date).format("DD/MM/YYYY")
 const splitter = (str) => str.split(regex).filter(String)
 const regex = /^(.*) (\d{4,5}) (.*)$/
-
-/**
- * @description get Region from public API
- * @param {string} dept
- * @returns {Promise<string>}
- */
-const getRegion = async (dept) => {
-  await delay(400)
-  const { status, data } = await axios.get(
-    `https://data.enseignementsup-recherche.gouv.fr/api/records/1.0/search/?dataset=fr-esr-referentiel-geographique&q=${dept}&facet=reg_nom&facet=dep_nom`
-  )
-  if (status !== 200) return null
-
-  return data.records[0].fields.reg_id.substring(1)
-}
 
 /**
  * @description format data into Pole Emploi specific fields
@@ -141,7 +127,7 @@ const formatToPe = async (offre) => {
     COM_libelle: null,
     DEP_cle: adresse.code_postal.slice(0, 2),
     DEP_libelle: null,
-    REG_cle: await getRegion(adresse.code_postal.slice(0, 2)),
+    REG_cle: getDepartmentByZipCode(adresse.code_postal)?.region.code,
     REG_libelle: null,
     Pay_cle: null,
     Pay_libelle: adresse.l7,
