@@ -20,11 +20,11 @@ export async function insertWhisper(document, isLoadingData) {
 
   const resultCards = document.getElementsByClassName("resultCard")
 
-  document.querySelectorAll('.whisper').forEach(element => {
+  document.querySelectorAll(".whisper").forEach((element) => {
     element.remove()
   })
 
-  if (resultCards.length === 0) { 
+  if (resultCards.length === 0) {
     return "no resultCard found"
   }
 
