@@ -354,7 +354,7 @@ export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }:
 
     delegations.push({ siret_code, email })
 
-    if (userState.status === etat_utilisateur.VALIDE) {
+    if (userState.status === ETAT_UTILISATEUR.VALIDE) {
       await sendCFADelegationMail(email, offre, offreDocument, siret_code)
     }
   })
