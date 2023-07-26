@@ -34,6 +34,7 @@ import { syncAffelnetFormationsFromCatalogueME } from "./jobs/rdv/syncEtablissem
 import { runScript } from "./jobs/scriptWrapper.js"
 import { checkAwaitingCompaniesValidation } from "./jobs/lba_recruteur/user/misc/updateMissingActivationState.js"
 import updateBrevoBlockedEmails from "./jobs/updateBrevoBlockedEmails/updateBrevoBlockedEmails.js"
+import { importReferentielOnisep } from "./jobs/rdv/importReferentielOnisep.js"
 
 cli.addHelpText("after", null)
 
@@ -236,6 +237,13 @@ cli
   .description("Historise l'egibilité d'une formation à la prise de rendez-vous avec le Catalogue des formations (RCO)")
   .action(() => {
     runScript(() => eligibleTrainingsForAppointmentsHistoryWithCatalogue())
+  })
+
+cli
+  .command("import-referentiel-onisep")
+  .description("Alimentation de la table de correspondance entre Id formation Onisep et Clé ME du catalogue RCO, utilisé pour diffuser la prise de RDV sur l’Onisep")
+  .action(() => {
+    runScript(() => importReferentielOnisep())
   })
 
 /**
