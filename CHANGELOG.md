@@ -14,52 +14,45 @@
 
 ## [1.57.3](https://github.com/mission-apprentissage/labonnealternance/compare/v1.57.2...v1.57.3) (2023-07-21)
 
-
 ### Reverts
 
-* Revert "fix: fix Docker deployment for ui project (#509)" (#512) ([aa50387](https://github.com/mission-apprentissage/labonnealternance/commit/aa5038749f7fe5cac7edea85e63460e782a1bbaa)), closes [#509](https://github.com/mission-apprentissage/labonnealternance/issues/509) [#512](https://github.com/mission-apprentissage/labonnealternance/issues/512)
+- Revert "fix: fix Docker deployment for ui project (#509)" (#512) ([aa50387](https://github.com/mission-apprentissage/labonnealternance/commit/aa5038749f7fe5cac7edea85e63460e782a1bbaa)), closes [#509](https://github.com/mission-apprentissage/labonnealternance/issues/509) [#512](https://github.com/mission-apprentissage/labonnealternance/issues/512)
 
 ## [1.57.2](https://github.com/mission-apprentissage/labonnealternance/compare/v1.57.1...v1.57.2) (2023-07-20)
 
-
 ### Bug Fixes
 
-* ui_espace_pro: remove lint rule as it breaks the build ([#511](https://github.com/mission-apprentissage/labonnealternance/issues/511)) ([83605fd](https://github.com/mission-apprentissage/labonnealternance/commit/83605fd8f029fe5fe38a931bbcb6f3d92d524bf7))
+- ui_espace_pro: remove lint rule as it breaks the build ([#511](https://github.com/mission-apprentissage/labonnealternance/issues/511)) ([83605fd](https://github.com/mission-apprentissage/labonnealternance/commit/83605fd8f029fe5fe38a931bbcb6f3d92d524bf7))
 
 ## [1.57.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.57.0...v1.57.1) (2023-07-20)
 
-
 ### Bug Fixes
 
-* flow recruteur pour déposer une offre ([#510](https://github.com/mission-apprentissage/labonnealternance/issues/510)) ([ca6f82e](https://github.com/mission-apprentissage/labonnealternance/commit/ca6f82e63f298ab708da5cf51f14b6b88c72da19))
+- flow recruteur pour déposer une offre ([#510](https://github.com/mission-apprentissage/labonnealternance/issues/510)) ([ca6f82e](https://github.com/mission-apprentissage/labonnealternance/commit/ca6f82e63f298ab708da5cf51f14b6b88c72da19))
 
 # [1.57.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.56.1...v1.57.0) (2023-07-20)
 
-
 ### Features
 
-* **recruteur:** LBAC-985 ajout des nombres de vues sur les offres ([#499](https://github.com/mission-apprentissage/labonnealternance/issues/499)) ([224a8fa](https://github.com/mission-apprentissage/labonnealternance/commit/224a8fa8b74e0b24048ce8e33d3af57873344818))
+- **recruteur:** LBAC-985 ajout des nombres de vues sur les offres ([#499](https://github.com/mission-apprentissage/labonnealternance/issues/499)) ([224a8fa](https://github.com/mission-apprentissage/labonnealternance/commit/224a8fa8b74e0b24048ce8e33d3af57873344818))
 
 ## [1.56.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.56.0...v1.56.1) (2023-07-20)
 
-
 ### Bug Fixes
 
-* fix Docker deployment for ui project ([#509](https://github.com/mission-apprentissage/labonnealternance/issues/509)) ([e25c979](https://github.com/mission-apprentissage/labonnealternance/commit/e25c9792b104b5fcc96311b8e33aadf0fda51922))
+- fix Docker deployment for ui project ([#509](https://github.com/mission-apprentissage/labonnealternance/issues/509)) ([e25c979](https://github.com/mission-apprentissage/labonnealternance/commit/e25c9792b104b5fcc96311b8e33aadf0fda51922))
 
 # [1.56.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.55.1...v1.56.0) (2023-07-19)
 
-
 ### Features
 
-* useless logs removed ([#507](https://github.com/mission-apprentissage/labonnealternance/issues/507)) ([f21ee46](https://github.com/mission-apprentissage/labonnealternance/commit/f21ee46f720e3a8224ba787eb5e6922ea48050c9))
+- useless logs removed ([#507](https://github.com/mission-apprentissage/labonnealternance/issues/507)) ([f21ee46](https://github.com/mission-apprentissage/labonnealternance/commit/f21ee46f720e3a8224ba787eb5e6922ea48050c9))
 
 ## [1.55.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.55.0...v1.55.1) (2023-07-19)
 
-
 ### Bug Fixes
 
-* attributes renamed ([#508](https://github.com/mission-apprentissage/labonnealternance/issues/508)) ([9040d34](https://github.com/mission-apprentissage/labonnealternance/commit/9040d3480f4676af24e26ebd83aba249c53e69aa))
+- attributes renamed ([#508](https://github.com/mission-apprentissage/labonnealternance/issues/508)) ([9040d34](https://github.com/mission-apprentissage/labonnealternance/commit/9040d3480f4676af24e26ebd83aba249c53e69aa))
 
 # [1.55.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.54.0...v1.55.0) (2023-07-12)
 

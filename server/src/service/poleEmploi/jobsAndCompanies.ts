@@ -2,7 +2,7 @@
 
 import { trackApiCall } from "../../common/utils/sendTrackingEvent.js"
 import { sentryCaptureException } from "../../common/utils/sentryUtils.js"
-import { getMatchaJobs } from "../matcha.js"
+import { getLbaJobs } from "../../services/lbajob.service.js"
 import { getSomeLbbCompanies } from "./bonnesBoites.js"
 import { jobsQueryValidator } from "./jobsQueryValidator.js"
 import { getSomePeJobs } from "./offresPoleEmploi.js"
@@ -100,7 +100,7 @@ const getJobsFromApi = async ({ query, api }) => {
           })
         : null,
       sources.indexOf("matcha") >= 0
-        ? getMatchaJobs({
+        ? getLbaJobs({
             romes: query.romes,
             latitude: query.latitude,
             longitude: query.longitude,

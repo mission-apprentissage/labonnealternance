@@ -22,13 +22,13 @@ import dayjs from "../../../common/dayjs.js"
 import { getAppellationDetailsFromAPI, getRomeDetailsFromAPI } from "../../../services/rome.service.js"
 import { getOffre } from "../../../services/formulaire.service.js"
 import { getNearEtablissementsFromRomes } from "../../../services/catalogue.service.js"
-import { ACTIVE, ANNULEE, ENTREPRISE, POURVUE, etat_utilisateur, validation_utilisateur } from "../../../common/constants.js"
+import { ACTIVE, ANNULEE, POURVUE, ENTREPRISE, ETAT_UTILISATEUR, VALIDATION_UTILISATEUR } from "../../../services/constant.service.js"
 import { delay } from "../../../common/utils/asyncUtils.js"
 import { ICredential } from "../../../common/model/schema/credentials/credential.types.js"
 import { IApiError } from "../../../common/utils/errorManager.js"
 import { ILbaItem } from "../../../services/lbaitem.shared.service.types.js"
 import { getCompanyFromSiret } from "../../../service/poleEmploi/bonnesBoites.js"
-import { addOffreDetailView, addOffreSearchView, getMatchaJobById } from "../../../service/matcha.js"
+import { addOffreDetailView, addOffreSearchView, getLbaJobById } from "../../../services/lbajob.service.js"
 import { getPeJobFromId } from "../../../service/poleEmploi/offresPoleEmploi.js"
 import { getJobsQuery } from "../../../service/poleEmploi/jobsAndCompanies.js"
 
@@ -155,9 +155,9 @@ export class JobsController extends Controller {
     const newUser = await createUser({ ...establishment, establishment_id: newEstablishment.establishment_id })
     // Update user status to valid
     await updateUserValidationHistory(newUser._id, {
-      validation_type: validation_utilisateur.AUTO,
+      validation_type: VALIDATION_UTILISATEUR.AUTO,
       user: "SERVEUR",
-      status: etat_utilisateur.VALIDE,
+      status: ETAT_UTILISATEUR.VALIDE,
     })
 
     this.setStatus(201)
@@ -522,7 +522,7 @@ export class JobsController extends Controller {
   @Get("/matcha/{id}")
   @OperationId("getLbaJob")
   public async getLbaJob(@Path() id: string, @Query() caller?: string): Promise<IApiError | { matchas: ILbaItem[] }> {
-    const result = await getMatchaJobById({
+    const result = await getLbaJobById({
       id,
       caller,
     })

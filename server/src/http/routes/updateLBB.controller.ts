@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { REGEX } from "../../common/constants.js"
+import { REGEX } from "../../services/constant.service.js"
 import express from "express"
 import Joi from "joi"
 import { updateContactInfo } from "../../services/company.service.js"

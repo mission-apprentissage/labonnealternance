@@ -5,7 +5,7 @@ import { mailTemplate } from "../../assets/index.js"
 import * as appointmentService from "../../services/appointment.service.js"
 import { mailType } from "../../common/model/constants/appointments.js"
 import { getReferrerByKeyName } from "../../common/model/constants/referrers.js"
-import { roles } from "../../common/roles.js"
+import { ROLES } from "../../services/constant.service.js"
 import { dayjs } from "../../common/utils/dayjs.js"
 import config from "../../config.js"
 import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
@@ -80,7 +80,7 @@ export default ({ mailer, etablissements }) => {
           phone,
           email,
           type,
-          role: roles.candidat,
+          role: ROLES.candidat,
           last_action_date: dayjs().toDate(),
         })
       }

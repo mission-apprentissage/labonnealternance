@@ -27,6 +27,29 @@ const getRncpsFromParameters = ({ values, widgetParameters }) => {
     : ""
 }
 
+const getJobCount = (jobs, option) => {
+  let jobCount = 0
+
+  if (jobs) {
+    if (jobs.peJobs) {
+      jobCount += jobs.peJobs.length
+    }
+    if (jobs.matchas) {
+      jobCount += jobs.matchas.length
+      if (option === "excludepartners") jobCount -= getPartnerJobCount(jobs)
+    }
+    if (jobs.lbaCompanies) {
+      jobCount += jobs.lbaCompanies.length
+    }
+  }
+
+  return jobCount
+}
+
+const getPartnerJobCount = (jobs) => {
+  return jobs && jobs.matchas ? jobs.matchas.filter((job) => job.company?.mandataire).length : 0
+}
+
 export {
   trainingApi,
   trainingsApi,
@@ -41,4 +64,6 @@ export {
   offreApi,
   matchaApi,
   companyApi,
+  getJobCount,
+  getPartnerJobCount,
 }

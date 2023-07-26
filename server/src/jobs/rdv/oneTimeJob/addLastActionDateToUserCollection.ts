@@ -1,13 +1,13 @@
 import dayjs from "../../../common/dayjs.js"
 import { User } from "../../../common/model/index.js"
-import { roles } from "../../../common/roles.js"
+import { ROLES } from "../../../services/constant.service.js"
 import { runScript } from "../../scriptWrapper.js"
 
 export const addLastActionDateToUserCollection = async () => {
   const date = dayjs().format()
 
   const result = await User.updateMany(
-    { role: roles.candidat },
+    { role: ROLES.candidat },
     {
       $set: {
         last_action_date: date,

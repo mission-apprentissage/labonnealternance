@@ -2,7 +2,7 @@ import express, { Request } from "express"
 import joi from "joi"
 import { createFormulaire, getFormulaire } from "../../services/formulaire.service.js"
 import { mailTemplate } from "../../assets/index.js"
-import { CFA, ENTREPRISE, etat_utilisateur, validation_utilisateur } from "../../common/constants.js"
+import { CFA, ENTREPRISE, ETAT_UTILISATEUR, VALIDATION_UTILISATEUR } from "../../services/constant.service.js"
 import { createMagicLinkToken, createUserRecruteurToken } from "../../common/utils/jwtUtils.js"
 import { checkIfUserEmailIsPrivate, checkIfUserMailExistInReferentiel, getAllDomainsFromEmailList } from "../../common/utils/mailUtils.js"
 import { notifyToSlack } from "../../common/utils/slackUtils.js"
@@ -46,16 +46,16 @@ export default ({ mailer }) => {
 
   const autoValidateUser = async (userId) =>
     await updateUserValidationHistory(userId, {
-      validation_type: validation_utilisateur.AUTO,
+      validation_type: VALIDATION_UTILISATEUR.AUTO,
       user: "SERVEUR",
-      status: etat_utilisateur.VALIDE,
+      status: ETAT_UTILISATEUR.VALIDE,
     })
 
   const setManualValidation = async (userId) =>
     await updateUserValidationHistory(userId, {
-      validation_type: validation_utilisateur.MANUAL,
+      validation_type: VALIDATION_UTILISATEUR.MANUAL,
       user: "SERVEUR",
-      status: etat_utilisateur.ATTENTE,
+      status: ETAT_UTILISATEUR.ATTENTE,
     })
 
   /**
@@ -424,7 +424,7 @@ export default ({ mailer }) => {
       }
 
       const user: IUserRecruteur = await getUser({ _id: req.body.id })
-      const isUserAwaiting = getUserValidationState(user.status) === etat_utilisateur.ATTENTE
+      const isUserAwaiting = getUserValidationState(user.status) === ETAT_UTILISATEUR.ATTENTE
 
       if (isUserAwaiting) {
         return res.json({ isUserAwaiting: true })

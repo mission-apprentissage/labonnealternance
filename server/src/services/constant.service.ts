@@ -13,19 +13,15 @@ export const KEY_GENERATOR_PARAMS = ({ length, symbols, numbers }) => {
     exclude: '!"_%£$€*¨^=+~ß(){}[]§;,./:`@#&|<>?"',
   }
 }
-export const validation_utilisateur = {
+export const VALIDATION_UTILISATEUR = {
   AUTO: "AUTOMATIQUE",
   MANUAL: "MANUELLE",
 }
 export const ENTREPRISE_DELEGATION = "ENTREPRISE_DELEGATION"
-export const etat_utilisateur = {
+export const ETAT_UTILISATEUR = {
   VALIDE: "VALIDÉ",
   DESACTIVE: "DESACTIVÉ",
   ATTENTE: "EN ATTENTE DE VALIDATION",
-}
-export const etat_etablissements = {
-  ACTIF: "actif",
-  FERME: "fermé",
 }
 export const ENTREPRISE = "ENTREPRISE"
 export const CFA = "CFA"
@@ -89,4 +85,10 @@ export const TRAINING_RYTHM = {
   "1S1S": "1 semaine / 1 semaine",
   "2S3S": "2 semaines / 3 semaines",
   "6S6S": "6 semaines / 6 semaines",
+}
+
+export const ROLES = {
+  candidat: "candidat",
+  cfa: "cfa",
+  administrator: "administrator",
 }

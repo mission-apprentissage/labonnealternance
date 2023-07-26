@@ -11,7 +11,7 @@ import {
   getAllEstablishmentFromBonneBoiteLegacy,
   getAllEstablishmentFromOpcoReferentiel,
 } from "../../../../services/etablissement.service.js"
-import { validation_utilisateur, etat_utilisateur, CFA } from "../../../../common/constants.js"
+import { VALIDATION_UTILISATEUR, ETAT_UTILISATEUR, CFA } from "../../../../services/constant.service.js"
 import { updateUser, updateUserValidationHistory } from "../../../../services/userRecruteur.service.js"
 import { notifyToSlack } from "../../../../common/utils/slackUtils.js"
 import { getFormulaire, updateOffre } from "../../../../services/formulaire.service.js"
@@ -21,9 +21,9 @@ import config from "../../../../config.js"
 
 const autoValidateUser = async (userId) =>
   await updateUserValidationHistory(userId, {
-    validation_type: validation_utilisateur.AUTO,
+    validation_type: VALIDATION_UTILISATEUR.AUTO,
     user: "SERVEUR",
-    status: etat_utilisateur.VALIDE,
+    status: ETAT_UTILISATEUR.VALIDE,
   })
 
 const stat = { validated: 0, notFound: 0, total: 0 }
