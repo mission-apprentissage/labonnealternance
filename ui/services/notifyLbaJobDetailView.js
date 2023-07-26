@@ -1,10 +1,10 @@
 import axios from "axios"
 
 /**
- * notifie le backend que la page de détail de l'offre a été vue
+ * notifie le backend que la page de détail de l'offre LBA a été ouverte
  * @param {string} jobId
  */
-export const notifyOffreDetailView = async (jobId) => {
+export const notifyLbaJobDetailView = async (jobId) => {
   const url = `/api/v1/jobs/matcha/${jobId}/stats/view-details`
   const response = await axios.post(url)
   if (response.status !== 200) {
