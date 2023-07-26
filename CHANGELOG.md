@@ -1,3 +1,10 @@
+# [1.58.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.57.4...v1.58.0) (2023-07-26)
+
+
+### Features
+
+* optimisation process vie aggregate ([#514](https://github.com/mission-apprentissage/labonnealternance/issues/514)) ([12b6c94](https://github.com/mission-apprentissage/labonnealternance/commit/12b6c94ed8d5b46cd8b034228e64fed38d5411ad))
+
 ## [1.57.4](https://github.com/mission-apprentissage/labonnealternance/compare/v1.57.3...v1.57.4) (2023-07-25)
 
 
