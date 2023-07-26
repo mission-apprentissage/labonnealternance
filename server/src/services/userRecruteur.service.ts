@@ -53,7 +53,13 @@ export const createUser = async (values) => {
       const [key] = randomUUID().split("-")
       scope = `cfa-${key}`
     } else {
-      scope = `etp-${values.establishment_raison_sociale.toLowerCase().replace(/ /g, "-")}`
+      let key
+      if (values?.establishment_raison_sociale) {
+        key = values.establishment_raison_sociale.toLowerCase().replace(/ /g, "-")
+      } else {
+        key = randomUUID().split("-")[0]
+      }
+      scope = `etp-${key}`
     }
   }
 
