@@ -15,7 +15,7 @@ const Formulaire = ({ submitForm }) => {
   const location = useLocation()
   const { widget } = useContext(WidgetContext)
 
-  const { type, informationSiret } = location.state ?? {}
+  const { type, informationSiret, origin } = location.state ?? {}
   const { email = "", opco = "" } = informationSiret ?? {}
   const shouldSelectOpco = type === AUTHTYPE.ENTREPRISE && !opco
   const informationEntreprise = { ...informationSiret, type }
@@ -29,6 +29,7 @@ const Formulaire = ({ submitForm }) => {
         first_name: "",
         phone: "",
         email,
+        origin: origin ?? "matcha",
       }}
       validationSchema={Yup.object().shape({
         last_name: Yup.string().required("champ obligatoire"),
