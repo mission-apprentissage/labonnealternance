@@ -1,3 +1,10 @@
+# [1.59.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.58.0...v1.59.0) (2023-07-26)
+
+
+### Features
+
+* déplacement services, onglet partenaires, compression images ([#486](https://github.com/mission-apprentissage/labonnealternance/issues/486)) ([ad12478](https://github.com/mission-apprentissage/labonnealternance/commit/ad12478232025b66f900ed1c71e1d5acb0785677))
+
 # [1.58.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.57.4...v1.58.0) (2023-07-26)
 
 
