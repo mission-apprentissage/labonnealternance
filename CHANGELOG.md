@@ -1,3 +1,10 @@
+## [1.59.3](https://github.com/mission-apprentissage/labonnealternance/compare/v1.59.2...v1.59.3) (2023-07-27)
+
+
+### Bug Fixes
+
+* transmission info origin dans la payload ([#517](https://github.com/mission-apprentissage/labonnealternance/issues/517)) ([f0ccf99](https://github.com/mission-apprentissage/labonnealternance/commit/f0ccf990f30f07bd9eca8fa79d881b205765fe3b))
+
 ## [1.59.2](https://github.com/mission-apprentissage/labonnealternance/compare/v1.59.1...v1.59.2) (2023-07-27)
 
 
