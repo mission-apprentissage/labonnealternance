@@ -1,3 +1,10 @@
+## [1.59.2](https://github.com/mission-apprentissage/labonnealternance/compare/v1.59.1...v1.59.2) (2023-07-27)
+
+
+### Bug Fixes
+
+* gestion cas société sans enseigne ([#518](https://github.com/mission-apprentissage/labonnealternance/issues/518)) ([ba7c8a4](https://github.com/mission-apprentissage/labonnealternance/commit/ba7c8a4717ff5405405b5d6d37af43d921a6f43e))
+
 ## [1.59.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.59.0...v1.59.1) (2023-07-27)
 
 
