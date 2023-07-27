@@ -1,3 +1,10 @@
+## [1.59.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.59.0...v1.59.1) (2023-07-27)
+
+
+### Bug Fixes
+
+* LBAC-1386 positionnement fin enregistrement des stats de visualisation ([#516](https://github.com/mission-apprentissage/labonnealternance/issues/516)) ([2a4c991](https://github.com/mission-apprentissage/labonnealternance/commit/2a4c99128cc53ff59a10c257c27e1cb7ea177209))
+
 # [1.59.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.58.0...v1.59.0) (2023-07-26)
 
 
