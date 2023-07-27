@@ -5,7 +5,6 @@ import { fetchAddressFromCoordinates } from "services/baseAdresse"
 import { logError } from "utils/tools"
 
 import { ParameterContext } from "../../context/ParameterContextProvider"
-import { notifyOffreDetailView } from "../../services/notifyOffreDetailView"
 
 const InitWidgetSearchParameters = ({ setIsLoading, handleSearchSubmit, handleItemLoad }) => {
   const { widgetParameters, itemParameters, setWidgetParameters, setItemParameters } = React.useContext(ParameterContext)
@@ -17,7 +16,6 @@ const InitWidgetSearchParameters = ({ setIsLoading, handleSearchSubmit, handleIt
       launchWidgetSearch({ selectItem: true })
       setWidgetParameters({ ...widgetParameters, applyWidgetParameters: false }) // action one shot
       setItemParameters({ ...itemParameters, applyItemParameters: false }) // action one shot
-      notifyOffreDetailView(itemParameters.parameters.itemId)
     } else if (widgetParameters && widgetParameters.applyWidgetParameters) {
       // launchWidget only
       launchWidgetSearch({ selectItem: false })
@@ -26,7 +24,6 @@ const InitWidgetSearchParameters = ({ setIsLoading, handleSearchSubmit, handleIt
       // launchItem only
       launchItemFetch()
       setItemParameters({ ...itemParameters, applyItemParameters: false }) // action one shot
-      notifyOffreDetailView(itemParameters.parameters.itemId)
     } else {
       setIsLoading(false)
     }
