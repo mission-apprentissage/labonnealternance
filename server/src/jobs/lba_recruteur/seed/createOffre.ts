@@ -3,9 +3,6 @@ import { logger } from "../../../common/logger.js"
 import { Recruiter, Job } from "../../../common/model/index.js"
 
 export const createOffreCollection = async () => {
-  logger.info("Deleting offres collections...")
-  await Job.deleteMany({})
-
   logger.info("Creating offres collections...")
   await Recruiter.aggregate([
     { $unwind: "$jobs" },
