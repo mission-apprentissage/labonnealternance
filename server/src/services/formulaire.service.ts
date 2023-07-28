@@ -1,7 +1,7 @@
 import { pick } from "lodash-es"
 import moment from "moment"
 import { mailTemplate } from "../assets/index.js"
-import { ANNULEE, POURVUE, ETAT_UTILISATEUR } from "./constant.service.js"
+import { ANNULEE, POURVUE, ETAT_UTILISATEUR, ACTIVE } from "./constant.service.js"
 import dayjs from "../common/dayjs.js"
 import { getElasticInstance } from "../common/esClient/index.js"
 import createMailer from "../common/mailer.js"
@@ -102,7 +102,7 @@ export const getJobsFromElasticSearch = async ({
                     },
                     {
                       match: {
-                        "jobs.job_status": "Active",
+                        "jobs.job_status": ACTIVE,
                       },
                     },
                   ],
