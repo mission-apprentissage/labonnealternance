@@ -80,10 +80,12 @@ export default function () {
         }
       }
 
-      if (result.error === "wrong_parameters") {
-        res.status(400)
-      } else {
-        res.status(500)
+      if (result.error) {
+        if (result.error === "wrong_parameters") {
+          res.status(400)
+        } else {
+          res.status(500)
+        }
       }
 
       return res.json(result)
