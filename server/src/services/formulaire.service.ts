@@ -186,7 +186,7 @@ export const getOffreAvecInfoMandataire = async (id: IJobs["_id"]): Promise<IFor
   const result = await getOffre(id)
 
   if (!result) {
-    return result
+    return null
   }
 
   result.jobs = result.jobs.filter((x) => x._id == id)
