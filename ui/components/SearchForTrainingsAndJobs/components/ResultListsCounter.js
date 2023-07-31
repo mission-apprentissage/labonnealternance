@@ -76,7 +76,7 @@ const ResultListsCounter = (props) => {
       </Box>
 
       <Flex direction={["column", "column", "column", "row"]} wrap="wrap" {...filterZoneProperties}>
-        {!trainingLoading && !jobLoading && scopeContext.isJob && scopeContext.isTraining ? (
+        {!trainingLoading && !jobLoading && scopeContext.isJob && scopeContext.isTraining && (
           <>
             <Flex flexFlow="row wrap" justifyContent="flex-end" width="100%">
               <Box flex="1 auto" mr={4} textAlign="left" fontSize="14px" display={["none", "none", "block"]}>
@@ -86,12 +86,10 @@ const ResultListsCounter = (props) => {
                 <FilterButton type="all" count={jobCount + trainingCount} isActive={activeFilter === "all"} handleFilterButtonClicked={filterButtonClicked} />
                 <FilterButton type="jobs" count={jobCount - partnerJobCount} isActive={activeFilter === "jobs"} handleFilterButtonClicked={filterButtonClicked} />
                 <FilterButton type="trainings" count={trainingCount} isActive={activeFilter === "trainings"} handleFilterButtonClicked={filterButtonClicked} />
-                <FilterButton type="duo" count={partnerJobCount} isActive={activeFilter === "duo"} handleFilterButtonClicked={filterButtonClicked} />
+                {!!partnerJobCount && <FilterButton type="duo" count={partnerJobCount} isActive={activeFilter === "duo"} handleFilterButtonClicked={filterButtonClicked} />}
               </Flex>
             </Flex>
           </>
-        ) : (
-          ""
         )}
       </Flex>
     </Box>
