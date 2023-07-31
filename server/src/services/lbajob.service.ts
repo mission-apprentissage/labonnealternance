@@ -5,7 +5,7 @@ import { filterJobsByOpco } from "./opco.service.js"
 
 const coordinatesOfFrance = [2.213749, 46.227638]
 
-import { NIVEAUX_POUR_LBA } from "./constant.service.js"
+import { NIVEAUX_POUR_LBA, ACTIVE } from "./constant.service.js"
 import { roundDistance } from "../common/geolib.js"
 import { matchaMock, matchaMockMandataire, matchasMock } from "../mocks/matchas-mock.js"
 import { getOffreAvecInfoMandataire, getJobsFromElasticSearch, incrementLbaJobViewCount } from "./formulaire.service.js"
@@ -136,6 +136,14 @@ export const getLbaJobById = async ({ id, caller }: { id: string; caller: string
       rawJob = matchaMockMandataire._source
     } else {
       rawJob = await getOffreAvecInfoMandataire(id)
+    }
+
+    if (!rawJob) {
+      return { error: "not_found" }
+    }
+
+    if (rawJob.status !== "Actif" || rawJob.jobs[0].job_status !== ACTIVE) {
+      return { error: "expired_job" }
     }
 
     const applicationCountByJob = await getApplicationByJobCount([id])

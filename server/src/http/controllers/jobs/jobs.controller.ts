@@ -528,12 +528,23 @@ export class JobsController extends Controller {
     })
 
     if ("error" in result) {
-      if (result.error === "wrong_parameters") {
-        this.setStatus(400)
-      } else if (result.error === "not_found") {
-        this.setStatus(404)
-      } else {
-        this.setStatus(result.status || 500)
+      switch (result.error) {
+        case "wrong_parameters": {
+          this.setStatus(400)
+          break
+        }
+        case "not_found": {
+          this.setStatus(404)
+          break
+        }
+        case "expired_job": {
+          this.setStatus(419)
+          break
+        }
+        default: {
+          this.setStatus(result.status || 500)
+          break
+        }
       }
     }
 
