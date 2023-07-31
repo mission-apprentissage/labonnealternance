@@ -1,3 +1,10 @@
+# [1.60.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.59.3...v1.60.0) (2023-07-31)
+
+
+### Features
+
+* inutile ([#521](https://github.com/mission-apprentissage/labonnealternance/issues/521)) ([7f06585](https://github.com/mission-apprentissage/labonnealternance/commit/7f0658568bb1da8e5435a2bc9fcfa08217935452))
+
 ## [1.59.3](https://github.com/mission-apprentissage/labonnealternance/compare/v1.59.2...v1.59.3) (2023-07-27)
 
 
