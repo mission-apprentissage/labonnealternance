@@ -14,7 +14,7 @@ import { env } from "../config/config"
 
 export default function LaBonneAlternance({ Component, pageProps }) {
   useEffect(() => {
-    init({ url: process.env.NEXT_PUBLIC_LBA_MATOMO_URL, siteId: process.env.NEXT_PUBLIC_LBA_MATOMO_SITE_ID })
+    init({ url: process.env.NEXT_PUBLIC_LBA_MATOMO_URL, siteId: process.env.NEXT_PUBLIC_LBA_MATOMO_SITE_ID, jsTrackerFile: process.env.NEXT_PUBLIC_LBA_MATOMO_TRACKER_JS })
   })
 
   return (
