@@ -1,3 +1,10 @@
+# [1.61.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.60.0...v1.61.0) (2023-07-31)
+
+
+### Features
+
+* masquage de l'onglet parternariats lorsqu'il n'y en a pas ([#522](https://github.com/mission-apprentissage/labonnealternance/issues/522)) ([41246d9](https://github.com/mission-apprentissage/labonnealternance/commit/41246d92ee33d550e790f86d72f288cb6e3f960f))
+
 # [1.60.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.59.3...v1.60.0) (2023-07-31)
 
 
