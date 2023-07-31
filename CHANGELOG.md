@@ -1,3 +1,11 @@
+## [1.61.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.61.0...v1.61.1) (2023-07-31)
+
+
+### Bug Fixes
+
+* LBAC-1354 pas de chargement de détail d'offre lba inactive ([#519](https://github.com/mission-apprentissage/labonnealternance/issues/519)) ([131ef09](https://github.com/mission-apprentissage/labonnealternance/commit/131ef0963d8ade7be4b38d34da093bb024cdff60))
+* restauration code retour success à 200 ([#520](https://github.com/mission-apprentissage/labonnealternance/issues/520)) ([70af608](https://github.com/mission-apprentissage/labonnealternance/commit/70af608b548e52d1c74302314c4c39822dbc1cd2))
+
 # [1.61.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.60.0...v1.61.0) (2023-07-31)
 
 
