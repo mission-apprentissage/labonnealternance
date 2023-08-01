@@ -3,6 +3,7 @@ import { oleoduc, transformData, writeData, filterData } from "oleoduc"
 import { logger } from "../../common/logger.js"
 import { parseCsv } from "../../common/utils/fileUtils.js"
 import { ReferentielOnisep } from "../../common/model/index.js"
+import dayjs from "../../common/dayjs.js"
 
 type TCsvRow = {
   "ID formation MA": string
@@ -20,6 +21,7 @@ type TCsvRow = {
 export const importReferentielOnisep = async () => {
   logger.info("Cron #importReferentielOnisep started.")
 
+  // Large file of ~50k lines
   const { data } = await axios.get("https://data.lheo.org/export/csv/relations/widget-mna-ideo/widget_mna_ideo", {
     maxContentLength: Infinity,
     responseType: "stream",
@@ -35,6 +37,16 @@ export const importReferentielOnisep = async () => {
     })),
     writeData((transformedData) => ReferentielOnisep.create(transformedData), { parallel: 50 })
   )
+
+  const currentDay = dayjs().format("YYYY-MM-DD")
+
+  const createdRowCount = await ReferentielOnisep.count({ created_at: currentDay })
+
+  // If rows have been created today, we delete old entries
+  if (createdRowCount) {
+    // Deletes old entries
+    await ReferentielOnisep.deleteMany({ created_at: { $ne: currentDay } })
+  }
 
   logger.info("Cron #importReferentielOnisep done.")
 }

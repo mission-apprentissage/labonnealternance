@@ -12,6 +12,11 @@ export const referentielOnisepSchema = new Schema<IReferentielOnisep>({
     required: true,
     description: "Clé ministère educatif",
   },
+  created_at: {
+    type: Date,
+    default: Date.now,
+    description: "Date de création",
+  },
 })
 
 export default model<IReferentielOnisep>("referentielOnisep", referentielOnisepSchema)
