@@ -26,28 +26,27 @@ export const importReferentielOnisep = async () => {
   const stats = {
     csvRows: 0,
     minCsvRowsThreshold: 10000,
-    beforeDatabaseRows: await ReferentielOnisep.count({}),
-    afterDatabaseRows: 0,
+    beforeImportationDatabaseRows: await ReferentielOnisep.estimatedDocumentCount({}),
+    afterImportationDatabaseRows: 0,
     filePath: "./widget_mna_ideo.csv",
   }
 
   // Large file of ~50k lines
   const { data } = await axios.get("https://data.lheo.org/export/csv/relations/widget-mna-ideo/widget_mna_ideo", {
     maxContentLength: Infinity,
-    responseType: "stream",
   })
+
+  // Save file locally
+  await writeFile(stats.filePath, data, { encoding: "utf-8" })
 
   // Count number of formation before import
   await pipeline(
-    data,
+    createReadStream(stats.filePath, { encoding: "utf-8" }),
     parseCsv(),
     transformData(() => {
       stats.csvRows += 1
     })
   )
-
-  // Save file locally
-  await writeFile(stats.filePath, data, { encoding: "utf-8" })
 
   // If there a too few formations, it's probably a bug, we stop the process and send a Slack notification
   if (stats.csvRows < stats.minCsvRowsThreshold) {
@@ -74,7 +73,7 @@ export const importReferentielOnisep = async () => {
     writeData((transformedData) => ReferentielOnisep.create(transformedData), { parallel: 50 })
   )
 
-  stats.afterDatabaseRows = await ReferentielOnisep.count({})
+  stats.afterDatabaseRows = await ReferentielOnisep.estimatedDocumentCount({})
 
   logger.info("Cron #importReferentielOnisep done.", stats)
 }
