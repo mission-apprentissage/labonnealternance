@@ -73,7 +73,7 @@ export const importReferentielOnisep = async () => {
     writeData((transformedData) => ReferentielOnisep.create(transformedData), { parallel: 50 })
   )
 
-  stats.afterDatabaseRows = await ReferentielOnisep.estimatedDocumentCount({})
+  stats.afterImportationDatabaseRows = await ReferentielOnisep.estimatedDocumentCount({})
 
   logger.info("Cron #importReferentielOnisep done.", stats)
 }
