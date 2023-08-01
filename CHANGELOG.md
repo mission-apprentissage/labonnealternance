@@ -1,3 +1,10 @@
+# [1.62.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.61.1...v1.62.0) (2023-08-01)
+
+
+### Features
+
+* Lbac 1350 automatiser la r cup ration hebdomadaire du mapping onisep cl me ([#525](https://github.com/mission-apprentissage/labonnealternance/issues/525)) ([5182d00](https://github.com/mission-apprentissage/labonnealternance/commit/5182d00838ae0e96398fbe1a6a58ac237e92f23f))
+
 ## [1.61.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.61.0...v1.61.1) (2023-07-31)
 
 
