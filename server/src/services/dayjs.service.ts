@@ -21,32 +21,6 @@ dayjs.extend(advancedFormat)
 dayjs.extend(isYesterday)
 dayjs.extend(localizedFormat)
 
-/**
- * @description Formats date.
- * @param {string} date
- * @returns {string|void}
- */
-export const formatDate = (date) => {
-  if (!date) {
-    return
-  }
-
-  return dayjs.tz(date, "Europe/Paris").format("DD/MM/YYYY")
-}
-
-/**
- * @description Formats date.
- * @param {string} date
- * @returns {string|void}
- */
-export const formatDatetime = (date) => {
-  if (!date) {
-    return
-  }
-
-  return dayjs.tz(date, "Europe/Paris").format("DD/MM/YYYY HH:mm:ss")
-}
-
 export type TDayjs = dayjs.Dayjs
 
 export default dayjs
