@@ -18,7 +18,7 @@ type TCsvRow = {
 }
 
 /**
- * @description Gets Catalogue etablissments informations and insert in etablissement collection.
+ * @description Retrieve and save un database ONISEP mapping.
  * @returns {Promise<void>}
  */
 export const importReferentielOnisep = async () => {
