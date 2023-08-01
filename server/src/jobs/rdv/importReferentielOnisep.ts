@@ -50,7 +50,7 @@ export const importReferentielOnisep = async () => {
     return
   }
 
-  await ReferentielOnisep.deleteMany()
+  await ReferentielOnisep.deleteMany({})
 
   await oleoduc(
     data,
