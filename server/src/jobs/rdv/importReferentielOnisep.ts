@@ -1,9 +1,10 @@
 import axios from "axios"
+import { pipeline } from "stream/promises"
 import { oleoduc, transformData, writeData, filterData } from "oleoduc"
 import { logger } from "../../common/logger.js"
 import { parseCsv } from "../../common/utils/fileUtils.js"
 import { ReferentielOnisep } from "../../common/model/index.js"
-import dayjs from "../../common/dayjs.js"
+import { notifyToSlack } from "../../common/utils/slackUtils.js"
 
 type TCsvRow = {
   "ID formation MA": string
@@ -27,6 +28,28 @@ export const importReferentielOnisep = async () => {
     responseType: "stream",
   })
 
+  // Check if the file is too light
+  const minCsvRowsThreshold = 10000
+  let numberOfRows = 0
+  await pipeline(
+    data,
+    parseCsv(),
+    transformData(() => (numberOfRows += 1))
+  )
+
+  logger.info("Number of formations in csv file", { numberOfRows, minCsvRowsThreshold })
+
+  if (numberOfRows < minCsvRowsThreshold) {
+    await notifyToSlack({
+      subject: "IMPORT ONISEP MAPPING (id_action_ideo2 > cle_ministere_educatif)",
+      message: `Import du mapping Onisep avorté car le fichier ne comporte pas de formations (suspicions de bug). ${numberOfRows} formations / ${minCsvRowsThreshold} minimum attendu`,
+      error: true,
+    })
+    return
+  }
+
+  await ReferentielOnisep.deleteMany()
+
   await oleoduc(
     data,
     parseCsv(),
@@ -37,16 +60,6 @@ export const importReferentielOnisep = async () => {
     })),
     writeData((transformedData) => ReferentielOnisep.create(transformedData), { parallel: 50 })
   )
-
-  const currentDay = dayjs().format("YYYY-MM-DD")
-
-  const createdRowCount = await ReferentielOnisep.count({ created_at: currentDay })
-
-  // If rows have been created today, we delete old entries
-  if (createdRowCount) {
-    // Deletes old entries
-    await ReferentielOnisep.deleteMany({ created_at: { $ne: currentDay } })
-  }
 
   logger.info("Cron #importReferentielOnisep done.")
 }
