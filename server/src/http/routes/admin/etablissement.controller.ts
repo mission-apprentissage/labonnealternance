@@ -10,7 +10,7 @@ import { tryCatch } from "../../middlewares/tryCatchMiddleware.js"
 /**
  * @description Etablissement Router.
  */
-export default ({ etablissements, mailer }) => {
+export default ({ etablissements }) => {
   const router = express.Router()
 
   /**

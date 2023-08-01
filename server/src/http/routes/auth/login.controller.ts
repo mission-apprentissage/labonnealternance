@@ -14,6 +14,7 @@ import { IUserRecruteur } from "../../../common/model/schema/userRecruteur/userR
 import { getUser, registerUser } from "../../../services/userRecruteur.service.js"
 import * as users from "../../../services/user.service.js"
 import { getValidationUrl } from "../../../services/etablissement.service.js"
+import mailer from "../../../services/mailer.service.js"
 
 const checkToken = () => {
   passport.use(
@@ -39,7 +40,7 @@ const checkToken = () => {
   return passport.authenticate("jwt", { session: false, failWithError: true })
 }
 
-export default ({ mailer }) => {
+export default () => {
   const router = express.Router() // eslint-disable-line new-cap
   passport.use(
     new LocalStrategy(

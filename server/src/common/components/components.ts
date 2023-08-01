@@ -1,5 +1,4 @@
 // @ts-nocheck
-import createMailer from "../mailer.js"
 import { connectToMongo } from "../mongodb.js"
 import createEtablissements from "./etablissement.js"
 
@@ -8,7 +7,6 @@ export default async function (options = {}) {
 
   return {
     db: options.db || (await connectToMongo()).db,
-    mailer: options.mailer || createMailer(),
     etablissements,
   }
 }

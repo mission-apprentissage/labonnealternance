@@ -4,7 +4,7 @@ import { mailTemplate } from "../assets/index.js"
 import { ANNULEE, POURVUE, ETAT_UTILISATEUR, ACTIVE } from "./constant.service.js"
 import dayjs from "../common/dayjs.js"
 import { getElasticInstance } from "../common/esClient/index.js"
-import createMailer from "../common/mailer.js"
+import mailer from "./mailer.service.js"
 import { Recruiter, UnsubscribeOF } from "../common/model/index.js"
 import { IRecruiter } from "../common/model/schema/recruiter/recruiter.types.js"
 import { IJobs } from "../common/model/schema/jobs/jobs.types.js"
@@ -19,7 +19,6 @@ import { getUser, getUserValidationState } from "./userRecruteur.service.js"
 import { ILbaJobEsResult } from "./lbajob.service.types.js"
 
 const esClient = getElasticInstance()
-const mailer = await createMailer()
 
 interface IFormulaireExtended extends IRecruiter {
   entreprise_localite: string

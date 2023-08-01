@@ -11,6 +11,7 @@ import config from "../../config.js"
 import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
 import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service.js"
 import * as users from "../../services/user.service.js"
+import mailer from "../../services/mailer.service.js"
 
 const userRequestSchema = Joi.object({
   firstname: Joi.string().required(),
@@ -31,7 +32,7 @@ const appointmentReplySchema = Joi.object({
   cfa_message_to_applicant: Joi.string().allow("").optional(),
 })
 
-export default ({ mailer, etablissements }) => {
+export default ({ etablissements }) => {
   const router = express.Router()
 
   router.post(
