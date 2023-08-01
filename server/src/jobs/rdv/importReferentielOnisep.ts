@@ -1,5 +1,7 @@
 import axios from "axios"
 import { pipeline } from "stream/promises"
+import { createReadStream } from "node:fs"
+import { writeFile } from "node:fs/promises"
 import { oleoduc, transformData, writeData, filterData } from "oleoduc"
 import { logger } from "../../common/logger.js"
 import { parseCsv } from "../../common/utils/fileUtils.js"
@@ -21,6 +23,13 @@ type TCsvRow = {
  */
 export const importReferentielOnisep = async () => {
   logger.info("Cron #importReferentielOnisep started.")
+  const stats = {
+    csvRows: 0,
+    minCsvRowsThreshold: 10000,
+    beforeDatabaseRows: await ReferentielOnisep.count({}),
+    afterDatabaseRows: 0,
+    filePath: "./widget_mna_ideo.csv",
+  }
 
   // Large file of ~50k lines
   const { data } = await axios.get("https://data.lheo.org/export/csv/relations/widget-mna-ideo/widget_mna_ideo", {
@@ -28,23 +37,23 @@ export const importReferentielOnisep = async () => {
     responseType: "stream",
   })
 
-  // Check if the file is too light
-  const minCsvRowsThreshold = 10000
-  let numberOfRows = 0
+  // Count number of formation before import
   await pipeline(
     data,
     parseCsv(),
     transformData(() => {
-      numberOfRows += 1
+      stats.csvRows += 1
     })
   )
 
-  logger.info("Number of formations in csv file", { numberOfRows, minCsvRowsThreshold })
+  // Save file locally
+  await writeFile(stats.filePath, data, { encoding: "utf-8" })
 
-  if (numberOfRows < minCsvRowsThreshold) {
+  // If there a too few formations, it's probably a bug, we stop the process and send a Slack notification
+  if (stats.csvRows < stats.minCsvRowsThreshold) {
     await notifyToSlack({
       subject: "IMPORT ONISEP MAPPING (id_action_ideo2 > cle_ministere_educatif)",
-      message: `Import du mapping Onisep avorté car le fichier ne comporte pas de formations (suspicions de bug). ${numberOfRows} formations / ${minCsvRowsThreshold} minimum attendu`,
+      message: `Import du mapping Onisep avorté car le fichier ne comporte pas de formations (suspicions de bug). ${stats.csvRows} formations / ${stats.minCsvRowsThreshold} minimum attendu`,
       error: true,
     })
     return
@@ -53,15 +62,19 @@ export const importReferentielOnisep = async () => {
   await ReferentielOnisep.deleteMany({})
 
   await oleoduc(
-    data,
+    createReadStream(stats.filePath, { encoding: "utf-8" }),
     parseCsv(),
     filterData((row: TCsvRow) => row["ID action IDEO2"] && row["Clé ministère éducatif MA"]),
-    transformData((row: TCsvRow) => ({
-      id_action_ideo2: row["ID action IDEO2"],
-      cle_ministere_educatif: row["Clé ministère éducatif MA"],
-    })),
+    transformData((row: TCsvRow) => {
+      return {
+        id_action_ideo2: row["ID action IDEO2"],
+        cle_ministere_educatif: row["Clé ministère éducatif MA"],
+      }
+    }),
     writeData((transformedData) => ReferentielOnisep.create(transformedData), { parallel: 50 })
   )
 
-  logger.info("Cron #importReferentielOnisep done.", { numberOfRows })
+  stats.afterDatabaseRows = await ReferentielOnisep.count({})
+
+  logger.info("Cron #importReferentielOnisep done.", stats)
 }
