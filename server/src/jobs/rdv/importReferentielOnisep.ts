@@ -34,7 +34,9 @@ export const importReferentielOnisep = async () => {
   await pipeline(
     data,
     parseCsv(),
-    transformData(() => (numberOfRows += 1))
+    transformData(() => {
+      numberOfRows += 1
+    })
   )
 
   logger.info("Number of formations in csv file", { numberOfRows, minCsvRowsThreshold })
@@ -61,5 +63,5 @@ export const importReferentielOnisep = async () => {
     writeData((transformedData) => ReferentielOnisep.create(transformedData), { parallel: 50 })
   )
 
-  logger.info("Cron #importReferentielOnisep done.")
+  logger.info("Cron #importReferentielOnisep done.", { numberOfRows })
 }
