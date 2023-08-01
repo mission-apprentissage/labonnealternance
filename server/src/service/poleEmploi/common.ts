@@ -1,5 +1,5 @@
 import axios, { AxiosRequestHeaders } from "axios"
-import dayjs from "dayjs"
+import dayjs from "../../services/dayjs.service.js"
 import config from "../../config.js"
 
 const accessTokenEndpoint = "https://entreprise.pole-emploi.fr/connexion/oauth2/access_token?realm=%2Fpartenaire"

@@ -18,7 +18,7 @@ import {
   provideOffre,
 } from "../../../services/formulaire.service.js"
 import { IJobs } from "../../../common/model/schema/jobs/jobs.types.js"
-import dayjs from "../../../common/dayjs.js"
+import dayjs from "../../../services/dayjs.service.js"
 import { getAppellationDetailsFromAPI, getRomeDetailsFromAPI } from "../../../services/rome.service.js"
 import { getOffre } from "../../../services/formulaire.service.js"
 import { getNearEtablissementsFromRomes } from "../../../services/catalogue.service.js"

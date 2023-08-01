@@ -1,4 +1,4 @@
-import dayjs from "../../../../common/dayjs.js"
+import dayjs from "../../../../services/dayjs.service.js"
 import { logger } from "../../../../common/logger.js"
 import { UserRecruteur } from "../../../../common/model/index.js"
 import { asyncForEach } from "../../../../common/utils/asyncUtils.js"

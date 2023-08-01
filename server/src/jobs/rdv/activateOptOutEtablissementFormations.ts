@@ -3,7 +3,7 @@ import { mailTemplate } from "../../assets/index.js"
 import { logger } from "../../common/logger.js"
 import { mailType } from "../../common/model/constants/etablissement.js"
 import { referrers } from "../../common/model/constants/referrers.js"
-import { dayjs } from "../../common/utils/dayjs.js"
+import dayjs from "../../services/dayjs.service.js"
 import config from "../../config.js"
 import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service.js"
 
