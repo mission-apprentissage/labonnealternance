@@ -32,38 +32,38 @@ const getSomePeJobs = async ({ romes, insee, radius, lat, long, caller, diploma,
     } else break
   }
 
-  if (jobs?.result !== "error") {
-    jobs = transformPeJobsForIdea({ jobs, radius: currentRadius, lat, long, caller })
+  if (jobs?.result == "error") {
+    return jobs
   }
 
+  jobs = transformPeJobsForIdea({ jobs, radius: currentRadius, lat, long, caller })
+
   // tri du résultat fusionné sur le critère de poids descendant
-  if (jobs.results) {
-    jobs.results.sort((a, b) => {
+  if (jobs) {
+    jobs.sort((a, b) => {
       return b.place.distance - a.place.distance
     })
   }
 
   // filtrage sur l'opco
   if (opco || opcoUrl) {
-    jobs.results = await filterJobsByOpco({ opco, opcoUrl, jobs: jobs.results })
+    jobs = await filterJobsByOpco({ opco, opcoUrl, jobs })
   }
 
   // suppression du siret pour les appels par API. On ne remonte le siret que dans le cadre du front LBA.
   if (caller) {
     // on ne remonte le siret que dans le cadre du front LBA. Cette info n'est pas remontée par API
-    jobs.results.forEach((job, idx) => {
-      jobs.results[idx].company.siret = null
+    jobs.forEach((job, idx) => {
+      jobs[idx].company.siret = null
     })
   }
 
-  return jobs
+  return { results: jobs }
 }
 
 // update du contenu avec des résultats pertinents par rapport au rayon
 const transformPeJobsForIdea = ({ jobs, radius, lat, long, caller }) => {
-  const resultJobs: { results: PEJob[] } = {
-    results: [],
-  }
+  const resultJobs: PEJob[] = []
 
   if (jobs.resultats && jobs.resultats.length) {
     for (let i = 0; i < jobs.resultats.length; ++i) {
@@ -71,7 +71,7 @@ const transformPeJobsForIdea = ({ jobs, radius, lat, long, caller }) => {
 
       if (job.place.distance < getRoundedRadius(radius)) {
         if (!job?.company?.name || blackListedCompanies.indexOf(job.company.name.toLowerCase()) < 0) {
-          resultJobs.results.push(job)
+          resultJobs.push(job)
         }
       }
     }
@@ -80,7 +80,7 @@ const transformPeJobsForIdea = ({ jobs, radius, lat, long, caller }) => {
   return resultJobs
 }
 
-// Adaptation au modèle Idea et conservation des seules infos utilisées des offres
+// Adaptation au modèle LBA et conservation des seules infos utilisées des offres
 const transformPeJobForIdea = ({ job, lat = null, long = null }): PEJob => {
   const resultJob = itemModel("peJob")
 
