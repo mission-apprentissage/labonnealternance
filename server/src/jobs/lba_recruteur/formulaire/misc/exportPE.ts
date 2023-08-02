@@ -207,11 +207,8 @@ export const exportPE = async ({ db }): Promise<void> => {
   const csvPath = new URL("./exportPE.csv", import.meta.url)
   const buffer = []
 
-  const [lowerLimit, upperLimit] = [dayjs().subtract(90, "days").toDate(), dayjs().toDate()]
-  const offres = await db
-    .collection("jobs")
-    .find({ job_creation_date: { $gt: lowerLimit, $lt: upperLimit } })
-    .toArray()
+  // Retrieve only active offers
+  const offres = await db.collection("jobs").find({ job_status: "Active", recruiterStatus: "Actif" }).toArray()
 
   logger.info("get info from user...")
   await asyncForEach(offres, async (offre) => {
