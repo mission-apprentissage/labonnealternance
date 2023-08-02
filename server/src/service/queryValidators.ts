@@ -1,7 +1,7 @@
 import { regionCodeToDepartmentList } from "../common/utils/regionInseeCodes.js"
 import { isOriginLocal } from "../common/utils/isOriginLocal.js"
 
-const validateRomes = (romes: string | null | undefined, error_messages: string[], romeLimit = 15) => {
+const validateRomes = (romes: string | null | undefined, error_messages: string[], romeLimit = 20) => {
   // codes ROME : romes
   if (!romes) error_messages.push("romes : Rome codes are missing. At least 1.")
   else if (romes.split(",").length > romeLimit) error_messages.push(`romes : Too many rome codes. Maximum is ${romeLimit}.`)
@@ -9,7 +9,7 @@ const validateRomes = (romes: string | null | undefined, error_messages: string[
     error_messages.push("romes : Badly formatted rome codes. Rome code must be one letter followed by 4 digit number. ex : A1234")
 }
 
-const validateRomeOrDomain = ({ romes, romeDomain, romeLimit = 15, optional }, error_messages) => {
+const validateRomeOrDomain = ({ romes, romeDomain, romeLimit = 20, optional }, error_messages) => {
   // codes ROME : romes
   if (!optional && !romes && !romeDomain) {
     error_messages.push("romes, romeDomain : You must define at least 1 rome code OR a single romeDomain.")
@@ -25,7 +25,7 @@ const validateRomeOrDomain = ({ romes, romeDomain, romeLimit = 15, optional }, e
   }
 }
 
-const validateOptionalRomeOrDomain = ({ romes, romeDomain, romeLimit = 15 }, error_messages) => {
+const validateOptionalRomeOrDomain = ({ romes, romeDomain, romeLimit = 20 }, error_messages) => {
   validateRomeOrDomain({ romes, romeDomain, romeLimit, optional: true }, error_messages)
 }
 
