@@ -15,85 +15,16 @@ import { getAccessToken, getRoundedRadius, peApiHeaders } from "./common.js"
 const blackListedCompanies = ["iscod", "oktogone", "institut europeen f 2i"]
 
 const getSomePeJobs = async ({ romes, insee, radius, lat, long, caller, diploma, opco, opcoUrl, api }) => {
-  // la liste des romes peut être supérieure au maximum de trois autorisés par l'api offre de PE
-  // on segmente les romes en blocs de max 3 et lance autant d'appels parallèles que nécessaires
-  const chunkedRomes = []
-  let i = 0,
-    k = 0
-  while (i < romes.length) {
-    chunkedRomes[k] = romes.slice(i, i + 3).join(",")
-    i += 3
-    ++k
-  }
-
-  const jobs = await Promise.all(
-    chunkedRomes.map(async (chunk) => {
-      const res = await getSomePeJobsForChunkedRomes({
-        romes: chunk,
-        insee,
-        radius,
-        lat,
-        long,
-        caller,
-        diploma,
-        api,
-      })
-      return res
-    })
-  )
-
-  // à ce stade nous avons plusieurs résultats de l'appel à l'api offres
-  // il faut fusionner les résultats des différents appels
-  for (let j = 0; j < jobs.length; ++j) {
-    if (j !== 0) {
-      if (!jobs[0].results) {
-        // si une erreur sur le premier bloc on le remplace par un bloc subséquent (qui peut être en erreur également)
-        jobs[0] = jobs[j]
-      } else {
-        if (jobs[j].results) {
-          // si aucune erreur sur le premier bloc et le bloc en court on procède à la concaténation des deux
-          jobs[0].results = jobs[0].results.concat(jobs[j].results)
-        }
-        // else le bloc courant est en erreur on ne fait rien
-      }
-    }
-  }
-
-  // tri du résultat fusionné sur le critère de poids descendant
-  if (jobs[0].results) {
-    jobs[0].results.sort((a, b) => {
-      return b.place.distance - a.place.distance
-    })
-  }
-
-  // filtrage sur l'opco
-  if (opco || opcoUrl) {
-    jobs[0].results = await filterJobsByOpco({ opco, opcoUrl, jobs: jobs[0].results })
-  }
-
-  // suppression du siret pour les appels par API. On ne remonte le siret que dans le cadre du front LBA.
-  if (caller) {
-    // on ne remonte le siret que dans le cadre du front LBA. Cette info n'est pas remontée par API
-    jobs[0].results.forEach((job, idx) => {
-      jobs[0].results[idx].company.siret = null
-    })
-  }
-
-  return jobs[0]
-}
-
-// appel de l'api offres pour un bloc de 1 à 3 romes
-const getSomePeJobsForChunkedRomes = async ({ romes, insee, radius, lat, long, caller, diploma, api }) => {
-  let jobResult: PEResponse | IApiError = null
+  let jobs: PEResponse | IApiError = null
   const currentRadius = radius || 20000
   const jobLimit = 50 //TODO: query params options or default value from properties -> size || 50
 
   let trys = 0
 
   while (trys < 3) {
-    jobResult = await getPeJobs({ romes, insee, radius: currentRadius, jobLimit, caller, diploma, api })
+    jobs = await getPeJobs({ romes, insee, radius: currentRadius, jobLimit, caller, diploma, api })
 
-    if (jobResult.status === 429) {
+    if (jobs.status === 429) {
       console.log("PE jobs api quota exceeded. Retrying : ", trys + 1)
       // trois essais pour gérer les 429 quotas exceeded des apis PE.
       trys++
@@ -101,11 +32,31 @@ const getSomePeJobsForChunkedRomes = async ({ romes, insee, radius, lat, long, c
     } else break
   }
 
-  if (jobResult?.result === "error") {
-    return jobResult
-  } else {
-    return transformPeJobsForIdea({ jobs: jobResult, radius: currentRadius, lat, long, caller })
+  if (jobs?.result !== "error") {
+    jobs = transformPeJobsForIdea({ jobs, radius: currentRadius, lat, long, caller })
   }
+
+  // tri du résultat fusionné sur le critère de poids descendant
+  if (jobs.results) {
+    jobs.results.sort((a, b) => {
+      return b.place.distance - a.place.distance
+    })
+  }
+
+  // filtrage sur l'opco
+  if (opco || opcoUrl) {
+    jobs.results = await filterJobsByOpco({ opco, opcoUrl, jobs: jobs.results })
+  }
+
+  // suppression du siret pour les appels par API. On ne remonte le siret que dans le cadre du front LBA.
+  if (caller) {
+    // on ne remonte le siret que dans le cadre du front LBA. Cette info n'est pas remontée par API
+    jobs.results.forEach((job, idx) => {
+      jobs.results[idx].company.siret = null
+    })
+  }
+
+  return jobs
 }
 
 // update du contenu avec des résultats pertinents par rapport au rayon
@@ -116,7 +67,6 @@ const transformPeJobsForIdea = ({ jobs, radius, lat, long, caller }) => {
 
   if (jobs.resultats && jobs.resultats.length) {
     for (let i = 0; i < jobs.resultats.length; ++i) {
-      //console.log("jobs.resultat : ",jobs.resultats[i]);
       const job = transformPeJobForIdea({ job: jobs.resultats[i], lat, long, caller })
 
       if (job.place.distance < getRoundedRadius(radius)) {
@@ -282,10 +232,8 @@ const getPeJobs = async ({ romes, insee, radius, jobLimit, caller, diploma, api 
 
     const distance = radius || 10
 
-    //console.log("diploma ? ",diploma)
-
     const params = {
-      codeROME: romes,
+      codeROME: romes.join(","),
       commune: codeInsee,
       sort: hasLocation ? 2 : 0, //sort: 0, TODO: remettre sort 0 après expérimentation CBS
       natureContrat: peContratsAlternances,
@@ -309,8 +257,6 @@ const getPeJobs = async ({ romes, insee, radius, jobLimit, caller, diploma, api 
       params,
       headers,
     })
-
-    //throw new Error("boom");
 
     return jobs.data
   } catch (error) {
