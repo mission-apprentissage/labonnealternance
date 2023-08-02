@@ -1,3 +1,10 @@
+## [1.62.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.62.0...v1.62.1) (2023-08-02)
+
+
+### Bug Fixes
+
+* only send active offers to Pole Emploi ([#528](https://github.com/mission-apprentissage/labonnealternance/issues/528)) ([e47d16c](https://github.com/mission-apprentissage/labonnealternance/commit/e47d16c05bd03e2618a47995c5007479ea2d5cbe))
+
 # [1.62.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.61.1...v1.62.0) (2023-08-01)
 
 
