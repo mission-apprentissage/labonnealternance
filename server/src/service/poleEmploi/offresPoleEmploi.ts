@@ -1,6 +1,7 @@
 // @ts-nocheck
 import distance from "@turf/distance"
 import axios from "axios"
+import { setTimeout } from "timers/promises"
 import { NIVEAUX_POUR_OFFRES_PE } from "../../services/constant.service.js"
 import { roundDistance } from "../../common/geolib.js"
 import { IApiError, manageApiError } from "../../common/utils/errorManager.js"
@@ -28,8 +29,10 @@ const getSomePeJobs = async ({ romes, insee, radius, lat, long, caller, diploma,
       console.log("PE jobs api quota exceeded. Retrying : ", trys + 1)
       // trois essais pour gérer les 429 quotas exceeded des apis PE.
       trys++
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-    } else break
+      await setTimeout(1000, "result")
+    } else {
+      break
+    }
   }
 
   if (jobs?.result == "error") {
