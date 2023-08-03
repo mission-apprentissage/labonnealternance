@@ -1,3 +1,10 @@
+# [1.64.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.63.0...v1.64.0) (2023-08-03)
+
+
+### Features
+
+* suppression rappel du titre d'une formation ([ecfea41](https://github.com/mission-apprentissage/labonnealternance/commit/ecfea41837fa637d88b823c9a7bdab5c65a8e9a0))
+
 # [1.63.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.62.1...v1.63.0) (2023-08-03)
 
 
