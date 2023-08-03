@@ -1,7 +1,7 @@
 import express from "express"
-import { deleteFormulaire, getFormulaire, sendCFADelegationMail, updateOffre } from "../../services/formulaire.service.js"
+import { deleteFormulaire, getFormulaire, reactivateRecruiter, sendCFADelegationMail, updateOffre } from "../../services/formulaire.service.js"
 import { mailTemplate } from "../../assets/index.js"
-import { CFA, ENTREPRISE, ETAT_UTILISATEUR } from "../../services/constant.service.js"
+import { CFA, ENTREPRISE, ETAT_UTILISATEUR, JOB_STATUS, RECRUITER_STATUS } from "../../services/constant.service.js"
 import dayjs from "../../services/dayjs.service.js"
 import { Recruiter, UserRecruteur } from "../../common/model/index.js"
 import { createMagicLinkToken } from "../../common/utils/jwtUtils.js"
@@ -111,7 +111,7 @@ export default ({ mailer }) => {
       const history = req.body
       const user = await updateUserValidationHistory(req.params.userId, history)
 
-      // if user is disable, return the user data directly
+      // if user is disabled, return the user data directly
       if (history.status === ETAT_UTILISATEUR.DESACTIVE) {
         return res.json(user)
       }
@@ -124,11 +124,18 @@ export default ({ mailer }) => {
          * - send email to delegation if available
          */
         const userFormulaire = await getFormulaire({ establishment_id: user.establishment_id })
-        const job = Object.assign(userFormulaire.jobs[0], { job_status: "Active", job_expiration_date: dayjs().add(1, "month").format("YYYY-MM-DD") })
-        await updateOffre(job._id, job)
 
-        if (job?.delegations && job?.delegations.length) {
-          await Promise.all(job.delegations.map(async (delegation) => await sendCFADelegationMail(delegation.email, job, userFormulaire, delegation.siret_code)))
+        if (userFormulaire.status === RECRUITER_STATUS.ARCHIVE) {
+          await reactivateRecruiter(user.establishment_id)
+        }
+
+        if (userFormulaire?.jobs?.length) {
+          const job = Object.assign(userFormulaire.jobs[0], { job_status: JOB_STATUS.ACTIVE, job_expiration_date: dayjs().add(1, "month").format("YYYY-MM-DD") })
+          await updateOffre(job._id, job)
+
+          if (job?.delegations && job?.delegations.length) {
+            await Promise.all(job.delegations.map(async (delegation) => await sendCFADelegationMail(delegation.email, job, userFormulaire, delegation.siret_code)))
+          }
         }
       }
 
