@@ -1,5 +1,6 @@
 import { randomUUID } from "crypto"
 import { mongoosePagination, Pagination } from "mongoose-paginate-ts"
+import { RECRUITER_STATUS } from "services/constant.service.js"
 import { getElasticInstance, mongoosastic } from "../../../esClient/index.js"
 import { model, Schema } from "../../../mongodb.js"
 import { jobsSchema } from "../jobs/jobs.schema.js"
@@ -87,8 +88,8 @@ export const recruiterSchema = new Schema<IRecruiter>(
     },
     status: {
       type: String,
-      enum: ["Actif", "Archivé", "En attente de validation"],
-      default: "Actif",
+      enum: [RECRUITER_STATUS.ACTIF, RECRUITER_STATUS.ARCHIVE, RECRUITER_STATUS.EN_ATTENTE_VALIDATION],
+      default: RECRUITER_STATUS.ACTIF,
       description: "Statut du formulaire",
     },
     naf_code: {

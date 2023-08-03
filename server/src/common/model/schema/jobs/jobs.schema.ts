@@ -1,3 +1,4 @@
+import { JOB_STATUS } from "../../../../services/constant.service.js"
 import { model, Schema } from "../../../mongodb.js"
 import { IJobs } from "./jobs.types.js"
 
@@ -62,8 +63,8 @@ export const jobsSchema = new Schema<IJobs>({
   },
   job_status: {
     type: String,
-    default: "Active",
-    enum: ["Active", "Annulée", "Pourvue", "En attente"],
+    default: JOB_STATUS.ACTIVE,
+    enum: [JOB_STATUS.ACTIVE, JOB_STATUS.ANNULEE, JOB_STATUS.POURVUE, JOB_STATUS.EN_ATTENTE],
     description: "Statut de l'offre",
   },
   job_status_comment: {
