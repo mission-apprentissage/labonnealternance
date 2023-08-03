@@ -1,3 +1,10 @@
+# [1.67.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.66.0...v1.67.0) (2023-08-03)
+
+
+### Features
+
+* LBAC-1306 LBAC-1307 adaptation à la nouvelle limite à 20 romes du search PE ([#527](https://github.com/mission-apprentissage/labonnealternance/issues/527)) ([3a0fdbf](https://github.com/mission-apprentissage/labonnealternance/commit/3a0fdbf5c6f8c033d69b59235de8348346b2ade1))
+
 # [1.66.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.65.0...v1.66.0) (2023-08-03)
 
 
