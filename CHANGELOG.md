@@ -1,3 +1,10 @@
+# [1.65.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.64.0...v1.65.0) (2023-08-03)
+
+
+### Features
+
+* AB testing sur accroche home ([5db9088](https://github.com/mission-apprentissage/labonnealternance/commit/5db9088af3015d53a4ad200ca4f030158df856f4))
+
 # [1.64.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.63.0...v1.64.0) (2023-08-03)
 
 
