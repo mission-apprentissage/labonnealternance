@@ -1,3 +1,10 @@
+# [1.63.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.62.1...v1.63.0) (2023-08-03)
+
+
+### Features
+
+* LBAC-1249 rationalisation dayjs ([#524](https://github.com/mission-apprentissage/labonnealternance/issues/524)) ([ec69e05](https://github.com/mission-apprentissage/labonnealternance/commit/ec69e0534c5ef5d21b1145056850a522b6f26b11))
+
 ## [1.62.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.62.0...v1.62.1) (2023-08-02)
 
 
