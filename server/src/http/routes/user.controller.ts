@@ -126,7 +126,18 @@ export default ({ mailer }) => {
         const userFormulaire = await getFormulaire({ establishment_id: user.establishment_id })
 
         if (userFormulaire.status === RECRUITER_STATUS.ARCHIVE) {
+          // le recruiter étant archivé on se contente de le rendre de nouveau Actif
           await reactivateRecruiter(user.establishment_id)
+        } else {
+          // le compte se trouve validé et on procède à l'activation de la première offre et à la notification aux CFAs
+          if (userFormulaire?.jobs?.length) {
+            const job = Object.assign(userFormulaire.jobs[0], { job_status: JOB_STATUS.ACTIVE, job_expiration_date: dayjs().add(1, "month").format("YYYY-MM-DD") })
+            await updateOffre(job._id, job)
+
+            if (job?.delegations && job?.delegations.length) {
+              await Promise.all(job.delegations.map(async (delegation) => await sendCFADelegationMail(delegation.email, job, userFormulaire, delegation.siret_code)))
+            }
+          }
         }
       }
 
