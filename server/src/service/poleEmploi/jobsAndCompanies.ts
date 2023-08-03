@@ -8,7 +8,8 @@ import { jobsQueryValidator } from "./jobsQueryValidator.js"
 import { getSomePeJobs } from "./offresPoleEmploi.js"
 
 export type JobSearchQuery = {
-  romes: string
+  romes?: string
+  rncp?: string
   referer?: string
   caller?: string
   latitude?: string
@@ -53,6 +54,8 @@ const getJobsQuery = async (query: JobSearchQuery) => {
 const getJobsFromApi = async ({ query, api }) => {
   try {
     const sources = !query.sources ? ["lba", "lbb", "offres", "matcha"] : query.sources.split(",")
+
+    const romes = getRomeList(query)
 
     const [peJobs, lbaCompanies, lbbCompanies, matchas] = await Promise.all([
       sources.indexOf("offres") >= 0

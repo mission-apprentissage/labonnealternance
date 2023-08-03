@@ -1,10 +1,11 @@
-import { validateApiSources, validateCaller, validateInsee, validateLatitude, validateLongitude, validateRadius, validateRomes } from "../queryValidators.js"
+import { validateApiSources, validateCaller, validateInsee, validateLatitude, validateLongitude, validateRadius, validateRomesOrRncp } from "../queryValidators.js"
 import { JobSearchQuery } from "./jobsAndCompanies.js"
 
 const jobsQueryValidator = ({
   caller,
   referer,
   romes,
+  rncp,
   latitude,
   longitude,
   insee,
@@ -18,8 +19,8 @@ const jobsQueryValidator = ({
   // présence d'identifiant de la source : caller
   validateCaller({ caller, referer }, error_messages)
 
-  // codes ROME : romes
-  validateRomes(romes, error_messages)
+  // codes ROME  et code RNCP : romes, rncp
+  validateRomesOrRncp(romes, rncp, error_messages)
 
   // coordonnées gps optionnelles : latitude et longitude
   if (latitude || longitude) {
@@ -28,11 +29,11 @@ const jobsQueryValidator = ({
 
     // rayon de recherche : radius
     validateRadius(radius, error_messages)
-  }
 
-  // code INSEE : insee
-  if (caller && (longitude || longitude)) {
-    validateInsee(insee, error_messages)
+    // code INSEE : insee
+    if (caller) {
+      validateInsee(insee, error_messages)
+    }
   }
 
   // source mal formée si présente

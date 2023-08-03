@@ -1,6 +1,25 @@
 import { regionCodeToDepartmentList } from "../common/utils/regionInseeCodes.js"
 import { isOriginLocal } from "../common/utils/isOriginLocal.js"
 
+const validateRncp = (rncp: string | null | undefined, error_messages: string[]) => {
+  if (!/^RNCP\d{2,5}$/.test(rncp)) error_messages.push("rncp : Badly formatted rncp code. RNCP code must 'RNCP' followed by 2 to 5 digit number. ex : RNCP12, RNCP12345 ...")
+}
+
+const validateRomesOrRncp = (romes: string | null | undefined, rncp: string | null | undefined, error_messages: string[], romeLimit = 20) => {
+  // codes ROME : romes
+  if (!romes && !rncp) {
+    error_messages.push("romes or rncp : You must specify at least 1 rome code or a rncp code.")
+  } else if (romes && rncp) {
+    error_messages.push("romes or rncp : You must specify either a rncp code or 1 or more rome codes.")
+  } else if (romes) {
+    if (romes.split(",").length > romeLimit) error_messages.push(`romes : Too many rome codes. Maximum is ${romeLimit}.`)
+    if (!/^[a-zA-Z][0-9]{4}(,[a-zA-Z][0-9]{4})*$/.test(romes))
+      error_messages.push("romes : Badly formatted rome codes. Rome code must be one letter followed by 4 digit number. ex : A1234")
+  } else {
+    validateRncp(rncp, error_messages)
+  }
+}
+
 const validateRomes = (romes: string | null | undefined, error_messages: string[], romeLimit = 20) => {
   // codes ROME : romes
   if (!romes) error_messages.push("romes : Rome codes are missing. At least 1.")
@@ -107,6 +126,7 @@ const validateCaller = ({ caller, referer }, error_messages = []) => {
 export {
   validateRadius,
   validateRomes,
+  validateRomesOrRncp,
   validateRomeOrDomain,
   validateLatitude,
   validateLongitude,
