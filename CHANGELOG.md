@@ -1,3 +1,10 @@
+# [1.66.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.65.0...v1.66.0) (2023-08-03)
+
+
+### Features
+
+* remplacement component mailer par service mailer ([#526](https://github.com/mission-apprentissage/labonnealternance/issues/526)) ([766610e](https://github.com/mission-apprentissage/labonnealternance/commit/766610eb95b6d99b7d6fdbdfcd5f6c02bee1d26b))
+
 # [1.65.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.64.0...v1.65.0) (2023-08-03)
 
 
