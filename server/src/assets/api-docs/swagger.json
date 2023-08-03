@@ -474,7 +474,7 @@
       "in": "query",
       "required": false,
       "type": "string",
-      "description": "Une liste de codes ROME séparés par des virgules correspondant au(x) métier(s) recherché(s). Maximum 9.<br />rome et romeDomain sont incompatibles.<br/><strong>Au moins un des deux doit être renseigné.</strong>",
+      "description": "Une liste de codes ROME séparés par des virgules correspondant au(x) métier(s) recherché(s). Maximum 20.<br />rome et romeDomain sont incompatibles.<br/><strong>Au moins un des deux doit être renseigné.</strong>",
       "example": "F1603,I1308"
     },
 
@@ -528,7 +528,7 @@
       "in": "query",
       "required": false,
       "type": "string",
-      "description": "Une liste de codes ROME séparés par des virgules correspondant au(x) métier(s) recherché(s). Maximum 9.<br />rome et romeDomain sont incompatibles.<br /><strong>Au moins un des deux doit être renseigné dans le cas d'une recherche France entière.</strong>",
+      "description": "Une liste de codes ROME séparés par des virgules correspondant au(x) métier(s) recherché(s). Maximum 20.<br />rome et romeDomain sont incompatibles.<br /><strong>Au moins un des deux doit être renseigné dans le cas d'une recherche France entière.</strong>",
       "example": "F1603,I1308"
     },
 
@@ -828,7 +828,7 @@
             "type": "string"
           },
           "description": "Une liste d'erreurs détaillées. Ex : les erreurs de paramétrage de la requête.",
-          "example": ["romes : Badly formatted rome codes. Rome code must be one letter followed by 4 digit number. ex : A1234", "romes : Too many rome codes. Maximum is 15."]
+          "example": ["romes : Badly formatted rome codes. Rome code must be one letter followed by 4 digit number. ex : A1234", "romes : Too many rome codes. Maximum is 20."]
         }
       }
     },
