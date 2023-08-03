@@ -305,7 +305,7 @@ export default () => {
 
             await mailer.sendEmail({
               to: email,
-              subject: "La bonne alternance — Confirmer votre adresse mail",
+              subject: "Confirmez votre adresse mail",
               template: mailTemplate["mail-confirmation-email"],
               data: {
                 images: {
@@ -336,7 +336,7 @@ export default () => {
 
               await mailer.sendEmail({
                 to: email,
-                subject: "La bonne alternance — Confirmer votre adresse mail",
+                subject: "Confirmez votre adresse mail",
                 template: mailTemplate["mail-confirmation-email"],
                 data: {
                   images: {

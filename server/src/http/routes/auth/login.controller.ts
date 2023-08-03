@@ -98,7 +98,7 @@ export default () => {
 
         await mailer.sendEmail({
           to: email,
-          subject: "La bonne alternance - Confirmez votre adresse email",
+          subject: "Confirmez votre adresse mail",
           template: mailTemplate["mail-confirmation-email"],
           data: {
             images: {
@@ -168,7 +168,7 @@ export default () => {
 
         await mailer.sendEmail({
           to: userEmail,
-          subject: "La bonne alternance - Confirmez votre adresse email",
+          subject: "Confirmez votre adresse mail",
           template: mailTemplate["mail-confirmation-email"],
           data: {
             images: {
@@ -190,7 +190,7 @@ export default () => {
 
       await mailer.sendEmail({
         to: userEmail,
-        subject: "La bonne alternance - Lien de connexion",
+        subject: "Lien de connexion",
         template: mailTemplate["mail-connexion"],
         data: {
           images: {

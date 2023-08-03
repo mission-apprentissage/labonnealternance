@@ -64,7 +64,7 @@ export const relanceFormulaire = async (threshold) => {
 
     await mailer.sendEmail({
       to: contactCFA?.email ?? email,
-      subject: "La bonne alternance - Vos offres vont expirer prochainement",
+      subject: "Vos offres expirent bientôt",
       template: mailTemplate["mail-expiration-offres"],
       data: {
         images: {

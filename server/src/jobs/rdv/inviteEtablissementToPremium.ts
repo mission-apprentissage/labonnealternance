@@ -37,7 +37,7 @@ export const inviteEtablissementToPremium = async ({ etablissements, eligibleTra
     // Invite all etablissements only in production environment
     const { messageId } = await mailer.sendEmail({
       to: etablissement.gestionnaire_email,
-      subject: `Optimisez le sourcing de vos candidats sur Parcoursup !`,
+      subject: `Trouvez et recrutez vos candidats sur Parcoursup !`,
       template: mailTemplate["mail-cfa-premium-invite"],
       data: {
         isParcoursup: true,

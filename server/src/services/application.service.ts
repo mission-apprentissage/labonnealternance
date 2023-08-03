@@ -549,7 +549,7 @@ export const sendNotificationToApplicant = async ({
     case "entretien": {
       mailer.sendEmail({
         to: application.applicant_email,
-        subject: `Réponse positive à votre candidature chez ${application.company_name}`,
+        subject: `Réponse positive de ${application.company_name}`,
         template: getEmailTemplate("mail-candidat-entretien"),
         data: { ...application.toObject(), ...images, email, phone, comment },
       })
@@ -558,7 +558,7 @@ export const sendNotificationToApplicant = async ({
     case "ne_sais_pas": {
       mailer.sendEmail({
         to: application.applicant_email,
-        subject: `Réponse à votre candidature chez ${application.company_name}`,
+        subject: `Réponse de ${application.company_name}`,
         template: getEmailTemplate("mail-candidat-nsp"),
         data: { ...application.toObject(), ...images, email, phone, comment },
       })
@@ -567,7 +567,7 @@ export const sendNotificationToApplicant = async ({
     case "refus": {
       mailer.sendEmail({
         to: application.applicant_email,
-        subject: `Réponse à votre candidature chez ${application.company_name}`,
+        subject: `Réponse négative de ${application.company_name}`,
         template: getEmailTemplate("mail-candidat-refus"),
         data: { ...application.toObject(), ...images, comment },
       })
@@ -640,7 +640,7 @@ export const updateApplicationStatus = async ({ payload }: { payload: any }): Pr
 const notifyHardbounceToApplicant = async ({ application }: { application: IApplication & Document<any, any, IApplication> }): Promise<void> => {
   mailer.sendEmail({
     to: application.applicant_email,
-    subject: `${application.company_name} n'a pas reçu votre candidature sur La bonne alternance`,
+    subject: `Votre candidature n'a pas pu être envoyée à ${application.company_name}`,
     template: getEmailTemplate("mail-candidat-hardbounce"),
     data: { ...application.toObject(), ...images },
   })
@@ -654,7 +654,7 @@ const notifyHardbounceToApplicant = async ({ application }: { application: IAppl
 const warnMatchaTeamAboutBouncedEmail = async ({ application }: { application: IApplication & Document<any, any, IApplication> }): Promise<void> => {
   mailer.sendEmail({
     to: config.transactionalEmail,
-    subject: `${application.company_name} n'a pas reçu votre candidature sur La bonne alternance`,
+    subject: `Votre candidature n'a pas pu être envoyée à ${application.company_name}`,
     template: getEmailTemplate("mail-matcha-hardbounce"),
     data: { ...application.toObject(), ...images },
   })
