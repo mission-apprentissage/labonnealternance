@@ -8,8 +8,9 @@ import { notifyToSlack } from "../../../common/utils/slackUtils.js"
 import config from "../../../config.js"
 import { IRecruiter } from "../../../common/model/schema/recruiter/recruiter.types.js"
 import { IUserRecruteur } from "../../../common/model/schema/userRecruteur/userRecruteur.types.js"
+import mailer from "../../../services/mailer.service.js"
 
-export const relanceFormulaire = async (mailer, threshold) => {
+export const relanceFormulaire = async (threshold) => {
   // number of days to expiration for the reminder email to be sent
 
   const forms = await Recruiter.find({

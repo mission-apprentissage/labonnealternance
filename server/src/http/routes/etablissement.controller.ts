@@ -10,6 +10,7 @@ import config from "../../config.js"
 import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
 import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service.js"
 import * as appointmentService from "../../services/appointment.service.js"
+import mailer from "../../services/mailer.service.js"
 
 const optOutUnsubscribeSchema = Joi.object({
   opt_out_question: Joi.string().optional(),
@@ -22,7 +23,7 @@ const patchEtablissementIdAppointmentIdReadAppointSchema = Joi.object({
 /**
  * @description Etablissement Router.
  */
-export default ({ etablissements, mailer }) => {
+export default ({ etablissements }) => {
   const router = express.Router()
 
   /**

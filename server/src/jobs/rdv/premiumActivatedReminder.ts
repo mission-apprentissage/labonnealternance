@@ -6,12 +6,13 @@ import dayjs from "../../services/dayjs.service.js"
 import config from "../../config.js"
 import { isValidEmail } from "../../common/utils/isValidEmail.js"
 import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service.js"
+import mailer from "../../services/mailer.service.js"
 
 /**
  * @description Send a "Premium" reminder mail.
  * @returns {Promise<void>}
  */
-export const premiumActivatedReminder = async ({ etablissements, mailer }) => {
+export const premiumActivatedReminder = async ({ etablissements }) => {
   logger.info("Cron #premiumActivatedReminder started.")
 
   const [etablissementsActivated, eligibleTrainingsForAppointmentsFound] = await Promise.all([

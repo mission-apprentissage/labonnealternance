@@ -4,13 +4,13 @@ import { UserRecruteur } from "../../../common/model/index.js"
 import { IUserRecruteur } from "../../../common/model/schema/userRecruteur/userRecruteur.types.js"
 import { asyncForEach } from "../../../common/utils/asyncUtils.js"
 import config from "../../../config.js"
+import mailer from "../../../services/mailer.service.js"
 
 /**
  * @description send mail to ocpo with awaiting validation user number
- * @param {*} mailer component
  * @returns {}
  */
-export const relanceOpco = async (mailer) => {
+export const relanceOpco = async () => {
   const userAwaitingValidation = await UserRecruteur.find({
     $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, ETAT_UTILISATEUR.ATTENTE] },
     opco: { $nin: [null, "Opco multiple", "inconnu"] },

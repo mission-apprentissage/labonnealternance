@@ -1,3 +1,4 @@
+import mailer from "../../services/mailer.service.js"
 import { mailTemplate } from "../../assets/index.js"
 import { logger } from "../../common/logger.js"
 import { mailType } from "../../common/model/constants/etablissement.js"
@@ -8,7 +9,7 @@ import config from "../../config.js"
  * @description Invite all "etablissements" to Premium.
  * @returns {Promise<void>}
  */
-export const inviteEtablissementToPremium = async ({ etablissements, mailer, eligibleTrainingsForAppointments }) => {
+export const inviteEtablissementToPremium = async ({ etablissements, eligibleTrainingsForAppointments }) => {
   logger.info("Cron #inviteEtablissementToPremium started.")
 
   const etablissementsToInvite = await etablissements.find({

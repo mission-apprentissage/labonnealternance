@@ -18,6 +18,7 @@ import { getFormulaire, updateOffre } from "../../../../services/formulaire.serv
 import { mailTemplate } from "../../../../assets/index.js"
 import { createMagicLinkToken } from "../../../../common/utils/jwtUtils.js"
 import config from "../../../../config.js"
+import mailer from "../../../../services/mailer.service.js"
 
 const autoValidateUser = async (userId) =>
   await updateUserValidationHistory(userId, {
@@ -28,7 +29,7 @@ const autoValidateUser = async (userId) =>
 
 const stat = { validated: 0, notFound: 0, total: 0 }
 
-export const checkAwaitingCompaniesValidation = async ({ mailer }) => {
+export const checkAwaitingCompaniesValidation = async () => {
   logger.info(`Start update missing validation state for companies...`)
 
   const entreprises = await UserRecruteur.find({ type: "ENTREPRISE", status: { $size: 1 }, "status.status": "EN ATTENTE DE VALIDATION" })

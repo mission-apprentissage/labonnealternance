@@ -1,4 +1,5 @@
 import _ from "lodash-es"
+import mailer from "../../services/mailer.service.js"
 import { mailTemplate } from "../../assets/index.js"
 import { logger } from "../../common/logger.js"
 import { mailType } from "../../common/model/constants/etablissement.js"
@@ -11,7 +12,7 @@ import * as eligibleTrainingsForAppointmentService from "../../services/eligible
  * @description Invite all "etablissements" without opt_mode to opt-out.
  * @returns {Promise<void>}
  */
-export const inviteEtablissementToOptOut = async ({ etablissements, mailer }) => {
+export const inviteEtablissementToOptOut = async ({ etablissements }) => {
   logger.info("Cron #inviteEtablissementToOptOut started.")
 
   // Opt-out etablissement to activate
