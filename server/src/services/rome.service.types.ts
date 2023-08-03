@@ -1,4 +1,4 @@
-import { TDayjs } from "../common/dayjs.js"
+import { TDayjs } from "./dayjs.service.js"
 
 export interface IPEAPIToken {
   access_token: string

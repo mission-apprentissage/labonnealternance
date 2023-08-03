@@ -1,6 +1,6 @@
 import axios from "axios"
 import querystring from "querystring"
-import dayjs from "../common/dayjs.js"
+import dayjs from "./dayjs.service.js"
 import config from "../config.js"
 import { IAppelattionDetailsFromAPI, IPEAPIToken, IRomeDetailsFromAPI } from "./rome.service.types.js"
 import { sentryCaptureException } from "../common/utils/sentryUtils.js"
