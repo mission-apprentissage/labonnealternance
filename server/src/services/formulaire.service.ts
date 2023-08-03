@@ -1,7 +1,7 @@
 import { pick } from "lodash-es"
 import moment from "moment"
 import { mailTemplate } from "../assets/index.js"
-import { ANNULEE, POURVUE, ETAT_UTILISATEUR, ACTIVE } from "./constant.service.js"
+import { ETAT_UTILISATEUR, ACTIVE, RECRUITER_STATUS, JOB_STATUS } from "./constant.service.js"
 import dayjs from "./dayjs.service.js"
 import { getElasticInstance } from "../common/esClient/index.js"
 import createMailer from "../common/mailer.js"
@@ -425,14 +425,26 @@ export const updateFormulaire = async (id: IRecruiter["establishment_id"], paylo
 export const archiveFormulaire = async (id: IRecruiter["establishment_id"]): Promise<boolean> => {
   const form = await Recruiter.findOne({ establishment_id: id })
 
-  form.status = "Archivé"
+  form.status = RECRUITER_STATUS.ARCHIVE
 
   form.jobs.map((job) => {
-    job.job_status = "Annulée"
+    job.job_status = JOB_STATUS.ANNULEE
   })
 
   await form.save()
 
+  return true
+}
+
+/**
+ * @description Unarchive existing formulaire
+ * @param {IRecruiter["establishment_id"]} establishment_id
+ * @returns {Promise<boolean>}
+ */
+export const reactivateRecruiter = async (id: IRecruiter["establishment_id"]): Promise<boolean> => {
+  const form = await Recruiter.findOne({ establishment_id: id })
+  form.status = RECRUITER_STATUS.ACTIF
+  await form.save()
   return true
 }
 
@@ -541,7 +553,7 @@ export const provideOffre = async (id: IJobs["_id"]): Promise<boolean> => {
     { "jobs._id": id },
     {
       $set: {
-        "jobs.$.job_status": POURVUE,
+        "jobs.$.job_status": JOB_STATUS.POURVUE,
       },
     }
   )
@@ -558,7 +570,7 @@ export const cancelOffre = async (id: IJobs["_id"]): Promise<boolean> => {
     { "jobs._id": id },
     {
       $set: {
-        "jobs.$.job_status": ANNULEE,
+        "jobs.$.job_status": JOB_STATUS.ANNULEE,
       },
     }
   )
