@@ -1,6 +1,6 @@
 import { randomUUID } from "crypto"
 import { mongoosePagination, Pagination } from "mongoose-paginate-ts"
-import { RECRUITER_STATUS } from "services/constant.service.js"
+import { RECRUITER_STATUS } from "../../../../services/constant.service.js"
 import { getElasticInstance, mongoosastic } from "../../../esClient/index.js"
 import { model, Schema } from "../../../mongodb.js"
 import { jobsSchema } from "../jobs/jobs.schema.js"
