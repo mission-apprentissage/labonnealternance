@@ -463,7 +463,7 @@ export class JobsController extends Controller {
       return result
     }
     const { matchas } = result
-    if ("results" in matchas) {
+    if (matchas && "results" in matchas) {
       matchas.results.map((matchaOffre) => addOffreSearchView(matchaOffre.job.id))
     }
     return result
