@@ -21,6 +21,7 @@ import Optout from "./schema/optout/optout.schema.js"
 import ParcoursupEtablissementStat from "./schema/parcoursupEtablissementStat/parcoursupEtablissementStat.schema.js"
 import ReferentielOpco from "./schema/referentielOpco/referentielOpco.schema.js"
 import ReferentielOnisep from "./schema/referentielOnisep/referentielOnisep.schema.js"
+import RncpRomes from "./schema/rncpRomes/rncpRomes.schema.js"
 import User from "./schema/user/user.schema.js"
 import UserRecruteur from "./schema/userRecruteur/usersRecruteur.schema.js"
 import UnsubscribeOF from "./schema/unsubscribedOF/unsubscribeOF.schema.js"
@@ -46,6 +47,7 @@ export {
   Optout,
   ReferentielOpco,
   ReferentielOnisep,
+  RncpRomes,
   UserRecruteur,
   AppointmentDetailed,
   eligibleTrainingsForAppointmentHistory,
