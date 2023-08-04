@@ -1,3 +1,11 @@
+## [1.67.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.67.0...v1.67.1) (2023-08-04)
+
+
+### Bug Fixes
+
+* check matchas exists ([#531](https://github.com/mission-apprentissage/labonnealternance/issues/531)) ([de0d7d5](https://github.com/mission-apprentissage/labonnealternance/commit/de0d7d50bbc86285898c5f59e36c2709f4f607e4))
+* LBAC-1408 réactivation Recruiter lors de la réactivation d'un utilisateur ([#530](https://github.com/mission-apprentissage/labonnealternance/issues/530)) ([7d1904f](https://github.com/mission-apprentissage/labonnealternance/commit/7d1904f254111ece40c91cfafface67ff625730c))
+
 # [1.67.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.66.0...v1.67.0) (2023-08-03)
 
 
