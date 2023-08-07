@@ -445,7 +445,7 @@ export class JobsController extends Controller {
   public async getJobOpportunities(
     @Request() request: express.Request,
     @Query() romes?: string[],
-    @Query() rncp?: string[],
+    @Query() rncp?: string,
     @Header() @Hidden() referer?: string,
     @Query() caller?: string,
     @Query() latitude?: string,
