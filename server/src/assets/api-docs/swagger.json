@@ -123,6 +123,9 @@
             "$ref": "#/parameters/requiredRomes"
           },
           {
+            "$ref": "#/parameters/requiredRncp"
+          },
+          {
             "$ref": "#/parameters/latitude"
           },
           {
@@ -170,6 +173,9 @@
         "parameters": [
           {
             "$ref": "#/parameters/requiredRomes"
+          },
+          {
+            "$ref": "#/parameters/requiredRncp"
           },
           {
             "$ref": "#/parameters/latitude"
@@ -535,10 +541,19 @@
     "requiredRomes": {
       "name": "romes",
       "in": "query",
-      "required": true,
+      "required": false,
       "type": "string",
-      "description": "Une liste de codes ROME séparés par des virgules correspondant au(x) métier(s) recherché(s). Maximum 9.",
+      "description": "Une liste de codes ROME séparés par des virgules correspondant au(x) métier(s) recherché(s). Maximum 20.<br />romes et rncp sont incompatibles.<br/><strong>Au moins un des deux doit être renseigné.</strong>",
       "example": "F1603,I1308"
+    },
+
+    "requiredRncp": {
+      "name": "rncp",
+      "in": "query",
+      "required": false,
+      "type": "string",
+      "description": "Un code RNCP.<br />romes et rncp sont incompatibles.<br/><strong>Au moins un des deux doit être renseigné.</strong>",
+      "example": "RNCP31899"
     },
 
     "romeDomain": {
