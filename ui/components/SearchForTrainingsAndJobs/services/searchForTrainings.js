@@ -1,7 +1,7 @@
 import axios from "axios"
 import { logError } from "utils/tools"
 
-import { getRncpsFromParameters, getRomeFromParameters, trainingErrorText, trainingsApi } from "../../SearchForTrainingsAndJobs/services/utils"
+import { getRncpsFromParameters, getRncpFromParameters, getRomeFromParameters, trainingErrorText, trainingsApi } from "../../SearchForTrainingsAndJobs/services/utils"
 import { storeTrainingsInSession } from "./handleSessionStorage"
 
 export const searchForTrainingsFunction = async ({
@@ -29,6 +29,7 @@ export const searchForTrainingsFunction = async ({
       params: {
         romes: getRomeFromParameters({ values, widgetParameters }),
         rncps: getRncpsFromParameters({ values, widgetParameters }),
+        rncp: getRncpFromParameters({ widgetParameters }),
         longitude: hasLocation ? values.location.value.coordinates[0] : null,
         latitude: hasLocation ? values.location.value.coordinates[1] : null,
         radius: values.radius || 30,
