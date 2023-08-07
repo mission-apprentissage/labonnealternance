@@ -1,11 +1,19 @@
 import { regionCodeToDepartmentList } from "../common/utils/regionInseeCodes.js"
 import { isOriginLocal } from "../common/utils/isOriginLocal.js"
+import { JobSearchQuery } from "./poleEmploi/jobsAndCompanies.js"
+import { RncpRomes } from "../common/model/index.js"
 
 const validateRncp = (rncp: string | null | undefined, error_messages: string[]) => {
-  if (!/^RNCP\d{2,5}$/.test(rncp)) error_messages.push("rncp : Badly formatted rncp code. RNCP code must 'RNCP' followed by 2 to 5 digit number. ex : RNCP12, RNCP12345 ...")
+  if (!/^RNCP\d{2,5}$/.test(rncp)) {
+    error_messages.push("rncp : Badly formatted rncp code. RNCP code must 'RNCP' followed by 2 to 5 digit number. ex : RNCP12, RNCP12345 ...")
+    return false
+  } else {
+    return true
+  }
 }
 
-const validateRomesOrRncp = (romes: string | null | undefined, rncp: string | null | undefined, error_messages: string[], romeLimit = 20) => {
+const validateRomesOrRncp = async (query: JobSearchQuery, error_messages: string[], romeLimit = 20) => {
+  const { romes, rncp } = query
   // codes ROME : romes
   if (!romes && !rncp) {
     error_messages.push("romes or rncp : You must specify at least 1 rome code or a rncp code.")
@@ -16,7 +24,15 @@ const validateRomesOrRncp = (romes: string | null | undefined, rncp: string | nu
     if (!/^[a-zA-Z][0-9]{4}(,[a-zA-Z][0-9]{4})*$/.test(romes))
       error_messages.push("romes : Badly formatted rome codes. Rome code must be one letter followed by 4 digit number. ex : A1234")
   } else {
-    validateRncp(rncp, error_messages)
+    if (validateRncp(rncp, error_messages)) {
+      const romesFromRncp = await RncpRomes.find({ rncp_code: rncp })
+      console.log("romesFormRncp : ", romesFromRncp, rncp)
+      if (!romesFromRncp.length) {
+        error_messages.push(`rncp : Rncp code not recognized. Please check that it exists. (${rncp})`)
+      } else {
+        query.romes = romesFromRncp[0].rome_codes.join(",")
+      }
+    }
   }
 }
 
