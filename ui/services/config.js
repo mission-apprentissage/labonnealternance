@@ -16,11 +16,21 @@ export const getWidgetParameters = () => {
   p = getValueFromPath("lon")
   if (p && !isNaN(p)) parameters.lon = parseFloat(p)
 
-  p = getValueFromPath("romes") // todo appliquer un ctrl regexp sur romes, max 3
-  if (p) parameters.romes = p
-  else applyWidgetParameters = false
+  p = getValueFromPath("rncp")
+  if (p) {
+    parameters.rncp = p
+  }
 
-  p = getValueFromPath("radius") //todo: vérifier les valeurs légitimes
+  p = getValueFromPath("romes")
+  if (p) {
+    parameters.romes = p
+  }
+
+  if (!parameters.romes && !parameters.rncp) {
+    applyWidgetParameters = false
+  }
+
+  p = getValueFromPath("radius")
   if (p && !isNaN(p) && (p === "10" || p === "30" || p === "60" || p === "100")) {
     parameters.radius = parseInt(p)
   }
@@ -49,7 +59,7 @@ export const getWidgetParameters = () => {
     widgetParameters.applyFormValues = true
   }
 
-  //console.log("widgetParameters : ", widgetParameters);
+  console.log("widgetParameters : ", widgetParameters)
 
   return widgetParameters
 }
