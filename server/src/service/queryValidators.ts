@@ -36,14 +36,6 @@ const validateRomesOrRncp = async (query: JobSearchQuery, error_messages: string
   }
 }
 
-const validateRomes = (romes: string | null | undefined, error_messages: string[], romeLimit = 20) => {
-  // codes ROME : romes
-  if (!romes) error_messages.push("romes : Rome codes are missing. At least 1.")
-  else if (romes.split(",").length > romeLimit) error_messages.push(`romes : Too many rome codes. Maximum is ${romeLimit}.`)
-  if (!/^[a-zA-Z][0-9]{4}(,[a-zA-Z][0-9]{4})*$/.test(romes))
-    error_messages.push("romes : Badly formatted rome codes. Rome code must be one letter followed by 4 digit number. ex : A1234")
-}
-
 const validateRomeOrDomain = ({ romes, romeDomain, romeLimit = 20, optional }, error_messages) => {
   // codes ROME : romes
   if (!optional && !romes && !romeDomain) {
@@ -141,7 +133,6 @@ const validateCaller = ({ caller, referer }, error_messages = []) => {
 
 export {
   validateRadius,
-  validateRomes,
   validateRomesOrRncp,
   validateRomeOrDomain,
   validateLatitude,
