@@ -172,6 +172,7 @@ const buildFormValuesFromParameters = (params) => {
       label: params.jobName,
       romes: params.romes.split(","),
       rncps: params.rncps ? params.rncps.split(",") : [],
+      rncp: params.rncp || "",
     },
     ...location,
     radius: params.radius,
