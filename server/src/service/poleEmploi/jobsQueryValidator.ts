@@ -1,26 +1,16 @@
 import { validateApiSources, validateCaller, validateInsee, validateLatitude, validateLongitude, validateRadius, validateRomesOrRncp } from "../queryValidators.js"
 import { JobSearchQuery } from "./jobsAndCompanies.js"
 
-const jobsQueryValidator = ({
-  caller,
-  referer,
-  romes,
-  rncp,
-  latitude,
-  longitude,
-  insee,
-  radius,
-  sources,
-}: JobSearchQuery): { result: "passed" } | { error: string; error_messages: string[] } => {
+const jobsQueryValidator = async (query: JobSearchQuery): Promise<{ result: "passed" } | { error: string; error_messages: string[] }> => {
   const error_messages = []
-
+  const { caller, referer, latitude, longitude, insee, radius, sources } = query
   // contrôle des paramètres
 
   // présence d'identifiant de la source : caller
   validateCaller({ caller, referer }, error_messages)
 
-  // codes ROME  et code RNCP : romes, rncp
-  validateRomesOrRncp(romes, rncp, error_messages)
+  // codes ROME  et code RNCP : romes, rncp. Modifie la valeur de query.romes si code rncp correct
+  await validateRomesOrRncp(query, error_messages)
 
   // coordonnées gps optionnelles : latitude et longitude
   if (latitude || longitude) {
