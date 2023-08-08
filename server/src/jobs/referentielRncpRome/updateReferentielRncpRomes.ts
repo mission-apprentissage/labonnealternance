@@ -28,7 +28,7 @@ export default async function (optionalFileName?: string) {
 
   await downloadAndSaveFile(optionalFileName)
 
-  console.log("emptying collection rncpromes")
+  logger.info("emptying collection rncpromes")
   await RncpRomes.deleteMany({})
 
   const workbookRncpRomes = readXLSXFile(FILEPATH)
@@ -36,7 +36,7 @@ export default async function (optionalFileName?: string) {
   let codesROMEs = []
   let currentRncpCode
 
-  console.log("parcours fichier xlsx")
+  logger.info("parcours fichier xlsx")
 
   const onglet = XLSX.utils.sheet_to_json(workbookRncpRomes.workbook.Sheets["Feuil3"])
 
