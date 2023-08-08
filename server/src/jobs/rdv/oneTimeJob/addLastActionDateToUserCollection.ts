@@ -1,4 +1,4 @@
-import dayjs from "../../../common/dayjs.js"
+import dayjs from "../../../services/dayjs.service.js"
 import { User } from "../../../common/model/index.js"
 import { ROLES } from "../../../services/constant.service.js"
 import { runScript } from "../../scriptWrapper.js"

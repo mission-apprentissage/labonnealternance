@@ -1,6 +1,20 @@
 export const POURVUE = "Pourvue"
 export const ANNULEE = "Annulée"
 export const ACTIVE = "Active"
+
+export const JOB_STATUS = {
+  ACTIVE: "Active",
+  POURVUE: "Pourvue",
+  ANNULEE: "Annulée",
+  EN_ATTENTE: "En attente",
+}
+
+export const RECRUITER_STATUS = {
+  ACTIF: "Actif",
+  ARCHIVE: "Archivé",
+  EN_ATTENTE_VALIDATION: "En attente de validation",
+}
+
 export const KEY_GENERATOR_PARAMS = ({ length, symbols, numbers }) => {
   return {
     length: length ?? 50,

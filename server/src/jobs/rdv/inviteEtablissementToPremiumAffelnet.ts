@@ -1,10 +1,10 @@
 import { mailTemplate } from "../../assets/index.js"
-import dayjs from "../../common/dayjs.js"
+import dayjs from "../../services/dayjs.service.js"
 import { logger } from "../../common/logger.js"
 import { mailType } from "../../common/model/constants/etablissement.js"
 import { Etablissement } from "../../common/model/index.js"
 import config from "../../config.js"
-import { mailer } from "../../services/mailer.service.js"
+import mailer from "../../services/mailer.service.js"
 
 export const inviteEtablissementAffelnetToPremium = async () => {
   logger.info("Cron #inviteEtablissementAffelnetToPremium started.")
@@ -29,7 +29,7 @@ export const inviteEtablissementAffelnetToPremium = async () => {
     // send the invitation mail
     const { messageId } = await mailer.sendEmail({
       to: etablissement.gestionnaire_email,
-      subject: `Optimisez le sourcing de vos candidats sur Choisir son affectation après la 3e !`,
+      subject: `Trouvez et recrutez vos candidats sur Choisir son affectation après la 3e !`,
       template: mailTemplate["mail-cfa-premium-invite"],
       data: {
         isAffelnet: true,

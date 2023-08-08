@@ -34,6 +34,7 @@ import { IUserRecruteur } from "../../common/model/schema/userRecruteur/userRecr
 import { IRecruiter } from "../../common/model/schema/recruiter/recruiter.types.js"
 import { updateUserValidationHistory, getUser, createUser, updateUser, getUserValidationState, registerUser } from "../../services/userRecruteur.service.js"
 import { sentryCaptureException } from "../../common/utils/sentryUtils.js"
+import mailer from "../../services/mailer.service.js"
 
 const getCfaRomeSchema = joi.object({
   latitude: joi.number().required(),
@@ -41,7 +42,7 @@ const getCfaRomeSchema = joi.object({
   rome: joi.array().items(joi.string()).required(),
 })
 
-export default ({ mailer }) => {
+export default () => {
   const router = express.Router()
 
   const autoValidateUser = async (userId) =>
@@ -304,7 +305,7 @@ export default ({ mailer }) => {
 
             await mailer.sendEmail({
               to: email,
-              subject: "La bonne alternance — Confirmer votre adresse mail",
+              subject: "Confirmez votre adresse mail",
               template: mailTemplate["mail-confirmation-email"],
               data: {
                 images: {
@@ -335,7 +336,7 @@ export default ({ mailer }) => {
 
               await mailer.sendEmail({
                 to: email,
-                subject: "La bonne alternance — Confirmer votre adresse mail",
+                subject: "Confirmez votre adresse mail",
                 template: mailTemplate["mail-confirmation-email"],
                 data: {
                   images: {

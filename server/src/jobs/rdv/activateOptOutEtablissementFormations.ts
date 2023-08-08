@@ -3,11 +3,11 @@ import { mailTemplate } from "../../assets/index.js"
 import { logger } from "../../common/logger.js"
 import { mailType } from "../../common/model/constants/etablissement.js"
 import { referrers } from "../../common/model/constants/referrers.js"
-import { dayjs } from "../../common/utils/dayjs.js"
+import dayjs from "../../services/dayjs.service.js"
 import config from "../../config.js"
 import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service.js"
 import { Etablissement } from "../../common/model/index.js"
-import { mailer } from "../../services/mailer.service.js"
+import mailer from "../../services/mailer.service.js"
 
 /**
  * @description Active all etablissement's formations that have subscribed to opt-out.
@@ -51,7 +51,7 @@ export const activateOptOutEtablissementFormations = async () => {
       // Send email
       const { messageId } = await mailer.sendEmail({
         to: etablissement.gestionnaire_email,
-        subject: `C'est parti pour améliorer le sourcing de vos candidats !`,
+        subject: `La prise de RDV est activée pour votre CFA sur La bonne alternance`,
         template: mailTemplate["mail-cfa-optout-start"],
         data: {
           images: {
@@ -94,7 +94,7 @@ export const activateOptOutEtablissementFormations = async () => {
         emails.map((email) =>
           mailer.sendEmail({
             to: email,
-            subject: `La prise de rendez-vous est activée pour votre CFA sur La bonne alternance`,
+            subject: `La prise de RDV est activée pour votre CFA sur La bonne alternance`,
             template: mailTemplate["mail-cfa-optout-activated"],
             data: {
               url: config.publicUrl,

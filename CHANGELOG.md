@@ -1,73 +1,106 @@
-# [1.62.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.61.1...v1.62.0) (2023-08-01)
+## [1.67.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.67.0...v1.67.1) (2023-08-04)
 
+### Bug Fixes
+
+- check matchas exists ([#531](https://github.com/mission-apprentissage/labonnealternance/issues/531)) ([de0d7d5](https://github.com/mission-apprentissage/labonnealternance/commit/de0d7d50bbc86285898c5f59e36c2709f4f607e4))
+- LBAC-1408 réactivation Recruiter lors de la réactivation d'un utilisateur ([#530](https://github.com/mission-apprentissage/labonnealternance/issues/530)) ([7d1904f](https://github.com/mission-apprentissage/labonnealternance/commit/7d1904f254111ece40c91cfafface67ff625730c))
+
+# [1.67.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.66.0...v1.67.0) (2023-08-03)
 
 ### Features
 
-* Lbac 1350 automatiser la r cup ration hebdomadaire du mapping onisep cl me ([#525](https://github.com/mission-apprentissage/labonnealternance/issues/525)) ([5182d00](https://github.com/mission-apprentissage/labonnealternance/commit/5182d00838ae0e96398fbe1a6a58ac237e92f23f))
+- LBAC-1306 LBAC-1307 adaptation à la nouvelle limite à 20 romes du search PE ([#527](https://github.com/mission-apprentissage/labonnealternance/issues/527)) ([3a0fdbf](https://github.com/mission-apprentissage/labonnealternance/commit/3a0fdbf5c6f8c033d69b59235de8348346b2ade1))
+
+# [1.66.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.65.0...v1.66.0) (2023-08-03)
+
+### Features
+
+- remplacement component mailer par service mailer ([#526](https://github.com/mission-apprentissage/labonnealternance/issues/526)) ([766610e](https://github.com/mission-apprentissage/labonnealternance/commit/766610eb95b6d99b7d6fdbdfcd5f6c02bee1d26b))
+
+# [1.65.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.64.0...v1.65.0) (2023-08-03)
+
+### Features
+
+- AB testing sur accroche home ([5db9088](https://github.com/mission-apprentissage/labonnealternance/commit/5db9088af3015d53a4ad200ca4f030158df856f4))
+
+# [1.64.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.63.0...v1.64.0) (2023-08-03)
+
+### Features
+
+- suppression rappel du titre d'une formation ([ecfea41](https://github.com/mission-apprentissage/labonnealternance/commit/ecfea41837fa637d88b823c9a7bdab5c65a8e9a0))
+
+# [1.63.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.62.1...v1.63.0) (2023-08-03)
+
+### Features
+
+- LBAC-1249 rationalisation dayjs ([#524](https://github.com/mission-apprentissage/labonnealternance/issues/524)) ([ec69e05](https://github.com/mission-apprentissage/labonnealternance/commit/ec69e0534c5ef5d21b1145056850a522b6f26b11))
+
+## [1.62.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.62.0...v1.62.1) (2023-08-02)
+
+### Bug Fixes
+
+- only send active offers to Pole Emploi ([#528](https://github.com/mission-apprentissage/labonnealternance/issues/528)) ([e47d16c](https://github.com/mission-apprentissage/labonnealternance/commit/e47d16c05bd03e2618a47995c5007479ea2d5cbe))
+
+# [1.62.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.61.1...v1.62.0) (2023-08-01)
+
+### Features
+
+- Lbac 1350 automatiser la r cup ration hebdomadaire du mapping onisep cl me ([#525](https://github.com/mission-apprentissage/labonnealternance/issues/525)) ([5182d00](https://github.com/mission-apprentissage/labonnealternance/commit/5182d00838ae0e96398fbe1a6a58ac237e92f23f))
 
 ## [1.61.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.61.0...v1.61.1) (2023-07-31)
 
-
 ### Bug Fixes
 
-* LBAC-1354 pas de chargement de détail d'offre lba inactive ([#519](https://github.com/mission-apprentissage/labonnealternance/issues/519)) ([131ef09](https://github.com/mission-apprentissage/labonnealternance/commit/131ef0963d8ade7be4b38d34da093bb024cdff60))
-* restauration code retour success à 200 ([#520](https://github.com/mission-apprentissage/labonnealternance/issues/520)) ([70af608](https://github.com/mission-apprentissage/labonnealternance/commit/70af608b548e52d1c74302314c4c39822dbc1cd2))
+- LBAC-1354 pas de chargement de détail d'offre lba inactive ([#519](https://github.com/mission-apprentissage/labonnealternance/issues/519)) ([131ef09](https://github.com/mission-apprentissage/labonnealternance/commit/131ef0963d8ade7be4b38d34da093bb024cdff60))
+- restauration code retour success à 200 ([#520](https://github.com/mission-apprentissage/labonnealternance/issues/520)) ([70af608](https://github.com/mission-apprentissage/labonnealternance/commit/70af608b548e52d1c74302314c4c39822dbc1cd2))
 
 # [1.61.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.60.0...v1.61.0) (2023-07-31)
 
-
 ### Features
 
-* masquage de l'onglet parternariats lorsqu'il n'y en a pas ([#522](https://github.com/mission-apprentissage/labonnealternance/issues/522)) ([41246d9](https://github.com/mission-apprentissage/labonnealternance/commit/41246d92ee33d550e790f86d72f288cb6e3f960f))
+- masquage de l'onglet parternariats lorsqu'il n'y en a pas ([#522](https://github.com/mission-apprentissage/labonnealternance/issues/522)) ([41246d9](https://github.com/mission-apprentissage/labonnealternance/commit/41246d92ee33d550e790f86d72f288cb6e3f960f))
 
 # [1.60.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.59.3...v1.60.0) (2023-07-31)
 
-
 ### Features
 
-* inutile ([#521](https://github.com/mission-apprentissage/labonnealternance/issues/521)) ([7f06585](https://github.com/mission-apprentissage/labonnealternance/commit/7f0658568bb1da8e5435a2bc9fcfa08217935452))
+- inutile ([#521](https://github.com/mission-apprentissage/labonnealternance/issues/521)) ([7f06585](https://github.com/mission-apprentissage/labonnealternance/commit/7f0658568bb1da8e5435a2bc9fcfa08217935452))
 
 ## [1.59.3](https://github.com/mission-apprentissage/labonnealternance/compare/v1.59.2...v1.59.3) (2023-07-27)
 
-
 ### Bug Fixes
 
-* transmission info origin dans la payload ([#517](https://github.com/mission-apprentissage/labonnealternance/issues/517)) ([f0ccf99](https://github.com/mission-apprentissage/labonnealternance/commit/f0ccf990f30f07bd9eca8fa79d881b205765fe3b))
+- transmission info origin dans la payload ([#517](https://github.com/mission-apprentissage/labonnealternance/issues/517)) ([f0ccf99](https://github.com/mission-apprentissage/labonnealternance/commit/f0ccf990f30f07bd9eca8fa79d881b205765fe3b))
 
 ## [1.59.2](https://github.com/mission-apprentissage/labonnealternance/compare/v1.59.1...v1.59.2) (2023-07-27)
 
-
 ### Bug Fixes
 
-* gestion cas société sans enseigne ([#518](https://github.com/mission-apprentissage/labonnealternance/issues/518)) ([ba7c8a4](https://github.com/mission-apprentissage/labonnealternance/commit/ba7c8a4717ff5405405b5d6d37af43d921a6f43e))
+- gestion cas société sans enseigne ([#518](https://github.com/mission-apprentissage/labonnealternance/issues/518)) ([ba7c8a4](https://github.com/mission-apprentissage/labonnealternance/commit/ba7c8a4717ff5405405b5d6d37af43d921a6f43e))
 
 ## [1.59.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.59.0...v1.59.1) (2023-07-27)
 
-
 ### Bug Fixes
 
-* LBAC-1386 positionnement fin enregistrement des stats de visualisation ([#516](https://github.com/mission-apprentissage/labonnealternance/issues/516)) ([2a4c991](https://github.com/mission-apprentissage/labonnealternance/commit/2a4c99128cc53ff59a10c257c27e1cb7ea177209))
+- LBAC-1386 positionnement fin enregistrement des stats de visualisation ([#516](https://github.com/mission-apprentissage/labonnealternance/issues/516)) ([2a4c991](https://github.com/mission-apprentissage/labonnealternance/commit/2a4c99128cc53ff59a10c257c27e1cb7ea177209))
 
 # [1.59.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.58.0...v1.59.0) (2023-07-26)
 
-
 ### Features
 
-* déplacement services, onglet partenaires, compression images ([#486](https://github.com/mission-apprentissage/labonnealternance/issues/486)) ([ad12478](https://github.com/mission-apprentissage/labonnealternance/commit/ad12478232025b66f900ed1c71e1d5acb0785677))
+- déplacement services, onglet partenaires, compression images ([#486](https://github.com/mission-apprentissage/labonnealternance/issues/486)) ([ad12478](https://github.com/mission-apprentissage/labonnealternance/commit/ad12478232025b66f900ed1c71e1d5acb0785677))
 
 # [1.58.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.57.4...v1.58.0) (2023-07-26)
 
-
 ### Features
 
-* optimisation process vie aggregate ([#514](https://github.com/mission-apprentissage/labonnealternance/issues/514)) ([12b6c94](https://github.com/mission-apprentissage/labonnealternance/commit/12b6c94ed8d5b46cd8b034228e64fed38d5411ad))
+- optimisation process vie aggregate ([#514](https://github.com/mission-apprentissage/labonnealternance/issues/514)) ([12b6c94](https://github.com/mission-apprentissage/labonnealternance/commit/12b6c94ed8d5b46cd8b034228e64fed38d5411ad))
 
 ## [1.57.4](https://github.com/mission-apprentissage/labonnealternance/compare/v1.57.3...v1.57.4) (2023-07-25)
 
-
 ### Bug Fixes
 
-* pole emploi export ([#515](https://github.com/mission-apprentissage/labonnealternance/issues/515)) ([e58a12c](https://github.com/mission-apprentissage/labonnealternance/commit/e58a12c5c2ed1cd6bf628f6b05c6092a4c65b1ff))
+- pole emploi export ([#515](https://github.com/mission-apprentissage/labonnealternance/issues/515)) ([e58a12c](https://github.com/mission-apprentissage/labonnealternance/commit/e58a12c5c2ed1cd6bf628f6b05c6092a4c65b1ff))
 
 ## [1.57.3](https://github.com/mission-apprentissage/labonnealternance/compare/v1.57.2...v1.57.3) (2023-07-21)
 

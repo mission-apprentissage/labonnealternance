@@ -3,8 +3,9 @@ import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
 import { sentryCaptureException } from "../../common/utils/sentryUtils.js"
 import { getEmailTemplate } from "../../services/application.service.js"
 import config from "../../config.js"
+import mailer from "../../services/mailer.service.js"
 
-export default function ({ mailer }) {
+export default function () {
   const router = express.Router()
 
   router.get(

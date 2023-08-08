@@ -2,12 +2,12 @@ import _ from "lodash-es"
 import { mailTemplate } from "../../assets/index.js"
 import { logger } from "../../common/logger.js"
 import { mailType } from "../../common/model/constants/etablissement.js"
-import { dayjs } from "../../common/utils/dayjs.js"
+import dayjs from "../../services/dayjs.service.js"
 import config from "../../config.js"
 import { isValidEmail } from "../../common/utils/isValidEmail.js"
 import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service.js"
 import { Etablissement } from "../../common/model/index.js"
-import { mailer } from "../../services/mailer.service.js"
+import mailer from "../../services/mailer.service.js"
 
 /**
  * @description Send a "Premium" reminder mail.
@@ -50,7 +50,7 @@ export const premiumActivatedReminder = async () => {
 
         const { messageId } = await mailer.sendEmail({
           to: email,
-          subject: `Les jeunes peuvent prendre contact avec votre CFA sur Parcoursup`,
+          subject: `Rappel - Les jeunes peuvent prendre contact avec votre CFA sur Parcoursup`,
           template: mailTemplate["mail-cfa-premium-activated-reminder"],
           data: {
             url: config.publicUrl,

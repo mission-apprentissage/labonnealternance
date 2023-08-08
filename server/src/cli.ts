@@ -102,7 +102,7 @@ cli
   .command("relance-formulaire <threshold>")
   .description("Envoie une relance par mail pour les offres expirant dans 7 jours")
   .action((threshold) => {
-    runScript(({ mailer }) => relanceFormulaire(mailer, parseInt(threshold)))
+    runScript(() => relanceFormulaire(parseInt(threshold)))
   })
 
 cli
@@ -123,7 +123,7 @@ cli
   .command("relance-opco")
   .description("Relance les opco avec le nombre d'utilisateur en attente de validation")
   .action(() => {
-    runScript(({ mailer }) => relanceOpco(mailer))
+    runScript(() => relanceOpco())
   })
 
 cli
@@ -137,7 +137,7 @@ cli
   .command("validate-user")
   .description("Contrôle de validation des entreprises en attente de validation")
   .action(() => {
-    runScript((components) => checkAwaitingCompaniesValidation(components))
+    runScript((components) => checkAwaitingCompaniesValidation())
   })
 
 /**

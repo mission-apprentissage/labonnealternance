@@ -1,5 +1,6 @@
 import Joi from "joi"
 import { differenceBy } from "lodash-es"
+import mailer from "../../../services/mailer.service.js"
 import { mailTemplate } from "../../../assets/index.js"
 import { logger } from "../../../common/logger.js"
 import { Optout, UserRecruteur } from "../../../common/model/index.js"
@@ -13,7 +14,7 @@ import { runScript } from "../../scriptWrapper.js"
  */
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
-runScript(async ({ mailer }) => {
+runScript(async () => {
   const [etablissements, users] = await Promise.all([Optout.find().lean(), UserRecruteur.find({ type: "CFA" }).lean()])
 
   const etablissementsToContact = differenceBy(etablissements, users, "siret")

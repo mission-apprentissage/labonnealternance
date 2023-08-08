@@ -1,10 +1,10 @@
 import { mailTemplate } from "../../assets/index.js"
 import { logger } from "../../common/logger.js"
 import { mailType } from "../../common/model/constants/etablissement.js"
-import { dayjs } from "../../common/utils/dayjs.js"
 import { Etablissement, EligibleTrainingsForAppointment } from "../../common/model/index.js"
+import dayjs from "../../services/dayjs.service.js"
 import config from "../../config.js"
-import { mailer } from "../../services/mailer.service.js"
+import mailer from "../../services/mailer.service.js"
 
 /**
  * @description Invite all "etablissements" to Premium.
@@ -43,7 +43,7 @@ export const inviteEtablissementToPremium = async () => {
     // Invite all etablissements only in production environment
     const { messageId } = await mailer.sendEmail({
       to: etablissement.gestionnaire_email,
-      subject: `Optimisez le sourcing de vos candidats sur Parcoursup !`,
+      subject: `Trouvez et recrutez vos candidats sur Parcoursup !`,
       template: mailTemplate["mail-cfa-premium-invite"],
       data: {
         isParcoursup: true,

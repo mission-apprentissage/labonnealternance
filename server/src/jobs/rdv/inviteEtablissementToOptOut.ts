@@ -2,12 +2,12 @@ import _ from "lodash-es"
 import { mailTemplate } from "../../assets/index.js"
 import { logger } from "../../common/logger.js"
 import { mailType } from "../../common/model/constants/etablissement.js"
-import { dayjs } from "../../common/utils/dayjs.js"
+import dayjs from "../../services/dayjs.service.js"
 import { isValidEmail } from "../../common/utils/isValidEmail.js"
 import config from "../../config.js"
 import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service.js"
 import { Etablissement } from "../../common/model/index.js"
-import { mailer } from "../../services/mailer.service.js"
+import mailer from "../../services/mailer.service.js"
 
 /**
  * @description Invite all "etablissements" without opt_mode to opt-out.
@@ -71,7 +71,7 @@ export const inviteEtablissementToOptOut = async () => {
 
       const { messageId } = await mailer.sendEmail({
         to: emailDecisionaire,
-        subject: `Améliorer le sourcing de vos candidats !`,
+        subject: `Trouvez et recrutez vos candidats avec La bonne alternance`,
         template: mailTemplate["mail-cfa-optout-invitation"],
         data: {
           images: {
@@ -122,7 +122,7 @@ export const inviteEtablissementToOptOut = async () => {
         emails.map((email) =>
           mailer.sendEmail({
             to: email,
-            subject: `La prise de rendez-vous est activée pour votre CFA sur La bonne alternance`,
+            subject: `La prise de RDV est activée pour votre CFA sur La bonne alternance`,
             template: mailTemplate["mail-cfa-optout-activated"],
             data: {
               url: config.publicUrl,
