@@ -59,8 +59,6 @@ export const getWidgetParameters = () => {
     widgetParameters.applyFormValues = true
   }
 
-  console.log("widgetParameters : ", widgetParameters)
-
   return widgetParameters
 }
 
