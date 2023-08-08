@@ -152,70 +152,70 @@ cli
   .command("activate-opt-out-etablissement-formations")
   .description("Active tous les établissements qui ont souscrits à l'opt-out.")
   .action(() => {
-    runScript((components) => activateOptOutEtablissementFormations(components))
+    runScript(() => activateOptOutEtablissementFormations())
   })
 
 cli
   .command("invite-etablissement-to-opt-out")
   .description("Invite les établissements (via email décisionnaire) à l'opt-out.")
   .action(() => {
-    runScript((components) => inviteEtablissementToOptOut(components))
+    runScript(() => inviteEtablissementToOptOut())
   })
 
 cli
   .command("invite-etablissement-to-premium")
   .description("Invite les établissements (via email décisionnaire) au premium (Parcoursup)")
   .action(() => {
-    runScript((components) => inviteEtablissementToPremium(components))
+    runScript(() => inviteEtablissementToPremium())
   })
 
 cli
   .command("invite-etablissement-affelnet-to-premium")
   .description("Invite les établissements (via email décisionnaire) au premium (Affelnet)")
   .action(() => {
-    runScript((components) => inviteEtablissementAffelnetToPremium())
+    runScript(() => inviteEtablissementAffelnetToPremium())
   })
 
 cli
   .command("invite-etablissement-to-premium-follow-up")
   .description("(Relance) Invite les établissements (via email décisionnaire) au premium (Parcoursup)")
   .action(() => {
-    runScript((components) => inviteEtablissementToPremiumFollowUp(components))
+    runScript(() => inviteEtablissementToPremiumFollowUp())
   })
 
 cli
   .command("invite-etablissement-affelnet-to-premium-follow-up")
   .description("(Relance) Invite les établissements (via email décisionnaire) au premium (Affelnet)")
   .action(() => {
-    runScript((components) => inviteEtablissementAffelnetToPremiumFollowUp(components))
+    runScript(() => inviteEtablissementAffelnetToPremiumFollowUp())
   })
 
 cli
   .command("premium-activated-reminder")
   .description("Envoi un email à tous les établissements premium pour les informer de l'ouverture des voeux sur Parcoursup")
   .action(() => {
-    runScript((components) => premiumActivatedReminder(components))
+    runScript(() => premiumActivatedReminder())
   })
 
 cli
   .command("premium-invite-one-shot")
   .description("Envoi un email à tous les établissements pas encore premium pour les inviter de nouveau")
   .action(() => {
-    runScript((components) => premiumInviteOneShot(components))
+    runScript(() => premiumInviteOneShot())
   })
 
 cli
   .command("sync-etablissements-and-formations")
   .description("Récupère la liste de toutes les formations du Catalogue et les enregistre.")
   .action(() => {
-    runScript((components) => syncEtablissementsAndFormations(components))
+    runScript(() => syncEtablissementsAndFormations())
   })
 
 cli
   .command("sync-etablissements-and-formations-affelnet")
   .description("Récupère la liste de toutes les formations du Catalogue ME du scope AFFELNET et les enregistre.")
   .action(() => {
-    runScript((components) => syncAffelnetFormationsFromCatalogueME(components))
+    runScript(() => syncAffelnetFormationsFromCatalogueME())
   })
 
 cli

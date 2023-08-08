@@ -1,13 +1,21 @@
-import mailer from "../../services/mailer.service.js"
 import { mailTemplate } from "../../assets/index.js"
 import dayjs from "../../services/dayjs.service.js"
 import { logger } from "../../common/logger.js"
 import { mailType } from "../../common/model/constants/etablissement.js"
 import { Etablissement } from "../../common/model/index.js"
 import config from "../../config.js"
+import mailer from "../../services/mailer.service.js"
 
 export const inviteEtablissementAffelnetToPremium = async () => {
   logger.info("Cron #inviteEtablissementAffelnetToPremium started.")
+
+  const startInvitationPeriod = dayjs().month(3).date(1)
+  const endInvitationPeriod = dayjs().month(7).date(31)
+  if (!dayjs().isBetween(startInvitationPeriod, endInvitationPeriod, "day", "[]")) {
+    logger.info("Stopped because we are not between the 01/03 and the 31/08 (eligible period).")
+    return
+  }
+
   // Get all Affelnet establishement where an email is specified
   const etablissementToInvite = await Etablissement.find({
     affelnet_perimetre: true,

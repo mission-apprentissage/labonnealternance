@@ -1,5 +1,4 @@
 import _ from "lodash-es"
-import mailer from "../../services/mailer.service.js"
 import { mailTemplate } from "../../assets/index.js"
 import { logger } from "../../common/logger.js"
 import { mailType } from "../../common/model/constants/etablissement.js"
@@ -7,16 +6,18 @@ import { referrers } from "../../common/model/constants/referrers.js"
 import dayjs from "../../services/dayjs.service.js"
 import config from "../../config.js"
 import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service.js"
+import { Etablissement } from "../../common/model/index.js"
+import mailer from "../../services/mailer.service.js"
 
 /**
  * @description Active all etablissement's formations that have subscribed to opt-out.
  * @returns {Promise<void>}
  */
-export const activateOptOutEtablissementFormations = async ({ etablissements }) => {
+export const activateOptOutEtablissementFormations = async () => {
   logger.info("Cron #activateOptOutEtablissementFormations started.")
 
   // Opt-out etablissement to activate
-  const etablissementsToActivate = await etablissements.find({
+  const etablissementsToActivate = await Etablissement.find({
     optout_activation_scheduled_date: {
       $lte: dayjs().toDate(),
     },
@@ -39,7 +40,7 @@ export const activateOptOutEtablissementFormations = async ({ etablissements }) 
               .filter((referrer) => referrer !== referrers.PARCOURSUP.name),
           }
         ),
-        etablissements.findOneAndUpdate(
+        Etablissement.findOneAndUpdate(
           {
             _id: etablissement._id,
           },
@@ -122,7 +123,7 @@ export const activateOptOutEtablissementFormations = async ({ etablissements }) 
         )
       )
 
-      await etablissements.findOneAndUpdate(
+      await Etablissement.findOneAndUpdate(
         { _id: etablissement._id },
         {
           $push: {

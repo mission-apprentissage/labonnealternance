@@ -1,5 +1,4 @@
 import _ from "lodash-es"
-import mailer from "../../services/mailer.service.js"
 import { mailTemplate } from "../../assets/index.js"
 import { logger } from "../../common/logger.js"
 import { mailType } from "../../common/model/constants/etablissement.js"
@@ -7,16 +6,18 @@ import dayjs from "../../services/dayjs.service.js"
 import { isValidEmail } from "../../common/utils/isValidEmail.js"
 import config from "../../config.js"
 import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service.js"
+import { Etablissement } from "../../common/model/index.js"
+import mailer from "../../services/mailer.service.js"
 
 /**
  * @description Invite all "etablissements" without opt_mode to opt-out.
  * @returns {Promise<void>}
  */
-export const inviteEtablissementToOptOut = async ({ etablissements }) => {
+export const inviteEtablissementToOptOut = async () => {
   logger.info("Cron #inviteEtablissementToOptOut started.")
 
   // Opt-out etablissement to activate
-  const etablissementsWithouOptMode = await etablissements.find({
+  const etablissementsWithouOptMode = await Etablissement.find({
     optout_invitation_date: null,
     gestionnaire_email: { $nin: [null, ""] },
     affelnet_perimetre: null,
@@ -94,7 +95,7 @@ export const inviteEtablissementToOptOut = async ({ etablissements }) => {
         },
       })
 
-      await etablissement.update({
+      await Etablissement.update({
         optout_invitation_date: dayjs().toDate(),
         optout_activation_scheduled_date: willBeActivatedAt.toDate(),
         $push: {

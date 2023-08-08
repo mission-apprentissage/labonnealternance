@@ -1,18 +1,26 @@
-import mailer from "../../services/mailer.service.js"
 import { mailTemplate } from "../../assets/index.js"
 import { logger } from "../../common/logger.js"
 import { mailType } from "../../common/model/constants/etablissement.js"
+import { Etablissement, EligibleTrainingsForAppointment } from "../../common/model/index.js"
 import dayjs from "../../services/dayjs.service.js"
 import config from "../../config.js"
+import mailer from "../../services/mailer.service.js"
 
 /**
  * @description Invite all "etablissements" to Premium.
  * @returns {Promise<void>}
  */
-export const inviteEtablissementToPremium = async ({ etablissements, eligibleTrainingsForAppointments }) => {
+export const inviteEtablissementToPremium = async () => {
   logger.info("Cron #inviteEtablissementToPremium started.")
 
-  const etablissementsToInvite = await etablissements.find({
+  const startInvitationPeriod = dayjs().month(0).date(1)
+  const endInvitationPeriod = dayjs().month(7).date(31)
+  if (!dayjs().isBetween(startInvitationPeriod, endInvitationPeriod, "day", "[]")) {
+    logger.info("Stopped because we are not between the 01/01 and the 31/08 (eligible period).")
+    return
+  }
+
+  const etablissementsToInvite = await Etablissement.find({
     gestionnaire_email: {
       $ne: null,
     },
@@ -22,13 +30,11 @@ export const inviteEtablissementToPremium = async ({ etablissements, eligibleTra
 
   for (const etablissement of etablissementsToInvite) {
     // Only send an invite if the "etablissement" have at least one available Parcoursup "formation"
-    const hasOneAvailableFormation = await eligibleTrainingsForAppointments
-      .findOne({
-        etablissement_formateur_siret: etablissement.formateur_siret,
-        lieu_formation_email: { $ne: null },
-        parcoursup_id: { $ne: null },
-      })
-      .lean()
+    const hasOneAvailableFormation = await EligibleTrainingsForAppointment.findOne({
+      etablissement_formateur_siret: etablissement.formateur_siret,
+      lieu_formation_email: { $ne: null },
+      parcoursup_id: { $ne: null },
+    }).lean()
 
     if (!hasOneAvailableFormation) {
       continue
@@ -53,7 +59,7 @@ export const inviteEtablissementToPremium = async ({ etablissements, eligibleTra
       },
     })
 
-    await etablissements.updateOne(
+    await Etablissement.updateOne(
       { formateur_siret: etablissement.formateur_siret },
       {
         premium_invitation_date: dayjs().toDate(),

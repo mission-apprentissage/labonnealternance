@@ -5,27 +5,26 @@ import dayjs from "../../services/dayjs.service.js"
 import config from "../../config.js"
 import { isValidEmail } from "../../common/utils/isValidEmail.js"
 import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service.js"
+import { Etablissement } from "../../common/model/index.js"
 import mailer from "../../services/mailer.service.js"
 
 /**
  * @description Send a "Premium" reminder mail.
  * @returns {Promise<void>}
  */
-export const premiumInviteOneShot = async ({ etablissements }) => {
+export const premiumInviteOneShot = async () => {
   logger.info("Cron #premiumInviteOneShot started.")
 
   const [etablissementsActivated, eligibleTrainingsForAppointmentsFound] = await Promise.all([
-    etablissements
-      .find({
-        gestionnaire_email: {
-          $ne: null,
-        },
-        optout_activation_date: {
-          $ne: null,
-        },
-        premium_activation_date: null,
-      })
-      .lean(),
+    Etablissement.find({
+      gestionnaire_email: {
+        $ne: null,
+      },
+      optout_activation_date: {
+        $ne: null,
+      },
+      premium_activation_date: null,
+    }).lean(),
     eligibleTrainingsForAppointmentService.find({ parcoursup_id: { $ne: null }, lieu_formation_email: { $ne: null } }).lean(),
   ])
 
@@ -71,7 +70,7 @@ export const premiumInviteOneShot = async ({ etablissements }) => {
         },
       })
 
-      await etablissements.updateOne(
+      await Etablissement.updateOne(
         { formateur_siret: etablissement.formateur_siret },
         {
           premium_invitation_date: dayjs().toDate(),

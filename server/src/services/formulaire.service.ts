@@ -291,9 +291,7 @@ export const createJob = async ({ job, id }: { job: Partial<IOffreExtended>; id:
   // Send mail with action links to manage offers
   await mailer.sendEmail({
     to: is_delegated ? contactCFA.email : email,
-    subject: is_delegated
-      ? `Votre offre d'alternance pour ${establishment_raison_sociale} est publiée`
-      : `Votre offre d'alternance est publiée`,
+    subject: is_delegated ? `Votre offre d'alternance pour ${establishment_raison_sociale} est publiée` : `Votre offre d'alternance est publiée`,
     template: mailTemplate["mail-nouvelle-offre"],
     data: {
       images: {
