@@ -11,6 +11,13 @@ import config from "../../config.js"
 export const inviteEtablissementToPremium = async ({ etablissements, mailer, eligibleTrainingsForAppointments }) => {
   logger.info("Cron #inviteEtablissementToPremium started.")
 
+  const startInvitationPeriod = dayjs().month(0).date(1)
+  const endInvitationPeriod = dayjs().month(7).date(31)
+  if (!dayjs().isBetween(startInvitationPeriod, endInvitationPeriod)) {
+    logger.info("Stopped because we are not between the 01/01 and the 31/08 (eligible period).")
+    return
+  }
+
   const etablissementsToInvite = await etablissements.find({
     gestionnaire_email: {
       $ne: null,
