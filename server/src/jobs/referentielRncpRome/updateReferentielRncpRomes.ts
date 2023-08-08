@@ -62,7 +62,6 @@ export default async function (optionalFileName?: string) {
     logger.info(`Fin traitement`)
   } catch (error) {
     logger.error(error)
-    return
   }
   return
 }
