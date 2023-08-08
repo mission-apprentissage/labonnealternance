@@ -585,7 +585,7 @@ export const getFormationsQuery = async (query: any): Promise<IApiError | { resu
   const queryValidationResult = await formationsQueryValidator(query)
 
   if (queryValidationResult.error) {
-    return { error: "wrong_parameters" }
+    return queryValidationResult
   }
 
   try {
