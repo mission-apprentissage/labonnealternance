@@ -6,16 +6,18 @@ import { referrers } from "../../common/model/constants/referrers.js"
 import { dayjs } from "../../common/utils/dayjs.js"
 import config from "../../config.js"
 import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service.js"
+import { Etablissement } from "../../common/model/index.js"
+import { mailer } from "../../services/mailer.service.js"
 
 /**
  * @description Active all etablissement's formations that have subscribed to opt-out.
  * @returns {Promise<void>}
  */
-export const activateOptOutEtablissementFormations = async ({ etablissements, mailer }) => {
+export const activateOptOutEtablissementFormations = async () => {
   logger.info("Cron #activateOptOutEtablissementFormations started.")
 
   // Opt-out etablissement to activate
-  const etablissementsToActivate = await etablissements.find({
+  const etablissementsToActivate = await Etablissement.find({
     optout_activation_scheduled_date: {
       $lte: dayjs().toDate(),
     },
@@ -38,7 +40,7 @@ export const activateOptOutEtablissementFormations = async ({ etablissements, ma
               .filter((referrer) => referrer !== referrers.PARCOURSUP.name),
           }
         ),
-        etablissements.findOneAndUpdate(
+        Etablissement.findOneAndUpdate(
           {
             _id: etablissement._id,
           },
@@ -121,7 +123,7 @@ export const activateOptOutEtablissementFormations = async ({ etablissements, ma
         )
       )
 
-      await etablissements.findOneAndUpdate(
+      await Etablissement.findOneAndUpdate(
         { _id: etablissement._id },
         {
           $push: {

@@ -4,15 +4,17 @@ import { mailType } from "../../common/model/constants/etablissement.js"
 import { dayjs } from "../../common/utils/dayjs.js"
 import { isValidEmail } from "../../common/utils/isValidEmail.js"
 import config from "../../config.js"
+import { Etablissement } from "../../common/model/index.js"
+import { mailer } from "../../services/mailer.service.js"
 
 /**
  * @description Invite all "etablissements" to Premium (followup).
  * @returns {Promise<void>}
  */
-export const inviteEtablissementToPremiumFollowUp = async ({ etablissements, mailer }) => {
+export const inviteEtablissementToPremiumFollowUp = async () => {
   logger.info("Cron #inviteEtablissementToPremiumFollowUp started.")
 
-  const etablissementsFound = await etablissements.find({
+  const etablissementsFound = await Etablissement.find({
     gestionnaire_email: {
       $ne: null,
     },
@@ -56,7 +58,7 @@ export const inviteEtablissementToPremiumFollowUp = async ({ etablissements, mai
       },
     })
 
-    await etablissements.updateOne(
+    await Etablissement.updateOne(
       { formateur_siret: etablissement.formateur_siret },
       {
         premium_invitation_date: dayjs().toDate(),

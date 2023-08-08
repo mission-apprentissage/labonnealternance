@@ -5,6 +5,7 @@ interface IEtablissement {
   gestionnaire_siret: string
   raison_sociale: string
   adresse: string
+  formateur_address: string
   formateur_zip_code: string
   formateur_city: string
   gestionnaire_email: string

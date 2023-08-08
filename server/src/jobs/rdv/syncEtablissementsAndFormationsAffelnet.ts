@@ -7,6 +7,7 @@ import { isValidEmail } from "../../common/utils/isValidEmail.js"
 import { isEmailBlacklisted } from "../../services/application.service.js"
 import { affelnetSelectedFields, getFormationsFromCatalogueMe } from "../../services/catalogue.service.js"
 import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service.js"
+import { Etablissement } from "../../common/model/index.js"
 
 /**
  * Gets email from catalogue field.
@@ -33,7 +34,7 @@ const getEmailFromCatalogueField = (email) => {
  * @description Gets Catalogue etablissments informations and insert in etablissement collection.
  * @returns {Promise<void>}
  */
-export const syncAffelnetFormationsFromCatalogueME = async ({ etablissements }) => {
+export const syncAffelnetFormationsFromCatalogueME = async () => {
   logger.info("Cron #syncEtablissementsAndFormationsAffelnet started.")
 
   const catalogueMinistereEducatif = await getFormationsFromCatalogueMe({
@@ -54,7 +55,7 @@ export const syncAffelnetFormationsFromCatalogueME = async ({ etablissements }) 
           eligibleTrainingsForAppointmentService.findOne({
             cle_ministere_educatif: formation.cle_ministere_educatif,
           }),
-          etablissements.findOne({ formateur_siret: formation.etablissement_formateur_siret }),
+          Etablissement.findOne({ formateur_siret: formation.etablissement_formateur_siret }),
         ])
 
         const referrersToActivate = eligibleTrainingsForAppointment?.referrers || []
@@ -136,7 +137,7 @@ export const syncAffelnetFormationsFromCatalogueME = async ({ etablissements }) 
         }
 
         // Update etablissement model (upsert)
-        return etablissements.updateMany(
+        return Etablissement.updateMany(
           {
             formateur_siret: formation.etablissement_formateur_siret,
           },

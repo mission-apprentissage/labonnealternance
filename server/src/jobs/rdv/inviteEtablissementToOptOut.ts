@@ -6,16 +6,18 @@ import { dayjs } from "../../common/utils/dayjs.js"
 import { isValidEmail } from "../../common/utils/isValidEmail.js"
 import config from "../../config.js"
 import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service.js"
+import { Etablissement } from "../../common/model/index.js"
+import { mailer } from "../../services/mailer.service.js"
 
 /**
  * @description Invite all "etablissements" without opt_mode to opt-out.
  * @returns {Promise<void>}
  */
-export const inviteEtablissementToOptOut = async ({ etablissements, mailer }) => {
+export const inviteEtablissementToOptOut = async () => {
   logger.info("Cron #inviteEtablissementToOptOut started.")
 
   // Opt-out etablissement to activate
-  const etablissementsWithouOptMode = await etablissements.find({
+  const etablissementsWithouOptMode = await Etablissement.find({
     optout_invitation_date: null,
     gestionnaire_email: { $nin: [null, ""] },
     affelnet_perimetre: null,
@@ -93,7 +95,7 @@ export const inviteEtablissementToOptOut = async ({ etablissements, mailer }) =>
         },
       })
 
-      await etablissement.update({
+      await Etablissement.update({
         optout_invitation_date: dayjs().toDate(),
         optout_activation_scheduled_date: willBeActivatedAt.toDate(),
         $push: {

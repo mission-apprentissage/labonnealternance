@@ -4,8 +4,9 @@ import { logger } from "../../common/logger.js"
 import { mailType } from "../../common/model/constants/etablissement.js"
 import { Etablissement } from "../../common/model/index.js"
 import config from "../../config.js"
+import { mailer } from "../../services/mailer.service.js"
 
-export const inviteEtablissementAffelnetToPremium = async ({ mailer }) => {
+export const inviteEtablissementAffelnetToPremium = async () => {
   logger.info("Cron #inviteEtablissementAffelnetToPremium started.")
 
   const startInvitationPeriod = dayjs().month(3).date(1)
