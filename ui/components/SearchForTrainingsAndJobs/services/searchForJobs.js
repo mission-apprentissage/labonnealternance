@@ -37,10 +37,13 @@ export const searchForJobsFunction = async ({
 
   try {
     const searchCenter = values?.location?.value ? [values.location.value.coordinates[0], values.location.value.coordinates[1]] : null
+    const romes = getRomeFromParameters({ values, widgetParameters })
+    const rncp = romes ? "" : getRncpFromParameters({ widgetParameters }) // on ne transmet pas romes ET rncp
+
     const response = await axios.get(jobsApi, {
       params: {
-        romes: getRomeFromParameters({ values, widgetParameters }),
-        rncp: getRncpFromParameters({ widgetParameters }),
+        romes,
+        rncp,
         longitude: values?.location?.value ? values.location.value.coordinates[0] : null,
         latitude: values?.location?.value ? values.location.value.coordinates[1] : null,
         insee: values?.location?.insee,
