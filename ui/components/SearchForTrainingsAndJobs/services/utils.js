@@ -23,9 +23,7 @@ const getRomeFromParameters = ({ values, widgetParameters }) => {
   return romes
 }
 
-const getRncpFromParameters = ({ widgetParameters }) => {
-  return widgetParameters?.parameters?.rncp
-}
+const getRncpFromParameters = ({ widgetParameters }) => widgetParameters?.parameters?.rncp
 
 const getRncpsFromParameters = ({ values, widgetParameters }) => {
   return widgetParameters?.parameters?.jobName && widgetParameters?.parameters?.romes && widgetParameters?.parameters?.frozenJob
