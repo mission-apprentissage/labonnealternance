@@ -26,7 +26,6 @@ const validateRomesOrRncp = async (query: JobSearchQuery, error_messages: string
   } else {
     if (validateRncp(rncp, error_messages)) {
       const romesFromRncp = await RncpRomes.find({ rncp_code: rncp })
-      console.log("romesFormRncp : ", romesFromRncp, rncp)
       if (!romesFromRncp.length) {
         error_messages.push(`rncp : Rncp code not recognized. Please check that it exists. (${rncp})`)
       } else {
@@ -49,6 +48,32 @@ const validateRomeOrDomain = ({ romes, romeDomain, romeLimit = 20, optional }, e
   } else if (romeDomain) {
     if (!/^[a-zA-Z][0-9]{2}$/.test(romeDomain) && !/^[a-zA-Z]$/.test(romeDomain))
       error_messages.push("romeDomain : Badly formatted romeDomain. Rome domain must be one letter or one letter followed by 2 digit number. ex : A or A12")
+  }
+}
+
+const validateRncpOrRomeOrDomain = async (query, error_messages, romeLimit = 20) => {
+  const { romes, rncp, romeDomain } = query
+
+  if (!rncp && !romes && !romeDomain) {
+    error_messages.push("romes, rncp, romeDomain : You must define at least 1 rome code OR a single romeDomain OR a single rncp code.")
+  } else if ((rncp && romes) || (rncp && romeDomain) || (romes && romeDomain)) {
+    error_messages.push("romes, romeDomain, rncp : You must define either romes OR romeDomain OR rncp.")
+  } else if (romes) {
+    if (romes.split(",").length > romeLimit) error_messages.push(`romes : Too many rome codes. Maximum is ${romeLimit}.`)
+    if (!/^[a-zA-Z][0-9]{4}(,[a-zA-Z][0-9]{4})*$/.test(romes))
+      error_messages.push("romes : Badly formatted rome codes. Rome code must be one letter followed by 4 digit number. ex : A1234")
+  } else if (romeDomain) {
+    if (!/^[a-zA-Z][0-9]{2}$/.test(romeDomain) && !/^[a-zA-Z]$/.test(romeDomain))
+      error_messages.push("romeDomain : Badly formatted romeDomain. Rome domain must be one letter or one letter followed by 2 digit number. ex : A or A12")
+  } else if (rncp) {
+    if (validateRncp(rncp, error_messages)) {
+      const romesFromRncp = await RncpRomes.find({ rncp_code: rncp })
+      if (!romesFromRncp.length) {
+        error_messages.push(`rncp : Rncp code not recognized. Please check that it exists. (${rncp})`)
+      } else {
+        query.romes = romesFromRncp[0].rome_codes.join(",")
+      }
+    }
   }
 }
 
@@ -135,6 +160,7 @@ export {
   validateRadius,
   validateRomesOrRncp,
   validateRomeOrDomain,
+  validateRncpOrRomeOrDomain,
   validateLatitude,
   validateLongitude,
   validateApiSources,

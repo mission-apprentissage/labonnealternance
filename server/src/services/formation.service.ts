@@ -582,7 +582,7 @@ const getSchoolName = (formation: Partial<IFormationCatalogue>): string => {
  * @returns {Promise<IApiError | { results: ILbaItem[]}}
  */
 export const getFormationsQuery = async (query: any): Promise<IApiError | { results: ILbaItem[] }> => {
-  const queryValidationResult = formationsQueryValidator(query)
+  const queryValidationResult = await formationsQueryValidator(query)
 
   if (queryValidationResult.error) {
     return { error: "wrong_parameters" }
