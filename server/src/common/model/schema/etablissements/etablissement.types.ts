@@ -1,6 +1,7 @@
 import { IMailing } from "../appointments/appointments.types.js"
 
 interface IEtablissement {
+  _id: string
   formateur_siret: string
   gestionnaire_siret: string
   raison_sociale: string

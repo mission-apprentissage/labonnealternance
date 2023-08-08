@@ -150,7 +150,7 @@ export const syncAffelnetFormationsFromCatalogueME = async () => {
             formateur_address: formation.etablissement_formateur_adresse,
             formateur_zip_code: formation.etablissement_formateur_code_postal,
             formateur_city: formation.etablissement_formateur_localite,
-            last_catalogue_sync_date: dayjs().format(),
+            last_catalogue_sync_date: dayjs().toDate(),
           }
         )
       },
