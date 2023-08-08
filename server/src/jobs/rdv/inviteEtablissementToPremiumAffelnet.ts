@@ -11,7 +11,7 @@ export const inviteEtablissementAffelnetToPremium = async () => {
 
   const startInvitationPeriod = dayjs().month(3).date(1)
   const endInvitationPeriod = dayjs().month(7).date(31)
-  if (!dayjs().isBetween(startInvitationPeriod, endInvitationPeriod)) {
+  if (!dayjs().isBetween(startInvitationPeriod, endInvitationPeriod, "day", "[]")) {
     logger.info("Stopped because we are not between the 01/03 and the 31/08 (eligible period).")
     return
   }
