@@ -1,3 +1,9 @@
+# [1.68.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.67.1...v1.68.0) (2023-08-09)
+
+### Features
+
+- LBAC-1388 recherche par RNCP ([#532](https://github.com/mission-apprentissage/labonnealternance/issues/532)) ([109bec1](https://github.com/mission-apprentissage/labonnealternance/commit/109bec15052386a88b32f3b9ea3707dfed43817f))
+
 ## [1.67.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.67.0...v1.67.1) (2023-08-04)
 
 ### Bug Fixes
