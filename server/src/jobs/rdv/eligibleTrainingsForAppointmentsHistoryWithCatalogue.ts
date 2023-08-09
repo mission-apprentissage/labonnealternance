@@ -1,6 +1,6 @@
 import { oleoduc, writeData } from "oleoduc"
 import { logger } from "../../common/logger.js"
-import { EligibleTrainingsForAppointment, eligibleTrainingsForAppointmentHistory, FormationCatalogue } from "../../common/model/index.js"
+import { EligibleTrainingsForAppointment, eligibleTrainingsForAppointmentHistory, FormationCatalogue } from "../../db/index.js"
 
 import dayjs from "../../services/dayjs.service.js"
 

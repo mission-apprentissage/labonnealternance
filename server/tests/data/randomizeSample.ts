@@ -1,6 +1,6 @@
 import faker from "faker/locale/fr.js"
 import RandExp from "randexp"
-import { referrers } from "../../src/common/model/constants/referrers.js"
+import { referrers } from "../../src/db/constants/referrers.js"
 import { ROLES } from "../../src/services/constant.service.js"
 
 // Utils

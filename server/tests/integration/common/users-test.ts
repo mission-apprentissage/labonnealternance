@@ -1,7 +1,7 @@
 import assert from "assert"
 import integrationTests from "../../utils/integrationTests.js"
 import users from "../../../src/common/components/users.js"
-import { User } from "../../../src/common/model/index.js"
+import { User } from "../../../src/db"
 import { ROLES } from "../../../src/services/constant.service.js"
 import __filename from "../../../src/common/filename.js"
 

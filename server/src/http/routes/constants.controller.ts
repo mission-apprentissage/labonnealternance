@@ -1,7 +1,7 @@
 import express from "express"
 import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
-import { referrers } from "../../common/model/constants/referrers.js"
-import { optMode } from "../../common/model/constants/etablissement.js"
+import { referrers } from "../../db/constants/referrers.js"
+import { optMode } from "../../db/constants/etablissement.js"
 
 /**
  * @description Constants router.

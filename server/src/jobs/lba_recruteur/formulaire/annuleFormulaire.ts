@@ -1,6 +1,6 @@
 import dayjs from "../../../services/dayjs.service.js"
 import { logger } from "../../../common/logger.js"
-import { Recruiter } from "../../../common/model/index.js"
+import { Recruiter } from "../../../db/index.js"
 import { asyncForEach } from "../../../common/utils/asyncUtils.js"
 import { notifyToSlack } from "../../../common/utils/slackUtils.js"
 

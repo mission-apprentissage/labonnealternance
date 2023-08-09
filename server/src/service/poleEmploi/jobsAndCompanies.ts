@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import { RncpRomes } from "../../common/model/index.js"
+import { RncpRomes } from "../../db/index.js"
 import { trackApiCall } from "../../common/utils/sendTrackingEvent.js"
 import { sentryCaptureException } from "../../common/utils/sentryUtils.js"
 import { getLbaJobs } from "../../services/lbajob.service.js"

@@ -4,7 +4,7 @@ import { access, mkdir } from "node:fs/promises"
 import prettyMilliseconds from "pretty-ms"
 import createComponents from "../common/components/components.js"
 import { getLoggerWithContext } from "../common/logger.js"
-import { closeMongoConnection } from "../common/mongodb.js"
+import { closeMongoConnection } from "../db/mongodb.js"
 import config from "../config.js"
 
 const logger = getLoggerWithContext("script")

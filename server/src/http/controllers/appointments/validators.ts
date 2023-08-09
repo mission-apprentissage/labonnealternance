@@ -1,5 +1,5 @@
 import Joi from "joi"
-import { referrers } from "../../../common/model/constants/referrers.js"
+import { referrers } from "../../../db/constants/referrers.js"
 
 const contextCreateSchema = Joi.alternatives(
   // Find through "idParcoursup"

@@ -4,7 +4,7 @@ import path from "path"
 import XLSX from "xlsx"
 import __dirname from "../../common/dirname.js"
 import { logger } from "../../common/logger.js"
-import { RncpRomes } from "../../common/model/index.js"
+import { RncpRomes } from "../../db/index.js"
 import { getFileFromS3Bucket } from "../../common/utils/awsUtils.js"
 import { readXLSXFile } from "../../common/utils/fileUtils.js"
 

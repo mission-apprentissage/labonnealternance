@@ -1,4 +1,4 @@
-import { Appointment } from "../../../common/model/index.js"
+import { Appointment } from "../../../db/index.js"
 import { runScript } from "../../scriptWrapper.js"
 
 export const addNewFieldToAppointmentCollection = async () => {

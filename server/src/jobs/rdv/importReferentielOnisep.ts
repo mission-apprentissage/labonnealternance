@@ -5,7 +5,7 @@ import { writeFile } from "node:fs/promises"
 import { oleoduc, transformData, writeData, filterData } from "oleoduc"
 import { logger } from "../../common/logger.js"
 import { parseCsv } from "../../common/utils/fileUtils.js"
-import { ReferentielOnisep } from "../../common/model/index.js"
+import { ReferentielOnisep } from "../../db/index.js"
 import { notifyToSlack } from "../../common/utils/slackUtils.js"
 
 type TCsvRow = {

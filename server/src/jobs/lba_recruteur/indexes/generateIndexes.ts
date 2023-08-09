@@ -1,4 +1,4 @@
-import { BonnesBoites, DiplomesMetiers, DomainesMetiers, FormationCatalogue, Recruiter } from "../../../common/model/index.js"
+import { BonnesBoites, DiplomesMetiers, DomainesMetiers, FormationCatalogue, Recruiter } from "../../../db/index.js"
 import { rebuildIndex } from "../../../common/utils/esUtils.js"
 import { logger } from "../../../common/logger.js"
 

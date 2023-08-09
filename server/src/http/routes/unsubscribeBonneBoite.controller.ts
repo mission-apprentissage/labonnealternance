@@ -1,4 +1,4 @@
-import { BonnesBoites, UnsubscribedBonneBoite } from "../../common/model/index.js"
+import { BonnesBoites, UnsubscribedBonneBoite } from "../../db/index.js"
 import express from "express"
 import rateLimit from "express-rate-limit"
 import { tryCatch } from "../middlewares/tryCatchMiddleware.js"

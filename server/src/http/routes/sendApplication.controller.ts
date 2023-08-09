@@ -2,7 +2,7 @@
 import express from "express"
 import rateLimit from "express-rate-limit"
 import { ObjectId } from "mongodb"
-import { Application } from "../../common/model/index.js"
+import { Application } from "../../db/index.js"
 import { sendApplication, sendNotificationToApplicant, updateApplicationStatus, validateFeedbackApplicationComment } from "../../services/application.service.js"
 import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
 import { decryptWithIV } from "../../common/utils/encryptString.js"

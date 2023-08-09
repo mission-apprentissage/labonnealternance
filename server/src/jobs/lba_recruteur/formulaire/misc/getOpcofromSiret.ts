@@ -1,9 +1,9 @@
 import axios from "axios"
 import { logger } from "../../../../common/logger.js"
-import { Recruiter } from "../../../../common/model/index.js"
+import { Recruiter } from "../../../../db/index.js"
 import { asyncForEach } from "../../../../common/utils/asyncUtils.js"
 import { runScript } from "../../../scriptWrapper.js"
-import { IRecruiter } from "../../../../common/model/schema/recruiter/recruiter.types.js"
+import { IRecruiter } from "../../../../db/schema/recruiter/recruiter.types.js"
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 

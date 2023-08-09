@@ -2,7 +2,7 @@
 import axios from "axios"
 import __dirname from "../../common/dirname.js"
 import { getDistanceInKm } from "../../common/geolib.js"
-import { FormationCatalogue } from "../../common/model/index.js"
+import { FormationCatalogue } from "../../db/index.js"
 import { asyncForEach } from "../../common/utils/asyncUtils.js"
 import { createXLSXFile } from "../../common/utils/fileUtils.js"
 import { runScript } from "../scriptWrapper.js"

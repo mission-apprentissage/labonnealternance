@@ -1,5 +1,5 @@
-import { IBonneBoite } from "../common/model/schema/bonneboite/bonneboite.types.js"
-import { BonnesBoites } from "../common/model/index.js"
+import { IBonneBoite } from "../db/schema/bonneboite/bonneboite.types.js"
+import { BonnesBoites } from "../db/index.js"
 import { sentryCaptureException } from "../common/utils/sentryUtils.js"
 
 /**

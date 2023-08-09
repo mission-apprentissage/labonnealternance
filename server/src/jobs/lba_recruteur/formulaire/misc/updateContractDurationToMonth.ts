@@ -1,5 +1,5 @@
 import { logger } from "../../../../common/logger.js"
-import { Recruiter } from "../../../../common/model/index.js"
+import { Recruiter } from "../../../../db/index.js"
 import { asyncForEach } from "../../../../common/utils/asyncUtils.js"
 import { runScript } from "../../../scriptWrapper.js"
 

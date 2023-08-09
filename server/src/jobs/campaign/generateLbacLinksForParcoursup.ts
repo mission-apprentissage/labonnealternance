@@ -1,7 +1,7 @@
 // @ts-nocheck
 import fs from "fs"
 import { runScript } from "../scriptWrapper.js"
-import { Appointment } from "../../common/model/index.js"
+import { Appointment } from "../../db/index.js"
 import { asyncForEach } from "../../common/utils/asyncUtils.js"
 import { URL } from "url"
 

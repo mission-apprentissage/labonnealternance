@@ -10,6 +10,7 @@ import { addEmailToBlacklist } from "../../../services/application.service.js"
 import { tryCatch } from "../../middlewares/tryCatchMiddleware.js"
 import * as eligibleTrainingsForAppointmentService from "../../../services/eligibleTrainingsForAppointment.service.js"
 import * as appointmentService from "../../../services/appointment.service.js"
+import { Etablissement } from "../../../db/index.js"
 
 /**
  * @description Checks "Brevo" token.
@@ -24,7 +25,7 @@ const checkWebhookToken = () => {
 /**
  * Email controllers.
  */
-export default ({ etablissements }) => {
+export default () => {
   const router = express.Router()
 
   /**
@@ -82,7 +83,7 @@ export default ({ etablissements }) => {
         }
       }
 
-      const [etablissementFound] = await etablissements.find({ "mailing.message_id": { $regex: messageId } })
+      const [etablissementFound] = await Etablissement.find({ "mailing.message_id": { $regex: messageId } })
 
       // If mail sent from etablissement model
       if (etablissementFound) {

@@ -1,6 +1,6 @@
 import dayjs from "../../../../services/dayjs.service.js"
 import { logger } from "../../../../common/logger.js"
-import { UserRecruteur } from "../../../../common/model/index.js"
+import { UserRecruteur } from "../../../../db/index.js"
 import { asyncForEach } from "../../../../common/utils/asyncUtils.js"
 import { validationOrganisation } from "../../../../services/bal.service.js"
 import { checkIfUserEmailIsPrivate } from "../../../../common/utils/mailUtils.js"

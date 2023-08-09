@@ -3,7 +3,7 @@ import { deleteFormulaire, getFormulaire, reactivateRecruiter, sendCFADelegation
 import { mailTemplate } from "../../assets/index.js"
 import { CFA, ENTREPRISE, ETAT_UTILISATEUR, JOB_STATUS, RECRUITER_STATUS } from "../../services/constant.service.js"
 import dayjs from "../../services/dayjs.service.js"
-import { Recruiter, UserRecruteur } from "../../common/model/index.js"
+import { Recruiter, UserRecruteur } from "../../db/index.js"
 import { createMagicLinkToken } from "../../common/utils/jwtUtils.js"
 import config from "../../config.js"
 import { tryCatch } from "../middlewares/tryCatchMiddleware.js"

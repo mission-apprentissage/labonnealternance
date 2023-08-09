@@ -6,7 +6,7 @@ import fsExtra from "fs-extra"
 import { oleoduc, readLineByLine, transformData, writeData } from "oleoduc"
 import path from "path"
 import __dirname from "../../common/dirname.js"
-import { GeoLocation } from "../../common/model/index.js"
+import { GeoLocation } from "../../db/index.js"
 import { logMessage } from "../../common/utils/logMessage.js"
 import { checkIfAlgoFileIsNew, downloadAlgoCompanyFile, readCompaniesFromJson, removePredictionFile } from "./bonnesBoitesUtils.js"
 

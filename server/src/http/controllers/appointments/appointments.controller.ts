@@ -2,13 +2,12 @@ import Sentry from "@sentry/node"
 import * as express from "express"
 import { Body, Controller, Example, OperationId, Post, Request, Response, Route, SuccessResponse, Tags } from "tsoa"
 import * as eligibleTrainingsForAppointmentService from "../../../services/eligibleTrainingsForAppointment.service.js"
-import Etablissement from "../../../common/components/etablissement.js"
-import { getReferrerByKeyName } from "../../../common/model/constants/referrers.js"
+import { getReferrerByKeyName } from "../../../db/constants/referrers.js"
 import { isValidEmail } from "../../../common/utils/isValidEmail.js"
 import config from "../../../config.js"
 import { TCreateContextBody, TCreateContextResponse, TCreateContextResponseError } from "./types.js"
 import { contextCreateSchema } from "./validators.js"
-import { ReferentielOnisep } from "../../../common/model/index.js"
+import { Etablissement, ReferentielOnisep } from "../../../db/index.js"
 
 @Tags("Appointment Request")
 @Route("/api/appointment-request")
@@ -95,7 +94,7 @@ export class AppointmentsController extends Controller {
       }
     }
 
-    const etablissement = await Etablissement().findOne({ formateur_siret: eligibleTrainingsForAppointment.etablissement_formateur_siret })
+    const etablissement = await Etablissement.findOne({ formateur_siret: eligibleTrainingsForAppointment.etablissement_formateur_siret })
 
     return {
       etablissement_formateur_entreprise_raison_sociale: etablissement.raison_sociale,

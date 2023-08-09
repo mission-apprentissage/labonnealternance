@@ -1,13 +1,13 @@
 import { oleoduc, writeData } from "oleoduc"
 import { Readable } from "stream"
 import { logger } from "../../common/logger.js"
-import { referrers } from "../../common/model/constants/referrers.js"
+import { referrers } from "../../db/constants/referrers.js"
 import dayjs from "../../services/dayjs.service.js"
 import { isValidEmail } from "../../common/utils/isValidEmail.js"
 import { isEmailBlacklisted } from "../../services/application.service.js"
 import { affelnetSelectedFields, getFormationsFromCatalogueMe } from "../../services/catalogue.service.js"
 import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service.js"
-import { Etablissement } from "../../common/model/index.js"
+import { Etablissement } from "../../db/index.js"
 
 /**
  * Gets email from catalogue field.

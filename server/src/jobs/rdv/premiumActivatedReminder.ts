@@ -1,12 +1,12 @@
 import _ from "lodash-es"
 import { mailTemplate } from "../../assets/index.js"
 import { logger } from "../../common/logger.js"
-import { mailType } from "../../common/model/constants/etablissement.js"
+import { mailType } from "../../db/constants/etablissement.js"
 import dayjs from "../../services/dayjs.service.js"
 import config from "../../config.js"
 import { isValidEmail } from "../../common/utils/isValidEmail.js"
 import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service.js"
-import { Etablissement } from "../../common/model/index.js"
+import { Etablissement } from "../../db/index.js"
 import mailer from "../../services/mailer.service.js"
 
 /**

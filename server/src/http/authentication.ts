@@ -1,6 +1,6 @@
 import * as express from "express"
-import { Credential } from "../common/model/index.js"
-import { ICredential } from "../common/model/schema/credentials/credential.types.js"
+import { Credential } from "../db/index.js"
+import { ICredential } from "../db/schema/credentials/credential.types.js"
 
 /**
  * @description This function is the authentication middleware. tsoa needs all parameters, even if not used.

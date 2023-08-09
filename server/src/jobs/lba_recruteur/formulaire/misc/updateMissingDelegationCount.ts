@@ -1,6 +1,6 @@
 import { logger } from "../../../../common/logger.js"
-import { Recruiter } from "../../../../common/model/index.js"
-import { IJobs } from "../../../../common/model/schema/jobs/jobs.types.js"
+import { Recruiter } from "../../../../db/index.js"
+import { IJobs } from "../../../../db/schema/jobs/jobs.types.js"
 import { asyncForEach } from "../../../../common/utils/asyncUtils.js"
 import { runScript } from "../../../scriptWrapper.js"
 

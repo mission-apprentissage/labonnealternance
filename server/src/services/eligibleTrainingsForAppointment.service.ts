@@ -1,5 +1,5 @@
-import { EligibleTrainingsForAppointment } from "../common/model/index.js"
-import { IEligibleTrainingsForAppointment } from "../common/model/schema/eligibleTrainingsForAppointment/eligibleTrainingsForAppointment.types.js"
+import { EligibleTrainingsForAppointment } from "../db/index.js"
+import { IEligibleTrainingsForAppointment } from "../db/schema/eligibleTrainingsForAppointment/eligibleTrainingsForAppointment.types.js"
 import { FilterQuery } from "mongoose"
 
 /**

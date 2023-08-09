@@ -1,5 +1,5 @@
-import { Appointment } from "../common/model/index.js"
-import { IAppointments } from "../common/model/schema/appointments/appointments.types.js"
+import { Appointment } from "../db/index.js"
+import { IAppointments } from "../db/schema/appointments/appointments.types.js"
 import { FilterQuery } from "mongoose"
 
 /**

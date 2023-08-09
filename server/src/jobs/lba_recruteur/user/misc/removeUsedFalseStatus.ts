@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { UserRecruteur } from "../../../../common/model/index.js"
+import { UserRecruteur } from "../../../../db/index.js"
 import { asyncForEach } from "../../../../common/utils/asyncUtils.js"
 import { getUserValidationState } from "../../../../services/userRecruteur.service.js"
 import { runScript } from "../../../scriptWrapper.js"

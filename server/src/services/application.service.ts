@@ -1,7 +1,7 @@
 import { isEmailBurner } from "burner-email-providers"
 import path from "path"
 import { oleoduc, writeData } from "oleoduc"
-import { Application, BonnesBoites, EmailBlacklist } from "../common/model/index.js"
+import { Application, BonnesBoites, EmailBlacklist } from "../db/index.js"
 import { manageApiError } from "../common/utils/errorManager.js"
 import { decryptWithIV, encryptIdWithIV } from "../common/utils/encryptString.js"
 import { validateCaller } from "../service/queryValidators.js"
@@ -12,9 +12,9 @@ import __dirname from "../common/dirname.js"
 import { BrevoEventStatus } from "./brevo.service.js"
 import mailer from "./mailer.service.js"
 import { sentryCaptureException } from "../common/utils/sentryUtils.js"
-import { IApplication } from "../common/model/schema/application/applications.types.js"
-import { IJobs } from "../common/model/schema/jobs/jobs.types.js"
-import { IBonneBoite } from "../common/model/schema/bonneboite/bonneboite.types.js"
+import { IApplication } from "../db/schema/application/applications.types.js"
+import { IJobs } from "../db/schema/jobs/jobs.types.js"
+import { IBonneBoite } from "../db/schema/bonneboite/bonneboite.types.js"
 
 import { Document } from "mongoose"
 import Joi from "joi"
@@ -585,7 +585,7 @@ export const sendNotificationToApplicant = async ({
  */
 export const updateApplicationStatus = async ({ payload }: { payload: any }): Promise<void> => {
   /* Format payload
-      { 
+      {
         event : "unique_opened",
         id: 497470,
         date: "2021-12-27 14:12:54",

@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { logger } from "../../../common/logger.js"
-import { mongooseInstance } from "../../../common/mongodb.js"
+import { mongooseInstance } from "../../../db/mongodb.js"
 import { runScript } from "../../scriptWrapper.js"
 import { createOffreCollection } from "../seed/createOffre.js"
 

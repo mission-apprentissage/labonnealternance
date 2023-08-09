@@ -1,6 +1,6 @@
-import { IAdresseCFA, IAdresseV3, IGlobalAddress } from "../common/model/schema/_shared/shared.types.js"
-import { IRecruiter } from "../common/model/schema/recruiter/recruiter.types.js"
-import { IUserRecruteur } from "../common/model/schema/userRecruteur/userRecruteur.types.js"
+import { IAdresseCFA, IAdresseV3, IGlobalAddress } from "../db/schema/_shared/shared.types.js"
+import { IRecruiter } from "../db/schema/recruiter/recruiter.types.js"
+import { IUserRecruteur } from "../db/schema/userRecruteur/userRecruteur.types.js"
 
 export interface IFormatAPIReferentiel
   extends Pick<IUserRecruteur, "establishment_raison_sociale" | "establishment_siret" | "is_qualiopi" | "address_detail" | "geo_coordinates" | "address"> {

@@ -3,9 +3,9 @@ import { Body, Controller, Get, Header, Hidden, OperationId, Patch, Path, Post, 
 import { ICreateDelegation, ICreateJobBody, IGetDelegation, TCreateEstablishmentBody, TEstablishmentResponseSuccess, TJob, TResponseError } from "./jobs.types.js"
 import { createDelegationSchema, createEstablishmentSchema, createJobSchema, getEstablishmentEntitySchema, updateJobSchema } from "./jobs.validators.js"
 import { formatEntrepriseData, getEtablissement, getEtablissementFromGouv, getGeoCoordinates } from "../../../services/etablissement.service.js"
-import { Recruiter } from "../../../common/model/index.js"
+import { Recruiter } from "../../../db/index.js"
 import { createUser, updateUserValidationHistory } from "../../../services/userRecruteur.service.js"
-import { IUserRecruteur } from "../../../common/model/schema/userRecruteur/userRecruteur.types.js"
+import { IUserRecruteur } from "../../../db/schema/userRecruteur/userRecruteur.types.js"
 import {
   cancelOffre,
   createJobDelegations,
@@ -17,14 +17,14 @@ import {
   patchOffre,
   provideOffre,
 } from "../../../services/formulaire.service.js"
-import { IJobs } from "../../../common/model/schema/jobs/jobs.types.js"
+import { IJobs } from "../../../db/schema/jobs/jobs.types.js"
 import dayjs from "../../../services/dayjs.service.js"
 import { getAppellationDetailsFromAPI, getRomeDetailsFromAPI } from "../../../services/rome.service.js"
 import { getOffre } from "../../../services/formulaire.service.js"
 import { getNearEtablissementsFromRomes } from "../../../services/catalogue.service.js"
 import { ACTIVE, ANNULEE, POURVUE, ENTREPRISE, ETAT_UTILISATEUR, VALIDATION_UTILISATEUR } from "../../../services/constant.service.js"
 import { delay } from "../../../common/utils/asyncUtils.js"
-import { ICredential } from "../../../common/model/schema/credentials/credential.types.js"
+import { ICredential } from "../../../db/schema/credentials/credential.types.js"
 import { IApiError } from "../../../common/utils/errorManager.js"
 import { ILbaItem } from "../../../services/lbaitem.shared.service.types.js"
 import { getCompanyFromSiret } from "../../../service/poleEmploi/bonnesBoites.js"

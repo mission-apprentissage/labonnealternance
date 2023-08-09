@@ -11,7 +11,7 @@ import { matchaMock, matchaMockMandataire, matchasMock } from "../mocks/matchas-
 import { getOffreAvecInfoMandataire, getJobsFromElasticSearch, incrementLbaJobViewCount } from "./formulaire.service.js"
 import { getApplicationByJobCount, IApplicationCount } from "./application.service.js"
 import { ILbaItem, LbaItem } from "./lbaitem.shared.service.types.js"
-import { IRecruiter } from "../common/model/schema/recruiter/recruiter.types.js"
+import { IRecruiter } from "../db/schema/recruiter/recruiter.types.js"
 import { ILbaJobEsResult } from "./lbajob.service.types.js"
 
 /**

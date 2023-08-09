@@ -4,7 +4,7 @@
  */
 
 import { omit } from "lodash-es"
-import { Appointment, AppointmentDetailed, User } from "../../common/model/index.js"
+import { Appointment, AppointmentDetailed, User } from "../../db/index.js"
 import { asyncForEach } from "../../common/utils/asyncUtils.js"
 import { runScript } from "../scriptWrapper.js"
 

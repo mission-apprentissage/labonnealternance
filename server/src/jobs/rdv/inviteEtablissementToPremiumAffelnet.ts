@@ -1,8 +1,8 @@
 import { mailTemplate } from "../../assets/index.js"
 import dayjs from "../../services/dayjs.service.js"
 import { logger } from "../../common/logger.js"
-import { mailType } from "../../common/model/constants/etablissement.js"
-import { Etablissement } from "../../common/model/index.js"
+import { mailType } from "../../db/constants/etablissement.js"
+import { Etablissement } from "../../db/index.js"
 import config from "../../config.js"
 import mailer from "../../services/mailer.service.js"
 
