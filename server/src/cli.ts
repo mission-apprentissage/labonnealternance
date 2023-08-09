@@ -35,6 +35,7 @@ import { runScript } from "./jobs/scriptWrapper.js"
 import { checkAwaitingCompaniesValidation } from "./jobs/lba_recruteur/user/misc/updateMissingActivationState.js"
 import updateBrevoBlockedEmails from "./jobs/updateBrevoBlockedEmails/updateBrevoBlockedEmails.js"
 import { importReferentielOnisep } from "./jobs/rdv/importReferentielOnisep.js"
+import updateReferentielRncpRomes from "./jobs/referentielRncpRome/updateReferentielRncpRomes.js"
 
 cli.addHelpText("after", null)
 
@@ -331,6 +332,13 @@ cli
   .description("Procède à l'association des diplômes par métiers")
   .action(() => {
     runScript(() => updateDiplomesMetiers())
+  })
+
+cli
+  .command("update-referentiel-rncp-romes")
+  .description("Procède à la mise à jour du référentiel RNCP codes ROME")
+  .action(() => {
+    runScript(() => updateReferentielRncpRomes())
   })
 
 cli.parse(process.argv)

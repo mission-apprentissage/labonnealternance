@@ -425,6 +425,7 @@ export class JobsController extends Controller {
    * @param {string} referer the referer provided in the HTTP query headers
    * @param {string} caller the consumer id.
    * @param {string} romes some rome codes separated by commas
+   * @param {string} rncp a rncp code
    * @param {string} latitude search center latitude
    * @param {string} longitude search center longitude
    * @param {number} radius the search radius
@@ -443,7 +444,8 @@ export class JobsController extends Controller {
   @OperationId("getJobOpportunities")
   public async getJobOpportunities(
     @Request() request: express.Request,
-    @Query() romes: string[],
+    @Query() romes?: string[],
+    @Query() rncp?: string,
     @Header() @Hidden() referer?: string,
     @Query() caller?: string,
     @Query() latitude?: string,
@@ -456,7 +458,7 @@ export class JobsController extends Controller {
     @Query() opcoUrl?: string,
     @Query() @Hidden() useMock?: string
   ): Promise<IApiError | { lbbCompanies: ILbaItem[] } | { lbaCompanies: ILbaItem[] }> {
-    const result = await getJobsQuery({ romes: romes.join(","), caller, referer, latitude, longitude, radius, insee, sources, diploma, opco, opcoUrl, useMock })
+    const result = await getJobsQuery({ romes: romes?.join(",") || null, rncp, caller, referer, latitude, longitude, radius, insee, sources, diploma, opco, opcoUrl, useMock })
 
     if ("error" in result) {
       this.setStatus(500)

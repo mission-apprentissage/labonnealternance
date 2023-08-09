@@ -14,7 +14,7 @@ export default function () {
     "/",
     tryCatch(async (req: express.Request, res) => {
       const query = { ...req.query, referer: req.headers.referer }
-      let result = jobsEtFormationsQueryValidator(query)
+      let result = await jobsEtFormationsQueryValidator(query)
 
       // TODO: use Joi control when moving this part to TSOA controller
       if (!result.error) {
