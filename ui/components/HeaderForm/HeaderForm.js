@@ -72,6 +72,7 @@ const HeaderForm = ({ handleSearchSubmit, isHome }) => {
               <Box>
                 <AutoCompleteField
                   kind="Métier ou diplôme *"
+                  id="headerFormJobField"
                   items={[]}
                   hasError={errors.job}
                   initialSelectedItem={contextFormValues?.job || null}
@@ -93,6 +94,7 @@ const HeaderForm = ({ handleSearchSubmit, isHome }) => {
               <Box ml={3}>
                 <Box>
                   <AutoCompleteField
+                    id="headerFormPlaceField"
                     kind="Lieu"
                     items={[]}
                     hasError={errors.location}
