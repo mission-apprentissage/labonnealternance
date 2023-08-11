@@ -120,6 +120,7 @@ const HeaderForm = ({ handleSearchSubmit, isHome }) => {
                     type="select"
                     value={locationRadius}
                     name="locationRadius"
+                    data-testid="locationRadius"
                   >
                     {buildRayonsOptions()}
                   </Select>

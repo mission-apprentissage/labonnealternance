@@ -138,6 +138,7 @@ const SearchForm = (props) => {
                         onChange={(evt) => handleSelectChange(evt, setFieldValue, setLocationRadius, "radius")}
                         value={locationRadius}
                         name="locationRadius"
+                        data-testid="locationRadius"
                         {...selectProperties}
                       >
                         {buildRayonsOptions()}
