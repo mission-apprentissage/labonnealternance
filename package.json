@@ -21,7 +21,9 @@
     "talisman:add-exception": "yarn node-talisman --githook pre-commit -i",
     "e2e": "cypress open",
     "e2e:headless": "cypress run",
-    "e2e:convert": "chrome-recorder cypress/records/ui/*.json --output=cypress/e2e/ui; chrome-recorder cypress/records/ui_espace_pro/*.json --output=cypress/e2e/ui_espace_pro"
+    "e2e:production": "cypress run --env host=https://labonnealternance.apprentissage.beta.gouv.fr",
+    "e2e:convert": "chrome-recorder cypress/records/ui/*.json --output=cypress/e2e/ui; chrome-recorder cypress/records/ui_espace_pro/*.json --output=cypress/e2e/ui_espace_pro",
+    "e2e:specific": "cypress run --spec=./cypress/e2e/ui/send-job-application.cy.js --env host=localhost"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.1.2",
