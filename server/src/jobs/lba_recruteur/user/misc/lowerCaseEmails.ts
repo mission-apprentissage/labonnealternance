@@ -1,8 +1,6 @@
-// @ts-nocheck
 import { Recruiter, UserRecruteur } from "../../../../common/model/index.js"
 import { runScript } from "../../../scriptWrapper.js"
 import { IUserRecruteur } from "../../../../common/model/schema/userRecruteur/userRecruteur.types.js"
-import { logger } from "../../../../common/logger.js"
 import { CFA, ENTREPRISE, etat_utilisateur } from "../../../../common/constants.js"
 import { asyncForEach } from "../../../../common/utils/asyncUtils.js"
 
@@ -15,6 +13,7 @@ const lowercaseAllEmail = (db) => db.collection("userrecruteurs").updateMany({},
 
 /**
  * @description get related users based on an email, case insensitive, sorted by last_connection date
+ * @param {string} user email
  * @returns {Promise}
  */
 const getduplicatesOfTheSameUser = (email: IUserRecruteur["email"]) =>
@@ -42,7 +41,7 @@ const removeUserAndDelegatee = ({ establishment_siret, _id }: { establishment_si
  * @param {string} users list of users from UserRecruteur collection
  * @returns {Array} list of duplicated user matched on case insensitive email
  */
-const findDuplicates = (users: IUserRecruteur) => {
+const findDuplicates = (users: IUserRecruteur[]) => {
   const duplicates = {}
   const processedEmails = []
 
@@ -72,9 +71,7 @@ const cleanUsersOfTypeENTREPRIE = async (establishments: IUserRecruteur[]) => {
 
   // triage logic
   await asyncForEach(Object.keys(duplicatedUsers), async (email) => {
-    const duplicatesOfTheSameUser = await UserRecruteur.find({ email: { $regex: new RegExp(email, "i") } })
-      .sort({ last_connection: -1 })
-      .lean()
+    const duplicatesOfTheSameUser = await getduplicatesOfTheSameUser(email)
 
     // create stash
     const stash = { user: null, establishment: null }
@@ -83,7 +80,7 @@ const cleanUsersOfTypeENTREPRIE = async (establishments: IUserRecruteur[]) => {
     if (duplicatesOfTheSameUser.length === 2) {
       const inactiveUser = duplicatesOfTheSameUser.filter((x) => x.status.pop().status !== etat_utilisateur.VALIDE)
       if (inactiveUser.length) {
-        await removeUserAndCompany(inactiveUser)
+        await removeUserAndCompany(inactiveUser[0])
         return
       }
     } else {
@@ -119,9 +116,7 @@ const cleanUsersOfTypeCFA = async (cfas: IUserRecruteur[]) => {
 
   // triage logic
   await asyncForEach(Object.keys(duplicatedUsers), async (email) => {
-    const duplicatesOfTheSameUser = await UserRecruteur.find({ email: { $regex: new RegExp(email, "i") } })
-      .sort({ last_connection: -1 })
-      .lean()
+    const duplicatesOfTheSameUser = await getduplicatesOfTheSameUser(email)
 
     const stash = []
 
@@ -129,7 +124,7 @@ const cleanUsersOfTypeCFA = async (cfas: IUserRecruteur[]) => {
     if (duplicatesOfTheSameUser.length === 2) {
       const inactiveUser = duplicatesOfTheSameUser.filter((x) => x.status.pop().status !== etat_utilisateur.VALIDE)
       if (inactiveUser.length) {
-        await removeUserAndCompany(inactiveUser)
+        await removeUserAndCompany(inactiveUser[0])
         return
       }
     } else {
@@ -156,9 +151,9 @@ const cleanUsersOfTypeCFA = async (cfas: IUserRecruteur[]) => {
   })
 }
 
-runScript(async () => {
+runScript(async ({ db }) => {
   const [establishments, cfas] = await Promise.all([UserRecruteur.find({ type: ENTREPRISE }).lean(), UserRecruteur.find({ type: CFA }).lean()])
   await cleanUsersOfTypeENTREPRIE(establishments)
   await cleanUsersOfTypeCFA(cfas)
-  await lowercaseAllEmail()
+  await lowercaseAllEmail(db)
 })
