@@ -67,7 +67,7 @@ const HeaderForm = ({ handleSearchSubmit, isHome }) => {
     return (
       <Formik validate={(values) => validateFormik(values, widgetParameters)} initialValues={{ job: {}, location: {}, radius: 30, diploma: "" }} onSubmit={handleSearchSubmit}>
         {({ isSubmitting, setFieldValue, errors, touched }) => (
-          <Form>
+          <Form data-testid="widget-form">
             <Flex>
               <Box>
                 <AutoCompleteField
