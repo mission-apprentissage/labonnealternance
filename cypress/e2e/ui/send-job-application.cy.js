@@ -7,14 +7,18 @@ describe("send-job-application", () => {
       cy.get("#headerFormJobField-input").click();
       cy.get("#headerFormJobField-input").type("ress");
       cy.get("#headerFormJobField-item-0").click();
+      cy.get("#headerFormJobField-input").should("have.value", "Ressources humaines")
       cy.get("#headerFormPlaceField-input").click();
       cy.get("#headerFormPlaceField-input").type("pari");
       cy.get("#headerFormPlaceField-item-0").click();
-      cy.get("select[data-testid='locationRadius']").select("60");
-      /*cy.get("div.css-uos98o img").click();
-      cy.get("div.css-gmd149 button:nth-of-type(2)").click();
-      cy.get("#matcha648adcb8258b0842bb1afcc1 > div").click();
-      cy.get("[data-testid='CandidatureSpontanee'] button").click();
+      cy.get("[data-testid='widget-form'] select[data-testid='locationRadius']").select("60");
+      cy.get("[data-testid='widget-form'] button").click();
+      cy.get("#choiceColumn");
+      cy.get("#resultList");
+      /*cy.get("#trainingResult");
+      cy.get("#jobList");
+      cy.get("#matcha6480a61b8ee143d3eff357a6");*/
+      /*cy.get("[data-testid='CandidatureSpontanee'] button").click();
       cy.get("[data-testid='lastName']").click();
       cy.get("[data-testid='lastName']").type("Doe");
       cy.get("[data-testid='firstName']").click();
