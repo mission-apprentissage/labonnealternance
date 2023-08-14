@@ -10,7 +10,7 @@ import { groupBy, flatMap } from "lodash-es"
  * @param {Object} db database connector
  * @returns {Promise}
  */
-const lowercaseAllEmail = (db) => db.collection("userrecruteurs").updateMany({}, { $set: { email: { $toLower: "email" } } })
+const lowercaseAllEmail = (db) => db.collection("userrecruteurs").updateMany({}, [{ $set: { email: { $toLower: "$email" } } }])
 
 /**
  * @description get related users based on an email, case insensitive, sorted by last_connection date
@@ -46,16 +46,33 @@ const findDuplicates = (users: IUserRecruteur[]) =>
   Object.entries(groupBy(users, (user) => user.email.toLowerCase())).flatMap(([email, users]: [email: string, users: string[]]) => (users.length > 1 ? [email] : []))
 
 /**
+ * @description normalize email if it contains a + sign by escaping it with \\
+ * @param {string} email
+ * @returns {string} email normalized
+ */
+function normalizeEmail(email) {
+  // Check if the email contains a "+"
+  if (email.includes("+")) {
+    const parts = email.split("@")
+    const [localPart, domainPart] = parts
+    const escapedLocalPart = localPart.replace(/\+/g, "\\+")
+    return `${escapedLocalPart}@${domainPart}`
+  }
+
+  return email
+}
+
+/**
  * @description clean up UserRecruteur & Recruiters collection of document from type ENTREPRISE
  * @param {Object} establishments
  */
-const cleanUsersOfTypeENTREPRIE = async (establishments: IUserRecruteur[]) => {
+const cleanUsersOfTypeENTREPRISE = async (establishments: IUserRecruteur[]) => {
   // get all duplicated users of type ENTREPRISE
   const duplicatedLowerCaseEmails = findDuplicates(establishments)
 
   // triage logic
   await asyncForEach(duplicatedLowerCaseEmails, async (email) => {
-    const duplicatesOfTheSameUser = await getduplicatesOfTheSameUser(email)
+    const duplicatesOfTheSameUser = await getduplicatesOfTheSameUser(normalizeEmail(email))
 
     // create stash
     const stash = { user: null, establishment: null }
@@ -66,6 +83,9 @@ const cleanUsersOfTypeENTREPRIE = async (establishments: IUserRecruteur[]) => {
       if (inactiveUser.length) {
         await removeUserAndCompany(inactiveUser[0])
         return
+      } else {
+        // Keep the last one connected
+        await removeUserAndCompany(duplicatesOfTheSameUser[1])
       }
     } else {
       await asyncForEach(duplicatesOfTheSameUser, async (user: IUserRecruteur) => {
@@ -83,12 +103,17 @@ const cleanUsersOfTypeENTREPRIE = async (establishments: IUserRecruteur[]) => {
           stash.user = user
           stash.establishment = establishment
         } else {
+          // accumulate jobs into the stashed establishment
           stash.establishment.jobs = [...stash.establishment.jobs, ...establishment.jobs]
+          // remove user
+          await removeUserAndCompany(user)
         }
       })
     }
-    // save stashed establishment with accumulated jobs. user does not change
-    await Recruiter.findByIdAndUpdate(stash.establishment._id, stash.establishment)
+    if (stash.establishment) {
+      // save stashed establishment with accumulated jobs. user does not change
+      await Recruiter.findByIdAndUpdate(stash.establishment._id, stash.establishment)
+    }
   })
 }
 
@@ -102,7 +127,7 @@ const cleanUsersOfTypeCFA = async (cfas: IUserRecruteur[]) => {
 
   // triage logic
   await asyncForEach(duplicatedLowerCaseEmails, async (email) => {
-    const duplicatesOfTheSameUser = await getduplicatesOfTheSameUser(email)
+    const duplicatesOfTheSameUser = await getduplicatesOfTheSameUser(normalizeEmail(email))
 
     const stash = []
 
@@ -139,8 +164,7 @@ const cleanUsersOfTypeCFA = async (cfas: IUserRecruteur[]) => {
 
 runScript(async ({ db }) => {
   const [establishments, cfas] = await Promise.all([UserRecruteur.find({ type: ENTREPRISE }).lean(), UserRecruteur.find({ type: CFA }).lean()])
-
-  await cleanUsersOfTypeENTREPRIE(establishments)
+  await cleanUsersOfTypeENTREPRISE(establishments)
   await cleanUsersOfTypeCFA(cfas)
   await lowercaseAllEmail(db)
 })
