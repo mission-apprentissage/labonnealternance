@@ -3,6 +3,7 @@ import { runScript } from "../../../scriptWrapper.js"
 import { IUserRecruteur } from "../../../../common/model/schema/userRecruteur/userRecruteur.types.js"
 import { asyncForEach } from "../../../../common/utils/asyncUtils.js"
 import { CFA, ENTREPRISE, etat_utilisateur } from "../../../../common/constants.js"
+import { groupBy, flatMap } from "lodash-es"
 
 /**
  * @description lowercase all email of the UserRecruter collection documents
@@ -25,7 +26,7 @@ const getduplicatesOfTheSameUser = (email: IUserRecruteur["email"]) =>
  * @param {Object} user user object
  * @returns {Promise}
  */
-const removeUserAndCompany = ({ establishment_id, _id }: { establishment_id: IUserRecruteur["establishment_id"]; _id: IUserRecruteur["_id"] }) =>
+const removeUserAndCompany = ({ establishment_id, _id }: Pick<IUserRecruteur, "establishment_id" | "_id">) =>
   Promise.all([Recruiter.findOneAndDelete({ establishment_id }), UserRecruteur.findByIdAndDelete(_id)])
 
 /**
@@ -33,7 +34,7 @@ const removeUserAndCompany = ({ establishment_id, _id }: { establishment_id: IUs
  * @param {Object} user user object
  * @returns {Promise}
  */
-const removeUserAndDelegatee = ({ establishment_siret, _id }: { establishment_siret: IUserRecruteur["establishment_siret"]; _id: IUserRecruteur["_id"] }) =>
+const removeUserAndDelegatee = ({ establishment_siret, _id }: Pick<IUserRecruteur, "establishment_siret" | "_id">) =>
   Promise.all([Recruiter.deleteMany({ cfa_delegated_siret: establishment_siret }), UserRecruteur.findByIdAndDelete(_id)])
 
 /**
@@ -41,25 +42,8 @@ const removeUserAndDelegatee = ({ establishment_siret, _id }: { establishment_si
  * @param {string} users list of users from UserRecruteur collection
  * @returns {Array} list of duplicated user matched on case insensitive email
  */
-const findDuplicates = (users: IUserRecruteur[]) => {
-  const duplicates = {}
-  const processedEmails = []
-
-  users.forEach((user) => {
-    const lowercaseEmail = user.email.toLowerCase()
-
-    if (processedEmails.includes(lowercaseEmail)) {
-      if (!duplicates[lowercaseEmail]) {
-        duplicates[lowercaseEmail] = [user.email]
-      } else {
-        duplicates[lowercaseEmail].push(user.email)
-      }
-    } else {
-      processedEmails.push(lowercaseEmail)
-    }
-  })
-  return duplicates
-}
+const findDuplicates = (users: IUserRecruteur[]) =>
+  Object.entries(groupBy(users, (user) => user.email.toLowerCase())).flatMap(([email, users]: [email: string, users: string[]]) => (users.length > 1 ? [email] : []))
 
 /**
  * @description clean up UserRecruteur & Recruiters collection of document from type ENTREPRISE
@@ -67,10 +51,10 @@ const findDuplicates = (users: IUserRecruteur[]) => {
  */
 const cleanUsersOfTypeENTREPRIE = async (establishments: IUserRecruteur[]) => {
   // get all duplicated users of type ENTREPRISE
-  const duplicatedUsers = findDuplicates(establishments)
+  const duplicatedLowerCaseEmails = findDuplicates(establishments)
 
   // triage logic
-  await asyncForEach(Object.keys(duplicatedUsers), async (email) => {
+  await asyncForEach(duplicatedLowerCaseEmails, async (email) => {
     const duplicatesOfTheSameUser = await getduplicatesOfTheSameUser(email)
 
     // create stash
@@ -114,10 +98,10 @@ const cleanUsersOfTypeENTREPRIE = async (establishments: IUserRecruteur[]) => {
  */
 const cleanUsersOfTypeCFA = async (cfas: IUserRecruteur[]) => {
   // get all duplicates
-  const duplicatedUsers = findDuplicates(cfas)
+  const duplicatedLowerCaseEmails = findDuplicates(cfas)
 
   // triage logic
-  await asyncForEach(Object.keys(duplicatedUsers), async (email) => {
+  await asyncForEach(duplicatedLowerCaseEmails, async (email) => {
     const duplicatesOfTheSameUser = await getduplicatesOfTheSameUser(email)
 
     const stash = []
@@ -155,6 +139,7 @@ const cleanUsersOfTypeCFA = async (cfas: IUserRecruteur[]) => {
 
 runScript(async ({ db }) => {
   const [establishments, cfas] = await Promise.all([UserRecruteur.find({ type: ENTREPRISE }).lean(), UserRecruteur.find({ type: CFA }).lean()])
+
   await cleanUsersOfTypeENTREPRIE(establishments)
   await cleanUsersOfTypeCFA(cfas)
   await lowercaseAllEmail(db)
