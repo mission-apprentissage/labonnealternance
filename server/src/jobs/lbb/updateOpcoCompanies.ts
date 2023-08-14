@@ -59,7 +59,7 @@ export default async function updateOpcoCompanies({ ClearMongo = false, ForceRec
     logMessage("info", " -- Start bulk opco determination -- ")
 
     if (!ForceRecreate) {
-      await checkIfAlgoFileIsNew()
+      await checkIfAlgoFileIsNew("opco companies")
     }
 
     await downloadAlgoCompanyFile()

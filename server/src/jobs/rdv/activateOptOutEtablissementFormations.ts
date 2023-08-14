@@ -3,24 +3,26 @@ import { mailTemplate } from "../../assets/index.js"
 import { logger } from "../../common/logger.js"
 import { mailType } from "../../common/model/constants/etablissement.js"
 import { referrers } from "../../common/model/constants/referrers.js"
-import { dayjs } from "../../common/utils/dayjs.js"
+import dayjs from "../../services/dayjs.service.js"
 import config from "../../config.js"
 import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service.js"
+import { Etablissement } from "../../common/model/index.js"
+import mailer from "../../services/mailer.service.js"
 
 /**
  * @description Active all etablissement's formations that have subscribed to opt-out.
  * @returns {Promise<void>}
  */
-export const activateOptOutEtablissementFormations = async ({ etablissements, mailer }) => {
+export const activateOptOutEtablissementFormations = async () => {
   logger.info("Cron #activateOptOutEtablissementFormations started.")
 
   // Opt-out etablissement to activate
-  const etablissementsToActivate = await etablissements.find({
+  const etablissementsToActivate = await Etablissement.find({
     optout_activation_scheduled_date: {
       $lte: dayjs().toDate(),
     },
-    opt_out_refused_at: null,
-    opt_out_activated_at: null,
+    optout_refusal_date: null,
+    optout_activation_date: null,
   })
 
   // Activate all formations, for all referrers that have a mail
@@ -38,7 +40,7 @@ export const activateOptOutEtablissementFormations = async ({ etablissements, ma
               .filter((referrer) => referrer !== referrers.PARCOURSUP.name),
           }
         ),
-        etablissements.findOneAndUpdate(
+        Etablissement.findOneAndUpdate(
           {
             _id: etablissement._id,
           },
@@ -49,7 +51,7 @@ export const activateOptOutEtablissementFormations = async ({ etablissements, ma
       // Send email
       const { messageId } = await mailer.sendEmail({
         to: etablissement.gestionnaire_email,
-        subject: `C'est parti pour améliorer le sourcing de vos candidats !`,
+        subject: `La prise de RDV est activée pour votre CFA sur La bonne alternance`,
         template: mailTemplate["mail-cfa-optout-start"],
         data: {
           images: {
@@ -92,7 +94,7 @@ export const activateOptOutEtablissementFormations = async ({ etablissements, ma
         emails.map((email) =>
           mailer.sendEmail({
             to: email,
-            subject: `La prise de rendez-vous est activée pour votre CFA sur La bonne alternance`,
+            subject: `La prise de RDV est activée pour votre CFA sur La bonne alternance`,
             template: mailTemplate["mail-cfa-optout-activated"],
             data: {
               url: config.publicUrl,
@@ -121,7 +123,7 @@ export const activateOptOutEtablissementFormations = async ({ etablissements, ma
         )
       )
 
-      await etablissements.findOneAndUpdate(
+      await Etablissement.findOneAndUpdate(
         { _id: etablissement._id },
         {
           $push: {

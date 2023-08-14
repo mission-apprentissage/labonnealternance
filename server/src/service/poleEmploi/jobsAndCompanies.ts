@@ -1,81 +1,99 @@
 // @ts-nocheck
 
+import { RncpRomes } from "../../common/model/index.js"
 import { trackApiCall } from "../../common/utils/sendTrackingEvent.js"
 import { sentryCaptureException } from "../../common/utils/sentryUtils.js"
-import { getMatchaJobs } from "../matcha.js"
+import { getLbaJobs } from "../../services/lbajob.service.js"
 import { getSomeLbbCompanies } from "./bonnesBoites.js"
 import { jobsQueryValidator } from "./jobsQueryValidator.js"
 import { getSomePeJobs } from "./offresPoleEmploi.js"
 
-const getJobsQuery = async (query) => {
-  const queryValidationResult = jobsQueryValidator(query)
+export type JobSearchQuery = {
+  romes?: string
+  rncp?: string
+  referer?: string
+  caller?: string
+  latitude?: string
+  longitude?: string
+  radius?: number
+  insee?: string
+  sources?: string
+  diploma?: string
+  opco?: string
+  opcoUrl?: string
+  useMock?: string
+}
 
-  if (queryValidationResult.error) {
+const getJobsQuery = async (query: JobSearchQuery) => {
+  const queryValidationResult = await jobsQueryValidator(query)
+
+  if ("error" in queryValidationResult) {
     return queryValidationResult
   }
 
   const result = await getJobsFromApi({ query, api: "jobV1/jobs" })
 
+  let job_count = 0
+  if (result?.lbaCompanies?.results) {
+    job_count += result.lbaCompanies.results.length
+  }
+
+  if (result?.peJobs?.results) {
+    job_count += result.peJobs.results.length
+  }
+
+  if (result?.matchas?.results) {
+    job_count += result.matchas.results.length
+  }
   if (query.caller) {
-    let job_count = 0
-    if (result?.lbaCompanies?.results) {
-      job_count += result.lbaCompanies.results.length
-    }
-
-    if (result?.peJobs?.results) {
-      job_count += result.peJobs.results.length
-    }
-
-    if (result?.matchas?.results) {
-      job_count += result.matchas.results.length
-    }
-
     trackApiCall({ caller: query.caller, job_count, result_count: job_count, api_path: "jobV1/jobs", response: "OK" })
   }
 
-  return result
+  return { ...result, job_count }
 }
 
 const getJobsFromApi = async ({ query, api }) => {
   try {
     const sources = !query.sources ? ["lba", "lbb", "offres", "matcha"] : query.sources.split(",")
 
+    const { caller, diploma, insee, latitude, longitude, opco, opcoUrl, radius, referer, romes, useMock } = query
+
     const [peJobs, lbaCompanies, lbbCompanies, matchas] = await Promise.all([
       sources.indexOf("offres") >= 0
         ? getSomePeJobs({
-            romes: query.romes.split(","),
-            insee: query.insee,
-            radius: parseInt(query.radius),
-            lat: query.latitude,
-            long: query.longitude,
-            caller: query.caller,
-            diploma: query.diploma,
+            romes: romes.split(","),
+            insee: insee,
+            radius: parseInt(radius),
+            lat: latitude,
+            long: longitude,
+            caller,
+            diploma,
             api,
-            opco: query.opco,
-            opcoUrl: query.opcoUrl,
+            opco,
+            opcoUrl,
           })
         : null,
       sources.indexOf("lba") >= 0
         ? getSomeLbbCompanies({
-            romes: query.romes,
+            romes,
             latitude: query.latitude,
             longitude: query.longitude,
             radius: parseInt(query.radius),
             type: "lba",
-            referer: query.referer,
-            caller: query.caller,
+            referer,
+            caller,
             api,
-            opco: query.opco,
-            opcoUrl: query.opcoUrl,
-            useMock: query.useMock,
+            opco,
+            opcoUrl,
+            useMock,
           })
         : null,
       sources.indexOf("lbb") >= 0
         ? getSomeLbbCompanies({
-            romes: query.romes,
-            latitude: query.latitude,
-            longitude: query.longitude,
-            radius: parseInt(query.radius),
+            romes,
+            latitude,
+            longitude,
+            radius: parseInt(radius),
             type: "lbb",
             referer: query.referer,
             caller: query.caller,
@@ -86,17 +104,17 @@ const getJobsFromApi = async ({ query, api }) => {
           })
         : null,
       sources.indexOf("matcha") >= 0
-        ? getMatchaJobs({
-            romes: query.romes,
-            latitude: query.latitude,
-            longitude: query.longitude,
-            radius: parseInt(query.radius),
+        ? getLbaJobs({
+            romes,
+            latitude,
+            longitude,
+            radius: parseInt(radius),
             api,
-            caller: query.caller,
-            diploma: query.diploma,
-            opco: query.opco,
-            opcoUrl: query.opcoUrl,
-            useMock: query.useMock,
+            caller,
+            diploma,
+            opco,
+            opcoUrl,
+            useMock,
           })
         : null,
     ])

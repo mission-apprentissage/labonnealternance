@@ -1,16 +1,17 @@
 import express from "express"
-import { deleteFormulaire, getFormulaire, updateOffre } from "../../services/formulaire.service.js"
+import { deleteFormulaire, getFormulaire, reactivateRecruiter, sendCFADelegationMail, updateOffre } from "../../services/formulaire.service.js"
 import { mailTemplate } from "../../assets/index.js"
-import { CFA, ENTREPRISE, etat_utilisateur } from "../../common/constants.js"
-import dayjs from "../../common/dayjs.js"
+import { CFA, ENTREPRISE, ETAT_UTILISATEUR, JOB_STATUS, RECRUITER_STATUS } from "../../services/constant.service.js"
+import dayjs from "../../services/dayjs.service.js"
 import { Recruiter, UserRecruteur } from "../../common/model/index.js"
 import { createMagicLinkToken } from "../../common/utils/jwtUtils.js"
 import config from "../../config.js"
 import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
 import { createUser, updateUser, updateUserValidationHistory, removeUser } from "../../services/userRecruteur.service.js"
 import authMiddleware from "../middlewares/authMiddleware.js"
+import mailer from "../../services/mailer.service.js"
 
-export default ({ mailer }) => {
+export default () => {
   const router = express.Router()
 
   router.get(
@@ -113,8 +114,8 @@ export default ({ mailer }) => {
       const history = req.body
       const user = await updateUserValidationHistory(req.params.userId, history)
 
-      // if user is disable, return the user data directly
-      if (history.status === etat_utilisateur.DESACTIVE) {
+      // if user is disabled, return the user data directly
+      if (history.status === ETAT_UTILISATEUR.DESACTIVE) {
         return res.json(user)
       }
 
@@ -126,34 +127,20 @@ export default ({ mailer }) => {
          * - send email to delegation if available
          */
         const userFormulaire = await getFormulaire({ establishment_id: user.establishment_id })
-        const job = Object.assign(userFormulaire.jobs[0], { job_status: "Active", job_expiration_date: dayjs().add(1, "month").format("YYYY-MM-DD") })
-        await updateOffre(job._id, job)
 
-        if (job?.delegations && job?.delegations.length) {
-          await Promise.all(
-            job.delegations.map(
-              async (delegation) =>
-                await mailer.sendEmail({
-                  to: delegation.email,
-                  subject: `Une entreprise recrute dans votre domaine`,
-                  template: mailTemplate["mail-cfa-delegation"],
-                  data: {
-                    images: {
-                      logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
-                    },
-                    enterpriseName: userFormulaire.establishment_raison_sociale,
-                    jobName: job.rome_appellation_label,
-                    contractType: job.job_type.join(", "),
-                    trainingLevel: job.job_level_label,
-                    startDate: dayjs(job.job_start_date).format("DD/MM/YYYY"),
-                    duration: job.job_duration,
-                    rhythm: job.job_rythm,
-                    offerButton: `${config.publicUrlEspacePro}/proposition/formulaire/${userFormulaire.establishment_id}/offre/${job._id}/siret/${delegation.siret_code}`,
-                    createAccountButton: `${config.publicUrlEspacePro}/creation/cfa`,
-                  },
-                })
-            )
-          )
+        if (userFormulaire.status === RECRUITER_STATUS.ARCHIVE) {
+          // le recruiter étant archivé on se contente de le rendre de nouveau Actif
+          await reactivateRecruiter(user.establishment_id)
+        } else {
+          // le compte se trouve validé et on procède à l'activation de la première offre et à la notification aux CFAs
+          if (userFormulaire?.jobs?.length) {
+            const job = Object.assign(userFormulaire.jobs[0], { job_status: JOB_STATUS.ACTIVE, job_expiration_date: dayjs().add(1, "month").format("YYYY-MM-DD") })
+            await updateOffre(job._id, job)
+
+            if (job?.delegations && job?.delegations.length) {
+              await Promise.all(job.delegations.map(async (delegation) => await sendCFADelegationMail(delegation.email, job, userFormulaire, delegation.siret_code)))
+            }
+          }
         }
       }
 
@@ -163,7 +150,7 @@ export default ({ mailer }) => {
       // get magiclink url
       const magiclink = `${config.publicUrlEspacePro}/authentification/verification?token=${createMagicLinkToken(user.email)}`
 
-      const { email, last_name, first_name, establishment_raison_sociale, type } = user
+      const { email, last_name, first_name, establishment_raison_sociale } = user
 
       // send welcome email to user
       await mailer.sendEmail({

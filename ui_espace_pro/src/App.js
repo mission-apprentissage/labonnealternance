@@ -42,6 +42,7 @@ import OptOutUnsubscribe from "./pages/OptOutUnsubscribe"
 import PremiumForm from "./pages/PremiumForm"
 import PremiumAffelnetForm from "./pages/PremiumAffelnetForm"
 import { PropositionOffreId } from "./pages/Proposition/Offre/PropositionOffreId"
+import { PropositionOffreUnsubscribe } from "./pages/Proposition/Offre/PropositionOffreUnsubscribe"
 import Widget from "./pages/Widget"
 
 function RedirectTo404() {
@@ -141,6 +142,9 @@ const App = () => {
         </Route>
         <Route path="/proposition/formulaire/:idFormulaire/offre/:jobId/siret/:siretFormateur" element={<Layout displayNavigationMenu={false} />}>
           <Route index element={<PropositionOffreId />} />
+        </Route>
+        <Route path="/proposition/formulaire/:idFormulaire/offre/:jobId/siret/:siretFormateur/unsubscribe" element={<Layout displayNavigationMenu={false} />}>
+          <Route index element={<PropositionOffreUnsubscribe />} />
         </Route>
         <Route path="/authentification/confirmation" element={<ConfirmationCreationCompte />} />
         <Route path="/authentification/validation/:id" element={<ConfirmationValidationEmail />} />

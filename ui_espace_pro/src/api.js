@@ -13,7 +13,7 @@ const securedAPI = Axios.create({
 
 const errorHandler = (error) => {
   if (error.response && error.response.data) {
-    console.log("Erreur de l'API :", error)
+    console.error("Erreur de l'API :", error)
   }
 }
 
@@ -92,6 +92,8 @@ export const validateOptOutToken = (token) =>
       Authorization: `Bearer ${token}`,
     },
   })
+
+export const etablissementUnsubscribeDemandeDelegation = (establishmentSiret) => API.post(`/etablissement/${establishmentSiret}/proposition/unsubscribe`)
 
 /**
  * Administration OPCO

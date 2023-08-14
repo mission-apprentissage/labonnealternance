@@ -1,5 +1,4 @@
 import { Box, Flex, Heading, Link, Stack, Text } from "@chakra-ui/react"
-import dayjs from "dayjs"
 import { AUTHTYPE } from "../common/contants"
 import useAuth from "../common/hooks/useAuth"
 import { InfoCircle } from "../theme/components/icons"
@@ -11,9 +10,11 @@ import InfoTooltip from "./InfoToolTip"
  * Migrate CFA entries in collection to have the same format as companies
  * Use the address API for all type of establishment
  */
-export default (props) => {
+export const InformationLegaleEntreprise = (props) => {
   const [auth] = useAuth()
   const { establishment_enseigne, establishment_raison_sociale, rue, establishment_siret, commune, code_postal, opco, establishment_size, type, address, is_qualiopi } = props
+  const hasDetailedAddress = Boolean(rue)
+  const firstLineAddress = rue ?? address
 
   const RAISON_SOCIALE =
     establishment_raison_sociale && establishment_raison_sociale.length > 30 ? establishment_raison_sociale.substring(0, 30) + "..." : establishment_raison_sociale ?? ""
@@ -70,12 +71,18 @@ export default (props) => {
         </Flex>
         <Flex align="center">
           <Text mr={3}>Adresse :</Text>
-          <Text bg="#F9F8F6" px="8px" py="2px" fontWeight={700} mr={2} noOfLines={1}>
-            {rue ?? address}
-          </Text>
+          {firstLineAddress ? (
+            <Text bg="#F9F8F6" px="8px" py="2px" fontWeight={700} mr={2} noOfLines={1}>
+              {firstLineAddress}
+            </Text>
+          ) : (
+            <Text textTransform="uppercase" bg="#FFE9E9" textColor="#CE0500" px="8px" py="2px" fontWeight={700} mr={2} noOfLines={1}>
+              Non identifié
+            </Text>
+          )}
           <InfoTooltip description="La donnée “Adresse” provient de l’INSEE puis est déduite du SIRET. Si cette information est erronée, merci de leur signaler." />
         </Flex>{" "}
-        {rue && (
+        {hasDetailedAddress && (
           <>
             <Flex align="center">
               <Text mr={3}>Code postal :</Text>
@@ -138,3 +145,5 @@ export default (props) => {
     </Box>
   )
 }
+
+export default InformationLegaleEntreprise

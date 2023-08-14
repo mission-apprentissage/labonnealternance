@@ -1,4 +1,5 @@
 import {
+  Badge,
   Box,
   Breadcrumb,
   BreadcrumbItem,
@@ -54,7 +55,15 @@ const EmptySpace = () => (
   </Stack>
 )
 
-export default () => {
+const NumberCell = ({ children }) => {
+  return (
+    <Box as="span" textAlign="right" w="100%" pr={5}>
+      <Badge colorScheme="blue">{children}</Badge>
+    </Box>
+  )
+}
+
+export const ListeOffres = () => {
   const navigate = useNavigate()
   const params = useParams()
   const confirmationSuppression = useDisclosure()
@@ -111,14 +120,14 @@ export default () => {
     )
   }
 
-  const jobs = data.data?.jobs?.map((job) => ({ ...job, geo_coordinates: data.data.geo_coordinates }))
+  const jobs = data.data?.jobs?.map((job) => ({ ...job, geo_coordinates: data.data.geo_coordinates })) ?? []
 
   const offresTermine = jobs.filter((x) => x.job_status === "Annulée")
-  const offresTermineNbr = jobs.filter((x) => x.job_status === "Annulée").length
+  const offresTermineNbr = offresTermine.length
   const offresActive = jobs.filter((x) => x.job_status === "Active")
-  const offresActiveNbr = jobs.filter((x) => x.job_status === "Active").length
+  const offresActiveNbr = offresActive.length
   const offresPourvue = jobs.filter((x) => x.job_status === "Pourvue")
-  const offresPourvueNbr = jobs.filter((x) => x.job_status === "Pourvue").length
+  const offresPourvueNbr = offresPourvue.length
 
   const columns = [
     {
@@ -143,22 +152,33 @@ export default () => {
       accessor: ({ job_creation_date }) => dayjs(job_creation_date).format("DD/MM/YYYY"),
     },
     {
-      Header: "Expire dans",
+      Header: "Expire le",
       id: "job_expiration_date",
+      width: "175",
       sortType: (a, b) => sortReactTableDate(a.original.job_expiration_date, b.original.job_expiration_date),
-      accessor: ({ job_expiration_date }) => dayjs(new Date()).to(job_expiration_date, true),
+      accessor: ({ job_expiration_date }) => dayjs(job_expiration_date).format("DD/MM/YYYY"),
+    },
+    {
+      Header: "Recherches",
+      id: "searches",
+      width: "150",
+      accessor: ({ stats_search_view = 0 }) => {
+        return <NumberCell>{stats_search_view}</NumberCell>
+      },
+    },
+    {
+      Header: "Vues",
+      id: "views",
+      width: "90",
+      accessor: ({ stats_detail_view = 0 }) => {
+        return <NumberCell>{stats_detail_view}</NumberCell>
+      },
     },
     {
       Header: "Candidat(s)",
       id: "candidat",
-      width: "225",
-      accessor: (row) => {
-        if (row.candidatures && row.candidatures > 0) {
-          return row.candidatures
-        } else {
-          return 0
-        }
-      },
+      width: "150",
+      accessor: ({ candidatures = 0 }) => <NumberCell>{Math.max(candidatures, 0)}</NumberCell>,
     },
     {
       Header: "",
@@ -193,15 +213,16 @@ export default () => {
                     <MenuItem>
                       <Link
                         onClick={() => {
+                          const newExpirationDate = dayjs().add(1, "month")
                           putOffre(row._id, {
                             ...row,
-                            job_expiration_date: dayjs().add(1, "month").format("YYYY-MM-DD"),
+                            job_expiration_date: newExpirationDate.format("YYYY-MM-DD"),
                             job_last_prolongation_date: Date(),
                             job_prolongation_count: row.job_prolongation_count >= 0 ? row.job_prolongation_count + 1 : 1,
                           })
                             .then(() =>
                               toast({
-                                title: "Offre prolongée d'un mois.",
+                                title: `Date d'expiration : ${newExpirationDate.format("DD/MM/YYYY")}`,
                                 position: "top-right",
                                 status: "success",
                                 duration: 2000,
@@ -335,3 +356,5 @@ export default () => {
     </Container>
   )
 }
+
+export default ListeOffres

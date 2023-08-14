@@ -1,4 +1,4 @@
-import dayjs from "../../../../common/dayjs.js"
+import dayjs from "../../../../services/dayjs.service.js"
 import { logger } from "../../../../common/logger.js"
 import { UserRecruteur } from "../../../../common/model/index.js"
 import { asyncForEach } from "../../../../common/utils/asyncUtils.js"
@@ -11,24 +11,25 @@ import {
   getAllEstablishmentFromBonneBoiteLegacy,
   getAllEstablishmentFromOpcoReferentiel,
 } from "../../../../services/etablissement.service.js"
-import { validation_utilisateur, etat_utilisateur, CFA } from "../../../../common/constants.js"
+import { VALIDATION_UTILISATEUR, ETAT_UTILISATEUR, CFA } from "../../../../services/constant.service.js"
 import { updateUser, updateUserValidationHistory } from "../../../../services/userRecruteur.service.js"
 import { notifyToSlack } from "../../../../common/utils/slackUtils.js"
 import { getFormulaire, updateOffre } from "../../../../services/formulaire.service.js"
 import { mailTemplate } from "../../../../assets/index.js"
 import { createMagicLinkToken } from "../../../../common/utils/jwtUtils.js"
 import config from "../../../../config.js"
+import mailer from "../../../../services/mailer.service.js"
 
 const autoValidateUser = async (userId) =>
   await updateUserValidationHistory(userId, {
-    validation_type: validation_utilisateur.AUTO,
+    validation_type: VALIDATION_UTILISATEUR.AUTO,
     user: "SERVEUR",
-    status: etat_utilisateur.VALIDE,
+    status: ETAT_UTILISATEUR.VALIDE,
   })
 
 const stat = { validated: 0, notFound: 0, total: 0 }
 
-export const checkAwaitingCompaniesValidation = async ({ mailer }) => {
+export const checkAwaitingCompaniesValidation = async () => {
   logger.info(`Start update missing validation state for companies...`)
 
   const entreprises = await UserRecruteur.find({ type: "ENTREPRISE", status: { $size: 1 }, "status.status": "EN ATTENTE DE VALIDATION" })

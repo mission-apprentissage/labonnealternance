@@ -1,7 +1,14 @@
 import axios from "axios"
 import { logError } from "utils/tools"
 
-import { allJobSearchErrorText, getRomeFromParameters, jobsApi, partialJobSearchErrorText, technicalErrorText } from "../../SearchForTrainingsAndJobs/services/utils"
+import {
+  allJobSearchErrorText,
+  getRomeFromParameters,
+  getRncpFromParameters,
+  jobsApi,
+  partialJobSearchErrorText,
+  technicalErrorText,
+} from "../../SearchForTrainingsAndJobs/services/utils"
 import { storeJobsInSession } from "./handleSessionStorage"
 
 export const searchForJobsFunction = async ({
@@ -30,10 +37,13 @@ export const searchForJobsFunction = async ({
 
   try {
     const searchCenter = values?.location?.value ? [values.location.value.coordinates[0], values.location.value.coordinates[1]] : null
+    const romes = getRomeFromParameters({ values, widgetParameters })
+    const rncp = romes ? "" : getRncpFromParameters({ widgetParameters }) // on ne transmet pas romes ET rncp
 
     const response = await axios.get(jobsApi, {
       params: {
-        romes: getRomeFromParameters({ values, widgetParameters }),
+        romes,
+        rncp,
         longitude: values?.location?.value ? values.location.value.coordinates[0] : null,
         latitude: values?.location?.value ? values.location.value.coordinates[1] : null,
         insee: values?.location?.insee,

@@ -1,3 +1,4 @@
+import updateReferentielRncpRomes from "../referentielRncpRome/updateReferentielRncpRomes.js"
 import { logger } from "../../common/logger.js"
 import updateDiplomesMetiers from "../diplomesMetiers/updateDiplomesMetiers.js"
 import updateDomainesMetiers from "../domainesMetiers/updateDomainesMetiers.js"
@@ -12,5 +13,7 @@ runScript(async () => {
   await importCatalogueFormationJob()
   logger.info("Diplome Métier...")
   await updateDiplomesMetiers()
+  logger.info("Référentiel rncp romes...")
+  await updateReferentielRncpRomes()
   logger.info("Import des données de référence terminé.")
 })

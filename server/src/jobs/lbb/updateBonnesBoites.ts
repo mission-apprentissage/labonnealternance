@@ -74,7 +74,7 @@ export default async function updateBonnesBoites({ UseAlgoFile = false, ClearMon
 
     if (UseAlgoFile) {
       if (!ForceRecreate) {
-        await checkIfAlgoFileIsNew()
+        await checkIfAlgoFileIsNew("algo companies")
       }
 
       await downloadAlgoCompanyFile()

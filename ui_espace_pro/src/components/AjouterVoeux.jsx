@@ -40,6 +40,7 @@ import DropdownCombobox from "./DropdownCombobox"
 import style from "./Voeux.module.css"
 
 const DATE_FORMAT = "YYYY-MM-DD"
+// TODO replace by an env variable
 const URL_LBA =
   process.env.REACT_APP_ENV === "production" ? "https://labonnealternance.apprentissage.beta.gouv.fr/api" : "https://labonnealternance-recette.apprentissage.beta.gouv.fr/api"
 
@@ -484,7 +485,7 @@ export default (props) => {
         formik.setFieldValue("rome_detail", result.data)
         setRomeInformation({ appellation, ...result.data })
       })
-      .catch((error) => console.log(error))
+      .catch((error) => console.error(error))
       .finally(() => {
         setTimeout(() => {
           setLoading(false)

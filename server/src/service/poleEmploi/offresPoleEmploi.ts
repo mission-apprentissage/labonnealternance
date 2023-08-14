@@ -1,7 +1,8 @@
 // @ts-nocheck
 import distance from "@turf/distance"
 import axios from "axios"
-import { NIVEAUX_POUR_OFFRES_PE } from "../../common/constants.js"
+import { setTimeout } from "timers/promises"
+import { NIVEAUX_POUR_OFFRES_PE } from "../../services/constant.service.js"
 import { roundDistance } from "../../common/geolib.js"
 import { IApiError, manageApiError } from "../../common/utils/errorManager.js"
 import { trackApiCall } from "../../common/utils/sendTrackingEvent.js"
@@ -15,113 +16,65 @@ import { getAccessToken, getRoundedRadius, peApiHeaders } from "./common.js"
 const blackListedCompanies = ["iscod", "oktogone", "institut europeen f 2i"]
 
 const getSomePeJobs = async ({ romes, insee, radius, lat, long, caller, diploma, opco, opcoUrl, api }) => {
-  // la liste des romes peut être supérieure au maximum de trois autorisés par l'api offre de PE
-  // on segmente les romes en blocs de max 3 et lance autant d'appels parallèles que nécessaires
-  const chunkedRomes = []
-  let i = 0,
-    k = 0
-  while (i < romes.length) {
-    chunkedRomes[k] = romes.slice(i, i + 3).join(",")
-    i += 3
-    ++k
-  }
-
-  const jobs = await Promise.all(
-    chunkedRomes.map(async (chunk) => {
-      const res = await getSomePeJobsForChunkedRomes({
-        romes: chunk,
-        insee,
-        radius,
-        lat,
-        long,
-        caller,
-        diploma,
-        api,
-      })
-      return res
-    })
-  )
-
-  // à ce stade nous avons plusieurs résultats de l'appel à l'api offres
-  // il faut fusionner les résultats des différents appels
-  for (let j = 0; j < jobs.length; ++j) {
-    if (j !== 0) {
-      if (!jobs[0].results) {
-        // si une erreur sur le premier bloc on le remplace par un bloc subséquent (qui peut être en erreur également)
-        jobs[0] = jobs[j]
-      } else {
-        if (jobs[j].results) {
-          // si aucune erreur sur le premier bloc et le bloc en court on procède à la concaténation des deux
-          jobs[0].results = jobs[0].results.concat(jobs[j].results)
-        }
-        // else le bloc courant est en erreur on ne fait rien
-      }
-    }
-  }
-
-  // tri du résultat fusionné sur le critère de poids descendant
-  if (jobs[0].results) {
-    jobs[0].results.sort((a, b) => {
-      return b.place.distance - a.place.distance
-    })
-  }
-
-  // filtrage sur l'opco
-  if (opco || opcoUrl) {
-    jobs[0].results = await filterJobsByOpco({ opco, opcoUrl, jobs: jobs[0].results })
-  }
-
-  // suppression du siret pour les appels par API. On ne remonte le siret que dans le cadre du front LBA.
-  if (caller) {
-    // on ne remonte le siret que dans le cadre du front LBA. Cette info n'est pas remontée par API
-    jobs[0].results.forEach((job, idx) => {
-      jobs[0].results[idx].company.siret = null
-    })
-  }
-
-  return jobs[0]
-}
-
-// appel de l'api offres pour un bloc de 1 à 3 romes
-const getSomePeJobsForChunkedRomes = async ({ romes, insee, radius, lat, long, caller, diploma, api }) => {
-  let jobResult = null
+  let jobs: PEResponse | IApiError = null
   const currentRadius = radius || 20000
   const jobLimit = 50 //TODO: query params options or default value from properties -> size || 50
 
   let trys = 0
 
   while (trys < 3) {
-    jobResult = await getPeJobs({ romes, insee, radius: currentRadius, jobLimit, caller, diploma, api })
+    jobs = await getPeJobs({ romes, insee, radius: currentRadius, jobLimit, caller, diploma, api })
 
-    if (jobResult.status === 429) {
+    if (jobs.status === 429) {
       console.log("PE jobs api quota exceeded. Retrying : ", trys + 1)
       // trois essais pour gérer les 429 quotas exceeded des apis PE.
       trys++
-      await new Promise((resolve) => setTimeout(resolve, 1000))
-    } else break
+      await setTimeout(1000, "result")
+    } else {
+      break
+    }
   }
 
-  if (jobResult?.result === "error") {
-    return jobResult
-  } else {
-    return transformPeJobsForIdea({ jobs: jobResult, radius: currentRadius, lat, long, caller })
+  if (jobs?.result == "error") {
+    return jobs
   }
+
+  jobs = transformPeJobsForIdea({ jobs, radius: currentRadius, lat, long, caller })
+
+  // tri du résultat fusionné sur le critère de poids descendant
+  if (jobs) {
+    jobs.sort((a, b) => {
+      return b.place.distance - a.place.distance
+    })
+  }
+
+  // filtrage sur l'opco
+  if (opco || opcoUrl) {
+    jobs = await filterJobsByOpco({ opco, opcoUrl, jobs })
+  }
+
+  // suppression du siret pour les appels par API. On ne remonte le siret que dans le cadre du front LBA.
+  if (caller) {
+    // on ne remonte le siret que dans le cadre du front LBA. Cette info n'est pas remontée par API
+    jobs.forEach((job, idx) => {
+      jobs[idx].company.siret = null
+    })
+  }
+
+  return { results: jobs }
 }
 
 // update du contenu avec des résultats pertinents par rapport au rayon
 const transformPeJobsForIdea = ({ jobs, radius, lat, long, caller }) => {
-  const resultJobs = {
-    results: [],
-  }
+  const resultJobs: PEJob[] = []
 
   if (jobs.resultats && jobs.resultats.length) {
     for (let i = 0; i < jobs.resultats.length; ++i) {
-      //console.log("jobs.resultat : ",jobs.resultats[i]);
       const job = transformPeJobForIdea({ job: jobs.resultats[i], lat, long, caller })
 
       if (job.place.distance < getRoundedRadius(radius)) {
         if (!job?.company?.name || blackListedCompanies.indexOf(job.company.name.toLowerCase()) < 0) {
-          resultJobs.results.push(job)
+          resultJobs.push(job)
         }
       }
     }
@@ -130,8 +83,8 @@ const transformPeJobsForIdea = ({ jobs, radius, lat, long, caller }) => {
   return resultJobs
 }
 
-// Adaptation au modèle Idea et conservation des seules infos utilisées des offres
-const transformPeJobForIdea = ({ job, lat = null, long = null }) => {
+// Adaptation au modèle LBA et conservation des seules infos utilisées des offres
+const transformPeJobForIdea = ({ job, lat = null, long = null }): PEJob => {
   const resultJob = itemModel("peJob")
 
   resultJob.title = job.intitule
@@ -216,7 +169,56 @@ const peJobsApiEndpoint = "https://api.pole-emploi.io/partenaire/offresdemploi/v
 const peJobApiEndpoint = "https://api.pole-emploi.io/partenaire/offresdemploi/v2/offres/"
 const peContratsAlternances = "E2,FS" //E2 -> Contrat d'Apprentissage, FS -> contrat de professionalisation
 
-const getPeJobs = async ({ romes, insee, radius, jobLimit, caller, diploma, api = "jobV1" }) => {
+// warning: type écrit à partir d'un échantillon de données
+export type PEJob = {
+  id: string
+  intitule: string
+  description: string
+  dateCreation: string
+  dateActualisation: string
+  lieuTravail: object[]
+  romeCode: string
+  romeLibelle: string
+  appellationlibelle: string
+  entreprise: object[]
+  typeContrat: string
+  typeContratLibelle: string
+  natureContrat: string
+  experienceExige: string
+  experienceLibelle: string
+  competences?: [][]
+  salaire: object[] | object
+  dureeTravailLibelle?: string
+  dureeTravailLibelleConverti?: string
+  alternance: boolean
+  contact?: object[] | object
+  agence?: object[]
+  nombrePostes: number
+  accessibleTH: boolean
+  deplacementCode?: string
+  deplacementLibelle?: string
+  qualificationCode?: string
+  qualificationLibelle?: string
+  codeNAF?: string
+  secteurActivite?: string
+  secteurActiviteLibelle?: string
+  qualitesProfessionnelles?: [][]
+  origineOffre: object[]
+  offresManqueCandidats?: boolean
+  formations?: [][]
+  langues?: [][]
+  complementExercice?: string
+}
+
+export type PEResponse = {
+  resultats: PEJob[]
+  filtresPossibles: {
+    filtre: string
+    agregation: [][]
+  }[]
+}
+
+const getPeJobs = async ({ romes, insee, radius, jobLimit, caller, diploma, api = "jobV1" }): Promise<PEResponse | IApiError> => {
   try {
     const token = await getAccessToken("pe")
 
@@ -233,10 +235,8 @@ const getPeJobs = async ({ romes, insee, radius, jobLimit, caller, diploma, api 
 
     const distance = radius || 10
 
-    //console.log("diploma ? ",diploma)
-
     const params = {
-      codeROME: romes,
+      codeROME: romes.join(","),
       commune: codeInsee,
       sort: hasLocation ? 2 : 0, //sort: 0, TODO: remettre sort 0 après expérimentation CBS
       natureContrat: peContratsAlternances,
@@ -260,8 +260,6 @@ const getPeJobs = async ({ romes, insee, radius, jobLimit, caller, diploma, api 
       params,
       headers,
     })
-
-    //throw new Error("boom");
 
     return jobs.data
   } catch (error) {

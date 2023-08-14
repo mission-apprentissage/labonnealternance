@@ -16,12 +16,12 @@ interface IRecruiter {
   cfa_delegated_siret: string
   last_name: string
   first_name: string
-  phone: string
+  phone?: string
   email: string
   jobs: IJobs[]
   origin: string
   opco: string
-  idcc: string
+  idcc?: string
   status: string
   naf_code: string
   naf_label: string

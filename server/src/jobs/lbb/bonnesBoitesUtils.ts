@@ -11,6 +11,7 @@ import geoData from "../../common/utils/geoData.js"
 import { EmailBlacklist, BonnesBoites, GeoLocation, Opco } from "../../common/model/index.js"
 import initNafMap from "./initNafMap.js"
 import initNafScoreMap from "./initNafScoreMap.js"
+import { notifyToSlack } from "../../common/utils/slackUtils.js"
 
 const currentDirname = __dirname(import.meta.url)
 
@@ -26,11 +27,20 @@ export const removePredictionFile = async () => {
   }
 }
 
-export const checkIfAlgoFileIsNew = async (): void => {
+/**
+ * Check if algo company file is more recent than when last processed
+ * @param {string} reason process calling the function
+ */
+export const checkIfAlgoFileIsNew = async (reason: string): void => {
   const algoFileLastModificationDate = await getFileLastModificationDate()
   const currentDbCreatedDate = await getCurrentDbCreatedDate()
 
   if (algoFileLastModificationDate.getTime() < currentDbCreatedDate.getTime()) {
+    notifyToSlack({
+      subject: "IMPORT BONNES BOITES",
+      message: `Process lié à l'import bonnesboites avorté car les données sont déjà à jour. ${reason}`,
+      error: false,
+    })
     throw new Error("Sociétés issues de l'algo déjà à jour")
   }
 }
