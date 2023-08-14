@@ -10,7 +10,14 @@ import { groupBy, flatMap } from "lodash-es"
  * @param {Object} db database connector
  * @returns {Promise}
  */
-const lowercaseAllEmail = (db) => db.collection("userrecruteurs").updateMany({}, [{ $set: { email: { $toLower: "$email" } } }])
+const lowercaseAllEmailUserRecruters = (db) => db.collection("userrecruteurs").updateMany({}, [{ $set: { email: { $toLower: "$email" } } }])
+
+/**
+ * @description lowercase all email of the UserRecruter collection documents
+ * @param {Object} db database connector
+ * @returns {Promise}
+ */
+const lowercaseAllEmailRecruiters = (db) => db.collection("recruiters").updateMany({}, [{ $set: { email: { $toLower: "$email" } } }])
 
 /**
  * @description get related users based on an email, case insensitive, sorted by last_connection date
@@ -135,8 +142,11 @@ const cleanUsersOfTypeCFA = async (cfas: IUserRecruteur[]) => {
     if (duplicatesOfTheSameUser.length === 2) {
       const inactiveUser = duplicatesOfTheSameUser.filter((x) => x.status.pop().status !== ETAT_UTILISATEUR.VALIDE)
       if (inactiveUser.length) {
-        await removeUserAndCompany(inactiveUser[0])
+        await removeUserAndDelegatee(inactiveUser[0])
         return
+      } else {
+        // Keep the last one connected
+        await removeUserAndDelegatee(duplicatesOfTheSameUser[1])
       }
     } else {
       await asyncForEach(duplicatesOfTheSameUser, async (user: IUserRecruteur) => {
@@ -166,5 +176,6 @@ runScript(async ({ db }) => {
   const [establishments, cfas] = await Promise.all([UserRecruteur.find({ type: ENTREPRISE }).lean(), UserRecruteur.find({ type: CFA }).lean()])
   await cleanUsersOfTypeENTREPRISE(establishments)
   await cleanUsersOfTypeCFA(cfas)
-  await lowercaseAllEmail(db)
+  await lowercaseAllEmailUserRecruters(db)
+  await lowercaseAllEmailRecruiters(db)
 })
