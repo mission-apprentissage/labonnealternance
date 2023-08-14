@@ -1,9 +1,8 @@
 # [1.69.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.68.0...v1.69.0) (2023-08-09)
 
-
 ### Features
 
-* nouvelle phrase d'accroche ([#534](https://github.com/mission-apprentissage/labonnealternance/issues/534)) ([8c965ac](https://github.com/mission-apprentissage/labonnealternance/commit/8c965ac47e593a9179fca2b8cd549ef1733febda))
+- nouvelle phrase d'accroche ([#534](https://github.com/mission-apprentissage/labonnealternance/issues/534)) ([8c965ac](https://github.com/mission-apprentissage/labonnealternance/commit/8c965ac47e593a9179fca2b8cd549ef1733febda))
 
 # [1.68.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.67.1...v1.68.0) (2023-08-09)
 

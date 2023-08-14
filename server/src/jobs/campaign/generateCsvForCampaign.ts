@@ -1,7 +1,7 @@
 // @ts-nocheck
 import axios from "axios"
 import __dirname from "../../common/dirname.js"
-import { getDistanceInKm } from "../../common/geolib.js"
+import { getDistanceInKm } from "../../common/utils/geolib.js"
 import { FormationCatalogue } from "../../common/model/index.js"
 import { asyncForEach } from "../../common/utils/asyncUtils.js"
 import { createXLSXFile } from "../../common/utils/fileUtils.js"
