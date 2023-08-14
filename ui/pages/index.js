@@ -3,6 +3,7 @@ import React, { useEffect } from "react"
 import Footer from "../components/footer"
 import AlgoHome from "../components/HomeComponents/AlgoHome"
 import MetiersDAvenir from "../components/HomeComponents/MetiersDAvenir"
+import TestezConnaissancesQuiz from "../components/HomeComponents/TestezConnaissancesQuiz"
 import HomeHero from "../components/HomeHero"
 import HowTo from "../components/HowTo"
 import Navigation from "../components/navigation"
@@ -57,6 +58,10 @@ const Home = () => {
         <Image src={howtocircle5} {...circleImgCssProperties} bottom="112px" right="-12px" alt="" />
         <HomeHero />
         <HowTo />
+      </Box>
+
+      <Box {...blockCssProperties} pt={12} pb={0}>
+        <TestezConnaissancesQuiz />
       </Box>
 
       <Box {...blockCssProperties} pt={12} pb={0}>
