@@ -69,7 +69,6 @@ const ChoiceColumn = ({
     flyToMarker(item, 12)
     closeMapPopups()
     setSelectedItem(item)
-
     setSelectedMarker(item)
 
     setCurrentPage("fiche")

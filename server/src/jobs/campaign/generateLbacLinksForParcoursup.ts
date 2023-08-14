@@ -135,7 +135,7 @@ runScript(async () => {
     if (err) {
       console.error("Une erreur est survenue lors de l'écriture du fichier :", err)
     } else {
-      console.log("Le fichier a été écrit avec succès.")
+      console.info("Le fichier a été écrit avec succès.")
     }
   })
 })

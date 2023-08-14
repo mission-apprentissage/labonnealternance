@@ -1,10 +1,10 @@
 import { pick } from "lodash-es"
 import moment from "moment"
 import { mailTemplate } from "../assets/index.js"
-import { ANNULEE, POURVUE, etat_utilisateur } from "../common/constants.js"
-import dayjs from "../common/dayjs.js"
+import { ETAT_UTILISATEUR, ACTIVE, RECRUITER_STATUS, JOB_STATUS } from "./constant.service.js"
+import dayjs from "./dayjs.service.js"
 import { getElasticInstance } from "../common/esClient/index.js"
-import createMailer from "../common/mailer.js"
+import mailer from "./mailer.service.js"
 import { Recruiter, UnsubscribeOF } from "../common/model/index.js"
 import { IRecruiter } from "../common/model/schema/recruiter/recruiter.types.js"
 import { IJobs } from "../common/model/schema/jobs/jobs.types.js"
@@ -16,9 +16,9 @@ import { getEtablissement, getValidationUrl } from "./etablissement.service.js"
 import { ModelUpdateOptions, UpdateQuery } from "mongoose"
 import { Filter } from "mongodb"
 import { getUser, getUserValidationState } from "./userRecruteur.service.js"
+import { ILbaJobEsResult } from "./lbajob.service.types.js"
 
 const esClient = getElasticInstance()
-const mailer = await createMailer()
 
 interface IFormulaireExtended extends IRecruiter {
   entreprise_localite: string
@@ -38,7 +38,7 @@ interface IOffreExtended extends IJobs {
  * @param {string} payload.long
  * @param {string[]} payload.romes
  * @param {string} payload.niveau
- * @returns {Promise<IRecruiter[]>}
+ * @returns {Promise<ILbaJobEsResult[]>}
  */
 export const getJobsFromElasticSearch = async ({
   distance,
@@ -52,7 +52,7 @@ export const getJobsFromElasticSearch = async ({
   lon: string
   romes: string[]
   niveau: string
-}): Promise<IRecruiter[]> => {
+}): Promise<ILbaJobEsResult[]> => {
   const filter: Array<object> = [
     {
       geo_distance: {
@@ -101,7 +101,7 @@ export const getJobsFromElasticSearch = async ({
                     },
                     {
                       match: {
-                        "jobs.job_status": "Active",
+                        "jobs.job_status": ACTIVE,
                       },
                     },
                   ],
@@ -185,7 +185,7 @@ export const getOffreAvecInfoMandataire = async (id: IJobs["_id"]): Promise<IFor
   const result = await getOffre(id)
 
   if (!result) {
-    return result
+    return null
   }
 
   result.jobs = result.jobs.filter((x) => x._id == id)
@@ -244,7 +244,7 @@ export const createJob = async ({ job, id }: { job: Partial<IOffreExtended>; id:
   const user = await getUser({ establishment_id: id })
   // get user activation state if not managed by a CFA
   if (user) {
-    isUserAwaiting = getUserValidationState(user.status) === etat_utilisateur.ATTENTE
+    isUserAwaiting = getUserValidationState(user.status) === ETAT_UTILISATEUR.ATTENTE
     // upon user creation, if user is awaiting validation, update job status to "En attente"
     if (isUserAwaiting) {
       job.job_status = "En attente"
@@ -267,7 +267,7 @@ export const createJob = async ({ job, id }: { job: Partial<IOffreExtended>; id:
 
     await mailer.sendEmail({
       to: email,
-      subject: "La bonne alternance - Merci de valider votre adresse mail pour diffuser votre offre",
+      subject: "Confirmez votre adresse mail",
       template: mailTemplate["mail-nouvelle-offre-depot-simplifie"],
       data: {
         images: {
@@ -291,9 +291,7 @@ export const createJob = async ({ job, id }: { job: Partial<IOffreExtended>; id:
   // Send mail with action links to manage offers
   await mailer.sendEmail({
     to: is_delegated ? contactCFA.email : email,
-    subject: is_delegated
-      ? `La bonne alternance - Votre offre d'alternance pour ${establishment_raison_sociale} a bien été publiée`
-      : `La bonne alternance - Votre offre d'alternance a bien été publiée`,
+    subject: is_delegated ? `Votre offre d'alternance pour ${establishment_raison_sociale} est publiée` : `Votre offre d'alternance est publiée`,
     template: mailTemplate["mail-nouvelle-offre"],
     data: {
       images: {
@@ -353,7 +351,7 @@ export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }:
 
     delegations.push({ siret_code, email })
 
-    if (userState.status === etat_utilisateur.VALIDE) {
+    if (userState.status === ETAT_UTILISATEUR.VALIDE) {
       await sendCFADelegationMail(email, offre, offreDocument, siret_code)
     }
   })
@@ -424,14 +422,26 @@ export const updateFormulaire = async (id: IRecruiter["establishment_id"], paylo
 export const archiveFormulaire = async (id: IRecruiter["establishment_id"]): Promise<boolean> => {
   const form = await Recruiter.findOne({ establishment_id: id })
 
-  form.status = "Archivé"
+  form.status = RECRUITER_STATUS.ARCHIVE
 
   form.jobs.map((job) => {
-    job.job_status = "Annulée"
+    job.job_status = JOB_STATUS.ANNULEE
   })
 
   await form.save()
 
+  return true
+}
+
+/**
+ * @description Unarchive existing formulaire
+ * @param {IRecruiter["establishment_id"]} establishment_id
+ * @returns {Promise<boolean>}
+ */
+export const reactivateRecruiter = async (id: IRecruiter["establishment_id"]): Promise<boolean> => {
+  const form = await Recruiter.findOne({ establishment_id: id })
+  form.status = RECRUITER_STATUS.ACTIF
+  await form.save()
   return true
 }
 
@@ -493,6 +503,23 @@ export const updateOffre = async (id: IJobs["_id"], payload: UpdateQuery<IJobs>,
   )
 
 /**
+ * @description Increment field in existing job offer
+ * @param {IJobs["_id"]} id
+ * @param {object} payload
+ * @returns {Promise<IRecruiter>}
+ */
+export const incrementLbaJobViewCount = async (id: IJobs["_id"], payload: object, options: ModelUpdateOptions = { new: true }): Promise<IRecruiter> => {
+  const incPayload = Object.fromEntries(Object.entries(payload).map(([key, value]) => [`jobs.$.${key}`, value]))
+  return Recruiter.findOneAndUpdate(
+    { "jobs._id": id },
+    {
+      $inc: incPayload,
+    },
+    options
+  )
+}
+
+/**
  * @description Update specific field(s) in an existing job offer
  * @param {IJobs["_id"]} id
  * @param {object} payload
@@ -523,7 +550,7 @@ export const provideOffre = async (id: IJobs["_id"]): Promise<boolean> => {
     { "jobs._id": id },
     {
       $set: {
-        "jobs.$.job_status": POURVUE,
+        "jobs.$.job_status": JOB_STATUS.POURVUE,
       },
     }
   )
@@ -540,7 +567,7 @@ export const cancelOffre = async (id: IJobs["_id"]): Promise<boolean> => {
     { "jobs._id": id },
     {
       $set: {
-        "jobs.$.job_status": ANNULEE,
+        "jobs.$.job_status": JOB_STATUS.ANNULEE,
       },
     }
   )

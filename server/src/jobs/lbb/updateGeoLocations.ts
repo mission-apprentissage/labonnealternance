@@ -73,7 +73,7 @@ export default async function updateGeoLocations({ ForceRecreate = false }) {
     logMessage("info", " -- Start bulk geolocations -- ")
 
     if (!ForceRecreate) {
-      await checkIfAlgoFileIsNew()
+      await checkIfAlgoFileIsNew("geo locations")
     }
 
     await clearingFiles()

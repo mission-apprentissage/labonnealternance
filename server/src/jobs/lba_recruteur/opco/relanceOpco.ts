@@ -1,18 +1,18 @@
 import { mailTemplate } from "../../../assets/index.js"
-import { etat_utilisateur } from "../../../common/constants.js"
+import { ETAT_UTILISATEUR } from "../../../services/constant.service.js"
 import { UserRecruteur } from "../../../common/model/index.js"
 import { IUserRecruteur } from "../../../common/model/schema/userRecruteur/userRecruteur.types.js"
 import { asyncForEach } from "../../../common/utils/asyncUtils.js"
 import config from "../../../config.js"
+import mailer from "../../../services/mailer.service.js"
 
 /**
  * @description send mail to ocpo with awaiting validation user number
- * @param {*} mailer component
  * @returns {}
  */
-export const relanceOpco = async (mailer) => {
+export const relanceOpco = async () => {
   const userAwaitingValidation = await UserRecruteur.find({
-    $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, etat_utilisateur.ATTENTE] },
+    $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, ETAT_UTILISATEUR.ATTENTE] },
     opco: { $nin: [null, "Opco multiple", "inconnu"] },
   }).lean()
 
@@ -37,7 +37,7 @@ export const relanceOpco = async (mailer) => {
       // send mail to recipient
       await mailer.sendEmail({
         to: user.email,
-        subject: "La bonne alternance - Vos entreprises souhaitent déposer des offres",
+        subject: "Nouveaux comptes entreprises à valider",
         template: mailTemplate["mail-relance-opco"],
         data: {
           images: {

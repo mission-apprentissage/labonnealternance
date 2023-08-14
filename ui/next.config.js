@@ -16,6 +16,7 @@ const contentSecurityPolicy = `
               https://plausible.io 
               http://localhost:3000 
               https://stats.beta.gouv.fr
+              https://stats.data.gouv.fr
               blob:; 
   script-src-attr 'none';
   connect-src 'self'
@@ -26,6 +27,7 @@ const contentSecurityPolicy = `
               https://api-adresse.data.gouv.fr 
               https://api.mapbox.com 
               https://stats.beta.gouv.fr
+              https://stats.data.gouv.fr
               https://events.mapbox.com 
               https://plausible.io 
               http://localhost:5000

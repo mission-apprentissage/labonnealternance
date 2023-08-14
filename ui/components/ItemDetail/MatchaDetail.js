@@ -2,6 +2,7 @@ import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Flex, Image, Link, Text } from "@chakra-ui/react"
 import React, { useEffect } from "react"
 import { DisplayContext } from "../../context/DisplayContextProvider"
+import { notifyLbaJobDetailView } from "../../services/notifyLbaJobDetailView"
 import { SendPlausibleEvent } from "../../utils/plausible"
 import { formatDate } from "../../utils/strutils"
 import MatchaAcces from "./MatchaComponents/MatchaAcces"
@@ -22,6 +23,7 @@ const MatchaDetail = ({ job, seeInfo, setSeeInfo }) => {
     SendPlausibleEvent("Affichage - Fiche entreprise Offre LBA", {
       info_fiche: `${job?.job?.id}${formValues?.job?.label ? ` - ${formValues.job.label}` : ""}`,
     })
+    notifyLbaJobDetailView(job?.job?.id)
   }, [job?.job?.id])
 
   const jobStartDate = job?.job?.jobStartDate ? formatDate(job.job.jobStartDate) : undefined

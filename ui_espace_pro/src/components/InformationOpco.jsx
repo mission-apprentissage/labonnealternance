@@ -1,7 +1,7 @@
 import { Box, Button, Flex, Image, SimpleGrid, Text } from "@chakra-ui/react"
 import { Edit2Fill, InfoCircle } from "../theme/components/icons"
 
-export default ({ disabled, informationOpco, resetOpcoChoice }) => {
+export const InformationOpco = ({ disabled, informationOpco, resetOpcoChoice }) => {
   return (
     <Box backgroundColor="#F5F5FE" p={5} mt={7}>
       <SimpleGrid columns={1} spacing="20px">
@@ -9,12 +9,12 @@ export default ({ disabled, informationOpco, resetOpcoChoice }) => {
           <Text fontWeight="700" fontSize="20px">
             Votre OPCO
           </Text>
-          <Button isDisabled={disabled} onClick={() => resetOpcoChoice()} variant="pill" color="bluefrance.500" leftIcon={<Edit2Fill width={3} />}>
+          <Button isDisabled={disabled} onClick={resetOpcoChoice} variant="pill" color="bluefrance.500" leftIcon={<Edit2Fill width={3} />}>
             Modifier
           </Button>
         </Flex>
         <Flex align="flex-start">
-          <Text maxW="75%" pr={1} fontSize="14px">
+          <Text maxW="75%" pr={4} fontSize="14px" textAlign="justify">
             {informationOpco?.description}
           </Text>
           <Image src={informationOpco?.image} />
@@ -30,3 +30,5 @@ export default ({ disabled, informationOpco, resetOpcoChoice }) => {
     </Box>
   )
 }
+
+export default InformationOpco

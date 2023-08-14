@@ -1,6 +1,6 @@
 {
   "name": "mna-lba-server",
-  "version": "1.54.0",
+  "version": "1.69.0",
   "description": "API La bonne alternance",
   "repository": "https://github.com/mission-apprentissage/labonnealternance.git",
   "private": false,
@@ -107,8 +107,7 @@
     "tcp-port-used": "1.0.2",
     "tsoa": "5.1.1",
     "xlsx": "0.16.1",
-    "xml2js": "0.6.0",
-    "yup": "0.32.11"
+    "xml2js": "0.6.0"
   },
   "devDependencies": {
     "@swc/core": "1.3.6",

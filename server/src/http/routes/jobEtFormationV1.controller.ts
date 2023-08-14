@@ -12,9 +12,9 @@ export default function () {
 
   router.get(
     "/",
-    tryCatch(async (req, res) => {
+    tryCatch(async (req: express.Request, res) => {
       const query = { ...req.query, referer: req.headers.referer }
-      let result = jobsEtFormationsQueryValidator(query)
+      let result = await jobsEtFormationsQueryValidator(query)
 
       // TODO: use Joi control when moving this part to TSOA controller
       if (!result.error) {
@@ -69,7 +69,7 @@ export default function () {
 
           result = { formations, jobs }
         } catch (err) {
-          console.log("Error ", err.message)
+          console.error("Error ", err.message)
           sentryCaptureException(err)
 
           if (query.caller) {
@@ -80,10 +80,12 @@ export default function () {
         }
       }
 
-      if (result.error === "wrong_parameters") {
-        res.status(400)
-      } else {
-        res.status(500)
+      if (result.error) {
+        if (result.error === "wrong_parameters") {
+          res.status(400)
+        } else {
+          res.status(500)
+        }
       }
 
       return res.json(result)

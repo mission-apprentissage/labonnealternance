@@ -178,9 +178,14 @@ export const getEtablissement = async (query: Filter<IUserRecruteur>): Promise<I
  * @param {String} siret
  * @returns {Promise<Object>}
  */
-export const getOpco = async (siret: string): Promise<ICFADock> => {
-  const { data } = await axios.get<ICFADock>(`https://www.cfadock.fr/api/opcos?siret=${siret}`)
-  return data
+export const getOpco = async (siret: string): Promise<ICFADock | null> => {
+  try {
+    const { data } = await axios.get<ICFADock>(`https://www.cfadock.fr/api/opcos?siret=${encodeURIComponent(siret)}`)
+    return data
+  } catch (err) {
+    sentryCaptureException(err)
+    return null
+  }
 }
 
 /**
@@ -188,9 +193,14 @@ export const getOpco = async (siret: string): Promise<ICFADock> => {
  * @param {Number} idcc
  * @returns {Promise<Object>}
  */
-export const getOpcoByIdcc = async (idcc: number): Promise<ICFADock> => {
-  const { data } = await axios.get<ICFADock>(`https://www.cfadock.fr/api/opcos?idcc=${idcc}`)
-  return data
+export const getOpcoByIdcc = async (idcc: number): Promise<ICFADock | null> => {
+  try {
+    const { data } = await axios.get<ICFADock>(`https://www.cfadock.fr/api/opcos?idcc=${idcc}`)
+    return data
+  } catch (err) {
+    sentryCaptureException(err)
+    return null
+  }
 }
 
 /**
@@ -230,9 +240,7 @@ export const getEtablissementFromGouv = async (siret: string): Promise<IAPIEtabl
     if (error.response.status == "404" || error.response.status == "422") {
       return null
     }
-
     sentryCaptureException(error)
-    throw error
   }
 }
 /**

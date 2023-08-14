@@ -1,16 +1,11 @@
 import express from "express"
-import { mailTemplate } from "../../../assets/index.js"
-import { mailType, optMode } from "../../../common/model/constants/etablissement.js"
-import { referrers } from "../../../common/model/constants/referrers.js"
 import { Etablissement } from "../../../common/model/index.js"
-import { dayjs } from "../../../common/utils/dayjs.js"
-import config from "../../../config.js"
 import { tryCatch } from "../../middlewares/tryCatchMiddleware.js"
 
 /**
  * @description Etablissement Router.
  */
-export default ({ etablissements, mailer }) => {
+export default ({ etablissements }) => {
   const router = express.Router()
 
   /**

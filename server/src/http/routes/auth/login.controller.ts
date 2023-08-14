@@ -5,7 +5,7 @@ import passport from "passport"
 import { ExtractJwt, Strategy } from "passport-jwt"
 import { Strategy as LocalStrategy } from "passport-local"
 import { mailTemplate } from "../../../assets/index.js"
-import { CFA, ENTREPRISE, etat_utilisateur } from "../../../common/constants.js"
+import { CFA, ENTREPRISE, ETAT_UTILISATEUR } from "../../../services/constant.service.js"
 import { UserRecruteur } from "../../../common/model/index.js"
 import { createMagicLinkToken, createUserRecruteurToken, createUserToken } from "../../../common/utils/jwtUtils.js"
 import config from "../../../config.js"
@@ -14,6 +14,7 @@ import { IUserRecruteur } from "../../../common/model/schema/userRecruteur/userR
 import { getUser, registerUser } from "../../../services/userRecruteur.service.js"
 import * as users from "../../../services/user.service.js"
 import { getValidationUrl } from "../../../services/etablissement.service.js"
+import mailer from "../../../services/mailer.service.js"
 
 const checkToken = () => {
   passport.use(
@@ -39,7 +40,7 @@ const checkToken = () => {
   return passport.authenticate("jwt", { session: false, failWithError: true })
 }
 
-export default ({ mailer }) => {
+export default () => {
   const router = express.Router() // eslint-disable-line new-cap
   passport.use(
     new LocalStrategy(
@@ -97,7 +98,7 @@ export default ({ mailer }) => {
 
         await mailer.sendEmail({
           to: email,
-          subject: "La bonne alternance - Confirmez votre adresse email",
+          subject: "Confirmez votre adresse mail",
           template: mailTemplate["mail-confirmation-email"],
           data: {
             images: {
@@ -139,11 +140,11 @@ export default ({ mailer }) => {
 
       switch (user.type) {
         case CFA:
-          if (lastValidationEntry.status === etat_utilisateur.ATTENTE) {
+          if (lastValidationEntry.status === ETAT_UTILISATEUR.ATTENTE) {
             return res.status(400).json({ error: true, reason: "VALIDATION" })
           }
 
-          if (lastValidationEntry.status === etat_utilisateur.DESACTIVE) {
+          if (lastValidationEntry.status === ETAT_UTILISATEUR.DESACTIVE) {
             return res.status(400).json({
               error: true,
               reason: "DISABLED",
@@ -151,11 +152,11 @@ export default ({ mailer }) => {
           }
           break
         case ENTREPRISE:
-          if (lastValidationEntry.status === etat_utilisateur.ATTENTE) {
+          if (lastValidationEntry.status === ETAT_UTILISATEUR.ATTENTE) {
             return res.status(400).json({ error: true, reason: "VALIDATION" })
           }
 
-          if (lastValidationEntry.status === etat_utilisateur.DESACTIVE) {
+          if (lastValidationEntry.status === ETAT_UTILISATEUR.DESACTIVE) {
             return res.status(400).json({
               error: true,
               reason: "DISABLED",
@@ -169,7 +170,7 @@ export default ({ mailer }) => {
 
         await mailer.sendEmail({
           to: userEmail,
-          subject: "La bonne alternance - Confirmez votre adresse email",
+          subject: "Confirmez votre adresse mail",
           template: mailTemplate["mail-confirmation-email"],
           data: {
             images: {
@@ -191,7 +192,7 @@ export default ({ mailer }) => {
 
       await mailer.sendEmail({
         to: userEmail,
-        subject: "La bonne alternance - Lien de connexion",
+        subject: "Lien de connexion",
         template: mailTemplate["mail-connexion"],
         data: {
           images: {

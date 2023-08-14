@@ -40,10 +40,10 @@ export interface ILbaItem {
 
 export interface ILbaItemContact {
   // informations de contact. optionnel
-  email: string // pe -> contact.courriel | lbb/lba -> email | formation -> email | matcha -> email
-  name: string // pe -> contact.nom | matcha -> prenom nom
-  phone: string // lbb/lba --> phone | matcha -> telephone
-  info: string // pe -> contact.coordonnees1+contact.coordonnees2+contact.coordonnees3
+  email?: string // pe -> contact.courriel | lbb/lba -> email | formation -> email | matcha -> email
+  name?: string // pe -> contact.nom | matcha -> prenom nom
+  phone?: string // lbb/lba --> phone | matcha -> telephone
+  info?: string // pe -> contact.coordonnees1+contact.coordonnees2+contact.coordonnees3
 }
 
 export interface ILbaItemPlace {
@@ -74,8 +74,8 @@ export interface ILbaItemCompany {
   uai: string // formation -> etablissement_formateur_uai
   place: Partial<ILbaItemPlace>
   //        city,   // formation -> etablissement_formateur_localite | matcha -> entreprise_localite
-  mandataire?: string // matcha -> mandataire
-  creationDate?: string // matcha -> date_creation_etablissement
+  mandataire?: boolean // matcha -> mandataire
+  creationDate?: Date // matcha -> date_creation_etablissement
   headquarter: ILbaItemCompanyHQ // uniquement pour formation
   opco?: ILbaItemOpco
 }
@@ -102,17 +102,17 @@ export interface ILbaItemOpco {
 
 export interface ILbaItemJob {
   description: string // pe -> description | matcha -> description
-  creationDate: string // pe -> dateCreation | matcha -> createdAt
+  creationDate: string | Date // pe -> dateCreation | matcha -> createdAt
   id: string // pe -> id | matcha -> id mongo offre
   contractType: string // pe -> typeContrat | matcha -> offres.type
-  contractDescription: string // pe -> typeContratLibelle
-  duration: string // pe -> dureeTravailLibelle
-  jobStartDate: string // matcha -> offres.date_debut_apprentissage
-  romeDetails: string // matcha -> offres.rome_detail -> détail du code ROME
+  contractDescription?: string // pe -> typeContratLibelle
+  duration?: string // pe -> dureeTravailLibelle
+  jobStartDate: string | Date // matcha -> offres.date_debut_apprentissage
+  romeDetails: object // matcha -> offres.rome_detail -> détail du code ROME
   rythmeAlternance: string // matcha -> offres.rythme_alternance
-  elligibleHandicap: string // matcha -> offres.elligible_handicap
+  elligibleHandicap?: boolean // matcha -> offres.is_disabled_elligible
   dureeContrat: string // matcha -> offres.duree_contrat
-  quantiteContrat: string // matcha -> offres.quantite
+  quantiteContrat?: number // matcha -> offres.quantite
 }
 
 export interface ILbaItemRome {
@@ -121,7 +121,7 @@ export interface ILbaItemRome {
 }
 
 export interface ILbaItemNaf {
-  code: string // lbb/lba -> naf_code | pe -> secteurActivite
+  code?: string // lbb/lba -> naf_code | pe -> secteurActivite
   label: string // lbb/lba -> naf_label | matcha -> libelle_naf | pe -> secteurActiviteLibelle
 }
 

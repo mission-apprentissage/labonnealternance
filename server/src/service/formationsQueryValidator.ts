@@ -8,11 +8,11 @@ import {
   validateOptionalRomeOrDomain,
   validateRadius,
   validateRegionOrRome,
-  validateRomeOrDomain,
+  validateRncpOrRomeOrDomain,
 } from "./queryValidators.js"
 
 //TODO: remplacer par joi validateAsync
-const formationsQueryValidator = (query) => {
+const formationsQueryValidator = async (query) => {
   const error_messages = []
 
   // contrôle des paramètres
@@ -20,8 +20,7 @@ const formationsQueryValidator = (query) => {
   // présence d'identifiant de la source : caller
   validateCaller({ caller: query.caller, referer: query.referer }, error_messages)
 
-  // codes ROME : romes
-  validateRomeOrDomain({ romes: query.romes, romeDomain: query.romeDomain, romeLimit: 20 }, error_messages)
+  await validateRncpOrRomeOrDomain(query, error_messages)
 
   // coordonnées gps optionnelles : latitude et longitude
   if (query.latitude || query.longitude) {

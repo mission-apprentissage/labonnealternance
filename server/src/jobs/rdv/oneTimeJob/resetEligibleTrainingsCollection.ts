@@ -43,7 +43,7 @@ const syncCustomEmail = async (filePath: URL): Promise<void> => {
   })
 }
 
-runScript(async (components) => {
+runScript(async () => {
   logger.info("Start EligibleTrainingsForAppointment reset")
   const countBefore = await EligibleTrainingsForAppointment.countDocuments()
   const filePath = new URL("./customEmails.json", import.meta.url)
@@ -54,8 +54,8 @@ runScript(async (components) => {
   if (dataSaved) {
     logger.info("Data saved, starting reset.")
     await EligibleTrainingsForAppointment.deleteMany({})
-    await syncEtablissementsAndFormations(components)
-    await syncAffelnetFormationsFromCatalogueME(components)
+    await syncEtablissementsAndFormations()
+    await syncAffelnetFormationsFromCatalogueME()
     const countAfter = await EligibleTrainingsForAppointment.countDocuments()
     logger.info(`count updated: ${countAfter} (before: ${countBefore})`)
     logger.info("Updating custom email from backup.")

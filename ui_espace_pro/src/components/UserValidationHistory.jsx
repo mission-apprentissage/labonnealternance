@@ -17,7 +17,7 @@ export default memo(({ histories }) => {
             user.last_name = result.data.last_name
             return user
           } catch (error) {
-            console.log(error)
+            console.error(error)
           }
         }
 
