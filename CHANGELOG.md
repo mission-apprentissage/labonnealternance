@@ -1,3 +1,10 @@
+# [1.70.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.69.0...v1.70.0) (2023-08-14)
+
+
+### Features
+
+* migrate geolib to utils folder ([#471](https://github.com/mission-apprentissage/labonnealternance/issues/471)) ([ff8a5bb](https://github.com/mission-apprentissage/labonnealternance/commit/ff8a5bb131a999898ed6f269c7b392e27aeb3e62))
+
 # [1.69.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.68.0...v1.69.0) (2023-08-09)
 
 ### Features
