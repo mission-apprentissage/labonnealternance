@@ -1,8 +1,8 @@
 import { Recruiter, UserRecruteur } from "../../../../common/model/index.js"
 import { runScript } from "../../../scriptWrapper.js"
 import { IUserRecruteur } from "../../../../common/model/schema/userRecruteur/userRecruteur.types.js"
-import { CFA, ENTREPRISE, etat_utilisateur } from "../../../../common/constants.js"
 import { asyncForEach } from "../../../../common/utils/asyncUtils.js"
+import { CFA, ENTREPRISE, etat_utilisateur } from "../../../../common/constants.js"
 
 /**
  * @description lowercase all email of the UserRecruter collection documents
@@ -103,6 +103,8 @@ const cleanUsersOfTypeENTREPRIE = async (establishments: IUserRecruteur[]) => {
         }
       })
     }
+    // save stashed establishment with accumulated jobs. user does not change
+    await Recruiter.findByIdAndUpdate(stash.establishment._id, stash.establishment)
   })
 }
 
@@ -142,7 +144,7 @@ const cleanUsersOfTypeCFA = async (cfas: IUserRecruteur[]) => {
           // check if stashed CFA is already stashed
           const found = stash.find((x) => x.establishment_siret === user.establishment_siret)
           if (found) {
-            // remove CFA
+            // remove duplicate from UserRecruteur collection. Link with Recruiters is kept intact.
             await UserRecruteur.findByIdAndDelete(user._id)
           }
         }
