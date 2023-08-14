@@ -1,12 +1,41 @@
-const validateRomes = (romes, error_messages, romeLimit = 15) => {
-  // codes ROME : romes
-  if (!romes) error_messages.push("romes : Rome codes are missing. At least 1.")
-  else if (romes.split(",").length > romeLimit) error_messages.push(`romes : Too many rome codes. Maximum is ${romeLimit}.`)
-  if (!/^[a-zA-Z][0-9]{4}(,[a-zA-Z][0-9]{4})*$/.test(romes))
-    error_messages.push("romes : Badly formatted rome codes. Rome code must be one letter followed by 4 digit number. ex : A1234")
+import { regionCodeToDepartmentList } from "../common/utils/regionInseeCodes.js"
+import { isOriginLocal } from "../common/utils/isOriginLocal.js"
+import { JobSearchQuery } from "./poleEmploi/jobsAndCompanies.js"
+import { RncpRomes } from "../common/model/index.js"
+
+const validateRncp = (rncp: string | null | undefined, error_messages: string[]) => {
+  if (!/^RNCP\d{2,5}$/.test(rncp)) {
+    error_messages.push("rncp : Badly formatted rncp code. RNCP code must 'RNCP' followed by 2 to 5 digit number. ex : RNCP12, RNCP12345 ...")
+    return false
+  } else {
+    return true
+  }
 }
 
-const validateRomeOrDomain = ({ romes, romeDomain, romeLimit = 15, optional }, error_messages) => {
+const validateRomesOrRncp = async (query: JobSearchQuery, error_messages: string[], romeLimit = 20) => {
+  const { romes, rncp } = query
+  // codes ROME : romes
+  if (!romes && !rncp) {
+    error_messages.push("romes or rncp : You must specify at least 1 rome code or a rncp code.")
+  } else if (romes && rncp) {
+    error_messages.push("romes or rncp : You must specify either a rncp code or 1 or more rome codes.")
+  } else if (romes) {
+    if (romes.split(",").length > romeLimit) error_messages.push(`romes : Too many rome codes. Maximum is ${romeLimit}.`)
+    if (!/^[a-zA-Z][0-9]{4}(,[a-zA-Z][0-9]{4})*$/.test(romes))
+      error_messages.push("romes : Badly formatted rome codes. Rome code must be one letter followed by 4 digit number. ex : A1234")
+  } else {
+    if (validateRncp(rncp, error_messages)) {
+      const romesFromRncp = await RncpRomes.find({ rncp_code: rncp })
+      if (!romesFromRncp.length) {
+        error_messages.push(`rncp : Rncp code not recognized. Please check that it exists. (${rncp})`)
+      } else {
+        query.romes = romesFromRncp[0].rome_codes.join(",")
+      }
+    }
+  }
+}
+
+const validateRomeOrDomain = ({ romes, romeDomain, romeLimit = 20, optional }, error_messages) => {
   // codes ROME : romes
   if (!optional && !romes && !romeDomain) {
     error_messages.push("romes, romeDomain : You must define at least 1 rome code OR a single romeDomain.")
@@ -22,11 +51,35 @@ const validateRomeOrDomain = ({ romes, romeDomain, romeLimit = 15, optional }, e
   }
 }
 
-const validateOptionalRomeOrDomain = ({ romes, romeDomain, romeLimit = 15 }, error_messages) => {
-  validateRomeOrDomain({ romes, romeDomain, romeLimit, optional: true }, error_messages)
+const validateRncpOrRomeOrDomain = async (query, error_messages, romeLimit = 20) => {
+  const { romes, rncp, romeDomain } = query
+
+  if (!rncp && !romes && !romeDomain) {
+    error_messages.push("romes, rncp, romeDomain : You must define at least 1 rome code OR a single romeDomain OR a single rncp code.")
+  } else if ((rncp && romes) || (rncp && romeDomain) || (romes && romeDomain)) {
+    error_messages.push("romes, romeDomain, rncp : You must define either romes OR romeDomain OR rncp.")
+  } else if (romes) {
+    if (romes.split(",").length > romeLimit) error_messages.push(`romes : Too many rome codes. Maximum is ${romeLimit}.`)
+    if (!/^[a-zA-Z][0-9]{4}(,[a-zA-Z][0-9]{4})*$/.test(romes))
+      error_messages.push("romes : Badly formatted rome codes. Rome code must be one letter followed by 4 digit number. ex : A1234")
+  } else if (romeDomain) {
+    if (!/^[a-zA-Z][0-9]{2}$/.test(romeDomain) && !/^[a-zA-Z]$/.test(romeDomain))
+      error_messages.push("romeDomain : Badly formatted romeDomain. Rome domain must be one letter or one letter followed by 2 digit number. ex : A or A12")
+  } else if (rncp) {
+    if (validateRncp(rncp, error_messages)) {
+      const romesFromRncp = await RncpRomes.find({ rncp_code: rncp })
+      if (!romesFromRncp.length) {
+        error_messages.push(`rncp : Rncp code not recognized. Please check that it exists. (${rncp})`)
+      } else {
+        query.romes = romesFromRncp[0].rome_codes.join(",")
+      }
+    }
+  }
 }
 
-import { regionCodeToDepartmentList } from "../common/utils/regionInseeCodes.js"
+const validateOptionalRomeOrDomain = ({ romes, romeDomain, romeLimit = 20 }, error_messages) => {
+  validateRomeOrDomain({ romes, romeDomain, romeLimit, optional: true }, error_messages)
+}
 
 const validateOptionalRegion = ({ region, departement }, error_messages) => {
   // codes ROME : romes
@@ -95,8 +148,6 @@ const validateApiSources = (apiSources, error_messages, allowedSources = ["forma
   }
 }
 
-import { isOriginLocal } from "../common/utils/isOriginLocal.js"
-
 // contrôle sur la présence d'un appelant valide
 const validateCaller = ({ caller, referer }, error_messages = []) => {
   if (!isOriginLocal(referer) && !caller) {
@@ -107,8 +158,9 @@ const validateCaller = ({ caller, referer }, error_messages = []) => {
 
 export {
   validateRadius,
-  validateRomes,
+  validateRomesOrRncp,
   validateRomeOrDomain,
+  validateRncpOrRomeOrDomain,
   validateLatitude,
   validateLongitude,
   validateApiSources,

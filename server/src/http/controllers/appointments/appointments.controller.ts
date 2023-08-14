@@ -5,10 +5,10 @@ import * as eligibleTrainingsForAppointmentService from "../../../services/eligi
 import Etablissement from "../../../common/components/etablissement.js"
 import { getReferrerByKeyName } from "../../../common/model/constants/referrers.js"
 import { isValidEmail } from "../../../common/utils/isValidEmail.js"
-import { getCleMinistereEducatifFromIdActionFormation } from "../../../common/utils/mappings/onisep.js"
 import config from "../../../config.js"
 import { TCreateContextBody, TCreateContextResponse, TCreateContextResponseError } from "./types.js"
 import { contextCreateSchema } from "./validators.js"
+import { ReferentielOnisep } from "../../../common/model/index.js"
 
 @Tags("Appointment Request")
 @Route("/api/appointment-request")
@@ -59,14 +59,16 @@ export class AppointmentsController extends Controller {
         },
       })
     } else if (idActionFormation) {
-      const cleMinistereEducatif = getCleMinistereEducatifFromIdActionFormation(idActionFormation)
+      const referentielOnisepIdActionFormation = await ReferentielOnisep.findOne({
+        id_action_ideo2: idActionFormation,
+      })
 
-      if (!cleMinistereEducatif) {
+      if (!referentielOnisepIdActionFormation) {
         this.setStatus(404)
         return "Formation introuvable."
       }
 
-      eligibleTrainingsForAppointment = await eligibleTrainingsForAppointmentService.findOne({ cle_ministere_educatif: cleMinistereEducatif })
+      eligibleTrainingsForAppointment = await eligibleTrainingsForAppointmentService.findOne({ cle_ministere_educatif: referentielOnisepIdActionFormation.cle_ministere_educatif })
     } else {
       this.setStatus(400)
       return "Critère de recherche non conforme."

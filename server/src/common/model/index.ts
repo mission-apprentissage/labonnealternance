@@ -9,7 +9,7 @@ import Credential from "./schema/credentials/credential.schema.js"
 import DiplomesMetiers from "./schema/diplomesmetiers/diplomesmetiers.schema.js"
 import DomainesMetiers from "./schema/domainesmetiers/domainesmetiers.schema.js"
 import EligibleTrainingsForAppointment from "./schema/eligibleTrainingsForAppointment/eligibleTrainingsForAppointment.schema.js"
-import eligibleTrainingsForAppointmentHistoric from "./schema/eligibleTrainingsForAppointmentsHistory/eligibleTrainingsForAppointmentHistory.schema.js"
+import eligibleTrainingsForAppointmentHistory from "./schema/eligibleTrainingsForAppointmentsHistory/eligibleTrainingsForAppointmentHistory.schema.js"
 import EmailBlacklist from "./schema/emailBlacklist/emailBlacklist.schema.js"
 import Etablissement from "./schema/etablissements/etablissement.schema.js"
 import FormationCatalogue from "./schema/formationCatalogue/formationCatalogue.schema.js"
@@ -20,6 +20,8 @@ import Opco from "./schema/opco/opco.schema.js"
 import Optout from "./schema/optout/optout.schema.js"
 import ParcoursupEtablissementStat from "./schema/parcoursupEtablissementStat/parcoursupEtablissementStat.schema.js"
 import ReferentielOpco from "./schema/referentielOpco/referentielOpco.schema.js"
+import ReferentielOnisep from "./schema/referentielOnisep/referentielOnisep.schema.js"
+import RncpRomes from "./schema/rncpRomes/rncpRomes.schema.js"
 import User from "./schema/user/user.schema.js"
 import UserRecruteur from "./schema/userRecruteur/usersRecruteur.schema.js"
 import UnsubscribeOF from "./schema/unsubscribedOF/unsubscribeOF.schema.js"
@@ -44,9 +46,11 @@ export {
   Job,
   Optout,
   ReferentielOpco,
+  ReferentielOnisep,
+  RncpRomes,
   UserRecruteur,
   AppointmentDetailed,
-  eligibleTrainingsForAppointmentHistoric,
+  eligibleTrainingsForAppointmentHistory,
   BonneBoiteLegacy,
   UnsubscribedBonneBoite,
   UnsubscribeOF,

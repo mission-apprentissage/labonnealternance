@@ -32,6 +32,8 @@ interface IJobs {
   job_rythm?: string
   custom_address: string
   custom_geo_coordinates: string
+  stats_detail_view?: number
+  stats_search_view?: number
 }
 
 export { IDelegation, IJobs }

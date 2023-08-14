@@ -3,5 +3,6 @@
 .env
 .nyc_output/
 bonnesboites.json
+*.xlsx
 *SAVE.json
 src/generated

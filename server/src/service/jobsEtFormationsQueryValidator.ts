@@ -1,6 +1,6 @@
-import { validateRomes, validateRadius, validateLatitude, validateLongitude, validateDiploma, validateApiSources, validateInsee, validateCaller } from "./queryValidators.js"
+import { validateApiSources, validateCaller, validateDiploma, validateInsee, validateLatitude, validateLongitude, validateRadius, validateRomesOrRncp } from "./queryValidators.js"
 
-const jobsEtFormationsQueryValidator = (query) => {
+const jobsEtFormationsQueryValidator = async (query) => {
   const error_messages = []
 
   // contrôle des paramètres
@@ -8,8 +8,8 @@ const jobsEtFormationsQueryValidator = (query) => {
   // présence d'identifiant de la source : caller
   validateCaller({ caller: query.caller, referer: query.referer }, error_messages)
 
-  // codes ROME : romes
-  validateRomes(query.romes, error_messages)
+  // codes ROME  et code RNCP : romes, rncp. Modifie la valeur de query.romes si code rncp correct
+  await validateRomesOrRncp(query, error_messages)
 
   // coordonnées gps optionnelles : latitude et longitude
   if (query.latitude || query.longitude) {

@@ -10,13 +10,13 @@ import { LogoContext } from "../../contextLogo"
 import { WidgetContext } from "../../contextWidget"
 import { ExternalLinkLine, InfoCircle, SearchLine } from "../../theme/components/icons"
 
-const CreationCompte = ({ type, setQualiopi, setBandeau }) => {
+const CreationCompteForm = ({ type, setQualiopi, setBandeau }) => {
   const [isCfa, setIsCfa] = useState(false)
   const navigate = useNavigate()
   const { origin } = useParams()
 
   const submitSiret = ({ establishment_siret }, { setSubmitting, setFieldError }) => {
-    const formattedSiret = establishment_siret.split(" ").join("")
+    const formattedSiret = establishment_siret.replace(/[^0-9]/g, "")
     setBandeau(false)
     // validate establishment_siret
     if (type === AUTHTYPE.ENTREPRISE) {
@@ -200,7 +200,7 @@ const InformationSiret = ({ type, widget }) => {
   )
 }
 
-export default ({ type, widget }) => {
+export const CreationCompte = ({ type, widget }) => {
   const { setWidget, widget: wid } = useContext(WidgetContext)
   const { setOrganisation } = useContext(LogoContext)
   const [qualiopi, setQualiopi] = useState()
@@ -232,7 +232,7 @@ export default ({ type, widget }) => {
             <Text fontSize="20px" textAlign="justify" mt={2} mb={4}>
               Nous avons besoin du numéro SIRET de votre {type === AUTHTYPE.ENTREPRISE ? "entreprise" : "organisme de formation"} afin de vous identifier.
             </Text>
-            <CreationCompte type={type} setQualiopi={setQualiopi} setBandeau={setBandeau} />
+            <CreationCompteForm type={type} setQualiopi={setQualiopi} setBandeau={setBandeau} />
           </Box>
           <Box mt={[4, 4, 4, 0]}>{qualiopi ? <InformationLegaleEntreprise {...qualiopi} /> : <InformationSiret type={type} widget={wid} />}</Box>
         </SimpleGrid>
@@ -240,3 +240,5 @@ export default ({ type, widget }) => {
     </AuthentificationLayout>
   )
 }
+
+export default CreationCompte

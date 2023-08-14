@@ -34,6 +34,8 @@ import { syncAffelnetFormationsFromCatalogueME } from "./jobs/rdv/syncEtablissem
 import { runScript } from "./jobs/scriptWrapper.js"
 import { checkAwaitingCompaniesValidation } from "./jobs/lba_recruteur/user/misc/updateMissingActivationState.js"
 import updateBrevoBlockedEmails from "./jobs/updateBrevoBlockedEmails/updateBrevoBlockedEmails.js"
+import { importReferentielOnisep } from "./jobs/rdv/importReferentielOnisep.js"
+import updateReferentielRncpRomes from "./jobs/referentielRncpRome/updateReferentielRncpRomes.js"
 
 cli.addHelpText("after", null)
 
@@ -101,7 +103,7 @@ cli
   .command("relance-formulaire <threshold>")
   .description("Envoie une relance par mail pour les offres expirant dans 7 jours")
   .action((threshold) => {
-    runScript(({ mailer }) => relanceFormulaire(mailer, parseInt(threshold)))
+    runScript(() => relanceFormulaire(parseInt(threshold)))
   })
 
 cli
@@ -122,7 +124,7 @@ cli
   .command("relance-opco")
   .description("Relance les opco avec le nombre d'utilisateur en attente de validation")
   .action(() => {
-    runScript(({ mailer }) => relanceOpco(mailer))
+    runScript(() => relanceOpco())
   })
 
 cli
@@ -136,7 +138,7 @@ cli
   .command("validate-user")
   .description("Contrôle de validation des entreprises en attente de validation")
   .action(() => {
-    runScript((components) => checkAwaitingCompaniesValidation(components))
+    runScript((components) => checkAwaitingCompaniesValidation())
   })
 
 /**
@@ -151,70 +153,70 @@ cli
   .command("activate-opt-out-etablissement-formations")
   .description("Active tous les établissements qui ont souscrits à l'opt-out.")
   .action(() => {
-    runScript((components) => activateOptOutEtablissementFormations(components))
+    runScript(() => activateOptOutEtablissementFormations())
   })
 
 cli
   .command("invite-etablissement-to-opt-out")
   .description("Invite les établissements (via email décisionnaire) à l'opt-out.")
   .action(() => {
-    runScript((components) => inviteEtablissementToOptOut(components))
+    runScript(() => inviteEtablissementToOptOut())
   })
 
 cli
   .command("invite-etablissement-to-premium")
   .description("Invite les établissements (via email décisionnaire) au premium (Parcoursup)")
   .action(() => {
-    runScript((components) => inviteEtablissementToPremium(components))
+    runScript(() => inviteEtablissementToPremium())
   })
 
 cli
   .command("invite-etablissement-affelnet-to-premium")
   .description("Invite les établissements (via email décisionnaire) au premium (Affelnet)")
   .action(() => {
-    runScript((components) => inviteEtablissementAffelnetToPremium(components))
+    runScript(() => inviteEtablissementAffelnetToPremium())
   })
 
 cli
   .command("invite-etablissement-to-premium-follow-up")
   .description("(Relance) Invite les établissements (via email décisionnaire) au premium (Parcoursup)")
   .action(() => {
-    runScript((components) => inviteEtablissementToPremiumFollowUp(components))
+    runScript(() => inviteEtablissementToPremiumFollowUp())
   })
 
 cli
   .command("invite-etablissement-affelnet-to-premium-follow-up")
   .description("(Relance) Invite les établissements (via email décisionnaire) au premium (Affelnet)")
   .action(() => {
-    runScript((components) => inviteEtablissementAffelnetToPremiumFollowUp(components))
+    runScript(() => inviteEtablissementAffelnetToPremiumFollowUp())
   })
 
 cli
   .command("premium-activated-reminder")
   .description("Envoi un email à tous les établissements premium pour les informer de l'ouverture des voeux sur Parcoursup")
   .action(() => {
-    runScript((components) => premiumActivatedReminder(components))
+    runScript(() => premiumActivatedReminder())
   })
 
 cli
   .command("premium-invite-one-shot")
   .description("Envoi un email à tous les établissements pas encore premium pour les inviter de nouveau")
   .action(() => {
-    runScript((components) => premiumInviteOneShot(components))
+    runScript(() => premiumInviteOneShot())
   })
 
 cli
   .command("sync-etablissements-and-formations")
   .description("Récupère la liste de toutes les formations du Catalogue et les enregistre.")
   .action(() => {
-    runScript((components) => syncEtablissementsAndFormations(components))
+    runScript(() => syncEtablissementsAndFormations())
   })
 
 cli
   .command("sync-etablissements-and-formations-affelnet")
   .description("Récupère la liste de toutes les formations du Catalogue ME du scope AFFELNET et les enregistre.")
   .action(() => {
-    runScript((components) => syncAffelnetFormationsFromCatalogueME(components))
+    runScript(() => syncAffelnetFormationsFromCatalogueME())
   })
 
 cli
@@ -236,6 +238,13 @@ cli
   .description("Historise l'egibilité d'une formation à la prise de rendez-vous avec le Catalogue des formations (RCO)")
   .action(() => {
     runScript(() => eligibleTrainingsForAppointmentsHistoryWithCatalogue())
+  })
+
+cli
+  .command("import-referentiel-onisep")
+  .description("Alimentation de la table de correspondance entre Id formation Onisep et Clé ME du catalogue RCO, utilisé pour diffuser la prise de RDV sur l’Onisep")
+  .action(() => {
+    runScript(() => importReferentielOnisep())
   })
 
 /**
@@ -323,6 +332,13 @@ cli
   .description("Procède à l'association des diplômes par métiers")
   .action(() => {
     runScript(() => updateDiplomesMetiers())
+  })
+
+cli
+  .command("update-referentiel-rncp-romes")
+  .description("Procède à la mise à jour du référentiel RNCP codes ROME")
+  .action(() => {
+    runScript(() => updateReferentielRncpRomes())
   })
 
 cli.parse(process.argv)

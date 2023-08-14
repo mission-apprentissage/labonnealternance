@@ -1,7 +1,7 @@
 import faker from "faker/locale/fr.js"
 import RandExp from "randexp"
 import { referrers } from "../../src/common/model/constants/referrers.js"
-import { roles } from "../../src/common/roles.js"
+import { ROLES } from "../../src/services/constant.service.js"
 
 // Utils
 const isRandomCondition = () => Math.random() < 0.66
@@ -34,7 +34,7 @@ const createRandomCandidat = () => {
     lastname: faker.name.lastName(),
     phone: faker.phone.phoneNumberFormat(),
     email: randomEmail,
-    role: roles.candidat,
+    role: ROLES.candidat,
   }
 }
 

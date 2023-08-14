@@ -3,7 +3,7 @@ import React, { useMemo } from "react"
 import { useFlexLayout, useSortBy, useTable } from "react-table"
 import { ArrowDownLine, ArrowUpLine } from "../theme/components/icons"
 
-export default ({ data, columns, onRowClick }) => {
+export const Table = ({ data, columns, onRowClick }) => {
   const tableData = useMemo(() => data, [data])
   const tableColumns = useMemo(() => columns, [columns])
 
@@ -72,3 +72,5 @@ export default ({ data, columns, onRowClick }) => {
     </>
   )
 }
+
+export default Table

@@ -1,5 +1,5 @@
 import axios from "axios"
-import dayjs from "dayjs"
+import dayjs from "./dayjs.service.js"
 import { sentryCaptureException } from "../common/utils/sentryUtils.js"
 import config from "../config.js"
 import { ISuggestionMetiersDavenir } from "./diagoriente.service.types.js"

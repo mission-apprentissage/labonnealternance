@@ -14,10 +14,16 @@ const notFoundErrorText = "L'élément recherché n'existe plus"
 const technicalErrorText = "Error technique momentanée"
 
 const getRomeFromParameters = ({ values, widgetParameters }) => {
-  return widgetParameters?.parameters?.jobName && widgetParameters?.parameters?.romes && widgetParameters?.parameters?.frozenJob
-    ? widgetParameters?.parameters?.romes
-    : values.job.romes.join(",")
+  let romes = ""
+  if (widgetParameters?.parameters?.jobName && widgetParameters?.parameters?.romes && widgetParameters?.parameters?.frozenJob) {
+    romes = widgetParameters?.parameters?.romes
+  } else if (values?.job?.romes) {
+    romes = values.job.romes.join(",")
+  }
+  return romes
 }
+
+const getRncpFromParameters = ({ widgetParameters }) => widgetParameters?.parameters?.rncp
 
 const getRncpsFromParameters = ({ values, widgetParameters }) => {
   return widgetParameters?.parameters?.jobName && widgetParameters?.parameters?.romes && widgetParameters?.parameters?.frozenJob
@@ -25,6 +31,29 @@ const getRncpsFromParameters = ({ values, widgetParameters }) => {
     : values.job?.rncps
     ? values.job.rncps.join(",")
     : ""
+}
+
+const getJobCount = (jobs, option) => {
+  let jobCount = 0
+
+  if (jobs) {
+    if (jobs.peJobs) {
+      jobCount += jobs.peJobs.length
+    }
+    if (jobs.matchas) {
+      jobCount += jobs.matchas.length
+      if (option === "excludepartners") jobCount -= getPartnerJobCount(jobs)
+    }
+    if (jobs.lbaCompanies) {
+      jobCount += jobs.lbaCompanies.length
+    }
+  }
+
+  return jobCount
+}
+
+const getPartnerJobCount = (jobs) => {
+  return jobs && jobs.matchas ? jobs.matchas.filter((job) => job.company?.mandataire).length : 0
 }
 
 export {
@@ -37,8 +66,11 @@ export {
   technicalErrorText,
   notFoundErrorText,
   getRomeFromParameters,
+  getRncpFromParameters,
   getRncpsFromParameters,
   offreApi,
   matchaApi,
   companyApi,
+  getJobCount,
+  getPartnerJobCount,
 }

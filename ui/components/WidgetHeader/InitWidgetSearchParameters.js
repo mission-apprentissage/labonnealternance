@@ -38,7 +38,8 @@ const InitWidgetSearchParameters = ({ setIsLoading, handleSearchSubmit, handleIt
       } else {
         let values = {
           job: {
-            romes: p.romes.split(","),
+            romes: p.romes ? p.romes.split(",") : "",
+            rncp: p.rncp || "",
           },
           radius: p.radius || 30,
         }

@@ -2,7 +2,7 @@ import assert from "assert"
 import integrationTests from "../../utils/integrationTests.js"
 import users from "../../../src/common/components/users.js"
 import { User } from "../../../src/common/model/index.js"
-import { roles } from "../../../src/common/roles.js"
+import { ROLES } from "../../../src/services/constant.service.js"
 import __filename from "../../../src/common/filename.js"
 
 integrationTests(__filename(import.meta.url), () => {
@@ -21,37 +21,37 @@ integrationTests(__filename(import.meta.url), () => {
   it("Permet de créer un utilisateur avec le role d'administrateur", async () => {
     const { createUser } = await users()
 
-    const user = await createUser("userAdmin", "password", { role: roles.administrator })
+    const user = await createUser("userAdmin", "password", { role: ROLES.administrator })
     const found = await User.findOne({ username: "userAdmin" })
 
-    assert.strictEqual(user.role, roles.administrator)
-    assert.strictEqual(found.role, roles.administrator)
+    assert.strictEqual(user.role, ROLES.administrator)
+    assert.strictEqual(found.role, ROLES.administrator)
   })
 
   it("Permet de créer un utilisateur avec le role de candidat", async () => {
     const { createUser } = await users()
 
-    const user = await createUser("userCandidat", "password", { role: roles.candidat })
+    const user = await createUser("userCandidat", "password", { role: ROLES.candidat })
     const found = await User.findOne({ username: "userCandidat" })
 
-    assert.strictEqual(user.role, roles.candidat)
-    assert.strictEqual(found.role, roles.candidat)
+    assert.strictEqual(user.role, ROLES.candidat)
+    assert.strictEqual(found.role, ROLES.candidat)
   })
 
   it("Permet de créer un utilisateur avec le role de cfa", async () => {
     const { createUser } = await users()
 
-    const user = await createUser("userCfa", "password", { role: roles.cfa })
+    const user = await createUser("userCfa", "password", { role: ROLES.cfa })
     const found = await User.findOne({ username: "userCfa" })
 
-    assert.strictEqual(user.role, roles.cfa)
-    assert.strictEqual(found.role, roles.cfa)
+    assert.strictEqual(user.role, ROLES.cfa)
+    assert.strictEqual(found.role, ROLES.cfa)
   })
 
   it("Permet de supprimer un utilisateur", async () => {
     const { createUser, removeUser } = await users()
 
-    await createUser("userToDelete", "password", { role: roles.administrator })
+    await createUser("userToDelete", "password", { role: ROLES.administrator })
     await removeUser("userToDelete")
 
     const found = await User.findOne({ username: "userToDelete" })

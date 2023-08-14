@@ -5,12 +5,13 @@ import { mailTemplate } from "../../assets/index.js"
 import * as appointmentService from "../../services/appointment.service.js"
 import { mailType } from "../../common/model/constants/appointments.js"
 import { getReferrerByKeyName } from "../../common/model/constants/referrers.js"
-import { roles } from "../../common/roles.js"
-import { dayjs } from "../../common/utils/dayjs.js"
+import { ROLES } from "../../services/constant.service.js"
+import dayjs from "../../services/dayjs.service.js"
 import config from "../../config.js"
 import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
 import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service.js"
 import * as users from "../../services/user.service.js"
+import mailer from "../../services/mailer.service.js"
 
 const userRequestSchema = Joi.object({
   firstname: Joi.string().required(),
@@ -31,7 +32,7 @@ const appointmentReplySchema = Joi.object({
   cfa_message_to_applicant: Joi.string().allow("").optional(),
 })
 
-export default ({ mailer, etablissements }) => {
+export default ({ etablissements }) => {
   const router = express.Router()
 
   router.post(
@@ -80,7 +81,7 @@ export default ({ mailer, etablissements }) => {
           phone,
           email,
           type,
-          role: roles.candidat,
+          role: ROLES.candidat,
           last_action_date: dayjs().toDate(),
         })
       }
