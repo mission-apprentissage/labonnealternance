@@ -2,7 +2,6 @@
 import Sentry from "@sentry/node"
 import Tracing from "@sentry/tracing"
 import express from "express"
-import bodyParser from "body-parser"
 import { readFileSync } from "fs"
 import path from "path"
 import swaggerDoc from "swagger-jsdoc"
