@@ -44,7 +44,7 @@ export const getUser = async (query: Filter<IUserRecruteur>) => UserRecruteur.fi
  * @param {IUserRecruteur} values
  * @returns {IUserRecruteur}
  */
-export const createUser = async (values) => {
+export const createUser = async (values: IUserRecruteur) => {
   let scope = values.scope ?? undefined
 
   const formatedEmail = values.email.toLocaleLowerCase()
