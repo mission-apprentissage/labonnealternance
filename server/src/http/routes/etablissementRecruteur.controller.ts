@@ -223,7 +223,10 @@ export default ({ mailer }) => {
   router.post(
     "/creation",
     tryCatch(async (req: Request<{}, {}, IUserRecruteur & IRecruiter>, res) => {
-      const exist = await getUser({ email: req.body.email })
+      const formatedEmail = req.body.email.toLocaleLowerCase()
+
+      // check if user already exist
+      const exist = await getUser({ email: formatedEmail })
 
       if (exist) {
         return res.status(403).json({ error: true, message: "L'adresse mail est déjà associée à un compte La bonne alternance." })
@@ -232,8 +235,7 @@ export default ({ mailer }) => {
       switch (req.body.type) {
         case ENTREPRISE: {
           const siren = req.body.establishment_siret.slice(0, 9)
-          const formulaireInfo = await createFormulaire(req.body)
-          const formatedEmail = req.body.email.toLocaleLowerCase()
+          const formulaireInfo = await createFormulaire({ ...req.body, email: formatedEmail })
           let newEntreprise: IUserRecruteur = await createUser({ ...req.body, establishment_id: formulaireInfo.establishment_id, email: formatedEmail })
 
           // Get all corresponding records using the SIREN number in BonneBoiteLegacy collection
