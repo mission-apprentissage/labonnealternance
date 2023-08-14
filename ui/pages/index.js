@@ -61,11 +61,11 @@ const Home = () => {
       </Box>
 
       <Box {...blockCssProperties} pt={12} pb={0}>
-        <TestezConnaissancesQuiz />
+        <MetiersDAvenir />
       </Box>
 
       <Box {...blockCssProperties} pt={12} pb={0}>
-        <MetiersDAvenir />
+        <TestezConnaissancesQuiz />
       </Box>
 
       <Box {...blockCssProperties} py={12}>
