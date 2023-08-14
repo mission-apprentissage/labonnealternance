@@ -2,7 +2,7 @@ import { Recruiter, UserRecruteur } from "../../../../common/model/index.js"
 import { runScript } from "../../../scriptWrapper.js"
 import { IUserRecruteur } from "../../../../common/model/schema/userRecruteur/userRecruteur.types.js"
 import { asyncForEach } from "../../../../common/utils/asyncUtils.js"
-import { CFA, ENTREPRISE, etat_utilisateur } from "../../../../common/constants.js"
+import { CFA, ENTREPRISE, ETAT_UTILISATEUR } from "../../../../services/constant.service.js"
 import { groupBy, flatMap } from "lodash-es"
 
 /**
@@ -62,7 +62,7 @@ const cleanUsersOfTypeENTREPRIE = async (establishments: IUserRecruteur[]) => {
 
     // if only two duplicates (most of the cases) and at least one of them is inactive, remove UserRecruters & Recruiters documents
     if (duplicatesOfTheSameUser.length === 2) {
-      const inactiveUser = duplicatesOfTheSameUser.filter((x) => x.status.pop().status !== etat_utilisateur.VALIDE)
+      const inactiveUser = duplicatesOfTheSameUser.filter((x) => x.status.pop().status !== ETAT_UTILISATEUR.VALIDE)
       if (inactiveUser.length) {
         await removeUserAndCompany(inactiveUser[0])
         return
@@ -70,7 +70,7 @@ const cleanUsersOfTypeENTREPRIE = async (establishments: IUserRecruteur[]) => {
     } else {
       await asyncForEach(duplicatesOfTheSameUser, async (user: IUserRecruteur) => {
         // if user is inactive, remove UserRecruters & Recruiters documents
-        if (user.status.pop().status !== etat_utilisateur.VALIDE) {
+        if (user.status.pop().status !== ETAT_UTILISATEUR.VALIDE) {
           await removeUserAndCompany(user)
           return
         }
@@ -108,7 +108,7 @@ const cleanUsersOfTypeCFA = async (cfas: IUserRecruteur[]) => {
 
     // if only two duplicates (most of the cases) and at least one of them is inactive, remove UserRecruters & Recruiters documents
     if (duplicatesOfTheSameUser.length === 2) {
-      const inactiveUser = duplicatesOfTheSameUser.filter((x) => x.status.pop().status !== etat_utilisateur.VALIDE)
+      const inactiveUser = duplicatesOfTheSameUser.filter((x) => x.status.pop().status !== ETAT_UTILISATEUR.VALIDE)
       if (inactiveUser.length) {
         await removeUserAndCompany(inactiveUser[0])
         return
@@ -116,7 +116,7 @@ const cleanUsersOfTypeCFA = async (cfas: IUserRecruteur[]) => {
     } else {
       await asyncForEach(duplicatesOfTheSameUser, async (user: IUserRecruteur) => {
         // if user is inactive, remove UserRecruters & Recruiters documents
-        if (user.status.pop().status !== etat_utilisateur.VALIDE) {
+        if (user.status.pop().status !== ETAT_UTILISATEUR.VALIDE) {
           await removeUserAndDelegatee(user)
           return
         }
