@@ -33,6 +33,7 @@ import { validationOrganisation } from "../../services/bal.service.js"
 import { IUserRecruteur } from "../../common/model/schema/userRecruteur/userRecruteur.types.js"
 import { IRecruiter } from "../../common/model/schema/recruiter/recruiter.types.js"
 import { updateUserValidationHistory, getUser, createUser, updateUser, getUserValidationState, registerUser } from "../../services/userRecruteur.service.js"
+import authMiddleware from "../middlewares/authMiddleware.js"
 import { sentryCaptureException } from "../../common/utils/sentryUtils.js"
 import mailer from "../../services/mailer.service.js"
 
@@ -393,6 +394,7 @@ export default () => {
 
   router.put(
     "/:id",
+    authMiddleware("jwt-bearer"),
     tryCatch(async (req, res) => {
       const result = await updateUser({ _id: req.params.id }, req.body)
       return res.json(result)

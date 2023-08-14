@@ -1,5 +1,5 @@
 import { Box, Flex, Spinner, Text } from "@chakra-ui/react"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
 import { validateToken } from "../../api"
 import { AUTHTYPE } from "../../common/contants"
@@ -8,10 +8,9 @@ import useAuth from "../../common/hooks/useAuth"
 export default () => {
   let navigate = useNavigate()
   const location = useLocation()
-  const [auth, setAuth] = useAuth()
+  const [_, setAuth] = useAuth()
 
   const { search } = location
-  const fromEntrepriseCreation = location.state
 
   let params = new URLSearchParams(search)
   let token = params.get("token")
@@ -21,44 +20,13 @@ export default () => {
     validateToken({ token })
       .then(({ data }) => {
         setAuth(data?.token)
+        // KBA 20230712 : Temporary solution until migration : use location href to reload the page to make the JWT token work.
+        window.location.href = "espace-pro/authentification/validation"
       })
       .catch(() => {
         navigate("/")
       })
   }, [token])
-
-  useEffect(() => {
-    switch (auth.type) {
-      case AUTHTYPE.ENTREPRISE:
-        setTimeout(() => {
-          navigate(`/administration/entreprise/${auth.establishment_id}`, {
-            state: { offerPopup: fromEntrepriseCreation ? true : false },
-          })
-        }, 1000)
-        break
-
-      case AUTHTYPE.OPCO:
-        setTimeout(() => {
-          navigate(`/administration/opco`, { replace: true })
-        }, 1000)
-        break
-
-      case AUTHTYPE.CFA:
-        setTimeout(() => {
-          navigate("/administration")
-        }, 1000)
-        break
-
-      case AUTHTYPE.ADMIN:
-        setTimeout(() => {
-          navigate("/administration/users")
-        }, 1000)
-        break
-
-      default:
-        break
-    }
-  }, [auth])
 
   return (
     <>
