@@ -33,6 +33,7 @@ import { validationOrganisation } from "../../services/bal.service.js"
 import { IUserRecruteur } from "../../common/model/schema/userRecruteur/userRecruteur.types.js"
 import { IRecruiter } from "../../common/model/schema/recruiter/recruiter.types.js"
 import { updateUserValidationHistory, getUser, createUser, updateUser, getUserValidationState, registerUser } from "../../services/userRecruteur.service.js"
+import authMiddleware from "../middlewares/authMiddleware.js"
 import { sentryCaptureException } from "../../common/utils/sentryUtils.js"
 import mailer from "../../services/mailer.service.js"
 
@@ -223,7 +224,10 @@ export default () => {
   router.post(
     "/creation",
     tryCatch(async (req: Request<{}, {}, IUserRecruteur & IRecruiter>, res) => {
-      const exist = await getUser({ email: req.body.email })
+      const formatedEmail = req.body.email.toLocaleLowerCase()
+
+      // check if user already exist
+      const exist = await getUser({ email: formatedEmail })
 
       if (exist) {
         return res.status(403).json({ error: true, message: "L'adresse mail est déjà associée à un compte La bonne alternance." })
@@ -232,8 +236,8 @@ export default () => {
       switch (req.body.type) {
         case ENTREPRISE: {
           const siren = req.body.establishment_siret.slice(0, 9)
-          const formulaireInfo = await createFormulaire(req.body)
-          let newEntreprise: IUserRecruteur = await createUser({ ...req.body, establishment_id: formulaireInfo.establishment_id })
+          const formulaireInfo = await createFormulaire({ ...req.body, email: formatedEmail })
+          let newEntreprise: IUserRecruteur = await createUser({ ...req.body, establishment_id: formulaireInfo.establishment_id, email: formatedEmail })
 
           // Get all corresponding records using the SIREN number in BonneBoiteLegacy collection
           const [bonneBoiteLegacyList, bonneBoiteList, referentielOpcoList] = await Promise.all([
@@ -390,6 +394,7 @@ export default () => {
 
   router.put(
     "/:id",
+    authMiddleware("jwt-bearer"),
     tryCatch(async (req, res) => {
       const result = await updateUser({ _id: req.params.id }, req.body)
       return res.json(result)

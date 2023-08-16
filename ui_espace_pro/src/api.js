@@ -4,6 +4,13 @@ const API = Axios.create({
   baseURL: `${process.env.REACT_APP_BASE_URL}/api`,
 })
 
+const securedAPI = Axios.create({
+  baseURL: `${process.env.REACT_APP_BASE_URL}/api`,
+  headers: {
+    Authorization: `Bearer ${sessionStorage.getItem("lba:token")}`,
+  },
+})
+
 const errorHandler = (error) => {
   if (error.response && error.response.data) {
     console.error("Erreur de l'API :", error)
@@ -18,7 +25,7 @@ export const getMetier = (search) => Axios.get(`https://labonnealternance.appren
 /**
  * Formulaire API
  */
-export const getFormulaires = (query, options, limit, page) => API.get("/formulaire", { params: { query, options, limit, page } }).catch(errorHandler)
+export const getFormulaires = (query, options, limit, page) => securedAPI.get("/formulaire", { params: { query, options, limit, page } }).catch(errorHandler)
 export const getFormulaire = (establishment_id) => API.get(`/formulaire/${establishment_id}`).catch(errorHandler)
 export const postFormulaire = (form) => API.post(`/formulaire`, form).catch(errorHandler)
 export const putFormulaire = (establishment_id, form) => API.put(`/formulaire/${establishment_id}`, form)
@@ -44,7 +51,7 @@ export const createEtablissementDelegation = ({ data, jobId }) => API.post(`/for
  * KBA 13/10/2022 : to be reuse when fontend can deal with pagination
  * Quick fix made today
  */
-export const getUsers = async (query) => API.get("/user", { params: query })
+export const getUsers = async (query) => securedAPI.get("/user", { params: query })
 // export const getUsers = (query, options, limit, page) =>
 //   API.get('/user', { params: { query, options, limit, page } }).catch(errorHandler)
 
@@ -76,7 +83,7 @@ export const getCfaInformation = async (siret) => await API.get(`/etablissement/
 export const getEntrepriseInformation = async (siret, options) => await API.get(`/etablissement/entreprise/${siret}`, { params: options })
 
 export const createPartenaire = (partenaire) => API.post("/etablissement/creation", partenaire)
-export const updatePartenaire = (id, partenaire) => API.put(`/etablissement/${id}`, partenaire)
+export const updatePartenaire = (id, partenaire) => securedAPI.put(`/etablissement/${id}`, partenaire)
 export const getRomeDetail = (rome) => API.get(`/rome/detail/${rome}`)
 export const getRelatedEtablissementsFromRome = ({ rome, latitude, longitude }) => API.get(`/etablissement/cfa/rome?rome[]=${rome}&latitude=${latitude}&longitude=${longitude}`)
 export const validateOptOutToken = (token) =>
@@ -86,7 +93,6 @@ export const validateOptOutToken = (token) =>
     },
   })
 
-export const getWithQS = (payload) => API.get("/formulaire", { params: { query: JSON.stringify(payload.query), ...payload } })
 export const etablissementUnsubscribeDemandeDelegation = (establishmentSiret) => API.post(`/etablissement/${establishmentSiret}/proposition/unsubscribe`)
 
 /**

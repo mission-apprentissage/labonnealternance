@@ -1,9 +1,14 @@
-# [1.69.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.68.0...v1.69.0) (2023-08-09)
-
+# [1.70.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.69.0...v1.70.0) (2023-08-14)
 
 ### Features
 
-* nouvelle phrase d'accroche ([#534](https://github.com/mission-apprentissage/labonnealternance/issues/534)) ([8c965ac](https://github.com/mission-apprentissage/labonnealternance/commit/8c965ac47e593a9179fca2b8cd549ef1733febda))
+- migrate geolib to utils folder ([#471](https://github.com/mission-apprentissage/labonnealternance/issues/471)) ([ff8a5bb](https://github.com/mission-apprentissage/labonnealternance/commit/ff8a5bb131a999898ed6f269c7b392e27aeb3e62))
+
+# [1.69.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.68.0...v1.69.0) (2023-08-09)
+
+### Features
+
+- nouvelle phrase d'accroche ([#534](https://github.com/mission-apprentissage/labonnealternance/issues/534)) ([8c965ac](https://github.com/mission-apprentissage/labonnealternance/commit/8c965ac47e593a9179fca2b8cd549ef1733febda))
 
 # [1.68.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.67.1...v1.68.0) (2023-08-09)
 

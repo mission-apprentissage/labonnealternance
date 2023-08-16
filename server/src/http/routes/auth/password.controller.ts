@@ -1,39 +1,13 @@
 import express from "express"
 import Boom from "boom"
 import Joi from "joi"
-import passport from "passport"
-import { Strategy, ExtractJwt } from "passport-jwt"
 import config from "../../../config.js"
 import { tryCatch } from "../../middlewares/tryCatchMiddleware.js"
 import { createUserToken } from "../../../common/utils/jwtUtils.js"
 import * as validators from "../../utils/validators.js"
 import { createPasswordToken } from "../../../common/utils/jwtUtils.js"
 import * as users from "../../../services/user.service.js"
-
-const checkPasswordToken = (users) => {
-  passport.use(
-    "jwt-password",
-    new Strategy(
-      {
-        jwtFromRequest: ExtractJwt.fromBodyField("passwordToken"),
-        secretOrKey: config.auth.password.jwtSecret,
-      },
-      (jwt_payload, done) => {
-        return users
-          .getUser(jwt_payload.sub)
-          .then((user) => {
-            if (!user) {
-              return done(null, false)
-            }
-            return done(null, user)
-          })
-          .catch((err) => done(err))
-      }
-    )
-  )
-
-  return passport.authenticate("jwt-password", { session: false, failWithError: true })
-}
+import authMiddleware from "../../middlewares/authMiddleware.js"
 
 export default () => {
   const router = express.Router() // eslint-disable-line new-cap
@@ -56,7 +30,7 @@ export default () => {
 
   router.post(
     "/reset-password",
-    checkPasswordToken(users),
+    authMiddleware("jwt-password"),
     tryCatch(async (req, res) => {
       const user = req.user
       const { newPassword } = await Joi.object({
