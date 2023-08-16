@@ -1,3 +1,10 @@
+# [1.71.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.70.0...v1.71.0) (2023-08-16)
+
+
+### Features
+
+* lbac 1026 : home page : ajout des modules didask ([#536](https://github.com/mission-apprentissage/labonnealternance/issues/536)) ([d08f1c4](https://github.com/mission-apprentissage/labonnealternance/commit/d08f1c483dbfc2ac39314ecf58ccc29af235f47e))
+
 # [1.70.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.69.0...v1.70.0) (2023-08-14)
 
 ### Features
