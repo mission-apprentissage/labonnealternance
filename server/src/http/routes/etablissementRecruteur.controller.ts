@@ -36,6 +36,7 @@ import { updateUserValidationHistory, getUser, createUser, updateUser, getUserVa
 import authMiddleware from "../middlewares/authMiddleware.js"
 import { sentryCaptureException } from "../../common/utils/sentryUtils.js"
 import mailer from "../../services/mailer.service.js"
+import { getOpcoBySirenFromDB, saveOpco } from "../../services/opco.service.js"
 
 const getCfaRomeSchema = joi.object({
   latitude: joi.number().required(),
@@ -89,11 +90,15 @@ export default () => {
   router.get(
     "/entreprise/:siret",
     tryCatch(async (req, res) => {
-      if (!req.params.siret) {
+      const { siret } = req.params
+      const { cfa_delegated_siret, fromDashboardCfa } = req.query
+      const siren = siret.slice(0, 9)
+
+      if (!siret) {
         return res.status(400).json({ error: true, message: "Le numéro siret est obligatoire." })
       }
       try {
-        const result = await getEtablissementFromGouv(req.params.siret)
+        const result = await getEtablissementFromGouv(siret)
 
         if (!result) {
           return res.status(400).json({ error: true, message: "Le numéro siret est invalide." })
@@ -104,10 +109,10 @@ export default () => {
         }
 
         // Check if a CFA already has the company as partenaire
-        if (req.query.fromDashboardCfa) {
+        if (fromDashboardCfa) {
           const exist = await getFormulaire({
-            establishment_siret: req.params.siret,
-            cfa_delegated_siret: req.query.cfa_delegated_siret,
+            establishment_siret: siret,
+            cfa_delegated_siret: cfa_delegated_siret,
             status: "Actif",
           })
 
@@ -120,7 +125,7 @@ export default () => {
         }
 
         // Allow cfa to add themselves as a company
-        if (!req.query.fromDashboardCfa) {
+        if (!fromDashboardCfa) {
           if (result.data.activite_principale.code.startsWith("85")) {
             return res.status(400).json({
               error: true,
@@ -133,32 +138,38 @@ export default () => {
         const entrepriseData = formatEntrepriseData(result.data)
         const geo_coordinates = await getGeoCoordinates(`${entrepriseData.address_detail.acheminement_postal.l4}, ${entrepriseData.address_detail.acheminement_postal.l6}`)
 
-        const opcoResult: ICFADock | null = await getOpco(req.params.siret)
+        const [opcoCFADOCK, opcoFromDB] = await Promise.all([getOpco(siret), getOpcoBySirenFromDB(siren)])
         const opcoData: { opco?: string; idcc?: string | number } = {}
 
-        switch (opcoResult?.searchStatus) {
-          case "OK": {
-            opcoData.opco = opcoResult.opcoName
-            opcoData.idcc = opcoResult.idcc
-            break
-          }
-          case "MULTIPLE_OPCO": {
-            opcoData.opco = "Opco multiple"
-            opcoData.idcc = "Opco multiple, IDCC non défini"
-            break
-          }
-          case null:
-          case "NOT_FOUND": {
-            const idccResult = await getIdcc(req.params.siret)
-            if (idccResult[0].conventions.length) {
-              const { num } = opcoResult[0]?.conventions[0]
-              const opcoByIdccResult = await getOpcoByIdcc(num)
-              if (opcoByIdccResult) {
-                opcoData.opco = opcoByIdccResult.opcoName
-                opcoData.idcc = opcoByIdccResult.idcc
-              }
+        if (opcoFromDB) {
+          opcoData.opco = opcoFromDB.opco
+          opcoData.idcc = opcoFromDB.idcc
+          await saveOpco({ opco: opcoCFADOCK.opcoName, idcc: opcoCFADOCK.idcc.toString(), siren, url: null })
+        } else {
+          switch (opcoCFADOCK?.searchStatus) {
+            case "OK": {
+              opcoData.opco = opcoCFADOCK.opcoName
+              opcoData.idcc = opcoCFADOCK.idcc
+              break
             }
-            break
+            case "MULTIPLE_OPCO": {
+              opcoData.opco = "Opco multiple"
+              opcoData.idcc = "Opco multiple, IDCC non défini"
+              break
+            }
+            case null:
+            case "NOT_FOUND": {
+              const idccResult = await getIdcc(siret)
+              if (idccResult[0].conventions.length) {
+                const { num } = opcoCFADOCK[0]?.conventions[0]
+                const opcoByIdccResult = await getOpcoByIdcc(num)
+                if (opcoByIdccResult) {
+                  opcoData.opco = opcoByIdccResult.opcoName
+                  opcoData.idcc = opcoByIdccResult.idcc
+                }
+              }
+              break
+            }
           }
         }
 
