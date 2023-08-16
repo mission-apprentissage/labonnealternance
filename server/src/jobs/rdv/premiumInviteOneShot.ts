@@ -1,30 +1,30 @@
 import { mailTemplate } from "../../assets/index.js"
 import { logger } from "../../common/logger.js"
 import { mailType } from "../../common/model/constants/etablissement.js"
-import { dayjs } from "../../common/utils/dayjs.js"
+import dayjs from "../../services/dayjs.service.js"
 import config from "../../config.js"
 import { isValidEmail } from "../../common/utils/isValidEmail.js"
 import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service.js"
+import { Etablissement } from "../../common/model/index.js"
+import mailer from "../../services/mailer.service.js"
 
 /**
  * @description Send a "Premium" reminder mail.
  * @returns {Promise<void>}
  */
-export const premiumInviteOneShot = async ({ etablissements, mailer }) => {
+export const premiumInviteOneShot = async () => {
   logger.info("Cron #premiumInviteOneShot started.")
 
   const [etablissementsActivated, eligibleTrainingsForAppointmentsFound] = await Promise.all([
-    etablissements
-      .find({
-        gestionnaire_email: {
-          $ne: null,
-        },
-        optout_activation_date: {
-          $ne: null,
-        },
-        premium_activation_date: null,
-      })
-      .lean(),
+    Etablissement.find({
+      gestionnaire_email: {
+        $ne: null,
+      },
+      optout_activation_date: {
+        $ne: null,
+      },
+      premium_activation_date: null,
+    }).lean(),
     eligibleTrainingsForAppointmentService.find({ parcoursup_id: { $ne: null }, lieu_formation_email: { $ne: null } }).lean(),
   ])
 
@@ -41,7 +41,7 @@ export const premiumInviteOneShot = async ({ etablissements, mailer }) => {
 
       const { messageId } = await mailer.sendEmail({
         to: etablissement.gestionnaire_email,
-        subject: `Activez la prise de rendez-vous apprentissage sur Parcoursup`,
+        subject: `Trouvez et recrutez vos candidats sur Parcoursup`,
         template: mailTemplate["mail-cfa-premium-invite-one-shot"],
         data: {
           replyTo: config.publicEmail,
@@ -70,7 +70,7 @@ export const premiumInviteOneShot = async ({ etablissements, mailer }) => {
         },
       })
 
-      await etablissements.updateOne(
+      await Etablissement.updateOne(
         { formateur_siret: etablissement.formateur_siret },
         {
           premium_invitation_date: dayjs().toDate(),

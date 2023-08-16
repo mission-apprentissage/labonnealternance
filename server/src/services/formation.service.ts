@@ -2,7 +2,7 @@ import axios from "axios"
 import { IFormationCatalogue } from "../common/model/schema/formationCatalogue/formationCatalogue.types.js"
 import crypto from "crypto"
 import { getElasticInstance } from "../common/esClient/index.js"
-import { roundDistance } from "../common/geolib.js"
+import { roundDistance } from "../common/utils/geolib.js"
 import { FormationCatalogue } from "../common/model/index.js"
 import { IApiError, manageApiError } from "../common/utils/errorManager.js"
 import { regionCodeToDepartmentList } from "../common/utils/regionInseeCodes.js"
@@ -30,7 +30,7 @@ const diplomaMap = {
 }
 
 const getDiplomaIndexName = (value) => {
-    return value ? diplomaMap[value[0]] : ""
+  return value ? diplomaMap[value[0]] : ""
 }
 
 /**
@@ -582,10 +582,10 @@ const getSchoolName = (formation: Partial<IFormationCatalogue>): string => {
  * @returns {Promise<IApiError | { results: ILbaItem[]}}
  */
 export const getFormationsQuery = async (query: any): Promise<IApiError | { results: ILbaItem[] }> => {
-  const queryValidationResult = formationsQueryValidator(query)
+  const queryValidationResult = await formationsQueryValidator(query)
 
   if (queryValidationResult.error) {
-    return { error: "wrong_parameters" }
+    return queryValidationResult
   }
 
   try {

@@ -3,9 +3,9 @@ import got from "got"
 import { sortBy } from "lodash-es"
 import querystring from "node:querystring"
 import { compose } from "oleoduc"
-import { getDistanceInKm } from "../common/geolib.js"
+import { getDistanceInKm } from "../common/utils/geolib.js"
 import { logger } from "../common/logger.js"
-import { FormationCatalogue } from "../common/model/index.js"
+import { FormationCatalogue, UnsubscribeOF } from "../common/model/index.js"
 import { fetchStream } from "../common/utils/httpUtils.js"
 import { streamJsonArray } from "../common/utils/streamUtils.js"
 import _ from "lodash-es"
@@ -183,23 +183,26 @@ export const getNearEtablissementsFromRomes = async ({ rome, origin }: { rome: s
     { _id: 1, numero_voie: 1, type_voie: 1, nom_voie: 1, code_postal: 1, nom_departement: 1, entreprise_raison_sociale: 1, geo_coordonnees: 1 }
   )
 
-  const etablissementsRefined = etablissements
-    .map((etablissement) => {
-      // This field can be null
-      if (!etablissement.geo_coordonnees) {
-        return
-      }
+  let etablissementsRefined = etablissements.flatMap((etablissement) => {
+    // This field can be null
+    if (!etablissement.geo_coordonnees) {
+      return []
+    }
 
-      const [latitude, longitude] = etablissement.geo_coordonnees?.split(",")
+    const [latitude, longitude] = etablissement.geo_coordonnees?.split(",")
 
-      return {
+    return [
+      {
         ...etablissement,
         distance_en_km: getDistanceInKm({ origin, destination: { latitude, longitude } }),
-      }
-    })
-    .filter(Boolean)
-
-  return sortBy(etablissementsRefined, "distance_en_km")
+      },
+    ]
+  })
+  etablissementsRefined = sortBy(etablissementsRefined, "distance_en_km")
+  const unsubscribedEtablissements = await UnsubscribeOF.find({ catalogue_id: { $in: etablissementsRefined.map((_) => _._id) } })
+  const unsubscribedIds = unsubscribedEtablissements.map((_) => _.catalogue_id)
+  etablissementsRefined = etablissementsRefined.filter((etablissement) => !unsubscribedIds.includes(etablissement._id))
+  return etablissementsRefined
 }
 
 /**

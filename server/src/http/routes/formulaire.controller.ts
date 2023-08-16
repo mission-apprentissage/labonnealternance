@@ -11,14 +11,16 @@ import {
   createJob,
   createJobDelegations,
   getFormulaire,
-  getJobsFromElasticSearch,
+  getJob,
   getOffre,
+  patchOffre,
   provideOffre,
   updateFormulaire,
   updateOffre,
 } from "../../services/formulaire.service.js"
 import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
 import { getUser, createUser } from "../../services/userRecruteur.service.js"
+import authMiddleware from "../middlewares/authMiddleware.js"
 
 export default () => {
   const router = express.Router()
@@ -28,6 +30,7 @@ export default () => {
    */
   router.get(
     "/",
+    authMiddleware("jwt-bearer"),
     tryCatch(async (req, res) => {
       const query = JSON.parse(req.query.query)
       const results = await Recruiter.find(query).lean()
@@ -169,15 +172,52 @@ export default () => {
   /**
    * Permet de passer une offre en statut ANNULER (mail transactionnel)
    */
+  router.patch(
+    "/offre/:jobId",
+    tryCatch(async (req, res) => {
+      const { jobId } = req.params
+      const exists = await checkOffreExists(jobId)
+
+      if (!exists) {
+        return res.status(400).json({ status: "INVALID_RESOURCE", message: "L'offre n'existe pas." })
+      }
+
+      const offre = await getJob(jobId)
+
+      const delegationFound = offre.delegations.find((delegation) => delegation.siret_code == req.query.siret_formateur)
+
+      if (!delegationFound) {
+        return res.status(400).json({ status: "INVALID_RESOURCE", message: `Le siret formateur n'a pas été proposé à l'offre.` })
+      }
+
+      await patchOffre(jobId, {
+        delegations: offre.delegations.map((delegation) => {
+          // Save the date of the first read of the company detail
+          if (delegation.siret_code === delegationFound.siret_code && !delegation.cfa_read_company_detail_at) {
+            return {
+              ...delegation,
+              cfa_read_company_detail_at: new Date(),
+            }
+          }
+          return delegation
+        }),
+      })
+
+      const jobUpdated = await getJob(jobId)
+      return res.send(jobUpdated)
+    })
+  )
+
+  /**
+   * Permet de passer une offre en statut ANNULER (mail transactionnel)
+   */
   router.put(
     "/offre/:jobId/cancel",
     tryCatch(async (req, res) => {
       const exists = await checkOffreExists(req.params.jobId)
-
       if (!exists) {
         return res.status(400).json({ status: "INVALID_RESSOURCE", message: "L'offre n'existe pas" })
       }
-
       await cancelOffre(req.params.jobId)
       return res.sendStatus(200)
     })
@@ -190,31 +230,11 @@ export default () => {
     "/offre/:jobId/provided",
     tryCatch(async (req, res) => {
       const exists = await checkOffreExists(req.params.jobId)
-
       if (!exists) {
         return res.status(400).json({ status: "INVALID_RESSOURCE", message: "L'offre n'existe pas" })
       }
-
       await provideOffre(req.params.jobId)
       return res.sendStatus(200)
-    })
-  )
-
-  /**
-   * LBA ENDPOINT
-   */
-  router.post(
-    "/search",
-    tryCatch(async (req, res) => {
-      const { distance, lat, lon, romes, niveau } = req.body
-
-      if (!distance || !lat || !lon || !romes) {
-        return res.status(400).json({ error: "Argument is missing (distance, lat, lon, romes)" })
-      }
-
-      const jobs = await getJobsFromElasticSearch({ distance, lat, lon, romes, niveau })
-
-      return res.json(jobs)
     })
   )
 

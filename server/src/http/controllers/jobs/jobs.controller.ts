@@ -1,27 +1,36 @@
 import * as express from "express"
 import { Body, Controller, Get, Header, Hidden, OperationId, Patch, Path, Post, Query, Request, Response, Route, Security, SuccessResponse, Tags } from "tsoa"
 import { ICreateDelegation, ICreateJobBody, IGetDelegation, TCreateEstablishmentBody, TEstablishmentResponseSuccess, TJob, TResponseError } from "./jobs.types.js"
-import { createDelegationSchema, createJobEntitySchema, createJobSchema, updateJobSchema } from "./jobs.validators.js"
+import { createDelegationSchema, createEstablishmentSchema, createJobSchema, getEstablishmentEntitySchema, updateJobSchema } from "./jobs.validators.js"
 import { formatEntrepriseData, getEtablissement, getEtablissementFromGouv, getGeoCoordinates } from "../../../services/etablissement.service.js"
 import { Recruiter } from "../../../common/model/index.js"
 import { createUser, updateUserValidationHistory } from "../../../services/userRecruteur.service.js"
 import { IUserRecruteur } from "../../../common/model/schema/userRecruteur/userRecruteur.types.js"
-import { cancelOffre, createJobDelegations, createOffre, extendOffre, getFormulaire, getFormulaires, patchOffre, provideOffre } from "../../../services/formulaire.service.js"
+import {
+  cancelOffre,
+  createJobDelegations,
+  createOffre,
+  extendOffre,
+  getFormulaire,
+  getFormulaires,
+  getJob,
+  patchOffre,
+  provideOffre,
+} from "../../../services/formulaire.service.js"
 import { IJobs } from "../../../common/model/schema/jobs/jobs.types.js"
-import dayjs from "../../../common/dayjs.js"
+import dayjs from "../../../services/dayjs.service.js"
 import { getAppellationDetailsFromAPI, getRomeDetailsFromAPI } from "../../../services/rome.service.js"
 import { getOffre } from "../../../services/formulaire.service.js"
 import { getNearEtablissementsFromRomes } from "../../../services/catalogue.service.js"
-import { ENTREPRISE, etat_utilisateur, validation_utilisateur } from "../../../common/constants.js"
+import { ACTIVE, ANNULEE, POURVUE, ENTREPRISE, ETAT_UTILISATEUR, VALIDATION_UTILISATEUR } from "../../../services/constant.service.js"
 import { delay } from "../../../common/utils/asyncUtils.js"
 import { ICredential } from "../../../common/model/schema/credentials/credential.types.js"
 import { IApiError } from "../../../common/utils/errorManager.js"
 import { ILbaItem } from "../../../services/lbaitem.shared.service.types.js"
 import { getCompanyFromSiret } from "../../../service/poleEmploi/bonnesBoites.js"
-import { getMatchaJobById } from "../../../service/matcha.js"
+import { addOffreDetailView, addOffreSearchView, getLbaJobById } from "../../../services/lbajob.service.js"
 import { getPeJobFromId } from "../../../service/poleEmploi/offresPoleEmploi.js"
 import { getJobsQuery } from "../../../service/poleEmploi/jobsAndCompanies.js"
-import { jobsQueryValidator } from "../../../service/poleEmploi/jobsQueryValidator.js"
 
 @Tags("Jobs")
 @Route("/api/v1/jobs")
@@ -35,8 +44,11 @@ export class JobsController extends Controller {
   @Response<"Establishment not found">(400)
   @SuccessResponse("200", "Establishment found")
   @Get("/establishment")
-  public async getEstablishment(@Query() siret: string, @Query() email: string): Promise<TEstablishmentResponseSuccess["establishment_id"] | TResponseError> {
-    const establishment = await Recruiter.findOne({ establishment_siret: siret, email: email })
+  @Security("api_key")
+  public async getEstablishment(@Query() establishment_siret: string, @Query() email: string): Promise<TEstablishmentResponseSuccess["establishment_id"] | TResponseError> {
+    await getEstablishmentEntitySchema.validateAsync({ establishment_siret, email }, { abortEarly: false })
+
+    const establishment = await Recruiter.findOne({ establishment_siret, email })
 
     if (!establishment) {
       this.setStatus(400)
@@ -107,13 +119,13 @@ export class JobsController extends Controller {
       return { error: true, message: "Email is already linked with an establishment" }
     }
     // Validate establishment parameters
-    await createJobEntitySchema.validateAsync(body, { abortEarly: false })
+    await createEstablishmentSchema.validateAsync(body, { abortEarly: false })
 
     // Get siret information from API
     const establishmentInformations = await getEtablissementFromGouv(establishment_siret)
 
     // If establishment is closed, throw error
-    if (establishmentInformations.etablissement.etat_administratif.value === "F") {
+    if (establishmentInformations.data.etat_administratif === "F") {
       return { error: true, message: "Establishment is closed" }
     }
 
@@ -128,11 +140,11 @@ export class JobsController extends Controller {
       type: ENTREPRISE,
       is_email_checked: true,
       is_qualiopi: false,
-      ...formatEntrepriseData(establishmentInformations.etablissement),
+      ...formatEntrepriseData(establishmentInformations.data),
     }
 
     // Get geocoordinates
-    establishment.geo_coordinates = await getGeoCoordinates(`${establishment.address_detail.l4}, ${establishment.address_detail.l6}`)
+    establishment.geo_coordinates = await getGeoCoordinates(`${establishment.address_detail.acheminement_postal.l4}, ${establishment.address_detail.acheminement_postal.l6}`)
 
     /**
      *  KBA 25052023 : Bellow logic will be update with the global refactoring of the service logic
@@ -143,9 +155,9 @@ export class JobsController extends Controller {
     const newUser = await createUser({ ...establishment, establishment_id: newEstablishment.establishment_id })
     // Update user status to valid
     await updateUserValidationHistory(newUser._id, {
-      validation_type: validation_utilisateur.AUTO,
+      validation_type: VALIDATION_UTILISATEUR.AUTO,
       user: "SERVEUR",
-      status: etat_utilisateur.VALIDE,
+      status: ETAT_UTILISATEUR.VALIDE,
     })
 
     this.setStatus(201)
@@ -271,6 +283,7 @@ export class JobsController extends Controller {
     const jobExists = await getOffre(jobId)
 
     if (!jobExists) {
+      this.setStatus(400)
       return { error: true, message: "Job does not exists" }
     }
 
@@ -300,6 +313,7 @@ export class JobsController extends Controller {
     const jobExists = await getOffre(jobId)
 
     if (!jobExists) {
+      this.setStatus(400)
       return { error: true, message: "Job does not exists" }
     }
 
@@ -319,19 +333,25 @@ export class JobsController extends Controller {
    */
   @Response<"Job update failed">(400)
   @SuccessResponse("204", "Job updated")
-  @Post("/provided")
+  @Post("/provided/{jobId}")
   @OperationId("setJobAsProvided")
   @Security("api_key")
-  public async setJobAsProvided(@Body() body: { jobId: IJobs["_id"] }): Promise<{} | TResponseError> {
-    const jobExists = await getOffre(body.jobId)
+  public async setJobAsProvided(@Path() jobId: IJobs["_id"]): Promise<{} | TResponseError> {
+    const job = await getJob(jobId)
 
-    if (!jobExists) {
+    if (!job) {
+      this.setStatus(400)
       return { error: true, message: "Job does not exists" }
     }
 
-    await provideOffre(body.jobId)
+    if (job.job_status === POURVUE) {
+      this.setStatus(400)
+      return { error: true, message: "Job is already provided" }
+    }
 
-    this.setStatus(204)
+    await provideOffre(jobId)
+
+    this.setStatus(200)
     return
   }
 
@@ -343,19 +363,25 @@ export class JobsController extends Controller {
    */
   @Response<"Job update failed">(400)
   @SuccessResponse("204", "Job updated")
-  @Post("/canceled")
+  @Post("/canceled/{jobId}")
   @OperationId("setJobAsCanceled")
   @Security("api_key")
-  public async setJobAsCanceled(@Body() body: { jobId: IJobs["_id"] }): Promise<{} | TResponseError> {
-    const jobExists = await getOffre(body.jobId)
+  public async setJobAsCanceled(@Path() jobId: IJobs["_id"]): Promise<{} | TResponseError> {
+    const job = await getJob(jobId)
 
-    if (!jobExists) {
+    if (!job) {
+      this.setStatus(400)
       return { error: true, message: "Job does not exists" }
     }
 
-    await cancelOffre(body.jobId)
+    if (job.job_status === ANNULEE) {
+      this.setStatus(400)
+      return { error: true, message: "Job is already canceled" }
+    }
 
-    this.setStatus(204)
+    await cancelOffre(jobId)
+
+    this.setStatus(200)
     return
   }
 
@@ -367,19 +393,30 @@ export class JobsController extends Controller {
    */
   @Response<"Job update failed">(400)
   @SuccessResponse("204", "Job updated")
-  @Post("/extend")
+  @Post("/extend/{jobId}")
   @OperationId("extendJobExpiration")
   @Security("api_key")
-  public async extendJobExpiration(@Body() body: { jobId: IJobs["_id"] }): Promise<{} | TResponseError> {
-    const jobExists = await getOffre(body.jobId)
+  public async extendJobExpiration(@Path() jobId: IJobs["_id"]): Promise<{} | TResponseError> {
+    const job = await getJob(jobId)
 
-    if (!jobExists) {
+    if (!job) {
+      this.setStatus(400)
       return { error: true, message: "Job does not exists" }
     }
 
-    await extendOffre(body.jobId)
+    if (dayjs().add(1, "month").isSame(dayjs(job.job_expiration_date), "day")) {
+      this.setStatus(400)
+      return { error: true, message: "Job is already extended up to a month" }
+    }
 
-    this.setStatus(204)
+    if (job.job_status !== ACTIVE) {
+      this.setStatus(400)
+      return { error: true, message: "Job cannot be extended as it is not enabled" }
+    }
+
+    await extendOffre(jobId)
+
+    this.setStatus(200)
     return
   }
 
@@ -388,6 +425,7 @@ export class JobsController extends Controller {
    * @param {string} referer the referer provided in the HTTP query headers
    * @param {string} caller the consumer id.
    * @param {string} romes some rome codes separated by commas
+   * @param {string} rncp a rncp code
    * @param {string} latitude search center latitude
    * @param {string} longitude search center longitude
    * @param {number} radius the search radius
@@ -405,7 +443,9 @@ export class JobsController extends Controller {
   @Get("/")
   @OperationId("getJobOpportunities")
   public async getJobOpportunities(
-    @Query() romes: string,
+    @Request() request: express.Request,
+    @Query() romes?: string[],
+    @Query() rncp?: string,
     @Header() @Hidden() referer?: string,
     @Query() caller?: string,
     @Query() latitude?: string,
@@ -418,12 +458,16 @@ export class JobsController extends Controller {
     @Query() opcoUrl?: string,
     @Query() @Hidden() useMock?: string
   ): Promise<IApiError | { lbbCompanies: ILbaItem[] } | { lbaCompanies: ILbaItem[] }> {
-    const result = await getJobsQuery({ romes, caller, referer, latitude, longitude, radius, insee, sources, diploma, opco, opcoUrl, useMock })
+    const result = await getJobsQuery({ romes: romes?.join(",") || null, rncp, caller, referer, latitude, longitude, radius, insee, sources, diploma, opco, opcoUrl, useMock })
 
-    if (result.error) {
+    if ("error" in result) {
       this.setStatus(500)
+      return result
     }
-
+    const { matchas } = result
+    if (matchas && "results" in matchas) {
+      matchas.results.map((matchaOffre) => addOffreSearchView(matchaOffre.job.id))
+    }
     return result
   }
 
@@ -480,22 +524,49 @@ export class JobsController extends Controller {
   @Get("/matcha/{id}")
   @OperationId("getLbaJob")
   public async getLbaJob(@Path() id: string, @Query() caller?: string): Promise<IApiError | { matchas: ILbaItem[] }> {
-    const result = await getMatchaJobById({
+    const result = await getLbaJobById({
       id,
       caller,
     })
 
     if ("error" in result) {
-      if (result.error === "wrong_parameters") {
-        this.setStatus(400)
-      } else if (result.error === "not_found") {
-        this.setStatus(404)
-      } else {
-        this.setStatus(result.status || 500)
+      switch (result.error) {
+        case "wrong_parameters": {
+          this.setStatus(400)
+          break
+        }
+        case "not_found": {
+          this.setStatus(404)
+          break
+        }
+        case "expired_job": {
+          this.setStatus(419)
+          break
+        }
+        default: {
+          this.setStatus(result.status || 500)
+          break
+        }
       }
     }
 
     return result
+  }
+
+  /**
+   * Notifies that the detail of a matcha job has been viewed
+   * @param {string} id the id the lba job looked for.
+   * @returns {Promise<IApiError | void>} response
+   */
+  @Response<"Wrong parameters">(400)
+  @Response<"Job not found">(404)
+  @Response<"Internal error">(500)
+  @SuccessResponse("200", "success")
+  @Post("/matcha/{id}/stats/view-details")
+  @OperationId("statsViewLbaJob")
+  public async statsViewLbaJob(@Path() id: string): Promise<IApiError | undefined> {
+    await addOffreDetailView(id)
+    return
   }
 
   /**

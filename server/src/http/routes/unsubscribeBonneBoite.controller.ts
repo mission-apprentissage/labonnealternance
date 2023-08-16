@@ -2,11 +2,11 @@ import { BonnesBoites, UnsubscribedBonneBoite } from "../../common/model/index.j
 import express from "express"
 import rateLimit from "express-rate-limit"
 import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
-import { UNSUBSCRIBE_EMAIL_ERRORS } from "../../common/constants.js"
+import { UNSUBSCRIBE_EMAIL_ERRORS } from "../../services/constant.service.js"
 import config from "../../config.js"
 import path from "path"
 import __dirname from "../../common/dirname.js"
-import { notifyToSlack } from "../../common/utils/slackUtils.js"
+import mailer from "../../services/mailer.service.js"
 const currentDirname = __dirname(import.meta.url)
 
 const limiter1Per5Second = rateLimit({
@@ -16,7 +16,7 @@ const limiter1Per5Second = rateLimit({
 
 const imagePath = `${config.publicUrl}/images/emails/`
 
-export default function ({ mailer }) {
+export default function () {
   const router = express.Router()
 
   router.post(
@@ -56,12 +56,6 @@ export default function ({ mailer }) {
             },
           },
         })
-
-        // await notifyToSlack({
-        //   subject: "Désinscription société issue de l'algo",
-        //   message: `La société avec le siret ${bonnesBoitesToUnsubscribe[0].siret} a été désinscrite des sociétés issues de l'algo`,
-        //   error: false,
-        // })
       }
 
       return res.json(result)

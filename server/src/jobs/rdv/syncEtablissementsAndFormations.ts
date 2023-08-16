@@ -1,8 +1,8 @@
 import { oleoduc, writeData } from "oleoduc"
 import { logger } from "../../common/logger.js"
 import { referrers } from "../../common/model/constants/referrers.js"
-import { FormationCatalogue } from "../../common/model/index.js"
-import { dayjs } from "../../common/utils/dayjs.js"
+import { Etablissement, FormationCatalogue } from "../../common/model/index.js"
+import dayjs from "../../services/dayjs.service.js"
 import { isValidEmail } from "../../common/utils/isValidEmail.js"
 import { isEmailBlacklisted } from "../../services/application.service.js"
 import { getFormationsFromCatalogueMe } from "../../services/catalogue.service.js"
@@ -33,7 +33,7 @@ const getEmailFromCatalogueField = (email) => {
  * @description Gets Catalogue etablissments informations and insert in etablissement collection.
  * @returns {Promise<void>}
  */
-export const syncEtablissementsAndFormations = async ({ etablissements }) => {
+export const syncEtablissementsAndFormations = async () => {
   logger.info("Cron #syncEtablissementsAndFormations started.")
 
   const catalogueMinistereEducatif = await getFormationsFromCatalogueMe({
@@ -58,7 +58,7 @@ export const syncEtablissementsAndFormations = async ({ etablissements }) => {
           eligibleTrainingsForAppointmentService.findOne({
             cle_ministere_educatif: formation.cle_ministere_educatif,
           }),
-          etablissements.findOne({ formateur_siret: formation.etablissement_formateur_siret }),
+          Etablissement.findOne({ formateur_siret: formation.etablissement_formateur_siret }),
           catalogueMinistereEducatif.find((formationMe) => formationMe.cle_ministere_educatif === formation.cle_ministere_educatif),
         ])
 
@@ -72,12 +72,11 @@ export const syncEtablissementsAndFormations = async ({ etablissements }) => {
         }
 
         // Activate premium referrers
-        if (etablissement?.premium_activation_date) {
+        if (etablissement?.premium_activation_date && formationMinistereEducatif?.parcoursup_id) {
           referrersToActivate.push(referrers.PARCOURSUP.name)
         }
 
         if (eligibleTrainingsForAppointment) {
-          logger.info("update formation:", formation.cle_ministere_educatif)
           let emailRdv = eligibleTrainingsForAppointment.lieu_formation_email
 
           // Don't override "email" if this field is true
@@ -116,7 +115,6 @@ export const syncEtablissementsAndFormations = async ({ etablissements }) => {
             }
           )
         } else {
-          logger.info("create new formation:", formation.cle_ministere_educatif)
           const emailRdv = getEmailFromCatalogueField(formation.etablissement_formateur_courriel)
 
           const emailBlacklisted = await isEmailBlacklisted(emailRdv)
@@ -150,7 +148,7 @@ export const syncEtablissementsAndFormations = async ({ etablissements }) => {
         }
 
         // Update etablissement model (upsert)
-        return etablissements.updateMany(
+        return Etablissement.updateMany(
           {
             formateur_siret: formation.etablissement_formateur_siret,
           },
@@ -162,7 +160,7 @@ export const syncEtablissementsAndFormations = async ({ etablissements }) => {
             formateur_address: formation.etablissement_formateur_adresse,
             formateur_zip_code: formation.etablissement_formateur_code_postal,
             formateur_city: formation.etablissement_formateur_localite,
-            last_catalogue_sync_date: dayjs().format(),
+            last_catalogue_sync_date: dayjs().toDate(),
           }
         )
       },

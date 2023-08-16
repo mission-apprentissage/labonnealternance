@@ -124,12 +124,6 @@ const TrainingDetail = ({ training, hasAlsoJob }) => {
       {getLoading()}
       {getTrainingDetails(training.training)}
       <Box background="#f6f6f6" borderRadius="8px" mt={8} pl={8} py="10px" pr="10px">
-        <Flex alignItems="center" pt={1} pb={2}>
-          <Image src={questionmarkIcon} alt="" />
-          <Text as="span" ml={2} fontWeight={700}>
-            {training.title ? training.title : training.longTitle}
-          </Text>
-        </Flex>
         {training.onisepUrl && (
           <Box>
             <Text as="span">Descriptif du {training.title ? training.title : training.longTitle} sur&nbsp;</Text>

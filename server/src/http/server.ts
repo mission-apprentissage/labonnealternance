@@ -46,6 +46,8 @@ import trainingLinks from "./routes/trainingLinks.controller.js"
 import { limiter10PerSecond, limiter1Per20Second, limiter20PerSecond, limiter3PerSecond, limiter5PerSecond, limiter7PerSecond } from "./utils/rateLimiters.js"
 import { initBrevoWebhooks } from "../services/brevo.service.js"
 
+import "../auth/passport-strategy.js"
+
 /**
  * LBA-Candidat Swagger file
  */

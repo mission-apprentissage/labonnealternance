@@ -8,8 +8,9 @@ import { notifyToSlack } from "../../../common/utils/slackUtils.js"
 import config from "../../../config.js"
 import { IRecruiter } from "../../../common/model/schema/recruiter/recruiter.types.js"
 import { IUserRecruteur } from "../../../common/model/schema/userRecruteur/userRecruteur.types.js"
+import mailer from "../../../services/mailer.service.js"
 
-export const relanceFormulaire = async (mailer, threshold) => {
+export const relanceFormulaire = async (threshold) => {
   // number of days to expiration for the reminder email to be sent
 
   const forms = await Recruiter.find({
@@ -63,7 +64,7 @@ export const relanceFormulaire = async (mailer, threshold) => {
 
     await mailer.sendEmail({
       to: contactCFA?.email ?? email,
-      subject: "La bonne alternance - Vos offres vont expirer prochainement",
+      subject: "Vos offres expirent bientôt",
       template: mailTemplate["mail-expiration-offres"],
       data: {
         images: {

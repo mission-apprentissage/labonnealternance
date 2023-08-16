@@ -76,7 +76,7 @@ const SearchForm = (props) => {
             <Box p="0">
               <Text as="h1" fontSize={["26px", "29px"]} fontWeight={700}>
                 <Text as="span" display={{ base: "block", md: "inline" }}>
-                  Se former et travailler{" "}
+                  Trouvez emploi et formation{" "}
                 </Text>
                 <Text as="span" color="info" display={{ base: "block", md: "inline" }}>
                   en alternance

@@ -3,14 +3,12 @@ import React, { useContext, useState } from "react"
 import { ErrorMessage } from "../../../components"
 import DisplayMapButton from "../../../components/DisplayMapButton/displayMapButton"
 import { DisplayContext } from "../../../context/DisplayContextProvider"
-import { ParameterContext } from "../../../context/ParameterContextProvider"
 import { ScopeContext } from "../../../context/ScopeContext"
 import { SearchResultContext } from "../../../context/SearchResultContextProvider"
 import purpleFilterIcon from "../../../public/images/icons/purpleFilter.svg"
 import { isCfaEntreprise } from "../../../services/cfaEntreprise"
 import { mergeJobs, mergeOpportunities } from "../../../utils/itemListUtils"
 import { filterLayers } from "../../../utils/mapTools"
-import DuoContainer from "./DuoContainer"
 import ExtendedSearchButton from "./ExtendedSearchButton"
 import NoJobResult from "./NoJobResult"
 import ResultListsCounter from "./ResultListsCounter"
@@ -18,8 +16,31 @@ import ResultListsCounter from "./ResultListsCounter"
 import { Box, Button, Flex, Image } from "@chakra-ui/react"
 import { SendPlausibleEvent } from "../../../utils/plausible"
 import { renderJob, renderLbb, renderTraining } from "../services/renderOneResult"
+import { getJobCount } from "../services/utils"
 
-const ResultLists = (props) => {
+const ResultLists = ({
+  activeFilter,
+  handleExtendedSearch,
+  handleSelectItem,
+  isJobSearchLoading,
+  isTrainingSearchLoading,
+  jobs,
+  jobSearchError,
+  searchForJobsOnNewCenter,
+  searchRadius,
+  selectedItem,
+  searchForTrainingsOnNewCenter,
+  setActiveFilter,
+  shouldShowWelcomeMessage,
+  showSearchForm,
+  trainings,
+  allJobSearchError,
+  trainingSearchError,
+  isTestMode,
+  stubbedExtendedSearch,
+  stubbedHasSearch,
+  stubbedIsFormVisible,
+}) => {
   const scopeContext = useContext(ScopeContext)
 
   let [extendedSearch, hasSearch, isFormVisible] = [false, false, false]
@@ -27,12 +48,12 @@ const ResultLists = (props) => {
   ;({ isFormVisible } = useContext(DisplayContext))
   ;({ extendedSearch, hasSearch } = useContext(SearchResultContext))
 
-  if (props.isTestMode) {
-    ;[extendedSearch, hasSearch, isFormVisible] = [props.stubbedExtendedSearch, props.stubbedHasSearch, props.stubbedIsFormVisible]
+  if (isTestMode) {
+    ;[extendedSearch, hasSearch, isFormVisible] = [stubbedExtendedSearch, stubbedHasSearch, stubbedIsFormVisible]
   }
 
   const filterButtonClicked = (filterButton) => {
-    props.setActiveFilter(filterButton)
+    setActiveFilter(filterButton)
     filterLayers(filterButton)
     if (filterButton === "duo") {
       SendPlausibleEvent("Clic onglet formations+emplois - Liste de résultats")
@@ -40,7 +61,7 @@ const ResultLists = (props) => {
   }
 
   const getTrainingResult = () => {
-    if (hasSearch && scopeContext.isTraining && (props.activeFilter === "all" || props.activeFilter === "trainings")) {
+    if (hasSearch && scopeContext.isTraining && (activeFilter === "all" || activeFilter === "trainings")) {
       return (
         <Box bg="beige" id="trainingResult">
           {getTrainingList()}
@@ -52,23 +73,23 @@ const ResultLists = (props) => {
   }
 
   const getTrainingList = () => {
-    if (props.trainings.length) {
+    if (trainings.length) {
       return (
         <>
-          {props.searchRadius < props.trainings[0].place.distance && (
+          {searchRadius < trainings[0].place.distance && (
             <Box fontWeight={700} ml={4} px={4} py={4}>
               Aucune formation ne correspondait à votre zone de recherche, nous avons trouvé les plus proches
             </Box>
           )}
-          {props.trainings.map((training, idx) => {
+          {trainings.map((training, idx) => {
             const isCfa = isCfaEntreprise(training?.company?.siret, training?.company?.headquarter?.siret)
 
-            return renderTraining(props.isTestMode, idx, training, props.handleSelectItem, props.searchForJobsOnNewCenter, isCfa)
+            return renderTraining(isTestMode, idx, training, handleSelectItem, searchForJobsOnNewCenter, isCfa)
           })}
         </>
       )
-    } else if (!props.isTrainingSearchLoading) {
-      if (props.trainings.length === 0) {
+    } else if (!isTrainingSearchLoading) {
+      if (trainings.length === 0) {
         return (
           <Box mx={6} my={4} fontWeight={700}>
             Aucune formation en alternance disponible pour ce métier
@@ -79,13 +100,19 @@ const ResultLists = (props) => {
   }
 
   const getJobResult = () => {
-    if (hasSearch && !props.isJobSearchLoading && (props.activeFilter === "all" || props.activeFilter === "jobs")) {
-      if (props.allJobSearchError) return ""
+    if (hasSearch && !isJobSearchLoading && ["all", "duo", "jobs"].includes(activeFilter)) {
+      if (allJobSearchError) return ""
 
-      const jobCount = getJobCount(props.jobs)
+      const jobCount = getJobCount(jobs)
 
       if (jobCount) {
-        if (extendedSearch) {
+        if (activeFilter === "duo") {
+          return (
+            <Box bg="beige" id="jobList">
+              {getPartnerJobList()}
+            </Box>
+          )
+        } else if (extendedSearch) {
           const mergedJobList = getMergedJobList()
           return (
             <Box bg="beige" id="jobList">
@@ -101,24 +128,25 @@ const ResultLists = (props) => {
                 <>
                   {jobList}
                   {lbbCompanyList}
-                  {jobCount < 100 ? <ExtendedSearchButton title="Voir plus de résultats" handleExtendedSearch={props.handleExtendedSearch} /> : ""}
+                  {jobCount < 100 ? <ExtendedSearchButton title="Voir plus de résultats" handleExtendedSearch={handleExtendedSearch} /> : ""}
                 </>
               ) : (
                 <Box m={6}>
                   <NoJobResult />
-                  <ExtendedSearchButton title="Étendre la sélection" handleExtendedSearch={props.handleExtendedSearch} />
+                  <ExtendedSearchButton title="Étendre la sélection" handleExtendedSearch={handleExtendedSearch} />
                 </Box>
               )}
             </Box>
           )
         }
       } else {
-        if (extendedSearch) return <NoJobResult />
-        else
+        if (extendedSearch) {
+          return <NoJobResult />
+        } else
           return (
             <Box m={6}>
               <NoJobResult />
-              <ExtendedSearchButton title="Étendre la sélection" handleExtendedSearch={props.handleExtendedSearch} />
+              <ExtendedSearchButton title="Étendre la sélection" handleExtendedSearch={handleExtendedSearch} />
             </Box>
           )
       }
@@ -127,25 +155,28 @@ const ResultLists = (props) => {
     }
   }
 
-  const getJobCount = (jobs) => {
-    let jobCount = 0
-
-    if (jobs) {
-      if (jobs.peJobs) jobCount += jobs.peJobs.length
-      if (jobs.matchas) jobCount += jobs.matchas.length
-      if (jobs.lbaCompanies) jobCount += jobs.lbaCompanies.length
+  const getPartnerJobList = () => {
+    const partnerJobs = jobs.matchas.filter((job) => job.company?.mandataire)
+    if (partnerJobs.length) {
+      return (
+        <>
+          {partnerJobs.map((job, idx) => {
+            return renderJob(isTestMode, idx, job, handleSelectItem, searchForTrainingsOnNewCenter)
+          })}
+        </>
+      )
+    } else {
+      return ""
     }
-
-    return jobCount
   }
 
   const getJobList = () => {
-    const mergedJobs = mergeJobs(props.jobs)
+    const mergedJobs = mergeJobs({ jobs, activeFilter })
     if (mergedJobs.length) {
       return (
         <>
           {mergedJobs.map((job, idx) => {
-            return renderJob(props.isTestMode, idx, job, props.handleSelectItem, props.searchForTrainingsOnNewCenter)
+            return renderJob(isTestMode, idx, job, handleSelectItem, searchForTrainingsOnNewCenter)
           })}
         </>
       )
@@ -153,12 +184,12 @@ const ResultLists = (props) => {
   }
 
   const getLbbCompanyList = () => {
-    const mergedLbaLbbCompanies = mergeOpportunities(props.jobs, "onlyLbbLba")
+    const mergedLbaLbbCompanies = mergeOpportunities({ jobs, activeFilter, onlyLbbLbaCompanies: "onlyLbbLba" })
     if (mergedLbaLbbCompanies.length) {
       return (
         <>
           {mergedLbaLbbCompanies.map((company, idx) => {
-            return renderLbb(props.isTestMode, idx, company, props.handleSelectItem, props.searchForTrainingsOnNewCenter)
+            return renderLbb(isTestMode, idx, company, handleSelectItem, searchForTrainingsOnNewCenter)
           })}
         </>
       )
@@ -167,16 +198,16 @@ const ResultLists = (props) => {
 
   // retourne le bloc construit des items lbb, lba, matcha et pe triés par ordre de distance
   const getMergedJobList = () => {
-    const mergedOpportunities = mergeOpportunities(props.jobs)
+    const mergedOpportunities = mergeOpportunities({ jobs, activeFilter })
 
     if (mergedOpportunities.length) {
       return (
         <>
           {mergedOpportunities.map((opportunity, idx) => {
             if (opportunity.ideaType === "peJob" || opportunity.ideaType === "matcha") {
-              return renderJob(props.isTestMode, idx, opportunity, props.handleSelectItem, props.searchForTrainingsOnNewCenter)
+              return renderJob(isTestMode, idx, opportunity, handleSelectItem, searchForTrainingsOnNewCenter)
             } else {
-              return renderLbb(props.isTestMode, idx, opportunity, props.handleSelectItem, props.searchForTrainingsOnNewCenter)
+              return renderLbb(isTestMode, idx, opportunity, handleSelectItem, searchForTrainingsOnNewCenter)
             }
           })}
         </>
@@ -188,12 +219,12 @@ const ResultLists = (props) => {
 
   // construit le bloc formaté avec les erreurs remontées
   const getErrorMessages = () => {
-    return props.trainingSearchError && props.allJobSearchError ? (
+    return trainingSearchError && allJobSearchError ? (
       <ErrorMessage message="Erreur technique momentanée" type="column" />
     ) : (
       <>
-        {props.trainingSearchError && <ErrorMessage message={props.trainingSearchError} />}
-        {props.jobSearchError && <ErrorMessage message={props.jobSearchError} />}
+        {trainingSearchError && <ErrorMessage message={trainingSearchError} />}
+        {jobSearchError && <ErrorMessage message={jobSearchError} />}
       </>
     )
   }
@@ -204,8 +235,8 @@ const ResultLists = (props) => {
   }
 
   return (
-    <Flex direction="column" height={props.selectedItem ? "0%" : "100%"} display={isFormVisible ? "none" : "flex"}>
-      <Box bg="beige" display={props.shouldShowWelcomeMessage || props.selectedItem ? "none" : ""}>
+    <Flex direction="column" height={selectedItem ? "0%" : "100%"} display={isFormVisible ? "none" : "flex"}>
+      <Box bg="beige" display={shouldShowWelcomeMessage || selectedItem ? "none" : ""}>
         <Flex flex="1 auto" my={[2, 2, 0]} alignItems="center">
           <Button
             background="none"
@@ -216,44 +247,29 @@ const ResultLists = (props) => {
             ml="auto"
             mr="30px"
             pt="15px"
-            onClick={props.showSearchForm}
+            onClick={showSearchForm}
           >
             <Image width="24px" height="24px" src={purpleFilterIcon} alt="" />
           </Button>
         </Flex>
-        <DisplayMapButton jobs={props.jobs} trainings={props.trainings} />
+        <DisplayMapButton jobs={jobs} trainings={trainings} />
         <ResultListsCounter
           scopeContext={scopeContext}
           filterButtonClicked={filterButtonClicked}
-          allJobSearchError={props.allJobSearchError}
-          trainingSearchError={props.trainingSearchError}
-          isJobSearchLoading={props.isJobSearchLoading}
-          isTrainingSearchLoading={props.isTrainingSearchLoading}
+          allJobSearchError={allJobSearchError}
+          trainingSearchError={trainingSearchError}
+          isJobSearchLoading={isJobSearchLoading}
+          isTrainingSearchLoading={isTrainingSearchLoading}
           displayCount={displayCount}
-          getJobCount={getJobCount}
-          jobs={props.jobs}
-          trainings={props.trainings}
-          activeFilter={props.activeFilter}
+          jobs={jobs}
+          trainings={trainings}
+          activeFilter={activeFilter}
         />
         {getErrorMessages()}
       </Box>
-      <Box
-        flex="1"
-        pb={["100px", "100px", 0]}
-        overflow="auto"
-        onScroll={handleScroll}
-        id="resultList"
-        display={props.shouldShowWelcomeMessage || props.selectedItem ? "none" : ""}
-        bg="beige"
-      >
-        {props.activeFilter !== "duo" ? (
-          <>
-            {getTrainingResult()}
-            {getJobResult()}
-          </>
-        ) : (
-          <DuoContainer />
-        )}
+      <Box flex="1" pb={["100px", "100px", 0]} overflow="auto" onScroll={handleScroll} id="resultList" display={shouldShowWelcomeMessage || selectedItem ? "none" : ""} bg="beige">
+        {getTrainingResult()}
+        {getJobResult()}
       </Box>
     </Flex>
   )

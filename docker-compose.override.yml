@@ -2,6 +2,7 @@
 version: "2.4"
 services:
   reverse_proxy:
+    mem_limit: 128m
     volumes:
       - lba_nginx_data:/data:z
       - ./reverse_proxy/dev/includes:/etc/nginx/templates/includes/env
@@ -13,7 +14,7 @@ services:
       - ./ui:/app:z
       - /app/node_modules/
       - /app/.next
-    mem_limit: 1g
+    mem_limit: 512m
     stdin_open: true
 
   ui_espace_pro:
@@ -24,10 +25,11 @@ services:
       - ./ui_espace_pro:/app:z
       - /app/node_modules/
     env_file: ./ui_espace_pro/.env
-    mem_limit: 1g
+    mem_limit: 512m
     stdin_open: true
 
   server:
+    mem_limit: 2g
     build:
       args:
         LBA_ENV: dev
@@ -54,19 +56,21 @@ services:
       - lba_network
 
   elasticsearch:
+    mem_limit: 2g
     ports:
       - "9200:9200"
     volumes:
       - lba_elasticsearch_data:/usr/share/elasticsearch/data
 
   clamav:
+    mem_limit: 512m
     ports:
       - "3310:3310"
 
   smtp:
     image: mailhog/mailhog
     container_name: lba_mailhog
-    mem_limit: 256m
+    mem_limit: 128m
     ports:
       - "1025:1025"
     environment:

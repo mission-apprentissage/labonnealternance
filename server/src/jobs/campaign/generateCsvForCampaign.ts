@@ -1,7 +1,7 @@
 // @ts-nocheck
 import axios from "axios"
 import __dirname from "../../common/dirname.js"
-import { getDistanceInKm } from "../../common/geolib.js"
+import { getDistanceInKm } from "../../common/utils/geolib.js"
 import { FormationCatalogue } from "../../common/model/index.js"
 import { asyncForEach } from "../../common/utils/asyncUtils.js"
 import { createXLSXFile } from "../../common/utils/fileUtils.js"
@@ -117,7 +117,7 @@ runScript(async () => {
         // Delay calls to avoid BAN from api-adresse.data.gouv.fr
         await delay(800)
       } catch (error) {
-        console.log(error)
+        console.error(error)
       }
     }
 

@@ -2,13 +2,14 @@ import express, { Request } from "express"
 import joi from "joi"
 import { createFormulaire, getFormulaire } from "../../services/formulaire.service.js"
 import { mailTemplate } from "../../assets/index.js"
-import { CFA, ENTREPRISE, etat_utilisateur, OPCOS, validation_utilisateur } from "../../common/constants.js"
+import { CFA, ENTREPRISE, ETAT_UTILISATEUR, VALIDATION_UTILISATEUR } from "../../services/constant.service.js"
 import { createMagicLinkToken, createUserRecruteurToken } from "../../common/utils/jwtUtils.js"
 import { checkIfUserEmailIsPrivate, checkIfUserMailExistInReferentiel, getAllDomainsFromEmailList } from "../../common/utils/mailUtils.js"
 import { notifyToSlack } from "../../common/utils/slackUtils.js"
 import config from "../../config.js"
 import { getNearEtablissementsFromRomes } from "../../services/catalogue.service.js"
 import {
+  etablissementUnsubscribeDemandeDelegation,
   formatEntrepriseData,
   formatReferentielData,
   getAllEstablishmentFromBonneBoite,
@@ -26,14 +27,15 @@ import {
   getValidationUrl,
   validateEtablissementEmail,
 } from "../../services/etablissement.service.js"
-import { ICFADock, ISIRET2IDCC } from "../../services/etablissement.service.types.js"
+import { ICFADock } from "../../services/etablissement.service.types.js"
 import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
-import { validationOrganisation } from "../../common/bal.js"
-import Joi from "joi"
-import { siretSchema } from "../utils/validators.js"
+import { validationOrganisation } from "../../services/bal.service.js"
 import { IUserRecruteur } from "../../common/model/schema/userRecruteur/userRecruteur.types.js"
 import { IRecruiter } from "../../common/model/schema/recruiter/recruiter.types.js"
 import { updateUserValidationHistory, getUser, createUser, updateUser, getUserValidationState, registerUser } from "../../services/userRecruteur.service.js"
+import authMiddleware from "../middlewares/authMiddleware.js"
+import { sentryCaptureException } from "../../common/utils/sentryUtils.js"
+import mailer from "../../services/mailer.service.js"
 
 const getCfaRomeSchema = joi.object({
   latitude: joi.number().required(),
@@ -41,21 +43,21 @@ const getCfaRomeSchema = joi.object({
   rome: joi.array().items(joi.string()).required(),
 })
 
-export default ({ mailer }) => {
+export default () => {
   const router = express.Router()
 
   const autoValidateUser = async (userId) =>
     await updateUserValidationHistory(userId, {
-      validation_type: validation_utilisateur.AUTO,
+      validation_type: VALIDATION_UTILISATEUR.AUTO,
       user: "SERVEUR",
-      status: etat_utilisateur.VALIDE,
+      status: ETAT_UTILISATEUR.VALIDE,
     })
 
   const setManualValidation = async (userId) =>
     await updateUserValidationHistory(userId, {
-      validation_type: validation_utilisateur.MANUAL,
+      validation_type: VALIDATION_UTILISATEUR.MANUAL,
       user: "SERVEUR",
-      status: etat_utilisateur.ATTENTE,
+      status: ETAT_UTILISATEUR.ATTENTE,
     })
 
   /**
@@ -77,7 +79,6 @@ export default ({ mailer }) => {
       )
 
       const etablissements = await getNearEtablissementsFromRomes({ rome, origin: { latitude, longitude } })
-
       res.send(etablissements)
     })
   )
@@ -91,7 +92,6 @@ export default ({ mailer }) => {
       if (!req.params.siret) {
         return res.status(400).json({ error: true, message: "Le numéro siret est obligatoire." })
       }
-
       try {
         const result = await getEtablissementFromGouv(req.params.siret)
 
@@ -99,7 +99,7 @@ export default ({ mailer }) => {
           return res.status(400).json({ error: true, message: "Le numéro siret est invalide." })
         }
 
-        if (result.etablissement.etat_administratif.value === "F") {
+        if (result.data.etat_administratif === "F") {
           return res.status(400).json({ error: true, message: "Cette entreprise est considérée comme fermée." })
         }
 
@@ -121,7 +121,7 @@ export default ({ mailer }) => {
 
         // Allow cfa to add themselves as a company
         if (!req.query.fromDashboardCfa) {
-          if (result.etablissement.naf.startsWith("85")) {
+          if (result.data.activite_principale.code.startsWith("85")) {
             return res.status(400).json({
               error: true,
               message: "Le numéro siret n'est pas référencé comme une entreprise.",
@@ -130,43 +130,42 @@ export default ({ mailer }) => {
           }
         }
 
-        const entrepriseData = formatEntrepriseData(result.etablissement)
-        const geo_coordinates = await getGeoCoordinates(`${entrepriseData.address_detail.l4}, ${entrepriseData.address_detail.l6}`)
+        const entrepriseData = formatEntrepriseData(result.data)
+        const geo_coordinates = await getGeoCoordinates(`${entrepriseData.address_detail.acheminement_postal.l4}, ${entrepriseData.address_detail.acheminement_postal.l6}`)
 
-        let opcoResult: ICFADock | ISIRET2IDCC = await getOpco(req.params.siret)
-        const opcoData = { opco: undefined, idcc: undefined }
+        const opcoResult: ICFADock | null = await getOpco(req.params.siret)
+        const opcoData: { opco?: string; idcc?: string | number } = {}
 
         switch (opcoResult?.searchStatus) {
-          case "OK":
+          case "OK": {
             opcoData.opco = opcoResult.opcoName
             opcoData.idcc = opcoResult.idcc
             break
-
-          case "MULTIPLE_OPCO":
+          }
+          case "MULTIPLE_OPCO": {
             opcoData.opco = "Opco multiple"
             opcoData.idcc = "Opco multiple, IDCC non défini"
             break
-
-          case "NOT_FOUND":
-            opcoResult = await getIdcc(req.params.siret)
-            console.log(opcoResult)
-            if (opcoResult[0].conventions.length) {
+          }
+          case null:
+          case "NOT_FOUND": {
+            const idccResult = await getIdcc(req.params.siret)
+            if (idccResult[0].conventions.length) {
               const { num } = opcoResult[0]?.conventions[0]
-              opcoResult = await getOpcoByIdcc(num)
-
-              opcoData.opco = opcoResult.opcoName
-              opcoData.idcc = opcoResult.idcc
+              const opcoByIdccResult = await getOpcoByIdcc(num)
+              if (opcoByIdccResult) {
+                opcoData.opco = opcoByIdccResult.opcoName
+                opcoData.idcc = opcoByIdccResult.idcc
+              }
             }
             break
-
-          default:
-            break
+          }
         }
 
         res.json({ ...entrepriseData, ...opcoData, geo_coordinates })
       } catch (error) {
-        console.log({ error })
-        res.status(400).json({ error: true, message: "Le service est momentanément indisponible." })
+        sentryCaptureException(error)
+        res.status(500).json({ error: true, message: "Le service est momentanément indisponible." })
       }
     })
   )
@@ -225,17 +224,20 @@ export default ({ mailer }) => {
   router.post(
     "/creation",
     tryCatch(async (req: Request<{}, {}, IUserRecruteur & IRecruiter>, res) => {
-      const exist = await getUser({ email: req.body.email })
+      const formatedEmail = req.body.email.toLocaleLowerCase()
+
+      // check if user already exist
+      const exist = await getUser({ email: formatedEmail })
 
       if (exist) {
         return res.status(403).json({ error: true, message: "L'adresse mail est déjà associée à un compte La bonne alternance." })
       }
 
       switch (req.body.type) {
-        case ENTREPRISE:
+        case ENTREPRISE: {
           const siren = req.body.establishment_siret.slice(0, 9)
-          const formulaireInfo = await createFormulaire(req.body)
-          let newEntreprise: IUserRecruteur = await createUser({ ...req.body, establishment_id: formulaireInfo.establishment_id })
+          const formulaireInfo = await createFormulaire({ ...req.body, email: formatedEmail })
+          let newEntreprise: IUserRecruteur = await createUser({ ...req.body, establishment_id: formulaireInfo.establishment_id, email: formatedEmail })
 
           // Get all corresponding records using the SIREN number in BonneBoiteLegacy collection
           const [bonneBoiteLegacyList, bonneBoiteList, referentielOpcoList] = await Promise.all([
@@ -278,7 +280,8 @@ export default ({ mailer }) => {
 
           // Dépot simplifié : retourner les informations nécessaire à la suite du parcours
           return res.json({ formulaire: formulaireInfo, user: newEntreprise })
-        case CFA:
+        }
+        case CFA: {
           // Contrôle du mail avec le référentiel :
           const referentiel = await getEtablissementFromReferentiel(req.body.establishment_siret)
           // Creation de l'utilisateur en base de données
@@ -306,7 +309,7 @@ export default ({ mailer }) => {
 
             await mailer.sendEmail({
               to: email,
-              subject: "La bonne alternance — Confirmer votre adresse mail",
+              subject: "Confirmez votre adresse mail",
               template: mailTemplate["mail-confirmation-email"],
               data: {
                 images: {
@@ -337,7 +340,7 @@ export default ({ mailer }) => {
 
               await mailer.sendEmail({
                 to: email,
-                subject: "La bonne alternance — Confirmer votre adresse mail",
+                subject: "Confirmez votre adresse mail",
                 template: mailTemplate["mail-confirmation-email"],
                 data: {
                   images: {
@@ -364,29 +367,36 @@ export default ({ mailer }) => {
 
           // Keep the same structure as ENTREPRISE
           return res.json({ user: newCfa })
+        }
+        default: {
+          return res.status(400).json({ error: "unsupported type" })
+        }
       }
     })
   )
 
   /**
-   * Récupérer les informations d'un partenaire
+   * Désactiver les mises en relations avec les entreprises
    */
 
-  router.get(
-    "/:establishment_siret",
+  router.post(
+    "/:establishment_siret/proposition/unsubscribe",
     tryCatch(async (req, res) => {
-      const partenaire = await getUser({ establishment_siret: req.params.establishment_siret })
-      res.json(partenaire)
+      await etablissementUnsubscribeDemandeDelegation(req.params.establishment_siret)
+      res.status(200)
+      return res.json({ ok: true })
     })
   )
+
   /**
    * Mise à jour d'un partenaire
    */
 
   router.put(
     "/:id",
+    authMiddleware("jwt-bearer"),
     tryCatch(async (req, res) => {
-      let result = await updateUser({ _id: req.params.id }, req.body)
+      const result = await updateUser({ _id: req.params.id }, req.body)
       return res.json(result)
     })
   )
@@ -420,7 +430,7 @@ export default ({ mailer }) => {
       }
 
       const user: IUserRecruteur = await getUser({ _id: req.body.id })
-      const isUserAwaiting = getUserValidationState(user.status) === etat_utilisateur.ATTENTE
+      const isUserAwaiting = getUserValidationState(user.status) === ETAT_UTILISATEUR.ATTENTE
 
       if (isUserAwaiting) {
         return res.json({ isUserAwaiting: true })
