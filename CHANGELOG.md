@@ -1,3 +1,10 @@
+# [1.72.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.71.0...v1.72.0) (2023-08-16)
+
+
+### Features
+
+* move mongodb container to override (⚠️ TO MERGE WHEN MIGRATING DB)  ([#473](https://github.com/mission-apprentissage/labonnealternance/issues/473)) ([553da4c](https://github.com/mission-apprentissage/labonnealternance/commit/553da4cc9e137a5017699f1e9b11f40922e5f131))
+
 # [1.71.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.70.0...v1.71.0) (2023-08-16)
 
 
