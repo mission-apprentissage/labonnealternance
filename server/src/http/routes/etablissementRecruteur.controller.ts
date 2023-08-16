@@ -36,7 +36,7 @@ import { updateUserValidationHistory, getUser, createUser, updateUser, getUserVa
 import authMiddleware from "../middlewares/authMiddleware.js"
 import { sentryCaptureException } from "../../common/utils/sentryUtils.js"
 import mailer from "../../services/mailer.service.js"
-import { getOpcoBySirenFromDB, getOpcoLongName, saveOpco } from "../../services/opco.service.js"
+import { getOpcoBySirenFromDB, saveOpco } from "../../services/opco.service.js"
 
 const getCfaRomeSchema = joi.object({
   latitude: joi.number().required(),
@@ -142,7 +142,7 @@ export default () => {
         const opcoData: { opco?: string; idcc?: string | number } = {}
 
         if (opcoFromDB) {
-          opcoData.opco = getOpcoLongName(opcoFromDB.opco)
+          opcoData.opco = opcoFromDB.opco
           opcoData.idcc = opcoFromDB.idcc
           await saveOpco({ opco: opcoCFADOCK.opcoName, idcc: opcoCFADOCK.idcc.toString(), siren, url: null })
         } else {
