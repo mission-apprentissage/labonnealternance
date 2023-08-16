@@ -138,7 +138,7 @@ export default () => {
         const entrepriseData = formatEntrepriseData(result.data)
         const geo_coordinates = await getGeoCoordinates(`${entrepriseData.address_detail.acheminement_postal.l4}, ${entrepriseData.address_detail.acheminement_postal.l6}`)
 
-        const [opcoCFADOCK, opcoFromDB] = await Promise.all([getOpco(siret), getOpcoBySirenFromDB(siret.slice(0, 9))])
+        const [opcoCFADOCK, opcoFromDB] = await Promise.all([getOpco(siret), getOpcoBySirenFromDB(siren)])
         const opcoData: { opco?: string; idcc?: string | number } = {}
 
         if (opcoFromDB) {
