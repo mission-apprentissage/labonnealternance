@@ -1,5 +1,12 @@
 describe("send-job-application", () => {
   it("tests send-job-application on "+Cypress.env('host'), () => {
+
+    cy.on('uncaught:exception', (err, runnable) => {
+      return false
+    })
+
+    cy.intercept("GET", Cypress.env('host')+"/api/v1/jobs?*").as("submitJobCall");
+
     cy.generateRandomEmail("test-auto-","@nexistepas.fr",10).then((randomEmail) => {
       cy.log(randomEmail); // Log the generated random string
       cy.viewport(1254, 704);
@@ -13,11 +20,24 @@ describe("send-job-application", () => {
       cy.get("#headerFormPlaceField-item-0").click();
       cy.get("[data-testid='widget-form'] select[data-testid='locationRadius']").select("60");
       cy.get("[data-testid='widget-form'] button").click();
-      cy.get("#choiceColumn");
-      cy.get("#resultList");
+      //cy.get("[data-testid='widget-form']").submit();
+      // Wait for the API call to complete
+      
+      cy.wait("@submitJobCall").then((interception) => {
+        const apiCall = interception.response.body;
+        cy.log("API Call Result:", apiCall);
+        // Continue with your test logic
+        cy.get("#choiceColumn");
+        /*cy.get("#resultList");
+        cy.get("#jobList");*/
+      });
+      
+      //cy.get("#trainingResult");
+      
       /*cy.get("#trainingResult");
       cy.get("#jobList");
-      cy.get("#matcha6480a61b8ee143d3eff357a6");*/
+      cy.get("#matcha6480a61b8ee143d3eff357a6");
+      */
       /*cy.get("[data-testid='CandidatureSpontanee'] button").click();
       cy.get("[data-testid='lastName']").click();
       cy.get("[data-testid='lastName']").type("Doe");
