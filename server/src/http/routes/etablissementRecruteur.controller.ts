@@ -117,10 +117,8 @@ export default () => {
               message: "L'entreprise est déjà référencée comme partenaire.",
             })
           }
-        }
-
-        // Allow cfa to add themselves as a company
-        if (!req.query.fromDashboardCfa) {
+        } else {
+          // Allow cfa to add themselves as a company
           if (result.data.activite_principale.code.startsWith("85")) {
             return res.status(400).json({
               error: true,

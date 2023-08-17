@@ -1,14 +1,17 @@
-import { Alert, AlertIcon, Box, Button, Flex, Heading, Link, ListItem, SimpleGrid, Stack, Text, UnorderedList } from "@chakra-ui/react"
+import { Alert, AlertIcon, Box, Button, Flex, Heading, Link, SimpleGrid, Text } from "@chakra-ui/react"
 import { Form, Formik } from "formik"
-import { useContext, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { useNavigate, useParams, useSearchParams } from "react-router-dom"
 import * as Yup from "yup"
 import { getCfaInformation, getEntrepriseInformation } from "../../api"
+import { Section } from "../../common/components/Section"
 import { AUTHTYPE } from "../../common/contants"
-import { AnimationContainer, AuthentificationLayout, CustomInput, InformationLegaleEntreprise, Bandeau } from "../../components"
+import { SIRETValidation } from "../../common/validation/fieldValidations"
+import { AnimationContainer, AuthentificationLayout, Bandeau, CustomInput, InformationLegaleEntreprise } from "../../components"
+import { InformationsSiret } from "../../components/CreationRecruteur/InformationsSiret"
 import { LogoContext } from "../../contextLogo"
 import { WidgetContext } from "../../contextWidget"
-import { ExternalLinkLine, InfoCircle, SearchLine } from "../../theme/components/icons"
+import { SearchLine } from "../../theme/components/icons"
 
 const CreationCompteForm = ({ type, setQualiopi, setBandeau }) => {
   const [isCfa, setIsCfa] = useState(false)
@@ -26,9 +29,14 @@ const CreationCompteForm = ({ type, setQualiopi, setBandeau }) => {
           navigate("/creation/detail", { state: { informationSiret: data, type, origin } })
         })
         .catch(({ response }) => {
-          setFieldError("establishment_siret", response.data.message)
-          setIsCfa(response.data?.isCfa)
-          setSubmitting(false)
+          const { status } = response
+          if (status < 500) {
+            setFieldError("establishment_siret", response.data.message)
+            setIsCfa(response.data?.isCfa)
+            setSubmitting(false)
+          } else {
+            navigate("/creation/detail", { state: { type, origin, informationSiret: { establishment_siret: formattedSiret } } })
+          }
         })
     } else {
       getCfaInformation(formattedSiret)
@@ -80,12 +88,7 @@ const CreationCompteForm = ({ type, setQualiopi, setBandeau }) => {
       validateOnMount
       initialValues={{ establishment_siret: undefined }}
       validationSchema={Yup.object().shape({
-        establishment_siret: Yup.string()
-          .transform((value) => value.split(" ").join(""))
-          .matches(/^[0-9]+$/, "Le siret est composé uniquement de chiffres")
-          .min(14, "le siret est sur 14 chiffres")
-          .max(14, "le siret est sur 14 chiffres")
-          .required("champ obligatoire"),
+        establishment_siret: SIRETValidation().required("champ obligatoire"),
       })}
       onSubmit={submitSiret}
     >
@@ -126,80 +129,6 @@ const CreationCompteForm = ({ type, setQualiopi, setBandeau }) => {
   )
 }
 
-const InformationSiret = ({ type, widget }) => {
-  const navigate = useNavigate()
-
-  return (
-    <Box border="1px solid #000091" p={["4", "8"]}>
-      {type === AUTHTYPE.CFA && (
-        <Stack direction="column" spacing={3} mb={5}>
-          <Heading fontSize="24px">Comment s'inscrire ?</Heading>
-          <Text>Pour créer le compte de votre organisme de formation, il faut :</Text>
-          <UnorderedList>
-            <ListItem mx={10} mb={5}>
-              <span style={{ fontWeight: "700" }}>Être référencé dans</span>{" "}
-              <Link href="https://catalogue.apprentissage.beta.gouv.fr/recherche/etablissements" style={{ textDecoration: "underline" }} isExternal>
-                le catalogue des offres de formations en apprentissage. <ExternalLinkLine h={3} />
-              </Link>{" "}
-              Pour ajouter une offre de formation au Catalogue de l’offre de formation en apprentissage, merci de la déclarer auprès du Carif-Oref de votre région en allant sur la
-              page suivante :{" "}
-              <Link href="https://reseau.intercariforef.org/referencer-son-offre-de-formation" isExternal style={{ textDecoration: "underline" }}>
-                référencer son offre de formation <ExternalLinkLine h={3} />
-              </Link>
-            </ListItem>
-            <ListItem mx={10}>
-              <span style={{ fontWeight: "700" }}>Être certifié Qualiopi.</span>{" "}
-              <Link
-                href="https://travail-emploi.gouv.fr/formation-professionnelle/acteurs-cadre-et-qualite-de-la-formation-professionnelle/liste-organismes-certificateurs"
-                style={{ textDecoration: "underline" }}
-                isExternal
-              >
-                La certification Qualiopi <ExternalLinkLine h={3} />
-              </Link>{" "}
-              est l’unique moyen d’accéder au fichier national des organismes de formation référencés et de permettre à vos entreprises clientes de faire financer vos actions avec
-              les fonds publics.
-            </ListItem>
-          </UnorderedList>
-        </Stack>
-      )}
-      <Heading fontSize="24px" mb={3}>
-        Où trouver votre SIRET ?
-      </Heading>
-      <Flex alignItems="flex-start">
-        <InfoCircle mr={2} mt={1} />
-        {type === AUTHTYPE.ENTREPRISE ? (
-          <Text textAlign="justify">
-            Le numéro d’identification de votre entreprise peut être trouvé sur{" "}
-            <Link href="https://annuaire-entreprises.data.gouv.fr/" style={{ textDecoration: "underline" }} isExternal>
-              l’annuaire des entreprises <ExternalLinkLine h={3} />
-            </Link>{" "}
-            ou bien sur les registres de votre entreprise.
-          </Text>
-        ) : (
-          <Text>
-            Le numéro d’identification de votre organisme peut être trouvé sur{" "}
-            <Link href="https://catalogue.apprentissage.beta.gouv.fr/recherche/etablissements" style={{ textDecoration: "underline" }} isExternal>
-              le catalogue des offres de formations en apprentissage <ExternalLinkLine h={3} />
-            </Link>{" "}
-            ou bien sur les registres de votre organisme de formation.
-          </Text>
-        )}
-      </Flex>
-      {widget && (
-        <Box mt={5}>
-          <Heading fontSize="24px" mb={3}>
-            Vous avez déjà déposé une offre en alternance par le passé ?
-          </Heading>
-          <Text>Connectez-vous à votre compte entreprise pour publier de nouvelles offres et administrer vos offres existantes.</Text>
-          <Button variant="primary" mt={4} onClick={() => navigate("/authentification")}>
-            Me connecter
-          </Button>
-        </Box>
-      )}
-    </Box>
-  )
-}
-
 export const CreationCompte = ({ type, widget }) => {
   const { setWidget, widget: wid } = useContext(WidgetContext)
   const { setOrganisation } = useContext(LogoContext)
@@ -210,7 +139,7 @@ export const CreationCompte = ({ type, widget }) => {
 
   let mobile = searchParams.get("mobile") === "true" ? true : false
 
-  useState(() => {
+  useEffect(() => {
     if (widget) {
       setWidget((prev) => ({ ...prev, isWidget: true, mobile: mobile ?? false }))
       setOrganisation(params.origin ?? "matcha")
@@ -234,7 +163,15 @@ export const CreationCompte = ({ type, widget }) => {
             </Text>
             <CreationCompteForm type={type} setQualiopi={setQualiopi} setBandeau={setBandeau} />
           </Box>
-          <Box mt={[4, 4, 4, 0]}>{qualiopi ? <InformationLegaleEntreprise {...qualiopi} /> : <InformationSiret type={type} widget={wid} />}</Box>
+          <Box mt={[4, 4, 4, 0]}>
+            {qualiopi ? (
+              <InformationLegaleEntreprise {...qualiopi} />
+            ) : (
+              <Section>
+                <InformationsSiret type={type} proposeLogin={wid} />
+              </Section>
+            )}
+          </Box>
         </SimpleGrid>
       </AnimationContainer>
     </AuthentificationLayout>

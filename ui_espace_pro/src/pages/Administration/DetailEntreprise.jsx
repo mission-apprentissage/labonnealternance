@@ -39,7 +39,7 @@ import {
 } from "../../components"
 import { ArrowDropRightLine, ArrowRightLine } from "../../theme/components/icons"
 
-export default () => {
+const DetailEntreprise = () => {
   const confirmationDesactivationUtilisateur = useDisclosure()
   const confirmationModificationOpco = useDisclosure()
   const params = useParams()
@@ -287,3 +287,5 @@ export default () => {
     </AnimationContainer>
   )
 }
+
+export default DetailEntreprise

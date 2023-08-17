@@ -1,11 +1,10 @@
 import { Box, Flex, Spinner, Text } from "@chakra-ui/react"
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
 import { validateToken } from "../../api"
-import { AUTHTYPE } from "../../common/contants"
 import useAuth from "../../common/hooks/useAuth"
 
-export default () => {
+export const AuthValidation = () => {
   let navigate = useNavigate()
   const location = useLocation()
   const [_, setAuth] = useAuth()
@@ -29,13 +28,13 @@ export default () => {
   }, [token])
 
   return (
-    <>
-      <Box>
-        <Flex justify="center" align="center" h="100vh" direction="column">
-          <Spinner thickness="4px" speed="0.5s" emptyColor="gray.200" color="bluefrance.500" size="xl" />
-          <Text>Connexion en cours...</Text>
-        </Flex>
-      </Box>
-    </>
+    <Box>
+      <Flex justify="center" align="center" h="100vh" direction="column">
+        <Spinner thickness="4px" speed="0.5s" emptyColor="gray.200" color="bluefrance.500" size="xl" />
+        <Text>Connexion en cours...</Text>
+      </Flex>
+    </Box>
   )
 }
+
+export default AuthValidation

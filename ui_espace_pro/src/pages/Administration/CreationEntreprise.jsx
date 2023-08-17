@@ -10,7 +10,7 @@ import { LogoContext } from "../../contextLogo"
 import { WidgetContext } from "../../contextWidget"
 import { InfoCircle, SearchLine } from "../../theme/components/icons"
 
-const CreationCompte = ({ type }) => {
+const CreationCompte = () => {
   const [isCfa, setIsCfa] = useState(false)
   const buttonSize = useBreakpointValue(["sm", "md"])
   const navigate = useNavigate()
@@ -111,8 +111,8 @@ const InformationSiret = () => (
   </Box>
 )
 
-export default ({ type, widget, administration }) => {
-  const { setWidget, widget: wid } = useContext(WidgetContext)
+const CreationEntreprise = ({ type, widget }) => {
+  const { setWidget } = useContext(WidgetContext)
   const { setOrganisation } = useContext(LogoContext)
   const params = useParams()
   const [searchParams] = useSearchParams()
@@ -156,3 +156,5 @@ export default ({ type, widget, administration }) => {
     </AnimationContainer>
   )
 }
+
+export default CreationEntreprise

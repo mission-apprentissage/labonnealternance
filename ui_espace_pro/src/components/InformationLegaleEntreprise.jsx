@@ -24,80 +24,66 @@ export const InformationLegaleEntreprise = (props) => {
       <Heading mb={3} fontSize="2xl">
         Informations légales
       </Heading>
-      {auth.type !== AUTHTYPE.OPCO && (
+      {RAISON_SOCIALE && auth.type !== AUTHTYPE.OPCO && (
         <Flex alignItems="flex-start" mb={10}>
           <InfoCircle mr={2} mt={1} />
           <Text>Vérifiez que les informations pré-remplies soient correctes avant de continuer.</Text>
         </Flex>
       )}
+      {!RAISON_SOCIALE && (
+        <Flex alignItems="flex-start" mb={10}>
+          <InfoCircle mr={2} mt={1} />
+          <Box>
+            <Text mb={4}>Suite à un problème technique, nous ne sommes pas en mesure d’afficher votre raison sociale et l'adresse de votre établissement.</Text>
+            <Text>Nous vous invitons à poursuivre votre parcours. Les informations de votre entreprise seront remplies automatiquement ultérieurement.</Text>
+          </Box>
+        </Flex>
+      )}
       <Stack direction="column" spacing={7}>
-        <Flex align="center">
-          <Text mr={3}>SIRET :</Text>
-          <Text bg="#F9F8F6" px="8px" py="2px" fontWeight={700} mr={2} noOfLines={1}>
-            {establishment_siret}
-          </Text>
-          {type === AUTHTYPE.ENTREPRISE ? (
-            <InfoPopover>
-              La donnée “SIRET Organisme” provient de l’INSEE puis est déduite du SIREN. Si cette information est erronée, merci de leur signaler en suivant{" "}
-              <Link textDecoration="underline" isExternal href="https://www.insee.fr/fr/information/2015441">
-                la marche à suivre.
-              </Link>
-            </InfoPopover>
-          ) : (
-            <InfoTooltip description="La donnée “SIRET Organisme”  provient des bases “Carif-Oref”. Si cette information est erronée, merci de le signaler au Carif-Oref de votre région." />
-          )}
-        </Flex>
-        {establishment_enseigne && (
-          <Flex align="center">
-            <Text mr={3}>Enseigne :</Text>
-            <Text bg="#F9F8F6" px="8px" py="2px" mr={2} fontWeight={700} noOfLines={1}>
-              {establishment_enseigne}
-            </Text>
-            <InfoTooltip description="La donnée “Enseigne” provient de l’INSEE puis est déduite du SIREN. Si cette information est erronée, merci de leur signaler." />
-          </Flex>
-        )}
-        <Flex align="center">
-          <Text mr={3}>Raison sociale :</Text>
-          {establishment_raison_sociale ? (
-            <Text bg="#F9F8F6" px="8px" py="2px" mr={2} fontWeight={700} noOfLines={1}>
-              {RAISON_SOCIALE}
-            </Text>
-          ) : (
-            <Text textTransform="uppercase" bg="#FFE9E9" textColor="#CE0500" px="8px" py="2px" fontWeight={700} mr={2} noOfLines={1}>
-              Non identifié
-            </Text>
-          )}
-          <InfoTooltip description="La donnée “Raison sociale” provient de l’INSEE puis est déduite du SIREN. Si cette information est erronée, merci de leur signaler." />
-        </Flex>
-        <Flex align="center">
-          <Text mr={3}>Adresse :</Text>
-          {firstLineAddress ? (
-            <Text bg="#F9F8F6" px="8px" py="2px" fontWeight={700} mr={2} noOfLines={1}>
-              {firstLineAddress}
-            </Text>
-          ) : (
-            <Text textTransform="uppercase" bg="#FFE9E9" textColor="#CE0500" px="8px" py="2px" fontWeight={700} mr={2} noOfLines={1}>
-              Non identifié
-            </Text>
-          )}
-          <InfoTooltip description="La donnée “Adresse” provient de l’INSEE puis est déduite du SIRET. Si cette information est erronée, merci de leur signaler." />
-        </Flex>{" "}
+        <FieldWithValue
+          title="SIRET"
+          value={establishment_siret}
+          tooltip={
+            type === AUTHTYPE.ENTREPRISE ? (
+              <InfoPopover>
+                La donnée “SIRET Organisme” provient de l’INSEE puis est déduite du SIREN. Si cette information est erronée, merci de leur signaler en suivant{" "}
+                <Link textDecoration="underline" isExternal href="https://www.insee.fr/fr/information/2015441">
+                  la marche à suivre.
+                </Link>
+              </InfoPopover>
+            ) : (
+              <InfoTooltip description="La donnée “SIRET Organisme”  provient des bases “Carif-Oref”. Si cette information est erronée, merci de le signaler au Carif-Oref de votre région." />
+            )
+          }
+        />
+        <FieldWithValue
+          hideIfEmpty={true}
+          title="Enseigne"
+          value={establishment_enseigne}
+          tooltip="La donnée “Enseigne” provient de l’INSEE puis est déduite du SIREN. Si cette information est erronée, merci de leur signaler."
+        />
+        <FieldWithValue
+          title="Raison sociale"
+          value={RAISON_SOCIALE}
+          tooltip="La donnée “Raison sociale” provient de l’INSEE puis est déduite du SIREN. Si cette information est erronée, merci de leur signaler."
+        />
+        <FieldWithValue
+          title="Adresse"
+          value={firstLineAddress}
+          tooltip="La donnée “Adresse” provient de l’INSEE puis est déduite du SIRET. Si cette information est erronée, merci de leur signaler."
+        />
         {hasDetailedAddress && (
           <>
-            <Flex align="center">
-              <Text mr={3}>Code postal :</Text>
-              <Text bg="#F9F8F6" px="8px" py="2px" fontWeight={700} mr={2} noOfLines={1}>
-                {code_postal}
-              </Text>
-              <InfoTooltip description="La donnée “Code postal“ provient de l’INSEE puis est déduite du SIRET. Si cette information est erronée, merci de leur signaler." />
-            </Flex>{" "}
-            <Flex align="center">
-              <Text mr={3}>Commune :</Text>
-              <Text bg="#F9F8F6" px="8px" py="2px" fontWeight={700} mr={2} noOfLines={1}>
-                {commune}
-              </Text>
-              <InfoTooltip description="La donnée “Commune” provient de l’INSEE puis est déduite du SIRET. Si cette information est erronée, merci de leur signaler." />
-            </Flex>
+            <FieldWithValue
+              title="Code postal"
+              value={code_postal}
+              tooltip="La donnée “Code postal“ provient de l’INSEE puis est déduite du SIRET. Si cette information est erronée, merci de leur signaler."
+            />
+            <FieldWithValue
+              title="Commune"
+              value={commune}
+              tooltip="La donnée “Commune” provient de l’INSEE puis est déduite du SIRET. Si cette information est erronée, merci de leur signaler."
+            />
           </>
         )}
         {type !== AUTHTYPE.ENTREPRISE && establishment_size && (
@@ -109,40 +95,53 @@ export const InformationLegaleEntreprise = (props) => {
             <InfoTooltip description='La donnée "Effectif” provient de l’INSEE puis est déduite du SIRET. Si cette information est erronée, merci de leur signaler.' />
           </Flex>
         )}
+        {type !== AUTHTYPE.ENTREPRISE && (
+          <FieldWithValue
+            hideIfEmpty={true}
+            title="Effectif"
+            value={establishment_size}
+            tooltip='La donnée "Effectif” provient de l’INSEE puis est déduite du SIRET. Si cette information est erronée, merci de leur signaler.'
+          />
+        )}
         {type === AUTHTYPE.ENTREPRISE && (
-          <Flex align="center">
-            <Text mr={3}>Opco de référence :</Text>
-
-            {opco ? (
-              <Text bg="#F9F8F6" px="8px" py="2px" fontWeight={700} mr={2} noOfLines={1} maxW="60%">
-                {opco}
-              </Text>
-            ) : (
-              <Text textTransform="uppercase" bg="#FFE9E9" textColor="#CE0500" px="8px" py="2px" fontWeight={700} mr={2} noOfLines={1}>
-                Non identifié
-              </Text>
-            )}
-
-            <InfoTooltip description='La donnée "Opco" provient de CFADOCK puis est déduite du SIRET. Si cette information est erronée, merci de nous contacter.' />
-          </Flex>
+          <FieldWithValue
+            title="Opco de référence"
+            value={opco}
+            tooltip='La donnée "Opco" provient de CFADOCK puis est déduite du SIRET. Si cette information est erronée, merci de nous contacter.'
+          />
         )}
         {type === AUTHTYPE.CFA && (
-          <Flex align="center">
-            <Text mr={3}>Qualiopi :</Text>
-            {is_qualiopi ? (
-              <Text bg="#F9F8F6" px="8px" py="2px" fontWeight={700} mr={2} noOfLines={1}>
-                OUI
-              </Text>
-            ) : (
-              <Text bg="#FFE9E9" textColor="#CE0500" px="8px" py="2px" fontWeight={700} mr={2} noOfLines={1}>
-                NON
-              </Text>
-            )}
-            <InfoTooltip description="La donnée 'Qualiopi' provient du Référentiel de l'ONISEP puis est déduite du SIRET. Si cette information est erronée, merci de leur signaler." />
-          </Flex>
+          <FieldWithValue
+            title="Qualiopi"
+            value={is_qualiopi ? "OUI" : "NON"}
+            tooltip="La donnée 'Qualiopi' provient du Référentiel de l'ONISEP puis est déduite du SIRET. Si cette information est erronée, merci de leur signaler."
+          />
         )}
       </Stack>
     </Box>
+  )
+}
+
+const FieldWithValue = ({ title, value, tooltip, hideIfEmpty }) => {
+  if (hideIfEmpty && !value) {
+    return null
+  }
+  return (
+    <Flex align="center">
+      <Text mr={3} minW="fit-content">
+        {title} :
+      </Text>
+      {value ? (
+        <Text bg="#F9F8F6" px="8px" py="2px" mr={2} fontWeight={700} noOfLines={1}>
+          {value}
+        </Text>
+      ) : (
+        <Text textTransform="uppercase" bg="#FFE9E9" textColor="#CE0500" px="8px" py="2px" fontWeight={700} mr={2} noOfLines={1}>
+          Non identifié
+        </Text>
+      )}
+      {tooltip && (typeof tooltip === "string" ? <InfoTooltip description={tooltip} /> : tooltip)}
+    </Flex>
   )
 }
 
