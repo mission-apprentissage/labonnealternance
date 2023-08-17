@@ -1,3 +1,10 @@
+# [1.73.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.72.0...v1.73.0) (2023-08-17)
+
+
+### Features
+
+* LBAC-1452 Autoriser le debug matomo ([#539](https://github.com/mission-apprentissage/labonnealternance/issues/539)) ([dde6657](https://github.com/mission-apprentissage/labonnealternance/commit/dde665756cb477504b18cafa00e6e77ef8036ca2))
+
 # [1.72.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.71.0...v1.72.0) (2023-08-16)
 
 
