@@ -40,7 +40,8 @@ const contentSecurityPolicy = `
               blob:
               https://www.notion.so
               https://www.google.com
-              https://www.google.fr; 
+              https://www.google.fr
+              https://stats.beta.gouv.fr; 
   object-src 'self' data: 
               https://labonnealternance.apprentissage.beta.gouv.fr
               https://labonnealternance-recette.apprentissage.beta.gouv.fr
