@@ -9,7 +9,8 @@ function inline(value) {
 
 const contentSecurityPolicy = `
   default-src 'self'; 
-  base-uri 'self';
+  base-uri 'self' 
+              'https://stats.beta.gouv.fr/';
   script-src 'self' 
               'unsafe-inline' 
               'unsafe-eval' 
