@@ -245,14 +245,9 @@ export default () => {
           ])
 
           // Format arrays to get only the emails
-          const [bonneBoiteLegacyEmailList, bonneBoiteEmailList, referentielOpcoEmailList] = await Promise.all([
-            bonneBoiteLegacyList.map(({ email }) => email),
-            bonneBoiteList.map(({ email }) => email),
-            referentielOpcoList.reduce((acc: string[], item) => {
-              item.emails.map((x) => acc.push(x))
-              return acc
-            }, []),
-          ])
+          const bonneBoiteLegacyEmailList = bonneBoiteLegacyList.map(({ email }) => email)
+          const bonneBoiteEmailList = bonneBoiteList.map(({ email }) => email)
+          const referentielOpcoEmailList = referentielOpcoList.flatMap((item) => item.emails)
 
           // Create a single array with all emails duplicate free
           const emailListUnique = [...new Set([...referentielOpcoEmailList, ...bonneBoiteLegacyEmailList, ...bonneBoiteEmailList])]

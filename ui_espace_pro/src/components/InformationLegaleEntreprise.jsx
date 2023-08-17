@@ -63,11 +63,13 @@ export const InformationLegaleEntreprise = (props) => {
           tooltip="La donnée “Enseigne” provient de l’INSEE puis est déduite du SIREN. Si cette information est erronée, merci de leur signaler."
         />
         <FieldWithValue
+          hideIfEmpty={true}
           title="Raison sociale"
           value={RAISON_SOCIALE}
           tooltip="La donnée “Raison sociale” provient de l’INSEE puis est déduite du SIREN. Si cette information est erronée, merci de leur signaler."
         />
         <FieldWithValue
+          hideIfEmpty={true}
           title="Adresse"
           value={firstLineAddress}
           tooltip="La donnée “Adresse” provient de l’INSEE puis est déduite du SIRET. Si cette information est erronée, merci de leur signaler."

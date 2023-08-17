@@ -26,16 +26,13 @@ export const ConfirmationCreationCompte = (props) => {
     onClose()
   }
 
-  const deleteAccount = () => {
+  const deleteAccount = async () => {
     if (user.type === AUTHTYPE.ENTREPRISE) {
-      deleteEntreprise(user._id, formulaire._id).then(() => {
-        window.location.replace("/")
-      })
+      await deleteEntreprise(user._id, formulaire._id)
     } else {
-      deleteCfa(user._id).then(() => {
-        window.location.replace("/")
-      })
+      await deleteCfa(user._id)
     }
+    window.location.replace("/")
   }
 
   return (
