@@ -38,6 +38,7 @@ import {
   UserValidationHistory,
 } from "../../components"
 import { ArrowDropRightLine, ArrowRightLine } from "../../theme/components/icons"
+import { OpcoSelect } from "../../components/CreationRecruteur/OpcoSelect"
 
 const DetailEntreprise = () => {
   const confirmationDesactivationUtilisateur = useDisclosure()
@@ -233,31 +234,14 @@ const DetailEntreprise = () => {
                             <FormControl>
                               <FormLabel>OPCO</FormLabel>
                               <FormHelperText pb={2}>Pour vous accompagner dans vos recrutements, votre OPCO accède à vos informations sur La bonne alternance.</FormHelperText>
-                              <Select
-                                variant="outline"
-                                size="md"
+                              <OpcoSelect
+                                value={values.opco}
                                 name="opco"
-                                mr={3}
-                                onChange={(e) => {
-                                  setFieldValue("opco", e.target.value)
+                                onChange={(newValue) => {
+                                  setFieldValue("opco", newValue)
                                   confirmationModificationOpco.onOpen()
                                 }}
-                                value={values.opco}
-                              >
-                                <option hidden>Sélectionnez un OPCO</option>
-                                <option value="AFDAS">AFDAS</option>
-                                <option value="AKTO / Opco entreprises et salariés des services à forte intensité de main d'oeuvre">AKTO</option>
-                                <option value="ATLAS">ATLAS</option>
-                                <option value="Constructys">Constructys</option>
-                                <option value="L'Opcommerce">L'Opcommerce</option>
-                                <option value="OCAPIAT">OCAPIAT</option>
-                                <option value="OPCO 2i">Opco 2i</option>
-                                <option value="Opco entreprises de proximité">Opco EP</option>
-                                <option value="Opco Mobilités">Opco Mobilités</option>
-                                <option value="Opco Santé">Opco Santé</option>
-                                <option value="Uniformation, l'Opco de la Cohésion sociale">Uniformation</option>
-                                <option value="inconnu">Je ne sais pas</option>
-                              </Select>
+                              />
                               <FormErrorMessage>{errors.opco}</FormErrorMessage>
                             </FormControl>
                           )}
