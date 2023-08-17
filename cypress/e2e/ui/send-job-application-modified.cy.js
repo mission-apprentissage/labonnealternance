@@ -22,7 +22,7 @@ describe("send-job-application", () => {
       cy.get("[data-testid='widget-form'] button").click();
       
       cy.wait("@submitJobCall").then((interception) => {
-        cy.get("[data-testid='matcha6480a61b8ee143d3eff357a6']").click();
+        cy.get('.resultCard.matcha').first().click()
         cy.get("[data-testid='CandidatureSpontanee'] button").click();
         cy.get("[data-testid='lastName']").click();
         cy.get("[data-testid='lastName']").type("Doe");
@@ -41,9 +41,6 @@ describe("send-job-application", () => {
           cy.get("[data-testid='CandidatureSpontaneeWorked']");          
         });
       });
-      
-      
-
     });
   });
 });
