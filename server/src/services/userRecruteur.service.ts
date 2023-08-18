@@ -3,7 +3,11 @@ import { ModelUpdateOptions, UpdateQuery } from "mongoose"
 import { Filter } from "mongodb"
 import { UserRecruteur } from "../common/model/index.js"
 import { IUserRecruteur } from "../common/model/schema/userRecruteur/userRecruteur.types.js"
-import { ETAT_UTILISATEUR, VALIDATION_UTILISATEUR } from "./constant.service.js"
+import { CFA, ETAT_UTILISATEUR, VALIDATION_UTILISATEUR } from "./constant.service.js"
+import mailer from "./mailer.service.js"
+import { mailTemplate } from "../assets/index.js"
+import config from "../config.js"
+import { createMagicLinkToken } from "../common/utils/jwtUtils.js"
 
 /**
  * @description generate an API key
@@ -137,3 +141,24 @@ export const userSetManualValidation = async (userId: IUserRecruteur["_id"]) =>
     user: "SERVEUR",
     status: ETAT_UTILISATEUR.ATTENTE,
   })
+
+export const userRecruteurSendWelcomeEmail = async (userRecruteur: IUserRecruteur) => {
+  const { email, first_name, last_name, establishment_raison_sociale, type } = userRecruteur
+  const magiclink = `${config.publicUrlEspacePro}/authentification/verification?token=${createMagicLinkToken(email)}`
+  await mailer.sendEmail({
+    to: email,
+    subject: "Bienvenue sur La bonne alternance",
+    template: mailTemplate["mail-bienvenue"],
+    data: {
+      images: {
+        logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
+      },
+      establishment_raison_sociale,
+      last_name,
+      first_name,
+      email,
+      is_delegated: type === CFA,
+      url: magiclink,
+    },
+  })
+}

@@ -2,15 +2,14 @@ import { mailTemplate } from "../../../../assets/index.js"
 import { logger } from "../../../../common/logger.js"
 import { UserRecruteur } from "../../../../common/model/index.js"
 import { asyncForEach } from "../../../../common/utils/asyncUtils.js"
-import { createMagicLinkToken } from "../../../../common/utils/jwtUtils.js"
 import { notifyToSlack } from "../../../../common/utils/slackUtils.js"
 import config from "../../../../config.js"
-import { CFA, ENTREPRISE, ETAT_UTILISATEUR } from "../../../../services/constant.service.js"
+import { ENTREPRISE, ETAT_UTILISATEUR } from "../../../../services/constant.service.js"
 import dayjs from "../../../../services/dayjs.service.js"
-import { etablissementAutoValidationBAL } from "../../../../services/etablissement.service.js"
+import { entrepriseAutoValidationBAL } from "../../../../services/etablissement.service.js"
 import { getFormulaire, updateOffre } from "../../../../services/formulaire.service.js"
 import mailer from "../../../../services/mailer.service.js"
-import { updateUser } from "../../../../services/userRecruteur.service.js"
+import { updateUser, userRecruteurSendWelcomeEmail } from "../../../../services/userRecruteur.service.js"
 
 export const checkAwaitingCompaniesValidation = async () => {
   logger.info(`Start update missing validation state for companies...`)
@@ -27,15 +26,15 @@ export const checkAwaitingCompaniesValidation = async () => {
 
   logger.info(`${entreprises.length} etp à mettre à jour...`)
 
-  await asyncForEach(entreprises, async (userRecruteur) => {
-    const userFormulaire = await getFormulaire({ establishment_id: userRecruteur.establishment_id })
+  await asyncForEach(entreprises, async (entreprise) => {
+    const userFormulaire = await getFormulaire({ establishment_id: entreprise.establishment_id })
 
     if (!userFormulaire) {
-      await UserRecruteur.findByIdAndDelete(userRecruteur.establishment_id)
+      await UserRecruteur.findByIdAndDelete(entreprise.establishment_id)
       return
     }
 
-    const { validated: hasBeenValidated } = await etablissementAutoValidationBAL(userRecruteur)
+    const { validated: hasBeenValidated } = await entrepriseAutoValidationBAL(entreprise)
     if (hasBeenValidated) {
       stat.validated++
     } else {
@@ -77,30 +76,8 @@ export const checkAwaitingCompaniesValidation = async () => {
       }
 
       // Validate user email addresse
-      await updateUser({ _id: userRecruteur._id }, { is_email_checked: true })
-
-      // Get magiclink url
-      const magiclink = `${config.publicUrlEspacePro}/authentification/verification?token=${createMagicLinkToken(userRecruteur.email)}`
-
-      const { email, last_name, first_name, establishment_raison_sociale } = userRecruteur
-
-      // Send welcome email to user
-      await mailer.sendEmail({
-        to: email,
-        subject: "Bienvenue sur La bonne alternance",
-        template: mailTemplate["mail-bienvenue"],
-        data: {
-          images: {
-            logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
-          },
-          last_name,
-          first_name,
-          establishment_raison_sociale,
-          email,
-          is_delegated: userRecruteur.type === CFA,
-          url: magiclink,
-        },
-      })
+      await updateUser({ _id: entreprise._id }, { is_email_checked: true })
+      await userRecruteurSendWelcomeEmail(entreprise)
     }
   })
 

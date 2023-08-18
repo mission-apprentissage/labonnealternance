@@ -3,7 +3,7 @@ import joi from "joi"
 import { mailTemplate } from "../../assets/index.js"
 import { IRecruiter } from "../../common/model/schema/recruiter/recruiter.types.js"
 import { IUserRecruteur } from "../../common/model/schema/userRecruteur/userRecruteur.types.js"
-import { createMagicLinkToken, createUserRecruteurToken } from "../../common/utils/jwtUtils.js"
+import { createUserRecruteurToken } from "../../common/utils/jwtUtils.js"
 import { checkIfUserMailExistInReferentiel, getAllDomainsFromEmailList, getEmailDomain, isEmailPrivateCompany } from "../../common/utils/mailUtils.js"
 import { sentryCaptureException } from "../../common/utils/sentryUtils.js"
 import { notifyToSlack } from "../../common/utils/slackUtils.js"
@@ -11,7 +11,7 @@ import config from "../../config.js"
 import { getNearEtablissementsFromRomes } from "../../services/catalogue.service.js"
 import { CFA, ENTREPRISE, ETAT_UTILISATEUR } from "../../services/constant.service.js"
 import {
-  etablissementAutoValidationBAL,
+  entrepriseAutoValidationBAL,
   etablissementUnsubscribeDemandeDelegation,
   formatEntrepriseData,
   formatReferentielData,
@@ -28,7 +28,16 @@ import {
 import { ICFADock } from "../../services/etablissement.service.types.js"
 import { createFormulaire, getFormulaire } from "../../services/formulaire.service.js"
 import mailer from "../../services/mailer.service.js"
-import { createUser, getUser, getUserValidationState, registerUser, updateUser, userAutoValidate, userSetManualValidation } from "../../services/userRecruteur.service.js"
+import {
+  createUser,
+  getUser,
+  getUserValidationState,
+  registerUser,
+  updateUser,
+  userAutoValidate,
+  userRecruteurSendWelcomeEmail,
+  userSetManualValidation,
+} from "../../services/userRecruteur.service.js"
 import authMiddleware from "../middlewares/authMiddleware.js"
 import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
 
@@ -220,7 +229,7 @@ export default () => {
           const formulaireInfo = await createFormulaire({ ...req.body, email: formatedEmail })
           let newEntreprise: IUserRecruteur = await createUser({ ...req.body, establishment_id: formulaireInfo.establishment_id, email: formatedEmail })
 
-          const result = await etablissementAutoValidationBAL(newEntreprise)
+          const result = await entrepriseAutoValidationBAL(newEntreprise)
           newEntreprise = result.userRecruteur
 
           // Dépot simplifié : retourner les informations nécessaire à la suite du parcours
@@ -374,29 +383,8 @@ export default () => {
       if (isUserAwaiting) {
         return res.json({ isUserAwaiting: true })
       }
-
-      const magiclink = `${config.publicUrlEspacePro}/authentification/verification?token=${createMagicLinkToken(user.email)}`
-
-      const { email, first_name, last_name, establishment_raison_sociale, type } = user
-
-      await mailer.sendEmail({
-        to: email,
-        subject: "Bienvenue sur La bonne alternance",
-        template: mailTemplate["mail-bienvenue"],
-        data: {
-          images: {
-            logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
-          },
-          establishment_raison_sociale,
-          last_name,
-          first_name,
-          email,
-          is_delegated: type === CFA,
-          url: magiclink,
-        },
-      })
-
-      await registerUser(email)
+      await userRecruteurSendWelcomeEmail(user)
+      await registerUser(user.email)
 
       // Log the user in directly
       return res.json({ token: createUserRecruteurToken(user) })

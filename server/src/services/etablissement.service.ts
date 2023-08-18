@@ -382,7 +382,7 @@ export const etablissementUnsubscribeDemandeDelegation = async (etablissementSir
   }
 }
 
-export const etablissementAutoValidationBAL = async (userRecruteur: IUserRecruteur) => {
+export const entrepriseAutoValidationBAL = async (userRecruteur: IUserRecruteur) => {
   const { establishment_siret: siret, email, _id } = userRecruteur
   const siren = siret.slice(0, 9)
   // Get all corresponding records using the SIREN number in BonneBoiteLegacy collection
