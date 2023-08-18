@@ -37,7 +37,7 @@ export const checkAwaitingCompaniesValidation = async () => {
   let hasBeenValidated = false
 
   if (!entreprises.length) {
-    notifyToSlack({ subject: "USER VALIDATION", message: "Aucunes entreprises à contrôler" })
+    await notifyToSlack({ subject: "USER VALIDATION", message: "Aucunes entreprises à contrôler" })
     return
   }
 
@@ -166,7 +166,10 @@ export const checkAwaitingCompaniesValidation = async () => {
     }
   })
 
-  notifyToSlack({ subject: "USER VALIDATION", message: `${stat.validated} entreprises validées sur un total de ${stat.total} (${stat.notFound} reste à valider manuellement)` })
+  await notifyToSlack({
+    subject: "USER VALIDATION",
+    message: `${stat.validated} entreprises validées sur un total de ${stat.total} (${stat.notFound} reste à valider manuellement)`,
+  })
 
   logger.info(`Done.`)
   return stat
