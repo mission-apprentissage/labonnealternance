@@ -59,10 +59,10 @@ export const pushFileToBucket = async ({ key, filePath }) => {
   await uploadFileToS3({ filePath, key })
 }
 
-export const downloadAlgoCompanyFile = async () => {
-  logger.info(`Downloading algo file ${s3File} from S3 Bucket...`)
+export const downloadAlgoCompanyFile = async (sourceFile) => {
+  logger.info(`Downloading algo file ${sourceFile || s3File} from S3 Bucket...`)
 
-  await downloadFile({ from: s3File, to: PREDICTION_FILE })
+  await downloadFile({ from: sourceFile || s3File, to: PREDICTION_FILE })
 }
 
 export const downloadSAVEFile = async ({ key }) => {
