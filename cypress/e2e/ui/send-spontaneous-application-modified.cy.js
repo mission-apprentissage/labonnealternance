@@ -22,7 +22,7 @@ describe("send-spontaneous-application", () => {
       cy.get("[data-testid='widget-form'] button").click();
       
       cy.wait("@submitJobCall").then((interception) => {
-        cy.get('.resultCard.lba').first().click()
+        cy.get('.resultCard.lba.hasEmail').first().click()
         cy.get("[data-testid='CandidatureSpontanee'] button").click();
         cy.get("[data-testid='lastName']").click();
         cy.get("[data-testid='lastName']").type("Doe");
