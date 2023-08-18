@@ -54,6 +54,7 @@ const Users = () => {
 
   let queries = [
     {
+      id: "awaitingValidationUserList",
       label: "En attente de vérification",
       query: {
         establishment_raison_sociale: { $nin: [null, ""] },
@@ -62,6 +63,7 @@ const Users = () => {
       },
     },
     {
+      id: "activeUserList",
       label: "Actifs",
       query: {
         establishment_raison_sociale: { $nin: [null, ""] },
@@ -70,6 +72,7 @@ const Users = () => {
       },
     },
     {
+      id: "disableUserList",
       label: "Désactivés",
       query: {
         $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, USER_STATUS.DISABLED] },
@@ -79,6 +82,7 @@ const Users = () => {
   ]
   if (isAdmin) {
     const errorQuery = {
+      id: "errorUserList",
       label: "En erreur",
       query: {
         establishment_raison_sociale: { $in: [null, ""] },
@@ -88,9 +92,9 @@ const Users = () => {
     queries = [errorQuery, ...queries]
   }
 
-  const queryResponses = queries.map(({ query, label }) => {
+  const queryResponses = queries.map(({ query, label, id }) => {
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    return useQuery(`${label} user list query`, () =>
+    return useQuery(id, () =>
       getUsers({
         users: query,
       })

@@ -1,14 +1,11 @@
-import { mailTemplate } from "../../../../assets/index.js"
 import { logger } from "../../../../common/logger.js"
 import { UserRecruteur } from "../../../../common/model/index.js"
 import { asyncForEach } from "../../../../common/utils/asyncUtils.js"
 import { notifyToSlack } from "../../../../common/utils/slackUtils.js"
-import config from "../../../../config.js"
 import { ENTREPRISE, ETAT_UTILISATEUR } from "../../../../services/constant.service.js"
 import dayjs from "../../../../services/dayjs.service.js"
 import { entrepriseAutoValidationBAL } from "../../../../services/etablissement.service.js"
-import { getFormulaire, updateOffre } from "../../../../services/formulaire.service.js"
-import mailer from "../../../../services/mailer.service.js"
+import { getFormulaire, sendCFADelegationMail, updateOffre } from "../../../../services/formulaire.service.js"
 import { updateUser, userRecruteurSendWelcomeEmail } from "../../../../services/userRecruteur.service.js"
 
 export const checkAwaitingCompaniesValidation = async () => {
@@ -50,28 +47,9 @@ export const checkAwaitingCompaniesValidation = async () => {
       // Send delegation if any
       if (job?.delegations?.length) {
         await Promise.all(
-          job.delegations.map(
-            async (delegation) =>
-              await mailer.sendEmail({
-                to: delegation.email,
-                subject: `Une entreprise recrute dans votre domaine`,
-                template: mailTemplate["mail-cfa-delegation"],
-                data: {
-                  images: {
-                    logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
-                  },
-                  enterpriseName: userFormulaire.establishment_raison_sociale,
-                  jobName: job.rome_appellation_label,
-                  contractType: job.job_type.join(", "),
-                  trainingLevel: job.job_level_label,
-                  startDate: dayjs(job.job_start_date).format("DD/MM/YYYY"),
-                  duration: job.job_duration,
-                  rhythm: job.job_rythm,
-                  offerButton: `${config.publicUrlEspacePro}/proposition/formulaire/${userFormulaire.establishment_id}/offre/${job._id}/siret/${delegation.siret_code}`,
-                  createAccountButton: `${config.publicUrlEspacePro}/creation/cfa`,
-                },
-              })
-          )
+          job.delegations.map(async (delegation) => {
+            await sendCFADelegationMail(delegation.email, job, userFormulaire, delegation.siret_code)
+          })
         )
       }
 
