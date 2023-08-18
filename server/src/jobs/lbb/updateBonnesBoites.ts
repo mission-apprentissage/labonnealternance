@@ -82,7 +82,7 @@ export default async function updateBonnesBoites({ UseAlgoFile = false, ClearMon
       if (!ForceRecreate) {
         const companyCount = await countCompaniesInFile()
         if (companyCount < MIN_COMPANY_THRESHOLD) {
-          notifyToSlack({
+          await notifyToSlack({
             subject: "IMPORT BONNES BOITES",
             message: `Import bonnesboites avorté car le fichier ne comporte pas assez de sociétés. ${companyCount} sociétés / ${MIN_COMPANY_THRESHOLD} minimum attendu`,
             error: true,
