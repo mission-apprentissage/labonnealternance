@@ -1,4 +1,13 @@
 import mailController from "company-email-validator"
+
+export const getEmailDomain = (email: string) => {
+  const domain = email.split("@").at(1)
+  if (!domain) {
+    throw new Error(`unexpected: no domain on email ${email}`)
+  }
+  return domain
+}
+
 /**
  * @description Check if an email is included in the provided array
  * @param {object[]} contactList
@@ -13,20 +22,12 @@ export const checkIfUserMailExistInReferentiel = (contactList, userEmail): boole
  * @returns {string[]}
  */
 export const getAllDomainsFromEmailList = (contactList) => {
-  const domains = contactList.reduce((acc, contact) => {
-    const [, domain] = contact.email.split("@")
-    if (!acc.includes(domain)) {
-      acc.push(domain)
-    }
-    return acc
-  }, [])
-
-  return domains
+  return [...new Set(contactList.map(getEmailDomain))]
 }
 
-/**
- * @description check if an email is generic or private
- * @param {string} userEmail
- * @returns {boolean}
- */
-export const checkIfUserEmailIsPrivate = (userEmail) => mailController.isCompanyEmail(userEmail)
+export const isEmailPrivateCompany = (userEmail: string) => mailController.isCompanyEmail(userEmail)
+
+export const isEmailSameDomain = (email1: string, email2: string) => {
+  // TODO check if subdomain are allowed
+  return getEmailDomain(email2).includes(getEmailDomain(email1))
+}

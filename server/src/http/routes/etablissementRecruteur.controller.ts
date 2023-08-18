@@ -1,41 +1,36 @@
 import express, { Request } from "express"
 import joi from "joi"
-import { createFormulaire, getFormulaire } from "../../services/formulaire.service.js"
 import { mailTemplate } from "../../assets/index.js"
-import { CFA, ENTREPRISE, ETAT_UTILISATEUR, VALIDATION_UTILISATEUR } from "../../services/constant.service.js"
+import { IRecruiter } from "../../common/model/schema/recruiter/recruiter.types.js"
+import { IUserRecruteur } from "../../common/model/schema/userRecruteur/userRecruteur.types.js"
 import { createMagicLinkToken, createUserRecruteurToken } from "../../common/utils/jwtUtils.js"
-import { checkIfUserEmailIsPrivate, checkIfUserMailExistInReferentiel, getAllDomainsFromEmailList } from "../../common/utils/mailUtils.js"
+import { checkIfUserMailExistInReferentiel, getAllDomainsFromEmailList, getEmailDomain, isEmailPrivateCompany } from "../../common/utils/mailUtils.js"
+import { sentryCaptureException } from "../../common/utils/sentryUtils.js"
 import { notifyToSlack } from "../../common/utils/slackUtils.js"
 import config from "../../config.js"
 import { getNearEtablissementsFromRomes } from "../../services/catalogue.service.js"
+import { CFA, ENTREPRISE, ETAT_UTILISATEUR } from "../../services/constant.service.js"
 import {
+  etablissementAutoValidationBAL,
   etablissementUnsubscribeDemandeDelegation,
   formatEntrepriseData,
   formatReferentielData,
-  getAllEstablishmentFromBonneBoite,
-  getAllEstablishmentFromBonneBoiteLegacy,
-  getAllEstablishmentFromOpcoReferentiel,
   getEtablissement,
   getEtablissementFromGouv,
   getEtablissementFromReferentiel,
   getGeoCoordinates,
   getIdcc,
-  getMatchingDomainFromContactList,
-  getMatchingEmailFromContactList,
   getOpco,
   getOpcoByIdcc,
   getValidationUrl,
   validateEtablissementEmail,
 } from "../../services/etablissement.service.js"
 import { ICFADock } from "../../services/etablissement.service.types.js"
-import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
-import { validationOrganisation } from "../../services/bal.service.js"
-import { IUserRecruteur } from "../../common/model/schema/userRecruteur/userRecruteur.types.js"
-import { IRecruiter } from "../../common/model/schema/recruiter/recruiter.types.js"
-import { updateUserValidationHistory, getUser, createUser, updateUser, getUserValidationState, registerUser } from "../../services/userRecruteur.service.js"
-import authMiddleware from "../middlewares/authMiddleware.js"
-import { sentryCaptureException } from "../../common/utils/sentryUtils.js"
+import { createFormulaire, getFormulaire } from "../../services/formulaire.service.js"
 import mailer from "../../services/mailer.service.js"
+import { createUser, getUser, getUserValidationState, registerUser, updateUser, userAutoValidate, userSetManualValidation } from "../../services/userRecruteur.service.js"
+import authMiddleware from "../middlewares/authMiddleware.js"
+import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
 
 const getCfaRomeSchema = joi.object({
   latitude: joi.number().required(),
@@ -45,20 +40,6 @@ const getCfaRomeSchema = joi.object({
 
 export default () => {
   const router = express.Router()
-
-  const autoValidateUser = async (userId) =>
-    await updateUserValidationHistory(userId, {
-      validation_type: VALIDATION_UTILISATEUR.AUTO,
-      user: "SERVEUR",
-      status: ETAT_UTILISATEUR.VALIDE,
-    })
-
-  const setManualValidation = async (userId) =>
-    await updateUserValidationHistory(userId, {
-      validation_type: VALIDATION_UTILISATEUR.MANUAL,
-      user: "SERVEUR",
-      status: ETAT_UTILISATEUR.ATTENTE,
-    })
 
   /**
    * Retourne la liste de tous les CFA ayant une formation avec les ROME passés..
@@ -89,6 +70,8 @@ export default () => {
   router.get(
     "/entreprise/:siret",
     tryCatch(async (req, res) => {
+      // SIRET reader
+
       if (!req.params.siret) {
         return res.status(400).json({ error: true, message: "Le numéro siret est obligatoire." })
       }
@@ -222,6 +205,7 @@ export default () => {
   router.post(
     "/creation",
     tryCatch(async (req: Request<{}, {}, IUserRecruteur & IRecruiter>, res) => {
+      // creation
       const formatedEmail = req.body.email.toLocaleLowerCase()
 
       // check if user already exist
@@ -233,43 +217,11 @@ export default () => {
 
       switch (req.body.type) {
         case ENTREPRISE: {
-          const siren = req.body.establishment_siret.slice(0, 9)
           const formulaireInfo = await createFormulaire({ ...req.body, email: formatedEmail })
           let newEntreprise: IUserRecruteur = await createUser({ ...req.body, establishment_id: formulaireInfo.establishment_id, email: formatedEmail })
 
-          // Get all corresponding records using the SIREN number in BonneBoiteLegacy collection
-          const [bonneBoiteLegacyList, bonneBoiteList, referentielOpcoList] = await Promise.all([
-            getAllEstablishmentFromBonneBoiteLegacy({ siret: { $regex: siren }, email: { $nin: ["", undefined] } }),
-            getAllEstablishmentFromBonneBoite({ siret: { $regex: siren }, email: { $nin: ["", undefined] } }),
-            getAllEstablishmentFromOpcoReferentiel({ siret_code: { $regex: siren } }),
-          ])
-
-          // Format arrays to get only the emails
-          const bonneBoiteLegacyEmailList = bonneBoiteLegacyList.map(({ email }) => email)
-          const bonneBoiteEmailList = bonneBoiteList.map(({ email }) => email)
-          const referentielOpcoEmailList = referentielOpcoList.flatMap((item) => item.emails)
-
-          // Create a single array with all emails duplicate free
-          const emailListUnique = [...new Set([...referentielOpcoEmailList, ...bonneBoiteLegacyEmailList, ...bonneBoiteEmailList])]
-
-          // Check BAL API for validation
-          const balControl = await validationOrganisation(req.body.establishment_siret, req.body.email)
-
-          if (balControl.is_valid) {
-            newEntreprise = await autoValidateUser(newEntreprise._id)
-          } else {
-            if (emailListUnique.length) {
-              if (getMatchingEmailFromContactList(newEntreprise.email, emailListUnique)) {
-                newEntreprise = await autoValidateUser(newEntreprise._id)
-              } else if (checkIfUserEmailIsPrivate(newEntreprise.email) && getMatchingDomainFromContactList(newEntreprise.email, emailListUnique)) {
-                newEntreprise = await autoValidateUser(newEntreprise._id)
-              } else {
-                newEntreprise = await setManualValidation(newEntreprise._id)
-              }
-            } else {
-              newEntreprise = await setManualValidation(newEntreprise._id)
-            }
-          }
+          const result = await etablissementAutoValidationBAL(newEntreprise)
+          newEntreprise = result.userRecruteur
 
           // Dépot simplifié : retourner les informations nécessaire à la suite du parcours
           return res.json({ formulaire: formulaireInfo, user: newEntreprise })
@@ -282,7 +234,7 @@ export default () => {
 
           if (!referentiel.contacts.length) {
             // Validation manuelle de l'utilisateur à effectuer pas un administrateur
-            newCfa = await setManualValidation(newCfa._id)
+            newCfa = await userSetManualValidation(newCfa._id)
 
             await notifyToSlack({
               subject: "RECRUTEUR",
@@ -294,7 +246,7 @@ export default () => {
 
           if (checkIfUserMailExistInReferentiel(referentiel.contacts, req.body.email)) {
             // Validation automatique de l'utilisateur
-            newCfa = await autoValidateUser(newCfa._id)
+            newCfa = await userAutoValidate(newCfa._id)
 
             const { email, _id, last_name, first_name } = newCfa
 
@@ -318,19 +270,14 @@ export default () => {
             return res.json({ user: newCfa })
           }
 
-          if (checkIfUserEmailIsPrivate(req.body.email)) {
-            // Récupération des noms de domain
+          if (isEmailPrivateCompany(formatedEmail)) {
             const domains = getAllDomainsFromEmailList(referentiel.contacts)
-            const userEmailDomain = req.body.email.split("@")[1]
-
+            const userEmailDomain = getEmailDomain(formatedEmail)
             if (domains.includes(userEmailDomain)) {
               // Validation automatique de l'utilisateur
-              newCfa = await autoValidateUser(newCfa._id)
-
+              newCfa = await userAutoValidate(newCfa._id)
               const { email, _id, last_name, first_name } = newCfa
-
               const url = getValidationUrl(_id)
-
               await mailer.sendEmail({
                 to: email,
                 subject: "Confirmez votre adresse mail",
@@ -344,14 +291,13 @@ export default () => {
                   confirmation_url: url,
                 },
               })
-
               // Keep the same structure as ENTREPRISE
               return res.json({ user: newCfa })
             }
           }
 
           // Validation manuelle de l'utilisateur à effectuer pas un administrateur
-          newCfa = await setManualValidation(newCfa._id)
+          newCfa = await userSetManualValidation(newCfa._id)
 
           await notifyToSlack({
             subject: "RECRUTEUR",

@@ -19,8 +19,11 @@ import {
 } from "./etablissement.service.types.js"
 import { IRecruiter } from "../common/model/schema/recruiter/recruiter.types.js"
 import { Filter } from "mongodb"
-import { IUnsubscribedOF } from "common/model/schema/unsubscribedOF/unsubscribeOF.types.js"
+import { IUnsubscribedOF } from "../common/model/schema/unsubscribedOF/unsubscribeOF.types.js"
 import { getCatalogueEtablissements } from "./catalogue.service.js"
+import { userAutoValidate, userSetManualValidation } from "./userRecruteur.service.js"
+import { validationOrganisation } from "./bal.service.js"
+import { isEmailPrivateCompany, isEmailSameDomain } from "../common/utils/mailUtils.js"
 
 const apiParams = {
   token: config.entreprise.apiKey,
@@ -318,24 +321,6 @@ export const getAllEstablishmentFromBonneBoiteLegacy = async (query: Filter<IBon
  * @returns {Promise<IBonneBoite["email"]>}
  */
 export const getAllEstablishmentFromBonneBoite = async (query: Filter<IBonneBoite>): Promise<IBonneBoite[]> => await BonnesBoites.find(query).select({ email: 1, _id: 0 }).lean()
-/**
- * @description Chech if a given email is included in the given email list array
- * @param {String} email
- * @param {String[]} emailList
- * @returns {Boolean}
- */
-export const getMatchingEmailFromContactList = (email: string, emailList: string[]): boolean => emailList.includes(email)
-/**
- * @description Check if the email domain is included in the givne email list array
- * @param {String} email
- * @param {String[]} emailList
- * @returns {Boolean}
- */
-export const getMatchingDomainFromContactList = (email: string, emailList: string[]): boolean => {
-  const [_, domain] = email.split("@")
-
-  return emailList.some((e) => e.includes(domain))
-}
 
 /**
  * @description Format Entreprise data
@@ -395,4 +380,33 @@ export const etablissementUnsubscribeDemandeDelegation = async (etablissementSir
       unsubscribe_date: new Date(),
     })
   }
+}
+
+export const etablissementAutoValidationBAL = async (userRecruteur: IUserRecruteur) => {
+  const { establishment_siret: siret, email, _id } = userRecruteur
+  const siren = siret.slice(0, 9)
+  // Get all corresponding records using the SIREN number in BonneBoiteLegacy collection
+  const [bonneBoiteLegacyList, bonneBoiteList, referentielOpcoList] = await Promise.all([
+    getAllEstablishmentFromBonneBoiteLegacy({ siret: { $regex: siren }, email: { $nin: ["", undefined] } }),
+    getAllEstablishmentFromBonneBoite({ siret: { $regex: siren }, email: { $nin: ["", undefined] } }),
+    getAllEstablishmentFromOpcoReferentiel({ siret_code: { $regex: siren } }),
+  ])
+
+  // Format arrays to get only the emails
+  const bonneBoiteLegacyEmailList = bonneBoiteLegacyList.map(({ email }) => email)
+  const bonneBoiteEmailList = bonneBoiteList.map(({ email }) => email)
+  const referentielOpcoEmailList = referentielOpcoList.flatMap((item) => item.emails)
+
+  // Create a single array with all emails duplicate free
+  const validEmails = [...new Set([...referentielOpcoEmailList, ...bonneBoiteLegacyEmailList, ...bonneBoiteEmailList])]
+
+  // Check BAL API for validation
+  const balControl = await validationOrganisation(siret, email)
+  const isValid = balControl.is_valid || validEmails.includes(email) || (isEmailPrivateCompany(email) && validEmails.some((validEmail) => isEmailSameDomain(email, validEmail)))
+  if (isValid) {
+    userRecruteur = await userAutoValidate(_id)
+  } else {
+    userRecruteur = await userSetManualValidation(_id)
+  }
+  return { userRecruteur, validated: isValid }
 }

@@ -3,6 +3,7 @@ import { ModelUpdateOptions, UpdateQuery } from "mongoose"
 import { Filter } from "mongodb"
 import { UserRecruteur } from "../common/model/index.js"
 import { IUserRecruteur } from "../common/model/schema/userRecruteur/userRecruteur.types.js"
+import { ETAT_UTILISATEUR, VALIDATION_UTILISATEUR } from "./constant.service.js"
 
 /**
  * @description generate an API key
@@ -122,3 +123,17 @@ export const updateUserValidationHistory = (userId: IUserRecruteur["_id"], state
  * @returns {IUserRecruteur["status"]}
  */
 export const getUserValidationState = (stateArray: IUserRecruteur["status"]) => stateArray.sort((a, b) => new Date(a.date).valueOf() - new Date(b.date).valueOf()).pop().status
+
+export const userAutoValidate = async (userId: IUserRecruteur["_id"]) =>
+  await updateUserValidationHistory(userId, {
+    validation_type: VALIDATION_UTILISATEUR.AUTO,
+    user: "SERVEUR",
+    status: ETAT_UTILISATEUR.VALIDE,
+  })
+
+export const userSetManualValidation = async (userId: IUserRecruteur["_id"]) =>
+  await updateUserValidationHistory(userId, {
+    validation_type: VALIDATION_UTILISATEUR.MANUAL,
+    user: "SERVEUR",
+    status: ETAT_UTILISATEUR.ATTENTE,
+  })

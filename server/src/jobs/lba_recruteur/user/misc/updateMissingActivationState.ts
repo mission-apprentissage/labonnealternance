@@ -1,40 +1,22 @@
-import dayjs from "../../../../services/dayjs.service.js"
+import { mailTemplate } from "../../../../assets/index.js"
 import { logger } from "../../../../common/logger.js"
 import { UserRecruteur } from "../../../../common/model/index.js"
 import { asyncForEach } from "../../../../common/utils/asyncUtils.js"
-import { validationOrganisation } from "../../../../services/bal.service.js"
-import { checkIfUserEmailIsPrivate } from "../../../../common/utils/mailUtils.js"
-import {
-  getMatchingEmailFromContactList,
-  getMatchingDomainFromContactList,
-  getAllEstablishmentFromBonneBoite,
-  getAllEstablishmentFromBonneBoiteLegacy,
-  getAllEstablishmentFromOpcoReferentiel,
-} from "../../../../services/etablissement.service.js"
-import { VALIDATION_UTILISATEUR, ETAT_UTILISATEUR, CFA } from "../../../../services/constant.service.js"
-import { updateUser, updateUserValidationHistory } from "../../../../services/userRecruteur.service.js"
-import { notifyToSlack } from "../../../../common/utils/slackUtils.js"
-import { getFormulaire, updateOffre } from "../../../../services/formulaire.service.js"
-import { mailTemplate } from "../../../../assets/index.js"
 import { createMagicLinkToken } from "../../../../common/utils/jwtUtils.js"
+import { notifyToSlack } from "../../../../common/utils/slackUtils.js"
 import config from "../../../../config.js"
+import { CFA, ENTREPRISE, ETAT_UTILISATEUR } from "../../../../services/constant.service.js"
+import dayjs from "../../../../services/dayjs.service.js"
+import { etablissementAutoValidationBAL } from "../../../../services/etablissement.service.js"
+import { getFormulaire, updateOffre } from "../../../../services/formulaire.service.js"
 import mailer from "../../../../services/mailer.service.js"
-
-const autoValidateUser = async (userId) =>
-  await updateUserValidationHistory(userId, {
-    validation_type: VALIDATION_UTILISATEUR.AUTO,
-    user: "SERVEUR",
-    status: ETAT_UTILISATEUR.VALIDE,
-  })
-
-const stat = { validated: 0, notFound: 0, total: 0 }
+import { updateUser } from "../../../../services/userRecruteur.service.js"
 
 export const checkAwaitingCompaniesValidation = async () => {
   logger.info(`Start update missing validation state for companies...`)
+  const stat = { validated: 0, notFound: 0, total: 0 }
 
-  const entreprises = await UserRecruteur.find({ type: "ENTREPRISE", status: { $size: 1 }, "status.status": "EN ATTENTE DE VALIDATION" })
-
-  let hasBeenValidated = false
+  const entreprises = await UserRecruteur.find({ type: ENTREPRISE, status: { $size: 1 }, "status.status": ETAT_UTILISATEUR.ATTENTE })
 
   if (!entreprises.length) {
     notifyToSlack({ subject: "USER VALIDATION", message: "Aucunes entreprises à contrôler" })
@@ -45,63 +27,19 @@ export const checkAwaitingCompaniesValidation = async () => {
 
   logger.info(`${entreprises.length} etp à mettre à jour...`)
 
-  await asyncForEach(entreprises, async (etp, index) => {
-    const userFormulaire = await getFormulaire({ establishment_id: etp.establishment_id })
+  await asyncForEach(entreprises, async (userRecruteur) => {
+    const userFormulaire = await getFormulaire({ establishment_id: userRecruteur.establishment_id })
 
     if (!userFormulaire) {
-      await UserRecruteur.findByIdAndDelete(etp.establishment_id)
+      await UserRecruteur.findByIdAndDelete(userRecruteur.establishment_id)
       return
     }
 
-    // Extract SIREN from SIRET
-    const siren = etp.establishment_siret.substr(0, 9)
-
-    // Get all matching entries from internal dictionnaires
-    const [bonneBoiteLegacyList, bonneBoiteList, referentielOpcoList] = await Promise.all([
-      getAllEstablishmentFromBonneBoiteLegacy({ siret: { $regex: siren }, email: { $nin: ["", undefined] } }),
-      getAllEstablishmentFromBonneBoite({ siret: { $regex: siren }, email: { $nin: ["", undefined] } }),
-      getAllEstablishmentFromOpcoReferentiel({ siret_code: { $regex: siren } }),
-    ])
-
-    // Tranform into single array of emails
-    const [bonneBoiteLegacyEmailList, bonneBoiteEmailList, referentielOpcoEmailList] = await Promise.all([
-      bonneBoiteLegacyList.map(({ email }) => email),
-      bonneBoiteList.map(({ email }) => email),
-      referentielOpcoList.reduce((acc: string[], item) => {
-        item.emails.map((x) => acc.push(x))
-        return acc
-      }, []),
-    ])
-
-    // Create a single array with all emails duplicate free
-    const emailListUnique = [...new Set([...referentielOpcoEmailList, ...bonneBoiteLegacyEmailList, ...bonneBoiteEmailList])]
-
-    // Check BAL API for validation
-    const balControl = await validationOrganisation(etp.establishment_siret, etp.email)
-
-    // Control based on data available
-    if (balControl.is_valid) {
-      await autoValidateUser(etp._id)
+    const { validated: hasBeenValidated } = await etablissementAutoValidationBAL(userRecruteur)
+    if (hasBeenValidated) {
       stat.validated++
-      hasBeenValidated = true
     } else {
-      if (emailListUnique.length) {
-        if (getMatchingEmailFromContactList(etp.email, emailListUnique)) {
-          await autoValidateUser(etp._id)
-          stat.validated++
-          hasBeenValidated = true
-        } else if (checkIfUserEmailIsPrivate(etp.email) && getMatchingDomainFromContactList(etp.email, emailListUnique)) {
-          await autoValidateUser(etp._id)
-          stat.validated++
-          hasBeenValidated = true
-        } else {
-          hasBeenValidated = false
-          stat.notFound++
-        }
-      } else {
-        hasBeenValidated = false
-        stat.notFound++
-      }
+      stat.notFound++
     }
 
     if (hasBeenValidated) {
@@ -111,7 +49,7 @@ export const checkAwaitingCompaniesValidation = async () => {
       await updateOffre(job._id, job)
 
       // Send delegation if any
-      if (job?.delegations && job?.delegations.length) {
+      if (job?.delegations?.length) {
         await Promise.all(
           job.delegations.map(
             async (delegation) =>
@@ -139,12 +77,12 @@ export const checkAwaitingCompaniesValidation = async () => {
       }
 
       // Validate user email addresse
-      await updateUser({ _id: etp._id }, { is_email_checked: true })
+      await updateUser({ _id: userRecruteur._id }, { is_email_checked: true })
 
       // Get magiclink url
-      const magiclink = `${config.publicUrlEspacePro}/authentification/verification?token=${createMagicLinkToken(etp.email)}`
+      const magiclink = `${config.publicUrlEspacePro}/authentification/verification?token=${createMagicLinkToken(userRecruteur.email)}`
 
-      const { email, last_name, first_name, establishment_raison_sociale, type } = etp
+      const { email, last_name, first_name, establishment_raison_sociale } = userRecruteur
 
       // Send welcome email to user
       await mailer.sendEmail({
@@ -159,7 +97,7 @@ export const checkAwaitingCompaniesValidation = async () => {
           first_name,
           establishment_raison_sociale,
           email,
-          is_delegated: etp.type === CFA,
+          is_delegated: userRecruteur.type === CFA,
           url: magiclink,
         },
       })
