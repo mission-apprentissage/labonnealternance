@@ -111,7 +111,7 @@ const LbbCompany = ({ company, handleSelectItem, showTextOnly, searchForTraining
   return (
     <Link
       as="a"
-      className="resultCard"
+      className={`resultCard lba`}
       {...cardProperties}
       onClick={onSelectItem}
       onMouseOver={highlightItemOnMap}

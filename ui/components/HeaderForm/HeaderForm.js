@@ -131,7 +131,12 @@ const HeaderForm = ({ handleSearchSubmit, isHome }) => {
                   Niveau d&apos;études visé
                 </Text>
                 <Box>
-                  <Select {...selectProperties} onChange={(evt) => handleSelectChange(evt, setFieldValue, setDiploma, "diploma")} value={diploma} name="diploma">
+                  <Select 
+                    {...selectProperties} onChange={(evt) => handleSelectChange(evt, setFieldValue, setDiploma, "diploma")} 
+                    value={diploma} 
+                    name="diploma"
+                    data-testid="diploma"
+                  >
                     {buildAvailableDiplomasOptions(diplomas)}
                   </Select>
                 </Box>
