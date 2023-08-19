@@ -33,7 +33,7 @@ describe("send-rdv-from-widget", () => {
             cy.get("input[name='applicantMessageToCfa']").type("horaires");
             cy.get("button").click();
             cy.wait("@submitRdv").then((rdvResultData) => {
-              cy.get("[data-testid='rdv-sent']").get();
+              cy.get("[data-testid='rdv-sent']");
             });
           });
         });
