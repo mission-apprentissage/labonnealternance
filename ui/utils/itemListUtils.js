@@ -22,7 +22,7 @@ export const mergeOpportunities = ({ jobs, onlyLbbLbaCompanies, activeFilter }) 
     let sources = [jobs.lbaCompanies]
     if (!onlyLbbLbaCompanies) {
       sources.push(jobs.peJobs)
-      sources.push(activeFilter === "all" ? jobs.matchas : jobs?.matchas?.filter((job) => !job.company.mandataire))
+      sources.push(activeFilter === "all" ? jobs?.matchas : jobs?.matchas?.filter((job) => !job.company.mandataire))
     }
 
     mergedArray = concatSources(sources)
