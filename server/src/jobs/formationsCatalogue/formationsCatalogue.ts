@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { oleoduc, writeData, transformData } from "oleoduc"
+import { oleoduc, writeData } from "oleoduc"
 import { logger } from "../../common/logger.js"
 import { FormationCatalogue } from "../../common/model/index.js"
 import { rebuildIndex, resetIndexAndDb } from "../../common/utils/esUtils.js"
