@@ -142,7 +142,7 @@ const getLBALink = async (wish: IWish): Promise<string> => {
 
     // recover all romes codes into a single array
     if (formation.length) {
-      romes = Array.from(new Set(formation.map(({ rome_codes }) => rome_codes).flat()))
+      romes = [...new Set(formation.flatMap(({ rome_codes }) => rome_codes))]
     }
 
     if (!romes?.length) {
