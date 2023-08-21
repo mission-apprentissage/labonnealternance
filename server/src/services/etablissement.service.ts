@@ -476,13 +476,9 @@ export const getEntrepriseDataFromSiret = async ({ siret, fromDashboardCfa, cfa_
       return errorFactory("Le numéro siret n'est pas référencé comme une entreprise.", ErrorCodes.isCfa)
     }
   }
-  throw new Error("test")
-
   const entrepriseData = formatEntrepriseData(result.data)
   const geo_coordinates = await getGeoCoordinates(`${entrepriseData.address_detail.acheminement_postal.l4}, ${entrepriseData.address_detail.acheminement_postal.l6}`)
-
   const opcoData = await getOpcoData(siret)
-
   return { ...entrepriseData, ...opcoData, geo_coordinates }
 }
 
