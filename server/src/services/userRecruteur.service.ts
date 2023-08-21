@@ -128,6 +128,14 @@ export const updateUserValidationHistory = (userId: IUserRecruteur["_id"], state
  */
 export const getUserValidationState = (stateArray: IUserRecruteur["status"]) => stateArray.sort((a, b) => new Date(a.date).valueOf() - new Date(b.date).valueOf()).pop().status
 
+export const userSetError = async (userId: IUserRecruteur["_id"], reason: string) =>
+  await updateUserValidationHistory(userId, {
+    validation_type: VALIDATION_UTILISATEUR.AUTO,
+    user: "SERVEUR",
+    status: ETAT_UTILISATEUR.ERROR,
+    reason,
+  })
+
 export const userAutoValidate = async (userId: IUserRecruteur["_id"]) =>
   await updateUserValidationHistory(userId, {
     validation_type: VALIDATION_UTILISATEUR.AUTO,

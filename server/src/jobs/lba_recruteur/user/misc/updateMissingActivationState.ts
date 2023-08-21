@@ -12,6 +12,7 @@ export const checkAwaitingCompaniesValidation = async () => {
   logger.info(`Start update missing validation state for companies...`)
   const stat = { validated: 0, notFound: 0, total: 0 }
 
+  // TODO check cette query pour voir si status peut avoir une taille > 1
   const entreprises = await UserRecruteur.find({ type: ENTREPRISE, status: { $size: 1 }, "status.status": ETAT_UTILISATEUR.ATTENTE })
 
   if (!entreprises.length) {
@@ -39,7 +40,7 @@ export const checkAwaitingCompaniesValidation = async () => {
     }
 
     if (hasBeenValidated) {
-      // Get job and update it's expiration date
+      // Get job and update its expiration date
       const job = Object.assign(userFormulaire.jobs[0], { job_status: "Active", job_expiration_date: dayjs().add(1, "month").format("YYYY-MM-DD") })
       // save job
       await updateOffre(job._id, job)

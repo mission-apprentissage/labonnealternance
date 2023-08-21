@@ -21,9 +21,11 @@ import { IRecruiter } from "../common/model/schema/recruiter/recruiter.types.js"
 import { Filter } from "mongodb"
 import { IUnsubscribedOF } from "../common/model/schema/unsubscribedOF/unsubscribeOF.types.js"
 import { getCatalogueEtablissements } from "./catalogue.service.js"
-import { userAutoValidate, userSetManualValidation } from "./userRecruteur.service.js"
+import { createUser, getUser, updateUser, userAutoValidate, userSetError, userSetManualValidation } from "./userRecruteur.service.js"
 import { validationOrganisation } from "./bal.service.js"
 import { isEmailPrivateCompany, isEmailSameDomain } from "../common/utils/mailUtils.js"
+import { createFormulaire, getFormulaire } from "./formulaire.service.js"
+import { ENTREPRISE, RECRUITER_STATUS } from "./constant.service.js"
 
 const apiParams = {
   token: config.entreprise.apiKey,
@@ -409,4 +411,138 @@ export const entrepriseAutoValidationBAL = async (userRecruteur: IUserRecruteur)
     userRecruteur = await userSetManualValidation(_id)
   }
   return { userRecruteur, validated: isValid }
+}
+
+export enum ErrorCodes {
+  isCfa = "isCfa",
+  alreadyExist = "alreadyExist",
+}
+
+const errorFactory = (message: string, errorCode?: ErrorCodes) => ({ error: true, message, errorCode })
+
+const getOpcoData = async (siret: string) => {
+  const opcoResult: ICFADock | null = await getOpco(siret)
+  switch (opcoResult?.searchStatus) {
+    case "OK": {
+      return { opco: opcoResult.opcoName, idcc: opcoResult.idcc.toString() }
+    }
+    case "MULTIPLE_OPCO": {
+      return { opco: "Opco multiple", idcc: "Opco multiple, IDCC non défini" }
+    }
+    case null:
+    case "NOT_FOUND": {
+      const idccResult = await getIdcc(siret)
+      if (idccResult[0].conventions.length) {
+        const { num } = opcoResult[0]?.conventions[0]
+        const opcoByIdccResult = await getOpcoByIdcc(num)
+        if (opcoByIdccResult) {
+          return { opco: opcoByIdccResult.opcoName, idcc: opcoByIdccResult.idcc.toString() }
+        }
+      }
+      break
+    }
+  }
+  return undefined
+}
+
+export type EntrepriseData = IFormatAPIEntreprise & { opco: string; idcc: string; geo_coordinates: string }
+
+export const getEntrepriseDataFromSiret = async ({ siret, fromDashboardCfa, cfa_delegated_siret }: { siret: string; fromDashboardCfa: boolean; cfa_delegated_siret?: string }) => {
+  const result = await getEtablissementFromGouv(siret)
+
+  if (!result) {
+    return errorFactory("Le numéro siret est invalide.")
+  }
+  const { etat_administratif, activite_principale } = result.data
+
+  if (etat_administratif === "F") {
+    return errorFactory("Cette entreprise est considérée comme fermée.")
+  }
+
+  // Check if a CFA already has the company as partenaire
+  if (fromDashboardCfa) {
+    const exist = await getFormulaire({
+      establishment_siret: siret,
+      cfa_delegated_siret: cfa_delegated_siret,
+      status: "Actif",
+    })
+
+    if (exist) {
+      return errorFactory("L'entreprise est déjà référencée comme partenaire.")
+    }
+  } else {
+    // Allow cfa to add themselves as a company
+    if (activite_principale.code.startsWith("85")) {
+      return errorFactory("Le numéro siret n'est pas référencé comme une entreprise.", ErrorCodes.isCfa)
+    }
+  }
+  throw new Error("test")
+
+  const entrepriseData = formatEntrepriseData(result.data)
+  const geo_coordinates = await getGeoCoordinates(`${entrepriseData.address_detail.acheminement_postal.l4}, ${entrepriseData.address_detail.acheminement_postal.l6}`)
+
+  const opcoData = await getOpcoData(siret)
+
+  return { ...entrepriseData, ...opcoData, geo_coordinates }
+}
+
+export const entrepriseOnboardingWorkflow = {
+  create: async ({
+    email,
+    first_name,
+    last_name,
+    phone,
+    siret,
+    fromDashboardCfa,
+    cfa_delegated_siret,
+    origin,
+    opco,
+  }: {
+    siret: string
+    last_name: string
+    first_name: string
+    phone: string
+    email: string
+    fromDashboardCfa: boolean
+    cfa_delegated_siret: string
+    origin: string
+    opco: string
+  }) => {
+    const formatedEmail = email.toLocaleLowerCase()
+    const exist = await getUser({ email: formatedEmail })
+    if (exist) {
+      return errorFactory("L'adresse mail est déjà associée à un compte La bonne alternance.", ErrorCodes.alreadyExist)
+    }
+    let entrepriseData: Partial<EntrepriseData>
+    let hasSiretError = false
+    try {
+      const siretResponse = await getEntrepriseDataFromSiret({ siret, fromDashboardCfa, cfa_delegated_siret })
+      if ("error" in siretResponse) {
+        return siretResponse
+      } else {
+        entrepriseData = siretResponse
+      }
+    } catch (err) {
+      hasSiretError = true
+      entrepriseData = { establishment_siret: siret }
+      sentryCaptureException(err)
+    }
+    const contactInfos = { email, first_name, last_name, phone, opco, origin }
+    const savedData = { ...entrepriseData, ...contactInfos, email: formatedEmail }
+    const formulaireInfo = await createFormulaire({
+      ...savedData,
+      status: RECRUITER_STATUS.EN_ATTENTE_VALIDATION,
+      jobs: [],
+      cfa_delegated_siret,
+    })
+    let newEntreprise: IUserRecruteur = await createUser({ ...savedData, establishment_id: formulaireInfo.establishment_id, type: ENTREPRISE })
+
+    if (hasSiretError) {
+      newEntreprise = await userSetError(newEntreprise._id, "Error in call to Siren API")
+    } else {
+      const balValidationResult = await entrepriseAutoValidationBAL(newEntreprise)
+      newEntreprise = balValidationResult.userRecruteur
+    }
+    return { formulaire: formulaireInfo, user: newEntreprise }
+  },
 }

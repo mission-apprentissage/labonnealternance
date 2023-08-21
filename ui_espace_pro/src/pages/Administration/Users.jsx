@@ -92,7 +92,7 @@ const Users = () => {
     queries = [errorQuery, ...queries]
   }
 
-  const queryResponses = queries.map(({ query, label, id }) => {
+  const queryResponses = queries.map(({ query, id }) => {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     return useQuery(id, () =>
       getUsers({

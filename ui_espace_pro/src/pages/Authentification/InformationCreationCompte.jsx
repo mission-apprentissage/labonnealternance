@@ -146,7 +146,7 @@ export const InformationCreationCompte = () => {
   const location = useLocation()
   const navigate = useNavigate()
   const validationPopup = useDisclosure()
-  const [userData, setUserData] = useState()
+  const [popupData, setPopupData] = useState()
 
   const { type, informationSiret } = location.state ?? {}
 
@@ -154,10 +154,7 @@ export const InformationCreationCompte = () => {
     // save info if not trusted from source
     createPartenaire({ ...informationSiret, ...values, type })
       .then(({ data }) => {
-        if (data.user.status[0].status === "EN ATTENTE DE VALIDATION") {
-          validationPopup.onOpen()
-          setUserData(data)
-        } else {
+        if (data.user.status[0].status === "VALIDÉ") {
           if (data.user.type === AUTHTYPE.ENTREPRISE) {
             // Dépot simplifié
             navigate("/creation/offre", {
@@ -167,8 +164,10 @@ export const InformationCreationCompte = () => {
           } else {
             navigate("/authentification/confirmation", { replace: true, state: { email: data.email } })
           }
+        } else {
+          validationPopup.onOpen()
+          setPopupData({ ...data, type })
         }
-
         setSubmitting(false)
       })
       .catch((error) => {
@@ -180,7 +179,7 @@ export const InformationCreationCompte = () => {
 
   return (
     <AnimationContainer>
-      <ConfirmationCreationCompte {...userData} {...validationPopup} />
+      <ConfirmationCreationCompte {...popupData} {...validationPopup} />
       <AuthentificationLayout>
         <Formulaire submitForm={submitForm} />
       </AuthentificationLayout>

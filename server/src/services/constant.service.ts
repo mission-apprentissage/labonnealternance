@@ -36,6 +36,7 @@ export const ETAT_UTILISATEUR = {
   VALIDE: "VALIDÉ",
   DESACTIVE: "DESACTIVÉ",
   ATTENTE: "EN ATTENTE DE VALIDATION",
+  ERROR: "ERROR",
 }
 export const ENTREPRISE = "ENTREPRISE"
 export const CFA = "CFA"

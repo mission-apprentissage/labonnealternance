@@ -12,7 +12,6 @@ import {
   FormHelperText,
   FormLabel,
   Heading,
-  Select,
   SimpleGrid,
   Stack,
   Text,

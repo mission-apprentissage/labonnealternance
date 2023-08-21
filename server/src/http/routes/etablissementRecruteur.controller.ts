@@ -11,10 +11,13 @@ import config from "../../config.js"
 import { getNearEtablissementsFromRomes } from "../../services/catalogue.service.js"
 import { CFA, ENTREPRISE, ETAT_UTILISATEUR } from "../../services/constant.service.js"
 import {
+  ErrorCodes,
   entrepriseAutoValidationBAL,
+  entrepriseOnboardingWorkflow,
   etablissementUnsubscribeDemandeDelegation,
   formatEntrepriseData,
   formatReferentielData,
+  getEntrepriseDataFromSiret,
   getEtablissement,
   getEtablissementFromGouv,
   getEtablissementFromReferentiel,
@@ -79,80 +82,33 @@ export default () => {
   router.get(
     "/entreprise/:siret",
     tryCatch(async (req, res) => {
-      // SIRET reader
-
-      if (!req.params.siret) {
+      const siret: string | undefined = req.params.siret
+      const fromDashboardCfa = Boolean(req.query.fromDashboardCfa)
+      const cfa_delegated_siret: string | undefined = req.query.cfa_delegated_siret
+      if (!siret) {
         return res.status(400).json({ error: true, message: "Le numéro siret est obligatoire." })
       }
       try {
-        const result = await getEtablissementFromGouv(req.params.siret)
-
-        if (!result) {
-          return res.status(400).json({ error: true, message: "Le numéro siret est invalide." })
-        }
-
-        if (result.data.etat_administratif === "F") {
-          return res.status(400).json({ error: true, message: "Cette entreprise est considérée comme fermée." })
-        }
-
-        // Check if a CFA already has the company as partenaire
-        if (req.query.fromDashboardCfa) {
-          const exist = await getFormulaire({
-            establishment_siret: req.params.siret,
-            cfa_delegated_siret: req.query.cfa_delegated_siret,
-            status: "Actif",
-          })
-
-          if (exist) {
-            return res.status(400).json({
-              error: true,
-              message: "L'entreprise est déjà référencée comme partenaire.",
-            })
+        const result = await getEntrepriseDataFromSiret({ siret, fromDashboardCfa, cfa_delegated_siret })
+        if ("error" in result) {
+          switch (result.errorCode) {
+            case ErrorCodes.isCfa: {
+              return res.status(400).json({
+                error: true,
+                message: result.message,
+                isCfa: true,
+              })
+            }
+            default: {
+              return res.status(400).json({
+                error: true,
+                message: result.message,
+              })
+            }
           }
         } else {
-          // Allow cfa to add themselves as a company
-          if (result.data.activite_principale.code.startsWith("85")) {
-            return res.status(400).json({
-              error: true,
-              message: "Le numéro siret n'est pas référencé comme une entreprise.",
-              isCfa: true,
-            })
-          }
+          res.json(result)
         }
-
-        const entrepriseData = formatEntrepriseData(result.data)
-        const geo_coordinates = await getGeoCoordinates(`${entrepriseData.address_detail.acheminement_postal.l4}, ${entrepriseData.address_detail.acheminement_postal.l6}`)
-
-        const opcoResult: ICFADock | null = await getOpco(req.params.siret)
-        const opcoData: { opco?: string; idcc?: string | number } = {}
-
-        switch (opcoResult?.searchStatus) {
-          case "OK": {
-            opcoData.opco = opcoResult.opcoName
-            opcoData.idcc = opcoResult.idcc
-            break
-          }
-          case "MULTIPLE_OPCO": {
-            opcoData.opco = "Opco multiple"
-            opcoData.idcc = "Opco multiple, IDCC non défini"
-            break
-          }
-          case null:
-          case "NOT_FOUND": {
-            const idccResult = await getIdcc(req.params.siret)
-            if (idccResult[0].conventions.length) {
-              const { num } = opcoResult[0]?.conventions[0]
-              const opcoByIdccResult = await getOpcoByIdcc(num)
-              if (opcoByIdccResult) {
-                opcoData.opco = opcoByIdccResult.opcoName
-                opcoData.idcc = opcoByIdccResult.idcc
-              }
-            }
-            break
-          }
-        }
-
-        res.json({ ...entrepriseData, ...opcoData, geo_coordinates })
       } catch (error) {
         sentryCaptureException(error)
         res.status(500).json({ error: true, message: "Le service est momentanément indisponible." })
@@ -214,28 +170,39 @@ export default () => {
   router.post(
     "/creation",
     tryCatch(async (req: Request<{}, {}, IUserRecruteur & IRecruiter>, res) => {
-      // creation
-      const formatedEmail = req.body.email.toLocaleLowerCase()
-
-      // check if user already exist
-      const exist = await getUser({ email: formatedEmail })
-
-      if (exist) {
-        return res.status(403).json({ error: true, message: "L'adresse mail est déjà associée à un compte La bonne alternance." })
-      }
-
       switch (req.body.type) {
         case ENTREPRISE: {
-          const formulaireInfo = await createFormulaire({ ...req.body, email: formatedEmail })
-          let newEntreprise: IUserRecruteur = await createUser({ ...req.body, establishment_id: formulaireInfo.establishment_id, email: formatedEmail })
-
-          const result = await entrepriseAutoValidationBAL(newEntreprise)
-          newEntreprise = result.userRecruteur
-
-          // Dépot simplifié : retourner les informations nécessaire à la suite du parcours
-          return res.json({ formulaire: formulaireInfo, user: newEntreprise })
+          const siret = req.body.establishment_siret
+          const result = await entrepriseOnboardingWorkflow.create({ ...req.body, fromDashboardCfa: false, siret })
+          if ("error" in result) {
+            switch (result.errorCode) {
+              case ErrorCodes.alreadyExist: {
+                return res.status(403).json({
+                  error: true,
+                  message: result.message,
+                })
+              }
+              default: {
+                return res.status(400).json({
+                  error: true,
+                  message: result.message,
+                })
+              }
+            }
+          }
+          return res.json(result)
         }
         case CFA: {
+          // creation
+          const formatedEmail = req.body.email.toLocaleLowerCase()
+
+          // check if user already exist
+          const exist = await getUser({ email: formatedEmail })
+
+          if (exist) {
+            return res.status(403).json({ error: true, message: "L'adresse mail est déjà associée à un compte La bonne alternance." })
+          }
+
           // Contrôle du mail avec le référentiel :
           const referentiel = await getEtablissementFromReferentiel(req.body.establishment_siret)
           // Creation de l'utilisateur en base de données
