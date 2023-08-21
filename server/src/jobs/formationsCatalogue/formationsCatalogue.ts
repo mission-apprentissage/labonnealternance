@@ -16,7 +16,7 @@ const importFormations = async () => {
     failed: 0,
   }
 
-  const formationCatalogueMe = getFormationsFromCatalogueMe({
+  const formationCatalogueMe = await getFormationsFromCatalogueMe({
     query: { parcoursup_id: { $ne: null }, affelnet_statut: { $ne: null }, cle_ministere_educatif: { $ne: null } },
     select: { parcoursup_id: 1, affelnet_statut: 1, cle_ministere_educatif: 1 },
   })
