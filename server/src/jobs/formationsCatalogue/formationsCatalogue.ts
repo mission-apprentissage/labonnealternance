@@ -5,7 +5,7 @@ import { FormationCatalogue } from "../../common/model/index.js"
 import { rebuildIndex, resetIndexAndDb } from "../../common/utils/esUtils.js"
 import { sentryCaptureException } from "../../common/utils/sentryUtils.js"
 import { notifyToSlack } from "../../common/utils/slackUtils.js"
-import { countFormations, getAllFormationsFromCatalogue, getFormationsFromCatalogueMe } from "../../services/catalogue.service.js"
+import { countFormations, getAllFormationsFromCatalogue } from "../../services/catalogue.service.js"
 
 const importFormations = async () => {
   logger.info(`Début import`)
@@ -16,19 +16,9 @@ const importFormations = async () => {
     failed: 0,
   }
 
-  const formationCatalogueMe = await getFormationsFromCatalogueMe({
-    limit: 1000,
-    query: { parcoursup_id: { $ne: null }, affelnet_statut: { $ne: null }, cle_ministere_educatif: { $ne: null } },
-    select: { parcoursup_id: 1, affelnet_statut: 1, cle_ministere_educatif: 1 },
-  })
-
   try {
     await oleoduc(
       await getAllFormationsFromCatalogue(),
-      transformData((formation) => {
-        const found = formationCatalogueMe.find((formationME) => formationME.cle_ministere_educatif === formation.cle_ministere_educatif)
-        return { ...formation, parcoursup_id: found?.parcoursup_id ?? null, affelnet_statut: found?.affelnet_statut ?? null }
-      }),
       writeData(async (formation) => {
         stats.total++
         try {
