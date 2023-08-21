@@ -36,6 +36,7 @@ import { checkAwaitingCompaniesValidation } from "./jobs/lba_recruteur/user/misc
 import updateBrevoBlockedEmails from "./jobs/updateBrevoBlockedEmails/updateBrevoBlockedEmails.js"
 import { importReferentielOnisep } from "./jobs/rdv/importReferentielOnisep.js"
 import updateReferentielRncpRomes from "./jobs/referentielRncpRome/updateReferentielRncpRomes.js"
+import { updateFormationCatalogue } from "./jobs/formationsCatalogue/updateFormationCatalogue.js"
 
 cli.addHelpText("after", null)
 
@@ -260,6 +261,13 @@ cli
   .description("Importe les formations depuis le Catalogue")
   .action(() => {
     runScript(() => importCatalogueFormationJob())
+  })
+
+cli
+  .command("sync-catalogue-trainings-extra-data")
+  .description("Mise à jour des champs spécifiques de la collection formations catalogue")
+  .action(() => {
+    runScript((components) => updateFormationCatalogue(components))
   })
 
 cli
