@@ -1,3 +1,10 @@
+## [1.73.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.73.0...v1.73.1) (2023-08-21)
+
+
+### Bug Fixes
+
+* LBAC-1463 bouton "voir plus de résultats" cassé ([#543](https://github.com/mission-apprentissage/labonnealternance/issues/543)) ([ee72dba](https://github.com/mission-apprentissage/labonnealternance/commit/ee72dba1d7a8a9f2d286cd6332c65638b5b47324))
+
 # [1.73.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.72.0...v1.73.0) (2023-08-17)
 
 
