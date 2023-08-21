@@ -2,20 +2,20 @@
 import distance from "@turf/distance"
 import axios from "axios"
 import { setTimeout } from "timers/promises"
-import { NIVEAUX_POUR_OFFRES_PE } from "../../services/constant.service.js"
+import { NIVEAUX_POUR_OFFRES_PE } from "./constant.service.js"
 import { roundDistance } from "../../common/utils/geolib.js"
-import { IApiError, manageApiError } from "../../common/utils/errorManager.js"
-import { trackApiCall } from "../../common/utils/sendTrackingEvent.js"
-import { itemModel } from "../../model/itemModel.js"
-import { filterJobsByOpco } from "../../services/opco.service.js"
-import { ILbaItem } from "../../services/lbaitem.shared.service.types.js"
+import { IApiError, manageApiError } from "../common/utils/errorManager.js"
+import { trackApiCall } from "../common/utils/sendTrackingEvent.js"
+import { itemModel } from "../model/itemModel.js"
+import { filterJobsByOpco } from "./opco.service.js"
+import { ILbaItem } from "./lbaitem.shared.service.types.js"
 
 //const poleEmploi = require("./common.js");
 import { getAccessToken, getRoundedRadius, peApiHeaders } from "./common.js"
 
 const blackListedCompanies = ["iscod", "oktogone", "institut europeen f 2i"]
 
-const getSomePeJobs = async ({ romes, insee, radius, lat, long, caller, diploma, opco, opcoUrl, api }) => {
+export const getSomePeJobs = async ({ romes, insee, radius, lat, long, caller, diploma, opco, opcoUrl, api }) => {
   let jobs: PEResponse | IApiError = null
   const currentRadius = radius || 20000
   const jobLimit = 50 //TODO: query params options or default value from properties -> size || 50
@@ -267,7 +267,7 @@ const getPeJobs = async ({ romes, insee, radius, jobLimit, caller, diploma, api 
   }
 }
 
-const getPeJobFromId = async ({ id, caller }: { id: string; caller: string }): IApiError | { peJobs: ILbaItem[] } => {
+export const getPeJobFromId = async ({ id, caller }: { id: string; caller: string }): IApiError | { peJobs: ILbaItem[] } => {
   try {
     const token = await getAccessToken("pe")
     const headers = peApiHeaders
@@ -298,5 +298,3 @@ const getPeJobFromId = async ({ id, caller }: { id: string; caller: string }): I
     return manageApiError({ error, api_path: "jobV1/job", caller, errorTitle: "getting job by id from PE" })
   }
 }
-
-export { getSomePeJobs, getPeJobFromId }

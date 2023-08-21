@@ -6,7 +6,7 @@ import { sentryCaptureException } from "../../common/utils/sentryUtils.js"
 import { getLbaJobs } from "../../services/lbajob.service.js"
 import { getSomeLbbCompanies } from "./bonnesBoites.js"
 import { jobsQueryValidator } from "./jobsQueryValidator.js"
-import { getSomePeJobs } from "./offresPoleEmploi.js"
+import { getSomePeJobs } from "../../services/pejob.service.js"
 
 export type JobSearchQuery = {
   romes?: string
