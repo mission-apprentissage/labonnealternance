@@ -17,6 +17,7 @@ const importFormations = async () => {
   }
 
   const formationCatalogueMe = await getFormationsFromCatalogueMe({
+    limit: 1000,
     query: { parcoursup_id: { $ne: null }, affelnet_statut: { $ne: null }, cle_ministere_educatif: { $ne: null } },
     select: { parcoursup_id: 1, affelnet_statut: 1, cle_ministere_educatif: 1 },
   })
@@ -25,8 +26,8 @@ const importFormations = async () => {
     await oleoduc(
       await getAllFormationsFromCatalogue(),
       transformData((formation) => {
-        const { parcoursup_id, affelnet_statut } = formationCatalogueMe.find((formationME) => formationME.cle_ministere_educatif === formation.cle_ministere_educatif)
-        return { ...formation, parcoursup_id: parcoursup_id ?? null, affelnet_statut: affelnet_statut ?? null }
+        const found = formationCatalogueMe.find((formationME) => formationME.cle_ministere_educatif === formation.cle_ministere_educatif)
+        return { ...formation, parcoursup_id: found?.parcoursup_id ?? null, affelnet_statut: found?.affelnet_statut ?? null }
       }),
       writeData(async (formation) => {
         stats.total++
