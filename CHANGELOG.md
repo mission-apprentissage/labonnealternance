@@ -1,3 +1,10 @@
+# [1.74.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.73.1...v1.74.0) (2023-08-21)
+
+
+### Features
+
+* update logic to fill new fields ([#545](https://github.com/mission-apprentissage/labonnealternance/issues/545)) ([b91db11](https://github.com/mission-apprentissage/labonnealternance/commit/b91db11f8f2645dc41727e17f4e652c94c209029))
+
 ## [1.73.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.73.0...v1.73.1) (2023-08-21)
 
 
