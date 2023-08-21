@@ -3,8 +3,7 @@ import { asyncForEach } from "../common/utils/asyncUtils.js"
 import { IFormationCatalogue } from "../common/model/schema/formationCatalogue/formationCatalogue.types.js"
 import apiGeoAdresse from "../common/utils/apiGeoAdresse.js"
 import { URL } from "url"
-
-const utmData = "&utm_source=lba&utm_medium=email&utm_campaign=promotion-emploi-jeunes-voeux"
+import config from "../config.js"
 
 interface IWish {
   id: string
@@ -28,18 +27,17 @@ interface ILinks {
   lien_lba: string
 }
 
-const lbaDomain = "https://labonnealternance.apprentissage.beta.gouv.fr"
-const lbaCandidat = new URL(`${lbaDomain}/recherche-emploi`)
+const utmData = { utm_source: "lba", utm_medium: "email", utm_campaign: "promotion-emploi-jeunes-voeux" }
 
-const buildLbaLinkFromFormation = (formation: IFormationCatalogue): string => {
-  const [lat, lon] = formation.lieu_formation_geo_coordonnees.split(",")
-  lbaCandidat.search = `romes=${formation.rome_codes}&lat=${lat}&lon=${lon}&radius=60${utmData}`
-  return lbaCandidat.toString()
+const buildEmploiUrl = ({ baseUrl = `${config.publicUrl}/recherche-emploi`, params }: { baseUrl?: string; params: Record<string, string> }) => {
+  const url = new URL(baseUrl)
+  Object.entries(params).forEach(([key, value]) => url.searchParams.append(key, value))
+  return url.toString()
 }
 
 /**
  * @description local function to get the formation related to the query
- * @param {string} query
+ * @param {Object} query
  * @param {string} filter
  * @returns {Promise<IFormationCatalogue>}
  */
@@ -101,7 +99,10 @@ const getPrdvLink = async (wish: IWish): Promise<string> => {
     { _id: 1 }
   )
 
-  return elligibleFormation ? new URL(`${lbaDomain}/espace-pro/form?referrer=lba&cleMinistereEducatif=${encodeURIComponent(wish.cle_ministere_educatif)}${utmData}`).toString() : ""
+  return buildEmploiUrl({
+    baseUrl: `${config.publicUrlEspacePro}/form`,
+    params: { referrer: "lba", cleMinistereEducatif: encodeURIComponent(wish.cle_ministere_educatif), ...utmData },
+  })
 }
 
 /**
@@ -116,7 +117,8 @@ const getLBALink = async (wish: IWish): Promise<string> => {
   formation = await getTrainingFromParameters(wish)
 
   if (formation) {
-    return buildLbaLinkFromFormation(formation)
+    const [lat, lon] = formation.lieu_formation_geo_coordonnees.split(",")
+    return buildEmploiUrl({ params: { romes: formation.rome_codes, lat, lon, radius: "60", ...utmData } })
   } else {
     // identify rome codes
     let romes = null
@@ -143,11 +145,12 @@ const getLBALink = async (wish: IWish): Promise<string> => {
     // recover all romes codes into a single array
     if (formation.length) {
       romes = [...new Set(formation.flatMap(({ rome_codes }) => rome_codes))]
+    } else {
+      return buildEmploiUrl({ params: utmData })
     }
 
     if (!romes?.length) {
-      lbaCandidat.search = utmData
-      return lbaCandidat.toString()
+      return buildEmploiUrl({ params: utmData })
     } else {
       // identify location
       let lat, lon
@@ -174,10 +177,8 @@ const getLBALink = async (wish: IWish): Promise<string> => {
         }
       }
 
-      lbaCandidat.search = `romes=${romes}${lat && lon ? `&lat=${lat}&lon=${lon}&radius=60` : ""}${utmData}`
+      return buildEmploiUrl({ params: { romes: romes, lat: (lat && lon) ?? undefined, lon: (lat && lon) ?? undefined, radius: "60", ...utmData } })
     }
-
-    return lbaCandidat.toString()
   }
 }
 
