@@ -1,3 +1,10 @@
+## [1.75.3](https://github.com/mission-apprentissage/labonnealternance/compare/v1.75.2...v1.75.3) (2023-08-22)
+
+
+### Bug Fixes
+
+* job api origin prefix is should be shortname ([9f210a9](https://github.com/mission-apprentissage/labonnealternance/commit/9f210a940b0e1d06587150445285cc73dddac989))
+
 ## [1.75.2](https://github.com/mission-apprentissage/labonnealternance/compare/v1.75.1...v1.75.2) (2023-08-22)
 
 
