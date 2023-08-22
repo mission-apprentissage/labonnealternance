@@ -8,6 +8,13 @@ type PEContact = {
   coordonnees3: string
 }
 
+type PEEntreprise = {
+  nom: string
+  logo: string
+  description: string
+  siret: string
+}
+
 export type PEJob = {
   id: string
   intitule: string
@@ -24,7 +31,7 @@ export type PEJob = {
   romeCode: string
   romeLibelle: string
   appellationlibelle: string
-  entreprise: object[]
+  entreprise: PEEntreprise
   typeContrat: string
   typeContratLibelle: string
   natureContrat: string
@@ -52,6 +59,7 @@ export type PEJob = {
   formations?: [][]
   langues?: [][]
   complementExercice?: string
+  appellationLibelle: string
 }
 
 export type PEResponse = {

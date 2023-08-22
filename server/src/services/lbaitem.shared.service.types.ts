@@ -63,20 +63,20 @@ export interface ILbaItemPlace {
 }
 
 export interface ILbaItemCompany {
-  name: string // pe -> entreprise.nom | formation -> etablissement_formateur_entreprise_raison_sociale | lbb/lba -> enseigne / raison_sociale | matcha -> enseigne > raison_sociale
-  siret: string // lbb/lba -> siret | formation -> etablissement_formateur_siret | matcha -> siret | pe -> entreprise.siret réservé à notre front
+  name?: string // pe -> entreprise.nom | formation -> etablissement_formateur_entreprise_raison_sociale | lbb/lba -> enseigne / raison_sociale | matcha -> enseigne > raison_sociale
+  siret?: string // lbb/lba -> siret | formation -> etablissement_formateur_siret | matcha -> siret | pe -> entreprise.siret réservé à notre front
   size?: string // lbb/lba -> company_size | matcha -> tranche_effectif
   logo?: string // pe -> entreprise.logo
   description?: string // pe -> entreprise.description
   socialNetwork?: string // lbb / lba -> social_network
   url?: string // lbb / lba -> website
-  id: string // formation -> etablissement_formateur_id
-  uai: string // formation -> etablissement_formateur_uai
-  place: Partial<ILbaItemPlace>
+  id?: string // formation -> etablissement_formateur_id
+  uai?: string // formation -> etablissement_formateur_uai
+  place?: Partial<ILbaItemPlace>
   //        city,   // formation -> etablissement_formateur_localite | matcha -> entreprise_localite
   mandataire?: boolean // matcha -> mandataire
   creationDate?: Date // matcha -> date_creation_etablissement
-  headquarter: ILbaItemCompanyHQ // uniquement pour formation
+  headquarter?: ILbaItemCompanyHQ // uniquement pour formation
   opco?: ILbaItemOpco
 }
 
@@ -101,17 +101,17 @@ export interface ILbaItemOpco {
 }
 
 export interface ILbaItemJob {
-  description: string // pe -> description | matcha -> description
-  creationDate: string | Date // pe -> dateCreation | matcha -> createdAt
-  id: string // pe -> id | matcha -> id mongo offre
+  description?: string // pe -> description | matcha -> description
+  creationDate?: string | Date // pe -> dateCreation | matcha -> createdAt
+  id?: string // pe -> id | matcha -> id mongo offre
   contractType: string // pe -> typeContrat | matcha -> offres.type
   contractDescription?: string // pe -> typeContratLibelle
   duration?: string // pe -> dureeTravailLibelle
-  jobStartDate: string | Date // matcha -> offres.date_debut_apprentissage
-  romeDetails: object // matcha -> offres.rome_detail -> détail du code ROME
-  rythmeAlternance: string // matcha -> offres.rythme_alternance
+  jobStartDate?: string | Date // matcha -> offres.date_debut_apprentissage
+  romeDetails?: object // matcha -> offres.rome_detail -> détail du code ROME
+  rythmeAlternance?: string // matcha -> offres.rythme_alternance
   elligibleHandicap?: boolean // matcha -> offres.is_disabled_elligible
-  dureeContrat: string // matcha -> offres.duree_contrat
+  dureeContrat?: string // matcha -> offres.duree_contrat
   quantiteContrat?: number // matcha -> offres.quantite
 }
 
