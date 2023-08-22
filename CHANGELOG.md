@@ -1,3 +1,10 @@
+## [1.75.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.75.0...v1.75.1) (2023-08-22)
+
+
+### Bug Fixes
+
+* LBAC-1399 added limit larger than default (10) ([#544](https://github.com/mission-apprentissage/labonnealternance/issues/544)) ([6607e50](https://github.com/mission-apprentissage/labonnealternance/commit/6607e504c4dc657b0ceb31fa3fe83a2c803d6224))
+
 # [1.75.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.74.0...v1.75.0) (2023-08-22)
 
 
