@@ -75,6 +75,8 @@ export const updateJobSchema = Joi.object({
   job_rythm: Joi.string().valid("Indifférent", "2 jours / 3 jours", "1 semaine / 1 semaine", "2 semaines / 3 semaines", "6 semaines / 6 semaines"),
   job_description: Joi.string(),
   job_employer_description: Joi.string(),
+  custom_address: Joi.string(),
+  custom_geo_coordinates: Joi.string().when("custom_address", { is: Joi.exist(), then: Joi.required() }),
 })
 
 export const createDelegationSchema = Joi.object({

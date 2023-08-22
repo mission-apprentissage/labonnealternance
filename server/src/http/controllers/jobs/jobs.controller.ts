@@ -227,6 +227,8 @@ export class JobsController extends Controller {
       job_count: body.job_count,
       job_duration: body.job_duration,
       job_rythm: body.job_rythm,
+      custom_address: body.custom_address,
+      custom_geo_coordinates: body.custom_geo_coordinates,
     }
 
     const updatedRecruiter = await createOffre(establishmentId, job)
