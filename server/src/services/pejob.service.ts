@@ -18,58 +18,40 @@ const headers = { headers: { "Content-Type": contentType }, timeout: 3000 }
 const clientId = config.esdClientId === "1234" ? process.env.ESD_CLIENT_ID : config.esdClientId
 const clientSecret = config.esdClientSecret === "1234" ? process.env.ESD_CLIENT_SECRET : config.esdClientSecret
 const scopeApisPE = `application_${clientId}%20`
-const scopeLBB = "api_labonneboitev1"
-const scopeLBA = "api_labonnealternancev1"
 const scopePE = "api_offresdemploiv2%20o2dsoffre"
 const paramApisPE = `grant_type=client_credentials&client_id=${clientId}&client_secret=${clientSecret}&scope=${scopeApisPE}`
-const paramLBB = `${paramApisPE}${scopeLBB}`
-const paramLBA = `${paramApisPE}${scopeLBA}`
 const paramPE = `${paramApisPE}${scopePE}`
 const peApiHeaders = { "Content-Type": "application/json", Accept: "application/json" } as AxiosRequestHeaders
-const tokens = {
-  lbb: null,
-  pe: null,
-}
+let tokenPE = null
 
-// retourne un refresh token encore valide ou null à défaut
-const getCurrentToken = (api) => {
-  const token = tokens[api]
-  const now = dayjs()
+const blackListedCompanies = ["iscod", "oktogone", "institut europeen f 2i"]
 
-  if (token && token.expiry.isAfter(now)) {
-    return token.value
-  } else {
-    return null
-  }
-}
+const peJobsApiEndpoint = "https://api.pole-emploi.io/partenaire/offresdemploi/v2/offres/search"
+const peJobApiEndpoint = "https://api.pole-emploi.io/partenaire/offresdemploi/v2/offres/"
+const peContratsAlternances = "E2,FS" //E2 -> Contrat d'Apprentissage, FS -> contrat de professionalisation
 
-// fixe un refresh token d'une durée de <25 minutes (1490 secondes)
-const setCurrentToken = async (api, token, expiresIn) => {
-  tokens[api] = {
-    value: token,
-    expiry: dayjs().add(expiresIn - 10, "s"),
-  }
-}
-
-// récupère un token d'accès aux API de Pôle emploi
-const getAccessToken = async (api) => {
+/**
+ *  Récupère un token d'accès aux API de Pôle emploi
+ *  @return {Promise<string>}
+ */
+const getAccessToken = async (): Promise<string> => {
   try {
-    if (!api) return "api_is_missing"
-    else if (api !== "lba" && api !== "lbb" && api !== "pe") return "unknown_api"
+    const now = dayjs()
 
-    //console.log("accessToken : ", api, accessTokenEndpoint, paramLBB);
-
-    const currentToken = getCurrentToken(api)
-
-    if (currentToken) return currentToken
-    else {
-      const paramApi = api === "lbb" ? paramLBB : api === "lba" ? paramLBA : paramPE
-      const response = await axios.post(accessTokenEndpoint, paramApi, headers)
+    if (tokenPE?.expiry.isAfter(now)) {
+      return tokenPE.value
+    } else {
+      const response = await axios.post(accessTokenEndpoint, paramPE, headers)
 
       if (response.data) {
-        setCurrentToken(api, response.data.access_token, response.data.expires_in)
-        return response.data.access_token
-      } else return "no_result"
+        tokenPE = {
+          value: response.data.access_token,
+          expiry: dayjs().add(response.data.expires_in - 10, "s"),
+        }
+        return tokenPE.value
+      } else {
+        return "no_result"
+      }
     }
   } catch (error) {
     console.log(error)
@@ -78,7 +60,6 @@ const getAccessToken = async (api) => {
 }
 
 const peJobApiEndpointReferentiel = "https://api.pole-emploi.io/partenaire/offresdemploi/v2/referentiel/"
-
 /**
  * Utilitaire à garder pour interroger les référentiels PE non documentés par ailleurs
  * Liste des référentiels disponible sur https://www.emploi-store-dev.fr/portail-developpeur-cms/home/catalogue-des-api/documentation-des-api/api/api-offres-demploi-v2/referentiels.html
@@ -87,7 +68,7 @@ const peJobApiEndpointReferentiel = "https://api.pole-emploi.io/partenaire/offre
  */
 const getPeApiReferentiels = async (referentiel: string) => {
   try {
-    const token = await getAccessToken("pe")
+    const token = await getAccessToken()
     const headers = peApiHeaders
     headers.Authorization = `Bearer ${token}`
 
@@ -104,76 +85,6 @@ const getPeApiReferentiels = async (referentiel: string) => {
 // formule de modification du rayon de distance pour prendre en compte les limites des communes
 const getRoundedRadius = (radius) => {
   return radius * 1.2
-}
-
-const blackListedCompanies = ["iscod", "oktogone", "institut europeen f 2i"]
-
-export const getSomePeJobs = async ({ romes, insee, radius, lat, long, caller, diploma, opco, opcoUrl, api }) => {
-  let jobs: PEResponse | IApiError = null
-  const currentRadius = radius || 20000
-  const jobLimit = 50 //TODO: query params options or default value from properties -> size || 50
-
-  let trys = 0
-
-  while (trys < 3) {
-    jobs = await getPeJobs({ romes, insee, radius: currentRadius, jobLimit, caller, diploma, api })
-
-    if (jobs.status === 429) {
-      console.log("PE jobs api quota exceeded. Retrying : ", trys + 1)
-      // trois essais pour gérer les 429 quotas exceeded des apis PE.
-      trys++
-      await setTimeout(1000, "result")
-    } else {
-      break
-    }
-  }
-
-  if (jobs?.result == "error") {
-    return jobs
-  }
-
-  jobs = transformPeJobsForIdea({ jobs, radius: currentRadius, lat, long, caller })
-
-  // tri du résultat fusionné sur le critère de poids descendant
-  if (jobs) {
-    jobs.sort((a, b) => {
-      return b.place.distance - a.place.distance
-    })
-  }
-
-  // filtrage sur l'opco
-  if (opco || opcoUrl) {
-    jobs = await filterJobsByOpco({ opco, opcoUrl, jobs })
-  }
-
-  // suppression du siret pour les appels par API. On ne remonte le siret que dans le cadre du front LBA.
-  if (caller) {
-    // on ne remonte le siret que dans le cadre du front LBA. Cette info n'est pas remontée par API
-    jobs.forEach((job, idx) => {
-      jobs[idx].company.siret = null
-    })
-  }
-
-  return { results: jobs }
-}
-
-// update du contenu avec des résultats pertinents par rapport au rayon
-const transformPeJobsForIdea = ({ jobs, radius, lat, long, caller }) => {
-  const resultJobs: PEJob[] = []
-
-  if (jobs.resultats && jobs.resultats.length) {
-    for (let i = 0; i < jobs.resultats.length; ++i) {
-      const job = transformPeJobForIdea({ job: jobs.resultats[i], lat, long, caller })
-
-      if (job.place.distance < getRoundedRadius(radius)) {
-        if (!job?.company?.name || blackListedCompanies.indexOf(job.company.name.toLowerCase()) < 0) {
-          resultJobs.push(job)
-        }
-      }
-    }
-  }
-
-  return resultJobs
 }
 
 const computeJobDistanceToSearchCenter = (job: PEJob, lat: number, long: number) => {
@@ -258,13 +169,28 @@ const transformPeJobForIdea = ({ job, lat = null, long = null }): PEJob => {
   return resultJob
 }
 
-const peJobsApiEndpoint = "https://api.pole-emploi.io/partenaire/offresdemploi/v2/offres/search"
-const peJobApiEndpoint = "https://api.pole-emploi.io/partenaire/offresdemploi/v2/offres/"
-const peContratsAlternances = "E2,FS" //E2 -> Contrat d'Apprentissage, FS -> contrat de professionalisation
+// update du contenu avec des résultats pertinents par rapport au rayon
+const transformPeJobsForIdea = ({ jobs, radius, lat, long, caller }) => {
+  const resultJobs: PEJob[] = []
+
+  if (jobs.resultats && jobs.resultats.length) {
+    for (let i = 0; i < jobs.resultats.length; ++i) {
+      const job = transformPeJobForIdea({ job: jobs.resultats[i], lat, long, caller })
+
+      if (job.place.distance < getRoundedRadius(radius)) {
+        if (!job?.company?.name || blackListedCompanies.indexOf(job.company.name.toLowerCase()) < 0) {
+          resultJobs.push(job)
+        }
+      }
+    }
+  }
+
+  return resultJobs
+}
 
 const getPeJobs = async ({ romes, insee, radius, jobLimit, caller, diploma, api = "jobV1" }): Promise<PEResponse | IApiError> => {
   try {
-    const token = await getAccessToken("pe")
+    const token = await getAccessToken()
 
     const hasLocation = insee ? true : false
 
@@ -309,6 +235,55 @@ const getPeJobs = async ({ romes, insee, radius, jobLimit, caller, diploma, api 
   } catch (error) {
     return manageApiError({ error, api_path: api, caller, errorTitle: `getting jobs from PE (${api})` })
   }
+}
+
+export const getSomePeJobs = async ({ romes, insee, radius, lat, long, caller, diploma, opco, opcoUrl, api }) => {
+  let jobs: PEResponse | IApiError = null
+  const currentRadius = radius || 20000
+  const jobLimit = 50 //TODO: query params options or default value from properties -> size || 50
+
+  let trys = 0
+
+  while (trys < 3) {
+    jobs = await getPeJobs({ romes, insee, radius: currentRadius, jobLimit, caller, diploma, api })
+
+    if (jobs.status === 429) {
+      console.log("PE jobs api quota exceeded. Retrying : ", trys + 1)
+      // trois essais pour gérer les 429 quotas exceeded des apis PE.
+      trys++
+      await setTimeout(1000, "result")
+    } else {
+      break
+    }
+  }
+
+  if (jobs?.result == "error") {
+    return jobs
+  }
+
+  jobs = transformPeJobsForIdea({ jobs, radius: currentRadius, lat, long, caller })
+
+  // tri du résultat fusionné sur le critère de poids descendant
+  if (jobs) {
+    jobs.sort((a, b) => {
+      return b.place.distance - a.place.distance
+    })
+  }
+
+  // filtrage sur l'opco
+  if (opco || opcoUrl) {
+    jobs = await filterJobsByOpco({ opco, opcoUrl, jobs })
+  }
+
+  // suppression du siret pour les appels par API. On ne remonte le siret que dans le cadre du front LBA.
+  if (caller) {
+    // on ne remonte le siret que dans le cadre du front LBA. Cette info n'est pas remontée par API
+    jobs.forEach((job, idx) => {
+      jobs[idx].company.siret = null
+    })
+  }
+
+  return { results: jobs }
 }
 
 export const getPeJobFromId = async ({ id, caller }: { id: string; caller: string }): IApiError | { peJobs: ILbaItem[] } => {
