@@ -132,7 +132,7 @@ export class JobsController extends Controller {
     // Format establishment data returned by API
     // Initialize establishment object
     const establishment = {
-      origin: `${user.scope}-${origin}`,
+      origin: `${user.organisation}-${origin}`,
       first_name,
       last_name,
       phone,
