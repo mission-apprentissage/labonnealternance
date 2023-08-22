@@ -144,7 +144,7 @@ export default () => {
         if (opcoFromDB) {
           opcoData.opco = opcoFromDB.opco
           opcoData.idcc = opcoFromDB.idcc
-          await saveOpco({ opco: opcoCFADOCK.opcoName, idcc: opcoCFADOCK.idcc.toString(), siren, url: null })
+          await saveOpco({ opco: opcoData.opco, idcc: opcoData.idcc, siren, url: null })
         } else {
           switch (opcoCFADOCK?.searchStatus) {
             case "OK": {
