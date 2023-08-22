@@ -1,17 +1,110 @@
-// @ts-nocheck
 import distance from "@turf/distance"
-import axios from "axios"
+import axios, { AxiosRequestHeaders } from "axios"
 import { setTimeout } from "timers/promises"
 import { NIVEAUX_POUR_OFFRES_PE } from "./constant.service.js"
-import { roundDistance } from "../../common/utils/geolib.js"
+import { roundDistance } from "../common/utils/geolib.js"
 import { IApiError, manageApiError } from "../common/utils/errorManager.js"
 import { trackApiCall } from "../common/utils/sendTrackingEvent.js"
 import { itemModel } from "../model/itemModel.js"
 import { filterJobsByOpco } from "./opco.service.js"
 import { ILbaItem } from "./lbaitem.shared.service.types.js"
+import dayjs from "./dayjs.service.js"
+import config from "../config.js"
+import { PEJob, PEResponse } from "./pejob.service.types.js"
 
-//const poleEmploi = require("./common.js");
-import { getAccessToken, getRoundedRadius, peApiHeaders } from "./common.js"
+const accessTokenEndpoint = "https://entreprise.pole-emploi.fr/connexion/oauth2/access_token?realm=%2Fpartenaire"
+const contentType = "application/x-www-form-urlencoded"
+const headers = { headers: { "Content-Type": contentType }, timeout: 3000 }
+const clientId = config.esdClientId === "1234" ? process.env.ESD_CLIENT_ID : config.esdClientId
+const clientSecret = config.esdClientSecret === "1234" ? process.env.ESD_CLIENT_SECRET : config.esdClientSecret
+const scopeApisPE = `application_${clientId}%20`
+const scopeLBB = "api_labonneboitev1"
+const scopeLBA = "api_labonnealternancev1"
+const scopePE = "api_offresdemploiv2%20o2dsoffre"
+const paramApisPE = `grant_type=client_credentials&client_id=${clientId}&client_secret=${clientSecret}&scope=${scopeApisPE}`
+const paramLBB = `${paramApisPE}${scopeLBB}`
+const paramLBA = `${paramApisPE}${scopeLBA}`
+const paramPE = `${paramApisPE}${scopePE}`
+const peApiHeaders = { "Content-Type": "application/json", Accept: "application/json" } as AxiosRequestHeaders
+const tokens = {
+  lbb: null,
+  pe: null,
+}
+
+// retourne un refresh token encore valide ou null à défaut
+const getCurrentToken = (api) => {
+  const token = tokens[api]
+  const now = dayjs()
+
+  if (token && token.expiry.isAfter(now)) {
+    return token.value
+  } else {
+    return null
+  }
+}
+
+// fixe un refresh token d'une durée de <25 minutes (1490 secondes)
+const setCurrentToken = async (api, token, expiresIn) => {
+  tokens[api] = {
+    value: token,
+    expiry: dayjs().add(expiresIn - 10, "s"),
+  }
+}
+
+// récupère un token d'accès aux API de Pôle emploi
+const getAccessToken = async (api) => {
+  try {
+    if (!api) return "api_is_missing"
+    else if (api !== "lba" && api !== "lbb" && api !== "pe") return "unknown_api"
+
+    //console.log("accessToken : ", api, accessTokenEndpoint, paramLBB);
+
+    const currentToken = getCurrentToken(api)
+
+    if (currentToken) return currentToken
+    else {
+      const paramApi = api === "lbb" ? paramLBB : api === "lba" ? paramLBA : paramPE
+      const response = await axios.post(accessTokenEndpoint, paramApi, headers)
+
+      if (response.data) {
+        setCurrentToken(api, response.data.access_token, response.data.expires_in)
+        return response.data.access_token
+      } else return "no_result"
+    }
+  } catch (error) {
+    console.log(error)
+    return "error"
+  }
+}
+
+const peJobApiEndpointReferentiel = "https://api.pole-emploi.io/partenaire/offresdemploi/v2/referentiel/"
+
+/**
+ * Utilitaire à garder pour interroger les référentiels PE non documentés par ailleurs
+ * Liste des référentiels disponible sur https://www.emploi-store-dev.fr/portail-developpeur-cms/home/catalogue-des-api/documentation-des-api/api/api-offres-demploi-v2/referentiels.html
+ *
+ * @param {string} referentiel
+ */
+const getPeApiReferentiels = async (referentiel: string) => {
+  try {
+    const token = await getAccessToken("pe")
+    const headers = peApiHeaders
+    headers.Authorization = `Bearer ${token}`
+
+    const referentiels = await axios.get(`${peJobApiEndpointReferentiel}${referentiel}`, {
+      headers,
+    })
+
+    console.log(`Référentiel ${referentiel} :`, referentiels) // retour car utilisation en mode CLI uniquement
+  } catch (error) {
+    console.log("error getReferentiel ", error)
+  }
+}
+
+// formule de modification du rayon de distance pour prendre en compte les limites des communes
+const getRoundedRadius = (radius) => {
+  return radius * 1.2
+}
 
 const blackListedCompanies = ["iscod", "oktogone", "institut europeen f 2i"]
 
@@ -81,6 +174,15 @@ const transformPeJobsForIdea = ({ jobs, radius, lat, long, caller }) => {
   }
 
   return resultJobs
+}
+
+const computeJobDistanceToSearchCenter = (job: PEJob, lat: number, long: number) => {
+  // si la distance au centre du point de recherche n'est pas connue, on la calcule avec l'utilitaire distance de turf.js
+  if (job.lieuTravail && job.lieuTravail.latitude && job.lieuTravail.longitude) {
+    return roundDistance(distance([long, lat], [job.lieuTravail.longitude, job.lieuTravail.latitude]))
+  }
+
+  return null
 }
 
 // Adaptation au modèle LBA et conservation des seules infos utilisées des offres
@@ -156,67 +258,9 @@ const transformPeJobForIdea = ({ job, lat = null, long = null }): PEJob => {
   return resultJob
 }
 
-const computeJobDistanceToSearchCenter = (job, lat, long) => {
-  // si la distance au centre du point de recherche n'est pas connue, on la calcule avec l'utilitaire distance de turf.js
-  if (job.lieuTravail && job.lieuTravail.latitude && job.lieuTravail.longitude) {
-    return roundDistance(distance([long, lat], [job.lieuTravail.longitude, job.lieuTravail.latitude]))
-  }
-
-  return null
-}
-
 const peJobsApiEndpoint = "https://api.pole-emploi.io/partenaire/offresdemploi/v2/offres/search"
 const peJobApiEndpoint = "https://api.pole-emploi.io/partenaire/offresdemploi/v2/offres/"
 const peContratsAlternances = "E2,FS" //E2 -> Contrat d'Apprentissage, FS -> contrat de professionalisation
-
-// warning: type écrit à partir d'un échantillon de données
-export type PEJob = {
-  id: string
-  intitule: string
-  description: string
-  dateCreation: string
-  dateActualisation: string
-  lieuTravail: object[]
-  romeCode: string
-  romeLibelle: string
-  appellationlibelle: string
-  entreprise: object[]
-  typeContrat: string
-  typeContratLibelle: string
-  natureContrat: string
-  experienceExige: string
-  experienceLibelle: string
-  competences?: [][]
-  salaire: object[] | object
-  dureeTravailLibelle?: string
-  dureeTravailLibelleConverti?: string
-  alternance: boolean
-  contact?: object[] | object
-  agence?: object[]
-  nombrePostes: number
-  accessibleTH: boolean
-  deplacementCode?: string
-  deplacementLibelle?: string
-  qualificationCode?: string
-  qualificationLibelle?: string
-  codeNAF?: string
-  secteurActivite?: string
-  secteurActiviteLibelle?: string
-  qualitesProfessionnelles?: [][]
-  origineOffre: object[]
-  offresManqueCandidats?: boolean
-  formations?: [][]
-  langues?: [][]
-  complementExercice?: string
-}
-
-export type PEResponse = {
-  resultats: PEJob[]
-  filtresPossibles: {
-    filtre: string
-    agregation: [][]
-  }[]
-}
 
 const getPeJobs = async ({ romes, insee, radius, jobLimit, caller, diploma, api = "jobV1" }): Promise<PEResponse | IApiError> => {
   try {
