@@ -5,7 +5,13 @@ export type PEJob = {
   description: string
   dateCreation: string
   dateActualisation: string
-  lieuTravail: object[]
+  lieuTravail: {
+    libelle: string
+    latitude: number
+    longitude: number
+    codePostal: string
+    commune: string
+  }
   romeCode: string
   romeLibelle: string
   appellationlibelle: string
