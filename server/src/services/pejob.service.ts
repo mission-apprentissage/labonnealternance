@@ -7,7 +7,7 @@ import { IApiError, manageApiError } from "../common/utils/errorManager.js"
 import { trackApiCall } from "../common/utils/sendTrackingEvent.js"
 import { itemModel } from "../model/itemModel.js"
 import { filterJobsByOpco } from "./opco.service.js"
-import { ILbaItem } from "./lbaitem.shared.service.types.js"
+import { ILbaItem, LbaItem } from "./lbaitem.shared.service.types.js"
 import dayjs from "./dayjs.service.js"
 import config from "../config.js"
 import { PEJob, PEResponse } from "./pejob.service.types.js"
@@ -82,13 +82,17 @@ const getPeApiReferentiels = async (referentiel: string) => {
   }
 }
 
-// formule de modification du rayon de distance pour prendre en compte les limites des communes
+/**
+ * formule de modification du rayon de distance pour prendre en compte les limites des communes
+ */
 const getRoundedRadius = (radius) => {
   return radius * 1.2
 }
-
+/**
+ * Calcule la distance au centre de recherche lorsque l'information est manquante
+ * Dépend de turf.js
+ */
 const computeJobDistanceToSearchCenter = (job: PEJob, lat: number, long: number) => {
-  // si la distance au centre du point de recherche n'est pas connue, on la calcule avec l'utilitaire distance de turf.js
   if (job.lieuTravail && job.lieuTravail.latitude && job.lieuTravail.longitude) {
     return roundDistance(distance([long, lat], [job.lieuTravail.longitude, job.lieuTravail.latitude]))
   }
@@ -96,21 +100,32 @@ const computeJobDistanceToSearchCenter = (job: PEJob, lat: number, long: number)
   return null
 }
 
-// Adaptation au modèle LBA et conservation des seules infos utilisées des offres
-const transformPeJobForIdea = ({ job, lat = null, long = null }): PEJob => {
-  const resultJob = itemModel("peJob")
+/**
+ * Adaptation au modèle LBA et conservation des seules infos utilisées des offres
+ * @param {PEJob} job une offre Pôle Emploi
+ * @param {number | null} lat la latitude du centre de recherche
+ * @param {number | null} long la longitude du centre de recherche
+ * @return {ILbaItem}
+ */
+const transformPeJob = ({ job, lat = null, long = null }: { job: PEJob; lat: number; long: number }): ILbaItem => {
+  const resultJob = new LbaItem("peJob")
 
   resultJob.title = job.intitule
 
   //contact
   if (job.contact) {
     resultJob.contact = {}
-    if (job.contact.nom) resultJob.contact.name = job.contact.nom
-    if (job.contact.courriel) resultJob.contact.email = job.contact.courriel
-    if (job.contact.coordonnees1)
+    if (job.contact.nom) {
+      resultJob.contact.name = job.contact.nom
+    }
+    if (job.contact.courriel) {
+      resultJob.contact.email = job.contact.courriel
+    }
+    if (job.contact.coordonnees1) {
       resultJob.contact.info = `${job.contact.coordonnees1}${job.contact.coordonnees2 ? "\n" + job.contact.coordonnees2 : ""}${
         job.contact.coordonnees3 ? "\n" + job.contact.coordonnees3 : ""
       }`
+    }
   }
 
   resultJob.place = {
@@ -170,12 +185,12 @@ const transformPeJobForIdea = ({ job, lat = null, long = null }): PEJob => {
 }
 
 // update du contenu avec des résultats pertinents par rapport au rayon
-const transformPeJobsForIdea = ({ jobs, radius, lat, long, caller }) => {
+const transformPeJobs = ({ jobs, radius, lat, long, caller }) => {
   const resultJobs: PEJob[] = []
 
   if (jobs.resultats && jobs.resultats.length) {
     for (let i = 0; i < jobs.resultats.length; ++i) {
-      const job = transformPeJobForIdea({ job: jobs.resultats[i], lat, long, caller })
+      const job = transformPeJob({ job: jobs.resultats[i], lat, long, caller })
 
       if (job.place.distance < getRoundedRadius(radius)) {
         if (!job?.company?.name || blackListedCompanies.indexOf(job.company.name.toLowerCase()) < 0) {
@@ -261,7 +276,7 @@ export const getSomePeJobs = async ({ romes, insee, radius, lat, long, caller, d
     return jobs
   }
 
-  jobs = transformPeJobsForIdea({ jobs, radius: currentRadius, lat, long, caller })
+  jobs = transformPeJobs({ jobs, radius: currentRadius, lat, long, caller })
 
   // tri du résultat fusionné sur le critère de poids descendant
   if (jobs) {
@@ -303,7 +318,7 @@ export const getPeJobFromId = async ({ id, caller }: { id: string; caller: strin
 
       return { error: "not_found", result: "not_found", message: "Offre non trouvée" }
     } else {
-      const peJob = transformPeJobForIdea({ job: job.data, caller })
+      const peJob = transformPeJob({ job: job.data, caller })
 
       if (caller) {
         trackApiCall({ caller, job_count: 1, result_count: 1, api_path: "jobV1/job", response: "OK" })

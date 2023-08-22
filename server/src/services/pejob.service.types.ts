@@ -1,4 +1,13 @@
-// warning: type écrit à partir d'un échantillon de données
+// warning: types écrits à partir d'un échantillon de données
+
+type PEContact = {
+  nom: string
+  courriel: string
+  coordonnees1: string
+  coordonnees2: string
+  coordonnees3: string
+}
+
 export type PEJob = {
   id: string
   intitule: string
@@ -26,7 +35,7 @@ export type PEJob = {
   dureeTravailLibelle?: string
   dureeTravailLibelleConverti?: string
   alternance: boolean
-  contact?: object[] | object
+  contact?: PEContact
   agence?: object[]
   nombrePostes: number
   accessibleTH: boolean
