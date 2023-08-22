@@ -1,3 +1,10 @@
+# [1.75.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.74.0...v1.75.0) (2023-08-22)
+
+
+### Features
+
+* add missing job param ([ff01a22](https://github.com/mission-apprentissage/labonnealternance/commit/ff01a2271fb7269c940cb2fac5091effdc78b388))
+
 # [1.74.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.73.1...v1.74.0) (2023-08-21)
 
 
