@@ -1,3 +1,10 @@
+## [1.75.2](https://github.com/mission-apprentissage/labonnealternance/compare/v1.75.1...v1.75.2) (2023-08-22)
+
+
+### Bug Fixes
+
+* save opco if unkwnown ([dc9b17a](https://github.com/mission-apprentissage/labonnealternance/commit/dc9b17a31730ab89769a3966a233c31df4a51261))
+
 ## [1.75.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.75.0...v1.75.1) (2023-08-22)
 
 
