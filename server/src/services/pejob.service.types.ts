@@ -64,8 +64,4 @@ export type PEJob = {
 
 export type PEResponse = {
   resultats: PEJob[]
-  filtresPossibles: {
-    filtre: string
-    agregation: [][]
-  }[]
 }
