@@ -1,3 +1,10 @@
+# [1.77.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.76.0...v1.77.0) (2023-08-23)
+
+
+### Features
+
+* add missing params ([ce8db28](https://github.com/mission-apprentissage/labonnealternance/commit/ce8db287e7c3ff5388a3b9f44be21a10d463bff0))
+
 # [1.76.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.75.4...v1.76.0) (2023-08-23)
 
 
