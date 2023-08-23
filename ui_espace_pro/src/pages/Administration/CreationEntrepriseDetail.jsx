@@ -24,6 +24,7 @@ import useAuth from "../../common/hooks/useAuth"
 import { AnimationContainer, CustomInput, InformationLegaleEntreprise } from "../../components"
 import { WidgetContext } from "../../contextWidget"
 import { ArrowDropRightLine, ArrowRightLine } from "../../theme/components/icons"
+import { SIRETValidation, phoneValidation } from "../../common/validation/fieldValidations"
 
 const Formulaire = () => {
   const buttonSize = useBreakpointValue(["sm", "md"])
@@ -93,20 +94,12 @@ const Formulaire = () => {
       }}
       validationSchema={Yup.object().shape({
         establishment_raison_sociale: Yup.string().required("champs obligatoire"),
-        establishment_siret: Yup.string()
-          .matches(/^[0-9]+$/, "Le siret est composé uniquement de chiffres")
-          .min(14, "le siret est sur 14 chiffres")
-          .max(14, "le siret est sur 14 chiffres")
-          .required("champs obligatoire"),
+        establishment_siret: SIRETValidation().required("champs obligatoire"),
         address: Yup.string().required("champ obligatoire"),
         email: Yup.string().email("Insérez un email valide").required("champ obligatoire"),
         last_name: Yup.string().required("champ obligatoire"),
         first_name: Yup.string().required("champ obligatoire"),
-        phone: Yup.string()
-          .matches(/^[0-9]+$/, "Le téléphone est composé uniquement de chiffres")
-          .min(10, "le téléphone est sur 10 chiffres")
-          .max(10, "le téléphone est sur 10 chiffres")
-          .required("champ obligatoire"),
+        phone: phoneValidation().required("champ obligatoire"),
       })}
       onSubmit={submitForm}
     >
@@ -141,7 +134,7 @@ const Formulaire = () => {
   )
 }
 
-export default () => {
+export const CreationEntrepriseDetail = () => {
   const location = useLocation()
   const informationEntreprise = { ...location.state?.informationSiret, type: AUTHTYPE.ENTREPRISE }
 
@@ -178,3 +171,5 @@ export default () => {
     </AnimationContainer>
   )
 }
+
+export default CreationEntrepriseDetail

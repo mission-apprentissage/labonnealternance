@@ -9,6 +9,7 @@ import { AnimationContainer, CustomInput } from "../../components"
 import { LogoContext } from "../../contextLogo"
 import { WidgetContext } from "../../contextWidget"
 import { InfoCircle, SearchLine } from "../../theme/components/icons"
+import { SIRETValidation } from "../../common/validation/fieldValidations"
 
 const CreationCompte = () => {
   const [isCfa, setIsCfa] = useState(false)
@@ -39,12 +40,7 @@ const CreationCompte = () => {
       validateOnMount
       initialValues={{ establishment_siret: undefined }}
       validationSchema={Yup.object().shape({
-        establishment_siret: Yup.string()
-          .transform((value) => value.split(" ").join(""))
-          .matches(/^[0-9]+$/, "Le siret est composé uniquement de chiffres")
-          .min(14, "le siret est sur 14 chiffres")
-          .max(14, "le siret est sur 14 chiffres")
-          .required("champ obligatoire"),
+        establishment_siret: SIRETValidation().required("champ obligatoire"),
       })}
       onSubmit={submitSiret}
     >

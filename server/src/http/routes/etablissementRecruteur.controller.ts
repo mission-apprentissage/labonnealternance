@@ -12,24 +12,15 @@ import { getNearEtablissementsFromRomes } from "../../services/catalogue.service
 import { CFA, ENTREPRISE, ETAT_UTILISATEUR } from "../../services/constant.service.js"
 import {
   ErrorCodes,
-  entrepriseAutoValidationBAL,
   entrepriseOnboardingWorkflow,
   etablissementUnsubscribeDemandeDelegation,
-  formatEntrepriseData,
   formatReferentielData,
   getEntrepriseDataFromSiret,
   getEtablissement,
-  getEtablissementFromGouv,
   getEtablissementFromReferentiel,
-  getGeoCoordinates,
-  getIdcc,
-  getOpco,
-  getOpcoByIdcc,
   getValidationUrl,
   validateEtablissementEmail,
 } from "../../services/etablissement.service.js"
-import { ICFADock } from "../../services/etablissement.service.types.js"
-import { createFormulaire, getFormulaire } from "../../services/formulaire.service.js"
 import mailer from "../../services/mailer.service.js"
 import {
   createUser,
