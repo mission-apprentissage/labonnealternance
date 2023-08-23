@@ -5,7 +5,6 @@ import { NIVEAUX_POUR_OFFRES_PE } from "./constant.service.js"
 import { roundDistance } from "../common/utils/geolib.js"
 import { IApiError, manageApiError } from "../common/utils/errorManager.js"
 import { trackApiCall } from "../common/utils/sendTrackingEvent.js"
-import { itemModel } from "../model/itemModel.js"
 import { filterJobsByOpco } from "./opco.service.js"
 import { ILbaItem, LbaItem } from "./lbaitem.shared.service.types.js"
 import dayjs from "./dayjs.service.js"
@@ -368,9 +367,15 @@ export const getSomePeJobs = async ({ romes, insee, radius, latitude, longitude,
   return { results: jobs }
 }
 
-export const getPeJobFromId = async ({ id, caller }: { id: string; caller: string }): IApiError | { peJobs: ILbaItem[] } => {
+/**
+ * Retourne un tableau contenant la seule offre Pôle emploi identifiée
+ * @param {string} id l'identifiant technique de l'offre Pôle emploi voulue
+ * @param {string} caller l'identifiant de l'appelant de l'api
+ * @returns {Promise<ILbaItem[] | IApiError>}
+ */
+export const getPeJobFromId = async ({ id, caller }: { id: string; caller: string }) => {
   try {
-    const token = await getAccessToken("pe")
+    const token = await getAccessToken()
     const headers = peApiHeaders
     headers.Authorization = `Bearer ${token}`
 
