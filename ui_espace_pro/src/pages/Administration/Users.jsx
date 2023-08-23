@@ -85,7 +85,7 @@ const Users = () => {
       id: "errorUserList",
       label: "En erreur",
       query: {
-        establishment_raison_sociale: { $in: [null, ""] },
+        $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, USER_STATUS.ERROR] },
         $or: [{ type: AUTHTYPE.CFA }, { type: AUTHTYPE.ENTREPRISE }],
       },
     }
@@ -119,14 +119,23 @@ const Users = () => {
         },
       }) => {
         const { establishment_raison_sociale, establishment_siret, _id, opco } = data[id]
+        const siretText = (
+          <Text color="#666666" fontSize="14px">
+            SIRET {establishment_siret}
+          </Text>
+        )
         return (
           <Flex direction="column">
             <Link fontWeight="700" as={NavLink} to={`/administration/users/${_id}`} aria-label="voir les informations">
               {establishment_raison_sociale}
             </Link>
-            <Text color="#666666" fontSize="14px">
-              SIRET {establishment_siret}
-            </Text>
+            {establishment_raison_sociale ? (
+              siretText
+            ) : (
+              <Link fontWeight="700" as={NavLink} to={`/administration/users/${_id}`} aria-label="voir les informations">
+                {siretText}
+              </Link>
+            )}
             <Text color="redmarianne" fontSize="14px">
               {opco}
             </Text>
