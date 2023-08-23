@@ -66,9 +66,8 @@ export const updateJobSchema = Joi.object({
     "Master, titre ingénieur, autres formations niveau (Bac+5)"
   ),
   job_start_date: Joi.date().greater("now").iso(),
-  job_type: Joi.array().items(Joi.string().valid("Apprentissage", "Professionalisation").required()),
+  job_type: Joi.array().items(Joi.string().valid("Apprentissage", "Professionalisation")),
   job_expiration_date: Joi.string(),
-  job_status: Joi.string().valid("Active", "Annulée", "Pourvue"),
   is_disabled_elligible: Joi.boolean(),
   job_count: Joi.number(),
   job_duration: Joi.number().min(6).max(36),
