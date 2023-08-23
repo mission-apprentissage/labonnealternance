@@ -211,6 +211,11 @@ const Users = () => {
       maxWidth: "80",
       disableSortBy: true,
       accessor: (row) => {
+        const { status: statusArray = [] } = row
+        const lastStatus = statusArray[statusArray.length - 1]
+        const { status } = lastStatus
+        const canActivate = [USER_STATUS.DISABLED, USER_STATUS.WAITING].includes(status)
+        const canDeactivate = [USER_STATUS.ACTIVE, USER_STATUS.WAITING, USER_STATUS.ERROR].includes(status)
         return (
           <Box display={["none", "block"]}>
             <Menu>
@@ -225,7 +230,7 @@ const Users = () => {
                         Voir les informations
                       </Link>
                     </MenuItem>
-                    {tabIndex !== 1 && (
+                    {canActivate && (
                       <MenuItem>
                         <Link
                           onClick={() => {
@@ -237,7 +242,7 @@ const Users = () => {
                         </Link>
                       </MenuItem>
                     )}
-                    {tabIndex !== 2 && (
+                    {canDeactivate && (
                       <MenuItem>
                         <Link
                           onClick={() => {
