@@ -1,3 +1,10 @@
+## [1.77.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.77.0...v1.77.1) (2023-08-23)
+
+
+### Bug Fixes
+
+* missing comma ([2c966d9](https://github.com/mission-apprentissage/labonnealternance/commit/2c966d9114437271ad99dd9bc8e2c63e6804f2c8))
+
 # [1.77.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.76.0...v1.77.0) (2023-08-23)
 
 
