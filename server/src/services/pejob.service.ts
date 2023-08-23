@@ -252,11 +252,7 @@ const getPeJobs = async ({ romes, insee, radius, jobLimit, caller, diploma, api 
   }
 }
 
-export const getSomePeJobs = async ({ romes, insee, radius, lat, long, caller, diploma, opco, opcoUrl, api }) => {
-
- console.log("ALT / LON ",lat,long)
-
-
+export const getSomePeJobs = async ({ romes, insee, radius, latitude, longitude, caller, diploma, opco, opcoUrl, api }) => {
   let jobs: PEResponse | IApiError = null
   const currentRadius = radius || 20000
   const jobLimit = 50 //TODO: query params options or default value from properties -> size || 50
@@ -280,7 +276,7 @@ export const getSomePeJobs = async ({ romes, insee, radius, lat, long, caller, d
     return jobs
   }
 
-  jobs = transformPeJobs({ jobs, radius: currentRadius, lat, long, caller })
+  jobs = transformPeJobs({ jobs, radius: currentRadius, latitude, longitude, caller })
 
   // tri du résultat fusionné sur le critère de poids descendant
   if (jobs) {
