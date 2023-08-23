@@ -4,7 +4,7 @@ import { RncpRomes } from "../../common/model/index.js"
 import { trackApiCall } from "../../common/utils/sendTrackingEvent.js"
 import { sentryCaptureException } from "../../common/utils/sentryUtils.js"
 import { getLbaJobs } from "../../services/lbajob.service.js"
-import { getSomeLbbCompanies } from "./bonnesBoites.js"
+import { getSomeLbbCompanies } from "../../services/bonnesBoites.js"
 import { jobsQueryValidator } from "./jobsQueryValidator.js"
 import { getSomePeJobs } from "../../services/pejob.service.js"
 
