@@ -23,8 +23,8 @@ export type PEJob = {
   dateActualisation: string
   lieuTravail: {
     libelle: string
-    latitude: number
-    longitude: number
+    latitude: string
+    longitude: string
     codePostal: string
     commune: string
   }

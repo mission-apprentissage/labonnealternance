@@ -92,9 +92,9 @@ const getRoundedRadius = (radius) => {
  * Calcule la distance au centre de recherche lorsque l'information est manquante
  * Dépend de turf.js
  */
-const computeJobDistanceToSearchCenter = (job: PEJob, lat: number, long: number) => {
+const computeJobDistanceToSearchCenter = (job: PEJob, latitude: string, longitude: string) => {
   if (job.lieuTravail && job.lieuTravail.latitude && job.lieuTravail.longitude) {
-    return roundDistance(distance([long, lat], [job.lieuTravail.longitude, job.lieuTravail.latitude]))
+    return roundDistance(distance([longitude, latitude], [job.lieuTravail.longitude, job.lieuTravail.latitude]))
   }
 
   return null
@@ -103,11 +103,11 @@ const computeJobDistanceToSearchCenter = (job: PEJob, lat: number, long: number)
 /**
  * Adaptation au modèle LBA et conservation des seules infos utilisées des offres
  * @param {PEJob} job une offre Pôle Emploi
- * @param {number | null} lat la latitude du centre de recherche
- * @param {number | null} long la longitude du centre de recherche
+ * @param {string | null} latitude la latitude du centre de recherche
+ * @param {string | null} longitude la longitude du centre de recherche
  * @return {ILbaItem}
  */
-const transformPeJob = ({ job, lat = null, long = null }: { job: PEJob; lat: number; long: number }): ILbaItem => {
+const transformPeJob = ({ job, latitude = null, longitude = null }: { job: PEJob; latitude: string; longitude: string }): ILbaItem => {
   const resultJob = new LbaItem("peJob")
 
   resultJob.title = job.intitule
@@ -129,7 +129,7 @@ const transformPeJob = ({ job, lat = null, long = null }: { job: PEJob; lat: num
   }
 
   resultJob.place = {
-    distance: lat === null || lat === "" ? 0 : computeJobDistanceToSearchCenter(job, lat, long),
+    distance: latitude === null || latitude === "" ? 0 : computeJobDistanceToSearchCenter(job, latitude, longitude),
     insee: job.lieuTravail.commune,
     zipCode: job.lieuTravail.codePostal,
     city: job.lieuTravail.libelle,
@@ -185,12 +185,12 @@ const transformPeJob = ({ job, lat = null, long = null }: { job: PEJob; lat: num
 }
 
 // update du contenu avec des résultats pertinents par rapport au rayon
-const transformPeJobs = ({ jobs, radius, lat, long, caller }) => {
+const transformPeJobs = ({ jobs, radius, latitude, longitude, caller }) => {
   const resultJobs: PEJob[] = []
 
   if (jobs.resultats && jobs.resultats.length) {
     for (let i = 0; i < jobs.resultats.length; ++i) {
-      const job = transformPeJob({ job: jobs.resultats[i], lat, long, caller })
+      const job = transformPeJob({ job: jobs.resultats[i], latitude, longitude, caller })
 
       if (job.place.distance < getRoundedRadius(radius)) {
         if (!job?.company?.name || blackListedCompanies.indexOf(job.company.name.toLowerCase()) < 0) {
@@ -253,6 +253,10 @@ const getPeJobs = async ({ romes, insee, radius, jobLimit, caller, diploma, api 
 }
 
 export const getSomePeJobs = async ({ romes, insee, radius, lat, long, caller, diploma, opco, opcoUrl, api }) => {
+
+ console.log("ALT / LON ",lat,long)
+
+
   let jobs: PEResponse | IApiError = null
   const currentRadius = radius || 20000
   const jobLimit = 50 //TODO: query params options or default value from properties -> size || 50
