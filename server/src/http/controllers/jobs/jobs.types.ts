@@ -6,7 +6,15 @@ export type TResponseError = {
 }
 export type TEstablishmentResponseSuccess = IRecruiter
 
-export type TCreateEstablishmentBody = Pick<IRecruiter, "establishment_siret" | "first_name" | "last_name" | "phone" | "email" | "idcc" | "origin">
+export type TCreateEstablishmentBody = {
+  establishment_siret: string
+  first_name: string
+  last_name: string
+  phone?: string
+  email: string
+  idcc?: string
+  origin?: string
+}
 export type TJob = {
   job_level_label: string
   job_duration: number
