@@ -28,7 +28,7 @@ export const annuleFormulaire = async () => {
 
   if (!offersToCancel.length) {
     logger.info("Aucune offre à annuler.")
-    notifyToSlack({ subject: "EXPIRATION OFFRE", message: "Aucune offre à annuler" })
+    await notifyToSlack({ subject: "EXPIRATION OFFRE", message: "Aucune offre à annuler" })
     return
   }
 
@@ -37,5 +37,5 @@ export const annuleFormulaire = async () => {
   })
 
   logger.info(`${offersToCancel.length} offres expirés`)
-  notifyToSlack({ subject: "EXPIRATION OFFRE", message: `*${offersToCancel.length} offres* ont expirées et ont été annulées automatiquement` })
+  await notifyToSlack({ subject: "EXPIRATION OFFRE", message: `*${offersToCancel.length} offres* ont expirées et ont été annulées automatiquement` })
 }

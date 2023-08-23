@@ -299,6 +299,7 @@ cli
   .option("-build-index, [BuildIndex]", "réindex les bonnes boîtes", false)
   .option("-use-save, [UseSave]", "pour appliquer les données SAVE", false)
   .option("-force-recreate, [ForceRecreate]", "pour forcer la recréation", false)
+  .option("-source-file, [SourceFile]", "fichier source alternatif", null)
   .description("Met à jour la liste des sociétés bonnes alternances")
   .action((options) => {
     runScript(() => updateBonnesBoites(options))
@@ -307,6 +308,7 @@ cli
 cli
   .command("update-geo-locations")
   .option("-force-recreate, [ForceRecreate]", "pour forcer la recréation", false)
+  .option("-source-file, [SourceFile]", "fichier source alternatif", null)
   .description("Procède à la géolocalisation de masse des sociétés dans le fichier des bonnes alternances")
   .action((options) => {
     runScript(() => updateGeoLocations(options))
@@ -316,6 +318,7 @@ cli
   .command("update-opcos")
   .option("-clear-mongo, [ClearMongo]", "vide la collection des opcos", false)
   .option("-force-recreate, [ForceRecreate]", "pour forcer la recréation", false)
+  .option("-source-file, [SourceFile]", "fichier source alternatif", null)
   .description("Procède à la résolution des opcos des sociétés dans le fichier des bonnes alternances")
   .action((options) => {
     runScript(() => updateOpcoCompanies(options))
