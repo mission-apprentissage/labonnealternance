@@ -186,18 +186,18 @@ const transformPeJob = ({ job, latitude = null, longitude = null }: { job: PEJob
 
 /**
  * Converti les offres issues de l'api Pôle emploi en objets de type ILbaItem
- * @param {PEResponse} jobs offres issues de l'api offres de Pôle emploi
+ * @param {PEJob[]} jobs offres issues de l'api offres de Pôle emploi
  * @param {number} radius le rayon de recherche
  * @param {string} latitude la latitude du centre de recherche
  * @param {string} longitude la longitude du centre de recherche
  * @returns {{ results: ILbaItem[] }}
  */
-const transformPeJobs = ({ jobs, radius, latitude, longitude }: { jobs: PEResponse; radius: number; latitude: string; longitude: string }): ILbaItem[] => {
+const transformPeJobs = ({ jobs, radius, latitude, longitude }: { jobs: PEJob[]; radius: number; latitude: string; longitude: string }): ILbaItem[] => {
   const resultJobs: ILbaItem[] = []
 
-  if (jobs.resultats && jobs.resultats.length) {
-    for (let i = 0; i < jobs.resultats.length; ++i) {
-      const job = transformPeJob({ job: jobs.resultats[i], latitude, longitude })
+  if (jobs && jobs.length) {
+    for (let i = 0; i < jobs.length; ++i) {
+      const job = transformPeJob({ job: jobs[i], latitude, longitude })
 
       if (job.place.distance < getRoundedRadius(radius)) {
         if (!job?.company?.name || blackListedCompanies.indexOf(job.company.name.toLowerCase()) < 0) {
@@ -267,16 +267,16 @@ const getPeJobs = async ({ romes, insee, radius, jobLimit, caller, diploma, api 
 }
 
 export const getSomePeJobs = async ({ romes, insee, radius, latitude, longitude, caller, diploma, opco, opcoUrl, api }) => {
-  let peJobs: "" | PEResponse | IApiError = null
+  let peResponse: "" | PEResponse | IApiError = null
   const currentRadius = radius || 20000
   const jobLimit = 50 //TODO: query params options or default value from properties -> size || 50
 
   let trys = 0
 
   while (trys < 3) {
-    peJobs = await getPeJobs({ romes, insee, radius: currentRadius, jobLimit, caller, diploma, api })
+    peResponse = await getPeJobs({ romes, insee, radius: currentRadius, jobLimit, caller, diploma, api })
 
-    if ("status" in peJobs && peJobs.status === 429) {
+    if ("status" in peResponse && peResponse.status === 429) {
       console.log("PE jobs api quota exceeded. Retrying : ", trys + 1)
       // trois essais pour gérer les 429 quotas exceeded des apis PE.
       trys++
@@ -286,15 +286,11 @@ export const getSomePeJobs = async ({ romes, insee, radius, latitude, longitude,
     }
   }
 
-  if (peJobs && "error" in peJobs && peJobs?.result === "error") {
-    return peJobs
+  if (peResponse && "error" in peResponse && peResponse?.result === "error") {
+    return peResponse
   }
 
-  if (peJobs === "") {
-    return { results: [] }
-  }
-
-  let jobs = transformPeJobs({ jobs: peJobs, radius: currentRadius, latitude, longitude })
+  let jobs = transformPeJobs({ jobs: peResponse.resultats, radius: currentRadius, latitude, longitude })
 
   // tri du résultat fusionné sur le critère de poids descendant
   if (jobs) {
