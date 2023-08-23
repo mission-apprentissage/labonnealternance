@@ -5,7 +5,7 @@ import { AUTHTYPE, USER_STATUS } from "../common/contants"
 import useUserHistoryUpdate from "../common/hooks/useUserHistoryUpdate"
 import { Close } from "../theme/components/icons"
 
-export default (props) => {
+export const ConfirmationDesactivationUtilisateur = (props) => {
   const { isOpen, onClose, establishment_raison_sociale, _id, type, establishment_id, siret } = props
   const [reason, setReason] = useState()
   const disableUser = useUserHistoryUpdate(_id, USER_STATUS.DISABLED, reason)
@@ -19,6 +19,8 @@ export default (props) => {
       case AUTHTYPE.CFA:
         await Promise.all([archiveDelegatedFormulaire(siret), disableUser()])
         break
+      default:
+        throw new Error(`unsupported type: ${type}`)
     }
     onClose()
   }
@@ -76,3 +78,5 @@ export default (props) => {
     </Modal>
   )
 }
+
+export default ConfirmationDesactivationUtilisateur

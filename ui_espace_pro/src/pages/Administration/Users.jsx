@@ -215,7 +215,7 @@ const Users = () => {
         const lastStatus = statusArray[statusArray.length - 1]
         const { status } = lastStatus
         const canActivate = [USER_STATUS.DISABLED, USER_STATUS.WAITING].includes(status)
-        const canDeactivate = [USER_STATUS.ACTIVE, USER_STATUS.WAITING, USER_STATUS.ERROR].includes(status)
+        const canDeactivate = [USER_STATUS.ACTIVE, USER_STATUS.WAITING].includes(status)
         return (
           <Box display={["none", "block"]}>
             <Menu>
