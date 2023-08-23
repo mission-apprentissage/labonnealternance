@@ -1,3 +1,10 @@
+## [1.77.2](https://github.com/mission-apprentissage/labonnealternance/compare/v1.77.1...v1.77.2) (2023-08-23)
+
+
+### Bug Fixes
+
+* param naming ([cd2aae0](https://github.com/mission-apprentissage/labonnealternance/commit/cd2aae0e24d52994d821662a750d2e8170dfb0f1))
+
 ## [1.77.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.77.0...v1.77.1) (2023-08-23)
 
 
