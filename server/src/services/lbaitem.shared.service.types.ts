@@ -53,13 +53,13 @@ export interface ILbaItemPlace {
   latitude: string // formation -> lieu_formation_geo_coordonnees | pe -> lieuTravail.latitude | lbb/lba -> geo_coordinates | matcha -> geo_coordonnees
   longitude: string // formation -> lieu_formation_geo_coordonnees | pe -> lieuTravail.longitude | lbb/lba -> geo_coordinates | matcha -> geo_coordonnees
   city: string // pe -> lieuTravail.libelle | formation -> localite | pe -> city | lba -> city
-  address: string // formation -> etablissement_formateur_adresse, etablissement_formateur_complement_adresse | lbb / lba -> address -> street_number + street_name | matcha -> adresse
-  cedex: string // formation -> etablissement_formateur_cedex
+  address?: string // formation -> etablissement_formateur_adresse, etablissement_formateur_complement_adresse | lbb / lba -> address -> street_number + street_name | matcha -> adresse
+  cedex?: string // formation -> etablissement_formateur_cedex
   zipCode: string // formation -> etablissement_formateur_code_postal | pe -> lieuTravail.codePostal | lba -> zip_code
   insee: string // pe -> lieuTravail.commune, training -> code_commune_insee, lba -> insee_city_code
-  departementNumber: string // formation -> num_departement
-  region: string // formation -> region
-  remoteOnly: boolean // formation
+  departementNumber?: string // formation -> num_departement
+  region?: string // formation -> region
+  remoteOnly?: boolean // formation
 }
 
 export interface ILbaItemCompany {
@@ -125,17 +125,17 @@ export interface ILbaItemNaf {
   label: string // lbb/lba -> naf_label | matcha -> libelle_naf | pe -> secteurActiviteLibelle
 }
 
+export interface ILbaItemTrainingSession {
+  startTime: string
+  endTime: string
+  isPermanentEntry: string
+}
+
 export interface ILbaItemTraining {
   // alimentation partielle côté client à l'ouverture d'une formation
   description: string
   objectif: string
   sessions: ILbaItemTrainingSession[]
-}
-
-export interface ILbaItemTrainingSession {
-  startTime: string
-  endTime: string
-  isPermanentEntry: string
 }
 
 export class LbaItem implements ILbaItem {
