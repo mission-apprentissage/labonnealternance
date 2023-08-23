@@ -109,7 +109,7 @@ export class JobsController extends Controller {
   @OperationId("createEstablishment")
   @Security("api_key")
   public async createEstablishment(@Request() request: express.Request | any, @Body() body: TCreateEstablishmentBody): Promise<TEstablishmentResponseSuccess | TResponseError> {
-    const { first_name, last_name, phone, email, origin, establishment_siret } = body
+    const { first_name, last_name, phone, email, origin, idcc, establishment_siret } = body
     const user: ICredential = request.user
 
     const establishmentExists = await getEtablissement({ email })
@@ -140,6 +140,8 @@ export class JobsController extends Controller {
       type: ENTREPRISE,
       is_email_checked: true,
       is_qualiopi: false,
+      ocpo: user.scope,
+      idcc
       ...formatEntrepriseData(establishmentInformations.data),
     }
 
