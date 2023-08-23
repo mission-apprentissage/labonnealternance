@@ -140,7 +140,7 @@ export class JobsController extends Controller {
       type: ENTREPRISE,
       is_email_checked: true,
       is_qualiopi: false,
-      ocpo: user.scope,
+      opco: user.scope,
       idcc,
       ...formatEntrepriseData(establishmentInformations.data),
     }
