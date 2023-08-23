@@ -1,3 +1,10 @@
+## [1.75.4](https://github.com/mission-apprentissage/labonnealternance/compare/v1.75.3...v1.75.4) (2023-08-23)
+
+
+### Bug Fixes
+
+* 1368: Opco: appel sequentiel DB puis cfa doc ([#547](https://github.com/mission-apprentissage/labonnealternance/issues/547)) ([89f511f](https://github.com/mission-apprentissage/labonnealternance/commit/89f511f3129809a7d26ae6d77510511603b7f612))
+
 ## [1.75.3](https://github.com/mission-apprentissage/labonnealternance/compare/v1.75.2...v1.75.3) (2023-08-22)
 
 
