@@ -84,13 +84,20 @@ const getPeApiReferentiels = async (referentiel: string) => {
 
 /**
  * formule de modification du rayon de distance pour prendre en compte les limites des communes
+ * @param {number} radius le rayon de recherche en km
+ * @return {number}
  */
-const getRoundedRadius = (radius) => {
+const getRoundedRadius = (radius: number) => {
   return radius * 1.2
 }
+
 /**
  * Calcule la distance au centre de recherche lorsque l'information est manquante
  * Dépend de turf.js
+ * @param {PEJob} job l'offre géolocalisée dont nous n'avons pas la distance au centre
+ * @param {string} latitude la latitude du centre de recherche
+ * @param {string} longitude la longitude du centre de recherche
+ * @return {number}
  */
 const computeJobDistanceToSearchCenter = (job: PEJob, latitude: string, longitude: string) => {
   if (job.lieuTravail && job.lieuTravail.latitude && job.lieuTravail.longitude) {
@@ -192,7 +199,7 @@ const transformPeJob = ({ job, latitude = null, longitude = null }: { job: PEJob
  * @param {string} longitude la longitude du centre de recherche
  * @returns {{ results: ILbaItem[] }}
  */
-const transformPeJobs = ({ jobs, radius, latitude, longitude }: { jobs: PEJob[]; radius: number; latitude: string; longitude: string }): ILbaItem[] => {
+const transformPeJobs = ({ jobs, radius, latitude, longitude }: { jobs: PEJob[]; radius: number; latitude: string; longitude: string }) => {
   const resultJobs: ILbaItem[] = []
 
   if (jobs && jobs.length) {
@@ -210,7 +217,34 @@ const transformPeJobs = ({ jobs, radius, latitude, longitude }: { jobs: PEJob[];
   return resultJobs
 }
 
-const getPeJobs = async ({ romes, insee, radius, jobLimit, caller, diploma, api = "jobV1" }) => {
+/**
+ * Récupère une liste d'offres depuis l'API Pôle emploi
+ * @param {string[]} romes un tableau de codes ROME
+ * @param {insee} insee le code insee du centre de recherche
+ * @param {number} radius le rayon de recherche
+ * @param {number} jobLimit le nombre maximum de résultats à retourner
+ * @param {string} caller l'identifiant de l'appelant
+ * @param {string} diploma le filtre sur le diplome
+ * @param {string} api le nom de l'api utilisée pour l'appel de la fonction
+ * @returns
+ */
+const getPeJobs = async ({
+  romes,
+  insee,
+  radius,
+  jobLimit,
+  caller,
+  diploma,
+  api = "jobV1",
+}: {
+  romes: string[]
+  insee: string
+  radius: number
+  jobLimit: number
+  caller: string
+  diploma: string
+  api: string
+}) => {
   try {
     const token = await getAccessToken()
 
@@ -227,7 +261,7 @@ const getPeJobs = async ({ romes, insee, radius, jobLimit, caller, diploma, api 
 
     const distance = radius || 10
 
-    const params = {
+    const params: { codeROME: string; commune: string; sort: number; natureContrat: string; range: string; niveauFormation?: string; insee?: string; distance?: number } = {
       codeROME: romes.join(","),
       commune: codeInsee,
       sort: hasLocation ? 2 : 0, //sort: 0, TODO: remettre sort 0 après expérimentation CBS
@@ -266,10 +300,27 @@ const getPeJobs = async ({ romes, insee, radius, jobLimit, caller, diploma, api 
   }
 }
 
+/**
+ * Retourne une liste d'offres Pôle emploi au format unifié La bonne alternance
+ * applique post traitements suivants :
+ * - filtrage optionnel sur les opco
+ * - suppressions de données non autorisées pour des consommateurs extérieurs
+ *
+ * @param {string[]} romes un tableau de codes ROME
+ * @param {insee} insee le code insee du centre de recherche
+ * @param {number} radius le rayon de recherche
+ * @param {number} jobLimit le nombre maximum de résultats à retourner
+ * @param {string} caller l'identifiant de l'appelant
+ * @param {string} diploma le filtre sur le diplome
+ * @param {string} opco le filtre sur l'opco
+ * @param {string} opcoUrl le filtre sur l'url de l'opco
+ * @param {string} api le nom de l'api utilisée pour l'appel de la fonction
+ * @returns {Promise<ILbaItem[] | IApiError>}
+ */
 export const getSomePeJobs = async ({ romes, insee, radius, latitude, longitude, caller, diploma, opco, opcoUrl, api }) => {
-  let peResponse: "" | PEResponse | IApiError = null
+  let peResponse: PEResponse | IApiError = null
   const currentRadius = radius || 20000
-  const jobLimit = 50 //TODO: query params options or default value from properties -> size || 50
+  const jobLimit = 150
 
   let trys = 0
 
@@ -290,7 +341,9 @@ export const getSomePeJobs = async ({ romes, insee, radius, latitude, longitude,
     return peResponse
   }
 
-  let jobs = transformPeJobs({ jobs: peResponse.resultats, radius: currentRadius, latitude, longitude })
+  const resultats = "resultats" in peResponse ? peResponse.resultats : []
+
+  let jobs = transformPeJobs({ jobs: resultats, radius: currentRadius, latitude, longitude })
 
   // tri du résultat fusionné sur le critère de poids descendant
   if (jobs) {
