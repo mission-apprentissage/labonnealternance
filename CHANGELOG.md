@@ -1,3 +1,10 @@
+# [1.76.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.75.4...v1.76.0) (2023-08-23)
+
+
+### Features
+
+* LBAC-1462 ajout fichier source alternatif ([#546](https://github.com/mission-apprentissage/labonnealternance/issues/546)) ([9cc86fe](https://github.com/mission-apprentissage/labonnealternance/commit/9cc86fed51422ca54b95361461cd53c0c242897f))
+
 ## [1.75.4](https://github.com/mission-apprentissage/labonnealternance/compare/v1.75.3...v1.75.4) (2023-08-23)
 
 
