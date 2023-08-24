@@ -1,5 +1,5 @@
 /* eslint-disable no-use-before-define */
-import _ from "lodash-es"
+import * as _ from "lodash-es"
 import { matchSorter } from "match-sorter"
 import { getElasticInstance } from "../common/esClient/index.js"
 import { logger } from "../common/logger.js"
