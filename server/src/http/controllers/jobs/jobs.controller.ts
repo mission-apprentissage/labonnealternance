@@ -479,7 +479,6 @@ export class JobsController extends Controller {
    * Get one company identified by it's siret
    * @param {string} siret the siret number of the company looked for.
    * @param {string} caller the consumer id.
-   * @param {string} type the type of the company
    * @param {string} referer the referer provided in the HTTP query headers
    * @returns {Promise<IApiError | { lbbCompanies: ILbaItem[] } | { lbaCompanies: ILbaItem[] }>} response
    */
@@ -493,11 +492,9 @@ export class JobsController extends Controller {
     @Path() siret: string,
     @Header() @Hidden() referer?: string,
     @Query() caller?: string,
-    @Query() type?: string
   ): Promise<IApiError | { lbbCompanies: ILbaItem[] } | { lbaCompanies: ILbaItem[] }> {
     const result = await getCompanyFromSiret({
       siret,
-      type,
       referer,
       caller,
     })

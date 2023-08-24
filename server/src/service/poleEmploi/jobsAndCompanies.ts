@@ -79,7 +79,6 @@ const getJobsFromApi = async ({ query, api }) => {
             latitude: query.latitude,
             longitude: query.longitude,
             radius: parseInt(query.radius),
-            type: "lba",
             referer,
             caller,
             api,
@@ -88,21 +87,7 @@ const getJobsFromApi = async ({ query, api }) => {
             useMock,
           })
         : null,
-      sources.indexOf("lbb") >= 0
-        ? getSomeLbbCompanies({
-            romes,
-            latitude,
-            longitude,
-            radius: parseInt(radius),
-            type: "lbb",
-            referer: query.referer,
-            caller: query.caller,
-            api,
-            opco: query.opco,
-            opcoUrl: query.opcoUrl,
-            useMock: query.useMock,
-          })
-        : null,
+      null,
       sources.indexOf("matcha") >= 0
         ? getLbaJobs({
             romes,
