@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { oleoduc, transformData, writeData } from "oleoduc"
 import _ from "lodash-es"
-import { LbaCompany, UnsubscribedBonneBoite } from "../../common/model/index.js"
+import { LbaCompany, UnsubscribedLbaCompany } from "../../common/model/index.js"
 import { rebuildIndex } from "../../common/utils/esUtils.js"
 import { logMessage } from "../../common/utils/logMessage.js"
 import { insertSAVECompanies, updateSAVECompanies, removeSAVECompanies } from "./updateSAVECompanies.js"
@@ -39,7 +39,7 @@ const prepareCompany = async (rawCompany) => {
     return null
   }
 
-  const unsubscribedBonneBoite = await UnsubscribedBonneBoite.findOne({ siret: rawCompany.siret }, { siret: 1, _id: 0 })
+  const unsubscribedBonneBoite = await UnsubscribedLbaCompany.findOne({ siret: rawCompany.siret }, { siret: 1, _id: 0 })
   if (unsubscribedBonneBoite) {
     return null
   }

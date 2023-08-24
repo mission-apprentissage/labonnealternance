@@ -1,8 +1,8 @@
 import { model, Schema } from "../../../mongodb.js"
 import { lbaCompanySchema } from "../lbaCompany/lbaCompany.schema.js"
-import { IUnsubscribedBonneBoite } from "./unsubscribedBonneBoite.types.js"
+import { IUnsubscribedLbaCompany } from "./unsubscribedLbaCompany.types.js"
 
-const unsubscribedBonneBoiteSchema = new Schema<IUnsubscribedBonneBoite>({
+const unsubscribedLbaCompanySchema = new Schema<IUnsubscribedLbaCompany>({
   ...lbaCompanySchema.obj,
   unsubscribe_date: {
     type: Date,
@@ -16,4 +16,4 @@ const unsubscribedBonneBoiteSchema = new Schema<IUnsubscribedBonneBoite>({
   },
 })
 
-export default model<IUnsubscribedBonneBoite>("unsubscribedbonnesboites", unsubscribedBonneBoiteSchema)
+export default model<IUnsubscribedLbaCompany>("unsubscribedbonnesboites", unsubscribedLbaCompanySchema)

@@ -1,4 +1,4 @@
-import { LbaCompany, UnsubscribedBonneBoite } from "../../common/model/index.js"
+import { LbaCompany, UnsubscribedLbaCompany } from "../../common/model/index.js"
 import express from "express"
 import rateLimit from "express-rate-limit"
 import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
@@ -35,7 +35,7 @@ export default function () {
       } else if (bonnesBoitesToUnsubscribe.length > 1) {
         result = UNSUBSCRIBE_EMAIL_ERRORS["ETABLISSEMENTS_MULTIPLES"]
       } else {
-        const unsubscribedBonneBoite = new UnsubscribedBonneBoite({
+        const unsubscribedBonneBoite = new UnsubscribedLbaCompany({
           ...bonnesBoitesToUnsubscribe[0],
           unsubscribe_reason: reason,
         })
