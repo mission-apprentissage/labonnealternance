@@ -290,8 +290,11 @@ export const getEtablissementFromCatalogue = async (siret: string): Promise<IEta
 export const getGeoCoordinates = async (adresse: string): Promise<string> => {
   try {
     const response: AxiosResponse<IAPIAdresse> = await axios.get(`https://api-adresse.data.gouv.fr/search/?q=${adresse}`)
-    const coordinates = response.data.features[0] ? response.data.features[0].geometry.coordinates.reverse().join(",") : "NOT FOUND"
-    return coordinates
+    const [firstFeature] = response.data?.features
+    if (!firstFeature) {
+      return "NOT FOUND"
+    }
+    return firstFeature.geometry.coordinates.reverse().join(",")
   } catch (error) {
     sentryCaptureException(error)
     return "NOT FOUND"
@@ -477,9 +480,10 @@ export const getEntrepriseDataFromSiret = async ({ siret, fromDashboardCfa, cfa_
     }
   }
   const entrepriseData = formatEntrepriseData(result.data)
-  const geo_coordinates = await getGeoCoordinates(`${entrepriseData.address_detail.acheminement_postal.l4}, ${entrepriseData.address_detail.acheminement_postal.l6}`)
-  // TODO return error
-  const opcoData = await getOpcoData(siret)
+  const [geo_coordinates, opcoData] = await Promise.all([
+    getGeoCoordinates(`${entrepriseData.address_detail.acheminement_postal.l4}, ${entrepriseData.address_detail.acheminement_postal.l6}`),
+    getOpcoData(siret),
+  ])
   return { ...entrepriseData, ...opcoData, geo_coordinates }
 }
 

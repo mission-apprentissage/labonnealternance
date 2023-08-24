@@ -73,7 +73,7 @@ export default () => {
     "/entreprise/:siret",
     tryCatch(async (req, res) => {
       const siret: string | undefined = req.params.siret
-      const fromDashboardCfa = Boolean(req.query.fromDashboardCfa)
+      const fromDashboardCfa = req.query.fromDashboardCfa === "true"
       const cfa_delegated_siret: string | undefined = req.query.cfa_delegated_siret
       if (!siret) {
         return res.status(400).json({ error: true, message: "Le numéro siret est obligatoire." })
@@ -116,9 +116,9 @@ export default () => {
         return res.status(400).json({ error: true, message: "Le numéro siret est obligatoire." })
       }
 
-      const exist = await getEtablissement({ establishment_siret: req.params.siret, type: CFA })
+      const cfaUserRecruteurOpt = await getEtablissement({ establishment_siret: req.params.siret, type: CFA })
 
-      if (exist) {
+      if (cfaUserRecruteurOpt) {
         return res.status(403).json({
           error: true,
           reason: "EXIST",
@@ -188,9 +188,9 @@ export default () => {
           const formatedEmail = req.body.email.toLocaleLowerCase()
 
           // check if user already exist
-          const exist = await getUser({ email: formatedEmail })
+          const userRecruteurOpt = await getUser({ email: formatedEmail })
 
-          if (exist) {
+          if (userRecruteurOpt) {
             return res.status(403).json({ error: true, message: "L'adresse mail est déjà associée à un compte La bonne alternance." })
           }
 

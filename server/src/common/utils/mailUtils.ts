@@ -22,12 +22,11 @@ export const checkIfUserMailExistInReferentiel = (contactList, userEmail): boole
  * @returns {string[]}
  */
 export const getAllDomainsFromEmailList = (contactList) => {
-  return [...new Set(contactList.map(getEmailDomain))]
+  return [...new Set(contactList.flatMap((email) => (email ? [getEmailDomain(email)] : [])))]
 }
 
 export const isEmailFromPrivateCompany = (userEmail: string) => mailController.isCompanyEmail(userEmail)
 
 export const isEmailSameDomain = (email1: string, email2: string) => {
-  // TODO check if subdomain are allowed
-  return getEmailDomain(email2).includes(getEmailDomain(email1))
+  return getEmailDomain(email2) === getEmailDomain(email1)
 }

@@ -12,8 +12,10 @@ export const checkAwaitingCompaniesValidation = async () => {
   logger.info(`Start update missing validation state for companies...`)
   const stat = { validated: 0, notFound: 0, total: 0 }
 
-  // TODO check cette query pour voir si status peut avoir une taille > 1
-  const entreprises = await UserRecruteur.find({ type: ENTREPRISE, status: { $size: 1 }, "status.status": ETAT_UTILISATEUR.ATTENTE })
+  const entreprises = await UserRecruteur.find({
+    $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, ETAT_UTILISATEUR.ATTENTE] },
+    type: ENTREPRISE,
+  })
 
   if (!entreprises.length) {
     notifyToSlack({ subject: "USER VALIDATION", message: "Aucunes entreprises à contrôler" })
