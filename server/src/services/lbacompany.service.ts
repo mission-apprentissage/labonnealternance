@@ -11,13 +11,14 @@ import { LbaCompany } from "../common/model/index.js"
 import { getApplicationByCompanyCount } from "./application.service.js"
 import { trackApiCall } from "../common/utils/sendTrackingEvent.js"
 import { LbaItem } from "./lbaitem.shared.service.types.js"
+import { ILbaCompanyEsResult } from "./lbacompany.service.types.js"
 
 const esClient = getElasticInstance()
 
 /**
  * Adaptation au modèle LBA
  * @param {PEJob} company une société issue de l'algo
- * 
+ *
  * @return {ILbaItem}
  */
 const transformCompany = ({ company, caller, contactAllowedOrigin, applicationCountByCompany }) => {
@@ -115,7 +116,39 @@ export const getSomeCompanies = async ({ romes, latitude, longitude, radius, ref
   }
 }
 
-
+/**
+ * Retourn le bloc de paramètres commun à toutes les recherches ES sur les sociétés issues de l'algo
+ * @param {number} limit le nombre maximum de sociétés à remonter
+ * @returns {object}
+ */
+const getCompanyEsQueryIndexFragment = (limit: number) => {
+  return {
+    //index: "mnaformation",
+    index: "bonnesboites",
+    size: limit,
+    _source_includes: [
+      "siret",
+      "recruitment_potential",
+      "raison_sociale",
+      "enseigne",
+      "naf_code",
+      "naf_label",
+      "rome_codes",
+      "street_number",
+      "street_name",
+      "insee_city_code",
+      "zip_code",
+      "city",
+      "geo_coordinates",
+      "email",
+      "phone",
+      "company_size",
+      "algorithm_origin",
+      "opco",
+      "opco_url",
+    ],
+  }
+}
 
 /**
  * Retourne des sociétés issues de l'algo matchant les critères en paramètres
@@ -130,11 +163,31 @@ export const getSomeCompanies = async ({ romes, latitude, longitude, radius, ref
  * @param {string} api l'identifiant du endpoint api utilisé pour exploiter cette fonction
  * @returns {Promise<| IApiError>}
  */
-const getCompanies = async ({ romes, latitude, longitude, radius, companyLimit, caller, opco, opcoUrl, api = "jobV1" }) => {
+const getCompanies = async ({
+  romes,
+  latitude,
+  longitude,
+  radius,
+  companyLimit,
+  caller,
+  opco,
+  opcoUrl,
+  api = "jobV1",
+}: {
+  romes: string
+  latitude: string
+  longitude: string
+  radius: number
+  companyLimit: number
+  caller?: string
+  opco?: string
+  opcoUrl?: string
+  api: string
+}) => {
   try {
     const distance = radius || 10
 
-    const mustTerm = [
+    const mustTerm: object[] = [
       {
         match: {
           rome_codes: romes.split(",").join(" "),
@@ -162,7 +215,7 @@ const getCompanies = async ({ romes, latitude, longitude, radius, companyLimit, 
 
     const esQuerySort = {
       sort: [
-        latitude || latitude === 0
+        latitude
           ? {
               _geo_distance: {
                 geo_coordinates: [parseFloat(longitude), parseFloat(latitude)],
@@ -170,14 +223,11 @@ const getCompanies = async ({ romes, latitude, longitude, radius, companyLimit, 
                 unit: "km",
                 mode: "min",
                 distance_type: "arc",
-                ignore_unmapped: true,
-              },
-            }
-          : "_score",
+                ignore_unmapped: true,Promise<>
       ],
     }
 
-    let esQuery = {
+    let esQuery: object = {
       query: {
         bool: {
           must: mustTerm,
@@ -185,7 +235,7 @@ const getCompanies = async ({ romes, latitude, longitude, radius, companyLimit, 
       },
     }
 
-    if (latitude || latitude === 0) {
+    if (latitude) {
       esQuery.query.bool.filter = {
         geo_distance: {
           distance: `${distance}km`,
@@ -211,13 +261,13 @@ const getCompanies = async ({ romes, latitude, longitude, radius, companyLimit, 
       },
     })
 
-    const companies = []
+    const companies: ILbaCompany[] = []
 
     responseCompanies.body.hits.hits.forEach((company) => {
-      companies.push({ ...company._source, distance: latitude || latitude === 0 ? company.sort : null })
+      companies.push({ ...company._source, distance: latitude ? company.sort : null })
     })
 
-    if (!latitude && latitude !== 0) {
+    if (!latitude) {
       companies.sort(function (a, b) {
         return a.enseigne.toLowerCase().localeCompare(b.enseigne.toLowerCase())
       })
@@ -229,7 +279,14 @@ const getCompanies = async ({ romes, latitude, longitude, radius, companyLimit, 
   }
 }
 
-export const getCompanyFromSiret = async ({ siret, referer, caller }): IApiError | { lbbCompanies: ILbaItem[] } | { lbaCompanies: ILbaItem[] } => {
+/**
+ * Retourne une société issue de l'algo identifiée par sont SIRET
+ * @param {string} siret
+ * @param {string} referer
+ * @param {string} caller
+ * @returns {Promise<IApiError | { lbaCompanies: LbaItem[] }>}
+ */
+export const getCompanyFromSiret = async ({ siret, referer, caller }: { siret: string; referer: string; caller: string }) => {
   try {
     const bonneBoite = await LbaCompany.findOne({ siret })
 
@@ -262,35 +319,6 @@ export const getCompanyFromSiret = async ({ siret, referer, caller }): IApiError
       caller,
       errorTitle: "getting company by Siret from local ES",
     })
-  }
-}
-
-const getCompanyEsQueryIndexFragment = (limit) => {
-  return {
-    //index: "mnaformation",
-    index: "bonnesboites",
-    size: limit,
-    _source_includes: [
-      "siret",
-      "recruitment_potential",
-      "raison_sociale",
-      "enseigne",
-      "naf_code",
-      "naf_label",
-      "rome_codes",
-      "street_number",
-      "street_name",
-      "insee_city_code",
-      "zip_code",
-      "city",
-      "geo_coordinates",
-      "email",
-      "phone",
-      "company_size",
-      "algorithm_origin",
-      "opco",
-      "opco_url",
-    ],
   }
 }
 
