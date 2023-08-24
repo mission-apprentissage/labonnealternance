@@ -9,7 +9,7 @@ export default function useUserHistoryUpdate(userId, status, reason = undefined)
   const client = useQueryClient()
   const toast = useToast()
 
-  const update = useCallback(async () => {
+  return useCallback(async () => {
     await updateUserValidationHistory(userId, {
       validation_type: "MANUELLE",
       user: auth.id,
@@ -27,5 +27,4 @@ export default function useUserHistoryUpdate(userId, status, reason = undefined)
         })
       )
   }, [auth.id, client, reason, status, toast, userId])
-  return update
 }
