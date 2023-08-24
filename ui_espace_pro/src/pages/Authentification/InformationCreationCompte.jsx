@@ -49,10 +49,10 @@ const Formulaire = ({ submitForm }) => {
             <FormulaireLayout
               left={
                 <>
-                  <CustomInput required={true} name="last_name" label="Nom" type="text" value={values.last_name} />
-                  <CustomInput required={true} name="first_name" label="Prénom" type="text" value={values.first_name} />
+                  <CustomInput required={false} name="last_name" label="Nom" type="text" value={values.last_name} />
+                  <CustomInput required={false} name="first_name" label="Prénom" type="text" value={values.first_name} />
                   <CustomInput
-                    required={true}
+                    required={false}
                     name="phone"
                     label="Numéro de téléphone"
                     type="tel"
@@ -67,7 +67,7 @@ const Formulaire = ({ submitForm }) => {
                   />
                   <CustomInput
                     sx={{ textTransform: "lowercase" }}
-                    required={true}
+                    required={false}
                     isDisabled={email ? true : false}
                     name="email"
                     label="Email"

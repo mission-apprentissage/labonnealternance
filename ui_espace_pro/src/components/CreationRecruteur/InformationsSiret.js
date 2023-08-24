@@ -3,7 +3,7 @@ import { AUTHTYPE } from "../../common/contants"
 import { ExternalLinkLine, InfoCircle } from "../../theme/components/icons"
 import { useNavigate } from "react-router-dom"
 
-export const InformationsSiret = ({ type, proposeLogin = true }) => {
+export const InformationsSiret = ({ type }) => {
   const navigate = useNavigate()
 
   return (
@@ -55,17 +55,15 @@ export const InformationsSiret = ({ type, proposeLogin = true }) => {
           )}
         </Text>
       </Flex>
-      {proposeLogin && (
-        <Box mt={5}>
-          <Heading fontSize="24px" mb={3}>
-            Vous avez déjà déposé une offre en alternance par le passé ?
-          </Heading>
-          <Text>Connectez-vous à votre compte entreprise pour publier de nouvelles offres et administrer vos offres existantes.</Text>
-          <Button variant="primary" mt={4} onClick={() => navigate("/authentification")}>
-            Me connecter
-          </Button>
-        </Box>
-      )}
+      <Box mt={5}>
+        <Heading fontSize="24px" mb={3}>
+          Vous avez déjà déposé une offre en alternance par le passé ?
+        </Heading>
+        <Text>Connectez-vous à votre compte entreprise pour publier de nouvelles offres et administrer vos offres existantes.</Text>
+        <Button variant="primary" mt={4} onClick={() => navigate("/authentification")}>
+          Me connecter
+        </Button>
+      </Box>
     </>
   )
 }

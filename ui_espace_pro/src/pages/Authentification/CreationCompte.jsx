@@ -168,7 +168,7 @@ export const CreationCompte = ({ type, widget }) => {
               <InformationLegaleEntreprise {...qualiopi} />
             ) : (
               <Section>
-                <InformationsSiret type={type} proposeLogin={wid} />
+                <InformationsSiret type={type} />
               </Section>
             )}
           </Box>
