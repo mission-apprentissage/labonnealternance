@@ -1,68 +1,25 @@
-// @ts-nocheck
 import { getElasticInstance } from "../common/esClient/index.js"
 import { encryptMailWithIV } from "../common/utils/encryptString.js"
 import { IApiError, manageApiError } from "../common/utils/errorManager.js"
 import { isAllowedSource } from "../common/utils/isAllowedSource.js"
-import { itemModel } from "../model/itemModel.js"
 
 import { roundDistance } from "../common/utils/geolib.js"
 import { lbbMock } from "../mocks/lbbs-mock.js"
 import { BonnesBoites } from "../common/model/index.js"
 import { getApplicationByCompanyCount } from "./application.service.js"
 import { trackApiCall } from "../common/utils/sendTrackingEvent.js"
+import { LbaItem } from "./lbaitem.shared.service.types.js"
 
 const esClient = getElasticInstance()
 
-const getSomeLbbCompanies = async ({ romes, latitude, longitude, radius, type, referer, caller, opco, opcoUrl, api = "jobV1", useMock }) => {
-  const hasLocation = latitude === undefined ? false : true
-  const currentRadius = hasLocation ? radius : 21000
-  const companyLimit = 150 //TODO: query params options or default value from properties -> size || 100
-
-  if (useMock && useMock !== "false") {
-    return { results: [lbbMock] }
-  } else {
-    const companies = await getLbbCompanies({
-      romes,
-      latitude,
-      longitude,
-      radius: currentRadius,
-      companyLimit,
-      type,
-      caller,
-      api,
-      opco,
-      opcoUrl,
-    })
-    if (companies && companies.length) {
-      const sirets = companies.map(({ siret }) => siret)
-      const applicationCountByCompany = await getApplicationByCompanyCount(sirets)
-      return transformLbbCompaniesForIdea({ companies, radius, type, referer, caller, applicationCountByCompany })
-    }
-    return companies
-  }
-}
-
-const transformLbbCompaniesForIdea = ({ companies = [], type, referer, caller, applicationCountByCompany }) => {
-  if (!companies?.length) {
-    return { results: [] }
-  }
-  return {
-    results: companies.map((company) => {
-      const contactAllowedOrigin = isAllowedSource({ referer, caller })
-      return transformLbbCompanyForIdea({
-        company,
-        type,
-        contactAllowedOrigin,
-        caller,
-        applicationCountByCompany,
-      })
-    }),
-  }
-}
-
-// Adaptation au modèle Idea et conservation des seules infos utilisées des offres
-const transformLbbCompanyForIdea = ({ company, type, caller, contactAllowedOrigin, applicationCountByCompany }) => {
-  const resultCompany = itemModel(type)
+/**
+ * Adaptation au modèle LBA
+ * @param {PEJob} company une société issue de l'algo
+ * 
+ * @return {ILbaItem}
+ */
+const transformCompany = ({ company, caller, contactAllowedOrigin, applicationCountByCompany }) => {
+  const resultCompany = new LbaItem("lba")
 
   resultCompany.title = company.enseigne
   const email = encryptMailWithIV({ value: company.email !== "null" ? company.email : "", caller })
@@ -91,22 +48,12 @@ const transformLbbCompanyForIdea = ({ company, type, caller, contactAllowedOrigi
     name: company.enseigne,
     siret: company.siret,
     size: company.company_size,
-    //socialNetwork: company.social_network,
     url: company.website,
     opco: {
       label: company.opco,
       url: company.opco_url,
     },
   }
-
-  //resultCompany.url = company.url;
-
-  /*resultCompany.romes = [
-    {
-      code: company.matched_rome_code,
-      label: company.matched_rome_label,
-    },
-  ];*/
 
   resultCompany.nafs = [
     {
@@ -121,7 +68,54 @@ const transformLbbCompanyForIdea = ({ company, type, caller, contactAllowedOrigi
   return resultCompany
 }
 
-const getLbbCompanies = async ({ romes, latitude, longitude, radius, companyLimit, type, caller, opco, opcoUrl, api = "jobV1" }) => {
+const transformCompanies = ({ companies = [], referer, caller, applicationCountByCompany }) => {
+  if (!companies?.length) {
+    return { results: [] }
+  }
+  return {
+    results: companies.map((company) => {
+      const contactAllowedOrigin = isAllowedSource({ referer, caller })
+      return transformCompany({
+        company,
+        contactAllowedOrigin,
+        caller,
+        applicationCountByCompany,
+      })
+    }),
+  }
+}
+
+export const getSomeCompanies = async ({ romes, latitude, longitude, radius, referer, caller, opco, opcoUrl, api = "jobV1", useMock }) => {
+  const hasLocation = latitude === undefined ? false : true
+  const currentRadius = hasLocation ? radius : 21000
+  const companyLimit = 150 //TODO: query params options or default value from properties -> size || 100
+
+  if (useMock && useMock !== "false") {
+    return { results: [lbbMock] }
+  } else {
+    const companies = await getCompanies({
+      romes,
+      latitude,
+      longitude,
+      radius: currentRadius,
+      companyLimit,
+      caller,
+      api,
+      opco,
+      opcoUrl,
+    })
+    if (companies && companies.length) {
+      const sirets = companies.map(({ siret }) => siret)
+      const applicationCountByCompany = await getApplicationByCompanyCount(sirets)
+      return transformCompanies({ companies, radius, referer, caller, applicationCountByCompany })
+    }
+    return companies
+  }
+}
+
+
+
+const getCompanies = async ({ romes, latitude, longitude, radius, companyLimit, caller, opco, opcoUrl, api = "jobV1" }) => {
   try {
     const distance = radius || 10
 
@@ -129,11 +123,6 @@ const getLbbCompanies = async ({ romes, latitude, longitude, radius, companyLimi
       {
         match: {
           rome_codes: romes.split(",").join(" "),
-        },
-      },
-      {
-        match: {
-          algorithm_origin: type,
         },
       },
     ]
@@ -154,7 +143,7 @@ const getLbbCompanies = async ({ romes, latitude, longitude, radius, companyLimi
       })
     }
 
-    const esQueryIndexFragment = getBonnesBoitesEsQueryIndexFragment(companyLimit)
+    const esQueryIndexFragment = getCompanyEsQueryIndexFragment(companyLimit)
 
     const esQuerySort = {
       sort: [
@@ -225,16 +214,15 @@ const getLbbCompanies = async ({ romes, latitude, longitude, radius, companyLimi
   }
 }
 
-const getCompanyFromSiret = async ({ siret, referer, caller, type }): IApiError | { lbbCompanies: ILbaItem[] } | { lbaCompanies: ILbaItem[] } => {
+export const getCompanyFromSiret = async ({ siret, referer, caller }): IApiError | { lbbCompanies: ILbaItem[] } | { lbaCompanies: ILbaItem[] } => {
   try {
     const bonneBoite = await BonnesBoites.findOne({ siret })
 
     if (bonneBoite) {
       const applicationCountByCompany = await getApplicationByCompanyCount([bonneBoite.siret])
 
-      const company = transformLbbCompanyForIdea({
+      const company = transformCompany({
         company: bonneBoite,
-        type,
         contactAllowedOrigin: isAllowedSource({ referer, caller }),
         caller,
         applicationCountByCompany,
@@ -244,7 +232,7 @@ const getCompanyFromSiret = async ({ siret, referer, caller, type }): IApiError 
         trackApiCall({ caller, api_path: "jobV1/company", job_count: 1, result_count: 1, response: "OK" })
       }
 
-      return type === "lbb" ? { lbbCompanies: [company] } : { lbaCompanies: [company] }
+      return { lbaCompanies: [company] }
     } else {
       if (caller) {
         trackApiCall({ caller, api_path: "jobV1/company", job_count: 0, result_count: 0, response: "OK" })
@@ -262,7 +250,7 @@ const getCompanyFromSiret = async ({ siret, referer, caller, type }): IApiError 
   }
 }
 
-const getBonnesBoitesEsQueryIndexFragment = (limit) => {
+const getCompanyEsQueryIndexFragment = (limit) => {
   return {
     //index: "mnaformation",
     index: "bonnesboites",
@@ -290,5 +278,3 @@ const getBonnesBoitesEsQueryIndexFragment = (limit) => {
     ],
   }
 }
-
-export { getSomeLbbCompanies, getCompanyFromSiret }

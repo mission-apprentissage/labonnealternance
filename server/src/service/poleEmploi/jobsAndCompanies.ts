@@ -4,7 +4,7 @@ import { RncpRomes } from "../../common/model/index.js"
 import { trackApiCall } from "../../common/utils/sendTrackingEvent.js"
 import { sentryCaptureException } from "../../common/utils/sentryUtils.js"
 import { getLbaJobs } from "../../services/lbajob.service.js"
-import { getSomeLbbCompanies } from "../../services/lbacompany.service.js"
+import { getSomeCompanies } from "../../services/lbacompany.service.js"
 import { jobsQueryValidator } from "./jobsQueryValidator.js"
 import { getSomePeJobs } from "../../services/pejob.service.js"
 
@@ -74,7 +74,7 @@ const getJobsFromApi = async ({ query, api }) => {
           })
         : null,
       sources.indexOf("lba") >= 0
-        ? getSomeLbbCompanies({
+        ? getSomeCompanies({
             romes,
             latitude: query.latitude,
             longitude: query.longitude,
