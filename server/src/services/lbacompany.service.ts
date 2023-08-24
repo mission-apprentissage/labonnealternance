@@ -223,7 +223,10 @@ const getCompanies = async ({
                 unit: "km",
                 mode: "min",
                 distance_type: "arc",
-                ignore_unmapped: true,Promise<>
+                ignore_unmapped: true,
+              },
+            }
+          : "_score",
       ],
     }
 
