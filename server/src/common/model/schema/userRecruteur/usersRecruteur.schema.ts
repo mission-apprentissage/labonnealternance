@@ -1,5 +1,6 @@
 import { mongoosePagination, Pagination } from "mongoose-paginate-ts"
 import { model, Schema } from "../../../mongodb.js"
+import { ETAT_UTILISATEUR } from "../../../../services/constant.service.js"
 import { IUserRecruteur, IUserValidation } from "./userRecruteur.types.js"
 
 const userValidationSchema = new Schema<IUserValidation>(
@@ -11,7 +12,7 @@ const userValidationSchema = new Schema<IUserValidation>(
     },
     status: {
       type: String,
-      enum: ["EN ATTENTE DE VALIDATION", "VALIDÉ", "DESACTIVÉ"],
+      enum: Object.values(ETAT_UTILISATEUR),
       description: "Statut de l'utilisateur",
     },
     reason: {

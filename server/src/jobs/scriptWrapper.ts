@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { isEmpty } from "lodash-es"
 import { access, mkdir } from "node:fs/promises"
 import prettyMilliseconds from "pretty-ms"
@@ -47,7 +46,7 @@ const ensureOutputDirExists = async () => {
   return outputDir
 }
 
-const exit = async (scriptError) => {
+const exit = async (scriptError?: any) => {
   if (scriptError) {
     logger.error(scriptError.constructor.name === "EnvVarError" ? scriptError.message : scriptError)
     process.exitCode = 1
