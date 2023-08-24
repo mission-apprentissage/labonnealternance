@@ -1,4 +1,4 @@
-interface IBonneBoite {
+interface ILbaCompany {
   siret: string
   recruitment_potential: number
   raison_sociale: string
@@ -24,4 +24,4 @@ interface IBonneBoite {
   last_update_at: Date
 }
 
-export { IBonneBoite }
+export { ILbaCompany }

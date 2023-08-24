@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { oleoduc, transformData, writeData } from "oleoduc"
-import { BonnesBoites } from "../../common/model/index.js"
+import { LbaCompany } from "../../common/model/index.js"
 import { logMessage } from "../../common/utils/logMessage.js"
 import { downloadSAVEFile, getCompanyMissingData, initMaps, streamSAVECompanies } from "./bonnesBoitesUtils.js"
 
@@ -21,7 +21,7 @@ export const updateSAVECompanies = async () => {
     ),
     writeData(async (company) => {
       try {
-        const bonneBoite = await BonnesBoites.findOne({ siret: company.siret })
+        const bonneBoite = await LbaCompany.findOne({ siret: company.siret })
 
         if (bonneBoite) {
           if (company.raison_sociale) {
@@ -83,9 +83,9 @@ export const insertSAVECompanies = async () => {
       const company = await getCompanyMissingData(rawCompany)
       if (company) {
         try {
-          let bonneBoite = await BonnesBoites.findOne({ siret: company.siret })
+          let bonneBoite = await LbaCompany.findOne({ siret: company.siret })
           if (!bonneBoite) {
-            bonneBoite = new BonnesBoites(company)
+            bonneBoite = new LbaCompany(company)
             await bonneBoite.save()
           }
         } catch (err) {
@@ -114,7 +114,7 @@ export const removeSAVECompanies = async () => {
       { parallel: 8 }
     ),
     writeData(async (company) => {
-      await BonnesBoites.deleteOne({ siret: company.siret })
+      await LbaCompany.deleteOne({ siret: company.siret })
     })
   )
 

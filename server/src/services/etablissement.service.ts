@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from "axios"
-import { BonneBoiteLegacy, BonnesBoites, Etablissement, ReferentielOpco, UnsubscribeOF, UserRecruteur } from "../common/model/index.js"
-import { IBonneBoite } from "../common/model/schema/bonneboite/bonneboite.types.js"
+import { LbaCompanyLegacy, LbaCompany, Etablissement, ReferentielOpco, UnsubscribeOF, UserRecruteur } from "../common/model/index.js"
+import { ILbaCompany } from "../common/model/schema/lbaCompany/lbaCompany.types.js"
 import { IEtablissement } from "../common/model/schema/etablissements/etablissement.types.js"
 import { IReferentielOpco } from "../common/model/schema/referentielOpco/referentielOpco.types.js"
 import { IUserRecruteur } from "../common/model/schema/userRecruteur/userRecruteur.types.js"
@@ -307,17 +307,17 @@ export const getEstablishmentFromOpcoReferentiel = async (siretCode: IReferentie
 export const getAllEstablishmentFromOpcoReferentiel = async (query: Filter<IReferentielOpco>): Promise<IReferentielOpco[]> => await ReferentielOpco.find(query).lean()
 /**
  * @description Get all matching records from the BonneBoiteLegacy collection
- * @param {Filter<IBonneBoite>} query
- * @returns {Promise<IBonneBoite["email"]>}
+ * @param {Filter<ILbaCompany>} query
+ * @returns {Promise<ILbaCompany["email"]>}
  */
-export const getAllEstablishmentFromBonneBoiteLegacy = async (query: Filter<IBonneBoite>): Promise<IBonneBoite[]> =>
-  await BonneBoiteLegacy.find(query).select({ email: 1, _id: 0 }).lean()
+export const getAllEstablishmentFromBonneBoiteLegacy = async (query: Filter<ILbaCompany>): Promise<ILbaCompany[]> =>
+  await LbaCompanyLegacy.find(query).select({ email: 1, _id: 0 }).lean()
 /**
  * @description Get all matching records from the BonnesBoites collection
- * @param {Filter<IBonneBoite>} query
- * @returns {Promise<IBonneBoite["email"]>}
+ * @param {Filter<ILbaCompany>} query
+ * @returns {Promise<ILbaCompany["email"]>}
  */
-export const getAllEstablishmentFromBonneBoite = async (query: Filter<IBonneBoite>): Promise<IBonneBoite[]> => await BonnesBoites.find(query).select({ email: 1, _id: 0 }).lean()
+export const getAllEstablishmentFromBonneBoite = async (query: Filter<ILbaCompany>): Promise<ILbaCompany[]> => await LbaCompany.find(query).select({ email: 1, _id: 0 }).lean()
 /**
  * @description Chech if a given email is included in the given email list array
  * @param {String} email

@@ -8,7 +8,7 @@ import config from "../../config.js"
 import __dirname from "../../common/dirname.js"
 import { compose, oleoduc, writeData } from "oleoduc"
 import geoData from "../../common/utils/geoData.js"
-import { EmailBlacklist, BonnesBoites, GeoLocation, Opco } from "../../common/model/index.js"
+import { EmailBlacklist, LbaCompany, GeoLocation, Opco } from "../../common/model/index.js"
 import initNafMap from "./initNafMap.js"
 import initNafScoreMap from "./initNafScoreMap.js"
 import { notifyToSlack } from "../../common/utils/slackUtils.js"
@@ -46,7 +46,7 @@ export const checkIfAlgoFileIsNew = async (reason: string): void => {
 }
 
 const getCurrentDbCreatedDate = async (): Date => {
-  return (await BonnesBoites.findOne({}).select({ created_at: 1, _id: 0 })).created_at
+  return (await LbaCompany.findOne({}).select({ created_at: 1, _id: 0 })).created_at
 }
 
 const getFileLastModificationDate = async (): Date => {
@@ -110,7 +110,7 @@ export const countCompaniesInFile = async (): number => {
 Initialize bonneBoite from data, add missing data from maps, 
 */
 export const getCompanyMissingData = async (rawCompany) => {
-  const company = new BonnesBoites(rawCompany)
+  const company = new LbaCompany(rawCompany)
   const geo = await getGeoLocationForCompany(company)
   if (!geo) {
     return null

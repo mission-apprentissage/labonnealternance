@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { logger } from "../../common/logger.js"
-import { BonnesBoites } from "../../common/model/index.js"
+import { LbaCompany } from "../../common/model/index.js"
 import { mongooseInstance } from "../../common/mongodb.js"
 import { rebuildIndex } from "../../common/utils/esUtils.js"
 
@@ -81,7 +81,7 @@ export default async function refactorLBACFields() {
   logger.info(`Fin renommage champs de la collection bonnesboites (${res.result.nModified} items mis à jour)`)
 
   logger.info("Début réindexation des bonnes boites")
-  await rebuildIndex(BonnesBoites, { skipNotFound: true })
+  await rebuildIndex(LbaCompany, { skipNotFound: true })
   logger.info("Fin réindexation des bonnes boites")
 
   logger.info("Refactorisation des champs LBAC terminée")

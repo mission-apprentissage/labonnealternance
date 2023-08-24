@@ -1,4 +1,4 @@
-import { BonnesBoites, UnsubscribedBonneBoite } from "../../common/model/index.js"
+import { LbaCompany, UnsubscribedBonneBoite } from "../../common/model/index.js"
 import express from "express"
 import rateLimit from "express-rate-limit"
 import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
@@ -28,7 +28,7 @@ export default function () {
       const email = req.body.email.toLowerCase()
       const reason = req.body.reason
 
-      const bonnesBoitesToUnsubscribe = await BonnesBoites.find({ email }).lean()
+      const bonnesBoitesToUnsubscribe = await LbaCompany.find({ email }).lean()
 
       if (!bonnesBoitesToUnsubscribe.length) {
         result = UNSUBSCRIBE_EMAIL_ERRORS["NON_RECONNU"]
@@ -42,7 +42,7 @@ export default function () {
 
         unsubscribedBonneBoite.save()
 
-        const bonneBoiteToUnsubscribe = await BonnesBoites.findOne({ siret: bonnesBoitesToUnsubscribe[0].siret })
+        const bonneBoiteToUnsubscribe = await LbaCompany.findOne({ siret: bonnesBoitesToUnsubscribe[0].siret })
         bonneBoiteToUnsubscribe.remove()
 
         await mailer.sendEmail({

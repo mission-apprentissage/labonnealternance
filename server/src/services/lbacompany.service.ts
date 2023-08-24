@@ -5,7 +5,7 @@ import { isAllowedSource } from "../common/utils/isAllowedSource.js"
 
 import { roundDistance } from "../common/utils/geolib.js"
 import { lbbMock } from "../mocks/lbbs-mock.js"
-import { BonnesBoites } from "../common/model/index.js"
+import { LbaCompany } from "../common/model/index.js"
 import { getApplicationByCompanyCount } from "./application.service.js"
 import { trackApiCall } from "../common/utils/sendTrackingEvent.js"
 import { LbaItem } from "./lbaitem.shared.service.types.js"
@@ -115,6 +115,19 @@ export const getSomeCompanies = async ({ romes, latitude, longitude, radius, ref
 
 
 
+/**
+ * Retourne des sociétés issues de l'algo matchant les critères en paramètres
+ * @param {string} romes une liste de codes ROME séparés par des virgules
+ * @param {string} latitude la latitude du centre de recherche
+ * @param {string} longitude la latitude du centre de recherche
+ * @param {number} radius le rayon de recherche
+ * @param {number} companyLimit le nombre maximum de sociétés à retourner
+ * @param {string} caller l'identifiant de l'utilisateur de l'api qui a lancé la recherche
+ * @param {string} opco un filtre sur l'opco auquel doivent être rattachés les sociétés
+ * @param {string} opcoUrl un filtre sur l'url de l'opco auquel doivent être rattachés les sociétés
+ * @param {string} api l'identifiant du endpoint api utilisé pour exploiter cette fonction
+ * @returns {Promise<| IApiError>}
+ */
 const getCompanies = async ({ romes, latitude, longitude, radius, companyLimit, caller, opco, opcoUrl, api = "jobV1" }) => {
   try {
     const distance = radius || 10
@@ -188,7 +201,7 @@ const getCompanies = async ({ romes, latitude, longitude, radius, companyLimit, 
       }
     }
 
-    const responseBonnesBoites = await esClient.search({
+    const responseCompanies = await esClient.search({
       ...esQueryIndexFragment,
       body: {
         ...esQuery,
@@ -196,19 +209,19 @@ const getCompanies = async ({ romes, latitude, longitude, radius, companyLimit, 
       },
     })
 
-    const bonnesBoites = []
+    const companies = []
 
-    responseBonnesBoites.body.hits.hits.forEach((bonneBoite) => {
-      bonnesBoites.push({ ...bonneBoite._source, distance: latitude || latitude === 0 ? bonneBoite.sort : null })
+    responseCompanies.body.hits.hits.forEach((company) => {
+      companies.push({ ...company._source, distance: latitude || latitude === 0 ? company.sort : null })
     })
 
     if (!latitude && latitude !== 0) {
-      bonnesBoites.sort(function (a, b) {
+      companies.sort(function (a, b) {
         return a.enseigne.toLowerCase().localeCompare(b.enseigne.toLowerCase())
       })
     }
 
-    return bonnesBoites
+    return companies
   } catch (error) {
     return manageApiError({ error, api_path: api, caller, errorTitle: `getting bonnesBoites from local ES (${api})` })
   }
@@ -216,7 +229,7 @@ const getCompanies = async ({ romes, latitude, longitude, radius, companyLimit, 
 
 export const getCompanyFromSiret = async ({ siret, referer, caller }): IApiError | { lbbCompanies: ILbaItem[] } | { lbaCompanies: ILbaItem[] } => {
   try {
-    const bonneBoite = await BonnesBoites.findOne({ siret })
+    const bonneBoite = await LbaCompany.findOne({ siret })
 
     if (bonneBoite) {
       const applicationCountByCompany = await getApplicationByCompanyCount([bonneBoite.siret])

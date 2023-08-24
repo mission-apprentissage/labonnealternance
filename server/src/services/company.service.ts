@@ -1,5 +1,5 @@
-import { IBonneBoite } from "../common/model/schema/bonneboite/bonneboite.types.js"
-import { BonnesBoites } from "../common/model/index.js"
+import { ILbaCompany } from "../common/model/schema/lbaCompany/lbaCompany.types.js"
+import { LbaCompany } from "../common/model/index.js"
 import { sentryCaptureException } from "../common/utils/sentryUtils.js"
 
 /**
@@ -8,11 +8,11 @@ import { sentryCaptureException } from "../common/utils/sentryUtils.js"
  * @param {string} siret
  * @param {string} email
  * @param {string} phone
- * @returns {Promise<IBonneBoite | string>}
+ * @returns {Promise<ILbaCompany | string>}
  */
-export const updateContactInfo = async ({ siret, email, phone }: { siret: string; email: string; phone: string }): Promise<IBonneBoite | string> => {
+export const updateContactInfo = async ({ siret, email, phone }: { siret: string; email: string; phone: string }): Promise<ILbaCompany | string> => {
   try {
-    const bonneBoite = await BonnesBoites.findOne({ siret })
+    const bonneBoite = await LbaCompany.findOne({ siret })
 
     if (!bonneBoite) {
       return "not_found"

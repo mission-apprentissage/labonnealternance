@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { oleoduc, transformData, writeData } from "oleoduc"
 import _ from "lodash-es"
-import { BonnesBoites, UnsubscribedBonneBoite } from "../../common/model/index.js"
+import { LbaCompany, UnsubscribedBonneBoite } from "../../common/model/index.js"
 import { rebuildIndex } from "../../common/utils/esUtils.js"
 import { logMessage } from "../../common/utils/logMessage.js"
 import { insertSAVECompanies, updateSAVECompanies, removeSAVECompanies } from "./updateSAVECompanies.js"
@@ -57,7 +57,7 @@ const processCompanies = async () => {
       try {
         if (bonneBoite) {
           // contourne mongoose pour éviter la réindexation systématique à chaque insertion.
-          await BonnesBoites.collection.insertOne(bonneBoite)
+          await LbaCompany.collection.insertOne(bonneBoite)
         }
       } catch (err) {
         logMessage("error", err)
@@ -94,7 +94,7 @@ export default async function updateBonnesBoites({ UseAlgoFile = false, ClearMon
 
     if (ClearMongo) {
       logMessage("info", `Clearing bonnesboites db...`)
-      await BonnesBoites.deleteMany({})
+      await LbaCompany.deleteMany({})
     }
 
     if (UseAlgoFile) {
@@ -108,7 +108,7 @@ export default async function updateBonnesBoites({ UseAlgoFile = false, ClearMon
     }
 
     if (BuildIndex) {
-      await rebuildIndex(BonnesBoites, { skipNotFound: true })
+      await rebuildIndex(LbaCompany, { skipNotFound: true })
     }
 
     logMessage("info", `End updating lbb db`)

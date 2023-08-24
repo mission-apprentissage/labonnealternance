@@ -1,7 +1,7 @@
 import { isEmailBurner } from "burner-email-providers"
 import path from "path"
 import { oleoduc, writeData } from "oleoduc"
-import { Application, BonnesBoites, EmailBlacklist } from "../common/model/index.js"
+import { Application, LbaCompany, EmailBlacklist } from "../common/model/index.js"
 import { manageApiError } from "../common/utils/errorManager.js"
 import { decryptWithIV, encryptIdWithIV } from "../common/utils/encryptString.js"
 import { validateCaller } from "../service/queryValidators.js"
@@ -14,7 +14,7 @@ import mailer from "./mailer.service.js"
 import { sentryCaptureException } from "../common/utils/sentryUtils.js"
 import { IApplication } from "../common/model/schema/application/applications.types.js"
 import { IJobs } from "../common/model/schema/jobs/jobs.types.js"
-import { IBonneBoite } from "../common/model/schema/bonneboite/bonneboite.types.js"
+import { ILbaCompany } from "../common/model/schema/lbaCompany/lbaCompany.types.js"
 
 import { Document } from "mongoose"
 import Joi from "joi"
@@ -112,7 +112,7 @@ const findApplicationByTypeAndMessageId = async ({
 export const removeEmailFromBonnesBoites = async (email: string) => {
   try {
     oleoduc(
-      BonnesBoites.find({ email }).cursor(),
+      LbaCompany.find({ email }).cursor(),
       writeData((company) => {
         company.email = ""
         company.save()
@@ -690,10 +690,10 @@ export const getApplicationByJobCount = async (job_ids: IJobs["_id"][]): Promise
 
 /**
  * @description retourne le nombre de candidatures enregistrées par siret de société fournis
- * @param {IBonneBoite["siret"][]} sirets
+ * @param {ILbaCompany["siret"][]} sirets
  * @returns {Promise<IApplicationCount[]>} token data
  */
-export const getApplicationByCompanyCount = async (sirets: IBonneBoite["siret"][]): Promise<IApplicationCount[]> => {
+export const getApplicationByCompanyCount = async (sirets: ILbaCompany["siret"][]): Promise<IApplicationCount[]> => {
   const applicationCountByCompany: IApplicationCount[] = await Application.aggregate([
     {
       $match: {

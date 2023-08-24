@@ -1,4 +1,4 @@
-import { BonnesBoites, DiplomesMetiers, DomainesMetiers, FormationCatalogue, Recruiter } from "../../../common/model/index.js"
+import { LbaCompany, DiplomesMetiers, DomainesMetiers, FormationCatalogue, Recruiter } from "../../../common/model/index.js"
 import { rebuildIndex } from "../../../common/utils/esUtils.js"
 import { logger } from "../../../common/logger.js"
 
@@ -19,8 +19,8 @@ export const generateIndexes = async (indexList = "recruiters,formationcatalogue
           break
         }
         case "bonnesboites": {
-          await BonnesBoites.syncIndexes()
-          await rebuildIndex(BonnesBoites, { skipNotFound: true })
+          await LbaCompany.syncIndexes()
+          await rebuildIndex(LbaCompany, { skipNotFound: true })
           break
         }
         case "formationcatalogues": {
