@@ -4,14 +4,13 @@ import { mailTemplate } from "../../assets/index.js"
 import { IRecruiter } from "../../common/model/schema/recruiter/recruiter.types.js"
 import { IUserRecruteur } from "../../common/model/schema/userRecruteur/userRecruteur.types.js"
 import { createUserRecruteurToken } from "../../common/utils/jwtUtils.js"
-import { checkIfUserMailExistInReferentiel, getAllDomainsFromEmailList, getEmailDomain, isEmailPrivateCompany } from "../../common/utils/mailUtils.js"
+import { checkIfUserMailExistInReferentiel, getAllDomainsFromEmailList, getEmailDomain, isEmailFromPrivateCompany } from "../../common/utils/mailUtils.js"
 import { sentryCaptureException } from "../../common/utils/sentryUtils.js"
 import { notifyToSlack } from "../../common/utils/slackUtils.js"
 import config from "../../config.js"
 import { getNearEtablissementsFromRomes } from "../../services/catalogue.service.js"
-import { CFA, ENTREPRISE, ETAT_UTILISATEUR } from "../../services/constant.service.js"
+import { BusinessErrorCodes, CFA, ENTREPRISE, ETAT_UTILISATEUR } from "../../services/constant.service.js"
 import {
-  ErrorCodes,
   entrepriseOnboardingWorkflow,
   etablissementUnsubscribeDemandeDelegation,
   formatReferentielData,
@@ -28,9 +27,9 @@ import {
   getUserValidationState,
   registerUser,
   updateUser,
-  userAutoValidate,
-  userRecruteurSendWelcomeEmail,
-  userSetManualValidation,
+  autoValidateUser,
+  sendWelcomeEmailToUserRecruteur,
+  setManualValidationUser,
 } from "../../services/userRecruteur.service.js"
 import authMiddleware from "../middlewares/authMiddleware.js"
 import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
@@ -83,7 +82,7 @@ export default () => {
         const result = await getEntrepriseDataFromSiret({ siret, fromDashboardCfa, cfa_delegated_siret })
         if ("error" in result) {
           switch (result.errorCode) {
-            case ErrorCodes.isCfa: {
+            case BusinessErrorCodes.IS_CFA: {
               return res.status(400).json({
                 error: true,
                 message: result.message,
@@ -167,7 +166,7 @@ export default () => {
           const result = await entrepriseOnboardingWorkflow.create({ ...req.body, fromDashboardCfa: false, siret })
           if ("error" in result) {
             switch (result.errorCode) {
-              case ErrorCodes.alreadyExist: {
+              case BusinessErrorCodes.ALREADY_EXISTS: {
                 return res.status(403).json({
                   error: true,
                   message: result.message,
@@ -201,7 +200,7 @@ export default () => {
 
           if (!referentiel.contacts.length) {
             // Validation manuelle de l'utilisateur à effectuer pas un administrateur
-            newCfa = await userSetManualValidation(newCfa._id)
+            newCfa = await setManualValidationUser(newCfa._id)
 
             await notifyToSlack({
               subject: "RECRUTEUR",
@@ -213,7 +212,7 @@ export default () => {
 
           if (checkIfUserMailExistInReferentiel(referentiel.contacts, req.body.email)) {
             // Validation automatique de l'utilisateur
-            newCfa = await userAutoValidate(newCfa._id)
+            newCfa = await autoValidateUser(newCfa._id)
 
             const { email, _id, last_name, first_name } = newCfa
 
@@ -237,12 +236,12 @@ export default () => {
             return res.json({ user: newCfa })
           }
 
-          if (isEmailPrivateCompany(formatedEmail)) {
+          if (isEmailFromPrivateCompany(formatedEmail)) {
             const domains = getAllDomainsFromEmailList(referentiel.contacts)
             const userEmailDomain = getEmailDomain(formatedEmail)
             if (domains.includes(userEmailDomain)) {
               // Validation automatique de l'utilisateur
-              newCfa = await userAutoValidate(newCfa._id)
+              newCfa = await autoValidateUser(newCfa._id)
               const { email, _id, last_name, first_name } = newCfa
               const url = getValidationUrl(_id)
               await mailer.sendEmail({
@@ -264,7 +263,7 @@ export default () => {
           }
 
           // Validation manuelle de l'utilisateur à effectuer pas un administrateur
-          newCfa = await userSetManualValidation(newCfa._id)
+          newCfa = await setManualValidationUser(newCfa._id)
 
           await notifyToSlack({
             subject: "RECRUTEUR",
@@ -341,7 +340,7 @@ export default () => {
       if (isUserAwaiting) {
         return res.json({ isUserAwaiting: true })
       }
-      await userRecruteurSendWelcomeEmail(user)
+      await sendWelcomeEmailToUserRecruteur(user)
       await registerUser(user.email)
 
       // Log the user in directly

@@ -25,7 +25,7 @@ export const getAllDomainsFromEmailList = (contactList) => {
   return [...new Set(contactList.map(getEmailDomain))]
 }
 
-export const isEmailPrivateCompany = (userEmail: string) => mailController.isCompanyEmail(userEmail)
+export const isEmailFromPrivateCompany = (userEmail: string) => mailController.isCompanyEmail(userEmail)
 
 export const isEmailSameDomain = (email1: string, email2: string) => {
   // TODO check if subdomain are allowed

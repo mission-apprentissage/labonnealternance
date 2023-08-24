@@ -2,8 +2,8 @@ import express from "express"
 import { Recruiter, UserRecruteur } from "../../common/model/index.js"
 import { ENTREPRISE, ETAT_UTILISATEUR, JOB_STATUS, RECRUITER_STATUS } from "../../services/constant.service.js"
 import dayjs from "../../services/dayjs.service.js"
-import { deleteFormulaire, getFormulaire, reactivateRecruiter, sendCFADelegationMail, updateOffre } from "../../services/formulaire.service.js"
-import { createUser, removeUser, updateUser, updateUserValidationHistory, userRecruteurSendWelcomeEmail } from "../../services/userRecruteur.service.js"
+import { deleteFormulaire, getFormulaire, reactivateRecruiter, sendDelegationMailToCFA, updateOffre } from "../../services/formulaire.service.js"
+import { createUser, removeUser, updateUser, updateUserValidationHistory, sendWelcomeEmailToUserRecruteur } from "../../services/userRecruteur.service.js"
 import authMiddleware from "../middlewares/authMiddleware.js"
 import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
 
@@ -134,7 +134,7 @@ export default () => {
             await updateOffre(job._id, job)
 
             if (job?.delegations && job?.delegations.length) {
-              await Promise.all(job.delegations.map(async (delegation) => await sendCFADelegationMail(delegation.email, job, userFormulaire, delegation.siret_code)))
+              await Promise.all(job.delegations.map(async (delegation) => await sendDelegationMailToCFA(delegation.email, job, userFormulaire, delegation.siret_code)))
             }
           }
         }
@@ -142,7 +142,7 @@ export default () => {
 
       // validate user email addresse
       await updateUser({ _id: user._id }, { is_email_checked: true })
-      await userRecruteurSendWelcomeEmail(user)
+      await sendWelcomeEmailToUserRecruteur(user)
       return res.json(user)
     })
   )

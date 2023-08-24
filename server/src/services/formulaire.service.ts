@@ -352,7 +352,7 @@ export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }:
     delegations.push({ siret_code, email })
 
     if (userState.status === ETAT_UTILISATEUR.VALIDE) {
-      await sendCFADelegationMail(email, offre, offreDocument, siret_code)
+      await sendDelegationMailToCFA(email, offre, offreDocument, siret_code)
     }
   })
 
@@ -608,7 +608,7 @@ export const getJob = async (id: IJobs["_id"]): Promise<IJobs> => {
 /**
  * @description Sends the mail informing the CFA that a company wants the CFA to handle the offer.
  */
-export const sendCFADelegationMail = async (email: string, offre: IJobs, recruiter: { establishment_raison_sociale: string; establishment_id: string }, siret_code: string) => {
+export const sendDelegationMailToCFA = async (email: string, offre: IJobs, recruiter: { establishment_raison_sociale: string; establishment_id: string }, siret_code: string) => {
   const unsubscribeOF = await UnsubscribeOF.findOne({ establishment_siret: siret_code })
   if (unsubscribeOF) return
   await mailer.sendEmail({

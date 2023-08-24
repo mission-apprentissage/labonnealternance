@@ -1,11 +1,18 @@
 import axios, { AxiosResponse } from "axios"
+import { Filter } from "mongodb"
 import { BonneBoiteLegacy, BonnesBoites, Etablissement, ReferentielOpco, UnsubscribeOF, UserRecruteur } from "../common/model/index.js"
 import { IBonneBoite } from "../common/model/schema/bonneboite/bonneboite.types.js"
 import { IEtablissement } from "../common/model/schema/etablissements/etablissement.types.js"
+import { IRecruiter } from "../common/model/schema/recruiter/recruiter.types.js"
 import { IReferentielOpco } from "../common/model/schema/referentielOpco/referentielOpco.types.js"
+import { IUnsubscribedOF } from "../common/model/schema/unsubscribedOF/unsubscribeOF.types.js"
 import { IUserRecruteur } from "../common/model/schema/userRecruteur/userRecruteur.types.js"
+import { isEmailFromPrivateCompany, isEmailSameDomain } from "../common/utils/mailUtils.js"
 import { sentryCaptureException } from "../common/utils/sentryUtils.js"
 import config from "../config.js"
+import { validationOrganisation } from "./bal.service.js"
+import { getCatalogueEtablissements } from "./catalogue.service.js"
+import { BusinessErrorCodes, ENTREPRISE, RECRUITER_STATUS } from "./constant.service.js"
 import {
   IAPIAdresse,
   IAPIEtablissement,
@@ -17,15 +24,8 @@ import {
   IReferentiel,
   ISIRET2IDCC,
 } from "./etablissement.service.types.js"
-import { IRecruiter } from "../common/model/schema/recruiter/recruiter.types.js"
-import { Filter } from "mongodb"
-import { IUnsubscribedOF } from "../common/model/schema/unsubscribedOF/unsubscribeOF.types.js"
-import { getCatalogueEtablissements } from "./catalogue.service.js"
-import { createUser, getUser, updateUser, userAutoValidate, userSetError, userSetManualValidation } from "./userRecruteur.service.js"
-import { validationOrganisation } from "./bal.service.js"
-import { isEmailPrivateCompany, isEmailSameDomain } from "../common/utils/mailUtils.js"
 import { createFormulaire, getFormulaire } from "./formulaire.service.js"
-import { ENTREPRISE, RECRUITER_STATUS } from "./constant.service.js"
+import { autoValidateUser, createUser, getUser, setManualValidationUser, userSetError } from "./userRecruteur.service.js"
 
 const apiParams = {
   token: config.entreprise.apiKey,
@@ -384,7 +384,7 @@ export const etablissementUnsubscribeDemandeDelegation = async (etablissementSir
   }
 }
 
-export const entrepriseAutoValidationBAL = async (userRecruteur: IUserRecruteur) => {
+export const autoValidateCompany = async (userRecruteur: IUserRecruteur) => {
   const { establishment_siret: siret, email, _id } = userRecruteur
   const siren = siret.slice(0, 9)
   // Get all corresponding records using the SIREN number in BonneBoiteLegacy collection
@@ -403,22 +403,22 @@ export const entrepriseAutoValidationBAL = async (userRecruteur: IUserRecruteur)
   const validEmails = [...new Set([...referentielOpcoEmailList, ...bonneBoiteLegacyEmailList, ...bonneBoiteEmailList])]
 
   // Check BAL API for validation
-  const balControl = await validationOrganisation(siret, email)
-  const isValid = balControl.is_valid || validEmails.includes(email) || (isEmailPrivateCompany(email) && validEmails.some((validEmail) => isEmailSameDomain(email, validEmail)))
+
+  const isValid = validEmails.includes(email) || (isEmailFromPrivateCompany(email) && validEmails.some((validEmail) => isEmailSameDomain(email, validEmail)))
   if (isValid) {
-    userRecruteur = await userAutoValidate(_id)
+    userRecruteur = await autoValidateUser(_id)
   } else {
-    userRecruteur = await userSetManualValidation(_id)
+    const balControl = await validationOrganisation(siret, email)
+    if (balControl.is_valid) {
+      userRecruteur = await autoValidateUser(_id)
+    } else {
+      userRecruteur = await setManualValidationUser(_id)
+    }
   }
   return { userRecruteur, validated: isValid }
 }
 
-export enum ErrorCodes {
-  isCfa = "isCfa",
-  alreadyExist = "alreadyExist",
-}
-
-const errorFactory = (message: string, errorCode?: ErrorCodes) => ({ error: true, message, errorCode })
+const errorFactory = (message: string, errorCode?: BusinessErrorCodes) => ({ error: true, message, errorCode })
 
 const getOpcoData = async (siret: string) => {
   const opcoResult: ICFADock | null = await getOpco(siret)
@@ -473,7 +473,7 @@ export const getEntrepriseDataFromSiret = async ({ siret, fromDashboardCfa, cfa_
   } else {
     // Allow cfa to add themselves as a company
     if (activite_principale.code.startsWith("85")) {
-      return errorFactory("Le numéro siret n'est pas référencé comme une entreprise.", ErrorCodes.isCfa)
+      return errorFactory("Le numéro siret n'est pas référencé comme une entreprise.", BusinessErrorCodes.IS_CFA)
     }
   }
   const entrepriseData = formatEntrepriseData(result.data)
@@ -507,7 +507,7 @@ export const entrepriseOnboardingWorkflow = {
     const formatedEmail = email.toLocaleLowerCase()
     const exist = await getUser({ email: formatedEmail })
     if (exist) {
-      return errorFactory("L'adresse mail est déjà associée à un compte La bonne alternance.", ErrorCodes.alreadyExist)
+      return errorFactory("L'adresse mail est déjà associée à un compte La bonne alternance.", BusinessErrorCodes.ALREADY_EXISTS)
     }
     let entrepriseData: Partial<EntrepriseData>
     let hasSiretError = false
@@ -536,7 +536,7 @@ export const entrepriseOnboardingWorkflow = {
     if (hasSiretError) {
       newEntreprise = await userSetError(newEntreprise._id, "Error in call to Siren API")
     } else {
-      const balValidationResult = await entrepriseAutoValidationBAL(newEntreprise)
+      const balValidationResult = await autoValidateCompany(newEntreprise)
       newEntreprise = balValidationResult.userRecruteur
     }
     return { formulaire: formulaireInfo, user: newEntreprise }

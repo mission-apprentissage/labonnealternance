@@ -136,21 +136,21 @@ export const userSetError = async (userId: IUserRecruteur["_id"], reason: string
     reason,
   })
 
-export const userAutoValidate = async (userId: IUserRecruteur["_id"]) =>
+export const autoValidateUser = async (userId: IUserRecruteur["_id"]) =>
   await updateUserValidationHistory(userId, {
     validation_type: VALIDATION_UTILISATEUR.AUTO,
     user: "SERVEUR",
     status: ETAT_UTILISATEUR.VALIDE,
   })
 
-export const userSetManualValidation = async (userId: IUserRecruteur["_id"]) =>
+export const setManualValidationUser = async (userId: IUserRecruteur["_id"]) =>
   await updateUserValidationHistory(userId, {
     validation_type: VALIDATION_UTILISATEUR.MANUAL,
     user: "SERVEUR",
     status: ETAT_UTILISATEUR.ATTENTE,
   })
 
-export const userRecruteurSendWelcomeEmail = async (userRecruteur: IUserRecruteur) => {
+export const sendWelcomeEmailToUserRecruteur = async (userRecruteur: IUserRecruteur) => {
   const { email, first_name, last_name, establishment_raison_sociale, type } = userRecruteur
   const magiclink = `${config.publicUrlEspacePro}/authentification/verification?token=${createMagicLinkToken(email)}`
   await mailer.sendEmail({

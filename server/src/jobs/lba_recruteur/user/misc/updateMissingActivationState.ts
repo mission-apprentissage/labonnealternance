@@ -4,9 +4,9 @@ import { asyncForEach } from "../../../../common/utils/asyncUtils.js"
 import { notifyToSlack } from "../../../../common/utils/slackUtils.js"
 import { ENTREPRISE, ETAT_UTILISATEUR } from "../../../../services/constant.service.js"
 import dayjs from "../../../../services/dayjs.service.js"
-import { entrepriseAutoValidationBAL } from "../../../../services/etablissement.service.js"
-import { getFormulaire, sendCFADelegationMail, updateOffre } from "../../../../services/formulaire.service.js"
-import { updateUser, userRecruteurSendWelcomeEmail } from "../../../../services/userRecruteur.service.js"
+import { autoValidateCompany } from "../../../../services/etablissement.service.js"
+import { getFormulaire, sendDelegationMailToCFA, updateOffre } from "../../../../services/formulaire.service.js"
+import { updateUser, sendWelcomeEmailToUserRecruteur } from "../../../../services/userRecruteur.service.js"
 
 export const checkAwaitingCompaniesValidation = async () => {
   logger.info(`Start update missing validation state for companies...`)
@@ -32,7 +32,7 @@ export const checkAwaitingCompaniesValidation = async () => {
       return
     }
 
-    const { validated: hasBeenValidated } = await entrepriseAutoValidationBAL(entreprise)
+    const { validated: hasBeenValidated } = await autoValidateCompany(entreprise)
     if (hasBeenValidated) {
       stat.validated++
     } else {
@@ -49,14 +49,14 @@ export const checkAwaitingCompaniesValidation = async () => {
       if (job?.delegations?.length) {
         await Promise.all(
           job.delegations.map(async (delegation) => {
-            await sendCFADelegationMail(delegation.email, job, userFormulaire, delegation.siret_code)
+            await sendDelegationMailToCFA(delegation.email, job, userFormulaire, delegation.siret_code)
           })
         )
       }
 
       // Validate user email addresse
       await updateUser({ _id: entreprise._id }, { is_email_checked: true })
-      await userRecruteurSendWelcomeEmail(entreprise)
+      await sendWelcomeEmailToUserRecruteur(entreprise)
     }
   })
 
