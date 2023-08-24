@@ -1,4 +1,3 @@
-import _ from "lodash-es"
 import { mailTemplate } from "../../assets/index.js"
 import { logger } from "../../common/logger.js"
 import { mailType } from "../../common/model/constants/etablissement.js"
@@ -34,12 +33,11 @@ export const premiumActivatedReminder = async () => {
 
   for (const etablissement of etablissementWithParcoursup) {
     // Retrieve all emails
-    let emails = eligibleTrainingsForAppointmentsFound
+    const emails = eligibleTrainingsForAppointmentsFound
       .filter((eligibleTrainingsForAppointment) => eligibleTrainingsForAppointment.etablissement_formateur_siret === etablissement.formateur_siret)
       .map((eligibleTrainingsForAppointment) => eligibleTrainingsForAppointment.lieu_formation_email)
       .concat([etablissement.gestionnaire_email])
-
-    emails = _(emails).uniq().omitBy(_.isNil).toArray()
+      .filter((email) => email)
 
     for (const email of emails) {
       try {
