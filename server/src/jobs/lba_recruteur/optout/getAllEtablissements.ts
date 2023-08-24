@@ -63,12 +63,13 @@ runScript(async ({ etablissement }: { etablissement: Etablissement }) => {
     }
   }
 
-  await Promise.all(
-    organismesFiltered.map(async (x) => {
-      const formated = etablissement.formatReferentielData(x)
-      await Optout.create(formated)
-    })
-  )
+  // await Promise.all(
+  //   organismesFiltered.map(async (x) => {
+  //     // TODO wtf is this ?
+  //     const formated = etablissement.formatReferentielData(x)
+  //     await Optout.create(formated)
+  //   })
+  // )
 
   const count = await Optout.countDocuments()
 
