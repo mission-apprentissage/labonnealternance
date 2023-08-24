@@ -36,7 +36,7 @@ import partnersRoute from "./routes/partners.controller.js"
 import rome from "./controllers/metiers/rome.controller.js"
 import sendApplication from "./routes/sendApplication.controller.js"
 import sendApplicationAPI from "./routes/sendApplicationAPI.controller.js"
-import unsubscribeBonneBoite from "./routes/unsubscribeBonneBoite.controller.js"
+import unsubscribeLbaCompany from "./routes/unsubscribeLbaCompany.controller.js"
 import sendMail from "./routes/sendMail.controller.js"
 import supportRoute from "./routes/support.controller.js"
 import updateLBB from "./routes/updateLBB.controller.js"
@@ -189,7 +189,7 @@ export default async (components) => {
   app.use("/api/campaign/webhook", campaignWebhook(components))
   app.use("/api/application", sendApplication(components))
   app.use("/api/V1/application", limiter5PerSecond, sendApplicationAPI(components))
-  app.use("/api/unsubscribe", unsubscribeBonneBoite(components))
+  app.use("/api/unsubscribe", unsubscribeLbaCompany(components))
 
   /**
    * Admin / Auth
