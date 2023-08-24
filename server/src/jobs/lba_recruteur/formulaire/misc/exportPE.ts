@@ -22,9 +22,9 @@ const stat = {
   geoCoord: 0,
 }
 
+const regex = /^(.*) (\d{4,5}) (.*)$/
 const formatDate = (date) => dayjs(date).format("DD/MM/YYYY")
 const splitter = (str) => str.split(regex).filter(String)
-const regex = /^(.*) (\d{4,5}) (.*)$/
 
 /**
  * @description format data into Pole Emploi specific fields
@@ -208,7 +208,7 @@ export const exportPE = async ({ db }): Promise<void> => {
   const buffer = []
 
   // Retrieve only active offers
-  const offres = await db.collection("jobs").find({ job_status: "Active", recruiterStatus: "Actif" }).toArray()
+  const offres: any[] = await db.collection("jobs").find({ job_status: "Active", recruiterStatus: "Actif" }).toArray()
 
   logger.info("get info from user...")
   await asyncForEach(offres, async (offre) => {
