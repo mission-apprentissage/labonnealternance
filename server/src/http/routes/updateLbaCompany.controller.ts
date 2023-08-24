@@ -2,7 +2,7 @@
 import { REGEX } from "../../services/constant.service.js"
 import express from "express"
 import Joi from "joi"
-import { updateContactInfo } from "../../services/company.service.js"
+import { updateContactInfo } from "../../services/lbacompany.service.js"
 import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
 import config from "../../config.js"
 

@@ -2,6 +2,8 @@ import { getElasticInstance } from "../common/esClient/index.js"
 import { encryptMailWithIV } from "../common/utils/encryptString.js"
 import { IApiError, manageApiError } from "../common/utils/errorManager.js"
 import { isAllowedSource } from "../common/utils/isAllowedSource.js"
+import { ILbaCompany } from "../common/model/schema/lbaCompany/lbaCompany.types.js"
+import { sentryCaptureException } from "../common/utils/sentryUtils.js"
 
 import { roundDistance } from "../common/utils/geolib.js"
 import { lbbMock } from "../mocks/lbbs-mock.js"
@@ -289,5 +291,38 @@ const getCompanyEsQueryIndexFragment = (limit) => {
       "opco",
       "opco_url",
     ],
+  }
+}
+
+/**
+ * Met à jour les coordonnées de contact d'une société issue de l'algo
+ * A usage interne
+ * @param {string} siret
+ * @param {string} email
+ * @param {string} phone
+ * @returns {Promise<ILbaCompany | string>}
+ */
+export const updateContactInfo = async ({ siret, email, phone }: { siret: string; email: string; phone: string }): Promise<ILbaCompany | string> => {
+  try {
+    const bonneBoite = await LbaCompany.findOne({ siret })
+
+    if (!bonneBoite) {
+      return "not_found"
+    } else {
+      if (email !== undefined) {
+        bonneBoite.email = email
+      }
+
+      if (phone !== undefined) {
+        bonneBoite.phone = phone
+      }
+
+      await bonneBoite.save()
+
+      return bonneBoite
+    }
+  } catch (err) {
+    sentryCaptureException(err)
+    throw err
   }
 }

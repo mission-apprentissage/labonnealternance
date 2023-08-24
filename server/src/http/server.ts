@@ -39,7 +39,7 @@ import sendApplicationAPI from "./routes/sendApplicationAPI.controller.js"
 import unsubscribeLbaCompany from "./routes/unsubscribeLbaCompany.controller.js"
 import sendMail from "./routes/sendMail.controller.js"
 import supportRoute from "./routes/support.controller.js"
-import updateLBB from "./routes/updateLBB.controller.js"
+import updateLbaCompany from "./routes/updateLbaCompany.controller.js"
 import userRoute from "./routes/user.controller.js"
 import version from "./routes/version.controller.js"
 import trainingLinks from "./routes/trainingLinks.controller.js"
@@ -184,7 +184,7 @@ export default async (components) => {
   app.use("/api/romelabels", limiter10PerSecond, rome())
   app.use("/api/v1/formationsParRegion", limiter5PerSecond, formationRegionV1())
   app.use("/api/v1/jobsEtFormations", limiter5PerSecond, jobEtFormationV1())
-  app.use("/api/updateLBB", limiter1Per20Second, updateLBB())
+  app.use("/api/updateLBB", limiter1Per20Second, updateLbaCompany())
   app.use("/api/mail", limiter1Per20Second, sendMail(components))
   app.use("/api/campaign/webhook", campaignWebhook(components))
   app.use("/api/application", sendApplication(components))
