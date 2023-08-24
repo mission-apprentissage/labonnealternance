@@ -2,7 +2,7 @@
 import { oleoduc, transformData, writeData } from "oleoduc"
 import { LbaCompany } from "../../common/model/index.js"
 import { logMessage } from "../../common/utils/logMessage.js"
-import { downloadSAVEFile, getCompanyMissingData, initMaps, streamSAVECompanies } from "./bonnesBoitesUtils.js"
+import { downloadSAVEFile, getCompanyMissingData, initMaps, streamSAVECompanies } from "./lbaCompaniesUtils.js"
 
 export const updateSAVECompanies = async () => {
   logMessage("info", "Starting updateSAVECompanies")

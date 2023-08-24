@@ -3,7 +3,7 @@ import fs from "fs"
 import { oleoduc, readLineByLine, transformData, writeData } from "oleoduc"
 import { logMessage } from "../../common/utils/logMessage.js"
 import __dirname from "../../common/dirname.js"
-import { downloadFile } from "./bonnesBoitesUtils.js"
+import { downloadFile } from "./lbaCompaniesUtils.js"
 import { logger } from "../../common/logger.js"
 
 const hiringFileName = "contrats_30j.csv"

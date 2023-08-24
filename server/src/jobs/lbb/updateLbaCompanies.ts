@@ -6,7 +6,7 @@ import { rebuildIndex } from "../../common/utils/esUtils.js"
 import { logMessage } from "../../common/utils/logMessage.js"
 import { insertSAVECompanies, updateSAVECompanies, removeSAVECompanies } from "./updateSAVECompanies.js"
 
-import { countCompaniesInFile, downloadAlgoCompanyFile, getCompanyMissingData, checkIfAlgoFileIsNew, readCompaniesFromJson, removePredictionFile } from "./bonnesBoitesUtils.js"
+import { countCompaniesInFile, downloadAlgoCompanyFile, getCompanyMissingData, checkIfAlgoFileIsNew, readCompaniesFromJson, removePredictionFile } from "./lbaCompaniesUtils.js"
 import { notifyToSlack } from "../../common/utils/slackUtils.js"
 
 // nombre minimal arbitraire de sociétés attendus dans le fichier
