@@ -22,14 +22,14 @@ import {
 } from "../../services/etablissement.service.js"
 import mailer from "../../services/mailer.service.js"
 import {
+  autoValidateUser,
   createUser,
   getUser,
   getUserValidationState,
   registerUser,
-  updateUser,
-  autoValidateUser,
   sendWelcomeEmailToUserRecruteur,
   setManualValidationUser,
+  updateUser,
 } from "../../services/userRecruteur.service.js"
 import authMiddleware from "../middlewares/authMiddleware.js"
 import { tryCatch } from "../middlewares/tryCatchMiddleware.js"

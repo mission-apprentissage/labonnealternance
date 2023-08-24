@@ -36,6 +36,7 @@ import { checkAwaitingCompaniesValidation } from "./jobs/lba_recruteur/user/misc
 import updateBrevoBlockedEmails from "./jobs/updateBrevoBlockedEmails/updateBrevoBlockedEmails.js"
 import { importReferentielOnisep } from "./jobs/rdv/importReferentielOnisep.js"
 import updateReferentielRncpRomes from "./jobs/referentielRncpRome/updateReferentielRncpRomes.js"
+import { updateFormationCatalogue } from "./jobs/formationsCatalogue/updateFormationCatalogue.js"
 
 cli.addHelpText("after", null)
 
@@ -263,6 +264,13 @@ cli
   })
 
 cli
+  .command("sync-catalogue-trainings-extra-data")
+  .description("Mise à jour des champs spécifiques de la collection formations catalogue")
+  .action(() => {
+    runScript((components) => updateFormationCatalogue(components))
+  })
+
+cli
   .command("sync-sib-blocked")
   .option("-all-addresses, [AllAddresses]", "pour récupérer toutes les adresses bloquées", false)
   .description("Récupère auprès de Brevo la liste des adresses emails bloquées le jour précédent (défaut) ou toutes les adresses bloquées (option)")
@@ -291,6 +299,7 @@ cli
   .option("-build-index, [BuildIndex]", "réindex les bonnes boîtes", false)
   .option("-use-save, [UseSave]", "pour appliquer les données SAVE", false)
   .option("-force-recreate, [ForceRecreate]", "pour forcer la recréation", false)
+  .option("-source-file, [SourceFile]", "fichier source alternatif", null)
   .description("Met à jour la liste des sociétés bonnes alternances")
   .action((options) => {
     runScript(() => updateBonnesBoites(options))
@@ -299,6 +308,7 @@ cli
 cli
   .command("update-geo-locations")
   .option("-force-recreate, [ForceRecreate]", "pour forcer la recréation", false)
+  .option("-source-file, [SourceFile]", "fichier source alternatif", null)
   .description("Procède à la géolocalisation de masse des sociétés dans le fichier des bonnes alternances")
   .action((options) => {
     runScript(() => updateGeoLocations(options))
@@ -308,6 +318,7 @@ cli
   .command("update-opcos")
   .option("-clear-mongo, [ClearMongo]", "vide la collection des opcos", false)
   .option("-force-recreate, [ForceRecreate]", "pour forcer la recréation", false)
+  .option("-source-file, [SourceFile]", "fichier source alternatif", null)
   .description("Procède à la résolution des opcos des sociétés dans le fichier des bonnes alternances")
   .action((options) => {
     runScript(() => updateOpcoCompanies(options))

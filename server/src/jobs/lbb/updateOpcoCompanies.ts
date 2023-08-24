@@ -54,7 +54,7 @@ const cleanUp = () => {
   sirenWithoutOpco = new Set()
 }
 
-export default async function updateOpcoCompanies({ ClearMongo = false, ForceRecreate = false }) {
+export default async function updateOpcoCompanies({ ClearMongo = false, ForceRecreate = false, SourceFile = null }) {
   try {
     logMessage("info", " -- Start bulk opco determination -- ")
 
@@ -62,7 +62,7 @@ export default async function updateOpcoCompanies({ ClearMongo = false, ForceRec
       await checkIfAlgoFileIsNew("opco companies")
     }
 
-    await downloadAlgoCompanyFile()
+    await downloadAlgoCompanyFile(SourceFile)
 
     if (ClearMongo) {
       logMessage("info", `Clearing opcos db...`)

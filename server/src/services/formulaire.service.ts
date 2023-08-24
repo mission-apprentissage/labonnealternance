@@ -20,6 +20,8 @@ import { ILbaJobEsResult } from "./lbajob.service.types.js"
 
 const esClient = getElasticInstance()
 
+const JOB_SEARCH_LIMIT = 250
+
 interface IFormulaireExtended extends IRecruiter {
   entreprise_localite: string
 }
@@ -135,7 +137,7 @@ export const getJobsFromElasticSearch = async ({
     ],
   }
 
-  const result = await esClient.search({ index: "recruiters", body })
+  const result = await esClient.search({ size: JOB_SEARCH_LIMIT, index: "recruiters", body })
 
   const filteredJobs = await Promise.all(
     result.body.hits.hits.map(async (x) => {

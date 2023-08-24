@@ -26,6 +26,7 @@ import {
 } from "./etablissement.service.types.js"
 import { createFormulaire, getFormulaire } from "./formulaire.service.js"
 import { autoValidateUser, createUser, getUser, setManualValidationUser, userSetError } from "./userRecruteur.service.js"
+import { getOpcoBySirenFromDB, saveOpco } from "./opco.service.js"
 
 const apiParams = {
   token: config.entreprise.apiKey,
@@ -424,6 +425,13 @@ export const autoValidateCompany = async (userRecruteur: IUserRecruteur) => {
 const errorFactory = (message: string, errorCode?: BusinessErrorCodes) => ({ error: true, message, errorCode })
 
 const getOpcoData = async (siret: string) => {
+  const siren = siret.substring(0, 9)
+  const opcoFromDB = await getOpcoBySirenFromDB(siren)
+  if (opcoFromDB) {
+    const { opco, idcc } = opcoFromDB
+    await saveOpco({ opco, idcc, siren, url: null })
+    return { opco, idcc }
+  }
   const opcoResult: ICFADock | null = await getOpco(siret)
   switch (opcoResult?.searchStatus) {
     case "OK": {
