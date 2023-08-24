@@ -160,6 +160,7 @@ export default () => {
   router.post(
     "/creation",
     tryCatch(async (req: Request<{}, {}, IUserRecruteur & IRecruiter>, res) => {
+      // TODO add some Joi
       switch (req.body.type) {
         case ENTREPRISE: {
           const siret = req.body.establishment_siret

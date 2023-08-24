@@ -2,7 +2,7 @@ import { randomUUID } from "crypto"
 import { ModelUpdateOptions, UpdateQuery } from "mongoose"
 import { Filter } from "mongodb"
 import { UserRecruteur } from "../common/model/index.js"
-import { IUserRecruteur, IUserValidation } from "../common/model/schema/userRecruteur/userRecruteur.types.js"
+import { IUserRecruteur, IUserStatusValidation } from "../common/model/schema/userRecruteur/userRecruteur.types.js"
 import { CFA, ETAT_UTILISATEUR, VALIDATION_UTILISATEUR } from "./constant.service.js"
 import mailer from "./mailer.service.js"
 import { mailTemplate } from "../assets/index.js"
@@ -118,7 +118,7 @@ export const registerUser = (email: IUserRecruteur["email"]) => UserRecruteur.fi
  * @param {ModelUpdateOptions} [options={new:true}]
  * @returns {Promise<IUserRecruteur>}
  */
-export const updateUserValidationHistory = (userId: IUserRecruteur["_id"], state: UpdateQuery<IUserValidation>, options: ModelUpdateOptions = { new: true }) =>
+export const updateUserValidationHistory = (userId: IUserRecruteur["_id"], state: UpdateQuery<IUserStatusValidation>, options: ModelUpdateOptions = { new: true }) =>
   UserRecruteur.findByIdAndUpdate({ _id: userId }, { $push: { status: state } }, options)
 
 /**

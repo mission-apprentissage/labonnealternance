@@ -461,13 +461,13 @@ export const getEntrepriseDataFromSiret = async ({ siret, fromDashboardCfa, cfa_
 
   // Check if a CFA already has the company as partenaire
   if (fromDashboardCfa) {
-    const exist = await getFormulaire({
+    const recruteurOpt = await getFormulaire({
       establishment_siret: siret,
       cfa_delegated_siret: cfa_delegated_siret,
       status: "Actif",
     })
 
-    if (exist) {
+    if (recruteurOpt) {
       return errorFactory("L'entreprise est déjà référencée comme partenaire.")
     }
   } else {
@@ -478,6 +478,7 @@ export const getEntrepriseDataFromSiret = async ({ siret, fromDashboardCfa, cfa_
   }
   const entrepriseData = formatEntrepriseData(result.data)
   const geo_coordinates = await getGeoCoordinates(`${entrepriseData.address_detail.acheminement_postal.l4}, ${entrepriseData.address_detail.acheminement_postal.l6}`)
+  // TODO return error
   const opcoData = await getOpcoData(siret)
   return { ...entrepriseData, ...opcoData, geo_coordinates }
 }

@@ -1,7 +1,7 @@
 import { ETAT_UTILISATEUR } from "../../../../services/constant.service.js"
 import { IGlobalAddress } from "../_shared/shared.types.js"
 
-interface IUserValidation {
+export interface IUserStatusValidation {
   validation_type: string
   status: ETAT_UTILISATEUR
   reason: string
@@ -9,7 +9,7 @@ interface IUserValidation {
   date: Date
 }
 
-interface IUserRecruteur {
+export interface IUserRecruteur {
   _id: string
   last_name: string
   first_name: string
@@ -29,10 +29,8 @@ interface IUserRecruteur {
   origin: string
   is_email_checked: boolean
   is_qualiopi: boolean
-  status: IUserValidation[]
+  status: IUserStatusValidation[]
   last_connection: Date
   createdAt: Date
   updatedAt: Date
 }
-
-export { IUserRecruteur, IUserValidation }
