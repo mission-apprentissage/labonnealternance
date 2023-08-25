@@ -143,7 +143,7 @@ export const autoValidateUser = async (userId: IUserRecruteur["_id"]) =>
     status: ETAT_UTILISATEUR.VALIDE,
   })
 
-export const setManualValidationUser = async (userId: IUserRecruteur["_id"]) =>
+export const setUserHasToBeManuallyValidated = async (userId: IUserRecruteur["_id"]) =>
   await updateUserValidationHistory(userId, {
     validation_type: VALIDATION_UTILISATEUR.MANUAL,
     user: "SERVEUR",

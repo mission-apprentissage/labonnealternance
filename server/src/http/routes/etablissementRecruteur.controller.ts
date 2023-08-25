@@ -28,7 +28,7 @@ import {
   getUserValidationState,
   registerUser,
   sendWelcomeEmailToUserRecruteur,
-  setManualValidationUser,
+  setUserHasToBeManuallyValidated,
   updateUser,
 } from "../../services/userRecruteur.service.js"
 import authMiddleware from "../middlewares/authMiddleware.js"
@@ -201,7 +201,7 @@ export default () => {
 
           if (!referentiel.contacts.length) {
             // Validation manuelle de l'utilisateur à effectuer pas un administrateur
-            newCfa = await setManualValidationUser(newCfa._id)
+            newCfa = await setUserHasToBeManuallyValidated(newCfa._id)
 
             await notifyToSlack({
               subject: "RECRUTEUR",
@@ -264,7 +264,7 @@ export default () => {
           }
 
           // Validation manuelle de l'utilisateur à effectuer pas un administrateur
-          newCfa = await setManualValidationUser(newCfa._id)
+          newCfa = await setUserHasToBeManuallyValidated(newCfa._id)
 
           await notifyToSlack({
             subject: "RECRUTEUR",

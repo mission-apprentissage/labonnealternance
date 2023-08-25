@@ -25,7 +25,7 @@ import {
   ISIRET2IDCC,
 } from "./etablissement.service.types.js"
 import { createFormulaire, getFormulaire } from "./formulaire.service.js"
-import { autoValidateUser, createUser, getUser, setManualValidationUser, userSetError } from "./userRecruteur.service.js"
+import { autoValidateUser, createUser, getUser, setUserHasToBeManuallyValidated, userSetError } from "./userRecruteur.service.js"
 import { getOpcoBySirenFromDB, saveOpco } from "./opco.service.js"
 
 const apiParams = {
@@ -416,7 +416,7 @@ export const autoValidateCompany = async (userRecruteur: IUserRecruteur) => {
     if (balControl.is_valid) {
       userRecruteur = await autoValidateUser(_id)
     } else {
-      userRecruteur = await setManualValidationUser(_id)
+      userRecruteur = await setUserHasToBeManuallyValidated(_id)
     }
   }
   return { userRecruteur, validated: isValid }
