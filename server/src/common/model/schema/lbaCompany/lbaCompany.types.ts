@@ -22,6 +22,7 @@ interface ILbaCompany {
   opco_url: string
   created_at: Date
   last_update_at: Date
+  distance?: [number]
 }
 
 export { ILbaCompany }

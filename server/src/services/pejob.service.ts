@@ -65,7 +65,7 @@ const peJobApiEndpointReferentiel = "https://api.pole-emploi.io/partenaire/offre
  *
  * @param {string} referentiel
  */
-const getPeApiReferentiels = async (referentiel: string) => {
+export const getPeApiReferentiels = async (referentiel: string) => {
   try {
     const token = await getAccessToken()
     const headers = peApiHeaders

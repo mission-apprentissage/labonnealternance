@@ -1,6 +1,6 @@
 import { getElasticInstance } from "../common/esClient/index.js"
 import { encryptMailWithIV } from "../common/utils/encryptString.js"
-import { IApiError, manageApiError } from "../common/utils/errorManager.js"
+import { manageApiError } from "../common/utils/errorManager.js"
 import { isAllowedSource } from "../common/utils/isAllowedSource.js"
 import { ILbaCompany } from "../common/model/schema/lbaCompany/lbaCompany.types.js"
 import { sentryCaptureException } from "../common/utils/sentryUtils.js"
@@ -8,20 +8,31 @@ import { sentryCaptureException } from "../common/utils/sentryUtils.js"
 import { roundDistance } from "../common/utils/geolib.js"
 import { lbbMock } from "../mocks/lbbs-mock.js"
 import { LbaCompany } from "../common/model/index.js"
-import { getApplicationByCompanyCount } from "./application.service.js"
+import { getApplicationByCompanyCount, IApplicationCount } from "./application.service.js"
 import { trackApiCall } from "../common/utils/sendTrackingEvent.js"
 import { LbaItem } from "./lbaitem.shared.service.types.js"
-import { ILbaCompanyEsResult } from "./lbacompany.service.types.js"
 
 const esClient = getElasticInstance()
 
 /**
- * Adaptation au modèle LBA
- * @param {PEJob} company une société issue de l'algo
- *
+ * Adaptation au modèle LBA d'une société issue de l'algo
+ * @param {ILbaCompany} company une société issue de l'algo
+ * @param {string} caller l'identifiant de l'appelant de l'api
+ * @param {boolean} contactAllowedOrigin flag indiquant si les données privées peuvent être retournées
+ * @param {IApplicationCount[]} applicationCountByCompany map des nombres de candidatures par sociétés
  * @return {ILbaItem}
  */
-const transformCompany = ({ company, caller, contactAllowedOrigin, applicationCountByCompany }) => {
+const transformCompany = ({
+  company,
+  caller,
+  contactAllowedOrigin,
+  applicationCountByCompany,
+}: {
+  company: ILbaCompany
+  caller: string
+  contactAllowedOrigin: boolean
+  applicationCountByCompany: IApplicationCount[]
+}) => {
   const resultCompany = new LbaItem("lba")
 
   resultCompany.title = company.enseigne
@@ -71,12 +82,29 @@ const transformCompany = ({ company, caller, contactAllowedOrigin, applicationCo
   return resultCompany
 }
 
-const transformCompanies = ({ companies = [], referer, caller, applicationCountByCompany }) => {
-  if (!companies?.length) {
-    return { results: [] }
-  }
-  return {
-    results: companies.map((company) => {
+/**
+ * Transformer au format unifié une liste de sociétés issues de l'algo
+ * @param {ILbaCompany[]} companies
+ * @param {string} referer
+ * @param {string} caller
+ * @param {IApplicationCount[]} applicationCountByCompany
+ * @returns {{ results: LbaItem[]}}
+ */
+const transformCompanies = ({
+  companies = [],
+  referer,
+  caller,
+  applicationCountByCompany,
+}: {
+  companies: ILbaCompany[]
+  referer: string
+  caller: string
+  applicationCountByCompany: IApplicationCount[]
+}) => {
+  const transformedCompanies: { results: LbaItem[] } = { results: [] }
+
+  if (companies?.length) {
+    transformedCompanies.results = companies.map((company) => {
       const contactAllowedOrigin = isAllowedSource({ referer, caller })
       return transformCompany({
         company,
@@ -84,36 +112,10 @@ const transformCompanies = ({ companies = [], referer, caller, applicationCountB
         caller,
         applicationCountByCompany,
       })
-    }),
-  }
-}
-
-export const getSomeCompanies = async ({ romes, latitude, longitude, radius, referer, caller, opco, opcoUrl, api = "jobV1", useMock }) => {
-  const hasLocation = latitude === undefined ? false : true
-  const currentRadius = hasLocation ? radius : 21000
-  const companyLimit = 150 //TODO: query params options or default value from properties -> size || 100
-
-  if (useMock && useMock !== "false") {
-    return { results: [lbbMock] }
-  } else {
-    const companies = await getCompanies({
-      romes,
-      latitude,
-      longitude,
-      radius: currentRadius,
-      companyLimit,
-      caller,
-      api,
-      opco,
-      opcoUrl,
     })
-    if (companies && companies.length) {
-      const sirets = companies.map(({ siret }) => siret)
-      const applicationCountByCompany = await getApplicationByCompanyCount(sirets)
-      return transformCompanies({ companies, radius, referer, caller, applicationCountByCompany })
-    }
-    return companies
   }
+
+  return transformedCompanies
 }
 
 /**
@@ -161,7 +163,7 @@ const getCompanyEsQueryIndexFragment = (limit: number) => {
  * @param {string} opco un filtre sur l'opco auquel doivent être rattachés les sociétés
  * @param {string} opcoUrl un filtre sur l'url de l'opco auquel doivent être rattachés les sociétés
  * @param {string} api l'identifiant du endpoint api utilisé pour exploiter cette fonction
- * @returns {Promise<| IApiError>}
+ * @returns {Promise<ILbaCompany[] | IApiError>}
  */
 const getCompanies = async ({
   romes,
@@ -230,7 +232,7 @@ const getCompanies = async ({
       ],
     }
 
-    let esQuery: object = {
+    let esQuery: any = {
       query: {
         bool: {
           must: mustTerm,
@@ -279,6 +281,73 @@ const getCompanies = async ({
     return companies
   } catch (error) {
     return manageApiError({ error, api_path: api, caller, errorTitle: `getting bonnesBoites from local ES (${api})` })
+  }
+}
+
+/**
+ * Retourne des sociétés issues de l'algo au format unifié LBA
+ * Les sociétés retournées sont celles matchant les critères en paramètres
+ * @param {string} romes une liste de codes ROME séparés par des virgules
+ * @param {string} latitude la latitude du centre de recherche
+ * @param {string} longitude la latitude du centre de recherche
+ * @param {number} radius le rayon de recherche
+ * @param {string} referer le referer de la requête pour identifier si l'appel est de LBA ou d'un service tiers
+ * @param {string} caller l'identifiant de l'utilisateur de l'api qui a lancé la recherche
+ * @param {string} opco un filtre sur l'opco auquel doivent être rattachés les sociétés
+ * @param {string} opcoUrl un filtre sur l'url de l'opco auquel doivent être rattachés les sociétés
+ * @param {string} api l'identifiant du endpoint api utilisé pour exploiter cette fonction
+ * @param {string} useMock un paramètre optionnel indiquant qu'il faut retourner des données mockées
+ * @returns {Promise<{ results: ILbaItem[] } | IApiError>}
+ */
+export const getSomeCompanies = async ({
+  romes,
+  latitude,
+  longitude,
+  radius,
+  referer,
+  caller,
+  opco,
+  opcoUrl,
+  api = "jobV1",
+  useMock,
+}: {
+  romes: string
+  latitude: string
+  longitude: string
+  radius: number
+  referer: string
+  caller: string
+  opco: string
+  opcoUrl: string
+  api: string
+  useMock: string
+}) => {
+  const hasLocation = latitude === undefined ? false : true
+  const currentRadius = hasLocation ? radius : 21000
+  const companyLimit = 150 //TODO: query params options or default value from properties -> size || 100
+
+  if (useMock && useMock !== "false") {
+    return { results: [lbbMock] }
+  } else {
+    const companies = await getCompanies({
+      romes,
+      latitude,
+      longitude,
+      radius: currentRadius,
+      companyLimit,
+      caller,
+      api,
+      opco,
+      opcoUrl,
+    })
+
+    if (!("error" in companies) && companies instanceof Array) {
+      const sirets = companies.map(({ siret }) => siret)
+      const applicationCountByCompany = await getApplicationByCompanyCount(sirets)
+      return transformCompanies({ companies, referer, caller, applicationCountByCompany })
+    } else {
+      return companies
+    }
   }
 }
 
