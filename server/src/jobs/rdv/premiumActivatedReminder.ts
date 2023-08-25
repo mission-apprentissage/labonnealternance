@@ -33,11 +33,11 @@ export const premiumActivatedReminder = async () => {
 
   for (const etablissement of etablissementWithParcoursup) {
     // Retrieve all emails
-    const emails = eligibleTrainingsForAppointmentsFound
+    let emails = eligibleTrainingsForAppointmentsFound
       .filter((eligibleTrainingsForAppointment) => eligibleTrainingsForAppointment.etablissement_formateur_siret === etablissement.formateur_siret)
       .map((eligibleTrainingsForAppointment) => eligibleTrainingsForAppointment.lieu_formation_email)
       .concat([etablissement.gestionnaire_email])
-      .filter((email) => email)
+    emails = _.uniq(emails).filter((email) => email)
 
     for (const email of emails) {
       try {
