@@ -540,7 +540,7 @@ export const entrepriseOnboardingWorkflow = {
     const savedData = { ...entrepriseData, ...contactInfos, email: formatedEmail }
     const formulaireInfo = await createFormulaire({
       ...savedData,
-      status: RECRUITER_STATUS.EN_ATTENTE_VALIDATION,
+      status: RECRUITER_STATUS.ACTIF,
       jobs: [],
       cfa_delegated_siret,
     })
@@ -552,9 +552,6 @@ export const entrepriseOnboardingWorkflow = {
     } else {
       const balValidationResult = await autoValidateCompany(newEntreprise)
       newEntreprise = balValidationResult.userRecruteur
-      if (balValidationResult.validated) {
-        await updateFormulaire(formulaireId, { status: RECRUITER_STATUS.ACTIF })
-      }
     }
     return { formulaire: formulaireInfo, user: newEntreprise }
   },
