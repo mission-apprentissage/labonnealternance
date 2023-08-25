@@ -1,4 +1,4 @@
-import { getFormulaire } from "../../../../services/formulaire.service.js"
+import { getFormulaire, updateFormulaire } from "../../../../services/formulaire.service.js"
 import { deactivateUser, updateUser } from "../../../../services/userRecruteur.service.js"
 import { logger } from "../../../../common/logger.js"
 import { UserRecruteur } from "../../../../common/model/index.js"
@@ -27,6 +27,7 @@ export const updateSiretInfosInError = async () => {
         stats.deactivated++
       } else {
         const result = await updateUser({ _id }, siretResponse)
+        await updateFormulaire(recruteur.establishment_id, siretResponse)
         await autoValidateCompany(result)
         stats.success++
       }
