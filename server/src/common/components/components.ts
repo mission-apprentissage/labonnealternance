@@ -2,7 +2,7 @@
 import { connectToMongo } from "../mongodb.js"
 import createEtablissements from "./etablissement.js"
 
-export default async function (options = {}) {
+export const components = async (options = {}) => {
   const etablissements = await createEtablissements()
 
   return {
@@ -10,3 +10,7 @@ export default async function (options = {}) {
     etablissements,
   }
 }
+
+export type Components = Awaited<ReturnType<typeof components>>
+
+export default components

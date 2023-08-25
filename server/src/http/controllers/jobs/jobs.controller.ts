@@ -1,11 +1,18 @@
 import * as express from "express"
 import { Body, Controller, Get, Header, Hidden, OperationId, Patch, Path, Post, Query, Request, Response, Route, Security, SuccessResponse, Tags } from "tsoa"
-import { ICreateDelegation, ICreateJobBody, IGetDelegation, TCreateEstablishmentBody, TEstablishmentResponseSuccess, TJob, TResponseError } from "./jobs.types.js"
-import { createDelegationSchema, createEstablishmentSchema, createJobSchema, getEstablishmentEntitySchema, updateJobSchema } from "./jobs.validators.js"
-import { formatEntrepriseData, getEtablissement, getEtablissementFromGouv, getGeoCoordinates } from "../../../services/etablissement.service.js"
 import { Recruiter } from "../../../common/model/index.js"
-import { createUser, updateUserValidationHistory } from "../../../services/userRecruteur.service.js"
+import { ICredential } from "../../../common/model/schema/credentials/credential.types.js"
+import { IJobs } from "../../../common/model/schema/jobs/jobs.types.js"
 import { IUserRecruteur } from "../../../common/model/schema/userRecruteur/userRecruteur.types.js"
+import { delay } from "../../../common/utils/asyncUtils.js"
+import { IApiError } from "../../../common/utils/errorManager.js"
+import { getCompanyFromSiret } from "../../../service/poleEmploi/bonnesBoites.js"
+import { getJobsQuery } from "../../../service/poleEmploi/jobsAndCompanies.js"
+import { getPeJobFromId } from "../../../service/poleEmploi/offresPoleEmploi.js"
+import { getNearEtablissementsFromRomes } from "../../../services/catalogue.service.js"
+import { ACTIVE, ANNULEE, ENTREPRISE, POURVUE } from "../../../services/constant.service.js"
+import dayjs from "../../../services/dayjs.service.js"
+import { formatEntrepriseData, getEtablissement, getEtablissementFromGouv, getGeoCoordinates } from "../../../services/etablissement.service.js"
 import {
   cancelOffre,
   createJobDelegations,
@@ -14,23 +21,16 @@ import {
   getFormulaire,
   getFormulaires,
   getJob,
+  getOffre,
   patchOffre,
   provideOffre,
 } from "../../../services/formulaire.service.js"
-import { IJobs } from "../../../common/model/schema/jobs/jobs.types.js"
-import dayjs from "../../../services/dayjs.service.js"
-import { getAppellationDetailsFromAPI, getRomeDetailsFromAPI } from "../../../services/rome.service.js"
-import { getOffre } from "../../../services/formulaire.service.js"
-import { getNearEtablissementsFromRomes } from "../../../services/catalogue.service.js"
-import { ACTIVE, ANNULEE, POURVUE, ENTREPRISE, ETAT_UTILISATEUR, VALIDATION_UTILISATEUR } from "../../../services/constant.service.js"
-import { delay } from "../../../common/utils/asyncUtils.js"
-import { ICredential } from "../../../common/model/schema/credentials/credential.types.js"
-import { IApiError } from "../../../common/utils/errorManager.js"
 import { ILbaItem } from "../../../services/lbaitem.shared.service.types.js"
-import { getCompanyFromSiret } from "../../../service/poleEmploi/bonnesBoites.js"
 import { addOffreDetailView, addOffreSearchView, getLbaJobById } from "../../../services/lbajob.service.js"
-import { getPeJobFromId } from "../../../service/poleEmploi/offresPoleEmploi.js"
-import { getJobsQuery } from "../../../service/poleEmploi/jobsAndCompanies.js"
+import { getAppellationDetailsFromAPI, getRomeDetailsFromAPI } from "../../../services/rome.service.js"
+import { autoValidateUser, createUser } from "../../../services/userRecruteur.service.js"
+import { ICreateDelegation, ICreateJobBody, IGetDelegation, TCreateEstablishmentBody, TEstablishmentResponseSuccess, TJob, TResponseError } from "./jobs.types.js"
+import { createDelegationSchema, createEstablishmentSchema, createJobSchema, getEstablishmentEntitySchema, updateJobSchema } from "./jobs.validators.js"
 
 @Tags("Jobs")
 @Route("/api/v1/jobs")
@@ -156,11 +156,7 @@ export class JobsController extends Controller {
     // Create entry in UserRecruter collection
     const newUser = await createUser({ ...establishment, establishment_id: newEstablishment.establishment_id })
     // Update user status to valid
-    await updateUserValidationHistory(newUser._id, {
-      validation_type: VALIDATION_UTILISATEUR.AUTO,
-      user: "SERVEUR",
-      status: ETAT_UTILISATEUR.VALIDE,
-    })
+    await autoValidateUser(newUser._id)
 
     this.setStatus(201)
     return newEstablishment

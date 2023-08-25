@@ -37,6 +37,7 @@ import updateBrevoBlockedEmails from "./jobs/updateBrevoBlockedEmails/updateBrev
 import { importReferentielOnisep } from "./jobs/rdv/importReferentielOnisep.js"
 import updateReferentielRncpRomes from "./jobs/referentielRncpRome/updateReferentielRncpRomes.js"
 import { updateFormationCatalogue } from "./jobs/formationsCatalogue/updateFormationCatalogue.js"
+import { updateSiretInfosInError } from "./jobs/lba_recruteur/user/misc/updateSiretInfosInError.js"
 
 cli.addHelpText("after", null)
 
@@ -62,7 +63,7 @@ cli
   .requiredOption("-email_valide, <email_valide>", "email valide", true)
   .description("Permet de créer un accès utilisateur à l'espace partenaire")
   .action((first_name, last_name, email, scope, establishment_raison_sociale, establishment_siret, phone, address, options) => {
-    runScript(() => {
+    runScript(() =>
       createUserFromCLI(
         {
           first_name,
@@ -76,7 +77,7 @@ cli
         },
         { options }
       )
-    })
+    )
   })
 
 cli
@@ -139,7 +140,14 @@ cli
   .command("validate-user")
   .description("Contrôle de validation des entreprises en attente de validation")
   .action(() => {
-    runScript((components) => checkAwaitingCompaniesValidation())
+    runScript(() => checkAwaitingCompaniesValidation())
+  })
+
+cli
+  .command("update-siret-infos-in-error")
+  .description("Remplis les données venant du SIRET pour les utilisateurs ayant eu une erreur pendant l'inscription")
+  .action(() => {
+    runScript(() => updateSiretInfosInError())
   })
 
 /**

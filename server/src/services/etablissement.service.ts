@@ -25,7 +25,7 @@ import {
   ISIRET2IDCC,
 } from "./etablissement.service.types.js"
 import { createFormulaire, getFormulaire } from "./formulaire.service.js"
-import { autoValidateUser, createUser, getUser, setUserHasToBeManuallyValidated, userSetError } from "./userRecruteur.service.js"
+import { autoValidateUser, createUser, getUser, setUserHasToBeManuallyValidated, setUserInError } from "./userRecruteur.service.js"
 import { getOpcoBySirenFromDB, saveOpco } from "./opco.service.js"
 
 const apiParams = {
@@ -237,16 +237,18 @@ export const validateEtablissementEmail = async (_id: IUserRecruteur["_id"]): Pr
  */
 export const getEtablissementFromGouv = async (siret: string): Promise<IAPIEtablissement> => {
   try {
+    throw new Error("test")
     const { data } = await axios.get<IAPIEtablissement>(`${config.entreprise.baseUrl}/sirene/etablissements/${encodeURIComponent(siret)}`, {
       params: apiParams,
     })
 
     return data
   } catch (error) {
-    if (error.response.status == "404" || error.response.status == "422") {
+    if (error?.response?.status == "404" || error?.response?.status == "422") {
       return null
     }
     sentryCaptureException(error)
+    throw error
   }
 }
 /**
@@ -474,7 +476,7 @@ export const getEntrepriseDataFromSiret = async ({ siret, fromDashboardCfa, cfa_
   if (fromDashboardCfa) {
     const recruteurOpt = await getFormulaire({
       establishment_siret: siret,
-      cfa_delegated_siret: cfa_delegated_siret,
+      cfa_delegated_siret,
       status: "Actif",
     })
 
@@ -547,7 +549,7 @@ export const entrepriseOnboardingWorkflow = {
     let newEntreprise: IUserRecruteur = await createUser({ ...savedData, establishment_id: formulaireInfo.establishment_id, type: ENTREPRISE })
 
     if (hasSiretError) {
-      newEntreprise = await userSetError(newEntreprise._id, "Error in call to Siren API")
+      newEntreprise = await setUserInError(newEntreprise._id, "Error in call to Siren API")
     } else {
       const balValidationResult = await autoValidateCompany(newEntreprise)
       newEntreprise = balValidationResult.userRecruteur
