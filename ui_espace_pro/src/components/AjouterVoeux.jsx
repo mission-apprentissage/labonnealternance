@@ -63,7 +63,7 @@ const ChampNombre = ({ value, max, name, handleChange, label }) => {
   )
 }
 
-const AjouterVoeux = (props) => {
+const AjouterVoeuxForm = (props) => {
   const [inputJobItems, setInputJobItems] = useState([])
   const [formulaire, setFormulaire] = useState()
   const [haveProposals, setHaveProposals] = useState()
@@ -159,20 +159,19 @@ const AjouterVoeux = (props) => {
     /**
      * KBA 20220105: Issue comes from address API if it's down or no result is found
      */
-    if (formulaire.geo_coordinates === "NOT FOUND") {
+    const { geo_coordinates } = formulaire
+    if (!geo_coordinates || geo_coordinates === "NOT FOUND") {
       setHaveProposals(false)
       return
     }
-
-    const [latitude, longitude] = formulaire.geo_coordinates.split(",")
-
+    const [latitude, longitude] = geo_coordinates.split(",")
     const { data } = await getRelatedEtablissementsFromRome({ rome, latitude, longitude })
     setHaveProposals(!!data.length)
   }
 
   useEffect(async () => {
-    const { data } = await getFormulaire(establishment_id || params.establishment_id)
-    setFormulaire(data)
+    const { data: formulaire } = await getFormulaire(establishment_id || params.establishment_id)
+    setFormulaire(formulaire)
   }, [])
 
   return (
@@ -210,7 +209,6 @@ const AjouterVoeux = (props) => {
     >
       {(formik) => {
         let { values, setFieldValue, handleChange, errors, touched, isValid, isSubmitting, dirty, submitForm } = formik
-
         return (
           <>
             <FormControl isRequired>
@@ -473,7 +471,7 @@ const RomeInformationDetail = ({ definition, competencesDeBase, libelle, appella
   }
 }
 
-export default (props) => {
+export const PageAjouterVoeux = (props) => {
   const [romeInformation, setRomeInformation] = useState({})
   const [loading, setLoading] = useState(false)
   const { widget } = useContext(WidgetContext)
@@ -506,7 +504,7 @@ export default (props) => {
           Merci de renseigner les champs ci-dessous pour créer votre offre
         </Text>
         <Box>
-          <AjouterVoeux {...props} getRomeInformation={getRomeInformation} />
+          <AjouterVoeuxForm {...props} getRomeInformation={getRomeInformation} />
         </Box>
       </Box>
       <Box>
@@ -522,3 +520,5 @@ export default (props) => {
     </SimpleGrid>
   )
 }
+
+export default PageAjouterVoeux
