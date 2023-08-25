@@ -4,36 +4,16 @@ import { getLbaJobs } from "./lbajob.service.js"
 import { getSomeCompanies } from "./lbacompany.service.js"
 import { jobsQueryValidator } from "./queryValidator.service.js"
 import { getSomePeJobs } from "./pejob.service.js"
+import { TJobSearchQuery } from "./jobOpportunity.service.types.js"
+import { IApiError } from "../common/utils/errorManager.js"
 
-const getJobsQuery = async (query: JobSearchQuery) => {
-  const queryValidationResult = await jobsQueryValidator(query)
-
-  if ("error" in queryValidationResult) {
-    return queryValidationResult
-  }
-
-  const result = await getJobsFromApi({ query, api: "jobV1/jobs" })
-
-  let job_count = 0
-  if (result?.lbaCompanies?.results) {
-    job_count += result.lbaCompanies.results.length
-  }
-
-  if (result?.peJobs?.results) {
-    job_count += result.peJobs.results.length
-  }
-
-  if (result?.matchas?.results) {
-    job_count += result.matchas.results.length
-  }
-  if (query.caller) {
-    trackApiCall({ caller: query.caller, job_count, result_count: job_count, api_path: "jobV1/jobs", response: "OK" })
-  }
-
-  return { ...result, job_count }
-}
-
-const getJobsFromApi = async ({ query, api }) => {
+/**
+ * Retourn la compilation d'opportunités d'emploi au format unifié
+ * @param {TJobQuery} query un objet contenant les paramètres de recherche
+ * @param {string} api l'identifiant de l'api utilisée
+ * @returns {Promise<IApiError | { peJobs: { results: ILbaItem[] } | IApiError, matchas: { results: ILbaItem[] } | IApiError, lbaCompanies: { results: ILbaItem[] } | IApiError, lbbCompanies: null}>}
+ */
+export const getJobsFromApi = async ({ query, api }) => {
   try {
     const sources = !query.sources ? ["lba", "lbb", "offres", "matcha"] : query.sources.split(",")
 
@@ -85,16 +65,6 @@ const getJobsFromApi = async ({ query, api }) => {
         : null,
     ])
 
-    //remove duplicates between lbas and lbbs. lbas stay untouched, only duplicate lbbs are removed
-    if (lbaCompanies && lbbCompanies) {
-      deduplicateCompanies(lbaCompanies, lbbCompanies)
-    }
-
-    /*if (!query.sources) {
-      lbbCompanies = { results: [] };
-    }*/
-    //throw new Error("kaboom");
-
     return { peJobs, matchas, lbaCompanies, lbbCompanies }
   } catch (err) {
     console.log("Error ", err.message)
@@ -103,24 +73,47 @@ const getJobsFromApi = async ({ query, api }) => {
     if (query.caller) {
       trackApiCall({ caller: query.caller, api_path: api, response: "Error" })
     }
+    const errorReturn: IApiError = { error: "internal_error" }
 
-    return { error: "internal_error" }
+    return errorReturn
   }
 }
 
-const deduplicateCompanies = (lbaCompanies, lbbCompanies) => {
-  if (lbaCompanies.results && lbbCompanies.results) {
-    const lbaSirets = []
-    for (let i = 0; i < lbaCompanies.results.length; ++i) {
-      lbaSirets.push(lbaCompanies.results[i].company.siret)
-    }
+/**
+ * Retourne la compilation d'offres partenaires, d'offres LBA et de sociétés issues de l'algo
+ * @param {TJobSearchQuery} query les paramètres de recherche
+ * @returns {Promise<>}
+ */
+export const getJobsQuery = async (query: TJobSearchQuery) => {
+  const queryValidationResult = await jobsQueryValidator(query)
 
-    const deduplicatedLbbCompanies = []
-    for (let i = 0; i < lbbCompanies.results.length; ++i) {
-      if (lbaSirets.indexOf(lbbCompanies.results[i].company.siret) < 0) deduplicatedLbbCompanies.push(lbbCompanies.results[i])
-    }
-    lbbCompanies.results = deduplicatedLbbCompanies
+  if ("error" in queryValidationResult) {
+    return queryValidationResult
   }
-}
 
-export { getJobsFromApi, getJobsQuery }
+  const result = await getJobsFromApi({ query, api: "jobV1/jobs" })
+
+  let job_count = 0
+
+  if ("error" in result) {
+    return result
+  }
+
+  if ("lbaCompanies" in result && "results" in result.lbaCompanies) {
+    job_count += result.lbaCompanies.results.length
+  }
+
+  if ("peJobs" in result && "results" in result.peJobs) {
+    job_count += result.peJobs.results.length
+  }
+
+  if ("matchas" in result && "results" in result.matchas) {
+    job_count += result.matchas.results.length
+  }
+
+  if (query.caller) {
+    trackApiCall({ caller: query.caller, job_count, result_count: job_count, api_path: "jobV1/jobs", response: "OK" })
+  }
+
+  return { ...result, job_count }
+}
