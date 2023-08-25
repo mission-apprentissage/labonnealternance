@@ -1,3 +1,4 @@
+/* eslint-disable no-use-before-define */
 import { pick } from "lodash-es"
 import moment from "moment"
 import { mailTemplate } from "../assets/index.js"
@@ -249,7 +250,7 @@ export const createJob = async ({ job, id }: { job: Partial<IOffreExtended>; id:
     isUserAwaiting = getUserValidationState(user.status) === ETAT_UTILISATEUR.ATTENTE
     // upon user creation, if user is awaiting validation, update job status to "En attente"
     if (isUserAwaiting) {
-      job.job_status = "En attente"
+      job.job_status = JOB_STATUS.EN_ATTENTE
     }
   }
   // insert job
@@ -461,8 +462,8 @@ export const archiveDelegatedFormulaire = async (siret: IUserRecruteur["establis
   await asyncForEach(formulaires, async (form: IRecruiter) => {
     form.status = "Archivé"
 
-    form.jobs.map((job) => {
-      job.job_status = "Annulée"
+    form.jobs.forEach((job) => {
+      job.job_status = JOB_STATUS.ANNULEE
     })
 
     await Recruiter.findByIdAndUpdate(form._id, form)
