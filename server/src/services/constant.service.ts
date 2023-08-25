@@ -2,11 +2,11 @@ export const POURVUE = "Pourvue"
 export const ANNULEE = "Annulée"
 export const ACTIVE = "Active"
 
-export const JOB_STATUS = {
-  ACTIVE: "Active",
-  POURVUE: "Pourvue",
-  ANNULEE: "Annulée",
-  EN_ATTENTE: "En attente",
+export enum JOB_STATUS {
+  ACTIVE = "Active",
+  POURVUE = "Pourvue",
+  ANNULEE = "Annulée",
+  EN_ATTENTE = "En attente",
 }
 
 export const RECRUITER_STATUS = {
