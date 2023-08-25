@@ -22,7 +22,7 @@ import dayjs from "../../../services/dayjs.service.js"
 import { getAppellationDetailsFromAPI, getRomeDetailsFromAPI } from "../../../services/rome.service.js"
 import { getOffre } from "../../../services/formulaire.service.js"
 import { getNearEtablissementsFromRomes } from "../../../services/catalogue.service.js"
-import { ACTIVE, ANNULEE, POURVUE, ENTREPRISE, ETAT_UTILISATEUR, VALIDATION_UTILISATEUR } from "../../../services/constant.service.js"
+import { ACTIVE, ANNULEE, POURVUE, ENTREPRISE, ETAT_UTILISATEUR, VALIDATION_UTILISATEUR, JOB_STATUS } from "../../../services/constant.service.js"
 import { delay } from "../../../common/utils/asyncUtils.js"
 import { ICredential } from "../../../common/model/schema/credentials/credential.types.js"
 import { IApiError } from "../../../common/utils/errorManager.js"
@@ -222,7 +222,7 @@ export class JobsController extends Controller {
       job_description: body.job_description,
       job_creation_date: dayjs().format(DATE_FORMAT),
       job_expiration_date: dayjs().add(1, "month").format(DATE_FORMAT),
-      job_status: "Active",
+      job_status: JOB_STATUS.ACTIVE,
       job_type: body.job_type,
       rome_detail: romeDetails,
       is_disabled_elligible: body.is_disabled_elligible,
