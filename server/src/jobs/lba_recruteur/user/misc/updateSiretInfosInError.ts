@@ -6,6 +6,7 @@ import { asyncForEach } from "../../../../common/utils/asyncUtils.js"
 import { sentryCaptureException } from "../../../../common/utils/sentryUtils.js"
 import { CFA, ENTREPRISE, ETAT_UTILISATEUR } from "../../../../services/constant.service.js"
 import { autoValidateCompany, getEntrepriseDataFromSiret } from "../../../../services/etablissement.service.js"
+import { notifyToSlack } from "../../../../common/utils/slackUtils.js"
 
 export const updateSiretInfosInError = async () => {
   const query = {
@@ -37,6 +38,11 @@ export const updateSiretInfosInError = async () => {
       sentryCaptureException(err)
       stats.failure++
     }
+  })
+  await notifyToSlack({
+    subject: "Reprise des recruteurs en erreur API SIRET",
+    message: `${stats.success} recruteurs repris avec succès. ${stats.failure} recruteurs avec une erreur de l'API SIRET. ${stats.deactivated} recruteurs désactivés pour non-respect des règles de création.`,
+    error: stats.failure > 0,
   })
   return stats
 }
