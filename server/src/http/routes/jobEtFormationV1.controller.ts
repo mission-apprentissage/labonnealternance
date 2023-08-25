@@ -3,9 +3,9 @@ import express from "express"
 import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
 import { sentryCaptureException } from "../../common/utils/sentryUtils.js"
 import { trackApiCall } from "../../common/utils/sendTrackingEvent.js"
-import { jobsEtFormationsQueryValidator } from "../../service/jobsEtFormationsQueryValidator.js"
+import { jobsEtFormationsQueryValidator } from "../../services/queryValidator.service.js"
 import { getFormationsQuery } from "../../services/formation.service.js"
-import { getJobsFromApi } from "../../service/poleEmploi/jobsAndCompanies.js"
+import { getJobsFromApi } from "../../services/jobOpportunity.service.js"
 
 export default function () {
   const router = express.Router()

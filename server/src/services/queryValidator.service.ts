@@ -1,7 +1,7 @@
 import { regionCodeToDepartmentList } from "../common/utils/regionInseeCodes.js"
 import { isOriginLocal } from "../common/utils/isOriginLocal.js"
-import { JobSearchQuery } from "./poleEmploi/jobsAndCompanies.js"
 import { RncpRomes } from "../common/model/index.js"
+import { TJobSearchQuery } from "./jobOpportunity.service.types.js"
 
 const validateRncp = (rncp: string | null | undefined, error_messages: string[]) => {
   if (!/^RNCP\d{2,5}$/.test(rncp)) {
@@ -12,7 +12,7 @@ const validateRncp = (rncp: string | null | undefined, error_messages: string[])
   }
 }
 
-const validateRomesOrRncp = async (query: JobSearchQuery, error_messages: string[], romeLimit = 20) => {
+const validateRomesOrRncp = async (query: TJobSearchQuery, error_messages: string[], romeLimit = 20) => {
   const { romes, rncp } = query
   // codes ROME : romes
   if (!romes && !rncp) {
@@ -149,25 +149,127 @@ const validateApiSources = (apiSources, error_messages, allowedSources = ["forma
 }
 
 // contrôle sur la présence d'un appelant valide
-const validateCaller = ({ caller, referer }, error_messages = []) => {
+export const validateCaller = ({ caller, referer }, error_messages = []) => {
   if (!isOriginLocal(referer) && !caller) {
     error_messages.push("caller : caller is missing.")
     return false
   } else return true
 }
 
-export {
-  validateRadius,
-  validateRomesOrRncp,
-  validateRomeOrDomain,
-  validateRncpOrRomeOrDomain,
-  validateLatitude,
-  validateLongitude,
-  validateApiSources,
-  validateDiploma,
-  validateInsee,
-  validateOptionalRomeOrDomain,
-  validateOptionalRegion,
-  validateRegionOrRome,
-  validateCaller,
+export const jobsQueryValidator = async (query: TJobSearchQuery): Promise<{ result: "passed" } | { error: string; error_messages: string[] }> => {
+  const error_messages = []
+  const { caller, referer, latitude, longitude, insee, radius, sources } = query
+  // contrôle des paramètres
+
+  // présence d'identifiant de la source : caller
+  validateCaller({ caller, referer }, error_messages)
+
+  // codes ROME  et code RNCP : romes, rncp. Modifie la valeur de query.romes si code rncp correct
+  await validateRomesOrRncp(query, error_messages)
+
+  // coordonnées gps optionnelles : latitude et longitude
+  if (latitude || longitude) {
+    validateLatitude(latitude, error_messages)
+    validateLongitude(longitude, error_messages)
+
+    // rayon de recherche : radius
+    validateRadius(radius, error_messages)
+
+    // code INSEE : insee
+    if (caller) {
+      validateInsee(insee, error_messages)
+    }
+  }
+
+  // source mal formée si présente
+  validateApiSources(sources, error_messages, ["lbb", "lba", "offres", "matcha"])
+
+  if (error_messages.length) return { error: "wrong_parameters", error_messages }
+
+  return { result: "passed" }
+}
+
+//TODO: remplacer par joi validateAsync
+export const formationsQueryValidator = async (query) => {
+  const error_messages = []
+
+  // contrôle des paramètres
+
+  // présence d'identifiant de la source : caller
+  validateCaller({ caller: query.caller, referer: query.referer }, error_messages)
+
+  await validateRncpOrRomeOrDomain(query, error_messages)
+
+  // coordonnées gps optionnelles : latitude et longitude
+  if (query.latitude || query.longitude) {
+    validateLatitude(query.latitude, error_messages)
+    validateLongitude(query.longitude, error_messages)
+
+    // rayon de recherche : radius
+    validateRadius(query.radius, error_messages)
+  }
+
+  // diploma mal formée si présente
+  validateDiploma(query.diploma, error_messages)
+
+  if (error_messages.length) return { error: "wrong_parameters", error_messages }
+
+  return { result: "passed" }
+}
+
+export const formationsRegionQueryValidator = (query) => {
+  const error_messages = []
+
+  // présence d'identifiant de la source : caller
+  validateCaller({ caller: query.caller, referer: query.referer }, error_messages)
+
+  // codes ROME : romes ou romeDomain optionnels dans ce contexte
+  validateOptionalRomeOrDomain({ romes: query.romes, romeDomain: query.romeDomain, romeLimit: 20 }, error_messages)
+
+  // region. Soit département soit région soit aucune des deux = France entière
+  validateOptionalRegion({ region: query.region, departement: query.departement }, error_messages)
+
+  // region ou rome obligatoires (règle : si pas de region donc France entière rome devient obligatoire)
+  validateRegionOrRome({ region: query.region, departement: query.departement, romes: query.romes, romeDomain: query.romeDomain }, error_messages)
+
+  // diploma mal formée si présente
+  validateDiploma(query.diploma, error_messages)
+
+  if (error_messages.length) return { error: "wrong_parameters", error_messages }
+
+  return { result: "passed" }
+}
+
+export const jobsEtFormationsQueryValidator = async (query) => {
+  const error_messages = []
+
+  // présence d'identifiant de la source : caller
+  validateCaller({ caller: query.caller, referer: query.referer }, error_messages)
+
+  // codes ROME  et code RNCP : romes, rncp. Modifie la valeur de query.romes si code rncp correct
+  await validateRomesOrRncp(query, error_messages)
+
+  // coordonnées gps optionnelles : latitude et longitude
+  if (query.latitude || query.longitude) {
+    validateLatitude(query.latitude, error_messages)
+    validateLongitude(query.longitude, error_messages)
+
+    // rayon de recherche : radius
+    validateRadius(query.radius, error_messages)
+  }
+
+  // diploma mal formée si présente
+  validateDiploma(query.diploma, error_messages)
+
+  // code INSEE : insee
+  if (query.longitude) {
+    validateInsee(query.insee, error_messages)
+  }
+
+  // source mal formée si présente
+  validateApiSources(query.sources, error_messages, ["formations", "lbb", "lba", "offres", "matcha"])
+
+  if (error_messages.length) return { error: "wrong_parameters", error_messages }
+
+  return { result: "passed" }
 }

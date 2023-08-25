@@ -1,28 +1,9 @@
-// @ts-nocheck
-
-import { RncpRomes } from "../../common/model/index.js"
-import { trackApiCall } from "../../common/utils/sendTrackingEvent.js"
-import { sentryCaptureException } from "../../common/utils/sentryUtils.js"
-import { getLbaJobs } from "../../services/lbajob.service.js"
-import { getSomeCompanies } from "../../services/lbacompany.service.js"
-import { jobsQueryValidator } from "./jobsQueryValidator.js"
-import { getSomePeJobs } from "../../services/pejob.service.js"
-
-export type JobSearchQuery = {
-  romes?: string
-  rncp?: string
-  referer?: string
-  caller?: string
-  latitude?: string
-  longitude?: string
-  radius?: number
-  insee?: string
-  sources?: string
-  diploma?: string
-  opco?: string
-  opcoUrl?: string
-  useMock?: string
-}
+import { trackApiCall } from "../common/utils/sendTrackingEvent.js"
+import { sentryCaptureException } from "../common/utils/sentryUtils.js"
+import { getLbaJobs } from "./lbajob.service.js"
+import { getSomeCompanies } from "./lbacompany.service.js"
+import { jobsQueryValidator } from "./queryValidator.service.js"
+import { getSomePeJobs } from "./pejob.service.js"
 
 const getJobsQuery = async (query: JobSearchQuery) => {
   const queryValidationResult = await jobsQueryValidator(query)

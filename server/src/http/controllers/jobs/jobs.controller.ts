@@ -30,7 +30,7 @@ import { ILbaItem } from "../../../services/lbaitem.shared.service.types.js"
 import { getCompanyFromSiret } from "../../../services/lbacompany.service.js"
 import { addOffreDetailView, addOffreSearchView, getLbaJobById } from "../../../services/lbajob.service.js"
 import { getPeJobFromId } from "../../../services/pejob.service.js"
-import { getJobsQuery } from "../../../service/poleEmploi/jobsAndCompanies.js"
+import { getJobsQuery } from "../../../services/jobOpportunity.service.js"
 
 @Tags("Jobs")
 @Route("/api/v1/jobs")

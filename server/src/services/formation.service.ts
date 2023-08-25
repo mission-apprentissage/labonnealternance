@@ -11,7 +11,7 @@ import { sentryCaptureException } from "../common/utils/sentryUtils.js"
 import { notifyToSlack } from "../common/utils/slackUtils.js"
 import config from "../config.js"
 import { formationMock, formationsMock, formationDetailMock } from "../mocks/formations-mock.js"
-import { formationsQueryValidator, formationsRegionQueryValidator } from "../service/formationsQueryValidator.js"
+import { formationsQueryValidator, formationsRegionQueryValidator } from "../services/queryValidator.service.js"
 import { IFormationEsResult } from "./formation.service.types.js"
 import { ILbaItem, ILbaItemTrainingSession, LbaItem } from "./lbaitem.shared.service.types.js"
 
