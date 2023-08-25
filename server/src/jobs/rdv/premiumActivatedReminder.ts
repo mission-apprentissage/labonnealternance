@@ -37,7 +37,7 @@ export const premiumActivatedReminder = async () => {
       .filter((eligibleTrainingsForAppointment) => eligibleTrainingsForAppointment.etablissement_formateur_siret === etablissement.formateur_siret)
       .map((eligibleTrainingsForAppointment) => eligibleTrainingsForAppointment.lieu_formation_email)
       .concat([etablissement.gestionnaire_email])
-    emails = _.uniq(emails).filter((email) => email)
+    emails = [...new Set(emails)].filter((email) => email)
 
     for (const email of emails) {
       try {
