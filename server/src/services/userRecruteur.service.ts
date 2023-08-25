@@ -2,7 +2,7 @@ import { randomUUID } from "crypto"
 import { ModelUpdateOptions, UpdateQuery } from "mongoose"
 import { Filter } from "mongodb"
 import { UserRecruteur } from "../common/model/index.js"
-import { IUserRecruteur, IUserValidation } from "../common/model/schema/userRecruteur/userRecruteur.types.js"
+import { IUserRecruteur, IUserStatusValidation } from "../common/model/schema/userRecruteur/userRecruteur.types.js"
 import { CFA, ETAT_UTILISATEUR, VALIDATION_UTILISATEUR } from "./constant.service.js"
 import mailer from "./mailer.service.js"
 import { mailTemplate } from "../assets/index.js"
@@ -118,7 +118,7 @@ export const registerUser = (email: IUserRecruteur["email"]) => UserRecruteur.fi
  * @param {ModelUpdateOptions} [options={new:true}]
  * @returns {Promise<IUserRecruteur>}
  */
-export const updateUserValidationHistory = (userId: IUserRecruteur["_id"], state: UpdateQuery<IUserValidation>, options: ModelUpdateOptions = { new: true }) =>
+export const updateUserValidationHistory = (userId: IUserRecruteur["_id"], state: UpdateQuery<IUserStatusValidation>, options: ModelUpdateOptions = { new: true }) =>
   UserRecruteur.findByIdAndUpdate({ _id: userId }, { $push: { status: state } }, options)
 
 /**
@@ -136,21 +136,21 @@ export const userSetError = async (userId: IUserRecruteur["_id"], reason: string
     reason,
   })
 
-export const userAutoValidate = async (userId: IUserRecruteur["_id"]) =>
+export const autoValidateUser = async (userId: IUserRecruteur["_id"]) =>
   await updateUserValidationHistory(userId, {
     validation_type: VALIDATION_UTILISATEUR.AUTO,
     user: "SERVEUR",
     status: ETAT_UTILISATEUR.VALIDE,
   })
 
-export const userSetManualValidation = async (userId: IUserRecruteur["_id"]) =>
+export const setUserHasToBeManuallyValidated = async (userId: IUserRecruteur["_id"]) =>
   await updateUserValidationHistory(userId, {
     validation_type: VALIDATION_UTILISATEUR.MANUAL,
     user: "SERVEUR",
     status: ETAT_UTILISATEUR.ATTENTE,
   })
 
-export const userRecruteurSendWelcomeEmail = async (userRecruteur: IUserRecruteur) => {
+export const sendWelcomeEmailToUserRecruteur = async (userRecruteur: IUserRecruteur) => {
   const { email, first_name, last_name, establishment_raison_sociale, type } = userRecruteur
   const magiclink = `${config.publicUrlEspacePro}/authentification/verification?token=${createMagicLinkToken(email)}`
   await mailer.sendEmail({

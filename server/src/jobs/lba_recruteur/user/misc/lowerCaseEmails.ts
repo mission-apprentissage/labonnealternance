@@ -50,7 +50,7 @@ const removeUserAndDelegatee = ({ establishment_siret, _id }: Pick<IUserRecruteu
  * @returns {Array} list of duplicated user matched on case insensitive email
  */
 const findDuplicates = (users: IUserRecruteur[]) =>
-  Object.entries(groupBy(users, (user) => user.email.toLowerCase())).flatMap(([email, users]: [email: string, users: string[]]) => (users.length > 1 ? [email] : []))
+  Object.entries(groupBy(users, (user) => user.email.toLowerCase())).flatMap(([email, users]) => (users.length > 1 ? [email] : []))
 
 /**
  * @description normalize email if it contains a + sign by escaping it with \\

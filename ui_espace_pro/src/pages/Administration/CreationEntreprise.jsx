@@ -141,7 +141,7 @@ const CreationEntreprise = ({ type, widget }) => {
               Merci de renseigner le SIRET de votre entreprise partenaire afin de l'identifier.
             </Text>
             <Box mt={4}>
-              <CreationCompte type={type} />
+              <CreationCompte />
             </Box>
           </Box>
           <Box>

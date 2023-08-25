@@ -59,20 +59,9 @@ services:
     restart: unless-stopped
     networks:
       - lba_network
-    depends_on:
-      - mongodb
     environment:
       - LBA_MONGODB_URI=mongodb://mongodb:27017/labonnealternance?retryWrites=true&w=majority
       - LBA_LOG_DESTINATIONS=stdout,mongodb
-
-  mongodb:
-    image: mongo:5.0.6-focal
-    container_name: lba_mongodb
-    mem_limit: 5g
-    command: --wiredTigerCacheSizeGB 4
-    restart: unless-stopped
-    networks:
-      - lba_network
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.17.6

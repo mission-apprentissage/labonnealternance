@@ -20,6 +20,8 @@ import { ILbaJobEsResult } from "./lbajob.service.types.js"
 
 const esClient = getElasticInstance()
 
+const JOB_SEARCH_LIMIT = 250
+
 interface IFormulaireExtended extends IRecruiter {
   entreprise_localite: string
 }
@@ -135,7 +137,7 @@ export const getJobsFromElasticSearch = async ({
     ],
   }
 
-  const result = await esClient.search({ index: "recruiters", body })
+  const result = await esClient.search({ size: JOB_SEARCH_LIMIT, index: "recruiters", body })
 
   const filteredJobs = await Promise.all(
     result.body.hits.hits.map(async (x) => {
@@ -352,7 +354,7 @@ export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }:
     delegations.push({ siret_code, email })
 
     if (userState.status === ETAT_UTILISATEUR.VALIDE) {
-      await sendCFADelegationMail(email, offre, offreDocument, siret_code)
+      await sendDelegationMailToCFA(email, offre, offreDocument, siret_code)
     }
   })
 
@@ -608,7 +610,7 @@ export const getJob = async (id: IJobs["_id"]): Promise<IJobs> => {
 /**
  * @description Sends the mail informing the CFA that a company wants the CFA to handle the offer.
  */
-export const sendCFADelegationMail = async (email: string, offre: IJobs, recruiter: { establishment_raison_sociale: string; establishment_id: string }, siret_code: string) => {
+export const sendDelegationMailToCFA = async (email: string, offre: IJobs, recruiter: { establishment_raison_sociale: string; establishment_id: string }, siret_code: string) => {
   const unsubscribeOF = await UnsubscribeOF.findOne({ establishment_siret: siret_code })
   if (unsubscribeOF) return
   await mailer.sendEmail({

@@ -109,7 +109,7 @@ export class JobsController extends Controller {
   @OperationId("createEstablishment")
   @Security("api_key")
   public async createEstablishment(@Request() request: express.Request | any, @Body() body: TCreateEstablishmentBody): Promise<TEstablishmentResponseSuccess | TResponseError> {
-    const { first_name, last_name, phone, email, origin, establishment_siret } = body
+    const { first_name, last_name, phone, email, origin, idcc, establishment_siret } = body
     const user: ICredential = request.user
 
     const establishmentExists = await getEtablissement({ email })
@@ -132,7 +132,7 @@ export class JobsController extends Controller {
     // Format establishment data returned by API
     // Initialize establishment object
     const establishment = {
-      origin: `${user.scope}-${origin}`,
+      origin: `${user.organisation}${origin ? `-${origin}` : ""}`,
       first_name,
       last_name,
       phone,
@@ -140,6 +140,8 @@ export class JobsController extends Controller {
       type: ENTREPRISE,
       is_email_checked: true,
       is_qualiopi: false,
+      opco: user.scope,
+      idcc,
       ...formatEntrepriseData(establishmentInformations.data),
     }
 
@@ -227,6 +229,8 @@ export class JobsController extends Controller {
       job_count: body.job_count,
       job_duration: body.job_duration,
       job_rythm: body.job_rythm,
+      custom_address: body.custom_address,
+      custom_geo_coordinates: body.custom_geo_coordinates,
     }
 
     const updatedRecruiter = await createOffre(establishmentId, job)
@@ -253,7 +257,7 @@ export class JobsController extends Controller {
   @Patch("/{jobId}")
   @OperationId("updateJob")
   @Security("api_key")
-  public async updateJob(@Body() body: TJob, @Path() jobId: IJobs["_id"]): Promise<TEstablishmentResponseSuccess | TResponseError> {
+  public async updateJob(@Body() body: Partial<TJob>, @Path() jobId: IJobs["_id"]): Promise<TEstablishmentResponseSuccess | TResponseError> {
     const jobExists = await getOffre(jobId)
 
     if (!jobExists) {

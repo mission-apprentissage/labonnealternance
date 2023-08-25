@@ -1,5 +1,5 @@
 import * as Yup from "yup"
-import { validateSIRET } from "../utils/validateSIRET"
+import { validateSIRET } from "../validation/validateSIRET"
 
 export const phoneValidation = () => {
   return Yup.string()

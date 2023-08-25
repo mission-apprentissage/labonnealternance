@@ -4,14 +4,13 @@ import { mailTemplate } from "../../assets/index.js"
 import { IRecruiter } from "../../common/model/schema/recruiter/recruiter.types.js"
 import { IUserRecruteur } from "../../common/model/schema/userRecruteur/userRecruteur.types.js"
 import { createUserRecruteurToken } from "../../common/utils/jwtUtils.js"
-import { checkIfUserMailExistInReferentiel, getAllDomainsFromEmailList, getEmailDomain, isEmailPrivateCompany } from "../../common/utils/mailUtils.js"
+import { checkIfUserMailExistInReferentiel, getAllDomainsFromEmailList, getEmailDomain, isEmailFromPrivateCompany } from "../../common/utils/mailUtils.js"
 import { sentryCaptureException } from "../../common/utils/sentryUtils.js"
 import { notifyToSlack } from "../../common/utils/slackUtils.js"
 import config from "../../config.js"
 import { getNearEtablissementsFromRomes } from "../../services/catalogue.service.js"
-import { CFA, ENTREPRISE, ETAT_UTILISATEUR } from "../../services/constant.service.js"
+import { BusinessErrorCodes, CFA, ENTREPRISE, ETAT_UTILISATEUR } from "../../services/constant.service.js"
 import {
-  ErrorCodes,
   entrepriseOnboardingWorkflow,
   etablissementUnsubscribeDemandeDelegation,
   formatReferentielData,
@@ -23,14 +22,14 @@ import {
 } from "../../services/etablissement.service.js"
 import mailer from "../../services/mailer.service.js"
 import {
+  autoValidateUser,
   createUser,
   getUser,
   getUserValidationState,
   registerUser,
+  sendWelcomeEmailToUserRecruteur,
+  setUserHasToBeManuallyValidated,
   updateUser,
-  userAutoValidate,
-  userRecruteurSendWelcomeEmail,
-  userSetManualValidation,
 } from "../../services/userRecruteur.service.js"
 import authMiddleware from "../middlewares/authMiddleware.js"
 import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
@@ -74,7 +73,7 @@ export default () => {
     "/entreprise/:siret",
     tryCatch(async (req, res) => {
       const siret: string | undefined = req.params.siret
-      const fromDashboardCfa = Boolean(req.query.fromDashboardCfa)
+      const fromDashboardCfa = req.query.fromDashboardCfa === "true"
       const cfa_delegated_siret: string | undefined = req.query.cfa_delegated_siret
       if (!siret) {
         return res.status(400).json({ error: true, message: "Le numéro siret est obligatoire." })
@@ -83,7 +82,7 @@ export default () => {
         const result = await getEntrepriseDataFromSiret({ siret, fromDashboardCfa, cfa_delegated_siret })
         if ("error" in result) {
           switch (result.errorCode) {
-            case ErrorCodes.isCfa: {
+            case BusinessErrorCodes.IS_CFA: {
               return res.status(400).json({
                 error: true,
                 message: result.message,
@@ -117,9 +116,9 @@ export default () => {
         return res.status(400).json({ error: true, message: "Le numéro siret est obligatoire." })
       }
 
-      const exist = await getEtablissement({ establishment_siret: req.params.siret, type: CFA })
+      const cfaUserRecruteurOpt = await getEtablissement({ establishment_siret: req.params.siret, type: CFA })
 
-      if (exist) {
+      if (cfaUserRecruteurOpt) {
         return res.status(403).json({
           error: true,
           reason: "EXIST",
@@ -161,13 +160,14 @@ export default () => {
   router.post(
     "/creation",
     tryCatch(async (req: Request<{}, {}, IUserRecruteur & IRecruiter>, res) => {
+      // TODO add some Joi
       switch (req.body.type) {
         case ENTREPRISE: {
           const siret = req.body.establishment_siret
           const result = await entrepriseOnboardingWorkflow.create({ ...req.body, fromDashboardCfa: false, siret })
           if ("error" in result) {
             switch (result.errorCode) {
-              case ErrorCodes.alreadyExist: {
+              case BusinessErrorCodes.ALREADY_EXISTS: {
                 return res.status(403).json({
                   error: true,
                   message: result.message,
@@ -188,9 +188,9 @@ export default () => {
           const formatedEmail = req.body.email.toLocaleLowerCase()
 
           // check if user already exist
-          const exist = await getUser({ email: formatedEmail })
+          const userRecruteurOpt = await getUser({ email: formatedEmail })
 
-          if (exist) {
+          if (userRecruteurOpt) {
             return res.status(403).json({ error: true, message: "L'adresse mail est déjà associée à un compte La bonne alternance." })
           }
 
@@ -201,7 +201,7 @@ export default () => {
 
           if (!referentiel.contacts.length) {
             // Validation manuelle de l'utilisateur à effectuer pas un administrateur
-            newCfa = await userSetManualValidation(newCfa._id)
+            newCfa = await setUserHasToBeManuallyValidated(newCfa._id)
 
             await notifyToSlack({
               subject: "RECRUTEUR",
@@ -213,7 +213,7 @@ export default () => {
 
           if (checkIfUserMailExistInReferentiel(referentiel.contacts, req.body.email)) {
             // Validation automatique de l'utilisateur
-            newCfa = await userAutoValidate(newCfa._id)
+            newCfa = await autoValidateUser(newCfa._id)
 
             const { email, _id, last_name, first_name } = newCfa
 
@@ -237,12 +237,12 @@ export default () => {
             return res.json({ user: newCfa })
           }
 
-          if (isEmailPrivateCompany(formatedEmail)) {
+          if (isEmailFromPrivateCompany(formatedEmail)) {
             const domains = getAllDomainsFromEmailList(referentiel.contacts)
             const userEmailDomain = getEmailDomain(formatedEmail)
             if (domains.includes(userEmailDomain)) {
               // Validation automatique de l'utilisateur
-              newCfa = await userAutoValidate(newCfa._id)
+              newCfa = await autoValidateUser(newCfa._id)
               const { email, _id, last_name, first_name } = newCfa
               const url = getValidationUrl(_id)
               await mailer.sendEmail({
@@ -264,7 +264,7 @@ export default () => {
           }
 
           // Validation manuelle de l'utilisateur à effectuer pas un administrateur
-          newCfa = await userSetManualValidation(newCfa._id)
+          newCfa = await setUserHasToBeManuallyValidated(newCfa._id)
 
           await notifyToSlack({
             subject: "RECRUTEUR",
@@ -341,7 +341,7 @@ export default () => {
       if (isUserAwaiting) {
         return res.json({ isUserAwaiting: true })
       }
-      await userRecruteurSendWelcomeEmail(user)
+      await sendWelcomeEmailToUserRecruteur(user)
       await registerUser(user.email)
 
       // Log the user in directly
