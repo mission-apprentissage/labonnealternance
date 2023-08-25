@@ -10,7 +10,7 @@ import { getCompanyFromSiret } from "../../../service/poleEmploi/bonnesBoites.js
 import { getJobsQuery } from "../../../service/poleEmploi/jobsAndCompanies.js"
 import { getPeJobFromId } from "../../../service/poleEmploi/offresPoleEmploi.js"
 import { getNearEtablissementsFromRomes } from "../../../services/catalogue.service.js"
-import { ACTIVE, ANNULEE, ENTREPRISE, POURVUE } from "../../../services/constant.service.js"
+import { ACTIVE, ANNULEE, ENTREPRISE, JOB_STATUS, POURVUE } from "../../../services/constant.service.js"
 import dayjs from "../../../services/dayjs.service.js"
 import { formatEntrepriseData, getEtablissement, getEtablissementFromGouv, getGeoCoordinates } from "../../../services/etablissement.service.js"
 import {
@@ -218,7 +218,7 @@ export class JobsController extends Controller {
       job_description: body.job_description,
       job_creation_date: dayjs().format(DATE_FORMAT),
       job_expiration_date: dayjs().add(1, "month").format(DATE_FORMAT),
-      job_status: "Active",
+      job_status: JOB_STATUS.ACTIVE,
       job_type: body.job_type,
       rome_detail: romeDetails,
       is_disabled_elligible: body.is_disabled_elligible,

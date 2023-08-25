@@ -187,7 +187,7 @@ export const ListeOffres = () => {
       disableFilters: true,
       disableSortBy: true,
       accessor: (row) => {
-        const [lat, lon] = row.geo_coordinates.split(",")
+        const [lat, lon] = (row.geo_coordinates ?? "").split(",")
         const isDisable = row.job_status === "Annulée" || row.job_status === "Pourvue" ? true : false
 
         return (
@@ -242,13 +242,11 @@ export const ListeOffres = () => {
                       </Link>
                     </MenuItem>
                     {auth.type !== AUTHTYPE.CFA && (
-                      <>
-                        <MenuItem>
-                          <Link isExternal href={`${process.env.REACT_APP_BASE_URL}/recherche-apprentissage-formation?&caller=matcha&romes=${row.rome_code}&lon=${lon}&lat=${lat}`}>
-                            Voir les centres de formations
-                          </Link>
-                        </MenuItem>
-                      </>
+                      <MenuItem>
+                        <Link isExternal href={`${process.env.REACT_APP_BASE_URL}/recherche-apprentissage-formation?&caller=matcha&romes=${row.rome_code}&lon=${lon}&lat=${lat}`}>
+                          Voir les centres de formations
+                        </Link>
+                      </MenuItem>
                     )}
                     <MenuItem>
                       <Link

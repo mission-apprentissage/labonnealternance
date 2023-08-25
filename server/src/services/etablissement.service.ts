@@ -237,14 +237,13 @@ export const validateEtablissementEmail = async (_id: IUserRecruteur["_id"]): Pr
  */
 export const getEtablissementFromGouv = async (siret: string): Promise<IAPIEtablissement> => {
   try {
-    throw new Error("test")
     const { data } = await axios.get<IAPIEtablissement>(`${config.entreprise.baseUrl}/sirene/etablissements/${encodeURIComponent(siret)}`, {
       params: apiParams,
     })
 
     return data
   } catch (error) {
-    if (error?.response?.status == "404" || error?.response?.status == "422") {
+    if (error?.response?.status === "404" || error?.response?.status === "422") {
       return null
     }
     sentryCaptureException(error)
@@ -542,14 +541,15 @@ export const entrepriseOnboardingWorkflow = {
     const savedData = { ...entrepriseData, ...contactInfos, email: formatedEmail }
     const formulaireInfo = await createFormulaire({
       ...savedData,
-      status: RECRUITER_STATUS.EN_ATTENTE_VALIDATION,
+      status: RECRUITER_STATUS.ACTIF,
       jobs: [],
       cfa_delegated_siret,
     })
-    let newEntreprise: IUserRecruteur = await createUser({ ...savedData, establishment_id: formulaireInfo.establishment_id, type: ENTREPRISE })
+    const formulaireId = formulaireInfo.establishment_id
+    let newEntreprise: IUserRecruteur = await createUser({ ...savedData, establishment_id: formulaireId, type: ENTREPRISE })
 
     if (hasSiretError) {
-      newEntreprise = await setUserInError(newEntreprise._id, "Error in call to Siren API")
+      newEntreprise = await setUserInError(newEntreprise._id, "Erreur lors de l'appel à l'API SIRET")
     } else {
       const balValidationResult = await autoValidateCompany(newEntreprise)
       newEntreprise = balValidationResult.userRecruteur
