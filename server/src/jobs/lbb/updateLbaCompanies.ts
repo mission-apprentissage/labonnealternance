@@ -66,7 +66,7 @@ const processCompanies = async () => {
   )
 }
 
-export default async function updateLbaCompanies({ UseAlgoFile = false, ClearMongo = false, BuildIndex = false, UseSave = false, ForceRecreate = false }) {
+export default async function updateLbaCompanies({ UseAlgoFile = false, ClearMongo = false, BuildIndex = false, UseSave = false, ForceRecreate = false, SourceFile = null }) {
   try {
     logMessage("info", " -- Start updating lbb db with new algo -- ")
 
