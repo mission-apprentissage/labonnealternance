@@ -18,7 +18,7 @@ export const updateSiretInfosInError = async () => {
   await asyncForEach(userRecruteurs, async (userRecruteur) => {
     const { establishment_siret, type, _id, establishment_id } = userRecruteur
     try {
-      const recruteur = await getFormulaire({ _id: establishment_id })
+      const recruteur = await getFormulaire({ establishment_id })
       const { cfa_delegated_siret } = recruteur
       const siretResponse = await getEntrepriseDataFromSiret({ siret: establishment_siret, fromDashboardCfa: type === CFA, cfa_delegated_siret })
       if ("error" in siretResponse) {
@@ -31,6 +31,7 @@ export const updateSiretInfosInError = async () => {
         stats.success++
       }
     } catch (err) {
+      logger.error(err)
       logger.error(`Correction des recruteurs en erreur: userRecruteur id=${_id}, erreur: ${(err && "message" in err && err.message) || err}`)
       sentryCaptureException(err)
       stats.failure++
