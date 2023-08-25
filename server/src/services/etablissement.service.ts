@@ -24,7 +24,7 @@ import {
   IReferentiel,
   ISIRET2IDCC,
 } from "./etablissement.service.types.js"
-import { createFormulaire, getFormulaire } from "./formulaire.service.js"
+import { createFormulaire, getFormulaire, updateFormulaire } from "./formulaire.service.js"
 import { autoValidateUser, createUser, getUser, setUserHasToBeManuallyValidated, userSetError } from "./userRecruteur.service.js"
 import { getOpcoBySirenFromDB, saveOpco } from "./opco.service.js"
 
@@ -544,13 +544,17 @@ export const entrepriseOnboardingWorkflow = {
       jobs: [],
       cfa_delegated_siret,
     })
-    let newEntreprise: IUserRecruteur = await createUser({ ...savedData, establishment_id: formulaireInfo.establishment_id, type: ENTREPRISE })
+    const formulaireId = formulaireInfo.establishment_id
+    let newEntreprise: IUserRecruteur = await createUser({ ...savedData, establishment_id: formulaireId, type: ENTREPRISE })
 
     if (hasSiretError) {
       newEntreprise = await userSetError(newEntreprise._id, "Error in call to Siren API")
     } else {
       const balValidationResult = await autoValidateCompany(newEntreprise)
       newEntreprise = balValidationResult.userRecruteur
+      if (balValidationResult.validated) {
+        await updateFormulaire(formulaireId, { status: RECRUITER_STATUS.ACTIF })
+      }
     }
     return { formulaire: formulaireInfo, user: newEntreprise }
   },
