@@ -468,9 +468,11 @@ export class JobsController extends Controller {
       this.setStatus(500)
       return result
     }
-    const { matchas } = result
-    if (matchas && "results" in matchas) {
-      matchas.results.map((matchaOffre) => addOffreSearchView(matchaOffre.job.id))
+    if ("matchas" in result) {
+      const { matchas } = result
+      if (matchas && "results" in matchas) {
+        matchas.results.map((matchaOffre) => addOffreSearchView(matchaOffre.job.id))
+      }
     }
     return result
   }
@@ -491,7 +493,7 @@ export class JobsController extends Controller {
   public async getCompany(
     @Path() siret: string,
     @Header() @Hidden() referer?: string,
-    @Query() caller?: string,
+    @Query() caller?: string
   ): Promise<IApiError | { lbbCompanies: ILbaItem[] } | { lbaCompanies: ILbaItem[] }> {
     const result = await getCompanyFromSiret({
       siret,

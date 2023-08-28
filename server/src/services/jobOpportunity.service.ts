@@ -9,6 +9,7 @@ import { IApiError } from "../common/utils/errorManager.js"
 
 /**
  * Retourn la compilation d'opportunités d'emploi au format unifié
+ * chaque type d'opportunités d'emploi peut être émis en succès même si d'autres groupes sont en erreur
  * @param {TJobQuery} query un objet contenant les paramètres de recherche
  * @param {string} api l'identifiant de l'api utilisée
  * @returns {Promise<IApiError | { peJobs: { results: ILbaItem[] } | IApiError, matchas: { results: ILbaItem[] } | IApiError, lbaCompanies: { results: ILbaItem[] } | IApiError, lbbCompanies: null}>}
@@ -81,8 +82,9 @@ export const getJobsFromApi = async ({ query, api }) => {
 
 /**
  * Retourne la compilation d'offres partenaires, d'offres LBA et de sociétés issues de l'algo
+ * ou une liste d'erreurs si les paramètres de la requête sont invalides
  * @param {TJobSearchQuery} query les paramètres de recherche
- * @returns {Promise<>}
+ * @returns {Promise<{ error: string, error_messages: string[] } | IApiError | { job_count: number, matchas: { IApiError | results: ILbaItem[] }, peJobs: { IApiError | results: ILbaItem[] }, lbaCompanies: { IApiError | results: ILbaItem[] }, lbbCompanies: null }>}
  */
 export const getJobsQuery = async (query: TJobSearchQuery) => {
   const queryValidationResult = await jobsQueryValidator(query)
@@ -93,11 +95,11 @@ export const getJobsQuery = async (query: TJobSearchQuery) => {
 
   const result = await getJobsFromApi({ query, api: "jobV1/jobs" })
 
-  let job_count = 0
-
   if ("error" in result) {
     return result
   }
+
+  let job_count = 0
 
   if ("lbaCompanies" in result && "results" in result.lbaCompanies) {
     job_count += result.lbaCompanies.results.length
