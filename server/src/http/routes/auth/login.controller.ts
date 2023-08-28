@@ -8,7 +8,7 @@ import config from "../../../config.js"
 import { tryCatch } from "../../middlewares/tryCatchMiddleware.js"
 import { IUserRecruteur } from "../../../common/model/schema/userRecruteur/userRecruteur.types.js"
 import { getUser, registerUser } from "../../../services/userRecruteur.service.js"
-import { getValidationUrl } from "../../../services/etablissement.service.js"
+import { getValidationUrl, sendConfirmationEmail } from "../../../services/etablissement.service.js"
 import authMiddleware from "../../middlewares/authMiddleware.js"
 import mailer from "../../../services/mailer.service.js"
 
@@ -44,23 +44,12 @@ export default () => {
         if (is_email_checked) {
           return res.status(400).json({ error: true, reason: "VERIFIED" })
         }
-
-        const url = getValidationUrl(_id)
-
-        await mailer.sendEmail({
-          to: email,
-          subject: "Confirmez votre adresse mail",
-          template: mailTemplate["mail-confirmation-email"],
-          data: {
-            images: {
-              logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
-            },
-            last_name,
-            first_name,
-            confirmation_url: url,
-          },
+        await sendConfirmationEmail({
+          email,
+          firstName: first_name,
+          lastName: last_name,
+          userRecruteurId: _id,
         })
-
         return res.sendStatus(200)
       } catch (error) {
         return res.status(400).json({
@@ -117,22 +106,12 @@ export default () => {
       }
 
       if (!is_email_checked) {
-        const url = getValidationUrl(_id)
-
-        await mailer.sendEmail({
-          to: userEmail,
-          subject: "Confirmez votre adresse mail",
-          template: mailTemplate["mail-confirmation-email"],
-          data: {
-            images: {
-              logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
-            },
-            last_name,
-            first_name,
-            confirmation_url: url,
-          },
+        await sendConfirmationEmail({
+          email: userEmail,
+          firstName: first_name,
+          lastName: last_name,
+          userRecruteurId: _id,
         })
-
         return res.status(400).json({
           error: true,
           reason: "VERIFY",
