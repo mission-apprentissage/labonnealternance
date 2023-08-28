@@ -70,13 +70,12 @@ export default () => {
     "/entreprise/:siret",
     tryCatch(async (req, res) => {
       const siret: string | undefined = req.params.siret
-      const fromDashboardCfa = req.query.fromDashboardCfa === "true"
       const cfa_delegated_siret: string | undefined = req.query.cfa_delegated_siret
       if (!siret) {
         return res.status(400).json({ error: true, message: "Le numéro siret est obligatoire." })
       }
       try {
-        const result = await getEntrepriseDataFromSiret({ siret, fromDashboardCfa, cfa_delegated_siret })
+        const result = await getEntrepriseDataFromSiret({ siret, cfa_delegated_siret })
         if ("error" in result) {
           switch (result.errorCode) {
             case BusinessErrorCodes.IS_CFA: {
@@ -145,7 +144,7 @@ export default () => {
       switch (req.body.type) {
         case ENTREPRISE: {
           const siret = req.body.establishment_siret
-          const result = await entrepriseOnboardingWorkflow.create({ ...req.body, fromDashboardCfa: false, siret })
+          const result = await entrepriseOnboardingWorkflow.create({ ...req.body, siret })
           if ("error" in result) {
             switch (result.errorCode) {
               case BusinessErrorCodes.ALREADY_EXISTS: {

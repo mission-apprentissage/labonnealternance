@@ -1,5 +1,6 @@
 import axios, { AxiosResponse } from "axios"
 import { Filter } from "mongodb"
+import { mailTemplate } from "../assets/index.js"
 import { BonneBoiteLegacy, BonnesBoites, Etablissement, ReferentielOpco, UnsubscribeOF, UserRecruteur } from "../common/model/index.js"
 import { IBonneBoite } from "../common/model/schema/bonneboite/bonneboite.types.js"
 import { IEtablissement } from "../common/model/schema/etablissements/etablissement.types.js"
@@ -28,7 +29,6 @@ import { createFormulaire, getFormulaire } from "./formulaire.service.js"
 import { autoValidateUser, createUser, getUser, setUserHasToBeManuallyValidated, setUserInError } from "./userRecruteur.service.js"
 import { getOpcoBySirenFromDB, saveOpco } from "./opco.service.js"
 import mailer from "./mailer.service.js"
-import { mailTemplate } from "../assets/index.js"
 
 const apiParams = {
   token: config.entreprise.apiKey,
@@ -464,30 +464,23 @@ const getOpcoData = async (siret: string) => {
 
 export type EntrepriseData = IFormatAPIEntreprise & { opco: string; idcc: string; geo_coordinates: string }
 
-export const getEntrepriseDataFromSiret = async ({ siret, fromDashboardCfa, cfa_delegated_siret }: { siret: string; fromDashboardCfa: boolean; cfa_delegated_siret?: string }) => {
+export const getEntrepriseDataFromSiret = async ({ siret, cfa_delegated_siret }: { siret: string; cfa_delegated_siret?: string }) => {
+  if (cfa_delegated_siret) {
+    const errorOpt = await validateCreationEntrepriseFromCfa({ siret, cfa_delegated_siret })
+    if (errorOpt) {
+      return errorOpt
+    }
+  }
   const result = await getEtablissementFromGouv(siret)
-
   if (!result) {
     return errorFactory("Le numéro siret est invalide.")
   }
   const { etat_administratif, activite_principale } = result.data
-
   if (etat_administratif === "F") {
     return errorFactory("Cette entreprise est considérée comme fermée.")
   }
-
   // Check if a CFA already has the company as partenaire
-  if (fromDashboardCfa) {
-    const recruteurOpt = await getFormulaire({
-      establishment_siret: siret,
-      cfa_delegated_siret,
-      status: "Actif",
-    })
-
-    if (recruteurOpt) {
-      return errorFactory("L'entreprise est déjà référencée comme partenaire.")
-    }
-  } else {
+  if (!cfa_delegated_siret) {
     // Allow cfa to add themselves as a company
     if (activite_principale.code.startsWith("85")) {
       return errorFactory("Le numéro siret n'est pas référencé comme une entreprise.", BusinessErrorCodes.IS_CFA)
@@ -516,6 +509,17 @@ export const getOrganismeDeFormationDataFromSiret = async (siret: string) => {
   return formatReferentielData(referentiel)
 }
 
+const validateCreationEntrepriseFromCfa = async ({ siret, cfa_delegated_siret }: { siret: string; cfa_delegated_siret: string }) => {
+  const recruteurOpt = await getFormulaire({
+    establishment_siret: siret,
+    cfa_delegated_siret,
+    status: "Actif",
+  })
+  if (recruteurOpt) {
+    return errorFactory("L'entreprise est déjà référencée comme partenaire.")
+  }
+}
+
 export const entrepriseOnboardingWorkflow = {
   create: async ({
     email,
@@ -523,7 +527,6 @@ export const entrepriseOnboardingWorkflow = {
     last_name,
     phone,
     siret,
-    fromDashboardCfa,
     cfa_delegated_siret,
     origin,
     opco,
@@ -533,7 +536,6 @@ export const entrepriseOnboardingWorkflow = {
     first_name: string
     phone: string
     email: string
-    fromDashboardCfa: boolean
     cfa_delegated_siret: string
     origin: string
     opco: string
@@ -546,7 +548,7 @@ export const entrepriseOnboardingWorkflow = {
     let entrepriseData: Partial<EntrepriseData>
     let hasSiretError = false
     try {
-      const siretResponse = await getEntrepriseDataFromSiret({ siret, fromDashboardCfa, cfa_delegated_siret })
+      const siretResponse = await getEntrepriseDataFromSiret({ siret, cfa_delegated_siret })
       if ("error" in siretResponse) {
         return siretResponse
       } else {

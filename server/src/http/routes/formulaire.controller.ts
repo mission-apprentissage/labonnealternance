@@ -18,9 +18,8 @@ import {
   updateFormulaire,
   updateOffre,
 } from "../../services/formulaire.service.js"
-import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
-import { getUser, createUser } from "../../services/userRecruteur.service.js"
 import authMiddleware from "../middlewares/authMiddleware.js"
+import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
 
 export default () => {
   const router = express.Router()
@@ -74,19 +73,6 @@ export default () => {
     "/",
     tryCatch(async (req, res) => {
       const response = await createFormulaire(req.body)
-
-      if (req.body.origine === "akto") {
-        const exist = await getUser({ email: payload.email })
-
-        if (!exist) {
-          await createUser({
-            ...req.body,
-            type: "ENTREPRISE",
-            establishment_id: response.establishment_id,
-            is_email_checked: true,
-          })
-        }
-      }
       return res.json(response)
     })
   )

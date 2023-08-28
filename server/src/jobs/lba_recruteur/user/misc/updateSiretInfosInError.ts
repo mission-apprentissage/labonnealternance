@@ -17,11 +17,11 @@ export const updateSiretInfosInError = async () => {
   const stats = { success: 0, failure: 0, deactivated: 0 }
   logger.info(`Correction des recruteurs en erreur: ${userRecruteurs.length} recruteurs à mettre à jour...`)
   await asyncForEach(userRecruteurs, async (userRecruteur) => {
-    const { establishment_siret, type, _id, establishment_id } = userRecruteur
+    const { establishment_siret, _id, establishment_id } = userRecruteur
     try {
       const recruteur = await getFormulaire({ establishment_id })
       const { cfa_delegated_siret } = recruteur
-      const siretResponse = await getEntrepriseDataFromSiret({ siret: establishment_siret, fromDashboardCfa: type === CFA, cfa_delegated_siret })
+      const siretResponse = await getEntrepriseDataFromSiret({ siret: establishment_siret, cfa_delegated_siret })
       if ("error" in siretResponse) {
         logger.warn(`Correction des recruteurs en erreur: userRecruteur id=${_id}, désactivation car création interdite, raison=${siretResponse.message}`)
         await deactivateUser(_id, siretResponse.message)
