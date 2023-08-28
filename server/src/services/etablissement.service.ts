@@ -24,8 +24,8 @@ import {
   IReferentiel,
   ISIRET2IDCC,
 } from "./etablissement.service.types.js"
-import { createFormulaire, getFormulaire, updateFormulaire } from "./formulaire.service.js"
-import { autoValidateUser, createUser, getUser, setUserHasToBeManuallyValidated, userSetError } from "./userRecruteur.service.js"
+import { createFormulaire, getFormulaire } from "./formulaire.service.js"
+import { autoValidateUser, createUser, getUser, setUserHasToBeManuallyValidated, setUserInError } from "./userRecruteur.service.js"
 import { getOpcoBySirenFromDB, saveOpco } from "./opco.service.js"
 import mailer from "./mailer.service.js"
 import { mailTemplate } from "../assets/index.js"
@@ -480,7 +480,7 @@ export const getEntrepriseDataFromSiret = async ({ siret, fromDashboardCfa, cfa_
   if (fromDashboardCfa) {
     const recruteurOpt = await getFormulaire({
       establishment_siret: siret,
-      cfa_delegated_siret: cfa_delegated_siret,
+      cfa_delegated_siret,
       status: "Actif",
     })
 
@@ -569,7 +569,7 @@ export const entrepriseOnboardingWorkflow = {
     let newEntreprise: IUserRecruteur = await createUser({ ...savedData, establishment_id: formulaireId, type: ENTREPRISE })
 
     if (hasSiretError) {
-      newEntreprise = await userSetError(newEntreprise._id, "Erreur lors de l'appel à l'API SIRET")
+      newEntreprise = await setUserInError(newEntreprise._id, "Erreur lors de l'appel à l'API SIRET")
     } else {
       const balValidationResult = await autoValidateCompany(newEntreprise)
       newEntreprise = balValidationResult.userRecruteur

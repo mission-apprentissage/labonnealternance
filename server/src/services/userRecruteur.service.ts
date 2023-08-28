@@ -128,7 +128,7 @@ export const updateUserValidationHistory = (userId: IUserRecruteur["_id"], state
  */
 export const getUserValidationState = (stateArray: IUserRecruteur["status"]) => stateArray.sort((a, b) => new Date(a.date).valueOf() - new Date(b.date).valueOf()).pop().status
 
-export const userSetError = async (userId: IUserRecruteur["_id"], reason: string) =>
+export const setUserInError = async (userId: IUserRecruteur["_id"], reason: string) =>
   await updateUserValidationHistory(userId, {
     validation_type: VALIDATION_UTILISATEUR.AUTO,
     user: "SERVEUR",
@@ -148,6 +148,14 @@ export const setUserHasToBeManuallyValidated = async (userId: IUserRecruteur["_i
     validation_type: VALIDATION_UTILISATEUR.MANUAL,
     user: "SERVEUR",
     status: ETAT_UTILISATEUR.ATTENTE,
+  })
+
+export const deactivateUser = async (userId: IUserRecruteur["_id"], reason?: string) =>
+  await updateUserValidationHistory(userId, {
+    validation_type: VALIDATION_UTILISATEUR.AUTO,
+    user: "SERVEUR",
+    status: ETAT_UTILISATEUR.DESACTIVE,
+    reason,
   })
 
 export const sendWelcomeEmailToUserRecruteur = async (userRecruteur: IUserRecruteur) => {
