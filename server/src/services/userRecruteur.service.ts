@@ -150,11 +150,12 @@ export const setUserHasToBeManuallyValidated = async (userId: IUserRecruteur["_i
     status: ETAT_UTILISATEUR.ATTENTE,
   })
 
-export const deactivateUser = async (userId: IUserRecruteur["_id"]) =>
+export const deactivateUser = async (userId: IUserRecruteur["_id"], reason?: string) =>
   await updateUserValidationHistory(userId, {
     validation_type: VALIDATION_UTILISATEUR.AUTO,
     user: "SERVEUR",
     status: ETAT_UTILISATEUR.DESACTIVE,
+    reason,
   })
 
 export const sendWelcomeEmailToUserRecruteur = async (userRecruteur: IUserRecruteur) => {

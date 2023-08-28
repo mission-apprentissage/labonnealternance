@@ -24,7 +24,7 @@ export const updateSiretInfosInError = async () => {
       const siretResponse = await getEntrepriseDataFromSiret({ siret: establishment_siret, fromDashboardCfa: type === CFA, cfa_delegated_siret })
       if ("error" in siretResponse) {
         logger.warn(`Correction des recruteurs en erreur: userRecruteur id=${_id}, désactivation car création interdite, raison=${siretResponse.message}`)
-        await deactivateUser(_id)
+        await deactivateUser(_id, siretResponse.message)
         stats.deactivated++
       } else {
         const result = await updateUser({ _id }, siretResponse)
