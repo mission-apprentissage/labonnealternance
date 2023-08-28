@@ -1,5 +1,9 @@
+import { IApiError } from "../common/utils/errorManager.js"
+import { ILbaItem } from "./lbaitem.shared.service.types.js"
+
 export type TJobSearchQuery = {
   romes?: string
+  romeDomain?: string
   rncp?: string
   referer?: string
   caller?: string
@@ -13,3 +17,9 @@ export type TJobSearchQuery = {
   opcoUrl?: string
   useMock?: string
 }
+
+export type TLbaItemResult =
+  | IApiError
+  | {
+      results: ILbaItem[]
+    }

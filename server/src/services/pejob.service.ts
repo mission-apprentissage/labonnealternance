@@ -10,6 +10,7 @@ import { ILbaItem, LbaItem } from "./lbaitem.shared.service.types.js"
 import dayjs from "./dayjs.service.js"
 import config from "../config.js"
 import { PEJob, PEResponse } from "./pejob.service.types.js"
+import { TLbaItemResult } from "./jobOpportunity.service.types.js"
 
 const accessTokenEndpoint = "https://entreprise.pole-emploi.fr/connexion/oauth2/access_token?realm=%2Fpartenaire"
 const contentType = "application/x-www-form-urlencoded"
@@ -316,7 +317,7 @@ const getPeJobs = async ({
  * @param {string} api le nom de l'api utilisée pour l'appel de la fonction
  * @returns {Promise<ILbaItem[] | IApiError>}
  */
-export const getSomePeJobs = async ({ romes, insee, radius, latitude, longitude, caller, diploma, opco, opcoUrl, api }) => {
+export const getSomePeJobs = async ({ romes, insee, radius, latitude, longitude, caller, diploma, opco, opcoUrl, api }): Promise<TLbaItemResult> => {
   let peResponse: PEResponse | IApiError = null
   const currentRadius = radius || 20000
   const jobLimit = 150

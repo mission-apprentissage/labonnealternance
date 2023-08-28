@@ -11,6 +11,7 @@ import { LbaCompany } from "../common/model/index.js"
 import { getApplicationByCompanyCount, IApplicationCount } from "./application.service.js"
 import { trackApiCall } from "../common/utils/sendTrackingEvent.js"
 import { LbaItem } from "./lbaitem.shared.service.types.js"
+import { TLbaItemResult } from "./jobOpportunity.service.types.js"
 
 const esClient = getElasticInstance()
 
@@ -297,7 +298,7 @@ const getCompanies = async ({
  * @param {string} opcoUrl un filtre sur l'url de l'opco auquel doivent être rattachés les sociétés
  * @param {string} api l'identifiant du endpoint api utilisé pour exploiter cette fonction
  * @param {string} useMock un paramètre optionnel indiquant qu'il faut retourner des données mockées
- * @returns {Promise<{ results: ILbaItem[] } | IApiError>}
+ * @returns {Promise<TLbaItemResult>}
  */
 export const getSomeCompanies = async ({
   romes,
@@ -321,7 +322,7 @@ export const getSomeCompanies = async ({
   opcoUrl: string
   api: string
   useMock: string
-}) => {
+}): Promise<TLbaItemResult> => {
   const hasLocation = latitude === undefined ? false : true
   const currentRadius = hasLocation ? radius : 21000
   const companyLimit = 150 //TODO: query params options or default value from properties -> size || 100

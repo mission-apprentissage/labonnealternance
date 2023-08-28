@@ -13,6 +13,7 @@ import { getApplicationByJobCount, IApplicationCount } from "./application.servi
 import { ILbaItem, LbaItem } from "./lbaitem.shared.service.types.js"
 import { IRecruiter } from "../common/model/schema/recruiter/recruiter.types.js"
 import { ILbaJobEsResult } from "./lbajob.service.types.js"
+import { TLbaItemResult } from "./jobOpportunity.service.types.js"
 
 /**
  * Retourne les offres LBA correspondantes aux critères de recherche
@@ -26,7 +27,7 @@ import { ILbaJobEsResult } from "./lbajob.service.types.js"
  * @param {string} diploma optionnel: un fitre pour ne remonter ques les offres aboutissant à l'obtention du diplôme
  * @param {string} caller optionnel: l'identifiant de l'utilisateur de l'api
  * @param {string} useMock optionnel: un flag indiquant s'il faut retourner une valeur réelle ou une valeur mockée
- * @returns {Promise<IApiError | { results: ILbaItem[] }>}
+ * @returns {Promise<TLbaItemResult>}
  */
 export const getLbaJobs = async ({
   romes,
@@ -50,7 +51,7 @@ export const getLbaJobs = async ({
   diploma?: string
   caller?: string
   useMock?: string
-}): Promise<IApiError | { results: ILbaItem[] }> => {
+}): Promise<TLbaItemResult> => {
   if (radius === 0) {
     radius = 10
   }

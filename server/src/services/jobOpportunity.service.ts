@@ -84,7 +84,7 @@ export const getJobsFromApi = async ({ query, api }) => {
  * Retourne la compilation d'offres partenaires, d'offres LBA et de sociétés issues de l'algo
  * ou une liste d'erreurs si les paramètres de la requête sont invalides
  * @param {TJobSearchQuery} query les paramètres de recherche
- * @returns {Promise<{ error: string, error_messages: string[] } | IApiError | { job_count: number, matchas: { IApiError | results: ILbaItem[] }, peJobs: { IApiError | results: ILbaItem[] }, lbaCompanies: { IApiError | results: ILbaItem[] }, lbbCompanies: null }>}
+ * @returns {Promise<{ error: string, error_messages: string[] } | IApiError | { job_count: number, matchas: TLbaItemResult, peJobs: TLbaItemResult, lbaCompanies: TLbaItemResult, lbbCompanies: null }>}
  */
 export const getJobsQuery = async (query: TJobSearchQuery) => {
   const queryValidationResult = await jobsQueryValidator(query)

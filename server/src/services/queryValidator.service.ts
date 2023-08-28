@@ -3,6 +3,12 @@ import { isOriginLocal } from "../common/utils/isOriginLocal.js"
 import { RncpRomes } from "../common/model/index.js"
 import { TJobSearchQuery } from "./jobOpportunity.service.types.js"
 
+/**
+ * Contrôle le format d'un code RNCP
+ * @param {string} rncp le code RNCP dont on souhaite valider le format
+ * @param {string[]} error_messages un tableau de messages d'erreur
+ * @returns {boolean}
+ */
 const validateRncp = (rncp: string | null | undefined, error_messages: string[]) => {
   if (!/^RNCP\d{2,5}$/.test(rncp)) {
     error_messages.push("rncp : Badly formatted rncp code. RNCP code must 'RNCP' followed by 2 to 5 digit number. ex : RNCP12, RNCP12345 ...")
@@ -12,6 +18,14 @@ const validateRncp = (rncp: string | null | undefined, error_messages: string[])
   }
 }
 
+/**
+ * Contrôle que les paramètres de codes ROME ou RNCP respectent les critères requis
+ * ajoute les erreurs dans error_messages
+ * @param {TJobSearchQuery} query les paramètres à vérifier
+ * @param {string[]} error_messages un tableau de messages d'erreur
+ * @param {number} romeLimit le nombre maximum de codes ROME pouvant être acceptés
+ * @returns {undefined}
+ */
 const validateRomesOrRncp = async (query: TJobSearchQuery, error_messages: string[], romeLimit = 20) => {
   const { romes, rncp } = query
   // codes ROME : romes
@@ -35,8 +49,20 @@ const validateRomesOrRncp = async (query: TJobSearchQuery, error_messages: strin
   }
 }
 
-const validateRomeOrDomain = ({ romes, romeDomain, romeLimit = 20, optional }, error_messages) => {
-  // codes ROME : romes
+/**
+ * Contrôle que les paramètres de codes ROME ou de domaine ROME respectent les critères requis
+ * ajoute les erreurs dans error_messages
+ * @param {string} romes une liste de codes ROME séparés par des virgules
+ * @param {string} romeDomain un domaine ROME (lettre du code ROME ou lettre + premiers chiffres du code ROME)
+ * @param {string[]} error_messages un tableau de messages d'erreur
+ * @param {number} romeLimit le nombre maximum de codes ROME pouvant être acceptés
+ * @param {boolean} optional flag indiquant si la présence de codes ROME ou d'un domaine ROME est optionnelle
+ * @returns {undefined}
+ */
+const validateRomeOrDomain = (
+  { romes, romeDomain, romeLimit = 20, optional }: { romes: string; romeDomain: string; romeLimit?: number; optional?: boolean },
+  error_messages: string[]
+) => {
   if (!optional && !romes && !romeDomain) {
     error_messages.push("romes, romeDomain : You must define at least 1 rome code OR a single romeDomain.")
   } else if (romes && romeDomain) {
@@ -51,7 +77,27 @@ const validateRomeOrDomain = ({ romes, romeDomain, romeLimit = 20, optional }, e
   }
 }
 
-const validateRncpOrRomeOrDomain = async (query, error_messages, romeLimit = 20) => {
+/**
+ * Contrôle que les paramètres optionnels de codes ROME ou de domaine ROME respectent les critères requis
+ * @param {string} romes une liste de codes ROME séparés par des virgules
+ * @param {string} romeDomain un domaine ROME (lettre du code ROME ou lettre + premiers chiffres du code ROME)
+ * @param {string[]} error_messages un tableau de messages d'erreur
+ * @param {number} romeLimit le nombre maximum de codes ROME pouvant être acceptés
+ * @returns {undefined}
+ */
+const validateOptionalRomeOrDomain = ({ romes, romeDomain, romeLimit = 20 }: { romes: string; romeDomain: string; romeLimit?: number }, error_messages: string[]) => {
+  validateRomeOrDomain({ romes, romeDomain, romeLimit, optional: true }, error_messages)
+}
+
+/**
+ * Contrôle que les paramètres de codes ROME ou de domaine ROME ou de RNCP respectent les critères requis
+ * ajoute les erreurs dans error_messages
+ * @param {TJobSearchQuery} query les paramètres à vérifier
+ * @param {string[]} error_messages un tableau de messages d'erreur
+ * @param {number} romeLimit le nombre maximum de codes ROME pouvant être acceptés
+ * @returns {undefined}
+ */
+const validateRncpOrRomeOrDomain = async (query: TJobSearchQuery, error_messages: string[], romeLimit = 20) => {
   const { romes, rncp, romeDomain } = query
 
   if (!rncp && !romes && !romeDomain) {
@@ -77,12 +123,14 @@ const validateRncpOrRomeOrDomain = async (query, error_messages, romeLimit = 20)
   }
 }
 
-const validateOptionalRomeOrDomain = ({ romes, romeDomain, romeLimit = 20 }, error_messages) => {
-  validateRomeOrDomain({ romes, romeDomain, romeLimit, optional: true }, error_messages)
-}
-
-const validateOptionalRegion = ({ region, departement }, error_messages) => {
-  // codes ROME : romes
+/**
+ * Contrôle que les paramètres optionnels de region ou de departement respectent les critères requis
+ * @param {string} region le code insee de région française
+ * @param {string} departement le numéro de département
+ * @param {string[]} error_messages un tableau de messages d'erreur
+ * @returns {undefined}
+ */
+const validateOptionalRegion = ({ region, departement }: { region: string; departement: string }, error_messages: string[]) => {
   if (region && departement) {
     error_messages.push("region, departement : You must define either region OR departement, not both.")
   } else if (departement) {
