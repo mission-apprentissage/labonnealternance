@@ -448,8 +448,9 @@ const getOpcoData = async (siret: string) => {
     case null:
     case "NOT_FOUND": {
       const idccResult = await getIdcc(siret)
-      if (idccResult[0].conventions.length) {
-        const { num } = opcoResult[0]?.conventions[0]
+      const conventions = idccResult[0]?.conventions
+      if (conventions?.length) {
+        const num: number = conventions[0]?.num
         const opcoByIdccResult = await getOpcoByIdcc(num)
         if (opcoByIdccResult) {
           return { opco: opcoByIdccResult.opcoName, idcc: opcoByIdccResult.idcc.toString() }
