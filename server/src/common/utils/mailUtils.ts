@@ -14,7 +14,7 @@ export const getEmailDomain = (email: string) => {
  * @param {string} userEmail
  * @returns {boolean}
  */
-export const checkIfUserMailExistInReferentiel = (contactList, userEmail): boolean => contactList.map((x) => x.email.toLowerCase()).includes(userEmail.toLowerCase())
+export const isUserMailExistInReferentiel = (contactList, userEmail): boolean => contactList.map((x) => x.email.toLowerCase()).includes(userEmail.toLowerCase())
 
 /**
  * @description get all domains from an array of emails
