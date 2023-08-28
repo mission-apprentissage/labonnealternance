@@ -144,46 +144,59 @@ const validateOptionalRegion = ({ region, departement }: { region: string; depar
   }
 }
 
-const validateRegionOrRome = ({ region, departement, romes, romeDomain }, error_messages) => {
+/**
+ * Contrôle que les paramètres de région/département et de romes/romeDomain sont correctements renseignés
+ * @param {string} region le code insee de région française
+ * @param {string} departement le numéro de département
+ * @param {string} romes une liste de codes ROME séparés par des virgules
+ * @param {string} romeDomain un domaine ROME (lettre du code ROME ou lettre + premiers chiffres du code ROME)
+ * @param {string[]} error_messages un tableau de messages d'erreur
+ * @returns {undefined}
+ */
+const validateRegionOrRome = ({ region, departement, romes, romeDomain }: { region: string; departement: string; romes: string; romeDomain: string }, error_messages: string[]) => {
   if (!(region || departement) && !(romes || romeDomain)) {
     error_messages.push("region, departement, romes, romeDomain : You must assign a value to at least one of these parameters.")
   }
 }
 
-const validateRadius = (radius, error_messages, min = 0, max = 200) => {
-  // rayon de recherche : radius
+/**
+ * Contrôle du format correct du rayon de recherche
+ * @param {number} radius le rayon
+ * @param {string[]} error_messages une liste de messages d'erreur
+ * @param {number} min optionnel. le rayon minimum
+ * @param {number} max optionnel. le rayon maximum
+ * @returns {undefined}
+ */
+const validateRadius = (radius: string, error_messages: string[], min = 0, max = 200) => {
   if (radius === undefined || radius === "") error_messages.push("radius : Search radius is missing.")
-  else if (isNaN(radius)) error_messages.push("radius : Search radius must be a number.")
+  else if (isNaN(parseInt(radius))) error_messages.push("radius : Search radius must be a number.")
   else if (parseInt(radius) < min || (parseInt(radius) > max && parseInt(radius) !== 20000))
     error_messages.push(`radius : Search radius must be a number between ${min} and ${max}.`)
 }
 
-const validateLatitude = (latitude, error_messages) => {
-  // coordonnées gps : latitude
+const validateLatitude = (latitude: string, error_messages: string[]) => {
   if (latitude === undefined || latitude === "") error_messages.push("latitude : Search center latitude is missing.")
-  else if (isNaN(latitude)) error_messages.push("latitude : Search center latitude must be a number.")
+  else if (isNaN(parseFloat(latitude))) error_messages.push("latitude : Search center latitude must be a number.")
   else if (parseFloat(latitude) > 90 || parseFloat(latitude) < -90) error_messages.push("latitude : Search center latitude must be a number between -90 and 90.")
 }
 
-const validateLongitude = (longitude, error_messages) => {
+const validateLongitude = (longitude: string, error_messages: string[]) => {
   if (longitude === undefined || longitude === "") error_messages.push("longitude : Search center longitude is missing.")
-  else if (isNaN(longitude)) error_messages.push("longitude : Search center longitude must be a number.")
+  else if (isNaN(parseFloat(longitude))) error_messages.push("longitude : Search center longitude must be a number.")
   else if (parseFloat(longitude) > 180 || parseFloat(longitude) < -180) error_messages.push("longitude : Search center longitude must be a number between -180 and 180.")
 }
 
-const validateDiploma = (diploma, error_messages) => {
-  // diploma mal formé si présent
+const validateDiploma = (diploma: string, error_messages: string[]) => {
   if (diploma && ["3", "4", "5", "6", "7"].indexOf(diploma[0]) < 0)
     error_messages.push('diploma : Optional diploma argument used with wrong value. Should contains only one of "3xxx","4xxx","5xxx","6xxx","7xxx". xxx maybe any value')
 }
 
-const validateInsee = (insee, error_messages) => {
-  // code INSEE : insee
+const validateInsee = (insee: string, error_messages: string[]) => {
   if (!insee) error_messages.push("insee : insee city code is missing.")
   if (!/^[0-9][abAB0-9][0-9]{3}$/.test(insee)) error_messages.push("insee : Badly formatted insee city code. Must be 5 digit number.")
 }
 
-const validateApiSources = (apiSources, error_messages, allowedSources = ["formations", "lbb", "lba", "offres", "matcha"]) => {
+const validateApiSources = (apiSources: string, error_messages: string[], allowedSources = ["formations", "lbb", "lba", "offres", "matcha"]) => {
   // source mal formée si présente
   if (apiSources) {
     const sources = apiSources.split(",")
@@ -196,8 +209,11 @@ const validateApiSources = (apiSources, error_messages, allowedSources = ["forma
   }
 }
 
-// contrôle sur la présence d'un appelant valide
-export const validateCaller = ({ caller, referer }, error_messages = []) => {
+/**
+ * contrôle sur la présence d'un appelant de l'api valide
+ *
+ */
+export const validateCaller = ({ caller, referer }: { caller: string; referer: string }, error_messages: string[] = []) => {
   if (!isOriginLocal(referer) && !caller) {
     error_messages.push("caller : caller is missing.")
     return false
@@ -207,7 +223,6 @@ export const validateCaller = ({ caller, referer }, error_messages = []) => {
 export const jobsQueryValidator = async (query: TJobSearchQuery): Promise<{ result: "passed" } | { error: string; error_messages: string[] }> => {
   const error_messages = []
   const { caller, referer, latitude, longitude, insee, radius, sources } = query
-  // contrôle des paramètres
 
   // présence d'identifiant de la source : caller
   validateCaller({ caller, referer }, error_messages)
@@ -240,8 +255,6 @@ export const jobsQueryValidator = async (query: TJobSearchQuery): Promise<{ resu
 //TODO: remplacer par joi validateAsync
 export const formationsQueryValidator = async (query) => {
   const error_messages = []
-
-  // contrôle des paramètres
 
   // présence d'identifiant de la source : caller
   validateCaller({ caller: query.caller, referer: query.referer }, error_messages)
