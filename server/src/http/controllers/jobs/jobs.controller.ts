@@ -454,7 +454,7 @@ export class JobsController extends Controller {
     @Query() caller?: string,
     @Query() latitude?: string,
     @Query() longitude?: string,
-    @Query() radius?: number,
+    @Query() radius?: string,
     @Query() insee?: string,
     @Query() sources?: string,
     @Query() diploma?: string,

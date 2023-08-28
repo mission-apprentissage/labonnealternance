@@ -1,7 +1,7 @@
 import { regionCodeToDepartmentList } from "../common/utils/regionInseeCodes.js"
 import { isOriginLocal } from "../common/utils/isOriginLocal.js"
 import { RncpRomes } from "../common/model/index.js"
-import { TJobSearchQuery } from "./jobOpportunity.service.types.js"
+import { TFormationSearchQuery, TJobSearchQuery } from "./jobOpportunity.service.types.js"
 
 /**
  * Contrôle le format d'un code RNCP
@@ -210,8 +210,10 @@ const validateApiSources = (apiSources: string, error_messages: string[], allowe
 }
 
 /**
- * contrôle sur la présence d'un appelant de l'api valide
- *
+ * Contrôle sur le champ caller : obligatoire si appel externe, facultatif si appel depuis le front lba
+ * @param {string} caller
+ * @param {string} referer
+ * @returns {boolean}
  */
 export const validateCaller = ({ caller, referer }: { caller: string; referer: string }, error_messages: string[] = []) => {
   if (!isOriginLocal(referer) && !caller) {
@@ -220,6 +222,11 @@ export const validateCaller = ({ caller, referer }: { caller: string; referer: s
   } else return true
 }
 
+/**
+ * Ensemble de contrôles complexes sur la requête de recherche d'opportunités d'emploi
+ * @param {TJobSearchQuery} query paramètres de la requête
+ * @returns {Promise<{ result: "passed" } | { error: string; error_messages: string[] }>}
+ */
 export const jobsQueryValidator = async (query: TJobSearchQuery): Promise<{ result: "passed" } | { error: string; error_messages: string[] }> => {
   const error_messages = []
   const { caller, referer, latitude, longitude, insee, radius, sources } = query
@@ -252,8 +259,12 @@ export const jobsQueryValidator = async (query: TJobSearchQuery): Promise<{ resu
   return { result: "passed" }
 }
 
-//TODO: remplacer par joi validateAsync
-export const formationsQueryValidator = async (query) => {
+/**
+ * Ensemble de contrôles complexes sur la requête de recherche de formations
+ * @param {TFormationSearchQuery} query paramètres de la requête
+ * @returns {Promise<{ result: "passed" } | { error: string; error_messages: string[] }>}
+ */
+export const formationsQueryValidator = async (query: TFormationSearchQuery): Promise<{ result: "passed" } | { error: string; error_messages: string[] }> => {
   const error_messages = []
 
   // présence d'identifiant de la source : caller
@@ -278,7 +289,12 @@ export const formationsQueryValidator = async (query) => {
   return { result: "passed" }
 }
 
-export const formationsRegionQueryValidator = (query) => {
+/**
+ * Ensemble de contrôles complexes sur la requête de recherche de formations par région
+ * @param {TFormationSearchQuery} query paramètres de la requête
+ * @returns {{ result: "passed" } | { error: string; error_messages: string[] }}
+ */
+export const formationsRegionQueryValidator = (query: TFormationSearchQuery): { result: "passed" } | { error: string; error_messages: string[] } => {
   const error_messages = []
 
   // présence d'identifiant de la source : caller
@@ -301,7 +317,12 @@ export const formationsRegionQueryValidator = (query) => {
   return { result: "passed" }
 }
 
-export const jobsEtFormationsQueryValidator = async (query) => {
+/**
+ * Ensemble de contrôles complexes sur la requête de recherche de formations et emploi
+ * @param {TFormationSearchQuery} query paramètres de la requête
+ * @returns {Promise<{ result: "passed" } | { error: string; error_messages: string[] }>}
+ */
+export const jobsEtFormationsQueryValidator = async (query: TFormationSearchQuery): Promise<{ result: "passed" } | { error: string; error_messages: string[] }> => {
   const error_messages = []
 
   // présence d'identifiant de la source : caller

@@ -9,7 +9,7 @@ export type TJobSearchQuery = {
   caller?: string
   latitude?: string
   longitude?: string
-  radius?: number
+  radius?: string
   insee?: string
   sources?: string
   diploma?: string
@@ -17,6 +17,8 @@ export type TJobSearchQuery = {
   opcoUrl?: string
   useMock?: string
 }
+
+export type TFormationSearchQuery = TJobSearchQuery & { region?: string; departement?: string }
 
 export type TLbaItemResult =
   | IApiError

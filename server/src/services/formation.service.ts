@@ -584,7 +584,7 @@ const getSchoolName = (formation: Partial<IFormationCatalogue>): string => {
 export const getFormationsQuery = async (query: any): Promise<IApiError | { results: ILbaItem[] }> => {
   const queryValidationResult = await formationsQueryValidator(query)
 
-  if (queryValidationResult.error) {
+  if ("error" in queryValidationResult) {
     return queryValidationResult
   }
 
@@ -714,7 +714,7 @@ export const getFormationDescriptionQuery = async ({ id }): Promise<IApiError | 
 export const getFormationsParRegionQuery = async (query: any): Promise<IApiError | { results: ILbaItem[] }> => {
   const queryValidationResult = formationsRegionQueryValidator(query)
 
-  if (queryValidationResult.error) {
+  if ("error" in queryValidationResult) {
     return queryValidationResult
   }
 
