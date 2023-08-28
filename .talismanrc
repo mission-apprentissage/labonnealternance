@@ -47,5 +47,6 @@ allowed_patterns:
   - apiKey
   - ApiKey
   - APIKey
+  - versionKey
 version: "1.0"
 
