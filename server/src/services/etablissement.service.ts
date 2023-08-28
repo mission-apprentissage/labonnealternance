@@ -242,7 +242,6 @@ export const getEtablissementFromGouv = async (siret: string): Promise<IAPIEtabl
     const { data } = await axios.get<IAPIEtablissement>(`${config.entreprise.baseUrl}/sirene/etablissements/${encodeURIComponent(siret)}`, {
       params: apiParams,
     })
-
     return data
   } catch (error) {
     if (error?.response?.status === "404" || error?.response?.status === "422") {
@@ -464,6 +463,17 @@ const getOpcoData = async (siret: string) => {
 
 export type EntrepriseData = IFormatAPIEntreprise & { opco: string; idcc: string; geo_coordinates: string }
 
+const validateCreationEntrepriseFromCfa = async ({ siret, cfa_delegated_siret }: { siret: string; cfa_delegated_siret: string }) => {
+  const recruteurOpt = await getFormulaire({
+    establishment_siret: siret,
+    cfa_delegated_siret,
+    status: "Actif",
+  })
+  if (recruteurOpt) {
+    return errorFactory("L'entreprise est déjà référencée comme partenaire.")
+  }
+}
+
 export const getEntrepriseDataFromSiret = async ({ siret, cfa_delegated_siret }: { siret: string; cfa_delegated_siret?: string }) => {
   if (cfa_delegated_siret) {
     const errorOpt = await validateCreationEntrepriseFromCfa({ siret, cfa_delegated_siret })
@@ -509,17 +519,6 @@ export const getOrganismeDeFormationDataFromSiret = async (siret: string) => {
   return formatReferentielData(referentiel)
 }
 
-const validateCreationEntrepriseFromCfa = async ({ siret, cfa_delegated_siret }: { siret: string; cfa_delegated_siret: string }) => {
-  const recruteurOpt = await getFormulaire({
-    establishment_siret: siret,
-    cfa_delegated_siret,
-    status: "Actif",
-  })
-  if (recruteurOpt) {
-    return errorFactory("L'entreprise est déjà référencée comme partenaire.")
-  }
-}
-
 export const entrepriseOnboardingWorkflow = {
   create: async ({
     email,
@@ -559,7 +558,7 @@ export const entrepriseOnboardingWorkflow = {
       entrepriseData = { establishment_siret: siret }
       sentryCaptureException(err)
     }
-    const contactInfos = { email, first_name, last_name, phone, opco, origin }
+    const contactInfos = { first_name, last_name, phone, opco, origin }
     const savedData = { ...entrepriseData, ...contactInfos, email: formatedEmail }
     const formulaireInfo = await createFormulaire({
       ...savedData,
@@ -577,6 +576,48 @@ export const entrepriseOnboardingWorkflow = {
       newEntreprise = balValidationResult.userRecruteur
     }
     return { formulaire: formulaireInfo, user: newEntreprise }
+  },
+  createFromCFA: async ({
+    email,
+    first_name,
+    last_name,
+    phone,
+    siret,
+    cfa_delegated_siret,
+    origin,
+  }: {
+    siret: string
+    last_name: string
+    first_name: string
+    phone: string
+    email: string
+    cfa_delegated_siret: string
+    origin: string
+  }) => {
+    const formatedEmail = email.toLocaleLowerCase()
+    let entrepriseData: Partial<EntrepriseData>
+    try {
+      const siretResponse = await getEntrepriseDataFromSiret({ siret, cfa_delegated_siret })
+      if ("error" in siretResponse) {
+        return siretResponse
+      } else {
+        entrepriseData = siretResponse
+      }
+    } catch (err) {
+      entrepriseData = { establishment_siret: siret }
+      sentryCaptureException(err)
+    }
+    const contactInfos = { first_name, last_name, phone, origin }
+    const savedData = { ...entrepriseData, ...contactInfos, email: formatedEmail }
+    const formulaireInfo = await createFormulaire({
+      ...savedData,
+      status: RECRUITER_STATUS.ACTIF,
+      jobs: [],
+      cfa_delegated_siret,
+      is_delegated: true,
+      origin,
+    })
+    return formulaireInfo
   },
 }
 

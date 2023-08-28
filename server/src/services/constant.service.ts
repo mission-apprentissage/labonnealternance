@@ -9,10 +9,10 @@ export enum JOB_STATUS {
   EN_ATTENTE = "En attente",
 }
 
-export const RECRUITER_STATUS = {
-  ACTIF: "Actif",
-  ARCHIVE: "Archivé",
-  EN_ATTENTE_VALIDATION: "En attente de validation",
+export enum RECRUITER_STATUS {
+  ACTIF = "Actif",
+  ARCHIVE = "Archivé",
+  EN_ATTENTE_VALIDATION = "En attente de validation",
 }
 
 export const KEY_GENERATOR_PARAMS = ({ length, symbols, numbers }) => {

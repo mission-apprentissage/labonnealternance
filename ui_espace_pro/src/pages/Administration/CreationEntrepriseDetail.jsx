@@ -4,12 +4,12 @@ import {
   BreadcrumbItem,
   BreadcrumbLink,
   Button,
+  Link as ChakraLink,
   Container,
   Flex,
   Grid,
   GridItem,
   Heading,
-  Link as ChakraLink,
   Text,
   useBreakpointValue,
   useToast,
@@ -24,32 +24,20 @@ import useAuth from "../../common/hooks/useAuth"
 import { AnimationContainer, CustomInput, InformationLegaleEntreprise } from "../../components"
 import { WidgetContext } from "../../contextWidget"
 import { ArrowDropRightLine, ArrowRightLine } from "../../theme/components/icons"
-import { SIRETValidation, phoneValidation } from "../../common/validation/fieldValidations"
+import { phoneValidation } from "../../common/validation/fieldValidations"
 
 const Formulaire = () => {
   const buttonSize = useBreakpointValue(["sm", "md"])
   let navigate = useNavigate()
   let location = useLocation()
   const { widget } = useContext(WidgetContext)
-  const {
-    establishment_raison_sociale,
-    address,
-    contacts,
-    establishment_siret,
-    geo_coordinates,
-    opco,
-    idcc,
-    naf_code,
-    naf_label,
-    establishment_size,
-    establishment_creation_date,
-  } = location.state?.informationSiret
+  const { establishment_siret } = location.state?.informationSiret
   const toast = useToast()
   const [auth] = useAuth()
 
   const submitForm = (values, { setSubmitting, setFieldError }) => {
     // save info if not trusted from source
-    postFormulaire(values)
+    postFormulaire({ ...values, establishment_siret, userRecruteurId: auth.id })
       .then(({ data }) => {
         setSubmitting(false)
         toast({
@@ -73,29 +61,12 @@ const Formulaire = () => {
     <Formik
       validateOnMount={true}
       initialValues={{
-        is_delegated: true,
-        cfa_delegated_siret: auth.cfa_delegated_siret,
-        establishment_siret: establishment_siret,
-        establishment_raison_sociale: establishment_raison_sociale,
-        address: address,
-        contacts: contacts,
-        geo_coordinates: geo_coordinates,
-        opco: opco,
-        idcc: idcc,
-        naf_code: naf_code,
-        naf_label: naf_label,
-        establishment_size: establishment_size,
-        establishment_creation_date: establishment_creation_date,
-        origin: auth.scope,
         last_name: undefined,
         first_name: undefined,
         phone: undefined,
         email: undefined,
       }}
       validationSchema={Yup.object().shape({
-        establishment_raison_sociale: Yup.string().required("champs obligatoire"),
-        establishment_siret: SIRETValidation().required("champs obligatoire"),
-        address: Yup.string().required("champ obligatoire"),
         email: Yup.string().email("Insérez un email valide").required("champ obligatoire"),
         last_name: Yup.string().required("champ obligatoire"),
         first_name: Yup.string().required("champ obligatoire"),

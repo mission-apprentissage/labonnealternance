@@ -1,5 +1,7 @@
 // @ts-nocheck
 import express from "express"
+import { entrepriseOnboardingWorkflow } from "../../services/etablissement.service.js"
+import { getUser } from "../../services/userRecruteur.service.js"
 import { Recruiter } from "../../common/model/index.js"
 import { getApplication } from "../../services/application.service.js"
 import {
@@ -7,7 +9,6 @@ import {
   archiveFormulaire,
   cancelOffre,
   checkOffreExists,
-  createFormulaire,
   createJob,
   createJobDelegations,
   getFormulaire,
@@ -72,7 +73,24 @@ export default () => {
   router.post(
     "/",
     tryCatch(async (req, res) => {
-      const response = await createFormulaire(req.body)
+      const { userRecruteurId, establishment_siret, email, last_name, first_name, phone } = req.body
+      const userRecruteurOpt = await getUser({ _id: userRecruteurId })
+      if (!userRecruteurOpt) {
+        return res.status(400).json({ error: true, message: "Nous n'avons pas trouvé votre compte utilisateur" })
+      }
+      const response = await entrepriseOnboardingWorkflow.createFromCFA({
+        email,
+        last_name,
+        first_name,
+        phone,
+        siret: establishment_siret,
+        cfa_delegated_siret: userRecruteurOpt.establishment_siret,
+        origin: userRecruteurOpt.scope,
+      })
+      if ("error" in response) {
+        const { message } = entrepriseData
+        return res.status(400).json({ error: true, message })
+      }
       return res.json(response)
     })
   )

@@ -88,7 +88,7 @@ export const recruiterSchema = new Schema<IRecruiter>(
     },
     status: {
       type: String,
-      enum: [RECRUITER_STATUS.ACTIF, RECRUITER_STATUS.ARCHIVE, RECRUITER_STATUS.EN_ATTENTE_VALIDATION],
+      enum: Object.values(RECRUITER_STATUS),
       default: RECRUITER_STATUS.ACTIF,
       description: "Statut du formulaire",
     },

@@ -82,9 +82,9 @@ export default memo(() => {
       width: "500",
       maxWidth: "500",
       sortType: (a, b) => sortReactTableString(a.original.establishment_raison_sociale, b.original.establishment_raison_sociale),
-      accessor: ({ establishment_id, establishment_raison_sociale }) => (
+      accessor: ({ establishment_id, establishment_raison_sociale, establishment_siret }) => (
         <Link as={NavLink} to={`/administration/entreprise/${establishment_id}`}>
-          {establishment_raison_sociale}
+          {establishment_raison_sociale ?? establishment_siret}
         </Link>
       ),
     },

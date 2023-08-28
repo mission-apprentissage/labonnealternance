@@ -1,6 +1,6 @@
 import { Alert, AlertIcon, Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, Button, Container, Flex, Heading, Link, SimpleGrid, Text, useBreakpointValue } from "@chakra-ui/react"
 import { Form, Formik } from "formik"
-import { useContext, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { NavLink, useNavigate, useParams, useSearchParams } from "react-router-dom"
 import * as Yup from "yup"
 import { getEntrepriseInformation } from "../../api"
@@ -21,7 +21,7 @@ const CreationCompte = () => {
     const formattedSiret = establishment_siret.split(" ").join("")
 
     // validate SIRET
-    getEntrepriseInformation(formattedSiret, { fromDashboardCfa: true, cfa_delegated_siret: auth.cfa_delegated_siret })
+    getEntrepriseInformation(formattedSiret, { cfa_delegated_siret: auth.cfa_delegated_siret })
       .then(({ data }) => {
         setSubmitting(true)
         navigate("/administration/entreprise/detail", {
@@ -29,9 +29,16 @@ const CreationCompte = () => {
         })
       })
       .catch(({ response }) => {
-        setFieldError("establishment_siret", response.data.message)
-        setIsCfa(response.data?.isCfa)
-        setSubmitting(false)
+        const { status } = response
+        if (status < 500) {
+          setFieldError("establishment_siret", response.data.message)
+          setIsCfa(response.data?.isCfa)
+          setSubmitting(false)
+        } else {
+          navigate("/administration/entreprise/detail", {
+            state: { informationSiret: { establishment_siret: formattedSiret } },
+          })
+        }
       })
   }
 
@@ -115,7 +122,7 @@ const CreationEntreprise = ({ type, widget }) => {
 
   let mobile = searchParams.get("mobile") === "true" ? true : false
 
-  useState(() => {
+  useEffect(() => {
     if (widget) {
       setWidget((prev) => ({ ...prev, isWidget: true, mobile: mobile ?? false }))
       setOrganisation(params.origine ?? "matcha")
