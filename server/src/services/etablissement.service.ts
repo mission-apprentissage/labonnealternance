@@ -12,7 +12,7 @@ import { sentryCaptureException } from "../common/utils/sentryUtils.js"
 import config from "../config.js"
 import { validationOrganisation } from "./bal.service.js"
 import { getCatalogueEtablissements } from "./catalogue.service.js"
-import { BusinessErrorCodes, ENTREPRISE, RECRUITER_STATUS } from "./constant.service.js"
+import { BusinessErrorCodes, CFA, ENTREPRISE, RECRUITER_STATUS } from "./constant.service.js"
 import {
   IAPIAdresse,
   IAPIEtablissement,
@@ -27,6 +27,8 @@ import {
 import { createFormulaire, getFormulaire } from "./formulaire.service.js"
 import { autoValidateUser, createUser, getUser, setUserHasToBeManuallyValidated, setUserInError } from "./userRecruteur.service.js"
 import { getOpcoBySirenFromDB, saveOpco } from "./opco.service.js"
+import mailer from "./mailer.service.js"
+import { mailTemplate } from "../assets/index.js"
 
 const apiParams = {
   token: config.entreprise.apiKey,
@@ -177,7 +179,7 @@ export const findByIdAndDelete = async (id): Promise<IEtablissement> => Etabliss
  * @param {Object} query
  * @returns {Promise<void>}
  */
-export const getEtablissement = async (query: Filter<IUserRecruteur>): Promise<IUserRecruteur> => UserRecruteur.findOne(query)
+export const getEtablissement = async (query: Filter<IUserRecruteur>): Promise<IUserRecruteur | null> => UserRecruteur.findOne(query)
 
 /**
  * @description Get opco details from CFADOCK API for a given SIRET
@@ -261,8 +263,10 @@ export const getEtablissementFromReferentiel = async (siret: string): Promise<IR
     return data
   } catch (error) {
     sentryCaptureException(error)
-    if (error.response.status === 404) {
+    if (error?.response?.status === 404) {
       return null
+    } else {
+      throw error
     }
   }
 }
@@ -496,6 +500,21 @@ export const getEntrepriseDataFromSiret = async ({ siret, fromDashboardCfa, cfa_
   return { ...entrepriseData, ...opcoData, geo_coordinates }
 }
 
+export const getOrganismeDeFormationDataFromSiret = async (siret: string) => {
+  const cfaUserRecruteurOpt = await getEtablissement({ establishment_siret: siret, type: CFA })
+  if (cfaUserRecruteurOpt) {
+    return errorFactory("EXIST", BusinessErrorCodes.ALREADY_EXISTS)
+  }
+  const referentiel = await getEtablissementFromReferentiel(siret)
+  if (!referentiel) {
+    return errorFactory("UNKNOWN")
+  }
+  if (referentiel.etat_administratif === "fermé") {
+    return errorFactory("CLOSED")
+  }
+  return formatReferentielData(referentiel)
+}
+
 export const entrepriseOnboardingWorkflow = {
   create: async ({
     email,
@@ -556,4 +575,31 @@ export const entrepriseOnboardingWorkflow = {
     }
     return { formulaire: formulaireInfo, user: newEntreprise }
   },
+}
+
+export const sendConfirmationEmail = async ({
+  email,
+  firstName,
+  lastName,
+  userRecruteurId,
+}: {
+  email: string
+  lastName: string
+  firstName: string
+  userRecruteurId: IUserRecruteur["_id"]
+}) => {
+  const url = getValidationUrl(userRecruteurId)
+  await mailer.sendEmail({
+    to: email,
+    subject: "Confirmez votre adresse mail",
+    template: mailTemplate["mail-confirmation-email"],
+    data: {
+      images: {
+        logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
+      },
+      last_name: lastName,
+      first_name: firstName,
+      confirmation_url: url,
+    },
+  })
 }

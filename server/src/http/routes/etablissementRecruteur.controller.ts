@@ -1,26 +1,23 @@
 import express, { Request } from "express"
 import joi from "joi"
-import { mailTemplate } from "../../assets/index.js"
 import { IRecruiter } from "../../common/model/schema/recruiter/recruiter.types.js"
 import { IUserRecruteur } from "../../common/model/schema/userRecruteur/userRecruteur.types.js"
 import { createUserRecruteurToken } from "../../common/utils/jwtUtils.js"
-import { checkIfUserMailExistInReferentiel, getAllDomainsFromEmailList, getEmailDomain, isEmailFromPrivateCompany } from "../../common/utils/mailUtils.js"
+import { getAllDomainsFromEmailList, getEmailDomain, isEmailFromPrivateCompany, isUserMailExistInReferentiel } from "../../common/utils/mailUtils.js"
 import { sentryCaptureException } from "../../common/utils/sentryUtils.js"
 import { notifyToSlack } from "../../common/utils/slackUtils.js"
-import config from "../../config.js"
 import { getNearEtablissementsFromRomes } from "../../services/catalogue.service.js"
 import { BusinessErrorCodes, CFA, ENTREPRISE, ETAT_UTILISATEUR } from "../../services/constant.service.js"
 import {
   entrepriseOnboardingWorkflow,
   etablissementUnsubscribeDemandeDelegation,
-  formatReferentielData,
   getEntrepriseDataFromSiret,
   getEtablissement,
   getEtablissementFromReferentiel,
-  getValidationUrl,
+  getOrganismeDeFormationDataFromSiret,
+  sendConfirmationEmail,
   validateEtablissementEmail,
 } from "../../services/etablissement.service.js"
-import mailer from "../../services/mailer.service.js"
 import {
   autoValidateUser,
   createUser,
@@ -112,44 +109,28 @@ export default () => {
   router.get(
     "/cfa/:siret",
     tryCatch(async (req, res) => {
-      if (!req.params.siret) {
+      const { siret } = req.params
+      if (!siret) {
         return res.status(400).json({ error: true, message: "Le numéro siret est obligatoire." })
       }
-
-      const cfaUserRecruteurOpt = await getEtablissement({ establishment_siret: req.params.siret, type: CFA })
-
-      if (cfaUserRecruteurOpt) {
-        return res.status(403).json({
-          error: true,
-          reason: "EXIST",
-        })
+      const response = await getOrganismeDeFormationDataFromSiret(siret)
+      if ("error" in response) {
+        const { message, errorCode } = response
+        switch (errorCode) {
+          case BusinessErrorCodes.ALREADY_EXISTS:
+            return res.status(403).json({ error: true, reason: message })
+          default:
+            return res.status(400).json({ error: true, reason: message })
+        }
       }
-
-      const referentiel = await getEtablissementFromReferentiel(req.params.siret)
-
-      if (!referentiel) {
+      if (response.is_qualiopi) {
         return res.status(400).json({
-          error: true,
-          reason: "UNKNOWN",
-        })
-      }
-
-      if (referentiel?.etat_administratif === "fermé") {
-        return res.status(400).json({
-          error: true,
-          reason: "CLOSED",
-        })
-      }
-
-      if (!referentiel?.qualiopi) {
-        return res.status(400).json({
-          data: { ...formatReferentielData(referentiel) },
+          data: response,
           error: true,
           reason: "QUALIOPI",
         })
       }
-
-      return res.json({ ...formatReferentielData(referentiel) })
+      return res.json(response)
     })
   )
 
@@ -184,59 +165,39 @@ export default () => {
           return res.json(result)
         }
         case CFA: {
-          // creation
-          const formatedEmail = req.body.email.toLocaleLowerCase()
-
+          const { email, establishment_siret } = req.body
+          const formatedEmail = email.toLocaleLowerCase()
           // check if user already exist
           const userRecruteurOpt = await getUser({ email: formatedEmail })
-
           if (userRecruteurOpt) {
             return res.status(403).json({ error: true, message: "L'adresse mail est déjà associée à un compte La bonne alternance." })
           }
-
           // Contrôle du mail avec le référentiel :
-          const referentiel = await getEtablissementFromReferentiel(req.body.establishment_siret)
+          const referentiel = await getEtablissementFromReferentiel(establishment_siret)
           // Creation de l'utilisateur en base de données
           let newCfa: IUserRecruteur = await createUser(req.body)
-
-          if (!referentiel.contacts.length) {
+          if (!referentiel?.contacts.length) {
             // Validation manuelle de l'utilisateur à effectuer pas un administrateur
             newCfa = await setUserHasToBeManuallyValidated(newCfa._id)
-
             await notifyToSlack({
               subject: "RECRUTEUR",
               message: `Nouvel OF en attente de validation - ${newCfa.email} - https://referentiel.apprentissage.beta.gouv.fr/organismes/${newCfa.establishment_siret}`,
             })
-
             return res.json({ user: newCfa })
           }
-
-          if (checkIfUserMailExistInReferentiel(referentiel.contacts, req.body.email)) {
+          if (isUserMailExistInReferentiel(referentiel.contacts, email)) {
             // Validation automatique de l'utilisateur
             newCfa = await autoValidateUser(newCfa._id)
-
             const { email, _id, last_name, first_name } = newCfa
-
-            const url = getValidationUrl(_id)
-
-            await mailer.sendEmail({
-              to: email,
-              subject: "Confirmez votre adresse mail",
-              template: mailTemplate["mail-confirmation-email"],
-              data: {
-                images: {
-                  logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
-                },
-                first_name,
-                last_name,
-                confirmation_url: url,
-              },
+            await sendConfirmationEmail({
+              email,
+              firstName: first_name,
+              lastName: last_name,
+              userRecruteurId: _id,
             })
-
             // Keep the same structure as ENTREPRISE
             return res.json({ user: newCfa })
           }
-
           if (isEmailFromPrivateCompany(formatedEmail)) {
             const domains = getAllDomainsFromEmailList(referentiel.contacts)
             const userEmailDomain = getEmailDomain(formatedEmail)
@@ -244,33 +205,22 @@ export default () => {
               // Validation automatique de l'utilisateur
               newCfa = await autoValidateUser(newCfa._id)
               const { email, _id, last_name, first_name } = newCfa
-              const url = getValidationUrl(_id)
-              await mailer.sendEmail({
-                to: email,
-                subject: "Confirmez votre adresse mail",
-                template: mailTemplate["mail-confirmation-email"],
-                data: {
-                  images: {
-                    logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
-                  },
-                  first_name,
-                  last_name,
-                  confirmation_url: url,
-                },
+              await sendConfirmationEmail({
+                email,
+                firstName: first_name,
+                lastName: last_name,
+                userRecruteurId: _id,
               })
               // Keep the same structure as ENTREPRISE
               return res.json({ user: newCfa })
             }
           }
-
           // Validation manuelle de l'utilisateur à effectuer pas un administrateur
           newCfa = await setUserHasToBeManuallyValidated(newCfa._id)
-
           await notifyToSlack({
             subject: "RECRUTEUR",
             message: `Nouvel OF en attente de validation - ${newCfa.email} - https://referentiel.apprentissage.beta.gouv.fr/organismes/${newCfa.establishment_siret}`,
           })
-
           // Keep the same structure as ENTREPRISE
           return res.json({ user: newCfa })
         }
