@@ -28,7 +28,7 @@ const getEtablissements = async (options?: { page: number }): Promise<Etablissem
   }
 }
 
-runScript(async ({ etablissement }: { etablissement: Etablissement }) => {
+runScript(async () => {
   const referentiel = await getEtablissements()
   const data = await Optout.find({}).lean()
 
