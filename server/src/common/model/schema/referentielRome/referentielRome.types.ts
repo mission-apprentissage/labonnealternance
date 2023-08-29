@@ -29,7 +29,7 @@ interface ICompetence {
 
 interface IContextesTravail {
   libelle: string
-  items: Item[]
+  items: IItem[]
 }
 
 interface IMobilite {
@@ -39,20 +39,20 @@ interface IMobilite {
 
 interface ISavoirFaire {
   libelle: string
-  items: Item[]
+  items: IItem[]
 }
 
 interface ISavoirEtreProfessionnel {
   libelle: string
-  items: Item[]
+  items: IItem[]
 }
 
 interface ISavoir {
   libelle: string
-  items: Item[]
+  items: IItem[]
 }
 
-interface Item {
+interface IItem {
   libelle: string
   code_ogr: string
 }
