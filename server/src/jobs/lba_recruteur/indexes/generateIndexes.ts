@@ -2,7 +2,7 @@ import { LbaCompany, DiplomesMetiers, DomainesMetiers, FormationCatalogue, Recru
 import { rebuildIndex } from "../../../common/utils/esUtils.js"
 import { logger } from "../../../common/logger.js"
 
-export const generateIndexes = async (indexList = "recruiters,formationcatalogues,bonnesboites,diplomesmetiers,domainesmetiers") => {
+export const generateIndexes = async (indexList = "recruiters,formationcatalogues,lbacompanies,diplomesmetiers,domainesmetiers") => {
   const list = indexList.split(",")
 
   await Promise.all(
