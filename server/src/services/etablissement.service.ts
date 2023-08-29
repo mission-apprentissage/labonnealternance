@@ -310,14 +310,14 @@ export const getAllEstablishmentFromOpcoReferentiel = async (query: Filter<IRefe
  * @param {Filter<ILbaCompany>} query
  * @returns {Promise<ILbaCompany["email"]>}
  */
-export const getAllEstablishmentFromBonneBoiteLegacy = async (query: Filter<ILbaCompany>): Promise<ILbaCompany[]> =>
+export const getAllEstablishmentFromLbaCompanyLegacy = async (query: Filter<ILbaCompany>): Promise<ILbaCompany[]> =>
   await LbaCompanyLegacy.find(query).select({ email: 1, _id: 0 }).lean()
 /**
  * @description Get all matching records from the BonnesBoites collection
  * @param {Filter<ILbaCompany>} query
  * @returns {Promise<ILbaCompany["email"]>}
  */
-export const getAllEstablishmentFromBonneBoite = async (query: Filter<ILbaCompany>): Promise<ILbaCompany[]> => await LbaCompany.find(query).select({ email: 1, _id: 0 }).lean()
+export const getAllEstablishmentFromLbaCompany = async (query: Filter<ILbaCompany>): Promise<ILbaCompany[]> => await LbaCompany.find(query).select({ email: 1, _id: 0 }).lean()
 /**
  * @description Chech if a given email is included in the given email list array
  * @param {String} email

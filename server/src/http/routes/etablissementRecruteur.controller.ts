@@ -12,8 +12,8 @@ import {
   etablissementUnsubscribeDemandeDelegation,
   formatEntrepriseData,
   formatReferentielData,
-  getAllEstablishmentFromBonneBoite,
-  getAllEstablishmentFromBonneBoiteLegacy,
+  getAllEstablishmentFromLbaCompany,
+  getAllEstablishmentFromLbaCompanyLegacy,
   getAllEstablishmentFromOpcoReferentiel,
   getEtablissement,
   getEtablissementFromGouv,
@@ -250,17 +250,17 @@ export default () => {
           const formulaireInfo = await createFormulaire({ ...req.body, email: formatedEmail })
           let newEntreprise: IUserRecruteur = await createUser({ ...req.body, establishment_id: formulaireInfo.establishment_id, email: formatedEmail })
 
-          // Get all corresponding records using the SIREN number in BonneBoiteLegacy collection
-          const [bonneBoiteLegacyList, bonneBoiteList, referentielOpcoList] = await Promise.all([
-            getAllEstablishmentFromBonneBoiteLegacy({ siret: { $regex: siren }, email: { $nin: ["", undefined] } }),
-            getAllEstablishmentFromBonneBoite({ siret: { $regex: siren }, email: { $nin: ["", undefined] } }),
+          // Get all corresponding records using the SIREN number in LbaCompanyLegacy collection
+          const [lbaCompanyLegacyList, lbaCompanyList, referentielOpcoList] = await Promise.all([
+            getAllEstablishmentFromLbaCompanyLegacy({ siret: { $regex: siren }, email: { $nin: ["", undefined] } }),
+            getAllEstablishmentFromLbaCompany({ siret: { $regex: siren }, email: { $nin: ["", undefined] } }),
             getAllEstablishmentFromOpcoReferentiel({ siret_code: { $regex: siren } }),
           ])
 
           // Format arrays to get only the emails
-          const [bonneBoiteLegacyEmailList, bonneBoiteEmailList, referentielOpcoEmailList] = await Promise.all([
-            bonneBoiteLegacyList.map(({ email }) => email),
-            bonneBoiteList.map(({ email }) => email),
+          const [lbaCompanyLegacyEmailList, lbaCompanyEmailList, referentielOpcoEmailList] = await Promise.all([
+            lbaCompanyLegacyList.map(({ email }) => email),
+            lbaCompanyList.map(({ email }) => email),
             referentielOpcoList.reduce((acc: string[], item) => {
               item.emails.map((x) => acc.push(x))
               return acc
@@ -268,7 +268,7 @@ export default () => {
           ])
 
           // Create a single array with all emails duplicate free
-          const emailListUnique = [...new Set([...referentielOpcoEmailList, ...bonneBoiteLegacyEmailList, ...bonneBoiteEmailList])]
+          const emailListUnique = [...new Set([...referentielOpcoEmailList, ...lbaCompanyLegacyEmailList, ...lbaCompanyEmailList])]
 
           // Check BAL API for validation
           const balControl = await validationOrganisation(req.body.establishment_siret, req.body.email)

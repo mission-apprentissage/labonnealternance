@@ -7,8 +7,8 @@ import { checkIfUserEmailIsPrivate } from "../../../../common/utils/mailUtils.js
 import {
   getMatchingEmailFromContactList,
   getMatchingDomainFromContactList,
-  getAllEstablishmentFromBonneBoite,
-  getAllEstablishmentFromBonneBoiteLegacy,
+  getAllEstablishmentFromLbaCompany,
+  getAllEstablishmentFromLbaCompanyLegacy,
   getAllEstablishmentFromOpcoReferentiel,
 } from "../../../../services/etablissement.service.js"
 import { VALIDATION_UTILISATEUR, ETAT_UTILISATEUR, CFA } from "../../../../services/constant.service.js"
@@ -58,8 +58,8 @@ export const checkAwaitingCompaniesValidation = async () => {
 
     // Get all matching entries from internal dictionnaires
     const [bonneBoiteLegacyList, bonneBoiteList, referentielOpcoList] = await Promise.all([
-      getAllEstablishmentFromBonneBoiteLegacy({ siret: { $regex: siren }, email: { $nin: ["", undefined] } }),
-      getAllEstablishmentFromBonneBoite({ siret: { $regex: siren }, email: { $nin: ["", undefined] } }),
+      getAllEstablishmentFromLbaCompanyLegacy({ siret: { $regex: siren }, email: { $nin: ["", undefined] } }),
+      getAllEstablishmentFromLbaCompany({ siret: { $regex: siren }, email: { $nin: ["", undefined] } }),
       getAllEstablishmentFromOpcoReferentiel({ siret_code: { $regex: siren } }),
     ])
 

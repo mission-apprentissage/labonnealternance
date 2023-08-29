@@ -109,7 +109,7 @@ const findApplicationByTypeAndMessageId = async ({
  * @param {string} email
  * @return {Promise<void>}
  */
-export const removeEmailFromBonnesBoites = async (email: string) => {
+export const removeEmailFromLbaCompanies = async (email: string) => {
   try {
     oleoduc(
       LbaCompany.find({ email }).cursor(),
@@ -623,7 +623,7 @@ export const updateApplicationStatus = async ({ payload }: { payload: any }): Pr
     await addEmailToBlacklist(payload.email, application.job_origin)
 
     if (application.job_origin === "lbb" || application.job_origin === "lba") {
-      await removeEmailFromBonnesBoites(payload.email)
+      await removeEmailFromLbaCompanies(payload.email)
     } else if (application.job_origin === "matcha") {
       await warnMatchaTeamAboutBouncedEmail({ application })
     }
