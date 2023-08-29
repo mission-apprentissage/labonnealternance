@@ -1,3 +1,10 @@
+## [1.77.3](https://github.com/mission-apprentissage/labonnealternance/compare/v1.77.2...v1.77.3) (2023-08-29)
+
+
+### Bug Fixes
+
+* variable name in relance script ([3891e36](https://github.com/mission-apprentissage/labonnealternance/commit/3891e360e927b6e22163116c9e24885c8053e210))
+
 ## [1.77.2](https://github.com/mission-apprentissage/labonnealternance/compare/v1.77.1...v1.77.2) (2023-08-23)
 
 
