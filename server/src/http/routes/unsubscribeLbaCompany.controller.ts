@@ -28,21 +28,21 @@ export default function () {
       const email = req.body.email.toLowerCase()
       const reason = req.body.reason
 
-      const bonnesBoitesToUnsubscribe = await LbaCompany.find({ email }).lean()
+      const lbaCompaniesToUnsubscribe = await LbaCompany.find({ email }).lean()
 
-      if (!bonnesBoitesToUnsubscribe.length) {
+      if (!lbaCompaniesToUnsubscribe.length) {
         result = UNSUBSCRIBE_EMAIL_ERRORS["NON_RECONNU"]
-      } else if (bonnesBoitesToUnsubscribe.length > 1) {
+      } else if (lbaCompaniesToUnsubscribe.length > 1) {
         result = UNSUBSCRIBE_EMAIL_ERRORS["ETABLISSEMENTS_MULTIPLES"]
       } else {
-        const unsubscribedBonneBoite = new UnsubscribedLbaCompany({
-          ...bonnesBoitesToUnsubscribe[0],
+        const unsubscribedLbaCompany = new UnsubscribedLbaCompany({
+          ...lbaCompaniesToUnsubscribe[0],
           unsubscribe_reason: reason,
         })
 
-        unsubscribedBonneBoite.save()
+        unsubscribedLbaCompany.save()
 
-        const bonneBoiteToUnsubscribe = await LbaCompany.findOne({ siret: bonnesBoitesToUnsubscribe[0].siret })
+        const bonneBoiteToUnsubscribe = await LbaCompany.findOne({ siret: lbaCompaniesToUnsubscribe[0].siret })
         bonneBoiteToUnsubscribe.remove()
 
         await mailer.sendEmail({

@@ -21,35 +21,35 @@ export const updateSAVECompanies = async () => {
     ),
     writeData(async (company) => {
       try {
-        const bonneBoite = await LbaCompany.findOne({ siret: company.siret })
+        const lbaCompany = await LbaCompany.findOne({ siret: company.siret })
 
-        if (bonneBoite) {
+        if (lbaCompany) {
           if (company.raison_sociale) {
-            bonneBoite.raison_sociale = company.raison_sociale
-            bonneBoite.eneigne = company.raison_sociale
+            lbaCompany.raison_sociale = company.raison_sociale
+            lbaCompany.eneigne = company.raison_sociale
           }
           if (company.email !== undefined) {
-            bonneBoite.email = company.email
+            lbaCompany.email = company.email
           }
           if (company.phone !== undefined) {
-            bonneBoite.phone = company.phone
+            lbaCompany.phone = company.phone
           }
           if (company.website !== undefined) {
-            bonneBoite.website = company.website
+            lbaCompany.website = company.website
           }
           if (company.rome_codes !== undefined) {
-            bonneBoite.rome_codes = company.rome_codes
+            lbaCompany.rome_codes = company.rome_codes
           } else if (company.removedRomes != undefined) {
-            bonneBoite.rome_codes = bonneBoite.rome_codes.filter((el) => !company.removedRomes.includes(el))
-            if (bonneBoite.rome_codes.length === 0) {
-              logMessage("info", "suppression bb car pas de romes " + bonneBoite.siret)
+            lbaCompany.rome_codes = lbaCompany.rome_codes.filter((el) => !company.removedRomes.includes(el))
+            if (lbaCompany.rome_codes.length === 0) {
+              logMessage("info", "suppression bb car pas de romes " + lbaCompany.siret)
             }
           }
 
-          if (bonneBoite.rome_codes?.length) {
-            await bonneBoite.save()
+          if (lbaCompany.rome_codes?.length) {
+            await lbaCompany.save()
           } else {
-            await bonneBoite.remove()
+            await lbaCompany.remove()
           }
         }
         //else company no more in collection => doing nothing
@@ -83,10 +83,10 @@ export const insertSAVECompanies = async () => {
       const company = await getCompanyMissingData(rawCompany)
       if (company) {
         try {
-          let bonneBoite = await LbaCompany.findOne({ siret: company.siret })
-          if (!bonneBoite) {
-            bonneBoite = new LbaCompany(company)
-            await bonneBoite.save()
+          let lbaCompany = await LbaCompany.findOne({ siret: company.siret })
+          if (!lbaCompany) {
+            lbaCompany = new LbaCompany(company)
+            await lbaCompany.save()
           }
         } catch (err) {
           logMessage("error", err)

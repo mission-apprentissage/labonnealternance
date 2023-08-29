@@ -281,7 +281,7 @@ const getCompanies = async ({
 
     return companies
   } catch (error) {
-    return manageApiError({ error, api_path: api, caller, errorTitle: `getting bonnesBoites from local ES (${api})` })
+    return manageApiError({ error, api_path: api, caller, errorTitle: `getting lbaCompanies from local ES (${api})` })
   }
 }
 

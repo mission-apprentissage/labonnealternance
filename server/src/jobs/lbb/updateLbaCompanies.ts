@@ -39,8 +39,8 @@ const prepareCompany = async (rawCompany) => {
     return null
   }
 
-  const unsubscribedBonneBoite = await UnsubscribedLbaCompany.findOne({ siret: rawCompany.siret }, { siret: 1, _id: 0 })
-  if (unsubscribedBonneBoite) {
+  const unsubscribedLbaCompany = await UnsubscribedLbaCompany.findOne({ siret: rawCompany.siret }, { siret: 1, _id: 0 })
+  if (unsubscribedLbaCompany) {
     return null
   }
 
@@ -53,11 +53,11 @@ const processCompanies = async () => {
   await oleoduc(
     await readCompaniesFromJson(),
     transformData((company) => prepareCompany(company), { parallel: 8 }),
-    writeData(async (bonneBoite) => {
+    writeData(async (lbaCompany) => {
       try {
-        if (bonneBoite) {
+        if (lbaCompany) {
           // contourne mongoose pour éviter la réindexation systématique à chaque insertion.
-          await LbaCompany.collection.insertOne(bonneBoite)
+          await LbaCompany.collection.insertOne(lbaCompany)
         }
       } catch (err) {
         logMessage("error", err)
@@ -83,8 +83,8 @@ export default async function updateLbaCompanies({ UseAlgoFile = false, ClearMon
         const companyCount = await countCompaniesInFile()
         if (companyCount < MIN_COMPANY_THRESHOLD) {
           await notifyToSlack({
-            subject: "IMPORT BONNES BOITES",
-            message: `Import bonnesboites avorté car le fichier ne comporte pas assez de sociétés. ${companyCount} sociétés / ${MIN_COMPANY_THRESHOLD} minimum attendu`,
+            subject: "IMPORT SOCIETES ISSUES DE L'ALGO",
+            message: `Import sociétés issues de l'algo avorté car le fichier ne comporte pas assez de sociétés. ${companyCount} sociétés / ${MIN_COMPANY_THRESHOLD} minimum attendu`,
             error: true,
           })
           throw new Error(`Nombre de sociétés insuffisant : ${companyCount}`)
@@ -113,7 +113,7 @@ export default async function updateLbaCompanies({ UseAlgoFile = false, ClearMon
 
     logMessage("info", `End updating lbb db`)
 
-    await notifyToSlack({ subject: "IMPORT BONNES BOITES", message: `Import bonnesboites terminé. ${count} sociétés importées`, error: false })
+    await notifyToSlack({ subject: "IMPORT SOCIETES ISSUES DE L'ALGO", message: `Import sociétés issues de l'algo terminé. ${count} sociétés importées`, error: false })
   } catch (err) {
     logMessage("error", err)
   } finally {

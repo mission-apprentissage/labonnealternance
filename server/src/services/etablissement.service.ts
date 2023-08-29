@@ -306,14 +306,14 @@ export const getEstablishmentFromOpcoReferentiel = async (siretCode: IReferentie
  */
 export const getAllEstablishmentFromOpcoReferentiel = async (query: Filter<IReferentielOpco>): Promise<IReferentielOpco[]> => await ReferentielOpco.find(query).lean()
 /**
- * @description Get all matching records from the BonneBoiteLegacy collection
+ * @description Get all matching records from the LbaCompanyLegacy collection
  * @param {Filter<ILbaCompany>} query
  * @returns {Promise<ILbaCompany["email"]>}
  */
 export const getAllEstablishmentFromLbaCompanyLegacy = async (query: Filter<ILbaCompany>): Promise<ILbaCompany[]> =>
   await LbaCompanyLegacy.find(query).select({ email: 1, _id: 0 }).lean()
 /**
- * @description Get all matching records from the BonnesBoites collection
+ * @description Get all matching records from the LbaCompanies collection
  * @param {Filter<ILbaCompany>} query
  * @returns {Promise<ILbaCompany["email"]>}
  */

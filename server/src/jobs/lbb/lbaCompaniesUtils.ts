@@ -37,8 +37,8 @@ export const checkIfAlgoFileIsNew = async (reason: string): void => {
 
   if (algoFileLastModificationDate.getTime() < currentDbCreatedDate.getTime()) {
     await notifyToSlack({
-      subject: "IMPORT BONNES BOITES",
-      message: `Process lié à l'import bonnesboites avorté car les données sont déjà à jour. ${reason}`,
+      subject: "IMPORT SOCIETES ISSUES DE L'ALGO",
+      message: `Process lié à l'import des sociétés issues de l'algo avorté car les données sont déjà à jour. ${reason}`,
       error: false,
     })
     throw new Error("Sociétés issues de l'algo déjà à jour")
