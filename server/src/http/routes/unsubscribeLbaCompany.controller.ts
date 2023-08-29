@@ -42,8 +42,8 @@ export default function () {
 
         unsubscribedLbaCompany.save()
 
-        const bonneBoiteToUnsubscribe = await LbaCompany.findOne({ siret: lbaCompaniesToUnsubscribe[0].siret })
-        bonneBoiteToUnsubscribe.remove()
+        const lbaCompanyToUnsubscribe = await LbaCompany.findOne({ siret: lbaCompaniesToUnsubscribe[0].siret })
+        lbaCompanyToUnsubscribe.remove()
 
         await mailer.sendEmail({
           to: email,

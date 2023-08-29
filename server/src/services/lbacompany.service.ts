@@ -361,13 +361,13 @@ export const getSomeCompanies = async ({
  */
 export const getCompanyFromSiret = async ({ siret, referer, caller }: { siret: string; referer: string; caller: string }) => {
   try {
-    const bonneBoite = await LbaCompany.findOne({ siret })
+    const lbaCompany = await LbaCompany.findOne({ siret })
 
-    if (bonneBoite) {
-      const applicationCountByCompany = await getApplicationByCompanyCount([bonneBoite.siret])
+    if (lbaCompany) {
+      const applicationCountByCompany = await getApplicationByCompanyCount([lbaCompany.siret])
 
       const company = transformCompany({
-        company: bonneBoite,
+        company: lbaCompany,
         contactAllowedOrigin: isAllowedSource({ referer, caller }),
         caller,
         applicationCountByCompany,
@@ -405,22 +405,22 @@ export const getCompanyFromSiret = async ({ siret, referer, caller }: { siret: s
  */
 export const updateContactInfo = async ({ siret, email, phone }: { siret: string; email: string; phone: string }): Promise<ILbaCompany | string> => {
   try {
-    const bonneBoite = await LbaCompany.findOne({ siret })
+    const lbaCompany = await LbaCompany.findOne({ siret })
 
-    if (!bonneBoite) {
+    if (!lbaCompany) {
       return "not_found"
     } else {
       if (email !== undefined) {
-        bonneBoite.email = email
+        lbaCompany.email = email
       }
 
       if (phone !== undefined) {
-        bonneBoite.phone = phone
+        lbaCompany.phone = phone
       }
 
-      await bonneBoite.save()
+      await lbaCompany.save()
 
-      return bonneBoite
+      return lbaCompany
     }
   } catch (err) {
     sentryCaptureException(err)

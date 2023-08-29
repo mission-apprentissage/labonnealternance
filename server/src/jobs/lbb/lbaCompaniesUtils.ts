@@ -183,8 +183,8 @@ const getGeoLocationForCompany = async (company) => {
   return result
 }
 
-const getOpcoForCompany = async (bonneBoite) => {
-  const siren = bonneBoite.siret.substring(0, 9)
+const getOpcoForCompany = async (lbaCompany) => {
+  const siren = lbaCompany.siret.substring(0, 9)
   return await Opco.findOne({ siren })
 }
 
@@ -197,8 +197,8 @@ export const initMaps = async () => {
 }
 
 const ARBITRARY_ROME_HIRING_THRESHOLD = 0.025
-const filterRomesFromNafHirings = (bonneBoite) => {
-  const nafRomeHirings = nafScoreMap[bonneBoite.naf_code]
+const filterRomesFromNafHirings = (lbaCompany) => {
+  const nafRomeHirings = nafScoreMap[lbaCompany.naf_code]
   let filteredRomes = []
   if (nafRomeHirings) {
     filteredRomes = nafRomeHirings.romes.filter((rome) => {

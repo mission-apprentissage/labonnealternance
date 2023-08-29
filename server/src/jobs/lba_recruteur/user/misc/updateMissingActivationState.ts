@@ -57,16 +57,16 @@ export const checkAwaitingCompaniesValidation = async () => {
     const siren = etp.establishment_siret.substr(0, 9)
 
     // Get all matching entries from internal dictionnaires
-    const [bonneBoiteLegacyList, bonneBoiteList, referentielOpcoList] = await Promise.all([
+    const [lbaCompanyLegacyList, lbaCompanyList, referentielOpcoList] = await Promise.all([
       getAllEstablishmentFromLbaCompanyLegacy({ siret: { $regex: siren }, email: { $nin: ["", undefined] } }),
       getAllEstablishmentFromLbaCompany({ siret: { $regex: siren }, email: { $nin: ["", undefined] } }),
       getAllEstablishmentFromOpcoReferentiel({ siret_code: { $regex: siren } }),
     ])
 
     // Tranform into single array of emails
-    const [bonneBoiteLegacyEmailList, bonneBoiteEmailList, referentielOpcoEmailList] = await Promise.all([
-      bonneBoiteLegacyList.map(({ email }) => email),
-      bonneBoiteList.map(({ email }) => email),
+    const [lbaCompanyLegacyEmailList, lbaCompanyEmailList, referentielOpcoEmailList] = await Promise.all([
+      lbaCompanyLegacyList.map(({ email }) => email),
+      lbaCompanyList.map(({ email }) => email),
       referentielOpcoList.reduce((acc: string[], item) => {
         item.emails.map((x) => acc.push(x))
         return acc
@@ -74,7 +74,7 @@ export const checkAwaitingCompaniesValidation = async () => {
     ])
 
     // Create a single array with all emails duplicate free
-    const emailListUnique = [...new Set([...referentielOpcoEmailList, ...bonneBoiteLegacyEmailList, ...bonneBoiteEmailList])]
+    const emailListUnique = [...new Set([...referentielOpcoEmailList, ...lbaCompanyLegacyEmailList, ...lbaCompanyEmailList])]
 
     // Check BAL API for validation
     const balControl = await validationOrganisation(etp.establishment_siret, etp.email)
