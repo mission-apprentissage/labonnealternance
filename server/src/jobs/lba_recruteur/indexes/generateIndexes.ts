@@ -18,7 +18,7 @@ export const generateIndexes = async (indexList = "recruiters,formationcatalogue
           await rebuildIndex(DiplomesMetiers, { skipNotFound: true })
           break
         }
-        case "bonnesboites": {
+        case "lbacompanies": {
           await LbaCompany.syncIndexes()
           await rebuildIndex(LbaCompany, { skipNotFound: true })
           break
