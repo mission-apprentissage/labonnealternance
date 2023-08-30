@@ -1,4 +1,3 @@
-// @ts-nocheck
 import express from "express"
 import { entrepriseOnboardingWorkflow } from "../../services/etablissement.service.js"
 import { getUser } from "../../services/userRecruteur.service.js"
@@ -54,12 +53,7 @@ export default () => {
       await Promise.all(
         result.jobs.map(async (job) => {
           const candidatures = await getApplication(job._id)
-
-          if (candidatures) {
-            job.candidatures = candidatures.length > 0 ? candidatures.length : undefined
-          }
-
-          return job
+          return { ...job, candidatures: candidatures && candidatures.length > 0 ? candidatures.length : undefined }
         })
       )
 
@@ -88,7 +82,7 @@ export default () => {
         origin: userRecruteurOpt.scope,
       })
       if ("error" in response) {
-        const { message } = entrepriseData
+        const { message } = response
         return res.status(400).json({ error: true, message })
       }
       return res.json(response)

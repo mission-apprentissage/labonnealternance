@@ -13,6 +13,7 @@ import { getApplicationByJobCount, IApplicationCount } from "./application.servi
 import { ILbaItem, LbaItem } from "./lbaitem.shared.service.types.js"
 import { IRecruiter } from "../common/model/schema/recruiter/recruiter.types.js"
 import { ILbaJobEsResult } from "./lbajob.service.types.js"
+import { sentryCaptureException } from "../common/utils/sentryUtils.js"
 
 /**
  * Retourne les offres LBA correspondantes aux critères de recherche
@@ -154,6 +155,7 @@ export const getLbaJobById = async ({ id, caller }: { id: string; caller: string
 
     return { matchas: job }
   } catch (error) {
+    sentryCaptureException(error)
     return manageApiError({ error, api_path: "jobV1/matcha", caller, errorTitle: "getting job by id from Matcha" })
   }
 }

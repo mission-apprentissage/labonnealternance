@@ -467,7 +467,7 @@ const validateCreationEntrepriseFromCfa = async ({ siret, cfa_delegated_siret }:
   const recruteurOpt = await getFormulaire({
     establishment_siret: siret,
     cfa_delegated_siret,
-    status: "Actif",
+    status: { $in: [RECRUITER_STATUS.ACTIF, RECRUITER_STATUS.EN_ATTENTE_VALIDATION] },
   })
   if (recruteurOpt) {
     return errorFactory("L'entreprise est déjà référencée comme partenaire.")
@@ -540,8 +540,8 @@ export const entrepriseOnboardingWorkflow = {
     opco: string
   }) => {
     const formatedEmail = email.toLocaleLowerCase()
-    const exist = await getUser({ email: formatedEmail })
-    if (exist) {
+    const userRecruteurOpt = await getUser({ email: formatedEmail })
+    if (userRecruteurOpt) {
       return errorFactory("L'adresse mail est déjà associée à un compte La bonne alternance.", BusinessErrorCodes.ALREADY_EXISTS)
     }
     let entrepriseData: Partial<EntrepriseData>
@@ -611,7 +611,7 @@ export const entrepriseOnboardingWorkflow = {
     const savedData = { ...entrepriseData, ...contactInfos, email: formatedEmail }
     const formulaireInfo = await createFormulaire({
       ...savedData,
-      status: RECRUITER_STATUS.ACTIF,
+      status: RECRUITER_STATUS.EN_ATTENTE_VALIDATION,
       jobs: [],
       cfa_delegated_siret,
       is_delegated: true,

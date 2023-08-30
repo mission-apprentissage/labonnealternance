@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { Recruiter, UserRecruteur } from "../../../../common/model/index.js"
 import { runScript } from "../../../scriptWrapper.js"
 
