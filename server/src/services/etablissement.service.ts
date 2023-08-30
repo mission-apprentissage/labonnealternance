@@ -520,25 +520,34 @@ export const getOrganismeDeFormationDataFromSiret = async (siret: string) => {
 }
 
 export const entrepriseOnboardingWorkflow = {
-  create: async ({
-    email,
-    first_name,
-    last_name,
-    phone,
-    siret,
-    cfa_delegated_siret,
-    origin,
-    opco,
-  }: {
-    siret: string
-    last_name: string
-    first_name: string
-    phone: string
-    email: string
-    cfa_delegated_siret: string
-    origin: string
-    opco: string
-  }) => {
+  create: async (
+    {
+      email,
+      first_name,
+      last_name,
+      phone,
+      siret,
+      cfa_delegated_siret,
+      origin,
+      opco,
+      idcc,
+    }: {
+      siret: string
+      last_name: string
+      first_name: string
+      phone: string
+      email: string
+      cfa_delegated_siret?: string
+      origin: string
+      opco: string
+      idcc?: string
+    },
+    {
+      isUserValidated = false,
+    }: {
+      isUserValidated?: boolean
+    } = {}
+  ) => {
     const formatedEmail = email.toLocaleLowerCase()
     const userRecruteurOpt = await getUser({ email: formatedEmail })
     if (userRecruteurOpt) {
@@ -558,7 +567,7 @@ export const entrepriseOnboardingWorkflow = {
       entrepriseData = { establishment_siret: siret }
       sentryCaptureException(err)
     }
-    const contactInfos = { first_name, last_name, phone, opco, origin }
+    const contactInfos = { first_name, last_name, phone, opco, idcc, origin }
     const savedData = { ...entrepriseData, ...contactInfos, email: formatedEmail }
     const formulaireInfo = await createFormulaire({
       ...savedData,
@@ -571,6 +580,8 @@ export const entrepriseOnboardingWorkflow = {
 
     if (hasSiretError) {
       newEntreprise = await setUserInError(newEntreprise._id, "Erreur lors de l'appel à l'API SIRET")
+    } else if (isUserValidated) {
+      newEntreprise = await autoValidateUser(newEntreprise._id)
     } else {
       const balValidationResult = await autoValidateCompany(newEntreprise)
       newEntreprise = balValidationResult.userRecruteur

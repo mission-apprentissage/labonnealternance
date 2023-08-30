@@ -10,9 +10,9 @@ import { getCompanyFromSiret } from "../../../service/poleEmploi/bonnesBoites.js
 import { getJobsQuery } from "../../../service/poleEmploi/jobsAndCompanies.js"
 import { getPeJobFromId } from "../../../service/poleEmploi/offresPoleEmploi.js"
 import { getNearEtablissementsFromRomes } from "../../../services/catalogue.service.js"
-import { ACTIVE, ANNULEE, ENTREPRISE, JOB_STATUS, POURVUE } from "../../../services/constant.service.js"
+import { ACTIVE, ANNULEE, JOB_STATUS, POURVUE } from "../../../services/constant.service.js"
 import dayjs from "../../../services/dayjs.service.js"
-import { formatEntrepriseData, getEtablissement, getEtablissementFromGouv, getGeoCoordinates } from "../../../services/etablissement.service.js"
+import { entrepriseOnboardingWorkflow } from "../../../services/etablissement.service.js"
 import {
   cancelOffre,
   createJobDelegations,
@@ -28,7 +28,6 @@ import {
 import { ILbaItem } from "../../../services/lbaitem.shared.service.types.js"
 import { addOffreDetailView, addOffreSearchView, getLbaJobById } from "../../../services/lbajob.service.js"
 import { getAppellationDetailsFromAPI, getRomeDetailsFromAPI } from "../../../services/rome.service.js"
-import { autoValidateUser, createUser } from "../../../services/userRecruteur.service.js"
 import { ICreateDelegation, ICreateJobBody, IGetDelegation, TCreateEstablishmentBody, TEstablishmentResponseSuccess, TJob, TResponseError } from "./jobs.types.js"
 import { createDelegationSchema, createEstablishmentSchema, createJobSchema, getEstablishmentEntitySchema, updateJobSchema } from "./jobs.validators.js"
 
@@ -109,57 +108,35 @@ export class JobsController extends Controller {
   @OperationId("createEstablishment")
   @Security("api_key")
   public async createEstablishment(@Request() request: express.Request | any, @Body() body: TCreateEstablishmentBody): Promise<TEstablishmentResponseSuccess | TResponseError> {
-    const { first_name, last_name, phone, email, origin, idcc, establishment_siret } = body
-    const user: ICredential = request.user
-
-    const establishmentExists = await getEtablissement({ email })
-
-    if (establishmentExists) {
-      this.setStatus(400)
-      return { error: true, message: "Email is already linked with an establishment" }
-    }
     // Validate establishment parameters
     await createEstablishmentSchema.validateAsync(body, { abortEarly: false })
 
-    // Get siret information from API
-    const establishmentInformations = await getEtablissementFromGouv(establishment_siret)
+    const { first_name, last_name, phone, email, origin, idcc, establishment_siret } = body
+    const user: ICredential = request.user
 
-    // If establishment is closed, throw error
-    if (establishmentInformations.data.etat_administratif === "F") {
-      return { error: true, message: "Establishment is closed" }
+    const result = await entrepriseOnboardingWorkflow.create(
+      {
+        email,
+        first_name,
+        last_name,
+        phone,
+        origin: `${user.organisation}${origin ? `-${origin}` : ""}`,
+        idcc,
+        siret: establishment_siret,
+        opco: user.scope,
+      },
+      {
+        isUserValidated: true,
+      }
+    )
+    if ("error" in result) {
+      const { message } = result
+      this.setStatus(400)
+      return { error: true, message }
     }
-
-    // Format establishment data returned by API
-    // Initialize establishment object
-    const establishment = {
-      origin: `${user.organisation}${origin ? `-${origin}` : ""}`,
-      first_name,
-      last_name,
-      phone,
-      email,
-      type: ENTREPRISE,
-      is_email_checked: true,
-      is_qualiopi: false,
-      opco: user.scope,
-      idcc,
-      ...formatEntrepriseData(establishmentInformations.data),
-    }
-
-    // Get geocoordinates
-    establishment.geo_coordinates = await getGeoCoordinates(`${establishment.address_detail.acheminement_postal.l4}, ${establishment.address_detail.acheminement_postal.l6}`)
-
-    /**
-     *  KBA 25052023 : Bellow logic will be update with the global refactoring of the service logic
-     */
-    // Create entry in Recruiter collection
-    const newEstablishment = await Recruiter.create(establishment)
-    // Create entry in UserRecruter collection
-    const newUser = await createUser({ ...establishment, establishment_id: newEstablishment.establishment_id })
-    // Update user status to valid
-    await autoValidateUser(newUser._id)
 
     this.setStatus(201)
-    return newEstablishment
+    return result.formulaire
   }
 
   /**
