@@ -124,6 +124,7 @@ const DetailEntreprise = () => {
   }
 
   const [lastUserState] = data.data.status.slice(-1)
+  const establishmentLabel = data.data.establishment_raison_sociale ?? data.data.establishment_siret
 
   return (
     <AnimationContainer>
@@ -138,7 +139,7 @@ const DetailEntreprise = () => {
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbItem>
-                <BreadcrumbLink textStyle="xs">{data.data.establishment_raison_sociale}</BreadcrumbLink>
+                <BreadcrumbLink textStyle="xs">{establishmentLabel}</BreadcrumbLink>
               </BreadcrumbItem>
             </Breadcrumb>
           </Box>
@@ -146,7 +147,7 @@ const DetailEntreprise = () => {
             <Flex align="center" justify="space-between" mb={5}>
               <Flex align="center" justify="flex-start" maxW="50%">
                 <Heading fontSize="32px" noOfLines={2}>
-                  {data.data.establishment_raison_sociale}
+                  {establishmentLabel}
                 </Heading>
                 <Box ml={5}>{getUserBadge(lastUserState)}</Box>
               </Flex>
@@ -154,7 +155,7 @@ const DetailEntreprise = () => {
                 {getActionButtons(lastUserState, data.data._id)}
                 {data.data.type === AUTHTYPE.ENTREPRISE ? (
                   data.data.jobs.length ? (
-                    lastUserState.status === USER_STATUS.WAITING ? (
+                    lastUserState.status === USER_STATUS.WAITING || lastUserState.status === USER_STATUS.ERROR ? (
                       <Button variant="secondary" isDisabled={true}>
                         Offre en attente de validation
                       </Button>
@@ -213,7 +214,7 @@ const DetailEntreprise = () => {
                 <>
                   <ConfirmationModificationOpco
                     {...confirmationModificationOpco}
-                    establishment_raison_sociale={data.data.establishment_raison_sociale}
+                    establishment_raison_sociale={establishmentLabel}
                     setFieldValue={setFieldValue}
                     previousValue={data.data.opco}
                     newValue={values.opco}

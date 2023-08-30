@@ -246,7 +246,7 @@ export const createJob = async ({ job, id }: { job: Partial<IOffreExtended>; id:
   const user = await getUser({ establishment_id: id })
   // get user activation state if not managed by a CFA
   if (user) {
-    isUserAwaiting = getUserValidationState(user.status) === ETAT_UTILISATEUR.ATTENTE
+    isUserAwaiting = getUserValidationState(user.status) !== ETAT_UTILISATEUR.VALIDE
     // upon user creation, if user is awaiting validation, update job status to "En attente"
     if (isUserAwaiting) {
       job.job_status = JOB_STATUS.EN_ATTENTE
