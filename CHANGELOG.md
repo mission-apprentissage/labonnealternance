@@ -1,3 +1,10 @@
+# [1.78.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.77.4...v1.78.0) (2023-08-30)
+
+
+### Features
+
+* suppression événements formation consultées sur catalogue ([#555](https://github.com/mission-apprentissage/labonnealternance/issues/555)) ([b5ae11e](https://github.com/mission-apprentissage/labonnealternance/commit/b5ae11e37675b510b4a49b83a96d76dd28d791bd))
+
 ## [1.77.4](https://github.com/mission-apprentissage/labonnealternance/compare/v1.77.3...v1.77.4) (2023-08-30)
 
 
