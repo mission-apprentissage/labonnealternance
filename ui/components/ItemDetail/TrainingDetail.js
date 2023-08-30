@@ -4,13 +4,11 @@ import React, { useContext, useEffect, useState } from "react"
 import { DisplayContext } from "../../context/DisplayContextProvider"
 import { SearchResultContext } from "../../context/SearchResultContextProvider"
 import academicCapIcon from "../../public/images/icons/training-academic-cap.svg"
-import questionmarkIcon from "../../public/images/icons/training-questionmark.svg"
 import targetIcon from "../../public/images/icons/training-target.svg"
 import clipboardListIcon from "../../public/images/icons/traning-clipboard-list.svg"
 import fetchInserJeuneStats from "../../services/fetchInserJeuneStats"
 import fetchPrdv from "../../services/fetchPrdv"
 import fetchTrainingDetails from "../../services/fetchTrainingDetails"
-import sendTrainingOpenedEventToCatalogue from "../../services/sendTrainingOpenedEventToCatalogue"
 import { SendPlausibleEvent } from "../../utils/plausible"
 import { formatDate } from "../../utils/strutils"
 import StatsInserJeunes from "./StatsInserJeunes"
@@ -64,7 +62,6 @@ const TrainingDetail = ({ training, hasAlsoJob }) => {
   useEffect(() => {
     if (training && !training.descriptionLoaded) {
       loadTrainingDetails()
-      sendTrainingOpenedEventToCatalogue(training.cleMinistereEducatif)
     } else {
       setLoading(false)
     }
