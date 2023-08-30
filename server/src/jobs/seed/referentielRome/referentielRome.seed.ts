@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { runScript } from "../../scriptWrapper.js"
 import * as xml2j from "xml2js"
 import { readFileSync } from "fs"

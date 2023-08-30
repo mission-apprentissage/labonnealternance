@@ -1,4 +1,4 @@
-import { ETAT_UTILISATEUR, RECRUITER_STATUS } from "../services/constant.service.js"
+import { ETAT_UTILISATEUR, RECRUITER_STATUS } from "../../../../services/constant.service.js"
 import { logger } from "../../../../common/logger.js"
 import { Recruiter, UserRecruteur } from "../../../../common/model/index.js"
 import { asyncForEach } from "../../../../common/utils/asyncUtils.js"
