@@ -34,7 +34,7 @@ export const generateIndexes = async (indexList = "recruiters,formationcatalogue
           break
         }
         default: {
-          logger.error(`Attention l'index "${index}" ne fait pas partie de la liste elligible`)
+          logger.error(`Attention l'index "${index}" ne fait pas partie de la liste elligible : recruiters,formationcatalogues,bonnesboites,diplomesmetiers,domainesmetiers`)
           break
         }
       }
