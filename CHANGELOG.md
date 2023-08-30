@@ -1,3 +1,10 @@
+## [1.77.4](https://github.com/mission-apprentissage/labonnealternance/compare/v1.77.3...v1.77.4) (2023-08-30)
+
+
+### Bug Fixes
+
+* only one init ([#554](https://github.com/mission-apprentissage/labonnealternance/issues/554)) ([0b424cd](https://github.com/mission-apprentissage/labonnealternance/commit/0b424cdbea4f0a209f2a57c43b7593262f7897b6))
+
 ## [1.77.3](https://github.com/mission-apprentissage/labonnealternance/compare/v1.77.2...v1.77.3) (2023-08-29)
 
 
