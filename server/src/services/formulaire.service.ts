@@ -1,4 +1,3 @@
-/* eslint-disable no-use-before-define */
 import { pick } from "lodash-es"
 import moment from "moment"
 import { mailTemplate } from "../assets/index.js"
@@ -460,7 +459,7 @@ export const archiveDelegatedFormulaire = async (siret: IUserRecruteur["establis
   if (!formulaires.length) return
 
   await asyncForEach(formulaires, async (form: IRecruiter) => {
-    form.status = "Archivé"
+    form.status = RECRUITER_STATUS.ARCHIVE
 
     form.jobs.forEach((job) => {
       job.job_status = JOB_STATUS.ANNULEE
@@ -477,7 +476,9 @@ export const archiveDelegatedFormulaire = async (siret: IUserRecruteur["establis
  * @param {IJobs["_id"]} id
  * @returns {Promise<IFormulaireExtended>}
  */
-export const getOffre = async (id: IJobs["_id"]): Promise<IFormulaireExtended> => await Recruiter.findOne({ "jobs._id": id }).lean()
+export async function getOffre(id: IJobs["_id"]): Promise<IFormulaireExtended> {
+  return Recruiter.findOne({ "jobs._id": id }).lean()
+}
 
 /**
  * @description Create job offer on existing formulaire
@@ -486,8 +487,9 @@ export const getOffre = async (id: IJobs["_id"]): Promise<IFormulaireExtended> =
  * @param {ModelUpdateOptions} [options={new:true}]
  * @returns {Promise<IRecruiter>}
  */
-export const createOffre = async (id: IRecruiter["establishment_id"], payload: UpdateQuery<IJobs>, options: ModelUpdateOptions = { new: true }): Promise<IRecruiter> =>
-  await Recruiter.findOneAndUpdate({ establishment_id: id }, { $push: { jobs: payload } }, options)
+export async function createOffre(id: IRecruiter["establishment_id"], payload: UpdateQuery<IJobs>, options: ModelUpdateOptions = { new: true }): Promise<IRecruiter> {
+  return Recruiter.findOneAndUpdate({ establishment_id: id }, { $push: { jobs: payload } }, options)
+}
 
 /**
  * @description Update existing job offer
@@ -495,8 +497,8 @@ export const createOffre = async (id: IRecruiter["establishment_id"], payload: U
  * @param {object} payload
  * @returns {Promise<IRecruiter>}
  */
-export const updateOffre = async (id: IJobs["_id"], payload: UpdateQuery<IJobs>, options: ModelUpdateOptions = { new: true }): Promise<IRecruiter> =>
-  await Recruiter.findOneAndUpdate(
+export async function updateOffre(id: IJobs["_id"], payload: UpdateQuery<IJobs>, options: ModelUpdateOptions = { new: true }): Promise<IRecruiter> {
+  return Recruiter.findOneAndUpdate(
     { "jobs._id": id },
     {
       $set: {
@@ -505,6 +507,7 @@ export const updateOffre = async (id: IJobs["_id"], payload: UpdateQuery<IJobs>,
     },
     options
   )
+}
 
 /**
  * @description Increment field in existing job offer
@@ -611,7 +614,7 @@ export const getJob = async (id: IJobs["_id"]): Promise<IJobs> => {
 /**
  * @description Sends the mail informing the CFA that a company wants the CFA to handle the offer.
  */
-export const sendDelegationMailToCFA = async (email: string, offre: IJobs, recruiter: { establishment_raison_sociale: string; establishment_id: string }, siret_code: string) => {
+export async function sendDelegationMailToCFA(email: string, offre: IJobs, recruiter: { establishment_raison_sociale: string; establishment_id: string }, siret_code: string) {
   const unsubscribeOF = await UnsubscribeOF.findOne({ establishment_siret: siret_code })
   if (unsubscribeOF) return
   await mailer.sendEmail({

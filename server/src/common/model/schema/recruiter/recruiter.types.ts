@@ -1,3 +1,4 @@
+import { RECRUITER_STATUS } from "../../../../services/constant.service.js"
 import { IGlobalAddress } from "../_shared/shared.types.js"
 import { IJobs } from "../jobs/jobs.types.js"
 
@@ -22,7 +23,7 @@ interface IRecruiter {
   origin: string
   opco: string
   idcc?: string
-  status: string
+  status: RECRUITER_STATUS
   naf_code: string
   naf_label: string
   createdAt: Date

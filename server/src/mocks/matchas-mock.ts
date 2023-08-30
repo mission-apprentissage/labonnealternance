@@ -1,3 +1,4 @@
+import { RECRUITER_STATUS } from "../services/constant.service.js"
 import { ILbaJobEsResult } from "../services/lbajob.service.types.js"
 
 const matchaMockMandataire: ILbaJobEsResult = {
@@ -18,7 +19,7 @@ const matchaMockMandataire: ILbaJobEsResult = {
     phone: "0742424242",
     email: "labonnealternance@apprentissage.beta.gouv.fr",
     origin: "cfa-72vnr",
-    status: "Actif",
+    status: RECRUITER_STATUS.ACTIF,
     cfa_delegated_siret: "33940141600047",
     naf_code: "7830Z",
     naf_label: "Autre mise à disposition de ressources humaines",
@@ -158,7 +159,7 @@ const matchaMock: ILbaJobEsResult = {
     origin: "matcha",
     opco: "ATLAS",
     idcc: "1486",
-    status: "Actif",
+    status: RECRUITER_STATUS.ACTIF,
     naf_code: "6201Z",
     naf_label: "Programmation informatique",
     establishment_size: "1 ou 2 salariés",

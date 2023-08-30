@@ -10,7 +10,14 @@
     "no-nonoctal-decimal-escape": 0,
     "no-unsafe-optional-chaining": 0,
     "node/exports-style": ["error", "exports"],
-    "no-use-before-define": "error"
+    "no-use-before-define": "off",
+    "@typescript-eslint/no-use-before-define": [
+      "error",
+      {
+        "typedefs": false,
+        "functions": false
+      }
+    ]
   },
   "overrides": [
     {
