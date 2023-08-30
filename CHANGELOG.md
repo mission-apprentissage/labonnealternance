@@ -1,3 +1,10 @@
+# [1.79.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.78.0...v1.79.0) (2023-08-30)
+
+
+### Features
+
+* update option and opco logic ([#557](https://github.com/mission-apprentissage/labonnealternance/issues/557)) ([4f1b41b](https://github.com/mission-apprentissage/labonnealternance/commit/4f1b41b5f717a03e1a968e952ed805b23a72ea9b))
+
 # [1.78.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.77.4...v1.78.0) (2023-08-30)
 
 
