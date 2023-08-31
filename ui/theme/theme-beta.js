@@ -8,6 +8,14 @@ const colors = {
   error: "#b60000",
   warning: "#fa5c00",
   info: "#3a55d1",
+  greenemeraude: {
+    950: "#c3fad5",
+    425: "#297254",
+  },
+  orangeterrebattue: {
+    925: "#fddfd8",
+    370: "#755348",
+  },
   bluefrance: {
     100: "#F2F2F9",
     113: "#3131FF",

@@ -4,8 +4,8 @@ import React from "react"
 import bookIcon from "../../public/images/book.svg"
 
 const tagProperties = {
-  color: "greensoft.600",
-  background: "greensoft.200",
+  color: "greenemeraude.425",
+  background: "greenemeraude.950",
 }
 
 const TagFormationAssociee = ({ isMandataire }) => {

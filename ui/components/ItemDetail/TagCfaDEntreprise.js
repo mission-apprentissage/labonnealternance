@@ -3,8 +3,8 @@ import React from "react"
 import smileyIcon from "../../public/images/smiley.svg"
 
 const tagProperties = {
-  color: "greensoft.600",
-  background: "greensoft.200",
+  color: "greenemeraude.425",
+  background: "greenemeraude.950",
 }
 
 const TagCfaDEntreprise = () => {

@@ -3,8 +3,8 @@ import bookIcon from "public/images/book.svg"
 import React from "react"
 
 const tagProperties = {
-  color: "greensoft.600",
-  background: "greensoft.200",
+  color: "greenemeraude.425",
+  background: "greenemeraude.950",
 }
 
 const TagFormation = () => {
