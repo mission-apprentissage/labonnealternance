@@ -12,9 +12,9 @@ const colors = {
     950: "#c3fad5",
     425: "#297254",
   },
-  orangeterrebattue: {
-    925: "#fddfd8",
-    370: "#755348",
+  pinktuile: {
+    950: "#fee9e7",
+    425: "#a94645",
   },
   bluefrance: {
     100: "#F2F2F9",
