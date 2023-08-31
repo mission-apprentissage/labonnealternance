@@ -27,11 +27,6 @@ export default (props) => {
   const disableUser = useUserHistoryUpdate(_id, USER_STATUS.DISABLED, reason)
   const reassignUserToAdmin = useUserHistoryUpdate(_id, USER_STATUS.WAITING, reason)
 
-  useEffect(() => {
-    // keep the field closed on every pop-in open
-    reasonComment.onClose()
-  }, [])
-
   const handleReason = (value) => {
     if (value === "Autre") {
       reasonComment.onOpen()
@@ -56,6 +51,7 @@ export default (props) => {
         break
     }
     onClose()
+    reasonComment.onClose()
   }
 
   return (
