@@ -42,7 +42,7 @@ export const getUsers = async (query: Filter<IUserRecruteur>, options, { page, l
  * @param {Filter<IUserRecruteur>} query
  * @returns {Promise<IUserRecruteur>}
  */
-export const getUser = async (query: Filter<IUserRecruteur>) => UserRecruteur.findOne(query)
+export const getUser = async (query: Filter<IUserRecruteur>): Promise<IUserRecruteur | null> => UserRecruteur.findOne(query)
 
 /**
  * @description create user

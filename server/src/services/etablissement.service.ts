@@ -465,7 +465,8 @@ export const getOpcoData = async (siret: string) => {
 
 export type EntrepriseData = IFormatAPIEntreprise & { opco: string; idcc: string; geo_coordinates: string }
 
-const validateCreationEntrepriseFromCfa = async ({ siret, cfa_delegated_siret }: { siret: string; cfa_delegated_siret: string }) => {
+export const validateCreationEntrepriseFromCfa = async ({ siret, cfa_delegated_siret }: { siret: string; cfa_delegated_siret: string }) => {
+  if (!cfa_delegated_siret) return
   const recruteurOpt = await getFormulaire({
     establishment_siret: siret,
     cfa_delegated_siret,
@@ -477,12 +478,6 @@ const validateCreationEntrepriseFromCfa = async ({ siret, cfa_delegated_siret }:
 }
 
 export const getEntrepriseDataFromSiret = async ({ siret, cfa_delegated_siret }: { siret: string; cfa_delegated_siret?: string }) => {
-  if (cfa_delegated_siret) {
-    const errorOpt = await validateCreationEntrepriseFromCfa({ siret, cfa_delegated_siret })
-    if (errorOpt) {
-      return errorOpt
-    }
-  }
   const result = await getEtablissementFromGouv(siret)
   if (!result) {
     return errorFactory("Le numéro siret est invalide.")
@@ -547,6 +542,8 @@ export const entrepriseOnboardingWorkflow = {
       isUserValidated?: boolean
     } = {}
   ) => {
+    const cfaErrorOpt = await validateCreationEntrepriseFromCfa({ siret, cfa_delegated_siret })
+    if (cfaErrorOpt) return cfaErrorOpt
     const formatedEmail = email.toLocaleLowerCase()
     const userRecruteurOpt = await getUser({ email: formatedEmail })
     if (userRecruteurOpt) {
@@ -608,6 +605,8 @@ export const entrepriseOnboardingWorkflow = {
     opco?: string
     idcc?: string
   }) => {
+    const cfaErrorOpt = await validateCreationEntrepriseFromCfa({ siret, cfa_delegated_siret })
+    if (cfaErrorOpt) return cfaErrorOpt
     const formatedEmail = email.toLocaleLowerCase()
     let entrepriseData: Partial<EntrepriseData>
     try {

@@ -253,7 +253,7 @@ export const createJob = async ({ job, id }: { job: Partial<IOffreExtended>; id:
   // insert job
   const updatedFormulaire = await createOffre(id, job)
 
-  const { email, establishment_raison_sociale, establishment_siret, first_name, last_name, is_delegated, cfa_delegated_siret, jobs } = updatedFormulaire
+  const { is_delegated, cfa_delegated_siret, jobs } = updatedFormulaire
 
   job._id = updatedFormulaire.jobs.filter((x) => x.rome_label === job.rome_label)[0]._id
 
@@ -268,28 +268,7 @@ export const createJob = async ({ job, id }: { job: Partial<IOffreExtended>; id:
 
   // get CFA informations if formulaire is handled by a CFA
   const contactCFA = is_delegated && (await getUser({ establishment_siret: cfa_delegated_siret }))
-
-  const establishmentTitle = establishment_raison_sociale ?? establishment_siret
-  // Send mail with action links to manage offers
-  await mailer.sendEmail({
-    to: is_delegated ? contactCFA.email : email,
-    subject: is_delegated ? `Votre offre d'alternance pour ${establishmentTitle} est publiée` : `Votre offre d'alternance est publiée`,
-    template: mailTemplate["mail-nouvelle-offre"],
-    data: {
-      images: {
-        logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
-      },
-      nom: is_delegated ? contactCFA.last_name : last_name,
-      prenom: is_delegated ? contactCFA.first_name : first_name,
-      raison_sociale: establishmentTitle,
-      mandataire: updatedFormulaire.is_delegated,
-      offre: pick(job, ["rome_appellation_label", "job_start_date", "type", "job_level_label"]),
-      lba_url:
-        config.env !== "recette"
-          ? `https://labonnealternance.apprentissage.beta.gouv.fr/recherche-apprentissage?&display=list&page=fiche&type=matcha&itemId=${job._id}`
-          : `https://labonnealternance-recette.apprentissage.beta.gouv.fr/recherche-apprentissage?&display=list&page=fiche&type=matcha&itemId=${job._id}`,
-    },
-  })
+  await sendMailNouvelleOffre(updatedFormulaire, job, contactCFA)
 
   return updatedFormulaire
 }
@@ -615,6 +594,36 @@ export async function sendDelegationMailToCFA(email: string, offre: IJobs, recru
       offerButton: `${config.publicUrlEspacePro}/proposition/formulaire/${recruiter.establishment_id}/offre/${offre._id}/siret/${siret_code}`,
       createAccountButton: `${config.publicUrlEspacePro}/creation/cfa`,
       unsubscribeUrl: `${config.publicUrlEspacePro}/proposition/formulaire/${recruiter.establishment_id}/offre/${offre._id}/siret/${siret_code}/unsubscribe`,
+    },
+  })
+}
+
+export async function sendMailNouvelleOffre(recruiter: IRecruiter, job: Partial<IOffreExtended>, contactCFA?: IUserRecruteur) {
+  const isRecruteurAwaiting = recruiter.status === RECRUITER_STATUS.EN_ATTENTE_VALIDATION
+  if (isRecruteurAwaiting) {
+    return
+  }
+  const { is_delegated, email, last_name, first_name, establishment_raison_sociale, establishment_siret } = recruiter
+
+  const establishmentTitle = establishment_raison_sociale ?? establishment_siret
+  // Send mail with action links to manage offers
+  await mailer.sendEmail({
+    to: is_delegated ? contactCFA.email : email,
+    subject: is_delegated ? `Votre offre d'alternance pour ${establishmentTitle} est publiée` : `Votre offre d'alternance est publiée`,
+    template: mailTemplate["mail-nouvelle-offre"],
+    data: {
+      images: {
+        logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
+      },
+      nom: is_delegated ? contactCFA.last_name : last_name,
+      prenom: is_delegated ? contactCFA.first_name : first_name,
+      raison_sociale: establishmentTitle,
+      mandataire: recruiter.is_delegated,
+      offre: pick(job, ["rome_appellation_label", "job_start_date", "type", "job_level_label"]),
+      lba_url:
+        config.env !== "recette"
+          ? `https://labonnealternance.apprentissage.beta.gouv.fr/recherche-apprentissage?&display=list&page=fiche&type=matcha&itemId=${job._id}`
+          : `https://labonnealternance-recette.apprentissage.beta.gouv.fr/recherche-apprentissage?&display=list&page=fiche&type=matcha&itemId=${job._id}`,
     },
   })
 }

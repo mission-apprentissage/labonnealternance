@@ -1,22 +1,22 @@
-import { getFormulaire, updateFormulaire } from "../../../../services/formulaire.service.js"
-import { deactivateUser, setUserInError, updateUser } from "../../../../services/userRecruteur.service.js"
+import { archiveFormulaire, getFormulaire, sendMailNouvelleOffre, updateFormulaire } from "../../../../services/formulaire.service.js"
+import { deactivateUser, getUser, setUserInError, updateUser } from "../../../../services/userRecruteur.service.js"
 import { logger } from "../../../../common/logger.js"
-import { UserRecruteur } from "../../../../common/model/index.js"
+import { Recruiter, UserRecruteur } from "../../../../common/model/index.js"
 import { asyncForEach } from "../../../../common/utils/asyncUtils.js"
 import { sentryCaptureException } from "../../../../common/utils/sentryUtils.js"
-import { CFA, ENTREPRISE, ETAT_UTILISATEUR } from "../../../../services/constant.service.js"
+import { CFA, ENTREPRISE, ETAT_UTILISATEUR, JOB_STATUS, RECRUITER_STATUS } from "../../../../services/constant.service.js"
 import { autoValidateCompany, getEntrepriseDataFromSiret, sendEmailConfirmationEntreprise } from "../../../../services/etablissement.service.js"
 import { notifyToSlack } from "../../../../common/utils/slackUtils.js"
-import { IUserRecruteur } from "common/model/schema/userRecruteur/userRecruteur.types.js"
+import { IUserRecruteur } from "../../../../common/model/schema/userRecruteur/userRecruteur.types.js"
 
-export const updateSiretInfosInError = async () => {
+const updateUserRecruteursSiretInfosInError = async () => {
   const query = {
     $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, ETAT_UTILISATEUR.ERROR] },
     $or: [{ type: CFA }, { type: ENTREPRISE }],
   }
   const userRecruteurs = await UserRecruteur.find(query).lean()
   const stats = { success: 0, failure: 0, deactivated: 0 }
-  logger.info(`Correction des recruteurs en erreur: ${userRecruteurs.length} recruteurs à mettre à jour...`)
+  logger.info(`Correction des user recruteurs en erreur: ${userRecruteurs.length} user recruteurs à mettre à jour...`)
   await asyncForEach(userRecruteurs, async (userRecruteur) => {
     const { establishment_siret, _id, establishment_id } = userRecruteur
     try {
@@ -45,9 +45,62 @@ export const updateSiretInfosInError = async () => {
     }
   })
   await notifyToSlack({
+    subject: "Reprise des user recruteurs en erreur API SIRET",
+    message: `${stats.success} user recruteurs repris avec succès. ${stats.failure} user recruteurs avec une erreur de l'API SIRET. ${stats.deactivated} user recruteurs désactivés pour non-respect des règles de création.`,
+    error: stats.failure > 0,
+  })
+  return stats
+}
+const updateRecruteursSiretInfosInError = async () => {
+  const recruteurs = await Recruiter.find({
+    status: RECRUITER_STATUS.EN_ATTENTE_VALIDATION,
+  }).lean()
+  const stats = { success: 0, failure: 0, deactivated: 0 }
+  logger.info(`Correction des recruteurs en erreur: ${recruteurs.length} user recruteurs à mettre à jour...`)
+  await asyncForEach(recruteurs, async (recruteur) => {
+    const { establishment_siret, establishment_id, _id, cfa_delegated_siret } = recruteur
+    try {
+      const siretResponse = await getEntrepriseDataFromSiret({ siret: establishment_siret, cfa_delegated_siret })
+      if ("error" in siretResponse) {
+        logger.warn(`Correction des recruteurs en erreur: recruteur id=${_id}, désactivation car création interdite, raison=${siretResponse.message}`)
+        await archiveFormulaire(establishment_id)
+        stats.deactivated++
+      } else {
+        const updatedRecruiter = await updateFormulaire(establishment_id, { ...siretResponse, status: RECRUITER_STATUS.ACTIF })
+        const userRecruteurCFA = await getUser({ establishment_siret: cfa_delegated_siret, $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, ETAT_UTILISATEUR.VALIDE] } })
+        await Promise.all(
+          updatedRecruiter.jobs.flatMap((job) => {
+            if (job.job_status === JOB_STATUS.ACTIVE) {
+              return [sendMailNouvelleOffre(updatedRecruiter, job, userRecruteurCFA)]
+            } else {
+              return []
+            }
+          })
+        )
+        stats.success++
+      }
+    } catch (err) {
+      const errorMessage = (err && "message" in err && err.message) || err
+      await updateFormulaire(establishment_id, { status: RECRUITER_STATUS.EN_ATTENTE_VALIDATION })
+      logger.error(err)
+      logger.error(`Correction des recruteurs en erreur: recruteur id=${_id}, erreur: ${errorMessage}`)
+      sentryCaptureException(err)
+      stats.failure++
+    }
+  })
+  await notifyToSlack({
     subject: "Reprise des recruteurs en erreur API SIRET",
     message: `${stats.success} recruteurs repris avec succès. ${stats.failure} recruteurs avec une erreur de l'API SIRET. ${stats.deactivated} recruteurs désactivés pour non-respect des règles de création.`,
     error: stats.failure > 0,
   })
   return stats
+}
+
+export const updateSiretInfosInError = async () => {
+  const userRecruteurResult = await updateUserRecruteursSiretInfosInError()
+  const recruteurResult = await updateRecruteursSiretInfosInError()
+  return {
+    userRecruteurResult,
+    recruteurResult,
+  }
 }

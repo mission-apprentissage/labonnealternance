@@ -17,6 +17,7 @@ import {
   getOpcoData,
   getOrganismeDeFormationDataFromSiret,
   sendUserConfirmationEmail,
+  validateCreationEntrepriseFromCfa,
   validateEtablissementEmail,
 } from "../../services/etablissement.service.js"
 import {
@@ -76,6 +77,13 @@ export default () => {
         return res.status(400).json({ error: true, message: "Le numéro siret est obligatoire." })
       }
       try {
+        const cfaVerification = await validateCreationEntrepriseFromCfa({ siret, cfa_delegated_siret })
+        if (cfaVerification) {
+          return res.status(400).json({
+            error: true,
+            message: cfaVerification.message,
+          })
+        }
         const result = await getEntrepriseDataFromSiret({ siret, cfa_delegated_siret })
         if ("error" in result) {
           switch (result.errorCode) {
