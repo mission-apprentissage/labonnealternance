@@ -136,6 +136,14 @@ export default () => {
         return res.json(user)
       }
 
+      /**
+       * 20230831 kevin todo: share reason between front and back with shared folder
+       */
+      // if user isn't part of the OPCO, just send the user straigth back
+      if (history.reason === "Ne relève pas des champs de compétences de mon OPCO") {
+        return res.json(user)
+      }
+
       if (user.type === ENTREPRISE) {
         /**
          * if entreprise type of user is validated :
