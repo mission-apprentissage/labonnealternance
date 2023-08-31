@@ -2,7 +2,7 @@ import { Box, Center, Heading, Icon, Link, Stack, Text } from "@chakra-ui/react"
 import { CircleCheck, OctogoneCross } from "../theme/components/icons"
 
 const Bandeau = ({ header, description, lien, type }) => {
-  const color = getBannerColor()
+  const color = getBannerColor(type)
 
   return (
     <Stack direction="row" spacing={0} mt={[2, 10]} maxH={["auto", "88px"]}>
