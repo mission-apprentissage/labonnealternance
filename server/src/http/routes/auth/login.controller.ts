@@ -1,16 +1,16 @@
 import express from "express"
 import Joi from "joi"
 import { mailTemplate } from "../../../assets/index.js"
-import { CFA, ENTREPRISE, ETAT_UTILISATEUR } from "../../../services/constant.service.js"
 import { UserRecruteur } from "../../../common/model/index.js"
+import { IUserRecruteur } from "../../../common/model/schema/userRecruteur/userRecruteur.types.js"
 import { createMagicLinkToken, createUserRecruteurToken, createUserToken } from "../../../common/utils/jwtUtils.js"
 import config from "../../../config.js"
-import { tryCatch } from "../../middlewares/tryCatchMiddleware.js"
-import { IUserRecruteur } from "../../../common/model/schema/userRecruteur/userRecruteur.types.js"
-import { getUser, registerUser } from "../../../services/userRecruteur.service.js"
-import { getValidationUrl, sendConfirmationEmail } from "../../../services/etablissement.service.js"
-import authMiddleware from "../../middlewares/authMiddleware.js"
+import { CFA, ENTREPRISE, ETAT_UTILISATEUR } from "../../../services/constant.service.js"
+import { sendUserConfirmationEmail } from "../../../services/etablissement.service.js"
 import mailer from "../../../services/mailer.service.js"
+import { getUser, registerUser } from "../../../services/userRecruteur.service.js"
+import authMiddleware from "../../middlewares/authMiddleware.js"
+import { tryCatch } from "../../middlewares/tryCatchMiddleware.js"
 
 export default () => {
   const router = express.Router() // eslint-disable-line new-cap
@@ -44,7 +44,7 @@ export default () => {
         if (is_email_checked) {
           return res.status(400).json({ error: true, reason: "VERIFIED" })
         }
-        await sendConfirmationEmail({
+        await sendUserConfirmationEmail({
           email,
           firstName: first_name,
           lastName: last_name,
@@ -106,7 +106,7 @@ export default () => {
       }
 
       if (!is_email_checked) {
-        await sendConfirmationEmail({
+        await sendUserConfirmationEmail({
           email: userEmail,
           firstName: first_name,
           lastName: last_name,

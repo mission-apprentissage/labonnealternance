@@ -5,8 +5,9 @@ import { UserRecruteur } from "../../../../common/model/index.js"
 import { asyncForEach } from "../../../../common/utils/asyncUtils.js"
 import { sentryCaptureException } from "../../../../common/utils/sentryUtils.js"
 import { CFA, ENTREPRISE, ETAT_UTILISATEUR } from "../../../../services/constant.service.js"
-import { autoValidateCompany, getEntrepriseDataFromSiret } from "../../../../services/etablissement.service.js"
+import { autoValidateCompany, getEntrepriseDataFromSiret, sendEmailConfirmationEntreprise } from "../../../../services/etablissement.service.js"
 import { notifyToSlack } from "../../../../common/utils/slackUtils.js"
+import { IUserRecruteur } from "common/model/schema/userRecruteur/userRecruteur.types.js"
 
 export const updateSiretInfosInError = async () => {
   const query = {
@@ -27,9 +28,11 @@ export const updateSiretInfosInError = async () => {
         await deactivateUser(_id, siretResponse.message)
         stats.deactivated++
       } else {
-        const result = await updateUser({ _id }, siretResponse)
+        let updatedUserRecruteur: IUserRecruteur = await updateUser({ _id }, siretResponse)
         await updateFormulaire(recruteur.establishment_id, siretResponse)
-        await autoValidateCompany(result)
+        const result = await autoValidateCompany(updatedUserRecruteur)
+        updatedUserRecruteur = result.userRecruteur
+        await sendEmailConfirmationEntreprise(updatedUserRecruteur, recruteur)
         stats.success++
       }
     } catch (err) {

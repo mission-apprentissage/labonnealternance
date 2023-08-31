@@ -1,4 +1,5 @@
 import axios, { AxiosResponse } from "axios"
+import { pick } from "lodash-es"
 import { Filter } from "mongodb"
 import { mailTemplate } from "../assets/index.js"
 import { BonneBoiteLegacy, BonnesBoites, Etablissement, ReferentielOpco, UnsubscribeOF, UserRecruteur } from "../common/model/index.js"
@@ -13,7 +14,7 @@ import { sentryCaptureException } from "../common/utils/sentryUtils.js"
 import config from "../config.js"
 import { validationOrganisation } from "./bal.service.js"
 import { getCatalogueEtablissements } from "./catalogue.service.js"
-import { BusinessErrorCodes, CFA, ENTREPRISE, RECRUITER_STATUS } from "./constant.service.js"
+import { BusinessErrorCodes, CFA, ENTREPRISE, ETAT_UTILISATEUR, RECRUITER_STATUS } from "./constant.service.js"
 import {
   IAPIAdresse,
   IAPIEtablissement,
@@ -26,9 +27,9 @@ import {
   ISIRET2IDCC,
 } from "./etablissement.service.types.js"
 import { createFormulaire, getFormulaire } from "./formulaire.service.js"
-import { autoValidateUser, createUser, getUser, setUserHasToBeManuallyValidated, setUserInError } from "./userRecruteur.service.js"
-import { getOpcoBySirenFromDB, saveOpco } from "./opco.service.js"
 import mailer from "./mailer.service.js"
+import { getOpcoBySirenFromDB, saveOpco } from "./opco.service.js"
+import { autoValidateUser, createUser, getUser, getUserStatus, setUserHasToBeManuallyValidated, setUserInError } from "./userRecruteur.service.js"
 
 const apiParams = {
   token: config.entreprise.apiKey,
@@ -636,7 +637,7 @@ export const entrepriseOnboardingWorkflow = {
   },
 }
 
-export const sendConfirmationEmail = async ({
+export const sendUserConfirmationEmail = async ({
   email,
   firstName,
   lastName,
@@ -661,4 +662,42 @@ export const sendConfirmationEmail = async ({
       confirmation_url: url,
     },
   })
+}
+
+export const sendEmailConfirmationEntreprise = async (user: IUserRecruteur, recruteur: IRecruiter) => {
+  console.log(user)
+  const userStatus = getUserStatus(user.status)
+  if (userStatus === ETAT_UTILISATEUR.ERROR || user.is_email_checked) {
+    return
+  }
+  const isUserAwaiting = userStatus !== ETAT_UTILISATEUR.VALIDE
+  const { jobs, is_delegated, email } = recruteur
+  const offre = jobs.at(0)
+  // Get user account validation link
+  const url = getValidationUrl(user._id)
+  if (jobs.length === 1 && offre && is_delegated === false) {
+    await mailer.sendEmail({
+      to: email,
+      subject: "Confirmez votre adresse mail",
+      template: mailTemplate["mail-nouvelle-offre-depot-simplifie"],
+      data: {
+        images: {
+          logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
+        },
+        nom: user.last_name,
+        prenom: user.first_name,
+        email: user.email,
+        confirmation_url: url,
+        offre: pick(offre, ["rome_appellation_label", "job_start_date", "type", "job_level_label"]),
+        isUserAwaiting,
+      },
+    })
+  } else {
+    await sendUserConfirmationEmail({
+      email: user.email,
+      firstName: user.first_name,
+      lastName: user.last_name,
+      userRecruteurId: user._id,
+    })
+  }
 }

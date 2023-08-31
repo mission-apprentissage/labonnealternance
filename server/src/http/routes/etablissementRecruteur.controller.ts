@@ -16,14 +16,14 @@ import {
   getEtablissementFromReferentiel,
   getOpcoData,
   getOrganismeDeFormationDataFromSiret,
-  sendConfirmationEmail,
+  sendUserConfirmationEmail,
   validateEtablissementEmail,
 } from "../../services/etablissement.service.js"
 import {
   autoValidateUser,
   createUser,
   getUser,
-  getUserValidationState,
+  getUserStatus,
   registerUser,
   sendWelcomeEmailToUserRecruteur,
   setUserHasToBeManuallyValidated,
@@ -204,7 +204,7 @@ export default () => {
             // Validation automatique de l'utilisateur
             newCfa = await autoValidateUser(newCfa._id)
             const { email, _id, last_name, first_name } = newCfa
-            await sendConfirmationEmail({
+            await sendUserConfirmationEmail({
               email,
               firstName: first_name,
               lastName: last_name,
@@ -220,7 +220,7 @@ export default () => {
               // Validation automatique de l'utilisateur
               newCfa = await autoValidateUser(newCfa._id)
               const { email, _id, last_name, first_name } = newCfa
-              await sendConfirmationEmail({
+              await sendUserConfirmationEmail({
                 email,
                 firstName: first_name,
                 lastName: last_name,
@@ -301,7 +301,7 @@ export default () => {
       }
 
       const user: IUserRecruteur = await getUser({ _id: req.body.id })
-      const isUserAwaiting = getUserValidationState(user.status) === ETAT_UTILISATEUR.ATTENTE
+      const isUserAwaiting = getUserStatus(user.status) === ETAT_UTILISATEUR.ATTENTE
 
       if (isUserAwaiting) {
         return res.json({ isUserAwaiting: true })

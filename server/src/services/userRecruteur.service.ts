@@ -126,7 +126,14 @@ export const updateUserValidationHistory = (userId: IUserRecruteur["_id"], state
  * @param {IUserRecruteur["status"]} stateArray
  * @returns {IUserRecruteur["status"]}
  */
-export const getUserValidationState = (stateArray: IUserRecruteur["status"]) => stateArray.sort((a, b) => new Date(a.date).valueOf() - new Date(b.date).valueOf()).pop().status
+export const getUserStatus = (stateArray: IUserRecruteur["status"]) => {
+  const sortedArray = [...stateArray].sort((a, b) => new Date(a.date).valueOf() - new Date(b.date).valueOf())
+  const lastValidationEvent = sortedArray.at(sortedArray.length - 1)
+  if (!lastValidationEvent) {
+    throw new Error("unexpected: status array empty")
+  }
+  return lastValidationEvent.status
+}
 
 export const setUserInError = async (userId: IUserRecruteur["_id"], reason: string) =>
   await updateUserValidationHistory(userId, {

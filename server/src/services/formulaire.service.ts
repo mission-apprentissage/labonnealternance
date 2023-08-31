@@ -1,22 +1,22 @@
 import { pick } from "lodash-es"
 import moment from "moment"
+import { Filter } from "mongodb"
+import { ModelUpdateOptions, UpdateQuery } from "mongoose"
 import { mailTemplate } from "../assets/index.js"
-import { ETAT_UTILISATEUR, ACTIVE, RECRUITER_STATUS, JOB_STATUS } from "./constant.service.js"
-import dayjs from "./dayjs.service.js"
 import { getElasticInstance } from "../common/esClient/index.js"
-import mailer from "./mailer.service.js"
 import { Recruiter, UnsubscribeOF } from "../common/model/index.js"
-import { IRecruiter } from "../common/model/schema/recruiter/recruiter.types.js"
 import { IJobs } from "../common/model/schema/jobs/jobs.types.js"
+import { IRecruiter } from "../common/model/schema/recruiter/recruiter.types.js"
 import { IUserRecruteur } from "../common/model/schema/userRecruteur/userRecruteur.types.js"
 import { asyncForEach } from "../common/utils/asyncUtils.js"
 import config from "../config.js"
 import { getCatalogueEtablissements, getCatalogueFormations } from "./catalogue.service.js"
-import { getEtablissement, getValidationUrl } from "./etablissement.service.js"
-import { ModelUpdateOptions, UpdateQuery } from "mongoose"
-import { Filter } from "mongodb"
-import { getUser, getUserValidationState } from "./userRecruteur.service.js"
+import { ACTIVE, ETAT_UTILISATEUR, JOB_STATUS, RECRUITER_STATUS } from "./constant.service.js"
+import dayjs from "./dayjs.service.js"
+import { getEtablissement, sendEmailConfirmationEntreprise } from "./etablissement.service.js"
 import { ILbaJobEsResult } from "./lbajob.service.types.js"
+import mailer from "./mailer.service.js"
+import { getUser, getUserStatus } from "./userRecruteur.service.js"
 
 const esClient = getElasticInstance()
 
@@ -26,7 +26,7 @@ interface IFormulaireExtended extends IRecruiter {
   entreprise_localite: string
 }
 
-interface IOffreExtended extends IJobs {
+export interface IOffreExtended extends IJobs {
   candidatures: number
   pourvue: string
   supprimer: string
@@ -241,16 +241,14 @@ export const getFormulaires = async (query: Filter<IRecruiter>, select: object, 
  * @returns {Promise<IRecruiter>}
  */
 export const createJob = async ({ job, id }: { job: Partial<IOffreExtended>; id: IUserRecruteur["establishment_id"] }): Promise<IRecruiter> => {
-  let isUserAwaiting = false
   // get user data
   const user = await getUser({ establishment_id: id })
+  const userStatus: ETAT_UTILISATEUR | null = user ? getUserStatus(user.status) : null
+  const isUserAwaiting = userStatus !== ETAT_UTILISATEUR.VALIDE
   // get user activation state if not managed by a CFA
-  if (user) {
-    isUserAwaiting = getUserValidationState(user.status) !== ETAT_UTILISATEUR.VALIDE
+  if (user && isUserAwaiting) {
     // upon user creation, if user is awaiting validation, update job status to "En attente"
-    if (isUserAwaiting) {
-      job.job_status = JOB_STATUS.EN_ATTENTE
-    }
+    job.job_status = JOB_STATUS.EN_ATTENTE
   }
   // insert job
   const updatedFormulaire = await createOffre(id, job)
@@ -264,26 +262,7 @@ export const createJob = async ({ job, id }: { job: Partial<IOffreExtended>; id:
 
   // if first offer creation for an Entreprise, send specific mail
   if (jobs.length === 1 && is_delegated === false) {
-    // Get user account validation link
-    const url = getValidationUrl(user._id)
-
-    await mailer.sendEmail({
-      to: email,
-      subject: "Confirmez votre adresse mail",
-      template: mailTemplate["mail-nouvelle-offre-depot-simplifie"],
-      data: {
-        images: {
-          logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
-        },
-        nom: user.last_name,
-        prenom: user.first_name,
-        email: user.email,
-        confirmation_url: url,
-        offre: pick(job, ["rome_appellation_label", "job_start_date", "type", "job_level_label"]),
-        isUserAwaiting,
-      },
-    })
-
+    await sendEmailConfirmationEntreprise(user, updatedFormulaire)
     return updatedFormulaire
   }
 
