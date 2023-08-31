@@ -1,5 +1,5 @@
 import { mongoosePagination, Pagination } from "mongoose-paginate-ts"
-import { ETAT_UTILISATEUR } from "../../../../services/constant.service.js"
+import { ETAT_UTILISATEUR, VALIDATION_UTILISATEUR } from "../../../../services/constant.service.js"
 import { model, Schema } from "../../../mongodb.js"
 import { IUserRecruteur, IUserStatusValidation } from "./userRecruteur.types.js"
 
@@ -7,7 +7,7 @@ const userValidationSchema = new Schema<IUserStatusValidation>(
   {
     validation_type: {
       type: String,
-      enum: ["AUTOMATIQUE", "MANUELLE"],
+      enum: Object.values(VALIDATION_UTILISATEUR),
       description: "Processus de validation lors de l'inscription de l'utilisateur",
     },
     status: {

@@ -27,9 +27,9 @@ export const KEY_GENERATOR_PARAMS = ({ length, symbols, numbers }) => {
     exclude: '!"_%£$€*¨^=+~ß(){}[]§;,./:`@#&|<>?"',
   }
 }
-export const VALIDATION_UTILISATEUR = {
-  AUTO: "AUTOMATIQUE",
-  MANUAL: "MANUELLE",
+export enum VALIDATION_UTILISATEUR {
+  AUTO = "AUTOMATIQUE",
+  MANUAL = "MANUELLE",
 }
 export const ENTREPRISE_DELEGATION = "ENTREPRISE_DELEGATION"
 export enum ETAT_UTILISATEUR {

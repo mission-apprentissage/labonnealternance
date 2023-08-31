@@ -1,4 +1,4 @@
-import { ETAT_UTILISATEUR, RECRUITER_STATUS } from "../../../../services/constant.service.js"
+import { ETAT_UTILISATEUR, RECRUITER_STATUS, VALIDATION_UTILISATEUR } from "../../../../services/constant.service.js"
 import { logger } from "../../../../common/logger.js"
 import { Recruiter, UserRecruteur } from "../../../../common/model/index.js"
 import { asyncForEach } from "../../../../common/utils/asyncUtils.js"
@@ -26,7 +26,7 @@ runScript(async () => {
         {
           $push: {
             status: {
-              validation_type: "AUTOMATIQUE",
+              validation_type: VALIDATION_UTILISATEUR.AUTO,
               status: ETAT_UTILISATEUR.DESACTIVE,
               reason: `Utilisateur en doublon (traitement des majuscules ${new Date()}`,
               user: "SERVEUR",
