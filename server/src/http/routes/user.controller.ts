@@ -120,7 +120,7 @@ export default () => {
         // send email to user to notify him his account has been disabled
         await mailer.sendEmail({
           to: user.email,
-          subject: "La bonne alternance - compte désactivé",
+          subject: "Compte désactivé",
           template: mailTemplate["mail-compte-desactive"],
           data: {
             images: {
