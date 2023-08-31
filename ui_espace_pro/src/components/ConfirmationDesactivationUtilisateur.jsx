@@ -13,6 +13,7 @@ import {
   Text,
   useDisclosure,
   Input,
+  useEffect,
 } from "@chakra-ui/react"
 import { useState } from "react"
 import { archiveDelegatedFormulaire, archiveFormulaire, updateEntreprise } from "../api"
