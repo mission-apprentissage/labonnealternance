@@ -358,115 +358,111 @@ const RomeInformationDetail = ({ definition, competencesDeBase, libelle, appella
     const accesFormatted = acces.split("\\n").join("<br><br>")
 
     return (
-      <>
-        <Box border="1px solid #000091" p={5} mb={5}>
-          <Box mb={5}>
-            <Heading fontSize="24px" mb={3}>
-              {appellation}
-            </Heading>
-            <Text fontSize="16px" fontWeight="700">
-              Fiche métier : {libelle}
-            </Text>
-            <Text fontSize="14px">La fiche métier se base sur la classification ROME de Pôle Emploi</Text>
-          </Box>
-          <Flex alignItems="flex-start" mb={6}>
-            <InfoCircle mr={2} mt={1} color="bluefrance.500" />
-            <Text textAlign="justify">Voici la description visible par les candidats lors de la mise en ligne de l’offre d’emploi en alternance.</Text>
-          </Flex>
-
-          <Accordion defaultIndex={[0]} allowMultiple>
-            <AccordionItem key={0} id="metier">
-              {({ isExpanded }) => (
-                <>
-                  <h2>
-                    <AccordionButton>
-                      <Text fontWeight="700" flex="1" textAlign="left">
-                        Description du métier
-                      </Text>
-                      {isExpanded ? <Minus color="bluefrance.500" /> : <Plus color="bluefrance.500" />}
-                    </AccordionButton>
-                  </h2>
-                  <AccordionPanel pb={4} ml={6} mr={3}>
-                    <ul className={style.voeux}>
-                      {definitionSplitted.map((x) => {
-                        return (
-                          <li className={style.voeux} key={x}>
-                            {x}
-                          </li>
-                        )
-                      })}
-                    </ul>
-                  </AccordionPanel>
-                </>
-              )}
-            </AccordionItem>
-            <hr />
-            <AccordionItem key={1} id="competence">
-              {({ isExpanded }) => (
-                <>
-                  <h2>
-                    <AccordionButton>
-                      <Text fontWeight="700" flex="1" textAlign="left">
-                        Quelles sont les compétences visées ?
-                      </Text>
-                      {isExpanded ? <Minus color="bluefrance.500" /> : <Plus color="bluefrance.500" />}
-                    </AccordionButton>
-                  </h2>
-                  <AccordionPanel maxH="50%" pb={4} ml={6} mr={3}>
-                    <ul className={style.voeux}>
-                      {competencesDeBase.map((x) => (
-                        <li className={style.voeux} key={x.libelle}>
-                          {x.libelle}
-                        </li>
-                      ))}
-                    </ul>
-                  </AccordionPanel>
-                </>
-              )}
-            </AccordionItem>
-            <hr />
-            <AccordionItem key={2} id="accessibilite">
-              {({ isExpanded }) => (
-                <>
-                  <h2>
-                    <AccordionButton>
-                      <Text fontWeight="700" flex="1" textAlign="left">
-                        À qui ce métier est-il accessible ?
-                      </Text>
-                      {isExpanded ? <Minus color="bluefrance.500" /> : <Plus color="bluefrance.500" />}
-                    </AccordionButton>
-                  </h2>
-                  <AccordionPanel maxH="50%" pb={4}>
-                    <span dangerouslySetInnerHTML={{ __html: accesFormatted }}></span>
-                  </AccordionPanel>
-                </>
-              )}
-            </AccordionItem>
-          </Accordion>
+      <Box border="1px solid #000091" p={5} mb={5}>
+        <Box mb={5}>
+          <Heading fontSize="24px" mb={3}>
+            {appellation}
+          </Heading>
+          <Text fontSize="16px" fontWeight="700">
+            Fiche métier : {libelle}
+          </Text>
+          <Text fontSize="14px">La fiche métier se base sur la classification ROME de Pôle Emploi</Text>
         </Box>
-      </>
+        <Flex alignItems="flex-start" mb={6}>
+          <InfoCircle mr={2} mt={1} color="bluefrance.500" />
+          <Text textAlign="justify">Voici la description visible par les candidats lors de la mise en ligne de l’offre d’emploi en alternance.</Text>
+        </Flex>
+
+        <Accordion defaultIndex={[0]} allowMultiple>
+          <AccordionItem key={0} id="metier">
+            {({ isExpanded }) => (
+              <>
+                <h2>
+                  <AccordionButton>
+                    <Text fontWeight="700" flex="1" textAlign="left">
+                      Description du métier
+                    </Text>
+                    {isExpanded ? <Minus color="bluefrance.500" /> : <Plus color="bluefrance.500" />}
+                  </AccordionButton>
+                </h2>
+                <AccordionPanel pb={4} ml={6} mr={3}>
+                  <ul className={style.voeux}>
+                    {definitionSplitted.map((x) => {
+                      return (
+                        <li className={style.voeux} key={x}>
+                          {x}
+                        </li>
+                      )
+                    })}
+                  </ul>
+                </AccordionPanel>
+              </>
+            )}
+          </AccordionItem>
+          <hr />
+          <AccordionItem key={1} id="competence">
+            {({ isExpanded }) => (
+              <>
+                <h2>
+                  <AccordionButton>
+                    <Text fontWeight="700" flex="1" textAlign="left">
+                      Quelles sont les compétences visées ?
+                    </Text>
+                    {isExpanded ? <Minus color="bluefrance.500" /> : <Plus color="bluefrance.500" />}
+                  </AccordionButton>
+                </h2>
+                <AccordionPanel maxH="50%" pb={4} ml={6} mr={3}>
+                  <ul className={style.voeux}>
+                    {competencesDeBase.map((x) => (
+                      <li className={style.voeux} key={x.libelle}>
+                        {x.libelle}
+                      </li>
+                    ))}
+                  </ul>
+                </AccordionPanel>
+              </>
+            )}
+          </AccordionItem>
+          <hr />
+          <AccordionItem key={2} id="accessibilite">
+            {({ isExpanded }) => (
+              <>
+                <h2>
+                  <AccordionButton>
+                    <Text fontWeight="700" flex="1" textAlign="left">
+                      À qui ce métier est-il accessible ?
+                    </Text>
+                    {isExpanded ? <Minus color="bluefrance.500" /> : <Plus color="bluefrance.500" />}
+                  </AccordionButton>
+                </h2>
+                <AccordionPanel maxH="50%" pb={4}>
+                  <span dangerouslySetInnerHTML={{ __html: accesFormatted }}></span>
+                </AccordionPanel>
+              </>
+            )}
+          </AccordionItem>
+        </Accordion>
+      </Box>
     )
   } else {
     return (
-      <>
-        <Box border="1px solid #000091" p={5}>
-          <Heading fontSize="24px" mb={3}>
-            Dites-nous en plus sur votre besoin en recrutement
-          </Heading>
-          <Flex alignItems="flex-start" mb={6} justify="flex-start">
-            <InfoCircle mr={2} mt={1} color="bluefrance.500" />
-            <Text textAlign="justify">Cela permettra à votre offre d'être visible des candidats intéressés.</Text>
-          </Flex>
-          <Box ml={5}>
-            <Text>Une fois créée, votre offre d’emploi sera immédiatement mise en ligne sur les sites suivants : </Text>
-            <Stack direction={["column", "row"]} spacing={2} align="center" justify="center" mt={3}>
-              <Image src="/images/logo_LBA.svg" alt="" minWidth="150px" width="150px" />
-              <J1S w="100px" h="100px" />
-              <Parcoursup w="220px" h="100px" />
-            </Stack>
-          </Box>
+      <Box border="1px solid #000091" p={5}>
+        <Heading fontSize="24px" mb={3}>
+          Dites-nous en plus sur votre besoin en recrutement
+        </Heading>
+        <Flex alignItems="flex-start" mb={6} justify="flex-start">
+          <InfoCircle mr={2} mt={1} color="bluefrance.500" />
+          <Text textAlign="justify">Cela permettra à votre offre d'être visible des candidats intéressés.</Text>
+        </Flex>
+        <Box ml={5}>
+          <Text>Une fois créée, votre offre d’emploi sera immédiatement mise en ligne sur les sites suivants : </Text>
+          <Stack direction={["column", "row"]} spacing={2} align="center" justify="center" mt={3}>
+            <Image src="/images/logo_LBA.svg" alt="" minWidth="150px" width="150px" />
+            <J1S w="100px" h="100px" />
+            <Parcoursup w="220px" h="100px" />
+          </Stack>
         </Box>
-      </>
+      </Box>
     )
   }
 }
