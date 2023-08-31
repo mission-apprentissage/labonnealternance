@@ -665,7 +665,6 @@ export const sendUserConfirmationEmail = async ({
 }
 
 export const sendEmailConfirmationEntreprise = async (user: IUserRecruteur, recruteur: IRecruiter) => {
-  console.log(user)
   const userStatus = getUserStatus(user.status)
   if (userStatus === ETAT_UTILISATEUR.ERROR || user.is_email_checked) {
     return

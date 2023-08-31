@@ -1,5 +1,5 @@
 import { getFormulaire, updateFormulaire } from "../../../../services/formulaire.service.js"
-import { deactivateUser, updateUser } from "../../../../services/userRecruteur.service.js"
+import { deactivateUser, setUserInError, updateUser } from "../../../../services/userRecruteur.service.js"
 import { logger } from "../../../../common/logger.js"
 import { UserRecruteur } from "../../../../common/model/index.js"
 import { asyncForEach } from "../../../../common/utils/asyncUtils.js"
@@ -36,8 +36,10 @@ export const updateSiretInfosInError = async () => {
         stats.success++
       }
     } catch (err) {
+      const errorMessage = (err && "message" in err && err.message) || err
+      await setUserInError(userRecruteur._id, errorMessage + "")
       logger.error(err)
-      logger.error(`Correction des recruteurs en erreur: userRecruteur id=${_id}, erreur: ${(err && "message" in err && err.message) || err}`)
+      logger.error(`Correction des recruteurs en erreur: userRecruteur id=${_id}, erreur: ${errorMessage}`)
       sentryCaptureException(err)
       stats.failure++
     }
