@@ -113,9 +113,26 @@ export default () => {
     tryCatch(async (req, res) => {
       const history = req.body
       const user = await updateUserValidationHistory(req.params.userId, history)
+      const { email, last_name, first_name, establishment_raison_sociale, opco } = user
 
       // if user is disabled, return the user data directly
       if (history.status === ETAT_UTILISATEUR.DESACTIVE) {
+        // send email to user to notify him his account has been disabled
+        await mailer.sendEmail({
+          to: user.email,
+          subject: "La bonne alternance - compte désactivé",
+          template: mailTemplate["mail-compte-desactive"],
+          data: {
+            images: {
+              logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
+            },
+            last_name,
+            first_name,
+            email,
+            opco,
+            emailSupport: config.publicEmail,
+          },
+        })
         return res.json(user)
       }
 
@@ -149,8 +166,6 @@ export default () => {
 
       // get magiclink url
       const magiclink = `${config.publicUrlEspacePro}/authentification/verification?token=${createMagicLinkToken(user.email)}`
-
-      const { email, last_name, first_name, establishment_raison_sociale } = user
 
       // send welcome email to user
       await mailer.sendEmail({
