@@ -13,9 +13,8 @@ import {
   Text,
   useDisclosure,
   Input,
-  useEffect,
 } from "@chakra-ui/react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { archiveDelegatedFormulaire, archiveFormulaire, updateEntreprise } from "../api"
 import { AUTHTYPE, USER_STATUS } from "../common/contants"
 import useUserHistoryUpdate from "../common/hooks/useUserHistoryUpdate"
