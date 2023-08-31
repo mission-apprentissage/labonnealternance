@@ -4,8 +4,8 @@ import React from "react"
 import briefcaseIcon from "../../public/images/briefcase.svg"
 
 const tagProperties = {
-  color: "pinksoft.600",
-  background: "pinksoft.200",
+  color: "orangeterrebattue.370",
+  background: "orangeterrebattue.925",
 }
 
 const TagOffreEmploi = () => {
