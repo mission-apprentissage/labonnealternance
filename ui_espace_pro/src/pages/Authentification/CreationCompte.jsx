@@ -3,7 +3,7 @@ import { Form, Formik } from "formik"
 import { useContext, useEffect, useState } from "react"
 import { useNavigate, useParams, useSearchParams } from "react-router-dom"
 import * as Yup from "yup"
-import { getCfaInformation, getEntrepriseInformation } from "../../api"
+import { getCfaInformation, getEntrepriseInformation, getEntrepriseOpco } from "../../api"
 import { Section } from "../../common/components/Section"
 import { AUTHTYPE } from "../../common/contants"
 import { SIRETValidation } from "../../common/validation/fieldValidations"
@@ -19,25 +19,25 @@ const CreationCompteForm = ({ type, setQualiopi, setBandeau }) => {
   const { origin } = useParams()
 
   const submitSiret = ({ establishment_siret }, { setSubmitting, setFieldError }) => {
-    const formattedSiret = establishment_siret.replace(/[^0-9]/g, "")
     setBandeau(false)
+    const formattedSiret = establishment_siret.replace(/[^0-9]/g, "")
+
     // validate establishment_siret
     if (type === AUTHTYPE.ENTREPRISE) {
-      getEntrepriseInformation(formattedSiret)
-        .then(({ data }) => {
-          setSubmitting(true)
-          navigate("/creation/detail", { state: { informationSiret: data, type, origin } })
-        })
-        .catch(({ response }) => {
-          const { status } = response
-          if (status < 500) {
-            setFieldError("establishment_siret", response.data.message)
-            setIsCfa(response.data?.isCfa)
-            setSubmitting(false)
+      Promise.all([getEntrepriseOpco(formattedSiret), getEntrepriseInformation(formattedSiret)]).then(([{ data: opcoInfos }, entrepriseData]) => {
+        if (entrepriseData.error) {
+          if (entrepriseData.errorType === "server") {
+            navigate("/creation/detail", { state: { type, origin, informationSiret: { establishment_siret: formattedSiret, ...opcoInfos } } })
           } else {
-            navigate("/creation/detail", { state: { type, origin, informationSiret: { establishment_siret: formattedSiret } } })
+            setFieldError("establishment_siret", entrepriseData.message)
+            setIsCfa(entrepriseData?.isCfa)
+            setSubmitting(false)
           }
-        })
+        } else {
+          setSubmitting(true)
+          navigate("/creation/detail", { state: { informationSiret: { ...entrepriseData, ...opcoInfos }, type, origin } })
+        }
+      })
     } else {
       getCfaInformation(formattedSiret)
         .then(({ data }) => {

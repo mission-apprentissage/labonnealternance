@@ -3,7 +3,7 @@ import { Form, Formik } from "formik"
 import { useContext, useEffect, useState } from "react"
 import { NavLink, useNavigate, useParams, useSearchParams } from "react-router-dom"
 import * as Yup from "yup"
-import { getEntrepriseInformation } from "../../api"
+import { getEntrepriseInformation, getEntrepriseOpco } from "../../api"
 import useAuth from "../../common/hooks/useAuth"
 import { AnimationContainer, CustomInput } from "../../components"
 import { LogoContext } from "../../contextLogo"
@@ -18,28 +18,27 @@ const CreationCompte = () => {
   const [auth] = useAuth()
 
   const submitSiret = ({ establishment_siret }, { setSubmitting, setFieldError }) => {
-    const formattedSiret = establishment_siret.split(" ").join("")
-
-    // validate SIRET
-    getEntrepriseInformation(formattedSiret, { cfa_delegated_siret: auth.cfa_delegated_siret })
-      .then(({ data }) => {
-        setSubmitting(true)
-        navigate("/administration/entreprise/detail", {
-          state: { informationSiret: data },
-        })
-      })
-      .catch(({ response }) => {
-        const { status } = response
-        if (status < 500) {
-          setFieldError("establishment_siret", response.data.message)
-          setIsCfa(response.data?.isCfa)
-          setSubmitting(false)
+    const formattedSiret = establishment_siret.replace(/[^0-9]/g, "")
+    Promise.all([getEntrepriseOpco(formattedSiret), getEntrepriseInformation(formattedSiret, { cfa_delegated_siret: auth.cfa_delegated_siret })]).then(
+      ([{ data: opcoInfos }, entrepriseData]) => {
+        if (entrepriseData.error) {
+          if (entrepriseData.errorType === "server") {
+            navigate("/administration/entreprise/detail", {
+              state: { informationSiret: { establishment_siret: formattedSiret, ...opcoInfos } },
+            })
+          } else {
+            setFieldError("establishment_siret", entrepriseData.message)
+            setIsCfa(entrepriseData?.isCfa)
+            setSubmitting(false)
+          }
         } else {
+          setSubmitting(true)
           navigate("/administration/entreprise/detail", {
-            state: { informationSiret: { establishment_siret: formattedSiret } },
+            state: { informationSiret: { ...entrepriseData, ...opcoInfos } },
           })
         }
-      })
+      }
+    )
   }
 
   return (

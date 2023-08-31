@@ -67,7 +67,7 @@ export default () => {
   router.post(
     "/",
     tryCatch(async (req, res) => {
-      const { userRecruteurId, establishment_siret, email, last_name, first_name, phone } = req.body
+      const { userRecruteurId, establishment_siret, email, last_name, first_name, phone, opco, idcc } = req.body
       const userRecruteurOpt = await getUser({ _id: userRecruteurId })
       if (!userRecruteurOpt) {
         return res.status(400).json({ error: true, message: "Nous n'avons pas trouvé votre compte utilisateur" })
@@ -80,6 +80,8 @@ export default () => {
         siret: establishment_siret,
         cfa_delegated_siret: userRecruteurOpt.establishment_siret,
         origin: userRecruteurOpt.scope,
+        opco,
+        idcc,
       })
       if ("error" in response) {
         const { message } = response

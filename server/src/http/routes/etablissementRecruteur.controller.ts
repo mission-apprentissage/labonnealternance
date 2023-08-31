@@ -14,6 +14,7 @@ import {
   getEntrepriseDataFromSiret,
   getEtablissement,
   getEtablissementFromReferentiel,
+  getOpcoData,
   getOrganismeDeFormationDataFromSiret,
   sendConfirmationEmail,
   validateEtablissementEmail,
@@ -99,6 +100,21 @@ export default () => {
         sentryCaptureException(error)
         res.status(500).json({ error: true, message: "Le service est momentanément indisponible." })
       }
+    })
+  )
+
+  /**
+   * Récupérer les informations d'une entreprise à l'aide de l'API du gouvernement
+   */
+  router.get(
+    "/entreprise/:siret/opco",
+    tryCatch(async (req, res) => {
+      const siret: string | undefined = req.params.siret
+      if (!siret) {
+        return res.status(400).json({ error: true, message: "Le numéro siret est obligatoire." })
+      }
+      const result = await getOpcoData(siret)
+      return res.json(result ?? {})
     })
   )
 

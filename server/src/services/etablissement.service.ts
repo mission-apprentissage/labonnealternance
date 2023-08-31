@@ -232,6 +232,7 @@ export const getValidationUrl = (_id: IRecruiter["_id"]): string => `${config.pu
  * @returns {Promise<void>}
  */
 export const validateEtablissementEmail = async (_id: IUserRecruteur["_id"]): Promise<IUserRecruteur> => UserRecruteur.findByIdAndUpdate(_id, { is_email_checked: true })
+
 /**
  * @description Get the establishment information from the ENTREPRISE API for a given SIRET
  * @param {String} siret
@@ -239,6 +240,7 @@ export const validateEtablissementEmail = async (_id: IUserRecruteur["_id"]): Pr
  */
 export const getEtablissementFromGouv = async (siret: string): Promise<IAPIEtablissement> => {
   try {
+    throw new Error("test")
     const { data } = await axios.get<IAPIEtablissement>(`${config.entreprise.baseUrl}/sirene/etablissements/${encodeURIComponent(siret)}`, {
       params: apiParams,
     })
@@ -428,7 +430,7 @@ export const autoValidateCompany = async (userRecruteur: IUserRecruteur) => {
 
 const errorFactory = (message: string, errorCode?: BusinessErrorCodes) => ({ error: true, message, errorCode })
 
-const getOpcoData = async (siret: string) => {
+export const getOpcoData = async (siret: string) => {
   const siren = siret.substring(0, 9)
   const opcoFromDB = await getOpcoBySirenFromDB(siren)
   if (opcoFromDB) {
@@ -497,11 +499,8 @@ export const getEntrepriseDataFromSiret = async ({ siret, cfa_delegated_siret }:
     }
   }
   const entrepriseData = formatEntrepriseData(result.data)
-  const [geo_coordinates, opcoData] = await Promise.all([
-    getGeoCoordinates(`${entrepriseData.address_detail.acheminement_postal.l4}, ${entrepriseData.address_detail.acheminement_postal.l6}`),
-    getOpcoData(siret),
-  ])
-  return { ...entrepriseData, ...opcoData, geo_coordinates }
+  const geo_coordinates = await getGeoCoordinates(`${entrepriseData.address_detail.acheminement_postal.l4}, ${entrepriseData.address_detail.acheminement_postal.l6}`)
+  return { ...entrepriseData, geo_coordinates }
 }
 
 export const getOrganismeDeFormationDataFromSiret = async (siret: string) => {
@@ -596,6 +595,8 @@ export const entrepriseOnboardingWorkflow = {
     siret,
     cfa_delegated_siret,
     origin,
+    opco,
+    idcc,
   }: {
     siret: string
     last_name: string
@@ -604,6 +605,8 @@ export const entrepriseOnboardingWorkflow = {
     email: string
     cfa_delegated_siret: string
     origin: string
+    opco?: string
+    idcc?: string
   }) => {
     const formatedEmail = email.toLocaleLowerCase()
     let entrepriseData: Partial<EntrepriseData>
@@ -627,6 +630,8 @@ export const entrepriseOnboardingWorkflow = {
       cfa_delegated_siret,
       is_delegated: true,
       origin,
+      opco,
+      idcc,
     })
     return formulaireInfo
   },

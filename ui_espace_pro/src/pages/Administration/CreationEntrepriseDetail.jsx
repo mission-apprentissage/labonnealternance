@@ -31,13 +31,13 @@ const Formulaire = () => {
   let navigate = useNavigate()
   let location = useLocation()
   const { widget } = useContext(WidgetContext)
-  const { establishment_siret } = location.state?.informationSiret
+  const { establishment_siret, opco, idcc } = location.state?.informationSiret
   const toast = useToast()
   const [auth] = useAuth()
 
   const submitForm = (values, { setSubmitting, setFieldError }) => {
     // save info if not trusted from source
-    postFormulaire({ ...values, establishment_siret, userRecruteurId: auth.id })
+    postFormulaire({ ...values, establishment_siret, opco, idcc, userRecruteurId: auth.id })
       .then(({ data }) => {
         setSubmitting(false)
         toast({
