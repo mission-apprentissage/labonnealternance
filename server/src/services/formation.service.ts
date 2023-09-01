@@ -733,8 +733,28 @@ export const getFormationDescriptionQuery = async ({ id }: { id: string }): Prom
  * @param {any} query la requête http
  * @returns {Promise< IApiError | ILbaItem[] >}
  */
-export const getFormationsParRegionQuery = async (query: any): Promise<IApiError | { results: ILbaItem[] }> => {
-  const queryValidationResult = formationsRegionQueryValidator(query)
+export const getFormationsParRegionQuery = async ({
+  romes,
+  departement,
+  region,
+  diploma,
+  romeDomain,
+  caller,
+  options,
+  referer,
+  useMock,
+}: {
+  romes?: string
+  departement?: string
+  region?: string
+  diploma?: string
+  romeDomain?: string
+  caller?: string
+  options: string
+  referer: string
+  useMock?: string
+}): Promise<IApiError | { results: ILbaItem[] }> => {
+  const queryValidationResult = formationsRegionQueryValidator({ romes, departement, region, diploma, romeDomain, caller, referer, useMock })
 
   if ("error" in queryValidationResult) {
     return queryValidationResult
@@ -742,13 +762,13 @@ export const getFormationsParRegionQuery = async (query: any): Promise<IApiError
 
   try {
     const rawEsFormations = await getRegionFormations({
-      romes: query.romes ? query.romes.split(",") : null,
-      region: query.region,
-      departement: query.departement,
-      diploma: query.diploma,
-      romeDomain: query.romeDomain,
-      caller: query.caller,
-      options: query.options ? query.options.split(",") : [],
+      romes: romes ? romes.split(",") : null,
+      region: region,
+      departement: departement,
+      diploma: diploma,
+      romeDomain: romeDomain,
+      caller: caller,
+      options: options ? options.split(",") : [],
     })
 
     const formations = transformFormationsForIdea(rawEsFormations)

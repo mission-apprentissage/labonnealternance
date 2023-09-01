@@ -172,6 +172,7 @@ export default async (components) => {
   app.use("/api/v1/metiers", limiter20PerSecond)
   app.use("/api/v1/jobs", limiter5PerSecond)
   app.use("/api/v1/formations", limiter7PerSecond)
+  app.use("/api/v1/formationsParRegion", limiter5PerSecond)
   //app.use("/api/romelabels", limiter10PerSecond)
 
   RegisterRoutes(app)
@@ -181,7 +182,6 @@ export default async (components) => {
    */
   app.use("/api/version", limiter3PerSecond, version())
   app.use("/api/romelabels", limiter10PerSecond, rome())
-  app.use("/api/v1/formationsParRegion", limiter5PerSecond, formationRegionV1())
   app.use("/api/v1/jobsEtFormations", limiter5PerSecond, jobEtFormationV1())
   app.use("/api/updateLBB", limiter1Per20Second, updateLbaCompany())
   app.use("/api/mail", limiter1Per20Second, sendMail(components))
