@@ -29,7 +29,7 @@ export class FormationsController extends Controller {
   @OperationId("getFormations")
   public async getFormations(
     @Request() request: express.Request,
-    @Query() romes?: string[],
+    @Query() romes?: string,
     @Query() romeDomain?: string,
     @Header() @Hidden() referer?: string,
     @Query() caller?: string,
@@ -37,10 +37,10 @@ export class FormationsController extends Controller {
     @Query() longitude?: string,
     @Query() radius?: string,
     @Query() diploma?: string,
-    @Query() @Hidden() options?: string[],
+    @Query() @Hidden() options?: string,
     @Query() @Hidden() useMock?: string
   ): Promise<IApiError | { results: ILbaItem[] }> {
-    const result = await getFormationsQuery({ romes, longitude, latitude, radius, diploma, romeDomain, caller, options, useMock })
+    const result = await getFormationsQuery({ romes, longitude, latitude, radius, diploma, romeDomain, caller, options, referer, useMock })
 
     if ("error" in result) {
       if (result.error === "wrong_parameters") {

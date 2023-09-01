@@ -581,8 +581,30 @@ const getSchoolName = (formation: Partial<IFormationCatalogue>): string => {
  * @param {any} query requête
  * @returns {Promise<IApiError | { results: ILbaItem[]}}
  */
-export const getFormationsQuery = async ({ romes, longitude, latitude, radius, diploma, romeDomain, caller, options, useMock }): Promise<IApiError | { results: ILbaItem[] }> => {
-  const queryValidationResult = await formationsQueryValidator({ romes, longitude, latitude, radius, diploma, romeDomain, caller, useMock })
+export const getFormationsQuery = async ({
+  romes,
+  longitude,
+  latitude,
+  radius,
+  diploma,
+  romeDomain,
+  caller,
+  options,
+  useMock,
+  referer,
+}: {
+  romes?: string
+  longitude?: string
+  latitude?: string
+  radius?: string
+  diploma?: string
+  romeDomain?: string
+  caller?: string
+  options: string
+  useMock?: string
+  referer: string
+}): Promise<IApiError | { results: ILbaItem[] }> => {
+  const queryValidationResult = await formationsQueryValidator({ romes, longitude, latitude, radius, diploma, romeDomain, caller, referer, useMock })
 
   if ("error" in queryValidationResult) {
     return queryValidationResult
@@ -592,7 +614,7 @@ export const getFormationsQuery = async ({ romes, longitude, latitude, radius, d
     const formations = await getAtLeastSomeFormations({
       romes: romes ? romes.split(",") : null,
       coords: longitude ? [longitude, latitude] : null,
-      radius: radius,
+      radius: parseInt(radius),
       diploma: diploma,
       maxOutLimitFormation: 5,
       romeDomain: romeDomain,
