@@ -79,7 +79,7 @@ const ConnexionCompte = () => {
   )
 }
 
-export default () => {
+export function Connexion() {
   return (
     <AnimationContainer>
       <AuthentificationLayout>
@@ -94,3 +94,5 @@ export default () => {
     </AnimationContainer>
   )
 }
+
+export default Connexion
