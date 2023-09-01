@@ -581,8 +581,8 @@ const getSchoolName = (formation: Partial<IFormationCatalogue>): string => {
  * @param {any} query requête
  * @returns {Promise<IApiError | { results: ILbaItem[]}}
  */
-export const getFormationsQuery = async (query: any): Promise<IApiError | { results: ILbaItem[] }> => {
-  const queryValidationResult = await formationsQueryValidator(query)
+export const getFormationsQuery = async ({ romes, longitude, latitude, radius, diploma, romeDomain, caller, options, useMock }): Promise<IApiError | { results: ILbaItem[] }> => {
+  const queryValidationResult = await formationsQueryValidator({ romes, longitude, latitude, radius, diploma, romeDomain, caller, useMock })
 
   if ("error" in queryValidationResult) {
     return queryValidationResult
@@ -590,23 +590,23 @@ export const getFormationsQuery = async (query: any): Promise<IApiError | { resu
 
   try {
     const formations = await getAtLeastSomeFormations({
-      romes: query.romes ? query.romes.split(",") : null,
-      coords: query.longitude ? [query.longitude, query.latitude] : null,
-      radius: query.radius,
-      diploma: query.diploma,
+      romes: romes ? romes.split(",") : null,
+      coords: longitude ? [longitude, latitude] : null,
+      radius: radius,
+      diploma: diploma,
       maxOutLimitFormation: 5,
-      romeDomain: query.romeDomain,
-      caller: query.caller,
-      useMock: query.useMock,
-      options: query.options ? query.options.split(",") : [],
+      romeDomain: romeDomain,
+      caller: caller,
+      useMock: useMock,
+      options: options ? options.split(",") : [],
     })
 
     return { results: formations }
   } catch (err) {
     console.error("Error ", err, err.message)
     sentryCaptureException(err)
-    if (query.caller) {
-      trackApiCall({ caller: query.caller, api_path: "formationV1", response: "Error" })
+    if (caller) {
+      trackApiCall({ caller, api_path: "formationV1", response: "Error" })
     }
     return { error: "internal_error" }
   }
