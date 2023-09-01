@@ -2,9 +2,9 @@ import { Box, Button, Link } from "@chakra-ui/react"
 import React from "react"
 import { ChevronLeft, ChevronRight } from "../theme/components/icons"
 
-const PageLink = ({ pageNumber, gotoPage, isActive = false }) => {
+const PageLink = ({ pageNumber, onClick, isActive = false }) => {
   return (
-    <Link onClick={() => gotoPage(pageNumber)} alt={`Page ${pageNumber}`} className={`${isActive ? "active" : ""}`}>
+    <Link onClick={() => onClick()} alt={`Page ${pageNumber}`} className={`${isActive ? "active" : ""}`}>
       {pageNumber}
     </Link>
   )
@@ -50,7 +50,7 @@ export function PaginationReactQuery({ pageCount, gotoPage: goToPageIndex, curre
             if (acc.previousPage !== page - 1 && page !== 1) {
               acc.jsx.push(<span key={`span_${page}`}>...</span>)
             }
-            acc.jsx.push(<PageLink key={page} pageNumber={page} gotoPage={() => goToPageIndex(page - 1)} isActive={currentPage === page} />)
+            acc.jsx.push(<PageLink key={page} pageNumber={page} onClick={() => goToPageIndex(page - 1)} isActive={currentPage === page} />)
             acc.previousPage = page
             return acc
           },
