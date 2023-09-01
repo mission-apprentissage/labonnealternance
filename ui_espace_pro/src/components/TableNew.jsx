@@ -9,7 +9,6 @@ import "./search.css"
 
 // Define a default UI for filtering
 function GlobalFilter({ preGlobalFilteredRows, globalFilter, setGlobalFilter }) {
-  const count = preGlobalFilteredRows.length
   const [value, setValue] = React.useState(globalFilter)
   const onChange = useAsyncDebounce((value) => {
     setGlobalFilter(value || undefined)
@@ -38,7 +37,7 @@ function fuzzyTextFilterFn(rows, id, filterValue) {
 // Let the table remove the filter if the string is empty
 fuzzyTextFilterFn.autoRemove = (val) => !val
 
-export default ({ data, columns, description, exportable }) => {
+export function TableNew({ data, columns, description, exportable }) {
   const tableData = useMemo(() => data, [data])
   const tableColumns = useMemo(() => columns, [columns])
 
@@ -63,12 +62,8 @@ export default ({ data, columns, description, exportable }) => {
     getTableBodyProps,
     headerGroups,
     page,
-    canPreviousPage,
-    canNextPage,
     pageCount,
     gotoPage,
-    nextPage,
-    previousPage,
     prepareRow,
     preGlobalFilteredRows,
     setGlobalFilter,
@@ -155,17 +150,10 @@ export default ({ data, columns, description, exportable }) => {
         </Box>
       </Box>
       <Box>
-        <PaginationReactQuery
-          nextPage={nextPage}
-          previousPage={previousPage}
-          gotoPage={gotoPage}
-          canNextPage={canNextPage}
-          canPreviousPage={canPreviousPage}
-          page={page}
-          pageCount={pageCount}
-          currentPage={pageIndex}
-        />
+        <PaginationReactQuery gotoPage={gotoPage} pageCount={pageCount} currentPage={pageIndex} />
       </Box>
     </Box>
   )
 }
+
+export default TableNew
