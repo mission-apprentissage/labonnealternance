@@ -1,30 +1,32 @@
-# [1.79.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.78.0...v1.79.0) (2023-08-30)
-
+# [1.80.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.79.0...v1.80.0) (2023-09-01)
 
 ### Features
 
-* update option and opco logic ([#557](https://github.com/mission-apprentissage/labonnealternance/issues/557)) ([4f1b41b](https://github.com/mission-apprentissage/labonnealternance/commit/4f1b41b5f717a03e1a968e952ed805b23a72ea9b))
+- LBAC-1403 : creation recruteur : fallback SIRET API ([#540](https://github.com/mission-apprentissage/labonnealternance/issues/540)) ([e88f410](https://github.com/mission-apprentissage/labonnealternance/commit/e88f410c0bb5b591a912a9fcfc262e1e46961d82))
+
+# [1.79.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.78.0...v1.79.0) (2023-08-30)
+
+### Features
+
+- update option and opco logic ([#557](https://github.com/mission-apprentissage/labonnealternance/issues/557)) ([4f1b41b](https://github.com/mission-apprentissage/labonnealternance/commit/4f1b41b5f717a03e1a968e952ed805b23a72ea9b))
 
 # [1.78.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.77.4...v1.78.0) (2023-08-30)
 
-
 ### Features
 
-* suppression événements formation consultées sur catalogue ([#555](https://github.com/mission-apprentissage/labonnealternance/issues/555)) ([b5ae11e](https://github.com/mission-apprentissage/labonnealternance/commit/b5ae11e37675b510b4a49b83a96d76dd28d791bd))
+- suppression événements formation consultées sur catalogue ([#555](https://github.com/mission-apprentissage/labonnealternance/issues/555)) ([b5ae11e](https://github.com/mission-apprentissage/labonnealternance/commit/b5ae11e37675b510b4a49b83a96d76dd28d791bd))
 
 ## [1.77.4](https://github.com/mission-apprentissage/labonnealternance/compare/v1.77.3...v1.77.4) (2023-08-30)
 
-
 ### Bug Fixes
 
-* only one init ([#554](https://github.com/mission-apprentissage/labonnealternance/issues/554)) ([0b424cd](https://github.com/mission-apprentissage/labonnealternance/commit/0b424cdbea4f0a209f2a57c43b7593262f7897b6))
+- only one init ([#554](https://github.com/mission-apprentissage/labonnealternance/issues/554)) ([0b424cd](https://github.com/mission-apprentissage/labonnealternance/commit/0b424cdbea4f0a209f2a57c43b7593262f7897b6))
 
 ## [1.77.3](https://github.com/mission-apprentissage/labonnealternance/compare/v1.77.2...v1.77.3) (2023-08-29)
 
-
 ### Bug Fixes
 
-* variable name in relance script ([3891e36](https://github.com/mission-apprentissage/labonnealternance/commit/3891e360e927b6e22163116c9e24885c8053e210))
+- variable name in relance script ([3891e36](https://github.com/mission-apprentissage/labonnealternance/commit/3891e360e927b6e22163116c9e24885c8053e210))
 
 ## [1.77.2](https://github.com/mission-apprentissage/labonnealternance/compare/v1.77.1...v1.77.2) (2023-08-23)
 
