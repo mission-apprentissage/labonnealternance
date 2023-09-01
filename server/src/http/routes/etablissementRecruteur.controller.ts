@@ -146,7 +146,7 @@ export default () => {
             return res.status(400).json({ error: true, reason: message })
         }
       }
-      if (response.is_qualiopi) {
+      if (!response.is_qualiopi) {
         return res.status(400).json({
           data: response,
           error: true,
