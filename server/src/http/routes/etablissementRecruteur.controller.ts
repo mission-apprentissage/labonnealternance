@@ -222,9 +222,9 @@ export default () => {
             return res.json({ user: newCfa })
           }
           if (isEmailFromPrivateCompany(formatedEmail)) {
-            const domains = getAllDomainsFromEmailList(referentiel.contacts)
+            const domains = getAllDomainsFromEmailList(referentiel.contacts.map(({ email }) => email))
             const userEmailDomain = getEmailDomain(formatedEmail)
-            if (domains.includes(userEmailDomain)) {
+            if (userEmailDomain && domains.includes(userEmailDomain)) {
               // Validation automatique de l'utilisateur
               newCfa = await autoValidateUser(newCfa._id)
               const { email, _id, last_name, first_name } = newCfa

@@ -2,9 +2,6 @@ import mailController from "company-email-validator"
 
 export const getEmailDomain = (email: string) => {
   const domain = email.split("@").at(1)
-  if (!domain) {
-    throw new Error(`unexpected: no domain on email ${email}`)
-  }
   return domain
 }
 
@@ -21,12 +18,20 @@ export const isUserMailExistInReferentiel = (contactList, userEmail): boolean =>
  * @param {object[]} contactList
  * @returns {string[]}
  */
-export const getAllDomainsFromEmailList = (contactList) => {
-  return [...new Set(contactList.flatMap((email) => (email ? [getEmailDomain(email)] : [])))]
+export const getAllDomainsFromEmailList = (contactList: string[]) => {
+  return [
+    ...new Set(
+      contactList.flatMap((email) => {
+        const domain = email && getEmailDomain(email)
+        return domain ? [domain] : []
+      })
+    ),
+  ]
 }
 
 export const isEmailFromPrivateCompany = (userEmail: string) => mailController.isCompanyEmail(userEmail)
 
 export const isEmailSameDomain = (email1: string, email2: string) => {
-  return getEmailDomain(email2) === getEmailDomain(email1)
+  const domain1 = getEmailDomain(email1)
+  return domain1 && getEmailDomain(email2) === domain1
 }
