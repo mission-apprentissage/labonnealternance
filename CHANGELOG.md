@@ -28,101 +28,87 @@
 
 ## [1.77.2](https://github.com/mission-apprentissage/labonnealternance/compare/v1.77.1...v1.77.2) (2023-08-23)
 
-
 ### Bug Fixes
 
-* param naming ([cd2aae0](https://github.com/mission-apprentissage/labonnealternance/commit/cd2aae0e24d52994d821662a750d2e8170dfb0f1))
+- param naming ([cd2aae0](https://github.com/mission-apprentissage/labonnealternance/commit/cd2aae0e24d52994d821662a750d2e8170dfb0f1))
 
 ## [1.77.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.77.0...v1.77.1) (2023-08-23)
 
-
 ### Bug Fixes
 
-* missing comma ([2c966d9](https://github.com/mission-apprentissage/labonnealternance/commit/2c966d9114437271ad99dd9bc8e2c63e6804f2c8))
+- missing comma ([2c966d9](https://github.com/mission-apprentissage/labonnealternance/commit/2c966d9114437271ad99dd9bc8e2c63e6804f2c8))
 
 # [1.77.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.76.0...v1.77.0) (2023-08-23)
 
-
 ### Features
 
-* add missing params ([ce8db28](https://github.com/mission-apprentissage/labonnealternance/commit/ce8db287e7c3ff5388a3b9f44be21a10d463bff0))
+- add missing params ([ce8db28](https://github.com/mission-apprentissage/labonnealternance/commit/ce8db287e7c3ff5388a3b9f44be21a10d463bff0))
 
 # [1.76.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.75.4...v1.76.0) (2023-08-23)
 
-
 ### Features
 
-* LBAC-1462 ajout fichier source alternatif ([#546](https://github.com/mission-apprentissage/labonnealternance/issues/546)) ([9cc86fe](https://github.com/mission-apprentissage/labonnealternance/commit/9cc86fed51422ca54b95361461cd53c0c242897f))
+- LBAC-1462 ajout fichier source alternatif ([#546](https://github.com/mission-apprentissage/labonnealternance/issues/546)) ([9cc86fe](https://github.com/mission-apprentissage/labonnealternance/commit/9cc86fed51422ca54b95361461cd53c0c242897f))
 
 ## [1.75.4](https://github.com/mission-apprentissage/labonnealternance/compare/v1.75.3...v1.75.4) (2023-08-23)
 
-
 ### Bug Fixes
 
-* 1368: Opco: appel sequentiel DB puis cfa doc ([#547](https://github.com/mission-apprentissage/labonnealternance/issues/547)) ([89f511f](https://github.com/mission-apprentissage/labonnealternance/commit/89f511f3129809a7d26ae6d77510511603b7f612))
+- 1368: Opco: appel sequentiel DB puis cfa doc ([#547](https://github.com/mission-apprentissage/labonnealternance/issues/547)) ([89f511f](https://github.com/mission-apprentissage/labonnealternance/commit/89f511f3129809a7d26ae6d77510511603b7f612))
 
 ## [1.75.3](https://github.com/mission-apprentissage/labonnealternance/compare/v1.75.2...v1.75.3) (2023-08-22)
 
-
 ### Bug Fixes
 
-* job api origin prefix is should be shortname ([9f210a9](https://github.com/mission-apprentissage/labonnealternance/commit/9f210a940b0e1d06587150445285cc73dddac989))
+- job api origin prefix is should be shortname ([9f210a9](https://github.com/mission-apprentissage/labonnealternance/commit/9f210a940b0e1d06587150445285cc73dddac989))
 
 ## [1.75.2](https://github.com/mission-apprentissage/labonnealternance/compare/v1.75.1...v1.75.2) (2023-08-22)
 
-
 ### Bug Fixes
 
-* save opco if unkwnown ([dc9b17a](https://github.com/mission-apprentissage/labonnealternance/commit/dc9b17a31730ab89769a3966a233c31df4a51261))
+- save opco if unkwnown ([dc9b17a](https://github.com/mission-apprentissage/labonnealternance/commit/dc9b17a31730ab89769a3966a233c31df4a51261))
 
 ## [1.75.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.75.0...v1.75.1) (2023-08-22)
 
-
 ### Bug Fixes
 
-* LBAC-1399 added limit larger than default (10) ([#544](https://github.com/mission-apprentissage/labonnealternance/issues/544)) ([6607e50](https://github.com/mission-apprentissage/labonnealternance/commit/6607e504c4dc657b0ceb31fa3fe83a2c803d6224))
+- LBAC-1399 added limit larger than default (10) ([#544](https://github.com/mission-apprentissage/labonnealternance/issues/544)) ([6607e50](https://github.com/mission-apprentissage/labonnealternance/commit/6607e504c4dc657b0ceb31fa3fe83a2c803d6224))
 
 # [1.75.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.74.0...v1.75.0) (2023-08-22)
 
-
 ### Features
 
-* add missing job param ([ff01a22](https://github.com/mission-apprentissage/labonnealternance/commit/ff01a2271fb7269c940cb2fac5091effdc78b388))
+- add missing job param ([ff01a22](https://github.com/mission-apprentissage/labonnealternance/commit/ff01a2271fb7269c940cb2fac5091effdc78b388))
 
 # [1.74.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.73.1...v1.74.0) (2023-08-21)
 
-
 ### Features
 
-* update logic to fill new fields ([#545](https://github.com/mission-apprentissage/labonnealternance/issues/545)) ([b91db11](https://github.com/mission-apprentissage/labonnealternance/commit/b91db11f8f2645dc41727e17f4e652c94c209029))
+- update logic to fill new fields ([#545](https://github.com/mission-apprentissage/labonnealternance/issues/545)) ([b91db11](https://github.com/mission-apprentissage/labonnealternance/commit/b91db11f8f2645dc41727e17f4e652c94c209029))
 
 ## [1.73.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.73.0...v1.73.1) (2023-08-21)
 
-
 ### Bug Fixes
 
-* LBAC-1463 bouton "voir plus de résultats" cassé ([#543](https://github.com/mission-apprentissage/labonnealternance/issues/543)) ([ee72dba](https://github.com/mission-apprentissage/labonnealternance/commit/ee72dba1d7a8a9f2d286cd6332c65638b5b47324))
+- LBAC-1463 bouton "voir plus de résultats" cassé ([#543](https://github.com/mission-apprentissage/labonnealternance/issues/543)) ([ee72dba](https://github.com/mission-apprentissage/labonnealternance/commit/ee72dba1d7a8a9f2d286cd6332c65638b5b47324))
 
 # [1.73.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.72.0...v1.73.0) (2023-08-17)
 
-
 ### Features
 
-* LBAC-1452 Autoriser le debug matomo ([#539](https://github.com/mission-apprentissage/labonnealternance/issues/539)) ([dde6657](https://github.com/mission-apprentissage/labonnealternance/commit/dde665756cb477504b18cafa00e6e77ef8036ca2))
+- LBAC-1452 Autoriser le debug matomo ([#539](https://github.com/mission-apprentissage/labonnealternance/issues/539)) ([dde6657](https://github.com/mission-apprentissage/labonnealternance/commit/dde665756cb477504b18cafa00e6e77ef8036ca2))
 
 # [1.72.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.71.0...v1.72.0) (2023-08-16)
 
-
 ### Features
 
-* move mongodb container to override (⚠️ TO MERGE WHEN MIGRATING DB)  ([#473](https://github.com/mission-apprentissage/labonnealternance/issues/473)) ([553da4c](https://github.com/mission-apprentissage/labonnealternance/commit/553da4cc9e137a5017699f1e9b11f40922e5f131))
+- move mongodb container to override (⚠️ TO MERGE WHEN MIGRATING DB) ([#473](https://github.com/mission-apprentissage/labonnealternance/issues/473)) ([553da4c](https://github.com/mission-apprentissage/labonnealternance/commit/553da4cc9e137a5017699f1e9b11f40922e5f131))
 
 # [1.71.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.70.0...v1.71.0) (2023-08-16)
 
-
 ### Features
 
-* lbac 1026 : home page : ajout des modules didask ([#536](https://github.com/mission-apprentissage/labonnealternance/issues/536)) ([d08f1c4](https://github.com/mission-apprentissage/labonnealternance/commit/d08f1c483dbfc2ac39314ecf58ccc29af235f47e))
+- lbac 1026 : home page : ajout des modules didask ([#536](https://github.com/mission-apprentissage/labonnealternance/issues/536)) ([d08f1c4](https://github.com/mission-apprentissage/labonnealternance/commit/d08f1c483dbfc2ac39314ecf58ccc29af235f47e))
 
 # [1.70.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.69.0...v1.70.0) (2023-08-14)
 

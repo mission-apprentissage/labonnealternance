@@ -2,17 +2,17 @@ export const POURVUE = "Pourvue"
 export const ANNULEE = "Annulée"
 export const ACTIVE = "Active"
 
-export const JOB_STATUS = {
-  ACTIVE: "Active",
-  POURVUE: "Pourvue",
-  ANNULEE: "Annulée",
-  EN_ATTENTE: "En attente",
+export enum JOB_STATUS {
+  ACTIVE = "Active",
+  POURVUE = "Pourvue",
+  ANNULEE = "Annulée",
+  EN_ATTENTE = "En attente",
 }
 
-export const RECRUITER_STATUS = {
-  ACTIF: "Actif",
-  ARCHIVE: "Archivé",
-  EN_ATTENTE_VALIDATION: "En attente de validation",
+export enum RECRUITER_STATUS {
+  ACTIF = "Actif",
+  ARCHIVE = "Archivé",
+  EN_ATTENTE_VALIDATION = "En attente de validation",
 }
 
 export const KEY_GENERATOR_PARAMS = ({ length, symbols, numbers }) => {
@@ -27,15 +27,16 @@ export const KEY_GENERATOR_PARAMS = ({ length, symbols, numbers }) => {
     exclude: '!"_%£$€*¨^=+~ß(){}[]§;,./:`@#&|<>?"',
   }
 }
-export const VALIDATION_UTILISATEUR = {
-  AUTO: "AUTOMATIQUE",
-  MANUAL: "MANUELLE",
+export enum VALIDATION_UTILISATEUR {
+  AUTO = "AUTOMATIQUE",
+  MANUAL = "MANUELLE",
 }
 export const ENTREPRISE_DELEGATION = "ENTREPRISE_DELEGATION"
-export const ETAT_UTILISATEUR = {
-  VALIDE: "VALIDÉ",
-  DESACTIVE: "DESACTIVÉ",
-  ATTENTE: "EN ATTENTE DE VALIDATION",
+export enum ETAT_UTILISATEUR {
+  VALIDE = "VALIDÉ",
+  DESACTIVE = "DESACTIVÉ",
+  ATTENTE = "EN ATTENTE DE VALIDATION",
+  ERROR = "ERROR",
 }
 export const ENTREPRISE = "ENTREPRISE"
 export const CFA = "CFA"
@@ -105,4 +106,9 @@ export const ROLES = {
   candidat: "candidat",
   cfa: "cfa",
   administrator: "administrator",
+}
+
+export enum BusinessErrorCodes {
+  IS_CFA = "IS_CFA",
+  ALREADY_EXISTS = "ALREADY_EXISTS",
 }

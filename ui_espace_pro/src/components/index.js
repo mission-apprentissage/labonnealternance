@@ -26,7 +26,6 @@ import MailActionsOnOffre from "./MailActionsOnOffre"
 import MatchaLbaOverlay from "./MatchaLbaOverlay"
 import Pagination from "./Pagination"
 import PaginationReactQuery from "./PaginationReactQuery"
-import SelectionManuelleOcpo from "./SelectionManuelleOcpo"
 import Table from "./Table"
 import TableNew from "./TableNew"
 import UserValidationHistory from "./UserValidationHistory"
@@ -55,7 +54,6 @@ export {
   Table,
   InfoPopover,
   MatchaLbaOverlay,
-  SelectionManuelleOcpo,
   InformationOpco,
   TableNew,
   PaginationReactQuery,

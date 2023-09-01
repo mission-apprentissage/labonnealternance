@@ -1,13 +1,12 @@
-import _ from "lodash-es"
+/* eslint-disable no-use-before-define */
+import * as _ from "lodash-es"
 import { matchSorter } from "match-sorter"
 import { getElasticInstance } from "../common/esClient/index.js"
 import { logger } from "../common/logger.js"
 import { sentryCaptureException } from "../common/utils/sentryUtils.js"
 import { mockedLabelsAndRomes } from "../mocks/labelsAndRomes-mock.js"
 import { getRomesFromCfd, getRomesFromSiret } from "../services/catalogue.service.js"
-import { IAppellationRome } from "./metiers.service.types.js"
-import { IAppellationsRomes } from "./metiers.service.types.js"
-import { IMetierEnrichi, IMetiers, IMetiersEnrichis } from "./metiers.service.types.js"
+import { IAppellationsRomes, IMetierEnrichi, IMetiers, IMetiersEnrichis } from "./metiers.service.types.js"
 
 /**
  * Retourne un ensemble de métiers et/ou diplômes et leurs codes romes et rncps associés en fonction de terme de recherches
@@ -98,8 +97,8 @@ const getMultiMatchTermForDiploma = (term) => {
 /**
  * retourne une liste de métiers avec leurs codes romes et codes RNCPs associés. le retour respecte strictement les critères
  * @param {string} title : un préfixe, un mot ou un ensemble de préfixes ou mots sur lesquels fonder une recherche de métiers
- * @param {undefined | string[]} romes : un tableau optionnel de codes ROME pour lesquels limiter la recherche
- * @param {undefined | string[]} rncps: un tableau optionnel de codes RNCP pour lesquels limiter la recherche
+ * @param {undefined | string[]} romes : un tableau optionnel de codes ROME pour lesquels limiter la recherche
+ * @param {undefined | string[]} rncps: un tableau optionnel de codes RNCP pour lesquels limiter la recherche
  * @returns {Promise<IMetiersEnrichis>}
  */
 export const getMetiers = async ({ title = null, romes = null, rncps = null }: { title: string; romes?: string; rncps?: string }): Promise<IMetiersEnrichis> => {

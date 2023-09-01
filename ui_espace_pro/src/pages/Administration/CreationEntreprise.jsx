@@ -1,37 +1,44 @@
 import { Alert, AlertIcon, Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, Button, Container, Flex, Heading, Link, SimpleGrid, Text, useBreakpointValue } from "@chakra-ui/react"
 import { Form, Formik } from "formik"
-import { useContext, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { NavLink, useNavigate, useParams, useSearchParams } from "react-router-dom"
 import * as Yup from "yup"
-import { getEntrepriseInformation } from "../../api"
+import { getEntrepriseInformation, getEntrepriseOpco } from "../../api"
 import useAuth from "../../common/hooks/useAuth"
 import { AnimationContainer, CustomInput } from "../../components"
 import { LogoContext } from "../../contextLogo"
 import { WidgetContext } from "../../contextWidget"
 import { InfoCircle, SearchLine } from "../../theme/components/icons"
+import { SIRETValidation } from "../../common/validation/fieldValidations"
 
-const CreationCompte = ({ type }) => {
+const CreationCompte = () => {
   const [isCfa, setIsCfa] = useState(false)
   const buttonSize = useBreakpointValue(["sm", "md"])
   const navigate = useNavigate()
   const [auth] = useAuth()
 
   const submitSiret = ({ establishment_siret }, { setSubmitting, setFieldError }) => {
-    const formattedSiret = establishment_siret.split(" ").join("")
-
-    // validate SIRET
-    getEntrepriseInformation(formattedSiret, { fromDashboardCfa: true, cfa_delegated_siret: auth.cfa_delegated_siret })
-      .then(({ data }) => {
-        setSubmitting(true)
-        navigate("/administration/entreprise/detail", {
-          state: { informationSiret: data },
-        })
-      })
-      .catch(({ response }) => {
-        setFieldError("establishment_siret", response.data.message)
-        setIsCfa(response.data?.isCfa)
-        setSubmitting(false)
-      })
+    const formattedSiret = establishment_siret.replace(/[^0-9]/g, "")
+    Promise.all([getEntrepriseOpco(formattedSiret), getEntrepriseInformation(formattedSiret, { cfa_delegated_siret: auth.cfa_delegated_siret })]).then(
+      ([{ data: opcoInfos }, entrepriseData]) => {
+        if (entrepriseData.error) {
+          if (entrepriseData.errorType === "server") {
+            navigate("/administration/entreprise/detail", {
+              state: { informationSiret: { establishment_siret: formattedSiret, ...opcoInfos } },
+            })
+          } else {
+            setFieldError("establishment_siret", entrepriseData.message)
+            setIsCfa(entrepriseData?.isCfa)
+            setSubmitting(false)
+          }
+        } else {
+          setSubmitting(true)
+          navigate("/administration/entreprise/detail", {
+            state: { informationSiret: { ...entrepriseData, ...opcoInfos } },
+          })
+        }
+      }
+    )
   }
 
   return (
@@ -39,12 +46,7 @@ const CreationCompte = ({ type }) => {
       validateOnMount
       initialValues={{ establishment_siret: undefined }}
       validationSchema={Yup.object().shape({
-        establishment_siret: Yup.string()
-          .transform((value) => value.split(" ").join(""))
-          .matches(/^[0-9]+$/, "Le siret est composé uniquement de chiffres")
-          .min(14, "le siret est sur 14 chiffres")
-          .max(14, "le siret est sur 14 chiffres")
-          .required("champ obligatoire"),
+        establishment_siret: SIRETValidation().required("champ obligatoire"),
       })}
       onSubmit={submitSiret}
     >
@@ -111,15 +113,15 @@ const InformationSiret = () => (
   </Box>
 )
 
-export default ({ type, widget, administration }) => {
-  const { setWidget, widget: wid } = useContext(WidgetContext)
+const CreationEntreprise = ({ type, widget }) => {
+  const { setWidget } = useContext(WidgetContext)
   const { setOrganisation } = useContext(LogoContext)
   const params = useParams()
   const [searchParams] = useSearchParams()
 
   let mobile = searchParams.get("mobile") === "true" ? true : false
 
-  useState(() => {
+  useEffect(() => {
     if (widget) {
       setWidget((prev) => ({ ...prev, isWidget: true, mobile: mobile ?? false }))
       setOrganisation(params.origine ?? "matcha")
@@ -145,7 +147,7 @@ export default ({ type, widget, administration }) => {
               Merci de renseigner le SIRET de votre entreprise partenaire afin de l'identifier.
             </Text>
             <Box mt={4}>
-              <CreationCompte type={type} />
+              <CreationCompte />
             </Box>
           </Box>
           <Box>
@@ -156,3 +158,5 @@ export default ({ type, widget, administration }) => {
     </AnimationContainer>
   )
 }
+
+export default CreationEntreprise

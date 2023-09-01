@@ -7,8 +7,6 @@ import {
   Box,
   Button,
   Flex,
-  FormControl,
-  FormLabel,
   Heading,
   Modal,
   ModalBody,
@@ -16,8 +14,6 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  Radio,
-  RadioGroup,
   Stack,
   Text,
 } from "@chakra-ui/react"
@@ -27,7 +23,7 @@ import * as Yup from "yup"
 import { CustomInput } from "../../components"
 import { ArrowRightLine, Close } from "../../theme/components/icons"
 
-export default (props) => {
+const AjouterUtilisateur = (props) => {
   let { isOpen, onClose, handleSave } = props
   const initialRef = useRef()
   const finalRef = useRef()
@@ -142,3 +138,5 @@ export default (props) => {
     </Formik>
   )
 }
+
+export default AjouterUtilisateur

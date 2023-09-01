@@ -1,22 +1,22 @@
 import { pick } from "lodash-es"
 import moment from "moment"
+import { Filter } from "mongodb"
+import { ModelUpdateOptions, UpdateQuery } from "mongoose"
 import { mailTemplate } from "../assets/index.js"
-import { ETAT_UTILISATEUR, ACTIVE, RECRUITER_STATUS, JOB_STATUS } from "./constant.service.js"
-import dayjs from "./dayjs.service.js"
 import { getElasticInstance } from "../common/esClient/index.js"
-import mailer from "./mailer.service.js"
 import { Recruiter, UnsubscribeOF } from "../common/model/index.js"
-import { IRecruiter } from "../common/model/schema/recruiter/recruiter.types.js"
 import { IJobs } from "../common/model/schema/jobs/jobs.types.js"
+import { IRecruiter } from "../common/model/schema/recruiter/recruiter.types.js"
 import { IUserRecruteur } from "../common/model/schema/userRecruteur/userRecruteur.types.js"
 import { asyncForEach } from "../common/utils/asyncUtils.js"
 import config from "../config.js"
 import { getCatalogueEtablissements, getCatalogueFormations } from "./catalogue.service.js"
-import { getEtablissement, getValidationUrl } from "./etablissement.service.js"
-import { ModelUpdateOptions, UpdateQuery } from "mongoose"
-import { Filter } from "mongodb"
-import { getUser, getUserValidationState } from "./userRecruteur.service.js"
+import { ACTIVE, ETAT_UTILISATEUR, JOB_STATUS, RECRUITER_STATUS } from "./constant.service.js"
+import dayjs from "./dayjs.service.js"
+import { getEtablissement, sendEmailConfirmationEntreprise } from "./etablissement.service.js"
 import { ILbaJobEsResult } from "./lbajob.service.types.js"
+import mailer from "./mailer.service.js"
+import { getUser, getUserStatus } from "./userRecruteur.service.js"
 
 const esClient = getElasticInstance()
 
@@ -26,7 +26,7 @@ interface IFormulaireExtended extends IRecruiter {
   entreprise_localite: string
 }
 
-interface IOffreExtended extends IJobs {
+export interface IOffreExtended extends IJobs {
   candidatures: number
   pourvue: string
   supprimer: string
@@ -241,21 +241,19 @@ export const getFormulaires = async (query: Filter<IRecruiter>, select: object, 
  * @returns {Promise<IRecruiter>}
  */
 export const createJob = async ({ job, id }: { job: Partial<IOffreExtended>; id: IUserRecruteur["establishment_id"] }): Promise<IRecruiter> => {
-  let isUserAwaiting = false
   // get user data
   const user = await getUser({ establishment_id: id })
+  const userStatus: ETAT_UTILISATEUR | null = user ? getUserStatus(user.status) : null
+  const isUserAwaiting = userStatus !== ETAT_UTILISATEUR.VALIDE
   // get user activation state if not managed by a CFA
-  if (user) {
-    isUserAwaiting = getUserValidationState(user.status) === ETAT_UTILISATEUR.ATTENTE
+  if (user && isUserAwaiting) {
     // upon user creation, if user is awaiting validation, update job status to "En attente"
-    if (isUserAwaiting) {
-      job.job_status = "En attente"
-    }
+    job.job_status = JOB_STATUS.EN_ATTENTE
   }
   // insert job
   const updatedFormulaire = await createOffre(id, job)
 
-  const { email, establishment_raison_sociale, first_name, last_name, is_delegated, cfa_delegated_siret, jobs } = updatedFormulaire
+  const { is_delegated, cfa_delegated_siret, jobs } = updatedFormulaire
 
   job._id = updatedFormulaire.jobs.filter((x) => x.rome_label === job.rome_label)[0]._id
 
@@ -264,52 +262,13 @@ export const createJob = async ({ job, id }: { job: Partial<IOffreExtended>; id:
 
   // if first offer creation for an Entreprise, send specific mail
   if (jobs.length === 1 && is_delegated === false) {
-    // Get user account validation link
-    const url = getValidationUrl(user._id)
-
-    await mailer.sendEmail({
-      to: email,
-      subject: "Confirmez votre adresse mail",
-      template: mailTemplate["mail-nouvelle-offre-depot-simplifie"],
-      data: {
-        images: {
-          logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
-        },
-        nom: user.last_name,
-        prenom: user.first_name,
-        email: user.email,
-        confirmation_url: url,
-        offre: pick(job, ["rome_appellation_label", "job_start_date", "type", "job_level_label"]),
-        isUserAwaiting,
-      },
-    })
-
+    await sendEmailConfirmationEntreprise(user, updatedFormulaire)
     return updatedFormulaire
   }
 
   // get CFA informations if formulaire is handled by a CFA
   const contactCFA = is_delegated && (await getUser({ establishment_siret: cfa_delegated_siret }))
-
-  // Send mail with action links to manage offers
-  await mailer.sendEmail({
-    to: is_delegated ? contactCFA.email : email,
-    subject: is_delegated ? `Votre offre d'alternance pour ${establishment_raison_sociale} est publiée` : `Votre offre d'alternance est publiée`,
-    template: mailTemplate["mail-nouvelle-offre"],
-    data: {
-      images: {
-        logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
-      },
-      nom: is_delegated ? contactCFA.last_name : last_name,
-      prenom: is_delegated ? contactCFA.first_name : first_name,
-      raison_sociale: establishment_raison_sociale,
-      mandataire: updatedFormulaire.is_delegated,
-      offre: pick(job, ["rome_appellation_label", "job_start_date", "type", "job_level_label"]),
-      lba_url:
-        config.env !== "recette"
-          ? `https://labonnealternance.apprentissage.beta.gouv.fr/recherche-apprentissage?&display=list&page=fiche&type=matcha&itemId=${job._id}`
-          : `https://labonnealternance-recette.apprentissage.beta.gouv.fr/recherche-apprentissage?&display=list&page=fiche&type=matcha&itemId=${job._id}`,
-    },
-  })
+  await sendMailNouvelleOffre(updatedFormulaire, job, contactCFA)
 
   return updatedFormulaire
 }
@@ -354,7 +313,7 @@ export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }:
     delegations.push({ siret_code, email })
 
     if (userState.status === ETAT_UTILISATEUR.VALIDE) {
-      await sendCFADelegationMail(email, offre, offreDocument, siret_code)
+      await sendDelegationMailToCFA(email, offre, offreDocument, siret_code)
     }
   })
 
@@ -389,7 +348,8 @@ export const getFormulaire = async (query: Filter<IRecruiter>): Promise<IRecruit
  * @param {IRecruiter} payload
  * @returns {Promise<IRecruiter>}
  */
-export const createFormulaire = async (payload: IRecruiter): Promise<IRecruiter> => await Recruiter.create(payload)
+export const createFormulaire = async (payload: Partial<Omit<IRecruiter, "_id" | "establishment_id" | "createdAt" | "updatedAt">>): Promise<IRecruiter> =>
+  await Recruiter.create(payload)
 
 /**
  * @description Remove formulaire by id
@@ -458,10 +418,10 @@ export const archiveDelegatedFormulaire = async (siret: IUserRecruteur["establis
   if (!formulaires.length) return
 
   await asyncForEach(formulaires, async (form: IRecruiter) => {
-    form.status = "Archivé"
+    form.status = RECRUITER_STATUS.ARCHIVE
 
-    form.jobs.map((job) => {
-      job.job_status = "Annulée"
+    form.jobs.forEach((job) => {
+      job.job_status = JOB_STATUS.ANNULEE
     })
 
     await Recruiter.findByIdAndUpdate(form._id, form)
@@ -475,7 +435,9 @@ export const archiveDelegatedFormulaire = async (siret: IUserRecruteur["establis
  * @param {IJobs["_id"]} id
  * @returns {Promise<IFormulaireExtended>}
  */
-export const getOffre = async (id: IJobs["_id"]): Promise<IFormulaireExtended> => await Recruiter.findOne({ "jobs._id": id }).lean()
+export async function getOffre(id: IJobs["_id"]): Promise<IFormulaireExtended> {
+  return Recruiter.findOne({ "jobs._id": id }).lean()
+}
 
 /**
  * @description Create job offer on existing formulaire
@@ -484,8 +446,9 @@ export const getOffre = async (id: IJobs["_id"]): Promise<IFormulaireExtended> =
  * @param {ModelUpdateOptions} [options={new:true}]
  * @returns {Promise<IRecruiter>}
  */
-export const createOffre = async (id: IRecruiter["establishment_id"], payload: UpdateQuery<IJobs>, options: ModelUpdateOptions = { new: true }): Promise<IRecruiter> =>
-  await Recruiter.findOneAndUpdate({ establishment_id: id }, { $push: { jobs: payload } }, options)
+export async function createOffre(id: IRecruiter["establishment_id"], payload: UpdateQuery<IJobs>, options: ModelUpdateOptions = { new: true }): Promise<IRecruiter> {
+  return Recruiter.findOneAndUpdate({ establishment_id: id }, { $push: { jobs: payload } }, options)
+}
 
 /**
  * @description Update existing job offer
@@ -493,8 +456,8 @@ export const createOffre = async (id: IRecruiter["establishment_id"], payload: U
  * @param {object} payload
  * @returns {Promise<IRecruiter>}
  */
-export const updateOffre = async (id: IJobs["_id"], payload: UpdateQuery<IJobs>, options: ModelUpdateOptions = { new: true }): Promise<IRecruiter> =>
-  await Recruiter.findOneAndUpdate(
+export async function updateOffre(id: IJobs["_id"], payload: UpdateQuery<IJobs>, options: ModelUpdateOptions = { new: true }): Promise<IRecruiter> {
+  return Recruiter.findOneAndUpdate(
     { "jobs._id": id },
     {
       $set: {
@@ -503,6 +466,7 @@ export const updateOffre = async (id: IJobs["_id"], payload: UpdateQuery<IJobs>,
     },
     options
   )
+}
 
 /**
  * @description Increment field in existing job offer
@@ -609,7 +573,7 @@ export const getJob = async (id: IJobs["_id"]): Promise<IJobs> => {
 /**
  * @description Sends the mail informing the CFA that a company wants the CFA to handle the offer.
  */
-export const sendCFADelegationMail = async (email: string, offre: IJobs, recruiter: { establishment_raison_sociale: string; establishment_id: string }, siret_code: string) => {
+export async function sendDelegationMailToCFA(email: string, offre: IJobs, recruiter: { establishment_raison_sociale: string; establishment_id: string }, siret_code: string) {
   const unsubscribeOF = await UnsubscribeOF.findOne({ establishment_siret: siret_code })
   if (unsubscribeOF) return
   await mailer.sendEmail({
@@ -630,6 +594,36 @@ export const sendCFADelegationMail = async (email: string, offre: IJobs, recruit
       offerButton: `${config.publicUrlEspacePro}/proposition/formulaire/${recruiter.establishment_id}/offre/${offre._id}/siret/${siret_code}`,
       createAccountButton: `${config.publicUrlEspacePro}/creation/cfa`,
       unsubscribeUrl: `${config.publicUrlEspacePro}/proposition/formulaire/${recruiter.establishment_id}/offre/${offre._id}/siret/${siret_code}/unsubscribe`,
+    },
+  })
+}
+
+export async function sendMailNouvelleOffre(recruiter: IRecruiter, job: Partial<IOffreExtended>, contactCFA?: IUserRecruteur) {
+  const isRecruteurAwaiting = recruiter.status === RECRUITER_STATUS.EN_ATTENTE_VALIDATION
+  if (isRecruteurAwaiting) {
+    return
+  }
+  const { is_delegated, email, last_name, first_name, establishment_raison_sociale, establishment_siret } = recruiter
+
+  const establishmentTitle = establishment_raison_sociale ?? establishment_siret
+  // Send mail with action links to manage offers
+  await mailer.sendEmail({
+    to: is_delegated ? contactCFA.email : email,
+    subject: is_delegated ? `Votre offre d'alternance pour ${establishmentTitle} est publiée` : `Votre offre d'alternance est publiée`,
+    template: mailTemplate["mail-nouvelle-offre"],
+    data: {
+      images: {
+        logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
+      },
+      nom: is_delegated ? contactCFA.last_name : last_name,
+      prenom: is_delegated ? contactCFA.first_name : first_name,
+      raison_sociale: establishmentTitle,
+      mandataire: recruiter.is_delegated,
+      offre: pick(job, ["rome_appellation_label", "job_start_date", "type", "job_level_label"]),
+      lba_url:
+        config.env !== "recette"
+          ? `https://labonnealternance.apprentissage.beta.gouv.fr/recherche-apprentissage?&display=list&page=fiche&type=matcha&itemId=${job._id}`
+          : `https://labonnealternance-recette.apprentissage.beta.gouv.fr/recherche-apprentissage?&display=list&page=fiche&type=matcha&itemId=${job._id}`,
     },
   })
 }

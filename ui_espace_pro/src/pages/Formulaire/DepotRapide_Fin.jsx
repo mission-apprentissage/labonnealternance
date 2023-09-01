@@ -9,7 +9,7 @@ import { WidgetContext } from "../../contextWidget"
 import { InfoCircle } from "../../theme/components/icons"
 import { MailCloud } from "../../theme/components/logos"
 
-export default () => {
+export function DepotRapide_Fin() {
   const [disableLink, setDisableLink] = useState(false)
   const [userIsValidated, setUserIsValidated] = useState()
   const [title, setTitle] = useState("")
@@ -91,6 +91,8 @@ export default () => {
                 status: "success",
                 duration: 4000,
               })
+              break
+            default:
               break
           }
         }
@@ -206,3 +208,5 @@ export default () => {
     </AuthentificationLayout>
   )
 }
+
+export default DepotRapide_Fin

@@ -9,14 +9,14 @@ export default function useUserHistoryUpdate(userId, status, reason = undefined)
   const client = useQueryClient()
   const toast = useToast()
 
-  return useCallback(() => {
-    updateUserValidationHistory(userId, {
+  return useCallback(async () => {
+    await updateUserValidationHistory(userId, {
       validation_type: "MANUELLE",
       user: auth.id,
       status,
       reason,
     })
-      .then(() => ["awaitingValidationUserList", "activeUserList", "disableUserList", "user"].map((x) => client.invalidateQueries(x)))
+      .then(() => ["errorUserList", "awaitingValidationUserList", "activeUserList", "disableUserList", "user"].map((x) => client.invalidateQueries(x)))
       .then(() =>
         toast({
           description: `Utilisateur ${status}`,
@@ -26,5 +26,5 @@ export default function useUserHistoryUpdate(userId, status, reason = undefined)
           isClosable: true,
         })
       )
-  })
+  }, [auth.id, client, reason, status, toast, userId])
 }

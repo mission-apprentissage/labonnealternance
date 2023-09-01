@@ -8,7 +8,7 @@ import { logger } from "../common/logger.js"
 import { FormationCatalogue, UnsubscribeOF } from "../common/model/index.js"
 import { fetchStream } from "../common/utils/httpUtils.js"
 import { streamJsonArray } from "../common/utils/streamUtils.js"
-import _ from "lodash-es"
+import * as _ from "lodash-es"
 import { getElasticInstance } from "../common/esClient/index.js"
 import config from "../config.js"
 import { sentryCaptureException } from "../common/utils/sentryUtils.js"
@@ -206,6 +206,23 @@ export const getNearEtablissementsFromRomes = async ({ rome, origin }: { rome: s
 }
 
 /**
+ * @description Convert query into URL params
+ * @param {Object} query - Mongo query
+ * @returns {String}
+ */
+const convertQueryIntoParams = (query: object, options: object = {}): string => {
+  return querystring.stringify({
+    query: JSON.stringify(query),
+    ...Object.keys(options).reduce((acc, key) => {
+      return {
+        ...acc,
+        [key]: JSON.stringify(options[key]),
+      }
+    }, {}),
+  })
+}
+
+/**
  * @description Get all formations through the CARIF OREF catalogue API.
  * @returns {Stream<Object[]>}
  */
@@ -230,23 +247,6 @@ export const getAllFormationsFromCatalogue = async () => {
   return streamFormations(query, {
     limit: count,
     select: neededFieldsFromCatalogue,
-  })
-}
-
-/**
- * @description Convert query into URL params
- * @param {Object} query - Mongo query
- * @returns {String}
- */
-const convertQueryIntoParams = (query: object, options: object = {}): string => {
-  return querystring.stringify({
-    query: JSON.stringify(query),
-    ...Object.keys(options).reduce((acc, key) => {
-      return {
-        ...acc,
-        [key]: JSON.stringify(options[key]),
-      }
-    }, {}),
   })
 }
 
@@ -325,6 +325,14 @@ export interface IRomeResult {
   romes?: string[]
   error?: string
   message?: string
+}
+
+const getFormationEsQueryIndexFragment = () => {
+  return {
+    index: "formationcatalogues",
+    size: 1000,
+    _source_includes: ["rome_codes"],
+  }
 }
 
 /**
@@ -408,12 +416,4 @@ export const getRomesFromCfd = ({ cfd }: { cfd: string }): Promise<IRomeResult> 
  */
 export const getRomesFromSiret = ({ siret }: { siret: string }): Promise<IRomeResult> => {
   return getRomesFromCatalogue({ siret })
-}
-
-const getFormationEsQueryIndexFragment = () => {
-  return {
-    index: "formationcatalogues",
-    size: 1000,
-    _source_includes: ["rome_codes"],
-  }
 }
