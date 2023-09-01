@@ -24,7 +24,7 @@ const CreationCompteForm = ({ type, setQualiopi, setBandeau }) => {
 
     // validate establishment_siret
     if (type === AUTHTYPE.ENTREPRISE) {
-      Promise.all([getEntrepriseOpco(formattedSiret), getEntrepriseInformation(formattedSiret)]).then(([{ data: opcoInfos }, entrepriseData]) => {
+      Promise.all([getEntrepriseOpco(formattedSiret), getEntrepriseInformation(formattedSiret)]).then(([opcoInfos, entrepriseData]) => {
         if (entrepriseData.error) {
           if (entrepriseData.errorType === "server") {
             navigate("/creation/detail", { state: { type, origin, informationSiret: { establishment_siret: formattedSiret, ...opcoInfos } } })

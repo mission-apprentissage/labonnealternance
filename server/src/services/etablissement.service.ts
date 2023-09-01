@@ -218,8 +218,13 @@ export const getOpcoByIdcc = async (idcc: number): Promise<ICFADock | null> => {
  * @returns {Promise<Object>}
  */
 export const getIdcc = async (siret: string): Promise<ISIRET2IDCC> => {
-  const { data } = await axios.get<ISIRET2IDCC>(`https://siret2idcc.fabrique.social.gouv.fr/api/v2/${encodeURIComponent(siret)}`)
-  return data
+  try {
+    const { data } = await axios.get<ISIRET2IDCC>(`https://siret2idcc.fabrique.social.gouv.fr/api/v2/${encodeURIComponent(siret)}`)
+    return data
+  } catch (err) {
+    sentryCaptureException(err)
+    return null
+  }
 }
 /**
  * @description Get the establishment validation url for a given SIRET
@@ -449,6 +454,7 @@ export const getOpcoData = async (siret: string) => {
     case null:
     case "NOT_FOUND": {
       const idccResult = await getIdcc(siret)
+      if (!idccResult) return undefined
       const conventions = idccResult[0]?.conventions
       if (conventions?.length) {
         const num: number = conventions[0]?.num

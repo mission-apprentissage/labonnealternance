@@ -122,7 +122,10 @@ export default () => {
         return res.status(400).json({ error: true, message: "Le numéro siret est obligatoire." })
       }
       const result = await getOpcoData(siret)
-      return res.json(result ?? {})
+      if (!result) {
+        return res.status(404).empty()
+      }
+      return res.json(result)
     })
   )
 

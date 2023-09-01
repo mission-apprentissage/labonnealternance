@@ -20,7 +20,7 @@ const CreationCompte = () => {
   const submitSiret = ({ establishment_siret }, { setSubmitting, setFieldError }) => {
     const formattedSiret = establishment_siret.replace(/[^0-9]/g, "")
     Promise.all([getEntrepriseOpco(formattedSiret), getEntrepriseInformation(formattedSiret, { cfa_delegated_siret: auth.cfa_delegated_siret })]).then(
-      ([{ data: opcoInfos }, entrepriseData]) => {
+      ([opcoInfos, entrepriseData]) => {
         if (entrepriseData.error) {
           if (entrepriseData.errorType === "server") {
             navigate("/administration/entreprise/detail", {
