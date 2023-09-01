@@ -109,7 +109,7 @@ export class FormationsController extends Controller {
   /**
    * Get details for one formation identified by it's clé ministère éducatif
    * @param {string} id the clé ministère éducatif of the formation looked for.
-   * @returns {Promise<IApiError | { lbbCompanies: ILbaItem[] } | { lbaCompanies: ILbaItem[] }>} response
+   * @returns {Promise<IApiError | any>} response
    */
   @Response<"Wrong parameters">(400)
   @Response<"Formation not found">(404)
@@ -117,7 +117,7 @@ export class FormationsController extends Controller {
   @SuccessResponse("200", "Get formation description success")
   @Get("/formationDescription/{id}")
   @OperationId("getFormationDescription")
-  public async getFormationDescription(@Path() id: string): Promise<IApiError | { results: ILbaItem[] }> {
+  public async getFormationDescription(@Path() id: string): Promise<IApiError | any> {
     const result = await getFormationDescriptionQuery({
       id,
     })

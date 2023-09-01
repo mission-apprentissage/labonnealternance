@@ -706,7 +706,7 @@ const removeEmailFromLBFData = (data: any): any => {
  * @param {string} id l'identifiant de la formation chez LBF (id RCO)
  * @returns {Promise<IApiError | any>}
  */
-export const getFormationDescriptionQuery = async ({ id }): Promise<IApiError | any> => {
+export const getFormationDescriptionQuery = async ({ id }: { id: string }): Promise<IApiError | any> => {
   try {
     let formationDescription = null
 
