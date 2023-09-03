@@ -124,13 +124,14 @@ export default () => {
           template: mailTemplate["mail-compte-desactive"],
           data: {
             images: {
+              accountDisabled: `${config.publicUrlEspacePro}/images/image-compte-desactive.png?raw=true`,
               logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
             },
             last_name,
             first_name,
             email,
             opco,
-            emailSupport: config.publicEmail,
+            emailSupport: "mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Compte%20pro%20non%20validé",
           },
         })
         return res.json(user)
