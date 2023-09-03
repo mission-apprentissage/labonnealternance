@@ -1,35 +1,34 @@
 <mjml>
   <mj-head>
     <mj-title>Compte désactivé</mj-title>
-    <mj-font name="Work Sans" href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;700&display=swap" />
-    <mj-style inline="inline">
-      .grey {color: #1E1E1E;}
-    </mj-style>
+    <mj-font name="Work Sans" href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;700&display=swap"></mj-font>
+    <mj-style inline="inline">.grey {color: #1E1E1E;}</mj-style>
     <mj-attributes>
-      <mj-text color="#242424" font-family="Work Sans, Arial" font-size="16px" line-height="24px" />
-      <mj-button font-size="16px" line-height="24px" padding="8px 24px" font-family="Work Sans" height="40px" />
+      <mj-text color="#242424" font-family="Work Sans, Arial" font-size="16px" line-height="24px"></mj-text>
+      <mj-button font-size="16px" line-height="24px" padding="8px 24px" font-family="Work Sans" height="40px"></mj-button>
     </mj-attributes>
   </mj-head>
-  <mj-body background-color="#E5E5E5">
+  <mj-body background-color="#F5F5FE">
     <mj-section>
       <mj-column>
-        <mj-image src="<%= data.images.logoLba %>" width="150px" alt="Logo du site La bonne alternance" />
+        <mj-image src="<%= data.images.logoLba %>" width="150px" alt="Logo du site La bonne alternance"></mj-image>
       </mj-column>
     </mj-section>
-    <mj-section padding-top="0">
-      <mj-column width="600px" background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 10px">
-        <mj-text>
-          Bonjour <%= data.first_name %> <%= data.last_name %>,
-        </mj-text>
-        <mj-text>
-          Votre compte La bonne alternance n'a pas pu être validé par votre opco de rattachement : <b><%= data.opco %></b>
-        </mj-text>
-        <mj-text>Email saisi lors de votre inscription : <b><%= data.email %></b> </mj-text>
-        <mj-text>Vous pouvez contacter notre support pour plus d'information sur votre situation : <%= data.emailSupport %> </mj-text>
-        <mj-text>
-          L'équipe La bonne alternance, <br>
-          Mission interministérielle pour l'apprentissage
-        </mj-text>
+    <mj-section background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 10px">
+      <mj-column width="174px">
+        <mj-image src="<%= data.images.accountDisabled %>" alt="image compte désactivé"></mj-image>
+      </mj-column>
+      <mj-column>
+        <mj-text>Bonjour <%= data.first_name %> <%= data.last_name %>,</mj-text>
+        <mj-text>Votre compte n'a pas pu être rattaché pour la raison suivante : </mj-text>
+        <mj-text container-background-color="#f6f6f6"><%= data.reason %></mj-text>
+      </mj-column>
+    </mj-section>
+    <mj-section> </mj-section>
+    <mj-section background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 10px">
+      <mj-column>
+        <mj-text>Vous pouvez contacter notre support pour plus d’information en communiquant l’email utilisé lors de la création de votre compte.</mj-text>
+        <mj-button color="#ffffff" background-color="#000091" href="<%= data.emailSupport %>"> Contacter le support </mj-button>
       </mj-column>
     </mj-section>
     <mj-section>
