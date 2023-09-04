@@ -1,3 +1,10 @@
+# [1.84.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.83.1...v1.84.0) (2023-09-04)
+
+
+### Features
+
+* LBAC-1146 lien vers tableau de suivi de candidatures ([6d4f855](https://github.com/mission-apprentissage/labonnealternance/commit/6d4f8552f2b158a1aef8bb584b1def4e32c2bf1b))
+
 ## [1.83.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.83.0...v1.83.1) (2023-09-04)
 
 
