@@ -111,7 +111,7 @@ const LbbCompany = ({ company, handleSelectItem, showTextOnly, searchForTraining
   return (
     <Link
       as="a"
-      className="resultCard"
+      className={`resultCard lba ${company?.contact?.email && "hasEmail"}`}
       {...cardProperties}
       onClick={onSelectItem}
       onMouseOver={highlightItemOnMap}

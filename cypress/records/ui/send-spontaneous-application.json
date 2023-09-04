@@ -1,0 +1,584 @@
+{
+    "title": "send-spontaneous-application",
+    "steps": [
+        {
+            "type": "setViewport",
+            "width": 1254,
+            "height": 704,
+            "deviceScaleFactor": 1,
+            "isMobile": false,
+            "hasTouch": false,
+            "isLandscape": false
+        },
+        {
+            "type": "navigate",
+            "url": "https://labonnealternance-recette.apprentissage.beta.gouv.fr/",
+            "assertedEvents": [
+                {
+                    "type": "navigation",
+                    "url": "https://labonnealternance-recette.apprentissage.beta.gouv.fr/",
+                    "title": "La bonne alternance | Trouvez votre alternance"
+                }
+            ]
+        },
+        {
+            "type": "waitForElement",
+            "target": "main",
+            "selectors": [
+                [
+                    "aria/Retour à l'accueil",
+                    "aria/[role=\"img\"]"
+                ],
+                "main > div > div.css-0 a:nth-of-type(1) > img",
+                "xpath///*[@id=\"__next\"]/main/div/div[1]/div/div/div[1]/div/div/a[1]/img",
+                "pierce/main > div > div.css-0 a:nth-of-type(1) > img"
+            ]
+        },
+        {
+            "type": "waitForElement",
+            "target": "main",
+            "selectors": [
+                [
+                    "aria/Accès espace recruteur",
+                    "aria/[role=\"generic\"]"
+                ],
+                "a:nth-of-type(2) > span",
+                "xpath///*[@id=\"__next\"]/main/div/div[1]/div/div/div[2]/div/div/a[2]/span",
+                "pierce/a:nth-of-type(2) > span",
+                "text/Recruteur"
+            ]
+        },
+        {
+            "type": "waitForElement",
+            "target": "main",
+            "selectors": [
+                [
+                    "aria/Accès espace organisme de formation",
+                    "aria/[role=\"generic\"]"
+                ],
+                "a:nth-of-type(3) > span",
+                "xpath///*[@id=\"__next\"]/main/div/div[1]/div/div/div[2]/div/div/a[3]/span",
+                "pierce/a:nth-of-type(3) > span",
+                "text/Organisme de"
+            ]
+        },
+        {
+            "type": "waitForElement",
+            "target": "main",
+            "selectors": [
+                "aria/Lancer la recherche[role=\"img\"]",
+                "div.css-uos98o img",
+                "xpath///*[@id=\"__next\"]/main/div/div[2]/div[1]/div/div/div[2]/div/div/div/div/form/div/div[5]/button/img",
+                "pierce/div.css-uos98o img"
+            ]
+        },
+        {
+            "type": "waitForElement",
+            "target": "main",
+            "selectors": [
+                "footer > div:nth-of-type(1) div:nth-of-type(2) img",
+                "xpath///*[@id=\"__next\"]/main/div/footer/div[1]/nav/div/div[2]/div/img",
+                "pierce/footer > div:nth-of-type(1) div:nth-of-type(2) img"
+            ]
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "aria/Indiquez un métier ou diplôme"
+                ],
+                [
+                    "form > div > div.css-0 input"
+                ],
+                [
+                    "xpath///*[@id=\"lang-switcher-input\"]"
+                ],
+                [
+                    "pierce/form > div > div.css-0 input"
+                ]
+            ],
+            "offsetY": 20.300003051757812,
+            "offsetX": 55.399993896484375
+        },
+        {
+            "type": "change",
+            "value": "C",
+            "selectors": [
+                [
+                    "aria/Indiquez un métier ou diplôme"
+                ],
+                [
+                    "form > div > div.css-0 input"
+                ],
+                [
+                    "xpath///*[@id=\"lang-switcher-input\"]"
+                ],
+                [
+                    "pierce/form > div > div.css-0 input"
+                ]
+            ],
+            "target": "main"
+        },
+        {
+            "type": "keyUp",
+            "key": "c",
+            "target": "main"
+        },
+        {
+            "type": "change",
+            "value": "Compta",
+            "selectors": [
+                [
+                    "aria/Indiquez un métier ou diplôme"
+                ],
+                [
+                    "form > div > div.css-0 input"
+                ],
+                [
+                    "xpath///*[@id=\"lang-switcher-input\"]"
+                ],
+                [
+                    "pierce/form > div > div.css-0 input"
+                ]
+            ],
+            "target": "main"
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "aria/Comptabilité, gestion de paie"
+                ],
+                [
+                    "#lang-switcher-item-0"
+                ],
+                [
+                    "xpath///*[@id=\"lang-switcher-item-0\"]"
+                ],
+                [
+                    "pierce/#lang-switcher-item-0"
+                ],
+                [
+                    "text/Comptabilité,"
+                ]
+            ],
+            "offsetY": 29.899993896484375,
+            "offsetX": 115.80000305175781
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "aria/A quel endroit ?"
+                ],
+                [
+                    "div.css-1kw2fa0 input"
+                ],
+                [
+                    "xpath///*[@id=\"lang-switcher-input\"]"
+                ],
+                [
+                    "pierce/div.css-1kw2fa0 input"
+                ]
+            ],
+            "offsetY": 17.89999771118164,
+            "offsetX": 38.399993896484375
+        },
+        {
+            "type": "change",
+            "value": "Marseil",
+            "selectors": [
+                [
+                    "aria/A quel endroit ?"
+                ],
+                [
+                    "div.css-1kw2fa0 input"
+                ],
+                [
+                    "xpath///*[@id=\"lang-switcher-input\"]"
+                ],
+                [
+                    "pierce/div.css-1kw2fa0 input"
+                ]
+            ],
+            "target": "main"
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "aria/Marseille",
+                    "aria/[role=\"strong\"]"
+                ],
+                [
+                    "#lang-switcher-item-0 > strong"
+                ],
+                [
+                    "xpath///*[@id=\"lang-switcher-item-0\"]/strong"
+                ],
+                [
+                    "pierce/#lang-switcher-item-0 > strong"
+                ]
+            ],
+            "offsetY": 7.3000030517578125,
+            "offsetX": 45.79998779296875
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "div.css-6st093 div:nth-of-type(4) select"
+                ],
+                [
+                    "xpath///*[@id=\"__next\"]/main/div/div[2]/div[1]/div/div/div[2]/div/div/div/div/form/div/div[4]/div/div/select"
+                ],
+                [
+                    "pierce/div.css-6st093 div:nth-of-type(4) select"
+                ]
+            ],
+            "offsetY": 13.39999771118164,
+            "offsetX": 58.5999755859375
+        },
+        {
+            "type": "change",
+            "value": "4 (BAC...)",
+            "selectors": [
+                [
+                    "div.css-6st093 div:nth-of-type(4) select"
+                ],
+                [
+                    "xpath///*[@id=\"__next\"]/main/div/div[2]/div[1]/div/div/div[2]/div/div/div/div/form/div/div[4]/div/div/select"
+                ],
+                [
+                    "pierce/div.css-6st093 div:nth-of-type(4) select"
+                ]
+            ],
+            "target": "main"
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "aria/Lancer la recherche[role=\"img\"]"
+                ],
+                [
+                    "div.css-uos98o img"
+                ],
+                [
+                    "xpath///*[@id=\"__next\"]/main/div/div[2]/div[1]/div/div/div[2]/div/div/div/div/form/div/div[5]/button/img"
+                ],
+                [
+                    "pierce/div.css-uos98o img"
+                ]
+            ],
+            "offsetY": 12.099998474121094,
+            "offsetX": 21.7999267578125
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "[data-testid='lba80781306800036'] div.css-17xle36"
+                ],
+                [
+                    "xpath///*[@id=\"lba80781306800036\"]/div/div[3]"
+                ],
+                [
+                    "pierce/[data-testid='lba80781306800036'] div.css-17xle36"
+                ],
+                [
+                    "text/224 RUE PARADIS,"
+                ]
+            ],
+            "offsetY": 17.79998779296875,
+            "offsetX": 285
+        },
+        {
+            "type": "waitForElement",
+            "target": "main",
+            "selectors": [
+                "aria/Quelques informations sur l'entreprise",
+                "h2",
+                "xpath///*[@id=\"itemDetailColumn\"]/div[3]/h2",
+                "pierce/h2",
+                "text/Quelques informations"
+            ]
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "aria/Ouvrir le formulaire d'envoi de candidature spontanée"
+                ],
+                [
+                    "[data-testid='CandidatureSpontanee'] button"
+                ],
+                [
+                    "xpath///*[@data-testid=\"CandidatureSpontanee\"]/div/div/button"
+                ],
+                [
+                    "pierce/[data-testid='CandidatureSpontanee'] button"
+                ],
+                [
+                    "text/J'envoie ma candidature"
+                ]
+            ],
+            "offsetY": 23.199996948242188,
+            "offsetX": 84
+        },
+        {
+            "type": "waitForElement",
+            "target": "main",
+            "selectors": [
+                "aria/Votre message au responsable du recrutement (Facultatif)",
+                "div:nth-of-type(4) h2",
+                "xpath///*[@data-testid=\"fieldset-message\"]/h2",
+                "pierce/div:nth-of-type(4) h2",
+                "text/Votre message"
+            ]
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "aria/Nom *"
+                ],
+                [
+                    "[data-testid='lastName']"
+                ],
+                [
+                    "xpath///*[@data-testid=\"lastName\"]"
+                ],
+                [
+                    "pierce/[data-testid='lastName']"
+                ]
+            ],
+            "offsetY": 26.837493896484375,
+            "offsetX": 127.79998779296875
+        },
+        {
+            "type": "change",
+            "value": "Doe",
+            "selectors": [
+                [
+                    "aria/Nom *"
+                ],
+                [
+                    "[data-testid='lastName']"
+                ],
+                [
+                    "xpath///*[@data-testid=\"lastName\"]"
+                ],
+                [
+                    "pierce/[data-testid='lastName']"
+                ]
+            ],
+            "target": "main"
+        },
+        {
+            "type": "keyDown",
+            "target": "main",
+            "key": "Tab"
+        },
+        {
+            "type": "keyUp",
+            "key": "Tab",
+            "target": "main"
+        },
+        {
+            "type": "change",
+            "value": "John",
+            "selectors": [
+                [
+                    "aria/Prénom *"
+                ],
+                [
+                    "[data-testid='firstName']"
+                ],
+                [
+                    "xpath///*[@data-testid=\"firstName\"]"
+                ],
+                [
+                    "pierce/[data-testid='firstName']"
+                ]
+            ],
+            "target": "main"
+        },
+        {
+            "type": "keyDown",
+            "target": "main",
+            "key": "Tab"
+        },
+        {
+            "type": "keyUp",
+            "key": "Tab",
+            "target": "main"
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "aria/E-mail * Téléphone *"
+                ],
+                [
+                    "[data-testid='email']"
+                ],
+                [
+                    "xpath///*[@data-testid=\"email\"]"
+                ],
+                [
+                    "pierce/[data-testid='email']"
+                ]
+            ],
+            "offsetY": 23.837493896484375,
+            "offsetX": 96.79998779296875,
+            "button": "secondary"
+        },
+        {
+            "type": "change",
+            "value": "test-auto@nexistepas.fr",
+            "selectors": [
+                [
+                    "aria/E-mail * Téléphone *"
+                ],
+                [
+                    "[data-testid='email']"
+                ],
+                [
+                    "xpath///*[@data-testid=\"email\"]"
+                ],
+                [
+                    "pierce/[data-testid='email']"
+                ]
+            ],
+            "target": "main"
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "[data-testid='phone']"
+                ],
+                [
+                    "xpath///*[@data-testid=\"phone\"]"
+                ],
+                [
+                    "pierce/[data-testid='phone']"
+                ]
+            ],
+            "offsetY": 24.837493896484375,
+            "offsetX": 18.79998779296875
+        },
+        {
+            "type": "change",
+            "value": "0700000000",
+            "selectors": [
+                [
+                    "[data-testid='phone']"
+                ],
+                [
+                    "xpath///*[@data-testid=\"phone\"]"
+                ],
+                [
+                    "pierce/[data-testid='phone']"
+                ]
+            ],
+            "target": "main"
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "p.css-1egmowt"
+                ],
+                [
+                    "xpath///*[@data-testid=\"modalbody-nominal\"]/div[4]/div/div/div/div/p[2]"
+                ],
+                [
+                    "pierce/p.css-1egmowt"
+                ]
+            ],
+            "offsetY": 0.0374755859375,
+            "offsetX": 43
+        },
+        {
+            "type": "change",
+            "value": "C:\\fakepath\\CV - John Doe.docx",
+            "selectors": [
+                [
+                    "[data-testid='fileDropzone']"
+                ],
+                [
+                    "xpath///*[@data-testid=\"fileDropzone\"]"
+                ],
+                [
+                    "pierce/[data-testid='fileDropzone']"
+                ]
+            ],
+            "target": "main"
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "aria/Envoyer la candidature spontanée"
+                ],
+                [
+                    "[data-testid='candidature-not-sent']"
+                ],
+                [
+                    "xpath///*[@data-testid=\"candidature-not-sent\"]"
+                ],
+                [
+                    "pierce/[data-testid='candidature-not-sent']"
+                ]
+            ],
+            "offsetY": 7.1624755859375,
+            "offsetX": 46.02496337890625
+        },
+        {
+            "type": "waitForElement",
+            "selectors": [
+                [
+                    ".cls"
+                ]
+            ]
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "aria/Votre candidature a bien été envoyée à LE STRATEGE"
+                ],
+                [
+                    "div:nth-of-type(4) h2"
+                ],
+                [
+                    "xpath///*[@data-testid=\"CandidatureSpontaneeWorked\"]/div/div/h2"
+                ],
+                [
+                    "pierce/div:nth-of-type(4) h2"
+                ],
+                [
+                    "text/Votre candidature"
+                ]
+            ],
+            "offsetY": 26.837493896484375,
+            "offsetX": 71.39999389648438
+        }
+    ]
+}
