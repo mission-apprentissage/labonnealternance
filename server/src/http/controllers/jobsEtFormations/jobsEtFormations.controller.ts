@@ -64,8 +64,6 @@ export class JobsEtFormationsController extends Controller {
       useMock,
     })
 
-    console.log("vérifier valeur de romes en fonction de rncp ", romes)
-
     if ("error" in parameterControl) {
       if (parameterControl.error === "wrong_parameters") {
         this.setStatus(400)
@@ -81,7 +79,7 @@ export class JobsEtFormationsController extends Controller {
     const [formations, jobs] = await Promise.all([
       itemSources.indexOf("formations") >= 0
         ? getFormationsQuery({
-            romes,
+            romes: parameterControl.romes,
             longitude,
             latitude,
             radius: radius,
@@ -95,7 +93,7 @@ export class JobsEtFormationsController extends Controller {
           })
         : null,
       itemSources.indexOf("lba") >= 0 || itemSources.indexOf("lbb") >= 0 || itemSources.indexOf("offres") >= 0 || itemSources.indexOf("matcha") >= 0
-        ? getJobsFromApi({ romes, referer, caller, latitude, longitude, radius, insee, sources, diploma, opco, opcoUrl, useMock, api: "jobEtFormationV1" })
+        ? getJobsFromApi({ romes: parameterControl.romes, referer, caller, latitude, longitude, radius, insee, sources, diploma, opco, opcoUrl, useMock, api: "jobEtFormationV1" })
         : null,
     ])
 

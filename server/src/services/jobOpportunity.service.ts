@@ -119,7 +119,7 @@ export const getJobsQuery = async (query: TJobSearchQuery) => {
     return queryValidationResult
   }
 
-  const result = await getJobsFromApi({ ...query })
+  const result = await getJobsFromApi({ romes: queryValidationResult.romes, ...query })
 
   if ("error" in result) {
     return result

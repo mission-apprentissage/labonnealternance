@@ -227,7 +227,7 @@ export const validateCaller = ({ caller, referer }: { caller: string; referer: s
  * @param {TJobSearchQuery} query paramètres de la requête
  * @returns {Promise<{ result: "passed" } | { error: string; error_messages: string[] }>}
  */
-export const jobsQueryValidator = async (query: TJobSearchQuery): Promise<{ result: "passed" } | { error: string; error_messages: string[] }> => {
+export const jobsQueryValidator = async (query: TJobSearchQuery): Promise<{ result: "passed"; romes: string } | { error: string; error_messages: string[] }> => {
   const error_messages = []
   const { caller, referer, latitude, longitude, insee, radius, sources } = query
 
@@ -256,7 +256,7 @@ export const jobsQueryValidator = async (query: TJobSearchQuery): Promise<{ resu
 
   if (error_messages.length) return { error: "wrong_parameters", error_messages }
 
-  return { result: "passed" }
+  return { result: "passed", romes: query.romes }
 }
 
 /**
@@ -322,7 +322,7 @@ export const formationsRegionQueryValidator = (query: TFormationSearchQuery): { 
  * @param {TFormationSearchQuery} query paramètres de la requête
  * @returns {Promise<{ result: "passed" } | { error: string; error_messages: string[] }>}
  */
-export const jobsEtFormationsQueryValidator = async (query: TFormationSearchQuery): Promise<{ result: "passed" } | { error: string; error_messages: string[] }> => {
+export const jobsEtFormationsQueryValidator = async (query: TFormationSearchQuery): Promise<{ result: "passed"; romes: string } | { error: string; error_messages: string[] }> => {
   const error_messages = []
 
   // présence d'identifiant de la source : caller
@@ -353,5 +353,5 @@ export const jobsEtFormationsQueryValidator = async (query: TFormationSearchQuer
 
   if (error_messages.length) return { error: "wrong_parameters", error_messages }
 
-  return { result: "passed" }
+  return { result: "passed", romes: query.romes }
 }
