@@ -435,14 +435,7 @@ export const autoValidateCompany = async (userRecruteur: IUserRecruteur) => {
 
 const errorFactory = (message: string, errorCode?: BusinessErrorCodes) => ({ error: true, message, errorCode })
 
-export const getOpcoData = async (siret: string) => {
-  const siren = siret.substring(0, 9)
-  const opcoFromDB = await getOpcoBySirenFromDB(siren)
-  if (opcoFromDB) {
-    const { opco, idcc } = opcoFromDB
-    await saveOpco({ opco, idcc, siren, url: null })
-    return { opco, idcc }
-  }
+const getOpcoDataRaw = async (siret: string) => {
   const opcoResult: ICFADock | null = await getOpco(siret)
   switch (opcoResult?.searchStatus) {
     case "OK": {
@@ -467,6 +460,22 @@ export const getOpcoData = async (siret: string) => {
     }
   }
   return undefined
+}
+
+export const getOpcoData = async (siret: string) => {
+  const siren = siret.substring(0, 9)
+  const opcoFromDB = await getOpcoBySirenFromDB(siren)
+  if (opcoFromDB) {
+    const { opco, idcc } = opcoFromDB
+    return { opco, idcc }
+  } else {
+    const result = await getOpcoDataRaw(siret)
+    if (result) {
+      const { opco, idcc } = result
+      await saveOpco({ opco, idcc, siren, url: null })
+    }
+    return result
+  }
 }
 
 export type EntrepriseData = IFormatAPIEntreprise & { opco: string; idcc: string; geo_coordinates: string }
