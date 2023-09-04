@@ -130,7 +130,7 @@ export default () => {
             last_name,
             first_name,
             email,
-            opco,
+            reason: history.reason,
             emailSupport: "mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Compte%20pro%20non%20validé",
           },
         })
