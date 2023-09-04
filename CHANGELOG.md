@@ -1,3 +1,10 @@
+## [1.83.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.83.0...v1.83.1) (2023-09-04)
+
+
+### Bug Fixes
+
+* lbac 1339: pagination ([#561](https://github.com/mission-apprentissage/labonnealternance/issues/561)) ([8a3817f](https://github.com/mission-apprentissage/labonnealternance/commit/8a3817fe92ec9ba86e217a434bc1a78d126ebba6))
+
 # [1.83.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.82.0...v1.83.0) (2023-09-04)
 
 
