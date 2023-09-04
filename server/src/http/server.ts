@@ -173,6 +173,7 @@ export default async (components) => {
   app.use("/api/v1/jobs", limiter5PerSecond)
   app.use("/api/v1/formations", limiter7PerSecond)
   app.use("/api/v1/formationsParRegion", limiter5PerSecond)
+  app.use("/api/v1/jobsEtFormations", limiter5PerSecond)
   //app.use("/api/romelabels", limiter10PerSecond)
 
   RegisterRoutes(app)

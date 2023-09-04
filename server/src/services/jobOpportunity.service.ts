@@ -14,14 +14,40 @@ import { IApiError } from "../common/utils/errorManager.js"
  * @param {string} api l'identifiant de l'api utilisée
  * @returns {Promise<IApiError | { peJobs: { results: ILbaItem[] } | IApiError, matchas: { results: ILbaItem[] } | IApiError, lbaCompanies: { results: ILbaItem[] } | IApiError, lbbCompanies: null}>}
  */
-export const getJobsFromApi = async ({ query, api }) => {
+export const getJobsFromApi = async ({
+  romes,
+  referer,
+  caller,
+  latitude,
+  longitude,
+  radius,
+  insee,
+  sources,
+  diploma,
+  opco,
+  opcoUrl,
+  useMock,
+  api = "jobV1/jobs",
+}: {
+  romes?: string
+  referer?: string
+  caller?: string
+  latitude?: string
+  longitude?: string
+  radius?: string
+  insee?: string
+  sources?: string
+  diploma?: string
+  opco?: string
+  opcoUrl?: string
+  useMock?: string
+  api?: string
+}) => {
   try {
-    const sources = !query.sources ? ["lba", "lbb", "offres", "matcha"] : query.sources.split(",")
-
-    const { caller, diploma, insee, latitude, longitude, opco, opcoUrl, radius, referer, romes, useMock } = query
+    const jobSources = !sources ? ["lba", "offres", "matcha"] : sources.split(",")
 
     const [peJobs, lbaCompanies, lbbCompanies, matchas] = await Promise.all([
-      sources.indexOf("offres") >= 0
+      jobSources.indexOf("offres") >= 0
         ? getSomePeJobs({
             romes: romes.split(","),
             insee: insee,
@@ -35,12 +61,12 @@ export const getJobsFromApi = async ({ query, api }) => {
             opcoUrl,
           })
         : null,
-      sources.indexOf("lba") >= 0
+      jobSources.indexOf("lba") >= 0
         ? getSomeCompanies({
             romes,
-            latitude: query.latitude,
-            longitude: query.longitude,
-            radius: parseInt(query.radius),
+            latitude,
+            longitude,
+            radius: parseInt(radius),
             referer,
             caller,
             api,
@@ -50,7 +76,7 @@ export const getJobsFromApi = async ({ query, api }) => {
           })
         : null,
       null,
-      sources.indexOf("matcha") >= 0
+      jobSources.indexOf("matcha") >= 0
         ? getLbaJobs({
             romes,
             latitude,
@@ -71,8 +97,8 @@ export const getJobsFromApi = async ({ query, api }) => {
     console.log("Error ", err.message)
     sentryCaptureException(err)
 
-    if (query.caller) {
-      trackApiCall({ caller: query.caller, api_path: api, response: "Error" })
+    if (caller) {
+      trackApiCall({ caller, api_path: api, response: "Error" })
     }
     const errorReturn: IApiError = { error: "internal_error" }
 
@@ -93,7 +119,7 @@ export const getJobsQuery = async (query: TJobSearchQuery) => {
     return queryValidationResult
   }
 
-  const result = await getJobsFromApi({ query, api: "jobV1/jobs" })
+  const result = await getJobsFromApi({ ...query })
 
   if ("error" in result) {
     return result

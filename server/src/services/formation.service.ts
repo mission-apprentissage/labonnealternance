@@ -592,6 +592,7 @@ export const getFormationsQuery = async ({
   options,
   useMock,
   referer,
+  api = "formationV1",
 }: {
   romes?: string
   longitude?: string
@@ -603,6 +604,7 @@ export const getFormationsQuery = async ({
   options: string
   useMock?: string
   referer: string
+  api?: string
 }): Promise<IApiError | { results: ILbaItem[] }> => {
   const queryValidationResult = await formationsQueryValidator({ romes, longitude, latitude, radius, diploma, romeDomain, caller, referer, useMock })
 
@@ -628,7 +630,7 @@ export const getFormationsQuery = async ({
     console.error("Error ", err, err.message)
     sentryCaptureException(err)
     if (caller) {
-      trackApiCall({ caller, api_path: "formationV1", response: "Error" })
+      trackApiCall({ caller, api_path: api, response: "Error" })
     }
     return { error: "internal_error" }
   }
@@ -779,8 +781,8 @@ export const getFormationsParRegionQuery = async ({
     console.error("Error ", err.message)
     sentryCaptureException(err)
 
-    if (query.caller) {
-      trackApiCall({ caller: query.caller, api_path: "formationRegionV1", response: "Error" })
+    if (caller) {
+      trackApiCall({ caller, api_path: "formationRegionV1", response: "Error" })
     }
 
     return { error: "internal_error" }
