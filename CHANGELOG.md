@@ -1,3 +1,10 @@
+# [1.83.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.82.0...v1.83.0) (2023-09-04)
+
+
+### Features
+
+* LBAC-1456 mise à jour aria-label ([#560](https://github.com/mission-apprentissage/labonnealternance/issues/560)) ([bd67dcf](https://github.com/mission-apprentissage/labonnealternance/commit/bd67dcf67e98d26462d848092bef57b214d03e48))
+
 # [1.82.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.81.0...v1.82.0) (2023-09-04)
 
 ### Features
