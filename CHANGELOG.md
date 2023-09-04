@@ -1,9 +1,14 @@
-# [1.81.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.80.0...v1.81.0) (2023-09-04)
-
+# [1.82.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.81.0...v1.82.0) (2023-09-04)
 
 ### Features
 
-* LBAC-1343 tests cypress e2e ([#541](https://github.com/mission-apprentissage/labonnealternance/issues/541)) ([7d84b44](https://github.com/mission-apprentissage/labonnealternance/commit/7d84b4486e33f1cfa0fe81489b66e023a95d7122))
+- LBAC-1383 sitemap.xml à la volée ([#559](https://github.com/mission-apprentissage/labonnealternance/issues/559)) ([c727932](https://github.com/mission-apprentissage/labonnealternance/commit/c727932e79bb6b1dee09ee271c36210715ba9440))
+
+# [1.81.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.80.0...v1.81.0) (2023-09-04)
+
+### Features
+
+- LBAC-1343 tests cypress e2e ([#541](https://github.com/mission-apprentissage/labonnealternance/issues/541)) ([7d84b44](https://github.com/mission-apprentissage/labonnealternance/commit/7d84b4486e33f1cfa0fe81489b66e023a95d7122))
 
 # [1.80.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.79.0...v1.80.0) (2023-09-01)
 
