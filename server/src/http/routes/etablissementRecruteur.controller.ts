@@ -123,7 +123,7 @@ export default () => {
       }
       const result = await getOpcoData(siret)
       if (!result) {
-        return res.status(404).empty()
+        return res.status(404).json({ error: true, message: "aucune données OPCO trouvées" })
       }
       return res.json(result)
     })
