@@ -1,3 +1,10 @@
+# [1.81.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.80.0...v1.81.0) (2023-09-04)
+
+
+### Features
+
+* LBAC-1343 tests cypress e2e ([#541](https://github.com/mission-apprentissage/labonnealternance/issues/541)) ([7d84b44](https://github.com/mission-apprentissage/labonnealternance/commit/7d84b4486e33f1cfa0fe81489b66e023a95d7122))
+
 # [1.80.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.79.0...v1.80.0) (2023-09-01)
 
 ### Features
