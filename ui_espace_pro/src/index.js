@@ -32,5 +32,5 @@ ReactDOM.render(
       </ChakraProvider>
     </BrowserRouter>
   </QueryClientProvider>,
-  document.getElementById("root")
+  document.getElementById("root"),
 )

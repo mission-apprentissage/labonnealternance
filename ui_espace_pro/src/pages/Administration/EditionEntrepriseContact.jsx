@@ -63,7 +63,7 @@ const Formulaire = ({ last_name, first_name, phone, email, establishment_id }) =
                 break
             }
           },
-        }
+        },
       )
     } else {
       cfaMutation.mutate({ establishment_id: establishment_id, values })

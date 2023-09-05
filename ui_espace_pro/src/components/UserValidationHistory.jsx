@@ -22,7 +22,7 @@ export default memo(({ histories }) => {
         }
 
         return user
-      })
+      }),
     )
     setHistoric(buffer)
   })

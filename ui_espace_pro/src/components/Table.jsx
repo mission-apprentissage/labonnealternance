@@ -15,7 +15,7 @@ export const Table = ({ data, columns, onRowClick }) => {
       initialState: { sortBy: [{ id: "createdAt", desc: true }] },
     },
     useFlexLayout,
-    useSortBy
+    useSortBy,
   )
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = tableInstance
 

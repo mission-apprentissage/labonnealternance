@@ -226,7 +226,7 @@ export const ListeOffres = () => {
                                 status: "success",
                                 duration: 2000,
                                 isClosable: true,
-                              })
+                              }),
                             )
                             .finally(() => client.invalidateQueries("offre-liste"))
                         }}

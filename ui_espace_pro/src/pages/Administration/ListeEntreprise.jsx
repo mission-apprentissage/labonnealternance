@@ -71,7 +71,7 @@ export default memo(() => {
   }, [])
 
   const { data, isLoading } = useQuery("listeEntreprise", () =>
-    getFormulaires({ status: { $in: [RECRUITER_STATUS.ACTIF, RECRUITER_STATUS.EN_ATTENTE_VALIDATION] }, cfa_delegated_siret: auth.cfa_delegated_siret })
+    getFormulaires({ status: { $in: [RECRUITER_STATUS.ACTIF, RECRUITER_STATUS.EN_ATTENTE_VALIDATION] }, cfa_delegated_siret: auth.cfa_delegated_siret }),
   )
 
   if (isLoading) {

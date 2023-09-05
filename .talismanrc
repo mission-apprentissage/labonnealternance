@@ -67,6 +67,8 @@ fileignoreconfig:
   checksum: 0e426e336e82553c4a737b4832732903cefb01b2f9ee2024f1759293827bf813
 - filename: ui/components/HomeComponents/TestezConnaissancesQuiz.tsx
   checksum: 7e42ed6bce6fc0f366669ae64e66975bc4c6b033fdafacb54e16e7cb2fbc75c2
+- filename: ui_espace_pro/src/pages/Authentification/Connexion.jsx
+  checksum: d01aca12462e745a97784ae381244b8821912e0d1359cde585d57782e4050edc
 scopeconfig:
 - scope: node
 custom_patterns:

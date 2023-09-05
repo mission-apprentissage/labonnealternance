@@ -62,7 +62,7 @@ const ResetPasswordPage = () => {
                 .required("Veuillez saisir un mot de passe")
                 .matches(
                   "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{8,}$",
-                  "Le mot de passe doit contenir au moins 8 caractères, une lettre en majuscule, un chiffre et un caractère spécial"
+                  "Le mot de passe doit contenir au moins 8 caractères, une lettre en majuscule, un chiffre et un caractère spécial",
                 ),
             })}
             onSubmit={changePassword}

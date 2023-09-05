@@ -22,7 +22,7 @@ export const PropositionOffreId = () => {
     navigator.clipboard.writeText(
       `https://labonnealternance${
         window.location.href.includes("recette") ? "-recette" : ""
-      }.apprentissage.beta.gouv.fr/recherche-apprentissage?&display=list&page=fiche&type=matcha&itemId=${job._id}`
+      }.apprentissage.beta.gouv.fr/recherche-apprentissage?&display=list&page=fiche&type=matcha&itemId=${job._id}`,
     )
     toast({
       title: "Lien copié.",

@@ -61,7 +61,7 @@ const AdministrationOpco = () => {
         opco: auth.scope,
       },
       formulaireQuery: { opco: auth.scope },
-    })
+    }),
   )
 
   const activeUserList = useQuery("activeUserList", () =>
@@ -71,7 +71,7 @@ const AdministrationOpco = () => {
         opco: auth.scope,
       },
       formulaireQuery: { opco: auth.scope },
-    })
+    }),
   )
 
   const disableUserList = useQuery("disableUserList", () =>
@@ -81,7 +81,7 @@ const AdministrationOpco = () => {
         opco: auth.scope,
       },
       formulaireQuery: { opco: auth.scope },
-    })
+    }),
   )
 
   if (awaitingValidationUserList.isLoading) {
