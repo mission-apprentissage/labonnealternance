@@ -26,7 +26,7 @@ fileignoreconfig:
 - filename: .infra/files/scripts/seed.sh
   checksum: 030d886a8ef5a415f42b105a0087eac735e3ceb4bcddb69a9914b2d44231ae52
 - filename: .infra/vault/vault.yml
-  checksum: 8b778abf2d970486f38f2a1bd29244582745eb5cd10f40499bea48136e1a0235
+  checksum: 347155ef3e92da4a9002ee4592b0727cd815a3846aca639102417852f0e1c6c9
 - filename: CHANGELOG.md
   checksum: d6981eb077fcbf1c6858393e2f5cada971b297db3c0103853338f9f4b6211e0d
   ignore_detectors:
