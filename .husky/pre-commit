@@ -1,4 +1,7 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-yarn hook:pre-commit
+# yarn lint-staged
+yarn lint-staged
+./.husky/preventSensibleFilesCommit.sh
+yarn node-talisman --githook pre-commit

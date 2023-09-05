@@ -2,14 +2,14 @@
 
 # A hook script to verify that we don't commit files that could contain sensible data or credentials like json, csv, xls(x) or .env
 
-sensible_files_pattern="\.(csv|xls(x?)|json|env|txt)$"
-exception="(package.json"
-exception="$exception|manifest.json|settings.json"
-exception="$exception|sample.json|swagger.json"
-exception="$exception|eslintrc.json|app.json|docker-bake.json"
-exception="$exception|tsconfig.json"
-exception="$exception|cypress/(.*).json"
-exception="$exception)$"
+sensible_files_pattern="\.(csv|xls|xls(x?)|json|env)$"
+exception="(package.json|custom-environment-variables.json|example.json"
+exception="$exception|manifest.json|settings.json|zapatosconfig.json|package-lock.json|coverage-final.json|extensions.json|terminals.json"
+exception="$exception|DECA_Extraction MIA-Fake.csv|referentiel-reseau-amue.csv"
+exception="$exception|docker-bake.json|eslintrc.json|app.json|tsconfig.json|.mocharc.json"
+exception="$exception|launch.json||docker-bake.json"
+exception="$exception|modele-import.xlsx"
+exception="$exception)$|cypress/(.*).json"
 
 files=$(git diff --cached --name-only | grep -v -E "$exception" | grep -E "$sensible_files_pattern")
 if [ -z "$files" ]; then

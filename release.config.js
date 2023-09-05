@@ -1,37 +1,16 @@
-const mainConfig = {
-  branches: ["main", { name: "develop", channel: "beta", prerelease: "beta" }],
+module.exports = {
+  branches: ["master", { name: "next", channel: "next", prerelease: "rc" }],
   repositoryUrl: "https://github.com/mission-apprentissage/labonnealternance.git",
   plugins: [
     "@semantic-release/commit-analyzer",
     "@semantic-release/release-notes-generator",
     [
-      "@semantic-release/changelog",
-      {
-        changelogFile: "CHANGELOG.md",
-      },
-    ],
-    [
       "@semantic-release/exec",
       {
-        prepareCmd: "./script/prepare-release.sh ${nextRelease.version}",
-      },
-    ],
-    [
-      "@semantic-release/git",
-      {
-        assets: ["ui/package.json", "server/package.json", "ui_espace_pro/package.json", "ui/CHANGELOG.md", "ui_espace_pro/CHANGELOG.md", "CHANGELOG.md", "package.json"],
-        message:
-          // eslint-disable-next-line no-template-curly-in-string
-          "chore(release): bump ${nextRelease.version}",
+        prepareCmd: `.bin/mna-tdb release:app \${nextRelease.version} push`,
       },
     ],
     "@semantic-release/github",
-    [
-      "@semantic-release/exec",
-      {
-        publishCmd: "git checkout -- package.json",
-      },
-    ],
     [
       "semantic-release-slack-bot",
       {
@@ -42,25 +21,3 @@ const mainConfig = {
     ],
   ],
 }
-
-const { execSync } = require("child_process")
-const { createHash } = require("crypto")
-
-const branch = execSync("git branch --show-current").toString().trimEnd("\n")
-const channel = createHash("md5").update(branch).digest("hex")
-
-const localConfig = {
-  branches: [
-    "main",
-    { name: "develop", channel: "beta", prerelease: "beta" },
-    {
-      name: branch,
-      channel,
-      prerelease: channel,
-    },
-  ],
-  repositoryUrl: "https://github.com/mission-apprentissage/labonnealternance.git",
-  plugins: ["@semantic-release/commit-analyzer"],
-}
-
-module.exports = process.env.LOCAL_RELEASE ? localConfig : mainConfig
