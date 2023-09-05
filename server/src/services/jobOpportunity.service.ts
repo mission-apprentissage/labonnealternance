@@ -113,13 +113,13 @@ export const getJobsFromApi = async ({
  * @returns {Promise<{ error: string, error_messages: string[] } | IApiError | { job_count: number, matchas: TLbaItemResult, peJobs: TLbaItemResult, lbaCompanies: TLbaItemResult, lbbCompanies: null }>}
  */
 export const getJobsQuery = async (query: TJobSearchQuery) => {
-  const queryValidationResult = await jobsQueryValidator(query)
+  const parameterControl = await jobsQueryValidator(query)
 
-  if ("error" in queryValidationResult) {
-    return queryValidationResult
+  if ("error" in parameterControl) {
+    return parameterControl
   }
 
-  const result = await getJobsFromApi({ romes: queryValidationResult.romes, ...query })
+  const result = await getJobsFromApi({ romes: parameterControl.romes, ...query })
 
   if ("error" in result) {
     return result

@@ -235,7 +235,7 @@ export const jobsQueryValidator = async (query: TJobSearchQuery): Promise<{ resu
   validateCaller({ caller, referer }, error_messages)
 
   // codes ROME  et code RNCP : romes, rncp. Modifie la valeur de query.romes si code rncp correct
-  await validateRncpOrRomeOrDomain(query, error_messages)
+  await validateRomesOrRncp(query, error_messages)
 
   // coordonnées gps optionnelles : latitude et longitude
   if (latitude || longitude) {

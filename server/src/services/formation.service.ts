@@ -606,15 +606,15 @@ export const getFormationsQuery = async ({
   referer: string
   api?: string
 }): Promise<IApiError | { results: ILbaItem[] }> => {
-  const queryValidationResult = await formationsQueryValidator({ romes, longitude, latitude, radius, diploma, romeDomain, caller, referer, useMock })
+  const parameterControl = await formationsQueryValidator({ romes, longitude, latitude, radius, diploma, romeDomain, caller, referer, useMock })
 
-  if ("error" in queryValidationResult) {
-    return queryValidationResult
+  if ("error" in parameterControl) {
+    return parameterControl
   }
 
   try {
     const formations = await getAtLeastSomeFormations({
-      romes: romes ? romes.split(",") : null,
+      romes: parameterControl.romes ? parameterControl.romes.split(",") : null,
       coords: longitude ? [longitude, latitude] : null,
       radius: parseInt(radius),
       diploma: diploma,
