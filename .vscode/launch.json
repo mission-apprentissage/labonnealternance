@@ -1,0 +1,44 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Server: Debug",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "npm run dev",
+      "cwd": "${workspaceFolder}/server",
+      "skipFiles": ["<node_internals>/**", "**/node_modules/**", "**/$KNOWN_TOOLS$/**"]
+    },
+    {
+      "name": "Ui: Debug Server-Side",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "npm run dev",
+      "cwd": "${workspaceFolder}/ui",
+      "skipFiles": ["<node_internals>/**", "**/node_modules/**", "**/$KNOWN_TOOLS$/**"]
+    },
+    {
+      "name": "Cli: Debug",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "npm run cli ${input:command}",
+      "cwd": "${workspaceFolder}/server",
+      "skipFiles": ["<node_internals>/**", "**/node_modules/**", "**/$KNOWN_TOOLS$/**"],
+      "preLaunchTask": {
+        "type": "npm",
+        "script": "build:dev",
+        "path": "server"
+      }
+    }
+  ],
+  "inputs": [
+    {
+      "id": "command",
+      "description": "Cli command to run",
+      "type": "promptString"
+    }
+  ]
+}
