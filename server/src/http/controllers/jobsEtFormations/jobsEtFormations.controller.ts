@@ -10,9 +10,8 @@ import { getJobsFromApi } from "../../../services/jobOpportunity.service.js"
 export class JobsEtFormationsController extends Controller {
   /**
    * Get job opportunities and formations matching the query parameters
-   * @param {string} romes optional: some rome codes separated by commas (either 'romes' or 'romeDomain' or 'rncp' must be present)
-   * @param {string} rncp optional: a rncp code (either 'romes' or 'romeDomain' or 'rncp' must be present)
-   * @param {string} romeDomain optional: a rome domain (either 'romes' or 'romeDomain' or 'rncp' must be present)
+   * @param {string} romes optional: some rome codes separated by commas (either 'romes' or 'rncp' must be present)
+   * @param {string} rncp optional: a rncp code (either 'romes' or 'rncp' must be present)
    * @param {string} referer the referer provided in the HTTP query headers
    * @param {string} caller the consumer id.
    * @param {string} latitude optional: search center latitude. Without latitude, the search will target whole France
@@ -36,7 +35,6 @@ export class JobsEtFormationsController extends Controller {
     @Request() request: express.Request,
     @Query() romes?: string,
     @Query() rncp?: string,
-    @Query() romeDomain?: string,
     @Header() @Hidden() referer?: string,
     @Query() caller?: string,
     @Query() latitude?: string,
@@ -50,11 +48,8 @@ export class JobsEtFormationsController extends Controller {
     @Query() @Hidden() options?: string,
     @Query() @Hidden() useMock?: string
   ) {
-    console.log("romes avant ctrl rncp ", romes)
-
     const parameterControl = await jobsEtFormationsQueryValidator({
       romes,
-      romeDomain,
       rncp,
       referer,
       caller,
@@ -89,7 +84,6 @@ export class JobsEtFormationsController extends Controller {
             latitude,
             radius: radius,
             diploma: diploma,
-            romeDomain,
             caller: caller,
             options: options,
             referer,
