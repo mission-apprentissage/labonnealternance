@@ -1,67 +1,34 @@
-version: "2.4"
+version: "3.8"
+
 services:
-  reverse_proxy:
-    image: lba_reverse_proxy
-    container_name: lba_reverse_proxy
-    build:
-      context: reverse_proxy
-    mem_limit: 256m
+  mongodb:
+    image: mongo:5.0.6-focal
+    restart: unless-stopped
+    mem_limit: 5g
+    command: --wiredTigerCacheSizeGB 4
+    ports:
+      - "127.0.0.1:27017:27017"
+    volumes:
+      - lba_mongodb_data:/data
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", '''db.runCommand("ping").ok''', "--quiet"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+
+  clamav:
+    image: clamav/clamav:latest
     restart: unless-stopped
     ports:
-      - 80:80
-    networks:
-      - lba_network
-    depends_on:
-      - server
-      - ui
-    environment:
-      - MODSEC_RULE_ENGINE=Off
-      - PARANOIA=1
-      - ANOMALY_INBOUND=5
-      - ANOMALY_OUTBOUND=4
-      - DNS_SERVER=127.0.0.11
-      - PROXY=1
-      - ACCESSLOG=/data/access.log
-      - ERRORLOG=/data/error.log
-      - LOGLEVEL=warn
-      - NGINX_ALWAYS_TLS_REDIRECT=false
-      - ALLOWED_METHODS=GET HEAD POST OPTIONS PUT DELETE
-
-  ui:
-    image: lba_ui
-    container_name: lba_ui
-    build:
-      context: ui
-    mem_limit: 512m
-    restart: unless-stopped
-    networks:
-      - lba_network
-    depends_on:
-      - server
-
-  ui_espace_pro:
-    image: lba_ui_espace_pro
-    container_name: lba_ui_espace_pro
-    build:
-      context: ui_espace_pro
-    mem_limit: 256m
-    networks:
-      - lba_network
-    depends_on:
-      - server
-
-  server:
-    image: lba_server
-    container_name: lba_server
-    build:
-      context: server
-    mem_limit: 2g
-    restart: unless-stopped
-    networks:
-      - lba_network
-    environment:
-      - LBA_MONGODB_URI=mongodb://mongodb:27017/labonnealternance?retryWrites=true&w=majority
-      - LBA_LOG_DESTINATIONS=stdout,mongodb
+      - 3310:3310
+    volumes:
+      - lba_clamav_data:/var/lib/clamav
+    healthcheck:
+      test: ["CMD", "/usr/local/bin/clamdcheck.sh"]
+      interval: 60s
+      retries: 3
+      start_period: 6m
 
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.17.6
@@ -73,22 +40,33 @@ services:
       - network.host=0.0.0.0
       - discovery.zen.minimum_master_nodes=1
     mem_limit: 3g
-    networks:
-      - lba_network
-
-  clamav:
-    image: clamav/clamav:0.105.0
-    container_name: lba_clamav
-    mem_limit: 4g
-    restart: unless-stopped
-    networks:
-      - lba_network
+    volumes:
+      - lba_elasticsearch_data:/usr/share/elasticsearch/data
     healthcheck:
-      test: ["CMD", "/usr/local/bin/clamdcheck.sh"]
-      interval: 60s
-      retries: 3
-      start_period: 120s
+      test: ["CMD", "curl", "http://localhost:9200/_cat/health > /dev/null || exit 1"]
+      interval: 30s
+      retries: 5
+      timeout: 10s
+      start_period: 2m
 
-networks:
-  lba_network:
-    name: lba_network
+  smtp:
+    image: axllent/mailpit:v1.5.5
+    restart: unless-stopped
+    ports:
+      - 1025:1025
+      - 8025:8025
+    environment:
+      - MP_DATA_FILE=/data/mailpit.db
+    volumes:
+      - lba_smtp_data:/data
+
+volumes:
+  lba_mongodb_data:
+    driver: local
+    name: lba_mongodb_data
+  lba_smtp_data:
+    driver: local
+    name: lba_smtp_data
+  lba_clamav_data:
+    driver: local
+    name: lba_clamav_data
