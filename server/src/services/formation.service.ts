@@ -1,6 +1,7 @@
 import axios from "axios"
 import { IFormationCatalogue } from "../common/model/schema/formationCatalogue/formationCatalogue.types.js"
 import crypto from "crypto"
+import { groupBy, maxBy } from "lodash-es"
 import { getElasticInstance } from "../common/esClient/index.js"
 import { roundDistance } from "../common/utils/geolib.js"
 import { FormationCatalogue } from "../common/model/index.js"
@@ -14,7 +15,6 @@ import { formationMock, formationsMock, formationDetailMock } from "../mocks/for
 import { formationsQueryValidator, formationsRegionQueryValidator } from "../service/formationsQueryValidator.js"
 import { IFormationEsResult } from "./formation.service.types.js"
 import { ILbaItem, ILbaItemTrainingSession, LbaItem } from "./lbaitem.shared.service.types.js"
-import { groupBy, maxBy } from "lodash"
 
 const formationResultLimit = 500
 
