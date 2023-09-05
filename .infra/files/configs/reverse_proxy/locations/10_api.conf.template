@@ -1,11 +1,13 @@
 location /api {
     set $upstream http://server:5000;
     include includes/proxy.conf;
+
+    # client_max_body_size 0;
 }
 
-location /api/admin/upload {
-    client_max_body_size    100M;
-
-    set $upstream http://server:5000;
-    include includes/proxy.conf;
-}
+# location /api/admin/upload {
+#     client_max_body_size    100M;
+# 
+#     set $upstream http://server:5000;
+#     include includes/proxy.conf;
+# }

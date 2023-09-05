@@ -1,8 +1,0 @@
-location / {
-    set $upstream http://ui:3000;
-    include includes/proxy.conf;
-
-    if ($always_redirect = on) {
-        return 301 https://$host$request_uri;
-    }
-}

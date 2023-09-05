@@ -2,8 +2,14 @@
 
 set -euo pipefail
 
-readonly SOURCE_DB=${1:?"Merci de préciser l'url de connection à la base de donnée source"}
-shift
+if [ -z "${1:-}" ]; then
+    readonly TARGET_DB="mongodb://localhost:27017"
+else
+    readonly TARGET_DB="$1"
+    shift
+fi
+
+echo "base de donnée cible: $TARGET_DB"
 
 read -p "La base de donnée contient-elle des données sensible ? [Y/n]: " response
 case $response in
@@ -28,6 +34,6 @@ ansible-vault view --vault-password-file="$ROOT_DIR/.bin/scripts/get-vault-passw
 
 docker compose -f "$ROOT_DIR/docker-compose.yml" up mongodb -d
 mkdir -p "$ROOT_DIR/.infra/files/mongodb"
-docker compose -f "$ROOT_DIR/docker-compose.yml" exec -it mongodb mongodump --uri "$SOURCE_DB" --gzip --archive > "$SEED_GZ" 
+docker compose -f "$ROOT_DIR/docker-compose.yml" exec -it mongodb mongodump --uri "$TARGET_DB" --gzip --archive > "$SEED_GZ" 
 rm -f "$SEED_GPG"
 gpg  -c --cipher-algo twofish --batch --passphrase-file "$PASSPHRASE" -o "$SEED_GPG" "$SEED_GZ"
