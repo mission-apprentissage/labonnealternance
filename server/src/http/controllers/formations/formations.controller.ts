@@ -10,12 +10,12 @@ import { trackApiCall } from "../../../common/utils/sendTrackingEvent.js"
 export class FormationsController extends Controller {
   /**
    * Get formations matching the query parameters
-   * @param {string} referer the referer provided in the HTTP query headers
-   * @param {string} caller the consumer id.
    * @param {string} romes optional: some rome codes separated by commas (either romes or romeDomain must be present)
    * @param {string} romeDomain optional: a rome domain (either romes or romeDomain must be present)
-   * @param {string} latitude search center latitude
-   * @param {string} longitude search center longitude
+   * @param {string} referer the referer provided in the HTTP query headers
+   * @param {string} caller the consumer id.
+   * @param {string} latitude optional: search center latitude. Without latitude, the search will target whole France
+   * @param {string} longitude optional: search center longitude. Without longitude, the search will target whole France
    * @param {number} radius the search radius
    * @param {string} diploma optional: targeted diploma
    * @param {string[]} options optional: options

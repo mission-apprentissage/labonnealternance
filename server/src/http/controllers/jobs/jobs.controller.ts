@@ -426,15 +426,15 @@ export class JobsController extends Controller {
 
   /**
    * Get job opportunities matching the query parameters
+   * @param {string} romes optional: some rome codes separated by commas (either 'romes' or 'rncp' must be present)
+   * @param {string} rncp optional: a rncp code (either 'romes' or 'rncp' must be present)
    * @param {string} referer the referer provided in the HTTP query headers
    * @param {string} caller the consumer id.
-   * @param {string} romes some rome codes separated by commas
-   * @param {string} rncp a rncp code
-   * @param {string} latitude search center latitude
-   * @param {string} longitude search center longitude
-   * @param {number} radius the search radius
-   * @param {string} insee search center insee code
-   * @param {string} sources optional: comma separated list of job opportunities sources
+   * @param {string} latitude optional: search center latitude. Without latitude, the search will target whole France
+   * @param {string} longitude optional: search center longitude. Without longitude, the search will target whole France
+   * @param {number} radius optional: the search radius
+   * @param {string} insee optional: search center insee code
+   * @param {string} sources optional: comma separated list of job opportunities sources (possible values: "lba", "offres", "matcha")
    * @param {string} diploma optional: targeted diploma
    * @param {string} opco optional: filter opportunities on opco name
    * @param {string} opcoUrl optional: filter opportunities on opco url
@@ -448,7 +448,7 @@ export class JobsController extends Controller {
   @OperationId("getJobOpportunities")
   public async getJobOpportunities(
     @Request() request: express.Request,
-    @Query() romes?: string[],
+    @Query() romes?: string,
     @Query() rncp?: string,
     @Header() @Hidden() referer?: string,
     @Query() caller?: string,
@@ -462,7 +462,7 @@ export class JobsController extends Controller {
     @Query() opcoUrl?: string,
     @Query() @Hidden() useMock?: string
   ): Promise<IApiError | { lbbCompanies: ILbaItem[] } | { lbaCompanies: ILbaItem[] }> {
-    const result = await getJobsQuery({ romes: romes?.join(",") || null, rncp, caller, referer, latitude, longitude, radius, insee, sources, diploma, opco, opcoUrl, useMock })
+    const result = await getJobsQuery({ romes, rncp, caller, referer, latitude, longitude, radius, insee, sources, diploma, opco, opcoUrl, useMock })
 
     if ("error" in result) {
       this.setStatus(500)

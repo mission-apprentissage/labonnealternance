@@ -27,9 +27,7 @@ import catalogueRoute from "./routes/catalogue.controller.js"
 import constantsRoute from "./routes/constants.controller.js"
 import etablissementRoute from "./routes/etablissement.controller.js"
 import etablissementsRecruteurRoute from "./routes/etablissementRecruteur.controller.js"
-import formationRegionV1 from "./routes/formationRegionV1.controller.js"
 import formulaireRoute from "./routes/formulaire.controller.js"
-import jobEtFormationV1 from "./routes/jobEtFormationV1.controller.js"
 import optoutRoute from "./routes/optout.controller.js"
 import partnersRoute from "./routes/partners.controller.js"
 import rome from "./controllers/metiers/rome.controller.js"
@@ -183,7 +181,6 @@ export default async (components) => {
    */
   app.use("/api/version", limiter3PerSecond, version())
   app.use("/api/romelabels", limiter10PerSecond, rome())
-  app.use("/api/v1/jobsEtFormations", limiter5PerSecond, jobEtFormationV1())
   app.use("/api/updateLBB", limiter1Per20Second, updateLbaCompany())
   app.use("/api/mail", limiter1Per20Second, sendMail(components))
   app.use("/api/campaign/webhook", campaignWebhook(components))

@@ -10,13 +10,12 @@ import { trackApiCall } from "../../../common/utils/sendTrackingEvent.js"
 export class FormationsParRegionController extends Controller {
   /**
    * Get formations matching the query parameters
-   * @param {string} referer the referer provided in the HTTP query headers
-   * @param {string} caller the consumer id.
    * @param {string} romes optional: some rome codes separated by commas (either romes or romeDomain must be present)
    * @param {string} romeDomain optional: a rome domain (either romes or romeDomain must be present)
-   * @param {string} latitude search center latitude
-   * @param {string} longitude search center longitude
-   * @param {number} radius the search radius
+   * @param {string} referer the referer provided in the HTTP query headers
+   * @param {string} caller the consumer id.
+   * @param {string} departement optional: french "departement" code (either 'departement' or 'region' must be present)
+   * @param {string} region optional: french "region" code (either 'departement' or 'region' must be present)
    * @param {string} diploma optional: targeted diploma
    * @param {string[]} options optional: options
    * @param {string} useMock optional: wether to return mocked values or not

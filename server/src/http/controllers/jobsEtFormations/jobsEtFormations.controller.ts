@@ -10,14 +10,19 @@ import { getJobsFromApi } from "../../../services/jobOpportunity.service.js"
 export class JobsEtFormationsController extends Controller {
   /**
    * Get job opportunities and formations matching the query parameters
+   * @param {string} romes optional: some rome codes separated by commas (either 'romes' or 'romeDomain' or 'rncp' must be present)
+   * @param {string} rncp optional: a rncp code (either 'romes' or 'romeDomain' or 'rncp' must be present)
+   * @param {string} romeDomain optional: a rome domain (either 'romes' or 'romeDomain' or 'rncp' must be present)
    * @param {string} referer the referer provided in the HTTP query headers
    * @param {string} caller the consumer id.
-   * @param {string} romes optional: some rome codes separated by commas (either romes or romeDomain must be present)
-   * @param {string} romeDomain optional: a rome domain (either romes or romeDomain must be present)
-   * @param {string} latitude search center latitude
-   * @param {string} longitude search center longitude
-   * @param {number} radius the search radius
+   * @param {string} latitude optional: search center latitude. Without latitude, the search will target whole France
+   * @param {string} longitude optional: search center longitude. Without longitude, the search will target whole France
+   * @param {number} radius optional: the search radius
+   * @param {string} insee optional: search center insee code
+   * @param {string} sources optional: comma separated list of job opportunities sources and trainings (possible values : "formations", "lba", "matcha", "offres")
    * @param {string} diploma optional: targeted diploma
+   * @param {string} opco optional: filter opportunities on opco name
+   * @param {string} opcoUrl optional: filter opportunities on opco url
    * @param {string[]} options optional: options
    * @param {string} useMock optional: wether to return mocked values or not
    * @returns {Promise<IApiError | { results: ILbaItem[] }>} response
