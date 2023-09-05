@@ -61,7 +61,7 @@ function vault:password() {
   "${SCRIPT_DIR}/get-vault-password-client.sh" "$@"
 }
 
-function seed:udpate() {
+function seed:update() {
   "${SCRIPT_DIR}/seed-update.sh" "$@"
 }
 

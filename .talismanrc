@@ -22,7 +22,7 @@ fileignoreconfig:
 - filename: .infra/env.ini
   checksum: b760bcf36494ee698a22dc8360d8589aa3d4f9645a049db1ef864cd169409304
 - filename: .infra/files/configs/mongodb/seed.gpg
-  checksum: bd386ba9f6c996fe1a4b27fd9c1727eaa1af5f135138bf7d0920041c7570f49c
+  checksum: ec83455b778d8d88cf4ba2ec7a68cfaea21bb475ce0a592f89d30690ac9c27bb
 - filename: .infra/files/scripts/seed.sh
   checksum: 030d886a8ef5a415f42b105a0087eac735e3ceb4bcddb69a9914b2d44231ae52
 - filename: .infra/vault/vault.yml

@@ -1,0 +1,94 @@
+version: "2.4"
+services:
+  reverse_proxy:
+    image: lba_reverse_proxy
+    container_name: lba_reverse_proxy
+    build:
+      context: reverse_proxy
+    mem_limit: 256m
+    restart: unless-stopped
+    ports:
+      - 80:80
+    networks:
+      - lba_network
+    depends_on:
+      - server
+      - ui
+    environment:
+      - MODSEC_RULE_ENGINE=Off
+      - PARANOIA=1
+      - ANOMALY_INBOUND=5
+      - ANOMALY_OUTBOUND=4
+      - DNS_SERVER=127.0.0.11
+      - PROXY=1
+      - ACCESSLOG=/data/access.log
+      - ERRORLOG=/data/error.log
+      - LOGLEVEL=warn
+      - NGINX_ALWAYS_TLS_REDIRECT=false
+      - ALLOWED_METHODS=GET HEAD POST OPTIONS PUT DELETE
+
+  ui:
+    image: lba_ui
+    container_name: lba_ui
+    build:
+      context: ui
+    mem_limit: 512m
+    restart: unless-stopped
+    networks:
+      - lba_network
+    depends_on:
+      - server
+
+  ui_espace_pro:
+    image: lba_ui_espace_pro
+    container_name: lba_ui_espace_pro
+    build:
+      context: ui_espace_pro
+    mem_limit: 256m
+    networks:
+      - lba_network
+    depends_on:
+      - server
+
+  server:
+    image: lba_server
+    container_name: lba_server
+    build:
+      context: server
+    mem_limit: 2g
+    restart: unless-stopped
+    networks:
+      - lba_network
+    environment:
+      - LBA_MONGODB_URI=mongodb://mongodb:27017/labonnealternance?retryWrites=true&w=majority
+      - LBA_LOG_DESTINATIONS=stdout,mongodb
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.6
+    container_name: lba_elasticsearch
+    environment:
+      - ES_JAVA_OPTS=-Xmx512m -Xms512m
+      - discovery.type=single-node
+      - cluster.name=docker-cluster
+      - network.host=0.0.0.0
+      - discovery.zen.minimum_master_nodes=1
+    mem_limit: 3g
+    networks:
+      - lba_network
+
+  clamav:
+    image: clamav/clamav:0.105.0
+    container_name: lba_clamav
+    mem_limit: 4g
+    restart: unless-stopped
+    networks:
+      - lba_network
+    healthcheck:
+      test: ["CMD", "/usr/local/bin/clamdcheck.sh"]
+      interval: 60s
+      retries: 3
+      start_period: 120s
+
+networks:
+  lba_network:
+    name: lba_network
