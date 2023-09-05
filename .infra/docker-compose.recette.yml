@@ -1,0 +1,29 @@
+version: "3.8"
+
+services:
+  smtp:
+    image: axllent/mailpit:v1.5.5
+    deploy:
+      resources:
+        limits:
+          memory: 128m
+      update_config:
+        failure_action: rollback
+      rollback_config:
+        parallelism: 0
+    ports:
+      - 1025:1025
+    networks:
+      - mna_network
+    volumes:
+      - /opt/app/data/smtp:/data
+      - /opt/app/configs/mailpit/auth:/auth
+    environment:
+      - MP_DATA_FILE=/data/mailpit.db
+      - MP_UI_AUTH_FILE=/auth
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: localhost:24224
+        tag: docker.lba.{{env_type}}.smtp
+        fluentd-async: "true"

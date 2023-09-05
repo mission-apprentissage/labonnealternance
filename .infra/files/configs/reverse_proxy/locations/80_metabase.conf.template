@@ -1,0 +1,8 @@
+location ~ ^/metabase/(.*)$ {
+    set $upstream http://metabase:3000;
+    proxy_pass $upstream/$1$is_args$args;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-Host $server_name;
+    proxy_set_header X-Forwarded-Proto $scheme;
+}

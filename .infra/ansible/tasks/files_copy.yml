@@ -1,0 +1,66 @@
+---
+- name: Création de l'arborescence /opt/app à partir de .infra/files
+  file:
+    path: "/opt/app/{{ item.path }}"
+    state: directory
+    mode: "{{ item.mode }}"
+  with_filetree: "{{inventory_dir}}/files"
+  when:
+    - item.state == 'directory'
+    # /app/tools is managed by infra
+    - item.path | regex_search('^tools/?') == none
+    - item.path | regex_search('^system/?') == none
+
+- name: Copie des fichiers de l'arborescence /opt/app à partir de .infra/files
+  ansible.builtin.template:
+    src: "{{ item.src }}"
+    dest: "/opt/app/{{ item.path }}"
+    mode: "{{ item.mode }}"
+  with_filetree: "{{inventory_dir}}/files"
+  when:
+    - item.state == 'file'
+    - item.path | basename != '.gitkeep'
+    - item.path | basename != '.DS_Store'
+    # seed.gpg should not be template replaced
+    - item.path | basename != 'seed.gpg'
+    - item.path | basename != 'seed.gz'
+    # /app/tools is managed by infra
+    - item.path | regex_search('^tools/?') == none
+    - item.path | regex_search('^system/?') == none
+
+- name: Copie du fichier de seed
+  ansible.builtin.copy:
+    src: "{{inventory_dir}}/files/configs/mongodb/seed.gpg"
+    dest: "/opt/app/configs/mongodb/seed.gpg"
+    mode: "700"
+  when: env_type == 'preview'
+
+- name: copy server env file
+  ansible.builtin.template:
+    src: "{{ item }}"
+    dest: "/opt/app/.env_server"
+  with_fileglob:
+    - "{{inventory_dir}}/.env_server"
+  when: env_type != 'preview'
+
+- name: copy du fichier docker compose
+  ansible.builtin.template:
+    src: "{{ item }}"
+    dest: "/opt/app/docker-compose.production.yml"
+  with_fileglob:
+    - "{{inventory_dir}}/docker-compose.production.yml"
+  when: env_type != 'preview'
+
+- name: copy du fichier recette docker compose
+  ansible.builtin.template:
+    src: "{{ item }}"
+    dest: "/opt/app/docker-compose.recette.yml"
+  with_fileglob:
+    - "{{inventory_dir}}/docker-compose.recette.yml"
+  when: env_type == 'recette'
+
+- name: creation du fichier docker compose preview system
+  ansible.builtin.template:
+    src: "{{inventory_dir}}/docker-compose.preview-system.yml"
+    dest: "/opt/app/docker-compose.preview-system.yml"
+  when: env_type == 'preview'

@@ -1,25 +1,80 @@
 # Autodetect text files
 * text=auto
-
 # Force the following filetypes to have unix eols, so Windows does not break them
 *.* text eol=lf
-
-# Force files to be handled as binaries
-*.jpg binary
-*.jpeg binary
-*.gif binary
-*.png binary
-*.t3x binary
-*.t3d binary
-*.exe binary
-*.data binary
-*.ttf binary
-*.eof binary
-*.eot binary
-*.swf binary
-*.mov binary
-*.mp4 binary
-*.mp3 binary
-*.ogg binary
-*.flv binary
-*.xml binary
+# Vault
+# .infra/vault/vault.yml diff=diff-vault merge=merge-vault
+# Force images/fonts to be handled as binaries
+# Documents
+*.doc       diff=astextplain
+*.DOC       diff=astextplain
+*.docx      diff=astextplain
+*.DOCX      diff=astextplain
+*.dot       diff=astextplain
+*.DOT       diff=astextplain
+*.pdf       diff=astextplain
+*.PDF       diff=astextplain
+*.rtf       diff=astextplain
+*.RTF       diff=astextplain
+# Graphics
+*.ai        binary
+*.bmp       binary
+*.eps       binary
+*.gif       binary
+*.gifv      binary
+*.ico       binary
+*.jng       binary
+*.jp2       binary
+*.jpg       binary
+*.jpeg      binary
+*.jpx       binary
+*.jxr       binary
+*.pdf       binary
+*.png       binary
+*.psb       binary
+*.psd       binary
+*.svgz      binary
+*.tif       binary
+*.tiff      binary
+*.wbmp      binary
+*.webp      binary
+# Audio
+*.kar       binary
+*.m4a       binary
+*.mid       binary
+*.midi      binary
+*.mp3       binary
+*.ogg       binary
+*.ra        binary
+# Video
+*.3gpp      binary
+*.3gp       binary
+*.as        binary
+*.asf       binary
+*.asx       binary
+*.fla       binary
+*.flv       binary
+*.m4v       binary
+*.mng       binary
+*.mov       binary
+*.mp4       binary
+*.mpeg      binary
+*.mpg       binary
+*.ogv       binary
+*.swc       binary
+*.swf       binary
+*.webm      binary
+# Archives
+*.7z        binary
+*.gz        binary
+*.jar       binary
+*.rar       binary
+*.tar       binary
+*.zip       binary
+# Fonts
+*.ttf       binary
+*.eot       binary
+*.otf       binary
+*.woff      binary
+*.woff2     binary
+.infra/files/configs/mongodb/seed.gpg filter=lfs diff=lfs merge=lfs -text

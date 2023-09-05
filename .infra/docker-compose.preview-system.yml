@@ -1,0 +1,163 @@
+version: "3.8"
+
+x-default: &default
+  deploy:
+    resources:
+      limits:
+        memory: 256m
+  restart: always
+  networks:
+    - mna_network
+
+name: lba_preview_system
+
+services:
+  reverse_proxy:
+    <<: *default
+    image: "nginxproxy/nginx-proxy"
+    container_name: lba_reverse_proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - conf:/etc/nginx/conf.d
+      - vhost:/etc/nginx/vhost.d
+      - html:/usr/share/nginx/html
+      - certs:/etc/nginx/certs:ro
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+    labels:
+      - autoheal=true
+
+  acme-companion:
+    <<: *default
+    image: nginxproxy/acme-companion
+    container_name: nginx-proxy-acme
+    volumes:
+      - certs:/etc/nginx/certs:rw
+      - acme:/etc/acme.sh
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      - DEFAULT_EMAIL=misson.apprentissage.devops@gmail.com
+    volumes_from:
+      - reverse_proxy
+
+  mongodb:
+    <<: *default
+    image: mongo:6.0.2-focal
+    container_name: lba_mongodb
+    deploy:
+      resources:
+        limits:
+          memory: 2g
+    ports:
+      - "127.0.0.1:27017:27017"
+    volumes:
+      - /opt/app/data/mongodb/db:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", '''db.runCommand("ping").ok''', "--quiet"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+    labels:
+      - autoheal=true
+
+  clamav:
+    <<: *default
+    image: clamav/clamav:latest
+    container_name: lba_clamav
+    deploy:
+      resources:
+        limits:
+          memory: 2g
+    volumes:
+      - /opt/app/data/clamav:/var/lib/clamav
+    healthcheck:
+      test: ["CMD", "/usr/local/bin/clamdcheck.sh"]
+      interval: 60s
+      retries: 3
+      start_period: 6m
+    labels:
+      - autoheal=true
+
+  smtp:
+    <<: *default
+    image: axllent/mailpit:v1.5.5
+    container_name: lba_smtp
+    ports:
+      - 1025:1025
+    volumes:
+      - /opt/app/data/smtp:/data
+      - /opt/app/configs/mailpit/auth:/auth
+    environment:
+      - MP_DATA_FILE=/data/mailpit.db
+      - MP_UI_AUTH_FILE=/auth/auth
+      - VIRTUAL_HOST=smtp.{{dns_name}}
+      - VIRTUAL_PATH=/
+      - VIRTUAL_PORT=8025
+      - LETSENCRYPT_HOST=smtp.{{dns_name}}
+      - LETSENCRYPT_EMAIL=misson.apprentissage.devops@gmail.com
+
+  nodeexporter:
+    <<: *default
+    image: prom/node-exporter:v1.5.0
+    hostname: "{{host_name}}"
+    user: root
+    command:
+      - "--path.procfs=/host/proc"
+      - "--path.rootfs=/rootfs"
+      - "--path.sysfs=/host/sys"
+      - "--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)"
+      - "--collector.textfile.directory=/var/cron-exporter"
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+      - /opt/app/system/cron:/var/cron-exporter:rw
+    environment:
+      - VIRTUAL_HOST={{dns_name}}
+      - VIRTUAL_DEST=/metrics
+      - VIRTUAL_PATH=/_monitoring/nodeexporter
+      - VIRTUAL_PORT=9100
+      - LETSENCRYPT_HOST={{dns_name}}
+      - LETSENCRYPT_EMAIL=misson.apprentissage.devops@gmail.com
+
+  cadvisor:
+    <<: *default
+    image: gcr.io/cadvisor/cadvisor:v0.46.0
+    hostname: "{{host_name}}"
+    privileged: true
+    devices:
+      - /dev/kmsg
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    environment:
+      - VIRTUAL_HOST={{dns_name}}
+      - VIRTUAL_DEST=/metrics
+      - VIRTUAL_PATH=/_monitoring/cadvisor
+      - VIRTUAL_PORT=8080
+      - LETSENCRYPT_HOST={{dns_name}}
+      - LETSENCRYPT_EMAIL=misson.apprentissage.devops@gmail.com
+
+  autoheal:
+    <<: *default
+    image: willfarrell/autoheal:latest
+    container_name: lba_autoheal
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+volumes:
+  conf:
+  vhost:
+  html:
+  certs:
+  acme:
+
+networks:
+  mna_network:
+    name: mna_network
+    external: true

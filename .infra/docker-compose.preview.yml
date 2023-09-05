@@ -1,0 +1,72 @@
+version: "3.8"
+
+x-default: &default
+  deploy:
+    resources:
+      limits:
+        memory: 256m
+  restart: always
+  networks:
+    - mna_network
+
+name: "lba_preview_{{pr_number}}"
+
+services:
+  server:
+    <<: *default
+    image: "ghcr.io/mission-apprentissage/mna_lba_server:0.0.0-{{pr_number}}"
+    container_name: lba_{{pr_number}}_server
+    environment:
+      - VIRTUAL_HOST={{pr_number}}.lba-preview.apprentissage.beta.gouv.fr
+      - VIRTUAL_PATH=/api
+      - VIRTUAL_PORT=5000
+      - LETSENCRYPT_HOST={{pr_number}}.lba-preview.apprentissage.beta.gouv.fr
+      - LETSENCRYPT_EMAIL=misson.apprentissage.devops@gmail.com
+    env_file: .env_server
+    volumes:
+      - server:/data
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:5000/api/healthcheck"]
+      interval: 10s
+      timeout: 30s
+      retries: 11
+      start_period: 10s
+    labels:
+      - autoheal=true
+
+  ui:
+    <<: *default
+    image: "ghcr.io/mission-apprentissage/mna_lba_ui:0.0.0-{{pr_number}}-preview"
+    container_name: lba_{{pr_number}}_ui
+    environment:
+      - VIRTUAL_HOST={{pr_number}}.lba-preview.apprentissage.beta.gouv.fr
+      - VIRTUAL_PATH=/
+      - VIRTUAL_PORT=3000
+      - LETSENCRYPT_HOST={{pr_number}}.lba-preview.apprentissage.beta.gouv.fr
+      - LETSENCRYPT_EMAIL=misson.apprentissage.devops@gmail.com
+
+  queue_processor:
+    <<: *default
+    image: "ghcr.io/mission-apprentissage/mna_lba_server:0.0.0-{{pr_number}}"
+    container_name: lba_{{pr_number}}_queue_processor
+    command: ["yarn", "cli", "queue_processor:start"]
+    env_file: .env_server
+    volumes:
+      - server:/data
+
+  jobs_processor:
+    <<: *default
+    image: "ghcr.io/mission-apprentissage/mna_lba_server:0.0.0-{{pr_number}}"
+    container_name: lba_{{pr_number}}_jobs_processor
+    command: ["yarn", "cli", "job_processor:start"]
+    env_file: .env_server
+    volumes:
+      - server:/data
+
+volumes:
+  server:
+
+networks:
+  mna_network:
+    name: mna_network
+    external: true

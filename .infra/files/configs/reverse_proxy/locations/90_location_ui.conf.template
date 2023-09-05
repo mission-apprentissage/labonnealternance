@@ -1,0 +1,8 @@
+location / {
+    set $upstream http://ui:3000;
+    include includes/proxy.conf;
+
+    # expires $ui_expires;
+
+    client_max_body_size 0;
+}

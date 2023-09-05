@@ -1,52 +1,83 @@
 fileignoreconfig:
-  - filename: server/src/assets/templates/mail-cfa-premium-invite.mjml.ejs
-    checksum: 8ade564d819d0605848db7f594c756a9f113ee0356f357c3bd41723f12cc7eb0
-  - filename: server/src/assets/templates/mail-cfa-premium-invite.mjml.ejs
-    checksum: 07f77c50203a70eeb951810250e4218e943d8d78e77495b91f6c0a20c32ff82e
-  - filename: server/src/assets/templates/mail-bienvenue.mjml.ejs
-    checksum: 6806b0e64e347ef56e04787e6518de5228a6c4f946f6f5f431cdcf56ca2303f4
-  - filename: server/src/generated/swagger.json
-    checksum: 4f467e6eaba0928961f8f278ba211fb5799348be44d5ee5f26f0ad8f9cf56f77
-    ignore_detectors: ["filename", "filesize", "filecontent"]
-  - filename: server/src/generated/routes.ts
-    checksum: 2f6de2887e054b2ed80c490519724d6cbca85a1c30dc0695471621161a78863c
-    ignore_detectors: ["filename", "filesize", "filecontent"]
-  - filename: server/src/jobs/lba_recruteur/api/resetApiKey.ts
-    checksum: a3fa687c1f7c387def5428d934cd1a427b0edf2603aac78c62c8aab140be9b30
-  - filename: server/src/services/userRecruteur.service.ts
-    checksum: 0e426e336e82553c4a737b4832732903cefb01b2f9ee2024f1759293827bf813
-  - filename: server/src/http/controllers/jobs/jobs.controller.ts
-    checksum: d7a5e33a4e9bd43ccfd2758ec08a1a491957e27566c50e235f9232f744a392ca
-  - filename: CHANGELOG.md
-    checksum: d6981eb077fcbf1c6858393e2f5cada971b297db3c0103853338f9f4b6211e0d
-    ignore_detectors: ["filename", "filesize", "filecontent"]
-  - filename: server/src/jobs/seed/referentielRome/unix_fiche_emploi_metier_v450_iso8859-15.xml
-    checksum: 7257a3a49d3170754fd55316bf78b680866465400c46e11727daa5da00863347
-  - filename: server/src/config.ts
-    checksum: 936ab034b4ef4228b377301733f76dff41cd75215f8ea06e873626bbccfd603d
-  - filename: .github/workflows/gitguardian.yml
-    checksum: 6570536d75569b3826026d9126cff26fc4de473afbab8adbfc9fab833362fb79
-  - filename: ui/components/HomeComponents/TestezConnaissancesQuiz.tsx
-    checksum: 7e42ed6bce6fc0f366669ae64e66975bc4c6b033fdafacb54e16e7cb2fbc75c2
-  - filename: server/src/auth/passport-strategy.ts
-    checksum: 9986e0643ef89aca68ad0d29db14bece58801a27335658db27bfc20b4fe15257
-  - filename: server/src/http/routes/auth/password.controller.ts
-    checksum: 9d27a293e44bed47969f818e2c8abff95d429f219780900e580bfb409c5d4985
-version: ""
+- filename: .bin/scripts/get-vault-password-client.sh
+  checksum: b15405225b41eed7640c8218c17155c3a1d7f59e47f4aeaca58d0c84a61ca169
+- filename: .bin/scripts/seed-apply.sh
+  checksum: 06012fd2d2a230a6e12021fdfa0091a22f3ede6805cee5ae4446d32f9818f9fd
+- filename: .bin/scripts/seed-update.sh
+  checksum: 73bb14c959a2257b415dbf651c4e9da26f7c4f8fbb681fd70582615a031849ee
+- filename: .bin/scripts/setup-local-env.sh
+  checksum: 4bb90296fab07d4c645e2dae35f0e397e073764e944865a55e6339aec0a707f3
+- filename: .github/workflows/gitguardian.yml
+  checksum: 6570536d75569b3826026d9126cff26fc4de473afbab8adbfc9fab833362fb79
+- filename: .infra/.env_server
+  checksum: 2e13b63907d9b781a0a55fdf739e2f3ca06eb614b26ab289c94f83ad66c1183c
+- filename: .infra/ansible/tasks/preview_pr.yml
+  checksum: fb8f977e58d7308fa2c937f33aa065af2a999171697b89ae399b9ba53c2d62f9
+- filename: .infra/docker-compose.preview-system.yml
+  checksum: 241d3e0e16c328c1f33d875acec59fb48704e2d83d1ba6c8ccb821d1064a9b91
+- filename: .infra/docker-compose.preview.yml
+  checksum: 301d8e633c0229eb3ed0f3ce396e4d8e0288434b7cc2bb7859cde42966efd8b8
+- filename: .infra/docker-compose.production.yml
+  checksum: c98ab69b77a7ab595bf6d504524db92c04940715325f1263542c2f5028c1423a
+- filename: .infra/env.ini
+  checksum: b760bcf36494ee698a22dc8360d8589aa3d4f9645a049db1ef864cd169409304
+- filename: .infra/files/configs/mongodb/seed.gpg
+  checksum: bd386ba9f6c996fe1a4b27fd9c1727eaa1af5f135138bf7d0920041c7570f49c
+- filename: .infra/files/scripts/seed.sh
+  checksum: 030d886a8ef5a415f42b105a0087eac735e3ceb4bcddb69a9914b2d44231ae52
+- filename: .infra/vault/vault.yml
+  checksum: 8b778abf2d970486f38f2a1bd29244582745eb5cd10f40499bea48136e1a0235
+- filename: CHANGELOG.md
+  checksum: d6981eb077fcbf1c6858393e2f5cada971b297db3c0103853338f9f4b6211e0d
+  ignore_detectors:
+  - filename
+  - filesize
+  - filecontent
+- filename: server/src/assets/templates/mail-bienvenue.mjml.ejs
+  checksum: 6806b0e64e347ef56e04787e6518de5228a6c4f946f6f5f431cdcf56ca2303f4
+- filename: server/src/assets/templates/mail-cfa-premium-invite.mjml.ejs
+  checksum: 07f77c50203a70eeb951810250e4218e943d8d78e77495b91f6c0a20c32ff82e
+- filename: server/src/auth/passport-strategy.ts
+  checksum: 9986e0643ef89aca68ad0d29db14bece58801a27335658db27bfc20b4fe15257
+- filename: server/src/config.ts
+  checksum: 936ab034b4ef4228b377301733f76dff41cd75215f8ea06e873626bbccfd603d
+- filename: server/src/generated/routes.ts
+  checksum: 2f6de2887e054b2ed80c490519724d6cbca85a1c30dc0695471621161a78863c
+  ignore_detectors:
+  - filename
+  - filesize
+  - filecontent
+- filename: server/src/generated/swagger.json
+  checksum: 4f467e6eaba0928961f8f278ba211fb5799348be44d5ee5f26f0ad8f9cf56f77
+  ignore_detectors:
+  - filename
+  - filesize
+  - filecontent
+- filename: server/src/http/controllers/jobs/jobs.controller.ts
+  checksum: d7a5e33a4e9bd43ccfd2758ec08a1a491957e27566c50e235f9232f744a392ca
+- filename: server/src/http/routes/auth/password.controller.ts
+  checksum: 9d27a293e44bed47969f818e2c8abff95d429f219780900e580bfb409c5d4985
+- filename: server/src/jobs/lba_recruteur/api/resetApiKey.ts
+  checksum: a3fa687c1f7c387def5428d934cd1a427b0edf2603aac78c62c8aab140be9b30
+- filename: server/src/jobs/seed/referentielRome/unix_fiche_emploi_metier_v450_iso8859-15.xml
+  checksum: 7257a3a49d3170754fd55316bf78b680866465400c46e11727daa5da00863347
+- filename: server/src/services/userRecruteur.service.ts
+  checksum: 0e426e336e82553c4a737b4832732903cefb01b2f9ee2024f1759293827bf813
+- filename: ui/components/HomeComponents/TestezConnaissancesQuiz.tsx
+  checksum: 7e42ed6bce6fc0f366669ae64e66975bc4c6b033fdafacb54e16e7cb2fbc75c2
 scopeconfig:
-  - scope: node
+- scope: node
 custom_patterns:
-  - (?s)[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}
+- (?s)[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}
 allowed_patterns:
-  - key
-  - secret
-  - SECRET
-  - password
-  - Password
-  - pass
-  - apiKey
-  - ApiKey
-  - APIKey
-  - versionKey
+- key
+- secret
+- SECRET
+- password
+- Password
+- pass
+- apiKey
+- ApiKey
+- APIKey
+- versionKey
 version: "1.0"
-
