@@ -14,6 +14,7 @@ import { formationMock, formationsMock, formationDetailMock } from "../mocks/for
 import { formationsQueryValidator, formationsRegionQueryValidator } from "../service/formationsQueryValidator.js"
 import { IFormationEsResult } from "./formation.service.types.js"
 import { ILbaItem, ILbaItemTrainingSession, LbaItem } from "./lbaitem.shared.service.types.js"
+import { groupBy, maxBy } from "lodash"
 
 const formationResultLimit = 500
 
@@ -863,4 +864,25 @@ const sortFormations = (formations: ILbaItem[]) => {
 
     return 0
   })
+}
+
+/**
+ * Retourne l'email le plus présent parmi toutes les formations du catalogue ayant un même "lieu_formation_siret".
+ * @param {string} lieu_formation_siret
+ * @return {Promise<string | null>}
+ */
+export const getMostFrequentEmailByLieuFormationSiret = async (lieu_formation_siret: string): Promise<string | null> => {
+  const formations = await FormationCatalogue.find(
+    {
+      email: { $ne: null },
+      lieu_formation_siret,
+    },
+    { email: 1 }
+  ).lean()
+
+  const emailGroups = groupBy(formations, "email")
+
+  const mostFrequentGroup = maxBy(Object.values(emailGroups), "length")
+
+  return mostFrequentGroup?.length ? mostFrequentGroup[0].email : null
 }

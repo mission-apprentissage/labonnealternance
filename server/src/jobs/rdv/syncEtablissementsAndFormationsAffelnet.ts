@@ -3,32 +3,11 @@ import { Readable } from "stream"
 import { logger } from "../../common/logger.js"
 import { referrers } from "../../common/model/constants/referrers.js"
 import dayjs from "../../services/dayjs.service.js"
-import { isValidEmail } from "../../common/utils/isValidEmail.js"
 import { isEmailBlacklisted } from "../../services/application.service.js"
-import { affelnetSelectedFields, getFormationsFromCatalogueMe } from "../../services/catalogue.service.js"
+import { affelnetSelectedFields, getEmailFromCatalogueField, getFormationsFromCatalogueMe } from "../../services/catalogue.service.js"
 import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service.js"
 import { Etablissement } from "../../common/model/index.js"
-
-/**
- * Gets email from catalogue field.
- * These email fields can contain "not valid email", "emails separated by ##" or be null.
- * @param {string|null} email
- * @return {string|null}
- */
-const getEmailFromCatalogueField = (email) => {
-  if (!email) {
-    return null
-  }
-
-  const divider = "##"
-  if (email?.includes(divider)) {
-    const emailSplit = email.split(divider).at(-1).toLowerCase()
-
-    return isValidEmail(emailSplit) ? emailSplit : null
-  }
-
-  return isValidEmail(email) ? email.toLowerCase() : null
-}
+import { getEmailForRdv } from "../../services/eligibleTrainingsForAppointment.service.js"
 
 /**
  * @description Gets Catalogue etablissments informations and insert in etablissement collection.
@@ -70,10 +49,11 @@ export const syncAffelnetFormationsFromCatalogueME = async () => {
 
           // Don't override "email" if this field is true
           if (!eligibleTrainingsForAppointment?.is_lieu_formation_email_customized) {
-            emailRdv =
-              getEmailFromCatalogueField(formation.email) ||
-              getEmailFromCatalogueField(formation.etablissement_formateur_courriel) ||
-              eligibleTrainingsForAppointment.lieu_formation_email
+            emailRdv = await getEmailForRdv({
+              email: formation.email,
+              etablissement_formateur_courriel: formation.etablissement_formateur_courriel,
+              etablissement_formateur_siret: formation.etablissement_formateur_siret,
+            })
           }
 
           const emailBlacklisted = await isEmailBlacklisted(emailRdv)
@@ -104,7 +84,11 @@ export const syncAffelnetFormationsFromCatalogueME = async () => {
             }
           )
         } else {
-          const emailRdv = getEmailFromCatalogueField(formation.etablissement_formateur_courriel)
+          const emailRdv = await getEmailForRdv({
+            email: formation.email,
+            etablissement_formateur_courriel: formation.etablissement_formateur_courriel,
+            etablissement_formateur_siret: formation.etablissement_formateur_siret,
+          })
 
           const emailBlacklisted = await isEmailBlacklisted(emailRdv)
 

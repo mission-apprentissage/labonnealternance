@@ -1,6 +1,9 @@
 import { EligibleTrainingsForAppointment } from "../common/model/index.js"
 import { IEligibleTrainingsForAppointment } from "../common/model/schema/eligibleTrainingsForAppointment/eligibleTrainingsForAppointment.types.js"
 import { FilterQuery } from "mongoose"
+import { getEmailFromCatalogueField } from "./catalogue.service.js"
+import { getMostFrequentEmailByLieuFormationSiret } from "./formation.service.js"
+import { IFormationCatalogue } from "../common/model/schema/formationCatalogue/formationCatalogue.types.js"
 
 /**
  * @description Creates new item.
@@ -63,4 +66,21 @@ const update = (conditions: FilterQuery<IEligibleTrainingsForAppointment>, value
  */
 const getParameterByCleMinistereEducatif = ({ cleMinistereEducatif }) => EligibleTrainingsForAppointment.findOne({ cle_ministere_educatif: cleMinistereEducatif }).lean()
 
-export { create, find, findOne, updateParameter, remove, updateMany, update, getParameterByCleMinistereEducatif }
+/**
+ * Returns email for rdv:
+ * 1. Returns "email" if it's valid
+ * 2. Or returns "etablissement_formateur_courriel" if it's valid
+ * 3. Or returns the most frequent email from "etablissement_formateur_siret"
+ * 4. Or returns null (no email found)
+ * @param {Pick<IFormationCatalogue, "email" | "etablissement_formateur_courriel" | "etablissement_formateur_siret">} formation
+ * @returns {Promise<string | null>}
+ */
+const getEmailForRdv = async (formation: Pick<IFormationCatalogue, "email" | "etablissement_formateur_courriel" | "etablissement_formateur_siret">): Promise<string | null> => {
+  return (
+    getEmailFromCatalogueField(formation.email) ||
+    getEmailFromCatalogueField(formation.etablissement_formateur_courriel) ||
+    (await getMostFrequentEmailByLieuFormationSiret(formation.etablissement_formateur_siret))
+  )
+}
+
+export { create, find, findOne, updateParameter, remove, updateMany, update, getParameterByCleMinistereEducatif, getEmailForRdv }
