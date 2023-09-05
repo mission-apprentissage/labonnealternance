@@ -225,7 +225,7 @@ export const validateCaller = ({ caller, referer }: { caller: string; referer: s
 /**
  * Ensemble de contrôles complexes sur la requête de recherche d'opportunités d'emploi
  * @param {TJobSearchQuery} query paramètres de la requête
- * @returns {Promise<{ result: "passed" } | { error: string; error_messages: string[] }>}
+ * @returns {Promise<{ result: "passed", romes: string } | { error: string; error_messages: string[] }>}
  */
 export const jobsQueryValidator = async (query: TJobSearchQuery): Promise<{ result: "passed"; romes: string } | { error: string; error_messages: string[] }> => {
   const error_messages = []
@@ -235,7 +235,7 @@ export const jobsQueryValidator = async (query: TJobSearchQuery): Promise<{ resu
   validateCaller({ caller, referer }, error_messages)
 
   // codes ROME  et code RNCP : romes, rncp. Modifie la valeur de query.romes si code rncp correct
-  await validateRomesOrRncp(query, error_messages)
+  await validateRncpOrRomeOrDomain(query, error_messages)
 
   // coordonnées gps optionnelles : latitude et longitude
   if (latitude || longitude) {
@@ -262,9 +262,9 @@ export const jobsQueryValidator = async (query: TJobSearchQuery): Promise<{ resu
 /**
  * Ensemble de contrôles complexes sur la requête de recherche de formations
  * @param {TFormationSearchQuery} query paramètres de la requête
- * @returns {Promise<{ result: "passed" } | { error: string; error_messages: string[] }>}
+ * @returns {Promise<{ result: "passed", romes: string } | { error: string; error_messages: string[] }>}
  */
-export const formationsQueryValidator = async (query: TFormationSearchQuery): Promise<{ result: "passed" } | { error: string; error_messages: string[] }> => {
+export const formationsQueryValidator = async (query: TFormationSearchQuery): Promise<{ result: "passed"; romes: string } | { error: string; error_messages: string[] }> => {
   const error_messages = []
 
   // présence d'identifiant de la source : caller
@@ -286,7 +286,7 @@ export const formationsQueryValidator = async (query: TFormationSearchQuery): Pr
 
   if (error_messages.length) return { error: "wrong_parameters", error_messages }
 
-  return { result: "passed" }
+  return { result: "passed", romes: query.romes }
 }
 
 /**
