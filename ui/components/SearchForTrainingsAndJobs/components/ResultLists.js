@@ -252,19 +252,21 @@ const ResultLists = ({
             <Image width="24px" height="24px" src={purpleFilterIcon} alt="" />
           </Button>
         </Flex>
-        <DisplayMapButton jobs={jobs} trainings={trainings} />
-        <ResultListsCounter
-          scopeContext={scopeContext}
-          filterButtonClicked={filterButtonClicked}
-          allJobSearchError={allJobSearchError}
-          trainingSearchError={trainingSearchError}
-          isJobSearchLoading={isJobSearchLoading}
-          isTrainingSearchLoading={isTrainingSearchLoading}
-          displayCount={displayCount}
-          jobs={jobs}
-          trainings={trainings}
-          activeFilter={activeFilter}
-        />
+        <Box display={["flex", "flex", "none"]}>
+          <DisplayMapButton jobs={jobs} trainings={trainings} />
+          <ResultListsCounter
+            scopeContext={scopeContext}
+            filterButtonClicked={filterButtonClicked}
+            allJobSearchError={allJobSearchError}
+            trainingSearchError={trainingSearchError}
+            isJobSearchLoading={isJobSearchLoading}
+            isTrainingSearchLoading={isTrainingSearchLoading}
+            displayCount={displayCount}
+            jobs={jobs}
+            trainings={trainings}
+            activeFilter={activeFilter}
+          />
+        </Box>
         {getErrorMessages()}
       </Box>
       <Box flex="1" pb={["100px", "100px", 0]} overflow="auto" onScroll={handleScroll} id="resultList" display={shouldShowWelcomeMessage || selectedItem ? "none" : ""} bg="beige">
