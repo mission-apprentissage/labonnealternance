@@ -20,7 +20,7 @@ function boomify(rawError) {
 
 export function errorMiddleware() {
   // eslint-disable-next-line no-unused-vars
-  return (rawError, req, res, next) => {
+  return (rawError, req, res) => {
     req.err = rawError
 
     const { output } = boomify(req.err)
