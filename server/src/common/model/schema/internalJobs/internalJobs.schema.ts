@@ -1,9 +1,3 @@
-// const indexes: IModelDescriptor["indexes"] = [
-//   [{ type: 1, scheduled_for: 1 }, { name: "type_scheduled_for" }],
-//   [{ type: 1, status: 1, scheduled_for: 1 }, { name: "type_status_scheduled_for" }],
-//   [{ ended_at: 1 }, { expireAfterSeconds: 3600 * 24 * 90 }], // 3 mois
-// ]
-
 import { model, Schema } from "../../../mongodb.js"
 import { IInternalJobs } from "./internalJobs.types.js"
 
@@ -54,5 +48,9 @@ export const internalJobsSchema = new Schema<IInternalJobs>({
     description: "Date d'ajout en base de données",
   },
 })
+
+internalJobsSchema.index({ type: 1, scheduled_for: 1 }, { name: "type_scheduled_for" })
+internalJobsSchema.index({ type: 1, status: 1, scheduled_for: 1 }, { name: "type_status_scheduled_for" })
+internalJobsSchema.index({ ended_at: 1 }, { expireAfterSeconds: 3600 * 24 * 90 }) // 3 mois
 
 export default model<IInternalJobs>("internalJob", internalJobsSchema)

@@ -56,8 +56,10 @@
     "styled-components": "^5.3.5",
     "yup": "^0.32.9"
   },
-  "eslintConfig": {
-    "extends": "react-app"
+  "private": true,
+  "engines": {
+    "node": ">=20",
+    "npm": "please-use-yarn"
   },
   "browserslist": {
     "production": [
