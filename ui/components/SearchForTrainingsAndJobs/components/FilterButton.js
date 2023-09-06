@@ -33,6 +33,7 @@ const FilterButton = ({ type, count, isActive, handleFilterButtonClicked }) => {
     background: "none",
     marginRight: "5px",
     height: "auto",
+    fontWeight: "400",
     paddingY: "0.3rem",
     borderRadius: "40px",
     whiteSpace: "pre-wrap",

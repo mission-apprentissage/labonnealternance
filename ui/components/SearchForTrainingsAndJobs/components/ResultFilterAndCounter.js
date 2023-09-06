@@ -8,7 +8,7 @@ import { ScopeContext } from "../../../context/ScopeContext"
 import FilterButton from "./FilterButton"
 import { SearchResultContext } from "../../../context/SearchResultContextProvider"
 import DisplayMapButton from "../../DisplayMapButton/displayMapButton"
-import purpleFilterIcon from "../../../public/images/icons/purpleFilter.svg"
+import filterIcon from "../../../public/images/icons/filter.svg"
 
 const ResultFilterAndCounter = ({ allJobSearchError, trainingSearchError, isTrainingSearchLoading, isJobSearchLoading, activeFilter, setActiveFilter, showSearchForm }) => {
   const scopeContext = useContext(ScopeContext)
@@ -56,7 +56,7 @@ const ResultFilterAndCounter = ({ allJobSearchError, trainingSearchError, isTrai
         {!trainingLoading && !jobLoading && scopeContext.isJob && scopeContext.isTraining && (
           <>
             <Flex flexFlow="row wrap" justifyContent="flex-end" width="100%">
-              <Flex width="100%" flex="2 auto">
+              <Flex width="100%" flex="2 auto" flexWrap={["wrap", "wrap", "nowrap"]}>
                 <FilterButton type="all" count={jobCount + trainingCount} isActive={activeFilter === "all"} handleFilterButtonClicked={filterButtonClicked} />
                 <FilterButton type="jobs" count={jobCount - partnerJobCount} isActive={activeFilter === "jobs"} handleFilterButtonClicked={filterButtonClicked} />
                 <FilterButton type="trainings" count={trainingCount} isActive={activeFilter === "trainings"} handleFilterButtonClicked={filterButtonClicked} />
@@ -72,9 +72,23 @@ const ResultFilterAndCounter = ({ allJobSearchError, trainingSearchError, isTrai
                   ml="auto"
                   mr="30px"
                   pt="15px"
+                  fontWeight="400"
+                  fontSize="14px"
+                  textDecoration="underline"
+                  color="bluefrance.500"
                   onClick={showSearchForm}
+                  _active={{
+                    background: "none",
+                  }}
+                  _focus={{
+                    background: "none",
+                  }}
+                  _hover={{
+                    background: "none",
+                  }}
                 >
-                  <Image width="24px" height="24px" src={purpleFilterIcon} alt="" />
+                  <Image width="24px" height="24px" src={filterIcon} alt="" />
+                  Filtres
                 </Button>
               </Flex>
             </Flex>
