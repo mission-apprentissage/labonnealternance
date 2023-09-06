@@ -3,7 +3,6 @@
   "version": "1.84.0",
   "description": "Interface de gestion pour les entreprises, organismes de formation et candidats en apprentissage",
   "repository": "https://github.com/mission-apprentissage/labonnealternance.git",
-  "private": false,
   "author": "Mission apprentissage",
   "license": "MIT",
   "main": "src/index.js",

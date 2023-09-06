@@ -4,6 +4,8 @@ services:
   mongodb:
     image: mongo:6.0.2-focal
     restart: unless-stopped
+    mem_limit: 5g
+    command: --wiredTigerCacheSizeGB 4
     ports:
       - "127.0.0.1:27017:27017"
     volumes:
@@ -14,6 +16,25 @@ services:
       timeout: 5s
       retries: 12
       start_period: 10s
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.6
+    container_name: lba_elasticsearch
+    environment:
+      - ES_JAVA_OPTS=-Xmx512m -Xms512m
+      - discovery.type=single-node
+      - cluster.name=docker-cluster
+      - network.host=0.0.0.0
+      - discovery.zen.minimum_master_nodes=1
+    mem_limit: 3g
+    volumes:
+      - lba_elasticsearch_data:/usr/share/elasticsearch/data
+    healthcheck:
+      test: ["CMD", "curl", "http://localhost:9200/_cat/health > /dev/null || exit 1"]
+      interval: 30s
+      retries: 5
+      timeout: 10s
+      start_period: 2m
 
   clamav:
     image: clamav/clamav:latest
