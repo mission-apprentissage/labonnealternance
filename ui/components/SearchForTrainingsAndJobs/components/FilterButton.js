@@ -28,6 +28,7 @@ const FilterButton = ({ type, count, isActive, handleFilterButtonClicked }) => {
     fontSize: "14px",
     outline: "none",
     border: "none",
+    background: "none",
     marginRight: "5px",
     height: "auto",
     paddingY: "0.3rem",

@@ -45,6 +45,7 @@ const ResultFilterAndCounter = ({ allJobSearchError, trainingSearchError, isTrai
     paddingLeft: "8px",
     marginTop: "8px",
     marginBottom: "4px",
+    maxWidth: "1275px",
     alignItems: ["left", "left", "left", "center"],
   }
 
