@@ -93,7 +93,14 @@ export const getEntrepriseInformation = async (siret, options) => {
     }
   }
 }
-export const getEntrepriseOpco = async (siret) => await API.get(`/etablissement/entreprise/${siret}/opco`)
+export const getEntrepriseOpco = async (siret) => {
+  try {
+    const { data } = await API.get(`/etablissement/entreprise/${siret}/opco`)
+    return data
+  } catch (error) {
+    return null
+  }
+}
 
 export const createPartenaire = (partenaire) => API.post("/etablissement/creation", partenaire)
 export const updatePartenaire = (id, partenaire) => securedAPI.put(`/etablissement/${id}`, partenaire)
