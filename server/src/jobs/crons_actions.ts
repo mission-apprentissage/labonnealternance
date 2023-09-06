@@ -1,6 +1,7 @@
 import cronParser from "cron-parser"
+import mongoose from "mongoose"
 
-import { createJob, findJob, findJobs, updateJob } from "../common/actions/job.actions"
+import { createJob, findJob, findJobs, updateJob } from "../common/actions/job.actions.js"
 
 import { CRONS } from "./jobs.js"
 import { addJob } from "./jobs_actions.js"
@@ -14,7 +15,7 @@ function parseCronString(cronString: string, options: { currentDate: string } | 
     ...options,
   })
 }
-const db //TODO
+const db = mongoose.connection
 export async function cronsInit() {
   logger.info(`Crons - initialise crons in DB`)
   await db.collection("internalJobs").deleteMany({ type: "cron" })

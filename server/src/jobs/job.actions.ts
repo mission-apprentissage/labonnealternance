@@ -1,4 +1,5 @@
 import { Filter, FindOptions, MatchKeysAndValues, ObjectId, WithoutId } from "mongodb"
+import mongoose from "mongoose"
 
 import { jobsDb } from "../model/collections"
 
@@ -6,7 +7,7 @@ import { IInternalJobs } from "common/model/schema/internalJobs/internalJobs.typ
 
 type CreateJobParam = Pick<IInternalJobs, "name" | "type" | "cron_string" | "payload" | "scheduled_for" | "sync">
 
-const db //TODO
+const db = mongoose.connection
 
 /**
  * Création d'un job
