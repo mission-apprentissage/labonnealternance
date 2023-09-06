@@ -19,6 +19,7 @@ import ResultFilterAndCounter from "./ResultFilterAndCounter"
 
 const ResultLists = ({
   activeFilter,
+  setActiveFilter,
   handleExtendedSearch,
   handleSelectItem,
   isJobSearchLoading,
@@ -40,10 +41,12 @@ const ResultLists = ({
 }) => {
   const scopeContext = useContext(ScopeContext)
 
-  let [extendedSearch, hasSearch, isFormVisible, jobs] = [false, false, false, null]
+  let [extendedSearch, hasSearch, isFormVisible] = [false, false, false]
 
   ;({ isFormVisible } = useContext(DisplayContext))
-  ;({ extendedSearch, hasSearch, jobs } = useContext(SearchResultContext))
+  ;({ extendedSearch, hasSearch } = useContext(SearchResultContext))
+
+  const { jobs } = useContext(SearchResultContext)
 
   if (isTestMode) {
     ;[extendedSearch, hasSearch, isFormVisible] = [stubbedExtendedSearch, stubbedHasSearch, stubbedIsFormVisible]
@@ -243,7 +246,14 @@ const ResultLists = ({
         </Flex>
         <Box display={["flex", "flex", "none"]}>
           <DisplayMapButton jobs={jobs} trainings={trainings} />
-          <ResultFilterAndCounter />
+          <ResultFilterAndCounter
+            allJobSearchError={allJobSearchError}
+            trainingSearchError={trainingSearchError}
+            isJobSearchLoading={isJobSearchLoading}
+            isTrainingSearchLoading={isTrainingSearchLoading}
+            activeFilter={activeFilter}
+            setActiveFilter={setActiveFilter}
+          />
         </Box>
         <ResultListsLoading
           allJobSearchError={allJobSearchError}
