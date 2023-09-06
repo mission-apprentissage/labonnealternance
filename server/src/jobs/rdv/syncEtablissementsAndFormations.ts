@@ -126,12 +126,7 @@ export const syncEtablissementsAndFormations = async () => {
           })
         }
 
-        let emailDecisionnaire = etablissement?.gestionnaire_email
-
-        const emailDecisionnaireRetrieved = getEmailFromCatalogueField(formation.etablissement_gestionnaire_courriel)
-        if (emailDecisionnaireRetrieved) {
-          emailDecisionnaire = emailDecisionnaireRetrieved.toLowerCase()
-        }
+        const emailDecisionnaire = getEmailFromCatalogueField(formation.etablissement_gestionnaire_courriel)?.toLowerCase() || etablissement?.gestionnaire_email
 
         // Update etablissement model (upsert)
         return Etablissement.updateMany(

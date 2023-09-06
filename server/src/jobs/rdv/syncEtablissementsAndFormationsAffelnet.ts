@@ -115,10 +115,7 @@ export const syncAffelnetFormationsFromCatalogueME = async () => {
           })
         }
 
-        let emailDecisionnaire = etablissement?.gestionnaire_email
-        if (getEmailFromCatalogueField(formation.etablissement_gestionnaire_courriel)) {
-          emailDecisionnaire = getEmailFromCatalogueField(formation.etablissement_gestionnaire_courriel).toLowerCase()
-        }
+        const emailDecisionnaire = getEmailFromCatalogueField(formation.etablissement_gestionnaire_courriel)?.toLowerCase() || etablissement?.gestionnaire_email
 
         // Update etablissement model (upsert)
         return Etablissement.updateMany(
