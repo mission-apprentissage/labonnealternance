@@ -192,7 +192,6 @@ const ChoiceColumn = ({
         handleExtendedSearch={searchForJobsWithLooseRadius}
         searchForJobsOnNewCenter={searchForJobsOnNewCenter}
         searchForTrainingsOnNewCenter={searchForTrainingsOnNewCenter}
-        jobs={jobs}
         jobSearchError={jobSearchError}
         allJobSearchError={allJobSearchError}
         trainingSearchError={trainingSearchError}

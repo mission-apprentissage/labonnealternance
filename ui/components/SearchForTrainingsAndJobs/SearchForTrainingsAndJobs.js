@@ -387,7 +387,15 @@ const SearchForTrainingsAndJobs = () => {
   return (
     <Flex direction="column" sx={{ height: "100vh" }}>
       <InitWidgetSearchParameters handleSearchSubmit={handleSearchSubmit} handleItemLoad={handleItemLoad} setIsLoading={setIsLoading} />
-      <WidgetHeader handleSearchSubmit={handleSearchSubmit} setActiveFilter={setActiveFilter} />
+      <WidgetHeader
+        handleSearchSubmit={handleSearchSubmit}
+        activeFilter={activeFilter}
+        setActiveFilter={setActiveFilter}
+        allJobSearchError={allJobSearchError}
+        trainingSearchError={trainingSearchError}
+        isTrainingSearchLoading={isTrainingSearchLoading}
+        isJobSearchLoading={isJobSearchLoading}
+      />
       <Flex direction="row" overflow="hidden" height="100%">
         <Box flex={{ base: 8, xl: 6 }} display={listDisplayParameters} height="100%" overflow="auto" direction="column">
           <ChoiceColumn

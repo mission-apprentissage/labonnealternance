@@ -15,6 +15,7 @@ import { Box, Button, Flex, Image } from "@chakra-ui/react"
 import { renderJob, renderLbb, renderTraining } from "../services/renderOneResult"
 import { getJobCount } from "../services/utils"
 import ResultListsLoading from "./ResultListsLoading"
+import ResultFilterAndCounter from "./ResultFilterAndCounter"
 
 const ResultLists = ({
   activeFilter,
@@ -22,7 +23,6 @@ const ResultLists = ({
   handleSelectItem,
   isJobSearchLoading,
   isTrainingSearchLoading,
-  jobs,
   jobSearchError,
   searchForJobsOnNewCenter,
   searchRadius,
@@ -40,10 +40,10 @@ const ResultLists = ({
 }) => {
   const scopeContext = useContext(ScopeContext)
 
-  let [extendedSearch, hasSearch, isFormVisible] = [false, false, false]
+  let [extendedSearch, hasSearch, isFormVisible, jobs] = [false, false, false, null]
 
   ;({ isFormVisible } = useContext(DisplayContext))
-  ;({ extendedSearch, hasSearch } = useContext(SearchResultContext))
+  ;({ extendedSearch, hasSearch, jobs } = useContext(SearchResultContext))
 
   if (isTestMode) {
     ;[extendedSearch, hasSearch, isFormVisible] = [stubbedExtendedSearch, stubbedHasSearch, stubbedIsFormVisible]
@@ -243,6 +243,7 @@ const ResultLists = ({
         </Flex>
         <Box display={["flex", "flex", "none"]}>
           <DisplayMapButton jobs={jobs} trainings={trainings} />
+          <ResultFilterAndCounter />
         </Box>
         <ResultListsLoading
           allJobSearchError={allJobSearchError}

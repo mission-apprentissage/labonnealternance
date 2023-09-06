@@ -32,11 +32,6 @@ describe("ResultList", () => {
         activeFilter={"all"}
         searchRadius={10}
         trainings={realisticFormations}
-        jobs={{
-          peJobs: [],
-          matchas: [],
-          lbbCompanies: realisticLbbCompanies,
-        }}
       />
     )
     // Then

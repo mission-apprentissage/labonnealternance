@@ -1,21 +1,17 @@
 import { useContext } from "react"
-import { Box, Flex, Spinner, Text } from "@chakra-ui/react"
+import { Box, Flex } from "@chakra-ui/react"
 import React from "react"
 import { SendPlausibleEvent } from "../../../utils/plausible"
 import { filterLayers } from "../../../utils/mapTools"
 import { getJobCount, getPartnerJobCount } from "../services/utils"
 import { ScopeContext } from "../../../context/ScopeContext"
 import FilterButton from "./FilterButton"
+import { SearchResultContext } from "../../../context/SearchResultContextProvider"
 
-const ResultFilterAndCounter = (props) => {
+const ResultFilterAndCounter = ({ allJobSearchError, trainingSearchError, isTrainingSearchLoading, isJobSearchLoading, activeFilter, setActiveFilter }) => {
   const scopeContext = useContext(ScopeContext)
-  const allJobSearchError = props.allJobSearchError
-  const trainingSearchError = props.trainingSearchError
-  const isTrainingSearchLoading = props.isTrainingSearchLoading
-  const isJobSearchLoading = props.isJobSearchLoading
-  const jobs = props.jobs
-  const trainings = props.trainings
-  const activeFilter = props.activeFilter
+
+  const { jobs, trainings } = useContext(SearchResultContext)
 
   const filterButtonClicked = (filterButton) => {
     setActiveFilter(filterButton)
@@ -31,45 +27,16 @@ const ResultFilterAndCounter = (props) => {
   let jobCount = 0
   let partnerJobCount = 0
 
-  if (scopeContext.isJob) {
-    if (isJobSearchLoading) {
-      jobLoading = (
-        <Flex p={5} color="pinksoft.600">
-          <Text mr={4}>Recherche des entreprises en cours</Text>
-          <Spinner thickness="4px" />
-        </Flex>
-      )
-    } else if (!allJobSearchError) {
-      jobCount = getJobCount(jobs)
-      partnerJobCount = getPartnerJobCount(jobs)
-    }
+  if (scopeContext.isJob && !isJobSearchLoading && !allJobSearchError) {
+    jobCount = getJobCount(jobs)
+    partnerJobCount = getPartnerJobCount(jobs)
   }
 
   let trainingCount = 0
   let trainingLoading = ""
 
-  if (scopeContext.isTraining) {
-    if (isTrainingSearchLoading) {
-      trainingLoading = (
-        <Flex p={5} color="greensoft.500">
-          <Text mr={4}>Recherche des formations en cours</Text>
-          <Spinner thickness="4px" />
-        </Flex>
-      )
-    } else if (!trainingSearchError) {
-      trainingCount = trainings ? trainings.length : 0
-    }
-  }
-
-  const resultListProperties = {
-    textAlign: "left",
-    marginLeft: "10px",
-    color: "grey.650",
-    fontWeight: 600,
-    fontSize: "22px",
-    marginBottom: "0px",
-    padding: "0 20px",
-    mt: [0, 0, 2],
+  if (scopeContext.isTraining && !isTrainingSearchLoading && !trainingSearchError) {
+    trainingCount = trainings ? trainings.length : 0
   }
 
   const filterZoneProperties = {
@@ -81,11 +48,6 @@ const ResultFilterAndCounter = (props) => {
 
   return (
     <Box pt="0">
-      <Box {...resultListProperties}>
-        {trainingLoading}
-        {jobLoading}
-      </Box>
-
       <Flex direction={["column", "column", "column", "row"]} wrap="wrap" {...filterZoneProperties}>
         {!trainingLoading && !jobLoading && scopeContext.isJob && scopeContext.isTraining && (
           <>
