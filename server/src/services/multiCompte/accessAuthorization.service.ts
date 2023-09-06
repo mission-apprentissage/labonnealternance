@@ -1,13 +1,13 @@
 import { groupBy } from "lodash-es"
-import { Entity } from "../common/model/generic/Entity.js"
-import { EntityRepository } from "../common/model/generic/EntityRepository.js"
+import { Entity } from "../../common/model/generic/Entity.js"
+import { EntityRepository } from "../../common/model/generic/EntityRepository.js"
 import {
   AccessAuthorization,
   AccessAuthorizationEvent,
   AccessEntityType,
   AccessStatus,
   NewAccessAuthorization,
-} from "../common/model/schema/multiCompte/accessAuthorization.types.js"
+} from "../../common/model/schema/multiCompte/accessAuthorization.types.js"
 
 export class AccessAuthorizationService {
   constructor(private readonly accessAuthorizationRepository: EntityRepository<AccessAuthorization>) {}

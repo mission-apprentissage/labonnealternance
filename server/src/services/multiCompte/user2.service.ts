@@ -1,6 +1,6 @@
-import { User2, NewUser } from "../common/model/schema/multiCompte/user2.types.js"
-import { EntityRepository } from "../common/model/generic/EntityRepository.js"
-import { Entity } from "../common/model/generic/Entity.js"
+import { User2, NewUser } from "../../common/model/schema/multiCompte/user2.types.js"
+import { EntityRepository } from "../../common/model/generic/EntityRepository.js"
+import { Entity } from "../../common/model/generic/Entity.js"
 
 export class UserUnifiedService {
   constructor(private readonly userRepository: EntityRepository<User2>) {}
