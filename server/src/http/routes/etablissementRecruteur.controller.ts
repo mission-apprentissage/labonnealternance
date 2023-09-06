@@ -189,7 +189,6 @@ export default () => {
         }
         case CFA: {
           const { email, establishment_siret } = req.body
-          console.log(req.body)
           const formatedEmail = email.toLocaleLowerCase()
           // check if user already exist
           const userRecruteurOpt = await getUser({ email: formatedEmail })
