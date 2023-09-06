@@ -6,7 +6,6 @@ const FilterButton = ({ type, count, isActive, handleFilterButtonClicked }) => {
   const handleClick = (e) => {
     e.stopPropagation()
     if (!isActive) {
-      console.log("bbb", type, isActive)
       handleFilterButtonClicked(type)
     }
   }

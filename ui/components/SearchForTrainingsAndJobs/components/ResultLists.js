@@ -4,12 +4,11 @@ import { ErrorMessage } from "../../../components"
 import { DisplayContext } from "../../../context/DisplayContextProvider"
 import { ScopeContext } from "../../../context/ScopeContext"
 import { SearchResultContext } from "../../../context/SearchResultContextProvider"
-import purpleFilterIcon from "../../../public/images/icons/purpleFilter.svg"
 import { isCfaEntreprise } from "../../../services/cfaEntreprise"
 import { mergeJobs, mergeOpportunities } from "../../../utils/itemListUtils"
 import ExtendedSearchButton from "./ExtendedSearchButton"
 import NoJobResult from "./NoJobResult"
-import { Box, Button, Flex, Image } from "@chakra-ui/react"
+import { Box, Flex } from "@chakra-ui/react"
 import { renderJob, renderLbb, renderTraining } from "../services/renderOneResult"
 import { getJobCount } from "../services/utils"
 import ResultListsLoading from "./ResultListsLoading"
@@ -227,21 +226,6 @@ const ResultLists = ({
   return (
     <Flex direction="column" height={selectedItem ? "0%" : "100%"} display={isFormVisible ? "none" : "flex"}>
       <Box bg="beige" display={shouldShowWelcomeMessage || selectedItem ? "none" : ""}>
-        <Flex flex="1 auto" my={[2, 2, 0]} alignItems="center">
-          <Button
-            background="none"
-            border="none"
-            title="Accéder aux filtrage des résultats"
-            display={["flex", "flex", "none"]}
-            mt="-10px"
-            ml="auto"
-            mr="30px"
-            pt="15px"
-            onClick={showSearchForm}
-          >
-            <Image width="24px" height="24px" src={purpleFilterIcon} alt="" />
-          </Button>
-        </Flex>
         <Box display={["flex", "flex", "none"]}>
           <ResultFilterAndCounter
             allJobSearchError={allJobSearchError}
@@ -250,6 +234,7 @@ const ResultLists = ({
             isTrainingSearchLoading={isTrainingSearchLoading}
             activeFilter={activeFilter}
             setActiveFilter={setActiveFilter}
+            showSearchForm={showSearchForm}
           />
         </Box>
         <ResultListsLoading

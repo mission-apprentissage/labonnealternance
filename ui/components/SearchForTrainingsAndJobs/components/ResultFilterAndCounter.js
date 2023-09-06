@@ -1,5 +1,5 @@
 import { useContext } from "react"
-import { Box, Flex } from "@chakra-ui/react"
+import { Box, Button, Flex, Image } from "@chakra-ui/react"
 import React from "react"
 import { SendPlausibleEvent } from "../../../utils/plausible"
 import { filterLayers } from "../../../utils/mapTools"
@@ -8,8 +8,9 @@ import { ScopeContext } from "../../../context/ScopeContext"
 import FilterButton from "./FilterButton"
 import { SearchResultContext } from "../../../context/SearchResultContextProvider"
 import DisplayMapButton from "../../DisplayMapButton/displayMapButton"
+import purpleFilterIcon from "../../../public/images/icons/purpleFilter.svg"
 
-const ResultFilterAndCounter = ({ allJobSearchError, trainingSearchError, isTrainingSearchLoading, isJobSearchLoading, activeFilter, setActiveFilter }) => {
+const ResultFilterAndCounter = ({ allJobSearchError, trainingSearchError, isTrainingSearchLoading, isJobSearchLoading, activeFilter, setActiveFilter, showSearchForm }) => {
   const scopeContext = useContext(ScopeContext)
 
   const { jobs, trainings } = useContext(SearchResultContext)
@@ -61,6 +62,20 @@ const ResultFilterAndCounter = ({ allJobSearchError, trainingSearchError, isTrai
                 <FilterButton type="trainings" count={trainingCount} isActive={activeFilter === "trainings"} handleFilterButtonClicked={filterButtonClicked} />
                 {!!partnerJobCount && <FilterButton type="duo" count={partnerJobCount} isActive={activeFilter === "duo"} handleFilterButtonClicked={filterButtonClicked} />}
                 <DisplayMapButton jobs={jobs} trainings={trainings} />
+
+                <Button
+                  background="none"
+                  border="none"
+                  title="Accéder aux filtrage des résultats"
+                  display={["flex", "flex", "none"]}
+                  mt="-10px"
+                  ml="auto"
+                  mr="30px"
+                  pt="15px"
+                  onClick={showSearchForm}
+                >
+                  <Image width="24px" height="24px" src={purpleFilterIcon} alt="" />
+                </Button>
               </Flex>
             </Flex>
           </>
