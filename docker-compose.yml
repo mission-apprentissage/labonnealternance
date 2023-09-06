@@ -30,7 +30,7 @@ services:
     volumes:
       - lba_elasticsearch_data:/usr/share/elasticsearch/data
     healthcheck:
-      test: ["CMD", "curl", "http://localhost:9200/_cat/health > /dev/null || exit 1"]
+      test: ["CMD", "curl", "http://localhost:9200/_cat/health > /dev/null || exit 1"]
       interval: 30s
       retries: 5
       timeout: 10s
