@@ -7,8 +7,9 @@ import LogoLBA from "../../components/LogoLBA/LogoLBA"
 
 import { Box, Flex, Text } from "@chakra-ui/react"
 import { SearchResultContext } from "../../context/SearchResultContextProvider"
+//import ResultListsCounter from "../SearchForTrainingsAndJobs/components/ResultListsLoading"
 
-const WidgetHeader = ({ handleSearchSubmit, isHome }) => {
+const WidgetHeader = ({ handleSearchSubmit, isHome, setActiveFilter }) => {
   const router = useRouter()
 
   const { selectedItem } = useContext(SearchResultContext)
@@ -37,6 +38,17 @@ const WidgetHeader = ({ handleSearchSubmit, isHome }) => {
             </Text>
           )}
           <HeaderForm handleSearchSubmit={handleSearchSubmitFunction} isHome={isHome} />
+          {/*<ResultListsCounter
+            filterButtonClicked={filterButtonClicked}
+            allJobSearchError={allJobSearchError}
+            trainingSearchError={trainingSearchError}
+            isJobSearchLoading={isJobSearchLoading}
+            isTrainingSearchLoading={isTrainingSearchLoading}
+            displayCount={displayCount}
+            jobs={jobs}
+            trainings={trainings}
+            activeFilter={activeFilter}
+          />*/}
         </Box>
       </Flex>
     </Box>

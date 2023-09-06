@@ -8,15 +8,13 @@ import { SearchResultContext } from "../../../context/SearchResultContextProvide
 import purpleFilterIcon from "../../../public/images/icons/purpleFilter.svg"
 import { isCfaEntreprise } from "../../../services/cfaEntreprise"
 import { mergeJobs, mergeOpportunities } from "../../../utils/itemListUtils"
-import { filterLayers } from "../../../utils/mapTools"
 import ExtendedSearchButton from "./ExtendedSearchButton"
 import NoJobResult from "./NoJobResult"
-import ResultListsCounter from "./ResultListsCounter"
 
 import { Box, Button, Flex, Image } from "@chakra-ui/react"
-import { SendPlausibleEvent } from "../../../utils/plausible"
 import { renderJob, renderLbb, renderTraining } from "../services/renderOneResult"
 import { getJobCount } from "../services/utils"
+import ResultListsLoading from "./ResultListsLoading"
 
 const ResultLists = ({
   activeFilter,
@@ -30,7 +28,6 @@ const ResultLists = ({
   searchRadius,
   selectedItem,
   searchForTrainingsOnNewCenter,
-  setActiveFilter,
   shouldShowWelcomeMessage,
   showSearchForm,
   trainings,
@@ -50,14 +47,6 @@ const ResultLists = ({
 
   if (isTestMode) {
     ;[extendedSearch, hasSearch, isFormVisible] = [stubbedExtendedSearch, stubbedHasSearch, stubbedIsFormVisible]
-  }
-
-  const filterButtonClicked = (filterButton) => {
-    setActiveFilter(filterButton)
-    filterLayers(filterButton)
-    if (filterButton === "duo") {
-      SendPlausibleEvent("Clic onglet formations+emplois - Liste de résultats")
-    }
   }
 
   const getTrainingResult = () => {
@@ -231,7 +220,7 @@ const ResultLists = ({
 
   const [displayCount, setDisplayCount] = useState(true)
   const handleScroll = () => {
-    setDisplayCount(document.querySelector("#resultList").scrollTop < 30)
+    setDisplayCount(document.querySelector("#resultList").scrResultListsLoadingollTop < 30)
   }
 
   return (
@@ -254,18 +243,13 @@ const ResultLists = ({
         </Flex>
         <Box display={["flex", "flex", "none"]}>
           <DisplayMapButton jobs={jobs} trainings={trainings} />
-          <ResultListsCounter
-            filterButtonClicked={filterButtonClicked}
-            allJobSearchError={allJobSearchError}
-            trainingSearchError={trainingSearchError}
-            isJobSearchLoading={isJobSearchLoading}
-            isTrainingSearchLoading={isTrainingSearchLoading}
-            displayCount={displayCount}
-            jobs={jobs}
-            trainings={trainings}
-            activeFilter={activeFilter}
-          />
         </Box>
+        <ResultListsLoading
+          allJobSearchError={allJobSearchError}
+          trainingSearchError={trainingSearchError}
+          isJobSearchLoading={isJobSearchLoading}
+          isTrainingSearchLoading={isTrainingSearchLoading}
+        />
         {getErrorMessages()}
       </Box>
       <Box flex="1" pb={["100px", "100px", 0]} overflow="auto" onScroll={handleScroll} id="resultList" display={shouldShowWelcomeMessage || selectedItem ? "none" : ""} bg="beige">

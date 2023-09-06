@@ -1,13 +1,14 @@
 import { useContext } from "react"
 import { Box, Flex, Spinner, Text } from "@chakra-ui/react"
 import React from "react"
+import { SendPlausibleEvent } from "../../../utils/plausible"
+import { filterLayers } from "../../../utils/mapTools"
 import { getJobCount, getPartnerJobCount } from "../services/utils"
 import { ScopeContext } from "../../../context/ScopeContext"
 import FilterButton from "./FilterButton"
 
-const ResultListsCounter = (props) => {
+const ResultFilterAndCounter = (props) => {
   const scopeContext = useContext(ScopeContext)
-  const filterButtonClicked = props.filterButtonClicked
   const allJobSearchError = props.allJobSearchError
   const trainingSearchError = props.trainingSearchError
   const isTrainingSearchLoading = props.isTrainingSearchLoading
@@ -15,6 +16,14 @@ const ResultListsCounter = (props) => {
   const jobs = props.jobs
   const trainings = props.trainings
   const activeFilter = props.activeFilter
+
+  const filterButtonClicked = (filterButton) => {
+    setActiveFilter(filterButton)
+    filterLayers(filterButton)
+    if (filterButton === "duo") {
+      SendPlausibleEvent("Clic onglet formations+emplois - Liste de résultats")
+    }
+  }
 
   if (allJobSearchError && trainingSearchError) return ""
 
@@ -98,4 +107,4 @@ const ResultListsCounter = (props) => {
   )
 }
 
-export default ResultListsCounter
+export default ResultFilterAndCounter
