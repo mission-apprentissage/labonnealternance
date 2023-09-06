@@ -2,8 +2,9 @@
 // @ts-nocheck
 import axios from "axios"
 import { differenceBy } from "lodash-es"
-import { Optout } from "../../../common/model/index.js"
-import { runScript } from "../../scriptWrapper.js"
+
+import { Optout } from "../../../common/model/index"
+import { runScript } from "../../scriptWrapper"
 
 type Etablissement = { contacts: { email: string }[]; adresse: string }
 

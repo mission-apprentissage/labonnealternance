@@ -1,13 +1,14 @@
 import express from "express"
 import Joi from "joi"
-import { logger } from "../../../common/logger.js"
-import { BrevoEventStatus } from "../../../services/brevo.service.js"
-import dayjs from "../../../services/dayjs.service.js"
-import { addEmailToBlacklist } from "../../../services/application.service.js"
-import { tryCatch } from "../../middlewares/tryCatchMiddleware.js"
-import * as eligibleTrainingsForAppointmentService from "../../../services/eligibleTrainingsForAppointment.service.js"
-import * as appointmentService from "../../../services/appointment.service.js"
-import authMiddleware from "../../middlewares/authMiddleware.js"
+
+import { logger } from "../../../common/logger"
+import { addEmailToBlacklist } from "../../../services/application.service"
+import * as appointmentService from "../../../services/appointment.service"
+import { BrevoEventStatus } from "../../../services/brevo.service"
+import dayjs from "../../../services/dayjs.service"
+import * as eligibleTrainingsForAppointmentService from "../../../services/eligibleTrainingsForAppointment.service"
+import authMiddleware from "../../middlewares/authMiddleware"
+import { tryCatch } from "../../middlewares/tryCatchMiddleware"
 
 /**
  * Email controllers.

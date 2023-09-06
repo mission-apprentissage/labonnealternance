@@ -1,6 +1,8 @@
 import SibApiV3Sdk from "sib-api-v3-sdk"
-import { logger } from "../common/logger.js"
-import config from "../config.js"
+
+import { logger } from "../common/logger"
+import config from "../config"
+
 const defaultClient = SibApiV3Sdk.ApiClient.instance
 
 const apiKey = defaultClient.authentications["api-key"]

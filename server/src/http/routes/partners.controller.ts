@@ -1,7 +1,8 @@
 import express from "express"
-import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
-import { referrers } from "../../common/model/constants/referrers.js"
-import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service.js"
+
+import { referrers } from "../../common/model/constants/referrers"
+import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service"
+import { tryCatch } from "../middlewares/tryCatchMiddleware"
 
 /**
  * @description Partners router.

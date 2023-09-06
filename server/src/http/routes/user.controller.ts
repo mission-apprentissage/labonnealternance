@@ -1,11 +1,12 @@
 import express from "express"
-import { Recruiter, UserRecruteur } from "../../common/model/index.js"
-import { ENTREPRISE, ETAT_UTILISATEUR, JOB_STATUS, RECRUITER_STATUS } from "../../services/constant.service.js"
-import dayjs from "../../services/dayjs.service.js"
-import { deleteFormulaire, getFormulaire, reactivateRecruiter, sendDelegationMailToCFA, updateOffre } from "../../services/formulaire.service.js"
-import { createUser, removeUser, updateUser, updateUserValidationHistory, sendWelcomeEmailToUserRecruteur } from "../../services/userRecruteur.service.js"
-import authMiddleware from "../middlewares/authMiddleware.js"
-import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
+
+import { Recruiter, UserRecruteur } from "../../common/model/index"
+import { ENTREPRISE, ETAT_UTILISATEUR, JOB_STATUS, RECRUITER_STATUS } from "../../services/constant.service"
+import dayjs from "../../services/dayjs.service"
+import { deleteFormulaire, getFormulaire, reactivateRecruiter, sendDelegationMailToCFA, updateOffre } from "../../services/formulaire.service"
+import { createUser, removeUser, updateUser, updateUserValidationHistory, sendWelcomeEmailToUserRecruteur } from "../../services/userRecruteur.service"
+import authMiddleware from "../middlewares/authMiddleware"
+import { tryCatch } from "../middlewares/tryCatchMiddleware"
 
 export default () => {
   const router = express.Router()

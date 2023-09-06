@@ -1,6 +1,6 @@
-import { EligibleTrainingsForAppointment } from "../../common/model/index.js"
-import { getFormationsFromCatalogueMe } from "../../services/catalogue.service.js"
-import { runScript } from "../scriptWrapper.js"
+import { EligibleTrainingsForAppointment } from "../../common/model/index"
+import { getFormationsFromCatalogueMe } from "../../services/catalogue.service"
+import { runScript } from "../scriptWrapper"
 
 const getParcoursupId = async () => {
   const formations = await getFormationsFromCatalogueMe({

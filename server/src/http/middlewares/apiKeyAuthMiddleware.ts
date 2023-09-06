@@ -1,4 +1,4 @@
-import { Credential } from "../../common/model/index.js"
+import { Credential } from "../../common/model/index"
 
 export default async function (req, res, next) {
   const apiKey = req.get("API-Key")

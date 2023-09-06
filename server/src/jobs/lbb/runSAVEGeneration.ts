@@ -1,5 +1,6 @@
-import { runScript } from "../scriptWrapper.js"
-import buildSAVE from "./buildSAVE.js"
+import { runScript } from "../scriptWrapper"
+
+import buildSAVE from "./buildSAVE"
 
 runScript(async () => {
   await buildSAVE()

@@ -1,4 +1,4 @@
-import { Etablissement } from "../model/index.js"
+import { Etablissement } from "../model/index"
 
 /**
  * KBA: to be refactored and merged with etablissementRecruteur.js

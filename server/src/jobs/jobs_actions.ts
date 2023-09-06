@@ -1,14 +1,15 @@
 import { captureException, getCurrentHub, runWithAsyncContext } from "@sentry/node"
 import { formatDuration, intervalToDuration } from "date-fns"
 
-import { jobsDb } from "@/common/model/collections"
-import { sleep } from "@/common/utils/asyncUtils"
+import { InternalJobs } from "common/model"
+import { IInternalJobs } from "common/model/schema/internalJobs/internalJobs.types"
+import { sleep } from "common/utils/asyncUtils"
 
-import { createJob, updateJob } from "./job.actions.js"
+import { getLoggerWithContext } from "../common/logger"
 
-import { runJob } from "./jobs.js"
-import { getLoggerWithContext } from "../common/logger.js"
-import { IInternalJobs } from "common/model/schema/internalJobs/internalJobs.types.js"
+import { createJob, updateJob } from "./job.actions"
+import { runJob } from "./jobs"
+
 const logger = getLoggerWithContext("script")
 
 export async function addJob({
@@ -39,7 +40,8 @@ export async function processor(signal: AbortSignal): Promise<void> {
   }
 
   logger.debug(`Process jobs queue - looking for a job to execute`)
-  const { value: nextJob } = await jobsDb().findOneAndUpdate(
+
+  const { value: nextJob } = await InternalJobs.findOneAndUpdate(
     {
       type: { $in: ["simple", "cron_task"] },
       status: "pending",

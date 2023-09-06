@@ -1,5 +1,6 @@
-import { model, Schema } from "../../../mongodb.js"
-import { IGeolocation } from "./geolocation.types.js"
+import { model, Schema } from "../../../mongodb"
+
+import { IGeolocation } from "./geolocation.types"
 
 export const geolocationSchema = new Schema<IGeolocation>({
   address: {

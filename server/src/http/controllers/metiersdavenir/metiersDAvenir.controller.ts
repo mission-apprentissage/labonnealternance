@@ -1,7 +1,9 @@
-import { getMetiersDAvenir } from "../../../services/diagoriente.service.js"
 import { Controller, Get, Hidden, OperationId, Response, Route, SuccessResponse, Tags } from "tsoa"
-import { TResponseError } from "../shared.types.js"
-import { TGetMetiersDAvenirResponseSuccess } from "./metiersDAvenir.type.js"
+
+import { getMetiersDAvenir } from "../../../services/diagoriente.service"
+import { TResponseError } from "../shared.types"
+
+import { TGetMetiersDAvenirResponseSuccess } from "./metiersDAvenir.type"
 
 @Tags("MetiersDAvenir")
 @Route("/api/metiersdavenir")

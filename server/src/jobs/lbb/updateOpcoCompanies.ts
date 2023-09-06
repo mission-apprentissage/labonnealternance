@@ -1,12 +1,15 @@
 //@ts-nocheck
-import { notifyToSlack } from "../../common/utils/slackUtils.js"
 import { oleoduc, writeData } from "oleoduc"
-import { logger } from "../../common/logger.js"
-import { Opco } from "../../common/model/index.js"
-import { logMessage } from "../../common/utils/logMessage.js"
-import { CFADOCK_FILTER_LIMIT, fetchOpcosFromCFADock } from "../../services/cfadock.service.js"
-import { checkIfAlgoFileIsNew, downloadAlgoCompanyFile, readCompaniesFromJson, removePredictionFile } from "./bonnesBoitesUtils.js"
-import { getMemoizedOpcoShortName, saveOpco } from "../../services/opco.service.js"
+
+import { logger } from "../../common/logger"
+import { Opco } from "../../common/model/index"
+import { logMessage } from "../../common/utils/logMessage"
+import { notifyToSlack } from "../../common/utils/slackUtils"
+import { CFADOCK_FILTER_LIMIT, fetchOpcosFromCFADock } from "../../services/cfadock.service"
+import { getMemoizedOpcoShortName, saveOpco } from "../../services/opco.service"
+
+import { checkIfAlgoFileIsNew, downloadAlgoCompanyFile, readCompaniesFromJson, removePredictionFile } from "./bonnesBoitesUtils"
+
 let errorCount = 0
 
 let sirenSet = new Set()

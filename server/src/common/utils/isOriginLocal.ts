@@ -1,4 +1,4 @@
-import config from "../../config.js"
+import config from "../../config"
 
 /**
  * @description : préciser l'usage de cet utils

@@ -58,7 +58,7 @@ fileignoreconfig:
 - filename: server/src/http/controllers/jobs/jobs.controller.ts
   checksum: d7a5e33a4e9bd43ccfd2758ec08a1a491957e27566c50e235f9232f744a392ca
 - filename: server/src/http/routes/auth/password.controller.ts
-  checksum: 9d27a293e44bed47969f818e2c8abff95d429f219780900e580bfb409c5d4985
+  checksum: 3dc96343cc0258fa5ecdba6071cac633c2f6810bdf1838293d97b5d95740ad3c
 - filename: server/src/jobs/lba_recruteur/api/resetApiKey.ts
   checksum: a3fa687c1f7c387def5428d934cd1a427b0edf2603aac78c62c8aab140be9b30
 - filename: server/src/jobs/seed/referentielRome/unix_fiche_emploi_metier_v450_iso8859-15.xml

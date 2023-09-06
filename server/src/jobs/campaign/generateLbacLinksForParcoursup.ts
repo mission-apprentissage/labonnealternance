@@ -1,9 +1,10 @@
 // @ts-nocheck
 import fs from "fs"
-import { runScript } from "../scriptWrapper.js"
-import { Appointment } from "../../common/model/index.js"
-import { asyncForEach } from "../../common/utils/asyncUtils.js"
 import { URL } from "url"
+
+import { Appointment } from "../../common/model/index"
+import { asyncForEach } from "../../common/utils/asyncUtils"
+import { runScript } from "../scriptWrapper"
 
 const lbaDomain = "https://labonnealternance.apprentissage.beta.gouv.fr"
 const utmData = "&utm_source=lba&utm_medium=email&utm_campaign=promotion-emploi-jeunes-rdva-ps"

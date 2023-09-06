@@ -1,7 +1,7 @@
-import { logger } from "../../../../common/logger.js"
-import { Recruiter } from "../../../../common/model/index.js"
-import { asyncForEach } from "../../../../common/utils/asyncUtils.js"
-import { runScript } from "../../../scriptWrapper.js"
+import { logger } from "../../../../common/logger"
+import { Recruiter } from "../../../../common/model/index"
+import { asyncForEach } from "../../../../common/utils/asyncUtils"
+import { runScript } from "../../../scriptWrapper"
 
 runScript(async () => {
   logger.info("Start update contract duration job")

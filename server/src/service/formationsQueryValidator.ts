@@ -9,7 +9,7 @@ import {
   validateRadius,
   validateRegionOrRome,
   validateRncpOrRomeOrDomain,
-} from "./queryValidators.js"
+} from "./queryValidators"
 
 //TODO: remplacer par joi validateAsync
 const formationsQueryValidator = async (query) => {

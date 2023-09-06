@@ -1,5 +1,5 @@
-import { ETAT_UTILISATEUR } from "../../../../services/constant.service.js"
-import { IGlobalAddress } from "../_shared/shared.types.js"
+import { ETAT_UTILISATEUR } from "../../../../services/constant.service"
+import { IGlobalAddress } from "../_shared/shared.types"
 
 export interface IUserStatusValidation {
   validation_type: string

@@ -1,9 +1,10 @@
 //@ts-nocheck
 import { get } from "lodash-es"
-import { logger } from "../../common/logger.js"
-import { Application } from "../../common/model/index.js"
-import { sentryCaptureException } from "../../common/utils/sentryUtils.js"
-import { notifyToSlack } from "../../common/utils/slackUtils.js"
+
+import { logger } from "../../common/logger"
+import { Application } from "../../common/model/index"
+import { sentryCaptureException } from "../../common/utils/sentryUtils"
+import { notifyToSlack } from "../../common/utils/slackUtils"
 
 const anonymizeApplications = async () => {
   logger.info(`Début anonymisation`)

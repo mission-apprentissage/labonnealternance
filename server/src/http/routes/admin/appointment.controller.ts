@@ -1,8 +1,9 @@
 import express from "express"
-import { logger } from "../../../common/logger.js"
-import { Appointment, User } from "../../../common/model/index.js"
-import { getFormationsByCleMinistereEducatif } from "../../../services/catalogue.service.js"
-import { tryCatch } from "../../middlewares/tryCatchMiddleware.js"
+
+import { logger } from "../../../common/logger"
+import { Appointment, User } from "../../../common/model/index"
+import { getFormationsByCleMinistereEducatif } from "../../../services/catalogue.service"
+import { tryCatch } from "../../middlewares/tryCatchMiddleware"
 
 /**
  * Sample entity route module for GET

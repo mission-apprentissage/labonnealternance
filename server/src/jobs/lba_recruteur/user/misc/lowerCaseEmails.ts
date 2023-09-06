@@ -1,9 +1,10 @@
 import { groupBy } from "lodash-es"
-import { Recruiter, UserRecruteur } from "../../../../common/model/index.js"
-import { IUserRecruteur } from "../../../../common/model/schema/userRecruteur/userRecruteur.types.js"
-import { asyncForEach } from "../../../../common/utils/asyncUtils.js"
-import { CFA, ENTREPRISE, ETAT_UTILISATEUR } from "../../../../services/constant.service.js"
-import { runScript } from "../../../scriptWrapper.js"
+
+import { Recruiter, UserRecruteur } from "../../../../common/model/index"
+import { IUserRecruteur } from "../../../../common/model/schema/userRecruteur/userRecruteur.types"
+import { asyncForEach } from "../../../../common/utils/asyncUtils"
+import { CFA, ENTREPRISE, ETAT_UTILISATEUR } from "../../../../services/constant.service"
+import { runScript } from "../../../scriptWrapper"
 
 /**
  * @description lowercase all email of the UserRecruter collection documents

@@ -1,5 +1,6 @@
-import { model, Schema } from "../../../mongodb.js"
-import { IRncpRomes } from "./rncpRomes.types.js"
+import { model, Schema } from "../../../mongodb"
+
+import { IRncpRomes } from "./rncpRomes.types"
 
 export const rncpRomesSchema = new Schema<IRncpRomes>({
   rncp_code: {

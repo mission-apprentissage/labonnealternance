@@ -1,5 +1,6 @@
 import { omitBy } from "lodash-es"
-import { logger } from "../../common/logger.js"
+
+import { logger } from "../../common/logger"
 
 export function logMiddleware() {
   return (req, res, next) => {

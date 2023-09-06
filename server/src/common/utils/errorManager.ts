@@ -1,6 +1,7 @@
 import Sentry from "@sentry/node"
-import { trackApiCall } from "./sendTrackingEvent.js"
-import { sentryCaptureException } from "./sentryUtils.js"
+
+import { trackApiCall } from "./sendTrackingEvent"
+import { sentryCaptureException } from "./sentryUtils"
 
 export interface IApiError {
   result?: string

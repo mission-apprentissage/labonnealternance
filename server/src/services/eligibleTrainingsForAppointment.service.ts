@@ -1,6 +1,7 @@
-import { EligibleTrainingsForAppointment } from "../common/model/index.js"
-import { IEligibleTrainingsForAppointment } from "../common/model/schema/eligibleTrainingsForAppointment/eligibleTrainingsForAppointment.types.js"
 import { FilterQuery } from "mongoose"
+
+import { EligibleTrainingsForAppointment } from "../common/model/index"
+import { IEligibleTrainingsForAppointment } from "../common/model/schema/eligibleTrainingsForAppointment/eligibleTrainingsForAppointment.types"
 
 /**
  * @description Creates new item.

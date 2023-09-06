@@ -1,5 +1,5 @@
-import { logger } from "../../../common/logger.js"
-import { Credential } from "../../../common/model/index.js"
+import { logger } from "../../../common/logger"
+import { Credential } from "../../../common/model/index"
 
 export const createApiUser = async (nom, prenom, email, organisation, scope) => {
   const apiUser = await Credential.create({ nom, prenom, email, organisation, scope })

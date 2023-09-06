@@ -1,8 +1,9 @@
 // @ts-nocheck
 import { pick } from "lodash-es"
-import { logger } from "../../../common/logger.js"
-import { Recruiter, UserRecruteur } from "../../../common/model/index.js"
-import { runScript } from "../../scriptWrapper.js"
+
+import { logger } from "../../../common/logger"
+import { Recruiter, UserRecruteur } from "../../../common/model/index"
+import { runScript } from "../../scriptWrapper"
 
 const updateFormulaire = async () => {
   // update record using MongoDB API to avoid timestamp automatic update

@@ -1,11 +1,12 @@
 //@ts-nocheck
 import express from "express"
-import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
-import { sentryCaptureException } from "../../common/utils/sentryUtils.js"
-import { trackApiCall } from "../../common/utils/sendTrackingEvent.js"
-import { jobsEtFormationsQueryValidator } from "../../service/jobsEtFormationsQueryValidator.js"
-import { getFormationsQuery } from "../../services/formation.service.js"
-import { getJobsFromApi } from "../../service/poleEmploi/jobsAndCompanies.js"
+
+import { trackApiCall } from "../../common/utils/sendTrackingEvent"
+import { sentryCaptureException } from "../../common/utils/sentryUtils"
+import { jobsEtFormationsQueryValidator } from "../../service/jobsEtFormationsQueryValidator"
+import { getJobsFromApi } from "../../service/poleEmploi/jobsAndCompanies"
+import { getFormationsQuery } from "../../services/formation.service"
+import { tryCatch } from "../middlewares/tryCatchMiddleware"
 
 export default function () {
   const router = express.Router()

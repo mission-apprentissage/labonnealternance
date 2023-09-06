@@ -1,13 +1,14 @@
 // @ts-nocheck
-import { oleoduc, transformData, writeData } from "oleoduc"
 import _ from "lodash-es"
-import { BonnesBoites, UnsubscribedBonneBoite } from "../../common/model/index.js"
-import { rebuildIndex } from "../../common/utils/esUtils.js"
-import { logMessage } from "../../common/utils/logMessage.js"
-import { insertSAVECompanies, updateSAVECompanies, removeSAVECompanies } from "./updateSAVECompanies.js"
+import { oleoduc, transformData, writeData } from "oleoduc"
 
-import { countCompaniesInFile, downloadAlgoCompanyFile, getCompanyMissingData, checkIfAlgoFileIsNew, readCompaniesFromJson, removePredictionFile } from "./bonnesBoitesUtils.js"
-import { notifyToSlack } from "../../common/utils/slackUtils.js"
+import { BonnesBoites, UnsubscribedBonneBoite } from "../../common/model/index"
+import { rebuildIndex } from "../../common/utils/esUtils"
+import { logMessage } from "../../common/utils/logMessage"
+import { notifyToSlack } from "../../common/utils/slackUtils"
+
+import { countCompaniesInFile, downloadAlgoCompanyFile, getCompanyMissingData, checkIfAlgoFileIsNew, readCompaniesFromJson, removePredictionFile } from "./bonnesBoitesUtils"
+import { insertSAVECompanies, updateSAVECompanies, removeSAVECompanies } from "./updateSAVECompanies"
 
 // nombre minimal arbitraire de sociétés attendus dans le fichier
 const MIN_COMPANY_THRESHOLD = 200000

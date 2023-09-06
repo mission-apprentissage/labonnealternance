@@ -1,9 +1,12 @@
-import axios from "axios"
 import querystring from "querystring"
-import dayjs from "./dayjs.service.js"
-import config from "../config.js"
-import { IAppelattionDetailsFromAPI, IPEAPIToken, IRomeDetailsFromAPI } from "./rome.service.types.js"
-import { sentryCaptureException } from "../common/utils/sentryUtils.js"
+
+import axios from "axios"
+
+import { sentryCaptureException } from "../common/utils/sentryUtils"
+import config from "../config"
+
+import dayjs from "./dayjs.service"
+import { IAppelattionDetailsFromAPI, IPEAPIToken, IRomeDetailsFromAPI } from "./rome.service.types"
 
 let token: IPEAPIToken = {
   access_token: "",

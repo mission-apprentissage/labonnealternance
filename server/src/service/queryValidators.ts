@@ -1,7 +1,8 @@
-import { regionCodeToDepartmentList } from "../common/utils/regionInseeCodes.js"
-import { isOriginLocal } from "../common/utils/isOriginLocal.js"
-import { JobSearchQuery } from "./poleEmploi/jobsAndCompanies.js"
-import { RncpRomes } from "../common/model/index.js"
+import { RncpRomes } from "../common/model/index"
+import { isOriginLocal } from "../common/utils/isOriginLocal"
+import { regionCodeToDepartmentList } from "../common/utils/regionInseeCodes"
+
+import { JobSearchQuery } from "./poleEmploi/jobsAndCompanies"
 
 const validateRncp = (rncp: string | null | undefined, error_messages: string[]) => {
   if (!/^RNCP\d{2,5}$/.test(rncp)) {

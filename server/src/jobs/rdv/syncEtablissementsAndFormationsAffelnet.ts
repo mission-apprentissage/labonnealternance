@@ -1,13 +1,15 @@
-import { oleoduc, writeData } from "oleoduc"
 import { Readable } from "stream"
-import { logger } from "../../common/logger.js"
-import { referrers } from "../../common/model/constants/referrers.js"
-import dayjs from "../../services/dayjs.service.js"
-import { isValidEmail } from "../../common/utils/isValidEmail.js"
-import { isEmailBlacklisted } from "../../services/application.service.js"
-import { affelnetSelectedFields, getFormationsFromCatalogueMe } from "../../services/catalogue.service.js"
-import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service.js"
-import { Etablissement } from "../../common/model/index.js"
+
+import { oleoduc, writeData } from "oleoduc"
+
+import { logger } from "../../common/logger"
+import { referrers } from "../../common/model/constants/referrers"
+import { Etablissement } from "../../common/model/index"
+import { isValidEmail } from "../../common/utils/isValidEmail"
+import { isEmailBlacklisted } from "../../services/application.service"
+import { affelnetSelectedFields, getFormationsFromCatalogueMe } from "../../services/catalogue.service"
+import dayjs from "../../services/dayjs.service"
+import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service"
 
 /**
  * Gets email from catalogue field.

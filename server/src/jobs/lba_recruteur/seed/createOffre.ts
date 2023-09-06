@@ -1,6 +1,6 @@
 // @ts-nocheck
-import { logger } from "../../../common/logger.js"
-import { Recruiter, Job } from "../../../common/model/index.js"
+import { logger } from "../../../common/logger"
+import { Recruiter, Job } from "../../../common/model/index"
 
 export const createOffreCollection = async () => {
   logger.info("Creating offres collections...")

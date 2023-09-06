@@ -1,11 +1,12 @@
 import { readFile, writeFile } from "node:fs/promises"
-import { logger } from "../../../common/logger.js"
-import { EligibleTrainingsForAppointment } from "../../../common/model/index.js"
-import { IEligibleTrainingsForAppointment } from "../../../common/model/schema/eligibleTrainingsForAppointment/eligibleTrainingsForAppointment.types.js"
-import { asyncForEach } from "../../../common/utils/asyncUtils.js"
-import { runScript } from "../../scriptWrapper.js"
-import { syncEtablissementsAndFormations } from "../syncEtablissementsAndFormations.js"
-import { syncAffelnetFormationsFromCatalogueME } from "../syncEtablissementsAndFormationsAffelnet.js"
+
+import { logger } from "../../../common/logger"
+import { EligibleTrainingsForAppointment } from "../../../common/model/index"
+import { IEligibleTrainingsForAppointment } from "../../../common/model/schema/eligibleTrainingsForAppointment/eligibleTrainingsForAppointment.types"
+import { asyncForEach } from "../../../common/utils/asyncUtils"
+import { runScript } from "../../scriptWrapper"
+import { syncEtablissementsAndFormations } from "../syncEtablissementsAndFormations"
+import { syncAffelnetFormationsFromCatalogueME } from "../syncEtablissementsAndFormationsAffelnet"
 
 type TWidgetParametersSelected = Pick<IEligibleTrainingsForAppointment, "cle_ministere_educatif" | "lieu_formation_email" | "is_lieu_formation_email_customized">
 

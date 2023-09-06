@@ -1,5 +1,6 @@
-import { model, Schema } from "../../../mongodb.js"
-import { IReferentielOnisep } from "./referentielOnisep.types.js"
+import { model, Schema } from "../../../mongodb"
+
+import { IReferentielOnisep } from "./referentielOnisep.types"
 
 export const referentielOnisepSchema = new Schema<IReferentielOnisep>({
   id_action_ideo2: {

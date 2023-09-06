@@ -1,5 +1,5 @@
-import { model } from "../../../mongodb.js"
-import { appointmentSchema } from "../appointments/appointment.schema.js"
-import { IAppointments } from "../appointments/appointments.types.js"
+import { model } from "../../../mongodb"
+import { appointmentSchema } from "../appointments/appointment.schema"
+import { IAppointments } from "../appointments/appointments.types"
 
 export default model<IAppointments>("appointmentDetailed", appointmentSchema)

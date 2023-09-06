@@ -1,17 +1,19 @@
 // @ts-nocheck
+import { setTimeout } from "timers/promises"
+
 import distance from "@turf/distance"
 import axios from "axios"
-import { setTimeout } from "timers/promises"
-import { NIVEAUX_POUR_OFFRES_PE } from "../../services/constant.service.js"
-import { roundDistance } from "../../common/utils/geolib.js"
-import { IApiError, manageApiError } from "../../common/utils/errorManager.js"
-import { trackApiCall } from "../../common/utils/sendTrackingEvent.js"
-import { itemModel } from "../../model/itemModel.js"
-import { filterJobsByOpco } from "../../services/opco.service.js"
-import { ILbaItem } from "../../services/lbaitem.shared.service.types.js"
 
-//const poleEmploi = require("./common.js");
-import { getAccessToken, getRoundedRadius, peApiHeaders } from "./common.js"
+import { IApiError, manageApiError } from "../../common/utils/errorManager"
+import { roundDistance } from "../../common/utils/geolib"
+import { trackApiCall } from "../../common/utils/sendTrackingEvent"
+import { itemModel } from "../../model/itemModel"
+import { NIVEAUX_POUR_OFFRES_PE } from "../../services/constant.service"
+import { ILbaItem } from "../../services/lbaitem.shared.service.types"
+import { filterJobsByOpco } from "../../services/opco.service"
+
+//const poleEmploi = require("./common");
+import { getAccessToken, getRoundedRadius, peApiHeaders } from "./common"
 
 const blackListedCompanies = ["iscod", "oktogone", "institut europeen f 2i"]
 

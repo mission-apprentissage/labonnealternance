@@ -1,7 +1,9 @@
 import { mongoosePagination, Pagination } from "mongoose-paginate-ts"
-import { ETAT_UTILISATEUR, VALIDATION_UTILISATEUR } from "../../../../services/constant.service.js"
-import { model, Schema } from "../../../mongodb.js"
-import { IUserRecruteur, IUserStatusValidation } from "./userRecruteur.types.js"
+
+import { ETAT_UTILISATEUR, VALIDATION_UTILISATEUR } from "../../../../services/constant.service"
+import { model, Schema } from "../../../mongodb"
+
+import { IUserRecruteur, IUserStatusValidation } from "./userRecruteur.types"
 
 const userValidationSchema = new Schema<IUserStatusValidation>(
   {

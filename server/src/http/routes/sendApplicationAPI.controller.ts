@@ -1,6 +1,7 @@
 import express from "express"
-import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
-import { sendApplication } from "../../services/application.service.js"
+
+import { sendApplication } from "../../services/application.service"
+import { tryCatch } from "../middlewares/tryCatchMiddleware"
 
 export default function (components) {
   const router = express.Router()

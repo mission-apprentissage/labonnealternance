@@ -1,10 +1,12 @@
-import { isEmpty } from "lodash-es"
 import { access, mkdir } from "node:fs/promises"
+
+import { isEmpty } from "lodash-es"
 import prettyMilliseconds from "pretty-ms"
-import createComponents, { Components } from "../common/components/components.js"
-import { getLoggerWithContext } from "../common/logger.js"
-import { closeMongoConnection } from "../common/mongodb.js"
-import config from "../config.js"
+
+import createComponents, { Components } from "../common/components/components"
+import { getLoggerWithContext } from "../common/logger"
+import { closeMongoConnection } from "../common/mongodb"
+import config from "../config"
 
 const logger = getLoggerWithContext("script")
 

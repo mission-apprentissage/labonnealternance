@@ -1,7 +1,8 @@
 import express from "express"
 import Joi from "joi"
-import { getTrainingLinks } from "../../services/trainingLinks.service.js"
-import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
+
+import { getTrainingLinks } from "../../services/trainingLinks.service"
+import { tryCatch } from "../middlewares/tryCatchMiddleware"
 
 export default () => {
   const router = express.Router()

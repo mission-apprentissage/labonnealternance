@@ -1,5 +1,6 @@
-import { validateApiSources, validateCaller, validateInsee, validateLatitude, validateLongitude, validateRadius, validateRomesOrRncp } from "../queryValidators.js"
-import { JobSearchQuery } from "./jobsAndCompanies.js"
+import { validateApiSources, validateCaller, validateInsee, validateLatitude, validateLongitude, validateRadius, validateRomesOrRncp } from "../queryValidators"
+
+import { JobSearchQuery } from "./jobsAndCompanies"
 
 const jobsQueryValidator = async (query: JobSearchQuery): Promise<{ result: "passed" } | { error: string; error_messages: string[] }> => {
   const error_messages = []

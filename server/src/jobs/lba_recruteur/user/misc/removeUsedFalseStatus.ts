@@ -1,7 +1,7 @@
 // @ts-nocheck
-import { UserRecruteur } from "../../../../common/model/index.js"
-import { asyncForEach } from "../../../../common/utils/asyncUtils.js"
-import { runScript } from "../../../scriptWrapper.js"
+import { UserRecruteur } from "../../../../common/model/index"
+import { asyncForEach } from "../../../../common/utils/asyncUtils"
+import { runScript } from "../../../scriptWrapper"
 
 runScript(async () => {
   const users = await UserRecruteur.find({ "status.status": null, type: "ENTREPRISE" })

@@ -1,7 +1,8 @@
 import { FilterQuery } from "mongoose"
-import * as sha512Utils from "../common/utils/sha512Utils.js"
-import { User } from "../common/model/index.js"
-import { IUser } from "../common/model/schema/user/user.types.js"
+
+import { User } from "../common/model/index"
+import { IUser } from "../common/model/schema/user/user.types"
+import * as sha512Utils from "../common/utils/sha512Utils"
 
 /**
  * @description Hash password

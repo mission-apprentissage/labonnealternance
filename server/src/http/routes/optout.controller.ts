@@ -1,8 +1,9 @@
 // @ts-nocheck
 import express from "express"
 import jwt from "jsonwebtoken"
-import { Optout } from "../../common/model/index.js"
-import config from "../../config.js"
+
+import { Optout } from "../../common/model/index"
+import config from "../../config"
 
 export default () => {
   const router = express.Router()

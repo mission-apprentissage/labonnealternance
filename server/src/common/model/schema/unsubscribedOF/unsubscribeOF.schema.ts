@@ -1,5 +1,6 @@
-import { model, Schema } from "../../../mongodb.js"
-import { IUnsubscribedOF } from "./unsubscribeOF.types.js"
+import { model, Schema } from "../../../mongodb"
+
+import { IUnsubscribedOF } from "./unsubscribeOF.types"
 
 const unsubscribedOF = new Schema<IUnsubscribedOF>({
   catalogue_id: {

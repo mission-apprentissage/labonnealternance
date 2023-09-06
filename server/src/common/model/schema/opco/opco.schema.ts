@@ -1,5 +1,6 @@
-import { model, Schema } from "../../../mongodb.js"
-import { IOpco } from "./opco.types.js"
+import { model, Schema } from "../../../mongodb"
+
+import { IOpco } from "./opco.types"
 
 export const opcoSchema = new Schema<IOpco>({
   siren: {

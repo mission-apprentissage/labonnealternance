@@ -1,4 +1,4 @@
-import { IMailing } from "../appointments/appointments.types.js"
+import { IMailing } from "../appointments/appointments.types"
 
 interface IEtablissement {
   _id: string

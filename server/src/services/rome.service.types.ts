@@ -1,4 +1,4 @@
-import { TDayjs } from "./dayjs.service.js"
+import { TDayjs } from "./dayjs.service"
 
 export interface IPEAPIToken {
   access_token: string
@@ -94,33 +94,11 @@ export interface AppellationEsco {
   libelle: string
 }
 
-export interface DomaineProfessionnel {
-  code: string
-  libelle: string
-  grandDomaine: GrandDomaine
-}
-
-export interface GrandDomaine {
-  code: string
-  libelle: string
-}
-
 export interface Appellation {
   code: string
   libelle: string
   libelleCourt: string
   particulier: boolean
-}
-
-export interface NoeudCompetence {
-  code: string
-  libelle: string
-  racineCompetence: RacineCompetence
-}
-
-export interface RacineCompetence {
-  code: string
-  libelle: string
 }
 
 export interface Theme {

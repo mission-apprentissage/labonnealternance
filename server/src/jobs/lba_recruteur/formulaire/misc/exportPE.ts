@@ -1,17 +1,19 @@
+import { createWriteStream, createReadStream } from "fs"
 import path from "path"
+import { Readable } from "stream"
+
 import axios from "axios"
 import FormData from "form-data"
-import { createWriteStream, createReadStream } from "fs"
 import { pick } from "lodash-es"
 import { oleoduc, transformData, transformIntoCSV } from "oleoduc"
-import { Readable } from "stream"
-import dayjs from "../../../../services/dayjs.service.js"
-import { logger } from "../../../../common/logger.js"
-import { UserRecruteur } from "../../../../common/model/index.js"
-import { asyncForEach } from "../../../../common/utils/asyncUtils.js"
-import { IUserRecruteur } from "../../../../common/model/schema/userRecruteur/userRecruteur.types.js"
-import config from "../../../../config.js"
-import { getDepartmentByZipCode } from "../../../../common/territoires.js"
+
+import { logger } from "../../../../common/logger"
+import { UserRecruteur } from "../../../../common/model/index"
+import { IUserRecruteur } from "../../../../common/model/schema/userRecruteur/userRecruteur.types"
+import { getDepartmentByZipCode } from "../../../../common/territoires"
+import { asyncForEach } from "../../../../common/utils/asyncUtils"
+import config from "../../../../config"
+import dayjs from "../../../../services/dayjs.service"
 
 const stat = {
   ok: 0,

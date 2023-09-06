@@ -1,6 +1,7 @@
 // @ts-nocheck
 import crypto from "crypto"
-import config from "../../config.js"
+
+import config from "../../config"
 
 const secretLba = Buffer.alloc(32, config?.private?.secretUpdateRomesMetiers || "1234")
 const secret1j1s = Buffer.alloc(32, config?.private?.secret1j1s || "5678")

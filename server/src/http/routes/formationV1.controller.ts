@@ -1,8 +1,9 @@
 // @ts-nocheck
-import { trackApiCall } from "../../common/utils/sendTrackingEvent.js"
 import express from "express"
-import { getFormationDescriptionQuery, getFormationQuery, getFormationsQuery } from "../../services/formation.service.js"
-import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
+
+import { trackApiCall } from "../../common/utils/sendTrackingEvent"
+import { getFormationDescriptionQuery, getFormationQuery, getFormationsQuery } from "../../services/formation.service"
+import { tryCatch } from "../middlewares/tryCatchMiddleware"
 
 /**
  * API romes

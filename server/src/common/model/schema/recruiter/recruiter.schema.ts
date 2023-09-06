@@ -1,10 +1,13 @@
 import { randomUUID } from "crypto"
+
 import { mongoosePagination, Pagination } from "mongoose-paginate-ts"
-import { RECRUITER_STATUS } from "../../../../services/constant.service.js"
-import { getElasticInstance, mongoosastic } from "../../../esClient/index.js"
-import { model, Schema } from "../../../mongodb.js"
-import { jobsSchema } from "../jobs/jobs.schema.js"
-import { IRecruiter } from "./recruiter.types.js"
+
+import { RECRUITER_STATUS } from "../../../../services/constant.service"
+import { getElasticInstance, mongoosastic } from "../../../esClient/index"
+import { model, Schema } from "../../../mongodb"
+import { jobsSchema } from "../jobs/jobs.schema"
+
+import { IRecruiter } from "./recruiter.types"
 
 export const recruiterSchema = new Schema<IRecruiter>(
   {

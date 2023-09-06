@@ -1,11 +1,13 @@
 // @ts-nocheck
+import querystring from "querystring"
+
 import axios from "axios"
 import express from "express"
-import querystring from "querystring"
-import dayjs from "../../../services/dayjs.service.js"
-import config from "../../../config.js"
-import { getRomesAndLabelsFromTitleQuery } from "../../../services/metiers.service.js"
-import { tryCatch } from "../../middlewares/tryCatchMiddleware.js"
+
+import config from "../../../config"
+import dayjs from "../../../services/dayjs.service"
+import { getRomesAndLabelsFromTitleQuery } from "../../../services/metiers.service"
+import { tryCatch } from "../../middlewares/tryCatchMiddleware"
 
 /**
  * API romes

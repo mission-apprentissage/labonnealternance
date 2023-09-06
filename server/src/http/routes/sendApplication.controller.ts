@@ -2,11 +2,12 @@
 import express from "express"
 import rateLimit from "express-rate-limit"
 import { ObjectId } from "mongodb"
-import { Application } from "../../common/model/index.js"
-import { sendApplication, sendNotificationToApplicant, updateApplicationStatus, validateFeedbackApplicationComment } from "../../services/application.service.js"
-import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
-import { decryptWithIV } from "../../common/utils/encryptString.js"
-import { sentryCaptureException } from "../../common/utils/sentryUtils.js"
+
+import { Application } from "../../common/model/index"
+import { decryptWithIV } from "../../common/utils/encryptString"
+import { sentryCaptureException } from "../../common/utils/sentryUtils"
+import { sendApplication, sendNotificationToApplicant, updateApplicationStatus, validateFeedbackApplicationComment } from "../../services/application.service"
+import { tryCatch } from "../middlewares/tryCatchMiddleware"
 
 const limiter1Per5Second = rateLimit({
   windowMs: 5000, // 5 seconds

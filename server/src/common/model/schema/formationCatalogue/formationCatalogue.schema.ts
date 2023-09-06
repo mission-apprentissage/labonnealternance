@@ -1,9 +1,10 @@
-import { getElasticInstance, mongoosastic } from "../../../esClient/index.js"
-import { model, Schema } from "../../../mongodb.js"
-import { etablissementFormateurInfo } from "./etablissement.formateur.sub.js"
-import { etablissementGestionnaireInfo } from "./etablissement.gestionnaire.sub.js"
-import { etablissementReferenceInfo } from "./etablissement.reference.sub.js"
-import { IFormationCatalogue } from "./formationCatalogue.types.js"
+import { getElasticInstance, mongoosastic } from "../../../esClient/index"
+import { model, Schema } from "../../../mongodb"
+
+import { etablissementFormateurInfo } from "./etablissement.formateur.sub"
+import { etablissementGestionnaireInfo } from "./etablissement.gestionnaire.sub"
+import { etablissementReferenceInfo } from "./etablissement.reference.sub"
+import { IFormationCatalogue } from "./formationCatalogue.types"
 
 const mnaFormationSchema = new Schema<IFormationCatalogue>({
   cle_ministere_educatif: {

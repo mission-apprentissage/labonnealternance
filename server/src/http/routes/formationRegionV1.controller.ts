@@ -1,8 +1,9 @@
 // @ts-nocheck
-import { trackApiCall } from "../../common/utils/sendTrackingEvent.js"
 import express from "express"
-import { getFormationsParRegionQuery } from "../../services/formation.service.js"
-import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
+
+import { trackApiCall } from "../../common/utils/sendTrackingEvent"
+import { getFormationsParRegionQuery } from "../../services/formation.service"
+import { tryCatch } from "../middlewares/tryCatchMiddleware"
 
 export default function () {
   const router = express.Router()

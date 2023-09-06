@@ -1,9 +1,11 @@
-import NodeClam from "clamscan"
 import { Readable } from "stream"
+
+import NodeClam from "clamscan"
 import tcpPortUsed from "tcp-port-used"
-import config from "../config.js"
-import { logger } from "../common/logger.js"
-import { notifyToSlack } from "../common/utils/slackUtils.js"
+
+import { logger } from "../common/logger"
+import { notifyToSlack } from "../common/utils/slackUtils"
+import config from "../config"
 
 let scanner = null
 

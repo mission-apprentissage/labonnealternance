@@ -1,12 +1,14 @@
 import fs from "fs"
-import { oleoduc } from "oleoduc"
 import path from "path"
+
+import { oleoduc } from "oleoduc"
 import XLSX from "xlsx"
-import __dirname from "../../common/dirname.js"
-import { logger } from "../../common/logger.js"
-import { RncpRomes } from "../../common/model/index.js"
-import { getFileFromS3Bucket } from "../../common/utils/awsUtils.js"
-import { readXLSXFile } from "../../common/utils/fileUtils.js"
+
+import __dirname from "../../common/dirname"
+import { logger } from "../../common/logger"
+import { RncpRomes } from "../../common/model/index"
+import { getFileFromS3Bucket } from "../../common/utils/awsUtils"
+import { readXLSXFile } from "../../common/utils/fileUtils"
 
 const currentDirname = __dirname(import.meta.url)
 const FILEPATH = path.join(currentDirname, "../../assets/referentielRncpRome.xlsx")

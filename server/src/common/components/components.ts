@@ -1,6 +1,7 @@
 // @ts-nocheck
-import { connectToMongo } from "../mongodb.js"
-import createEtablissements from "./etablissement.js"
+import { connectToMongo } from "../mongodb"
+
+import createEtablissements from "./etablissement"
 
 export const components = async (options = {}) => {
   const etablissements = await createEtablissements()

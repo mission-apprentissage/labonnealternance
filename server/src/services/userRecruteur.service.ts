@@ -1,13 +1,16 @@
 import { randomUUID } from "crypto"
-import { ModelUpdateOptions, UpdateQuery } from "mongoose"
+
 import { Filter } from "mongodb"
-import { UserRecruteur } from "../common/model/index.js"
-import { IUserRecruteur, IUserStatusValidation } from "../common/model/schema/userRecruteur/userRecruteur.types.js"
-import { CFA, ETAT_UTILISATEUR, VALIDATION_UTILISATEUR } from "./constant.service.js"
-import mailer from "./mailer.service.js"
-import { mailTemplate } from "../assets/index.js"
-import config from "../config.js"
-import { createMagicLinkToken } from "../common/utils/jwtUtils.js"
+import { ModelUpdateOptions, UpdateQuery } from "mongoose"
+
+import { mailTemplate } from "../assets/index"
+import { UserRecruteur } from "../common/model/index"
+import { IUserRecruteur, IUserStatusValidation } from "../common/model/schema/userRecruteur/userRecruteur.types"
+import { createMagicLinkToken } from "../common/utils/jwtUtils"
+import config from "../config"
+
+import { CFA, ETAT_UTILISATEUR, VALIDATION_UTILISATEUR } from "./constant.service"
+import mailer from "./mailer.service"
 
 /**
  * @description generate an API key

@@ -1,6 +1,8 @@
 import { mongoosePagination, Pagination } from "mongoose-paginate-ts"
-import { model, Schema } from "../../../mongodb.js"
-import { IParcoursupEtablissementStat } from "./parcoursupEtablissementStat.types.js"
+
+import { model, Schema } from "../../../mongodb"
+
+import { IParcoursupEtablissementStat } from "./parcoursupEtablissementStat.types"
 
 export const parcoursupEtablissementStatSchema = new Schema<IParcoursupEtablissementStat>({
   formateur_siret: {

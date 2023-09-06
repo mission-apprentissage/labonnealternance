@@ -1,12 +1,12 @@
 // @ts-nocheck
 
-import { RncpRomes } from "../../common/model/index.js"
-import { trackApiCall } from "../../common/utils/sendTrackingEvent.js"
-import { sentryCaptureException } from "../../common/utils/sentryUtils.js"
-import { getLbaJobs } from "../../services/lbajob.service.js"
-import { getSomeLbbCompanies } from "./bonnesBoites.js"
-import { jobsQueryValidator } from "./jobsQueryValidator.js"
-import { getSomePeJobs } from "./offresPoleEmploi.js"
+import { trackApiCall } from "../../common/utils/sendTrackingEvent"
+import { sentryCaptureException } from "../../common/utils/sentryUtils"
+import { getLbaJobs } from "../../services/lbajob.service"
+
+import { getSomeLbbCompanies } from "./bonnesBoites"
+import { jobsQueryValidator } from "./jobsQueryValidator"
+import { getSomePeJobs } from "./offresPoleEmploi"
 
 export type JobSearchQuery = {
   romes?: string

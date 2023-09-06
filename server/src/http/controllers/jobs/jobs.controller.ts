@@ -1,18 +1,19 @@
 import * as express from "express"
 import { Body, Controller, Get, Header, Hidden, OperationId, Patch, Path, Post, Query, Request, Response, Route, Security, SuccessResponse, Tags } from "tsoa"
-import { Recruiter } from "../../../common/model/index.js"
-import { ICredential } from "../../../common/model/schema/credentials/credential.types.js"
-import { IJobs } from "../../../common/model/schema/jobs/jobs.types.js"
-import { IUserRecruteur } from "../../../common/model/schema/userRecruteur/userRecruteur.types.js"
-import { delay } from "../../../common/utils/asyncUtils.js"
-import { IApiError } from "../../../common/utils/errorManager.js"
-import { getCompanyFromSiret } from "../../../service/poleEmploi/bonnesBoites.js"
-import { getJobsQuery } from "../../../service/poleEmploi/jobsAndCompanies.js"
-import { getPeJobFromId } from "../../../service/poleEmploi/offresPoleEmploi.js"
-import { getNearEtablissementsFromRomes } from "../../../services/catalogue.service.js"
-import { ACTIVE, ANNULEE, JOB_STATUS, POURVUE } from "../../../services/constant.service.js"
-import dayjs from "../../../services/dayjs.service.js"
-import { entrepriseOnboardingWorkflow } from "../../../services/etablissement.service.js"
+
+import { Recruiter } from "../../../common/model/index"
+import { ICredential } from "../../../common/model/schema/credentials/credential.types"
+import { IJobs } from "../../../common/model/schema/jobs/jobs.types"
+import { IUserRecruteur } from "../../../common/model/schema/userRecruteur/userRecruteur.types"
+import { delay } from "../../../common/utils/asyncUtils"
+import { IApiError } from "../../../common/utils/errorManager"
+import { getCompanyFromSiret } from "../../../service/poleEmploi/bonnesBoites"
+import { getJobsQuery } from "../../../service/poleEmploi/jobsAndCompanies"
+import { getPeJobFromId } from "../../../service/poleEmploi/offresPoleEmploi"
+import { getNearEtablissementsFromRomes } from "../../../services/catalogue.service"
+import { ACTIVE, ANNULEE, JOB_STATUS, POURVUE } from "../../../services/constant.service"
+import dayjs from "../../../services/dayjs.service"
+import { entrepriseOnboardingWorkflow } from "../../../services/etablissement.service"
 import {
   cancelOffre,
   createJobDelegations,
@@ -24,12 +25,13 @@ import {
   getOffre,
   patchOffre,
   provideOffre,
-} from "../../../services/formulaire.service.js"
-import { ILbaItem } from "../../../services/lbaitem.shared.service.types.js"
-import { addOffreDetailView, addOffreSearchView, getLbaJobById } from "../../../services/lbajob.service.js"
-import { getAppellationDetailsFromAPI, getRomeDetailsFromAPI } from "../../../services/rome.service.js"
-import { ICreateDelegation, ICreateJobBody, IGetDelegation, TCreateEstablishmentBody, TEstablishmentResponseSuccess, TJob, TResponseError } from "./jobs.types.js"
-import { createDelegationSchema, createEstablishmentSchema, createJobSchema, getEstablishmentEntitySchema, updateJobSchema } from "./jobs.validators.js"
+} from "../../../services/formulaire.service"
+import { ILbaItem } from "../../../services/lbaitem.shared.service.types"
+import { addOffreDetailView, addOffreSearchView, getLbaJobById } from "../../../services/lbajob.service"
+import { getAppellationDetailsFromAPI, getRomeDetailsFromAPI } from "../../../services/rome.service"
+
+import { ICreateDelegation, ICreateJobBody, IGetDelegation, TCreateEstablishmentBody, TEstablishmentResponseSuccess, TJob, TResponseError } from "./jobs.types"
+import { createDelegationSchema, createEstablishmentSchema, createJobSchema, getEstablishmentEntitySchema, updateJobSchema } from "./jobs.validators"
 
 @Tags("Jobs")
 @Route("/api/v1/jobs")
@@ -77,7 +79,7 @@ export class JobsController extends Controller {
     @Query() select = "{}",
     @Query() page = 1,
     @Query() limit = 10
-  ): Promise<TEstablishmentResponseSuccess | {}> {
+  ): Promise<TEstablishmentResponseSuccess | any> {
     const user: ICredential = request.user
 
     const qs = JSON.parse(query)
@@ -313,7 +315,7 @@ export class JobsController extends Controller {
   @Post("/provided/{jobId}")
   @OperationId("setJobAsProvided")
   @Security("api_key")
-  public async setJobAsProvided(@Path() jobId: IJobs["_id"]): Promise<{} | TResponseError> {
+  public async setJobAsProvided(@Path() jobId: IJobs["_id"]): Promise<any | TResponseError> {
     const job = await getJob(jobId)
 
     if (!job) {
@@ -343,7 +345,7 @@ export class JobsController extends Controller {
   @Post("/canceled/{jobId}")
   @OperationId("setJobAsCanceled")
   @Security("api_key")
-  public async setJobAsCanceled(@Path() jobId: IJobs["_id"]): Promise<{} | TResponseError> {
+  public async setJobAsCanceled(@Path() jobId: IJobs["_id"]): Promise<any | TResponseError> {
     const job = await getJob(jobId)
 
     if (!job) {
@@ -373,7 +375,7 @@ export class JobsController extends Controller {
   @Post("/extend/{jobId}")
   @OperationId("extendJobExpiration")
   @Security("api_key")
-  public async extendJobExpiration(@Path() jobId: IJobs["_id"]): Promise<{} | TResponseError> {
+  public async extendJobExpiration(@Path() jobId: IJobs["_id"]): Promise<any | TResponseError> {
     const job = await getJob(jobId)
 
     if (!job) {

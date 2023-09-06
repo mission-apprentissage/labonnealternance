@@ -1,9 +1,8 @@
-import { logger } from "../../../../common/logger.js"
-import { Recruiter } from "../../../../common/model/index.js"
-import { IRecruiter } from "../../../../common/model/schema/recruiter/recruiter.types.js"
-import { asyncForEach, delay } from "../../../../common/utils/asyncUtils.js"
-import { getEtablissementFromGouv } from "../../../../services/etablissement.service.js"
-import { runScript } from "../../../scriptWrapper.js"
+import { logger } from "../../../../common/logger"
+import { Recruiter } from "../../../../common/model/index"
+import { asyncForEach, delay } from "../../../../common/utils/asyncUtils"
+import { getEtablissementFromGouv } from "../../../../services/etablissement.service"
+import { runScript } from "../../../scriptWrapper"
 
 runScript(async () => {
   logger.info("Start update user adresse detail")
@@ -24,7 +23,7 @@ runScript(async () => {
       etb.address_detail = data.adresse
 
       await etb.save()
-    } catch (error) {
+    } catch (error: any) {
       const { errors } = error.response.data
 
       if (errors.length) {

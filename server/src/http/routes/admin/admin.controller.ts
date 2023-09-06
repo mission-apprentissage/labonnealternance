@@ -1,5 +1,6 @@
 import express from "express"
-import { tryCatch } from "../../middlewares/tryCatchMiddleware.js"
+
+import { tryCatch } from "../../middlewares/tryCatchMiddleware"
 
 export default () => {
   const router = express.Router()

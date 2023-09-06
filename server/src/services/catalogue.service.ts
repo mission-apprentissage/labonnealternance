@@ -1,17 +1,19 @@
-import axios, { AxiosInstance } from "axios"
-import got from "got"
-import { sortBy } from "lodash-es"
 import querystring from "node:querystring"
-import { compose } from "oleoduc"
-import { getDistanceInKm } from "../common/utils/geolib.js"
-import { logger } from "../common/logger.js"
-import { FormationCatalogue, UnsubscribeOF } from "../common/model/index.js"
-import { fetchStream } from "../common/utils/httpUtils.js"
-import { streamJsonArray } from "../common/utils/streamUtils.js"
+
+import axios, { AxiosInstance } from "axios"
+import { got } from "got"
+import { sortBy } from "lodash-es"
 import * as _ from "lodash-es"
-import { getElasticInstance } from "../common/esClient/index.js"
-import config from "../config.js"
-import { sentryCaptureException } from "../common/utils/sentryUtils.js"
+import { compose } from "oleoduc"
+
+import { getElasticInstance } from "../common/esClient/index"
+import { logger } from "../common/logger"
+import { FormationCatalogue, UnsubscribeOF } from "../common/model/index"
+import { getDistanceInKm } from "../common/utils/geolib"
+import { fetchStream } from "../common/utils/httpUtils"
+import { sentryCaptureException } from "../common/utils/sentryUtils"
+import { streamJsonArray } from "../common/utils/streamUtils"
+import config from "../config"
 
 export const affelnetSelectedFields = {
   _id: 1,
@@ -189,6 +191,7 @@ export const getNearEtablissementsFromRomes = async ({ rome, origin }: { rome: s
       return []
     }
 
+    // eslint-disable-next-line no-unsafe-optional-chaining
     const [latitude, longitude] = etablissement.geo_coordonnees?.split(",")
 
     return [
@@ -263,8 +266,8 @@ const createCatalogueMeAPI = async (): Promise<AxiosInstance> => {
       password: config.catalogueMe.password,
     })
 
-    instance.defaults.headers.common["Cookie"] = response.headers["set-cookie"][0]
-  } catch (error) {
+    instance.defaults.headers.common["Cookie"] = response?.headers["set-cookie"]?.[0]
+  } catch (error: any) {
     logger.error(error.response)
   }
 
@@ -297,12 +300,14 @@ export const getFormationsFromCatalogueMe = async ({
   allFormations?: object[]
 }) => {
   if (api === null) {
+    // @ts-ignore
     api = await createCatalogueMeAPI()
   }
 
   const params = { page, limit, query: JSON.stringify(query), select: JSON.stringify(select) }
 
   try {
+    // @ts-ignore
     const response = await api.get(`/entity/formations`, { params })
 
     const { formations, pagination } = response.data
@@ -343,7 +348,7 @@ const getFormationEsQueryIndexFragment = () => {
  */
 const getRomesFromCatalogue = async ({ cfd, siret }: { cfd?: string; siret?: string }): Promise<IRomeResult> => {
   try {
-    const mustTerm = []
+    const mustTerm = [] as any[]
 
     if (cfd) {
       mustTerm.push({
@@ -388,7 +393,7 @@ const getRomesFromCatalogue = async ({ cfd, siret }: { cfd?: string; siret?: str
     }
 
     return result
-  } catch (err) {
+  } catch (err: any) {
     const error_msg = _.get(err, "meta.body", err.message)
     console.error("Error getting trainings from romes ", error_msg)
     if (_.get(err, "meta.meta.connection.status") === "dead") {

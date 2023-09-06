@@ -1,12 +1,13 @@
 import cronParser from "cron-parser"
-import mongoose from "mongoose"
 
-import { createJob, findJob, findJobs, updateJob } from "../common/actions/job.actions.js"
+import { InternalJobs } from "common/model"
 
-import { CRONS } from "./jobs.js"
-import { addJob } from "./jobs_actions.js"
+import { getLoggerWithContext } from "../common/logger"
 
-import { getLoggerWithContext } from "../common/logger.js"
+import { createJob, findJob, findJobs, updateJob } from "./job.actions"
+import { CRONS } from "./jobs"
+import { addJob } from "./jobs_actions"
+
 const logger = getLoggerWithContext("script")
 
 function parseCronString(cronString: string, options: { currentDate: string } | object = {}) {
@@ -15,11 +16,11 @@ function parseCronString(cronString: string, options: { currentDate: string } | 
     ...options,
   })
 }
-const db = mongoose.connection
+
 export async function cronsInit() {
   logger.info(`Crons - initialise crons in DB`)
-  await db.collection("internalJobs").deleteMany({ type: "cron" })
-  await db.collection("internalJobs").deleteMany({
+  await InternalJobs.deleteMany({ type: "cron" })
+  await InternalJobs.deleteMany({
     status: "pending",
     type: "cron_task",
   })

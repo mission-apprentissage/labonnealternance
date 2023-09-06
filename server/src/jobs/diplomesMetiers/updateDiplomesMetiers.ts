@@ -1,9 +1,9 @@
 // @ts-nocheck
-import { getElasticInstance } from "../../common/esClient/index.js"
-import { logger } from "../../common/logger.js"
-import { DiplomesMetiers } from "../../common/model/index.js"
-import { resetIndexAndDb } from "../../common/utils/esUtils.js"
-import { sentryCaptureException } from "../../common/utils/sentryUtils.js"
+import { getElasticInstance } from "../../common/esClient/index"
+import { logger } from "../../common/logger"
+import { DiplomesMetiers } from "../../common/model/index"
+import { resetIndexAndDb } from "../../common/utils/esUtils"
+import { sentryCaptureException } from "../../common/utils/sentryUtils"
 
 const motsIgnores = ["a", "au", "aux", "l", "le", "la", "les", "d", "de", "du", "des", "et", "en"]
 const diplomesMetiers = []

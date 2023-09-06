@@ -1,8 +1,10 @@
 import axios from "axios"
-import dayjs from "./dayjs.service.js"
-import { sentryCaptureException } from "../common/utils/sentryUtils.js"
-import config from "../config.js"
-import { ISuggestionMetiersDavenir } from "./diagoriente.service.types.js"
+
+import { sentryCaptureException } from "../common/utils/sentryUtils"
+import config from "../config"
+
+import dayjs from "./dayjs.service"
+import { ISuggestionMetiersDavenir } from "./diagoriente.service.types"
 
 let diagorienteToken = null
 

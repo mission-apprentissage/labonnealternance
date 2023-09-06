@@ -1,6 +1,7 @@
-import { getElasticInstance, mongoosastic } from "../../../esClient/index.js"
-import { model, Schema } from "../../../mongodb.js"
-import { IDiplomesMetiers } from "./diplomesmetiers.types.js"
+import { getElasticInstance, mongoosastic } from "../../../esClient/index"
+import { model, Schema } from "../../../mongodb"
+
+import { IDiplomesMetiers } from "./diplomesmetiers.types"
 
 export const diplomesMetiersSchema = new Schema<IDiplomesMetiers>({
   intitule_long: {

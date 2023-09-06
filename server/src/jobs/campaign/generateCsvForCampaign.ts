@@ -1,11 +1,14 @@
 // @ts-nocheck
 import axios from "axios"
-import __dirname from "../../common/dirname.js"
-import { getDistanceInKm } from "../../common/utils/geolib.js"
-import { FormationCatalogue } from "../../common/model/index.js"
-import { asyncForEach } from "../../common/utils/asyncUtils.js"
-import { createXLSXFile } from "../../common/utils/fileUtils.js"
-import { runScript } from "../scriptWrapper.js"
+
+import __dirname from "../../common/dirname"
+import { FormationCatalogue } from "../../common/model/index"
+import { asyncForEach } from "../../common/utils/asyncUtils"
+import { createXLSXFile } from "../../common/utils/fileUtils"
+import { getDistanceInKm } from "../../common/utils/geolib"
+import { runScript } from "../scriptWrapper"
+
+// eslint-disable-next-line import/no-unresolved, import/extensions
 import jeunes from "./jeunes.json" assert { type: "json" }
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))

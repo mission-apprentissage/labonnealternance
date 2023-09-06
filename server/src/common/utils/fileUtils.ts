@@ -1,12 +1,15 @@
 // @ts-nocheck
+import path from "path"
+
 import csvToJson from "convert-csv-to-json"
 import { parse } from "csv-parse"
 import { isEmpty, pickBy } from "lodash-es"
-import path from "path"
 import XLSX from "xlsx"
-import __dirname from "../../common/dirname.js"
-import config from "../../config.js"
-import { FTPClient } from "./ftpUtils.js"
+
+import __dirname from "../../common/dirname"
+import config from "../../config"
+
+import { FTPClient } from "./ftpUtils"
 
 export const readJsonFromCsvFile = (localPath) => {
   return csvToJson.getJsonFromCsv(localPath)

@@ -1,6 +1,7 @@
 import express from "express"
-import { Etablissement } from "../../../common/model/index.js"
-import { tryCatch } from "../../middlewares/tryCatchMiddleware.js"
+
+import { Etablissement } from "../../../common/model/index"
+import { tryCatch } from "../../middlewares/tryCatchMiddleware"
 
 /**
  * @description Etablissement Router.

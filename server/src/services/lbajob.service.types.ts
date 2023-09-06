@@ -1,4 +1,4 @@
-import { IRecruiter } from "../common/model/schema/recruiter/recruiter.types.js"
+import { IRecruiter } from "../common/model/schema/recruiter/recruiter.types"
 
 export interface ILbaJobEsResult {
   _source: Partial<IRecruiter>

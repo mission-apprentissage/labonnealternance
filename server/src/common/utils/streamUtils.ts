@@ -1,7 +1,7 @@
 import { compose, transformData } from "oleoduc"
 import streamJson from "stream-json"
-import jsonFilters from "stream-json/filters/Pick.js"
-import streamers from "stream-json/streamers/StreamArray.js"
+import jsonFilters from "stream-json/filters/Pick"
+import streamers from "stream-json/streamers/StreamArray"
 
 export function streamNestedJsonArray(arrayPropertyName) {
   return compose(

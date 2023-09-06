@@ -1,6 +1,7 @@
-import { Appointment } from "../common/model/index.js"
-import { IAppointments } from "../common/model/schema/appointments/appointments.types.js"
 import { FilterQuery } from "mongoose"
+
+import { Appointment } from "../common/model/index"
+import { IAppointments } from "../common/model/schema/appointments/appointments.types"
 
 /**
  * @description Create a new appointment.

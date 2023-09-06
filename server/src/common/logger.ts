@@ -1,10 +1,12 @@
+import util from "util"
+
 import bunyan from "bunyan"
 import BunyanSlack from "bunyan-slack"
 import chalk from "chalk" // eslint-disable-line node/no-unpublished-import
 import { isEmpty, omit, throttle } from "lodash-es"
 import { compose, transformData, writeData } from "oleoduc"
-import util from "util"
-import config from "../config.js"
+
+import config from "../config"
 
 function prettyPrintStream(outputName) {
   const levels = {

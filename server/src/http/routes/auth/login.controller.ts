@@ -1,16 +1,17 @@
 import express from "express"
 import Joi from "joi"
-import { mailTemplate } from "../../../assets/index.js"
-import { UserRecruteur } from "../../../common/model/index.js"
-import { IUserRecruteur } from "../../../common/model/schema/userRecruteur/userRecruteur.types.js"
-import { createMagicLinkToken, createUserRecruteurToken, createUserToken } from "../../../common/utils/jwtUtils.js"
-import config from "../../../config.js"
-import { CFA, ENTREPRISE, ETAT_UTILISATEUR } from "../../../services/constant.service.js"
-import { sendUserConfirmationEmail } from "../../../services/etablissement.service.js"
-import mailer from "../../../services/mailer.service.js"
-import { getUser, getUserStatus, registerUser } from "../../../services/userRecruteur.service.js"
-import authMiddleware from "../../middlewares/authMiddleware.js"
-import { tryCatch } from "../../middlewares/tryCatchMiddleware.js"
+
+import { mailTemplate } from "../../../assets/index"
+import { UserRecruteur } from "../../../common/model/index"
+import { IUserRecruteur } from "../../../common/model/schema/userRecruteur/userRecruteur.types"
+import { createMagicLinkToken, createUserRecruteurToken, createUserToken } from "../../../common/utils/jwtUtils"
+import config from "../../../config"
+import { CFA, ENTREPRISE, ETAT_UTILISATEUR } from "../../../services/constant.service"
+import { sendUserConfirmationEmail } from "../../../services/etablissement.service"
+import mailer from "../../../services/mailer.service"
+import { getUser, getUserStatus, registerUser } from "../../../services/userRecruteur.service"
+import authMiddleware from "../../middlewares/authMiddleware"
+import { tryCatch } from "../../middlewares/tryCatchMiddleware"
 
 export default () => {
   const router = express.Router() // eslint-disable-line new-cap

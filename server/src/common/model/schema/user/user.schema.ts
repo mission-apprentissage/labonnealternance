@@ -1,6 +1,8 @@
 import { mongoosePagination, Pagination } from "mongoose-paginate-ts"
-import { model, Schema } from "../../../mongodb.js"
-import { IUser } from "./user.types.js"
+
+import { model, Schema } from "../../../mongodb"
+
+import { IUser } from "./user.types"
 
 export const userSchema = new Schema<IUser>({
   username: {

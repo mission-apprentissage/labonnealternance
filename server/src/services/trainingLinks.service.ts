@@ -1,8 +1,9 @@
-import { EligibleTrainingsForAppointment, FormationCatalogue } from "../common/model/index.js"
-import { asyncForEach } from "../common/utils/asyncUtils.js"
-import { IFormationCatalogue } from "../common/model/schema/formationCatalogue/formationCatalogue.types.js"
-import apiGeoAdresse from "../common/utils/apiGeoAdresse.js"
 import { URL } from "url"
+
+import { EligibleTrainingsForAppointment, FormationCatalogue } from "../common/model/index"
+import { IFormationCatalogue } from "../common/model/schema/formationCatalogue/formationCatalogue.types"
+import apiGeoAdresse from "../common/utils/apiGeoAdresse"
+import { asyncForEach } from "../common/utils/asyncUtils"
 
 const utmData = "&utm_source=lba&utm_medium=email&utm_campaign=promotion-emploi-jeunes-voeux"
 

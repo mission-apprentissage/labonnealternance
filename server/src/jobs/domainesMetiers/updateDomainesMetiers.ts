@@ -1,15 +1,17 @@
 // @ts-nocheck
 import fs from "fs"
-import { oleoduc } from "oleoduc"
 import path from "path"
+
+import { oleoduc } from "oleoduc"
 import XLSX from "xlsx"
-import __dirname from "../../common/dirname.js"
-import { logger } from "../../common/logger.js"
-import { DomainesMetiers } from "../../common/model/index.js"
-import { getFileFromS3Bucket } from "../../common/utils/awsUtils.js"
-import { resetIndexAndDb } from "../../common/utils/esUtils.js"
-import { readXLSXFile } from "../../common/utils/fileUtils.js"
-import { sentryCaptureException } from "../../common/utils/sentryUtils.js"
+
+import __dirname from "../../common/dirname"
+import { logger } from "../../common/logger"
+import { DomainesMetiers } from "../../common/model/index"
+import { getFileFromS3Bucket } from "../../common/utils/awsUtils"
+import { resetIndexAndDb } from "../../common/utils/esUtils"
+import { readXLSXFile } from "../../common/utils/fileUtils"
+import { sentryCaptureException } from "../../common/utils/sentryUtils"
 
 const currentDirname = __dirname(import.meta.url)
 const FILEPATH = path.join(currentDirname, "../../assets/domainesMetiers_S3.xlsx")

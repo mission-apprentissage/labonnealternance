@@ -1,14 +1,17 @@
-import axios from "axios"
-import { notifyToSlack } from "../../common/utils/slackUtils.js"
-import FormData from "form-data"
 import fs from "fs"
+import path from "path"
+
+import axios from "axios"
+import FormData from "form-data"
 import fsExtra from "fs-extra"
 import { oleoduc, readLineByLine, transformData, writeData } from "oleoduc"
-import path from "path"
-import __dirname from "../../common/dirname.js"
-import { GeoLocation } from "../../common/model/index.js"
-import { logMessage } from "../../common/utils/logMessage.js"
-import { checkIfAlgoFileIsNew, downloadAlgoCompanyFile, readCompaniesFromJson, removePredictionFile } from "./bonnesBoitesUtils.js"
+
+import __dirname from "../../common/dirname"
+import { GeoLocation } from "../../common/model/index"
+import { logMessage } from "../../common/utils/logMessage"
+import { notifyToSlack } from "../../common/utils/slackUtils"
+
+import { checkIfAlgoFileIsNew, downloadAlgoCompanyFile, readCompaniesFromJson, removePredictionFile } from "./bonnesBoitesUtils"
 
 const currentDirname = __dirname(import.meta.url)
 

@@ -1,6 +1,7 @@
 // @ts-nocheck
-import { runScript } from "../scriptWrapper.js"
-import updateBrevoBlockedEmails from "./updateBrevoBlockedEmails.js"
+import { runScript } from "../scriptWrapper"
+
+import updateBrevoBlockedEmails from "./updateBrevoBlockedEmails"
 
 runScript(async () => {
   await updateBrevoBlockedEmails({ query: {} })

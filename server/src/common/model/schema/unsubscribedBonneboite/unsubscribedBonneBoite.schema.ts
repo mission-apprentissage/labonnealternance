@@ -1,6 +1,7 @@
-import { model, Schema } from "../../../mongodb.js"
-import { bonneBoiteSchema } from "../bonneboite/bonneBoite.schema.js"
-import { IUnsubscribedBonneBoite } from "./unsubscribedBonneBoite.types.js"
+import { model, Schema } from "../../../mongodb"
+import { bonneBoiteSchema } from "../bonneboite/bonneBoite.schema"
+
+import { IUnsubscribedBonneBoite } from "./unsubscribedBonneBoite.types"
 
 const unsubscribedBonneBoiteSchema = new Schema<IUnsubscribedBonneBoite>({
   ...bonneBoiteSchema.obj,

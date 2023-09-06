@@ -1,6 +1,8 @@
 import { randomUUID } from "crypto"
-import { model, Schema } from "../../../mongodb.js"
-import { ICredential } from "./credential.types.js"
+
+import { model, Schema } from "../../../mongodb"
+
+import { ICredential } from "./credential.types"
 
 export const credentialSchema = new Schema<ICredential>(
   {

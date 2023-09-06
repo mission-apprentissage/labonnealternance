@@ -1,6 +1,6 @@
-import { BonnesBoites, DiplomesMetiers, DomainesMetiers, FormationCatalogue, Recruiter } from "../../../common/model/index.js"
-import { rebuildIndex } from "../../../common/utils/esUtils.js"
-import { logger } from "../../../common/logger.js"
+import { logger } from "../../../common/logger"
+import { BonnesBoites, DiplomesMetiers, DomainesMetiers, FormationCatalogue, Recruiter } from "../../../common/model/index"
+import { rebuildIndex } from "../../../common/utils/esUtils"
 
 export const generateIndexes = async (indexList = "recruiters,formationcatalogues,bonnesboites,diplomesmetiers,domainesmetiers") => {
   const list = indexList.split(",")

@@ -1,13 +1,13 @@
-import { archiveFormulaire, getFormulaire, sendMailNouvelleOffre, updateFormulaire } from "../../../../services/formulaire.service.js"
-import { deactivateUser, getUser, setUserInError, updateUser } from "../../../../services/userRecruteur.service.js"
-import { logger } from "../../../../common/logger.js"
-import { Recruiter, UserRecruteur } from "../../../../common/model/index.js"
-import { asyncForEach } from "../../../../common/utils/asyncUtils.js"
-import { sentryCaptureException } from "../../../../common/utils/sentryUtils.js"
-import { CFA, ENTREPRISE, ETAT_UTILISATEUR, JOB_STATUS, RECRUITER_STATUS } from "../../../../services/constant.service.js"
-import { autoValidateCompany, getEntrepriseDataFromSiret, sendEmailConfirmationEntreprise } from "../../../../services/etablissement.service.js"
-import { notifyToSlack } from "../../../../common/utils/slackUtils.js"
-import { IUserRecruteur } from "../../../../common/model/schema/userRecruteur/userRecruteur.types.js"
+import { logger } from "../../../../common/logger"
+import { Recruiter, UserRecruteur } from "../../../../common/model/index"
+import { IUserRecruteur } from "../../../../common/model/schema/userRecruteur/userRecruteur.types"
+import { asyncForEach } from "../../../../common/utils/asyncUtils"
+import { sentryCaptureException } from "../../../../common/utils/sentryUtils"
+import { notifyToSlack } from "../../../../common/utils/slackUtils"
+import { CFA, ENTREPRISE, ETAT_UTILISATEUR, JOB_STATUS, RECRUITER_STATUS } from "../../../../services/constant.service"
+import { autoValidateCompany, getEntrepriseDataFromSiret, sendEmailConfirmationEntreprise } from "../../../../services/etablissement.service"
+import { archiveFormulaire, getFormulaire, sendMailNouvelleOffre, updateFormulaire } from "../../../../services/formulaire.service"
+import { deactivateUser, getUser, setUserInError, updateUser } from "../../../../services/userRecruteur.service"
 
 const updateUserRecruteursSiretInfosInError = async () => {
   const query = {

@@ -1,13 +1,14 @@
 import Joi from "joi"
 import { differenceBy } from "lodash-es"
-import { mailTemplate } from "../../../assets/index.js"
-import { logger } from "../../../common/logger.js"
-import { Optout, UserRecruteur } from "../../../common/model/index.js"
-import { asyncForEach } from "../../../common/utils/asyncUtils.js"
-import { createActivationToken } from "../../../common/utils/jwtUtils.js"
-import config from "../../../config.js"
-import mailer from "../../../services/mailer.service.js"
-import { runScript } from "../../scriptWrapper.js"
+
+import { mailTemplate } from "../../../assets/index"
+import { logger } from "../../../common/logger"
+import { Optout, UserRecruteur } from "../../../common/model/index"
+import { asyncForEach } from "../../../common/utils/asyncUtils"
+import { createActivationToken } from "../../../common/utils/jwtUtils"
+import config from "../../../config"
+import mailer from "../../../services/mailer.service"
+import { runScript } from "../../scriptWrapper"
 
 /**
  * @param {number} ms delay in millisecond

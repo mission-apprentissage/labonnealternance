@@ -1,15 +1,15 @@
 // @ts-nocheck
-import moment from "moment"
-import { mailTemplate } from "../../../assets/index.js"
-import { logger } from "../../../common/logger.js"
-import { Recruiter, UserRecruteur } from "../../../common/model/index.js"
-import { asyncForEach } from "../../../common/utils/asyncUtils.js"
-import { notifyToSlack } from "../../../common/utils/slackUtils.js"
-import config from "../../../config.js"
-import { IRecruiter } from "../../../common/model/schema/recruiter/recruiter.types.js"
-import { IUserRecruteur } from "../../../common/model/schema/userRecruteur/userRecruteur.types.js"
-import mailer from "../../../services/mailer.service.js"
-import dayjs from "../../../services/dayjs.service.js"
+
+import { mailTemplate } from "../../../assets/index"
+import { logger } from "../../../common/logger"
+import { Recruiter, UserRecruteur } from "../../../common/model/index"
+import { IRecruiter } from "../../../common/model/schema/recruiter/recruiter.types"
+import { IUserRecruteur } from "../../../common/model/schema/userRecruteur/userRecruteur.types"
+import { asyncForEach } from "../../../common/utils/asyncUtils"
+import { notifyToSlack } from "../../../common/utils/slackUtils"
+import config from "../../../config"
+import dayjs from "../../../services/dayjs.service"
+import mailer from "../../../services/mailer.service"
 
 export const relanceFormulaire = async (threshold) => {
   // number of days to expiration for the reminder email to be sent

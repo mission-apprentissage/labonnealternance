@@ -1,6 +1,7 @@
-import { JOB_STATUS } from "../../../../services/constant.service.js"
-import { model, Schema } from "../../../mongodb.js"
-import { IJobs } from "./jobs.types.js"
+import { JOB_STATUS } from "../../../../services/constant.service"
+import { model, Schema } from "../../../mongodb"
+
+import { IJobs } from "./jobs.types"
 
 export const jobsSchema = new Schema<IJobs>({
   rome_label: { type: String, default: null, description: "Libellé du métier concerné" },

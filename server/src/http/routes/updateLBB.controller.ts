@@ -1,10 +1,11 @@
 // @ts-nocheck
-import { REGEX } from "../../services/constant.service.js"
 import express from "express"
 import Joi from "joi"
-import { updateContactInfo } from "../../services/company.service.js"
-import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
-import config from "../../config.js"
+
+import config from "../../config"
+import { updateContactInfo } from "../../services/company.service"
+import { REGEX } from "../../services/constant.service"
+import { tryCatch } from "../middlewares/tryCatchMiddleware"
 
 export default function () {
   const router = express.Router()

@@ -1,8 +1,10 @@
 // @ts-nocheck
 import { oleoduc, transformData, writeData } from "oleoduc"
-import { BonnesBoites } from "../../common/model/index.js"
-import { logMessage } from "../../common/utils/logMessage.js"
-import { downloadSAVEFile, getCompanyMissingData, initMaps, streamSAVECompanies } from "./bonnesBoitesUtils.js"
+
+import { BonnesBoites } from "../../common/model/index"
+import { logMessage } from "../../common/utils/logMessage"
+
+import { downloadSAVEFile, getCompanyMissingData, initMaps, streamSAVECompanies } from "./bonnesBoitesUtils"
 
 export const updateSAVECompanies = async () => {
   logMessage("info", "Starting updateSAVECompanies")

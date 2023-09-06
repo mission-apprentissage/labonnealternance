@@ -12,8 +12,10 @@
 "use strict"
 
 import { oleoduc, writeData } from "oleoduc"
-import { logMessage } from "../../utils/logMessage.js"
-import serialize from "./serialize.js"
+
+import { logMessage } from "../../utils/logMessage"
+
+import serialize from "./serialize"
 
 // https://www.elastic.co/guide/en/elasticsearch/client/javascript-api/current/bulk_examples.html
 
@@ -267,6 +269,7 @@ function Mongoosastic(schema, options) {
     })
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   schema.statics.synchronize = async function synchronize(filter = {}, refresh = false) {
     let count = 0
     await oleoduc(
@@ -284,7 +287,7 @@ function Mongoosastic(schema, options) {
   }
 
   schema.statics.unsynchronize = function unsynchronize() {
-    return new Promise(async (resolve, reject) => {
+    return new Promise(async (resolve) => {
       const exists = await esClient.indices.exists({ index: indexName })
       if (exists) {
         await esClient.indices.delete({ index: this.modelName })
@@ -319,7 +322,7 @@ function Mongoosastic(schema, options) {
     inSchema.post("findOneAndUpdate", postSave)
 
     inSchema.post("insertMany", (docs) => {
-      return new Promise(async (resolve, reject) => {
+      return new Promise(async (resolve) => {
         for (let i = 0; i < docs.length; i++) {
           try {
             await postSave(docs[i])

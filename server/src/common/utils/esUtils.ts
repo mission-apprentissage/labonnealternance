@@ -1,5 +1,5 @@
-import { getElasticInstance } from "../esClient/index.js"
-import { logger } from "../logger.js"
+import { getElasticInstance } from "../esClient/index"
+import { logger } from "../logger"
 
 export const rebuildIndex = async (model, { skipNotFound } = { skipNotFound: false }) => {
   const client = getElasticInstance()

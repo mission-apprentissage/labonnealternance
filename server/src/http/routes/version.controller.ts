@@ -1,9 +1,12 @@
-import express from "express"
-import parseChangelog from "changelog-parser"
-import { get } from "lodash-es"
 import path from "path"
-import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
-import __dirname from "../../common/dirname.js"
+
+import parseChangelog from "changelog-parser"
+import express from "express"
+import { get } from "lodash-es"
+
+import __dirname from "../../common/dirname"
+import { tryCatch } from "../middlewares/tryCatchMiddleware"
+
 const currentDirname = __dirname(import.meta.url)
 
 /**

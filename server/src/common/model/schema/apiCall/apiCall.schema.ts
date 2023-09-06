@@ -1,5 +1,6 @@
-import { model, Schema } from "../../../mongodb.js"
-import { IApiCall } from "./apiCall.types.js"
+import { model, Schema } from "../../../mongodb"
+
+import { IApiCall } from "./apiCall.types"
 
 export const apiCallSchema = new Schema<IApiCall>({
   caller: {

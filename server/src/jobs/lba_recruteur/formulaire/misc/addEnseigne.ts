@@ -1,6 +1,6 @@
 // @ts-nocheck
-import { Recruiter, UserRecruteur } from "../../../../common/model/index.js"
-import { runScript } from "../../../scriptWrapper.js"
+import { Recruiter, UserRecruteur } from "../../../../common/model/index"
+import { runScript } from "../../../scriptWrapper"
 
 runScript(async ({ etablissement }) => {
   const errors = []

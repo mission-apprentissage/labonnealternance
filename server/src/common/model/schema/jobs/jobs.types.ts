@@ -1,4 +1,4 @@
-import { JOB_STATUS } from "../../../../services/constant.service.js"
+import { JOB_STATUS } from "../../../../services/constant.service"
 
 interface IDelegation {
   siret_code: string

@@ -1,20 +1,22 @@
 import axios, { AxiosResponse } from "axios"
 import { pick } from "lodash-es"
 import { Filter } from "mongodb"
-import { mailTemplate } from "../assets/index.js"
-import { BonneBoiteLegacy, BonnesBoites, Etablissement, ReferentielOpco, UnsubscribeOF, UserRecruteur } from "../common/model/index.js"
-import { IBonneBoite } from "../common/model/schema/bonneboite/bonneboite.types.js"
-import { IEtablissement } from "../common/model/schema/etablissements/etablissement.types.js"
-import { IRecruiter } from "../common/model/schema/recruiter/recruiter.types.js"
-import { IReferentielOpco } from "../common/model/schema/referentielOpco/referentielOpco.types.js"
-import { IUnsubscribedOF } from "../common/model/schema/unsubscribedOF/unsubscribeOF.types.js"
-import { IUserRecruteur } from "../common/model/schema/userRecruteur/userRecruteur.types.js"
-import { isEmailFromPrivateCompany, isEmailSameDomain } from "../common/utils/mailUtils.js"
-import { sentryCaptureException } from "../common/utils/sentryUtils.js"
-import config from "../config.js"
-import { validationOrganisation } from "./bal.service.js"
-import { getCatalogueEtablissements } from "./catalogue.service.js"
-import { BusinessErrorCodes, CFA, ENTREPRISE, ETAT_UTILISATEUR, RECRUITER_STATUS } from "./constant.service.js"
+
+import { mailTemplate } from "../assets/index"
+import { BonneBoiteLegacy, BonnesBoites, Etablissement, ReferentielOpco, UnsubscribeOF, UserRecruteur } from "../common/model/index"
+import { IBonneBoite } from "../common/model/schema/bonneboite/bonneboite.types"
+import { IEtablissement } from "../common/model/schema/etablissements/etablissement.types"
+import { IRecruiter } from "../common/model/schema/recruiter/recruiter.types"
+import { IReferentielOpco } from "../common/model/schema/referentielOpco/referentielOpco.types"
+import { IUnsubscribedOF } from "../common/model/schema/unsubscribedOF/unsubscribeOF.types"
+import { IUserRecruteur } from "../common/model/schema/userRecruteur/userRecruteur.types"
+import { isEmailFromPrivateCompany, isEmailSameDomain } from "../common/utils/mailUtils"
+import { sentryCaptureException } from "../common/utils/sentryUtils"
+import config from "../config"
+
+import { validationOrganisation } from "./bal.service"
+import { getCatalogueEtablissements } from "./catalogue.service"
+import { BusinessErrorCodes, CFA, ENTREPRISE, ETAT_UTILISATEUR, RECRUITER_STATUS } from "./constant.service"
 import {
   IAPIAdresse,
   IAPIEtablissement,
@@ -25,11 +27,11 @@ import {
   IFormatAPIReferentiel,
   IReferentiel,
   ISIRET2IDCC,
-} from "./etablissement.service.types.js"
-import { createFormulaire, getFormulaire } from "./formulaire.service.js"
-import mailer from "./mailer.service.js"
-import { getOpcoBySirenFromDB, saveOpco } from "./opco.service.js"
-import { autoValidateUser, createUser, getUser, getUserStatus, setUserHasToBeManuallyValidated, setUserInError } from "./userRecruteur.service.js"
+} from "./etablissement.service.types"
+import { createFormulaire, getFormulaire } from "./formulaire.service"
+import mailer from "./mailer.service"
+import { getOpcoBySirenFromDB, saveOpco } from "./opco.service"
+import { autoValidateUser, createUser, getUser, getUserStatus, setUserHasToBeManuallyValidated, setUserInError } from "./userRecruteur.service"
 
 const apiParams = {
   token: config.entreprise.apiKey,
@@ -191,7 +193,7 @@ export const getOpco = async (siret: string): Promise<ICFADock | null> => {
   try {
     const { data } = await axios.get<ICFADock>(`https://www.cfadock.fr/api/opcos?siret=${encodeURIComponent(siret)}`)
     return data
-  } catch (err) {
+  } catch (err: any) {
     sentryCaptureException(err)
     return null
   }
@@ -206,7 +208,7 @@ export const getOpcoByIdcc = async (idcc: number): Promise<ICFADock | null> => {
   try {
     const { data } = await axios.get<ICFADock>(`https://www.cfadock.fr/api/opcos?idcc=${idcc}`)
     return data
-  } catch (err) {
+  } catch (err: any) {
     sentryCaptureException(err)
     return null
   }
@@ -262,9 +264,10 @@ export const getEtablissementFromReferentiel = async (siret: string): Promise<IR
   try {
     const { data } = await axios.get<IReferentiel>(`https://referentiel.apprentissage.beta.gouv.fr/api/v1/organismes/${siret}`)
     return data
-  } catch (error) {
+  } catch (error: any) {
     sentryCaptureException(error)
     if (error?.response?.status === 404) {
+      // @ts-ignore
       return null
     } else {
       throw error
@@ -284,7 +287,7 @@ export const getEtablissementFromCatalogue = async (siret: string): Promise<IEta
       },
     })
     return result
-  } catch (error) {
+  } catch (error: any) {
     sentryCaptureException(error)
     return error
   }
@@ -297,12 +300,13 @@ export const getEtablissementFromCatalogue = async (siret: string): Promise<IEta
 export const getGeoCoordinates = async (adresse: string): Promise<string> => {
   try {
     const response: AxiosResponse<IAPIAdresse> = await axios.get(`https://api-adresse.data.gouv.fr/search/?q=${adresse}`)
+    // eslint-disable-next-line no-unsafe-optional-chaining
     const [firstFeature] = response.data?.features
     if (!firstFeature) {
       return "NOT FOUND"
     }
     return firstFeature.geometry.coordinates.reverse().join(",")
-  } catch (error) {
+  } catch (error: any) {
     sentryCaptureException(error)
     return "NOT FOUND"
   }

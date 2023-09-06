@@ -1,5 +1,5 @@
-import { logger } from "../../../common/logger.js"
-import { getUser, createUser } from "../../../services/userRecruteur.service.js"
+import { logger } from "../../../common/logger"
+import { getUser, createUser } from "../../../services/userRecruteur.service"
 
 export const createUserFromCLI = async ({ first_name, last_name, establishment_siret, establishment_raison_sociale, phone, address, email, scope }, { options }) => {
   const { Type, Email_valide } = options

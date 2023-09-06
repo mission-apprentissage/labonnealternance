@@ -1,8 +1,8 @@
-import dayjs from "../../../services/dayjs.service.js"
-import { logger } from "../../../common/logger.js"
-import { Recruiter } from "../../../common/model/index.js"
-import { asyncForEach } from "../../../common/utils/asyncUtils.js"
-import { notifyToSlack } from "../../../common/utils/slackUtils.js"
+import { logger } from "../../../common/logger"
+import { Recruiter } from "../../../common/model/index"
+import { asyncForEach } from "../../../common/utils/asyncUtils"
+import { notifyToSlack } from "../../../common/utils/slackUtils"
+import dayjs from "../../../services/dayjs.service"
 
 export const annuleFormulaire = async () => {
   const today = dayjs().startOf("day").utc(true)

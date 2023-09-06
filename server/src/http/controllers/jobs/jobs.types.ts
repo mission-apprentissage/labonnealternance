@@ -1,4 +1,4 @@
-import { IRecruiter } from "../../../common/model/schema/recruiter/recruiter.types.js"
+import { IRecruiter } from "../../../common/model/schema/recruiter/recruiter.types"
 
 export type TResponseError = {
   error: boolean

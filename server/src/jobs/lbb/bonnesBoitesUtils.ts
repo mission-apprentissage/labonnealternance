@@ -1,17 +1,20 @@
 // @ts-nocheck
-import { getFileFromS3Bucket, getS3FileLastUpdate, uploadFileToS3 } from "../../common/utils/awsUtils.js"
-import { streamJsonArray } from "../../common/utils/streamUtils.js"
-import { logger } from "../../common/logger.js"
 import fs from "fs"
 import path from "path"
-import config from "../../config.js"
-import __dirname from "../../common/dirname.js"
+
 import { compose, oleoduc, writeData } from "oleoduc"
-import geoData from "../../common/utils/geoData.js"
-import { EmailBlacklist, BonnesBoites, GeoLocation, Opco } from "../../common/model/index.js"
-import initNafMap from "./initNafMap.js"
-import initNafScoreMap from "./initNafScoreMap.js"
-import { notifyToSlack } from "../../common/utils/slackUtils.js"
+
+import __dirname from "../../common/dirname"
+import { logger } from "../../common/logger"
+import { EmailBlacklist, BonnesBoites, GeoLocation, Opco } from "../../common/model/index"
+import { getFileFromS3Bucket, getS3FileLastUpdate, uploadFileToS3 } from "../../common/utils/awsUtils"
+import geoData from "../../common/utils/geoData"
+import { notifyToSlack } from "../../common/utils/slackUtils"
+import { streamJsonArray } from "../../common/utils/streamUtils"
+import config from "../../config"
+
+import initNafMap from "./initNafMap"
+import initNafScoreMap from "./initNafScoreMap"
 
 const currentDirname = __dirname(import.meta.url)
 
@@ -107,7 +110,7 @@ export const countCompaniesInFile = async (): number => {
 }
 
 /*
-Initialize bonneBoite from data, add missing data from maps, 
+Initialize bonneBoite from data, add missing data from maps,
 */
 export const getCompanyMissingData = async (rawCompany) => {
   const company = new BonnesBoites(rawCompany)

@@ -1,7 +1,7 @@
-import dayjs from "../../../services/dayjs.service.js"
-import { User } from "../../../common/model/index.js"
-import { ROLES } from "../../../services/constant.service.js"
-import { runScript } from "../../scriptWrapper.js"
+import { User } from "../../../common/model/index"
+import { ROLES } from "../../../services/constant.service"
+import dayjs from "../../../services/dayjs.service"
+import { runScript } from "../../scriptWrapper"
 
 export const addLastActionDateToUserCollection = async () => {
   const date = dayjs().format()

@@ -1,19 +1,19 @@
-import { encryptMailWithIV } from "../common/utils/encryptString.js"
-import { IApiError, manageApiError } from "../common/utils/errorManager.js"
-import { trackApiCall } from "../common/utils/sendTrackingEvent.js"
-import { filterJobsByOpco } from "./opco.service.js"
+import { IRecruiter } from "../common/model/schema/recruiter/recruiter.types"
+import { encryptMailWithIV } from "../common/utils/encryptString"
+import { IApiError, manageApiError } from "../common/utils/errorManager"
+import { roundDistance } from "../common/utils/geolib"
+import { trackApiCall } from "../common/utils/sendTrackingEvent"
+import { sentryCaptureException } from "../common/utils/sentryUtils"
+import { matchaMock, matchaMockMandataire, matchasMock } from "../mocks/matchas-mock"
+
+import { getApplicationByJobCount, IApplicationCount } from "./application.service"
+import { NIVEAUX_POUR_LBA, ACTIVE } from "./constant.service"
+import { getOffreAvecInfoMandataire, getJobsFromElasticSearch, incrementLbaJobViewCount } from "./formulaire.service"
+import { ILbaItem, LbaItem } from "./lbaitem.shared.service.types"
+import { ILbaJobEsResult } from "./lbajob.service.types"
+import { filterJobsByOpco } from "./opco.service"
 
 const coordinatesOfFrance = [2.213749, 46.227638]
-
-import { NIVEAUX_POUR_LBA, ACTIVE } from "./constant.service.js"
-import { roundDistance } from "../common/utils/geolib.js"
-import { matchaMock, matchaMockMandataire, matchasMock } from "../mocks/matchas-mock.js"
-import { getOffreAvecInfoMandataire, getJobsFromElasticSearch, incrementLbaJobViewCount } from "./formulaire.service.js"
-import { getApplicationByJobCount, IApplicationCount } from "./application.service.js"
-import { ILbaItem, LbaItem } from "./lbaitem.shared.service.types.js"
-import { IRecruiter } from "../common/model/schema/recruiter/recruiter.types.js"
-import { ILbaJobEsResult } from "./lbajob.service.types.js"
-import { sentryCaptureException } from "../common/utils/sentryUtils.js"
 
 /**
  * Retourne les offres LBA correspondantes aux critères de recherche

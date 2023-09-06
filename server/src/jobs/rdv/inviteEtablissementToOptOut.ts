@@ -1,13 +1,14 @@
 import * as _ from "lodash-es"
-import { mailTemplate } from "../../assets/index.js"
-import { logger } from "../../common/logger.js"
-import { mailType } from "../../common/model/constants/etablissement.js"
-import dayjs from "../../services/dayjs.service.js"
-import { isValidEmail } from "../../common/utils/isValidEmail.js"
-import config from "../../config.js"
-import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service.js"
-import { Etablissement } from "../../common/model/index.js"
-import mailer from "../../services/mailer.service.js"
+
+import { mailTemplate } from "../../assets/index"
+import { logger } from "../../common/logger"
+import { mailType } from "../../common/model/constants/etablissement"
+import { Etablissement } from "../../common/model/index"
+import { isValidEmail } from "../../common/utils/isValidEmail"
+import config from "../../config"
+import dayjs from "../../services/dayjs.service"
+import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service"
+import mailer from "../../services/mailer.service"
 
 /**
  * @description Invite all "etablissements" without opt_mode to opt-out.

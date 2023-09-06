@@ -2,21 +2,23 @@ import { pick } from "lodash-es"
 import moment from "moment"
 import { Filter } from "mongodb"
 import { ModelUpdateOptions, UpdateQuery } from "mongoose"
-import { mailTemplate } from "../assets/index.js"
-import { getElasticInstance } from "../common/esClient/index.js"
-import { Recruiter, UnsubscribeOF } from "../common/model/index.js"
-import { IJobs } from "../common/model/schema/jobs/jobs.types.js"
-import { IRecruiter } from "../common/model/schema/recruiter/recruiter.types.js"
-import { IUserRecruteur } from "../common/model/schema/userRecruteur/userRecruteur.types.js"
-import { asyncForEach } from "../common/utils/asyncUtils.js"
-import config from "../config.js"
-import { getCatalogueEtablissements, getCatalogueFormations } from "./catalogue.service.js"
-import { ACTIVE, ETAT_UTILISATEUR, JOB_STATUS, RECRUITER_STATUS } from "./constant.service.js"
-import dayjs from "./dayjs.service.js"
-import { getEtablissement, sendEmailConfirmationEntreprise } from "./etablissement.service.js"
-import { ILbaJobEsResult } from "./lbajob.service.types.js"
-import mailer from "./mailer.service.js"
-import { getUser, getUserStatus } from "./userRecruteur.service.js"
+
+import { mailTemplate } from "../assets/index"
+import { getElasticInstance } from "../common/esClient/index"
+import { Recruiter, UnsubscribeOF } from "../common/model/index"
+import { IJobs } from "../common/model/schema/jobs/jobs.types"
+import { IRecruiter } from "../common/model/schema/recruiter/recruiter.types"
+import { IUserRecruteur } from "../common/model/schema/userRecruteur/userRecruteur.types"
+import { asyncForEach } from "../common/utils/asyncUtils"
+import config from "../config"
+
+import { getCatalogueEtablissements, getCatalogueFormations } from "./catalogue.service"
+import { ACTIVE, ETAT_UTILISATEUR, JOB_STATUS, RECRUITER_STATUS } from "./constant.service"
+import dayjs from "./dayjs.service"
+import { getEtablissement, sendEmailConfirmationEntreprise } from "./etablissement.service"
+import { ILbaJobEsResult } from "./lbajob.service.types"
+import mailer from "./mailer.service"
+import { getUser, getUserStatus } from "./userRecruteur.service"
 
 const esClient = getElasticInstance()
 
@@ -217,9 +219,8 @@ export const getOffreAvecInfoMandataire = async (id: IJobs["_id"]): Promise<IFor
  * @param {object} payload.options
  * @param {number} payload.page
  * @param {number} payload.limit
- * @returns {Promise<object>}
  */
-export const getFormulaires = async (query: Filter<IRecruiter>, select: object, { page, limit }: { page: number; limit: number }): Promise<object> => {
+export const getFormulaires = async (query: Filter<IRecruiter>, select: object, { page, limit }: { page: number; limit: number }) => {
   const response = await Recruiter.paginate({ query, ...select, page, limit, lean: true })
 
   return {

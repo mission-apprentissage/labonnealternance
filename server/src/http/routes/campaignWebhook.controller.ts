@@ -1,7 +1,8 @@
 import express from "express"
-import { BrevoEventStatus } from "../../services/brevo.service.js"
-import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
-import { addEmailToBlacklist, removeEmailFromBonnesBoites } from "../../services/application.service.js"
+
+import { addEmailToBlacklist, removeEmailFromBonnesBoites } from "../../services/application.service"
+import { BrevoEventStatus } from "../../services/brevo.service"
+import { tryCatch } from "../middlewares/tryCatchMiddleware"
 
 export default function () {
   const router = express.Router()
@@ -10,7 +11,7 @@ export default function () {
     "/",
     tryCatch(async (req, res) => {
       /* Format payload
-      { 
+      {
         req.body.event : "hard_bounce",
         req.body.email:"john.doe@mail.com",
         ...

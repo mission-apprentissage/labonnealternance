@@ -1,6 +1,7 @@
-import { OPCOS } from "../../../../services/constant.service.js"
-import { model, Schema } from "../../../mongodb.js"
-import { IReferentielOpco } from "./referentielOpco.types.js"
+import { OPCOS } from "../../../../services/constant.service"
+import { model, Schema } from "../../../mongodb"
+
+import { IReferentielOpco } from "./referentielOpco.types"
 
 export const referentielOpcoSchema = new Schema<IReferentielOpco>({
   opco_label: {

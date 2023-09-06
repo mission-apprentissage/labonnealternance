@@ -1,5 +1,6 @@
-import { runScript } from "../scriptWrapper.js"
-import updateDomainesMetiers from "./updateDomainesMetiers.js"
+import { runScript } from "../scriptWrapper"
+
+import updateDomainesMetiers from "./updateDomainesMetiers"
 
 runScript(async () => {
   await updateDomainesMetiers()

@@ -1,8 +1,8 @@
 // @ts-nocheck
 import jwt from "jsonwebtoken"
-import { pick } from "lodash-es"
-import config from "../../config.js"
-import { CFA } from "../../services/constant.service.js"
+
+import config from "../../config"
+import { CFA } from "../../services/constant.service"
 
 const createToken = (type, subject, options = {}) => {
   const defaults = config.auth[type]

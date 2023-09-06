@@ -1,4 +1,4 @@
-import { IBonneBoite } from "../bonneboite/bonneboite.types.js"
+import { IBonneBoite } from "../bonneboite/bonneboite.types"
 
 interface IUnsubscribedBonneBoite extends IBonneBoite {
   unsubscribe_date: Date

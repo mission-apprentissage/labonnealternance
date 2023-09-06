@@ -1,9 +1,8 @@
 import { Filter, FindOptions, MatchKeysAndValues, ObjectId, WithoutId } from "mongodb"
 import mongoose from "mongoose"
 
-import { jobsDb } from "../model/collections"
-
-import { IInternalJobs } from "common/model/schema/internalJobs/internalJobs.types.js"
+import { InternalJobs } from "common/model"
+import { IInternalJobs } from "common/model/schema/internalJobs/internalJobs.types"
 
 type CreateJobParam = Pick<IInternalJobs, "name" | "type" | "cron_string" | "payload" | "scheduled_for" | "sync">
 
@@ -29,16 +28,16 @@ export const createJob = async ({ name, type = "simple", payload, scheduled_for 
 }
 
 export const findJob = async (filter: Filter<IInternalJobs>, options?: FindOptions<IInternalJobs>): Promise<IInternalJobs | null> => {
-  return await jobsDb().findOne(filter, options)
+  return await InternalJobs.findOne(filter, options)
 }
 
 export const findJobs = async (filter: Filter<IInternalJobs>, options?: FindOptions<IInternalJobs>): Promise<IInternalJobs[]> => {
-  return await jobsDb().find<IInternalJobs>(filter, options).toArray()
+  return await InternalJobs.find(filter, options).toArray()
 }
 
 /**
  * Mise à jour d'un job
  */
 export const updateJob = async (_id: ObjectId, data: MatchKeysAndValues<IInternalJobs>) => {
-  return db.collection("internalJobs").updateOne({ _id }, { $set: { ...data, updated_at: new Date() } })
+  return InternalJobs.updateOne({ _id }, { $set: { ...data, updated_at: new Date() } })
 }

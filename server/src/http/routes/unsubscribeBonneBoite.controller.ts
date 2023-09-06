@@ -1,12 +1,15 @@
-import { BonnesBoites, UnsubscribedBonneBoite } from "../../common/model/index.js"
+import path from "path"
+
 import express from "express"
 import rateLimit from "express-rate-limit"
-import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
-import { UNSUBSCRIBE_EMAIL_ERRORS } from "../../services/constant.service.js"
-import config from "../../config.js"
-import path from "path"
-import __dirname from "../../common/dirname.js"
-import mailer from "../../services/mailer.service.js"
+
+import __dirname from "../../common/dirname"
+import { BonnesBoites, UnsubscribedBonneBoite } from "../../common/model/index"
+import config from "../../config"
+import { UNSUBSCRIBE_EMAIL_ERRORS } from "../../services/constant.service"
+import mailer from "../../services/mailer.service"
+import { tryCatch } from "../middlewares/tryCatchMiddleware"
+
 const currentDirname = __dirname(import.meta.url)
 
 const limiter1Per5Second = rateLimit({

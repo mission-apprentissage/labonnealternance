@@ -4,9 +4,10 @@
  */
 
 import { omit } from "lodash-es"
-import { Appointment, AppointmentDetailed, User } from "../../common/model/index.js"
-import { asyncForEach } from "../../common/utils/asyncUtils.js"
-import { runScript } from "../scriptWrapper.js"
+
+import { Appointment, AppointmentDetailed, User } from "../../common/model/index"
+import { asyncForEach } from "../../common/utils/asyncUtils"
+import { runScript } from "../scriptWrapper"
 
 const normalise = (str) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
 

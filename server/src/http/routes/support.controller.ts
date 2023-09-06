@@ -1,7 +1,8 @@
+import Boom from "boom"
 import express from "express"
 import { NotionAPI } from "notion-client"
-import Boom from "boom"
-import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
+
+import { tryCatch } from "../middlewares/tryCatchMiddleware"
 
 const notion = new NotionAPI()
 

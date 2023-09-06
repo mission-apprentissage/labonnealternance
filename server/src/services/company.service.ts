@@ -1,6 +1,6 @@
-import { IBonneBoite } from "../common/model/schema/bonneboite/bonneboite.types.js"
-import { BonnesBoites } from "../common/model/index.js"
-import { sentryCaptureException } from "../common/utils/sentryUtils.js"
+import { BonnesBoites } from "../common/model/index"
+import { IBonneBoite } from "../common/model/schema/bonneboite/bonneboite.types"
+import { sentryCaptureException } from "../common/utils/sentryUtils"
 
 /**
  * Met à jour les coordonnées de contact d'une société issue de l'algo

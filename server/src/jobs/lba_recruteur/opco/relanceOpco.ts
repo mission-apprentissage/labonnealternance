@@ -1,10 +1,10 @@
-import { mailTemplate } from "../../../assets/index.js"
-import { ETAT_UTILISATEUR } from "../../../services/constant.service.js"
-import { UserRecruteur } from "../../../common/model/index.js"
-import { IUserRecruteur } from "../../../common/model/schema/userRecruteur/userRecruteur.types.js"
-import { asyncForEach } from "../../../common/utils/asyncUtils.js"
-import config from "../../../config.js"
-import mailer from "../../../services/mailer.service.js"
+import { mailTemplate } from "../../../assets/index"
+import { UserRecruteur } from "../../../common/model/index"
+import { IUserRecruteur } from "../../../common/model/schema/userRecruteur/userRecruteur.types"
+import { asyncForEach } from "../../../common/utils/asyncUtils"
+import config from "../../../config"
+import { ETAT_UTILISATEUR } from "../../../services/constant.service"
+import mailer from "../../../services/mailer.service"
 
 /**
  * @description send mail to ocpo with awaiting validation user number

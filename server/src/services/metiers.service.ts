@@ -1,12 +1,14 @@
 /* eslint-disable no-use-before-define */
 import * as _ from "lodash-es"
 import { matchSorter } from "match-sorter"
-import { getElasticInstance } from "../common/esClient/index.js"
-import { logger } from "../common/logger.js"
-import { sentryCaptureException } from "../common/utils/sentryUtils.js"
-import { mockedLabelsAndRomes } from "../mocks/labelsAndRomes-mock.js"
-import { getRomesFromCfd, getRomesFromSiret } from "../services/catalogue.service.js"
-import { IAppellationsRomes, IMetierEnrichi, IMetiers, IMetiersEnrichis } from "./metiers.service.types.js"
+
+import { getElasticInstance } from "../common/esClient/index"
+import { logger } from "../common/logger"
+import { sentryCaptureException } from "../common/utils/sentryUtils"
+import { mockedLabelsAndRomes } from "../mocks/labelsAndRomes-mock"
+import { getRomesFromCfd, getRomesFromSiret } from "../services/catalogue.service"
+
+import { IAppellationsRomes, IMetierEnrichi, IMetiers, IMetiersEnrichis } from "./metiers.service.types"
 
 /**
  * Retourne un ensemble de métiers et/ou diplômes et leurs codes romes et rncps associés en fonction de terme de recherches

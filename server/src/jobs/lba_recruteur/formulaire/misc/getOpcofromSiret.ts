@@ -1,9 +1,9 @@
 import axios from "axios"
-import { logger } from "../../../../common/logger.js"
-import { Recruiter } from "../../../../common/model/index.js"
-import { asyncForEach } from "../../../../common/utils/asyncUtils.js"
-import { runScript } from "../../../scriptWrapper.js"
-import { IRecruiter } from "../../../../common/model/schema/recruiter/recruiter.types.js"
+
+import { logger } from "../../../../common/logger"
+import { Recruiter } from "../../../../common/model/index"
+import { asyncForEach } from "../../../../common/utils/asyncUtils"
+import { runScript } from "../../../scriptWrapper"
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
@@ -21,6 +21,7 @@ runScript(async () => {
       return
     }
 
+    // eslint-disable-next-line no-unsafe-optional-chaining
     const { num } = idcc.data[0]?.conventions[0]
 
     const { data } = await axios.get(`https://www.cfadock.fr/api/opcos?idcc=${num}`)

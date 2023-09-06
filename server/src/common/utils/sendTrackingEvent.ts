@@ -1,4 +1,4 @@
-import { ApiCalls } from "../../common/model/index.js"
+import { ApiCalls } from "../../common/model/index"
 
 const trackApiCall = async ({
   caller,

@@ -1,9 +1,11 @@
 // @ts-nocheck
-import axios from "axios"
 import http from "http"
 import https from "https"
+
+import axios from "axios"
 import { compose, transformData } from "oleoduc"
-import { logger } from "../logger.js"
+
+import { logger } from "../logger"
 
 class BufferedHttpAgent extends http.Agent {
   constructor({ highWaterMark = 16 * 1024, ...rest }) {

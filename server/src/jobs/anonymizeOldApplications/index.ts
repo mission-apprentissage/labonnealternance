@@ -1,5 +1,6 @@
-import anonymizeOldApplications from "./anonymizeOldApplications.js"
-import { runScript } from "../scriptWrapper.js"
+import { runScript } from "../scriptWrapper"
+
+import anonymizeOldApplications from "./anonymizeOldApplications"
 
 runScript(async () => {
   await anonymizeOldApplications()

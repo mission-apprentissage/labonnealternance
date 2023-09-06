@@ -1,12 +1,14 @@
 // @ts-nocheck
-import { runScript } from "../../scriptWrapper.js"
-import * as xml2j from "xml2js"
 import { readFileSync } from "fs"
+
 import iconv from "iconv-lite"
-import __dirname from "../../../common/dirname.js"
-import { asyncForEach } from "../../../common/utils/asyncUtils.js"
 import { isNull, isArray, isObject } from "lodash-es"
-import { ReferentielRome } from "../../../common/model/index.js"
+import * as xml2j from "xml2js"
+
+import __dirname from "../../../common/dirname"
+import { ReferentielRome } from "../../../common/model/index"
+import { asyncForEach } from "../../../common/utils/asyncUtils"
+import { runScript } from "../../scriptWrapper"
 
 const formatRawData = ({ appellations, competences, contextes_travail, mobilites, ...data }) => {
   return {

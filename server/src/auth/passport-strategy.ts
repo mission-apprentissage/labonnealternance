@@ -1,11 +1,12 @@
-import config from "../config.js"
-import { getUser as getUserRecruteur } from "../services/userRecruteur.service.js"
 import passport from "passport"
 import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt"
-import { Strategy as LocalAPIKeyStrategy } from "passport-localapikey"
 import { Strategy as LocalStrategy } from "passport-local"
-import { authenticate, getUser } from "../services/user.service.js"
-import { sentryCaptureException } from "../common/utils/sentryUtils.js"
+import { Strategy as LocalAPIKeyStrategy } from "passport-localapikey"
+
+import { sentryCaptureException } from "../common/utils/sentryUtils"
+import config from "../config"
+import { authenticate, getUser } from "../services/user.service"
+import { getUser as getUserRecruteur } from "../services/userRecruteur.service"
 
 passport.use("api-key", new LocalAPIKeyStrategy({}, async (token, done) => done(null, config.smtp.brevoWebhookApiKey === token ? { apiKey: token } : false)))
 

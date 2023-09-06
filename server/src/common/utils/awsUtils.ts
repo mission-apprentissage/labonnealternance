@@ -1,7 +1,9 @@
-import * as stream from "stream"
-import AWS from "aws-sdk"
 import fs from "fs"
-import config from "../../config.js"
+import * as stream from "stream"
+
+import AWS from "aws-sdk"
+
+import config from "../../config"
 
 const { endpoint, region, bucket, accessKeyId, secretAccessKey }: { endpoint: string; region: string; bucket: string; accessKeyId: string; secretAccessKey: string } = config.s3
 

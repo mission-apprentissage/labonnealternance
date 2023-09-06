@@ -1,6 +1,8 @@
 import { mongoosePagination, Pagination } from "mongoose-paginate-ts"
-import { model, Schema } from "../../../mongodb.js"
-import { IAppointments } from "./appointments.types.js"
+
+import { model, Schema } from "../../../mongodb"
+
+import { IAppointments } from "./appointments.types"
 
 export const appointmentSchema = new Schema<IAppointments>({
   applicant_id: {

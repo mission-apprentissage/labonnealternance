@@ -1,24 +1,26 @@
-import { isEmailBurner } from "burner-email-providers"
 import path from "path"
-import { oleoduc, writeData } from "oleoduc"
-import { Application, BonnesBoites, EmailBlacklist } from "../common/model/index.js"
-import { manageApiError } from "../common/utils/errorManager.js"
-import { decryptWithIV, encryptIdWithIV } from "../common/utils/encryptString.js"
-import { validateCaller } from "../service/queryValidators.js"
-import { logger } from "../common/logger.js"
-import { prepareMessageForMail } from "../common/utils/fileUtils.js"
-import config from "../config.js"
-import __dirname from "../common/dirname.js"
-import { BrevoEventStatus } from "./brevo.service.js"
-import mailer from "./mailer.service.js"
-import { sentryCaptureException } from "../common/utils/sentryUtils.js"
-import { IApplication } from "../common/model/schema/application/applications.types.js"
-import { IJobs } from "../common/model/schema/jobs/jobs.types.js"
-import { IBonneBoite } from "../common/model/schema/bonneboite/bonneboite.types.js"
 
-import { Document } from "mongoose"
+import { isEmailBurner } from "burner-email-providers"
 import Joi from "joi"
-import { scan } from "./clamav.service.js"
+import { Document } from "mongoose"
+import { oleoduc, writeData } from "oleoduc"
+
+import __dirname from "../common/dirname"
+import { logger } from "../common/logger"
+import { Application, BonnesBoites, EmailBlacklist } from "../common/model/index"
+import { IApplication } from "../common/model/schema/application/applications.types"
+import { IBonneBoite } from "../common/model/schema/bonneboite/bonneboite.types"
+import { IJobs } from "../common/model/schema/jobs/jobs.types"
+import { decryptWithIV, encryptIdWithIV } from "../common/utils/encryptString"
+import { manageApiError } from "../common/utils/errorManager"
+import { prepareMessageForMail } from "../common/utils/fileUtils"
+import { sentryCaptureException } from "../common/utils/sentryUtils"
+import config from "../config"
+import { validateCaller } from "../service/queryValidators"
+
+import { BrevoEventStatus } from "./brevo.service"
+import { scan } from "./clamav.service"
+import mailer from "./mailer.service"
 
 const publicUrl = config.publicUrl
 const publicUrlEspacePro = config.publicUrlEspacePro
@@ -585,7 +587,7 @@ export const sendNotificationToApplicant = async ({
  */
 export const updateApplicationStatus = async ({ payload }: { payload: any }): Promise<void> => {
   /* Format payload
-      { 
+      {
         event : "unique_opened",
         id: 497470,
         date: "2021-12-27 14:12:54",

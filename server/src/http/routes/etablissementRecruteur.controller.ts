@@ -1,13 +1,14 @@
 import express, { Request } from "express"
 import joi from "joi"
-import { IRecruiter } from "../../common/model/schema/recruiter/recruiter.types.js"
-import { IUserRecruteur } from "../../common/model/schema/userRecruteur/userRecruteur.types.js"
-import { createUserRecruteurToken } from "../../common/utils/jwtUtils.js"
-import { getAllDomainsFromEmailList, getEmailDomain, isEmailFromPrivateCompany, isUserMailExistInReferentiel } from "../../common/utils/mailUtils.js"
-import { sentryCaptureException } from "../../common/utils/sentryUtils.js"
-import { notifyToSlack } from "../../common/utils/slackUtils.js"
-import { getNearEtablissementsFromRomes } from "../../services/catalogue.service.js"
-import { BusinessErrorCodes, CFA, ENTREPRISE, ETAT_UTILISATEUR } from "../../services/constant.service.js"
+
+import { IRecruiter } from "../../common/model/schema/recruiter/recruiter.types"
+import { IUserRecruteur } from "../../common/model/schema/userRecruteur/userRecruteur.types"
+import { createUserRecruteurToken } from "../../common/utils/jwtUtils"
+import { getAllDomainsFromEmailList, getEmailDomain, isEmailFromPrivateCompany, isUserMailExistInReferentiel } from "../../common/utils/mailUtils"
+import { sentryCaptureException } from "../../common/utils/sentryUtils"
+import { notifyToSlack } from "../../common/utils/slackUtils"
+import { getNearEtablissementsFromRomes } from "../../services/catalogue.service"
+import { BusinessErrorCodes, CFA, ENTREPRISE, ETAT_UTILISATEUR } from "../../services/constant.service"
 import {
   entrepriseOnboardingWorkflow,
   etablissementUnsubscribeDemandeDelegation,
@@ -19,7 +20,7 @@ import {
   sendUserConfirmationEmail,
   validateCreationEntrepriseFromCfa,
   validateEtablissementEmail,
-} from "../../services/etablissement.service.js"
+} from "../../services/etablissement.service"
 import {
   autoValidateUser,
   createUser,
@@ -29,9 +30,9 @@ import {
   sendWelcomeEmailToUserRecruteur,
   setUserHasToBeManuallyValidated,
   updateUser,
-} from "../../services/userRecruteur.service.js"
-import authMiddleware from "../middlewares/authMiddleware.js"
-import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
+} from "../../services/userRecruteur.service"
+import authMiddleware from "../middlewares/authMiddleware"
+import { tryCatch } from "../middlewares/tryCatchMiddleware"
 
 const getCfaRomeSchema = joi.object({
   latitude: joi.number().required(),
@@ -163,7 +164,7 @@ export default () => {
 
   router.post(
     "/creation",
-    tryCatch(async (req: Request<{}, {}, IUserRecruteur & IRecruiter>, res) => {
+    tryCatch(async (req: Request<any, any, IUserRecruteur & IRecruiter>, res) => {
       // TODO add some Joi
       switch (req.body.type) {
         case ENTREPRISE: {

@@ -1,7 +1,9 @@
 // @ts-nocheck
 import Ftp from "basic-ftp"
-import { logger } from "../logger.js"
-import { sentryCaptureException } from "./sentryUtils.js"
+
+import { logger } from "../logger"
+
+import { sentryCaptureException } from "./sentryUtils"
 
 class FTPClient {
   constructor() {

@@ -1,9 +1,9 @@
-import { CFA, ENTREPRISE } from "../../../../services/constant.service.js"
-import { logger } from "../../../../common/logger.js"
-import { Recruiter, UserRecruteur } from "../../../../common/model/index.js"
-import { asyncForEach, delay } from "../../../../common/utils/asyncUtils.js"
-import { getEtablissementFromGouv } from "../../../../services/etablissement.service.js"
-import { runScript } from "../../../scriptWrapper.js"
+import { logger } from "../../../../common/logger"
+import { Recruiter, UserRecruteur } from "../../../../common/model/index"
+import { asyncForEach, delay } from "../../../../common/utils/asyncUtils"
+import { CFA, ENTREPRISE } from "../../../../services/constant.service"
+import { getEtablissementFromGouv } from "../../../../services/etablissement.service"
+import { runScript } from "../../../scriptWrapper"
 
 runScript(async () => {
   logger.info("Start update user adresse detail")

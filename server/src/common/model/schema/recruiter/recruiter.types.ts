@@ -1,6 +1,6 @@
-import { RECRUITER_STATUS } from "../../../../services/constant.service.js"
-import { IGlobalAddress } from "../_shared/shared.types.js"
-import { IJobs } from "../jobs/jobs.types.js"
+import { RECRUITER_STATUS } from "../../../../services/constant.service"
+import { IGlobalAddress } from "../_shared/shared.types"
+import { IJobs } from "../jobs/jobs.types"
 
 interface IRecruiter {
   _id: string
@@ -30,4 +30,4 @@ interface IRecruiter {
   updatedAt: Date
 }
 
-export { IRecruiter }
+export type { IRecruiter }

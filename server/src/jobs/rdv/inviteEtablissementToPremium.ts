@@ -1,10 +1,10 @@
-import { mailTemplate } from "../../assets/index.js"
-import { logger } from "../../common/logger.js"
-import { mailType } from "../../common/model/constants/etablissement.js"
-import { Etablissement, EligibleTrainingsForAppointment } from "../../common/model/index.js"
-import dayjs from "../../services/dayjs.service.js"
-import config from "../../config.js"
-import mailer from "../../services/mailer.service.js"
+import { mailTemplate } from "../../assets/index"
+import { logger } from "../../common/logger"
+import { mailType } from "../../common/model/constants/etablissement"
+import { Etablissement, EligibleTrainingsForAppointment } from "../../common/model/index"
+import config from "../../config"
+import dayjs from "../../services/dayjs.service"
+import mailer from "../../services/mailer.service"
 
 /**
  * @description Invite all "etablissements" to Premium.

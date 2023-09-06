@@ -1,19 +1,22 @@
-import axios from "axios"
-import { IFormationCatalogue } from "../common/model/schema/formationCatalogue/formationCatalogue.types.js"
 import crypto from "crypto"
-import { getElasticInstance } from "../common/esClient/index.js"
-import { roundDistance } from "../common/utils/geolib.js"
-import { FormationCatalogue } from "../common/model/index.js"
-import { IApiError, manageApiError } from "../common/utils/errorManager.js"
-import { regionCodeToDepartmentList } from "../common/utils/regionInseeCodes.js"
-import { trackApiCall } from "../common/utils/sendTrackingEvent.js"
-import { sentryCaptureException } from "../common/utils/sentryUtils.js"
-import { notifyToSlack } from "../common/utils/slackUtils.js"
-import config from "../config.js"
-import { formationMock, formationsMock, formationDetailMock } from "../mocks/formations-mock.js"
-import { formationsQueryValidator, formationsRegionQueryValidator } from "../service/formationsQueryValidator.js"
-import { IFormationEsResult } from "./formation.service.types.js"
-import { ILbaItem, ILbaItemTrainingSession, LbaItem } from "./lbaitem.shared.service.types.js"
+
+import axios from "axios"
+
+import { getElasticInstance } from "../common/esClient/index"
+import { FormationCatalogue } from "../common/model/index"
+import { IFormationCatalogue } from "../common/model/schema/formationCatalogue/formationCatalogue.types"
+import { IApiError, manageApiError } from "../common/utils/errorManager"
+import { roundDistance } from "../common/utils/geolib"
+import { regionCodeToDepartmentList } from "../common/utils/regionInseeCodes"
+import { trackApiCall } from "../common/utils/sendTrackingEvent"
+import { sentryCaptureException } from "../common/utils/sentryUtils"
+import { notifyToSlack } from "../common/utils/slackUtils"
+import config from "../config"
+import { formationMock, formationsMock, formationDetailMock } from "../mocks/formations-mock"
+import { formationsQueryValidator, formationsRegionQueryValidator } from "../service/formationsQueryValidator"
+
+import { IFormationEsResult } from "./formation.service.types"
+import { ILbaItem, ILbaItemTrainingSession, LbaItem } from "./lbaitem.shared.service.types"
 
 const formationResultLimit = 500
 

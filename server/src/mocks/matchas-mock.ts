@@ -1,5 +1,5 @@
-import { RECRUITER_STATUS } from "../services/constant.service.js"
-import { ILbaJobEsResult } from "../services/lbajob.service.types.js"
+import { RECRUITER_STATUS } from "../services/constant.service"
+import { ILbaJobEsResult } from "../services/lbajob.service.types"
 
 const matchaMockMandataire: ILbaJobEsResult = {
   //_index: "formulaires",

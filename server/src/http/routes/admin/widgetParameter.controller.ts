@@ -1,10 +1,11 @@
 // @ts-nocheck
 import express from "express"
 import Joi from "joi"
-import { logger } from "../../../common/logger.js"
-import { EligibleTrainingsForAppointment } from "../../../common/model/index.js"
-import { tryCatch } from "../../middlewares/tryCatchMiddleware.js"
-import * as eligibleTrainingsForAppointmentService from "../../../services/eligibleTrainingsForAppointment.service.js"
+
+import { logger } from "../../../common/logger"
+import { EligibleTrainingsForAppointment } from "../../../common/model/index"
+import * as eligibleTrainingsForAppointmentService from "../../../services/eligibleTrainingsForAppointment.service"
+import { tryCatch } from "../../middlewares/tryCatchMiddleware"
 
 const eligibleTrainingsForAppointmentIdPatchSchema = Joi.object({
   is_lieu_formation_email_customized: Joi.boolean().optional(),

@@ -1,5 +1,6 @@
-import { runScript } from "../scriptWrapper.js"
-import { importCatalogueFormationJob } from "./formationsCatalogue.js"
+import { runScript } from "../scriptWrapper"
+
+import { importCatalogueFormationJob } from "./formationsCatalogue"
 
 runScript(async () => {
   await importCatalogueFormationJob()

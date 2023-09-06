@@ -1,8 +1,8 @@
 // @ts-nocheck
-import { logger } from "../../../common/logger.js"
-import { mongooseInstance } from "../../../common/mongodb.js"
-import { runScript } from "../../scriptWrapper.js"
-import { createOffreCollection } from "../seed/createOffre.js"
+import { logger } from "../../../common/logger"
+import { mongooseInstance } from "../../../common/mongodb"
+import { runScript } from "../../scriptWrapper"
+import { createOffreCollection } from "../seed/createOffre"
 
 const migrateUserRecruteurCollection = async (db) => {
   logger.info("———— [UserRecruteur] Remove obsolete fields")
@@ -18,7 +18,7 @@ const migrateUserRecruteurCollection = async (db) => {
     }
   )
   logger.info(`Fin suppression champs de la collection userRecruteur (${res.result.nModified} items mis à jour)`)
-  const halo = await db.collection("userrecruteurs").updateMany({}, { $rename: { opco_label: "opco" } })
+  // const halo = await db.collection("userrecruteurs").updateMany({}, { $rename: { opco_label: "opco" } })
   logger.info("———— [UserRecruteur] Renaming")
   res = await db.collection("userrecruteurs").updateMany(
     {},

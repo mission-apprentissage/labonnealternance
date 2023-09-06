@@ -1,6 +1,7 @@
-import { logMessage } from "../../common/utils/logMessage.js"
 import miniget from "miniget"
 import { oleoduc, readLineByLine, transformData, writeData } from "oleoduc"
+
+import { logMessage } from "../../common/utils/logMessage"
 
 const nafMap = {}
 let count = 0

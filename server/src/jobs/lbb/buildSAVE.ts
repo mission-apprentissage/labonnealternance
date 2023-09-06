@@ -1,10 +1,14 @@
 // @ts-nocheck
-import { logMessage } from "../../common/utils/logMessage.js"
-import { oleoduc, accumulateData, readLineByLine, transformData, writeData } from "oleoduc"
 import fs from "fs"
 import path from "path"
-import __dirname from "../../common/dirname.js"
-import { pushFileToBucket } from "./bonnesBoitesUtils.js"
+
+import { oleoduc, accumulateData, readLineByLine, transformData, writeData } from "oleoduc"
+
+import __dirname from "../../common/dirname"
+import { logMessage } from "../../common/utils/logMessage"
+
+import { pushFileToBucket } from "./bonnesBoitesUtils"
+
 const currentDirname = __dirname(import.meta.url)
 
 const tempDir = "./assets/"
@@ -36,35 +40,35 @@ const parseUpdateLine = (line) => {
 
   if (updateCount > 1) {
     /* Liste des champs dans l'ordre de 0 à N :
-    
+
     "id"
-    "sirets"	
-    "name"	
-    "new_email"	
-    "new_phone"	
-    "new_website"	
-    "remove_email"	
-    "remove_phone"	
-    "remove_website"	
-    "date_created"	
-    "updated_by_id"	
-    "romes_to_boost"	
-    "boost"	
-    "romes_to_remove"	
-    "nafs_to_add"	
-    "email_alternance"	
-    "romes_alternance_to_boost"	
-    "boost_alternance"	
-    "romes_alternance_to_remove"	
-    "score"	
-    "score_alternance"	
-    "social_network"	
-    "phone_alternance"	
-    "website_alternance"	
-    "contact_mode"	
-    "certified_recruiter"	
-    "recruiter_uid"	
-    "new_company_name"	
+    "sirets"
+    "name"
+    "new_email"
+    "new_phone"
+    "new_website"
+    "remove_email"
+    "remove_phone"
+    "remove_website"
+    "date_created"
+    "updated_by_id"
+    "romes_to_boost"
+    "boost"
+    "romes_to_remove"
+    "nafs_to_add"
+    "email_alternance"
+    "romes_alternance_to_boost"
+    "boost_alternance"
+    "romes_alternance_to_remove"
+    "score"
+    "score_alternance"
+    "social_network"
+    "phone_alternance"
+    "website_alternance"
+    "contact_mode"
+    "certified_recruiter"
+    "recruiter_uid"
+    "new_company_name"
     "new_office_name"
     */
 

@@ -1,6 +1,7 @@
-import { getElasticInstance, mongoosastic } from "../../../esClient/index.js"
-import { model, Schema } from "../../../mongodb.js"
-import { IDomainesMetiers } from "./domainesmetiers.types.js"
+import { getElasticInstance, mongoosastic } from "../../../esClient/index"
+import { model, Schema } from "../../../mongodb"
+
+import { IDomainesMetiers } from "./domainesmetiers.types"
 
 export const domainesMetiersSchema = new Schema<IDomainesMetiers>({
   sous_domaine: {

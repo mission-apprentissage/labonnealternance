@@ -1,8 +1,8 @@
 import express from "express"
-import { entrepriseOnboardingWorkflow } from "../../services/etablissement.service.js"
-import { getUser } from "../../services/userRecruteur.service.js"
-import { Recruiter } from "../../common/model/index.js"
-import { getApplication } from "../../services/application.service.js"
+
+import { Recruiter } from "../../common/model/index"
+import { getApplication } from "../../services/application.service"
+import { entrepriseOnboardingWorkflow } from "../../services/etablissement.service"
 import {
   archiveDelegatedFormulaire,
   archiveFormulaire,
@@ -17,9 +17,10 @@ import {
   provideOffre,
   updateFormulaire,
   updateOffre,
-} from "../../services/formulaire.service.js"
-import authMiddleware from "../middlewares/authMiddleware.js"
-import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
+} from "../../services/formulaire.service"
+import { getUser } from "../../services/userRecruteur.service"
+import authMiddleware from "../middlewares/authMiddleware"
+import { tryCatch } from "../middlewares/tryCatchMiddleware"
 
 export default () => {
   const router = express.Router()

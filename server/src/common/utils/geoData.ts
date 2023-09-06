@@ -1,4 +1,4 @@
-import apiGeoAdresse from "./apiGeoAdresse.js"
+import apiGeoAdresse from "./apiGeoAdresse"
 
 class GeoData {
   constructor() {}

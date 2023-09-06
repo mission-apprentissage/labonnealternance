@@ -1,7 +1,7 @@
 import fs from "fs"
 import path from "path"
 
-import __dirname from "../common/dirname.js"
+import __dirname from "../common/dirname"
 
 /**
  * @description generate an object where the keys are the file name without extension and the value is the path of the file
