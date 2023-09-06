@@ -23,9 +23,8 @@ const WidgetHeader = ({ handleSearchSubmit, isHome, activeFilter, setActiveFilte
 
   return (
     <Box zIndex={9} display={formDisplayValue} boxShadow={isHome ? "none" : "0 0 12px 2px rgb(0 0 0 / 21%)"} padding="8px">
-      <Flex>
-        {!isHome && <LogoLBA />}
-
+      <Flex alignItems="flex-start">
+        {!isHome && <LogoLBA mt={2} />}
         <Box>
           {isHome && (
             <Text mb={3} as="h1" fontSize={["26px", "29px"]} fontWeight={700}>
@@ -38,16 +37,18 @@ const WidgetHeader = ({ handleSearchSubmit, isHome, activeFilter, setActiveFilte
             </Text>
           )}
           <HeaderForm handleSearchSubmit={handleSearchSubmitFunction} isHome={isHome} />
-          <ResultFilterAndCounter
-            allJobSearchError={allJobSearchError}
-            trainingSearchError={trainingSearchError}
-            isJobSearchLoading={isJobSearchLoading}
-            isTrainingSearchLoading={isTrainingSearchLoading}
-            activeFilter={activeFilter}
-            setActiveFilter={setActiveFilter}
-          />
         </Box>
       </Flex>
+      {!isHome && (
+        <ResultFilterAndCounter
+          allJobSearchError={allJobSearchError}
+          trainingSearchError={trainingSearchError}
+          isJobSearchLoading={isJobSearchLoading}
+          isTrainingSearchLoading={isTrainingSearchLoading}
+          activeFilter={activeFilter}
+          setActiveFilter={setActiveFilter}
+        />
+      )}
     </Box>
   )
 }

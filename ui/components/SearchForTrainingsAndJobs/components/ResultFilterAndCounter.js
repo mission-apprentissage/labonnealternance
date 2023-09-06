@@ -42,7 +42,8 @@ const ResultFilterAndCounter = ({ allJobSearchError, trainingSearchError, isTrai
 
   const filterZoneProperties = {
     justifyContent: "left",
-    paddingLeft: "31px",
+    paddingLeft: "8px",
+    marginTop: "8px",
     marginBottom: "4px",
     alignItems: ["left", "left", "left", "center"],
   }
@@ -53,9 +54,6 @@ const ResultFilterAndCounter = ({ allJobSearchError, trainingSearchError, isTrai
         {!trainingLoading && !jobLoading && scopeContext.isJob && scopeContext.isTraining && (
           <>
             <Flex flexFlow="row wrap" justifyContent="flex-end" width="100%">
-              <Box flex="1 auto" mr={4} textAlign="left" fontSize="14px" display={["none", "none", "block"]}>
-                Que souhaitez-vous voir ?
-              </Box>
               <Flex width="100%" flex="2 auto">
                 <FilterButton type="all" count={jobCount + trainingCount} isActive={activeFilter === "all"} handleFilterButtonClicked={filterButtonClicked} />
                 <FilterButton type="jobs" count={jobCount - partnerJobCount} isActive={activeFilter === "jobs"} handleFilterButtonClicked={filterButtonClicked} />

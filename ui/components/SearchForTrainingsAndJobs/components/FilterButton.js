@@ -27,32 +27,22 @@ const FilterButton = ({ type, count, isActive, handleFilterButtonClicked }) => {
     width: "fit-content",
     fontSize: "14px",
     outline: "none",
-    border: "2px solid transparent",
+    border: "none",
     marginRight: "5px",
     height: "auto",
     paddingY: "0.3rem",
     borderRadius: "40px",
     whiteSpace: "pre-wrap",
     _hover: {
-      borderRadius: "15px",
-      border: "2px solid",
-      borderColor: "primary ",
+      background: "none",
     },
     _focus: {
-      borderRadius: "15px",
-      border: "2px solid",
-      borderColor: "primary",
+      background: "none",
     },
   }
 
   return (
-    <Button
-      color={isActive ? "white" : "bluefrance.500"}
-      background={isActive ? "bluefrance.500" : "bluefrance.200"}
-      px={["0.3rem", "1rem", "1rem", "0.3rem", "1rem"]}
-      {...buttonProperties}
-      onClick={handleClick}
-    >
+    <Button px={["0.3rem", "1rem", "1rem", "0.3rem", "1rem"]} {...buttonProperties} onClick={handleClick}>
       {ReactHtmlParser(getText())}
     </Button>
   )
