@@ -7,6 +7,7 @@ import { getJobCount, getPartnerJobCount } from "../services/utils"
 import { ScopeContext } from "../../../context/ScopeContext"
 import FilterButton from "./FilterButton"
 import { SearchResultContext } from "../../../context/SearchResultContextProvider"
+import DisplayMapButton from "../../DisplayMapButton/displayMapButton"
 
 const ResultFilterAndCounter = ({ allJobSearchError, trainingSearchError, isTrainingSearchLoading, isJobSearchLoading, activeFilter, setActiveFilter }) => {
   const scopeContext = useContext(ScopeContext)
@@ -60,6 +61,7 @@ const ResultFilterAndCounter = ({ allJobSearchError, trainingSearchError, isTrai
                 <FilterButton type="jobs" count={jobCount - partnerJobCount} isActive={activeFilter === "jobs"} handleFilterButtonClicked={filterButtonClicked} />
                 <FilterButton type="trainings" count={trainingCount} isActive={activeFilter === "trainings"} handleFilterButtonClicked={filterButtonClicked} />
                 {!!partnerJobCount && <FilterButton type="duo" count={partnerJobCount} isActive={activeFilter === "duo"} handleFilterButtonClicked={filterButtonClicked} />}
+                <DisplayMapButton jobs={jobs} trainings={trainings} />
               </Flex>
             </Flex>
           </>

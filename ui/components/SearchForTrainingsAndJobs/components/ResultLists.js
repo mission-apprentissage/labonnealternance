@@ -1,7 +1,6 @@
 import React, { useContext, useState } from "react"
 
 import { ErrorMessage } from "../../../components"
-import DisplayMapButton from "../../../components/DisplayMapButton/displayMapButton"
 import { DisplayContext } from "../../../context/DisplayContextProvider"
 import { ScopeContext } from "../../../context/ScopeContext"
 import { SearchResultContext } from "../../../context/SearchResultContextProvider"
@@ -10,7 +9,6 @@ import { isCfaEntreprise } from "../../../services/cfaEntreprise"
 import { mergeJobs, mergeOpportunities } from "../../../utils/itemListUtils"
 import ExtendedSearchButton from "./ExtendedSearchButton"
 import NoJobResult from "./NoJobResult"
-
 import { Box, Button, Flex, Image } from "@chakra-ui/react"
 import { renderJob, renderLbb, renderTraining } from "../services/renderOneResult"
 import { getJobCount } from "../services/utils"
@@ -245,7 +243,6 @@ const ResultLists = ({
           </Button>
         </Flex>
         <Box display={["flex", "flex", "none"]}>
-          <DisplayMapButton jobs={jobs} trainings={trainings} />
           <ResultFilterAndCounter
             allJobSearchError={allJobSearchError}
             trainingSearchError={trainingSearchError}
