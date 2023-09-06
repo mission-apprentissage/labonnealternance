@@ -67,11 +67,12 @@ const HeaderForm = ({ handleSearchSubmit, isHome }) => {
     return (
       <Formik validate={(values) => validateFormik(values, widgetParameters)} initialValues={{ job: {}, location: {}, radius: 30, diploma: "" }} onSubmit={handleSearchSubmit}>
         {({ isSubmitting, setFieldValue, errors, touched }) => (
-          <Form>
+          <Form data-testid="widget-form">
             <Flex>
               <Box>
                 <AutoCompleteField
                   kind="Métier ou diplôme *"
+                  id="headerFormJobField"
                   items={[]}
                   hasError={errors.job}
                   initialSelectedItem={contextFormValues?.job || null}
@@ -93,6 +94,7 @@ const HeaderForm = ({ handleSearchSubmit, isHome }) => {
               <Box ml={3}>
                 <Box>
                   <AutoCompleteField
+                    id="headerFormPlaceField"
                     kind="Lieu"
                     items={[]}
                     hasError={errors.location}
@@ -118,6 +120,7 @@ const HeaderForm = ({ handleSearchSubmit, isHome }) => {
                     type="select"
                     value={locationRadius}
                     name="locationRadius"
+                    data-testid="locationRadius"
                   >
                     {buildRayonsOptions()}
                   </Select>
@@ -128,7 +131,12 @@ const HeaderForm = ({ handleSearchSubmit, isHome }) => {
                   Niveau d&apos;études visé
                 </Text>
                 <Box>
-                  <Select {...selectProperties} onChange={(evt) => handleSelectChange(evt, setFieldValue, setDiploma, "diploma")} value={diploma} name="diploma">
+                  <Select 
+                    {...selectProperties} onChange={(evt) => handleSelectChange(evt, setFieldValue, setDiploma, "diploma")} 
+                    value={diploma} 
+                    name="diploma"
+                    data-testid="diploma"
+                  >
                     {buildAvailableDiplomasOptions(diplomas)}
                   </Select>
                 </Box>

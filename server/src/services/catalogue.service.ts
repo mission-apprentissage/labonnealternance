@@ -12,6 +12,7 @@ import * as _ from "lodash-es"
 import { getElasticInstance } from "../common/esClient/index.js"
 import config from "../config.js"
 import { sentryCaptureException } from "../common/utils/sentryUtils.js"
+import { isValidEmail } from "../common/utils/isValidEmail.js"
 
 export const affelnetSelectedFields = {
   _id: 1,
@@ -416,4 +417,25 @@ export const getRomesFromCfd = ({ cfd }: { cfd: string }): Promise<IRomeResult> 
  */
 export const getRomesFromSiret = ({ siret }: { siret: string }): Promise<IRomeResult> => {
   return getRomesFromCatalogue({ siret })
+}
+
+/**
+ * Gets email from catalogue field.
+ * These email fields can contain "not valid email", "emails separated by ##" or be null.
+ * @param {string|null} email
+ * @return {string|null}
+ */
+export const getEmailFromCatalogueField = (email: null | string) => {
+  if (!email) {
+    return null
+  }
+
+  const divider = "##"
+  if (email?.includes(divider)) {
+    const emailSplit = email.split(divider).at(-1).toLowerCase()
+
+    return isValidEmail(emailSplit) ? emailSplit : null
+  }
+
+  return isValidEmail(email) ? email.toLowerCase() : null
 }

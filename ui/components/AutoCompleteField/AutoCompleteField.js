@@ -61,6 +61,7 @@ const borderedTitleItemProps = {
 }
 
 export const AutoCompleteField = ({
+  id,
   kind,
   name,
   itemToStringFunction,
@@ -174,7 +175,7 @@ export const AutoCompleteField = ({
   }
 
   const { isOpen, getMenuProps, getInputProps, getComboboxProps, highlightedIndex, getItemProps, selectItem, openMenu, inputValue } = useCombobox({
-    id: "lang-switcher",
+    id,
     items: inputItems,
     itemToString,
     defaultHighlightedIndex: findExactItemRank({ value: inputTextValue, items: inputItems }),

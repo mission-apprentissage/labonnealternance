@@ -110,7 +110,7 @@ const Training = ({ training, handleSelectItem, showTextOnly, searchForJobsOnNew
   }
 
   return (
-    <Link as="a" className="resultCard" {...cardProperties} onClick={onSelectItem} onMouseOver={highlightItemOnMap} onMouseOut={dimItemOnMap} href={actualLink}>
+    <Link as="a" className="resultCard training" {...cardProperties} onClick={onSelectItem} onMouseOver={highlightItemOnMap} onMouseOut={dimItemOnMap} href={actualLink}>
       <Flex align="flex-start" id={`id${training.id}`}>
         <Box flex="1">
           <Flex m="0">

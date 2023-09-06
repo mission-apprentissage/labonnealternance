@@ -1,3 +1,39 @@
+# [1.85.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.84.0...v1.85.0) (2023-09-06)
+
+### Features
+
+- exploiter l'email le plus r pandu si email et email formateur vides ([#565](https://github.com/mission-apprentissage/labonnealternance/issues/565)) ([ab06b32](https://github.com/mission-apprentissage/labonnealternance/commit/ab06b325a1e63b922dfaaa475f4e2d63ca9ccc26))
+
+# [1.84.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.83.1...v1.84.0) (2023-09-04)
+
+### Features
+
+- LBAC-1146 lien vers tableau de suivi de candidatures ([6d4f855](https://github.com/mission-apprentissage/labonnealternance/commit/6d4f8552f2b158a1aef8bb584b1def4e32c2bf1b))
+
+## [1.83.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.83.0...v1.83.1) (2023-09-04)
+
+### Bug Fixes
+
+- lbac 1339: pagination ([#561](https://github.com/mission-apprentissage/labonnealternance/issues/561)) ([8a3817f](https://github.com/mission-apprentissage/labonnealternance/commit/8a3817fe92ec9ba86e217a434bc1a78d126ebba6))
+
+# [1.83.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.82.0...v1.83.0) (2023-09-04)
+
+### Features
+
+- LBAC-1456 mise à jour aria-label ([#560](https://github.com/mission-apprentissage/labonnealternance/issues/560)) ([bd67dcf](https://github.com/mission-apprentissage/labonnealternance/commit/bd67dcf67e98d26462d848092bef57b214d03e48))
+
+# [1.82.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.81.0...v1.82.0) (2023-09-04)
+
+### Features
+
+- LBAC-1383 sitemap.xml à la volée ([#559](https://github.com/mission-apprentissage/labonnealternance/issues/559)) ([c727932](https://github.com/mission-apprentissage/labonnealternance/commit/c727932e79bb6b1dee09ee271c36210715ba9440))
+
+# [1.81.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.80.0...v1.81.0) (2023-09-04)
+
+### Features
+
+- LBAC-1343 tests cypress e2e ([#541](https://github.com/mission-apprentissage/labonnealternance/issues/541)) ([7d84b44](https://github.com/mission-apprentissage/labonnealternance/commit/7d84b4486e33f1cfa0fe81489b66e023a95d7122))
+
 # [1.80.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.79.0...v1.80.0) (2023-09-01)
 
 ### Features

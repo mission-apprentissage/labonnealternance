@@ -133,3 +133,6 @@ setEnv.sh
 **/.vagrant/
 **/node_modules/
 yarn-error.log
+
+
+cypress.env.json
