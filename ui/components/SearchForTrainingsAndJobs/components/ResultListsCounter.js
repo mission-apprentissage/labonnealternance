@@ -1,10 +1,12 @@
+import { useContext } from "react"
 import { Box, Flex, Spinner, Text } from "@chakra-ui/react"
 import React from "react"
 import { getJobCount, getPartnerJobCount } from "../services/utils"
+import { ScopeContext } from "../../../context/ScopeContext"
 import FilterButton from "./FilterButton"
 
 const ResultListsCounter = (props) => {
-  const scopeContext = props.scopeContext
+  const scopeContext = useContext(ScopeContext)
   const filterButtonClicked = props.filterButtonClicked
   const allJobSearchError = props.allJobSearchError
   const trainingSearchError = props.trainingSearchError

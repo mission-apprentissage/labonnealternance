@@ -255,7 +255,6 @@ const ResultLists = ({
         <Box display={["flex", "flex", "none"]}>
           <DisplayMapButton jobs={jobs} trainings={trainings} />
           <ResultListsCounter
-            scopeContext={scopeContext}
             filterButtonClicked={filterButtonClicked}
             allJobSearchError={allJobSearchError}
             trainingSearchError={trainingSearchError}
