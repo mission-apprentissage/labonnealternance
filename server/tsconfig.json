@@ -1,31 +1,40 @@
 {
   "compilerOptions": {
-    "experimentalDecorators": true,
+    /* Visit https://aka.ms/tsconfig.json to read more about this file */
+    /* Projects */
+    "incremental": true /* Enable incremental compilation */,
     /* Language and Environment */
-    /* ES2022 : recommanded for node 18 LTS*/
-    "target": "ESNext" /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */,
-    "module": "ESNext" /* Specify what module code is generated. */,
-    "rootDir": "./src" /* Specify the root folder within your source files. */,
-    "moduleResolution": "NodeNext" /* Specify how TypeScript looks up a file from a given module specifier. */,
-    "baseUrl": "./src" /* Specify the base directory to resolve non-relative module names. */,
-    "outDir": "build",
-    // "paths": {},                                      /* Specify a set of entries that re-map imports to additional lookup locations. */
-    // "rootDirs": [],                                   /* Allow multiple folders to be treated as one when resolving modules. */
-    // "typeRoots": [],                                  /* Specify multiple folders that act like './node_modules/@types'. */
-    "types": ["node", "mocha"] /* Specify type package names to be included without being referenced in a source file. */,
-    // "allowUmdGlobalAccess": true,                     /* Allow accessing UMD globals from modules. */
-    // "moduleSuffixes": [],                             /* List of file name suffixes to search when resolving a module. */
-    // "noResolve": true,                                /* Disallow 'import's, 'require's or '<reference>'s from expanding the number of files TypeScript should add to a project. */
-    "allowJs": true /* Allow JavaScript files to be a part of your program. Use the 'checkJS' option to get errors from these files. */,
-    "checkJs": false /* Enable error reporting in type-checked JavaScript files. */,
-    "esModuleInterop": true /* Emit additional JavaScript to ease support for importing CommonJS modules. This enables 'allowSyntheticDefaultImports' for type compatibility. */,
-    "forceConsistentCasingInFileNames": true /* Ensure that casing is correct in imports. */,
-    "strict": false /* Enable all strict type-checking options. */,
-    "skipLibCheck": true /* Skip type checking all .d.ts files. */,
-    "resolveJsonModule": true
+    "target": "ES2022" /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */,
+    "lib": [
+      "ES2023"
+    ] /* Specify a set of bundled library declaration files that describe the target runtime environment. */,
+    /* Modules */
+    "module": "ESNext", // TODO: maybe nodenext ?
+    "moduleResolution": "node",
+    "baseUrl": "./src",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@tests/*": ["./tests/*"],
+    },
+    "resolveJsonModule": true,
+    /* JavaScript Support */
+    "allowJs": false,
+    /* Emit */
+    "outDir": "./dist",
+    /* Interop Constraints */
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    /* Type Checking */
+    "strict": true,
+    "noImplicitAny": false,
+    /* Completeness */
+    "skipLibCheck": true,
+    /* Output Formatting */
+    "pretty": true
   },
   "ts-node": {
     "swc": true
   },
-  "exclude": ["tests", "node_modules"]
+  "include": ["./**/*.ts", "./**/*.js"],
+  "exclude": ["**/node_modules","tests", "coverage", "dist"],
 }

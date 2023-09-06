@@ -14,4 +14,4 @@ interface IInternalJobs {
   created_at?: Date | undefined
 }
 
-export { IInternalJobs }
+export type { IInternalJobs }

@@ -1,5 +1,6 @@
-import { model, Schema } from "../../../mongodb.js"
-import { IInternalJobs } from "./internalJobs.types.js"
+import { model, Schema } from "../../../mongodb"
+
+import { IInternalJobs } from "./internalJobs.types"
 
 export const internalJobsSchema = new Schema<IInternalJobs>({
   name: { type: String, description: "Le nom de la tâche" },
