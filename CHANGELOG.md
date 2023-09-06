@@ -1,3 +1,10 @@
+## [1.85.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.85.0...v1.85.1) (2023-09-06)
+
+
+### Bug Fixes
+
+* lbac 1502: fallback api opco ([#563](https://github.com/mission-apprentissage/labonnealternance/issues/563)) ([5e2ee07](https://github.com/mission-apprentissage/labonnealternance/commit/5e2ee0727d644a4f8c5f76e1614fad3d235bf394))
+
 # [1.85.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.84.0...v1.85.0) (2023-09-06)
 
 ### Features
