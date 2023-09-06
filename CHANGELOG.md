@@ -1,3 +1,10 @@
+## [1.85.2](https://github.com/mission-apprentissage/labonnealternance/compare/v1.85.1...v1.85.2) (2023-09-06)
+
+
+### Bug Fixes
+
+* update siret en erreur: fix validation pour les creations api ([#562](https://github.com/mission-apprentissage/labonnealternance/issues/562)) ([ff44354](https://github.com/mission-apprentissage/labonnealternance/commit/ff44354c278f6d38a6f05396c82ea3284743bb79))
+
 ## [1.85.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.85.0...v1.85.1) (2023-09-06)
 
 
