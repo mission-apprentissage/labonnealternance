@@ -1,3 +1,10 @@
+# [1.86.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.85.2...v1.86.0) (2023-09-07)
+
+
+### Features
+
+* LBAC-1519 update InformationsSiret.js ([#567](https://github.com/mission-apprentissage/labonnealternance/issues/567)) ([5fed07f](https://github.com/mission-apprentissage/labonnealternance/commit/5fed07fb833f53ee5eab1fb794c4532e936696ef))
+
 ## [1.85.2](https://github.com/mission-apprentissage/labonnealternance/compare/v1.85.1...v1.85.2) (2023-09-06)
 
 
