@@ -10,7 +10,5 @@ export type Entreprise = Entity & {
   address_detail: IGlobalAddress
   address: string
   geo_coordinates: string
-  phone: string
-  email: string
   origin: string
 }

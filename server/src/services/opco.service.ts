@@ -20,15 +20,6 @@ export const saveOpco = async (opcoData: IOpco): Promise<IOpco> => Opco.findOneA
 
 /**
  * @description retourne le nom court d'un opco en paramètre
- * @param {string} shortName
- * @returns {string}
- */
-export const getOpcoLongName = memoize((shortName: string): string => {
-  return Object.values(OPCOS).find((k) => OPCOS[k] === shortName.toUpperCase())
-})
-
-/**
- * @description retourne le nom court d'un opco en paramètre
  * @param {string} longName
  * @returns {string}
  */

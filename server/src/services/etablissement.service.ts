@@ -14,7 +14,7 @@ import { sentryCaptureException } from "../common/utils/sentryUtils.js"
 import config from "../config.js"
 import { validationOrganisation } from "./bal.service.js"
 import { getCatalogueEtablissements } from "./catalogue.service.js"
-import { BusinessErrorCodes, CFA, ENTREPRISE, ETAT_UTILISATEUR, RECRUITER_STATUS } from "./constant.service.js"
+import { BusinessErrorCodes, CFA, ENTREPRISE, ETAT_UTILISATEUR, RECRUITER_STATUS, errorFactory } from "./constant.service.js"
 import {
   IAPIAdresse,
   IAPIEtablissement,
@@ -427,8 +427,6 @@ export const autoValidateCompany = async (userRecruteur: IUserRecruteur) => {
   }
   return { userRecruteur, validated: isValid }
 }
-
-const errorFactory = (message: string, errorCode?: BusinessErrorCodes) => ({ error: true, message, errorCode })
 
 export const getOpcoData = async (siret: string) => {
   const siren = siret.substring(0, 9)
