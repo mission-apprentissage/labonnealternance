@@ -42,7 +42,7 @@ const ChoiceColumn = ({
 }) => {
   const router = useRouter()
   const scopeContext = useContext(ScopeContext)
-  const { trainings, jobs, setTrainings, setJobs, setSelectedItem, selectedItem, itemToScrollTo, setItemToScrollTo, setExtendedSearch } = useContext(SearchResultContext)
+  const { trainings, setTrainings, setJobs, setSelectedItem, selectedItem, itemToScrollTo, setItemToScrollTo, setExtendedSearch } = useContext(SearchResultContext)
   const { formValues, setFormValues } = useContext(DisplayContext)
   const { displayMap } = useContext(ParameterContext)
 
@@ -188,7 +188,6 @@ const ChoiceColumn = ({
         isTrainingSearchLoading={isTrainingSearchLoading}
         isJobSearchLoading={isJobSearchLoading}
         searchRadius={searchRadius}
-        trainings={trainings}
         handleExtendedSearch={searchForJobsWithLooseRadius}
         searchForJobsOnNewCenter={searchForJobsOnNewCenter}
         searchForTrainingsOnNewCenter={searchForTrainingsOnNewCenter}

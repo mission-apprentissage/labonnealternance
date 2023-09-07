@@ -28,7 +28,6 @@ const ResultLists = ({
   searchForTrainingsOnNewCenter,
   shouldShowWelcomeMessage,
   showSearchForm,
-  trainings,
   allJobSearchError,
   trainingSearchError,
   isTestMode,
@@ -43,7 +42,7 @@ const ResultLists = ({
   ;({ isFormVisible } = useContext(DisplayContext))
   ;({ extendedSearch, hasSearch } = useContext(SearchResultContext))
 
-  const { jobs } = useContext(SearchResultContext)
+  const { jobs, trainings } = useContext(SearchResultContext)
 
   if (isTestMode) {
     ;[extendedSearch, hasSearch, isFormVisible] = [stubbedExtendedSearch, stubbedHasSearch, stubbedIsFormVisible]

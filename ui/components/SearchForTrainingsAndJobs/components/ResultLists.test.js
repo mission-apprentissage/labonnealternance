@@ -31,7 +31,6 @@ describe("ResultList", () => {
         stubbedIsFormVisible={true}
         activeFilter={"all"}
         searchRadius={10}
-        trainings={realisticFormations}
       />
     )
     // Then
