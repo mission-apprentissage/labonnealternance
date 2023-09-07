@@ -1,6 +1,8 @@
 import { mongoosePagination, Pagination } from "mongoose-paginate-ts"
 import { model, Schema } from "../../../mongodb.js"
 import { IApplication } from "./applications.types.js"
+import { ApplicantRole } from "../multiCompte/application2.types.js"
+import { ObjectId } from "mongodb"
 
 export const applicationSchema = new Schema<IApplication>({
   applicant_email: {
@@ -123,6 +125,15 @@ export const applicationSchema = new Schema<IApplication>({
     type: Date,
     default: Date.now,
     description: "Date de dernières mise à jour",
+  },
+  applicantRole: {
+    type: String,
+    enum: Object.values(ApplicantRole),
+    description: "type de candidat: parent | student",
+  },
+  applicantId: {
+    type: ObjectId,
+    description: "id de l'utilisateur qui a postulé",
   },
 })
 

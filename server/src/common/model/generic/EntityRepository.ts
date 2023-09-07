@@ -7,7 +7,7 @@ export type EntityRepository<T extends Entity> = {
   findById(id: string): Promise<T | null>
   findBy(query: Partial<T>): Promise<T[]>
   findOneBy(query: Partial<T>): Promise<T | null>
-  create(entity: T): Promise<void>
+  create(entity: Omit<T, "id">): Promise<T>
   update(id: string, entity: Partial<T>): Promise<void>
   delete(id: string): Promise<void>
 }

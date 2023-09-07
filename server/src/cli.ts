@@ -38,6 +38,7 @@ import { importReferentielOnisep } from "./jobs/rdv/importReferentielOnisep.js"
 import updateReferentielRncpRomes from "./jobs/referentielRncpRome/updateReferentielRncpRomes.js"
 import { updateFormationCatalogue } from "./jobs/formationsCatalogue/updateFormationCatalogue.js"
 import { updateSiretInfosInError } from "./jobs/lba_recruteur/user/misc/updateSiretInfosInError.js"
+import { migrationMultiCompte } from "./jobs/multiCompte/migrationMultiCompte.js"
 
 cli.addHelpText("after", null)
 
@@ -358,6 +359,20 @@ cli
   .description("Procède à la mise à jour du référentiel RNCP codes ROME")
   .action(() => {
     runScript(() => updateReferentielRncpRomes())
+  })
+
+/**
+ *
+ *
+ * ONE SHOT
+ *
+ *
+ */
+cli
+  .command("migration-multi-compte")
+  .description("Migration des données vers le nouveau modèle pour le multi-compte")
+  .action(() => {
+    runScript(() => migrationMultiCompte())
   })
 
 cli.parse(process.argv)

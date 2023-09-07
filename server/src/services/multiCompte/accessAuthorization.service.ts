@@ -27,15 +27,14 @@ export class AccessAuthorizationService {
         history: authorization.history,
       })
     } else {
-      authorization = {
+      authorization = await this.accessAuthorizationRepository.create({
         ...Entity.new(),
         accessedId,
         accessedType,
         accessorId,
         accessorType,
         history: [newHistoryEvent],
-      }
-      await this.accessAuthorizationRepository.create(authorization)
+      })
     }
     return authorization
   }

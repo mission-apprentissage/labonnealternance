@@ -26,8 +26,7 @@ export class User2Service {
       email: formatedEmail,
       history: [],
     }
-    await this.userRepository.create(user)
-    return user
+    return this.userRepository.create(user)
   }
   private async canLogin(email: string) {
     const userOpt = await this.findByEmail(email)

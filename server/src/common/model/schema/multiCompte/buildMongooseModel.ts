@@ -1,5 +1,7 @@
 import { mongoosePagination, Pagination } from "mongoose-paginate-ts"
-import { model, Schema } from "mongoose"
+import mongoose, { Schema } from "mongoose"
+
+const { model } = mongoose
 
 export const buildMongooseModel = <T>(schema: Schema<T>, tableName: string) => {
   schema.plugin(mongoosePagination)
