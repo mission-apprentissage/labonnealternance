@@ -61,6 +61,9 @@ services:
       - lba_smtp_data:/data
 
 volumes:
+  lba_elasticsearch_data:
+    driver: local
+    name: lba_elasticsearch_data
   lba_mongodb_data:
     driver: local
     name: lba_mongodb_data
