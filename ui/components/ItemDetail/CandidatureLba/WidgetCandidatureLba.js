@@ -15,9 +15,7 @@ const WidgetCandidatureLba = ({ item, caller, fakeLocalStorage }) => {
   const [sendingState, setSendingState] = useState("not_sent")
   const kind = item?.ideaType || ""
 
-  const uniqId = () => {
-    return `candidaturespontanee-${kind}-${getItemId(item)}`
-  }
+  const uniqId = `candidaturespontanee-${kind}-${getItemId(item)}`
 
   const actualLocalStorage = fakeLocalStorage || window.localStorage || {}
 
