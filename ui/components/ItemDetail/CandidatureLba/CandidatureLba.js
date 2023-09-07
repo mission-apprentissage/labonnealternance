@@ -34,7 +34,7 @@ const CandidatureLba = ({ item, fakeLocalStorage }) => {
     })
   }
 
-  const [applied, setApplied] = useLocalStorage(uniqId(), null, actualLocalStorage)
+  const [applied, setApplied] = useLocalStorage(uniqId, null, actualLocalStorage)
 
   useEffect(() => {
     onModalClose()
