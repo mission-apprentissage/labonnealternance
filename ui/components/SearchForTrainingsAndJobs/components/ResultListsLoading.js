@@ -22,8 +22,7 @@ const ResultListsLoading = ({ allJobSearchError, trainingSearchError, isTraining
 
   let trainingLoading = ""
 
-  if (scopeContext.isTraining) {
-    if (isTrainingSearchLoading) {
+  if (scopeContext.isTraining && isTrainingSearchLoading) {
       trainingLoading = (
         <Flex p={5} color="greensoft.500">
           <Text mr={4}>Recherche des formations en cours</Text>
