@@ -66,18 +66,18 @@ const CandidatureLba = ({ item, fakeLocalStorage }) => {
   return (
     <Box data-testid="CandidatureSpontanee">
       <Box>
-        <Box my={4}>
-          {hasAlreadySubmittedCandidature({ applied, isOpen }) ? (
-            <Box data-testid="already-applied">
-              Vous avez déjà postulé le{" "}
-              {new Date(parseInt(applied, 10)).toLocaleDateString("fr-FR", {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              })}
-            </Box>
-          ) : (
-            <>
+        {hasAlreadySubmittedCandidature({ applied, isOpen }) ? (
+          <Box data-testid="already-applied">
+            Vous avez déjà postulé le{" "}
+            {new Date(parseInt(applied, 10)).toLocaleDateString("fr-FR", {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            })}
+          </Box>
+        ) : (
+          <>
+            <Box my={4}>
               <Button
                 ml={1}
                 padding="8px 24px"
@@ -129,18 +129,18 @@ const CandidatureLba = ({ item, fakeLocalStorage }) => {
                   </form>
                 </ModalContent>
               </Modal>
-            </>
-          )}
-        </Box>
-        {item?.company?.mandataire && (
-          <Box display="flex" alignItems="center" my={4}>
-            <Text as="span">
-              <Image src="/images/icons/small_info.svg" alt="" />
-            </Text>
-            <Text as="span" ml={2} fontSize="12px" fontStyle="italic">
-              Votre candidature sera envoyée au centre de formation en charge du recrutement pour le compte de l’entreprise.{" "}
-            </Text>
-          </Box>
+            </Box>
+            {item?.company?.mandataire && (
+              <Box display="flex" alignItems="center" my={4}>
+                <Text as="span">
+                  <Image src="/images/icons/small_info.svg" alt="" />
+                </Text>
+                <Text as="span" ml={2} fontSize="12px" fontStyle="italic">
+                  Votre candidature sera envoyée au centre de formation en charge du recrutement pour le compte de l’entreprise.{" "}
+                </Text>
+              </Box>
+            )}
+          </>
         )}
       </Box>
     </Box>
