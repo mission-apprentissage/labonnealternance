@@ -1,6 +1,5 @@
 import { Button, Checkbox } from "@chakra-ui/react"
 import React from "react"
-import ReactHtmlParser from "react-html-parser"
 
 const FilterButton = ({ type, count, isActive, handleFilterButtonClicked }) => {
   const handleClick = (e) => {
@@ -51,7 +50,7 @@ const FilterButton = ({ type, count, isActive, handleFilterButtonClicked }) => {
   return (
     <Checkbox spacing={3} mr={5} isChecked={isActive} onChange={handleClick}>
       <Button px="0" {...buttonProperties} onClick={handleClick}>
-        {ReactHtmlParser(getText())}
+        {getText()}
       </Button>
     </Checkbox>
   )
