@@ -137,10 +137,6 @@ export const getLbaJobById = async ({ id, caller }: { id: string; caller: string
       return { error: "not_found" }
     }
 
-    if (rawJob.status !== "Actif" || rawJob.jobs[0].job_status !== ACTIVE) {
-      return { error: "expired_job" }
-    }
-
     const applicationCountByJob = await getApplicationByJobCount([id])
 
     const job = transformLbaJob({
