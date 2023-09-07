@@ -34,7 +34,7 @@ const WidgetCandidatureLba = ({ item, caller, fakeLocalStorage }) => {
     // HACK HERE : reapply setApplied to currentUniqId to re-detect
     // if user already applied each time the user swap to another item.
     if (item) {
-      let currentUniqId = actualLocalStorage.getItem(uniqId())
+      let currentUniqId = actualLocalStorage.getItem(uniqId)
       if (currentUniqId) {
         setApplied(currentUniqId)
       } else {
