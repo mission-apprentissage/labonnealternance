@@ -1,6 +1,7 @@
 // eslint-disable-next-line no-undef
 module.exports = {
   extends: ["plugin:node/recommended-module"],
+  ignorePatterns: ["**/tests/"],
   rules: {
     // désactivé temporairement pour éviter trop de changements
     // le temps de la migration complète vers typescript
