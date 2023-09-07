@@ -220,7 +220,7 @@ const ResultLists = ({
 
   const [displayCount, setDisplayCount] = useState(true)
   const handleScroll = () => {
-    setDisplayCount(document.querySelector("#resultList").scrResultListsLoadingollTop < 30)
+    setDisplayCount(document.querySelector("#resultList").scrollTop < 30)
   }
 
   return (
