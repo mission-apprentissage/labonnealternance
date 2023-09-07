@@ -35,6 +35,8 @@ fileignoreconfig:
   - filecontent
 - filename: README-New.md
   checksum: 0f7d91a5bb60a1597593249bd475f5feb7dc8361861f7697a4648dfb4873c580
+- filename: server/.env.local.example
+  checksum: 495c0e79094d84f26ac766658f84b715ca131576c15a97201d5819a683992379
 - filename: server/src/assets/templates/mail-bienvenue.mjml.ejs
   checksum: 6806b0e64e347ef56e04787e6518de5228a6c4f946f6f5f431cdcf56ca2303f4
 - filename: server/src/assets/templates/mail-cfa-premium-invite.mjml.ejs
