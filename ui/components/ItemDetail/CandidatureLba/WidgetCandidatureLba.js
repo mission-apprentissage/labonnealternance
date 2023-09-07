@@ -11,7 +11,7 @@ import hasAlreadySubmittedCandidature from "./services/hasAlreadySubmittedCandid
 import submitCandidature from "./services/submitCandidature"
 import useLocalStorage from "./services/useLocalStorage"
 
-const WidgetCandidatureSpontanee = (props) => {
+const WidgetCandidatureLba = (props) => {
   const [sendingState, setSendingState] = useState("not_sent")
   const kind = props?.item?.ideaType || ""
 
@@ -88,4 +88,4 @@ const WidgetCandidatureSpontanee = (props) => {
   )
 }
 
-export default WidgetCandidatureSpontanee
+export default WidgetCandidatureLba

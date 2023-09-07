@@ -1,7 +1,7 @@
 import { Box, Text, Textarea } from "@chakra-ui/react"
 import React from "react"
 
-const CandidatureSpontaneeMessage = ({ formik, kind }) => {
+const CandidatureLbaMessage = ({ formik, kind }) => {
   const getFieldTitle = () => {
     return (
       <>
@@ -57,4 +57,4 @@ const CandidatureSpontaneeMessage = ({ formik, kind }) => {
   )
 }
 
-export default CandidatureSpontaneeMessage
+export default CandidatureLbaMessage

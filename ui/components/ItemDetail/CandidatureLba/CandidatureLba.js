@@ -5,9 +5,9 @@ import React, { useEffect, useState } from "react"
 import { getItemId } from "../../../utils/getItemId"
 import { SendPlausibleEvent } from "../../../utils/plausible"
 import { string_wrapper as with_str } from "../../../utils/wrapper_utils"
-import CandidatureSpontaneeFailed from "./CandidatureSpontaneeFailed"
-import CandidatureSpontaneeNominalBodyFooter from "./CandidatureSpontaneeNominalBodyFooter"
-import CandidatureSpontaneeWorked from "./CandidatureSpontaneeWorked"
+import CandidatureLbaFailed from "./CandidatureLbaFailed"
+import CandidatureLbaModalBody from "./CandidatureLbaModalBody"
+import CandidatureLbaWorked from "./CandidatureLbaWorked"
 import { getInitialSchemaValues, getValidationSchema } from "./services/getSchema"
 import hasAlreadySubmittedCandidature from "./services/hasAlreadySubmittedCandidature"
 import submitCandidature from "./services/submitCandidature"
@@ -122,10 +122,10 @@ const CandidatureLba = ({ item, fakeLocalStorage }) => {
                   </ModalHeader>
                   <form onSubmit={formik.handleSubmit}>
                     {with_str(sendingState).amongst(["not_sent", "currently_sending"]) && (
-                      <CandidatureSpontaneeNominalBodyFooter formik={formik} sendingState={sendingState} company={item?.company?.name} item={item} kind={kind} />
+                      <CandidatureLbaModalBody formik={formik} sendingState={sendingState} company={item?.company?.name} item={item} kind={kind} />
                     )}
-                    {with_str(sendingState).amongst(["ok_sent"]) && <CandidatureSpontaneeWorked kind={kind} email={formik.values.email} company={item?.company?.name} />}
-                    {!with_str(sendingState).amongst(["not_sent", "ok_sent", "currently_sending"]) && <CandidatureSpontaneeFailed sendingState={sendingState} />}
+                    {with_str(sendingState).amongst(["ok_sent"]) && <CandidatureLbaWorked kind={kind} email={formik.values.email} company={item?.company?.name} />}
+                    {!with_str(sendingState).amongst(["not_sent", "ok_sent", "currently_sending"]) && <CandidatureLbaFailed sendingState={sendingState} />}
                   </form>
                 </ModalContent>
               </Modal>

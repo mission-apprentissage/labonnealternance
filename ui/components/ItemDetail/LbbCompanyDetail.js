@@ -2,7 +2,7 @@ import { Box } from "@chakra-ui/react"
 import React, { useEffect } from "react"
 import { DisplayContext } from "../../context/DisplayContextProvider"
 import { SendPlausibleEvent } from "../../utils/plausible"
-import CandidatureSpontaneeExplanation from "./CandidatureSpontanee/CandidatureSpontaneeExplanation"
+import CandidatureLbaExplanation from "./CandidatureLba/CandidatureLbaExplanation"
 
 const LbbCompanyDetail = ({ lbb }) => {
   useEffect(() => {
@@ -29,8 +29,8 @@ const LbbCompanyDetail = ({ lbb }) => {
       padding={["1px 12px 12px 12px", "1px 24px 12px 24px", "1px 12px 12px 12px"]}
       mx={["0", "30px"]}
     >
-      <CandidatureSpontaneeExplanation about={"what"} />
-      <CandidatureSpontaneeExplanation about={"how"} />
+      <CandidatureLbaExplanation about={"what"} />
+      <CandidatureLbaExplanation about={"how"} />
     </Box>
   )
 }

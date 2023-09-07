@@ -2,10 +2,10 @@ import { Box, Button, Container, Flex, FormControl, FormErrorMessage, FormLabel,
 import emailMisspelled, { top100 } from "email-misspelled"
 import React, { useState } from "react"
 import { testingParameters } from "../../../utils/testingParameters"
-import CandidatureSpontaneeFileDropzone from "./CandidatureSpontaneeFileDropzone"
-import CandidatureSpontaneeMandataireMessage from "./CandidatureSpontaneeMandataireMessage"
-import CandidatureSpontaneeMessage from "./CandidatureSpontaneeMessage"
-import CandidatureSpontaneeSubmit from "./CandidatureSpontaneeSubmit"
+import CandidatureLbaFileDropzone from "./CandidatureLbaFileDropzone"
+import CandidatureLbaMandataireMessage from "./CandidatureLbaMandataireMessage"
+import CandidatureLbaMessage from "./CandidatureLbaMessage"
+import CandidatureLbaSubmit from "./CandidatureLbaSubmit"
 
 const emailChecker = emailMisspelled({ maxMisspelled: 3, domains: top100 })
 
@@ -17,7 +17,7 @@ const PostulerFooter = (props) => {
   return props.fromWidget ? <Container maxW="2xl">{props.children}</Container> : <ModalFooter>{props.children}</ModalFooter>
 }
 
-const CandidatureSpontaneeNominalBodyFooter = ({ formik, sendingState, company, item, kind, fromWidget = false }) => {
+const CandidatureLbaModalBody = ({ formik, sendingState, company, item, kind, fromWidget = false }) => {
   const setFileValue = (fileValue) => {
     formik.values.fileName = fileValue?.fileName || null
     formik.values.fileContent = fileValue?.fileContent || null
@@ -122,14 +122,14 @@ const CandidatureSpontaneeNominalBodyFooter = ({ formik, sendingState, company, 
           </FormControl>
         </Flex>
 
-        <CandidatureSpontaneeMessage formik={formik} kind={kind} />
+        <CandidatureLbaMessage formik={formik} kind={kind} />
 
         <Box mt={4}>
-          <CandidatureSpontaneeFileDropzone formik={formik} setFileValue={setFileValue} />
+          <CandidatureLbaFileDropzone formik={formik} setFileValue={setFileValue} />
         </Box>
 
         <Box mt={4}>
-          <CandidatureSpontaneeMandataireMessage item={item} />
+          <CandidatureLbaMandataireMessage item={item} />
         </Box>
 
         <Box width="95%" my={4}>
@@ -152,10 +152,10 @@ const CandidatureSpontaneeNominalBodyFooter = ({ formik, sendingState, company, 
         </Box>
       </PostulerBody>
       <PostulerFooter fromWidget={fromWidget}>
-        <CandidatureSpontaneeSubmit item={item} sendingState={sendingState} />
+        <CandidatureLbaSubmit item={item} sendingState={sendingState} />
       </PostulerFooter>
     </>
   )
 }
 
-export default CandidatureSpontaneeNominalBodyFooter
+export default CandidatureLbaModalBody
