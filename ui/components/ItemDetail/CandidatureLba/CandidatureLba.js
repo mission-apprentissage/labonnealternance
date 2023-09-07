@@ -76,71 +76,73 @@ const CandidatureLba = ({ item, fakeLocalStorage }) => {
             })}
           </Box>
         ) : (
-          <>
-            <Box my={4}>
-              <Button
-                ml={1}
-                padding="8px 24px"
-                color="white"
-                background="bluefrance.500"
-                borderRadius="8px"
-                sx={{
-                  textDecoration: "none",
-                  _hover: {
-                    background: "bluesoft.500",
-                  },
-                }}
-                onClick={openApplicationForm}
-                aria-label="Ouvrir le formulaire d'envoi de candidature spontanée"
-              >
-                J&apos;envoie ma candidature{with_str(kind).amongst(["lbb", "lba"]) ? " spontanée" : ""}
-              </Button>
-              <Modal isOpen={isOpen} onClose={onModalClose} closeOnOverlayClick={false} size="3xl">
-                <ModalOverlay />
-                <ModalContent>
-                  <ModalHeader align="right" paddingTop="8px" paddingBottom="0">
-                    <Button
-                      fontSize="14px"
-                      color="bluefrance.500"
-                      fontWeight={400}
-                      background="none"
-                      alignItems="baseline"
-                      height="1.5rem"
-                      sx={{
-                        _hover: {
-                          background: "none",
-                          textDecoration: "none",
-                        },
-                        _active: {
-                          background: "none",
-                        },
-                      }}
-                      onClick={onModalClose}
-                    >
-                      Fermer <CloseIcon w={2} h={2} ml={2} />
-                    </Button>
-                  </ModalHeader>
-                  <form onSubmit={formik.handleSubmit}>
-                    {with_str(sendingState).amongst(["not_sent", "currently_sending"]) && (
-                      <CandidatureLbaModalBody formik={formik} sendingState={sendingState} company={item?.company?.name} item={item} kind={kind} />
-                    )}
-                    {with_str(sendingState).amongst(["ok_sent"]) && <CandidatureLbaWorked kind={kind} email={formik.values.email} company={item?.company?.name} />}
-                    {!with_str(sendingState).amongst(["not_sent", "ok_sent", "currently_sending"]) && <CandidatureLbaFailed sendingState={sendingState} />}
-                  </form>
-                </ModalContent>
-              </Modal>
-            </Box>
-            {item?.company?.mandataire && (
-              <Box display="flex" alignItems="center" my={4}>
-                <Text as="span">
-                  <Image src="/images/icons/small_info.svg" alt="" />
-                </Text>
-                <Text as="span" ml={2} fontSize="12px" fontStyle="italic">
-                  Votre candidature sera envoyée au centre de formation en charge du recrutement pour le compte de l’entreprise.{" "}
-                </Text>
+          (kind !== "matcha" || item.job.status === "Active") && (
+            <>
+              <Box my={4}>
+                <Button
+                  ml={1}
+                  padding="8px 24px"
+                  color="white"
+                  background="bluefrance.500"
+                  borderRadius="8px"
+                  sx={{
+                    textDecoration: "none",
+                    _hover: {
+                      background: "bluesoft.500",
+                    },
+                  }}
+                  onClick={openApplicationForm}
+                  aria-label="Ouvrir le formulaire d'envoi de candidature spontanée"
+                >
+                  J&apos;envoie ma candidature{with_str(kind).amongst(["lbb", "lba"]) ? " spontanée" : ""}
+                </Button>
+                <Modal isOpen={isOpen} onClose={onModalClose} closeOnOverlayClick={false} size="3xl">
+                  <ModalOverlay />
+                  <ModalContent>
+                    <ModalHeader align="right" paddingTop="8px" paddingBottom="0">
+                      <Button
+                        fontSize="14px"
+                        color="bluefrance.500"
+                        fontWeight={400}
+                        background="none"
+                        alignItems="baseline"
+                        height="1.5rem"
+                        sx={{
+                          _hover: {
+                            background: "none",
+                            textDecoration: "none",
+                          },
+                          _active: {
+                            background: "none",
+                          },
+                        }}
+                        onClick={onModalClose}
+                      >
+                        Fermer <CloseIcon w={2} h={2} ml={2} />
+                      </Button>
+                    </ModalHeader>
+                    <form onSubmit={formik.handleSubmit}>
+                      {with_str(sendingState).amongst(["not_sent", "currently_sending"]) && (
+                        <CandidatureLbaModalBody formik={formik} sendingState={sendingState} company={item?.company?.name} item={item} kind={kind} />
+                      )}
+                      {with_str(sendingState).amongst(["ok_sent"]) && <CandidatureLbaWorked kind={kind} email={formik.values.email} company={item?.company?.name} />}
+                      {!with_str(sendingState).amongst(["not_sent", "ok_sent", "currently_sending"]) && <CandidatureLbaFailed sendingState={sendingState} />}
+                    </form>
+                  </ModalContent>
+                </Modal>
               </Box>
-            )}
-          </>
+              {item?.company?.mandataire && (
+                <Box display="flex" alignItems="center" my={4}>
+                  <Text as="span">
+                    <Image src="/images/icons/small_info.svg" alt="" />
+                  </Text>
+                  <Text as="span" ml={2} fontSize="12px" fontStyle="italic">
+                    Votre candidature sera envoyée au centre de formation en charge du recrutement pour le compte de l’entreprise.{" "}
+                  </Text>
+                </Box>
+              )}
+            </>
+          )
         )}
       </Box>
     </Box>
