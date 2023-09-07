@@ -2,15 +2,9 @@ module.exports = {
   env: {
     es2022: true,
     node: true,
+    jest: true,
   },
-  extends: [
-    "eslint:recommended",
-    "plugin:@typescript-eslint/recommended",
-    "plugin:import/recommended",
-    "plugin:import/warnings",
-    "plugin:import/typescript",
-    "prettier",
-  ],
+  extends: ["eslint:recommended", "plugin:@typescript-eslint/recommended", "plugin:import/recommended", "plugin:import/warnings", "plugin:import/typescript", "prettier"],
   parser: "@typescript-eslint/parser",
   parserOptions: {
     ecmaVersion: 2022,
@@ -82,4 +76,4 @@ module.exports = {
       "@typescript-eslint/parser": [".ts", ".tsx"],
     },
   },
-};
+}
