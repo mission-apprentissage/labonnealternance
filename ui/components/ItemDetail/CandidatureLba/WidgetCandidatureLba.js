@@ -11,17 +11,17 @@ import hasAlreadySubmittedCandidature from "./services/hasAlreadySubmittedCandid
 import submitCandidature from "./services/submitCandidature"
 import useLocalStorage from "./services/useLocalStorage"
 
-const WidgetCandidatureLba = (props) => {
+const WidgetCandidatureLba = ({ item, caller, fakeLocalStorage }) => {
   const [sendingState, setSendingState] = useState("not_sent")
-  const kind = props?.item?.ideaType || ""
+  const kind = item?.ideaType || ""
 
-  const uniqId = (kind, item) => {
+  const uniqId = () => {
     return `candidaturespontanee-${kind}-${getItemId(item)}`
   }
 
-  const actualLocalStorage = props.fakeLocalStorage || window.localStorage || {}
+  const actualLocalStorage = fakeLocalStorage || window.localStorage || {}
 
-  const [applied, setApplied] = useLocalStorage(uniqId(kind, props.item), null, actualLocalStorage)
+  const [applied, setApplied] = useLocalStorage(uniqId(), null, actualLocalStorage)
 
   const getAPostuleMessage = () => {
     return `
@@ -35,8 +35,8 @@ const WidgetCandidatureLba = (props) => {
   useEffect(() => {
     // HACK HERE : reapply setApplied to currentUniqId to re-detect
     // if user already applied each time the user swap to another item.
-    if (props.item) {
-      let currentUniqId = actualLocalStorage.getItem(uniqId(kind, props.item))
+    if (item) {
+      let currentUniqId = actualLocalStorage.getItem(uniqId())
       if (currentUniqId) {
         setApplied(currentUniqId)
       } else {
@@ -44,7 +44,7 @@ const WidgetCandidatureLba = (props) => {
         setApplied(null)
       }
     }
-  }, [props?.item])
+  }, [item])
 
   const formik = useFormik({
     initialValues: getInitialSchemaValues(),
@@ -53,8 +53,8 @@ const WidgetCandidatureLba = (props) => {
       let success = await submitCandidature({
         applicantValues,
         setSendingState,
-        item: props.item,
-        caller: props.caller,
+        item,
+        caller,
       })
       if (success) {
         setApplied(Date.now().toString())
@@ -69,10 +69,10 @@ const WidgetCandidatureLba = (props) => {
       ) : (
         <form onSubmit={formik.handleSubmit}>
           {with_str(sendingState).amongst(["not_sent", "currently_sending"]) && (
-            <CandidatureLbaModalBody formik={formik} sendingState={sendingState} company={props?.item?.company?.name} item={props?.item} kind={kind} fromWidget={true} />
+            <CandidatureLbaModalBody formik={formik} sendingState={sendingState} company={item?.company?.name} item={item} kind={kind} fromWidget={true} />
           )}
 
-          {with_str(sendingState).amongst(["ok_sent"]) && <CandidatureLbaWorked kind={kind} email={formik.values.email} company={props?.item?.company?.name} />}
+          {with_str(sendingState).amongst(["ok_sent"]) && <CandidatureLbaWorked kind={kind} email={formik.values.email} company={item?.company?.name} />}
 
           {!with_str(sendingState).amongst(["not_sent", "ok_sent", "currently_sending"]) && <CandidatureLbaFailed sendingState={sendingState} />}
         </form>
