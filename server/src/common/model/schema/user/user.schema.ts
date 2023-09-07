@@ -42,7 +42,7 @@ export const userSchema = new Schema<IUser>({
   role: {
     type: String,
     default: null,
-    description: "candidat | cfa | administrator",
+    description: "candidat | administrator",
   },
   last_action_date: {
     type: Date,
