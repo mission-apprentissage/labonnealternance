@@ -11,25 +11,23 @@ const ResultListsLoading = ({ allJobSearchError, trainingSearchError, isTraining
   let jobLoading = ""
 
   if (scopeContext.isJob && isJobSearchLoading) {
-      jobLoading = (
-        <Flex p={5} color="pinksoft.600">
-          <Text mr={4}>Recherche des entreprises en cours</Text>
-          <Spinner thickness="4px" />
-        </Flex>
-      )
-    }
+    jobLoading = (
+      <Flex p={5} color="pinksoft.600">
+        <Text mr={4}>Recherche des entreprises en cours</Text>
+        <Spinner thickness="4px" />
+      </Flex>
+    )
   }
 
   let trainingLoading = ""
 
   if (scopeContext.isTraining && isTrainingSearchLoading) {
-      trainingLoading = (
-        <Flex p={5} color="greensoft.500">
-          <Text mr={4}>Recherche des formations en cours</Text>
-          <Spinner thickness="4px" />
-        </Flex>
-      )
-    }
+    trainingLoading = (
+      <Flex p={5} color="greensoft.500">
+        <Text mr={4}>Recherche des formations en cours</Text>
+        <Spinner thickness="4px" />
+      </Flex>
+    )
   }
 
   const resultListProperties = {
