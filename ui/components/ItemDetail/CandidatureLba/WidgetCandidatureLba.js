@@ -19,7 +19,7 @@ const WidgetCandidatureLba = ({ item, caller, fakeLocalStorage }) => {
 
   const actualLocalStorage = fakeLocalStorage || window.localStorage || {}
 
-  const [applied, setApplied] = useLocalStorage(uniqId(), null, actualLocalStorage)
+  const [applied, setApplied] = useLocalStorage(uniqId, null, actualLocalStorage)
 
   const getAPostuleMessage = () => {
     return `
