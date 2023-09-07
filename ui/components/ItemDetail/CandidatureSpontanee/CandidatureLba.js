@@ -13,50 +13,50 @@ import hasAlreadySubmittedCandidature from "./services/hasAlreadySubmittedCandid
 import submitCandidature from "./services/submitCandidature"
 import useLocalStorage from "./services/useLocalStorage"
 
-const CandidatureSpontanee = (props) => {
+const CandidatureLba = ({ item, fakeLocalStorage }) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [sendingState, setSendingState] = useState("not_sent")
-  const kind = props?.item?.ideaType || ""
+  const kind = item?.ideaType || ""
 
   const onModalClose = () => {
     setSendingState("not_sent")
     onClose()
   }
 
-  const uniqId = (kind, item) => {
+  const uniqId = () => {
     return `candidaturespontanee-${kind}-${getItemId(item)}`
   }
 
-  const actualLocalStorage = props.fakeLocalStorage || window.localStorage || {}
+  const actualLocalStorage = fakeLocalStorage || window.localStorage || {}
 
   const openApplicationForm = () => {
     onOpen()
-    SendPlausibleEvent(props.item.ideaType === "matcha" ? "Clic Postuler - Fiche entreprise Offre LBA" : "Clic Postuler - Fiche entreprise Algo", {
-      info_fiche: getItemId(props.item),
+    SendPlausibleEvent(kind === "matcha" ? "Clic Postuler - Fiche entreprise Offre LBA" : "Clic Postuler - Fiche entreprise Algo", {
+      info_fiche: getItemId(item),
     })
   }
 
-  const [applied, setApplied] = useLocalStorage(uniqId(kind, props.item), null, actualLocalStorage)
+  const [applied, setApplied] = useLocalStorage(uniqId(), null, actualLocalStorage)
 
   useEffect(() => {
     onModalClose()
 
     // HACK HERE : reapply setApplied to currentUniqId to re-detect
     // if user already applied each time the user swap to another item.
-    let currentUniqId = actualLocalStorage.getItem(uniqId(kind, props.item))
+    let currentUniqId = actualLocalStorage.getItem(uniqId())
     if (currentUniqId) {
       setApplied(currentUniqId)
     } else {
       // setApplied(null) is MANDATORY to avoid "already-applied message" when user swaps.
       setApplied(null)
     }
-  }, [props?.item])
+  }, [item])
 
   const formik = useFormik({
     initialValues: getInitialSchemaValues(),
     validationSchema: getValidationSchema(kind),
     onSubmit: async (applicantValues) => {
-      let success = await submitCandidature({ applicantValues, setSendingState, item: props.item })
+      let success = await submitCandidature({ applicantValues, setSendingState, item })
       if (success) {
         setApplied(Date.now().toString())
       }
@@ -122,9 +122,9 @@ const CandidatureSpontanee = (props) => {
                   </ModalHeader>
                   <form onSubmit={formik.handleSubmit}>
                     {with_str(sendingState).amongst(["not_sent", "currently_sending"]) && (
-                      <CandidatureSpontaneeNominalBodyFooter formik={formik} sendingState={sendingState} company={props?.item?.company?.name} item={props?.item} kind={kind} />
+                      <CandidatureSpontaneeNominalBodyFooter formik={formik} sendingState={sendingState} company={item?.company?.name} item={item} kind={kind} />
                     )}
-                    {with_str(sendingState).amongst(["ok_sent"]) && <CandidatureSpontaneeWorked kind={kind} email={formik.values.email} company={props?.item?.company?.name} />}
+                    {with_str(sendingState).amongst(["ok_sent"]) && <CandidatureSpontaneeWorked kind={kind} email={formik.values.email} company={item?.company?.name} />}
                     {!with_str(sendingState).amongst(["not_sent", "ok_sent", "currently_sending"]) && <CandidatureSpontaneeFailed sendingState={sendingState} />}
                   </form>
                 </ModalContent>
@@ -132,7 +132,7 @@ const CandidatureSpontanee = (props) => {
             </>
           )}
         </Box>
-        {props?.item?.company?.mandataire && (
+        {item?.company?.mandataire && (
           <Box display="flex" alignItems="center" my={4}>
             <Text as="span">
               <Image src="/images/icons/small_info.svg" alt="" />
@@ -147,4 +147,4 @@ const CandidatureSpontanee = (props) => {
   )
 }
 
-export default CandidatureSpontanee
+export default CandidatureLba
