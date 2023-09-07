@@ -24,7 +24,10 @@
     "coverage": "nyc --temp-dir .coverage/.nyc_output --report-dir .coverage --reporter=lcov --reporter=html yarn test",
     "lint": "eslint src/ tests/",
     "lint:fix": "eslint src/ tests/ --fix",
-    "seed:reference": "dotenv ts-node-esm src/jobs/seed/candidat.seed.ts"
+    "seed:reference": "dotenv ts-node-esm src/jobs/seed/candidat.seed.ts",
+    "dev:up": "tsup --watch",
+    "build:up": "tsup",
+    "start:up": "node dist/index.js"
   },
   "dependencies": {
     "@elastic/elasticsearch": "7.9.1",
@@ -136,6 +139,7 @@
     "randexp": "0.5.3",
     "rimraf": "3.0.2",
     "ts-node": "10.9.1",
+    "tsup": "^7.2.0",
     "typescript": "^5.2.2"
   }
 }
