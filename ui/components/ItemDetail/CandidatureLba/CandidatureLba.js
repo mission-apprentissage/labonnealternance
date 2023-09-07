@@ -23,9 +23,7 @@ const CandidatureLba = ({ item, fakeLocalStorage }) => {
     onClose()
   }
 
-  const uniqId = () => {
-    return `candidaturespontanee-${kind}-${getItemId(item)}`
-  }
+  const uniqId = `candidaturespontanee-${kind}-${getItemId(item)}`
 
   const actualLocalStorage = fakeLocalStorage || window.localStorage || {}
 
