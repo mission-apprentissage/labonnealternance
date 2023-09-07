@@ -1,6 +1,6 @@
-import React from "react"
 import { useRouter } from "next/router"
 import { usePlausible } from "next-plausible"
+import React from "react"
 
 const PageTracker = (props) => {
   const router = useRouter()

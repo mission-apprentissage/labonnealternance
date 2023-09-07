@@ -1,14 +1,15 @@
-import React, { useContext } from "react"
 
-import { useRouter } from "next/router"
 
-import { DisplayContext } from "../../context/DisplayContextProvider"
-import { ParameterContext } from "../../context/ParameterContextProvider"
 
 import { Box } from "@chakra-ui/react"
 import { pick } from "lodash"
+import { useRouter } from "next/router"
+import React, { useContext } from "react"
+
 import SearchForm from "../../components/SearchForTrainingsAndJobs/components/SearchForm"
 import WidgetHeader from "../../components/WidgetHeader/WidgetHeader"
+import { DisplayContext } from "../../context/DisplayContextProvider"
+import { ParameterContext } from "../../context/ParameterContextProvider"
 
 const StartForm = () => {
   const router = useRouter()

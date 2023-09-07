@@ -1,5 +1,5 @@
 import { Image, Text } from "@chakra-ui/react"
-import bookIcon from "public/images/book.svg"
+import bookIcon from "../../public/images/icons/book.svg"
 import React from "react"
 
 const tagProperties = {

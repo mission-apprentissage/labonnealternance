@@ -1,10 +1,11 @@
+import { Box, Container, Divider, SimpleGrid, Tab, TabList, TabPanel, TabPanels, Tabs, Text } from "@chakra-ui/react"
 import React from "react"
+
 import Breadcrumb from "../components/breadcrumb"
+import Footer from "../components/footer"
 import Navigation from "../components/navigation"
 import ScrollToTop from "../components/ScrollToTop"
 
-import { Box, Container, Divider, SimpleGrid, Tab, TabList, TabPanel, TabPanels, Tabs, Text } from "@chakra-ui/react"
-import Footer from "../components/footer"
 
 const metabaseIframeOnLoad = (ev) => {
   try {

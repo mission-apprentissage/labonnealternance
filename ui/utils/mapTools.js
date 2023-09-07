@@ -4,8 +4,10 @@ import * as mapboxgl from "mapbox-gl"
 import "mapbox-gl/dist/mapbox-gl.css"
 import React from "react"
 import { createRoot } from "react-dom/client"
+
 import { MapPopup } from "../components/SearchForTrainingsAndJobs/components"
 import { fetchAddresses } from "../services/baseAdresse"
+
 import { isArea } from "./isArea"
 import { getItemElement, scrollToElementInContainer } from "./tools"
 

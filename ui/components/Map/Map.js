@@ -5,9 +5,11 @@ import React, { useContext, useEffect, useRef, useState } from "react"
 import { currentPage, currentSearch, setCurrentPage } from "utils/currentPage.js"
 import { initializeMap, isMapInitialized, map, setSelectedMarker } from "utils/mapTools"
 import pushHistory from "utils/pushHistory"
+
 import { DisplayContext } from "../../context/DisplayContextProvider"
 import { SearchResultContext } from "../../context/SearchResultContextProvider"
 import { fetchAddressFromCoordinates } from "../../services/baseAdresse"
+
 import MapSearchButton from "./MapSearchButton"
 
 let mapPosition = {

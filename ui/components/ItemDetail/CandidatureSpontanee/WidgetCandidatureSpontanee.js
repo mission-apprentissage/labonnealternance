@@ -1,8 +1,10 @@
 import { Box, Container } from "@chakra-ui/react"
 import { useFormik } from "formik"
 import React, { useEffect, useState } from "react"
+
 import { getItemId } from "../../../utils/getItemId"
 import { string_wrapper as with_str } from "../../../utils/wrapper_utils"
+
 import CandidatureSpontaneeFailed from "./CandidatureSpontaneeFailed"
 import CandidatureSpontaneeNominalBodyFooter from "./CandidatureSpontaneeNominalBodyFooter"
 import CandidatureSpontaneeWorked from "./CandidatureSpontaneeWorked"

@@ -1,8 +1,8 @@
+import { Box, Button, Image, Link } from "@chakra-ui/react"
 import { findIndex } from "lodash"
 import React from "react"
 import { useSwipeable } from "react-swipeable"
 
-import { Box, Button, Image, Link } from "@chakra-ui/react"
 import chevronLeft from "../../../public/images/chevronleft.svg"
 import chevronRight from "../../../public/images/chevronright.svg"
 import chevronClose from "../../../public/images/close.svg"

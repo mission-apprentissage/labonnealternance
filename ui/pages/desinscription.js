@@ -1,15 +1,14 @@
 import { Box, Container } from "@chakra-ui/react"
+import { NextSeo } from "next-seo"
 import React, { useState } from "react"
+
 import Breadcrumb from "../components/breadcrumb"
-import AlgoRecruiter from "../components/HomeComponents/AlgoRecruiter"
 import FormulaireDesinscription from "../components/DesinscriptionEntreprise/FormulaireDesinscription"
 import SuccesDesinscription from "../components/DesinscriptionEntreprise/SuccesDesinscription"
+import Footer from "../components/footer"
+import AlgoRecruiter from "../components/HomeComponents/AlgoRecruiter"
 import Navigation from "../components/navigation"
 import ScrollToTop from "../components/ScrollToTop"
-
-import { NextSeo } from "next-seo"
-
-import Footer from "../components/footer"
 
 const DesinscriptionRecruteur = () => {
   const [isSuccess, setIsSuccess] = useState(false)

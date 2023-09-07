@@ -1,4 +1,4 @@
-import toggleCandidature from "./toggleCandidature.js"
+import toggleCandidature from "./toggleCandidature"
 
 describe("toggleCandidature", () => {
   it("By default, set the sending state do default, and reverse modal value", () => {

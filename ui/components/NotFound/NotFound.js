@@ -1,6 +1,7 @@
 import { Box, Flex, Grid, GridItem, Image, Link, Text } from "@chakra-ui/react"
 import lostCat from "public/images/lostCat.svg"
 import React from "react"
+
 import Footer from "../footer"
 
 const NotFound = () => (

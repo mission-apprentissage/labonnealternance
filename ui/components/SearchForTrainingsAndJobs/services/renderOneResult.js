@@ -1,5 +1,6 @@
 import { Box } from "@chakra-ui/react"
 import React from "react"
+
 import Job from "../../../components/ItemDetail/Job"
 import LbbCompany from "../../../components/ItemDetail/LbbCompany"
 import Training from "../../../components/ItemDetail/Training"

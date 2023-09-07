@@ -1,7 +1,7 @@
-import React from "react"
-import NextLink from "next/link"
-import { Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, Container, Link } from "@chakra-ui/react"
 import { ChevronRightIcon } from "@chakra-ui/icons"
+import { Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, Container, Link } from "@chakra-ui/react"
+import NextLink from "next/link"
+import React from "react"
 
 const BreadcrumbLinks = (props) => {
   return props.items.map((item, index) => {

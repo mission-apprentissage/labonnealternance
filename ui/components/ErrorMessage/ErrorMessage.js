@@ -1,5 +1,6 @@
 import { Box, Flex, Image, Text } from "@chakra-ui/react"
 import React from "react"
+
 import errorAlertIcon from "../../public/images/icons/errorAlert.svg"
 import searchingPeople from "../../public/images/icons/searchingPeople.svg"
 

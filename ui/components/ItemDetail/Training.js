@@ -1,5 +1,6 @@
 import { Box, Button, Flex, Image, Link, Text } from "@chakra-ui/react"
 import React, { useContext, useState } from "react"
+
 import { DisplayContext } from "../../context/DisplayContextProvider"
 import { ScopeContext } from "../../context/ScopeContext"
 import { SearchResultContext } from "../../context/SearchResultContextProvider"
@@ -8,6 +9,7 @@ import { fetchAddresses } from "../../services/baseAdresse"
 import { getItemQueryParameters } from "../../utils/getItemId"
 import { getSearchQueryParameters } from "../../utils/getSearchParameters"
 import { setSelectedMarker } from "../../utils/mapTools"
+
 import TagCfaDEntreprise from "./TagCfaDEntreprise"
 import TagFormation from "./TagFormation"
 

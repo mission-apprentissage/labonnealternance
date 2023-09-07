@@ -1,7 +1,8 @@
 import { Flex, Image, Text } from "@chakra-ui/react"
 import React from "react"
-import { getDaysSinceDate } from "../../../utils/dateUtils"
+
 import eclair from "../../../public/images/eclair.svg"
+import { getDaysSinceDate } from "../../../utils/dateUtils"
 
 export default function getJobPublishedTimeAndApplications({ item }) {
   let res = (

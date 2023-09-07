@@ -1,14 +1,12 @@
+import { Box, Container, Divider, Grid, GridItem, Text } from "@chakra-ui/react"
 import { NextSeo } from "next-seo"
 import React from "react"
 import { NotionRenderer } from "react-notion-x"
+
 import Breadcrumb from "../components/breadcrumb"
+import Footer from "../components/footer"
 import Navigation from "../components/navigation"
 import ScrollToTop from "../components/ScrollToTop"
-
-import Footer from "../components/footer"
-
-import { Box, Container, Divider, Grid, GridItem, Text } from "@chakra-ui/react"
-
 import { fetchNotionPage } from "../services/fetchNotionPage"
 
 export async function getStaticProps() {

@@ -2,6 +2,7 @@ import { render } from "@testing-library/react"
 import { Formik } from "formik"
 import { noop } from "lodash/noop"
 import React from "react"
+
 import AutoCompleteField from "./AutoCompleteField"
 
 describe("AutoCompleteField", () => {

@@ -1,5 +1,5 @@
-import React from "react"
 import { Box, Image, Text, Grid, GridItem, Link } from "@chakra-ui/react"
+import React from "react"
 
 const FacilitezRDVA = () => {
   return (

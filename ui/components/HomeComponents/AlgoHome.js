@@ -1,7 +1,8 @@
 import { Container, Divider, Grid, GridItem, Image, ListItem, Text, UnorderedList } from "@chakra-ui/react"
 import React from "react"
-import TagCandidatureSpontanee from "../../components/ItemDetail/TagCandidatureSpontanee.js"
-import TagOffreEmploi from "../../components/ItemDetail/TagOffreEmploi.js"
+
+import TagCandidatureSpontanee from "../../components/ItemDetail/TagCandidatureSpontanee"
+import TagOffreEmploi from "../../components/ItemDetail/TagOffreEmploi"
 
 const AlgoHome = () => {
   return (

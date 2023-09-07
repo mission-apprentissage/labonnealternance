@@ -1,5 +1,5 @@
-import { isNonEmptyString } from "../../../../utils/strutils"
 import { amongst } from "../../../../utils/arrayutils"
+import { isNonEmptyString } from "../../../../utils/strutils"
 
 export default function isCandidatureSpontanee(item) {
   const kind = item?.ideaType

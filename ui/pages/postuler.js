@@ -1,6 +1,7 @@
-import React from "react"
 import Head from "next/head"
 import { NextSeo } from "next-seo"
+import React from "react"
+
 import WidgetPostuler from "../components/ItemDetail/CandidatureSpontanee/WidgetPostuler"
 
 const Postuler = () => {

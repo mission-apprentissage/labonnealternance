@@ -1,4 +1,5 @@
 import { Box } from "@chakra-ui/react"
+
 import { amongst } from "../../../utils/arrayutils"
 import TagCandidatureSpontanee from "../TagCandidatureSpontanee"
 import TagCfaDEntreprise from "../TagCfaDEntreprise"

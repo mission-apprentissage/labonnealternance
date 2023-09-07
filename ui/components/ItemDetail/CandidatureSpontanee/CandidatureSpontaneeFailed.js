@@ -1,5 +1,6 @@
 import { Box, Container, Flex, Image, Text } from "@chakra-ui/react"
 import React from "react"
+
 import error2 from "../../../public/images/icons/input_value_error.svg"
 
 const sendingStateValues = {

@@ -1,6 +1,6 @@
+import { Box, Button, ChakraProvider, Flex, Image, Text, VStack } from "@chakra-ui/react"
 import React, { useEffect } from "react"
 
-import { Box, Button, ChakraProvider, Flex, Image, Text, VStack } from "@chakra-ui/react"
 import { ErrorMessage } from "../.."
 import bookIcon from "../../../public/images/icons/book.svg"
 import jobIcon from "../../../public/images/icons/job.svg"

@@ -1,12 +1,8 @@
-import React, { useContext, useEffect, useState } from "react"
-
+import { Box, Flex } from "@chakra-ui/react"
+import { ScopeContext } from "context/ScopeContext"
 import { useRouter } from "next/router"
-
-import pushHistory from "utils/pushHistory"
-import { loadItem } from "../SearchForTrainingsAndJobs/services/loadItem"
-import { searchForJobsFunction } from "../SearchForTrainingsAndJobs/services/searchForJobs"
-import { searchForTrainingsFunction } from "../SearchForTrainingsAndJobs/services/searchForTrainings"
-
+import React, { useContext, useEffect, useState } from "react"
+import { currentPage, currentSearch, setCurrentPage, setCurrentSearch } from "utils/currentPage"
 import {
   closeMapPopups,
   computeMissingPositionAndDistance,
@@ -22,17 +18,18 @@ import {
   setSelectedMarker,
   setTrainingMarkers,
 } from "utils/mapTools"
+import pushHistory from "utils/pushHistory"
 
-import { ScopeContext } from "context/ScopeContext"
 import { DisplayContext } from "../../context/DisplayContextProvider"
 import { ParameterContext } from "../../context/ParameterContextProvider"
 import { SearchResultContext } from "../../context/SearchResultContextProvider"
-
-import { Box, Flex } from "@chakra-ui/react"
-import { currentPage, currentSearch, setCurrentPage, setCurrentSearch } from "utils/currentPage"
 import updateUiFromHistory from "../../services/updateUiFromHistory"
 import Map from "../Map"
+import { loadItem } from "../SearchForTrainingsAndJobs/services/loadItem"
+import { searchForJobsFunction } from "../SearchForTrainingsAndJobs/services/searchForJobs"
+import { searchForTrainingsFunction } from "../SearchForTrainingsAndJobs/services/searchForTrainings"
 import { InitWidgetSearchParameters, WidgetHeader } from "../WidgetHeader"
+
 import { ChoiceColumn, MapListSwitchButton } from "./components"
 
 const SearchForTrainingsAndJobs = () => {

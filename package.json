@@ -32,6 +32,7 @@
     "services:clean": "yarn services:stop; docker system prune --volumes",
     "seed:update": "./.bin/mna-tdb seed:update",
     "lint": "eslint --ignore-path .gitignore --cache .",
+    "lint:fix": "eslint --ignore-path .gitignore --fix .",
     "prettier:fix": "prettier --write  -u .",
     "prettier:check": "prettier --check -u .",
     "release": "semantic-release",

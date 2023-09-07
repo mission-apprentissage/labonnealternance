@@ -23,7 +23,7 @@ const commonControls = {
     .required("⚠ Le téléphone est obligatoire"),
 }
 
-export function getValidationSchema(actualKind) {
+export function getValidationSchema() {
   return Yup.object({
     ...commonControls,
   })

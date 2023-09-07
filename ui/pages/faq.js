@@ -2,11 +2,11 @@ import { Box, Container, Divider, Grid, GridItem, Tab, TabList, TabPanel, TabPan
 import { NextSeo } from "next-seo"
 import React from "react"
 import { NotionRenderer } from "react-notion-x"
+
 import Breadcrumb from "../components/breadcrumb"
 import Footer from "../components/footer"
 import Navigation from "../components/navigation"
 import ScrollToTop from "../components/ScrollToTop"
-
 import { fetchNotionPage } from "../services/fetchNotionPage"
 
 export async function getStaticProps() {

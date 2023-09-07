@@ -1,10 +1,12 @@
 import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Flex, Image, Link, Text } from "@chakra-ui/react"
 import React, { useEffect } from "react"
+
 import { DisplayContext } from "../../context/DisplayContextProvider"
 import { notifyLbaJobDetailView } from "../../services/notifyLbaJobDetailView"
 import { SendPlausibleEvent } from "../../utils/plausible"
 import { formatDate } from "../../utils/strutils"
+
 import MatchaAcces from "./MatchaComponents/MatchaAcces"
 import MatchaCompetences from "./MatchaComponents/MatchaCompetences"
 import MatchaDescription from "./MatchaComponents/MatchaDescription"
@@ -13,7 +15,7 @@ const getContractTypes = (contractTypes) => {
   return contractTypes instanceof Array ? contractTypes.join(", ") : contractTypes
 }
 
-const MatchaDetail = ({ job, seeInfo, setSeeInfo }) => {
+const MatchaDetail = ({ job }) => {
   useEffect(() => {
     // S'assurer que l'utilisateur voit bien le haut de la fiche au départ
     document.getElementsByClassName("choiceCol")[0].scrollTo(0, 0)

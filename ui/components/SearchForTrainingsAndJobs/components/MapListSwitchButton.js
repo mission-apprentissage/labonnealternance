@@ -1,5 +1,6 @@
 import { Box, Button, Flex, Image, Text } from "@chakra-ui/react"
 import React from "react"
+
 import { DisplayContext } from "../../../context/DisplayContextProvider"
 import { SearchResultContext } from "../../../context/SearchResultContextProvider"
 import toggleCard from "../../../public/images/icons/toggleCard.svg"

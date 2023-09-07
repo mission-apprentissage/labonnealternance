@@ -7,7 +7,7 @@ describe("onInputValueChangeService", () => {
     let items = [{ label: "plomberie" }, { label: "agriculture" }, { label: "ploermel" }]
     let setInputItems = jest.fn()
 
-    const res = await onInputValueChangeService({ inputValue, inputItems, items, setInputItems })
+    await onInputValueChangeService({ inputValue, inputItems, items, setInputItems })
 
     expect(setInputItems).toHaveBeenCalledWith([{ label: "plomberie" }, { label: "ploermel" }])
   })
@@ -18,7 +18,7 @@ describe("onInputValueChangeService", () => {
     let items = [{ label: "PLomberie" }, { label: "AGriculture" }, { label: "Ploermel" }]
     let setInputItems = jest.fn()
 
-    const res = await onInputValueChangeService({ inputValue, inputItems, items, setInputItems })
+    await onInputValueChangeService({ inputValue, inputItems, items, setInputItems })
 
     expect(setInputItems).toHaveBeenCalledWith([{ label: "PLomberie" }, { label: "Ploermel" }])
   })

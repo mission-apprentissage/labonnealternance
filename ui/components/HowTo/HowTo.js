@@ -1,5 +1,6 @@
 import { Box, Container, Grid, GridItem, Image, Show, Text } from "@chakra-ui/react"
 import React from "react"
+
 import howto1 from "../../public/images/howto1.svg"
 import howto2 from "../../public/images/howto2.svg"
 import howto3 from "../../public/images/howto3.svg"

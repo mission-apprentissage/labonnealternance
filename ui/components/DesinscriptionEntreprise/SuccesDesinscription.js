@@ -1,5 +1,6 @@
-import { Box, Flex, GridItem, Image, Link, ListItem, SimpleGrid, Text, UnorderedList } from "@chakra-ui/react"
 import { ExternalLinkIcon } from "@chakra-ui/icons"
+import { Box, Flex, GridItem, Image, Link, ListItem, SimpleGrid, Text, UnorderedList } from "@chakra-ui/react"
+
 import { baseUrl } from "../../config/config"
 
 const SuccesDesinscription = () => (

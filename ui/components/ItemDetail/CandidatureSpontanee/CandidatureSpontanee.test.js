@@ -1,8 +1,9 @@
-import React from "react"
-import { render, screen, fireEvent, wait, waitFor } from "@testing-library/react"
-import CandidatureSpontanee from "./CandidatureSpontanee"
-import nock from "nock"
+import { render, screen, fireEvent, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
+import nock from "nock"
+import React from "react"
+
+import CandidatureSpontanee from "./CandidatureSpontanee"
 
 describe("CandidatureSpontanee", () => {
   function buildFakeStorage() {

@@ -1,12 +1,8 @@
-import React from "react"
-
 import { AddIcon, ExternalLinkIcon, MinusIcon } from "@chakra-ui/icons"
 import { Accordion, AccordionButton, AccordionItem, AccordionPanel, Box, Link } from "@chakra-ui/react"
+import React from "react"
 
 const CandidatureSpontaneeExplanation = (props) => {
-  // Collapse Open state
-  const [isOpen, setIsOpen] = React.useState(false)
-
   const getTitle = () => {
     let res = ""
     if (props.about == "what") {

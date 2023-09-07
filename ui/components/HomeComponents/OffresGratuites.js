@@ -1,7 +1,8 @@
+import { Box, Image, Link, SimpleGrid, Text } from "@chakra-ui/react"
 import React from "react"
+
 import plateformesjeunesImage from "../../public/images/home_pics/illu-plateformesjeunes.svg"
 
-import { Box, Image, Link, SimpleGrid, Text } from "@chakra-ui/react"
 
 const OffresGratuites = () => {
   return (

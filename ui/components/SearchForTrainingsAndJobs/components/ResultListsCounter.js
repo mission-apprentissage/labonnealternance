@@ -1,6 +1,8 @@
 import { Box, Flex, Spinner, Text } from "@chakra-ui/react"
 import React from "react"
+
 import { getJobCount, getPartnerJobCount } from "../services/utils"
+
 import FilterButton from "./FilterButton"
 
 const ResultListsCounter = (props) => {

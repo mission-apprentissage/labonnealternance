@@ -1,9 +1,9 @@
-import { NextSeo } from "next-seo"
-import React from "react"
-import Breadcrumb from "../components/breadcrumb"
-import Navigation from "../components/navigation"
 
 import { Box, Container, Text } from "@chakra-ui/react"
+import { NextSeo } from "next-seo"
+import React from "react"
+
+import Breadcrumb from "../components/breadcrumb"
 import Footer from "../components/footer"
 import BientotCFA from "../components/HomeComponents/BientotCFA"
 import CFA from "../components/HomeComponents/CFA"
@@ -14,6 +14,7 @@ import GerezEntreprise from "../components/HomeComponents/GerezEntreprise"
 import OffresGratuites from "../components/HomeComponents/OffresGratuites"
 import PostezVotreOffreAlternance from "../components/HomeComponents/PostezVotreOffreAlternance"
 import ReseauEntreprise from "../components/HomeComponents/ReseauEntreprise"
+import Navigation from "../components/navigation"
 
 const Organisme = () => {
   return (

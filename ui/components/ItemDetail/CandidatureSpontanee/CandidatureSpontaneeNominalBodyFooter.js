@@ -1,7 +1,9 @@
 import { Box, Button, Container, Flex, FormControl, FormErrorMessage, FormLabel, Input, Link, ModalBody, ModalFooter, Text } from "@chakra-ui/react"
 import emailMisspelled, { top100 } from "email-misspelled"
 import React, { useState } from "react"
+
 import { testingParameters } from "../../../utils/testingParameters"
+
 import CandidatureSpontaneeFileDropzone from "./CandidatureSpontaneeFileDropzone"
 import CandidatureSpontaneeMandataireMessage from "./CandidatureSpontaneeMandataireMessage"
 import CandidatureSpontaneeMessage from "./CandidatureSpontaneeMessage"

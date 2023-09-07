@@ -1,15 +1,17 @@
 import { Box, Button, Flex, Image, Link, Text } from "@chakra-ui/react"
 import { get } from "lodash"
 import React, { useState } from "react"
+
 import { DisplayContext } from "../../context/DisplayContextProvider"
 import { SearchResultContext } from "../../context/SearchResultContextProvider"
+import eclair from "../../public/images/eclair.svg"
 import extendedSearchPin from "../../public/images/icons/trainingPin.svg"
 import { fetchAddresses } from "../../services/baseAdresse"
 import { getItemQueryParameters } from "../../utils/getItemId"
 import { getSearchQueryParameters } from "../../utils/getSearchParameters"
 import { setSelectedMarker } from "../../utils/mapTools"
+
 import TagCandidatureSpontanee from "./TagCandidatureSpontanee"
-import eclair from "../../public/images/eclair.svg"
 
 const LbbCompany = ({ company, handleSelectItem, showTextOnly, searchForTrainingsOnNewCenter }) => {
   const { selectedMapPopupItem } = React.useContext(SearchResultContext)
@@ -70,7 +72,7 @@ const LbbCompany = ({ company, handleSelectItem, showTextOnly, searchForTraining
     setSelectedMarker(company)
   }
 
-  const dimItemOnMap = (e) => {
+  const dimItemOnMap = () => {
     if (allowDim) {
       setSelectedMarker(null)
     } else {

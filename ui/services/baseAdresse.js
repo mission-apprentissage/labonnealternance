@@ -1,5 +1,7 @@
 import axios from "axios"
+
 import memoize from "../utils/memoize"
+
 import { simplifiedItems } from "./arrondissements"
 
 let cancelToken

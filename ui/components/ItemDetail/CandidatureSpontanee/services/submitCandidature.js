@@ -1,5 +1,5 @@
-import postCandidature from "../../../../services/postCandidature.js"
-import extractCompanyValues from "../../../../services/extractCompanyValues.js"
+import extractCompanyValues from "../../../../services/extractCompanyValues"
+import postCandidature from "../../../../services/postCandidature"
 
 export default async function submitCandidature(
   { applicantValues, setSendingState = () => {}, item = {}, caller = null },

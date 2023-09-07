@@ -1,3 +1,4 @@
+import { Box, Button, Flex, Image } from "@chakra-ui/react"
 import React, { useContext, useState } from "react"
 
 import { ErrorMessage } from "../../../components"
@@ -9,14 +10,14 @@ import purpleFilterIcon from "../../../public/images/icons/purpleFilter.svg"
 import { isCfaEntreprise } from "../../../services/cfaEntreprise"
 import { mergeJobs, mergeOpportunities } from "../../../utils/itemListUtils"
 import { filterLayers } from "../../../utils/mapTools"
+import { SendPlausibleEvent } from "../../../utils/plausible"
+import { renderJob, renderLbb, renderTraining } from "../services/renderOneResult"
+import { getJobCount } from "../services/utils"
+
 import ExtendedSearchButton from "./ExtendedSearchButton"
 import NoJobResult from "./NoJobResult"
 import ResultListsCounter from "./ResultListsCounter"
 
-import { Box, Button, Flex, Image } from "@chakra-ui/react"
-import { SendPlausibleEvent } from "../../../utils/plausible"
-import { renderJob, renderLbb, renderTraining } from "../services/renderOneResult"
-import { getJobCount } from "../services/utils"
 
 const ResultLists = ({
   activeFilter,

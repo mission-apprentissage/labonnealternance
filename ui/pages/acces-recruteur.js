@@ -1,6 +1,9 @@
 import { Box, Container, Text } from "@chakra-ui/react"
+import { NextSeo } from "next-seo"
 import React from "react"
+
 import Breadcrumb from "../components/breadcrumb"
+import Footer from "../components/footer"
 import AlgoRecruiter from "../components/HomeComponents/AlgoRecruiter"
 import ConnectionActions from "../components/HomeComponents/ConnectionActions"
 import Entreprise from "../components/HomeComponents/Entreprise"
@@ -12,9 +15,7 @@ import PostezVotreOffre from "../components/HomeComponents/PostezVotreOffre"
 import Navigation from "../components/navigation"
 import ScrollToTop from "../components/ScrollToTop"
 
-import { NextSeo } from "next-seo"
 
-import Footer from "../components/footer"
 
 const AccesRecruteur = () => (
   <Box>

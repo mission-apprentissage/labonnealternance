@@ -1,18 +1,19 @@
+import { Box, Container, Divider, Flex, Grid, GridItem, Image, Link, SimpleGrid, Text, VStack } from "@chakra-ui/react"
 import { NextSeo } from "next-seo"
 import React from "react"
+
 import Breadcrumb from "../components/breadcrumb"
+import Footer from "../components/footer"
 import Navigation from "../components/navigation"
 import ScrollToTop from "../components/ScrollToTop"
+import logoAvril from "../public/images/logo-avril.svg"
+import logoLbb from "../public/images/logo-lbb.svg"
 import logoCatalogue from "../public/images/logo_catalogue.svg"
 import logoMatcha from "../public/images/logo_matcha.svg"
 import logoPrdv from "../public/images/logo_prdv.svg"
 
-import logoAvril from "../public/images/logo-avril.svg"
-import logoLbb from "../public/images/logo-lbb.svg"
 
-import Footer from "../components/footer"
 
-import { Box, Container, Divider, Flex, Grid, GridItem, Image, Link, SimpleGrid, Text, VStack } from "@chakra-ui/react"
 
 const ServiceCard = ({ logo, title, text, url, mt, mb, imageMT, imageML }) => {
   return (

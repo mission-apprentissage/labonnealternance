@@ -1,6 +1,9 @@
+import { Box, Image, Text } from "@chakra-ui/react"
 import distance from "@turf/distance"
+import { round } from "lodash"
 import { useRouter } from "next/router"
 import React, { useContext, useEffect } from "react"
+
 import ItemDetail from "../../../components/ItemDetail/ItemDetail"
 import LoadingScreen from "../../../components/LoadingScreen"
 import { DisplayContext } from "../../../context/DisplayContextProvider"
@@ -9,17 +12,15 @@ import { ScopeContext } from "../../../context/ScopeContext"
 import { SearchResultContext } from "../../../context/SearchResultContextProvider"
 import dosearchImage from "../../../public/images/dosearch.svg"
 import { currentSearch, setCurrentPage, setCurrentSearch } from "../../../utils/currentPage.js"
-import { filterLayers } from "../../../utils/mapTools"
+import { filterLayers , closeMapPopups, flyToLocation, flyToMarker, setSelectedMarker } from "../../../utils/mapTools"
 import pushHistory from "../../../utils/pushHistory"
 import { getItemElement, scrollToElementInContainer, scrollToTop } from "../../../utils/tools"
 import { insertWhisper } from "../services/whispers.js"
+
 import ResultLists from "./ResultLists"
 import SearchForm from "./SearchForm"
 
-import { Box, Image, Text } from "@chakra-ui/react"
-import { closeMapPopups, flyToLocation, flyToMarker, setSelectedMarker } from "../../../utils/mapTools"
 
-import { round } from "lodash"
 
 const ChoiceColumn = ({
   showResultList,

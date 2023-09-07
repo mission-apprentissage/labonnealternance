@@ -1,10 +1,10 @@
-import { ErrorMessage, Form, Formik } from "formik"
-import React, { useContext, useEffect, useState } from "react"
-import { AutoCompleteField } from "../../../components/AutoCompleteField/AutoCompleteField"
-
 import { Box, Button, Flex, Select, Text } from "@chakra-ui/react"
+import { ErrorMessage, Form, Formik } from "formik"
 import { partialRight } from "lodash"
+import React, { useContext, useEffect, useState } from "react"
+
 import { DomainError } from "../../"
+import { AutoCompleteField } from "../../../components/AutoCompleteField/AutoCompleteField"
 import { DisplayContext } from "../../../context/DisplayContextProvider"
 import { ParameterContext } from "../../../context/ParameterContextProvider"
 import { SearchResultContext } from "../../../context/SearchResultContextProvider"

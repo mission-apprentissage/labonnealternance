@@ -3,8 +3,6 @@ import { Accordion, AccordionButton, AccordionItem, AccordionPanel, Box, Text } 
 import React from "react"
 
 const MatchaCompetences = ({ job }) => {
-  const [isOpen, setIsOpen] = React.useState(false)
-
   const getText = () => {
     const res = (
       <Box pl="12px" mt={4}>

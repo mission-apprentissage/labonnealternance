@@ -2,7 +2,9 @@ import { ChakraProvider } from "@chakra-ui/react"
 import PlausibleProvider from "next-plausible"
 import React from "react"
 import { QueryClient, QueryClientProvider } from "react-query"
+
 import theme from "../theme/index"
+
 import DisplayContextProvider from "./DisplayContextProvider"
 import ParameterContextProvider from "./ParameterContextProvider"
 import SearchResultContextProvider from "./SearchResultContextProvider"

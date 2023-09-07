@@ -1,16 +1,18 @@
 import { Box, Button, Flex, Image, Link, Text } from "@chakra-ui/react"
 import React, { useState } from "react"
 import ReactHtmlParser from "react-html-parser"
+
 import { DisplayContext } from "../../context/DisplayContextProvider"
 import { SearchResultContext } from "../../context/SearchResultContextProvider"
-import extendedSearchPin from "../../public/images/icons/trainingPin.svg"
 import eclair from "../../public/images/eclair.svg"
+import extendedSearchPin from "../../public/images/icons/trainingPin.svg"
 import { fetchAddresses } from "../../services/baseAdresse"
 import { getDaysSinceDate } from "../../utils/dateUtils"
 import { getItemQueryParameters } from "../../utils/getItemId"
 import { getSearchQueryParameters } from "../../utils/getSearchParameters"
 import { isDepartmentJob } from "../../utils/itemListUtils"
 import { setSelectedMarker } from "../../utils/mapTools"
+
 import TagFormationAssociee from "./TagFormationAssociee"
 import TagOffreEmploi from "./TagOffreEmploi"
 
@@ -88,7 +90,7 @@ const Job = ({ job, handleSelectItem, showTextOnly, searchForTrainingsOnNewCente
     setSelectedMarker(job)
   }
 
-  const dimItemOnMap = (e) => {
+  const dimItemOnMap = () => {
     if (allowDim) {
       setSelectedMarker(null)
     } else {

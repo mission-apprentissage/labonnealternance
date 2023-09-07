@@ -1,5 +1,6 @@
 import { Box } from "@chakra-ui/react"
 import React, { useContext } from "react"
+
 import { ScopeContext } from "../../../context/ScopeContext"
 
 const NoJobResult = () => {

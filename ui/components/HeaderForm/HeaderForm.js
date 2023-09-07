@@ -1,27 +1,24 @@
+import { Box, Button, Flex, Image, Select, Text } from "@chakra-ui/react"
 import { Form, Formik } from "formik"
 import { partialRight } from "lodash"
 import React, { useEffect, useState } from "react"
-import { AutoCompleteField } from ".."
-import { DomainError } from "../../components"
+
+import { AutoCompleteField, DomainError } from ".."
+import { DisplayContext } from "../../context/DisplayContextProvider"
+import { ParameterContext } from "../../context/ParameterContextProvider"
 import glassImage from "../../public/images/glass_white.svg"
+import { autoCompleteToStringFunction, compareAutoCompleteValues } from "../../services/autoCompleteUtilities"
+import { fetchAddresses } from "../../services/baseAdresse"
 import { buildAvailableDiplomasOptions } from "../../services/buildAvailableDiplomas"
 import { buildRayonsOptions } from "../../services/buildRayons"
-
 import domainChanged from "../../services/domainChanged"
 import formikUpdateValue from "../../services/formikUpdateValue"
 import handleSelectChange from "../../services/handleSelectChange"
 import updateValuesFromJobAutoComplete from "../../services/updateValuesFromJobAutoComplete"
-
-import { Box, Button, Flex, Image, Select, Text } from "@chakra-ui/react"
-import { DisplayContext } from "../../context/DisplayContextProvider"
-import { ParameterContext } from "../../context/ParameterContextProvider"
-import { autoCompleteToStringFunction, compareAutoCompleteValues } from "../../services/autoCompleteUtilities"
-import { fetchAddresses } from "../../services/baseAdresse"
 import validateFormik from "../../services/validateFormik"
 
 const selectProperties = {
   fontSize: "14px",
-  border: "none",
   height: "23px",
   fontWeight: 600,
   background: "white",
@@ -46,7 +43,7 @@ const HeaderForm = ({ handleSearchSubmit, isHome }) => {
 
   const contextFormValues = widgetParameters?.applyFormValues && widgetParameters?.formValues ? widgetParameters.formValues : formValues
 
-  const [diplomas, setDiplomas] = useState([])
+  const [diplomas] = useState([])
   const [diploma, setDiploma] = useState("")
   const [domainError, setDomainError] = useState(false)
   const [diplomaError, setDiplomaError] = useState(false)
@@ -66,7 +63,7 @@ const HeaderForm = ({ handleSearchSubmit, isHome }) => {
   const renderFormik = () => {
     return (
       <Formik validate={(values) => validateFormik(values, widgetParameters)} initialValues={{ job: {}, location: {}, radius: 30, diploma: "" }} onSubmit={handleSearchSubmit}>
-        {({ isSubmitting, setFieldValue, errors, touched }) => (
+        {({ isSubmitting, setFieldValue, errors }) => (
           <Form data-testid="widget-form">
             <Flex>
               <Box>

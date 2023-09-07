@@ -2,6 +2,7 @@ import { Box, Image, Show, SimpleGrid, Text } from "@chakra-ui/react"
 import React from "react"
 
 import votrebesoinImage from "../../public/images/home_pics/illu-votrebesoin.svg"
+
 import ConnectionActions from "./ConnectionActions"
 
 const Entreprise = () => {

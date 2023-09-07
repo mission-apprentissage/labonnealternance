@@ -1,4 +1,4 @@
-import WidgetHeader from "./WidgetHeader"
 import InitWidgetSearchParameters from "./InitWidgetSearchParameters"
+import WidgetHeader from "./WidgetHeader"
 
 export { WidgetHeader, InitWidgetSearchParameters }

@@ -1,8 +1,9 @@
-import * as Yup from "yup"
-import { Formik, Field, Form } from "formik"
 import { Box, Button, Flex, FormControl, FormErrorMessage, FormHelperText, FormLabel, Image, Input, Link, Select, SimpleGrid, Spinner, Text } from "@chakra-ui/react"
-import React, { useState } from "react"
+import { Formik, Field, Form } from "formik"
 import { useRouter } from "next/router"
+import React, { useState } from "react"
+import * as Yup from "yup"
+
 import postUnsubscribe from "../../services/postUnsubscribe"
 
 const UNSUBSCRIBE_REASON = {

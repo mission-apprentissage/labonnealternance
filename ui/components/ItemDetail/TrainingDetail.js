@@ -1,6 +1,7 @@
 import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Flex, Image, Link, Spinner, Text } from "@chakra-ui/react"
 import React, { useContext, useEffect, useState } from "react"
+
 import { DisplayContext } from "../../context/DisplayContextProvider"
 import { SearchResultContext } from "../../context/SearchResultContextProvider"
 import academicCapIcon from "../../public/images/icons/training-academic-cap.svg"
@@ -11,6 +12,7 @@ import fetchPrdv from "../../services/fetchPrdv"
 import fetchTrainingDetails from "../../services/fetchTrainingDetails"
 import { SendPlausibleEvent } from "../../utils/plausible"
 import { formatDate } from "../../utils/strutils"
+
 import StatsInserJeunes from "./StatsInserJeunes"
 
 // Read https://css-tricks.com/snippets/css/prevent-long-urls-from-breaking-out-of-container/

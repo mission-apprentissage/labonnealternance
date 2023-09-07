@@ -1,5 +1,6 @@
 import { Button, Flex, Spinner, Text } from "@chakra-ui/react"
 import React from "react"
+
 import { amongst } from "../../../utils/arrayutils"
 
 const CandidatureSpontaneeSubmit = (props) => {

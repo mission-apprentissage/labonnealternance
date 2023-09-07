@@ -9,6 +9,7 @@ import {
   partialJobSearchErrorText,
   technicalErrorText,
 } from "../../SearchForTrainingsAndJobs/services/utils"
+
 import { storeJobsInSession } from "./handleSessionStorage"
 
 export const searchForJobsFunction = async ({

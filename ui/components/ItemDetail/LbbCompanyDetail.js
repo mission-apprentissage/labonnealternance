@@ -1,7 +1,9 @@
 import { Box } from "@chakra-ui/react"
 import React, { useEffect } from "react"
+
 import { DisplayContext } from "../../context/DisplayContextProvider"
 import { SendPlausibleEvent } from "../../utils/plausible"
+
 import CandidatureSpontaneeExplanation from "./CandidatureSpontanee/CandidatureSpontaneeExplanation"
 
 const LbbCompanyDetail = ({ lbb }) => {

@@ -1,5 +1,6 @@
 import { Box, Image, SimpleGrid, Text } from "@chakra-ui/react"
 import React from "react"
+
 import solliciterCFAImage from "../../public/images/home_pics/illu-solliciterCFA.svg"
 
 const OrganismesMandataires = () => {

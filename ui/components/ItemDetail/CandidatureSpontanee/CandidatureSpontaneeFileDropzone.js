@@ -1,6 +1,7 @@
 import { Box, Button, Flex, FormControl, FormErrorMessage, Image, Input, Spinner, Text } from "@chakra-ui/react"
 import React, { useState } from "react"
 import { useDropzone } from "react-dropzone"
+
 import dropzoneIco from "../../../public/images/icons/candidature_file_upload.svg"
 
 const CandidatureSpontaneeFileDropzone = ({ setFileValue, formik }) => {
@@ -27,12 +28,12 @@ const CandidatureSpontaneeFileDropzone = ({ setFileValue, formik }) => {
       setFileValue(readFileData)
     }
 
-    reader.onloadstart = (e) => {
+    reader.onloadstart = () => {
       setFileLoading(true)
       setShowUnacceptedFileMessages(false)
     }
 
-    reader.onloadend = (e) => {
+    reader.onloadend = () => {
       setTimeout(() => {
         setFileLoading(false)
       }, 300)

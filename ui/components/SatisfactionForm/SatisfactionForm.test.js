@@ -1,8 +1,10 @@
-import React from "react"
 import { render, screen, waitFor } from "@testing-library/react"
-import SatisfactionForm from "./SatisfactionForm"
-import nock from "nock"
 import userEvent from "@testing-library/user-event"
+import nock from "nock"
+import React from "react"
+
+import SatisfactionForm from "./SatisfactionForm"
+
 
 describe("SatisfactionForm", () => {
   beforeEach(() => {

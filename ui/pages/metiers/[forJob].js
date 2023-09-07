@@ -1,9 +1,10 @@
 import { Box, Container, Divider, Link, Text, VStack } from "@chakra-ui/react"
-import { NextSeo } from "next-seo"
 import NextLink from "next/link"
 import { useRouter } from "next/router"
+import { NextSeo } from "next-seo"
 import React from "react"
 import { getStaticMetiers, getStaticVilles } from "utils/getStaticData"
+
 import Breadcrumb from "../../components/breadcrumb"
 import Footer from "../../components/footer"
 import Navigation from "../../components/navigation"

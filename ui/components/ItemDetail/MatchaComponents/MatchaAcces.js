@@ -1,6 +1,6 @@
-import React from "react"
 import { AddIcon, MinusIcon } from "@chakra-ui/icons"
 import { Accordion, AccordionButton, AccordionItem, AccordionPanel, Box, Text } from "@chakra-ui/react"
+import React from "react"
 
 const MatchaAcces = ({ job }) => {
   const acces = job?.job?.romeDetails?.acces ?? null

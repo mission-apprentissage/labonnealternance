@@ -1,6 +1,7 @@
-import { NextSeo } from "next-seo"
 import { useRouter } from "next/router"
+import { NextSeo } from "next-seo"
 import React, { useEffect } from "react"
+
 import SearchForTrainingsAndJobs from "../components/SearchForTrainingsAndJobs/index.js"
 import { ParameterContext } from "../context/ParameterContextProvider.js"
 import { ScopeContextProvider } from "../context/ScopeContext.js"

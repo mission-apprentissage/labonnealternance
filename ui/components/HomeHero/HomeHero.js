@@ -1,5 +1,6 @@
 import { Box, Container } from "@chakra-ui/react"
 import React from "react"
+
 import StartForm from "../StartForm"
 
 const HomeHero = () => {

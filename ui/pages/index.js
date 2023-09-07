@@ -1,16 +1,15 @@
+import { Box, Image } from "@chakra-ui/react"
 import { useRouter } from "next/router"
 import React, { useEffect } from "react"
+
 import Footer from "../components/footer"
 import AlgoHome from "../components/HomeComponents/AlgoHome"
+import AmeliorerLBA from "../components/HomeComponents/AmeliorerLBA"
 import MetiersDAvenir from "../components/HomeComponents/MetiersDAvenir"
 import TestezConnaissancesQuiz from "../components/HomeComponents/TestezConnaissancesQuiz"
 import HomeHero from "../components/HomeHero"
 import HowTo from "../components/HowTo"
 import Navigation from "../components/navigation"
-import { initParametersFromQuery } from "../services/config"
-
-import { Box, Image } from "@chakra-ui/react"
-import AmeliorerLBA from "../components/HomeComponents/AmeliorerLBA"
 import ScrollToTop from "../components/ScrollToTop"
 import config from "../config/config"
 import { ParameterContext } from "../context/ParameterContextProvider"
@@ -19,6 +18,7 @@ import howtocircle2 from "../public/images/howtocircle2.svg"
 import howtocircle3 from "../public/images/howtocircle3.svg"
 import howtocircle4 from "../public/images/howtocircle4.svg"
 import howtocircle5 from "../public/images/howtocircle5.svg"
+import { initParametersFromQuery } from "../services/config"
 
 const blockCssProperties = {
   position: "relative",

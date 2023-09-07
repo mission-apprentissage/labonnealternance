@@ -1,7 +1,5 @@
 import React, { useEffect } from "react"
-
 import { fetchAddressFromCoordinates } from "services/baseAdresse"
-
 import { logError } from "utils/tools"
 
 import { ParameterContext } from "../../context/ParameterContextProvider"

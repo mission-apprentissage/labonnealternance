@@ -1,7 +1,9 @@
-import React from "react"
 import { render, screen, fireEvent, wait, waitFor } from "@testing-library/react"
-import ResultLists from "./ResultLists"
 import nock from "nock"
+import React from "react"
+
+import ResultLists from "./ResultLists"
+
 
 describe("ResultList", () => {
   beforeEach(() => {

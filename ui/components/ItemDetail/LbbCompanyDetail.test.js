@@ -1,7 +1,10 @@
-import React from "react"
 import { render, screen } from "@testing-library/react"
-import LbbCompanyDetail from "./LbbCompanyDetail"
+import React from "react"
+
 import DisplayContextProvider from "../../context/DisplayContextProvider"
+
+import LbbCompanyDetail from "./LbbCompanyDetail"
+
 
 describe("LbbCompanyDetail", () => {
   it("Displays the LBB component", () => {
