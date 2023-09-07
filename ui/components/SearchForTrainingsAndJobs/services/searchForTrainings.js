@@ -1,7 +1,7 @@
 import axios from "axios"
-import { logError } from "utils/tools"
 
-import { getRncpsFromParameters, getRncpFromParameters, getRomeFromParameters, trainingErrorText, trainingsApi } from "../../SearchForTrainingsAndJobs/services/utils"
+import { logError } from "../../../utils/tools"
+import { getRncpFromParameters, getRncpsFromParameters, getRomeFromParameters, trainingErrorText, trainingsApi } from "../../SearchForTrainingsAndJobs/services/utils"
 
 import { storeTrainingsInSession } from "./handleSessionStorage"
 

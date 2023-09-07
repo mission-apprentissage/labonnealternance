@@ -74,16 +74,14 @@ const TrainingDetail = ({ training, hasAlsoJob }) => {
     updatedTrainings.forEach(async (v) => {
       if (v.id === training.id) {
         if (!v.descriptionLoaded) {
-          try {
-            const trainingWithDetails = await fetchTrainingDetails(training)
-            if (trainingWithDetails) {
-              v.training = trainingWithDetails.training
-              v.contact = trainingWithDetails.contact
-              v.company = trainingWithDetails.company
-            }
-            v.descriptionLoaded = true
-            setTrainingsAndSelectedItem(updatedTrainings, v)
-          } catch (err) {}
+          const trainingWithDetails = await fetchTrainingDetails(training)
+          if (trainingWithDetails) {
+            v.training = trainingWithDetails.training
+            v.contact = trainingWithDetails.contact
+            v.company = trainingWithDetails.company
+          }
+          v.descriptionLoaded = true
+          setTrainingsAndSelectedItem(updatedTrainings, v)
         }
         setLoading(false)
       }
@@ -96,11 +94,8 @@ const TrainingDetail = ({ training, hasAlsoJob }) => {
       if (v.id === training.id) {
         if (!v.prdvLoaded) {
           v.prdvLoaded = true
-
-          try {
-            v.prdvUrl = url
-            setTrainingsAndSelectedItem(updatedTrainings, v)
-          } catch (err) {}
+          v.prdvUrl = url
+          setTrainingsAndSelectedItem(updatedTrainings, v)
         }
         setLoading(false)
       }

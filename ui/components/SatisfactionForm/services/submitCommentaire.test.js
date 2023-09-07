@@ -1,4 +1,4 @@
-import submitCommentaire from "./submitCommentaire.js"
+import submitCommentaire from "./submitCommentaire"
 
 describe("submitCommentaire", () => {
   it("By default, change current state if no error", async () => {

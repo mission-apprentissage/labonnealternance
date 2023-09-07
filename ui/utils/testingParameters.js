@@ -1,1 +1,1 @@
-export let testingParameters = {}
+export const testingParameters = {}

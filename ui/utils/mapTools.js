@@ -239,7 +239,7 @@ const initializeMap = ({ mapContainer, unselectItem, selectItemOnMap, onMapHasMo
   })
 
   // log vers google analytics de l'utilisation du bouton zoom / dézoom
-  map.on("zoomend", (e) => {
+  map.on("zoomend", () => {
     if (map.getZoom() < 9) closeMapPopups()
   })
 
@@ -276,7 +276,7 @@ const onLayerClick = (e, layer, selectItemOnMap, unselectItem, unselectMapPopupI
       .setDOMContent(buildPopup({ item, type: item.ideaType, selectItemOnMap, setSelectedItem, setSelectedMapPopupItem }))
       .addTo(map)
 
-    currentPopup.on("close", function (e) {
+    currentPopup.on("close", function () {
       setSelectedMarker(null)
       unselectMapPopupItem()
     })
@@ -655,25 +655,25 @@ const refreshLocationMarkers = ({ jobs, trainings, scopeContext }) => {
 }
 
 export {
-  map,
-  isMapInitialized,
-  resizeMap,
   buildPopup,
-  initializeMap,
-  flyToMarker,
-  flyToLocation,
   closeMapPopups,
-  getZoomLevelForDistance,
-  factorTrainingsForMap,
-  factorJobsForMap,
   computeMissingPositionAndDistance,
+  coordinatesOfFrance,
+  factorJobsForMap,
+  factorTrainingsForMap,
   filterLayers,
-  waitForMapReadiness,
-  setTrainingMarkers,
+  flyToLocation,
+  flyToMarker,
+  getZoomLevelForDistance,
+  initializeMap,
+  isMapInitialized,
+  map,
+  refreshLocationMarkers,
+  resizeMap,
   setJobMarkers,
   setSelectedJobMarker,
-  setSelectedTrainingMarker,
   setSelectedMarker,
-  coordinatesOfFrance,
-  refreshLocationMarkers,
+  setSelectedTrainingMarker,
+  setTrainingMarkers,
+  waitForMapReadiness,
 }

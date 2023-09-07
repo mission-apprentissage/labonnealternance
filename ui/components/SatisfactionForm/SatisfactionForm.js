@@ -8,11 +8,9 @@ import { isNonEmptyString } from "../../utils/strutils"
 import { testingParameters } from "../../utils/testingParameters"
 import { getValueFromPath } from "../../utils/tools"
 
-import SatisfactionFormNavigation from "./SatisfactionFormNavigation.js"
-import SatisfactionFormSuccess from "./SatisfactionFormSuccess.js"
-import submitCommentaire from "./services/submitCommentaire.js"
-
-
+import SatisfactionFormNavigation from "./SatisfactionFormNavigation"
+import SatisfactionFormSuccess from "./SatisfactionFormSuccess"
+import submitCommentaire from "./services/submitCommentaire"
 
 let iv = null
 let id = null

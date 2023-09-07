@@ -9,11 +9,9 @@ const PageTracker = (props) => {
 
   React.useEffect(() => {
     const handleRouteChange = (url) => {
-      try {
-        if (url.indexOf("?") < 0) {
-          plausible("pageview", { url })
-        }
-      } catch (err) {}
+      if (url.indexOf("?") < 0) {
+        plausible("pageview", { url })
+      }
     }
 
     router.events.on("routeChangeStart", handleRouteChange)

@@ -1,8 +1,8 @@
 import React, { useEffect } from "react"
-import { fetchAddressFromCoordinates } from "services/baseAdresse"
-import { logError } from "utils/tools"
 
 import { ParameterContext } from "../../context/ParameterContextProvider"
+import { fetchAddressFromCoordinates } from "../../services/baseAdresse"
+import { logError } from "../../utils/tools"
 
 const InitWidgetSearchParameters = ({ setIsLoading, handleSearchSubmit, handleItemLoad }) => {
   const { widgetParameters, itemParameters, setWidgetParameters, setItemParameters } = React.useContext(ParameterContext)

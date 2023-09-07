@@ -1,20 +1,22 @@
+import fs from "fs"
+import path from "path"
+
 import { Box, Container, Divider, Link, Text, VStack } from "@chakra-ui/react"
+import { find, sortBy } from "lodash"
 import NextLink from "next/link"
 import { useRouter } from "next/router"
 import { NextSeo } from "next-seo"
 import React from "react"
-import { getStaticMetiers, getStaticVilles } from "utils/getStaticData"
 
 import Breadcrumb from "../../components/breadcrumb"
 import Footer from "../../components/footer"
 import Navigation from "../../components/navigation"
 import { buildLinkForTownAndJob } from "../../utils/buildLinkForTownAndJob"
+import { getStaticMetiers, getStaticVilles } from "../../utils/getStaticData"
 
 export default function ForJob(props) {
   const router = useRouter()
 
-  const find = require("lodash").find
-  const sortBy = require("lodash").sortBy
   const currentSlug = router.query.forJob
   const currentJob = find(props.dataJobs, (e) => e.slug === currentSlug)
   const sortedTowns = sortBy(props.dataTowns, (e) => e.slug)
@@ -94,8 +96,6 @@ export default function ForJob(props) {
 // Required.
 // See https://nextjs.org/docs/basic-features/data-fetching#getstaticpaths-static-generation
 export async function getStaticPaths() {
-  const path = require("path")
-  const fs = require("fs")
   const txtDirectory = path.join(process.cwd(), "config")
 
   const dataJobs = getStaticMetiers(path, fs, txtDirectory)
@@ -113,8 +113,6 @@ export async function getStaticPaths() {
 // See https://nextjs.org/learn/basics/data-fetching/with-data
 // Static data, please restart nextjs each time this function change
 export async function getStaticProps() {
-  const path = require("path")
-  const fs = require("fs")
   const txtDirectory = path.join(process.cwd(), "config")
 
   const dataTowns = getStaticVilles(path, fs, txtDirectory)

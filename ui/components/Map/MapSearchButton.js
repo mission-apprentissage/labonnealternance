@@ -1,11 +1,10 @@
-
 import { Box, Button, Flex, Image, Text } from "@chakra-ui/react"
-import lookingGlassOnMap from "public/images/glass.svg"
-import refreshSearchOnMap from "public/images/icons/refreshSearchOnMap.svg"
 import React from "react"
 
 import { DisplayContext } from "../../context/DisplayContextProvider"
 import { SearchResultContext } from "../../context/SearchResultContextProvider"
+import lookingGlassOnMap from "../../public/images/glass.svg"
+import refreshSearchOnMap from "../../public/images/icons/refreshSearchOnMap.svg"
 
 const MapSearchButton = ({ handleSearchClick }) => {
   const { formValues } = React.useContext(DisplayContext)

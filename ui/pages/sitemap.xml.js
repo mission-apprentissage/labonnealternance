@@ -1,4 +1,4 @@
-import { getStaticMetiers } from "utils/getStaticData"
+import { getStaticMetiers } from "../utils/getStaticData"
 
 function generateSiteMap(dataJobs, props) {
   const host = `${props.req.headers.host === "localhost" ? "http://" : "https://"}${props.req.headers.host}`

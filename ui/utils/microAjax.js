@@ -1,5 +1,3 @@
-/*global XMLHttpRequest */
-
 // Copy/pasted from https://github.com/le717/microajax/blob/master/microajax.js
 
 /**

@@ -1,4 +1,4 @@
-import { includes } from "lodash"
+import { includes, kebabCase, uniq } from "lodash"
 
 export const extractFromFile = (path, fs, txtDirectory, fileName) => {
   const filePath = path.join(txtDirectory, fileName)
@@ -12,8 +12,6 @@ export const getStaticMetiers = (path, fs, txtDirectory, stubbedExtractionFuncti
 
   const arrayOfJobLines = extractionFunction(path, fs, txtDirectory, "metiers.txt")
 
-  const uniq = require("lodash").uniq
-  const kebabCase = require("lodash").kebabCase
   const dataJobs = arrayOfJobLines.map(function (singleLine) {
     const splitted = singleLine.split("[")
     const actualName = splitted[0].trim()
@@ -34,7 +32,6 @@ export const getStaticVilles = (path, fs, txtDirectory, stubbedExtractionFunctio
 
   const arrayOfTownLines = extractionFunction(path, fs, txtDirectory, "villes.txt")
 
-  const kebabCase = require("lodash").kebabCase
   const dataTowns = arrayOfTownLines.map(function (singleLine) {
     const splitted = singleLine.split("/")
     const townName = splitted[0].trim()

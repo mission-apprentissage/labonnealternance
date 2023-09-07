@@ -4,9 +4,9 @@ import React, { useEffect } from "react"
 
 import SearchForTrainingsAndJobs from "../components/SearchForTrainingsAndJobs"
 import { ParameterContext } from "../context/ParameterContextProvider"
-import { ScopeContextProvider } from "../context/ScopeContext.js"
+import { ScopeContextProvider } from "../context/ScopeContext"
 import { initParametersFromQuery } from "../services/config"
-import { getSeoDescription, getSeoTitle } from "../utils/seoUtils.js"
+import { getSeoDescription, getSeoTitle } from "../utils/seoUtils"
 
 const RechercheApprentissageFormation = () => {
   const router = useRouter()

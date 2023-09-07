@@ -1,10 +1,10 @@
 import axios from "axios"
-import { logError } from "utils/tools"
 
+import { logError } from "../../../utils/tools"
 import {
   allJobSearchErrorText,
-  getRomeFromParameters,
   getRncpFromParameters,
+  getRomeFromParameters,
   jobsApi,
   partialJobSearchErrorText,
   technicalErrorText,

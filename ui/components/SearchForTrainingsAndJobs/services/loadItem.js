@@ -1,7 +1,7 @@
 import axios from "axios"
-import { flyToMarker, setSelectedMarker } from "utils/mapTools"
-import { logError } from "utils/tools"
 
+import { flyToMarker, setSelectedMarker } from "../../../utils/mapTools"
+import { logError } from "../../../utils/tools"
 import { searchForJobsFunction } from "../../SearchForTrainingsAndJobs/services/searchForJobs"
 import { companyApi, matchaApi, notFoundErrorText, offreApi, partialJobSearchErrorText, trainingApi, trainingErrorText } from "../../SearchForTrainingsAndJobs/services/utils"
 

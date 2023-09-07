@@ -83,7 +83,7 @@ const Training = ({ training, handleSelectItem, showTextOnly, searchForJobsOnNew
     setSelectedMarker(training)
   }
 
-  const dimItemOnMap = (e) => {
+  const dimItemOnMap = () => {
     if (allowDim) {
       setSelectedMarker(null)
     } else {

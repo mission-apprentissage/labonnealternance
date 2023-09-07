@@ -35,7 +35,7 @@ describe("insertWhisper", () => {
       "</div>"
     let res = await insertWhisper(document)
     const container = document.querySelector("#app")
-    const whisper = queryByTestId(container, "whisper0")
+    const whisper = screen.queryByTestId(container, "whisper0")
     expect(whisper).not.toBeNull()
     expect(res).toEqual("whisper randomly inserted")
   })

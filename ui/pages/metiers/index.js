@@ -1,13 +1,15 @@
+import fs from "fs"
+import path from "path"
+
 import { Box, Container, Divider, Link, Text, VStack } from "@chakra-ui/react"
 import { NextSeo } from "next-seo"
 import React from "react"
-import { getStaticMetiers, getStaticVilles } from "utils/getStaticData"
 
 import Breadcrumb from "../../components/breadcrumb"
 import Footer from "../../components/footer"
 import Navigation from "../../components/navigation"
 import ScrollToTop from "../../components/ScrollToTop"
-
+import { getStaticMetiers, getStaticVilles } from "../../utils/getStaticData"
 
 export default function Catalog(props) {
   return (
@@ -60,8 +62,6 @@ export default function Catalog(props) {
 // See https://nextjs.org/learn/basics/data-fetching/with-data
 // Static data, please restart nextjs each time this function change
 export async function getStaticProps() {
-  const path = require("path")
-  const fs = require("fs")
   const txtDirectory = path.join(process.cwd(), "config")
 
   const dataTowns = getStaticVilles(path, fs, txtDirectory)

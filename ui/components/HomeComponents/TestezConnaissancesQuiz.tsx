@@ -1,9 +1,10 @@
 import { ArrowForwardIcon } from "@chakra-ui/icons"
 import { Box, Container, Divider, Flex, Grid, GridItem, Image, Link, Text } from "@chakra-ui/react"
-import hommeAuTelephone from "../../public/images/hommeAuTelephone.svg"
-import fuseeDecollant from "../../public/images/fuseeDecollant.svg"
-import hommeFemmeDiscutentAssisATable from "../../public/images/hommeFemmeDiscutentAssisATable.svg"
+
 import femmeMontrantNavigateur from "../../public/images/femmeMontrantNavigateur.svg"
+import fuseeDecollant from "../../public/images/fuseeDecollant.svg"
+import hommeAuTelephone from "../../public/images/hommeAuTelephone.svg"
+import hommeFemmeDiscutentAssisATable from "../../public/images/hommeFemmeDiscutentAssisATable.svg"
 
 const gridGapY = 4
 const gridGapX = [0, 0, 6, 6]

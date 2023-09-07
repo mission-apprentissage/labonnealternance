@@ -1,4 +1,4 @@
-import postCommentaire from "./postCommentaire.js"
+import postCommentaire from "./postCommentaire"
 
 export default async function submitCommentaire(params, setSendingState = () => {}, _postCommentaire = postCommentaire) {
   setSendingState("currently_sending")

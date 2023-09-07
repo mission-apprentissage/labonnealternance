@@ -3,12 +3,10 @@ import NextLink from "next/link"
 import { NextSeo } from "next-seo"
 import React from "react"
 
-import Breadcrumb from "../components/breadcrumb.js"
-import Footer from "../components/footer.js"
-import Navigation from "../components/navigation.js"
-import ScrollToTop from "../components/ScrollToTop/index.js"
-
-
+import Breadcrumb from "../components/breadcrumb"
+import Footer from "../components/footer"
+import Navigation from "../components/navigation"
+import ScrollToTop from "../components/ScrollToTop/index"
 
 const Contact = () => (
   <Box>

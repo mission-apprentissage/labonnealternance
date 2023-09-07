@@ -1,4 +1,4 @@
-import { factorJobsForMap, factorTrainingsForMap, setJobMarkers, setTrainingMarkers } from "utils/mapTools"
+import { factorJobsForMap, factorTrainingsForMap, setJobMarkers, setTrainingMarkers } from "../../../utils/mapTools"
 
 export const storeTrainingsInSession = ({ trainings, searchTimestamp }) => {
   try {

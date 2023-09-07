@@ -64,7 +64,7 @@
     "@types/node": "18.8.2",
     "@types/react": "18.0.21",
     "eslint": "8.14.0",
-    "eslint-config-next": "12.1.5",
+    "eslint-config-next": "^13.4.19",
     "jest": "28.0.3",
     "jest-environment-jsdom": "28.0.2",
     "typescript": "^5.2.2"

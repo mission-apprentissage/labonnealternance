@@ -24,7 +24,6 @@ const Container = {
       overflowY: "auto",
       margin: "4px 0 0",
       padding: "0",
-      borderTop: "0",
       boxShadow: "1px 1px 10px rgba(0, 0, 0, 0.2)",
       let: "auto",
       top: "auto",

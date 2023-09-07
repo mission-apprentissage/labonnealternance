@@ -1,8 +1,10 @@
 import { Flex, Spinner } from "@chakra-ui/react"
 import axios from "axios"
 import React, { useEffect, useState } from "react"
+
 import { initPostulerParametersFromQuery } from "../../../services/config"
 import { companyApi, matchaApi } from "../../SearchForTrainingsAndJobs/services/utils"
+
 import WidgetCandidatureSpontanee from "./WidgetCandidatureSpontanee"
 import WidgetPostulerError from "./WidgetPostulerError"
 

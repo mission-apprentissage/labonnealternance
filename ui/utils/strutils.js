@@ -22,11 +22,9 @@ const endsWithNumber = (str) => {
 const formatDate = (d) => {
   let resultDate = ""
 
-  try {
-    resultDate = new Date(d).toLocaleDateString("fr-FR", { year: "numeric", month: "short", day: "numeric" })
-  } catch (err) {}
+  resultDate = new Date(d).toLocaleDateString("fr-FR", { year: "numeric", month: "short", day: "numeric" })
 
   return resultDate
 }
 
-export { isNonEmptyString, capitalizeFirstLetter, formatDate, countInstances, endsWithNumber }
+export { capitalizeFirstLetter, countInstances, endsWithNumber, formatDate, isNonEmptyString }

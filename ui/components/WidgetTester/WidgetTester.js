@@ -14,7 +14,7 @@ const WidgetTester = () => {
   const [widgetParams, setWidgetParams] = useState(null)
   const [shownRomes, setShownRomes] = useState(null)
   const [shownSearchCenter, setShownSearchCenter] = useState(null)
-  const [domainError, setDomainError] = useState(false)
+  const [, setDomainError] = useState(false)
 
   const jobChanged = async function (val, setLoadingState) {
     let res = await domainChanged(val, setDomainError)

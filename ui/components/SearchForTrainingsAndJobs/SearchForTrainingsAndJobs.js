@@ -1,8 +1,13 @@
 import { Box, Flex } from "@chakra-ui/react"
-import { ScopeContext } from "context/ScopeContext"
 import { useRouter } from "next/router"
 import React, { useContext, useEffect, useState } from "react"
-import { currentPage, currentSearch, setCurrentPage, setCurrentSearch } from "utils/currentPage"
+
+import { DisplayContext } from "../../context/DisplayContextProvider"
+import { ParameterContext } from "../../context/ParameterContextProvider"
+import { ScopeContext } from "../../context/ScopeContext"
+import { SearchResultContext } from "../../context/SearchResultContextProvider"
+import updateUiFromHistory from "../../services/updateUiFromHistory"
+import { currentPage, currentSearch, setCurrentPage, setCurrentSearch } from "../../utils/currentPage"
 import {
   closeMapPopups,
   computeMissingPositionAndDistance,
@@ -17,13 +22,9 @@ import {
   setJobMarkers,
   setSelectedMarker,
   setTrainingMarkers,
-} from "utils/mapTools"
-import pushHistory from "utils/pushHistory"
-
-import { DisplayContext } from "../../context/DisplayContextProvider"
-import { ParameterContext } from "../../context/ParameterContextProvider"
-import { SearchResultContext } from "../../context/SearchResultContextProvider"
-import updateUiFromHistory from "../../services/updateUiFromHistory"
+} from "../../utils/mapTools"
+import pushHistory from "../../utils/pushHistory"
+import { logError } from "../../utils/tools"
 import Map from "../Map"
 import { loadItem } from "../SearchForTrainingsAndJobs/services/loadItem"
 import { searchForJobsFunction } from "../SearchForTrainingsAndJobs/services/searchForJobs"
@@ -125,19 +126,17 @@ const SearchForTrainingsAndJobs = () => {
 
     if (item) {
       selectItem(item)
-      try {
-        pushHistory({
-          router,
-          scopeContext,
-          item: { id: itemId, ideaType: type === "training" ? "formation" : type, directId: true },
-          page: "fiche",
-          display: "list",
-          searchParameters: formValues,
-          searchTimestamp,
-          isReplace: true,
-          displayMap,
-        })
-      } catch (err) {}
+      pushHistory({
+        router,
+        scopeContext,
+        item: { id: itemId, ideaType: type === "training" ? "formation" : type, directId: true },
+        page: "fiche",
+        display: "list",
+        searchParameters: formValues,
+        searchTimestamp,
+        isReplace: true,
+        displayMap,
+      })
     }
   }
 

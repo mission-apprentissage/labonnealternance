@@ -11,16 +11,14 @@ import { ParameterContext } from "../../../context/ParameterContextProvider"
 import { ScopeContext } from "../../../context/ScopeContext"
 import { SearchResultContext } from "../../../context/SearchResultContextProvider"
 import dosearchImage from "../../../public/images/dosearch.svg"
-import { currentSearch, setCurrentPage, setCurrentSearch } from "../../../utils/currentPage.js"
-import { filterLayers , closeMapPopups, flyToLocation, flyToMarker, setSelectedMarker } from "../../../utils/mapTools"
+import { currentSearch, setCurrentPage, setCurrentSearch } from "../../../utils/currentPage"
+import { filterLayers, closeMapPopups, flyToLocation, flyToMarker, setSelectedMarker } from "../../../utils/mapTools"
 import pushHistory from "../../../utils/pushHistory"
 import { getItemElement, scrollToElementInContainer, scrollToTop } from "../../../utils/tools"
-import { insertWhisper } from "../services/whispers.js"
+import { insertWhisper } from "../services/whispers"
 
 import ResultLists from "./ResultLists"
 import SearchForm from "./SearchForm"
-
-
 
 const ChoiceColumn = ({
   showResultList,

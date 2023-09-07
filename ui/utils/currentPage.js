@@ -1,10 +1,12 @@
-export let currentPage = ""
-export let currentSearch = null
+let currentPage = ""
+let currentSearch = null
 
-export const setCurrentPage = (p) => {
+const setCurrentPage = (p) => {
   currentPage = p
 }
 
-export const setCurrentSearch = (s) => {
+const setCurrentSearch = (s) => {
   currentSearch = s
 }
+
+export { currentPage, currentSearch, setCurrentPage, setCurrentSearch }

@@ -2,11 +2,11 @@ import { useRouter } from "next/router"
 import { NextSeo } from "next-seo"
 import React, { useEffect } from "react"
 
-import SearchForTrainingsAndJobs from "../components/SearchForTrainingsAndJobs/index.js"
-import { ParameterContext } from "../context/ParameterContextProvider.js"
-import { ScopeContextProvider } from "../context/ScopeContext.js"
-import { initParametersFromQuery } from "../services/config.js"
-import { getSeoDescription, getSeoTitle } from "../utils/seoUtils.js"
+import SearchForTrainingsAndJobs from "../components/SearchForTrainingsAndJobs"
+import { ParameterContext } from "../context/ParameterContextProvider"
+import { ScopeContextProvider } from "../context/ScopeContext"
+import { initParametersFromQuery } from "../services/config"
+import { getSeoDescription, getSeoTitle } from "../utils/seoUtils"
 
 const RechercheApprentissage = () => {
   const router = useRouter()

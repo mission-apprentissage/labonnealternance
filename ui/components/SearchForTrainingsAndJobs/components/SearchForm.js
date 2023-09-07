@@ -20,7 +20,6 @@ import validateFormik from "../../../services/validateFormik"
 
 const selectProperties = {
   fontSize: "1rem",
-  border: "none",
   height: "26px",
   fontWeight: 600,
   background: "white",
@@ -46,8 +45,8 @@ const SearchForm = (props) => {
 
   const contextFormValues = widgetParameters?.applyFormValues && widgetParameters?.formValues ? widgetParameters.formValues : formValues
 
-  const [jobValue, setJobValue] = useState(null)
-  const [diplomas, setDiplomas] = useState([])
+  const [, setJobValue] = useState(null)
+  const [diplomas] = useState([])
   const [diploma, setDiploma] = useState("")
   const [domainError, setDomainError] = useState(false)
   const [diplomaError, setDiplomaError] = useState(false)

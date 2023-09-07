@@ -1,14 +1,14 @@
 import { Box } from "@chakra-ui/react"
-import { ScopeContext } from "context/ScopeContext"
 import { useRouter } from "next/router"
 import React, { useContext, useEffect, useRef, useState } from "react"
-import { currentPage, currentSearch, setCurrentPage } from "utils/currentPage.js"
-import { initializeMap, isMapInitialized, map, setSelectedMarker } from "utils/mapTools"
-import pushHistory from "utils/pushHistory"
 
 import { DisplayContext } from "../../context/DisplayContextProvider"
+import { ScopeContext } from "../../context/ScopeContext"
 import { SearchResultContext } from "../../context/SearchResultContextProvider"
 import { fetchAddressFromCoordinates } from "../../services/baseAdresse"
+import { currentPage, currentSearch, setCurrentPage } from "../../utils/currentPage"
+import { initializeMap, isMapInitialized, map, setSelectedMarker } from "../../utils/mapTools"
+import pushHistory from "../../utils/pushHistory"
 
 import MapSearchButton from "./MapSearchButton"
 
@@ -61,21 +61,18 @@ const Map = ({ handleSearchSubmit, showSearchForm, selectItemOnMap }) => {
 
         if (mapPosition.lon && mapPosition.lat) {
           values.location.value.coordinates = [mapPosition.lon, mapPosition.lat]
+          // récupération du code insee depuis la base d'adresse
+          const addresses = await fetchAddressFromCoordinates([mapPosition.lon, mapPosition.lat])
 
-          try {
-            // récupération du code insee depuis la base d'adresse
-            const addresses = await fetchAddressFromCoordinates([mapPosition.lon, mapPosition.lat])
-
-            if (addresses.length) {
-              values.location.insee = addresses[0].insee
-              values.location.zipcode = addresses[0].zipcode
-              values.location.label = addresses[0].label
-            } else {
-              values.location.insee = null
-              values.location.label = null
-              values.location.zipcode = null
-            }
-          } catch (err) {}
+          if (addresses.length) {
+            values.location.insee = addresses[0].insee
+            values.location.zipcode = addresses[0].zipcode
+            values.location.label = addresses[0].label
+          } else {
+            values.location.insee = null
+            values.location.label = null
+            values.location.zipcode = null
+          }
           await handleSearchSubmit({ values })
         }
 
