@@ -10,8 +10,7 @@ export default async function fetchInserJeuneStats(training, _baseUrl = baseUrl,
     return res
   }
 
-  try
-  {
+  try {
     const response = await _axios.get(`${inserJeuneApiUrl}/api/inserjeunes/regionales/${training.place.zipCode}/certifications/${training.cfd}`)
     const isAxiosError = Boolean(response?.data?.error)
     if (isAxiosError) {
@@ -19,9 +18,7 @@ export default async function fetchInserJeuneStats(training, _baseUrl = baseUrl,
     } else {
       res = response.data
     }
-  }
-  catch(err)
-  {
+  } catch (err) {
     _logError("InserJeune API error", `InserJeune API error ${err}`)
   }
 
