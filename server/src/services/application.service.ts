@@ -19,6 +19,8 @@ import { IBonneBoite } from "../common/model/schema/bonneboite/bonneboite.types.
 import { Document } from "mongoose"
 import Joi from "joi"
 import { scan } from "./clamav.service.js"
+import { getOffreAvecInfoMandataire } from "./formulaire.service.js"
+import { RECRUITER_STATUS, JOB_STATUS } from "./constant.service.js"
 
 const publicUrl = config.publicUrl
 const publicUrlEspacePro = config.publicUrlEspacePro
@@ -151,7 +153,7 @@ export const sendApplication = async ({ query, referer, shouldCheckSecret }: { q
       return { error: validationResult }
     }
 
-    validationResult = await scanFileContent(query)
+    validationResult = await validateJobStatus(query)
 
     if (validationResult !== "ok") {
       return { error: validationResult }
@@ -170,6 +172,12 @@ export const sendApplication = async ({ query, referer, shouldCheckSecret }: { q
     }
 
     validationResult = await checkUserApplicationCount(query.applicant_email.toLowerCase())
+
+    if (validationResult !== "ok") {
+      return { error: validationResult }
+    }
+
+    validationResult = await scanFileContent(query)
 
     if (validationResult !== "ok") {
       return { error: validationResult }
@@ -424,6 +432,26 @@ export const validateSendApplication = async (validable: Partial<IApplicationPar
     await schema.validateAsync(validable)
   } catch (err) {
     return "données de candidature invalides"
+  }
+
+  return "ok"
+}
+
+/**
+ * @description checks if job applied to is still active or exists
+ * @param {Partial<IApplicationParameters>} validable
+ * @return {Promise<string>}
+ */
+export const validateJobStatus = async (validable: Partial<IApplicationParameters>): Promise<string> => {
+  const { job_id } = validable
+
+  if (job_id) {
+    // check is only for lbajobs, not for lbacompanies
+    const job = await getOffreAvecInfoMandataire(job_id)
+
+    if (job.status !== RECRUITER_STATUS.ACTIF || job.jobs[0].job_status !== JOB_STATUS.ACTIVE) {
+      return "offre expirée"
+    }
   }
 
   return "ok"
