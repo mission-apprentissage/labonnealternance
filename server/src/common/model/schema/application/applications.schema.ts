@@ -126,12 +126,12 @@ export const applicationSchema = new Schema<IApplication>({
     default: Date.now,
     description: "Date de dernières mise à jour",
   },
-  applicantRole: {
+  applicant_role: {
     type: String,
     enum: Object.values(ApplicantRole),
     description: "type de candidat: parent | student",
   },
-  applicantId: {
+  applicant_id: {
     type: ObjectId,
     description: "id de l'utilisateur qui a postulé",
   },

@@ -6,21 +6,21 @@ export type NewUser = {
   lastname: string
   phone: string
   email: string
-  isAdmin?: boolean
+  is_admin?: boolean
   opco?: OPCOS
 }
 
 export enum UserEventType {
   ACTIF = "ACTIF",
   VALIDATION_EMAIL = "VALIDATION_EMAIL",
-  INACTIF = "INACTIF",
+  DESACTIVE = "DESACTIVE",
 }
 
 export type NewUserStatusEvent = {
   validation_type: VALIDATION_UTILISATEUR
   status: UserEventType
   reason: string
-  grantedBy?: string
+  granted_by?: string
 }
 
 export type UserStatusEvent = NewUserStatusEvent & {
@@ -29,6 +29,8 @@ export type UserStatusEvent = NewUserStatusEvent & {
 
 export type User2 = Entity &
   NewUser & {
-    lastConnection: Date
+    last_connection: Date
     history: UserStatusEvent[]
+    is_anonymized: boolean
+    origin: string
   }

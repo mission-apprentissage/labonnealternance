@@ -17,7 +17,7 @@ export type NewAccessAuthorizationEvent = {
   validation_type: VALIDATION_UTILISATEUR
   status: AccessStatus
   reason: string
-  grantedBy?: string
+  granted_by?: string
 }
 
 export type AccessAuthorizationEvent = NewAccessAuthorizationEvent & {
@@ -25,10 +25,10 @@ export type AccessAuthorizationEvent = NewAccessAuthorizationEvent & {
 }
 
 type AccessAuthorizationBase = {
-  accessorId: string
-  accessorType: AccessEntityType
-  accessedId: string
-  accessedType: AccessEntityType
+  accessor_id: string
+  accessor_type: AccessEntityType
+  accessed_id: string
+  accessed_type: AccessEntityType
 }
 
 export type AccessAuthorization = Entity &

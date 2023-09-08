@@ -19,7 +19,7 @@ const userStatusEventSchema = new Schema<UserStatusEvent>(
       type: String,
       description: "Raison du changement de statut",
     },
-    grantedBy: {
+    granted_by: {
       type: String,
       default: null,
       description: "Utilisateur à l'origine du changement",
@@ -55,18 +55,18 @@ const User2Schema = new Schema<User2>(
       default: null,
       description: "L'email",
     },
-    isAdmin: {
+    is_admin: {
       type: Boolean,
       default: null,
       description: "Si true, l'utilisateur a les droits d'administration",
     },
     opco: {
-      type: Boolean,
-      enum: Object.values(OPCOS),
+      type: String,
+      enum: [...Object.values(OPCOS), null],
       default: null,
       description: "Si rempli, donne les droits d'un OPCO",
     },
-    lastConnection: {
+    last_connection: {
       type: Date,
       default: null,
       description: "Date de dernière connexion",
@@ -79,6 +79,10 @@ const User2Schema = new Schema<User2>(
     history: {
       type: [userStatusEventSchema],
       description: "Evénements liés au cycle de vie de l'utilisateur",
+    },
+    origin: {
+      type: String,
+      description: "Origine de la creation de l'utilisateur (ex: Campagne mail, lien web, etc...) pour suivi",
     },
   },
   {

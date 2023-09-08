@@ -26,18 +26,18 @@ export class MongoEntityRepository<T extends Entity> implements EntityRepository
     const docOpt = await this.mongoTable.findOne(query)
     return docOpt ? this.mapDocument(docOpt) : null
   }
-  async create(entity: Omit<T, "id">): Promise<T> {
+  async create(entity: Omit<T, "_id" | "createdAt" | "updatedAt">): Promise<T> {
     const document = await this.mongoTable.create(omit(entity, "_id"))
     return this.mapDocument(document)
   }
   async update(id: string, entity: Partial<T>): Promise<void> {
     // @ts-ignore
-    await this.mongoTable.findOneAndUpdate({ _id: id }, { $set: entity, updatedAt: new Date() })
+    await this.mongoTable.findOneAndUpdate({ _id: id }, { $set: { ...entity, updatedAt: new Date() } })
   }
   async delete(id: string): Promise<void> {
     await this.mongoTable.deleteOne({ _id: id })
   }
   private mapDocument(mongoDocument: EnforceDocument<T, {}>): T {
-    return { ...mongoDocument, id: mongoDocument._id }
+    return { ...mongoDocument }
   }
 }

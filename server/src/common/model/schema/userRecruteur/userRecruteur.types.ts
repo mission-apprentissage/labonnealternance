@@ -1,8 +1,8 @@
-import { ETAT_UTILISATEUR } from "../../../../services/constant.service.js"
+import { ETAT_UTILISATEUR, VALIDATION_UTILISATEUR } from "../../../../services/constant.service.js"
 import { IGlobalAddress } from "../_shared/shared.types.js"
 
 export interface IUserStatusValidation {
-  validation_type: string
+  validation_type: VALIDATION_UTILISATEUR
   status: ETAT_UTILISATEUR
   reason: string
   user: string

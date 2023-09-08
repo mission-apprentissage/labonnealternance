@@ -6,13 +6,13 @@ export enum ApplicantRole {
 }
 
 export type Application2 = Entity & {
-  applicantId: string
-  jobId: string
-  applicantRole: ApplicantRole
+  applicant_id: string
+  job_id: string
+  applicant_role: ApplicantRole
   applicant_attachment_name: string
   applicant_message_to_company: string
   company_recruitment_intention: string
-  companyFeedback?: {
+  company_feedback?: {
     message: string
     date: Date
   }

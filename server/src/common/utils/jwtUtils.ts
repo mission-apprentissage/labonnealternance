@@ -1,6 +1,5 @@
 // @ts-nocheck
 import jwt from "jsonwebtoken"
-import { pick } from "lodash-es"
 import config from "../../config.js"
 import { CFA } from "../../services/constant.service.js"
 
@@ -43,4 +42,4 @@ const createUserRecruteurToken = (user, options = {}) => {
 
 const createMagicLinkToken = (subject, options = {}) => createToken("magiclink", subject, options)
 
-export { createActivationToken, createPasswordToken, createUserToken, createUserRecruteurToken, createMagicLinkToken }
+export { createActivationToken, createMagicLinkToken, createPasswordToken, createUserRecruteurToken, createUserToken }

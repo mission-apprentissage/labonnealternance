@@ -1,30 +1,29 @@
-import { User2, NewUser, UserEventType, UserStatusEvent, NewUserStatusEvent } from "../../common/model/schema/multiCompte/user2.types.js"
+import { mailTemplate } from "../../assets/index.js"
 import { EntityRepository } from "../../common/model/generic/EntityRepository.js"
-import { Entity } from "../../common/model/generic/Entity.js"
-import { AccessAuthorizationService } from "./accessAuthorization.service.js"
+import { NewUser, NewUserStatusEvent, User2, UserEventType } from "../../common/model/schema/multiCompte/user2.types.js"
+import { createMagicLinkToken } from "../../common/utils/jwtUtils.js"
+import config from "../../config.js"
 import { BusinessErrorCodes, VALIDATION_UTILISATEUR, errorFactory } from "../../services/constant.service.js"
 import { sendUserConfirmationEmail } from "../../services/etablissement.service.js"
-import config from "../../config.js"
-import { createMagicLinkToken } from "../../common/utils/jwtUtils.js"
 import mailer from "../../services/mailer.service.js"
-import { mailTemplate } from "../../assets/index.js"
+import { AccessAuthorizationService } from "./accessAuthorization.service.js"
 
 export class User2Service {
   constructor(private readonly userRepository: EntityRepository<User2>, private readonly accessAuthorizationService: AccessAuthorizationService) {}
 
-  async create(newUser: NewUser) {
+  async create(newUser: NewUser, origin?: string) {
     const userOpt = await this.findByEmail(newUser.email)
     if (userOpt) {
       return errorFactory("L'utilisateur existe déjà", BusinessErrorCodes.ALREADY_EXISTS)
     }
-    const entityBase = Entity.new()
     const formatedEmail = this.formatEmail(newUser.email)
-    const user: User2 = {
-      ...entityBase,
+    const user = {
       ...newUser,
-      lastConnection: new Date(),
+      last_connection: new Date(),
       email: formatedEmail,
       history: [],
+      is_anonymized: false,
+      origin,
     }
     return this.userRepository.create(user)
   }
@@ -33,13 +32,13 @@ export class User2Service {
     if (!userOpt) {
       return errorFactory("L'utilisateur n'existe pas", BusinessErrorCodes.DOES_NOT_EXIST)
     }
-    if (this.isInactif(userOpt)) {
-      return errorFactory("Utilisateur inactif", BusinessErrorCodes.DISABLED)
+    if (this.isDesactive(userOpt)) {
+      return errorFactory("Utilisateur désactivé", BusinessErrorCodes.DISABLED)
     }
-    if (userOpt.isAdmin || userOpt.opco) {
+    if (userOpt.is_admin || userOpt.opco) {
       return { user: userOpt }
     }
-    const allAccess = await this.accessAuthorizationService.getAccessFor(userOpt.id)
+    const allAccess = await this.accessAuthorizationService.getAccessFor(userOpt._id)
     if (!allAccess.length) {
       return errorFactory("Utilisateur sans droits")
     }
@@ -51,7 +50,7 @@ export class User2Service {
       return loginAuthorization
     }
     const { user, access } = loginAuthorization
-    await this.userRepository.update(user.id, { lastConnection: new Date() })
+    await this.userRepository.update(user._id, { last_connection: new Date() })
     if (this.hasUserValidatedEmail(user)) {
       await this.sendLoginMail(user)
       return { user, access }
@@ -60,7 +59,7 @@ export class User2Service {
         email: user.email,
         firstName: user.firstname,
         lastName: user.lastname,
-        userRecruteurId: user.id,
+        userRecruteurId: user._id,
       })
       return errorFactory("Utilisateur en attente de validation de son email")
     }
@@ -76,8 +75,8 @@ export class User2Service {
     userOpt.history.push({ ...event, date: new Date() })
     await this.userRepository.update(id, { history: userOpt.history })
   }
-  private isInactif(user: User2) {
-    return this.getLastStatus(user) === UserEventType.INACTIF
+  private isDesactive(user: User2) {
+    return this.getLastStatus(user) === UserEventType.DESACTIVE
   }
   private findByEmail(email: string) {
     return this.userRepository.findOneBy({ email: this.formatEmail(email) })
@@ -104,10 +103,7 @@ export class User2Service {
           logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
         },
         last_name: lastname,
-        first_name: firstname,
-        connexion_url: magiclink,
-      },
-    })
+        first_name: firstname,: Partial<User2>
   }
 }
 
@@ -119,7 +115,7 @@ export function newServerUserEvent({ reason, status }: Omit<NewUserStatusEvent, 
     grantedBy: "server",
   }
 }
-export function newManualUserEvent({ reason, status, grantedBy }: Omit<NewUserStatusEvent, "validation_type">) {
+export function newManualUserEvent({ reason, status, granted_by: grantedBy }: Omit<NewUserStatusEvent, "validation_type">) {
   return {
     reason,
     status,

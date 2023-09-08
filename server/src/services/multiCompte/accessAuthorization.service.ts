@@ -1,5 +1,4 @@
 import { groupBy } from "lodash-es"
-import { Entity } from "../../common/model/generic/Entity.js"
 import { EntityRepository } from "../../common/model/generic/EntityRepository.js"
 import {
   AccessAuthorization,
@@ -12,37 +11,50 @@ import {
 export class AccessAuthorizationService {
   constructor(private readonly accessAuthorizationRepository: EntityRepository<AccessAuthorization>) {}
 
-  async add({ accessedId, accessedType, accessorId, accessorType, reason, status, validation_type, grantedBy }: NewAccessAuthorization) {
-    let authorization = await this.accessAuthorizationRepository.findOneBy({ accessedId, accessedType, accessorId, accessorType })
+  async add({
+    accessed_id: accessedId,
+    accessed_type: accessedType,
+    accessor_id: accessorId,
+    accessor_type: accessorType,
+    reason,
+    status,
+    validation_type,
+    granted_by: grantedBy,
+  }: NewAccessAuthorization) {
+    let authorization = await this.accessAuthorizationRepository.findOneBy({
+      accessed_id: accessedId,
+      accessed_type: accessedType,
+      accessor_id: accessorId,
+      accessor_type: accessorType,
+    })
     const newHistoryEvent: AccessAuthorizationEvent = {
       reason,
       date: new Date(),
       status,
       validation_type,
-      grantedBy,
+      granted_by: grantedBy,
     }
     if (authorization) {
       authorization.history.push(newHistoryEvent)
-      await this.accessAuthorizationRepository.update(authorization.id, {
+      await this.accessAuthorizationRepository.update(authorization._id, {
         history: authorization.history,
       })
     } else {
       authorization = await this.accessAuthorizationRepository.create({
-        ...Entity.new(),
-        accessedId,
-        accessedType,
-        accessorId,
-        accessorType,
+        accessed_id: accessedId,
+        accessed_type: accessedType,
+        accessor_id: accessorId,
+        accessor_type: accessorType,
         history: [newHistoryEvent],
       })
     }
     return authorization
   }
   async getAccessFor(id: string, entityType = AccessEntityType.USER) {
-    const authorizations = await this.accessAuthorizationRepository.findBy({ accessedId: id, accessedType: entityType })
+    const authorizations = await this.accessAuthorizationRepository.findBy({ accessed_id: id, accessed_type: entityType })
     const validAuthorizations = authorizations.filter((authorization) => this.getLastEvent(authorization)?.status === AccessStatus.GRANTED)
-    const groups = groupBy(validAuthorizations, ({ accessedId, accessedType }) => `${accessedType}_${accessedId}`)
-    return Object.values(groups).map(([{ accessedId, accessorType }]) => ({ accessedId, accessorType }))
+    const groups = groupBy(validAuthorizations, ({ accessed_id: accessedId, accessed_type: accessedType }) => `${accessedType}_${accessedId}`)
+    return Object.values(groups).map(([{ accessed_id: accessedId, accessor_type: accessorType }]) => ({ accessedId, accessorType }))
   }
   private getLastEvent({ history }: AccessAuthorization) {
     return history.at(history.length - 1)
