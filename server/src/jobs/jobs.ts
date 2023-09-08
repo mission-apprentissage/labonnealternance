@@ -1,5 +1,5 @@
 // import { create as createMigration, status as statusMigration, up as upMigration } from "@/jobs/migrations/migrations"
-import { IInternalJobs } from "common/model/schema/internalJobs/internalJobs.types"
+import { IInternalJobs } from "@/common/model/schema/internalJobs/internalJobs.types"
 
 import { getLoggerWithContext } from "../common/logger"
 

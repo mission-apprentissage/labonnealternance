@@ -1,7 +1,7 @@
 import Joi from "joi"
 import { differenceBy } from "lodash-es"
 
-import { getStaticFilePath } from "common/utils/getStaticFilePath"
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 import { logger } from "../../../common/logger"
 import { Optout, UserRecruteur } from "../../../common/model/index"
