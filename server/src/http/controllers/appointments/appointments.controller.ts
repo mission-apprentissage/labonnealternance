@@ -9,7 +9,7 @@ import { isValidEmail } from "../../../common/utils/isValidEmail"
 import config from "../../../config"
 import * as eligibleTrainingsForAppointmentService from "../../../services/eligibleTrainingsForAppointment.service"
 
-import { TCreateContextBody, TCreateContextResponse, TCreateContextResponseError } from "./types"
+import type { TCreateContextBody, TCreateContextResponse, TCreateContextResponseError } from "./types"
 import { contextCreateSchema } from "./validators"
 
 @Tags("Appointment Request")

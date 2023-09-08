@@ -1,9 +1,9 @@
-import path from "path"
-
 import { isEmailBurner } from "burner-email-providers"
 import Joi from "joi"
 import { Document } from "mongoose"
 import { oleoduc, writeData } from "oleoduc"
+
+import { getStaticFilePath } from "common/utils/getStaticFilePath"
 
 import __dirname from "../common/dirname"
 import { logger } from "../common/logger"
@@ -24,7 +24,6 @@ import mailer from "./mailer.service"
 
 const publicUrl = config.publicUrl
 const publicUrlEspacePro = config.publicUrlEspacePro
-const currentDirname = __dirname(import.meta.url)
 
 const imagePath = `${config.publicUrl}/images/emails/`
 
@@ -347,7 +346,7 @@ const initApplication = (params: any, company_email: string): IApplication & Doc
  * @return {string}
  */
 export const getEmailTemplate = (type = "mail-candidat"): string => {
-  return path.join(currentDirname, `../assets/templates/${type}.mjml.ejs`)
+  return getStaticFilePath(`./templates/${type}.mjml.ejs`)
 }
 
 interface IApplicationTemplates {

@@ -1,7 +1,7 @@
-import path from "path"
-
 import express from "express"
 import rateLimit from "express-rate-limit"
+
+import { getStaticFilePath } from "common/utils/getStaticFilePath"
 
 import __dirname from "../../common/dirname"
 import { BonnesBoites, UnsubscribedBonneBoite } from "../../common/model/index"
@@ -9,8 +9,6 @@ import config from "../../config"
 import { UNSUBSCRIBE_EMAIL_ERRORS } from "../../services/constant.service"
 import mailer from "../../services/mailer.service"
 import { tryCatch } from "../middlewares/tryCatchMiddleware"
-
-const currentDirname = __dirname(import.meta.url)
 
 const limiter1Per5Second = rateLimit({
   windowMs: 5000, // 5 seconds
@@ -51,7 +49,7 @@ export default function () {
         await mailer.sendEmail({
           to: email,
           subject: `Confirmation de déréférencement du service La bonne alternance`,
-          template: path.join(currentDirname, `../../assets/templates/mail-desinscription-algo.mjml.ejs`),
+          template: getStaticFilePath("./templates/mail-desinscription-algo.mjml.ejs"),
           data: {
             images: {
               logoLba: `${imagePath}logo_LBA.png`,

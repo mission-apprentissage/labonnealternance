@@ -3,7 +3,8 @@ import { randomUUID } from "crypto"
 import { Filter } from "mongodb"
 import { ModelUpdateOptions, UpdateQuery } from "mongoose"
 
-import { mailTemplate } from "../assets/index"
+import { getStaticFilePath } from "common/utils/getStaticFilePath"
+
 import { UserRecruteur } from "../common/model/index"
 import { IUserRecruteur, IUserStatusValidation } from "../common/model/schema/userRecruteur/userRecruteur.types"
 import { createMagicLinkToken } from "../common/utils/jwtUtils"
@@ -171,7 +172,7 @@ export const sendWelcomeEmailToUserRecruteur = async (userRecruteur: IUserRecrut
   await mailer.sendEmail({
     to: email,
     subject: "Bienvenue sur La bonne alternance",
-    template: mailTemplate["mail-bienvenue"],
+    template: getStaticFilePath("./templates/mail-bienvenue.mjml.ejs"),
     data: {
       images: {
         logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,

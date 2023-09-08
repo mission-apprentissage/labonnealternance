@@ -1,6 +1,7 @@
 import * as _ from "lodash-es"
 
-import { mailTemplate } from "../../assets/index"
+import { getStaticFilePath } from "common/utils/getStaticFilePath"
+
 import { logger } from "../../common/logger"
 import { mailType } from "../../common/model/constants/etablissement"
 import { referrers } from "../../common/model/constants/referrers"
@@ -53,7 +54,7 @@ export const activateOptOutEtablissementFormations = async () => {
       const { messageId } = await mailer.sendEmail({
         to: etablissement.gestionnaire_email,
         subject: `La prise de RDV est activée pour votre CFA sur La bonne alternance`,
-        template: mailTemplate["mail-cfa-optout-start"],
+        template: getStaticFilePath("./templates/mail-cfa-optout-start.mjml.ejs"),
         data: {
           images: {
             logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
@@ -88,7 +89,7 @@ export const activateOptOutEtablissementFormations = async () => {
           mailer.sendEmail({
             to: email,
             subject: `La prise de RDV est activée pour votre CFA sur La bonne alternance`,
-            template: mailTemplate["mail-cfa-optout-activated"],
+            template: getStaticFilePath("./templates/mail-cfa-optout-activated.mjml.ejs"),
             data: {
               url: config.publicUrl,
               replyTo: config.publicEmail,

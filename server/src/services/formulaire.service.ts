@@ -3,7 +3,8 @@ import moment from "moment"
 import { Filter } from "mongodb"
 import { ModelUpdateOptions, UpdateQuery } from "mongoose"
 
-import { mailTemplate } from "../assets/index"
+import { getStaticFilePath } from "common/utils/getStaticFilePath"
+
 import { getElasticInstance } from "../common/esClient/index"
 import { Recruiter, UnsubscribeOF } from "../common/model/index"
 import { IJobs } from "../common/model/schema/jobs/jobs.types"
@@ -580,7 +581,7 @@ export async function sendDelegationMailToCFA(email: string, offre: IJobs, recru
   await mailer.sendEmail({
     to: email,
     subject: `Une entreprise recrute dans votre domaine`,
-    template: mailTemplate["mail-cfa-delegation"],
+    template: getStaticFilePath("./templates/mail-cfa-delegation.mjml.ejs"),
     data: {
       images: {
         logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
@@ -611,7 +612,7 @@ export async function sendMailNouvelleOffre(recruiter: IRecruiter, job: Partial<
   await mailer.sendEmail({
     to: is_delegated ? contactCFA.email : email,
     subject: is_delegated ? `Votre offre d'alternance pour ${establishmentTitle} est publiée` : `Votre offre d'alternance est publiée`,
-    template: mailTemplate["mail-nouvelle-offre"],
+    template: getStaticFilePath("./templates/mail-nouvelle-offre.mjml.ejs"),
     data: {
       images: {
         logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,

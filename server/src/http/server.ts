@@ -1,6 +1,5 @@
 // @ts-nocheck
 import { readFileSync } from "fs"
-import path from "path"
 
 import Sentry from "@sentry/node"
 import Tracing from "@sentry/tracing"
@@ -8,11 +7,13 @@ import express from "express"
 import swaggerDoc from "swagger-jsdoc"
 import swaggerUi from "swagger-ui-express"
 
+import { getStaticFilePath } from "common/utils/getStaticFilePath"
+
 import __dirname from "../common/dirname"
 import { logger } from "../common/logger"
 import config from "../config"
 // eslint-disable-next-line import/no-unresolved, node/no-unpublished-import
-// import { RegisterRoutes } from "../generated/routes"
+import { RegisterRoutes } from "../generated/routes"
 import { initBrevoWebhooks } from "../services/brevo.service"
 
 import rome from "./controllers/metiers/rome.controller"
@@ -55,9 +56,8 @@ import "../auth/passport-strategy"
 /**
  * LBA-Candidat Swagger file
  */
-const dirname = __dirname(import.meta.url)
-const deprecatedSwaggerDocument = JSON.parse(readFileSync(path.resolve(dirname, "../src/assets/api-docs/swagger.json")))
-// const swaggerDocument = JSON.parse(readFileSync(path.resolve(dirname, "../generated/swagger.json")))
+const deprecatedSwaggerDocument = JSON.parse(readFileSync(getStaticFilePath("./api-docs/swagger.json")))
+const swaggerDocument = JSON.parse(readFileSync(getStaticFilePath("./generated/swagger.json")))
 
 /**
  * LBA-Recruteur Swagger configuration
@@ -164,10 +164,10 @@ export default async (components) => {
    * Swaggers
    */
   app.get("/api-docs/swagger.json", (req, res) => {
-    res.sendFile(path.resolve(dirname, "../assets/api-docs/swagger.json"))
+    res.sendFile(getStaticFilePath("./api-docs/swagger.json"))
   })
 
-  // app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument))
+  app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument))
   app.use("/api/v1/lba-docs", swaggerUi.serve, swaggerUi.setup(deprecatedSwaggerDocument, swaggerUIOptions))
   app.use("/api/v1/lbar-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpecification, swaggerUIOptions))
 
@@ -178,7 +178,7 @@ export default async (components) => {
   app.use("/api/v1/jobs", limiter5PerSecond)
   //app.use("/api/romelabels", limiter10PerSecond)
 
-  // RegisterRoutes(app)
+  RegisterRoutes(app)
 
   /**
    * LBACandidat

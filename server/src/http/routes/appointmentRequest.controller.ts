@@ -2,7 +2,8 @@ import Boom from "boom"
 import express from "express"
 import Joi from "joi"
 
-import { mailTemplate } from "../../assets/index"
+import { getStaticFilePath } from "common/utils/getStaticFilePath"
+
 import { mailType } from "../../common/model/constants/appointments"
 import { getReferrerByKeyName } from "../../common/model/constants/referrers"
 import config from "../../config"
@@ -145,13 +146,13 @@ export default ({ etablissements }) => {
         mailer.sendEmail({
           to: user.email,
           subject: `Le centre de formation a bien reçu votre demande de contact !`,
-          template: mailTemplate["mail-candidat-confirmation-rdv"],
+          template: getStaticFilePath("./templates/mail-candidat-confirmation-rdv.mjml.ejs"),
           data: mailData,
         }),
         mailer.sendEmail({
           to: eligibleTrainingsForAppointment.lieu_formation_email,
           subject: emailCfaSubject,
-          template: mailTemplate["mail-cfa-demande-de-contact"],
+          template: getStaticFilePath("./templates/mail-cfa-demande-de-contact.mjml.ejs"),
           data: mailData,
         }),
       ])
@@ -239,7 +240,7 @@ export default ({ etablissements }) => {
         await mailer.sendEmail({
           to: user.email,
           subject: `[La bonne alternance] Le centre de formation vous répond`,
-          template: mailTemplate["mail-reponse-cfa"],
+          template: getStaticFilePath("./templates/mail-reponse-cfa.mjml.ejs"),
           data: {
             logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
             prenom: user.firstname,

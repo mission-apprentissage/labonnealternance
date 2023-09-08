@@ -12,6 +12,7 @@ const config = {
   elasticSearch: "http://localhost:9200",
   publicEmail: "labonnealternance@apprentissage.beta.gouv.fr",
   transactionalEmail: "nepasrepondre@apprentissage.beta.gouv.fr",
+  disable_processors: env.get("LBA_DISABLE_PROCESSORS").default("false").asBool(),
   log: {
     level: env.get("LBA_LOG_LEVEL").default("info").asString(),
     format: env.get("LBA_LOG_FORMAT").default("pretty").asString(),

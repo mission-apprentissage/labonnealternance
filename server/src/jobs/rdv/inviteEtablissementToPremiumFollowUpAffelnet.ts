@@ -1,4 +1,5 @@
-import { mailTemplate } from "../../assets/index"
+import { getStaticFilePath } from "common/utils/getStaticFilePath"
+
 import { logger } from "../../common/logger"
 import { mailType } from "../../common/model/constants/etablissement"
 import { Etablissement } from "../../common/model/index"
@@ -39,7 +40,7 @@ export const inviteEtablissementAffelnetToPremiumFollowUp = async () => {
     const { messageId } = await mailer.sendEmail({
       to: etablissement.gestionnaire_email,
       subject: `Trouvez et recrutez vos candidats sur Choisir son affectation après la 3e`,
-      template: mailTemplate["mail-cfa-premium-invite-followup"],
+      template: getStaticFilePath("./templates/mail-cfa-premium-invite-followup.mjml.ejs"),
       data: {
         isAffelnet: true,
         images: {

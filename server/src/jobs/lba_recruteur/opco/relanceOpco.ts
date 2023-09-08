@@ -1,4 +1,5 @@
-import { mailTemplate } from "../../../assets/index"
+import { getStaticFilePath } from "common/utils/getStaticFilePath"
+
 import { UserRecruteur } from "../../../common/model/index"
 import { IUserRecruteur } from "../../../common/model/schema/userRecruteur/userRecruteur.types"
 import { asyncForEach } from "../../../common/utils/asyncUtils"
@@ -38,7 +39,7 @@ export const relanceOpco = async () => {
       await mailer.sendEmail({
         to: user.email,
         subject: "Nouveaux comptes entreprises à valider",
-        template: mailTemplate["mail-relance-opco"],
+        template: getStaticFilePath("./templates/mail-relance-opco.mjml.ejs"),
         data: {
           images: {
             logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,

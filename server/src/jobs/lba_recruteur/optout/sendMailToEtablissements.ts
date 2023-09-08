@@ -1,7 +1,8 @@
 import Joi from "joi"
 import { differenceBy } from "lodash-es"
 
-import { mailTemplate } from "../../../assets/index"
+import { getStaticFilePath } from "common/utils/getStaticFilePath"
+
 import { logger } from "../../../common/logger"
 import { Optout, UserRecruteur } from "../../../common/model/index"
 import { asyncForEach } from "../../../common/utils/asyncUtils"
@@ -58,7 +59,7 @@ runScript(async () => {
       data = await mailer.sendEmail({
         to: email,
         subject: "Vous êtes invité à rejoindre La bonne alternance",
-        template: mailTemplate["mail-optout"],
+        template: getStaticFilePath("./templates/mail-optout.mjml.ejs"),
         data: {
           images: {
             logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,

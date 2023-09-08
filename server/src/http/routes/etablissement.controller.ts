@@ -3,7 +3,8 @@ import express from "express"
 import Joi from "joi"
 import * as _ from "lodash-es"
 
-import { mailTemplate } from "../../assets/index"
+import { getStaticFilePath } from "common/utils/getStaticFilePath"
+
 import { mailType } from "../../common/model/constants/etablissement"
 import { referrers } from "../../common/model/constants/referrers"
 import config from "../../config"
@@ -62,7 +63,7 @@ export default ({ etablissements }) => {
       const mailAffelnet = await mailer.sendEmail({
         to: etablissement.gestionnaire_email,
         subject: `La prise de RDV est activée pour votre CFA sur Choisir son affectation après la 3e`,
-        template: mailTemplate["mail-cfa-premium-start"],
+        template: getStaticFilePath("./templates/mail-cfa-premium-start.mjml.ejs"),
         data: {
           isAffelnet: true,
           images: {
@@ -110,7 +111,7 @@ export default ({ etablissements }) => {
           mailer.sendEmail({
             to: email,
             subject: `La prise de RDV est activée pour votre CFA sur Choisir son affectation après la 3e`,
-            template: mailTemplate["mail-cfa-premium-activated"],
+            template: getStaticFilePath("./templates/mail-cfa-premium-activated.mjml.ejs"),
             data: {
               isAffelnet: true,
               url: config.publicUrl,
@@ -173,7 +174,7 @@ export default ({ etablissements }) => {
       const mailParcoursup = await mailer.sendEmail({
         to: etablissement.gestionnaire_email,
         subject: `La prise de RDV est activée pour votre CFA sur Parcoursup`,
-        template: mailTemplate["mail-cfa-premium-start"],
+        template: getStaticFilePath("./templates/mail-cfa-premium-start.mjml.ejs"),
         data: {
           isParcoursup: true,
           images: {
@@ -224,7 +225,7 @@ export default ({ etablissements }) => {
           mailer.sendEmail({
             to: email,
             subject: `La prise de RDV est activée pour votre CFA sur Parcoursup`,
-            template: mailTemplate["mail-cfa-premium-activated"],
+            template: getStaticFilePath("./templates/mail-cfa-premium-activated.mjml.ejs"),
             data: {
               isParcoursup: true,
               url: config.publicUrl,
@@ -291,7 +292,7 @@ export default ({ etablissements }) => {
       const mailAffelnet = await mailer.sendEmail({
         to: etablissement.gestionnaire_email,
         subject: `La prise de RDV ne sera pas activée pour votre CFA sur Choisir son affectation après la 3e`,
-        template: mailTemplate["mail-cfa-premium-refused"],
+        template: getStaticFilePath("./templates/mail-cfa-premium-refused.mjml.ejs"),
         data: {
           isAffelnet: true,
           images: {
@@ -355,7 +356,7 @@ export default ({ etablissements }) => {
       const mailParcoursup = await mailer.sendEmail({
         to: etablissement.gestionnaire_email,
         subject: `La prise de RDV ne sera pas activée pour votre CFA sur Parcoursup`,
-        template: mailTemplate["mail-cfa-premium-refused"],
+        template: getStaticFilePath("./templates/mail-cfa-premium-refused.mjml.ejs"),
         data: {
           isParcoursup: true,
           images: {
@@ -454,7 +455,7 @@ export default ({ etablissements }) => {
         await mailer.sendEmail({
           to: config.publicEmail,
           subject: `Un CFA se pose une question concernant l'opt-out"`,
-          template: mailTemplate["mail-rdva-optout-unsubscription-question"],
+          template: getStaticFilePath("./templates/mail-rdva-optout-unsubscription-question.mjml.ejs"),
           data: {
             images: {
               logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
@@ -497,7 +498,7 @@ export default ({ etablissements }) => {
       const { messageId } = await mailer.sendEmail({
         to: etablissement.gestionnaire_email,
         subject: `La prise de RDV ne sera pas activée pour votre CFA sur La bonne alternance`,
-        template: mailTemplate["mail-cfa-optout-unsubscription"],
+        template: getStaticFilePath("./templates/mail-cfa-optout-unsubscription.mjml.ejs"),
         data: {
           images: {
             logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,

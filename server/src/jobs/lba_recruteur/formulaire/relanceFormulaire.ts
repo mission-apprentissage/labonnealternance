@@ -1,6 +1,7 @@
 // @ts-nocheck
 
-import { mailTemplate } from "../../../assets/index"
+import { getStaticFilePath } from "common/utils/getStaticFilePath"
+
 import { logger } from "../../../common/logger"
 import { Recruiter, UserRecruteur } from "../../../common/model/index"
 import { IRecruiter } from "../../../common/model/schema/recruiter/recruiter.types"
@@ -66,7 +67,7 @@ export const relanceFormulaire = async (threshold) => {
     await mailer.sendEmail({
       to: contactCFA?.email ?? email,
       subject: "Vos offres expirent bientôt",
-      template: mailTemplate["mail-expiration-offres"],
+      template: getStaticFilePath("./templates/mail-expiration-offres.mjml.ejs"),
       data: {
         images: {
           logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,

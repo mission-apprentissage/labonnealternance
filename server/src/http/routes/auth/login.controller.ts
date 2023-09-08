@@ -1,7 +1,8 @@
 import express from "express"
 import Joi from "joi"
 
-import { mailTemplate } from "../../../assets/index"
+import { getStaticFilePath } from "common/utils/getStaticFilePath"
+
 import { UserRecruteur } from "../../../common/model/index"
 import { IUserRecruteur } from "../../../common/model/schema/userRecruteur/userRecruteur.types"
 import { createMagicLinkToken, createUserRecruteurToken, createUserToken } from "../../../common/utils/jwtUtils"
@@ -101,7 +102,7 @@ export default () => {
       await mailer.sendEmail({
         to: userEmail,
         subject: "Lien de connexion",
-        template: mailTemplate["mail-connexion"],
+        template: getStaticFilePath("./templates/mail-connexion.mjml.ejs"),
         data: {
           images: {
             logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,

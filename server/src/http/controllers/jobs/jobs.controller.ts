@@ -26,11 +26,11 @@ import {
   patchOffre,
   provideOffre,
 } from "../../../services/formulaire.service"
-import { ILbaItem } from "../../../services/lbaitem.shared.service.types"
+import type { ILbaItem } from "../../../services/lbaitem.shared.service.types"
 import { addOffreDetailView, addOffreSearchView, getLbaJobById } from "../../../services/lbajob.service"
 import { getAppellationDetailsFromAPI, getRomeDetailsFromAPI } from "../../../services/rome.service"
 
-import { ICreateDelegation, ICreateJobBody, IGetDelegation, TCreateEstablishmentBody, TEstablishmentResponseSuccess, TJob, TResponseError } from "./jobs.types"
+import type { ICreateDelegation, ICreateJobBody, IGetDelegation, TCreateEstablishmentBody, TEstablishmentResponseSuccess, TJob, TResponseError } from "./jobs.types"
 import { createDelegationSchema, createEstablishmentSchema, createJobSchema, getEstablishmentEntitySchema, updateJobSchema } from "./jobs.validators"
 
 @Tags("Jobs")

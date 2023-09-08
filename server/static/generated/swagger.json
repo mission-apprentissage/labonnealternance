@@ -1,0 +1,3271 @@
+{
+	"components": {
+		"examples": {},
+		"headers": {},
+		"parameters": {},
+		"requestBodies": {},
+		"responses": {},
+		"schemas": {
+			"TCreateContextResponse": {
+				"properties": {
+					"form_url": {
+						"type": "string"
+					},
+					"cle_ministere_educatif": {
+						"type": "string"
+					},
+					"id_rco_formation": {
+						"type": "string"
+					},
+					"localite": {
+						"type": "string"
+					},
+					"cfd": {
+						"type": "string"
+					},
+					"etablissement_formateur_siret": {
+						"type": "string"
+					},
+					"code_postal": {
+						"type": "string"
+					},
+					"lieu_formation_adresse": {
+						"type": "string"
+					},
+					"intitule_long": {
+						"type": "string"
+					},
+					"etablissement_formateur_entreprise_raison_sociale": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"form_url",
+					"cle_ministere_educatif",
+					"id_rco_formation",
+					"localite",
+					"cfd",
+					"etablissement_formateur_siret",
+					"code_postal",
+					"lieu_formation_adresse",
+					"intitule_long",
+					"etablissement_formateur_entreprise_raison_sociale"
+				],
+				"type": "object"
+			},
+			"TCreateContextResponseError": {
+				"properties": {
+					"error": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"error"
+				],
+				"type": "object"
+			},
+			"TCreateContextBody": {
+				"properties": {
+					"referrer": {
+						"type": "string"
+					},
+					"trainingHasJob": {
+						"type": "boolean"
+					},
+					"idCleMinistereEducatif": {
+						"type": "string"
+					},
+					"idActionFormation": {
+						"type": "string"
+					},
+					"idRcoFormation": {
+						"type": "string"
+					},
+					"idParcoursup": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"referrer"
+				],
+				"type": "object"
+			},
+			"TResponseError": {
+				"properties": {
+					"message": {
+						"type": "string"
+					},
+					"error": {
+						"type": "boolean"
+					}
+				},
+				"required": [
+					"message",
+					"error"
+				],
+				"type": "object"
+			},
+			"Academie": {
+				"properties": {
+					"code": {
+						"type": "string"
+					},
+					"nom": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"code",
+					"nom"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IGeometry": {
+				"properties": {
+					"coordinates": {
+						"items": {
+							"type": "number",
+							"format": "double"
+						},
+						"type": "array"
+					},
+					"type": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"coordinates",
+					"type"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IProperties": {
+				"properties": {
+					"score": {
+						"type": "number",
+						"format": "double"
+					},
+					"source": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"score",
+					"source"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Geojson": {
+				"properties": {
+					"geometry": {
+						"$ref": "#/components/schemas/IGeometry"
+					},
+					"properties": {
+						"$ref": "#/components/schemas/IProperties"
+					},
+					"type": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"geometry",
+					"properties",
+					"type"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"AcheminementPostal": {
+				"properties": {
+					"l1": {
+						"type": "string"
+					},
+					"l2": {
+						"type": "string"
+					},
+					"l3": {
+						"type": "string"
+					},
+					"l4": {
+						"type": "string"
+					},
+					"l5": {
+						"type": "string"
+					},
+					"l6": {
+						"type": "string"
+					},
+					"l7": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"l1",
+					"l2",
+					"l3",
+					"l4",
+					"l5",
+					"l6",
+					"l7"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IAdresseCFA": {
+				"properties": {
+					"academie": {
+						"$ref": "#/components/schemas/Academie"
+					},
+					"code_insee": {
+						"type": "string"
+					},
+					"code_postal": {
+						"type": "string"
+					},
+					"departement": {
+						"$ref": "#/components/schemas/Academie"
+					},
+					"geojson": {
+						"$ref": "#/components/schemas/Geojson"
+					},
+					"label": {
+						"type": "string"
+					},
+					"localite": {
+						"type": "string"
+					},
+					"region": {
+						"$ref": "#/components/schemas/Academie"
+					},
+					"acheminement_postal": {
+						"$ref": "#/components/schemas/AcheminementPostal"
+					}
+				},
+				"required": [
+					"academie",
+					"code_insee",
+					"code_postal",
+					"departement",
+					"geojson",
+					"label",
+					"localite",
+					"region"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IAdresseV2": {
+				"properties": {
+					"l1": {
+						"type": "string"
+					},
+					"l2": {
+						"type": "string"
+					},
+					"l3": {
+						"type": "string"
+					},
+					"l4": {
+						"type": "string"
+					},
+					"l5": {
+						"type": "string"
+					},
+					"l6": {
+						"type": "string"
+					},
+					"l7": {
+						"type": "string"
+					},
+					"numero_voie": {
+						"type": "string"
+					},
+					"type_voie": {
+						"type": "string"
+					},
+					"nom_voie": {
+						"type": "string"
+					},
+					"complement_adresse": {
+						"type": "string"
+					},
+					"code_postal": {
+						"type": "string"
+					},
+					"localite": {
+						"type": "string"
+					},
+					"code_insee_localite": {
+						"type": "string"
+					},
+					"cedex": {
+						"type": "number",
+						"enum": [
+							null
+						],
+						"nullable": true
+					},
+					"acheminement_postal": {
+						"$ref": "#/components/schemas/AcheminementPostal"
+					}
+				},
+				"required": [
+					"l1",
+					"l2",
+					"l3",
+					"l4",
+					"l5",
+					"l6",
+					"l7",
+					"numero_voie",
+					"type_voie",
+					"nom_voie",
+					"complement_adresse",
+					"code_postal",
+					"localite",
+					"code_insee_localite",
+					"cedex"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IAdresseV3": {
+				"properties": {
+					"status_diffusion": {
+						"type": "string"
+					},
+					"complement_adresse": {
+						"type": "string"
+					},
+					"numero_voie": {
+						"type": "string"
+					},
+					"indice_repetition_voie": {
+						"type": "string"
+					},
+					"type_voie": {
+						"type": "string"
+					},
+					"libelle_voie": {
+						"type": "string"
+					},
+					"code_postal": {
+						"type": "string"
+					},
+					"libelle_commune": {
+						"type": "string"
+					},
+					"libelle_commune_etranger": {
+						"type": "string"
+					},
+					"distribution_speciale": {
+						"type": "string"
+					},
+					"code_commune": {
+						"type": "string"
+					},
+					"code_cedex": {
+						"type": "string"
+					},
+					"libelle_cedex": {
+						"type": "string"
+					},
+					"code_pays_etranger": {
+						"type": "string"
+					},
+					"libelle_pays_etranger": {
+						"type": "string"
+					},
+					"acheminement_postal": {
+						"$ref": "#/components/schemas/AcheminementPostal"
+					}
+				},
+				"required": [
+					"status_diffusion",
+					"complement_adresse",
+					"numero_voie",
+					"indice_repetition_voie",
+					"type_voie",
+					"libelle_voie",
+					"code_postal",
+					"libelle_commune",
+					"libelle_commune_etranger",
+					"distribution_speciale",
+					"code_commune",
+					"code_cedex",
+					"libelle_cedex",
+					"code_pays_etranger",
+					"libelle_pays_etranger"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IGlobalAddress": {
+				"anyOf": [
+					{
+						"$ref": "#/components/schemas/IAdresseCFA"
+					},
+					{
+						"$ref": "#/components/schemas/IAdresseV2"
+					},
+					{
+						"$ref": "#/components/schemas/IAdresseV3"
+					}
+				]
+			},
+			"JOB_STATUS": {
+				"enum": [
+					"Active",
+					"Pourvue",
+					"Annulée",
+					"En attente"
+				],
+				"type": "string"
+			},
+			"IDelegation": {
+				"properties": {
+					"siret_code": {
+						"type": "string"
+					},
+					"email": {
+						"type": "string"
+					},
+					"cfa_read_company_detail_at": {
+						"anyOf": [
+							{
+								"type": "string",
+								"format": "date-time"
+							},
+							{
+								"type": "string"
+							}
+						]
+					}
+				},
+				"required": [
+					"siret_code",
+					"email",
+					"cfa_read_company_detail_at"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IJobs": {
+				"properties": {
+					"_id": {
+						"type": "string"
+					},
+					"rome_label": {
+						"type": "string"
+					},
+					"rome_appellation_label": {
+						"type": "string"
+					},
+					"job_level_label": {
+						"type": "string"
+					},
+					"job_description": {
+						"type": "string"
+					},
+					"job_employer_description": {
+						"type": "string"
+					},
+					"job_start_date": {
+						"anyOf": [
+							{
+								"type": "string",
+								"format": "date-time"
+							},
+							{
+								"type": "string"
+							}
+						]
+					},
+					"rome_code": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					},
+					"rome_detail": {
+						"additionalProperties": false,
+						"type": "object"
+					},
+					"job_creation_date": {
+						"anyOf": [
+							{
+								"type": "string",
+								"format": "date-time"
+							},
+							{
+								"type": "string"
+							}
+						]
+					},
+					"job_expiration_date": {
+						"anyOf": [
+							{
+								"type": "string",
+								"format": "date-time"
+							},
+							{
+								"type": "string"
+							}
+						]
+					},
+					"job_update_date": {
+						"anyOf": [
+							{
+								"type": "string",
+								"format": "date-time"
+							},
+							{
+								"type": "string"
+							}
+						]
+					},
+					"job_last_prolongation_date": {
+						"anyOf": [
+							{
+								"type": "string",
+								"format": "date-time"
+							},
+							{
+								"type": "string"
+							}
+						]
+					},
+					"job_prolongation_count": {
+						"type": "number",
+						"format": "double"
+					},
+					"job_status": {
+						"$ref": "#/components/schemas/JOB_STATUS"
+					},
+					"job_status_comment": {
+						"type": "string"
+					},
+					"job_type": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					},
+					"is_multi_published": {
+						"type": "boolean"
+					},
+					"is_delegated": {
+						"type": "boolean"
+					},
+					"job_delegation_count": {
+						"type": "number",
+						"format": "double"
+					},
+					"delegations": {
+						"items": {
+							"$ref": "#/components/schemas/IDelegation"
+						},
+						"type": "array"
+					},
+					"is_disabled_elligible": {
+						"type": "boolean"
+					},
+					"job_count": {
+						"type": "number",
+						"format": "double"
+					},
+					"job_duration": {
+						"type": "number",
+						"format": "double"
+					},
+					"job_rythm": {
+						"type": "string"
+					},
+					"custom_address": {
+						"type": "string"
+					},
+					"custom_geo_coordinates": {
+						"type": "string"
+					},
+					"stats_detail_view": {
+						"type": "number",
+						"format": "double"
+					},
+					"stats_search_view": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"_id",
+					"rome_label",
+					"rome_appellation_label",
+					"rome_code",
+					"rome_detail",
+					"job_creation_date",
+					"job_update_date",
+					"job_last_prolongation_date",
+					"job_prolongation_count",
+					"job_status_comment",
+					"is_multi_published",
+					"is_delegated",
+					"job_delegation_count",
+					"delegations",
+					"is_disabled_elligible",
+					"custom_address",
+					"custom_geo_coordinates"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"RECRUITER_STATUS": {
+				"enum": [
+					"Actif",
+					"Archivé",
+					"En attente de validation"
+				],
+				"type": "string"
+			},
+			"IRecruiter": {
+				"properties": {
+					"_id": {
+						"type": "string"
+					},
+					"establishment_id": {
+						"type": "string"
+					},
+					"establishment_raison_sociale": {
+						"type": "string"
+					},
+					"establishment_enseigne": {
+						"type": "string"
+					},
+					"establishment_siret": {
+						"type": "string"
+					},
+					"establishment_size": {
+						"type": "string"
+					},
+					"establishment_creation_date": {
+						"type": "string"
+					},
+					"address_detail": {
+						"$ref": "#/components/schemas/IGlobalAddress"
+					},
+					"address": {
+						"type": "string"
+					},
+					"geo_coordinates": {
+						"type": "string"
+					},
+					"is_delegated": {
+						"type": "boolean"
+					},
+					"cfa_delegated_siret": {
+						"type": "string"
+					},
+					"last_name": {
+						"type": "string"
+					},
+					"first_name": {
+						"type": "string"
+					},
+					"phone": {
+						"type": "string"
+					},
+					"email": {
+						"type": "string"
+					},
+					"jobs": {
+						"items": {
+							"$ref": "#/components/schemas/IJobs"
+						},
+						"type": "array"
+					},
+					"origin": {
+						"type": "string"
+					},
+					"opco": {
+						"type": "string"
+					},
+					"idcc": {
+						"type": "string"
+					},
+					"status": {
+						"$ref": "#/components/schemas/RECRUITER_STATUS"
+					},
+					"naf_code": {
+						"type": "string"
+					},
+					"naf_label": {
+						"type": "string"
+					},
+					"createdAt": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"updatedAt": {
+						"type": "string",
+						"format": "date-time"
+					}
+				},
+				"required": [
+					"_id",
+					"establishment_id",
+					"establishment_raison_sociale",
+					"establishment_enseigne",
+					"establishment_siret",
+					"establishment_size",
+					"establishment_creation_date",
+					"address_detail",
+					"address",
+					"geo_coordinates",
+					"is_delegated",
+					"cfa_delegated_siret",
+					"last_name",
+					"first_name",
+					"email",
+					"jobs",
+					"origin",
+					"opco",
+					"status",
+					"naf_code",
+					"naf_label",
+					"createdAt",
+					"updatedAt"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"TEstablishmentResponseSuccess": {
+				"$ref": "#/components/schemas/IRecruiter"
+			},
+			"TCreateEstablishmentBody": {
+				"properties": {
+					"origin": {
+						"type": "string"
+					},
+					"idcc": {
+						"type": "string"
+					},
+					"email": {
+						"type": "string"
+					},
+					"phone": {
+						"type": "string"
+					},
+					"last_name": {
+						"type": "string"
+					},
+					"first_name": {
+						"type": "string"
+					},
+					"establishment_siret": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"email",
+					"last_name",
+					"first_name",
+					"establishment_siret"
+				],
+				"type": "object"
+			},
+			"ICreateJobBody": {
+				"properties": {
+					"custom_geo_coordinates": {
+						"type": "string"
+					},
+					"custom_address": {
+						"type": "string"
+					},
+					"job_description": {
+						"type": "string"
+					},
+					"job_employer_description": {
+						"type": "string"
+					},
+					"job_start_date": {
+						"type": "string"
+					},
+					"job_rythm": {
+						"type": "string"
+					},
+					"job_count": {
+						"type": "number",
+						"format": "double"
+					},
+					"is_disabled_elligible": {
+						"type": "boolean"
+					},
+					"job_type": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					},
+					"job_duration": {
+						"type": "number",
+						"format": "double"
+					},
+					"job_level_label": {
+						"type": "string"
+					},
+					"appellation_code": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"job_start_date",
+					"is_disabled_elligible",
+					"job_type",
+					"job_duration",
+					"job_level_label",
+					"appellation_code"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Partial_TJob_": {
+				"properties": {
+					"job_level_label": {
+						"type": "string"
+					},
+					"job_duration": {
+						"type": "number",
+						"format": "double"
+					},
+					"job_type": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					},
+					"is_disabled_elligible": {
+						"type": "boolean"
+					},
+					"job_count": {
+						"type": "number",
+						"format": "double"
+					},
+					"job_rythm": {
+						"type": "string"
+					},
+					"job_start_date": {
+						"type": "string"
+					},
+					"job_employer_description": {
+						"type": "string"
+					},
+					"job_description": {
+						"type": "string"
+					},
+					"custom_address": {
+						"type": "string"
+					},
+					"custom_geo_coordinates": {
+						"type": "string"
+					}
+				},
+				"type": "object",
+				"description": "Make all properties in T optional"
+			},
+			"IGetDelegation": {
+				"properties": {
+					"_id": {
+						"type": "string"
+					},
+					"numero_voie": {
+						"type": "string"
+					},
+					"type_voie": {
+						"type": "string"
+					},
+					"nom_voie": {
+						"type": "string"
+					},
+					"code_postal": {
+						"type": "string"
+					},
+					"nom_departement": {
+						"type": "string"
+					},
+					"entreprise_raison_sociale": {
+						"type": "string"
+					},
+					"geo_coordonnees": {
+						"type": "string"
+					},
+					"distance_en_km": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"_id",
+					"numero_voie",
+					"type_voie",
+					"nom_voie",
+					"code_postal",
+					"nom_departement",
+					"entreprise_raison_sociale",
+					"geo_coordonnees",
+					"distance_en_km"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ICreateDelegation": {
+				"properties": {
+					"establishmentIds": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"establishmentIds"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IApiError": {
+				"properties": {
+					"result": {
+						"type": "string"
+					},
+					"error": {
+						"type": "string"
+					},
+					"message": {},
+					"status": {
+						"type": "number",
+						"format": "double"
+					},
+					"statusText": {
+						"type": "string"
+					}
+				},
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ILbaItemContact": {
+				"properties": {
+					"email": {
+						"type": "string"
+					},
+					"name": {
+						"type": "string"
+					},
+					"phone": {
+						"type": "string"
+					},
+					"info": {
+						"type": "string"
+					}
+				},
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ILbaItemPlace": {
+				"properties": {
+					"distance": {
+						"type": "number",
+						"format": "double"
+					},
+					"fullAddress": {
+						"type": "string"
+					},
+					"latitude": {
+						"type": "string"
+					},
+					"longitude": {
+						"type": "string"
+					},
+					"city": {
+						"type": "string"
+					},
+					"address": {
+						"type": "string"
+					},
+					"cedex": {
+						"type": "string"
+					},
+					"zipCode": {
+						"type": "string"
+					},
+					"insee": {
+						"type": "string"
+					},
+					"departementNumber": {
+						"type": "string"
+					},
+					"region": {
+						"type": "string"
+					},
+					"remoteOnly": {
+						"type": "boolean"
+					}
+				},
+				"required": [
+					"distance",
+					"fullAddress",
+					"latitude",
+					"longitude",
+					"city",
+					"address",
+					"cedex",
+					"zipCode",
+					"insee",
+					"departementNumber",
+					"region",
+					"remoteOnly"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"Partial_ILbaItemPlace_": {
+				"properties": {
+					"distance": {
+						"type": "number",
+						"format": "double"
+					},
+					"fullAddress": {
+						"type": "string"
+					},
+					"latitude": {
+						"type": "string"
+					},
+					"longitude": {
+						"type": "string"
+					},
+					"city": {
+						"type": "string"
+					},
+					"address": {
+						"type": "string"
+					},
+					"cedex": {
+						"type": "string"
+					},
+					"zipCode": {
+						"type": "string"
+					},
+					"insee": {
+						"type": "string"
+					},
+					"departementNumber": {
+						"type": "string"
+					},
+					"region": {
+						"type": "string"
+					},
+					"remoteOnly": {
+						"type": "boolean"
+					}
+				},
+				"type": "object",
+				"description": "Make all properties in T optional"
+			},
+			"ILbaItemCompanyHQ": {
+				"properties": {
+					"siret": {
+						"type": "string"
+					},
+					"id": {
+						"type": "string"
+					},
+					"uai": {
+						"type": "string"
+					},
+					"type": {
+						"type": "string"
+					},
+					"hasConvention": {
+						"type": "string"
+					},
+					"place": {
+						"$ref": "#/components/schemas/Partial_ILbaItemPlace_"
+					},
+					"name": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"siret",
+					"id",
+					"uai",
+					"type",
+					"hasConvention",
+					"place",
+					"name"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ILbaItemOpco": {
+				"properties": {
+					"label": {
+						"type": "string"
+					},
+					"url": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"label",
+					"url"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ILbaItemCompany": {
+				"properties": {
+					"name": {
+						"type": "string"
+					},
+					"siret": {
+						"type": "string"
+					},
+					"size": {
+						"type": "string"
+					},
+					"logo": {
+						"type": "string"
+					},
+					"description": {
+						"type": "string"
+					},
+					"socialNetwork": {
+						"type": "string"
+					},
+					"url": {
+						"type": "string"
+					},
+					"id": {
+						"type": "string"
+					},
+					"uai": {
+						"type": "string"
+					},
+					"place": {
+						"$ref": "#/components/schemas/Partial_ILbaItemPlace_"
+					},
+					"mandataire": {
+						"type": "boolean"
+					},
+					"creationDate": {
+						"type": "string",
+						"format": "date-time"
+					},
+					"headquarter": {
+						"$ref": "#/components/schemas/ILbaItemCompanyHQ"
+					},
+					"opco": {
+						"$ref": "#/components/schemas/ILbaItemOpco"
+					}
+				},
+				"required": [
+					"name",
+					"siret",
+					"id",
+					"uai",
+					"place",
+					"headquarter"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ILbaItemJob": {
+				"properties": {
+					"description": {
+						"type": "string"
+					},
+					"creationDate": {
+						"anyOf": [
+							{
+								"type": "string"
+							},
+							{
+								"type": "string",
+								"format": "date-time"
+							}
+						]
+					},
+					"id": {
+						"type": "string"
+					},
+					"contractType": {
+						"type": "string"
+					},
+					"contractDescription": {
+						"type": "string"
+					},
+					"duration": {
+						"type": "string"
+					},
+					"jobStartDate": {
+						"anyOf": [
+							{
+								"type": "string"
+							},
+							{
+								"type": "string",
+								"format": "date-time"
+							}
+						]
+					},
+					"romeDetails": {
+						"additionalProperties": false,
+						"type": "object"
+					},
+					"rythmeAlternance": {
+						"type": "string"
+					},
+					"elligibleHandicap": {
+						"type": "boolean"
+					},
+					"dureeContrat": {
+						"type": "string"
+					},
+					"quantiteContrat": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"description",
+					"creationDate",
+					"id",
+					"contractType",
+					"jobStartDate",
+					"romeDetails",
+					"rythmeAlternance",
+					"dureeContrat"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ILbaItemRome": {
+				"properties": {
+					"code": {
+						"type": "string"
+					},
+					"label": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"code"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ILbaItemNaf": {
+				"properties": {
+					"code": {
+						"type": "string"
+					},
+					"label": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"label"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ILbaItemTrainingSession": {
+				"properties": {
+					"startTime": {
+						"type": "string"
+					},
+					"endTime": {
+						"type": "string"
+					},
+					"isPermanentEntry": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"startTime",
+					"endTime",
+					"isPermanentEntry"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ILbaItemTraining": {
+				"properties": {
+					"description": {
+						"type": "string"
+					},
+					"objectif": {
+						"type": "string"
+					},
+					"sessions": {
+						"items": {
+							"$ref": "#/components/schemas/ILbaItemTrainingSession"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"description",
+					"objectif",
+					"sessions"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ILbaItem": {
+				"properties": {
+					"ideaType": {
+						"type": "string"
+					},
+					"title": {
+						"type": "string"
+					},
+					"longTitle": {
+						"type": "string"
+					},
+					"id": {
+						"type": "string"
+					},
+					"idRco": {
+						"type": "string"
+					},
+					"idRcoFormation": {
+						"type": "string"
+					},
+					"contact": {
+						"$ref": "#/components/schemas/ILbaItemContact"
+					},
+					"place": {
+						"$ref": "#/components/schemas/ILbaItemPlace"
+					},
+					"company": {
+						"$ref": "#/components/schemas/ILbaItemCompany"
+					},
+					"createdAt": {
+						"type": "string"
+					},
+					"lastUpdateAt": {
+						"type": "string"
+					},
+					"url": {
+						"type": "string"
+					},
+					"cleMinistereEducatif": {
+						"type": "string",
+						"description": "TODO API V2: move inside training<ILbaItemTraining>"
+					},
+					"diplomaLevel": {
+						"type": "string"
+					},
+					"diploma": {
+						"type": "string"
+					},
+					"cfd": {
+						"type": "string"
+					},
+					"rncpCode": {
+						"type": "string"
+					},
+					"rncpLabel": {
+						"type": "string"
+					},
+					"rncpEligibleApprentissage": {
+						"type": "string"
+					},
+					"period": {
+						"type": "string"
+					},
+					"capacity": {
+						"type": "string"
+					},
+					"onisepUrl": {
+						"type": "string"
+					},
+					"job": {
+						"$ref": "#/components/schemas/ILbaItemJob"
+					},
+					"romes": {
+						"items": {
+							"$ref": "#/components/schemas/ILbaItemRome"
+						},
+						"type": "array"
+					},
+					"nafs": {
+						"items": {
+							"$ref": "#/components/schemas/ILbaItemNaf"
+						},
+						"type": "array"
+					},
+					"training": {
+						"$ref": "#/components/schemas/ILbaItemTraining"
+					},
+					"applicationCount": {
+						"type": "number",
+						"format": "double"
+					}
+				},
+				"required": [
+					"ideaType",
+					"title",
+					"longTitle",
+					"id",
+					"idRco",
+					"idRcoFormation",
+					"contact",
+					"place",
+					"company",
+					"createdAt",
+					"lastUpdateAt",
+					"url",
+					"cleMinistereEducatif",
+					"diplomaLevel",
+					"diploma",
+					"cfd",
+					"rncpCode",
+					"rncpLabel",
+					"rncpEligibleApprentissage",
+					"period",
+					"capacity",
+					"onisepUrl",
+					"job",
+					"romes",
+					"nafs",
+					"training",
+					"applicationCount"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IMetiers": {
+				"properties": {
+					"metiers": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					},
+					"error": {
+						"type": "string"
+					}
+				},
+				"type": "object",
+				"additionalProperties": false
+			},
+			"TGetMetiersResponseSuccess": {
+				"$ref": "#/components/schemas/IMetiers"
+			},
+			"IRomeWithLabel": {
+				"properties": {
+					"codeRome": {
+						"type": "string"
+					},
+					"intitule": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"codeRome",
+					"intitule"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IMetierEnrichi": {
+				"properties": {
+					"label": {
+						"type": "string"
+					},
+					"romes": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					},
+					"rncps": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					},
+					"type": {
+						"type": "string"
+					},
+					"romeTitles": {
+						"items": {
+							"$ref": "#/components/schemas/IRomeWithLabel"
+						},
+						"type": "array"
+					}
+				},
+				"required": [
+					"label",
+					"romes"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IMetiersEnrichis": {
+				"properties": {
+					"labelsAndRomes": {
+						"items": {
+							"$ref": "#/components/schemas/IMetierEnrichi"
+						},
+						"type": "array"
+					},
+					"labelsAndRomesForDiplomas": {
+						"items": {
+							"$ref": "#/components/schemas/IMetierEnrichi"
+						},
+						"type": "array"
+					},
+					"error": {
+						"type": "string"
+					},
+					"error_messages": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					}
+				},
+				"type": "object",
+				"additionalProperties": false
+			},
+			"TGetMetiersEnrichisResponseSuccess": {
+				"$ref": "#/components/schemas/IMetiersEnrichis"
+			},
+			"IAppellationRome": {
+				"properties": {
+					"codeRome": {
+						"type": "string"
+					},
+					"intitule": {
+						"type": "string"
+					},
+					"appellation": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"codeRome",
+					"intitule",
+					"appellation"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"IAppellationsRomes": {
+				"properties": {
+					"coupleAppellationRomeMetier": {
+						"items": {
+							"$ref": "#/components/schemas/IAppellationRome"
+						},
+						"type": "array"
+					},
+					"error": {
+						"type": "string"
+					},
+					"error_messages": {
+						"items": {
+							"type": "string"
+						},
+						"type": "array"
+					}
+				},
+				"type": "object",
+				"additionalProperties": false
+			},
+			"TGetAppellationsRomesResponseSuccess": {
+				"$ref": "#/components/schemas/IAppellationsRomes"
+			},
+			"IMetierDavenir": {
+				"properties": {
+					"codeROME": {
+						"type": "string"
+					},
+					"title": {
+						"type": "string"
+					}
+				},
+				"required": [
+					"codeROME",
+					"title"
+				],
+				"type": "object",
+				"additionalProperties": false
+			},
+			"ISuggestionMetiersDavenir": {
+				"properties": {
+					"suggestionsMetiersDavenir": {
+						"items": {
+							"$ref": "#/components/schemas/IMetierDavenir"
+						},
+						"type": "array"
+					},
+					"error": {
+						"type": "string"
+					}
+				},
+				"type": "object",
+				"additionalProperties": false
+			},
+			"TGetMetiersDAvenirResponseSuccess": {
+				"$ref": "#/components/schemas/ISuggestionMetiersDavenir"
+			}
+		},
+		"securitySchemes": {
+			"api_key": {
+				"type": "apiKey",
+				"name": "Authorization",
+				"in": "header"
+			}
+		}
+	},
+	"info": {
+		"title": "La bonne alternance",
+		"version": "1.84.0",
+		"description": "Trouvez ici les formations en alternance et les entreprises qui recrutent régulièrement en alternance",
+		"license": {
+			"name": "MIT"
+		},
+		"contact": {
+			"name": "La bonne alternance",
+			"url": "https://labonnealternance.apprentissage.beta.gouv.fr"
+		}
+	},
+	"openapi": "3.0.0",
+	"paths": {
+		"/api/appointment-request/context/create": {
+			"post": {
+				"operationId": "appointmentCreateContext",
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"$ref": "#/components/schemas/TCreateContextResponse"
+										},
+										{
+											"$ref": "#/components/schemas/TCreateContextResponseError"
+										},
+										{
+											"type": "string"
+										}
+									]
+								},
+								"examples": {
+									"Example 1": {
+										"value": {
+											"etablissement_formateur_entreprise_raison_sociale": "CAMPUS FONDERIE DE L'IMAGE",
+											"intitule_long": "METIERS D'ART ET DU DESIGN (DN)",
+											"lieu_formation_adresse": "80 Rue Jules Ferry",
+											"code_postal": "93170",
+											"etablissement_formateur_siret": "35386977900036",
+											"cfd": "24113401",
+											"localite": "Bagnolet",
+											"id_rco_formation": "14_AF_0000095539|14_SE_0000501120##14_SE_0000598458##14_SE_0000642556##14_SE_0000642557##14_SE_0000825379##14_SE_0000825382|101249",
+											"cle_ministere_educatif": "101249P01313538697790003635386977900036-93006#L01",
+											"form_url": "https://labonnealternance.apprentissage.beta.gouv.fr/espace-pro/form?referrer=affelnet&cleMinistereEducatif=101249P01313538697790003635386977900036-93006%23L01"
+										}
+									}
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string",
+									"enum": [
+										"Formation introuvable."
+									],
+									"nullable": false
+								}
+							}
+						}
+					}
+				},
+				"tags": [
+					"Appointment Request"
+				],
+				"security": [],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/TCreateContextBody"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/v1/jobs/establishment": {
+			"get": {
+				"operationId": "GetEstablishment",
+				"responses": {
+					"200": {
+						"description": "Establishment found",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"type": "string"
+										},
+										{
+											"$ref": "#/components/schemas/TResponseError"
+										}
+									]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string",
+									"enum": [
+										"Establishment not found"
+									],
+									"nullable": false
+								}
+							}
+						}
+					}
+				},
+				"description": "Get existing establishment id from siret & email",
+				"tags": [
+					"Jobs"
+				],
+				"security": [
+					{
+						"api_key": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "query",
+						"name": "establishment_siret",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "Establishment email",
+						"in": "query",
+						"name": "email",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			},
+			"post": {
+				"operationId": "createEstablishment",
+				"responses": {
+					"201": {
+						"description": "Establishment created",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"$ref": "#/components/schemas/TEstablishmentResponseSuccess"
+										},
+										{
+											"$ref": "#/components/schemas/TResponseError"
+										}
+									]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string",
+									"enum": [
+										"Establishment creation failed"
+									],
+									"nullable": false
+								}
+							}
+						}
+					}
+				},
+				"description": "Create an establishment entity.\norigin parameter is always prefixed with you identification name declared at the API user creation.\nit is a string in tiny case of your organism name. example: BETA GOUV with an origin set to \"campaign2023\" will be betagouv-campaign2023.",
+				"tags": [
+					"Jobs"
+				],
+				"security": [
+					{
+						"api_key": []
+					}
+				],
+				"parameters": [],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/TCreateEstablishmentBody"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/v1/jobs/bulk": {
+			"get": {
+				"operationId": "getJobs",
+				"responses": {
+					"200": {
+						"description": "Get all jobs success",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"$ref": "#/components/schemas/TEstablishmentResponseSuccess"
+										},
+										{}
+									]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string",
+									"enum": [
+										"Get all jobs failed"
+									],
+									"nullable": false
+								}
+							}
+						}
+					}
+				},
+				"description": "Get all jobs related to my organization",
+				"tags": [
+					"Jobs"
+				],
+				"security": [
+					{
+						"api_key": []
+					}
+				],
+				"parameters": [
+					{
+						"description": "mongodb query allowing specific filtering, JSON stringified.",
+						"in": "query",
+						"name": "query",
+						"required": false,
+						"schema": {
+							"default": "{}",
+							"type": "string"
+						}
+					},
+					{
+						"description": "fields to return, ex {_id: 1, first_name:1, last_name:0}",
+						"in": "query",
+						"name": "select",
+						"required": false,
+						"schema": {
+							"default": "{}",
+							"type": "string"
+						}
+					},
+					{
+						"description": "the current page.",
+						"in": "query",
+						"name": "page",
+						"required": false,
+						"schema": {
+							"default": 1,
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"description": "the limit of results per page",
+						"in": "query",
+						"name": "limit",
+						"required": false,
+						"schema": {
+							"default": 10,
+							"format": "double",
+							"type": "number"
+						}
+					}
+				]
+			}
+		},
+		"/api/v1/jobs/{establishmentId}": {
+			"post": {
+				"operationId": "createJob",
+				"responses": {
+					"201": {
+						"description": "Job created",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"$ref": "#/components/schemas/TEstablishmentResponseSuccess"
+										},
+										{
+											"$ref": "#/components/schemas/TResponseError"
+										}
+									]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string",
+									"enum": [
+										"Job creation failed"
+									],
+									"nullable": false
+								}
+							}
+						}
+					}
+				},
+				"description": "Create a job offer inside an establishment entity.\nAn establishment ID entity is required.",
+				"tags": [
+					"Jobs"
+				],
+				"security": [
+					{
+						"api_key": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "establishmentId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/ICreateJobBody"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/v1/jobs/{jobId}": {
+			"patch": {
+				"operationId": "updateJob",
+				"responses": {
+					"200": {
+						"description": "Job updated",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"$ref": "#/components/schemas/TEstablishmentResponseSuccess"
+										},
+										{
+											"$ref": "#/components/schemas/TResponseError"
+										}
+									]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string",
+									"enum": [
+										"Job update failed"
+									],
+									"nullable": false
+								}
+							}
+						}
+					}
+				},
+				"description": "Update a job offer specific fields inside an establishment entity.\nA job ID is required.",
+				"tags": [
+					"Jobs"
+				],
+				"security": [
+					{
+						"api_key": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "jobId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/Partial_TJob_"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/v1/jobs/delegations/{jobId}": {
+			"get": {
+				"operationId": "getDelegation",
+				"responses": {
+					"200": {
+						"description": "Get Delegations success",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"$ref": "#/components/schemas/IGetDelegation"
+										},
+										{
+											"$ref": "#/components/schemas/TResponseError"
+										}
+									]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string",
+									"enum": [
+										"Get delegations failed"
+									],
+									"nullable": false
+								}
+							}
+						}
+					}
+				},
+				"description": "Get related training organization related to a job offer.\nA job ID is required",
+				"tags": [
+					"Jobs"
+				],
+				"security": [
+					{
+						"api_key": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "jobId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			},
+			"post": {
+				"operationId": "createDelegation",
+				"responses": {
+					"200": {
+						"description": "Delegation created",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"$ref": "#/components/schemas/TEstablishmentResponseSuccess"
+										},
+										{
+											"$ref": "#/components/schemas/TResponseError"
+										}
+									]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string",
+									"enum": [
+										"Create delegations failed"
+									],
+									"nullable": false
+								}
+							}
+						}
+					}
+				},
+				"description": "Create delegation related to a job offer.\nA job ID and a list of establishment IDs are required",
+				"tags": [
+					"Jobs"
+				],
+				"security": [
+					{
+						"api_key": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "jobId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				],
+				"requestBody": {
+					"required": true,
+					"content": {
+						"application/json": {
+							"schema": {
+								"$ref": "#/components/schemas/ICreateDelegation"
+							}
+						}
+					}
+				}
+			}
+		},
+		"/api/v1/jobs/provided/{jobId}": {
+			"post": {
+				"operationId": "setJobAsProvided",
+				"responses": {
+					"204": {
+						"description": "Job updated",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{},
+										{
+											"$ref": "#/components/schemas/TResponseError"
+										}
+									]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string",
+									"enum": [
+										"Job update failed"
+									],
+									"nullable": false
+								}
+							}
+						}
+					}
+				},
+				"description": "Update a job offer status to \"Provided\".\nA job ID is required",
+				"tags": [
+					"Jobs"
+				],
+				"security": [
+					{
+						"api_key": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "jobId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/v1/jobs/canceled/{jobId}": {
+			"post": {
+				"operationId": "setJobAsCanceled",
+				"responses": {
+					"204": {
+						"description": "Job updated",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{},
+										{
+											"$ref": "#/components/schemas/TResponseError"
+										}
+									]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string",
+									"enum": [
+										"Job update failed"
+									],
+									"nullable": false
+								}
+							}
+						}
+					}
+				},
+				"description": "Update a job offer status to \"Canceled\".\nA job ID is required",
+				"tags": [
+					"Jobs"
+				],
+				"security": [
+					{
+						"api_key": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "jobId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/v1/jobs/extend/{jobId}": {
+			"post": {
+				"operationId": "extendJobExpiration",
+				"responses": {
+					"204": {
+						"description": "Job updated",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{},
+										{
+											"$ref": "#/components/schemas/TResponseError"
+										}
+									]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string",
+									"enum": [
+										"Job update failed"
+									],
+									"nullable": false
+								}
+							}
+						}
+					}
+				},
+				"description": "Update a job expiration date by 30 days.\nA job ID is required",
+				"tags": [
+					"Jobs"
+				],
+				"security": [
+					{
+						"api_key": []
+					}
+				],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "jobId",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/v1/jobs": {
+			"get": {
+				"operationId": "getJobOpportunities",
+				"responses": {
+					"200": {
+						"description": "Get job opportunities success",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"$ref": "#/components/schemas/IApiError"
+										},
+										{
+											"properties": {
+												"lbbCompanies": {
+													"items": {
+														"$ref": "#/components/schemas/ILbaItem"
+													},
+													"type": "array"
+												}
+											},
+											"required": [
+												"lbbCompanies"
+											],
+											"type": "object"
+										},
+										{
+											"properties": {
+												"lbaCompanies": {
+													"items": {
+														"$ref": "#/components/schemas/ILbaItem"
+													},
+													"type": "array"
+												}
+											},
+											"required": [
+												"lbaCompanies"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string",
+									"enum": [
+										"Wrong parameters"
+									],
+									"nullable": false
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string",
+									"enum": [
+										"Internal error"
+									],
+									"nullable": false
+								}
+							}
+						}
+					}
+				},
+				"description": "Get job opportunities matching the query parameters",
+				"tags": [
+					"Jobs"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"description": "some rome codes separated by commas",
+						"in": "query",
+						"name": "romes",
+						"required": false,
+						"schema": {
+							"type": "array",
+							"items": {
+								"type": "string"
+							}
+						}
+					},
+					{
+						"description": "a rncp code",
+						"in": "query",
+						"name": "rncp",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "the referer provided in the HTTP query headers",
+						"in": "header",
+						"name": "referer",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "the consumer id.",
+						"in": "query",
+						"name": "caller",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "search center latitude",
+						"in": "query",
+						"name": "latitude",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "search center longitude",
+						"in": "query",
+						"name": "longitude",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "the search radius",
+						"in": "query",
+						"name": "radius",
+						"required": false,
+						"schema": {
+							"format": "double",
+							"type": "number"
+						}
+					},
+					{
+						"description": "search center insee code",
+						"in": "query",
+						"name": "insee",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "optional: comma separated list of job opportunities sources",
+						"in": "query",
+						"name": "sources",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "optional: targeted diploma",
+						"in": "query",
+						"name": "diploma",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "optional: filter opportunities on opco name",
+						"in": "query",
+						"name": "opco",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "optional: filter opportunities on opco url",
+						"in": "query",
+						"name": "opcoUrl",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/v1/jobs/company/{siret}": {
+			"get": {
+				"operationId": "getCompany",
+				"responses": {
+					"200": {
+						"description": "Get company success",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"$ref": "#/components/schemas/IApiError"
+										},
+										{
+											"properties": {
+												"lbbCompanies": {
+													"items": {
+														"$ref": "#/components/schemas/ILbaItem"
+													},
+													"type": "array"
+												}
+											},
+											"required": [
+												"lbbCompanies"
+											],
+											"type": "object"
+										},
+										{
+											"properties": {
+												"lbaCompanies": {
+													"items": {
+														"$ref": "#/components/schemas/ILbaItem"
+													},
+													"type": "array"
+												}
+											},
+											"required": [
+												"lbaCompanies"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string",
+									"enum": [
+										"Wrong parameters"
+									],
+									"nullable": false
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string",
+									"enum": [
+										"Company not found"
+									],
+									"nullable": false
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string",
+									"enum": [
+										"Internal error"
+									],
+									"nullable": false
+								}
+							}
+						}
+					}
+				},
+				"description": "Get one company identified by it's siret",
+				"tags": [
+					"Jobs"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"description": "the siret number of the company looked for.",
+						"in": "path",
+						"name": "siret",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "the referer provided in the HTTP query headers",
+						"in": "header",
+						"name": "referer",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "the consumer id.",
+						"in": "query",
+						"name": "caller",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "the type of the company",
+						"in": "query",
+						"name": "type",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/v1/jobs/matcha/{id}": {
+			"get": {
+				"operationId": "getLbaJob",
+				"responses": {
+					"200": {
+						"description": "Get job success",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"$ref": "#/components/schemas/IApiError"
+										},
+										{
+											"properties": {
+												"matchas": {
+													"items": {
+														"$ref": "#/components/schemas/ILbaItem"
+													},
+													"type": "array"
+												}
+											},
+											"required": [
+												"matchas"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string",
+									"enum": [
+										"Wrong parameters"
+									],
+									"nullable": false
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string",
+									"enum": [
+										"Job not found"
+									],
+									"nullable": false
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string",
+									"enum": [
+										"Internal error"
+									],
+									"nullable": false
+								}
+							}
+						}
+					}
+				},
+				"description": "Get one lba job identified by it's id",
+				"tags": [
+					"Jobs"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"description": "the id the lba job looked for.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "the consumer id.",
+						"in": "query",
+						"name": "caller",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/v1/jobs/matcha/{id}/stats/view-details": {
+			"post": {
+				"operationId": "statsViewLbaJob",
+				"responses": {
+					"200": {
+						"description": "success",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/IApiError"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string",
+									"enum": [
+										"Wrong parameters"
+									],
+									"nullable": false
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string",
+									"enum": [
+										"Job not found"
+									],
+									"nullable": false
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string",
+									"enum": [
+										"Internal error"
+									],
+									"nullable": false
+								}
+							}
+						}
+					}
+				},
+				"description": "Notifies that the detail of a matcha job has been viewed",
+				"tags": [
+					"Jobs"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"description": "the id the lba job looked for.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/v1/jobs/job/{id}": {
+			"get": {
+				"operationId": "getPeJob",
+				"responses": {
+					"200": {
+						"description": "Get job success",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"$ref": "#/components/schemas/IApiError"
+										},
+										{
+											"properties": {
+												"peJobs": {
+													"items": {
+														"$ref": "#/components/schemas/ILbaItem"
+													},
+													"type": "array"
+												}
+											},
+											"required": [
+												"peJobs"
+											],
+											"type": "object"
+										}
+									]
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string",
+									"enum": [
+										"Wrong parameters"
+									],
+									"nullable": false
+								}
+							}
+						}
+					},
+					"404": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string",
+									"enum": [
+										"Job not found"
+									],
+									"nullable": false
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string",
+									"enum": [
+										"Internal error"
+									],
+									"nullable": false
+								}
+							}
+						}
+					}
+				},
+				"description": "Get one pe job identified by it's id",
+				"tags": [
+					"Jobs"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"description": "the id the pe job looked for.",
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "the consumer id.",
+						"in": "query",
+						"name": "caller",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/v1/metiers/metiersParFormation/{cfd}": {
+			"get": {
+				"operationId": "getMetiersParCfd",
+				"responses": {
+					"200": {
+						"description": "List retrieved",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"$ref": "#/components/schemas/TGetMetiersResponseSuccess"
+										},
+										{
+											"$ref": "#/components/schemas/TResponseError"
+										}
+									]
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string",
+									"enum": [
+										"List unavailable"
+									],
+									"nullable": false
+								}
+							}
+						}
+					}
+				},
+				"description": "Retourne la liste des métiers associé à une formation identifiée par son CFD dans le chemin de l'appel",
+				"tags": [
+					"Metiers"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "cfd",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/v1/metiers/metiersParEtablissement/{siret}": {
+			"get": {
+				"operationId": "getMetiersParEtablissement",
+				"responses": {
+					"200": {
+						"description": "List retrieved",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"$ref": "#/components/schemas/TGetMetiersResponseSuccess"
+										},
+										{
+											"$ref": "#/components/schemas/TResponseError"
+										}
+									]
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string",
+									"enum": [
+										"List unavailable"
+									],
+									"nullable": false
+								}
+							}
+						}
+					}
+				},
+				"description": "Retourne la liste des métiers associé à un établissment identifié par son siret dans le chemin de l'appel",
+				"tags": [
+					"Metiers"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "path",
+						"name": "siret",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/v1/metiers/all": {
+			"get": {
+				"operationId": "getTousLesMetiers",
+				"responses": {
+					"200": {
+						"description": "List retrieved",
+						"content": {
+							"application/json": {
+								"schema": {
+									"anyOf": [
+										{
+											"$ref": "#/components/schemas/TGetMetiersResponseSuccess"
+										},
+										{
+											"$ref": "#/components/schemas/TResponseError"
+										}
+									]
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string",
+									"enum": [
+										"List unavailable"
+									],
+									"nullable": false
+								}
+							}
+						}
+					}
+				},
+				"description": "Retourne la liste de tous les métiers référencés sur LBA",
+				"tags": [
+					"Metiers"
+				],
+				"security": [],
+				"parameters": []
+			}
+		},
+		"/api/v1/metiers": {
+			"get": {
+				"operationId": "getMetiers",
+				"responses": {
+					"200": {
+						"description": "List retrieved",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/TGetMetiersEnrichisResponseSuccess"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string",
+									"enum": [
+										"Missing parameters"
+									],
+									"nullable": false
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string",
+									"enum": [
+										"List unavailable"
+									],
+									"nullable": false
+								}
+							}
+						}
+					}
+				},
+				"description": "Retourne une liste de métiers enrichis avec les codes romes associés correspondant aux critères en paramètres",
+				"tags": [
+					"Metiers"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"description": "le(s) terme(s) de recherche",
+						"in": "query",
+						"name": "title",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "(optionnel) critère de codes romes",
+						"in": "query",
+						"name": "romes",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					},
+					{
+						"description": "(optionnel) critère de codes RNCPs",
+						"in": "query",
+						"name": "rncps",
+						"required": false,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		},
+		"/api/v1/metiers/intitule": {
+			"get": {
+				"operationId": "getCoupleAppellationRomeIntitule",
+				"responses": {
+					"200": {
+						"description": "List retrieved",
+						"content": {
+							"application/json": {
+								"schema": {
+									"$ref": "#/components/schemas/TGetAppellationsRomesResponseSuccess"
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string",
+									"enum": [
+										"Missing parameters"
+									],
+									"nullable": false
+								}
+							}
+						}
+					},
+					"500": {
+						"description": "",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "string",
+									"enum": [
+										"List unavailable"
+									],
+									"nullable": false
+								}
+							}
+						}
+					}
+				},
+				"description": "Retourne une liste de métiers enrichis avec les codes romes associés correspondant aux critères en paramètres",
+				"tags": [
+					"Metiers"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"description": "le(s) terme(s) de recherche",
+						"in": "query",
+						"name": "label",
+						"required": true,
+						"schema": {
+							"type": "string"
+						}
+					}
+				]
+			}
+		}
+	},
+	"servers": [
+		{
+			"url": "https://labonnealternance.apprentissage.beta.gouv.fr",
+			"description": "Production"
+		},
+		{
+			"url": "https://labonnealternance-recette.apprentissage.beta.gouv.fr",
+			"description": "Recette"
+		},
+		{
+			"url": "https://labonnealternance-develop.apprentissage.beta.gouv.fr",
+			"description": "Developpement"
+		},
+		{
+			"url": "http://localhost",
+			"description": "Localhost"
+		}
+	]
+}

@@ -1,4 +1,5 @@
-import { mailTemplate } from "../../assets/index"
+import { getStaticFilePath } from "common/utils/getStaticFilePath"
+
 import { logger } from "../../common/logger"
 import { mailType } from "../../common/model/constants/etablissement"
 import { Etablissement } from "../../common/model/index"
@@ -49,7 +50,7 @@ export const premiumActivatedReminder = async () => {
         const { messageId } = await mailer.sendEmail({
           to: email,
           subject: `Rappel - Les jeunes peuvent prendre contact avec votre CFA sur Parcoursup`,
-          template: mailTemplate["mail-cfa-premium-activated-reminder"],
+          template: getStaticFilePath("./templates/mail-cfa-premium-activated-reminder.mjml.ejs"),
           data: {
             url: config.publicUrl,
             replyTo: config.publicEmail,

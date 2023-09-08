@@ -24,4 +24,4 @@ type TCreateContextBody = {
   referrer: string
 }
 
-export { TCreateContextResponseError, TCreateContextResponse, TCreateContextBody }
+export type { TCreateContextResponseError, TCreateContextResponse, TCreateContextBody }

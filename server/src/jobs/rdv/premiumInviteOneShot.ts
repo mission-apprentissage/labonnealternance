@@ -1,4 +1,5 @@
-import { mailTemplate } from "../../assets/index"
+import { getStaticFilePath } from "common/utils/getStaticFilePath"
+
 import { logger } from "../../common/logger"
 import { mailType } from "../../common/model/constants/etablissement"
 import { Etablissement } from "../../common/model/index"
@@ -42,7 +43,7 @@ export const premiumInviteOneShot = async () => {
       const { messageId } = await mailer.sendEmail({
         to: etablissement.gestionnaire_email,
         subject: `Trouvez et recrutez vos candidats sur Parcoursup`,
-        template: mailTemplate["mail-cfa-premium-invite-one-shot"],
+        template: getStaticFilePath("./templates/mail-cfa-premium-invite-one-shot.mjml.ejs"),
         data: {
           replyTo: config.publicEmail,
           url: config.publicUrl,

@@ -2,7 +2,8 @@ import axios, { AxiosResponse } from "axios"
 import { pick } from "lodash-es"
 import { Filter } from "mongodb"
 
-import { mailTemplate } from "../assets/index"
+import { getStaticFilePath } from "common/utils/getStaticFilePath"
+
 import { BonneBoiteLegacy, BonnesBoites, Etablissement, ReferentielOpco, UnsubscribeOF, UserRecruteur } from "../common/model/index"
 import { IBonneBoite } from "../common/model/schema/bonneboite/bonneboite.types"
 import { IEtablissement } from "../common/model/schema/etablissements/etablissement.types"
@@ -655,7 +656,7 @@ export const sendUserConfirmationEmail = async ({
   await mailer.sendEmail({
     to: email,
     subject: "Confirmez votre adresse mail",
-    template: mailTemplate["mail-confirmation-email"],
+    template: getStaticFilePath("./templates/mail-confirmation-email.mjml.ejs"),
     data: {
       images: {
         logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
@@ -681,7 +682,7 @@ export const sendEmailConfirmationEntreprise = async (user: IUserRecruteur, recr
     await mailer.sendEmail({
       to: email,
       subject: "Confirmez votre adresse mail",
-      template: mailTemplate["mail-nouvelle-offre-depot-simplifie"],
+      template: getStaticFilePath("./templates/mail-nouvelle-offre-depot-simplifie.mjml.ejs"),
       data: {
         images: {
           logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,

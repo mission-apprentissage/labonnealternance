@@ -9,7 +9,7 @@
       "ES2023"
     ] /* Specify a set of bundled library declaration files that describe the target runtime environment. */,
     /* Modules */
-    "module": "ESNext", // TODO: maybe nodenext ?
+    "module": "NodeNext",
     "moduleResolution": "node",
     "baseUrl": "./src",
     "paths": {
@@ -30,11 +30,14 @@
     /* Completeness */
     "skipLibCheck": true,
     /* Output Formatting */
-    "pretty": true
+    "pretty": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
   },
   "ts-node": {
     "swc": true
   },
   "include": ["./**/*.ts", "./**/*.js"],
   "exclude": ["**/node_modules","tests", "coverage", "dist"],
+
 }

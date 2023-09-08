@@ -5,7 +5,7 @@
   "spec": {
     "name": "La bonne alternance",
     "description": "Trouvez ici les formations en alternance et les entreprises qui recrutent régulièrement en alternance",
-    "outputDirectory": "./src/generated",
+    "outputDirectory": "./static/generated",
     "specVersion": 3,
     "contact": {
       "name": "La bonne alternance",

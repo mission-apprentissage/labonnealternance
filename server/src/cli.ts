@@ -7,28 +7,28 @@ import updateDomainesMetiers from "./jobs/domainesMetiers/updateDomainesMetiers"
 import updateDomainesMetiersFile from "./jobs/domainesMetiers/updateDomainesMetiersFile"
 import { importCatalogueFormationJob } from "./jobs/formationsCatalogue/formationsCatalogue"
 import { updateFormationCatalogue } from "./jobs/formationsCatalogue/updateFormationCatalogue"
-import { createApiUser } from "./jobs/lba_recruteur/api/createApiUser"
-import { disableApiUser } from "./jobs/lba_recruteur/api/disableApiUser"
-import { resetApiKey } from "./jobs/lba_recruteur/api/resetApiKey"
-import { annuleFormulaire } from "./jobs/lba_recruteur/formulaire/annuleFormulaire"
-import { createUserFromCLI } from "./jobs/lba_recruteur/formulaire/createUser"
-import { exportPE } from "./jobs/lba_recruteur/formulaire/misc/exportPE"
-import { relanceFormulaire } from "./jobs/lba_recruteur/formulaire/relanceFormulaire"
-import { generateIndexes } from "./jobs/lba_recruteur/indexes/generateIndexes"
-import { relanceOpco } from "./jobs/lba_recruteur/opco/relanceOpco"
-import { createOffreCollection } from "./jobs/lba_recruteur/seed/createOffre"
-import { checkAwaitingCompaniesValidation } from "./jobs/lba_recruteur/user/misc/updateMissingActivationState"
-import { updateSiretInfosInError } from "./jobs/lba_recruteur/user/misc/updateSiretInfosInError"
+// import { createApiUser } from "./jobs/lba_recruteur/api/createApiUser"
+// import { disableApiUser } from "./jobs/lba_recruteur/api/disableApiUser"
+// import { resetApiKey } from "./jobs/lba_recruteur/api/resetApiKey"
+// import { annuleFormulaire } from "./jobs/lba_recruteur/formulaire/annuleFormulaire"
+// import { createUserFromCLI } from "./jobs/lba_recruteur/formulaire/createUser"
+// import { exportPE } from "./jobs/lba_recruteur/formulaire/misc/exportPE"
+// import { relanceFormulaire } from "./jobs/lba_recruteur/formulaire/relanceFormulaire"
+// import { generateIndexes } from "./jobs/lba_recruteur/indexes/generateIndexes"
+// import { relanceOpco } from "./jobs/lba_recruteur/opco/relanceOpco"
+// import { createOffreCollection } from "./jobs/lba_recruteur/seed/createOffre"
+// import { checkAwaitingCompaniesValidation } from "./jobs/lba_recruteur/user/misc/updateMissingActivationState"
+// import { updateSiretInfosInError } from "./jobs/lba_recruteur/user/misc/updateSiretInfosInError"
 import updateBonnesBoites from "./jobs/lbb/updateBonnesBoites"
 import updateGeoLocations from "./jobs/lbb/updateGeoLocations"
 import updateOpcoCompanies from "./jobs/lbb/updateOpcoCompanies"
-import { activateOptOutEtablissementFormations } from "./jobs/rdv/activateOptOutEtablissementFormations"
+// import { activateOptOutEtablissementFormations } from "./jobs/rdv/activateOptOutEtablissementFormations"
 import { anonimizeAppointments } from "./jobs/rdv/anonymizeAppointments"
 import { anonimizeUsers } from "./jobs/rdv/anonymizeUsers"
 import { eligibleTrainingsForAppointmentsHistoryWithCatalogue } from "./jobs/rdv/eligibleTrainingsForAppointmentsHistoryWithCatalogue"
 import { importReferentielOnisep } from "./jobs/rdv/importReferentielOnisep"
-import { inviteEtablissementToOptOut } from "./jobs/rdv/inviteEtablissementToOptOut"
-import { inviteEtablissementToPremium } from "./jobs/rdv/inviteEtablissementToPremium"
+// import { inviteEtablissementToOptOut } from "./jobs/rdv/inviteEtablissementToOptOut"
+// import { inviteEtablissementToPremium } from "./jobs/rdv/inviteEtablissementToPremium"
 import { inviteEtablissementAffelnetToPremium } from "./jobs/rdv/inviteEtablissementToPremiumAffelnet"
 import { inviteEtablissementToPremiumFollowUp } from "./jobs/rdv/inviteEtablissementToPremiumFollowUp"
 import { inviteEtablissementAffelnetToPremiumFollowUp } from "./jobs/rdv/inviteEtablissementToPremiumFollowUpAffelnet"
@@ -50,106 +50,106 @@ cli.addHelpText("after", null)
  *
  */
 
-cli
-  .command("index [index_list]")
-  .description("Synchronise les index des collections mongo & reconstruit les index elasticsearch. <index_list> est la liste des index séparés par des , ")
-  .action((index_list) => {
-    runScript(() => generateIndexes(index_list))
-  })
+// cli
+//   .command("index [index_list]")
+//   .description("Synchronise les index des collections mongo & reconstruit les index elasticsearch. <index_list> est la liste des index séparés par des , ")
+//   .action((index_list) => {
+//     runScript(() => generateIndexes(index_list))
+//   })
 
-cli
-  .command("create-user <first_name> <last_name> <email> <scope> <establishment_raison_sociale> [establishment_siret] [phone] [address]")
-  .option("-admin, [isAdmin]", "utilisateur administrateur", false)
-  .requiredOption("-type, <type>", "type d'utilisateur")
-  .requiredOption("-email_valide, <email_valide>", "email valide", true)
-  .description("Permet de créer un accès utilisateur à l'espace partenaire")
-  .action((first_name, last_name, email, scope, establishment_raison_sociale, establishment_siret, phone, address, options) => {
-    runScript(() =>
-      createUserFromCLI(
-        {
-          first_name,
-          last_name,
-          establishment_siret,
-          establishment_raison_sociale,
-          phone,
-          address,
-          email,
-          scope,
-        },
-        { options }
-      )
-    )
-  })
+// cli
+//   .command("create-user <first_name> <last_name> <email> <scope> <establishment_raison_sociale> [establishment_siret] [phone] [address]")
+//   .option("-admin, [isAdmin]", "utilisateur administrateur", false)
+//   .requiredOption("-type, <type>", "type d'utilisateur")
+//   .requiredOption("-email_valide, <email_valide>", "email valide", true)
+//   .description("Permet de créer un accès utilisateur à l'espace partenaire")
+//   .action((first_name, last_name, email, scope, establishment_raison_sociale, establishment_siret, phone, address, options) => {
+//     runScript(() =>
+//       createUserFromCLI(
+//         {
+//           first_name,
+//           last_name,
+//           establishment_siret,
+//           establishment_raison_sociale,
+//           phone,
+//           address,
+//           email,
+//           scope,
+//         },
+//         { options }
+//       )
+//     )
+//   })
 
-cli
-  .command("create-api-user <nom> <prenom> <email> <organization> <scope>")
-  .description("Permet de créer un utilisateur ayant accès à l'API")
-  .action((nom, prenom, email, organization, scope) => {
-    runScript(() => createApiUser(nom, prenom, email, organization, scope))
-  })
+// cli
+//   .command("create-api-user <nom> <prenom> <email> <organization> <scope>")
+//   .description("Permet de créer un utilisateur ayant accès à l'API")
+//   .action((nom, prenom, email, organization, scope) => {
+//     runScript(() => createApiUser(nom, prenom, email, organization, scope))
+//   })
 
-cli
-  .command("reset-api-user <email>")
-  .description("Permet de réinitialiser la clé API d'un utilisateur")
-  .action((email) => {
-    runScript(() => resetApiKey(email))
-  })
+// cli
+//   .command("reset-api-user <email>")
+//   .description("Permet de réinitialiser la clé API d'un utilisateur")
+//   .action((email) => {
+//     runScript(() => resetApiKey(email))
+//   })
 
-cli
-  .command("disable-api-user <email> [state]")
-  .description("Permet de d'activer/désactiver l'accès d'un utilisateur à l'API")
-  .action((email, state) => {
-    runScript(() => disableApiUser(email, state))
-  })
+// cli
+//   .command("disable-api-user <email> [state]")
+//   .description("Permet de d'activer/désactiver l'accès d'un utilisateur à l'API")
+//   .action((email, state) => {
+//     runScript(() => disableApiUser(email, state))
+//   })
 
-cli
-  .command("relance-formulaire <threshold>")
-  .description("Envoie une relance par mail pour les offres expirant dans 7 jours")
-  .action((threshold) => {
-    runScript(() => relanceFormulaire(parseInt(threshold)))
-  })
+// cli
+//   .command("relance-formulaire <threshold>")
+//   .description("Envoie une relance par mail pour les offres expirant dans 7 jours")
+//   .action((threshold) => {
+//     runScript(() => relanceFormulaire(parseInt(threshold)))
+//   })
 
-cli
-  .command("annulation-formulaire")
-  .description("Annule les offres pour lesquels la date d'expiration est correspondante à la date actuelle")
-  .action(() => {
-    runScript(() => annuleFormulaire())
-  })
+// cli
+//   .command("annulation-formulaire")
+//   .description("Annule les offres pour lesquels la date d'expiration est correspondante à la date actuelle")
+//   .action(() => {
+//     runScript(() => annuleFormulaire())
+//   })
 
-cli
-  .command("creer-offre-metabase")
-  .description("Permet de créer une collection dédiée aux offres pour metabase")
-  .action(() => {
-    runScript(() => createOffreCollection())
-  })
+// cli
+//   .command("creer-offre-metabase")
+//   .description("Permet de créer une collection dédiée aux offres pour metabase")
+//   .action(() => {
+//     runScript(() => createOffreCollection())
+//   })
 
-cli
-  .command("relance-opco")
-  .description("Relance les opco avec le nombre d'utilisateur en attente de validation")
-  .action(() => {
-    runScript(() => relanceOpco())
-  })
+// cli
+//   .command("relance-opco")
+//   .description("Relance les opco avec le nombre d'utilisateur en attente de validation")
+//   .action(() => {
+//     runScript(() => relanceOpco())
+//   })
 
-cli
-  .command("export-offre-pole-emploi")
-  .description("Exporte les offres vers Pôle Emploi")
-  .action(() => {
-    runScript((components) => exportPE(components))
-  })
+// cli
+//   .command("export-offre-pole-emploi")
+//   .description("Exporte les offres vers Pôle Emploi")
+//   .action(() => {
+//     runScript((components) => exportPE(components))
+//   })
 
-cli
-  .command("validate-user")
-  .description("Contrôle de validation des entreprises en attente de validation")
-  .action(() => {
-    runScript(() => checkAwaitingCompaniesValidation())
-  })
+// cli
+//   .command("validate-user")
+//   .description("Contrôle de validation des entreprises en attente de validation")
+//   .action(() => {
+//     runScript(() => checkAwaitingCompaniesValidation())
+//   })
 
-cli
-  .command("update-siret-infos-in-error")
-  .description("Remplis les données venant du SIRET pour les utilisateurs ayant eu une erreur pendant l'inscription")
-  .action(() => {
-    runScript(() => updateSiretInfosInError())
-  })
+// cli
+//   .command("update-siret-infos-in-error")
+//   .description("Remplis les données venant du SIRET pour les utilisateurs ayant eu une erreur pendant l'inscription")
+//   .action(() => {
+//     runScript(() => updateSiretInfosInError())
+//   })
 
 /**
  *
@@ -159,26 +159,26 @@ cli
  *
  */
 
-cli
-  .command("activate-opt-out-etablissement-formations")
-  .description("Active tous les établissements qui ont souscrits à l'opt-out.")
-  .action(() => {
-    runScript(() => activateOptOutEtablissementFormations())
-  })
+// cli
+//   .command("activate-opt-out-etablissement-formations")
+//   .description("Active tous les établissements qui ont souscrits à l'opt-out.")
+//   .action(() => {
+//     runScript(() => activateOptOutEtablissementFormations())
+//   })
 
-cli
-  .command("invite-etablissement-to-opt-out")
-  .description("Invite les établissements (via email décisionnaire) à l'opt-out.")
-  .action(() => {
-    runScript(() => inviteEtablissementToOptOut())
-  })
+// cli
+//   .command("invite-etablissement-to-opt-out")
+//   .description("Invite les établissements (via email décisionnaire) à l'opt-out.")
+//   .action(() => {
+//     runScript(() => inviteEtablissementToOptOut())
+//   })
 
-cli
-  .command("invite-etablissement-to-premium")
-  .description("Invite les établissements (via email décisionnaire) au premium (Parcoursup)")
-  .action(() => {
-    runScript(() => inviteEtablissementToPremium())
-  })
+// cli
+//   .command("invite-etablissement-to-premium")
+//   .description("Invite les établissements (via email décisionnaire) au premium (Parcoursup)")
+//   .action(() => {
+//     runScript(() => inviteEtablissementToPremium())
+//   })
 
 cli
   .command("invite-etablissement-affelnet-to-premium")
