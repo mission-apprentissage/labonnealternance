@@ -29490,7 +29490,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"promise.any@npm:^2.0.5":
+"promise.any@npm:2.0.6, promise.any@npm:^2.0.5":
   version: 2.0.6
   resolution: "promise.any@npm:2.0.6"
   dependencies:
@@ -32623,6 +32623,7 @@ __metadata:
     passport-localapikey: 0.0.3
     prettier: 2.6.2
     pretty-ms: 7.0.1
+    promise.any: 2.0.6
     query-string: 7.1.1
     randexp: 0.5.3
     rate-limiter-flexible: 2.3.6

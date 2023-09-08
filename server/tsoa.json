@@ -1,7 +1,8 @@
 {
-  "entryFile": "src/index.ts",
+  "entryFile": "src/main.ts",
   "noImplicitAdditionalProperties": "throw-on-extras",
   "controllerPathGlobs": ["src/http/controllers/**/*.controller.ts"],
+  "esModuleInterop" : true,
   "spec": {
     "name": "La bonne alternance",
     "description": "Trouvez ici les formations en alternance et les entreprises qui recrutent régulièrement en alternance",
