@@ -128,11 +128,13 @@ export const applicationSchema = new Schema<IApplication>({
   },
   applicant_role: {
     type: String,
-    enum: Object.values(ApplicantRole),
+    enum: [...Object.values(ApplicantRole), null],
+    default: null,
     description: "type de candidat: parent | student",
   },
   applicant_id: {
     type: ObjectId,
+    default: null,
     description: "id de l'utilisateur qui a postulé",
   },
 })
