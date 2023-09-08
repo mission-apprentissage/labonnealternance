@@ -103,7 +103,10 @@ export class User2Service {
           logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
         },
         last_name: lastname,
-        first_name: firstname,: Partial<User2>
+        first_name: firstname,
+        connexion_url: magiclink,
+      },
+    })
   }
 }
 
