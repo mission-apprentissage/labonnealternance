@@ -26,7 +26,7 @@ WORKDIR /app
 
 COPY ./server ./server
 
-RUN yarn --cwd server build
+RUN yarn --cwd server build:up
 # Removing dev dependencies
 RUN yarn workspaces focus --all --production
 # Cache is not needed anymore
@@ -43,11 +43,12 @@ ENV NODE_ENV production
 ARG PUBLIC_VERSION
 ENV PUBLIC_VERSION=$PUBLIC_VERSION
 
-COPY --from=builder_server /app/build ./server
+COPY --from=builder_server /app/server ./server
 COPY --from=builder_server /app/node_modules ./node_modules
 
 EXPOSE 5000
-CMD ["node", "src/index.js"]
+WORKDIR /app/server
+CMD ["node", "dist/index.js", "start"]
 
 
 ##############################################################

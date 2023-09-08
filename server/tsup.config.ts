@@ -10,8 +10,7 @@ export default defineConfig((options) => {
   return {
     entry,
     watch: isDev && options.watch ? ["./src"] : false,
-    // onSuccess: isDev && options.watch ? "yarn cli:up start --withProcessor" : "",
-    onSuccess: isDev && options.watch ? "yarn cli:up start" : "",
+    onSuccess: isDev && options.watch ? "yarn cli:up start --withProcessor" : "",
     // In watch mode doesn't exit cleanly as it causes EADDRINUSE error
     killSignal: "SIGKILL",
     target: "es2022",
