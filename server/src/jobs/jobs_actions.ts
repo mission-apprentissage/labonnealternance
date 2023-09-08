@@ -1,8 +1,9 @@
 import { captureException, getCurrentHub, runWithAsyncContext } from "@sentry/node"
 import { formatDuration, intervalToDuration } from "date-fns"
+import { ObjectId } from "mongodb"
 
-import { InternalJobs } from "common/model"
 import { IInternalJobs } from "common/model/schema/internalJobs/internalJobs.types"
+import { db } from "common/mongodb"
 import { sleep } from "common/utils/asyncUtils"
 
 import { getLoggerWithContext } from "../common/logger"
@@ -41,7 +42,7 @@ export async function processor(signal: AbortSignal): Promise<void> {
 
   logger.debug(`Process jobs queue - looking for a job to execute`)
 
-  const { value: nextJob } = await InternalJobs.findOneAndUpdate(
+  const { value: nextJob } = await db.collection("internalJobs").findOneAndUpdate(
     {
       type: { $in: ["simple", "cron_task"] },
       status: "pending",
@@ -71,7 +72,7 @@ const runner = async (job: IInternalJobs, jobFunc: () => Promise<unknown>): Prom
 
   jobLogger.info("job started")
   const startDate = new Date()
-  await updateJob(job._id, {
+  await updateJob(new ObjectId(job._id), {
     status: "running",
     started_at: startDate,
   })
@@ -91,7 +92,7 @@ const runner = async (job: IInternalJobs, jobFunc: () => Promise<unknown>): Prom
   const ts = endDate.getTime() - startDate.getTime()
   const duration = formatDuration(intervalToDuration({ start: startDate, end: endDate })) || `${ts}ms`
   const status = error ? "errored" : "finished"
-  await updateJob(job._id, {
+  await updateJob(new ObjectId(job._id), {
     status: error ? "errored" : "finished",
     output: { duration, result, error },
     ended_at: endDate,
@@ -116,7 +117,7 @@ export function executeJob(job: IInternalJobs, jobFunc: () => Promise<unknown>) 
     hub.configureScope((scope) => {
       scope.setSpan(transaction)
       scope.setTag("job", job.name)
-      scope.setContext("job", job)
+      // scope.setContext("job", job) // TODO
     })
     const start = Date.now()
     try {

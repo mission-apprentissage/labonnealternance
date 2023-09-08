@@ -1,6 +1,5 @@
 import { Filter, FindOptions, MatchKeysAndValues, ObjectId, WithoutId } from "mongodb"
 
-import { InternalJobs } from "common/model"
 import { IInternalJobs } from "common/model/schema/internalJobs/internalJobs.types"
 import { db } from "common/mongodb"
 
@@ -26,16 +25,16 @@ export const createJob = async ({ name, type = "simple", payload, scheduled_for 
 }
 
 export const findJob = async (filter: Filter<IInternalJobs>, options?: FindOptions<IInternalJobs>): Promise<IInternalJobs | null> => {
-  return await InternalJobs.findOne(filter, options)
+  return await db.collection("internalJobs").findOne(filter, options)
 }
 
 export const findJobs = async (filter: Filter<IInternalJobs>, options?: FindOptions<IInternalJobs>): Promise<IInternalJobs[]> => {
-  return await InternalJobs.find(filter, options).toArray()
+  return await db.collection("internalJobs").find(filter, options).toArray()
 }
 
 /**
  * Mise à jour d'un job
  */
 export const updateJob = async (_id: ObjectId, data: MatchKeysAndValues<IInternalJobs>) => {
-  return InternalJobs.updateOne({ _id }, { $set: { ...data, updated_at: new Date() } })
+  return db.collection("internalJobs").updateOne({ _id }, { $set: { ...data, updated_at: new Date() } })
 }
