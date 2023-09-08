@@ -180,48 +180,58 @@ program
 program
   .command("index")
   .description("Synchronise les index des collections mongo & reconstruit les index elasticsearch.")
-  .option("-i, --index_list", " <index_list> est la liste des index séparés par des ,")
+  .option("-i, --index_list <string>", " <index_list> est la liste des index séparés par des ,")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("indexes:generate"))
 
+//yarn cli:up create-user --first_name a --last_name b --email ab@fr.fr --scope beta --establishment_raison_sociale beta --type ADMIN
 program
   .command("create-user")
   .description("Permet de créer un accès utilisateur à l'espace partenaire")
-  .requiredOption("--first_name", "utilisateur administrateur")
-  .requiredOption("--last_name", "utilisateur administrateur")
-  .requiredOption("--email", "utilisateur administrateur")
-  .requiredOption("--scope", "utilisateur administrateur")
-  .requiredOption("--establishment_raison_sociale", "utilisateur administrateur")
-  .option("--establishment_siret", "utilisateur administrateur")
-  .option("--phone", "utilisateur administrateur")
-  .option("--address", "utilisateur administrateur")
+  .requiredOption("--first_name <string>", "prenom de l'utilisateur")
+  .requiredOption("--last_name <string>", "nom de l'utilisateur")
+  .requiredOption("--email <string>", "email de l'utilisateur")
+  .requiredOption("--scope <string>", "scope")
+  .requiredOption("--establishment_raison_sociale <string>", " raison sociale de l'établissement")
+  .option("--establishment_siret <string>", "siret de l'établissement")
+  .option("--phone <string>", "telephone de l'utilisateur")
+  .option("--address <string>", "adresse de l'utilisateur")
   .option("-a, --admin", "utilisateur administrateur", false)
-  .requiredOption("-t ,--type", "type d'utilisateur")
+  .requiredOption("-t ,--type <string>", "type d'utilisateur")
   .requiredOption("-e, --email_valide", "email valide", true)
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("user:create"))
 
 program
-  .command("create-api-user <nom> <prenom> <email> <organization> <scope>")
+  .command("create-api-user")
   .description("Permet de créer un utilisateur ayant accès à l'API")
+  .requiredOption("--nom <string>", "nom de l'utilisateur")
+  .requiredOption("--prenom <string>", "prenom de l'utilisateur")
+  .requiredOption("--email <string>", "email de l'utilisateur")
+  .requiredOption("--organization <string>", "organization de l'utilisateur")
+  .requiredOption("--scope <string>", "scope")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("api:user:create"))
 
 program
-  .command("reset-api-user <email>")
+  .command("reset-api-user")
   .description("Permet de réinitialiser la clé API d'un utilisateur")
+  .requiredOption("--email <string>", "email de l'utilisateur")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("api:user:reset"))
 
 program
-  .command("disable-api-user <email> [state]")
+  .command("disable-api-user")
   .description("Permet de d'activer/désactiver l'accès d'un utilisateur à l'API")
+  .requiredOption("--email <string>", "email de l'utilisateur")
+  .option("-s, --state", "state", false)
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("api:user:disable"))
 
 program
-  .command("relance-formulaire <threshold>")
+  .command("relance-formulaire")
   .description("Envoie une relance par mail pour les offres expirant dans 7 jours")
+  .requiredOption("--threshold <string>", "threshold")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("formulaire:relance"))
 
@@ -427,8 +437,10 @@ program
   .action(createJobAction("domaines-metiers:update"))
 
 program
-  .command("update-domaines-metiers-file <filename> [key]")
+  .command("update-domaines-metiers-file")
   .description("Enregistre le fichier spécifié présent dans /assets sur le repository distant. Si key n'est pas précisé il remplacera le fichier par défaut.")
+  .requiredOption("--filename <string>", "filename")
+  .option("--key <string>", "key")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("domaines-metiers:file:update"))
 

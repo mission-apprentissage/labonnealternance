@@ -43,6 +43,8 @@ fileignoreconfig:
   checksum: 07f77c50203a70eeb951810250e4218e943d8d78e77495b91f6c0a20c32ff82e
 - filename: server/src/auth/passport-strategy.ts
   checksum: 9986e0643ef89aca68ad0d29db14bece58801a27335658db27bfc20b4fe15257
+- filename: server/src/commands.ts
+  checksum: 5322e79cd7a94d86511817a7edef61df5746e038a283203a95428b865e3ccf2d
 - filename: server/src/config.ts
   checksum: 936ab034b4ef4228b377301733f76dff41cd75215f8ea06e873626bbccfd603d
 - filename: server/src/generated/routes.ts
