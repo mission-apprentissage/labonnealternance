@@ -10,7 +10,7 @@ import { LockFill } from "../../theme/components/icons"
 import { LbaNew } from "../../theme/components/logos"
 import Logo from "./Logo"
 
-export default () => {
+const Header = () => {
   const { organisation } = useContext(LogoContext)
   const [auth, setAuth] = useAuth()
   const navigate = useNavigate()
@@ -78,3 +78,5 @@ export default () => {
     </Box>
   )
 }
+
+export default Header

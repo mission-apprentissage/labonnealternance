@@ -39,7 +39,7 @@ export const buildPrdvButton = (training) => {
 
   return (
     <Box onClick={onClickPrdv}>
-      <Link variant="postuler" isExternal href={training.prdvUrl}>
+      <Link variant="postuler" data-testid="prdvButton" isExternal href={training.prdvUrl}>
         Je prends rendez-vous
       </Link>
     </Box>

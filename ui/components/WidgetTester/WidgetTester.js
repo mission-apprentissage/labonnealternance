@@ -166,6 +166,7 @@ const WidgetTester = () => {
                     </Box>
                     <Box>
                       <AutoCompleteField
+                        id="widgetTesterJobField"
                         items={[]}
                         itemToStringFunction={autoCompleteToStringFunction}
                         onSelectedItemChangeFunction={updateValuesFromJobAutoComplete}
@@ -189,6 +190,7 @@ const WidgetTester = () => {
                     </Box>
                     <Box>
                       <AutoCompleteField
+                        id="widgetTesterPlaceField"
                         items={[]}
                         itemToStringFunction={autoCompleteToStringFunction}
                         onSelectedItemChangeFunction={updateValuesFromPlaceAutoComplete}

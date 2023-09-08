@@ -37,6 +37,7 @@ import updateBrevoBlockedEmails from "./jobs/updateBrevoBlockedEmails/updateBrev
 import { importReferentielOnisep } from "./jobs/rdv/importReferentielOnisep.js"
 import updateReferentielRncpRomes from "./jobs/referentielRncpRome/updateReferentielRncpRomes.js"
 import { updateFormationCatalogue } from "./jobs/formationsCatalogue/updateFormationCatalogue.js"
+import { updateSiretInfosInError } from "./jobs/lba_recruteur/user/misc/updateSiretInfosInError.js"
 
 cli.addHelpText("after", null)
 
@@ -62,7 +63,7 @@ cli
   .requiredOption("-email_valide, <email_valide>", "email valide", true)
   .description("Permet de créer un accès utilisateur à l'espace partenaire")
   .action((first_name, last_name, email, scope, establishment_raison_sociale, establishment_siret, phone, address, options) => {
-    runScript(() => {
+    runScript(() =>
       createUserFromCLI(
         {
           first_name,
@@ -76,7 +77,7 @@ cli
         },
         { options }
       )
-    })
+    )
   })
 
 cli
@@ -139,7 +140,14 @@ cli
   .command("validate-user")
   .description("Contrôle de validation des entreprises en attente de validation")
   .action(() => {
-    runScript((components) => checkAwaitingCompaniesValidation())
+    runScript(() => checkAwaitingCompaniesValidation())
+  })
+
+cli
+  .command("update-siret-infos-in-error")
+  .description("Remplis les données venant du SIRET pour les utilisateurs ayant eu une erreur pendant l'inscription")
+  .action(() => {
+    runScript(() => updateSiretInfosInError())
   })
 
 /**
@@ -299,6 +307,7 @@ cli
   .option("-build-index, [BuildIndex]", "réindex les bonnes boîtes", false)
   .option("-use-save, [UseSave]", "pour appliquer les données SAVE", false)
   .option("-force-recreate, [ForceRecreate]", "pour forcer la recréation", false)
+  .option("-source-file, [SourceFile]", "fichier source alternatif", null)
   .description("Met à jour la liste des sociétés bonnes alternances")
   .action((options) => {
     runScript(() => updateBonnesBoites(options))
@@ -307,6 +316,7 @@ cli
 cli
   .command("update-geo-locations")
   .option("-force-recreate, [ForceRecreate]", "pour forcer la recréation", false)
+  .option("-source-file, [SourceFile]", "fichier source alternatif", null)
   .description("Procède à la géolocalisation de masse des sociétés dans le fichier des bonnes alternances")
   .action((options) => {
     runScript(() => updateGeoLocations(options))
@@ -316,6 +326,7 @@ cli
   .command("update-opcos")
   .option("-clear-mongo, [ClearMongo]", "vide la collection des opcos", false)
   .option("-force-recreate, [ForceRecreate]", "pour forcer la recréation", false)
+  .option("-source-file, [SourceFile]", "fichier source alternatif", null)
   .description("Procède à la résolution des opcos des sociétés dans le fichier des bonnes alternances")
   .action((options) => {
     runScript(() => updateOpcoCompanies(options))

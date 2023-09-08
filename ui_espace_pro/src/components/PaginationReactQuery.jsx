@@ -2,9 +2,9 @@ import { Box, Button, Link } from "@chakra-ui/react"
 import React from "react"
 import { ChevronLeft, ChevronRight } from "../theme/components/icons"
 
-const PageLink = ({ pageNumber, pageIndex, gotoPage, isActive = false }) => {
+const PageLink = ({ pageNumber, onClick, isActive = false }) => {
   return (
-    <Link onClick={() => gotoPage(pageNumber - 1)} alt={`Page ${pageIndex}`} className={`${isActive ? "active" : ""}`}>
+    <Link onClick={() => onClick()} alt={`Page ${pageNumber}`} className={`${isActive ? "active" : ""}`}>
       {pageNumber}
     </Link>
   )
@@ -12,7 +12,7 @@ const PageLink = ({ pageNumber, pageIndex, gotoPage, isActive = false }) => {
 
 const PreviousLink = ({ previousPage, canPreviousPage }) => {
   return (
-    <Button leftIcon={<ChevronLeft />} as={Link} variant="link" isDisabled={!canPreviousPage} onClick={() => previousPage()}>
+    <Button leftIcon={<ChevronLeft />} as={Link} variant="link" isDisabled={!canPreviousPage} onClick={previousPage}>
       Précédent
     </Button>
   )
@@ -20,58 +20,46 @@ const PreviousLink = ({ previousPage, canPreviousPage }) => {
 
 const NextLink = ({ nextPage, canNextPage }) => {
   return (
-    <Button rightIcon={<ChevronRight />} as={Link} variant="link" isDisabled={!canNextPage} onClick={() => nextPage()}>
+    <Button rightIcon={<ChevronRight />} as={Link} variant="link" isDisabled={!canNextPage} onClick={nextPage}>
       Suivant
     </Button>
   )
 }
 
-export default ({ page, canPreviousPage, canNextPage, pageCount, nextPage, previousPage, gotoPage, currentPage }) => {
-  if (Number.isNaN(pageCount) || pageCount <= 1) {
-    return <></>
-  }
+const sequence = (from, to) => [...new Array(to - from + 1)].map((_, index) => index + from)
+const uniq = (array) => [...new Set(array)]
 
-  if (pageCount <= 5) {
-    return (
-      <Box className="search-pagination" textAlign="center" my={3} mx={1}>
-        <PreviousLink previousPage={previousPage} canPreviousPage={canPreviousPage} />
-        {Array(pageCount)
-          .fill(page)
-          .map((_unusedValue, index) => (
-            <PageLink key={index} />
-          ))}
-        <NextLink nextPage={nextPage} canNextPage={canNextPage} />
-      </Box>
-    )
+export function PaginationReactQuery({ pageCount, gotoPage: goToPageIndex, currentPage: pageIndex }) {
+  if (Number.isNaN(pageCount) || pageCount <= 1) {
+    return null
   }
+  const currentPage = pageIndex + 1
+  const canPreviousPage = currentPage >= 2
+  const canNextPage = currentPage <= pageCount - 1
+  const displayedPages =
+    pageCount <= 5 ? sequence(1, pageCount) : uniq([1, ...sequence(currentPage - 1, currentPage + 1), pageCount]).filter((value) => value >= 1 && value <= pageCount)
+  const nextPage = () => goToPageIndex(pageIndex + 1)
+  const previousPage = () => goToPageIndex(pageIndex - 1)
 
   return (
     <Box className={"search-pagination"} textAlign={"center"} my={3} mx={1}>
       <PreviousLink previousPage={previousPage} canPreviousPage={canPreviousPage} />
-
-      {currentPage > 1 && <PageLink pageNumber={1} gotoPage={gotoPage} />}
-
-      {currentPage - 2 > 0 && <span>...</span>}
-
-      {currentPage > pageCount - 2 && <PageLink pageNumber={currentPage - 2} gotoPage={gotoPage} />}
-
-      {currentPage > pageCount - 3 && <PageLink pageNumber={currentPage - 1} gotoPage={gotoPage} />}
-
-      {currentPage > 0 && <PageLink pageNumber={currentPage} gotoPage={gotoPage} />}
-
-      <PageLink pageNumber={currentPage + 1} gotoPage={gotoPage} isActive={true} />
-
-      {currentPage + 1 < pageCount - 1 && <PageLink pageNumber={currentPage + 2} gotoPage={gotoPage} />}
-
-      {currentPage + 2 < pageCount - 1 && currentPage < 2 && <PageLink pageNumber={currentPage + 3} gotoPage={gotoPage} />}
-
-      {currentPage + 3 < pageCount - 1 && currentPage < 1 && <PageLink pageNumber={currentPage + 4} gotoPage={gotoPage} />}
-
-      {currentPage + 2 < pageCount - 1 && <span>...</span>}
-
-      {currentPage < pageCount - 1 && <PageLink pageNumber={pageCount} gotoPage={gotoPage} />}
-
+      {
+        displayedPages.reduce(
+          (acc, page) => {
+            if (acc.previousPage !== page - 1 && page !== 1) {
+              acc.jsx.push(<span key={`span_${page}`}>...</span>)
+            }
+            acc.jsx.push(<PageLink key={page} pageNumber={page} onClick={() => goToPageIndex(page - 1)} isActive={currentPage === page} />)
+            acc.previousPage = page
+            return acc
+          },
+          { previousPage: null, jsx: [] }
+        ).jsx
+      }
       <NextLink nextPage={nextPage} canNextPage={canNextPage} />
     </Box>
   )
 }
+
+export default PaginationReactQuery

@@ -19,25 +19,25 @@ import {
   useToast,
 } from "@chakra-ui/react"
 import dayjs from "dayjs"
-import { memo, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { useQuery } from "react-query"
-import { NavLink, useLocation, useNavigate } from "react-router-dom"
+import { NavLink, useLocation } from "react-router-dom"
 import { getUsers } from "../../api"
 import { AUTHTYPE, USER_STATUS } from "../../common/contants"
-import useAuth from "../../common/hooks/useAuth"
 import { sortReactTableDate, sortReactTableString } from "../../common/utils/dateUtils"
 import { AnimationContainer, ConfirmationActivationUtilsateur, ConfirmationDesactivationUtilisateur, LoadingEmptySpace, TableNew } from "../../components"
 import { Parametre } from "../../theme/components/icons"
+import useAuth from "../../common/hooks/useAuth"
 
-export default memo(() => {
+const Users = () => {
   const [currentEntreprise, setCurrentEntreprise] = useState()
   const [tabIndex, setTabIndex] = useState(0)
   const confirmationDesactivationUtilisateur = useDisclosure()
   const confirmationActivationUtilisateur = useDisclosure()
   const location = useLocation()
-  const navigate = useNavigate()
-  const [auth] = useAuth()
   const toast = useToast()
+  const [auth] = useAuth()
+  const isAdmin = auth.type === AUTHTYPE.ADMIN
 
   useEffect(() => {
     if (location.state?.newUser) {
@@ -52,34 +52,56 @@ export default memo(() => {
     }
   }, [])
 
-  const awaitingValidationUserList = useQuery("awaitingValidationUserList", () =>
-    getUsers({
-      users: {
+  let queries = [
+    {
+      id: "awaitingValidationUserList",
+      label: "En attente de vérification",
+      query: {
+        establishment_raison_sociale: { $nin: [null, ""] },
         $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, USER_STATUS.WAITING] },
         $or: [{ type: AUTHTYPE.CFA }, { type: AUTHTYPE.ENTREPRISE }],
       },
-    })
-  )
-
-  const activeUserList = useQuery("activeUserList", () =>
-    getUsers({
-      users: {
+    },
+    {
+      id: "activeUserList",
+      label: "Actifs",
+      query: {
+        establishment_raison_sociale: { $nin: [null, ""] },
         $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, USER_STATUS.ACTIVE] },
         $or: [{ type: AUTHTYPE.CFA }, { type: AUTHTYPE.ENTREPRISE }],
       },
-    })
-  )
-
-  const disableUserList = useQuery("disableUserList", () =>
-    getUsers({
-      users: {
+    },
+    {
+      id: "disableUserList",
+      label: "Désactivés",
+      query: {
         $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, USER_STATUS.DISABLED] },
         $or: [{ type: AUTHTYPE.CFA }, { type: AUTHTYPE.ENTREPRISE }],
       },
-    })
-  )
+    },
+  ]
+  if (isAdmin) {
+    const errorQuery = {
+      id: "errorUserList",
+      label: "En erreur",
+      query: {
+        $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, USER_STATUS.ERROR] },
+        $or: [{ type: AUTHTYPE.CFA }, { type: AUTHTYPE.ENTREPRISE }],
+      },
+    }
+    queries = [errorQuery, ...queries]
+  }
 
-  if (awaitingValidationUserList.isLoading) {
+  const queryResponses = queries.map(({ query, id }) => {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    return useQuery(id, () =>
+      getUsers({
+        users: query,
+      })
+    )
+  })
+
+  if (queryResponses[0].isLoading) {
     return <LoadingEmptySpace />
   }
 
@@ -97,14 +119,23 @@ export default memo(() => {
         },
       }) => {
         const { establishment_raison_sociale, establishment_siret, _id, opco } = data[id]
+        const siretText = (
+          <Text color="#666666" fontSize="14px">
+            SIRET {establishment_siret}
+          </Text>
+        )
         return (
           <Flex direction="column">
             <Link fontWeight="700" as={NavLink} to={`/administration/users/${_id}`} aria-label="voir les informations">
               {establishment_raison_sociale}
             </Link>
-            <Text color="#666666" fontSize="14px">
-              SIRET {establishment_siret}
-            </Text>
+            {establishment_raison_sociale ? (
+              siretText
+            ) : (
+              <Link fontWeight="700" as={NavLink} to={`/administration/users/${_id}`} aria-label="voir les informations">
+                {siretText}
+              </Link>
+            )}
             <Text color="redmarianne" fontSize="14px">
               {opco}
             </Text>
@@ -180,6 +211,11 @@ export default memo(() => {
       maxWidth: "80",
       disableSortBy: true,
       accessor: (row) => {
+        const { status: statusArray = [] } = row
+        const lastStatus = statusArray[statusArray.length - 1]
+        const { status } = lastStatus
+        const canActivate = [USER_STATUS.DISABLED, USER_STATUS.WAITING].includes(status)
+        const canDeactivate = [USER_STATUS.ACTIVE, USER_STATUS.WAITING].includes(status)
         return (
           <Box display={["none", "block"]}>
             <Menu>
@@ -194,7 +230,7 @@ export default memo(() => {
                         Voir les informations
                       </Link>
                     </MenuItem>
-                    {tabIndex !== 1 && (
+                    {canActivate && (
                       <MenuItem>
                         <Link
                           onClick={() => {
@@ -206,7 +242,7 @@ export default memo(() => {
                         </Link>
                       </MenuItem>
                     )}
-                    {tabIndex !== 2 && (
+                    {canDeactivate && (
                       <MenuItem>
                         <Link
                           onClick={() => {
@@ -243,20 +279,26 @@ export default memo(() => {
         <Tabs index={tabIndex} onChange={(index) => setTabIndex(index)} variant="search" isLazy>
           <Box mx={8}>
             <TabList>
-              <Tab width="300px">En attente de vérification ({awaitingValidationUserList.data.data.length})</Tab>
-              <Tab width="300px">Actifs {activeUserList.isFetched && `(${activeUserList.data.data.length})`}</Tab>
-              <Tab width="300px">Désactivés {disableUserList.isFetched && `(${disableUserList.data.data.length})`}</Tab>
+              {queryResponses.map((response, index) => {
+                const { label } = queries[index]
+                return (
+                  <Tab key={label} width="300px">
+                    {label} {response.isFetched && `(${response.data.data.length})`}
+                  </Tab>
+                )
+              })}
             </TabList>
           </Box>
           <TabPanels mt={3}>
-            <TabPanel>
-              <TableNew columns={columns} data={awaitingValidationUserList.data.data} />
-            </TabPanel>
-            <TabPanel>{activeUserList.isLoading ? <LoadingEmptySpace /> : <TableNew columns={columns} data={activeUserList?.data?.data} />}</TabPanel>
-            <TabPanel>{disableUserList.isLoading ? <LoadingEmptySpace /> : <TableNew columns={columns} data={disableUserList?.data?.data} />}</TabPanel>
+            {queryResponses.map((response, index) => {
+              const { label } = queries[index]
+              return <TabPanel key={label}>{response.isLoading ? <LoadingEmptySpace /> : <TableNew columns={columns} data={response?.data?.data} />}</TabPanel>
+            })}
           </TabPanels>
         </Tabs>
       </Container>
     </AnimationContainer>
   )
-})
+}
+
+export default Users

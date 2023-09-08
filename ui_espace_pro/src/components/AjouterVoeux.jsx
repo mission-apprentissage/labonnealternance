@@ -63,7 +63,7 @@ const ChampNombre = ({ value, max, name, handleChange, label }) => {
   )
 }
 
-const AjouterVoeux = (props) => {
+const AjouterVoeuxForm = (props) => {
   const [inputJobItems, setInputJobItems] = useState([])
   const [formulaire, setFormulaire] = useState()
   const [haveProposals, setHaveProposals] = useState()
@@ -159,20 +159,19 @@ const AjouterVoeux = (props) => {
     /**
      * KBA 20220105: Issue comes from address API if it's down or no result is found
      */
-    if (formulaire.geo_coordinates === "NOT FOUND") {
+    const { geo_coordinates } = formulaire
+    if (!geo_coordinates || geo_coordinates === "NOT FOUND") {
       setHaveProposals(false)
       return
     }
-
-    const [latitude, longitude] = formulaire.geo_coordinates.split(",")
-
+    const [latitude, longitude] = geo_coordinates.split(",")
     const { data } = await getRelatedEtablissementsFromRome({ rome, latitude, longitude })
     setHaveProposals(!!data.length)
   }
 
   useEffect(async () => {
-    const { data } = await getFormulaire(establishment_id || params.establishment_id)
-    setFormulaire(data)
+    const { data: formulaire } = await getFormulaire(establishment_id || params.establishment_id)
+    setFormulaire(formulaire)
   }, [])
 
   return (
@@ -210,7 +209,6 @@ const AjouterVoeux = (props) => {
     >
       {(formik) => {
         let { values, setFieldValue, handleChange, errors, touched, isValid, isSubmitting, dirty, submitForm } = formik
-
         return (
           <>
             <FormControl isRequired>
@@ -360,120 +358,116 @@ const RomeInformationDetail = ({ definition, competencesDeBase, libelle, appella
     const accesFormatted = acces.split("\\n").join("<br><br>")
 
     return (
-      <>
-        <Box border="1px solid #000091" p={5} mb={5}>
-          <Box mb={5}>
-            <Heading fontSize="24px" mb={3}>
-              {appellation}
-            </Heading>
-            <Text fontSize="16px" fontWeight="700">
-              Fiche métier : {libelle}
-            </Text>
-            <Text fontSize="14px">La fiche métier se base sur la classification ROME de Pôle Emploi</Text>
-          </Box>
-          <Flex alignItems="flex-start" mb={6}>
-            <InfoCircle mr={2} mt={1} color="bluefrance.500" />
-            <Text textAlign="justify">Voici la description visible par les candidats lors de la mise en ligne de l’offre d’emploi en alternance.</Text>
-          </Flex>
-
-          <Accordion defaultIndex={[0]} allowMultiple>
-            <AccordionItem key={0} id="metier">
-              {({ isExpanded }) => (
-                <>
-                  <h2>
-                    <AccordionButton>
-                      <Text fontWeight="700" flex="1" textAlign="left">
-                        Description du métier
-                      </Text>
-                      {isExpanded ? <Minus color="bluefrance.500" /> : <Plus color="bluefrance.500" />}
-                    </AccordionButton>
-                  </h2>
-                  <AccordionPanel pb={4} ml={6} mr={3}>
-                    <ul className={style.voeux}>
-                      {definitionSplitted.map((x) => {
-                        return (
-                          <li className={style.voeux} key={x}>
-                            {x}
-                          </li>
-                        )
-                      })}
-                    </ul>
-                  </AccordionPanel>
-                </>
-              )}
-            </AccordionItem>
-            <hr />
-            <AccordionItem key={1} id="competence">
-              {({ isExpanded }) => (
-                <>
-                  <h2>
-                    <AccordionButton>
-                      <Text fontWeight="700" flex="1" textAlign="left">
-                        Quelles sont les compétences visées ?
-                      </Text>
-                      {isExpanded ? <Minus color="bluefrance.500" /> : <Plus color="bluefrance.500" />}
-                    </AccordionButton>
-                  </h2>
-                  <AccordionPanel maxH="50%" pb={4} ml={6} mr={3}>
-                    <ul className={style.voeux}>
-                      {competencesDeBase.map((x) => (
-                        <li className={style.voeux} key={x.libelle}>
-                          {x.libelle}
-                        </li>
-                      ))}
-                    </ul>
-                  </AccordionPanel>
-                </>
-              )}
-            </AccordionItem>
-            <hr />
-            <AccordionItem key={2} id="accessibilite">
-              {({ isExpanded }) => (
-                <>
-                  <h2>
-                    <AccordionButton>
-                      <Text fontWeight="700" flex="1" textAlign="left">
-                        À qui ce métier est-il accessible ?
-                      </Text>
-                      {isExpanded ? <Minus color="bluefrance.500" /> : <Plus color="bluefrance.500" />}
-                    </AccordionButton>
-                  </h2>
-                  <AccordionPanel maxH="50%" pb={4}>
-                    <span dangerouslySetInnerHTML={{ __html: accesFormatted }}></span>
-                  </AccordionPanel>
-                </>
-              )}
-            </AccordionItem>
-          </Accordion>
+      <Box border="1px solid #000091" p={5} mb={5}>
+        <Box mb={5}>
+          <Heading fontSize="24px" mb={3}>
+            {appellation}
+          </Heading>
+          <Text fontSize="16px" fontWeight="700">
+            Fiche métier : {libelle}
+          </Text>
+          <Text fontSize="14px">La fiche métier se base sur la classification ROME de Pôle Emploi</Text>
         </Box>
-      </>
+        <Flex alignItems="flex-start" mb={6}>
+          <InfoCircle mr={2} mt={1} color="bluefrance.500" />
+          <Text textAlign="justify">Voici la description visible par les candidats lors de la mise en ligne de l’offre d’emploi en alternance.</Text>
+        </Flex>
+
+        <Accordion defaultIndex={[0]} allowMultiple>
+          <AccordionItem key={0} id="metier">
+            {({ isExpanded }) => (
+              <>
+                <h2>
+                  <AccordionButton>
+                    <Text fontWeight="700" flex="1" textAlign="left">
+                      Description du métier
+                    </Text>
+                    {isExpanded ? <Minus color="bluefrance.500" /> : <Plus color="bluefrance.500" />}
+                  </AccordionButton>
+                </h2>
+                <AccordionPanel pb={4} ml={6} mr={3}>
+                  <ul className={style.voeux}>
+                    {definitionSplitted.map((x) => {
+                      return (
+                        <li className={style.voeux} key={x}>
+                          {x}
+                        </li>
+                      )
+                    })}
+                  </ul>
+                </AccordionPanel>
+              </>
+            )}
+          </AccordionItem>
+          <hr />
+          <AccordionItem key={1} id="competence">
+            {({ isExpanded }) => (
+              <>
+                <h2>
+                  <AccordionButton>
+                    <Text fontWeight="700" flex="1" textAlign="left">
+                      Quelles sont les compétences visées ?
+                    </Text>
+                    {isExpanded ? <Minus color="bluefrance.500" /> : <Plus color="bluefrance.500" />}
+                  </AccordionButton>
+                </h2>
+                <AccordionPanel maxH="50%" pb={4} ml={6} mr={3}>
+                  <ul className={style.voeux}>
+                    {competencesDeBase.map((x) => (
+                      <li className={style.voeux} key={x.libelle}>
+                        {x.libelle}
+                      </li>
+                    ))}
+                  </ul>
+                </AccordionPanel>
+              </>
+            )}
+          </AccordionItem>
+          <hr />
+          <AccordionItem key={2} id="accessibilite">
+            {({ isExpanded }) => (
+              <>
+                <h2>
+                  <AccordionButton>
+                    <Text fontWeight="700" flex="1" textAlign="left">
+                      À qui ce métier est-il accessible ?
+                    </Text>
+                    {isExpanded ? <Minus color="bluefrance.500" /> : <Plus color="bluefrance.500" />}
+                  </AccordionButton>
+                </h2>
+                <AccordionPanel maxH="50%" pb={4}>
+                  <span dangerouslySetInnerHTML={{ __html: accesFormatted }}></span>
+                </AccordionPanel>
+              </>
+            )}
+          </AccordionItem>
+        </Accordion>
+      </Box>
     )
   } else {
     return (
-      <>
-        <Box border="1px solid #000091" p={5}>
-          <Heading fontSize="24px" mb={3}>
-            Dites-nous en plus sur votre besoin en recrutement
-          </Heading>
-          <Flex alignItems="flex-start" mb={6} justify="flex-start">
-            <InfoCircle mr={2} mt={1} color="bluefrance.500" />
-            <Text textAlign="justify">Cela permettra à votre offre d'être visible des candidats intéressés.</Text>
-          </Flex>
-          <Box ml={5}>
-            <Text>Une fois créée, votre offre d’emploi sera immédiatement mise en ligne sur les sites suivants : </Text>
-            <Stack direction={["column", "row"]} spacing={2} align="center" justify="center" mt={3}>
-              <Image src="/images/logo_LBA.svg" alt="" minWidth="150px" width="150px" />
-              <J1S w="100px" h="100px" />
-              <Parcoursup w="220px" h="100px" />
-            </Stack>
-          </Box>
+      <Box border="1px solid #000091" p={5}>
+        <Heading fontSize="24px" mb={3}>
+          Dites-nous en plus sur votre besoin en recrutement
+        </Heading>
+        <Flex alignItems="flex-start" mb={6} justify="flex-start">
+          <InfoCircle mr={2} mt={1} color="bluefrance.500" />
+          <Text textAlign="justify">Cela permettra à votre offre d'être visible des candidats intéressés.</Text>
+        </Flex>
+        <Box ml={5}>
+          <Text>Une fois créée, votre offre d’emploi sera immédiatement mise en ligne sur les sites suivants : </Text>
+          <Stack direction={["column", "row"]} spacing={2} align="center" justify="center" mt={3}>
+            <Image src="/images/logo_LBA.svg" alt="" minWidth="150px" width="150px" />
+            <J1S w="100px" h="100px" />
+            <Parcoursup w="220px" h="100px" />
+          </Stack>
         </Box>
-      </>
+      </Box>
     )
   }
 }
 
-export default (props) => {
+export const PageAjouterVoeux = (props) => {
   const [romeInformation, setRomeInformation] = useState({})
   const [loading, setLoading] = useState(false)
   const { widget } = useContext(WidgetContext)
@@ -506,7 +500,7 @@ export default (props) => {
           Merci de renseigner les champs ci-dessous pour créer votre offre
         </Text>
         <Box>
-          <AjouterVoeux {...props} getRomeInformation={getRomeInformation} />
+          <AjouterVoeuxForm {...props} getRomeInformation={getRomeInformation} />
         </Box>
       </Box>
       <Box>
@@ -522,3 +516,5 @@ export default (props) => {
     </SimpleGrid>
   )
 }
+
+export default PageAjouterVoeux

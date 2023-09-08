@@ -26,16 +26,13 @@ export const ConfirmationCreationCompte = (props) => {
     onClose()
   }
 
-  const deleteAccount = () => {
+  const deleteAccount = async () => {
     if (user.type === AUTHTYPE.ENTREPRISE) {
-      deleteEntreprise(user._id, formulaire._id).then(() => {
-        window.location.replace("/")
-      })
+      await deleteEntreprise(user._id, formulaire._id)
     } else {
-      deleteCfa(user._id).then(() => {
-        window.location.replace("/")
-      })
+      await deleteCfa(user._id)
     }
+    window.location.replace("/")
   }
 
   return (
@@ -49,13 +46,10 @@ export const ConfirmationCreationCompte = (props) => {
         </ModalHeader>
         <ModalBody pb={6}>
           <Stack direction="column" spacing={4}>
-            <Flex>
-              <Text fontWeight="700">
-                Votre adresse email <span style={{ color: "#000091", background: "#F5F5FE", padding: "5px 5px" }}>{user?.email}</span> n’est pas référencée dans nos bases de
-                données.
-              </Text>
-            </Flex>
-            <Text>Votre demande de création de compte va être vérifiée et validée avant que vos offres soient visibles en ligne.</Text>
+            <Text fontWeight="700">
+              Votre demande de création de compte liée à l’adresse email <span style={{ color: "#000091", background: "#F5F5FE", padding: "5px 5px" }}>{user?.email}</span> va être
+              vérifiée et validée avant que vos offres soient visibles en ligne.
+            </Text>
             <Text>Cela peut prendre quelques jours. Vous serez notifié dès que votre demande sera validée.</Text>
             <Box bg="#EEEEEE" h="62px">
               <Center h="100%">

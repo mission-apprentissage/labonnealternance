@@ -80,7 +80,27 @@ export const validationCompte = (id) => API.post("/etablissement/validation", id
  * Etablissement API
  */
 export const getCfaInformation = async (siret) => await API.get(`/etablissement/cfa/${siret}`)
-export const getEntrepriseInformation = async (siret, options) => await API.get(`/etablissement/entreprise/${siret}`, { params: options })
+export const getEntrepriseInformation = async (siret, options) => {
+  try {
+    const { data } = await API.get(`/etablissement/entreprise/${siret}`, { params: options })
+    return data
+  } catch (error) {
+    const status = error?.response?.status
+    if (status && status < 500) {
+      return error?.response?.data
+    } else {
+      return { error: true, errorType: "server", data: error?.response?.data }
+    }
+  }
+}
+export const getEntrepriseOpco = async (siret) => {
+  try {
+    const { data } = await API.get(`/etablissement/entreprise/${siret}/opco`)
+    return data
+  } catch (error) {
+    return null
+  }
+}
 
 export const createPartenaire = (partenaire) => API.post("/etablissement/creation", partenaire)
 export const updatePartenaire = (id, partenaire) => securedAPI.put(`/etablissement/${id}`, partenaire)

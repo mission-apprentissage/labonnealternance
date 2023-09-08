@@ -1,0 +1,480 @@
+{
+    "title": "send-rdv-from-widget",
+    "steps": [
+        {
+            "type": "setViewport",
+            "width": 1271,
+            "height": 721,
+            "deviceScaleFactor": 1,
+            "isMobile": false,
+            "hasTouch": false,
+            "isLandscape": false
+        },
+        {
+            "type": "navigate",
+            "url": "https://labonnealternance.apprentissage.beta.gouv.fr/recherche-apprentissage-formation",
+            "assertedEvents": [
+                {
+                    "type": "navigation",
+                    "url": "https://labonnealternance.apprentissage.beta.gouv.fr/recherche-apprentissage-formation",
+                    "title": "Formations en alternance | La bonne alternance"
+                }
+            ]
+        },
+        {
+            "type": "waitForElement",
+            "target": "main",
+            "selectors": [
+                "aria/Retour page d'accueil de La bonne alternance[role=\"img\"]",
+                "div.css-1r61h60 img",
+                "xpath///*[@id=\"__next\"]/main/div/div[1]/div/div[1]/a/img",
+                "pierce/div.css-1r61h60 img"
+            ]
+        },
+        {
+            "type": "waitForElement",
+            "target": "main",
+            "selectors": [
+                "aria/Lancer la recherche[role=\"img\"]",
+                "div.css-iiltjv div.css-0 img",
+                "xpath///*[@id=\"__next\"]/main/div/div[1]/div/div[2]/div/form/div/div[5]/button/img",
+                "pierce/div.css-iiltjv div.css-0 img"
+            ]
+        },
+        {
+            "type": "waitForElement",
+            "target": "main",
+            "selectors": [
+                "p.css-gja1ac",
+                "xpath///*[@id=\"choiceColumn\"]/div[1]/div/div/p[1]",
+                "pierce/p.css-gja1ac",
+                "text/Faites une recherche"
+            ]
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "aria/Indiquez un métier ou diplôme"
+                ],
+                [
+                    "form > div > div.css-0 input"
+                ],
+                [
+                    "xpath///*[@id=\"lang-switcher-input\"]"
+                ],
+                [
+                    "pierce/form > div > div.css-0 input"
+                ]
+            ],
+            "offsetY": 9.799999237060547,
+            "offsetX": 102.5999984741211
+        },
+        {
+            "type": "change",
+            "value": "esth",
+            "selectors": [
+                [
+                    "aria/Indiquez un métier ou diplôme"
+                ],
+                [
+                    "form > div > div.css-0 input"
+                ],
+                [
+                    "xpath///*[@id=\"lang-switcher-input\"]"
+                ],
+                [
+                    "pierce/form > div > div.css-0 input"
+                ]
+            ],
+            "target": "main"
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "aria/Esthétique"
+                ],
+                [
+                    "#lang-switcher-item-0"
+                ],
+                [
+                    "xpath///*[@id=\"lang-switcher-item-0\"]"
+                ],
+                [
+                    "pierce/#lang-switcher-item-0"
+                ],
+                [
+                    "text/Esthétique"
+                ]
+            ],
+            "offsetY": 7.8000030517578125,
+            "offsetX": 87
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "aria/Lancer la recherche[role=\"img\"]"
+                ],
+                [
+                    "div.css-iiltjv div.css-0 img"
+                ],
+                [
+                    "xpath///*[@id=\"__next\"]/main/div/div[1]/div/div[2]/div/form/div/div[5]/button/img"
+                ],
+                [
+                    "pierce/div.css-iiltjv div.css-0 img"
+                ]
+            ],
+            "offsetY": 5,
+            "offsetX": 9.5999755859375
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "a:nth-of-type(1) div.css-17xle36"
+                ],
+                [
+                    "xpath///*[@id=\"id095041P01111934001160002919340006600018-34028#L01\"]/div/div[3]"
+                ],
+                [
+                    "pierce/a:nth-of-type(1) div.css-17xle36"
+                ],
+                [
+                    "text/63  de Clermont"
+                ]
+            ],
+            "offsetY": 2.899993896484375,
+            "offsetX": 437
+        },
+        {
+            "type": "waitForElement",
+            "target": "main",
+            "selectors": [
+                "aria/Quelques informations sur le centre de formation",
+                "h2",
+                "xpath///*[@id=\"itemDetailColumn\"]/div[2]/h2",
+                "pierce/h2",
+                "text/Quelques informations"
+            ]
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "aria/Je prends rendez-vous"
+                ],
+                [
+                    "header a"
+                ],
+                [
+                    "xpath///*[@id=\"itemDetailColumn\"]/header/div/div[2]/div/a"
+                ],
+                [
+                    "pierce/header a"
+                ],
+                [
+                    "text/Je prends rendez-vous"
+                ]
+            ],
+            "offsetY": 18.199996948242188,
+            "offsetX": 76
+        },
+        {
+            "type": "click",
+            "target": "https://labonnealternance.apprentissage.beta.gouv.fr/espace-pro/form?referrer=lba&cleMinistereEducatif=095041P01111934001160002919340006600018-34028%23L01",
+            "selectors": [
+                [
+                    "aria/votre prénom"
+                ],
+                [
+                    "form > input:nth-of-type(1)"
+                ],
+                [
+                    "xpath///*[@id=\"root\"]/div/div/div[2]/div/form/input[1]"
+                ],
+                [
+                    "pierce/form > input:nth-of-type(1)"
+                ]
+            ],
+            "offsetY": 10.037506103515625,
+            "offsetX": 188
+        },
+        {
+            "type": "change",
+            "value": "John",
+            "selectors": [
+                [
+                    "aria/votre prénom"
+                ],
+                [
+                    "form > input:nth-of-type(1)"
+                ],
+                [
+                    "xpath///*[@id=\"root\"]/div/div/div[2]/div/form/input[1]"
+                ],
+                [
+                    "pierce/form > input:nth-of-type(1)"
+                ]
+            ],
+            "target": "https://labonnealternance.apprentissage.beta.gouv.fr/espace-pro/form?referrer=lba&cleMinistereEducatif=095041P01111934001160002919340006600018-34028%23L01"
+        },
+        {
+            "type": "click",
+            "target": "https://labonnealternance.apprentissage.beta.gouv.fr/espace-pro/form?referrer=lba&cleMinistereEducatif=095041P01111934001160002919340006600018-34028%23L01",
+            "selectors": [
+                [
+                    "aria/votre nom"
+                ],
+                [
+                    "form > input.css-jw8yg"
+                ],
+                [
+                    "xpath///*[@id=\"root\"]/div/div/div[2]/div/form/input[2]"
+                ],
+                [
+                    "pierce/form > input.css-jw8yg"
+                ]
+            ],
+            "offsetY": 16.0374755859375,
+            "offsetX": 60.399993896484375
+        },
+        {
+            "type": "change",
+            "value": "Doe",
+            "selectors": [
+                [
+                    "aria/votre nom"
+                ],
+                [
+                    "form > input.css-jw8yg"
+                ],
+                [
+                    "xpath///*[@id=\"root\"]/div/div/div[2]/div/form/input[2]"
+                ],
+                [
+                    "pierce/form > input.css-jw8yg"
+                ]
+            ],
+            "target": "https://labonnealternance.apprentissage.beta.gouv.fr/espace-pro/form?referrer=lba&cleMinistereEducatif=095041P01111934001160002919340006600018-34028%23L01"
+        },
+        {
+            "type": "click",
+            "target": "https://labonnealternance.apprentissage.beta.gouv.fr/espace-pro/form?referrer=lba&cleMinistereEducatif=095041P01111934001160002919340006600018-34028%23L01",
+            "selectors": [
+                [
+                    "aria/votre numéro de téléphone"
+                ],
+                [
+                    "div.css-0 > input"
+                ],
+                [
+                    "xpath///*[@id=\"root\"]/div/div/div[2]/div/form/div[3]/input"
+                ],
+                [
+                    "pierce/div.css-0 > input"
+                ]
+            ],
+            "offsetY": 26.037490844726562,
+            "offsetX": 179.39999389648438
+        },
+        {
+            "type": "change",
+            "value": "0700000000",
+            "selectors": [
+                [
+                    "aria/votre numéro de téléphone"
+                ],
+                [
+                    "div.css-0 > input"
+                ],
+                [
+                    "xpath///*[@id=\"root\"]/div/div/div[2]/div/form/div[3]/input"
+                ],
+                [
+                    "pierce/div.css-0 > input"
+                ]
+            ],
+            "target": "https://labonnealternance.apprentissage.beta.gouv.fr/espace-pro/form?referrer=lba&cleMinistereEducatif=095041P01111934001160002919340006600018-34028%23L01"
+        },
+        {
+            "type": "click",
+            "target": "https://labonnealternance.apprentissage.beta.gouv.fr/espace-pro/form?referrer=lba&cleMinistereEducatif=095041P01111934001160002919340006600018-34028%23L01",
+            "selectors": [
+                [
+                    "aria/votre adresse email"
+                ],
+                [
+                    "input[type='email']"
+                ],
+                [
+                    "xpath///*[@id=\"root\"]/div/div/div[2]/div/form/input[3]"
+                ],
+                [
+                    "pierce/input[type='email']"
+                ]
+            ],
+            "offsetY": 19.037490844726562,
+            "offsetX": 153.39999389648438
+        },
+        {
+            "type": "change",
+            "value": "test-auto@nexistepas.fr",
+            "selectors": [
+                [
+                    "aria/votre adresse email"
+                ],
+                [
+                    "input[type='email']"
+                ],
+                [
+                    "xpath///*[@id=\"root\"]/div/div/div[2]/div/form/input[3]"
+                ],
+                [
+                    "pierce/input[type='email']"
+                ]
+            ],
+            "target": "https://labonnealternance.apprentissage.beta.gouv.fr/espace-pro/form?referrer=lba&cleMinistereEducatif=095041P01111934001160002919340006600018-34028%23L01"
+        },
+        {
+            "type": "click",
+            "target": "https://labonnealternance.apprentissage.beta.gouv.fr/espace-pro/form?referrer=lba&cleMinistereEducatif=095041P01111934001160002919340006600018-34028%23L01",
+            "selectors": [
+                [
+                    "label:nth-of-type(2) > span.chakra-checkbox__control"
+                ],
+                [
+                    "xpath///*[@id=\"root\"]/div/div/div[2]/div/form/div[4]/label[2]/span[1]"
+                ],
+                [
+                    "pierce/label:nth-of-type(2) > span.chakra-checkbox__control"
+                ]
+            ],
+            "offsetY": 7.037506103515625,
+            "offsetX": 10.399993896484375
+        },
+        {
+            "type": "click",
+            "target": "https://labonnealternance.apprentissage.beta.gouv.fr/espace-pro/form?referrer=lba&cleMinistereEducatif=095041P01111934001160002919340006600018-34028%23L01",
+            "selectors": [
+                [
+                    "label:nth-of-type(4) > span.chakra-checkbox__control"
+                ],
+                [
+                    "xpath///*[@id=\"root\"]/div/div/div[2]/div/form/div[4]/label[4]/span[1]"
+                ],
+                [
+                    "pierce/label:nth-of-type(4) > span.chakra-checkbox__control"
+                ]
+            ],
+            "offsetY": 10.037506103515625,
+            "offsetX": 3.399993896484375
+        },
+        {
+            "type": "click",
+            "target": "https://labonnealternance.apprentissage.beta.gouv.fr/espace-pro/form?referrer=lba&cleMinistereEducatif=095041P01111934001160002919340006600018-34028%23L01",
+            "selectors": [
+                [
+                    "label:nth-of-type(11) > span.chakra-checkbox__control"
+                ],
+                [
+                    "xpath///*[@id=\"root\"]/div/div/div[2]/div/form/div[4]/label[11]/span[1]"
+                ],
+                [
+                    "pierce/label:nth-of-type(11) > span.chakra-checkbox__control"
+                ]
+            ],
+            "offsetY": 8.4375,
+            "offsetX": 8.399993896484375
+        },
+        {
+            "type": "click",
+            "target": "https://labonnealternance.apprentissage.beta.gouv.fr/espace-pro/form?referrer=lba&cleMinistereEducatif=095041P01111934001160002919340006600018-34028%23L01",
+            "selectors": [
+                [
+                    "aria/période d’inscription, horaires, etc."
+                ],
+                [
+                    "input:nth-of-type(4)"
+                ],
+                [
+                    "xpath///*[@id=\"root\"]/div/div/div[2]/div/form/input[4]"
+                ],
+                [
+                    "pierce/input:nth-of-type(4)"
+                ]
+            ],
+            "offsetY": 16.4375,
+            "offsetX": 35.399993896484375
+        },
+        {
+            "type": "change",
+            "value": "horaires",
+            "selectors": [
+                [
+                    "aria/période d’inscription, horaires, etc."
+                ],
+                [
+                    "input:nth-of-type(4)"
+                ],
+                [
+                    "xpath///*[@id=\"root\"]/div/div/div[2]/div/form/input[4]"
+                ],
+                [
+                    "pierce/input:nth-of-type(4)"
+                ]
+            ],
+            "target": "https://labonnealternance.apprentissage.beta.gouv.fr/espace-pro/form?referrer=lba&cleMinistereEducatif=095041P01111934001160002919340006600018-34028%23L01"
+        },
+        {
+            "type": "waitForElement",
+            "target": "https://labonnealternance.apprentissage.beta.gouv.fr/espace-pro/form?referrer=lba&cleMinistereEducatif=095041P01111934001160002919340006600018-34028%23L01",
+            "selectors": [
+                "div.css-5sxn50 > span",
+                "xpath///*[@id=\"root\"]/div/div/div[2]/div/form/div[1]/div[1]/span",
+                "pierce/div.css-5sxn50 > span",
+                "text/63  de Clermont,"
+            ]
+        },
+        {
+            "type": "click",
+            "target": "https://labonnealternance.apprentissage.beta.gouv.fr/espace-pro/form?referrer=lba&cleMinistereEducatif=095041P01111934001160002919340006600018-34028%23L01",
+            "selectors": [
+                [
+                    "aria/Envoyer ma demande"
+                ],
+                [
+                    "button"
+                ],
+                [
+                    "xpath///*[@id=\"root\"]/div/div/div[2]/div/form/button"
+                ],
+                [
+                    "pierce/button"
+                ],
+                [
+                    "text/Envoyer ma demande"
+                ]
+            ],
+            "offsetY": 20.037506103515625,
+            "offsetX": 116.39999389648438
+        },
+        {
+            "type": "waitForElement",
+            "target": "https://labonnealternance.apprentissage.beta.gouv.fr/espace-pro/form?referrer=lba&cleMinistereEducatif=095041P01111934001160002919340006600018-34028%23L01",
+            "selectors": [
+                "div > span",
+                "xpath///*[@id=\"root\"]/div/div/div[2]/div/span",
+                "pierce/div > span",
+                "text/Voilà une bonne"
+            ]
+        }
+    ]
+}

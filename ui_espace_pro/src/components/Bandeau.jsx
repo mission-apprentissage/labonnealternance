@@ -1,26 +1,8 @@
 import { Box, Center, Heading, Icon, Link, Stack, Text } from "@chakra-ui/react"
-import { useEffect, useState } from "react"
 import { CircleCheck, OctogoneCross } from "../theme/components/icons"
 
-export default ({ header, description, lien, type }) => {
-  const [color, setColor] = useState("")
-
-  const getBannerType = () => {
-    switch (type) {
-      case "success":
-        setColor("#18753C")
-
-        break
-      case "error":
-        setColor("red.500")
-
-        break
-      default:
-        break
-    }
-  }
-
-  useEffect(() => getBannerType(), [type])
+const Bandeau = ({ header, description, lien, type }) => {
+  const color = getBannerColor(type)
 
   return (
     <Stack direction="row" spacing={0} mt={[2, 10]} maxH={["auto", "88px"]}>
@@ -43,3 +25,16 @@ export default ({ header, description, lien, type }) => {
     </Stack>
   )
 }
+
+const getBannerColor = (type) => {
+  switch (type) {
+    case "success":
+      return "#18753C"
+    case "error":
+      return "red.500"
+    default:
+      return ""
+  }
+}
+
+export default Bandeau

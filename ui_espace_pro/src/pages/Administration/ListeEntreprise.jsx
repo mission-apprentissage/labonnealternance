@@ -29,6 +29,7 @@ import useAuth from "../../common/hooks/useAuth"
 import { sortReactTableDate, sortReactTableString } from "../../common/utils/dateUtils"
 import { AnimationContainer, ConfirmationSuppressionEntreprise, LoadingEmptySpace, TableNew } from "../../components"
 import { Parametre } from "../../theme/components/icons"
+import { RECRUITER_STATUS } from "../../common/contants"
 
 const EmptySpace = () => (
   <Stack direction={["column", "column", "column", "row"]} mt={12} pt={12} py={8} border="1px solid" borderColor="grey.400" spacing="32px">
@@ -69,7 +70,9 @@ export default memo(() => {
     }
   }, [])
 
-  const { data, isLoading } = useQuery("listeEntreprise", () => getFormulaires({ status: "Actif", cfa_delegated_siret: auth.cfa_delegated_siret }))
+  const { data, isLoading } = useQuery("listeEntreprise", () =>
+    getFormulaires({ status: { $in: [RECRUITER_STATUS.ACTIF, RECRUITER_STATUS.EN_ATTENTE_VALIDATION] }, cfa_delegated_siret: auth.cfa_delegated_siret })
+  )
 
   if (isLoading) {
     return <LoadingEmptySpace />
@@ -82,9 +85,9 @@ export default memo(() => {
       width: "500",
       maxWidth: "500",
       sortType: (a, b) => sortReactTableString(a.original.establishment_raison_sociale, b.original.establishment_raison_sociale),
-      accessor: ({ establishment_id, establishment_raison_sociale }) => (
+      accessor: ({ establishment_id, establishment_raison_sociale, establishment_siret }) => (
         <Link as={NavLink} to={`/administration/entreprise/${establishment_id}`}>
-          {establishment_raison_sociale}
+          {establishment_raison_sociale ?? establishment_siret}
         </Link>
       ),
     },

@@ -6,15 +6,12 @@ import {
   Button,
   Container,
   Flex,
-  Heading,
   Icon,
-  Image,
   Link,
   Menu,
   MenuButton,
   MenuItem,
   MenuList,
-  Stack,
   Tab,
   TabList,
   TabPanel,
@@ -25,43 +22,22 @@ import {
   useToast,
 } from "@chakra-ui/react"
 import dayjs from "dayjs"
-import { memo, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { useQuery } from "react-query"
-import { NavLink, useLocation, useNavigate } from "react-router-dom"
+import { NavLink, useLocation } from "react-router-dom"
 import { getOpcoUsers } from "../../api"
-import addOfferImage from "../../assets/images/add-offer.svg"
 import { USER_STATUS } from "../../common/contants"
 import useAuth from "../../common/hooks/useAuth"
 import { sortReactTableDate, sortReactTableString } from "../../common/utils/dateUtils"
 import { AnimationContainer, ConfirmationActivationUtilsateur, ConfirmationDesactivationUtilisateur, LoadingEmptySpace, TableNew } from "../../components"
 import { ArrowDropRightLine, Parametre } from "../../theme/components/icons"
 
-const EmptySpace = () => (
-  <Stack direction={["column", "column", "column", "row"]} mt={12} pt={12} py={8} border="1px solid" borderColor="grey.400" spacing="32px">
-    <Flex justify={["center", "center", "center", "flex-end"]} align={["center", "center", "center", "flex-start"]} w={["100%", "100%", "100%", "350px"]} h="150px">
-      <Image src={addOfferImage} />
-    </Flex>
-
-    <Box w={["100%", "100%", "100%", "600px"]}>
-      <Heading fontSize="2rem" pb={7}>
-        Créez votre première entreprise mandatée.
-      </Heading>
-      <Text fontSize="1.375rem">Une entreprise vous a mandaté pour gérer ses offres d’emploi ?</Text>
-      <Text fontSize="1.375rem">
-        En quelques secondes, exprimez les besoins de recrutement de cette entreprise pour les afficher sur le site <span style={{ fontWeight: "700" }}>La bonne alternance</span>{" "}
-        dès aujourd’hui.
-      </Text>
-    </Box>
-  </Stack>
-)
-
-export default memo(() => {
+const AdministrationOpco = () => {
   const [currentEntreprise, setCurrentEntreprise] = useState()
   const [tabIndex, setTabIndex] = useState(0)
   const confirmationDesactivationUtilisateur = useDisclosure()
   const confirmationActivationUtilisateur = useDisclosure()
   const location = useLocation()
-  const navigate = useNavigate()
   const [auth] = useAuth()
   const toast = useToast()
 
@@ -275,9 +251,6 @@ export default memo(() => {
           <Text fontSize="2rem" fontWeight={700}>
             Entreprises
           </Text>
-          {/* <Button variant='primary' size='sm' mr={3} onClick={() => navigate(`/administration/entreprise`)}>
-              Nouvelle entreprise
-            </Button> */}
         </Flex>
 
         <Tabs index={tabIndex} onChange={(index) => setTabIndex(index)} variant="search" isLazy>
@@ -303,4 +276,6 @@ export default memo(() => {
       </Container>
     </AnimationContainer>
   )
-})
+}
+
+export default AdministrationOpco

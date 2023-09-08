@@ -1,16 +1,16 @@
 import express from "express"
 import Joi from "joi"
 import { mailTemplate } from "../../../assets/index.js"
-import { CFA, ENTREPRISE, ETAT_UTILISATEUR } from "../../../services/constant.service.js"
 import { UserRecruteur } from "../../../common/model/index.js"
+import { IUserRecruteur } from "../../../common/model/schema/userRecruteur/userRecruteur.types.js"
 import { createMagicLinkToken, createUserRecruteurToken, createUserToken } from "../../../common/utils/jwtUtils.js"
 import config from "../../../config.js"
-import { tryCatch } from "../../middlewares/tryCatchMiddleware.js"
-import { IUserRecruteur } from "../../../common/model/schema/userRecruteur/userRecruteur.types.js"
-import { getUser, registerUser } from "../../../services/userRecruteur.service.js"
-import { getValidationUrl } from "../../../services/etablissement.service.js"
-import authMiddleware from "../../middlewares/authMiddleware.js"
+import { CFA, ENTREPRISE, ETAT_UTILISATEUR } from "../../../services/constant.service.js"
+import { sendUserConfirmationEmail } from "../../../services/etablissement.service.js"
 import mailer from "../../../services/mailer.service.js"
+import { getUser, getUserStatus, registerUser } from "../../../services/userRecruteur.service.js"
+import authMiddleware from "../../middlewares/authMiddleware.js"
+import { tryCatch } from "../../middlewares/tryCatchMiddleware.js"
 
 export default () => {
   const router = express.Router() // eslint-disable-line new-cap
@@ -44,23 +44,12 @@ export default () => {
         if (is_email_checked) {
           return res.status(400).json({ error: true, reason: "VERIFIED" })
         }
-
-        const url = getValidationUrl(_id)
-
-        await mailer.sendEmail({
-          to: email,
-          subject: "Confirmez votre adresse mail",
-          template: mailTemplate["mail-confirmation-email"],
-          data: {
-            images: {
-              logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
-            },
-            last_name,
-            first_name,
-            confirmation_url: url,
-          },
+        await sendUserConfirmationEmail({
+          email,
+          firstName: first_name,
+          lastName: last_name,
+          userRecruteurId: _id,
         })
-
         return res.sendStatus(200)
       } catch (error) {
         return res.status(400).json({
@@ -77,70 +66,37 @@ export default () => {
       const { email } = await Joi.object({
         email: Joi.string().email().required(),
       }).validateAsync(req.body, { abortEarly: false })
-
       const formatedEmail = email.toLowerCase()
-
       const user = await UserRecruteur.findOne({ email: formatedEmail })
       const { email: userEmail, _id, first_name, last_name, is_email_checked } = user || {}
-
       if (!user) {
         return res.status(400).json({ error: true, reason: "UNKNOWN" })
       }
-
-      const [lastValidationEntry] = user.status.slice(-1)
-
-      switch (user.type) {
-        case CFA:
-          if (lastValidationEntry.status === ETAT_UTILISATEUR.ATTENTE) {
-            return res.status(400).json({ error: true, reason: "VALIDATION" })
-          }
-
-          if (lastValidationEntry.status === ETAT_UTILISATEUR.DESACTIVE) {
-            return res.status(400).json({
-              error: true,
-              reason: "DISABLED",
-            })
-          }
-          break
-        case ENTREPRISE:
-          if (lastValidationEntry.status === ETAT_UTILISATEUR.ATTENTE) {
-            return res.status(400).json({ error: true, reason: "VALIDATION" })
-          }
-
-          if (lastValidationEntry.status === ETAT_UTILISATEUR.DESACTIVE) {
-            return res.status(400).json({
-              error: true,
-              reason: "DISABLED",
-            })
-          }
-          break
+      const status = getUserStatus(user.status)
+      if ([ENTREPRISE, CFA].includes(user.type)) {
+        if ([ETAT_UTILISATEUR.ATTENTE, ETAT_UTILISATEUR.ERROR].includes(status)) {
+          return res.status(400).json({ error: true, reason: "VALIDATION" })
+        }
+        if (status === ETAT_UTILISATEUR.DESACTIVE) {
+          return res.status(400).json({
+            error: true,
+            reason: "DISABLED",
+          })
+        }
       }
-
       if (!is_email_checked) {
-        const url = getValidationUrl(_id)
-
-        await mailer.sendEmail({
-          to: userEmail,
-          subject: "Confirmez votre adresse mail",
-          template: mailTemplate["mail-confirmation-email"],
-          data: {
-            images: {
-              logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
-            },
-            last_name,
-            first_name,
-            confirmation_url: url,
-          },
+        await sendUserConfirmationEmail({
+          email: userEmail,
+          firstName: first_name,
+          lastName: last_name,
+          userRecruteurId: _id,
         })
-
         return res.status(400).json({
           error: true,
           reason: "VERIFY",
         })
       }
-
       const magiclink = `${config.publicUrlEspacePro}/authentification/verification?token=${createMagicLinkToken(userEmail)}`
-
       await mailer.sendEmail({
         to: userEmail,
         subject: "Lien de connexion",
@@ -154,7 +110,6 @@ export default () => {
           connexion_url: magiclink,
         },
       })
-
       return res.sendStatus(200)
     })
   )

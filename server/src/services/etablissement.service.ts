@@ -1,11 +1,20 @@
 import axios, { AxiosResponse } from "axios"
+import { pick } from "lodash-es"
+import { Filter } from "mongodb"
+import { mailTemplate } from "../assets/index.js"
 import { BonneBoiteLegacy, BonnesBoites, Etablissement, ReferentielOpco, UnsubscribeOF, UserRecruteur } from "../common/model/index.js"
 import { IBonneBoite } from "../common/model/schema/bonneboite/bonneboite.types.js"
 import { IEtablissement } from "../common/model/schema/etablissements/etablissement.types.js"
+import { IRecruiter } from "../common/model/schema/recruiter/recruiter.types.js"
 import { IReferentielOpco } from "../common/model/schema/referentielOpco/referentielOpco.types.js"
+import { IUnsubscribedOF } from "../common/model/schema/unsubscribedOF/unsubscribeOF.types.js"
 import { IUserRecruteur } from "../common/model/schema/userRecruteur/userRecruteur.types.js"
+import { isEmailFromPrivateCompany, isEmailSameDomain } from "../common/utils/mailUtils.js"
 import { sentryCaptureException } from "../common/utils/sentryUtils.js"
 import config from "../config.js"
+import { validationOrganisation } from "./bal.service.js"
+import { getCatalogueEtablissements } from "./catalogue.service.js"
+import { BusinessErrorCodes, CFA, ENTREPRISE, ETAT_UTILISATEUR, RECRUITER_STATUS } from "./constant.service.js"
 import {
   IAPIAdresse,
   IAPIEtablissement,
@@ -17,10 +26,10 @@ import {
   IReferentiel,
   ISIRET2IDCC,
 } from "./etablissement.service.types.js"
-import { IRecruiter } from "../common/model/schema/recruiter/recruiter.types.js"
-import { Filter } from "mongodb"
-import { IUnsubscribedOF } from "common/model/schema/unsubscribedOF/unsubscribeOF.types.js"
-import { getCatalogueEtablissements } from "./catalogue.service.js"
+import { createFormulaire, getFormulaire } from "./formulaire.service.js"
+import mailer from "./mailer.service.js"
+import { getOpcoBySirenFromDB, saveOpco } from "./opco.service.js"
+import { autoValidateUser, createUser, getUser, getUserStatus, setUserHasToBeManuallyValidated, setUserInError } from "./userRecruteur.service.js"
 
 const apiParams = {
   token: config.entreprise.apiKey,
@@ -171,7 +180,7 @@ export const findByIdAndDelete = async (id): Promise<IEtablissement> => Etabliss
  * @param {Object} query
  * @returns {Promise<void>}
  */
-export const getEtablissement = async (query: Filter<IUserRecruteur>): Promise<IUserRecruteur> => UserRecruteur.findOne(query)
+export const getEtablissement = async (query: Filter<IUserRecruteur>): Promise<IUserRecruteur | null> => UserRecruteur.findOne(query)
 
 /**
  * @description Get opco details from CFADOCK API for a given SIRET
@@ -209,8 +218,13 @@ export const getOpcoByIdcc = async (idcc: number): Promise<ICFADock | null> => {
  * @returns {Promise<Object>}
  */
 export const getIdcc = async (siret: string): Promise<ISIRET2IDCC> => {
-  const { data } = await axios.get<ISIRET2IDCC>(`https://siret2idcc.fabrique.social.gouv.fr/api/v2/${encodeURIComponent(siret)}`)
-  return data
+  try {
+    const { data } = await axios.get<ISIRET2IDCC>(`https://siret2idcc.fabrique.social.gouv.fr/api/v2/${encodeURIComponent(siret)}`)
+    return data
+  } catch (err) {
+    sentryCaptureException(err)
+    return null
+  }
 }
 /**
  * @description Get the establishment validation url for a given SIRET
@@ -224,6 +238,7 @@ export const getValidationUrl = (_id: IRecruiter["_id"]): string => `${config.pu
  * @returns {Promise<void>}
  */
 export const validateEtablissementEmail = async (_id: IUserRecruteur["_id"]): Promise<IUserRecruteur> => UserRecruteur.findByIdAndUpdate(_id, { is_email_checked: true })
+
 /**
  * @description Get the establishment information from the ENTREPRISE API for a given SIRET
  * @param {String} siret
@@ -234,13 +249,13 @@ export const getEtablissementFromGouv = async (siret: string): Promise<IAPIEtabl
     const { data } = await axios.get<IAPIEtablissement>(`${config.entreprise.baseUrl}/sirene/etablissements/${encodeURIComponent(siret)}`, {
       params: apiParams,
     })
-
     return data
   } catch (error) {
-    if (error.response.status == "404" || error.response.status == "422") {
+    if (error?.response?.status === 404 || error?.response?.status === 422) {
       return null
     }
     sentryCaptureException(error)
+    throw error
   }
 }
 /**
@@ -254,8 +269,10 @@ export const getEtablissementFromReferentiel = async (siret: string): Promise<IR
     return data
   } catch (error) {
     sentryCaptureException(error)
-    if (error.response.status === 404) {
+    if (error?.response?.status === 404) {
       return null
+    } else {
+      throw error
     }
   }
 }
@@ -285,8 +302,11 @@ export const getEtablissementFromCatalogue = async (siret: string): Promise<IEta
 export const getGeoCoordinates = async (adresse: string): Promise<string> => {
   try {
     const response: AxiosResponse<IAPIAdresse> = await axios.get(`https://api-adresse.data.gouv.fr/search/?q=${adresse}`)
-    const coordinates = response.data.features[0] ? response.data.features[0].geometry.coordinates.reverse().join(",") : "NOT FOUND"
-    return coordinates
+    const [firstFeature] = response.data?.features
+    if (!firstFeature) {
+      return "NOT FOUND"
+    }
+    return firstFeature.geometry.coordinates.reverse().join(",")
   } catch (error) {
     sentryCaptureException(error)
     return "NOT FOUND"
@@ -318,24 +338,6 @@ export const getAllEstablishmentFromBonneBoiteLegacy = async (query: Filter<IBon
  * @returns {Promise<IBonneBoite["email"]>}
  */
 export const getAllEstablishmentFromBonneBoite = async (query: Filter<IBonneBoite>): Promise<IBonneBoite[]> => await BonnesBoites.find(query).select({ email: 1, _id: 0 }).lean()
-/**
- * @description Chech if a given email is included in the given email list array
- * @param {String} email
- * @param {String[]} emailList
- * @returns {Boolean}
- */
-export const getMatchingEmailFromContactList = (email: string, emailList: string[]): boolean => emailList.includes(email)
-/**
- * @description Check if the email domain is included in the givne email list array
- * @param {String} email
- * @param {String[]} emailList
- * @returns {Boolean}
- */
-export const getMatchingDomainFromContactList = (email: string, emailList: string[]): boolean => {
-  const [_, domain] = email.split("@")
-
-  return emailList.some((e) => e.includes(domain))
-}
 
 /**
  * @description Format Entreprise data
@@ -393,6 +395,322 @@ export const etablissementUnsubscribeDemandeDelegation = async (etablissementSir
       catalogue_id: _id,
       establishment_siret: etablissementSiret,
       unsubscribe_date: new Date(),
+    })
+  }
+}
+
+export const autoValidateCompany = async (userRecruteur: IUserRecruteur) => {
+  const { establishment_siret: siret, email, _id } = userRecruteur
+  const siren = siret.slice(0, 9)
+  // Get all corresponding records using the SIREN number in BonneBoiteLegacy collection
+  const [bonneBoiteLegacyList, bonneBoiteList, referentielOpcoList] = await Promise.all([
+    getAllEstablishmentFromBonneBoiteLegacy({ siret: { $regex: siren }, email: { $nin: ["", undefined] } }),
+    getAllEstablishmentFromBonneBoite({ siret: { $regex: siren }, email: { $nin: ["", undefined] } }),
+    getAllEstablishmentFromOpcoReferentiel({ siret_code: { $regex: siren } }),
+  ])
+
+  // Format arrays to get only the emails
+  const bonneBoiteLegacyEmailList = bonneBoiteLegacyList.map(({ email }) => email)
+  const bonneBoiteEmailList = bonneBoiteList.map(({ email }) => email)
+  const referentielOpcoEmailList = referentielOpcoList.flatMap((item) => item.emails)
+
+  // Create a single array with all emails duplicate free
+  const validEmails = [...new Set([...referentielOpcoEmailList, ...bonneBoiteLegacyEmailList, ...bonneBoiteEmailList])]
+
+  // Check BAL API for validation
+
+  const isValid = validEmails.includes(email) || (isEmailFromPrivateCompany(email) && validEmails.some((validEmail) => isEmailSameDomain(email, validEmail)))
+  if (isValid) {
+    userRecruteur = await autoValidateUser(_id)
+  } else {
+    const balControl = await validationOrganisation(siret, email)
+    if (balControl.is_valid) {
+      userRecruteur = await autoValidateUser(_id)
+    } else {
+      userRecruteur = await setUserHasToBeManuallyValidated(_id)
+    }
+  }
+  return { userRecruteur, validated: isValid }
+}
+
+const errorFactory = (message: string, errorCode?: BusinessErrorCodes) => ({ error: true, message, errorCode })
+
+const getOpcoDataRaw = async (siret: string) => {
+  const opcoResult: ICFADock | null = await getOpco(siret)
+  switch (opcoResult?.searchStatus) {
+    case "OK": {
+      return { opco: opcoResult.opcoName, idcc: opcoResult.idcc.toString() }
+    }
+    case "MULTIPLE_OPCO": {
+      return { opco: "Opco multiple", idcc: "Opco multiple, IDCC non défini" }
+    }
+    case null:
+    case "NOT_FOUND": {
+      const idccResult = await getIdcc(siret)
+      if (!idccResult) return undefined
+      const conventions = idccResult[0]?.conventions
+      if (conventions?.length) {
+        const num: number = conventions[0]?.num
+        const opcoByIdccResult = await getOpcoByIdcc(num)
+        if (opcoByIdccResult) {
+          return { opco: opcoByIdccResult.opcoName, idcc: opcoByIdccResult.idcc.toString() }
+        }
+      }
+      break
+    }
+  }
+  return undefined
+}
+
+export const getOpcoData = async (siret: string) => {
+  const siren = siret.substring(0, 9)
+  const opcoFromDB = await getOpcoBySirenFromDB(siren)
+  if (opcoFromDB) {
+    const { opco, idcc } = opcoFromDB
+    return { opco, idcc }
+  } else {
+    const result = await getOpcoDataRaw(siret)
+    if (result) {
+      const { opco, idcc } = result
+      await saveOpco({ opco, idcc, siren, url: null })
+    }
+    return result
+  }
+}
+
+export type EntrepriseData = IFormatAPIEntreprise & { opco: string; idcc: string; geo_coordinates: string }
+
+export const validateCreationEntrepriseFromCfa = async ({ siret, cfa_delegated_siret }: { siret: string; cfa_delegated_siret: string }) => {
+  if (!cfa_delegated_siret) return
+  const recruteurOpt = await getFormulaire({
+    establishment_siret: siret,
+    cfa_delegated_siret,
+    status: { $in: [RECRUITER_STATUS.ACTIF, RECRUITER_STATUS.EN_ATTENTE_VALIDATION] },
+  })
+  if (recruteurOpt) {
+    return errorFactory("L'entreprise est déjà référencée comme partenaire.")
+  }
+}
+
+export const getEntrepriseDataFromSiret = async ({ siret, cfa_delegated_siret }: { siret: string; cfa_delegated_siret?: string }) => {
+  const result = await getEtablissementFromGouv(siret)
+  if (!result) {
+    return errorFactory("Le numéro siret est invalide.")
+  }
+  const { etat_administratif, activite_principale } = result.data
+  if (etat_administratif === "F") {
+    return errorFactory("Cette entreprise est considérée comme fermée.")
+  }
+  // Check if a CFA already has the company as partenaire
+  if (!cfa_delegated_siret) {
+    // Allow cfa to add themselves as a company
+    if (activite_principale.code.startsWith("85")) {
+      return errorFactory("Le numéro siret n'est pas référencé comme une entreprise.", BusinessErrorCodes.IS_CFA)
+    }
+  }
+  const entrepriseData = formatEntrepriseData(result.data)
+  const geo_coordinates = await getGeoCoordinates(`${entrepriseData.address_detail.acheminement_postal.l4}, ${entrepriseData.address_detail.acheminement_postal.l6}`)
+  return { ...entrepriseData, geo_coordinates }
+}
+
+export const getOrganismeDeFormationDataFromSiret = async (siret: string) => {
+  const cfaUserRecruteurOpt = await getEtablissement({ establishment_siret: siret, type: CFA })
+  if (cfaUserRecruteurOpt) {
+    return errorFactory("EXIST", BusinessErrorCodes.ALREADY_EXISTS)
+  }
+  const referentiel = await getEtablissementFromReferentiel(siret)
+  if (!referentiel) {
+    return errorFactory("UNKNOWN")
+  }
+  if (referentiel.etat_administratif === "fermé") {
+    return errorFactory("CLOSED")
+  }
+  return formatReferentielData(referentiel)
+}
+
+export const entrepriseOnboardingWorkflow = {
+  create: async (
+    {
+      email,
+      first_name,
+      last_name,
+      phone,
+      siret,
+      cfa_delegated_siret,
+      origin,
+      opco,
+      idcc,
+    }: {
+      siret: string
+      last_name: string
+      first_name: string
+      phone: string
+      email: string
+      cfa_delegated_siret?: string
+      origin: string
+      opco: string
+      idcc?: string
+    },
+    {
+      isUserValidated = false,
+    }: {
+      isUserValidated?: boolean
+    } = {}
+  ) => {
+    const cfaErrorOpt = await validateCreationEntrepriseFromCfa({ siret, cfa_delegated_siret })
+    if (cfaErrorOpt) return cfaErrorOpt
+    const formatedEmail = email.toLocaleLowerCase()
+    const userRecruteurOpt = await getUser({ email: formatedEmail })
+    if (userRecruteurOpt) {
+      return errorFactory("L'adresse mail est déjà associée à un compte La bonne alternance.", BusinessErrorCodes.ALREADY_EXISTS)
+    }
+    let entrepriseData: Partial<EntrepriseData>
+    let hasSiretError = false
+    try {
+      const siretResponse = await getEntrepriseDataFromSiret({ siret, cfa_delegated_siret })
+      if ("error" in siretResponse) {
+        return siretResponse
+      } else {
+        entrepriseData = siretResponse
+      }
+    } catch (err) {
+      hasSiretError = true
+      entrepriseData = { establishment_siret: siret }
+      sentryCaptureException(err)
+    }
+    const contactInfos = { first_name, last_name, phone, opco, idcc, origin }
+    const savedData = { ...entrepriseData, ...contactInfos, email: formatedEmail }
+    const formulaireInfo = await createFormulaire({
+      ...savedData,
+      status: RECRUITER_STATUS.ACTIF,
+      jobs: [],
+      cfa_delegated_siret,
+    })
+    const formulaireId = formulaireInfo.establishment_id
+    let newEntreprise: IUserRecruteur = await createUser({ ...savedData, establishment_id: formulaireId, type: ENTREPRISE })
+
+    if (hasSiretError) {
+      newEntreprise = await setUserInError(newEntreprise._id, "Erreur lors de l'appel à l'API SIRET")
+    } else if (isUserValidated) {
+      newEntreprise = await autoValidateUser(newEntreprise._id)
+    } else {
+      const balValidationResult = await autoValidateCompany(newEntreprise)
+      newEntreprise = balValidationResult.userRecruteur
+    }
+    return { formulaire: formulaireInfo, user: newEntreprise }
+  },
+  createFromCFA: async ({
+    email,
+    first_name,
+    last_name,
+    phone,
+    siret,
+    cfa_delegated_siret,
+    origin,
+    opco,
+    idcc,
+  }: {
+    siret: string
+    last_name: string
+    first_name: string
+    phone: string
+    email: string
+    cfa_delegated_siret: string
+    origin: string
+    opco?: string
+    idcc?: string
+  }) => {
+    const cfaErrorOpt = await validateCreationEntrepriseFromCfa({ siret, cfa_delegated_siret })
+    if (cfaErrorOpt) return cfaErrorOpt
+    const formatedEmail = email.toLocaleLowerCase()
+    let entrepriseData: Partial<EntrepriseData>
+    try {
+      const siretResponse = await getEntrepriseDataFromSiret({ siret, cfa_delegated_siret })
+      if ("error" in siretResponse) {
+        return siretResponse
+      } else {
+        entrepriseData = siretResponse
+      }
+    } catch (err) {
+      entrepriseData = { establishment_siret: siret }
+      sentryCaptureException(err)
+    }
+    const contactInfos = { first_name, last_name, phone, origin }
+    const savedData = { ...entrepriseData, ...contactInfos, email: formatedEmail }
+    const formulaireInfo = await createFormulaire({
+      ...savedData,
+      status: RECRUITER_STATUS.EN_ATTENTE_VALIDATION,
+      jobs: [],
+      cfa_delegated_siret,
+      is_delegated: true,
+      origin,
+      opco,
+      idcc,
+    })
+    return formulaireInfo
+  },
+}
+
+export const sendUserConfirmationEmail = async ({
+  email,
+  firstName,
+  lastName,
+  userRecruteurId,
+}: {
+  email: string
+  lastName: string
+  firstName: string
+  userRecruteurId: IUserRecruteur["_id"]
+}) => {
+  const url = getValidationUrl(userRecruteurId)
+  await mailer.sendEmail({
+    to: email,
+    subject: "Confirmez votre adresse mail",
+    template: mailTemplate["mail-confirmation-email"],
+    data: {
+      images: {
+        logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
+      },
+      last_name: lastName,
+      first_name: firstName,
+      confirmation_url: url,
+    },
+  })
+}
+
+export const sendEmailConfirmationEntreprise = async (user: IUserRecruteur, recruteur: IRecruiter) => {
+  const userStatus = getUserStatus(user.status)
+  if (userStatus === ETAT_UTILISATEUR.ERROR || user.is_email_checked) {
+    return
+  }
+  const isUserAwaiting = userStatus !== ETAT_UTILISATEUR.VALIDE
+  const { jobs, is_delegated, email } = recruteur
+  const offre = jobs.at(0)
+  // Get user account validation link
+  const url = getValidationUrl(user._id)
+  if (jobs.length === 1 && offre && is_delegated === false) {
+    await mailer.sendEmail({
+      to: email,
+      subject: "Confirmez votre adresse mail",
+      template: mailTemplate["mail-nouvelle-offre-depot-simplifie"],
+      data: {
+        images: {
+          logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
+        },
+        nom: user.last_name,
+        prenom: user.first_name,
+        email: user.email,
+        confirmation_url: url,
+        offre: pick(offre, ["rome_appellation_label", "job_start_date", "type", "job_level_label"]),
+        isUserAwaiting,
+      },
+    })
+  } else {
+    await sendUserConfirmationEmail({
+      email: user.email,
+      firstName: user.first_name,
+      lastName: user.last_name,
+      userRecruteurId: user._id,
     })
   }
 }

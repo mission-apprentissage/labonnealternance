@@ -9,7 +9,7 @@ import useAuth from "../../common/hooks/useAuth"
 import { AnimationContainer, CustomInput, InformationLegaleEntreprise, Layout } from "../../components"
 import { ArrowDropRightLine, ArrowRightLine } from "../../theme/components/icons"
 
-export default () => {
+const Account = () => {
   const navigate = useNavigate()
   const client = useQueryClient()
   const toast = useToast()
@@ -140,3 +140,5 @@ export default () => {
     </AnimationContainer>
   )
 }
+
+export default Account

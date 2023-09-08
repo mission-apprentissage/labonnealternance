@@ -2,7 +2,12 @@ import { randomUUID } from "crypto"
 import { ModelUpdateOptions, UpdateQuery } from "mongoose"
 import { Filter } from "mongodb"
 import { UserRecruteur } from "../common/model/index.js"
-import { IUserRecruteur } from "../common/model/schema/userRecruteur/userRecruteur.types.js"
+import { IUserRecruteur, IUserStatusValidation } from "../common/model/schema/userRecruteur/userRecruteur.types.js"
+import { CFA, ETAT_UTILISATEUR, VALIDATION_UTILISATEUR } from "./constant.service.js"
+import mailer from "./mailer.service.js"
+import { mailTemplate } from "../assets/index.js"
+import config from "../config.js"
+import { createMagicLinkToken } from "../common/utils/jwtUtils.js"
 
 /**
  * @description generate an API key
@@ -37,7 +42,7 @@ export const getUsers = async (query: Filter<IUserRecruteur>, options, { page, l
  * @param {Filter<IUserRecruteur>} query
  * @returns {Promise<IUserRecruteur>}
  */
-export const getUser = async (query: Filter<IUserRecruteur>) => UserRecruteur.findOne(query)
+export const getUser = async (query: Filter<IUserRecruteur>): Promise<IUserRecruteur | null> => UserRecruteur.findOne(query)
 
 /**
  * @description create user
@@ -113,7 +118,7 @@ export const registerUser = (email: IUserRecruteur["email"]) => UserRecruteur.fi
  * @param {ModelUpdateOptions} [options={new:true}]
  * @returns {Promise<IUserRecruteur>}
  */
-export const updateUserValidationHistory = (userId: IUserRecruteur["_id"], state: UpdateQuery<IUserRecruteur["status"]>, options: ModelUpdateOptions = { new: true }) =>
+export const updateUserValidationHistory = (userId: IUserRecruteur["_id"], state: UpdateQuery<IUserStatusValidation>, options: ModelUpdateOptions = { new: true }) =>
   UserRecruteur.findByIdAndUpdate({ _id: userId }, { $push: { status: state } }, options)
 
 /**
@@ -121,4 +126,59 @@ export const updateUserValidationHistory = (userId: IUserRecruteur["_id"], state
  * @param {IUserRecruteur["status"]} stateArray
  * @returns {IUserRecruteur["status"]}
  */
-export const getUserValidationState = (stateArray: IUserRecruteur["status"]) => stateArray.sort((a, b) => new Date(a.date).valueOf() - new Date(b.date).valueOf()).pop().status
+export const getUserStatus = (stateArray: IUserRecruteur["status"]) => {
+  const sortedArray = [...stateArray].sort((a, b) => new Date(a.date).valueOf() - new Date(b.date).valueOf())
+  const lastValidationEvent = sortedArray.at(sortedArray.length - 1)
+  return lastValidationEvent?.status
+}
+
+export const setUserInError = async (userId: IUserRecruteur["_id"], reason: string) =>
+  await updateUserValidationHistory(userId, {
+    validation_type: VALIDATION_UTILISATEUR.AUTO,
+    user: "SERVEUR",
+    status: ETAT_UTILISATEUR.ERROR,
+    reason,
+  })
+
+export const autoValidateUser = async (userId: IUserRecruteur["_id"]) =>
+  await updateUserValidationHistory(userId, {
+    validation_type: VALIDATION_UTILISATEUR.AUTO,
+    user: "SERVEUR",
+    status: ETAT_UTILISATEUR.VALIDE,
+  })
+
+export const setUserHasToBeManuallyValidated = async (userId: IUserRecruteur["_id"]) =>
+  await updateUserValidationHistory(userId, {
+    validation_type: VALIDATION_UTILISATEUR.AUTO,
+    user: "SERVEUR",
+    status: ETAT_UTILISATEUR.ATTENTE,
+  })
+
+export const deactivateUser = async (userId: IUserRecruteur["_id"], reason?: string) =>
+  await updateUserValidationHistory(userId, {
+    validation_type: VALIDATION_UTILISATEUR.AUTO,
+    user: "SERVEUR",
+    status: ETAT_UTILISATEUR.DESACTIVE,
+    reason,
+  })
+
+export const sendWelcomeEmailToUserRecruteur = async (userRecruteur: IUserRecruteur) => {
+  const { email, first_name, last_name, establishment_raison_sociale, type } = userRecruteur
+  const magiclink = `${config.publicUrlEspacePro}/authentification/verification?token=${createMagicLinkToken(email)}`
+  await mailer.sendEmail({
+    to: email,
+    subject: "Bienvenue sur La bonne alternance",
+    template: mailTemplate["mail-bienvenue"],
+    data: {
+      images: {
+        logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
+      },
+      establishment_raison_sociale,
+      last_name,
+      first_name,
+      email,
+      is_delegated: type === CFA,
+      url: magiclink,
+    },
+  })
+}

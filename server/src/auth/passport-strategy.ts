@@ -5,6 +5,7 @@ import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt"
 import { Strategy as LocalAPIKeyStrategy } from "passport-localapikey"
 import { Strategy as LocalStrategy } from "passport-local"
 import { authenticate, getUser } from "../services/user.service.js"
+import { sentryCaptureException } from "../common/utils/sentryUtils.js"
 
 passport.use("api-key", new LocalAPIKeyStrategy({}, async (token, done) => done(null, config.smtp.brevoWebhookApiKey === token ? { apiKey: token } : false)))
 
@@ -65,7 +66,7 @@ passport.use(
           return done(null, user)
         })
         .catch((err) => {
-          console.log(err)
+          sentryCaptureException(err)
           done(err)
         })
     }

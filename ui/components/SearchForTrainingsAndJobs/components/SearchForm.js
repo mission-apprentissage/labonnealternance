@@ -88,6 +88,7 @@ const SearchForm = (props) => {
                     Votre recherche
                   </Text>
                   <AutoCompleteField
+                    id="searchFormJobField"
                     kind="Métier ou diplôme *"
                     items={[]}
                     hasError={errors.job}
@@ -111,6 +112,7 @@ const SearchForm = (props) => {
                 </Box>
                 <Box mb={4}>
                   <AutoCompleteField
+                    id="searchFormPlaceField"
                     kind="Lieu"
                     items={[]}
                     hasError={errors.location}
@@ -136,6 +138,7 @@ const SearchForm = (props) => {
                         onChange={(evt) => handleSelectChange(evt, setFieldValue, setLocationRadius, "radius")}
                         value={locationRadius}
                         name="locationRadius"
+                        data-testid="locationRadius"
                         {...selectProperties}
                       >
                         {buildRayonsOptions()}

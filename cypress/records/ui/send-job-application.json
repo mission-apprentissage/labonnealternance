@@ -1,0 +1,609 @@
+{
+    "title": "send-job-application",
+    "steps": [
+        {
+            "type": "setViewport",
+            "width": 1254,
+            "height": 704,
+            "deviceScaleFactor": 1,
+            "isMobile": false,
+            "hasTouch": false,
+            "isLandscape": false
+        },
+        {
+            "type": "navigate",
+            "url": "https://labonnealternance-recette.apprentissage.beta.gouv.fr/",
+            "assertedEvents": [
+                {
+                    "type": "navigation",
+                    "url": "https://labonnealternance-recette.apprentissage.beta.gouv.fr/",
+                    "title": "La bonne alternance | Trouvez votre alternance"
+                }
+            ]
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "aria/Indiquez un métier ou diplôme"
+                ],
+                [
+                    "form > div > div.css-0 input"
+                ],
+                [
+                    "xpath///*[@id=\"lang-switcher-input\"]"
+                ],
+                [
+                    "pierce/form > div > div.css-0 input"
+                ]
+            ],
+            "offsetY": 24.300003051757812,
+            "offsetX": 32.399993896484375
+        },
+        {
+            "type": "change",
+            "value": "ress",
+            "selectors": [
+                [
+                    "aria/Indiquez un métier ou diplôme"
+                ],
+                [
+                    "form > div > div.css-0 input"
+                ],
+                [
+                    "xpath///*[@id=\"lang-switcher-input\"]"
+                ],
+                [
+                    "pierce/form > div > div.css-0 input"
+                ]
+            ],
+            "target": "main"
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "aria/Ressources humaines"
+                ],
+                [
+                    "#lang-switcher-item-0"
+                ],
+                [
+                    "xpath///*[@id=\"lang-switcher-item-0\"]"
+                ],
+                [
+                    "pierce/#lang-switcher-item-0"
+                ],
+                [
+                    "text/Ressources humaines"
+                ]
+            ],
+            "offsetY": 30.899993896484375,
+            "offsetX": 66.80000305175781
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "div.css-1kw2fa0 div.containerIdentity"
+                ],
+                [
+                    "xpath///*[@id=\"__next\"]/main/div/div[2]/div[1]/div/div/div[2]/div/div/div/div/form/div/div[2]/div/div/div[1]"
+                ],
+                [
+                    "pierce/div.css-1kw2fa0 div.containerIdentity"
+                ]
+            ],
+            "offsetY": 54.10000038146973,
+            "offsetX": 98.79998779296875
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "aria/A quel endroit ?"
+                ],
+                [
+                    "div.css-1kw2fa0 input"
+                ],
+                [
+                    "xpath///*[@id=\"lang-switcher-input\"]"
+                ],
+                [
+                    "pierce/div.css-1kw2fa0 input"
+                ]
+            ],
+            "offsetY": 21.89999771118164,
+            "offsetX": 87.39999389648438
+        },
+        {
+            "type": "change",
+            "value": "pari",
+            "selectors": [
+                [
+                    "aria/A quel endroit ?"
+                ],
+                [
+                    "div.css-1kw2fa0 input"
+                ],
+                [
+                    "xpath///*[@id=\"lang-switcher-input\"]"
+                ],
+                [
+                    "pierce/div.css-1kw2fa0 input"
+                ]
+            ],
+            "target": "main"
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "aria/Paris",
+                    "aria/[role=\"strong\"]"
+                ],
+                [
+                    "#lang-switcher-item-0 > strong"
+                ],
+                [
+                    "xpath///*[@id=\"lang-switcher-item-0\"]/strong"
+                ],
+                [
+                    "pierce/#lang-switcher-item-0 > strong"
+                ]
+            ],
+            "offsetY": 9.300003051757812,
+            "offsetX": 17.79998779296875
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "div.css-6st093 div:nth-of-type(3) select"
+                ],
+                [
+                    "xpath///*[@id=\"__next\"]/main/div/div[2]/div[1]/div/div/div[2]/div/div/div/div/form/div/div[3]/div/div/select"
+                ],
+                [
+                    "pierce/div.css-6st093 div:nth-of-type(3) select"
+                ]
+            ],
+            "offsetY": 15.39999771118164,
+            "offsetX": 77.39996337890625
+        },
+        {
+            "type": "change",
+            "value": "60",
+            "selectors": [
+                [
+                    "div.css-6st093 div:nth-of-type(3) select"
+                ],
+                [
+                    "xpath///*[@id=\"__next\"]/main/div/div[2]/div[1]/div/div/div[2]/div/div/div/div/form/div/div[3]/div/div/select"
+                ],
+                [
+                    "pierce/div.css-6st093 div:nth-of-type(3) select"
+                ]
+            ],
+            "target": "main"
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "aria/Lancer la recherche[role=\"img\"]"
+                ],
+                [
+                    "div.css-uos98o img"
+                ],
+                [
+                    "xpath///*[@id=\"__next\"]/main/div/div[2]/div[1]/div/div/div[2]/div/div/div/div/form/div/div[5]/button/img"
+                ],
+                [
+                    "pierce/div.css-uos98o img"
+                ]
+            ],
+            "offsetY": 19.099998474121094,
+            "offsetX": 11.7999267578125
+        },
+        {
+            "type": "waitForElement",
+            "target": "main",
+            "selectors": [
+                [
+                    "aria/Afficher la carte Cliquer pour masquer la carte",
+                    "aria/[role=\"generic\"]"
+                ],
+                "div.css-1n3ujyz span",
+                "xpath///*[@id=\"choiceColumn\"]/div[3]/div[1]/div[2]/div/button/span",
+                "pierce/div.css-1n3ujyz span",
+                "text/Afficher la carte"
+            ]
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "aria/Entreprises (240)"
+                ],
+                [
+                    "div.css-gmd149 button:nth-of-type(2)"
+                ],
+                [
+                    "xpath///*[@id=\"choiceColumn\"]/div[3]/div[1]/div[3]/div[2]/div/div[2]/button[2]"
+                ],
+                [
+                    "pierce/div.css-gmd149 button:nth-of-type(2)"
+                ],
+                [
+                    "text/Entreprises (240)"
+                ]
+            ],
+            "offsetY": 25.899993896484375,
+            "offsetX": 66.9124984741211
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "#matcha648adcb8258b0842bb1afcc1 > div"
+                ],
+                [
+                    "xpath///*[@id=\"matcha648adcb8258b0842bb1afcc1\"]/div"
+                ],
+                [
+                    "pierce/#matcha648adcb8258b0842bb1afcc1 > div"
+                ]
+            ],
+            "offsetY": 105.09999084472656,
+            "offsetX": 374
+        },
+        {
+            "type": "waitForElement",
+            "target": "main",
+            "selectors": [
+                "aria/Description de l'offre",
+                "div:nth-of-type(1) > h2",
+                "xpath///*[@id=\"itemDetailColumn\"]/div[1]/h2",
+                "pierce/div:nth-of-type(1) > h2",
+                "text/Description de"
+            ]
+        },
+        {
+            "type": "waitForElement",
+            "target": "main",
+            "selectors": [
+                [
+                    "aria/Description du métier",
+                    "aria/[role=\"generic\"]"
+                ],
+                "#accordion-button-\\:r3\\: > span",
+                "xpath///*[@id=\"accordion-button-:r3:\"]/span",
+                "pierce/#accordion-button-\\:r3\\: > span",
+                "text/Description du"
+            ]
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "aria/Ouvrir le formulaire d'envoi de candidature spontanée"
+                ],
+                [
+                    "[data-testid='CandidatureSpontanee'] button"
+                ],
+                [
+                    "xpath///*[@data-testid=\"CandidatureSpontanee\"]/div/div/button"
+                ],
+                [
+                    "pierce/[data-testid='CandidatureSpontanee'] button"
+                ],
+                [
+                    "text/J'envoie ma candidature"
+                ]
+            ],
+            "offsetY": 24.199996948242188,
+            "offsetX": 41
+        },
+        {
+            "type": "waitForElement",
+            "target": "main",
+            "selectors": [
+                "aria/Votre message au responsable du recrutement (Facultatif)",
+                "div:nth-of-type(4) h2",
+                "xpath///*[@data-testid=\"fieldset-message\"]/h2",
+                "pierce/div:nth-of-type(4) h2",
+                "text/Votre message"
+            ]
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "aria/Nom *"
+                ],
+                [
+                    "[data-testid='lastName']"
+                ],
+                [
+                    "xpath///*[@data-testid=\"lastName\"]"
+                ],
+                [
+                    "pierce/[data-testid='lastName']"
+                ]
+            ],
+            "offsetY": 9.837493896484375,
+            "offsetX": 55.79998779296875
+        },
+        {
+            "type": "change",
+            "value": "Doe",
+            "selectors": [
+                [
+                    "aria/Nom *"
+                ],
+                [
+                    "[data-testid='lastName']"
+                ],
+                [
+                    "xpath///*[@data-testid=\"lastName\"]"
+                ],
+                [
+                    "pierce/[data-testid='lastName']"
+                ]
+            ],
+            "target": "main"
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "aria/Prénom *"
+                ],
+                [
+                    "[data-testid='firstName']"
+                ],
+                [
+                    "xpath///*[@data-testid=\"firstName\"]"
+                ],
+                [
+                    "pierce/[data-testid='firstName']"
+                ]
+            ],
+            "offsetY": 22.837493896484375,
+            "offsetX": 11.79998779296875
+        },
+        {
+            "type": "change",
+            "value": "John",
+            "selectors": [
+                [
+                    "aria/Prénom *"
+                ],
+                [
+                    "[data-testid='firstName']"
+                ],
+                [
+                    "xpath///*[@data-testid=\"firstName\"]"
+                ],
+                [
+                    "pierce/[data-testid='firstName']"
+                ]
+            ],
+            "target": "main"
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "aria/E-mail * Téléphone *"
+                ],
+                [
+                    "[data-testid='email']"
+                ],
+                [
+                    "xpath///*[@data-testid=\"email\"]"
+                ],
+                [
+                    "pierce/[data-testid='email']"
+                ]
+            ],
+            "offsetY": 19.837493896484375,
+            "offsetX": 246.79998779296875
+        },
+        {
+            "type": "change",
+            "value": "test-auto@nexistepas.fr",
+            "selectors": [
+                [
+                    "aria/E-mail * Téléphone *"
+                ],
+                [
+                    "[data-testid='email']"
+                ],
+                [
+                    "xpath///*[@data-testid=\"email\"]"
+                ],
+                [
+                    "pierce/[data-testid='email']"
+                ]
+            ],
+            "target": "main"
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "[data-testid='phone']"
+                ],
+                [
+                    "xpath///*[@data-testid=\"phone\"]"
+                ],
+                [
+                    "pierce/[data-testid='phone']"
+                ]
+            ],
+            "offsetY": 21.837493896484375,
+            "offsetX": 62.79998779296875
+        },
+        {
+            "type": "change",
+            "value": "0700000000",
+            "selectors": [
+                [
+                    "[data-testid='phone']"
+                ],
+                [
+                    "xpath///*[@data-testid=\"phone\"]"
+                ],
+                [
+                    "pierce/[data-testid='phone']"
+                ]
+            ],
+            "target": "main"
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "[data-testid='message']"
+                ],
+                [
+                    "xpath///*[@data-testid=\"message\"]"
+                ],
+                [
+                    "pierce/[data-testid='message']"
+                ]
+            ],
+            "offsetY": 32.837493896484375,
+            "offsetX": 365.79998779296875
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "[data-testid='message']"
+                ],
+                [
+                    "xpath///*[@data-testid=\"message\"]"
+                ],
+                [
+                    "pierce/[data-testid='message']"
+                ]
+            ],
+            "offsetY": 35.837493896484375,
+            "offsetX": 89.79998779296875,
+            "button": "secondary"
+        },
+        {
+            "type": "change",
+            "value": "Madame, Monsieur,\nEtant actuellement à la recherche d’un emploi, je me permets de vous proposer ma candidature au poste de (emploi).\n\nEn effet, mon profil correspond à la description recherchée sur l’offre d’emploi (préciser où l’annonce a été vue). (Si le candidat possède peu d’expérience professionnelle) Ma formation en (préciser la formation) m'a permis d'acquérir de nombreuses compétences parmi celles que vous recherchez. Je possède tous les atouts qui me permettront de réussir dans le rôle que vous voudrez bien me confier. Motivation, rigueur et écoute sont les maîtres mots de mon comportement professionnel.(Si le candidat possède une expérience significative dans le poste à pourvoir). Mon expérience en tant que (emploi) m’a permis d’acquérir toutes les connaissances nécessaires à la bonne exécution des tâches du poste à pourvoir. Régulièrement confronté aux aléas du métier, je suis capable de répondre aux imprévus en toute autonomie. Intégrer votre entreprise représente pour moi un réel enjeu d’avenir dans lequel mon travail et mon honnêteté pourront s’exprimer pleinement.\n\nRestant à votre disposition pour toute information complémentaire, je suis disponible pour vous rencontrer lors d’un entretien à votre convenance\n\nVeuillez agréer, Madame, Monsieur, l’expression de mes sincères salutations.",
+            "selectors": [
+                [
+                    "[data-testid='message']"
+                ],
+                [
+                    "xpath///*[@data-testid=\"message\"]"
+                ],
+                [
+                    "pierce/[data-testid='message']"
+                ]
+            ],
+            "target": "main"
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "p.css-1egmowt"
+                ],
+                [
+                    "xpath///*[@data-testid=\"modalbody-nominal\"]/div[5]/div/div/div/div/p[2]"
+                ],
+                [
+                    "pierce/p.css-1egmowt"
+                ]
+            ],
+            "offsetY": 0.0374755859375,
+            "offsetX": 250
+        },
+        {
+            "type": "change",
+            "value": "C:\\fakepath\\CV - John Doe.pdf",
+            "selectors": [
+                [
+                    "[data-testid='fileDropzone']"
+                ],
+                [
+                    "xpath///*[@data-testid=\"fileDropzone\"]"
+                ],
+                [
+                    "pierce/[data-testid='fileDropzone']"
+                ]
+            ],
+            "target": "main"
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "aria/Envoyer la candidature spontanée"
+                ],
+                [
+                    "[data-testid='candidature-not-sent']"
+                ],
+                [
+                    "xpath///*[@data-testid=\"candidature-not-sent\"]"
+                ],
+                [
+                    "pierce/[data-testid='candidature-not-sent']"
+                ]
+            ],
+            "offsetY": 13.1624755859375,
+            "offsetX": 47.58746337890625
+        },
+        {
+            "type": "waitForElement",
+            "selectors": [
+                [
+                    ".cls"
+                ]
+            ]
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                [
+                    "p.css-x9fc5p"
+                ],
+                [
+                    "xpath///*[@data-testid=\"CandidatureSpontaneeWorked\"]/p[1]"
+                ],
+                [
+                    "pierce/p.css-x9fc5p"
+                ]
+            ],
+            "offsetY": 14.837493896484375,
+            "offsetX": 111.39999389648438
+        }
+    ]
+}
