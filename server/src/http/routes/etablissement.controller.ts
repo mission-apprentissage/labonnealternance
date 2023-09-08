@@ -3,7 +3,7 @@ import express from "express"
 import Joi from "joi"
 import * as _ from "lodash-es"
 
-import { getStaticFilePath } from "common/utils/getStaticFilePath"
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 import { mailType } from "../../common/model/constants/etablissement"
 import { referrers } from "../../common/model/constants/referrers"

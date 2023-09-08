@@ -1,4 +1,4 @@
-import { db } from "common/mongodb"
+import { db } from "@/common/mongodb"
 
 import { logger } from "../../common/logger"
 import { FormationCatalogue } from "../../common/model/index"

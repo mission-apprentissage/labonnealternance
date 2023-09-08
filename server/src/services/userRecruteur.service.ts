@@ -3,7 +3,7 @@ import { randomUUID } from "crypto"
 import { Filter } from "mongodb"
 import { ModelUpdateOptions, UpdateQuery } from "mongoose"
 
-import { getStaticFilePath } from "common/utils/getStaticFilePath"
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 import { UserRecruteur } from "../common/model/index"
 import { IUserRecruteur, IUserStatusValidation } from "../common/model/schema/userRecruteur/userRecruteur.types"

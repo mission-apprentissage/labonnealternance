@@ -3,7 +3,7 @@ import { program } from "commander"
 // eslint-disable-next-line import/no-extraneous-dependencies
 import HttpTerminator from "lil-http-terminator"
 
-import { closeMongoConnection } from "common/mongodb"
+import { closeMongoConnection } from "@/common/mongodb"
 
 import createComponents from "./common/components/components"
 import { logger } from "./common/logger"
@@ -178,17 +178,26 @@ program
 /********************/
 
 program
-  .command("index [index_list]")
-  .description("Synchronise les index des collections mongo & reconstruit les index elasticsearch. <index_list> est la liste des index séparés par des , ")
+  .command("index")
+  .description("Synchronise les index des collections mongo & reconstruit les index elasticsearch.")
+  .option("-i, --index_list", " <index_list> est la liste des index séparés par des ,")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("indexes:generate"))
 
 program
-  .command("create-user <first_name> <last_name> <email> <scope> <establishment_raison_sociale> [establishment_siret] [phone] [address]")
+  .command("create-user")
   .description("Permet de créer un accès utilisateur à l'espace partenaire")
-  .option("-admin, [isAdmin]", "utilisateur administrateur", false)
-  .requiredOption("-type, <type>", "type d'utilisateur")
-  .requiredOption("-email_valide, <email_valide>", "email valide", true)
+  .requiredOption("--first_name", "utilisateur administrateur")
+  .requiredOption("--last_name", "utilisateur administrateur")
+  .requiredOption("--email", "utilisateur administrateur")
+  .requiredOption("--scope", "utilisateur administrateur")
+  .requiredOption("--establishment_raison_sociale", "utilisateur administrateur")
+  .option("--establishment_siret", "utilisateur administrateur")
+  .option("--phone", "utilisateur administrateur")
+  .option("--address", "utilisateur administrateur")
+  .option("-a, --admin", "utilisateur administrateur", false)
+  .requiredOption("-t ,--type", "type d'utilisateur")
+  .requiredOption("-e, --email_valide", "email valide", true)
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("user:create"))
 

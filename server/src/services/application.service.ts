@@ -3,7 +3,7 @@ import Joi from "joi"
 import { Document } from "mongoose"
 import { oleoduc, writeData } from "oleoduc"
 
-import { getStaticFilePath } from "common/utils/getStaticFilePath"
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 import __dirname from "../common/dirname"
 import { logger } from "../common/logger"

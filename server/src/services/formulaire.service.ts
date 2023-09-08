@@ -3,7 +3,7 @@ import moment from "moment"
 import { Filter } from "mongodb"
 import { ModelUpdateOptions, UpdateQuery } from "mongoose"
 
-import { getStaticFilePath } from "common/utils/getStaticFilePath"
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 import { getElasticInstance } from "../common/esClient/index"
 import { Recruiter, UnsubscribeOF } from "../common/model/index"

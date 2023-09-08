@@ -1,7 +1,7 @@
 import express from "express"
 import Joi from "joi"
 
-import { getStaticFilePath } from "common/utils/getStaticFilePath"
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 import { UserRecruteur } from "../../../common/model/index"
 import { IUserRecruteur } from "../../../common/model/schema/userRecruteur/userRecruteur.types"

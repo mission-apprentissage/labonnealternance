@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import { getStaticFilePath } from "common/utils/getStaticFilePath"
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 import { logger } from "../../../common/logger"
 import { Recruiter, UserRecruteur } from "../../../common/model/index"

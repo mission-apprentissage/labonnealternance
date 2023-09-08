@@ -7,7 +7,7 @@ import express from "express"
 import swaggerDoc from "swagger-jsdoc"
 import swaggerUi from "swagger-ui-express"
 
-import { getStaticFilePath } from "common/utils/getStaticFilePath"
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 import __dirname from "../common/dirname"
 import { logger } from "../common/logger"

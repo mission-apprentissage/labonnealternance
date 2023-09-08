@@ -1,7 +1,7 @@
 import express from "express"
 import rateLimit from "express-rate-limit"
 
-import { getStaticFilePath } from "common/utils/getStaticFilePath"
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 import __dirname from "../../common/dirname"
 import { BonnesBoites, UnsubscribedBonneBoite } from "../../common/model/index"

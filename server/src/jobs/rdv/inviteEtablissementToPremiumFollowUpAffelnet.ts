@@ -1,4 +1,4 @@
-import { getStaticFilePath } from "common/utils/getStaticFilePath"
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 import { logger } from "../../common/logger"
 import { mailType } from "../../common/model/constants/etablissement"

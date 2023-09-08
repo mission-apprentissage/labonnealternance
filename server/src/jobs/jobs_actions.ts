@@ -2,9 +2,9 @@ import { captureException, getCurrentHub, runWithAsyncContext } from "@sentry/no
 import { formatDuration, intervalToDuration } from "date-fns"
 import { ObjectId } from "mongodb"
 
-import { IInternalJobs } from "common/model/schema/internalJobs/internalJobs.types"
-import { db } from "common/mongodb"
-import { sleep } from "common/utils/asyncUtils"
+import { IInternalJobs } from "@/common/model/schema/internalJobs/internalJobs.types"
+import { db } from "@/common/mongodb"
+import { sleep } from "@/common/utils/asyncUtils"
 
 import { getLoggerWithContext } from "../common/logger"
 

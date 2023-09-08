@@ -1,7 +1,7 @@
 import cronParser from "cron-parser"
 import { ObjectId } from "mongodb"
 
-import { db } from "common/mongodb"
+import { db } from "@/common/mongodb"
 
 import { getLoggerWithContext } from "../common/logger"
 

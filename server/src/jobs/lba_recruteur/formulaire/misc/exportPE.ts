@@ -7,7 +7,7 @@ import FormData from "form-data"
 import { pick } from "lodash-es"
 import { oleoduc, transformData, transformIntoCSV } from "oleoduc"
 
-import { db } from "common/mongodb"
+import { db } from "@/common/mongodb"
 
 import { logger } from "../../../../common/logger"
 import { UserRecruteur } from "../../../../common/model/index"

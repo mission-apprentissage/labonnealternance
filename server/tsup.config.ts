@@ -2,13 +2,16 @@
 import { defineConfig } from "tsup"
 
 export default defineConfig((options) => {
+  const isDev = options.env?.NODE_ENV !== "production"
+
   const entry: Record<string, string> = {
-    index: options.watch ? "src/dev.ts" : "src/index.ts",
+    index: isDev ? "src/dev.ts" : "src/main.ts",
   }
   return {
     entry,
-    watch: options.watch ? ["./src"] : false,
-    onSuccess: options.watch ? "yarn cli:up start" : "",
+    watch: isDev && options.watch ? ["./src"] : false,
+    // onSuccess: isDev && options.watch ? "yarn cli:up start --withProcessor" : "",
+    onSuccess: isDev && options.watch ? "yarn cli:up start" : "",
     // In watch mode doesn't exit cleanly as it causes EADDRINUSE error
     killSignal: "SIGKILL",
     target: "es2022",
@@ -23,5 +26,15 @@ export default defineConfig((options) => {
     // This could be supported in future when using nodejs16 module in tsconfig
     external: ["bson", "mongodb", "dotenv"],
     clean: true,
+    env: {
+      ...options.env,
+    },
+    esbuildOptions(options) {
+      options.define = {
+        ...options.define,
+        "process.env.IS_BUILT": '"true"',
+        "process.env.NODE_ENV": isDev ? '"developpement"' : '"production"',
+      }
+    },
   }
 })

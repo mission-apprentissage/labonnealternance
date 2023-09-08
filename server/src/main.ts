@@ -1,4 +1,4 @@
-import { connectToMongo } from "common/mongodb"
+import { connectToMongo } from "@/common/mongodb"
 
 import { startCLI } from "./commands"
 import { logger } from "./common/logger"
