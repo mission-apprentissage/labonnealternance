@@ -40,11 +40,11 @@ export const updateUiFromHistory = ({
 
   if (!activeFilters) {
     setActiveFilters(defaultFilters) // restauration des onglets à all pour assurer la présence de marker dans le dom
-  }
-  try {
-    filterLayers(defaultFilters)
-  } catch (err) {
-    //notice: gère des erreurs qui se présentent à l'initialisation de la page quand mapbox n'est pas prêt.
+    try {
+      filterLayers(defaultFilters)
+    } catch (err) {
+      //notice: gère des erreurs qui se présentent à l'initialisation de la page quand mapbox n'est pas prêt.
+    }
   }
 
   // réconciliation entre le store et l'état des résultats de recherche
