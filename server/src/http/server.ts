@@ -1,6 +1,6 @@
 // @ts-nocheck
 import Sentry from "@sentry/node"
-import Tracing from "@sentry/tracing"
+import { CaptureConsole, ExtraErrorData } from "@sentry/integrations"
 import express from "express"
 import { readFileSync } from "fs"
 import path from "path"
@@ -106,15 +106,22 @@ export default async (components) => {
 
   Sentry.init({
     dsn: config.serverSentryDsn,
+    tracesSampleRate: 0.1,
+    tracePropagationTargets: [/\.apprentissage\.beta\.gouv\.fr$/],
     environment: config.env,
-    enabled: ["production", "recette"].includes(config.env),
+    enabled: config.env === "production",
     integrations: [
       // enable HTTP calls tracing
       new Sentry.Integrations.Http({ tracing: true }),
+      // enable Mongoose query tracing
+      new Sentry.Integrations.Mongo({ useMongoose: true }),
       // enable Express.js middleware tracing
-      new Tracing.Integrations.Express({ app }),
+      new Sentry.Integrations.Express({ app }),
+      // enable capture all console api errors
+      new CaptureConsole({ levels: ["error"] }),
+      // add all extra error data into the event
+      new ExtraErrorData({ depth: 8 }),
     ],
-    tracesSampleRate: 1.0,
   })
 
   app.set("trust proxy", 1)
