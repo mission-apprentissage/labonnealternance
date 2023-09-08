@@ -15,7 +15,6 @@ export const createOffreCollection = async () => {
         _id: 0,
 
         // champs de recruiters.jobs
-        job_start_date: "$jobs.job_start_date",
         rome_label: "$jobs.rome_label",
         rome_appellation_label: "$jobs.rome_appellation_label",
         job_level_label: "$jobs.job_level_label",
@@ -34,7 +33,7 @@ export const createOffreCollection = async () => {
         job_status_comment: "$jobs.job_status_comment",
         job_type: "$jobs.job_type",
         is_multi_published: "$jobs.is_multi_published",
-        is_delegated: "$jobs.is_delegated",
+        // is_delegated: "$jobs.is_delegated",
         job_delegation_count: "$jobs.job_delegation_count",
         delegations: "$jobs.delegations",
         is_disabled_elligible: "$jobs.is_disabled_elligible",
@@ -49,7 +48,6 @@ export const createOffreCollection = async () => {
         // champs de recruiters
         establishment_raison_sociale: 1,
         establishment_id: 1,
-        establishment_raison_sociale: 1,
         establishment_enseigne: 1,
         establishment_siret: 1,
         address_detail: 1,

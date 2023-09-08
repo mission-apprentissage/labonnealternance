@@ -18,12 +18,14 @@ export const internalJobsSchema = new Schema<IInternalJobs>({
     type: Boolean,
     description: "Si le job est synchrone",
   },
-  // payload: {
-  //   description: "La donnée liéé à la tâche",
-  // },
-  // output: {
-  //   description: "Les valeurs de retours du job",
-  // },
+  payload: {
+    type: Schema.Types.Mixed,
+    description: "La donnée liéé à la tâche",
+  },
+  output: {
+    type: Schema.Types.Mixed,
+    description: "Les valeurs de retours du job",
+  },
   cron_string: {
     type: String,
     description: "standard cron string exemple: '*/2 * * * *'",

@@ -61,12 +61,12 @@ program
     if (command !== "start") {
       logger.fields.module = `cli:${command}`
       // Pas besoin d'init Sentry dans le cas du server car il est start automatiquement
-      // initSentryProcessor()
+      // initSentryProcessor() // TODO
     }
   })
   .hook("postAction", async () => {
     await closeMongoConnection()
-    // await closeSentry()
+    // await closeSentry() // TODO
   })
 
 program
@@ -181,9 +181,6 @@ program
   .command("index [index_list]")
   .description("Synchronise les index des collections mongo & reconstruit les index elasticsearch. <index_list> est la liste des index séparés par des , ")
   .option("-q, --queued", "Run job asynchronously", false)
-  // .action((index_list) => {
-  //   runScript(() => generateIndexes(index_list))
-  // })
   .action(createJobAction("indexes:generate"))
 
 program
@@ -194,113 +191,66 @@ program
   .requiredOption("-email_valide, <email_valide>", "email valide", true)
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("user:create"))
-// .action((first_name, last_name, email, scope, establishment_raison_sociale, establishment_siret, phone, address, options) => {
-//   runScript(() =>
-//     createUserFromCLI(
-//       {
-//         first_name,
-//         last_name,
-//         establishment_siret,
-//         establishment_raison_sociale,
-//         phone,
-//         address,
-//         email,
-//         scope,
-//       },
-//       { options }
-//     )
-//   )
-// })
 
 program
   .command("create-api-user <nom> <prenom> <email> <organization> <scope>")
   .description("Permet de créer un utilisateur ayant accès à l'API")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("api:user:create"))
-// .action((nom, prenom, email, organization, scope) => {
-//   runScript(() => createApiUser(nom, prenom, email, organization, scope))
-// })
 
 program
   .command("reset-api-user <email>")
   .description("Permet de réinitialiser la clé API d'un utilisateur")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("api:user:reset"))
-// .action((email) => {
-//   runScript(() => resetApiKey(email))
-// })
 
 program
   .command("disable-api-user <email> [state]")
   .description("Permet de d'activer/désactiver l'accès d'un utilisateur à l'API")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("api:user:disable"))
-// .action((email, state) => {
-//   runScript(() => disableApiUser(email, state))
-// })
 
 program
   .command("relance-formulaire <threshold>")
   .description("Envoie une relance par mail pour les offres expirant dans 7 jours")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("formulaire:relance"))
-// .action((threshold) => {
-//   runScript(() => relanceFormulaire(parseInt(threshold)))
-// })
 
 program
   .command("annulation-formulaire")
   .description("Annule les offres pour lesquels la date d'expiration est correspondante à la date actuelle")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("formulaire:annulation"))
-// .action(() => {
-//   runScript(() => annuleFormulaire())
-// })
 
 program
   .command("creer-offre-metabase")
   .description("Permet de créer une collection dédiée aux offres pour metabase")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("metabase:offre:create"))
-// .action(() => {
-//   runScript(() => createOffreCollection())
-// })
 
 program
   .command("relance-opco")
   .description("Relance les opco avec le nombre d'utilisateur en attente de validation")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("opco:relance"))
-// .action(() => {
-//   runScript(() => relanceOpco())
-// })
 
 program
   .command("export-offre-pole-emploi")
   .description("Exporte les offres vers Pôle Emploi")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("pe:offre:export"))
-// .action(() => {
-//   runScript((components) => exportPE(components))
-// })
 
 program
   .command("validate-user")
   .description("Contrôle de validation des entreprises en attente de validation")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("user:validate"))
-// .action(() => {
-//   runScript(() => checkAwaitingCompaniesValidation())
-// })
 
 program
   .command("update-siret-infos-in-error")
   .description("Remplis les données venant du SIRET pour les utilisateurs ayant eu une erreur pendant l'inscription")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("siret:inError:update"))
-// .action(() => {
-//   runScript(() => updateSiretInfosInError())
-// })
 
 /**
  *
@@ -315,27 +265,175 @@ program
   .description("Active tous les établissements qui ont souscrits à l'opt-out.")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("etablissement:formations:activate:opt-out"))
-// .action(() => {
-//   runScript(() => activateOptOutEtablissementFormations())
-// })
 
 program
   .command("invite-etablissement-to-opt-out")
   .description("Invite les établissements (via email décisionnaire) à l'opt-out.")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("etablissement:invite:opt-out"))
-// .action(() => {
-//   runScript(() => inviteEtablissementToOptOut())
-// })
 
 program
   .command("invite-etablissement-to-premium")
   .description("Invite les établissements (via email décisionnaire) au premium (Parcoursup)")
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("etablissement:invite:premium"))
-// .action(() => {
-//   runScript(() => inviteEtablissementToPremium())
-// })
+
+program
+  .command("invite-etablissement-affelnet-to-premium")
+  .description("Invite les établissements (via email décisionnaire) au premium (Affelnet)")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("etablissement:invite:premium:affelnet"))
+
+program
+  .command("invite-etablissement-to-premium-follow-up")
+  .description("(Relance) Invite les établissements (via email décisionnaire) au premium (Parcoursup)")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("etablissement:invite:premium:follow-up"))
+
+program
+  .command("invite-etablissement-affelnet-to-premium-follow-up")
+  .description("(Relance) Invite les établissements (via email décisionnaire) au premium (Affelnet)")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("etablissement:invite:premium:affelnet:follow-up"))
+
+program
+  .command("premium-activated-reminder")
+  .description("Envoi un email à tous les établissements premium pour les informer de l'ouverture des voeux sur Parcoursup")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("premium:activated:reminder"))
+
+program
+  .command("premium-invite-one-shot")
+  .description("Envoi un email à tous les établissements pas encore premium pour les inviter de nouveau")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("premium:invite:one-shot"))
+
+program
+  .command("sync-etablissements-and-formations")
+  .description("Récupère la liste de toutes les formations du Catalogue et les enregistre.")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("etablissements:formations:sync"))
+
+program
+  .command("sync-etablissements-and-formations-affelnet")
+  .description("Récupère la liste de toutes les formations du Catalogue ME du scope AFFELNET et les enregistre.")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("etablissements:formations:affelnet:sync"))
+
+program
+  .command("anonimize-appointments")
+  .description("anonimisation des prises de rendez-vous de plus d'un an")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("appointments:anonimize"))
+
+program
+  .command("anonimize-users")
+  .description("anonimisation des utilisateurs n'ayant effectué aucun rendez-vous de plus d'un an")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("users:anonimize"))
+program
+  .command("history-eligible-trainings-for-appointments-catalogue")
+  .description("Historise l'egibilité d'une formation à la prise de rendez-vous avec le Catalogue des formations (RCO)")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("catalogue:trainings:appointments:archive:eligible"))
+
+program
+  .command("import-referentiel-onisep")
+  .description("Alimentation de la table de correspondance entre Id formation Onisep et Clé ME du catalogue RCO, utilisé pour diffuser la prise de RDV sur l’Onisep")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("referentiel:onisep:import"))
+
+/**
+ *
+ *
+ * JOB CANDIDAT
+ *
+ *
+ */
+
+program
+  .command("sync-catalogue-trainings")
+  .description("Importe les formations depuis le Catalogue")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("catalogue:trainings:sync"))
+
+program
+  .command("sync-catalogue-trainings-extra-data")
+  .description("Mise à jour des champs spécifiques de la collection formations catalogue")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("catalogue:trainings:sync:extra"))
+
+program
+  .command("sync-sib-blocked")
+  .description("Récupère auprès de Brevo la liste des adresses emails bloquées le jour précédent (défaut) ou toutes les adresses bloquées (option)")
+  .option("-all-addresses, [AllAddresses]", "pour récupérer toutes les adresses bloquées", false)
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("brevo:blocked:sync"))
+
+program
+  .command("anonymize-applications")
+  .description("Anonymise toutes les candidatures de plus de an qui ne sont pas déjà anonymisées")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("applications:anonymize"))
+
+program
+  .command("rename-lbac-fields")
+  .description("Renomme les champs des collections LBAC")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("lbac:fields:rename"))
+
+program
+  .command("update-companies")
+  .description("Met à jour la liste des sociétés bonnes alternances")
+  .option("-use-algo-file, [UseAlgoFile]", "télécharge et traite le fichier issu de l'algo", false)
+  .option("-clear-mongo, [ClearMongo]", "vide la collection des bonnes alternances", false)
+  .option("-build-index, [BuildIndex]", "réindex les bonnes boîtes", false)
+  .option("-use-save, [UseSave]", "pour appliquer les données SAVE", false)
+  .option("-force-recreate, [ForceRecreate]", "pour forcer la recréation", false)
+  .option("-source-file, [SourceFile]", "fichier source alternatif")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("companies:update"))
+
+program
+  .command("update-geo-locations")
+  .description("Procède à la géolocalisation de masse des sociétés dans le fichier des bonnes alternances")
+  .option("-force-recreate, [ForceRecreate]", "pour forcer la recréation", false)
+  .option("-source-file, [SourceFile]", "fichier source alternatif")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("geo-locations:update"))
+
+program
+  .command("update-opcos")
+  .description("Procède à la résolution des opcos des sociétés dans le fichier des bonnes alternances")
+  .option("-clear-mongo, [ClearMongo]", "vide la collection des opcos", false)
+  .option("-force-recreate, [ForceRecreate]", "pour forcer la recréation", false)
+  .option("-source-file, [SourceFile]", "fichier source alternatif")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("opcos:update"))
+
+program
+  .command("update-domaines-metiers")
+  .description("Procède à l'import du fichier domaines metiers")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("domaines-metiers:update"))
+
+program
+  .command("update-domaines-metiers-file <filename> [key]")
+  .description("Enregistre le fichier spécifié présent dans /assets sur le repository distant. Si key n'est pas précisé il remplacera le fichier par défaut.")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("domaines-metiers:file:update"))
+
+program
+  .command("update-diplomes-metiers")
+  .description("Procède à l'association des diplômes par métiers")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("diplomes-metiers:update"))
+
+program
+  .command("update-referentiel-rncp-romes")
+  .description("Procède à la mise à jour du référentiel RNCP codes ROME")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("referentiel:rncp-romes:update"))
 
 export async function startCLI() {
   await program.parseAsync(process.argv)

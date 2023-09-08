@@ -4,6 +4,8 @@ import config from "../config"
 
 export const mongooseInstance = mongoose
 export const { model, Schema } = mongoose
+// @ts-ignore
+export let db: ReturnType<typeof mongoose.Connection> // eslint-disable-line import/no-mutable-exports
 
 export const connectToMongo = (mongoUri = config.mongodb.uri, mongooseInst = null) => {
   return new Promise((resolve, reject) => {
@@ -20,7 +22,7 @@ export const connectToMongo = (mongoUri = config.mongodb.uri, mongooseInst = nul
 
     // Get Mongoose to use the global promise library
     mI.Promise = global.Promise // Get the default connection
-    const db = mI.connection
+    db = mI.connection
 
     // Bind connection to error event (to get notification of connection errors)
     db.on("error", (e) => {
