@@ -1,3 +1,10 @@
+## [1.86.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.86.0...v1.86.1) (2023-09-08)
+
+
+### Bug Fixes
+
+* suppression de code mort Etablissement ([#572](https://github.com/mission-apprentissage/labonnealternance/issues/572)) ([50ece04](https://github.com/mission-apprentissage/labonnealternance/commit/50ece045fa90ead26fb9ce4cc91c0c3cffe4125c))
+
 # [1.86.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.85.2...v1.86.0) (2023-09-07)
 
 
