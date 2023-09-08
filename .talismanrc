@@ -48,5 +48,6 @@ allowed_patterns:
   - ApiKey
   - APIKey
   - versionKey
+  - @apprentissage.beta.gouv.fr
 version: "1.0"
 

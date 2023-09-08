@@ -24,7 +24,7 @@ export default function useUserHistoryUpdate(userId, status, reason = undefined)
           status: "success",
           duration: 4000,
           isClosable: true,
-        })
+        }),
       )
   }, [auth.id, client, reason, status, toast, userId])
 }

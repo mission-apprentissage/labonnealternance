@@ -1,30 +1,26 @@
 ## [1.86.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.86.0...v1.86.1) (2023-09-08)
 
-
 ### Bug Fixes
 
-* suppression de code mort Etablissement ([#572](https://github.com/mission-apprentissage/labonnealternance/issues/572)) ([50ece04](https://github.com/mission-apprentissage/labonnealternance/commit/50ece045fa90ead26fb9ce4cc91c0c3cffe4125c))
+- suppression de code mort Etablissement ([#572](https://github.com/mission-apprentissage/labonnealternance/issues/572)) ([50ece04](https://github.com/mission-apprentissage/labonnealternance/commit/50ece045fa90ead26fb9ce4cc91c0c3cffe4125c))
 
 # [1.86.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.85.2...v1.86.0) (2023-09-07)
 
-
 ### Features
 
-* LBAC-1519 update InformationsSiret.js ([#567](https://github.com/mission-apprentissage/labonnealternance/issues/567)) ([5fed07f](https://github.com/mission-apprentissage/labonnealternance/commit/5fed07fb833f53ee5eab1fb794c4532e936696ef))
+- LBAC-1519 update InformationsSiret.js ([#567](https://github.com/mission-apprentissage/labonnealternance/issues/567)) ([5fed07f](https://github.com/mission-apprentissage/labonnealternance/commit/5fed07fb833f53ee5eab1fb794c4532e936696ef))
 
 ## [1.85.2](https://github.com/mission-apprentissage/labonnealternance/compare/v1.85.1...v1.85.2) (2023-09-06)
 
-
 ### Bug Fixes
 
-* update siret en erreur: fix validation pour les creations api ([#562](https://github.com/mission-apprentissage/labonnealternance/issues/562)) ([ff44354](https://github.com/mission-apprentissage/labonnealternance/commit/ff44354c278f6d38a6f05396c82ea3284743bb79))
+- update siret en erreur: fix validation pour les creations api ([#562](https://github.com/mission-apprentissage/labonnealternance/issues/562)) ([ff44354](https://github.com/mission-apprentissage/labonnealternance/commit/ff44354c278f6d38a6f05396c82ea3284743bb79))
 
 ## [1.85.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.85.0...v1.85.1) (2023-09-06)
 
-
 ### Bug Fixes
 
-* lbac 1502: fallback api opco ([#563](https://github.com/mission-apprentissage/labonnealternance/issues/563)) ([5e2ee07](https://github.com/mission-apprentissage/labonnealternance/commit/5e2ee0727d644a4f8c5f76e1614fad3d235bf394))
+- lbac 1502: fallback api opco ([#563](https://github.com/mission-apprentissage/labonnealternance/issues/563)) ([5e2ee07](https://github.com/mission-apprentissage/labonnealternance/commit/5e2ee0727d644a4f8c5f76e1614fad3d235bf394))
 
 # [1.85.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.84.0...v1.85.0) (2023-09-06)
 
