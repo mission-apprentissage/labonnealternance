@@ -3,7 +3,7 @@ import { useField } from "formik"
 import { NavLink } from "react-router-dom"
 import { Warning } from "../theme/components/icons"
 
-export default (props) => {
+export const CustomInput = (props) => {
   const [field, meta] = useField(props)
 
   return (
@@ -30,3 +30,5 @@ export default (props) => {
     </Box>
   )
 }
+
+export default CustomInput

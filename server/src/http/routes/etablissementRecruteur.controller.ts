@@ -1,42 +1,37 @@
 import express, { Request } from "express"
 import joi from "joi"
-import { createFormulaire, getFormulaire } from "../../services/formulaire.service.js"
-import { mailTemplate } from "../../assets/index.js"
-import { CFA, ENTREPRISE, ETAT_UTILISATEUR, VALIDATION_UTILISATEUR } from "../../services/constant.service.js"
-import { createMagicLinkToken, createUserRecruteurToken } from "../../common/utils/jwtUtils.js"
-import { checkIfUserEmailIsPrivate, checkIfUserMailExistInReferentiel, getAllDomainsFromEmailList } from "../../common/utils/mailUtils.js"
+import { IRecruiter } from "../../common/model/schema/recruiter/recruiter.types.js"
+import { IUserRecruteur } from "../../common/model/schema/userRecruteur/userRecruteur.types.js"
+import { createUserRecruteurToken } from "../../common/utils/jwtUtils.js"
+import { getAllDomainsFromEmailList, getEmailDomain, isEmailFromPrivateCompany, isUserMailExistInReferentiel } from "../../common/utils/mailUtils.js"
+import { sentryCaptureException } from "../../common/utils/sentryUtils.js"
 import { notifyToSlack } from "../../common/utils/slackUtils.js"
-import config from "../../config.js"
 import { getNearEtablissementsFromRomes } from "../../services/catalogue.service.js"
+import { BusinessErrorCodes, CFA, ENTREPRISE, ETAT_UTILISATEUR } from "../../services/constant.service.js"
 import {
+  entrepriseOnboardingWorkflow,
   etablissementUnsubscribeDemandeDelegation,
-  formatEntrepriseData,
-  formatReferentielData,
-  getAllEstablishmentFromBonneBoite,
-  getAllEstablishmentFromBonneBoiteLegacy,
-  getAllEstablishmentFromOpcoReferentiel,
+  getEntrepriseDataFromSiret,
   getEtablissement,
-  getEtablissementFromGouv,
   getEtablissementFromReferentiel,
-  getGeoCoordinates,
-  getIdcc,
-  getMatchingDomainFromContactList,
-  getMatchingEmailFromContactList,
-  getOpco,
-  getOpcoByIdcc,
-  getValidationUrl,
+  getOpcoData,
+  getOrganismeDeFormationDataFromSiret,
+  sendUserConfirmationEmail,
+  validateCreationEntrepriseFromCfa,
   validateEtablissementEmail,
 } from "../../services/etablissement.service.js"
-import { ICFADock } from "../../services/etablissement.service.types.js"
-import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
-import { validationOrganisation } from "../../services/bal.service.js"
-import { IUserRecruteur } from "../../common/model/schema/userRecruteur/userRecruteur.types.js"
-import { IRecruiter } from "../../common/model/schema/recruiter/recruiter.types.js"
-import { updateUserValidationHistory, getUser, createUser, updateUser, getUserValidationState, registerUser } from "../../services/userRecruteur.service.js"
+import {
+  autoValidateUser,
+  createUser,
+  getUser,
+  getUserStatus,
+  registerUser,
+  sendWelcomeEmailToUserRecruteur,
+  setUserHasToBeManuallyValidated,
+  updateUser,
+} from "../../services/userRecruteur.service.js"
 import authMiddleware from "../middlewares/authMiddleware.js"
-import { sentryCaptureException } from "../../common/utils/sentryUtils.js"
-import mailer from "../../services/mailer.service.js"
-import { getOpcoBySirenFromDB, saveOpco } from "../../services/opco.service.js"
+import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
 
 const getCfaRomeSchema = joi.object({
   latitude: joi.number().required(),
@@ -46,20 +41,6 @@ const getCfaRomeSchema = joi.object({
 
 export default () => {
   const router = express.Router()
-
-  const autoValidateUser = async (userId) =>
-    await updateUserValidationHistory(userId, {
-      validation_type: VALIDATION_UTILISATEUR.AUTO,
-      user: "SERVEUR",
-      status: ETAT_UTILISATEUR.VALIDE,
-    })
-
-  const setManualValidation = async (userId) =>
-    await updateUserValidationHistory(userId, {
-      validation_type: VALIDATION_UTILISATEUR.MANUAL,
-      user: "SERVEUR",
-      status: ETAT_UTILISATEUR.ATTENTE,
-    })
 
   /**
    * Retourne la liste de tous les CFA ayant une formation avec les ROME passés..
@@ -90,94 +71,61 @@ export default () => {
   router.get(
     "/entreprise/:siret",
     tryCatch(async (req, res) => {
-      const { siret } = req.params
-      const { cfa_delegated_siret, fromDashboardCfa } = req.query
-      const siren = siret.slice(0, 9)
-
+      const siret: string | undefined = req.params.siret
+      const cfa_delegated_siret: string | undefined = req.query.cfa_delegated_siret
       if (!siret) {
         return res.status(400).json({ error: true, message: "Le numéro siret est obligatoire." })
       }
       try {
-        const result = await getEtablissementFromGouv(siret)
-
-        if (!result) {
-          return res.status(400).json({ error: true, message: "Le numéro siret est invalide." })
-        }
-
-        if (result.data.etat_administratif === "F") {
-          return res.status(400).json({ error: true, message: "Cette entreprise est considérée comme fermée." })
-        }
-
-        // Check if a CFA already has the company as partenaire
-        if (fromDashboardCfa) {
-          const exist = await getFormulaire({
-            establishment_siret: siret,
-            cfa_delegated_siret: cfa_delegated_siret,
-            status: "Actif",
+        const cfaVerification = await validateCreationEntrepriseFromCfa({ siret, cfa_delegated_siret })
+        if (cfaVerification) {
+          return res.status(400).json({
+            error: true,
+            message: cfaVerification.message,
           })
-
-          if (exist) {
-            return res.status(400).json({
-              error: true,
-              message: "L'entreprise est déjà référencée comme partenaire.",
-            })
-          }
         }
-
-        // Allow cfa to add themselves as a company
-        if (!fromDashboardCfa) {
-          if (result.data.activite_principale.code.startsWith("85")) {
-            return res.status(400).json({
-              error: true,
-              message: "Le numéro siret n'est pas référencé comme une entreprise.",
-              isCfa: true,
-            })
+        const result = await getEntrepriseDataFromSiret({ siret, cfa_delegated_siret })
+        if ("error" in result) {
+          switch (result.errorCode) {
+            case BusinessErrorCodes.IS_CFA: {
+              return res.status(400).json({
+                error: true,
+                message: result.message,
+                isCfa: true,
+              })
+            }
+            default: {
+              return res.status(400).json({
+                error: true,
+                message: result.message,
+              })
+            }
           }
-        }
-
-        const entrepriseData = formatEntrepriseData(result.data)
-        const geo_coordinates = await getGeoCoordinates(`${entrepriseData.address_detail.acheminement_postal.l4}, ${entrepriseData.address_detail.acheminement_postal.l6}`)
-
-        const opcoData: { opco?: string; idcc?: string | number } = {}
-        const opcoFromDB = await getOpcoBySirenFromDB(siren)
-        if (opcoFromDB) {
-          opcoData.opco = opcoFromDB.opco
-          opcoData.idcc = opcoFromDB.idcc
-          await saveOpco({ opco: opcoData.opco, idcc: opcoData.idcc, siren, url: null })
         } else {
-          const opcoCFADOCK = await getOpco(siret)
-          switch (opcoCFADOCK?.searchStatus) {
-            case "OK": {
-              opcoData.opco = opcoCFADOCK.opcoName
-              opcoData.idcc = opcoCFADOCK.idcc
-              break
-            }
-            case "MULTIPLE_OPCO": {
-              opcoData.opco = "Opco multiple"
-              opcoData.idcc = "Opco multiple, IDCC non défini"
-              break
-            }
-            case null:
-            case "NOT_FOUND": {
-              const idccResult = await getIdcc(siret)
-              if (idccResult[0].conventions.length) {
-                const { num } = opcoCFADOCK[0]?.conventions[0]
-                const opcoByIdccResult = await getOpcoByIdcc(num)
-                if (opcoByIdccResult) {
-                  opcoData.opco = opcoByIdccResult.opcoName
-                  opcoData.idcc = opcoByIdccResult.idcc
-                }
-              }
-              break
-            }
-          }
+          res.json(result)
         }
-
-        res.json({ ...entrepriseData, ...opcoData, geo_coordinates })
       } catch (error) {
         sentryCaptureException(error)
         res.status(500).json({ error: true, message: "Le service est momentanément indisponible." })
       }
+    })
+  )
+
+  /**
+   * Récupérer les informations d'une entreprise à l'aide de l'API du gouvernement
+   */
+  router.get(
+    "/entreprise/:siret/opco",
+    tryCatch(async (req, res) => {
+      const siret: string | undefined = req.params.siret
+      if (!siret) {
+        return res.status(400).json({ error: true, message: "Le numéro siret est obligatoire." })
+      }
+      const result = await getOpcoData(siret)
+      if (!result) {
+        return res.status(404).json({ error: true, message: "aucune données OPCO trouvées" })
+      }
+      return res.json(result)
     })
   )
 
@@ -187,44 +135,28 @@ export default () => {
   router.get(
     "/cfa/:siret",
     tryCatch(async (req, res) => {
-      if (!req.params.siret) {
+      const { siret } = req.params
+      if (!siret) {
         return res.status(400).json({ error: true, message: "Le numéro siret est obligatoire." })
       }
-
-      const exist = await getEtablissement({ establishment_siret: req.params.siret, type: CFA })
-
-      if (exist) {
-        return res.status(403).json({
-          error: true,
-          reason: "EXIST",
-        })
+      const response = await getOrganismeDeFormationDataFromSiret(siret)
+      if ("error" in response) {
+        const { message, errorCode } = response
+        switch (errorCode) {
+          case BusinessErrorCodes.ALREADY_EXISTS:
+            return res.status(403).json({ error: true, reason: message })
+          default:
+            return res.status(400).json({ error: true, reason: message })
+        }
       }
-
-      const referentiel = await getEtablissementFromReferentiel(req.params.siret)
-
-      if (!referentiel) {
+      if (!response.is_qualiopi) {
         return res.status(400).json({
-          error: true,
-          reason: "UNKNOWN",
-        })
-      }
-
-      if (referentiel?.etat_administratif === "fermé") {
-        return res.status(400).json({
-          error: true,
-          reason: "CLOSED",
-        })
-      }
-
-      if (!referentiel?.qualiopi) {
-        return res.status(400).json({
-          data: { ...formatReferentielData(referentiel) },
+          data: response,
           error: true,
           reason: "QUALIOPI",
         })
       }
-
-      return res.json({ ...formatReferentielData(referentiel) })
+      return res.json(response)
     })
   )
 
@@ -235,147 +167,86 @@ export default () => {
   router.post(
     "/creation",
     tryCatch(async (req: Request<{}, {}, IUserRecruteur & IRecruiter>, res) => {
-      const formatedEmail = req.body.email.toLocaleLowerCase()
-
-      // check if user already exist
-      const exist = await getUser({ email: formatedEmail })
-
-      if (exist) {
-        return res.status(403).json({ error: true, message: "L'adresse mail est déjà associée à un compte La bonne alternance." })
-      }
-
+      // TODO add some Joi
       switch (req.body.type) {
         case ENTREPRISE: {
-          const siren = req.body.establishment_siret.slice(0, 9)
-          const formulaireInfo = await createFormulaire({ ...req.body, email: formatedEmail })
-          let newEntreprise: IUserRecruteur = await createUser({ ...req.body, establishment_id: formulaireInfo.establishment_id, email: formatedEmail })
-
-          // Get all corresponding records using the SIREN number in BonneBoiteLegacy collection
-          const [bonneBoiteLegacyList, bonneBoiteList, referentielOpcoList] = await Promise.all([
-            getAllEstablishmentFromBonneBoiteLegacy({ siret: { $regex: siren }, email: { $nin: ["", undefined] } }),
-            getAllEstablishmentFromBonneBoite({ siret: { $regex: siren }, email: { $nin: ["", undefined] } }),
-            getAllEstablishmentFromOpcoReferentiel({ siret_code: { $regex: siren } }),
-          ])
-
-          // Format arrays to get only the emails
-          const [bonneBoiteLegacyEmailList, bonneBoiteEmailList, referentielOpcoEmailList] = await Promise.all([
-            bonneBoiteLegacyList.map(({ email }) => email),
-            bonneBoiteList.map(({ email }) => email),
-            referentielOpcoList.reduce((acc: string[], item) => {
-              item.emails.map((x) => acc.push(x))
-              return acc
-            }, []),
-          ])
-
-          // Create a single array with all emails duplicate free
-          const emailListUnique = [...new Set([...referentielOpcoEmailList, ...bonneBoiteLegacyEmailList, ...bonneBoiteEmailList])]
-
-          // Check BAL API for validation
-          const balControl = await validationOrganisation(req.body.establishment_siret, req.body.email)
-
-          if (balControl.is_valid) {
-            newEntreprise = await autoValidateUser(newEntreprise._id)
-          } else {
-            if (emailListUnique.length) {
-              if (getMatchingEmailFromContactList(newEntreprise.email, emailListUnique)) {
-                newEntreprise = await autoValidateUser(newEntreprise._id)
-              } else if (checkIfUserEmailIsPrivate(newEntreprise.email) && getMatchingDomainFromContactList(newEntreprise.email, emailListUnique)) {
-                newEntreprise = await autoValidateUser(newEntreprise._id)
-              } else {
-                newEntreprise = await setManualValidation(newEntreprise._id)
+          const siret = req.body.establishment_siret
+          const result = await entrepriseOnboardingWorkflow.create({ ...req.body, siret })
+          if ("error" in result) {
+            switch (result.errorCode) {
+              case BusinessErrorCodes.ALREADY_EXISTS: {
+                return res.status(403).json({
+                  error: true,
+                  message: result.message,
+                })
               }
-            } else {
-              newEntreprise = await setManualValidation(newEntreprise._id)
+              default: {
+                return res.status(400).json({
+                  error: true,
+                  message: result.message,
+                })
+              }
             }
           }
-
-          // Dépot simplifié : retourner les informations nécessaire à la suite du parcours
-          return res.json({ formulaire: formulaireInfo, user: newEntreprise })
+          return res.json(result)
         }
         case CFA: {
+          const { email, establishment_siret } = req.body
+          const formatedEmail = email.toLocaleLowerCase()
+          // check if user already exist
+          const userRecruteurOpt = await getUser({ email: formatedEmail })
+          if (userRecruteurOpt) {
+            return res.status(403).json({ error: true, message: "L'adresse mail est déjà associée à un compte La bonne alternance." })
+          }
           // Contrôle du mail avec le référentiel :
-          const referentiel = await getEtablissementFromReferentiel(req.body.establishment_siret)
+          const referentiel = await getEtablissementFromReferentiel(establishment_siret)
           // Creation de l'utilisateur en base de données
           let newCfa: IUserRecruteur = await createUser(req.body)
-
-          if (!referentiel.contacts.length) {
+          if (!referentiel?.contacts.length) {
             // Validation manuelle de l'utilisateur à effectuer pas un administrateur
-            newCfa = await setManualValidation(newCfa._id)
-
+            newCfa = await setUserHasToBeManuallyValidated(newCfa._id)
             await notifyToSlack({
               subject: "RECRUTEUR",
               message: `Nouvel OF en attente de validation - ${newCfa.email} - https://referentiel.apprentissage.beta.gouv.fr/organismes/${newCfa.establishment_siret}`,
             })
-
             return res.json({ user: newCfa })
           }
-
-          if (checkIfUserMailExistInReferentiel(referentiel.contacts, req.body.email)) {
+          if (isUserMailExistInReferentiel(referentiel.contacts, email)) {
             // Validation automatique de l'utilisateur
             newCfa = await autoValidateUser(newCfa._id)
-
             const { email, _id, last_name, first_name } = newCfa
-
-            const url = getValidationUrl(_id)
-
-            await mailer.sendEmail({
-              to: email,
-              subject: "Confirmez votre adresse mail",
-              template: mailTemplate["mail-confirmation-email"],
-              data: {
-                images: {
-                  logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
-                },
-                first_name,
-                last_name,
-                confirmation_url: url,
-              },
+            await sendUserConfirmationEmail({
+              email,
+              firstName: first_name,
+              lastName: last_name,
+              userRecruteurId: _id,
             })
-
             // Keep the same structure as ENTREPRISE
             return res.json({ user: newCfa })
           }
-
-          if (checkIfUserEmailIsPrivate(req.body.email)) {
-            // Récupération des noms de domain
-            const domains = getAllDomainsFromEmailList(referentiel.contacts)
-            const userEmailDomain = req.body.email.split("@")[1]
-
-            if (domains.includes(userEmailDomain)) {
+          if (isEmailFromPrivateCompany(formatedEmail)) {
+            const domains = getAllDomainsFromEmailList(referentiel.contacts.map(({ email }) => email))
+            const userEmailDomain = getEmailDomain(formatedEmail)
+            if (userEmailDomain && domains.includes(userEmailDomain)) {
               // Validation automatique de l'utilisateur
               newCfa = await autoValidateUser(newCfa._id)
-
               const { email, _id, last_name, first_name } = newCfa
-
-              const url = getValidationUrl(_id)
-
-              await mailer.sendEmail({
-                to: email,
-                subject: "Confirmez votre adresse mail",
-                template: mailTemplate["mail-confirmation-email"],
-                data: {
-                  images: {
-                    logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
-                  },
-                  first_name,
-                  last_name,
-                  confirmation_url: url,
-                },
+              await sendUserConfirmationEmail({
+                email,
+                firstName: first_name,
+                lastName: last_name,
+                userRecruteurId: _id,
               })
-
               // Keep the same structure as ENTREPRISE
               return res.json({ user: newCfa })
             }
           }
-
           // Validation manuelle de l'utilisateur à effectuer pas un administrateur
-          newCfa = await setManualValidation(newCfa._id)
-
+          newCfa = await setUserHasToBeManuallyValidated(newCfa._id)
           await notifyToSlack({
             subject: "RECRUTEUR",
             message: `Nouvel OF en attente de validation - ${newCfa.email} - https://referentiel.apprentissage.beta.gouv.fr/organismes/${newCfa.establishment_siret}`,
           })
-
           // Keep the same structure as ENTREPRISE
           return res.json({ user: newCfa })
         }
@@ -441,34 +312,13 @@ export default () => {
       }
 
       const user: IUserRecruteur = await getUser({ _id: req.body.id })
-      const isUserAwaiting = getUserValidationState(user.status) === ETAT_UTILISATEUR.ATTENTE
+      const isUserAwaiting = getUserStatus(user.status) === ETAT_UTILISATEUR.ATTENTE
 
       if (isUserAwaiting) {
         return res.json({ isUserAwaiting: true })
       }
-
-      const magiclink = `${config.publicUrlEspacePro}/authentification/verification?token=${createMagicLinkToken(user.email)}`
-
-      const { email, first_name, last_name, establishment_raison_sociale, type } = user
-
-      await mailer.sendEmail({
-        to: email,
-        subject: "Bienvenue sur La bonne alternance",
-        template: mailTemplate["mail-bienvenue"],
-        data: {
-          images: {
-            logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
-          },
-          establishment_raison_sociale,
-          last_name,
-          first_name,
-          email,
-          is_delegated: type === CFA,
-          url: magiclink,
-        },
-      })
-
-      await registerUser(email)
+      await sendWelcomeEmailToUserRecruteur(user)
+      await registerUser(user.email)
 
       // Log the user in directly
       return res.json({ token: createUserRecruteurToken(user) })

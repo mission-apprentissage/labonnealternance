@@ -1,4 +1,4 @@
-import { Box, Button, Flex, FormControl, FormErrorMessage, FormHelperText, FormLabel, Heading, Select, SimpleGrid, Text, useBoolean, useDisclosure } from "@chakra-ui/react"
+import { Box, Button, Flex, FormControl, FormErrorMessage, FormHelperText, FormLabel, Heading, Select, SimpleGrid, Text, useDisclosure } from "@chakra-ui/react"
 import { Form, Formik } from "formik"
 import { useContext, useState } from "react"
 import { useLocation, useNavigate } from "react-router-dom"
@@ -9,6 +9,8 @@ import { AnimationContainer, AuthentificationLayout, ConfirmationCreationCompte,
 import { WidgetContext } from "../../contextWidget"
 import { ArrowRightLine } from "../../theme/components/icons"
 import logosOpco from "../../theme/components/logos/logosOpco"
+import { OpcoSelect } from "../../components/CreationRecruteur/OpcoSelect"
+import { phoneValidation } from "../../common/validation/fieldValidations"
 
 const Formulaire = ({ submitForm }) => {
   const navigate = useNavigate()
@@ -34,11 +36,7 @@ const Formulaire = ({ submitForm }) => {
       validationSchema={Yup.object().shape({
         last_name: Yup.string().required("champ obligatoire"),
         first_name: Yup.string().required("champ obligatoire"),
-        phone: Yup.string()
-          .matches(/^[0-9]+$/, "Le téléphone est composé uniquement de chiffres")
-          .min(10, "le téléphone est sur 10 chiffres")
-          .max(10, "le téléphone est sur 10 chiffres")
-          .required("champ obligatoire"),
+        phone: phoneValidation().required("champ obligatoire"),
         email: Yup.string().email("Insérez un email valide").lowercase().required("champ obligatoire"),
         opco: shouldSelectOpco ? Yup.string().required("champ obligatoire") : Yup.string(),
       })}
@@ -85,21 +83,7 @@ const Formulaire = ({ submitForm }) => {
                     <FormControl>
                       <FormLabel>OPCO</FormLabel>
                       <FormHelperText pb={2}>Pour vous accompagner dans vos recrutements, votre OPCO accède à vos informations sur La bonne alternance.</FormHelperText>
-                      <Select variant="outline" size="md" name="opco" mr={3} onChange={(e) => setFieldValue("opco", e.target.value)} value={values.opco}>
-                        <option hidden>Sélectionnez un OPCO</option>
-                        <option value="AFDAS">AFDAS</option>
-                        <option value="AKTO / Opco entreprises et salariés des services à forte intensité de main d'oeuvre">AKTO</option>
-                        <option value="ATLAS">ATLAS</option>
-                        <option value="Constructys">Constructys</option>
-                        <option value="L'Opcommerce">L'Opcommerce</option>
-                        <option value="OCAPIAT">OCAPIAT</option>
-                        <option value="OPCO 2i">Opco 2i</option>
-                        <option value="Opco entreprises de proximité">Opco EP</option>
-                        <option value="Opco Mobilités">Opco Mobilités</option>
-                        <option value="Opco Santé">Opco Santé</option>
-                        <option value="Uniformation, l'Opco de la Cohésion sociale">Uniformation</option>
-                        <option value="inconnu">Je ne sais pas</option>
-                      </Select>
+                      <OpcoSelect name="opco" onChange={(newValue) => setFieldValue("opco", newValue)} value={values.opco} />
                       <FormErrorMessage>{errors.opco}</FormErrorMessage>
                     </FormControl>
                   )}
@@ -162,7 +146,7 @@ export const InformationCreationCompte = () => {
   const location = useLocation()
   const navigate = useNavigate()
   const validationPopup = useDisclosure()
-  const [userData, setUserData] = useState()
+  const [popupData, setPopupData] = useState()
 
   const { type, informationSiret } = location.state ?? {}
 
@@ -170,10 +154,7 @@ export const InformationCreationCompte = () => {
     // save info if not trusted from source
     createPartenaire({ ...informationSiret, ...values, type })
       .then(({ data }) => {
-        if (data.user.status[0].status === "EN ATTENTE DE VALIDATION") {
-          validationPopup.onOpen()
-          setUserData(data)
-        } else {
+        if (data.user.status[0].status === "VALIDÉ") {
           if (data.user.type === AUTHTYPE.ENTREPRISE) {
             // Dépot simplifié
             navigate("/creation/offre", {
@@ -183,8 +164,10 @@ export const InformationCreationCompte = () => {
           } else {
             navigate("/authentification/confirmation", { replace: true, state: { email: data.email } })
           }
+        } else {
+          validationPopup.onOpen()
+          setPopupData({ ...data, type })
         }
-
         setSubmitting(false)
       })
       .catch((error) => {
@@ -196,7 +179,7 @@ export const InformationCreationCompte = () => {
 
   return (
     <AnimationContainer>
-      <ConfirmationCreationCompte {...userData} {...validationPopup} />
+      <ConfirmationCreationCompte {...popupData} {...validationPopup} />
       <AuthentificationLayout>
         <Formulaire submitForm={submitForm} />
       </AuthentificationLayout>

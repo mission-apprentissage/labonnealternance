@@ -80,7 +80,9 @@ export const ListeOffres = () => {
     return <LoadingEmptySpace label="Chargement en cours..." />
   }
 
-  const getUserNavigationContext = ({ establishment_siret, establishment_id }) => {
+  const { jobs = [], establishment_raison_sociale, establishment_siret, establishment_id, geo_coordinates } = data.data ?? {}
+  const entrepriseTitle = establishment_raison_sociale ?? establishment_siret
+  const getOffreCreationUrl = () => {
     switch (auth.type) {
       case AUTHTYPE.OPCO:
         return `/administration/opco/entreprise/${establishment_siret}/${establishment_id}/offre/creation`
@@ -88,29 +90,26 @@ export const ListeOffres = () => {
         return `/administration/entreprise/${establishment_id}/offre/creation`
     }
   }
+  const navigateToCreation = () => {
+    navigate(getOffreCreationUrl(), {
+      state: { raison_sociale: entrepriseTitle },
+    })
+  }
 
-  if (data.data.jobs.length === 0) {
+  if (jobs.length === 0) {
     return (
       <Container maxW="container.xl" my={12}>
         <Flex justify="space-between" align="center">
           <Text fontSize="2rem" fontWeight={700}>
-            {data.data.establishment_raison_sociale}
+            {entrepriseTitle}
           </Text>
           <Box>
             {auth.type !== AUTHTYPE.OPCO && (
-              <Button mr={5} variant="secondary" leftIcon={<Building />} onClick={() => navigate(`/administration/entreprise/${data.data.establishment_id}/edition`)}>
+              <Button mr={5} variant="secondary" leftIcon={<Building />} onClick={() => navigate(`/administration/entreprise/${establishment_id}/edition`)}>
                 Modifier l'entreprise
               </Button>
             )}
-            <Button
-              variant="primary"
-              leftIcon={<Plus />}
-              onClick={() => {
-                navigate(getUserNavigationContext(data.data), {
-                  state: { establishment_raison_sociale: data.data.establishment_raison_sociale },
-                })
-              }}
-            >
+            <Button variant="primary" leftIcon={<Plus />} onClick={navigateToCreation}>
               Ajouter une offre
             </Button>
           </Box>
@@ -120,13 +119,13 @@ export const ListeOffres = () => {
     )
   }
 
-  const jobs = data.data?.jobs?.map((job) => ({ ...job, geo_coordinates: data.data.geo_coordinates })) ?? []
+  const jobsWithGeoCoords = jobs?.map((job) => ({ ...job, geo_coordinates })) ?? []
 
-  const offresTermine = jobs.filter((x) => x.job_status === "Annulée")
+  const offresTermine = jobsWithGeoCoords.filter((x) => x.job_status === "Annulée")
   const offresTermineNbr = offresTermine.length
-  const offresActive = jobs.filter((x) => x.job_status === "Active")
+  const offresActive = jobsWithGeoCoords.filter((x) => x.job_status === "Active")
   const offresActiveNbr = offresActive.length
-  const offresPourvue = jobs.filter((x) => x.job_status === "Pourvue")
+  const offresPourvue = jobsWithGeoCoords.filter((x) => x.job_status === "Pourvue")
   const offresPourvueNbr = offresPourvue.length
 
   const columns = [
@@ -187,7 +186,7 @@ export const ListeOffres = () => {
       disableFilters: true,
       disableSortBy: true,
       accessor: (row) => {
-        const [lat, lon] = row.geo_coordinates.split(",")
+        const [lat, lon] = (row.geo_coordinates ?? "").split(",")
         const isDisable = row.job_status === "Annulée" || row.job_status === "Pourvue" ? true : false
 
         return (
@@ -203,7 +202,7 @@ export const ListeOffres = () => {
                       <Link
                         onClick={() =>
                           navigate(`/administration/entreprise/${params.establishment_id}/offre/${row._id}`, {
-                            state: { establishment_raison_sociale: data.data.establishment_raison_sociale },
+                            state: { establishment_raison_sociale },
                           })
                         }
                       >
@@ -242,13 +241,11 @@ export const ListeOffres = () => {
                       </Link>
                     </MenuItem>
                     {auth.type !== AUTHTYPE.CFA && (
-                      <>
-                        <MenuItem>
-                          <Link isExternal href={`${process.env.REACT_APP_BASE_URL}/recherche-apprentissage-formation?&caller=matcha&romes=${row.rome_code}&lon=${lon}&lat=${lat}`}>
-                            Voir les centres de formations
-                          </Link>
-                        </MenuItem>
-                      </>
+                      <MenuItem>
+                        <Link isExternal href={`${process.env.REACT_APP_BASE_URL}/recherche-apprentissage-formation?&caller=matcha&romes=${row.rome_code}&lon=${lon}&lat=${lat}`}>
+                          Voir les centres de formations
+                        </Link>
+                      </MenuItem>
                     )}
                     <MenuItem>
                       <Link
@@ -283,7 +280,7 @@ export const ListeOffres = () => {
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbItem>
-                <BreadcrumbLink textStyle="xs">{data.data.establishment_raison_sociale}</BreadcrumbLink>
+                <BreadcrumbLink textStyle="xs">{establishment_raison_sociale}</BreadcrumbLink>
               </BreadcrumbItem>
             </Breadcrumb>
           )}
@@ -296,7 +293,7 @@ export const ListeOffres = () => {
               </BreadcrumbItem>
               <BreadcrumbItem>
                 {data.data._id ? (
-                  <BreadcrumbLink textStyle="xs">{data.data.establishment_raison_sociale}</BreadcrumbLink>
+                  <BreadcrumbLink textStyle="xs">{establishment_raison_sociale}</BreadcrumbLink>
                 ) : (
                   <BreadcrumbLink textStyle="xs">Nouvelle entreprise</BreadcrumbLink>
                 )}
@@ -307,23 +304,15 @@ export const ListeOffres = () => {
       </Box>
       <Flex justify="space-between" align="center">
         <Text fontSize="2rem" fontWeight={700}>
-          {data.data.establishment_raison_sociale}
+          {establishment_raison_sociale}
         </Text>
         <Box>
           {auth.type !== AUTHTYPE.OPCO && (
-            <Button mr={5} variant="secondary" leftIcon={<Building />} onClick={() => navigate(`/administration/entreprise/${data.data.establishment_id}/edition`)}>
+            <Button mr={5} variant="secondary" leftIcon={<Building />} onClick={() => navigate(`/administration/entreprise/${establishment_id}/edition`)}>
               {auth.type === AUTHTYPE.ENTREPRISE ? "Mes informations" : "Modifier l'entreprise"}
             </Button>
           )}
-          <Button
-            variant="primary"
-            leftIcon={<Plus />}
-            onClick={() =>
-              navigate(getUserNavigationContext(data.data), {
-                state: { establishment_raison_sociale: data.data.establishment_raison_sociale },
-              })
-            }
-          >
+          <Button variant="primary" leftIcon={<Plus />} onClick={navigateToCreation}>
             Ajouter une offre
           </Button>
         </Box>

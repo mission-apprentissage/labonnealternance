@@ -1,15 +1,14 @@
 import express from "express"
-import { deleteFormulaire, getFormulaire, reactivateRecruiter, sendCFADelegationMail, updateOffre } from "../../services/formulaire.service.js"
 import { mailTemplate } from "../../assets/index.js"
-import { CFA, ENTREPRISE, ETAT_UTILISATEUR, JOB_STATUS, RECRUITER_STATUS } from "../../services/constant.service.js"
-import dayjs from "../../services/dayjs.service.js"
 import { Recruiter, UserRecruteur } from "../../common/model/index.js"
-import { createMagicLinkToken } from "../../common/utils/jwtUtils.js"
 import config from "../../config.js"
-import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
-import { createUser, updateUser, updateUserValidationHistory, removeUser } from "../../services/userRecruteur.service.js"
-import authMiddleware from "../middlewares/authMiddleware.js"
+import { ENTREPRISE, ETAT_UTILISATEUR, JOB_STATUS, RECRUITER_STATUS } from "../../services/constant.service.js"
+import dayjs from "../../services/dayjs.service.js"
+import { deleteFormulaire, getFormulaire, reactivateRecruiter, sendDelegationMailToCFA, updateOffre } from "../../services/formulaire.service.js"
 import mailer from "../../services/mailer.service.js"
+import { createUser, removeUser, sendWelcomeEmailToUserRecruteur, updateUser, updateUserValidationHistory } from "../../services/userRecruteur.service.js"
+import authMiddleware from "../middlewares/authMiddleware.js"
+import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
 
 export default () => {
   const router = express.Router()
@@ -164,7 +163,7 @@ export default () => {
             await updateOffre(job._id, job)
 
             if (job?.delegations && job?.delegations.length) {
-              await Promise.all(job.delegations.map(async (delegation) => await sendCFADelegationMail(delegation.email, job, userFormulaire, delegation.siret_code)))
+              await Promise.all(job.delegations.map(async (delegation) => await sendDelegationMailToCFA(delegation.email, job, userFormulaire, delegation.siret_code)))
             }
           }
         }
@@ -172,28 +171,7 @@ export default () => {
 
       // validate user email addresse
       await updateUser({ _id: user._id }, { is_email_checked: true })
-
-      // get magiclink url
-      const magiclink = `${config.publicUrlEspacePro}/authentification/verification?token=${createMagicLinkToken(user.email)}`
-
-      // send welcome email to user
-      await mailer.sendEmail({
-        to: email,
-        subject: "Bienvenue sur La bonne alternance",
-        template: mailTemplate["mail-bienvenue"],
-        data: {
-          images: {
-            logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
-          },
-          last_name,
-          first_name,
-          establishment_raison_sociale,
-          email,
-          is_delegated: user.type === CFA,
-          url: magiclink,
-        },
-      })
-
+      await sendWelcomeEmailToUserRecruteur(user)
       return res.json(user)
     })
   )

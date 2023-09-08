@@ -1,3 +1,5 @@
+import { JOB_STATUS } from "../../../../services/constant.service.js"
+
 interface IDelegation {
   siret_code: string
   email: string
@@ -19,7 +21,7 @@ interface IJobs {
   job_update_date: Date | string
   job_last_prolongation_date: Date | string
   job_prolongation_count: number
-  job_status?: string
+  job_status?: JOB_STATUS
   job_status_comment: string
   job_type?: string[]
   is_multi_published: boolean

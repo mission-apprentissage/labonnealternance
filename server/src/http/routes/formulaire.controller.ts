@@ -1,5 +1,6 @@
-// @ts-nocheck
 import express from "express"
+import { entrepriseOnboardingWorkflow } from "../../services/etablissement.service.js"
+import { getUser } from "../../services/userRecruteur.service.js"
 import { Recruiter } from "../../common/model/index.js"
 import { getApplication } from "../../services/application.service.js"
 import {
@@ -7,7 +8,6 @@ import {
   archiveFormulaire,
   cancelOffre,
   checkOffreExists,
-  createFormulaire,
   createJob,
   createJobDelegations,
   getFormulaire,
@@ -18,9 +18,8 @@ import {
   updateFormulaire,
   updateOffre,
 } from "../../services/formulaire.service.js"
-import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
-import { getUser, createUser } from "../../services/userRecruteur.service.js"
 import authMiddleware from "../middlewares/authMiddleware.js"
+import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
 
 export default () => {
   const router = express.Router()
@@ -54,12 +53,7 @@ export default () => {
       await Promise.all(
         result.jobs.map(async (job) => {
           const candidatures = await getApplication(job._id)
-
-          if (candidatures) {
-            job.candidatures = candidatures.length > 0 ? candidatures.length : undefined
-          }
-
-          return job
+          return { ...job, candidatures: candidatures && candidatures.length > 0 ? candidatures.length : undefined }
         })
       )
 
@@ -73,19 +67,25 @@ export default () => {
   router.post(
     "/",
     tryCatch(async (req, res) => {
-      const response = await createFormulaire(req.body)
-
-      if (req.body.origine === "akto") {
-        const exist = await getUser({ email: payload.email })
-
-        if (!exist) {
-          await createUser({
-            ...req.body,
-            type: "ENTREPRISE",
-            establishment_id: response.establishment_id,
-            is_email_checked: true,
-          })
-        }
+      const { userRecruteurId, establishment_siret, email, last_name, first_name, phone, opco, idcc } = req.body
+      const userRecruteurOpt = await getUser({ _id: userRecruteurId })
+      if (!userRecruteurOpt) {
+        return res.status(400).json({ error: true, message: "Nous n'avons pas trouvé votre compte utilisateur" })
+      }
+      const response = await entrepriseOnboardingWorkflow.createFromCFA({
+        email,
+        last_name,
+        first_name,
+        phone,
+        siret: establishment_siret,
+        cfa_delegated_siret: userRecruteurOpt.establishment_siret,
+        origin: userRecruteurOpt.scope,
+        opco,
+        idcc,
+      })
+      if ("error" in response) {
+        const { message } = response
+        return res.status(400).json({ error: true, message })
       }
       return res.json(response)
     })
