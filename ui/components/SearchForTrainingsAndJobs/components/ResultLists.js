@@ -15,8 +15,6 @@ import ResultListsLoading from "./ResultListsLoading"
 import ResultFilterAndCounter from "./ResultFilterAndCounter"
 
 const ResultLists = ({
-  activeFilter,
-  setActiveFilter,
   handleExtendedSearch,
   handleSelectItem,
   isJobSearchLoading,
@@ -43,13 +41,14 @@ const ResultLists = ({
   ;({ extendedSearch, hasSearch } = useContext(SearchResultContext))
 
   const { jobs, trainings } = useContext(SearchResultContext)
+  const { activeFilters } = useContext(DisplayContext)
 
   if (isTestMode) {
     ;[extendedSearch, hasSearch, isFormVisible] = [stubbedExtendedSearch, stubbedHasSearch, stubbedIsFormVisible]
   }
 
   const getTrainingResult = () => {
-    if (hasSearch && scopeContext.isTraining && (activeFilter === "all" || activeFilter === "trainings")) {
+    if (hasSearch && scopeContext.isTraining && activeFilters.includes("trainings")) {
       return (
         <Box bg="beige" id="trainingResult">
           {getTrainingList()}
@@ -88,13 +87,13 @@ const ResultLists = ({
   }
 
   const getJobResult = () => {
-    if (hasSearch && !isJobSearchLoading && ["all", "duo", "jobs"].includes(activeFilter)) {
+    if (hasSearch && !isJobSearchLoading && (activeFilters.includes("jobs") || activeFilters.includes("duo"))) {
       if (allJobSearchError) return ""
 
       const jobCount = getJobCount(jobs)
 
       if (jobCount) {
-        if (activeFilter === "duo") {
+        if (!activeFilters.includes("jobs")) {
           return (
             <Box bg="beige" id="jobList">
               {getPartnerJobList()}
@@ -159,7 +158,7 @@ const ResultLists = ({
   }
 
   const getJobList = () => {
-    const mergedJobs = mergeJobs({ jobs, activeFilter })
+    const mergedJobs = mergeJobs({ jobs, activeFilters })
     if (mergedJobs.length) {
       return (
         <>
@@ -172,7 +171,7 @@ const ResultLists = ({
   }
 
   const getLbbCompanyList = () => {
-    const mergedLbaLbbCompanies = mergeOpportunities({ jobs, activeFilter, onlyLbbLbaCompanies: "onlyLbbLba" })
+    const mergedLbaLbbCompanies = mergeOpportunities({ jobs, activeFilters, onlyLbbLbaCompanies: "onlyLbbLba" })
     if (mergedLbaLbbCompanies.length) {
       return (
         <>
@@ -186,7 +185,7 @@ const ResultLists = ({
 
   // retourne le bloc construit des items lbb, lba, matcha et pe triés par ordre de distance
   const getMergedJobList = () => {
-    const mergedOpportunities = mergeOpportunities({ jobs, activeFilter })
+    const mergedOpportunities = mergeOpportunities({ jobs, activeFilters })
 
     if (mergedOpportunities.length) {
       return (
@@ -231,8 +230,6 @@ const ResultLists = ({
             trainingSearchError={trainingSearchError}
             isJobSearchLoading={isJobSearchLoading}
             isTrainingSearchLoading={isTrainingSearchLoading}
-            activeFilter={activeFilter}
-            setActiveFilter={setActiveFilter}
             showSearchForm={showSearchForm}
           />
         </Box>

@@ -9,7 +9,7 @@ import { Box, Flex, Text } from "@chakra-ui/react"
 import { SearchResultContext } from "../../context/SearchResultContextProvider"
 import ResultFilterAndCounter from "../SearchForTrainingsAndJobs/components/ResultFilterAndCounter"
 
-const WidgetHeader = ({ handleSearchSubmit, isHome, activeFilter, setActiveFilter, allJobSearchError, trainingSearchError, isJobSearchLoading, isTrainingSearchLoading }) => {
+const WidgetHeader = ({ handleSearchSubmit, isHome, allJobSearchError, trainingSearchError, isJobSearchLoading, isTrainingSearchLoading }) => {
   const router = useRouter()
 
   const { selectedItem } = useContext(SearchResultContext)
@@ -45,8 +45,6 @@ const WidgetHeader = ({ handleSearchSubmit, isHome, activeFilter, setActiveFilte
           trainingSearchError={trainingSearchError}
           isJobSearchLoading={isJobSearchLoading}
           isTrainingSearchLoading={isTrainingSearchLoading}
-          activeFilter={activeFilter}
-          setActiveFilter={setActiveFilter}
         />
       )}
     </Box>

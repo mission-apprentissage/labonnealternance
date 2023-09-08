@@ -1,10 +1,12 @@
 import React, { createContext, useReducer } from "react"
+import { defaultFilters } from "../components/SearchForTrainingsAndJobs/services/utils"
 
 const initialState = {
   formValues: null,
   visiblePane: "resultList",
   isFormVisible: true,
   shouldMapBeVisible: false,
+  activeFilters: defaultFilters,
 }
 
 const actions = {
@@ -12,6 +14,7 @@ const actions = {
   SET_VISIBLE_PANE: "SET_VISIBLE_PANE",
   SET_IS_FORM_VISIBLE: "SET_IS_FORM_VISIBLE",
   SET_SHOULD_MAP_BE_VISIBLE: "SET_SHOULD_MAP_BE_VISIBLE",
+  SET_ACTIVE_FILTERS: "SET_ACTIVE_FILTERS",
 }
 
 const reducer = (state, action) => {
@@ -30,6 +33,9 @@ const reducer = (state, action) => {
     case actions.SET_SHOULD_MAP_BE_VISIBLE: {
       return { ...state_copy, shouldMapBeVisible: action.shouldMapBeVisible }
     }
+    case actions.SET_ACTIVE_FILTERS: {
+      return { ...state_copy, activeFilters: action.activeFilters }
+    }
     default:
       return state
   }
@@ -42,6 +48,9 @@ const DisplayContextProvider = ({ children }) => {
 
   const value = {
     ...state,
+    setActiveFilters: (activeFilters = defaultFilters) => {
+      dispatch({ type: actions.SET_ACTIVE_FILTERS, activeFilters })
+    },
     setFormValues: (formValues = null) => {
       dispatch({ type: actions.SET_FORM_VALUES, formValues })
     },

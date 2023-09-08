@@ -18,6 +18,7 @@ import SearchForm from "./SearchForm"
 
 import { Box, Image, Text } from "@chakra-ui/react"
 import { closeMapPopups, flyToLocation, flyToMarker, setSelectedMarker } from "../../../utils/mapTools"
+import { defaultFilters } from "../services/utils"
 
 import { round } from "lodash"
 
@@ -37,13 +38,11 @@ const ChoiceColumn = ({
   jobSearchError,
   allJobSearchError,
   isLoading,
-  activeFilter,
-  setActiveFilter,
 }) => {
   const router = useRouter()
   const scopeContext = useContext(ScopeContext)
   const { trainings, setTrainings, setJobs, setSelectedItem, selectedItem, itemToScrollTo, setItemToScrollTo, setExtendedSearch } = useContext(SearchResultContext)
-  const { formValues, setFormValues } = useContext(DisplayContext)
+  const { formValues, setFormValues, setActiveFilters } = useContext(DisplayContext)
   const { displayMap } = useContext(ParameterContext)
 
   useEffect(() => {
@@ -99,8 +98,8 @@ const ChoiceColumn = ({
   }
 
   const showAllResults = () => {
-    setActiveFilter("all")
-    filterLayers("all")
+    setActiveFilters(defaultFilters)
+    filterLayers(defaultFilters)
   }
 
   const searchForJobsOnNewCenter = async (newCenter) => {
@@ -180,8 +179,6 @@ const ChoiceColumn = ({
   const getResultLists = () => {
     return (
       <ResultLists
-        activeFilter={activeFilter}
-        setActiveFilter={setActiveFilter}
         selectedItem={selectedItem}
         handleSelectItem={handleSelectItem}
         showSearchForm={showSearchForm}
@@ -237,7 +234,7 @@ const ChoiceColumn = ({
   }
 
   const getSelectedItemDetail = () => {
-    return <ItemDetail selectedItem={selectedItem} handleClose={handleClose} handleSelectItem={handleSelectItem} activeFilter={activeFilter} />
+    return <ItemDetail selectedItem={selectedItem} handleClose={handleClose} handleSelectItem={handleSelectItem} />
   }
 
   const columnBackgroundProperty = shouldShowWelcomeMessage ? ["white", "white", "beige"] : "grey.100"

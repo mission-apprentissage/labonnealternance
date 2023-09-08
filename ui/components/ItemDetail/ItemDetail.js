@@ -26,9 +26,12 @@ import { Box, Divider, Flex, Link, Text } from "@chakra-ui/react"
 import { SendPlausibleEvent } from "../../utils/plausible"
 import GoingToContactQuestion, { getGoingtoId } from "./GoingToContactQuestion"
 import getJobPublishedTimeAndApplications from "./ItemDetailServices/getJobPublishedTimeAndApplications"
+import { DisplayContext } from "../../context/DisplayContextProvider"
 
-const ItemDetail = ({ selectedItem, handleClose, handleSelectItem, activeFilter }) => {
+const ItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
   const kind = selectedItem?.ideaType
+
+  const { activeFilters } = useContext(DisplayContext)
 
   const isCfa = isCfaEntreprise(selectedItem?.company?.siret, selectedItem?.company?.headquarter?.siret)
   const isMandataire = selectedItem?.company?.mandataire
@@ -38,7 +41,7 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem, activeFilter 
   useEffect(() => {
     setSeeInfo(false)
     try {
-      filterLayers(activeFilter)
+      filterLayers(activeFilters)
     } catch (err) {
       //notice: gère des erreurs qui se présentent à l'initialisation de la page quand mapbox n'est pas prêt.
     }
@@ -48,7 +51,7 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem, activeFilter 
 
   const { trainings, jobs, extendedSearch } = useContext(SearchResultContext)
   const hasAlsoJob = hasAlsoEmploi({ isCfa, company: selectedItem?.company, searchedMatchaJobs: jobs?.matchas })
-  const currentList = getCurrentList({ store: { trainings, jobs }, activeFilter, extendedSearch })
+  const currentList = getCurrentList({ store: { trainings, jobs }, activeFilters, extendedSearch })
 
   const { swipeHandlers, goNext, goPrev } = BuildSwipe({ currentList, handleSelectItem, selectedItem })
 

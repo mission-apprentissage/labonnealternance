@@ -9,16 +9,24 @@ import FilterButton from "./FilterButton"
 import { SearchResultContext } from "../../../context/SearchResultContextProvider"
 import DisplayMapButton from "../../DisplayMapButton/displayMapButton"
 import filterIcon from "../../../public/images/icons/filter.svg"
+import { DisplayContext } from "../../../context/DisplayContextProvider"
 
-const ResultFilterAndCounter = ({ allJobSearchError, trainingSearchError, isTrainingSearchLoading, isJobSearchLoading, activeFilter, setActiveFilter, showSearchForm }) => {
+const ResultFilterAndCounter = ({ allJobSearchError, trainingSearchError, isTrainingSearchLoading, isJobSearchLoading, showSearchForm }) => {
   const scopeContext = useContext(ScopeContext)
 
   const { jobs, trainings } = useContext(SearchResultContext)
+  const { activeFilters, setActiveFilters } = useContext(DisplayContext)
 
   const filterButtonClicked = (filterButton) => {
-    setActiveFilter(filterButton)
-    filterLayers(filterButton)
-    if (filterButton === "duo") {
+    let filters = activeFilters
+    filters.includes(filterButton) ? filters.splice(filters.indexOf(filterButton), 1) : filters.push(filterButton)
+    if (!filters.length) {
+      filters = ["jobs", "trainings", "duo"]
+    }
+
+    setActiveFilters(filters)
+    filterLayers(filters)
+    if (filterButton === "duo" && filters.includes("duo")) {
       SendPlausibleEvent("Clic onglet formations+emplois - Liste de résultats")
     }
   }
@@ -57,10 +65,27 @@ const ResultFilterAndCounter = ({ allJobSearchError, trainingSearchError, isTrai
           <>
             <Flex flexFlow="row wrap" justifyContent="flex-end" width="100%">
               <Flex width="100%" flex="2 auto" flexWrap={["wrap", "wrap", "nowrap"]}>
-                <FilterButton type="all" count={jobCount + trainingCount} isActive={activeFilter === "all"} handleFilterButtonClicked={filterButtonClicked} />
-                <FilterButton type="jobs" count={jobCount - partnerJobCount} isActive={activeFilter === "jobs"} handleFilterButtonClicked={filterButtonClicked} />
-                <FilterButton type="trainings" count={trainingCount} isActive={activeFilter === "trainings"} handleFilterButtonClicked={filterButtonClicked} />
-                {!!partnerJobCount && <FilterButton type="duo" count={partnerJobCount} isActive={activeFilter === "duo"} handleFilterButtonClicked={filterButtonClicked} />}
+                <FilterButton
+                  type="jobs"
+                  count={jobCount - partnerJobCount}
+                  activeFilters={activeFilters}
+                  isActive={activeFilters.includes("jobs")}
+                  handleFilterButtonClicked={filterButtonClicked}
+                />
+                <FilterButton
+                  type="trainings"
+                  count={trainingCount}
+                  activeFilters={activeFilters}
+                  isActive={activeFilters.includes("trainings")}
+                  handleFilterButtonClicked={filterButtonClicked}
+                />
+                <FilterButton
+                  type="duo"
+                  count={partnerJobCount}
+                  activeFilters={activeFilters}
+                  isActive={activeFilters.includes("duo")}
+                  handleFilterButtonClicked={filterButtonClicked}
+                />
                 <DisplayMapButton jobs={jobs} trainings={trainings} />
 
                 <Button

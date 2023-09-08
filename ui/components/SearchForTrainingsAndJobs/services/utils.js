@@ -55,6 +55,8 @@ const getPartnerJobCount = (jobs) => {
   return jobs && jobs.matchas ? jobs.matchas.filter((job) => job.company?.mandataire).length : 0
 }
 
+const defaultFilters = ["jobs", "trainings", "duo"]
+
 export {
   trainingApi,
   trainingsApi,
@@ -72,4 +74,5 @@ export {
   companyApi,
   getJobCount,
   getPartnerJobCount,
+  defaultFilters,
 }

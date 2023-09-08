@@ -4,9 +4,7 @@ import React from "react"
 const FilterButton = ({ type, count, isActive, handleFilterButtonClicked }) => {
   const handleClick = (e) => {
     e.stopPropagation()
-    if (!isActive) {
-      handleFilterButtonClicked(type)
-    }
+    handleFilterButtonClicked(type)
   }
 
   const getText = () => {
