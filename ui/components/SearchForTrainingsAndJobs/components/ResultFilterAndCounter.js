@@ -61,10 +61,10 @@ const ResultFilterAndCounter = ({ allJobSearchError, trainingSearchError, isTrai
   return (
     <Box pt="0">
       <Flex direction={["column", "column", "column", "row"]} wrap="wrap" {...filterZoneProperties}>
-        {!trainingLoading && !jobLoading && scopeContext.isJob && scopeContext.isTraining && (
-          <>
-            <Flex flexFlow="row wrap" justifyContent="flex-end" width="100%">
-              <Flex width="100%" flex="2 auto" flexWrap={["wrap", "wrap", "nowrap"]}>
+        {!trainingLoading && !jobLoading && (
+          <Flex flexFlow="row wrap" justifyContent="flex-end" width="100%">
+            <Flex width="100%" flex="2 auto" flexWrap={["wrap", "wrap", "nowrap"]}>
+              {scopeContext.isJob && (
                 <FilterButton
                   type="jobs"
                   count={jobCount - partnerJobCount}
@@ -72,6 +72,8 @@ const ResultFilterAndCounter = ({ allJobSearchError, trainingSearchError, isTrai
                   isActive={activeFilters.includes("jobs")}
                   handleFilterButtonClicked={filterButtonClicked}
                 />
+              )}
+              {scopeContext.isJob && scopeContext.isTraining && (
                 <FilterButton
                   type="trainings"
                   count={trainingCount}
@@ -79,6 +81,8 @@ const ResultFilterAndCounter = ({ allJobSearchError, trainingSearchError, isTrai
                   isActive={activeFilters.includes("trainings")}
                   handleFilterButtonClicked={filterButtonClicked}
                 />
+              )}
+              {scopeContext.isJob && (
                 <FilterButton
                   type="duo"
                   count={partnerJobCount}
@@ -86,37 +90,37 @@ const ResultFilterAndCounter = ({ allJobSearchError, trainingSearchError, isTrai
                   isActive={activeFilters.includes("duo")}
                   handleFilterButtonClicked={filterButtonClicked}
                 />
-                <DisplayMapButton jobs={jobs} trainings={trainings} />
+              )}
+              <DisplayMapButton jobs={jobs} trainings={trainings} />
 
-                <Button
-                  background="none"
-                  border="none"
-                  title="Accéder aux filtrage des résultats"
-                  display={["flex", "flex", "none"]}
-                  mt="-10px"
-                  pt="15px"
-                  px="0"
-                  fontWeight="400"
-                  fontSize="14px"
-                  textDecoration="underline"
-                  color="bluefrance.500"
-                  onClick={showSearchForm}
-                  _active={{
-                    background: "none",
-                  }}
-                  _focus={{
-                    background: "none",
-                  }}
-                  _hover={{
-                    background: "none",
-                  }}
-                >
-                  <Image width="24px" height="24px" src={filterIcon} alt="" />
-                  Filtres
-                </Button>
-              </Flex>
+              <Button
+                background="none"
+                border="none"
+                title="Accéder aux filtrage des résultats"
+                display={["flex", "flex", "none"]}
+                mt="-10px"
+                pt="15px"
+                px="0"
+                fontWeight="400"
+                fontSize="14px"
+                textDecoration="underline"
+                color="bluefrance.500"
+                onClick={showSearchForm}
+                _active={{
+                  background: "none",
+                }}
+                _focus={{
+                  background: "none",
+                }}
+                _hover={{
+                  background: "none",
+                }}
+              >
+                <Image width="24px" height="24px" src={filterIcon} alt="" />
+                Filtres
+              </Button>
             </Flex>
-          </>
+          </Flex>
         )}
       </Flex>
     </Box>
