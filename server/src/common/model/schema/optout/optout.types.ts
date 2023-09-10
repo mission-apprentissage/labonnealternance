@@ -25,4 +25,4 @@ interface IOptout {
   updatedAt: Date
 }
 
-export { IOptout }
+export type { IOptout }

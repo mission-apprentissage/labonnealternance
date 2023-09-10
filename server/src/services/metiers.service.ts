@@ -103,7 +103,7 @@ const getMultiMatchTermForDiploma = (term) => {
  * @param {undefined | string[]} rncps: un tableau optionnel de codes RNCP pour lesquels limiter la recherche
  * @returns {Promise<IMetiersEnrichis>}
  */
-export const getMetiers = async ({ title = null, romes = null, rncps = null }: { title: string; romes?: string; rncps?: string }): Promise<IMetiersEnrichis> => {
+export const getMetiers = async ({ title, romes, rncps }: { title: string; romes?: string; rncps?: string }): Promise<IMetiersEnrichis> => {
   if (!title && !romes && !rncps) {
     return {
       error: "missing_parameters",
@@ -111,7 +111,7 @@ export const getMetiers = async ({ title = null, romes = null, rncps = null }: {
     }
   } else {
     try {
-      const terms = []
+      const terms: any[] = []
 
       if (title) {
         title.split(" ").forEach((term, idx) => {
@@ -160,7 +160,7 @@ export const getMetiers = async ({ title = null, romes = null, rncps = null }: {
         },
       })
 
-      const labelsAndRomes = []
+      const labelsAndRomes: any[] = []
 
       response.body.hits.hits.forEach((labelAndRome) => {
         labelsAndRomes.push({
@@ -186,7 +186,7 @@ export const getMetiers = async ({ title = null, romes = null, rncps = null }: {
  */
 const getLabelsAndRomes = async (searchTerm: string, withRomeLabels?: string): Promise<IMetiersEnrichis> => {
   try {
-    const terms = []
+    const terms: any[] = []
 
     searchTerm.split(" ").forEach((term, idx) => {
       if (idx === 0 || term.length > 2) {
@@ -214,7 +214,7 @@ const getLabelsAndRomes = async (searchTerm: string, withRomeLabels?: string): P
       },
     })
 
-    const labelsAndRomes = []
+    const labelsAndRomes: any[] = []
 
     response.body.hits.hits.forEach((labelAndRome) => {
       const metier: IMetierEnrichi = {
@@ -284,7 +284,7 @@ export const getCoupleAppellationRomeIntitule = async (searchTerm: string): Prom
 
     const response = await esClient.search({ index: "domainesmetiers", body })
 
-    let coupleAppellationRomeMetier = []
+    let coupleAppellationRomeMetier: any[] = []
 
     response.body.hits.hits.map((item) => {
       coupleAppellationRomeMetier.push([...item._source.couples_appellations_rome_metier])
@@ -310,7 +310,7 @@ export const getCoupleAppellationRomeIntitule = async (searchTerm: string): Prom
  */
 const getLabelsAndRomesForDiplomas = async (searchTerm: string): Promise<IMetiersEnrichis> => {
   try {
-    const terms = []
+    const terms: any[] = []
 
     searchTerm.split(" ").forEach((term, idx) => {
       if (idx === 0 || term.length > 2) {
@@ -353,8 +353,8 @@ const getLabelsAndRomesForDiplomas = async (searchTerm: string): Promise<IMetier
 }
 
 const removeDuplicateDiplomas = (diplomas) => {
-  const labelsAndRomesForDiplomas = []
-  const diplomasWithoutLevel = []
+  const labelsAndRomesForDiplomas: any[] = []
+  const diplomasWithoutLevel: any[] = []
 
   diplomas.forEach((diploma) => {
     const diplomaWithoutLevel = diploma.label.indexOf("(") > 0 ? diploma.label.substring(0, diploma.label.indexOf("(")).trim() : diploma.label
@@ -434,7 +434,7 @@ const getMetiersFromRomes = async (romes: string[]): Promise<IMetiers> => {
       },
     })
 
-    const metiers = []
+    const metiers: any[] = []
 
     response.body.hits.hits.forEach((metier) => {
       metiers.push(metier._source.sous_domaine)

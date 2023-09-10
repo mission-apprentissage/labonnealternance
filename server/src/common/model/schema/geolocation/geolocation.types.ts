@@ -5,4 +5,4 @@ interface IGeolocation {
   geo_coordinates: string
 }
 
-export { IGeolocation }
+export type { IGeolocation }

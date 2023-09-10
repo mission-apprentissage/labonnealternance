@@ -4,7 +4,6 @@ import Joi from "joi"
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 import { UserRecruteur } from "../../../common/model/index"
-import { IUserRecruteur } from "../../../common/model/schema/userRecruteur/userRecruteur.types"
 import { createMagicLinkToken, createUserRecruteurToken, createUserToken } from "../../../common/utils/jwtUtils"
 import config from "../../../config"
 import { CFA, ENTREPRISE, ETAT_UTILISATEUR } from "../../../services/constant.service"
@@ -35,7 +34,7 @@ export default () => {
           email: Joi.string().email().required(),
         }).validateAsync(req.body, { abortEarly: false })
 
-        const user: IUserRecruteur = await getUser({ email })
+        const user = await getUser({ email })
 
         if (!user) {
           return res.status(400).json({ error: true, reason: "UNKNOWN" })
@@ -56,7 +55,7 @@ export default () => {
       } catch (error) {
         return res.status(400).json({
           errorMessage: "l'adresse mail n'est pas valide.",
-          details: error.details,
+          details: error,
         })
       }
     })
@@ -68,13 +67,20 @@ export default () => {
       const { email } = await Joi.object({
         email: Joi.string().email().required(),
       }).validateAsync(req.body, { abortEarly: false })
+
       const formatedEmail = email.toLowerCase()
       const user = await UserRecruteur.findOne({ email: formatedEmail })
-      const { email: userEmail, _id, first_name, last_name, is_email_checked } = user || {}
+
       if (!user) {
         return res.status(400).json({ error: true, reason: "UNKNOWN" })
       }
+
+      const { email: userEmail, _id, first_name, last_name, is_email_checked } = user || {}
+
       const status = getUserStatus(user.status)
+
+      if (!status) return
+
       if ([ENTREPRISE, CFA].includes(user.type)) {
         if ([ETAT_UTILISATEUR.ATTENTE, ETAT_UTILISATEUR.ERROR].includes(status)) {
           return res.status(400).json({ error: true, reason: "VALIDATION" })
@@ -86,6 +92,7 @@ export default () => {
           })
         }
       }
+
       if (!is_email_checked) {
         await sendUserConfirmationEmail({
           email: userEmail,

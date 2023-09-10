@@ -32,12 +32,12 @@ export const getUsers = async (query: Filter<IUserRecruteur>, options, { page, l
   const response = await UserRecruteur.paginate({ query, ...options, page, limit, lean: true, select: "-password" })
   return {
     pagination: {
-      page: response.page,
+      page: response?.page,
       result_per_page: limit,
-      number_of_page: response.totalPages,
-      total: response.totalDocs,
+      number_of_page: response?.totalPages,
+      total: response?.totalDocs,
     },
-    data: response.docs,
+    data: response?.docs,
   }
 }
 

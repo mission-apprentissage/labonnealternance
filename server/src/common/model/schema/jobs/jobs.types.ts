@@ -38,4 +38,4 @@ interface IJobs {
   stats_search_view?: number
 }
 
-export { IDelegation, IJobs }
+export type { IDelegation, IJobs }

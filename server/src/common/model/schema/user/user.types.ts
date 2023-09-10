@@ -1,4 +1,4 @@
-interface IUser {
+export interface IUser {
   username: string
   password: string
   firstname: string
@@ -10,5 +10,3 @@ interface IUser {
   last_action_date: Date
   is_anonymized: boolean
 }
-
-export { IUser }

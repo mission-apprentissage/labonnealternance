@@ -9,7 +9,6 @@ import { IBonneBoite } from "../common/model/schema/bonneboite/bonneboite.types"
 import { IEtablissement } from "../common/model/schema/etablissements/etablissement.types"
 import { IRecruiter } from "../common/model/schema/recruiter/recruiter.types"
 import { IReferentielOpco } from "../common/model/schema/referentielOpco/referentielOpco.types"
-import { IUnsubscribedOF } from "../common/model/schema/unsubscribedOF/unsubscribeOF.types"
 import { IUserRecruteur } from "../common/model/schema/userRecruteur/userRecruteur.types"
 import { isEmailFromPrivateCompany, isEmailSameDomain } from "../common/utils/mailUtils"
 import { sentryCaptureException } from "../common/utils/sentryUtils"
@@ -137,7 +136,7 @@ export const find = async (conditions): Promise<IEtablissement[]> => Etablisseme
  * @param {Object} conditions
  * @returns {Promise<Etablissement>}
  */
-export const findOne = async (conditions): Promise<IEtablissement> => Etablissement.findOne(conditions)
+export const findOne = async (conditions): Promise<IEtablissement | null> => Etablissement.findOne(conditions)
 
 /**
  * @description Updates an etablissement from its conditions.
@@ -145,7 +144,7 @@ export const findOne = async (conditions): Promise<IEtablissement> => Etablissem
  * @param {Object} values
  * @returns {Promise<Etablissement>}
  */
-export const findOneAndUpdate = async (conditions, values): Promise<IEtablissement> => Etablissement.findOneAndUpdate(conditions, values, { new: true })
+export const findOneAndUpdate = async (conditions, values): Promise<IEtablissement | null> => Etablissement.findOneAndUpdate(conditions, values, { new: true })
 
 /**
  * @description Upserts.
@@ -169,14 +168,14 @@ export const updateOne = async (conditions, values): Promise<any> => Etablisseme
  * @param {Object} values
  * @returns {Promise<Etablissement>}
  */
-export const findByIdAndUpdate = async (id, values): Promise<IEtablissement> => Etablissement.findByIdAndUpdate({ _id: id }, values, { new: true })
+export const findByIdAndUpdate = async (id, values): Promise<IEtablissement | null> => Etablissement.findByIdAndUpdate({ _id: id }, values, { new: true })
 
 /**
  * @description Deletes an etablissement from its id.
  * @param {ObjectId} id
  * @returns {Promise<void>}
  */
-export const findByIdAndDelete = async (id): Promise<IEtablissement> => Etablissement.findByIdAndDelete(id)
+export const findByIdAndDelete = async (id): Promise<IEtablissement | null> => Etablissement.findByIdAndDelete(id)
 
 /**
  * @description Get etablissement from a given query
@@ -235,7 +234,7 @@ export const getValidationUrl = (_id: IRecruiter["_id"]): string => `${config.pu
  * @param {IUserRecruteur["_id"]} _id
  * @returns {Promise<void>}
  */
-export const validateEtablissementEmail = async (_id: IUserRecruteur["_id"]): Promise<IUserRecruteur> => UserRecruteur.findByIdAndUpdate(_id, { is_email_checked: true })
+export const validateEtablissementEmail = async (_id: IUserRecruteur["_id"]): Promise<IUserRecruteur | null> => UserRecruteur.findByIdAndUpdate(_id, { is_email_checked: true })
 
 /**
  * @description Get the establishment information from the ENTREPRISE API for a given SIRET
@@ -317,8 +316,7 @@ export const getGeoCoordinates = async (adresse: string): Promise<string> => {
  * @param {IReferentielOpco["siret_code"]} siretCode
  * @returns {Promise<IReferentielOpco>}
  */
-export const getEstablishmentFromOpcoReferentiel = async (siretCode: IReferentielOpco["siret_code"]): Promise<IReferentielOpco> =>
-  await ReferentielOpco.findOne({ siret_code: siretCode })
+export const getEstablishmentFromOpcoReferentiel = async (siretCode: IReferentielOpco["siret_code"]) => await ReferentielOpco.findOne({ siret_code: siretCode })
 /**
  * @description Get all matching records from the ReferentielOpco collection
  * @param {Filter<IReferentielOpco>} query
@@ -381,7 +379,8 @@ export const formatReferentielData = (d: IReferentiel): IFormatAPIReferentiel =>
  * @param etablissementSiret siret de l'organisme de formation ne souhaitant plus recevoir les demandes
  */
 export const etablissementUnsubscribeDemandeDelegation = async (etablissementSiret: string) => {
-  const unsubscribeOF: IUnsubscribedOF = await UnsubscribeOF.findOne({ establishment_siret: etablissementSiret })
+  const unsubscribeOF = await UnsubscribeOF.findOne({ establishment_siret: etablissementSiret })
+
   if (!unsubscribeOF) {
     const { etablissements } = await getCatalogueEtablissements(
       {
@@ -470,7 +469,7 @@ export const getOpcoData = async (siret: string) => {
 
 export type EntrepriseData = IFormatAPIEntreprise & { opco: string; idcc: string; geo_coordinates: string }
 
-export const validateCreationEntrepriseFromCfa = async ({ siret, cfa_delegated_siret }: { siret: string; cfa_delegated_siret: string }) => {
+export const validateCreationEntrepriseFromCfa = async ({ siret, cfa_delegated_siret }: { siret: string; cfa_delegated_siret?: string }) => {
   if (!cfa_delegated_siret) return
   const recruteurOpt = await getFormulaire({
     establishment_siret: siret,
@@ -534,7 +533,7 @@ export const entrepriseOnboardingWorkflow = {
       siret: string
       last_name: string
       first_name: string
-      phone: string
+      phone?: string
       email: string
       cfa_delegated_siret?: string
       origin: string

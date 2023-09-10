@@ -1,5 +1,4 @@
 import Sentry from "@sentry/node"
-import * as express from "express"
 import { Body, Controller, Example, OperationId, Post, Request, Response, Route, SuccessResponse, Tags } from "tsoa"
 
 import Etablissement from "../../../common/components/etablissement"
@@ -20,7 +19,6 @@ export class AppointmentsController extends Controller {
    */
   @SuccessResponse(200, "OK")
   @Request()
-  req: express.Request
   @Response<"Formation introuvable.">(404)
   @Post("/context/create")
   @OperationId("appointmentCreateContext")
@@ -100,11 +98,11 @@ export class AppointmentsController extends Controller {
     const etablissement = await Etablissement().findOne({ formateur_siret: eligibleTrainingsForAppointment.etablissement_formateur_siret })
 
     return {
-      etablissement_formateur_entreprise_raison_sociale: etablissement.raison_sociale,
+      etablissement_formateur_entreprise_raison_sociale: etablissement?.raison_sociale,
       intitule_long: eligibleTrainingsForAppointment.training_intitule_long,
       lieu_formation_adresse: eligibleTrainingsForAppointment.lieu_formation_street,
       code_postal: eligibleTrainingsForAppointment.lieu_formation_zip_code,
-      etablissement_formateur_siret: etablissement.formateur_siret,
+      etablissement_formateur_siret: etablissement?.formateur_siret,
       cfd: eligibleTrainingsForAppointment.training_code_formation_diplome,
       localite: eligibleTrainingsForAppointment.lieu_formation_city,
       id_rco_formation: eligibleTrainingsForAppointment.rco_formation_id,

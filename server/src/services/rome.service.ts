@@ -15,7 +15,7 @@ let token: IPEAPIToken = {
   expires_in: 0,
 }
 
-const isTokenValid = (token: IPEAPIToken): boolean => token?.expire?.isAfter(dayjs())
+const isTokenValid = (token: IPEAPIToken): any => token?.expire?.isAfter(dayjs())
 
 const getToken = async (token): Promise<IPEAPIToken> => {
   const isValid = isTokenValid(token)
@@ -45,13 +45,12 @@ const getToken = async (token): Promise<IPEAPIToken> => {
       ...response.data,
       expire: dayjs().add(response.data.expires_in - 10, "s"),
     }
-  } catch (error) {
-    console.log(error)
+  } catch (error: any) {
     return error.response.data
   }
 }
 
-export const getRomeDetailsFromAPI = async (romeCode: string): Promise<IRomeDetailsFromAPI> => {
+export const getRomeDetailsFromAPI = async (romeCode: string): Promise<IRomeDetailsFromAPI | null | undefined> => {
   token = await getToken(token)
 
   try {
@@ -62,7 +61,7 @@ export const getRomeDetailsFromAPI = async (romeCode: string): Promise<IRomeDeta
     })
 
     return data
-  } catch (error) {
+  } catch (error: any) {
     sentryCaptureException(error)
     if (error.response.status === 404) {
       return null
@@ -70,7 +69,7 @@ export const getRomeDetailsFromAPI = async (romeCode: string): Promise<IRomeDeta
   }
 }
 
-export const getAppellationDetailsFromAPI = async (appellationCode: string): Promise<IAppelattionDetailsFromAPI> => {
+export const getAppellationDetailsFromAPI = async (appellationCode: string): Promise<IAppelattionDetailsFromAPI | null | undefined> => {
   token = await getToken(token)
 
   try {
@@ -81,7 +80,7 @@ export const getAppellationDetailsFromAPI = async (appellationCode: string): Pro
     })
 
     return data
-  } catch (error) {
+  } catch (error: any) {
     sentryCaptureException(error)
     if (error.response.status === 404) {
       return null

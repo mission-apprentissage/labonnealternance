@@ -3,11 +3,11 @@ type TCreateContextResponseError = {
 }
 
 type TCreateContextResponse = {
-  etablissement_formateur_entreprise_raison_sociale: string
+  etablissement_formateur_entreprise_raison_sociale?: string
   intitule_long: string
   lieu_formation_adresse: string
   code_postal: string
-  etablissement_formateur_siret: string
+  etablissement_formateur_siret?: string
   cfd: string
   localite: string
   id_rco_formation: string
@@ -24,4 +24,4 @@ type TCreateContextBody = {
   referrer: string
 }
 
-export type { TCreateContextResponseError, TCreateContextResponse, TCreateContextBody }
+export type { TCreateContextBody, TCreateContextResponse, TCreateContextResponseError }

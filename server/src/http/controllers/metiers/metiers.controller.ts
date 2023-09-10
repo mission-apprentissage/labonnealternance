@@ -1,9 +1,9 @@
-import { Controller, Get, Path, OperationId, Response, Route, SuccessResponse, Tags, Query } from "tsoa"
+import { Controller, Get, OperationId, Path, Query, Response, Route, SuccessResponse, Tags } from "tsoa"
 
 import { getCoupleAppellationRomeIntitule, getMetiers, getMetiersPourCfd, getMetiersPourEtablissement, getTousLesMetiers } from "../../../services/metiers.service"
 import { TResponseError } from "../shared.types"
 
-import { TGetAppellationsRomesResponseSuccess, TGetMetiersEnrichisResponseSuccess, TGetMetiersResponseSuccess } from "./type"
+import type { TGetAppellationsRomesResponseSuccess, TGetMetiersEnrichisResponseSuccess, TGetMetiersResponseSuccess } from "./type"
 
 @Tags("Metiers")
 @Route("/api/v1/metiers")

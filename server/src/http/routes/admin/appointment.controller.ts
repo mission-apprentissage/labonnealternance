@@ -23,13 +23,14 @@ export default () => {
       const limit = qs && qs.limit ? parseInt(qs.limit, 50) : 50
 
       const allData = await Appointment.paginate({ query, page, limit })
+
       return res.send({
-        appointments: allData.docs,
+        appointments: allData?.docs,
         pagination: {
-          page: allData.page,
+          page: allData?.page,
           resultats_par_page: limit,
-          nombre_de_page: allData.totalPages,
-          total: allData.totalDocs,
+          nombre_de_page: allData?.totalPages,
+          total: allData?.totalDocs,
         },
       })
     })
@@ -48,11 +49,11 @@ export default () => {
 
       const allAppointments = await Appointment.paginate({ query, page, limit, sort: { created_at: -1 } })
 
-      const cleMinistereEducatifs = [...new Set(allAppointments.docs.map((document) => document.cle_ministere_educatif))]
+      const cleMinistereEducatifs = [...new Set(allAppointments?.docs.map((document) => document.cle_ministere_educatif))]
 
       const formations = await getFormationsByCleMinistereEducatif({ cleMinistereEducatifs })
 
-      const appointmentsPromises = allAppointments.docs.map(async (document) => {
+      const appointmentsPromises = allAppointments?.docs.map(async (document) => {
         const user = await User.findById(document.applicant_id)
         const formation = formations.find((item) => item.cle_ministere_educatif === document.cle_ministere_educatif)
 
@@ -61,24 +62,24 @@ export default () => {
           appointment_origin: document.appointment_origin,
           formation,
           candidat: {
-            _id: user._id,
-            firstname: user.firstname,
-            lastname: user.lastname,
-            email: user.email,
-            phone: user.phone,
+            _id: user?._id,
+            firstname: user?.firstname,
+            lastname: user?.lastname,
+            email: user?.email,
+            phone: user?.phone,
           },
         }
       })
 
-      const appointments = await Promise.all(appointmentsPromises)
+      const appointments = await Promise.all(appointmentsPromises || [])
 
       return res.send({
         appointments,
         pagination: {
-          page: allAppointments.page,
+          page: allAppointments?.page,
           resultats_par_page: limit,
-          nombre_de_page: allAppointments.totalPages,
-          total: allAppointments.totalDocs,
+          nombre_de_page: allAppointments?.totalPages,
+          total: allAppointments?.totalDocs,
         },
       })
     })

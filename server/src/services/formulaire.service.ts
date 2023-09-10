@@ -144,8 +144,7 @@ export const getJobsFromElasticSearch = async ({
 
   const filteredJobs = await Promise.all(
     result.body.hits.hits.map(async (x) => {
-      const jobs = []
-      let cfa = <IUserRecruteur>{}
+      const jobs: any[] = []
 
       if (x._source.jobs.length === 0) {
         return
@@ -153,14 +152,14 @@ export const getJobsFromElasticSearch = async ({
 
       if (x._source.is_delegated) {
         const [establishment_location] = x._source.address.match(/([0-9]{5})[ ,] ?([a-zA-Z-]*)/) ?? [""]
-        cfa = await getEtablissement({ establishment_siret: x._source.cfa_delegated_siret })
+        const cfa = await getEtablissement({ establishment_siret: x._source.cfa_delegated_siret })
 
-        x._source.phone = cfa.phone
-        x._source.email = cfa.email
-        x._source.last_name = cfa.last_name
-        x._source.first_name = cfa.first_name
-        x._source.establishment_raison_sociale = cfa.establishment_raison_sociale
-        x._source.address = cfa.address
+        x._source.phone = cfa?.phone
+        x._source.email = cfa?.email
+        x._source.last_name = cfa?.last_name
+        x._source.first_name = cfa?.first_name
+        x._source.establishment_raison_sociale = cfa?.establishment_raison_sociale
+        x._source.address = cfa?.address
         x._source.establishment_location = establishment_location
       }
 
@@ -190,7 +189,7 @@ export const getOffreAvecInfoMandataire = async (id: IJobs["_id"]): Promise<IFor
   const result = await getOffre(id)
 
   if (!result) {
-    return null
+    throw new Error("getOffreAvecInfoMandataire failed")
   }
 
   result.jobs = result.jobs.filter((x) => x._id == id)
@@ -226,12 +225,12 @@ export const getFormulaires = async (query: Filter<IRecruiter>, select: object, 
 
   return {
     pagination: {
-      page: response.page,
+      page: response?.page,
       result_per_page: limit,
-      number_of_page: response.totalPages,
-      total: response.totalDocs,
+      number_of_page: response?.totalPages,
+      total: response?.totalDocs,
     },
-    data: response.docs,
+    data: response?.docs,
   }
 }
 
@@ -245,6 +244,11 @@ export const getFormulaires = async (query: Filter<IRecruiter>, select: object, 
 export const createJob = async ({ job, id }: { job: Partial<IOffreExtended>; id: IUserRecruteur["establishment_id"] }): Promise<IRecruiter> => {
   // get user data
   const user = await getUser({ establishment_id: id })
+
+  if (!user) {
+    throw new Error("")
+  }
+
   const userStatus: ETAT_UTILISATEUR | null = user ? getUserStatus(user.status) : null
   const isUserAwaiting = userStatus !== ETAT_UTILISATEUR.VALIDE
   // get user activation state if not managed by a CFA
@@ -610,15 +614,15 @@ export async function sendMailNouvelleOffre(recruiter: IRecruiter, job: Partial<
   const establishmentTitle = establishment_raison_sociale ?? establishment_siret
   // Send mail with action links to manage offers
   await mailer.sendEmail({
-    to: is_delegated ? contactCFA.email : email,
+    to: is_delegated ? contactCFA?.email : email,
     subject: is_delegated ? `Votre offre d'alternance pour ${establishmentTitle} est publiée` : `Votre offre d'alternance est publiée`,
     template: getStaticFilePath("./templates/mail-nouvelle-offre.mjml.ejs"),
     data: {
       images: {
         logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
       },
-      nom: is_delegated ? contactCFA.last_name : last_name,
-      prenom: is_delegated ? contactCFA.first_name : first_name,
+      nom: is_delegated ? contactCFA?.last_name : last_name,
+      prenom: is_delegated ? contactCFA?.first_name : first_name,
       raison_sociale: establishmentTitle,
       mandataire: recruiter.is_delegated,
       offre: pick(job, ["rome_appellation_label", "job_start_date", "type", "job_level_label"]),

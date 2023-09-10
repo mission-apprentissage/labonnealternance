@@ -309,7 +309,10 @@ export default () => {
         })
       }
 
-      const user: IUserRecruteur = await getUser({ _id: req.body.id })
+      const user = await getUser({ _id: req.body.id })
+
+      if (!user) return
+
       const isUserAwaiting = getUserStatus(user.status) === ETAT_UTILISATEUR.ATTENTE
 
       if (isUserAwaiting) {

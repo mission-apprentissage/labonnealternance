@@ -17,4 +17,4 @@ interface IDomainesMetiers {
   last_update_at: Date
 }
 
-export { IDomainesMetiers }
+export type { IDomainesMetiers }

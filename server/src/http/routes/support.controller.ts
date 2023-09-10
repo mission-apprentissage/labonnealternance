@@ -24,9 +24,9 @@ export default () => {
         const element = keys[index]
         const blockValue = recordMap.block[element].value
         if (blockValue.type === "page") {
-          const title = blockValue.properties.title[0][0]
+          const title = blockValue?.properties?.title[0][0]
           if (title !== "Documentation") {
-            pageTitle = title
+            pageTitle = title || ""
           }
         }
       }

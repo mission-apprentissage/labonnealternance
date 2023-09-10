@@ -61,6 +61,11 @@ export default ({ etablissements }) => {
       // Updates firstname and last name if the user already exists
       if (user) {
         user = await users.update(user._id, { firstname, lastname, phone, type, last_action_date: dayjs().format() })
+
+        if (!user) {
+          return
+        }
+
         const appointment = await appointmentService.findOne({
           applicant_id: user._id,
           cle_ministere_educatif: eligibleTrainingsForAppointment.cle_ministere_educatif,
@@ -108,7 +113,7 @@ export default ({ etablissements }) => {
         user: {
           firstname: user.firstname,
           lastname: user.lastname,
-          phone: user.phone.match(/.{1,2}/g).join("."),
+          phone: user.phone,
           email: user.email,
           applicant_message_to_cfa: createdAppointement.applicant_message_to_cfa,
         },
@@ -203,6 +208,8 @@ export default ({ etablissements }) => {
 
       const appointment = await appointmentService.findById(appointmentId).lean()
 
+      if (!appointment) return res.sendStatus(400)
+
       const [eligibleTrainingsForAppointment, user] = await Promise.all([
         eligibleTrainingsForAppointmentService.getParameterByCleMinistereEducatif({
           cleMinistereEducatif: appointment.cle_ministere_educatif,
@@ -229,12 +236,16 @@ export default ({ etablissements }) => {
 
       const appointment = await appointmentService.findById(appointment_id).lean()
 
+      if (!appointment) return res.sendStatus(400)
+
       const [eligibleTrainingsForAppointment, user] = await Promise.all([
         eligibleTrainingsForAppointmentService.getParameterByCleMinistereEducatif({
           cleMinistereEducatif: appointment.cle_ministere_educatif,
         }),
         users.getUserById(appointment.applicant_id),
       ])
+
+      if (!user || !eligibleTrainingsForAppointment) return res.sendStatus(400)
 
       if (cfa_intention_to_applicant === "personalised_answer") {
         await mailer.sendEmail({

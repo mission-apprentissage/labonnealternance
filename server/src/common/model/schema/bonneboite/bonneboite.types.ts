@@ -24,4 +24,4 @@ interface IBonneBoite {
   last_update_at: Date
 }
 
-export { IBonneBoite }
+export type { IBonneBoite }

@@ -159,4 +159,4 @@ interface IFormationCatalogue extends IEtablissementFormateur, IEtablissementGes
   modalites_entrees_sorties: boolean[]
 }
 
-export { IEtablissementFormateur, IEtablissementGestionnaire, IEtablissementReference, IFormationCatalogue }
+export type { IEtablissementFormateur, IEtablissementGestionnaire, IEtablissementReference, IFormationCatalogue }

@@ -13,7 +13,7 @@ export const annuleFormulaire = async () => {
   }).lean()
 
   // reduce formulaire with eligible offers
-  const offersToCancel = formulaires.reduce((acc, formulaire) => {
+  const offersToCancel = formulaires.reduce((acc: any[], formulaire) => {
     formulaire.jobs
       // The query returns all offers included in the form, regardless of the status filter in the query.
       // The payload is smaller than not filtering it.

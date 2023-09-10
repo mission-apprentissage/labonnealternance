@@ -37,4 +37,4 @@ interface IAppointments {
   cfa_recipient_email: string
 }
 
-export { IAppointments, IMailing, EReasons }
+export type { EReasons, IAppointments, IMailing }

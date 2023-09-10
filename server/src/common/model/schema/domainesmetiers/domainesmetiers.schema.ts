@@ -1,5 +1,5 @@
 import { getElasticInstance, mongoosastic } from "../../../esClient/index"
-import { model, Schema } from "../../../mongodb"
+import { Schema, model } from "../../../mongodb"
 
 import { IDomainesMetiers } from "./domainesmetiers.types"
 
@@ -88,4 +88,4 @@ export const domainesMetiersSchema = new Schema<IDomainesMetiers>({
 
 domainesMetiersSchema.plugin(mongoosastic, { esClient: getElasticInstance(), index: "domainesmetiers" })
 
-export default model("domainesmetiers", domainesMetiersSchema)
+export default model<IDomainesMetiers>("domainesmetiers", domainesMetiersSchema)

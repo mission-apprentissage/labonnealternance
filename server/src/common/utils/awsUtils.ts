@@ -38,5 +38,9 @@ export const getS3FileLastUpdate = async ({ key }: { key: string }): Promise<Dat
     })
     .promise()
 
-  return new Date(headResponse.LastModified)
+  if (headResponse.LastModified) {
+    return new Date(headResponse.LastModified)
+  } else {
+    throw new Error(`getS3FileLastUpdate failed to fetch`)
+  }
 }

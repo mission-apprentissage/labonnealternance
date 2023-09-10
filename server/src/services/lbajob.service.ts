@@ -7,8 +7,8 @@ import { sentryCaptureException } from "../common/utils/sentryUtils"
 import { matchaMock, matchaMockMandataire, matchasMock } from "../mocks/matchas-mock"
 
 import { getApplicationByJobCount, IApplicationCount } from "./application.service"
-import { NIVEAUX_POUR_LBA, ACTIVE } from "./constant.service"
-import { getOffreAvecInfoMandataire, getJobsFromElasticSearch, incrementLbaJobViewCount } from "./formulaire.service"
+import { ACTIVE, NIVEAUX_POUR_LBA } from "./constant.service"
+import { getJobsFromElasticSearch, getOffreAvecInfoMandataire, incrementLbaJobViewCount } from "./formulaire.service"
 import { ILbaItem, LbaItem } from "./lbaitem.shared.service.types"
 import { ILbaJobEsResult } from "./lbajob.service.types"
 import { filterJobsByOpco } from "./opco.service"
@@ -122,9 +122,9 @@ function transformLbaJobs({ jobs, caller, applicationCountByJob }: { jobs: ILbaJ
  * @param {string} caller optionnel. l'identifiant de l'utilisateur de l'api
  * @return {Promise<IApiError | { matchas: ILbaItem[] }>}
  */
-export const getLbaJobById = async ({ id, caller }: { id: string; caller: string }): Promise<IApiError | { matchas: ILbaItem[] }> => {
+export const getLbaJobById = async ({ id, caller }: { id: string; caller?: string }): Promise<IApiError | { matchas: ILbaItem[] }> => {
   try {
-    let rawJob = null
+    let rawJob
     if (id === "id-matcha-test") {
       rawJob = matchaMock._source
     } else if (id === "id-matcha-test2") {

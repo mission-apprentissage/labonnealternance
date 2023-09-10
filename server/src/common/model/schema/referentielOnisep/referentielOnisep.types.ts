@@ -4,4 +4,4 @@ interface IReferentielOnisep {
   created_at: Date
 }
 
-export { IReferentielOnisep }
+export type { IReferentielOnisep }

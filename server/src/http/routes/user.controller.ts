@@ -4,7 +4,7 @@ import { Recruiter, UserRecruteur } from "../../common/model/index"
 import { ENTREPRISE, ETAT_UTILISATEUR, JOB_STATUS, RECRUITER_STATUS } from "../../services/constant.service"
 import dayjs from "../../services/dayjs.service"
 import { deleteFormulaire, getFormulaire, reactivateRecruiter, sendDelegationMailToCFA, updateOffre } from "../../services/formulaire.service"
-import { createUser, removeUser, updateUser, updateUserValidationHistory, sendWelcomeEmailToUserRecruteur } from "../../services/userRecruteur.service"
+import { createUser, removeUser, sendWelcomeEmailToUserRecruteur, updateUser, updateUserValidationHistory } from "../../services/userRecruteur.service"
 import authMiddleware from "../middlewares/authMiddleware"
 import { tryCatch } from "../middlewares/tryCatchMiddleware"
 
@@ -19,7 +19,7 @@ export default () => {
 
       const [users, formulaires] = await Promise.all([UserRecruteur.find(userQuery).lean(), Recruiter.find(formulaireQuery).lean()])
 
-      const results = users.reduce((acc, user) => {
+      const results = users.reduce((acc: any[], user) => {
         acc.push({ ...user, offres: 0 })
 
         const form = formulaires.find((x) => x.establishment_id === user.establishment_id)
@@ -72,6 +72,8 @@ export default () => {
       const users = await UserRecruteur.findOne({ _id: req.params.userId }).lean()
       let formulaire
 
+      if (!users) return res.sendStatus(400)
+
       if (users.type === ENTREPRISE) {
         formulaire = await Recruiter.findOne({ establishment_id: users.establishment_id }).select({ jobs: 1, _id: 0 }).lean()
       }
@@ -110,6 +112,8 @@ export default () => {
     tryCatch(async (req, res) => {
       const history = req.body
       const user = await updateUserValidationHistory(req.params.userId, history)
+
+      if (!user) return res.sendStatus(400)
 
       // if user is disabled, return the user data directly
       if (history.status === ETAT_UTILISATEUR.DESACTIVE) {

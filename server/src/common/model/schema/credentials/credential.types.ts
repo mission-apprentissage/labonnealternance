@@ -11,4 +11,4 @@ interface ICredential {
   updatedAt: Date
 }
 
-export { ICredential }
+export type { ICredential }

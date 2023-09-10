@@ -3,7 +3,7 @@ import { Controller, Get, Hidden, OperationId, Response, Route, SuccessResponse,
 import { getMetiersDAvenir } from "../../../services/diagoriente.service"
 import { TResponseError } from "../shared.types"
 
-import { TGetMetiersDAvenirResponseSuccess } from "./metiersDAvenir.type"
+import type { TGetMetiersDAvenirResponseSuccess } from "./metiersDAvenir.type"
 
 @Tags("MetiersDAvenir")
 @Route("/api/metiersdavenir")

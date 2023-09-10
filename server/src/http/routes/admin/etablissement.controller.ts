@@ -22,6 +22,8 @@ export default ({ etablissements }) => {
 
       const allData = await Etablissement.paginate({ query, page, limit })
 
+      if (!allData) return res.sendStatus(400)
+
       return res.send({
         etablissements: allData.docs,
         pagination: {

@@ -11,4 +11,4 @@ interface IParcoursupEtablissementStat {
   average_time_to_check_applicant_details_in_days: number
 }
 
-export { IParcoursupEtablissementStat }
+export type { IParcoursupEtablissementStat }

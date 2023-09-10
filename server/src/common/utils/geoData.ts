@@ -35,7 +35,7 @@ class GeoData {
       return false
     }
 
-    let responseApiAdresse = null
+    let responseApiAdresse
 
     if (street_name) {
       responseApiAdresse = await apiGeoAdresse.search(

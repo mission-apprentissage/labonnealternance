@@ -31,7 +31,7 @@ const importer = async (filePath, remoteFileName, opco_label) => {
     parseCsv({ trim: true, delimiter: ";" }),
     filterData((e) => e["Email du contact"]),
     transformData((e) => {
-      const emails = []
+      const emails: any[] = []
 
       const Siret = e.Siret
       const email = e["Email du contact"]

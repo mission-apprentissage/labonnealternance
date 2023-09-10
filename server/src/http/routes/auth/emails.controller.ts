@@ -42,6 +42,8 @@ export default ({ etablissements }) => {
       if (appointment) {
         const previousEmail = appointment.to_cfa_mails.find((mail) => mail.message_id.includes(messageId))
 
+        if (!previousEmail) return
+
         await appointment.update({
           $push: {
             to_etablissement_emails: {
@@ -97,6 +99,8 @@ export default ({ etablissements }) => {
       if (appointmentCandidatFound) {
         const previousEmail = appointmentCandidatFound.to_applicant_mails.find((mail) => mail.message_id.includes(messageId))
 
+        if (!previousEmail) return
+
         await appointmentCandidatFound.update({
           $push: {
             to_applicant_mails: {
@@ -114,6 +118,8 @@ export default ({ etablissements }) => {
       // If mail sent from appointment (to the CFA)
       if (appointmentCfaFound && appointmentCfaFound?.to_cfa_mails) {
         const previousEmail = appointmentCfaFound.to_cfa_mails.find((mail) => mail.message_id.includes(messageId))
+
+        if (!previousEmail) return
 
         await appointmentCfaFound.update({
           $push: {

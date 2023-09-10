@@ -6,4 +6,4 @@ interface IOpco {
   url: string
 }
 
-export { IOpco }
+export type { IOpco }

@@ -24,4 +24,4 @@ interface IApplication {
   last_update_at: Date
 }
 
-export { IApplication }
+export type { IApplication }

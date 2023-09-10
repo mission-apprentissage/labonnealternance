@@ -63,7 +63,7 @@ const getLBALink = async (training: Partial<IWish>): Promise<string> => {
   const lbaLink = new URL(`${lbaDomain}/recherche-emploi`)
 
   // identification des romes
-  let romes = null
+  let romes: any[] = []
   formations = await FormationCatalogue.find(
     {
       $or: [
@@ -97,8 +97,8 @@ const getLBALink = async (training: Partial<IWish>): Promise<string> => {
     return lbaLink.toString()
   } else {
     // identification du lieu
-    let lat = null
-    let lon = null
+    let lat: number = 0
+    let lon: number = 0
     if (training.uai) {
       formations = await FormationCatalogue.findOne(
         {
@@ -139,7 +139,7 @@ const buildLbaLinkFromFormation = (formation: IFormationCatalogue): string => {
  * @returns {Promise<ILinks[]>}
  */
 export const getTrainingLinks = async (params: IWish[]): Promise<ILinks[]> => {
-  const results = []
+  const results: any[] = []
   await asyncForEach(params, async (training) => {
     const [lien_prdv, lien_lba] = await Promise.all([getPrdvLink(training), getLBALink(training)])
     results.push({ id: training.id, lien_prdv, lien_lba })

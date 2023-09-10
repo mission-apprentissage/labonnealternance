@@ -26,4 +26,4 @@ interface IEtablissement {
   affelnet_perimetre: boolean
 }
 
-export { IEtablissement }
+export type { IEtablissement }

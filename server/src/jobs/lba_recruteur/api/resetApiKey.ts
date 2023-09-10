@@ -4,5 +4,5 @@ import { createApiKey } from "../../../services/userRecruteur.service"
 
 export const resetApiKey = async (email) => {
   const updatedUser = await Credential.findOneAndUpdate({ email }, { api_key: createApiKey() }, { new: true })
-  logger.info(`API-KEY : ${updatedUser.api_key}`)
+  logger.info(`API-KEY : ${updatedUser?.api_key}`)
 }

@@ -28,7 +28,7 @@ export const manageApiError = ({ error, api_path, caller, errorTitle }: { error:
   }
   sentryCaptureException(error)
 
-  if (caller) {
+  if (caller && api_path) {
     trackApiCall({ caller, api_path, response: "Error" })
   }
 

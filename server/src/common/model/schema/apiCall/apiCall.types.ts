@@ -8,4 +8,4 @@ interface IApiCall {
   created_at: Date
 }
 
-export { IApiCall }
+export type { IApiCall }

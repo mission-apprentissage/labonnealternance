@@ -3,6 +3,44 @@ import axios from "axios"
 // Cf Documentation : https://geo.api.gouv.fr/adresse
 const apiEndpoint = "https://api-adresse.data.gouv.fr"
 
+interface IGeoAddress {
+  type: string
+  version: string
+  features: IFeature[]
+  attribution: string
+  licence: string
+  query: string
+  limit: number
+}
+
+interface IFeature {
+  type: string
+  geometry: IGeometry
+  properties: IProperties
+}
+
+interface IGeometry {
+  type: string
+  coordinates: number[]
+}
+
+interface IProperties {
+  label: string
+  score: number
+  housenumber: string
+  id: string
+  type: string
+  name: string
+  postcode: string
+  citycode: string
+  x: number
+  y: number
+  city: string
+  context: string
+  importance: number
+  street: string
+}
+
 class ApiGeoAdresse {
   constructor() {}
 
@@ -21,12 +59,12 @@ class ApiGeoAdresse {
     }
   }
 
-  async searchQuery(query) {
+  async searchQuery(query): Promise<IGeoAddress | null> {
     let response
     let trys = 0
 
     while (trys < 3) {
-      response = await axios.get(query)
+      response = await axios.get<IGeoAddress>(query)
 
       if (response?.data?.status === 429) {
         console.log("429 ", new Date(), query)
@@ -40,9 +78,9 @@ class ApiGeoAdresse {
     return response?.data
   }
 
-  async searchPostcodeOnly(postcode = null) {
+  async searchPostcodeOnly(postcode: string) {
     try {
-      const response = await axios.get(`${apiEndpoint}/search/?q=${postcode}&postcode=${postcode}`)
+      const response = await axios.get<IGeoAddress>(`${apiEndpoint}/search/?q=${postcode}&postcode=${postcode}`)
       return response.data
     } catch (error) {
       console.log(`geo searchPostcodeOnly error : ${postcode} ${error}`)

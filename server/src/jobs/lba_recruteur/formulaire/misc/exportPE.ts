@@ -1,4 +1,4 @@
-import { createWriteStream, createReadStream } from "fs"
+import { createReadStream, createWriteStream } from "fs"
 import path from "path"
 import { Readable } from "stream"
 
@@ -11,7 +11,6 @@ import { db } from "@/common/mongodb"
 
 import { logger } from "../../../../common/logger"
 import { UserRecruteur } from "../../../../common/model/index"
-import { IUserRecruteur } from "../../../../common/model/schema/userRecruteur/userRecruteur.types"
 import { getDepartmentByZipCode } from "../../../../common/territoires"
 import { asyncForEach } from "../../../../common/utils/asyncUtils"
 import config from "../../../../config"
@@ -209,14 +208,14 @@ const sendCsvToPE = async (csvPath: string): Promise<void> => {
  */
 export const exportPE = async (): Promise<void> => {
   const csvPath = new URL("./exportPE.csv", import.meta.url)
-  const buffer = []
+  const buffer: any[] = []
 
   // Retrieve only active offers
   const offres: any[] = await db.collection("jobs").find({ job_status: "Active", recruiterStatus: "Actif" }).toArray()
 
   logger.info("get info from user...")
   await asyncForEach(offres, async (offre) => {
-    const user: IUserRecruteur = offre.is_delegated ? await UserRecruteur.findOne({ establishment_siret: offre.cfa_delegated_siret }) : null
+    const user = offre.is_delegated ? await UserRecruteur.findOne({ establishment_siret: offre.cfa_delegated_siret }) : null
 
     if (typeof offre.rome_detail !== "string" && offre.rome_detail) {
       offre.job_type.map(async (type) => {

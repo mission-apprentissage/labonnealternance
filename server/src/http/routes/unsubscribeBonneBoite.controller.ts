@@ -3,7 +3,6 @@ import rateLimit from "express-rate-limit"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
-import __dirname from "../../common/dirname"
 import { BonnesBoites, UnsubscribedBonneBoite } from "../../common/model/index"
 import config from "../../config"
 import { UNSUBSCRIBE_EMAIL_ERRORS } from "../../services/constant.service"
@@ -43,8 +42,7 @@ export default function () {
 
         unsubscribedBonneBoite.save()
 
-        const bonneBoiteToUnsubscribe = await BonnesBoites.findOne({ siret: bonnesBoitesToUnsubscribe[0].siret })
-        bonneBoiteToUnsubscribe.remove()
+        await BonnesBoites.findOneAndDelete({ siret: bonnesBoitesToUnsubscribe[0].siret })
 
         await mailer.sendEmail({
           to: email,
