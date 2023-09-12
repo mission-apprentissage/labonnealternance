@@ -314,7 +314,7 @@ const buildRecruiterEmailUrls = ({
   publicUrl: string
   application: IApplication & Document<any, any, IApplication>
   encryptedId: any
-}): any => {
+}) => {
   const utmRecruiterData = "&utm_source=jecandidate&utm_medium=email&utm_campaign=jecandidaterecruteur"
   const candidateData = `&fn=${application.toObject().applicant_first_name}&ln=${application.toObject().applicant_last_name}`
   const encryptedData = `&id=${encryptedId.id}&iv=${encryptedId.iv}`
@@ -340,7 +340,7 @@ const buildRecruiterEmailUrls = ({
  * @param {string} company_email
  * @return {IApplication}
  */
-const initApplication = (params: any, company_email: string): IApplication & Document<any, any, IApplication> => {
+const initApplication = (params: any, company_email: string) => {
   const res = new Application({
     ...params,
     applicant_attachment_name: params.applicant_file_name,
@@ -358,7 +358,7 @@ const initApplication = (params: any, company_email: string): IApplication & Doc
  * @param {string} type
  * @return {string}
  */
-export const getEmailTemplate = (type = "mail-candidat"): string => {
+export const getEmailTemplate = (type = "mail-candidat") => {
   return path.join(currentDirname, `../assets/templates/${type}.mjml.ejs`)
 }
 
@@ -408,7 +408,7 @@ interface IApplicationParameters {
  * @param {Partial<IApplicationParameters>} validable
  * @return {Promise<string>}
  */
-export const validateSendApplication = async (validable: Partial<IApplicationParameters>): Promise<string> => {
+export const validateSendApplication = async (validable: Partial<IApplicationParameters>) => {
   const schema = Joi.object({
     applicant_file_name: Joi.string()
       .required()
