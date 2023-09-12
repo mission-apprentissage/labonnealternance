@@ -1,3 +1,10 @@
+# [1.87.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.86.1...v1.87.0) (2023-09-12)
+
+
+### Features
+
+* LBAC-1214 clarification affichage contexte de recherche ([#569](https://github.com/mission-apprentissage/labonnealternance/issues/569)) ([69d5286](https://github.com/mission-apprentissage/labonnealternance/commit/69d528691d0cf4e2ee4de312bb7deab0128c1470))
+
 ## [1.86.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.86.0...v1.86.1) (2023-09-08)
 
 ### Bug Fixes
