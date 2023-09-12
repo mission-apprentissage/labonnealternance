@@ -12,7 +12,6 @@ describe("ResultList", () => {
     // Given /When
     render(
       <ResultLists
-        setActiveFilter={() => {}}
         selectedItem={null}
         handleSelectItem={() => {}}
         showSearchForm={() => {}}
@@ -29,14 +28,7 @@ describe("ResultList", () => {
         stubbedExtendedSearch={false}
         stubbedHasSearch={true}
         stubbedIsFormVisible={true}
-        activeFilter={"all"}
         searchRadius={10}
-        trainings={realisticFormations}
-        jobs={{
-          peJobs: [],
-          matchas: [],
-          lbbCompanies: realisticLbbCompanies,
-        }}
       />
     )
     // Then

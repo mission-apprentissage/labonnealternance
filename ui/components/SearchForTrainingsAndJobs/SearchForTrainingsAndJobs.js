@@ -43,12 +43,12 @@ const SearchForTrainingsAndJobs = () => {
   const { displayMap, opcoFilter, opcoUrlFilter, widgetParameters, useMock, shouldExecuteSearch, setDisplayMap, setShouldExecuteSearch, showCombinedJob } =
     useContext(ParameterContext)
 
-  const { formValues, setFormValues, visiblePane, setVisiblePane, isFormVisible, setIsFormVisible, setShouldMapBeVisible } = useContext(DisplayContext)
+  const { activeFilters, setActiveFilters, formValues, setFormValues, visiblePane, setVisiblePane, isFormVisible, setIsFormVisible, setShouldMapBeVisible } =
+    useContext(DisplayContext)
 
   const [searchRadius, setSearchRadius] = useState(30)
   const [isTrainingSearchLoading, setIsTrainingSearchLoading] = useState(hasSearch ? false : true)
   const [shouldShowWelcomeMessage, setShouldShowWelcomeMessage] = useState(hasSearch ? false : true)
-  const [activeFilter, setActiveFilter] = useState("all")
 
   const [isJobSearchLoading, setIsJobSearchLoading] = useState(hasSearch ? false : true)
   const [jobSearchError, setJobSearchError] = useState("")
@@ -76,8 +76,8 @@ const SearchForTrainingsAndJobs = () => {
         showSearchForm,
         setTrainings,
         setJobs,
-        setActiveFilter,
-        activeFilter,
+        setActiveFilters,
+        activeFilters,
       })
     }
 
@@ -387,7 +387,13 @@ const SearchForTrainingsAndJobs = () => {
   return (
     <Flex direction="column" sx={{ height: "100vh" }}>
       <InitWidgetSearchParameters handleSearchSubmit={handleSearchSubmit} handleItemLoad={handleItemLoad} setIsLoading={setIsLoading} />
-      <WidgetHeader handleSearchSubmit={handleSearchSubmit} />
+      <WidgetHeader
+        handleSearchSubmit={handleSearchSubmit}
+        allJobSearchError={allJobSearchError}
+        trainingSearchError={trainingSearchError}
+        isTrainingSearchLoading={isTrainingSearchLoading}
+        isJobSearchLoading={isJobSearchLoading}
+      />
       <Flex direction="row" overflow="hidden" height="100%">
         <Box flex={{ base: 8, xl: 6 }} display={listDisplayParameters} height="100%" overflow="auto" direction="column">
           <ChoiceColumn
@@ -406,8 +412,6 @@ const SearchForTrainingsAndJobs = () => {
             jobSearchError={jobSearchError}
             allJobSearchError={allJobSearchError}
             isLoading={isLoading}
-            setActiveFilter={setActiveFilter}
-            activeFilter={activeFilter}
           />
         </Box>
         {displayMap ? (
