@@ -1,4 +1,4 @@
-import { RECRUITER_STATUS } from "../../../../services/constant.service.js"
+import { RECRUITER_STATUS } from "../../../services/constant.service.js"
 import { IGlobalAddress } from "../_shared/shared.types.js"
 import { IJobs } from "../jobs/jobs.types.js"
 
