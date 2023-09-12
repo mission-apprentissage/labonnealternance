@@ -5,7 +5,7 @@ import { ILbaItem } from "../../../services/lbaitem.shared.service.types.js"
 import { getFormationsParRegionQuery } from "../../../services/formation.service.js"
 import { trackApiCall } from "../../../common/utils/sendTrackingEvent.js"
 
-@Tags("FormationsParRegion")
+@Tags("Formations par région")
 @Route("/api/v1/formationsParRegion")
 export class FormationsParRegionController extends Controller {
   /**
