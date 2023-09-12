@@ -778,7 +778,7 @@ export const getFormationsParRegionQuery = async ({
 
     return { results: formations }
   } catch (err) {
-    console.error("Error ", err.message)
+    logger.error("Error ", err.message)
     sentryCaptureException(err)
 
     if (caller) {
