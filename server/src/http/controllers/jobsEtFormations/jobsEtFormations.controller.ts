@@ -5,7 +5,7 @@ import { trackApiCall } from "../../../common/utils/sendTrackingEvent.js"
 import { jobsEtFormationsQueryValidator } from "../../../services/queryValidator.service.js"
 import { getJobsFromApi } from "../../../services/jobOpportunity.service.js"
 
-@Tags("JobsEtFormations")
+@Tags("Jobs et formations")
 @Route("/api/v1/jobsEtFormations")
 export class JobsEtFormationsController extends Controller {
   /**
