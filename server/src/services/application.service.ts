@@ -446,13 +446,12 @@ export const validateSendApplication = async (validable: Partial<IApplicationPar
 /**
  * @description checks if job applied to is still active or exists
  * @param {Partial<IApplicationParameters>} validable
- * @return {Promise<string>}
+ * @return {Promise<"ok" | "offre expirée">}
  */
-export const validateJobStatus = async (validable: Partial<IApplicationParameters>): Promise<string> => {
-  const { job_id } = validable
+export const validateJobStatus = async (validable: Partial<IApplicationParameters>) => {
+  const { company_type, job_id } = validable
 
-  if (job_id) {
-    // check is only for lbajobs, not for lbacompanies
+  if (company_type === "matcha" && job_id) {
     const job = await getOffreAvecInfoMandataire(job_id)
 
     if (job.status !== RECRUITER_STATUS.ACTIF || job.jobs[0].job_status !== JOB_STATUS.ACTIVE) {
