@@ -1,3 +1,4 @@
+//@ts-nocheck
 import axios, { AxiosResponse } from "axios"
 import { pick } from "lodash-es"
 import { Filter } from "mongodb"

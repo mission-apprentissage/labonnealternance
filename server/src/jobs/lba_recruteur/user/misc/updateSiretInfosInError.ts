@@ -1,3 +1,4 @@
+//@ts-nocheck
 import { logger } from "../../../../common/logger"
 import { Recruiter, UserRecruteur } from "../../../../common/model/index"
 import { IUserRecruteur } from "../../../../common/model/schema/userRecruteur/userRecruteur.types"

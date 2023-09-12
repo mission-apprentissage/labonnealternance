@@ -63,7 +63,7 @@ const parseUpdateLine = (line) => {
     "new_office_name"
     */
 
-    const companies = []
+    const companies: any[] = []
 
     let sirets = terms[1].replace(/"/g, "").trim().split(/,|\s/g)
     sirets = sirets.map((siret) => siret.padStart(14, "0"))
@@ -105,13 +105,13 @@ const parseUpdateLine = (line) => {
       type = "lba"
     }
 
-    let romes = null
+    let romes: any[] = []
     if (romesToBoost || romesAlternance) {
       // merge et unique sur les romes
       romes = [...new Set((romesToBoost ? romesToBoost.split(",") : []).concat(romesAlternance ? romesAlternance.split(",") : []))]
     }
 
-    let removedRomes = null
+    let removedRomes: any[] = []
     if (romesToRemove || romesAlternanceToRemove) {
       // merge et unique sur les romes
       removedRomes = [...new Set((romesToRemove ? romesToRemove.split(",") : []).concat(romesAlternanceToRemove ? romesAlternanceToRemove.split(",") : []))]
@@ -297,4 +297,4 @@ const initSAVEUpdateMap = async () => {
   return updateMap
 }
 
-export { initSAVERemoveMap, initSAVEAddMap, initSAVEUpdateMap }
+export { initSAVEAddMap, initSAVERemoveMap, initSAVEUpdateMap }

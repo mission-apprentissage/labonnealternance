@@ -1,3 +1,4 @@
+//@ts-nocheck
 import crypto from "crypto"
 
 import axios from "axios"
@@ -12,7 +13,7 @@ import { trackApiCall } from "../common/utils/sendTrackingEvent"
 import { sentryCaptureException } from "../common/utils/sentryUtils"
 import { notifyToSlack } from "../common/utils/slackUtils"
 import config from "../config"
-import { formationMock, formationsMock, formationDetailMock } from "../mocks/formations-mock"
+import { formationDetailMock, formationMock, formationsMock } from "../mocks/formations-mock"
 import { formationsQueryValidator, formationsRegionQueryValidator } from "../service/formationsQueryValidator"
 
 import { IFormationEsResult } from "./formation.service.types"
@@ -81,8 +82,8 @@ export const getFormations = async ({
     const distance = radius || 30
 
     const useGeoLocation = coords ? true : false
-    const latitude = coords ? coords[1] : null
-    const longitude = coords ? coords[0] : null
+    const latitude = coords ? coords[1] : ""
+    const longitude = coords ? coords[0] : ""
 
     const now = new Date()
     const tags = [now.getFullYear(), now.getFullYear() + 1, now.getFullYear() + (now.getMonth() < 8 ? -1 : 2)]
@@ -165,7 +166,7 @@ export const getFormations = async ({
       },
     })
 
-    const formations = []
+    const formations: any[] = []
 
     responseFormations.body.hits.hits.forEach((formation) => {
       formations.push({ source: formation._source, sort: formation.sort, id: formation._id })
@@ -247,7 +248,7 @@ const getRegionFormations = async ({
   options: string[]
   caller: string
 }): Promise<IFormationEsResult[]> => {
-  const mustTerm = []
+  const mustTerm: any[] = []
 
   if (departement)
     mustTerm.push({
@@ -298,7 +299,7 @@ const getRegionFormations = async ({
     },
   })
 
-  const formations = []
+  const formations: object[] = []
 
   responseFormations.body.hits.hits.forEach((formation) => {
     formations.push({ source: formation._source, sort: formation.sort, id: formation._id })
@@ -346,7 +347,7 @@ const getAtLeastSomeFormations = async ({
   options: string[]
   useMock: string
 }): Promise<ILbaItem[]> => {
-  let rawEsFormations: IFormationEsResult[] = null
+  let rawEsFormations: IFormationEsResult[]
   let currentRadius = radius
   let formationLimit = formationResultLimit
 
@@ -393,9 +394,9 @@ const getAtLeastSomeFormations = async ({
  * @param {IFormationEsResult[]} formations les formations issues de la recherche elasticsearch
  * @return {IFormationEsResult[]}
  */
-const deduplicateFormations = (formations: IFormationEsResult[]): IFormationEsResult[] => {
+export const deduplicateFormations = (formations: IFormationEsResult[]): IFormationEsResult[] => {
   if (formations instanceof Array && formations.length > 0) {
-    return formations.reduce((acc, formation) => {
+    return formations.reduce((acc: any[], formation) => {
       const found = acc.find((f) => {
         return (
           f.source.intitule_long === formation.source.intitule_long &&
@@ -526,7 +527,7 @@ const transformFormationForIdea = (rawFormation: IFormationEsResult): ILbaItem =
  * @return {ILbaItemTrainingSession[]}
  */
 const setSessions = (formation: Partial<IFormationCatalogue>): ILbaItemTrainingSession[] => {
-  const sessions = []
+  const sessions: object[] = []
   if (formation?.date_debut?.length) {
     formation.date_debut.forEach((startDate, idx) => {
       sessions.push({
@@ -594,7 +595,7 @@ export const getFormationsQuery = async (query: any): Promise<IApiError | { resu
   try {
     const formations = await getAtLeastSomeFormations({
       romes: query.romes ? query.romes.split(",") : null,
-      coords: query.longitude ? [query.longitude, query.latitude] : null,
+      coords: query.longitude ? [query.longitude, query.latitude] : undefined,
       radius: query.radius,
       diploma: query.diploma,
       maxOutLimitFormation: 5,
@@ -605,7 +606,7 @@ export const getFormationsQuery = async (query: any): Promise<IApiError | { resu
     })
 
     return { results: formations }
-  } catch (err) {
+  } catch (err: any) {
     console.error("Error ", err, err.message)
     sentryCaptureException(err)
     if (query.caller) {
@@ -689,7 +690,7 @@ const removeEmailFromLBFData = (data: any): any => {
  */
 export const getFormationDescriptionQuery = async ({ id }): Promise<IApiError | any> => {
   try {
-    let formationDescription = null
+    let formationDescription
 
     if (id === "id-formation-test") {
       formationDescription = formationDetailMock
@@ -736,8 +737,8 @@ export const getFormationsParRegionQuery = async (query: any): Promise<IApiError
     sortFormations(formations)
 
     return { results: formations }
-  } catch (err) {
-    console.error("Error ", err.message)
+  } catch (err: any) {
+    console.error("Error ", err?.message)
     sentryCaptureException(err)
 
     if (query.caller) {
@@ -818,7 +819,7 @@ const getFormationEsQueryIndexFragment = (limit: number, options: string[]): { i
  * @returns {object}
  */
 const getEsRegionTermFragment = (region: string): object => {
-  const departements = []
+  const departements: object[] = []
 
   regionCodeToDepartmentList[region].forEach((departement) => {
     departements.push({

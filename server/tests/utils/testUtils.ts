@@ -7,7 +7,7 @@ import * as url from "url"
 const __dirname = url.fileURLToPath(new URL(".", import.meta.url))
 
 const testDataDir = path.join(__dirname, "../../.local/test")
-let mongoHolder = null
+let mongoHolder
 
 const connectToMongoForTests = async () => {
   if (!mongoHolder) {
@@ -23,4 +23,4 @@ const cleanAll = () => {
   return Promise.all([emptyDir(testDataDir), ...Object.values(models).map((m) => m.deleteMany())])
 }
 
-export { connectToMongoForTests, cleanAll }
+export { cleanAll, connectToMongoForTests }

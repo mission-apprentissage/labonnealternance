@@ -1,7 +1,7 @@
 import assert from "assert"
-import { isOriginLocal } from "../../src/common/utils/isOriginLocal.js"
-import { encrypt, decrypt } from "../../src/common/utils/encryptString.js"
 import __filename from "../../src/common/filename.js"
+import { decrypt, encrypt } from "../../src/common/utils/encryptString.js"
+import { isOriginLocal } from "../../src/common/utils/isOriginLocal.js"
 
 describe(__filename(import.meta.url), () => {
   it("Détection origine autorisée - retourne false si undefined ", () => {
@@ -32,8 +32,8 @@ describe(__filename(import.meta.url), () => {
   it("Encryption décryption fonctionne", () => {
     const value = "Chaîne@crypter"
 
-    const encryptedValue = encrypt({ value })
-    const decryptedValue = decrypt({ value: encryptedValue })
+    const encryptedValue = encrypt({ value, iv: null, secret: "test" })
+    const decryptedValue = decrypt({ value: encryptedValue, iv: null, secret: "test" })
 
     assert.notStrictEqual(value, encryptedValue)
     assert.strictEqual(value, decryptedValue)

@@ -66,19 +66,19 @@ const matchaMockMandataire: ILbaJobEsResult = {
     //__v: 0,
     address_detail: {
       localite: "44840 LES",
-      l1: null,
-      l2: null,
-      l3: null,
-      l4: null,
-      l5: null,
-      l6: null,
-      l7: null,
-      numero_voie: null,
-      type_voie: null,
-      nom_voie: null,
-      complement_adresse: null,
-      code_postal: null,
-      code_insee_localite: null,
+      l1: "",
+      l2: "",
+      l3: "",
+      l4: "",
+      l5: "",
+      l6: "",
+      l7: "",
+      numero_voie: "",
+      type_voie: "",
+      nom_voie: "",
+      complement_adresse: "",
+      code_postal: "",
+      code_insee_localite: "",
       cedex: null,
     },
   },
@@ -172,4 +172,4 @@ const matchaMock: ILbaJobEsResult = {
 
 const matchasMock = [matchaMock, matchaMockMandataire]
 
-export { matchasMock, matchaMock, matchaMockMandataire }
+export { matchaMock, matchaMockMandataire, matchasMock }

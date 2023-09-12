@@ -64,7 +64,7 @@ export const syncEtablissementsAndFormations = async () => {
         ])
 
         // Activate opt_out referrers
-        const referrersToActivate = []
+        const referrersToActivate: any[] = []
         if (etablissement?.optout_activation_date) {
           referrersToActivate.push(referrers.LBA.name)
           referrersToActivate.push(referrers.ONISEP.name)

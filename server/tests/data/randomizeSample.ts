@@ -56,22 +56,23 @@ const createRandomEligibleTrainingsForAppointment = () => {
  * Create random list
  * @param {*} generateItem
  */
-const createRandomListOf =
-  (generateItem) =>
-  (nbItems = null) => {
-    const randomList = []
-    if (!nbItems) {
-      nbItems = Math.floor(Math.random() * Math.floor(100))
-    }
-    for (let index = 0; index < nbItems; index++) {
-      randomList.push(generateItem())
-    }
-    return randomList
+const createRandomListOf = (generateItem) => (nbItems) => {
+  const randomList: any[] = []
+
+  if (!nbItems) {
+    nbItems = Math.floor(Math.random() * Math.floor(100))
   }
+
+  for (let index = 0; index < nbItems; index++) {
+    randomList.push(generateItem())
+  }
+
+  return randomList
+}
 
 // Random lists
 const createRandomAppointmentsList = createRandomListOf(createRandomAppointment)
 const createRandomEligibleTrainingsForAppointmentsList = createRandomListOf(createRandomEligibleTrainingsForAppointment)
 const createRandomCandidatsList = createRandomListOf(createRandomCandidat)
 
-export { createRandomEligibleTrainingsForAppointmentsList, createRandomAppointmentsList, createRandomCandidatsList }
+export { createRandomAppointmentsList, createRandomCandidatsList, createRandomEligibleTrainingsForAppointmentsList }

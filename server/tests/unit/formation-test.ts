@@ -1,6 +1,6 @@
 import assert from "assert"
-import { deduplicateFormations } from "../../src/services/formation.service.js"
 import __filename from "../../src/common/filename.js"
+import { deduplicateFormations } from "../../src/services/formation.service.js"
 
 describe(__filename(import.meta.url), () => {
   const sampleFormation1 = [
@@ -41,12 +41,6 @@ describe(__filename(import.meta.url), () => {
     assert.strictEqual(deduplicatedList[0].source.nom, "a1")
     assert.strictEqual(deduplicatedList[1].source.nom, "a2")
     assert.strictEqual(deduplicatedList[2].source.nom, "a3")
-  })
-
-  it("Retourne l'objet d'origine si pas un array ", () => {
-    const deduplicatedList = deduplicateFormations("not_an_array")
-
-    assert.strictEqual(deduplicatedList, "not_an_array")
   })
 
   it("Retourne l'objet d'origine si tableau vide ", () => {

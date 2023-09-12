@@ -1,11 +1,11 @@
 import assert from "assert"
 import jwt from "jsonwebtoken"
 import { omit } from "lodash-es"
-import config from "../../../src/config.js"
-import httpTests from "../../utils/httpTests.js"
+import __filename from "../../../src/common/filename.js"
 import { User } from "../../../src/common/model/index.js"
 import { hash } from "../../../src/common/utils/sha512Utils.js"
-import __filename from "../../../src/common/filename.js"
+import config from "../../../src/config.js"
+import httpTests from "../../utils/httpTests.js"
 
 httpTests(__filename(import.meta.url), ({ startServer }) => {
   it("Vérifie qu'on peut se connecter", async () => {
@@ -62,7 +62,7 @@ httpTests(__filename(import.meta.url), ({ startServer }) => {
 
     assert.strictEqual(response.status, 200)
     const found = await User.findOne({ username: "user" })
-    assert.strictEqual(found.password.startsWith("$6$rounds=1001"), true)
+    assert.strictEqual(found?.password.startsWith("$6$rounds=1001"), true)
 
     response = await httpClient.post("/api/login", {
       username: "user",
@@ -83,7 +83,7 @@ httpTests(__filename(import.meta.url), ({ startServer }) => {
 
     assert.strictEqual(response.status, 200)
     const found = await User.findOne({ username: "user" })
-    assert.strictEqual(previous.password, found.password)
+    assert.strictEqual(previous?.password, found?.password)
   })
 
   it("Vérifie que le mot de passe n'est pas rehashé si invalide", async () => {
@@ -98,6 +98,6 @@ httpTests(__filename(import.meta.url), ({ startServer }) => {
 
     assert.strictEqual(response.status, 401)
     const found = await User.findOne({ username: "user" })
-    assert.strictEqual(previous.password, found.password)
+    assert.strictEqual(previous?.password, found?.password)
   })
 })

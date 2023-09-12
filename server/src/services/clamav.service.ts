@@ -7,7 +7,7 @@ import { logger } from "../common/logger"
 import { notifyToSlack } from "../common/utils/slackUtils"
 import config from "../config"
 
-let scanner = null
+let scanner
 
 const setScanner = async () => {
   scanner = await initScanner()

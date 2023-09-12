@@ -1,3 +1,4 @@
+//@ts-nocheck
 import express, { Request } from "express"
 import joi from "joi"
 

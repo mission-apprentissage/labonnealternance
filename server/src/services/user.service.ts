@@ -119,4 +119,4 @@ const changePassword = async (username: string, newPassword: string) => {
   return user.save()
 }
 
-export { rehashPassword, authenticate, getUser, getUserById, update, createUser, find, findOne, changePassword }
+export { authenticate, changePassword, createUser, find, findOne, getUser, getUserById, rehashPassword, update }

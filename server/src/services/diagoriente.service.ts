@@ -6,15 +6,10 @@ import config from "../config"
 import dayjs from "./dayjs.service"
 import { ISuggestionMetiersDavenir } from "./diagoriente.service.types"
 
-let diagorienteToken = null
+const paramApi = `grant_type=client_credentials&client_id=${config.diagoriente.clientId}&client_secret=${config.diagoriente.clientSecret}`
+const accessTokenEndpoint = `https://auth.diagoriente.beta.gouv.fr/auth/realms/${config.diagoriente.realm}/protocol/openid-connect/token`
 
-const clientId = config.diagoriente.clientId
-const clientSecret = config.diagoriente.clientSecret
-const realm = config.diagoriente.realm
-
-const paramApi = `grant_type=client_credentials&client_id=${clientId}&client_secret=${clientSecret}`
-const accessTokenEndpoint = `https://auth.diagoriente.beta.gouv.fr/auth/realms/${realm}/protocol/openid-connect/token`
-const diagorienteUrl = config.diagoriente.queryUrl
+let diagorienteToken
 
 const getAccessToken = async () => {
   const now = dayjs()
@@ -45,7 +40,7 @@ export const getMetiersDAvenir = async (): Promise<ISuggestionMetiersDavenir> =>
     }
 
     const { data } = await axios.post(
-      diagorienteUrl,
+      config.diagoriente.queryUrl,
       JSON.stringify({
         query: `{
           suggestionsMetiersAvenir(count: 8) {

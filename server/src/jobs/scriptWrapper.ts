@@ -40,7 +40,7 @@ const ensureOutputDirExists = async () => {
   const outputDir = config.outputDir
   try {
     await access(outputDir)
-  } catch (e) {
+  } catch (e: any) {
     if (e.code !== "EEXIST") {
       await mkdir(outputDir, { recursive: true })
     }

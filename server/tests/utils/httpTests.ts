@@ -2,6 +2,7 @@ import axiosist from "axiosist"
 import nock from "nock"
 import createComponents from "../../src/common/components/components.js"
 import server from "../../src/http/server.js"
+import { createUser } from "../../src/services/user.service.js"
 import { cleanAll, connectToMongoForTests } from "./testUtils.js"
 
 //FIXME : issue https://github.com/mission-apprentissage/labonnealternance/issues/158
@@ -24,7 +25,7 @@ const startServer = async () => {
     httpClient,
     components,
     createAndLogUser: async (username, password, options) => {
-      await components.users.createUser(username, password, options)
+      await createUser(username, password, options)
 
       const response = await httpClient.post("/api/login", {
         username: username,

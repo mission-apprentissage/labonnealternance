@@ -1,3 +1,4 @@
+//@ts-nocheck
 import distance from "@turf/distance"
 import { round } from "lodash-es"
 

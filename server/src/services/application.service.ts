@@ -5,7 +5,6 @@ import { oleoduc, writeData } from "oleoduc"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
-import __dirname from "../common/dirname"
 import { logger } from "../common/logger"
 import { Application, BonnesBoites, EmailBlacklist } from "../common/model/index"
 import { IApplication } from "../common/model/schema/application/applications.types"
@@ -89,21 +88,10 @@ export const addEmailToBlacklist = async (email: string, blacklistingOrigin: str
  * @param {string} messageId
  * @param {string} type
  * @param {string} email
- * @returns {Promise<IApplication & Document<any, any, IApplication>>}
+ * @returns {Promise<IApplication>}
  */
-const findApplicationByTypeAndMessageId = async ({
-  messageId,
-  type,
-  email,
-}: {
-  messageId: string
-  type: string
-  email: string
-}): Promise<IApplication & Document<any, any, IApplication>> => {
-  return await Application.findOne(
-    type === "application" ? { company_email: email, to_company_message_id: messageId } : { applicant_email: email, to_applicant_message_id: messageId }
-  )
-}
+const findApplicationByTypeAndMessageId = async ({ messageId, type, email }: { messageId: string; type: string; email: string }) =>
+  Application.findOne(type === "application" ? { company_email: email, to_company_message_id: messageId } : { applicant_email: email, to_applicant_message_id: messageId })
 
 /**
  * @description Remove an email address form all bonnesboites where it is present
@@ -435,7 +423,7 @@ export const validateSendApplication = async (validable: Partial<IApplicationPar
  * @param {Partial<IApplicationParameters>} validable
  * @return {Promise<string>}
  */
-const scanFileContent = async (validable: Partial<IApplicationParameters>): Promise<string> => {
+const scanFileContent = async (validable: IApplicationParameters): Promise<string> => {
   return (await scan(validable.applicant_file_content)) ? "pièce jointe invalide" : "ok"
 }
 
@@ -468,7 +456,7 @@ export const validateCompanyEmail = async (validable: ICompanyEmail): Promise<st
  * @return {Promise<string>}
  */
 export const validatePermanentEmail = async (validable: Partial<IApplicationParameters>): Promise<string> => {
-  if (isEmailBurner(validable.applicant_email)) {
+  if (isEmailBurner(validable?.applicant_email)) {
     return "email temporaire non autorisé"
   }
   return "ok"

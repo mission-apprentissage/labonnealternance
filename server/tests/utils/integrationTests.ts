@@ -1,4 +1,4 @@
-import { connectToMongoForTests, cleanAll } from "../utils/testUtils.js"
+import { cleanAll, connectToMongoForTests } from "../utils/testUtils.js"
 
 export default function (desc, cb) {
   describe(desc, function () {
