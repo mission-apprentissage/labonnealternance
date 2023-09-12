@@ -167,6 +167,12 @@ export const sendApplication = async ({ query, referer, shouldCheckSecret }: { q
       crypted_email,
     })
 
+    validationResult = await validateCompany(query, company_email)
+
+    if (validationResult !== "ok") {
+      return { error: validationResult }
+    }
+
     if (validationResult !== "ok") {
       return { error: validationResult }
     }
@@ -458,11 +464,32 @@ export const validateJobStatus = async (validable: Partial<IApplicationParameter
 }
 
 /**
+ * @description checks if company applied to exists in base
+ * @param {Partial<IApplicationParameters>} validable
+ * @param {string} company_email
+ * @return {Promise<"ok" | "société désinscrite" | "email société invalide">}
+ */
+export const validateCompany = async (validable: Partial<IApplicationParameters>, company_email: string) => {
+  const { company_siret, company_type } = validable
+
+  if (company_type === "lba") {
+    const lbaCompany = await BonnesBoites.findOne({ siret: company_siret })
+    if (!lbaCompany) {
+      return "société désinscrite"
+    } else if (lbaCompany.email?.toLowerCase() !== company_email.toLowerCase()) {
+      return "email société invalide"
+    }
+  }
+
+  return "ok"
+}
+
+/**
  * @description checks if attachment is corrupted
  * @param {Partial<IApplicationParameters>} validable
  * @return {Promise<string>}
  */
-const scanFileContent = async (validable: Partial<IApplicationParameters>): Promise<string> => {
+const scanFileContent = async (validable: Partial<IApplicationParameters>) => {
   return (await scan(validable.applicant_file_content)) ? "pièce jointe invalide" : "ok"
 }
 
