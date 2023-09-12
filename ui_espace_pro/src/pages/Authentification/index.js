@@ -6,5 +6,16 @@ import Connexion from "./Connexion"
 import CreationCompte from "./CreationCompte"
 import InformationCreationCompte from "./InformationCreationCompte"
 import OptOutValidation from "./OptOutValidation"
+import RedirectAfterAuth from "./RedirectAfterAuth"
 
-export { Connexion, ConfirmationCreationCompte, AuthValidation, ConfirmationValidationEmail, CreationCompte, InformationCreationCompte, OptOutValidation, CompteEnAttente }
+export {
+  Connexion,
+  ConfirmationCreationCompte,
+  AuthValidation,
+  ConfirmationValidationEmail,
+  CreationCompte,
+  InformationCreationCompte,
+  OptOutValidation,
+  CompteEnAttente,
+  RedirectAfterAuth,
+}

@@ -9,7 +9,8 @@ function inline(value) {
 
 const contentSecurityPolicy = `
   default-src 'self'; 
-  base-uri 'self';
+  base-uri 'self' 
+              https://stats.beta.gouv.fr;
   script-src 'self' 
               'unsafe-inline' 
               'unsafe-eval' 
@@ -39,7 +40,8 @@ const contentSecurityPolicy = `
               blob:
               https://www.notion.so
               https://www.google.com
-              https://www.google.fr; 
+              https://www.google.fr
+              https://stats.beta.gouv.fr; 
   object-src 'self' data: 
               https://labonnealternance.apprentissage.beta.gouv.fr
               https://labonnealternance-recette.apprentissage.beta.gouv.fr

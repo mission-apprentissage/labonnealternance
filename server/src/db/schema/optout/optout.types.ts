@@ -7,13 +7,14 @@ interface IMail {
 }
 
 interface IOptout {
+  _id: string
   etat: string
   uai: string[]
   rue: string
   code_postal: string
   commune: string
   siret: string
-  contacts: object[]
+  contacts: { email: string }[]
   qualiopi: boolean
   raison_sociale: string
   adresse: string

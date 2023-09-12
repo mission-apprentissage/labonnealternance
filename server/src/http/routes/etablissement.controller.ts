@@ -1,7 +1,7 @@
 import Boom from "boom"
 import express from "express"
 import Joi from "joi"
-import _ from "lodash-es"
+import * as _ from "lodash-es"
 import { mailTemplate } from "../../assets/index.js"
 import { mailType } from "../../db/constants/etablissement.js"
 import { referrers } from "../../db/constants/referrers.js"
@@ -103,15 +103,7 @@ export default () => {
 
       // Gets all mails (formation email + formateur email), excepted "email_decisionnaire"
       let emailsAffelnet = eligibleTrainingsForAppointmentsAffelnetFound.map((eligibleTrainingsForAppointment) => eligibleTrainingsForAppointment.lieu_formation_email)
-      if (etablissement?.gestionnaire_email) {
-        emailsAffelnet.push(etablissement.gestionnaire_email)
-      }
-
-      emailsAffelnet = _(emailsAffelnet)
-        .uniq()
-        .omitBy(_.isNil)
-        .omitBy((item) => item === etablissement.gestionnaire_email)
-        .toArray()
+      emailsAffelnet = [...new Set(emailsAffelnet.filter((email) => !_.isNil(email) && email !== etablissement.gestionnaire_email))]
 
       await Promise.all(
         emailsAffelnet.map((email) =>
@@ -225,15 +217,7 @@ export default () => {
 
       // Gets all mails (formation email + formateur email), excepted "email_decisionnaire"
       let emailsParcoursup = eligibleTrainingsForAppointmentsParcoursupFound.map((eligibleTrainingsForAppointment) => eligibleTrainingsForAppointment.lieu_formation_email)
-      if (etablissement?.gestionnaire_email) {
-        emailsParcoursup.push(etablissement.gestionnaire_email)
-      }
-
-      emailsParcoursup = _(emailsParcoursup)
-        .uniq()
-        .omitBy(_.isNil)
-        .omitBy((item) => item === etablissement.gestionnaire_email)
-        .toArray()
+      emailsParcoursup = [...new Set(emailsParcoursup.filter((email) => !_.isNil(email) && email !== etablissement.gestionnaire_email))]
 
       await Promise.all(
         emailsParcoursup.map((email) =>
@@ -424,6 +408,7 @@ export default () => {
 
       const { id, appointmentId } = params
 
+      // eslint-disable-next-line prefer-const
       let [etablissement, appointment] = await Promise.all([Etablissement.findById(id), appointmentService.findById(appointmentId)])
 
       if (!etablissement) {

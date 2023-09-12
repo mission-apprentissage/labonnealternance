@@ -7,7 +7,7 @@ import useAuth from "../../common/hooks/useAuth"
 import { AjouterVoeux } from "../../components"
 import { ArrowDropRightLine } from "../../theme/components/icons"
 
-export default () => {
+export const CreationOffre = () => {
   const params = useParams()
   const toast = useToast()
   const navigate = useNavigate()
@@ -15,15 +15,18 @@ export default () => {
   const client = useQueryClient()
   const [auth] = useAuth()
 
-  const { data, isLoading } = useQuery("offre", () => getOffre(params.jobId), {
-    enabled: params.jobId !== "creation" ? true : false,
+  const { establishment_id, jobId } = params
+  const isCreation = jobId === "creation"
+
+  const { data, isLoading } = useQuery("offre", () => getOffre(jobId), {
+    enabled: !isCreation,
     cacheTime: 0,
   })
 
   const handleSave = (values) => {
     // Updates an offer
-    if (params.jobId !== "creation") {
-      putOffre(params.jobId, values)
+    if (!isCreation) {
+      putOffre(jobId, values)
         .then(() => {
           toast({
             title: "Offre mise à jour avec succès.",
@@ -33,17 +36,17 @@ export default () => {
             isClosable: true,
           })
         })
-        .finally(() => navigate(`/administration/entreprise/${params.establishment_id}`), { replace: true })
+        .finally(() => navigate(`/administration/entreprise/${establishment_id}`), { replace: true })
     } else {
       if (auth.type === AUTHTYPE.ENTREPRISE) {
         // Create the offer and return the form with the related offer created
-        return postOffre(params.establishment_id, values).then(({ data }) => ({
+        return postOffre(establishment_id, values).then(({ data }) => ({
           form: data,
           offre: data.jobs.slice(-1).shift(),
         }))
       }
 
-      postOffre(params.establishment_id, values)
+      postOffre(establishment_id, values)
         .then(() => {
           toast({
             title: "Offre enregistrée avec succès.",
@@ -55,7 +58,7 @@ export default () => {
         })
         .then(() => client.invalidateQueries("offre-liste"))
 
-        .finally(() => navigate(`/administration/entreprise/${params.establishment_id}`), { replace: true })
+        .finally(() => navigate(`/administration/entreprise/${establishment_id}`), { replace: true })
     }
   }
 
@@ -83,3 +86,5 @@ export default () => {
     </Container>
   )
 }
+
+export default CreationOffre

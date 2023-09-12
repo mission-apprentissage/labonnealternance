@@ -36,7 +36,7 @@ export const checkIfAlgoFileIsNew = async (reason: string): void => {
   const currentDbCreatedDate = await getCurrentDbCreatedDate()
 
   if (algoFileLastModificationDate.getTime() < currentDbCreatedDate.getTime()) {
-    notifyToSlack({
+    await notifyToSlack({
       subject: "IMPORT BONNES BOITES",
       message: `Process lié à l'import bonnesboites avorté car les données sont déjà à jour. ${reason}`,
       error: false,
@@ -59,10 +59,14 @@ export const pushFileToBucket = async ({ key, filePath }) => {
   await uploadFileToS3({ filePath, key })
 }
 
-export const downloadAlgoCompanyFile = async () => {
-  logger.info(`Downloading algo file ${s3File} from S3 Bucket...`)
+/**
+ * Télécharge localement le fichier des sociétés issues de l'algo
+ * @param {string | null} sourceFile un fichier source alternatif
+ */
+export const downloadAlgoCompanyFile = async (sourceFile: string | null) => {
+  logger.info(`Downloading algo file ${sourceFile || s3File} from S3 Bucket...`)
 
-  await downloadFile({ from: s3File, to: PREDICTION_FILE })
+  await downloadFile({ from: sourceFile || s3File, to: PREDICTION_FILE })
 }
 
 export const downloadSAVEFile = async ({ key }) => {

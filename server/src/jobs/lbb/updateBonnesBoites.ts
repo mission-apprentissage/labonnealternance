@@ -66,7 +66,7 @@ const processCompanies = async () => {
   )
 }
 
-export default async function updateBonnesBoites({ UseAlgoFile = false, ClearMongo = false, BuildIndex = false, UseSave = false, ForceRecreate = false }) {
+export default async function updateBonnesBoites({ UseAlgoFile = false, ClearMongo = false, BuildIndex = false, UseSave = false, ForceRecreate = false, SourceFile = null }) {
   try {
     logMessage("info", " -- Start updating lbb db with new algo -- ")
 
@@ -77,12 +77,12 @@ export default async function updateBonnesBoites({ UseAlgoFile = false, ClearMon
         await checkIfAlgoFileIsNew("algo companies")
       }
 
-      await downloadAlgoCompanyFile()
+      await downloadAlgoCompanyFile(SourceFile)
 
       if (!ForceRecreate) {
         const companyCount = await countCompaniesInFile()
         if (companyCount < MIN_COMPANY_THRESHOLD) {
-          notifyToSlack({
+          await notifyToSlack({
             subject: "IMPORT BONNES BOITES",
             message: `Import bonnesboites avorté car le fichier ne comporte pas assez de sociétés. ${companyCount} sociétés / ${MIN_COMPANY_THRESHOLD} minimum attendu`,
             error: true,

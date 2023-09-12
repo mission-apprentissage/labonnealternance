@@ -3,6 +3,7 @@ import React, { useEffect } from "react"
 import Footer from "../components/footer"
 import AlgoHome from "../components/HomeComponents/AlgoHome"
 import MetiersDAvenir from "../components/HomeComponents/MetiersDAvenir"
+import TestezConnaissancesQuiz from "../components/HomeComponents/TestezConnaissancesQuiz"
 import HomeHero from "../components/HomeHero"
 import HowTo from "../components/HowTo"
 import Navigation from "../components/navigation"
@@ -61,6 +62,10 @@ const Home = () => {
 
       <Box {...blockCssProperties} pt={12} pb={0}>
         <MetiersDAvenir />
+      </Box>
+
+      <Box {...blockCssProperties} pt={12} pb={0}>
+        <TestezConnaissancesQuiz />
       </Box>
 
       <Box {...blockCssProperties} py={12}>

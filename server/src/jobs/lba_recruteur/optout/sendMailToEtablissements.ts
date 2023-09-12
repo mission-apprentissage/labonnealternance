@@ -1,12 +1,12 @@
 import Joi from "joi"
 import { differenceBy } from "lodash-es"
-import mailer from "../../../services/mailer.service.js"
 import { mailTemplate } from "../../../assets/index.js"
 import { logger } from "../../../common/logger.js"
 import { Optout, UserRecruteur } from "../../../db/index.js"
 import { asyncForEach } from "../../../common/utils/asyncUtils.js"
 import { createActivationToken } from "../../../common/utils/jwtUtils.js"
 import config from "../../../config.js"
+import mailer from "../../../services/mailer.service.js"
 import { runScript } from "../../scriptWrapper.js"
 
 /**

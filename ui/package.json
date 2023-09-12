@@ -1,6 +1,6 @@
 {
   "name": "ui",
-  "version": "1.68.0",
+  "version": "1.86.1",
   "private": false,
   "license": "MIT",
   "author": "Mission apprentissage",
@@ -9,7 +9,6 @@
     "docker-dev": "yarn install && yarn dev",
     "dev": "next dev",
     "build": "next build",
-    "postbuild": "next-sitemap --config next-sitemap.js",
     "start": "next start",
     "lint": "next lint",
     "test": "nyc --silent jest --env=jest-environment-jsdom-sixteen",
@@ -50,7 +49,6 @@
     "next-images": "1.8.4",
     "next-plausible": "3.6.3",
     "next-seo": "4.26.0",
-    "next-sitemap": "1.6.133",
     "notion-client": "6.15.6",
     "react": "18.2.0",
     "react-dom": "18.2.0",

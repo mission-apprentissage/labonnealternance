@@ -1,26 +1,14 @@
 import express from "express"
 import Joi from "joi"
-import passport from "passport"
-import { Strategy as LocalAPIKeyStrategy } from "passport-localapikey"
 import { logger } from "../../../common/logger.js"
 import { BrevoEventStatus } from "../../../services/brevo.service.js"
 import dayjs from "../../../services/dayjs.service.js"
-import config from "../../../config.js"
 import { addEmailToBlacklist } from "../../../services/application.service.js"
 import { tryCatch } from "../../middlewares/tryCatchMiddleware.js"
 import * as eligibleTrainingsForAppointmentService from "../../../services/eligibleTrainingsForAppointment.service.js"
 import * as appointmentService from "../../../services/appointment.service.js"
+import authMiddleware from "../../middlewares/authMiddleware.js"
 import { Etablissement } from "../../../db/index.js"
-
-/**
- * @description Checks "Brevo" token.
- * @return {NextFunction}
- */
-const checkWebhookToken = () => {
-  passport.use(new LocalAPIKeyStrategy({}, async (token, done) => done(null, config.smtp.brevoWebhookApiKey === token ? { apiKey: token } : false)))
-
-  return passport.authenticate("localapikey", { session: false, failWithError: true })
-}
 
 /**
  * Email controllers.
@@ -35,7 +23,7 @@ export default () => {
    */
   router.post(
     "/webhook",
-    checkWebhookToken(),
+    authMiddleware("api-key"),
     tryCatch(async (req, res) => {
       const parameters = await Joi.object({
         event: Joi.string().required(),

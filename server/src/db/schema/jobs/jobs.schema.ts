@@ -64,7 +64,7 @@ export const jobsSchema = new Schema<IJobs>({
   job_status: {
     type: String,
     default: JOB_STATUS.ACTIVE,
-    enum: [JOB_STATUS.ACTIVE, JOB_STATUS.ANNULEE, JOB_STATUS.POURVUE, JOB_STATUS.EN_ATTENTE],
+    enum: Object.values(JOB_STATUS),
     description: "Statut de l'offre",
   },
   job_status_comment: {

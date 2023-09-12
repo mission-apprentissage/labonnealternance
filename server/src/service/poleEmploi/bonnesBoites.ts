@@ -5,7 +5,7 @@ import { IApiError, manageApiError } from "../../common/utils/errorManager.js"
 import { isAllowedSource } from "../../common/utils/isAllowedSource.js"
 import { itemModel } from "../../model/itemModel.js"
 
-import { roundDistance } from "../../common/geolib.js"
+import { roundDistance } from "../../common/utils/geolib.js"
 import { lbbMock } from "../../mocks/lbbs-mock.js"
 import { BonnesBoites } from "../../db/index.js"
 import { getApplicationByCompanyCount } from "../../services/application.service.js"

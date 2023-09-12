@@ -5,11 +5,27 @@ import { OPCOS } from "./constant.service.js"
 import { CFADOCK_FILTER_LIMIT, fetchOpcosFromCFADock } from "../services/cfadock.service.js"
 
 /**
+ * @description get opco from database collection OPCOS
+ * @param {string} siren
+ * @returns {Promise<IOpco>}
+ */
+export const getOpcoBySirenFromDB = (siren) => Opco.findOne({ siren })
+
+/**
  * @description tente d'ajouter un opco en base et retourne une string indiquant le résultat
  * @param {IOpco} opcoData
  * @returns {Promise<IOpco>}
  */
 export const saveOpco = async (opcoData: IOpco): Promise<IOpco> => Opco.findOneAndUpdate({ siren: opcoData.siren }, opcoData, { upsert: true })
+
+/**
+ * @description retourne le nom court d'un opco en paramètre
+ * @param {string} shortName
+ * @returns {string}
+ */
+export const getOpcoLongName = memoize((shortName: string): string => {
+  return Object.values(OPCOS).find((k) => OPCOS[k] === shortName.toUpperCase())
+})
 
 /**
  * @description retourne le nom court d'un opco en paramètre

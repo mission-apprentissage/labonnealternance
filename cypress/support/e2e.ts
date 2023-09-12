@@ -23,3 +23,14 @@ beforeEach(() => {
     })
   })
 })
+
+Cypress.on('uncaught:exception', (err, runnable) => {
+  // Erreurs mapbox non bloquantes pour les tests
+  if (err.message.includes("Failed to initialize WebGL")) {
+    return false
+  }
+  if (err.message.includes("Cannot read properties of null (reading 'getLayer')")) {
+    return false
+  }
+  
+})

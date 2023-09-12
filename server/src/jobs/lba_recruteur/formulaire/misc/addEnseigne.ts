@@ -10,9 +10,7 @@ runScript(async ({ etablissement }) => {
   for (const formulaire of formulaires) {
     try {
       const { data } = await etablissement.getEtablissementFromGouv(formulaire.establishment_siret)
-
       const enseigneFromApiEntreprise = data.etablissement?.enseigne
-
       if (enseigneFromApiEntreprise) {
         await Formulaire.collection.update({ _id: formulaire._id }, { establishment_enseigne: enseigneFromApiEntreprise })
         itemsUpdated[`${formulaire.establishment_siret}`] = enseigneFromApiEntreprise

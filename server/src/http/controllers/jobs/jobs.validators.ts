@@ -66,15 +66,16 @@ export const updateJobSchema = Joi.object({
     "Master, titre ingénieur, autres formations niveau (Bac+5)"
   ),
   job_start_date: Joi.date().greater("now").iso(),
-  job_type: Joi.array().items(Joi.string().valid("Apprentissage", "Professionalisation").required()),
+  job_type: Joi.array().items(Joi.string().valid("Apprentissage", "Professionalisation")),
   job_expiration_date: Joi.string(),
-  job_status: Joi.string().valid("Active", "Annulée", "Pourvue"),
   is_disabled_elligible: Joi.boolean(),
   job_count: Joi.number(),
   job_duration: Joi.number().min(6).max(36),
   job_rythm: Joi.string().valid("Indifférent", "2 jours / 3 jours", "1 semaine / 1 semaine", "2 semaines / 3 semaines", "6 semaines / 6 semaines"),
   job_description: Joi.string(),
   job_employer_description: Joi.string(),
+  custom_address: Joi.string(),
+  custom_geo_coordinates: Joi.string().when("custom_address", { is: Joi.exist(), then: Joi.required() }),
 })
 
 export const createDelegationSchema = Joi.object({

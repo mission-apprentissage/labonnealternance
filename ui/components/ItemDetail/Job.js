@@ -121,7 +121,7 @@ const Job = ({ job, handleSelectItem, showTextOnly, searchForTrainingsOnNewCente
   return (
     <Link
       as="a"
-      className="resultCard"
+      className={`resultCard ${kind}`}
       {...cardProperties}
       onClick={onSelectItem}
       onMouseOver={highlightItemOnMap}

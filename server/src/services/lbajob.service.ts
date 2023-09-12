@@ -6,13 +6,14 @@ import { filterJobsByOpco } from "./opco.service.js"
 const coordinatesOfFrance = [2.213749, 46.227638]
 
 import { NIVEAUX_POUR_LBA, ACTIVE } from "./constant.service.js"
-import { roundDistance } from "../common/geolib.js"
+import { roundDistance } from "../common/utils/geolib.js"
 import { matchaMock, matchaMockMandataire, matchasMock } from "../mocks/matchas-mock.js"
 import { getOffreAvecInfoMandataire, getJobsFromElasticSearch, incrementLbaJobViewCount } from "./formulaire.service.js"
 import { getApplicationByJobCount, IApplicationCount } from "./application.service.js"
 import { ILbaItem, LbaItem } from "./lbaitem.shared.service.types.js"
 import { IRecruiter } from "../db/schema/recruiter/recruiter.types.js"
 import { ILbaJobEsResult } from "./lbajob.service.types.js"
+import { sentryCaptureException } from "../common/utils/sentryUtils.js"
 
 /**
  * Retourne les offres LBA correspondantes aux critères de recherche
@@ -100,15 +101,9 @@ export const getLbaJobs = async ({
  * @param {IApplicationCount[]} applicationCountByJob les décomptes de candidatures par identifiant d'offres
  * @returns {{ results: ILbaItem[] }}
  */
-const transformLbaJobs = ({
-  jobs,
-  caller,
-  applicationCountByJob,
-}: {
-  jobs: ILbaJobEsResult[]
-  caller?: string
-  applicationCountByJob: IApplicationCount[]
-}): { results: ILbaItem[] } => {
+function transformLbaJobs({ jobs, caller, applicationCountByJob }: { jobs: ILbaJobEsResult[]; caller?: string; applicationCountByJob: IApplicationCount[] }): {
+  results: ILbaItem[]
+} {
   return {
     results: jobs.flatMap((job) =>
       transformLbaJob({
@@ -160,6 +155,7 @@ export const getLbaJobById = async ({ id, caller }: { id: string; caller: string
 
     return { matchas: job }
   } catch (error) {
+    sentryCaptureException(error)
     return manageApiError({ error, api_path: "jobV1/matcha", caller, errorTitle: "getting job by id from Matcha" })
   }
 }
@@ -172,7 +168,7 @@ export const getLbaJobById = async ({ id, caller }: { id: string; caller: string
  * @param {IApplicationCount[]} applicationCountByJob le tableau des décomptes de candidatures par offre
  * @returns {ILbaItem[]}
  */
-const transformLbaJob = ({
+function transformLbaJob({
   job,
   distance,
   caller,
@@ -182,7 +178,7 @@ const transformLbaJob = ({
   distance?: number
   caller?: string
   applicationCountByJob: IApplicationCount[]
-}): ILbaItem[] => {
+}): ILbaItem[] {
   return job.jobs.map((offre, idx) => {
     const resultJob = new LbaItem("matcha")
     const email = encryptMailWithIV({ value: job.email, caller })
@@ -240,7 +236,7 @@ const transformLbaJob = ({
  * tri des ofres selon l'ordre alphabétique du titre (primaire) puis du nom de société (secondaire)
  * @param {{ results: ILbaItem[] }}
  */
-const sortLbaJobs = (jobs: { results: ILbaItem[] }) => {
+function sortLbaJobs(jobs: { results: ILbaItem[] }) {
   jobs.results.sort((a, b) => {
     if (a?.title?.toLowerCase() < b?.title?.toLowerCase()) {
       return -1

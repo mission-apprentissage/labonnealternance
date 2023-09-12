@@ -9,6 +9,7 @@ import config from "../../../config.js"
 import { IRecruiter } from "../../../db/schema/recruiter/recruiter.types.js"
 import { IUserRecruteur } from "../../../db/schema/userRecruteur/userRecruteur.types.js"
 import mailer from "../../../services/mailer.service.js"
+import dayjs from "../../../services/dayjs.service.js"
 
 export const relanceFormulaire = async (threshold) => {
   // number of days to expiration for the reminder email to be sent
@@ -27,7 +28,7 @@ export const relanceFormulaire = async (threshold) => {
       // The payload is smaller than not filtering it.
       .filter((x) => x.job_status === "Active")
       .forEach((job) => {
-        const remainingDays = moment(job.date_expiration).diff(moment(), "days")
+        const remainingDays = dayjs(job.job_expiration_date).diff(dayjs(), "days")
 
         // if the number of days to the expiration date is strictly above the threshold, do nothing
         if (remainingDays !== threshold) return

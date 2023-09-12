@@ -1,8 +1,7 @@
-// @ts-nocheck
 import { isEmpty } from "lodash-es"
 import { access, mkdir } from "node:fs/promises"
 import prettyMilliseconds from "pretty-ms"
-import createComponents from "../common/components/components.js"
+import createComponents, { Components } from "../common/components/components.js"
 import { getLoggerWithContext } from "../common/logger.js"
 import { closeMongoConnection } from "../db/mongodb.js"
 import config from "../config.js"
@@ -47,7 +46,7 @@ const ensureOutputDirExists = async () => {
   return outputDir
 }
 
-const exit = async (scriptError) => {
+const exit = async (scriptError?: any) => {
   if (scriptError) {
     logger.error(scriptError.constructor.name === "EnvVarError" ? scriptError.message : scriptError)
     process.exitCode = 1
@@ -62,7 +61,7 @@ const exit = async (scriptError) => {
   }, 250)
 }
 
-async function runScript(job) {
+async function runScript(job: (components: Components) => Promise<any>) {
   try {
     const timer = createTimer()
     timer.start()
