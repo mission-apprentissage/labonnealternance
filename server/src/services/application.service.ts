@@ -456,7 +456,7 @@ export const validateCompanyEmail = async (validable: ICompanyEmail): Promise<st
  * @return {Promise<string>}
  */
 export const validatePermanentEmail = async (validable: Partial<IApplicationParameters>): Promise<string> => {
-  if (isEmailBurner(validable?.applicant_email)) {
+  if (isEmailBurner(validable?.applicant_email ?? "")) {
     return "email temporaire non autorisé"
   }
   return "ok"

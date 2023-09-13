@@ -13,3 +13,7 @@ ANSIBLE_CONFIG="${ROOT_DIR}/.infra/ansible/ansible.cfg" ansible all \
 echo "NEXT_PUBLIC_ENV=local" >> "${ROOT_DIR}/ui/.env"
 echo "NEXT_PUBLIC_VERSION=0.0.0-local" >> "${ROOT_DIR}/ui/.env"
 echo "NEXT_PUBLIC_API_PORT=5001" >> "${ROOT_DIR}/ui/.env"
+
+echo "REACT_APP_ENV=local" >> "${ROOT_DIR}/ui_espace_pro/.env"
+echo "REACT_APP_VERSION=0.0.0-local" >> "${ROOT_DIR}/ui_espace_pro/.env"
+echo "REACT_APP_API_PORT=5001" >> "${ROOT_DIR}/ui_espace_pro/.env"

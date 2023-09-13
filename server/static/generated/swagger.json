@@ -45,11 +45,9 @@
 					"id_rco_formation",
 					"localite",
 					"cfd",
-					"etablissement_formateur_siret",
 					"code_postal",
 					"lieu_formation_adresse",
-					"intitule_long",
-					"etablissement_formateur_entreprise_raison_sociale"
+					"intitule_long"
 				],
 				"type": "object"
 			},
@@ -1782,7 +1780,7 @@
 				"operationId": "appointmentCreateContext",
 				"responses": {
 					"200": {
-						"description": "Ok",
+						"description": "OK",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -1832,6 +1830,7 @@
 						}
 					}
 				},
+				"description": "Appointment request",
 				"tags": [
 					"Appointment Request"
 				],
