@@ -1,3 +1,10 @@
+# [1.88.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.87.0...v1.88.0) (2023-09-13)
+
+
+### Features
+
+* LBAC-1400 Permettre de voir les offres échues ([#571](https://github.com/mission-apprentissage/labonnealternance/issues/571)) ([a9c7096](https://github.com/mission-apprentissage/labonnealternance/commit/a9c7096330ecc89ff66073ffd081ffbf12ca309c))
+
 # [1.87.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.86.1...v1.87.0) (2023-09-12)
 
 
