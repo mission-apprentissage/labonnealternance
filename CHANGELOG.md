@@ -1,3 +1,10 @@
+## [1.88.4](https://github.com/mission-apprentissage/labonnealternance/compare/v1.88.3...v1.88.4) (2023-09-13)
+
+
+### Bug Fixes
+
+* extension ([5146a68](https://github.com/mission-apprentissage/labonnealternance/commit/5146a6853ad1619c2311857cf4f994394954b9d3))
+
 ## [1.88.3](https://github.com/mission-apprentissage/labonnealternance/compare/v1.88.2...v1.88.3) (2023-09-13)
 
 
