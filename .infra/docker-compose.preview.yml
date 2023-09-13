@@ -38,6 +38,7 @@ services:
     <<: *default
     image: "ghcr.io/mission-apprentissage/mna_lba_ui:0.0.0-{{pr_number}}-preview"
     container_name: lba_{{pr_number}}_ui
+    env_file: .env_ui
     environment:
       - VIRTUAL_HOST={{pr_number}}.lba-preview.apprentissage.beta.gouv.fr
       - VIRTUAL_PATH=/

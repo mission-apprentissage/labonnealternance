@@ -7,6 +7,7 @@ import Breadcrumb from "../components/breadcrumb"
 import Footer from "../components/footer"
 import Navigation from "../components/navigation"
 import ScrollToTop from "../components/ScrollToTop"
+import { publicConfig } from "../config.public"
 import { fetchNotionPage } from "../services/fetchNotionPage"
 
 export async function getStaticProps() {
@@ -41,7 +42,7 @@ const PolitiqueDeConfidentialite = ({ recordMap }) => {
             </Box>
             <Divider variant="pageTitleDivider" my={12} />
           </Box>
-          <NotionRenderer recordMap={recordMap} fullPage={false} darkMode={false} disableHeader={true} rootDomain={process.env.NEXT_PUBLIC_BASE_URL} className="disable-chakra" />
+          <NotionRenderer recordMap={recordMap} fullPage={false} darkMode={false} disableHeader={true} rootDomain={publicConfig.baseUrl} className="disable-chakra" />
         </SimpleGrid>
       </Container>
       <Footer />

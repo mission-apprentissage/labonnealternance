@@ -90,10 +90,7 @@ services:
         limits:
           memory: 256m
       replicas: 2
-    environment:
-      METABASE_SITE_URL: "{{vault.METABASE_SITE_URL}}"
-      METABASE_ONGLET_DATAVIZ_DASHBOARD_ID: "{{vault.METABASE_ONGLET_DATAVIZ_DASHBOARD_ID}}"
-      METABASE_SECRET_KEY: "{{vault.METABASE_SECRET_KEY}}"
+    env_file: .env_ui
     logging:
       driver: "fluentd"
       options:

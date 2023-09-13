@@ -7,6 +7,7 @@ import Breadcrumb from "../components/breadcrumb"
 import Footer from "../components/footer"
 import Navigation from "../components/navigation"
 import ScrollToTop from "../components/ScrollToTop"
+import { publicConfig } from "../config.public"
 import { fetchNotionPage } from "../services/fetchNotionPage"
 
 export async function getStaticProps() {
@@ -90,34 +91,13 @@ const FAQ = ({ recruteur, organisme, candidat }) => {
 
                 <TabPanels>
                   <TabPanel height="auto" color="grey.800" padding="0 !important;">
-                    <NotionRenderer
-                      recordMap={candidat}
-                      fullPage={false}
-                      darkMode={false}
-                      disableHeader={true}
-                      rootDomain={process.env.NEXT_PUBLIC_BASE_URL}
-                      bodyClassName="notion-body"
-                    />
+                    <NotionRenderer recordMap={candidat} fullPage={false} darkMode={false} disableHeader={true} rootDomain={publicConfig.baseUrl} bodyClassName="notion-body" />
                   </TabPanel>
                   <TabPanel height="auto" color="grey.800" padding="0 !important;">
-                    <NotionRenderer
-                      recordMap={recruteur}
-                      fullPage={false}
-                      darkMode={false}
-                      disableHeader={true}
-                      rootDomain={process.env.NEXT_PUBLIC_BASE_URL}
-                      bodyClassName="notion-body"
-                    />
+                    <NotionRenderer recordMap={recruteur} fullPage={false} darkMode={false} disableHeader={true} rootDomain={publicConfig.baseUrl} bodyClassName="notion-body" />
                   </TabPanel>
                   <TabPanel height="auto" color="grey.800" padding="0 !important;">
-                    <NotionRenderer
-                      recordMap={organisme}
-                      fullPage={false}
-                      darkMode={false}
-                      disableHeader={true}
-                      rootDomain={process.env.NEXT_PUBLIC_BASE_URL}
-                      bodyClassName="notion-body"
-                    />
+                    <NotionRenderer recordMap={organisme} fullPage={false} darkMode={false} disableHeader={true} rootDomain={publicConfig.baseUrl} bodyClassName="notion-body" />
                   </TabPanel>
                 </TabPanels>
               </Tabs>
