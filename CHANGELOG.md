@@ -1,3 +1,10 @@
+## [1.88.2](https://github.com/mission-apprentissage/labonnealternance/compare/v1.88.1...v1.88.2) (2023-09-13)
+
+
+### Bug Fixes
+
+* removing unused ([#576](https://github.com/mission-apprentissage/labonnealternance/issues/576)) ([74c9ab1](https://github.com/mission-apprentissage/labonnealternance/commit/74c9ab11acc5a263a22f8564d0be5cc7999d65d2))
+
 ## [1.88.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.88.0...v1.88.1) (2023-09-13)
 
 
