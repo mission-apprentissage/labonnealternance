@@ -1,4 +1,3 @@
-
 FROM node:20-alpine as builder_root
 WORKDIR /app
 RUN yarn set version 3.3.1
@@ -14,7 +13,6 @@ RUN yarn install --immutable
 
 FROM builder_root as root
 WORKDIR /app
-
 
 ##############################################################
 ######################    SERVER    ##########################
@@ -79,6 +77,12 @@ ENV NODE_ENV production
 # Uncomment the following line in case you want to disable telemetry during runtime.
 ENV NEXT_TELEMETRY_DISABLED 1
 
+ARG PUBLIC_VERSION
+ENV NEXT_PUBLIC_VERSION=$PUBLIC_VERSION
+
+ARG PUBLIC_ENV
+ENV NEXT_PUBLIC_ENV=$PUBLIC_ENV
+
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
@@ -106,14 +110,15 @@ FROM root AS build_espace_pro
 WORKDIR /app
 COPY ./ui_espace_pro ./ui_espace_pro
 
-ARG LBA_ENV=production
-ARG REACT_APP_BASE_URL
-ARG REACT_APP_METABASE_URL
-ARG REACT_APP_ENV
-ENV REACT_APP_BASE_URL=$REACT_APP_BASE_URL
-ENV REACT_APP_METABASE_URL=$REACT_APP_METABASE_URL
-ENV REACT_APP_ENV=$REACT_APP_ENV
+ENV NODE_ENV production
+
 ENV NODE_OPTIONS=--openssl-legacy-provider
+
+ARG PUBLIC_VERSION
+ENV REACT_APP_VERSION=$PUBLIC_VERSION
+
+ARG PUBLIC_ENV
+ENV REACT_APP_ENV=$PUBLIC_ENV
 
 # build & serve production
 FROM base as ui-espace-pro

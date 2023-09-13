@@ -37,6 +37,7 @@ import useAuth from "../../common/hooks/useAuth"
 import { sortReactTableDate } from "../../common/utils/dateUtils"
 import { ConfirmationSuppressionOffre, LoadingEmptySpace, Table } from "../../components"
 import { ArrowDropRightLine, Building, ExternalLinkLine, Parametre, Plus } from "../../theme/components/icons"
+import { publicConfig } from "../../config.public"
 
 const EmptySpace = () => (
   <Stack direction={["column", "column", "column", "row"]} mt={12} pt={12} py={8} border="1px solid" borderColor="grey.400" spacing="32px">
@@ -226,7 +227,7 @@ export const ListeOffres = () => {
                                 status: "success",
                                 duration: 2000,
                                 isClosable: true,
-                              }),
+                              })
                             )
                             .finally(() => client.invalidateQueries("offre-liste"))
                         }}
@@ -235,14 +236,14 @@ export const ListeOffres = () => {
                       </Link>
                     </MenuItem>
                     <MenuItem>
-                      <Link isExternal href={`${process.env.REACT_APP_BASE_URL}/recherche-apprentissage?&type=matcha&itemId=${row._id}`}>
+                      <Link isExternal href={`${publicConfig.baseUrl}/recherche-apprentissage?&type=matcha&itemId=${row._id}`}>
                         Voir l'offre en ligne
                         <ExternalLinkLine ml={1} color="bluefrance.500" />
                       </Link>
                     </MenuItem>
                     {auth.type !== AUTHTYPE.CFA && (
                       <MenuItem>
-                        <Link isExternal href={`${process.env.REACT_APP_BASE_URL}/recherche-apprentissage-formation?&caller=matcha&romes=${row.rome_code}&lon=${lon}&lat=${lat}`}>
+                        <Link isExternal href={`${publicConfig.baseUrl}/recherche-apprentissage-formation?&caller=matcha&romes=${row.rome_code}&lon=${lon}&lat=${lat}`}>
                           Voir les centres de formations
                         </Link>
                       </MenuItem>

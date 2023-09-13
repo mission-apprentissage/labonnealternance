@@ -38,11 +38,10 @@ import { ArrowRightLine, ExternalLinkLine, InfoCircle, Minus, Plus, Warning } fr
 import { J1S, Parcoursup } from "../theme/components/logos"
 import DropdownCombobox from "./DropdownCombobox"
 import style from "./Voeux.module.css"
+import { publicConfig } from "../config.public"
 
 const DATE_FORMAT = "YYYY-MM-DD"
-// TODO replace by an env variable
-const URL_LBA =
-  process.env.REACT_APP_ENV === "production" ? "https://labonnealternance.apprentissage.beta.gouv.fr/api" : "https://labonnealternance-recette.apprentissage.beta.gouv.fr/api"
+const URL_LBA = `${publicConfig.baseUrl}/api`
 
 const ChampNombre = ({ value, max, name, handleChange, label }) => {
   return (

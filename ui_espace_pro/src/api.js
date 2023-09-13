@@ -1,11 +1,12 @@
 import Axios from "axios"
+import { publicConfig } from "./config.public"
 
 const API = Axios.create({
-  baseURL: `${process.env.REACT_APP_BASE_URL}/api`,
+  baseURL: `${publicConfig.baseUrl}/api`,
 })
 
 const securedAPI = Axios.create({
-  baseURL: `${process.env.REACT_APP_BASE_URL}/api`,
+  baseURL: `${publicConfig.baseUrl}/api`,
   headers: {
     Authorization: `Bearer ${sessionStorage.getItem("lba:token")}`,
   },

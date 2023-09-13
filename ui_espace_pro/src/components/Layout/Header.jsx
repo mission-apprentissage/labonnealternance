@@ -9,17 +9,16 @@ import { LogoContext } from "../../contextLogo"
 import { LockFill } from "../../theme/components/icons"
 import { LbaNew } from "../../theme/components/logos"
 import Logo from "./Logo"
+import { publicConfig } from "../../config.public"
 
 const Header = () => {
   const { organisation } = useContext(LogoContext)
   const [auth, setAuth] = useAuth()
   const navigate = useNavigate()
 
-  const baseUrl = process.env.REACT_APP_BASE_URL
-
   return (
     <Box>
-      {baseUrl.includes("recette") && (
+      {publicConfig.baseUrl.includes("recette") && (
         <Alert status="info" variant="top-accent" justifyContent="center">
           <AlertIcon />
           Environnement de test
