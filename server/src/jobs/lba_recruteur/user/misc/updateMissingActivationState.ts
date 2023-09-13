@@ -1,8 +1,6 @@
 import { logger } from "../../../../common/logger.js"
 import { UserRecruteur } from "../../../../common/model/index.js"
 import { asyncForEach } from "../../../../common/utils/asyncUtils.js"
-import { ETAT_UTILISATEUR } from "../../../../services/constant.service.js"
-import { updateUser } from "../../../../services/userRecruteur.service.js"
 import { notifyToSlack } from "../../../../common/utils/slackUtils.js"
 import { ENTREPRISE, ETAT_UTILISATEUR } from "../../../../services/constant.service.js"
 import dayjs from "../../../../services/dayjs.service.js"
