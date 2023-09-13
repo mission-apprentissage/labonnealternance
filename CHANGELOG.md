@@ -1,3 +1,10 @@
+## [1.88.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.88.0...v1.88.1) (2023-09-13)
+
+
+### Bug Fixes
+
+* eslint ([#575](https://github.com/mission-apprentissage/labonnealternance/issues/575)) ([c2ec611](https://github.com/mission-apprentissage/labonnealternance/commit/c2ec61164f488df74c75e7500606c10aae54b72c))
+
 # [1.88.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.87.0...v1.88.0) (2023-09-13)
 
 
