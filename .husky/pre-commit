@@ -2,5 +2,6 @@
 . "$(dirname -- "$0")/_/husky.sh"
 
 yarn lint-staged
+yarn --cwd server tsoa
 ./.husky/preventSensibleFilesCommit.sh
 yarn node-talisman --githook pre-commit
