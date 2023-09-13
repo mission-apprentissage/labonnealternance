@@ -108,6 +108,13 @@ export default ({ etablissements }) => {
         }),
       ])
 
+      const emailCandidatSubject = `Votre demande de RDV auprès de ${eligibleTrainingsForAppointment.etablissement_formateur_raison_sociale}`
+      let emailCfaSubject = `[${referrerObj.full_name}] - Un candidat a un message pour vous`
+
+      if (eligibleTrainingsForAppointment.lieu_formation_zip_code) {
+        emailCfaSubject = `${emailCfaSubject} - [${eligibleTrainingsForAppointment.lieu_formation_zip_code.slice(0, 2)}]`
+      }
+
       const mailData = {
         appointmentId: createdAppointement._id,
         user: {
@@ -138,19 +145,17 @@ export default ({ etablissements }) => {
           logoFooter: `${config.publicUrlEspacePro}/assets/logo-republique-francaise.png?raw=true`,
           peopleLaptop: `${config.publicUrlEspacePro}/assets/people-laptop.png?raw=true`,
         },
-      }
-
-      let emailCfaSubject = `[${referrerObj.full_name}] - Un candidat a un message pour vous`
-
-      if (eligibleTrainingsForAppointment.lieu_formation_zip_code) {
-        emailCfaSubject = `${emailCfaSubject} - [${eligibleTrainingsForAppointment.lieu_formation_zip_code.slice(0, 2)}]`
+        subjects: {
+          emailCandidatSubject,
+          emailCfaSubject,
+        },
       }
 
       // Sends email to "candidate" and "formation"
       const [emailCandidat, emailCfa] = await Promise.all([
         mailer.sendEmail({
           to: user.email,
-          subject: `Le centre de formation a bien reçu votre demande de contact !`,
+          subject: emailCandidatSubject,
           template: getStaticFilePath("./templates/mail-candidat-confirmation-rdv.mjml.ejs"),
           data: mailData,
         }),

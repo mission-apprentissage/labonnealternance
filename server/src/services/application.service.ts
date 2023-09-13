@@ -186,7 +186,7 @@ export const sendApplication = async ({ query, referer, shouldCheckSecret }: { q
         if (aCompanyType === "matcha") {
           res = `Candidature en alternance - ${aJobTitle}`
         } else {
-          res = `Candidature spontanée en alternance`
+          res = `Candidature spontanée en alternance - ${aJobTitle}`
         }
         return res
       }
