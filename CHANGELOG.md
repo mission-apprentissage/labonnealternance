@@ -1,3 +1,10 @@
+## [1.88.3](https://github.com/mission-apprentissage/labonnealternance/compare/v1.88.2...v1.88.3) (2023-09-13)
+
+
+### Bug Fixes
+
+* api job user info assignment ([9120500](https://github.com/mission-apprentissage/labonnealternance/commit/9120500fc993bf3b86975dc50f20cbad5fc1bc34))
+
 ## [1.88.2](https://github.com/mission-apprentissage/labonnealternance/compare/v1.88.1...v1.88.2) (2023-09-13)
 
 
