@@ -3,7 +3,7 @@ import React from "react"
 import { AddIcon, ExternalLinkIcon, MinusIcon } from "@chakra-ui/icons"
 import { Accordion, AccordionButton, AccordionItem, AccordionPanel, Box, Link } from "@chakra-ui/react"
 
-const CandidatureSpontaneeExplanation = (props) => {
+const CandidatureLbaExplanation = (props) => {
   // Collapse Open state
   const [isOpen, setIsOpen] = React.useState(false)
 
@@ -82,4 +82,4 @@ const CandidatureSpontaneeExplanation = (props) => {
   )
 }
 
-export default CandidatureSpontaneeExplanation
+export default CandidatureLbaExplanation

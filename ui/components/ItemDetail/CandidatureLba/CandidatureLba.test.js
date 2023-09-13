@@ -1,10 +1,10 @@
 import React from "react"
 import { render, screen, fireEvent, wait, waitFor } from "@testing-library/react"
-import CandidatureSpontanee from "./CandidatureSpontanee"
+import CandidatureLba from "./CandidatureLba"
 import nock from "nock"
 import userEvent from "@testing-library/user-event"
 
-describe("CandidatureSpontanee", () => {
+describe("CandidatureLba", () => {
   function buildFakeStorage() {
     let storage = {}
 
@@ -29,7 +29,7 @@ describe("CandidatureSpontanee", () => {
 
   it("By default displays a button, not a modal", () => {
     // Given
-    render(<CandidatureSpontanee item={{}} fakeLocalStorage={fakeLocalStorage} />)
+    render(<CandidatureLba item={{}} fakeLocalStorage={fakeLocalStorage} />)
     // When
     const button = screen.queryByRole("button", { name: /jenvoie-une-candidature-spontanee/i })
     const modal = screen.queryByRole("dialog")
@@ -153,7 +153,7 @@ describe("CandidatureSpontanee", () => {
     // Given
     fakeLocalStorage.setItem("candidaturespontanee-lbb-40400744500079", "1641477787024")
     // When
-    render(<CandidatureSpontanee item={realisticLbb} fakeLocalStorage={fakeLocalStorage} />)
+    render(<CandidatureLba item={realisticLbb} fakeLocalStorage={fakeLocalStorage} />)
     // Then
     expect(screen.getByTestId("already-applied")).toHaveTextContent("Vous avez déjà postulé le 6 janvier 2022")
   })
@@ -264,7 +264,7 @@ describe("CandidatureSpontanee", () => {
     // Given
     fakeLocalStorage.setItem("candidaturespontanee-matcha-611ccfa4bb8f010028f0bd75", "1641477787024")
     // When
-    render(<CandidatureSpontanee item={realisticMatcha} fakeLocalStorage={fakeLocalStorage} />)
+    render(<CandidatureLba item={realisticMatcha} fakeLocalStorage={fakeLocalStorage} />)
     // Then
     expect(screen.getByTestId("already-applied")).toHaveTextContent("Vous avez déjà postulé le 6 janvier 2022")
   })
@@ -340,12 +340,12 @@ describe("CandidatureSpontanee", () => {
   })
 
   const openLbbModal = (render, screen, fireEvent) => {
-    render(<CandidatureSpontanee item={realisticLbb} fakeLocalStorage={fakeLocalStorage} />)
+    render(<CandidatureLba item={realisticLbb} fakeLocalStorage={fakeLocalStorage} />)
     const button = screen.queryByRole("button", { name: /jenvoie-une-candidature-spontanee/i })
     fireEvent.click(button)
   }
   const openMatchaModal = (render, screen, fireEvent) => {
-    render(<CandidatureSpontanee item={realisticMatcha} fakeLocalStorage={fakeLocalStorage} />)
+    render(<CandidatureLba item={realisticMatcha} fakeLocalStorage={fakeLocalStorage} />)
     const button = screen.queryByRole("button", { name: /jenvoie-une-candidature-spontanee/i })
     fireEvent.click(button)
   }

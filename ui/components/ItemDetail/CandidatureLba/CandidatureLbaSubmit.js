@@ -2,7 +2,7 @@ import { Button, Flex, Spinner, Text } from "@chakra-ui/react"
 import React from "react"
 import { amongst } from "../../../utils/arrayutils"
 
-const CandidatureSpontaneeSubmit = (props) => {
+const CandidatureLbaSubmit = (props) => {
   const sendingState = props.sendingState
   const kind = props?.item?.ideaType || ""
 
@@ -27,4 +27,4 @@ const CandidatureSpontaneeSubmit = (props) => {
   }
 }
 
-export default CandidatureSpontaneeSubmit
+export default CandidatureLbaSubmit
