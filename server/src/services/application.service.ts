@@ -147,6 +147,12 @@ export const sendApplication = async ({ query, referer, shouldCheckSecret }: { q
       return { error: validationResult }
     }
 
+    validationResult = await validateApplicationType(query)
+
+    if (validationResult !== "ok") {
+      return { error: validationResult }
+    }
+
     validationResult = await validatePermanentEmail(query)
 
     if (validationResult !== "ok") {
@@ -425,7 +431,7 @@ export const validateSendApplication = async (validable: Partial<IApplicationPar
     company_naf: Joi.string().required(),
     company_name: Joi.string().required(),
     job_title: Joi.string().required(),
-    company_type: Joi.string().required(),
+    company_type: Joi.string().valid("matcha", "lba").required(),
     company_siret: Joi.string().required(),
     company_address: Joi.string().required(),
     job_id: Joi.optional(),
@@ -454,7 +460,7 @@ export const validateJobStatus = async (validable: Partial<IApplicationParameter
   if (company_type === "matcha" && job_id) {
     const job = await getOffreAvecInfoMandataire(job_id)
 
-    if (job.status !== RECRUITER_STATUS.ACTIF || job.jobs[0].job_status !== JOB_STATUS.ACTIVE) {
+    if (!job || job.status !== RECRUITER_STATUS.ACTIF || job.jobs[0].job_status !== JOB_STATUS.ACTIVE) {
       return "offre expirée"
     }
   }
@@ -523,6 +529,19 @@ export const validateCompanyEmail = async (validable: ICompanyEmail): Promise<st
 export const validatePermanentEmail = async (validable: Partial<IApplicationParameters>): Promise<string> => {
   if (isEmailBurner(validable.applicant_email)) {
     return "email temporaire non autorisé"
+  }
+  return "ok"
+}
+
+/**
+ * @description Checks if application type matches params
+ * @param {Partial<IApplicationParameters>} validable
+ * @return {<string>}
+ */
+export const validateApplicationType = (validable: Partial<IApplicationParameters>) => {
+  const { company_type, company_siret, job_id } = validable
+  if ((company_type === "matcha" && !job_id) || (company_type === "lba" && (!company_siret || job_id))) {
+    return "paramètres sociétés non autorisés"
   }
   return "ok"
 }
