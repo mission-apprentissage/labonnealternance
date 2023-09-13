@@ -27,6 +27,11 @@
         content: "{{ lookup('ansible.builtin.template', '../.env_server') }}"
         dest: "/opt/app/projects/{{ pr_number }}/.env_server"
 
+    - name: "[{{ pr_number }}] copy ui env file"
+      ansible.builtin.copy:
+        content: "{{ lookup('ansible.builtin.template', '../.env_ui') }}"
+        dest: "/opt/app/projects/{{ pr_number }}/.env_ui"
+
     - name: "[{{ pr_number }}] creation du fichier docker compose"
       ansible.builtin.template:
         src: "{{inventory_dir}}/docker-compose.preview.yml"
@@ -34,12 +39,12 @@
 
     - name: "Check if repository exists"
       stat:
-        path: "/opt/app/repository"
+        path: "/opt/app/projects/{{ pr_number }}/repository"
       register: check_stat
 
     - name: "Pruning repository references"
       shell:
-        chdir: "/opt/app/repository"
+        chdir: "/opt/app/projects/{{ pr_number }}/repository"
         cmd: git remote prune origin
       when: check_stat.stat.exists
 
@@ -49,7 +54,7 @@
         version: "{{ pr_commit_id }}"
         force: yes
         accept_newhostkey: yes
-        dest: /opt/app/repository
+        dest: "/opt/app/projects/{{ pr_number }}/repository"
 
     - name: "[{{ pr_number }}] Root only pour tous les répertoires applicatifs"
       file:
@@ -59,12 +64,12 @@
         group: root
         mode: 770
       with_items:
-        - "/opt/app/repository"
+        - "/opt/app/projects/{{ pr_number }}/repository"
 
     - name: "[{{ pr_number }}] Build local images 0.0.0-{{ pr_number }}"
       shell:
         cmd: ".bin/mna-lba preview:build 0.0.0-{{ pr_number }} load preview"
-        chdir: /opt/app/repository
+        chdir: "/opt/app/projects/{{ pr_number }}/repository"
       async: 900 # max 15 minutes
       poll: 15 # check every 15s
 
@@ -90,7 +95,7 @@
 
     - name: "[{{ pr_number }}] Preview URL"
       debug:
-        msg: "{{ vault[env_type].MNA_LBA_PUBLIC_URL }}"
+        msg: "{{ vault[env_type].LBA_PUBLIC_URL }}"
 
 - name: "[{{ pr_number }}] Uninstalling preview"
   when: pr_state != 'open'
@@ -115,7 +120,7 @@
 
     - name: "[{{ pr_number }}] Remove database"
       shell:
-        cmd: docker run --rm -i --network mna_network mongo:6.0.2-focal mongosh "{{ vault[env_type].MNA_LBA_MONGODB_URI }}" --eval "db.dropDatabase()"
+        cmd: docker run --rm -i --network mna_network mongo:6.0.2-focal mongosh "{{ vault[env_type].LBA_MONGODB_URI }}" --eval "db.dropDatabase()"
 
     - name: "[{{ pr_number }}] Removing preview directory"
       shell:
