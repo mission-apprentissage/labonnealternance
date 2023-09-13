@@ -7,6 +7,7 @@ import Breadcrumb from "../components/breadcrumb"
 import Footer from "../components/footer"
 import Navigation from "../components/navigation"
 import ScrollToTop from "../components/ScrollToTop"
+import { publicConfig } from "../config.public"
 import { fetchNotionPage } from "../services/fetchNotionPage"
 
 export async function getStaticProps() {
@@ -39,14 +40,7 @@ const MentionsLegales = ({ recordMap }) => {
           </GridItem>
           <GridItem px={4} colSpan={[12, 12, 12, 7]}>
             <Box>
-              <NotionRenderer
-                recordMap={recordMap}
-                fullPage={false}
-                darkMode={false}
-                disableHeader={true}
-                rootDomain={process.env.NEXT_PUBLIC_BASE_URL}
-                bodyClassName="notion-body"
-              />
+              <NotionRenderer recordMap={recordMap} fullPage={false} darkMode={false} disableHeader={true} rootDomain={publicConfig.baseUrl} bodyClassName="notion-body" />
             </Box>
           </GridItem>
         </Grid>

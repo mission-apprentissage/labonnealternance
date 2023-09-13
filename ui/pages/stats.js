@@ -5,7 +5,7 @@ import Breadcrumb from "../components/breadcrumb"
 import Footer from "../components/footer"
 import Navigation from "../components/navigation"
 import ScrollToTop from "../components/ScrollToTop"
-
+import { publicConfig } from "../config.public"
 
 const metabaseIframeOnLoad = (ev) => {
   try {
@@ -117,7 +117,7 @@ const stats = () => (
                   height="450px"
                   onLoad={metabaseIframeOnLoad}
                   title="stats_offres_lba"
-                  src={`${process.env.NEXT_PUBLIC_BASE_URL}/metabase/public/dashboard/74a0d3f7-97e7-41b3-86ac-38cadbc21a76`}
+                  src={`${publicConfig.baseUrl}/metabase/public/dashboard/74a0d3f7-97e7-41b3-86ac-38cadbc21a76`}
                   loading="lazy"
                 ></iframe>
               </Box>
@@ -133,7 +133,7 @@ const stats = () => (
                   height="500px"
                   onLoad={metabaseIframeOnLoad}
                   title="stats_formations_lba"
-                  src={`${process.env.NEXT_PUBLIC_BASE_URL}/metabase/public/dashboard/ff285493-4d51-4429-b330-497a14c92974`}
+                  src={`${publicConfig.baseUrl}/metabase/public/dashboard/ff285493-4d51-4429-b330-497a14c92974`}
                   loading="lazy"
                 ></iframe>
               </Box>
@@ -151,7 +151,7 @@ const stats = () => (
                   height="500px"
                   onLoad={metabaseIframeOnLoad}
                   title="stats_candidatures_lba"
-                  src={`${process.env.NEXT_PUBLIC_BASE_URL}/metabase/public/dashboard/9b0132ca-2629-4fa7-9be8-9183f2f7d98d`}
+                  src={`${publicConfig.baseUrl}/metabase/public/dashboard/9b0132ca-2629-4fa7-9be8-9183f2f7d98d`}
                   loading="lazy"
                 ></iframe>
               </Box>
@@ -167,7 +167,7 @@ const stats = () => (
                   height="330px"
                   title="stats_count_prdv"
                   onLoad={metabaseIframeOnLoad}
-                  src={`${process.env.NEXT_PUBLIC_BASE_URL}/metabase/public/dashboard/d9818d96-22b4-4fa8-bf90-3109c8f86f14`}
+                  src={`${publicConfig.baseUrl}/metabase/public/dashboard/d9818d96-22b4-4fa8-bf90-3109c8f86f14`}
                   loading="lazy"
                 ></iframe>
               </Box>
@@ -183,7 +183,7 @@ const stats = () => (
                   height="280px"
                   title="stats_modules_pedagogiques"
                   onLoad={metabaseIframeOnLoad}
-                  src={`${process.env.NEXT_PUBLIC_BASE_URL}/metabase/public/dashboard/abf6bcc2-0da5-4f1d-a063-6f7dec80c363`}
+                  src={`${publicConfig.baseUrl}/metabase/public/dashboard/abf6bcc2-0da5-4f1d-a063-6f7dec80c363`}
                   loading="lazy"
                 ></iframe>
               </Box>
@@ -203,7 +203,7 @@ const stats = () => (
                     height="550px"
                     title="stats_reponses_recruteurs"
                     onLoad={metabaseIframeOnLoad}
-                    src={`${process.env.NEXT_PUBLIC_BASE_URL}/metabase/public/dashboard/17a7b8f6-160c-4510-b723-fdedf961913c`}
+                    src={`${publicConfig.baseUrl}/metabase/public/dashboard/17a7b8f6-160c-4510-b723-fdedf961913c`}
                     loading="lazy"
                   ></iframe>
                 </Box>
@@ -220,7 +220,7 @@ const stats = () => (
                     height="550px"
                     title="stats_reponses_cfa"
                     onLoad={metabaseIframeOnLoad}
-                    src={`${process.env.NEXT_PUBLIC_BASE_URL}/metabase/public/dashboard/74000a35-edfa-4b6f-b28a-64a3c54a0f22`}
+                    src={`${publicConfig.baseUrl}/metabase/public/dashboard/74000a35-edfa-4b6f-b28a-64a3c54a0f22`}
                     loading="lazy"
                   ></iframe>
                 </Box>
@@ -240,7 +240,7 @@ const stats = () => (
                     height="350px"
                     title="stats_signatures_contrat"
                     onLoad={metabaseIframeOnLoad}
-                    src={`${process.env.NEXT_PUBLIC_BASE_URL}/metabase/public/dashboard/2984c1be-175b-41bd-9bf8-8a892dac5565`}
+                    src={`${publicConfig.baseUrl}/metabase/public/dashboard/2984c1be-175b-41bd-9bf8-8a892dac5565`}
                     loading="lazy"
                   ></iframe>
                 </Box>
@@ -257,7 +257,7 @@ const stats = () => (
                     height="350px"
                     title="stats_inscriptions_formations"
                     onLoad={metabaseIframeOnLoad}
-                    src={`${process.env.NEXT_PUBLIC_BASE_URL}/metabase/public/dashboard/46675941-a800-4f05-98f2-667d9810a912`}
+                    src={`${publicConfig.baseUrl}/metabase/public/dashboard/46675941-a800-4f05-98f2-667d9810a912`}
                     loading="lazy"
                   ></iframe>
                 </Box>
