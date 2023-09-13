@@ -1,26 +1,59 @@
-import { Button, FormControl, FormLabel, Heading, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Select, Text } from "@chakra-ui/react"
-import { useState } from "react"
-import { archiveDelegatedFormulaire, archiveFormulaire } from "../api"
+import {
+  Button,
+  FormControl,
+  FormLabel,
+  Heading,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Select,
+  Text,
+  useDisclosure,
+  Input,
+} from "@chakra-ui/react"
+import { useState, useEffect } from "react"
+import { archiveDelegatedFormulaire, archiveFormulaire, updateEntreprise } from "../api"
 import { AUTHTYPE, USER_STATUS } from "../common/contants"
 import useUserHistoryUpdate from "../common/hooks/useUserHistoryUpdate"
 import { Close } from "../theme/components/icons"
 
-export default (props) => {
+export const ConfirmationDesactivationUtilisateur = (props) => {
   const { isOpen, onClose, establishment_raison_sociale, _id, type, establishment_id, siret } = props
   const [reason, setReason] = useState()
+  const reasonComment = useDisclosure(false)
   const disableUser = useUserHistoryUpdate(_id, USER_STATUS.DISABLED, reason)
+  const reassignUserToAdmin = useUserHistoryUpdate(_id, USER_STATUS.WAITING, reason)
+
+  const handleReason = (value) => {
+    if (value === "Autre") {
+      reasonComment.onOpen()
+    } else {
+      reasonComment.onClose()
+      setReason(value)
+    }
+  }
 
   const handleUpdate = async () => {
     switch (type) {
       case AUTHTYPE.ENTREPRISE:
-        await Promise.all([archiveFormulaire(establishment_id), disableUser()])
+        if (reason === "Ne relève pas des champs de compétences de mon OPCO") {
+          await Promise.all([updateEntreprise(_id, establishment_id, { opco: "inconnu" }), reassignUserToAdmin(establishment_id)])
+        } else {
+          await Promise.all([archiveFormulaire(establishment_id), disableUser()])
+        }
         break
 
       case AUTHTYPE.CFA:
         await Promise.all([archiveDelegatedFormulaire(siret), disableUser()])
         break
+      default:
+        throw new Error(`unsupported type: ${type}`)
     }
     onClose()
+    reasonComment.onClose()
   }
 
   return (
@@ -45,17 +78,28 @@ export default (props) => {
           </Text>
           <FormControl isRequired mt={5}>
             <FormLabel>Motif de refus</FormLabel>
-            <Select onChange={(e) => setReason(e.target.value)}>
+            <Select onChange={(e) => handleReason(e.target.value)}>
               <option value="" hidden>
                 Sélectionnez un motif
               </option>
               <option value="Ne relève pas des champs de compétences de mon OPCO">Ne relève pas des champs de compétences de mon OPCO</option>
-              <option value="Information utilisateur non conforme">Information utilisateur non conforme</option>
               <option value="Tentative de fraude">Tentative de fraude</option>
+              <option value="Injoignable">Injoignable</option>
+              <option value="Compte en doublon">Compte en doublon</option>
+              {type === "CFA" && <option value="Non référencé dans le catalogue">Non référencé dans le catalogue</option>}
               <option value="Autre">Autre</option>
             </Select>
           </FormControl>
         </ModalBody>
+
+        {reasonComment.isOpen && (
+          <ModalBody isRequired>
+            <FormLabel>Autre</FormLabel>
+            <FormControl isRequired>
+              <Input onChange={(e) => setReason(e.target.value)} isRequired minLength="3" />
+            </FormControl>
+          </ModalBody>
+        )}
 
         <ModalFooter>
           <Button
@@ -76,3 +120,5 @@ export default (props) => {
     </Modal>
   )
 }
+
+export default ConfirmationDesactivationUtilisateur

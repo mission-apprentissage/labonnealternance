@@ -26,7 +26,7 @@ export const FormRecapPage = () => {
         <>
           {data.user && (
             <Box mt={10}>
-              <Text as="span" color="info" textStyle="h6" fontWeight="700">
+              <Text data-testid="rdv-sent" as="span" color="info" textStyle="h6" fontWeight="700">
                 Voilà une bonne chose de faite {data.user.firstname} {data.user.lastname} !
               </Text>
               <Text fontWeight="700" color="grey.750" mt={6}>

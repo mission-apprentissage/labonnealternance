@@ -1,15 +1,14 @@
 import express from "express"
-import { deleteFormulaire, getFormulaire, reactivateRecruiter, sendCFADelegationMail, updateOffre } from "../../services/formulaire.service.js"
 import { mailTemplate } from "../../assets/index.js"
-import { CFA, ENTREPRISE, ETAT_UTILISATEUR, JOB_STATUS, RECRUITER_STATUS } from "../../services/constant.service.js"
-import dayjs from "../../services/dayjs.service.js"
 import { Recruiter, UserRecruteur } from "../../common/model/index.js"
-import { createMagicLinkToken } from "../../common/utils/jwtUtils.js"
 import config from "../../config.js"
-import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
-import { createUser, updateUser, updateUserValidationHistory, removeUser } from "../../services/userRecruteur.service.js"
-import authMiddleware from "../middlewares/authMiddleware.js"
+import { ENTREPRISE, ETAT_UTILISATEUR, JOB_STATUS, RECRUITER_STATUS } from "../../services/constant.service.js"
+import dayjs from "../../services/dayjs.service.js"
+import { deleteFormulaire, getFormulaire, reactivateRecruiter, sendDelegationMailToCFA, updateOffre } from "../../services/formulaire.service.js"
 import mailer from "../../services/mailer.service.js"
+import { createUser, removeUser, sendWelcomeEmailToUserRecruteur, updateUser, updateUserValidationHistory } from "../../services/userRecruteur.service.js"
+import authMiddleware from "../middlewares/authMiddleware.js"
+import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
 
 export default () => {
   const router = express.Router()
@@ -113,9 +112,35 @@ export default () => {
     tryCatch(async (req, res) => {
       const history = req.body
       const user = await updateUserValidationHistory(req.params.userId, history)
+      const { email, last_name, first_name, establishment_raison_sociale, opco } = user
 
       // if user is disabled, return the user data directly
       if (history.status === ETAT_UTILISATEUR.DESACTIVE) {
+        // send email to user to notify him his account has been disabled
+        await mailer.sendEmail({
+          to: user.email,
+          subject: "Votre compte a été désactivé sur La bonne alternance",
+          template: mailTemplate["mail-compte-desactive"],
+          data: {
+            images: {
+              accountDisabled: `${config.publicUrlEspacePro}/images/image-compte-desactive.png?raw=true`,
+              logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
+            },
+            last_name,
+            first_name,
+            email,
+            reason: history.reason,
+            emailSupport: "mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Compte%20pro%20non%20validé",
+          },
+        })
+        return res.json(user)
+      }
+
+      /**
+       * 20230831 kevin todo: share reason between front and back with shared folder
+       */
+      // if user isn't part of the OPCO, just send the user straigth back
+      if (history.reason === "Ne relève pas des champs de compétences de mon OPCO") {
         return res.json(user)
       }
 
@@ -138,7 +163,7 @@ export default () => {
             await updateOffre(job._id, job)
 
             if (job?.delegations && job?.delegations.length) {
-              await Promise.all(job.delegations.map(async (delegation) => await sendCFADelegationMail(delegation.email, job, userFormulaire, delegation.siret_code)))
+              await Promise.all(job.delegations.map(async (delegation) => await sendDelegationMailToCFA(delegation.email, job, userFormulaire, delegation.siret_code)))
             }
           }
         }
@@ -146,30 +171,7 @@ export default () => {
 
       // validate user email addresse
       await updateUser({ _id: user._id }, { is_email_checked: true })
-
-      // get magiclink url
-      const magiclink = `${config.publicUrlEspacePro}/authentification/verification?token=${createMagicLinkToken(user.email)}`
-
-      const { email, last_name, first_name, establishment_raison_sociale } = user
-
-      // send welcome email to user
-      await mailer.sendEmail({
-        to: email,
-        subject: "Bienvenue sur La bonne alternance",
-        template: mailTemplate["mail-bienvenue"],
-        data: {
-          images: {
-            logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
-          },
-          last_name,
-          first_name,
-          establishment_raison_sociale,
-          email,
-          is_delegated: user.type === CFA,
-          url: magiclink,
-        },
-      })
-
+      await sendWelcomeEmailToUserRecruteur(user)
       return res.json(user)
     })
   )

@@ -25,6 +25,7 @@ import RncpRomes from "./schema/rncpRomes/rncpRomes.schema.js"
 import User from "./schema/user/user.schema.js"
 import UserRecruteur from "./schema/userRecruteur/usersRecruteur.schema.js"
 import UnsubscribeOF from "./schema/unsubscribedOF/unsubscribeOF.schema.js"
+import ReferentielRome from "./schema/referentielRome/referentielRome.schema.js"
 
 export {
   DomainesMetiers,
@@ -54,4 +55,5 @@ export {
   LbaCompanyLegacy,
   UnsubscribedLbaCompany,
   UnsubscribeOF,
+  ReferentielRome,
 }

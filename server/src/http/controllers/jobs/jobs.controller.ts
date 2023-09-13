@@ -1,11 +1,20 @@
 import * as express from "express"
 import { Body, Controller, Get, Header, Hidden, OperationId, Patch, Path, Post, Query, Request, Response, Route, Security, SuccessResponse, Tags } from "tsoa"
-import { ICreateDelegation, ICreateJobBody, IGetDelegation, TCreateEstablishmentBody, TEstablishmentResponseSuccess, TJob, TResponseError } from "./jobs.types.js"
-import { createDelegationSchema, createEstablishmentSchema, createJobSchema, getEstablishmentEntitySchema, updateJobSchema } from "./jobs.validators.js"
-import { formatEntrepriseData, getEtablissement, getEtablissementFromGouv, getGeoCoordinates } from "../../../services/etablissement.service.js"
 import { Recruiter } from "../../../common/model/index.js"
-import { createUser, updateUserValidationHistory } from "../../../services/userRecruteur.service.js"
+import { ICredential } from "../../../common/model/schema/credentials/credential.types.js"
+import { IJobs } from "../../../common/model/schema/jobs/jobs.types.js"
 import { IUserRecruteur } from "../../../common/model/schema/userRecruteur/userRecruteur.types.js"
+import { delay } from "../../../common/utils/asyncUtils.js"
+import { IApiError } from "../../../common/utils/errorManager.js"
+import { getCompanyFromSiret } from "../../../services/lbacompany.service.js"
+import { getJobsQuery } from "../../../services/jobOpportunity.service.js"
+import { getPeJobFromId } from "../../../services/pejob.service.js"
+import { getNearEtablissementsFromRomes } from "../../../services/catalogue.service.js"
+import { ACTIVE, ANNULEE, JOB_STATUS, POURVUE } from "../../../services/constant.service.js"
+import dayjs from "../../../services/dayjs.service.js"
+import { entrepriseOnboardingWorkflow } from "../../../services/etablissement.service.js"
+import { addOffreDetailView, addOffreSearchView, getLbaJobById } from "../../../services/lbajob.service.js"
+import { getAppellationDetailsFromAPI, getRomeDetailsFromAPI } from "../../../services/rome.service.js"
 import {
   cancelOffre,
   createJobDelegations,
@@ -14,23 +23,13 @@ import {
   getFormulaire,
   getFormulaires,
   getJob,
+  getOffre,
   patchOffre,
   provideOffre,
 } from "../../../services/formulaire.service.js"
-import { IJobs } from "../../../common/model/schema/jobs/jobs.types.js"
-import dayjs from "../../../services/dayjs.service.js"
-import { getAppellationDetailsFromAPI, getRomeDetailsFromAPI } from "../../../services/rome.service.js"
-import { getOffre } from "../../../services/formulaire.service.js"
-import { getNearEtablissementsFromRomes } from "../../../services/catalogue.service.js"
-import { ACTIVE, ANNULEE, POURVUE, ENTREPRISE, ETAT_UTILISATEUR, VALIDATION_UTILISATEUR } from "../../../services/constant.service.js"
-import { delay } from "../../../common/utils/asyncUtils.js"
-import { ICredential } from "../../../common/model/schema/credentials/credential.types.js"
-import { IApiError } from "../../../common/utils/errorManager.js"
 import { ILbaItem } from "../../../services/lbaitem.shared.service.types.js"
-import { getCompanyFromSiret } from "../../../services/lbacompany.service.js"
-import { addOffreDetailView, addOffreSearchView, getLbaJobById } from "../../../services/lbajob.service.js"
-import { getPeJobFromId } from "../../../services/pejob.service.js"
-import { getJobsQuery } from "../../../services/jobOpportunity.service.js"
+import { ICreateDelegation, ICreateJobBody, IGetDelegation, TCreateEstablishmentBody, TEstablishmentResponseSuccess, TJob, TResponseError } from "./jobs.types.js"
+import { createDelegationSchema, createEstablishmentSchema, createJobSchema, getEstablishmentEntitySchema, updateJobSchema } from "./jobs.validators.js"
 
 @Tags("Jobs")
 @Route("/api/v1/jobs")
@@ -109,61 +108,35 @@ export class JobsController extends Controller {
   @OperationId("createEstablishment")
   @Security("api_key")
   public async createEstablishment(@Request() request: express.Request | any, @Body() body: TCreateEstablishmentBody): Promise<TEstablishmentResponseSuccess | TResponseError> {
-    const { first_name, last_name, phone, email, origin, idcc, establishment_siret } = body
-    const user: ICredential = request.user
-
-    const establishmentExists = await getEtablissement({ email })
-
-    if (establishmentExists) {
-      this.setStatus(400)
-      return { error: true, message: "Email is already linked with an establishment" }
-    }
     // Validate establishment parameters
     await createEstablishmentSchema.validateAsync(body, { abortEarly: false })
 
-    // Get siret information from API
-    const establishmentInformations = await getEtablissementFromGouv(establishment_siret)
+    const { first_name, last_name, phone, email, origin, idcc, establishment_siret } = body
+    const user: ICredential = request.user
 
-    // If establishment is closed, throw error
-    if (establishmentInformations.data.etat_administratif === "F") {
-      return { error: true, message: "Establishment is closed" }
+    const result = await entrepriseOnboardingWorkflow.create(
+      {
+        email,
+        first_name,
+        last_name,
+        phone,
+        origin: `${user.organisation}${origin ? `-${origin}` : ""}`,
+        idcc,
+        siret: establishment_siret,
+        opco: user.scope,
+      },
+      {
+        isUserValidated: true,
+      }
+    )
+    if ("error" in result) {
+      const { message } = result
+      this.setStatus(400)
+      return { error: true, message }
     }
-
-    // Format establishment data returned by API
-    // Initialize establishment object
-    const establishment = {
-      origin: `${user.organisation}${origin ? `-${origin}` : ""}`,
-      first_name,
-      last_name,
-      phone,
-      email,
-      type: ENTREPRISE,
-      is_email_checked: true,
-      is_qualiopi: false,
-      opco: user.scope,
-      idcc,
-      ...formatEntrepriseData(establishmentInformations.data),
-    }
-
-    // Get geocoordinates
-    establishment.geo_coordinates = await getGeoCoordinates(`${establishment.address_detail.acheminement_postal.l4}, ${establishment.address_detail.acheminement_postal.l6}`)
-
-    /**
-     *  KBA 25052023 : Bellow logic will be update with the global refactoring of the service logic
-     */
-    // Create entry in Recruiter collection
-    const newEstablishment = await Recruiter.create(establishment)
-    // Create entry in UserRecruter collection
-    const newUser = await createUser({ ...establishment, establishment_id: newEstablishment.establishment_id })
-    // Update user status to valid
-    await updateUserValidationHistory(newUser._id, {
-      validation_type: VALIDATION_UTILISATEUR.AUTO,
-      user: "SERVEUR",
-      status: ETAT_UTILISATEUR.VALIDE,
-    })
 
     this.setStatus(201)
-    return newEstablishment
+    return result.formulaire
   }
 
   /**
@@ -222,7 +195,7 @@ export class JobsController extends Controller {
       job_description: body.job_description,
       job_creation_date: dayjs().format(DATE_FORMAT),
       job_expiration_date: dayjs().add(1, "month").format(DATE_FORMAT),
-      job_status: "Active",
+      job_status: JOB_STATUS.ACTIVE,
       job_type: body.job_type,
       rome_detail: romeDetails,
       is_disabled_elligible: body.is_disabled_elligible,

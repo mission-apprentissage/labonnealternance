@@ -1,39 +1,31 @@
 import React, { useContext, useState } from "react"
 
 import { ErrorMessage } from "../../../components"
-import DisplayMapButton from "../../../components/DisplayMapButton/displayMapButton"
 import { DisplayContext } from "../../../context/DisplayContextProvider"
 import { ScopeContext } from "../../../context/ScopeContext"
 import { SearchResultContext } from "../../../context/SearchResultContextProvider"
-import purpleFilterIcon from "../../../public/images/icons/purpleFilter.svg"
 import { isCfaEntreprise } from "../../../services/cfaEntreprise"
 import { mergeJobs, mergeOpportunities } from "../../../utils/itemListUtils"
-import { filterLayers } from "../../../utils/mapTools"
 import ExtendedSearchButton from "./ExtendedSearchButton"
 import NoJobResult from "./NoJobResult"
-import ResultListsCounter from "./ResultListsCounter"
-
-import { Box, Button, Flex, Image } from "@chakra-ui/react"
-import { SendPlausibleEvent } from "../../../utils/plausible"
+import { Box, Flex } from "@chakra-ui/react"
 import { renderJob, renderLbb, renderTraining } from "../services/renderOneResult"
 import { getJobCount } from "../services/utils"
+import ResultListsLoading from "./ResultListsLoading"
+import ResultFilterAndCounter from "./ResultFilterAndCounter"
 
 const ResultLists = ({
-  activeFilter,
   handleExtendedSearch,
   handleSelectItem,
   isJobSearchLoading,
   isTrainingSearchLoading,
-  jobs,
   jobSearchError,
   searchForJobsOnNewCenter,
   searchRadius,
   selectedItem,
   searchForTrainingsOnNewCenter,
-  setActiveFilter,
   shouldShowWelcomeMessage,
   showSearchForm,
-  trainings,
   allJobSearchError,
   trainingSearchError,
   isTestMode,
@@ -48,20 +40,15 @@ const ResultLists = ({
   ;({ isFormVisible } = useContext(DisplayContext))
   ;({ extendedSearch, hasSearch } = useContext(SearchResultContext))
 
+  const { jobs, trainings } = useContext(SearchResultContext)
+  const { activeFilters } = useContext(DisplayContext)
+
   if (isTestMode) {
     ;[extendedSearch, hasSearch, isFormVisible] = [stubbedExtendedSearch, stubbedHasSearch, stubbedIsFormVisible]
   }
 
-  const filterButtonClicked = (filterButton) => {
-    setActiveFilter(filterButton)
-    filterLayers(filterButton)
-    if (filterButton === "duo") {
-      SendPlausibleEvent("Clic onglet formations+emplois - Liste de résultats")
-    }
-  }
-
   const getTrainingResult = () => {
-    if (hasSearch && scopeContext.isTraining && (activeFilter === "all" || activeFilter === "trainings")) {
+    if (hasSearch && scopeContext.isTraining && activeFilters.includes("trainings")) {
       return (
         <Box bg="beige" id="trainingResult">
           {getTrainingList()}
@@ -100,13 +87,13 @@ const ResultLists = ({
   }
 
   const getJobResult = () => {
-    if (hasSearch && !isJobSearchLoading && ["all", "duo", "jobs"].includes(activeFilter)) {
+    if (hasSearch && !isJobSearchLoading && (activeFilters.includes("jobs") || activeFilters.includes("duo"))) {
       if (allJobSearchError) return ""
 
       const jobCount = getJobCount(jobs)
 
       if (jobCount) {
-        if (activeFilter === "duo") {
+        if (!activeFilters.includes("jobs")) {
           return (
             <Box bg="beige" id="jobList">
               {getPartnerJobList()}
@@ -171,7 +158,7 @@ const ResultLists = ({
   }
 
   const getJobList = () => {
-    const mergedJobs = mergeJobs({ jobs, activeFilter })
+    const mergedJobs = mergeJobs({ jobs, activeFilters })
     if (mergedJobs.length) {
       return (
         <>
@@ -184,7 +171,7 @@ const ResultLists = ({
   }
 
   const getLbbCompanyList = () => {
-    const mergedLbaLbbCompanies = mergeOpportunities({ jobs, activeFilter, onlyLbbLbaCompanies: "onlyLbbLba" })
+    const mergedLbaLbbCompanies = mergeOpportunities({ jobs, activeFilters, onlyLbbLbaCompanies: "onlyLbbLba" })
     if (mergedLbaLbbCompanies.length) {
       return (
         <>
@@ -198,7 +185,7 @@ const ResultLists = ({
 
   // retourne le bloc construit des items lbb, lba, matcha et pe triés par ordre de distance
   const getMergedJobList = () => {
-    const mergedOpportunities = mergeOpportunities({ jobs, activeFilter })
+    const mergedOpportunities = mergeOpportunities({ jobs, activeFilters })
 
     if (mergedOpportunities.length) {
       return (
@@ -237,33 +224,20 @@ const ResultLists = ({
   return (
     <Flex direction="column" height={selectedItem ? "0%" : "100%"} display={isFormVisible ? "none" : "flex"}>
       <Box bg="beige" display={shouldShowWelcomeMessage || selectedItem ? "none" : ""}>
-        <Flex flex="1 auto" my={[2, 2, 0]} alignItems="center">
-          <Button
-            background="none"
-            border="none"
-            title="Accéder aux filtrage des résultats"
-            display={["flex", "flex", "none"]}
-            mt="-10px"
-            ml="auto"
-            mr="30px"
-            pt="15px"
-            onClick={showSearchForm}
-          >
-            <Image width="24px" height="24px" src={purpleFilterIcon} alt="" />
-          </Button>
-        </Flex>
-        <DisplayMapButton jobs={jobs} trainings={trainings} />
-        <ResultListsCounter
-          scopeContext={scopeContext}
-          filterButtonClicked={filterButtonClicked}
+        <Box display={["flex", "flex", "none"]}>
+          <ResultFilterAndCounter
+            allJobSearchError={allJobSearchError}
+            trainingSearchError={trainingSearchError}
+            isJobSearchLoading={isJobSearchLoading}
+            isTrainingSearchLoading={isTrainingSearchLoading}
+            showSearchForm={showSearchForm}
+          />
+        </Box>
+        <ResultListsLoading
           allJobSearchError={allJobSearchError}
           trainingSearchError={trainingSearchError}
           isJobSearchLoading={isJobSearchLoading}
           isTrainingSearchLoading={isTrainingSearchLoading}
-          displayCount={displayCount}
-          jobs={jobs}
-          trainings={trainings}
-          activeFilter={activeFilter}
         />
         {getErrorMessages()}
       </Box>

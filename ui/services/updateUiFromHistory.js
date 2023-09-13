@@ -4,6 +4,7 @@
  */
 
 import { restoreSearchFromSession } from "../components/SearchForTrainingsAndJobs/services/handleSessionStorage"
+import { defaultFilters } from "../components/SearchForTrainingsAndJobs/services/utils"
 import { currentSearch, setCurrentSearch } from "../utils/currentPage"
 import { filterLayers } from "../utils/mapTools"
 
@@ -21,8 +22,8 @@ export const updateUiFromHistory = ({
   showSearchForm,
   setTrainings,
   setJobs,
-  setActiveFilter,
-  activeFilter,
+  setActiveFilters,
+  activeFilters,
 }) => {
   // récupération des query parameters donnant des indications sur l'état de l'interface
   let urlParams
@@ -37,13 +38,13 @@ export const updateUiFromHistory = ({
   const jobName = urlParams ? urlParams.get("job_name") : ""
   const address = urlParams ? urlParams.get("address") : ""
 
-  if (!activeFilter) {
-    setActiveFilter("all") // restauration des onglets à all pour assurer la présence de marker dans le dom
-  }
-  try {
-    filterLayers("all")
-  } catch (err) {
-    //notice: gère des erreurs qui se présentent à l'initialisation de la page quand mapbox n'est pas prêt.
+  if (!activeFilters) {
+    setActiveFilters(defaultFilters) // restauration des onglets à all pour assurer la présence de marker dans le dom
+    try {
+      filterLayers(defaultFilters)
+    } catch (err) {
+      //notice: gère des erreurs qui se présentent à l'initialisation de la page quand mapbox n'est pas prêt.
+    }
   }
 
   // réconciliation entre le store et l'état des résultats de recherche

@@ -8,10 +8,11 @@ import { logger } from "../common/logger.js"
 import { FormationCatalogue, UnsubscribeOF } from "../common/model/index.js"
 import { fetchStream } from "../common/utils/httpUtils.js"
 import { streamJsonArray } from "../common/utils/streamUtils.js"
-import _ from "lodash-es"
+import * as _ from "lodash-es"
 import { getElasticInstance } from "../common/esClient/index.js"
 import config from "../config.js"
 import { sentryCaptureException } from "../common/utils/sentryUtils.js"
+import { isValidEmail } from "../common/utils/isValidEmail.js"
 
 export const affelnetSelectedFields = {
   _id: 1,
@@ -206,6 +207,23 @@ export const getNearEtablissementsFromRomes = async ({ rome, origin }: { rome: s
 }
 
 /**
+ * @description Convert query into URL params
+ * @param {Object} query - Mongo query
+ * @returns {String}
+ */
+const convertQueryIntoParams = (query: object, options: object = {}): string => {
+  return querystring.stringify({
+    query: JSON.stringify(query),
+    ...Object.keys(options).reduce((acc, key) => {
+      return {
+        ...acc,
+        [key]: JSON.stringify(options[key]),
+      }
+    }, {}),
+  })
+}
+
+/**
  * @description Get all formations through the CARIF OREF catalogue API.
  * @returns {Stream<Object[]>}
  */
@@ -230,23 +248,6 @@ export const getAllFormationsFromCatalogue = async () => {
   return streamFormations(query, {
     limit: count,
     select: neededFieldsFromCatalogue,
-  })
-}
-
-/**
- * @description Convert query into URL params
- * @param {Object} query - Mongo query
- * @returns {String}
- */
-const convertQueryIntoParams = (query: object, options: object = {}): string => {
-  return querystring.stringify({
-    query: JSON.stringify(query),
-    ...Object.keys(options).reduce((acc, key) => {
-      return {
-        ...acc,
-        [key]: JSON.stringify(options[key]),
-      }
-    }, {}),
   })
 }
 
@@ -325,6 +326,14 @@ export interface IRomeResult {
   romes?: string[]
   error?: string
   message?: string
+}
+
+const getFormationEsQueryIndexFragment = () => {
+  return {
+    index: "formationcatalogues",
+    size: 1000,
+    _source_includes: ["rome_codes"],
+  }
 }
 
 /**
@@ -410,10 +419,23 @@ export const getRomesFromSiret = ({ siret }: { siret: string }): Promise<IRomeRe
   return getRomesFromCatalogue({ siret })
 }
 
-const getFormationEsQueryIndexFragment = () => {
-  return {
-    index: "formationcatalogues",
-    size: 1000,
-    _source_includes: ["rome_codes"],
+/**
+ * Gets email from catalogue field.
+ * These email fields can contain "not valid email", "emails separated by ##" or be null.
+ * @param {string|null} email
+ * @return {string|null}
+ */
+export const getEmailFromCatalogueField = (email: null | string) => {
+  if (!email) {
+    return null
   }
+
+  const divider = "##"
+  if (email?.includes(divider)) {
+    const emailSplit = email.split(divider).at(-1).toLowerCase()
+
+    return isValidEmail(emailSplit) ? emailSplit : null
+  }
+
+  return isValidEmail(email) ? email.toLowerCase() : null
 }

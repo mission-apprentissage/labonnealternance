@@ -29,7 +29,11 @@ const initializeMap = ({ mapContainer, unselectItem, selectItemOnMap, onMapHasMo
     maxZoom: 17,
     minZoom: 3,
     dragRotate: false,
+    language: "fr",
+    locale: "fr",
   })
+
+  map._canvas.setAttribute("aria-label", "Localisation géographique des employeurs et/ou formations en alternance")
 
   map.on("load", async () => {
     map.resize()
@@ -455,18 +459,21 @@ const computeMissingPositionAndDistance = async (searchCenter, jobs) => {
   return jobs
 }
 
-const filterLayers = (filter) => {
+const filterLayers = (filters) => {
   if (isMapInitialized) {
     let layersToShow = []
     let layersToHide = []
-    if (filter === "all") layersToShow = ["training-points-cluster-count", "training-points-layer", "job-points-cluster-count", "job-points-layer"]
-    if (filter === "jobs") {
-      layersToShow = ["job-points-cluster-count", "job-points-layer"]
-      layersToHide = ["training-points-cluster-count", "training-points-layer"]
+
+    if (filters.includes("jobs") || filters.includes("duo")) {
+      layersToShow = layersToShow.concat(["job-points-cluster-count", "job-points-layer"])
+    } else {
+      layersToHide = layersToHide.concat(["job-points-cluster-count", "job-points-layer"])
     }
-    if (filter === "trainings") {
-      layersToHide = ["job-points-cluster-count", "job-points-layer"]
-      layersToShow = ["training-points-cluster-count", "training-points-layer"]
+
+    if (filters.includes("trainings")) {
+      layersToShow = layersToShow.concat(["training-points-cluster-count", "training-points-layer"])
+    } else {
+      layersToHide = layersToHide.concat(["training-points-cluster-count", "training-points-layer"])
     }
 
     layersToHide.map((layerId) => {

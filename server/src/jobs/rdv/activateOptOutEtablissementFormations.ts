@@ -1,4 +1,4 @@
-import _ from "lodash-es"
+import * as _ from "lodash-es"
 import { mailTemplate } from "../../assets/index.js"
 import { logger } from "../../common/logger.js"
 import { mailType } from "../../common/model/constants/etablissement.js"
@@ -80,15 +80,7 @@ export const activateOptOutEtablissementFormations = async () => {
 
       // Gets all mails (formation email + formateur email), excepted "email_decisionnaire"
       let emails = eligibleTrainingsForAppointmentsFound.map((eligibleTrainingsForAppointment) => eligibleTrainingsForAppointment.lieu_formation_email)
-      if (etablissement?.gestionnaire_email) {
-        emails.push(etablissement.gestionnaire_email)
-      }
-
-      emails = _(emails)
-        .uniq()
-        .omitBy(_.isNil)
-        .omitBy((item) => item === etablissement.gestionnaire_email)
-        .toArray()
+      emails = [...new Set(emails.filter((email) => !_.isNil(email) && email !== etablissement.gestionnaire_email))]
 
       await Promise.all(
         emails.map((email) =>

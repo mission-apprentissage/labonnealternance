@@ -9,4 +9,10 @@ export const USER_STATUS = {
   ACTIVE: "VALIDÉ",
   WAITING: "EN ATTENTE DE VALIDATION",
   DISABLED: "DESACTIVÉ",
+  ERROR: "ERROR",
+}
+export const RECRUITER_STATUS = {
+  ACTIF: "Actif",
+  ARCHIVE: "Archivé",
+  EN_ATTENTE_VALIDATION: "En attente de validation",
 }
