@@ -86,19 +86,19 @@ RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
 # You only need to copy next.config.js if you are NOT using the default configuration
-COPY --from=builder_ui /app/ui/next.config.js /app/
-COPY --from=builder_ui /app/ui/public /app/public
+COPY --from=builder_ui /app/ui/next.config.js /app/ui
+COPY --from=builder_ui /app/ui/public /app/ui/public
 
 # Automatically leverage output traces to reduce image size
 # https://nextjs.org/docs/advanced-features/output-file-tracing
-COPY --from=builder_ui --chown=nextjs:nodejs /app/ui/.next/standalone /app/
-COPY --from=builder_ui --chown=nextjs:nodejs /app/ui/.next/static /app/.next/static
+COPY --from=builder_ui --chown=nextjs:nodejs /app/ui/.next/standalone /app/ui
+COPY --from=builder_ui --chown=nextjs:nodejs /app/ui/.next/static /app/ui/.next/static
 
 USER nextjs
 
 EXPOSE 3000
 ENV PORT 3000
-CMD ["node", "server.js"]
+CMD ["node", "ui/server.js"]
 
 ##############################################################
 ######################   UI ESPACE PRO  ######################
