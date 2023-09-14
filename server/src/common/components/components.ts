@@ -1,9 +1,9 @@
 // @ts-nocheck
-import { connectToMongo } from "../mongodb.js"
+import { db } from "../mongodb.js"
 
 export const components = async (options = {}) => {
   return {
-    db: options.db || (await connectToMongo()).db,
+    db: options.db || db,
   }
 }
 
