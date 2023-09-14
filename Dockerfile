@@ -26,16 +26,12 @@ COPY ./server ./server
 
 RUN yarn --cwd server build
 # Removing dev dependencies
-RUN yarn workspaces focus --all --production
-# Cache is not needed anymore
-RUN rm -rf .yarn/cache
+RUN --mount=type=cache,target=/app/.yarn/cache yarn workspaces focus --all --production
 
 # Production image, copy all the files and run next
 FROM node:20-alpine AS server
 WORKDIR /app
-RUN apk add --update \
-  curl \
-  && rm -rf /var/cache/apk/*
+RUN --mount=type=cache,target=/var/cache/apk apk add --update curl
 
 ENV NODE_ENV production
 ARG PUBLIC_VERSION
@@ -71,8 +67,6 @@ ARG PUBLIC_ENV
 ENV NEXT_PUBLIC_ENV=$PUBLIC_ENV
 
 RUN --mount=type=cache,target=/app/ui/.next/cache yarn --cwd ui build
-# Cache is not needed anymore
-RUN rm -rf .yarn/cache
 
 # Production image, copy all the files and run next
 FROM node:20-alpine AS ui
@@ -137,4 +131,3 @@ RUN yarn global add local-web-server
 RUN mkdir /site
 COPY --from=build_espace_pro /app/ui_espace_pro/build /site/espace-pro
 CMD ["yarn", "--cwd", "ui_espace_pro", "serve"]
-

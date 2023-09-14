@@ -110,11 +110,11 @@ const runner = async (job: IInternalJobs, jobFunc: () => Promise<unknown>): Prom
 export function executeJob(job: IInternalJobs, jobFunc: () => Promise<unknown>) {
   return runWithAsyncContext(async () => {
     const hub = getCurrentHub()
-    const transaction = hub.startTransaction({
+    const transaction = hub?.startTransaction({
       name: `JOB: ${job.name}`,
       op: "processor.job",
     })
-    hub.configureScope((scope) => {
+    hub?.configureScope((scope) => {
       scope.setSpan(transaction)
       scope.setTag("job", job.name)
       // scope.setContext("job", job) // TODO
@@ -123,8 +123,8 @@ export function executeJob(job: IInternalJobs, jobFunc: () => Promise<unknown>) 
     try {
       return await runner(job, jobFunc)
     } finally {
-      transaction.setMeasurement("job.execute", Date.now() - start, "millisecond")
-      transaction.finish()
+      transaction?.setMeasurement("job.execute", Date.now() - start, "millisecond")
+      transaction?.finish()
     }
   })
 }
