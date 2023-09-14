@@ -3,6 +3,7 @@ import { readFileSync } from "fs"
 
 import { CaptureConsole, ExtraErrorData } from "@sentry/integrations"
 import Sentry from "@sentry/node"
+import Boom from "boom"
 import express from "express"
 import swaggerDoc from "swagger-jsdoc"
 import swaggerUi from "swagger-ui-express"
@@ -167,6 +168,31 @@ export default async (components) => {
     })
   )
 
+  app.get(
+    "/api/healthcheck",
+    tryCatch(async (req, res) => {
+      let mongodbStatus
+
+      await components.db
+        .collection("logs")
+        .stats()
+        .then(() => {
+          mongodbStatus = true
+        })
+        .catch((e) => {
+          mongodbStatus = false
+          logger.error("Healthcheck failed", e)
+        })
+
+      return res.json({
+        env: config.env,
+        healthcheck: {
+          mongodb: mongodbStatus,
+        },
+      })
+    })
+  )
+
   /**
    * Swaggers
    */
@@ -238,6 +264,10 @@ export default async (components) => {
   app.use("/api/trainingLinks", limiter3PerSecond, trainingLinks())
 
   initBrevoWebhooks()
+
+  app.use((req, res) => {
+    res.status(404).send(Boom.notFound().output)
+  })
 
   app.use(Sentry.Handlers.errorHandler())
 
