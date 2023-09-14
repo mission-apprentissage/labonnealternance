@@ -1,8 +1,6 @@
 fileignoreconfig:
 - filename: .infra/env.ini
   checksum: 226621a82b4a416356281cdd771ae0c8663de7f0b1cebe748032fc551f5e23ff
-- filename: server/src/generated/swagger.json
-  checksum: c918d7f02265fc368e053eb770768f56ca58a7a6f7df439b748d2bad6e0e5f63
 - filename: ui/components/SearchForTrainingsAndJobs/components/ResultLists.test.js
   checksum: e5aab994d90ece8a04ec3b79a10e1e68d611167638d440f7df67d94cb41429de
 - filename: yarn.lock
@@ -61,8 +59,6 @@ fileignoreconfig:
   checksum: 7257a3a49d3170754fd55316bf78b680866465400c46e11727daa5da00863347
 - filename: server/src/services/userRecruteur.service.ts
   checksum: 0e426e336e82553c4a737b4832732903cefb01b2f9ee2024f1759293827bf813
-- filename: server/static/generated/swagger.json
-  checksum: 42848decdc5f7227703973c7ac9bbb53737d0f6f391536b9b4889a6bca41625e
 - filename: server/tests/unit/validateSendApplication-test.ts
   checksum: 787b8598596ff9ab7481a6229c4d450d32c5189bdd878f0fac78a6b8e9772b39
 - filename: ui/components/HomeComponents/TestezConnaissancesQuiz.tsx
