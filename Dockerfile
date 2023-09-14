@@ -127,7 +127,8 @@ ENV SKIP_PREFLIGHT_CHECK=true
 RUN yarn --cwd ui_espace_pro build
 
 FROM node:20-alpine as ui_espace_pro
+WORKDIR /app
 RUN yarn global add local-web-server
 RUN mkdir /site
 COPY --from=build_espace_pro /app/ui_espace_pro/build /site/espace-pro
-CMD ["yarn", "--cwd", "ui_espace_pro", "serve"]
+CMD ["ws", "--port", "3000", "-d" ,"/site", "--log.format", "dev", "--spa", "espace-pro/index.html"]
