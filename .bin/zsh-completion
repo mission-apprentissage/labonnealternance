@@ -1,6 +1,6 @@
 #compdef -d mna-lba
 
-_mna-tdb_completion() {
+_mna-lba_completion() {
   local curcontext="$curcontext" state line
   typeset -A opt_args
   local -a commands=(
@@ -26,8 +26,8 @@ _mna-tdb_completion() {
       _describe 'command' commands
       ;;
   esac
-  
+
   # _describe 'command' commands
 }
 
-_mna-tdb_completion "$@"
+_mna-lba_completion "$@"
