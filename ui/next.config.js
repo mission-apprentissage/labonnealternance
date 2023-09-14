@@ -1,3 +1,5 @@
+const path = require("path")
+
 const withImages = require("next-images")
 /**
  * supprime les espacements inutiles pour remettre la séquence sur une seule ligne
@@ -61,6 +63,12 @@ const contentSecurityPolicy = `
 /** @type {import('next').NextConfig} */
 const nextConfig = withImages({
   reactStrictMode: true,
+  poweredByHeader: false,
+  swcMinify: true,
+  experimental: {
+    outputFileTracingRoot: path.join(__dirname, "../"),
+    // typedRoutes: true,
+  },
   output: "standalone",
   eslint: {
     // Warning: This allows production builds to successfully complete even if
