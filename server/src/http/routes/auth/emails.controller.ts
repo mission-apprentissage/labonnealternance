@@ -73,7 +73,7 @@ export default ({ etablissements }) => {
         }
       }
 
-      const [etablissementFound] = await etablissements.find({ "mailing.message_id": { $regex: messageId } })
+      const [etablissementFound] = await etablissements.find({ "to_etablissement_emails.message_id": { $regex: messageId } })
 
       // If mail sent from etablissement model
       if (etablissementFound) {
