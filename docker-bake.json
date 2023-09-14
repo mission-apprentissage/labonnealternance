@@ -6,16 +6,16 @@
   },
   "group": {
     "production": {
-      "targets": ["server", "ui-production", "ui-espace-pro-production"]
+      "targets": ["server", "ui-production", "ui_espace_pro-production"]
     },
     "recette": {
-      "targets": ["server", "ui-recette", "ui-espace-pro-recette"]
+      "targets": ["server", "ui-recette", "ui_espace_pro-recette"]
     },
     "preview": {
-      "targets": ["server", "ui-preview", "ui-espace-pro-preview"]
+      "targets": ["server", "ui-preview", "ui_espace_pro-preview"]
     },
     "local": {
-      "targets": ["server", "ui-local", "ui-espace-pro-local"]
+      "targets": ["server", "ui-local", "ui_espace_pro-local"]
     }
   },
   "target": {
@@ -34,10 +34,7 @@
     },
     "server": {
       "inherits": ["common"],
-      "tags": [
-        "ghcr.io/mission-apprentissage/mna_lba_server:${VERSION}",
-        "ghcr.io/mission-apprentissage/mna_lba_server:${CHANNEL}"
-      ],
+      "tags": ["ghcr.io/mission-apprentissage/mna_lba_server:${VERSION}", "ghcr.io/mission-apprentissage/mna_lba_server:${CHANNEL}"],
       "labels": {
         "org.opencontainers.image.description": "Server lba"
       },
@@ -52,10 +49,7 @@
       "args": {
         "PUBLIC_ENV": "${ENV}"
       },
-      "tags": [
-        "ghcr.io/mission-apprentissage/mna_lba_ui:${VERSION}-${ENV}",
-        "ghcr.io/mission-apprentissage/mna_lba_ui:${CHANNEL}-${ENV}"
-      ],
+      "tags": ["ghcr.io/mission-apprentissage/mna_lba_ui:${VERSION}-${ENV}", "ghcr.io/mission-apprentissage/mna_lba_ui:${CHANNEL}-${ENV}"],
       "labels": {
         "org.opencontainers.image.description": "Ui lba"
       },
@@ -70,10 +64,7 @@
       "args": {
         "PUBLIC_ENV": "${ENV}"
       },
-      "tags": [
-        "ghcr.io/mission-apprentissage/mna_lba_ui_espace_pro:${VERSION}-${ENV}",
-        "ghcr.io/mission-apprentissage/mna_lba_ui_espace_pro:${CHANNEL}-${ENV}"
-      ],
+      "tags": ["ghcr.io/mission-apprentissage/mna_lba_ui_espace_pro:${VERSION}-${ENV}", "ghcr.io/mission-apprentissage/mna_lba_ui_espace_pro:${CHANNEL}-${ENV}"],
       "labels": {
         "org.opencontainers.image.description": "Ui Espace pro lba"
       },

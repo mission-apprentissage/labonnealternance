@@ -1,5 +1,4 @@
-import withImages from "next-plausible"
-
+const withImages = require("next-images")
 /**
  * supprime les espacements inutiles pour remettre la séquence sur une seule ligne
  */
