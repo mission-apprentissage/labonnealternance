@@ -13,7 +13,6 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "lint": "eslint src/",
-    "serve": "ws --port 3000 -d /site --log.format dev --spa espace-pro/index.html",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
