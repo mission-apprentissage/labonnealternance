@@ -11,6 +11,10 @@ services:
         failure_action: rollback
       rollback_config:
         parallelism: 0
+      restart_policy:
+        window: 360s
+        # Max 24hours
+        max_attempts: 240
     ports:
       - 1025:1025
     networks:
@@ -25,5 +29,5 @@ services:
       driver: "fluentd"
       options:
         fluentd-address: localhost:24224
-        tag: docker.lba.{{env_type}}.smtp
+        tag: docker.json.lba.{{env_type}}.smtp
         fluentd-async: "true"

@@ -1,0 +1,6 @@
+[worker.oci]
+  max-parallelism = 2
+  
+[[worker.oci.gcpolicy]]
+  keepBytes = "20GB"
+  keepDuration = "72h"

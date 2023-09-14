@@ -43,6 +43,14 @@
     - "{{inventory_dir}}/.env_server"
   when: env_type != 'preview'
 
+- name: copy ui env file
+  ansible.builtin.template:
+    src: "{{ item }}"
+    dest: "/opt/app/.env_ui"
+  with_fileglob:
+    - "{{inventory_dir}}/.env_ui"
+  when: env_type != 'preview'
+
 - name: copy du fichier docker compose
   ansible.builtin.template:
     src: "{{ item }}"

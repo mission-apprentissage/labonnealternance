@@ -1,17 +1,26 @@
 *
 
-!/server
-/server/.env
-/server/.env.local
+!/server/src
+!/server/static
+!/server/package.json
+!/server/tsconfig.json
+!/server/tsoa.json
+!/server/tsup.config.ts
 
 !/shared
 
 !/ui
-!/ui/.env
+/ui/.env
 /ui/.next
+/ui/.eslintrc.js
+/ui/jest.config.js
+
+!ui_espace_pro/src
+!ui_espace_pro/public
+!ui_espace_pro/package.json
 
 !/package.json
-!/.yarn/cache
+!/.yarn/patches
 !/.yarn/plugins
 !/.yarn/releases
 !/.yarn/versions
@@ -26,5 +35,3 @@
 **/node_modules
 */tests
 **/logs
-
-!/ui_espace_pro

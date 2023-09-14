@@ -3,7 +3,7 @@ import React, { useEffect } from "react"
 
 import HeadLaBonneAlternance from "../components/head"
 import PageTracker from "../components/pageTracker"
-import publicConfig from "../config.public"
+import { publicConfig } from "../config.public"
 import Providers from "../context/Providers"
 import "../public/styles/application.css"
 import "../public/styles/fonts.css"

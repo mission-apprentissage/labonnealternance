@@ -11,7 +11,9 @@ x-deploy-default: &deploy-default
   rollback_config:
     parallelism: 0
   restart_policy:
-    window: 5s
+    window: 360s
+    # Max 24hours
+    max_attempts: 240
 
 x-default: &default
   networks:
@@ -59,7 +61,7 @@ services:
       driver: "fluentd"
       options:
         fluentd-address: localhost:24224
-        tag: docker.lba.{{env_type}}.queue_processor
+        tag: docker.json.lba.{{env_type}}.queue_processor
         fluentd-async: "true"
 
   jobs_processor:
@@ -78,7 +80,7 @@ services:
       driver: "fluentd"
       options:
         fluentd-address: localhost:24224
-        tag: docker.lba.{{env_type}}.jobs_processor
+        tag: docker.json.lba.{{env_type}}.jobs_processor
         fluentd-async: "true"
 
   ui:
@@ -95,7 +97,7 @@ services:
       driver: "fluentd"
       options:
         fluentd-address: localhost:24224
-        tag: docker.lba.{{env_type}}.ui
+        tag: docker.txt.lba.{{env_type}}.ui
         fluentd-async: "true"
 
   metabase:
@@ -111,14 +113,14 @@ services:
       MB_SITE_LOCALE: fr
       MB_SITE_URL: "{{dns_name}}/metabase"
       MB_DB_TYPE: mysql
-      MB_DB_CONNECTION_URI: "{{vault[env_type].MNA_LBA_METABASE_DB_URI}}"
-      MB_ENCRYPTION_SECRET_KEY: "{{vault[env_type].MNA_LBA_METABASE_ENCRYPTION_SECRET_KEY}}"
+      MB_DB_CONNECTION_URI: "{{vault[env_type].LBA_METABASE_URI}}"
+      MB_ENCRYPTION_SECRET_KEY: "{{vault[env_type].LBA_METABASE_ENCRYPTION_SECRET_KEY}}"
       MB_PASSWORD_COMPLEXITY: strong
       MB_START_OF_WEEK: monday
-      MB_EMAIL_SMTP_HOST: "{{vault[env_type].MNA_LBA_SMTP_HOST}}"
-      MB_EMAIL_SMTP_PORT: "{{vault[env_type].MNA_LBA_SMTP_PORT}}"
-      MB_EMAIL_SMTP_USERNAME: "{{vault[env_type].MNA_LBA_SMTP_AUTH_USER}}"
-      MB_EMAIL_SMTP_PASSWORD: "{{vault[env_type].MNA_LBA_SMTP_AUTH_PASS}}"
+      MB_EMAIL_SMTP_HOST: "{{vault[env_type].LBA_SMTP_HOST}}"
+      MB_EMAIL_SMTP_PORT: "{{vault[env_type].LBA_SMTP_PORT}}"
+      MB_EMAIL_SMTP_USERNAME: "{{vault[env_type].LBA_SMTP_AUTH_USER}}"
+      MB_EMAIL_SMTP_PASSWORD: "{{vault[env_type].LBA_SMTP_AUTH_PASS}}"
       MB_EMAIL_SMTP_SECURITY: tls
     healthcheck:
       test: curl --fail -I http://localhost:3000/api/health || exit 1
@@ -130,7 +132,7 @@ services:
       driver: "fluentd"
       options:
         fluentd-address: localhost:24224
-        tag: docker.lba.{{env_type}}.metabase
+        tag: docker.json.lba.{{env_type}}.metabase
         fluentd-async: "true"
 
   clamav:
@@ -150,7 +152,7 @@ services:
       driver: "fluentd"
       options:
         fluentd-address: localhost:24224
-        tag: docker.lba.{{env_type}}.clamav
+        tag: docker.json.lba.{{env_type}}.clamav
         fluentd-async: "true"
     volumes:
       - /opt/app/data/clamav:/var/lib/clamav
