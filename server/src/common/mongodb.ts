@@ -12,17 +12,6 @@ export const connectToMongo = (mongoUri = config.mongodb.uri, mongooseInst = nul
     console.log(`MongoDB: Connection to ${mongoUri}`)
 
     const mI = mongooseInst || mongooseInstance
-    // Set up default mongoose connection
-    mI.connect(mongoUri, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      useFindAndModify: false,
-      keepAlive: true,
-    })
-
-    // Get Mongoose to use the global promise library
-    mI.Promise = global.Promise // Get the default connection
-    db = mI.connection
 
     // Bind connection to error event (to get notification of connection errors)
     db.on("error", (e) => {
@@ -33,6 +22,14 @@ export const connectToMongo = (mongoUri = config.mongodb.uri, mongooseInst = nul
     db.once("open", () => {
       console.log("MongoDB: Connected")
       resolve({ db })
+    });
+    
+    // Set up default mongoose connection
+    mI.connect(mongoUri, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      useFindAndModify: false,
+      keepAlive: true,
     })
   })
 }

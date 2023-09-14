@@ -184,7 +184,7 @@ program
   .option("-q, --queued", "Run job asynchronously", false)
   .action(createJobAction("indexes:generate"))
 
-//yarn cli:up create-user --first_name a --last_name b --email ab@fr.fr --scope beta --establishment_raison_sociale beta --type ADMIN
+//yarn cli create-user --first_name a --last_name b --email ab@fr.fr --scope beta --establishment_raison_sociale beta --type ADMIN
 program
   .command("create-user")
   .description("Permet de créer un accès utilisateur à l'espace partenaire")
