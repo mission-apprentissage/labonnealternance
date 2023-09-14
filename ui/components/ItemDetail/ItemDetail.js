@@ -9,8 +9,8 @@ import MatchaDetail from "./MatchaDetail"
 import PeJobDetail from "./PeJobDetail"
 import TrainingDetail from "./TrainingDetail"
 
-import CandidatureSpontanee from "./CandidatureSpontanee/CandidatureSpontanee"
-import isCandidatureSpontanee from "./CandidatureSpontanee/services/isCandidatureSpontanee"
+import CandidatureLba from "./CandidatureLba/CandidatureLba"
+import isCandidatureLba from "./CandidatureLba/services/isCandidatureLba"
 import DidYouKnow from "./DidYouKnow"
 import getActualTitle from "./ItemDetailServices/getActualTitle"
 import { buildPrdvButton, BuildSwipe, buttonJePostuleShouldBeDisplayed, buttonPRDVShouldBeDisplayed, getNavigationButtons } from "./ItemDetailServices/getButtons"
@@ -145,10 +145,10 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
             </Box>
           )}
 
-          {isCandidatureSpontanee(selectedItem) && (
+          {isCandidatureLba(selectedItem) && (
             <>
               <Divider my={2} />
-              <CandidatureSpontanee item={selectedItem} />
+              <CandidatureLba item={selectedItem} />
             </>
           )}
 
@@ -225,7 +225,7 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
       {kind === "formation" && !buttonPRDVShouldBeDisplayed(selectedItem) && (
         <GoingToContactQuestion kind={kind} uniqId={getGoingtoId(kind, selectedItem)} key={getGoingtoId(kind, selectedItem)} item={selectedItem} />
       )}
-      {(kind === "lbb" || kind === "lba") && !isCandidatureSpontanee(selectedItem) && (
+      {(kind === "lbb" || kind === "lba") && !isCandidatureLba(selectedItem) && (
         <GoingToContactQuestion kind={kind} uniqId={getGoingtoId(kind, selectedItem)} key={getGoingtoId(kind, selectedItem)} item={selectedItem} />
       )}
     </Box>

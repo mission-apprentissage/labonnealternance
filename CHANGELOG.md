@@ -1,3 +1,33 @@
+## [1.88.4](https://github.com/mission-apprentissage/labonnealternance/compare/v1.88.3...v1.88.4) (2023-09-13)
+
+### Bug Fixes
+
+- extension ([5146a68](https://github.com/mission-apprentissage/labonnealternance/commit/5146a6853ad1619c2311857cf4f994394954b9d3))
+
+## [1.88.3](https://github.com/mission-apprentissage/labonnealternance/compare/v1.88.2...v1.88.3) (2023-09-13)
+
+### Bug Fixes
+
+- api job user info assignment ([9120500](https://github.com/mission-apprentissage/labonnealternance/commit/9120500fc993bf3b86975dc50f20cbad5fc1bc34))
+
+## [1.88.2](https://github.com/mission-apprentissage/labonnealternance/compare/v1.88.1...v1.88.2) (2023-09-13)
+
+### Bug Fixes
+
+- removing unused ([#576](https://github.com/mission-apprentissage/labonnealternance/issues/576)) ([74c9ab1](https://github.com/mission-apprentissage/labonnealternance/commit/74c9ab11acc5a263a22f8564d0be5cc7999d65d2))
+
+## [1.88.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.88.0...v1.88.1) (2023-09-13)
+
+### Bug Fixes
+
+- eslint ([#575](https://github.com/mission-apprentissage/labonnealternance/issues/575)) ([c2ec611](https://github.com/mission-apprentissage/labonnealternance/commit/c2ec61164f488df74c75e7500606c10aae54b72c))
+
+# [1.88.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.87.0...v1.88.0) (2023-09-13)
+
+### Features
+
+- LBAC-1400 Permettre de voir les offres échues ([#571](https://github.com/mission-apprentissage/labonnealternance/issues/571)) ([a9c7096](https://github.com/mission-apprentissage/labonnealternance/commit/a9c7096330ecc89ff66073ffd081ffbf12ca309c))
+
 # [1.87.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.86.1...v1.87.0) (2023-09-12)
 
 ### Features

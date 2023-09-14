@@ -19,6 +19,8 @@ import { ILbaCompany } from "../common/model/schema/lbaCompany/lbaCompany.types.
 import { Document } from "mongoose"
 import Joi from "joi"
 import { scan } from "./clamav.service.js"
+import { getOffreAvecInfoMandataire } from "./formulaire.service.js"
+import { RECRUITER_STATUS, JOB_STATUS } from "./constant.service.js"
 
 const publicUrl = config.publicUrl
 const publicUrlEspacePro = config.publicUrlEspacePro
@@ -145,13 +147,19 @@ export const sendApplication = async ({ query, referer, shouldCheckSecret }: { q
       return { error: validationResult }
     }
 
+    validationResult = await validateApplicationType(query)
+
+    if (validationResult !== "ok") {
+      return { error: validationResult }
+    }
+
     validationResult = await validatePermanentEmail(query)
 
     if (validationResult !== "ok") {
       return { error: validationResult }
     }
 
-    validationResult = await scanFileContent(query)
+    validationResult = await validateJobStatus(query)
 
     if (validationResult !== "ok") {
       return { error: validationResult }
@@ -165,11 +173,23 @@ export const sendApplication = async ({ query, referer, shouldCheckSecret }: { q
       crypted_email,
     })
 
+    validationResult = await validateCompany(query, company_email)
+
+    if (validationResult !== "ok") {
+      return { error: validationResult }
+    }
+
     if (validationResult !== "ok") {
       return { error: validationResult }
     }
 
     validationResult = await checkUserApplicationCount(query.applicant_email.toLowerCase())
+
+    if (validationResult !== "ok") {
+      return { error: validationResult }
+    }
+
+    validationResult = await scanFileContent(query)
 
     if (validationResult !== "ok") {
       return { error: validationResult }
@@ -300,7 +320,7 @@ const buildRecruiterEmailUrls = ({
   publicUrl: string
   application: IApplication & Document<any, any, IApplication>
   encryptedId: any
-}): any => {
+}) => {
   const utmRecruiterData = "&utm_source=jecandidate&utm_medium=email&utm_campaign=jecandidaterecruteur"
   const candidateData = `&fn=${application.toObject().applicant_first_name}&ln=${application.toObject().applicant_last_name}`
   const encryptedData = `&id=${encryptedId.id}&iv=${encryptedId.iv}`
@@ -326,7 +346,7 @@ const buildRecruiterEmailUrls = ({
  * @param {string} company_email
  * @return {IApplication}
  */
-const initApplication = (params: any, company_email: string): IApplication & Document<any, any, IApplication> => {
+const initApplication = (params: any, company_email: string) => {
   const res = new Application({
     ...params,
     applicant_attachment_name: params.applicant_file_name,
@@ -344,7 +364,7 @@ const initApplication = (params: any, company_email: string): IApplication & Doc
  * @param {string} type
  * @return {string}
  */
-export const getEmailTemplate = (type = "mail-candidat"): string => {
+export const getEmailTemplate = (type = "mail-candidat") => {
   return path.join(currentDirname, `../assets/templates/${type}.mjml.ejs`)
 }
 
@@ -394,7 +414,7 @@ interface IApplicationParameters {
  * @param {Partial<IApplicationParameters>} validable
  * @return {Promise<string>}
  */
-export const validateSendApplication = async (validable: Partial<IApplicationParameters>): Promise<string> => {
+export const validateSendApplication = async (validable: Partial<IApplicationParameters>) => {
   const schema = Joi.object({
     applicant_file_name: Joi.string()
       .required()
@@ -411,7 +431,7 @@ export const validateSendApplication = async (validable: Partial<IApplicationPar
     company_naf: Joi.string().required(),
     company_name: Joi.string().required(),
     job_title: Joi.string().required(),
-    company_type: Joi.string().required(),
+    company_type: Joi.string().valid("matcha", "lba").required(),
     company_siret: Joi.string().required(),
     company_address: Joi.string().required(),
     job_id: Joi.optional(),
@@ -430,11 +450,51 @@ export const validateSendApplication = async (validable: Partial<IApplicationPar
 }
 
 /**
+ * @description checks if job applied to is still active or exists
+ * @param {Partial<IApplicationParameters>} validable
+ * @return {Promise<"ok" | "offre expirée">}
+ */
+export const validateJobStatus = async (validable: Partial<IApplicationParameters>) => {
+  const { company_type, job_id } = validable
+
+  if (company_type === "matcha" && job_id) {
+    const job = await getOffreAvecInfoMandataire(job_id)
+
+    if (!job || job.status !== RECRUITER_STATUS.ACTIF || job.jobs[0].job_status !== JOB_STATUS.ACTIVE) {
+      return "offre expirée"
+    }
+  }
+
+  return "ok"
+}
+
+/**
+ * @description checks if company applied to exists in base
+ * @param {Partial<IApplicationParameters>} validable
+ * @param {string} company_email
+ * @return {Promise<"ok" | "société désinscrite" | "email société invalide">}
+ */
+export const validateCompany = async (validable: Partial<IApplicationParameters>, company_email: string) => {
+  const { company_siret, company_type } = validable
+
+  if (company_type === "lba") {
+    const lbaCompany = await BonnesBoites.findOne({ siret: company_siret })
+    if (!lbaCompany) {
+      return "société désinscrite"
+    } else if (lbaCompany.email?.toLowerCase() !== company_email.toLowerCase()) {
+      return "email société invalide"
+    }
+  }
+
+  return "ok"
+}
+
+/**
  * @description checks if attachment is corrupted
  * @param {Partial<IApplicationParameters>} validable
  * @return {Promise<string>}
  */
-const scanFileContent = async (validable: Partial<IApplicationParameters>): Promise<string> => {
+const scanFileContent = async (validable: Partial<IApplicationParameters>) => {
   return (await scan(validable.applicant_file_content)) ? "pièce jointe invalide" : "ok"
 }
 
@@ -469,6 +529,19 @@ export const validateCompanyEmail = async (validable: ICompanyEmail): Promise<st
 export const validatePermanentEmail = async (validable: Partial<IApplicationParameters>): Promise<string> => {
   if (isEmailBurner(validable.applicant_email)) {
     return "email temporaire non autorisé"
+  }
+  return "ok"
+}
+
+/**
+ * @description Checks if application type matches params
+ * @param {Partial<IApplicationParameters>} validable
+ * @return {<string>}
+ */
+export const validateApplicationType = (validable: Partial<IApplicationParameters>) => {
+  const { company_type, company_siret, job_id } = validable
+  if ((company_type === "matcha" && !job_id) || (company_type === "lba" && (!company_siret || job_id))) {
+    return "paramètres sociétés non autorisés"
   }
   return "ok"
 }

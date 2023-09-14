@@ -31,7 +31,7 @@ const sendingStateValues = {
   },
 }
 
-const CandidatureSpontaneeFailed = ({ sendingState }) => {
+const CandidatureLbaFailed = ({ sendingState }) => {
   const errorReasonText = () => {
     return (
       <>
@@ -58,4 +58,4 @@ const CandidatureSpontaneeFailed = ({ sendingState }) => {
   )
 }
 
-export default CandidatureSpontaneeFailed
+export default CandidatureLbaFailed

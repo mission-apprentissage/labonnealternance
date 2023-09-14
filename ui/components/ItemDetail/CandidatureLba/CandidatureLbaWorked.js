@@ -3,7 +3,7 @@ import React from "react"
 import paperplaneIcon from "../../../public/images/paperplane2.svg"
 import { testingParameters } from "../../../utils/testingParameters"
 
-const CandidatureSpontaneeWorked = ({ email, company, kind }) => {
+const CandidatureLbaWorked = ({ email, company, kind }) => {
   return (
     <Container data-testid="CandidatureSpontaneeWorked">
       <Flex direction="row" alignItems="center" my={12}>
@@ -31,4 +31,4 @@ const CandidatureSpontaneeWorked = ({ email, company, kind }) => {
   )
 }
 
-export default CandidatureSpontaneeWorked
+export default CandidatureLbaWorked

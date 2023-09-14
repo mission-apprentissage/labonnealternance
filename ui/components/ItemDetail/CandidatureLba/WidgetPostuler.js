@@ -5,7 +5,7 @@ import WidgetPostulerError from "./WidgetPostulerError"
 
 import { Flex, Spinner } from "@chakra-ui/react"
 import { companyApi, matchaApi } from "../../SearchForTrainingsAndJobs/services/utils"
-import WidgetCandidatureSpontanee from "./WidgetCandidatureSpontanee"
+import WidgetCandidatureLba from "./WidgetCandidatureLba"
 
 const WidgetPostuler = () => {
   useEffect(() => {
@@ -68,7 +68,7 @@ const WidgetPostuler = () => {
       Veuillez patienter
     </Flex>
   ) : (
-    <WidgetCandidatureSpontanee item={item} caller={caller} />
+    <WidgetCandidatureLba item={item} caller={caller} />
   )
 }
 

@@ -5,7 +5,7 @@ import { filterJobsByOpco } from "./opco.service.js"
 
 const coordinatesOfFrance = [2.213749, 46.227638]
 
-import { NIVEAUX_POUR_LBA, ACTIVE } from "./constant.service.js"
+import { NIVEAUX_POUR_LBA, ACTIVE, JOB_STATUS, RECRUITER_STATUS } from "./constant.service.js"
 import { roundDistance } from "../common/utils/geolib.js"
 import { matchaMock, matchaMockMandataire, matchasMock } from "../mocks/matchas-mock.js"
 import { getOffreAvecInfoMandataire, getJobsFromElasticSearch, incrementLbaJobViewCount } from "./formulaire.service.js"
@@ -137,10 +137,6 @@ export const getLbaJobById = async ({ id, caller }: { id: string; caller: string
       return { error: "not_found" }
     }
 
-    if (rawJob.status !== "Actif" || rawJob.jobs[0].job_status !== ACTIVE) {
-      return { error: "expired_job" }
-    }
-
     const applicationCountByJob = await getApplicationByJobCount([id])
 
     const job = transformLbaJob({
@@ -220,6 +216,7 @@ function transformLbaJob({
       dureeContrat: "" + offre.job_duration,
       quantiteContrat: offre.job_count,
       elligibleHandicap: offre.is_disabled_elligible,
+      status: job.status === RECRUITER_STATUS.ACTIF && offre.job_status === JOB_STATUS.ACTIVE ? JOB_STATUS.ACTIVE : JOB_STATUS.ANNULEE,
     }
 
     resultJob.romes = []

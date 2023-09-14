@@ -1,7 +1,7 @@
 import { Flex, Image, Text } from "@chakra-ui/react"
 import React from "react"
 
-const CandidatureSpontaneeMandataireMessage = ({ item }) => {
+const CandidatureLbaMandataireMessage = ({ item }) => {
   return (
     item?.company?.mandataire && (
       <Flex direction="row" width="95%" alignItems="center">
@@ -18,4 +18,4 @@ const CandidatureSpontaneeMandataireMessage = ({ item }) => {
   )
 }
 
-export default CandidatureSpontaneeMandataireMessage
+export default CandidatureLbaMandataireMessage
