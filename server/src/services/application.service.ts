@@ -478,7 +478,7 @@ export const validateCompany = async (validable: Partial<IApplicationParameters>
   const { company_siret, company_type } = validable
 
   if (company_type === "lba") {
-    const lbaCompany = await BonnesBoites.findOne({ siret: company_siret })
+    const lbaCompany = await LbaCompany.findOne({ siret: company_siret })
     if (!lbaCompany) {
       return "société désinscrite"
     } else if (lbaCompany.email?.toLowerCase() !== company_email.toLowerCase()) {
