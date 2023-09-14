@@ -2,7 +2,7 @@ export interface PublicConfig {
   sentry_dsn: string
   baseUrl: string
   host: string
-  env: "local" | "recette" | "production" | "preview"
+  env: "local" | "recette" | "production" | "preview" | "next"
   matomo: {
     url: string
     siteId: string
@@ -36,6 +36,22 @@ function getRecettePublicConfig(): PublicConfig {
   return {
     sentry_dsn: SENTRY_DSN,
     env: "recette",
+    host,
+    baseUrl: `https://${host}`,
+    matomo: {
+      url: "https://stats.beta.gouv.fr",
+      siteId: "10",
+      jsTrackerFile: "js/container_6EvvnT5g.js",
+    },
+    inserJeuneApiUrl: "https://exposition-recette.inserjeunes.beta.gouv.fr",
+  }
+}
+function getNextPublicConfig(): PublicConfig {
+  const host = "labonnealternance-next.apprentissage.beta.gouv.fr"
+
+  return {
+    sentry_dsn: SENTRY_DSN,
+    env: "next",
     host,
     baseUrl: `https://${host}`,
     matomo: {
@@ -105,6 +121,7 @@ function getEnv(): PublicConfig["env"] {
     case "recette":
     case "preview":
     case "local":
+    case "next":
       return env
     default:
       throw new Error(`Invalid NEXT_PUBLIC_ENV env-vars ${env}`)
@@ -121,6 +138,8 @@ function getPublicConfig(): PublicConfig {
       return getPreviewPublicConfig()
     case "local":
       return getLocalPublicConfig()
+    case "next":
+      return getNextPublicConfig()
   }
 }
 

@@ -11,6 +11,9 @@
     "recette": {
       "targets": ["server", "ui-recette", "ui_espace_pro-recette"]
     },
+    "next": {
+      "targets": ["server", "ui-next", "ui_espace_pro-next"]
+    },
     "preview": {
       "targets": ["server", "ui-preview", "ui_espace_pro-preview"]
     },
@@ -43,7 +46,7 @@
     "ui": {
       "inherits": ["common"],
       "matrix": {
-        "ENV": ["production", "recette", "preview", "local"]
+        "ENV": ["production", "recette", "preview", "local", "next"]
       },
       "name": "ui-${ENV}",
       "args": {
@@ -58,7 +61,7 @@
     "ui_espace_pro": {
       "inherits": ["common"],
       "matrix": {
-        "ENV": ["production", "recette", "preview", "local"]
+        "ENV": ["production", "recette", "preview", "local", "next"]
       },
       "name": "ui_espace_pro-${ENV}",
       "args": {
