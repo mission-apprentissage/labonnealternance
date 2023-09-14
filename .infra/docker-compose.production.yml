@@ -130,6 +130,12 @@ services:
       - cluster.name=docker-cluster
       - network.host=0.0.0.0
       - discovery.zen.minimum_master_nodes=1
+    healthcheck:
+      test: ["CMD", "curl", "http://localhost:9200/_cat/health > /dev/null || exit 1"]
+      interval: 30s
+      retries: 5
+      timeout: 10s
+      start_period: 2m
     logging:
       driver: "fluentd"
       options:
