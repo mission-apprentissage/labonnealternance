@@ -1,23 +1,86 @@
-# [1.84.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.83.1...v1.84.0) (2023-09-04)
-
-
-### Features
-
-* LBAC-1146 lien vers tableau de suivi de candidatures ([6d4f855](https://github.com/mission-apprentissage/labonnealternance/commit/6d4f8552f2b158a1aef8bb584b1def4e32c2bf1b))
-
-## [1.83.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.83.0...v1.83.1) (2023-09-04)
-
+## [1.88.4](https://github.com/mission-apprentissage/labonnealternance/compare/v1.88.3...v1.88.4) (2023-09-13)
 
 ### Bug Fixes
 
-* lbac 1339: pagination ([#561](https://github.com/mission-apprentissage/labonnealternance/issues/561)) ([8a3817f](https://github.com/mission-apprentissage/labonnealternance/commit/8a3817fe92ec9ba86e217a434bc1a78d126ebba6))
+- extension ([5146a68](https://github.com/mission-apprentissage/labonnealternance/commit/5146a6853ad1619c2311857cf4f994394954b9d3))
 
-# [1.83.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.82.0...v1.83.0) (2023-09-04)
+## [1.88.3](https://github.com/mission-apprentissage/labonnealternance/compare/v1.88.2...v1.88.3) (2023-09-13)
 
+### Bug Fixes
+
+- api job user info assignment ([9120500](https://github.com/mission-apprentissage/labonnealternance/commit/9120500fc993bf3b86975dc50f20cbad5fc1bc34))
+
+## [1.88.2](https://github.com/mission-apprentissage/labonnealternance/compare/v1.88.1...v1.88.2) (2023-09-13)
+
+### Bug Fixes
+
+- removing unused ([#576](https://github.com/mission-apprentissage/labonnealternance/issues/576)) ([74c9ab1](https://github.com/mission-apprentissage/labonnealternance/commit/74c9ab11acc5a263a22f8564d0be5cc7999d65d2))
+
+## [1.88.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.88.0...v1.88.1) (2023-09-13)
+
+### Bug Fixes
+
+- eslint ([#575](https://github.com/mission-apprentissage/labonnealternance/issues/575)) ([c2ec611](https://github.com/mission-apprentissage/labonnealternance/commit/c2ec61164f488df74c75e7500606c10aae54b72c))
+
+# [1.88.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.87.0...v1.88.0) (2023-09-13)
 
 ### Features
 
-* LBAC-1456 mise à jour aria-label ([#560](https://github.com/mission-apprentissage/labonnealternance/issues/560)) ([bd67dcf](https://github.com/mission-apprentissage/labonnealternance/commit/bd67dcf67e98d26462d848092bef57b214d03e48))
+- LBAC-1400 Permettre de voir les offres échues ([#571](https://github.com/mission-apprentissage/labonnealternance/issues/571)) ([a9c7096](https://github.com/mission-apprentissage/labonnealternance/commit/a9c7096330ecc89ff66073ffd081ffbf12ca309c))
+
+# [1.87.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.86.1...v1.87.0) (2023-09-12)
+
+### Features
+
+- LBAC-1214 clarification affichage contexte de recherche ([#569](https://github.com/mission-apprentissage/labonnealternance/issues/569)) ([69d5286](https://github.com/mission-apprentissage/labonnealternance/commit/69d528691d0cf4e2ee4de312bb7deab0128c1470))
+
+## [1.86.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.86.0...v1.86.1) (2023-09-08)
+
+### Bug Fixes
+
+- suppression de code mort Etablissement ([#572](https://github.com/mission-apprentissage/labonnealternance/issues/572)) ([50ece04](https://github.com/mission-apprentissage/labonnealternance/commit/50ece045fa90ead26fb9ce4cc91c0c3cffe4125c))
+
+# [1.86.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.85.2...v1.86.0) (2023-09-07)
+
+### Features
+
+- LBAC-1519 update InformationsSiret.js ([#567](https://github.com/mission-apprentissage/labonnealternance/issues/567)) ([5fed07f](https://github.com/mission-apprentissage/labonnealternance/commit/5fed07fb833f53ee5eab1fb794c4532e936696ef))
+
+## [1.85.2](https://github.com/mission-apprentissage/labonnealternance/compare/v1.85.1...v1.85.2) (2023-09-06)
+
+### Bug Fixes
+
+- update siret en erreur: fix validation pour les creations api ([#562](https://github.com/mission-apprentissage/labonnealternance/issues/562)) ([ff44354](https://github.com/mission-apprentissage/labonnealternance/commit/ff44354c278f6d38a6f05396c82ea3284743bb79))
+
+## [1.85.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.85.0...v1.85.1) (2023-09-06)
+
+### Bug Fixes
+
+- lbac 1502: fallback api opco ([#563](https://github.com/mission-apprentissage/labonnealternance/issues/563)) ([5e2ee07](https://github.com/mission-apprentissage/labonnealternance/commit/5e2ee0727d644a4f8c5f76e1614fad3d235bf394))
+
+# [1.85.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.84.0...v1.85.0) (2023-09-06)
+
+### Features
+
+- exploiter l'email le plus r pandu si email et email formateur vides ([#565](https://github.com/mission-apprentissage/labonnealternance/issues/565)) ([ab06b32](https://github.com/mission-apprentissage/labonnealternance/commit/ab06b325a1e63b922dfaaa475f4e2d63ca9ccc26))
+
+# [1.84.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.83.1...v1.84.0) (2023-09-04)
+
+### Features
+
+- LBAC-1146 lien vers tableau de suivi de candidatures ([6d4f855](https://github.com/mission-apprentissage/labonnealternance/commit/6d4f8552f2b158a1aef8bb584b1def4e32c2bf1b))
+
+## [1.83.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.83.0...v1.83.1) (2023-09-04)
+
+### Bug Fixes
+
+- lbac 1339: pagination ([#561](https://github.com/mission-apprentissage/labonnealternance/issues/561)) ([8a3817f](https://github.com/mission-apprentissage/labonnealternance/commit/8a3817fe92ec9ba86e217a434bc1a78d126ebba6))
+
+# [1.83.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.82.0...v1.83.0) (2023-09-04)
+
+### Features
+
+- LBAC-1456 mise à jour aria-label ([#560](https://github.com/mission-apprentissage/labonnealternance/issues/560)) ([bd67dcf](https://github.com/mission-apprentissage/labonnealternance/commit/bd67dcf67e98d26462d848092bef57b214d03e48))
 
 # [1.82.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.81.0...v1.82.0) (2023-09-04)
 

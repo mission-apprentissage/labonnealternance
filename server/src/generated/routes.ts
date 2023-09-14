@@ -408,6 +408,7 @@ const models: TsoaRoute.Models = {
             "elligibleHandicap": {"dataType":"boolean"},
             "dureeContrat": {"dataType":"union","subSchemas":[{"dataType":"string"},{"dataType":"enum","enums":[null]}],"required":true},
             "quantiteContrat": {"dataType":"union","subSchemas":[{"dataType":"double"},{"dataType":"enum","enums":[null]}]},
+            "status": {"dataType":"union","subSchemas":[{"ref":"JOB_STATUS"},{"dataType":"enum","enums":[null]}]},
         },
         "additionalProperties": false,
     },

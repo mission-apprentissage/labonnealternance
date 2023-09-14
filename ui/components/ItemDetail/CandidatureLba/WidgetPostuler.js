@@ -5,7 +5,7 @@ import React, { useEffect, useState } from "react"
 import { initPostulerParametersFromQuery } from "../../../services/config"
 import { companyApi, matchaApi } from "../../SearchForTrainingsAndJobs/services/utils"
 
-import WidgetCandidatureSpontanee from "./WidgetCandidatureSpontanee"
+import WidgetCandidatureLba from "./WidgetCandidatureLba"
 import WidgetPostulerError from "./WidgetPostulerError"
 
 const WidgetPostuler = () => {
@@ -69,7 +69,7 @@ const WidgetPostuler = () => {
       Veuillez patienter
     </Flex>
   ) : (
-    <WidgetCandidatureSpontanee item={item} caller={caller} />
+    <WidgetCandidatureLba item={item} caller={caller} />
   )
 }
 

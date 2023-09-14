@@ -1,9 +1,9 @@
 import Sentry from "@sentry/node"
+
 import { Body, Controller, Example, OperationId, Post, Request, Response, Route, SuccessResponse, Tags } from "tsoa"
 
-import Etablissement from "../../../common/components/etablissement"
 import { getReferrerByKeyName } from "../../../common/model/constants/referrers"
-import { ReferentielOnisep } from "../../../common/model/index"
+import { Etablissement, ReferentielOnisep } from "../../../common/model/index"
 import { isValidEmail } from "../../../common/utils/isValidEmail"
 import config from "../../../config"
 import * as eligibleTrainingsForAppointmentService from "../../../services/eligibleTrainingsForAppointment.service"
@@ -95,7 +95,7 @@ export class AppointmentsController extends Controller {
       }
     }
 
-    const etablissement = await Etablissement().findOne({ formateur_siret: eligibleTrainingsForAppointment.etablissement_formateur_siret })
+    const etablissement = await Etablissement.findOne({ formateur_siret: eligibleTrainingsForAppointment.etablissement_formateur_siret })
 
     return {
       etablissement_formateur_entreprise_raison_sociale: etablissement?.raison_sociale,

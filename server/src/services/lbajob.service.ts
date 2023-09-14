@@ -7,8 +7,8 @@ import { trackApiCall } from "../common/utils/sendTrackingEvent"
 import { sentryCaptureException } from "../common/utils/sentryUtils"
 import { matchaMock, matchaMockMandataire, matchasMock } from "../mocks/matchas-mock"
 
-import { getApplicationByJobCount, IApplicationCount } from "./application.service"
-import { ACTIVE, NIVEAUX_POUR_LBA } from "./constant.service"
+import { IApplicationCount, getApplicationByJobCount } from "./application.service"
+import { JOB_STATUS, NIVEAUX_POUR_LBA, RECRUITER_STATUS } from "./constant.service"
 import { getJobsFromElasticSearch, getOffreAvecInfoMandataire, incrementLbaJobViewCount } from "./formulaire.service"
 import { ILbaItem, LbaItem } from "./lbaitem.shared.service.types"
 import { ILbaJobEsResult } from "./lbajob.service.types"
@@ -138,10 +138,6 @@ export const getLbaJobById = async ({ id, caller }: { id: string; caller?: strin
       return { error: "not_found" }
     }
 
-    if (rawJob.status !== "Actif" || rawJob.jobs[0].job_status !== ACTIVE) {
-      return { error: "expired_job" }
-    }
-
     const applicationCountByJob = await getApplicationByJobCount([id])
 
     const job = transformLbaJob({
@@ -222,6 +218,7 @@ function transformLbaJob({
       dureeContrat: "" + offre.job_duration,
       quantiteContrat: offre.job_count,
       elligibleHandicap: offre.is_disabled_elligible,
+      status: job.status === RECRUITER_STATUS.ACTIF && offre.job_status === JOB_STATUS.ACTIVE ? JOB_STATUS.ACTIVE : JOB_STATUS.ANNULEE,
     }
 
     resultJob.romes = []

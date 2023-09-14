@@ -1,3 +1,4 @@
+/* eslint-disable no-import-assign */
 import distance from "@turf/distance"
 import { round } from "lodash"
 import * as mapboxgl from "mapbox-gl"
@@ -461,18 +462,21 @@ const computeMissingPositionAndDistance = async (searchCenter, jobs) => {
   return jobs
 }
 
-const filterLayers = (filter) => {
+const filterLayers = (filters) => {
   if (isMapInitialized) {
     let layersToShow = []
     let layersToHide = []
-    if (filter === "all") layersToShow = ["training-points-cluster-count", "training-points-layer", "job-points-cluster-count", "job-points-layer"]
-    if (filter === "jobs") {
-      layersToShow = ["job-points-cluster-count", "job-points-layer"]
-      layersToHide = ["training-points-cluster-count", "training-points-layer"]
+
+    if (filters.includes("jobs") || filters.includes("duo")) {
+      layersToShow = layersToShow.concat(["job-points-cluster-count", "job-points-layer"])
+    } else {
+      layersToHide = layersToHide.concat(["job-points-cluster-count", "job-points-layer"])
     }
-    if (filter === "trainings") {
-      layersToHide = ["job-points-cluster-count", "job-points-layer"]
-      layersToShow = ["training-points-cluster-count", "training-points-layer"]
+
+    if (filters.includes("trainings")) {
+      layersToShow = layersToShow.concat(["training-points-cluster-count", "training-points-layer"])
+    } else {
+      layersToHide = layersToHide.concat(["training-points-cluster-count", "training-points-layer"])
     }
 
     layersToHide.map((layerId) => {

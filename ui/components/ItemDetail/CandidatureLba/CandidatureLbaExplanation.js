@@ -2,7 +2,7 @@ import { AddIcon, ExternalLinkIcon, MinusIcon } from "@chakra-ui/icons"
 import { Accordion, AccordionButton, AccordionItem, AccordionPanel, Box, Link } from "@chakra-ui/react"
 import React from "react"
 
-const CandidatureSpontaneeExplanation = (props) => {
+const CandidatureLbaExplanation = (props) => {
   const getTitle = () => {
     let res = ""
     if (props.about == "what") {
@@ -78,4 +78,4 @@ const CandidatureSpontaneeExplanation = (props) => {
   )
 }
 
-export default CandidatureSpontaneeExplanation
+export default CandidatureLbaExplanation

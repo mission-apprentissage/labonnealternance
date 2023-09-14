@@ -1,8 +1,7 @@
 import Head from "next/head"
 import { NextSeo } from "next-seo"
-import React from "react"
 
-import WidgetPostuler from "../components/ItemDetail/CandidatureSpontanee/WidgetPostuler"
+import WidgetPostuler from "../components/ItemDetail/CandidatureLba/WidgetPostuler"
 
 const Postuler = () => {
   return (

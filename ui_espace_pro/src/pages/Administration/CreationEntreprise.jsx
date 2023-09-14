@@ -5,11 +5,11 @@ import { NavLink, useNavigate, useParams, useSearchParams } from "react-router-d
 import * as Yup from "yup"
 import { getEntrepriseInformation, getEntrepriseOpco } from "../../api"
 import useAuth from "../../common/hooks/useAuth"
+import { SIRETValidation } from "../../common/validation/fieldValidations"
 import { AnimationContainer, CustomInput } from "../../components"
 import { LogoContext } from "../../contextLogo"
 import { WidgetContext } from "../../contextWidget"
 import { InfoCircle, SearchLine } from "../../theme/components/icons"
-import { SIRETValidation } from "../../common/validation/fieldValidations"
 
 const CreationCompte = () => {
   const [isCfa, setIsCfa] = useState(false)
@@ -20,7 +20,7 @@ const CreationCompte = () => {
   const submitSiret = ({ establishment_siret }, { setSubmitting, setFieldError }) => {
     const formattedSiret = establishment_siret.replace(/[^0-9]/g, "")
     Promise.all([getEntrepriseOpco(formattedSiret), getEntrepriseInformation(formattedSiret, { cfa_delegated_siret: auth.cfa_delegated_siret })]).then(
-      ([{ data: opcoInfos }, entrepriseData]) => {
+      ([opcoInfos, entrepriseData]) => {
         if (entrepriseData.error) {
           if (entrepriseData.errorType === "server") {
             navigate("/administration/entreprise/detail", {
@@ -126,6 +126,7 @@ const CreationEntreprise = ({ type, widget }) => {
       setWidget((prev) => ({ ...prev, isWidget: true, mobile: mobile ?? false }))
       setOrganisation(params.origine ?? "matcha")
     }
+    /* eslint react-hooks/exhaustive-deps: 0 */
   }, [])
 
   return (

@@ -1,18 +1,18 @@
 fileignoreconfig:
-- filename: .bin/scripts/get-vault-password-client.sh
-  checksum: b15405225b41eed7640c8218c17155c3a1d7f59e47f4aeaca58d0c84a61ca169
-- filename: .bin/scripts/seed-apply.sh
-  checksum: 06012fd2d2a230a6e12021fdfa0091a22f3ede6805cee5ae4446d32f9818f9fd
-- filename: .bin/scripts/seed-update.sh
-  checksum: 73bb14c959a2257b415dbf651c4e9da26f7c4f8fbb681fd70582615a031849ee
-- filename: .bin/scripts/setup-local-env.sh
-  checksum: 4bb90296fab07d4c645e2dae35f0e397e073764e944865a55e6339aec0a707f3
-- filename: .github/workflows/gitguardian.yml
-  checksum: 6570536d75569b3826026d9126cff26fc4de473afbab8adbfc9fab833362fb79
-- filename: .infra/.env_server
-  checksum: 2e13b63907d9b781a0a55fdf739e2f3ca06eb614b26ab289c94f83ad66c1183c
-- filename: .infra/ansible/tasks/preview_pr.yml
-  checksum: fb8f977e58d7308fa2c937f33aa065af2a999171697b89ae399b9ba53c2d62f9
+- filename: CHANGELOG.md
+  checksum: c5ac171fa218e977fc0dea0a950d92944c1b95e9ab86f102ef202d8335bd6e16
+- filename: cypress/e2e/ui/send-job-application-mjsbal.cy.js
+  checksum: 3fb2f60e9fc4359bc6e4293208acca8662643d2365deea7d98c528952d73ff07
+- filename: cypress/e2e/ui/send-job-application.cy.js
+  checksum: 32db9cd910b4f4e1854aefb145a5ea0ca3c594cf63e4dffac22ade5c0ad8fe66
+- filename: server/src/generated/swagger.json
+  checksum: c918d7f02265fc368e053eb770768f56ca58a7a6f7df439b748d2bad6e0e5f63
+- filename: ui/components/SearchForTrainingsAndJobs/components/ResultLists.test.js
+  checksum: e5aab994d90ece8a04ec3b79a10e1e68d611167638d440f7df67d94cb41429de
+- filename: yarn.lock
+  checksum: a2509f136cc15853b6495b5ba325b0c1d8845855518c13714e4885a99af00355
+version: ""
+ checksum: fb8f977e58d7308fa2c937f33aa065af2a999171697b89ae399b9ba53c2d62f9
 - filename: .infra/docker-compose.preview-system.yml
   checksum: 241d3e0e16c328c1f33d875acec59fb48704e2d83d1ba6c8ccb821d1064a9b91
 - filename: .infra/docker-compose.preview.yml
@@ -82,14 +82,15 @@ scopeconfig:
 custom_patterns:
 - (?s)[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}
 allowed_patterns:
-- key
-- secret
-- SECRET
-- password
-- Password
-- pass
-- apiKey
-- ApiKey
-- APIKey
-- versionKey
+  - key
+  - secret
+  - SECRET
+  - password
+  - Password
+  - pass
+  - apiKey
+  - ApiKey
+  - APIKey
+  - versionKey
+  - @apprentissage.beta.gouv.fr
 version: "1.0"

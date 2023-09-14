@@ -2,8 +2,8 @@ import querystring from "node:querystring"
 
 import axios, { AxiosInstance } from "axios"
 import { got } from "got"
-import { sortBy } from "lodash-es"
 import * as _ from "lodash-es"
+import { sortBy } from "lodash-es"
 import { compose } from "oleoduc"
 
 import { getElasticInstance } from "../common/esClient/index"
@@ -11,6 +11,7 @@ import { logger } from "../common/logger"
 import { FormationCatalogue, UnsubscribeOF } from "../common/model/index"
 import { getDistanceInKm } from "../common/utils/geolib"
 import { fetchStream } from "../common/utils/httpUtils"
+import { isValidEmail } from "../common/utils/isValidEmail"
 import { sentryCaptureException } from "../common/utils/sentryUtils"
 import { streamJsonArray } from "../common/utils/streamUtils"
 import config from "../config"
@@ -421,4 +422,25 @@ export const getRomesFromCfd = ({ cfd }: { cfd: string }): Promise<IRomeResult> 
  */
 export const getRomesFromSiret = ({ siret }: { siret: string }): Promise<IRomeResult> => {
   return getRomesFromCatalogue({ siret })
+}
+
+/**
+ * Gets email from catalogue field.
+ * These email fields can contain "not valid email", "emails separated by ##" or be null.
+ * @param {string|null} email
+ * @return {string|null}
+ */
+export const getEmailFromCatalogueField = (email) => {
+  if (!email) {
+    return null
+  }
+
+  const divider = "##"
+  if (email?.includes(divider)) {
+    const emailSplit = email.split(divider).at(-1).toLowerCase()
+
+    return isValidEmail(emailSplit) ? emailSplit : null
+  }
+
+  return isValidEmail(email) ? email.toLowerCase() : null
 }

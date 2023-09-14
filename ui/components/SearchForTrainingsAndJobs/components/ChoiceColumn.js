@@ -12,9 +12,10 @@ import { ScopeContext } from "../../../context/ScopeContext"
 import { SearchResultContext } from "../../../context/SearchResultContextProvider"
 import dosearchImage from "../../../public/images/dosearch.svg"
 import { currentSearch, setCurrentPage, setCurrentSearch } from "../../../utils/currentPage"
-import { filterLayers, closeMapPopups, flyToLocation, flyToMarker, setSelectedMarker } from "../../../utils/mapTools"
+import { closeMapPopups, filterLayers, flyToLocation, flyToMarker, setSelectedMarker } from "../../../utils/mapTools"
 import pushHistory from "../../../utils/pushHistory"
 import { getItemElement, scrollToElementInContainer, scrollToTop } from "../../../utils/tools"
+import { defaultFilters } from "../services/utils"
 import { insertWhisper } from "../services/whispers"
 
 import ResultLists from "./ResultLists"
@@ -36,13 +37,11 @@ const ChoiceColumn = ({
   jobSearchError,
   allJobSearchError,
   isLoading,
-  activeFilter,
-  setActiveFilter,
 }) => {
   const router = useRouter()
   const scopeContext = useContext(ScopeContext)
-  const { trainings, jobs, setTrainings, setJobs, setSelectedItem, selectedItem, itemToScrollTo, setItemToScrollTo, setExtendedSearch } = useContext(SearchResultContext)
-  const { formValues, setFormValues } = useContext(DisplayContext)
+  const { trainings, setTrainings, setJobs, setSelectedItem, selectedItem, itemToScrollTo, setItemToScrollTo, setExtendedSearch } = useContext(SearchResultContext)
+  const { formValues, setFormValues, setActiveFilters } = useContext(DisplayContext)
   const { displayMap } = useContext(ParameterContext)
 
   useEffect(() => {
@@ -98,8 +97,8 @@ const ChoiceColumn = ({
   }
 
   const showAllResults = () => {
-    setActiveFilter("all")
-    filterLayers("all")
+    setActiveFilters(defaultFilters)
+    filterLayers(defaultFilters)
   }
 
   const searchForJobsOnNewCenter = async (newCenter) => {
@@ -179,19 +178,15 @@ const ChoiceColumn = ({
   const getResultLists = () => {
     return (
       <ResultLists
-        activeFilter={activeFilter}
-        setActiveFilter={setActiveFilter}
         selectedItem={selectedItem}
         handleSelectItem={handleSelectItem}
         showSearchForm={showSearchForm}
         isTrainingSearchLoading={isTrainingSearchLoading}
         isJobSearchLoading={isJobSearchLoading}
         searchRadius={searchRadius}
-        trainings={trainings}
         handleExtendedSearch={searchForJobsWithLooseRadius}
         searchForJobsOnNewCenter={searchForJobsOnNewCenter}
         searchForTrainingsOnNewCenter={searchForTrainingsOnNewCenter}
-        jobs={jobs}
         jobSearchError={jobSearchError}
         allJobSearchError={allJobSearchError}
         trainingSearchError={trainingSearchError}
@@ -238,7 +233,7 @@ const ChoiceColumn = ({
   }
 
   const getSelectedItemDetail = () => {
-    return <ItemDetail selectedItem={selectedItem} handleClose={handleClose} handleSelectItem={handleSelectItem} activeFilter={activeFilter} />
+    return <ItemDetail selectedItem={selectedItem} handleClose={handleClose} handleSelectItem={handleSelectItem} />
   }
 
   const columnBackgroundProperty = shouldShowWelcomeMessage ? ["white", "white", "beige"] : "grey.100"

@@ -1,0 +1,40 @@
+<mjml>
+  <mj-head>
+    <mj-title>Votre compte a été désactivé sur La bonne alternance</mj-title>
+    <mj-font name="Work Sans" href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;700&display=swap"></mj-font>
+    <mj-style inline="inline">.grey {color: #1E1E1E;}</mj-style>
+    <mj-attributes>
+      <mj-text color="#242424" font-family="Work Sans, Arial" font-size="16px" line-height="24px"></mj-text>
+      <mj-button font-size="16px" line-height="24px" padding="8px 24px" font-family="Work Sans" height="40px"></mj-button>
+    </mj-attributes>
+  </mj-head>
+  <mj-body background-color="#F5F5FE">
+    <mj-section>
+      <mj-column>
+        <mj-image src="<%= data.images.logoLba %>" width="150px" alt="Logo du site La bonne alternance"></mj-image>
+      </mj-column>
+    </mj-section>
+    <mj-section background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 5px">
+      <mj-column>
+        <mj-image src="<%= data.images.accountDisabled %>" alt="image compte désactivé"></mj-image>
+      </mj-column>
+      <mj-column>
+        <mj-text>Bonjour <%= data.first_name %> <%= data.last_name %>,</mj-text>
+        <mj-text>Votre compte n'a pas pu être validé pour la raison suivante :</mj-text>
+        <mj-text container-background-color="#f6f6f6" padding-rigth="10px"><%= data.reason %></mj-text>
+      </mj-column>
+    </mj-section>
+    <mj-section> </mj-section>
+    <mj-section background-color="#FFFFFF" border-radius="4px" border="1px solid #FFFFFF" padding="20px 10px">
+      <mj-column>
+        <mj-text>Vous pouvez contacter notre support pour plus d’information en communiquant l’email utilisé lors de la création de votre compte.</mj-text>
+        <mj-button color="#ffffff" background-color="#000091" href="<%= data.emailSupport %>"> Contacter le support </mj-button>
+      </mj-column>
+    </mj-section>
+    <mj-section>
+      <mj-column>
+        <mj-image src="https://labonnealternance.apprentissage.beta.gouv.fr/espace-pro/images/logo-republique-francaise.png" width="200px" align="left"></mj-image>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

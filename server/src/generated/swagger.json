@@ -45,9 +45,11 @@
 					"id_rco_formation",
 					"localite",
 					"cfd",
+					"etablissement_formateur_siret",
 					"code_postal",
 					"lieu_formation_adresse",
-					"intitule_long"
+					"intitule_long",
+					"etablissement_formateur_entreprise_raison_sociale"
 				],
 				"type": "object"
 			},
@@ -954,20 +956,16 @@
 			"ILbaItemContact": {
 				"properties": {
 					"email": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"name": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"phone": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"info": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					}
 				},
 				"type": "object",
@@ -977,52 +975,40 @@
 				"properties": {
 					"distance": {
 						"type": "number",
-						"format": "double",
-						"nullable": true
+						"format": "double"
 					},
 					"fullAddress": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"latitude": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"longitude": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"city": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"address": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"cedex": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"zipCode": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"insee": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"departementNumber": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"region": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"remoteOnly": {
-						"type": "boolean",
-						"nullable": true
+						"type": "boolean"
 					}
 				},
 				"required": [
@@ -1046,52 +1032,40 @@
 				"properties": {
 					"distance": {
 						"type": "number",
-						"format": "double",
-						"nullable": true
+						"format": "double"
 					},
 					"fullAddress": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"latitude": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"longitude": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"city": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"address": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"cedex": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"zipCode": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"insee": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"departementNumber": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"region": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"remoteOnly": {
-						"type": "boolean",
-						"nullable": true
+						"type": "boolean"
 					}
 				},
 				"type": "object",
@@ -1100,36 +1074,25 @@
 			"ILbaItemCompanyHQ": {
 				"properties": {
 					"siret": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"id": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"uai": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"type": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"hasConvention": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"place": {
-						"allOf": [
-							{
-								"$ref": "#/components/schemas/Partial_ILbaItemPlace_"
-							}
-						],
-						"nullable": true
+						"$ref": "#/components/schemas/Partial_ILbaItemPlace_"
 					},
 					"name": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					}
 				},
 				"required": [
@@ -1147,12 +1110,10 @@
 			"ILbaItemOpco": {
 				"properties": {
 					"label": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"url": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					}
 				},
 				"required": [
@@ -1165,73 +1126,47 @@
 			"ILbaItemCompany": {
 				"properties": {
 					"name": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"siret": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"size": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"logo": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"description": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"socialNetwork": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"url": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"id": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"uai": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"place": {
-						"allOf": [
-							{
-								"$ref": "#/components/schemas/Partial_ILbaItemPlace_"
-							}
-						],
-						"nullable": true
+						"$ref": "#/components/schemas/Partial_ILbaItemPlace_"
 					},
 					"mandataire": {
-						"type": "boolean",
-						"nullable": true
+						"type": "boolean"
 					},
 					"creationDate": {
 						"type": "string",
-						"format": "date-time",
-						"nullable": true
+						"format": "date-time"
 					},
 					"headquarter": {
-						"allOf": [
-							{
-								"$ref": "#/components/schemas/ILbaItemCompanyHQ"
-							}
-						],
-						"nullable": true
+						"$ref": "#/components/schemas/ILbaItemCompanyHQ"
 					},
 					"opco": {
-						"allOf": [
-							{
-								"$ref": "#/components/schemas/ILbaItemOpco"
-							}
-						],
-						"nullable": true
+						"$ref": "#/components/schemas/ILbaItemOpco"
 					}
 				},
 				"required": [
@@ -1248,8 +1183,7 @@
 			"ILbaItemJob": {
 				"properties": {
 					"description": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"creationDate": {
 						"anyOf": [
@@ -1263,20 +1197,16 @@
 						]
 					},
 					"id": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"contractType": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"contractDescription": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"duration": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"jobStartDate": {
 						"anyOf": [
@@ -1294,20 +1224,17 @@
 						"type": "object"
 					},
 					"rythmeAlternance": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"elligibleHandicap": {
 						"type": "boolean"
 					},
 					"dureeContrat": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"quantiteContrat": {
 						"type": "number",
-						"format": "double",
-						"nullable": true
+						"format": "double"
 					},
 					"status": {
 						"allOf": [
@@ -1334,12 +1261,10 @@
 			"ILbaItemRome": {
 				"properties": {
 					"code": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"label": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					}
 				},
 				"required": [
@@ -1351,12 +1276,10 @@
 			"ILbaItemNaf": {
 				"properties": {
 					"code": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"label": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					}
 				},
 				"required": [
@@ -1368,16 +1291,13 @@
 			"ILbaItemTrainingSession": {
 				"properties": {
 					"startTime": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"endTime": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"isPermanentEntry": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					}
 				},
 				"required": [
@@ -1391,12 +1311,10 @@
 			"ILbaItemTraining": {
 				"properties": {
 					"description": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"objectif": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"sessions": {
 						"items": {
@@ -1416,140 +1334,93 @@
 			"ILbaItem": {
 				"properties": {
 					"ideaType": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"title": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"longTitle": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"id": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"idRco": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"idRcoFormation": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"contact": {
-						"allOf": [
-							{
-								"$ref": "#/components/schemas/ILbaItemContact"
-							}
-						],
-						"nullable": true
+						"$ref": "#/components/schemas/ILbaItemContact"
 					},
 					"place": {
-						"allOf": [
-							{
-								"$ref": "#/components/schemas/ILbaItemPlace"
-							}
-						],
-						"nullable": true
+						"$ref": "#/components/schemas/ILbaItemPlace"
 					},
 					"company": {
-						"allOf": [
-							{
-								"$ref": "#/components/schemas/ILbaItemCompany"
-							}
-						],
-						"nullable": true
+						"$ref": "#/components/schemas/ILbaItemCompany"
 					},
 					"createdAt": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"lastUpdateAt": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"url": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"cleMinistereEducatif": {
 						"type": "string",
-						"nullable": true,
 						"description": "TODO API V2: move inside training<ILbaItemTraining>"
 					},
 					"diplomaLevel": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"diploma": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"cfd": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"rncpCode": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"rncpLabel": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"rncpEligibleApprentissage": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"period": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"capacity": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"onisepUrl": {
-						"type": "string",
-						"nullable": true
+						"type": "string"
 					},
 					"job": {
-						"allOf": [
-							{
-								"$ref": "#/components/schemas/ILbaItemJob"
-							}
-						],
-						"nullable": true
+						"$ref": "#/components/schemas/ILbaItemJob"
 					},
 					"romes": {
 						"items": {
 							"$ref": "#/components/schemas/ILbaItemRome"
 						},
-						"type": "array",
-						"nullable": true
+						"type": "array"
 					},
 					"nafs": {
 						"items": {
 							"$ref": "#/components/schemas/ILbaItemNaf"
 						},
-						"type": "array",
-						"nullable": true
+						"type": "array"
 					},
 					"training": {
-						"allOf": [
-							{
-								"$ref": "#/components/schemas/ILbaItemTraining"
-							}
-						],
-						"nullable": true
+						"$ref": "#/components/schemas/ILbaItemTraining"
 					},
 					"applicationCount": {
 						"type": "number",
-						"format": "double",
-						"nullable": true
+						"format": "double"
 					}
 				},
 				"required": [
@@ -1771,7 +1642,7 @@
 	},
 	"info": {
 		"title": "La bonne alternance",
-		"version": "1.88.4",
+		"version": "1.88.3",
 		"description": "Trouvez ici les formations en alternance et les entreprises qui recrutent régulièrement en alternance",
 		"license": {
 			"name": "MIT"
@@ -1788,7 +1659,7 @@
 				"operationId": "appointmentCreateContext",
 				"responses": {
 					"200": {
-						"description": "OK",
+						"description": "Ok",
 						"content": {
 							"application/json": {
 								"schema": {
@@ -1838,7 +1709,6 @@
 						}
 					}
 				},
-				"description": "Appointment request",
 				"tags": [
 					"Appointment Request"
 				],

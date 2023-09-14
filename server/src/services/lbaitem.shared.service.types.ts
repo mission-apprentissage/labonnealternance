@@ -1,3 +1,5 @@
+import { JOB_STATUS } from "./constant.service.js"
+
 export interface ILbaItem {
   ideaType: string | null // type de l'item :  formation | lbb | lba | peJob | matcha
   title: string | null // pe -> intitule | lbb/lba -> enseigne | formation -> intitule_long OU intitule_court | matcha -> offres.libelle || offres.rome_appellation_label
@@ -113,6 +115,7 @@ export interface ILbaItemJob {
   elligibleHandicap?: boolean // matcha -> offres.is_disabled_elligible
   dureeContrat: string | null // matcha -> offres.duree_contrat
   quantiteContrat?: number | null // matcha -> offres.quantite
+  status?: JOB_STATUS | null
 }
 
 export interface ILbaItemRome {

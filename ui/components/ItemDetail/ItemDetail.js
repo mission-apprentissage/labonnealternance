@@ -3,14 +3,15 @@ import { Box, Divider, Flex, Link, Text } from "@chakra-ui/react"
 import { defaultTo } from "lodash"
 import React, { useContext, useEffect, useState } from "react"
 
+import { DisplayContext } from "../../context/DisplayContextProvider"
 import { SearchResultContext } from "../../context/SearchResultContextProvider"
 import { isCfaEntreprise } from "../../services/cfaEntreprise"
 import { amongst } from "../../utils/arrayutils"
 import { filterLayers } from "../../utils/mapTools"
 import { SendPlausibleEvent } from "../../utils/plausible"
 
-import CandidatureSpontanee from "./CandidatureSpontanee/CandidatureSpontanee"
-import isCandidatureSpontanee from "./CandidatureSpontanee/services/isCandidatureSpontanee"
+import CandidatureLba from "./CandidatureLba/CandidatureLba"
+import isCandidatureLba from "./CandidatureLba/services/isCandidatureLba"
 import DidYouKnow from "./DidYouKnow"
 import GoingToContactQuestion, { getGoingtoId } from "./GoingToContactQuestion"
 import getActualTitle from "./ItemDetailServices/getActualTitle"
@@ -27,9 +28,10 @@ import MatchaDetail from "./MatchaDetail"
 import PeJobDetail from "./PeJobDetail"
 import TrainingDetail from "./TrainingDetail"
 
-
-const ItemDetail = ({ selectedItem, handleClose, handleSelectItem, activeFilter }) => {
+const ItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
   const kind = selectedItem?.ideaType
+
+  const { activeFilters } = useContext(DisplayContext)
 
   const isCfa = isCfaEntreprise(selectedItem?.company?.siret, selectedItem?.company?.headquarter?.siret)
   const isMandataire = selectedItem?.company?.mandataire
@@ -39,17 +41,18 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem, activeFilter 
   useEffect(() => {
     setSeeInfo(false)
     try {
-      filterLayers(activeFilter)
+      filterLayers(activeFilters)
     } catch (err) {
       //notice: gère des erreurs qui se présentent à l'initialisation de la page quand mapbox n'est pas prêt.
     }
+    /* eslint react-hooks/exhaustive-deps: 0 */
   }, [selectedItem?.id, selectedItem?.company?.siret, selectedItem?.job?.id])
 
   let actualTitle = getActualTitle({ kind, selectedItem })
 
   const { trainings, jobs, extendedSearch } = useContext(SearchResultContext)
   const hasAlsoJob = hasAlsoEmploi({ isCfa, company: selectedItem?.company, searchedMatchaJobs: jobs?.matchas })
-  const currentList = getCurrentList({ store: { trainings, jobs }, activeFilter, extendedSearch })
+  const currentList = getCurrentList({ store: { trainings, jobs }, activeFilters, extendedSearch })
 
   const { swipeHandlers, goNext, goPrev } = BuildSwipe({ currentList, handleSelectItem, selectedItem })
 
@@ -143,10 +146,10 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem, activeFilter 
             </Box>
           )}
 
-          {isCandidatureSpontanee(selectedItem) && (
+          {isCandidatureLba(selectedItem) && (
             <>
               <Divider my={2} />
-              <CandidatureSpontanee item={selectedItem} />
+              <CandidatureLba item={selectedItem} />
             </>
           )}
 
@@ -223,7 +226,7 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem, activeFilter 
       {kind === "formation" && !buttonPRDVShouldBeDisplayed(selectedItem) && (
         <GoingToContactQuestion kind={kind} uniqId={getGoingtoId(kind, selectedItem)} key={getGoingtoId(kind, selectedItem)} item={selectedItem} />
       )}
-      {(kind === "lbb" || kind === "lba") && !isCandidatureSpontanee(selectedItem) && (
+      {(kind === "lbb" || kind === "lba") && !isCandidatureLba(selectedItem) && (
         <GoingToContactQuestion kind={kind} uniqId={getGoingtoId(kind, selectedItem)} key={getGoingtoId(kind, selectedItem)} item={selectedItem} />
       )}
     </Box>

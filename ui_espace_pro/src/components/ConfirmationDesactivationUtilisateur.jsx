@@ -3,6 +3,7 @@ import {
   FormControl,
   FormLabel,
   Heading,
+  Input,
   Modal,
   ModalBody,
   ModalContent,
@@ -12,7 +13,6 @@ import {
   Select,
   Text,
   useDisclosure,
-  Input,
 } from "@chakra-ui/react"
 import { useState } from "react"
 import { archiveDelegatedFormulaire, archiveFormulaire, updateEntreprise } from "../api"
@@ -53,6 +53,7 @@ export const ConfirmationDesactivationUtilisateur = (props) => {
         throw new Error(`unsupported type: ${type}`)
     }
     onClose()
+    reasonComment.onClose()
   }
 
   return (

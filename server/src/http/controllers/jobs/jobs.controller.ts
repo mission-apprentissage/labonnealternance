@@ -124,10 +124,10 @@ export class JobsController extends Controller {
         first_name,
         last_name,
         phone,
-        origin: `${user.organisation}${origin ? `-${origin}` : ""}`,
+        origin: `${user.scope}${origin ? `-${origin}` : ""}`,
         idcc,
         siret: establishment_siret,
-        opco: user.scope,
+        opco: user.organisation,
       },
       {
         isUserValidated: true,

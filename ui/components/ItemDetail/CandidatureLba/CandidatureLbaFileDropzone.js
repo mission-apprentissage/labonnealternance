@@ -4,7 +4,7 @@ import { useDropzone } from "react-dropzone"
 
 import dropzoneIco from "../../../public/images/icons/candidature_file_upload.svg"
 
-const CandidatureSpontaneeFileDropzone = ({ setFileValue, formik }) => {
+const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
   const [fileData, setFileData] = useState(formik.values.fileName ? { fileName: formik.values.fileName, fileContent: formik.values.fileContent } : null)
   const [fileLoading, setFileLoading] = useState(false)
   const [showUnacceptedFileMessage, setShowUnacceptedFileMessages] = useState(false)
@@ -126,4 +126,4 @@ const CandidatureSpontaneeFileDropzone = ({ setFileValue, formik }) => {
   )
 }
 
-export default CandidatureSpontaneeFileDropzone
+export default CandidatureLbaFileDropzone

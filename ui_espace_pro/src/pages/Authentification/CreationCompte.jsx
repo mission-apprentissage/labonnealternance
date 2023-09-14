@@ -24,7 +24,7 @@ const CreationCompteForm = ({ type, setQualiopi, setBandeau }) => {
 
     // validate establishment_siret
     if (type === AUTHTYPE.ENTREPRISE) {
-      Promise.all([getEntrepriseOpco(formattedSiret), getEntrepriseInformation(formattedSiret)]).then(([{ data: opcoInfos }, entrepriseData]) => {
+      Promise.all([getEntrepriseOpco(formattedSiret), getEntrepriseInformation(formattedSiret)]).then(([opcoInfos, entrepriseData]) => {
         if (entrepriseData.error) {
           if (entrepriseData.errorType === "server") {
             navigate("/creation/detail", { state: { type, origin, informationSiret: { establishment_siret: formattedSiret, ...opcoInfos } } })
@@ -144,6 +144,7 @@ export const CreationCompte = ({ type, widget }) => {
       setWidget((prev) => ({ ...prev, isWidget: true, mobile: mobile ?? false }))
       setOrganisation(params.origin ?? "matcha")
     }
+    /* eslint react-hooks/exhaustive-deps: 0 */
   }, [])
 
   return (

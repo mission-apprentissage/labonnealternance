@@ -17,7 +17,7 @@ export const InformationsSiret = ({ type }) => {
               <span style={{ fontWeight: "700" }}>Être référencé dans</span>{" "}
               <CatalogueLink url="https://catalogue.apprentissage.beta.gouv.fr/recherche/etablissements">le catalogue des offres de formations en apprentissage</CatalogueLink>.
               Pour ajouter une offre de formation au Catalogue de l’offre de formation en apprentissage, merci de la déclarer auprès du Carif-Oref de votre région en allant sur la
-              page suivante : <CatalogueLink href="https://reseau.intercariforef.org/referencer-son-offre-de-formation">référencer son offre de formation</CatalogueLink>
+              page suivante : <CatalogueLink url="https://reseau.intercariforef.org/referencer-son-offre-de-formation">référencer son offre de formation</CatalogueLink>
             </ListItem>
             <ListItem mx={10}>
               <span style={{ fontWeight: "700" }}>Être certifié Qualiopi.</span>{" "}

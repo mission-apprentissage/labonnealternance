@@ -2,6 +2,7 @@
 import crypto from "crypto"
 
 import axios from "axios"
+import { groupBy, maxBy } from "lodash-es"
 
 import { getElasticInstance } from "../common/esClient/index"
 import { FormationCatalogue } from "../common/model/index"
@@ -867,4 +868,25 @@ const sortFormations = (formations: ILbaItem[]) => {
 
     return 0
   })
+}
+
+/**
+ * Retourne l'email le plus présent parmi toutes les formations du catalogue ayant un même "etablissement_formateur_siret".
+ * @param {string} etablissement_formateur_siret
+ * @return {Promise<string | null>}
+ */
+export const getMostFrequentEmailByLieuFormationSiret = async (etablissement_formateur_siret: string): Promise<string | null> => {
+  const formations = await FormationCatalogue.find(
+    {
+      email: { $ne: null },
+      etablissement_formateur_siret,
+    },
+    { email: 1 }
+  ).lean()
+
+  const emailGroups = groupBy(formations, "email")
+
+  const mostFrequentGroup = maxBy(Object.values(emailGroups), "length")
+
+  return mostFrequentGroup?.length ? mostFrequentGroup[0].email : null
 }

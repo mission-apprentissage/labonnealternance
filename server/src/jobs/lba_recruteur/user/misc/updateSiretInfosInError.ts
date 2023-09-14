@@ -1,14 +1,14 @@
 //@ts-nocheck
 import { logger } from "../../../../common/logger"
 import { Recruiter, UserRecruteur } from "../../../../common/model/index"
-import { IUserRecruteur } from "../../../../common/model/schema/userRecruteur/userRecruteur.types"
+import type { IUserRecruteur } from "../../../../common/model/schema/userRecruteur/userRecruteur.types"
 import { asyncForEach } from "../../../../common/utils/asyncUtils"
 import { sentryCaptureException } from "../../../../common/utils/sentryUtils"
 import { notifyToSlack } from "../../../../common/utils/slackUtils"
 import { CFA, ENTREPRISE, ETAT_UTILISATEUR, JOB_STATUS, RECRUITER_STATUS } from "../../../../services/constant.service"
 import { autoValidateCompany, getEntrepriseDataFromSiret, sendEmailConfirmationEntreprise } from "../../../../services/etablissement.service"
 import { archiveFormulaire, getFormulaire, sendMailNouvelleOffre, updateFormulaire } from "../../../../services/formulaire.service"
-import { deactivateUser, getUser, setUserInError, updateUser } from "../../../../services/userRecruteur.service"
+import { autoValidateUser, deactivateUser, getUser, setUserInError, updateUser } from "../../../../services/userRecruteur.service"
 
 const updateUserRecruteursSiretInfosInError = async () => {
   const query = {
@@ -19,9 +19,9 @@ const updateUserRecruteursSiretInfosInError = async () => {
   const stats = { success: 0, failure: 0, deactivated: 0 }
   logger.info(`Correction des user recruteurs en erreur: ${userRecruteurs.length} user recruteurs à mettre à jour...`)
   await asyncForEach(userRecruteurs, async (userRecruteur) => {
-    const { establishment_siret, _id, establishment_id } = userRecruteur
+    const { establishment_siret, _id, establishment_id, scope } = userRecruteur
     try {
-      const recruteur = await getFormulaire({ establishment_id })
+      let recruteur = await getFormulaire({ establishment_id })
       const { cfa_delegated_siret } = recruteur
       const siretResponse = await getEntrepriseDataFromSiret({ siret: establishment_siret, cfa_delegated_siret })
       if ("error" in siretResponse) {
@@ -30,10 +30,14 @@ const updateUserRecruteursSiretInfosInError = async () => {
         stats.deactivated++
       } else {
         let updatedUserRecruteur: IUserRecruteur = await updateUser({ _id }, siretResponse)
-        await updateFormulaire(recruteur.establishment_id, siretResponse)
-        const result = await autoValidateCompany(updatedUserRecruteur)
-        updatedUserRecruteur = result.userRecruteur
-        await sendEmailConfirmationEntreprise(updatedUserRecruteur, recruteur)
+        recruteur = await updateFormulaire(recruteur.establishment_id, siretResponse)
+        if (scope === "matcha") {
+          const result = await autoValidateCompany(updatedUserRecruteur)
+          updatedUserRecruteur = result.userRecruteur
+          await sendEmailConfirmationEntreprise(updatedUserRecruteur, recruteur)
+        } else {
+          updatedUserRecruteur = await autoValidateUser(userRecruteur._id)
+        }
         stats.success++
       }
     } catch (err) {

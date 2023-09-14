@@ -1,9 +1,12 @@
 import express from "express"
 
 import { Recruiter, UserRecruteur } from "../../common/model/index"
+import { getStaticFilePath } from "../../common/utils/getStaticFilePath"
+import config from "../../config"
 import { ENTREPRISE, ETAT_UTILISATEUR, JOB_STATUS, RECRUITER_STATUS } from "../../services/constant.service"
 import dayjs from "../../services/dayjs.service"
 import { deleteFormulaire, getFormulaire, reactivateRecruiter, sendDelegationMailToCFA, updateOffre } from "../../services/formulaire.service"
+import mailer from "../../services/mailer.service"
 import { createUser, removeUser, sendWelcomeEmailToUserRecruteur, updateUser, updateUserValidationHistory } from "../../services/userRecruteur.service"
 import authMiddleware from "../middlewares/authMiddleware"
 import { tryCatch } from "../middlewares/tryCatchMiddleware"
@@ -115,8 +118,35 @@ export default () => {
 
       if (!user) return res.sendStatus(400)
 
+      const { email, last_name, first_name } = user
+
       // if user is disabled, return the user data directly
       if (history.status === ETAT_UTILISATEUR.DESACTIVE) {
+        // send email to user to notify him his account has been disabled
+        await mailer.sendEmail({
+          to: email,
+          subject: "Votre compte a été désactivé sur La bonne alternance",
+          template: getStaticFilePath("./templates/mail-compte-desactive.mjml.ejs"),
+          data: {
+            images: {
+              accountDisabled: `${config.publicUrlEspacePro}/images/image-compte-desactive.png?raw=true`,
+              logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
+            },
+            last_name,
+            first_name,
+            email,
+            reason: history.reason,
+            emailSupport: "mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Compte%20pro%20non%20validé",
+          },
+        })
+        return res.json(user)
+      }
+
+      /**
+       * 20230831 kevin todo: share reason between front and back with shared folder
+       */
+      // if user isn't part of the OPCO, just send the user straigth back
+      if (history.reason === "Ne relève pas des champs de compétences de mon OPCO") {
         return res.json(user)
       }
 

@@ -1,34 +1,14 @@
+// @ts-nocheck
 import { oleoduc, writeData } from "oleoduc"
 
 import { logger } from "../../common/logger"
 import { referrers } from "../../common/model/constants/referrers"
 import { Etablissement, FormationCatalogue } from "../../common/model/index"
-import { isValidEmail } from "../../common/utils/isValidEmail"
 import { isEmailBlacklisted } from "../../services/application.service"
-import { getFormationsFromCatalogueMe } from "../../services/catalogue.service"
+import { getEmailFromCatalogueField, getFormationsFromCatalogueMe } from "../../services/catalogue.service"
 import dayjs from "../../services/dayjs.service"
 import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service"
-
-/**
- * Gets email from catalogue field.
- * These email fields can contain "not valid email", "emails separated by ##" or be null.
- * @param {string|null} email
- * @return {string|null}
- */
-const getEmailFromCatalogueField = (email) => {
-  if (!email) {
-    return null
-  }
-
-  const divider = "##"
-  if (email?.includes(divider)) {
-    const emailSplit = email.split(divider).at(-1).toLowerCase()
-
-    return isValidEmail(emailSplit) ? emailSplit : null
-  }
-
-  return isValidEmail(email) ? email.toLowerCase() : null
-}
+import { getEmailForRdv } from "../../services/eligibleTrainingsForAppointment.service"
 
 /**
  * @description Gets Catalogue etablissments informations and insert in etablissement collection.
@@ -82,10 +62,11 @@ export const syncEtablissementsAndFormations = async () => {
 
           // Don't override "email" if this field is true
           if (!eligibleTrainingsForAppointment?.is_lieu_formation_email_customized) {
-            emailRdv =
-              getEmailFromCatalogueField(formation.email) ||
-              getEmailFromCatalogueField(formation.etablissement_formateur_courriel) ||
-              eligibleTrainingsForAppointment.lieu_formation_email
+            emailRdv = await eligibleTrainingsForAppointmentService.getEmailForRdv({
+              email: formation.email,
+              etablissement_formateur_courriel: formation.etablissement_formateur_courriel,
+              etablissement_formateur_siret: formation.etablissement_formateur_siret,
+            })
           }
 
           const emailBlacklisted = await isEmailBlacklisted(emailRdv)
@@ -116,7 +97,11 @@ export const syncEtablissementsAndFormations = async () => {
             }
           )
         } else {
-          const emailRdv = getEmailFromCatalogueField(formation.etablissement_formateur_courriel)
+          const emailRdv = await getEmailForRdv({
+            email: formation.email,
+            etablissement_formateur_courriel: formation.etablissement_formateur_courriel,
+            etablissement_formateur_siret: formation.etablissement_formateur_siret,
+          })
 
           const emailBlacklisted = await isEmailBlacklisted(emailRdv)
 
@@ -143,10 +128,7 @@ export const syncEtablissementsAndFormations = async () => {
           })
         }
 
-        let emailDecisionnaire = etablissement?.gestionnaire_email
-        if (getEmailFromCatalogueField(formation.etablissement_gestionnaire_courriel)) {
-          emailDecisionnaire = getEmailFromCatalogueField(formation.etablissement_gestionnaire_courriel).toLowerCase()
-        }
+        const emailDecisionnaire = getEmailFromCatalogueField(formation.etablissement_gestionnaire_courriel)?.toLowerCase() || etablissement?.gestionnaire_email
 
         // Update etablissement model (upsert)
         return Etablissement.updateMany(
