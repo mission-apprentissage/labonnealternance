@@ -99,7 +99,7 @@ USER nextjs
 
 EXPOSE 3000
 ENV PORT 3000
-CMD ["node", "ui/server"]
+CMD ["node", "server.js"]
 
 ##############################################################
 ######################   UI ESPACE PRO  ######################
