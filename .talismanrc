@@ -1,84 +1,22 @@
 fileignoreconfig:
 - filename: .infra/env.ini
-  checksum: 226621a82b4a416356281cdd771ae0c8663de7f0b1cebe748032fc551f5e23ff
-- filename: ui/components/SearchForTrainingsAndJobs/components/ResultLists.test.js
-  checksum: e5aab994d90ece8a04ec3b79a10e1e68d611167638d440f7df67d94cb41429de
-- filename: yarn.lock
-  checksum: a2509f136cc15853b6495b5ba325b0c1d8845855518c13714e4885a99af00355
-- filename: .infra/docker-compose.preview-system.yml
-  checksum: 241d3e0e16c328c1f33d875acec59fb48704e2d83d1ba6c8ccb821d1064a9b91
-- filename: .infra/docker-compose.preview.yml
-  checksum: 301d8e633c0229eb3ed0f3ce396e4d8e0288434b7cc2bb7859cde42966efd8b8
-- filename: .infra/docker-compose.production.yml
-  checksum: c98ab69b77a7ab595bf6d504524db92c04940715325f1263542c2f5028c1423a
-- filename: .infra/files/configs/mongodb/seed.gpg
-  checksum: ec83455b778d8d88cf4ba2ec7a68cfaea21bb475ce0a592f89d30690ac9c27bb
-- filename: .infra/files/scripts/seed.sh
-  checksum: 030d886a8ef5a415f42b105a0087eac735e3ceb4bcddb69a9914b2d44231ae52
+  checksum: 3cdb266b46684647db70ddad5e201a94dcad84eb90b04877c93c4d26410bd803
 - filename: .infra/vault/vault.yml
-  checksum: 347155ef3e92da4a9002ee4592b0727cd815a3846aca639102417852f0e1c6c9
-- filename: CHANGELOG.md
-  checksum: d6981eb077fcbf1c6858393e2f5cada971b297db3c0103853338f9f4b6211e0d
-  ignore_detectors:
-  - filename
-  - filesize
-  - filecontent
-- filename: README-New.md
-  checksum: 0f7d91a5bb60a1597593249bd475f5feb7dc8361861f7697a4648dfb4873c580
-- filename: server/.env.local.example
-  checksum: 495c0e79094d84f26ac766658f84b715ca131576c15a97201d5819a683992379
-- filename: server/src/assets/templates/mail-bienvenue.mjml.ejs
-  checksum: 6806b0e64e347ef56e04787e6518de5228a6c4f946f6f5f431cdcf56ca2303f4
-- filename: server/src/assets/templates/mail-cfa-premium-invite.mjml.ejs
-  checksum: 07f77c50203a70eeb951810250e4218e943d8d78e77495b91f6c0a20c32ff82e
-- filename: server/src/auth/passport-strategy.ts
-  checksum: 9986e0643ef89aca68ad0d29db14bece58801a27335658db27bfc20b4fe15257
-- filename: server/src/commands.ts
-  checksum: 5322e79cd7a94d86511817a7edef61df5746e038a283203a95428b865e3ccf2d
-- filename: server/src/config.ts
-  checksum: 936ab034b4ef4228b377301733f76dff41cd75215f8ea06e873626bbccfd603d
-- filename: server/src/generated/routes.ts
-  checksum: 2f6de2887e054b2ed80c490519724d6cbca85a1c30dc0695471621161a78863c
-  ignore_detectors:
-  - filename
-  - filesize
-  - filecontent
-- filename: server/src/generated/swagger.json
-  checksum: 4f467e6eaba0928961f8f278ba211fb5799348be44d5ee5f26f0ad8f9cf56f77
-  ignore_detectors:
-  - filename
-  - filesize
-  - filecontent
-- filename: server/src/http/controllers/jobs/jobs.controller.ts
-  checksum: d7a5e33a4e9bd43ccfd2758ec08a1a491957e27566c50e235f9232f744a392ca
-- filename: server/src/http/routes/auth/password.controller.ts
-  checksum: 3dc96343cc0258fa5ecdba6071cac633c2f6810bdf1838293d97b5d95740ad3c
-- filename: server/src/jobs/lba_recruteur/api/resetApiKey.ts
-  checksum: a3fa687c1f7c387def5428d934cd1a427b0edf2603aac78c62c8aab140be9b30
-- filename: server/src/jobs/seed/referentielRome/unix_fiche_emploi_metier_v450_iso8859-15.xml
-  checksum: 7257a3a49d3170754fd55316bf78b680866465400c46e11727daa5da00863347
-- filename: server/src/services/userRecruteur.service.ts
-  checksum: 0e426e336e82553c4a737b4832732903cefb01b2f9ee2024f1759293827bf813
-- filename: server/tests/unit/validateSendApplication-test.ts
-  checksum: 787b8598596ff9ab7481a6229c4d450d32c5189bdd878f0fac78a6b8e9772b39
-- filename: ui/components/HomeComponents/TestezConnaissancesQuiz.tsx
-  checksum: 7e42ed6bce6fc0f366669ae64e66975bc4c6b033fdafacb54e16e7cb2fbc75c2
-- filename: ui_espace_pro/src/pages/Authentification/Connexion.jsx
-  checksum: d01aca12462e745a97784ae381244b8821912e0d1359cde585d57782e4050edc
+  checksum: 150cbc5cb036d3a661357eacff662eab860efb22dc84b6cfba894436fb53ab52
 scopeconfig:
 - scope: node
 custom_patterns:
 - (?s)[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}
 allowed_patterns:
-  - key
-  - secret
-  - SECRET
-  - password
-  - Password
-  - pass
-  - apiKey
-  - ApiKey
-  - APIKey
-  - versionKey
-  - "@apprentissage.beta.gouv.fr"
+- key
+- secret
+- SECRET
+- password
+- Password
+- pass
+- apiKey
+- ApiKey
+- APIKey
+- versionKey
+- '@apprentissage.beta.gouv.fr'
 version: "1.0"

@@ -65,7 +65,7 @@
     dest: "/opt/app/docker-compose.recette.yml"
   with_fileglob:
     - "{{inventory_dir}}/docker-compose.recette.yml"
-  when: env_type == 'recette'
+  when: env_type == 'recette' or env_type == 'next'
 
 - name: creation du fichier docker compose preview system
   ansible.builtin.template:
