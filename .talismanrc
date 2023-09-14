@@ -1,4 +1,6 @@
 fileignoreconfig:
+- filename: .infra/.env_server
+  checksum: 599766c970cc24d31d684ce02d613bcc5fb7eeb3fa24fa61bde02d67603459db
 - filename: .infra/env.ini
   checksum: 24332dcab809201ac286e4225a1d861307c291dc4a5e2308b996da2d3547a41c
 - filename: .infra/vault/vault.yml
