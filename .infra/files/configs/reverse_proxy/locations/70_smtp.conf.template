@@ -1,6 +1,10 @@
-location /smtp/ {
-    set $upstream http://smtp:8025/;
-    proxy_pass  $upstream;
+location ~ ^/smtp/(.*)$ {
+    set $upstream http://smtp:8025;
+    proxy_pass $upstream/$1$is_args$args;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-Host $server_name;
+    proxy_set_header X-Forwarded-Proto $scheme;
 
     # Websocket configuration
     # See:

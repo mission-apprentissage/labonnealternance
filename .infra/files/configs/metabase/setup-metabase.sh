@@ -16,10 +16,10 @@ curl -s https://{{dns_name}}/metabase/api/setup \
 --data-raw "{
     \"token\": \"$TOKEN\",
     \"user\": {
-        \"password_confirm\": \"{{ vault[env_type].MNA_LBA_METABASE_ADMIN_PASS }}\",
-        \"password\": \"{{ vault[env_type].MNA_LBA_METABASE_ADMIN_PASS }}\",
+        \"password_confirm\": \"{{ vault[env_type].LBA_METABASE_ADMIN_PASS }}\",
+        \"password\": \"{{ vault[env_type].LBA_METABASE_ADMIN_PASS }}\",
         \"site_name\": \"boite aux lettres\",
-        \"email\": \"{{ vault[env_type].MNA_LBA_METABASE_ADMIN_EMAIL }}\",
+        \"email\": \"{{ vault[env_type].LBA_METABASE_ADMIN_EMAIL }}\",
         \"last_name\": null,
         \"first_name\": null
     },
@@ -33,7 +33,7 @@ curl -s https://{{dns_name}}/metabase/api/setup \
         \"schedules\": {},
         \"details\": {
             \"use-conn-uri\": true,
-            \"conn-uri\": \"{{ vault[env_type].MNA_LBA_METABASE_DB_URI }}\",
+            \"conn-uri\": \"{{ vault[env_type].LBA_METABASE_URI }}\",
             \"tunnel-enabled\": false,
             \"advanced-options\": true,
             \"ssl\": true
