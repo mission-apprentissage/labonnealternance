@@ -1,26 +1,18 @@
 fileignoreconfig:
-- filename: CHANGELOG.md
-  checksum: c5ac171fa218e977fc0dea0a950d92944c1b95e9ab86f102ef202d8335bd6e16
-- filename: cypress/e2e/ui/send-job-application-mjsbal.cy.js
-  checksum: 3fb2f60e9fc4359bc6e4293208acca8662643d2365deea7d98c528952d73ff07
-- filename: cypress/e2e/ui/send-job-application.cy.js
-  checksum: 32db9cd910b4f4e1854aefb145a5ea0ca3c594cf63e4dffac22ade5c0ad8fe66
+- filename: .infra/env.ini
+  checksum: 226621a82b4a416356281cdd771ae0c8663de7f0b1cebe748032fc551f5e23ff
 - filename: server/src/generated/swagger.json
   checksum: c918d7f02265fc368e053eb770768f56ca58a7a6f7df439b748d2bad6e0e5f63
 - filename: ui/components/SearchForTrainingsAndJobs/components/ResultLists.test.js
   checksum: e5aab994d90ece8a04ec3b79a10e1e68d611167638d440f7df67d94cb41429de
 - filename: yarn.lock
   checksum: a2509f136cc15853b6495b5ba325b0c1d8845855518c13714e4885a99af00355
-version: ""
- checksum: fb8f977e58d7308fa2c937f33aa065af2a999171697b89ae399b9ba53c2d62f9
 - filename: .infra/docker-compose.preview-system.yml
   checksum: 241d3e0e16c328c1f33d875acec59fb48704e2d83d1ba6c8ccb821d1064a9b91
 - filename: .infra/docker-compose.preview.yml
   checksum: 301d8e633c0229eb3ed0f3ce396e4d8e0288434b7cc2bb7859cde42966efd8b8
 - filename: .infra/docker-compose.production.yml
   checksum: c98ab69b77a7ab595bf6d504524db92c04940715325f1263542c2f5028c1423a
-- filename: .infra/env.ini
-  checksum: b760bcf36494ee698a22dc8360d8589aa3d4f9645a049db1ef864cd169409304
 - filename: .infra/files/configs/mongodb/seed.gpg
   checksum: ec83455b778d8d88cf4ba2ec7a68cfaea21bb475ce0a592f89d30690ac9c27bb
 - filename: .infra/files/scripts/seed.sh
@@ -92,5 +84,5 @@ allowed_patterns:
   - ApiKey
   - APIKey
   - versionKey
-  - @apprentissage.beta.gouv.fr
+  - "@apprentissage.beta.gouv.fr"
 version: "1.0"
