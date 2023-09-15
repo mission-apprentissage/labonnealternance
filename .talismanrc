@@ -32,6 +32,10 @@ fileignoreconfig:
     checksum: 9986e0643ef89aca68ad0d29db14bece58801a27335658db27bfc20b4fe15257
   - filename: server/src/http/routes/auth/password.controller.ts
     checksum: 9d27a293e44bed47969f818e2c8abff95d429f219780900e580bfb409c5d4985
+  - filename: server/yarn.lock
+    checksum: 3abd7fd11b96e81750c3a86b68e1f1c95cf62f1cc6ccc7aa456d205290fcb54d
+  - filename: server/src/common/model/constants/referrers.ts
+    checksum: afa23ef228bc7d3ff20d7759e33a1b63714cc33ce647fa00ffe67a5045a55f84
 version: ""
 scopeconfig:
   - scope: node
@@ -48,6 +52,5 @@ allowed_patterns:
   - ApiKey
   - APIKey
   - versionKey
-  - @apprentissage.beta.gouv.fr
+  - "@apprentissage.beta.gouv.fr"
 version: "1.0"
-
