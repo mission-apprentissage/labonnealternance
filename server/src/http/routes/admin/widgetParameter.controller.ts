@@ -1,8 +1,7 @@
-// @ts-nocheck
 import express from "express"
 import Joi from "joi"
 import { logger } from "../../../common/logger.js"
-import { EligibleTrainingsForAppointment } from "../../../common/model/index.js"
+import { EligibleTrainingsForAppointment, Etablissement } from "../../../common/model/index.js"
 import { tryCatch } from "../../middlewares/tryCatchMiddleware.js"
 import * as eligibleTrainingsForAppointmentService from "../../../services/eligibleTrainingsForAppointment.service.js"
 
@@ -33,7 +32,7 @@ const eligibleTrainingsForAppointmentSchema = Joi.object({
 /**
  * Sample entity route module for GET
  */
-export default ({ etablissements }) => {
+export default () => {
   const router = express.Router()
 
   /**
@@ -51,7 +50,7 @@ export default ({ etablissements }) => {
 
       const parameters = await Promise.all(
         allData.docs.map(async (parameter) => {
-          const etablissement = await etablissements.findOne({ formateur_siret: parameter.etablissement_formateur_siret })
+          const etablissement = await Etablissement.findOne({ formateur_siret: parameter.etablissement_formateur_siret })
 
           return {
             etablissement_raison_sociale: etablissement?.raison_sociale || "N/C",
@@ -66,7 +65,11 @@ export default ({ etablissements }) => {
         pagination: {
           page: allData.page,
           resultats_par_page: limit,
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           nombre_de_page: allData.pages,
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
           total: allData.total,
         },
       })
