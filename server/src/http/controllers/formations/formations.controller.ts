@@ -40,14 +40,14 @@ export class FormationsController extends Controller {
     @Request() request: express.Request,
     @Query() romes?: string,
     @Query() romeDomain?: string,
+    @Header() @Hidden() referer?: string,
     @Query() caller?: string,
     @Query() latitude?: string,
     @Query() longitude?: string,
     @Query() radius?: string,
     @Query() diploma?: string,
     @Query() @Hidden() options?: string,
-    @Query() @Hidden() useMock?: string,
-    @Header() @Hidden() referer?: string
+    @Query() @Hidden() useMock?: string
   ): Promise<IApiError | { results: ILbaItem[] }> {
     const result = await getFormationsQuery({ romes, longitude, latitude, radius, diploma, romeDomain, caller, options, referer, useMock })
 
