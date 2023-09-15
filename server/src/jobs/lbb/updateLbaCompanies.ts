@@ -1,12 +1,12 @@
 // @ts-nocheck
 import { oleoduc, transformData, writeData } from "oleoduc"
 import _ from "lodash-es"
-import { BonnesBoites, UnsubscribedBonneBoite } from "../../common/model/index.js"
+import { LbaCompany, UnsubscribedLbaCompany } from "../../common/model/index.js"
 import { rebuildIndex } from "../../common/utils/esUtils.js"
 import { logMessage } from "../../common/utils/logMessage.js"
 import { insertSAVECompanies, updateSAVECompanies, removeSAVECompanies } from "./updateSAVECompanies.js"
 
-import { countCompaniesInFile, downloadAlgoCompanyFile, getCompanyMissingData, checkIfAlgoFileIsNew, readCompaniesFromJson, removePredictionFile } from "./bonnesBoitesUtils.js"
+import { countCompaniesInFile, downloadAlgoCompanyFile, getCompanyMissingData, checkIfAlgoFileIsNew, readCompaniesFromJson, removePredictionFile } from "./lbaCompaniesUtils.js"
 import { notifyToSlack } from "../../common/utils/slackUtils.js"
 
 // nombre minimal arbitraire de sociétés attendus dans le fichier
@@ -39,8 +39,8 @@ const prepareCompany = async (rawCompany) => {
     return null
   }
 
-  const unsubscribedBonneBoite = await UnsubscribedBonneBoite.findOne({ siret: rawCompany.siret }, { siret: 1, _id: 0 })
-  if (unsubscribedBonneBoite) {
+  const unsubscribedLbaCompany = await UnsubscribedLbaCompany.findOne({ siret: rawCompany.siret }, { siret: 1, _id: 0 })
+  if (unsubscribedLbaCompany) {
     return null
   }
 
@@ -53,11 +53,11 @@ const processCompanies = async () => {
   await oleoduc(
     await readCompaniesFromJson(),
     transformData((company) => prepareCompany(company), { parallel: 8 }),
-    writeData(async (bonneBoite) => {
+    writeData(async (lbaCompany) => {
       try {
-        if (bonneBoite) {
+        if (lbaCompany) {
           // contourne mongoose pour éviter la réindexation systématique à chaque insertion.
-          await BonnesBoites.collection.insertOne(bonneBoite)
+          await LbaCompany.collection.insertOne(lbaCompany)
         }
       } catch (err) {
         logMessage("error", err)
@@ -66,7 +66,7 @@ const processCompanies = async () => {
   )
 }
 
-export default async function updateBonnesBoites({ UseAlgoFile = false, ClearMongo = false, BuildIndex = false, UseSave = false, ForceRecreate = false, SourceFile = null }) {
+export default async function updateLbaCompanies({ UseAlgoFile = false, ClearMongo = false, BuildIndex = false, UseSave = false, ForceRecreate = false, SourceFile = null }) {
   try {
     logMessage("info", " -- Start updating lbb db with new algo -- ")
 
@@ -83,8 +83,8 @@ export default async function updateBonnesBoites({ UseAlgoFile = false, ClearMon
         const companyCount = await countCompaniesInFile()
         if (companyCount < MIN_COMPANY_THRESHOLD) {
           await notifyToSlack({
-            subject: "IMPORT BONNES BOITES",
-            message: `Import bonnesboites avorté car le fichier ne comporte pas assez de sociétés. ${companyCount} sociétés / ${MIN_COMPANY_THRESHOLD} minimum attendu`,
+            subject: "IMPORT SOCIETES ISSUES DE L'ALGO",
+            message: `Import sociétés issues de l'algo avorté car le fichier ne comporte pas assez de sociétés. ${companyCount} sociétés / ${MIN_COMPANY_THRESHOLD} minimum attendu`,
             error: true,
           })
           throw new Error(`Nombre de sociétés insuffisant : ${companyCount}`)
@@ -94,7 +94,7 @@ export default async function updateBonnesBoites({ UseAlgoFile = false, ClearMon
 
     if (ClearMongo) {
       logMessage("info", `Clearing bonnesboites db...`)
-      await BonnesBoites.deleteMany({})
+      await LbaCompany.deleteMany({})
     }
 
     if (UseAlgoFile) {
@@ -108,12 +108,12 @@ export default async function updateBonnesBoites({ UseAlgoFile = false, ClearMon
     }
 
     if (BuildIndex) {
-      await rebuildIndex(BonnesBoites, { skipNotFound: true })
+      await rebuildIndex(LbaCompany, { skipNotFound: true })
     }
 
     logMessage("info", `End updating lbb db`)
 
-    await notifyToSlack({ subject: "IMPORT BONNES BOITES", message: `Import bonnesboites terminé. ${count} sociétés importées`, error: false })
+    await notifyToSlack({ subject: "IMPORT SOCIETES ISSUES DE L'ALGO", message: `Import sociétés issues de l'algo terminé. ${count} sociétés importées`, error: false })
   } catch (err) {
     logMessage("error", err)
   } finally {

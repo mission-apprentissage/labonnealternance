@@ -4,7 +4,7 @@ import { oleoduc, accumulateData, readLineByLine, transformData, writeData } fro
 import fs from "fs"
 import path from "path"
 import __dirname from "../../common/dirname.js"
-import { pushFileToBucket } from "./bonnesBoitesUtils.js"
+import { pushFileToBucket } from "./lbaCompaniesUtils.js"
 const currentDirname = __dirname(import.meta.url)
 
 const tempDir = "./assets/"

@@ -12,7 +12,7 @@ import { sentryCaptureException } from "../common/utils/sentryUtils.js"
 import { notifyToSlack } from "../common/utils/slackUtils.js"
 import config from "../config.js"
 import { formationMock, formationsMock, formationDetailMock } from "../mocks/formations-mock.js"
-import { formationsQueryValidator, formationsRegionQueryValidator } from "../service/formationsQueryValidator.js"
+import { formationsQueryValidator, formationsRegionQueryValidator } from "../services/queryValidator.service.js"
 import { IFormationEsResult } from "./formation.service.types.js"
 import { ILbaItem, ILbaItemTrainingSession, LbaItem } from "./lbaitem.shared.service.types.js"
 
@@ -582,32 +582,55 @@ const getSchoolName = (formation: Partial<IFormationCatalogue>): string => {
  * @param {any} query requête
  * @returns {Promise<IApiError | { results: ILbaItem[]}}
  */
-export const getFormationsQuery = async (query: any): Promise<IApiError | { results: ILbaItem[] }> => {
-  const queryValidationResult = await formationsQueryValidator(query)
+export const getFormationsQuery = async ({
+  romes,
+  longitude,
+  latitude,
+  radius,
+  diploma,
+  romeDomain,
+  caller,
+  options,
+  useMock,
+  referer,
+  api = "formationV1",
+}: {
+  romes?: string
+  longitude?: string
+  latitude?: string
+  radius?: string
+  diploma?: string
+  romeDomain?: string
+  caller?: string
+  options: string
+  useMock?: string
+  referer: string
+  api?: string
+}): Promise<IApiError | { results: ILbaItem[] }> => {
+  const parameterControl = await formationsQueryValidator({ romes, longitude, latitude, radius, diploma, romeDomain, caller, referer, useMock })
 
-  if (queryValidationResult.error) {
-    return queryValidationResult
+  if ("error" in parameterControl) {
+    return parameterControl
   }
 
   try {
     const formations = await getAtLeastSomeFormations({
-      romes: query.romes ? query.romes.split(",") : null,
-      coords: query.longitude ? [query.longitude, query.latitude] : null,
-      radius: query.radius,
-      diploma: query.diploma,
+      romes: parameterControl.romes ? parameterControl.romes.split(",") : null,
+      coords: longitude ? [longitude, latitude] : null,
+      radius: parseInt(radius),
+      diploma: diploma,
       maxOutLimitFormation: 5,
-      romeDomain: query.romeDomain,
-      caller: query.caller,
-      useMock: query.useMock,
-      options: query.options ? query.options.split(",") : [],
+      romeDomain: romeDomain,
+      caller: caller,
+      useMock: useMock,
+      options: options ? options.split(",") : [],
     })
 
     return { results: formations }
   } catch (err) {
-    console.error("Error ", err, err.message)
     sentryCaptureException(err)
-    if (query.caller) {
-      trackApiCall({ caller: query.caller, api_path: "formationV1", response: "Error" })
+    if (caller) {
+      trackApiCall({ caller, api_path: api, response: "Error" })
     }
     return { error: "internal_error" }
   }
@@ -685,7 +708,7 @@ const removeEmailFromLBFData = (data: any): any => {
  * @param {string} id l'identifiant de la formation chez LBF (id RCO)
  * @returns {Promise<IApiError | any>}
  */
-export const getFormationDescriptionQuery = async ({ id }): Promise<IApiError | any> => {
+export const getFormationDescriptionQuery = async ({ id }: { id: string }): Promise<IApiError | any> => {
   try {
     let formationDescription = null
 
@@ -712,22 +735,42 @@ export const getFormationDescriptionQuery = async ({ id }): Promise<IApiError | 
  * @param {any} query la requête http
  * @returns {Promise< IApiError | ILbaItem[] >}
  */
-export const getFormationsParRegionQuery = async (query: any): Promise<IApiError | { results: ILbaItem[] }> => {
-  const queryValidationResult = formationsRegionQueryValidator(query)
+export const getFormationsParRegionQuery = async ({
+  romes,
+  departement,
+  region,
+  diploma,
+  romeDomain,
+  caller,
+  options,
+  referer,
+  useMock,
+}: {
+  romes?: string
+  departement?: string
+  region?: string
+  diploma?: string
+  romeDomain?: string
+  caller?: string
+  options: string
+  referer: string
+  useMock?: string
+}): Promise<IApiError | { results: ILbaItem[] }> => {
+  const queryValidationResult = formationsRegionQueryValidator({ romes, departement, region, diploma, romeDomain, caller, referer, useMock })
 
-  if (queryValidationResult.error) {
+  if ("error" in queryValidationResult) {
     return queryValidationResult
   }
 
   try {
     const rawEsFormations = await getRegionFormations({
-      romes: query.romes ? query.romes.split(",") : null,
-      region: query.region,
-      departement: query.departement,
-      diploma: query.diploma,
-      romeDomain: query.romeDomain,
-      caller: query.caller,
-      options: query.options ? query.options.split(",") : [],
+      romes: romes ? romes.split(",") : null,
+      region: region,
+      departement: departement,
+      diploma: diploma,
+      romeDomain: romeDomain,
+      caller: caller,
+      options: options ? options.split(",") : [],
     })
 
     const formations = transformFormationsForIdea(rawEsFormations)
@@ -735,11 +778,9 @@ export const getFormationsParRegionQuery = async (query: any): Promise<IApiError
 
     return { results: formations }
   } catch (err) {
-    console.error("Error ", err.message)
     sentryCaptureException(err)
-
-    if (query.caller) {
-      trackApiCall({ caller: query.caller, api_path: "formationRegionV1", response: "Error" })
+    if (caller) {
+      trackApiCall({ caller, api_path: "formationRegionV1", response: "Error" })
     }
 
     return { error: "internal_error" }

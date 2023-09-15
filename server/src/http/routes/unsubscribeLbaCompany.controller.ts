@@ -1,4 +1,4 @@
-import { BonnesBoites, UnsubscribedBonneBoite } from "../../common/model/index.js"
+import { LbaCompany, UnsubscribedLbaCompany } from "../../common/model/index.js"
 import express from "express"
 import rateLimit from "express-rate-limit"
 import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
@@ -28,22 +28,22 @@ export default function () {
       const email = req.body.email.toLowerCase()
       const reason = req.body.reason
 
-      const bonnesBoitesToUnsubscribe = await BonnesBoites.find({ email }).lean()
+      const lbaCompaniesToUnsubscribe = await LbaCompany.find({ email }).lean()
 
-      if (!bonnesBoitesToUnsubscribe.length) {
+      if (!lbaCompaniesToUnsubscribe.length) {
         result = UNSUBSCRIBE_EMAIL_ERRORS["NON_RECONNU"]
-      } else if (bonnesBoitesToUnsubscribe.length > 1) {
+      } else if (lbaCompaniesToUnsubscribe.length > 1) {
         result = UNSUBSCRIBE_EMAIL_ERRORS["ETABLISSEMENTS_MULTIPLES"]
       } else {
-        const unsubscribedBonneBoite = new UnsubscribedBonneBoite({
-          ...bonnesBoitesToUnsubscribe[0],
+        const unsubscribedLbaCompany = new UnsubscribedLbaCompany({
+          ...lbaCompaniesToUnsubscribe[0],
           unsubscribe_reason: reason,
         })
 
-        unsubscribedBonneBoite.save()
+        unsubscribedLbaCompany.save()
 
-        const bonneBoiteToUnsubscribe = await BonnesBoites.findOne({ siret: bonnesBoitesToUnsubscribe[0].siret })
-        bonneBoiteToUnsubscribe.remove()
+        const lbaCompanyToUnsubscribe = await LbaCompany.findOne({ siret: lbaCompaniesToUnsubscribe[0].siret })
+        lbaCompanyToUnsubscribe.remove()
 
         await mailer.sendEmail({
           to: email,

@@ -15,7 +15,7 @@ import { generateIndexes } from "./jobs/lba_recruteur/indexes/generateIndexes.js
 import { relanceOpco } from "./jobs/lba_recruteur/opco/relanceOpco.js"
 import { exportPE } from "./jobs/lba_recruteur/formulaire/misc/exportPE.js"
 import { createOffreCollection } from "./jobs/lba_recruteur/seed/createOffre.js"
-import updateBonnesBoites from "./jobs/lbb/updateBonnesBoites.js"
+import updateLbaCompanies from "./jobs/lbb/updateLbaCompanies.js"
 import updateGeoLocations from "./jobs/lbb/updateGeoLocations.js"
 import updateOpcoCompanies from "./jobs/lbb/updateOpcoCompanies.js"
 import { activateOptOutEtablissementFormations } from "./jobs/rdv/activateOptOutEtablissementFormations.js"
@@ -310,7 +310,7 @@ cli
   .option("-source-file, [SourceFile]", "fichier source alternatif", null)
   .description("Met à jour la liste des sociétés bonnes alternances")
   .action((options) => {
-    runScript(() => updateBonnesBoites(options))
+    runScript(() => updateLbaCompanies(options))
   })
 
 cli
