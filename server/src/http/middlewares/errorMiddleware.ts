@@ -1,6 +1,8 @@
 // @ts-nocheck
 import Boom from "boom"
 
+import { logger } from "@/common/logger"
+
 function boomify(rawError) {
   let error
   if (rawError.isBoom) {
@@ -25,6 +27,7 @@ export function errorMiddleware() {
   // Number of params matter to differentiate fallback route from error handler
   return (err, _req, res, _next) => {
     const boomError = boomify(err)
+    logger.error(err);
     return res.status(boomError.output.statusCode).send(boomError.output.payload)
   }
 }

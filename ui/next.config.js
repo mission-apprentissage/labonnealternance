@@ -36,7 +36,7 @@ const contentSecurityPolicy = `
               https://exposition-recette.inserjeunes.beta.gouv.fr 
               https://exposition.inserjeunes.beta.gouv.fr 
               https://*.ingest.sentry.io
-              ${process.env.NEXT_PUBLIC_ENV === "local" ? "http://localhost:5001/" : ""};
+              ${process.env.NEXT_PUBLIC_ENV === "local" ? "http://localhost:5001" : ""};
   img-src 'self' 
               data: 
               blob:

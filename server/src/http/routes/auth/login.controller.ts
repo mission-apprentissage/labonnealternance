@@ -79,10 +79,8 @@ export default () => {
 
       const status = getUserStatus(user.status)
 
-      if (!status) return
-
       if ([ENTREPRISE, CFA].includes(user.type)) {
-        if ([ETAT_UTILISATEUR.ATTENTE, ETAT_UTILISATEUR.ERROR].includes(status)) {
+        if (status && [ETAT_UTILISATEUR.ATTENTE, ETAT_UTILISATEUR.ERROR].includes(status)) {
           return res.status(400).json({ error: true, reason: "VALIDATION" })
         }
         if (status === ETAT_UTILISATEUR.DESACTIVE) {
