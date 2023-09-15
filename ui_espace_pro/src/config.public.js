@@ -18,6 +18,16 @@ function getRecettePublicConfig() {
   }
 }
 
+function getNextPublicConfig() {
+  const host = "labonnealternance-next.apprentissage.beta.gouv.fr"
+
+  return {
+    env: "next",
+    host,
+    baseUrl: `https://${host}`,
+  }
+}
+
 function getPreviewPublicConfig() {
   const version = getVersion()
   const matches = version.match(/^0\.0\.0-(\d+)$/)
@@ -49,7 +59,7 @@ function getVersion() {
   const version = process.env.REACT_APP_VERSION
 
   if (!version) {
-    throw new Error("missing NEXT_PUBLIC_VERSION env-vars")
+    throw new Error("missing REACT_APP_VERSION env-vars")
   }
 
   return version
@@ -61,10 +71,11 @@ function getEnv() {
     case "production":
     case "recette":
     case "preview":
+    case "next":
     case "local":
       return env
     default:
-      throw new Error(`Invalid NEXT_PUBLIC_ENV env-vars ${env}`)
+      throw new Error(`Invalid REACT_APP_ENV env-vars ${env}`)
   }
 }
 
@@ -74,6 +85,8 @@ function getPublicConfig() {
       return getProductionPublicConfig()
     case "recette":
       return getRecettePublicConfig()
+    case "next":
+      return getNextPublicConfig()
     case "preview":
       return getPreviewPublicConfig()
     case "local":
