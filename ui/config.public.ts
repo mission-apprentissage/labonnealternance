@@ -2,6 +2,10 @@ export interface PublicConfig {
   sentry_dsn: string
   baseUrl: string
   host: string
+  espacePro: {
+    host: string,
+    protocol: string,
+  },
   env: "local" | "recette" | "production" | "preview" | "next"
   matomo: {
     url: string
@@ -20,6 +24,10 @@ function getProductionPublicConfig(): PublicConfig {
     sentry_dsn: SENTRY_DSN,
     env: "production",
     host,
+    espacePro: { 
+      host,
+      protocol: 'https',
+    },
     baseUrl: `https://${host}`,
     matomo: {
       url: "https://stats.beta.gouv.fr",
@@ -37,6 +45,10 @@ function getRecettePublicConfig(): PublicConfig {
     sentry_dsn: SENTRY_DSN,
     env: "recette",
     host,
+    espacePro: { 
+      host,
+      protocol: 'https',
+    },
     baseUrl: `https://${host}`,
     matomo: {
       url: "https://stats.beta.gouv.fr",
@@ -53,6 +65,10 @@ function getNextPublicConfig(): PublicConfig {
     sentry_dsn: SENTRY_DSN,
     env: "next",
     host,
+    espacePro: { 
+      host,
+      protocol: 'https',
+    },
     baseUrl: `https://${host}`,
     matomo: {
       url: "https://stats.beta.gouv.fr",
@@ -77,6 +93,10 @@ function getPreviewPublicConfig(): PublicConfig {
     sentry_dsn: SENTRY_DSN,
     env: "preview",
     host,
+    espacePro: { 
+      host,
+      protocol: 'https',
+        },
     baseUrl: `https://${host}`,
     matomo: {
       url: "https://stats.beta.gouv.fr",
@@ -94,6 +114,10 @@ function getLocalPublicConfig(): PublicConfig {
     sentry_dsn: SENTRY_DSN,
     env: "local",
     host,
+    espacePro: { 
+      host: `${host}:${process.env.NEXT_PUBLIC_ESPACE_PRO_PORT}`,
+      protocol: 'http',
+    },
     baseUrl: `http://${host}:${process.env.NEXT_PUBLIC_API_PORT}`,
     matomo: {
       url: "https://stats.beta.gouv.fr",

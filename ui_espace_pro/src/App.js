@@ -44,17 +44,18 @@ import PremiumAffelnetForm from "./pages/PremiumAffelnetForm"
 import { PropositionOffreId } from "./pages/Proposition/Offre/PropositionOffreId"
 import { PropositionOffreUnsubscribe } from "./pages/Proposition/Offre/PropositionOffreUnsubscribe"
 import Widget from "./pages/Widget"
+import { redirect } from "./common/utils/router"
 
 function RedirectTo404() {
   useEffect(() => {
-    window.location.replace("/404")
+    redirect("/404", true)
   }, [])
   return null
 }
 
 function RedirectToLba() {
   useEffect(() => {
-    window.location.replace("/")
+    redirect("/", true)
   }, [])
   return null
 }

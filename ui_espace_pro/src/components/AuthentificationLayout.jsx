@@ -4,17 +4,18 @@ import { WidgetContext } from "../contextWidget"
 import { Close } from "../theme/components/icons"
 import { LbaNew } from "../theme/components/logos"
 import Logo from "./Layout/Logo"
+import { redirect } from "../common/utils/router"
 
 export default (props) => {
   const { widget } = useContext(WidgetContext)
 
-  const redirect = () => {
+  const redirectFn = () => {
     const isCfa = window.location.pathname.includes("cfa") ? true : false
 
     if (isCfa) {
-      return window.location.assign(`/organisme-de-formation`)
+      return redirect(`/organisme-de-formation`)
     } else {
-      return window.location.assign(`/acces-recruteur`)
+      return redirect(`/acces-recruteur`)
     }
   }
 
@@ -32,7 +33,7 @@ export default (props) => {
           </Flex>
           <Button
             display="flex"
-            onClick={props.fromDashboard ? () => props.onClose() : () => redirect()}
+            onClick={props.fromDashboard ? () => props.onClose() : () => redirectFn()}
             fontWeight="normal"
             variant="pill"
             color="bluefrance.500"

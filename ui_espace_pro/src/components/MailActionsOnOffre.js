@@ -2,14 +2,15 @@ import { Box, Flex, Spinner, Text, useToast } from "@chakra-ui/react"
 import { useEffect } from "react"
 import { useParams } from "react-router-dom"
 import { cancelOffre, fillOffre } from "../api"
+import { redirect } from "../common/utils/router"
 
 export default (props) => {
   const params = useParams()
   const toast = useToast()
 
-  const redirect = (ms) => {
+  const redirectFn = (ms) => {
     setTimeout(() => {
-      window.location.replace("/")
+      redirect("/", true)
     }, 5000)
   }
 
@@ -22,7 +23,7 @@ export default (props) => {
       isClosable: false,
       duration: 5000,
     })
-    redirect()
+    redirectFn()
   }
 
   useEffect(() => {
@@ -43,7 +44,7 @@ export default (props) => {
             isClosable: true,
             duration: 5000,
           })
-          redirect()
+          redirectFn()
         })
         .catch((err) => error())
     }
@@ -59,7 +60,7 @@ export default (props) => {
             isClosable: true,
             duration: 5000,
           })
-          redirect()
+          redirectFn()
         })
         .catch(() => error())
     }

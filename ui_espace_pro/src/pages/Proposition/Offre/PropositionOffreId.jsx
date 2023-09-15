@@ -6,6 +6,7 @@ import { dayjs } from "../../../common/dayjs"
 import { LoadingEmptySpace } from "../../../components"
 import style from "../../../components/Voeux.module.css"
 import { Copy, InfoCircle, Minus, Plus } from "../../../theme/components/icons"
+import { publicConfig } from "../../../config.public"
 
 export const PropositionOffreId = () => {
   const { idFormulaire, jobId, siretFormateur } = useParams()
@@ -19,11 +20,7 @@ export const PropositionOffreId = () => {
    * @return {Promise<void>}
    */
   const copyInClipboard = () => {
-    navigator.clipboard.writeText(
-      `https://labonnealternance${
-        window.location.href.includes("recette") ? "-recette" : ""
-      }.apprentissage.beta.gouv.fr/recherche-apprentissage?&display=list&page=fiche&type=matcha&itemId=${job._id}`,
-    )
+    navigator.clipboard.writeText(`${publicConfig.baseUrlUri}/recherche-apprentissage?&display=list&page=fiche&type=matcha&itemId=${job._id}`)
     toast({
       title: "Lien copié.",
       position: "top-right",

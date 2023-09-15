@@ -14,7 +14,7 @@ const contentSecurityPolicy = `
               https://stats.beta.gouv.fr;
   script-src 'self' 
               'unsafe-inline' 
-              'unsafe-eval' 
+              ${process.env.NEXT_PUBLIC_ENV === "local" ? "'unsafe-eval'" : ""}
               https://plausible.io 
               http://localhost:3000 
               https://stats.beta.gouv.fr
@@ -35,7 +35,8 @@ const contentSecurityPolicy = `
               http://localhost:5000
               https://exposition-recette.inserjeunes.beta.gouv.fr 
               https://exposition.inserjeunes.beta.gouv.fr 
-              https://*.ingest.sentry.io;
+              https://*.ingest.sentry.io
+              ${process.env.NEXT_PUBLIC_ENV === "local" ? "http://localhost:5001/" : ""};
   img-src 'self' 
               data: 
               blob:
@@ -49,8 +50,7 @@ const contentSecurityPolicy = `
               https://labonnealternance.pole-emploi.fr;
   font-src 'self' https: data:;
   style-src 'self' https: 'unsafe-inline';
-  frame-src http://localhost
-            http://localhost:3000
+  frame-src ${process.env.NEXT_PUBLIC_ENV === "local" ? "http://localhost:3000" : ""}
             https://plausible.io             
             https://labonnealternance.pole-emploi.fr
             https://labonnealternance.apprentissage.beta.gouv.fr

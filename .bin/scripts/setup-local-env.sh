@@ -18,10 +18,12 @@ ANSIBLE_CONFIG="${ROOT_DIR}/.infra/ansible/ansible.cfg" ansible all \
 echo "NEXT_PUBLIC_ENV=local" >> "${ROOT_DIR}/ui/.env"
 echo "NEXT_PUBLIC_VERSION=0.0.0-local" >> "${ROOT_DIR}/ui/.env"
 echo "NEXT_PUBLIC_API_PORT=5001" >> "${ROOT_DIR}/ui/.env"
+echo "NEXT_PUBLIC_ESPACE_PRO_PORT=3001" >> "${ROOT_DIR}/ui/.env"
 
 echo "REACT_APP_ENV=local" > "${ROOT_DIR}/ui_espace_pro/.env"
 echo "REACT_APP_VERSION=0.0.0-local" >> "${ROOT_DIR}/ui_espace_pro/.env"
 echo "REACT_APP_API_PORT=5001" >> "${ROOT_DIR}/ui_espace_pro/.env"
 echo "PORT=3001" >> "${ROOT_DIR}/ui_espace_pro/.env"
+echo "REACT_APP_UI_PORT=3000" >> "${ROOT_DIR}/ui_espace_pro/.env"
 echo "SKIP_PREFLIGHT_CHECK=true" >> "${ROOT_DIR}/ui_espace_pro/.env"
 echo "DISABLE_ESLINT_PLUGIN=true" >> "${ROOT_DIR}/ui_espace_pro/.env"

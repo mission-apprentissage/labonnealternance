@@ -5,6 +5,7 @@ import { validationCompte } from "../../api"
 import { AUTHTYPE } from "../../common/contants"
 import useAuth from "../../common/hooks/useAuth"
 import { AuthentificationLayout } from "../../components"
+import { redirect } from "../../common/utils/router"
 
 const EmailValide = () => (
   <Box pt={["6w", "12w"]} px={["6", "8"]}>
@@ -46,7 +47,7 @@ export default (props) => {
       .then(({ data }) => {
         if (data?.isUserAwaiting) {
           setIsAwaitingValidation.on()
-          setTimeout(() => window.location.replace("/"), 10000)
+          setTimeout(() => redirect("/", true), 10000)
         }
         if (data?.token) {
           setAuth(data?.token)

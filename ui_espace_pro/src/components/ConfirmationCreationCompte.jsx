@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom"
 import { deleteCfa, deleteEntreprise } from "../api"
 import { AUTHTYPE } from "../common/contants"
 import { InfoCircle } from "../theme/components/icons"
+import { redirect } from "../common/utils/router"
 
 export const ConfirmationCreationCompte = (props) => {
   let { isOpen, onClose, user, formulaire } = props
@@ -32,7 +33,7 @@ export const ConfirmationCreationCompte = (props) => {
     } else {
       await deleteCfa(user._id)
     }
-    window.location.replace("/")
+    redirect("/", true)
   }
 
   return (

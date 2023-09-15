@@ -6,15 +6,16 @@ import { AuthentificationLayout } from "../../components"
 import { WidgetContext } from "../../contextWidget"
 import { InfoCircle } from "../../theme/components/icons"
 import { MailCloud } from "../../theme/components/logos"
+import { redirect } from "../../common/utils/router"
 
 export default () => {
   const location = useLocation()
   const { widget } = useContext(WidgetContext)
 
-  const redirect = () => window.location.replace("/organisme-de-formation")
+  const redirectFn = () => redirect("/organisme-de-formation")
 
   return (
-    <AuthentificationLayout onClose={redirect}>
+    <AuthentificationLayout onClose={redirectFn}>
       <Flex direction={["column", widget?.mobile ? "column" : "row"]} align={widget?.mobile ? "center" : "flex-start"} border="1px solid #000091" mt={[4, 8]} p={[4, 8]}>
         <MailCloud style={{ paddingRight: "10px" }} />
         <Box pt={[3, 0]} ml={10}>
@@ -28,7 +29,7 @@ export default () => {
             </Flex>
 
             <Flex align="center" ml={5} mb="16px">
-              <Button variant="secondary" onClick={redirect}>
+              <Button variant="secondary" onClick={redirectFn}>
                 Retour à l'accueil
               </Button>
             </Flex>

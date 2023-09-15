@@ -5,6 +5,7 @@ function getProductionPublicConfig() {
     env: "production",
     host,
     baseUrl: `https://${host}`,
+    baseUrlUi: `https://${host}`,
   }
 }
 
@@ -15,6 +16,7 @@ function getRecettePublicConfig() {
     env: "recette",
     host,
     baseUrl: `https://${host}`,
+    baseUrlUi: `https://${host}`,
   }
 }
 
@@ -25,6 +27,7 @@ function getNextPublicConfig() {
     env: "next",
     host,
     baseUrl: `https://${host}`,
+    baseUrlUi: `https://${host}`,
   }
 }
 
@@ -42,6 +45,7 @@ function getPreviewPublicConfig() {
     env: "preview",
     host,
     baseUrl: `https://${host}`,
+    baseUrlUi: `https://${host}`,
   }
 }
 
@@ -52,6 +56,7 @@ function getLocalPublicConfig() {
     env: "local",
     host,
     baseUrl: `http://${host}:${process.env.REACT_APP_API_PORT}`,
+    baseUrlUi: `http://${host}:${process.env.REACT_APP_UI_PORT}`,
   }
 }
 
