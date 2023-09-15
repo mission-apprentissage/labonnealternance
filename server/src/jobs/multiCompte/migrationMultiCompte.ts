@@ -1,22 +1,25 @@
-import { Application, User, UserRecruteur } from "../../common/model/index.js"
+import dayjs from "dayjs"
 import { logger } from "../../common/logger.js"
-import { asyncForEachGrouped } from "../../common/utils/asyncUtils.js"
-import { notifyToSlack } from "../../common/utils/slackUtils.js"
-import { user2Repository } from "../../common/model/schema/multiCompte/user2.schema.js"
-import { entrepriseRepository } from "../../common/model/schema/multiCompte/entreprise.schema.js"
-import { User2, UserEventType, UserStatusEvent } from "../../common/model/schema/multiCompte/user2.types.js"
-import { ENTREPRISE, ETAT_UTILISATEUR, OPCOS, VALIDATION_UTILISATEUR } from "../../services/constant.service.js"
-import { IUserRecruteur } from "../../common/model/schema/userRecruteur/userRecruteur.types.js"
-import { parseEnumOrError } from "../../common/utils/enumUtils.js"
-import { Entreprise, EntrepriseStatusEvent, EntrepriseStatusEventType } from "../../common/model/schema/multiCompte/entreprise.types.js"
-import { CFA, CFAStatusEvent, CFAStatusEventType } from "../../common/model/schema/multiCompte/cfa.types.js"
+import { Appointment, User, UserRecruteur } from "../../common/model/index.js"
+import { AppointmentUserType } from "../../common/model/schema/appointments/appointments.types.js"
 import { cfaRepository } from "../../common/model/schema/multiCompte/cfa.schema.js"
+import { CFA } from "../../common/model/schema/multiCompte/cfa.types.js"
+import { entrepriseRepository } from "../../common/model/schema/multiCompte/entreprise.schema.js"
+import { Entreprise } from "../../common/model/schema/multiCompte/entreprise.types.js"
+import { roleManagementRepository } from "../../common/model/schema/multiCompte/roleManagement.schema.js"
+import { AccessEntityType, AccessStatus, RoleManagement, RoleManagementEvent } from "../../common/model/schema/multiCompte/roleManagement.types.js"
+import { user2Repository } from "../../common/model/schema/multiCompte/user2.schema.js"
+import { User2, UserEventType } from "../../common/model/schema/multiCompte/user2.types.js"
+import { IUserRecruteur } from "../../common/model/schema/userRecruteur/userRecruteur.types.js"
+import { asyncForEachGrouped } from "../../common/utils/asyncUtils.js"
+import { parseEnumOrError } from "../../common/utils/enumUtils.js"
+import { notifyToSlack } from "../../common/utils/slackUtils.js"
+import { ENTREPRISE, ETAT_UTILISATEUR, OPCOS, VALIDATION_UTILISATEUR } from "../../services/constant.service.js"
 
 const migrationCandidats = async (now: Date) => {
   logger.info(`Migration: lecture des user candidats...`)
 
-  // TODO handle admin coté candidatures
-
+  // l'utilisateur admin n'est pas repris
   const candidats = await User.find({ role: "candidat" })
   logger.info(`Migration: ${candidats.length} user candidats à mettre à jour`)
   const stats = { success: 0, failure: 0, alreadyExist: 0 }
@@ -25,9 +28,15 @@ const migrationCandidats = async (now: Date) => {
     const { username, password, firstname, lastname, phone, email, role, type, last_action_date, is_anonymized, _id } = candidat
     index % 1000 === 0 && logger.info(`import du candidat n°${index}`)
     try {
+      if (type) {
+        await Appointment.updateMany({ applicant_id: candidat._id }, { $set: { applicant_user_type: parseEnumOrError(AppointmentUserType, type) } })
+      }
       const existingUser = await user2Repository.findOne({ email })
       if (existingUser) {
-        await Application.updateMany({ applicant_email: email }, { $set: { applicant_role: type, applicant_id: existingUser._id } })
+        await Appointment.updateMany({ applicant_id: candidat._id }, { $set: { applicant_id: existingUser._id } })
+        if (dayjs(candidat.last_action_date).isAfter(existingUser.last_connection)) {
+          await user2Repository.updateOne({ _id: existingUser._id }, { last_connection: candidat.last_action_date })
+        }
         stats.alreadyExist++
         return
       }
@@ -50,8 +59,7 @@ const migrationCandidats = async (now: Date) => {
           },
         ],
       }
-      const document = await user2Repository.create(newUser)
-      await Application.updateMany({ applicant_email: email }, { $set: { applicantRole: type, applicantId: document._id } })
+      await user2Repository.create({ ...newUser, _id: candidat._id })
       stats.success++
     } catch (err) {
       logger.error(`erreur lors de l'import du user candidat avec id=${_id}`)
@@ -62,7 +70,7 @@ const migrationCandidats = async (now: Date) => {
   logger.info(`Migration: user candidats terminés`)
   const message = `${stats.success} user candidats repris avec succès.
   ${stats.failure} user candidats en erreur.
-  ${stats.alreadyExist} users n'ont pas été modifés car déjà créés par ailleurs.`
+  ${stats.alreadyExist} users en doublon.`
   logger.info(message)
   await notifyToSlack({
     subject: "Migration multi-compte",
@@ -74,9 +82,9 @@ const migrationCandidats = async (now: Date) => {
 
 const migrationRecruteurs = async () => {
   logger.info(`Migration: lecture des user recruteurs...`)
-  const userRecruteurs = await UserRecruteur.find({})
+  const userRecruteurs: IUserRecruteur[] = await UserRecruteur.find({})
   logger.info(`Migration: ${userRecruteurs.length} user recruteurs à mettre à jour`)
-  const stats = { success: 0, failure: 0, entrepriseCreated: 0, cfaCreated: 0, userCreated: 0 }
+  const stats = { success: 0, failure: 0, entrepriseCreated: 0, cfaCreated: 0, userCreated: 0, adminAccess: 0, opcoAccess: 0 }
 
   await asyncForEachGrouped(userRecruteurs, 100, async (userRecruteur, index) => {
     const {
@@ -115,8 +123,6 @@ const migrationRecruteurs = async () => {
         createdAt,
         updatedAt,
         origin,
-        is_admin: type === "ADMIN",
-        opco: type === "OPCO" ? parseEnumOrError(OPCOS, scope) : undefined,
         history: [
           ...(is_email_checked
             ? [
@@ -128,7 +134,12 @@ const migrationRecruteurs = async () => {
                 },
               ]
             : []),
-          ...userRecruteurStatusToUserStatus(status),
+          {
+            date: createdAt,
+            reason: "migration",
+            status: UserEventType.ACTIF,
+            validation_type: VALIDATION_UTILISATEUR.AUTO,
+          },
         ],
       }
       await user2Repository.create({ ...fieldsUpdate, _id: userRecruteur._id })
@@ -147,14 +158,23 @@ const migrationRecruteurs = async () => {
           origin,
           createdAt,
           updatedAt,
-          history: userRecruteurStatusToEntrepriseStatus(status),
         }
-        await entrepriseRepository.create(entreprise)
+        const createdEntreprise = await entrepriseRepository.create({ ...entreprise, _id: userRecruteur._id })
         stats.entrepriseCreated++
+        const roleManagement: Omit<RoleManagement, "_id"> = {
+          accessor_id: userRecruteur._id,
+          accessor_type: AccessEntityType.USER,
+          accessed_type: AccessEntityType.ENTREPRISE,
+          accessed_id: createdEntreprise._id,
+          createdAt: userRecruteur.createdAt,
+          updatedAt: userRecruteur.updatedAt,
+          origin,
+          history: userRecruteurStatusToRoleManagementStatus(status),
+        }
+        await roleManagementRepository.create(roleManagement)
       } else if (type === "CFA") {
         const cfa: Omit<CFA, "_id"> = {
           establishment_siret,
-          is_qualiopi: Boolean(is_qualiopi),
           address,
           address_detail,
           establishment_enseigne,
@@ -163,10 +183,47 @@ const migrationRecruteurs = async () => {
           origin,
           createdAt,
           updatedAt,
-          history: userRecruteurStatusToCFAStatus(status),
         }
-        await cfaRepository.create(cfa)
+        const createdCfa = await cfaRepository.create({ ...cfa, _id: userRecruteur._id })
         stats.cfaCreated++
+        const roleManagement: Omit<RoleManagement, "_id"> = {
+          accessor_id: userRecruteur._id,
+          accessor_type: AccessEntityType.USER,
+          accessed_type: AccessEntityType.CFA,
+          accessed_id: createdCfa._id,
+          createdAt: userRecruteur.createdAt,
+          updatedAt: userRecruteur.updatedAt,
+          origin,
+          history: userRecruteurStatusToRoleManagementStatus(status),
+        }
+        await roleManagementRepository.create(roleManagement)
+      } else if (type === "ADMIN") {
+        const roleManagement: Omit<RoleManagement, "_id"> = {
+          accessor_id: userRecruteur._id,
+          accessor_type: AccessEntityType.USER,
+          accessed_type: AccessEntityType.ADMIN,
+          accessed_id: "",
+          createdAt: userRecruteur.createdAt,
+          updatedAt: userRecruteur.updatedAt,
+          origin,
+          history: userRecruteurStatusToRoleManagementStatus(status),
+        }
+        await roleManagementRepository.create(roleManagement)
+        stats.adminAccess++
+      } else if (type === "OPCO") {
+        const opco = parseEnumOrError(OPCOS, scope)
+        const roleManagement: Omit<RoleManagement, "_id"> = {
+          accessor_id: userRecruteur._id,
+          accessor_type: AccessEntityType.USER,
+          accessed_type: AccessEntityType.OPCO,
+          accessed_id: opco,
+          createdAt: userRecruteur.createdAt,
+          updatedAt: userRecruteur.updatedAt,
+          origin,
+          history: userRecruteurStatusToRoleManagementStatus(status),
+        }
+        await roleManagementRepository.create(roleManagement)
+        stats.opcoAccess++
       }
       stats.success++
     } catch (err) {
@@ -191,120 +248,36 @@ const migrationRecruteurs = async () => {
   return stats
 }
 
-function userRecruteurStatusToUserStatus(allStatus: IUserRecruteur["status"]): UserStatusEvent[] {
+function userRecruteurStatusToRoleManagementStatus(allStatus: IUserRecruteur["status"]): RoleManagementEvent[] {
   return allStatus.flatMap((statusEvent) => {
     const { date, reason, status, user, validation_type } = statusEvent
-    switch (status) {
-      case ETAT_UTILISATEUR.DESACTIVE: {
-        const newEvent: UserStatusEvent = {
-          date,
-          reason,
-          validation_type: validation_type,
-          granted_by: user,
-          status: UserEventType.DESACTIVE,
-        }
-        return [newEvent]
-      }
-      case ETAT_UTILISATEUR.VALIDE: {
-        const newEvent: UserStatusEvent = {
-          date,
-          reason,
-          validation_type: validation_type,
-          granted_by: user,
-          status: UserEventType.ACTIF,
-        }
-        return [newEvent]
-      }
-      default: {
-        return []
-      }
+    const statusMapping: Record<ETAT_UTILISATEUR, AccessStatus | null> = {
+      [ETAT_UTILISATEUR.DESACTIVE]: AccessStatus.DENIED,
+      [ETAT_UTILISATEUR.VALIDE]: AccessStatus.GRANTED,
+      [ETAT_UTILISATEUR.ATTENTE]: AccessStatus.AWAITING_VALIDATION,
+      [ETAT_UTILISATEUR.ERROR]: null,
     }
-  })
-}
-
-function userRecruteurStatusToEntrepriseStatus(allStatus: IUserRecruteur["status"]): EntrepriseStatusEvent[] {
-  return allStatus.flatMap((statusEvent) => {
-    const { date, reason, status, user, validation_type } = statusEvent
-    switch (status) {
-      case ETAT_UTILISATEUR.ATTENTE: {
-        const newEvent: EntrepriseStatusEvent = {
-          date,
-          reason,
-          validation_type,
-          granted_by: user,
-          status: EntrepriseStatusEventType.ATTENTE,
-        }
-        return [newEvent]
+    const accessStatus = statusMapping[status]
+    if (accessStatus) {
+      const newEvent: RoleManagementEvent = {
+        date,
+        reason,
+        validation_type: validation_type,
+        granted_by: user,
+        status: accessStatus,
       }
-      case ETAT_UTILISATEUR.ERROR: {
-        const newEvent: EntrepriseStatusEvent = {
-          date,
-          reason,
-          validation_type,
-          granted_by: user,
-          status: EntrepriseStatusEventType.ERROR,
-        }
-        return [newEvent]
-      }
-      case ETAT_UTILISATEUR.VALIDE: {
-        const newEvent: EntrepriseStatusEvent = {
-          date,
-          reason,
-          validation_type,
-          granted_by: user,
-          status: EntrepriseStatusEventType.VALIDE,
-        }
-        return [newEvent]
-      }
-      default: {
-        return []
-      }
-    }
-  })
-}
-
-function userRecruteurStatusToCFAStatus(allStatus: IUserRecruteur["status"]): CFAStatusEvent[] {
-  return allStatus.flatMap((statusEvent) => {
-    const { date, reason, status, user, validation_type } = statusEvent
-    switch (status) {
-      case ETAT_UTILISATEUR.ATTENTE: {
-        const newEvent: CFAStatusEvent = {
-          date,
-          reason,
-          validation_type,
-          granted_by: user,
-          status: CFAStatusEventType.ATTENTE,
-        }
-        return [newEvent]
-      }
-      case ETAT_UTILISATEUR.ERROR: {
-        const newEvent: CFAStatusEvent = {
-          date,
-          reason,
-          validation_type,
-          granted_by: user,
-          status: CFAStatusEventType.ERROR,
-        }
-        return [newEvent]
-      }
-      case ETAT_UTILISATEUR.VALIDE: {
-        const newEvent: CFAStatusEvent = {
-          date,
-          reason,
-          validation_type,
-          granted_by: user,
-          status: CFAStatusEventType.VALIDE,
-        }
-        return [newEvent]
-      }
-      default: {
-        return []
-      }
+      return [newEvent]
+    } else {
+      return []
     }
   })
 }
 
 export const migrationMultiCompte = async () => {
+  await user2Repository.deleteMany({})
+  await entrepriseRepository.deleteMany({})
+  await cfaRepository.deleteMany({})
+  await roleManagementRepository.deleteMany({})
   const now = new Date()
   await migrationRecruteurs()
   await migrationCandidats(now)

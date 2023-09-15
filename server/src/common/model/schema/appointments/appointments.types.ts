@@ -1,4 +1,4 @@
-enum EReasons {
+export enum EReasons {
   "modalite",
   "contenu",
   "porte",
@@ -12,7 +12,7 @@ enum EReasons {
   "autre",
 }
 
-interface IMailing {
+export interface IMailing {
   campaign: string
   message_id: string
   status: string
@@ -20,7 +20,12 @@ interface IMailing {
   email_sent_at: Date
 }
 
-interface IAppointments {
+export enum AppointmentUserType {
+  PARENT = "parent",
+  ETUDIENT = "etudiant",
+}
+
+export interface IAppointments {
   applicant_id: string
   applicant_message_to_cfa: string
   applicant_reasons: EReasons[]
@@ -35,6 +40,5 @@ interface IAppointments {
   email_cfa: string
   is_anonymized: boolean
   cfa_recipient_email: string
+  applicant_user_type?: AppointmentUserType
 }
-
-export { IAppointments, IMailing, EReasons }

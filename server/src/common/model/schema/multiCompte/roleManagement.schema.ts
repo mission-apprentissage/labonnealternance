@@ -1,9 +1,9 @@
 import { Schema } from "../../../../common/mongodb.js"
 import { VALIDATION_UTILISATEUR } from "../../../../services/constant.service.js"
 import { buildMongooseModel } from "./buildMongooseModel.js"
-import { User2, UserEventType, UserStatusEvent } from "./user2.types.js"
+import { AccessEntityType, AccessStatus, RoleManagement, RoleManagementEvent } from "./roleManagement.types.js"
 
-const userStatusEventSchema = new Schema<UserStatusEvent>(
+const roleManagementEventSchema = new Schema<RoleManagementEvent>(
   {
     validation_type: {
       type: String,
@@ -12,7 +12,7 @@ const userStatusEventSchema = new Schema<UserStatusEvent>(
     },
     status: {
       type: String,
-      enum: Object.values(UserEventType),
+      enum: Object.values(AccessStatus),
       description: "Statut de l'utilisateur",
     },
     reason: {
@@ -33,45 +33,33 @@ const userStatusEventSchema = new Schema<UserStatusEvent>(
   { _id: false }
 )
 
-const User2Schema = new Schema<User2>(
+const roleManagementSchema = new Schema<RoleManagement>(
   {
-    firstname: {
+    accessor_id: {
       type: String,
-      default: null,
-      description: "Le prénom",
+      description: "ID de l'entité ayant accès",
     },
-    lastname: {
+    accessor_type: {
       type: String,
-      default: null,
-      description: "Le nom",
+      enum: Object.values(AccessEntityType),
+      description: "Type de l'entité ayant accès",
     },
-    phone: {
+    accessed_id: {
       type: String,
-      default: null,
-      description: "Le numéro de téléphone",
+      description: "ID de l'entité sur laquelle l'accès est exercé",
     },
-    email: {
+    accessed_type: {
       type: String,
-      default: null,
-      description: "L'email",
-    },
-    last_connection: {
-      type: Date,
-      default: null,
-      description: "Date de dernière connexion",
-    },
-    is_anonymized: {
-      type: Boolean,
-      default: false,
-      description: "Si l'enregistrement est anonymisé",
+      enum: Object.values(AccessEntityType),
+      description: "Type de l'entité sur laquelle l'accès est exercé",
     },
     history: {
-      type: [userStatusEventSchema],
-      description: "Evénements liés au cycle de vie de l'utilisateur",
+      type: [roleManagementEventSchema],
+      description: "Evénements liés au cycle de vie de l'accès",
     },
     origin: {
       type: String,
-      description: "Origine de la creation de l'utilisateur (ex: Campagne mail, lien web, etc...) pour suivi",
+      description: "Origine de la creation",
     },
   },
   {
@@ -79,4 +67,4 @@ const User2Schema = new Schema<User2>(
   }
 )
 
-export const user2Repository = buildMongooseModel(User2Schema, "user2")
+export const roleManagementRepository = buildMongooseModel(roleManagementSchema, "roleManagement")

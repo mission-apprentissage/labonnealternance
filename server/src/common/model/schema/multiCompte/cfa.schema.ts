@@ -1,36 +1,6 @@
-import { VALIDATION_UTILISATEUR } from "../../../../services/constant.service.js"
 import { Schema } from "../../../mongodb.js"
 import { buildMongooseModel } from "./buildMongooseModel.js"
-import { CFA, CFAStatusEvent, CFAStatusEventType } from "./cfa.types.js"
-
-const validationSchema = new Schema<CFAStatusEvent>(
-  {
-    validation_type: {
-      type: String,
-      enum: Object.values(VALIDATION_UTILISATEUR),
-      description: "Indique si l'événement est déclenché de manière automatique ou par un utilisateur",
-    },
-    status: {
-      type: String,
-      enum: Object.values(CFAStatusEventType),
-      description: "nouveau status",
-    },
-    reason: {
-      type: String,
-      description: "Raison du changement de statut",
-    },
-    granted_by: {
-      type: String,
-      description: "Utilisateur ayant effectué la modification | SERVEUR si le compte a été validé automatiquement",
-    },
-    date: {
-      type: Date,
-      default: () => new Date(),
-      description: "Date de l'évènement",
-    },
-  },
-  { _id: false }
-)
+import { CFA } from "./cfa.types.js"
 
 const cfaSchema = new Schema<CFA>(
   {
@@ -63,15 +33,6 @@ const cfaSchema = new Schema<CFA>(
     origin: {
       type: String,
       description: "Origine de la creation (ex: Campagne mail, lien web, etc...) pour suivi",
-    },
-    is_qualiopi: {
-      type: Boolean,
-      default: true,
-      description: "Statut qualiopi du CFA (forcément true, sinon l'inscription n'est pas possibe)",
-    },
-    history: {
-      type: [validationSchema],
-      description: "Tableau des modifications de statut",
     },
   },
   {

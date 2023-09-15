@@ -1,13 +1,11 @@
+import { VALIDATION_UTILISATEUR } from "../../../../services/constant.service.js"
 import { Entity } from "../../generic/Entity.js"
-import { OPCOS, VALIDATION_UTILISATEUR } from "../../../../services/constant.service.js"
 
 export type NewUser = {
   firstname: string
   lastname: string
   phone: string
   email: string
-  is_admin?: boolean
-  opco?: OPCOS
 }
 
 export enum UserEventType {

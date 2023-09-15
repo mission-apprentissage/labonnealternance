@@ -1,6 +1,6 @@
 import { mongoosePagination, Pagination } from "mongoose-paginate-ts"
 import { model, Schema } from "../../../mongodb.js"
-import { IAppointments } from "./appointments.types.js"
+import { AppointmentUserType, IAppointments } from "./appointments.types.js"
 
 export const appointmentSchema = new Schema<IAppointments>({
   applicant_id: {
@@ -147,6 +147,12 @@ export const appointmentSchema = new Schema<IAppointments>({
     type: Boolean,
     default: false,
     description: "Si l'enregistrement est anonymisé",
+  },
+  applicant_user_type: {
+    type: String,
+    enum: [...Object.values(AppointmentUserType), null],
+    default: null,
+    description: "Role du demandeur : parent ou etudiant",
   },
 })
 
