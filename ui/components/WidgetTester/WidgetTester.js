@@ -265,6 +265,7 @@ const WidgetTester = () => {
                     </Box>
                     <Box>
                       <Field as={Input} variant="outline" type="text" name="caller" />
+                      <Text variant="defaultAutocomplete">Nous vous contacterons à cette adresse email en cas d'évolution du service</Text>
                     </Box>
                   </Box>
                 </GridItem>
