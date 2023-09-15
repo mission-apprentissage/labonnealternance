@@ -14,7 +14,7 @@ export class FormationsController extends Controller {
    * <br><br><italic>Example : F1603,I1308</italic>
    * @param {string} romeDomain (optional) a ROME domain (1 letter and 2 digits) or great ROME domain (1 letter)<br><br><strong>You must use either 'rome' or 'romeDomain'</strong>
    * <br><br><italic>Example : F or I13</italic>
-   * @param {string} caller Your company or product name and your contact email address.
+   * @param {string} caller (required) Your company or product name and your contact email address.
    * <br><br><italic>Example : contact@domain company_name</italic>
    * @param {string} latitude (optional) search center latitude. Without latitude, the search will target whole France<br>
    * with 'latitude' you also must fill 'insee' and 'longitude'
