@@ -1,3 +1,10 @@
+## [1.90.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.90.0...v1.90.1) (2023-09-15)
+
+
+### Bug Fixes
+
+* remove etablissements from components ([#579](https://github.com/mission-apprentissage/labonnealternance/issues/579)) ([af3028b](https://github.com/mission-apprentissage/labonnealternance/commit/af3028bb75eaf5b7e03bf11e3b37189c87b2c2a5))
+
 # [1.90.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.89.0...v1.90.0) (2023-09-15)
 
 
