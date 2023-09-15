@@ -1,3 +1,10 @@
+# [1.89.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.88.4...v1.89.0) (2023-09-15)
+
+
+### Features
+
+* wording lbac ([8b75868](https://github.com/mission-apprentissage/labonnealternance/commit/8b75868c5ef192a18df1f2750d915df4c7da0a48))
+
 ## [1.88.4](https://github.com/mission-apprentissage/labonnealternance/compare/v1.88.3...v1.88.4) (2023-09-13)
 
 
