@@ -73,7 +73,7 @@ export async function runJob(job: IInternalJobs): Promise<number> {
     }
     switch (job.name) {
       case "indexes:generate":
-        return generateIndexes((job.payload as any)?.index_list)
+        return generateIndexes((job.payload as any))
       case "user:create": {
         const { first_name, last_name, establishment_siret, establishment_raison_sociale, phone, address, email, scope } = job.payload as any
         return createUserFromCLI(

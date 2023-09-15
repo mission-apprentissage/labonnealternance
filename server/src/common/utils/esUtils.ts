@@ -1,9 +1,13 @@
 import { getElasticInstance } from "../esClient/index"
 import { logger } from "../logger"
 
-export const rebuildIndex = async (model, { skipNotFound } = { skipNotFound: false }) => {
+export const rebuildIndex = async (model, { skipNotFound, recreate } = { skipNotFound: false, recreate: true }) => {
   const client = getElasticInstance()
   const index = model.collection.collectionName // Assume model name = index name
+
+  if (!recreate && await client.indices.exists(index)) {
+    return;
+  }
 
   logger.info(`Removing '${index}' index...`)
   try {

@@ -97,6 +97,11 @@
         cmd: "sudo bash /opt/app/configs/metabase/setup-metabase.sh"
       timeout: 86400 # 1 day
 
+    - name: "Seed ElasticSearch"
+      shell:
+        chdir: /opt/app
+        cmd: "sudo /opt/app/scripts/sync-index.sh"
+
     - name: "Prune Docker"
       shell:
         chdir: /opt/app
