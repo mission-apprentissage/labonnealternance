@@ -1,3 +1,10 @@
+# [1.91.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.90.1...v1.91.0) (2023-09-15)
+
+
+### Features
+
+* LBAC-1227 migrations services PE ([#551](https://github.com/mission-apprentissage/labonnealternance/issues/551)) ([30695c5](https://github.com/mission-apprentissage/labonnealternance/commit/30695c56cf147fbd2a6dd2195fbd922f76bb4e8e))
+
 ## [1.90.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.90.0...v1.90.1) (2023-09-15)
 
 
