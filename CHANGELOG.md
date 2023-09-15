@@ -1,3 +1,10 @@
+# [1.90.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.89.0...v1.90.0) (2023-09-15)
+
+
+### Features
+
+* suppression -beta de didask dans les modèles de mail ([1812c91](https://github.com/mission-apprentissage/labonnealternance/commit/1812c918d9ba3af8727c872a979cb7dfc9b6058f))
+
 # [1.89.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.88.4...v1.89.0) (2023-09-15)
 
 
