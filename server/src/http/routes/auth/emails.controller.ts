@@ -75,7 +75,6 @@ export default () => {
 
       // If mail sent from etablissement model
       if (etablissementFound) {
-        // TODO
         const previousEmail = etablissementFound.to_etablissement_emails.find((mail) => mail.message_id.includes(messageId))
 
         await etablissementFound.update({
