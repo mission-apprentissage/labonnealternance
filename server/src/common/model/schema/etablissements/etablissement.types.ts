@@ -1,6 +1,6 @@
 import { IMailing } from "../appointments/appointments.types.js"
 
-interface IEtablissement {
+export interface IEtablissement {
   _id: string
   formateur_siret: string
   gestionnaire_siret: string
@@ -24,6 +24,11 @@ interface IEtablissement {
   last_catalogue_sync_date: Date
   created_at: Date
   affelnet_perimetre: boolean
+  to_etablissement_emails?: {
+    campaign?: string
+    message_id?: string
+    status?: string
+    webhook_status_at?: Date
+    email_sent_at?: Date
+  }[]
 }
-
-export { IEtablissement }

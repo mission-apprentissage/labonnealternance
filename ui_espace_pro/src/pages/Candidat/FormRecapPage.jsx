@@ -57,7 +57,7 @@ export const FormRecapPage = () => {
                   </Text>
                   <Text fontSize="16px" mt="12px">
                     <b>Pour préparer votre premier contact avec le centre formation,</b> répondez à notre quiz{" "}
-                    <Link href="https://dinum-beta.didask.com/courses/demonstration/60abc18c075edf000065c987" target="_blank">
+                    <Link href="https://dinum.didask.com/courses/demonstration/60abc18c075edf000065c987" target="_blank">
                       <u>Prendre contact avec une école</u> <ExternalLinkIcon mt="-5px" />
                     </Link>
                   </Text>
