@@ -73,7 +73,7 @@ export async function runJob(job: IInternalJobs): Promise<number> {
     }
     switch (job.name) {
       case "indexes:generate":
-        return generateIndexes((job.payload as any))
+        return generateIndexes(job.payload as any)
       case "user:create": {
         const { first_name, last_name, establishment_siret, establishment_raison_sociale, phone, address, email, scope } = job.payload as any
         return createUserFromCLI(
@@ -175,9 +175,9 @@ export async function runJob(job: IInternalJobs): Promise<number> {
         return updateDiplomesMetiers()
       case "referentiel:rncp-romes:update":
         return updateReferentielRncpRomes()
-      ///////
-      case "indexes:create":
-      case "indexes:recreate":
+        ///////
+        // case "indexes:create":
+        // case "indexes:recreate":
         //recreateIndexes((job.payload as any)?.drop)
         return
       case "db:validate":

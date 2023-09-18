@@ -20,6 +20,7 @@
     "dev": "yarn services:start; yarn foreach:parallel run dev",
     "cli": "yarn workspace server cli",
     "seed": "./.bin/mna-lba seed:apply",
+    "seed:es": "./.bin/mna-lba seed:es",
     "deploy": "./.bin/mna-lba deploy",
     "build": "yarn foreach:seq run build",
     "migrations:status": "yarn cli migrations:status",

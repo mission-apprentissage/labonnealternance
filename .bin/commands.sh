@@ -16,7 +16,8 @@ function Help() {
    echo "  vault:password                             Show vault password"
    echo "  seed:update                                Update seed using a database"
    echo "  seed:apply                                 Apply seed to a database"
-   echo 
+   echo "  seed:es                                    Seed Elasticsearch with data"
+   echo
    echo
 }
 
@@ -68,3 +69,8 @@ function seed:update() {
 function seed:apply() {
   "${SCRIPT_DIR}/seed-apply.sh" "$@"
 }
+
+function seed:es() {
+  "${SCRIPT_DIR}/seed-es.sh" "$@"
+}
+
