@@ -15,7 +15,7 @@ export const astuces = [
     id: "AID_ENTRETIEN",
     theme: "Aide",
     message: "Après la candidature, l'entretien ! Préparez-vous à l'aide de ce module !",
-    lien: "https://dinum-beta.didask.com/courses/demonstration/60d1adbb877dae00003f0eac",
+    lien: "https://dinum.didask.com/courses/demonstration/60d1adbb877dae00003f0eac",
   },
   {
     id: "AID_MATERIEL",

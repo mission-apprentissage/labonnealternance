@@ -1,8 +1,8 @@
 import { getElasticInstance, mongoosastic } from "../../../esClient/index.js"
 import { model, Schema } from "../../../mongodb.js"
-import { IBonneBoite } from "./bonneboite.types.js"
+import { ILbaCompany } from "./lbaCompany.types.js"
 
-export const bonneBoiteSchema = new Schema<IBonneBoite>({
+export const lbaCompanySchema = new Schema<ILbaCompany>({
   siret: {
     type: String,
     default: null,
@@ -120,6 +120,6 @@ export const bonneBoiteSchema = new Schema<IBonneBoite>({
   },
 })
 
-bonneBoiteSchema.plugin(mongoosastic, { esClient: getElasticInstance(), index: "bonnesboites" })
+lbaCompanySchema.plugin(mongoosastic, { esClient: getElasticInstance(), index: "bonnesboites" })
 
-export default model<IBonneBoite>("bonnesboites", bonneBoiteSchema)
+export default model<ILbaCompany>("bonnesboites", lbaCompanySchema)

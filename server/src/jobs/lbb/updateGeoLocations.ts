@@ -8,7 +8,7 @@ import path from "path"
 import __dirname from "../../common/dirname.js"
 import { GeoLocation } from "../../common/model/index.js"
 import { logMessage } from "../../common/utils/logMessage.js"
-import { checkIfAlgoFileIsNew, downloadAlgoCompanyFile, readCompaniesFromJson, removePredictionFile } from "./bonnesBoitesUtils.js"
+import { checkIfAlgoFileIsNew, downloadAlgoCompanyFile, readCompaniesFromJson, removePredictionFile } from "./lbaCompaniesUtils.js"
 
 const currentDirname = __dirname(import.meta.url)
 

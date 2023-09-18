@@ -187,7 +187,7 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
                 }}
                 ml={4}
                 isExternal
-                href="https://dinum-beta.didask.com/courses/demonstration/60d21bf5be76560000ae916e"
+                href="https://dinum.didask.com/courses/demonstration/60d21bf5be76560000ae916e"
               >
                 Chercher un employeur <ExternalLinkIcon mb="3px" mx="2px" />
               </Link>

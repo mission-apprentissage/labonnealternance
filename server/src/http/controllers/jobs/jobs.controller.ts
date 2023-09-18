@@ -9,13 +9,15 @@ import { IJobs } from "../../../common/model/schema/jobs/jobs.types.js"
 import { IUserRecruteur } from "../../../common/model/schema/userRecruteur/userRecruteur.types.js"
 import { delay } from "../../../common/utils/asyncUtils.js"
 import { IApiError } from "../../../common/utils/errorManager.js"
-import { getCompanyFromSiret } from "../../../service/poleEmploi/bonnesBoites.js"
-import { getJobsQuery } from "../../../service/poleEmploi/jobsAndCompanies.js"
-import { getPeJobFromId } from "../../../service/poleEmploi/offresPoleEmploi.js"
+import { getCompanyFromSiret } from "../../../services/lbacompany.service.js"
+import { getJobsQuery } from "../../../services/jobOpportunity.service.js"
+import { getPeJobFromId } from "../../../services/pejob.service.js"
 import { getNearEtablissementsFromRomes } from "../../../services/catalogue.service.js"
 import { ACTIVE, ANNULEE, JOB_STATUS, POURVUE } from "../../../services/constant.service.js"
 import dayjs from "../../../services/dayjs.service.js"
 import { entrepriseOnboardingWorkflow } from "../../../services/etablissement.service.js"
+import { addOffreDetailView, addOffreSearchView, getLbaJobById } from "../../../services/lbajob.service.js"
+import { getAppellationDetailsFromAPI, getRomeDetailsFromAPI } from "../../../services/rome.service.js"
 import {
   cancelOffre,
   createJobDelegations,
@@ -29,9 +31,6 @@ import {
   provideOffre,
 } from "../../../services/formulaire.service.js"
 import type { ILbaItem } from "../../../services/lbaitem.shared.service.types.js"
-import { addOffreDetailView, addOffreSearchView, getLbaJobById } from "../../../services/lbajob.service.js"
-import { getAppellationDetailsFromAPI, getRomeDetailsFromAPI } from "../../../services/rome.service.js"
-
 import type { ICreateDelegation, ICreateJobBody, IGetDelegation, TCreateEstablishmentBody, TEstablishmentResponseSuccess, TJob, TResponseError } from "./jobs.types.js"
 import { createDelegationSchema, createEstablishmentSchema, createJobSchema, getEstablishmentEntitySchema, updateJobSchema } from "./jobs.validators.js"
 
@@ -403,15 +402,15 @@ export class JobsController extends Controller {
 
   /**
    * Get job opportunities matching the query parameters
+   * @param {string} romes optional: some rome codes separated by commas (either 'romes' or 'rncp' must be present)
+   * @param {string} rncp optional: a rncp code (either 'romes' or 'rncp' must be present)
    * @param {string} referer the referer provided in the HTTP query headers
    * @param {string} caller the consumer id.
-   * @param {string} romes some rome codes separated by commas
-   * @param {string} rncp a rncp code
-   * @param {string} latitude search center latitude
-   * @param {string} longitude search center longitude
-   * @param {number} radius the search radius
-   * @param {string} insee search center insee code
-   * @param {string} sources optional: comma separated list of job opportunities sources
+   * @param {string} latitude optional: search center latitude. Without latitude, the search will target whole France
+   * @param {string} longitude optional: search center longitude. Without longitude, the search will target whole France
+   * @param {number} radius optional: the search radius
+   * @param {string} insee optional: search center insee code
+   * @param {string} sources optional: comma separated list of job opportunities sources (possible values: "lba", "offres", "matcha")
    * @param {string} diploma optional: targeted diploma
    * @param {string} opco optional: filter opportunities on opco name
    * @param {string} opcoUrl optional: filter opportunities on opco url
@@ -425,13 +424,13 @@ export class JobsController extends Controller {
   @OperationId("getJobOpportunities")
   public async getJobOpportunities(
     @Request() request: express.Request,
-    @Query() romes?: string[],
+    @Query() romes?: string,
     @Query() rncp?: string,
     @Header() @Hidden() referer?: string,
     @Query() caller?: string,
     @Query() latitude?: string,
     @Query() longitude?: string,
-    @Query() radius?: number,
+    @Query() radius?: string,
     @Query() insee?: string,
     @Query() sources?: string,
     @Query() diploma?: string,
@@ -439,15 +438,17 @@ export class JobsController extends Controller {
     @Query() opcoUrl?: string,
     @Query() @Hidden() useMock?: string
   ): Promise<IApiError | { lbbCompanies: ILbaItem[] } | { lbaCompanies: ILbaItem[] }> {
-    const result = await getJobsQuery({ romes: romes?.join(",") || null, rncp, caller, referer, latitude, longitude, radius, insee, sources, diploma, opco, opcoUrl, useMock })
+    const result = await getJobsQuery({ romes, rncp, caller, referer, latitude, longitude, radius, insee, sources, diploma, opco, opcoUrl, useMock })
 
     if ("error" in result) {
       this.setStatus(500)
       return result
     }
-    const { matchas } = result
-    if (matchas && "results" in matchas) {
-      matchas.results.map((matchaOffre) => addOffreSearchView(matchaOffre.job.id))
+    if ("matchas" in result) {
+      const { matchas } = result
+      if (matchas && "results" in matchas) {
+        matchas.results.map((matchaOffre) => addOffreSearchView(matchaOffre.job.id))
+      }
     }
     return result
   }
@@ -456,7 +457,6 @@ export class JobsController extends Controller {
    * Get one company identified by it's siret
    * @param {string} siret the siret number of the company looked for.
    * @param {string} caller the consumer id.
-   * @param {string} type the type of the company
    * @param {string} referer the referer provided in the HTTP query headers
    * @returns {Promise<IApiError | { lbbCompanies: ILbaItem[] } | { lbaCompanies: ILbaItem[] }>} response
    */
@@ -469,12 +469,10 @@ export class JobsController extends Controller {
   public async getCompany(
     @Path() siret: string,
     @Header() @Hidden() referer?: string,
-    @Query() caller?: string,
-    @Query() type?: string
+    @Query() caller?: string
   ): Promise<IApiError | { lbbCompanies: ILbaItem[] } | { lbaCompanies: ILbaItem[] }> {
     const result = await getCompanyFromSiret({
       siret,
-      type,
       referer,
       caller,
     })
