@@ -1,3 +1,9 @@
+## [1.92.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.92.0...v1.92.1) (2023-09-18)
+
+### Bug Fixes
+
+- envoi des emails rdvs bloques ([#580](https://github.com/mission-apprentissage/labonnealternance/issues/580)) ([b5b98ad](https://github.com/mission-apprentissage/labonnealternance/commit/b5b98add230c3b93d063513d60f44b42d651c833))
+
 # [1.92.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.91.0...v1.92.0) (2023-09-18)
 
 ### Features
