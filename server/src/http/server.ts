@@ -24,19 +24,16 @@ import catalogueRoute from "./routes/catalogue.controller.js"
 import constantsRoute from "./routes/constants.controller.js"
 import etablissementRoute from "./routes/etablissement.controller.js"
 import etablissementsRecruteurRoute from "./routes/etablissementRecruteur.controller.js"
-import formationRegionV1 from "./routes/formationRegionV1.controller.js"
-import formationV1 from "./routes/formationV1.controller.js"
 import formulaireRoute from "./routes/formulaire.controller.js"
-import jobEtFormationV1 from "./routes/jobEtFormationV1.controller.js"
 import optoutRoute from "./routes/optout.controller.js"
 import partnersRoute from "./routes/partners.controller.js"
 import rome from "./controllers/metiers/rome.controller.js"
 import sendApplication from "./routes/sendApplication.controller.js"
 import sendApplicationAPI from "./routes/sendApplicationAPI.controller.js"
-import unsubscribeBonneBoite from "./routes/unsubscribeBonneBoite.controller.js"
+import unsubscribeLbaCompany from "./routes/unsubscribeLbaCompany.controller.js"
 import sendMail from "./routes/sendMail.controller.js"
 import supportRoute from "./routes/support.controller.js"
-import updateLBB from "./routes/updateLBB.controller.js"
+import updateLbaCompany from "./routes/updateLbaCompany.controller.js"
 import userRoute from "./routes/user.controller.js"
 import version from "./routes/version.controller.js"
 import trainingLinks from "./routes/trainingLinks.controller.js"
@@ -155,6 +152,9 @@ export default async (components) => {
    */
   app.use("/api/v1/metiers", limiter20PerSecond)
   app.use("/api/v1/jobs", limiter5PerSecond)
+  app.use("/api/v1/formations", limiter7PerSecond)
+  app.use("/api/v1/formationsParRegion", limiter5PerSecond)
+  app.use("/api/v1/jobsEtFormations", limiter5PerSecond)
   //app.use("/api/romelabels", limiter10PerSecond)
 
   RegisterRoutes(app)
@@ -163,16 +163,13 @@ export default async (components) => {
    * LBACandidat
    */
   app.use("/api/version", limiter3PerSecond, version())
-  app.use("/api/v1/formations", limiter7PerSecond, formationV1())
   app.use("/api/romelabels", limiter10PerSecond, rome())
-  app.use("/api/v1/formationsParRegion", limiter5PerSecond, formationRegionV1())
-  app.use("/api/v1/jobsEtFormations", limiter5PerSecond, jobEtFormationV1())
-  app.use("/api/updateLBB", limiter1Per20Second, updateLBB())
+  app.use("/api/updateLBB", limiter1Per20Second, updateLbaCompany())
   app.use("/api/mail", limiter1Per20Second, sendMail())
   app.use("/api/campaign/webhook", campaignWebhook())
   app.use("/api/application", sendApplication(components))
   app.use("/api/V1/application", limiter5PerSecond, sendApplicationAPI(components))
-  app.use("/api/unsubscribe", unsubscribeBonneBoite())
+  app.use("/api/unsubscribe", unsubscribeLbaCompany())
 
   /**
    * Admin / Auth

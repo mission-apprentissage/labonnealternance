@@ -23,30 +23,32 @@ const WidgetHeader = ({ handleSearchSubmit, isHome, allJobSearchError, trainingS
 
   return (
     <Box zIndex={9} display={formDisplayValue} boxShadow={isHome ? "none" : "0 0 12px 2px rgb(0 0 0 / 21%)"} padding="8px">
-      <Flex alignItems="flex-start">
-        {!isHome && <LogoLBA mt={2} />}
-        <Box>
-          {isHome && (
-            <Text mb={3} as="h1" fontSize={["26px", "29px"]} fontWeight={700}>
-              <Text as="span" display={{ base: "block", md: "inline" }}>
-                Emplois et formations{" "}
+      <Box margin="auto" maxWidth="1310px">
+        <Flex alignItems="flex-start">
+          {!isHome && <LogoLBA mt={2} />}
+          <Box>
+            {isHome && (
+              <Text mb={3} as="h1" fontSize={["26px", "29px"]} fontWeight={700}>
+                <Text as="span" display={{ base: "block", md: "inline" }}>
+                  Emplois et formations{" "}
+                </Text>
+                <Text as="span" color="info" display={{ base: "block", md: "inline" }}>
+                  en alternance
+                </Text>
               </Text>
-              <Text as="span" color="info" display={{ base: "block", md: "inline" }}>
-                en alternance
-              </Text>
-            </Text>
-          )}
-          <HeaderForm handleSearchSubmit={handleSearchSubmitFunction} isHome={isHome} />
-        </Box>
-      </Flex>
-      {!isHome && (
-        <ResultFilterAndCounter
-          allJobSearchError={allJobSearchError}
-          trainingSearchError={trainingSearchError}
-          isJobSearchLoading={isJobSearchLoading}
-          isTrainingSearchLoading={isTrainingSearchLoading}
-        />
-      )}
+            )}
+            <HeaderForm handleSearchSubmit={handleSearchSubmitFunction} isHome={isHome} />
+          </Box>
+        </Flex>
+        {!isHome && (
+          <ResultFilterAndCounter
+            allJobSearchError={allJobSearchError}
+            trainingSearchError={trainingSearchError}
+            isJobSearchLoading={isJobSearchLoading}
+            isTrainingSearchLoading={isTrainingSearchLoading}
+          />
+        )}
+      </Box>
     </Box>
   )
 }

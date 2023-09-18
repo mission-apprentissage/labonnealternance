@@ -44,6 +44,8 @@ const lbbMock = {
     },
   ],
   training: null,
+  cleMinistereEducatif: null,
+  applicationCount: 5,
 }
 
 export { lbbMock }

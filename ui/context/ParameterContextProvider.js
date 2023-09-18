@@ -7,7 +7,7 @@ const initialState = {
   opcoFilter: null,
   opcoUrlFilter: null,
   useMock: false,
-  displayMap: true,
+  displayMap: false,
   showCombinedJob: true,
 }
 
@@ -74,7 +74,7 @@ const ParameterContextProvider = ({ children }) => {
     setUseMock: (useMock = null) => {
       dispatch({ type: actions.SET_USE_MOCK, useMock })
     },
-    setDisplayMap: (displayMap = true) => {
+    setDisplayMap: (displayMap = false) => {
       dispatch({ type: actions.SET_DISPLAY_MAP, displayMap })
     },
     setShowCombinedJob: (showCombinedJob = true) => {

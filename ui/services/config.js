@@ -107,7 +107,7 @@ export const setUseMock = ({ parameterContext }) => {
 export const setDisplayMap = ({ parameterContext }) => {
   let displayMap = getValueFromPath("displayMap")
   if (displayMap !== null) {
-    parameterContext.setDisplayMap(displayMap === "false" ? false : true)
+    parameterContext.setDisplayMap(displayMap === "true" ? true : false)
   }
 }
 
