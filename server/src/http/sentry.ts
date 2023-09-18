@@ -4,6 +4,11 @@ import config from "../config.js"
 import { Express } from "express"
 
 export function initSentry(app: Express) {
+  if (config.env === "dev") {
+    console.warn("Sentry deactivated.")
+    return
+  }
+
   Sentry.init({
     dsn: config.serverSentryDsn,
     tracesSampleRate: 0.1,

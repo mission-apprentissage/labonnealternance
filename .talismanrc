@@ -18,7 +18,7 @@ fileignoreconfig:
   - filename: server/src/http/controllers/jobs/jobs.controller.ts
     checksum: d7a5e33a4e9bd43ccfd2758ec08a1a491957e27566c50e235f9232f744a392ca
   - filename: CHANGELOG.md
-    checksum: d6981eb077fcbf1c6858393e2f5cada971b297db3c0103853338f9f4b6211e0d
+    checksum: 97f03ce72bf559aa5adeb862a7f870c89b24185a7c6635bcc9c30a0f75f6a2d4
     ignore_detectors: ["filename", "filesize", "filecontent"]
   - filename: server/src/jobs/seed/referentielRome/unix_fiche_emploi_metier_v450_iso8859-15.xml
     checksum: 7257a3a49d3170754fd55316bf78b680866465400c46e11727daa5da00863347
@@ -37,7 +37,9 @@ fileignoreconfig:
   - filename: server/src/common/model/constants/referrers.ts
     checksum: afa23ef228bc7d3ff20d7759e33a1b63714cc33ce647fa00ffe67a5045a55f84
   - filename: server/src/services/pejob.service.ts
-  checksum: a5e10265c577dfa9be632f745f648e8dda032e0d4eaedcf4380480db0a105818
+    checksum: a5e10265c577dfa9be632f745f648e8dda032e0d4eaedcf4380480db0a105818
+  - filename: server/src/services/queryValidator.service.ts
+    checksum: 9acb824b25b2eb7fe9e1d158a6874d5537d1d1d1bc912e0216e6e9c2215c7a4c
 version: ""
 scopeconfig:
   - scope: node
