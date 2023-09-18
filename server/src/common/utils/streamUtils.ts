@@ -1,9 +1,9 @@
 import { compose, transformData } from "oleoduc"
 import streamJson from "stream-json"
 // eslint-disable-next-line import/extensions
-import jsonFilters from "stream-json/filters/Pick.js"
+import jsonFilters from "stream-json/filters/Pick"
 // eslint-disable-next-line import/extensions
-import streamers from "stream-json/streamers/StreamArray.js"
+import streamers from "stream-json/streamers/StreamArray"
 
 export function streamNestedJsonArray(arrayPropertyName) {
   return compose(

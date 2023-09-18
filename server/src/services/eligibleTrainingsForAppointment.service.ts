@@ -2,10 +2,10 @@ import { FilterQuery } from "mongoose"
 
 import { EligibleTrainingsForAppointment } from "../common/model/index"
 import { IEligibleTrainingsForAppointment } from "../common/model/schema/eligibleTrainingsForAppointment/eligibleTrainingsForAppointment.types"
-import { IFormationCatalogue } from "../common/model/schema/formationCatalogue/formationCatalogue.types.js"
+import { IFormationCatalogue } from "../common/model/schema/formationCatalogue/formationCatalogue.types"
 
-import { getEmailFromCatalogueField } from "./catalogue.service.js"
-import { getMostFrequentEmailByLieuFormationSiret } from "./formation.service.js"
+import { getEmailFromCatalogueField } from "./catalogue.service"
+import { getMostFrequentEmailByLieuFormationSiret } from "./formation.service"
 
 /**
  * @description Creates new item.

@@ -1,4 +1,4 @@
-import { JOB_STATUS } from "./constant.service.js"
+import { JOB_STATUS } from "./constant.service"
 
 export interface ILbaItem {
   ideaType: string | null // type de l'item :  formation | lbb | lba | peJob | matcha

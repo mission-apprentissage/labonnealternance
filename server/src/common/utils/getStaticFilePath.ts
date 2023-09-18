@@ -11,7 +11,7 @@ export function getStaticDirPath(): string {
 
   // When ran directly from source code with tsx or jest
   // Then files are not compiled into a single file
-  return path.join(__dirname(import.meta.url), "../static")
+  return path.join(__dirname(import.meta.url), "../../../static")
 }
 
 export function getStaticFilePath(relativeFilename: string): string {

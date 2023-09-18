@@ -1,13 +1,13 @@
 //@ts-nocheck
 import { Readable } from "stream"
 
-import { logger } from "../../common/logger.js"
-import { referrers } from "../../common/model/constants/referrers.js"
-import { Etablissement } from "../../common/model/index.js"
-import { isEmailBlacklisted } from "../../services/application.service.js"
-import { affelnetSelectedFields, getEmailFromCatalogueField, getFormationsFromCatalogueMe } from "../../services/catalogue.service.js"
-import dayjs from "../../services/dayjs.service.js"
-import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service.js"
+import { logger } from "../../common/logger"
+import { referrers } from "../../common/model/constants/referrers"
+import { Etablissement } from "../../common/model/index"
+import { isEmailBlacklisted } from "../../services/application.service"
+import { affelnetSelectedFields, getEmailFromCatalogueField, getFormationsFromCatalogueMe } from "../../services/catalogue.service"
+import dayjs from "../../services/dayjs.service"
+import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service"
 
 /**
  * @description Gets Catalogue etablissments informations and insert in etablissement collection.

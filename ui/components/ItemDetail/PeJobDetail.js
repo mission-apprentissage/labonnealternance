@@ -1,4 +1,5 @@
 import { Box, Text } from "@chakra-ui/react"
+import mdIt from "markdown-it";
 import React, { useEffect } from "react"
 import ReactHtmlParser from "react-html-parser"
 
@@ -6,7 +7,8 @@ import { DisplayContext } from "../../context/DisplayContextProvider"
 import { SendPlausibleEvent } from "../../utils/plausible"
 import { formatDate } from "../../utils/strutils"
 
-let md = require("markdown-it")().disable(["link", "image"])
+
+let md = mdIt().disable(["link", "image"])
 
 const PeJobDetail = ({ job }) => {
   useEffect(() => {

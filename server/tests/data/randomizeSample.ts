@@ -1,7 +1,7 @@
-import faker from "faker/locale/fr.js"
+import faker from "faker/locale/fr"
 import RandExp from "randexp"
-import { referrers } from "../../src/common/model/constants/referrers.js"
-import { ROLES } from "../../src/services/constant.service.js"
+import { referrers } from "../../src/common/model/constants/referrers"
+import { ROLES } from "../../src/services/constant.service"
 
 // Utils
 const isRandomCondition = () => Math.random() < 0.66

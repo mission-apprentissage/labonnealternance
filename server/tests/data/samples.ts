@@ -1,4 +1,4 @@
-import { referrers } from "../../src/common/model/constants/referrers.js"
+import { referrers } from "../../src/common/model/constants/referrers"
 
 const sampleAppointment = {
   rco_formation_id: "21_114876|21_114876|106291",
