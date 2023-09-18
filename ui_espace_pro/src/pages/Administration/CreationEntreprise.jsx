@@ -37,7 +37,7 @@ const CreationCompte = () => {
             state: { informationSiret: { ...entrepriseData, ...opcoInfos } },
           })
         }
-      },
+      }
     )
   }
 

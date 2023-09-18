@@ -1,5 +1,5 @@
-import React from "react"
 import { Icon } from "@chakra-ui/react"
+import React from "react"
 
 export function Repeat(props) {
   return (

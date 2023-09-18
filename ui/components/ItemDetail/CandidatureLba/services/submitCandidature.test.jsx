@@ -1,10 +1,12 @@
+import { describe, expect, it, vi } from "vitest";
+
 import submitCandidature from "./submitCandidature"
 
 describe("submitCandidature", () => {
   it("By default, change current state if no error", async () => {
     // given
-    const mockedSetSendingState = jest.fn()
-    const mockedPostCandidature = jest.fn(() => {
+    const mockedSetSendingState = vi.fn()
+    const mockedPostCandidature = vi.fn(() => {
       return "ok"
     })
     const repeatFunc = (x) => {
@@ -20,9 +22,9 @@ describe("submitCandidature", () => {
 
   it("If error, change state with an error", async () => {
     // given
-    const mockedSetSendingState = jest.fn()
+    const mockedSetSendingState = vi.fn()
     const emptyFunc = () => {}
-    const mockedPostCandidature = jest.fn(() => {
+    const mockedPostCandidature = vi.fn(() => {
       throw "Custom error"
     })
     // when
@@ -34,8 +36,8 @@ describe("submitCandidature", () => {
 
   it("If post result error, change state with an error", async () => {
     // given
-    const mockedSetSendingState = jest.fn()
-    const mockedPostCandidature = jest.fn(() => {
+    const mockedSetSendingState = vi.fn()
+    const mockedPostCandidature = vi.fn(() => {
       return "error"
     })
     const repeatFunc = (x) => {

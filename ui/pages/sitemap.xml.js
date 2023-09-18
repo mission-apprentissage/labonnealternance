@@ -1,3 +1,6 @@
+import fs from "fs"
+import path from "path"
+
 import { getStaticMetiers } from "../utils/getStaticData"
 
 function generateSiteMap(dataJobs, props) {
@@ -34,8 +37,6 @@ function SiteMap() {
 }
 
 export async function getServerSideProps(props) {
-  const path = require("path")
-  const fs = require("fs")
   const txtDirectory = path.join(process.cwd(), "config")
 
   const dataJobs = getStaticMetiers(path, fs, txtDirectory)

@@ -1,9 +1,10 @@
 import axios from "axios"
 
 import { logError } from "../../../utils/tools"
-import { getRncpFromParameters, getRncpsFromParameters, getRomeFromParameters, trainingErrorText, trainingsApi } from "../../SearchForTrainingsAndJobs/services/utils"
 
 import { storeTrainingsInSession } from "./handleSessionStorage"
+import { getRncpFromParameters, getRncpsFromParameters, getRomeFromParameters, trainingErrorText, trainingsApi } from "./utils"
+
 
 export const searchForTrainingsFunction = async ({
   values,

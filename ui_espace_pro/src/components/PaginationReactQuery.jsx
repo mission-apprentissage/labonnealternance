@@ -54,7 +54,7 @@ export function PaginationReactQuery({ pageCount, gotoPage: goToPageIndex, curre
             acc.previousPage = page
             return acc
           },
-          { previousPage: null, jsx: [] },
+          { previousPage: null, jsx: [] }
         ).jsx
       }
       <NextLink nextPage={nextPage} canNextPage={canNextPage} />

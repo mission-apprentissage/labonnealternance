@@ -1,3 +1,5 @@
+import { describe, expect, it, vi } from "vitest";
+
 import onInputValueChangeService from "./onInputValueChangeService"
 
 describe("onInputValueChangeService", () => {
@@ -5,7 +7,7 @@ describe("onInputValueChangeService", () => {
     let inputValue = "plo"
     let inputItems = []
     let items = [{ label: "plomberie" }, { label: "agriculture" }, { label: "ploermel" }]
-    let setInputItems = jest.fn()
+    let setInputItems = vi.fn()
 
     await onInputValueChangeService({ inputValue, inputItems, items, setInputItems })
 
@@ -16,7 +18,7 @@ describe("onInputValueChangeService", () => {
     let inputValue = "plo"
     let inputItems = []
     let items = [{ label: "PLomberie" }, { label: "AGriculture" }, { label: "Ploermel" }]
-    let setInputItems = jest.fn()
+    let setInputItems = vi.fn()
 
     await onInputValueChangeService({ inputValue, inputItems, items, setInputItems })
 

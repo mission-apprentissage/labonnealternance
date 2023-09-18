@@ -30,7 +30,7 @@ const SearchPage = () => {
     try {
       const keywordEncoded = encodeURIComponent(keyword)
       const catalogueResponse = await fetch(
-        `/api/catalogue/formations?query={ "$or": [ { "etablissement_formateur_siret": "${keywordEncoded}" }, { "etablissement_formateur_uai": "${keywordEncoded}"}, { "id_rco_formation": "${keywordEncoded}"}, {"cle_ministere_educatif": "${keywordEncoded}"} ] }`,
+        `/api/catalogue/formations?query={ "$or": [ { "etablissement_formateur_siret": "${keywordEncoded}" }, { "etablissement_formateur_uai": "${keywordEncoded}"}, { "id_rco_formation": "${keywordEncoded}"}, {"cle_ministere_educatif": "${keywordEncoded}"} ] }`
       )
 
       const formations = await catalogueResponse.json()

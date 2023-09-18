@@ -1,5 +1,4 @@
 import Sentry from "@sentry/node"
-
 import { Body, Controller, Example, OperationId, Post, Request, Response, Route, SuccessResponse, Tags } from "tsoa"
 
 import { getReferrerByKeyName } from "../../../common/model/constants/referrers"

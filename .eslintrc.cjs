@@ -74,6 +74,7 @@ module.exports = {
           "**/dev.ts",
           "**/tsup.config.ts",
           "**/cypress.config.ts",
+          "*.ts"
         ],
         optionalDependencies: false,
       },

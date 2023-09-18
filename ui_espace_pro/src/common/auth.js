@@ -1,11 +1,10 @@
 import { createGlobalState } from "react-hooks-global-state"
-import { subscribeToHttpEvent } from "./httpClient"
 import decodeJWT from "./utils/decodeJWT"
 
 const anonymous = { sub: "anonymous", permissions: {} }
 let token = sessionStorage.getItem("lba:token")
 
-const { useGlobalState, getGlobalState, setGlobalState } = createGlobalState({
+const { useGlobalState, getGlobalState } = createGlobalState({
   auth: token ? decodeJWT(token) : anonymous,
 })
 

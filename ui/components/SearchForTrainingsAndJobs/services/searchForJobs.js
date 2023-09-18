@@ -1,6 +1,8 @@
 import axios from "axios"
 
 import { logError } from "../../../utils/tools"
+
+import { storeJobsInSession } from "./handleSessionStorage"
 import {
   allJobSearchErrorText,
   getRncpFromParameters,
@@ -8,9 +10,8 @@ import {
   jobsApi,
   partialJobSearchErrorText,
   technicalErrorText,
-} from "../../SearchForTrainingsAndJobs/services/utils"
+} from "./utils"
 
-import { storeJobsInSession } from "./handleSessionStorage"
 
 export const searchForJobsFunction = async ({
   values,

@@ -1,5 +1,7 @@
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const path = require("path")
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const withImages = require("next-images")
 /**
  * supprime les espacements inutiles pour remettre la séquence sur une seule ligne

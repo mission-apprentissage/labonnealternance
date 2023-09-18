@@ -54,7 +54,7 @@ export function TableNew({ data, columns, description, exportable }) {
         })
       },
     }),
-    [],
+    []
   )
 
   const {
@@ -80,7 +80,7 @@ export function TableNew({ data, columns, description, exportable }) {
     useGlobalFilter,
     useFlexLayout,
     useSortBy,
-    usePagination,
+    usePagination
   )
 
   return (

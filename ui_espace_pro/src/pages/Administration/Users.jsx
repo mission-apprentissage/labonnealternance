@@ -97,7 +97,7 @@ const Users = () => {
     return useQuery(id, () =>
       getUsers({
         users: query,
-      }),
+      })
     )
   })
 

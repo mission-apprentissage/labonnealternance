@@ -11,11 +11,6 @@ import "./index.css"
 import theme from "./theme"
 
 dayjs.locale("fr")
-// plop
-
-function name(toto) {
-  console.log("yo")
-}
 
 const client = new QueryClient({
   defaultOptions: {

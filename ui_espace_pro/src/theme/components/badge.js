@@ -1,13 +1,3 @@
-const commonStatusBadgeStyle = {
-  fontSize: "omega",
-  fontWeight: 700,
-  borderRadius: 20,
-  pl: 4,
-  pr: 4,
-  py: 1,
-  textTransform: "none",
-}
-
 const Badge = {
   variants: {
     inactive: {

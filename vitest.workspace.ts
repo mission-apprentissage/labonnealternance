@@ -1,8 +1,10 @@
 import tsconfigPaths from "vite-tsconfig-paths";
+// eslint-disable-next-line import/no-unresolved
 import { defineWorkspace } from "vitest/config";
 
 export default defineWorkspace([
   {
+    // @ts-ignore
     plugins: [tsconfigPaths()],
     test: {
       name: "server",
@@ -14,15 +16,14 @@ export default defineWorkspace([
       isolate: false,
     },
   },
-  // {
-  //   plugins: [tsconfigPaths()],
-  //   test: {
-  //     name: "ui",
-  //     root: "./ui",
-  //     include: ["./**/*.test.ts"],
-  //     setupFiles: ["./tests/setup.ts"],
-  //   },
-  // },
+  {
+    test: {
+      name: "ui",
+      root: "./ui",
+      include: ["./**/*.test.(js|jsx)"],
+      setupFiles: ["./tests/setup.ts"],
+    },
+  },
   // {
   //   test: {
   //     name: "shared",

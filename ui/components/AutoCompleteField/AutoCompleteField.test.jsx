@@ -1,7 +1,9 @@
+// @vitest-environment jsdom
 import { render } from "@testing-library/react"
 import { Formik } from "formik"
 import { noop } from "lodash/noop"
 import React from "react"
+import { describe, expect, it } from "vitest";
 
 import AutoCompleteField from "./AutoCompleteField"
 

@@ -1,10 +1,12 @@
+import { describe, it, vi, expect } from "vitest"
+
 import submitCommentaire from "./submitCommentaire"
 
 describe("submitCommentaire", () => {
   it("By default, change current state if no error", async () => {
     // given
-    const mockedSetSendingState = jest.fn()
-    const mockedPostCommentaire = jest.fn()
+    const mockedSetSendingState = vi.fn()
+    const mockedPostCommentaire = vi.fn()
     const repeatFunc = (x) => {
       return x
     }
@@ -18,7 +20,7 @@ describe("submitCommentaire", () => {
 
   it.only("If error, change state with an error", async () => {
     // given
-    const mockedSetSendingState = jest.fn()
+    const mockedSetSendingState = vi.fn()
     const badFunc = () => {
       throw "Just an error for testing purpose"
     }
