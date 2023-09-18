@@ -1,3 +1,10 @@
+# [1.92.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.91.0...v1.92.0) (2023-09-18)
+
+
+### Features
+
+* LBAC-1522 LBAC-1523 LBAC-1534 map désactivées par défaut et centrages ([#585](https://github.com/mission-apprentissage/labonnealternance/issues/585)) ([3d12b3f](https://github.com/mission-apprentissage/labonnealternance/commit/3d12b3f696345639684efd4c96b6288c7cf23991))
+
 # [1.91.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.90.1...v1.91.0) (2023-09-15)
 
 
