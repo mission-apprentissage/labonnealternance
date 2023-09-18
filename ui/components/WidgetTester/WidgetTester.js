@@ -277,7 +277,7 @@ const WidgetTester = () => {
                     <Box as="label">
                       <Text as="strong">Filtrage des opportunités d&apos;emploi pour un OPCO. Optionnel (opco)</Text>
                     </Box>
-                    <Select name="opco">
+                    <Select name="opco" onChange={(evt) => setFieldValue("opco", evt.target.value)}>
                       <option></option>
                       <option>AFDAS</option>
                       <option>AKTO</option>
@@ -299,7 +299,13 @@ const WidgetTester = () => {
                     <Box as="label">
                       <Text as="strong">Filtrage des opportunités d&apos;emploi par un site d'OPCO. Optionnel (opcoUrl)</Text>
                     </Box>
-                    <Field as={Input} variant="outline" type="text" name="opcoUrl" />
+                    <Select name="opco" onChange={(evt) => setFieldValue("opcoUrl", evt.target.value)}>
+                      <option></option>
+                      <option>www.jecompte.fr</option>
+                      <option>www.concepteursdavenirs.fr</option>
+                      <option>www.jinvestislavenir.fr</option>
+                      <option>www.jassuremonfutur.fr</option>
+                    </Select>
                   </Box>
                 </GridItem>
 
