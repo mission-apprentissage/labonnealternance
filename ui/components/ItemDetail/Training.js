@@ -115,7 +115,7 @@ const Training = ({ training, handleSelectItem, showTextOnly, searchForJobsOnNew
         <Box flex="1">
           <Flex m="0">
             <Box flex="initial" textAlign="left">
-              <Box color="black" fontSize="1rem" fontWeight={700}>
+              <Box color="black" as="h2" fontSize="1rem" fontWeight={700}>
                 {training.title ? training.title : training.longTitle}
               </Box>
             </Box>
@@ -124,7 +124,7 @@ const Training = ({ training, handleSelectItem, showTextOnly, searchForJobsOnNew
             </Box>
           </Flex>
 
-          <Box pt={[4, 4, 4, 1]} fw={500} fontSize="14px">
+          <Box as="h3" pt={[4, 4, 4, 1]} fw={500} fontSize="14px">
             {training.company.name}
           </Box>
           <Box pt={2} fw={500} fontSize="12px">
