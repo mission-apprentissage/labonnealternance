@@ -12,9 +12,10 @@ import { logger } from "../../../common/logger.js"
 import { sentryCaptureException } from "../../../common/utils/sentryUtils.js"
 import { notifyToSlack } from "../../../common/utils/slackUtils.js"
 
-export const repriseEmailRdvs = async () => {
-  logger.info(`Reprise des emails de rdv: récupération des rdvs...`)
-  const appointments = await Appointment.find({ to_cfa_mails: { $size: 0 } })
+export const repriseEmailRdvs = async ({ fromDateStr }: { fromDateStr: string }) => {
+  const fromDate = dayjs(fromDateStr, "DD-MM-YYYY")
+  logger.info(`Reprise des emails de rdv: récupération des rdvs depuis le ${fromDate.toISOString()}...`)
+  const appointments = await Appointment.find({ to_cfa_mails: { $size: 0 }, created_at: { $gt: fromDate } })
   logger.info(`Reprise des emails de rdv: ${appointments.length} rdvs à envoyer`)
   const stats = { success: 0, failure: 0 }
 
@@ -113,6 +114,7 @@ export const repriseEmailRdvs = async () => {
           }
         ),
       ])
+      stats.success++
     } catch (err) {
       const errorMessage = (err && "message" in err && err.message) || err
       logger.error(err)

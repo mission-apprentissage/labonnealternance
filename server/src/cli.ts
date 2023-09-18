@@ -363,9 +363,14 @@ cli
 
 cli
   .command("reprise-email-rdvs")
+  .option("--from-date, [fromDate]", "date du plus view rdv repris")
   .description("Procède à l'envoi de mails pour les rdvs ayant eu le bug d'import de etablissements")
-  .action(() => {
-    runScript(() => repriseEmailRdvs())
+  .action((options) => {
+    const { fromDate } = options
+    if (!fromDate) {
+      throw new Error(`l'option --from-date est obligatoire`)
+    }
+    runScript(() => repriseEmailRdvs({ fromDateStr: fromDate }))
   })
 
 cli.parse(process.argv)
