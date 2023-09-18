@@ -84,8 +84,6 @@ const WidgetTester = () => {
   const handleSearchSubmit = async (values) => {
     let res = {}
 
-    console.log("values : ", values)
-
     res.romes = values.job && values.job.romes ? values.job.romes.join() : null
     res.location = values.location && values.location.value ? values.location.value.coordinates : null
     res.radius = values.radius || null
@@ -111,7 +109,6 @@ const WidgetTester = () => {
 
       ideaUrl = `${ideaUrl}/${path}`
 
-      //console.log("widgetParams  : ",widgetParams);
       ideaUrl += "?"
       ideaUrl += widgetParams.caller ? `&caller=${encodeURIComponent(widgetParams.caller)}` : ""
       ideaUrl += widgetParams.romes ? `&romes=${widgetParams.romes}` : ""
