@@ -27,6 +27,8 @@ services:
       - network.host=0.0.0.0
       - discovery.zen.minimum_master_nodes=1
     mem_limit: 3g
+    ports:
+      - "9200:9200"
     volumes:
       - lba_elasticsearch_data:/usr/share/elasticsearch/data
     healthcheck:
