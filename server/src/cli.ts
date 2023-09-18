@@ -38,6 +38,7 @@ import { importReferentielOnisep } from "./jobs/rdv/importReferentielOnisep.js"
 import updateReferentielRncpRomes from "./jobs/referentielRncpRome/updateReferentielRncpRomes.js"
 import { updateFormationCatalogue } from "./jobs/formationsCatalogue/updateFormationCatalogue.js"
 import { updateSiretInfosInError } from "./jobs/lba_recruteur/user/misc/updateSiretInfosInError.js"
+import { repriseEmailRdvs } from "./jobs/rdv/oneTimeJob/repriseEmailsRdv.js"
 
 cli.addHelpText("after", null)
 
@@ -358,6 +359,18 @@ cli
   .description("Procède à la mise à jour du référentiel RNCP codes ROME")
   .action(() => {
     runScript(() => updateReferentielRncpRomes())
+  })
+
+cli
+  .command("reprise-email-rdvs")
+  .option("--from-date, [fromDate]", "date du plus view rdv repris")
+  .description("Procède à l'envoi de mails pour les rdvs ayant eu le bug d'import de etablissements")
+  .action((options) => {
+    const { fromDate } = options
+    if (!fromDate) {
+      throw new Error(`l'option --from-date est obligatoire`)
+    }
+    runScript(() => repriseEmailRdvs({ fromDateStr: fromDate }))
   })
 
 cli.parse(process.argv)
