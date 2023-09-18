@@ -1,4 +1,4 @@
-import { Box, Button, Container, Grid, GridItem, Input, Link, Radio, RadioGroup, Stack, Text } from "@chakra-ui/react"
+import { Box, Button, Container, Grid, GridItem, Input, Link, Radio, RadioGroup, Select, Stack, Text } from "@chakra-ui/react"
 import { ErrorMessage, Field, Form, Formik } from "formik"
 import React, { useState } from "react"
 import { baseUrl } from "../../config/config"
@@ -83,6 +83,8 @@ const WidgetTester = () => {
 
   const handleSearchSubmit = async (values) => {
     let res = {}
+
+    console.log("values : ", values)
 
     res.romes = values.job && values.job.romes ? values.job.romes.join() : null
     res.location = values.location && values.location.value ? values.location.value.coordinates : null
@@ -275,7 +277,20 @@ const WidgetTester = () => {
                     <Box as="label">
                       <Text as="strong">Filtrage des opportunités d&apos;emploi pour un OPCO. Optionnel (opco)</Text>
                     </Box>
-                    <Field as={Input} variant="outline" type="text" name="opco" />
+                    <Select name="opco">
+                      <option></option>
+                      <option>AFDAS</option>
+                      <option>AKTO</option>
+                      <option>ATLAS</option>
+                      <option>CONSTRUCTYS</option>
+                      <option>OPCOMMERCE</option>
+                      <option>OCAPIAT</option>
+                      <option>OPCO2I</option>
+                      <option>EP</option>
+                      <option>MOBILITE</option>
+                      <option>SANTE</option>
+                      <option>UNIFORMATION</option>
+                    </Select>
                   </Box>
                 </GridItem>
 
