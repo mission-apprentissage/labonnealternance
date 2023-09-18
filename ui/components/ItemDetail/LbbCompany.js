@@ -123,7 +123,7 @@ const LbbCompany = ({ company, handleSelectItem, showTextOnly, searchForTraining
         <Box flex="1">
           <Flex m="0">
             <Box flex="initial" textAlign="left">
-              <Box color="black" fontSize="1rem" fontWeight={700}>
+              <Box as="h2" color="black" fontSize="1rem" fontWeight={700}>
                 {company.company.name}
               </Box>
             </Box>
@@ -132,7 +132,7 @@ const LbbCompany = ({ company, handleSelectItem, showTextOnly, searchForTraining
             </Box>
           </Flex>
 
-          <Box pt={2} fw={500} fontSize="14px">
+          <Box as="h3" pt={2} fw={500} fontSize="14px">
             Secteur d'activité : {get(company, "nafs[0].label", "")}
           </Box>
           <Box pt={2} fw={500} fontSize="12px">
