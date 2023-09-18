@@ -175,11 +175,11 @@ export async function runJob(job: IInternalJobs): Promise<number> {
         return updateDiplomesMetiers()
       case "referentiel:rncp-romes:update":
         return updateReferentielRncpRomes()
-        ///////
-        // case "indexes:create":
-        // case "indexes:recreate":
-        //recreateIndexes((job.payload as any)?.drop)
-        return
+      ///////
+      // case "indexes:create":
+      // case "indexes:recreate":
+      //recreateIndexes((job.payload as any)?.drop)
+      // return
       case "db:validate":
         //validateModels()
         return
