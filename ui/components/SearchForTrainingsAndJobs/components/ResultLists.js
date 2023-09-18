@@ -241,7 +241,17 @@ const ResultLists = ({
         />
         {getErrorMessages()}
       </Box>
-      <Box flex="1" pb={["100px", "100px", 0]} pr={{xl: "25px", "2xl":"50px"}} width="100%" overflow="auto" onScroll={handleScroll} id="resultList" display={shouldShowWelcomeMessage || selectedItem ? "none" : ""} bg="beige">
+      <Box
+        flex="1"
+        pb={["100px", "100px", 0]}
+        pr={{ xl: "25px", "2xl": "50px" }}
+        width="100%"
+        overflow="auto"
+        onScroll={handleScroll}
+        id="resultList"
+        display={shouldShowWelcomeMessage || selectedItem ? "none" : ""}
+        bg="beige"
+      >
         <Box margin="auto" maxWidth="1310px">
           {getTrainingResult()}
           {getJobResult()}
