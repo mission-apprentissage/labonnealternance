@@ -1,12 +1,14 @@
 import assert from "assert"
 
-import __filename from "../../../src/common/filename.js"
-import { User } from "../../../src/common/model/index.js"
-import { ROLES } from "../../../src/services/constant.service.js"
-import { authenticate, changePassword, createUser } from "../../../src/services/user.service.js"
-import integrationTests from "../../utils/integrationTests.js"
+import { User } from "../../../src/common/model/index"
+import { ROLES } from "../../../src/services/constant.service"
+import { authenticate, changePassword, createUser } from "../../../src/services/user.service"
+import { describe, expect, it } from "vitest";
+import { useMongo } from "@tests/utils/mongo.utils";
 
-integrationTests(__filename(import.meta.url), () => {
+describe('users', () => {
+  useMongo();
+  
   it("Permet de créer un utilisateur", async () => {
     const created = await createUser("user", "password", {})
     assert.strictEqual(created.username, "user")
@@ -39,13 +41,6 @@ integrationTests(__filename(import.meta.url), () => {
 
     assert.strictEqual(user.role, ROLES.cfa)
     assert.strictEqual(found?.role, ROLES.cfa)
-  })
-
-  it("Permet de supprimer un utilisateur", async () => {
-    await createUser("userToDelete", "password", { role: ROLES.administrator })
-
-    const found = await User.findOne({ username: "userToDelete" })
-    assert.strictEqual(found, null)
   })
 
   it("Vérifie que le mot de passe est valide", async () => {

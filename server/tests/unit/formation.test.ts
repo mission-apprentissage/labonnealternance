@@ -1,8 +1,9 @@
 import assert from "assert"
-import __filename from "../../src/common/filename.js"
-import { deduplicateFormations } from "../../src/services/formation.service.js"
+import { deduplicateFormations } from "../../src/services/formation.service"
 
-describe(__filename(import.meta.url), () => {
+import { describe, it } from "vitest";
+
+describe('formation', () => {
   const sampleFormation1 = [
     {
       source: { nom: "a1", intitule: "b1", etablissement_formateur_siret: "c1", diplome: "d1", code_postal: "e1" },
