@@ -50,7 +50,11 @@ import { initSentry } from "./sentry.js"
  * LBA-Candidat Swagger file
  */
 const dirname = __dirname(import.meta.url)
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 const deprecatedSwaggerDocument = JSON.parse(readFileSync(path.resolve(dirname, "../assets/api-docs/swagger.json")))
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 const swaggerDocument = JSON.parse(readFileSync(path.resolve(dirname, "../generated/swagger.json")))
 
 /**
