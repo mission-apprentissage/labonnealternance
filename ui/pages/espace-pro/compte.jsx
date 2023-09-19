@@ -144,3 +144,5 @@ export default function Compte() {
     </AnimationContainer>
   )
 }
+
+// TODO_AB add HOC restriction page PRIVATE ROUTE
