@@ -5,7 +5,7 @@ import TagCandidatureSpontanee from "../../components/ItemDetail/TagCandidatureS
 
 const DidYouKnow = () => {
   return (
-    <Box position="relative" background="white" padding={["1px 12px 50px 12px", "1px 24px 50px 24px", "1px 12px 24px 12px"]} mx={["0", "30px"]} mb={8} mt={6}>
+    <Box position="relative" background="white" padding="16px 24px" mx={["0", "30px"]} mb={8} mt={6}>
       <Text mt={2} as="h2" variant="itemDetailH2">
         Le saviez-vous ?
       </Text>

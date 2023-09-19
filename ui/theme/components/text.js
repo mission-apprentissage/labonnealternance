@@ -53,7 +53,7 @@ const Text = {
     },
 
     itemDetailH2: {
-      fontSize: "18px",
+      fontSize: "22px",
       fontWeight: 700,
       color: "bluefrance.500",
     },

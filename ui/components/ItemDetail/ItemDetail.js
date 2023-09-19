@@ -27,6 +27,7 @@ import { SendPlausibleEvent } from "../../utils/plausible"
 import GoingToContactQuestion, { getGoingtoId } from "./GoingToContactQuestion"
 import getJobPublishedTimeAndApplications from "./ItemDetailServices/getJobPublishedTimeAndApplications"
 import { DisplayContext } from "../../context/DisplayContextProvider"
+import AideApprentissage from "./AideApprentissage"
 
 const ItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
   const kind = selectedItem?.ideaType
@@ -213,6 +214,8 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
       )}
 
       <LocationDetail item={selectedItem} isCfa={isCfa}></LocationDetail>
+
+      <AideApprentissage item={selectedItem}></AideApprentissage>
 
       {kind === "peJob" && (
         <>
