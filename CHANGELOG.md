@@ -1,3 +1,10 @@
+## [1.92.2](https://github.com/mission-apprentissage/labonnealternance/compare/v1.92.1...v1.92.2) (2023-09-19)
+
+
+### Bug Fixes
+
+* redirect CFA ([8b6f88a](https://github.com/mission-apprentissage/labonnealternance/commit/8b6f88ae1dabbcd2004c25fef8149006047d916d))
+
 ## [1.92.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.92.0...v1.92.1) (2023-09-18)
 
 ### Bug Fixes
