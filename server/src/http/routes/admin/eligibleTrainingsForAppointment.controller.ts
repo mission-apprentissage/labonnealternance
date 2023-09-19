@@ -39,7 +39,7 @@ export default () => {
    * Get all eligibleTrainingsForAppointments GET
    * */
   router.get(
-    "/parameters",
+    "/",
     tryCatch(async (req, res) => {
       const qs = req.query
       const query = qs && qs.query ? JSON.parse(qs.query) : {}
@@ -73,37 +73,6 @@ export default () => {
           total: allData.total,
         },
       })
-    })
-  )
-
-  /**
-   * Get all eligibleTrainingsForAppointments eligibleTrainingsForAppointments/count GET
-   */
-  router.get(
-    "/parameters/count",
-    tryCatch(async (req, res) => {
-      const qs = req.query
-      const query = qs && qs.query ? JSON.parse(qs.query) : {}
-      const total = await EligibleTrainingsForAppointment.countDocuments(query)
-
-      res.send({ total })
-    })
-  )
-
-  /**
-   * Get eligibleTrainingsForAppointment eligibleTrainingsForAppointments / GET
-   */
-  router.get(
-    "/",
-    tryCatch(async (req, res) => {
-      const qs = req.query
-      const query = qs && qs.query ? JSON.parse(qs.query) : {}
-      const retrievedData = await EligibleTrainingsForAppointment.findOne(query)
-      if (retrievedData) {
-        res.send(retrievedData)
-      } else {
-        res.send({ message: `Item doesn't exist` })
-      }
     })
   )
 

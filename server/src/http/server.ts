@@ -13,7 +13,7 @@ import { logMiddleware } from "./middlewares/logMiddleware.js"
 import { tryCatch } from "./middlewares/tryCatchMiddleware.js"
 import adminAppointmentRoute from "./routes/admin/appointment.controller.js"
 import adminEtablissementRoute from "./routes/admin/etablissement.controller.js"
-import eligibleTrainingsForAppointmentRoute from "./routes/admin/widgetParameter.controller.js"
+import eligibleTrainingsForAppointmentRoute from "./routes/admin/eligibleTrainingsForAppointment.controller.js"
 import appointmentRequestRoute from "./routes/appointmentRequest.controller.js"
 import emailsRoute from "./routes/auth/emails.controller.js"
 import login from "./routes/auth/login.controller.js"
@@ -188,10 +188,10 @@ export default async (components) => {
   app.use("/api/admin/appointment", checkJwtTokenRdvAdmin, administratorOnly, adminAppointmentRoute())
   app.use("/api/admin/etablissements", checkJwtTokenRdvAdmin, administratorOnly, adminEtablissementRoute())
   app.use("/api/admin/formations", checkJwtTokenRdvAdmin, administratorOnly, formationsRoute())
+  app.use("/api/admin/eligible-tranings-for-appointment", checkJwtTokenRdvAdmin, administratorOnly, eligibleTrainingsForAppointmentRoute())
   app.use("/api/etablissements", etablissementRoute())
   app.use("/api/appointment-request", appointmentRequestRoute())
   app.use("/api/constants", constantsRoute())
-  app.use("/api/widget-parameters", eligibleTrainingsForAppointmentRoute())
   app.use("/api/partners", partnersRoute())
   app.use("/api/emails", emailsRoute())
   app.use("/api/support", supportRoute())

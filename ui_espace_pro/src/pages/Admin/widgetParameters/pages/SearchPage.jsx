@@ -42,7 +42,7 @@ const SearchPage = () => {
           position: "bottom-right",
         })
       } else {
-        navigate(`/admin/widget-parameters/edit/${formations[0].etablissement_formateur_siret}`)
+        navigate(`/admin/eligible-tranings-for-appointment/edit/${formations[0].etablissement_formateur_siret}`)
       }
     } catch (e) {
       toast({

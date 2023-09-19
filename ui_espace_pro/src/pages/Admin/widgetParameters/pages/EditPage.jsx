@@ -16,7 +16,7 @@ import EtablissementComponent from "../components/EtablissementComponent"
  */
 const EditPage = () => {
   const { id } = useParams()
-  const [parametersResult, setParametersResult] = useState()
+  const [eligibleTrainingsForAppointmentResult, setEligibleTrainingsForAppointmentResult] = useState()
   const [referrers, setReferrers] = useState()
   const [etablissement, setEtablissement] = useState()
   const [loading, setLoading] = useState(false)
@@ -33,9 +33,9 @@ const EditPage = () => {
     try {
       setLoading(true)
 
-      const [parametersResponse, referrers, etablissementResponse] = await Promise.all([getParameters(id), getReferrers(), getEtablissement(id)])
+      const [parametersResponse, referrers, etablissementResponse] = await Promise.all([getEligibleTrainingsForAppointments(id), getReferrers(), getEtablissement(id)])
 
-      setParametersResult(parametersResponse)
+      setEligibleTrainingsForAppointmentResult(parametersResponse)
       setReferrers(referrers)
       setEtablissement(etablissementResponse)
     } catch (error) {
@@ -62,9 +62,9 @@ const EditPage = () => {
    * @returns {Promise<void>}
    */
   const refreshParameters = async () => {
-    const parametersResponse = await getParameters(id)
+    const parametersResponse = await getEligibleTrainingsForAppointments(id)
 
-    setParametersResult(parametersResponse)
+    setEligibleTrainingsForAppointmentResult(parametersResponse)
   }
 
   /**
@@ -72,7 +72,7 @@ const EditPage = () => {
    * @param {String} id
    * @returns {Promise<*>}
    */
-  const getParameters = (id) => _get(`/api/widget-parameters/parameters?query={"etablissement_formateur_siret":"${id}"}&limit=1000`)
+  const getEligibleTrainingsForAppointments = (id) => _get(`/api/admin/eligible-tranings-for-appointment?query={"etablissement_formateur_siret":"${id}"}&limit=1000`)
 
   /**
    * @description Returns etablissement from its SIRET.
@@ -92,13 +92,13 @@ const EditPage = () => {
   }
 
   /**
-   * @description Patch parameters.
+   * @description Patch eligibleTrainingsForAppointments.
    * @param {string} id
    * @param {Object} body
    * @returns {Promise<void>}
    */
-  const patchParameter = async (id, body) => {
-    await _patch(`/api/widget-parameters/${id}`, body)
+  const patchEligibleTrainingsForAppointment = async (id, body) => {
+    await _patch(`/api/admin/eligible-tranings-for-appointment/${id}`, body)
   }
 
   /**
@@ -117,7 +117,7 @@ const EditPage = () => {
       })
     }
 
-    await patchParameter(parameterId, {
+    await patchEligibleTrainingsForAppointment(parameterId, {
       lieu_formation_email: email,
       is_lieu_formation_email_customized: true,
     })
@@ -131,6 +131,31 @@ const EditPage = () => {
   }
 
   /**
+   * @description Disable/enable email overriding.
+   * @param id
+   * @param is_lieu_formation_email_customized
+   * @return {Promise<void>}
+   */
+  const disableEmailOverriding = async (id, is_lieu_formation_email_customized) => {
+    await patchEligibleTrainingsForAppointment(id, { is_lieu_formation_email_customized })
+    if (is_lieu_formation_email_customized) {
+      toast({
+        title: "L'email ne sera pas écrasé lors de la prochaine synchronisation.",
+        status: "success",
+        isClosable: true,
+        position: "bottom-right",
+      })
+    } else {
+      toast({
+        title: "L'email sera pas écrasé lors de la prochaine synchronisation.",
+        status: "success",
+        isClosable: true,
+        position: "bottom-right",
+      })
+    }
+  }
+
+  /**
    * @description Handle referrer checkbox.
    * @param {Object} parameter
    * @param {Boolean} checked
@@ -140,19 +165,19 @@ const EditPage = () => {
   const onCheckboxChange = async ({ parameter, checked, referrer }) => {
     // Add referrer
     if (checked) {
-      await patchParameter(parameter._id, {
+      await patchEligibleTrainingsForAppointment(parameter._id, {
         referrers: parameter.referrers.map((ref) => ref).concat(referrer.name),
       })
       await refreshParameters()
     } else {
-      await patchParameter(parameter._id, {
+      await patchEligibleTrainingsForAppointment(parameter._id, {
         referrers: parameter.referrers.map((ref) => ref).filter((item) => item !== referrer.name),
       })
       await refreshParameters()
     }
   }
 
-  if (!parametersResult) {
+  if (!eligibleTrainingsForAppointmentResult) {
     return <Spinner display="block" mx="auto" mt="10rem" />
   }
 
@@ -163,7 +188,7 @@ const EditPage = () => {
         {title}
       </Heading>
       <Box>
-        {parametersResult && etablissement && !loading && (
+        {eligibleTrainingsForAppointmentResult && etablissement && !loading && (
           <>
             <EtablissementComponent id={etablissement._id} />
             <Flex bg="white" mt={10} border="1px solid #E0E5ED" borderRadius="4px" borderBottom="none">
@@ -187,7 +212,7 @@ const EditPage = () => {
                   <Td textStyle="sm">SOURCE</Td>
                 </Thead>
                 <Tbody>
-                  {parametersResult.parameters.map((parameter) => {
+                  {eligibleTrainingsForAppointmentResult.parameters.map((parameter) => {
                     const emailRef = createRef()
                     const emailFocusRef = createRef()
 
@@ -230,7 +255,7 @@ const EditPage = () => {
                             checked={parameter?.is_lieu_formation_email_customized}
                             icon={<Check w="20px" h="18px" />}
                             defaultIsChecked={parameter?.is_lieu_formation_email_customized}
-                            onChange={(event) => patchParameter(parameter._id, { is_lieu_formation_email_customized: event.target.checked })}
+                            onChange={(event) => disableEmailOverriding(parameter._id, event.target.checked)}
                           />
                         </Td>
                         <Td>{parameter?.is_catalogue_published ? "Oui" : "Non"}</Td>
