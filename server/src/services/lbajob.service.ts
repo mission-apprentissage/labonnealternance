@@ -4,14 +4,13 @@ import { encryptMailWithIV } from "../common/utils/encryptString"
 import { IApiError, manageApiError } from "../common/utils/errorManager"
 import { roundDistance } from "../common/utils/geolib"
 import { trackApiCall } from "../common/utils/sendTrackingEvent"
-import { sentryCaptureException } from "../common/utils/sentryUtils"
 import { matchaMock, matchaMockMandataire, matchasMock } from "../mocks/matchas-mock"
-
 import { IApplicationCount, getApplicationByJobCount } from "./application.service"
 import { JOB_STATUS, NIVEAUX_POUR_LBA, RECRUITER_STATUS } from "./constant.service"
 import { getJobsFromElasticSearch, getOffreAvecInfoMandataire, incrementLbaJobViewCount } from "./formulaire.service"
-import { ILbaItem, LbaItem } from "./lbaitem.shared.service.types"
-import { ILbaJobEsResult } from "./lbajob.service.types"
+import type { TLbaItemResult } from "./jobOpportunity.service.types"
+import type { ILbaItem, LbaItem } from "./lbaitem.shared.service.types"
+import type { ILbaJobEsResult } from "./lbajob.service.types"
 import { filterJobsByOpco } from "./opco.service"
 
 const coordinatesOfFrance = [2.213749, 46.227638]
@@ -28,7 +27,7 @@ const coordinatesOfFrance = [2.213749, 46.227638]
  * @param {string} diploma optionnel: un fitre pour ne remonter ques les offres aboutissant à l'obtention du diplôme
  * @param {string} caller optionnel: l'identifiant de l'utilisateur de l'api
  * @param {string} useMock optionnel: un flag indiquant s'il faut retourner une valeur réelle ou une valeur mockée
- * @returns {Promise<IApiError | { results: ILbaItem[] }>}
+ * @returns {Promise<TLbaItemResult>}
  */
 export const getLbaJobs = async ({
   romes,
@@ -52,7 +51,7 @@ export const getLbaJobs = async ({
   diploma?: string
   caller?: string
   useMock?: string
-}): Promise<IApiError | { results: ILbaItem[] }> => {
+}): Promise<TLbaItemResult> => {
   if (radius === 0) {
     radius = 10
   }
@@ -152,7 +151,6 @@ export const getLbaJobById = async ({ id, caller }: { id: string; caller?: strin
 
     return { matchas: job }
   } catch (error) {
-    sentryCaptureException(error)
     return manageApiError({ error, api_path: "jobV1/matcha", caller, errorTitle: "getting job by id from Matcha" })
   }
 }
@@ -193,6 +191,10 @@ function transformLbaJob({
     resultJob.place.address = job.address
     resultJob.place.latitude = job.geo_coordinates.split(",")[0]
     resultJob.place.longitude = job.geo_coordinates.split(",")[1]
+
+    if (job.address_detail && "localite" in job.address_detail) {
+      resultJob.place.city = job.address_detail.localite
+    }
 
     resultJob.company.siret = job.establishment_siret
     resultJob.company.name = job.establishment_enseigne || job.establishment_raison_sociale || "Enseigne inconnue"

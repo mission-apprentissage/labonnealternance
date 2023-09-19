@@ -10,12 +10,13 @@ import { amongst } from "../../utils/arrayutils"
 import { filterLayers } from "../../utils/mapTools"
 import { SendPlausibleEvent } from "../../utils/plausible"
 
+import AideApprentissage from "./AideApprentissage"
 import CandidatureLba from "./CandidatureLba/CandidatureLba"
 import isCandidatureLba from "./CandidatureLba/services/isCandidatureLba"
 import DidYouKnow from "./DidYouKnow"
 import GoingToContactQuestion, { getGoingtoId } from "./GoingToContactQuestion"
 import getActualTitle from "./ItemDetailServices/getActualTitle"
-import { buildPrdvButton, BuildSwipe, buttonJePostuleShouldBeDisplayed, buttonPRDVShouldBeDisplayed, getNavigationButtons } from "./ItemDetailServices/getButtons"
+import { BuildSwipe, buildPrdvButton, buttonJePostuleShouldBeDisplayed, buttonPRDVShouldBeDisplayed, getNavigationButtons } from "./ItemDetailServices/getButtons"
 import getCurrentList from "./ItemDetailServices/getCurrentList"
 import getJobPublishedTimeAndApplications from "./ItemDetailServices/getJobPublishedTimeAndApplications"
 import getJobSurtitre from "./ItemDetailServices/getJobSurtitre"
@@ -188,7 +189,7 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
                 }}
                 ml={4}
                 isExternal
-                href="https://dinum-beta.didask.com/courses/demonstration/60d21bf5be76560000ae916e"
+                href="https://dinum.didask.com/courses/demonstration/60d21bf5be76560000ae916e"
               >
                 Chercher un employeur <ExternalLinkIcon mb="3px" mx="2px" />
               </Link>
@@ -214,6 +215,8 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
       )}
 
       <LocationDetail item={selectedItem} isCfa={isCfa}></LocationDetail>
+
+      <AideApprentissage item={selectedItem}></AideApprentissage>
 
       {kind === "peJob" && (
         <>

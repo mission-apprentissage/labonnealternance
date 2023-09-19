@@ -5,7 +5,7 @@ import { getSearchQueryParameters } from "./getSearchParameters"
 const pushHistory = ({ router, scopeContext, item, page, display, searchParameters, searchTimestamp, isReplace, displayMap }) => {
   let params = `${display ? `&display=${display}` : ""}${page ? `&page=${page}` : ""}${item ? `&${getItemQueryParameters(item)}` : ""}${
     searchParameters ? `&${getSearchQueryParameters(searchParameters)}` : ""
-  }${searchTimestamp ? `&s=${searchTimestamp}` : ""}${getCampaignParameters()}${displayMap === false ? "&displayMap=false" : ""}`
+  }${searchTimestamp ? `&s=${searchTimestamp}` : ""}${getCampaignParameters()}${displayMap === true ? "&displayMap=true" : ""}`
 
   if (!isReplace) {
     router.push(`${scopeContext.path}${params ? `?${params}` : ""}`, undefined, {

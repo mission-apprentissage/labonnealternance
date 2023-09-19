@@ -1,3 +1,69 @@
+# [1.96.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.95.0...v1.96.0) (2023-09-19)
+
+### Features
+
+- LBAC-1018 liens google sur ville + cp seulement ([f7c916f](https://github.com/mission-apprentissage/labonnealternance/commit/f7c916fd021cb8f21f7ddd28c6d9b9b78e59843a))
+
+# [1.95.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.94.0...v1.95.0) (2023-09-19)
+
+### Features
+
+- LBAC-1455 balises hx sur cartes ([#589](https://github.com/mission-apprentissage/labonnealternance/issues/589)) ([a677c24](https://github.com/mission-apprentissage/labonnealternance/commit/a677c245351e4417b4fb75dda1135e3de853f4d8))
+
+# [1.94.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.93.0...v1.94.0) (2023-09-19)
+
+### Features
+
+- endpoint rework (LBAC-1554) ([#590](https://github.com/mission-apprentissage/labonnealternance/issues/590)) ([5c50d6c](https://github.com/mission-apprentissage/labonnealternance/commit/5c50d6c303f64f669a0880f1d1f2ff8aa6c0faf5))
+
+# [1.93.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.92.2...v1.93.0) (2023-09-19)
+
+### Features
+
+- LBAC-1447 Ajout bloc mes aides ([aad3dc7](https://github.com/mission-apprentissage/labonnealternance/commit/aad3dc704e71e4f8eeb9920c35db8862e8064212))
+
+## [1.92.2](https://github.com/mission-apprentissage/labonnealternance/compare/v1.92.1...v1.92.2) (2023-09-19)
+
+### Bug Fixes
+
+- redirect CFA ([8b6f88a](https://github.com/mission-apprentissage/labonnealternance/commit/8b6f88ae1dabbcd2004c25fef8149006047d916d))
+
+## [1.92.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.92.0...v1.92.1) (2023-09-18)
+
+### Bug Fixes
+
+- envoi des emails rdvs bloques ([#580](https://github.com/mission-apprentissage/labonnealternance/issues/580)) ([b5b98ad](https://github.com/mission-apprentissage/labonnealternance/commit/b5b98add230c3b93d063513d60f44b42d651c833))
+
+# [1.92.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.91.0...v1.92.0) (2023-09-18)
+
+### Features
+
+- LBAC-1522 LBAC-1523 LBAC-1534 map désactivées par défaut et centrages ([#585](https://github.com/mission-apprentissage/labonnealternance/issues/585)) ([3d12b3f](https://github.com/mission-apprentissage/labonnealternance/commit/3d12b3f696345639684efd4c96b6288c7cf23991))
+
+# [1.91.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.90.1...v1.91.0) (2023-09-15)
+
+### Features
+
+- LBAC-1227 migrations services PE ([#551](https://github.com/mission-apprentissage/labonnealternance/issues/551)) ([30695c5](https://github.com/mission-apprentissage/labonnealternance/commit/30695c56cf147fbd2a6dd2195fbd922f76bb4e8e))
+
+## [1.90.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.90.0...v1.90.1) (2023-09-15)
+
+### Bug Fixes
+
+- remove etablissements from components ([#579](https://github.com/mission-apprentissage/labonnealternance/issues/579)) ([af3028b](https://github.com/mission-apprentissage/labonnealternance/commit/af3028bb75eaf5b7e03bf11e3b37189c87b2c2a5))
+
+# [1.90.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.89.0...v1.90.0) (2023-09-15)
+
+### Features
+
+- suppression -beta de didask dans les modèles de mail ([1812c91](https://github.com/mission-apprentissage/labonnealternance/commit/1812c918d9ba3af8727c872a979cb7dfc9b6058f))
+
+# [1.89.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.88.4...v1.89.0) (2023-09-15)
+
+### Features
+
+- wording lbac ([8b75868](https://github.com/mission-apprentissage/labonnealternance/commit/8b75868c5ef192a18df1f2750d915df4c7da0a48))
+
 ## [1.88.4](https://github.com/mission-apprentissage/labonnealternance/compare/v1.88.3...v1.88.4) (2023-09-13)
 
 ### Bug Fixes

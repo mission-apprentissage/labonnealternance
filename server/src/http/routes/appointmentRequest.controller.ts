@@ -6,6 +6,7 @@ import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 import { mailType } from "../../common/model/constants/appointments"
 import { getReferrerByKeyName } from "../../common/model/constants/referrers"
+import { Etablissement } from "../../common/model/index"
 import config from "../../config"
 import * as appointmentService from "../../services/appointment.service"
 import { ROLES } from "../../services/constant.service"
@@ -34,7 +35,7 @@ const appointmentReplySchema = Joi.object({
   cfa_message_to_applicant: Joi.string().allow("").optional(),
 })
 
-export default ({ etablissements }) => {
+export default () => {
   const router = express.Router()
 
   router.post(
@@ -103,7 +104,7 @@ export default ({ etablissements }) => {
           appointment_origin: referrerObj.name,
           cle_ministere_educatif: eligibleTrainingsForAppointment.cle_ministere_educatif,
         }),
-        etablissements.findOne({
+        Etablissement.findOne({
           formateur_siret: eligibleTrainingsForAppointment.etablissement_formateur_siret,
         }),
       ])
@@ -131,7 +132,7 @@ export default ({ etablissements }) => {
           reasons: createdAppointement.applicant_reasons,
           referrerLink: referrerObj.url,
           appointment_origin: referrerObj.full_name,
-          link: `${config.publicUrlEspacePro}/establishment/${etablissement._id}/appointments/${createdAppointement._id}?utm_source=mail`,
+          link: `${config.publicUrlEspacePro}/establishment/${etablissement?._id}/appointments/${createdAppointement._id}?utm_source=mail`,
         },
         images: {
           logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,

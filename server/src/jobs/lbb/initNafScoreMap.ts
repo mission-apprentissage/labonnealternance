@@ -6,8 +6,7 @@ import { oleoduc, readLineByLine, transformData, writeData } from "oleoduc"
 import __dirname from "../../common/dirname"
 import { logger } from "../../common/logger"
 import { logMessage } from "../../common/utils/logMessage"
-
-import { downloadFile } from "./bonnesBoitesUtils"
+import { downloadFile } from "./lbaCompaniesUtils"
 
 const hiringFileName = "contrats_30j.csv"
 const currentDirname = __dirname(import.meta.url)

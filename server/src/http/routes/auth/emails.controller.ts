@@ -2,6 +2,7 @@ import express from "express"
 import Joi from "joi"
 
 import { logger } from "../../../common/logger"
+import { Etablissement } from "../../../common/model"
 import { addEmailToBlacklist } from "../../../services/application.service"
 import * as appointmentService from "../../../services/appointment.service"
 import { BrevoEventStatus } from "../../../services/brevo.service"
@@ -13,7 +14,7 @@ import { tryCatch } from "../../middlewares/tryCatchMiddleware"
 /**
  * Email controllers.
  */
-export default ({ etablissements }) => {
+export default () => {
   const router = express.Router()
 
   /**
@@ -73,18 +74,18 @@ export default ({ etablissements }) => {
         }
       }
 
-      const [etablissementFound] = await etablissements.find({ "to_etablissement_emails.message_id": { $regex: messageId } })
+      const [etablissementFound] = await Etablissement.find({ "mailing.message_id": { $regex: messageId } })
 
       // If mail sent from etablissement model
       if (etablissementFound) {
-        const previousEmail = etablissementFound.to_etablissement_emails.find((mail) => mail.message_id.includes(messageId))
+        const previousEmail = etablissementFound?.to_etablissement_emails?.find((mail) => mail?.message_id?.includes(messageId))
 
         await etablissementFound.update({
           $push: {
             to_etablissement_emails: {
-              campaign: previousEmail.campaign,
+              campaign: previousEmail?.campaign,
               status: parameters.event,
-              message_id: previousEmail.message_id,
+              message_id: previousEmail?.message_id,
               webhook_status_at: eventDate,
             },
           },

@@ -1,27 +1,24 @@
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { isEmailBurner } from "burner-email-providers"
 import Joi from "joi"
 import { Document } from "mongoose"
 import { oleoduc, writeData } from "oleoduc"
-
-import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
-
-import { logger } from "../common/logger"
-import { Application, BonnesBoites, EmailBlacklist } from "../common/model/index"
-import { IApplication } from "../common/model/schema/application/applications.types"
-import { IBonneBoite } from "../common/model/schema/bonneboite/bonneboite.types"
-import { IJobs } from "../common/model/schema/jobs/jobs.types"
-import { decryptWithIV, encryptIdWithIV } from "../common/utils/encryptString"
-import { manageApiError } from "../common/utils/errorManager"
-import { prepareMessageForMail } from "../common/utils/fileUtils"
-import { sentryCaptureException } from "../common/utils/sentryUtils"
-import config from "../config"
-import { validateCaller } from "../service/queryValidators"
-
-import { BrevoEventStatus } from "./brevo.service"
+import { logger } from "../common/logger.js"
+import { Application, EmailBlacklist, LbaCompany } from "../common/model/index.js"
+import { IApplication } from "../common/model/schema/application/applications.types.js"
+import { IJobs } from "../common/model/schema/jobs/jobs.types.js"
+import { ILbaCompany } from "../common/model/schema/lbaCompany/lbaCompany.types.js"
+import { decryptWithIV, encryptIdWithIV } from "../common/utils/encryptString.js"
+import { manageApiError } from "../common/utils/errorManager.js"
+import { prepareMessageForMail } from "../common/utils/fileUtils.js"
+import { sentryCaptureException } from "../common/utils/sentryUtils.js"
+import config from "../config.js"
+import { BrevoEventStatus } from "./brevo.service.js"
 import { scan } from "./clamav.service"
 import { JOB_STATUS, RECRUITER_STATUS } from "./constant.service"
 import { getOffreAvecInfoMandataire } from "./formulaire.service"
-import mailer from "./mailer.service"
+import mailer from "./mailer.service.js"
+import { validateCaller } from "./queryValidator.service.js"
 
 const publicUrl = config.publicUrl
 const publicUrlEspacePro = config.publicUrlEspacePro
@@ -100,10 +97,10 @@ const findApplicationByTypeAndMessageId = async ({ messageId, type, email }: { m
  * @param {string} email
  * @return {Promise<void>}
  */
-export const removeEmailFromBonnesBoites = async (email: string) => {
+export const removeEmailFromLbaCompanies = async (email: string) => {
   try {
     oleoduc(
-      BonnesBoites.find({ email }).cursor(),
+      LbaCompany.find({ email }).cursor(),
       writeData((company) => {
         company.email = ""
         company.save()
@@ -467,7 +464,7 @@ export const validateCompany = async (validable: Partial<IApplicationParameters>
   const { company_siret, company_type } = validable
 
   if (company_type === "lba") {
-    const lbaCompany = await BonnesBoites.findOne({ siret: company_siret })
+    const lbaCompany = await LbaCompany.findOne({ siret: company_siret })
     if (!lbaCompany) {
       return "société désinscrite"
     } else if (lbaCompany.email?.toLowerCase() !== company_email.toLowerCase()) {
@@ -685,7 +682,7 @@ export const updateApplicationStatus = async ({ payload }: { payload: any }): Pr
     await addEmailToBlacklist(payload.email, application.job_origin)
 
     if (application.job_origin === "lbb" || application.job_origin === "lba") {
-      await removeEmailFromBonnesBoites(payload.email)
+      await removeEmailFromLbaCompanies(payload.email)
     } else if (application.job_origin === "matcha") {
       await warnMatchaTeamAboutBouncedEmail({ application })
     }
@@ -752,10 +749,10 @@ export const getApplicationByJobCount = async (job_ids: IJobs["_id"][]): Promise
 
 /**
  * @description retourne le nombre de candidatures enregistrées par siret de société fournis
- * @param {IBonneBoite["siret"][]} sirets
+ * @param {ILbaCompany["siret"][]} sirets
  * @returns {Promise<IApplicationCount[]>} token data
  */
-export const getApplicationByCompanyCount = async (sirets: IBonneBoite["siret"][]): Promise<IApplicationCount[]> => {
+export const getApplicationByCompanyCount = async (sirets: ILbaCompany["siret"][]): Promise<IApplicationCount[]> => {
   const applicationCountByCompany: IApplicationCount[] = await Application.aggregate([
     {
       $match: {

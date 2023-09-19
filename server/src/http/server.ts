@@ -1,43 +1,37 @@
 // @ts-nocheck
-import { readFileSync } from "fs"
-
-import { CaptureConsole, ExtraErrorData } from "@sentry/integrations"
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import Sentry from "@sentry/node"
 import Boom from "boom"
 import express from "express"
+import { readFileSync } from "fs"
 import swaggerDoc from "swagger-jsdoc"
 import swaggerUi from "swagger-ui-express"
-
-import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
-
-import __dirname from "../common/dirname"
+import "../auth/passport-strategy"
 import { logger } from "../common/logger"
 import config from "../config"
 import { RegisterRoutes } from "../generated/routes"
 import { initBrevoWebhooks } from "../services/brevo.service"
-
+import { ROLES } from "../services/constant.service"
 import rome from "./controllers/metiers/rome.controller"
+import authMiddleware from "./middlewares/authMiddleware"
 import { corsMiddleware } from "./middlewares/corsMiddleware"
 import { errorMiddleware } from "./middlewares/errorMiddleware"
 import { logMiddleware } from "./middlewares/logMiddleware"
+import permissionsMiddleware from "./middlewares/permissionsMiddleware"
 import { tryCatch } from "./middlewares/tryCatchMiddleware"
-import admin from "./routes/admin/admin.controller"
-import appointmentRoute from "./routes/admin/appointment.controller"
+import adminAppointmentRoute from "./routes/admin/appointment.controller"
+import eligibleTrainingsForAppointmentRoute from "./routes/admin/eligibleTrainingsForAppointment.controller"
 import adminEtablissementRoute from "./routes/admin/etablissement.controller"
-import eligibleTrainingsForAppointmentRoute from "./routes/admin/widgetParameter.controller"
+import formationsRoute from "./routes/admin/formations.controller"
 import appointmentRequestRoute from "./routes/appointmentRequest.controller"
 import emailsRoute from "./routes/auth/emails.controller"
 import login from "./routes/auth/login.controller"
 import password from "./routes/auth/password.controller"
 import campaignWebhook from "./routes/campaignWebhook.controller"
-import catalogueRoute from "./routes/catalogue.controller"
 import constantsRoute from "./routes/constants.controller"
 import etablissementRoute from "./routes/etablissement.controller"
 import etablissementsRecruteurRoute from "./routes/etablissementRecruteur.controller"
-import formationRegionV1 from "./routes/formationRegionV1.controller"
-import formationV1 from "./routes/formationV1.controller"
 import formulaireRoute from "./routes/formulaire.controller"
-import jobEtFormationV1 from "./routes/jobEtFormationV1.controller"
 import optoutRoute from "./routes/optout.controller"
 import partnersRoute from "./routes/partners.controller"
 import sendApplication from "./routes/sendApplication.controller"
@@ -45,18 +39,21 @@ import sendApplicationAPI from "./routes/sendApplicationAPI.controller"
 import sendMail from "./routes/sendMail.controller"
 import supportRoute from "./routes/support.controller"
 import trainingLinks from "./routes/trainingLinks.controller"
-import unsubscribeBonneBoite from "./routes/unsubscribeBonneBoite.controller"
-import updateLBB from "./routes/updateLBB.controller"
+import unsubscribeLbaCompany from "./routes/unsubscribeLbaCompany.controller"
+import updateLbaCompany from "./routes/updateLbaCompany.controller"
 import userRoute from "./routes/user.controller"
 import version from "./routes/version.controller"
+import { initSentry } from "./sentry"
 import { limiter10PerSecond, limiter1Per20Second, limiter20PerSecond, limiter3PerSecond, limiter5PerSecond, limiter7PerSecond } from "./utils/rateLimiters"
-
-import "../auth/passport-strategy"
 
 /**
  * LBA-Candidat Swagger file
  */
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 const deprecatedSwaggerDocument = JSON.parse(readFileSync(getStaticFilePath("./api-docs/swagger.json")))
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 const swaggerDocument = JSON.parse(readFileSync(getStaticFilePath("./generated/swagger.json")))
 
 /**
@@ -108,38 +105,15 @@ const swaggerUIOptions = {
 export default async (components) => {
   const app = express()
 
-  Sentry.init({
-    dsn: config.serverSentryDsn,
-    tracesSampleRate: 0.1,
-    tracePropagationTargets: [/\.apprentissage\.beta\.gouv\.fr$/],
-    environment: config.env,
-    enabled: config.env === "production",
-    integrations: [
-      // enable HTTP calls tracing
-      new Sentry.Integrations.Http({ tracing: true }),
-      // enable Mongoose query tracing
-      new Sentry.Integrations.Mongo({ useMongoose: true }),
-      // enable Express.js middleware tracing
-      new Sentry.Integrations.Express({ app }),
-      // enable capture all console api errors
-      new CaptureConsole({ levels: ["error"] }),
-      // add all extra error data into the event
-      new ExtraErrorData({ depth: 8 }),
-    ],
-  })
+  const checkJwtTokenRdvAdmin = authMiddleware("jwt-rdv-admin")
+  const administratorOnly = permissionsMiddleware(ROLES.administrator)
+
+  initSentry(app)
 
   app.set("trust proxy", 1)
 
-  // RequestHandler creates a separate execution context using domains, so that every
-  // transaction/span/breadcrumb is attached to its own Hub instance
-  app.use(Sentry.Handlers.requestHandler())
-  // TracingHandler creates a trace for every incoming request
-  app.use(Sentry.Handlers.tracingHandler())
-
   app.use(express.json({ limit: "5mb" }))
-
   app.use(corsMiddleware())
-
   app.use(logMiddleware())
 
   app.get(
@@ -208,6 +182,9 @@ export default async (components) => {
    */
   app.use("/api/v1/metiers", limiter20PerSecond)
   app.use("/api/v1/jobs", limiter5PerSecond)
+  app.use("/api/v1/formations", limiter7PerSecond)
+  app.use("/api/v1/formationsParRegion", limiter5PerSecond)
+  app.use("/api/v1/jobsEtFormations", limiter5PerSecond)
   //app.use("/api/romelabels", limiter10PerSecond)
 
   RegisterRoutes(app)
@@ -216,46 +193,42 @@ export default async (components) => {
    * LBACandidat
    */
   app.use("/api/version", limiter3PerSecond, version())
-  app.use("/api/v1/formations", limiter7PerSecond, formationV1())
   app.use("/api/romelabels", limiter10PerSecond, rome())
-  app.use("/api/v1/formationsParRegion", limiter5PerSecond, formationRegionV1())
-  app.use("/api/v1/jobsEtFormations", limiter5PerSecond, jobEtFormationV1())
-  app.use("/api/updateLBB", limiter1Per20Second, updateLBB())
-  app.use("/api/mail", limiter1Per20Second, sendMail(components))
-  app.use("/api/campaign/webhook", campaignWebhook(components))
+  app.use("/api/updateLBB", limiter1Per20Second, updateLbaCompany())
+  app.use("/api/mail", limiter1Per20Second, sendMail())
+  app.use("/api/campaign/webhook", campaignWebhook())
   app.use("/api/application", sendApplication(components))
   app.use("/api/V1/application", limiter5PerSecond, sendApplicationAPI(components))
-  app.use("/api/unsubscribe", unsubscribeBonneBoite(components))
+  app.use("/api/unsubscribe", unsubscribeLbaCompany())
 
   /**
    * Admin / Auth
    */
-  app.use("/api/login", login(components))
-  app.use("/api/password", password(components))
-  app.use("/api/admin", admin())
+  app.use("/api/login", login())
+  app.use("/api/password", password())
 
   /**
    * LBA-Organisme de formation
    */
-  app.use("/api/appointment", appointmentRoute(components))
-  app.use("/api/admin/etablissements", adminEtablissementRoute(components))
-  app.use("/api/etablissements", etablissementRoute(components))
-  app.use("/api/appointment-request", appointmentRequestRoute(components))
-  app.use("/api/catalogue", catalogueRoute())
+  app.use("/api/admin/appointments", checkJwtTokenRdvAdmin, administratorOnly, adminAppointmentRoute())
+  app.use("/api/admin/etablissements", checkJwtTokenRdvAdmin, administratorOnly, adminEtablissementRoute())
+  app.use("/api/admin/formations", checkJwtTokenRdvAdmin, administratorOnly, formationsRoute())
+  app.use("/api/admin/eligible-trainings-for-appointment", checkJwtTokenRdvAdmin, administratorOnly, eligibleTrainingsForAppointmentRoute())
+  app.use("/api/etablissements", etablissementRoute())
+  app.use("/api/appointment-request", appointmentRequestRoute())
   app.use("/api/constants", constantsRoute())
-  app.use("/api/widget-parameters", eligibleTrainingsForAppointmentRoute(components))
-  app.use("/api/partners", partnersRoute(components))
-  app.use("/api/emails", emailsRoute(components))
+  app.use("/api/partners", partnersRoute())
+  app.use("/api/emails", emailsRoute())
   app.use("/api/support", supportRoute())
 
   /**
    * LBA-Recruteur
    */
-  app.use("/api/user", userRoute(components))
-  app.use("/api/formulaire", formulaireRoute(components))
+  app.use("/api/user", userRoute())
+  app.use("/api/formulaire", formulaireRoute())
   app.use("/api/rome", rome())
   app.use("/api/optout", optoutRoute())
-  app.use("/api/etablissement", etablissementsRecruteurRoute(components))
+  app.use("/api/etablissement", etablissementsRecruteurRoute())
 
   /**
    * Tools

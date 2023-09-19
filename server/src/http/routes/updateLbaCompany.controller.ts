@@ -1,10 +1,9 @@
 // @ts-nocheck
 import express from "express"
 import Joi from "joi"
-
 import config from "../../config"
-import { updateContactInfo } from "../../services/company.service"
 import { REGEX } from "../../services/constant.service"
+import { updateContactInfo } from "../../services/lbacompany.service"
 import { tryCatch } from "../middlewares/tryCatchMiddleware"
 
 export default function () {

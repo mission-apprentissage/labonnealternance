@@ -6,7 +6,7 @@ import TagCandidatureSpontanee from "./TagCandidatureSpontanee"
 
 const DidYouKnow = () => {
   return (
-    <Box position="relative" background="white" padding={["1px 12px 50px 12px", "1px 24px 50px 24px", "1px 12px 24px 12px"]} mx={["0", "30px"]} mb={8} mt={6}>
+    <Box position="relative" background="white" padding="16px 24px" mx={["0", "30px"]} mb={8} mt={6}>
       <Text mt={2} as="h2" variant="itemDetailH2">
         Le saviez-vous ?
       </Text>
@@ -20,7 +20,7 @@ const DidYouKnow = () => {
       <Text pb={4}>
         <Text>Un employeur vous a proposé un entretien ?</Text>
         <Text>
-          <Link isExternal href="https://dinum-beta.didask.com/courses/demonstration/60d1adbb877dae00003f0eac" variant="basicUnderlined">
+          <Link isExternal href="https://dinum.didask.com/courses/demonstration/60d1adbb877dae00003f0eac" variant="basicUnderlined">
             On vous donne des conseils pour vous aider à le préparer. <ExternalLinkIcon mb="3px" ml="2px" />
           </Link>
         </Text>

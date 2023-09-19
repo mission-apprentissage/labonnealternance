@@ -10,7 +10,7 @@ const LocationDetail = ({ item, isCfa }) => {
   const kind = item?.ideaType
 
   const getGoogleSearchParameters = () => {
-    return encodeURIComponent(`${item.company.name} ${item.place.address}`)
+    return encodeURIComponent(`${item.company.name} ${item.place.city || item.place.address}`)
   }
 
   let companySize = item?.company?.size?.toLowerCase()
@@ -52,7 +52,7 @@ const LocationDetail = ({ item, isCfa }) => {
   return (
     <>
       {kind === "matcha" && item?.company?.mandataire && (
-        <Box pb="0px" mt={6} position="relative" background="white" padding={["1px 12px 50px 12px", "1px 24px 50px 24px", "1px 12px 24px 12px"]} mx={["0", "30px"]}>
+        <Box pb="0px" mt={6} position="relative" background="white" padding="16px 24px" mx={["0", "30px"]}>
           <Text as="h2" variant="itemDetailH2" mt={2}>
             {getTitle({})}
           </Text>
@@ -80,7 +80,7 @@ const LocationDetail = ({ item, isCfa }) => {
         </Box>
       )}
 
-      <Box pb="0px" mt={6} position="relative" background="white" padding={["1px 12px 50px 12px", "1px 24px 50px 24px", "1px 12px 24px 12px"]} mx={["0", "30px"]}>
+      <Box pb="0px" mt={6} position="relative" background="white" padding="16px 24px" mx={["0", "30px"]}>
         <Text as="h2" variant="itemDetailH2" mt={2}>
           {getTitle(item)}
         </Text>
@@ -175,7 +175,7 @@ const LocationDetail = ({ item, isCfa }) => {
               <Link
                 isExternal
                 variant="basicUnderlined"
-                href="https://dinum-beta.didask.com/courses/demonstration/60abc18c075edf000065c987"
+                href="https://dinum.didask.com/courses/demonstration/60abc18c075edf000065c987"
                 aria-label="Lien vers des conseils pour préparer son premier contact avec un CFA"
               >
                 Préparez votre premier contact avec un CFA&nbsp;

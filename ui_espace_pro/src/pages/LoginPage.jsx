@@ -1,12 +1,12 @@
-import * as Yup from "yup"
-import { Formik, Field, Form } from "formik"
+import { Box, Button, Container, Flex, Heading, Input, Text } from "@chakra-ui/react"
+import { Field, Form, Formik } from "formik"
+import React from "react"
 import { useNavigate } from "react-router-dom"
-import { Box, Container, Input, Button, Link, Text, Flex, Heading } from "@chakra-ui/react"
+import * as Yup from "yup"
+import { Breadcrumb } from "../common/components/Breadcrumb"
+import Layout from "../common/components/Layout"
 import useAuth from "../common/hooks/useAuth"
 import { _post } from "../common/httpClient"
-import { Breadcrumb } from "../common/components/Breadcrumb"
-import React from "react"
-import Layout from "../common/components/Layout"
 import { setTitle } from "../common/utils/pageUtils"
 
 const LoginPage = () => {
@@ -89,10 +89,6 @@ const LoginPage = () => {
                         <Button variant="primary" type={"submit"} fontSize="12px" fontWeight="700">
                           Connexion
                         </Button>
-
-                        <Link href="/forgotten-password" color="info" mt={1}>
-                          Mot de passe oublié
-                        </Link>
                       </Flex>
                       <Box mb={5}>{status.error && <Text color="#cd201f">{status.error}</Text>}</Box>
                     </Form>

@@ -7,6 +7,7 @@ import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 import { mailType } from "../../common/model/constants/etablissement"
 import { referrers } from "../../common/model/constants/referrers"
+import { Etablissement } from "../../common/model/index"
 import config from "../../config"
 import * as appointmentService from "../../services/appointment.service"
 import dayjs from "../../services/dayjs.service"
@@ -25,7 +26,7 @@ const patchEtablissementIdAppointmentIdReadAppointSchema = Joi.object({
 /**
  * @description Etablissement Router.
  */
-export default ({ etablissements }) => {
+export default () => {
   const router = express.Router()
 
   /**
@@ -34,7 +35,7 @@ export default ({ etablissements }) => {
   router.get(
     "/:id",
     tryCatch(async (req, res) => {
-      const etablissement = await etablissements.findById(req.params.id)
+      const etablissement = await Etablissement.findById(req.params.id)
 
       if (!etablissement) {
         return res.sendStatus(404)
@@ -50,7 +51,7 @@ export default ({ etablissements }) => {
   router.post(
     "/:id/premium/affelnet/accept",
     tryCatch(async (req, res) => {
-      const etablissement = await etablissements.findById(req.params.id)
+      const etablissement = await Etablissement.findById(req.params.id)
 
       if (!etablissement) {
         throw Boom.badRequest("Etablissement not found.")
@@ -86,7 +87,7 @@ export default ({ etablissements }) => {
         eligibleTrainingsForAppointmentService.find({
           etablissement_formateur_siret: etablissement.formateur_siret,
         }),
-        etablissements.findOneAndUpdate(
+        Etablissement.findOneAndUpdate(
           { _id: etablissement._id },
           {
             $push: {
@@ -128,7 +129,7 @@ export default ({ etablissements }) => {
                 formateur_city: etablissement.formateur_city,
                 siret: etablissement.formateur_siret,
                 email: etablissement.gestionnaire_email,
-                premiumActivatedDate: dayjs(etablissementAffelnetUpdated.premium_affelnet_activation_date).format("DD/MM"),
+                premiumActivatedDate: dayjs(etablissementAffelnetUpdated?.premium_affelnet_activation_date).format("DD/MM"),
                 emailGestionnaire: etablissement.gestionnaire_email,
               },
               user: {
@@ -140,7 +141,7 @@ export default ({ etablissements }) => {
       )
 
       const [resultAffelnet] = await Promise.all([
-        etablissements.findById(req.params.id),
+        Etablissement.findById(req.params.id),
         ...eligibleTrainingsForAppointmentsAffelnetFound.map((eligibleTrainingsForAppointment) =>
           eligibleTrainingsForAppointmentService.update(
             { _id: eligibleTrainingsForAppointment._id, lieu_formation_email: { $nin: [null, ""] } },
@@ -161,7 +162,7 @@ export default ({ etablissements }) => {
   router.post(
     "/:id/premium/accept",
     tryCatch(async (req, res) => {
-      const etablissement = await etablissements.findById(req.params.id)
+      const etablissement = await Etablissement.findById(req.params.id)
 
       if (!etablissement) {
         throw Boom.badRequest("Etablissement not found.")
@@ -200,7 +201,7 @@ export default ({ etablissements }) => {
             $ne: null,
           },
         }),
-        etablissements.findOneAndUpdate(
+        Etablissement.findOneAndUpdate(
           { _id: etablissement._id },
           {
             $push: {
@@ -242,7 +243,7 @@ export default ({ etablissements }) => {
                 formateur_city: etablissement.formateur_city,
                 siret: etablissement.formateur_siret,
                 email: etablissement.gestionnaire_email,
-                premiumActivatedDate: dayjs(etablissementParcoursupUpdated.premium_activation_date).format("DD/MM"),
+                premiumActivatedDate: dayjs(etablissementParcoursupUpdated?.premium_activation_date).format("DD/MM"),
                 emailGestionnaire: etablissement.gestionnaire_email,
               },
               user: {
@@ -254,7 +255,7 @@ export default ({ etablissements }) => {
       )
 
       const [result] = await Promise.all([
-        etablissements.findById(req.params.id),
+        Etablissement.findById(req.params.id),
         ...eligibleTrainingsForAppointmentsParcoursupFound.map((eligibleTrainingsForAppointment) =>
           eligibleTrainingsForAppointmentService.update(
             { _id: eligibleTrainingsForAppointment._id, lieu_formation_email: { $nin: [null, ""] } },
@@ -275,7 +276,7 @@ export default ({ etablissements }) => {
   router.post(
     "/:id/premium/affelnet/refuse",
     tryCatch(async (req, res) => {
-      const etablissement = await etablissements.findById(req.params.id)
+      const etablissement = await Etablissement.findById(req.params.id)
 
       if (!etablissement) {
         throw Boom.badRequest("Etablissement not found.")
@@ -312,7 +313,7 @@ export default ({ etablissements }) => {
         },
       })
 
-      await etablissements.findOneAndUpdate(
+      await Etablissement.findOneAndUpdate(
         { _id: etablissement._id },
         {
           $push: {
@@ -327,7 +328,7 @@ export default ({ etablissements }) => {
         }
       )
 
-      const etablissementAffelnetUpdated = await etablissements.findById(req.params.id)
+      const etablissementAffelnetUpdated = await Etablissement.findById(req.params.id)
 
       return res.send(etablissementAffelnetUpdated)
     })
@@ -339,7 +340,7 @@ export default ({ etablissements }) => {
   router.post(
     "/:id/premium/refuse",
     tryCatch(async (req, res) => {
-      const etablissement = await etablissements.findById(req.params.id)
+      const etablissement = await Etablissement.findById(req.params.id)
 
       if (!etablissement) {
         throw Boom.badRequest("Etablissement not found.")
@@ -376,7 +377,7 @@ export default ({ etablissements }) => {
         },
       })
 
-      await etablissements.findOneAndUpdate(
+      await Etablissement.findOneAndUpdate(
         { _id: etablissement._id },
         {
           $push: {
@@ -391,7 +392,7 @@ export default ({ etablissements }) => {
         }
       )
 
-      const etablissementParcoursupUpdated = await etablissements.findById(req.params.id)
+      const etablissementParcoursupUpdated = await Etablissement.findById(req.params.id)
 
       return res.send(etablissementParcoursupUpdated)
     })
@@ -410,7 +411,7 @@ export default ({ etablissements }) => {
       const { id, appointmentId } = params
 
       // eslint-disable-next-line prefer-const
-      let [etablissement, appointment] = await Promise.all([etablissements.findById(id), appointmentService.findById(appointmentId)])
+      let [etablissement, appointment] = await Promise.all([Etablissement.findById(id), appointmentService.findById(appointmentId)])
 
       if (!etablissement) {
         throw Boom.badRequest("Etablissement not found.")
@@ -439,7 +440,7 @@ export default ({ etablissements }) => {
     tryCatch(async (req, res) => {
       const { opt_out_question } = await optOutUnsubscribeSchema.validateAsync(req.body, { abortEarly: false })
 
-      let etablissement = await etablissements.findById(req.params.id)
+      let etablissement = await Etablissement.findById(req.params.id)
 
       if (!etablissement) {
         return res.sendStatus(404)
@@ -450,7 +451,7 @@ export default ({ etablissements }) => {
       }
 
       if (opt_out_question) {
-        etablissement = await etablissements.findById(req.params.id)
+        etablissement = await Etablissement.findById(req.params.id)
 
         await mailer.sendEmail({
           to: config.publicEmail,
@@ -462,14 +463,14 @@ export default ({ etablissements }) => {
               logoFooter: `${config.publicUrlEspacePro}/assets/logo-republique-francaise.png?raw=true`,
             },
             etablissement: {
-              name: etablissement.raison_sociale,
-              formateur_address: etablissement.formateur_address,
-              formateur_zip_code: etablissement.formateur_zip_code,
-              formateur_city: etablissement.formateur_city,
+              name: etablissement?.raison_sociale,
+              formateur_address: etablissement?.formateur_address,
+              formateur_zip_code: etablissement?.formateur_zip_code,
+              formateur_city: etablissement?.formateur_city,
               opt_out_question,
             },
             user: {
-              destinataireEmail: etablissement.gestionnaire_email,
+              destinataireEmail: etablissement?.gestionnaire_email,
             },
           },
           from: config.transactionalEmail,
@@ -491,7 +492,7 @@ export default ({ etablissements }) => {
         )
       }
 
-      await etablissements.findByIdAndUpdate(req.params.id, {
+      await Etablissement.findByIdAndUpdate(req.params.id, {
         optout_refusal_date: dayjs().toDate(),
       })
 
@@ -517,7 +518,7 @@ export default ({ etablissements }) => {
         },
       })
 
-      await etablissements.findOneAndUpdate(
+      await Etablissement.findOneAndUpdate(
         { _id: etablissement._id },
         {
           $push: {
@@ -531,7 +532,7 @@ export default ({ etablissements }) => {
         }
       )
 
-      etablissement = await etablissements.findById(req.params.id)
+      etablissement = await Etablissement.findById(req.params.id)
 
       return res.send(etablissement)
     })

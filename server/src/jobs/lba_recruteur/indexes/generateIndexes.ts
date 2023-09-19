@@ -1,10 +1,10 @@
 import { logger } from "../../../common/logger"
-import { BonnesBoites, DiplomesMetiers, DomainesMetiers, FormationCatalogue, Recruiter } from "../../../common/model/index"
+import { DiplomesMetiers, DomainesMetiers, FormationCatalogue, LbaCompany, Recruiter } from "../../../common/model/index"
 import { rebuildIndex } from "../../../common/utils/esUtils"
 
 export const generateIndexes = async (payload) => {
   const indexList = payload?.index_list ?? "recruiters,formationcatalogues,bonnesboites,diplomesmetiers,domainesmetiers"
-  const recreate = payload?.recreate ?? false;
+  const recreate = payload?.recreate ?? false
   const list = indexList.split(",")
 
   await Promise.all(
@@ -20,9 +20,9 @@ export const generateIndexes = async (payload) => {
           await rebuildIndex(DiplomesMetiers, { skipNotFound: true, recreate })
           break
         }
-        case "bonnesboites": {
-          await BonnesBoites.syncIndexes()
-          await rebuildIndex(BonnesBoites, { skipNotFound: true, recreate })
+        case "lbacompanies": {
+          await LbaCompany.syncIndexes()
+          await rebuildIndex(LbaCompany, { skipNotFound: true, recreate })
           break
         }
         case "formationcatalogues": {
@@ -36,7 +36,7 @@ export const generateIndexes = async (payload) => {
           break
         }
         default: {
-          logger.error(`Attention l'index "${index}" ne fait pas partie de la liste elligible`)
+          logger.error(`Attention l'index "${index}" ne fait pas partie de la liste elligible : recruiters,formationcatalogues,lbacompanies,diplomesmetiers,domainesmetiers`)
           break
         }
       }

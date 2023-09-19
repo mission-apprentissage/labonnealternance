@@ -1,19 +1,18 @@
 import express from "express"
-
-import { getCatalogueFormations } from "../../services/catalogue.service"
-import { tryCatch } from "../middlewares/tryCatchMiddleware"
+import { getCatalogueFormations } from "../../../services/catalogue.service"
+import { tryCatch } from "../../middlewares/tryCatchMiddleware"
 
 /**
- * @description Catalogue router.
+ * @description Formations router.
  */
 export default () => {
   const router = express.Router()
 
   /**
-   * @description Proxify catalogue's requests.
+   * @description Get in formation collection.
    */
   router.get(
-    "/formations",
+    "/",
     tryCatch(async (req, res) => {
       const qs = req.query
       const query = qs && qs.query ? JSON.parse(qs.query) : {}

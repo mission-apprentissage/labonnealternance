@@ -128,17 +128,17 @@ export interface ILbaItemNaf {
   label: string | null // lbb/lba -> naf_label | matcha -> libelle_naf | pe -> secteurActiviteLibelle
 }
 
+export interface ILbaItemTrainingSession {
+  startTime: string
+  endTime: string
+  isPermanentEntry: string
+}
+
 export interface ILbaItemTraining {
   // alimentation partielle côté client à l'ouverture d'une formation
   description: string | null
   objectif: string | null
   sessions: ILbaItemTrainingSession[]
-}
-
-export interface ILbaItemTrainingSession {
-  startTime: string | null
-  endTime: string | null
-  isPermanentEntry: string | null
 }
 
 export class LbaItem implements ILbaItem {

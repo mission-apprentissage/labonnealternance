@@ -1,6 +1,6 @@
 import express from "express"
 
-import { addEmailToBlacklist, removeEmailFromBonnesBoites } from "../../services/application.service"
+import { addEmailToBlacklist, removeEmailFromLbaCompanies } from "../../services/application.service"
 import { BrevoEventStatus } from "../../services/brevo.service"
 import { tryCatch } from "../middlewares/tryCatchMiddleware"
 
@@ -18,7 +18,7 @@ export default function () {
       }*/
       if (req.body.event === BrevoEventStatus.HARD_BOUNCE) {
         addEmailToBlacklist(req.body.email, "campaign")
-        removeEmailFromBonnesBoites(req.body.email)
+        removeEmailFromLbaCompanies(req.body.email)
       }
 
       return res.json({ result: "ok" })

@@ -1,4 +1,4 @@
-interface IBonneBoite {
+interface ILbaCompany {
   siret: string
   recruitment_potential: number
   raison_sociale: string
@@ -22,6 +22,7 @@ interface IBonneBoite {
   opco_url: string
   created_at: Date
   last_update_at: Date
+  distance?: [number]
 }
 
-export type { IBonneBoite }
+export type { ILbaCompany }

@@ -1,17 +1,14 @@
-import fs from "fs"
-import path from "path"
-
 import axios from "axios"
 import FormData from "form-data"
+import fs from "fs"
 import fsExtra from "fs-extra"
 import { oleoduc, readLineByLine, transformData, writeData } from "oleoduc"
-
+import path from "path"
 import __dirname from "../../common/dirname"
 import { GeoLocation } from "../../common/model/index"
 import { logMessage } from "../../common/utils/logMessage"
 import { notifyToSlack } from "../../common/utils/slackUtils"
-
-import { checkIfAlgoFileIsNew, downloadAlgoCompanyFile, readCompaniesFromJson, removePredictionFile } from "./bonnesBoitesUtils"
+import { checkIfAlgoFileIsNew, downloadAlgoCompanyFile, readCompaniesFromJson, removePredictionFile } from "./lbaCompaniesUtils"
 
 const currentDirname = __dirname(import.meta.url)
 

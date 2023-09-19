@@ -1,8 +1,7 @@
 // @ts-nocheck
 import SibApiV3Sdk from "sib-api-v3-sdk"
-
 import { logger } from "../../common/logger"
-import { BonnesBoites, EmailBlacklist } from "../../common/model/index"
+import { EmailBlacklist, LbaCompany } from "../../common/model/index.js"
 import { sentryCaptureException } from "../../common/utils/sentryUtils"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 import config from "../../config"
@@ -12,7 +11,7 @@ const saveBlacklistEmails = async (contacts) => {
     const email = contacts[i].email
     let blackListedEmail = await EmailBlacklist.findOne({ email })
     if (!blackListedEmail) {
-      const companies = await BonnesBoites.find({ email })
+      const companies = await LbaCompany.find({ email })
       await cleanCompanies(companies)
 
       blackListedEmail = new EmailBlacklist({

@@ -1,5 +1,12 @@
 import Boom from "boom"
 
+export type ReferrerObject = {
+  code: number
+  name: string
+  full_name: string
+  url: string
+}
+
 // Referrer configurations
 const referrers = {
   PARCOURSUP: {
@@ -40,18 +47,21 @@ const referrers = {
   },
 }
 
+function isReferrer(name: string): name is keyof typeof referrers {
+  return Object.keys(referrers).includes(name)
+}
+
 /**
  * @description Returns referrer from it's key.
- * @param {string} keyName
+ * @param {string} name
  * @returns {{code: {Number}, name: {String}, fullName: {String}, url: {String}}}
  */
-function getReferrerByKeyName(keyName) {
-  const referrerFound = referrers[keyName.toUpperCase()]
-
-  if (!referrerFound) {
+function getReferrerByKeyName(name: string): ReferrerObject {
+  const upperName = name.toUpperCase()
+  if (!isReferrer(upperName)) {
     throw Boom.badRequest("Referrer introuvable.")
   }
-
+  const referrerFound = referrers[upperName]
   return referrerFound
 }
 
@@ -70,4 +80,4 @@ function getReferrerById(id) {
   return referrer
 }
 
-export { referrers, getReferrerByKeyName, getReferrerById }
+export { getReferrerById, getReferrerByKeyName, referrers }
