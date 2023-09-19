@@ -21,7 +21,7 @@ const SuccesDesinscription = () => (
           En complément, permettez-nous de vous expliquer notre fonctionnement.
         </Text>
         <Text>
-          La bonne alternance est un service public, porté par différents ministères (Emploi, Education Nationale, Transition numérique) ainsi que Pôle emploi. Notre rôle est de
+          La bonne alternance est un service public, porté par différents ministères (Emploi, Education Nationale, Transition numérique). Notre rôle est de
           faciliter les entrées en alternance
           <br />
           <br />
@@ -52,7 +52,7 @@ const SuccesDesinscription = () => (
             </Link>
           </ListItem>
           <ListItem mb="3">
-            Celles n'ayant pas diffusé d'offres, mais ayant été identifiées comme "à fort potentiel d'embauche en alternance" par un algorithme prédictif de Pôle emploi.
+            Celles n'ayant pas diffusé d'offres, mais ayant été identifiées comme "à fort potentiel d'embauche en alternance" grâce à l'analyse de diverses données publiques.
           </ListItem>
         </UnorderedList>
         <Text mt={4} fontWeight={700}>
