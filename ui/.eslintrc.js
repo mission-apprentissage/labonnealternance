@@ -4,4 +4,9 @@ module.exports = {
     "react/no-unescaped-entities": 0,
     "react-hooks/exhaustive-deps": 0,
   },
+  settings: {
+    next: {
+      rootDir: "ui",
+    },
+  },
 }

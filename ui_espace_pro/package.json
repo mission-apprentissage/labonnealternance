@@ -12,19 +12,14 @@
     "dev": "react-scripts start",
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "lint": "eslint src/",
-    "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
   "dependencies": {
     "@chakra-ui/icons": "^1.1.1",
     "@chakra-ui/react": "^1.6.3",
-    "@chakra-ui/theme": "^1.12.2",
     "@emotion/react": "^11",
     "@emotion/styled": "^11",
     "axios": "^0.21.1",
-    "chakra-ui-markdown-renderer": "^4.0.0",
-    "chakra-ui-steps-rework-mna": "^1.5.0-beta.5",
     "dayjs": "^1.10.7",
     "downshift": "^6.1.0",
     "email-validator": "^2.0.4",
@@ -40,20 +35,13 @@
     "react-dates": "^21.8.0",
     "react-dom": "^17.0.1",
     "react-dropzone": "^11.3.4",
-    "react-gtm-module": "^2.0.11",
     "react-helmet": "^6.1.0",
     "react-hooks-global-state": "^1.0.1",
     "react-icons": "^4.2.0",
-    "react-notion-x": "^4.12.0",
-    "react-papaparse": "^3.17.1",
     "react-query": "^3.34.19",
-    "react-router": "^5.2.1",
     "react-router-dom": "^6.2.1",
     "react-scripts": "5.0.1",
     "react-table": "^7.7.0",
-    "react-virtualized-auto-sizer": "^1.0.6",
-    "react-window": "^1.8.6",
-    "styled-components": "^5.3.5",
     "yup": "^0.32.9"
   },
   "private": true,
@@ -74,25 +62,7 @@
     ]
   },
   "devDependencies": {
-    "eslint": "^7.22.0",
-    "eslint-config-airbnb": "^18.2.0",
-    "eslint-config-prettier": "^8.1.0",
-    "eslint-config-react-app": "^7.0.1",
-    "eslint-plugin-import": "^2.22.0",
-    "eslint-plugin-jsx-a11y": "^6.3.1",
-    "eslint-plugin-prettier": "^3.3.1",
-    "eslint-plugin-react": "^7.20.6",
-    "eslint-plugin-react-hooks": "^4.1.0",
-    "eslint-webpack-plugin": "^3.0.1",
-    "local-web-server": "^4.2.1",
-    "prettier": "^2.2.1",
     "prop-types": "^15.8.1",
     "source-map-explorer": "^2.5.2"
-  },
-  "prettier": {
-    "semi": false,
-    "tabWidth": 2,
-    "printWidth": 180,
-    "bracketSpacing": true
   }
 }

@@ -5,24 +5,18 @@ module.exports = {
   },
   extends: [
     "eslint:recommended",
-    "plugin:@typescript-eslint/recommended",
     "plugin:import/recommended",
-    "plugin:import/typescript",
+    "plugin:import/recommended",
     "plugin:@eslint-community/eslint-comments/recommended",    
-    // "plugin:cypress/recommended",
     "prettier",
   ],
-  parser: "@typescript-eslint/parser",
   parserOptions: {
     ecmaVersion: 2022,
     sourceType: "module",
   },
-  plugins: ["@typescript-eslint", "simple-import-sort", "import"],
+  plugins: [ "simple-import-sort", "import"],
   rules: {
-    "@typescript-eslint/no-explicit-any": 0,
-    "@typescript-eslint/ban-ts-comment": 0,
-    "@typescript-eslint/no-empty-function": 0,
-    "@typescript-eslint/no-unused-vars": [
+    "no-unused-vars": [
       "error",
       {
         argsIgnorePattern: "^_",
@@ -32,8 +26,6 @@ module.exports = {
         ignoreRestSiblings: true,
       },
     ],
-    "no-unused-vars": 0, // duplicated with @typescript-eslint/no-unused-vars
-    "node/no-missing-import": 0, // duplicated with import/no-unresolved
 
     // imports
     "import/extensions": [
@@ -93,6 +85,34 @@ module.exports = {
       },
     ],
   },
+  overrides: [
+    {
+      parser: "@typescript-eslint/parser",
+      plugins: ["@typescript-eslint"],
+      files: [
+        "**/*.ts", '**/*.tsx'
+      ],
+      extends: [
+        "plugin:@typescript-eslint/recommended",
+        "plugin:import/typescript"
+      ],
+      rules: {
+        "@typescript-eslint/no-explicit-any": 0,
+        "@typescript-eslint/ban-ts-comment": 0,
+        "@typescript-eslint/no-empty-function": 0,
+        "@typescript-eslint/no-unused-vars": [
+          "error",
+          {
+            argsIgnorePattern: "^_",
+            varsIgnorePattern: "^_",
+            args: "after-used",
+            caughtErrorsIgnorePattern: "^_",
+            ignoreRestSiblings: true,
+          },
+        ],
+      }
+    }
+  ],
   settings: {
     "import/extensions": [".js", ".ts", ".jsx", ".tsx"],
     "import/parsers": {

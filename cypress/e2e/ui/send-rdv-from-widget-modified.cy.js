@@ -14,10 +14,12 @@ describe("send-rdv-from-widget", () => {
 
       cy.wait("@submitTrainingCall").then(() => {
         cy.get(".resultCard.training").first().click()
+        // eslint-disable-next-line cypress/unsafe-to-chain-command
         cy.get("[data-testid='prdvButton']")
           .invoke("removeAttr", "target")
           .click()
           .then(() => {
+            // eslint-disable-next-line cypress/no-unnecessary-waiting
             cy.wait(5000).then(() => {
               cy.get("input[name='firstname']").click()
               cy.get("input[name='firstname']").type("John")

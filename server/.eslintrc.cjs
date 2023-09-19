@@ -13,24 +13,13 @@ module.exports = {
     project: "server/tsconfig.json",
   },
   overrides: [
-    // {
-    //   files: ["./tsup.config.ts", "src/dev.ts"],
-    //   rules: {
-    //     // autorise l'import des devDependencies
-    //     // "node/no-unpublished-import": "off",
-    //     // "node/no-extraneous-import": "error",
-    //   },
-    // },
-    // {
-    //   files: ["**/*test.{js, ts}", "**/*Tests.{js, ts}", "tests/**/*.{js, ts}"],
-    //   rules: {
-    //     // "node/no-unpublished-require": "off",
-    //     // "no-nonoctal-decimal-escape": "off",
-    //     "no-unsafe-optional-chaining": "off",
-    //     "node/no-unpublished-import": "off",
-    //     "node/no-extraneous-import": "error",
-    //   },
-    // },
+    {
+      files: ["src/generated/**/*.ts"],
+      rules: {
+        "@eslint-community/eslint-comments/disable-enable-pair": "off",
+        "@eslint-community/eslint-comments/no-unlimited-disable": "off",
+      },
+    },
   ],
   settings: {
     "import/resolver": {

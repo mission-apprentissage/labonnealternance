@@ -3,7 +3,6 @@ import Joi from "joi"
 const customJoi = Joi.extend((joi) => ({
   type: "arrayOf",
   base: joi.array(),
-  // eslint-disable-next-line no-unused-vars
   coerce(value) {
     return { value: value.split ? value.split(",") : value }
   },

@@ -9,7 +9,6 @@ import { Credential } from "../common/model/index"
  * @param {Array} scope
  * @returns {Promise<ICredential>}
  */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const expressAuthentication = async (request: express.Request, _securityName?: string, _scope?: string[]): Promise<any> => {
   let token
   if (request.headers && request.headers.authorization) {

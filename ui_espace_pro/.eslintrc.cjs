@@ -1,5 +1,5 @@
 module.exports = {
-  extends: ["react-app", "plugin:prettier/recommended"],
+  extends: ["react-app"],
   rules: {
     "react-hooks/exhaustive-deps": "off",
     "import/no-anonymous-default-export": "off",

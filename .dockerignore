@@ -13,7 +13,6 @@
 /ui/.env
 /ui/.next
 /ui/.eslintrc.js
-/ui/jest.config.js
 
 !ui_espace_pro/src
 !ui_espace_pro/public

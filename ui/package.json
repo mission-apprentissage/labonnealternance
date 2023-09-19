@@ -5,28 +5,9 @@
   "author": "Mission apprentissage",
   "repository": "https://github.com/mission-apprentissage/labonnealternance.git",
   "scripts": {
-    "docker-dev": "yarn install && yarn dev",
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
-    "test": "nyc --silent jest --env=jest-environment-jsdom-sixteen",
-    "testlocal": "nyc --silent jest --env=jest-environment-jsdom-sixteen --watch",
-    "test:ci": "jest --ci",
-    "coverage": "jest --ci --coverage",
-    "cypress": "cypress open",
-    "cypress:headless": "cypress run",
-    "e2e": "echo '{ \"presets\": [ \"next/babel\" ], \"plugins\": [ \"istanbul\" ] }' > .babelrc && start-server-and-test dev http://localhost:3000 cypress ; rm .babelrc",
-    "e2e:headless": "echo '{ \"presets\": [ \"next/babel\" ], \"plugins\": [ \"istanbul\" ] }' > .babelrc && nyc --silent --no-clean  start-server-and-test dev http://localhost:3000 cypress:headless ; rm .babelrc",
-    "mergecov": "mkdir -p ./coverage/both && cp ./coverage/e2e/coverage-final.json ./coverage/both/coverage-final-e2e.json && cp ./coverage/unit/coverage-final.json ./coverage/both/coverage-final-unit.json && mkdir -p ./coverage/final && npx nyc merge ./coverage/both ./coverage/final/merged-coverage.json && npx nyc report -t ./coverage/final/ --report-dir ./coverage/final/ --reporter=html --reporter=text-summary"
-  },
-  "nyc": {
-    "report-dir": "coverage/e2e",
-    "exclude": [
-      "pages",
-      "pages/**"
-    ],
-    "excludeAfterRemap": true
+    "start": "next start"
   },
   "dependencies": {
     "@chakra-ui/icons": "2.0.11",
@@ -59,7 +40,6 @@
     "yup": "0.32.9"
   },
   "devDependencies": {
-    "@testing-library/jest-dom": "5.16.5",
     "@testing-library/react": "13.1.1",
     "@testing-library/user-event": "^14.5.1",
     "@types/node": "18.8.2",
@@ -67,8 +47,6 @@
     "dotenv": "^16.3.1",
     "eslint": "8.14.0",
     "eslint-config-next": "^13.4.19",
-    "jest": "28.0.3",
-    "jest-environment-jsdom": "28.0.2",
     "nock": "^13.3.3",
     "typescript": "^5.2.2",
     "vitest": "^0.34.4"
