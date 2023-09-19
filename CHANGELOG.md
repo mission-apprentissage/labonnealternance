@@ -1,3 +1,10 @@
+# [1.95.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.94.0...v1.95.0) (2023-09-19)
+
+
+### Features
+
+* LBAC-1455 balises hx sur cartes ([#589](https://github.com/mission-apprentissage/labonnealternance/issues/589)) ([a677c24](https://github.com/mission-apprentissage/labonnealternance/commit/a677c245351e4417b4fb75dda1135e3de853f4d8))
+
 # [1.94.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.93.0...v1.94.0) (2023-09-19)
 
 
