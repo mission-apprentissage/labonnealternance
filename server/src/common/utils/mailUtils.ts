@@ -1,4 +1,4 @@
-import { isCompanyEmail } from "company-email-validator"
+import mailController from "company-email-validator"
 
 export const getEmailDomain = (email: string) => {
   const domain = email.split("@").at(1)
@@ -29,7 +29,7 @@ export const getAllDomainsFromEmailList = (contactList: string[]) => {
   ]
 }
 
-export const isEmailFromPrivateCompany = (userEmail: string) => isCompanyEmail(userEmail)
+export const isEmailFromPrivateCompany = (userEmail: string) => mailController.isCompanyEmail(userEmail)
 
 export const isEmailSameDomain = (email1: string, email2: string) => {
   const domain1 = getEmailDomain(email1)

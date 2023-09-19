@@ -1,4 +1,4 @@
-import * as Sentry from "@sentry/node"
+import Sentry from "@sentry/node"
 
 import { trackApiCall } from "./sendTrackingEvent"
 import { sentryCaptureException } from "./sentryUtils"

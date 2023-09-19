@@ -1,11 +1,14 @@
-import { Client } from "basic-ftp"
+// @ts-nocheck
+import Ftp from "basic-ftp"
 
 import { logger } from "../logger"
 
 import { sentryCaptureException } from "./sentryUtils"
 
 class FTPClient {
-  client: Client = new Client();
+  constructor() {
+    this.client = new Ftp.Client()
+  }
 
   /**
    * @description Open an FTP connection

@@ -2,7 +2,7 @@
 import { readFileSync } from "fs"
 
 import { CaptureConsole, ExtraErrorData } from "@sentry/integrations"
-import * as Sentry from "@sentry/node"
+import Sentry from "@sentry/node"
 import Boom from "boom"
 import express from "express"
 import swaggerDoc from "swagger-jsdoc"

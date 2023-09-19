@@ -4,7 +4,7 @@ import path from "path"
 import csvToJson from "convert-csv-to-json"
 import { parse } from "csv-parse"
 import { isEmpty, pickBy } from "lodash-es"
-import * as XLSX from "xlsx"
+import XLSX from "xlsx"
 
 import config from "../../config"
 import __dirname from "../dirname"

@@ -3,7 +3,7 @@ import fs from "fs"
 import path from "path"
 
 import { oleoduc } from "oleoduc"
-import { utils as XlsxUtils } from "xlsx"
+import XLSX from "xlsx"
 
 import __dirname from "../../common/dirname"
 import { logger } from "../../common/logger"
@@ -55,7 +55,7 @@ export default async function (optionalFileName?: string) {
 
   logger.info("parcours fichier xlsx")
 
-  const onglet = XlsxUtils.sheet_to_json(workbookRncpRomes.workbook.Sheets["Feuil3"])
+  const onglet = XLSX.utils.sheet_to_json(workbookRncpRomes.workbook.Sheets["Feuil3"])
 
   try {
     for (let i = 0; i < onglet.length; i++) {

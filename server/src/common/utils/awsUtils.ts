@@ -1,18 +1,18 @@
 import fs from "fs"
 import * as stream from "stream"
 
-import { S3, config as AwsConfig } from "aws-sdk"
+import AWS from "aws-sdk"
 
 import config from "../../config"
 
 const { endpoint, region, bucket, accessKeyId, secretAccessKey }: { endpoint: string; region: string; bucket: string; accessKeyId: string; secretAccessKey: string } = config.s3
 
-AwsConfig.update({
+AWS.config.update({
   accessKeyId,
   secretAccessKey,
 })
 
-const repository: S3 = new S3({ endpoint, region })
+const repository: AWS.S3 = new AWS.S3({ endpoint, region })
 
 export const getFileFromS3Bucket = ({ key }: { key: string }): stream.Readable => {
   return repository.getObject({ Bucket: bucket, Key: key }).createReadStream()

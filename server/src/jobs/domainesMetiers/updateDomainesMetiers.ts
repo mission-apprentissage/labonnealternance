@@ -3,7 +3,7 @@ import fs from "fs"
 import path from "path"
 
 import { oleoduc } from "oleoduc"
-import { utils as XlsxUtils} from "xlsx"
+import XLSX from "xlsx"
 
 import __dirname from "../../common/dirname"
 import { logger } from "../../common/logger"
@@ -65,7 +65,7 @@ export default async function (optionalFileName?: string) {
 
   logger.info(`Début traitement`)
 
-  const onglet = XlsxUtils.sheet_to_json(workbookDomainesMetiers.workbook.Sheets["Liste"])
+  const onglet = XLSX.utils.sheet_to_json(workbookDomainesMetiers.workbook.Sheets["Liste"])
 
   reset()
 

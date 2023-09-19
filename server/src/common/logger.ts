@@ -1,6 +1,6 @@
 import util from "util"
 
-import { createLogger, stdSerializers } from "bunyan"
+import bunyan from "bunyan"
 import BunyanSlack from "bunyan-slack"
 import chalk from "chalk"
 import { isEmpty, omit, throttle } from "lodash-es"
@@ -114,13 +114,13 @@ const createStreams = () => {
     })
 }
 
-export const logger = createLogger({
+export const logger = bunyan.createLogger({
   name: "lba",
   serializers: {
-    ...stdSerializers,
+    ...bunyan.stdSerializers,
     err: function (err) {
       return {
-        ...stdSerializers.err(err),
+        ...bunyan.stdSerializers.err(err),
         ...(err.errInfo ? { errInfo: err.errInfo } : {}),
       }
     },
