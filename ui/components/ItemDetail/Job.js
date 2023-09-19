@@ -133,7 +133,7 @@ const Job = ({ job, handleSelectItem, showTextOnly, searchForTrainingsOnNewCente
         <Box flex="1">
           <Flex m="0">
             <Box flex="initial" textAlign="left">
-              <Box color="black" fontSize="1rem" fontWeight={700}>
+              <Box as="h2" color="black" fontSize="1rem" fontWeight={700}>
                 {job.title}
               </Box>
             </Box>
@@ -143,7 +143,7 @@ const Job = ({ job, handleSelectItem, showTextOnly, searchForTrainingsOnNewCente
             </Box>
           </Flex>
 
-          <Box pt={2} fw={500} fontSize="14px">
+          <Box as="h3" pt={2} fw={500} fontSize="14px">
             {job.company && job.company.name ? job.company.name : ReactHtmlParser("<i>Offre anonyme</i>")}
           </Box>
           <Box pt={2} fw={500} fontSize="12px">
