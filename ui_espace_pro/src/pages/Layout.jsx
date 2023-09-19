@@ -26,7 +26,7 @@ const Layout2 = (props) => {
                 <Menu isLazy>
                   <MenuButton>Menu</MenuButton>
                   <MenuList>
-                    <Link href="/espace-pro/admin/eligible-tranings-for-appointment/search">
+                    <Link href="/espace-pro/admin/eligible-trainings-for-appointment/search">
                       <MenuItem>Rechercher / modifier un siret formateur</MenuItem>
                     </Link>
                   </MenuList>

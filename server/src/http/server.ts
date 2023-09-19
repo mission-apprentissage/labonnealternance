@@ -188,7 +188,7 @@ export default async (components) => {
   app.use("/api/admin/appointments", checkJwtTokenRdvAdmin, administratorOnly, adminAppointmentRoute())
   app.use("/api/admin/etablissements", checkJwtTokenRdvAdmin, administratorOnly, adminEtablissementRoute())
   app.use("/api/admin/formations", checkJwtTokenRdvAdmin, administratorOnly, formationsRoute())
-  app.use("/api/admin/eligible-tranings-for-appointment", checkJwtTokenRdvAdmin, administratorOnly, eligibleTrainingsForAppointmentRoute())
+  app.use("/api/admin/eligible-trainings-for-appointment", checkJwtTokenRdvAdmin, administratorOnly, eligibleTrainingsForAppointmentRoute())
   app.use("/api/etablissements", etablissementRoute())
   app.use("/api/appointment-request", appointmentRequestRoute())
   app.use("/api/constants", constantsRoute())

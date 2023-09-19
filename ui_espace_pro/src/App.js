@@ -173,7 +173,7 @@ const App = () => {
         />
         <Route path="/admin/login" element={<LoginPage />} />
         <Route
-          path="/admin/eligible-tranings-for-appointment/search"
+          path="/admin/eligible-trainings-for-appointment/search"
           element={
             <AdminRdvaRoute>
               <WidgetParametersSearchPage />
@@ -181,7 +181,7 @@ const App = () => {
           }
         />
         <Route
-          path="/admin/eligible-tranings-for-appointment/edit/:id"
+          path="/admin/eligible-trainings-for-appointment/edit/:id"
           element={
             <AdminRdvaRoute>
               <WidgetParametersEditPage />

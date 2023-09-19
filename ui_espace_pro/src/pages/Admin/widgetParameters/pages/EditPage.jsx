@@ -72,7 +72,7 @@ const EditPage = () => {
    * @param {String} id
    * @returns {Promise<*>}
    */
-  const getEligibleTrainingsForAppointments = (id) => _get(`/api/admin/eligible-tranings-for-appointment?query={"etablissement_formateur_siret":"${id}"}&limit=1000`)
+  const getEligibleTrainingsForAppointments = (id) => _get(`/api/admin/eligible-trainings-for-appointment?query={"etablissement_formateur_siret":"${id}"}&limit=1000`)
 
   /**
    * @description Returns etablissement from its SIRET.
@@ -98,7 +98,7 @@ const EditPage = () => {
    * @returns {Promise<void>}
    */
   const patchEligibleTrainingsForAppointment = async (id, body) => {
-    await _patch(`/api/admin/eligible-tranings-for-appointment/${id}`, body)
+    await _patch(`/api/admin/eligible-trainings-for-appointment/${id}`, body)
   }
 
   /**
