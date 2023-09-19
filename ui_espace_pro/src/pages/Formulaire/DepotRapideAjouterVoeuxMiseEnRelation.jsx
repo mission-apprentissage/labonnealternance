@@ -8,7 +8,7 @@ import { ArrowRightLine, Check } from "../../theme/components/icons"
  * @description "Mise en relation" page.
  * @return {JSX.Element}
  */
-const DepotRapide_AjouterVoeuxMiseEnRelation = () => {
+const DepotRapideAjouterVoeuxMiseEnRelation = () => {
   const location = useLocation()
   const navigate = useNavigate()
 
@@ -160,12 +160,7 @@ const DepotRapide_AjouterVoeuxMiseEnRelation = () => {
           </Grid>
         </Box>
       </Container>
-      <Box
-        backgroundColor="#FFFFFF"
-        sx={{ position: "-webkit-sticky", position: "sticky", bottom: "0" }}
-        boxShadow={"0px -16px 16px -16px rgba(0, 0, 0, 0.32), 0px -8px 16px rgba(0, 0, 0, 0.1);"}
-        w="full"
-      >
+      <Box backgroundColor="#FFFFFF" sx={{ position: "sticky", bottom: "0" }} boxShadow={"0px -16px 16px -16px rgba(0, 0, 0, 0.32), 0px -8px 16px rgba(0, 0, 0, 0.1);"} w="full">
         <Container maxW="container.xl">
           <Box p={5}>
             <Grid gap={4}>
@@ -193,4 +188,4 @@ const DepotRapide_AjouterVoeuxMiseEnRelation = () => {
   )
 }
 
-export { DepotRapide_AjouterVoeuxMiseEnRelation as default }
+export { DepotRapideAjouterVoeuxMiseEnRelation as default }

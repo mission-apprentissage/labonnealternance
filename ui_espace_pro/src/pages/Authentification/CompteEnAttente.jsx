@@ -1,7 +1,5 @@
 import { Box, Button, Flex, Heading, Text } from "@chakra-ui/react"
 import { useContext } from "react"
-import { useLocation } from "react-router-dom"
-import { AUTHTYPE } from "../../common/contants"
 import { AuthentificationLayout } from "../../components"
 import { WidgetContext } from "../../contextWidget"
 import { InfoCircle } from "../../theme/components/icons"
@@ -9,7 +7,6 @@ import { MailCloud } from "../../theme/components/logos"
 import { redirect } from "../../common/utils/router"
 
 export default () => {
-  const location = useLocation()
   const { widget } = useContext(WidgetContext)
 
   const redirectFn = () => redirect("/organisme-de-formation")

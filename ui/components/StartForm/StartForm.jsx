@@ -6,10 +6,10 @@ import { pick } from "lodash"
 import { useRouter } from "next/router"
 import React, { useContext } from "react"
 
-import SearchForm from "../../components/SearchForTrainingsAndJobs/components/SearchForm"
-import WidgetHeader from "../../components/WidgetHeader/WidgetHeader"
 import { DisplayContext } from "../../context/DisplayContextProvider"
 import { ParameterContext } from "../../context/ParameterContextProvider"
+import SearchForm from "../SearchForTrainingsAndJobs/components/SearchForm"
+import WidgetHeader from "../WidgetHeader/WidgetHeader"
 
 const StartForm = () => {
   const router = useRouter()

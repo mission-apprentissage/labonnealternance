@@ -1,4 +1,4 @@
-import { Box, Button, Center, Flex, Heading, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Stack, Text } from "@chakra-ui/react"
+import { Box, Button, Center, Heading, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Stack, Text } from "@chakra-ui/react"
 import { useNavigate } from "react-router-dom"
 import { deleteCfa, deleteEntreprise } from "../api"
 import { AUTHTYPE } from "../common/contants"

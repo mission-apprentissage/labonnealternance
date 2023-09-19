@@ -1,4 +1,4 @@
-import { Button, Center, Container, Flex, SimpleGrid, Text } from "@chakra-ui/react"
+import { Button, Center, Flex, SimpleGrid, Text } from "@chakra-ui/react"
 import { useNavigate } from "react-router-dom"
 import { AnimationContainer, Layout } from "../../components"
 import { Logo404 } from "../../theme/components/logos"

@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { readFileSync } from "fs"
 
-import iconv from "iconv-lite"
+import { decode } from "iconv-lite"
 import { isNull, isArray, isObject } from "lodash-es"
 import * as xml2j from "xml2js"
 
@@ -55,7 +55,7 @@ runScript(async () => {
   const filePath = `${__dirname(import.meta.url)}/unix_fiche_emploi_metier_v450_iso8859-15.xml`
 
   const xmlBuffer = readFileSync(filePath)
-  const xml = iconv.decode(xmlBuffer, "iso8859-15")
+  const xml = decode(xmlBuffer, "iso8859-15")
 
   const data = await parser.parseStringPromise(xml)
 

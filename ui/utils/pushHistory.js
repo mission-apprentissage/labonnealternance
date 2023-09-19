@@ -1,6 +1,6 @@
-import { getCampaignParameters } from "../utils/campaignParameters"
-import { getItemQueryParameters } from "../utils/getItemId"
-import { getSearchQueryParameters } from "../utils/getSearchParameters"
+import { getCampaignParameters } from "./campaignParameters"
+import { getItemQueryParameters } from "./getItemId"
+import { getSearchQueryParameters } from "./getSearchParameters"
 
 const pushHistory = ({ router, scopeContext, item, page, display, searchParameters, searchTimestamp, isReplace, displayMap }) => {
   let params = `${display ? `&display=${display}` : ""}${page ? `&page=${page}` : ""}${item ? `&${getItemQueryParameters(item)}` : ""}${

@@ -137,19 +137,6 @@ export const FormCreatePage = (props) => {
       : {}
   }
 
-  /**
-   * @description Sends Plausible goal.
-   * @param {string} interested (Oui|Non)
-   * @return {void}
-   */
-  const sendPlausibleFeedback = (interested) => {
-    typeof window !== "undefined" &&
-      window?.plausible &&
-      window.plausible("souhaitez-vous-recevoir-des-offres-en-lien-avec-cette-formation", {
-        props: { interessé: interested },
-      })
-  }
-
   const [checkedState, setCheckedState] = useState(getDefaultReasonsAsFalse())
 
   /**

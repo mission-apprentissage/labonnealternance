@@ -2,15 +2,13 @@ module.exports = {
   env: {
     es2022: true,
     node: true,
-    jest: true,
   },
   extends: [
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:import/recommended",
-    "plugin:import/warnings",
     "plugin:import/typescript",
-    "plugin:cypress/recommended",
+    // "plugin:cypress/recommended",
     "prettier",
   ],
   parser: "@typescript-eslint/parser",
@@ -36,7 +34,22 @@ module.exports = {
     "node/no-missing-import": 0, // duplicated with import/no-unresolved
 
     // imports
-    "import/extensions": ["error"],
+    "import/extensions": [
+      "error",
+      "ignorePackages",
+      {
+        js: "never",
+        jsx: "never",
+        ts: "never",
+        tsx: "never",
+      },
+    ],
+    "import/no-useless-path-segments": "error",
+    "import/no-unresolved": ["error", { caseSensitive: true }],
+    "import/first": "error",
+    "import/no-named-as-default": "off",
+    "import/no-anonymous-default-export": "off",
+    "import/no-named-as-default-member": "off",
     "import/order": [
       "error",
       {
@@ -56,8 +69,6 @@ module.exports = {
     ],
     "import/newline-after-import": "error",
     "import/no-mutable-exports": "error",
-    "import/default": "off",
-    "import/no-named-as-default-member": "off",
     "import/no-extraneous-dependencies": [
       "error",
       {
@@ -74,14 +85,14 @@ module.exports = {
           "**/dev.ts",
           "**/tsup.config.ts",
           "**/cypress.config.ts",
-          "*.ts"
+          "*.ts",
         ],
         optionalDependencies: false,
       },
     ],
   },
   settings: {
-    "import/extensions": [".js", ".ts"],
+    "import/extensions": [".js", ".ts", ".jsx", ".tsx"],
     "import/parsers": {
       "@typescript-eslint/parser": [".ts", ".tsx"],
     },

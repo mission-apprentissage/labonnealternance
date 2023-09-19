@@ -1,4 +1,4 @@
-import Sentry from "@sentry/node"
+import * as Sentry from "@sentry/node"
 
 export const sentryCaptureException = (error: any): void => {
   Sentry.captureException(error)

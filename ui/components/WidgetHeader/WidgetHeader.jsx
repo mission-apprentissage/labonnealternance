@@ -3,9 +3,9 @@ import { includes } from "lodash"
 import { useRouter } from "next/router"
 import React, { useContext } from "react"
 
-import HeaderForm from "../../components/HeaderForm/HeaderForm"
-import LogoLBA from "../../components/LogoLBA/LogoLBA"
 import { SearchResultContext } from "../../context/SearchResultContextProvider"
+import HeaderForm from "../HeaderForm/HeaderForm"
+import LogoLBA from "../LogoLBA/LogoLBA"
 import ResultFilterAndCounter from "../SearchForTrainingsAndJobs/components/ResultFilterAndCounter"
 
 const WidgetHeader = ({ handleSearchSubmit, isHome, allJobSearchError, trainingSearchError, isJobSearchLoading, isTrainingSearchLoading }) => {

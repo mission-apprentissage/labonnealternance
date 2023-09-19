@@ -1,9 +1,9 @@
 import { Box } from "@chakra-ui/react"
 import React from "react"
 
-import Job from "../../../components/ItemDetail/Job"
-import LbbCompany from "../../../components/ItemDetail/LbbCompany"
-import Training from "../../../components/ItemDetail/Training"
+import Job from "../../ItemDetail/Job"
+import LbbCompany from "../../ItemDetail/LbbCompany"
+import Training from "../../ItemDetail/Training"
 
 export const renderJob = (isTestMode, idx, job, handleSelectItem, searchForTrainingsOnNewCenter) => {
   if (isTestMode) {

@@ -26,12 +26,13 @@ import {
 import pushHistory from "../../utils/pushHistory"
 import { logError } from "../../utils/tools"
 import Map from "../Map"
-import { loadItem } from "../SearchForTrainingsAndJobs/services/loadItem"
-import { searchForJobsFunction } from "../SearchForTrainingsAndJobs/services/searchForJobs"
-import { searchForTrainingsFunction } from "../SearchForTrainingsAndJobs/services/searchForTrainings"
 import { InitWidgetSearchParameters, WidgetHeader } from "../WidgetHeader"
 
 import { ChoiceColumn, MapListSwitchButton } from "./components"
+import { loadItem } from "./services/loadItem"
+import { searchForJobsFunction } from "./services/searchForJobs"
+import { searchForTrainingsFunction } from "./services/searchForTrainings"
+
 
 const SearchForTrainingsAndJobs = () => {
   const scopeContext = useContext(ScopeContext)

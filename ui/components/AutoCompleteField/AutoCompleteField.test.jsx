@@ -5,7 +5,7 @@ import { noop } from "lodash/noop"
 import React from "react"
 import { describe, expect, it } from "vitest";
 
-import AutoCompleteField from "./AutoCompleteField"
+import { AutoCompleteField } from "./AutoCompleteField"
 
 describe("AutoCompleteField", () => {
   it("Renders static image and text", () => {

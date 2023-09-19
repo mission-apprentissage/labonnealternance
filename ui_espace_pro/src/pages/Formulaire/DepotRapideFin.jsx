@@ -9,7 +9,7 @@ import { WidgetContext } from "../../contextWidget"
 import { InfoCircle } from "../../theme/components/icons"
 import { MailCloud } from "../../theme/components/logos"
 
-export function DepotRapide_Fin() {
+export function DepotRapideFin() {
   const [disableLink, setDisableLink] = useState(false)
   const [userIsValidated, setUserIsValidated] = useState()
   const [title, setTitle] = useState("")
@@ -209,4 +209,4 @@ export function DepotRapide_Fin() {
   )
 }
 
-export default DepotRapide_Fin
+export default DepotRapideFin

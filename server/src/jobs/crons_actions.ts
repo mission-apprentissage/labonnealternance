@@ -1,4 +1,4 @@
-import cronParser from "cron-parser"
+import { parseExpression } from "cron-parser"
 import { ObjectId } from "mongodb"
 
 import { db } from "@/common/mongodb"
@@ -12,7 +12,7 @@ import { addJob } from "./jobs_actions"
 const logger = getLoggerWithContext("script")
 
 function parseCronString(cronString: string, options: { currentDate: string } | object = {}) {
-  return cronParser.parseExpression(cronString, {
+  return parseExpression(cronString, {
     tz: "Europe/Paris",
     ...options,
   })

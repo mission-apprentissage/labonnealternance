@@ -1,4 +1,4 @@
-import { fetchRomes } from "../services/fetchRomes"
+import { fetchRomes } from "./fetchRomes"
 
 export default async function domainChanged(val, setDomainErrorFunc) {
   const res = await fetchRomes(val, () => {

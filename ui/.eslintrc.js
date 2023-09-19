@@ -3,6 +3,8 @@ module.exports = {
   rules: {
     "react/no-unescaped-entities": 0,
     "import/no-mutable-exports": 0,
+    "import/no-anonymous-default-export": 0,
+    "react-hooks/exhaustive-deps": 0,
     "react/no-unknown-property": 0,
     "react/jsx-filename-extension": [2, { allow: "as-needed", "extensions": [".tsx", ".jsx"] }],
     "import/no-extraneous-dependencies": [

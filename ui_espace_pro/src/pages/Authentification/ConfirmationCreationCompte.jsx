@@ -1,5 +1,4 @@
 import { Box, Divider, Flex, Heading, Link, Text } from "@chakra-ui/react"
-import { useEffect, useState } from "react"
 import { IoMail } from "react-icons/io5"
 import { useLocation } from "react-router-dom"
 import { AuthentificationLayout } from "../../components"

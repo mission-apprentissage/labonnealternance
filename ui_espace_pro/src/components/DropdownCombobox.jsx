@@ -6,7 +6,7 @@ import CustomInput from "./CustomInput"
 
 export default (props) => {
   let { saveSelectedItem, setInputItems, handleSearch, value, placeholder, inputItems, name } = props
-  const [_, __, helpers] = useField(props.name)
+  const [, , helpers] = useField(props.name)
 
   const itemToString = (item) => (item ? item.appellation : "")
   const onInputValueChange = async ({ inputValue }) => setInputItems(await handleSearch(inputValue))

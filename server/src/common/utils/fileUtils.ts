@@ -4,10 +4,10 @@ import path from "path"
 import csvToJson from "convert-csv-to-json"
 import { parse } from "csv-parse"
 import { isEmpty, pickBy } from "lodash-es"
-import XLSX from "xlsx"
+import * as XLSX from "xlsx"
 
-import __dirname from "../../common/dirname"
 import config from "../../config"
+import __dirname from "../dirname"
 
 import { FTPClient } from "./ftpUtils"
 

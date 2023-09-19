@@ -2,7 +2,7 @@ import { Box } from "@chakra-ui/react"
 import { useLocation } from "react-router-dom"
 import { AjouterVoeux, AuthentificationLayout, Bandeau } from "../../components"
 
-export const DepotRapide_AjouterVoeux = (props) => {
+export const DepotRapideAjouterVoeux = (props) => {
   const location = useLocation()
   const { displayBanner } = location.state
 
@@ -22,4 +22,4 @@ export const DepotRapide_AjouterVoeux = (props) => {
   )
 }
 
-export default DepotRapide_AjouterVoeux
+export default DepotRapideAjouterVoeux

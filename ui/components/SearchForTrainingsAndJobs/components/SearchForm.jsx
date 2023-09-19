@@ -3,8 +3,7 @@ import { ErrorMessage, Form, Formik } from "formik"
 import { partialRight } from "lodash"
 import React, { useContext, useEffect, useState } from "react"
 
-import { DomainError } from "../../"
-import { AutoCompleteField } from "../../../components/AutoCompleteField/AutoCompleteField"
+import { DomainError } from "../.."
 import { DisplayContext } from "../../../context/DisplayContextProvider"
 import { ParameterContext } from "../../../context/ParameterContextProvider"
 import { SearchResultContext } from "../../../context/SearchResultContextProvider"
@@ -17,6 +16,7 @@ import formikUpdateValue from "../../../services/formikUpdateValue"
 import handleSelectChange from "../../../services/handleSelectChange"
 import updateValuesFromJobAutoComplete from "../../../services/updateValuesFromJobAutoComplete"
 import validateFormik from "../../../services/validateFormik"
+import { AutoCompleteField } from "../../AutoCompleteField/AutoCompleteField"
 
 const selectProperties = {
   fontSize: "1rem",

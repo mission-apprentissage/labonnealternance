@@ -1,10 +1,8 @@
 // @vitest-environment jsdom
 
 /* eslint-disable import/no-extraneous-dependencies */
-import { render, screen } from "@testing-library/react"
 import nock from "nock"
-import React from "react"
-import { describe, expect, it, beforeEach } from "vitest";
+import { describe, it, beforeEach } from "vitest";
 
 // import ResultLists from "./ResultLists"
 

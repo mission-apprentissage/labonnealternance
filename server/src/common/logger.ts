@@ -1,6 +1,6 @@
 import util from "util"
 
-import bunyan from "bunyan"
+import { createLogger, stdSerializers } from "bunyan"
 import BunyanSlack from "bunyan-slack"
 import chalk from "chalk" // eslint-disable-line node/no-unpublished-import
 import { isEmpty, omit, throttle } from "lodash-es"
@@ -114,13 +114,13 @@ const createStreams = () => {
     })
 }
 
-export const logger = bunyan.createLogger({
+export const logger = createLogger({
   name: "lba",
   serializers: {
-    ...bunyan.stdSerializers,
+    ...stdSerializers,
     err: function (err) {
       return {
-        ...bunyan.stdSerializers.err(err),
+        ...stdSerializers.err(err),
         ...(err.errInfo ? { errInfo: err.errInfo } : {}),
       }
     },

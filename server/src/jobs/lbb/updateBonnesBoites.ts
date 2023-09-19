@@ -1,5 +1,3 @@
-// @ts-nocheck
-import _ from "lodash-es"
 import { oleoduc, transformData, writeData } from "oleoduc"
 
 import { BonnesBoites, UnsubscribedBonneBoite } from "../../common/model/index"

@@ -4,8 +4,6 @@ import { round } from "lodash"
 import { useRouter } from "next/router"
 import React, { useContext, useEffect } from "react"
 
-import ItemDetail from "../../../components/ItemDetail/ItemDetail"
-import LoadingScreen from "../../../components/LoadingScreen"
 import { DisplayContext } from "../../../context/DisplayContextProvider"
 import { ParameterContext } from "../../../context/ParameterContextProvider"
 import { ScopeContext } from "../../../context/ScopeContext"
@@ -15,6 +13,8 @@ import { currentSearch, setCurrentPage, setCurrentSearch } from "../../../utils/
 import { closeMapPopups, filterLayers, flyToLocation, flyToMarker, setSelectedMarker } from "../../../utils/mapTools"
 import pushHistory from "../../../utils/pushHistory"
 import { getItemElement, scrollToElementInContainer, scrollToTop } from "../../../utils/tools"
+import ItemDetail from "../../ItemDetail/ItemDetail"
+import LoadingScreen from "../../LoadingScreen"
 import { defaultFilters } from "../services/utils"
 import { insertWhisper } from "../services/whispers"
 

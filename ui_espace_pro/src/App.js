@@ -35,7 +35,7 @@ import {
 import { FormCreatePage } from "./pages/Candidat/FormCreatePage"
 import { FormRecapPage } from "./pages/Candidat/FormRecapPage"
 import { CfaCandidatInformationPage } from "./pages/CfaCandidatInformationPage/CfaCandidatInformationPage"
-import { DepotRapide_AjouterVoeux, DepotRapide_AjouterVoeuxMiseEnRelation, DepotRapide_Fin } from "./pages/Formulaire"
+import { DepotRapideAjouterVoeux, DepotRapideAjouterVoeuxMiseEnRelation, DepotRapideFin } from "./pages/Formulaire"
 import Layout2 from "./pages/Layout"
 import LoginPage from "./pages/LoginPage"
 import OptOutUnsubscribe from "./pages/OptOutUnsubscribe"
@@ -134,9 +134,9 @@ const App = () => {
         <Route path="/creation/cfa" element={<CreationCompte type={AUTHTYPE.CFA} />} />
         <Route path="/creation/cfa/:origin" element={<CreationCompte type={AUTHTYPE.CFA} />} />
         <Route path="/creation/detail" element={<InformationCreationCompte />} />
-        <Route path="/creation/offre" element={<DepotRapide_AjouterVoeux />} />
-        <Route path="/creation/mise-en-relation" element={<DepotRapide_AjouterVoeuxMiseEnRelation />} />
-        <Route path="/creation/fin" element={<DepotRapide_Fin />} />
+        <Route path="/creation/offre" element={<DepotRapideAjouterVoeux />} />
+        <Route path="/creation/mise-en-relation" element={<DepotRapideAjouterVoeuxMiseEnRelation />} />
+        <Route path="/creation/fin" element={<DepotRapideFin />} />
         {/* Deprecated route, can be deleted on 03/2023 */}
         <Route path="/proposition/formulaire/:idFormulaire/offre/:jobId" element={<Layout displayNavigationMenu={false} />}>
           <Route index element={<PropositionOffreId />} />

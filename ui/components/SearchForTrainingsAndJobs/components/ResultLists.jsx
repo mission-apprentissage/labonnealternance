@@ -1,7 +1,7 @@
 import { Box, Flex } from "@chakra-ui/react"
 import React, { useContext, useState } from "react"
 
-import { ErrorMessage } from "../../../components"
+import { ErrorMessage } from "../.."
 import { DisplayContext } from "../../../context/DisplayContextProvider"
 import { ScopeContext } from "../../../context/ScopeContext"
 import { SearchResultContext } from "../../../context/SearchResultContextProvider"

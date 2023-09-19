@@ -7,7 +7,7 @@ import useAuth from "../../common/hooks/useAuth"
 export const AuthValidation = () => {
   let navigate = useNavigate()
   const location = useLocation()
-  const [_, setAuth] = useAuth()
+  const [, setAuth] = useAuth()
 
   const { search } = location
 

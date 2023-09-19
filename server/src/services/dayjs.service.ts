@@ -1,4 +1,4 @@
-import dayjs from "dayjs"
+import { extend } from "dayjs"
 import advancedFormat from "dayjs/plugin/advancedFormat.js"
 import customParseFormat from "dayjs/plugin/customParseFormat.js"
 import duration from "dayjs/plugin/duration.js"
@@ -10,16 +10,16 @@ import localizedFormat from "dayjs/plugin/localizedFormat.js"
 import timezone from "dayjs/plugin/timezone.js"
 import utc from "dayjs/plugin/utc.js"
 
-dayjs.extend(utc)
-dayjs.extend(duration)
-dayjs.extend(timezone)
-dayjs.extend(isSameOrBefore)
-dayjs.extend(isSameOrAfter)
-dayjs.extend(isBetween)
-dayjs.extend(customParseFormat)
-dayjs.extend(advancedFormat)
-dayjs.extend(isYesterday)
-dayjs.extend(localizedFormat)
+extend(utc)
+extend(duration)
+extend(timezone)
+extend(isSameOrBefore)
+extend(isSameOrAfter)
+extend(isBetween)
+extend(customParseFormat)
+extend(advancedFormat)
+extend(isYesterday)
+extend(localizedFormat)
 
 export type TDayjs = dayjs.Dayjs
 
