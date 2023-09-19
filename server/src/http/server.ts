@@ -1,17 +1,21 @@
 // @ts-nocheck
-import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { readFileSync } from "fs"
+
 import Sentry from "@sentry/node"
 import Boom from "boom"
 import express from "express"
-import { readFileSync } from "fs"
 import swaggerDoc from "swagger-jsdoc"
 import swaggerUi from "swagger-ui-express"
+
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+
 import "../auth/passport-strategy"
 import { logger } from "../common/logger"
 import config from "../config"
 import { RegisterRoutes } from "../generated/routes"
 import { initBrevoWebhooks } from "../services/brevo.service"
 import { ROLES } from "../services/constant.service"
+
 import rome from "./controllers/metiers/rome.controller"
 import authMiddleware from "./middlewares/authMiddleware"
 import { corsMiddleware } from "./middlewares/corsMiddleware"

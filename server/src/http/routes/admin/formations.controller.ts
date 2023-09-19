@@ -1,4 +1,5 @@
 import express from "express"
+
 import { getCatalogueFormations } from "../../../services/catalogue.service"
 import { tryCatch } from "../../middlewares/tryCatchMiddleware"
 

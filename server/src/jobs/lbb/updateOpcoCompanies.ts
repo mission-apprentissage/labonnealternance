@@ -1,11 +1,13 @@
 //@ts-nocheck
 import { oleoduc, writeData } from "oleoduc"
+
 import { logger } from "../../common/logger"
 import { Opco } from "../../common/model/index"
 import { logMessage } from "../../common/utils/logMessage"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 import { CFADOCK_FILTER_LIMIT, fetchOpcosFromCFADock } from "../../services/cfadock.service"
 import { getMemoizedOpcoShortName, saveOpco } from "../../services/opco.service"
+
 import { checkIfAlgoFileIsNew, downloadAlgoCompanyFile, readCompaniesFromJson, removePredictionFile } from "./lbaCompaniesUtils.js"
 
 let errorCount = 0

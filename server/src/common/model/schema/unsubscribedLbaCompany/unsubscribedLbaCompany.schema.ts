@@ -1,5 +1,6 @@
 import { model, Schema } from "../../../mongodb.js"
 import { lbaCompanySchema } from "../lbaCompany/lbaCompany.schema.js"
+
 import { IUnsubscribedLbaCompany } from "./unsubscribedLbaCompany.types.js"
 
 const unsubscribedLbaCompanySchema = new Schema<IUnsubscribedLbaCompany>({

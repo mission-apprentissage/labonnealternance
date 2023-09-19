@@ -1,8 +1,10 @@
 import { oleoduc, transformData, writeData } from "oleoduc"
+
 import { LbaCompany, UnsubscribedLbaCompany } from "../../common/model/index.js"
 import { rebuildIndex } from "../../common/utils/esUtils"
 import { logMessage } from "../../common/utils/logMessage"
 import { notifyToSlack } from "../../common/utils/slackUtils"
+
 import { checkIfAlgoFileIsNew, countCompaniesInFile, downloadAlgoCompanyFile, getCompanyMissingData, readCompaniesFromJson, removePredictionFile } from "./lbaCompaniesUtils.js"
 import { insertSAVECompanies, removeSAVECompanies, updateSAVECompanies } from "./updateSAVECompanies"
 

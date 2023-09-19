@@ -1,9 +1,10 @@
 import * as express from "express"
 import { Controller, Get, Header, Hidden, OperationId, Query, Request, Response, Route, SuccessResponse, Tags } from "tsoa"
-import { getFormationsQuery } from "../../../services/formation.service.js"
+
 import { trackApiCall } from "../../../common/utils/sendTrackingEvent.js"
-import { jobsEtFormationsQueryValidator } from "../../../services/queryValidator.service.js"
+import { getFormationsQuery } from "../../../services/formation.service.js"
 import { getJobsFromApi } from "../../../services/jobOpportunity.service.js"
+import { jobsEtFormationsQueryValidator } from "../../../services/queryValidator.service.js"
 
 @Tags("Jobs et formations")
 @Route("/api/v1/jobsEtFormations")

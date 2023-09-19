@@ -6,7 +6,6 @@ module.exports = {
   extends: [
     "eslint:recommended",
     "plugin:import/recommended",
-    "plugin:import/recommended",
     "plugin:@eslint-community/eslint-comments/recommended",    
     "prettier",
   ],
@@ -93,8 +92,8 @@ module.exports = {
         "**/*.ts", '**/*.tsx'
       ],
       extends: [
-        "plugin:@typescript-eslint/recommended",
-        "plugin:import/typescript"
+        "plugin:import/typescript",
+        "plugin:@typescript-eslint/recommended"
       ],
       rules: {
         "@typescript-eslint/no-explicit-any": 0,
@@ -110,6 +109,7 @@ module.exports = {
             ignoreRestSiblings: true,
           },
         ],
+        "import/default": "off"
       }
     }
   ],

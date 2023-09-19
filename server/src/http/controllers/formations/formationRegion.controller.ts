@@ -1,5 +1,6 @@
 import * as express from "express"
 import { Controller, Get, Header, Hidden, OperationId, Query, Request, Response, Route, SuccessResponse, Tags } from "tsoa"
+
 import { IApiError } from "../../../common/utils/errorManager.js"
 import { trackApiCall } from "../../../common/utils/sendTrackingEvent.js"
 import { getFormationsParRegionQuery } from "../../../services/formation.service.js"

@@ -1,9 +1,12 @@
 // @ts-nocheck
 import fs from "fs"
-import { accumulateData, oleoduc, readLineByLine, transformData, writeData } from "oleoduc"
 import path from "path"
+
+import { accumulateData, oleoduc, readLineByLine, transformData, writeData } from "oleoduc"
+
 import __dirname from "../../common/dirname"
 import { logMessage } from "../../common/utils/logMessage"
+
 import { pushFileToBucket } from "./lbaCompaniesUtils"
 
 const currentDirname = __dirname(import.meta.url)

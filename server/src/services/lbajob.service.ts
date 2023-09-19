@@ -5,6 +5,7 @@ import { IApiError, manageApiError } from "../common/utils/errorManager"
 import { roundDistance } from "../common/utils/geolib"
 import { trackApiCall } from "../common/utils/sendTrackingEvent"
 import { matchaMock, matchaMockMandataire, matchasMock } from "../mocks/matchas-mock"
+
 import { IApplicationCount, getApplicationByJobCount } from "./application.service"
 import { JOB_STATUS, NIVEAUX_POUR_LBA, RECRUITER_STATUS } from "./constant.service"
 import { getJobsFromElasticSearch, getOffreAvecInfoMandataire, incrementLbaJobViewCount } from "./formulaire.service"

@@ -1,6 +1,7 @@
 // @ts-nocheck
 import express from "express"
 import Joi from "joi"
+
 import config from "../../config"
 import { REGEX } from "../../services/constant.service"
 import { updateContactInfo } from "../../services/lbacompany.service"

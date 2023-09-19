@@ -1,6 +1,8 @@
-import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import express from "express"
 import rateLimit from "express-rate-limit"
+
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+
 import { LbaCompany, UnsubscribedLbaCompany } from "../../common/model/index.js"
 import config from "../../config"
 import { UNSUBSCRIBE_EMAIL_ERRORS } from "../../services/constant.service"

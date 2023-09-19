@@ -1,6 +1,7 @@
 import { CaptureConsole, ExtraErrorData } from "@sentry/integrations"
 import Sentry from "@sentry/node"
 import { Express } from "express"
+
 import config from "../config.js"
 
 export function initSentry(app: Express) {

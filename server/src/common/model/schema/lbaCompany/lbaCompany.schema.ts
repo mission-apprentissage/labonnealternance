@@ -1,5 +1,6 @@
 import { getElasticInstance, mongoosastic } from "../../../esClient/index"
 import { Schema, model } from "../../../mongodb"
+
 import { ILbaCompany } from "./lbaCompany.types"
 
 export const lbaCompanySchema = new Schema<ILbaCompany>({

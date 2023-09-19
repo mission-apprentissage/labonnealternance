@@ -1,6 +1,7 @@
-import { regionCodeToDepartmentList } from "../common/utils/regionInseeCodes.js"
-import { isOriginLocal } from "../common/utils/isOriginLocal.js"
 import { RncpRomes } from "../common/model/index.js"
+import { isOriginLocal } from "../common/utils/isOriginLocal.js"
+import { regionCodeToDepartmentList } from "../common/utils/regionInseeCodes.js"
+
 import { TFormationSearchQuery, TJobSearchQuery } from "./jobOpportunity.service.types.js"
 
 /**

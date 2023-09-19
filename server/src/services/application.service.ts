@@ -1,8 +1,10 @@
-import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { isEmailBurner } from "burner-email-providers"
 import Joi from "joi"
 import { Document } from "mongoose"
 import { oleoduc, writeData } from "oleoduc"
+
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+
 import { logger } from "../common/logger.js"
 import { Application, EmailBlacklist, LbaCompany } from "../common/model/index.js"
 import { IApplication } from "../common/model/schema/application/applications.types.js"
@@ -13,6 +15,7 @@ import { manageApiError } from "../common/utils/errorManager.js"
 import { prepareMessageForMail } from "../common/utils/fileUtils.js"
 import { sentryCaptureException } from "../common/utils/sentryUtils.js"
 import config from "../config.js"
+
 import { BrevoEventStatus } from "./brevo.service.js"
 import { scan } from "./clamav.service"
 import { JOB_STATUS, RECRUITER_STATUS } from "./constant.service"

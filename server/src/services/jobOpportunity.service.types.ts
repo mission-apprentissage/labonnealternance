@@ -1,4 +1,5 @@
 import { IApiError } from "../common/utils/errorManager.js"
+
 import { ILbaItem } from "./lbaitem.shared.service.types.js"
 
 export type TJobSearchQuery = {

@@ -1,4 +1,5 @@
 import express from "express"
+
 import { Appointment, User } from "../../../common/model/index"
 import { getFormationsByCleMinistereEducatif } from "../../../services/catalogue.service"
 import { tryCatch } from "../../middlewares/tryCatchMiddleware"

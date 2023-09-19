@@ -1,9 +1,10 @@
 import * as express from "express"
 import { Controller, Get, Header, Hidden, OperationId, Path, Query, Request, Response, Route, SuccessResponse, Tags } from "tsoa"
+
 import { IApiError } from "../../../common/utils/errorManager.js"
-import { ILbaItem } from "../../../services/lbaitem.shared.service.types.js"
-import { getFormationDescriptionQuery, getFormationQuery, getFormationsQuery } from "../../../services/formation.service.js"
 import { trackApiCall } from "../../../common/utils/sendTrackingEvent.js"
+import { getFormationDescriptionQuery, getFormationQuery, getFormationsQuery } from "../../../services/formation.service.js"
+import { ILbaItem } from "../../../services/lbaitem.shared.service.types.js"
 
 @Tags("Formations")
 @Route("/api/v1/formations")

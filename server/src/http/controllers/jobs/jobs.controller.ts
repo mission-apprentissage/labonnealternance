@@ -1,6 +1,7 @@
 //@ts-nocheck
 import * as express from "express"
 import { Body, Controller, Get, Header, Hidden, OperationId, Patch, Path, Post, Query, Request, Response, Route, Security, SuccessResponse, Tags } from "tsoa"
+
 import { Recruiter } from "../../../common/model/index"
 import { ICredential } from "../../../common/model/schema/credentials/credential.types"
 import { IJobs } from "../../../common/model/schema/jobs/jobs.types"
@@ -29,6 +30,7 @@ import type { ILbaItem } from "../../../services/lbaitem.shared.service.types"
 import { addOffreDetailView, addOffreSearchView, getLbaJobById } from "../../../services/lbajob.service"
 import { getPeJobFromId } from "../../../services/pejob.service"
 import { getAppellationDetailsFromAPI, getRomeDetailsFromAPI } from "../../../services/rome.service"
+
 import type { ICreateDelegation, ICreateJobBody, IGetDelegation, TCreateEstablishmentBody, TEstablishmentResponseSuccess, TJob, TResponseError } from "./jobs.types"
 import { createDelegationSchema, createEstablishmentSchema, createJobSchema, getEstablishmentEntitySchema, updateJobSchema } from "./jobs.validators"
 

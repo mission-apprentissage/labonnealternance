@@ -1,8 +1,10 @@
 //@ts-nocheck
-import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import axios, { AxiosResponse } from "axios"
 import { pick } from "lodash-es"
 import { Filter } from "mongodb"
+
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+
 import { Etablissement, LbaCompany, LbaCompanyLegacy, ReferentielOpco, UnsubscribeOF, UserRecruteur } from "../common/model/index"
 import { IEtablissement } from "../common/model/schema/etablissements/etablissement.types"
 import { ILbaCompany } from "../common/model/schema/lbaCompany/lbaCompany.types"
@@ -12,6 +14,7 @@ import { IUserRecruteur } from "../common/model/schema/userRecruteur/userRecrute
 import { isEmailFromPrivateCompany, isEmailSameDomain } from "../common/utils/mailUtils"
 import { sentryCaptureException } from "../common/utils/sentryUtils"
 import config from "../config"
+
 import { validationOrganisation } from "./bal.service"
 import { getCatalogueEtablissements } from "./catalogue.service"
 import { BusinessErrorCodes, CFA, ENTREPRISE, ETAT_UTILISATEUR, RECRUITER_STATUS } from "./constant.service"

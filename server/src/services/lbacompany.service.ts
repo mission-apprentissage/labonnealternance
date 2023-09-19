@@ -8,6 +8,7 @@ import { isAllowedSource } from "../common/utils/isAllowedSource.js"
 import { trackApiCall } from "../common/utils/sendTrackingEvent.js"
 import { sentryCaptureException } from "../common/utils/sentryUtils.js"
 import { lbbMock } from "../mocks/lbbs-mock.js"
+
 import { getApplicationByCompanyCount, IApplicationCount } from "./application.service.js"
 import { TLbaItemResult } from "./jobOpportunity.service.types.js"
 import { LbaItem } from "./lbaitem.shared.service.types.js"

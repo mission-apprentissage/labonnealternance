@@ -1,7 +1,9 @@
 //@ts-nocheck
-import axios from "axios"
 import crypto from "crypto"
+
+import axios from "axios"
 import { groupBy, maxBy } from "lodash-es"
+
 import { getElasticInstance } from "../common/esClient/index"
 import { FormationCatalogue } from "../common/model/index"
 import type { IFormationCatalogue } from "../common/model/schema/formationCatalogue/formationCatalogue.types"
@@ -13,9 +15,10 @@ import { sentryCaptureException } from "../common/utils/sentryUtils"
 import { notifyToSlack } from "../common/utils/slackUtils"
 import config from "../config"
 import { formationDetailMock, formationMock, formationsMock } from "../mocks/formations-mock"
-import { formationsQueryValidator, formationsRegionQueryValidator } from "../services/queryValidator.service"
+
 import type { IFormationEsResult } from "./formation.service.types"
 import type { ILbaItem, ILbaItemTrainingSession, LbaItem } from "./lbaitem.shared.service.types"
+import { formationsQueryValidator, formationsRegionQueryValidator } from "./queryValidator.service"
 
 const formationResultLimit = 500
 

@@ -1,4 +1,5 @@
 import { URL } from "url"
+
 import { EligibleTrainingsForAppointment, FormationCatalogue } from "../common/model/index"
 import apiGeoAdresse from "../common/utils/apiGeoAdresse"
 import { asyncForEach } from "../common/utils/asyncUtils"

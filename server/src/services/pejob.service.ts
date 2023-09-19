@@ -1,16 +1,19 @@
+import { setTimeout } from "timers/promises"
+
 import distance from "@turf/distance"
 import axios, { AxiosRequestHeaders } from "axios"
-import { setTimeout } from "timers/promises"
-import { NIVEAUX_POUR_OFFRES_PE } from "./constant.service.js"
-import { roundDistance } from "../common/utils/geolib.js"
+
 import { IApiError, manageApiError } from "../common/utils/errorManager.js"
+import { roundDistance } from "../common/utils/geolib.js"
 import { trackApiCall } from "../common/utils/sendTrackingEvent.js"
-import { filterJobsByOpco } from "./opco.service.js"
-import { ILbaItem, LbaItem } from "./lbaitem.shared.service.types.js"
-import dayjs from "./dayjs.service.js"
 import config from "../config.js"
-import { PEJob, PEResponse } from "./pejob.service.types.js"
+
+import { NIVEAUX_POUR_OFFRES_PE } from "./constant.service.js"
+import dayjs from "./dayjs.service.js"
 import { TLbaItemResult } from "./jobOpportunity.service.types.js"
+import { ILbaItem, LbaItem } from "./lbaitem.shared.service.types.js"
+import { filterJobsByOpco } from "./opco.service.js"
+import { PEJob, PEResponse } from "./pejob.service.types.js"
 
 const accessTokenEndpoint = "https://entreprise.pole-emploi.fr/connexion/oauth2/access_token?realm=%2Fpartenaire"
 const contentType = "application/x-www-form-urlencoded"

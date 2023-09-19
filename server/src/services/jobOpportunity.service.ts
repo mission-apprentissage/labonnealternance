@@ -1,11 +1,12 @@
+import { IApiError } from "../common/utils/errorManager.js"
 import { trackApiCall } from "../common/utils/sendTrackingEvent.js"
 import { sentryCaptureException } from "../common/utils/sentryUtils.js"
-import { getLbaJobs } from "./lbajob.service.js"
-import { getSomeCompanies } from "./lbacompany.service.js"
-import { jobsQueryValidator } from "./queryValidator.service.js"
-import { getSomePeJobs } from "./pejob.service.js"
+
 import { TJobSearchQuery } from "./jobOpportunity.service.types.js"
-import { IApiError } from "../common/utils/errorManager.js"
+import { getSomeCompanies } from "./lbacompany.service.js"
+import { getLbaJobs } from "./lbajob.service.js"
+import { getSomePeJobs } from "./pejob.service.js"
+import { jobsQueryValidator } from "./queryValidator.service.js"
 
 /**
  * Retourn la compilation d'opportunités d'emploi au format unifié
