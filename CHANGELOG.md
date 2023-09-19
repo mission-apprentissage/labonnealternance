@@ -1,3 +1,10 @@
+# [1.93.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.92.2...v1.93.0) (2023-09-19)
+
+
+### Features
+
+* LBAC-1447 Ajout bloc mes aides ([aad3dc7](https://github.com/mission-apprentissage/labonnealternance/commit/aad3dc704e71e4f8eeb9920c35db8862e8064212))
+
 ## [1.92.2](https://github.com/mission-apprentissage/labonnealternance/compare/v1.92.1...v1.92.2) (2023-09-19)
 
 
