@@ -1,3 +1,10 @@
+# [1.96.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.95.0...v1.96.0) (2023-09-19)
+
+
+### Features
+
+* LBAC-1018 liens google sur ville + cp seulement ([f7c916f](https://github.com/mission-apprentissage/labonnealternance/commit/f7c916fd021cb8f21f7ddd28c6d9b9b78e59843a))
+
 # [1.95.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.94.0...v1.95.0) (2023-09-19)
 
 
