@@ -114,7 +114,7 @@ export default () => {
   )
 
   /**
-   * Récupérer les informations d'une entreprise à l'aide de l'API du gouvernement
+   * Récupérer l'OPCO d'une entreprise à l'aide des données en base ou de l'API CFA DOCK
    */
   router.get(
     "/entreprise/:siret/opco",
