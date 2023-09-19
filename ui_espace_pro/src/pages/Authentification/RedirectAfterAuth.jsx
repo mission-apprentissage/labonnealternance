@@ -31,7 +31,7 @@ export default () => {
 
       case AUTHTYPE.CFA:
         setTimeout(() => {
-          navigate("/administration")
+          window.location.href = "espace-pro/administration"
         }, 1000)
         break
 

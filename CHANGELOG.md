@@ -1,44 +1,81 @@
-## [1.88.4](https://github.com/mission-apprentissage/labonnealternance/compare/v1.88.3...v1.88.4) (2023-09-13)
+## [1.92.2](https://github.com/mission-apprentissage/labonnealternance/compare/v1.92.1...v1.92.2) (2023-09-19)
 
 
 ### Bug Fixes
 
-* extension ([5146a68](https://github.com/mission-apprentissage/labonnealternance/commit/5146a6853ad1619c2311857cf4f994394954b9d3))
+* redirect CFA ([8b6f88a](https://github.com/mission-apprentissage/labonnealternance/commit/8b6f88ae1dabbcd2004c25fef8149006047d916d))
+
+## [1.92.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.92.0...v1.92.1) (2023-09-18)
+
+### Bug Fixes
+
+- envoi des emails rdvs bloques ([#580](https://github.com/mission-apprentissage/labonnealternance/issues/580)) ([b5b98ad](https://github.com/mission-apprentissage/labonnealternance/commit/b5b98add230c3b93d063513d60f44b42d651c833))
+
+# [1.92.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.91.0...v1.92.0) (2023-09-18)
+
+### Features
+
+- LBAC-1522 LBAC-1523 LBAC-1534 map désactivées par défaut et centrages ([#585](https://github.com/mission-apprentissage/labonnealternance/issues/585)) ([3d12b3f](https://github.com/mission-apprentissage/labonnealternance/commit/3d12b3f696345639684efd4c96b6288c7cf23991))
+
+# [1.91.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.90.1...v1.91.0) (2023-09-15)
+
+### Features
+
+- LBAC-1227 migrations services PE ([#551](https://github.com/mission-apprentissage/labonnealternance/issues/551)) ([30695c5](https://github.com/mission-apprentissage/labonnealternance/commit/30695c56cf147fbd2a6dd2195fbd922f76bb4e8e))
+
+## [1.90.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.90.0...v1.90.1) (2023-09-15)
+
+### Bug Fixes
+
+- remove etablissements from components ([#579](https://github.com/mission-apprentissage/labonnealternance/issues/579)) ([af3028b](https://github.com/mission-apprentissage/labonnealternance/commit/af3028bb75eaf5b7e03bf11e3b37189c87b2c2a5))
+
+# [1.90.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.89.0...v1.90.0) (2023-09-15)
+
+### Features
+
+- suppression -beta de didask dans les modèles de mail ([1812c91](https://github.com/mission-apprentissage/labonnealternance/commit/1812c918d9ba3af8727c872a979cb7dfc9b6058f))
+
+# [1.89.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.88.4...v1.89.0) (2023-09-15)
+
+### Features
+
+- wording lbac ([8b75868](https://github.com/mission-apprentissage/labonnealternance/commit/8b75868c5ef192a18df1f2750d915df4c7da0a48))
+
+## [1.88.4](https://github.com/mission-apprentissage/labonnealternance/compare/v1.88.3...v1.88.4) (2023-09-13)
+
+### Bug Fixes
+
+- extension ([5146a68](https://github.com/mission-apprentissage/labonnealternance/commit/5146a6853ad1619c2311857cf4f994394954b9d3))
 
 ## [1.88.3](https://github.com/mission-apprentissage/labonnealternance/compare/v1.88.2...v1.88.3) (2023-09-13)
 
-
 ### Bug Fixes
 
-* api job user info assignment ([9120500](https://github.com/mission-apprentissage/labonnealternance/commit/9120500fc993bf3b86975dc50f20cbad5fc1bc34))
+- api job user info assignment ([9120500](https://github.com/mission-apprentissage/labonnealternance/commit/9120500fc993bf3b86975dc50f20cbad5fc1bc34))
 
 ## [1.88.2](https://github.com/mission-apprentissage/labonnealternance/compare/v1.88.1...v1.88.2) (2023-09-13)
 
-
 ### Bug Fixes
 
-* removing unused ([#576](https://github.com/mission-apprentissage/labonnealternance/issues/576)) ([74c9ab1](https://github.com/mission-apprentissage/labonnealternance/commit/74c9ab11acc5a263a22f8564d0be5cc7999d65d2))
+- removing unused ([#576](https://github.com/mission-apprentissage/labonnealternance/issues/576)) ([74c9ab1](https://github.com/mission-apprentissage/labonnealternance/commit/74c9ab11acc5a263a22f8564d0be5cc7999d65d2))
 
 ## [1.88.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.88.0...v1.88.1) (2023-09-13)
 
-
 ### Bug Fixes
 
-* eslint ([#575](https://github.com/mission-apprentissage/labonnealternance/issues/575)) ([c2ec611](https://github.com/mission-apprentissage/labonnealternance/commit/c2ec61164f488df74c75e7500606c10aae54b72c))
+- eslint ([#575](https://github.com/mission-apprentissage/labonnealternance/issues/575)) ([c2ec611](https://github.com/mission-apprentissage/labonnealternance/commit/c2ec61164f488df74c75e7500606c10aae54b72c))
 
 # [1.88.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.87.0...v1.88.0) (2023-09-13)
 
-
 ### Features
 
-* LBAC-1400 Permettre de voir les offres échues ([#571](https://github.com/mission-apprentissage/labonnealternance/issues/571)) ([a9c7096](https://github.com/mission-apprentissage/labonnealternance/commit/a9c7096330ecc89ff66073ffd081ffbf12ca309c))
+- LBAC-1400 Permettre de voir les offres échues ([#571](https://github.com/mission-apprentissage/labonnealternance/issues/571)) ([a9c7096](https://github.com/mission-apprentissage/labonnealternance/commit/a9c7096330ecc89ff66073ffd081ffbf12ca309c))
 
 # [1.87.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.86.1...v1.87.0) (2023-09-12)
 
-
 ### Features
 
-* LBAC-1214 clarification affichage contexte de recherche ([#569](https://github.com/mission-apprentissage/labonnealternance/issues/569)) ([69d5286](https://github.com/mission-apprentissage/labonnealternance/commit/69d528691d0cf4e2ee4de312bb7deab0128c1470))
+- LBAC-1214 clarification affichage contexte de recherche ([#569](https://github.com/mission-apprentissage/labonnealternance/issues/569)) ([69d5286](https://github.com/mission-apprentissage/labonnealternance/commit/69d528691d0cf4e2ee4de312bb7deab0128c1470))
 
 ## [1.86.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.86.0...v1.86.1) (2023-09-08)
 

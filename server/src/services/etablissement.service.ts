@@ -1,9 +1,9 @@
 import axios, { AxiosResponse } from "axios"
 import { pick } from "lodash-es"
-import { Filter } from "mongodb"
+import { LbaCompanyLegacy, LbaCompany, Etablissement, ReferentielOpco, UnsubscribeOF, UserRecruteur } from "../common/model/index.js"
 import { mailTemplate } from "../assets/index.js"
-import { BonneBoiteLegacy, BonnesBoites, Etablissement, ReferentielOpco, UnsubscribeOF, UserRecruteur } from "../common/model/index.js"
-import { IBonneBoite } from "../common/model/schema/bonneboite/bonneboite.types.js"
+import { Filter } from "mongodb"
+import { ILbaCompany } from "../common/model/schema/lbaCompany/lbaCompany.types.js"
 import { IEtablissement } from "../common/model/schema/etablissements/etablissement.types.js"
 import { IRecruiter } from "../common/model/schema/recruiter/recruiter.types.js"
 import { IReferentielOpco } from "../common/model/schema/referentielOpco/referentielOpco.types.js"
@@ -326,18 +326,19 @@ export const getEstablishmentFromOpcoReferentiel = async (siretCode: IReferentie
  */
 export const getAllEstablishmentFromOpcoReferentiel = async (query: Filter<IReferentielOpco>): Promise<IReferentielOpco[]> => await ReferentielOpco.find(query).lean()
 /**
- * @description Get all matching records from the BonneBoiteLegacy collection
- * @param {Filter<IBonneBoite>} query
- * @returns {Promise<IBonneBoite["email"]>}
+ * @description Get all matching records from the LbaCompanyLegacy collection
+ * @param {Filter<ILbaCompany>} query
+ * @returns {Promise<ILbaCompany["email"]>}
  */
-export const getAllEstablishmentFromBonneBoiteLegacy = async (query: Filter<IBonneBoite>): Promise<IBonneBoite[]> =>
-  await BonneBoiteLegacy.find(query).select({ email: 1, _id: 0 }).lean()
+export const getAllEstablishmentFromLbaCompanyLegacy = async (query: Filter<ILbaCompany>): Promise<ILbaCompany[]> =>
+  await LbaCompanyLegacy.find(query).select({ email: 1, _id: 0 }).lean()
+
 /**
- * @description Get all matching records from the BonnesBoites collection
- * @param {Filter<IBonneBoite>} query
- * @returns {Promise<IBonneBoite["email"]>}
+ * @description Get all matching records from the LbaCompanies collection
+ * @param {Filter<ILbaCompany>} query
+ * @returns {Promise<ILbaCompany["email"]>}
  */
-export const getAllEstablishmentFromBonneBoite = async (query: Filter<IBonneBoite>): Promise<IBonneBoite[]> => await BonnesBoites.find(query).select({ email: 1, _id: 0 }).lean()
+export const getAllEstablishmentFromLbaCompany = async (query: Filter<ILbaCompany>): Promise<ILbaCompany[]> => await LbaCompany.find(query).select({ email: 1, _id: 0 }).lean()
 
 /**
  * @description Format Entreprise data
@@ -404,8 +405,8 @@ export const autoValidateCompany = async (userRecruteur: IUserRecruteur) => {
   const siren = siret.slice(0, 9)
   // Get all corresponding records using the SIREN number in BonneBoiteLegacy collection
   const [bonneBoiteLegacyList, bonneBoiteList, referentielOpcoList] = await Promise.all([
-    getAllEstablishmentFromBonneBoiteLegacy({ siret: { $regex: siren }, email: { $nin: ["", undefined] } }),
-    getAllEstablishmentFromBonneBoite({ siret: { $regex: siren }, email: { $nin: ["", undefined] } }),
+    getAllEstablishmentFromLbaCompanyLegacy({ siret: { $regex: siren }, email: { $nin: ["", undefined] } }),
+    getAllEstablishmentFromLbaCompany({ siret: { $regex: siren }, email: { $nin: ["", undefined] } }),
     getAllEstablishmentFromOpcoReferentiel({ siret_code: { $regex: siren } }),
   ])
 

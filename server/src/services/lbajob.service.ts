@@ -13,7 +13,7 @@ import { getApplicationByJobCount, IApplicationCount } from "./application.servi
 import { ILbaItem, LbaItem } from "./lbaitem.shared.service.types.js"
 import { IRecruiter } from "../common/model/schema/recruiter/recruiter.types.js"
 import { ILbaJobEsResult } from "./lbajob.service.types.js"
-import { sentryCaptureException } from "../common/utils/sentryUtils.js"
+import { TLbaItemResult } from "./jobOpportunity.service.types.js"
 
 /**
  * Retourne les offres LBA correspondantes aux critères de recherche
@@ -27,7 +27,7 @@ import { sentryCaptureException } from "../common/utils/sentryUtils.js"
  * @param {string} diploma optionnel: un fitre pour ne remonter ques les offres aboutissant à l'obtention du diplôme
  * @param {string} caller optionnel: l'identifiant de l'utilisateur de l'api
  * @param {string} useMock optionnel: un flag indiquant s'il faut retourner une valeur réelle ou une valeur mockée
- * @returns {Promise<IApiError | { results: ILbaItem[] }>}
+ * @returns {Promise<TLbaItemResult>}
  */
 export const getLbaJobs = async ({
   romes,
@@ -51,7 +51,7 @@ export const getLbaJobs = async ({
   diploma?: string
   caller?: string
   useMock?: string
-}): Promise<IApiError | { results: ILbaItem[] }> => {
+}): Promise<TLbaItemResult> => {
   if (radius === 0) {
     radius = 10
   }
@@ -151,7 +151,6 @@ export const getLbaJobById = async ({ id, caller }: { id: string; caller: string
 
     return { matchas: job }
   } catch (error) {
-    sentryCaptureException(error)
     return manageApiError({ error, api_path: "jobV1/matcha", caller, errorTitle: "getting job by id from Matcha" })
   }
 }

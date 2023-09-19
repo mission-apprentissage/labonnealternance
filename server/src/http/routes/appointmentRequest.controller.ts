@@ -12,6 +12,7 @@ import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
 import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service.js"
 import * as users from "../../services/user.service.js"
 import mailer from "../../services/mailer.service.js"
+import { Etablissement } from "../../common/model/index.js"
 
 const userRequestSchema = Joi.object({
   firstname: Joi.string().required(),
@@ -32,7 +33,7 @@ const appointmentReplySchema = Joi.object({
   cfa_message_to_applicant: Joi.string().allow("").optional(),
 })
 
-export default ({ etablissements }) => {
+export default () => {
   const router = express.Router()
 
   router.post(
@@ -96,7 +97,7 @@ export default ({ etablissements }) => {
           appointment_origin: referrerObj.name,
           cle_ministere_educatif: eligibleTrainingsForAppointment.cle_ministere_educatif,
         }),
-        etablissements.findOne({
+        Etablissement.findOne({
           formateur_siret: eligibleTrainingsForAppointment.etablissement_formateur_siret,
         }),
       ])

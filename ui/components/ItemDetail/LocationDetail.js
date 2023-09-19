@@ -174,7 +174,7 @@ const LocationDetail = ({ item, isCfa }) => {
               <Link
                 isExternal
                 variant="basicUnderlined"
-                href="https://dinum-beta.didask.com/courses/demonstration/60abc18c075edf000065c987"
+                href="https://dinum.didask.com/courses/demonstration/60abc18c075edf000065c987"
                 aria-label="Lien vers des conseils pour préparer son premier contact avec un CFA"
               >
                 Préparez votre premier contact avec un CFA&nbsp;

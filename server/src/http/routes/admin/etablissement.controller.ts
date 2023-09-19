@@ -5,7 +5,7 @@ import { tryCatch } from "../../middlewares/tryCatchMiddleware.js"
 /**
  * @description Etablissement Router.
  */
-export default ({ etablissements }) => {
+export default () => {
   const router = express.Router()
 
   /**
@@ -39,7 +39,7 @@ export default ({ etablissements }) => {
   router.get(
     "/siret-formateur/:siret",
     tryCatch(async ({ params }, res) => {
-      const etablissement = await etablissements.findOne({ formateur_siret: params.siret })
+      const etablissement = await Etablissement.findOne({ formateur_siret: params.siret })
 
       if (!etablissement) {
         return res.sendStatus(404)
@@ -55,7 +55,7 @@ export default ({ etablissements }) => {
   router.get(
     "/:id",
     tryCatch(async (req, res) => {
-      const etablissement = await etablissements.findById(req.params.id)
+      const etablissement = await Etablissement.findById(req.params.id)
 
       if (!etablissement) {
         return res.sendStatus(404)
@@ -90,13 +90,13 @@ export default ({ etablissements }) => {
   router.patch(
     "/:id",
     tryCatch(async ({ body, params }, res) => {
-      const etablissement = await etablissements.findById(params.id)
+      const etablissement = await Etablissement.findById(params.id)
 
       if (!etablissement) {
         return res.sendStatus(404)
       }
 
-      const result = await etablissements.findByIdAndUpdate(params.id, body)
+      const result = await Etablissement.findByIdAndUpdate(params.id, body)
 
       res.send(result)
     })
@@ -108,7 +108,7 @@ export default ({ etablissements }) => {
   router.delete(
     "/:id",
     tryCatch(async ({ params }, res) => {
-      await etablissements.findByIdAndDelete(params.id)
+      await Etablissement.findByIdAndDelete(params.id)
 
       return res.sendStatus(204)
     })

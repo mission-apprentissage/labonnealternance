@@ -1,10 +1,10 @@
 import { isEmailBurner } from "burner-email-providers"
 import path from "path"
 import { oleoduc, writeData } from "oleoduc"
-import { Application, BonnesBoites, EmailBlacklist } from "../common/model/index.js"
+import { Application, LbaCompany, EmailBlacklist } from "../common/model/index.js"
 import { manageApiError } from "../common/utils/errorManager.js"
 import { decryptWithIV, encryptIdWithIV } from "../common/utils/encryptString.js"
-import { validateCaller } from "../service/queryValidators.js"
+import { validateCaller } from "./queryValidator.service.js"
 import { logger } from "../common/logger.js"
 import { prepareMessageForMail } from "../common/utils/fileUtils.js"
 import config from "../config.js"
@@ -14,7 +14,7 @@ import mailer from "./mailer.service.js"
 import { sentryCaptureException } from "../common/utils/sentryUtils.js"
 import { IApplication } from "../common/model/schema/application/applications.types.js"
 import { IJobs } from "../common/model/schema/jobs/jobs.types.js"
-import { IBonneBoite } from "../common/model/schema/bonneboite/bonneboite.types.js"
+import { ILbaCompany } from "../common/model/schema/lbaCompany/lbaCompany.types.js"
 
 import { Document } from "mongoose"
 import Joi from "joi"
@@ -111,10 +111,10 @@ const findApplicationByTypeAndMessageId = async ({
  * @param {string} email
  * @return {Promise<void>}
  */
-export const removeEmailFromBonnesBoites = async (email: string) => {
+export const removeEmailFromLbaCompanies = async (email: string) => {
   try {
     oleoduc(
-      BonnesBoites.find({ email }).cursor(),
+      LbaCompany.find({ email }).cursor(),
       writeData((company) => {
         company.email = ""
         company.save()
@@ -478,7 +478,7 @@ export const validateCompany = async (validable: Partial<IApplicationParameters>
   const { company_siret, company_type } = validable
 
   if (company_type === "lba") {
-    const lbaCompany = await BonnesBoites.findOne({ siret: company_siret })
+    const lbaCompany = await LbaCompany.findOne({ siret: company_siret })
     if (!lbaCompany) {
       return "société désinscrite"
     } else if (lbaCompany.email?.toLowerCase() !== company_email.toLowerCase()) {
@@ -696,7 +696,7 @@ export const updateApplicationStatus = async ({ payload }: { payload: any }): Pr
     await addEmailToBlacklist(payload.email, application.job_origin)
 
     if (application.job_origin === "lbb" || application.job_origin === "lba") {
-      await removeEmailFromBonnesBoites(payload.email)
+      await removeEmailFromLbaCompanies(payload.email)
     } else if (application.job_origin === "matcha") {
       await warnMatchaTeamAboutBouncedEmail({ application })
     }
@@ -763,10 +763,10 @@ export const getApplicationByJobCount = async (job_ids: IJobs["_id"][]): Promise
 
 /**
  * @description retourne le nombre de candidatures enregistrées par siret de société fournis
- * @param {IBonneBoite["siret"][]} sirets
+ * @param {ILbaCompany["siret"][]} sirets
  * @returns {Promise<IApplicationCount[]>} token data
  */
-export const getApplicationByCompanyCount = async (sirets: IBonneBoite["siret"][]): Promise<IApplicationCount[]> => {
+export const getApplicationByCompanyCount = async (sirets: ILbaCompany["siret"][]): Promise<IApplicationCount[]> => {
   const applicationCountByCompany: IApplicationCount[] = await Application.aggregate([
     {
       $match: {

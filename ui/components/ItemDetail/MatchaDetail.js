@@ -96,7 +96,7 @@ const MatchaDetail = ({ job, seeInfo, setSeeInfo }) => {
               <Link
                 isExternal
                 variant="basicUnderlined"
-                href="https://dinum-beta.didask.com/courses/demonstration/60d21bf5be76560000ae916e"
+                href="https://dinum.didask.com/courses/demonstration/60d21bf5be76560000ae916e"
                 aria-label="Lien vers des conseils pour préparer son premier contact avec un CFA"
               >
                 On vous donne des conseils ici pour vous aider !

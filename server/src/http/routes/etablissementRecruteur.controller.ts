@@ -163,7 +163,6 @@ export default () => {
   /**
    * Enregistrement d'un partenaire
    */
-
   router.post(
     "/creation",
     tryCatch(async (req: Request<{}, {}, IUserRecruteur & IRecruiter>, res) => {
