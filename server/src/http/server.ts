@@ -11,8 +11,7 @@ import { corsMiddleware } from "./middlewares/corsMiddleware.js"
 import { errorMiddleware } from "./middlewares/errorMiddleware.js"
 import { logMiddleware } from "./middlewares/logMiddleware.js"
 import { tryCatch } from "./middlewares/tryCatchMiddleware.js"
-import admin from "./routes/admin/admin.controller.js"
-import appointmentRoute from "./routes/admin/appointment.controller.js"
+import adminAppointmentRoute from "./routes/admin/appointment.controller.js"
 import adminEtablissementRoute from "./routes/admin/etablissement.controller.js"
 import eligibleTrainingsForAppointmentRoute from "./routes/admin/widgetParameter.controller.js"
 import appointmentRequestRoute from "./routes/appointmentRequest.controller.js"
@@ -42,6 +41,9 @@ import { initBrevoWebhooks } from "../services/brevo.service.js"
 
 import "../auth/passport-strategy.js"
 import { initSentry } from "./sentry.js"
+import authMiddleware from "./middlewares/authMiddleware.js"
+import permissionsMiddleware from "./middlewares/permissionsMiddleware.js"
+import { ROLES } from "../services/constant.service.js"
 
 /**
  * LBA-Candidat Swagger file
@@ -102,6 +104,9 @@ const swaggerUIOptions = {
 
 export default async (components) => {
   const app = express()
+
+  const checkJwtTokenRdvAdmin = authMiddleware("jwt-rdv-admin")
+  const administratorOnly = permissionsMiddleware(ROLES.administrator)
 
   initSentry(app)
 
@@ -176,13 +181,12 @@ export default async (components) => {
    */
   app.use("/api/login", login())
   app.use("/api/password", password())
-  app.use("/api/admin", admin())
 
   /**
    * LBA-Organisme de formation
    */
-  app.use("/api/appointment", appointmentRoute())
-  app.use("/api/admin/etablissements", adminEtablissementRoute())
+  app.use("/api/admin/appointment", checkJwtTokenRdvAdmin, administratorOnly, adminAppointmentRoute())
+  app.use("/api/admin/etablissements", checkJwtTokenRdvAdmin, administratorOnly, adminEtablissementRoute())
   app.use("/api/etablissements", etablissementRoute())
   app.use("/api/appointment-request", appointmentRequestRoute())
   app.use("/api/catalogue", catalogueRoute())

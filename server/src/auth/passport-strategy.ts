@@ -95,7 +95,7 @@ passport.use(
 )
 
 passport.use(
-  "jwt-rdv",
+  "jwt-rdv-admin",
   new JwtStrategy(
     {
       jwtFromRequest: ExtractJwt.fromExtractors([ExtractJwt.fromUrlQueryParameter("token"), ExtractJwt.fromAuthHeaderAsBearerToken()]),
@@ -103,7 +103,7 @@ passport.use(
     },
     (jwt_payload, done) => {
       return userService
-        .getUser(jwt_payload.sub)
+        .getUserByMail(jwt_payload.sub)
         .then((user) => {
           if (!user) {
             return done(null, false, { message: "User not found" })

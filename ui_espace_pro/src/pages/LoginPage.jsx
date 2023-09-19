@@ -89,10 +89,6 @@ const LoginPage = () => {
                         <Button variant="primary" type={"submit"} fontSize="12px" fontWeight="700">
                           Connexion
                         </Button>
-
-                        <Link href="/forgotten-password" color="info" mt={1}>
-                          Mot de passe oublié
-                        </Link>
                       </Flex>
                       <Box mb={5}>{status.error && <Text color="#cd201f">{status.error}</Text>}</Box>
                     </Form>

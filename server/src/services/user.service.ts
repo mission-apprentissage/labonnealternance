@@ -48,6 +48,13 @@ const authenticate = async (username: string, password: string) => {
 const getUser = (username: string) => User.findOne({ username })
 
 /**
+ * @description Returns user from its email.
+ * @param {string} email
+ * @returns {Promise<IUser>}
+ */
+const getUserByMail = (email: string) => User.findOne({ email })
+
+/**
  * @description Returns user from its identifier.
  * @param {string} userId
  * @returns {Promise<IUser>}
@@ -118,4 +125,4 @@ const changePassword = async (username: string, newPassword: string) => {
   return user.save()
 }
 
-export { rehashPassword, authenticate, getUser, getUserById, update, createUser, find, findOne, changePassword }
+export { rehashPassword, authenticate, getUser, getUserById, getUserByMail, update, createUser, find, findOne, changePassword }
