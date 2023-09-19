@@ -4,6 +4,7 @@ import React, { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { Breadcrumb } from "../../../../common/components/Breadcrumb"
 import { setTitle } from "../../../../common/utils/pageUtils"
+import { _get } from "../../../../common/httpClient"
 
 const SearchPage = () => {
   const [searchKeyword, setSearchKeyword] = useState("")
@@ -29,11 +30,9 @@ const SearchPage = () => {
 
     try {
       const keywordEncoded = encodeURIComponent(keyword)
-      const catalogueResponse = await fetch(
-        `/api/catalogue/formations?query={ "$or": [ { "etablissement_formateur_siret": "${keywordEncoded}" }, { "etablissement_formateur_uai": "${keywordEncoded}"}, { "id_rco_formation": "${keywordEncoded}"}, {"cle_ministere_educatif": "${keywordEncoded}"} ] }`
+      const formations = await _get(
+        `/api/admin/formations?query={ "$or": [ { "etablissement_formateur_siret": "${keywordEncoded}" }, { "etablissement_formateur_uai": "${keywordEncoded}"}, { "id_rco_formation": "${keywordEncoded}"}, {"cle_ministere_educatif": "${keywordEncoded}"} ] }`
       )
-
-      const formations = await catalogueResponse.json()
 
       if (!formations.length) {
         toast({
@@ -43,7 +42,7 @@ const SearchPage = () => {
           position: "bottom-right",
         })
       } else {
-        navigate(`/admin/widget-parameters/edit/${formations[0].etablissement_formateur_siret}`)
+        navigate(`/admin/eligible-trainings-for-appointment/edit/${formations[0].etablissement_formateur_siret}`)
       }
     } catch (e) {
       toast({

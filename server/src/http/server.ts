@@ -11,16 +11,15 @@ import { corsMiddleware } from "./middlewares/corsMiddleware.js"
 import { errorMiddleware } from "./middlewares/errorMiddleware.js"
 import { logMiddleware } from "./middlewares/logMiddleware.js"
 import { tryCatch } from "./middlewares/tryCatchMiddleware.js"
-import admin from "./routes/admin/admin.controller.js"
-import appointmentRoute from "./routes/admin/appointment.controller.js"
+import adminAppointmentRoute from "./routes/admin/appointment.controller.js"
 import adminEtablissementRoute from "./routes/admin/etablissement.controller.js"
-import eligibleTrainingsForAppointmentRoute from "./routes/admin/widgetParameter.controller.js"
+import eligibleTrainingsForAppointmentRoute from "./routes/admin/eligibleTrainingsForAppointment.controller.js"
 import appointmentRequestRoute from "./routes/appointmentRequest.controller.js"
 import emailsRoute from "./routes/auth/emails.controller.js"
 import login from "./routes/auth/login.controller.js"
 import password from "./routes/auth/password.controller.js"
 import campaignWebhook from "./routes/campaignWebhook.controller.js"
-import catalogueRoute from "./routes/catalogue.controller.js"
+import formationsRoute from "./routes/admin/formations.controller.js"
 import constantsRoute from "./routes/constants.controller.js"
 import etablissementRoute from "./routes/etablissement.controller.js"
 import etablissementsRecruteurRoute from "./routes/etablissementRecruteur.controller.js"
@@ -42,6 +41,9 @@ import { initBrevoWebhooks } from "../services/brevo.service.js"
 
 import "../auth/passport-strategy.js"
 import { initSentry } from "./sentry.js"
+import authMiddleware from "./middlewares/authMiddleware.js"
+import permissionsMiddleware from "./middlewares/permissionsMiddleware.js"
+import { ROLES } from "../services/constant.service.js"
 
 /**
  * LBA-Candidat Swagger file
@@ -102,6 +104,9 @@ const swaggerUIOptions = {
 
 export default async (components) => {
   const app = express()
+
+  const checkJwtTokenRdvAdmin = authMiddleware("jwt-rdv-admin")
+  const administratorOnly = permissionsMiddleware(ROLES.administrator)
 
   initSentry(app)
 
@@ -176,18 +181,17 @@ export default async (components) => {
    */
   app.use("/api/login", login())
   app.use("/api/password", password())
-  app.use("/api/admin", admin())
 
   /**
    * LBA-Organisme de formation
    */
-  app.use("/api/appointment", appointmentRoute())
-  app.use("/api/admin/etablissements", adminEtablissementRoute())
+  app.use("/api/admin/appointments", checkJwtTokenRdvAdmin, administratorOnly, adminAppointmentRoute())
+  app.use("/api/admin/etablissements", checkJwtTokenRdvAdmin, administratorOnly, adminEtablissementRoute())
+  app.use("/api/admin/formations", checkJwtTokenRdvAdmin, administratorOnly, formationsRoute())
+  app.use("/api/admin/eligible-trainings-for-appointment", checkJwtTokenRdvAdmin, administratorOnly, eligibleTrainingsForAppointmentRoute())
   app.use("/api/etablissements", etablissementRoute())
   app.use("/api/appointment-request", appointmentRequestRoute())
-  app.use("/api/catalogue", catalogueRoute())
   app.use("/api/constants", constantsRoute())
-  app.use("/api/widget-parameters", eligibleTrainingsForAppointmentRoute())
   app.use("/api/partners", partnersRoute())
   app.use("/api/emails", emailsRoute())
   app.use("/api/support", supportRoute())
