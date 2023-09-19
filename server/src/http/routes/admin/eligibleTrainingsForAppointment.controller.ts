@@ -119,17 +119,5 @@ export default () => {
     })
   )
 
-  /**
-   * Delete an item by id deleteParameter eligibleTrainingsForAppointment/{id} DELETE
-   */
-  router.delete(
-    "/:id",
-    tryCatch(async ({ params }, res) => {
-      logger.info("Deleting new item: ", params.id)
-      await eligibleTrainingsForAppointmentService.remove(params.id)
-      res.send({ message: `Item ${params.id} deleted !` })
-    })
-  )
-
   return router
 }
