@@ -6,7 +6,7 @@ import { Breadcrumb } from "../../common/components/Breadcrumb"
 import { setTitle } from "../../common/utils/pageUtils"
 
 const DashboardPage = () => {
-  const [data, loading] = useFetch("/api/admin/appointment/appointments/details?limit=500")
+  const [data, loading] = useFetch("/api/admin/appointments/details?limit=500")
   const appointments = data === null ? [] : data.appointments
 
   const title = "Tableau de bord"

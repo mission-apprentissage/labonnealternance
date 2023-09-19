@@ -14,7 +14,7 @@ export default () => {
    * Get all formations getRequests /requests GET
    * */
   router.get(
-    "/appointments",
+    "/",
     tryCatch(async (req, res) => {
       const qs = req.query
       const query = qs && qs.query ? JSON.parse(qs.query) : {}
@@ -35,10 +35,10 @@ export default () => {
   )
 
   /**
-   * Get all formations getRequests /requests GET
+   * Get all formations getRequests /requests GET (with details)
    * */
   router.get(
-    "/appointments/details",
+    "/details",
     tryCatch(async (req, res) => {
       const qs = req.query
       const query = qs && qs.query ? JSON.parse(qs.query) : {}
@@ -80,92 +80,6 @@ export default () => {
           total: allAppointments.totalDocs,
         },
       })
-    })
-  )
-
-  /**
-   * Get countRequests requests/count GET
-   */
-  router.get(
-    "/appointments/count",
-    tryCatch(async (req, res) => {
-      const qs = req.query
-      const query = qs && qs.query ? JSON.parse(qs.query) : {}
-      const total = await Appointment.countDocuments(query)
-
-      res.send({ total })
-    })
-  )
-
-  /**
-   * Get request getRequest /request GET
-   */
-  router.get(
-    "/",
-    tryCatch(async (req, res) => {
-      const qs = req.query
-      const query = qs && qs.query ? JSON.parse(qs.query) : {}
-      const retrievedData = await Appointment.findOne(query)
-      if (retrievedData) {
-        res.send(retrievedData)
-      } else {
-        res.send({ message: `Item doesn't exist` })
-      }
-    })
-  )
-
-  /**
-   * Get request by id getRequestById /request/{id} GET
-   */
-  router.get(
-    "/:id",
-    tryCatch(async (req, res) => {
-      const itemId = req.params.id
-      const retrievedData = await Appointment.findById(itemId)
-      if (retrievedData) {
-        res.send(retrievedData)
-      } else {
-        res.send({ message: `Item ${itemId} doesn't exist` })
-      }
-    })
-  )
-
-  /**
-   * Add/Post an item validated by schema createRequest /request POST
-   */
-  router.post(
-    "/",
-    tryCatch(async ({ body }, res) => {
-      const item = body
-      logger.info("Adding new request: ", item)
-      const request = new Appointment(body)
-      await request.save()
-      res.send(request)
-    })
-  )
-
-  /**
-   * Update an item validated by schema updateRequest request/{id} PUT
-   */
-  router.put(
-    "/:id",
-    tryCatch(async ({ body, params }, res) => {
-      const itemId = params.id
-      logger.info("Updating item: ", body)
-      const result = await Appointment.findOneAndUpdate({ _id: itemId }, body, { new: true })
-      res.send(result)
-    })
-  )
-
-  /**
-   * Delete an item by id deleteRequest request/{id} DELETE
-   */
-  router.delete(
-    "/:id",
-    tryCatch(async ({ params }, res) => {
-      const itemId = params.id
-      await Appointment.findByIdAndDelete(itemId)
-      res.send({ message: `Item ${itemId} deleted !` })
     })
   )
 

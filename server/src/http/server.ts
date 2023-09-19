@@ -185,7 +185,7 @@ export default async (components) => {
   /**
    * LBA-Organisme de formation
    */
-  app.use("/api/admin/appointment", checkJwtTokenRdvAdmin, administratorOnly, adminAppointmentRoute())
+  app.use("/api/admin/appointments", checkJwtTokenRdvAdmin, administratorOnly, adminAppointmentRoute())
   app.use("/api/admin/etablissements", checkJwtTokenRdvAdmin, administratorOnly, adminEtablissementRoute())
   app.use("/api/admin/formations", checkJwtTokenRdvAdmin, administratorOnly, formationsRoute())
   app.use("/api/admin/eligible-tranings-for-appointment", checkJwtTokenRdvAdmin, administratorOnly, eligibleTrainingsForAppointmentRoute())
