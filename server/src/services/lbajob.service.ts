@@ -192,6 +192,10 @@ function transformLbaJob({
     resultJob.place.latitude = job.geo_coordinates.split(",")[0]
     resultJob.place.longitude = job.geo_coordinates.split(",")[1]
 
+    if (job.address_detail && "localite" in job.address_detail) {
+      resultJob.place.city = job.address_detail.localite
+    }
+
     resultJob.company.siret = job.establishment_siret
     resultJob.company.name = job.establishment_enseigne || job.establishment_raison_sociale || "Enseigne inconnue"
     resultJob.company.size = job.establishment_size

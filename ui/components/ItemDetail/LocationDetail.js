@@ -9,7 +9,7 @@ const LocationDetail = ({ item, isCfa }) => {
   const kind = item?.ideaType
 
   const getGoogleSearchParameters = () => {
-    return encodeURIComponent(`${item.company.name} ${item.place.address}`)
+    return encodeURIComponent(`${item.company.name} ${item.place.city || item.place.address}`)
   }
 
   let companySize = item?.company?.size?.toLowerCase()
