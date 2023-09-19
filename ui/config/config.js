@@ -1,8 +1,10 @@
 import { publicConfig } from "../config.public"
 
-export default {
+const config = {
   shouldDisplayCallForHelp: false,
 }
+
+export default config;
 
 export const baseUrl = publicConfig.baseUrl
 export const env = publicConfig.env

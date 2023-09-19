@@ -10,7 +10,7 @@ import opcomobilite from "./opcomobilite.png"
 import opcosante from "./opcosante.png"
 import opcouniformation from "./opcouniformation.png"
 
-export default [
+const logos = [
   {
     nom: "AFDAS",
     description:
@@ -72,3 +72,5 @@ export default [
     image: opcouniformation,
   },
 ]
+
+export default logos;

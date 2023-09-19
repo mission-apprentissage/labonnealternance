@@ -12,7 +12,9 @@ import { isArea } from "./isArea"
 import { getItemElement, scrollToElementInContainer } from "./tools"
 
 let currentPopup = null
+// eslint-disable-next-line import/no-mutable-exports
 let map = null
+// eslint-disable-next-line import/no-mutable-exports
 let isMapInitialized = false
 
 const franceCenter = [2.2, 47]
