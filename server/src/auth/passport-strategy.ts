@@ -6,6 +6,7 @@ import { Strategy as LocalAPIKeyStrategy } from "passport-localapikey"
 import { Strategy as LocalStrategy } from "passport-local"
 import { authenticate, getUser } from "../services/user.service.js"
 import { sentryCaptureException } from "../common/utils/sentryUtils.js"
+import * as userService from "../services/user.service.js"
 
 passport.use("api-key", new LocalAPIKeyStrategy({}, async (token, done) => done(null, config.smtp.brevoWebhookApiKey === token ? { apiKey: token } : false)))
 
@@ -82,6 +83,27 @@ passport.use(
     },
     (jwt_payload, done) => {
       return getUserRecruteur({ email: jwt_payload.sub })
+        .then((user) => {
+          if (!user) {
+            return done(null, false, { message: "User not found" })
+          }
+          return done(null, user)
+        })
+        .catch((err) => done(err))
+    }
+  )
+)
+
+passport.use(
+  "jwt-rdv",
+  new JwtStrategy(
+    {
+      jwtFromRequest: ExtractJwt.fromExtractors([ExtractJwt.fromUrlQueryParameter("token"), ExtractJwt.fromAuthHeaderAsBearerToken()]),
+      secretOrKey: config.auth.user.jwtSecret,
+    },
+    (jwt_payload, done) => {
+      return userService
+        .getUser(jwt_payload.sub)
         .then((user) => {
           if (!user) {
             return done(null, false, { message: "User not found" })
