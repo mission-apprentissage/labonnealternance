@@ -1,20 +1,23 @@
 import { Alert, AlertIcon, Box, Button, Container, Flex, Icon, Menu, MenuButton, MenuDivider, MenuItem, MenuList, Spacer, Text } from "@chakra-ui/react"
+import { useRouter } from "next/router"
 import { useContext } from "react"
-import { RiAccountCircleLine } from "react-icons/ri"
-import { useNavigate } from "react-router-dom"
-import LogoAkto from "../../assets/images/akto"
-import { AUTHTYPE } from "../../common/contants"
-import useAuth from "../../common/hooks/useAuth"
-import { LogoContext } from "../../contextLogo"
-import { LockFill } from "../../theme/components/icons"
-import { LbaNew } from "../../theme/components/logos"
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { RiAccountCircleLine } from "react-icons/ri" // TODO_AB
+
+import { AUTHTYPE } from "../../../common/contants"
+import useAuth from "../../../common/hooks/useAuth"
+import { publicConfig } from "../../../config.public"
+import { LogoContext } from "../../../context/contextLogo"
+import { LockFill } from "../../../theme/components/icons"
+import { LbaNew } from "../../../theme/components/logos_pro"
+import LogoAkto from "../assets/images/akto"
+
 import Logo from "./Logo"
-import { publicConfig } from "../../config.public"
 
 const Header = () => {
   const { organisation } = useContext(LogoContext)
   const [auth, setAuth] = useAuth()
-  const navigate = useNavigate()
+  const router = useRouter()
 
   return (
     <Box>
@@ -32,7 +35,7 @@ const Header = () => {
             {organisation?.includes("akto") && <LogoAkto display={["none", "flex"]} w="100px" h={6} />}
             <Spacer />
             {auth.sub === "anonymous" && (
-              <Button onClick={() => navigate("/authentification")} fontWeight="normal" variant="pill" color="bluefrance.500" leftIcon={<LockFill w={3} h={3} />}>
+              <Button onClick={() => router.push("/authentification")} fontWeight="normal" variant="pill" color="bluefrance.500" leftIcon={<LockFill w={3} h={3} />}>
                 Connexion
               </Button>
             )}
@@ -52,10 +55,10 @@ const Header = () => {
                 <MenuList>
                   {auth.sub !== "anonymous" && (
                     <>
-                      {auth.type !== AUTHTYPE.OPCO && <MenuItem onClick={() => navigate("/compte")}>Mes informations</MenuItem>}
+                      {auth.type !== AUTHTYPE.OPCO && <MenuItem onClick={() => router.push("/compte")}>Mes informations</MenuItem>}
                       {auth.type !== AUTHTYPE.ENTREPRISE && auth.type !== AUTHTYPE.OPCO && auth.type !== AUTHTYPE.ADMIN && (
                         <>
-                          <MenuItem onClick={() => navigate("/administration")}>Gestion des offres</MenuItem>
+                          <MenuItem onClick={() => router.push("/administration")}>Gestion des offres</MenuItem>
                           <MenuDivider />
                         </>
                       )}
@@ -63,7 +66,7 @@ const Header = () => {
                   )}
                   {auth.type === AUTHTYPE.ADMIN && (
                     <>
-                      <MenuItem onClick={() => navigate("/administration/users")}>Gestion des utilisateurs</MenuItem>
+                      <MenuItem onClick={() => router.push("/administration/users")}>Gestion des utilisateurs</MenuItem>
                       <MenuDivider />
                     </>
                   )}

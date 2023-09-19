@@ -1,7 +1,9 @@
 import { Box, Flex, Heading, Link, Stack, Text } from "@chakra-ui/react"
-import { AUTHTYPE } from "../common/contants"
-import useAuth from "../common/hooks/useAuth"
-import { InfoCircle } from "../theme/components/icons"
+
+import { AUTHTYPE } from "../../common/contants"
+import useAuth from "../../common/hooks/useAuth"
+import { InfoCircle } from "../../theme/components/icons"
+
 import InfoPopover from "./InfoPopover"
 import InfoTooltip from "./InfoToolTip"
 

@@ -1,5 +1,6 @@
 import { Box, Container, Divider, Flex, Spacer } from "@chakra-ui/react"
-import { Outlet } from "react-router-dom"
+// import { Outlet } from "react-router-dom" // TODO_AB to check consequences
+
 import Footer from "./Footer"
 import Header from "./Header"
 import Mission from "./Mission"
@@ -13,28 +14,31 @@ import NavigationMenu from "./NavigationMenu"
  * @param {boolean} displayNavigationMenu
  * @return {JSX.Element}
  */
-export default ({ header = true, children, widget, footer = true, displayNavigationMenu = true }) => (
-  <Container maxW="full" p="0">
-    <Flex direction="column" h="100vh">
-      {!widget && (
-        <>
-          {header && <Header />}
-          {displayNavigationMenu && <NavigationMenu />}
-        </>
-      )}
-      <Container maxW="container.xl" flexGrow="1">
-        {children ?? <Outlet />}
-      </Container>
-      {!widget && footer && (
-        <>
-          <Box>
-            <Spacer />
-            <Mission />
-            <Divider />
-            <Footer />
-          </Box>
-        </>
-      )}
-    </Flex>
-  </Container>
-)
+export default function Layout({ header = true, children, widget, footer = true, displayNavigationMenu = true }) {
+  return (
+    <Container maxW="full" p="0">
+      <Flex direction="column" h="100vh">
+        {!widget && (
+          <>
+            {header && <Header />}
+            {displayNavigationMenu && <NavigationMenu />}
+          </>
+        )}
+        <Container maxW="container.xl" flexGrow="1">
+          {/* {children ?? <Outlet />} */}
+          {children}
+        </Container>
+        {!widget && footer && (
+          <>
+            <Box>
+              <Spacer />
+              <Mission />
+              <Divider />
+              <Footer />
+            </Box>
+          </>
+        )}
+      </Flex>
+    </Container>
+  )
+}

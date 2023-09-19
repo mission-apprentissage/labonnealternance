@@ -1,9 +1,11 @@
-import { Box, Container, Flex, Link, Text } from "@chakra-ui/react"
+import { Box, Container, Flex, Text } from "@chakra-ui/react"
+import { useRouter } from "next/router"
 import { useState } from "react"
-import { NavLink, useLocation } from "react-router-dom"
-import { AUTHTYPE } from "../../common/contants"
-import useAuth from "../../common/hooks/useAuth"
-import { Close, MenuFill } from "../../theme/components/icons"
+
+import { AUTHTYPE } from "../../../common/contants"
+import useAuth from "../../../common/hooks/useAuth"
+import { Close, MenuFill } from "../../../theme/components/icons"
+import Link from "../../Link"
 
 const NavigationMenu = (props) => {
   const [isOpen, setIsOpen] = useState(false)
@@ -27,14 +29,13 @@ const NavToggle = ({ toggle, isOpen }) => {
 }
 
 const NavItem = ({ children, to = "/", ...rest }) => {
-  const { pathname } = useLocation()
-  const isActive = pathname === to
+  const router = useRouter()
+  const isActive = router.pathname === to
 
   return (
     <Link
       p={3}
-      as={NavLink}
-      to={to}
+      href={to}
       color={isActive ? "bluefrance.500" : "grey.800"}
       _hover={{ textDecoration: "none", bg: "grey.200" }}
       borderBottom="2px solid"

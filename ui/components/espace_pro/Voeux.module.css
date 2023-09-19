@@ -7,7 +7,7 @@
 }
 
 .voeux ul li::before {
-  content: '\2022';
+  content: "\2022";
   color: #000091;
   font-weight: bold;
   display: inline-block;
@@ -15,7 +15,7 @@
   margin-left: -1em;
 }
 
-input[type="date"]::-webkit-calendar-picker-indicator {
+/*input[type="date"]::-webkit-calendar-picker-indicator {
   background: transparent;
   bottom: 0;
   color: transparent;
@@ -26,4 +26,4 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   right: 0;
   top: 0;
   width: auto;
-}
+} TODO_AB */

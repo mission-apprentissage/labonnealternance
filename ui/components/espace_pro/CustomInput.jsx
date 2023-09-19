@@ -1,7 +1,8 @@
-import { Box, Flex, FormControl, FormErrorMessage, FormHelperText, FormLabel, Input, Link } from "@chakra-ui/react"
+import { Box, Flex, FormControl, FormErrorMessage, FormHelperText, FormLabel, Input } from "@chakra-ui/react"
 import { useField } from "formik"
-import { NavLink } from "react-router-dom"
-import { Warning } from "../theme/components/icons"
+
+import { Warning } from "../../theme/components/icons"
+import Link from "../Link"
 
 export const CustomInput = (props) => {
   const [field, meta] = useField(props)
@@ -19,7 +20,7 @@ export const CustomInput = (props) => {
             <Flex ml={1}>
               <div dangerouslySetInnerHTML={{ __html: meta.error }} />
               {meta.error?.includes("déjà associé") && (
-                <Link as={NavLink} to="/authentification" textColor="bluefrance.500" textDecoration="underline" ml={1}>
+                <Link href="/authentification" textColor="bluefrance.500" textDecoration="underline" ml={1}>
                   Connexion
                 </Link>
               )}

@@ -24897,6 +24897,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-hooks-global-state@npm:2.1.0":
+  version: 2.1.0
+  resolution: "react-hooks-global-state@npm:2.1.0"
+  dependencies:
+    zustand: 4.0.0
+  peerDependencies:
+    react: ">=16.8.0"
+  checksum: 43e08b617fec1d6418eb47843d917dd9767f09ede8a3e54695d8071c6042572337d2f0403ce845ff0eaad0f65cb88f11d40e5886665e3eb61ab40878d1f4b566
+  languageName: node
+  linkType: hard
+
 "react-hooks-global-state@npm:^1.0.1":
   version: 1.0.2
   resolution: "react-hooks-global-state@npm:1.0.2"
@@ -28845,7 +28856,9 @@ __metadata:
     react: 18.2.0
     react-dom: 18.2.0
     react-dropzone: 11.4.2
+    react-hooks-global-state: 2.1.0
     react-html-parser: 2.0.2
+    react-icons: ^4.2.0
     react-notion-x: 4.12.0
     react-query: 3.39.2
     react-swipeable: 6.1.0
@@ -30698,6 +30711,23 @@ __metadata:
   bin:
     z-schema: bin/z-schema
   checksum: 9afc0b8d4f75122fbbac8835b0398fc6ab3cfa3f68792e4e86edcd9be1e9ae9d982368a8ae25a4eeea6aad3ab35a24379b76e1525b105c23169c4f93b3185004
+  languageName: node
+  linkType: hard
+
+"zustand@npm:4.0.0":
+  version: 4.0.0
+  resolution: "zustand@npm:4.0.0"
+  dependencies:
+    use-sync-external-store: 1.2.0
+  peerDependencies:
+    immer: ">=9.0"
+    react: ">=16.8"
+  peerDependenciesMeta:
+    immer:
+      optional: true
+    react:
+      optional: true
+  checksum: b8ae5971dff79a1007d46f9a6bfa39ed5cc5b101a877eeec069ebdb6c8285ec8e3463e40cfa7c0f1507a41f43fe26ffb44b556063cb70ac03bccf1ea6e0f69d6
   languageName: node
   linkType: hard
 
