@@ -102,17 +102,5 @@ export default () => {
     })
   )
 
-  /**
-   * Deletes an etablissement.
-   */
-  router.delete(
-    "/:id",
-    tryCatch(async ({ params }, res) => {
-      await Etablissement.findByIdAndDelete(params.id)
-
-      return res.sendStatus(204)
-    })
-  )
-
   return router
 }
