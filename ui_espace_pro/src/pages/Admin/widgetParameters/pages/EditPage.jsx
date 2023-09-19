@@ -140,14 +140,14 @@ const EditPage = () => {
     await patchEligibleTrainingsForAppointment(id, { is_lieu_formation_email_customized })
     if (is_lieu_formation_email_customized) {
       toast({
-        title: "L'email ne sera pas écrasé lors de la prochaine synchronisation.",
+        title: "Lors de la prochaine synchronisation l'email ne sera pas écrasé car il est personnalisé.",
         status: "success",
         isClosable: true,
         position: "bottom-right",
       })
     } else {
       toast({
-        title: "L'email sera pas écrasé lors de la prochaine synchronisation.",
+        title: "L'email sera mis à jour automatiquement lors de la prochaine synchronisation avec le Catalogue.",
         status: "success",
         isClosable: true,
         position: "bottom-right",
