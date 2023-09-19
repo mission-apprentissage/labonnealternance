@@ -19,7 +19,7 @@ import emailsRoute from "./routes/auth/emails.controller.js"
 import login from "./routes/auth/login.controller.js"
 import password from "./routes/auth/password.controller.js"
 import campaignWebhook from "./routes/campaignWebhook.controller.js"
-import catalogueRoute from "./routes/catalogue.controller.js"
+import formationsRoute from "./routes/admin/formations.controller.js"
 import constantsRoute from "./routes/constants.controller.js"
 import etablissementRoute from "./routes/etablissement.controller.js"
 import etablissementsRecruteurRoute from "./routes/etablissementRecruteur.controller.js"
@@ -187,9 +187,9 @@ export default async (components) => {
    */
   app.use("/api/admin/appointment", checkJwtTokenRdvAdmin, administratorOnly, adminAppointmentRoute())
   app.use("/api/admin/etablissements", checkJwtTokenRdvAdmin, administratorOnly, adminEtablissementRoute())
+  app.use("/api/admin/formations", checkJwtTokenRdvAdmin, administratorOnly, formationsRoute())
   app.use("/api/etablissements", etablissementRoute())
   app.use("/api/appointment-request", appointmentRequestRoute())
-  app.use("/api/catalogue", catalogueRoute())
   app.use("/api/constants", constantsRoute())
   app.use("/api/widget-parameters", eligibleTrainingsForAppointmentRoute())
   app.use("/api/partners", partnersRoute())
