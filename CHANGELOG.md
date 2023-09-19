@@ -1,3 +1,10 @@
+# [1.94.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.93.0...v1.94.0) (2023-09-19)
+
+
+### Features
+
+* endpoint rework (LBAC-1554) ([#590](https://github.com/mission-apprentissage/labonnealternance/issues/590)) ([5c50d6c](https://github.com/mission-apprentissage/labonnealternance/commit/5c50d6c303f64f669a0880f1d1f2ff8aa6c0faf5))
+
 # [1.93.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.92.2...v1.93.0) (2023-09-19)
 
 
