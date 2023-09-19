@@ -1,17 +1,9 @@
 // @ts-nocheck
-/* eslint-disable no-unused-vars */
-/* eslint-disable eqeqeq */
-/* eslint-disable consistent-return */
-/* eslint-disable no-empty */
-/* eslint-disable no-continue */
-/* eslint-disable no-await-in-loop */
-/* eslint-disable no-async-promise-executor */
-/* eslint-disable no-plusplus */
-/* eslint-disable no-underscore-dangle */
-/* eslint-disable no-param-reassign */
 "use strict"
 
 import { oleoduc, writeData } from "oleoduc"
+
+import { logger } from "@/common/logger"
 
 import { logMessage } from "../../utils/logMessage"
 
@@ -229,48 +221,31 @@ function Mongoosastic(schema, options) {
     }
   }
 
-  schema.methods.index = function schemaIndex(refresh = true) {
-    return new Promise(async (resolve, reject) => {
-      try {
-        const _opts = { index: indexName, type: typeName, refresh }
-        _opts.body = serialize(this, mapping)
-        _opts.id = this._id.toString()
-        await esClient.index(_opts)
-      } catch (e) {
-        console.error(`Error index ${this._id.toString()}`, e.message || e, this)
-        return reject()
-      }
-      resolve()
-    })
+  schema.methods.index = async function schemaIndex(refresh = true) {
+    const _opts = { index: indexName, type: typeName, refresh }
+    _opts.body = serialize(this, mapping)
+    _opts.id = this._id.toString()
+    await esClient.index(_opts)
   }
 
-  schema.methods.unIndex = function schemaUnIndex() {
-    return new Promise(async (resolve, reject) => {
-      try {
-        const _opts = { index: indexName, type: typeName, refresh: true }
-        _opts.id = this._id.toString()
+  schema.methods.unIndex = async function schemaUnIndex() {
+    const _opts = { index: indexName, type: typeName, refresh: true }
+    _opts.id = this._id.toString()
 
-        let tries = 3
-        while (tries > 0) {
-          try {
-            await esClient.delete(_opts)
-            return resolve()
-          } catch (e) {
-            console.error(e)
-            await timeout(500)
-            --tries
-          }
-        }
+    let tries = 3
+    while (tries > 0) {
+      try {
+        await esClient.delete(_opts)
+        return resolve()
       } catch (e) {
-        console.error(`Error delete ${this._id.toString()}`, e.message || e)
-        return reject()
+        console.error(e)
+        await timeout(500)
+        --tries
       }
-      resolve()
-    })
+    }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  schema.statics.synchronize = async function synchronize(filter = {}, refresh = false) {
+  schema.statics.synchronize = async function synchronize(_filter = {}, refresh = false) {
     let count = 0
     await oleoduc(
       this.find({}).cursor(),
@@ -286,14 +261,11 @@ function Mongoosastic(schema, options) {
     )
   }
 
-  schema.statics.unsynchronize = function unsynchronize() {
-    return new Promise(async (resolve) => {
-      const exists = await esClient.indices.exists({ index: indexName })
-      if (exists) {
-        await esClient.indices.delete({ index: this.modelName })
-      }
-      resolve()
-    })
+  schema.statics.unsynchronize = async function unsynchronize() {
+    const exists = await esClient.indices.exists({ index: indexName })
+    if (exists) {
+      await esClient.indices.delete({ index: this.modelName })
+    }
   }
 
   function postRemove(doc) {
@@ -321,15 +293,14 @@ function Mongoosastic(schema, options) {
     inSchema.post("save", postSave)
     inSchema.post("findOneAndUpdate", postSave)
 
-    inSchema.post("insertMany", (docs) => {
-      return new Promise(async (resolve) => {
-        for (let i = 0; i < docs.length; i++) {
-          try {
-            await postSave(docs[i])
-          } catch (e) {}
+    inSchema.post("insertMany", async (docs) => {
+      for (let i = 0; i < docs.length; i++) {
+        try {
+          await postSave(docs[i])
+        } catch (e) {
+          logger.error(e);
         }
-        resolve()
-      })
+      }
     })
   }
   setUpMiddlewareHooks(schema)

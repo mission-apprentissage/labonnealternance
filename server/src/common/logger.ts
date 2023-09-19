@@ -2,7 +2,7 @@ import util from "util"
 
 import { createLogger, stdSerializers } from "bunyan"
 import BunyanSlack from "bunyan-slack"
-import chalk from "chalk" // eslint-disable-line node/no-unpublished-import
+import chalk from "chalk"
 import { isEmpty, omit, throttle } from "lodash-es"
 import { compose, transformData, writeData } from "oleoduc"
 

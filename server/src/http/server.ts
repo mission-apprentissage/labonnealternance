@@ -13,7 +13,6 @@ import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import __dirname from "../common/dirname"
 import { logger } from "../common/logger"
 import config from "../config"
-// eslint-disable-next-line import/no-unresolved, node/no-unpublished-import
 import { RegisterRoutes } from "../generated/routes"
 import { initBrevoWebhooks } from "../services/brevo.service"
 

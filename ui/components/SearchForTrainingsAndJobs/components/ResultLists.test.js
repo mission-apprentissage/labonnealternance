@@ -1,6 +1,5 @@
 // @vitest-environment jsdom
 
-/* eslint-disable import/no-extraneous-dependencies */
 import nock from "nock"
 import { describe, it, beforeEach } from "vitest";
 

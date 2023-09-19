@@ -14,7 +14,7 @@ process.on("unhandledRejection", (e) => logger.error(e))
 process.on("uncaughtException", (e) => logger.error(e))
 process.stdout.on("error", function (err) {
   if (err.code === "EPIPE") {
-    // eslint-disable-next-line no-process-exit
+    // eslint-disable-next-line n/no-process-exit
     process.exit(0)
   }
 })

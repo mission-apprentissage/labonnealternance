@@ -34,7 +34,7 @@ function createProcessExitSignal() {
         if (shutdownInProgress) {
           const message = `Server shut down (FORCED) (signal=${signal})`
           logger.warn(message)
-          // eslint-disable-next-line no-process-exit
+          // eslint-disable-next-line n/no-process-exit
           process.exit(1)
         }
 

@@ -8,6 +8,7 @@ module.exports = {
     "plugin:@typescript-eslint/recommended",
     "plugin:import/recommended",
     "plugin:import/typescript",
+    "plugin:@eslint-community/eslint-comments/recommended",    
     // "plugin:cypress/recommended",
     "prettier",
   ],
@@ -16,7 +17,7 @@ module.exports = {
     ecmaVersion: 2022,
     sourceType: "module",
   },
-  plugins: ["@typescript-eslint", "simple-import-sort", "import", "unused-imports"],
+  plugins: ["@typescript-eslint", "simple-import-sort", "import"],
   rules: {
     "@typescript-eslint/no-explicit-any": 0,
     "@typescript-eslint/ban-ts-comment": 0,
@@ -26,6 +27,7 @@ module.exports = {
       {
         argsIgnorePattern: "^_",
         varsIgnorePattern: "^_",
+        args: "after-used",
         caughtErrorsIgnorePattern: "^_",
         ignoreRestSiblings: true,
       },

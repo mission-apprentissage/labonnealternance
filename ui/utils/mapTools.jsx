@@ -1,4 +1,3 @@
-/* eslint-disable no-import-assign */
 import distance from "@turf/distance"
 import { round } from "lodash"
 import * as mapboxgl from "mapbox-gl"
@@ -22,6 +21,7 @@ const zoomWholeFrance = 5
 const initializeMap = ({ mapContainer, unselectItem, selectItemOnMap, onMapHasMoved, unselectMapPopupItem, setSelectedItem, setSelectedMapPopupItem }) => {
   isMapInitialized = true
 
+  // eslint-disable-next-line no-import-assign
   mapboxgl.accessToken = "pk.eyJ1IjoiYWxhbmxyIiwiYSI6ImNrYWlwYWYyZDAyejQzMHBpYzE0d2hoZWwifQ.FnAOzwsIKsYFRnTUwneUSA"
 
   map = new mapboxgl.Map({

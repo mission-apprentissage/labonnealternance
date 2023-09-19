@@ -17,5 +17,5 @@ try {
   startCLI()
 } catch (err) {
   logger.error({ err }, "startup error")
-  process.exit(1) // eslint-disable-line no-process-exit
+  process.exit(1) // eslint-disable-line n/no-process-exit
 }
