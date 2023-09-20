@@ -1,15 +1,19 @@
 import { Badge, Box, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr } from "@chakra-ui/react"
+// eslint-disable-next-line import/no-extraneous-dependencies
 import dayjs from "dayjs"
 import { memo, useCallback, useEffect, useState } from "react"
-import { getUser } from "../api"
+
+import { getUser } from "../../utils/api"
+
 import LoadingEmptySpace from "./LoadingEmptySpace"
 
+// eslint-disable-next-line react/display-name
 export default memo(({ histories }) => {
   const [historic, setHistoric] = useState([])
 
   const getValidator = useCallback(async () => {
     const buffer = await Promise.all(
-      histories.map(async (user, i) => {
+      histories.map(async (user) => {
         if (user.user !== "SERVEUR") {
           try {
             let result = await getUser(user.user)
@@ -71,7 +75,7 @@ export default memo(({ histories }) => {
               {historic
                 .map(({ date, status, first_name, last_name, validation_type, reason, user }, i) => {
                   return (
-                    <Tr>
+                    <Tr key={i}>
                       <Td>{i + 1}</Td>
                       <Td>{dayjs(date).format("DD/MM/YYYY")}</Td>
                       <Td>{getStatut(status)}</Td>

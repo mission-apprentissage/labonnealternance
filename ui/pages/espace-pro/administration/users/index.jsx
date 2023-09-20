@@ -129,13 +129,13 @@ export default function Users() {
         )
         return (
           <Flex direction="column">
-            <Link fontWeight="700" href={`/administration/users/${_id}`} aria-label="voir les informations">
+            <Link fontWeight="700" href={`/espace-pro/administration/users/${_id}`} aria-label="voir les informations">
               {establishment_raison_sociale}
             </Link>
             {establishment_raison_sociale ? (
               siretText
             ) : (
-              <Link fontWeight="700" href={`/administration/users/${_id}`} aria-label="voir les informations">
+              <Link fontWeight="700" href={`/espace-pro/administration/users/${_id}`} aria-label="voir les informations">
                 {siretText}
               </Link>
             )}
@@ -229,7 +229,7 @@ export default function Users() {
                   </MenuButton>
                   <MenuList>
                     <MenuItem>
-                      <Link href={`/administration/users/${row._id}`} aria-label="voir les informations">
+                      <Link href={`/espace-pro/administration/users/${row._id}`} aria-label="voir les informations">
                         Voir les informations
                       </Link>
                     </MenuItem>

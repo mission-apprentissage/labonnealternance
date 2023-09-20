@@ -1,7 +1,8 @@
 import { Button, Heading, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Stack, Text } from "@chakra-ui/react"
-import { Close } from "../theme/components/icons"
 
-export default (props) => {
+import { Close } from "../../theme/components/icons"
+
+export default function ConfirmationModificationOpco(props) {
   const { isOpen, onClose, setFieldValue, previousValue, newValue, establishment_raison_sociale } = props
 
   const handleUpdate = () => {

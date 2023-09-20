@@ -6,7 +6,7 @@ import Bandeau from "./Bandeau"
 import ConfirmationActivationUtilsateur from "./ConfirmationActivationUtilsateur"
 // import ConfirmationCreationCompte from "./ConfirmationCreationCompte"
 import ConfirmationDesactivationUtilisateur from "./ConfirmationDesactivationUtilisateur"
-// import ConfirmationModificationOpco from "./ConfirmationModificationOpco"
+import ConfirmationModificationOpco from "./ConfirmationModificationOpco"
 // import ConfirmationSuppressionEntreprise from "./ConfirmationSuppressionEntreprise"
 // import ConfirmationSuppressionOffre from "./ConfirmationSuppressionOffre"
 import CustomInput from "./CustomInput"
@@ -28,7 +28,7 @@ import Pagination from "./Pagination"
 // import PaginationReactQuery from "./PaginationReactQuery"
 import Table from "./Table"
 import TableNew from "./TableNew"
-// import UserValidationHistory from "./UserValidationHistory"
+import UserValidationHistory from "./UserValidationHistory"
 
 export {
   Pagination,
@@ -58,8 +58,8 @@ export {
   TableNew,
   // PaginationReactQuery,
   // ExportButtonNew,
-  // UserValidationHistory,
+  UserValidationHistory,
   ConfirmationDesactivationUtilisateur,
   ConfirmationActivationUtilsateur,
-  // ConfirmationModificationOpco,
+  ConfirmationModificationOpco,
 }
