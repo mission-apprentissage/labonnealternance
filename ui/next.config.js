@@ -3,6 +3,9 @@ const path = require("path")
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const withImages = require("next-images")
+// eslint-disable-next-line import/no-extraneous-dependencies
+const withTM = require("next-transpile-modules")(["shared"])
+
 /**
  * supprime les espacements inutiles pour remettre la séquence sur une seule ligne
  */
@@ -63,58 +66,60 @@ const contentSecurityPolicy = `
 `
 
 /** @type {import('next').NextConfig} */
-const nextConfig = withImages({
-  reactStrictMode: true,
-  poweredByHeader: false,
-  swcMinify: true,
-  experimental: {
-    outputFileTracingRoot: path.join(__dirname, "../"),
-    // typedRoutes: true,
-  },
-  output: "standalone",
-  eslint: {
-    // Warning: This allows production builds to successfully complete even if
-    // your project has ESLint errors.
-    ignoreDuringBuilds: true,
-  },
-  async headers() {
-    return [
-      {
-        source: "/:path*",
-        headers: [
-          {
-            key: "X-Content-Type-Options",
-            value: "nosniff",
-          },
-          {
-            key: "Content-Security-Policy",
-            value: inline(contentSecurityPolicy + " frame-ancestors 'none';"),
-          },
-          {
-            key: "Referrer-Policy",
-            value: "unsafe-url",
-          },
-          {
-            key: "Strict-Transport-Security",
-            value: "max-age=31536000; includeSubDomains",
-          },
-          {
-            key: "X-XSS-Protection",
-            value: "1",
-          },
-        ],
-      },
-      {
-        source: "/:slug(recherche-apprentissage|recherche-emploi|recherche-apprentissage-formation|postuler)",
-        headers: [
-          {
-            key: "Content-Security-Policy",
-            value: inline(contentSecurityPolicy),
-          },
-        ],
-      },
-    ]
-  },
-})
+const nextConfig = withTM(
+  withImages({
+    reactStrictMode: true,
+    poweredByHeader: false,
+    swcMinify: true,
+    experimental: {
+      outputFileTracingRoot: path.join(__dirname, "../"),
+      // typedRoutes: true,
+    },
+    output: "standalone",
+    eslint: {
+      // Warning: This allows production builds to successfully complete even if
+      // your project has ESLint errors.
+      ignoreDuringBuilds: true,
+    },
+    async headers() {
+      return [
+        {
+          source: "/:path*",
+          headers: [
+            {
+              key: "X-Content-Type-Options",
+              value: "nosniff",
+            },
+            {
+              key: "Content-Security-Policy",
+              value: inline(contentSecurityPolicy + " frame-ancestors 'none';"),
+            },
+            {
+              key: "Referrer-Policy",
+              value: "unsafe-url",
+            },
+            {
+              key: "Strict-Transport-Security",
+              value: "max-age=31536000; includeSubDomains",
+            },
+            {
+              key: "X-XSS-Protection",
+              value: "1",
+            },
+          ],
+        },
+        {
+          source: "/:slug(recherche-apprentissage|recherche-emploi|recherche-apprentissage-formation|postuler)",
+          headers: [
+            {
+              key: "Content-Security-Policy",
+              value: inline(contentSecurityPolicy),
+            },
+          ],
+        },
+      ]
+    },
+  })
+)
 
 module.exports = nextConfig

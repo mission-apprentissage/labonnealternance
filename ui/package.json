@@ -32,6 +32,7 @@
     "next-images": "1.8.5",
     "next-plausible": "3.6.3",
     "next-seo": "4.26.0",
+    "next-transpile-modules": "^10.0.1",
     "notion-client": "6.15.6",
     "react": "18.2.0",
     "react-dates": "^21.8.0",
@@ -44,6 +45,7 @@
     "react-query": "3.39.2",
     "react-swipeable": "6.1.0",
     "react-table": "^7.7.0",
+    "shared": "workspace:*",
     "yup": "0.32.9"
   },
   "devDependencies": {

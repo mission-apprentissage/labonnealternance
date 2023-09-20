@@ -2,6 +2,8 @@ export const getItemId = (item) => {
   return getItemIdAndType(item).itemId
 }
 
+export * from "shared/validators/siretValidator"
+
 export const getItemIdAndType = (item) => {
   let itemId = item.id
   let type = "training"

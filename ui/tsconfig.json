@@ -14,7 +14,10 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
-    "baseUrl": "."
+    "baseUrl": ".",
+    "paths": {
+      "shared": ["../shared"]
+    }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "components/greeting.jsx"],
   "exclude": ["node_modules"]

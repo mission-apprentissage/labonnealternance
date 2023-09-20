@@ -8,6 +8,7 @@ COPY .yarnrc.yml .yarnrc.yml
 COPY ui/package.json ui/package.json
 COPY ui_espace_pro/package.json ui_espace_pro/package.json
 COPY server/package.json server/package.json
+COPY shared/package.json shared/package.json
 
 RUN --mount=type=cache,target=/app/.yarn/cache yarn install --immutable
 
@@ -23,6 +24,7 @@ FROM root AS builder_server
 WORKDIR /app
 
 COPY ./server ./server
+COPY ./shared ./shared
 
 RUN yarn --cwd server build
 # Removing dev dependencies
@@ -38,6 +40,7 @@ ARG PUBLIC_VERSION
 ENV PUBLIC_VERSION=$PUBLIC_VERSION
 
 COPY --from=builder_server /app/server ./server
+COPY --from=builder_server /app/shared ./shared
 COPY --from=builder_server /app/node_modules ./node_modules
 COPY ./server/static /app/server/static
 
@@ -54,6 +57,7 @@ CMD ["node", "dist/index.js", "start"]
 FROM root AS builder_ui
 WORKDIR /app
 COPY ./ui ./ui
+COPY ./shared ./shared
 
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry
@@ -108,6 +112,7 @@ CMD ["node", "ui/server.js"]
 FROM root AS build_espace_pro
 WORKDIR /app
 COPY ./ui_espace_pro ./ui_espace_pro
+COPY ./shared ./shared
 
 ENV NODE_ENV production
 

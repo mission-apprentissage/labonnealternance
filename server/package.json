@@ -79,6 +79,7 @@
     "rate-limiter-flexible": "2.3.6",
     "require-all": "3.0.0",
     "sha512crypt-node": "0.1.0",
+    "shared": "workspace:*",
     "sib-api-v3-sdk": "8.2.1",
     "stream-json": "1.7.4",
     "swagger-jsdoc": "6.2.5",

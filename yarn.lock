@@ -13355,7 +13355,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"enhanced-resolve@npm:^5.12.0, enhanced-resolve@npm:^5.15.0":
+"enhanced-resolve@npm:^5.10.0, enhanced-resolve@npm:^5.12.0, enhanced-resolve@npm:^5.15.0":
   version: 5.15.0
   resolution: "enhanced-resolve@npm:5.15.0"
   dependencies:
@@ -21356,6 +21356,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"next-transpile-modules@npm:^10.0.1":
+  version: 10.0.1
+  resolution: "next-transpile-modules@npm:10.0.1"
+  dependencies:
+    enhanced-resolve: ^5.10.0
+  checksum: 6cfffd165769a04b153e60f49f4f3896d16aa688304616f66c7b94299e2229b04db368217e6a7300d3110fe988a6c6e68025bb2cbda3edf49e9b29109ff671bd
+  languageName: node
+  linkType: hard
+
 "next@npm:12.3.4":
   version: 12.3.4
   resolution: "next@npm:12.3.4"
@@ -26644,6 +26653,7 @@ __metadata:
     rate-limiter-flexible: 2.3.6
     require-all: 3.0.0
     sha512crypt-node: 0.1.0
+    shared: "workspace:*"
     sib-api-v3-sdk: 8.2.1
     stream-json: 1.7.4
     supertest: ^6.3.3
@@ -26707,7 +26717,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"shared@workspace:shared":
+"shared@workspace:*, shared@workspace:shared":
   version: 0.0.0-use.local
   resolution: "shared@workspace:shared"
   dependencies:
@@ -28866,6 +28876,7 @@ __metadata:
     next-images: 1.8.5
     next-plausible: 3.6.3
     next-seo: 4.26.0
+    next-transpile-modules: ^10.0.1
     nock: ^13.3.3
     notion-client: 6.15.6
     react: 18.2.0
@@ -28879,6 +28890,7 @@ __metadata:
     react-query: 3.39.2
     react-swipeable: 6.1.0
     react-table: ^7.7.0
+    shared: "workspace:*"
     typescript: ^5.2.2
     vitest: ^0.34.4
     yup: 0.32.9

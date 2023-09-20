@@ -9,7 +9,7 @@ export default defineConfig((options) => {
   }
   return {
     entry,
-    watch: isDev && options.watch ? ["./src"] : false,
+    watch: isDev && options.watch ? ["./src", "../shared"] : false,
     onSuccess: isDev && options.watch ? "yarn cli start --withProcessor" : "",
     // In watch mode doesn't exit cleanly as it causes EADDRINUSE error
     killSignal: "SIGKILL",
@@ -20,7 +20,7 @@ export default defineConfig((options) => {
     shims: false,
     minify: false,
     sourcemap: true,
-    // noExternal: ["shared"],
+    noExternal: ["shared"],
     clean: true,
     env: {
       ...options.env,

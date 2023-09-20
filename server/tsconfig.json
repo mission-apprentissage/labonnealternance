@@ -11,7 +11,8 @@
     "moduleResolution": "node",
     "paths": {
       "@/*": ["./src/*"],
-      "@tests/*": ["./tests/*"]
+      "@tests/*": ["./tests/*"],
+      "shared": ["../shared"]
     },
     "resolveJsonModule": true,
     /* JavaScript Support */

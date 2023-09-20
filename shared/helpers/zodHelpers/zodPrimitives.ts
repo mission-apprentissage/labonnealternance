@@ -1,6 +1,7 @@
 import { capitalize } from "lodash-es"
-import luhn from "luhn"
 import { z } from "zod"
+
+import { validateSIRET } from "validators/siretValidator"
 
 import { CODE_NAF_REGEX, SIRET_REGEX, UAI_REGEX } from "../../constants/regex"
 
@@ -18,13 +19,9 @@ z.setErrorMap(customErrorMap)
 
 export const extensions = {
   siret: () =>
-    z
-      .string()
-      .trim()
-      .regex(SIRET_REGEX, "SIRET invalide")
-      .refine((val) => luhn.validate(val), {
-        message: "Le siret ne respecte pas l'algorithme luhn",
-      }), // e.g 01234567890123
+    z.string().trim().regex(SIRET_REGEX, "SIRET invalide").refine(validateSIRET, {
+      message: "Le siret ne respecte pas l'algorithme luhn (https://fr.wikipedia.org/wiki/Formule_de_Luhn)",
+    }),
   uai: () => z.string().trim().regex(UAI_REGEX, "UAI invalide"), // e.g 0123456B
   code_naf: () =>
     z.preprocess(
