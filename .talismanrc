@@ -5,6 +5,8 @@ fileignoreconfig:
   checksum: 24332dcab809201ac286e4225a1d861307c291dc4a5e2308b996da2d3547a41c
 - filename: .infra/vault/vault.yml
   checksum: efe056129fb1c4f2719ae88eeefa7d116be7cd2faa27c0fc84c488109b63127d
+- filename: ui/pages/espace-pro/admin/widget-parameters/search.jsx
+  checksum: 4b65ee1cab8a6297037abb32ff06a72a54ccfaf2165745ed780f52699bb7a4c6
 scopeconfig:
 - scope: node
 custom_patterns:

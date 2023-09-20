@@ -3,9 +3,9 @@ export interface PublicConfig {
   baseUrl: string
   host: string
   espacePro: {
-    host: string,
-    protocol: string,
-  },
+    host: string
+    protocol: string
+  }
   env: "local" | "recette" | "production" | "preview" | "next"
   matomo: {
     url: string
@@ -13,6 +13,7 @@ export interface PublicConfig {
     jsTrackerFile: string
   }
   inserJeuneApiUrl: string
+  apiEndpoint: string
 }
 
 const SENTRY_DSN = ""
@@ -24,9 +25,9 @@ function getProductionPublicConfig(): PublicConfig {
     sentry_dsn: SENTRY_DSN,
     env: "production",
     host,
-    espacePro: { 
+    espacePro: {
       host,
-      protocol: 'https',
+      protocol: "https",
     },
     baseUrl: `https://${host}`,
     matomo: {
@@ -35,6 +36,7 @@ function getProductionPublicConfig(): PublicConfig {
       jsTrackerFile: "js/container_s4n03ZE1.js",
     },
     inserJeuneApiUrl: "https://exposition.inserjeunes.beta.gouv.fr",
+    apiEndpoint: `https://${host}/api`,
   }
 }
 
@@ -45,9 +47,9 @@ function getRecettePublicConfig(): PublicConfig {
     sentry_dsn: SENTRY_DSN,
     env: "recette",
     host,
-    espacePro: { 
+    espacePro: {
       host,
-      protocol: 'https',
+      protocol: "https",
     },
     baseUrl: `https://${host}`,
     matomo: {
@@ -56,6 +58,7 @@ function getRecettePublicConfig(): PublicConfig {
       jsTrackerFile: "js/container_6EvvnT5g.js",
     },
     inserJeuneApiUrl: "https://exposition-recette.inserjeunes.beta.gouv.fr",
+    apiEndpoint: `https://${host}/api`,
   }
 }
 function getNextPublicConfig(): PublicConfig {
@@ -65,9 +68,9 @@ function getNextPublicConfig(): PublicConfig {
     sentry_dsn: SENTRY_DSN,
     env: "next",
     host,
-    espacePro: { 
+    espacePro: {
       host,
-      protocol: 'https',
+      protocol: "https",
     },
     baseUrl: `https://${host}`,
     matomo: {
@@ -76,6 +79,7 @@ function getNextPublicConfig(): PublicConfig {
       jsTrackerFile: "js/container_6EvvnT5g.js",
     },
     inserJeuneApiUrl: "https://exposition-recette.inserjeunes.beta.gouv.fr",
+    apiEndpoint: `https://${host}/api`,
   }
 }
 
@@ -93,10 +97,10 @@ function getPreviewPublicConfig(): PublicConfig {
     sentry_dsn: SENTRY_DSN,
     env: "preview",
     host,
-    espacePro: { 
+    espacePro: {
       host,
-      protocol: 'https',
-        },
+      protocol: "https",
+    },
     baseUrl: `https://${host}`,
     matomo: {
       url: "https://stats.beta.gouv.fr",
@@ -104,6 +108,7 @@ function getPreviewPublicConfig(): PublicConfig {
       jsTrackerFile: "",
     },
     inserJeuneApiUrl: "https://exposition-recette.inserjeunes.beta.gouv.fr",
+    apiEndpoint: `https://${host}/api`,
   }
 }
 
@@ -114,11 +119,12 @@ function getLocalPublicConfig(): PublicConfig {
     sentry_dsn: SENTRY_DSN,
     env: "local",
     host,
-    espacePro: { 
+    espacePro: {
       host: `${host}:${process.env.NEXT_PUBLIC_ESPACE_PRO_PORT}`,
-      protocol: 'http',
+      protocol: "http",
     },
     baseUrl: `http://${host}:${process.env.NEXT_PUBLIC_API_PORT}`,
+    apiEndpoint: `http://${host}:${process.env.NEXT_PUBLIC_API_PORT ?? 5000}/api`,
     matomo: {
       url: "https://stats.beta.gouv.fr",
       siteId: "",

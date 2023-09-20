@@ -1,5 +1,5 @@
 {
-  "name": "mna-lba-server",
+  "name": "server",
   "version": "1.96.0",
   "description": "API La bonne alternance",
   "repository": "https://github.com/mission-apprentissage/labonnealternance.git",
@@ -38,6 +38,7 @@
     "commander": "9.4.1",
     "company-email-validator": "1.0.8",
     "convert-csv-to-json": "0.0.15",
+    "cors": "^2.8.5",
     "cron-parser": "4.9.0",
     "csv-parse": "5.3.1",
     "date-fns": "2.28.0",
