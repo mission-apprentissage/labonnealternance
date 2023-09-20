@@ -17,7 +17,8 @@ import config from "../config"
 import { formationDetailMock, formationMock, formationsMock } from "../mocks/formations-mock"
 
 import type { IFormationEsResult } from "./formation.service.types"
-import type { ILbaItem, ILbaItemTrainingSession, LbaItem } from "./lbaitem.shared.service.types"
+import type { ILbaItem, ILbaItemTrainingSession } from "./lbaitem.shared.service.types"
+import { LbaItem } from "./lbaitem.shared.service.types"
 import { formationsQueryValidator, formationsRegionQueryValidator } from "./queryValidator.service"
 
 const formationResultLimit = 500
