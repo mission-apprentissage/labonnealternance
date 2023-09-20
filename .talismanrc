@@ -14,7 +14,9 @@ fileignoreconfig:
 - filename: .infra/vault/vault.yml
   checksum: efe056129fb1c4f2719ae88eeefa7d116be7cd2faa27c0fc84c488109b63127d
 - filename: server/static/generated/swagger.json
-  checksum: 4c8d4cd74a8c3b8775c22e078fa502997c7a806d4695a3827a2e4b068bc8704f
+  checksum: any
+  ignore_detectors:
+  - filecontent
 - filename: ui/pages/espace-pro/admin/widget-parameters/search.jsx
   checksum: 4b65ee1cab8a6297037abb32ff06a72a54ccfaf2165745ed780f52699bb7a4c6
 scopeconfig:
