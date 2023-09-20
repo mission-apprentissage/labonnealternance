@@ -10,7 +10,7 @@ import { IApplicationCount, getApplicationByJobCount } from "./application.servi
 import { JOB_STATUS, NIVEAUX_POUR_LBA, RECRUITER_STATUS } from "./constant.service"
 import { getJobsFromElasticSearch, getOffreAvecInfoMandataire, incrementLbaJobViewCount } from "./formulaire.service"
 import type { TLbaItemResult } from "./jobOpportunity.service.types"
-import type { ILbaItem, LbaItem } from "./lbaitem.shared.service.types"
+import { ILbaItem, LbaItem } from "./lbaitem.shared.service.types"
 import type { ILbaJobEsResult } from "./lbajob.service.types"
 import { filterJobsByOpco } from "./opco.service"
 
