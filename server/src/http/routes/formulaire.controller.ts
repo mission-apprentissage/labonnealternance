@@ -32,9 +32,9 @@ export default () => {
     "/",
     authMiddleware("jwt-bearer"),
     tryCatch(async (req, res) => {
-      const query = JSON.parse(req.query.query)
-      const results = await Recruiter.find(query).lean()
-
+      // TODO_AB ??????
+      const query = req.query.query
+      const results = await Recruiter.find(query).limit(50).lean()
       return res.json(results)
     })
   )

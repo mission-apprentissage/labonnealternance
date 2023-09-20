@@ -33,7 +33,8 @@ export const getMetier = (search) => Axios.get(`https://labonnealternance.appren
 /**
  * Formulaire API
  */
-export const getFormulaires = (query, options, limit, page) => securedAPI.get("/formulaire", { params: { query, options, limit, page } }).catch(errorHandler)
+// export const getFormulaires = (query, options, limit, page) => securedAPI.get("/formulaire", { params: { query, options, limit, page } }).catch(errorHandler)
+export const getFormulaires = (query) => securedAPI.get("/formulaire", { params: { query } }).catch(errorHandler) // TODO_AB
 export const getFormulaire = (establishment_id) => API.get(`/formulaire/${establishment_id}`).catch(errorHandler)
 export const postFormulaire = (form) => API.post(`/formulaire`, form).catch(errorHandler)
 export const putFormulaire = (establishment_id, form) => API.put(`/formulaire/${establishment_id}`, form)

@@ -1,8 +1,9 @@
 import { Button, Flex, Heading, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Text, useToast } from "@chakra-ui/react"
-import { archiveFormulaire } from "../api"
-import { ArrowRightLine, Close } from "../theme/components/icons"
 
-export default (props) => {
+import { ArrowRightLine, Close } from "../../theme/components/icons"
+import { archiveFormulaire } from "../../utils/api"
+
+export default function ConfirmationSuppressionEntreprise(props) {
   let { isOpen, onClose, establishment_raison_sociale, establishment_id } = props
   const toast = useToast()
 
