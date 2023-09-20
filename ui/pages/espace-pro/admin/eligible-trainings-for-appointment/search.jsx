@@ -4,6 +4,7 @@ import Head from "next/head"
 import { useRouter } from "next/router"
 import React, { useState } from "react"
 
+import { _get } from "../../../../common/httpClient"
 import { Breadcrumb } from "../../../../components/espace_pro/common/components/Breadcrumb"
 
 export default function SearchPage() {
@@ -27,11 +28,9 @@ export default function SearchPage() {
 
     try {
       const keywordEncoded = encodeURIComponent(keyword)
-      const catalogueResponse = await fetch(
-        `/api/catalogue/formations?query={ "$or": [ { "etablissement_formateur_siret": "${keywordEncoded}" }, { "etablissement_formateur_uai": "${keywordEncoded}"}, { "id_rco_formation": "${keywordEncoded}"}, {"cle_ministere_educatif": "${keywordEncoded}"} ] }`
+      const formations = await _get(
+        `/api/admin/formations?query={ "$or": [ { "etablissement_formateur_siret": "${keywordEncoded}" }, { "etablissement_formateur_uai": "${keywordEncoded}"}, { "id_rco_formation": "${keywordEncoded}"}, {"cle_ministere_educatif": "${keywordEncoded}"} ] }`
       )
-
-      const formations = await catalogueResponse.json()
 
       if (!formations.length) {
         toast({
@@ -41,7 +40,7 @@ export default function SearchPage() {
           position: "bottom-right",
         })
       } else {
-        router.push(`/admin/widget-parameters/edit/${formations[0].etablissement_formateur_siret}`)
+        router.push(`/admin/eligible-trainings-for-appointment/edit/${formations[0].etablissement_formateur_siret}`)
       }
     } catch (e) {
       toast({

@@ -3,12 +3,11 @@ import Head from "next/head"
 import React from "react"
 
 import { useFetch } from "../../../common/hooks/useFetch"
-import { KpisComponent } from "../../../components/espace_pro/Admin/KpiContainer"
 import { RequestsBoardComponent } from "../../../components/espace_pro/Admin/RequestsBoardComponent"
 import { Breadcrumb } from "../../../components/espace_pro/common/components/Breadcrumb"
 
 export default function AdminPage() {
-  const [data, loading] = useFetch("/api/appointment/appointments/details?limit=500")
+  const [data, loading] = useFetch("/api/admin/appointments/details?limit=500")
   const appointments = data === null ? [] : data.appointments
 
   const title = "Tableau de bord"
@@ -27,7 +26,6 @@ export default function AdminPage() {
         <Spinner />
       ) : (
         <>
-          <KpisComponent />
           <RequestsBoardComponent appointments={appointments} />
         </>
       )}
