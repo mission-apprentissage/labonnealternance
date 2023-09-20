@@ -38,6 +38,7 @@ export * from "./Info-circle"
 // Following is conflicting
 // export * from "./InfoCircle"
 export * from "./InfoCircleFilled"
+export * from "./BarberGuy"
 export * from "./Information-line"
 export * from "./LinkLine"
 export * from "./LockFill"

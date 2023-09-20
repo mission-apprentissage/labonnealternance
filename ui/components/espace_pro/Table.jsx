@@ -1,9 +1,12 @@
 import { Box, Flex, Text } from "@chakra-ui/react"
 import React, { useMemo } from "react"
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { useFlexLayout, useSortBy, useTable } from "react-table"
-import { ArrowDownLine, ArrowUpLine } from "../theme/components/icons"
 
-export const Table = ({ data, columns, onRowClick }) => {
+import { ArrowDownLine, ArrowUpLine } from "../../theme/components/icons"
+
+
+export const Table = ({ data, columns }) => {
   const tableData = useMemo(() => data, [data])
   const tableColumns = useMemo(() => columns, [columns])
 
@@ -23,10 +26,10 @@ export const Table = ({ data, columns, onRowClick }) => {
     <>
       <Box as="table" {...getTableProps()} w="100%" flex={1} fontSize="delta">
         <Box as="thead" borderBottom="2px solid #3A3A3A">
-          {headerGroups.map((headerGroup) => (
-            <Box as="tr" {...headerGroup.getHeaderGroupProps({})} pb={4}>
+          {headerGroups.map((headerGroup, g) => (
+            <Box key={g} as="tr" {...headerGroup.getHeaderGroupProps({})} pb={4}>
               {headerGroup.headers.map((column, i) => (
-                <Box as="th" {...column.getHeaderProps(column.getSortByToggleProps())} display={[i === 0 || i > 2 ? "none" : "flex", "flex"]} overflow="hidden" px={2}>
+                <Box key={i} as="th" {...column.getHeaderProps(column.getSortByToggleProps())} display={[i === 0 || i > 2 ? "none" : "flex", "flex"]} overflow="hidden" px={2}>
                   <Flex flexDirection="column" w="full" alignItems="flex-start" justify="center">
                     <Text fontWeight="700" textAlign="left" fontSize="14px">
                       {column.render("Header")}
@@ -56,10 +59,10 @@ export const Table = ({ data, columns, onRowClick }) => {
           {rows.map((row, i) => {
             prepareRow(row)
             return (
-              <Box as="tr" backgroundColor={i % 2 ? "grey.200" : "white"} py={4} {...row.getRowProps()}>
-                {row.cells.map((cell) => {
+              <Box key={i} as="tr" backgroundColor={i % 2 ? "grey.200" : "white"} py={4} {...row.getRowProps()}>
+                {row.cells.map((cell, j) => {
                   return (
-                    <Flex as="td" align="center" px={2} {...cell.getCellProps()}>
+                    <Flex key={j} as="td" align="center" px={2} {...cell.getCellProps()}>
                       {cell.render("Cell")}
                     </Flex>
                   )

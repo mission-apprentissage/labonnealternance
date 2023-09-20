@@ -24,21 +24,25 @@ import {
   Text,
   Textarea,
 } from "@chakra-ui/react"
+// eslint-disable-next-line import/no-extraneous-dependencies
 import dayjs from "dayjs"
 import { Formik } from "formik"
 import { useContext, useEffect, useState } from "react"
 import { useLocation, useNavigate, useParams } from "react-router-dom"
 import * as Yup from "yup"
+
+import { AUTHTYPE } from "../../common/contants"
+import useAuth from "../../common/hooks/useAuth"
+import { publicConfig } from "../../config.public"
 import { getFormulaire, getRelatedEtablissementsFromRome, getRomeDetail, postOffre } from "../api"
-import { AUTHTYPE } from "../common/contants"
-import useAuth from "../common/hooks/useAuth"
 import { LogoContext } from "../contextLogo"
 import { WidgetContext } from "../contextWidget"
 import { ArrowRightLine, ExternalLinkLine, InfoCircle, Minus, Plus, Warning } from "../theme/components/icons"
 import { J1S, Parcoursup } from "../theme/components/logos"
+
 import DropdownCombobox from "./DropdownCombobox"
 import style from "./Voeux.module.css"
-import { publicConfig } from "../config.public"
+
 
 const DATE_FORMAT = "YYYY-MM-DD"
 const URL_LBA = `${publicConfig.baseUrl}/api`
