@@ -22,9 +22,9 @@ export default function Compte() {
   const getUserNavigationContext = () => {
     switch (auth.type) {
       case AUTHTYPE.ENTREPRISE:
-        return `/administration/entreprise/${auth.establishment_id}`
+        return `/espace-pro/administration/entreprise/${auth.establishment_id}`
       case AUTHTYPE.CFA:
-        return `/administration`
+        return `/espace-pro/administration`
       default:
         break
     }

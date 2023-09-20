@@ -35,7 +35,7 @@ const Header = () => {
             {organisation?.includes("akto") && <LogoAkto display={["none", "flex"]} w="100px" h={6} />}
             <Spacer />
             {auth.sub === "anonymous" && (
-              <Button onClick={() => router.push("/authentification")} fontWeight="normal" variant="pill" color="bluefrance.500" leftIcon={<LockFill w={3} h={3} />}>
+              <Button onClick={() => router.push("/espace-pro/authentification")} fontWeight="normal" variant="pill" color="bluefrance.500" leftIcon={<LockFill w={3} h={3} />}>
                 Connexion
               </Button>
             )}
@@ -55,10 +55,10 @@ const Header = () => {
                 <MenuList>
                   {auth.sub !== "anonymous" && (
                     <>
-                      {auth.type !== AUTHTYPE.OPCO && <MenuItem onClick={() => router.push("/compte")}>Mes informations</MenuItem>}
+                      {auth.type !== AUTHTYPE.OPCO && <MenuItem onClick={() => router.push("espace-pro/compte")}>Mes informations</MenuItem>}
                       {auth.type !== AUTHTYPE.ENTREPRISE && auth.type !== AUTHTYPE.OPCO && auth.type !== AUTHTYPE.ADMIN && (
                         <>
-                          <MenuItem onClick={() => router.push("/administration")}>Gestion des offres</MenuItem>
+                          <MenuItem onClick={() => router.push("/espace-pro/administration")}>Gestion des offres</MenuItem>
                           <MenuDivider />
                         </>
                       )}
@@ -66,7 +66,7 @@ const Header = () => {
                   )}
                   {auth.type === AUTHTYPE.ADMIN && (
                     <>
-                      <MenuItem onClick={() => router.push("/administration/users")}>Gestion des utilisateurs</MenuItem>
+                      <MenuItem onClick={() => router.push("/espace-pro/administration/users")}>Gestion des utilisateurs</MenuItem>
                       <MenuDivider />
                     </>
                   )}
