@@ -28837,9 +28837,11 @@ __metadata:
     "@types/react": 18.0.21
     axios: 1.1.2
     config: 3.3.3
+    dayjs: ^1.10.7
     dotenv: ^16.3.1
     downshift: 5.2.0
     email-misspelled: 3.3.9
+    email-validator: ^2.0.4
     eslint: 8.14.0
     eslint-config-next: ^13.4.19
     formik: ^2.1.4
@@ -28854,6 +28856,7 @@ __metadata:
     nock: ^13.3.3
     notion-client: 6.15.6
     react: 18.2.0
+    react-dates: ^21.8.0
     react-dom: 18.2.0
     react-dropzone: 11.4.2
     react-hooks-global-state: 2.1.0

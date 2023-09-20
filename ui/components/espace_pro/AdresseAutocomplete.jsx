@@ -1,7 +1,6 @@
-import { useState } from "react"
-import { useCombobox } from "downshift"
-
 import { Input, Box } from "@chakra-ui/react"
+import { useCombobox } from "downshift"
+import { useState } from "react"
 
 /**
  * @description Address autocomplete input.
@@ -12,7 +11,7 @@ import { Input, Box } from "@chakra-ui/react"
  * @param {string} props.defaultValue
  * @return {JSX.Element}
  */
-export default (props) => {
+export default function AdresseAutocomplete(props) {
   const [items, setItems] = useState([])
   const adresse = []
 
