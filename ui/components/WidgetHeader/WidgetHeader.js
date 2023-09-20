@@ -38,7 +38,7 @@ const WidgetHeader = ({ handleSearchSubmit, isHome, allJobSearchError, trainingS
               </Text>
             )}
             <HeaderForm handleSearchSubmit={handleSearchSubmitFunction} isHome={isHome} />
-          </Box>          
+          </Box>
         </Flex>
         {!isHome && (
           <ResultFilterAndCounter
@@ -48,7 +48,7 @@ const WidgetHeader = ({ handleSearchSubmit, isHome, allJobSearchError, trainingS
             isTrainingSearchLoading={isTrainingSearchLoading}
           />
         )}
-      </Box>      
+      </Box>
     </Box>
   )
 }

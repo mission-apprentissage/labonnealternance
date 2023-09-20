@@ -51,7 +51,7 @@ const ResultFilterAndCounter = ({ allJobSearchError, trainingSearchError, isTrai
 
   const filterZoneProperties = {
     justifyContent: "left",
-    paddingLeft: ["8px", "8px", "8px", "16px"], 
+    paddingLeft: ["8px", "8px", "8px", "16px"],
     marginTop: "8px",
     marginBottom: "4px",
     maxWidth: "1275px",
