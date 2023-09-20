@@ -56,6 +56,7 @@ const processCompanies = async () => {
       try {
         if (lbaCompany) {
           // contourne mongoose pour éviter la réindexation systématique à chaque insertion.
+          // @ts-ignore
           await LbaCompany.collection.insertOne(lbaCompany)
         }
       } catch (err) {

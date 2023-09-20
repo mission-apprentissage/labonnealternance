@@ -4,7 +4,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import nock from "nock"
 import { default as React } from "react"
-import { describe, expect, it, vi, beforeEach } from "vitest";
+import { describe, expect, it, vi, beforeEach } from "vitest"
 
 import CandidatureLba from "./CandidatureLba"
 

@@ -221,7 +221,7 @@ const getCompanies = async ({
         latitude
           ? {
               _geo_distance: {
-                geo_coordinates: [parseFloat(longitude ?? '0'), parseFloat(latitude)],
+                geo_coordinates: [parseFloat(longitude ?? "0"), parseFloat(latitude)],
                 order: "asc",
                 unit: "km",
                 mode: "min",

@@ -606,9 +606,9 @@ export const getFormationsQuery = async ({
   diploma?: string
   romeDomain?: string
   caller?: string
-  options: string
+  options?: string
   useMock?: string
-  referer: string
+  referer?: string
   api?: string
 }): Promise<IApiError | { results: ILbaItem[] }> => {
   const parameterControl = await formationsQueryValidator({ romes, longitude, latitude, radius, diploma, romeDomain, caller, referer, useMock })
@@ -647,7 +647,7 @@ export const getFormationsQuery = async ({
  * @param {string} caller l'identifiant de l'appelant de l'api
  * @returns {Promise<IApiError | { results: ILbaItem[] }>}
  */
-export const getFormationQuery = async ({ id, caller }: { id: string; caller: string }): Promise<IApiError | { results: ILbaItem[] }> => {
+export const getFormationQuery = async ({ id, caller }: { id: string; caller?: string }): Promise<IApiError | { results: ILbaItem[] }> => {
   try {
     const formation = await getOneFormationFromId({ id })
     return {
@@ -756,8 +756,8 @@ export const getFormationsParRegionQuery = async ({
   diploma?: string
   romeDomain?: string
   caller?: string
-  options: string
-  referer: string
+  options?: string
+  referer?: string
   useMock?: string
 }): Promise<IApiError | { results: ILbaItem[] }> => {
   const queryValidationResult = formationsRegionQueryValidator({ romes, departement, region, diploma, romeDomain, caller, referer, useMock })

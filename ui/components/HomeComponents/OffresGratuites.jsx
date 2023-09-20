@@ -3,7 +3,6 @@ import React from "react"
 
 import plateformesjeunesImage from "../../public/images/home_pics/illu-plateformesjeunes.svg"
 
-
 const OffresGratuites = () => {
   return (
     <Box as="section" py={3} mb={{ base: "2", md: "5" }}>

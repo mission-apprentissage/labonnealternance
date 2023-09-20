@@ -11,11 +11,11 @@ import { useServer } from "@tests/utils/server.utils"
 import { createUser } from "@/services/user.service"
 import { createAndLogUser } from "@tests/utils/login.utils"
 
-describe('loginRoutes', () => {
+describe("loginRoutes", () => {
   useMongo()
   const httpClient = useServer()
   it("Vérifie qu'on peut se connecter", async () => {
-    await createAndLogUser(httpClient, 'user', 'password');
+    await createAndLogUser(httpClient, "user", "password")
 
     const response = await httpClient().post("/api/login").send({
       username: "user",
@@ -34,7 +34,7 @@ describe('loginRoutes', () => {
   })
 
   it("Vérifie qu'un mot de passe invalide est rejeté", async () => {
-    await createAndLogUser(httpClient, 'user', 'password');
+    await createAndLogUser(httpClient, "user", "password")
 
     const response = await httpClient().post("/api/login").send({
       username: "user",
@@ -45,8 +45,6 @@ describe('loginRoutes', () => {
   })
 
   it("Vérifie qu'un login invalide est rejeté", async () => {
-    
-
     const response = await httpClient().post("/api/login").send({
       username: "INVALID",
       password: "INVALID",
@@ -56,7 +54,7 @@ describe('loginRoutes', () => {
   })
 
   it("Vérifie que le mot de passe est rehashé si trop faible", async () => {
-    await createAndLogUser(httpClient, 'user', 'password', { hash: hash("password", 1000) })
+    await createAndLogUser(httpClient, "user", "password", { hash: hash("password", 1000) })
 
     let response = await httpClient().post("/api/login").send({
       username: "user",
@@ -67,7 +65,7 @@ describe('loginRoutes', () => {
     const found = await User.findOne({ username: "user" })
     assert.strictEqual(found?.password.startsWith("$6$rounds=1001"), true)
 
-    response = await httpClient().post("/api/login",).send({
+    response = await httpClient().post("/api/login").send({
       username: "user",
       password: "password",
     })
@@ -75,10 +73,10 @@ describe('loginRoutes', () => {
   })
 
   it("Vérifie que le mot de passe n'est pas rehashé si ok", async () => {
-    await createAndLogUser(httpClient, 'user', 'password', { hash: hash("password", 1001) })
+    await createAndLogUser(httpClient, "user", "password", { hash: hash("password", 1001) })
     const previous = await User.findOne({ username: "user" })
 
-    const response = await httpClient().post("/api/login", ).send({
+    const response = await httpClient().post("/api/login").send({
       username: "user",
       password: "password",
     })
@@ -92,7 +90,7 @@ describe('loginRoutes', () => {
     await createAndLogUser(httpClient, "user", "password", { hash: hash("password", 1001) })
     const previous = await User.findOne({ username: "user" })
 
-    const response = await httpClient().post("/api/login",).send({
+    const response = await httpClient().post("/api/login").send({
       username: "user",
       password: "invalid",
     })

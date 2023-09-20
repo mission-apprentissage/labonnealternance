@@ -22,8 +22,8 @@ const SuccesDesinscription = () => (
           En complément, permettez-nous de vous expliquer notre fonctionnement.
         </Text>
         <Text>
-          La bonne alternance est un service public, porté par différents ministères (Emploi, Education Nationale, Transition numérique). Notre rôle est de
-          faciliter les entrées en alternance
+          La bonne alternance est un service public, porté par différents ministères (Emploi, Education Nationale, Transition numérique). Notre rôle est de faciliter les entrées en
+          alternance
           <br />
           <br />
           Pour cela, nous exposons différents types d'entreprises :

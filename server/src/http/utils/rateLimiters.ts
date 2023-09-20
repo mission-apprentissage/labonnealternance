@@ -2,10 +2,10 @@ import rateLimit from "express-rate-limit"
 
 import config from "@/config"
 
-let skip = config.env === 'local';
+let skip = config.env === "local"
 
 export const enableRateLimiter = () => {
-  skip = false;
+  skip = false
 }
 
 export const limiter3PerSecond = rateLimit({

@@ -2,7 +2,7 @@ import assert from "assert"
 import __filename from "../../src/common/filename"
 import { decrypt, encrypt } from "../../src/common/utils/encryptString"
 import { isOriginLocal } from "../../src/common/utils/isOriginLocal"
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest"
 
 describe(__filename(import.meta.url), () => {
   it("Détection origine autorisée - retourne false si undefined ", () => {

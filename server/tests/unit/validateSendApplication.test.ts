@@ -1,10 +1,9 @@
-
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest"
 import { validateCompanyEmail, validatePermanentEmail, validateSendApplication } from "../../src/services/application.service"
 
 import { decryptWithIV } from "../../src/common/utils/encryptString"
 
-describe('validateSendApplication', () => {
+describe("validateSendApplication", () => {
   it("validateSendApplication : Echoue si mauvais argument passé en param", async () => {
     expect(await validateSendApplication({})).to.equal("données de candidature invalides")
   })
@@ -18,7 +17,6 @@ describe('validateSendApplication', () => {
     expect(await validatePermanentEmail({ applicant_email: "test@gmail.com" })).to.equal("ok")
   })
   it("validateSendApplication : Passe si tous les champs sont valides", async () => {
-
     expect(
       await validateSendApplication({
         applicant_first_name: "jane",
@@ -28,13 +26,13 @@ describe('validateSendApplication', () => {
         applicant_phone: "0606060606",
         applicant_email: "jane.doe@example.com",
         company_email: "contact@example.com",
-        iv: 'pp',
-        company_naf: 'company_naf',
-        company_name: 'company_name',
-        job_title: 'job_title',
-        company_type: 'matcha',
-        company_siret: 'company_siret',
-        company_address: 'company_address',
+        iv: "pp",
+        company_naf: "company_naf",
+        company_name: "company_name",
+        job_title: "job_title",
+        company_type: "matcha",
+        company_siret: "company_siret",
+        company_address: "company_address",
       })
     ).to.equal("ok")
   })

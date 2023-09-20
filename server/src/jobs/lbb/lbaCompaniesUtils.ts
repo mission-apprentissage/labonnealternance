@@ -6,7 +6,7 @@ import { compose, oleoduc, writeData } from "oleoduc"
 
 import __dirname from "../../common/dirname"
 import { logger } from "../../common/logger"
-import { EmailBlacklist, GeoLocation, Opco , LbaCompany } from "../../common/model/index"
+import { EmailBlacklist, GeoLocation, Opco, LbaCompany } from "../../common/model/index"
 import { getFileFromS3Bucket, getS3FileLastUpdate, uploadFileToS3 } from "../../common/utils/awsUtils"
 import geoData from "../../common/utils/geoData"
 import { notifyToSlack } from "../../common/utils/slackUtils"

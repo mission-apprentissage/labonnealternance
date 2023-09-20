@@ -6,9 +6,6 @@ import React from "react"
 import { ParameterContext } from "../../context/ParameterContextProvider"
 import logoLBA from "../../public/images/logo-violet-seul.svg"
 
-
-
-
 const LogoLBA = () => {
   const router = useRouter()
 

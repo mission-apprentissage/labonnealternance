@@ -61,7 +61,7 @@ const validateRomesOrRncp = async (query: TJobSearchQuery, error_messages: strin
  * @returns {undefined}
  */
 const validateRomeOrDomain = (
-  { romes, romeDomain, romeLimit = 20, optional }: { romes: string | undefined; romeDomain: string| undefined; romeLimit?: number; optional?: boolean },
+  { romes, romeDomain, romeLimit = 20, optional }: { romes: string | undefined; romeDomain: string | undefined; romeLimit?: number; optional?: boolean },
   error_messages: string[]
 ) => {
   if (!optional && !romes && !romeDomain) {
@@ -86,7 +86,10 @@ const validateRomeOrDomain = (
  * @param {number} romeLimit le nombre maximum de codes ROME pouvant être acceptés
  * @returns {undefined}
  */
-const validateOptionalRomeOrDomain = ({ romes, romeDomain, romeLimit = 20 }: { romes: string| undefined; romeDomain: string| undefined; romeLimit?: number }, error_messages: string[]) => {
+const validateOptionalRomeOrDomain = (
+  { romes, romeDomain, romeLimit = 20 }: { romes: string | undefined; romeDomain: string | undefined; romeLimit?: number },
+  error_messages: string[]
+) => {
   validateRomeOrDomain({ romes, romeDomain, romeLimit, optional: true }, error_messages)
 }
 
@@ -97,7 +100,7 @@ const validateOptionalRomeOrDomain = ({ romes, romeDomain, romeLimit = 20 }: { r
  * @param {string[]} error_messages un tableau de messages d'erreur
  * @returns {undefined}
  */
-const validateOptionalRegion = ({ region, departement }: { region: string| undefined; departement: string| undefined }, error_messages: string[]) => {
+const validateOptionalRegion = ({ region, departement }: { region: string | undefined; departement: string | undefined }, error_messages: string[]) => {
   if (region && departement) {
     error_messages.push("region, departement : You must define either region OR departement, not both.")
   } else if (departement) {
@@ -120,7 +123,10 @@ const validateOptionalRegion = ({ region, departement }: { region: string| undef
  * @param {string[]} error_messages un tableau de messages d'erreur
  * @returns {undefined}
  */
-const validateRegionOrRome = ({ region, departement, romes, romeDomain }: { region: string| undefined; departement: string| undefined; romes: string| undefined; romeDomain: string| undefined }, error_messages: string[]) => {
+const validateRegionOrRome = (
+  { region, departement, romes, romeDomain }: { region: string | undefined; departement: string | undefined; romes: string | undefined; romeDomain: string | undefined },
+  error_messages: string[]
+) => {
   if (!(region || departement) && !(romes || romeDomain)) {
     error_messages.push("region, departement, romes, romeDomain : You must assign a value to at least one of these parameters.")
   }
@@ -161,8 +167,7 @@ const validateDiploma = (diploma: string | undefined, error_messages: string[]) 
 const validateInsee = (insee: string | undefined, error_messages: string[]) => {
   if (!insee) {
     error_messages.push("insee : insee city code is missing.")
-  } else 
-  if (!/^[0-9][abAB0-9][0-9]{3}$/.test(insee)) {
+  } else if (!/^[0-9][abAB0-9][0-9]{3}$/.test(insee)) {
     error_messages.push("insee : Badly formatted insee city code. Must be 5 digit number.")
   }
 }
@@ -235,7 +240,9 @@ export const jobsQueryValidator = async (query: TJobSearchQuery): Promise<{ resu
  * @param {TFormationSearchQuery} query paramètres de la requête
  * @returns {Promise<{ result: "passed", romes: string } | { error: string; error_messages: string[] }>}
  */
-export const formationsQueryValidator = async (query: TFormationSearchQuery): Promise<{ result: "passed"; romes: string| undefined } | { error: string; error_messages: string[] }> => {
+export const formationsQueryValidator = async (
+  query: TFormationSearchQuery
+): Promise<{ result: "passed"; romes: string | undefined } | { error: string; error_messages: string[] }> => {
   const error_messages = []
 
   // présence d'identifiant de la source : caller
@@ -293,7 +300,9 @@ export const formationsRegionQueryValidator = (query: TFormationSearchQuery): { 
  * @param {TFormationSearchQuery} query paramètres de la requête
  * @returns {Promise<{ result: "passed" } | { error: string; error_messages: string[] }>}
  */
-export const jobsEtFormationsQueryValidator = async (query: TFormationSearchQuery): Promise<{ result: "passed"; romes: string| undefined } | { error: string; error_messages: string[] }> => {
+export const jobsEtFormationsQueryValidator = async (
+  query: TFormationSearchQuery
+): Promise<{ result: "passed"; romes: string | undefined } | { error: string; error_messages: string[] }> => {
   const error_messages = []
 
   // présence d'identifiant de la source : caller

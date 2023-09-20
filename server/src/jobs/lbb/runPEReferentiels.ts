@@ -1,4 +1,5 @@
-import { getPeApiReferentiels } from "../../service/poleEmploi/common"
+import { getPeApiReferentiels } from "@/services/pejob.service"
+
 import { runScript } from "../scriptWrapper"
 
 runScript(async () => {

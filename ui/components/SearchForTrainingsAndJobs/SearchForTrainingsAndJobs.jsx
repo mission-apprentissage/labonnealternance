@@ -33,7 +33,6 @@ import { loadItem } from "./services/loadItem"
 import { searchForJobsFunction } from "./services/searchForJobs"
 import { searchForTrainingsFunction } from "./services/searchForTrainings"
 
-
 const SearchForTrainingsAndJobs = () => {
   const scopeContext = useContext(ScopeContext)
 

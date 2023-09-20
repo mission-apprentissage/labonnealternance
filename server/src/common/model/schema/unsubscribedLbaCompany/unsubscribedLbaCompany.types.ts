@@ -5,4 +5,4 @@ interface IUnsubscribedLbaCompany extends ILbaCompany {
   unsubscribe_reason: string
 }
 
-export { IUnsubscribedLbaCompany }
+export type { IUnsubscribedLbaCompany }

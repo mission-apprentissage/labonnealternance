@@ -2,7 +2,7 @@ import express from "express"
 import Joi from "joi"
 
 import { logger } from "../../../common/logger"
-import { EligibleTrainingsForAppointment , Etablissement } from "../../../common/model/index"
+import { EligibleTrainingsForAppointment, Etablissement } from "../../../common/model/index"
 import * as eligibleTrainingsForAppointmentService from "../../../services/eligibleTrainingsForAppointment.service"
 import { tryCatch } from "../../middlewares/tryCatchMiddleware"
 

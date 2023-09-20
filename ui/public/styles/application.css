@@ -1,100 +1,95 @@
 body {
-    overscroll-behavior: none;
-  }
-
+  overscroll-behavior: none;
+}
 
 /**
 FORMIK
 */
 .onErrorFieldColumn {
-    color: #e10600;
-    margin-left: 5px;
-    font-style: italic;
-    font-size: 14px;
-    padding-left: 25px;
-    background-image: url(/images/icons/input_value_error.svg);
-    background-repeat: no-repeat;
-    background-position: 5px 2px;
+  color: #e10600;
+  margin-left: 5px;
+  font-style: italic;
+  font-size: 14px;
+  padding-left: 25px;
+  background-image: url(/images/icons/input_value_error.svg);
+  background-repeat: no-repeat;
+  background-position: 5px 2px;
 }
-  
-  
+
 /**
 MAPBOX
 */
 canvas.mapboxgl-canvas:focus {
-    outline: none;
+  outline: none;
 }
-  
+
 .mapboxgl-popup {
-    z-index: 2;
-    min-width: 200px !important;
-    max-width: 200px !important;
+  z-index: 2;
+  min-width: 200px !important;
+  max-width: 200px !important;
 }
 
 .mapboxgl-popup-close-button {
-    font-size: 24px;
-    top: 5px !important;
-    right: 8px !important;
-    color: #383838;
-    width: 20px;
+  font-size: 24px;
+  top: 5px !important;
+  right: 8px !important;
+  color: #383838;
+  width: 20px;
 }
 .mapboxgl-popup-close-button:hover {
-    background: none !important;
+  background: none !important;
 }
 
 .mapboxgl-ctrl-bottom-right .mapboxgl-ctrl {
-    margin: 0 18px 2rem 0;
+  margin: 0 18px 2rem 0;
 }
 
 .mapboxgl-ctrl-attrib {
-    display: none;
+  display: none;
 }
 
-
 @media screen and (min-width: 480px) {
-    .mapboxgl-popup {
-        min-width: 300px !important;
-        max-width: 300px !important;
-    }
+  .mapboxgl-popup {
+    min-width: 300px !important;
+    max-width: 300px !important;
+  }
 }
 
 @media screen and (min-width: 768px) {
-    .mapboxgl-ctrl-bottom-right .mapboxgl-ctrl {
-        margin: 0 38px 6rem 0;
-    }   
+  .mapboxgl-ctrl-bottom-right .mapboxgl-ctrl {
+    margin: 0 38px 6rem 0;
+  }
 
-    .mapboxgl-ctrl-bottom-right {
-            bottom: 75px !important;
-    }   
+  .mapboxgl-ctrl-bottom-right {
+    bottom: 75px !important;
+  }
 
-    .mapboxgl-popup {
-        min-width: 200px !important;
-        max-width: 200px !important;
-    }
+  .mapboxgl-popup {
+    min-width: 200px !important;
+    max-width: 200px !important;
+  }
 }
 
 @media screen and (min-width: 992px) {
-    .mapboxgl-popup {
-        min-width: 250px !important;
-        max-width: 250px !important;
-    }
+  .mapboxgl-popup {
+    min-width: 250px !important;
+    max-width: 250px !important;
+  }
 }
-
 
 @media screen and (min-width: 1280px) {
-    .mapboxgl-popup {
-        min-width: 400px !important;
-        max-width: 400px !important;
-    }
+  .mapboxgl-popup {
+    min-width: 400px !important;
+    max-width: 400px !important;
+  }
 }
-
 
 /**
 PAGE NOTION
 */
 .disable-chakra {
-    all: revert
+  all: revert;
 }
 .disable-chakra * {
-    all: revert
+  all: revert;
 }

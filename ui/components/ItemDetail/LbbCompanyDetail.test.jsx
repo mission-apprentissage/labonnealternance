@@ -1,12 +1,11 @@
 // @vitest-environment jsdom
 import { render, screen } from "@testing-library/react"
 import React from "react"
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest"
 
 import DisplayContextProvider from "../../context/DisplayContextProvider"
 
 import LbbCompanyDetail from "./LbbCompanyDetail"
-
 
 describe("LbbCompanyDetail", () => {
   it.skip("Displays the LBB component", () => {

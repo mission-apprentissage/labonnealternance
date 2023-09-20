@@ -2,7 +2,7 @@ import { useMongo } from "@tests/utils/mongo.utils"
 import { useServer } from "@tests/utils/server.utils"
 import { describe, it, expect } from "vitest"
 
-describe('constantsRoutes', () => {
+describe("constantsRoutes", () => {
   useMongo()
   const httpClient = useServer()
 
@@ -10,6 +10,6 @@ describe('constantsRoutes', () => {
     await httpClient()
       .get("/api/constants")
       .expect(200)
-      .then(response => expect(response.body.referrers).not.toHaveLength(0));
+      .then((response) => expect(response.body.referrers).not.toHaveLength(0))
   })
 })

@@ -27,8 +27,8 @@ const paramApisPE = `grant_type=client_credentials&client_id=${clientId}&client_
 const paramPE = `${paramApisPE}${scopePE}`
 const peApiHeaders = { "Content-Type": "application/json", Accept: "application/json" } as AxiosRequestHeaders
 type TokenPE = {
-  expiry: Dayjs,
-  value: string,
+  expiry: Dayjs
+  value: string
 }
 let tokenPE: TokenPE | null = null
 
@@ -122,7 +122,7 @@ const computeJobDistanceToSearchCenter = (job: PEJob, latitude: string, longitud
  * @param {string | null} longitude la longitude du centre de recherche
  * @return {ILbaItem}
  */
-const transformPeJob = ({ job, latitude = null, longitude = null }: { job: PEJob; latitude?: string | null; longitude?: string | null}): ILbaItem => {
+const transformPeJob = ({ job, latitude = null, longitude = null }: { job: PEJob; latitude?: string | null; longitude?: string | null }): ILbaItem => {
   const resultJob = new LbaItem("peJob")
 
   resultJob.title = job.intitule
@@ -357,8 +357,8 @@ export const getSomePeJobs = async ({ romes, insee, radius, latitude, longitude,
   // tri du résultat fusionné sur le critère de poids descendant
   if (jobs) {
     jobs.sort((a, b) => {
-      const bDist = b.place?.distance ?? 0;
-      const aDist = a.place?.distance ?? 0;
+      const bDist = b.place?.distance ?? 0
+      const aDist = a.place?.distance ?? 0
       return bDist - aDist
     })
   }

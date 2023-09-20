@@ -4,7 +4,7 @@ const config = {
   shouldDisplayCallForHelp: false,
 }
 
-export default config;
+export default config
 
 export const baseUrl = publicConfig.baseUrl
 export const env = publicConfig.env

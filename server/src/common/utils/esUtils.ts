@@ -5,8 +5,8 @@ export const rebuildIndex = async (model, { skipNotFound, recreate } = { skipNot
   const client = getElasticInstance()
   const index = model.collection.collectionName // Assume model name = index name
 
-  if (!recreate && await client.indices.exists(index)) {
-    return;
+  if (!recreate && (await client.indices.exists(index))) {
+    return
   }
 
   logger.info(`Removing '${index}' index...`)

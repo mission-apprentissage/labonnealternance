@@ -15,8 +15,6 @@ import PostezVotreOffre from "../components/HomeComponents/PostezVotreOffre"
 import Navigation from "../components/navigation"
 import ScrollToTop from "../components/ScrollToTop"
 
-
-
 const AccesRecruteur = () => (
   <Box>
     <NextSeo

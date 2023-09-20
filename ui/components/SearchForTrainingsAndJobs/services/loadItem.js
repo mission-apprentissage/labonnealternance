@@ -7,7 +7,6 @@ import { storeTrainingsInSession } from "./handleSessionStorage"
 import { searchForJobsFunction } from "./searchForJobs"
 import { companyApi, matchaApi, notFoundErrorText, offreApi, partialJobSearchErrorText, trainingApi, trainingErrorText } from "./utils"
 
-
 export const loadItem = async ({
   item,
   setTrainings,

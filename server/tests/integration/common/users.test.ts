@@ -3,12 +3,12 @@ import assert from "assert"
 import { User } from "../../../src/common/model/index"
 import { ROLES } from "../../../src/services/constant.service"
 import { authenticate, changePassword, createUser } from "../../../src/services/user.service"
-import { describe, expect, it } from "vitest";
-import { useMongo } from "@tests/utils/mongo.utils";
+import { describe, expect, it } from "vitest"
+import { useMongo } from "@tests/utils/mongo.utils"
 
-describe('users', () => {
-  useMongo();
-  
+describe("users", () => {
+  useMongo()
+
   it("Permet de créer un utilisateur", async () => {
     const created = await createUser("user", "password", {})
     assert.strictEqual(created.username, "user")

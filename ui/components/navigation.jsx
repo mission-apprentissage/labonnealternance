@@ -2,8 +2,7 @@ import { CloseIcon, HamburgerIcon, LockIcon } from "@chakra-ui/icons"
 import { Box, Container, Flex, Image, keyframes, Link, Show, Stack, useDisclosure, usePrefersReducedMotion } from "@chakra-ui/react"
 import NextLink from "next/link"
 
-import { publicConfig } from '../config.public'
-
+import { publicConfig } from "../config.public"
 
 const Navigation = ({ currentPage }) => {
   const getLogo = () => {

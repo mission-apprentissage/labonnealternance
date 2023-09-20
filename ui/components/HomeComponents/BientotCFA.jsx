@@ -1,7 +1,6 @@
 import { Box, Grid, GridItem, Image, Text } from "@chakra-ui/react"
 import React from "react"
 
-
 const BientotCFA = () => {
   return (
     <Box bg="beige" mt="16" borderRadius="10" px={{ base: 3, md: 6, lg: 12 }} py={{ base: 12, lg: 0 }}>

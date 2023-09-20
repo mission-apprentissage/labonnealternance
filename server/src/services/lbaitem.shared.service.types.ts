@@ -146,12 +146,12 @@ export class LbaItem implements ILbaItem {
     this.ideaType = type
   }
 
-  ideaType: ILbaItem['ideaType'] = null
-  title: ILbaItem['title'] = null
-  longTitle: ILbaItem['longTitle'] = null
-  id: ILbaItem['id'] = null
-  idRco: ILbaItem['idRco'] = null
-  idRcoFormation: ILbaItem['idRcoFormation'] = null
+  ideaType: ILbaItem["ideaType"] = null
+  title: ILbaItem["title"] = null
+  longTitle: ILbaItem["longTitle"] = null
+  id: ILbaItem["id"] = null
+  idRco: ILbaItem["idRco"] = null
+  idRcoFormation: ILbaItem["idRcoFormation"] = null
 
   contact: ILbaItemContact | null = null
 
@@ -187,19 +187,19 @@ export class LbaItem implements ILbaItem {
     opco: null,
   }
 
-  diplomaLevel: ILbaItem['diplomaLevel'] = null
-  diploma: ILbaItem['diploma'] = null
-  cleMinistereEducatif: ILbaItem['cleMinistereEducatif'] = null
-  cfd: ILbaItem['cfd'] = null
-  rncpCode: ILbaItem['rncpCode'] = null
-  rncpLabel: ILbaItem['rncpLabel'] = null
-  rncpEligibleApprentissage: ILbaItem['rncpEligibleApprentissage'] = null
-  period: ILbaItem['period'] = null
-  capacity: ILbaItem['capacity'] = null
-  createdAt: ILbaItem['createdAt'] = null
-  lastUpdateAt: ILbaItem['lastUpdateAt'] = null
-  onisepUrl: ILbaItem['onisepUrl'] = null
-  url: ILbaItem['url'] = null
+  diplomaLevel: ILbaItem["diplomaLevel"] = null
+  diploma: ILbaItem["diploma"] = null
+  cleMinistereEducatif: ILbaItem["cleMinistereEducatif"] = null
+  cfd: ILbaItem["cfd"] = null
+  rncpCode: ILbaItem["rncpCode"] = null
+  rncpLabel: ILbaItem["rncpLabel"] = null
+  rncpEligibleApprentissage: ILbaItem["rncpEligibleApprentissage"] = null
+  period: ILbaItem["period"] = null
+  capacity: ILbaItem["capacity"] = null
+  createdAt: ILbaItem["createdAt"] = null
+  lastUpdateAt: ILbaItem["lastUpdateAt"] = null
+  onisepUrl: ILbaItem["onisepUrl"] = null
+  url: ILbaItem["url"] = null
 
   job: ILbaItemJob | null = null
   romes: ILbaItemRome[] | null = null

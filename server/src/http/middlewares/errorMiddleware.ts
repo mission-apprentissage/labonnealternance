@@ -17,7 +17,7 @@ function boomify(rawError) {
       ...(!rawError.message ? "Une erreur est survenue" : {}),
     })
   } else {
-    error = Boom.internal(typeof rawError === 'string' ? rawError : "Une erreur est survenue")
+    error = Boom.internal(typeof rawError === "string" ? rawError : "Une erreur est survenue")
   }
 
   return error
@@ -27,7 +27,7 @@ export function errorMiddleware() {
   // Number of params matter to differentiate fallback route from error handler
   return (err, _req, res, _next) => {
     const boomError = boomify(err)
-    logger.error(err);
+    logger.error(err)
     return res.status(boomError.output.statusCode).send(boomError.output.payload)
   }
 }

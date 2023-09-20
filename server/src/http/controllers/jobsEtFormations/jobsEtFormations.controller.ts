@@ -99,19 +99,19 @@ export class JobsEtFormationsController extends Controller {
 
     if (caller) {
       let job_count = 0
-      if ("lbaCompanies" in jobs && "results" in jobs.lbaCompanies) {
+      if (jobs && "lbaCompanies" in jobs && jobs.lbaCompanies && "results" in jobs.lbaCompanies) {
         job_count += jobs.lbaCompanies.results.length
       }
 
-      if ("peJobs" in jobs && "results" in jobs.peJobs) {
+      if (jobs && "peJobs" in jobs && jobs.peJobs && "results" in jobs.peJobs) {
         job_count += jobs.peJobs.results.length
       }
 
-      if ("matchas" in jobs && "results" in jobs.matchas) {
+      if (jobs && "matchas" in jobs && jobs.matchas && "results" in jobs.matchas) {
         job_count += jobs.matchas.results.length
       }
 
-      const training_count = "results" in formations ? formations.results.length : 0
+      const training_count = formations && "results" in formations ? formations.results.length : 0
 
       trackApiCall({
         caller,

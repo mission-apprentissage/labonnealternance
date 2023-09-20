@@ -298,7 +298,7 @@ function Mongoosastic(schema, options) {
         try {
           await postSave(docs[i])
         } catch (e) {
-          logger.error(e);
+          logger.error(e)
         }
       }
     })

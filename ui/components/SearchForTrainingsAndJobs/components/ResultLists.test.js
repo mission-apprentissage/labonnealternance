@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 
 import nock from "nock"
-import { describe, it, beforeEach } from "vitest";
+import { describe, it, beforeEach } from "vitest"
 
 // import ResultLists from "./ResultLists"
 

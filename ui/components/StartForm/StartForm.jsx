@@ -1,6 +1,3 @@
-
-
-
 import { Box } from "@chakra-ui/react"
 import { pick } from "lodash"
 import { useRouter } from "next/router"

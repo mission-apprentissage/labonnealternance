@@ -1,6 +1,6 @@
-import tsconfigPaths from "vite-tsconfig-paths";
+import tsconfigPaths from "vite-tsconfig-paths"
 // eslint-disable-next-line import/no-unresolved
-import { defineWorkspace } from "vitest/config";
+import { defineWorkspace } from "vitest/config"
 
 export default defineWorkspace([
   {
@@ -31,4 +31,4 @@ export default defineWorkspace([
   //     include: ["**/*.test.ts"],
   //   },
   // },
-]);
+])

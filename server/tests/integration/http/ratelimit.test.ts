@@ -8,10 +8,10 @@ import { enableRateLimiter } from "@/http/utils/rateLimiters"
 describe("ratelimit", () => {
   useMongo()
   const httpClient = useServer()
-  
+
   beforeAll(() => {
-    enableRateLimiter();
-  });
+    enableRateLimiter()
+  })
 
   it("rate-limit, exemple avec /api/romelabels : 11 requêtes consécutives : les 10 premières sont acceptées, mais pas la 11ème", async () => {
     const response1 = await httpClient().get("/api/romelabels")

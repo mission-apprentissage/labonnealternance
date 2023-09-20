@@ -6,7 +6,6 @@ import FormData from "form-data"
 import fsExtra from "fs-extra"
 import { oleoduc, readLineByLine, transformData, writeData } from "oleoduc"
 
-
 import __dirname from "../../common/dirname"
 import { GeoLocation } from "../../common/model/index"
 import { logMessage } from "../../common/utils/logMessage"

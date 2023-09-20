@@ -5,7 +5,6 @@ import { logError } from "../../../utils/tools"
 import { storeTrainingsInSession } from "./handleSessionStorage"
 import { getRncpFromParameters, getRncpsFromParameters, getRomeFromParameters, trainingErrorText, trainingsApi } from "./utils"
 
-
 export const searchForTrainingsFunction = async ({
   values,
   searchTimestamp,

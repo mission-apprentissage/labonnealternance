@@ -1,7 +1,6 @@
 import { Box, Grid, GridItem, Image, Link, Text } from "@chakra-ui/react"
 import React from "react"
 
-
 const FollowLinkedIn = () => {
   return (
     <Box px={{ base: 3, md: 6, lg: 12 }}>

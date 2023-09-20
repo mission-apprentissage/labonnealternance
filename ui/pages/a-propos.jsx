@@ -12,9 +12,6 @@ import logoCatalogue from "../public/images/logo_catalogue.svg"
 import logoMatcha from "../public/images/logo_matcha.svg"
 import logoPrdv from "../public/images/logo_prdv.svg"
 
-
-
-
 const ServiceCard = ({ logo, title, text, url, mt, mb, imageMT, imageML }) => {
   return (
     <Box mt={mt} mb={mb}>

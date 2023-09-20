@@ -3,17 +3,12 @@ module.exports = {
     es2022: true,
     node: true,
   },
-  extends: [
-    "eslint:recommended",
-    "plugin:import/recommended",
-    "plugin:@eslint-community/eslint-comments/recommended",    
-    "prettier",
-  ],
+  extends: ["eslint:recommended", "plugin:import/recommended", "plugin:@eslint-community/eslint-comments/recommended", "prettier"],
   parserOptions: {
     ecmaVersion: 2022,
     sourceType: "module",
   },
-  plugins: [ "simple-import-sort", "import"],
+  plugins: ["simple-import-sort", "import"],
   rules: {
     "no-unused-vars": [
       "error",
@@ -88,13 +83,8 @@ module.exports = {
     {
       parser: "@typescript-eslint/parser",
       plugins: ["@typescript-eslint"],
-      files: [
-        "**/*.ts", '**/*.tsx'
-      ],
-      extends: [
-        "plugin:import/typescript",
-        "plugin:@typescript-eslint/recommended"
-      ],
+      files: ["**/*.ts", "**/*.tsx"],
+      extends: ["plugin:import/typescript", "plugin:@typescript-eslint/recommended"],
       rules: {
         "@typescript-eslint/no-explicit-any": 0,
         "@typescript-eslint/ban-ts-comment": 0,
@@ -109,9 +99,9 @@ module.exports = {
             ignoreRestSiblings: true,
           },
         ],
-        "import/default": "off"
-      }
-    }
+        "import/default": "off",
+      },
+    },
   ],
   settings: {
     "import/extensions": [".js", ".ts", ".jsx", ".tsx"],

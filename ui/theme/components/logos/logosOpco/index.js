@@ -73,4 +73,4 @@ const logos = [
   },
 ]
 
-export default logos;
+export default logos

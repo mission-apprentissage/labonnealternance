@@ -24,8 +24,10 @@ export function initSentry(app: Express) {
       // enable Express.js middleware tracing
       new Sentry.Integrations.Express({ app }),
       // enable capture all console api errors
+      // @ts-ignore
       new CaptureConsole({ levels: ["error"] }),
       // add all extra error data into the event
+      // @ts-ignore
       new ExtraErrorData({ depth: 8 }),
     ],
   })
