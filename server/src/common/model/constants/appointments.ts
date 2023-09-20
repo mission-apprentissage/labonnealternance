@@ -4,9 +4,4 @@ const mailType = {
   CANDIDAT_APPOINTMENT: "CANDIDAT_APPOINTMENT",
 }
 
-const candidatFollowUpType = {
-  CONFIRM: "CONFIRM",
-  RESEND: "RESEND",
-}
-
-export { mailType, candidatFollowUpType }
+export { mailType }

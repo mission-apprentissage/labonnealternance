@@ -10,33 +10,6 @@ export default () => {
   const router = express.Router()
 
   /**
-   * Gets all etablissements
-   * */
-  router.get(
-    "/",
-    tryCatch(async (req, res) => {
-      const qs = req.query
-      const query = qs && qs.query ? JSON.parse(qs.query) : {}
-      const page = qs && qs.page ? qs.page : 1
-      const limit = qs && qs.limit ? parseInt(qs.limit, 50) : 50
-
-      const allData = await Etablissement.paginate({ query, page, limit })
-
-      if (!allData) return res.sendStatus(400)
-
-      return res.send({
-        etablissements: allData.docs,
-        pagination: {
-          page: allData.page,
-          resultats_par_page: limit,
-          nombre_de_page: allData.totalPages,
-          total: allData.totalDocs,
-        },
-      })
-    })
-  )
-
-  /**
    * Gets an etablissement from its siret_formateur.
    */
   router.get(
@@ -65,25 +38,6 @@ export default () => {
       }
 
       return res.send(etablissement)
-    })
-  )
-
-  /**
-   * Creates one or multiple etablissements.
-   */
-  router.post(
-    "/",
-    tryCatch(async ({ body }, res) => {
-      const { etablissements } = body
-
-      let output
-      if (etablissements) {
-        output = await Promise.all(etablissements.map((etablissement) => etablissements.create(etablissement)))
-      } else {
-        output = await etablissements.create(body)
-      }
-
-      return res.send(output)
     })
   )
 

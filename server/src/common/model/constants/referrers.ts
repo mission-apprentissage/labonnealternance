@@ -65,19 +65,4 @@ function getReferrerByKeyName(name: string): ReferrerObject {
   return referrerFound
 }
 
-/**
- * @description Returns referrer from it's identifier.
- * @param {string|number} id
- * @returns {{code: {Number}, name: {String}, fullName: {String}, url: {String}}}
- */
-function getReferrerById(id) {
-  const referrer = Object.values(referrers).find((referrer) => referrer.code.toString() === id.toString())
-
-  if (!referrer) {
-    throw new Error(`Unknown "${id}" referrer code.`)
-  }
-
-  return referrer
-}
-
-export { getReferrerById, getReferrerByKeyName, referrers }
+export { getReferrerByKeyName, referrers }

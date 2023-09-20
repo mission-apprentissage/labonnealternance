@@ -11,31 +11,6 @@ export default () => {
   const router = express.Router()
 
   /**
-   * Get all formations getRequests /requests GET
-   * */
-  router.get(
-    "/",
-    tryCatch(async (req, res) => {
-      const qs = req.query
-      const query = qs && qs.query ? JSON.parse(qs.query) : {}
-      const page = qs && qs.page ? qs.page : 1
-      const limit = qs && qs.limit ? parseInt(qs.limit, 50) : 50
-
-      const allData = await Appointment.paginate({ query, page, limit })
-
-      return res.send({
-        appointments: allData?.docs,
-        pagination: {
-          page: allData?.page,
-          resultats_par_page: limit,
-          nombre_de_page: allData?.totalPages,
-          total: allData?.totalDocs,
-        },
-      })
-    })
-  )
-
-  /**
    * Get all formations getRequests /requests GET (with details)
    * */
   router.get(

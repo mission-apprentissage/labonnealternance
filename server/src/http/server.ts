@@ -45,7 +45,6 @@ import sendMail from "./routes/sendMail.controller"
 import supportRoute from "./routes/support.controller"
 import trainingLinks from "./routes/trainingLinks.controller"
 import unsubscribeLbaCompany from "./routes/unsubscribeLbaCompany.controller"
-import updateLbaCompany from "./routes/updateLbaCompany.controller"
 import userRoute from "./routes/user.controller"
 import version from "./routes/version.controller"
 import { initSentry } from "./sentry"
@@ -204,7 +203,6 @@ export default async (components) => {
    */
   app.use("/api/version", limiter3PerSecond, version())
   app.use("/api/romelabels", limiter10PerSecond, rome())
-  app.use("/api/updateLBB", limiter1Per20Second, updateLbaCompany())
   app.use("/api/mail", limiter1Per20Second, sendMail())
   app.use("/api/campaign/webhook", campaignWebhook())
   app.use("/api/application", sendApplication(components))

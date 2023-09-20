@@ -1,7 +1,6 @@
 import express from "express"
 import Joi from "joi"
 
-import { logger } from "../../../common/logger"
 import { EligibleTrainingsForAppointment, Etablissement } from "../../../common/model/index"
 import * as eligibleTrainingsForAppointmentService from "../../../services/eligibleTrainingsForAppointment.service"
 import { tryCatch } from "../../middlewares/tryCatchMiddleware"
@@ -78,35 +77,6 @@ export default () => {
           total: allData.total,
         },
       })
-    })
-  )
-
-  /**
-   * Get eligibleTrainingsForAppointments by id getEligibleTrainingsForAppointmentsById /{id} GET
-   */
-  router.get(
-    "/:id",
-    tryCatch(async (req, res) => {
-      const itemId = req.params.id
-      const retrievedData = await EligibleTrainingsForAppointment.findById(itemId)
-      if (retrievedData) {
-        res.send(retrievedData)
-      } else {
-        res.send({ message: `Item ${itemId} doesn't exist` })
-      }
-    })
-  )
-
-  /**
-   * Update an item validated by schema updateParameter updateParameter/{id} PUT
-   */
-  router.put(
-    "/:id",
-    tryCatch(async ({ body, params }, res) => {
-      await eligibleTrainingsForAppointmentSchema.validateAsync(body, { abortEarly: false })
-      logger.info("Updating new item: ", body)
-      const result = await eligibleTrainingsForAppointmentService.updateParameter(params.id, body)
-      res.send(result)
     })
   )
 
