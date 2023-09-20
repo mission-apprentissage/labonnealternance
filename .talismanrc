@@ -12,7 +12,7 @@ fileignoreconfig:
 - filename: .infra/env.ini
   checksum: 24332dcab809201ac286e4225a1d861307c291dc4a5e2308b996da2d3547a41c
 - filename: .infra/vault/vault.yml
-  checksum: efe056129fb1c4f2719ae88eeefa7d116be7cd2faa27c0fc84c488109b63127d
+  checksum: 07829e185a94d0773d879c847ba5347238a8b3025042650fc92f66c7a25f4e12
 - filename: server/static/generated/swagger.json
   checksum: any
   ignore_detectors:
