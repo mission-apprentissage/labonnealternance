@@ -40,7 +40,7 @@ export default function SearchPage() {
           position: "bottom-right",
         })
       } else {
-        router.push(`/admin/eligible-trainings-for-appointment/edit/${formations[0].etablissement_formateur_siret}`)
+        router.push(`/espace-pro/admin/eligible-trainings-for-appointment/edit/${formations[0].etablissement_formateur_siret}`)
       }
     } catch (e) {
       toast({
