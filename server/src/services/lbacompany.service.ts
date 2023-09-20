@@ -11,7 +11,7 @@ import { lbbMock } from "../mocks/lbbs-mock.js"
 
 import { getApplicationByCompanyCount, IApplicationCount } from "./application.service.js"
 import { TLbaItemResult } from "./jobOpportunity.service.types.js"
-import { LbaItem } from "./lbaitem.shared.service.types.js"
+import { ILbaItem, LbaItem } from "./lbaitem.shared.service.types.js"
 
 const esClient = getElasticInstance()
 
@@ -30,11 +30,11 @@ const transformCompany = ({
   applicationCountByCompany,
 }: {
   company: ILbaCompany
-  caller: string
+  caller?: string
   contactAllowedOrigin: boolean
   applicationCountByCompany: IApplicationCount[]
 }) => {
-  const resultCompany = new LbaItem("lba")
+  const resultCompany: ILbaItem = new LbaItem("lba")
 
   resultCompany.title = company.enseigne
   const email = encryptMailWithIV({ value: company.email !== "null" ? company.email : "", caller })
@@ -98,11 +98,11 @@ const transformCompanies = ({
   applicationCountByCompany,
 }: {
   companies: ILbaCompany[]
-  referer: string
-  caller: string
+  referer?: string
+  caller?: string
   applicationCountByCompany: IApplicationCount[]
 }) => {
-  const transformedCompanies: { results: LbaItem[] } = { results: [] }
+  const transformedCompanies: { results: ILbaItem[] } = { results: [] }
 
   if (companies?.length) {
     transformedCompanies.results = companies.map((company) => {
@@ -177,10 +177,10 @@ const getCompanies = async ({
   opcoUrl,
   api = "jobV1",
 }: {
-  romes: string
-  latitude: string
-  longitude: string
-  radius: number
+  romes?: string
+  latitude?: string
+  longitude?: string
+  radius?: number
   companyLimit: number
   caller?: string
   opco?: string
@@ -193,7 +193,7 @@ const getCompanies = async ({
     const mustTerm: object[] = [
       {
         match: {
-          rome_codes: romes.split(",").join(" "),
+          rome_codes: romes?.split(",").join(" "),
         },
       },
     ]
@@ -221,7 +221,7 @@ const getCompanies = async ({
         latitude
           ? {
               _geo_distance: {
-                geo_coordinates: [parseFloat(longitude), parseFloat(latitude)],
+                geo_coordinates: [parseFloat(longitude ?? '0'), parseFloat(latitude)],
                 order: "asc",
                 unit: "km",
                 mode: "min",
@@ -312,16 +312,16 @@ export const getSomeCompanies = async ({
   api = "jobV1",
   useMock,
 }: {
-  romes: string
-  latitude: string
-  longitude: string
-  radius: number
-  referer: string
-  caller: string
-  opco: string
-  opcoUrl: string
-  api: string
-  useMock: string
+  romes?: string
+  latitude?: string
+  longitude?: string
+  radius?: number
+  referer?: string
+  caller?: string
+  opco?: string
+  opcoUrl?: string
+  api?: string
+  useMock?: string
 }): Promise<TLbaItemResult> => {
   const hasLocation = latitude === undefined ? false : true
   const currentRadius = hasLocation ? radius : 21000

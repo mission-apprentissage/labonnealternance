@@ -42,7 +42,7 @@ export const getLbaJobs = async ({
   caller,
   useMock,
 }: {
-  romes: string
+  romes?: string
   radius?: number
   latitude?: string
   longitude?: string

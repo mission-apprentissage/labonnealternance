@@ -1,3 +1,5 @@
+import { logger } from "@/common/logger.js"
+
 import { IApiError } from "../common/utils/errorManager.js"
 import { trackApiCall } from "../common/utils/sendTrackingEvent.js"
 import { sentryCaptureException } from "../common/utils/sentryUtils.js"
@@ -50,9 +52,9 @@ export const getJobsFromApi = async ({
     const [peJobs, lbaCompanies, lbbCompanies, matchas] = await Promise.all([
       jobSources.indexOf("offres") >= 0
         ? getSomePeJobs({
-            romes: romes.split(","),
+            romes: romes?.split(","),
             insee: insee,
-            radius: parseInt(radius),
+            radius: radius ? parseInt(radius) : 0,
             latitude,
             longitude,
             caller,
@@ -67,7 +69,7 @@ export const getJobsFromApi = async ({
             romes,
             latitude,
             longitude,
-            radius: parseInt(radius),
+            radius: radius ? parseInt(radius) : 0,
             referer,
             caller,
             api,
@@ -82,7 +84,7 @@ export const getJobsFromApi = async ({
             romes,
             latitude,
             longitude,
-            radius: parseInt(radius),
+            radius: radius ? parseInt(radius) : 0,
             api,
             caller,
             diploma,
@@ -95,7 +97,7 @@ export const getJobsFromApi = async ({
 
     return { peJobs, matchas, lbaCompanies, lbbCompanies }
   } catch (err) {
-    console.log("Error ", err.message)
+    logger.error(err)
     sentryCaptureException(err)
 
     if (caller) {
@@ -128,15 +130,15 @@ export const getJobsQuery = async (query: TJobSearchQuery) => {
 
   let job_count = 0
 
-  if ("lbaCompanies" in result && "results" in result.lbaCompanies) {
+  if ("lbaCompanies" in result && result.lbaCompanies && "results" in result.lbaCompanies) {
     job_count += result.lbaCompanies.results.length
   }
 
-  if ("peJobs" in result && "results" in result.peJobs) {
+  if ("peJobs" in result && result.peJobs && "results" in result.peJobs) {
     job_count += result.peJobs.results.length
   }
 
-  if ("matchas" in result && "results" in result.matchas) {
+  if ("matchas" in result && result.matchas && "results" in result.matchas) {
     job_count += result.matchas.results.length
   }
 

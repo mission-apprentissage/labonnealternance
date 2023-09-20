@@ -55,30 +55,30 @@ export interface ILbaItemPlace {
   latitude: string | null // formation -> lieu_formation_geo_coordonnees | pe -> lieuTravail.latitude | lbb/lba -> geo_coordinates | matcha -> geo_coordonnees
   longitude: string | null // formation -> lieu_formation_geo_coordonnees | pe -> lieuTravail.longitude | lbb/lba -> geo_coordinates | matcha -> geo_coordonnees
   city: string | null // pe -> lieuTravail.libelle | formation -> localite | pe -> city | lba -> city
-  address: string | null // formation -> etablissement_formateur_adresse, etablissement_formateur_complement_adresse | lbb / lba -> address -> street_number + street_name | matcha -> adresse
-  cedex: string | null // formation -> etablissement_formateur_cedex
-  zipCode: string | null // formation -> etablissement_formateur_code_postal | pe -> lieuTravail.codePostal | lba -> zip_code
-  insee: string | null // pe -> lieuTravail.commune, training -> code_commune_insee, lba -> insee_city_code
-  departementNumber: string | null // formation -> num_departement
-  region: string | null // formation -> region
-  remoteOnly: boolean | null // formation
+  address?: string | null // formation -> etablissement_formateur_adresse, etablissement_formateur_complement_adresse | lbb / lba -> address -> street_number + street_name | matcha -> adresse
+  cedex?: string | null // formation -> etablissement_formateur_cedex
+  zipCode?: string | null // formation -> etablissement_formateur_code_postal | pe -> lieuTravail.codePostal | lba -> zip_code
+  insee?: string | null // pe -> lieuTravail.commune, training -> code_commune_insee, lba -> insee_city_code
+  departementNumber?: string | null // formation -> num_departement
+  region?: string | null // formation -> region
+  remoteOnly?: boolean | null // formation
 }
 
 export interface ILbaItemCompany {
-  name: string | null // pe -> entreprise.nom | formation -> etablissement_formateur_entreprise_raison_sociale | lbb/lba -> enseigne / raison_sociale | matcha -> enseigne > raison_sociale
-  siret: string | null // lbb/lba -> siret | formation -> etablissement_formateur_siret | matcha -> siret | pe -> entreprise.siret réservé à notre front
+  name?: string | null // pe -> entreprise.nom | formation -> etablissement_formateur_entreprise_raison_sociale | lbb/lba -> enseigne / raison_sociale | matcha -> enseigne > raison_sociale
+  siret?: string | null // lbb/lba -> siret | formation -> etablissement_formateur_siret | matcha -> siret | pe -> entreprise.siret réservé à notre front
   size?: string | null // lbb/lba -> company_size | matcha -> tranche_effectif
   logo?: string | null // pe -> entreprise.logo
   description?: string | null // pe -> entreprise.description
   socialNetwork?: string | null // lbb / lba -> social_network
   url?: string | null // lbb / lba -> website
-  id: string | null // formation -> etablissement_formateur_id
-  uai: string | null // formation -> etablissement_formateur_uai
-  place: Partial<ILbaItemPlace> | null
+  id?: string | null // formation -> etablissement_formateur_id
+  uai?: string | null // formation -> etablissement_formateur_uai
+  place?: Partial<ILbaItemPlace> | null
   //        city,   // formation -> etablissement_formateur_localite | matcha -> entreprise_localite
   mandataire?: boolean | null // matcha -> mandataire
   creationDate?: Date | null // matcha -> date_creation_etablissement
-  headquarter: ILbaItemCompanyHQ | null // uniquement pour formation
+  headquarter?: ILbaItemCompanyHQ | null // uniquement pour formation
   opco?: ILbaItemOpco | null
 }
 
@@ -109,11 +109,11 @@ export interface ILbaItemJob {
   contractType: string | null // pe -> typeContrat | matcha -> offres.type
   contractDescription?: string | null // pe -> typeContratLibelle
   duration?: string | null // pe -> dureeTravailLibelle
-  jobStartDate: string | Date // matcha -> offres.date_debut_apprentissage
-  romeDetails: object // matcha -> offres.rome_detail -> détail du code ROME
-  rythmeAlternance: string | null // matcha -> offres.rythme_alternance
+  jobStartDate?: string | Date // matcha -> offres.date_debut_apprentissage
+  romeDetails?: object // matcha -> offres.rome_detail -> détail du code ROME
+  rythmeAlternance?: string | null // matcha -> offres.rythme_alternance
   elligibleHandicap?: boolean // matcha -> offres.is_disabled_elligible
-  dureeContrat: string | null // matcha -> offres.duree_contrat
+  dureeContrat?: string | null // matcha -> offres.duree_contrat
   quantiteContrat?: number | null // matcha -> offres.quantite
   status?: JOB_STATUS | null
 }
@@ -125,7 +125,7 @@ export interface ILbaItemRome {
 
 export interface ILbaItemNaf {
   code?: string | null // lbb/lba -> naf_code | pe -> secteurActivite
-  label: string | null // lbb/lba -> naf_label | matcha -> libelle_naf | pe -> secteurActiviteLibelle
+  label: string | null | undefined // lbb/lba -> naf_label | matcha -> libelle_naf | pe -> secteurActiviteLibelle
 }
 
 export interface ILbaItemTrainingSession {
@@ -146,12 +146,12 @@ export class LbaItem implements ILbaItem {
     this.ideaType = type
   }
 
-  ideaType = null
-  title = null
-  longTitle = null
-  id = null
-  idRco = null
-  idRcoFormation = null
+  ideaType: ILbaItem['ideaType'] = null
+  title: ILbaItem['title'] = null
+  longTitle: ILbaItem['longTitle'] = null
+  id: ILbaItem['id'] = null
+  idRco: ILbaItem['idRco'] = null
+  idRcoFormation: ILbaItem['idRcoFormation'] = null
 
   contact: ILbaItemContact | null = null
 
@@ -187,19 +187,19 @@ export class LbaItem implements ILbaItem {
     opco: null,
   }
 
-  diplomaLevel = null
-  diploma = null
-  cleMinistereEducatif = null
-  cfd = null
-  rncpCode = null
-  rncpLabel = null
-  rncpEligibleApprentissage = null
-  period = null
-  capacity = null
-  createdAt = null
-  lastUpdateAt = null
-  onisepUrl = null
-  url = null
+  diplomaLevel: ILbaItem['diplomaLevel'] = null
+  diploma: ILbaItem['diploma'] = null
+  cleMinistereEducatif: ILbaItem['cleMinistereEducatif'] = null
+  cfd: ILbaItem['cfd'] = null
+  rncpCode: ILbaItem['rncpCode'] = null
+  rncpLabel: ILbaItem['rncpLabel'] = null
+  rncpEligibleApprentissage: ILbaItem['rncpEligibleApprentissage'] = null
+  period: ILbaItem['period'] = null
+  capacity: ILbaItem['capacity'] = null
+  createdAt: ILbaItem['createdAt'] = null
+  lastUpdateAt: ILbaItem['lastUpdateAt'] = null
+  onisepUrl: ILbaItem['onisepUrl'] = null
+  url: ILbaItem['url'] = null
 
   job: ILbaItemJob | null = null
   romes: ILbaItemRome[] | null = null

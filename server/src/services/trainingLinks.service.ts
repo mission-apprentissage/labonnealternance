@@ -105,6 +105,8 @@ const getPrdvLink = async (wish: IWish): Promise<string> => {
       params: { referrer: "lba", cleMinistereEducatif: wish.cle_ministere_educatif, ...utmData },
     })
   }
+
+  return ""
 }
 
 /**

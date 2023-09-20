@@ -1,4 +1,6 @@
-const lbbMock = {
+import { ILbaItem } from "@/services/lbaitem.shared.service.types"
+
+const lbbMock: ILbaItem = {
   ideaType: "lbb",
   title: "SOCIETE RADIOLOGIQUE LIBERTE",
   longTitle: null,

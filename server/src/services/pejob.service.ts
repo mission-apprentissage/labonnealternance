@@ -2,6 +2,7 @@ import { setTimeout } from "timers/promises"
 
 import distance from "@turf/distance"
 import axios, { AxiosRequestHeaders } from "axios"
+import { Dayjs } from "dayjs"
 
 import { IApiError, manageApiError } from "../common/utils/errorManager.js"
 import { roundDistance } from "../common/utils/geolib.js"
@@ -25,7 +26,11 @@ const scopePE = "api_offresdemploiv2%20o2dsoffre"
 const paramApisPE = `grant_type=client_credentials&client_id=${clientId}&client_secret=${clientSecret}&scope=${scopeApisPE}`
 const paramPE = `${paramApisPE}${scopePE}`
 const peApiHeaders = { "Content-Type": "application/json", Accept: "application/json" } as AxiosRequestHeaders
-let tokenPE = null
+type TokenPE = {
+  expiry: Dayjs,
+  value: string,
+}
+let tokenPE: TokenPE | null = null
 
 const blackListedCompanies = ["iscod", "oktogone", "institut europeen f 2i"]
 
@@ -104,7 +109,7 @@ const getRoundedRadius = (radius: number) => {
  */
 const computeJobDistanceToSearchCenter = (job: PEJob, latitude: string, longitude: string) => {
   if (job.lieuTravail && job.lieuTravail.latitude && job.lieuTravail.longitude) {
-    return roundDistance(distance([longitude, latitude], [job.lieuTravail.longitude, job.lieuTravail.latitude]))
+    return roundDistance(distance([parseFloat(longitude), parseFloat(latitude)], [parseFloat(job.lieuTravail.longitude), parseFloat(job.lieuTravail.latitude)]))
   }
 
   return null
@@ -117,7 +122,7 @@ const computeJobDistanceToSearchCenter = (job: PEJob, latitude: string, longitud
  * @param {string | null} longitude la longitude du centre de recherche
  * @return {ILbaItem}
  */
-const transformPeJob = ({ job, latitude = null, longitude = null }: { job: PEJob; latitude?: string; longitude?: string }): ILbaItem => {
+const transformPeJob = ({ job, latitude = null, longitude = null }: { job: PEJob; latitude?: string | null; longitude?: string | null}): ILbaItem => {
   const resultJob = new LbaItem("peJob")
 
   resultJob.title = job.intitule
@@ -139,7 +144,7 @@ const transformPeJob = ({ job, latitude = null, longitude = null }: { job: PEJob
   }
 
   resultJob.place = {
-    distance: latitude === null || latitude === "" ? 0 : computeJobDistanceToSearchCenter(job, latitude, longitude),
+    distance: !latitude || !longitude ? 0 : computeJobDistanceToSearchCenter(job, latitude, longitude),
     insee: job.lieuTravail.commune,
     zipCode: job.lieuTravail.codePostal,
     city: job.lieuTravail.libelle,
@@ -209,7 +214,8 @@ const transformPeJobs = ({ jobs, radius, latitude, longitude }: { jobs: PEJob[];
     for (let i = 0; i < jobs.length; ++i) {
       const job = transformPeJob({ job: jobs[i], latitude, longitude })
 
-      if (job.place.distance < getRoundedRadius(radius)) {
+      const d = job.place?.distance ?? 0
+      if (d < getRoundedRadius(radius)) {
         if (!job?.company?.name || blackListedCompanies.indexOf(job.company.name.toLowerCase()) < 0) {
           resultJobs.push(job)
         }
@@ -321,7 +327,7 @@ const getPeJobs = async ({
  * @returns {Promise<ILbaItem[] | IApiError>}
  */
 export const getSomePeJobs = async ({ romes, insee, radius, latitude, longitude, caller, diploma, opco, opcoUrl, api }): Promise<TLbaItemResult> => {
-  let peResponse: PEResponse | IApiError = null
+  let peResponse: PEResponse | IApiError | null = null
   const currentRadius = radius || 20000
   const jobLimit = 150
 
@@ -344,14 +350,16 @@ export const getSomePeJobs = async ({ romes, insee, radius, latitude, longitude,
     return peResponse
   }
 
-  const resultats = "resultats" in peResponse ? peResponse.resultats : []
+  const resultats = peResponse && "resultats" in peResponse ? peResponse.resultats : []
 
   let jobs = transformPeJobs({ jobs: resultats, radius: currentRadius, latitude, longitude })
 
   // tri du résultat fusionné sur le critère de poids descendant
   if (jobs) {
     jobs.sort((a, b) => {
-      return b.place.distance - a.place.distance
+      const bDist = b.place?.distance ?? 0;
+      const aDist = a.place?.distance ?? 0;
+      return bDist - aDist
     })
   }
 
@@ -363,8 +371,10 @@ export const getSomePeJobs = async ({ romes, insee, radius, latitude, longitude,
   // suppression du siret pour les appels par API. On ne remonte le siret que dans le cadre du front LBA.
   if (caller) {
     // on ne remonte le siret que dans le cadre du front LBA. Cette info n'est pas remontée par API
-    jobs.forEach((job, idx) => {
-      jobs[idx].company.siret = null
+    jobs.forEach((job) => {
+      if (job.company) {
+        job.company.siret = null
+      }
     })
   }
 
@@ -399,7 +409,9 @@ export const getPeJobFromId = async ({ id, caller }: { id: string; caller: strin
       if (caller) {
         trackApiCall({ caller, job_count: 1, result_count: 1, api_path: "jobV1/job", response: "OK" })
         // on ne remonte le siret que dans le cadre du front LBA. Cette info n'est pas remontée par API
-        peJob.company.siret = null
+        if (peJob.company) {
+          peJob.company.siret = null
+        }
       }
 
       return { peJobs: [peJob] }
