@@ -28,7 +28,7 @@ import { createOffreCollection } from "./lba_recruteur/seed/createOffre"
 import { checkAwaitingCompaniesValidation } from "./lba_recruteur/user/misc/updateMissingActivationState"
 import { updateSiretInfosInError } from "./lba_recruteur/user/misc/updateSiretInfosInError"
 import updateGeoLocations from "./lbb/updateGeoLocations"
-import updateBonnesBoites from "./lbb/updateLbaCompanies" // TODO_AB Alan ?
+import updateLbaCompanies from "./lbb/updateLbaCompanies"
 import updateOpcoCompanies from "./lbb/updateOpcoCompanies"
 import { activateOptOutEtablissementFormations } from "./rdv/activateOptOutEtablissementFormations"
 import { anonimizeAppointments } from "./rdv/anonymizeAppointments"
@@ -160,7 +160,7 @@ export async function runJob(job: IInternalJobs): Promise<number> {
       case "lbac:fields:rename":
         return refactorLBACFields()
       case "companies:update":
-        return updateBonnesBoites(job.payload as any)
+        return updateLbaCompanies(job.payload as any)
       case "geo-locations:update":
         return updateGeoLocations(job.payload as any)
       case "opcos:update":
