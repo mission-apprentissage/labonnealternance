@@ -1,3 +1,10 @@
+# [1.97.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.96.0...v1.97.0) (2023-09-20)
+
+
+### Features
+
+* LBAC-1505 précisions sur page test-widget ([#586](https://github.com/mission-apprentissage/labonnealternance/issues/586)) ([9b28f89](https://github.com/mission-apprentissage/labonnealternance/commit/9b28f895a9115658b52c98a4ffa55fa2f523fdd8))
+
 # [1.96.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.95.0...v1.96.0) (2023-09-19)
 
 
