@@ -108,5 +108,8 @@ module.exports = {
     "import/parsers": {
       "@typescript-eslint/parser": [".ts", ".tsx"],
     },
+    node: {
+      allowModules: ["shared"],
+    },
   },
 }

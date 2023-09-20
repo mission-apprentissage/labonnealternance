@@ -7,9 +7,11 @@ export const zCoreRoutes = {
         "2xx": z
           .object({
             env: z.enum(["local", "recette", "production", "preview"]),
-            healthcheck: z.object({
-              mongodb: z.boolean(),
-            }),
+            healthcheck: z
+              .object({
+                mongodb: z.boolean(),
+              })
+              .strict(),
           })
           .describe("API Health"),
       },

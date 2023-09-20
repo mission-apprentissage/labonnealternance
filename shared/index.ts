@@ -4,6 +4,8 @@ import z, { ZodType } from "zod"
 import { zCoreRoutes } from "./routes/core.routes"
 import { zEtablissementRoutes } from "./routes/etablissement.routes"
 
+export * from "./models/index"
+
 export const zRoutes = {
   get: {
     ...zCoreRoutes.get,
