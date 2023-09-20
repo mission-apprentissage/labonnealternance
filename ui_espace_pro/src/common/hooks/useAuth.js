@@ -2,9 +2,9 @@ import { useAuthState, anonymous } from "../auth"
 import decodeJWT from "../utils/decodeJWT"
 
 export default function useAuth() {
-  let [auth, setAuth] = useAuthState()
+  const [auth, setAuth] = useAuthState()
 
-  let setAuthFromToken = (token) => {
+  const setAuthFromToken = (token) => {
     if (!token) {
       sessionStorage.removeItem("lba:token")
       setAuth(anonymous)
@@ -13,6 +13,7 @@ export default function useAuth() {
       setAuth(decodeJWT(token))
     }
   }
+  const isAuthenticated = () => auth?.sub !== anonymous.sub
 
-  return [auth, setAuthFromToken]
+  return [auth, setAuthFromToken, isAuthenticated]
 }

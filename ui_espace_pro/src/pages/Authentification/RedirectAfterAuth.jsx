@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom"
 import { AUTHTYPE } from "../../common/contants"
 import useAuth from "../../common/hooks/useAuth"
 
-export default () => {
+export function RedirectAfterAuth() {
   const navigate = useNavigate()
   const location = useLocation()
   const [auth] = useAuth()
@@ -57,3 +57,5 @@ export default () => {
     </>
   )
 }
+
+export default RedirectAfterAuth

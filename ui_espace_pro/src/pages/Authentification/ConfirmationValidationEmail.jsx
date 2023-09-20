@@ -33,52 +33,52 @@ const EmailInvalide = () => (
   </Box>
 )
 
-export default (props) => {
+export function ConfirmationValidationEmail(props) {
   const [isValid, setIsValid] = useBoolean(true)
   const [isAwaitingValidation, setIsAwaitingValidation] = useBoolean(false)
   const { id } = useParams()
   const navigate = useNavigate()
-  const [auth, setAuth] = useAuth()
+  const [auth, setAuth, isAuthenticated] = useAuth()
+
+  function navigateToLoggedPage() {
+    switch (auth.type) {
+      case AUTHTYPE.ENTREPRISE:
+        navigate(`/administration/entreprise/${auth.establishment_id}`, { state: { newUser: true } })
+        break
+      case AUTHTYPE.CFA:
+        navigate("/administration")
+        break
+      case AUTHTYPE.OPCO:
+        navigate("/administration/opco")
+        break
+      default:
+        console.warn(`unsupported auth type: ${auth.type}`)
+        break
+    }
+  }
+
+  useEffect(() => {
+    if (isAuthenticated()) {
+      navigateToLoggedPage()
+    }
+  }, [auth])
 
   useEffect(() => {
     // get user from params coming from email link
     validationCompte({ id })
       .then(({ data }) => {
-        if (data?.isUserAwaiting) {
+        const { token, isUserAwaiting } = data ?? {}
+        console.log(data)
+        if (isUserAwaiting) {
           setIsAwaitingValidation.on()
           setTimeout(() => window.location.replace("/"), 10000)
         }
-        if (data?.token) {
-          setAuth(data?.token)
+        if (token) {
+          setAuth(token)
         }
       })
       .catch(() => setIsValid.off())
   }, [id])
-
-  useEffect(() => {
-    switch (auth.type) {
-      case AUTHTYPE.ENTREPRISE:
-        setTimeout(() => {
-          navigate(`/administration/entreprise/${auth.establishment_id}`, { state: { newUser: true } })
-        }, 1000)
-        break
-
-      case AUTHTYPE.CFA:
-        setTimeout(() => {
-          navigate("/administration")
-        }, 1000)
-        break
-
-      case AUTHTYPE.OPCO:
-        setTimeout(() => {
-          navigate("/administration/opco")
-        }, 1000)
-        break
-
-      default:
-        break
-    }
-  }, [auth])
 
   return (
     <>
@@ -103,3 +103,5 @@ export default (props) => {
     </>
   )
 }
+
+export default ConfirmationValidationEmail
