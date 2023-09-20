@@ -74,21 +74,21 @@ export default function EditPage() {
    * @param {String} id
    * @returns {Promise<*>}
    */
-  const getEligibleTrainingsForAppointments = (id) => _get(`/api/admin/eligible-trainings-for-appointment?query={"etablissement_formateur_siret":"${id}"}&limit=1000`)
+  const getEligibleTrainingsForAppointments = (id) => _get(`admin/eligible-trainings-for-appointment?query={"etablissement_formateur_siret":"${id}"}&limit=1000`)
 
   /**
    * @description Returns etablissement from its SIRET.
    * @param {String} siret
    * @returns {Promise<*>}
    */
-  const getEtablissement = (siret) => _get(`/api/admin/etablissements/siret-formateur/${siret}`)
+  const getEtablissement = (siret) => _get(`admin/etablissements/siret-formateur/${siret}`)
 
   /**
    * @description Returns all referrers.
    * @returns {Promise<{code: {number}, name: {string}, full_name: {string}, url: {string}[]}>}
    */
   const getReferrers = async () => {
-    const { referrers } = await _get(`/api/constants`)
+    const { referrers } = await _get(`constants`)
 
     return referrers
   }
@@ -100,7 +100,7 @@ export default function EditPage() {
    * @returns {Promise<void>}
    */
   const patchEligibleTrainingsForAppointment = async (id, body) => {
-    await _patch(`/api/admin/eligible-trainings-for-appointment/${id}`, body)
+    await _patch(`admin/eligible-trainings-for-appointment/${id}`, body)
   }
 
   /**
@@ -187,7 +187,7 @@ export default function EditPage() {
     <Box w="100%" pt={[4, 8]} px={[1, 1, 12, 24]} pb={40}>
       <Head>
         <title>{title}</title>
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/favicon/favicon.ico" />
       </Head>
       <Breadcrumb pages={[{ title: "Administration", to: "/admin" }, { title: title }]} />
       <Heading textStyle="h2" mt={5}>

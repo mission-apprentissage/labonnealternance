@@ -29,7 +29,7 @@ export default function SearchPage() {
     try {
       const keywordEncoded = encodeURIComponent(keyword)
       const formations = await _get(
-        `/api/admin/formations?query={ "$or": [ { "etablissement_formateur_siret": "${keywordEncoded}" }, { "etablissement_formateur_uai": "${keywordEncoded}"}, { "id_rco_formation": "${keywordEncoded}"}, {"cle_ministere_educatif": "${keywordEncoded}"} ] }`
+        `admin/formations?query={ "$or": [ { "etablissement_formateur_siret": "${keywordEncoded}" }, { "etablissement_formateur_uai": "${keywordEncoded}"}, { "id_rco_formation": "${keywordEncoded}"}, {"cle_ministere_educatif": "${keywordEncoded}"} ] }`
       )
 
       if (!formations.length) {
@@ -58,14 +58,14 @@ export default function SearchPage() {
     <Box w="100%" pt={[4, 8]} px={[1, 1, 12, 24]} pb={40}>
       <Head>
         <title>{title}</title>
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/favicon/favicon.ico" />
       </Head>
       <Breadcrumb pages={[{ title: "Administration", to: "/admin" }, { title }]} />
       <Heading textStyle="h2" mt={5}>
         {title}
       </Heading>
       <Box border="1px solid #E0E5ED" bg="white" mx={40} mt={20}>
-        {loading && <Button loading color="secondary" block />}
+        {loading && <Button isLoading={loading} color="secondary" block />}
         <Text fontWeight="500" textStyle="h6" p={4} px={6} borderBottom="1px solid #E0E5ED">
           Rechercher un établissement
         </Text>
@@ -79,7 +79,7 @@ export default function SearchPage() {
                   }}
                 </Field>
               </Box>
-              <Button variant="primary" mt={3} mb={5} type={"submit"} loading={loading}>
+              <Button variant="primary" mt={3} mb={5} type={"submit"} isLoading={loading}>
                 Rechercher
               </Button>
             </Form>

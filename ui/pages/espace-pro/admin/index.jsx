@@ -7,7 +7,7 @@ import { RequestsBoardComponent } from "../../../components/espace_pro/Admin/Req
 import { Breadcrumb } from "../../../components/espace_pro/common/components/Breadcrumb"
 
 export default function AdminPage() {
-  const [data, loading] = useFetch("/api/admin/appointments/details?limit=500")
+  const [data, loading] = useFetch("admin/appointments/details?limit=500")
   const appointments = data === null ? [] : data.appointments
 
   const title = "Tableau de bord"
@@ -16,7 +16,7 @@ export default function AdminPage() {
     <Box w="100%" pt={[4, 8]} px={[1, 1, 12, 24]} pb={40}>
       <Head>
         <title>{title}</title>
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/favicon/favicon.ico" />
       </Head>
       <Breadcrumb pages={[{ title: "Administration", to: "/espace-pro/admin" }, { title: title }]} />
       <Heading textStyle="h2" mt={5}>

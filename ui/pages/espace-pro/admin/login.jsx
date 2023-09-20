@@ -27,7 +27,7 @@ export default function AdminLogin() {
 
   let login = async (values, { setStatus }) => {
     try {
-      let { token } = await _post("/api/login", values)
+      let { token } = await _post("login", values)
       setAuth(token)
       router.push("/admin")
     } catch (e) {
@@ -40,7 +40,7 @@ export default function AdminLogin() {
     <Layout>
       <Head>
         <title>{title}</title>
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/favicon/favicon.ico" />
       </Head>
       <Box w="100%" pt={[4, 8]} px={[1, 1, 12, 24]}>
         <Container maxW="xl" mb={20}>

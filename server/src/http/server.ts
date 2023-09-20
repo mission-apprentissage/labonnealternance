@@ -3,6 +3,7 @@ import { readFileSync } from "fs"
 
 import Sentry from "@sentry/node"
 import Boom from "boom"
+import cors from "cors"
 import express from "express"
 import swaggerDoc from "swagger-jsdoc"
 import swaggerUi from "swagger-ui-express"
@@ -18,7 +19,7 @@ import { ROLES } from "../services/constant.service"
 
 import rome from "./controllers/metiers/rome.controller"
 import authMiddleware from "./middlewares/authMiddleware"
-import { corsMiddleware } from "./middlewares/corsMiddleware"
+// import { corsMiddleware } from "./middlewares/corsMiddleware" // TODO_AB To check
 import { errorMiddleware } from "./middlewares/errorMiddleware"
 import { logMiddleware } from "./middlewares/logMiddleware"
 import permissionsMiddleware from "./middlewares/permissionsMiddleware"
@@ -117,7 +118,12 @@ export default async (components) => {
   app.set("trust proxy", 1)
 
   app.use(express.json({ limit: "5mb" }))
-  app.use(corsMiddleware())
+  // app.use(corsMiddleware()) // TODO_AB To check
+
+  if (config.env === "local") {
+    app.use(cors({ credentials: true, origin: config.publicUrl }))
+  }
+
   app.use(logMiddleware())
 
   app.get(

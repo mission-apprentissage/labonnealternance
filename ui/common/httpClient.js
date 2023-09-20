@@ -1,5 +1,7 @@
 import EventEmitter from "events"
 
+import { publicConfig } from "../config.public"
+
 import { getAuth } from "./auth"
 
 class AuthError extends Error {
@@ -49,14 +51,16 @@ const getHeaders = () => {
 }
 
 export const _get = (path) => {
-  return fetch(`${path}`, {
+  const normalisedEndpoint = publicConfig.apiEndpoint.endsWith("/") ? publicConfig.apiEndpoint.slice(0, -1) : publicConfig.apiEndpoint
+  return fetch(`${normalisedEndpoint}/${path}`, {
     method: "GET",
     headers: getHeaders(),
   }).then((res) => handleResponse(path, res))
 }
 
 export const _post = (path, body) => {
-  return fetch(`${path}`, {
+  const normalisedEndpoint = publicConfig.apiEndpoint.endsWith("/") ? publicConfig.apiEndpoint.slice(0, -1) : publicConfig.apiEndpoint
+  return fetch(`${normalisedEndpoint}/${path}`, {
     method: "POST",
     headers: getHeaders(),
     body: JSON.stringify(body),
@@ -64,7 +68,8 @@ export const _post = (path, body) => {
 }
 
 export const _put = (path, body = {}) => {
-  return fetch(`${path}`, {
+  const normalisedEndpoint = publicConfig.apiEndpoint.endsWith("/") ? publicConfig.apiEndpoint.slice(0, -1) : publicConfig.apiEndpoint
+  return fetch(`${normalisedEndpoint}/${path}`, {
     method: "PUT",
     headers: getHeaders(),
     body: JSON.stringify(body),
@@ -72,7 +77,8 @@ export const _put = (path, body = {}) => {
 }
 
 export const _patch = (path, body = {}) => {
-  return fetch(`${path}`, {
+  const normalisedEndpoint = publicConfig.apiEndpoint.endsWith("/") ? publicConfig.apiEndpoint.slice(0, -1) : publicConfig.apiEndpoint
+  return fetch(`${normalisedEndpoint}/${path}`, {
     method: "PATCH",
     headers: getHeaders(),
     body: JSON.stringify(body),
@@ -80,13 +86,15 @@ export const _patch = (path, body = {}) => {
 }
 
 export const _delete = (path) => {
-  return fetch(`${path}`, {
+  const normalisedEndpoint = publicConfig.apiEndpoint.endsWith("/") ? publicConfig.apiEndpoint.slice(0, -1) : publicConfig.apiEndpoint
+  return fetch(`${normalisedEndpoint}/${path}`, {
     method: "DELETE",
     headers: getHeaders(),
   }).then((res) => handleResponse(path, res))
 }
 
 export const buildLink = (path) => {
+  // TODO_AB to check
   let auth = getAuth()
   if (auth.sub !== "anonymous") {
     //TODO better handle params
