@@ -1,6 +1,7 @@
 import { Box, Button, Link } from "@chakra-ui/react"
 import React from "react"
-import { ChevronLeft, ChevronRight } from "../theme/components/icons"
+
+import { ChevronLeft, ChevronRight } from "../../theme/components/icons"
 
 const PageLink = ({ pageNumber, onClick, isActive = false }) => {
   return (

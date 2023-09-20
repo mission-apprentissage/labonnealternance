@@ -15,10 +15,11 @@ import {
   useDisclosure,
 } from "@chakra-ui/react"
 import { useState } from "react"
-import { archiveDelegatedFormulaire, archiveFormulaire, updateEntreprise } from "../api"
-import { AUTHTYPE, USER_STATUS } from "../common/contants"
-import useUserHistoryUpdate from "../common/hooks/useUserHistoryUpdate"
-import { Close } from "../theme/components/icons"
+
+import { AUTHTYPE, USER_STATUS } from "../../common/contants"
+import useUserHistoryUpdate from "../../common/hooks/useUserHistoryUpdate"
+import { Close } from "../../theme/components/icons"
+import { archiveDelegatedFormulaire, archiveFormulaire, updateEntreprise } from "../../utils/api"
 
 export const ConfirmationDesactivationUtilisateur = (props) => {
   const { isOpen, onClose, establishment_raison_sociale, _id, type, establishment_id, siret } = props

@@ -28873,6 +28873,7 @@ __metadata:
     lodash: 4.17.20
     mapbox-gl: 2.10.0
     markdown-it: 12.0.4
+    match-sorter: ^6.3.1
     next: 12.3.4
     next-images: 1.8.5
     next-plausible: 3.6.3
@@ -28881,6 +28882,7 @@ __metadata:
     nock: ^13.3.3
     notion-client: 6.15.6
     react: 18.2.0
+    react-csv: ^2.2.2
     react-dates: ^21.8.0
     react-dom: 18.2.0
     react-dropzone: 11.4.2

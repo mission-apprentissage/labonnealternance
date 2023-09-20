@@ -48,10 +48,11 @@ export default () => {
     "/",
     authMiddleware("jwt-bearer"),
     tryCatch(async (req, res) => {
-      const query = JSON.parse(req.query.users)
-
+      const query = req.query.users
+      if (query?.$expr?.$eq[0]?.$arrayElemAt[1]) {
+        query.$expr.$eq[0].$arrayElemAt[1] = parseInt(query.$expr.$eq[0].$arrayElemAt[1])
+      }
       const users = await UserRecruteur.find(query).lean()
-
       return res.json(users)
 
       /**

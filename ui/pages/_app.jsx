@@ -8,6 +8,8 @@ import Providers from "../context/Providers"
 import "../public/styles/application.css"
 import "../public/styles/fonts.css"
 import "../public/styles/notion.css"
+import "../styles/search.css"
+import "../styles/Voeux.module.css"
 
 export default function LaBonneAlternance({ Component, pageProps }) {
   useEffect(() => {

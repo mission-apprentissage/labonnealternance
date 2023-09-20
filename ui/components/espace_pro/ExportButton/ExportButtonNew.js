@@ -1,14 +1,17 @@
 import { Button, Link } from "@chakra-ui/react"
+// eslint-disable-next-line import/no-extraneous-dependencies
 import dayjs from "dayjs"
 import _ from "lodash"
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { CSVLink } from "react-csv"
-import { AUTHTYPE } from "../../common/contants"
-import useAuth from "../../common/hooks/useAuth"
-import { DownloadLine } from "../../theme/components/icons"
+
+import { AUTHTYPE } from "../../../common/contants"
+import useAuth from "../../../common/hooks/useAuth"
+import { DownloadLine } from "../../../theme/components/icons"
 
 const formatDate = (date) => dayjs(date).format("YYYY-MM-DD")
 
-export default ({ data, datasetName = "export" }) => {
+export default function ExportButtonNew({ data, datasetName = "export" }) {
   /** Map et reduce data per offre */
 
   const [auth] = useAuth()

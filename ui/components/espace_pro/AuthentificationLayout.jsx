@@ -1,12 +1,14 @@
 import { Button, Container, Flex, Box } from "@chakra-ui/react"
 import { useContext } from "react"
-import { WidgetContext } from "../contextWidget"
-import { Close } from "../theme/components/icons"
-import { LbaNew } from "../theme/components/logos"
-import Logo from "./Layout/Logo"
-import { redirect } from "../common/utils/router"
 
-export default (props) => {
+import { redirect } from "../../common/utils/router"
+import { WidgetContext } from "../../context/contextWidget"
+import { Close } from "../../theme/components/icons"
+import { LbaNew } from "../../theme/components/logos_pro"
+
+import Logo from "./Layout/Logo"
+
+export default function AuthentificationLayout(props) {
   const { widget } = useContext(WidgetContext)
 
   const redirectFn = () => {

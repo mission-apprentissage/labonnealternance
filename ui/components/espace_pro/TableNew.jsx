@@ -1,18 +1,32 @@
 import { Box, Flex, Input, InputGroup, InputRightElement, Text } from "@chakra-ui/react"
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { matchSorter } from "match-sorter"
 import React, { useMemo } from "react"
-import { useAsyncDebounce, useFilters, useFlexLayout, useGlobalFilter, usePagination, useSortBy, useTable } from "react-table"
-import { ArrowDownLine, ArrowUpLine, SearchLine } from "../theme/components/icons"
+// eslint-disable-next-line import/no-extraneous-dependencies
+import {
+  // useAsyncDebounce,
+  useFilters,
+  useFlexLayout,
+  useGlobalFilter,
+  usePagination,
+  useSortBy,
+  useTable,
+} from "react-table"
+
+import { ArrowDownLine, ArrowUpLine, SearchLine } from "../../theme/components/icons"
+
 import ExportButtonNew from "./ExportButton/ExportButtonNew"
 import PaginationReactQuery from "./PaginationReactQuery"
-import "./search.css"
 
 // Define a default UI for filtering
-function GlobalFilter({ preGlobalFilteredRows, globalFilter, setGlobalFilter }) {
+function GlobalFilter({ globalFilter, setGlobalFilter }) {
   const [value, setValue] = React.useState(globalFilter)
-  const onChange = useAsyncDebounce((value) => {
+  // const onChange = useAsyncDebounce((value) => { // TODO_AB
+  //   setGlobalFilter(value || undefined)
+  // }, 200)
+  const onChange = (value) => {
     setGlobalFilter(value || undefined)
-  }, 200)
+  }
 
   return (
     <InputGroup>
@@ -25,7 +39,9 @@ function GlobalFilter({ preGlobalFilteredRows, globalFilter, setGlobalFilter }) 
         }}
         placeholder={`Rechercher par raison sociale, email ou téléphone...`}
       />
-      <InputRightElement background="bluefrance.500" border="none" pointerEvents="none" children={<SearchLine color="white" />} />
+      <InputRightElement background="bluefrance.500" border="none" pointerEvents="none">
+        <SearchLine color="white" />
+      </InputRightElement>
     </InputGroup>
   )
 }
@@ -103,10 +119,10 @@ export function TableNew({ data, columns, description, exportable }) {
 
       <Box as="table" {...getTableProps()} w="100%" flex={1} fontSize="delta">
         <Box as="thead" borderBottom="2px solid #3A3A3A">
-          {headerGroups.map((headerGroup) => (
-            <Box as="tr" {...headerGroup.getHeaderGroupProps({})} pb={4}>
+          {headerGroups.map((headerGroup, k) => (
+            <Box key={k} as="tr" {...headerGroup.getHeaderGroupProps({})} pb={4}>
               {headerGroup.headers.map((column, i) => (
-                <Box as="th" {...column.getHeaderProps(column.getSortByToggleProps())} display={[i === 0 || i > 2 ? "none" : "flex", "flex"]} overflow="hidden" px={2}>
+                <Box key={i} as="th" {...column.getHeaderProps(column.getSortByToggleProps())} display={[i === 0 || i > 2 ? "none" : "flex", "flex"]} overflow="hidden" px={2}>
                   <Flex flexDirection="column" w="full" alignItems="flex-start" justify="center">
                     <Text fontWeight="700" textAlign="left" fontSize="14px">
                       {column.render("Header")}
@@ -136,10 +152,10 @@ export function TableNew({ data, columns, description, exportable }) {
           {page.map((row, i) => {
             prepareRow(row)
             return (
-              <Box as="tr" backgroundColor={i % 2 ? "grey.200" : "white"} py={4} {...row.getRowProps()}>
-                {row.cells.map((cell) => {
+              <Box key={i} as="tr" backgroundColor={i % 2 ? "grey.200" : "white"} py={4} {...row.getRowProps()}>
+                {row.cells.map((cell, j) => {
                   return (
-                    <Flex as="td" align="center" px={2} {...cell.getCellProps()}>
+                    <Flex key={j} as="td" align="center" px={2} {...cell.getCellProps()}>
                       {cell.render("Cell")}
                     </Flex>
                   )

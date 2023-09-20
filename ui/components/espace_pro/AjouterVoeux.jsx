@@ -27,6 +27,7 @@ import {
 // eslint-disable-next-line import/no-extraneous-dependencies
 import dayjs from "dayjs"
 import { Formik } from "formik"
+import { useRouter } from "next/router"
 import { useContext, useEffect, useState } from "react"
 import { useLocation, useNavigate, useParams } from "react-router-dom"
 import * as Yup from "yup"
@@ -42,7 +43,6 @@ import { J1S, Parcoursup } from "../theme/components/logos"
 
 import DropdownCombobox from "./DropdownCombobox"
 import style from "./Voeux.module.css"
-
 
 const DATE_FORMAT = "YYYY-MM-DD"
 const URL_LBA = `${publicConfig.baseUrl}/api`
@@ -71,7 +71,7 @@ const AjouterVoeuxForm = (props) => {
   const [formulaire, setFormulaire] = useState()
   const [haveProposals, setHaveProposals] = useState()
   const location = useLocation()
-  const navigate = useNavigate()
+  const router = useRouter()
   const params = useParams()
   const [auth] = useAuth()
 
@@ -106,13 +106,13 @@ const AjouterVoeuxForm = (props) => {
    */
   const handleRedirectionAfterSubmit = (form, job, fromDashboard) => {
     if (haveProposals) {
-      return navigate("/creation/mise-en-relation", {
+      return router.push("/espace-pro/creation/mise-en-relation", {
         replace: true,
         state: { job, email, geo_coordinates: form.geo_coordinates, fromDashboard, userId },
       })
     }
 
-    navigate("/creation/fin", {
+    router.push("/espace-pro/creation/fin", {
       replace: true,
       state: { job, email, withDelegation: false, fromDashboard, userId },
     })
@@ -341,7 +341,7 @@ const AjouterVoeuxForm = (props) => {
               </FormControl>
             )}
             <Flex justify="flex-end" my={8}>
-              <Button variant="secondary" onClick={() => navigate(-1)} mr={4}>
+              <Button variant="secondary" onClick={() => router.back()} mr={4}>
                 Annuler
               </Button>
               <Button leftIcon={<ArrowRightLine />} variant="form" isDisabled={!(isValid && dirty) || isSubmitting} isActive={isValid && dirty} onClick={submitForm}>

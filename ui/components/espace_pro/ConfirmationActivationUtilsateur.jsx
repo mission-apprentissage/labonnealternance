@@ -1,9 +1,8 @@
 import { Button, Heading, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Text } from "@chakra-ui/react"
 
-
 import { USER_STATUS } from "../../common/contants"
+import useUserHistoryUpdate from "../../common/hooks/useUserHistoryUpdate"
 import { Close } from "../../theme/components/icons"
-import useUserHistoryUpdate from "../common/hooks/useUserHistoryUpdate"
 
 export const ConfirmationActivationUtilsateur = (props) => {
   let { isOpen, onClose, establishment_raison_social, _id } = props
