@@ -17,6 +17,8 @@ function Help() {
    echo "  seed:update                                Update seed using a database"
    echo "  seed:apply                                 Apply seed to a database"
    echo "  seed:es                                    Seed Elasticsearch with data"
+   echo "  deploy:log:encrypt                         Encrypt Github ansible logs"
+   echo "  deploy:log:dencrypt                        Decrypt Github ansible logs"
    echo
    echo
 }
@@ -72,5 +74,13 @@ function seed:apply() {
 
 function seed:es() {
   "${SCRIPT_DIR}/seed-es.sh" "$@"
+}
+
+function deploy:log:encrypt() {
+  "${SCRIPT_DIR}/deploy-log-encrypt.sh" "$@"
+}
+
+function deploy:log:decrypt() {
+  "${SCRIPT_DIR}/deploy-log-decrypt.sh" "$@"
 }
 

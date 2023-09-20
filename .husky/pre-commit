@@ -3,5 +3,6 @@
 
 yarn lint-staged
 yarn --cwd server tsoa
+git add server/src/generated
 ./.husky/preventSensibleFilesCommit.sh
 yarn node-talisman --githook pre-commit

@@ -1,10 +1,20 @@
 fileignoreconfig:
+- filename: .bin/scripts/deploy-log-decrypt.sh
+  checksum: b9c969e31cc620084c9a3d97637d509a821c542dba236f96dc799beff4b66648
+- filename: .bin/scripts/deploy-log-encrypt.sh
+  checksum: 8ebe245e2a3719defc295d0de3d02c42e2cb82cb2ecc9507ce0dd4273a428e5e
+- filename: .github/workflows/_deploy.yml
+  checksum: 62e09b5f606f4aaebbd1802c7c6b1d985099f92b9a759afcbcef6a1426f9cf71
+- filename: .github/workflows/release.yml
+  checksum: 04cd4e69c67ffb0baa69892cb715aab8221d10587af0b2f27af38b2d4a968b93
 - filename: .infra/.env_server
   checksum: 618e1aad8e37a060c78ddca285899ae61cd2a6c584895a3c4dfd54f392ed6112
 - filename: .infra/env.ini
   checksum: 24332dcab809201ac286e4225a1d861307c291dc4a5e2308b996da2d3547a41c
 - filename: .infra/vault/vault.yml
   checksum: efe056129fb1c4f2719ae88eeefa7d116be7cd2faa27c0fc84c488109b63127d
+- filename: server/static/generated/swagger.json
+  checksum: 4c8d4cd74a8c3b8775c22e078fa502997c7a806d4695a3827a2e4b068bc8704f
 - filename: ui/pages/espace-pro/admin/widget-parameters/search.jsx
   checksum: 4b65ee1cab8a6297037abb32ff06a72a54ccfaf2165745ed780f52699bb7a4c6
 scopeconfig:

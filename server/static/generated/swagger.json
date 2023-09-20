@@ -75,6 +75,606 @@
         "required": ["referrer"],
         "type": "object"
       },
+      "IApiError": {
+        "properties": {
+          "result": {
+            "type": "string"
+          },
+          "error": {
+            "type": "string"
+          },
+          "message": {},
+          "status": {
+            "type": "number",
+            "format": "double"
+          },
+          "statusText": {
+            "type": "string"
+          }
+        },
+        "type": "object",
+        "additionalProperties": false
+      },
+      "ILbaItemContact": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "phone": {
+            "type": "string",
+            "nullable": true
+          },
+          "info": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "type": "object",
+        "additionalProperties": false
+      },
+      "ILbaItemPlace": {
+        "properties": {
+          "distance": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "fullAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "latitude": {
+            "type": "string",
+            "nullable": true
+          },
+          "longitude": {
+            "type": "string",
+            "nullable": true
+          },
+          "city": {
+            "type": "string",
+            "nullable": true
+          },
+          "address": {
+            "type": "string",
+            "nullable": true
+          },
+          "cedex": {
+            "type": "string",
+            "nullable": true
+          },
+          "zipCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "insee": {
+            "type": "string",
+            "nullable": true
+          },
+          "departementNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "region": {
+            "type": "string",
+            "nullable": true
+          },
+          "remoteOnly": {
+            "type": "boolean",
+            "nullable": true
+          }
+        },
+        "required": ["distance", "fullAddress", "latitude", "longitude", "city"],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "Partial_ILbaItemPlace_": {
+        "properties": {
+          "distance": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "fullAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "latitude": {
+            "type": "string",
+            "nullable": true
+          },
+          "longitude": {
+            "type": "string",
+            "nullable": true
+          },
+          "city": {
+            "type": "string",
+            "nullable": true
+          },
+          "address": {
+            "type": "string",
+            "nullable": true
+          },
+          "cedex": {
+            "type": "string",
+            "nullable": true
+          },
+          "zipCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "insee": {
+            "type": "string",
+            "nullable": true
+          },
+          "departementNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "region": {
+            "type": "string",
+            "nullable": true
+          },
+          "remoteOnly": {
+            "type": "boolean",
+            "nullable": true
+          }
+        },
+        "type": "object",
+        "description": "Make all properties in T optional"
+      },
+      "ILbaItemCompanyHQ": {
+        "properties": {
+          "siret": {
+            "type": "string",
+            "nullable": true
+          },
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "uai": {
+            "type": "string",
+            "nullable": true
+          },
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "hasConvention": {
+            "type": "string",
+            "nullable": true
+          },
+          "place": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Partial_ILbaItemPlace_"
+              }
+            ],
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": ["siret", "id", "uai", "type", "hasConvention", "place", "name"],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "ILbaItemOpco": {
+        "properties": {
+          "label": {
+            "type": "string",
+            "nullable": true
+          },
+          "url": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": ["label", "url"],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "ILbaItemCompany": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "siret": {
+            "type": "string",
+            "nullable": true
+          },
+          "size": {
+            "type": "string",
+            "nullable": true
+          },
+          "logo": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "socialNetwork": {
+            "type": "string",
+            "nullable": true
+          },
+          "url": {
+            "type": "string",
+            "nullable": true
+          },
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "uai": {
+            "type": "string",
+            "nullable": true
+          },
+          "place": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Partial_ILbaItemPlace_"
+              }
+            ],
+            "nullable": true
+          },
+          "mandataire": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "creationDate": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "headquarter": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ILbaItemCompanyHQ"
+              }
+            ],
+            "nullable": true
+          },
+          "opco": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ILbaItemOpco"
+              }
+            ],
+            "nullable": true
+          }
+        },
+        "type": "object",
+        "additionalProperties": false
+      },
+      "JOB_STATUS": {
+        "enum": ["Active", "Pourvue", "Annulée", "En attente"],
+        "type": "string"
+      },
+      "ILbaItemJob": {
+        "properties": {
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "creationDate": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "string",
+                "format": "date-time"
+              }
+            ]
+          },
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "contractType": {
+            "type": "string",
+            "nullable": true
+          },
+          "contractDescription": {
+            "type": "string",
+            "nullable": true
+          },
+          "duration": {
+            "type": "string",
+            "nullable": true
+          },
+          "jobStartDate": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "string",
+                "format": "date-time"
+              }
+            ]
+          },
+          "romeDetails": {
+            "additionalProperties": false,
+            "type": "object"
+          },
+          "rythmeAlternance": {
+            "type": "string",
+            "nullable": true
+          },
+          "elligibleHandicap": {
+            "type": "boolean"
+          },
+          "dureeContrat": {
+            "type": "string",
+            "nullable": true
+          },
+          "quantiteContrat": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "status": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/JOB_STATUS"
+              }
+            ],
+            "nullable": true
+          }
+        },
+        "required": ["description", "creationDate", "id", "contractType"],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "ILbaItemRome": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "nullable": true
+          },
+          "label": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": ["code"],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "ILbaItemNaf": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "nullable": true
+          },
+          "label": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "type": "object",
+        "additionalProperties": false
+      },
+      "ILbaItemTrainingSession": {
+        "properties": {
+          "startTime": {
+            "type": "string"
+          },
+          "endTime": {
+            "type": "string"
+          },
+          "isPermanentEntry": {
+            "type": "string"
+          }
+        },
+        "required": ["startTime", "endTime", "isPermanentEntry"],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "ILbaItemTraining": {
+        "properties": {
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "objectif": {
+            "type": "string",
+            "nullable": true
+          },
+          "sessions": {
+            "items": {
+              "$ref": "#/components/schemas/ILbaItemTrainingSession"
+            },
+            "type": "array"
+          }
+        },
+        "required": ["description", "objectif", "sessions"],
+        "type": "object",
+        "additionalProperties": false
+      },
+      "ILbaItem": {
+        "properties": {
+          "ideaType": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "longTitle": {
+            "type": "string",
+            "nullable": true
+          },
+          "id": {
+            "type": "string",
+            "nullable": true
+          },
+          "idRco": {
+            "type": "string",
+            "nullable": true
+          },
+          "idRcoFormation": {
+            "type": "string",
+            "nullable": true
+          },
+          "contact": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ILbaItemContact"
+              }
+            ],
+            "nullable": true
+          },
+          "place": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ILbaItemPlace"
+              }
+            ],
+            "nullable": true
+          },
+          "company": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ILbaItemCompany"
+              }
+            ],
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "nullable": true
+          },
+          "lastUpdateAt": {
+            "type": "string",
+            "nullable": true
+          },
+          "url": {
+            "type": "string",
+            "nullable": true
+          },
+          "cleMinistereEducatif": {
+            "type": "string",
+            "nullable": true,
+            "description": "TODO API V2: move inside training<ILbaItemTraining>"
+          },
+          "diplomaLevel": {
+            "type": "string",
+            "nullable": true
+          },
+          "diploma": {
+            "type": "string",
+            "nullable": true
+          },
+          "cfd": {
+            "type": "string",
+            "nullable": true
+          },
+          "rncpCode": {
+            "type": "string",
+            "nullable": true
+          },
+          "rncpLabel": {
+            "type": "string",
+            "nullable": true
+          },
+          "rncpEligibleApprentissage": {
+            "type": "string",
+            "nullable": true
+          },
+          "period": {
+            "type": "string",
+            "nullable": true
+          },
+          "capacity": {
+            "type": "string",
+            "nullable": true
+          },
+          "onisepUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "job": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ILbaItemJob"
+              }
+            ],
+            "nullable": true
+          },
+          "romes": {
+            "items": {
+              "$ref": "#/components/schemas/ILbaItemRome"
+            },
+            "type": "array",
+            "nullable": true
+          },
+          "nafs": {
+            "items": {
+              "$ref": "#/components/schemas/ILbaItemNaf"
+            },
+            "type": "array",
+            "nullable": true
+          },
+          "training": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ILbaItemTraining"
+              }
+            ],
+            "nullable": true
+          },
+          "applicationCount": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          }
+        },
+        "required": [
+          "ideaType",
+          "title",
+          "longTitle",
+          "id",
+          "idRco",
+          "idRcoFormation",
+          "contact",
+          "place",
+          "company",
+          "createdAt",
+          "lastUpdateAt",
+          "url",
+          "cleMinistereEducatif",
+          "diplomaLevel",
+          "diploma",
+          "cfd",
+          "rncpCode",
+          "rncpLabel",
+          "rncpEligibleApprentissage",
+          "period",
+          "capacity",
+          "onisepUrl",
+          "job",
+          "romes",
+          "nafs",
+          "training",
+          "applicationCount"
+        ],
+        "type": "object",
+        "additionalProperties": false
+      },
       "TResponseError": {
         "properties": {
           "message": {
@@ -365,10 +965,6 @@
             "$ref": "#/components/schemas/IAdresseV3"
           }
         ]
-      },
-      "JOB_STATUS": {
-        "enum": ["Active", "Pourvue", "Annulée", "En attente"],
-        "type": "string"
       },
       "IDelegation": {
         "properties": {
@@ -846,606 +1442,24 @@
         "type": "object",
         "additionalProperties": false
       },
-      "IApiError": {
-        "properties": {
-          "result": {
-            "type": "string"
+      "TLbaItemResult": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/IApiError"
           },
-          "error": {
-            "type": "string"
-          },
-          "message": {},
-          "status": {
-            "type": "number",
-            "format": "double"
-          },
-          "statusText": {
-            "type": "string"
-          }
-        },
-        "type": "object",
-        "additionalProperties": false
-      },
-      "ILbaItemContact": {
-        "properties": {
-          "email": {
-            "type": "string",
-            "nullable": true
-          },
-          "name": {
-            "type": "string",
-            "nullable": true
-          },
-          "phone": {
-            "type": "string",
-            "nullable": true
-          },
-          "info": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "type": "object",
-        "additionalProperties": false
-      },
-      "ILbaItemPlace": {
-        "properties": {
-          "distance": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "fullAddress": {
-            "type": "string",
-            "nullable": true
-          },
-          "latitude": {
-            "type": "string",
-            "nullable": true
-          },
-          "longitude": {
-            "type": "string",
-            "nullable": true
-          },
-          "city": {
-            "type": "string",
-            "nullable": true
-          },
-          "address": {
-            "type": "string",
-            "nullable": true
-          },
-          "cedex": {
-            "type": "string",
-            "nullable": true
-          },
-          "zipCode": {
-            "type": "string",
-            "nullable": true
-          },
-          "insee": {
-            "type": "string",
-            "nullable": true
-          },
-          "departementNumber": {
-            "type": "string",
-            "nullable": true
-          },
-          "region": {
-            "type": "string",
-            "nullable": true
-          },
-          "remoteOnly": {
-            "type": "boolean",
-            "nullable": true
-          }
-        },
-        "required": ["distance", "fullAddress", "latitude", "longitude", "city", "address", "cedex", "zipCode", "insee", "departementNumber", "region", "remoteOnly"],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "Partial_ILbaItemPlace_": {
-        "properties": {
-          "distance": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "fullAddress": {
-            "type": "string",
-            "nullable": true
-          },
-          "latitude": {
-            "type": "string",
-            "nullable": true
-          },
-          "longitude": {
-            "type": "string",
-            "nullable": true
-          },
-          "city": {
-            "type": "string",
-            "nullable": true
-          },
-          "address": {
-            "type": "string",
-            "nullable": true
-          },
-          "cedex": {
-            "type": "string",
-            "nullable": true
-          },
-          "zipCode": {
-            "type": "string",
-            "nullable": true
-          },
-          "insee": {
-            "type": "string",
-            "nullable": true
-          },
-          "departementNumber": {
-            "type": "string",
-            "nullable": true
-          },
-          "region": {
-            "type": "string",
-            "nullable": true
-          },
-          "remoteOnly": {
-            "type": "boolean",
-            "nullable": true
-          }
-        },
-        "type": "object",
-        "description": "Make all properties in T optional"
-      },
-      "ILbaItemCompanyHQ": {
-        "properties": {
-          "siret": {
-            "type": "string",
-            "nullable": true
-          },
-          "id": {
-            "type": "string",
-            "nullable": true
-          },
-          "uai": {
-            "type": "string",
-            "nullable": true
-          },
-          "type": {
-            "type": "string",
-            "nullable": true
-          },
-          "hasConvention": {
-            "type": "string",
-            "nullable": true
-          },
-          "place": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Partial_ILbaItemPlace_"
+          {
+            "properties": {
+              "results": {
+                "items": {
+                  "$ref": "#/components/schemas/ILbaItem"
+                },
+                "type": "array"
               }
-            ],
-            "nullable": true
-          },
-          "name": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "required": ["siret", "id", "uai", "type", "hasConvention", "place", "name"],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "ILbaItemOpco": {
-        "properties": {
-          "label": {
-            "type": "string",
-            "nullable": true
-          },
-          "url": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "required": ["label", "url"],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "ILbaItemCompany": {
-        "properties": {
-          "name": {
-            "type": "string",
-            "nullable": true
-          },
-          "siret": {
-            "type": "string",
-            "nullable": true
-          },
-          "size": {
-            "type": "string",
-            "nullable": true
-          },
-          "logo": {
-            "type": "string",
-            "nullable": true
-          },
-          "description": {
-            "type": "string",
-            "nullable": true
-          },
-          "socialNetwork": {
-            "type": "string",
-            "nullable": true
-          },
-          "url": {
-            "type": "string",
-            "nullable": true
-          },
-          "id": {
-            "type": "string",
-            "nullable": true
-          },
-          "uai": {
-            "type": "string",
-            "nullable": true
-          },
-          "place": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/Partial_ILbaItemPlace_"
-              }
-            ],
-            "nullable": true
-          },
-          "mandataire": {
-            "type": "boolean",
-            "nullable": true
-          },
-          "creationDate": {
-            "type": "string",
-            "format": "date-time",
-            "nullable": true
-          },
-          "headquarter": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/ILbaItemCompanyHQ"
-              }
-            ],
-            "nullable": true
-          },
-          "opco": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/ILbaItemOpco"
-              }
-            ],
-            "nullable": true
-          }
-        },
-        "required": ["name", "siret", "id", "uai", "place", "headquarter"],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "ILbaItemJob": {
-        "properties": {
-          "description": {
-            "type": "string",
-            "nullable": true
-          },
-          "creationDate": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "string",
-                "format": "date-time"
-              }
-            ]
-          },
-          "id": {
-            "type": "string",
-            "nullable": true
-          },
-          "contractType": {
-            "type": "string",
-            "nullable": true
-          },
-          "contractDescription": {
-            "type": "string",
-            "nullable": true
-          },
-          "duration": {
-            "type": "string",
-            "nullable": true
-          },
-          "jobStartDate": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "string",
-                "format": "date-time"
-              }
-            ]
-          },
-          "romeDetails": {
-            "additionalProperties": false,
+            },
+            "required": ["results"],
             "type": "object"
-          },
-          "rythmeAlternance": {
-            "type": "string",
-            "nullable": true
-          },
-          "elligibleHandicap": {
-            "type": "boolean"
-          },
-          "dureeContrat": {
-            "type": "string",
-            "nullable": true
-          },
-          "quantiteContrat": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          },
-          "status": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/JOB_STATUS"
-              }
-            ],
-            "nullable": true
           }
-        },
-        "required": ["description", "creationDate", "id", "contractType", "jobStartDate", "romeDetails", "rythmeAlternance", "dureeContrat"],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "ILbaItemRome": {
-        "properties": {
-          "code": {
-            "type": "string",
-            "nullable": true
-          },
-          "label": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "required": ["code"],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "ILbaItemNaf": {
-        "properties": {
-          "code": {
-            "type": "string",
-            "nullable": true
-          },
-          "label": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "required": ["label"],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "ILbaItemTrainingSession": {
-        "properties": {
-          "startTime": {
-            "type": "string",
-            "nullable": true
-          },
-          "endTime": {
-            "type": "string",
-            "nullable": true
-          },
-          "isPermanentEntry": {
-            "type": "string",
-            "nullable": true
-          }
-        },
-        "required": ["startTime", "endTime", "isPermanentEntry"],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "ILbaItemTraining": {
-        "properties": {
-          "description": {
-            "type": "string",
-            "nullable": true
-          },
-          "objectif": {
-            "type": "string",
-            "nullable": true
-          },
-          "sessions": {
-            "items": {
-              "$ref": "#/components/schemas/ILbaItemTrainingSession"
-            },
-            "type": "array"
-          }
-        },
-        "required": ["description", "objectif", "sessions"],
-        "type": "object",
-        "additionalProperties": false
-      },
-      "ILbaItem": {
-        "properties": {
-          "ideaType": {
-            "type": "string",
-            "nullable": true
-          },
-          "title": {
-            "type": "string",
-            "nullable": true
-          },
-          "longTitle": {
-            "type": "string",
-            "nullable": true
-          },
-          "id": {
-            "type": "string",
-            "nullable": true
-          },
-          "idRco": {
-            "type": "string",
-            "nullable": true
-          },
-          "idRcoFormation": {
-            "type": "string",
-            "nullable": true
-          },
-          "contact": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/ILbaItemContact"
-              }
-            ],
-            "nullable": true
-          },
-          "place": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/ILbaItemPlace"
-              }
-            ],
-            "nullable": true
-          },
-          "company": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/ILbaItemCompany"
-              }
-            ],
-            "nullable": true
-          },
-          "createdAt": {
-            "type": "string",
-            "nullable": true
-          },
-          "lastUpdateAt": {
-            "type": "string",
-            "nullable": true
-          },
-          "url": {
-            "type": "string",
-            "nullable": true
-          },
-          "cleMinistereEducatif": {
-            "type": "string",
-            "nullable": true,
-            "description": "TODO API V2: move inside training<ILbaItemTraining>"
-          },
-          "diplomaLevel": {
-            "type": "string",
-            "nullable": true
-          },
-          "diploma": {
-            "type": "string",
-            "nullable": true
-          },
-          "cfd": {
-            "type": "string",
-            "nullable": true
-          },
-          "rncpCode": {
-            "type": "string",
-            "nullable": true
-          },
-          "rncpLabel": {
-            "type": "string",
-            "nullable": true
-          },
-          "rncpEligibleApprentissage": {
-            "type": "string",
-            "nullable": true
-          },
-          "period": {
-            "type": "string",
-            "nullable": true
-          },
-          "capacity": {
-            "type": "string",
-            "nullable": true
-          },
-          "onisepUrl": {
-            "type": "string",
-            "nullable": true
-          },
-          "job": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/ILbaItemJob"
-              }
-            ],
-            "nullable": true
-          },
-          "romes": {
-            "items": {
-              "$ref": "#/components/schemas/ILbaItemRome"
-            },
-            "type": "array",
-            "nullable": true
-          },
-          "nafs": {
-            "items": {
-              "$ref": "#/components/schemas/ILbaItemNaf"
-            },
-            "type": "array",
-            "nullable": true
-          },
-          "training": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/ILbaItemTraining"
-              }
-            ],
-            "nullable": true
-          },
-          "applicationCount": {
-            "type": "number",
-            "format": "double",
-            "nullable": true
-          }
-        },
-        "required": [
-          "ideaType",
-          "title",
-          "longTitle",
-          "id",
-          "idRco",
-          "idRcoFormation",
-          "contact",
-          "place",
-          "company",
-          "createdAt",
-          "lastUpdateAt",
-          "url",
-          "cleMinistereEducatif",
-          "diplomaLevel",
-          "diploma",
-          "cfd",
-          "rncpCode",
-          "rncpLabel",
-          "rncpEligibleApprentissage",
-          "period",
-          "capacity",
-          "onisepUrl",
-          "job",
-          "romes",
-          "nafs",
-          "training",
-          "applicationCount"
-        ],
-        "type": "object",
-        "additionalProperties": false
+        ]
       },
       "IMetiers": {
         "properties": {
@@ -1621,7 +1635,7 @@
   },
   "info": {
     "title": "La bonne alternance",
-    "version": "1.88.4",
+    "version": "1.96.0",
     "description": "Trouvez ici les formations en alternance et les entreprises qui recrutent régulièrement en alternance",
     "license": {
       "name": "MIT"
@@ -1700,6 +1714,428 @@
             }
           }
         }
+      }
+    },
+    "/api/v1/formationsParRegion": {
+      "get": {
+        "operationId": "getFormations",
+        "responses": {
+          "200": {
+            "description": "Get formations success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/IApiError"
+                    },
+                    {
+                      "properties": {
+                        "results": {
+                          "items": {
+                            "$ref": "#/components/schemas/ILbaItem"
+                          },
+                          "type": "array"
+                        }
+                      },
+                      "required": ["results"],
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "enum": ["Wrong parameters"],
+                  "nullable": false
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "enum": ["Internal error"],
+                  "nullable": false
+                }
+              }
+            }
+          }
+        },
+        "description": "Get formations matching the query parameters",
+        "tags": ["Formations par région"],
+        "security": [],
+        "parameters": [
+          {
+            "description": "optional: some rome codes separated by commas (either romes or romeDomain must be present)",
+            "in": "query",
+            "name": "romes",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "optional: a rome domain (either romes or romeDomain must be present)",
+            "in": "query",
+            "name": "romeDomain",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "the referer provided in the HTTP query headers",
+            "in": "header",
+            "name": "referer",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "the consumer id.",
+            "in": "query",
+            "name": "caller",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "optional: french \"departement\" code (either 'departement' or 'region' must be present)",
+            "in": "query",
+            "name": "departement",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "optional: french \"region\" code (either 'departement' or 'region' must be present)",
+            "in": "query",
+            "name": "region",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "optional: targeted diploma",
+            "in": "query",
+            "name": "diploma",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/formations": {
+      "get": {
+        "operationId": "getFormations",
+        "responses": {
+          "200": {
+            "description": "Get formations success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/IApiError"
+                    },
+                    {
+                      "properties": {
+                        "results": {
+                          "items": {
+                            "$ref": "#/components/schemas/ILbaItem"
+                          },
+                          "type": "array"
+                        }
+                      },
+                      "required": ["results"],
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "enum": ["Wrong parameters"],
+                  "nullable": false
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "enum": ["Internal error"],
+                  "nullable": false
+                }
+              }
+            }
+          }
+        },
+        "description": "Get formations matching job and location parameters",
+        "tags": ["Formations"],
+        "security": [],
+        "parameters": [
+          {
+            "description": "(optional) a list of comma separated ROME codes matching the requested jobs. Max: 20.<br><br><strong>You must use either 'rome' or 'romeDomain'</strong>\n<br><br><italic>Example : F1603,I1308</italic>",
+            "in": "query",
+            "name": "romes",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "(optional) a ROME domain (1 letter and 2 digits) or great ROME domain (1 letter)<br><br><strong>You must use either 'rome' or 'romeDomain'</strong>\n<br><br><italic>Example : F or I13</italic>",
+            "in": "query",
+            "name": "romeDomain",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "referer",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "(required) Your company or product name and your contact email address.\n<br><br><italic>Example : contact@domain company_name</italic>",
+            "in": "query",
+            "name": "caller",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "(optional) search center latitude. Without latitude, the search will target whole France<br>\nwith 'latitude' you also must fill 'insee' and 'longitude'\n<br><br><italic>Example : 48.845</italic>",
+            "in": "query",
+            "name": "latitude",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "(optional) search center longitude. Without longitude, the search will target whole France\nwith 'longitude' you also must fill 'insee' and 'latitude'\n<br><br><italic>Example : 2.3752</italic>",
+            "in": "query",
+            "name": "longitude",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "the search radius in kilometers. Default value is 30\n<br><br><italic>Example : 30</italic>",
+            "in": "query",
+            "name": "radius",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "(optional) the targeted diploma level. Must contain at least the number of an allowed value<br><br>\nAllowed values : 3 (CAP...), 4 (BAC...), 5 (BTS, DEUST...), 6 (Licence...), 7 (Master, titre ingénieur...)\n<br><br><italic>Example : 3</italic>",
+            "in": "query",
+            "name": "diploma",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/formations/formation/{id}": {
+      "get": {
+        "operationId": "getFormation",
+        "responses": {
+          "200": {
+            "description": "Get formation success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/IApiError"
+                    },
+                    {
+                      "properties": {
+                        "results": {
+                          "items": {
+                            "$ref": "#/components/schemas/ILbaItem"
+                          },
+                          "type": "array"
+                        }
+                      },
+                      "required": ["results"],
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "enum": ["Wrong parameters"],
+                  "nullable": false
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "enum": ["Formation not found"],
+                  "nullable": false
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "enum": ["Internal error"],
+                  "nullable": false
+                }
+              }
+            }
+          }
+        },
+        "description": "Get one formation identified by it's clé ministère éducatif",
+        "tags": ["Formations"],
+        "security": [],
+        "parameters": [
+          {
+            "description": "the clé ministère éducatif of the formation looked for.",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "the consumer id.",
+            "in": "query",
+            "name": "caller",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/formations/formationDescription/{id}": {
+      "get": {
+        "operationId": "getFormationDescription",
+        "responses": {
+          "200": {
+            "description": "Get formation description success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/IApiError"
+                    },
+                    {}
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "enum": ["Wrong parameters"],
+                  "nullable": false
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "enum": ["Formation not found"],
+                  "nullable": false
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "enum": ["Internal error"],
+                  "nullable": false
+                }
+              }
+            }
+          }
+        },
+        "description": "Get details for one formation identified by it's clé ministère éducatif",
+        "tags": ["Formations"],
+        "security": [],
+        "parameters": [
+          {
+            "description": "the clé ministère éducatif of the formation looked for.",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
       }
     },
     "/api/v1/jobs/establishment": {
@@ -2366,19 +2802,16 @@
         "security": [],
         "parameters": [
           {
-            "description": "some rome codes separated by commas",
+            "description": "optional: some rome codes separated by commas (either 'romes' or 'rncp' must be present)",
             "in": "query",
             "name": "romes",
             "required": false,
             "schema": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
+              "type": "string"
             }
           },
           {
-            "description": "a rncp code",
+            "description": "optional: a rncp code (either 'romes' or 'rncp' must be present)",
             "in": "query",
             "name": "rncp",
             "required": false,
@@ -2405,7 +2838,7 @@
             }
           },
           {
-            "description": "search center latitude",
+            "description": "optional: search center latitude. Without latitude, the search will target whole France",
             "in": "query",
             "name": "latitude",
             "required": false,
@@ -2414,7 +2847,7 @@
             }
           },
           {
-            "description": "search center longitude",
+            "description": "optional: search center longitude. Without longitude, the search will target whole France",
             "in": "query",
             "name": "longitude",
             "required": false,
@@ -2423,17 +2856,16 @@
             }
           },
           {
-            "description": "the search radius",
+            "description": "optional: the search radius",
             "in": "query",
             "name": "radius",
             "required": false,
             "schema": {
-              "format": "double",
-              "type": "number"
+              "type": "string"
             }
           },
           {
-            "description": "search center insee code",
+            "description": "optional: search center insee code",
             "in": "query",
             "name": "insee",
             "required": false,
@@ -2442,7 +2874,7 @@
             }
           },
           {
-            "description": "optional: comma separated list of job opportunities sources",
+            "description": "optional: comma separated list of job opportunities sources (possible values: \"lba\", \"offres\", \"matcha\")",
             "in": "query",
             "name": "sources",
             "required": false,
@@ -2585,15 +3017,6 @@
             "description": "the consumer id.",
             "in": "query",
             "name": "caller",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "description": "the type of the company",
-            "in": "query",
-            "name": "type",
             "required": false,
             "schema": {
               "type": "string"
@@ -2845,6 +3268,224 @@
             "description": "the consumer id.",
             "in": "query",
             "name": "caller",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/jobsEtFormations": {
+      "get": {
+        "operationId": "getJobsEtFormations",
+        "responses": {
+          "200": {
+            "description": "Get formations success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "properties": {
+                        "error_messages": {
+                          "items": {
+                            "type": "string"
+                          },
+                          "type": "array"
+                        },
+                        "error": {
+                          "type": "string"
+                        }
+                      },
+                      "required": ["error_messages", "error"],
+                      "type": "object"
+                    },
+                    {
+                      "properties": {
+                        "jobs": {
+                          "anyOf": [
+                            {
+                              "$ref": "#/components/schemas/IApiError"
+                            },
+                            {
+                              "properties": {
+                                "lbbCompanies": {},
+                                "lbaCompanies": {
+                                  "$ref": "#/components/schemas/TLbaItemResult"
+                                },
+                                "matchas": {
+                                  "$ref": "#/components/schemas/TLbaItemResult"
+                                },
+                                "peJobs": {
+                                  "$ref": "#/components/schemas/TLbaItemResult"
+                                }
+                              },
+                              "required": ["lbbCompanies", "lbaCompanies", "matchas", "peJobs"],
+                              "type": "object"
+                            }
+                          ]
+                        },
+                        "formations": {
+                          "anyOf": [
+                            {
+                              "$ref": "#/components/schemas/IApiError"
+                            },
+                            {
+                              "properties": {
+                                "results": {
+                                  "items": {
+                                    "$ref": "#/components/schemas/ILbaItem"
+                                  },
+                                  "type": "array"
+                                }
+                              },
+                              "required": ["results"],
+                              "type": "object"
+                            }
+                          ]
+                        }
+                      },
+                      "required": ["jobs", "formations"],
+                      "type": "object"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "enum": ["Wrong parameters"],
+                  "nullable": false
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "enum": ["Internal error"],
+                  "nullable": false
+                }
+              }
+            }
+          }
+        },
+        "description": "Get job opportunities and formations matching the query parameters",
+        "tags": ["Jobs et formations"],
+        "security": [],
+        "parameters": [
+          {
+            "description": "optional: some rome codes separated by commas (either 'romes' or 'rncp' must be present)",
+            "in": "query",
+            "name": "romes",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "optional: a rncp code (either 'romes' or 'rncp' must be present)",
+            "in": "query",
+            "name": "rncp",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "the referer provided in the HTTP query headers",
+            "in": "header",
+            "name": "referer",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "the consumer id.",
+            "in": "query",
+            "name": "caller",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "optional: search center latitude. Without latitude, the search will target whole France",
+            "in": "query",
+            "name": "latitude",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "optional: search center longitude. Without longitude, the search will target whole France",
+            "in": "query",
+            "name": "longitude",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "optional: the search radius",
+            "in": "query",
+            "name": "radius",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "optional: search center insee code",
+            "in": "query",
+            "name": "insee",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "optional: comma separated list of job opportunities sources and trainings (possible values : \"formations\", \"lba\", \"matcha\", \"offres\")",
+            "in": "query",
+            "name": "sources",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "optional: targeted diploma",
+            "in": "query",
+            "name": "diploma",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "optional: filter opportunities on opco name",
+            "in": "query",
+            "name": "opco",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "optional: filter opportunities on opco url",
+            "in": "query",
+            "name": "opcoUrl",
             "required": false,
             "schema": {
               "type": "string"

@@ -16,6 +16,8 @@ _mna-lba_completion() {
    "seed\:update:'Update seed using a database'"
    "seed\:apply:'Apply seed to a database'"
    "seed\:es:'Seed ElasticSearch with data'"
+   "deploy\:log\:encrypt:'Encrypt Github ansible logs'"
+   "deploy\:log\:dencrypt:'Decrypt Github ansible logs'"
   )
 
   # Set completion behavior based on the current word

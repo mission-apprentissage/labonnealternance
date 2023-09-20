@@ -1,0 +1,113 @@
+name: Deployment
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: The environment to deploy to
+        type: choice
+        required: true
+        options:
+          - production
+          - recette
+      app_version:
+        description: app version
+        type: string
+        required: true
+        default: latest
+  workflow_call:
+    inputs:
+      environment:
+        description: The environment to deploy to
+        type: string
+        default: latest
+        required: false
+      app_version:
+        description: app version
+        type: string
+        required: false
+        default: latest
+    secrets:
+      DEPLOY_SSH_PRIVATE_KEY:
+        description: SSH private key
+        required: true
+      DEPLOY_PASS:
+        description: SSH PWD TO DEPLOY
+        required: true
+      SLACK_WEBHOOK:
+        description: Slack webhook URL
+        required: true
+      VAULT_PWD:
+        description: Vault Password
+        required: true
+
+jobs:
+  deploy:
+    name: Deploy ${{ inputs.app_version }} on ${{ inputs.environment }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify new deployment on Slack
+        uses: ravsamhq/notify-slack-action@v2
+        if: always()
+        with:
+          status: ${{ job.status }}
+          notification_title: "Déploiement ${{ inputs.app_version }} en ${{ inputs.environment }} initié..."
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+
+      - name: Checkout project
+        uses: actions/checkout@v4
+
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          name: github_actions
+          key: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
+          known_hosts: ${{ vars.SSH_KNOWN_HOSTS }}
+          config: |
+            Host *
+              IdentityFile ~/.ssh/github_actions
+
+      - name: Create vault pwd file
+        run: echo ${{ secrets.VAULT_PWD }} > .infra/.vault_pwd.txt
+
+      - name: Run playbook
+        run: .bin/mna-lba deploy ${{ inputs.environment }} --extra-vars "app_version=${{ inputs.app_version }}"
+        env:
+          ANSIBLE_VAULT_PASSWORD_FILE: .infra/.vault_pwd.txt
+          ANSIBLE_REMOTE_USER: deploy
+          ANSIBLE_BECOME_PASS: ${{ secrets.DEPLOY_PASS }}
+
+      - name: Encrypt Error log on failure
+        run: .bin/mna-lba deploy:log:encrypt
+        if: failure()
+        env:
+          ANSIBLE_VAULT_PASSWORD_FILE: .infra/.vault_pwd.txt
+
+      - name: Upload failure artifacts on failure
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: error-logs
+          path: /tmp/deploy_error.log.gpg
+
+      - name: Notify failure on Slack
+        uses: ravsamhq/notify-slack-action@v2
+        if: always()
+        with:
+          status: ${{ job.status }}
+          notification_title: "Le déploiement ${{ inputs.app_version }} en ${{ inputs.environment }} a échoué"
+          message_format: "{emoji} *[${{ inputs.environment }}]* *{workflow}* {status_message} in <{repo_url}|{branch}> on <{commit_url}|{commit_sha}>. You can get error logs using `.bin/mna-lba deploy:log:decrypt ${{ github.run_id }}`"
+          notify_when: "failure"
+          mention_groups: "!channel"
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+
+      - name: Notify success on Slack
+        uses: ravsamhq/notify-slack-action@v2
+        if: always()
+        with:
+          status: ${{ job.status }}
+          notification_title: "Déploiement ${{ inputs.app_version }} en ${{ inputs.environment }} terminé avec succès"
+          notify_when: "success"
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
