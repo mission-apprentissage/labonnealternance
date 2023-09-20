@@ -26728,6 +26728,7 @@ __metadata:
     mongodb: ^5.7.0
     type-fest: ^4.3.1
     typescript: ^5.2.2
+    vitest: ^0.34.4
     zod: ^3.22.2
   languageName: unknown
   linkType: soft

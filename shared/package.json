@@ -25,6 +25,7 @@
     "@types/boom": "^7.3.3",
     "mongodb": "^5.7.0",
     "typescript": "^5.2.2",
+    "vitest": "^0.34.4",
     "zod": "^3.22.2"
   }
 }

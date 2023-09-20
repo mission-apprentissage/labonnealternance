@@ -24,11 +24,11 @@ export default defineWorkspace([
       setupFiles: ["./tests/setup.ts"],
     },
   },
-  // {
-  //   test: {
-  //     name: "shared",
-  //     root: "./shared",
-  //     include: ["**/*.test.ts"],
-  //   },
-  // },
+  {
+    test: {
+      name: "shared",
+      root: "./shared",
+      include: ["**/*.test.ts"],
+    },
+  },
 ])
