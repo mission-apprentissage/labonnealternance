@@ -1,15 +1,17 @@
 import assert from "assert"
+
 import jwt from "jsonwebtoken"
 import { omit } from "lodash-es"
+import { describe, it } from "vitest"
+
+import { createAndLogUser } from "@tests/utils/login.utils"
+import { useMongo } from "@tests/utils/mongo.utils"
+import { useServer } from "@tests/utils/server.utils"
+
 import __filename from "../../../src/common/filename"
 import { User } from "../../../src/common/model/index"
 import { hash } from "../../../src/common/utils/sha512Utils"
 import config from "../../../src/config"
-import { describe, it, expect } from "vitest"
-import { useMongo } from "@tests/utils/mongo.utils"
-import { useServer } from "@tests/utils/server.utils"
-import { createUser } from "@/services/user.service"
-import { createAndLogUser } from "@tests/utils/login.utils"
 
 describe("loginRoutes", () => {
   useMongo()

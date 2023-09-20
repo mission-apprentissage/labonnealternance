@@ -13,6 +13,7 @@
   "workspaces": [
     "ui",
     "server",
+    "shared",
     "ui_espace_pro"
   ],
   "scripts": {
@@ -38,7 +39,7 @@
     "prettier:check": "prettier --check -u .",
     "release": "semantic-release",
     "release:interactive": "./.bin/mna-lba release:interactive",
-    "prepare": "husky install",
+    "postinstall": "husky install",
     "talisman:add-exception": "yarn node-talisman --githook pre-commit -i",
     "test": "vitest",
     "test:ci": "yarn test --run",

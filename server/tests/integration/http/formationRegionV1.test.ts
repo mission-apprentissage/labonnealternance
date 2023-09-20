@@ -1,8 +1,11 @@
 import assert from "assert"
-import __filename from "../../../src/common/filename"
+
 import { describe, it, expect } from "vitest"
+
 import { useMongo } from "@tests/utils/mongo.utils"
 import { useServer } from "@tests/utils/server.utils"
+
+import __filename from "../../../src/common/filename"
 
 describe("formationRegionV1", () => {
   useMongo()

@@ -1,6 +1,7 @@
 import { describe, it } from "vitest"
-import { useServer } from "@tests/utils/server.utils"
+
 import { useMongo } from "@tests/utils/mongo.utils"
+import { useServer } from "@tests/utils/server.utils"
 
 describe("catalogueRoutes", () => {
   useMongo()

@@ -1,6 +1,7 @@
 import assert from "assert"
 
-import { describe, it, expect } from "vitest"
+import { describe, it } from "vitest"
+
 import { useMongo } from "@tests/utils/mongo.utils"
 import { useServer } from "@tests/utils/server.utils"
 

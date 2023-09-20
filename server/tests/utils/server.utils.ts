@@ -1,7 +1,8 @@
-import server from "@/http/server"
 import mongoose from "mongoose"
-import { beforeAll } from "vitest"
 import request from "supertest"
+import { beforeAll } from "vitest"
+
+import server from "@/http/server"
 
 export const useServer = () => {
   let app

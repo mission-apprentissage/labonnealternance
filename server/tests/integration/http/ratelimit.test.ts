@@ -1,9 +1,10 @@
 import assert from "assert"
 
 import { describe, it, beforeAll } from "vitest"
+
+import { enableRateLimiter } from "@/http/utils/rateLimiters"
 import { useMongo } from "@tests/utils/mongo.utils"
 import { useServer } from "@tests/utils/server.utils"
-import { enableRateLimiter } from "@/http/utils/rateLimiters"
 
 describe("ratelimit", () => {
   useMongo()

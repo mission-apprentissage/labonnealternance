@@ -1,9 +1,12 @@
 import assert from "assert"
-import { ROLES } from "../../../src/services/constant.service"
-import { describe, it, expect } from "vitest"
+
+import { describe, it } from "vitest"
+
+import { createAndLogUser } from "@tests/utils/login.utils"
 import { useMongo } from "@tests/utils/mongo.utils"
 import { useServer } from "@tests/utils/server.utils"
-import { createAndLogUser } from "@tests/utils/login.utils"
+
+import { ROLES } from "../../../src/services/constant.service"
 
 describe("rolesRoutes", () => {
   useMongo()

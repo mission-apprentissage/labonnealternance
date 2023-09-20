@@ -1,10 +1,12 @@
 import assert from "assert"
 
+import { describe, it } from "vitest"
+
+import { useMongo } from "@tests/utils/mongo.utils"
+
 import { User } from "../../../src/common/model/index"
 import { ROLES } from "../../../src/services/constant.service"
 import { authenticate, changePassword, createUser } from "../../../src/services/user.service"
-import { describe, expect, it } from "vitest"
-import { useMongo } from "@tests/utils/mongo.utils"
 
 describe("users", () => {
   useMongo()

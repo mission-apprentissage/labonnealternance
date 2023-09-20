@@ -1,8 +1,8 @@
+import mongoose, { STATES } from "mongoose"
+import { afterAll, beforeAll, beforeEach } from "vitest"
+
 import { connectToMongo } from "@/common/mongodb"
 import config from "@/config"
-import mongoose, { STATES } from "mongoose"
-import { afterAll, beforeAll } from "vitest"
-import { beforeEach } from "vitest"
 
 export const startAndConnectMongodb = async () => {
   const workerId = `${process.env.VITEST_POOL_ID}-${process.env.VITEST_WORKER_ID}`

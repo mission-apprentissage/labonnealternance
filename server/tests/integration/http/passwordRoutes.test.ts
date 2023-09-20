@@ -1,13 +1,16 @@
 import assert from "assert"
-import { omit } from "lodash-es"
+
 import jwt from "jsonwebtoken"
-import config from "../../../src/config"
-import { createPasswordToken } from "../../../src/common/utils/jwtUtils"
-import { ROLES } from "../../../src/services/constant.service"
-import { describe, it, expect } from "vitest"
+import { omit } from "lodash-es"
+import { describe, it } from "vitest"
+
+import { createAndLogUser } from "@tests/utils/login.utils"
 import { useMongo } from "@tests/utils/mongo.utils"
 import { useServer } from "@tests/utils/server.utils"
-import { createAndLogUser } from "@tests/utils/login.utils"
+
+import { createPasswordToken } from "../../../src/common/utils/jwtUtils"
+import config from "../../../src/config"
+import { ROLES } from "../../../src/services/constant.service"
 
 describe("passwordRoutes", () => {
   useMongo()

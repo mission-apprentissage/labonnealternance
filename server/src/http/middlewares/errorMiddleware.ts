@@ -1,9 +1,8 @@
-// @ts-nocheck
 import Boom from "boom"
 
 import { logger } from "@/common/logger"
 
-function boomify(rawError) {
+function boomify(rawError): Boom {
   let error
   if (rawError.isBoom) {
     error = rawError
@@ -13,8 +12,8 @@ function boomify(rawError) {
     error.output.payload.details = rawError.details || rawError?.fields
   } else if (rawError instanceof Error) {
     error = Boom.boomify(rawError, {
-      statusCode: rawError.status || 500,
-      ...(!rawError.message ? "Une erreur est survenue" : {}),
+      statusCode: (rawError as any).status || 500,
+      message: (rawError as any).message || "Une erreur est survenue",
     })
   } else {
     error = Boom.internal(typeof rawError === "string" ? rawError : "Une erreur est survenue")

@@ -1,6 +1,7 @@
+import { describe, it, expect } from "vitest"
+
 import { useMongo } from "@tests/utils/mongo.utils"
 import { useServer } from "@tests/utils/server.utils"
-import { describe, it, expect } from "vitest"
 
 describe("constantsRoutes", () => {
   useMongo()

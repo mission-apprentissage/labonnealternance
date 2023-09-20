@@ -1,7 +1,6 @@
 // eslint-disable-next-line no-undef
 module.exports = {
   extends: ["plugin:n/recommended-module"],
-  ignorePatterns: ["**/tests/"],
   rules: {
     "n/no-missing-import": 0,
   },

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
-import { validateCompanyEmail, validatePermanentEmail, validateSendApplication } from "../../src/services/application.service"
 
 import { decryptWithIV } from "../../src/common/utils/encryptString"
+import { validateCompanyEmail, validatePermanentEmail, validateSendApplication } from "../../src/services/application.service"
 
 describe("validateSendApplication", () => {
   it("validateSendApplication : Echoue si mauvais argument passé en param", async () => {
