@@ -46,7 +46,6 @@ const EtablissementComponent = ({ id }) => {
   const emailGestionnaireFocusRef = createRef()
   const emailGestionnaireRef = createRef()
 
-  const [loading, setLoading] = useState(false)
   const [etablissement, setEtablissement] = useState()
   const toast = useToast()
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -57,8 +56,7 @@ const EtablissementComponent = ({ id }) => {
    */
   const fetchData = async () => {
     try {
-      setLoading(true)
-      const response = await _get(`/api/admin/etablissements/${id}`)
+      const response = await _get(`admin/etablissements/${id}`)
       setEtablissement(response)
     } catch (error) {
       toast({
@@ -68,7 +66,7 @@ const EtablissementComponent = ({ id }) => {
         position: "bottom-right",
       })
     } finally {
-      setLoading(false)
+      //
     }
   }
 
@@ -107,7 +105,7 @@ const EtablissementComponent = ({ id }) => {
    */
   const upsertEmailDecisionnaire = async (email) => {
     try {
-      const response = await _patch(`/api/admin/etablissements/${etablissement._id}`, { gestionnaire_email: email })
+      const response = await _patch(`admin/etablissements/${etablissement._id}`, { gestionnaire_email: email })
       setEtablissement(response)
       putSuccess()
     } catch (error) {
@@ -116,7 +114,7 @@ const EtablissementComponent = ({ id }) => {
   }
 
   return (
-    <Box bg="white" border="1px solid #E0E5ED" borderRadius="4px" mt={10} pb="5" loading={loading}>
+    <Box bg="white" border="1px solid #E0E5ED" borderRadius="4px" mt={10} pb="5">
       <Box borderBottom="1px solid #E0E5ED">
         <Text fontSize="16px" p={5}>
           Etablissement
@@ -269,7 +267,7 @@ const EtablissementComponent = ({ id }) => {
               <EditablePreview ref={emailGestionnaireFocusRef} />
               <EditableInput ref={emailGestionnaireRef} type="email" _focus={{ border: "none" }} />
             </Editable>
-            <Button RootComponent="a" variant="primary" onClick={() => upsertEmailDecisionnaire(emailGestionnaireRef.current.value.toLowerCase())}>
+            <Button variant="primary" onClick={() => upsertEmailDecisionnaire(emailGestionnaireRef.current.value.toLowerCase())}>
               <Disquette w="16px" h="16px" />
             </Button>
           </Flex>

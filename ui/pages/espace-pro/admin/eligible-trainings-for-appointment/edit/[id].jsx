@@ -1,5 +1,5 @@
 import { ExternalLinkIcon } from "@chakra-ui/icons"
-import { Box, Button, Checkbox, Editable, EditableInput, EditablePreview, Flex, Heading, Spinner, Table, Tbody, Td, Text, Thead, Tr, useToast } from "@chakra-ui/react"
+import { Box, Button, Checkbox, Editable, EditableInput, EditablePreview, Flex, Heading, Spinner, Table, Tbody, Td, Text, Th, Thead, Tr, useToast } from "@chakra-ui/react"
 // eslint-disable-next-line import/no-extraneous-dependencies
 import emailValidator from "email-validator" // TODO_AB
 import Head from "next/head"
@@ -10,7 +10,6 @@ import { formatDate } from "../../../../../common/dayjs"
 import { _get, _patch } from "../../../../../common/httpClient"
 import EtablissementComponent from "../../../../../components/espace_pro/Admin/widgetParameters/components/EtablissementComponent"
 import { Breadcrumb } from "../../../../../components/espace_pro/common/components/Breadcrumb"
-import { Check } from "../../../../../theme/components/icons"
 
 /**
  * @description Page that handle formation editions.
@@ -34,7 +33,6 @@ export default function EditPage() {
   const fetchData = async () => {
     try {
       setLoading(true)
-
       const [parametersResponse, referrers, etablissementResponse] = await Promise.all([getEligibleTrainingsForAppointments(id), getReferrers(), getEtablissement(id)])
 
       setEligibleTrainingsForAppointmentResult(parametersResponse)
@@ -56,7 +54,7 @@ export default function EditPage() {
    * @description Get all parameters.
    */
   useEffect(() => {
-    fetchData()
+    if (id) fetchData()
   }, [id, toast])
 
   /**
@@ -205,17 +203,19 @@ export default function EditPage() {
             <Box border="1px solid #E0E5ED" overflow="auto" cursor="pointer">
               <Table w="150rem" bg="white">
                 <Thead color="#ADB2BC">
-                  <Td textStyle="sm">Catalogue</Td>
-                  <Td textStyle="sm">CLE MINISTERE EDUCATIF</Td>
-                  <Td textStyle="sm">INTITULE</Td>
-                  <Td textStyle="sm">CODE POSTAL</Td>
-                  <Td textStyle="sm">ADRESSE</Td>
-                  <Td textStyle="sm">LIEU FORMATION EMAIL</Td>
-                  <Td textStyle="sm">DESACTIVER L'ECRASEMENT DU MAIL VIA LA SYNCHRONISATION CATALOGUE</Td>
-                  <Td textStyle="sm">PUBLIE SUR LE CATALOGUE</Td>
-                  <Td textStyle="sm">PARCOURSUP ID</Td>
-                  <Td textStyle="sm">DERNIERE SYNCHRONISATION CATALOGUE</Td>
-                  <Td textStyle="sm">SOURCE</Td>
+                  <Tr>
+                    <Th textStyle="sm">Catalogue</Th>
+                    <Th textStyle="sm">CLE MINISTERE EDUCATIF</Th>
+                    <Th textStyle="sm">INTITULE</Th>
+                    <Th textStyle="sm">CODE POSTAL</Th>
+                    <Th textStyle="sm">ADRESSE</Th>
+                    <Th textStyle="sm">LIEU FORMATION EMAIL</Th>
+                    <Th textStyle="sm">DESACTIVER L'ECRASEMENT DU MAIL VIA LA SYNCHRONISATION CATALOGUE</Th>
+                    <Th textStyle="sm">PUBLIE SUR LE CATALOGUE</Th>
+                    <Th textStyle="sm">PARCOURSUP ID</Th>
+                    <Th textStyle="sm">DERNIERE SYNCHRONISATION CATALOGUE</Th>
+                    <Th textStyle="sm">SOURCE</Th>
+                  </Tr>
                 </Thead>
                 <Tbody>
                   {eligibleTrainingsForAppointmentResult.parameters.map((parameter) => {
@@ -252,15 +252,14 @@ export default function EditPage() {
                             <EditableInput ref={emailRef} type="email" _focus={{ border: "none" }} />
                             <EditablePreview ref={emailFocusRef} />
                           </Editable>
-                          <Button mt={4} RootComponent="a" variant="primary" onClick={() => saveEmail(parameter._id, emailRef.current.value)}>
+                          <Button mt={4} variant="primary" onClick={() => saveEmail(parameter._id, emailRef.current.value)}>
                             OK
                           </Button>
                         </Td>
                         <Td align="center">
                           <Checkbox
-                            checked={parameter?.is_lieu_formation_email_customized}
-                            icon={<Check w="20px" h="18px" />}
-                            defaultIsChecked={parameter?.is_lieu_formation_email_customized}
+                            isChecked={parameter?.is_lieu_formation_email_customized}
+                            defaultChecked={parameter?.is_lieu_formation_email_customized}
                             onChange={(event) => disableEmailOverriding(parameter._id, event.target.checked)}
                           />
                         </Td>
@@ -268,29 +267,26 @@ export default function EditPage() {
                         <Td>{parameter?.parcoursup_id || "N/C"}</Td>
                         <Td>{parameter?.last_catalogue_sync_date ? formatDate(parameter?.last_catalogue_sync_date) : "N/A"}</Td>
                         <Td>
-                          {referrers.map((referrer) => {
+                          {referrers.map((referrer, i) => {
                             const parameterReferrers = parameter.referrers?.find((parameterReferrer) => parameterReferrer === referrer.name)
                             return (
-                              <>
-                                <Flex mt={1}>
-                                  <Checkbox
-                                    key={referrer.name}
-                                    checked={!!parameterReferrers}
-                                    value={!!parameterReferrers}
-                                    icon={<Check w="20px" h="18px" />}
-                                    defaultIsChecked={!!parameterReferrers}
-                                    onChange={(event) =>
-                                      onCheckboxChange({
-                                        parameter,
-                                        referrer,
-                                        checked: event.target.checked,
-                                      })
-                                    }
-                                  >
-                                    <Text ml={2}>{referrer.name}</Text>
-                                  </Checkbox>
-                                </Flex>
-                              </>
+                              <Flex mt={1} key={i}>
+                                <Checkbox
+                                  key={referrer.name}
+                                  isChecked={!!parameterReferrers}
+                                  value={!!parameterReferrers}
+                                  defaultChecked={!!parameterReferrers}
+                                  onChange={(event) =>
+                                    onCheckboxChange({
+                                      parameter,
+                                      referrer,
+                                      checked: event.target.checked,
+                                    })
+                                  }
+                                >
+                                  <Text ml={2}>{referrer.name}</Text>
+                                </Checkbox>
+                              </Flex>
                             )
                           })}
                         </Td>
