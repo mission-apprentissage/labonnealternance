@@ -1,4 +1,4 @@
-import { Box, Button, Container, Grid, GridItem, Input, Link, Radio, RadioGroup, Stack, Text } from "@chakra-ui/react"
+import { Box, Button, Container, Grid, GridItem, Input, Link, Radio, RadioGroup, Select, Stack, Text } from "@chakra-ui/react"
 import { ErrorMessage, Field, Form, Formik } from "formik"
 import React, { useState } from "react"
 
@@ -14,7 +14,7 @@ const WidgetTester = () => {
   const [widgetParams, setWidgetParams] = useState(null)
   const [shownRomes, setShownRomes] = useState(null)
   const [shownSearchCenter, setShownSearchCenter] = useState(null)
-  const [, setDomainError] = useState(false)
+  const [_domainError, setDomainError] = useState(false)
 
   const jobChanged = async function (val, setLoadingState) {
     let res = await domainChanged(val, setDomainError)
@@ -110,7 +110,6 @@ const WidgetTester = () => {
 
       ideaUrl = `${ideaUrl}/${path}`
 
-      //console.log("widgetParams  : ",widgetParams);
       ideaUrl += "?"
       ideaUrl += widgetParams.caller ? `&caller=${encodeURIComponent(widgetParams.caller)}` : ""
       ideaUrl += widgetParams.romes ? `&romes=${widgetParams.romes}` : ""
@@ -266,6 +265,7 @@ const WidgetTester = () => {
                     </Box>
                     <Box>
                       <Field as={Input} variant="outline" type="text" name="caller" />
+                      <Text variant="defaultAutocomplete">Nous vous contacterons à cette adresse email en cas d'évolution du service</Text>
                     </Box>
                   </Box>
                 </GridItem>
@@ -275,7 +275,20 @@ const WidgetTester = () => {
                     <Box as="label">
                       <Text as="strong">Filtrage des opportunités d&apos;emploi pour un OPCO. Optionnel (opco)</Text>
                     </Box>
-                    <Field as={Input} variant="outline" type="text" name="opco" />
+                    <Select name="opco" onChange={(evt) => setFieldValue("opco", evt.target.value)}>
+                      <option></option>
+                      <option>AFDAS</option>
+                      <option>AKTO</option>
+                      <option>ATLAS</option>
+                      <option>CONSTRUCTYS</option>
+                      <option>OPCOMMERCE</option>
+                      <option>OCAPIAT</option>
+                      <option>OPCO2I</option>
+                      <option>EP</option>
+                      <option>MOBILITE</option>
+                      <option>SANTE</option>
+                      <option>UNIFORMATION</option>
+                    </Select>
                   </Box>
                 </GridItem>
 
@@ -284,7 +297,13 @@ const WidgetTester = () => {
                     <Box as="label">
                       <Text as="strong">Filtrage des opportunités d&apos;emploi par un site d'OPCO. Optionnel (opcoUrl)</Text>
                     </Box>
-                    <Field as={Input} variant="outline" type="text" name="opcoUrl" />
+                    <Select name="opco" onChange={(evt) => setFieldValue("opcoUrl", evt.target.value)}>
+                      <option></option>
+                      <option>www.jecompte.fr</option>
+                      <option>www.concepteursdavenirs.fr</option>
+                      <option>www.jinvestislavenir.fr</option>
+                      <option>www.jassuremonfutur.fr</option>
+                    </Select>
                   </Box>
                 </GridItem>
 
