@@ -23,6 +23,7 @@ import * as Yup from "yup"
 import useAuth from "../../../../common/hooks/useAuth"
 import { SIRETValidation } from "../../../../common/validation/fieldValidations"
 import { AnimationContainer, CustomInput } from "../../../../components/espace_pro"
+import withAuth from "../../../../components/espace_pro/withAuth"
 import { LogoContext } from "../../../../context/contextLogo"
 import { WidgetContext } from "../../../../context/contextWidget"
 import { InfoCircle, SearchLine } from "../../../../theme/components/icons"
@@ -132,7 +133,7 @@ const InformationSiret = () => (
   </Box>
 )
 
-export default function CreationEntreprise({ type, widget }) {
+function CreationEntreprise({ type, widget }) {
   const { setWidget } = useContext(WidgetContext)
   const { setOrganisation } = useContext(LogoContext)
   const router = useRouter()
@@ -179,3 +180,4 @@ export default function CreationEntreprise({ type, widget }) {
     </AnimationContainer>
   )
 }
+export default withAuth(CreationEntreprise)

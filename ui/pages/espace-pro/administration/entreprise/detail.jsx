@@ -9,6 +9,7 @@ import { AUTHTYPE } from "../../../../common/contants"
 import useAuth from "../../../../common/hooks/useAuth"
 import { phoneValidation } from "../../../../common/validation/fieldValidations"
 import { AnimationContainer, CustomInput, InformationLegaleEntreprise } from "../../../../components/espace_pro"
+import withAuth from "../../../../components/espace_pro/withAuth"
 import Link from "../../../../components/Link"
 import { WidgetContext } from "../../../../context/contextWidget"
 import { ArrowDropRightLine, ArrowRightLine } from "../../../../theme/components/icons"
@@ -91,7 +92,8 @@ const Formulaire = () => {
     </Formik>
   )
 }
-export default function CreationEntrepriseDetail() {
+
+function CreationEntrepriseDetail() {
   const router = useRouter()
   const informationEntreprise = { ...JSON.parse(router.query.informationSiret), type: AUTHTYPE.ENTREPRISE }
 
@@ -128,3 +130,4 @@ export default function CreationEntrepriseDetail() {
     </AnimationContainer>
   )
 }
+export default withAuth(CreationEntrepriseDetail)

@@ -6,8 +6,9 @@ import React, { useState } from "react"
 
 import { _get } from "../../../../common/httpClient"
 import { Breadcrumb } from "../../../../components/espace_pro/common/components/Breadcrumb"
+import withAuth from "../../../../components/espace_pro/withAuth"
 
-export default function SearchPage() {
+function SearchPage() {
   const [searchKeyword, setSearchKeyword] = useState("")
   const [loading, setLoading] = useState(false)
   const router = useRouter()
@@ -90,4 +91,4 @@ export default function SearchPage() {
   )
 }
 
-// TODO_AB add HOC restriction page PRIVATE ROUTE redirect to admin/login
+export default withAuth(SearchPage, "adminRva")

@@ -1,5 +1,7 @@
 import ListeOffres from "../../../../../../../components/espace_pro/ListeOffres"
+import withAuth from "../../../../../../../components/espace_pro/withAuth"
 
-export default function OpcoEntrepriseListOffre() {
+function OpcoEntrepriseListOffre() {
   return <ListeOffres />
 }
+export default withAuth(OpcoEntrepriseListOffre)

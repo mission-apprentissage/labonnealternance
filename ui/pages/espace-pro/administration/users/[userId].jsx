@@ -37,10 +37,11 @@ import {
   UserValidationHistory,
 } from "../../../../components/espace_pro"
 import { OpcoSelect } from "../../../../components/espace_pro/CreationRecruteur/OpcoSelect"
+import withAuth from "../../../../components/espace_pro/withAuth"
 import { ArrowDropRightLine, ArrowRightLine } from "../../../../theme/components/icons"
 import { getUser, updateEntreprise } from "../../../../utils/api"
 
-export default function DetailEntreprise() {
+function DetailEntreprise() {
   const router = useRouter()
   const { userId } = router.query
   const confirmationDesactivationUtilisateur = useDisclosure()
@@ -277,4 +278,4 @@ export default function DetailEntreprise() {
   )
 }
 
-// TODO_AB add HOC restriction page PRIVATE ROUTE redirect to /
+export default withAuth(DetailEntreprise, "adminLbaR")

@@ -31,11 +31,12 @@ import { USER_STATUS } from "../../../../common/contants"
 import useAuth from "../../../../common/hooks/useAuth"
 import { sortReactTableDate, sortReactTableString } from "../../../../common/utils/dateUtils"
 import { AnimationContainer, ConfirmationActivationUtilsateur, ConfirmationDesactivationUtilisateur, LoadingEmptySpace, TableNew } from "../../../../components/espace_pro"
+import withAuth from "../../../../components/espace_pro/withAuth"
 import Link from "../../../../components/Link"
 import { ArrowDropRightLine, Parametre } from "../../../../theme/components/icons"
 import { getOpcoUsers } from "../../../../utils/api"
 
-export default function AdministrationOpco() {
+function AdministrationOpco() {
   const [currentEntreprise, setCurrentEntreprise] = useState()
   const [tabIndex, setTabIndex] = useState(0)
   const confirmationDesactivationUtilisateur = useDisclosure()
@@ -276,3 +277,5 @@ export default function AdministrationOpco() {
     </AnimationContainer>
   )
 }
+
+export default withAuth(AdministrationOpco)

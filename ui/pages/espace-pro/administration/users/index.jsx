@@ -28,11 +28,12 @@ import { AUTHTYPE, USER_STATUS } from "../../../../common/contants"
 import useAuth from "../../../../common/hooks/useAuth"
 import { sortReactTableDate, sortReactTableString } from "../../../../common/utils/dateUtils"
 import { AnimationContainer, ConfirmationActivationUtilsateur, ConfirmationDesactivationUtilisateur, LoadingEmptySpace, TableNew } from "../../../../components/espace_pro"
+import withAuth from "../../../../components/espace_pro/withAuth"
 import Link from "../../../../components/Link"
 import { Parametre } from "../../../../theme/components/icons"
 import { getUsers } from "../../../../utils/api"
 
-export default function Users() {
+function Users() {
   const [currentEntreprise, setCurrentEntreprise] = useState()
   const [tabIndex, setTabIndex] = useState(0)
   const confirmationDesactivationUtilisateur = useDisclosure()
@@ -303,4 +304,5 @@ export default function Users() {
     </AnimationContainer>
   )
 }
-// TODO_AB add HOC restriction page PRIVATE ROUTE redirect to /
+
+export default withAuth(Users, "adminLbaR")

@@ -10,12 +10,13 @@ import { formatDate } from "../../../../../common/dayjs"
 import { _get, _patch } from "../../../../../common/httpClient"
 import EtablissementComponent from "../../../../../components/espace_pro/Admin/widgetParameters/components/EtablissementComponent"
 import { Breadcrumb } from "../../../../../components/espace_pro/common/components/Breadcrumb"
+import withAuth from "../../../../../components/espace_pro/withAuth"
 
 /**
  * @description Page that handle formation editions.
  * @returns {JSX.Element}
  */
-export default function EditPage() {
+function EditPage() {
   const router = useRouter()
   const { id } = router.query
   const [eligibleTrainingsForAppointmentResult, setEligibleTrainingsForAppointmentResult] = useState()
@@ -302,5 +303,4 @@ export default function EditPage() {
     </Box>
   )
 }
-
-// TODO_AB add HOC restriction page PRIVATE ROUTE redirect to admin/login
+export default withAuth(EditPage, "adminRva")

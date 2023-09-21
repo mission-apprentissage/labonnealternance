@@ -7,6 +7,7 @@ import * as Yup from "yup"
 import { AUTHTYPE } from "../../../../../common/contants"
 import useAuth from "../../../../../common/hooks/useAuth"
 import { AnimationContainer, CustomInput, InformationLegaleEntreprise, LoadingEmptySpace } from "../../../../../components/espace_pro"
+import withAuth from "../../../../../components/espace_pro/withAuth"
 import { ArrowDropRightLine, ArrowRightLine } from "../../../../../theme/components/icons"
 import { getFormulaire, putFormulaire, updateEntreprise } from "../../../../../utils/api"
 
@@ -136,7 +137,7 @@ const Formulaire = ({ last_name, first_name, phone, email, establishment_id }) =
   )
 }
 
-export default function EditionEntrepriseContact() {
+function EditionEntrepriseContact() {
   const router = useRouter()
   const [auth] = useAuth()
 
@@ -186,3 +187,5 @@ export default function EditionEntrepriseContact() {
     </AnimationContainer>
   )
 }
+
+export default withAuth(EditionEntrepriseContact)

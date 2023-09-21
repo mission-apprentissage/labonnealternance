@@ -30,6 +30,7 @@ import useAuth from "../../../common/hooks/useAuth"
 import { sortReactTableDate, sortReactTableString } from "../../../common/utils/dateUtils"
 import { AnimationContainer, ConfirmationSuppressionEntreprise, LoadingEmptySpace, TableNew } from "../../../components/espace_pro"
 import addOfferImage from "../../../components/espace_pro/assets/images/add-offer.svg"
+import withAuth from "../../../components/espace_pro/withAuth"
 import Link from "../../../components/Link"
 import { Parametre } from "../../../theme/components/icons"
 import { getFormulaires } from "../../../utils/api"
@@ -53,8 +54,7 @@ const EmptySpace = () => (
   </Stack>
 )
 
-// eslint-disable-next-line react/display-name
-export default memo(() => {
+function ListeEntreprise() {
   const [currentEntreprise, setCurrentEntreprise] = useState()
   const confirmationSuppression = useDisclosure()
   const router = useRouter()
@@ -210,4 +210,6 @@ export default memo(() => {
       </Container>
     </AnimationContainer>
   )
-})
+}
+
+export default withAuth(memo(ListeEntreprise))

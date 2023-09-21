@@ -10,10 +10,11 @@ import AnimationContainer from "../../components/espace_pro/AnimationContainer"
 import CustomInput from "../../components/espace_pro/CustomInput"
 import InformationLegaleEntreprise from "../../components/espace_pro/InformationLegaleEntreprise"
 import Layout from "../../components/espace_pro/Layout"
+import withAuth from "../../components/espace_pro/withAuth"
 import { ArrowDropRightLine, ArrowRightLine } from "../../theme/components/icons"
 import { getUser, updateEntreprise, updatePartenaire } from "../../utils/api"
 
-export default function Compte() {
+function Compte() {
   const client = useQueryClient()
   const toast = useToast()
   const router = useRouter()
@@ -44,7 +45,7 @@ export default function Compte() {
   })
 
   if (isLoading) {
-    return "Chargement en cours..."
+    return <Text>Chargement en cours...</Text>
   }
 
   return (
@@ -145,4 +146,4 @@ export default function Compte() {
   )
 }
 
-// TODO_AB add HOC restriction page PRIVATE ROUTE
+export default withAuth(Compte)

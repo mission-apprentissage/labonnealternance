@@ -37,10 +37,11 @@ import {
   UserValidationHistory,
 } from "../../../../../../components/espace_pro"
 import { OpcoSelect } from "../../../../../../components/espace_pro/CreationRecruteur/OpcoSelect"
+import withAuth from "../../../../../../components/espace_pro/withAuth"
 import { ArrowDropRightLine, ArrowRightLine } from "../../../../../../theme/components/icons"
 import { getUser, updateEntreprise } from "../../../../../../utils/api"
 
-export default function DetailEntreprise() {
+function DetailEntreprise() {
   const confirmationDesactivationUtilisateur = useDisclosure()
   const confirmationModificationOpco = useDisclosure()
   const client = useQueryClient()
@@ -275,3 +276,5 @@ export default function DetailEntreprise() {
     </AnimationContainer>
   )
 }
+
+export default withAuth(DetailEntreprise)

@@ -5,8 +5,9 @@ import React from "react"
 import { useFetch } from "../../../common/hooks/useFetch"
 import { RequestsBoardComponent } from "../../../components/espace_pro/Admin/RequestsBoardComponent"
 import { Breadcrumb } from "../../../components/espace_pro/common/components/Breadcrumb"
+import withAuth from "../../../components/espace_pro/withAuth"
 
-export default function AdminPage() {
+function AdminPage() {
   const [data, loading] = useFetch("admin/appointments/details?limit=500")
   const appointments = data === null ? [] : data.appointments
 
@@ -33,4 +34,4 @@ export default function AdminPage() {
   )
 }
 
-// TODO_AB add HOC restriction page PRIVATE ROUTE redirect to admin/login
+export default withAuth(AdminPage, "adminRva")
