@@ -8,7 +8,7 @@ import ConfirmationCreationCompte from "./ConfirmationCreationCompte"
 import ConfirmationDesactivationUtilisateur from "./ConfirmationDesactivationUtilisateur"
 import ConfirmationModificationOpco from "./ConfirmationModificationOpco"
 import ConfirmationSuppressionEntreprise from "./ConfirmationSuppressionEntreprise"
-// import ConfirmationSuppressionOffre from "./ConfirmationSuppressionOffre"
+import ConfirmationSuppressionOffre from "./ConfirmationSuppressionOffre"
 import CustomInput from "./CustomInput"
 import CustomSelect from "./CustomSelect"
 import DropdownCombobox from "./DropdownCombobox"
@@ -41,7 +41,7 @@ export {
   LoadingEmptySpace,
   InformationLegaleEntreprise,
   ConfirmationSuppressionEntreprise,
-  // ConfirmationSuppressionOffre,
+  ConfirmationSuppressionOffre,
   CustomInput,
   CustomSelect,
   EditorialContainer,

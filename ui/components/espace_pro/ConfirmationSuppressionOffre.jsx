@@ -18,10 +18,11 @@ import {
 } from "@chakra-ui/react"
 import { useState } from "react"
 import { useQueryClient } from "react-query"
-import { putOffre } from "../api"
-import { ArrowRightLine, Close } from "../theme/components/icons"
 
-export default (props) => {
+import { ArrowRightLine, Close } from "../../theme/components/icons"
+import { putOffre } from "../../utils/api"
+
+export default function ConfirmationSuppressionOffre(props) {
   const [job_status_comment, SetjobStatusComment] = useState("")
   const extraOption = useDisclosure()
   const reason = useDisclosure()
