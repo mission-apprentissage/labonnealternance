@@ -3,6 +3,7 @@ import { z } from "zod"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { zEtablissementCatalogue } from "../interface/etablissement.types"
 import { zObjectId } from "../models/common"
+import { ZUserRecruteur } from "../models/usersRecruteur.model"
 
 export const zRecruiterRoutes = {
   get: {
@@ -93,9 +94,9 @@ export const zRecruiterRoutes = {
   put: {
     "/:id": {
       params: z.object({ id: zObjectId }),
-      body: {},
+      body: ZUserRecruteur,
       response: {
-        "2xx": {},
+        "2xx": ZUserRecruteur,
       },
     },
   },
