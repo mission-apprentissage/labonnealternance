@@ -1,3 +1,10 @@
+## [1.97.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.97.0...v1.97.1) (2023-09-21)
+
+
+### Bug Fixes
+
+* max ogr appellation code limit ([3c33a0b](https://github.com/mission-apprentissage/labonnealternance/commit/3c33a0b05b13780baf8b6c35e592cb6fb7e2bda5))
+
 # [1.97.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.96.0...v1.97.0) (2023-09-20)
 
 
