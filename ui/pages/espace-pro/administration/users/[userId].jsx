@@ -279,10 +279,8 @@ function DetailEntreprise() {
 }
 
 function DetailEntreprisePage() {
-  return (
-    <Layout footer={false}>
-      <DetailEntreprise />
-    </Layout>
-  )
+  const router = useRouter()
+  const { userId } = router.query
+  return <Layout footer={false}>{userId && <DetailEntreprise />}</Layout>
 }
 export default withAuth(DetailEntreprisePage, "adminLbaR")
