@@ -1,5 +1,6 @@
 import { Box, Button, Flex, Image, SimpleGrid, Text } from "@chakra-ui/react"
-import { Edit2Fill, InfoCircle } from "../theme/components/icons"
+
+import { Edit2Fill, InfoCircle } from "../../theme/components/icons"
 
 export const InformationOpco = ({ disabled, informationOpco, resetOpcoChoice }) => {
   return (
@@ -17,6 +18,7 @@ export const InformationOpco = ({ disabled, informationOpco, resetOpcoChoice }) 
           <Text maxW="75%" pr={4} fontSize="14px" textAlign="justify">
             {informationOpco?.description}
           </Text>
+          {/* eslint-disable-next-line jsx-a11y/alt-text */}
           <Image src={informationOpco?.image} />
         </Flex>
         <Flex alignItems="flex-start">
