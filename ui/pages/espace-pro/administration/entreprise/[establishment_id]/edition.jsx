@@ -6,7 +6,7 @@ import * as Yup from "yup"
 
 import { AUTHTYPE } from "../../../../../common/contants"
 import useAuth from "../../../../../common/hooks/useAuth"
-import { AnimationContainer, CustomInput, InformationLegaleEntreprise, LoadingEmptySpace } from "../../../../../components/espace_pro"
+import { AnimationContainer, CustomInput, InformationLegaleEntreprise, Layout, LoadingEmptySpace } from "../../../../../components/espace_pro"
 import withAuth from "../../../../../components/espace_pro/withAuth"
 import { ArrowDropRightLine, ArrowRightLine } from "../../../../../theme/components/icons"
 import { getFormulaire, putFormulaire, updateEntreprise } from "../../../../../utils/api"
@@ -188,4 +188,11 @@ function EditionEntrepriseContact() {
   )
 }
 
-export default withAuth(EditionEntrepriseContact)
+function EditionEntrepriseContactPage() {
+  return (
+    <Layout footer={false}>
+      <EditionEntrepriseContact />
+    </Layout>
+  )
+}
+export default withAuth(EditionEntrepriseContactPage)

@@ -25,7 +25,6 @@ export default function Layout({ header = true, children, widget, footer = true,
           </>
         )}
         <Container maxW="container.xl" flexGrow="1">
-          {/* {children ?? <Outlet />} */}
           {children}
         </Container>
         {!widget && footer && (

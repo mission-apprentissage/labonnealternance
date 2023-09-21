@@ -55,7 +55,7 @@ const Header = () => {
                 <MenuList>
                   {auth.sub !== "anonymous" && (
                     <>
-                      {auth.type !== AUTHTYPE.OPCO && <MenuItem onClick={() => router.push("espace-pro/compte")}>Mes informations</MenuItem>}
+                      {auth.type !== AUTHTYPE.OPCO && <MenuItem onClick={() => router.push("/espace-pro/compte")}>Mes informations</MenuItem>}
                       {auth.type !== AUTHTYPE.ENTREPRISE && auth.type !== AUTHTYPE.OPCO && auth.type !== AUTHTYPE.ADMIN && (
                         <>
                           <MenuItem onClick={() => router.push("/espace-pro/administration")}>Gestion des offres</MenuItem>

@@ -30,7 +30,7 @@ import { useQuery } from "react-query"
 import { USER_STATUS } from "../../../../common/contants"
 import useAuth from "../../../../common/hooks/useAuth"
 import { sortReactTableDate, sortReactTableString } from "../../../../common/utils/dateUtils"
-import { AnimationContainer, ConfirmationActivationUtilsateur, ConfirmationDesactivationUtilisateur, LoadingEmptySpace, TableNew } from "../../../../components/espace_pro"
+import { AnimationContainer, ConfirmationActivationUtilsateur, ConfirmationDesactivationUtilisateur, Layout, LoadingEmptySpace, TableNew } from "../../../../components/espace_pro"
 import withAuth from "../../../../components/espace_pro/withAuth"
 import Link from "../../../../components/Link"
 import { ArrowDropRightLine, Parametre } from "../../../../theme/components/icons"
@@ -87,10 +87,6 @@ function AdministrationOpco() {
       formulaireQuery: { opco: auth.scope },
     })
   )
-
-  if (awaitingValidationUserList.isLoading) {
-    return <LoadingEmptySpace />
-  }
 
   const columns = [
     {
@@ -233,6 +229,10 @@ function AdministrationOpco() {
     },
   ]
 
+  if (awaitingValidationUserList.isLoading) {
+    return <LoadingEmptySpace />
+  }
+
   return (
     <AnimationContainer>
       <ConfirmationDesactivationUtilisateur {...confirmationDesactivationUtilisateur} {...currentEntreprise} />
@@ -278,4 +278,11 @@ function AdministrationOpco() {
   )
 }
 
-export default withAuth(AdministrationOpco)
+function AdministrationOpcoPage() {
+  return (
+    <Layout footer={false}>
+      <AdministrationOpco />
+    </Layout>
+  )
+}
+export default withAuth(AdministrationOpcoPage)

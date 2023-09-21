@@ -278,4 +278,11 @@ function DetailEntreprise() {
   )
 }
 
-export default withAuth(DetailEntreprise, "adminLbaR")
+function DetailEntreprisePage() {
+  return (
+    <Layout footer={false}>
+      <DetailEntreprise />
+    </Layout>
+  )
+}
+export default withAuth(DetailEntreprisePage, "adminLbaR")

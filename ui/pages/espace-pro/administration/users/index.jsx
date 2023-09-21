@@ -27,7 +27,7 @@ import { useQuery } from "react-query"
 import { AUTHTYPE, USER_STATUS } from "../../../../common/contants"
 import useAuth from "../../../../common/hooks/useAuth"
 import { sortReactTableDate, sortReactTableString } from "../../../../common/utils/dateUtils"
-import { AnimationContainer, ConfirmationActivationUtilsateur, ConfirmationDesactivationUtilisateur, LoadingEmptySpace, TableNew } from "../../../../components/espace_pro"
+import { AnimationContainer, ConfirmationActivationUtilsateur, ConfirmationDesactivationUtilisateur, Layout, LoadingEmptySpace, TableNew } from "../../../../components/espace_pro"
 import withAuth from "../../../../components/espace_pro/withAuth"
 import Link from "../../../../components/Link"
 import { Parametre } from "../../../../theme/components/icons"
@@ -305,4 +305,12 @@ function Users() {
   )
 }
 
-export default withAuth(Users, "adminLbaR")
+function UsersPage() {
+  return (
+    <Layout footer={false}>
+      <Users />
+    </Layout>
+  )
+}
+
+export default withAuth(UsersPage, "adminLbaR")

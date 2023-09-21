@@ -22,7 +22,7 @@ import * as Yup from "yup"
 
 import useAuth from "../../../../common/hooks/useAuth"
 import { SIRETValidation } from "../../../../common/validation/fieldValidations"
-import { AnimationContainer, CustomInput } from "../../../../components/espace_pro"
+import { AnimationContainer, CustomInput, Layout } from "../../../../components/espace_pro"
 import withAuth from "../../../../components/espace_pro/withAuth"
 import { LogoContext } from "../../../../context/contextLogo"
 import { WidgetContext } from "../../../../context/contextWidget"
@@ -180,4 +180,12 @@ function CreationEntreprise({ type, widget }) {
     </AnimationContainer>
   )
 }
-export default withAuth(CreationEntreprise)
+
+function CreationEntreprisePage() {
+  return (
+    <Layout footer={false}>
+      <CreationEntreprise />
+    </Layout>
+  )
+}
+export default withAuth(CreationEntreprisePage)
