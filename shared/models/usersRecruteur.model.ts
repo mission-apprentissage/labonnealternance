@@ -1,6 +1,8 @@
 import { Jsonify } from "type-fest"
 import { z } from "zod"
 
+import { extensions } from "../helpers/zodHelpers/zodPrimitives"
+
 import { zObjectId } from "./common"
 
 export const ZUserStatusValidation = z
@@ -22,12 +24,12 @@ export const ZUserRecruteur = z
     idcc: z.string().describe("Identifiant convention collective de l'entreprise"),
     establishment_raison_sociale: z.string().describe("Raison social de l'établissement"),
     establishment_enseigne: z.string().nullable().describe("Enseigne de l'établissement"),
-    establishment_siret: z.string().describe("Siret de l'établissement"),
+    establishment_siret: extensions.siret().describe("Siret de l'établissement"),
     address_detail: z.object().describe("Detail de l'adresse de l'établissement"),
     address: z.string().describe("Adresse de l'établissement"),
     geo_coordinates: z.string().nullable().describe("Latitude/Longitude de l'adresse de l'entreprise"),
     phone: z.string().describe("Téléphone de l'établissement"),
-    email: z.string().nullable().describe("L'email de l'utilisateur"),
+    email: z.string().email().nullable().describe("L'email de l'utilisateur"),
     scope: z.string().nullable().describe("Scope accessible par l'utilisateur"),
     is_email_checked: z.boolean().describe("Indicateur de confirmation de l'adresse mail par l'utilisateur"),
     type: z.enum(["ENTREPRISE", "CFA", "OPCO", "ADMIN"]).describe("Type d'utilisateur"),
