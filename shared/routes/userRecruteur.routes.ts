@@ -6,7 +6,7 @@ import { ZUserRecruteur, ZUserStatusValidation } from "../models/usersRecruteur.
 export const zUserRecruteurRoutes = {
   get: {
     "/api/user/opco": {
-      params: z.object({
+      queryParams: z.object({
         userQuery: z.string() /* mongo query */,
         formulaireQuery: z.string() /* mongo query */,
       }),
@@ -22,7 +22,7 @@ export const zUserRecruteurRoutes = {
       },
     },
     "/api/user": {
-      params: z.object({
+      queryParams: z.object({
         users: z.string() /* mongo query */,
       }),
       response: {
@@ -32,7 +32,7 @@ export const zUserRecruteurRoutes = {
   },
   post: {
     "/api/user": {
-      params: ZUserRecruteur.extend({
+      queryParams: ZUserRecruteur.extend({
         scope: z.string().optional(),
       }),
       response: {
@@ -42,7 +42,7 @@ export const zUserRecruteurRoutes = {
   },
   put: {
     "/api/user/:userId": {
-      params: ZUserRecruteur.pick({
+      queryParams: ZUserRecruteur.pick({
         last_name: true,
         first_name: true,
         phone: true,
@@ -54,7 +54,7 @@ export const zUserRecruteurRoutes = {
       },
     },
     "/api/user/:userId/history": {
-      params: ZUserStatusValidation,
+      queryParams: ZUserStatusValidation,
       response: {
         "2xx": ZUserRecruteur,
       },
@@ -62,7 +62,7 @@ export const zUserRecruteurRoutes = {
   },
   delete: {
     "/api/user": {
-      params: z.object({
+      queryParams: z.object({
         userId: z.string(),
         recruiterId: z.string().optional(),
       }),
