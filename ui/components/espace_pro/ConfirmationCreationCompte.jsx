@@ -1,24 +1,27 @@
 import { Box, Button, Center, Heading, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Stack, Text } from "@chakra-ui/react"
-import { useNavigate } from "react-router-dom"
-import { deleteCfa, deleteEntreprise } from "../api"
-import { AUTHTYPE } from "../common/contants"
-import { InfoCircle } from "../theme/components/icons"
-import { redirect } from "../common/utils/router"
+import { useRouter } from "next/router"
+
+import { AUTHTYPE } from "../../common/contants"
+import { redirect } from "../../common/utils/router"
+import { InfoCircle } from "../../theme/components/icons"
+import { deleteCfa, deleteEntreprise } from "../../utils/api"
 
 export const ConfirmationCreationCompte = (props) => {
   let { isOpen, onClose, user, formulaire } = props
-  const navigate = useNavigate()
+  const router = useRouter()
 
   const validateAccountCreation = () => {
     switch (user.type) {
       case AUTHTYPE.ENTREPRISE:
-        navigate("/creation/offre", {
+        router.push("/espace-pro/creation/offre", {
           replace: true,
           state: { establishment_id: formulaire.establishment_id, email: user.email, type: user.type, userId: user._id, displayBanner: true },
         })
+        // TODO_AB
         break
       case AUTHTYPE.CFA:
-        navigate("/authentification/en-attente", { replace: true })
+        // TODO_AB
+        router.push("/espace-pro/authentification/en-attente", { replace: true })
         break
 
       default:

@@ -1,10 +1,11 @@
 import { Flex, Heading, Link, Text, Box, Button, Stack, UnorderedList, ListItem } from "@chakra-ui/react"
-import { AUTHTYPE } from "../../common/contants"
-import { ExternalLinkLine, InfoCircle } from "../../theme/components/icons"
-import { useNavigate } from "react-router-dom"
+import { useRouter } from "next/router"
+
+import { AUTHTYPE } from "../../../common/contants"
+import { ExternalLinkLine, InfoCircle } from "../../../theme/components/icons"
 
 export const InformationsSiret = ({ type }) => {
-  const navigate = useNavigate()
+  const router = useRouter()
 
   return (
     <>
@@ -60,7 +61,7 @@ export const InformationsSiret = ({ type }) => {
           Vous avez déjà déposé une offre en alternance par le passé ?
         </Heading>
         <Text>Connectez-vous à votre compte entreprise pour publier de nouvelles offres et administrer vos offres existantes.</Text>
-        <Button variant="primary" mt={4} onClick={() => navigate("/authentification")}>
+        <Button variant="primary" mt={4} onClick={() => router.push("/espace-pro/authentification")}>
           Me connecter
         </Button>
       </Box>

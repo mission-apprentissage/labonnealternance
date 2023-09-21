@@ -4,7 +4,7 @@ import AnimationContainer from "./AnimationContainer"
 import AuthentificationLayout from "./AuthentificationLayout"
 import Bandeau from "./Bandeau"
 import ConfirmationActivationUtilsateur from "./ConfirmationActivationUtilsateur"
-// import ConfirmationCreationCompte from "./ConfirmationCreationCompte"
+import ConfirmationCreationCompte from "./ConfirmationCreationCompte"
 import ConfirmationDesactivationUtilisateur from "./ConfirmationDesactivationUtilisateur"
 import ConfirmationModificationOpco from "./ConfirmationModificationOpco"
 import ConfirmationSuppressionEntreprise from "./ConfirmationSuppressionEntreprise"
@@ -18,7 +18,7 @@ import EditorialTextBlock from "./EditorialTextBlock"
 // import ExportButtonNew from "./ExportButton/ExportButtonNew"
 import InfoPopover from "./InfoPopover"
 import InformationLegaleEntreprise from "./InformationLegaleEntreprise"
-// import InformationOpco from "./InformationOpco"
+import InformationOpco from "./InformationOpco"
 import InfoTooltip from "./InfoToolTip"
 import Layout from "./Layout"
 import LoadingEmptySpace from "./LoadingEmptySpace"
@@ -50,11 +50,11 @@ export {
   // Etablissement,
   // MailActionsOnOffre,
   Bandeau,
-  // ConfirmationCreationCompte,
+  ConfirmationCreationCompte,
   Table,
   InfoPopover,
   // MatchaLbaOverlay,
-  // InformationOpco,
+  InformationOpco,
   TableNew,
   // PaginationReactQuery,
   // ExportButtonNew,
