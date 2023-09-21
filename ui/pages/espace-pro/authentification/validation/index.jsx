@@ -17,17 +17,6 @@ export default function RedirectAfterAuth() {
 
     switch (auth.type) {
       case AUTHTYPE.ENTREPRISE:
-        // setTimeout(() => {
-        //   // TODO_AB
-        //   router.push(`/espace-pro/administration/entreprise/${auth.establishment_id}`, {
-        //     state: { offerPopup: Object.keys(fromEntrepriseCreation).length > 0 ? true : false },
-        //   })
-        // }, 1000)
-        // TODO_AB
-        // router.push(`/espace-pro/administration/entreprise/${auth.establishment_id}`, {
-        //   state: { offerPopup: Object.keys(fromEntrepriseCreation).length > 0 ? true : false },
-        // })
-
         router.push({
           pathname: `/espace-pro/administration/entreprise/${auth.establishment_id}`,
           query: { offerPopup: Object.keys(fromEntrepriseCreation).length > 0 ? true : false },
@@ -36,18 +25,10 @@ export default function RedirectAfterAuth() {
         break
 
       case AUTHTYPE.OPCO:
-        // setTimeout(() => {
-        //   // TODO_AB
-        //   router.push(`/espace-pro/administration/opco`, { replace: true })
-        // }, 1000)
-        // TODO_AB
         router.push(`/espace-pro/administration/opco`)
         break
 
       case AUTHTYPE.CFA:
-        // setTimeout(() => {
-        //   window.location.href = "espace-pro/administration"
-        // }, 1000)
         router.push("/espace-pro/administration")
         break
 

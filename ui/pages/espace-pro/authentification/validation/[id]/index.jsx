@@ -61,21 +61,21 @@ export default function ConfirmationValidationEmail() {
     switch (auth.type) {
       case AUTHTYPE.ENTREPRISE:
         setTimeout(() => {
-          // TODO_AB
-          router.push(`/espace-pro/administration/entreprise/${auth.establishment_id}`, { state: { newUser: true } })
+          router.push({
+            pathname: `/espace-pro/administration/entreprise/${auth.establishment_id}`,
+            query: { newUser: true },
+          })
         }, 1000)
         break
 
       case AUTHTYPE.CFA:
         setTimeout(() => {
-          // TODO_AB
           router.push("/espace-pro/administration")
         }, 1000)
         break
 
       case AUTHTYPE.OPCO:
         setTimeout(() => {
-          // TODO_AB
           router.push("/espace-pro/administration/opco")
         }, 1000)
         break

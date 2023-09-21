@@ -16,8 +16,8 @@ export default function CreationMiseEnRelation() {
   const [isSubmitButtonEnabled, setIsSubmitButtonEnabled] = useState(false)
   const [isSubmitLoading, setIsSubmitLoading] = useState(false)
 
-  // TODO_AB
-  const { job, email, geo_coordinates, fromDashboard, userId } = router.query
+  const { job: jobString, email, geo_coordinates, fromDashboard, userId } = router.query
+  const job = JSON.parse(jobString)
 
   /**
    * @description Handles all checkboxes.
@@ -36,14 +36,9 @@ export default function CreationMiseEnRelation() {
    * @returns {void}
    */
   const skip = () =>
-    // TODO_AB
-    // router.push("/espace-pro/creation/fin", {
-    //   replace: true,
-    //   state: { job, email, withDelegation: false, fromDashboard, userId },
-    // })
     router.push({
       pathname: "/espace-pro/creation/fin",
-      query: { job, email, withDelegation: false, fromDashboard, userId },
+      query: { job: JSON.stringify(job), email, withDelegation: false, fromDashboard, userId },
     })
 
   /**
@@ -55,17 +50,12 @@ export default function CreationMiseEnRelation() {
     const etablissementCatalogueIds = etablissements.filter((etablissement) => etablissement.checked).map((etablissement) => etablissement._id)
 
     await createEtablissementDelegation({
-      jobId: location.state.job._id,
+      jobId: job._id,
       data: { etablissementCatalogueIds },
     }).finally(() => setIsSubmitLoading(false))
-    // TODO_AB
-    // router.push("/espace-pro/creation/fin", {
-    //   replace: true,
-    //   state: { job, email, withDelegation: true, fromDashboard, userId },
-    // })
     router.push({
       pathname: "/espace-pro/creation/fin",
-      query: { job, email, withDelegation: true, fromDashboard, userId },
+      query: { job: JSON.stringify(job), email, withDelegation: true, fromDashboard, userId },
     })
   }
 

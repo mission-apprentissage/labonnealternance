@@ -28,8 +28,6 @@ const CreationCompteForm = ({ type, setQualiopi, setBandeau, origin }) => {
       Promise.all([getEntrepriseOpco(formattedSiret), getEntrepriseInformation(formattedSiret)]).then(([opcoInfos, entrepriseData]) => {
         if (entrepriseData.error) {
           if (entrepriseData.errorType === "server") {
-            // TODO_AB
-            // router.push("/espace-pro/creation/detail", { state: { type, origin, informationSiret: { establishment_siret: formattedSiret, ...opcoInfos } } })
             router.push({
               pathname: "/espace-pro/creation/detail",
               query: { type, origin, informationSiret: JSON.stringify({ establishment_siret: formattedSiret, ...opcoInfos }) },
@@ -41,8 +39,6 @@ const CreationCompteForm = ({ type, setQualiopi, setBandeau, origin }) => {
           }
         } else {
           setSubmitting(true)
-          // TODO_AB
-          // router.push("/espace-pro/creation/detail", { state: { informationSiret: { ...entrepriseData, ...opcoInfos }, type, origin } })
           router.push({
             pathname: "/espace-pro/creation/detail",
             query: { informationSiret: JSON.stringify({ ...entrepriseData, ...opcoInfos }), type, origin },
@@ -53,8 +49,6 @@ const CreationCompteForm = ({ type, setQualiopi, setBandeau, origin }) => {
       getCfaInformation(formattedSiret)
         .then(({ data }) => {
           setSubmitting(false)
-          // TODO_AB
-          // router.push("/espace-pro/creation/detail", { state: { informationSiret: data, type, origin } })
           router.push({
             pathname: "/espace-pro/creation/detail",
             query: { informationSiret: JSON.stringify(data), type, origin },

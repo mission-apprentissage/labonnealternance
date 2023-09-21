@@ -71,11 +71,6 @@ const AjouterVoeuxForm = (props) => {
   const router = useRouter()
   const [auth] = useAuth()
 
-  // const establishment_id = location.state?.establishment_id
-  // const email = location.state?.email
-  // const userId = location.state?.userId
-  // const type = location.state?.type
-  // TODO_AB
   const { establishment_id, email, userId, type } = router.query
 
   const minDate = dayjs().format(DATE_FORMAT)
@@ -105,24 +100,15 @@ const AjouterVoeuxForm = (props) => {
    */
   const handleRedirectionAfterSubmit = (form, job, fromDashboard) => {
     if (haveProposals) {
-      // return router.push("/espace-pro/creation/mise-en-relation", {
-      //   replace: true,
-      //   state: { job, email, geo_coordinates: form.geo_coordinates, fromDashboard, userId },
-      // })
-      // TODO_AB
       return router.push({
         pathname: "/espace-pro/creation/mise-en-relation",
-        query: { job, email, geo_coordinates: form.geo_coordinates, fromDashboard, userId },
+        query: { job: JSON.stringify(job), email, geo_coordinates: form.geo_coordinates, fromDashboard, userId },
       })
     }
 
-    // router.push("/espace-pro/creation/fin", {
-    //   replace: true,
-    //   state: { job, email, withDelegation: false, fromDashboard, userId },
-    // })
     router.push({
       pathname: "/espace-pro/creation/fin",
-      query: { job, email, withDelegation: false, fromDashboard, userId },
+      query: { job: JSON.stringify(job), email, withDelegation: false, fromDashboard, userId },
     })
   }
 
@@ -180,11 +166,15 @@ const AjouterVoeuxForm = (props) => {
     setHaveProposals(!!data.length)
   }
 
-  useEffect(async () => {
-    // TODO_AB to check params.establishment_id
-    const { data: formulaire } = await getFormulaire(establishment_id)
-    setFormulaire(formulaire)
-  }, [])
+  useEffect(() => {
+    async function fetchData() {
+      if (establishment_id) {
+        const { data: formulaire } = await getFormulaire(establishment_id)
+        setFormulaire(formulaire)
+      }
+    }
+    fetchData()
+  }, [establishment_id])
 
   return (
     <Formik

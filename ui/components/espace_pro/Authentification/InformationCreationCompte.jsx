@@ -93,7 +93,7 @@ const Formulaire = ({ submitForm }) => {
                   )}
                   <Flex justifyContent="flex-end" alignItems="center" mt={5}>
                     {!widget?.isWidget && (
-                      <Button variant="link" sx={{ color: "black", fontWeight: 400 }} mr={5} onClick={() => router.push("/espace-pro/", { replace: true })}>
+                      <Button variant="link" sx={{ color: "black", fontWeight: 400 }} mr={5} onClick={() => router.push("/espace-pro/")}>
                         Annuler {/* TODO_AB */}
                       </Button>
                     )}
@@ -167,12 +167,15 @@ export const InformationCreationCompte = () => {
         if (data.user.status[0].status === "VALIDÉ") {
           if (data.user.type === AUTHTYPE.ENTREPRISE) {
             // Dépot simplifié
-            router.push("/espace-pro/creation/offre", {
-              replace: true,
-              state: { establishment_id: data.formulaire.establishment_id, type, email: data.user.email, userId: data.user._id },
+            router.push({
+              pathname: "/espace-pro/creation/offre",
+              query: { establishment_id: data.formulaire.establishment_id, type, email: data.user.email, userId: data.user._id },
             })
           } else {
-            router.push("/espace-pro/authentification/confirmation", { replace: true, state: { email: data.email } })
+            router.push({
+              pathname: "/espace-pro/authentification/confirmation",
+              query: { email: data.email },
+            })
           }
         } else {
           validationPopup.onOpen()

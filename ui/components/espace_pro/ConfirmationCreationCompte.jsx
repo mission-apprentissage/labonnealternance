@@ -13,15 +13,13 @@ export const ConfirmationCreationCompte = (props) => {
   const validateAccountCreation = () => {
     switch (user.type) {
       case AUTHTYPE.ENTREPRISE:
-        router.push("/espace-pro/creation/offre", {
-          replace: true,
-          state: { establishment_id: formulaire.establishment_id, email: user.email, type: user.type, userId: user._id, displayBanner: true },
+        router.push({
+          pathname: "/espace-pro/creation/offre",
+          query: { establishment_id: formulaire.establishment_id, email: user.email, type: user.type, userId: user._id, displayBanner: true },
         })
-        // TODO_AB
         break
       case AUTHTYPE.CFA:
-        // TODO_AB
-        router.push("/espace-pro/authentification/en-attente", { replace: true })
+        router.push("/espace-pro/authentification/en-attente")
         break
 
       default:
