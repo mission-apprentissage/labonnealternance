@@ -38,7 +38,7 @@ export const createJobSchema = Joi.object({
   appellation_code: Joi.string()
     .pattern(/^[0-9]+$/)
     .min(5)
-    .max(5)
+    .max(6)
     .required(),
   job_level_label: Joi.string()
     .valid(
