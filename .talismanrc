@@ -19,6 +19,8 @@ fileignoreconfig:
   - filecontent
 - filename: server/tests/integration/http/passwordRoutes.test.ts
   checksum: ca06f5c65cc9e3bdc39390cfe5ecdc4e3ea165ce58dc39ce7ac990aff8074a90
+- filename: ui/pages/espace-pro/admin/eligible-trainings-for-appointment/search.jsx
+  checksum: 26e08a59fba2fbace721a6109af82b5d0d70bd91ddf590484c69fd34a60db17b
 - filename: ui/pages/espace-pro/admin/widget-parameters/search.jsx
   checksum: 4b65ee1cab8a6297037abb32ff06a72a54ccfaf2165745ed780f52699bb7a4c6
 scopeconfig:

@@ -28,7 +28,7 @@ import { useQuery } from "react-query"
 import { RECRUITER_STATUS } from "../../../common/contants"
 import useAuth from "../../../common/hooks/useAuth"
 import { sortReactTableDate, sortReactTableString } from "../../../common/utils/dateUtils"
-import { AnimationContainer, ConfirmationSuppressionEntreprise, LoadingEmptySpace, TableNew } from "../../../components/espace_pro"
+import { AnimationContainer, ConfirmationSuppressionEntreprise, Layout, LoadingEmptySpace, TableNew } from "../../../components/espace_pro"
 import addOfferImage from "../../../components/espace_pro/assets/images/add-offer.svg"
 import withAuth from "../../../components/espace_pro/withAuth"
 import Link from "../../../components/Link"
@@ -212,4 +212,11 @@ function ListeEntreprise() {
   )
 }
 
-export default withAuth(memo(ListeEntreprise))
+function ListeEntreprisePage() {
+  return (
+    <Layout footer={false}>
+      <ListeEntreprise />
+    </Layout>
+  )
+}
+export default withAuth(memo(ListeEntreprisePage))

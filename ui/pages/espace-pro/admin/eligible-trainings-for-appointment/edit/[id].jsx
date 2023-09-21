@@ -8,6 +8,7 @@ import React, { createRef, useEffect, useState } from "react"
 
 import { formatDate } from "../../../../../common/dayjs"
 import { _get, _patch } from "../../../../../common/httpClient"
+import LayoutAdminRdvA from "../../../../../components/espace_pro/Admin/Layout"
 import EtablissementComponent from "../../../../../components/espace_pro/Admin/widgetParameters/components/EtablissementComponent"
 import { Breadcrumb } from "../../../../../components/espace_pro/common/components/Breadcrumb"
 import withAuth from "../../../../../components/espace_pro/withAuth"
@@ -179,128 +180,134 @@ function EditPage() {
   }
 
   if (!eligibleTrainingsForAppointmentResult) {
-    return <Spinner display="block" mx="auto" mt="10rem" />
+    return (
+      <LayoutAdminRdvA>
+        <Spinner display="block" mx="auto" mt="10rem" />
+      </LayoutAdminRdvA>
+    )
   }
 
   return (
-    <Box w="100%" pt={[4, 8]} px={[1, 1, 12, 24]} pb={40}>
-      <Head>
-        <title>{title}</title>
-        <link rel="icon" href="/favicon/favicon.ico" />
-      </Head>
-      <Breadcrumb pages={[{ title: "Administration", to: "/admin" }, { title: title }]} />
-      <Heading textStyle="h2" mt={5}>
-        {title}
-      </Heading>
-      <Box>
-        {eligibleTrainingsForAppointmentResult && etablissement && !loading && (
-          <>
-            <EtablissementComponent id={etablissement._id} />
-            <Flex bg="white" mt={10} border="1px solid #E0E5ED" borderRadius="4px" borderBottom="none">
-              <Text flex="1" fontSize="16px" p={5}>
-                Formations
-              </Text>
-            </Flex>
-            <Box border="1px solid #E0E5ED" overflow="auto" cursor="pointer">
-              <Table w="150rem" bg="white">
-                <Thead color="#ADB2BC">
-                  <Tr>
-                    <Th textStyle="sm">Catalogue</Th>
-                    <Th textStyle="sm">CLE MINISTERE EDUCATIF</Th>
-                    <Th textStyle="sm">INTITULE</Th>
-                    <Th textStyle="sm">CODE POSTAL</Th>
-                    <Th textStyle="sm">ADRESSE</Th>
-                    <Th textStyle="sm">LIEU FORMATION EMAIL</Th>
-                    <Th textStyle="sm">DESACTIVER L'ECRASEMENT DU MAIL VIA LA SYNCHRONISATION CATALOGUE</Th>
-                    <Th textStyle="sm">PUBLIE SUR LE CATALOGUE</Th>
-                    <Th textStyle="sm">PARCOURSUP ID</Th>
-                    <Th textStyle="sm">DERNIERE SYNCHRONISATION CATALOGUE</Th>
-                    <Th textStyle="sm">SOURCE</Th>
-                  </Tr>
-                </Thead>
-                <Tbody>
-                  {eligibleTrainingsForAppointmentResult.parameters.map((parameter) => {
-                    const emailRef = createRef()
-                    const emailFocusRef = createRef()
+    <LayoutAdminRdvA>
+      <Box w="100%" pt={[4, 8]} px={[1, 1, 12, 24]} pb={40}>
+        <Head>
+          <title>{title}</title>
+          <link rel="icon" href="/favicon/favicon.ico" />
+        </Head>
+        <Breadcrumb pages={[{ title: "Administration", to: "/admin" }, { title: title }]} />
+        <Heading textStyle="h2" mt={5}>
+          {title}
+        </Heading>
+        <Box>
+          {eligibleTrainingsForAppointmentResult && etablissement && !loading && (
+            <>
+              <EtablissementComponent id={etablissement._id} />
+              <Flex bg="white" mt={10} border="1px solid #E0E5ED" borderRadius="4px" borderBottom="none">
+                <Text flex="1" fontSize="16px" p={5}>
+                  Formations
+                </Text>
+              </Flex>
+              <Box border="1px solid #E0E5ED" overflow="auto" cursor="pointer">
+                <Table w="150rem" bg="white">
+                  <Thead color="#ADB2BC">
+                    <Tr>
+                      <Th textStyle="sm">Catalogue</Th>
+                      <Th textStyle="sm">CLE MINISTERE EDUCATIF</Th>
+                      <Th textStyle="sm">INTITULE</Th>
+                      <Th textStyle="sm">CODE POSTAL</Th>
+                      <Th textStyle="sm">ADRESSE</Th>
+                      <Th textStyle="sm">LIEU FORMATION EMAIL</Th>
+                      <Th textStyle="sm">DESACTIVER L'ECRASEMENT DU MAIL VIA LA SYNCHRONISATION CATALOGUE</Th>
+                      <Th textStyle="sm">PUBLIE SUR LE CATALOGUE</Th>
+                      <Th textStyle="sm">PARCOURSUP ID</Th>
+                      <Th textStyle="sm">DERNIERE SYNCHRONISATION CATALOGUE</Th>
+                      <Th textStyle="sm">SOURCE</Th>
+                    </Tr>
+                  </Thead>
+                  <Tbody>
+                    {eligibleTrainingsForAppointmentResult.parameters.map((parameter) => {
+                      const emailRef = createRef()
+                      const emailFocusRef = createRef()
 
-                    return (
-                      <Tr key={parameter._id} _hover={{ bg: "#f4f4f4", transition: "0.5s" }} transition="0.5s">
-                        <Td>
-                          <a
-                            href={`https://catalogue-apprentissage.intercariforef.org/recherche/formations?SEARCH=%22${encodeURIComponent(parameter.cle_ministere_educatif)}%22`}
-                            title="Lien vers la formation du Catalogue"
-                            target="_blank"
-                            rel="noreferrer"
-                          >
-                            <ExternalLinkIcon w={6} h={6} />
-                          </a>
-                        </Td>
-                        <Td>{parameter?.cle_ministere_educatif}</Td>
-                        <Td>{parameter.training_intitule_long}</Td>
-                        <Td>{parameter.etablissement_formateur_zip_code}</Td>
-                        <Td>{parameter.etablissement_formateur_street}</Td>
-                        <Td onClick={() => emailFocusRef.current.focus()}>
-                          <Editable
-                            defaultValue={parameter?.lieu_formation_email}
-                            style={{
-                              border: "solid #dee2e6 1px",
-                              padding: 5,
-                              marginRight: 10,
-                              borderRadius: 4,
-                              minWidth: 350,
-                            }}
-                          >
-                            <EditableInput ref={emailRef} type="email" _focus={{ border: "none" }} />
-                            <EditablePreview ref={emailFocusRef} />
-                          </Editable>
-                          <Button mt={4} variant="primary" onClick={() => saveEmail(parameter._id, emailRef.current.value)}>
-                            OK
-                          </Button>
-                        </Td>
-                        <Td align="center">
-                          <Checkbox
-                            isChecked={parameter?.is_lieu_formation_email_customized}
-                            defaultChecked={parameter?.is_lieu_formation_email_customized}
-                            onChange={(event) => disableEmailOverriding(parameter._id, event.target.checked)}
-                          />
-                        </Td>
-                        <Td>{parameter?.is_catalogue_published ? "Oui" : "Non"}</Td>
-                        <Td>{parameter?.parcoursup_id || "N/C"}</Td>
-                        <Td>{parameter?.last_catalogue_sync_date ? formatDate(parameter?.last_catalogue_sync_date) : "N/A"}</Td>
-                        <Td>
-                          {referrers.map((referrer, i) => {
-                            const parameterReferrers = parameter.referrers?.find((parameterReferrer) => parameterReferrer === referrer.name)
-                            return (
-                              <Flex mt={1} key={i}>
-                                <Checkbox
-                                  key={referrer.name}
-                                  isChecked={!!parameterReferrers}
-                                  value={!!parameterReferrers}
-                                  defaultChecked={!!parameterReferrers}
-                                  onChange={(event) =>
-                                    onCheckboxChange({
-                                      parameter,
-                                      referrer,
-                                      checked: event.target.checked,
-                                    })
-                                  }
-                                >
-                                  <Text ml={2}>{referrer.name}</Text>
-                                </Checkbox>
-                              </Flex>
-                            )
-                          })}
-                        </Td>
-                      </Tr>
-                    )
-                  })}
-                </Tbody>
-              </Table>
-            </Box>
-          </>
-        )}
+                      return (
+                        <Tr key={parameter._id} _hover={{ bg: "#f4f4f4", transition: "0.5s" }} transition="0.5s">
+                          <Td>
+                            <a
+                              href={`https://catalogue-apprentissage.intercariforef.org/recherche/formations?SEARCH=%22${encodeURIComponent(parameter.cle_ministere_educatif)}%22`}
+                              title="Lien vers la formation du Catalogue"
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              <ExternalLinkIcon w={6} h={6} />
+                            </a>
+                          </Td>
+                          <Td>{parameter?.cle_ministere_educatif}</Td>
+                          <Td>{parameter.training_intitule_long}</Td>
+                          <Td>{parameter.etablissement_formateur_zip_code}</Td>
+                          <Td>{parameter.etablissement_formateur_street}</Td>
+                          <Td onClick={() => emailFocusRef.current.focus()}>
+                            <Editable
+                              defaultValue={parameter?.lieu_formation_email}
+                              style={{
+                                border: "solid #dee2e6 1px",
+                                padding: 5,
+                                marginRight: 10,
+                                borderRadius: 4,
+                                minWidth: 350,
+                              }}
+                            >
+                              <EditableInput ref={emailRef} type="email" _focus={{ border: "none" }} />
+                              <EditablePreview ref={emailFocusRef} />
+                            </Editable>
+                            <Button mt={4} variant="primary" onClick={() => saveEmail(parameter._id, emailRef.current.value)}>
+                              OK
+                            </Button>
+                          </Td>
+                          <Td align="center">
+                            <Checkbox
+                              isChecked={parameter?.is_lieu_formation_email_customized}
+                              defaultChecked={parameter?.is_lieu_formation_email_customized}
+                              onChange={(event) => disableEmailOverriding(parameter._id, event.target.checked)}
+                            />
+                          </Td>
+                          <Td>{parameter?.is_catalogue_published ? "Oui" : "Non"}</Td>
+                          <Td>{parameter?.parcoursup_id || "N/C"}</Td>
+                          <Td>{parameter?.last_catalogue_sync_date ? formatDate(parameter?.last_catalogue_sync_date) : "N/A"}</Td>
+                          <Td>
+                            {referrers.map((referrer, i) => {
+                              const parameterReferrers = parameter.referrers?.find((parameterReferrer) => parameterReferrer === referrer.name)
+                              return (
+                                <Flex mt={1} key={i}>
+                                  <Checkbox
+                                    key={referrer.name}
+                                    isChecked={!!parameterReferrers}
+                                    value={!!parameterReferrers}
+                                    defaultChecked={!!parameterReferrers}
+                                    onChange={(event) =>
+                                      onCheckboxChange({
+                                        parameter,
+                                        referrer,
+                                        checked: event.target.checked,
+                                      })
+                                    }
+                                  >
+                                    <Text ml={2}>{referrer.name}</Text>
+                                  </Checkbox>
+                                </Flex>
+                              )
+                            })}
+                          </Td>
+                        </Tr>
+                      )
+                    })}
+                  </Tbody>
+                </Table>
+              </Box>
+            </>
+          )}
+        </Box>
       </Box>
-    </Box>
+    </LayoutAdminRdvA>
   )
 }
 export default withAuth(EditPage, "adminRva")

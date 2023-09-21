@@ -5,6 +5,8 @@ import { QueryClient, QueryClientProvider } from "react-query"
 
 import theme from "../theme/index"
 
+import LogoProvider from "./contextLogo"
+import WidgetProvider from "./contextWidget"
 import DisplayContextProvider from "./DisplayContextProvider"
 import ParameterContextProvider from "./ParameterContextProvider"
 import SearchResultContextProvider from "./SearchResultContextProvider"
@@ -29,7 +31,11 @@ const Providers = ({ env, children }) => {
         <SearchResultContextProvider>
           <ParameterContextProvider>
             <DisplayContextProvider>
-              <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+              <WidgetProvider>
+                <LogoProvider>
+                  <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+                </LogoProvider>
+              </WidgetProvider>
             </DisplayContextProvider>
           </ParameterContextProvider>
         </SearchResultContextProvider>
