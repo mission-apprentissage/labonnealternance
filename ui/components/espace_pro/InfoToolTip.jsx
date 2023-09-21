@@ -1,5 +1,5 @@
-import React from "react"
 import { Icon, Text, Tooltip } from "@chakra-ui/react"
+import React from "react"
 
 const TooltipIcon = (props) => (
   <Icon viewBox="0 0 24 24" {...props}>

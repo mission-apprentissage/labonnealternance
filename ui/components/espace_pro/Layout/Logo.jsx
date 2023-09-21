@@ -1,6 +1,6 @@
 import { Box, Text } from "@chakra-ui/react"
 
-export default ({ size = "sm", ...props }) => {
+export default function Logo({ size = "sm", ...props }) {
   let fontSize = "0.7875rem"
   let beforeWidth = "2.0625rem"
   let beforeHeight = "0.75rem"

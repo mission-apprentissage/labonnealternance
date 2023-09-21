@@ -1,7 +1,8 @@
 import { Box, Button, Container, Flex, Heading, Link, Text, useBoolean } from "@chakra-ui/react"
-import { Close } from "../theme/components/icons"
 
-export default () => {
+import { Close } from "../../theme/components/icons"
+
+export default function MatchaLbaOverlay() {
   const [overlay, setOverlay] = useBoolean(true)
 
   return (

@@ -1,8 +1,8 @@
 import { Box, Button, Heading, Stack, Text } from "@chakra-ui/react"
-import { useNavigate } from "react-router-dom"
+import { useRouter } from "next/router"
 
-export default ({ title, subtitle, description, buttonLabel, bg, link, type, buttonLabel2, link2 }) => {
-  const navigate = useNavigate()
+export default function Etablissement({ title, subtitle, description, buttonLabel, bg, link, type }) {
+  const router = useRouter()
 
   return (
     <Box p={5} px={7} bg={bg} border="3px solid transparent" _hover={{ background: "white", border: "3px solid #000091" }} flex="1">
@@ -14,7 +14,16 @@ export default ({ title, subtitle, description, buttonLabel, bg, link, type, but
           {subtitle}
         </Text>
         <Text>{description}</Text>
-        <Button size="lg" variant="primary" onClick={() => navigate(`${link}`, { state: { type } })}>
+        <Button
+          size="lg"
+          variant="primary"
+          onClick={() => {
+            router.push({
+              pathname: `${link}`,
+              query: { type },
+            })
+          }}
+        >
           {buttonLabel}
         </Button>
       </Stack>

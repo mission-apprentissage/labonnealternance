@@ -47,7 +47,7 @@ const NextLink = ({ currentPage, totalPages, fragmentName, setPage }) => {
   )
 }
 
-export default ({ totalPages, currentPage, setPage, fragmentName }) => {
+export default function Pagination({ totalPages, currentPage, setPage, fragmentName }) {
   if (Number.isNaN(totalPages) || totalPages <= 1) {
     return <></>
   }

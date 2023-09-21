@@ -10,10 +10,7 @@ import ConfirmationModificationOpco from "./ConfirmationModificationOpco"
 import ConfirmationSuppressionEntreprise from "./ConfirmationSuppressionEntreprise"
 import ConfirmationSuppressionOffre from "./ConfirmationSuppressionOffre"
 import CustomInput from "./CustomInput"
-import CustomSelect from "./CustomSelect"
 import DropdownCombobox from "./DropdownCombobox"
-import EditorialContainer from "./EditorialContainer"
-import EditorialTextBlock from "./EditorialTextBlock"
 // import Etablissement from "./Etablissement"
 // import ExportButtonNew from "./ExportButton/ExportButtonNew"
 import InfoPopover from "./InfoPopover"
@@ -43,9 +40,6 @@ export {
   ConfirmationSuppressionEntreprise,
   ConfirmationSuppressionOffre,
   CustomInput,
-  CustomSelect,
-  EditorialContainer,
-  EditorialTextBlock,
   AuthentificationLayout,
   // Etablissement,
   // MailActionsOnOffre,

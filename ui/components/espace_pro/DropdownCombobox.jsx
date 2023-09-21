@@ -2,9 +2,10 @@ import { Box, Text } from "@chakra-ui/react"
 import { useCombobox } from "downshift"
 import { useField } from "formik"
 import debounce from "lodash/debounce"
+
 import CustomInput from "./CustomInput"
 
-export default (props) => {
+export default function DropdownCombobox(props) {
   let { saveSelectedItem, setInputItems, handleSearch, value, placeholder, inputItems, name } = props
   const [, , helpers] = useField(props.name)
 

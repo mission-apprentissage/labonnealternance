@@ -1,14 +1,15 @@
 import { Box, Flex, Spinner, Text, useToast } from "@chakra-ui/react"
+import { useRouter } from "next/router"
 import { useEffect } from "react"
-import { useParams } from "react-router-dom"
-import { cancelOffre, fillOffre } from "../api"
-import { redirect } from "../common/utils/router"
 
-export default (props) => {
-  const params = useParams()
+import { redirect } from "../../common/utils/router"
+import { cancelOffre, fillOffre } from "../../utils/api"
+
+export default function MailActionsOnOffre() {
+  const router = useRouter()
   const toast = useToast()
 
-  const redirectFn = (ms) => {
+  const redirectFn = () => {
     setTimeout(() => {
       redirect("/", true)
     }, 5000)
@@ -27,7 +28,7 @@ export default (props) => {
   }
 
   useEffect(() => {
-    let { jobId, option } = params
+    let { jobId, option } = router.query
 
     if (!jobId || !option) {
       error()
@@ -46,7 +47,7 @@ export default (props) => {
           })
           redirectFn()
         })
-        .catch((err) => error())
+        .catch(() => error())
     }
 
     if (option === "provided") {
