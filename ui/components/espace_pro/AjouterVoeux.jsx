@@ -29,20 +29,18 @@ import dayjs from "dayjs"
 import { Formik } from "formik"
 import { useRouter } from "next/router"
 import { useContext, useEffect, useState } from "react"
-import { useLocation, useNavigate, useParams } from "react-router-dom"
 import * as Yup from "yup"
 
 import { AUTHTYPE } from "../../common/contants"
 import useAuth from "../../common/hooks/useAuth"
 import { publicConfig } from "../../config.public"
-import { getFormulaire, getRelatedEtablissementsFromRome, getRomeDetail, postOffre } from "../api"
-import { LogoContext } from "../contextLogo"
-import { WidgetContext } from "../contextWidget"
-import { ArrowRightLine, ExternalLinkLine, InfoCircle, Minus, Plus, Warning } from "../theme/components/icons"
-import { J1S, Parcoursup } from "../theme/components/logos"
+import { LogoContext } from "../../context/contextLogo"
+import { WidgetContext } from "../../context/contextWidget"
+import { ArrowRightLine, ExternalLinkLine, InfoCircle, Minus, Plus, Warning } from "../../theme/components/icons"
+import { J1S, Parcoursup } from "../../theme/components/logos_pro"
+import { getFormulaire, getRelatedEtablissementsFromRome, getRomeDetail, postOffre } from "../../utils/api"
 
 import DropdownCombobox from "./DropdownCombobox"
-import style from "./Voeux.module.css"
 
 const DATE_FORMAT = "YYYY-MM-DD"
 const URL_LBA = `${publicConfig.baseUrl}/api`
@@ -70,17 +68,18 @@ const AjouterVoeuxForm = (props) => {
   const [inputJobItems, setInputJobItems] = useState([])
   const [formulaire, setFormulaire] = useState()
   const [haveProposals, setHaveProposals] = useState()
-  const location = useLocation()
   const router = useRouter()
-  const params = useParams()
   const [auth] = useAuth()
 
-  const establishment_id = location.state?.establishment_id
-  const email = location.state?.email
-  const userId = location.state?.userId
-  const type = location.state?.type
+  // const establishment_id = location.state?.establishment_id
+  // const email = location.state?.email
+  // const userId = location.state?.userId
+  // const type = location.state?.type
+  // TODO_AB
+  const { establishment_id, email, userId, type } = router.query
 
   const minDate = dayjs().format(DATE_FORMAT)
+
   const { organisation } = useContext(LogoContext)
 
   const handleJobSearch = async (search) => {
@@ -106,15 +105,24 @@ const AjouterVoeuxForm = (props) => {
    */
   const handleRedirectionAfterSubmit = (form, job, fromDashboard) => {
     if (haveProposals) {
-      return router.push("/espace-pro/creation/mise-en-relation", {
-        replace: true,
-        state: { job, email, geo_coordinates: form.geo_coordinates, fromDashboard, userId },
+      // return router.push("/espace-pro/creation/mise-en-relation", {
+      //   replace: true,
+      //   state: { job, email, geo_coordinates: form.geo_coordinates, fromDashboard, userId },
+      // })
+      // TODO_AB
+      return router.push({
+        pathname: "/espace-pro/creation/mise-en-relation",
+        query: { job, email, geo_coordinates: form.geo_coordinates, fromDashboard, userId },
       })
     }
 
-    router.push("/espace-pro/creation/fin", {
-      replace: true,
-      state: { job, email, withDelegation: false, fromDashboard, userId },
+    // router.push("/espace-pro/creation/fin", {
+    //   replace: true,
+    //   state: { job, email, withDelegation: false, fromDashboard, userId },
+    // })
+    router.push({
+      pathname: "/espace-pro/creation/fin",
+      query: { job, email, withDelegation: false, fromDashboard, userId },
     })
   }
 
@@ -173,7 +181,8 @@ const AjouterVoeuxForm = (props) => {
   }
 
   useEffect(async () => {
-    const { data: formulaire } = await getFormulaire(establishment_id || params.establishment_id)
+    // TODO_AB to check params.establishment_id
+    const { data: formulaire } = await getFormulaire(establishment_id)
     setFormulaire(formulaire)
   }, [])
 
@@ -389,10 +398,10 @@ const RomeInformationDetail = ({ definition, competencesDeBase, libelle, appella
                   </AccordionButton>
                 </h2>
                 <AccordionPanel pb={4} ml={6} mr={3}>
-                  <ul className={style.voeux}>
+                  <ul className="voeuxUl">
                     {definitionSplitted.map((x) => {
                       return (
-                        <li className={style.voeux} key={x}>
+                        <li className="voeuxUlLi" key={x}>
                           {x}
                         </li>
                       )
@@ -415,9 +424,9 @@ const RomeInformationDetail = ({ definition, competencesDeBase, libelle, appella
                   </AccordionButton>
                 </h2>
                 <AccordionPanel maxH="50%" pb={4} ml={6} mr={3}>
-                  <ul className={style.voeux}>
+                  <ul className="voeuxUl">
                     {competencesDeBase.map((x) => (
-                      <li className={style.voeux} key={x.libelle}>
+                      <li className="voeuxUlLi" key={x.libelle}>
                         {x.libelle}
                       </li>
                     ))}
@@ -475,6 +484,9 @@ export const PageAjouterVoeux = (props) => {
   const [loading, setLoading] = useState(false)
   const { widget } = useContext(WidgetContext)
 
+  const router = useRouter()
+  const { establishment_id } = router.query
+
   const getRomeInformation = (rome, appellation, formik) => {
     getRomeDetail(rome)
       .then((result) => {
@@ -489,6 +501,9 @@ export const PageAjouterVoeux = (props) => {
         }, 700)
       })
   }
+
+  // TODO_AB to redirect
+  if (!establishment_id) return <></>
 
   return (
     <SimpleGrid columns={[1, 1, 1, 2]} spacing={["35px", "35px", "35px", "75px"]}>

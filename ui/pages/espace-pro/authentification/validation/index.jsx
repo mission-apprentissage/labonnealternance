@@ -15,12 +15,6 @@ export default function RedirectAfterAuth() {
   useEffect(() => {
     if (auth.sub === "anonymous") return
 
-    // TODO_AB
-    // router.push({
-    //   pathname: '/B',
-    //   query: { result: JSON.stringify(result) }
-    // });
-
     switch (auth.type) {
       case AUTHTYPE.ENTREPRISE:
         // setTimeout(() => {
@@ -30,9 +24,15 @@ export default function RedirectAfterAuth() {
         //   })
         // }, 1000)
         // TODO_AB
-        router.push(`/espace-pro/administration/entreprise/${auth.establishment_id}`, {
-          state: { offerPopup: Object.keys(fromEntrepriseCreation).length > 0 ? true : false },
+        // router.push(`/espace-pro/administration/entreprise/${auth.establishment_id}`, {
+        //   state: { offerPopup: Object.keys(fromEntrepriseCreation).length > 0 ? true : false },
+        // })
+
+        router.push({
+          pathname: `/espace-pro/administration/entreprise/${auth.establishment_id}`,
+          query: { offerPopup: Object.keys(fromEntrepriseCreation).length > 0 ? true : false },
         })
+
         break
 
       case AUTHTYPE.OPCO:
@@ -41,7 +41,7 @@ export default function RedirectAfterAuth() {
         //   router.push(`/espace-pro/administration/opco`, { replace: true })
         // }, 1000)
         // TODO_AB
-        router.push(`/espace-pro/administration/opco`, { replace: true })
+        router.push(`/espace-pro/administration/opco`)
         break
 
       case AUTHTYPE.CFA:

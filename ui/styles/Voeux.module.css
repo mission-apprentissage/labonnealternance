@@ -1,12 +1,15 @@
-.voeux ul {
+.voeux ul,
+.voeuxUl {
   list-style: none;
 }
 
-.voeux ul li {
+.voeux ul li,
+.voeuxUlLi {
   margin-bottom: 5px;
 }
 
-.voeux ul li::before {
+.voeux ul li::before,
+.voeuxUlLi::before {
   content: "\2022";
   color: #000091;
   font-weight: bold;

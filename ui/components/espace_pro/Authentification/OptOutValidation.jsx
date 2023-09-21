@@ -26,7 +26,11 @@ export default function OptOutValidation() {
     validateOptOutToken(token)
       .then(({ data }) => {
         // TODO_AB
-        router.push("/espace-pro/creation/detail", { state: { informationSiret: data, type: AUTHTYPE.CFA, origin: "optout" } })
+        // router.push("/espace-pro/creation/detail", { state: { informationSiret: data, type: AUTHTYPE.CFA, origin: "optout" } })
+        router.push({
+          pathname: "/espace-pro/creation/detail",
+          query: { informationSiret: JSON.stringify(data), type: AUTHTYPE.CFA, origin: "optout" },
+        })
       })
       .catch(({ response }) => {
         switch (response.data.reason) {
