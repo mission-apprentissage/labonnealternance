@@ -181,7 +181,7 @@ export const zV1JobsRoutes = {
           establishment_siret: extensions.siret(),
           first_name: z.string(),
           last_name: z.string(),
-          phone: z.string().optional(),
+          phone: extensions.phone().optional(),
           email: z.string().email(),
           idcc: z.string().optional(),
           origin: z.string().optional(),

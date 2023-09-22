@@ -1,5 +1,7 @@
 import { z } from "zod"
 
+import { extensions } from "../helpers/zodHelpers/zodPrimitives"
+
 import { ZRomeDetail } from "./rome.model"
 
 const ZLBAItemPlace = z
@@ -45,7 +47,7 @@ export const ZLbaItem = z.object({
       // informations de contact. optionnel
       email: z.string().nullable().optional(), // pe -> contact.courriel | lbb/lba -> email | formation -> email | matcha -> email
       name: z.string().nullable().optional(), // pe -> contact.nom | matcha -> prenom nom
-      phone: z.string().nullable().optional(), // lbb/lba --> phone | matcha -> telephone
+      phone: extensions.phone().nullable().optional(), // lbb/lba --> phone | matcha -> telephone
       info: z.string().nullable().optional(), // pe -> contact.coordonnees1+contact.coordonnees2+contact.coordonnees3
     })
     .strict()

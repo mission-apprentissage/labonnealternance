@@ -29,7 +29,7 @@ export const ZUserRecruteur = z
     address_detail: ZGlobalAddress.describe("Detail de l'adresse de l'établissement"),
     address: z.string().describe("Adresse de l'établissement"),
     geo_coordinates: z.string().nullable().describe("Latitude/Longitude de l'adresse de l'entreprise"),
-    phone: z.string().describe("Téléphone de l'établissement"),
+    phone: extensions.phone().describe("Téléphone de l'établissement"),
     email: z.string().email().nullable().describe("L'email de l'utilisateur"),
     scope: z.string().nullable().describe("Scope accessible par l'utilisateur"),
     is_email_checked: z.boolean().describe("Indicateur de confirmation de l'adresse mail par l'utilisateur"),
