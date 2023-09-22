@@ -4,6 +4,7 @@
 import { oleoduc, writeData } from "oleoduc"
 
 import { logger } from "@/common/logger"
+import { sentryCaptureException } from "@/common/utils/sentryUtils"
 
 import { logMessage } from "../../utils/logMessage"
 
@@ -239,6 +240,7 @@ function Mongoosastic(schema, options) {
         return resolve()
       } catch (e) {
         console.error(e)
+        sentryCaptureException(e)
         await timeout(500)
         --tries
       }
@@ -251,9 +253,14 @@ function Mongoosastic(schema, options) {
       this.find({}).cursor(),
       writeData(
         async (doc) => {
-          await doc.index(refresh)
-          if (++count % 1000 === 0) {
-            logMessage("info", `${count} indexed`)
+          try {
+            await doc.index(refresh)
+            if (++count % 1000 === 0) {
+              logMessage("info", `${count} indexed ${this.modelName}`)
+            }
+          } catch (error) {
+            logger.error(error)
+            sentryCaptureException(error)
           }
         },
         { parallel: 8 }
@@ -299,6 +306,7 @@ function Mongoosastic(schema, options) {
           await postSave(docs[i])
         } catch (e) {
           logger.error(e)
+          sentryCaptureException(e)
         }
       }
     })

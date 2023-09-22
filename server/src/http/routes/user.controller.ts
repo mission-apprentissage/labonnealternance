@@ -17,8 +17,7 @@ export default () => {
   router.get(
     "/opco",
     tryCatch(async (req, res) => {
-      const userQuery = JSON.parse(req.query.userQuery)
-      const formulaireQuery = JSON.parse(req.query.formulaireQuery)
+      const { userQuery, formulaireQuery } = req.query
 
       const [users, formulaires] = await Promise.all([UserRecruteur.find(userQuery).lean(), Recruiter.find(formulaireQuery).lean()])
 

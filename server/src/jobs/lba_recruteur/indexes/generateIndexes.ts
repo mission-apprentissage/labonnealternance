@@ -7,7 +7,7 @@ export const generateIndexes = async (payload) => {
   const recreate = payload?.recreate ?? false
   const list = indexList.split(",")
 
-  await Promise.all(
+  const results = await Promise.allSettled(
     list.map(async (index) => {
       switch (index) {
         case "domainesmetiers": {
@@ -42,4 +42,9 @@ export const generateIndexes = async (payload) => {
       }
     })
   )
+  const errors = results.reduce((acc, item) => {
+    if (item.status === "rejected") acc.push(item.reason)
+    return acc
+  }, [] as any[])
+  if (errors.length) throw new AggregateError(errors)
 }

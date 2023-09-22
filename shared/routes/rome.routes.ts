@@ -1,29 +1,37 @@
 import { z } from "zod"
 
-const ZRomeWithLabel = z.object({
-  codeRome: z.string(),
-  intitule: z.string(),
-})
-const ZMetierEnrichi = z.object({
-  label: z.string(),
-  romes: z.array(z.string()),
-  rncps: z.array(z.string()).optional(),
-  type: z.string().optional(),
-  romeTitles: z.array(ZRomeWithLabel).optional(),
-})
-const ZMetiersEnrichis = z.object({
-  labelsAndRomes: z.array(ZMetierEnrichi).optional(),
-  labelsAndRomesForDiplomas: z.array(ZMetierEnrichi).optional(),
-  error: z.string().optional(),
-  error_messages: z.array(z.string()).optional(),
-})
+import { ZRomeDetail } from "../models/rome.model"
+
+const ZRomeWithLabel = z
+  .object({
+    codeRome: z.string(),
+    intitule: z.string(),
+  })
+  .strict()
+const ZMetierEnrichi = z
+  .object({
+    label: z.string(),
+    romes: z.array(z.string()),
+    rncps: z.array(z.string()).optional(),
+    type: z.string().optional(),
+    romeTitles: z.array(ZRomeWithLabel).optional(),
+  })
+  .strict()
+const ZMetiersEnrichis = z
+  .object({
+    labelsAndRomes: z.array(ZMetierEnrichi).optional(),
+    labelsAndRomesForDiplomas: z.array(ZMetierEnrichi).optional(),
+    error: z.string().optional(),
+    error_messages: z.array(z.string()).optional(),
+  })
+  .strict()
 
 export const zRomeRoutes = {
   get: {
     "/api/rome": {
-      queryParams: null, // basic auth
+      queryString: null, // basic auth
       response: {
-        "2xx": ZMetiersEnrichis,
+        "200": ZMetiersEnrichis,
       },
     },
     "/api/rome/detail/:rome": {
@@ -31,7 +39,7 @@ export const zRomeRoutes = {
         rome: z.string(),
       }),
       response: {
-        "2xx": null, // non typé
+        "200": ZRomeDetail,
       },
     },
   },

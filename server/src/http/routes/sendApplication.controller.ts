@@ -84,20 +84,5 @@ export default function (components) {
     })
   )
 
-  router.get(
-    "/webhook",
-    tryCatch(async (req, res) => {
-      if (!req.query.secret) {
-        logger.error("Debugging Brevo webhook : secret missing")
-      } else if (req.query.secret !== config.secretUpdateRomesMetiers) {
-        logger.error("Debugging Brevo webhook : wrong secret")
-      } else {
-        updateApplicationStatus({ payload: { ...query, secret: "" } })
-      }
-
-      return res.json({ result: "ok" })
-    })
-  )
-
   return router
 }
