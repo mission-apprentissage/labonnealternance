@@ -5,7 +5,7 @@ import { ZApplicationUI } from "../models/applications.model"
 export const zApplicationRoutes = {
   post: {
     "/api/V1/application": {
-      queryParams: ZApplicationUI,
+      body: ZApplicationUI,
       response: {
         "200": z
           .object({
@@ -16,7 +16,7 @@ export const zApplicationRoutes = {
       },
     },
     "/api/application": {
-      queryParams: ZApplicationUI,
+      body: ZApplicationUI,
       response: {
         "200": z
           .object({
@@ -27,7 +27,7 @@ export const zApplicationRoutes = {
       },
     },
     "/api/application/intentionComment": {
-      queryParams: z.object({
+      body: z.object({
         id: z.string(),
         iv: z.string(),
         comment: z.string(),
@@ -42,7 +42,7 @@ export const zApplicationRoutes = {
       },
     },
     "/api/application/webhook": {
-      queryParams: z.object({
+      body: z.object({
         event: z.string(),
         id: z.string(),
         date: z.string(),
