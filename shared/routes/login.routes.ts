@@ -6,7 +6,7 @@ export const zLoginRoutes = {
     "/api/login": {
       body: null, // basic auth
       response: {
-        "2xx": z
+        "200": z
           .object({
             token: z.string(),
           })
@@ -20,7 +20,7 @@ export const zLoginRoutes = {
         })
         .strict(),
       response: {
-        "2xx": null,
+        "200": null,
       },
     },
     "/api/login/magiclink": {
@@ -30,13 +30,13 @@ export const zLoginRoutes = {
         })
         .strict(),
       response: {
-        "2xx": null,
+        "200": null,
       },
     },
     "/api/login/verification": {
       body: null, // jwt token
       response: {
-        "2xx": z
+        "200": z
           .object({
             token: z.string(),
           })

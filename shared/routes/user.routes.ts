@@ -13,7 +13,7 @@ export const zUserRecruteurRoutes = {
         })
         .strict(),
       response: {
-        "2xx": z.array(
+        "200": z.array(
           ZUserRecruteur.extend({
             offres: z.number(), // toujours 0, wtf ?
             jobs: z.number().optional(),
@@ -30,7 +30,7 @@ export const zUserRecruteurRoutes = {
         })
         .strict(),
       response: {
-        "2xx": z.array(ZUserRecruteur),
+        "200": z.array(ZUserRecruteur),
       },
     },
   },
@@ -40,7 +40,7 @@ export const zUserRecruteurRoutes = {
         scope: z.string().optional(),
       }).strict(),
       response: {
-        "2xx": ZUserRecruteur,
+        "200": ZUserRecruteur,
       },
     },
   },
@@ -56,13 +56,13 @@ export const zUserRecruteurRoutes = {
         .partial()
         .strict(),
       response: {
-        "2xx": ZUserRecruteur,
+        "200": ZUserRecruteur,
       },
     },
     "/api/user/:userId/history": {
       queryString: ZUserStatusValidation,
       response: {
-        "2xx": ZUserRecruteur,
+        "200": ZUserRecruteur,
       },
     },
   },
@@ -75,7 +75,7 @@ export const zUserRecruteurRoutes = {
         })
         .strict(),
       response: {
-        "2xx": null,
+        "200": null,
       },
     },
   },

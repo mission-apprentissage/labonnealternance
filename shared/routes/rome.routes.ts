@@ -31,7 +31,7 @@ export const zRomeRoutes = {
     "/api/rome": {
       queryString: null, // basic auth
       response: {
-        "2xx": ZMetiersEnrichis,
+        "200": ZMetiersEnrichis,
       },
     },
     "/api/rome/detail/:rome": {
@@ -39,7 +39,7 @@ export const zRomeRoutes = {
         rome: z.string(),
       }),
       response: {
-        "2xx": ZRomeDetail,
+        "200": ZRomeDetail,
       },
     },
   },

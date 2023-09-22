@@ -16,7 +16,7 @@ export const zV1JobsRoutes = {
         })
         .strict(),
       response: {
-        "2xx": z
+        "200": z
           .object({
             token: z.string(),
           })
@@ -33,7 +33,7 @@ export const zV1JobsRoutes = {
         })
         .strict(),
       response: {
-        "2xx": z
+        "200": z
           .object({
             data: z.array(ZUserRecruteur).optional(),
             pagination: z
@@ -55,7 +55,7 @@ export const zV1JobsRoutes = {
         })
         .strict(),
       response: {
-        "2xx": z
+        "200": z
           .object({
             _id: z.string(),
             numero_voie: z.string(),
@@ -89,7 +89,7 @@ export const zV1JobsRoutes = {
         })
         .strict(),
       response: {
-        "2xx": z
+        "200": z
           .object({
             job_count: z.number(),
             peJobs: z
@@ -128,7 +128,7 @@ export const zV1JobsRoutes = {
         })
         .strict(),
       response: {
-        "2xx": z
+        "200": z
           .object({
             lbaCompanies: z.array(ZLbaItem),
           })
@@ -147,7 +147,7 @@ export const zV1JobsRoutes = {
         })
         .strict(),
       response: {
-        "2xx": z
+        "200": z
           .object({
             matchas: z.array(ZLbaItem),
           })
@@ -166,7 +166,7 @@ export const zV1JobsRoutes = {
         })
         .strict(),
       response: {
-        "2xx": z
+        "200": z
           .object({
             peJobs: z.array(ZLbaItem),
           })
@@ -188,7 +188,7 @@ export const zV1JobsRoutes = {
         })
         .strict(),
       response: {
-        "2xx": ZRecruiter,
+        "200": ZRecruiter,
       },
     },
     "/api/v1/jobs/:establishmentId": {
@@ -214,7 +214,7 @@ export const zV1JobsRoutes = {
         })
         .strict(),
       response: {
-        "2xx": ZRecruiter,
+        "200": ZRecruiter,
       },
     },
     "/api/v1/jobs/delegations/:jobId": {
@@ -229,7 +229,7 @@ export const zV1JobsRoutes = {
         })
         .strict(),
       response: {
-        "2xx": ZRecruiter,
+        "200": ZRecruiter,
       },
     },
     "/api/v1/jobs/provided/:jobId": {
@@ -239,7 +239,7 @@ export const zV1JobsRoutes = {
         })
         .strict(),
       response: {
-        "2xx": null,
+        "200": null,
       },
     },
     "/api/v1/jobs/canceled/:jobId": {
@@ -249,7 +249,7 @@ export const zV1JobsRoutes = {
         })
         .strict(),
       response: {
-        "2xx": null,
+        "200": null,
       },
     },
     "/api/v1/jobs/extend/:jobId": {
@@ -259,7 +259,7 @@ export const zV1JobsRoutes = {
         })
         .strict(),
       response: {
-        "2xx": null,
+        "200": null,
       },
     },
     "/api/v1/jobs/matcha/:id/stats/view-details": {
@@ -269,7 +269,7 @@ export const zV1JobsRoutes = {
         })
         .strict(),
       response: {
-        "2xx": null,
+        "200": null,
       },
     },
   },
@@ -296,7 +296,7 @@ export const zV1JobsRoutes = {
         })
         .strict(),
       response: {
-        "2xx": ZRecruiter,
+        "200": ZRecruiter,
       },
     },
   },
