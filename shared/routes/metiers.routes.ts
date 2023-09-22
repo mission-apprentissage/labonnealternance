@@ -1,5 +1,6 @@
 import { z } from "zod"
 
+import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { ZAppellationsRomes, ZMetiersEnrichis, ZMetiers } from "../models/metiers.model"
 
 export const zMetiersRoutes = {
@@ -40,7 +41,7 @@ export const zMetiersRoutes = {
     "/api/v1/metiers/metiersParEtablissement/:siret": {
       param: z
         .object({
-          siret: z.string(),
+          siret: z.object({ siret: extensions.siret() }),
         })
         .strict(),
       response: {
