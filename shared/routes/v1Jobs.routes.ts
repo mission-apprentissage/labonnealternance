@@ -280,6 +280,21 @@ export const zV1JobsRoutes = {
           jobId: zObjectId,
         })
         .strict(),
+      body: z
+        .object({
+          job_level_label: z.string(),
+          job_duration: z.number(),
+          job_type: z.array(z.string()),
+          is_disabled_elligible: z.boolean(),
+          job_count: z.number().optional(),
+          job_rythm: z.string().optional(),
+          job_start_date: z.string(),
+          job_employer_description: z.string().optional(),
+          job_description: z.string().optional(),
+          custom_address: z.string().optional(),
+          custom_geo_coordinates: z.string().optional(),
+        })
+        .strict(),
       response: {
         "2xx": ZRecruiter,
       },
