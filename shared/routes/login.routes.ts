@@ -6,23 +6,29 @@ export const zLoginRoutes = {
     "/api/login": {
       body: null, // basic auth
       response: {
-        "2xx": z.object({
-          token: z.string(),
-        }),
+        "2xx": z
+          .object({
+            token: z.string(),
+          })
+          .strict(),
       },
     },
     "/api/login/confirmation-email": {
-      body: z.object({
-        email: z.string().email(),
-      }),
+      body: z
+        .object({
+          email: z.string().email(),
+        })
+        .strict(),
       response: {
         "2xx": null,
       },
     },
     "/api/login/magiclink": {
-      body: z.object({
-        email: z.string().email(),
-      }),
+      body: z
+        .object({
+          email: z.string().email(),
+        })
+        .strict(),
       response: {
         "2xx": null,
       },
@@ -30,9 +36,11 @@ export const zLoginRoutes = {
     "/api/login/verification": {
       body: null, // jwt token
       response: {
-        "2xx": z.object({
-          token: z.string(),
-        }),
+        "2xx": z
+          .object({
+            token: z.string(),
+          })
+          .strict(),
       },
     },
   },

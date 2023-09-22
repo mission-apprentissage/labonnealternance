@@ -6,10 +6,12 @@ import { ZUserRecruteur, ZUserStatusValidation } from "../models/usersRecruteur.
 export const zUserRecruteurRoutes = {
   get: {
     "/api/user/opco": {
-      queryParams: z.object({
-        userQuery: z.string() /* mongo query */,
-        formulaireQuery: z.string() /* mongo query */,
-      }),
+      queryParams: z
+        .object({
+          userQuery: z.string() /* mongo query */,
+          formulaireQuery: z.string() /* mongo query */,
+        })
+        .strict(),
       response: {
         "2xx": z.array(
           ZUserRecruteur.extend({
@@ -17,14 +19,16 @@ export const zUserRecruteurRoutes = {
             jobs: z.number().optional(),
             origin: z.string().optional(),
             job_detail: z.array(ZJob).optional(),
-          })
+          }).strict()
         ),
       },
     },
     "/api/user": {
-      queryParams: z.object({
-        users: z.string() /* mongo query */,
-      }),
+      queryParams: z
+        .object({
+          users: z.string() /* mongo query */,
+        })
+        .strict(),
       response: {
         "2xx": z.array(ZUserRecruteur),
       },
@@ -34,7 +38,7 @@ export const zUserRecruteurRoutes = {
     "/api/user": {
       body: ZUserRecruteur.extend({
         scope: z.string().optional(),
-      }),
+      }).strict(),
       response: {
         "2xx": ZUserRecruteur,
       },
@@ -48,7 +52,9 @@ export const zUserRecruteurRoutes = {
         phone: true,
         email: true,
         opco: true,
-      }).partial(),
+      })
+        .partial()
+        .strict(),
       response: {
         "2xx": ZUserRecruteur,
       },
@@ -62,10 +68,12 @@ export const zUserRecruteurRoutes = {
   },
   delete: {
     "/api/user": {
-      queryParams: z.object({
-        userId: z.string(),
-        recruiterId: z.string().optional(),
-      }),
+      queryParams: z
+        .object({
+          userId: z.string(),
+          recruiterId: z.string().optional(),
+        })
+        .strict(),
       response: {
         "2xx": null,
       },
