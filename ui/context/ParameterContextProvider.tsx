@@ -51,8 +51,26 @@ const reducer = (state, action) => {
       return state
   }
 }
-
-export const ParameterContext = createContext()
+export type IContextParameter = {
+  shouldExecuteSearch: boolean
+  setShouldExecuteSearch: (b: boolean) => void
+  widgetParameters: object
+  setWidgetParameters: (b: object) => void
+  itemParameters: object
+  setItemParameters: (b: object) => void
+  opcoFilter: object
+  setOpcoFilter: (b: object) => void
+  opcoUrlFilter: object
+  setOpcoUrlFilter: (b: object) => void
+  useMock: boolean
+  setUseMock: (b: boolean) => void
+  displayMap: boolean
+  setDisplayMap: (b: boolean) => void
+  showCombinedJob: boolean
+  setShowCombinedJob: (b: boolean) => void
+}
+// @ts-expect-error: TODO
+export const ParameterContext = createContext<IContextParameter>()
 
 const ParameterContextProvider = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState)

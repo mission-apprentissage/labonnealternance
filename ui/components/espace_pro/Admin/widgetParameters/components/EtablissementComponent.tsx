@@ -46,7 +46,7 @@ const EtablissementComponent = ({ id }) => {
   const emailGestionnaireFocusRef = createRef()
   const emailGestionnaireRef = createRef()
 
-  const [etablissement, setEtablissement] = useState()
+  const [etablissement, setEtablissement]: [any, (t: any) => void] = useState()
   const toast = useToast()
   const { isOpen, onOpen, onClose } = useDisclosure()
 
@@ -105,7 +105,7 @@ const EtablissementComponent = ({ id }) => {
    */
   const upsertEmailDecisionnaire = async (email) => {
     try {
-      const response = await _patch(`admin/etablissements/${etablissement._id}`, { gestionnaire_email: email })
+      const response = await _patch(`admin/etablissements/${etablissement?._id}`, { gestionnaire_email: email })
       setEtablissement(response)
       putSuccess()
     } catch (error) {
@@ -247,6 +247,7 @@ const EtablissementComponent = ({ id }) => {
         )}
       </Grid>
       <Grid templateColumns="repeat(3, 1fr)" gap={5} p="5" pt="10">
+        {/*  @ts-expect-error: TODO */}
         <Box onClick={() => emailGestionnaireFocusRef.current.focus()}>
           <Text textStyle="sm" fontWeight="600">
             Email décisionnaire <br />
@@ -264,9 +265,12 @@ const EtablissementComponent = ({ id }) => {
                 minWidth: "70%",
               }}
             >
+              {/*  @ts-expect-error: TODO */}
               <EditablePreview ref={emailGestionnaireFocusRef} />
+              {/*  @ts-expect-error: TODO */}
               <EditableInput ref={emailGestionnaireRef} type="email" _focus={{ border: "none" }} />
             </Editable>
+            {/*  @ts-expect-error: TODO */}
             <Button variant="primary" onClick={() => upsertEmailDecisionnaire(emailGestionnaireRef.current.value.toLowerCase())}>
               <Disquette w="16px" h="16px" />
             </Button>

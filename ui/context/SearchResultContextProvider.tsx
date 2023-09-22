@@ -55,7 +55,24 @@ const reducer = (state, action) => {
   }
 }
 
-export const SearchResultContext = createContext()
+export type IContextSearch = {
+  trainings: any[]
+  setTrainings: (b: any[]) => void
+  jobs: any[]
+  setJobs: (b: any[]) => void
+  itemToScrollTo: object
+  setItemToScrollTo: (b: object) => void
+  selectedItem: object
+  setSelectedItem: (b: object) => void
+  extendedSearch: boolean
+  setExtendedSearch: (b: boolean) => void
+  hasSearch: boolean
+  setHasSearch: (b: boolean) => void
+  selectedMapPopupItem: object
+  setSelectedMapPopupItem: (b: object) => void
+}
+// @ts-expect-error: TODO
+export const SearchResultContext = createContext<IContextSearch>()
 
 const SearchResultContextProvider = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState)

@@ -15,6 +15,7 @@ const LogoLBA = () => {
     if (widgetParameters) {
       const p = {
         type: "goToPage",
+        // @ts-expect-error: TODO
         page: widgetParameters && widgetParameters?.parameters?.returnURI ? widgetParameters.parameters.returnURI : "/",
       }
       if (typeof window !== "undefined") {
@@ -31,6 +32,7 @@ const LogoLBA = () => {
       <NextLink passHref href="/">
         <Link as="a" onClick={goToLbaHome} ml={4}>
           <Image
+            // @ts-expect-error: TODO
             src={widgetParameters && widgetParameters?.parameters?.returnLogoURL ? widgetParameters.parameters.returnLogoURL : logoLBA}
             alt="Retour page d'accueil de La bonne alternance"
           />

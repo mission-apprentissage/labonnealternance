@@ -42,7 +42,20 @@ const reducer = (state, action) => {
   }
 }
 
-export const DisplayContext = createContext()
+export type IContextDisplay = {
+  formValues: object
+  setFormValues: (b: any) => void
+  visiblePane: string
+  setVisiblePane: (b: string) => void
+  isFormVisible: boolean
+  setIsFormVisible: (b: boolean) => void
+  shouldMapBeVisible: boolean
+  setShouldMapBeVisible: (b: boolean) => void
+  activeFilters: string[]
+  setActiveFilters: (b: string[]) => void
+}
+// @ts-expect-error: TODO
+export const DisplayContext = createContext<IContextDisplay>()
 
 const DisplayContextProvider = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState)

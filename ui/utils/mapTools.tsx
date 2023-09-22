@@ -285,7 +285,7 @@ const onLayerClick = (e, layer, selectItemOnMap, unselectItem, unselectMapPopupI
     })
 
     unselectItem()
-    scrollToElementInContainer({ containerId: "resultList", el: getItemElement(item), behavior: "smooth" })
+    scrollToElementInContainer({ containerId: "resultList", el: getItemElement(item) })
     setSelectedMarker(item)
   }
 }
@@ -600,7 +600,7 @@ const updateSelectedMarkerCollection = async (item, layer) => {
   }
 }
 
-const setTrainingMarkers = async ({ trainingList, options, tryCount = 0 }) => {
+const setTrainingMarkers = async ({ trainingList, options = undefined, tryCount = 0 }) => {
   if (isMapInitialized) {
     await waitForMapReadiness()
 
@@ -649,7 +649,6 @@ const refreshLocationMarkers = ({ jobs, trainings, scopeContext }) => {
       setJobMarkers({ jobList: factorJobsForMap(jobs), hasTrainings: trainings })
     }
     if (scopeContext.isTraining) {
-      // @ts-expect-error: TODO
       setTrainingMarkers({ trainingList: factorTrainingsForMap(trainings) })
     }
   }, 1000)
