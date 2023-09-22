@@ -1,9 +1,8 @@
 import { capitalize } from "lodash-es"
 import { z } from "zod"
 
-import { validateSIRET } from "validators/siretValidator"
-
 import { CODE_NAF_REGEX, SIRET_REGEX, UAI_REGEX } from "../../constants/regex"
+import { validateSIRET } from "../../validators/siretValidator"
 
 // custom error map to translate zod errors to french
 const customErrorMap: z.ZodErrorMap = (issue, ctx) => {
