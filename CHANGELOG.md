@@ -1,3 +1,10 @@
+# [1.98.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.97.1...v1.98.0) (2023-09-22)
+
+
+### Features
+
+* training links logic review ([3195c3a](https://github.com/mission-apprentissage/labonnealternance/commit/3195c3a4662ff17cb7cdf167d9d0bf922d6b45e8))
+
 ## [1.97.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.97.0...v1.97.1) (2023-09-21)
 
 
