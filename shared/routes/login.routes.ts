@@ -4,7 +4,7 @@ export const zLoginRoutes = {
   get: {},
   post: {
     "/api/login": {
-      queryParams: null, // basic auth
+      body: null, // basic auth
       response: {
         "2xx": z.object({
           token: z.string(),
@@ -12,7 +12,7 @@ export const zLoginRoutes = {
       },
     },
     "/api/login/confirmation-email": {
-      queryParams: z.object({
+      body: z.object({
         email: z.string().email(),
       }),
       response: {
@@ -20,7 +20,7 @@ export const zLoginRoutes = {
       },
     },
     "/api/login/magiclink": {
-      queryParams: z.object({
+      body: z.object({
         email: z.string().email(),
       }),
       response: {
@@ -28,7 +28,7 @@ export const zLoginRoutes = {
       },
     },
     "/api/login/verification": {
-      queryParams: null, // jwt token
+      body: null, // jwt token
       response: {
         "2xx": z.object({
           token: z.string(),

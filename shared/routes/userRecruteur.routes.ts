@@ -32,7 +32,7 @@ export const zUserRecruteurRoutes = {
   },
   post: {
     "/api/user": {
-      queryParams: ZUserRecruteur.extend({
+      body: ZUserRecruteur.extend({
         scope: z.string().optional(),
       }),
       response: {
@@ -42,7 +42,7 @@ export const zUserRecruteurRoutes = {
   },
   put: {
     "/api/user/:userId": {
-      queryParams: ZUserRecruteur.pick({
+      body: ZUserRecruteur.pick({
         last_name: true,
         first_name: true,
         phone: true,

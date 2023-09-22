@@ -137,7 +137,7 @@ export const zV1JobsRoutes = {
   },
   post: {
     "/api/v1/jobs/establishment": {
-      queryParams: z.object({
+      body: z.object({
         establishment_siret: extensions.siret(),
         first_name: z.string(),
         last_name: z.string(),
@@ -154,7 +154,7 @@ export const zV1JobsRoutes = {
       params: z.object({
         establishmentId: z.string(),
       }),
-      queryParams: z.object({
+      body: z.object({
         job_level_label: z.string(),
         job_duration: z.number(),
         job_type: z.array(z.string()),
@@ -176,7 +176,7 @@ export const zV1JobsRoutes = {
       params: z.object({
         jobId: zObjectId,
       }),
-      queryParams: z.object({
+      body: z.object({
         establishmentIds: z.array(z.string()),
       }),
       response: {
