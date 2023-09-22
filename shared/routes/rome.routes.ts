@@ -1,5 +1,7 @@
 import { z } from "zod"
 
+import { ZRomeDetail } from "../models/rome.model"
+
 const ZRomeWithLabel = z.object({
   codeRome: z.string(),
   intitule: z.string(),
@@ -31,7 +33,7 @@ export const zRomeRoutes = {
         rome: z.string(),
       }),
       response: {
-        "2xx": null, // non typé
+        "2xx": ZRomeDetail,
       },
     },
   },
