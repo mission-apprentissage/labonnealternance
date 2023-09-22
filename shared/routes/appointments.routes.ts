@@ -84,7 +84,7 @@ const zContextCreateSchema = z.union([
 
 export const zAppointmentsRoute = {
   get: {
-    "/context/recap": {
+    "/api/appointment-request/context/recap": {
       queryString: z.object({ appointmentId: z.string() }).strict(),
       response: {
         "2xx": z
@@ -101,7 +101,7 @@ export const zAppointmentsRoute = {
     },
   },
   post: {
-    "/context/create": {
+    "/api/appointment-request/context/create": {
       body: zContextCreateSchema,
       response: {
         "2xx": z.object({
@@ -118,7 +118,7 @@ export const zAppointmentsRoute = {
         }),
       },
     },
-    "/validate": {
+    "/api/appointment-request/validate": {
       body: z
         .object({
           firstname: z.string(),
@@ -141,7 +141,7 @@ export const zAppointmentsRoute = {
           .strict(),
       },
     },
-    "/reply": {
+    "/api/appointment-request/reply": {
       body: z
         .object({
           appointment_id: z.string(),
