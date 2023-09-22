@@ -6,19 +6,19 @@ import { ZRecruiter } from "../models/recruiter.model"
 
 export const zFormulaireRoute = {
   get: {
-    "/": {
+    "/api/formulaire/": {
       queryString: z.object({ query: z.string() }), // mongo query
       response: {
         "2xx": z.array(ZRecruiter),
       },
     },
-    "/:establishment_id": {
+    "/api/formulaire/:establishment_id": {
       params: z.object({ establishment_id: z.string() }),
       response: {
         "2xx": ZRecruiter,
       },
     },
-    "/offre/f/:jobId": {
+    "/api/formulaire/offre/f/:jobId": {
       params: z.object({ jobId: zObjectId }),
       response: {
         "2xx": ZJob,
@@ -26,7 +26,7 @@ export const zFormulaireRoute = {
     },
   },
   post: {
-    "/": {
+    "/api/formulaire/": {
       body: z
         .object({
           userRecruteurId: zObjectId,
@@ -43,14 +43,14 @@ export const zFormulaireRoute = {
         "2xx": ZRecruiter,
       },
     },
-    "/:establishment_id/offre": {
+    "/api/formulaire/:establishment_id/offre": {
       params: z.object({ establishment_id: z.string() }),
       body: ZJob,
       response: {
         "2xx": ZRecruiter,
       },
     },
-    "/offre/:jobId/delegation": {
+    "/api/formulaire/offre/:jobId/delegation": {
       params: z.object({ jobId: z.string() }),
       body: z.object({
         etablissementCatalogueIds: z.array(z.string()),
@@ -61,25 +61,27 @@ export const zFormulaireRoute = {
     },
   },
   put: {
-    "/:establishment_id": {
+    "/api/formulaire/:establishment_id": {
+      body: ZRecruiter.partial(),
       params: z.object({ establishment_id: z.string() }),
       response: {
         "2xx": ZRecruiter,
       },
     },
-    "/offre/:jobId": {
+    "/api/formulaire/offre/:jobId": {
+      body: ZJob.partial(),
       params: z.object({ jobId: zObjectId }),
       response: {
         "2xx": ZJob,
       },
     },
-    "/offre/:jobId/cancel": {
+    "/api/formulaire/offre/:jobId/cancel": {
       params: z.object({ jobId: zObjectId }),
       response: {
         "2xx": null,
       },
     },
-    "/offre/:jobId/provided": {
+    "/api/formulaire/offre/:jobId/provided": {
       params: z.object({ jobId: zObjectId }),
       response: {
         "2xx": null,
@@ -88,7 +90,7 @@ export const zFormulaireRoute = {
   },
   patch: {
     // KBA 20230922 to be checked, description is false and it only updates delegations
-    "/offre/:jobId": {
+    "/api/formulaire/offre/:jobId": {
       params: z.object({ jobId: zObjectId }),
       queryString: z.object({ siret_formateur: z.string() }),
       response: {
@@ -97,13 +99,13 @@ export const zFormulaireRoute = {
     },
   },
   delete: {
-    "/:establishment_id": {
+    "/api/formulaire/:establishment_id": {
       params: z.object({ establishment_id: z.string() }),
       response: {
         "2xx": null,
       },
     },
-    "/delegated/:establishment_siret": {
+    "/api/formulaire/delegated/:establishment_siret": {
       params: z.object({ establishment_siret: z.string() }),
       response: {
         "2xx": null,
