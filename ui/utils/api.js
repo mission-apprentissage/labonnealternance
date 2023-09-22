@@ -6,19 +6,6 @@ const API = Axios.create({
   baseURL: `${publicConfig.baseUrl}/api`,
 })
 
-let token // TODO_AB
-if (typeof window !== "undefined") {
-  // Perform localStorage action
-  token = sessionStorage.getItem("lba:token")
-}
-
-const securedAPI = Axios.create({
-  baseURL: `${publicConfig.baseUrl}/api`,
-  headers: {
-    Authorization: `Bearer ${token}`,
-  },
-})
-
 const errorHandler = (error) => {
   if (error.response && error.response.data) {
     console.error("Erreur de l'API :", error)
@@ -34,7 +21,16 @@ export const getMetier = (search) => Axios.get(`https://labonnealternance.appren
  * Formulaire API
  */
 // export const getFormulaires = (query, options, limit, page) => securedAPI.get("/formulaire", { params: { query, options, limit, page } }).catch(errorHandler)
-export const getFormulaires = (query) => securedAPI.get("/formulaire", { params: { query } }).catch(errorHandler) // TODO_AB
+export const getFormulaires = async (query) => {
+  const token = sessionStorage.getItem("lba:token")
+  return API.get("/formulaire", {
+    params: query,
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }).catch(errorHandler)
+}
+
 export const getFormulaire = (establishment_id) => API.get(`/formulaire/${establishment_id}`).catch(errorHandler)
 export const postFormulaire = (form) => API.post(`/formulaire`, form).catch(errorHandler)
 export const putFormulaire = (establishment_id, form) => API.put(`/formulaire/${establishment_id}`, form)
@@ -60,7 +56,15 @@ export const createEtablissementDelegation = ({ data, jobId }) => API.post(`/for
  * KBA 13/10/2022 : to be reuse when fontend can deal with pagination
  * Quick fix made today
  */
-export const getUsers = async (query) => securedAPI.get("/user", { params: query })
+export const getUsers = async (query) => {
+  const token = sessionStorage.getItem("lba:token")
+  return API.get("/user", {
+    params: query,
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+}
 // export const getUsers = (query, options, limit, page) =>
 //   API.get('/user', { params: { query, options, limit, page } }).catch(errorHandler)
 
@@ -112,7 +116,15 @@ export const getEntrepriseOpco = async (siret) => {
 }
 
 export const createPartenaire = (partenaire) => API.post("/etablissement/creation", partenaire)
-export const updatePartenaire = (id, partenaire) => securedAPI.put(`/etablissement/${id}`, partenaire)
+export const updatePartenaire = async (id, partenaire) => {
+  const token = sessionStorage.getItem("lba:token")
+  return API.put(`/etablissement/${id}`, partenaire, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+}
+
 export const getRomeDetail = (rome) => API.get(`/rome/detail/${rome}`)
 export const getRelatedEtablissementsFromRome = ({ rome, latitude, longitude }) => API.get(`/etablissement/cfa/rome?rome[]=${rome}&latitude=${latitude}&longitude=${longitude}`)
 export const validateOptOutToken = (token) =>
