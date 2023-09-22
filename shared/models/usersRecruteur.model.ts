@@ -3,6 +3,7 @@ import { z } from "zod"
 
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 
+import { ZGlobalAddress } from "./address.model"
 import { zObjectId } from "./common"
 
 export const ZUserStatusValidation = z
@@ -25,7 +26,7 @@ export const ZUserRecruteur = z
     establishment_raison_sociale: z.string().describe("Raison social de l'établissement"),
     establishment_enseigne: z.string().nullable().describe("Enseigne de l'établissement"),
     establishment_siret: extensions.siret().describe("Siret de l'établissement"),
-    address_detail: z.object().describe("Detail de l'adresse de l'établissement"),
+    address_detail: ZGlobalAddress.describe("Detail de l'adresse de l'établissement"),
     address: z.string().describe("Adresse de l'établissement"),
     geo_coordinates: z.string().nullable().describe("Latitude/Longitude de l'adresse de l'entreprise"),
     phone: z.string().describe("Téléphone de l'établissement"),
