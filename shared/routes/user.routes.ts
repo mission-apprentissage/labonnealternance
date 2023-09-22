@@ -1,6 +1,7 @@
 import { z } from "zod"
 
 import { ZJob } from "../models/job.model"
+import { ZRecruiter } from "../models/recruiter.model"
 import { ZUserRecruteur, ZUserStatusValidation } from "../models/usersRecruteur.model"
 
 export const zUserRecruteurRoutes = {
@@ -31,6 +32,16 @@ export const zUserRecruteurRoutes = {
         .strict(),
       response: {
         "200": z.array(ZUserRecruteur),
+      },
+    },
+    "/api/user/:userId": {
+      params: z
+        .object({
+          userId: z.string(),
+        })
+        .strict(),
+      response: {
+        "200": ZUserRecruteur.extend(ZRecruiter.shape),
       },
     },
   },
