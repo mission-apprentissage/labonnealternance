@@ -1,4 +1,3 @@
-import { Jsonify } from "type-fest"
 import { z } from "zod"
 
 const phoneRegex = new RegExp(/^\d{10}$/)
@@ -32,40 +31,20 @@ export const ZApplication = z
   .strict()
 
 export const ZApplicationUI = ZApplication.extend({
-  message: z.string().nullable().describe("Le message envoyé par le candidat"),
+  message: ZApplication.shape.applicant_message_to_company,
   applicant_file_name: z.string().describe("Nom du fichier du CV du candidat"),
   applicant_file_content: z.string().describe("Contenu de la pièce jointe de candidature"),
   company_type: z.string().describe("Le type de société / offre au sens source d'info La bonne alternance. Ex : lba, lbb, matcha, pejob"),
   iv: z.string().describe("Initialization vector de chiffrement de l'adresse email société"),
   secret: z.string().nullable(),
   crypted_company_email: z.string().nullable(),
+}).omit({
+  applicant_message_to_company: true,
+  to_applicant_message_id: true,
+  to_company_message_id: true,
+  is_anonymized: true,
+  created_at: true,
+  last_update_at: true,
 })
-/*
-
-  
-  res["message"] = applicant_h?.message || null                             --> applicant_message_to_company
-  res["applicant_file_name"] = applicant_h?.fileName || "dummy.pdf"         --> applicant_attachment_name
-  res["company_type"] = company_h?.type || null                             --> job_origin  
-  
-  // pas de correspondance en base
-  res["applicant_file_content"] = applicant_h?.fileContent || null          --> pas de correspondance en base
-  res["iv"] = company_h?.iv || "1f77e84c5735d50f8e326ed8af85452e"           --> pas de correspondance en base
-  res["crypted_company_email"] = company_h?.email || "dummy@beta.gouv.fr"
-  res["secret"] = testingParameters.secret
-
-  
-  */
-
-/*
-  pas présent côté ui 
-
-  to_applicant_message_id
-  to_company_message_id
-  is_anonymized
-  created_at
-  last_update_at
-
-  */
 
 export type IApplication = z.output<typeof ZApplication>
-export type IApplicationJson = Jsonify<z.input<typeof ZApplication>>
