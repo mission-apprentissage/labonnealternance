@@ -6,13 +6,42 @@ import { ZRecruiter } from "../models/recruiter.model"
 
 export const zFormulaireRoute = {
   get: {
-    "/": {},
-    "/:establishment_id": {},
-    "/offre/f/:jobId": {},
+    "/": {
+      queryString: z.object({ query: z.string() }), // mongo query
+      response: {
+        "2xx": [ZRecruiter],
+      },
+    },
+    "/:establishment_id": {
+      params: z.object({ establishment_id: z.string() }),
+      response: {
+        "2xx": ZRecruiter,
+      },
+    },
+    "/offre/f/:jobId": {
+      params: z.object({ jobId: zObjectId }),
+      response: {
+        "2xx": ZJob,
+      },
+    },
   },
   post: {
     "/": {
-      body: z.object({}), // wip
+      body: z
+        .object({
+          userRecruteurId: zObjectId,
+          establishment_siret: z.string(),
+          email: z.string(),
+          last_name: z.string(),
+          first_name: z.string(),
+          phone: z.string(),
+          opco: z.string(),
+          idcc: z.string(),
+        })
+        .strict(),
+      response: {
+        "2xx": ZRecruiter,
+      },
     },
     "/:establishment_id/offre": {
       params: z.object({ establishment_id: z.string() }),
