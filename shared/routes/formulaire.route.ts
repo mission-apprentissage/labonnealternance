@@ -9,7 +9,7 @@ export const zFormulaireRoute = {
     "/": {
       queryString: z.object({ query: z.string() }), // mongo query
       response: {
-        "2xx": [ZRecruiter],
+        "2xx": z.array(ZRecruiter),
       },
     },
     "/:establishment_id": {
