@@ -1,8 +1,10 @@
 import { Jsonify } from "type-fest"
 import z, { ZodType } from "zod"
 
+import { zAppointmentsRoute } from "./routes/appointments.routes"
 import { zCoreRoutes } from "./routes/core.routes"
 import { zEtablissementRoutes } from "./routes/etablissement.routes"
+import { zFormationRoute } from "./routes/formations.routes"
 
 export * from "./models/index"
 
@@ -10,18 +12,22 @@ export const zRoutes = {
   get: {
     ...zCoreRoutes.get,
     ...zEtablissementRoutes.get,
+    ...zAppointmentsRoute.get,
+    ...zFormationRoute.get,
   },
   post: {
     ...zCoreRoutes.post,
     ...zEtablissementRoutes.post,
+    ...zAppointmentsRoute.post,
+  },
+  patch: {
+    ...zEtablissementRoutes.patch,
   },
   put: {
     ...zCoreRoutes.put,
-    ...zEtablissementRoutes.put,
   },
   delete: {
     ...zCoreRoutes.delete,
-    ...zEtablissementRoutes.delete,
   },
 } as const
 
@@ -30,6 +36,7 @@ export type IRoutes = typeof zRoutes
 export type IGetRoutes = IRoutes["get"]
 export type IPostRoutes = IRoutes["post"]
 export type IPutRoutes = IRoutes["put"]
+export type IPatchRoutes = IRoutes["patch"]
 export type IDeleteRoutes = IRoutes["delete"]
 
 export interface IRouteSchema {
