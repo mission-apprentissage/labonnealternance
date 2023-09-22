@@ -9,7 +9,7 @@ import { ZUserRecruteur } from "../models/usersRecruteur.model"
 export const zV1JobsRoutes = {
   get: {
     "/api/v1/jobs/establishment": {
-      queryParams: z
+      queryString: z
         .object({
           establishment_siret: extensions.siret(),
           email: z.string().email(),
@@ -24,7 +24,7 @@ export const zV1JobsRoutes = {
       },
     },
     "/api/v1/jobs/bulk": {
-      queryParams: z
+      queryString: z
         .object({
           query: z.string().optional(), // mongo query
           select: z.string().optional(), // mongo projection
@@ -71,7 +71,7 @@ export const zV1JobsRoutes = {
       },
     },
     "/api/v1/jobs": {
-      queryParams: z
+      queryString: z
         .object({
           romes: z.string().optional(),
           rncp: z.string().optional(),
@@ -121,7 +121,7 @@ export const zV1JobsRoutes = {
           siret: extensions.siret(),
         })
         .strict(),
-      queryParams: z
+      queryString: z
         .object({
           caller: z.string().optional(),
           referer: z.string().optional(), // hidden
@@ -141,7 +141,7 @@ export const zV1JobsRoutes = {
           id: z.string(),
         })
         .strict(),
-      queryParams: z
+      queryString: z
         .object({
           caller: z.string().optional(),
         })
@@ -160,7 +160,7 @@ export const zV1JobsRoutes = {
           id: z.string(),
         })
         .strict(),
-      queryParams: z
+      queryString: z
         .object({
           caller: z.string().optional(),
         })

@@ -29,7 +29,7 @@ const ZMetiersEnrichis = z
 export const zRomeRoutes = {
   get: {
     "/api/rome": {
-      queryParams: null, // basic auth
+      queryString: null, // basic auth
       response: {
         "2xx": ZMetiersEnrichis,
       },

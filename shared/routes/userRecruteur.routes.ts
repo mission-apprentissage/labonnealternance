@@ -6,7 +6,7 @@ import { ZUserRecruteur, ZUserStatusValidation } from "../models/usersRecruteur.
 export const zUserRecruteurRoutes = {
   get: {
     "/api/user/opco": {
-      queryParams: z
+      queryString: z
         .object({
           userQuery: z.string() /* mongo query */,
           formulaireQuery: z.string() /* mongo query */,
@@ -24,7 +24,7 @@ export const zUserRecruteurRoutes = {
       },
     },
     "/api/user": {
-      queryParams: z
+      queryString: z
         .object({
           users: z.string() /* mongo query */,
         })
@@ -60,7 +60,7 @@ export const zUserRecruteurRoutes = {
       },
     },
     "/api/user/:userId/history": {
-      queryParams: ZUserStatusValidation,
+      queryString: ZUserStatusValidation,
       response: {
         "2xx": ZUserRecruteur,
       },
@@ -68,7 +68,7 @@ export const zUserRecruteurRoutes = {
   },
   delete: {
     "/api/user": {
-      queryParams: z
+      queryString: z
         .object({
           userId: z.string(),
           recruiterId: z.string().optional(),
