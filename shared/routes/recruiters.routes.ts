@@ -7,7 +7,7 @@ import { ZUserRecruteur } from "../models/usersRecruteur.model"
 
 export const zRecruiterRoutes = {
   get: {
-    "/cfa/rome": {
+    "/api/etablissement/cfa/rome": {
       querystring: z
         .object({
           latitude: z.number(),
@@ -32,7 +32,7 @@ export const zRecruiterRoutes = {
           .strict(),
       },
     },
-    "/entreprise/:siret": {
+    "/api/etablissement/entreprise/:siret": {
       params: z.object({ siret: extensions.siret() }),
       response: {
         "2xx": z
@@ -53,7 +53,7 @@ export const zRecruiterRoutes = {
           .strict(),
       },
     },
-    "/entreprise/:siret/opco": {
+    "/api/etablissement/entreprise/:siret/opco": {
       params: z.object({ siret: extensions.siret() }),
       response: {
         "2xx": z
@@ -64,7 +64,7 @@ export const zRecruiterRoutes = {
           .strict(),
       },
     },
-    "/cfa/:siret": {
+    "/api/etablissement/cfa/:siret": {
       params: z.object({ siret: extensions.siret() }),
       response: {
         "2xx": z
@@ -83,8 +83,8 @@ export const zRecruiterRoutes = {
     },
   },
   post: {
-    "/creation": {},
-    "/:establishment_siret/proposition/unsubscribe": {
+    "/api/etablissement/creation": {},
+    "/api/etablissement/:establishment_siret/proposition/unsubscribe": {
       params: z.object({ establishment_siret: extensions.siret() }),
       response: {
         "2xx": {
@@ -92,7 +92,7 @@ export const zRecruiterRoutes = {
         },
       },
     },
-    "/validation": {
+    "/api/etablissement/validation": {
       body: z.object({ id: zObjectId }),
       response: {
         "2xx": z.object({ token: z.string() }).strict(), // JWToken
@@ -100,7 +100,7 @@ export const zRecruiterRoutes = {
     },
   },
   put: {
-    "/:id": {
+    "/api/etablissement/:id": {
       params: z.object({ id: zObjectId }),
       body: ZUserRecruteur,
       response: {
