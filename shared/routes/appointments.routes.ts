@@ -84,6 +84,34 @@ const zContextCreateSchema = z.union([
 
 export const zAppointmentsRoute = {
   get: {
+    "/api/admin/appointments/": {
+      queryString: z.object({ query: z.string(), limit: z.number(), page: z.number() }).strict(),
+      response: {
+        "2xx": z.object({
+          appointments: z.array(ZAppointment),
+          pagination: z.object({
+            page: z.number(),
+            resultats_par_page: z.number(),
+            nombre_de_page: z.number(),
+            total: z.number(),
+          }),
+        }),
+      },
+    },
+    "/api/admin/appointments/details": {
+      queryString: z.object({ query: z.string(), limit: z.number(), page: z.number() }).strict(),
+      response: {
+        "2xx": z.object({
+          appointments: z.array(ZAppointment),
+          pagination: z.object({
+            page: z.number(),
+            resultats_par_page: z.number(),
+            nombre_de_page: z.number(),
+            total: z.number(),
+          }),
+        }),
+      },
+    },
     "/api/appointment-request/context/recap": {
       queryString: z.object({ appointmentId: z.string() }).strict(),
       response: {
