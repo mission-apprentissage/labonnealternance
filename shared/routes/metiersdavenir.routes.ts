@@ -4,7 +4,7 @@ export const zMetiersDAvenirRoutes = {
   get: {
     "/api/metiersdavenir": {
       response: {
-        "2xx": ZMetiersDAvenir,
+        "200": ZMetiersDAvenir,
       },
     },
   },
