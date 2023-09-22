@@ -2,7 +2,7 @@ import { z } from "zod"
 
 import { ZMetiersEnrichis } from "../models/metiers.model"
 
-export const zEtablissementRoutes = {
+export const zMetiersRoutes = {
   get: {
     "/api/romelabels": {
       queryParams: z.object({ title: z.string(), useMock: z.boolean().nullish(), withRomeLabels: z.boolean().nullish() }).strict(),
