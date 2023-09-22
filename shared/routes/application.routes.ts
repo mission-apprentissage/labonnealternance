@@ -31,7 +31,7 @@ export const zApplicationRoutes = {
         id: z.string(),
         iv: z.string(),
         comment: z.string(),
-      }),
+      }).strict(),
       response: {
         "200": z
           .object({
