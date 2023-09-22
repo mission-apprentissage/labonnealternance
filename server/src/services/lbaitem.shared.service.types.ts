@@ -46,6 +46,7 @@ export interface ILbaItemContact {
   name?: string | null // pe -> contact.nom | matcha -> prenom nom
   phone?: string | null // lbb/lba --> phone | matcha -> telephone
   info?: string | null // pe -> contact.coordonnees1+contact.coordonnees2+contact.coordonnees3
+  iv?: string | null // lbb/lba | matcha
 }
 
 export interface ILbaItemPlace {

@@ -125,6 +125,10 @@
 					"info": {
 						"type": "string",
 						"nullable": true
+					},
+					"iv": {
+						"type": "string",
+						"nullable": true
 					}
 				},
 				"type": "object",
