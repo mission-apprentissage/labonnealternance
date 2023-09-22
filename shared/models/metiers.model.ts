@@ -17,3 +17,15 @@ export const ZMetiersEnrichis = z.object({
   labelsAndRomes: ZMetierEnrichi.array(),
   labelsAndRomesForDiplomas: ZMetierEnrichi.array(),
 })
+
+export const ZMetiers = z.object({ metiers: z.string().array() })
+
+export const ZAppellationRome = z.object({
+  codeRome: z.string(),
+  intitule: z.string(),
+  appellation: z.string(),
+})
+
+export const ZAppellationsRomes = z.object({
+  coupleAppellationRomeMetier: ZAppellationRome.array(),
+})

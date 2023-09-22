@@ -1,6 +1,6 @@
 import { z } from "zod"
 
-import { ZMetiersEnrichis, ZMetiers } from "../models/metiers.model"
+import { ZAppellationsRomes, ZMetiersEnrichis, ZMetiers } from "../models/metiers.model"
 
 export const zMetiersRoutes = {
   get: {
@@ -49,18 +49,38 @@ export const zMetiersRoutes = {
       },
     },
     "/api/v1/metiers/all": {
-      param: z
-        .object({
-          siret: z.string(),
-        })
-        .strict(),
       response: {
         200: ZMetiers.strict(),
         500: z.object({ error: z.string() }).strict(),
       },
     },
+    "/api/v1/metiers": {
+      queryParams: z
+        .object({
+          title: z.string().optional(),
+          romes: z.string().array().optional(),
+          rncps: z.string().array().optional(),
+        })
+        .strict(),
+      response: {
+        200: ZMetiersEnrichis.omit({
+          labelsAndRomesForDiplomas: true,
+        }).strict(),
+        400: z.object({ error: z.string() }).strict(),
+        500: z.object({ error: z.string() }).strict(),
+      },
+    },
+    "/api/v1/metiers/intitule": {
+      queryParams: z
+        .object({
+          label: z.string(),
+        })
+        .strict(),
+      response: {
+        200: ZAppellationsRomes.strict(),
+        400: z.object({ error: z.string() }).strict(),
+        500: z.object({ error: z.string() }).strict(),
+      },
+    },
   },
-  post: {},
-  put: {},
-  delete: {},
 }
