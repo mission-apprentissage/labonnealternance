@@ -5,9 +5,11 @@ import { zApplicationRoutes } from "./routes/application.routes"
 import { IRouteSchema } from "./routes/common.routes"
 import { zCoreRoutes } from "./routes/core.routes"
 import { zEtablissementRoutes } from "./routes/etablissement.routes"
+import { zFormulaireRoute } from "./routes/formulaire.route"
 import { zLoginRoutes } from "./routes/login.routes"
 import { zMetiersDAvenirRoutes } from "./routes/metiersdavenir.routes"
 import { zOptoutRoutes } from "./routes/optout.routes"
+import { zRecruiterRoutes } from "./routes/recruiters.routes"
 import { zRomeRoutes } from "./routes/rome.routes"
 import { zTrainingLinksRoutes } from "./routes/trainingLinks.routes"
 import { zUnsubscribeRoute } from "./routes/unsubscribe.routes"
@@ -34,6 +36,8 @@ export const zRoutes = {
     ...zV1FormationsParRegion.get,
     ...zV1JobsRoutes.get,
     ...zV1JobsEtFormationsRoutes.get,
+    ...zFormulaireRoute.get,
+    ...zRecruiterRoutes.get,
   },
   post: {
     ...zApplicationRoutes.post,
@@ -50,6 +54,8 @@ export const zRoutes = {
     ...zV1FormationsParRegion.post,
     ...zV1JobsRoutes.post,
     ...zV1JobsEtFormationsRoutes.post,
+    ...zFormulaireRoute.post,
+    ...zRecruiterRoutes.post,
   },
   put: {
     ...zApplicationRoutes.put,
@@ -66,6 +72,8 @@ export const zRoutes = {
     ...zV1FormationsParRegion.put,
     ...zV1JobsRoutes.put,
     ...zV1JobsEtFormationsRoutes.put,
+    ...zFormulaireRoute.put,
+    ...zRecruiterRoutes.put,
   },
   delete: {
     ...zApplicationRoutes.delete,
@@ -82,6 +90,8 @@ export const zRoutes = {
     ...zV1FormationsParRegion.delete,
     ...zV1JobsRoutes.delete,
     ...zV1JobsEtFormationsRoutes.delete,
+    ...zFormulaireRoute.delete,
+    ...zRecruiterRoutes.delete,
   },
   patch: {
     ...zApplicationRoutes.patch,
@@ -98,6 +108,8 @@ export const zRoutes = {
     ...zV1FormationsParRegion.patch,
     ...zV1JobsRoutes.patch,
     ...zV1JobsEtFormationsRoutes.patch,
+    ...zFormulaireRoute.patch,
+    ...zRecruiterRoutes.patch,
   },
 } as const
 
@@ -105,6 +117,7 @@ export type IRoutes = typeof zRoutes
 
 export type IGetRoutes = IRoutes["get"]
 export type IPostRoutes = IRoutes["post"]
+export type IPatchRoutes = IRoutes["patch"]
 export type IPutRoutes = IRoutes["put"]
 export type IDeleteRoutes = IRoutes["delete"]
 
