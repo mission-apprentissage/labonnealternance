@@ -4,7 +4,7 @@ export function redirect(path, replace = false) {
   let uri = ""
 
   if (!path.startsWith("/espace-pro")) {
-    uri += publicConfig.baseUrlUi
+    uri += publicConfig.baseUrl
   }
 
   uri += path

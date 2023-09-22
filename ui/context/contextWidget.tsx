@@ -1,15 +1,28 @@
-import { createContext, useState } from "react"
+import { createContext, FC, PropsWithChildren, useState } from "react"
 
-const WidgetContext = createContext({
-  widget: {},
+export type IContextWidget = {
+  isWidget: boolean
+  mobile: boolean
+}
+
+interface ItWidgetContext {
+  widget?: IContextWidget
+  setWidget: (widget?: IContextWidget) => void
+}
+
+const WidgetContext = createContext<ItWidgetContext>({
+  widget: undefined,
   setWidget: () => {},
 })
 
-const WidgetProvider = (props) => {
-  const [widget, setWidget] = useState({})
-  const state = { widget, setWidget }
+interface Props extends PropsWithChildren {
+  initialWidget?: IContextWidget
+}
 
-  return <WidgetContext.Provider value={state}>{props.children}</WidgetContext.Provider>
+export const WidgetProvider: FC<Props> = ({ initialWidget, children }) => {
+  const [widget, setWidget] = useState<IContextWidget | undefined>(initialWidget)
+
+  return <WidgetContext.Provider value={{ widget, setWidget }}>{children}</WidgetContext.Provider>
 }
 
 export { WidgetContext }

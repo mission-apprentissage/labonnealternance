@@ -14,7 +14,7 @@ const CandidatureLbaMessage = ({ formik, kind }) => {
   }
 
   const getFieldError = () => {
-    let errorMsg = ""
+    let errorMsg = <></>
     if (kind === "matcha") {
       if (formik.touched.message && formik.errors.message) {
         errorMsg = (

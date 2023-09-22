@@ -142,8 +142,8 @@ const CreationCompteForm = ({ type, setQualiopi, setBandeau, origin }) => {
 export default function CreationCompte({ type, widget, origin }) {
   const { setWidget, widget: wid } = useContext(WidgetContext)
   const { setOrganisation } = useContext(LogoContext)
-  const [qualiopi, setQualiopi] = useState()
-  const [bandeau, setBandeau] = useState()
+  const [qualiopi, setQualiopi] = useState({})
+  const [bandeau, setBandeau] = useState({})
   // const [searchParams] = useSearchParams() // TODO_AB
   const router = useRouter()
   const mobile = router.query.mobile === "true" ? true : false
@@ -151,7 +151,7 @@ export default function CreationCompte({ type, widget, origin }) {
 
   useEffect(() => {
     if (widget) {
-      setWidget((prev) => ({ ...prev, isWidget: true, mobile: mobile ?? false }))
+      setWidget({ isWidget: true, mobile: mobile ?? false })
       setOrganisation(origin ?? "matcha")
     }
     /* eslint react-hooks/exhaustive-deps: 0 */
@@ -160,7 +160,7 @@ export default function CreationCompte({ type, widget, origin }) {
   return (
     <AuthentificationLayout>
       <AnimationContainer>
-        {bandeau && <Bandeau {...bandeau} />}
+        {bandeau && <Bandeau {...(bandeau as any)} />}
         <SimpleGrid columns={[1, 1, 1, 2]} spacing={[0, 0, 0, "75px"]} mt={wid.isWidget ? 0 : 12}>
           <Box>
             {wid.isWidget && (

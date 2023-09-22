@@ -1,16 +1,16 @@
 import decodeJWT from "../../utils/decodeJWT"
-import { useAuthState, anonymous } from "../auth"
+import { useAuthState, anonymous, IUserPublic } from "../auth"
 
-export default function useAuth() {
+export default function useAuth(): [IUserPublic, (t: string) => void] {
   const [auth, setAuth] = useAuthState()
 
-  const setAuthFromToken = (token) => {
+  const setAuthFromToken = (token: string) => {
     if (!token) {
       sessionStorage.removeItem("lba:token")
       setAuth(anonymous)
     } else {
       sessionStorage.setItem("lba:token", token)
-      setAuth(decodeJWT(token))
+      setAuth(decodeJWT(token) as IUserPublic)
     }
   }
 

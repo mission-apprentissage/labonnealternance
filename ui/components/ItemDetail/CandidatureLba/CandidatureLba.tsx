@@ -55,8 +55,9 @@ const CandidatureLba = ({ item, fakeLocalStorage }) => {
 
   const formik = useFormik({
     initialValues: getInitialSchemaValues(),
-    validationSchema: getValidationSchema(kind),
+    validationSchema: getValidationSchema(),
     onSubmit: async (applicantValues) => {
+      // @ts-expect-error: TODO
       const success = await submitCandidature({ applicantValues, setSendingState, item })
       if (success) {
         setApplied(Date.now().toString())
@@ -100,7 +101,7 @@ const CandidatureLba = ({ item, fakeLocalStorage }) => {
                 <Modal isOpen={isOpen} onClose={onModalClose} closeOnOverlayClick={false} size="3xl">
                   <ModalOverlay />
                   <ModalContent>
-                    <ModalHeader align="right" paddingTop="8px" paddingBottom="0">
+                    <ModalHeader paddingTop="8px" paddingBottom="0">
                       <Button
                         fontSize="14px"
                         color="bluefrance.500"
@@ -126,7 +127,7 @@ const CandidatureLba = ({ item, fakeLocalStorage }) => {
                       {with_str(sendingState).amongst(["not_sent", "currently_sending"]) && (
                         <CandidatureLbaModalBody formik={formik} sendingState={sendingState} company={item?.company?.name} item={item} kind={kind} />
                       )}
-                      {with_str(sendingState).amongst(["ok_sent"]) && <CandidatureLbaWorked kind={kind} email={formik.values.email} company={item?.company?.name} />}
+                      {with_str(sendingState).amongst(["ok_sent"]) && <CandidatureLbaWorked email={formik.values.email} company={item?.company?.name} />}
                       {!with_str(sendingState).amongst(["not_sent", "ok_sent", "currently_sending"]) && <CandidatureLbaFailed sendingState={sendingState} />}
                     </form>
                   </ModalContent>

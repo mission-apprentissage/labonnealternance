@@ -13,7 +13,7 @@ import hasAlreadySubmittedCandidature from "./services/hasAlreadySubmittedCandid
 import submitCandidature from "./services/submitCandidature"
 import useLocalStorage from "./services/useLocalStorage"
 
-const WidgetCandidatureLba = ({ item, caller, fakeLocalStorage }) => {
+const WidgetCandidatureLba = ({ item, caller, fakeLocalStorage = null }) => {
   const [sendingState, setSendingState] = useState("not_sent")
   const kind = item?.ideaType || ""
 
@@ -49,10 +49,11 @@ const WidgetCandidatureLba = ({ item, caller, fakeLocalStorage }) => {
 
   const formik = useFormik({
     initialValues: getInitialSchemaValues(),
-    validationSchema: getValidationSchema(kind),
+    validationSchema: getValidationSchema(),
     onSubmit: async (applicantValues) => {
       const success = await submitCandidature({
         applicantValues,
+        // @ts-expect-error: TODO
         setSendingState,
         item,
         caller,
@@ -73,7 +74,7 @@ const WidgetCandidatureLba = ({ item, caller, fakeLocalStorage }) => {
             <CandidatureLbaModalBody formik={formik} sendingState={sendingState} company={item?.company?.name} item={item} kind={kind} fromWidget={true} />
           )}
 
-          {with_str(sendingState).amongst(["ok_sent"]) && <CandidatureLbaWorked kind={kind} email={formik.values.email} company={item?.company?.name} />}
+          {with_str(sendingState).amongst(["ok_sent"]) && <CandidatureLbaWorked email={formik.values.email} company={item?.company?.name} />}
 
           {!with_str(sendingState).amongst(["not_sent", "ok_sent", "currently_sending"]) && <CandidatureLbaFailed sendingState={sendingState} />}
         </form>

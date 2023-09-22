@@ -19,7 +19,7 @@ export default function Catalog(props) {
         description={`Liste de métiers où trouver une formation ou un emploi en alternance`}
       />
       <ScrollToTop />
-      <Navigation />
+      <Navigation currentPage={undefined} />
       <Breadcrumb forPage="metiers" label="Métiers" />
 
       <Container p={12} my={0} mb={[0, 12]} variant="pageContainer">
