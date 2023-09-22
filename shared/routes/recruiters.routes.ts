@@ -14,8 +14,7 @@ export const zRecruiterRoutes = {
           longitude: z.number(),
           rome: z.array(z.string()),
         })
-        .strict()
-        .required(),
+        .strict(),
       response: {
         "2xx": zEtablissementCatalogue
           .pick({
@@ -29,50 +28,57 @@ export const zRecruiterRoutes = {
           })
           .extend({
             distance_en_km: z.string(),
-          }),
+          })
+          .strict(),
       },
     },
     "/entreprise/:siret": {
       params: z.object({ siret: extensions.siret() }),
       response: {
-        "2xx": z.object({
-          establishment_enseigne: z.string(),
-          establishment_state: z.string(), // F pour fermé ou A pour actif
-          establishment_siret: z.string(),
-          establishment_raison_sociale: z.string(),
-          address_detail: z.any(),
-          address: z.string(),
-          contacts: z.array(z.any()), // conserve la coherence avec l'UI
-          naf_code: z.number(),
-          naf_label: z.string(),
-          establishment_size: z.string(),
-          establishment_creation_date: z.date(),
-          geo_coordinates: z.string(),
-        }),
+        "2xx": z
+          .object({
+            establishment_enseigne: z.string(),
+            establishment_state: z.string(), // F pour fermé ou A pour actif
+            establishment_siret: z.string(),
+            establishment_raison_sociale: z.string(),
+            address_detail: z.any(),
+            address: z.string(),
+            contacts: z.array(z.any()), // conserve la coherence avec l'UI
+            naf_code: z.number(),
+            naf_label: z.string(),
+            establishment_size: z.string(),
+            establishment_creation_date: z.date(),
+            geo_coordinates: z.string(),
+          })
+          .strict(),
       },
     },
     "/entreprise/:siret/opco": {
       params: z.object({ siret: extensions.siret() }),
       response: {
-        "2xx": z.object({
-          opco: z.string(),
-          idcc: z.string(),
-        }),
+        "2xx": z
+          .object({
+            opco: z.string(),
+            idcc: z.string(),
+          })
+          .strict(),
       },
     },
     "/cfa/:siret": {
       params: z.object({ siret: extensions.siret() }),
       response: {
-        "2xx": z.object({
-          establishment_state: z.string(),
-          is_qualiopi: z.string(),
-          establishment_siret: z.string(),
-          establishment_raison_sociale: z.string(),
-          contacts: z.string(),
-          address_detail: z.string(),
-          address: z.string(),
-          geo_coordinates: z.string(),
-        }),
+        "2xx": z
+          .object({
+            establishment_state: z.string(),
+            is_qualiopi: z.string(),
+            establishment_siret: z.string(),
+            establishment_raison_sociale: z.string(),
+            contacts: z.string(),
+            address_detail: z.string(),
+            address: z.string(),
+            geo_coordinates: z.string(),
+          })
+          .strict(),
       },
     },
   },
@@ -88,7 +94,9 @@ export const zRecruiterRoutes = {
     },
     "/validation": {
       body: z.object({ id: zObjectId }),
-      response: {}, // JWToken
+      response: {
+        "2xx": z.object({ token: z.string() }).strict(), // JWToken
+      },
     },
   },
   put: {
