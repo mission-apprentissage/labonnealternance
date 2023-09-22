@@ -6,7 +6,7 @@ import { ZAppellationsRomes, ZMetiersEnrichis, ZMetiers } from "../models/metier
 export const zMetiersRoutes = {
   get: {
     "/api/romelabels": {
-      queryParams: z.object({ title: z.string(), useMock: z.boolean().nullish(), withRomeLabels: z.boolean().nullish() }).strict(),
+      querystring: z.object({ title: z.string(), useMock: z.boolean().nullish(), withRomeLabels: z.boolean().nullish() }).strict(),
       response: {
         "200": ZMetiersEnrichis.or(
           z.object({
@@ -17,7 +17,7 @@ export const zMetiersRoutes = {
       },
     },
     "/api/rome": {
-      queryParams: z.object({ title: z.string(), useMock: z.boolean().nullish(), withRomeLabels: z.boolean().nullish() }).strict(),
+      querystring: z.object({ title: z.string(), useMock: z.boolean().nullish(), withRomeLabels: z.boolean().nullish() }).strict(),
       response: {
         "200": ZMetiersEnrichis.or(
           z.object({
@@ -56,7 +56,7 @@ export const zMetiersRoutes = {
       },
     },
     "/api/v1/metiers": {
-      queryParams: z
+      querystring: z
         .object({
           title: z.string().optional(),
           romes: z.string().array().optional(),
@@ -72,7 +72,7 @@ export const zMetiersRoutes = {
       },
     },
     "/api/v1/metiers/intitule": {
-      queryParams: z
+      querystring: z
         .object({
           label: z.string(),
         })
