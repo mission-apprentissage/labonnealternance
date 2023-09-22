@@ -21,6 +21,7 @@ export const getMetier = (search) => Axios.get(`https://labonnealternance.appren
  * Formulaire API
  */
 // export const getFormulaires = (query, options, limit, page) => securedAPI.get("/formulaire", { params: { query, options, limit, page } }).catch(errorHandler)
+// TODO_AB
 export const getFormulaires = async (query) => {
   const token = sessionStorage.getItem("lba:token")
   return API.get("/formulaire", {
