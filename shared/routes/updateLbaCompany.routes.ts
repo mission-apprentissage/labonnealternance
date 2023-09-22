@@ -3,10 +3,12 @@ import { z } from "zod"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { ZLbaCompany } from "../models/lbaCompany.model"
 
+import { IRoutesDef } from "./common.routes"
+
 export const zUpdateLbaCompanyRoutes = {
   get: {
     "/api/updateLBB/updateContactInfo": {
-      queryString: z
+      querystring: z
         .object({
           secret: z.string(),
           siret: extensions.siret(),
@@ -22,4 +24,5 @@ export const zUpdateLbaCompanyRoutes = {
   post: {},
   put: {},
   delete: {},
-}
+  patch: {},
+} satisfies IRoutesDef

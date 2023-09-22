@@ -1,5 +1,7 @@
 import { z } from "zod"
 
+import { IRoutesDef } from "./common.routes"
+
 export const zUnsubscribeRoute = {
   post: {
     "/api/unsubscribe": {
@@ -9,4 +11,8 @@ export const zUnsubscribeRoute = {
       },
     },
   },
-}
+  get: {},
+  put: {},
+  patch: {},
+  delete: {},
+} satisfies IRoutesDef

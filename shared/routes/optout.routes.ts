@@ -1,5 +1,7 @@
 import { z } from "zod"
 
+import { IRoutesDef } from "./common.routes"
+
 export const zOptoutRoutes = {
   get: {
     "/api/optout/validate": {
@@ -47,4 +49,5 @@ export const zOptoutRoutes = {
   post: {},
   put: {},
   delete: {},
-}
+  patch: {},
+} satisfies IRoutesDef

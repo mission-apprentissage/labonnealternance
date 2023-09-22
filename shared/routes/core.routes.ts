@@ -1,35 +1,42 @@
-import { z } from "zod"
+import { z } from "../helpers/zodWithOpenApi"
+
+import { IRoutesDef } from "./common.routes"
+
+const zResponse = z.object({
+  env: z.enum(["local", "recette", "production", "preview"]),
+  healthcheck: z
+    .object({
+      mongodb: z.boolean(),
+    })
+    .strict(),
+})
 
 export const zCoreRoutes = {
   get: {
     "/api": {
       response: {
-        "2xx": z
-          .object({
-            env: z.enum(["local", "recette", "production", "preview"]),
-            healthcheck: z
-              .object({
-                mongodb: z.boolean(),
-              })
-              .strict(),
-          })
-          .describe("API Health"),
+        "200": zResponse,
+        "500": zResponse,
       },
     },
     "/api/healthcheck": {
       response: {
-        "2xx": z
+        "200": zResponse,
+        "500": zResponse,
+      },
+    },
+    "/api/version": {
+      response: {
+        "200": z
           .object({
-            env: z.enum(["local", "recette", "production", "preview"]),
-            healthcheck: z.object({
-              mongodb: z.boolean(),
-            }),
+            version: z.string(),
           })
-          .describe("API Health"),
+          .strict(),
       },
     },
   },
   post: {},
   put: {},
   delete: {},
-}
+  patch: {},
+} satisfies IRoutesDef

@@ -4,10 +4,12 @@ import { ZJob } from "../models/job.model"
 import { ZRecruiter } from "../models/recruiter.model"
 import { ZUserRecruteur, ZUserStatusValidation } from "../models/usersRecruteur.model"
 
+import { IRoutesDef } from "./common.routes"
+
 export const zUserRecruteurRoutes = {
   get: {
     "/api/user/opco": {
-      queryString: z
+      querystring: z
         .object({
           userQuery: z.string() /* mongo query */,
           formulaireQuery: z.string() /* mongo query */,
@@ -25,7 +27,7 @@ export const zUserRecruteurRoutes = {
       },
     },
     "/api/user": {
-      queryString: z
+      querystring: z
         .object({
           users: z.string() /* mongo query */,
         })
@@ -71,7 +73,7 @@ export const zUserRecruteurRoutes = {
       },
     },
     "/api/user/:userId/history": {
-      queryString: ZUserStatusValidation,
+      querystring: ZUserStatusValidation,
       response: {
         "200": ZUserRecruteur,
       },
@@ -90,4 +92,5 @@ export const zUserRecruteurRoutes = {
       },
     },
   },
-}
+  patch: {},
+} satisfies IRoutesDef

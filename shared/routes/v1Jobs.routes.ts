@@ -6,10 +6,12 @@ import { ZLbaItem } from "../models/lbaItem.model"
 import { ZRecruiter } from "../models/recruiter.model"
 import { ZUserRecruteur } from "../models/usersRecruteur.model"
 
+import { IRoutesDef } from "./common.routes"
+
 export const zV1JobsRoutes = {
   get: {
     "/api/v1/jobs/establishment": {
-      queryString: z
+      querystring: z
         .object({
           establishment_siret: extensions.siret(),
           email: z.string().email(),
@@ -24,7 +26,7 @@ export const zV1JobsRoutes = {
       },
     },
     "/api/v1/jobs/bulk": {
-      queryString: z
+      querystring: z
         .object({
           query: z.string().optional(), // mongo query
           select: z.string().optional(), // mongo projection
@@ -71,7 +73,7 @@ export const zV1JobsRoutes = {
       },
     },
     "/api/v1/jobs": {
-      queryString: z
+      querystring: z
         .object({
           romes: z.string().optional(),
           rncp: z.string().optional(),
@@ -121,7 +123,7 @@ export const zV1JobsRoutes = {
           siret: extensions.siret(),
         })
         .strict(),
-      queryString: z
+      querystring: z
         .object({
           caller: z.string().optional(),
           referer: z.string().optional(), // hidden
@@ -141,7 +143,7 @@ export const zV1JobsRoutes = {
           id: z.string(),
         })
         .strict(),
-      queryString: z
+      querystring: z
         .object({
           caller: z.string().optional(),
         })
@@ -160,7 +162,7 @@ export const zV1JobsRoutes = {
           id: z.string(),
         })
         .strict(),
-      queryString: z
+      querystring: z
         .object({
           caller: z.string().optional(),
         })
@@ -302,4 +304,4 @@ export const zV1JobsRoutes = {
   },
   put: {},
   delete: {},
-}
+} satisfies IRoutesDef

@@ -1,4 +1,6 @@
-import { ZMetiersDAvenir } from "models/metiersdavenir.model"
+import { ZMetiersDAvenir } from "../models/metiersdavenir.model"
+
+import { IRoutesDef } from "./common.routes"
 
 export const zMetiersDAvenirRoutes = {
   get: {
@@ -8,4 +10,8 @@ export const zMetiersDAvenirRoutes = {
       },
     },
   },
-}
+  patch: {},
+  delete: {},
+  put: {},
+  post: {},
+} satisfies IRoutesDef

@@ -2,10 +2,12 @@ import { z } from "zod"
 
 import { ZLbaItem } from "../models/lbaItem.model"
 
+import { IRoutesDef } from "./common.routes"
+
 export const zV1JobsEtFormationsRoutes = {
   get: {
     "/api/v1/jobsEtFormations": {
-      queryString: z
+      querystring: z
         .object({
           romes: z.string().optional(),
           rncp: z.string().optional(),
@@ -63,4 +65,5 @@ export const zV1JobsEtFormationsRoutes = {
   post: {},
   put: {},
   delete: {},
-}
+  patch: {},
+} satisfies IRoutesDef

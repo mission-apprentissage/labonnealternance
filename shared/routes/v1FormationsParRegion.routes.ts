@@ -2,10 +2,12 @@ import { z } from "zod"
 
 import { ZLbaItem } from "../models/lbaItem.model"
 
-export const zV1JobsEtFormationsRoutes = {
+import { IRoutesDef } from "./common.routes"
+
+export const zV1FormationsParRegion = {
   get: {
     "/api/v1/formationsParRegion": {
-      queryString: z
+      querystring: z
         .object({
           romes: z.string().optional(),
           romeDomain: z.string().optional(),
@@ -29,4 +31,5 @@ export const zV1JobsEtFormationsRoutes = {
   post: {},
   put: {},
   delete: {},
-}
+  patch: {},
+} satisfies IRoutesDef

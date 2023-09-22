@@ -1,5 +1,7 @@
 import { z } from "zod"
 
+import { IRoutesDef } from "./common.routes"
+
 export const zTrainingLinksRoutes = {
   get: {},
   post: {
@@ -40,4 +42,5 @@ export const zTrainingLinksRoutes = {
   },
   put: {},
   delete: {},
-}
+  patch: {},
+} satisfies IRoutesDef
