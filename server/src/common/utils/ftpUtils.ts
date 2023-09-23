@@ -1,4 +1,3 @@
-// @ts-nocheck
 import Ftp from "basic-ftp"
 
 import { logger } from "../logger"

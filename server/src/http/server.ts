@@ -1,4 +1,4 @@
-// @ts-nocheck
+import fastifyCors from "@fastify/cors"
 import { readFileSync } from "fs"
 
 import Sentry from "@sentry/node"
