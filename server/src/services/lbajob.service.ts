@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { IRecruiter } from "../common/model/schema/recruiter/recruiter.types"
 import { encryptMailWithIV } from "../common/utils/encryptString"
 import { IApiError, manageApiError } from "../common/utils/errorManager"
