@@ -20,7 +20,8 @@ const Formulaire = ({ last_name, first_name, phone, email, establishment_id }) =
   /**
    * KBA 20230511 : values for recruiter collection are casted in api.js file directly. form values must remain as awaited in userRecruteur collection
    */
-  const entrepriseMutation = useMutation(({ userId, establishment_id, values }) => updateEntreprise(userId, establishment_id, values), {
+  // TODO
+  const entrepriseMutation = useMutation<any, unknown, any, unknown>(({ userId, establishment_id, values }) => updateEntreprise(userId, establishment_id, values), {
     onSuccess: () => {
       toast({
         title: "Entreprise mise à jour avec succès.",
@@ -32,7 +33,7 @@ const Formulaire = ({ last_name, first_name, phone, email, establishment_id }) =
       client.invalidateQueries("formulaire-edition")
     },
   })
-
+  // @ts-expect-error: TODO
   const cfaMutation = useMutation(({ establishment_id, values }) => putFormulaire(establishment_id, values), {
     onSuccess: () => {
       toast({
@@ -51,7 +52,7 @@ const Formulaire = ({ last_name, first_name, phone, email, establishment_id }) =
       entrepriseMutation.mutate(
         { userId: auth.id, establishment_id: establishment_id, values },
         {
-          onError: (error) => {
+          onError: (error: any) => {
             switch (error.response.data.reason) {
               case "EMAIL_TAKEN":
                 setFieldError("email", "l'adresse email est déjà utilisé")
@@ -64,6 +65,7 @@ const Formulaire = ({ last_name, first_name, phone, email, establishment_id }) =
         }
       )
     } else {
+      // @ts-expect-error: TODO
       cfaMutation.mutate({ establishment_id: establishment_id, values })
     }
 
@@ -148,6 +150,7 @@ function EditionEntrepriseContact() {
   }
 
   // add type ENTREPRISE for legale information
+  // @ts-expect-error: TODO
   const entreprise = { ...data.data, type: AUTHTYPE.ENTREPRISE }
 
   return (
@@ -162,6 +165,7 @@ function EditionEntrepriseContact() {
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbItem>
+                {/* @ts-expect-error: TODO */}
                 <BreadcrumbLink textStyle="xs">{data.data.establishment_raison_sociale}</BreadcrumbLink>
               </BreadcrumbItem>
             </Breadcrumb>

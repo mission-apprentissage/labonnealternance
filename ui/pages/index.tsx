@@ -50,29 +50,36 @@ const Home = () => {
     <Box>
       <ScrollToTop />
       <Navigation />
+      {/* @ts-expect-error: TODO */}
       <Box background="beige" {...blockCssProperties}>
+        {/* @ts-expect-error: TODO */}
         <Image src={howtocircle1} {...circleImgCssProperties} top="60px" left="50px" alt="" />
+        {/* @ts-expect-error: TODO */}
         <Image src={howtocircle2} {...circleImgCssProperties} bottom="-28px" left="444px" alt="" />
+        {/* @ts-expect-error: TODO */}
         <Image src={howtocircle3} {...circleImgCssProperties} top="182px" right="512px" alt="" />
+        {/* @ts-expect-error: TODO */}
         <Image src={howtocircle4} {...circleImgCssProperties} top="12px" right="312px" alt="" />
+        {/* @ts-expect-error: TODO */}
         <Image src={howtocircle5} {...circleImgCssProperties} bottom="112px" right="-12px" alt="" />
         <HomeHero />
         <HowTo />
       </Box>
-
+      {/* @ts-expect-error: TODO */}
       <Box {...blockCssProperties} pt={12} pb={0}>
         <MetiersDAvenir />
       </Box>
-
+      {/* @ts-expect-error: TODO */}
       <Box {...blockCssProperties} pt={12} pb={0}>
         <TestezConnaissancesQuiz />
       </Box>
-
+      {/* @ts-expect-error: TODO */}
       <Box {...blockCssProperties} py={12}>
         <AlgoHome />
       </Box>
 
       {config.shouldDisplayCallForHelp && (
+        // @ts-expect-error: TODO
         <Box {...blockCssProperties}>
           <AmeliorerLBA />
         </Box>

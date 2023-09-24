@@ -64,17 +64,17 @@ const borderedTitleItemProps = {
 
 export const AutoCompleteField = ({
   id,
-  kind,
+  kind = undefined,
   name,
   itemToStringFunction,
   onInputValueChangeFunction,
   onSelectedItemChangeFunction,
   compareItemFunction,
-  initialSelectedItem,
+  initialSelectedItem = undefined,
   items,
-  hasError,
-  initialIsOpen,
-  scrollParentId,
+  hasError = undefined,
+  initialIsOpen = undefined,
+  scrollParentId = undefined,
   searchPlaceholder,
   splitItemsByTypes = null,
   isDisabled = false,
@@ -107,10 +107,10 @@ export const AutoCompleteField = ({
 
   const { setFieldValue } = useFormikContext()
 
-  const [inputTextValue, setInputTextValue] = useState("")
-  const [inputItems, setInputItems] = useState(items)
+  const [inputTextValue, setInputTextValue]: [any, (t: any) => void] = useState("")
+  const [inputItems, setInputItems]: [any, (t: any) => void] = useState(items)
   const [initialized, setInitialized] = useState(false)
-  const [loadingState, setLoadingState] = useState("loading")
+  const [loadingState, setLoadingState]: [any, (t: any) => void] = useState("loading")
 
   const itemToString = (item) => {
     if (itemToStringFunction) return item ? itemToStringFunction(item) : ""
@@ -122,7 +122,7 @@ export const AutoCompleteField = ({
     let currentTitleCnt = 0
     let currentType = ""
     const returnTitleLi = (item) => {
-      let res = ""
+      let res = <></>
       if (splitItemsByTypes && item.type !== currentType && currentTitleCnt < splitItemsByTypes.length) {
         while (item.type !== currentType && currentTitleCnt < splitItemsByTypes.length) {
           currentType = splitItemsByTypes[currentTitleCnt].type
@@ -130,6 +130,7 @@ export const AutoCompleteField = ({
         }
         const titleProps = currentTitleCnt > 1 ? borderedTitleItemProps : titleItemProps
         res = (
+          // @ts-expect-error: TODO
           <Box key={`autocomplete_title_${currentTitleCnt - 1}`} {...titleProps}>
             {splitItemsByTypes[currentTitleCnt - 1].typeLabel}
           </Box>

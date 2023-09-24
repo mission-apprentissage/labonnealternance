@@ -1,4 +1,10 @@
-export const campaignParameters = {}
+export type ICampaignParameters = {
+  utm_campaign?: string
+  utm_source?: string
+  utm_medium?: string
+}
+
+export const campaignParameters: ICampaignParameters = {}
 
 export const getCampaignParameters = () => {
   const cPs = campaignParameters.utm_campaign

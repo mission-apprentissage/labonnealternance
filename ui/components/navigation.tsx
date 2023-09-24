@@ -4,7 +4,7 @@ import NextLink from "next/link"
 
 import { publicConfig } from "../config.public"
 
-const Navigation = ({ currentPage }) => {
+const Navigation = ({ currentPage = undefined }) => {
   const getLogo = () => {
     return "logo_LBA.svg"
   }

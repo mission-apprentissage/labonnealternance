@@ -1,5 +1,11 @@
 import React, { createContext, useReducer } from "react"
 
+// jobs: {
+//   peJobs
+// lbaCompanies
+// matchas
+// }
+
 const initialState = {
   trainings: [],
   jobs: [],
@@ -58,7 +64,7 @@ const reducer = (state, action) => {
 export type IContextSearch = {
   trainings: any[]
   setTrainings: (b: any[]) => void
-  jobs: any[]
+  jobs: any[] | any // Sometime array sometime object... // TODO
   setJobs: (b: any[]) => void
   itemToScrollTo: object
   setItemToScrollTo: (b: object) => void

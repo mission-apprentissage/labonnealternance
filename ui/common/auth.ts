@@ -14,6 +14,7 @@ export type IUserPublic = {
   last_name?: string
   establishment_id?: string
   scope?: string
+  id?: string
 }
 
 const anonymous = { sub: "anonymous", permissions: {} } as IUserPublic
