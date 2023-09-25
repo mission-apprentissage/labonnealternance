@@ -35,9 +35,9 @@ export const getJobsFromApi = async ({
   romes?: string
   referer?: string
   caller?: string
-  latitude?: string
-  longitude?: string
-  radius?: string
+  latitude?: number
+  longitude?: number
+  radius?: number
   insee?: string
   sources?: string
   diploma?: string
@@ -145,5 +145,5 @@ export const getJobsQuery = async (query: TJobSearchQuery) => {
     trackApiCall({ caller: query.caller, job_count, result_count: job_count, api_path: "jobV1/jobs", response: "OK" })
   }
 
-  return { ...result, job_count }
+  return { ...result }
 }
