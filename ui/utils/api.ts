@@ -88,6 +88,7 @@ export const updateEntreprise = async (userId, establishment_id, values) => awai
 export const validateToken = async (token) => await API.post(`/login/verification`, token)
 export const sendMagiclink = async (email) => await API.post(`/login/magiclink`, email)
 export const sendValidationLink = async (email) => await API.post(`/login/confirmation-email`, email)
+
 export const validationCompte = (id) => API.post("/etablissement/validation", id)
 
 /**
@@ -116,6 +117,7 @@ export const getEntrepriseOpco = async (siret) => {
 }
 
 export const createPartenaire = (partenaire) => API.post("/etablissement/creation", partenaire)
+
 export const updatePartenaire = async (id, partenaire) => {
   const token = sessionStorage.getItem("lba:token")
   return API.put(`/etablissement/${id}`, partenaire, {

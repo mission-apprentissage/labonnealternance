@@ -15,13 +15,11 @@ import { AnimationContainer, AuthentificationLayout, ConfirmationCreationCompte,
 
 const Formulaire = ({ submitForm }) => {
   const router = useRouter()
-  // const location = useLocation()
   const { widget } = useContext(WidgetContext)
 
-  // const { type, informationSiret, origin } = location.state ?? {}
-  const { type, informationSiret: informationSiretString, origin } = router.query
+  const { type, informationSiret: informationSiretString, origin }: { type: string; informationSiret: string; origin: string } = router.query as any
   const informationSiret = JSON.parse(informationSiretString || "{}")
-  // TODO_AB
+
   const { email = "", opco = "" } = informationSiret ?? {}
   const shouldSelectOpco = type === AUTHTYPE.ENTREPRISE && !opco
   const informationEntreprise = { ...informationSiret, type }
@@ -88,7 +86,7 @@ const Formulaire = ({ submitForm }) => {
                       <FormLabel>OPCO</FormLabel>
                       <FormHelperText pb={2}>Pour vous accompagner dans vos recrutements, votre OPCO accède à vos informations sur La bonne alternance.</FormHelperText>
                       <OpcoSelect name="opco" onChange={(newValue) => setFieldValue("opco", newValue)} value={values.opco} />
-                      <FormErrorMessage>{errors.opco}</FormErrorMessage>
+                      <FormErrorMessage>{errors.opco as string}</FormErrorMessage>
                     </FormControl>
                   )}
                   <Flex justifyContent="flex-end" alignItems="center" mt={5}>
@@ -153,12 +151,10 @@ export const InformationCreationCompte = () => {
   // const location = useLocation()
   const router = useRouter()
   const validationPopup = useDisclosure()
-  const [popupData, setPopupData] = useState()
+  const [popupData, setPopupData] = useState({})
 
-  // const { type, informationSiret } = location.state ?? {}
-  const { type, informationSiret: informationSiretString } = router.query
+  const { type, informationSiret: informationSiretString }: { type: string; informationSiret: string } = router.query as any
   const informationSiret = JSON.parse(informationSiretString || "{}")
-  // TODO_AB
 
   const submitForm = (values, { setSubmitting, setFieldError }) => {
     // save info if not trusted from source
@@ -174,7 +170,7 @@ export const InformationCreationCompte = () => {
           } else {
             router.push({
               pathname: "/espace-pro/authentification/confirmation",
-              query: { email: data.email },
+              query: { email: data.user.email },
             })
           }
         } else {
@@ -183,9 +179,10 @@ export const InformationCreationCompte = () => {
         }
         setSubmitting(false)
       })
-      .catch((error) => {
-        console.error(error)
-        setFieldError("email", error?.response?.data?.message)
+      .catch(({ response }) => {
+        const payload: { error: string; statusCode: number; message: string } = response.data
+        console.error(payload.error)
+        setFieldError("email", payload.message)
         setSubmitting(false)
       })
   }

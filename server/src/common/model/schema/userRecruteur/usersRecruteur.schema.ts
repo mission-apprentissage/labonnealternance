@@ -84,7 +84,7 @@ const userRecruteurSchema = new Schema<IUserRecruteur>(
     },
     email: {
       type: String,
-      default: null,
+      required: true,
       description: "L'email de l'utilisateur",
       unique: true,
     },

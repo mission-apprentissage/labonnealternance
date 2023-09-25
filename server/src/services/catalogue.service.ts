@@ -161,7 +161,7 @@ export const getCatalogueEtablissements = (query: object = {}, select: object = 
  * @param {{latitude: string, longitude: string}} origin
  * @returns {Promise<Object[]>}
  */
-export const getNearEtablissementsFromRomes = async ({ rome, origin }: { rome: string; origin: object }) => {
+export const getNearEtablissementsFromRomes = async ({ rome, origin }: { rome: string[]; origin: { latitude: number; longitude: number } }) => {
   const formations = await getCatalogueFormations(
     {
       rome_codes: { $in: rome },

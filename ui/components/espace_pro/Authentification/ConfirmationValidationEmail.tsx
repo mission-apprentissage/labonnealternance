@@ -38,10 +38,8 @@ const EmailInvalide = () => (
 export default function ConfirmationValidationEmail() {
   const [isValid, setIsValid] = useBoolean(true)
   const [isAwaitingValidation, setIsAwaitingValidation] = useBoolean(false)
-  // const { id } = useParams()
   const router = useRouter()
   const { id } = router.query
-  // TODO_AB
   const [auth, setAuth] = useAuth()
 
   useEffect(() => {

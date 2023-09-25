@@ -4,7 +4,7 @@ export const zEntreprise = z
   .object({
     establishment_enseigne: z.string().nullish(),
     establishment_state: z.string(), // F pour fermé ou A pour actif
-    establishment_siret: z.string().nullish(),
+    establishment_siret: z.string(),
     establishment_raison_sociale: z.string().nullish(),
     address_detail: z.any(),
     address: z.string().nullish(),

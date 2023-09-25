@@ -2,11 +2,9 @@ import Boom from "boom"
 import joi from "joi"
 import { zRoutes } from "shared/index"
 
-import { IRecruiter } from "../../common/model/schema/recruiter/recruiter.types"
 import { IUserRecruteur } from "../../common/model/schema/userRecruteur/userRecruteur.types"
 import { createUserRecruteurToken } from "../../common/utils/jwtUtils"
 import { getAllDomainsFromEmailList, getEmailDomain, isEmailFromPrivateCompany, isUserMailExistInReferentiel } from "../../common/utils/mailUtils"
-import { sentryCaptureException } from "../../common/utils/sentryUtils"
 import { notifyToSlack } from "../../common/utils/slackUtils"
 import { getNearEtablissementsFromRomes } from "../../services/catalogue.service"
 import { BusinessErrorCodes, CFA, ENTREPRISE, ETAT_UTILISATEUR } from "../../services/constant.service"
@@ -62,7 +60,7 @@ export default (server: Server) => {
         { abortEarly: false }
       )
 
-      const etablissements = await getNearEtablissementsFromRomes({ rome, origin: { latitude, longitude } })
+      const etablissements = await getNearEtablissementsFromRomes({ rome, origin: { latitude: parseFloat(latitude), longitude: parseFloat(longitude) } })
       res.send(etablissements)
     }
   )
@@ -164,26 +162,13 @@ export default (server: Server) => {
       schema: zRoutes.post["/api/etablissement/creation"],
     },
     async (req, res) => {
-      // TODO add some Joi
       switch (req.body.type) {
         case ENTREPRISE: {
           const siret = req.body.establishment_siret
           const result = await entrepriseOnboardingWorkflow.create({ ...req.body, siret })
           if ("error" in result) {
-            switch (result.errorCode) {
-              case BusinessErrorCodes.ALREADY_EXISTS: {
-                return res.status(403).send({
-                  error: true,
-                  message: result.message,
-                })
-              }
-              default: {
-                return res.status(400).send({
-                  error: true,
-                  message: result.message,
-                })
-              }
-            }
+            if (result.errorCode === BusinessErrorCodes.ALREADY_EXISTS) throw Boom.forbidden(result.message)
+            else throw Boom.badRequest(result.message)
           }
           return res.status(200).send(result)
         }
@@ -193,7 +178,7 @@ export default (server: Server) => {
           // check if user already exist
           const userRecruteurOpt = await getUser({ email: formatedEmail })
           if (userRecruteurOpt) {
-            return res.status(403).send({ error: true, message: "L'adresse mail est déjà associée à un compte La bonne alternance." })
+            throw Boom.forbidden("L'adresse mail est déjà associée à un compte La bonne alternance.")
           }
           // Contrôle du mail avec le référentiel :
           const referentiel = await getEtablissementFromReferentiel(establishment_siret)
@@ -248,7 +233,7 @@ export default (server: Server) => {
           return res.status(200).send({ user: newCfa })
         }
         default: {
-          return res.status(400).send({ error: "unsupported type" })
+          throw Boom.badRequest("unsupported type")
         }
       }
     }
@@ -295,31 +280,25 @@ export default (server: Server) => {
       const id = req.body.id
 
       if (!id) {
-        return res.status(400)
+        throw Boom.badRequest()
       }
 
       const exist = await getEtablissement({ _id: id })
 
       if (!exist) {
-        return res.status(400).send({
-          error: true,
-          message: "L'utilisateur n'existe pas.",
-        })
+        throw Boom.badRequest("L'utilisateur n'existe pas.")
       }
 
       // Validate email
       const validation = await validateEtablissementEmail(id)
 
       if (!validation) {
-        return res.status(400).send({
-          error: true,
-          message: "La validation de l'adresse mail à échoué. Merci de contacter le support La bonne alternance.",
-        })
+        throw Boom.badRequest("La validation de l'adresse mail à échoué. Merci de contacter le support La bonne alternance.")
       }
 
       const user = await getUser({ _id: req.body.id })
 
-      if (!user) return
+      if (!user) throw Boom.badRequest("L'utilisateur n'existe pas.")
 
       const isUserAwaiting = getUserStatus(user.status) === ETAT_UTILISATEUR.ATTENTE
 
