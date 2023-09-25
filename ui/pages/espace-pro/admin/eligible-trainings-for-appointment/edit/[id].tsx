@@ -5,6 +5,9 @@ import emailValidator from "email-validator" // TODO_AB
 import Head from "next/head"
 import { useRouter } from "next/router"
 import React, { createRef, useEffect, useState } from "react"
+import { IEtablissement } from "shared"
+import { referrers} from "shared/constants/referers"
+import { IEligibleTrainingsForAppointmentJson } from "shared/models/elligibleTraining.model"
 
 import { formatDate } from "../../../../../common/dayjs"
 import { _get, _patch } from "../../../../../common/httpClient"
@@ -20,9 +23,8 @@ import withAuth from "../../../../../components/espace_pro/withAuth"
 function EditPage() {
   const router = useRouter()
   const { id } = router.query
-  const [eligibleTrainingsForAppointmentResult, setEligibleTrainingsForAppointmentResult] = useState()
-  const [referrers, setReferrers] = useState([])
-  const [etablissement, setEtablissement] = useState()
+  const [eligibleTrainingsForAppointmentResult, setEligibleTrainingsForAppointmentResult] = useState<IEligibleTrainingsForAppointmentJson[]>([])
+  const [etablissement, setEtablissement] = useState<IEtablissement>()
   const [loading, setLoading] = useState(false)
   const toast = useToast()
 
@@ -35,10 +37,9 @@ function EditPage() {
   const fetchData = async () => {
     try {
       setLoading(true)
-      const [parametersResponse, referrers, etablissementResponse] = await Promise.all([getEligibleTrainingsForAppointments(id), getReferrers(), getEtablissement(id)])
+      const [parametersResponse, etablissementResponse] = await Promise.all([getEligibleTrainingsForAppointments(id), getEtablissement(id)])
 
       setEligibleTrainingsForAppointmentResult(parametersResponse)
-      setReferrers(referrers)
       setEtablissement(etablissementResponse)
     } catch (error) {
       toast({
@@ -74,7 +75,7 @@ function EditPage() {
    * @param {String} id
    * @returns {Promise<*>}
    */
-  const getEligibleTrainingsForAppointments = (id) => _get(`admin/eligible-trainings-for-appointment?query={"etablissement_formateur_siret":"${id}"}&limit=1000`)
+  const getEligibleTrainingsForAppointments = (id) => _get(`admin/eligible-trainings-for-appointment/etablissement-formateur-siret/${id}`)
 
   /**
    * @description Returns etablissement from its SIRET.
@@ -82,16 +83,6 @@ function EditPage() {
    * @returns {Promise<*>}
    */
   const getEtablissement = (siret) => _get(`admin/etablissements/siret-formateur/${siret}`)
-
-  /**
-   * @description Returns all referrers.
-   * @returns {Promise<{code: {number}, name: {string}, full_name: {string}, url: {string}[]}>}
-   */
-  const getReferrers = async () => {
-    const { referrers } = await _get(`constants`)
-
-    return referrers
-  }
 
   /**
    * @description Patch eligibleTrainingsForAppointments.
@@ -201,7 +192,6 @@ function EditPage() {
         <Box>
           {eligibleTrainingsForAppointmentResult && etablissement && !loading && (
             <>
-              {/* @ts-expect-error: TODO */}
               <EtablissementComponent id={etablissement._id} />
               <Flex bg="white" mt={10} border="1px solid #E0E5ED" borderRadius="4px" borderBottom="none">
                 <Text flex="1" fontSize="16px" p={5}>
@@ -226,8 +216,7 @@ function EditPage() {
                     </Tr>
                   </Thead>
                   <Tbody>
-                    {/* @ts-expect-error: TODO */}
-                    {eligibleTrainingsForAppointmentResult.parameters.map((parameter) => {
+                    {eligibleTrainingsForAppointmentResult.map((parameter) => {
                       const emailRef = createRef()
                       const emailFocusRef = createRef()
 
@@ -280,7 +269,7 @@ function EditPage() {
                           <Td>{parameter?.parcoursup_id || "N/C"}</Td>
                           <Td>{parameter?.last_catalogue_sync_date ? formatDate(parameter?.last_catalogue_sync_date) : "N/A"}</Td>
                           <Td>
-                            {referrers.map((referrer, i) => {
+                            {Object.values(referrers).map((referrer, i) => {
                               const parameterReferrers = parameter.referrers?.find((parameterReferrer) => parameterReferrer === referrer.name)
                               return (
                                 <Flex mt={1} key={i}>

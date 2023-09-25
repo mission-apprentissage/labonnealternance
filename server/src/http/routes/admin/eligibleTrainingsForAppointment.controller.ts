@@ -40,48 +40,21 @@ export default (server: Server) => {
    * Get all eligibleTrainingsForAppointments GET
    * */
   server.get(
-    "/api/admin/eligible-trainings-for-appointment",
+    "/etablissement-formateur-siret/:siret",
     {
-      schema: zRoutes.get["/api/admin/eligible-trainings-for-appointment"],
+      schema: zRoutes.get["/api/admin/eligible-trainings-for-appointment/etablissement-formateur-siret/:siret"],
       // preHandler: [authenticationMiddleware("jwt-rdv-admin"), administratorOnly],
     },
     async (req, res) => {
-      const qs = req.query
-      const query = qs && qs.query ? JSON.parse(qs.query) : {}
-      const page = qs && qs.page ? qs.page : 1
-      const limit = qs && qs.limit ? parseInt(qs.limit, 10) : 50
+      const { siret } = req.params
 
-      const allData = await EligibleTrainingsForAppointment.paginate({ query, page, limit })
+      const parameters = await EligibleTrainingsForAppointment.find({etablissement_formateur_siret: siret}).lean();
 
-      if (allData == undefined || allData.docs.length == 0) {
-        return res.status(404).send()
+      if (parameters == undefined || parameters.length == 0) {
+        return res.sendStatus(400).send()
       }
 
-      const parameters = await Promise.all(
-        allData.docs.map(async (parameter) => {
-          const etablissement = await Etablissement.findOne({ formateur_siret: parameter.etablissement_formateur_siret })
-
-          return {
-            etablissement_raison_sociale: etablissement?.raison_sociale || "N/C",
-            ...parameter,
-            referrers: parameter.referrers,
-          }
-        })
-      )
-
-      return res.send({
-        parameters,
-        pagination: {
-          page: allData.page,
-          resultats_par_page: limit,
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          nombre_de_page: allData.pages,
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          total: allData.total,
-        },
-      })
+      return res.send({ parameters })
     }
   )
 

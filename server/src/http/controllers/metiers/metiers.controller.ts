@@ -1,4 +1,3 @@
-import { FastifyReply } from "fastify"
 import { zRoutes } from "shared/index.js"
 
 import { getCoupleAppellationRomeIntitule, getMetiers, getMetiersPourCfd, getMetiersPourEtablissement, getTousLesMetiers } from "../../../services/metiers.service"

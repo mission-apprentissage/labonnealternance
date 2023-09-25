@@ -1,10 +1,10 @@
 import * as _ from "lodash-es"
+import { referrers } from "shared/constants/referers"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 import { logger } from "../../common/logger"
 import { mailType } from "../../common/model/constants/etablissement"
-import { referrers } from "../../common/model/constants/referrers"
 import { Etablissement } from "../../common/model/index"
 import config from "../../config"
 import dayjs from "../../services/dayjs.service"

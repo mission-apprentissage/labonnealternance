@@ -1,3 +1,4 @@
+import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 import { ZAppointment, ZEtablissement } from "../models"
 import { zObjectId } from "../models/common"
@@ -23,7 +24,7 @@ export const zEtablissementRoutes = {
       },
     },
     "/api/admin/etablissements/siret-formateur/:siret": {
-      params: z.object({ siret: zObjectId }),
+      params: z.object({ siret: extensions.siret() }),
       response: {
         "2xx": ZEtablissement,
       },
