@@ -31,7 +31,7 @@ const coordinatesOfFrance = [2.213749, 46.227638]
  * @returns {Promise<TLbaItemResult>}
  */
 export const getLbaJobs = async ({
-  romes,
+  romes = "",
   radius = 10,
   latitude,
   longitude,
@@ -44,8 +44,8 @@ export const getLbaJobs = async ({
 }: {
   romes?: string
   radius?: number
-  latitude?: string
-  longitude?: string
+  latitude?: number
+  longitude?: number
   api: string
   opco?: string
   opcoUrl?: string

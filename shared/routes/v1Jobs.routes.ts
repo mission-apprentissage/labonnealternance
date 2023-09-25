@@ -89,9 +89,9 @@ export const zV1JobsRoutes = {
           romes: z.string().optional(),
           rncp: z.string().optional(),
           caller: z.string().optional(),
-          latitude: z.string().optional(),
-          longitude: z.string().optional(),
-          radius: z.string().optional(),
+          latitude: z.number().optional(),
+          longitude: z.number().optional(),
+          radius: z.number().optional(),
           insee: z.string().optional(),
           sources: z.string().optional(),
           diploma: z.string().optional(),
@@ -108,7 +108,6 @@ export const zV1JobsRoutes = {
       response: {
         "200": z
           .object({
-            job_count: z.number(),
             peJobs: z
               .object({
                 results: z.array(ZLbaItem),
