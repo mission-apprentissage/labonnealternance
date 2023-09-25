@@ -35,6 +35,10 @@ interface IAppointments {
   email_cfa: string
   is_anonymized: boolean
   cfa_recipient_email: string
+  cfa_intention_to_applicant?: string
+  cfa_message_to_applicant_date?: Date
+  cfa_message_to_applicant?: string
+  cfa_gestionnaire_siret?: string
 }
 
 export type { EReasons, IAppointments, IMailing }

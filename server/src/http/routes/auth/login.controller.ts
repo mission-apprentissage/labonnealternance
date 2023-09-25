@@ -1,5 +1,5 @@
-import express from "express"
 import Joi from "joi"
+import { zRoutes } from "shared/index"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
@@ -10,25 +10,29 @@ import { CFA, ENTREPRISE, ETAT_UTILISATEUR } from "../../../services/constant.se
 import { sendUserConfirmationEmail } from "../../../services/etablissement.service"
 import mailer from "../../../services/mailer.service"
 import { getUser, getUserStatus, registerUser } from "../../../services/userRecruteur.service"
-import authMiddleware from "../../middlewares/authMiddleware"
-import { tryCatch } from "../../middlewares/tryCatchMiddleware"
+import { Server } from "../../server"
 
-export default () => {
-  const router = express.Router() // eslint-disable-line new-cap
-
-  router.post(
-    "/",
-    authMiddleware("basic"),
-    tryCatch(async (req, res) => {
+export default (server: Server) => {
+  server.post(
+    "/api/login",
+    {
+      schema: zRoutes.post["/api/login"],
+      preHandler: server.auth(zRoutes.post["/api/login"].securityScheme),
+    },
+    async (req, res) => {
       const user = req.user
       const token = createUserToken(user)
-      return res.json({ token })
-    })
+      return res.status(200).send({ token })
+    }
   )
 
-  router.post(
-    "/confirmation-email",
-    tryCatch(async (req, res) => {
+  server.post(
+    "/api/login/confirmation-email",
+    {
+      schema: zRoutes.post["/api/login/confirmation-email"],
+      preHandler: [],
+    },
+    async (req, res) => {
       try {
         const { email } = await Joi.object({
           email: Joi.string().email().required(),
@@ -37,13 +41,13 @@ export default () => {
         const user = await getUser({ email })
 
         if (!user) {
-          return res.status(400).json({ error: true, reason: "UNKNOWN" })
+          return res.status(400).send({ error: true, reason: "UNKNOWN" })
         }
 
         const { _id, first_name, last_name, is_email_checked } = user
 
         if (is_email_checked) {
-          return res.status(400).json({ error: true, reason: "VERIFIED" })
+          return res.status(400).send({ error: true, reason: "VERIFIED" })
         }
         await sendUserConfirmationEmail({
           email,
@@ -51,19 +55,23 @@ export default () => {
           lastName: last_name,
           userRecruteurId: _id,
         })
-        return res.sendStatus(200)
+        return res.status(200).send()
       } catch (error) {
-        return res.status(400).json({
+        return res.status(400).send({
           errorMessage: "l'adresse mail n'est pas valide.",
           details: error,
         })
       }
-    })
+    }
   )
 
-  router.post(
-    "/magiclink",
-    tryCatch(async (req, res) => {
+  server.post(
+    "/api/login/magiclink",
+    {
+      schema: zRoutes.post["/api/login/magiclink"],
+      preHandler: [],
+    },
+    async (req, res) => {
       const { email } = await Joi.object({
         email: Joi.string().email().required(),
       }).validateAsync(req.body, { abortEarly: false })
@@ -72,7 +80,7 @@ export default () => {
       const user = await UserRecruteur.findOne({ email: formatedEmail })
 
       if (!user) {
-        return res.status(400).json({ error: true, reason: "UNKNOWN" })
+        return res.status(400).send({ error: true, reason: "UNKNOWN" })
       }
 
       const { email: userEmail, _id, first_name, last_name, is_email_checked } = user || {}
@@ -81,10 +89,10 @@ export default () => {
 
       if ([ENTREPRISE, CFA].includes(user.type)) {
         if (status && [ETAT_UTILISATEUR.ATTENTE, ETAT_UTILISATEUR.ERROR].includes(status)) {
-          return res.status(400).json({ error: true, reason: "VALIDATION" })
+          return res.status(400).send({ error: true, reason: "VALIDATION" })
         }
         if (status === ETAT_UTILISATEUR.DESACTIVE) {
-          return res.status(400).json({
+          return res.status(400).send({
             error: true,
             reason: "DISABLED",
           })
@@ -98,7 +106,7 @@ export default () => {
           lastName: last_name,
           userRecruteurId: _id,
         })
-        return res.status(400).json({
+        return res.status(400).send({
           error: true,
           reason: "VERIFY",
         })
@@ -117,19 +125,20 @@ export default () => {
           connexion_url: magiclink,
         },
       })
-      return res.sendStatus(200)
-    })
+      return res.status(200).send()
+    }
   )
 
-  router.post(
-    "/verification",
-    authMiddleware("jwt-token"),
-    tryCatch(async (req, res) => {
+  server.post(
+    "/api/login/verification",
+    {
+      schema: zRoutes.post["/api/login/verification"],
+      preHandler: server.auth(zRoutes.post["/api/login/verification"].securityScheme),
+    },
+    async (req, res) => {
       const user = req.user
       await registerUser(user.email)
-      return res.json({ token: createUserRecruteurToken(user) })
-    })
+      return res.status(200).send({ token: createUserRecruteurToken(user) })
+    }
   )
-
-  return router
 }

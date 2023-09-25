@@ -1,27 +1,23 @@
-import path from "path"
+import { zRoutes } from "shared/index"
 
-import parseChangelog from "changelog-parser"
-import express from "express"
-import { get } from "lodash-es"
+import config from "@/config"
 
-import __dirname from "../../common/dirname"
-import { tryCatch } from "../middlewares/tryCatchMiddleware"
+import { Server } from "../server"
 
-const currentDirname = __dirname(import.meta.url)
-
-/**
- * VERSION
- */
-export default () => {
-  const router = express.Router()
-
-  router.get(
-    "/",
-    tryCatch(async (req, res) => {
-      const data = await parseChangelog(path.join(currentDirname, "../../../CHANGELOG.md"))
-      return res.json(get(data, "versions.0", {}))
-    })
+export default (server: Server) => {
+  server.get(
+    "/api/version",
+    {
+      schema: zRoutes.get["/api/version"],
+      config: {
+        rateLimit: {
+          max: 3,
+          timeWindow: "1s",
+        },
+      },
+    },
+    async (_req, res) => {
+      return res.status(200).send({ version: config.version })
+    }
   )
-
-  return router
 }

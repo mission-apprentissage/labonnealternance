@@ -1,30 +1,31 @@
-import express from "express"
-import rateLimit from "express-rate-limit"
 import { ObjectId } from "mongodb"
+import { zRoutes } from "shared/index"
 
 import { Application } from "../../common/model/index"
 import { decryptWithIV } from "../../common/utils/encryptString"
 import { sentryCaptureException } from "../../common/utils/sentryUtils"
 import { sendApplication, sendNotificationToApplicant, updateApplicationStatus, validateFeedbackApplicationComment } from "../../services/application.service"
-import { tryCatch } from "../middlewares/tryCatchMiddleware"
+import { Server } from "../server"
 
-const limiter1Per5Second = rateLimit({
-  windowMs: 5000, // 5 seconds
-  max: 1, // limit each IP to 1 request per windowMs
-})
+const config = {
+  rateLimit: {
+    max: 1,
+    timeWindow: "5s",
+  },
+} as const
 
-export default function (components) {
-  const router = express.Router()
-
-  router.post(
-    "/",
-    limiter1Per5Second,
-    tryCatch(async (req, res) => {
+export default function (server: Server) {
+  server.post(
+    "/api/application",
+    {
+      schema: zRoutes.post["/api/application"],
+      config,
+    },
+    async (req, res) => {
       const result = await sendApplication({
         shouldCheckSecret: req.body.secret ? true : false,
         query: req.body,
         referer: req.headers.referer,
-        ...components,
       })
 
       if (result.error) {
@@ -33,16 +34,21 @@ export default function (components) {
         } else {
           res.status(400)
         }
+      } else {
+        res.status(200)
       }
 
-      return res.json(result)
-    })
+      return res.send(result)
+    }
   )
 
-  router.post(
-    "/intentionComment",
-    limiter1Per5Second,
-    tryCatch(async (req, res) => {
+  server.post(
+    "/api/application/intentionComment",
+    {
+      schema: zRoutes.post["/api/application/intentionComment"],
+      config,
+    },
+    async (req, res) => {
       // email and phone should appear
       await validateFeedbackApplicationComment({
         id: req.body.id,
@@ -66,23 +72,25 @@ export default function (components) {
           comment: req.body.comment,
         })
 
-        return res.json({ result: "ok", message: "comment registered" })
+        return res.status(200).send({ result: "ok", message: "comment registered" })
       } catch (err) {
         console.error("err ", err)
         sentryCaptureException(err)
-        return res.json({ error: "error_saving_comment" })
+        // TODO: return 500
+        return res.status(200).send({ error: "error_saving_comment" })
       }
-    })
+    }
   )
 
-  router.post(
-    "/webhook",
-    tryCatch(async (req, res) => {
+  server.post(
+    "/api/application/webhook",
+    {
+      schema: zRoutes.post["/api/application/webhook"],
+      config,
+    },
+    async (req, res) => {
       await updateApplicationStatus({ payload: req.body })
-
-      return res.json({ result: "ok" })
-    })
+      return res.status(200).send({ result: "ok" })
+    }
   )
-
-  return router
 }

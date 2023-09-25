@@ -2,12 +2,12 @@ import { pick } from "lodash-es"
 import moment from "moment"
 import { Filter } from "mongodb"
 import { ModelUpdateOptions, UpdateQuery } from "mongoose"
+import { IJob } from "shared"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 import { getElasticInstance } from "../common/esClient/index"
 import { Recruiter, UnsubscribeOF } from "../common/model/index"
-import { IJobs } from "../common/model/schema/jobs/jobs.types"
 import { IRecruiter } from "../common/model/schema/recruiter/recruiter.types"
 import { IUserRecruteur } from "../common/model/schema/userRecruteur/userRecruteur.types"
 import { asyncForEach } from "../common/utils/asyncUtils"
@@ -29,7 +29,7 @@ interface IFormulaireExtended extends IRecruiter {
   entreprise_localite: string
 }
 
-export interface IOffreExtended extends IJobs {
+export interface IOffreExtended extends IJob {
   candidatures: number
   pourvue: string
   supprimer: string
@@ -182,10 +182,10 @@ export const getJobsFromElasticSearch = async ({
 
 /**
  * @description get formulaire by offer id
- * @param {IJobs["_id"]} id
+ * @param {IJob["_id"]} id
  * @returns {Promise<IFormulaireExtended>}
  */
-export const getOffreAvecInfoMandataire = async (id: IJobs["_id"]): Promise<IFormulaireExtended> => {
+export const getOffreAvecInfoMandataire = async (id: IJob["_id"]): Promise<IFormulaireExtended> => {
   const result = await getOffre(id)
 
   if (!result) {
@@ -220,7 +220,7 @@ export const getOffreAvecInfoMandataire = async (id: IJobs["_id"]): Promise<IFor
  * @param {number} payload.page
  * @param {number} payload.limit
  */
-export const getFormulaires = async (query: Filter<IRecruiter>, select: object, { page, limit }: { page: number; limit: number }) => {
+export const getFormulaires = async (query: Filter<IRecruiter>, select: object, { page, limit }: { page?: number; limit?: number }) => {
   const response = await Recruiter.paginate({ query, ...select, page, limit, lean: true })
 
   return {
@@ -282,11 +282,11 @@ export const createJob = async ({ job, id }: { job: Partial<IOffreExtended>; id:
 /**
  * @description Create job delegations
  * @param {Object} payload
- * @param {IJobs["_id"]} payload.jobId
+ * @param {IJob["_id"]} payload.jobId
  * @param {string[]} payload.etablissementCatalogueIds
  * @returns {Promise<IRecruiter>}
  */
-export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }: { jobId: IJobs["_id"]; etablissementCatalogueIds: string[] }): Promise<IRecruiter> => {
+export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }: { jobId: IJob["_id"]; etablissementCatalogueIds: string[] }): Promise<IRecruiter> => {
   const offreDocument = await getOffre(jobId)
   const userDocument = await getUser({ establishment_id: offreDocument.establishment_id })
   const userState = userDocument.status.pop()
@@ -334,10 +334,10 @@ export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }:
 
 /**
  * @description Check if job offer exists
- * @param {IJobs['_id']} id
+ * @param {IJob['_id']} id
  * @returns {Promise<IRecruiter>}
  */
-export const checkOffreExists = async (id: IJobs["_id"]): Promise<boolean> => {
+export const checkOffreExists = async (id: IJob["_id"]): Promise<boolean> => {
   const offre = await getOffre(id)
   return offre ? true : false
 }
@@ -438,31 +438,31 @@ export const archiveDelegatedFormulaire = async (siret: IUserRecruteur["establis
 
 /**
  * @description Get job offer by job id
- * @param {IJobs["_id"]} id
+ * @param {IJob["_id"]} id
  * @returns {Promise<IFormulaireExtended>}
  */
-export async function getOffre(id: IJobs["_id"]): Promise<IFormulaireExtended> {
+export async function getOffre(id: IJob["_id"]): Promise<IFormulaireExtended> {
   return Recruiter.findOne({ "jobs._id": id }).lean()
 }
 
 /**
  * @description Create job offer on existing formulaire
  * @param {IRecruiter["establishment_id"]} id
- * @param {UpdateQuery<IJobs>} payload
+ * @param {UpdateQuery<IJob>} payload
  * @param {ModelUpdateOptions} [options={new:true}]
  * @returns {Promise<IRecruiter>}
  */
-export async function createOffre(id: IRecruiter["establishment_id"], payload: UpdateQuery<IJobs>, options: ModelUpdateOptions = { new: true }): Promise<IRecruiter> {
+export async function createOffre(id: IRecruiter["establishment_id"], payload: UpdateQuery<IJob>, options: ModelUpdateOptions = { new: true }): Promise<IRecruiter> {
   return Recruiter.findOneAndUpdate({ establishment_id: id }, { $push: { jobs: payload } }, options)
 }
 
 /**
  * @description Update existing job offer
- * @param {IJobs["_id"]} id
+ * @param {IJob["_id"]} id
  * @param {object} payload
  * @returns {Promise<IRecruiter>}
  */
-export async function updateOffre(id: IJobs["_id"], payload: UpdateQuery<IJobs>, options: ModelUpdateOptions = { new: true }): Promise<IRecruiter> {
+export async function updateOffre(id: IJob["_id"], payload: UpdateQuery<IJob>, options: ModelUpdateOptions = { new: true }): Promise<IRecruiter> {
   return Recruiter.findOneAndUpdate(
     { "jobs._id": id },
     {
@@ -476,11 +476,11 @@ export async function updateOffre(id: IJobs["_id"], payload: UpdateQuery<IJobs>,
 
 /**
  * @description Increment field in existing job offer
- * @param {IJobs["_id"]} id
+ * @param {IJob["_id"]} id
  * @param {object} payload
  * @returns {Promise<IRecruiter>}
  */
-export const incrementLbaJobViewCount = async (id: IJobs["_id"], payload: object, options: ModelUpdateOptions = { new: true }): Promise<IRecruiter> => {
+export const incrementLbaJobViewCount = async (id: IJob["_id"], payload: object, options: ModelUpdateOptions = { new: true }): Promise<IRecruiter> => {
   const incPayload = Object.fromEntries(Object.entries(payload).map(([key, value]) => [`jobs.$.${key}`, value]))
   return Recruiter.findOneAndUpdate(
     { "jobs._id": id },
@@ -493,11 +493,11 @@ export const incrementLbaJobViewCount = async (id: IJobs["_id"], payload: object
 
 /**
  * @description Update specific field(s) in an existing job offer
- * @param {IJobs["_id"]} id
+ * @param {IJob["_id"]} id
  * @param {object} payload
  * @returns {Promise<IRecruiter>}
  */
-export const patchOffre = async (id: IJobs["_id"], payload: UpdateQuery<IJobs>, options: ModelUpdateOptions = { new: true }): Promise<IRecruiter> => {
+export const patchOffre = async (id: IJob["_id"], payload: UpdateQuery<IJob>, options: ModelUpdateOptions = { new: true }): Promise<IRecruiter> => {
   const fields = {}
   for (const key in payload) {
     fields[`jobs.$.${key}`] = payload[key]
@@ -514,10 +514,10 @@ export const patchOffre = async (id: IJobs["_id"], payload: UpdateQuery<IJobs>, 
 
 /**
  * @description Change job status to provided
- * @param {IJobs["_id"]} id
+ * @param {IJob["_id"]} id
  * @returns {Promise<boolean>}
  */
-export const provideOffre = async (id: IJobs["_id"]): Promise<boolean> => {
+export const provideOffre = async (id: IJob["_id"]): Promise<boolean> => {
   await Recruiter.findOneAndUpdate(
     { "jobs._id": id },
     {
@@ -531,10 +531,10 @@ export const provideOffre = async (id: IJobs["_id"]): Promise<boolean> => {
 
 /**
  * @description Cancel job
- * @param {IJobs["_id"]} id
+ * @param {IJob["_id"]} id
  * @returns {Promise<boolean>}
  */
-export const cancelOffre = async (id: IJobs["_id"]): Promise<boolean> => {
+export const cancelOffre = async (id: IJob["_id"]): Promise<boolean> => {
   await Recruiter.findOneAndUpdate(
     { "jobs._id": id },
     {
@@ -548,10 +548,10 @@ export const cancelOffre = async (id: IJobs["_id"]): Promise<boolean> => {
 
 /**
  * @description Extends job duration by 1 month.
- * @param {IJobs["_id"]} id
+ * @param {IJob["_id"]} id
  * @returns {Promise<boolean>}
  */
-export const extendOffre = async (id: IJobs["_id"]): Promise<boolean> => {
+export const extendOffre = async (id: IJob["_id"]): Promise<boolean> => {
   await Recruiter.findOneAndUpdate(
     { "jobs._id": id },
     {
@@ -567,10 +567,10 @@ export const extendOffre = async (id: IJobs["_id"]): Promise<boolean> => {
 
 /**
  * @description Get job offer by its id.
- * @param {IJobs["_id"]} id - Job id
- * @returns {Promise<IJobs>}
+ * @param {IJob["_id"]} id - Job id
+ * @returns {Promise<IJob>}
  */
-export const getJob = async (id: IJobs["_id"]): Promise<IJobs> => {
+export const getJob = async (id: IJob["_id"]): Promise<IJob> => {
   const offre = await getOffre(id)
 
   return offre.jobs.find((job) => job._id.toString() == id)
@@ -579,7 +579,7 @@ export const getJob = async (id: IJobs["_id"]): Promise<IJobs> => {
 /**
  * @description Sends the mail informing the CFA that a company wants the CFA to handle the offer.
  */
-export async function sendDelegationMailToCFA(email: string, offre: IJobs, recruiter: { establishment_raison_sociale: string; establishment_id: string }, siret_code: string) {
+export async function sendDelegationMailToCFA(email: string, offre: IJob, recruiter: { establishment_raison_sociale: string; establishment_id: string }, siret_code: string) {
   const unsubscribeOF = await UnsubscribeOF.findOne({ establishment_siret: siret_code })
   if (unsubscribeOF) return
   await mailer.sendEmail({

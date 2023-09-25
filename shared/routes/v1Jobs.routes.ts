@@ -1,13 +1,13 @@
 import { z } from "zod"
 
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
+import { ZJob } from "../models"
 import { zObjectId } from "../models/common"
-import { ZLbacError } from "../models/lbacError.model"
+import { ZLbacError, ZLbarError } from "../models/lbacError.model"
 import { ZLbaItem } from "../models/lbaItem.model"
 import { ZRecruiter } from "../models/recruiter.model"
-import { ZUserRecruteur } from "../models/usersRecruteur.model"
 
-import { IRoutesDef } from "./common.routes"
+import { IRoutesDef, ZResError } from "./common.routes"
 
 export const zV1JobsRoutes = {
   get: {
@@ -19,14 +19,12 @@ export const zV1JobsRoutes = {
         })
         .strict(),
       response: {
-        "200": z
-          .object({
-            token: z.string(),
-          })
-          .strict(),
+        "200": z.string(),
+        "400": ZLbarError,
       },
       securityScheme: {
         auth: "api-key",
+        role: "all",
       },
     },
     "/api/v1/jobs/bulk": {
@@ -41,11 +39,11 @@ export const zV1JobsRoutes = {
       response: {
         "200": z
           .object({
-            data: z.array(ZUserRecruteur).optional(),
+            data: z.array(ZRecruiter).or(z.undefined()),
             pagination: z
               .object({
                 page: z.number().optional(),
-                result_per_page: z.number(),
+                result_per_page: z.number().optional(),
                 number_of_page: z.number().optional(),
                 total: z.number().optional(),
               })
@@ -55,6 +53,7 @@ export const zV1JobsRoutes = {
       },
       securityScheme: {
         auth: "api-key",
+        role: "all",
       },
     },
     "/api/v1/jobs/delegations/:jobId": {
@@ -77,9 +76,11 @@ export const zV1JobsRoutes = {
             distance_en_km: z.number(),
           })
           .strict(),
+        "4xx": ZLbarError,
       },
       securityScheme: {
         auth: "api-key",
+        role: "all",
       },
     },
     "/api/v1/jobs": {
@@ -135,6 +136,7 @@ export const zV1JobsRoutes = {
       },
       securityScheme: {
         auth: "none",
+        role: "all",
       },
     },
     "/api/v1/jobs/company/:siret": {
@@ -159,12 +161,13 @@ export const zV1JobsRoutes = {
             lbaCompanies: z.array(ZLbaItem),
           })
           .strict(),
-        "400": ZLbacError,
-        "404": ZLbacError,
-        "500": ZLbacError,
+        "400": z.union([ZResError, ZLbacError]),
+        "404": z.union([ZResError, ZLbacError]),
+        "500": z.union([ZResError, ZLbacError]),
       },
       securityScheme: {
         auth: "none",
+        role: "all",
       },
     },
     "/api/v1/jobs/matcha/:id": {
@@ -190,11 +193,12 @@ export const zV1JobsRoutes = {
           })
           .strict(),
         //"419": le code correspondant a disparu. ticket bug ouvert
-        "400": ZLbacError,
-        "500": ZLbacError,
+        "400": z.union([ZResError, ZLbacError]),
+        "500": z.union([ZResError, ZLbacError]),
       },
       securityScheme: {
         auth: "none",
+        role: "all",
       },
     },
     "/api/v1/jobs/job/:id": {
@@ -219,12 +223,13 @@ export const zV1JobsRoutes = {
             peJobs: z.array(ZLbaItem),
           })
           .strict(),
-        "400": ZLbacError,
-        "404": ZLbacError,
-        "500": ZLbacError,
+        "400": z.union([ZResError, ZLbacError]),
+        "404": z.union([ZResError, ZLbacError]),
+        "500": z.union([ZResError, ZLbacError]),
       },
       securityScheme: {
         auth: "none",
+        role: "all",
       },
     },
   },
@@ -242,10 +247,12 @@ export const zV1JobsRoutes = {
         })
         .strict(),
       response: {
-        "200": ZRecruiter,
+        "201": ZRecruiter,
+        "400": ZLbarError,
       },
       securityScheme: {
         auth: "api-key",
+        role: "all",
       },
     },
     "/api/v1/jobs/:establishmentId": {
@@ -258,7 +265,7 @@ export const zV1JobsRoutes = {
         .object({
           job_level_label: z.string(),
           job_duration: z.number(),
-          job_type: z.array(z.string()),
+          job_type: z.array(z.enum(["Apprentissage", "Professionnalisation"])),
           is_disabled_elligible: z.boolean(),
           job_count: z.number().optional(),
           job_rythm: z.string().optional(),
@@ -271,10 +278,12 @@ export const zV1JobsRoutes = {
         })
         .strict(),
       response: {
-        "200": ZRecruiter,
+        "201": ZRecruiter,
+        "400": ZLbarError,
       },
       securityScheme: {
         auth: "api-key",
+        role: "all",
       },
     },
     "/api/v1/jobs/delegations/:jobId": {
@@ -290,9 +299,11 @@ export const zV1JobsRoutes = {
         .strict(),
       response: {
         "200": ZRecruiter,
+        "400": ZLbarError,
       },
       securityScheme: {
         auth: "api-key",
+        role: "all",
       },
     },
     "/api/v1/jobs/provided/:jobId": {
@@ -306,6 +317,7 @@ export const zV1JobsRoutes = {
       },
       securityScheme: {
         auth: "api-key",
+        role: "all",
       },
     },
     "/api/v1/jobs/canceled/:jobId": {
@@ -319,6 +331,7 @@ export const zV1JobsRoutes = {
       },
       securityScheme: {
         auth: "api-key",
+        role: "all",
       },
     },
     "/api/v1/jobs/extend/:jobId": {
@@ -332,6 +345,7 @@ export const zV1JobsRoutes = {
       },
       securityScheme: {
         auth: "api-key",
+        role: "all",
       },
     },
     "/api/v1/jobs/matcha/:id/stats/view-details": {
@@ -345,6 +359,7 @@ export const zV1JobsRoutes = {
       },
       securityScheme: {
         auth: "none",
+        role: "all",
       },
     },
   },
@@ -355,27 +370,27 @@ export const zV1JobsRoutes = {
           jobId: zObjectId,
         })
         .strict(),
-      body: z
-        .object({
-          job_level_label: z.string(),
-          job_duration: z.number(),
-          job_type: z.array(z.string()),
-          is_disabled_elligible: z.boolean(),
-          job_count: z.number().optional(),
-          job_rythm: z.string().optional(),
-          job_start_date: z.string(),
-          job_employer_description: z.string().optional(),
-          job_description: z.string().optional(),
-          custom_address: z.string().optional(),
-          custom_geo_coordinates: z.string().optional(),
-        })
-        .strict(),
+      body: ZJob.pick({
+        job_level_label: true,
+        job_duration: true,
+        job_type: true,
+        is_disabled_elligible: true,
+        job_count: true,
+        job_rythm: true,
+        job_start_date: true,
+        job_employer_description: true,
+        job_description: true,
+        custom_address: true,
+        custom_geo_coordinates: true,
+      }).partial(),
       response: {
         "200": ZRecruiter,
+        "400": ZLbarError,
       },
       securityScheme: {
         auth: "api-key",
+        role: "all",
       },
     },
   },
-} satisfies IRoutesDef
+} as const satisfies IRoutesDef

@@ -1,6 +1,6 @@
 import { z } from "../helpers/zodWithOpenApi"
 
-import { IRoutesDef } from "./common.routes"
+import { IRoutesDef, ZResError } from "./common.routes"
 
 const zResponse = z.object({
   env: z.enum(["local", "recette", "production", "preview"]),
@@ -16,13 +16,13 @@ export const zCoreRoutes = {
     "/api": {
       response: {
         "200": zResponse,
-        "500": zResponse,
+        "500": z.union([ZResError, zResponse]),
       },
     },
     "/api/healthcheck": {
       response: {
         "200": zResponse,
-        "500": zResponse,
+        "500": z.union([ZResError, zResponse]),
       },
     },
     "/api/version": {
@@ -35,4 +35,4 @@ export const zCoreRoutes = {
       },
     },
   },
-} satisfies IRoutesDef
+} as const satisfies IRoutesDef

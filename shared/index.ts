@@ -28,7 +28,7 @@ import { zV1JobsEtFormationsRoutes } from "./routes/v1JobsEtFormations.routes"
 
 export * from "./models/index"
 
-const zRoutesGet = {
+const zRoutesGetP1 = {
   ...zCoreRoutes.get,
   ...zEtablissementRoutes.get,
   ...zMetiersDAvenirRoutes.get,
@@ -38,15 +38,22 @@ const zRoutesGet = {
   ...zUpdateLbaCompanyRoutes.get,
   ...zUserRecruteurRoutes.get,
   ...zV1FormationsParRegion.get,
+} as const
+
+const zRoutesGetP2 = {
   ...zV1JobsRoutes.get,
   ...zV1FormationsRoutes.get,
   ...zV1JobsEtFormationsRoutes.get,
   ...zFormulaireRoute.get,
   ...zRecruiterRoutes.get,
-  ...zCampaignWebhookRoutes.get,
   ...zAppointmentsRoute.get,
   ...zFormationRoute.get,
   ...zEligibleTrainingsForAppointmentRoutes.get,
+} as const
+
+const zRoutesGet: typeof zRoutesGetP1 & typeof zRoutesGetP2 = {
+  ...zRoutesGetP1,
+  ...zRoutesGetP2,
 } as const
 
 const zRoutesPost = {

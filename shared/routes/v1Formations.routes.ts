@@ -3,7 +3,7 @@ import { z } from "zod"
 import { ZLbacError } from "../models/lbacError.model"
 import { ZLbaItem } from "../models/lbaItem.model"
 
-import { IRoutesDef } from "./common.routes"
+import { IRoutesDef, ZResError } from "./common.routes"
 
 export const zV1FormationsRoutes = {
   get: {
@@ -32,8 +32,8 @@ export const zV1FormationsRoutes = {
             results: z.array(ZLbaItem),
           })
           .strict(),
-        "400": ZLbacError,
-        "500": ZLbacError,
+        "400": z.union([ZResError, ZLbacError]),
+        "500": z.union([ZResError, ZLbacError]),
       },
     },
     "/api/v1/formations/formation/:id": {
@@ -44,7 +44,7 @@ export const zV1FormationsRoutes = {
         .strict(),
       params: z
         .object({
-          id: z.string().optional(),
+          id: z.string(),
         })
         .strict(),
       response: {
@@ -53,15 +53,15 @@ export const zV1FormationsRoutes = {
             results: z.array(ZLbaItem),
           })
           .strict(),
-        "400": ZLbacError,
-        "404": ZLbacError,
-        "500": ZLbacError,
+        "400": z.union([ZResError, ZLbacError]),
+        "404": z.union([ZResError, ZLbacError]),
+        "500": z.union([ZResError, ZLbacError]),
       },
     },
     "/api/v1/formations/formationDescription/:id": {
       params: z
         .object({
-          id: z.string().optional(),
+          id: z.string(),
         })
         .strict(),
       response: {
@@ -70,10 +70,10 @@ export const zV1FormationsRoutes = {
             results: z.array(ZLbaItem),
           })
           .strict(),
-        "400": ZLbacError,
-        "404": ZLbacError,
-        "500": ZLbacError,
+        "400": z.union([ZResError, ZLbacError]),
+        "404": z.union([ZResError, ZLbacError]),
+        "500": z.union([ZResError, ZLbacError]),
       },
     },
   },
-} satisfies IRoutesDef
+} as const satisfies IRoutesDef

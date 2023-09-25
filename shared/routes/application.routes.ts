@@ -57,4 +57,4 @@ export const zApplicationRoutes = {
       },
     },
   },
-} satisfies IRoutesDef
+} as const satisfies IRoutesDef

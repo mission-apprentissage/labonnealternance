@@ -1,27 +1,30 @@
-import express from "express"
+import { zRoutes } from "shared/index"
+
+import { administratorOnly } from "@/http/middlewares/permissionsMiddleware"
 
 import { getCatalogueFormations } from "../../../services/catalogue.service"
-import { tryCatch } from "../../middlewares/tryCatchMiddleware"
+import { Server } from "../../server"
 
 /**
- * @description Formations router.
+ * @description Formations server.
  */
-export default () => {
-  const router = express.Router()
-
+export default (server: Server) => {
   /**
    * @description Get in formation collection.
    */
-  router.get(
-    "/",
-    tryCatch(async (req, res) => {
+  server.get(
+    "/api/admin/formations",
+    {
+      schema: zRoutes.get["/api/admin/formations"],
+      // preHandler: [authenticationMiddleware("jwt-rdv-admin"), administratorOnly],
+    },
+    async (req, res) => {
       const qs = req.query
       const query = qs && qs.query ? JSON.parse(qs.query) : {}
 
       const response = await getCatalogueFormations(query)
 
       return res.send(response)
-    })
+    }
   )
-  return router
 }

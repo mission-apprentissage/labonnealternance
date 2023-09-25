@@ -1,4 +1,4 @@
-import express from "express"
+import { zRoutes } from "shared/index"
 
 import { Recruiter, UserRecruteur } from "../../common/model/index"
 import { getStaticFilePath } from "../../common/utils/getStaticFilePath"
@@ -8,15 +8,16 @@ import dayjs from "../../services/dayjs.service"
 import { deleteFormulaire, getFormulaire, reactivateRecruiter, sendDelegationMailToCFA, updateOffre } from "../../services/formulaire.service"
 import mailer from "../../services/mailer.service"
 import { createUser, removeUser, sendWelcomeEmailToUserRecruteur, updateUser, updateUserValidationHistory } from "../../services/userRecruteur.service"
-import authMiddleware from "../middlewares/authMiddleware"
-import { tryCatch } from "../middlewares/tryCatchMiddleware"
+import { Server } from "../server"
 
-export default () => {
-  const router = express.Router()
-
-  router.get(
-    "/opco",
-    tryCatch(async (req, res) => {
+export default (server: Server) => {
+  server.get(
+    "/api/user/opco",
+    {
+      schema: zRoutes.get["/api/user/opco"],
+      preHandler: [],
+    },
+    async (req, res) => {
       const { userQuery, formulaireQuery } = req.query
 
       const [users, formulaires] = await Promise.all([UserRecruteur.find(userQuery).lean(), Recruiter.find(formulaireQuery).lean()])
@@ -39,20 +40,23 @@ export default () => {
         return acc
       }, [])
 
-      return res.json(results)
-    })
+      return res.status(200).send(results)
+    }
   )
 
-  router.get(
-    "/",
-    authMiddleware("jwt-bearer"),
-    tryCatch(async (req, res) => {
+  server.get(
+    "/api/user",
+    {
+      schema: zRoutes.get["/api/user"],
+      preHandler: server.auth(zRoutes.get["/api/user"].securityScheme),
+    },
+    async (req, res) => {
       const query = req.query.users
       if (query?.$expr?.$eq[0]?.$arrayElemAt[1]) {
         query.$expr.$eq[0].$arrayElemAt[1] = parseInt(query.$expr.$eq[0].$arrayElemAt[1])
       }
       const users = await UserRecruteur.find(query).lean()
-      return res.json(users)
+      return res.status(200).send(users)
 
       /**
        * KBA 13/10/2022 : To reuse when frontend can deal with pagination
@@ -65,58 +69,74 @@ export default () => {
       // const limit = qs && qs.limit ? parseInt(qs.limit, 10) : 100;
 
       // const result = await getUsers(query, options, { page, limit });
-      // return res.json(result);
-    })
+      // return res.status(200).send(result);
+    }
   )
 
-  router.get(
-    "/:userId",
-    tryCatch(async (req, res) => {
+  server.get(
+    "/api/user/:userId",
+    {
+      schema: zRoutes.get["/api/user/:userId"],
+      preHandler: [],
+    },
+    async (req, res) => {
       const user = await UserRecruteur.findOne({ _id: req.params.userId }).lean()
       let formulaire = {}
 
-      if (!user) return res.sendStatus(400)
+      if (!user) return res.status(400).send()
 
       if (user.type === ENTREPRISE) {
         formulaire = await Recruiter.findOne({ establishment_id: user.establishment_id }).select({ jobs: 1, _id: 0 }).lean()
       }
 
-      return res.json({ ...user, ...formulaire })
-    })
+      return res.status(200).send({ ...user, ...formulaire })
+    }
   )
 
-  router.post(
-    "/",
-    tryCatch(async (req, res) => {
+  server.post(
+    "/api/user/",
+    {
+      schema: zRoutes.post["/api/user/"],
+      preHandler: [],
+    },
+    async (req, res) => {
       const user = await createUser(req.body)
-      return res.json(user)
-    })
+      return res.status(200).send(user)
+    }
   )
 
-  router.put(
-    "/:userId",
-    tryCatch(async (req, res) => {
+  server.put(
+    "/api/user/:userId",
+    {
+      schema: zRoutes.put["/api/user/:userId"],
+      preHandler: [],
+    },
+    async (req, res) => {
       const userPayload = req.body
       const { userId } = req.params
 
       const exist = await UserRecruteur.findOne({ email: userPayload.email, _id: { $ne: userId } }).lean()
 
       if (exist) {
-        return res.status(400).json({ error: true, reason: "EMAIL_TAKEN" })
+        return res.status(400).send({ error: true, reason: "EMAIL_TAKEN" })
       }
 
       const user = await updateUser({ _id: userId }, userPayload)
-      return res.json(user)
-    })
+      return res.status(200).send(user)
+    }
   )
 
-  router.put(
-    "/:userId/history",
-    tryCatch(async (req, res) => {
+  server.put(
+    "/api/user/:userId/history",
+    {
+      schema: zRoutes.put["/api/user/:userId/history"],
+      preHandler: [],
+    },
+    async (req, res) => {
       const history = req.body
       const user = await updateUserValidationHistory(req.params.userId, history)
 
-      if (!user) return res.sendStatus(400)
+      if (!user) return res.status(400).send()
 
       const { email, last_name, first_name } = user
 
@@ -139,7 +159,7 @@ export default () => {
             emailSupport: "mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Compte%20pro%20non%20validé",
           },
         })
-        return res.json(user)
+        return res.status(200).send(user)
       }
 
       /**
@@ -147,7 +167,7 @@ export default () => {
        */
       // if user isn't part of the OPCO, just send the user straigth back
       if (history.reason === "Ne relève pas des champs de compétences de mon OPCO") {
-        return res.json(user)
+        return res.status(200).send(user)
       }
 
       if (user.type === ENTREPRISE) {
@@ -178,13 +198,17 @@ export default () => {
       // validate user email addresse
       await updateUser({ _id: user._id }, { is_email_checked: true })
       await sendWelcomeEmailToUserRecruteur(user)
-      return res.json(user)
-    })
+      return res.status(200).send(user)
+    }
   )
 
-  router.delete(
-    "/",
-    tryCatch(async (req, res) => {
+  server.delete(
+    "/api/user",
+    {
+      schema: zRoutes.delete["/api/user"],
+      preHandler: [],
+    },
+    async (req, res) => {
       const { userId, recruiterId } = req.query
 
       await removeUser(userId)
@@ -193,9 +217,7 @@ export default () => {
         await deleteFormulaire(recruiterId)
       }
 
-      return res.sendStatus(200)
-    })
+      return res.status(200).send()
+    }
   )
-
-  return router
 }

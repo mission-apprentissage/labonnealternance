@@ -89,9 +89,11 @@ export const zRecruiterRoutes = {
     "/api/etablissement/:establishment_siret/proposition/unsubscribe": {
       params: z.object({ establishment_siret: extensions.siret() }),
       response: {
-        "2xx": {
-          ok: true,
-        },
+        "2xx": z
+          .object({
+            ok: z.literal(true),
+          })
+          .strict(),
       },
     },
     "/api/etablissement/validation": {
@@ -108,6 +110,10 @@ export const zRecruiterRoutes = {
       response: {
         "2xx": ZUserRecruteur,
       },
+      securityScheme: {
+        auth: "jwt-bearer",
+        role: "all",
+      },
     },
   },
-} satisfies IRoutesDef
+} as const satisfies IRoutesDef

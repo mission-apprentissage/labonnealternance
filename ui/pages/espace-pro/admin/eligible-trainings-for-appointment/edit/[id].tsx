@@ -23,7 +23,7 @@ import withAuth from "../../../../../components/espace_pro/withAuth"
 function EditPage() {
   const router = useRouter()
   const { id } = router.query
-  const [eligibleTrainingsForAppointmentResult, setEligibleTrainingsForAppointmentResult] = useState<IEligibleTrainingsForAppointmentJson[]>()
+  const [eligibleTrainingsForAppointmentResult, setEligibleTrainingsForAppointmentResult] = useState<IEligibleTrainingsForAppointmentJson[]>([])
   const [etablissement, setEtablissement] = useState<IEtablissement>()
   const [loading, setLoading] = useState(false)
   const toast = useToast()
@@ -236,6 +236,7 @@ function EditPage() {
                           <Td>{parameter.training_intitule_long}</Td>
                           <Td>{parameter.etablissement_formateur_zip_code}</Td>
                           <Td>{parameter.etablissement_formateur_street}</Td>
+                          {/* @ts-expect-error: TODO */}
                           <Td onClick={() => emailFocusRef.current.focus()}>
                             <Editable
                               defaultValue={parameter?.lieu_formation_email}
@@ -247,9 +248,12 @@ function EditPage() {
                                 minWidth: 350,
                               }}
                             >
+                              {/* @ts-expect-error: TODO */}
                               <EditableInput ref={emailRef} type="email" _focus={{ border: "none" }} />
+                              {/* @ts-expect-error: TODO */}
                               <EditablePreview ref={emailFocusRef} />
                             </Editable>
+                            {/* @ts-expect-error: TODO */}
                             <Button mt={4} variant="primary" onClick={() => saveEmail(parameter._id, emailRef.current.value)}>
                               OK
                             </Button>
@@ -272,7 +276,7 @@ function EditPage() {
                                   <Checkbox
                                     key={referrer.name}
                                     isChecked={!!parameterReferrers}
-                                    value={!!parameterReferrers}
+                                    value={referrer.name}
                                     defaultChecked={!!parameterReferrers}
                                     onChange={(event) =>
                                       onCheckboxChange({

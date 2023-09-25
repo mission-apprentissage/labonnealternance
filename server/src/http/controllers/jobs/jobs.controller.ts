@@ -1,13 +1,13 @@
-import * as express from "express"
-import { FastifyReply } from "fastify"
-import { Body, Controller, Get, Header, Hidden, OperationId, Patch, Path, Post, Query, Request, Response, Route, Security, SuccessResponse, Tags } from "tsoa"
+import { zRoutes } from "shared/index.js"
+import { IRouteSchema } from "shared/routes/common.routes"
+import { zV1JobsRoutes } from "shared/routes/v1Jobs.routes"
+
+import { IUser } from "@/common/model/schema/user/user.types"
 
 import { Recruiter } from "../../../common/model/index"
 import { ICredential } from "../../../common/model/schema/credentials/credential.types"
 import { IJobs } from "../../../common/model/schema/jobs/jobs.types"
-import { IUserRecruteur } from "../../../common/model/schema/userRecruteur/userRecruteur.types"
 import { delay } from "../../../common/utils/asyncUtils"
-import { IApiError } from "../../../common/utils/errorManager"
 import { getNearEtablissementsFromRomes } from "../../../services/catalogue.service"
 import { ACTIVE, ANNULEE, JOB_STATUS, POURVUE } from "../../../services/constant.service"
 import dayjs from "../../../services/dayjs.service"
@@ -26,556 +26,506 @@ import {
 } from "../../../services/formulaire.service"
 import { getJobsQuery } from "../../../services/jobOpportunity.service"
 import { getCompanyFromSiret } from "../../../services/lbacompany.service"
-import type { ILbaItem } from "../../../services/lbaitem.shared.service.types"
 import { addOffreDetailView, addOffreSearchView, getLbaJobById } from "../../../services/lbajob.service"
 import { getPeJobFromId } from "../../../services/pejob.service"
 import { getAppellationDetailsFromAPI, getRomeDetailsFromAPI } from "../../../services/rome.service"
+import { Server } from "../../server"
 
-import type { ICreateDelegation, ICreateJobBody, IGetDelegation, TCreateEstablishmentBody, TEstablishmentResponseSuccess, TJob, TResponseError } from "./jobs.types"
 import { createDelegationSchema, createEstablishmentSchema, createJobSchema, getEstablishmentEntitySchema, updateJobSchema } from "./jobs.validators"
 
-@Tags("Jobs")
-@Route("/api/v1/jobs")
-export class JobsController extends Controller {
-  /**
-   * Get existing establishment id from siret & email
-   * @param {string} siret Establishment siret
-   * @param {string} email Establishment email
-   * @returns {Promise<TEstablishmentResponseSuccess["establishment_id"]>} response
-   */
-  @Response<"Establishment not found">(400)
-  @SuccessResponse("200", "Establishment found")
-  @Get("/establishment")
-  @Security("api_key")
-  public async getEstablishment(@Query() establishment_siret: string, @Query() email: string): Promise<TEstablishmentResponseSuccess["establishment_id"] | TResponseError> {
-    await getEstablishmentEntitySchema.validateAsync({ establishment_siret, email }, { abortEarly: false })
+const config = {
+  rateLimit: {
+    max: 5,
+    timeWindow: "1s",
+  },
+}
+export type AuthStrategy = "api-key" | "basic" | "jwt-password" | "jwt-bearer" | "jwt-token" | "jwt-rdv-admin" | "none"
 
-    const establishment = await Recruiter.findOne({ establishment_siret, email })
+type AuthenticatedUser<AuthScheme extends IRouteSchema["securityScheme"]["auth"]> = AuthScheme extends "jwt-bearer" ? IUser : AuthScheme extends "api-key" ? ICredential : null
 
-    if (!establishment) {
-      this.setStatus(400)
-      return { error: true, message: "Establishment not found" }
-    }
+const getUser = <Path extends keyof (typeof zV1JobsRoutes)["get"]>(req): AuthenticatedUser<(typeof zV1JobsRoutes)["get"][Path]["securityScheme"]["auth"]> => {
+  return req.user as AuthenticatedUser<(typeof zV1JobsRoutes)["get"][Path]["securityScheme"]["auth"]>
+}
 
-    this.setStatus(200)
-    return establishment.establishment_id
-  }
+export default (server: Server) => {
+  // @Tags("Jobs")
+  server.get(
+    "/api/v1/jobs/establishment",
+    {
+      schema: zRoutes.get["/api/v1/jobs/establishment"],
+      config,
+      onRequest: server.auth(zRoutes.get["/api/v1/jobs/establishment"].securityScheme),
+      // TODO: AttachValidation Error ?
+    },
+    async (req, res) => {
+      const { establishment_siret, email } = req.query
+      await getEstablishmentEntitySchema.validateAsync({ establishment_siret, email }, { abortEarly: false })
 
-  /**
-   * Get all jobs related to my organization
-   * @param {Filter<IRecruiter>} query mongodb query allowing specific filtering, JSON stringified.
-   * @param {Object} select fields to return, ex {_id: 1, first_name:1, last_name:0}
-   * @param {Number} page the current page.
-   * @param {Number} limit the limit of results per page
-   * @returns {Promise<TEstablishmentResponseSuccess>} response
-   */
-  @Response<"Get all jobs failed">(400)
-  @SuccessResponse("200", "Get all jobs success")
-  @Get("/bulk")
-  @OperationId("getJobs")
-  @Security("api_key")
-  public async getJobs(
-    @Request() request: express.Request | any,
-    @Query() query = "{}",
-    @Query() select = "{}",
-    @Query() page = 1,
-    @Query() limit = 10
-  ): Promise<TEstablishmentResponseSuccess | any> {
-    const user: ICredential = request.user
+      const establishment = await Recruiter.findOne({ establishment_siret, email })
 
-    const qs = JSON.parse(query)
-    const slt = JSON.parse(select)
-
-    const jobs = getFormulaires({ ...qs, opco: user.organisation }, slt, { page, limit })
-
-    this.setStatus(200)
-    return jobs
-  }
-
-  /**
-   * Create an establishment entity.
-   * origin parameter is always prefixed with you identification name declared at the API user creation.
-   * it is a string in tiny case of your organism name. example: BETA GOUV with an origin set to "campaign2023" will be betagouv-campaign2023.
-   * @param {string} establishment_siret
-   * @param {string} first_name
-   * @param {string} last_name
-   * @param {string} phone
-   * @param {string} email
-   * @param {string} idcc
-   * @param {string} origin Origine composé de :
-   * @returns {Promise<TEstablishmentResponseSuccess | TResponseError>}
-   */
-  @Response<"Establishment creation failed">(400)
-  @SuccessResponse("201", "Establishment created")
-  @Post("/establishment")
-  @OperationId("createEstablishment")
-  @Security("api_key")
-  public async createEstablishment(@Request() request: express.Request | any, @Body() body: TCreateEstablishmentBody): Promise<TEstablishmentResponseSuccess | TResponseError> {
-    // Validate establishment parameters
-    await createEstablishmentSchema.validateAsync(body, { abortEarly: false })
-
-    const { first_name, last_name, phone, email, origin, idcc, establishment_siret } = body
-    const user: ICredential = request.user
-
-    const result = await entrepriseOnboardingWorkflow.create(
-      {
-        email,
-        first_name,
-        last_name,
-        phone,
-        origin: `${user.scope}${origin ? `-${origin}` : ""}`,
-        idcc,
-        siret: establishment_siret,
-        opco: user.organisation,
-      },
-      {
-        isUserValidated: true,
+      if (!establishment) {
+        res.status(400)
+        return res.send({ error: true, message: "Establishment not found" })
       }
-    )
-    if ("error" in result) {
-      const { message } = result
-      this.setStatus(400)
-      return { error: true, message }
+
+      res.status(200)
+      return res.send(establishment.establishment_id)
     }
+  )
 
-    this.setStatus(201)
-    return result.formulaire
-  }
+  // @OperationId("getJobs")
+  server.get(
+    "/api/v1/jobs/bulk",
+    {
+      schema: zRoutes.get["/api/v1/jobs/bulk"],
+      config,
+      onRequest: server.auth(zRoutes.get["/api/v1/jobs/bulk"].securityScheme),
+      // TODO: AttachValidation Error ?
+    },
+    async (req, res) => {
+      const { query, select, page, limit } = req.query
 
-  /**
-   * Create a job offer inside an establishment entity.
-   * An establishment ID entity is required.
-   * @param {string} job_level_label
-   * @param {string} job_start_date
-   * @param {string[]} job_type
-   * @param {boolean} is_disabled_elligible
-   * @param {number} job_count
-   * @param {string} job_rythm
-   * @param {number} job_duration
-   * @param {string} job_description
-   * @returns {Promise<TEstablishmentResponseSuccess | TResponseError>}
-   */
-  @Response<"Job creation failed">(400)
-  @SuccessResponse("201", "Job created")
-  @Post("/{establishmentId}")
-  @OperationId("createJob")
-  @Security("api_key")
-  public async createJob(@Body() body: ICreateJobBody, @Path() establishmentId: IUserRecruteur["establishment_id"]): Promise<TEstablishmentResponseSuccess | TResponseError> {
-    // Check if entity exists
-    const establishmentExists = await getFormulaire({ establishment_id: establishmentId })
+      const user = getUser<"/api/v1/jobs/bulk">(req)
 
-    if (!establishmentExists) {
-      return { error: true, message: "Establishment does not exist" }
+      const qs = query ? JSON.parse(query) : {}
+      const slt = select ? JSON.parse(select) : {}
+
+      const jobs = await getFormulaires({ ...qs, opco: user.organisation }, slt, { page, limit })
+
+      res.status(200)
+      return res.send(jobs)
     }
+  )
 
-    // Validate job parameters
-    await createJobSchema.validateAsync(body, { abortEarly: false })
+  // @OperationId("createEstablishment")
+  server.post(
+    "/api/v1/jobs/establishment",
+    {
+      schema: zRoutes.post["/api/v1/jobs/establishment"],
+      config,
+      onRequest: server.auth(zRoutes.post["/api/v1/jobs/establishment"].securityScheme),
+      // TODO: AttachValidation Error ?
+    },
+    async (req, res) => {
+      const { body } = req
+      // Validate establishment parameters
+      await createEstablishmentSchema.validateAsync(body, { abortEarly: false })
 
-    // Get Appellation detail from Pole Emploi API
-    const appelationDetails = await getAppellationDetailsFromAPI(body.appellation_code)
+      const { first_name, last_name, phone, email, origin, idcc, establishment_siret } = body
+      const user = getUser<"/api/v1/jobs/establishment">(req)
 
-    if (!appelationDetails) {
-      return { error: true, message: "ROME Appelation details could not be retrieved" }
-    }
-
-    await delay(1000)
-
-    // Get Rome details from Pole Emploi API
-    const romeDetails = await getRomeDetailsFromAPI(appelationDetails.metier.code)
-
-    if (!romeDetails) {
-      return { error: true, message: "ROME Code details could not be retrieved" }
-    }
-    // Initialize job object with collected data
-    const DATE_FORMAT = "YYYY-MM-DD"
-
-    const job: Partial<IJobs> = {
-      rome_label: romeDetails.libelle,
-      rome_appellation_label: appelationDetails.libelle,
-      rome_code: [appelationDetails.metier.code],
-      job_level_label: body.job_level_label,
-      job_start_date: body.job_start_date,
-      job_description: body.job_description,
-      job_creation_date: dayjs().format(DATE_FORMAT),
-      job_expiration_date: dayjs().add(1, "month").format(DATE_FORMAT),
-      job_status: JOB_STATUS.ACTIVE,
-      job_type: body.job_type,
-      rome_detail: romeDetails,
-      is_disabled_elligible: body.is_disabled_elligible,
-      job_count: body.job_count,
-      job_duration: body.job_duration,
-      job_rythm: body.job_rythm,
-      custom_address: body.custom_address,
-      custom_geo_coordinates: body.custom_geo_coordinates,
-    }
-
-    const updatedRecruiter = await createOffre(establishmentId, job)
-
-    this.setStatus(201)
-    return updatedRecruiter
-  }
-
-  /**
-   * Update a job offer specific fields inside an establishment entity.
-   * A job ID is required.
-   * @param {string} job_level_label
-   * @param {string} job_start_date
-   * @param {string[]} job_type
-   * @param {boolean} is_disabled_elligible
-   * @param {number} job_count
-   * @param {string} job_rythm
-   * @param {number} job_duration
-   * @param {string} job_description
-   * @returns {Promise<TEstablishmentResponseSuccess | TResponseError>}
-   */
-  @Response<"Job update failed">(400)
-  @SuccessResponse("200", "Job updated")
-  @Patch("/{jobId}")
-  @OperationId("updateJob")
-  @Security("api_key")
-  public async updateJob(@Body() body: Partial<TJob>, @Path() jobId: IJobs["_id"]): Promise<TEstablishmentResponseSuccess | TResponseError> {
-    const jobExists = await getOffre(jobId)
-
-    if (!jobExists) {
-      return { error: true, message: "Job does not exists" }
-    }
-
-    await updateJobSchema.validateAsync(body, { abortEarly: false })
-
-    const updatedRecruiter = await patchOffre(jobId, body)
-
-    this.setStatus(200)
-    return updatedRecruiter
-  }
-
-  /**
-   * Get related training organization related to a job offer.
-   * A job ID is required
-   *
-   * @param {string} jobId
-   */
-  @Response<"Get delegations failed">(400)
-  @SuccessResponse("200", "Get Delegations success")
-  @Get("/delegations/{jobId}")
-  @OperationId("getDelegation")
-  @Security("api_key")
-  public async getDelegation(@Path() jobId: IJobs["_id"]): Promise<IGetDelegation | TResponseError> {
-    const jobExists = await getOffre(jobId)
-
-    if (!jobExists) {
-      this.setStatus(400)
-      return { error: true, message: "Job does not exists" }
-    }
-
-    const [latitude, longitude] = jobExists.geo_coordinates.split(",")
-    const { rome_code } = jobExists.jobs.filter(({ _id }) => _id == jobId)[0]
-
-    // Get related establishment from a job offer
-    const etablissements = await getNearEtablissementsFromRomes({ rome: rome_code[0], origin: { latitude, longitude } })
-
-    const top10 = etablissements.slice(0, 10)
-
-    this.setStatus(200)
-    return top10
-  }
-
-  /**
-   * Create delegation related to a job offer.
-   * A job ID and a list of establishment IDs are required
-   * @param {string[]} establishmentIds
-   */
-  @Response<"Create delegations failed">(400)
-  @SuccessResponse("200", "Delegation created")
-  @Post("/delegations/{jobId}")
-  @OperationId("createDelegation")
-  @Security("api_key")
-  public async createDelegation(@Body() body: ICreateDelegation, @Path() jobId: IJobs["_id"]): Promise<TEstablishmentResponseSuccess | TResponseError> {
-    const jobExists = await getOffre(jobId)
-
-    if (!jobExists) {
-      this.setStatus(400)
-      return { error: true, message: "Job does not exists" }
-    }
-
-    await createDelegationSchema.validateAsync(body)
-
-    const updatedRecruiter = await createJobDelegations({ jobId, etablissementCatalogueIds: body.establishmentIds })
-
-    this.setStatus(200)
-    return updatedRecruiter
-  }
-
-  /**
-   * Update a job offer status to "Provided".
-   * A job ID is required
-   *
-   * @param {string} jobId
-   */
-  @Response<"Job update failed">(400)
-  @SuccessResponse("204", "Job updated")
-  @Post("/provided/{jobId}")
-  @OperationId("setJobAsProvided")
-  @Security("api_key")
-  public async setJobAsProvided(@Path() jobId: IJobs["_id"]): Promise<any | TResponseError> {
-    const job = await getJob(jobId)
-
-    if (!job) {
-      this.setStatus(400)
-      return { error: true, message: "Job does not exists" }
-    }
-
-    if (job.job_status === POURVUE) {
-      this.setStatus(400)
-      return { error: true, message: "Job is already provided" }
-    }
-
-    await provideOffre(jobId)
-
-    this.setStatus(200)
-    return
-  }
-
-  /**
-   * Update a job offer status to "Canceled".
-   * A job ID is required
-   *
-   * @param {string} jobId
-   */
-  @Response<"Job update failed">(400)
-  @SuccessResponse("204", "Job updated")
-  @Post("/canceled/{jobId}")
-  @OperationId("setJobAsCanceled")
-  @Security("api_key")
-  public async setJobAsCanceled(@Path() jobId: IJobs["_id"]): Promise<any | TResponseError> {
-    const job = await getJob(jobId)
-
-    if (!job) {
-      this.setStatus(400)
-      return { error: true, message: "Job does not exists" }
-    }
-
-    if (job.job_status === ANNULEE) {
-      this.setStatus(400)
-      return { error: true, message: "Job is already canceled" }
-    }
-
-    await cancelOffre(jobId)
-
-    this.setStatus(200)
-    return
-  }
-
-  /**
-   * Update a job expiration date by 30 days.
-   * A job ID is required
-   *
-   * @param {string} jobId
-   */
-  @Response<"Job update failed">(400)
-  @SuccessResponse("204", "Job updated")
-  @Post("/extend/{jobId}")
-  @OperationId("extendJobExpiration")
-  @Security("api_key")
-  public async extendJobExpiration(@Path() jobId: IJobs["_id"]): Promise<any | TResponseError> {
-    const job = await getJob(jobId)
-
-    if (!job) {
-      this.setStatus(400)
-      return { error: true, message: "Job does not exists" }
-    }
-
-    if (dayjs().add(1, "month").isSame(dayjs(job.job_expiration_date), "day")) {
-      this.setStatus(400)
-      return { error: true, message: "Job is already extended up to a month" }
-    }
-
-    if (job.job_status !== ACTIVE) {
-      this.setStatus(400)
-      return { error: true, message: "Job cannot be extended as it is not enabled" }
-    }
-
-    await extendOffre(jobId)
-
-    this.setStatus(200)
-    return
-  }
-
-  /**
-   * Get job opportunities matching the query parameters
-   * @param {string} romes optional: some rome codes separated by commas (either 'romes' or 'rncp' must be present)
-   * @param {string} rncp optional: a rncp code (either 'romes' or 'rncp' must be present)
-   * @param {string} referer the referer provided in the HTTP query headers
-   * @param {string} caller the consumer id.
-   * @param {string} latitude optional: search center latitude. Without latitude, the search will target whole France
-   * @param {string} longitude optional: search center longitude. Without longitude, the search will target whole France
-   * @param {number} radius optional: the search radius
-   * @param {string} insee optional: search center insee code
-   * @param {string} sources optional: comma separated list of job opportunities sources (possible values: "lba", "offres", "matcha")
-   * @param {string} diploma optional: targeted diploma
-   * @param {string} opco optional: filter opportunities on opco name
-   * @param {string} opcoUrl optional: filter opportunities on opco url
-   * @param {string} useMock optional: wether to return mocked values or not
-   * @returns {Promise<IApiError | { lbbCompanies: ILbaItem[] } | { lbaCompanies: ILbaItem[] }>} response
-   */
-  @Response<"Wrong parameters">(400)
-  @Response<"Internal error">(500)
-  @SuccessResponse("200", "Get job opportunities success")
-  @Get("/")
-  @OperationId("getJobOpportunities")
-  public async getJobOpportunities(
-    @Request() request: express.Request,
-    @Query() romes?: string,
-    @Query() rncp?: string,
-    @Header() @Hidden() referer?: string,
-    @Query() caller?: string,
-    @Query() latitude?: string,
-    @Query() longitude?: string,
-    @Query() radius?: string,
-    @Query() insee?: string,
-    @Query() sources?: string,
-    @Query() diploma?: string,
-    @Query() opco?: string,
-    @Query() opcoUrl?: string,
-    @Query() @Hidden() useMock?: string
-  ): Promise<IApiError | { lbbCompanies: ILbaItem[] } | { lbaCompanies: ILbaItem[] }> {
-    const result = await getJobsQuery({ romes, rncp, caller, referer, latitude, longitude, radius, insee, sources, diploma, opco, opcoUrl, useMock })
-
-    if ("error" in result) {
-      this.setStatus(500)
-      return result
-    }
-    if ("matchas" in result) {
-      const { matchas } = result
-      if (matchas && "results" in matchas) {
-        matchas.results.map((matchaOffre) => addOffreSearchView(matchaOffre.job.id))
+      const result = await entrepriseOnboardingWorkflow.create(
+        {
+          email,
+          first_name,
+          last_name,
+          phone,
+          origin: `${user.scope}${origin ? `-${origin}` : ""}`,
+          idcc,
+          siret: establishment_siret,
+          opco: user.organisation,
+        },
+        {
+          isUserValidated: true,
+        }
+      )
+      if ("error" in result) {
+        const { message } = result
+        res.status(400)
+        return res.send({ error: true, message })
       }
+
+      res.status(201)
+      return res.send(result.formulaire)
     }
-    return result
-  }
+  )
 
-  /**
-   * Get one company identified by it's siret
-   * @param {string} siret the siret number of the company looked for.
-   * @param {string} caller the consumer id.
-   * @param {string} referer the referer provided in the HTTP query headers
-   * @returns {Promise<IApiError | { lbbCompanies: ILbaItem[] } | { lbaCompanies: ILbaItem[] }>} response
-   */
-  @Response<"Wrong parameters">(400)
-  @Response<"Company not found">(404)
-  @Response<"Internal error">(500)
-  @SuccessResponse("200", "Get company success")
-  @Get("/company/{siret}")
-  @OperationId("getCompany")
-  public async getCompany(
-    @Path() siret: string,
-    @Header() @Hidden() referer?: string,
-    @Query() caller?: string
-  ): Promise<IApiError | { lbbCompanies: ILbaItem[] } | { lbaCompanies: ILbaItem[] }> {
-    const result = await getCompanyFromSiret({
-      siret,
-      referer,
-      caller,
-    })
+  // @OperationId("createJob")
+  server.post(
+    "/api/v1/jobs/:establishmentId",
+    {
+      schema: zRoutes.post["/api/v1/jobs/:establishmentId"],
+      config,
+      onRequest: server.auth(zRoutes.post["/api/v1/jobs/:establishmentId"].securityScheme),
+      // TODO: AttachValidation Error ?
+    },
+    async (req, res) => {
+      const { establishmentId } = req.params
+      const { body } = req
+      // Check if entity exists
+      const establishmentExists = await getFormulaire({ establishment_id: establishmentId })
 
-    if ("error" in result) {
-      if (result.error === "wrong_parameters") {
-        this.setStatus(400)
-      } else if (result.error === "not_found") {
-        this.setStatus(404)
-      } else {
-        this.setStatus(result.status || 500)
+      if (!establishmentExists) {
+        return res.send({ error: true, message: "Establishment does not exist" })
       }
+
+      // Validate job parameters
+      await createJobSchema.validateAsync(body, { abortEarly: false })
+
+      // Get Appellation detail from Pole Emploi API
+      const appelationDetails = await getAppellationDetailsFromAPI(body.appellation_code)
+
+      if (!appelationDetails) {
+        return res.send({ error: true, message: "ROME Appelation details could not be retrieved" })
+      }
+
+      await delay(1000)
+
+      // Get Rome details from Pole Emploi API
+      const romeDetails = await getRomeDetailsFromAPI(appelationDetails.metier.code)
+
+      if (!romeDetails) {
+        return res.send({ error: true, message: "ROME Code details could not be retrieved" })
+      }
+      // Initialize job object with collected data
+      const DATE_FORMAT = "YYYY-MM-DD"
+
+      const job: Partial<IJobs> = {
+        rome_label: romeDetails.libelle,
+        rome_appellation_label: appelationDetails.libelle,
+        rome_code: [appelationDetails.metier.code],
+        job_level_label: body.job_level_label,
+        job_start_date: body.job_start_date,
+        job_description: body.job_description,
+        job_creation_date: dayjs().format(DATE_FORMAT),
+        job_expiration_date: dayjs().add(1, "month").format(DATE_FORMAT),
+        job_status: JOB_STATUS.ACTIVE,
+        job_type: body.job_type,
+        rome_detail: romeDetails,
+        is_disabled_elligible: body.is_disabled_elligible,
+        job_count: body.job_count,
+        job_duration: body.job_duration,
+        job_rythm: body.job_rythm,
+        custom_address: body.custom_address,
+        custom_geo_coordinates: body.custom_geo_coordinates,
+      }
+
+      const updatedRecruiter = await createOffre(establishmentId, job)
+
+      return res.status(201).send(updatedRecruiter)
     }
+  )
 
-    return result
-  }
+  // @OperationId("updateJob")
+  server.patch(
+    "/api/v1/jobs/:jobId",
+    {
+      schema: zRoutes.patch["/api/v1/jobs/:jobId"],
+      config,
+      onRequest: server.auth(zRoutes.patch["/api/v1/jobs/:jobId"].securityScheme),
+      // TODO: AttachValidation Error ?
+    },
+    async (req, res) => {
+      const { jobId } = req.params
+      const jobExists = await getOffre(jobId)
 
-  /**
-   * Get one lba job identified by it's id
-   * @param {string} id the id the lba job looked for.
-   * @param {string} caller the consumer id.
-   * @returns {Promise<IApiError | { matchas: ILbaItem[] }>} response
-   */
-  @Response<"Wrong parameters">(400)
-  @Response<"Job not found">(404)
-  @Response<"Internal error">(500)
-  @SuccessResponse("200", "Get job success")
-  @Get("/matcha/{id}")
-  @OperationId("getLbaJob")
-  public async getLbaJob(@Path() id: string, @Query() caller?: string): Promise<IApiError | { matchas: ILbaItem[] }> {
-    const result = await getLbaJobById({
-      id,
-      caller,
-    })
+      if (!jobExists) {
+        return res.send({ error: true, message: "Job does not exists" })
+      }
 
-    if ("error" in result) {
-      switch (result.error) {
-        case "wrong_parameters": {
-          this.setStatus(400)
-          break
-        }
-        case "not_found": {
-          this.setStatus(404)
-          break
-        }
-        case "expired_job": {
-          this.setStatus(419)
-          break
-        }
-        default: {
-          this.setStatus(result.status || 500)
-          break
+      await updateJobSchema.validateAsync(req.body, { abortEarly: false })
+
+      const updatedRecruiter = await patchOffre(jobId, req.body)
+
+      res.status(200)
+      return res.send(updatedRecruiter)
+    }
+  )
+
+  // @OperationId("getDelegation")
+  server.get(
+    "/api/v1/jobs/delegations/:jobId",
+    {
+      schema: zRoutes.get["/api/v1/jobs/delegations/:jobId"],
+      config,
+      onRequest: server.auth(zRoutes.get["/api/v1/jobs/delegations/:jobId"].securityScheme),
+      // TODO: AttachValidation Error ?
+    },
+    async (req, res) => {
+      const { jobId } = req.params
+      const jobExists = await getOffre(jobId)
+
+      if (!jobExists) {
+        res.status(400)
+        return res.send({ error: true, message: "Job does not exists" })
+      }
+
+      const [latitude, longitude] = jobExists.geo_coordinates.split(",")
+      const { rome_code } = jobExists.jobs.filter(({ _id }) => _id == jobId)[0]
+
+      // Get related establishment from a job offer
+      const etablissements = await getNearEtablissementsFromRomes({ rome: rome_code[0], origin: { latitude, longitude } })
+
+      const top10 = etablissements.slice(0, 10)
+
+      res.status(200)
+      return res.send(top10)
+    }
+  )
+
+  // @OperationId("createDelegation")
+  server.post(
+    "/api/v1/jobs/delegations/:jobId",
+    {
+      schema: zRoutes.post["/api/v1/jobs/delegations/:jobId"],
+      config,
+      onRequest: server.auth(zRoutes.post["/api/v1/jobs/delegations/:jobId"].securityScheme),
+      // TODO: AttachValidation Error ?
+    },
+    async (req, res) => {
+      const { jobId } = req.params
+      const jobExists = await getOffre(jobId)
+
+      if (!jobExists) {
+        res.status(400)
+        return res.send({ error: true, message: "Job does not exists" })
+      }
+
+      await createDelegationSchema.validateAsync(req.body)
+
+      const updatedRecruiter = await createJobDelegations({ jobId, etablissementCatalogueIds: req.body.establishmentIds })
+
+      res.status(200)
+      return res.send(updatedRecruiter)
+    }
+  )
+
+  // @OperationId("setJobAsProvided")
+  server.post(
+    "/api/v1/jobs/provided/:jobId",
+    {
+      schema: zRoutes.post["/api/v1/jobs/provided/:jobId"],
+      config,
+      onRequest: server.auth(zRoutes.post["/api/v1/jobs/provided/:jobId"].securityScheme),
+      // TODO: AttachValidation Error ?
+    },
+    async (req, res) => {
+      const { jobId } = req.params
+      const job = await getJob(jobId)
+
+      if (!job) {
+        res.status(400)
+        return res.send({ error: true, message: "Job does not exists" })
+      }
+
+      if (job.job_status === POURVUE) {
+        res.status(400)
+        return res.send({ error: true, message: "Job is already provided" })
+      }
+
+      await provideOffre(jobId)
+
+      res.status(200)
+      return res.send()
+    }
+  )
+
+  // @OperationId("setJobAsCanceled")
+  server.post(
+    "/api/v1/jobs/canceled/:jobId",
+    {
+      schema: zRoutes.post["/api/v1/jobs/canceled/:jobId"],
+      config,
+      onRequest: server.auth(zRoutes.post["/api/v1/jobs/canceled/:jobId"].securityScheme),
+      // TODO: AttachValidation Error ?
+    },
+    async (req, res) => {
+      const { jobId } = req.params
+      const job = await getJob(jobId)
+
+      if (!job) {
+        res.status(400)
+        return res.send({ error: true, message: "Job does not exists" })
+      }
+
+      if (job.job_status === ANNULEE) {
+        res.status(400)
+        return res.send({ error: true, message: "Job is already canceled" })
+      }
+
+      await cancelOffre(jobId)
+
+      res.status(200)
+      return res.send()
+    }
+  )
+
+  // @OperationId("extendJobExpiration")
+  server.post(
+    "/api/v1/jobs/extend/:jobId",
+    {
+      schema: zRoutes.post["/api/v1/jobs/extend/:jobId"],
+      config,
+      onRequest: server.auth(zRoutes.post["/api/v1/jobs/extend/:jobId"].securityScheme),
+      // TODO: AttachValidation Error ?
+    },
+    async (req, res) => {
+      const { jobId } = req.params
+      const job = await getJob(jobId)
+
+      if (!job) {
+        res.status(400)
+        return res.send({ error: true, message: "Job does not exists" })
+      }
+
+      if (dayjs().add(1, "month").isSame(dayjs(job.job_expiration_date), "day")) {
+        res.status(400)
+        return res.send({ error: true, message: "Job is already extended up to a month" })
+      }
+
+      if (job.job_status !== ACTIVE) {
+        res.status(400)
+        return res.send({ error: true, message: "Job cannot be extended as it is not enabled" })
+      }
+
+      await extendOffre(jobId)
+
+      res.status(200)
+      return res.send()
+    }
+  )
+  // @OperationId("getJobOpportunities")
+  server.get(
+    "/api/v1/jobs",
+    {
+      schema: zRoutes.get["/api/v1/jobs"],
+      config,
+      // TODO: AttachValidation Error ?
+    },
+    async (req, res) => {
+      const { referer } = req.headers
+      const { romes, rncp, caller, latitude, longitude, radius, insee, sources, diploma, opco, opcoUrl, useMock } = req.query
+      const result = await getJobsQuery({ romes, rncp, caller, referer, latitude, longitude, radius, insee, sources, diploma, opco, opcoUrl, useMock })
+
+      if ("error" in result) {
+        res.status(500)
+        return res.send(result)
+      }
+      if ("matchas" in result) {
+        const { matchas } = result
+        if (matchas && "results" in matchas) {
+          matchas.results.map((matchaOffre) => addOffreSearchView(matchaOffre.job.id))
         }
       }
+      return res.send(result)
     }
+  )
 
-    return result
-  }
+  // @OperationId("getCompany")
+  server.get(
+    "/api/v1/jobs/company/:siret",
+    {
+      schema: zRoutes.get["/api/v1/jobs/company/:siret"],
+      config,
+      // TODO: AttachValidation Error ?
+    },
+    async (req, res) => {
+      const { siret } = req.params
+      const { referer } = req.headers
+      const { caller } = req.query
+      const result = await getCompanyFromSiret({
+        siret,
+        referer,
+        caller,
+      })
 
-  /**
-   * Notifies that the detail of a matcha job has been viewed
-   * @param {string} id the id the lba job looked for.
-   * @returns {Promise<IApiError | void>} response
-   */
-  @Response<"Wrong parameters">(400)
-  @Response<"Job not found">(404)
-  @Response<"Internal error">(500)
-  @SuccessResponse("200", "success")
-  @Post("/matcha/{id}/stats/view-details")
-  @OperationId("statsViewLbaJob")
-  public async statsViewLbaJob(@Path() id: string): Promise<IApiError | undefined> {
-    await addOffreDetailView(id)
-    return
-  }
-
-  /**
-   * Get one pe job identified by it's id
-   * @param {string} id the id the pe job looked for.
-   * @param {string} caller the consumer id.
-   * @returns {Promise<IApiError | { matchas: ILbaItem[] }>} response
-   */
-  @Response<"Wrong parameters">(400)
-  @Response<"Job not found">(404)
-  @Response<"Internal error">(500)
-  @SuccessResponse("200", "Get job success")
-  @Get("/job/{id}")
-  @OperationId("getPeJob")
-  public async getPeJob(@Path() id: string, @Query() caller?: string): Promise<IApiError | { peJobs: ILbaItem[] }> {
-    const result = await getPeJobFromId({
-      id,
-      caller,
-    })
-
-    if ("error" in result) {
-      if (result.error === "wrong_parameters") {
-        this.setStatus(400)
-      } else if (result.error === "not_found") {
-        this.setStatus(404)
-      } else {
-        this.setStatus(result.status || 500)
+      if ("error" in result) {
+        if (result.error === "wrong_parameters") {
+          res.status(400)
+        } else if (result.error === "not_found") {
+          res.status(404)
+        } else {
+          res.status(result.status || 500)
+        }
       }
-    }
 
-    return result
-  }
+      return res.send(result)
+    }
+  )
+
+  // @OperationId("getLbaJob")
+  server.get(
+    "/api/v1/jobs/matcha/:id",
+    {
+      schema: zRoutes.get["/api/v1/jobs/matcha/:id"],
+      config,
+      // TODO: AttachValidation Error ?
+    },
+    async (req, res) => {
+      const { id } = req.params
+      const { caller } = req.query
+      const result = await getLbaJobById({
+        id,
+        caller,
+      })
+
+      if ("error" in result) {
+        switch (result.error) {
+          case "wrong_parameters": {
+            res.status(400)
+            break
+          }
+          case "not_found": {
+            res.status(404)
+            break
+          }
+          case "expired_job": {
+            res.status(419)
+            break
+          }
+          default: {
+            res.status(result.status || 500)
+            break
+          }
+        }
+      }
+
+      return res.send(result)
+    }
+  )
+
+  // @OperationId("statsViewLbaJob")
+  server.post(
+    "/api/v1/jobs/matcha/:id/stats/view-details",
+    {
+      schema: zRoutes.post["/api/v1/jobs/matcha/:id/stats/view-details"],
+      config,
+      // TODO: AttachValidation Error ?
+    },
+    async (req, res) => {
+      const { id } = req.params
+      await addOffreDetailView(id)
+      return res.send()
+    }
+  )
+
+  // @OperationId("getPeJob")
+  server.get(
+    "/api/v1/jobs/job/:id",
+    {
+      schema: zRoutes.get["/api/v1/jobs/job/:id"],
+      config,
+      // TODO: AttachValidation Error ?
+    },
+    async (req, res) => {
+      const { id } = req.params
+      const { caller } = req.query
+      const result = await getPeJobFromId({
+        id,
+        caller,
+      })
+
+      if ("error" in result) {
+        if (result.error === "wrong_parameters") {
+          res.status(400)
+        } else if (result.error === "not_found") {
+          res.status(404)
+        } else {
+          res.status(result.status || 500)
+        }
+      }
+
+      return res.send(result)
+    }
+  )
 }

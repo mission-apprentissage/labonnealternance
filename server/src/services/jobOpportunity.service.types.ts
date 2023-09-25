@@ -8,9 +8,9 @@ export type TJobSearchQuery = {
   rncp?: string
   referer?: string
   caller?: string
-  latitude?: string
-  longitude?: string
-  radius?: string
+  latitude?: number
+  longitude?: number
+  radius?: number
   insee?: string
   sources?: string
   diploma?: string
