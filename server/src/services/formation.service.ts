@@ -343,7 +343,7 @@ const getAtLeastSomeFormations = async ({
   coords?: [string, string]
   radius?: number
   diploma?: string
-  maxOutLimitFormation?: number
+  maxOutLimitFormation: number
   caller?: string
   options: string[]
   useMock: string
