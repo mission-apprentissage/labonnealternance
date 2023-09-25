@@ -34,8 +34,8 @@ export default (server: Server) => {
         }
 
         return res.send(result)
-      }
-
+       } 
+       
       if (caller && "results" in result) {
         trackApiCall({
           caller: caller,
