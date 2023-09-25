@@ -5,7 +5,7 @@ import { ZLbaItem } from "../models/lbaItem.model"
 
 import { IRoutesDef } from "./common.routes"
 
-export const zV1JobsRoutes = {
+export const zV1FormationsRoutes = {
   get: {
     "/api/v1/formations": {
       querystring: z

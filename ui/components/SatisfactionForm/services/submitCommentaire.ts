@@ -1,6 +1,12 @@
 import postCommentaire from "./postCommentaire"
 
-export default async function submitCommentaire(params, setSendingState = () => {}, _postCommentaire = postCommentaire) {
+export default async function submitCommentaire(
+  params,
+  setSendingState = (t: string) => {
+    console.log(t)
+  },
+  _postCommentaire = postCommentaire
+) {
   setSendingState("currently_sending")
   let success = true
 
