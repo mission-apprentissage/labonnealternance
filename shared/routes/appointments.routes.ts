@@ -8,19 +8,9 @@ const zContextCreateSchema = z.union([
   // Find through "idParcoursup"
   z
     .object({
-      idParcoursup: z.string().min(1),
-      idRcoFormation: z.string().optional(),
-      idActionFormation: z.string().optional(),
-      idCleMinistereEducatif: z.string().optional(),
+      idParcoursup: z.string(),
       trainingHasJob: z.boolean().optional(),
-      referrer: z.enum([
-        referrers.PARCOURSUP.name.toLowerCase(),
-        referrers.LBA.name.toLowerCase(),
-        referrers.PFR_PAYS_DE_LA_LOIRE.name.toLowerCase(),
-        referrers.ONISEP.name.toLowerCase(),
-        referrers.JEUNE_1_SOLUTION.name.toLowerCase(),
-        referrers.AFFELNET.name.toLowerCase(),
-      ]),
+      referrer: z.literal(referrers.PARCOURSUP.name.toLowerCase())
     })
     .strict(),
 
@@ -28,18 +18,8 @@ const zContextCreateSchema = z.union([
   z
     .object({
       idRcoFormation: z.string().min(1),
-      idActionFormation: z.string().optional(),
-      idParcoursup: z.string().optional(),
-      idCleMinistereEducatif: z.string().optional(),
       trainingHasJob: z.boolean().optional(),
-      referrer: z.enum([
-        referrers.PARCOURSUP.name.toLowerCase(),
-        referrers.LBA.name.toLowerCase(),
-        referrers.PFR_PAYS_DE_LA_LOIRE.name.toLowerCase(),
-        referrers.ONISEP.name.toLowerCase(),
-        referrers.JEUNE_1_SOLUTION.name.toLowerCase(),
-        referrers.AFFELNET.name.toLowerCase(),
-      ]),
+      referrer: z.literal(referrers.PFR_PAYS_DE_LA_LOIRE.name.toLowerCase())
     })
     .strict(),
 
@@ -47,18 +27,8 @@ const zContextCreateSchema = z.union([
   z
     .object({
       idActionFormation: z.string().min(1),
-      idRcoFormation: z.string().optional(),
-      idParcoursup: z.string().optional(),
-      idCleMinistereEducatif: z.string().optional(),
       trainingHasJob: z.boolean().optional(),
-      referrer: z.enum([
-        referrers.PARCOURSUP.name.toLowerCase(),
-        referrers.LBA.name.toLowerCase(),
-        referrers.PFR_PAYS_DE_LA_LOIRE.name.toLowerCase(),
-        referrers.ONISEP.name.toLowerCase(),
-        referrers.JEUNE_1_SOLUTION.name.toLowerCase(),
-        referrers.AFFELNET.name.toLowerCase(),
-      ]),
+      referrer: z.literal(referrers.ONISEP.name.toLowerCase())
     })
     .strict(),
 
@@ -66,9 +36,6 @@ const zContextCreateSchema = z.union([
   z
     .object({
       idCleMinistereEducatif: z.string().min(1),
-      idRcoFormation: z.string().optional(),
-      idActionFormation: z.string().optional(),
-      idParcoursup: z.string().optional(),
       trainingHasJob: z.boolean().optional(),
       referrer: z.enum([
         referrers.PARCOURSUP.name.toLowerCase(),
@@ -77,7 +44,7 @@ const zContextCreateSchema = z.union([
         referrers.ONISEP.name.toLowerCase(),
         referrers.JEUNE_1_SOLUTION.name.toLowerCase(),
         referrers.AFFELNET.name.toLowerCase(),
-      ]),
+      ])
     })
     .strict(),
 ])
