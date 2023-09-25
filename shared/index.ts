@@ -8,6 +8,7 @@ import { zCoreRoutes } from "./routes/core.routes"
 import { zEtablissementRoutes } from "./routes/etablissement.routes"
 import { zFormulaireRoute } from "./routes/formulaire.route"
 import { zLoginRoutes } from "./routes/login.routes"
+import { zMetiersRoutes } from "./routes/metiers.routes"
 import { zMetiersDAvenirRoutes } from "./routes/metiersdavenir.routes"
 import { zOptoutRoutes } from "./routes/optout.routes"
 import { zRecruiterRoutes } from "./routes/recruiters.routes"
@@ -16,6 +17,7 @@ import { zTrainingLinksRoutes } from "./routes/trainingLinks.routes"
 import { zUnsubscribeRoute } from "./routes/unsubscribe.routes"
 import { zUpdateLbaCompanyRoutes } from "./routes/updateLbaCompany.routes"
 import { zUserRecruteurRoutes } from "./routes/user.routes"
+import { zV1FormationsRoutes } from "./routes/v1Formations.routes"
 import { zV1FormationsParRegion } from "./routes/v1FormationsParRegion.routes"
 import { zV1JobsRoutes } from "./routes/v1Jobs.routes"
 import { zV1JobsEtFormationsRoutes } from "./routes/v1JobsEtFormations.routes"
@@ -26,12 +28,14 @@ const zRoutesGet = {
   ...zCoreRoutes.get,
   ...zEtablissementRoutes.get,
   ...zMetiersDAvenirRoutes.get,
+  ...zMetiersRoutes.get,
   ...zOptoutRoutes.get,
   ...zRomeRoutes.get,
   ...zUpdateLbaCompanyRoutes.get,
   ...zUserRecruteurRoutes.get,
   ...zV1FormationsParRegion.get,
   ...zV1JobsRoutes.get,
+  ...zV1FormationsRoutes.get,
   ...zV1JobsEtFormationsRoutes.get,
   ...zFormulaireRoute.get,
   ...zRecruiterRoutes.get,

@@ -72,16 +72,16 @@ export default () => {
   router.get(
     "/:userId",
     tryCatch(async (req, res) => {
-      const users = await UserRecruteur.findOne({ _id: req.params.userId }).lean()
-      let formulaire
+      const user = await UserRecruteur.findOne({ _id: req.params.userId }).lean()
+      let formulaire = {}
 
-      if (!users) return res.sendStatus(400)
+      if (!user) return res.sendStatus(400)
 
-      if (users.type === ENTREPRISE) {
-        formulaire = await Recruiter.findOne({ establishment_id: users.establishment_id }).select({ jobs: 1, _id: 0 }).lean()
+      if (user.type === ENTREPRISE) {
+        formulaire = await Recruiter.findOne({ establishment_id: user.establishment_id }).select({ jobs: 1, _id: 0 }).lean()
       }
 
-      return res.json({ ...users, ...formulaire })
+      return res.json({ ...user, ...formulaire })
     })
   )
 
