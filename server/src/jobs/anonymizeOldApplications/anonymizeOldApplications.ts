@@ -1,4 +1,3 @@
-//@ts-nocheck
 import { get } from "lodash-es"
 
 import { logger } from "../../common/logger"

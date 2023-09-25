@@ -10,13 +10,14 @@ const detailActivityProperties = {
   color: "grey.600",
 }
 
-export default function getJobSurtitre({ selectedItem, kind, isMandataire, isCollapsedHeader }) {
-  let res = ""
+export default function getJobSurtitre({ selectedItem, kind, isMandataire, isCollapsedHeader = undefined }) {
+  let res = <></>
   const companyName = selectedItem?.company?.name || ""
 
   if (!isCollapsedHeader) {
     if (kind === "matcha" && isMandataire) {
       res = (
+        // @ts-expect-error: TODO
         <Text as="p" {...detailActivityProperties} mt={2}>
           <Text as="span" fontWeight={400}>
             Le centre de formation&nbsp;
@@ -31,6 +32,7 @@ export default function getJobSurtitre({ selectedItem, kind, isMandataire, isCol
 
     if (kind === "peJob" || (kind === "matcha" && !isMandataire)) {
       res = (
+        // @ts-expect-error: TODO
         <Text as="p" {...detailActivityProperties} mt={2}>
           {companyName ? (
             <>
@@ -44,6 +46,7 @@ export default function getJobSurtitre({ selectedItem, kind, isMandataire, isCol
               <Text as="span" fontWeight={400}>
                 {selectedItem?.nafs ? (
                   <>
+                    {/* @ts-expect-error: TODO */}
                     Une société du secteur&nbsp;<bold>{selectedItem.nafs[0].label}</bold>&nbsp;propose actuellement cette offre
                   </>
                 ) : (
@@ -58,6 +61,7 @@ export default function getJobSurtitre({ selectedItem, kind, isMandataire, isCol
 
     if (kind === "lbb" || kind === "lba") {
       res = (
+        // @ts-expect-error: TODO
         <Text as="p" {...detailActivityProperties} mt={2}>
           <Text as="span">{companyName}</Text>
           <Text as="span" fontWeight={400}>

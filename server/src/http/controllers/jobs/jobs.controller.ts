@@ -1,4 +1,4 @@
-//@ts-nocheck
+import { FastifyReply } from "fastify"
 import * as express from "express"
 import { Body, Controller, Get, Header, Hidden, OperationId, Patch, Path, Post, Query, Request, Response, Route, Security, SuccessResponse, Tags } from "tsoa"
 

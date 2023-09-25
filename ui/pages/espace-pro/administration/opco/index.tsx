@@ -37,7 +37,7 @@ import { ArrowDropRightLine, Parametre } from "../../../../theme/components/icon
 import { getOpcoUsers } from "../../../../utils/api"
 
 function AdministrationOpco() {
-  const [currentEntreprise, setCurrentEntreprise] = useState()
+  const [currentEntreprise, setCurrentEntreprise] = useState({})
   const [tabIndex, setTabIndex] = useState(0)
   const confirmationDesactivationUtilisateur = useDisclosure()
   const confirmationActivationUtilisateur = useDisclosure()
@@ -263,13 +263,16 @@ function AdministrationOpco() {
           </Box>
           <TabPanels mt={3}>
             <TabPanel>
+              {/* @ts-expect-error: TODO */}
               <TableNew
                 columns={columns}
                 data={awaitingValidationUserList.data.data}
                 description="Les entreprises en attente de vérification représentent pour votre OPCO de nouvelles opportunités d’accompagnement.  Vous pouvez contacter chacun des comptes en attente, vérifier qu’il s’agit bien d’une entreprise relevant de vos champs de compétences, et qu’il ne s’agit pas d’une tentative d’usurpation de compte."
               />
             </TabPanel>
+            {/* @ts-expect-error: TODO */}
             <TabPanel>{activeUserList.isLoading ? <LoadingEmptySpace /> : <TableNew columns={columns} data={activeUserList?.data?.data} exportable />}</TabPanel>
+            {/* @ts-expect-error: TODO */}
             <TabPanel>{disableUserList.isLoading ? <LoadingEmptySpace /> : <TableNew columns={columns} data={disableUserList?.data?.data} />}</TabPanel>
           </TabPanels>
         </Tabs>

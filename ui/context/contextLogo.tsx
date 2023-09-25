@@ -1,15 +1,23 @@
-import { createContext, useState } from "react"
+import { createContext, FC, PropsWithChildren, useState } from "react"
 
-const LogoContext = createContext({
+interface ItLogoContext {
+  organisation: string
+  setOrganisation: (organisation: string) => void
+}
+
+const LogoContext = createContext<ItLogoContext>({
   organisation: "",
   setOrganisation: () => {},
 })
 
-const LogoProvider = (props) => {
-  const [organisation, setOrganisation] = useState("")
-  const state = { organisation, setOrganisation }
+interface Props extends PropsWithChildren {
+  initialLogo?: string
+}
 
-  return <LogoContext.Provider value={state}>{props.children}</LogoContext.Provider>
+export const LogoProvider: FC<Props> = ({ initialLogo, children }) => {
+  const [organisation, setOrganisation] = useState<string>(initialLogo)
+
+  return <LogoContext.Provider value={{ organisation, setOrganisation }}>{children}</LogoContext.Provider>
 }
 
 export { LogoContext }

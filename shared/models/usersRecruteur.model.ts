@@ -29,7 +29,7 @@ export const ZUserRecruteur = z
     address_detail: ZGlobalAddress.describe("Detail de l'adresse de l'établissement"),
     address: z.string().describe("Adresse de l'établissement"),
     geo_coordinates: z.string().nullable().describe("Latitude/Longitude de l'adresse de l'entreprise"),
-    phone: z.string().describe("Téléphone de l'établissement"),
+    phone: extensions.phone().describe("Téléphone de l'établissement"),
     email: z.string().email().nullable().describe("L'email de l'utilisateur"),
     scope: z.string().nullable().describe("Scope accessible par l'utilisateur"),
     is_email_checked: z.boolean().describe("Indicateur de confirmation de l'adresse mail par l'utilisateur"),
@@ -39,8 +39,11 @@ export const ZUserRecruteur = z
     origin: z.string().describe("Origine de la creation de l'utilisateur (ex: Campagne mail, lien web, etc...) pour suivi"),
     status: z.array(ZUserStatusValidation).describe("Tableau des modifications de statut de l'utilisateur"),
     is_qualiopi: z.boolean().describe("Statut qualiopi du CFA (forcément true, sinon l'inscription n'est pas possibe)"),
+    createdAt: z.date().describe("Date de création"),
+    updatedAt: z.date().describe("Date de la dernière modification"),
   })
   .strict()
 
+export type IUserStatusValidation = z.output<typeof ZUserStatusValidation>
 export type IUserRecruteur = z.output<typeof ZUserRecruteur>
 export type IUserRecruteurJson = Jsonify<z.input<typeof ZUserRecruteur>>

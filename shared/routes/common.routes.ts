@@ -1,8 +1,12 @@
 import { Jsonify } from "type-fest"
-import { z } from "zod"
+import { AnyZodObject, ZodType } from "zod"
+import { ZodOpenApiOperationObject } from "zod-openapi"
+
+import { z } from "../helpers/zodWithOpenApi"
 
 export const ZResError = z
   .object({
+    details: z.any().optional(),
     attributes: z.any().optional(),
     message: z.string(),
     error: z.string(),
@@ -27,3 +31,27 @@ export type IReqParamsSearchPagination = z.input<typeof ZReqParamsSearchPaginati
 export const ZReqHeadersAuthorization = z.object({
   Authorization: z.string().describe("Bearer token").optional(),
 })
+
+export type AuthStrategy = "api-key" | "basic" | "jwt-password" | "jwt-bearer" | "jwt-token" | "jwt-rdv-admin" | "none"
+
+export type SecurityScheme = {
+  auth: AuthStrategy
+}
+
+export interface IRouteSchema {
+  body?: ZodType
+  querystring?: AnyZodObject
+  headers?: ZodType<Record<string, string | undefined> | undefined>
+  params?: AnyZodObject
+  response: { [statuscode: `${1 | 2 | 3 | 4 | 5}${string}`]: ZodType }
+  openapi?: null | Omit<ZodOpenApiOperationObject, "parameters" | "requestBody" | "requestParams" | "responses">
+  securityScheme: SecurityScheme
+}
+
+export type IRoutesDef = {
+  get?: Record<string, IRouteSchema>
+  post?: Record<string, IRouteSchema>
+  put?: Record<string, IRouteSchema>
+  delete?: Record<string, IRouteSchema>
+  patch?: Record<string, IRouteSchema>
+}

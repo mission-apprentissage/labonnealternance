@@ -403,7 +403,7 @@ export const getCompanyFromSiret = async ({ siret, referer, caller }: { siret: s
  * @param {string} phone
  * @returns {Promise<ILbaCompany | string>}
  */
-export const updateContactInfo = async ({ siret, email, phone }: { siret: string; email: string; phone: string }): Promise<ILbaCompany | string> => {
+export const updateContactInfo = async ({ siret, email, phone }: { siret: string; email: string; phone: string }) => {
   try {
     const lbaCompany = await LbaCompany.findOne({ siret })
 

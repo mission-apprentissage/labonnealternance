@@ -1,4 +1,3 @@
-//@ts-nocheck
 import { Readable } from "stream"
 
 import { logger } from "../../common/logger"

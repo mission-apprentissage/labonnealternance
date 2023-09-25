@@ -1,7 +1,8 @@
-import { z } from "zod"
-
+import { z } from "../helpers/zodWithOpenApi"
 import { zObjectId } from "../models/common"
 import { ZEtablissement } from "../models/etablissement.model"
+
+import { IRoutesDef } from "./common.routes"
 
 export const zEtablissementRoutes = {
   get: {
@@ -12,7 +13,4 @@ export const zEtablissementRoutes = {
       },
     },
   },
-  post: {},
-  put: {},
-  delete: {},
-}
+} satisfies IRoutesDef

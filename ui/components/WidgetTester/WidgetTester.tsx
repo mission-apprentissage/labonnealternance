@@ -83,17 +83,17 @@ const WidgetTester = () => {
   }
 
   const handleSearchSubmit = async (values) => {
-    const res = {}
-
-    res.romes = values.job && values.job.romes ? values.job.romes.join() : null
-    res.location = values.location && values.location.value ? values.location.value.coordinates : null
-    res.radius = values.radius || null
-    res.scope = values.scope || null
-    res.caller = values.caller || null
-    res.opco = values.opco || null
-    res.opcoUrl = values.opcoUrl || null
-    res.jobName = values.jobName || null
-    res.frozenJob = values.frozen_job || null
+    const res = {
+      romes: values.job && values.job.romes ? values.job.romes.join() : null,
+      location: values.location && values.location.value ? values.location.value.coordinates : null,
+      radius: values.radius || null,
+      scope: values.scope || null,
+      caller: values.caller || null,
+      opco: values.opco || null,
+      opcoUrl: values.opcoUrl || null,
+      jobName: values.jobName || null,
+      frozenJob: values.frozen_job || null,
+    }
 
     setWidgetParams(res)
   }
@@ -125,7 +125,7 @@ const WidgetTester = () => {
   }
 
   const getWidget = (params) => {
-    const ideaUrl = getIdeaUrlWithParams(widgetParams)
+    const ideaUrl = getIdeaUrlWithParams()
 
     return (
       <iframe

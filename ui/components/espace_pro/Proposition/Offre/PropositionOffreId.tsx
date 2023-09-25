@@ -13,15 +13,15 @@ export default function PropositionOffreId() {
   const { idFormulaire, jobId, siretFormateur } = router.query
   const toast = useToast()
 
-  const [job, setJob] = useState()
-  const [formulaire, setFormulaire] = useState()
+  const [job, setJob]: [any, (t: any) => void] = useState()
+  const [formulaire, setFormulaire]: [any, (t: any) => void] = useState()
 
   /**
    * @description Copy in clipboard.
    * @return {Promise<void>}
    */
   const copyInClipboard = () => {
-    navigator.clipboard.writeText(`${publicConfig.baseUrlUri}/recherche-apprentissage?&display=list&page=fiche&type=matcha&itemId=${job._id}`)
+    navigator.clipboard.writeText(`${publicConfig.baseUrl}/recherche-apprentissage?&display=list&page=fiche&type=matcha&itemId=${job._id}`)
     toast({
       title: "Lien copié.",
       position: "top-right",
@@ -34,7 +34,9 @@ export default function PropositionOffreId() {
    * @description Gets offre.
    * @return {void}
    */
+  // @ts-expect-error: TODO
   useEffect(async () => {
+    // @ts-expect-error: TODO
     const { data } = await getFormulaire(idFormulaire)
 
     const job = data.jobs.find((job) => job._id === jobId)

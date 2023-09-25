@@ -70,7 +70,7 @@ const MetiersDAvenir = () => {
         <Divider variant="pageTitleDivider" my={[4, 4, 8]} />
 
         <Grid templateColumns={{ base: "1fr", md: "repeat(12, 1fr)" }}>
-          <GridItem colSpan="4" mr={[0, 0, 8, 8]} mb={[4, 4, 0, 0]}>
+          <GridItem colSpan={4} mr={[0, 0, 8, 8]} mb={[4, 4, 0, 0]}>
             <Box textAlign="center" height="100%" border="1px solid #E7E7E7" borderRadius="8px" py={12} px={8}>
               <Text as="p" lineHeight="32px" fontWeight={700} fontSize="24px" mb="5">
                 Votre futur métier est peut-être parmi cette sélection !
@@ -83,7 +83,7 @@ const MetiersDAvenir = () => {
               </Link>
             </Box>
           </GridItem>
-          <GridItem colSpan="8" height="100%">
+          <GridItem colSpan={8} height="100%">
             <SimpleGrid columns={[1, 1, 1, 2]} spacingX={8} spacingY={4}>
               {data.suggestionsMetiersAvenir.map((metier, idx) => buildJobBlock({ idx, title: metier.title, rome: metier.codeROME }))}
             </SimpleGrid>

@@ -6,10 +6,12 @@ import { ZLbaItem } from "../models/lbaItem.model"
 import { ZRecruiter } from "../models/recruiter.model"
 import { ZUserRecruteur } from "../models/usersRecruteur.model"
 
+import { IRoutesDef } from "./common.routes"
+
 export const zV1JobsRoutes = {
   get: {
     "/api/v1/jobs/establishment": {
-      queryString: z
+      querystring: z
         .object({
           establishment_siret: extensions.siret(),
           email: z.string().email(),
@@ -22,9 +24,12 @@ export const zV1JobsRoutes = {
           })
           .strict(),
       },
+      securityScheme: {
+        auth: "api-key",
+      },
     },
     "/api/v1/jobs/bulk": {
-      queryString: z
+      querystring: z
         .object({
           query: z.string().optional(), // mongo query
           select: z.string().optional(), // mongo projection
@@ -46,6 +51,9 @@ export const zV1JobsRoutes = {
               .strict(),
           })
           .strict(),
+      },
+      securityScheme: {
+        auth: "api-key",
       },
     },
     "/api/v1/jobs/delegations/:jobId": {
@@ -69,9 +77,12 @@ export const zV1JobsRoutes = {
           })
           .strict(),
       },
+      securityScheme: {
+        auth: "api-key",
+      },
     },
     "/api/v1/jobs": {
-      queryString: z
+      querystring: z
         .object({
           romes: z.string().optional(),
           rncp: z.string().optional(),
@@ -114,6 +125,9 @@ export const zV1JobsRoutes = {
           })
           .strict(),
       },
+      securityScheme: {
+        auth: "none",
+      },
     },
     "/api/v1/jobs/company/:siret": {
       params: z
@@ -121,7 +135,7 @@ export const zV1JobsRoutes = {
           siret: extensions.siret(),
         })
         .strict(),
-      queryString: z
+      querystring: z
         .object({
           caller: z.string().optional(),
           referer: z.string().optional(), // hidden
@@ -134,6 +148,9 @@ export const zV1JobsRoutes = {
           })
           .strict(),
       },
+      securityScheme: {
+        auth: "none",
+      },
     },
     "/api/v1/jobs/matcha/:id": {
       params: z
@@ -141,7 +158,7 @@ export const zV1JobsRoutes = {
           id: z.string(),
         })
         .strict(),
-      queryString: z
+      querystring: z
         .object({
           caller: z.string().optional(),
         })
@@ -153,6 +170,9 @@ export const zV1JobsRoutes = {
           })
           .strict(),
       },
+      securityScheme: {
+        auth: "none",
+      },
     },
     "/api/v1/jobs/job/:id": {
       params: z
@@ -160,7 +180,7 @@ export const zV1JobsRoutes = {
           id: z.string(),
         })
         .strict(),
-      queryString: z
+      querystring: z
         .object({
           caller: z.string().optional(),
         })
@@ -172,6 +192,9 @@ export const zV1JobsRoutes = {
           })
           .strict(),
       },
+      securityScheme: {
+        auth: "none",
+      },
     },
   },
   post: {
@@ -181,7 +204,7 @@ export const zV1JobsRoutes = {
           establishment_siret: extensions.siret(),
           first_name: z.string(),
           last_name: z.string(),
-          phone: z.string().optional(),
+          phone: extensions.phone().optional(),
           email: z.string().email(),
           idcc: z.string().optional(),
           origin: z.string().optional(),
@@ -189,6 +212,9 @@ export const zV1JobsRoutes = {
         .strict(),
       response: {
         "200": ZRecruiter,
+      },
+      securityScheme: {
+        auth: "api-key",
       },
     },
     "/api/v1/jobs/:establishmentId": {
@@ -216,6 +242,9 @@ export const zV1JobsRoutes = {
       response: {
         "200": ZRecruiter,
       },
+      securityScheme: {
+        auth: "api-key",
+      },
     },
     "/api/v1/jobs/delegations/:jobId": {
       params: z
@@ -231,6 +260,9 @@ export const zV1JobsRoutes = {
       response: {
         "200": ZRecruiter,
       },
+      securityScheme: {
+        auth: "api-key",
+      },
     },
     "/api/v1/jobs/provided/:jobId": {
       params: z
@@ -239,7 +271,10 @@ export const zV1JobsRoutes = {
         })
         .strict(),
       response: {
-        "200": null,
+        "200": z.undefined(),
+      },
+      securityScheme: {
+        auth: "api-key",
       },
     },
     "/api/v1/jobs/canceled/:jobId": {
@@ -249,7 +284,10 @@ export const zV1JobsRoutes = {
         })
         .strict(),
       response: {
-        "200": null,
+        "200": z.undefined(),
+      },
+      securityScheme: {
+        auth: "api-key",
       },
     },
     "/api/v1/jobs/extend/:jobId": {
@@ -259,7 +297,10 @@ export const zV1JobsRoutes = {
         })
         .strict(),
       response: {
-        "200": null,
+        "200": z.undefined(),
+      },
+      securityScheme: {
+        auth: "api-key",
       },
     },
     "/api/v1/jobs/matcha/:id/stats/view-details": {
@@ -269,7 +310,10 @@ export const zV1JobsRoutes = {
         })
         .strict(),
       response: {
-        "200": null,
+        "200": z.undefined(),
+      },
+      securityScheme: {
+        auth: "none",
       },
     },
   },
@@ -298,8 +342,9 @@ export const zV1JobsRoutes = {
       response: {
         "200": ZRecruiter,
       },
+      securityScheme: {
+        auth: "api-key",
+      },
     },
   },
-  put: {},
-  delete: {},
-}
+} satisfies IRoutesDef

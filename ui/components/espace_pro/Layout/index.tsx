@@ -14,7 +14,7 @@ import NavigationMenu from "./NavigationMenu"
  * @param {boolean} displayNavigationMenu
  * @return {JSX.Element}
  */
-export default function Layout({ header = true, children, widget, footer = true, displayNavigationMenu = true }) {
+export default function Layout({ header = true, children, widget = false, footer = true, displayNavigationMenu = true }) {
   return (
     <Container maxW="full" p="0">
       <Flex direction="column" h="100vh">

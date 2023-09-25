@@ -16,6 +16,7 @@ const CandidatureLbaWorked = ({ email, company }) => {
               {company}
             </Text>
           </Text>
+          {/* @ts-expect-error: TODO */}
           {testingParameters?.simulatedRecipient && <Text>Les emails ont été envoyés à {testingParameters.simulatedRecipient}</Text>}
         </Box>
       </Flex>

@@ -43,6 +43,7 @@ const MapListSwitchButton = ({ showResultMap, showResultList, isFormVisible }) =
   if (visiblePane === "resultList") {
     if (hasSearch)
       return (
+        // @ts-expect-error: TODO
         <Box display={resultListFloatingButtonDisplayProperty} {...floatingButtonProperties}>
           <Button {...buttonProperties} onClick={showResultMap} title="Afficher la carte">
             <Flex alignItems="center">
@@ -57,6 +58,7 @@ const MapListSwitchButton = ({ showResultMap, showResultList, isFormVisible }) =
     else return ""
   } else {
     return (
+      // @ts-expect-error: TODO
       <Box display={mapFloatingButtonDisplayProperty} {...floatingButtonProperties}>
         {hasSearch ? (
           <Button {...buttonProperties} onClick={showResultList} title="Afficher la liste">

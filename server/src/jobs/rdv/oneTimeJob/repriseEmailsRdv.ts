@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { logger } from "../../../common/logger"
 import { mailType } from "../../../common/model/constants/appointments"
 import { getReferrerByKeyName } from "../../../common/model/constants/referrers"

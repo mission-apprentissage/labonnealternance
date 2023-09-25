@@ -61,8 +61,6 @@ const SearchForTrainingsAndJobs = () => {
       updateUiFromHistory({
         url,
         currentPage,
-        trainings,
-        jobs,
         selectedItem,
         unSelectItem,
         selectItemFromHistory,
@@ -192,7 +190,7 @@ const SearchForTrainingsAndJobs = () => {
       searchForJobs({ values, searchTimestamp, followUpItem, selectFollowUpItem })
     }
     setIsFormVisible(false)
-
+    // @ts-expect-error: TODO
     pushHistory({ router, scopeContext, display: "list", searchParameters: values, searchTimestamp, displayMap })
     setCurrentSearch(searchTimestamp)
   }
@@ -285,6 +283,7 @@ const SearchForTrainingsAndJobs = () => {
 
     if (!doNotSaveToHistory) {
       unSelectItem("doNotSaveToHistory")
+      // @ts-expect-error: TODO
       pushHistory({
         router,
         scopeContext,
@@ -312,6 +311,7 @@ const SearchForTrainingsAndJobs = () => {
     setVisiblePane("resultMap")
 
     if (!doNotSaveToHistory) {
+      // @ts-expect-error: TODO
       pushHistory({
         router,
         scopeContext,
@@ -341,6 +341,7 @@ const SearchForTrainingsAndJobs = () => {
     setIsFormVisible(false)
 
     if (!doNotSaveToHistory) {
+      // @ts-expect-error: TODO
       pushHistory({
         router,
         scopeContext,
@@ -355,6 +356,7 @@ const SearchForTrainingsAndJobs = () => {
   const selectItemOnMap = (item) => {
     showResultList(null, "doNotSaveToHistory")
     setCurrentPage("fiche")
+    // @ts-expect-error: TODO
     pushHistory({
       router,
       scopeContext,
@@ -375,6 +377,7 @@ const SearchForTrainingsAndJobs = () => {
     }
 
     if (!doNotSaveToHistory) {
+      // @ts-expect-error: TODO
       pushHistory({ router, scopeContext, searchParameters: formValues, searchTimestamp: currentSearch, displayMap })
     }
   }
@@ -393,7 +396,7 @@ const SearchForTrainingsAndJobs = () => {
         isJobSearchLoading={isJobSearchLoading}
       />
       <Flex direction="row" overflow="hidden" height="100%">
-        <Box flex={{ base: 8, xl: 6 }} display={listDisplayParameters} height="100%" overflow="auto" direction="column">
+        <Box flex={{ base: 8, xl: 6 }} display={listDisplayParameters} height="100%" overflow="auto" flexDirection="column">
           <ChoiceColumn
             shouldShowWelcomeMessage={shouldShowWelcomeMessage}
             handleSearchSubmit={handleSearchSubmit}
@@ -420,7 +423,7 @@ const SearchForTrainingsAndJobs = () => {
           ""
         )}
       </Flex>
-      <MapListSwitchButton showSearchForm={showSearchForm} showResultMap={showResultMap} showResultList={showResultList} isFormVisible={isFormVisible} />
+      <MapListSwitchButton showResultMap={showResultMap} showResultList={showResultList} isFormVisible={isFormVisible} />
     </Flex>
   )
 }

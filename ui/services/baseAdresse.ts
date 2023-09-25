@@ -67,7 +67,7 @@ export const fetchAddresses = memoize(async (value, type) => {
 })
 
 // récupère cp et insee à partir de lat / lon
-export const fetchAddressFromCoordinates = (coordinates, type) => {
+export const fetchAddressFromCoordinates = (coordinates, type = undefined) => {
   const addressURL = `https://api-adresse.data.gouv.fr/reverse/?lat=${coordinates[1]}&lon=${coordinates[0]}${type ? "&type=" + type : ""}`
   return axios.get(addressURL).then((response) => {
     const returnedItems = response.data.features.map((feature) => {

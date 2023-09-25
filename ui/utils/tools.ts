@@ -24,6 +24,7 @@ const getCompanyPathLink = (anyItem) => {
 const getValueFromPath = (key) => {
   let res = ""
   if (typeof window !== "undefined") {
+    // @ts-expect-error: TODO
     const url = new URL(window.location)
 
     // WARNING: URLSearchParams not supported by IE
@@ -48,12 +49,11 @@ const scrollToTop = (elementId) => {
   }
 }
 
-const scrollToElementInContainer = ({ containerId, el, yOffsett = 250, behavior = "auto" }) => {
+const scrollToElementInContainer = ({ containerId, el, yOffsett = 250 }) => {
   el &&
     document.getElementById(containerId).scrollTo({
       top: el.offsetTop - yOffsett,
       left: 0,
-      behavior,
     })
 }
 
@@ -89,7 +89,7 @@ const getItemElement = (item) => {
   }
 }
 
-const logError = (title, error) => {
+const logError = (title, error = undefined) => {
   const err = error instanceof Error ? error : new Error(error)
   err.name = title
 

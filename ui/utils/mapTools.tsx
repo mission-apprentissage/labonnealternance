@@ -285,7 +285,7 @@ const onLayerClick = (e, layer, selectItemOnMap, unselectItem, unselectMapPopupI
     })
 
     unselectItem()
-    scrollToElementInContainer({ containerId: "resultList", el: getItemElement(item), behavior: "smooth" })
+    scrollToElementInContainer({ containerId: "resultList", el: getItemElement(item) })
     setSelectedMarker(item)
   }
 }
@@ -549,14 +549,15 @@ const setJobMarkers = async ({ jobList, searchCenter = null, hasTrainings = fals
 
 const setSelectedMarker = async (item) => {
   if (item) {
-    const marker = { coords: getCoordinates(item), items: [item] }
-
+    const marker = {
+      coords: getCoordinates(item),
+      items: [item],
+      ideaType: item.ideaType === "formation" ? "formation" : "job",
+    }
     if (item.ideaType === "formation") {
-      marker.ideaType = "formation"
       setSelectedTrainingMarker(marker)
       setSelectedJobMarker(marker)
     } else {
-      marker.ideaType = "job"
       setSelectedJobMarker(marker)
       setSelectedTrainingMarker(null)
     }
@@ -580,7 +581,7 @@ const updateSelectedMarkerCollection = async (item, layer) => {
 
     const features = []
     if (item) {
-      const feature = {
+      features.push({
         type: "Feature",
         geometry: {
           type: "Point",
@@ -588,16 +589,9 @@ const updateSelectedMarkerCollection = async (item, layer) => {
         },
         properties: {
           id: 0,
+          ...(item.ideaType === "formation" ? { training: item } : { job: item }),
         },
-      }
-
-      if (item.ideaType === "formation") {
-        feature.properties.training = item
-      } else {
-        feature.properties.job = item
-      }
-
-      features.push(feature)
+      })
     }
 
     const results = { type: "FeatureCollection", features }
@@ -606,7 +600,7 @@ const updateSelectedMarkerCollection = async (item, layer) => {
   }
 }
 
-const setTrainingMarkers = async ({ trainingList, options, tryCount = 0 }) => {
+const setTrainingMarkers = async ({ trainingList, options = undefined, tryCount = 0 }) => {
   if (isMapInitialized) {
     await waitForMapReadiness()
 

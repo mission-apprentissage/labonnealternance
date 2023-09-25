@@ -39,8 +39,9 @@ const HeaderForm = ({ handleSearchSubmit, isHome }) => {
   useEffect(() => {
     setLocationRadius(contextFormValues?.radius ?? 30)
     setDiploma(contextFormValues?.diploma ?? "")
+    // @ts-expect-error: TODO
   }, [widgetParameters?.applyFormValues])
-
+  // @ts-expect-error: TODO
   const contextFormValues = widgetParameters?.applyFormValues && widgetParameters?.formValues ? widgetParameters.formValues : formValues
 
   const [diplomas] = useState([])
@@ -77,6 +78,7 @@ const HeaderForm = ({ handleSearchSubmit, isHome }) => {
                   onSelectedItemChangeFunction={updateValuesFromJobAutoComplete}
                   compareItemFunction={compareAutoCompleteValues}
                   onInputValueChangeFunction={jobChanged}
+                  // @ts-expect-error: TODO
                   isDisabled={widgetParameters?.parameters?.jobName && widgetParameters?.parameters?.romes && widgetParameters?.parameters?.frozenJob}
                   name="jobField"
                   placeholder="Indiquez un métier ou diplôme"
@@ -114,6 +116,7 @@ const HeaderForm = ({ handleSearchSubmit, isHome }) => {
                   <Select
                     {...selectProperties}
                     onChange={(evt) => handleSelectChange(evt, setFieldValue, setLocationRadius, "radius")}
+                    // @ts-expect-error: TODO
                     type="select"
                     value={locationRadius}
                     name="locationRadius"
@@ -140,6 +143,7 @@ const HeaderForm = ({ handleSearchSubmit, isHome }) => {
                 </Box>
               </Box>
               <Box ml={[1, 1, 1, 3]}>
+                {/* @ts-expect-error: TODO */}
                 <Button type="submit" variant="blackButton" borderRadius="unset" disabled={isSubmitting} alt="Lancer la recherche" height="57px" paddingTop="3px">
                   <Image maxWidth="unset" alt="Lancer la recherche" src={glassImage} />
                   {isHome && (

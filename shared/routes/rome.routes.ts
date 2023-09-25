@@ -2,6 +2,8 @@ import { z } from "zod"
 
 import { ZRomeDetail } from "../models/rome.model"
 
+import { IRoutesDef } from "./common.routes"
+
 const ZRomeWithLabel = z
   .object({
     codeRome: z.string(),
@@ -29,7 +31,6 @@ const ZMetiersEnrichis = z
 export const zRomeRoutes = {
   get: {
     "/api/rome": {
-      queryString: null, // basic auth
       response: {
         "200": ZMetiersEnrichis,
       },
@@ -43,7 +44,4 @@ export const zRomeRoutes = {
       },
     },
   },
-  post: {},
-  put: {},
-  delete: {},
-}
+} satisfies IRoutesDef
