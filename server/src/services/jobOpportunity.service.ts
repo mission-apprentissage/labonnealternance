@@ -103,9 +103,8 @@ export const getJobsFromApi = async ({
     if (caller) {
       trackApiCall({ caller, api_path: api, response: "Error" })
     }
-    const errorReturn: IApiError = { error: "internal_error" }
 
-    return errorReturn
+    return { error: "internal_error" }
   }
 }
 
