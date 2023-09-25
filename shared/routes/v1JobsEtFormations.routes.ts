@@ -1,5 +1,6 @@
 import { z } from "zod"
 
+import { ZLbacError } from "../models/lbacError.model"
 import { ZLbaItem } from "../models/lbaItem.model"
 
 import { IRoutesDef } from "./common.routes"
@@ -24,6 +25,11 @@ export const zV1JobsEtFormationsRoutes = {
           useMock: z.string().optional(), // hidden
         })
         .strict(),
+      headers: z
+        .object({
+          referer: z.string().optional(),
+        })
+        .strict(),
       response: {
         "200": z
           .object({
@@ -32,6 +38,7 @@ export const zV1JobsEtFormationsRoutes = {
                 results: z.array(ZLbaItem),
               })
               .strict()
+              .or(ZLbacError)
               .or(z.null()),
             jobs: z
               .object({
@@ -40,25 +47,30 @@ export const zV1JobsEtFormationsRoutes = {
                     results: z.array(ZLbaItem),
                   })
                   .strict()
+                  .or(ZLbacError)
                   .nullable(),
                 matchas: z
                   .object({
                     results: z.array(ZLbaItem),
                   })
                   .strict()
+                  .or(ZLbacError)
                   .nullable(),
                 lbaCompanies: z
                   .object({
                     results: z.array(ZLbaItem),
                   })
                   .strict()
+                  .or(ZLbacError)
                   .nullable(),
-                lbbCompanies: z.null(), // always null ???
+                lbbCompanies: z.null(), // always null until removal
               })
               .strict()
               .or(z.null()),
           })
           .strict(),
+        "400": ZLbacError.strict(),
+        "500": ZLbacError.strict(),
       },
     },
   },
