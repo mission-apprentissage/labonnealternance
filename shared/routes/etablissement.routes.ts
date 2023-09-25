@@ -1,7 +1,7 @@
 import { z } from "../helpers/zodWithOpenApi"
-import { ZAppointment } from "../models"
+import { ZAppointment , ZEtablissement } from "../models"
 import { zObjectId } from "../models/common"
-import { ZEtablissement } from "../models"
+
 import { IRoutesDef } from "./common.routes"
 
 export const zEtablissementRoutes = {

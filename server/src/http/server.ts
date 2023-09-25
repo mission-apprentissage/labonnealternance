@@ -1,6 +1,6 @@
-import fastifyCors from "@fastify/cors"
 import { readFileSync } from "fs"
 
+import fastifyCors from "@fastify/cors"
 import Sentry from "@sentry/node"
 import Boom from "boom"
 import cors from "cors"

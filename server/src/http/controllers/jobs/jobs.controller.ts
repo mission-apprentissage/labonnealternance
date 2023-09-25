@@ -1,5 +1,5 @@
-import { FastifyReply } from "fastify"
 import * as express from "express"
+import { FastifyReply } from "fastify"
 import { Body, Controller, Get, Header, Hidden, OperationId, Patch, Path, Post, Query, Request, Response, Route, Security, SuccessResponse, Tags } from "tsoa"
 
 import { Recruiter } from "../../../common/model/index"
