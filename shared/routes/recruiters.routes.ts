@@ -2,10 +2,24 @@ import { z } from "zod"
 
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { zEtablissementCatalogue } from "../interface/etablissement.types"
+import { ZRecruiter } from "../models"
+import { zCFA } from "../models/cfa.model"
 import { zObjectId } from "../models/common"
+import { zEntreprise } from "../models/entreprise.model"
+import { ZLbarError } from "../models/lbacError.model"
 import { ZUserRecruteur } from "../models/usersRecruteur.model"
 
 import { IRoutesDef } from "./common.routes"
+
+const zShalowUser = ZUserRecruteur.pick({
+  type: true,
+  first_name: true,
+  last_name: true,
+  phone: true,
+  email: true,
+  origin: true,
+  opco: true,
+})
 
 export const zRecruiterRoutes = {
   get: {
@@ -92,7 +106,18 @@ export const zRecruiterRoutes = {
     },
   },
   post: {
-    "/api/etablissement/creation": {},
+    "/api/etablissement/creation": {
+      body: z.union([zCFA.extend(zShalowUser.shape), zEntreprise.extend(zShalowUser.shape)]),
+      response: {
+        "2xx": z.union([
+          ZLbarError,
+          z.object({
+            formulaire: ZRecruiter,
+            user: ZUserRecruteur,
+          }),
+        ]),
+      },
+    },
     "/api/etablissement/:establishment_siret/proposition/unsubscribe": {
       params: z.object({ establishment_siret: extensions.siret() }),
       response: {
