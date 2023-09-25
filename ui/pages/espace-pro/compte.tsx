@@ -32,12 +32,13 @@ function Compte() {
   }
 
   const { data, isLoading } = useQuery("user", () => getUser(auth.id))
-
+  // @ts-expect-error: TODO
   const userMutation = useMutation(({ userId, establishment_id, values }) => updateEntreprise(userId, establishment_id, values), {
     onSuccess: () => {
       client.invalidateQueries("user")
     },
   })
+  // @ts-expect-error: TODO
   const partenaireMutation = useMutation(({ userId, values }) => updatePartenaire(userId, values), {
     onSuccess: () => {
       client.invalidateQueries("user")
@@ -88,8 +89,10 @@ function Compte() {
             onSubmit={async (values, { setSubmitting }) => {
               setSubmitting(true)
               if (auth.type === AUTHTYPE.ENTREPRISE) {
+                // @ts-expect-error: TODO
                 userMutation.mutate({ userId: data.data._id, establishment_id: auth.establishment_id, values })
               } else {
+                // @ts-expect-error: TODO
                 partenaireMutation.mutate({ userId: data.data._id, values })
               }
               toast({

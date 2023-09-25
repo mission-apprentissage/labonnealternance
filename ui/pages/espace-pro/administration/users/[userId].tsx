@@ -52,7 +52,7 @@ function DetailEntreprise() {
   const [auth] = useAuth()
 
   const { data, isLoading }: { data: any; isLoading: boolean } = useQuery("user", () => getUser(userId), { cacheTime: 0 })
-
+  // @ts-expect-error: TODO
   const userMutation = useMutation(({ userId, establishment_id, values }) => updateEntreprise(userId, establishment_id, values), {
     onSuccess: () => {
       client.invalidateQueries("user")
@@ -83,11 +83,11 @@ function DetailEntreprise() {
         return (
           <>
             <ActivateUserButton userId={userId} />
-            <DisableUserButton userId={userId} />
+            <DisableUserButton />
           </>
         )
       case USER_STATUS.ACTIVE:
-        return <DisableUserButton userId={userId} />
+        return <DisableUserButton />
       case USER_STATUS.DISABLED:
         return <ActivateUserButton userId={userId} />
 
@@ -204,6 +204,7 @@ function DetailEntreprise() {
             onSubmit={async (values, { setSubmitting }) => {
               setSubmitting(true)
               // For companies we update the User Collection and the Formulaire collection at the same time
+              // @ts-expect-error: TODO
               userMutation.mutate({ userId: data.data._id, establishment_id: data.data.establishment_id, values })
               toast({
                 title: "Mise à jour enregistrée avec succès",

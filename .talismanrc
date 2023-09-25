@@ -14,7 +14,7 @@ fileignoreconfig:
 - filename: .infra/env.ini
   checksum: 24332dcab809201ac286e4225a1d861307c291dc4a5e2308b996da2d3547a41c
 - filename: .infra/vault/vault.yml
-  checksum: 07829e185a94d0773d879c847ba5347238a8b3025042650fc92f66c7a25f4e12
+  checksum: 171944b26137803ef124182fe78dc33ed701f67b2cb0e04f015de791feb0ed9c
 - filename: server/.env.test
   checksum: 5e714996a5c6ab5bf637ff570e51f7044616dc465115b282add1580233e795fb
 - filename: server/src/http/controllers/appointments/appointments.controller.ts
