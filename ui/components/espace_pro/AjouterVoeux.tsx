@@ -27,6 +27,7 @@ import {
 // eslint-disable-next-line import/no-extraneous-dependencies
 import dayjs from "dayjs"
 import { Formik } from "formik"
+import omit from "lodash/omit"
 import { useRouter } from "next/router"
 import { useContext, useEffect, useState } from "react"
 import * as Yup from "yup"
@@ -66,8 +67,8 @@ const ChampNombre = ({ value, max, name, handleChange, label }) => {
 
 const AjouterVoeuxForm = (props) => {
   const [inputJobItems, setInputJobItems] = useState([])
-  const [formulaire, setFormulaire] = useState()
-  const [haveProposals, setHaveProposals] = useState()
+  const [formulaire, setFormulaire] = useState(null)
+  const [haveProposals, setHaveProposals] = useState(false)
   const router = useRouter()
   const [auth] = useAuth()
 
@@ -102,13 +103,13 @@ const AjouterVoeuxForm = (props) => {
     if (haveProposals) {
       return router.push({
         pathname: "/espace-pro/creation/mise-en-relation",
-        query: { job: JSON.stringify(job), email, geo_coordinates: form.geo_coordinates, fromDashboard, userId },
+        query: { job: JSON.stringify(omit(job, "rome_detail")), email, geo_coordinates: form.geo_coordinates, fromDashboard, userId },
       })
     }
 
     router.push({
       pathname: "/espace-pro/creation/fin",
-      query: { job: JSON.stringify(job), email, withDelegation: false, fromDashboard, userId },
+      query: { job: JSON.stringify(omit(job, "rome_detail")), email, withDelegation: false, fromDashboard, userId },
     })
   }
 
@@ -141,7 +142,7 @@ const AjouterVoeuxForm = (props) => {
    * @return {Promise<void>}
    */
   const submitFromDepotRapide = async (values) => {
-    const { data } = await postOffre(establishment_id, values)
+    const { data } = (await postOffre(establishment_id, values)) as any
     data.jobs.slice(-1)
     const [job] = data.jobs.slice(-1)
     await handleRedirectionAfterSubmit(data, job, false)
@@ -169,7 +170,7 @@ const AjouterVoeuxForm = (props) => {
   useEffect(() => {
     async function fetchData() {
       if (establishment_id) {
-        const { data: formulaire } = await getFormulaire(establishment_id)
+        const { data: formulaire } = (await getFormulaire(establishment_id)) as any
         setFormulaire(formulaire)
       }
     }
@@ -278,7 +279,7 @@ const AjouterVoeuxForm = (props) => {
                 <option value="Licence, autres formations niveau (Bac+3)">Licence, autres formations niveau (Bac+3)</option>
                 <option value="Master, titre ingénieur, autres formations niveau (Bac+5)">Master, titre ingénieur, autres formations niveau (Bac+5)</option>
               </Select>
-              {errors.job_level_label && touched.job_level_label && <FormErrorMessage>{errors.job_level_label}</FormErrorMessage>}
+              {errors.job_level_label && touched.job_level_label && <FormErrorMessage>{errors.job_level_label as string}</FormErrorMessage>}
             </FormControl>
             <FormControl mt={6} isRequired>
               <FormLabel>Date de début</FormLabel>
@@ -295,6 +296,7 @@ const AjouterVoeuxForm = (props) => {
             <FormControl mt={6}>
               <ChampNombre max={10} name="job_count" value={values.job_count} label="Nombre de poste(s) disponible(s)" handleChange={setFieldValue} />
             </FormControl>
+            {/* @ts-expect-error: TODO */}
             <FormControl mt={6} isInvalid={errors.job_duration}>
               <Flex align="center">
                 <Text flexGrow={2}>Durée du contrat (mois)</Text>
@@ -302,13 +304,13 @@ const AjouterVoeuxForm = (props) => {
                   maxW="27%"
                   name="job_duration"
                   value={values.job_duration}
-                  onChange={(e) => (e.target.value > 0 ? setFieldValue("job_duration", parseInt(e.target.value)) : setFieldValue("job_duration", null))}
+                  onChange={(e) => (parseInt(e.target.value) > 0 ? setFieldValue("job_duration", parseInt(e.target.value)) : setFieldValue("job_duration", null))}
                 />
               </Flex>
               <FormErrorMessage>
                 <Flex direction="row" alignItems="center">
                   <Warning m={0} />
-                  <Flex ml={1}>{errors.job_duration}</Flex>
+                  <Flex ml={1}>{errors.job_duration as string}</Flex>
                 </Flex>
               </FormErrorMessage>
             </FormControl>
@@ -326,13 +328,14 @@ const AjouterVoeuxForm = (props) => {
                   <option value="2 semaines / 3 semaines">2 semaines / 3 semaines</option>
                   <option value="6 semaines / 6 semaines">6 semaines / 6 semaines</option>
                 </Select>
-                {errors.job_rythm && touched.job_rythm && <FormErrorMessage>{errors.job_rythm}</FormErrorMessage>}
+                {errors.job_rythm && touched.job_rythm && <FormErrorMessage>{errors.job_rythm as string}</FormErrorMessage>}
               </FormControl>
             ) : null}
             <Divider mt={5} />
             {(values.job_description || organisation?.includes("akto")) && (
               <FormControl mt={6}>
                 <FormLabel>Description</FormLabel>
+                {/* @ts-expect-error: TODO */}
                 <Textarea rows="6" name="job_description" defaultValue={values.job_description} onChange={handleChange} />
                 <FormHelperText>
                   Insérer ici une description de l'offre d'apprentissage, un lien vers la fiche de poste ou tout élément permettant de présenter le poste à pourvoir.
@@ -518,7 +521,7 @@ export const PageAjouterVoeux = (props) => {
             <Text>Recherche en cours...</Text>
           </Flex>
         ) : (
-          <RomeInformationDetail {...romeInformation} />
+          <RomeInformationDetail {...(romeInformation as any)} />
         )}
       </Box>
     </SimpleGrid>

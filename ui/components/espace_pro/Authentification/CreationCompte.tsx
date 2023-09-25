@@ -142,7 +142,7 @@ const CreationCompteForm = ({ type, setQualiopi, setBandeau, origin }) => {
 export default function CreationCompte({ type, widget, origin = "lba" }) {
   const { setWidget, widget: wid } = useContext(WidgetContext)
   const { setOrganisation } = useContext(LogoContext)
-  const [qualiopi, setQualiopi] = useState({})
+  const [qualiopi, setQualiopi] = useState(null)
   const [bandeau, setBandeau] = useState(null)
   // const [searchParams] = useSearchParams() // TODO_AB
   const router = useRouter()

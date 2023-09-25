@@ -20,7 +20,7 @@ export const CustomInput = (props) => {
             <Flex ml={1}>
               <div dangerouslySetInnerHTML={{ __html: meta.error }} />
               {meta.error?.includes("déjà associé") && (
-                <Link href="/authentification" textColor="bluefrance.500" textDecoration="underline" ml={1}>
+                <Link href="/espace-pro/authentification" textColor="bluefrance.500" textDecoration="underline" ml={1}>
                   Connexion
                 </Link>
               )}

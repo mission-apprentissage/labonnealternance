@@ -93,7 +93,7 @@ const Formulaire = ({ submitForm }) => {
                   )}
                   <Flex justifyContent="flex-end" alignItems="center" mt={5}>
                     {!widget?.isWidget && (
-                      <Button variant="link" sx={{ color: "black", fontWeight: 400 }} mr={5} onClick={() => router.push("/espace-pro/")}>
+                      <Button variant="link" sx={{ color: "black", fontWeight: 400 }} mr={5} onClick={() => router.back()}>
                         Annuler {/* TODO_AB */}
                       </Button>
                     )}
