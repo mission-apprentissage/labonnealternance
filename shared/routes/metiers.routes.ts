@@ -11,7 +11,7 @@ export const zMetiersRoutes = {
         "200": ZMetiersEnrichis.or(
           z.object({
             error: z.string().nullish(),
-            error_messages: z.string().array().nullish(),
+            error_messages: z.array(z.string()).nullish(),
           })
         ),
       },
@@ -22,7 +22,7 @@ export const zMetiersRoutes = {
         "200": ZMetiersEnrichis.or(
           z.object({
             error: z.string().nullish(),
-            error_messages: z.string().array().nullish(),
+            error_messages: z.array(z.string()).nullish(),
           })
         ),
       },
@@ -59,8 +59,8 @@ export const zMetiersRoutes = {
       querystring: z
         .object({
           title: z.string().optional(),
-          romes: z.string().array().optional(),
-          rncps: z.string().array().optional(),
+          romes: z.array(z.string()).optional(),
+          rncps: z.array(z.string()).optional(),
         })
         .strict(),
       response: {

@@ -2,6 +2,7 @@ import { z } from "zod"
 
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { zObjectId } from "../models/common"
+import { ZLbacError } from "../models/lbacError.model"
 import { ZLbaItem } from "../models/lbaItem.model"
 import { ZRecruiter } from "../models/recruiter.model"
 import { ZUserRecruteur } from "../models/usersRecruteur.model"
@@ -95,8 +96,12 @@ export const zV1JobsRoutes = {
           diploma: z.string().optional(),
           opco: z.string().optional(),
           opcoUrl: z.string().optional(),
-          referer: z.string().optional(), // hidden
           useMock: z.string().optional(), // hidden
+        })
+        .strict(),
+      headers: z
+        .object({
+          referer: z.string().optional(),
         })
         .strict(),
       response: {
@@ -108,20 +113,23 @@ export const zV1JobsRoutes = {
                 results: z.array(ZLbaItem),
               })
               .strict()
+              .or(ZLbacError)
               .nullable(),
             matchas: z
               .object({
                 results: z.array(ZLbaItem),
               })
               .strict()
+              .or(ZLbacError)
               .nullable(),
             lbaCompanies: z
               .object({
                 results: z.array(ZLbaItem),
               })
               .strict()
+              .or(ZLbacError)
               .nullable(),
-            lbbCompanies: z.null(), // always null ???
+            lbbCompanies: z.null(), // always null until removal
           })
           .strict(),
       },
@@ -138,7 +146,11 @@ export const zV1JobsRoutes = {
       querystring: z
         .object({
           caller: z.string().optional(),
-          referer: z.string().optional(), // hidden
+        })
+        .strict(),
+      headers: z
+        .object({
+          referer: z.string().optional(),
         })
         .strict(),
       response: {
@@ -147,6 +159,9 @@ export const zV1JobsRoutes = {
             lbaCompanies: z.array(ZLbaItem),
           })
           .strict(),
+        "400": ZLbacError,
+        "404": ZLbacError,
+        "500": ZLbacError,
       },
       securityScheme: {
         auth: "none",
@@ -163,12 +178,20 @@ export const zV1JobsRoutes = {
           caller: z.string().optional(),
         })
         .strict(),
+      headers: z
+        .object({
+          referer: z.string().optional(),
+        })
+        .strict(),
       response: {
         "200": z
           .object({
             matchas: z.array(ZLbaItem),
           })
           .strict(),
+        //"419": le code correspondant a disparu. ticket bug ouvert
+        "400": ZLbacError,
+        "500": ZLbacError,
       },
       securityScheme: {
         auth: "none",
@@ -185,12 +208,20 @@ export const zV1JobsRoutes = {
           caller: z.string().optional(),
         })
         .strict(),
+      headers: z
+        .object({
+          referer: z.string().optional(),
+        })
+        .strict(),
       response: {
         "200": z
           .object({
             peJobs: z.array(ZLbaItem),
           })
           .strict(),
+        "400": ZLbacError,
+        "404": ZLbacError,
+        "500": ZLbacError,
       },
       securityScheme: {
         auth: "none",
