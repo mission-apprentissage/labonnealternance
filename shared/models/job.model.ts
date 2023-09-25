@@ -15,7 +15,7 @@ export const ZDelegation = z
   .object({
     siret_code: z.string().nullish().describe("SIRET de l'établissement"),
     email: z.string().nullish().describe("Email gestionnaire de l'établissement"),
-    cfa_read_company_detail_at: z.date().nullish().describe("Date de consultation de l'offre"),
+    cfa_read_company_detail_at: z.date().or(z.string()).describe("Date de consultation de l'offre"),
   })
   .strict()
 
@@ -32,23 +32,26 @@ export const ZJob = z
     job_creation_date: z.date().nullish().describe("Date de creation de l'offre"),
     job_expiration_date: z.date().nullish().describe("Date d'expiration de l'offre"),
     job_update_date: z.date().or(z.string()).describe("Date de dernière mise à jour de l'offre"),
-    job_last_prolongation_date: z.date().describe("Date de dernière prolongation de l'offre"),
+    job_last_prolongation_date: z.date().or(z.string()).describe("Date de dernière prolongation de l'offre"),
     job_prolongation_count: z.number().describe("Nombre de fois où l'offre a été prolongée"),
     relance_mail_sent: z.boolean().describe("Statut de l'envoi du mail de relance avant expiration"),
     job_status: z.enum([allJobStatus[0], ...allJobStatus.slice(1)]).describe("Statut de l'offre"),
     job_status_comment: z.string().describe("Raison de la suppression de l'offre"),
-    job_type: z.enum(["Apprentissage", "Professionnalisation"]).describe("Type de contrat"),
+    job_type: z
+      .array(z.enum(["Apprentissage", "Professionnalisation"]))
+      .nullish()
+      .describe("Type de contrat"),
     is_multi_published: z.boolean().nullish().describe("Definit si l'offre est diffusée sur d'autres jobboard que La bonne alternance"),
     is_delegated: z.boolean().describe("Definit si l'entreprise souhaite déléguer l'offre à un CFA"),
     job_delegation_count: z.number().describe("Nombre de délégations"),
     delegations: z.array(ZDelegation).describe("Liste des délégations"),
     is_disabled_elligible: z.boolean().describe("Poste ouvert aux personnes en situation de handicap"),
-    job_count: z.number().describe("Nombre de poste(s) ouvert(s) pour cette offre"),
-    job_duration: z.number().describe("Durée du contrat en année"),
-    job_rythm: z.string().describe("Répartition de la présence de l'alternant en formation/entreprise"),
+    job_count: z.number().nullish().describe("Nombre de poste(s) ouvert(s) pour cette offre"),
+    job_duration: z.number().nullish().describe("Durée du contrat en année"),
+    job_rythm: z.string().nullish().describe("Répartition de la présence de l'alternant en formation/entreprise"),
     custom_address: z.string().nullish().describe("Adresse personnalisée de l'entreprise"),
     custom_geo_coordinates: z.string().nullish().describe("Latitude/Longitude de l'adresse personnalisée de l'entreprise"),
-    stats_detail_view: z.number().describe("Nombre de vues de la page de détail"),
-    stats_search_view: z.number().describe("Nombre de vues sur une page de recherche"),
+    stats_detail_view: z.number().nullish().describe("Nombre de vues de la page de détail"),
+    stats_search_view: z.number().nullish().describe("Nombre de vues sur une page de recherche"),
   })
   .strict()

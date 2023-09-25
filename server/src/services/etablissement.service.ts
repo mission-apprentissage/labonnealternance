@@ -595,9 +595,9 @@ export const entrepriseOnboardingWorkflow = {
     let newEntreprise: IUserRecruteur = await createUser({ ...savedData, establishment_id: formulaireId, type: ENTREPRISE })
 
     if (hasSiretError) {
-      newEntreprise = await setUserInError(newEntreprise._id, "Erreur lors de l'appel à l'API SIRET")
+      newEntreprise = (await setUserInError(newEntreprise._id, "Erreur lors de l'appel à l'API SIRET")) ?? newEntreprise
     } else if (isUserValidated) {
-      newEntreprise = await autoValidateUser(newEntreprise._id)
+      newEntreprise = (await autoValidateUser(newEntreprise._id)) ?? newEntreprise
     } else {
       const balValidationResult = await autoValidateCompany(newEntreprise)
       newEntreprise = balValidationResult.userRecruteur

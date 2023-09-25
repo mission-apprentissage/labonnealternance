@@ -122,8 +122,11 @@ export const registerUser = (email: IUserRecruteur["email"]) => UserRecruteur.fi
  * @param {ModelUpdateOptions} [options={new:true}]
  * @returns {Promise<IUserRecruteur>}
  */
-export const updateUserValidationHistory = (userId: IUserRecruteur["_id"], state: UpdateQuery<IUserStatusValidation>, options: ModelUpdateOptions = { new: true }) =>
-  UserRecruteur.findByIdAndUpdate({ _id: userId }, { $push: { status: state } }, options)
+export const updateUserValidationHistory = async (
+  userId: IUserRecruteur["_id"],
+  state: UpdateQuery<IUserStatusValidation>,
+  options: ModelUpdateOptions = { new: true }
+): Promise<IUserRecruteur | null> => await UserRecruteur.findByIdAndUpdate({ _id: userId }, { $push: { status: state } }, options)
 
 /**
  * @description get last user validation state from status array, by creation date
