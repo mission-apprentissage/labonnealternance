@@ -404,7 +404,7 @@ export default (server: Server) => {
       if ("matchas" in result) {
         const { matchas } = result
         if (matchas && "results" in matchas) {
-          matchas.results.map((matchaOffre) => addOffreSearchView(matchaOffre.job.id))
+          matchas.results.map((matchaOffre) => matchaOffre.job && addOffreSearchView(matchaOffre.job.id))
         }
       }
       return res.send(result)
