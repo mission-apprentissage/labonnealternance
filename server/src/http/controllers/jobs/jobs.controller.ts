@@ -1,5 +1,8 @@
-import { notFound } from "boom"
-import { IRoutes, zRoutes } from "shared/index.js"
+import { zRoutes } from "shared/index.js"
+import { IRouteSchema } from "shared/routes/common.routes"
+import { zV1JobsRoutes } from "shared/routes/v1Jobs.routes"
+
+import { IUser } from "@/common/model/schema/user/user.types"
 
 import { Recruiter } from "../../../common/model/index"
 import { ICredential } from "../../../common/model/schema/credentials/credential.types"
@@ -35,6 +38,13 @@ const config = {
     max: 5,
     timeWindow: "1s",
   },
+}
+export type AuthStrategy = "api-key" | "basic" | "jwt-password" | "jwt-bearer" | "jwt-token" | "jwt-rdv-admin" | "none"
+
+type AuthenticatedUser<AuthScheme extends IRouteSchema["securityScheme"]["auth"]> = AuthScheme extends "jwt-bearer" ? IUser : AuthScheme extends "api-key" ? ICredential : null
+
+const getUser = <Path extends keyof (typeof zV1JobsRoutes)["get"]>(req): AuthenticatedUser<(typeof zV1JobsRoutes)["get"][Path]["securityScheme"]["auth"]> => {
+  return req.user as AuthenticatedUser<(typeof zV1JobsRoutes)["get"][Path]["securityScheme"]["auth"]>
 }
 
 export default (server: Server) => {
@@ -74,10 +84,11 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { query, select, page, limit } = req.query
-      const user = req.user
 
-      const qs = JSON.parse(query)
-      const slt = JSON.parse(select)
+      const user = getUser<"/api/v1/jobs/bulk">(req)
+
+      const qs = query ? JSON.parse(query) : {}
+      const slt = select ? JSON.parse(select) : {}
 
       const jobs = await getFormulaires({ ...qs, opco: user.organisation }, slt, { page, limit })
 

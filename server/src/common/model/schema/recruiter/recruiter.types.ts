@@ -1,9 +1,11 @@
+import { ObjectId } from "mongodb"
+
 import { RECRUITER_STATUS } from "../../../../services/constant.service"
 import { IGlobalAddress } from "../_shared/shared.types"
 import { IJobs } from "../jobs/jobs.types"
 
 interface IRecruiter {
-  _id: string
+  _id: ObjectId
   establishment_id: string
   establishment_raison_sociale: string
   establishment_enseigne: string
