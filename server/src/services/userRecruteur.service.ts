@@ -139,35 +139,55 @@ export const getUserStatus = (stateArray: IUserRecruteur["status"]) => {
   return lastValidationEvent?.status
 }
 
-export const setUserInError = async (userId: IUserRecruteur["_id"], reason: string) =>
-  await updateUserValidationHistory(userId, {
+export const setUserInError = async (userId: IUserRecruteur["_id"], reason: string) => {
+  const response = await updateUserValidationHistory(userId, {
     validation_type: VALIDATION_UTILISATEUR.AUTO,
     user: "SERVEUR",
     status: ETAT_UTILISATEUR.ERROR,
     reason,
   })
+  if (!response) {
+    throw new Error(`could not find user history for user with id=${userId}`)
+  }
+  return response
+}
 
-export const autoValidateUser = async (userId: IUserRecruteur["_id"]) =>
-  await updateUserValidationHistory(userId, {
+export const autoValidateUser = async (userId: IUserRecruteur["_id"]) => {
+  const response = await updateUserValidationHistory(userId, {
     validation_type: VALIDATION_UTILISATEUR.AUTO,
     user: "SERVEUR",
     status: ETAT_UTILISATEUR.VALIDE,
   })
+  if (!response) {
+    throw new Error(`could not find user history for user with id=${userId}`)
+  }
+  return response
+}
 
-export const setUserHasToBeManuallyValidated = async (userId: IUserRecruteur["_id"]) =>
-  await updateUserValidationHistory(userId, {
+export const setUserHasToBeManuallyValidated = async (userId: IUserRecruteur["_id"]) => {
+  const response = await updateUserValidationHistory(userId, {
     validation_type: VALIDATION_UTILISATEUR.AUTO,
     user: "SERVEUR",
     status: ETAT_UTILISATEUR.ATTENTE,
   })
+  if (!response) {
+    throw new Error(`could not find user history for user with id=${userId}`)
+  }
+  return response
+}
 
-export const deactivateUser = async (userId: IUserRecruteur["_id"], reason?: string) =>
-  await updateUserValidationHistory(userId, {
+export const deactivateUser = async (userId: IUserRecruteur["_id"], reason?: string) => {
+  const response = await updateUserValidationHistory(userId, {
     validation_type: VALIDATION_UTILISATEUR.AUTO,
     user: "SERVEUR",
     status: ETAT_UTILISATEUR.DESACTIVE,
     reason,
   })
+  if (!response) {
+    throw new Error(`could not find user history for user with id=${userId}`)
+  }
+  return response
+}
 
 export const sendWelcomeEmailToUserRecruteur = async (userRecruteur: IUserRecruteur) => {
   const { email, first_name, last_name, establishment_raison_sociale, type } = userRecruteur
