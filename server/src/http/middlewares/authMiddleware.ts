@@ -12,6 +12,7 @@ import {
   RawServerDefault,
   RouteGenericInterface,
   preHandlerAsyncHookHandler,
+  preHandlerHookHandler,
 } from "fastify"
 import jwt, { JwtPayload } from "jsonwebtoken"
 import passport from "passport"
@@ -136,20 +137,20 @@ function createAuthHandler(authFn: (req: FastifyRequest) => Promise<FastifyReque
   }
 }
 
-function authenticationMiddleware(strategy: SecurityScheme) {
+function authenticationMiddleware(strategy: SecurityScheme, req: FastifyRequest) {
   switch (strategy.auth) {
     case "basic":
-      return authBasic
+      return authBasic(req)
     case "jwt-password":
-      return authJwtPassword
+      return authJwtPassword(req)
     case "jwt-bearer":
-      return authJwtBearer
+      return authJwtBearer(req)
     case "jwt-token":
-      return authJwtToken
+      return authJwtToken(req)
     case "jwt-rdv-admin":
-      return authJwtRdvAdmin
+      return authJwtRdvAdmin(req)
     case "api-key":
-      return authApiKey
+      return authApiKey(req)
     case "none":
       return async () => {
         // noop
@@ -161,10 +162,10 @@ function authenticationMiddleware(strategy: SecurityScheme) {
   }
 }
 
-function authorizationnMiddleware(strategy: SecurityScheme) {
+function authorizationnMiddleware(strategy: SecurityScheme, req: FastifyRequest) {
   switch (strategy.role) {
     case "admin":
-      return authBasic
+      return authBasic(req)
     case "all":
       return async () => {
         // noop
@@ -176,8 +177,21 @@ function authorizationnMiddleware(strategy: SecurityScheme) {
   }
 }
 
+const symbol = Symbol("authStrategy")
+
 export function auth(strategy: SecurityScheme) {
-  return [authenticationMiddleware(strategy), authorizationnMiddleware(strategy)]
+  const authMiddleware = (req: FastifyRequest) => {
+    authenticationMiddleware(strategy, req)
+    authorizationnMiddleware(strategy, req)
+  }
+
+  authMiddleware[symbol] = strategy
+
+  return authMiddleware
+}
+
+export function describeAuthMiddleware(fn) {
+  return fn[symbol]
 }
 
 declare module "fastify" {
@@ -190,6 +204,6 @@ declare module "fastify" {
   > {
     auth<RouteGeneric extends RouteGenericInterface = RouteGenericInterface, ContextConfig = ContextConfigDefault, SchemaCompiler extends FastifySchema = FastifySchema>(
       strategy: SecurityScheme
-    ): preHandlerAsyncHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, Logger>[]
+    ): preHandlerHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, Logger>
   }
 }
