@@ -98,13 +98,9 @@ export const getEntrepriseInformation = async (siret, options: { cfa_delegated_s
   try {
     const { data } = await API.get(`/etablissement/entreprise/${siret}`, { params: options })
     return data
-  } catch (error) {
-    const status = error?.response?.status
-    if (status && status < 500) {
-      return error?.response?.data
-    } else {
-      return { error: true, errorType: "server", data: error?.response?.data }
-    }
+  } catch (error: any) {
+    const payload: { data: object | undefined; error: string; statusCode: number; message: string } = error.response.data
+    return payload
   }
 }
 export const getEntrepriseOpco = async (siret) => {
