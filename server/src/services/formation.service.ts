@@ -66,7 +66,7 @@ export const getFormations = async ({
 }: {
   romes?: string[]
   romeDomain?: string
-  coords?: [string, string]
+  coords?: [number, number]
   radius?: number
   diploma?: string
   limit?: number
@@ -340,7 +340,7 @@ const getAtLeastSomeFormations = async ({
 }: {
   romes?: string[]
   romeDomain?: string
-  coords?: [string, string]
+  coords?: [number, number]
   radius?: number
   diploma?: string
   maxOutLimitFormation: number
@@ -600,9 +600,9 @@ export const getFormationsQuery = async ({
   api = "formationV1",
 }: {
   romes?: string
-  longitude?: string
-  latitude?: string
-  radius?: string
+  longitude?: number
+  latitude?: number
+  radius?: number
   diploma?: string
   romeDomain?: string
   caller?: string
@@ -619,14 +619,14 @@ export const getFormationsQuery = async ({
 
   try {
     const formations = await getAtLeastSomeFormations({
-      romes: parameterControl.romes ? parameterControl.romes.split(",") : null,
-      coords: longitude ? [longitude, latitude] : null,
-      radius: parseInt(radius),
+      romes: parameterControl.romes && parameterControl.romes.split(","),
+      coords: longitude !== undefined && latitude !== undefined ? [longitude, latitude] : undefined,
+      radius,
       diploma: diploma,
       maxOutLimitFormation: 5,
-      romeDomain: romeDomain,
-      caller: caller,
-      useMock: useMock,
+      romeDomain,
+      caller,
+      useMock,
       options: options ? options.split(",") : [],
     })
 
