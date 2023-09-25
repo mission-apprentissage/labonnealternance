@@ -74,7 +74,7 @@ function EditPage() {
    * @param {String} id
    * @returns {Promise<*>}
    */
-  const getEligibleTrainingsForAppointments = (id) => _get(`admin/eligible-trainings-for-appointment?query={"etablissement_formateur_siret":"${id}"}&limit=1000`)
+  const getEligibleTrainingsForAppointments = (id) => _get(`admin/eligible-trainings-for-appointment/etablissement-formateur-siret/${id}`)
 
   /**
    * @description Returns etablissement from its SIRET.
@@ -225,7 +225,7 @@ function EditPage() {
                     </Tr>
                   </Thead>
                   <Tbody>
-                    {eligibleTrainingsForAppointmentResult.parameters.map((parameter) => {
+                    {eligibleTrainingsForAppointmentResult.map((parameter) => {
                       const emailRef = createRef()
                       const emailFocusRef = createRef()
 
