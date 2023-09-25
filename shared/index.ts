@@ -7,6 +7,7 @@ import { zCampaignWebhookRoutes } from "./routes/campaignWebhook.routes"
 import { IRouteSchema } from "./routes/common.routes"
 import { zCoreRoutes } from "./routes/core.routes"
 import { zEligibleTrainingsForAppointmentRoutes } from "./routes/eligibleTrainingsForAppointment.routes"
+import { zEmailsRoutes } from "./routes/emails.routes"
 import { zEtablissementRoutes } from "./routes/etablissement.routes"
 import { zFormationRoute } from "./routes/formations.routes"
 import { zFormulaireRoute } from "./routes/formulaire.route"
@@ -58,23 +59,21 @@ const zRoutesPost = {
   ...zFormulaireRoute.post,
   ...zRecruiterRoutes.post,
   ...zCampaignWebhookRoutes.post,
-  ...zCoreRoutes.post,
   ...zEtablissementRoutes.post,
   ...zAppointmentsRoute.post,
+  ...zEmailsRoutes.post,
 } as const
 
 const zRoutesPut = {
   ...zUserRecruteurRoutes.put,
   ...zFormulaireRoute.put,
   ...zRecruiterRoutes.put,
-  ...zCoreRoutes.put,
   ...zEligibleTrainingsForAppointmentRoutes.put,
 } as const
 
 const zRoutesDelete = {
   ...zUserRecruteurRoutes.delete,
   ...zFormulaireRoute.delete,
-  ...zCoreRoutes.delete,
 } as const
 
 const zRoutesPatch = {
