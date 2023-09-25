@@ -7,6 +7,17 @@ import { _get, _post } from "../../../../common/httpClient"
 import { Layout } from "../../../../components/espace_pro"
 import { InfoCircleFilled, SuccessCircle } from "../../../../theme/components/icons"
 
+type IPremiumEtablissement = {
+  raison_sociale: string
+  gestionnaire_siret: string
+  formateur_siret: string
+  formateur_address: string
+  formateur_zip_code: string
+  formateur_city: string
+  premium_refusal_date: any
+  premium_activation_date: any
+}
+
 /**
  * @description Premium form component.
  * @returns {JSX.Element}
@@ -16,7 +27,7 @@ export default function PremiumForm() {
   const { id } = router.query
   const [hasRefused, setHasRefused] = useState(false)
   const [hasAccepted, setHasAccepted] = useState(false)
-  const [etablissement, setEtablissement] = useState()
+  const [etablissement, setEtablissement]: [IPremiumEtablissement | null, (e: any) => void] = useState()
 
   const title = "Parcoursup"
 
@@ -40,18 +51,22 @@ export default function PremiumForm() {
     window.scrollTo(0, 0)
   }
 
-  useEffect(async () => {
-    const etablissement = await _get(`etablissements/${id}`)
+  useEffect(() => {
+    const fetchData = async () => {
+      const etablissement = await _get(`etablissements/${id}`)
 
-    if (etablissement.premium_refusal_date) {
-      setHasRefused(true)
+      if (etablissement.premium_refusal_date) {
+        setHasRefused(true)
+      }
+
+      if (etablissement.premium_activation_date) {
+        setHasAccepted(true)
+      }
+
+      setEtablissement(etablissement)
     }
 
-    if (etablissement.premium_activation_date) {
-      setHasAccepted(true)
-    }
-
-    setEtablissement(etablissement)
+    fetchData().catch(console.error)
   }, [id])
 
   if (!etablissement) {
@@ -132,7 +147,7 @@ export default function PremiumForm() {
               <Flex align="center" borderColor="pinksoft.400" borderLeftWidth="4px" bg="grey.100" py={4} my={8}>
                 <Text fontSize="14px">
                   <Box float="left" pr={3} pl={3}>
-                    <InfoCircleFilled width={6} fillHexaColor="#FF8D7E" />
+                    <InfoCircleFilled fillHexaColor="#FF8D7E" />
                   </Box>{" "}
                   Cette action n’aura aucun impact sur le référencement de vos formations dans Parcoursup
                 </Text>

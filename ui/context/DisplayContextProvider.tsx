@@ -2,6 +2,17 @@ import React, { createContext, useReducer } from "react"
 
 import { defaultFilters } from "../components/SearchForTrainingsAndJobs/services/utils"
 
+// formValues = {
+//   location: {
+//     value: {
+//       coordinates: [lon, lat]
+//     }
+//     insee
+//     zipcode
+//     label
+//   }
+// }
+
 const initialState = {
   formValues: null,
   visiblePane: "resultList",

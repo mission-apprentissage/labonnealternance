@@ -78,7 +78,14 @@ export const BuildSwipe = ({ currentList, handleSelectItem, selectedItem }) => {
   }
 }
 
-export const getNavigationButtons = ({ goPrev, goNext, setSeeInfo, handleClose }) => {
+export const getNavigationButtons = ({
+  goPrev,
+  goNext,
+  setSeeInfo = (t) => {
+    console.log(t)
+  },
+  handleClose,
+}) => {
   return (
     <>
       <Box>

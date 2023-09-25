@@ -37,10 +37,7 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
   const isCfa = isCfaEntreprise(selectedItem?.company?.siret, selectedItem?.company?.headquarter?.siret)
   const isMandataire = selectedItem?.company?.mandataire
 
-  const [seeInfo, setSeeInfo] = useState(false)
-
   useEffect(() => {
-    setSeeInfo(false)
     try {
       filterLayers(activeFilters)
     } catch (err) {
@@ -95,6 +92,7 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
       }}
       {...swipeHandlers}
     >
+      {/* @ts-expect-error: TODO */}
       <Box
         as="header"
         sx={{
@@ -106,8 +104,8 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
       >
         <Box width="100%" pl={["0", 4]} pb={isCollapsedHeader ? "0" : 2}>
           <Flex mb={2} justifyContent="flex-end">
-            {getTags({ kind, isCfa, isMandataire, hasAlsoJob })}
-            {getNavigationButtons({ goPrev, goNext, setSeeInfo, handleClose })}
+            {getTags({ kind, isCfa, isMandataire })}
+            {getNavigationButtons({ goPrev, goNext, handleClose })}
           </Flex>
 
           {kind === "formation" && (
@@ -137,7 +135,7 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
             {defaultTo(actualTitle, "")}
           </Text>
 
-          {!isCollapsedHeader && getSoustitre({ selectedItem, kind })}
+          {!isCollapsedHeader && getSoustitre({ selectedItem })}
 
           {buttonJePostuleShouldBeDisplayed(kind, selectedItem) && (
             <Box my={4}>
@@ -165,9 +163,9 @@ const ItemDetail = ({ selectedItem, handleClose, handleSelectItem }) => {
         </Box>
       </Box>
 
-      {kind === "peJob" ? <PeJobDetail job={selectedItem} seeInfo={seeInfo} setSeeInfo={setSeeInfo} /> : ""}
-      {kind === "matcha" ? <MatchaDetail job={selectedItem} seeInfo={seeInfo} setSeeInfo={setSeeInfo} /> : ""}
-      {amongst(kind, ["lbb", "lba"]) ? <LbbCompanyDetail lbb={selectedItem} seeInfo={seeInfo} setSeeInfo={setSeeInfo} /> : ""}
+      {kind === "peJob" ? <PeJobDetail job={selectedItem} /> : ""}
+      {kind === "matcha" ? <MatchaDetail job={selectedItem} /> : ""}
+      {amongst(kind, ["lbb", "lba"]) ? <LbbCompanyDetail lbb={selectedItem} /> : ""}
 
       {kind === "formation" ? <TrainingDetail training={selectedItem} hasAlsoJob={hasAlsoJob} /> : ""}
 

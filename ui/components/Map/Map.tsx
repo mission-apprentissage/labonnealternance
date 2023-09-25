@@ -49,8 +49,7 @@ const Map = ({ handleSearchSubmit, showSearchForm, selectItemOnMap }) => {
     if (formValues) {
       if (shouldHandleMapSearch) {
         shouldHandleMapSearch = false
-
-        const values = formValues
+        const values = formValues as any // TODO
         if (!values?.location?.value) {
           values.location = {
             value: {
@@ -96,7 +95,7 @@ const Map = ({ handleSearchSubmit, showSearchForm, selectItemOnMap }) => {
     /*
     Chargement de la carte si :
     - elle n'est pas chargée
-    - il y a des résultats 
+    - il y a des résultats
     - le panneau carte est visible à l'écran
      */
 
@@ -104,6 +103,7 @@ const Map = ({ handleSearchSubmit, showSearchForm, selectItemOnMap }) => {
 
     return (
       !isMapInitialized &&
+      // @ts-expect-error: TODO
       (trainings.length > 0 || jobs.peJobs || jobs.lbaCompanies || jobs.matchas) &&
       (shouldMapBeVisible || vw > 767) &&
       (!map || (map && !document.getElementsByClassName("mapContainer")[0].innerHTML.length))
@@ -173,7 +173,9 @@ const Map = ({ handleSearchSubmit, showSearchForm, selectItemOnMap }) => {
   return (
     <>
       <MapSearchButton handleSearchClick={handleSearchClick} />
+      {/* @ts-expect-error: TODO */}
       <Box className="mapContainer" ref={(el) => (mapContainer.current = el)} display={mapInitialized ? "" : "none"} {...mapStyleParams}></Box>
+      {/* @ts-expect-error: TODO */}
       <Box display={mapInitialized ? "none" : ""} {...mapStyleParams}>
         <Box {...staticMapStyleParams}></Box>
       </Box>

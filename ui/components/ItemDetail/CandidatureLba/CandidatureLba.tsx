@@ -15,7 +15,7 @@ import hasAlreadySubmittedCandidature from "./services/hasAlreadySubmittedCandid
 import submitCandidature from "./services/submitCandidature"
 import useLocalStorage from "./services/useLocalStorage"
 
-const CandidatureLba = ({ item, fakeLocalStorage }) => {
+const CandidatureLba = ({ item, fakeLocalStorage = undefined }) => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [sendingState, setSendingState] = useState("not_sent")
   const kind = item?.ideaType || ""

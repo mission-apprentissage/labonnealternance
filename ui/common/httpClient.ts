@@ -5,6 +5,9 @@ import { publicConfig } from "../config.public"
 import { getAuth } from "./auth"
 
 class AuthError extends Error {
+  json: any
+  statusCode: number | string
+  prettyMessage: string
   constructor(json, statusCode) {
     super(`Request rejected with status code ${statusCode}`)
     this.json = json
@@ -14,6 +17,9 @@ class AuthError extends Error {
 }
 
 class HTTPError extends Error {
+  json: any
+  statusCode: number | string
+  prettyMessage: string
   constructor(message, json, statusCode) {
     super(message)
     this.json = json
@@ -58,7 +64,7 @@ export const _get = (path) => {
   }).then((res) => handleResponse(path, res))
 }
 
-export const _post = (path, body) => {
+export const _post = (path, body = {}) => {
   const normalisedEndpoint = publicConfig.apiEndpoint.endsWith("/") ? publicConfig.apiEndpoint.slice(0, -1) : publicConfig.apiEndpoint
   return fetch(`${normalisedEndpoint}/${path}`, {
     method: "POST",
