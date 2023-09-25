@@ -1,6 +1,5 @@
+import Boom from "boom"
 import { zRoutes } from "shared/index"
-
-import { administratorOnly } from "@/http/middlewares/permissionsMiddleware"
 
 import { Etablissement } from "../../../common/model/index"
 import { Server } from "../../server"
@@ -15,14 +14,12 @@ export default (server: Server) => {
   server.get(
     "/api/admin/etablissements",
     {
-      schema: zRoutes.get["/api/admin/etablissement"],
-      // preHandler: [authenticationMiddleware("jwt-rdv-admin"), administratorOnly],
+      schema: zRoutes.get["/api/admin/etablissements"],
+      preHandler: server.auth(zRoutes.get["/api/admin/etablissements"].securityScheme),
     },
     async (req, res) => {
-      const qs = req.query
-      const query = qs && qs.query ? JSON.parse(qs.query) : {}
-      const page = qs && qs.page ? qs.page : 1
-      const limit = qs && qs.limit ? parseInt(qs.limit, 50) : 50
+      const query = req.query.query ? JSON.parse(req.query.query) : {}
+      const { page, limit } = req.query
 
       const allData = await Etablissement.paginate({ query, page, limit })
 
@@ -47,7 +44,7 @@ export default (server: Server) => {
     "/api/admin/etablissements/siret-formateur/:siret",
     {
       schema: zRoutes.get["/api/admin/etablissements/siret-formateur/:siret"],
-      // preHandler: [authenticationMiddleware("jwt-rdv-admin"), administratorOnly],
+      preHandler: server.auth(zRoutes.get["/api/admin/etablissements/siret-formateur/:siret"].securityScheme),
     },
     async ({ params }, res) => {
       const etablissement = await Etablissement.findOne({ formateur_siret: params.siret })
@@ -67,7 +64,7 @@ export default (server: Server) => {
     "/api/admin/etablissements/:id",
     {
       schema: zRoutes.get["/api/admin/etablissements/:id"],
-      // preHandler: [authenticationMiddleware("jwt-rdv-admin"), administratorOnly],
+      preHandler: server.auth(zRoutes.get["/api/admin/etablissements/:id"].securityScheme),
     },
     async (req, res) => {
       const etablissement = await Etablissement.findById(req.params.id)
@@ -84,10 +81,10 @@ export default (server: Server) => {
    * Creates one or multiple etablissements.
    */
   server.post(
-    "/api/admin/etablissements/",
+    "/api/admin/etablissements",
     {
-      schema: zRoutes.post["api/admin/etablissements/"],
-      // preHandler: [authenticationMiddleware("jwt-rdv-admin"), administratorOnly],
+      schema: zRoutes.post["/api/admin/etablissements"],
+      preHandler: server.auth(zRoutes.post["/api/admin/etablissements"].securityScheme),
     },
     async ({ body }, res) => {
       const { etablissements } = body
@@ -109,17 +106,21 @@ export default (server: Server) => {
   server.patch(
     "/api/admin/etablissements/:id",
     {
-      schema: zRoutes.post["/api/admin/etablissements/:id"],
-      // preHandler: [authenticationMiddleware("jwt-rdv-admin"), administratorOnly],
+      schema: zRoutes.patch["/api/admin/etablissements/:id"],
+      preHandler: server.auth(zRoutes.patch["/api/admin/etablissements/:id"].securityScheme),
     },
     async ({ body, params }, res) => {
       const etablissement = await Etablissement.findById(params.id)
 
       if (!etablissement) {
-        return res.status(404).send()
+        throw Boom.notFound()
       }
 
       const result = await Etablissement.findByIdAndUpdate(params.id, body)
+
+      if (!result) {
+        throw Boom.notFound()
+      }
 
       res.status(200).send(result)
     }

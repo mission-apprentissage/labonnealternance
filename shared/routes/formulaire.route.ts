@@ -8,7 +8,7 @@ import { IRoutesDef } from "./common.routes"
 
 export const zFormulaireRoute = {
   get: {
-    "/api/formulaire/": {
+    "/api/formulaire": {
       querystring: z.object({ query: z.string() }), // mongo query
       response: {
         "2xx": z.array(ZRecruiter),
@@ -28,7 +28,7 @@ export const zFormulaireRoute = {
     },
   },
   post: {
-    "/api/formulaire/": {
+    "/api/formulaire": {
       body: z
         .object({
           userRecruteurId: zObjectId,

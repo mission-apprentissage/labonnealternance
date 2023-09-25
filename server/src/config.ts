@@ -44,7 +44,7 @@ const config = {
   },
   smtp: {
     host: env.get("LBA_SMTP_HOST").required().asString(),
-    port: env.get("LBA_SMTP_PORT").required().asString(),
+    port: env.get("LBA_SMTP_PORT").required().asPortNumber(),
     auth: {
       user: env.get("LBA_SMTP_AUTH_USER").required().asString(),
       pass: env.get("LBA_SMTP_AUTH_PASS").required().asString(),

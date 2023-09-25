@@ -1,4 +1,4 @@
-import { IEligibleTrainingsForAppointmentSchema } from "shared/models/elligibleTraining.model"
+import { ZEligibleTrainingsForAppointmentSchema } from "shared/models/elligibleTraining.model"
 
 import { z } from "../helpers/zodWithOpenApi"
 
@@ -8,7 +8,7 @@ export const zPartnersRoutes = {
   get: {
     "/api/partners/parcoursup/formations": {
       response: {
-        "200": z.array(z.object({ parcoursup_id: Pick<IEligibleTrainingsForAppointmentSchema, "parcoursup_id"> })),
+        "200": z.array(z.object({ parcoursup_id: ZEligibleTrainingsForAppointmentSchema.shape.parcoursup_id })),
       },
     },
   },

@@ -1,10 +1,8 @@
 import Joi from "joi"
 import { zRoutes } from "shared/index"
 
-import { administratorOnly } from "@/http/middlewares/permissionsMiddleware"
-
 import { logger } from "../../../common/logger"
-import { EligibleTrainingsForAppointment, Etablissement } from "../../../common/model/index"
+import { EligibleTrainingsForAppointment } from "../../../common/model/index"
 import * as eligibleTrainingsForAppointmentService from "../../../services/eligibleTrainingsForAppointment.service"
 import { Server } from "../../server"
 
@@ -40,18 +38,18 @@ export default (server: Server) => {
    * Get all eligibleTrainingsForAppointments GET
    * */
   server.get(
-    "/etablissement-formateur-siret/:siret",
+    "/api/admin/eligible-trainings-for-appointment/etablissement-formateur-siret/:siret",
     {
       schema: zRoutes.get["/api/admin/eligible-trainings-for-appointment/etablissement-formateur-siret/:siret"],
-      // preHandler: [authenticationMiddleware("jwt-rdv-admin"), administratorOnly],
+      preHandler: server.auth(zRoutes.get["/api/admin/eligible-trainings-for-appointment/etablissement-formateur-siret/:siret"].securityScheme),
     },
     async (req, res) => {
       const { siret } = req.params
 
-      const parameters = await EligibleTrainingsForAppointment.find({etablissement_formateur_siret: siret}).lean();
+      const parameters = await EligibleTrainingsForAppointment.find({ etablissement_formateur_siret: siret }).lean()
 
       if (parameters == undefined || parameters.length == 0) {
-        return res.sendStatus(400).send()
+        return res.status(400).send()
       }
 
       return res.send({ parameters })
@@ -65,7 +63,7 @@ export default (server: Server) => {
     "/api/admin/eligible-trainings-for-appointment/:id",
     {
       schema: zRoutes.get["/api/admin/eligible-trainings-for-appointment/:id"],
-      // preHandler: [authenticationMiddleware("jwt-rdv-admin"), administratorOnly],
+      preHandler: server.auth(zRoutes.get["/api/admin/eligible-trainings-for-appointment/:id"].securityScheme),
     },
     async (req, res) => {
       const itemId = req.params.id
@@ -85,7 +83,7 @@ export default (server: Server) => {
     "/api/admin/eligible-trainings-for-appointment/:id",
     {
       schema: zRoutes.put["/api/admin/eligible-trainings-for-appointment/:id"],
-      // preHandler: [authenticationMiddleware("jwt-rdv-admin"), administratorOnly],
+      preHandler: server.auth(zRoutes.put["/api/admin/eligible-trainings-for-appointment/:id"].securityScheme),
     },
     async ({ body, params }, res) => {
       await eligibleTrainingsForAppointmentSchema.validateAsync(body, { abortEarly: false })
@@ -102,7 +100,7 @@ export default (server: Server) => {
     "/api/admin/eligible-trainings-for-appointment/:id",
     {
       schema: zRoutes.patch["/api/admin/eligible-trainings-for-appointment/:id"],
-      // preHandler: [authenticationMiddleware("jwt-rdv-admin"), administratorOnly],
+      preHandler: server.auth(zRoutes.patch["/api/admin/eligible-trainings-for-appointment/:id"].securityScheme),
     },
     async ({ body, params }, res) => {
       await eligibleTrainingsForAppointmentIdPatchSchema.validateAsync(body, { abortEarly: false })

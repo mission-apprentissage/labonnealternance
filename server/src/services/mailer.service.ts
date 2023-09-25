@@ -1,32 +1,38 @@
 import { promisify } from "util"
 
-import ejs from "ejs"
-import { omit } from "lodash-es"
+import ejs, { Data } from "ejs"
 import mjml from "mjml"
-import nodemailer from "nodemailer"
+import nodemailer, { Transporter } from "nodemailer"
+import SMTPTransport from "nodemailer/lib/smtp-transport"
 import nodemailerHtmlToText from "nodemailer-html-to-text"
 
 import config from "../config"
 
 const htmlToText = nodemailerHtmlToText.htmlToText
-const renderFile = promisify(ejs.renderFile)
+const renderFile: (path: string, data: Data) => Promise<string> = promisify(ejs.renderFile)
 
-/**
- * @description Create transporter.
- * @returns {MailerInstance}
- */
-const createTransporter = () => {
+const createTransporter = (): Transporter => {
   const needAuthentication = config.env === "production"
 
-  const transporter = nodemailer.createTransport(needAuthentication ? config.smtp : omit(config.smtp, ["auth"]))
+  const options: SMTPTransport.Options = {
+    host: config.smtp.host,
+    port: config.smtp.port,
+  }
+
+  if (needAuthentication) {
+    options.auth = config.smtp.auth
+  }
+
+  const transporter = nodemailer.createTransport(options)
 
   transporter.use("compile", htmlToText({ ignoreImage: true }))
 
   return transporter
 }
 
-const createMailer = (transporter = createTransporter()) => {
-  const renderEmail = async (template, data = {}) => {
+const createMailer = () => {
+  const transporter = createTransporter()
+  const renderEmail = async (template: string, data: Data = {}): Promise<string> => {
     const buffer = await renderFile(template, { data })
     const { html } = mjml(buffer.toString(), { minify: true })
 
@@ -35,21 +41,9 @@ const createMailer = (transporter = createTransporter()) => {
 
   return {
     /**
-     * @description Process template ejs and mjml template.
-     * @returns {string}
+     * Process template ejs and mjml template.
      */
     renderEmail,
-    /**
-     * @description Sends email.
-     * @param {string} to
-     * @param {string} subject
-     * @param {string} template
-     * @param {Object} data
-     * @param {string} from
-     * @param {undefined|string} cc
-     * @param {Object[]} attachments
-     * @returns {Promise<{messageId: string}>}
-     */
     sendEmail: async ({
       to,
       subject,
@@ -66,7 +60,7 @@ const createMailer = (transporter = createTransporter()) => {
       from?: string
       cc?: string
       attachments?: object[]
-    }) => {
+    }): Promise<{ messageId: string }> => {
       return transporter.sendMail({
         from,
         to,
@@ -75,21 +69,6 @@ const createMailer = (transporter = createTransporter()) => {
         html: await renderEmail(template, data),
         list: {},
         attachments,
-      })
-    },
-    /**
-     * @description Send plain test email.
-     * @param {string} to
-     * @param {string} subject
-     * @returns {Promise<*>}
-     */
-    sendPlainTextEmail: async (to, subject) => {
-      return transporter.sendMail({
-        from: "nepasrepondre@apprentissage.beta.gouv.fr",
-        to,
-        subject,
-        body: `Mail pour ${to}`,
-        list: {},
       })
     },
   }

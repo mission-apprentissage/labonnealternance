@@ -17,7 +17,7 @@ import {
 import jwt, { JwtPayload } from "jsonwebtoken"
 import passport from "passport"
 import { IUserRecruteur } from "shared/models/usersRecruteur.model"
-import { AuthStrategy, SecurityScheme } from "shared/routes/common.routes"
+import { AuthStrategy, IRouteSchema, SecurityScheme } from "shared/routes/common.routes"
 
 import { Credential } from "@/common/model"
 import { ICredential } from "@/common/model/schema/credentials/credential.types"

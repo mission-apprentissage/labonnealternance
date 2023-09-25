@@ -1,7 +1,5 @@
 import { zRoutes } from "shared/index"
 
-import { administratorOnly } from "@/http/middlewares/permissionsMiddleware"
-
 import { getCatalogueFormations } from "../../../services/catalogue.service"
 import { Server } from "../../server"
 
@@ -16,7 +14,7 @@ export default (server: Server) => {
     "/api/admin/formations",
     {
       schema: zRoutes.get["/api/admin/formations"],
-      // preHandler: [authenticationMiddleware("jwt-rdv-admin"), administratorOnly],
+      preHandler: server.auth(zRoutes.get["/api/admin/formations"].securityScheme),
     },
     async (req, res) => {
       const qs = req.query

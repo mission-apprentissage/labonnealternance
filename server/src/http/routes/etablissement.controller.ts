@@ -356,7 +356,7 @@ export default (server: Server) => {
   server.post(
     "/api/etablissements/:id/premium/refuse",
     {
-      schema: zRoutes.post["/api/etablissements/:id/premium/affelnet/refuse"],
+      schema: zRoutes.post["/api/etablissements/:id/premium/refuse"],
     },
     async (req, res) => {
       const etablissement = await Etablissement.findById(req.params.id)

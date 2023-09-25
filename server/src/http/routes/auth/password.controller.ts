@@ -1,12 +1,10 @@
 import Boom from "boom"
-import Joi from "joi"
 import { zRoutes } from "shared/index"
 
 import { createUserToken, createPasswordToken } from "../../../common/utils/jwtUtils"
 import config from "../../../config"
 import * as users from "../../../services/user.service"
 import { Server } from "../../server"
-import * as validators from "../../utils/validators"
 
 export default (server: Server) => {
   server.post(
@@ -15,10 +13,7 @@ export default (server: Server) => {
       schema: zRoutes.post["/api/password/forgotten-password"],
     },
     async (req, res) => {
-      const { username } = await Joi.object({
-        username: Joi.string().required(),
-      }).validateAsync(req.body, { abortEarly: false })
-
+      const { username } = req.body
       if (!(await users.getUser(username))) {
         throw Boom.badRequest()
       }
@@ -32,14 +27,16 @@ export default (server: Server) => {
     "/api/password/reset-password",
     {
       schema: zRoutes.post["/api/password/reset-password"],
-      // preHandler: [authenticationMiddleware("jwt-password")],
+      preHandler: server.auth(zRoutes.post["/api/password/reset-password"].securityScheme),
     },
     async (req, res) => {
       const user = req.user
-      const { newPassword } = await Joi.object({
-        passwordToken: Joi.string().required(),
-        newPassword: validators.password().required(),
-      }).validateAsync(req.body, { abortEarly: false })
+
+      if (!user || !("username" in user)) {
+        throw Boom.forbidden()
+      }
+
+      const { newPassword } = req.body
 
       await users.changePassword(user.username, newPassword)
       return res.status(200).send({ token: createUserToken(user) })

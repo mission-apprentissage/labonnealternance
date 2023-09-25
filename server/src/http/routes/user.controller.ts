@@ -99,9 +99,9 @@ export default (server: Server) => {
   )
 
   server.post(
-    "/api/user/",
+    "/api/user",
     {
-      schema: zRoutes.post["/api/user/"],
+      schema: zRoutes.post["/api/user"],
       preHandler: [],
     },
     async (req, res) => {

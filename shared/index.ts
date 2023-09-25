@@ -1,6 +1,7 @@
 import { Jsonify } from "type-fest"
 import z, { ZodType } from "zod"
 
+import { zAdminAppointementsRoutes } from "./routes/adminAppointments.routes"
 import { zApplicationRoutes } from "./routes/application.routes"
 import { zAppointmentsRoute } from "./routes/appointments.routes"
 import { zCampaignWebhookRoutes } from "./routes/campaignWebhook.routes"
@@ -16,8 +17,10 @@ import { zMetiersRoutes } from "./routes/metiers.routes"
 import { zMetiersDAvenirRoutes } from "./routes/metiersdavenir.routes"
 import { zOptoutRoutes } from "./routes/optout.routes"
 import { zPartnersRoutes } from "./routes/partners.routes"
+import { zAuthPasswordRoutes } from "./routes/password.routes"
 import { zRecruiterRoutes } from "./routes/recruiters.routes"
 import { zRomeRoutes } from "./routes/rome.routes"
+import { zMailRoutes } from "./routes/sendMail.routes"
 import { zTrainingLinksRoutes } from "./routes/trainingLinks.routes"
 import { zUnsubscribeRoute } from "./routes/unsubscribe.routes"
 import { zUpdateLbaCompanyRoutes } from "./routes/updateLbaCompany.routes"
@@ -51,6 +54,8 @@ const zRoutesGetP2 = {
   ...zAppointmentsRoute.get,
   ...zFormationRoute.get,
   ...zEligibleTrainingsForAppointmentRoutes.get,
+  ...zMailRoutes.get,
+  ...zAdminAppointementsRoutes.get,
 } as const
 
 const zRoutesGet: typeof zRoutesGetP1 & typeof zRoutesGetP2 = {
@@ -71,6 +76,7 @@ const zRoutesPost = {
   ...zEtablissementRoutes.post,
   ...zAppointmentsRoute.post,
   ...zEmailsRoutes.post,
+  ...zAuthPasswordRoutes.post,
 } as const
 
 const zRoutesPut = {

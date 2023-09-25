@@ -16,13 +16,13 @@ fileignoreconfig:
 - filename: .infra/vault/vault.yml
   checksum: 171944b26137803ef124182fe78dc33ed701f67b2cb0e04f015de791feb0ed9c
 - filename: server/.env.test
-  checksum: 5e714996a5c6ab5bf637ff570e51f7044616dc465115b282add1580233e795fb
+  checksum: 812d70e7fc383abd6942dbaf8691be833d7cd25b13aae6b4bbb2c2da4df6ed51
 - filename: server/src/config.ts
   checksum: 0a7fb0cc67e8d1453b1605840a2ff848466c640557e315929002833c10f58812
 - filename: server/src/http/controllers/appointments/appointments.controller.ts
   checksum: dc77c04efc26dcd8ca4816f392ab24a32a92cb45ca4b94adb593a08e7a2d231e
 - filename: server/src/http/routes/auth/password.controller.ts
-  checksum: 6c202063b1fa3cfbc1df4b74e01168398933eb99147ef72eaf34f461f5726ac6
+  checksum: b9082b14973b6519b151acd49185e06ccc67a8f49ecf8ba985344eae43e00251
 - filename: server/static/generated/swagger.json
   checksum: any
   ignore_detectors:
@@ -33,6 +33,8 @@ fileignoreconfig:
   checksum: 28af032d2eb26aec7dd3bb1d32253f992a036626c36a92eb1e7ff07599fd0b2b
 - filename: shared/helpers/openapi/generateOpenapi.test.ts
   checksum: d7b85c3dff488cec523d78f0926e15dbea41071a1864bda62b4d6caeb2541df3
+- filename: shared/routes/password.routes.ts
+  checksum: f328889ff5a6db74868a82d5725659cd4b26da3126f0778639dc485eace74832
 - filename: ui/common/hooks/useAuth.ts
   checksum: 7cce935653407e000b35e98bd365a003e538aed4fed432a9a404d4f2412dd2df
 - filename: ui/pages/espace-pro/admin/eligible-trainings-for-appointment/edit/[id].tsx

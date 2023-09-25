@@ -38,8 +38,7 @@ export type SecurityScheme = {
   role: "admin" | "all"
 }
 
-export interface IRouteSchema {
-  body?: ZodType
+export interface IRouteSchemaGet {
   querystring?: AnyZodObject
   headers?: ZodType<Record<string, string | undefined> | undefined>
   params?: AnyZodObject
@@ -48,8 +47,12 @@ export interface IRouteSchema {
   securityScheme?: SecurityScheme
 }
 
+export interface IRouteSchema extends IRouteSchemaGet {
+  body?: ZodType
+}
+
 export type IRoutesDef = {
-  get?: Record<string, IRouteSchema>
+  get?: Record<string, IRouteSchemaGet>
   post?: Record<string, IRouteSchema>
   put?: Record<string, IRouteSchema>
   delete?: Record<string, IRouteSchema>
