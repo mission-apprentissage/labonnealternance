@@ -44,7 +44,6 @@ const zRoutesGetP2 = {
   ...zV1JobsEtFormationsRoutes.get,
   ...zFormulaireRoute.get,
   ...zRecruiterRoutes.get,
-  ...zCampaignWebhookRoutes.get,
   ...zAppointmentsRoute.get,
   ...zFormationRoute.get,
 } as const
