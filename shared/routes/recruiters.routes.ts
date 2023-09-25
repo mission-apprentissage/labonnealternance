@@ -2,6 +2,7 @@ import { z } from "zod"
 
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { zEtablissementCatalogue } from "../interface/etablissement.types"
+import { ZGlobalAddress } from "../models"
 import { ZRecruiter } from "../models"
 import { zCFA } from "../models/cfa.model"
 import { zObjectId } from "../models/common"
@@ -93,13 +94,20 @@ export const zRecruiterRoutes = {
         "2xx": z
           .object({
             establishment_state: z.string(),
-            is_qualiopi: z.string(),
+            is_qualiopi: z.boolean(),
             establishment_siret: z.string(),
             establishment_raison_sociale: z.string(),
-            contacts: z.string(),
-            address_detail: z.string(),
+            contacts: z.array(
+              z.object({
+                email: z.string(),
+                confirmé: z.boolean(),
+                sources: z.array(z.string()),
+                date_collecte: z.date(),
+              })
+            ),
+            address_detail: ZGlobalAddress,
             address: z.string(),
-            geo_coordinates: z.string(),
+            geo_coordinates: z.string().nullish(),
           })
           .strict(),
       },

@@ -40,7 +40,7 @@ const ZAcheminementPostal = z
   })
   .strict()
 
-const ZAdresseCFA = z
+export const ZAdresseCFA = z
   .object({
     academie: ZAcademie,
     code_insee: z.string(),

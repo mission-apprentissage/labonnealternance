@@ -94,6 +94,7 @@ export const validationCompte = (id) => API.post("/etablissement/validation", id
  * Etablissement API
  */
 export const getCfaInformation = async (siret) => await API.get(`/etablissement/cfa/${siret}`)
+
 export const getEntrepriseInformation = async (siret, options: { cfa_delegated_siret: string | undefined } = { cfa_delegated_siret: undefined }) => {
   try {
     const { data } = await API.get(`/etablissement/entreprise/${siret}`, { params: options })
@@ -108,6 +109,8 @@ export const getEntrepriseOpco = async (siret) => {
     const { data } = await API.get(`/etablissement/entreprise/${siret}/opco`)
     return data
   } catch (error) {
+    const payload: { data: object | undefined; error: string; statusCode: number; message: string } = error.response.data
+    console.log(payload) // TODO sentry
     return null
   }
 }

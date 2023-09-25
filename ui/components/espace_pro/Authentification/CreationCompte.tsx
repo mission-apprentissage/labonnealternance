@@ -55,13 +55,14 @@ const CreationCompteForm = ({ type, setQualiopi, setBandeau, origin }) => {
           })
         })
         .catch(({ response }) => {
-          if (response.data.error) {
-            if (response.data.reason === "EXIST") {
+          const payload: { data: { reason: string; data?: unknown } | undefined; error: string; statusCode: number; message: string } = response.data
+          if (payload.error) {
+            if (payload.data.reason === "EXIST") {
               setFieldError("establishment_siret", "Ce numéro siret est déjà associé à un compte utilisateur.")
             }
-            if (response.data.reason === "QUALIOPI") {
+            if (payload.data.reason === "QUALIOPI") {
               setFieldError("establishment_siret", "L’organisme rattaché à ce SIRET n’est pas certifié Qualiopi")
-              setQualiopi(response.data.data)
+              setQualiopi(payload.data.data)
               setBandeau({
                 type: "error",
                 header: "Votre centre de formation n’est pas certifié Qualiopi.",
@@ -69,7 +70,7 @@ const CreationCompteForm = ({ type, setQualiopi, setBandeau, origin }) => {
                 lien: "https://travail-emploi.gouv.fr/formation-professionnelle/acteurs-cadre-et-qualite-de-la-formation-professionnelle/liste-organismes-certificateurs",
               })
             }
-            if (response.data.reason === "CLOSED") {
+            if (payload.data.reason === "CLOSED") {
               setFieldError("establishment_siret", "Le numéro siret indique un établissement fermé.")
               setBandeau({
                 type: "error",
@@ -77,7 +78,7 @@ const CreationCompteForm = ({ type, setQualiopi, setBandeau, origin }) => {
                 description: "Pour modifier les caractéristiques de votre organisme, vous pouvez vous rapprocher de l’INSEE afin de réaliser les modifications à la source.",
               })
             }
-            if (response.data.reason === "UNKNOWN") {
+            if (payload.data.reason === "UNKNOWN") {
               setFieldError("establishment_siret", "Le numéro siret n'est pas référencé comme centre de formation.")
               setBandeau({
                 type: "error",

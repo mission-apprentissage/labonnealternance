@@ -118,11 +118,11 @@ export default (server: Server) => {
     async (req, res) => {
       const siret: string | undefined = req.params.siret
       if (!siret) {
-        return res.status(400).send({ error: true, message: "Le numéro siret est obligatoire." })
+        throw Boom.badRequest("Le numéro siret est obligatoire.")
       }
       const result = await getOpcoData(siret)
       if (!result) {
-        return res.status(404).send({ error: true, message: "aucune données OPCO trouvées" })
+        throw Boom.notFound("aucune données OPCO trouvées")
       }
       return res.status(200).send(result)
     }
@@ -139,26 +139,19 @@ export default (server: Server) => {
     async (req, res) => {
       const { siret } = req.params
       if (!siret) {
-        return res.status(400).send({ error: true, message: "Le numéro siret est obligatoire." })
+        throw Boom.badRequest("Le numéro siret est obligatoire.")
       }
       const response = await getOrganismeDeFormationDataFromSiret(siret)
       if ("error" in response) {
         const { message, errorCode } = response
-        switch (errorCode) {
-          case BusinessErrorCodes.ALREADY_EXISTS:
-            return res.status(403).send({ error: true, reason: message })
-          default:
-            return res.status(400).send({ error: true, reason: message })
-        }
+        if (errorCode === BusinessErrorCodes.ALREADY_EXISTS) throw Boom.forbidden("Ce numéro siret est déjà associé à un compte utilisateur.", { reason: message })
+        if (message === "CLOSED") throw Boom.badRequest("Le numéro siret indique un établissement fermé.", { reason: message })
+        if (message === "UNKNOWN") throw Boom.badRequest("Le numéro siret n'est pas référencé comme centre de formation.", { reason: message })
+      } else if (!response.is_qualiopi) {
+        throw Boom.badRequest("L’organisme rattaché à ce SIRET n’est pas certifié Qualiopi", { reason: "QUALIOPI", data: response })
+      } else {
+        return res.status(200).send(response)
       }
-      if (!response.is_qualiopi) {
-        return res.status(400).send({
-          data: response,
-          error: true,
-          reason: "QUALIOPI",
-        })
-      }
-      return res.status(200).send(response)
     }
   )
 

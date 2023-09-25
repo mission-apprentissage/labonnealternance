@@ -5,7 +5,7 @@ import { IUserRecruteur } from "../common/model/schema/userRecruteur/userRecrute
 export interface IFormatAPIReferentiel
   extends Pick<IUserRecruteur, "establishment_raison_sociale" | "establishment_siret" | "is_qualiopi" | "address_detail" | "geo_coordinates" | "address"> {
   establishment_state: string
-  contacts: object[]
+  contacts: IContact[]
 }
 export interface IFormatAPIEntreprise
   extends Pick<
