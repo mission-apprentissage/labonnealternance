@@ -261,7 +261,7 @@ export const zV1JobsRoutes = {
         .object({
           job_level_label: z.string(),
           job_duration: z.number(),
-          job_type: z.array(z.string()),
+          job_type: z.array(z.enum(["Apprentissage", "Professionnalisation"])),
           is_disabled_elligible: z.boolean(),
           job_count: z.number().optional(),
           job_rythm: z.string().optional(),

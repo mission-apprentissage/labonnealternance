@@ -92,7 +92,7 @@ export const UNSUBSCRIBE_EMAIL_ERRORS = {
 export const TRAINING_CONTRACT_TYPE = {
   APPRENTISSAGE: "Apprentissage",
   PROFESSIONALISATION: "Professionalisation",
-}
+} as const
 
 export const TRAINING_RYTHM = {
   INDIFFERENT: "Indifférent",
