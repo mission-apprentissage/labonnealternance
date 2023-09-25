@@ -4,7 +4,7 @@ import { IRomeDetailsFromAPI } from "./rome.service.types"
 export interface ILbaItem {
   ideaType: string | null // type de l'item :  formation | lbb | lba | peJob | matcha
   title: string | null // pe -> intitule | lbb/lba -> enseigne | formation -> intitule_long OU intitule_court | matcha -> offres.libelle || offres.rome_appellation_label
-  longTitle: string | null // formation -> intitule_long,
+  longTitle?: string | null // formation -> intitule_long,
   id: string | null // formation -> id | matcha -> id_form
   idRco: string | null // formation -> id_formation
   idRcoFormation: string | null // formation -> id_rco_formation

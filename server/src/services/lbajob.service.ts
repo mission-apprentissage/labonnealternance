@@ -176,59 +176,69 @@ function transformLbaJob({
   applicationCountByJob: IApplicationCount[]
 }): ILbaItem[] {
   return job.jobs.map((offre, idx) => {
-    const resultJob = new LbaItem("matcha")
     const email = encryptMailWithIV({ value: job.email, caller })
-
-    resultJob.id = `${job.establishment_id}-${idx}`
-    resultJob.title = offre.rome_appellation_label ?? offre.rome_label
-    resultJob.contact = {
-      ...email,
-      name: job.first_name + " " + job.last_name,
-      phone: job.phone,
-    }
-
-    resultJob.place.distance = distance ? roundDistance(distance) : null
-    resultJob.place.fullAddress = job.address
-    resultJob.place.address = job.address
-    resultJob.place.latitude = job.geo_coordinates.split(",")[0]
-    resultJob.place.longitude = job.geo_coordinates.split(",")[1]
-
-    if (job.address_detail && "localite" in job.address_detail) {
-      resultJob.place.city = job.address_detail.localite
-    }
-
-    resultJob.company.siret = job.establishment_siret
-    resultJob.company.name = job.establishment_enseigne || job.establishment_raison_sociale || "Enseigne inconnue"
-    resultJob.company.size = job.establishment_size
-
-    resultJob.company.mandataire = job.is_delegated
-
-    resultJob.nafs = [{ label: job.naf_label }]
-    resultJob.company.creationDate = new Date(job.establishment_creation_date)
-
-    resultJob.diplomaLevel = offre.job_level_label
-    resultJob.createdAt = job.createdAt
-    resultJob.lastUpdateAt = job.updatedAt
-
-    resultJob.job = {
-      id: offre._id,
-      description: offre.job_description || "",
-      creationDate: offre.job_creation_date,
-      contractType: offre.job_type.join(", "),
-      jobStartDate: offre.job_start_date,
-      romeDetails: offre.rome_detail,
-      rythmeAlternance: offre.job_rythm || null,
-      dureeContrat: "" + offre.job_duration,
-      quantiteContrat: offre.job_count,
-      elligibleHandicap: offre.is_disabled_elligible,
-      status: job.status === RECRUITER_STATUS.ACTIF && offre.job_status === JOB_STATUS.ACTIVE ? JOB_STATUS.ACTIVE : JOB_STATUS.ANNULEE,
-    }
-
-    resultJob.romes = []
-    offre.rome_code.map((code) => resultJob.romes.push({ code, label: null }))
-
     const applicationCount = applicationCountByJob.find((job) => job._id == offre._id)
-    resultJob.applicationCount = applicationCount?.count || 0
+    const romes = []
+    offre.rome_code.map((code) => romes.push({ code, label: null }))
+
+    const resultJob = {
+      ideaType: "matcha",
+      id: `${job.establishment_id}-${idx}`,
+      title: offre.rome_appellation_label ?? offre.rome_label,
+      contact: {
+        ...email,
+        name: job.first_name + " " + job.last_name,
+        phone: job.phone,
+      },
+      place: {
+        distance: distance ? roundDistance(distance) : null,
+        fullAddress: job.address,
+        address: job.address,
+        latitude: job.geo_coordinates.split(",")[0],
+        longitude: job.geo_coordinates.split(",")[1],
+        city: job.address_detail && "localite" in job.address_detail && job.address_detail.localite,
+      },
+      company: {
+        siret: job.establishment_siret,
+        name: job.establishment_enseigne || job.establishment_raison_sociale || "Enseigne inconnue",
+        size: job.establishment_size,
+        mandataire: job.is_delegated,
+        creationDate: new Date(job.establishment_creation_date),
+      },
+      nafs: [{ label: job.naf_label }],
+      diplomaLevel: offre.job_level_label,
+      createdAt: job.createdAt,
+      lastUpdateAt: job.updatedAt,
+      job: {
+        id: offre._id,
+        description: offre.job_description || "",
+        creationDate: offre.job_creation_date,
+        contractType: offre.job_type.join(", "),
+        jobStartDate: offre.job_start_date,
+        romeDetails: offre.rome_detail,
+        rythmeAlternance: offre.job_rythm || null,
+        dureeContrat: "" + offre.job_duration,
+        quantiteContrat: offre.job_count,
+        elligibleHandicap: offre.is_disabled_elligible,
+        status: job.status === RECRUITER_STATUS.ACTIF && offre.job_status === JOB_STATUS.ACTIVE ? JOB_STATUS.ACTIVE : JOB_STATUS.ANNULEE,
+      },
+      romes,
+      idRco: null,
+      idRcoFormation: null,
+      url: null,
+      cleMinistereEducatif: null,
+      diploma: null,
+      cfd: null,
+      rncpCode: null,
+      rncpLabel: null,
+      rncpEligibleApprentissage: null,
+      period: null,
+      capacity: null,
+      onisepUrl: null,
+      training: null, 
+      applicationCount,
+    }
+
     return resultJob
   })
 }
@@ -239,18 +249,24 @@ function transformLbaJob({
  */
 function sortLbaJobs(jobs: { results: ILbaItem[] }) {
   jobs.results.sort((a, b) => {
-    if (a?.title?.toLowerCase() < b?.title?.toLowerCase()) {
-      return -1
-    }
-    if (a?.title?.toLowerCase() > b?.title?.toLowerCase()) {
-      return 1
-    }
 
-    if (a?.company?.name?.toLowerCase() < b?.company?.name?.toLowerCase()) {
-      return -1
-    }
-    if (a?.company?.name?.toLowerCase() > b?.company?.name?.toLowerCase()) {
-      return 1
+    if(a && b)
+    {
+      if(a.title && b.title)
+      {if (a?.title?.toLowerCase() < b?.title?.toLowerCase()) {
+        return -1
+      }
+      if (a?.title?.toLowerCase() > b?.title?.toLowerCase()) {
+        return 1
+      }}
+
+      if(a.company?.name && b.company?.name)
+      {if (a?.company?.name?.toLowerCase() < b?.company?.name?.toLowerCase()) {
+        return -1
+      }
+      if (a?.company?.name?.toLowerCase() > b?.company?.name?.toLowerCase()) {
+        return 1
+      }}
     }
 
     return 0
