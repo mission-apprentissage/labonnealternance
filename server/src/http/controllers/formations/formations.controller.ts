@@ -22,7 +22,6 @@ export default (server: Server) => {
       // TODO: AttachValidation Error ?
     },
     async (req, res) => {
-      const { id } = req.params
       const { referer } = req.headers
       const { romes, romeDomain, caller, latitude, longitude, radius, diploma, options, useMock } = req.query
       const result = await getFormationsQuery({ romes, longitude, latitude, radius, diploma, romeDomain, caller, options, referer, useMock })
@@ -35,8 +34,8 @@ export default (server: Server) => {
         }
 
         return res.send(result)
-      }
-
+       } 
+       
       if (caller && "results" in result) {
         trackApiCall({
           caller: caller,

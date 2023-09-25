@@ -119,7 +119,7 @@ export const ZLbaItem = z.object({
       contractDescription: z.string().nullable().optional(), // pe -> typeContratLibelle
       duration: z.string().nullable().optional(), // pe -> dureeTravailLibelle
       jobStartDate: z.union([z.string(), z.date()]).optional(), // matcha -> offres.date_debut_apprentissage
-      romeDetails: ZRomeDetail.optional(), // matcha -> offres.rome_detail -> détail du code ROME
+      romeDetails: ZRomeDetail.optional().nullish(), // matcha -> offres.rome_detail -> détail du code ROME
       rythmeAlternance: z.string().nullable().optional(), // matcha -> offres.rythme_alternance
       elligibleHandicap: z.boolean().optional(), // matcha -> offres.is_disabled_elligible
       dureeContrat: z.string().nullable().optional(), // matcha -> offres.duree_contrat

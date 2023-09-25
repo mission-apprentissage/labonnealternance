@@ -44,7 +44,7 @@ export const zV1FormationsRoutes = {
         .strict(),
       params: z
         .object({
-          id: z.string().optional(),
+          id: z.string(),
         })
         .strict(),
       response: {
@@ -61,7 +61,7 @@ export const zV1FormationsRoutes = {
     "/api/v1/formations/formationDescription/:id": {
       params: z
         .object({
-          id: z.string().optional(),
+          id: z.string(),
         })
         .strict(),
       response: {
