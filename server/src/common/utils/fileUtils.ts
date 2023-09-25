@@ -23,6 +23,7 @@ export const createXLSXFile = (data, localPath) => {
   const workbook = XLSX.utils.book_new()
   XLSX.utils.book_append_sheet(workbook, XLSX.utils.json_to_sheet(data), "data")
 
+  // @ts-ignore writeFileAsync Cb function is not properly typed
   XLSX.writeFileAsync(path.join(localPath), workbook, (e) => {
     if (e) {
       console.log(e)

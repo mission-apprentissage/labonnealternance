@@ -1,23 +1,29 @@
 import http from "http"
 import https from "https"
 
-import axios from "axios"
+import axios, { AxiosRequestConfig } from "axios"
 import { compose, transformData } from "oleoduc"
 
 import { logger } from "../logger"
 
+// https://github.com/axios/axios/issues/3845#issuecomment-1040819908
 class BufferedHttpAgent extends http.Agent {
+  highWaterMark: number
+
   constructor({ highWaterMark = 16 * 1024, ...rest }) {
     super(rest)
-    //see https://github.com/nodejs/node/issues/39092
+
     this.highWaterMark = highWaterMark
   }
 
   createConnection(options, callback) {
+    // @ts-ignore
     return super.createConnection({ ...options, highWaterMark: this.highWaterMark }, callback)
   }
 }
 class BufferedHttpsAgent extends https.Agent {
+  highWaterMark: number
+
   constructor({ highWaterMark = 16 * 1024, ...rest }) {
     super(rest)
     //see https://github.com/nodejs/node/issues/39092
@@ -25,11 +31,15 @@ class BufferedHttpsAgent extends https.Agent {
   }
 
   createConnection(options, callback) {
+    // @ts-ignore
     return super.createConnection({ ...options, highWaterMark: this.highWaterMark }, callback)
   }
 }
 
-async function _fetch(url, options = {}) {
+type FetchOptions = AxiosRequestConfig & {
+  highWaterMark: number
+}
+async function _fetch(url: string, options: Partial<FetchOptions> = {}) {
   const { method = "GET", data, highWaterMark, ...rest } = options
   logger.debug(`${method} ${url}...`)
 
@@ -43,7 +53,7 @@ async function _fetch(url, options = {}) {
   })
 }
 
-async function fetchStream(url, options = {}) {
+async function fetchStream(url: string, options: Partial<FetchOptions> = {}) {
   const response = await _fetch(url, { ...options, responseType: "stream" })
   return compose(
     response.data,
@@ -51,7 +61,7 @@ async function fetchStream(url, options = {}) {
   )
 }
 
-async function fetchJson(url, options = {}) {
+async function fetchJson(url: string, options: Partial<FetchOptions> = {}) {
   const response = await _fetch(url, { ...options, responseType: "json" })
   return response.data
 }

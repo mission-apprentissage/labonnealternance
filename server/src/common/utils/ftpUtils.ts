@@ -5,9 +5,7 @@ import { logger } from "../logger"
 import { sentryCaptureException } from "./sentryUtils"
 
 class FTPClient {
-  constructor() {
-    this.client = new Ftp.Client()
-  }
+  client = new Ftp.Client()
 
   /**
    * @description Open an FTP connection
