@@ -118,7 +118,7 @@ export default (server: Server) => {
       const exist = await UserRecruteur.findOne({ email: userPayload.email, _id: { $ne: userId } }).lean()
 
       if (exist) {
-        return res.status(400).json({ error: true, reason: "EMAIL_TAKEN" })
+        return res.status(400).send({ error: true, reason: "EMAIL_TAKEN" })
       }
 
       const user = await updateUser({ _id: userId }, userPayload)

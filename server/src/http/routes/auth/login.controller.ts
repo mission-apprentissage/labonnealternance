@@ -41,13 +41,13 @@ export default (server: Server) => {
         const user = await getUser({ email })
 
         if (!user) {
-          return res.status(400).json({ error: true, reason: "UNKNOWN" })
+          return res.status(400).send({ error: true, reason: "UNKNOWN" })
         }
 
         const { _id, first_name, last_name, is_email_checked } = user
 
         if (is_email_checked) {
-          return res.status(400).json({ error: true, reason: "VERIFIED" })
+          return res.status(400).send({ error: true, reason: "VERIFIED" })
         }
         await sendUserConfirmationEmail({
           email,
@@ -57,7 +57,7 @@ export default (server: Server) => {
         })
         return res.status(200).send()
       } catch (error) {
-        return res.status(400).json({
+        return res.status(400).send({
           errorMessage: "l'adresse mail n'est pas valide.",
           details: error,
         })
@@ -80,7 +80,7 @@ export default (server: Server) => {
       const user = await UserRecruteur.findOne({ email: formatedEmail })
 
       if (!user) {
-        return res.status(400).json({ error: true, reason: "UNKNOWN" })
+        return res.status(400).send({ error: true, reason: "UNKNOWN" })
       }
 
       const { email: userEmail, _id, first_name, last_name, is_email_checked } = user || {}
@@ -89,10 +89,10 @@ export default (server: Server) => {
 
       if ([ENTREPRISE, CFA].includes(user.type)) {
         if (status && [ETAT_UTILISATEUR.ATTENTE, ETAT_UTILISATEUR.ERROR].includes(status)) {
-          return res.status(400).json({ error: true, reason: "VALIDATION" })
+          return res.status(400).send({ error: true, reason: "VALIDATION" })
         }
         if (status === ETAT_UTILISATEUR.DESACTIVE) {
-          return res.status(400).json({
+          return res.status(400).send({
             error: true,
             reason: "DISABLED",
           })
@@ -106,7 +106,7 @@ export default (server: Server) => {
           lastName: last_name,
           userRecruteurId: _id,
         })
-        return res.status(400).json({
+        return res.status(400).send({
           error: true,
           reason: "VERIFY",
         })

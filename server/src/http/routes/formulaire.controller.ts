@@ -77,7 +77,7 @@ export default (server: Server) => {
       const { userRecruteurId, establishment_siret, email, last_name, first_name, phone, opco, idcc } = req.body
       const userRecruteurOpt = await getUser({ _id: userRecruteurId })
       if (!userRecruteurOpt) {
-        return res.status(400).json({ error: true, message: "Nous n'avons pas trouvé votre compte utilisateur" })
+        return res.status(400).send({ error: true, message: "Nous n'avons pas trouvé votre compte utilisateur" })
       }
       const response = await entrepriseOnboardingWorkflow.createFromCFA({
         email,
@@ -92,7 +92,7 @@ export default (server: Server) => {
       })
       if ("error" in response) {
         const { message } = response
-        return res.status(400).json({ error: true, message })
+        return res.status(400).send({ error: true, message })
       }
       return res.status(200).send(response)
     }
@@ -210,7 +210,7 @@ export default (server: Server) => {
       const exists = await checkOffreExists(jobId)
 
       if (!exists) {
-        return res.status(400).json({ status: "INVALID_RESOURCE", message: "L'offre n'existe pas." })
+        return res.status(400).send({ status: "INVALID_RESOURCE", message: "L'offre n'existe pas." })
       }
 
       const offre = await getJob(jobId)
@@ -218,7 +218,7 @@ export default (server: Server) => {
       const delegationFound = offre.delegations.find((delegation) => delegation.siret_code == req.query.siret_formateur)
 
       if (!delegationFound) {
-        return res.status(400).json({ status: "INVALID_RESOURCE", message: `Le siret formateur n'a pas été proposé à l'offre.` })
+        return res.status(400).send({ status: "INVALID_RESOURCE", message: `Le siret formateur n'a pas été proposé à l'offre.` })
       }
 
       await patchOffre(jobId, {
@@ -250,7 +250,7 @@ export default (server: Server) => {
     async (req, res) => {
       const exists = await checkOffreExists(req.params.jobId)
       if (!exists) {
-        return res.status(400).json({ status: "INVALID_RESSOURCE", message: "L'offre n'existe pas" })
+        return res.status(400).send({ status: "INVALID_RESSOURCE", message: "L'offre n'existe pas" })
       }
       await cancelOffre(req.params.jobId)
       return res.status(200).send()
@@ -268,7 +268,7 @@ export default (server: Server) => {
     async (req, res) => {
       const exists = await checkOffreExists(req.params.jobId)
       if (!exists) {
-        return res.status(400).json({ status: "INVALID_RESSOURCE", message: "L'offre n'existe pas" })
+        return res.status(400).send({ status: "INVALID_RESSOURCE", message: "L'offre n'existe pas" })
       }
       await provideOffre(req.params.jobId)
       return res.status(200).send()

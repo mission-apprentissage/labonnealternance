@@ -78,12 +78,12 @@ export default (server: Server) => {
       const siret: string | undefined = req.params.siret
       const cfa_delegated_siret: string | undefined = req.query.cfa_delegated_siret
       if (!siret) {
-        return res.status(400).json({ error: true, message: "Le numéro siret est obligatoire." })
+        return res.status(400).send({ error: true, message: "Le numéro siret est obligatoire." })
       }
       try {
         const cfaVerification = await validateCreationEntrepriseFromCfa({ siret, cfa_delegated_siret })
         if (cfaVerification) {
-          return res.status(400).json({
+          return res.status(400).send({
             error: true,
             message: cfaVerification.message,
           })
@@ -92,14 +92,14 @@ export default (server: Server) => {
         if ("error" in result) {
           switch (result.errorCode) {
             case BusinessErrorCodes.IS_CFA: {
-              return res.status(400).json({
+              return res.status(400).send({
                 error: true,
                 message: result.message,
                 isCfa: true,
               })
             }
             default: {
-              return res.status(400).json({
+              return res.status(400).send({
                 error: true,
                 message: result.message,
               })
@@ -110,7 +110,7 @@ export default (server: Server) => {
         }
       } catch (error) {
         sentryCaptureException(error)
-        res.status(500).json({ error: true, message: "Le service est momentanément indisponible." })
+        res.status(500).send({ error: true, message: "Le service est momentanément indisponible." })
       }
     }
   )
@@ -126,11 +126,11 @@ export default (server: Server) => {
     async (req, res) => {
       const siret: string | undefined = req.params.siret
       if (!siret) {
-        return res.status(400).json({ error: true, message: "Le numéro siret est obligatoire." })
+        return res.status(400).send({ error: true, message: "Le numéro siret est obligatoire." })
       }
       const result = await getOpcoData(siret)
       if (!result) {
-        return res.status(404).json({ error: true, message: "aucune données OPCO trouvées" })
+        return res.status(404).send({ error: true, message: "aucune données OPCO trouvées" })
       }
       return res.status(200).send(result)
     }
@@ -147,20 +147,20 @@ export default (server: Server) => {
     async (req, res) => {
       const { siret } = req.params
       if (!siret) {
-        return res.status(400).json({ error: true, message: "Le numéro siret est obligatoire." })
+        return res.status(400).send({ error: true, message: "Le numéro siret est obligatoire." })
       }
       const response = await getOrganismeDeFormationDataFromSiret(siret)
       if ("error" in response) {
         const { message, errorCode } = response
         switch (errorCode) {
           case BusinessErrorCodes.ALREADY_EXISTS:
-            return res.status(403).json({ error: true, reason: message })
+            return res.status(403).send({ error: true, reason: message })
           default:
-            return res.status(400).json({ error: true, reason: message })
+            return res.status(400).send({ error: true, reason: message })
         }
       }
       if (!response.is_qualiopi) {
-        return res.status(400).json({
+        return res.status(400).send({
           data: response,
           error: true,
           reason: "QUALIOPI",
@@ -178,7 +178,7 @@ export default (server: Server) => {
     {
       schema: zRoutes.post["/api/etablissement/creation"],
     },
-    async (req: Request<any, any, IUserRecruteur & IRecruiter>, res) => {
+    async (req, res) => {
       // TODO add some Joi
       switch (req.body.type) {
         case ENTREPRISE: {
@@ -187,13 +187,13 @@ export default (server: Server) => {
           if ("error" in result) {
             switch (result.errorCode) {
               case BusinessErrorCodes.ALREADY_EXISTS: {
-                return res.status(403).json({
+                return res.status(403).send({
                   error: true,
                   message: result.message,
                 })
               }
               default: {
-                return res.status(400).json({
+                return res.status(400).send({
                   error: true,
                   message: result.message,
                 })
@@ -208,7 +208,7 @@ export default (server: Server) => {
           // check if user already exist
           const userRecruteurOpt = await getUser({ email: formatedEmail })
           if (userRecruteurOpt) {
-            return res.status(403).json({ error: true, message: "L'adresse mail est déjà associée à un compte La bonne alternance." })
+            return res.status(403).send({ error: true, message: "L'adresse mail est déjà associée à un compte La bonne alternance." })
           }
           // Contrôle du mail avec le référentiel :
           const referentiel = await getEtablissementFromReferentiel(establishment_siret)
@@ -263,7 +263,7 @@ export default (server: Server) => {
           return res.status(200).send({ user: newCfa })
         }
         default: {
-          return res.status(400).json({ error: "unsupported type" })
+          return res.status(400).send({ error: "unsupported type" })
         }
       }
     }
@@ -316,7 +316,7 @@ export default (server: Server) => {
       const exist = await getEtablissement({ _id: id })
 
       if (!exist) {
-        return res.status(400).json({
+        return res.status(400).send({
           error: true,
           message: "L'utilisateur n'existe pas.",
         })
@@ -326,7 +326,7 @@ export default (server: Server) => {
       const validation = await validateEtablissementEmail(id)
 
       if (!validation) {
-        return res.status(400).json({
+        return res.status(400).send({
           error: true,
           message: "La validation de l'adresse mail à échoué. Merci de contacter le support La bonne alternance.",
         })

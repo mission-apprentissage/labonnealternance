@@ -1,7 +1,6 @@
 import Sentry from "@sentry/node"
 import Boom from "boom"
 import { zRoutes } from "shared/index"
-import { IContextCreateSchemaCleMinistereEducatif } from "shared/routes/appointments.routes"
 
 import { getReferrerByKeyName } from "../../../common/model/constants/referrers"
 import { Etablissement, ReferentielOnisep } from "../../../common/model/index"
