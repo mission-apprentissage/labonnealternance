@@ -13,7 +13,7 @@ export default function AuthentificationLayout(props) {
   const { widget } = useContext(WidgetContext)
 
   const redirectFn = () => {
-    const isCfa = window.location.pathname.includes("cfa") ? true : false
+    const isCfa = router.pathname.includes("cfa") ? true : false
 
     if (isCfa) {
       return router.push(`/organisme-de-formation`)
