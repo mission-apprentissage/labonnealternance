@@ -45,4 +45,17 @@ export const extensions = {
       })
     ),
   codeCommuneInsee: () => z.string().regex(/^([0-9]{2}|2A|2B)[0-9]{3}$/, "Format invalide"),
+  brevoWebhook: () =>
+    z.object({
+      event: z.string(),
+      id: z.string(),
+      date: z.string(),
+      ts: z.number(),
+      "message-id": z.string(),
+      email: z.string(),
+      ts_event: z.number(),
+      subject: z.string(),
+      sending_ip: z.string(),
+      ts_epoch: z.number(),
+    }),
 }
