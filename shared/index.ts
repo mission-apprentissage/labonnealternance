@@ -117,6 +117,62 @@ export const zRoutes = {
     ...zFormulaireRoute.patch,
     ...zRecruiterRoutes.patch,
   },
+const zRoutesGet = {
+  ...zCoreRoutes.get,
+  ...zEtablissementRoutes.get,
+  ...zMetiersDAvenirRoutes.get,
+  ...zOptoutRoutes.get,
+  ...zRomeRoutes.get,
+  ...zUpdateLbaCompanyRoutes.get,
+  ...zUserRecruteurRoutes.get,
+  ...zV1FormationsParRegion.get,
+  ...zV1JobsRoutes.get,
+  ...zV1JobsEtFormationsRoutes.get,
+  ...zFormulaireRoute.get,
+  ...zRecruiterRoutes.get,
+} as const
+
+const zRoutesPost = {
+  ...zApplicationRoutes.post,
+  ...zLoginRoutes.post,
+  ...zTrainingLinksRoutes.post,
+  ...zUnsubscribeRoute.post,
+  ...zUserRecruteurRoutes.post,
+  ...zV1JobsRoutes.post,
+  ...zFormulaireRoute.post,
+  ...zRecruiterRoutes.post,
+} as const
+
+const zRoutesPut = {
+  ...zUserRecruteurRoutes.put,
+  ...zFormulaireRoute.put,
+  ...zRecruiterRoutes.put,
+} as const
+
+const zRoutesDelete = {
+  ...zUserRecruteurRoutes.delete,
+  ...zFormulaireRoute.delete,
+} as const
+
+const zRoutesPatch = {
+  ...zV1JobsRoutes.patch,
+  ...zFormulaireRoute.patch,
+} as const
+
+type ZRoutes = {
+  get: typeof zRoutesGet
+  post: typeof zRoutesPost
+  put: typeof zRoutesPut
+  delete: typeof zRoutesDelete
+  patch: typeof zRoutesPatch
+}
+
+export const zRoutes: ZRoutes = {
+  get: zRoutesGet,
+  post: zRoutesPost,
+  put: zRoutesPut,
+  delete: zRoutesDelete,
+  patch: zRoutesPatch,
 } as const
 
 export type IRoutes = typeof zRoutes

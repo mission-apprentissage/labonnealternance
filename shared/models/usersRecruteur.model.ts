@@ -39,8 +39,11 @@ export const ZUserRecruteur = z
     origin: z.string().describe("Origine de la creation de l'utilisateur (ex: Campagne mail, lien web, etc...) pour suivi"),
     status: z.array(ZUserStatusValidation).describe("Tableau des modifications de statut de l'utilisateur"),
     is_qualiopi: z.boolean().describe("Statut qualiopi du CFA (forcément true, sinon l'inscription n'est pas possibe)"),
+    createdAt: z.date().describe("Date de création"),
+    updatedAt: z.date().describe("Date de la dernière modification"),
   })
   .strict()
 
+export type IUserStatusValidation = z.output<typeof ZUserStatusValidation>
 export type IUserRecruteur = z.output<typeof ZUserRecruteur>
 export type IUserRecruteurJson = Jsonify<z.input<typeof ZUserRecruteur>>

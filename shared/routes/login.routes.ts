@@ -3,10 +3,8 @@ import { z } from "zod"
 import { IRoutesDef } from "./common.routes"
 
 export const zLoginRoutes = {
-  get: {},
   post: {
     "/api/login": {
-      body: null, // basic auth
       response: {
         "200": z
           .object({
@@ -22,7 +20,7 @@ export const zLoginRoutes = {
         })
         .strict(),
       response: {
-        "200": null,
+        "200": z.undefined(),
       },
     },
     "/api/login/magiclink": {
@@ -32,11 +30,10 @@ export const zLoginRoutes = {
         })
         .strict(),
       response: {
-        "200": null,
+        "200": z.undefined(),
       },
     },
     "/api/login/verification": {
-      body: null, // jwt token
       response: {
         "200": z
           .object({
@@ -46,7 +43,4 @@ export const zLoginRoutes = {
       },
     },
   },
-  put: {},
-  delete: {},
-  patch: {},
 } satisfies IRoutesDef
