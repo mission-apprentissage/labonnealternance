@@ -1,8 +1,8 @@
 import Boom from "boom"
 import Joi from "joi"
 import * as _ from "lodash-es"
-import { referrers } from "shared/constants/referers"
 import { zRoutes } from "shared"
+import { referrers } from "shared/constants/referers"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 

@@ -1,11 +1,11 @@
+import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
+import { zObjectId } from "../models/common"
 import {
   ZEligibleTrainingsForAppointmentSchema,
 } from "../models/elligibleTraining.model"
 
 import { IRoutesDef } from "./common.routes"
-import { extensions } from "../helpers/zodHelpers/zodPrimitives"
-import { zObjectId } from "../models/common"
 
 export const zEligibleTrainingsForAppointmentRoutes = {
   get: {

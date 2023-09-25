@@ -1,9 +1,9 @@
+import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 import { ZAppointment, ZEtablissement } from "../models"
 import { zObjectId } from "../models/common"
 
 import { IRoutesDef } from "./common.routes"
-import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 
 export const zEtablissementRoutes = {
   get: {
