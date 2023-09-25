@@ -22,9 +22,19 @@ export default (server: Server) => {
       // TODO: AttachValidation Error ?
     },
     async (req, res) => {
+
+      console.log("ICI ",req)
+
       const { referer } = req.headers
       const { romes, romeDomain, caller, latitude, longitude, radius, diploma, options, useMock } = req.query
+
+
+      console.log("latitude -- ",latitude," --- longitude -- ", longitude," --")
+
       const result = await getFormationsQuery({ romes, longitude, latitude, radius, diploma, romeDomain, caller, options, referer, useMock })
+
+      
+
 
       if ("error" in result) {
         if (result.error === "wrong_parameters") {
