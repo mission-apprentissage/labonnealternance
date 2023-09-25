@@ -35,21 +35,6 @@ export const convertIntoBuffer = (workbook) => {
   return XLSX.write(workbook, { type: "buffer", bookType: "xlsx" })
 }
 
-export const writeXlsxFile = async (workbook, filePath, fileName) => {
-  const execWrite = () =>
-    new Promise((resolve) => {
-      XLSX.writeFileAsync(path.join(__dirname(import.meta.url), `${filePath}/${fileName}`), workbook, (e) => {
-        if (e) {
-          console.log(e)
-          throw new Error("La génération du fichier excel à échoué : ", e)
-        }
-        resolve()
-      })
-    })
-
-  await execWrite()
-}
-
 export const removeLine = (data, regex) => {
   return data
     .split("\n")
@@ -76,7 +61,7 @@ export const parseCsv = (options = {}) => {
   })
 }
 
-export const fileDownloader = async (filePath, remoteFileName, { ftp = {} }) => {
+export const fileDownloader = async (filePath: string, remoteFileName: string, ftp: { user: string; password: string }) => {
   const opt = {
     host: config.ftp.host,
     user: ftp.user,

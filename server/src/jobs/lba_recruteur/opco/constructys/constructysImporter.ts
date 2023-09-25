@@ -13,7 +13,7 @@ import { runScript } from "../../../scriptWrapper"
 
 const importer = async (filePath, remoteFileName, opco_label) => {
   logger.info("Downloading file...")
-  await fileDownloader(filePath, remoteFileName, { ftp: config.ftp.constructys })
+  await fileDownloader(filePath, remoteFileName, config.ftp.constructys)
 
   logger.info(`Deleting collection entries for ${opco_label}...`)
   await ReferentielOpco.deleteMany({ opco_label })
