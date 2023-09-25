@@ -56,8 +56,8 @@ const NavLinks = ({ isOpen }) => {
   return (
     <Box display={{ base: isOpen ? "block" : "none", md: "block" }} flexBasis={{ base: "100%", md: "auto" }}>
       <Flex align="center" justify={["center", "center", "flex-end", "flex-end"]} direction={["column", "column", "row", "row"]} py={0} textStyle="sm">
-        {auth.type === AUTHTYPE.CFA && <NavItem to="/administration">Entreprises partenaires</NavItem>}
-        {auth.type === AUTHTYPE.ENTREPRISE && <NavItem to={`/administration/entreprise/${auth.establishment_id}`}>Gerer mes offres</NavItem>}
+        {auth.type === AUTHTYPE.CFA && <NavItem to="/espace-pro/administration">Entreprises partenaires</NavItem>}
+        {auth.type === AUTHTYPE.ENTREPRISE && <NavItem to={`/espace-pro/administration/entreprise/${auth.establishment_id}`}>Gerer mes offres</NavItem>}
       </Flex>
     </Box>
   )
