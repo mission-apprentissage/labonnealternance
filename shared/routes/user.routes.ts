@@ -1,7 +1,7 @@
 import { z } from "zod"
 
+import { zObjectId } from "../models/common"
 import { ZJob } from "../models/job.model"
-import { ZRecruiter } from "../models/recruiter.model"
 import { ZUserRecruteur, ZUserStatusValidation } from "../models/usersRecruteur.model"
 
 import { IRoutesDef } from "./common.routes"
@@ -47,7 +47,7 @@ export const zUserRecruteurRoutes = {
         })
         .strict(),
       response: {
-        "200": ZUserRecruteur.extend(ZRecruiter.shape),
+        "200": ZUserRecruteur.extend({ jobs: z.array(ZJob) }),
       },
     },
   },
@@ -63,6 +63,7 @@ export const zUserRecruteurRoutes = {
   },
   put: {
     "/api/user/:userId": {
+      params: z.object({ userId: zObjectId }),
       body: ZUserRecruteur.pick({
         last_name: true,
         first_name: true,
@@ -74,10 +75,12 @@ export const zUserRecruteurRoutes = {
         .strict(),
       response: {
         "200": ZUserRecruteur,
+        "400": z.object({ error: z.boolean(), reason: z.string() }),
       },
     },
     "/api/user/:userId/history": {
-      querystring: ZUserStatusValidation,
+      params: z.object({ userId: zObjectId }),
+      body: ZUserStatusValidation,
       response: {
         "200": ZUserRecruteur,
       },
@@ -87,8 +90,8 @@ export const zUserRecruteurRoutes = {
     "/api/user": {
       querystring: z
         .object({
-          userId: z.string(),
-          recruiterId: z.string().optional(),
+          userId: zObjectId,
+          recruiterId: zObjectId.optional(),
         })
         .strict(),
       response: {
