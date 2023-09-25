@@ -36,7 +36,7 @@ export const ZRecruiter = z.object({
   naf_code: z.string().nullish().describe("Code NAF de l'établissement"),
   naf_label: z.string().nullish().describe("Libellé NAF de l'établissement"),
   establishment_size: z.string().nullish().describe("Tranche d'effectif salariale de l'établissement"),
-  establishment_creation_date: z.date().or(z.string()).nullish().describe("Date de creation de l'établissement"),
+  establishment_creation_date: z.date().nullish().describe("Date de creation de l'établissement"),
 })
 
 export type IRecruiter = z.output<typeof ZRecruiter>

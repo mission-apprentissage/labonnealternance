@@ -23,13 +23,13 @@ export const zEtablissementRoutes = {
       },
     },
     "/api/admin/etablissements/siret-formateur/:siret": {
-      params: z.object({ siret: z.string() }),
+      params: z.object({ siret: zObjectId }),
       response: {
         "2xx": ZEtablissement,
       },
     },
     "/api/admin/etablissements/:id": {
-      params: z.object({ id: z.string() }),
+      params: z.object({ id: zObjectId }),
       response: {
         "2xx": ZEtablissement,
       },
@@ -49,25 +49,25 @@ export const zEtablissementRoutes = {
       },
     },
     "/api/etablissements/:id/premium/affelnet/accept": {
-      params: z.object({ id: z.string() }).strict(),
+      params: z.object({ id: zObjectId }).strict(),
       response: {
         "2xx": ZEtablissement,
       },
     },
     "/api/etablissements/:id/premium/accept": {
-      params: z.object({ id: z.string() }).strict(),
+      params: z.object({ id: zObjectId }).strict(),
       response: {
         "2xx": ZEtablissement,
       },
     },
     "/api/etablissements/:id/premium/affelnet/refuse": {
-      params: z.object({ id: z.string() }).strict(),
+      params: z.object({ id: zObjectId }).strict(),
       response: {
         "2xx": ZEtablissement,
       },
     },
     "/api/etablissements/:id/premium/refuse": {
-      params: z.object({ id: z.string() }).strict(),
+      params: z.object({ id: zObjectId }).strict(),
       response: {
         "2xx": ZEtablissement,
       },
@@ -82,7 +82,7 @@ export const zEtablissementRoutes = {
   },
   patch: {
     "/api/admin/etablissements/:id": {
-      params: z.object({ id: z.string() }).strict(),
+      params: z.object({ id: zObjectId }).strict(),
       response: {
         "2xx": ZEtablissement,
       },
