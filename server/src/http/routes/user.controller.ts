@@ -80,16 +80,16 @@ export default (server: Server) => {
       preHandler: [],
     },
     async (req, res) => {
-      const users = await UserRecruteur.findOne({ _id: req.params.userId }).lean()
-      let formulaire
+      const user = await UserRecruteur.findOne({ _id: req.params.userId }).lean()
+      let formulaire = {}
 
-      if (!users) return res.status(400).send()
+      if (!user) return res.status(400).send()
 
-      if (users.type === ENTREPRISE) {
-        formulaire = await Recruiter.findOne({ establishment_id: users.establishment_id }).select({ jobs: 1, _id: 0 }).lean()
+      if (user.type === ENTREPRISE) {
+        formulaire = await Recruiter.findOne({ establishment_id: user.establishment_id }).select({ jobs: 1, _id: 0 }).lean()
       }
 
-      return res.status(200).send({ ...users, ...formulaire })
+      return res.status(200).send({ ...user, ...formulaire })
     }
   )
 

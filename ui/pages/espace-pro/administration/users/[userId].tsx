@@ -51,7 +51,7 @@ function DetailEntreprise() {
   const toast = useToast()
   const [auth] = useAuth()
 
-  const { data, isLoading } = useQuery("user", () => getUser(userId), { cacheTime: 0 })
+  const { data, isLoading }: { data: any; isLoading: boolean } = useQuery("user", () => getUser(userId), { cacheTime: 0 })
 
   const userMutation = useMutation(({ userId, establishment_id, values }) => updateEntreprise(userId, establishment_id, values), {
     onSuccess: () => {
@@ -122,7 +122,7 @@ function DetailEntreprise() {
     }
   }
 
-  if (isLoading) {
+  if (isLoading && data && data.data && data.data.status) {
     return <LoadingEmptySpace />
   }
 
@@ -248,7 +248,7 @@ function DetailEntreprise() {
                                   confirmationModificationOpco.onOpen()
                                 }}
                               />
-                              <FormErrorMessage>{errors.opco}</FormErrorMessage>
+                              <FormErrorMessage>{errors.opco as string}</FormErrorMessage>
                             </FormControl>
                           )}
                           <Flex justify="flex-end" mt={10}>
@@ -265,6 +265,7 @@ function DetailEntreprise() {
                   </SimpleGrid>
                   {(auth.type === AUTHTYPE.OPCO || auth.type === AUTHTYPE.ADMIN) && (
                     <Box mb={12}>
+                      {/* @ts-expect-error: TODO */}
                       <UserValidationHistory histories={data.data.status} />
                     </Box>
                   )}

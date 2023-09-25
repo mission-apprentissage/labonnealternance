@@ -2,14 +2,13 @@ import {
   Box,
   Breadcrumb,
   BreadcrumbItem,
-  BreadcrumbLink,
   Button,
+  Link as ChakraLink,
   Container,
   Flex,
   Heading,
   Icon,
   Image,
-  Link as ChakraLink,
   Menu,
   MenuButton,
   MenuItem,
@@ -28,6 +27,7 @@ import { useQuery } from "react-query"
 import { RECRUITER_STATUS } from "../../../common/contants"
 import useAuth from "../../../common/hooks/useAuth"
 import { sortReactTableDate, sortReactTableString } from "../../../common/utils/dateUtils"
+import BreadcrumbLink from "../../../components/BreadcrumbLink"
 import { AnimationContainer, ConfirmationSuppressionEntreprise, Layout, LoadingEmptySpace, TableNew } from "../../../components/espace_pro"
 import addOfferImage from "../../../components/espace_pro/assets/images/add-offer.svg"
 import withAuth from "../../../components/espace_pro/withAuth"
@@ -165,7 +165,7 @@ function ListeEntreprise() {
           <Box mb={5}>
             <Breadcrumb spacing="4px" textStyle="xs">
               <BreadcrumbItem isCurrentPage>
-                <BreadcrumbLink href="#" textStyle="xs">
+                <BreadcrumbLink href="/espace-pro/administration" textStyle="xs">
                   Administration des offres
                 </BreadcrumbLink>
               </BreadcrumbItem>
