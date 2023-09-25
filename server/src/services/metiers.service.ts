@@ -22,13 +22,10 @@ export const getRomesAndLabelsFromTitleQuery = async ({
   withRomeLabels,
 }: {
   title: string
-  useMock: string
-  withRomeLabels: string
+  useMock?: boolean
+  withRomeLabels?: boolean
 }): Promise<IMetiersEnrichis> => {
-  if (!title) {
-    // error case
-    return { error: "title_missing" }
-  } else if (useMock) {
+  if (useMock) {
     // mock case
     return mockedLabelsAndRomes
   } else {
@@ -183,7 +180,7 @@ export const getMetiers = async ({ title, romes, rncps }: { title: string; romes
  * @param {undefined | string} withRomeLabels : indique s'il faut que la fonction retourne également les labels associés aux romes
  * @returns {Promise<IMetiersEnrichis>}
  */
-const getLabelsAndRomes = async (searchTerm: string, withRomeLabels?: string): Promise<IMetiersEnrichis> => {
+const getLabelsAndRomes = async (searchTerm: string, withRomeLabels?: boolean): Promise<IMetiersEnrichis> => {
   try {
     const terms: any[] = []
 

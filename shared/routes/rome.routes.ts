@@ -31,6 +31,13 @@ const ZMetiersEnrichis = z
 export const zRomeRoutes = {
   get: {
     "/api/rome": {
+      querystring: z
+        .object({
+          title: z.string(),
+          useMock: z.boolean().optional(),
+          withRomeLabels: z.boolean().optional(),
+        })
+        .strict(),
       response: {
         "200": ZMetiersEnrichis,
       },
