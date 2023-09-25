@@ -112,7 +112,7 @@ export default (server: Server) => {
       await createEstablishmentSchema.validateAsync(body, { abortEarly: false })
 
       const { first_name, last_name, phone, email, origin, idcc, establishment_siret } = body
-      const user: ICredential = request.user
+      const user = getUser<"/api/v1/jobs/establishment">(req)
 
       const result = await entrepriseOnboardingWorkflow.create(
         {
