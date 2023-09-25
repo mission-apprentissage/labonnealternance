@@ -6,7 +6,7 @@ import joi, { type ValidationError } from "joi"
 import { IResError } from "shared/routes/common.routes"
 import { ZodError } from "zod"
 
-import { logger } from "@/common/logger"
+// import { logger } from "@/common/logger"
 import config from "@/config"
 
 import { Server } from "../server"
@@ -61,6 +61,7 @@ export function errorMiddleware(server: Server) {
     }
 
     if (error.output.statusCode >= 500) {
+      server.log.error(rawError)
       captureException(error)
     }
 
