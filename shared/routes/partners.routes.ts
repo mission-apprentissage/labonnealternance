@@ -4,7 +4,7 @@ import { z } from "../helpers/zodWithOpenApi"
 
 import { IRoutesDef } from "./common.routes"
 
-export const zCampaignWebhookRoutes = {
+export const zPartnersRoutes = {
   get: {
     "/api/partners/parcoursup/formations": {
       response: {
@@ -12,8 +12,4 @@ export const zCampaignWebhookRoutes = {
       },
     },
   },
-  post: {},
-  put: {},
-  delete: {},
-  patch: {},
-} satisfies IRoutesDef
+} as const satisfies IRoutesDef

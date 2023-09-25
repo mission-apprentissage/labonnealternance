@@ -4,11 +4,12 @@ import {
 } from "../models/elligibleTraining.model"
 
 import { IRoutesDef } from "./common.routes"
+import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 
 export const zEligibleTrainingsForAppointmentRoutes = {
   get: {
     "/api/admin/eligible-trainings-for-appointment/etablissement-formateur-siret/:siret": {
-      params: z.object({ siret: z.string() }).strict(),
+      params: z.object({ siret: extensions.siret() }).strict(),
       response: {
         "200": ZEligibleTrainingsForAppointmentSchema
       },
@@ -36,4 +37,4 @@ export const zEligibleTrainingsForAppointmentRoutes = {
       },
     },
   }
-}  satisfies IRoutesDef;
+} as const satisfies IRoutesDef

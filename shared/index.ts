@@ -25,8 +25,9 @@ import { zV1FormationsRoutes } from "./routes/v1Formations.routes"
 import { zV1FormationsParRegion } from "./routes/v1FormationsParRegion.routes"
 import { zV1JobsRoutes } from "./routes/v1Jobs.routes"
 import { zV1JobsEtFormationsRoutes } from "./routes/v1JobsEtFormations.routes"
+import { zPartnersRoutes } from "./routes/partners.routes"
 
-export * from "./models/index"
+export * from "./models"
 
 const zRoutesGetP1 = {
   ...zCoreRoutes.get,
@@ -38,6 +39,7 @@ const zRoutesGetP1 = {
   ...zUpdateLbaCompanyRoutes.get,
   ...zUserRecruteurRoutes.get,
   ...zV1FormationsParRegion.get,
+  ...zPartnersRoutes.get,
 } as const
 
 const zRoutesGetP2 = {

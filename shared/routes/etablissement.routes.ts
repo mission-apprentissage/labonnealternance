@@ -3,6 +3,7 @@ import { ZAppointment, ZEtablissement } from "../models"
 import { zObjectId } from "../models/common"
 
 import { IRoutesDef } from "./common.routes"
+import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 
 export const zEtablissementRoutes = {
   get: {
@@ -23,7 +24,7 @@ export const zEtablissementRoutes = {
       },
     },
     "/api/admin/etablissements/siret-formateur/:siret": {
-      params: z.object({ siret: z.string() }),
+      params: z.object({ siret: extensions.siret() }),
       response: {
         "2xx": ZEtablissement,
       },

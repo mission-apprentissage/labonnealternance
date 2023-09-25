@@ -4,7 +4,6 @@ import { z } from "../helpers/zodWithOpenApi"
 import { IRoutesDef } from "./common.routes"
 
 export const zEmailsRoutes = {
-  get: {},
   post: {
     "/api/emails/webhook": {
       body: extensions.brevoWebhook(),
@@ -15,7 +14,4 @@ export const zEmailsRoutes = {
       },
     },
   },
-  put: {},
-  delete: {},
-  patch: {},
-} satisfies IRoutesDef
+} as const satisfies IRoutesDef
