@@ -34,7 +34,6 @@ export default (server: Server) => {
     "/api/etablissements/:id",
     {
       schema: zRoutes.get["/api/etablissements/:id"],
-      preHandler: server.auth(zRoutes.get["/api/etablissements/:id"].securityScheme),
     },
     async (req, res) => {
       const etablissement = await Etablissement.findById(req.params.id)
