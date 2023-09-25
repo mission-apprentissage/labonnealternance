@@ -67,7 +67,7 @@ export const zUserRecruteurRoutes = {
         recruiterId: z.string().optional(),
       }),
       response: {
-        "2xx": null,
+        "2xx": z.undefined(),
       },
     },
   },
