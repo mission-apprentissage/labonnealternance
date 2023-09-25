@@ -1,7 +1,8 @@
 import { Readable } from "stream"
 
+import { referrers } from "shared/constants/referers"
+
 import { logger } from "../../common/logger"
-import { referrers } from "../../common/model/constants/referrers"
 import { Etablissement } from "../../common/model/index"
 import { isEmailBlacklisted } from "../../services/application.service"
 import { affelnetSelectedFields, getEmailFromCatalogueField, getFormationsFromCatalogueMe } from "../../services/catalogue.service"

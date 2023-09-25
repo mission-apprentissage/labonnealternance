@@ -33,7 +33,6 @@ import emailsRoute from "./routes/auth/emails.controller"
 import login from "./routes/auth/login.controller"
 import password from "./routes/auth/password.controller"
 import campaignWebhook from "./routes/campaignWebhook.controller"
-import constantsRoute from "./routes/constants.controller"
 import etablissementRoute from "./routes/etablissement.controller"
 import etablissementsRecruteurRoute from "./routes/etablissementRecruteur.controller"
 import formulaireRoute from "./routes/formulaire.controller"
@@ -42,7 +41,6 @@ import partnersRoute from "./routes/partners.controller"
 import sendApplication from "./routes/sendApplication.controller"
 import sendApplicationAPI from "./routes/sendApplicationAPI.controller"
 import sendMail from "./routes/sendMail.controller"
-import supportRoute from "./routes/support.controller"
 import trainingLinks from "./routes/trainingLinks.controller"
 import unsubscribeLbaCompany from "./routes/unsubscribeLbaCompany.controller"
 import updateLbaCompany from "./routes/updateLbaCompany.controller"
@@ -226,10 +224,8 @@ export default async (components) => {
   app.use("/api/admin/eligible-trainings-for-appointment", checkJwtTokenRdvAdmin, administratorOnly, eligibleTrainingsForAppointmentRoute())
   app.use("/api/etablissements", etablissementRoute())
   app.use("/api/appointment-request", appointmentRequestRoute())
-  app.use("/api/constants", constantsRoute())
   app.use("/api/partners", partnersRoute())
   app.use("/api/emails", emailsRoute())
-  app.use("/api/support", supportRoute())
 
   /**
    * LBA-Recruteur
