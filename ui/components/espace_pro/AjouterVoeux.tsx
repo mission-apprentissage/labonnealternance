@@ -27,6 +27,7 @@ import {
 // eslint-disable-next-line import/no-extraneous-dependencies
 import dayjs from "dayjs"
 import { Formik } from "formik"
+import omit from "lodash/omit"
 import { useRouter } from "next/router"
 import { useContext, useEffect, useState } from "react"
 import * as Yup from "yup"
@@ -102,13 +103,13 @@ const AjouterVoeuxForm = (props) => {
     if (haveProposals) {
       return router.push({
         pathname: "/espace-pro/creation/mise-en-relation",
-        query: { job: JSON.stringify(job), email, geo_coordinates: form.geo_coordinates, fromDashboard, userId },
+        query: { job: JSON.stringify(omit(job, "rome_detail")), email, geo_coordinates: form.geo_coordinates, fromDashboard, userId },
       })
     }
 
     router.push({
       pathname: "/espace-pro/creation/fin",
-      query: { job: JSON.stringify(job), email, withDelegation: false, fromDashboard, userId },
+      query: { job: JSON.stringify(omit(job, "rome_detail")), email, withDelegation: false, fromDashboard, userId },
     })
   }
 
