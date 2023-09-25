@@ -3,6 +3,8 @@ import { z } from "zod"
 import { ZLbacError } from "../models/lbacError.model"
 import { ZLbaItem } from "../models/lbaItem.model"
 
+import { IRoutesDef } from "./common.routes"
+
 export const zV1JobsRoutes = {
   get: {
     "/api/v1/formations": {
@@ -73,5 +75,9 @@ export const zV1JobsRoutes = {
         "500": ZLbacError,
       },
     },
+    delete: {},
+    patch: {},
+    post: {},
+    put: {},
   },
-}
+} satisfies IRoutesDef
