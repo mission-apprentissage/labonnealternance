@@ -20,9 +20,16 @@ export default function DepotRapideFin() {
   const client = useQueryClient()
 
   const { widget } = useContext(WidgetContext)
-  const { job: jobString, email, withDelegation, fromDashboard, userId } = router.query
+  const {
+    job: jobString,
+    email,
+    withDelegation,
+    fromDashboard,
+    userId,
+  }: { job: string; email: string; withDelegation: string; fromDashboard: string; userId: string } = router.query as any
 
-  const job = JSON.parse(jobString as string)
+  const job = JSON.parse(jobString)
+  const fromDash = JSON.parse(fromDashboard)
 
   /**
    * KBA 20230130 : retry set to false to avoid waiting for failure if user is from dashboard (userId is not passed)
@@ -33,7 +40,7 @@ export default function DepotRapideFin() {
     onSettled: (data) => {
       const latestStatus = data?.data?.status.pop().status || false
 
-      if (latestStatus === "VALIDÉ" || fromDashboard) {
+      if (latestStatus === "VALIDÉ" || fromDash === true) {
         setUserIsValidated(true)
         setTitle(
           withDelegation
