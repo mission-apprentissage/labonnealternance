@@ -2,6 +2,7 @@ import { Jsonify } from "type-fest"
 import z, { ZodType } from "zod"
 
 import { zApplicationRoutes } from "./routes/application.routes"
+import { zCampaignWebhookRoutes } from "./routes/campaignWebhook.routes"
 import { IRouteSchema } from "./routes/common.routes"
 import { zCoreRoutes } from "./routes/core.routes"
 import { zEtablissementRoutes } from "./routes/etablissement.routes"
@@ -23,6 +24,7 @@ export * from "./models/index"
 
 export const zRoutes = {
   get: {
+    ...zCampaignWebhookRoutes.get,
     ...zCoreRoutes.get,
     ...zEtablissementRoutes.get,
     ...zLoginRoutes.get,
@@ -40,6 +42,7 @@ export const zRoutes = {
     ...zRecruiterRoutes.get,
   },
   post: {
+    ...zCampaignWebhookRoutes.post,
     ...zApplicationRoutes.post,
     ...zCoreRoutes.post,
     ...zEtablissementRoutes.post,
@@ -58,6 +61,7 @@ export const zRoutes = {
     ...zRecruiterRoutes.post,
   },
   put: {
+    ...zCampaignWebhookRoutes.put,
     ...zApplicationRoutes.put,
     ...zCoreRoutes.put,
     ...zEtablissementRoutes.put,
@@ -76,6 +80,7 @@ export const zRoutes = {
     ...zRecruiterRoutes.put,
   },
   delete: {
+    ...zCampaignWebhookRoutes.delete,
     ...zApplicationRoutes.delete,
     ...zCoreRoutes.delete,
     ...zEtablissementRoutes.delete,
@@ -94,6 +99,7 @@ export const zRoutes = {
     ...zRecruiterRoutes.delete,
   },
   patch: {
+    ...zCampaignWebhookRoutes.patch,
     ...zApplicationRoutes.patch,
     ...zCoreRoutes.patch,
     ...zEtablissementRoutes.patch,

@@ -1,5 +1,6 @@
 import { z } from "zod"
 
+import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { ZApplicationUI } from "../models/applications.model"
 
 import { IRoutesDef } from "./common.routes"
@@ -46,18 +47,7 @@ export const zApplicationRoutes = {
       },
     },
     "/api/application/webhook": {
-      body: z.object({
-        event: z.string(),
-        id: z.string(),
-        date: z.string(),
-        ts: z.number(),
-        "message-id": z.string(),
-        email: z.string(),
-        ts_event: z.number(),
-        subject: z.string(),
-        sending_ip: z.string(),
-        ts_epoch: z.number(),
-      }),
+      body: extensions.brevoWebhook(),
       response: {
         "200": z
           .object({
