@@ -1,17 +1,24 @@
-import express from "express"
+import { zRoutes } from "shared/index"
 
 import { sentryCaptureException } from "../../common/utils/sentryUtils"
 import config from "../../config"
 import { getEmailTemplate } from "../../services/application.service"
 import mailer from "../../services/mailer.service"
-import { tryCatch } from "../middlewares/tryCatchMiddleware"
+import { Server } from "../server"
 
-export default function () {
-  const router = express.Router()
-
-  router.get(
-    "/",
-    tryCatch(async (req, res) => {
+export default function (server: Server) {
+  server.get(
+    "/api/mail",
+    {
+      schema: zRoutes.get["/api/mail"],
+      config: {
+        rateLimit: {
+          max: 1,
+          timeWindow: "20s",
+        },
+      },
+    },
+    async (req, res) => {
       if (!req.query.secret) {
         return { error: "secret_missing" }
       } else if (req.query.secret !== config.secretUpdateRomesMetiers) {
@@ -26,7 +33,7 @@ export default function () {
             },
           }
 
-          res.json(
+          res.status(200).send(
             await mailer.sendEmail({
               to: req.query.applicant_email,
               subject: "Envoi mail de test",
@@ -36,11 +43,10 @@ export default function () {
           )
         } catch (err) {
           sentryCaptureException(err)
-          return res.json({ error: "error_sending_test_mail" })
+          // TODO: Should be 500
+          return res.status(200).send({ error: "error_sending_test_mail" })
         }
       }
-    })
+    }
   )
-
-  return router
 }

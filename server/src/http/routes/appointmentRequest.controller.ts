@@ -1,6 +1,6 @@
 import Boom from "boom"
-import express from "express"
 import Joi from "joi"
+import { zRoutes } from "shared/index"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
@@ -14,7 +14,7 @@ import dayjs from "../../services/dayjs.service"
 import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service"
 import mailer from "../../services/mailer.service"
 import * as users from "../../services/user.service"
-import { tryCatch } from "../middlewares/tryCatchMiddleware"
+import { Server } from "../server"
 
 const userRequestSchema = Joi.object({
   firstname: Joi.string().required(),
@@ -35,12 +35,13 @@ const appointmentReplySchema = Joi.object({
   cfa_message_to_applicant: Joi.string().allow("").optional(),
 })
 
-export default () => {
-  const router = express.Router()
-
-  router.post(
-    "/validate",
-    tryCatch(async (req, res) => {
+export default (server: Server) => {
+  server.post(
+    "/api/appointment-request/validate",
+    {
+      schema: zRoutes.post["/api/appointment-request/validate"],
+    },
+    async (req, res) => {
       await userRequestSchema.validateAsync(req.body, { abortEarly: false })
 
       const { firstname, lastname, phone, applicantMessageToCfa, applicantReasons, type, appointmentOrigin, cleMinistereEducatif } = req.body
@@ -195,21 +196,24 @@ export default () => {
 
       const appointmentUpdated = await appointmentService.findById(createdAppointement._id)
 
-      res.json({
+      res.status(200).send({
         userId: user._id,
         appointment: appointmentUpdated,
       })
-    })
+    }
   )
 
-  router.get(
-    "/context/recap",
-    tryCatch(async (req, res) => {
+  server.get(
+    "/api/appointment-request/context/recap",
+    {
+      schema: zRoutes.get["/api/appointment-request/context/recap"],
+    },
+    async (req, res) => {
       const { appointmentId } = req.query
 
       const appointment = await appointmentService.findById(appointmentId).lean()
 
-      if (!appointment) return res.sendStatus(400)
+      if (!appointment) return res.status(400).send()
 
       const [eligibleTrainingsForAppointment, user] = await Promise.all([
         eligibleTrainingsForAppointmentService.getParameterByCleMinistereEducatif({
@@ -218,7 +222,7 @@ export default () => {
         users.getUserById(appointment.applicant_id),
       ])
 
-      res.json({
+      res.status(200).send({
         appointment: {
           ...appointment,
           appointment_origin_detailed: getReferrerByKeyName(appointment.appointment_origin),
@@ -226,18 +230,21 @@ export default () => {
         user,
         etablissement: { ...eligibleTrainingsForAppointment },
       })
-    })
+    }
   )
 
-  router.post(
-    "/reply",
-    tryCatch(async (req, res) => {
+  server.post(
+    "/api/appointment-request/reply",
+    {
+      schema: zRoutes.post["/api/appointment-request/reply"],
+    },
+    async (req, res) => {
       await appointmentReplySchema.validateAsync(req.body, { abortEarly: false })
       const { appointment_id, cfa_intention_to_applicant, cfa_message_to_applicant, cfa_message_to_applicant_date } = req.body
 
       const appointment = await appointmentService.findById(appointment_id).lean()
 
-      if (!appointment) return res.sendStatus(400)
+      if (!appointment) return res.status(400).send()
 
       const [eligibleTrainingsForAppointment, user] = await Promise.all([
         eligibleTrainingsForAppointmentService.getParameterByCleMinistereEducatif({
@@ -246,7 +253,7 @@ export default () => {
         users.getUserById(appointment.applicant_id),
       ])
 
-      if (!user || !eligibleTrainingsForAppointment) return res.sendStatus(400)
+      if (!user || !eligibleTrainingsForAppointment) return res.status(400).send()
 
       if (cfa_intention_to_applicant === "personalised_answer") {
         await mailer.sendEmail({
@@ -264,9 +271,7 @@ export default () => {
         })
       }
       await appointmentService.updateAppointment(appointment_id, { cfa_intention_to_applicant, cfa_message_to_applicant, cfa_message_to_applicant_date })
-      res.json({ appointment_id, cfa_intention_to_applicant, cfa_message_to_applicant, cfa_message_to_applicant_date })
-    })
+      res.status(200).send({ appointment_id, cfa_intention_to_applicant, cfa_message_to_applicant, cfa_message_to_applicant_date })
+    }
   )
-
-  return router
 }

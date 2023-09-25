@@ -1,29 +1,21 @@
 import fastifyCors from "@fastify/cors"
-import { readFileSync } from "fs"
-
-import Sentry from "@sentry/node"
+import fastifyRateLimt from "@fastify/rate-limit"
+import fastifySwagger, { FastifyStaticSwaggerOptions } from "@fastify/swagger"
+import fastifySwaggerUI, { FastifySwaggerUiOptions } from "@fastify/swagger-ui"
 import Boom from "boom"
-import cors from "cors"
-import express from "express"
+import fastify, { FastifyBaseLogger, FastifyInstance, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerDefault } from "fastify"
+import { serializerCompiler, validatorCompiler, ZodTypeProvider } from "fastify-type-provider-zod"
+import { OpenAPIV3_1 } from "openapi-types"
+import { generateOpenApiSchema } from "shared/helpers/openapi/generateOpenapi"
 import swaggerDoc from "swagger-jsdoc"
-import swaggerUi from "swagger-ui-express"
 
-import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
-
-import "../auth/passport-strategy"
-import { logger } from "../common/logger"
 import config from "../config"
-import { RegisterRoutes } from "../generated/routes"
 import { initBrevoWebhooks } from "../services/brevo.service"
-import { ROLES } from "../services/constant.service"
 
 import rome from "./controllers/metiers/rome.controller"
-import authMiddleware from "./middlewares/authMiddleware"
 // import { corsMiddleware } from "./middlewares/corsMiddleware" // TODO_AB To check
 import { errorMiddleware } from "./middlewares/errorMiddleware"
 import { logMiddleware } from "./middlewares/logMiddleware"
-import permissionsMiddleware from "./middlewares/permissionsMiddleware"
-import { tryCatch } from "./middlewares/tryCatchMiddleware"
 import adminAppointmentRoute from "./routes/admin/appointment.controller"
 import eligibleTrainingsForAppointmentRoute from "./routes/admin/eligibleTrainingsForAppointment.controller"
 import adminEtablissementRoute from "./routes/admin/etablissement.controller"
@@ -34,6 +26,7 @@ import login from "./routes/auth/login.controller"
 import password from "./routes/auth/password.controller"
 import campaignWebhook from "./routes/campaignWebhook.controller"
 import constantsRoute from "./routes/constants.controller"
+import { coreRoutes } from "./routes/core.controller"
 import etablissementRoute from "./routes/etablissement.controller"
 import etablissementsRecruteurRoute from "./routes/etablissementRecruteur.controller"
 import formulaireRoute from "./routes/formulaire.controller"
@@ -48,22 +41,10 @@ import unsubscribeLbaCompany from "./routes/unsubscribeLbaCompany.controller"
 import updateLbaCompany from "./routes/updateLbaCompany.controller"
 import userRoute from "./routes/user.controller"
 import version from "./routes/version.controller"
-import { initSentry } from "./sentry"
-import { limiter10PerSecond, limiter1Per20Second, limiter20PerSecond, limiter3PerSecond, limiter5PerSecond, limiter7PerSecond } from "./utils/rateLimiters"
+import { initSentryFastify } from "./sentry"
 
-/**
- * LBA-Candidat Swagger file
- */
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-const deprecatedSwaggerDocument = JSON.parse(readFileSync(getStaticFilePath("./api-docs/swagger.json")))
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-const swaggerDocument = JSON.parse(readFileSync(getStaticFilePath("./generated/swagger.json")))
-
-/**
- * LBA-Recruteur Swagger configuration
- */
+export interface Server
+  extends FastifyInstance<RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>, FastifyBaseLogger, ZodTypeProvider> {}
 
 const swaggerOptions = {
   definition: {
@@ -88,12 +69,11 @@ const swaggerOptions = {
     ],
   },
   apis: ["./src/http/routes/api", "./src/http/routes/appointmentRequest"],
-}
+} as const
 
 const swaggerSpecification = swaggerDoc(swaggerOptions)
 
 swaggerSpecification.components = {
-  // schemas: swaggerRecruteurSchema, // To be fixed, require-all is commonJS only
   securitySchemes: {
     bearerAuth: {
       type: "http",
@@ -103,157 +83,125 @@ swaggerSpecification.components = {
   },
 }
 
-const swaggerUIOptions = {
-  customCss: ".swagger-ui .topbar { display: none }",
-}
+export async function bind(app: Server) {
+  initSentryFastify(app)
 
-export default async (components) => {
-  const app = express()
+  app.setValidatorCompiler(validatorCompiler)
+  app.setSerializerCompiler(serializerCompiler)
 
-  const checkJwtTokenRdvAdmin = authMiddleware("jwt-rdv-admin")
-  const administratorOnly = permissionsMiddleware(ROLES.administrator)
+  await app.register(fastifyRateLimt, {
+    global: false,
+  })
 
-  initSentry(app)
+  const swagegrOpts: FastifyStaticSwaggerOptions = {
+    mode: "static",
+    specification: {
+      // @ts-ignore invalid definition of document type
+      document: generateOpenApiSchema() as OpenAPIV3_1.Document,
+    },
+    // openapi: {
+    //   openapi: "3.1.0",
+    // },
+    // transform: ({ schema, url, route, swaggerObject }) => {
+    //   return { schema: transformedSchema, url: transformedUrl }
+    // },
+    // transformObject: fastifyZodOpenApiTransformObject,
+  }
+  await app.register(fastifySwagger, swagegrOpts)
 
-  app.set("trust proxy", 1)
+  const swaggerUiOptions: FastifySwaggerUiOptions = {
+    routePrefix: "/api/docs",
+    theme: {
+      // @ts-ignore invalid definition of css theme type
+      css: [{ content: ".swagger-ui .topbar { display: none }" }],
+    },
+  }
+  await app.register(fastifySwaggerUI, swaggerUiOptions)
 
-  app.use(express.json({ limit: "5mb" }))
-  // app.use(corsMiddleware()) // TODO_AB To check
+  // TODO_AB To check
+  // app.register(fastifyCors, {
+  //   origin: "*",
+  // })
 
   if (config.env === "local") {
-    app.use(cors({ credentials: true, origin: config.publicUrl }))
+    app.register(fastifyCors, {
+      origin: config.publicUrl,
+      credentials: true,
+    })
   }
 
-  app.use(logMiddleware())
-
-  app.get(
-    "/api",
-    tryCatch(async (req, res) => {
-      let mongodbStatus
-
-      await components.db
-        .collection("logs")
-        .stats()
-        .then(() => {
-          mongodbStatus = true
-        })
-        .catch((e) => {
-          mongodbStatus = false
-          logger.error("Healthcheck failed", e)
-        })
-
-      return res.json({
-        env: config.env,
-        healthcheck: {
-          mongodb: mongodbStatus,
-        },
-      })
-    })
-  )
-
-  app.get(
-    "/api/healthcheck",
-    tryCatch(async (req, res) => {
-      let mongodbStatus
-
-      await components.db
-        .collection("logs")
-        .stats()
-        .then(() => {
-          mongodbStatus = true
-        })
-        .catch((e) => {
-          mongodbStatus = false
-          logger.error("Healthcheck failed", e)
-        })
-
-      return res.json({
-        env: config.env,
-        healthcheck: {
-          mongodb: mongodbStatus,
-        },
-      })
-    })
-  )
+  coreRoutes(app)
 
   /**
    * Swaggers
    */
-  app.get("/api-docs/swagger.json", (req, res) => {
-    res.sendFile(getStaticFilePath("./api-docs/swagger.json"))
-  })
+  // app.get("/api-docs/swagger.json", (req, res) => {
+  //   res.sendFile(getStaticFilePath("./api-docs/swagger.json"))
+  // })
 
-  app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument))
-  app.use("/api/v1/lba-docs", swaggerUi.serve, swaggerUi.setup(deprecatedSwaggerDocument, swaggerUIOptions))
-  app.use("/api/v1/lbar-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpecification, swaggerUIOptions))
-
-  /**
-   * rate limiter sur les routes routes
-   */
-  app.use("/api/v1/metiers", limiter20PerSecond)
-  app.use("/api/v1/jobs", limiter5PerSecond)
-  app.use("/api/v1/formations", limiter7PerSecond)
-  app.use("/api/v1/formationsParRegion", limiter5PerSecond)
-  app.use("/api/v1/jobsEtFormations", limiter5PerSecond)
-  //app.use("/api/romelabels", limiter10PerSecond)
-
-  RegisterRoutes(app)
+  // app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument))
+  // app.use("/api/v1/lba-docs", swaggerUi.serve, swaggerUi.setup(deprecatedSwaggerDocument, swaggerUIOptions))
+  // app.use("/api/v1/lbar-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpecification, swaggerUIOptions))
 
   /**
    * LBACandidat
    */
-  app.use("/api/version", limiter3PerSecond, version())
-  app.use("/api/romelabels", limiter10PerSecond, rome())
-  app.use("/api/updateLBB", limiter1Per20Second, updateLbaCompany())
-  app.use("/api/mail", limiter1Per20Second, sendMail())
-  app.use("/api/campaign/webhook", campaignWebhook())
-  app.use("/api/application", sendApplication(components))
-  app.use("/api/V1/application", limiter5PerSecond, sendApplicationAPI(components))
-  app.use("/api/unsubscribe", unsubscribeLbaCompany())
+  version(app)
+  rome(app)
+  updateLbaCompany(app)
+  sendMail(app)
+  campaignWebhook(app)
+  sendApplication(app)
+  sendApplicationAPI(app)
+  unsubscribeLbaCompany(app)
 
   /**
    * Admin / Auth
    */
-  app.use("/api/login", login())
-  app.use("/api/password", password())
+  login(app)
+  password(app)
 
   /**
    * LBA-Organisme de formation
    */
-  app.use("/api/admin/appointments", checkJwtTokenRdvAdmin, administratorOnly, adminAppointmentRoute())
-  app.use("/api/admin/etablissements", checkJwtTokenRdvAdmin, administratorOnly, adminEtablissementRoute())
-  app.use("/api/admin/formations", checkJwtTokenRdvAdmin, administratorOnly, formationsRoute())
-  app.use("/api/admin/eligible-trainings-for-appointment", checkJwtTokenRdvAdmin, administratorOnly, eligibleTrainingsForAppointmentRoute())
-  app.use("/api/etablissements", etablissementRoute())
-  app.use("/api/appointment-request", appointmentRequestRoute())
-  app.use("/api/constants", constantsRoute())
-  app.use("/api/partners", partnersRoute())
-  app.use("/api/emails", emailsRoute())
-  app.use("/api/support", supportRoute())
+  adminAppointmentRoute(app)
+  adminEtablissementRoute(app)
+  formationsRoute(app)
+  eligibleTrainingsForAppointmentRoute(app)
+  etablissementRoute(app)
+  appointmentRequestRoute(app)
+  constantsRoute(app)
+  partnersRoute(app)
+  emailsRoute(app)
+  supportRoute(app)
 
   /**
    * LBA-Recruteur
    */
-  app.use("/api/user", userRoute())
-  app.use("/api/formulaire", formulaireRoute())
-  app.use("/api/rome", rome())
-  app.use("/api/optout", optoutRoute())
-  app.use("/api/etablissement", etablissementsRecruteurRoute())
+  userRoute(app)
+  formulaireRoute(app)
+  optoutRoute(app)
+  etablissementsRecruteurRoute(app)
 
-  /**
-   * Tools
-   */
-  app.use("/api/trainingLinks", limiter3PerSecond, trainingLinks())
+  trainingLinks(app)
 
   initBrevoWebhooks()
 
-  app.use((req, res) => {
+  app.setNotFoundHandler((req, res) => {
     res.status(404).send(Boom.notFound().output)
   })
 
-  app.use(Sentry.Handlers.errorHandler())
-
-  app.use(errorMiddleware())
+  errorMiddleware(app)
 
   return app
+}
+
+export default async () => {
+  const app: Server = fastify({
+    logger: logMiddleware(),
+    bodyLimit: 5 * 1024 ** 2, // 5MB
+    trustProxy: 1,
+  }).withTypeProvider<ZodTypeProvider>()
+
+  return bind(app)
 }

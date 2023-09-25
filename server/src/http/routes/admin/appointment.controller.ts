@@ -1,21 +1,26 @@
-import express from "express"
+import { zRoutes } from "shared/index"
+
+import { authenticationMiddleware } from "@/http/middlewares/authMiddleware"
+import { administratorOnly } from "@/http/middlewares/permissionsMiddleware"
 
 import { Appointment, User } from "../../../common/model/index"
 import { getFormationsByCleMinistereEducatif } from "../../../services/catalogue.service"
-import { tryCatch } from "../../middlewares/tryCatchMiddleware"
+import { Server } from "../../server"
 
 /**
  * Sample entity route module for GET
  */
-export default () => {
-  const router = express.Router()
-
+export default (server: Server) => {
   /**
    * Get all formations getRequests /requests GET
    * */
-  router.get(
-    "/",
-    tryCatch(async (req, res) => {
+  server.get(
+    "/api/admin/appointments",
+    {
+      schema: zRoutes.get["/api/admin/appointments"],
+      preHandler: [authenticationMiddleware("jwt-rdv-admin"), administratorOnly],
+    },
+    async (req, res) => {
       const qs = req.query
       const query = qs && qs.query ? JSON.parse(qs.query) : {}
       const page = qs && qs.page ? qs.page : 1
@@ -23,7 +28,7 @@ export default () => {
 
       const allData = await Appointment.paginate({ query, page, limit })
 
-      return res.send({
+      return res.status(200).send({
         appointments: allData?.docs,
         pagination: {
           page: allData?.page,
@@ -32,15 +37,19 @@ export default () => {
           total: allData?.totalDocs,
         },
       })
-    })
+    }
   )
 
   /**
    * Get all formations getRequests /requests GET (with details)
    * */
-  router.get(
-    "/details",
-    tryCatch(async (req, res) => {
+  server.get(
+    "/api/admin/appointments/details",
+    {
+      schema: zRoutes.get["/api/admin/appointments/details"],
+      preHandler: [authenticationMiddleware("jwt-rdv-admin"), administratorOnly],
+    },
+    async (req, res) => {
       const qs = req.query
       const query = qs && qs.query ? JSON.parse(qs.query) : {}
       const page = qs && qs.page ? qs.page : 1
@@ -72,7 +81,7 @@ export default () => {
 
       const appointments = await Promise.all(appointmentsPromises || [])
 
-      return res.send({
+      return res.status(200).send({
         appointments,
         pagination: {
           page: allAppointments?.page,
@@ -81,8 +90,6 @@ export default () => {
           total: allAppointments?.totalDocs,
         },
       })
-    })
+    }
   )
-
-  return router
 }

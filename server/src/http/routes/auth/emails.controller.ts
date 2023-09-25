@@ -1,5 +1,7 @@
-import express from "express"
 import Joi from "joi"
+import { zRoutes } from "shared/index"
+
+import { authMiddleware, authenticationMiddleware } from "@/http/middlewares/authMiddleware"
 
 import { logger } from "../../../common/logger"
 import { Etablissement } from "../../../common/model"
@@ -8,24 +10,24 @@ import * as appointmentService from "../../../services/appointment.service"
 import { BrevoEventStatus } from "../../../services/brevo.service"
 import dayjs from "../../../services/dayjs.service"
 import * as eligibleTrainingsForAppointmentService from "../../../services/eligibleTrainingsForAppointment.service"
-import authMiddleware from "../../middlewares/authMiddleware"
-import { tryCatch } from "../../middlewares/tryCatchMiddleware"
+import { Server } from "../../server"
 
 /**
  * Email controllers.
  */
-export default () => {
-  const router = express.Router()
-
+export default (server: Server) => {
   /**
    * @description Update email status.
    * @method {POST}
    * @returns {Promise<void>}
    */
-  router.post(
-    "/webhook",
-    authMiddleware("api-key"),
-    tryCatch(async (req, res) => {
+  server.post(
+    "/api/emails/webhook",
+    {
+      schema: zRoutes.post["/api/emails/webhook"],
+      preValidation: [authenticationMiddleware("api-key")],
+    },
+    async (req, res) => {
       const parameters = await Joi.object({
         event: Joi.string().required(),
         "message-id": Joi.string().required(),
@@ -134,9 +136,7 @@ export default () => {
         })
       }
 
-      return res.json({})
-    })
+      return res.status(200).send({})
+    }
   )
-
-  return router
 }

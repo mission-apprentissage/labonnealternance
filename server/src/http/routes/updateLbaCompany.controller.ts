@@ -1,17 +1,24 @@
-import express from "express"
 import Joi from "joi"
+import { zRoutes } from "shared/index"
 
 import config from "../../config"
 import { REGEX } from "../../services/constant.service"
 import { updateContactInfo } from "../../services/lbacompany.service"
-import { tryCatch } from "../middlewares/tryCatchMiddleware"
+import { Server } from "../server"
 
-export default function () {
-  const router = express.Router()
-
-  router.get(
-    "/updateContactInfo",
-    tryCatch(async (req, res) => {
+export default function (server: Server) {
+  server.get(
+    "/api/updateLBB/updateContactInfo",
+    {
+      schema: zRoutes.get["/api/updateLBB/updateContactInfo"],
+      config: {
+        rateLimit: {
+          max: 1,
+          timeWindow: "20s",
+        },
+      },
+    },
+    async (req, res) => {
       await Joi.object({
         secret: Joi.string().required(),
         email: Joi.string().allow("").email(),
@@ -20,18 +27,16 @@ export default function () {
       }).validateAsync(req.query)
 
       if (req.query.secret !== config.secretUpdateRomesMetiers) {
-        return res.status(401).json("unauthorized")
+        return res.status(401).send("unauthorized")
       } else {
         const result = await updateContactInfo(req.query)
 
         if (result === "not_found") {
-          return res.status(404).json(result)
+          return res.status(404).send(result)
         }
 
-        return res.json(result)
+        return res.status(200).send(result)
       }
-    })
+    }
   )
-
-  return router
 }

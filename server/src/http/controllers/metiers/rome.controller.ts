@@ -1,19 +1,38 @@
 import { zRoutes } from "shared/index"
-import express from "express"
 
 import { getRomesAndLabelsFromTitleQuery } from "../../../services/metiers.service"
-import { tryCatch } from "../../middlewares/tryCatchMiddleware"
+import { Server } from "../../server"
 
-export default function () {
-  const router = express.Router()
+const config = {
+  rateLimit: {
+    max: 10,
+    timeWindow: "1s",
+  },
+}
 
-  router.get(
-    "/",
-    tryCatch(async (req, res) => {
+export default function (server: Server) {
+  // TODO: Remove duplicated routes
+
+  server.get(
+    "/api/romelabels",
+    {
+      schema: zRoutes.get["/api/romelabels"],
+      config,
+    },
+    async (req, res) => {
       const result = await getRomesAndLabelsFromTitleQuery(req.query)
-      return res.json(result)
-    })
+      return res.status(200).send(result)
+    }
   )
-
-  return router
+  server.get(
+    "/api/rome",
+    {
+      schema: zRoutes.get["/api/rome"],
+      config,
+    },
+    async (req, res) => {
+      const result = await getRomesAndLabelsFromTitleQuery(req.query)
+      return res.status(200).send(result)
+    }
+  )
 }

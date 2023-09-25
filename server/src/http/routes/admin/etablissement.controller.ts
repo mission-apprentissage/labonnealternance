@@ -1,20 +1,25 @@
-import express from "express"
+import { zRoutes } from "shared/index"
+
+import { authenticationMiddleware } from "@/http/middlewares/authMiddleware"
+import { administratorOnly } from "@/http/middlewares/permissionsMiddleware"
 
 import { Etablissement } from "../../../common/model/index"
-import { tryCatch } from "../../middlewares/tryCatchMiddleware"
+import { Server } from "../../server"
 
 /**
- * @description Etablissement Router.
+ * @description Etablissement server.
  */
-export default () => {
-  const router = express.Router()
-
+export default (server: Server) => {
   /**
    * Gets all etablissements
    * */
-  router.get(
-    "/",
-    tryCatch(async (req, res) => {
+  server.get(
+    "/api/admin/etablissements",
+    {
+      schema: zRoutes.get["/api/admin/etablissement"],
+      preHandler: [authenticationMiddleware("jwt-rdv-admin"), administratorOnly],
+    },
+    async (req, res) => {
       const qs = req.query
       const query = qs && qs.query ? JSON.parse(qs.query) : {}
       const page = qs && qs.page ? qs.page : 1
@@ -22,9 +27,9 @@ export default () => {
 
       const allData = await Etablissement.paginate({ query, page, limit })
 
-      if (!allData) return res.sendStatus(400)
+      if (!allData) return res.status(400).send()
 
-      return res.send({
+      return res.status(200).send({
         etablissements: allData.docs,
         pagination: {
           page: allData.page,
@@ -33,47 +38,59 @@ export default () => {
           total: allData.totalDocs,
         },
       })
-    })
+    }
   )
 
   /**
    * Gets an etablissement from its siret_formateur.
    */
-  router.get(
-    "/siret-formateur/:siret",
-    tryCatch(async ({ params }, res) => {
+  server.get(
+    "/api/admin/etablissements/siret-formateur/:siret",
+    {
+      schema: zRoutes.get["/api/admin/etablissements/siret-formateur/:siret"],
+      preHandler: [authenticationMiddleware("jwt-rdv-admin"), administratorOnly],
+    },
+    async ({ params }, res) => {
       const etablissement = await Etablissement.findOne({ formateur_siret: params.siret })
 
       if (!etablissement) {
-        return res.sendStatus(404)
+        return res.status(404).send()
       }
 
-      return res.send(etablissement)
-    })
+      return res.status(200).send(etablissement)
+    }
   )
 
   /**
    * Gets an etablissement from its id.
    */
-  router.get(
-    "/:id",
-    tryCatch(async (req, res) => {
+  server.get(
+    "/api/admin/etablissements/:id",
+    {
+      schema: zRoutes.get["/api/admin/etablissements/:id"],
+      preHandler: [authenticationMiddleware("jwt-rdv-admin"), administratorOnly],
+    },
+    async (req, res) => {
       const etablissement = await Etablissement.findById(req.params.id)
 
       if (!etablissement) {
-        return res.sendStatus(404)
+        return res.status(404).send()
       }
 
       return res.send(etablissement)
-    })
+    }
   )
 
   /**
    * Creates one or multiple etablissements.
    */
-  router.post(
-    "/",
-    tryCatch(async ({ body }, res) => {
+  server.post(
+    "/api/admin/etablissements/",
+    {
+      schema: zRoutes.post["api/admin/etablissements/"],
+      preHandler: [authenticationMiddleware("jwt-rdv-admin"), administratorOnly],
+    },
+    async ({ body }, res) => {
       const { etablissements } = body
 
       let output
@@ -83,27 +100,29 @@ export default () => {
         output = await etablissements.create(body)
       }
 
-      return res.send(output)
-    })
+      return res.status(200).send(output)
+    }
   )
 
   /**
    * Updates an etablissement.
    */
-  router.patch(
-    "/:id",
-    tryCatch(async ({ body, params }, res) => {
+  server.patch(
+    "/api/admin/etablissements/:id",
+    {
+      schema: zRoutes.post["/api/admin/etablissements/:id"],
+      preHandler: [authenticationMiddleware("jwt-rdv-admin"), administratorOnly],
+    },
+    async ({ body, params }, res) => {
       const etablissement = await Etablissement.findById(params.id)
 
       if (!etablissement) {
-        return res.sendStatus(404)
+        return res.status(404).send()
       }
 
       const result = await Etablissement.findByIdAndUpdate(params.id, body)
 
-      res.send(result)
-    })
+      res.status(200).send(result)
+    }
   )
-
-  return router
 }

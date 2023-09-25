@@ -1,42 +1,50 @@
+
+import fastifySentryPlugin from "@immobiliarelabs/fastify-sentry";
 import { CaptureConsole, ExtraErrorData } from "@sentry/integrations"
-import Sentry from "@sentry/node"
-import { Express } from "express"
+import * as Sentry from "@sentry/node";
+import { FastifyRequest } from "fastify";
 
-import config from "../config.js"
+import config from "@/config";
 
-export function initSentry(app: Express) {
-  if (config.env === "dev") {
-    console.warn("Sentry deactivated.")
-    return
-  }
+import { Server } from "./server";
 
-  Sentry.init({
+function getOptions() {
+  return {
     dsn: config.serverSentryDsn,
-    tracesSampleRate: 0.1,
+    tracesSampleRate: config.env === "production" ? 0.1 : 1.0,
     tracePropagationTargets: [/\.apprentissage\.beta\.gouv\.fr$/],
     environment: config.env,
-    enabled: config.env === "production",
+    enabled: config.env !== "local",
     integrations: [
-      // enable HTTP calls tracing
       new Sentry.Integrations.Http({ tracing: true }),
-      // enable Mongoose query tracing
       new Sentry.Integrations.Mongo({ useMongoose: true }),
-      // enable Express.js middleware tracing
-      new Sentry.Integrations.Express({ app }),
-      // enable capture all console api errors
-      // @ts-ignore
       new CaptureConsole({ levels: ["error"] }),
-      // add all extra error data into the event
-      // @ts-ignore
       new ExtraErrorData({ depth: 8 }),
     ],
-  })
+  };
+}
 
-  // RequestHandler creates a separate execution context using domains, so that every
-  // transaction/span/breadcrumb is attached to its own Hub instance
-  app.use(Sentry.Handlers.requestHandler())
-  // TracingHandler creates a trace for every incoming request
-  app.use(Sentry.Handlers.tracingHandler())
+export function initSentryProcessor(): void {
+  Sentry.init(getOptions() as any);
+}
 
-  app.use(Sentry.Handlers.errorHandler())
+export async function closeSentry(): Promise<void> {
+  await Sentry.close(2_000);
+}
+
+export function initSentryFastify(app: Server) {
+  const options: any = {
+    setErrorHandler: false,
+    extractRequestData: (request: FastifyRequest) => {
+      return {
+        headers: request.headers,
+        method: request.method,
+        protocol: request.protocol,
+        query_string: request.query,
+      };
+    },
+    ...getOptions(),
+  };
+
+  app.register(fastifySentryPlugin, options);
 }
