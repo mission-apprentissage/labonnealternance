@@ -6,8 +6,7 @@ import { z } from "../helpers/zodWithOpenApi"
 
 export const ZResError = z
   .object({
-    details: z.any().optional(),
-    attributes: z.any().optional(),
+    data: z.any().optional(),
     message: z.string(),
     error: z.string(),
     statusCode: z.number(),

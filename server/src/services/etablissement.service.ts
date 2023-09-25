@@ -359,7 +359,7 @@ export const formatEntrepriseData = (d: IEtablissementGouv): IFormatAPIEntrepris
   naf_code: d.activite_principale.code,
   naf_label: d.activite_principale.libelle,
   establishment_size: getEffectif(d.unite_legale.tranche_effectif_salarie.code),
-  establishment_creation_date: new Date(d.unite_legale.date_creation * 1000).toISOString(),
+  establishment_creation_date: new Date(d.unite_legale.date_creation * 1000),
 })
 
 /**

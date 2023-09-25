@@ -94,7 +94,7 @@ export const validationCompte = (id) => API.post("/etablissement/validation", id
  * Etablissement API
  */
 export const getCfaInformation = async (siret) => await API.get(`/etablissement/cfa/${siret}`)
-export const getEntrepriseInformation = async (siret, options = {}) => {
+export const getEntrepriseInformation = async (siret, options: { cfa_delegated_siret: string | undefined } = { cfa_delegated_siret: undefined }) => {
   try {
     const { data } = await API.get(`/etablissement/entreprise/${siret}`, { params: options })
     return data

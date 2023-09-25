@@ -1,3 +1,4 @@
+import Boom from "boom"
 import joi from "joi"
 import { zRoutes } from "shared/index"
 
@@ -78,31 +79,40 @@ export default (server: Server) => {
       const siret: string | undefined = req.params.siret
       const cfa_delegated_siret: string | undefined = req.query.cfa_delegated_siret
       if (!siret) {
-        return res.status(400).send({ error: true, message: "Le numéro siret est obligatoire." })
+        throw Boom.badRequest("Le numéro siret est obligatoire.")
+        // return res.status(400).send({ error: true, message: "Le numéro siret est obligatoire." })
       }
       try {
         const cfaVerification = await validateCreationEntrepriseFromCfa({ siret, cfa_delegated_siret })
         if (cfaVerification) {
-          return res.status(400).send({
-            error: true,
-            message: cfaVerification.message,
-          })
+          throw Boom.badRequest(cfaVerification.message)
+          // return res.status(400).send({
+          //   error: true,
+          //   message: cfaVerification.message,
+          // })
         }
+
         const result = await getEntrepriseDataFromSiret({ siret, cfa_delegated_siret })
         if ("error" in result) {
           switch (result.errorCode) {
             case BusinessErrorCodes.IS_CFA: {
-              return res.status(400).send({
-                error: true,
-                message: result.message,
+              throw Boom.badRequest(result.message, {
                 isCfa: true,
               })
+              // return res.status(400).send({
+              //   error: true,
+              //   message: result.message,
+              //   isCfa: true,
+              // })
             }
             default: {
-              return res.status(400).send({
-                error: true,
-                message: result.message,
+              throw Boom.badRequest(result.message, {
+                isCfa: true,
               })
+              // return res.status(400).send({
+              //   error: true,
+              //   message: result.message,
+              // })
             }
           }
         } else {
@@ -110,7 +120,12 @@ export default (server: Server) => {
         }
       } catch (error) {
         sentryCaptureException(error)
-        res.status(500).send({ error: true, message: "Le service est momentanément indisponible." })
+        // throw Boom.serverUnavailable()
+        throw Boom.internal("Le service est momentanément indisponible.")
+        // throw Boom.internal("Le service est momentanément indisponible.", {
+        //   isCfa: true,
+        // })
+        // res.status(500).send({ error: true, message: "Le service est momentanément indisponible." })
       }
     }
   )
