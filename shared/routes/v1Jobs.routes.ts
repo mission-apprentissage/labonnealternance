@@ -4,7 +4,6 @@ import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { zObjectId } from "../models/common"
 import { ZLbaItem } from "../models/lbaItem.model"
 import { ZRecruiter } from "../models/recruiter.model"
-import { ZUserRecruteur } from "../models/usersRecruteur.model"
 
 import { IRoutesDef } from "./common.routes"
 
@@ -36,11 +35,11 @@ export const zV1JobsRoutes = {
       response: {
         "200": z
           .object({
-            data: z.array(ZUserRecruteur).optional(),
+            data: z.array(ZRecruiter).or(z.undefined()),
             pagination: z
               .object({
                 page: z.number().optional(),
-                result_per_page: z.number(),
+                result_per_page: z.number().optional(),
                 number_of_page: z.number().optional(),
                 total: z.number().optional(),
               })

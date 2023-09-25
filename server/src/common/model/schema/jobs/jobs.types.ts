@@ -1,3 +1,5 @@
+import { IRomeDetailsFromAPI } from "@/services/rome.service.types"
+
 import { JOB_STATUS } from "../../../../services/constant.service"
 
 interface IDelegation {
@@ -15,13 +17,13 @@ interface IJobs {
   job_employer_description?: string
   job_start_date?: Date | string
   rome_code: string[]
-  rome_detail: object
+  rome_detail: IRomeDetailsFromAPI
   job_creation_date: Date | string
   job_expiration_date?: Date | string
   job_update_date: Date | string
   job_last_prolongation_date: Date | string
   job_prolongation_count: number
-  job_status?: JOB_STATUS
+  job_status: JOB_STATUS
   job_status_comment: string
   job_type?: string[]
   is_multi_published: boolean
@@ -36,6 +38,7 @@ interface IJobs {
   custom_geo_coordinates: string
   stats_detail_view?: number
   stats_search_view?: number
+  relance_mail_sent: boolean
 }
 
 export type { IDelegation, IJobs }

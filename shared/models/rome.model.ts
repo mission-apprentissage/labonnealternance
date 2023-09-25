@@ -77,8 +77,8 @@ export const ZRomeDetail = z
             })
             .strict(),
           typeCompetence: z.string(),
-          riasecMineur: z.string(),
-          riasecMajeur: z.string(),
+          riasecMineur: z.string().nullish(),
+          riasecMajeur: z.string().nullish(),
         })
         .strict()
     ),
