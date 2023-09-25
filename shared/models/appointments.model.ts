@@ -21,7 +21,7 @@ export const ZAppointment = z
     cfa_message_to_applicant_date: z.date().nullish(),
     cfa_message_to_applicant: z.string().nullish(),
     applicant_message_to_cfa: z.string().nullish(),
-    applicant_reasons: z.array(z.string()).nullish(),
+    applicant_reasons: z.array(z.enum(["modalite", "contenu", "porte", "frais", "place", "horaire", "plus", "accompagnement", "lieu", "suivi", "autre"])).nullish(),
     cfa_gestionnaire_siret: z.string().nullish(),
     cfa_formateur_siret: z.string().nullish(),
     appointment_origin: z.string().nullish(),
@@ -37,3 +37,6 @@ export const ZAppointment = z
 
 export type IAppointment = z.output<typeof ZAppointment>
 export type IAppointmentJson = Jsonify<z.input<typeof ZAppointment>>
+
+export type IMailing = z.output<typeof ZMailing>
+export type EReason = NonNullable<IAppointment["applicant_reasons"]>[0]
