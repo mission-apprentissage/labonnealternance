@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { logger } from "../../../common/logger"
 import { mongooseInstance } from "../../../common/mongodb"
 import { runScript } from "../../scriptWrapper"

@@ -8,7 +8,7 @@ import HeaderForm from "../HeaderForm/HeaderForm"
 import LogoLBA from "../LogoLBA/LogoLBA"
 import ResultFilterAndCounter from "../SearchForTrainingsAndJobs/components/ResultFilterAndCounter"
 
-const WidgetHeader = ({ handleSearchSubmit, isHome, allJobSearchError, trainingSearchError, isJobSearchLoading, isTrainingSearchLoading }) => {
+const WidgetHeader = ({ handleSearchSubmit, isHome = false, allJobSearchError, trainingSearchError, isJobSearchLoading, isTrainingSearchLoading }) => {
   const router = useRouter()
 
   const { selectedItem } = useContext(SearchResultContext)
@@ -24,7 +24,7 @@ const WidgetHeader = ({ handleSearchSubmit, isHome, allJobSearchError, trainingS
     <Box zIndex={9} display={formDisplayValue} boxShadow={isHome ? "none" : "0 0 12px 2px rgb(0 0 0 / 21%)"} padding="8px">
       <Box margin="auto" maxWidth="1310px">
         <Flex alignItems="flex-start">
-          {!isHome && <LogoLBA mt={2} />}
+          {!isHome && <LogoLBA />}
           <Box>
             {isHome && (
               <Text mb={3} as="h1" fontSize={["26px", "29px"]} fontWeight={700}>
@@ -45,6 +45,7 @@ const WidgetHeader = ({ handleSearchSubmit, isHome, allJobSearchError, trainingS
             trainingSearchError={trainingSearchError}
             isJobSearchLoading={isJobSearchLoading}
             isTrainingSearchLoading={isTrainingSearchLoading}
+            showSearchForm={() => {}}
           />
         )}
       </Box>

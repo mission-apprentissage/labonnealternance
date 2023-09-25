@@ -1,10 +1,8 @@
 import { CloseIcon, HamburgerIcon, LockIcon } from "@chakra-ui/icons"
-import { Box, Container, Flex, Image, keyframes, Link, Show, Stack, useDisclosure, usePrefersReducedMotion } from "@chakra-ui/react"
+import { Box, Container, Flex, Image, Link, Show, Stack, keyframes, useDisclosure, usePrefersReducedMotion } from "@chakra-ui/react"
 import NextLink from "next/link"
 
-import { publicConfig } from "../config.public"
-
-const Navigation = ({ currentPage }) => {
+const Navigation = ({ currentPage = undefined }) => {
   const getLogo = () => {
     return "logo_LBA.svg"
   }
@@ -130,7 +128,7 @@ const Navigation = ({ currentPage }) => {
                       marginTop="10px !important;"
                       marginBottom="10px !important;"
                     ></Box>
-                    <NextLink passHref href={{ pathname: "/espace-pro/authentification", host: publicConfig.espacePro.host, protocol: publicConfig.espacePro.protocol }}>
+                    <NextLink passHref href="/espace-pro/authentification">
                       <Link aria-label="Espace pro" display="flex" alignItems="center">
                         <LockIcon color="bluefrance.500" ml={{ base: 0, lg: 3 }} />
                         <Box as="span" color="bluefrance.500" fontSize={14} pl={[1, 1, 1, 2]} pr={2} py={2}>

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { db } from "../mongodb"
 
 export const components = async (options = {}) => {

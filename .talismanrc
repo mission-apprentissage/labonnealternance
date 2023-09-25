@@ -19,6 +19,12 @@ fileignoreconfig:
   - filecontent
 - filename: server/tests/integration/http/passwordRoutes.test.ts
   checksum: ca06f5c65cc9e3bdc39390cfe5ecdc4e3ea165ce58dc39ce7ac990aff8074a90
+- filename: shared/constants/recruteur.ts
+  checksum: 28af032d2eb26aec7dd3bb1d32253f992a036626c36a92eb1e7ff07599fd0b2b
+- filename: ui/common/hooks/useAuth.ts
+  checksum: 7cce935653407e000b35e98bd365a003e538aed4fed432a9a404d4f2412dd2df
+- filename: ui/pages/espace-pro/admin/eligible-trainings-for-appointment/edit/[id].tsx
+  checksum: e8b1197c5340965b02a4152edd1a06fd08627225538ec67f6767e8d4e93971fa
 - filename: ui/pages/espace-pro/admin/eligible-trainings-for-appointment/search.jsx
   checksum: 26e08a59fba2fbace721a6109af82b5d0d70bd91ddf590484c69fd34a60db17b
 - filename: ui/pages/espace-pro/admin/widget-parameters/search.jsx

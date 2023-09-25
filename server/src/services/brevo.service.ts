@@ -36,6 +36,10 @@ campaignHarbounceWebhook = {
  * Initialise les webhooks Brevo au démarrage du docker server. Echoue sans conséquences s'ils existent déjà
  */
 export const initBrevoWebhooks = () => {
+  if (config.env !== "production") {
+    return
+  }
+
   apiInstance.createWebhook(applicationStatusWebhook).then(
     function (data) {
       logger.info("Brevo webhook API called successfully for application email status changes. Returned data: " + JSON.stringify(data))

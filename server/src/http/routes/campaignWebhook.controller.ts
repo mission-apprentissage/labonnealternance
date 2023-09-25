@@ -17,8 +17,7 @@ export default function () {
         ...
       }*/
       if (req.body.event === BrevoEventStatus.HARD_BOUNCE) {
-        addEmailToBlacklist(req.body.email, "campaign")
-        removeEmailFromLbaCompanies(req.body.email)
+        await Promise.all([addEmailToBlacklist(req.body.email, "campaign"), removeEmailFromLbaCompanies(req.body.email)])
       }
 
       return res.json({ result: "ok" })

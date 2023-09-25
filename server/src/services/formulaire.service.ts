@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { pick } from "lodash-es"
 import moment from "moment"
 import { Filter } from "mongodb"

@@ -6,7 +6,7 @@ import { Icon } from "@chakra-ui/react"
  * @param {string} fillHexaColor - Hexa color
  * @returns {JSX.Element}
  */
-const SuccessCircle = ({ width, fillHexaColor, ...props }) => (
+const SuccessCircle = ({ width = undefined, fillHexaColor, ...props }) => (
   <Icon width={width} height="100%" viewBox="0 0 34 34" {...props}>
     <path
       fillRule="evenodd"

@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { oleoduc, transformData, writeData } from "oleoduc"
 
 import { LbaCompany } from "../../common/model/index.js"

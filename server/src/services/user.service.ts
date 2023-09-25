@@ -22,7 +22,7 @@ const rehashPassword = (user, password: string) => {
  * @param {string} password
  * @returns {Promise<null|User>}
  */
-const authenticate = async (username: string, password: string) => {
+const authenticate = async (username: string, password: string): Promise<IUser | null> => {
   const user = await getUser(username)
 
   if (!user) {

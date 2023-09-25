@@ -16,7 +16,7 @@ const AideApprentissage = ({ item }) => {
 
       <Box color="grey.700" mt={6}>
         Accéder à{" "}
-        <Link href="https://mes-aides.1jeune1solution.beta.gouv.fr/" aria-label="Accès à l'outil de simulation de 1jeune1solution" textDecor="underline" isExternal="true">
+        <Link href="https://mes-aides.1jeune1solution.beta.gouv.fr/" aria-label="Accès à l'outil de simulation de 1jeune1solution" textDecor="underline" isExternal>
           l’outil de simulation 1jeune1solution
           <Image src="/images/square_link.svg" alt="Ouverture dans un nouvel onglet" display="inline-block" pl="1" />
         </Link>

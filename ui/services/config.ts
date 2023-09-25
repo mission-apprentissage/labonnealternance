@@ -2,18 +2,37 @@ import { campaignParameters } from "../utils/campaignParameters"
 import { testingParameters } from "../utils/testingParameters"
 import { getValueFromPath } from "../utils/tools"
 
-export const getWidgetParameters = () => {
-  const widgetParameters = { parameters: null, applyWidgetParameters: false }
+type IConfigParameters = {
+  lat?: number
+  lon?: number
+  romes?: string
+  rncp?: string
+  radius?: number
+  returnURI?: string
+  returnLogoURL?: string
+  jobName?: string
+  frozenJob?: string
+  caller?: string
+  zipcode?: string
+  insee?: string
+  diploma?: string
+  address?: string
+}
 
-  let parameters = {}
+export const getWidgetParameters = () => {
+  const widgetParameters = { parameters: null, applyWidgetParameters: false, applyFormValues: undefined, formValues: undefined }
+
+  let parameters: IConfigParameters = {}
   let applyWidgetParameters = true
 
   parameters = {}
 
   let p = getValueFromPath("lat")
+  // @ts-expect-error: TODO
   if (p && !isNaN(p)) parameters.lat = parseFloat(p)
 
   p = getValueFromPath("lon")
+  // @ts-expect-error: TODO
   if (p && !isNaN(p)) parameters.lon = parseFloat(p)
 
   p = getValueFromPath("rncp")
@@ -31,6 +50,7 @@ export const getWidgetParameters = () => {
   }
 
   p = getValueFromPath("radius")
+  // @ts-expect-error: TODO
   if (p && !isNaN(p) && (p === "10" || p === "30" || p === "60" || p === "100")) {
     parameters.radius = parseInt(p)
   }
@@ -66,11 +86,15 @@ export const getItemParameters = () => {
   const itemParameters = { parameters: null, mode: null, applyItemParameters: false }
 
   if (getValueFromPath("itemId")) {
-    let parameters = {}
+    let parameters: {
+      itemId?: string
+      type?: string
+    } = {}
     let applyItemParameters = true
 
     parameters = {
       itemId: getValueFromPath("itemId"),
+      type: undefined,
     }
 
     const p = getValueFromPath("type")
@@ -135,7 +159,7 @@ export const initTestingParameters = () => {
 }
 
 /* à conserver
-export const buildFormValuesFromParameterString = (urlParams) => 
+export const buildFormValuesFromParameterString = (urlParams) =>
 {
   let params = {};
   params.lat = parseFloat(urlParams.get("lat"));

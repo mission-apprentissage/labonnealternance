@@ -1,8 +1,8 @@
-import { z } from "zod"
-
+import { z } from "../helpers/zodWithOpenApi"
 import { ZAppointment } from "../models"
 import { zObjectId } from "../models/common"
-import { ZEtablissement } from "../models/etablissement.model"
+import { ZEtablissement } from "../models"
+import { IRoutesDef } from "./common.routes"
 
 export const zEtablissementRoutes = {
   get: {
@@ -95,4 +95,4 @@ export const zEtablissementRoutes = {
       },
     },
   },
-}
+}  satisfies IRoutesDef

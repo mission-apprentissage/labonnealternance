@@ -1,14 +1,16 @@
 import { Jsonify } from "type-fest"
 import { z } from "zod"
 
+import { extensions } from "../helpers/zodHelpers/zodPrimitives"
+
 import { ZMailing } from "./appointments.model"
 import { zObjectId } from "./common"
 
 export const ZEtablissement = z
   .object({
     _id: zObjectId,
-    formateur_siret: z.string(),
-    gestionnaire_siret: z.string(),
+    formateur_siret: extensions.siret(),
+    gestionnaire_siret: extensions.siret(),
     raison_sociale: z.string(),
     adresse: z.string(),
     formateur_address: z.string(),

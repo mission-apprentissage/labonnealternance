@@ -17,15 +17,13 @@ import {
 import { Form, Formik } from "formik"
 import NavLink from "next/link"
 import { useRouter } from "next/router"
-import { useContext, useEffect, useState } from "react"
+import { useState } from "react"
 import * as Yup from "yup"
 
 import useAuth from "../../../../common/hooks/useAuth"
 import { SIRETValidation } from "../../../../common/validation/fieldValidations"
 import { AnimationContainer, CustomInput, Layout } from "../../../../components/espace_pro"
 import withAuth from "../../../../components/espace_pro/withAuth"
-import { LogoContext } from "../../../../context/contextLogo"
-import { WidgetContext } from "../../../../context/contextWidget"
 import { InfoCircle, SearchLine } from "../../../../theme/components/icons"
 import { getEntrepriseInformation, getEntrepriseOpco } from "../../../../utils/api"
 
@@ -133,23 +131,7 @@ const InformationSiret = () => (
   </Box>
 )
 
-function CreationEntreprise({ type, widget }) {
-  const { setWidget } = useContext(WidgetContext)
-  const { setOrganisation } = useContext(LogoContext)
-  const router = useRouter()
-
-  // let mobile = searchParams.get("mobile") === "true" ? true : false
-  // const [searchParams] = useSearchParams() // TODO_AB
-  const mobile = router.query.mobile === "true" ? true : false
-
-  useEffect(() => {
-    if (widget) {
-      setWidget((prev) => ({ ...prev, isWidget: true, mobile: mobile ?? false }))
-      setOrganisation(router.query.origine ?? "matcha")
-    }
-    /* eslint react-hooks/exhaustive-deps: 0 */
-  }, [])
-
+function CreationEntreprise() {
   return (
     <AnimationContainer>
       <Container maxW="container.xl" mt={5}>
@@ -173,7 +155,7 @@ function CreationEntreprise({ type, widget }) {
             </Box>
           </Box>
           <Box>
-            <InformationSiret type={type} />
+            <InformationSiret />
           </Box>
         </SimpleGrid>
       </Container>

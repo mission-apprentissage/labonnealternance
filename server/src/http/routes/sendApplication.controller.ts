@@ -1,4 +1,3 @@
-// @ts-nocheck
 import express from "express"
 import rateLimit from "express-rate-limit"
 import { ObjectId } from "mongodb"
@@ -59,7 +58,7 @@ export default function (components) {
           { company_recruitment_intention: req.body.intention, company_feedback: req.body.comment, company_feedback_date: new Date() }
         )
 
-        sendNotificationToApplicant({
+        await sendNotificationToApplicant({
           application,
           intention: req.body.intention,
           email: req.body.email,
@@ -79,7 +78,8 @@ export default function (components) {
   router.post(
     "/webhook",
     tryCatch(async (req, res) => {
-      updateApplicationStatus({ payload: req.body })
+      await updateApplicationStatus({ payload: req.body })
+
       return res.json({ result: "ok" })
     })
   )

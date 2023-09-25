@@ -1,9 +1,8 @@
 import { capitalize } from "lodash-es"
 import { z } from "zod"
 
-import { validateSIRET } from "validators/siretValidator"
-
 import { CODE_NAF_REGEX, SIRET_REGEX, UAI_REGEX } from "../../constants/regex"
+import { validateSIRET } from "../../validators/siretValidator"
 
 // custom error map to translate zod errors to french
 const customErrorMap: z.ZodErrorMap = (issue, ctx) => {
@@ -23,6 +22,7 @@ export const extensions = {
       message: "Le siret ne respecte pas l'algorithme luhn (https://fr.wikipedia.org/wiki/Formule_de_Luhn)",
     }),
   uai: () => z.string().trim().regex(UAI_REGEX, "UAI invalide"), // e.g 0123456B
+  phone: () => z.string(), // TODO refine
   code_naf: () =>
     z.preprocess(
       (v: unknown) => (typeof v === "string" ? v.replace(".", "") : v), // parfois, le code naf contient un point
@@ -45,4 +45,17 @@ export const extensions = {
       })
     ),
   codeCommuneInsee: () => z.string().regex(/^([0-9]{2}|2A|2B)[0-9]{3}$/, "Format invalide"),
+  brevoWebhook: () =>
+    z.object({
+      event: z.string(),
+      id: z.string(),
+      date: z.string(),
+      ts: z.number(),
+      "message-id": z.string(),
+      email: z.string(),
+      ts_event: z.number(),
+      subject: z.string(),
+      sending_ip: z.string(),
+      ts_epoch: z.number(),
+    }),
 }

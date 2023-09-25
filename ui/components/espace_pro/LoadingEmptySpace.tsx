@@ -1,6 +1,6 @@
 import { Box, Flex, Spinner, Text } from "@chakra-ui/react"
 
-export default function LoadingEmptySpace({ label }) {
+export default function LoadingEmptySpace({ label = "" }) {
   return (
     <>
       <Box>

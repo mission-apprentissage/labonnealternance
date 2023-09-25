@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { runScript } from "../scriptWrapper"
 
 import updateBrevoBlockedEmails from "./updateBrevoBlockedEmails"

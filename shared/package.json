@@ -19,13 +19,13 @@
     "lodash-es": "^4.17.21",
     "luhn": "^2.4.1",
     "type-fest": "^4.3.1",
-    "zod": "^3.22.2"
+    "zod": "^3.22.2",
+    "zod-openapi": "^2.9.0"
   },
   "devDependencies": {
     "@types/boom": "^7.3.3",
     "mongodb": "^5.7.0",
     "typescript": "^5.2.2",
-    "vitest": "^0.34.4",
-    "zod": "^3.22.2"
+    "vitest": "^0.34.4"
   }
 }
