@@ -26,7 +26,7 @@ import { zV1JobsEtFormationsRoutes } from "./routes/v1JobsEtFormations.routes"
 
 export * from "./models/index"
 
-const zRoutesGet = {
+const zRoutesGetP1 = {
   ...zCoreRoutes.get,
   ...zEtablissementRoutes.get,
   ...zMetiersDAvenirRoutes.get,
@@ -36,6 +36,9 @@ const zRoutesGet = {
   ...zUpdateLbaCompanyRoutes.get,
   ...zUserRecruteurRoutes.get,
   ...zV1FormationsParRegion.get,
+} as const
+
+const zRoutesGetP2 = {
   ...zV1JobsRoutes.get,
   ...zV1FormationsRoutes.get,
   ...zV1JobsEtFormationsRoutes.get,
@@ -44,6 +47,11 @@ const zRoutesGet = {
   ...zCampaignWebhookRoutes.get,
   ...zAppointmentsRoute.get,
   ...zFormationRoute.get,
+} as const
+
+const zRoutesGet: typeof zRoutesGetP1 & typeof zRoutesGetP2 = {
+  ...zRoutesGetP1,
+  ...zRoutesGetP2,
 } as const
 
 const zRoutesPost = {
@@ -56,7 +64,6 @@ const zRoutesPost = {
   ...zFormulaireRoute.post,
   ...zRecruiterRoutes.post,
   ...zCampaignWebhookRoutes.post,
-  ...zCoreRoutes.post,
   ...zEtablissementRoutes.post,
   ...zAppointmentsRoute.post,
 } as const
@@ -65,13 +72,11 @@ const zRoutesPut = {
   ...zUserRecruteurRoutes.put,
   ...zFormulaireRoute.put,
   ...zRecruiterRoutes.put,
-  ...zCoreRoutes.put,
 } as const
 
 const zRoutesDelete = {
   ...zUserRecruteurRoutes.delete,
   ...zFormulaireRoute.delete,
-  ...zCoreRoutes.delete,
 } as const
 
 const zRoutesPatch = {
