@@ -4,73 +4,82 @@ import { z } from "zod"
 const geoCoordSchema = z.string()
 
 // Define schemas for each interface
-const etablissementFormateurSchema = {
-  etablissement_formateur_id: z.string(),
-  etablissement_formateur_siret: z.string(),
-  etablissement_formateur_enseigne: z.string(),
-  etablissement_formateur_uai: z.string(),
-  etablissement_formateur_type: z.string(),
-  etablissement_formateur_conventionne: z.string(),
-  etablissement_formateur_declare_prefecture: z.string(),
-  etablissement_formateur_datadock: z.string(),
-  etablissement_formateur_adresse: z.string(),
-  etablissement_formateur_code_postal: z.string(),
-  etablissement_formateur_code_commune_insee: z.string(),
-  etablissement_formateur_localite: z.string(),
-  etablissement_formateur_complement_adresse: z.string(),
-  etablissement_formateur_cedex: z.string(),
-  etablissement_formateur_entreprise_raison_sociale: z.string(),
-  geo_coordonnees_etablissement_formateur: geoCoordSchema,
-  etablissement_formateur_region: z.string(),
-  etablissement_formateur_num_departement: z.string(),
-  etablissement_formateur_nom_departement: z.string(),
-  etablissement_formateur_nom_academie: z.string(),
-  etablissement_formateur_num_academie: z.string(),
-  etablissement_formateur_siren: z.string(),
-  etablissement_formateur_courriel: z.string(),
-  etablissement_formateur_published: z.boolean(),
-  etablissement_formateur_catalogue_published: z.boolean(),
-  rncp_etablissement_formateur_habilite: z.boolean(),
-  etablissement_formateur_date_creation: z.date(),
-}
+const etablissementFormateurSchema = z
+  .object({
+    etablissement_formateur_id: z.string(),
+    etablissement_formateur_siret: z.string(),
+    etablissement_formateur_enseigne: z.string(),
+    etablissement_formateur_uai: z.string(),
+    etablissement_formateur_type: z.string(),
+    etablissement_formateur_conventionne: z.string(),
+    etablissement_formateur_declare_prefecture: z.string(),
+    etablissement_formateur_datadock: z.string(),
+    etablissement_formateur_adresse: z.string(),
+    etablissement_formateur_code_postal: z.string(),
+    etablissement_formateur_code_commune_insee: z.string(),
+    etablissement_formateur_localite: z.string(),
+    etablissement_formateur_complement_adresse: z.string(),
+    etablissement_formateur_cedex: z.string(),
+    etablissement_formateur_entreprise_raison_sociale: z.string(),
+    geo_coordonnees_etablissement_formateur: geoCoordSchema,
+    etablissement_formateur_region: z.string(),
+    etablissement_formateur_num_departement: z.string(),
+    etablissement_formateur_nom_departement: z.string(),
+    etablissement_formateur_nom_academie: z.string(),
+    etablissement_formateur_num_academie: z.string(),
+    etablissement_formateur_siren: z.string(),
+    etablissement_formateur_courriel: z.string(),
+    etablissement_formateur_published: z.boolean(),
+    etablissement_formateur_catalogue_published: z.boolean(),
+    rncp_etablissement_formateur_habilite: z.boolean(),
+    etablissement_formateur_date_creation: z.date(),
+  })
+  .strict()
+  .deepPartial()
 
-const etablissementGestionnaireSchema = {
-  etablissement_gestionnaire_id: z.string(),
-  etablissement_gestionnaire_siret: z.string(),
-  etablissement_gestionnaire_enseigne: z.string(),
-  etablissement_gestionnaire_uai: z.string(),
-  etablissement_gestionnaire_type: z.string(),
-  etablissement_gestionnaire_conventionne: z.string(),
-  etablissement_gestionnaire_declare_prefecture: z.string(),
-  etablissement_gestionnaire_datadock: z.string(),
-  etablissement_gestionnaire_adresse: z.string(),
-  etablissement_gestionnaire_code_postal: z.string(),
-  etablissement_gestionnaire_code_commune_insee: z.string(),
-  etablissement_gestionnaire_localite: z.string(),
-  etablissement_gestionnaire_complement_adresse: z.string(),
-  etablissement_gestionnaire_cedex: z.string(),
-  etablissement_gestionnaire_entreprise_raison_sociale: z.string(),
-  geo_coordonnees_etablissement_gestionnaire: geoCoordSchema,
-  etablissement_gestionnaire_region: z.string(),
-  etablissement_gestionnaire_num_departement: z.string(),
-  etablissement_gestionnaire_nom_departement: z.string(),
-  etablissement_gestionnaire_nom_academie: z.string(),
-  etablissement_gestionnaire_num_academie: z.string(),
-  etablissement_gestionnaire_siren: z.string(),
-  etablissement_gestionnaire_courriel: z.string(),
-  etablissement_gestionnaire_published: z.boolean(),
-  etablissement_gestionnaire_catalogue_published: z.boolean(),
-  rncp_etablissement_gestionnaire_habilite: z.boolean(),
-  etablissement_gestionnaire_date_creation: z.date(),
-}
+const etablissementGestionnaireSchema = z
+  .object({
+    etablissement_gestionnaire_id: z.string(),
+    etablissement_gestionnaire_siret: z.string(),
+    etablissement_gestionnaire_enseigne: z.string(),
+    etablissement_gestionnaire_uai: z.string(),
+    etablissement_gestionnaire_type: z.string(),
+    etablissement_gestionnaire_conventionne: z.string(),
+    etablissement_gestionnaire_declare_prefecture: z.string(),
+    etablissement_gestionnaire_datadock: z.string(),
+    etablissement_gestionnaire_adresse: z.string(),
+    etablissement_gestionnaire_code_postal: z.string(),
+    etablissement_gestionnaire_code_commune_insee: z.string(),
+    etablissement_gestionnaire_localite: z.string(),
+    etablissement_gestionnaire_complement_adresse: z.string(),
+    etablissement_gestionnaire_cedex: z.string(),
+    etablissement_gestionnaire_entreprise_raison_sociale: z.string(),
+    geo_coordonnees_etablissement_gestionnaire: geoCoordSchema,
+    etablissement_gestionnaire_region: z.string(),
+    etablissement_gestionnaire_num_departement: z.string(),
+    etablissement_gestionnaire_nom_departement: z.string(),
+    etablissement_gestionnaire_nom_academie: z.string(),
+    etablissement_gestionnaire_num_academie: z.string(),
+    etablissement_gestionnaire_siren: z.string(),
+    etablissement_gestionnaire_courriel: z.string(),
+    etablissement_gestionnaire_published: z.boolean(),
+    etablissement_gestionnaire_catalogue_published: z.boolean(),
+    rncp_etablissement_gestionnaire_habilite: z.boolean(),
+    etablissement_gestionnaire_date_creation: z.date(),
+  })
+  .strict()
+  .deepPartial()
 
-const etablissementReferenceSchema = {
-  etablissement_reference: z.string(),
-  etablissement_reference_published: z.boolean(),
-  etablissement_reference_habilite_rncp: z.boolean(),
-  etablissement_reference_certifie_qualite: z.boolean(),
-  etablissement_reference_date_creation: z.date(),
-}
+const etablissementReferenceSchema = z
+  .object({
+    etablissement_reference: z.string(),
+    etablissement_reference_published: z.boolean(),
+    etablissement_reference_habilite_rncp: z.boolean(),
+    etablissement_reference_certifie_qualite: z.boolean(),
+    etablissement_reference_date_creation: z.date(),
+  })
+  .strict()
+  .deepPartial()
 
 // Define a schema for a single string or an array of strings
 const stringOrArraySchema = z.union([z.string(), z.array(z.string())])
@@ -169,6 +178,6 @@ export const zFormationCatalogueSchema = z
     date_fin: z.array(z.date()),
     modalites_entrees_sorties: z.array(z.boolean()),
   })
-  .extend(etablissementFormateurSchema)
-  .extend(etablissementGestionnaireSchema)
-  .extend(etablissementReferenceSchema)
+  .extend(etablissementFormateurSchema.shape)
+  .extend(etablissementGestionnaireSchema.shape)
+  .extend(etablissementReferenceSchema.shape)
