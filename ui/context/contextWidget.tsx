@@ -11,7 +11,7 @@ interface ItWidgetContext {
 }
 
 const WidgetContext = createContext<ItWidgetContext>({
-  widget: undefined,
+  widget: { isWidget: false, mobile: false },
   setWidget: () => {},
 })
 
@@ -19,7 +19,7 @@ interface Props extends PropsWithChildren {
   initialWidget?: IContextWidget
 }
 
-export const WidgetProvider: FC<Props> = ({ initialWidget, children }) => {
+export const WidgetProvider: FC<Props> = ({ initialWidget = { isWidget: false, mobile: false }, children }) => {
   const [widget, setWidget] = useState<IContextWidget | undefined>(initialWidget)
 
   return <WidgetContext.Provider value={{ widget, setWidget }}>{children}</WidgetContext.Provider>
