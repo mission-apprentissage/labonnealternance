@@ -17,7 +17,7 @@ import mailer from "./mailer.service"
  * @description generate an API key
  * @returns {string}
  */
-export const createApiKey = () => `mna-${randomUUID()}`
+export const createApiKey = (): string => `mna-${randomUUID()}`
 
 /**
  * @query get all user using a given query filter

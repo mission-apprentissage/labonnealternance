@@ -1,4 +1,3 @@
-import mongoose from "mongoose"
 import request from "supertest"
 import { beforeAll } from "vitest"
 
@@ -8,7 +7,7 @@ export const useServer = () => {
   let app
 
   beforeAll(async () => {
-    app = await server({ db: mongoose.connection })
+    app = await server()
   })
 
   return () => request(app)
