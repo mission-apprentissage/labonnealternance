@@ -1,6 +1,6 @@
-import { zRoutes } from "shared/index"
+import { zRoutes } from "shared"
+import { referrers } from "shared/constants/referers"
 
-import { referrers } from "../../common/model/constants/referrers"
 import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service"
 import { Server } from "../server"
 

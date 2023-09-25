@@ -42,7 +42,6 @@ import partnersRoute from "./routes/partners.controller"
 import sendApplication from "./routes/sendApplication.controller"
 import sendApplicationAPI from "./routes/sendApplicationAPI.controller"
 import sendMail from "./routes/sendMail.controller"
-import supportRoute from "./routes/support.controller"
 import trainingLinks from "./routes/trainingLinks.controller"
 import unsubscribeLbaCompany from "./routes/unsubscribeLbaCompany.controller"
 import updateLbaCompany from "./routes/updateLbaCompany.controller"
@@ -184,10 +183,8 @@ export async function bind(app: Server) {
   eligibleTrainingsForAppointmentRoute(app)
   etablissementRoute(app)
   appointmentRequestRoute(app)
-  constantsRoute(app)
   partnersRoute(app)
   emailsRoute(app)
-  supportRoute(app)
 
   /**
    * LBA-Recruteur

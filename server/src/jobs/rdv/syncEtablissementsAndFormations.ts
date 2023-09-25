@@ -1,7 +1,7 @@
 import { oleoduc, writeData } from "oleoduc"
+import { referrers } from "shared/constants/referers"
 
 import { logger } from "../../common/logger"
-import { referrers } from "../../common/model/constants/referrers"
 import { Etablissement, FormationCatalogue } from "../../common/model/index"
 import { isEmailBlacklisted } from "../../services/application.service"
 import { getEmailFromCatalogueField, getFormationsFromCatalogueMe } from "../../services/catalogue.service"
