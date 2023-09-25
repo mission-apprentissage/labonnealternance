@@ -66,7 +66,7 @@ const ChampNombre = ({ value, max, name, handleChange, label }) => {
 
 const AjouterVoeuxForm = (props) => {
   const [inputJobItems, setInputJobItems] = useState([])
-  const [formulaire, setFormulaire] = useState()
+  const [formulaire, setFormulaire] = useState(null)
   const [haveProposals, setHaveProposals] = useState(false)
   const router = useRouter()
   const [auth] = useAuth()
@@ -141,7 +141,7 @@ const AjouterVoeuxForm = (props) => {
    * @return {Promise<void>}
    */
   const submitFromDepotRapide = async (values) => {
-    const { data } = await postOffre(establishment_id, values)
+    const { data } = (await postOffre(establishment_id, values)) as any
     data.jobs.slice(-1)
     const [job] = data.jobs.slice(-1)
     await handleRedirectionAfterSubmit(data, job, false)
@@ -169,7 +169,7 @@ const AjouterVoeuxForm = (props) => {
   useEffect(() => {
     async function fetchData() {
       if (establishment_id) {
-        const { data: formulaire } = await getFormulaire(establishment_id)
+        const { data: formulaire } = (await getFormulaire(establishment_id)) as any
         setFormulaire(formulaire)
       }
     }
