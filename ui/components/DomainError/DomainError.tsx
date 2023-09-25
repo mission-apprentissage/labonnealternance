@@ -12,7 +12,7 @@ const cssParameters = {
   fontSize: "20px",
 }
 
-export default function DomainError({ position, setDomainError, setDiplomaError }) {
+export default function DomainError({ position = undefined, setDomainError, setDiplomaError }) {
   const reset = (e) => {
     if (e) {
       e.stopPropagation()

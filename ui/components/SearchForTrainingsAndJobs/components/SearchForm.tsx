@@ -41,8 +41,10 @@ const SearchForm = (props) => {
     setLocationRadius(contextFormValues?.radius ?? 30)
     setDiploma(contextFormValues?.diploma ?? "")
     setJobValue(contextFormValues?.job ?? null)
+    // @ts-expect-error: TODO
   }, [widgetParameters?.applyFormValues])
 
+  // @ts-expect-error: TODO
   const contextFormValues = widgetParameters?.applyFormValues && widgetParameters?.formValues ? widgetParameters.formValues : formValues
 
   const [, setJobValue] = useState(null)
@@ -100,6 +102,7 @@ const SearchForm = (props) => {
                     placeholder="Indiquez un métier ou diplôme"
                     inputVariant="homeAutocomplete"
                     searchPlaceholder="Indiquez un métier ou diplôme ci-dessus"
+                    // @ts-expect-error: TODO
                     isDisabled={widgetParameters?.parameters?.jobName && widgetParameters?.parameters?.romes && widgetParameters?.parameters?.frozenJob}
                     splitItemsByTypes={[
                       { type: "job", typeLabel: "Métiers", size: 4 },
@@ -180,6 +183,7 @@ const SearchForm = (props) => {
                     variant="blackButton"
                     borderRadius="unset"
                     disabled={isSubmitting}
+                    // @ts-expect-error: TODO
                     alt="Lancer la recherche"
                   >
                     C&apos;est parti

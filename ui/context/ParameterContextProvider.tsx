@@ -55,6 +55,15 @@ export type IContextParameter = {
   shouldExecuteSearch: boolean
   setShouldExecuteSearch: (b: boolean) => void
   widgetParameters: object
+  // widgetParameters: {
+  //   formValues?: object
+  //   applyFormValues?: object
+  // parameters: {
+  //   jobName
+  //   romes
+  //   frozenJob
+  // }
+  // }
   setWidgetParameters: (b: object) => void
   itemParameters: object
   setItemParameters: (b: object) => void
