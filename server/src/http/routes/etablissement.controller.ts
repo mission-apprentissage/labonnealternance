@@ -155,7 +155,9 @@ export default (server: Server) => {
           )
         ),
       ])
-
+      if (!resultAffelnet) {
+        throw new Error(`unexpected: could not find etablissement with id=${req.params.id}`)
+      }
       return res.send(resultAffelnet)
     }
   )
@@ -272,7 +274,9 @@ export default (server: Server) => {
           )
         ),
       ])
-
+      if (!result) {
+        throw new Error(`unexpected: could not find etablissement with id=${req.params.id}`)
+      }
       return res.send(result)
     }
   )
@@ -339,7 +343,9 @@ export default (server: Server) => {
       )
 
       const etablissementAffelnetUpdated = await Etablissement.findById(req.params.id)
-
+      if (!etablissementAffelnetUpdated) {
+        throw new Error(`unexpected: could not find etablissement with id=${req.params.id}`)
+      }
       return res.send(etablissementAffelnetUpdated)
     }
   )
@@ -406,7 +412,9 @@ export default (server: Server) => {
       )
 
       const etablissementParcoursupUpdated = await Etablissement.findById(req.params.id)
-
+      if (!etablissementParcoursupUpdated) {
+        throw new Error(`unexpected: could not find etablissement with id=${req.params.id}`)
+      }
       return res.send(etablissementParcoursupUpdated)
     }
   )
@@ -443,6 +451,9 @@ export default (server: Server) => {
       }
 
       appointment = await appointmentService.findById(appointmentId)
+      if (!appointment) {
+        throw new Error(`unexpected: could not find appointment with id=${appointmentId}`)
+      }
 
       res.send(appointment)
     }
@@ -470,8 +481,6 @@ export default (server: Server) => {
       }
 
       if (opt_out_question) {
-        etablissement = await Etablissement.findById(req.params.id)
-
         await mailer.sendEmail({
           to: config.publicEmail,
           subject: `Un CFA se pose une question concernant l'opt-out"`,
@@ -482,14 +491,14 @@ export default (server: Server) => {
               logoFooter: `${config.publicUrlEspacePro}/assets/logo-republique-francaise.png?raw=true`,
             },
             etablissement: {
-              name: etablissement?.raison_sociale,
-              formateur_address: etablissement?.formateur_address,
-              formateur_zip_code: etablissement?.formateur_zip_code,
-              formateur_city: etablissement?.formateur_city,
+              name: etablissement.raison_sociale,
+              formateur_address: etablissement.formateur_address,
+              formateur_zip_code: etablissement.formateur_zip_code,
+              formateur_city: etablissement.formateur_city,
               opt_out_question,
             },
             user: {
-              destinataireEmail: etablissement?.gestionnaire_email,
+              destinataireEmail: etablissement.gestionnaire_email,
             },
           },
           from: config.transactionalEmail,
@@ -552,6 +561,9 @@ export default (server: Server) => {
       )
 
       etablissement = await Etablissement.findById(req.params.id)
+      if (!etablissement) {
+        throw new Error(`unexpected: could not find appointment with id=${req.params.id}`)
+      }
 
       return res.send(etablissement)
     }
