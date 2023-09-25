@@ -19,7 +19,16 @@ import { FormLayoutComponent } from "../../../components/espace_pro/Candidat/lay
 export default function FormCreatePage() {
   const router = useRouter()
 
-  const [data, setData] = useState()
+  const [data, setData]: [
+    {
+      etablissement_formateur_entreprise_raison_sociale: string
+      intitule_long: string
+      lieu_formation_adresse: string
+      code_postal: string
+      localite: string
+    },
+    (d: any) => void,
+  ] = useState(null)
   const [submitLoading, setSubmitLoading] = useState(false)
   const [error, setError] = useState()
   const [errorPhone, setErrorPhone] = useState()
@@ -289,7 +298,6 @@ export default function FormCreatePage() {
                   <Button
                     variant="unstyled"
                     type={"submit"}
-                    loading={submitLoading.toString()}
                     disabled={submitLoading}
                     bg={"grey.750"}
                     borderRadius="10px"
@@ -300,7 +308,6 @@ export default function FormCreatePage() {
                     display="block"
                     mx={["auto", "0", "0", "0"]}
                     mt="2rem"
-                    _hover=""
                     textAlign="center"
                   >
                     Envoyer ma demande

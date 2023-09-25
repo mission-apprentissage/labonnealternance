@@ -129,8 +129,8 @@ const SatisfactionForm = ({ formType }) => {
   }
 
   const formik = useFormik({
-    initialValues: { comment: "" },
-    validationSchema: getValidationSchema(intention),
+    initialValues: { comment: "", email: "", phone: "" },
+    validationSchema: getValidationSchema(),
     onSubmit: async (formikValues) => {
       await submitCommentaire(
         {
@@ -142,13 +142,14 @@ const SatisfactionForm = ({ formType }) => {
           iv,
           formType,
         },
-        setSendingState
+        setSendingState as any
       )
     },
   })
 
   const getErrorForMessage = (message) => {
     return (
+      // @ts-expect-error: TODO
       <Box mb={message ? 2 : 0} lineHeight="20px" fontSize="12px" color="#e10600" visibility={message ? "visible" : "hidden !important"}>
         {message || "pas d'erreur"}
       </Box>
