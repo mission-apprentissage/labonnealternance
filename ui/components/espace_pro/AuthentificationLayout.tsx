@@ -1,4 +1,4 @@
-import { Button, Container, Flex, Box } from "@chakra-ui/react"
+import { Box, Button, Container, Flex } from "@chakra-ui/react"
 import { useRouter } from "next/router"
 import { useContext } from "react"
 
@@ -16,9 +16,9 @@ export default function AuthentificationLayout(props) {
     const isCfa = window.location.pathname.includes("cfa") ? true : false
 
     if (isCfa) {
-      return router.push(`/espace-pro/organisme-de-formation`)
+      return router.push(`/organisme-de-formation`)
     } else {
-      return router.push(`/espace-pro/acces-recruteur`)
+      return router.push(`/acces-recruteur`)
     }
   }
 
