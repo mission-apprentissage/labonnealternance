@@ -3,7 +3,7 @@ import { z } from "zod"
 import { ZLbacError } from "../models/lbacError.model"
 import { ZLbaItem } from "../models/lbaItem.model"
 
-import { IRoutesDef } from "./common.routes"
+import { IRoutesDef, ZResError } from "./common.routes"
 
 export const zV1JobsEtFormationsRoutes = {
   get: {
@@ -69,8 +69,8 @@ export const zV1JobsEtFormationsRoutes = {
               .or(z.null()),
           })
           .strict(),
-        "400": ZLbacError.strict(),
-        "500": ZLbacError.strict(),
+        "400": z.union([ZResError, ZLbacError.strict()]),
+        "500": z.union([ZResError, ZLbacError.strict()]),
       },
     },
   },

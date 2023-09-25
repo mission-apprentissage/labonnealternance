@@ -4,7 +4,6 @@ import { z } from "../helpers/zodWithOpenApi"
 import { IRoutesDef } from "./common.routes"
 
 export const zCampaignWebhookRoutes = {
-  get: {},
   post: {
     "/api/campaign/webhook": {
       body: extensions.brevoWebhook(),
@@ -17,7 +16,4 @@ export const zCampaignWebhookRoutes = {
       },
     },
   },
-  put: {},
-  delete: {},
-  patch: {},
 } as const satisfies IRoutesDef

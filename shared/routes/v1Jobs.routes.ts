@@ -6,7 +6,7 @@ import { ZLbacError } from "../models/lbacError.model"
 import { ZLbaItem } from "../models/lbaItem.model"
 import { ZRecruiter } from "../models/recruiter.model"
 
-import { IRoutesDef } from "./common.routes"
+import { IRoutesDef, ZResError } from "./common.routes"
 
 export const zV1JobsRoutes = {
   get: {
@@ -158,9 +158,9 @@ export const zV1JobsRoutes = {
             lbaCompanies: z.array(ZLbaItem),
           })
           .strict(),
-        "400": ZLbacError,
-        "404": ZLbacError,
-        "500": ZLbacError,
+        "400": z.union([ZResError, ZLbacError]),
+        "404": z.union([ZResError, ZLbacError]),
+        "500": z.union([ZResError, ZLbacError]),
       },
       securityScheme: {
         auth: "none",
@@ -190,8 +190,8 @@ export const zV1JobsRoutes = {
           })
           .strict(),
         //"419": le code correspondant a disparu. ticket bug ouvert
-        "400": ZLbacError,
-        "500": ZLbacError,
+        "400": z.union([ZResError, ZLbacError]),
+        "500": z.union([ZResError, ZLbacError]),
       },
       securityScheme: {
         auth: "none",
@@ -220,9 +220,9 @@ export const zV1JobsRoutes = {
             peJobs: z.array(ZLbaItem),
           })
           .strict(),
-        "400": ZLbacError,
-        "404": ZLbacError,
-        "500": ZLbacError,
+        "400": z.union([ZResError, ZLbacError]),
+        "404": z.union([ZResError, ZLbacError]),
+        "500": z.union([ZResError, ZLbacError]),
       },
       securityScheme: {
         auth: "none",

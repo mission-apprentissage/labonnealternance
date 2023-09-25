@@ -14,12 +14,13 @@ const config = {
 export default (server: Server) => {
   // @Tags("Formations par région")
   // @OperationId("getFormations")
-  server.post(
+  server.get(
     "/api/v1/formationsParRegion",
     {
-      schema: zRoutes.post["/api/v1/formationsParRegion"],
+      schema: zRoutes.get["/api/v1/formationsParRegion"],
       config,
       // TODO: AttachValidation Error ?
+      attachValidation: true,
     },
     async (req, res) => {
       const { romes, romeDomain, caller, departement, region, diploma, options, useMock } = req.query
