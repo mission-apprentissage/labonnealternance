@@ -1,4 +1,4 @@
-import { forbidden } from "boom"
+import Boom from "boom"
 import { FastifyRequest } from "fastify"
 
 import { IRole, ROLES } from "@/services/constant.service"
@@ -6,13 +6,13 @@ import { IRole, ROLES } from "@/services/constant.service"
 export function permissionsMiddleware(role: IRole) {
   return async (req: FastifyRequest) => {
     if (!req.user) {
-      throw forbidden()
+      throw Boom.forbidden()
     }
     if (!("role" in req.user)) {
-      throw forbidden()
+      throw Boom.forbidden()
     }
     if (req.user.role !== role) {
-      throw forbidden()
+      throw Boom.forbidden()
     }
   }
 }

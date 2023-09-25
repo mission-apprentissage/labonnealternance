@@ -12,6 +12,10 @@ export const zLoginRoutes = {
           })
           .strict(),
       },
+      securityScheme: {
+        auth: "basic",
+        role: "all",
+      },
     },
     "/api/login/confirmation-email": {
       body: z
@@ -40,6 +44,10 @@ export const zLoginRoutes = {
             token: z.string(),
           })
           .strict(),
+      },
+      securityScheme: {
+        auth: "jwt-token",
+        role: "all",
       },
     },
   },

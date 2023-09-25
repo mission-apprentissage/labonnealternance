@@ -18,7 +18,7 @@ fileignoreconfig:
 - filename: server/src/http/controllers/appointments/appointments.controller.ts
   checksum: dc77c04efc26dcd8ca4816f392ab24a32a92cb45ca4b94adb593a08e7a2d231e
 - filename: server/src/http/routes/auth/password.controller.ts
-  checksum: ff80fa2cac87ea543ffb06a61dbeca37a9bf29fd110ef45481c5428db26384e2
+  checksum: 6c202063b1fa3cfbc1df4b74e01168398933eb99147ef72eaf34f461f5726ac6
 - filename: server/static/generated/swagger.json
   checksum: any
   ignore_detectors:

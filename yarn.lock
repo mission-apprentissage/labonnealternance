@@ -5013,16 +5013,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fastify/auth@npm:^4.3.0":
-  version: 4.3.0
-  resolution: "@fastify/auth@npm:4.3.0"
-  dependencies:
-    fastify-plugin: ^4.0.0
-    reusify: ^1.0.4
-  checksum: 000995f0a9aab993ab6c8e792c7909b914f375760f32fcd007dd555601dd7ad2f04444beb87f5ac50dfee1062fee75192668978de73f3bf467ef7a169897dd7f
-  languageName: node
-  linkType: hard
-
 "@fastify/cors@npm:^8.4.0":
   version: 8.4.0
   resolution: "@fastify/cors@npm:8.4.0"
@@ -27048,7 +27038,6 @@ __metadata:
   resolution: "server@workspace:server"
   dependencies:
     "@elastic/elasticsearch": 7.9.1
-    "@fastify/auth": ^4.3.0
     "@fastify/cors": ^8.4.0
     "@fastify/rate-limit": ^8.0.3
     "@fastify/swagger": ^8.10.1

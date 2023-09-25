@@ -26,6 +26,7 @@ export const zV1JobsRoutes = {
       },
       securityScheme: {
         auth: "api-key",
+        role: "all",
       },
     },
     "/api/v1/jobs/bulk": {
@@ -54,6 +55,7 @@ export const zV1JobsRoutes = {
       },
       securityScheme: {
         auth: "api-key",
+        role: "all",
       },
     },
     "/api/v1/jobs/delegations/:jobId": {
@@ -79,6 +81,7 @@ export const zV1JobsRoutes = {
       },
       securityScheme: {
         auth: "api-key",
+        role: "all",
       },
     },
     "/api/v1/jobs": {
@@ -127,6 +130,7 @@ export const zV1JobsRoutes = {
       },
       securityScheme: {
         auth: "none",
+        role: "all",
       },
     },
     "/api/v1/jobs/company/:siret": {
@@ -150,6 +154,7 @@ export const zV1JobsRoutes = {
       },
       securityScheme: {
         auth: "none",
+        role: "all",
       },
     },
     "/api/v1/jobs/matcha/:id": {
@@ -172,6 +177,7 @@ export const zV1JobsRoutes = {
       },
       securityScheme: {
         auth: "none",
+        role: "all",
       },
     },
     "/api/v1/jobs/job/:id": {
@@ -194,6 +200,7 @@ export const zV1JobsRoutes = {
       },
       securityScheme: {
         auth: "none",
+        role: "all",
       },
     },
   },
@@ -215,6 +222,7 @@ export const zV1JobsRoutes = {
       },
       securityScheme: {
         auth: "api-key",
+        role: "all",
       },
     },
     "/api/v1/jobs/:establishmentId": {
@@ -244,6 +252,7 @@ export const zV1JobsRoutes = {
       },
       securityScheme: {
         auth: "api-key",
+        role: "all",
       },
     },
     "/api/v1/jobs/delegations/:jobId": {
@@ -262,6 +271,7 @@ export const zV1JobsRoutes = {
       },
       securityScheme: {
         auth: "api-key",
+        role: "all",
       },
     },
     "/api/v1/jobs/provided/:jobId": {
@@ -275,6 +285,7 @@ export const zV1JobsRoutes = {
       },
       securityScheme: {
         auth: "api-key",
+        role: "all",
       },
     },
     "/api/v1/jobs/canceled/:jobId": {
@@ -288,6 +299,7 @@ export const zV1JobsRoutes = {
       },
       securityScheme: {
         auth: "api-key",
+        role: "all",
       },
     },
     "/api/v1/jobs/extend/:jobId": {
@@ -301,6 +313,7 @@ export const zV1JobsRoutes = {
       },
       securityScheme: {
         auth: "api-key",
+        role: "all",
       },
     },
     "/api/v1/jobs/matcha/:id/stats/view-details": {
@@ -314,6 +327,7 @@ export const zV1JobsRoutes = {
       },
       securityScheme: {
         auth: "none",
+        role: "all",
       },
     },
   },
@@ -344,6 +358,7 @@ export const zV1JobsRoutes = {
       },
       securityScheme: {
         auth: "api-key",
+        role: "all",
       },
     },
   },

@@ -11,6 +11,10 @@ export const zEtablissementRoutes = {
       response: {
         "2xx": ZEtablissement,
       },
+      securityScheme: {
+        auth: "jwt-password",
+        role: "all",
+      },
     },
   },
 } satisfies IRoutesDef

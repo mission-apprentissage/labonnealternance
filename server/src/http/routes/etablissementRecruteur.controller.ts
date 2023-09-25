@@ -31,7 +31,6 @@ import {
   setUserHasToBeManuallyValidated,
   updateUser,
 } from "../../services/userRecruteur.service"
-import { authMiddleware, authenticationMiddleware } from "../middlewares/authMiddleware"
 import { Server } from "../server"
 
 const getCfaRomeSchema = joi.object({
@@ -294,7 +293,7 @@ export default (server: Server) => {
     "/api/etablissement/:id",
     {
       schema: zRoutes.put["/api/etablissement/:id"],
-      preHandler: [authenticationMiddleware("jwt-bearer")],
+      preHandler: server.auth(zRoutes.put["/api/etablissement/:id"].securityScheme),
     },
     async (req, res) => {
       const result = await updateUser({ _id: req.params.id }, req.body)

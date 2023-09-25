@@ -2,8 +2,6 @@ import Boom from "boom"
 import Joi from "joi"
 import { zRoutes } from "shared/index"
 
-import { authMiddleware, authenticationMiddleware } from "@/http/middlewares/authMiddleware"
-
 import { createUserToken, createPasswordToken } from "../../../common/utils/jwtUtils"
 import config from "../../../config"
 import * as users from "../../../services/user.service"
@@ -34,7 +32,7 @@ export default (server: Server) => {
     "/api/password/reset-password",
     {
       schema: zRoutes.post["/api/password/reset-password"],
-      preHandler: [authenticationMiddleware("jwt-password")],
+      // preHandler: [authenticationMiddleware("jwt-password")],
     },
     async (req, res) => {
       const user = req.user

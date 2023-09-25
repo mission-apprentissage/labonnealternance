@@ -1,4 +1,5 @@
-import { zRoutes } from "shared/index.js"
+import { notFound } from "boom"
+import { IRoutes, zRoutes } from "shared/index.js"
 
 import { Recruiter } from "../../../common/model/index"
 import { ICredential } from "../../../common/model/schema/credentials/credential.types"
@@ -43,7 +44,7 @@ export default (server: Server) => {
     {
       schema: zRoutes.get["/api/v1/jobs/establishment"],
       config,
-      onRequest: [server.auth(zRoutes.get["/api/v1/jobs/establishment"].securityScheme)],
+      onRequest: server.auth(zRoutes.get["/api/v1/jobs/establishment"].securityScheme),
       // TODO: AttachValidation Error ?
     },
     async (req, res) => {
@@ -68,12 +69,12 @@ export default (server: Server) => {
     {
       schema: zRoutes.get["/api/v1/jobs/bulk"],
       config,
-      onRequest: [server.auth(zRoutes.get["/api/v1/jobs/bulk"].securityScheme)],
+      onRequest: server.auth(zRoutes.get["/api/v1/jobs/bulk"].securityScheme),
       // TODO: AttachValidation Error ?
     },
     async (req, res) => {
       const { query, select, page, limit } = req.query
-      const user: ICredential = req.user
+      const user = req.user
 
       const qs = JSON.parse(query)
       const slt = JSON.parse(select)
@@ -91,7 +92,7 @@ export default (server: Server) => {
     {
       schema: zRoutes.post["/api/v1/jobs/establishment"],
       config,
-      onRequest: [server.auth(zRoutes.post["/api/v1/jobs/establishment"].securityScheme)],
+      onRequest: server.auth(zRoutes.post["/api/v1/jobs/establishment"].securityScheme),
       // TODO: AttachValidation Error ?
     },
     async (req, res) => {
@@ -134,7 +135,7 @@ export default (server: Server) => {
     {
       schema: zRoutes.post["/api/v1/jobs/:establishmentId"],
       config,
-      onRequest: [server.auth(zRoutes.post["/api/v1/jobs/:establishmentId"].securityScheme)],
+      onRequest: server.auth(zRoutes.post["/api/v1/jobs/:establishmentId"].securityScheme),
       // TODO: AttachValidation Error ?
     },
     async (req, res) => {
@@ -200,7 +201,7 @@ export default (server: Server) => {
     {
       schema: zRoutes.patch["/api/v1/jobs/:jobId"],
       config,
-      onRequest: [server.auth(zRoutes.patch["/api/v1/jobs/:jobId"].securityScheme)],
+      onRequest: server.auth(zRoutes.patch["/api/v1/jobs/:jobId"].securityScheme),
       // TODO: AttachValidation Error ?
     },
     async (req, res) => {
@@ -226,7 +227,7 @@ export default (server: Server) => {
     {
       schema: zRoutes.get["/api/v1/jobs/delegations/:jobId"],
       config,
-      onRequest: [server.auth(zRoutes.get["/api/v1/jobs/delegations/:jobId"].securityScheme)],
+      onRequest: server.auth(zRoutes.get["/api/v1/jobs/delegations/:jobId"].securityScheme),
       // TODO: AttachValidation Error ?
     },
     async (req, res) => {
@@ -257,7 +258,7 @@ export default (server: Server) => {
     {
       schema: zRoutes.post["/api/v1/jobs/delegations/:jobId"],
       config,
-      onRequest: [server.auth(zRoutes.post["/api/v1/jobs/delegations/:jobId"].securityScheme)],
+      onRequest: server.auth(zRoutes.post["/api/v1/jobs/delegations/:jobId"].securityScheme),
       // TODO: AttachValidation Error ?
     },
     async (req, res) => {
@@ -284,7 +285,7 @@ export default (server: Server) => {
     {
       schema: zRoutes.post["/api/v1/jobs/provided/:jobId"],
       config,
-      onRequest: [server.auth(zRoutes.post["/api/v1/jobs/provided/:jobId"].securityScheme)],
+      onRequest: server.auth(zRoutes.post["/api/v1/jobs/provided/:jobId"].securityScheme),
       // TODO: AttachValidation Error ?
     },
     async (req, res) => {
@@ -314,7 +315,7 @@ export default (server: Server) => {
     {
       schema: zRoutes.post["/api/v1/jobs/canceled/:jobId"],
       config,
-      onRequest: [server.auth(zRoutes.post["/api/v1/jobs/canceled/:jobId"].securityScheme)],
+      onRequest: server.auth(zRoutes.post["/api/v1/jobs/canceled/:jobId"].securityScheme),
       // TODO: AttachValidation Error ?
     },
     async (req, res) => {
@@ -344,7 +345,7 @@ export default (server: Server) => {
     {
       schema: zRoutes.post["/api/v1/jobs/extend/:jobId"],
       config,
-      onRequest: [server.auth(zRoutes.post["/api/v1/jobs/extend/:jobId"].securityScheme)],
+      onRequest: server.auth(zRoutes.post["/api/v1/jobs/extend/:jobId"].securityScheme),
       // TODO: AttachValidation Error ?
     },
     async (req, res) => {

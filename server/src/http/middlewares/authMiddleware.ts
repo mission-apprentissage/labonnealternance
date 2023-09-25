@@ -1,8 +1,9 @@
-import { internal, unauthorized } from "boom"
+import Boom from "boom"
 import {
   ContextConfigDefault,
   FastifyBaseLogger,
   FastifyRequest,
+  FastifySchema,
   FastifyTypeProvider,
   FastifyTypeProviderDefault,
   RawReplyDefaultExpression,
@@ -10,7 +11,7 @@ import {
   RawServerBase,
   RawServerDefault,
   RouteGenericInterface,
-  preHandlerHookHandler,
+  preHandlerAsyncHookHandler,
 } from "fastify"
 import jwt, { JwtPayload } from "jsonwebtoken"
 import passport from "passport"
@@ -25,10 +26,6 @@ import { authenticate, getUser, getUserByMail } from "@/services/user.service"
 import { getUser as getUserRecruteur } from "@/services/userRecruteur.service"
 
 export default (strategyName: AuthStrategy) => passport.authenticate(strategyName, { session: false })
-
-// function authApiKey(req: FastifyRequest) {
-//   const key = req.body?.apikey ?? req.query.apikey ?? req.headers.apikey ?? null
-// }
 
 declare module "fastify" {
   interface FastifyRequest {
@@ -134,13 +131,13 @@ function createAuthHandler(authFn: (req: FastifyRequest) => Promise<FastifyReque
     req.user = await authFn(req)
 
     if (!req.user) {
-      throw unauthorized()
+      throw Boom.unauthorized()
     }
   }
 }
 
-export function authenticationMiddleware(strategyName: AuthStrategy) {
-  switch (strategyName) {
+function authenticationMiddleware(strategy: SecurityScheme) {
+  switch (strategy.auth) {
     case "basic":
       return authBasic
     case "jwt-password":
@@ -154,10 +151,33 @@ export function authenticationMiddleware(strategyName: AuthStrategy) {
     case "api-key":
       return authApiKey
     case "none":
-      return
+      return async () => {
+        // noop
+      }
     default:
-      throw internal("Unknown authMiddleware strategy", { strategyName })
+      // Temp solution to not break server
+      return async () => {}
+    // throw Boom.internal("Unknown authMiddleware strategy", { strategy })
   }
+}
+
+function authorizationnMiddleware(strategy: SecurityScheme) {
+  switch (strategy.role) {
+    case "admin":
+      return authBasic
+    case "all":
+      return async () => {
+        // noop
+      }
+    default:
+      // Temp solution to not break server
+      return async () => {}
+    // throw Boom.internal("Unknown authMiddleware strategy", { strategy })
+  }
+}
+
+export function auth(strategy: SecurityScheme) {
+  return [authenticationMiddleware(strategy), authorizationnMiddleware(strategy)]
 }
 
 declare module "fastify" {
@@ -170,6 +190,6 @@ declare module "fastify" {
   > {
     auth<RouteGeneric extends RouteGenericInterface = RouteGenericInterface, ContextConfig = ContextConfigDefault, SchemaCompiler extends FastifySchema = FastifySchema>(
       strategy: SecurityScheme
-    ): preHandlerHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, Logger>
+    ): preHandlerAsyncHookHandler<RawServer, RawRequest, RawReply, RouteGeneric, ContextConfig, SchemaCompiler, TypeProvider, Logger>[]
   }
 }

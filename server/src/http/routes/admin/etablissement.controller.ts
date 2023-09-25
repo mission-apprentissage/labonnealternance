@@ -1,6 +1,5 @@
 import { zRoutes } from "shared/index"
 
-import { authenticationMiddleware } from "@/http/middlewares/authMiddleware"
 import { administratorOnly } from "@/http/middlewares/permissionsMiddleware"
 
 import { Etablissement } from "../../../common/model/index"
@@ -17,7 +16,7 @@ export default (server: Server) => {
     "/api/admin/etablissements",
     {
       schema: zRoutes.get["/api/admin/etablissement"],
-      preHandler: [authenticationMiddleware("jwt-rdv-admin"), administratorOnly],
+      // preHandler: [authenticationMiddleware("jwt-rdv-admin"), administratorOnly],
     },
     async (req, res) => {
       const qs = req.query
@@ -48,7 +47,7 @@ export default (server: Server) => {
     "/api/admin/etablissements/siret-formateur/:siret",
     {
       schema: zRoutes.get["/api/admin/etablissements/siret-formateur/:siret"],
-      preHandler: [authenticationMiddleware("jwt-rdv-admin"), administratorOnly],
+      // preHandler: [authenticationMiddleware("jwt-rdv-admin"), administratorOnly],
     },
     async ({ params }, res) => {
       const etablissement = await Etablissement.findOne({ formateur_siret: params.siret })
@@ -68,7 +67,7 @@ export default (server: Server) => {
     "/api/admin/etablissements/:id",
     {
       schema: zRoutes.get["/api/admin/etablissements/:id"],
-      preHandler: [authenticationMiddleware("jwt-rdv-admin"), administratorOnly],
+      // preHandler: [authenticationMiddleware("jwt-rdv-admin"), administratorOnly],
     },
     async (req, res) => {
       const etablissement = await Etablissement.findById(req.params.id)
@@ -88,7 +87,7 @@ export default (server: Server) => {
     "/api/admin/etablissements/",
     {
       schema: zRoutes.post["api/admin/etablissements/"],
-      preHandler: [authenticationMiddleware("jwt-rdv-admin"), administratorOnly],
+      // preHandler: [authenticationMiddleware("jwt-rdv-admin"), administratorOnly],
     },
     async ({ body }, res) => {
       const { etablissements } = body
@@ -111,7 +110,7 @@ export default (server: Server) => {
     "/api/admin/etablissements/:id",
     {
       schema: zRoutes.post["/api/admin/etablissements/:id"],
-      preHandler: [authenticationMiddleware("jwt-rdv-admin"), administratorOnly],
+      // preHandler: [authenticationMiddleware("jwt-rdv-admin"), administratorOnly],
     },
     async ({ body, params }, res) => {
       const etablissement = await Etablissement.findById(params.id)

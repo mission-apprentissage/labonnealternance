@@ -8,7 +8,6 @@ import dayjs from "../../services/dayjs.service"
 import { deleteFormulaire, getFormulaire, reactivateRecruiter, sendDelegationMailToCFA, updateOffre } from "../../services/formulaire.service"
 import mailer from "../../services/mailer.service"
 import { createUser, removeUser, sendWelcomeEmailToUserRecruteur, updateUser, updateUserValidationHistory } from "../../services/userRecruteur.service"
-import authenticationMiddleware from "../middlewares/authMiddleware"
 import { Server } from "../server"
 
 export default (server: Server) => {
@@ -49,7 +48,7 @@ export default (server: Server) => {
     "/api/user",
     {
       schema: zRoutes.get["/api/user"],
-      preHandler: [authenticationMiddleware("jwt-bearer")],
+      preHandler: server.auth(zRoutes.get["/api/user"].securityScheme),
     },
     async (req, res) => {
       const query = req.query.users

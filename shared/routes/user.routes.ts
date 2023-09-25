@@ -35,6 +35,10 @@ export const zUserRecruteurRoutes = {
       response: {
         "200": z.array(ZUserRecruteur),
       },
+      securityScheme: {
+        auth: "jwt-bearer",
+        role: "all",
+      },
     },
     "/api/user/:userId": {
       params: z

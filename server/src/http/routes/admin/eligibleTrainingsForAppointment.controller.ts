@@ -1,7 +1,6 @@
 import Joi from "joi"
 import { zRoutes } from "shared/index"
 
-import { authenticationMiddleware } from "@/http/middlewares/authMiddleware"
 import { administratorOnly } from "@/http/middlewares/permissionsMiddleware"
 
 import { logger } from "../../../common/logger"
@@ -44,7 +43,7 @@ export default (server: Server) => {
     "/api/admin/eligible-trainings-for-appointment",
     {
       schema: zRoutes.get["/api/admin/eligible-trainings-for-appointment"],
-      preHandler: [authenticationMiddleware("jwt-rdv-admin"), administratorOnly],
+      // preHandler: [authenticationMiddleware("jwt-rdv-admin"), administratorOnly],
     },
     async (req, res) => {
       const qs = req.query
@@ -93,7 +92,7 @@ export default (server: Server) => {
     "/api/admin/eligible-trainings-for-appointment/:id",
     {
       schema: zRoutes.get["/api/admin/eligible-trainings-for-appointment/:id"],
-      preHandler: [authenticationMiddleware("jwt-rdv-admin"), administratorOnly],
+      // preHandler: [authenticationMiddleware("jwt-rdv-admin"), administratorOnly],
     },
     async (req, res) => {
       const itemId = req.params.id
@@ -113,7 +112,7 @@ export default (server: Server) => {
     "/api/admin/eligible-trainings-for-appointment/:id",
     {
       schema: zRoutes.put["/api/admin/eligible-trainings-for-appointment/:id"],
-      preHandler: [authenticationMiddleware("jwt-rdv-admin"), administratorOnly],
+      // preHandler: [authenticationMiddleware("jwt-rdv-admin"), administratorOnly],
     },
     async ({ body, params }, res) => {
       await eligibleTrainingsForAppointmentSchema.validateAsync(body, { abortEarly: false })
@@ -130,7 +129,7 @@ export default (server: Server) => {
     "/api/admin/eligible-trainings-for-appointment/:id",
     {
       schema: zRoutes.patch["/api/admin/eligible-trainings-for-appointment/:id"],
-      preHandler: [authenticationMiddleware("jwt-rdv-admin"), administratorOnly],
+      // preHandler: [authenticationMiddleware("jwt-rdv-admin"), administratorOnly],
     },
     async ({ body, params }, res) => {
       await eligibleTrainingsForAppointmentIdPatchSchema.validateAsync(body, { abortEarly: false })

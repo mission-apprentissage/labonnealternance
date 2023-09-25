@@ -1,8 +1,6 @@
 import Joi from "joi"
 import { zRoutes } from "shared/index"
 
-import { authMiddleware, authenticationMiddleware } from "@/http/middlewares/authMiddleware"
-
 import { logger } from "../../../common/logger"
 import { Etablissement } from "../../../common/model"
 import { addEmailToBlacklist } from "../../../services/application.service"
@@ -25,7 +23,7 @@ export default (server: Server) => {
     "/api/emails/webhook",
     {
       schema: zRoutes.post["/api/emails/webhook"],
-      preValidation: [authenticationMiddleware("api-key")],
+      // preValidation: [authenticationMiddleware("api-key")],
     },
     async (req, res) => {
       const parameters = await Joi.object({

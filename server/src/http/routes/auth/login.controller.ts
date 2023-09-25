@@ -10,7 +10,6 @@ import { CFA, ENTREPRISE, ETAT_UTILISATEUR } from "../../../services/constant.se
 import { sendUserConfirmationEmail } from "../../../services/etablissement.service"
 import mailer from "../../../services/mailer.service"
 import { getUser, getUserStatus, registerUser } from "../../../services/userRecruteur.service"
-import authMiddleware, { authenticationMiddleware } from "../../middlewares/authMiddleware"
 import { Server } from "../../server"
 
 export default (server: Server) => {
@@ -18,7 +17,7 @@ export default (server: Server) => {
     "/api/login",
     {
       schema: zRoutes.post["/api/login"],
-      preHandler: [authenticationMiddleware("basic")],
+      preHandler: server.auth(zRoutes.post["/api/login"].securityScheme),
     },
     async (req, res) => {
       const user = req.user
@@ -134,7 +133,7 @@ export default (server: Server) => {
     "/api/login/verification",
     {
       schema: zRoutes.post["/api/login/verification"],
-      preHandler: [authenticationMiddleware("jwt-token")],
+      preHandler: server.auth(zRoutes.post["/api/login/verification"].securityScheme),
     },
     async (req, res) => {
       const user = req.user

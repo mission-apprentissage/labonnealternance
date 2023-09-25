@@ -13,7 +13,6 @@ import * as appointmentService from "../../services/appointment.service"
 import dayjs from "../../services/dayjs.service"
 import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service"
 import mailer from "../../services/mailer.service"
-import { authMiddleware, authenticationMiddleware } from "../middlewares/authMiddleware"
 import { Server } from "../server"
 
 const optOutUnsubscribeSchema = Joi.object({
@@ -35,7 +34,7 @@ export default (server: Server) => {
     "/api/etablissements/:id",
     {
       schema: zRoutes.get["/api/etablissements/:id"],
-      preHandler: [authenticationMiddleware("jwt-password")],
+      preHandler: server.auth(zRoutes.get["/api/etablissements/:id"].securityScheme),
     },
     async (req, res) => {
       const etablissement = await Etablissement.findById(req.params.id)

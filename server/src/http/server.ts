@@ -7,6 +7,7 @@ import fastify, { FastifyBaseLogger, FastifyInstance, RawReplyDefaultExpression,
 import { serializerCompiler, validatorCompiler, ZodTypeProvider } from "fastify-type-provider-zod"
 import { OpenAPIV3_1 } from "openapi-types"
 import { generateOpenApiSchema } from "shared/helpers/openapi/generateOpenapi"
+import { SecurityScheme } from "shared/routes/common.routes"
 import swaggerDoc from "swagger-jsdoc"
 
 import config from "../config"
@@ -14,6 +15,7 @@ import { initBrevoWebhooks } from "../services/brevo.service"
 
 import rome from "./controllers/metiers/rome.controller"
 // import { corsMiddleware } from "./middlewares/corsMiddleware" // TODO_AB To check
+import { auth } from "./middlewares/authMiddleware"
 import { errorMiddleware } from "./middlewares/errorMiddleware"
 import { logMiddleware } from "./middlewares/logMiddleware"
 import adminAppointmentRoute from "./routes/admin/appointment.controller"
@@ -117,6 +119,8 @@ export async function bind(app: Server) {
     },
   }
   await app.register(fastifySwaggerUI, swaggerUiOptions)
+
+  app.decorate("auth", (strategy: SecurityScheme) => auth(strategy))
 
   // TODO_AB To check
   // app.register(fastifyCors, {

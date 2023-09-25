@@ -3,7 +3,6 @@ import { zRoutes } from "shared/index"
 
 import { Optout } from "../../common/model/index"
 import config from "../../config"
-import { authMiddleware, authenticationMiddleware } from "../middlewares/authMiddleware"
 import { Server } from "../server"
 
 export default (server: Server) => {
@@ -11,7 +10,7 @@ export default (server: Server) => {
     "/api/optout/validate",
     {
       schema: zRoutes.get["/api/optout/validate"],
-      preHandler: [authenticationMiddleware("jwt-password")],
+      preHandler: server.auth(zRoutes.get["/api/optout/validate"].securityScheme),
     },
     async (req, res) => {
       const token = req.headers.authorization.split(" ")[1]

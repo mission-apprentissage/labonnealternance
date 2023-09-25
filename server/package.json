@@ -21,7 +21,6 @@
   },
   "dependencies": {
     "@elastic/elasticsearch": "7.9.1",
-    "@fastify/auth": "^4.3.0",
     "@fastify/cors": "^8.4.0",
     "@fastify/rate-limit": "^8.0.3",
     "@fastify/swagger": "^8.10.1",

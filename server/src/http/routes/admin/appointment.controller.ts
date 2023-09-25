@@ -1,6 +1,5 @@
 import { zRoutes } from "shared/index"
 
-import { authenticationMiddleware } from "@/http/middlewares/authMiddleware"
 import { administratorOnly } from "@/http/middlewares/permissionsMiddleware"
 
 import { Appointment, User } from "../../../common/model/index"
@@ -18,7 +17,9 @@ export default (server: Server) => {
     "/api/admin/appointments",
     {
       schema: zRoutes.get["/api/admin/appointments"],
-      preHandler: [authenticationMiddleware("jwt-rdv-admin"), administratorOnly],
+      preHandler: [
+        // authenticationMiddleware("jwt-rdv-admin"), administratorOnly
+      ],
     },
     async (req, res) => {
       const qs = req.query
@@ -47,7 +48,7 @@ export default (server: Server) => {
     "/api/admin/appointments/details",
     {
       schema: zRoutes.get["/api/admin/appointments/details"],
-      preHandler: [authenticationMiddleware("jwt-rdv-admin"), administratorOnly],
+      // preHandler: [authenticationMiddleware("jwt-rdv-admin"), administratorOnly],
     },
     async (req, res) => {
       const qs = req.query

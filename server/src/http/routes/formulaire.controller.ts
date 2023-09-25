@@ -19,7 +19,6 @@ import {
   updateOffre,
 } from "../../services/formulaire.service"
 import { getUser } from "../../services/userRecruteur.service"
-import { authMiddleware, authenticationMiddleware } from "../middlewares/authMiddleware"
 import { Server } from "../server"
 
 export default (server: Server) => {
@@ -30,7 +29,7 @@ export default (server: Server) => {
     "/api/formulaire",
     {
       schema: zRoutes.get["/api/formulaire"],
-      preHandler: [authenticationMiddleware("jwt-bearer")],
+      // preHandler: [authenticationMiddleware("jwt-bearer")],
     },
     async (req, res) => {
       // TODO_AB ??????
