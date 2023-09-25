@@ -18,11 +18,7 @@ export const zV1JobsRoutes = {
         })
         .strict(),
       response: {
-        "200": z
-          .object({
-            token: z.string(),
-          })
-          .strict(),
+        "200": z.string(),
       },
       securityScheme: {
         auth: "api-key",
