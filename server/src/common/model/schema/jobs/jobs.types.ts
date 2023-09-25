@@ -25,7 +25,7 @@ interface IJobs {
   job_prolongation_count: number
   job_status: JOB_STATUS
   job_status_comment: string
-  job_type?: string[]
+  job_type?: ("Apprentissage" | "Professionnalisation")[]
   is_multi_published: boolean
   is_delegated: boolean
   job_delegation_count: number
