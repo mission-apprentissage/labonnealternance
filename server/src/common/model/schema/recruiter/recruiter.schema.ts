@@ -118,6 +118,6 @@ export const recruiterSchema = new Schema<IRecruiter>(
 )
 
 recruiterSchema.plugin(mongoosePagination)
-recruiterSchema.plugin(mongoosastic, { esClient: getElasticInstance(), index: "recruiters" })
+recruiterSchema.plugin(mongoosastic, { index: "recruiters" })
 
 export default model<IRecruiter, Pagination<IRecruiter>>("recruiter", recruiterSchema)

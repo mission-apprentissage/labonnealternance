@@ -3,7 +3,6 @@ import { access, mkdir } from "node:fs/promises"
 import { isEmpty } from "lodash-es"
 import prettyMilliseconds from "pretty-ms"
 
-import createComponents, { Components } from "../common/components/components"
 import { getLoggerWithContext } from "../common/logger"
 import { closeMongoConnection } from "../common/mongodb"
 import config from "../config"
@@ -63,15 +62,14 @@ const exit = async (scriptError?: any) => {
   }, 250)
 }
 
-async function runScript(job: (components: Components) => Promise<any>) {
+async function runScript(job: () => Promise<any>) {
   try {
     const timer = createTimer()
     timer.start()
 
     await ensureOutputDirExists()
 
-    const components = await createComponents()
-    const results = await job(components)
+    const results = await job()
 
     timer.stop(results)
     await exit()

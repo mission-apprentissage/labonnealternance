@@ -1,5 +1,6 @@
 import { ObjectId } from "mongodb"
 import { FilterQuery } from "mongoose"
+import { IAppointment } from "shared/models"
 
 import { Appointment } from "../common/model/index"
 import { IAppointments } from "../common/model/schema/appointments/appointments.types"
@@ -21,7 +22,7 @@ const createAppointment = async (params: Partial<IAppointments>) => {
  * @param {string} id - Appointment id.
  * @returns {Promise<IAppointments>}
  */
-const findById = (id: ObjectId) => Appointment.findById(id)
+const findById = async (id: ObjectId): Promise<IAppointment | null> => Appointment.findById(id)
 
 /**
  * @description Find items.

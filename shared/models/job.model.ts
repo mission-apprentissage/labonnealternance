@@ -32,7 +32,7 @@ export const ZJob = z
     job_employer_description: z.string().nullish().describe("Description de l'employer proposant l'offre d'alternance"),
     rome_code: z.array(z.string()).describe("Liste des romes liés au métier"),
     rome_detail: ZRomeDetail.describe("Détail du code ROME selon la nomenclature Pole emploi"),
-    job_creation_date: z.date().or(z.string()).nullish().describe("Date de creation de l'offre"),
+    job_creation_date: z.date().nullish().describe("Date de creation de l'offre"),
     job_expiration_date: z.date().or(z.string()).nullish().describe("Date d'expiration de l'offre"),
     job_update_date: z.date().or(z.string()).describe("Date de dernière mise à jour de l'offre"),
     job_last_prolongation_date: z.date().or(z.string()).describe("Date de dernière prolongation de l'offre"),

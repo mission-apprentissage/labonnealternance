@@ -1,10 +1,12 @@
 "use strict"
 
+import { RequestParams } from "@elastic/elasticsearch"
 import { oleoduc, writeData } from "oleoduc"
 
 import { logger } from "@/common/logger"
 import { sentryCaptureException } from "@/common/utils/sentryUtils"
 
+import { getElasticInstance } from ".."
 import { logMessage } from "../../utils/logMessage"
 
 import serialize from "./serialize"
@@ -170,7 +172,7 @@ function getMapping(schema, requireAsciiFolding = false) {
 }*/
 
 function Mongoosastic(schema, options) {
-  const { esClient } = options
+  const esClient = getElasticInstance()
 
   const mapping = getMapping(schema)
   const indexName = options.index
@@ -214,7 +216,7 @@ function Mongoosastic(schema, options) {
         body: completeMapping,
         ...includeTypeNameParameters,
       })
-    } catch (e) {
+    } catch (e: any) {
       let errorMsg = e.message
       if (e.meta && e.meta.body) errorMsg = e.meta.body.error
       console.error("Error update mapping", errorMsg || e)
@@ -222,21 +224,29 @@ function Mongoosastic(schema, options) {
   }
 
   schema.methods.index = async function schemaIndex(refresh = true) {
-    const _opts = { index: indexName, type: typeName, refresh }
-    _opts.body = serialize(this, mapping)
-    _opts.id = this._id.toString()
+    const _opts: RequestParams.Index<Record<string, string>> = {
+      index: indexName,
+      type: typeName,
+      refresh,
+      body: serialize(this, mapping),
+      id: this._id.toString(),
+    }
+
     await esClient.index(_opts)
   }
 
   schema.methods.unIndex = async function schemaUnIndex() {
-    const _opts = { index: indexName, type: typeName, refresh: true }
-    _opts.id = this._id.toString()
+    const _opts: RequestParams.Delete = {
+      index: indexName,
+      type: typeName,
+      refresh: true,
+      id: this._id.toString(),
+    }
 
     let tries = 3
     while (tries > 0) {
       try {
         await esClient.delete(_opts)
-        return resolve()
       } catch (e) {
         console.error(e)
         sentryCaptureException(e)

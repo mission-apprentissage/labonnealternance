@@ -471,6 +471,6 @@ const mnaFormationSchema = new Schema<IFormationCatalogue>({
   ...etablissementReferenceInfo,
 })
 
-mnaFormationSchema.plugin(mongoosastic, { esClient: getElasticInstance(), index: "formationcatalogues" })
+mnaFormationSchema.plugin(mongoosastic, { index: "formationcatalogues" })
 
 export default model<IFormationCatalogue>("formationcatalogues", mnaFormationSchema)

@@ -38,14 +38,14 @@ const CreationCompte = () => {
     Promise.all([getEntrepriseOpco(formattedSiret), getEntrepriseInformation(formattedSiret, { cfa_delegated_siret: auth.cfa_delegated_siret })]).then(
       ([opcoInfos, entrepriseData]) => {
         if (entrepriseData.error) {
-          if (entrepriseData.errorType === "server") {
+          if (!entrepriseData.data) {
             router.push({
               pathname: "/espace-pro/administration/entreprise/detail",
               query: { informationSiret: JSON.stringify({ establishment_siret: formattedSiret, ...opcoInfos }) },
             })
           } else {
             setFieldError("establishment_siret", entrepriseData.message)
-            setIsCfa(entrepriseData?.isCfa)
+            setIsCfa(entrepriseData.data.isCfa)
             setSubmitting(false)
           }
         } else {

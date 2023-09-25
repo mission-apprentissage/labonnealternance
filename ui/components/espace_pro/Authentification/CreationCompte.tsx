@@ -27,14 +27,14 @@ const CreationCompteForm = ({ type, setQualiopi, setBandeau, origin }) => {
     if (type === AUTHTYPE.ENTREPRISE) {
       Promise.all([getEntrepriseOpco(formattedSiret), getEntrepriseInformation(formattedSiret)]).then(([opcoInfos, entrepriseData]) => {
         if (entrepriseData.error) {
-          if (entrepriseData.errorType === "server") {
+          if (!entrepriseData.data) {
             router.push({
               pathname: "/espace-pro/creation/detail",
               query: { type, origin, informationSiret: JSON.stringify({ establishment_siret: formattedSiret, ...opcoInfos }) },
             })
           } else {
             setFieldError("establishment_siret", entrepriseData.message)
-            setIsCfa(entrepriseData?.isCfa)
+            setIsCfa(entrepriseData.data.isCfa)
             setSubmitting(false)
           }
         } else {

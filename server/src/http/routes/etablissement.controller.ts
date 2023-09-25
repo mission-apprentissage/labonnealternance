@@ -447,7 +447,7 @@ export default (server: Server) => {
 
       // Save current date
       if (!appointment.cfa_read_appointment_details_date && has_been_read) {
-        await appointment.update({ cfa_read_appointment_details_date: dayjs().toDate() })
+        await appointmentService.updateAppointment(appointmentId.toString(), { cfa_read_appointment_details_date: dayjs().toDate() })
       }
 
       appointment = await appointmentService.findById(appointmentId)
