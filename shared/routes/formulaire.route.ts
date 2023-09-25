@@ -80,13 +80,13 @@ export const zFormulaireRoute = {
     "/api/formulaire/offre/:jobId/cancel": {
       params: z.object({ jobId: zObjectId }),
       response: {
-        "2xx": null,
+        "2xx": z.undefined(),
       },
     },
     "/api/formulaire/offre/:jobId/provided": {
       params: z.object({ jobId: zObjectId }),
       response: {
-        "2xx": null,
+        "2xx": z.undefined(),
       },
     },
   },
@@ -104,14 +104,14 @@ export const zFormulaireRoute = {
     "/api/formulaire/:establishment_id": {
       params: z.object({ establishment_id: z.string() }),
       response: {
-        "2xx": null,
+        "2xx": z.undefined(),
       },
     },
     "/api/formulaire/delegated/:establishment_siret": {
       params: z.object({ establishment_siret: z.string() }),
       response: {
-        "2xx": null,
+        "2xx": z.undefined(),
       },
     },
   },
-} satisfies IRoutesDef
+} as const satisfies IRoutesDef

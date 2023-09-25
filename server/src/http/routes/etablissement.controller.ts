@@ -1,7 +1,7 @@
 import Boom from "boom"
-import express from "express"
 import Joi from "joi"
 import * as _ from "lodash-es"
+import { zRoutes } from "shared/index"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
@@ -13,7 +13,7 @@ import * as appointmentService from "../../services/appointment.service"
 import dayjs from "../../services/dayjs.service"
 import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service"
 import mailer from "../../services/mailer.service"
-import { tryCatch } from "../middlewares/tryCatchMiddleware"
+import { Server } from "../server"
 
 const optOutUnsubscribeSchema = Joi.object({
   opt_out_question: Joi.string().optional(),
@@ -24,33 +24,37 @@ const patchEtablissementIdAppointmentIdReadAppointSchema = Joi.object({
 })
 
 /**
- * @description Etablissement Router.
+ * @description Etablissement server.
  */
-export default () => {
-  const router = express.Router()
-
+export default (server: Server) => {
   /**
    * @description Returns etablissement from its id.
    */
-  router.get(
-    "/:id",
-    tryCatch(async (req, res) => {
+  server.get(
+    "/api/etablissements/:id",
+    {
+      schema: zRoutes.get["/api/etablissements/:id"],
+    },
+    async (req, res) => {
       const etablissement = await Etablissement.findById(req.params.id)
 
       if (!etablissement) {
-        return res.sendStatus(404)
+        return res.status(404).send()
       }
 
       return res.send(etablissement)
-    })
+    }
   )
 
   /**
    * @description Accepts "Premium Affelnet".
    */
-  router.post(
-    "/:id/premium/affelnet/accept",
-    tryCatch(async (req, res) => {
+  server.post(
+    "/api/etablissements/:id/premium/affelnet/accept",
+    {
+      schema: zRoutes.post["/api/etablissements/:id/premium/affelnet/accept"],
+    },
+    async (req, res) => {
       const etablissement = await Etablissement.findById(req.params.id)
 
       if (!etablissement) {
@@ -153,15 +157,18 @@ export default () => {
       ])
 
       return res.send(resultAffelnet)
-    })
+    }
   )
 
   /**
    * @description Accepts "Premium Parcoursup".
    */
-  router.post(
-    "/:id/premium/accept",
-    tryCatch(async (req, res) => {
+  server.post(
+    "/api/etablissements/:id/premium/accept",
+    {
+      schema: zRoutes.post["/api/etablissements/:id/premium/accept"],
+    },
+    async (req, res) => {
       const etablissement = await Etablissement.findById(req.params.id)
 
       if (!etablissement) {
@@ -267,15 +274,18 @@ export default () => {
       ])
 
       return res.send(result)
-    })
+    }
   )
 
   /**
    * @description Refuses "Premium Affelnet"
    */
-  router.post(
-    "/:id/premium/affelnet/refuse",
-    tryCatch(async (req, res) => {
+  server.post(
+    "/api/etablissements/:id/premium/affelnet/refuse",
+    {
+      schema: zRoutes.post["/api/etablissements/:id/premium/affelnet/refuse"],
+    },
+    async (req, res) => {
       const etablissement = await Etablissement.findById(req.params.id)
 
       if (!etablissement) {
@@ -331,15 +341,18 @@ export default () => {
       const etablissementAffelnetUpdated = await Etablissement.findById(req.params.id)
 
       return res.send(etablissementAffelnetUpdated)
-    })
+    }
   )
 
   /**
    * @description Refuses "Premium Parcoursup"
    */
-  router.post(
-    "/:id/premium/refuse",
-    tryCatch(async (req, res) => {
+  server.post(
+    "/api/etablissements/:id/premium/refuse",
+    {
+      schema: zRoutes.post["/api/etablissements/:id/premium/affelnet/refuse"],
+    },
+    async (req, res) => {
       const etablissement = await Etablissement.findById(req.params.id)
 
       if (!etablissement) {
@@ -395,15 +408,18 @@ export default () => {
       const etablissementParcoursupUpdated = await Etablissement.findById(req.params.id)
 
       return res.send(etablissementParcoursupUpdated)
-    })
+    }
   )
 
   /**
    * Patch etablissement appointment.
    */
-  router.patch(
-    "/:id/appointments/:appointmentId",
-    tryCatch(async ({ body, params }, res) => {
+  server.patch(
+    "/api/etablissements/:id/appointments/:appointmentId",
+    {
+      schema: zRoutes.patch["/api/etablissements/:id/appointments/:appointmentId"],
+    },
+    async ({ body, params }, res) => {
       const { has_been_read } = await patchEtablissementIdAppointmentIdReadAppointSchema.validateAsync(body, {
         abortEarly: false,
       })
@@ -429,25 +445,28 @@ export default () => {
       appointment = await appointmentService.findById(appointmentId)
 
       res.send(appointment)
-    })
+    }
   )
 
   /**
    * @description OptOutUnsubscribe to "opt-out".
    */
-  router.post(
-    "/:id/opt-out/unsubscribe",
-    tryCatch(async (req, res) => {
+  server.post(
+    "/api/etablissements/:id/opt-out/unsubscribe",
+    {
+      schema: zRoutes.post["/api/etablissements/:id/opt-out/unsubscribe"],
+    },
+    async (req, res) => {
       const { opt_out_question } = await optOutUnsubscribeSchema.validateAsync(req.body, { abortEarly: false })
 
       let etablissement = await Etablissement.findById(req.params.id)
 
       if (!etablissement) {
-        return res.sendStatus(404)
+        return res.status(404).send()
       }
 
       if (etablissement.optout_refusal_date) {
-        return res.sendStatus(400)
+        return res.status(400).send()
       }
 
       if (opt_out_question) {
@@ -535,8 +554,6 @@ export default () => {
       etablissement = await Etablissement.findById(req.params.id)
 
       return res.send(etablissement)
-    })
+    }
   )
-
-  return router
 }

@@ -1,22 +1,15 @@
-import express from "express"
+import { zRoutes } from "shared/index"
 
 import { optMode } from "../../common/model/constants/etablissement"
 import { referrers } from "../../common/model/constants/referrers"
-import { tryCatch } from "../middlewares/tryCatchMiddleware"
+import { Server } from "../server"
 
-/**
- * @description Constants router.
- */
-export default () => {
-  const router = express.Router()
-
-  /**
-   * @description Returns all constants.
-   */
-  router.get(
-    "/",
-    tryCatch((req, res) => res.send({ referrers: Object.values(referrers), optMode: Object.values(optMode) }))
+export default (server: Server) => {
+  server.get(
+    "/api/constants",
+    {
+      schema: zRoutes.get["/api/constants"],
+    },
+    (req, res) => res.send({ referrers: Object.values(referrers), optMode: Object.values(optMode) })
   )
-
-  return router
 }

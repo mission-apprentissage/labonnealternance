@@ -1,5 +1,4 @@
-import express from "express"
-import rateLimit from "express-rate-limit"
+import { zRoutes } from "shared/index.js"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
@@ -7,22 +6,23 @@ import { LbaCompany, UnsubscribedLbaCompany } from "../../common/model/index.js"
 import config from "../../config"
 import { UNSUBSCRIBE_EMAIL_ERRORS } from "../../services/constant.service"
 import mailer from "../../services/mailer.service"
-import { tryCatch } from "../middlewares/tryCatchMiddleware"
-
-const limiter1Per5Second = rateLimit({
-  windowMs: 5000, // 5 seconds
-  max: 1, // limit each IP to 1 request per windowMs
-})
+import { Server } from "../server.js"
 
 const imagePath = `${config.publicUrl}/images/emails/`
 
-export default function () {
-  const router = express.Router()
-
-  router.post(
-    "/",
-    limiter1Per5Second,
-    tryCatch(async (req, res) => {
+export default function (server: Server) {
+  server.post(
+    "/api/unsubscribe",
+    {
+      schema: zRoutes.post["/api/unsubscribe"],
+      config: {
+        rateLimit: {
+          max: 1,
+          timeWindow: "5s",
+        },
+      },
+    },
+    async (req, res) => {
       let result = "OK"
 
       const email = req.body.email.toLowerCase()
@@ -58,9 +58,7 @@ export default function () {
         })
       }
 
-      return res.json(result)
-    })
+      return res.status(200).send(result)
+    }
   )
-
-  return router
 }

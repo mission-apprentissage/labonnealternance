@@ -1,17 +1,19 @@
-// @ts-nocheck
 import querystring from "querystring"
 
 import axios from "axios"
-import express from "express"
+import { zRoutes } from "shared/index"
 
 import config from "../../../config"
 import dayjs from "../../../services/dayjs.service"
 import { getRomesAndLabelsFromTitleQuery } from "../../../services/metiers.service"
-import { tryCatch } from "../../middlewares/tryCatchMiddleware"
+import { Server } from "../../server"
 
-/**
- * API romes
- */
+const rateLimiterConfig = {
+  rateLimit: {
+    max: 10,
+    timeWindow: "1s",
+  },
+}
 
 const isTokenValid = (token) => token.expire?.isAfter(dayjs())
 
@@ -49,32 +51,58 @@ const getToken = async (token = {}) => {
   }
 }
 
-export default function () {
-  const router = express.Router()
+// TODO: Remove duplicated routes
+/**
+ * API romes
+ */
+export default function (server: Server) {
   let token = {}
 
-  router.get(
-    "/",
-    tryCatch(async (req, res) => {
+  server.get(
+    "/api/romelabels",
+    {
+      schema: zRoutes.get["/api/romelabels"],
+      config: rateLimiterConfig,
+    },
+    async (req, res) => {
       const result = await getRomesAndLabelsFromTitleQuery(req.query)
-      return res.json(result)
-    })
+      return res.status(200).send(result)
+    }
   )
 
-  router.get(
-    "/detail/:rome",
-    tryCatch(async (req, res) => {
-      token = await getToken(token)
-
-      const response = await axios.get(`https://api.pole-emploi.io/partenaire/rome/v1/metier/${req.params.rome}`, {
-        headers: {
-          Authorization: `Bearer ${token.access_token}`,
-        },
-      })
-
-      return res.json(response.data)
-    })
+  server.get(
+    "/api/rome",
+    {
+      schema: zRoutes.get["/api/rome"],
+      config: rateLimiterConfig,
+    },
+    async (req, res) => {
+      const result = await getRomesAndLabelsFromTitleQuery(req.query)
+      return res.status(200).send(result)
+    }
   )
 
-  return router
+  server.get("/api/romelabels/detail/:rome", async (req, res) => {
+    token = await getToken(token)
+
+    const response = await axios.get(`https://api.pole-emploi.io/partenaire/rome/v1/metier/${req.params.rome}`, {
+      headers: {
+        Authorization: `Bearer ${token.access_token}`,
+      },
+    })
+
+    return res.status(200).send(response.data)
+  })
+
+  server.get("/api/rome/detail/:rome", async (req, res) => {
+    token = await getToken(token)
+
+    const response = await axios.get(`https://api.pole-emploi.io/partenaire/rome/v1/metier/${req.params.rome}`, {
+      headers: {
+        Authorization: `Bearer ${token.access_token}`,
+      },
+    })
+
+    return res.status(200).send(response.data)
+  })
 }

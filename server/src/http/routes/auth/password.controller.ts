@@ -1,20 +1,20 @@
 import Boom from "boom"
-import express from "express"
 import Joi from "joi"
+import { zRoutes } from "shared/index"
 
 import { createUserToken, createPasswordToken } from "../../../common/utils/jwtUtils"
 import config from "../../../config"
 import * as users from "../../../services/user.service"
-import authMiddleware from "../../middlewares/authMiddleware"
-import { tryCatch } from "../../middlewares/tryCatchMiddleware"
+import { Server } from "../../server"
 import * as validators from "../../utils/validators"
 
-export default () => {
-  const router = express.Router() // eslint-disable-line new-cap
-
-  router.post(
-    "/forgotten-password",
-    tryCatch(async (req, res) => {
+export default (server: Server) => {
+  server.post(
+    "/api/password/forgotten-password",
+    {
+      schema: zRoutes.post["/api/password/forgotten-password"],
+    },
+    async (req, res) => {
       const { username } = await Joi.object({
         username: Joi.string().required(),
       }).validateAsync(req.body, { abortEarly: false })
@@ -24,14 +24,17 @@ export default () => {
       }
 
       const url = `${config.publicUrl}/reset-password?passwordToken=${createPasswordToken(username)}`
-      return res.json({ url: url })
-    })
+      return res.status(200).send({ url: url })
+    }
   )
 
-  router.post(
-    "/reset-password",
-    authMiddleware("jwt-password"),
-    tryCatch(async (req, res) => {
+  server.post(
+    "/api/password/reset-password",
+    {
+      schema: zRoutes.post["/api/password/reset-password"],
+      // preHandler: [authenticationMiddleware("jwt-password")],
+    },
+    async (req, res) => {
       const user = req.user
       const { newPassword } = await Joi.object({
         passwordToken: Joi.string().required(),
@@ -39,9 +42,7 @@ export default () => {
       }).validateAsync(req.body, { abortEarly: false })
 
       await users.changePassword(user.username, newPassword)
-      return res.json({ token: createUserToken(user) })
-    })
+      return res.status(200).send({ token: createUserToken(user) })
+    }
   )
-
-  return router
 }

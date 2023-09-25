@@ -1,17 +1,18 @@
 import Boom from "boom"
-import express from "express"
 import { NotionAPI } from "notion-client"
+import { zRoutes } from "shared/index"
 
-import { tryCatch } from "../middlewares/tryCatchMiddleware"
+import { Server } from "../server"
 
 const notion = new NotionAPI()
 
-export default () => {
-  const router = express.Router()
-
-  router.get(
-    "/content/:id",
-    tryCatch(async ({ params }, res) => {
+export default (server: Server) => {
+  server.get(
+    "/api/support/content/:id",
+    {
+      schema: zRoutes.get["/api/support/content/:id"],
+    },
+    async ({ params }, res) => {
       if (!["7e8a9c1a1ef54cb399f8ae50620f95ce"].includes(params.id)) {
         throw Boom.notFound("Page not found")
       }
@@ -31,9 +32,7 @@ export default () => {
         }
       }
 
-      return res.json({ ...recordMap, pageTitle })
-    })
+      return res.status(200).send({ ...recordMap, pageTitle })
+    }
   )
-
-  return router
 }

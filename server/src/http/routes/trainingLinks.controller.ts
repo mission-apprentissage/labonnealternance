@@ -1,15 +1,22 @@
-import express from "express"
 import Joi from "joi"
+import { zRoutes } from "shared/index"
 
 import { getTrainingLinks } from "../../services/trainingLinks.service"
-import { tryCatch } from "../middlewares/tryCatchMiddleware"
+import { Server } from "../server"
 
-export default () => {
-  const router = express.Router()
-
-  router.post(
-    "/",
-    tryCatch(async (req, res) => {
+export default (server: Server) => {
+  server.post(
+    "/api/trainingLinks",
+    {
+      schema: zRoutes.post["/api/trainingLinks"],
+      config: {
+        rateLimit: {
+          max: 3,
+          timeWindow: "1s",
+        },
+      },
+    },
+    async (req, res) => {
       const params = req.body
 
       await Joi.array()
@@ -39,9 +46,7 @@ export default () => {
 
       const results = await getTrainingLinks(params)
 
-      return res.json(results)
-    })
+      return res.status(200).send(results)
+    }
   )
-
-  return router
 }

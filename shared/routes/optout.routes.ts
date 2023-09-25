@@ -44,6 +44,10 @@ export const zOptoutRoutes = {
           })
           .strict(),
       },
+      securityScheme: {
+        auth: "jwt-password",
+        role: "all",
+      },
     },
   },
-} satisfies IRoutesDef
+} as const satisfies IRoutesDef

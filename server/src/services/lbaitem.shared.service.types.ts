@@ -1,4 +1,5 @@
 import { JOB_STATUS } from "./constant.service"
+import { IRomeDetailsFromAPI } from "./rome.service.types"
 
 export interface ILbaItem {
   ideaType: string | null // type de l'item :  formation | lbb | lba | peJob | matcha
@@ -111,7 +112,7 @@ export interface ILbaItemJob {
   contractDescription?: string | null // pe -> typeContratLibelle
   duration?: string | null // pe -> dureeTravailLibelle
   jobStartDate?: string | Date // matcha -> offres.date_debut_apprentissage
-  romeDetails?: object // matcha -> offres.rome_detail -> détail du code ROME
+  romeDetails?: IRomeDetailsFromAPI // matcha -> offres.rome_detail -> détail du code ROME
   rythmeAlternance?: string | null // matcha -> offres.rythme_alternance
   elligibleHandicap?: boolean // matcha -> offres.is_disabled_elligible
   dureeContrat?: string | null // matcha -> offres.duree_contrat

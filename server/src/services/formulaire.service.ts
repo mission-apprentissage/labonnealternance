@@ -220,7 +220,7 @@ export const getOffreAvecInfoMandataire = async (id: IJobs["_id"]): Promise<IFor
  * @param {number} payload.page
  * @param {number} payload.limit
  */
-export const getFormulaires = async (query: Filter<IRecruiter>, select: object, { page, limit }: { page: number; limit: number }) => {
+export const getFormulaires = async (query: Filter<IRecruiter>, select: object, { page, limit }: { page?: number; limit?: number }) => {
   const response = await Recruiter.paginate({ query, ...select, page, limit, lean: true })
 
   return {

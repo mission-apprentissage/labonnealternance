@@ -1,15 +1,16 @@
-import express from "express"
+import { zRoutes } from "shared/index"
 
 import { addEmailToBlacklist, removeEmailFromLbaCompanies } from "../../services/application.service"
 import { BrevoEventStatus } from "../../services/brevo.service"
-import { tryCatch } from "../middlewares/tryCatchMiddleware"
+import { Server } from "../server"
 
-export default function () {
-  const router = express.Router()
-
-  router.post(
-    "/",
-    tryCatch(async (req, res) => {
+export default function (server: Server) {
+  server.post(
+    "/api/campaign/webhook",
+    {
+      schema: zRoutes.post["/api/campaign/webhook"],
+    },
+    async (req, res) => {
       /* Format payload
       {
         req.body.event : "hard_bounce",
@@ -20,9 +21,7 @@ export default function () {
         await Promise.all([addEmailToBlacklist(req.body.email, "campaign"), removeEmailFromLbaCompanies(req.body.email)])
       }
 
-      return res.json({ result: "ok" })
-    })
+      return res.status(200).send({ result: "ok" })
+    }
   )
-
-  return router
 }

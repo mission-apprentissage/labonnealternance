@@ -1,4 +1,4 @@
-import express from "express"
+import { zRoutes } from "shared/index"
 
 import { Recruiter } from "../../common/model/index"
 import { getApplication } from "../../services/application.service"
@@ -19,36 +19,39 @@ import {
   updateOffre,
 } from "../../services/formulaire.service"
 import { getUser } from "../../services/userRecruteur.service"
-import authMiddleware from "../middlewares/authMiddleware"
-import { tryCatch } from "../middlewares/tryCatchMiddleware"
+import { Server } from "../server"
 
-export default () => {
-  const router = express.Router()
-
+export default (server: Server) => {
   /**
    * Query search endpoint
    */
-  router.get(
-    "/",
-    authMiddleware("jwt-bearer"),
-    tryCatch(async (req, res) => {
+  server.get(
+    "/api/formulaire",
+    {
+      schema: zRoutes.get["/api/formulaire"],
+      // preHandler: [authenticationMiddleware("jwt-bearer")],
+    },
+    async (req, res) => {
       // TODO_AB ??????
       const query = req.query.query
       const results = await Recruiter.find(query).limit(50).lean()
-      return res.json(results)
-    })
+      return res.status(200).send(results)
+    }
   )
 
   /**
    * Get form from id
    */
-  router.get(
-    "/:establishment_id",
-    tryCatch(async (req, res) => {
+  server.get(
+    "/api/formulaire/:establishment_id",
+    {
+      schema: zRoutes.get["/api/formulaire/:establishment_id"],
+    },
+    async (req, res) => {
       const result = await getFormulaire({ establishment_id: req.params.establishment_id })
 
       if (!result) {
-        return res.sendStatus(401)
+        return res.status(401).send()
       }
 
       await Promise.all(
@@ -58,16 +61,19 @@ export default () => {
         })
       )
 
-      return res.json(result)
-    })
+      return res.status(200).send(result)
+    }
   )
 
   /**
    * Post form
    */
-  router.post(
-    "/",
-    tryCatch(async (req, res) => {
+  server.post(
+    "/api/formulaire",
+    {
+      schema: zRoutes.post["/api/formulaire"],
+    },
+    async (req, res) => {
       const { userRecruteurId, establishment_siret, email, last_name, first_name, phone, opco, idcc } = req.body
       const userRecruteurOpt = await getUser({ _id: userRecruteurId })
       if (!userRecruteurOpt) {
@@ -88,35 +94,44 @@ export default () => {
         const { message } = response
         return res.status(400).json({ error: true, message })
       }
-      return res.json(response)
-    })
+      return res.status(200).send(response)
+    }
   )
 
   /**
    * Put form
    */
-  router.put(
-    "/:establishment_id",
-    tryCatch(async (req, res) => {
+  server.put(
+    "/api/formulaire/:establishment_id",
+    {
+      schema: zRoutes.put["/api/formulaire/:establishment_id"],
+    },
+    async (req, res) => {
       const result = await updateFormulaire(req.params.establishment_id, req.body)
-      return res.json(result)
-    })
+      return res.status(200).send(result)
+    }
   )
 
-  router.delete(
-    "/:establishment_id",
-    tryCatch(async (req, res) => {
+  server.delete(
+    "/api/formulaire/:establishment_id",
+    {
+      schema: zRoutes.delete["/api/formulaire/:establishment_id"],
+    },
+    async (req, res) => {
       await archiveFormulaire(req.params.establishment_id)
-      return res.sendStatus(200)
-    })
+      return res.status(200).send()
+    }
   )
 
-  router.delete(
-    "/delegated/:establishment_siret",
-    tryCatch(async (req, res) => {
+  server.delete(
+    "/api/formulaire/delegated/:establishment_siret",
+    {
+      schema: zRoutes.delete["/api/formulaire/delegated/:establishment_siret"],
+    },
+    async (req, res) => {
       await archiveDelegatedFormulaire(req.params.establishment_siret)
-      return res.sendStatus(200)
-    })
+      return res.status(200).send()
+    }
   )
 
   /**
@@ -124,58 +139,73 @@ export default () => {
    * TO BE REPLACE
    *
    */
-  router.get(
-    "/offre/f/:jobId",
-    tryCatch(async (req, res) => {
+  server.get(
+    "/api/formulaire/offre/f/:jobId",
+    {
+      schema: zRoutes.get["/api/formulaire/offre/f/:jobId"],
+    },
+    async (req, res) => {
       // Note pour PR quel traitement de getJobById empêche de l'utiliser ici ?
       const result = await getOffre(req.params.jobId)
       const offre = result.jobs.filter((job) => job._id == req.params.jobId)
 
-      res.json(offre)
-    })
+      res.status(200).send(offre)
+    }
   )
 
   /**
    * Create new offer
    */
-  router.post(
-    "/:establishment_id/offre",
-    tryCatch(async (req, res) => {
+  server.post(
+    "/api/formulaire/:establishment_id/offre",
+    {
+      schema: zRoutes.post["/api/formulaire/:establishment_id/offre"],
+    },
+    async (req, res) => {
       const updatedFormulaire = await createJob({ job: req.body, id: req.params.establishment_id })
-      return res.json(updatedFormulaire)
-    })
+      return res.status(200).send(updatedFormulaire)
+    }
   )
 
   /**
    * Create offer delegations
    */
-  router.post(
-    "/offre/:jobId/delegation",
-    tryCatch(async (req, res) => {
+  server.post(
+    "/api/formulaire/offre/:jobId/delegation",
+    {
+      schema: zRoutes.post["/api/formulaire/offre/:jobId/delegation"],
+    },
+    async (req, res) => {
       const { etablissementCatalogueIds } = req.body
       const { jobId } = req.params
       const job = await createJobDelegations({ jobId, etablissementCatalogueIds })
-      return res.json(job)
-    })
+      return res.status(200).send(job)
+    }
   )
 
   /**
    * Put existing offer from id
    */
-  router.put(
-    "/offre/:jobId",
-    tryCatch(async (req, res) => {
+  server.put(
+    "/api/formulaire/offre/:jobId",
+    {
+      schema: zRoutes.put["/api/formulaire/offre/:jobId"],
+    },
+    async (req, res) => {
       const result = await updateOffre(req.params.jobId, req.body)
-      return res.json(result)
-    })
+      return res.status(200).send(result)
+    }
   )
 
   /**
    * Permet de passer une offre en statut ANNULER (mail transactionnel)
    */
-  router.patch(
-    "/offre/:jobId",
-    tryCatch(async (req, res) => {
+  server.patch(
+    "/api/formulaire/offre/:jobId",
+    {
+      schema: zRoutes.patch["/api/formulaire/offre/:jobId"],
+    },
+    async (req, res) => {
       const { jobId } = req.params
       const exists = await checkOffreExists(jobId)
 
@@ -206,38 +236,42 @@ export default () => {
 
       const jobUpdated = await getJob(jobId)
       return res.send(jobUpdated)
-    })
+    }
   )
 
   /**
    * Permet de passer une offre en statut ANNULER (mail transactionnel)
    */
-  router.put(
-    "/offre/:jobId/cancel",
-    tryCatch(async (req, res) => {
+  server.put(
+    "/api/formulaire/offre/:jobId/cancel",
+    {
+      schema: zRoutes.put["/api/formulaire/offre/:jobId/cancel"],
+    },
+    async (req, res) => {
       const exists = await checkOffreExists(req.params.jobId)
       if (!exists) {
         return res.status(400).json({ status: "INVALID_RESSOURCE", message: "L'offre n'existe pas" })
       }
       await cancelOffre(req.params.jobId)
-      return res.sendStatus(200)
-    })
+      return res.status(200).send()
+    }
   )
 
   /**
    * Permet de passer une offre en statut POURVUE (mail transactionnel)
    */
-  router.put(
-    "/offre/:jobId/provided",
-    tryCatch(async (req, res) => {
+  server.put(
+    "/api/formulaire/offre/:jobId/provided",
+    {
+      schema: zRoutes.put["/api/formulaire/offre/:jobId/provided"],
+    },
+    async (req, res) => {
       const exists = await checkOffreExists(req.params.jobId)
       if (!exists) {
         return res.status(400).json({ status: "INVALID_RESSOURCE", message: "L'offre n'existe pas" })
       }
       await provideOffre(req.params.jobId)
-      return res.sendStatus(200)
-    })
+      return res.status(200).send()
+    }
   )
-
-  return router
 }

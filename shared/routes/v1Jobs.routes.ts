@@ -5,7 +5,6 @@ import { zObjectId } from "../models/common"
 import { ZLbacError } from "../models/lbacError.model"
 import { ZLbaItem } from "../models/lbaItem.model"
 import { ZRecruiter } from "../models/recruiter.model"
-import { ZUserRecruteur } from "../models/usersRecruteur.model"
 
 import { IRoutesDef } from "./common.routes"
 
@@ -19,14 +18,11 @@ export const zV1JobsRoutes = {
         })
         .strict(),
       response: {
-        "200": z
-          .object({
-            token: z.string(),
-          })
-          .strict(),
+        "200": z.string(),
       },
       securityScheme: {
         auth: "api-key",
+        role: "all",
       },
     },
     "/api/v1/jobs/bulk": {
@@ -41,11 +37,11 @@ export const zV1JobsRoutes = {
       response: {
         "200": z
           .object({
-            data: z.array(ZUserRecruteur).optional(),
+            data: z.array(ZRecruiter).or(z.undefined()),
             pagination: z
               .object({
                 page: z.number().optional(),
-                result_per_page: z.number(),
+                result_per_page: z.number().optional(),
                 number_of_page: z.number().optional(),
                 total: z.number().optional(),
               })
@@ -55,6 +51,7 @@ export const zV1JobsRoutes = {
       },
       securityScheme: {
         auth: "api-key",
+        role: "all",
       },
     },
     "/api/v1/jobs/delegations/:jobId": {
@@ -80,6 +77,7 @@ export const zV1JobsRoutes = {
       },
       securityScheme: {
         auth: "api-key",
+        role: "all",
       },
     },
     "/api/v1/jobs": {
@@ -135,6 +133,7 @@ export const zV1JobsRoutes = {
       },
       securityScheme: {
         auth: "none",
+        role: "all",
       },
     },
     "/api/v1/jobs/company/:siret": {
@@ -165,6 +164,7 @@ export const zV1JobsRoutes = {
       },
       securityScheme: {
         auth: "none",
+        role: "all",
       },
     },
     "/api/v1/jobs/matcha/:id": {
@@ -195,6 +195,7 @@ export const zV1JobsRoutes = {
       },
       securityScheme: {
         auth: "none",
+        role: "all",
       },
     },
     "/api/v1/jobs/job/:id": {
@@ -225,6 +226,7 @@ export const zV1JobsRoutes = {
       },
       securityScheme: {
         auth: "none",
+        role: "all",
       },
     },
   },
@@ -246,6 +248,7 @@ export const zV1JobsRoutes = {
       },
       securityScheme: {
         auth: "api-key",
+        role: "all",
       },
     },
     "/api/v1/jobs/:establishmentId": {
@@ -275,6 +278,7 @@ export const zV1JobsRoutes = {
       },
       securityScheme: {
         auth: "api-key",
+        role: "all",
       },
     },
     "/api/v1/jobs/delegations/:jobId": {
@@ -293,6 +297,7 @@ export const zV1JobsRoutes = {
       },
       securityScheme: {
         auth: "api-key",
+        role: "all",
       },
     },
     "/api/v1/jobs/provided/:jobId": {
@@ -306,6 +311,7 @@ export const zV1JobsRoutes = {
       },
       securityScheme: {
         auth: "api-key",
+        role: "all",
       },
     },
     "/api/v1/jobs/canceled/:jobId": {
@@ -319,6 +325,7 @@ export const zV1JobsRoutes = {
       },
       securityScheme: {
         auth: "api-key",
+        role: "all",
       },
     },
     "/api/v1/jobs/extend/:jobId": {
@@ -332,6 +339,7 @@ export const zV1JobsRoutes = {
       },
       securityScheme: {
         auth: "api-key",
+        role: "all",
       },
     },
     "/api/v1/jobs/matcha/:id/stats/view-details": {
@@ -345,6 +353,7 @@ export const zV1JobsRoutes = {
       },
       securityScheme: {
         auth: "none",
+        role: "all",
       },
     },
   },
@@ -375,7 +384,8 @@ export const zV1JobsRoutes = {
       },
       securityScheme: {
         auth: "api-key",
+        role: "all",
       },
     },
   },
-} satisfies IRoutesDef
+} as const satisfies IRoutesDef

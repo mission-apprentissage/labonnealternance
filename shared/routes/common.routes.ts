@@ -36,6 +36,7 @@ export type AuthStrategy = "api-key" | "basic" | "jwt-password" | "jwt-bearer" |
 
 export type SecurityScheme = {
   auth: AuthStrategy
+  role: "admin" | "all"
 }
 
 export interface IRouteSchema {
@@ -45,7 +46,7 @@ export interface IRouteSchema {
   params?: AnyZodObject
   response: { [statuscode: `${1 | 2 | 3 | 4 | 5}${string}`]: ZodType }
   openapi?: null | Omit<ZodOpenApiOperationObject, "parameters" | "requestBody" | "requestParams" | "responses">
-  securityScheme: SecurityScheme
+  securityScheme?: SecurityScheme
 }
 
 export type IRoutesDef = {

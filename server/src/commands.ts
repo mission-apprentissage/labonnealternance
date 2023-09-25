@@ -5,7 +5,6 @@ import HttpTerminator from "lil-http-terminator"
 
 import { closeMongoConnection } from "@/common/mongodb"
 
-import createComponents from "./common/components/components"
 import { logger } from "./common/logger"
 // import { closeSentry, initSentryProcessor } from "./common/services/sentry/sentry"
 import { sleep } from "./common/utils/asyncUtils"
@@ -76,14 +75,12 @@ program
   .action(async ({ withProcessor = false }) => {
     try {
       const signal = createProcessExitSignal()
-
-      const components = await createComponents() // using older version with mongoose
-
-      const http = await server(components)
-      const httpServer = http.listen(config.port, () => logger.info(`Server ready and listening on port ${config.port}`))
+      const httpServer = await server()
+      await httpServer.listen({ port: config.port, host: "0.0.0.0" })
+      logger.info(`Server ready and listening on port ${config.port}`)
 
       const terminator = HttpTerminator({
-        server: httpServer,
+        server: httpServer.server,
         maxWaitTimeout: 50_000,
         logger: logger,
       })

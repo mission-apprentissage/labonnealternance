@@ -108,6 +108,10 @@ export const zRecruiterRoutes = {
       response: {
         "2xx": ZUserRecruteur,
       },
+      securityScheme: {
+        auth: "jwt-bearer",
+        role: "all",
+      },
     },
   },
-} satisfies IRoutesDef
+} as const satisfies IRoutesDef
