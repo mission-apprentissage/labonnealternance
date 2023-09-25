@@ -2,10 +2,10 @@ import crypto from "crypto"
 
 import axios from "axios"
 import { groupBy, maxBy } from "lodash-es"
+import type { IFormationCatalogue } from "shared"
 
 import { getElasticInstance } from "../common/esClient/index"
 import { FormationCatalogue } from "../common/model/index"
-import type { IFormationCatalogue } from "../common/model/schema/formationCatalogue/formationCatalogue.types"
 import { IApiError, manageApiError } from "../common/utils/errorManager"
 import { roundDistance } from "../common/utils/geolib"
 import { regionCodeToDepartmentList } from "../common/utils/regionInseeCodes"
@@ -66,7 +66,7 @@ export const getFormations = async ({
 }: {
   romes?: string[]
   romeDomain?: string
-  coords?: [number, number]
+  coords?: [number | string, number | string]
   radius?: number
   diploma?: string
   limit?: number
@@ -444,22 +444,22 @@ const transformFormationsForIdea = (rawEsFormations: IFormationEsResult[]): ILba
 const transformFormationForIdea = (rawFormation: IFormationEsResult): ILbaItem => {
   const resultFormation = new LbaItem("formation")
 
-  resultFormation.title = rawFormation.source?.intitule_long || rawFormation.source.intitule_court
-  resultFormation.longTitle = rawFormation.source.intitule_long
-  resultFormation.diplomaLevel = rawFormation.source.niveau
-  resultFormation.onisepUrl = rawFormation.source.onisep_url
-  resultFormation.id = rawFormation.source.cle_ministere_educatif
-  resultFormation.diploma = rawFormation.source.diplome
-  resultFormation.cfd = rawFormation.source.cfd
-  resultFormation.rncpCode = rawFormation.source.rncp_code
-  resultFormation.rncpLabel = rawFormation.source.rncp_intitule
+  resultFormation.title = (rawFormation.source?.intitule_long || rawFormation.source.intitule_court) ?? null
+  resultFormation.longTitle = rawFormation.source.intitule_long ?? null
+  resultFormation.diplomaLevel = rawFormation.source.niveau ?? null
+  resultFormation.onisepUrl = rawFormation.source.onisep_url ?? null
+  resultFormation.id = rawFormation.source.cle_ministere_educatif ?? null
+  resultFormation.diploma = rawFormation.source.diplome ?? null
+  resultFormation.cfd = rawFormation.source.cfd ?? null
+  resultFormation.rncpCode = rawFormation.source.rncp_code ?? null
+  resultFormation.rncpLabel = rawFormation.source.rncp_intitule ?? null
   resultFormation.rncpEligibleApprentissage = rawFormation.source.rncp_eligible_apprentissage
-  resultFormation.capacity = rawFormation.source.capacite
+  resultFormation.capacity = rawFormation.source.capacite ?? null
   resultFormation.createdAt = rawFormation.source.created_at
   resultFormation.lastUpdateAt = rawFormation.source.last_update_at
-  resultFormation.idRco = rawFormation.source.id_formation
-  resultFormation.idRcoFormation = rawFormation.source.id_rco_formation
-  resultFormation.cleMinistereEducatif = rawFormation.source.cle_ministere_educatif
+  resultFormation.idRco = rawFormation.source.id_formation ?? null
+  resultFormation.idRcoFormation = rawFormation.source.id_rco_formation ?? null
+  resultFormation.cleMinistereEducatif = rawFormation.source.cle_ministere_educatif ?? null
 
   const geoSource = rawFormation.source.lieu_formation_geo_coordonnees
 

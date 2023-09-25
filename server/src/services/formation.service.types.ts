@@ -1,4 +1,4 @@
-import { IFormationCatalogue } from "../common/model/schema/formationCatalogue/formationCatalogue.types"
+import { IFormationCatalogue } from "shared"
 
 export interface IFormationEsResult {
   source: Partial<IFormationCatalogue>

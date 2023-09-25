@@ -1,6 +1,9 @@
-import { IFormationCatalogue } from "../common/model/schema/formationCatalogue/formationCatalogue.types"
+import { ObjectId } from "mongodb"
+import { IFormationCatalogue } from "shared"
 
-const formationMock: Partial<IFormationCatalogue> = {
+import { IFormationEsResult } from "@/services/formation.service.types"
+
+const formationMock: IFormationCatalogue = {
   cle_ministere_educatif: "id-formation-test",
   cfd: "50020007",
   nom: "null",
@@ -41,7 +44,7 @@ const formationMock: Partial<IFormationCatalogue> = {
   lieu_formation_geo_coordonnees: "46.002614,6.15737772159091",
   created_at: new Date("2021-04-01T02:23:24.063Z"),
   last_update_at: new Date("2022-06-01T05:59:29.856Z"),
-  _id: "1234",
+  _id: new ObjectId(),
   email: "labonnealternance@apprentissage.beta.gouv.fr",
   lieu_formation_adresse: "126 route des emplois",
   code_postal: "74570",
@@ -93,7 +96,7 @@ const formationDetailMock = {
   },
 }
 
-const formationsMock = [
+const formationsMock: IFormationEsResult[] = [
   { source: formationMock, id: formationMock._id, sort: [5] },
   { source: formationMock, id: formationMock._id, sort: [10] },
   { source: { ...formationMock, intitule_long: "PATISSIER (CAP)" }, id: formationMock._id, sort: [15] },

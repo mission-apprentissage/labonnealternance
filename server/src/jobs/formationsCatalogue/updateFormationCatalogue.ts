@@ -1,8 +1,9 @@
+import { IFormationCatalogue } from "shared"
+
 import { db } from "@/common/mongodb"
 
 import { logger } from "../../common/logger"
 import { FormationCatalogue } from "../../common/model/index"
-import { IFormationCatalogue } from "../../common/model/schema/formationCatalogue/formationCatalogue.types"
 import { asyncForEach } from "../../common/utils/asyncUtils"
 import { getFormationsFromCatalogueMe } from "../../services/catalogue.service"
 

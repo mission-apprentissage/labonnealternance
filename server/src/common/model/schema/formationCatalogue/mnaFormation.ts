@@ -1,10 +1,11 @@
-import { getElasticInstance, mongoosastic } from "../../../esClient/index"
+import { IFormationCatalogue } from "shared"
+
+import { mongoosastic } from "../../../esClient/index"
 import { model, Schema } from "../../../mongodb"
 
 import { etablissementFormateurInfo } from "./etablissement.formateur.sub"
 import { etablissementGestionnaireInfo } from "./etablissement.gestionnaire.sub"
 import { etablissementReferenceInfo } from "./etablissement.reference.sub"
-import { IFormationCatalogue } from "./formationCatalogue.types"
 
 const mnaFormationSchema = new Schema<IFormationCatalogue>({
   cle_ministere_educatif: {

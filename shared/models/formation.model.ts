@@ -1,6 +1,6 @@
 import { z } from "zod"
 
-import { zObjectId } from "../common"
+import { zObjectId } from "./common"
 
 // Define schemas for nested objects
 const geoCoordSchema = z.string()
@@ -183,3 +183,5 @@ export const zFormationCatalogueSchema = z
   .extend(etablissementFormateurSchema.shape)
   .extend(etablissementGestionnaireSchema.shape)
   .extend(etablissementReferenceSchema.shape)
+
+export type IFormationCatalogue = z.output<typeof zFormationCatalogueSchema>

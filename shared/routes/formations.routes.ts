@@ -1,6 +1,6 @@
 import { z } from "zod"
 
-import { zFormationCatalogueSchema } from "../models/formationCatalogue/formation.model"
+import { zFormationCatalogueSchema } from "../models/formation.model"
 
 import { IRoutesDef } from "./common.routes"
 
