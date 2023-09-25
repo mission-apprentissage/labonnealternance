@@ -81,16 +81,15 @@ export const zUserRecruteurRoutes = {
   },
   delete: {
     "/api/user": {
-      queryString: z
+      querystring: z
         .object({
           userId: z.string(),
           recruiterId: z.string().optional(),
         })
         .strict(),
       response: {
-        "200": null,
+        "200": z.undefined(),
       },
     },
   },
-  patch: {},
 } satisfies IRoutesDef

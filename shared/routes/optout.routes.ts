@@ -46,8 +46,4 @@ export const zOptoutRoutes = {
       },
     },
   },
-  post: {},
-  put: {},
-  delete: {},
-  patch: {},
 } satisfies IRoutesDef

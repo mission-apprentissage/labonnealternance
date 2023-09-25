@@ -3,7 +3,6 @@ import { z } from "zod"
 import { IRoutesDef } from "./common.routes"
 
 export const zTrainingLinksRoutes = {
-  get: {},
   post: {
     "/api/trainingLinks": {
       body: z
@@ -40,7 +39,4 @@ export const zTrainingLinksRoutes = {
       },
     },
   },
-  put: {},
-  delete: {},
-  patch: {},
 } satisfies IRoutesDef

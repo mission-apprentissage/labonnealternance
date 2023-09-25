@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { logger } from "../../common/logger"
 import { LbaCompany } from "../../common/model"
 import { mongooseInstance } from "../../common/mongodb"

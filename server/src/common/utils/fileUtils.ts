@@ -1,4 +1,3 @@
-// @ts-nocheck
 import path from "path"
 
 import csvToJson from "convert-csv-to-json"

@@ -11,8 +11,4 @@ export const zUnsubscribeRoute = {
       },
     },
   },
-  get: {},
-  put: {},
-  patch: {},
-  delete: {},
 } satisfies IRoutesDef

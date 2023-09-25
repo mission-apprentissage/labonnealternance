@@ -28,8 +28,4 @@ export const zV1FormationsParRegion = {
       },
     },
   },
-  post: {},
-  put: {},
-  delete: {},
-  patch: {},
 } satisfies IRoutesDef

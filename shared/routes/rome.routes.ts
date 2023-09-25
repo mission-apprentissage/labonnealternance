@@ -44,8 +44,4 @@ export const zRomeRoutes = {
       },
     },
   },
-  post: {},
-  put: {},
-  delete: {},
-  patch: {},
 } satisfies IRoutesDef

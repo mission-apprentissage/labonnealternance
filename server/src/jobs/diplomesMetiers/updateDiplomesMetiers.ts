@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { getElasticInstance } from "../../common/esClient/index"
 import { logger } from "../../common/logger"
 import { DiplomesMetiers } from "../../common/model/index"

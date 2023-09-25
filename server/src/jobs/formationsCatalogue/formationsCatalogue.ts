@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { oleoduc, writeData } from "oleoduc"
 
 import { logger } from "../../common/logger"

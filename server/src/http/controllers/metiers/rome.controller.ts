@@ -1,4 +1,4 @@
-// @ts-nocheck
+import { zRoutes } from "shared/index"
 import express from "express"
 
 import { getRomesAndLabelsFromTitleQuery } from "../../../services/metiers.service"

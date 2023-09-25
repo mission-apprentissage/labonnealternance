@@ -21,96 +21,62 @@ import { zV1JobsEtFormationsRoutes } from "./routes/v1JobsEtFormations.routes"
 
 export * from "./models/index"
 
-export const zRoutes = {
-  get: {
-    ...zCoreRoutes.get,
-    ...zEtablissementRoutes.get,
-    ...zLoginRoutes.get,
-    ...zMetiersDAvenirRoutes.get,
-    ...zOptoutRoutes.get,
-    ...zRomeRoutes.get,
-    ...zTrainingLinksRoutes.get,
-    ...zUnsubscribeRoute.get,
-    ...zUpdateLbaCompanyRoutes.get,
-    ...zUserRecruteurRoutes.get,
-    ...zV1FormationsParRegion.get,
-    ...zV1JobsRoutes.get,
-    ...zV1JobsEtFormationsRoutes.get,
-    ...zFormulaireRoute.get,
-    ...zRecruiterRoutes.get,
-  },
-  post: {
-    ...zApplicationRoutes.post,
-    ...zCoreRoutes.post,
-    ...zEtablissementRoutes.post,
-    ...zLoginRoutes.post,
-    ...zMetiersDAvenirRoutes.post,
-    ...zOptoutRoutes.post,
-    ...zRomeRoutes.post,
-    ...zTrainingLinksRoutes.post,
-    ...zUnsubscribeRoute.post,
-    ...zUpdateLbaCompanyRoutes.post,
-    ...zUserRecruteurRoutes.post,
-    ...zV1FormationsParRegion.post,
-    ...zV1JobsRoutes.post,
-    ...zV1JobsEtFormationsRoutes.post,
-    ...zFormulaireRoute.post,
-    ...zRecruiterRoutes.post,
-  },
-  put: {
-    ...zApplicationRoutes.put,
-    ...zCoreRoutes.put,
-    ...zEtablissementRoutes.put,
-    ...zLoginRoutes.put,
-    ...zMetiersDAvenirRoutes.put,
-    ...zOptoutRoutes.put,
-    ...zRomeRoutes.put,
-    ...zTrainingLinksRoutes.put,
-    ...zUnsubscribeRoute.put,
-    ...zUpdateLbaCompanyRoutes.put,
-    ...zUserRecruteurRoutes.put,
-    ...zV1FormationsParRegion.put,
-    ...zV1JobsRoutes.put,
-    ...zV1JobsEtFormationsRoutes.put,
-    ...zFormulaireRoute.put,
-    ...zRecruiterRoutes.put,
-  },
-  delete: {
-    ...zApplicationRoutes.delete,
-    ...zCoreRoutes.delete,
-    ...zEtablissementRoutes.delete,
-    ...zLoginRoutes.delete,
-    ...zMetiersDAvenirRoutes.delete,
-    ...zOptoutRoutes.delete,
-    ...zRomeRoutes.delete,
-    ...zTrainingLinksRoutes.delete,
-    ...zUnsubscribeRoute.delete,
-    ...zUpdateLbaCompanyRoutes.delete,
-    ...zUserRecruteurRoutes.delete,
-    ...zV1FormationsParRegion.delete,
-    ...zV1JobsRoutes.delete,
-    ...zV1JobsEtFormationsRoutes.delete,
-    ...zFormulaireRoute.delete,
-    ...zRecruiterRoutes.delete,
-  },
-  patch: {
-    ...zApplicationRoutes.patch,
-    ...zCoreRoutes.patch,
-    ...zEtablissementRoutes.patch,
-    ...zLoginRoutes.patch,
-    ...zMetiersDAvenirRoutes.patch,
-    ...zOptoutRoutes.patch,
-    ...zRomeRoutes.patch,
-    ...zTrainingLinksRoutes.patch,
-    ...zUnsubscribeRoute.patch,
-    ...zUpdateLbaCompanyRoutes.patch,
-    ...zUserRecruteurRoutes.patch,
-    ...zV1FormationsParRegion.patch,
-    ...zV1JobsRoutes.patch,
-    ...zV1JobsEtFormationsRoutes.patch,
-    ...zFormulaireRoute.patch,
-    ...zRecruiterRoutes.patch,
-  },
+const zRoutesGet = {
+  ...zCoreRoutes.get,
+  ...zEtablissementRoutes.get,
+  ...zMetiersDAvenirRoutes.get,
+  ...zOptoutRoutes.get,
+  ...zRomeRoutes.get,
+  ...zUpdateLbaCompanyRoutes.get,
+  ...zUserRecruteurRoutes.get,
+  ...zV1FormationsParRegion.get,
+  ...zV1JobsRoutes.get,
+  ...zV1JobsEtFormationsRoutes.get,
+  ...zFormulaireRoute.get,
+  ...zRecruiterRoutes.get,
+} as const
+
+const zRoutesPost = {
+  ...zApplicationRoutes.post,
+  ...zLoginRoutes.post,
+  ...zTrainingLinksRoutes.post,
+  ...zUnsubscribeRoute.post,
+  ...zUserRecruteurRoutes.post,
+  ...zV1JobsRoutes.post,
+  ...zFormulaireRoute.post,
+  ...zRecruiterRoutes.post,
+} as const
+
+const zRoutesPut = {
+  ...zUserRecruteurRoutes.put,
+  ...zFormulaireRoute.put,
+  ...zRecruiterRoutes.put,
+} as const
+
+const zRoutesDelete = {
+  ...zUserRecruteurRoutes.delete,
+  ...zFormulaireRoute.delete,
+} as const
+
+const zRoutesPatch = {
+  ...zV1JobsRoutes.patch,
+  ...zFormulaireRoute.patch,
+} as const
+
+type ZRoutes = {
+  get: typeof zRoutesGet
+  post: typeof zRoutesPost
+  put: typeof zRoutesPut
+  delete: typeof zRoutesDelete
+  patch: typeof zRoutesPatch
+}
+
+export const zRoutes: ZRoutes = {
+  get: zRoutesGet,
+  post: zRoutesPost,
+  put: zRoutesPut,
+  delete: zRoutesDelete,
+  patch: zRoutesPatch,
 } as const
 
 export type IRoutes = typeof zRoutes

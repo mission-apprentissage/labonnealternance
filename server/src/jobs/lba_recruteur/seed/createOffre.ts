@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { logger } from "../../../common/logger"
 import { Recruiter, Job } from "../../../common/model/index"
 

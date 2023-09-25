@@ -14,7 +14,7 @@ try {
   await connectToMongo(config.mongodb.uri)
 
   // createGlobalServices();
-  startCLI()
+  await startCLI()
 } catch (err) {
   logger.error({ err }, "startup error")
   process.exit(1) // eslint-disable-line n/no-process-exit
