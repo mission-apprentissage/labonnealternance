@@ -181,7 +181,6 @@ export async function bind(app: Server) {
   adminAppointmentRoute(app)
   adminEtablissementRoute(app)
   formationsRoute(app)
-  formationsParRegion(app)
   eligibleTrainingsForAppointmentRoute(app)
   etablissementRoute(app)
   appointmentRequestRoute(app)
