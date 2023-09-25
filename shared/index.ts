@@ -2,10 +2,12 @@ import { Jsonify } from "type-fest"
 import z, { ZodType } from "zod"
 
 import { zApplicationRoutes } from "./routes/application.routes"
+import { zAppointmentsRoute } from "./routes/appointments.routes"
 import { zCampaignWebhookRoutes } from "./routes/campaignWebhook.routes"
 import { IRouteSchema } from "./routes/common.routes"
 import { zCoreRoutes } from "./routes/core.routes"
 import { zEtablissementRoutes } from "./routes/etablissement.routes"
+import { zFormationRoute } from "./routes/formations.routes"
 import { zFormulaireRoute } from "./routes/formulaire.route"
 import { zLoginRoutes } from "./routes/login.routes"
 import { zMetiersRoutes } from "./routes/metiers.routes"
@@ -40,6 +42,8 @@ const zRoutesGet = {
   ...zFormulaireRoute.get,
   ...zRecruiterRoutes.get,
   ...zCampaignWebhookRoutes.get,
+  ...zAppointmentsRoute.get,
+  ...zFormationRoute.get,
 } as const
 
 const zRoutesPost = {
@@ -52,22 +56,28 @@ const zRoutesPost = {
   ...zFormulaireRoute.post,
   ...zRecruiterRoutes.post,
   ...zCampaignWebhookRoutes.post,
+  ...zCoreRoutes.post,
+  ...zEtablissementRoutes.post,
+  ...zAppointmentsRoute.post,
 } as const
 
 const zRoutesPut = {
   ...zUserRecruteurRoutes.put,
   ...zFormulaireRoute.put,
   ...zRecruiterRoutes.put,
+  ...zCoreRoutes.put,
 } as const
 
 const zRoutesDelete = {
   ...zUserRecruteurRoutes.delete,
   ...zFormulaireRoute.delete,
+  ...zCoreRoutes.delete,
 } as const
 
 const zRoutesPatch = {
   ...zV1JobsRoutes.patch,
   ...zFormulaireRoute.patch,
+  ...zEtablissementRoutes.patch,
 } as const
 
 type ZRoutes = {
