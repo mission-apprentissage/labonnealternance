@@ -15,6 +15,7 @@ import { initBrevoWebhooks } from "../services/brevo.service"
 
 import rome from "./controllers/metiers/rome.controller"
 // import { corsMiddleware } from "./middlewares/corsMiddleware" // TODO_AB To check
+import metiersDAvenirRoute from "./controllers/metiersdavenir/metiersDAvenir.controller"
 import { auth } from "./middlewares/authMiddleware"
 import { errorMiddleware } from "./middlewares/errorMiddleware"
 import { logMiddleware } from "./middlewares/logMiddleware"
@@ -158,6 +159,7 @@ export async function bind(app: Server) {
   sendApplication(app)
   sendApplicationAPI(app)
   unsubscribeLbaCompany(app)
+  metiersDAvenirRoute(app)
 
   /**
    * Admin / Auth
