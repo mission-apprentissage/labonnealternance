@@ -62,7 +62,7 @@ export const getLbaJobs = async ({
     const distance = hasLocation ? radius : 21000
 
     const params: any = {
-      romes: romes.split(","),
+      romes: romes?.split(","),
       distance,
       lat: hasLocation ? latitude : coordinatesOfFrance[1],
       lon: hasLocation ? longitude : coordinatesOfFrance[0],
@@ -239,16 +239,19 @@ function transformLbaJob({
  */
 function sortLbaJobs(jobs: { results: ILbaItem[] }) {
   jobs.results.sort((a, b) => {
+    // @ts-expect-error: TODO
     if (a?.title?.toLowerCase() < b?.title?.toLowerCase()) {
       return -1
     }
+    // @ts-expect-error: TODO
     if (a?.title?.toLowerCase() > b?.title?.toLowerCase()) {
       return 1
     }
-
+    // @ts-expect-error: TODO
     if (a?.company?.name?.toLowerCase() < b?.company?.name?.toLowerCase()) {
       return -1
     }
+    // @ts-expect-error: TODO
     if (a?.company?.name?.toLowerCase() > b?.company?.name?.toLowerCase()) {
       return 1
     }

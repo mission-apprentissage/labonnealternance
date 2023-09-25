@@ -240,14 +240,14 @@ const getRegionFormations = async ({
   options,
   caller,
 }: {
-  romes?: string[]
+  romes: string[]
   romeDomain?: string
   region?: string
   departement?: string
   diploma?: string
   limit?: number
   options: string[]
-  caller: string
+  caller?: string
 }): Promise<IFormationEsResult[]> => {
   const mustTerm: any[] = []
 
@@ -263,7 +263,7 @@ const getRegionFormations = async ({
 
   if (region) mustTerm.push(getEsRegionTermFragment(region))
 
-  if (romes)
+  if (romes.length)
     mustTerm.push({
       match: {
         rome_codes: romes.join(" "),
@@ -768,7 +768,7 @@ export const getFormationsParRegionQuery = async ({
 
   try {
     const rawEsFormations = await getRegionFormations({
-      romes: romes ? romes.split(",") : null,
+      romes: romes ? romes.split(",") : [],
       region: region,
       departement: departement,
       diploma: diploma,
@@ -892,17 +892,19 @@ const sortFormations = (formations: ILbaItem[]) => {
     if (a?.place?.distance !== null) {
       return 0
     }
-
+    // @ts-expect-error: TODO
     if (a?.title?.toLowerCase() < b?.title?.toLowerCase()) {
       return -1
     }
+    // @ts-expect-error: TODO
     if (a?.title?.toLowerCase() > b?.title?.toLowerCase()) {
       return 1
     }
-
+    // @ts-expect-error: TODO
     if (a?.company?.name?.toLowerCase() < b?.company?.name?.toLowerCase()) {
       return -1
     }
+    // @ts-expect-error: TODO
     if (a?.company?.name?.toLowerCase() > b?.company?.name?.toLowerCase()) {
       return 1
     }
