@@ -1,6 +1,8 @@
 import { Jsonify } from "type-fest"
 import { z } from "zod"
 
+import { zObjectId } from "./common"
+
 export const ZMailing = z
   .object({
     campaign: z.string(),
@@ -13,20 +15,23 @@ export const ZMailing = z
 
 export const ZAppointment = z
   .object({
-    applicant_id: z.string(),
-    applicant_message_to_cfa: z.string(),
-    applicant_reasons: z.enum(["modalite", "contenu", "porte", "frais", "place", "horaire", "plus", "accompagnement", "lieu", "suivi", "autre"]),
-    cfa_formateur_siret: z.string(),
-    appointment_origin: z.string(),
-    cfa_read_appointment_details_date: z.date(),
-    to_applicant_mails: z.array(ZMailing),
-    to_cfa_mails: z.array(ZMailing),
-    cle_ministere_educatif: z.string(),
-    created_at: z.date(),
-    last_update_at: z.date(),
-    email_cfa: z.string(),
-    is_anonymized: z.boolean(),
-    cfa_recipient_email: z.string(),
+    _id: zObjectId,
+    applicant_id: z.string().nullable(),
+    cfa_intention_to_applicant: z.string().nullable(),
+    cfa_message_to_applicant_date: z.date().nullable(),
+    cfa_message_to_applicant: z.string().nullable(),
+    applicant_message_to_cfa: z.string().nullable(),
+    applicant_reasons: z.array(z.string()).nullable(),
+    cfa_gestionnaire_siret: z.string().nullable(),
+    cfa_formateur_siret: z.string().nullable(),
+    appointment_origin: z.string().nullable(),
+    cfa_read_appointment_details_date: z.date().nullable(),
+    to_applicant_mails: z.array(ZMailing).nullable(),
+    to_cfa_mails: z.array(ZMailing).nullable(),
+    cle_ministere_educatif: z.string().nullable(),
+    created_at: z.date().default(() => new Date()),
+    cfa_recipient_email: z.string().nullable(),
+    is_anonymized: z.boolean().default(false),
   })
   .strict()
 
