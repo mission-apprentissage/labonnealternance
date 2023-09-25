@@ -59,12 +59,15 @@ export function errorMiddleware(server: Server) {
     if (joi.isError(rawError)) {
       return reply.status(error.output.statusCode).send({ ...error.output.payload, details: rawError.details })
     }
-
     if (error.output.statusCode >= 500) {
       server.log.error(rawError)
+      error.output.payload.message = error.message || error.output.payload.message
       captureException(error)
     }
 
-    return reply.status(error.output.statusCode).send(error.output.payload)
+    return reply.status(error.output.statusCode).send({
+      ...error.output.payload,
+      ...(error.data ? { data: error.data } : {}),
+    })
   })
 }
