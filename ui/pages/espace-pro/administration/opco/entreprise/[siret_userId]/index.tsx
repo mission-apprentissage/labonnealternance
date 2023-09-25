@@ -51,8 +51,8 @@ function DetailEntreprise() {
   const { siret_userId } = router.query // Here userId
 
   const { data, isLoading } = useQuery("user", () => getUser(siret_userId), { cacheTime: 0 })
-
-  const userMutation = useMutation(({ userId, establishment_id, values }) => updateEntreprise(userId, establishment_id, values), {
+  // TODO
+  const userMutation = useMutation(({ userId, establishment_id, values }: any) => updateEntreprise(userId, establishment_id, values), {
     onSuccess: () => {
       client.invalidateQueries("user")
     },
@@ -82,11 +82,11 @@ function DetailEntreprise() {
         return (
           <>
             <ActivateUserButton userId={userId} />
-            <DisableUserButton userId={userId} />
+            <DisableUserButton />
           </>
         )
       case USER_STATUS.ACTIVE:
-        return <DisableUserButton userId={userId} />
+        return <DisableUserButton />
       case USER_STATUS.DISABLED:
         return <ActivateUserButton userId={userId} />
 
@@ -247,7 +247,7 @@ function DetailEntreprise() {
                                   confirmationModificationOpco.onOpen()
                                 }}
                               />
-                              <FormErrorMessage>{errors.opco}</FormErrorMessage>
+                              <FormErrorMessage>{errors.opco as string}</FormErrorMessage>
                             </FormControl>
                           )}
                           <Flex justify="flex-end" mt={10}>
@@ -264,6 +264,7 @@ function DetailEntreprise() {
                   </SimpleGrid>
                   {(auth.type === AUTHTYPE.OPCO || auth.type === AUTHTYPE.ADMIN) && (
                     <Box mb={12}>
+                      {/* @ts-expect-error: TODO */}
                       <UserValidationHistory histories={data.data.status} />
                     </Box>
                   )}

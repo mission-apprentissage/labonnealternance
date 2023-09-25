@@ -2,12 +2,12 @@ import { Box, Text } from "@chakra-ui/react"
 import React from "react"
 
 export const Logo = ({ size = "sm" }) => {
-  let fontSize = "0.7875rem"
-  let beforeWidth = "2.0625rem"
-  let beforeHeight = "0.75rem"
-  let beforeMarginBottom = "0.25rem"
-  let beforeBackgroundSize = "2.0625rem 0.84375rem, 2.0625rem 0.75rem, 0"
-  let beforeBackgroundPosition = "0 -0.04688rem, 0 0, 0 0"
+  let fontSize = "0.7875rem" as string | string[]
+  let beforeWidth = "2.0625rem" as string | string[]
+  let beforeHeight = "0.75rem" as string | string[]
+  let beforeMarginBottom = "0.25rem" as string | string[]
+  let beforeBackgroundSize = "2.0625rem 0.84375rem, 2.0625rem 0.75rem, 0" as string | string[]
+  let beforeBackgroundPosition = "0 -0.04688rem, 0 0, 0 0" as string | string[]
 
   if (size === "xl") {
     fontSize = ["1.05rem", "1.05rem", "1.3125rem"]
