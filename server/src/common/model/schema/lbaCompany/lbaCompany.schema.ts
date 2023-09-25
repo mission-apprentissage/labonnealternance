@@ -121,6 +121,6 @@ export const lbaCompanySchema = new Schema<ILbaCompany>({
   },
 })
 
-lbaCompanySchema.plugin(mongoosastic, { esClient: getElasticInstance(), index: "bonnesboites" })
+lbaCompanySchema.plugin(mongoosastic, { index: "bonnesboites" })
 
 export default model<ILbaCompany>("bonnesboites", lbaCompanySchema)

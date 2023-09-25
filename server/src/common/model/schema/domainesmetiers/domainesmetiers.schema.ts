@@ -86,6 +86,6 @@ export const domainesMetiersSchema = new Schema<IDomainesMetiers>({
   },
 })
 
-domainesMetiersSchema.plugin(mongoosastic, { esClient: getElasticInstance(), index: "domainesmetiers" })
+domainesMetiersSchema.plugin(mongoosastic, { index: "domainesmetiers" })
 
 export default model<IDomainesMetiers>("domainesmetiers", domainesMetiersSchema)
