@@ -94,7 +94,7 @@ export const zFormulaireRoute = {
     // KBA 20230922 to be checked, description is false and it only updates delegations
     "/api/formulaire/offre/:jobId": {
       params: z.object({ jobId: zObjectId }),
-      queryString: z.object({ siret_formateur: z.string() }),
+      querystring: z.object({ siret_formateur: z.string() }),
       response: {
         "2xx": ZJob,
       },

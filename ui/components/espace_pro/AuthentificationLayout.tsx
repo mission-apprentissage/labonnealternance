@@ -1,7 +1,7 @@
-import { Button, Container, Flex, Box } from "@chakra-ui/react"
+import { Box, Button, Container, Flex } from "@chakra-ui/react"
+import { useRouter } from "next/router"
 import { useContext } from "react"
 
-import { redirect } from "../../common/utils/router"
 import { WidgetContext } from "../../context/contextWidget"
 import { Close } from "../../theme/components/icons"
 import { LbaNew } from "../../theme/components/logos_pro"
@@ -9,15 +9,16 @@ import { LbaNew } from "../../theme/components/logos_pro"
 import Logo from "./Layout/Logo"
 
 export default function AuthentificationLayout(props) {
+  const router = useRouter()
   const { widget } = useContext(WidgetContext)
 
   const redirectFn = () => {
-    const isCfa = window.location.pathname.includes("cfa") ? true : false
+    const isCfa = router.pathname.includes("cfa") ? true : false
 
     if (isCfa) {
-      return redirect(`/organisme-de-formation`)
+      return router.push(`/organisme-de-formation`)
     } else {
-      return redirect(`/acces-recruteur`)
+      return router.push(`/acces-recruteur`)
     }
   }
 

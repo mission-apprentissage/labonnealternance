@@ -97,6 +97,7 @@ const stats = () => (
                 <Divider variant="pageTitleDivider" mt={6} mb={2} />
                 <iframe
                   width="100%"
+                  // @ts-expect-error: ?
                   border="none"
                   height="800px"
                   title="stats_plausible"
@@ -113,6 +114,7 @@ const stats = () => (
                 <Divider variant="pageTitleDivider" mt={6} mb={2} />
                 <iframe
                   width="100%"
+                  // @ts-expect-error: ?
                   border="none"
                   height="450px"
                   onLoad={metabaseIframeOnLoad}
@@ -129,6 +131,7 @@ const stats = () => (
                 <Divider variant="pageTitleDivider" mt={6} mb={2} />
                 <iframe
                   width="100%"
+                  // @ts-expect-error: ?
                   border="none"
                   height="500px"
                   onLoad={metabaseIframeOnLoad}
@@ -147,6 +150,7 @@ const stats = () => (
                 <Divider variant="pageTitleDivider" mt={6} mb={2} />
                 <iframe
                   width="100%"
+                  // @ts-expect-error: ?
                   border="none"
                   height="500px"
                   onLoad={metabaseIframeOnLoad}
@@ -163,6 +167,7 @@ const stats = () => (
                 <Divider variant="pageTitleDivider" mt={6} mb={2} />
                 <iframe
                   width="100%"
+                  // @ts-expect-error: ?
                   border="none"
                   height="330px"
                   title="stats_count_prdv"
@@ -179,6 +184,7 @@ const stats = () => (
                 <Divider variant="pageTitleDivider" mt={6} mb={2} />
                 <iframe
                   width="100%"
+                  // @ts-expect-error: ?
                   border="none"
                   height="280px"
                   title="stats_modules_pedagogiques"
@@ -199,6 +205,7 @@ const stats = () => (
                   <iframe
                     width="100%"
                     max-width="300px"
+                    // @ts-expect-error: ?
                     border="none"
                     height="550px"
                     title="stats_reponses_recruteurs"
@@ -216,6 +223,7 @@ const stats = () => (
                   <iframe
                     width="100%"
                     max-width="300px"
+                    // @ts-expect-error: ?
                     border="none"
                     height="550px"
                     title="stats_reponses_cfa"
@@ -236,6 +244,7 @@ const stats = () => (
                   <iframe
                     width="100%"
                     max-width="300px"
+                    // @ts-expect-error: ?
                     border="none"
                     height="350px"
                     title="stats_signatures_contrat"
@@ -253,6 +262,7 @@ const stats = () => (
                   <iframe
                     width="100%"
                     max-width="300px"
+                    // @ts-expect-error: ?
                     border="none"
                     height="350px"
                     title="stats_inscriptions_formations"

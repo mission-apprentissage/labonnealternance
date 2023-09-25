@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { readFileSync } from "fs"
 
 import iconv from "iconv-lite"

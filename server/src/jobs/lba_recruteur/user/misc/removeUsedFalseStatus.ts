@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { UserRecruteur } from "../../../../common/model/index"
 import { asyncForEach } from "../../../../common/utils/asyncUtils"
 import { runScript } from "../../../scriptWrapper"
