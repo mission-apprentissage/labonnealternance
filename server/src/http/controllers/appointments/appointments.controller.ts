@@ -1,5 +1,7 @@
 import Sentry from "@sentry/node"
+import Boom from "boom"
 import { zRoutes } from "shared/index"
+import { IContextCreateSchemaCleMinistereEducatif } from "shared/routes/appointments.routes"
 
 import { getReferrerByKeyName } from "../../../common/model/constants/referrers"
 import { Etablissement, ReferentielOnisep } from "../../../common/model/index"
@@ -35,30 +37,30 @@ export default (server: Server) => {
       // TODO: remove this validate ?
       await contextCreateSchema.validateAsync(req.body, { abortEarly: false })
 
-      const { idRcoFormation, idParcoursup, idActionFormation, referrer, idCleMinistereEducatif } = req.body
+      const { referrer } = req.body
 
       const referrerObj = getReferrerByKeyName(referrer)
 
       let eligibleTrainingsForAppointment
-      if (idCleMinistereEducatif) {
-        eligibleTrainingsForAppointment = await eligibleTrainingsForAppointmentService.findOne({ cle_ministere_educatif: idCleMinistereEducatif })
-      } else if (idRcoFormation) {
+      if ("idCleMinistereEducatif" in req.body) {
+        eligibleTrainingsForAppointment = await eligibleTrainingsForAppointmentService.findOne({ cle_ministere_educatif: req.body.idCleMinistereEducatif })
+      } else if ("idRcoFormation" in req.body) {
         eligibleTrainingsForAppointment = await eligibleTrainingsForAppointmentService.findOne({
-          rco_formation_id: idRcoFormation,
+          rco_formation_id: req.body.idRcoFormation,
           cle_ministere_educatif: {
             $ne: null,
           },
         })
-      } else if (idParcoursup) {
+      } else if ("idParcoursup" in req.body) {
         eligibleTrainingsForAppointment = await eligibleTrainingsForAppointmentService.findOne({
-          parcoursup_id: idParcoursup,
+          parcoursup_id: req.body.idParcoursup,
           cle_ministere_educatif: {
             $ne: null,
           },
         })
-      } else if (idActionFormation) {
+      } else if ("idActionFormation" in req.body) {
         const referentielOnisepIdActionFormation = await ReferentielOnisep.findOne({
-          id_action_ideo2: idActionFormation,
+          id_action_ideo2: req.body.idActionFormation,
         })
 
         if (!referentielOnisepIdActionFormation) {
@@ -95,16 +97,20 @@ export default (server: Server) => {
 
       const etablissement = await Etablissement.findOne({ formateur_siret: eligibleTrainingsForAppointment.etablissement_formateur_siret })
 
+      if (!etablissement) {
+        throw Boom.internal("Etablissement formateur non trouvé")
+      }
+
       res.status(200).send({
-        etablissement_formateur_entreprise_raison_sociale: etablissement?.raison_sociale,
+        etablissement_formateur_entreprise_raison_sociale: etablissement.raison_sociale,
         intitule_long: eligibleTrainingsForAppointment.training_intitule_long,
         lieu_formation_adresse: eligibleTrainingsForAppointment.lieu_formation_street,
         code_postal: eligibleTrainingsForAppointment.lieu_formation_zip_code,
-        etablissement_formateur_siret: etablissement?.formateur_siret,
+        etablissement_formateur_siret: etablissement.formateur_siret,
         cfd: eligibleTrainingsForAppointment.training_code_formation_diplome,
         localite: eligibleTrainingsForAppointment.lieu_formation_city,
         id_rco_formation: eligibleTrainingsForAppointment.rco_formation_id,
-        cle_ministere_educatif: eligibleTrainingsForAppointment?.cle_ministere_educatif,
+        cle_ministere_educatif: eligibleTrainingsForAppointment.cle_ministere_educatif,
         form_url: `${config.publicUrlEspacePro}/form?referrer=${referrerObj.name.toLowerCase()}&cleMinistereEducatif=${encodeURIComponent(
           eligibleTrainingsForAppointment.cle_ministere_educatif
         )}`,

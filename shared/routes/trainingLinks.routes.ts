@@ -39,4 +39,4 @@ export const zTrainingLinksRoutes = {
       },
     },
   },
-} satisfies IRoutesDef
+} as const satisfies IRoutesDef

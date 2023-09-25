@@ -114,4 +114,4 @@ export const zFormulaireRoute = {
       },
     },
   },
-} satisfies IRoutesDef
+} as const satisfies IRoutesDef

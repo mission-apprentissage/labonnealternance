@@ -114,4 +114,4 @@ export const zRecruiterRoutes = {
       },
     },
   },
-} satisfies IRoutesDef
+} as const satisfies IRoutesDef

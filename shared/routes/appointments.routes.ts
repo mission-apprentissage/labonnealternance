@@ -4,55 +4,71 @@ import { referrers } from "../constants/referers"
 import { ZAppointment } from "../models"
 import { ZEligibleTrainingsForAppointmentSchema } from "../models/elligibleTraining.model"
 
+const zContextCreateSchemaParcoursup = z
+  .object({
+    idParcoursup: z.string(),
+    trainingHasJob: z.boolean().optional(),
+    referrer: z.literal(referrers.PARCOURSUP.name.toLowerCase()),
+  })
+  .strict()
+
+export type IContextCreateSchemaParcoursup = z.output<typeof zContextCreateSchemaParcoursup>
+
+const zContextCreateSchemaRcoFormation = z
+  .object({
+    idRcoFormation: z.string().min(1),
+    trainingHasJob: z.boolean().optional(),
+    referrer: z.literal(referrers.PFR_PAYS_DE_LA_LOIRE.name.toLowerCase()),
+  })
+  .strict()
+
+export type IContextCreateSchemaRcoFormation = z.output<typeof zContextCreateSchemaRcoFormation>
+
+const zContextCreateSchemaActionFormation = z
+  .object({
+    idActionFormation: z.string().min(1),
+    trainingHasJob: z.boolean().optional(),
+    referrer: z.literal(referrers.ONISEP.name.toLowerCase()),
+  })
+  .strict()
+
+export type IContextCreateSchemaActionFormation = z.output<typeof zContextCreateSchemaActionFormation>
+
+const zContextCreateSchemaCleMinistereEducatif = z
+  .object({
+    idCleMinistereEducatif: z.string().min(1),
+    trainingHasJob: z.boolean().optional(),
+    referrer: z.enum([
+      referrers.PARCOURSUP.name.toLowerCase(),
+      referrers.LBA.name.toLowerCase(),
+      referrers.PFR_PAYS_DE_LA_LOIRE.name.toLowerCase(),
+      referrers.ONISEP.name.toLowerCase(),
+      referrers.JEUNE_1_SOLUTION.name.toLowerCase(),
+      referrers.AFFELNET.name.toLowerCase(),
+    ]),
+  })
+  .strict()
+
+export type IContextCreateSchemaCleMinistereEducatif = z.output<typeof zContextCreateSchemaCleMinistereEducatif>
+
 const zContextCreateSchema = z.union([
   // Find through "idParcoursup"
-  z
-    .object({
-      idParcoursup: z.string(),
-      trainingHasJob: z.boolean().optional(),
-      referrer: z.literal(referrers.PARCOURSUP.name.toLowerCase())
-    })
-    .strict(),
+  zContextCreateSchemaParcoursup,
 
   // Find through "idRcoFormation"
-  z
-    .object({
-      idRcoFormation: z.string().min(1),
-      trainingHasJob: z.boolean().optional(),
-      referrer: z.literal(referrers.PFR_PAYS_DE_LA_LOIRE.name.toLowerCase())
-    })
-    .strict(),
+  zContextCreateSchemaRcoFormation,
 
   // Find through "idActionFormation"
-  z
-    .object({
-      idActionFormation: z.string().min(1),
-      trainingHasJob: z.boolean().optional(),
-      referrer: z.literal(referrers.ONISEP.name.toLowerCase())
-    })
-    .strict(),
+  zContextCreateSchemaActionFormation,
 
   // Find through "idCleMinistereEducatif"
-  z
-    .object({
-      idCleMinistereEducatif: z.string().min(1),
-      trainingHasJob: z.boolean().optional(),
-      referrer: z.enum([
-        referrers.PARCOURSUP.name.toLowerCase(),
-        referrers.LBA.name.toLowerCase(),
-        referrers.PFR_PAYS_DE_LA_LOIRE.name.toLowerCase(),
-        referrers.ONISEP.name.toLowerCase(),
-        referrers.JEUNE_1_SOLUTION.name.toLowerCase(),
-        referrers.AFFELNET.name.toLowerCase(),
-      ])
-    })
-    .strict(),
+  zContextCreateSchemaCleMinistereEducatif,
 ])
 
 export const zAppointmentsRoute = {
   get: {
     "/api/admin/appointments/": {
-      queryString: z.object({ query: z.string(), limit: z.number(), page: z.number() }).strict(),
+      querystring: z.object({ query: z.string(), limit: z.number(), page: z.number() }).strict(),
       response: {
         "2xx": z.object({
           appointments: z.array(ZAppointment),
@@ -66,7 +82,7 @@ export const zAppointmentsRoute = {
       },
     },
     "/api/admin/appointments/details": {
-      queryString: z.object({ query: z.string(), limit: z.number(), page: z.number() }).strict(),
+      querystring: z.object({ query: z.string(), limit: z.number(), page: z.number() }).strict(),
       response: {
         "2xx": z.object({
           appointments: z.array(ZAppointment),
@@ -80,7 +96,7 @@ export const zAppointmentsRoute = {
       },
     },
     "/api/appointment-request/context/recap": {
-      queryString: z.object({ appointmentId: z.string() }).strict(),
+      querystring: z.object({ appointmentId: z.string() }).strict(),
       response: {
         "2xx": z
           .object({
@@ -99,18 +115,27 @@ export const zAppointmentsRoute = {
     "/api/appointment-request/context/create": {
       body: zContextCreateSchema,
       response: {
-        "2xx": z.object({
-          etablissement_formateur_entreprise_raison_sociale: z.string(),
-          intitule_long: z.string(),
-          lieu_formation_adresse: z.string(),
-          code_postal: z.string(),
-          etablissement_formateur_siret: z.string(),
-          cfd: z.string(),
-          localite: z.string(),
-          id_rco_formation: z.string(),
-          cle_ministere_educatif: z.string(),
-          form_url: z.string(),
-        }),
+        "2xx": z.union([
+          z.object({
+            etablissement_formateur_entreprise_raison_sociale: z.string(),
+            intitule_long: z.string(),
+            lieu_formation_adresse: z.string(),
+            code_postal: z.string(),
+            etablissement_formateur_siret: z.string(),
+            cfd: z.string(),
+            localite: z.string(),
+            id_rco_formation: z.string(),
+            cle_ministere_educatif: z.string(),
+            form_url: z.string(),
+          }),
+          z
+            .object({
+              error: z.literal("Prise de rendez-vous non disponible."),
+            })
+            .strict(),
+        ]),
+        "404": z.literal("Formation introuvable"),
+        "400": z.literal("Critère de recherche non conforme."),
       },
     },
     "/api/appointment-request/validate": {

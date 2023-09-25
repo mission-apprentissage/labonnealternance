@@ -388,4 +388,4 @@ export const zV1JobsRoutes = {
       },
     },
   },
-} satisfies IRoutesDef
+} as const satisfies IRoutesDef

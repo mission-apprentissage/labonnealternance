@@ -50,4 +50,4 @@ export const zOptoutRoutes = {
       },
     },
   },
-} satisfies IRoutesDef
+} as const satisfies IRoutesDef

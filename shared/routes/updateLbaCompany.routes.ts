@@ -21,4 +21,4 @@ export const zUpdateLbaCompanyRoutes = {
       },
     },
   },
-} satisfies IRoutesDef
+} as const satisfies IRoutesDef

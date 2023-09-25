@@ -10,4 +10,4 @@ export const zMetiersDAvenirRoutes = {
       },
     },
   },
-} satisfies IRoutesDef
+} as const satisfies IRoutesDef

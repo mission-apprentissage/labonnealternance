@@ -76,4 +76,4 @@ export const zV1FormationsRoutes = {
       },
     },
   },
-} satisfies IRoutesDef
+} as const satisfies IRoutesDef

@@ -1,5 +1,5 @@
 import { z } from "../helpers/zodWithOpenApi"
-import { ZAppointment , ZEtablissement } from "../models"
+import { ZAppointment, ZEtablissement } from "../models"
 import { zObjectId } from "../models/common"
 
 import { IRoutesDef } from "./common.routes"
@@ -7,7 +7,7 @@ import { IRoutesDef } from "./common.routes"
 export const zEtablissementRoutes = {
   get: {
     "/api/admin/etablissements/": {
-      queryString: z.object({ query: z.string(), limit: z.number(), page: z.number() }).strict(),
+      querystring: z.object({ query: z.string(), limit: z.number(), page: z.number() }).strict(),
       response: {
         "2xx": z
           .object({
@@ -99,4 +99,4 @@ export const zEtablissementRoutes = {
       },
     },
   },
-}  satisfies IRoutesDef
+} as const satisfies IRoutesDef

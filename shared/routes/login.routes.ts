@@ -51,4 +51,4 @@ export const zLoginRoutes = {
       },
     },
   },
-} satisfies IRoutesDef
+} as const satisfies IRoutesDef

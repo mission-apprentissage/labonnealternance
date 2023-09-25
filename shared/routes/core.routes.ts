@@ -35,4 +35,4 @@ export const zCoreRoutes = {
       },
     },
   },
-} satisfies IRoutesDef
+} as const satisfies IRoutesDef

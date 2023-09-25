@@ -44,4 +44,4 @@ export const zRomeRoutes = {
       },
     },
   },
-} satisfies IRoutesDef
+} as const satisfies IRoutesDef

@@ -5,7 +5,7 @@ import { zFormationCatalogueSchema } from "../models/formationCatalogue/formatio
 export const zFormationRoute = {
   get: {
     "/api/admin/formations/": {
-      queryString: z.object({ query: z.string() }).strict(),
+      querystring: z.object({ query: z.string() }).strict(),
       response: {
         "2xx": z.array(zFormationCatalogueSchema),
       },

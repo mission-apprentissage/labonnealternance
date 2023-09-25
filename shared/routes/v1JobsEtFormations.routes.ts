@@ -74,4 +74,4 @@ export const zV1JobsEtFormationsRoutes = {
       },
     },
   },
-} satisfies IRoutesDef
+} as const satisfies IRoutesDef

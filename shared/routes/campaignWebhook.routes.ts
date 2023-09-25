@@ -20,4 +20,4 @@ export const zCampaignWebhookRoutes = {
   put: {},
   delete: {},
   patch: {},
-} satisfies IRoutesDef
+} as const satisfies IRoutesDef
