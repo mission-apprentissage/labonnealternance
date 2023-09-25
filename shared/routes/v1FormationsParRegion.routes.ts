@@ -1,5 +1,6 @@
 import { z } from "zod"
 
+import { ZLbacError } from "../models/lbacError.model"
 import { ZLbaItem } from "../models/lbaItem.model"
 
 import { IRoutesDef } from "./common.routes"
@@ -19,12 +20,19 @@ export const zV1FormationsParRegion = {
           useMock: z.string().optional(), // hidden
         })
         .strict(),
+      headers: z
+        .object({
+          referer: z.string().optional(),
+        })
+        .strict(),
       response: {
         "200": z
           .object({
             results: z.array(ZLbaItem),
           })
           .strict(),
+        "400": ZLbacError,
+        "500": ZLbacError,
       },
     },
   },

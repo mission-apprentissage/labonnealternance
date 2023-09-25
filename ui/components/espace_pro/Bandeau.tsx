@@ -2,7 +2,7 @@ import { Box, Center, Heading, Icon, Link, Stack, Text } from "@chakra-ui/react"
 
 import { CircleCheck, OctogoneCross } from "../../theme/components/icons"
 
-const Bandeau = ({ header, description, lien, type }) => {
+const Bandeau = ({ header, description, lien = null, type }) => {
   const color = getBannerColor(type)
 
   return (

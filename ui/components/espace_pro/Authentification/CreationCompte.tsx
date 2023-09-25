@@ -20,7 +20,7 @@ const CreationCompteForm = ({ type, setQualiopi, setBandeau, origin }) => {
   const [isCfa, setIsCfa] = useState(false)
 
   const submitSiret = ({ establishment_siret }, { setSubmitting, setFieldError }) => {
-    setBandeau(false)
+    setBandeau(null)
     const formattedSiret = establishment_siret.replace(/[^0-9]/g, "")
 
     // validate establishment_siret
@@ -139,11 +139,11 @@ const CreationCompteForm = ({ type, setQualiopi, setBandeau, origin }) => {
   )
 }
 
-export default function CreationCompte({ type, widget, origin }) {
+export default function CreationCompte({ type, widget, origin = "lba" }) {
   const { setWidget, widget: wid } = useContext(WidgetContext)
   const { setOrganisation } = useContext(LogoContext)
-  const [qualiopi, setQualiopi] = useState({})
-  const [bandeau, setBandeau] = useState({})
+  const [qualiopi, setQualiopi] = useState(null)
+  const [bandeau, setBandeau] = useState(null)
   // const [searchParams] = useSearchParams() // TODO_AB
   const router = useRouter()
   const mobile = router.query.mobile === "true" ? true : false

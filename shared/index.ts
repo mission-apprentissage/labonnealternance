@@ -2,6 +2,7 @@ import { Jsonify } from "type-fest"
 import z, { ZodType } from "zod"
 
 import { zApplicationRoutes } from "./routes/application.routes"
+import { zCampaignWebhookRoutes } from "./routes/campaignWebhook.routes"
 import { IRouteSchema } from "./routes/common.routes"
 import { zCoreRoutes } from "./routes/core.routes"
 import { zEtablissementRoutes } from "./routes/etablissement.routes"
@@ -34,6 +35,7 @@ const zRoutesGet = {
   ...zV1JobsEtFormationsRoutes.get,
   ...zFormulaireRoute.get,
   ...zRecruiterRoutes.get,
+  ...zCampaignWebhookRoutes.get,
 } as const
 
 const zRoutesPost = {
@@ -45,6 +47,7 @@ const zRoutesPost = {
   ...zV1JobsRoutes.post,
   ...zFormulaireRoute.post,
   ...zRecruiterRoutes.post,
+  ...zCampaignWebhookRoutes.post,
 } as const
 
 const zRoutesPut = {

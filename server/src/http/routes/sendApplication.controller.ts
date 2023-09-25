@@ -64,7 +64,7 @@ export default function (server: Server) {
           { company_recruitment_intention: req.body.intention, company_feedback: req.body.comment, company_feedback_date: new Date() }
         )
 
-        sendNotificationToApplicant({
+        await sendNotificationToApplicant({
           application,
           intention: req.body.intention,
           email: req.body.email,
@@ -89,7 +89,7 @@ export default function (server: Server) {
       config,
     },
     async (req, res) => {
-      updateApplicationStatus({ payload: req.body })
+      await updateApplicationStatus({ payload: req.body })
       return res.status(200).send({ result: "ok" })
     }
   )
