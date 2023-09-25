@@ -3,6 +3,8 @@ fileignoreconfig:
   checksum: b9c969e31cc620084c9a3d97637d509a821c542dba236f96dc799beff4b66648
 - filename: .bin/scripts/deploy-log-encrypt.sh
   checksum: 8ebe245e2a3719defc295d0de3d02c42e2cb82cb2ecc9507ce0dd4273a428e5e
+- filename: .bin/scripts/setup-local-env.sh
+  checksum: 95c232b45f70c6588af19ff5c2443d48af9e346c80412d34c0cfd9ba51f81d3a
 - filename: .github/workflows/_deploy.yml
   checksum: 62e09b5f606f4aaebbd1802c7c6b1d985099f92b9a759afcbcef6a1426f9cf71
 - filename: .github/workflows/release.yml
