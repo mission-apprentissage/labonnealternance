@@ -65,7 +65,7 @@ export const zV1JobsRoutes = {
       response: {
         "200": z
           .object({
-            _id: z.string(),
+            _id: zObjectId,
             numero_voie: z.string(),
             type_voie: z.string(),
             nom_voie: z.string(),

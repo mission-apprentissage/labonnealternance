@@ -1,5 +1,7 @@
 import { z } from "zod"
 
+import { zObjectId } from "../common"
+
 // Define schemas for nested objects
 const geoCoordSchema = z.string()
 
@@ -87,7 +89,7 @@ const stringOrArraySchema = z.union([z.string(), z.array(z.string())])
 // Define the Zod schema for IFormationCatalogue
 export const zFormationCatalogueSchema = z
   .object({
-    _id: z.string(),
+    _id: zObjectId,
     cle_ministere_educatif: z.string(),
     cfd: z.string(),
     cfd_specialite: z.record(z.unknown()), // Assuming cfd_specialite is an object

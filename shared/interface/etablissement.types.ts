@@ -1,7 +1,9 @@
 import { z } from "zod"
 
+import { zObjectId } from "../models/common"
+
 export const zEtablissementCatalogue = z.object({
-  _id: z.string(),
+  _id: zObjectId,
   siege_social: z.boolean(),
   etablissement_siege_siret: z.string(),
   siret: z.string(),
