@@ -3,7 +3,6 @@ import { z } from "zod"
 import { IRoutesDef } from "./common.routes"
 
 export const zLoginRoutes = {
-  get: {},
   post: {
     "/api/login": {
       body: null, // basic auth
@@ -46,7 +45,4 @@ export const zLoginRoutes = {
       },
     },
   },
-  put: {},
-  delete: {},
-  patch: {},
 } satisfies IRoutesDef

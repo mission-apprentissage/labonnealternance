@@ -21,8 +21,4 @@ export const zUpdateLbaCompanyRoutes = {
       },
     },
   },
-  post: {},
-  put: {},
-  delete: {},
-  patch: {},
 } satisfies IRoutesDef

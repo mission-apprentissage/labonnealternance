@@ -110,6 +110,4 @@ export const zRecruiterRoutes = {
       },
     },
   },
-  delete: {},
-  patch: {},
 } satisfies IRoutesDef

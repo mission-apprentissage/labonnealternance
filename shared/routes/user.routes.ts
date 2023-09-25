@@ -92,5 +92,4 @@ export const zUserRecruteurRoutes = {
       },
     },
   },
-  patch: {},
 } satisfies IRoutesDef

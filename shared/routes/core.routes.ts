@@ -35,8 +35,4 @@ export const zCoreRoutes = {
       },
     },
   },
-  post: {},
-  put: {},
-  delete: {},
-  patch: {},
 } satisfies IRoutesDef

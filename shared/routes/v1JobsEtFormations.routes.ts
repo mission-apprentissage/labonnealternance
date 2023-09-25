@@ -62,8 +62,4 @@ export const zV1JobsEtFormationsRoutes = {
       },
     },
   },
-  post: {},
-  put: {},
-  delete: {},
-  patch: {},
 } satisfies IRoutesDef

@@ -10,8 +10,4 @@ export const zMetiersDAvenirRoutes = {
       },
     },
   },
-  patch: {},
-  delete: {},
-  put: {},
-  post: {},
 } satisfies IRoutesDef
