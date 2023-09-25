@@ -24,7 +24,7 @@ import { archiveDelegatedFormulaire, archiveFormulaire, updateEntreprise } from 
 export const ConfirmationDesactivationUtilisateur = (props) => {
   const { isOpen, onClose, establishment_raison_sociale, _id, type, establishment_id, siret } = props
   const [reason, setReason] = useState()
-  const reasonComment = useDisclosure(false)
+  const reasonComment = useDisclosure()
   const disableUser = useUserHistoryUpdate(_id, USER_STATUS.DISABLED, reason)
   const reassignUserToAdmin = useUserHistoryUpdate(_id, USER_STATUS.WAITING, reason)
 
@@ -41,7 +41,7 @@ export const ConfirmationDesactivationUtilisateur = (props) => {
     switch (type) {
       case AUTHTYPE.ENTREPRISE:
         if (reason === "Ne relève pas des champs de compétences de mon OPCO") {
-          await Promise.all([updateEntreprise(_id, establishment_id, { opco: "inconnu" }), reassignUserToAdmin(establishment_id)])
+          await Promise.all([updateEntreprise(_id, establishment_id, { opco: "inconnu" }), reassignUserToAdmin()])
         } else {
           await Promise.all([archiveFormulaire(establishment_id), disableUser()])
         }
@@ -94,9 +94,11 @@ export const ConfirmationDesactivationUtilisateur = (props) => {
         </ModalBody>
 
         {reasonComment.isOpen && (
+          // @ts-expect-error: TODO
           <ModalBody isRequired>
             <FormLabel>Autre</FormLabel>
             <FormControl isRequired>
+              {/* @ts-expect-error: TODO */}
               <Input onChange={(e) => setReason(e.target.value)} isRequired minLength="3" />
             </FormControl>
           </ModalBody>
