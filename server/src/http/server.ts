@@ -13,7 +13,10 @@ import swaggerDoc from "swagger-jsdoc"
 import config from "../config"
 import { initBrevoWebhooks } from "../services/brevo.service"
 
-import formationsParRegion from "./controllers/formations/formationRegion.controller"
+import formationsRegionV1Route from "./controllers/formations/formationRegion.controller"
+import formationsV1Route from "./controllers/formations/formations.controller"
+import jobsV1Route from "./controllers/jobs/jobs.controller"
+import jobsEtFormationsV1Route from "./controllers/jobsEtFormations/jobsEtFormations.controller"
 import rome from "./controllers/metiers/rome.controller"
 // import { corsMiddleware } from "./middlewares/corsMiddleware" // TODO_AB To check
 import metiersDAvenirRoute from "./controllers/metiersdavenir/metiersDAvenir.controller"
@@ -161,6 +164,10 @@ export async function bind(app: Server) {
   sendApplicationAPI(app)
   unsubscribeLbaCompany(app)
   metiersDAvenirRoute(app)
+  jobsV1Route(app)
+  formationsV1Route(app)
+  formationsRegionV1Route(app)
+  jobsEtFormationsV1Route(app)
 
   /**
    * Admin / Auth
