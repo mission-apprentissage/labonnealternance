@@ -5,6 +5,7 @@ import {
 
 import { IRoutesDef } from "./common.routes"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
+import { zObjectId } from "../models/common"
 
 export const zEligibleTrainingsForAppointmentRoutes = {
   get: {
@@ -15,7 +16,7 @@ export const zEligibleTrainingsForAppointmentRoutes = {
       },
     },
     "/api/admin/eligible-trainings-for-appointment/:id": {
-      params: z.object({ id: z.string() }).strict(),
+      params: z.object({ id: zObjectId }).strict(),
       response: {
         "200": ZEligibleTrainingsForAppointmentSchema
       },
@@ -23,7 +24,7 @@ export const zEligibleTrainingsForAppointmentRoutes = {
   },
   put: {
     "/api/admin/eligible-trainings-for-appointment/:id": {
-      params: z.object({ id: z.string() }).strict(),
+      params: z.object({ id: zObjectId }).strict(),
       response: {
         "200": ZEligibleTrainingsForAppointmentSchema
       },
@@ -31,7 +32,7 @@ export const zEligibleTrainingsForAppointmentRoutes = {
   },
   patch: {
     "/api/admin/eligible-trainings-for-appointment/:id": {
-      params: z.object({ id: z.string() }).strict(),
+      params: z.object({ id: zObjectId }).strict(),
       response: {
         "200": ZEligibleTrainingsForAppointmentSchema
       },
