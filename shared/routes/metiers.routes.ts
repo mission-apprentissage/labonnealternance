@@ -7,28 +7,6 @@ import { ZResError } from "./common.routes"
 
 export const zMetiersRoutes = {
   get: {
-    "/api/romelabels": {
-      querystring: z.object({ title: z.string(), useMock: z.boolean().nullish(), withRomeLabels: z.boolean().nullish() }).strict(),
-      response: {
-        "200": ZMetiersEnrichis.or(
-          z.object({
-            error: z.string().nullish(),
-            error_messages: z.array(z.string()).nullish(),
-          })
-        ),
-      },
-    },
-    "/api/rome": {
-      querystring: z.object({ title: z.string(), useMock: z.boolean().nullish(), withRomeLabels: z.boolean().nullish() }).strict(),
-      response: {
-        "200": ZMetiersEnrichis.or(
-          z.object({
-            error: z.string().nullish(),
-            error_messages: z.array(z.string()).nullish(),
-          })
-        ),
-      },
-    },
     "/api/v1/metiers/metiersParFormation/:cfd": {
       param: z
         .object({
