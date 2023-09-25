@@ -13,14 +13,16 @@ import { getUser, sendValidationLink } from "../../../utils/api"
 
 export default function DepotRapideFin() {
   const [disableLink, setDisableLink] = useState(false)
-  const [userIsValidated, setUserIsValidated] = useState()
+  const [userIsValidated, setUserIsValidated] = useState(false)
   const [title, setTitle] = useState("")
   const router = useRouter()
   const toast = useToast()
   const client = useQueryClient()
 
   const { widget } = useContext(WidgetContext)
-  const { job, email, withDelegation, fromDashboard, userId } = router.query
+  const { job: jobString, email, withDelegation, fromDashboard, userId } = router.query
+
+  const job = JSON.parse(jobString as string)
 
   /**
    * KBA 20230130 : retry set to false to avoid waiting for failure if user is from dashboard (userId is not passed)
@@ -30,29 +32,20 @@ export default function DepotRapideFin() {
     retry: false,
     onSettled: (data) => {
       const latestStatus = data?.data?.status.pop().status || false
-      switch (withDelegation) {
-        case true:
-          if (latestStatus === "VALIDÉ" || fromDashboard) {
-            setUserIsValidated(true)
-            setTitle("Félicitations,<br>votre offre a bien été créée et transmise aux organismes de formation que vous avez sélectionnés.")
-          } else {
-            setTitle(
-              "Félicitations,<br>votre offre a bien été créée.<br>Elle sera publiée et transmise aux organismes de formation que vous avez sélectionnés dès validation de votre compte."
-            )
-          }
-          break
 
-        case false:
-          if (latestStatus === "VALIDÉ" || fromDashboard) {
-            setUserIsValidated(true)
-            setTitle("Félicitations,<br>votre offre a bien été créée!")
-          } else {
-            setTitle("Félicitations,<br>votre offre a bien été créée.<br>Elle sera publiée dès validation de votre compte.")
-          }
-          break
-
-        default:
-          break
+      if (latestStatus === "VALIDÉ" || fromDashboard) {
+        setUserIsValidated(true)
+        setTitle(
+          withDelegation
+            ? "Félicitations,<br>votre offre a bien été créée et transmise aux organismes de formation que vous avez sélectionnés."
+            : "Félicitations,<br>votre offre a bien été créée!"
+        )
+      } else {
+        setTitle(
+          withDelegation
+            ? "Félicitations,<br>votre offre a bien été créée.<br>Elle sera publiée et transmise aux organismes de formation que vous avez sélectionnés dès validation de votre compte."
+            : "Félicitations,<br>votre offre a bien été créée.<br>Elle sera publiée dès validation de votre compte."
+        )
       }
     },
   })
