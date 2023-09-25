@@ -75,9 +75,5 @@ export const zV1JobsRoutes = {
         "500": ZLbacError,
       },
     },
-    delete: {},
-    patch: {},
-    post: {},
-    put: {},
   },
 } satisfies IRoutesDef
