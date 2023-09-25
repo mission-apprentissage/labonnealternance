@@ -1,8 +1,7 @@
 import { mongoosePagination, Pagination } from "mongoose-paginate-ts"
+import { IEtablissement } from "shared"
 
 import { model, Schema } from "../../../mongodb"
-
-import { IEtablissement } from "./etablissement.types"
 
 export const etablissementSchema = new Schema<IEtablissement>({
   formateur_siret: {

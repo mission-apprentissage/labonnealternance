@@ -1,4 +1,4 @@
-import { getElasticInstance, mongoosastic } from "../../../esClient/index"
+import { mongoosastic } from "../../../esClient/index"
 import { model, Schema } from "../../../mongodb"
 
 import { IDiplomesMetiers } from "./diplomesmetiers.types"

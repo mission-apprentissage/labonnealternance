@@ -1,4 +1,5 @@
-import { IRecruiter } from "../common/model/schema/recruiter/recruiter.types"
+import { IRecruiter } from "shared"
+
 import { encryptMailWithIV } from "../common/utils/encryptString"
 import { IApiError, manageApiError } from "../common/utils/errorManager"
 import { roundDistance } from "../common/utils/geolib"

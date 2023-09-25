@@ -29,3 +29,5 @@ export const ZLbaCompany = z
     last_update_at: z.date().describe("Date de dernières mise à jour"),
   })
   .strict()
+
+export type ILbaCompany = z.output<typeof ZLbaCompany>

@@ -1,8 +1,7 @@
 import { mongoosePagination, Pagination } from "mongoose-paginate-ts"
+import { IEligibleTrainingsForAppointment } from "shared"
 
 import { model, Schema } from "../../../mongodb"
-
-import { IEligibleTrainingsForAppointment } from "./eligibleTrainingsForAppointment.types"
 
 export const eligibleTrainingsForAppointmentSchema = new Schema<IEligibleTrainingsForAppointment>({
   training_id_catalogue: {

@@ -1,9 +1,9 @@
+import { IJob } from "shared"
+
 import { JOB_STATUS } from "../../../../services/constant.service"
 import { model, Schema } from "../../../mongodb"
 
-import { IJobs } from "./jobs.types"
-
-export const jobsSchema = new Schema<IJobs>({
+export const jobsSchema = new Schema<IJob>({
   rome_label: { type: String, default: null, description: "Libellé du métier concerné" },
   rome_appellation_label: { type: String, default: null, description: "Libellé de l'appelation ROME" },
   job_level_label: {
@@ -154,4 +154,4 @@ export const jobsSchema = new Schema<IJobs>({
   },
 })
 
-export default model<IJobs>("job", jobsSchema)
+export default model<IJob>("job", jobsSchema)

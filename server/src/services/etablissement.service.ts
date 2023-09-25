@@ -1,15 +1,12 @@
 import axios, { AxiosResponse } from "axios"
 import { pick } from "lodash-es"
 import { Filter } from "mongodb"
+import { IEtablissement, ILbaCompany, IRecruiter, IUserRecruteur } from "shared"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 import { Etablissement, LbaCompany, LbaCompanyLegacy, ReferentielOpco, UnsubscribeOF, UserRecruteur } from "../common/model/index"
-import { IEtablissement } from "../common/model/schema/etablissements/etablissement.types"
-import { ILbaCompany } from "../common/model/schema/lbaCompany/lbaCompany.types"
-import { IRecruiter } from "../common/model/schema/recruiter/recruiter.types"
 import { IReferentielOpco } from "../common/model/schema/referentielOpco/referentielOpco.types"
-import { IUserRecruteur } from "../common/model/schema/userRecruteur/userRecruteur.types"
 import { isEmailFromPrivateCompany, isEmailSameDomain } from "../common/utils/mailUtils"
 import { sentryCaptureException } from "../common/utils/sentryUtils"
 import config from "../config"

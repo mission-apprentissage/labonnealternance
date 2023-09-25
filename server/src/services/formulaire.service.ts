@@ -2,14 +2,12 @@ import { pick } from "lodash-es"
 import moment from "moment"
 import { Filter } from "mongodb"
 import { ModelUpdateOptions, UpdateQuery } from "mongoose"
-import { IJob } from "shared"
+import { IJob, IRecruiter, IUserRecruteur } from "shared"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 import { getElasticInstance } from "../common/esClient/index"
 import { Recruiter, UnsubscribeOF } from "../common/model/index"
-import { IRecruiter } from "../common/model/schema/recruiter/recruiter.types"
-import { IUserRecruteur } from "../common/model/schema/userRecruteur/userRecruteur.types"
 import { asyncForEach } from "../common/utils/asyncUtils"
 import config from "../config"
 
@@ -185,7 +183,7 @@ export const getJobsFromElasticSearch = async ({
  * @param {IJob["_id"]} id
  * @returns {Promise<IFormulaireExtended>}
  */
-export const getOffreAvecInfoMandataire = async (id: IJob["_id"]): Promise<IFormulaireExtended> => {
+export const getOffreAvecInfoMandataire = async (id: string): Promise<IFormulaireExtended> => {
   const result = await getOffre(id)
 
   if (!result) {

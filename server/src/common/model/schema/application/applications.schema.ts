@@ -1,8 +1,7 @@
 import { mongoosePagination, Pagination } from "mongoose-paginate-ts"
+import { IApplication } from "shared"
 
 import { model, Schema } from "../../../mongodb"
-
-import { IApplication } from "./applications.types"
 
 export const applicationSchema = new Schema<IApplication>({
   applicant_email: {

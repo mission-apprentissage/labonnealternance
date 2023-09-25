@@ -11,16 +11,15 @@ import {
   RawServerBase,
   RawServerDefault,
   RouteGenericInterface,
-  preHandlerAsyncHookHandler,
   preHandlerHookHandler,
 } from "fastify"
 import jwt, { JwtPayload } from "jsonwebtoken"
 import passport from "passport"
+import { ICredential } from "shared"
 import { IUserRecruteur } from "shared/models/usersRecruteur.model"
-import { AuthStrategy, IRouteSchema, SecurityScheme } from "shared/routes/common.routes"
+import { AuthStrategy, SecurityScheme } from "shared/routes/common.routes"
 
 import { Credential } from "@/common/model"
-import { ICredential } from "@/common/model/schema/credentials/credential.types"
 import { IUser } from "@/common/model/schema/user/user.types"
 import config from "@/config"
 import { authenticate, getUser, getUserByMail } from "@/services/user.service"

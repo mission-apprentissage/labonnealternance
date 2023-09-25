@@ -1,13 +1,11 @@
 import Boom from "boom"
-import { zRoutes } from "shared/index.js"
+import { ICredential, zRoutes, IJob } from "shared"
 import { IRouteSchema } from "shared/routes/common.routes"
 import { zV1JobsRoutes } from "shared/routes/v1Jobs.routes"
 
 import { IUser } from "@/common/model/schema/user/user.types"
 
 import { Recruiter } from "../../../common/model/index"
-import { ICredential } from "../../../common/model/schema/credentials/credential.types"
-import { IJobs } from "../../../common/model/schema/jobs/jobs.types"
 import { delay } from "../../../common/utils/asyncUtils"
 import { getNearEtablissementsFromRomes } from "../../../services/catalogue.service"
 import { ACTIVE, ANNULEE, JOB_STATUS, POURVUE } from "../../../services/constant.service"
@@ -180,7 +178,7 @@ export default (server: Server) => {
       // Initialize job object with collected data
       const DATE_FORMAT = "YYYY-MM-DD"
 
-      const job: Partial<IJobs> = {
+      const job: Partial<IJob> = {
         rome_label: romeDetails.libelle,
         rome_appellation_label: appelationDetails.libelle,
         rome_code: [appelationDetails.metier.code],

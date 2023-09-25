@@ -1,6 +1,7 @@
+import type { IUserRecruteur } from "shared"
+
 import { logger } from "../../../../common/logger"
 import { Recruiter, UserRecruteur } from "../../../../common/model/index"
-import type { IUserRecruteur } from "../../../../common/model/schema/userRecruteur/userRecruteur.types"
 import { asyncForEach } from "../../../../common/utils/asyncUtils"
 import { sentryCaptureException } from "../../../../common/utils/sentryUtils"
 import { notifyToSlack } from "../../../../common/utils/slackUtils"

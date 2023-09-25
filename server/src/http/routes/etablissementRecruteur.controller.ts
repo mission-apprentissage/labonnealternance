@@ -1,8 +1,7 @@
 import Boom from "boom"
 import joi from "joi"
-import { zRoutes } from "shared/index"
+import { IUserRecruteur, zRoutes } from "shared"
 
-import { IUserRecruteur } from "../../common/model/schema/userRecruteur/userRecruteur.types"
 import { createUserRecruteurToken } from "../../common/utils/jwtUtils"
 import { getAllDomainsFromEmailList, getEmailDomain, isEmailFromPrivateCompany, isUserMailExistInReferentiel } from "../../common/utils/mailUtils"
 import { notifyToSlack } from "../../common/utils/slackUtils"

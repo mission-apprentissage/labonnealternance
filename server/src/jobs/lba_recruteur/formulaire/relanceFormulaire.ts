@@ -1,9 +1,9 @@
+import { IRecruiter, IUserRecruteur } from "shared"
+
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 import { logger } from "../../../common/logger"
 import { Recruiter, UserRecruteur } from "../../../common/model/index"
-import { IRecruiter } from "../../../common/model/schema/recruiter/recruiter.types"
-import { IUserRecruteur } from "../../../common/model/schema/userRecruteur/userRecruteur.types"
 import { asyncForEach } from "../../../common/utils/asyncUtils"
 import { notifyToSlack } from "../../../common/utils/slackUtils"
 import config from "../../../config"

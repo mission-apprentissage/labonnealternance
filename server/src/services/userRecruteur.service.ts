@@ -2,11 +2,11 @@ import { randomUUID } from "crypto"
 
 import { Filter } from "mongodb"
 import { ModelUpdateOptions, UpdateQuery } from "mongoose"
+import { IUserRecruteur, IUserStatusValidation } from "shared"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 import { UserRecruteur } from "../common/model/index"
-import { IUserRecruteur, IUserStatusValidation } from "../common/model/schema/userRecruteur/userRecruteur.types"
 import { createMagicLinkToken } from "../common/utils/jwtUtils"
 import config from "../config"
 

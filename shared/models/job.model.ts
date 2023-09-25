@@ -59,5 +59,7 @@ export const ZJob = z
   })
   .strict()
 
+export type IDelegation = z.output<typeof ZDelegation>
+
 export type IJob = z.output<typeof ZJob>
 export type IJobJson = Jsonify<z.input<typeof ZJob>>

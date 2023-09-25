@@ -1,7 +1,8 @@
+import { IUserRecruteur } from "shared"
+
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 import { UserRecruteur } from "../../../common/model/index"
-import { IUserRecruteur } from "../../../common/model/schema/userRecruteur/userRecruteur.types"
 import { asyncForEach } from "../../../common/utils/asyncUtils"
 import config from "../../../config"
 import { ETAT_UTILISATEUR } from "../../../services/constant.service"

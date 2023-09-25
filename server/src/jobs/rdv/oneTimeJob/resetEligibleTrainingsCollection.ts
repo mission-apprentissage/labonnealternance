@@ -1,8 +1,9 @@
 import { readFile, writeFile } from "node:fs/promises"
 
+import { IEligibleTrainingsForAppointment } from "shared"
+
 import { logger } from "../../../common/logger"
 import { EligibleTrainingsForAppointment } from "../../../common/model/index"
-import { IEligibleTrainingsForAppointment } from "../../../common/model/schema/eligibleTrainingsForAppointment/eligibleTrainingsForAppointment.types"
 import { asyncForEach } from "../../../common/utils/asyncUtils"
 import { runScript } from "../../scriptWrapper"
 import { syncEtablissementsAndFormations } from "../syncEtablissementsAndFormations"

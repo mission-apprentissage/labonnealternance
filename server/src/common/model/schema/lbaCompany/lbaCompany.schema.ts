@@ -1,7 +1,7 @@
-import { getElasticInstance, mongoosastic } from "../../../esClient/index"
-import { Schema, model } from "../../../mongodb"
+import { ILbaCompany } from "shared"
 
-import { ILbaCompany } from "./lbaCompany.types"
+import { mongoosastic } from "../../../esClient/index"
+import { Schema, model } from "../../../mongodb"
 
 export const lbaCompanySchema = new Schema<ILbaCompany>({
   siret: {

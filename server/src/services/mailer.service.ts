@@ -60,7 +60,7 @@ const createMailer = () => {
       from?: string
       cc?: string
       attachments?: object[]
-    }): Promise<{ messageId: string }> => {
+    }): Promise<{ messageId: string; accepted?: string[] }> => {
       return transporter.sendMail({
         from,
         to,

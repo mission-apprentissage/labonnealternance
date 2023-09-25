@@ -1,8 +1,7 @@
 import { FilterQuery } from "mongoose"
-import { IFormationCatalogue } from "shared"
+import { IFormationCatalogue, IEligibleTrainingsForAppointment } from "shared"
 
 import { EligibleTrainingsForAppointment } from "../common/model/index"
-import { IEligibleTrainingsForAppointment } from "../common/model/schema/eligibleTrainingsForAppointment/eligibleTrainingsForAppointment.types"
 
 import { getEmailFromCatalogueField } from "./catalogue.service"
 import { getMostFrequentEmailByLieuFormationSiret } from "./formation.service"

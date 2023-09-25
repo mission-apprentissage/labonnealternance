@@ -2,14 +2,12 @@ import { isEmailBurner } from "burner-email-providers"
 import Joi from "joi"
 import { Document } from "mongoose"
 import { oleoduc, writeData } from "oleoduc"
+import { IApplication, ILbaCompany } from "shared"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 import { logger } from "../common/logger.js"
 import { Application, EmailBlacklist, LbaCompany } from "../common/model/index.js"
-import { IApplication } from "../common/model/schema/application/applications.types.js"
-import { IJobs } from "../common/model/schema/jobs/jobs.types.js"
-import { ILbaCompany } from "../common/model/schema/lbaCompany/lbaCompany.types.js"
 import { decryptWithIV, encryptIdWithIV } from "../common/utils/encryptString.js"
 import { manageApiError } from "../common/utils/errorManager.js"
 import { prepareMessageForMail } from "../common/utils/fileUtils.js"
@@ -50,15 +48,13 @@ const images: object = {
 
 /**
  * @description Get applications by job id
- * @param {IJobs["_id"]} job_id
  */
-export const getApplication = (job_id: IJobs["_id"]) => Application.find({ job_id }).lean()
+export const getApplication = (job_id: IApplication["job_id"]) => Application.find({ job_id }).lean()
 
 /**
  * @description Get applications count by job id
- * @param {IJobs["_id"]} job_id
  */
-export const getApplicationCount = (job_id: IJobs["_id"]) => Application.count({ job_id }).lean()
+export const getApplicationCount = (job_id: IApplication["job_id"]) => Application.count({ job_id }).lean()
 
 /**
  * @description Check if an email if blacklisted.
@@ -732,7 +728,7 @@ export interface IApplicationCount {
  * @param {IJobs["_id"][]} job_ids
  * @returns {Promise<IApplicationCount[]>} token data
  */
-export const getApplicationByJobCount = async (job_ids: IJobs["_id"][]): Promise<IApplicationCount[]> => {
+export const getApplicationByJobCount = async (job_ids: IApplication["job_id"][]): Promise<IApplicationCount[]> => {
   const applicationCountByJob: IApplicationCount[] = await Application.aggregate([
     {
       $match: {

@@ -32,5 +32,5 @@ export const ZEligibleTrainingsForAppointmentSchema = z
   })
   .strict()
 
-export type IEligibleTrainingsForAppointmentSchema = z.output<typeof ZEligibleTrainingsForAppointmentSchema>
+export type IEligibleTrainingsForAppointment = z.output<typeof ZEligibleTrainingsForAppointmentSchema>
 export type IEligibleTrainingsForAppointmentJson = Jsonify<z.input<typeof ZEligibleTrainingsForAppointmentSchema>>
