@@ -10,7 +10,6 @@ import { JOB_STATUS, NIVEAUX_POUR_LBA, RECRUITER_STATUS } from "./constant.servi
 import { getJobsFromElasticSearch, getOffreAvecInfoMandataire, incrementLbaJobViewCount } from "./formulaire.service"
 import type { TLbaItemResult } from "./jobOpportunity.service.types"
 import type { ILbaItem } from "./lbaitem.shared.service.types"
-import { LbaItem } from "./lbaitem.shared.service.types"
 import type { ILbaJobEsResult } from "./lbajob.service.types"
 import { filterJobsByOpco } from "./opco.service"
 
@@ -74,7 +73,7 @@ export const getLbaJobs = async ({
 
     const jobs = useMock === "true" ? matchasMock : await getJobsFromElasticSearch(params)
 
-    const ids: string[] = jobs.flatMap(({ _source }) => _source.jobs.map(({ _id }) => _id))
+    const ids: string[] = jobs.flatMap(({ _source }) => _source?.jobs ? _source.jobs.map(({ _id }) => _id.toString()):[])
 
     const applicationCountByJob = await getApplicationByJobCount(ids)
 
