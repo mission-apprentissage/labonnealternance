@@ -17,7 +17,6 @@ import LbaCompany from "./schema/lbaCompany/lbaCompany.schema"
 import LbaCompanyLegacy from "./schema/lbaCompanylegacy/lbaCompanyLegacy.schema"
 import Opco from "./schema/opco/opco.schema"
 import Optout from "./schema/optout/optout.schema"
-import ParcoursupEtablissementStat from "./schema/parcoursupEtablissementStat/parcoursupEtablissementStat.schema"
 import Recruiter from "./schema/recruiter/recruiter.schema"
 import ReferentielOnisep from "./schema/referentielOnisep/referentielOnisep.schema"
 import ReferentielOpco from "./schema/referentielOpco/referentielOpco.schema"
@@ -47,7 +46,6 @@ export {
   LbaCompanyLegacy,
   Opco,
   Optout,
-  ParcoursupEtablissementStat,
   Recruiter,
   ReferentielOnisep,
   ReferentielOpco,
