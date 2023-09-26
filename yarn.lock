@@ -29459,6 +29459,7 @@ __metadata:
     typescript: ^5.2.2
     vitest: ^0.34.4
     yup: 0.32.9
+    zod: ^3.22.2
   languageName: unknown
   linkType: soft
 
