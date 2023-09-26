@@ -70,39 +70,41 @@ const zContextCreateSchema = z.union([
 export const zAppointmentsRoute = {
   get: {
     "/api/admin/appointments": {
-      querystring: z.object({ query: z.string(), limit: z.coerce.number(), page: z.coerce.number() }).strict(),
       response: {
-        "2xx": z.object({
-          appointments: z.array(ZAppointment),
-          pagination: z.object({
-            page: z.number(),
-            resultats_par_page: z.number(),
-            nombre_de_page: z.number(),
-            total: z.number(),
-          }),
-        }),
+        "2xx": z
+          .object({
+            appointments: z.array(ZAppointment)
+          })
+          .strict(),
       },
       securityScheme: {
         auth: "jwt-rdv-admin",
-        role: "admin",
+        role: "administrator",
       },
     },
     "/api/admin/appointments/details": {
-      querystring: z.object({ query: z.string(), limit: z.coerce.number(), page: z.coerce.number() }).strict(),
       response: {
-        "2xx": z.object({
-          appointments: z.array(ZAppointment),
-          pagination: z.object({
-            page: z.number(),
-            resultats_par_page: z.number(),
-            nombre_de_page: z.number(),
-            total: z.number(),
-          }),
-        }),
+        "2xx": z
+          .object({
+            appointments: z.array(ZAppointment.extend({
+                formation: z.object({
+                  etablissement_gestionnaire_entreprise_raison_sociale: z.string().nullable(),
+                  etablissement_formateur_siret: z.string().nullable(),
+                }),
+                candidat: z.object({
+                  firstname: z.string(),
+                  lastname: z.string(),
+                  email: z.string(),
+                  phone: z.string(),
+                })
+              }
+            ))
+          })
+          .strict(),
       },
       securityScheme: {
         auth: "jwt-rdv-admin",
-        role: "admin",
+        role: "administrator",
       },
     },
     "/api/appointment-request/context/recap": {
