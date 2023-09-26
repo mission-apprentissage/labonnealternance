@@ -124,7 +124,7 @@ const header = "lien\tapplicant_id\tprenom\tnom\temail\tvoeu_etablissement_raiso
 runScript(async () => {
   const voeux = await Appointment.aggregate(aggregateQuery)
 
-  const voeuxAvecLiens = []
+  const voeuxAvecLiens: any[] = []
   await asyncForEach(voeux, async (voeu) => {
     await voeuxAvecLiens.push(formatCsvLine({ lien: buildLien(voeu), ...voeu }))
   })
