@@ -118,7 +118,7 @@ export const removeEmailFromLbaCompanies = async (email: string) => {
  * @param {boolean} shouldCheckSecret
  * @return {Promise<any>}
  */
-export const sendApplication = async ({ query, referer, shouldCheckSecret }: { query: any; referer: string; shouldCheckSecret: boolean }): Promise<any> => {
+export const sendApplication = async ({ query, referer, shouldCheckSecret }: { query: any; referer: string | undefined; shouldCheckSecret: boolean }): Promise<any> => {
   if (shouldCheckSecret && !query.secret) {
     return { error: "secret_missing" }
   } else if (shouldCheckSecret && query.secret !== config.secretUpdateRomesMetiers) {
