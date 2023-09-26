@@ -58,7 +58,7 @@ export default function (server: Server) {
         })
       }
 
-      return res.status(200).send(result)
+      return res.status(200).send(result as string)
     }
   )
 }

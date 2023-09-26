@@ -193,7 +193,7 @@ export default (server: Server) => {
           // le compte se trouve validé et on procède à l'activation de la première offre et à la notification aux CFAs
           if (userFormulaire?.jobs?.length) {
             const job: IJob = Object.assign(userFormulaire.jobs[0], { job_status: JOB_STATUS.ACTIVE, job_expiration_date: dayjs().add(1, "month").format("YYYY-MM-DD") })
-            await updateOffre(job._id, job)
+            await updateOffre(job._id.toString(), job)
 
             if (job?.delegations && job?.delegations.length) {
               await Promise.all(
