@@ -31,7 +31,7 @@ function SearchPage() {
     try {
       const keywordEncoded = encodeURIComponent(keyword)
       const formations = await _get(
-        `admin/formations?query={ "$or": [ { "etablissement_formateur_siret": "${keywordEncoded}" }, { "etablissement_formateur_uai": "${keywordEncoded}"}, { "id_rco_formation": "${keywordEncoded}"}, {"cle_ministere_educatif": "${keywordEncoded}"} ] }`
+        `admin/formations?search_item=${keywordEncoded}`
       )
 
       if (!formations.length) {

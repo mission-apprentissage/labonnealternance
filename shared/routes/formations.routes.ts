@@ -7,13 +7,13 @@ import { IRoutesDef } from "./common.routes"
 export const zFormationRoute = {
   get: {
     "/api/admin/formations": {
-      querystring: z.object({ query: z.string() }).strict(),
+      querystring: z.object({ search_item: z.string() }).strict(),
       response: {
         "2xx": z.array(zFormationCatalogueSchema),
       },
       securityScheme: {
         auth: "jwt-rdv-admin",
-        role: "admin",
+        role: "administrator",
       },
     },
   },
