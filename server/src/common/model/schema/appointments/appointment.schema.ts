@@ -6,7 +6,7 @@ import { model, Schema } from "../../../mongodb"
 export const appointmentSchema = new Schema<IAppointment>({
   applicant_id: {
     type: String,
-    default: null,
+    require: true,
     description: "Id candidat",
   },
   cfa_intention_to_applicant: {
@@ -48,7 +48,7 @@ export const appointmentSchema = new Schema<IAppointment>({
   },
   appointment_origin: {
     type: String,
-    default: null,
+    require: true,
     description: "Le nom du site parent",
   },
   cfa_read_appointment_details_date: {
@@ -60,6 +60,7 @@ export const appointmentSchema = new Schema<IAppointment>({
     type: "array",
     description: "Liste des évènements MAIL récupéré par le serveur",
     required: false,
+    default: [],
     items: {
       type: "object",
       required: false,
@@ -96,6 +97,7 @@ export const appointmentSchema = new Schema<IAppointment>({
     type: "array",
     description: "Liste des évènements MAIL récupéré par le serveur",
     required: false,
+    default: [],
     items: {
       type: "object",
       required: false,

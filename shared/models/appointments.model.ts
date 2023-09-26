@@ -16,7 +16,7 @@ export const ZMailing = z
 export const ZAppointment = z
   .object({
     _id: zObjectId,
-    applicant_id: z.string().nullish(),
+    applicant_id: z.string(),
     cfa_intention_to_applicant: z.string().nullish(),
     cfa_message_to_applicant_date: z.date().nullish(),
     cfa_message_to_applicant: z.string().nullish(),
@@ -24,10 +24,10 @@ export const ZAppointment = z
     applicant_reasons: z.array(z.enum(["modalite", "contenu", "porte", "frais", "place", "horaire", "plus", "accompagnement", "lieu", "suivi", "autre"])).nullish(),
     cfa_gestionnaire_siret: z.string().nullish(),
     cfa_formateur_siret: z.string().nullish(),
-    appointment_origin: z.string().nullish(),
+    appointment_origin: z.string(),
     cfa_read_appointment_details_date: z.date().nullish(),
-    to_applicant_mails: z.array(ZMailing).nullish(),
-    to_cfa_mails: z.array(ZMailing).nullish(),
+    to_applicant_mails: z.array(ZMailing),
+    to_cfa_mails: z.array(ZMailing),
     cle_ministere_educatif: z.string().nullish(),
     created_at: z.date().default(() => new Date()),
     cfa_recipient_email: z.string().nullish(),

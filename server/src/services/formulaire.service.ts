@@ -193,7 +193,7 @@ export const getOffreAvecInfoMandataire = async (id: string | ObjectId): Promise
 
   result.jobs = result.jobs.filter((x) => x._id == id)
 
-  if (result.is_delegated) {
+  if (result.is_delegated && result.address) {
     const [entreprise_localite] = result.address.match(/([0-9]{5})[ ,] ?([A-zÀ-ÿ]*)/) ?? [""]
     const cfa = await getEtablissement({ establishment_siret: result.cfa_delegated_siret })
 

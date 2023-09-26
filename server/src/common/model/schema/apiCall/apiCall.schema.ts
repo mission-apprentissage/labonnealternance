@@ -5,17 +5,17 @@ import { IApiCall } from "./apiCall.types"
 export const apiCallSchema = new Schema<IApiCall>({
   caller: {
     type: String,
-    default: null,
+    require: true,
     description: "Le service faisant appel à l'API",
   },
   api_path: {
     type: String,
-    default: null,
+    require: true,
     description: "Le endpoint appelé",
   },
   response: {
     type: String,
-    default: null,
+    require: true,
     description: "Le résultat de l'appel",
   },
   training_count: {
