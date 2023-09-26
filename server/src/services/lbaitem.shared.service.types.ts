@@ -15,8 +15,8 @@ export interface ILbaItem {
 
   company: ILbaItemCompany | null
 
-  createdAt: string | null // formation -> created_at | matcha -> createdAt
-  lastUpdateAt: string | null // formation -> last_update_at | matcha -> updatedAt
+  createdAt: Date | null // formation -> created_at | matcha -> createdAt
+  lastUpdateAt: Date | null // formation -> last_update_at | matcha -> updatedAt
   url: string | null // pe -> reconstruction depuis id | lbb/lba url
 
   /** TODO API V2: move inside training<ILbaItemTraining> */
@@ -26,7 +26,7 @@ export interface ILbaItem {
   cfd: string | null // formation -> cfd
   rncpCode: string | null // formation -> rncp_code
   rncpLabel: string | null // formation -> rncp_intitule
-  rncpEligibleApprentissage: string | null // formation -> rncp_eligible_apprentissage
+  rncpEligibleApprentissage: boolean | null | undefined // formation -> rncp_eligible_apprentissage
   period: string | null // formation -> periode
   capacity: string | null // formation -> capacite
   onisepUrl: string | null // formation -> onisep_url

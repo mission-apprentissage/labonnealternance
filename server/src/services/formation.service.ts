@@ -401,8 +401,8 @@ const transformFormationForIdea = (rawFormation: IFormationEsResult): ILbaItem =
   resultFormation.rncpLabel = rawFormation.source.rncp_intitule ?? null
   resultFormation.rncpEligibleApprentissage = rawFormation.source.rncp_eligible_apprentissage
   resultFormation.capacity = rawFormation.source.capacite ?? null
-  resultFormation.createdAt = rawFormation.source.created_at
-  resultFormation.lastUpdateAt = rawFormation.source.last_update_at
+  resultFormation.createdAt = rawFormation.source.created_at ?? null
+  resultFormation.lastUpdateAt = rawFormation.source.last_update_at ?? null
   resultFormation.idRco = rawFormation.source.id_formation ?? null
   resultFormation.idRcoFormation = rawFormation.source.id_rco_formation ?? null
   resultFormation.cleMinistereEducatif = rawFormation.source.cle_ministere_educatif ?? null

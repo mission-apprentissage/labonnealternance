@@ -1,3 +1,4 @@
+import { ObjectId } from "mongodb"
 import { IRecruiter } from "shared"
 
 import { encryptMailWithIV } from "../common/utils/encryptString"
@@ -105,9 +106,6 @@ function transformLbaJobs({ jobs, caller, applicationCountByJob }: { jobs: ILbaJ
 
 /**
  * Retourne une offre LBA identifiée par son id
- * @param {string} id l'identifiant mongo de l'offre LBA
- * @param {string} caller optionnel. l'identifiant de l'utilisateur de l'api
- * @return {Promise<IApiError | { matchas: ILbaItem[] }>}
  */
 export const getLbaJobById = async ({ id, caller }: { id: string; caller?: string }): Promise<IApiError | { matchas: ILbaItem[] }> => {
   try {
@@ -119,7 +117,7 @@ export const getLbaJobById = async ({ id, caller }: { id: string; caller?: strin
 
     const applicationCountByJob = await getApplicationByJobCount([id])
 
-    const job = transformLbaJob({
+    const job: ILbaItem = transformLbaJob({
       job: rawJob,
       caller,
       applicationCountByJob,
@@ -257,7 +255,7 @@ function sortLbaJobs(jobs: { results: ILbaItem[] }) {
  * Incrémente le compteur de vue de la page de détail d'une offre LBA
  * @param {string} jobId
  */
-export const addOffreDetailView = async (jobId: string) => {
+export const addOffreDetailView = async (jobId: string | ObjectId) => {
   await incrementLbaJobViewCount(jobId, {
     stats_detail_view: 1,
   })
@@ -265,9 +263,8 @@ export const addOffreDetailView = async (jobId: string) => {
 
 /**
  * Incrémente le compteur de vue de la page de recherche d'une offre LBA
- * @param {string} jobId
  */
-export const addOffreSearchView = async (jobId: string) => {
+export const addOffreSearchView = async (jobId: string | ObjectId) => {
   await incrementLbaJobViewCount(jobId, {
     stats_search_view: 1,
   })

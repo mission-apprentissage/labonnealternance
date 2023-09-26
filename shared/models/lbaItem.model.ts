@@ -94,8 +94,8 @@ export const ZLbaItem = z.object({
     .strict()
     .nullable(),
 
-  createdAt: z.string().nullable(), // formation -> created_at | matcha -> createdAt
-  lastUpdateAt: z.string().nullable(), // formation -> last_update_at | matcha -> updatedAt
+  createdAt: z.date().nullable(), // formation -> created_at | matcha -> createdAt
+  lastUpdateAt: z.date().nullable(), // formation -> last_update_at | matcha -> updatedAt
   url: z.string().nullable(), // pe -> reconstruction depuis id | lbb/lba url
 
   /** TODO API V2: move inside training<ILbaItemTraining> */
@@ -105,7 +105,7 @@ export const ZLbaItem = z.object({
   cfd: z.string().nullable(), // formation -> cfd
   rncpCode: z.string().nullable(), // formation -> rncp_code
   rncpLabel: z.string().nullable(), // formation -> rncp_intitule
-  rncpEligibleApprentissage: z.string().nullable(), // formation -> rncp_eligible_apprentissage
+  rncpEligibleApprentissage: z.boolean().nullable(), // formation -> rncp_eligible_apprentissage
   period: z.string().nullable(), // formation -> periode
   capacity: z.string().nullable(), // formation -> capacite
   onisepUrl: z.string().nullable(), // formation -> onisep_url
