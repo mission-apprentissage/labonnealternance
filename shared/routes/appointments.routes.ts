@@ -70,7 +70,7 @@ const zContextCreateSchema = z.union([
 export const zAppointmentsRoute = {
   get: {
     "/api/admin/appointments": {
-      querystring: z.object({ query: z.string(), limit: z.number(), page: z.number() }).strict(),
+      querystring: z.object({ query: z.string(), limit: z.coerce.number(), page: z.coerce.number() }).strict(),
       response: {
         "2xx": z.object({
           appointments: z.array(ZAppointment),
@@ -88,7 +88,7 @@ export const zAppointmentsRoute = {
       },
     },
     "/api/admin/appointments/details": {
-      querystring: z.object({ query: z.string(), limit: z.number(), page: z.number() }).strict(),
+      querystring: z.object({ query: z.string(), limit: z.coerce.number(), page: z.coerce.number() }).strict(),
       response: {
         "2xx": z.object({
           appointments: z.array(ZAppointment),

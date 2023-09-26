@@ -9,9 +9,9 @@ export const zAdminAppointementsRoutes = {
     "/api/admin/appointments": {
       querystring: z
         .object({
-          query: z.string().nullish(),
-          limit: z.number().optional().default(50),
-          page: z.number().optional().default(1),
+          query: z.string().optional(),
+          limit: z.coerce.number().optional().default(50),
+          page: z.coerce.number().optional().default(1),
         })
         .strict(),
       response: {
@@ -36,8 +36,8 @@ export const zAdminAppointementsRoutes = {
       querystring: z
         .object({
           query: z.string().nullish(),
-          limit: z.number().optional().default(50),
-          page: z.number().optional().default(1),
+          limit: z.coerce.number().optional().default(50),
+          page: z.coerce.number().optional().default(1),
         })
         .strict(),
       response: {

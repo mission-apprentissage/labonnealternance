@@ -32,8 +32,8 @@ export const zV1JobsRoutes = {
         .object({
           query: z.string().optional(), // mongo query
           select: z.string().optional(), // mongo projection
-          page: z.number().optional(),
-          limit: z.number().optional(),
+          page: z.coerce.number().optional(),
+          limit: z.coerce.number().optional(),
         })
         .strict(),
       response: {
@@ -89,9 +89,9 @@ export const zV1JobsRoutes = {
           romes: z.string().optional(),
           rncp: z.string().optional(),
           caller: z.string().optional(),
-          latitude: z.number().optional(),
-          longitude: z.number().optional(),
-          radius: z.number().optional(),
+          latitude: z.coerce.number().optional(),
+          longitude: z.coerce.number().optional(),
+          radius: z.coerce.number().optional(),
           insee: z.string().optional(),
           sources: z.string().optional(),
           diploma: z.string().optional(),

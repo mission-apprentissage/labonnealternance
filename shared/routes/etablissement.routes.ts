@@ -11,8 +11,8 @@ export const zEtablissementRoutes = {
       querystring: z
         .object({
           query: z.string().optional(),
-          limit: z.number().optional().default(50),
-          page: z.number().optional().default(1),
+          limit: z.coerce.number().optional().default(50),
+          page: z.coerce.number().optional().default(1),
         })
         .strict(),
       response: {

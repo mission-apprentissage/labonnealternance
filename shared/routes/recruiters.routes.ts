@@ -26,8 +26,8 @@ export const zRecruiterRoutes = {
     "/api/etablissement/cfa/rome": {
       querystring: z
         .object({
-          latitude: z.number(),
-          longitude: z.number(),
+          latitude: z.coerce.number(),
+          longitude: z.coerce.number(),
           rome: z.array(z.string()),
         })
         .strict(),
