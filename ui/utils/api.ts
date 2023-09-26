@@ -1,4 +1,4 @@
-import Axios from "axios"
+import Axios, {AxiosResponse} from "axios"
 
 import { publicConfig } from "../config.public"
 
@@ -147,3 +147,22 @@ export const etablissementUnsubscribeDemandeDelegation = (establishmentSiret) =>
  */
 
 export const getOpcoUsers = async (query) => API.get(`/user/opco`, { params: query })
+
+
+export const getAppointments = async () => {
+  console.log("========================================================")
+  console.log(JSON.stringify({sessionToken: sessionStorage.getItem("lba:token")}, null, 2))
+
+
+  const res = await API.get(`/admin/appointments`, {
+    headers: {
+      Authorization: `Bearer ${sessionStorage.getItem("lba:token")}`,
+    },
+  })
+
+  console.log("==========================RES==============================")
+  console.log(JSON.stringify({res}, null, 2))
+
+  return res;
+}
+

@@ -35,7 +35,7 @@ export type AuthStrategy = "api-key" | "basic" | "jwt-password" | "jwt-bearer" |
 
 export type SecurityScheme = {
   auth: AuthStrategy
-  role: "admin" | "all"
+  role: "admin" | "all" | "administrator"
 }
 
 export interface IRouteSchemaGet {
