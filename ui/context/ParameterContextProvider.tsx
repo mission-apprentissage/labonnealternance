@@ -6,7 +6,6 @@ const initialState = {
   itemParameters: null,
   opcoFilter: null,
   opcoUrlFilter: null,
-  useMock: false,
   displayMap: false,
   showCombinedJob: true,
 }
@@ -16,7 +15,6 @@ const actions = {
   SET_WIDGET_PARAMETERS: "SET_WIDGET_PARAMETERS",
   SET_ITEM_PARAMETERS: "SET_ITEM_PARAMETERS",
   SET_OPCO_FILTER: "SET_OPCO_FILTER",
-  SET_USE_MOCK: "SET_USE_MOCK",
   SET_DISPLAY_MAP: "SET_DISPLAY_MAP",
   SET_SHOW_COMBINED_JOB: "SET_SHOW_COMBINED_JOB",
 }
@@ -36,9 +34,6 @@ const reducer = (state, action) => {
     }
     case actions.SET_OPCO_FILTER: {
       return { ...state_copy, opcoFilter: action.opcoFilter, opcoUrlFilter: action.opcoUrlFilter }
-    }
-    case actions.SET_USE_MOCK: {
-      return { ...state_copy, useMock: action.useMock }
     }
     case actions.SET_DISPLAY_MAP: {
       return { ...state_copy, displayMap: action.displayMap }
@@ -71,8 +66,6 @@ export type IContextParameter = {
   setOpcoFilter: (b: object) => void
   opcoUrlFilter: object
   setOpcoUrlFilter: (b: object) => void
-  useMock: boolean
-  setUseMock: (b: boolean) => void
   displayMap: boolean
   setDisplayMap: (b: boolean) => void
   showCombinedJob: boolean
@@ -97,9 +90,6 @@ const ParameterContextProvider = ({ children }) => {
     },
     setOpcoFilter: (opcoFilter = null, opcoUrlFilter = null) => {
       dispatch({ type: actions.SET_OPCO_FILTER, opcoFilter, opcoUrlFilter })
-    },
-    setUseMock: (useMock = null) => {
-      dispatch({ type: actions.SET_USE_MOCK, useMock })
     },
     setDisplayMap: (displayMap = false) => {
       dispatch({ type: actions.SET_DISPLAY_MAP, displayMap })

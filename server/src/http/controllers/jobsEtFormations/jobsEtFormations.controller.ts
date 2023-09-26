@@ -25,7 +25,7 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { referer } = req.headers
-      const { romes, rncp, caller, latitude, longitude, radius, insee, sources, diploma, opco, opcoUrl, options, useMock } = req.query
+      const { romes, rncp, caller, latitude, longitude, radius, insee, sources, diploma, opco, opcoUrl, options } = req.query
       const parameterControl = await jobsEtFormationsQueryValidator({
         romes,
         rncp,
@@ -39,7 +39,6 @@ export default (server: Server) => {
         diploma,
         opco,
         opcoUrl,
-        useMock,
       })
 
       if ("error" in parameterControl) {
@@ -66,7 +65,6 @@ export default (server: Server) => {
               caller,
               options,
               referer,
-              useMock,
               api: "jobEtFormationV1",
             })
           : null,
@@ -83,7 +81,6 @@ export default (server: Server) => {
               diploma,
               opco,
               opcoUrl,
-              useMock,
               api: "jobEtFormationV1",
             })
           : null,

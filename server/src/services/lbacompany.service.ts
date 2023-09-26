@@ -8,7 +8,6 @@ import { roundDistance } from "../common/utils/geolib.js"
 import { isAllowedSource } from "../common/utils/isAllowedSource.js"
 import { trackApiCall } from "../common/utils/sendTrackingEvent.js"
 import { sentryCaptureException } from "../common/utils/sentryUtils.js"
-import { lbbMock } from "../mocks/lbbs-mock.js"
 
 import { getApplicationByCompanyCount, IApplicationCount } from "./application.service.js"
 import { TLbaItemResult } from "./jobOpportunity.service.types.js"
@@ -296,17 +295,6 @@ const getCompanies = async ({
 /**
  * Retourne des sociétés issues de l'algo au format unifié LBA
  * Les sociétés retournées sont celles matchant les critères en paramètres
- * @param {string} romes une liste de codes ROME séparés par des virgules
- * @param {string} latitude la latitude du centre de recherche
- * @param {string} longitude la latitude du centre de recherche
- * @param {number} radius le rayon de recherche
- * @param {string} referer le referer de la requête pour identifier si l'appel est de LBA ou d'un service tiers
- * @param {string} caller l'identifiant de l'utilisateur de l'api qui a lancé la recherche
- * @param {string} opco un filtre sur l'opco auquel doivent être rattachés les sociétés
- * @param {string} opcoUrl un filtre sur l'url de l'opco auquel doivent être rattachés les sociétés
- * @param {string} api l'identifiant du endpoint api utilisé pour exploiter cette fonction
- * @param {string} useMock un paramètre optionnel indiquant qu'il faut retourner des données mockées
- * @returns {Promise<TLbaItemResult>}
  */
 export const getSomeCompanies = async ({
   romes,
@@ -318,7 +306,6 @@ export const getSomeCompanies = async ({
   opco,
   opcoUrl,
   api = "jobV1",
-  useMock,
 }: {
   romes?: string
   latitude?: number
@@ -329,34 +316,29 @@ export const getSomeCompanies = async ({
   opco?: string
   opcoUrl?: string
   api?: string
-  useMock?: boolean
 }): Promise<TLbaItemResult> => {
   const hasLocation = latitude === undefined ? false : true
   const currentRadius = hasLocation ? radius : 21000
   const companyLimit = 150 //TODO: query params options or default value from properties -> size || 100
 
-  if (useMock !== false) {
-    return { results: [lbbMock] }
-  } else {
-    const companies = await getCompanies({
-      romes,
-      latitude,
-      longitude,
-      radius: currentRadius,
-      companyLimit,
-      caller,
-      api,
-      opco,
-      opcoUrl,
-    })
+  const companies = await getCompanies({
+    romes,
+    latitude,
+    longitude,
+    radius: currentRadius,
+    companyLimit,
+    caller,
+    api,
+    opco,
+    opcoUrl,
+  })
 
-    if (!("error" in companies) && companies instanceof Array) {
-      const sirets = companies.map(({ siret }) => siret)
-      const applicationCountByCompany = await getApplicationByCompanyCount(sirets)
-      return transformCompanies({ companies, referer, caller, applicationCountByCompany })
-    } else {
-      return companies
-    }
+  if (!("error" in companies) && companies instanceof Array) {
+    const sirets = companies.map(({ siret }) => siret)
+    const applicationCountByCompany = await getApplicationByCompanyCount(sirets)
+    return transformCompanies({ companies, referer, caller, applicationCountByCompany })
+  } else {
+    return companies
   }
 }
 

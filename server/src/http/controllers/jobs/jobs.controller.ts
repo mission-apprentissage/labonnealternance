@@ -402,8 +402,8 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { referer } = req.headers
-      const { romes, rncp, caller, latitude, longitude, radius, insee, sources, diploma, opco, opcoUrl, useMock } = req.query
-      const result = await getJobsQuery({ romes, rncp, caller, referer, latitude, longitude, radius, insee, sources, diploma, opco, opcoUrl, useMock })
+      const { romes, rncp, caller, latitude, longitude, radius, insee, sources, diploma, opco, opcoUrl } = req.query
+      const result = await getJobsQuery({ romes, rncp, caller, referer, latitude, longitude, radius, insee, sources, diploma, opco, opcoUrl })
 
       if ("error" in result) {
         return res.status(500).send(result)

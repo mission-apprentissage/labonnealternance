@@ -120,14 +120,6 @@ export const getOpcoFilter = ({ parameterContext }) => {
   }
 }
 
-export const setUseMock = ({ parameterContext }) => {
-  const useMock = getValueFromPath("useMock")
-  if (useMock) {
-    parameterContext.setUseMock(true)
-    console.log("useMock : ", useMock)
-  }
-}
-
 export const setDisplayMap = ({ parameterContext }) => {
   const displayMap = getValueFromPath("displayMap")
   if (displayMap !== null) {
@@ -216,7 +208,6 @@ export const initParametersFromQuery = ({ router, shouldPush, parameterContext }
   }
 
   getOpcoFilter({ parameterContext })
-  setUseMock({ parameterContext })
   setDisplayMap({ parameterContext })
   setShowCombinedJob({ router, parameterContext })
 

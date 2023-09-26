@@ -17,7 +17,6 @@ export const zV1FormationsParRegion = {
           region: z.string().optional(),
           diploma: z.string().optional(),
           options: z.string().optional(), // hidden
-          useMock: z.boolean().optional(), // hidden
         })
         .strict(),
       headers: z

@@ -24,15 +24,8 @@ export const fetchRomes = memoize(async (value, errorCallbackFn = _.noop, _baseU
 
   const romeLabelsApi = _baseUrl + "/api/romelabels"
 
-  const queryParams = new Proxy(new URLSearchParams(window.location.search), {
-    get: (searchParams, prop) => searchParams.get(prop),
-  })
-
   try {
     const reqParams = { title: value }
-    if (queryParams.useMock) {
-      reqParams.useMock = queryParams.useMock
-    }
     const response = await _axios.get(romeLabelsApi, { params: reqParams, cancelToken: cancelToken.token })
 
     const isAxiosError = !!_.get(response, "data.error")

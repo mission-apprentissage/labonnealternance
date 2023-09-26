@@ -38,8 +38,7 @@ const SearchForTrainingsAndJobs = () => {
 
   const { hasSearch, trainings, jobs, setTrainings, setJobs, selectedItem, setSelectedItem, setItemToScrollTo, setExtendedSearch, setHasSearch } = useContext(SearchResultContext)
 
-  const { displayMap, opcoFilter, opcoUrlFilter, widgetParameters, useMock, shouldExecuteSearch, setDisplayMap, setShouldExecuteSearch, showCombinedJob } =
-    useContext(ParameterContext)
+  const { displayMap, opcoFilter, opcoUrlFilter, widgetParameters, shouldExecuteSearch, setDisplayMap, setShouldExecuteSearch, showCombinedJob } = useContext(ParameterContext)
 
   const { activeFilters, setActiveFilters, formValues, setFormValues, visiblePane, setVisiblePane, isFormVisible, setIsFormVisible, setShouldMapBeVisible } =
     useContext(DisplayContext)
@@ -218,7 +217,6 @@ const SearchForTrainingsAndJobs = () => {
       setJobs,
       setJobMarkers,
       factorJobsForMap,
-      useMock,
     })
 
     setIsFormVisible(false)
@@ -239,7 +237,6 @@ const SearchForTrainingsAndJobs = () => {
       widgetParameters,
       followUpItem,
       selectFollowUpItem,
-      useMock,
     })
   }
 
@@ -261,7 +258,6 @@ const SearchForTrainingsAndJobs = () => {
       selectFollowUpItem,
       opcoFilter,
       opcoUrlFilter,
-      useMock,
       showCombinedJob,
     })
   }

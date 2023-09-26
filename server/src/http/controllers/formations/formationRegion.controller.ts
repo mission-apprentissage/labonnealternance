@@ -23,10 +23,10 @@ export default (server: Server) => {
       attachValidation: true,
     },
     async (req, res) => {
-      const { romes, romeDomain, caller, departement, region, diploma, options, useMock } = req.query
+      const { romes, romeDomain, caller, departement, region, diploma, options } = req.query
       const { referer } = req.headers
 
-      const result = await getFormationsParRegionQuery({ romes, departement, region, diploma, romeDomain, caller, options, referer, useMock })
+      const result = await getFormationsParRegionQuery({ romes, departement, region, diploma, romeDomain, caller, options, referer })
 
       if ("error" in result) {
         if (result.error === "wrong_parameters") {
