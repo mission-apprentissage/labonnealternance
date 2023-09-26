@@ -155,7 +155,7 @@ function transformLbaJob({
 
   return job.jobs.map((offre, idx): ILbaItem => {
     const email = encryptMailWithIV({ value: job.email, caller })
-    const applicationCount = applicationCountByJob.find((job) => job._id.toString() === offre._id.toString())
+    const applicationCountForCurrentJob = applicationCountByJob.find((job) => job._id.toString() === offre._id.toString())
     const romes = offre.rome_code.map((code) => ({ code, label: null }))
 
     const latitude = parseFloat(job.geo_coordinates ? job.geo_coordinates.split(",")[0] : "0")
@@ -214,7 +214,7 @@ function transformLbaJob({
       capacity: null,
       onisepUrl: null,
       training: null, 
-      applicationCount: applicationCount?.count,
+      applicationCount: applicationCountForCurrentJob?.count,
     }
 
     return resultJob
