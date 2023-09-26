@@ -1,5 +1,6 @@
 import axios from "axios"
 import Boom from "boom"
+import { IMetiersDavenir } from "shared/models"
 
 import config from "../config"
 
@@ -29,9 +30,8 @@ const getAccessToken = async () => {
 
 /**
  * @description Interroge l'api Diagoriente pour récupérer des suggestions de métiers d'avenir
- * @returns {Promise<ISuggestionMetiersDavenir>}
  */
-export const getMetiersDAvenir = async (): Promise<ISuggestionMetiersDavenir> => {
+export const getMetiersDAvenir = async (): Promise<IMetiersDavenir> => {
   try {
     const token = await getAccessToken()
     const headers = {
