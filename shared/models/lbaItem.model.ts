@@ -36,7 +36,7 @@ const ZLbaItemNaf = z
 
 export const ZLbaItem = z.object({
   ideaType: z.string().nullable(), // type de l'item :  formation | lbb | lba | peJob | matcha
-  title: z.string().nullable(), // pe -> intitule | lbb/lba -> enseigne | formation -> intitule_long OU intitule_court | matcha -> offres.libelle || offres.rome_appellation_label
+  title: z.string().nullish(), // pe -> intitule | lbb/lba -> enseigne | formation -> intitule_long OU intitule_court | matcha -> offres.libelle || offres.rome_appellation_label
   longTitle: z.string().nullable(), // formation -> intitule_long,
   id: z.string().nullable(), // formation -> id | matcha -> id_form
   idRco: z.string().nullable(), // formation -> id_formation
