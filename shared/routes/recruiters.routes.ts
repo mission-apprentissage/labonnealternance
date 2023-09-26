@@ -6,7 +6,6 @@ import { ZGlobalAddress, ZRecruiter } from "../models"
 import { zCFA } from "../models/cfa.model"
 import { zObjectId } from "../models/common"
 import { zEntreprise } from "../models/entreprise.model"
-import { ZLbarError } from "../models/lbacError.model"
 import { ZUserRecruteur } from "../models/usersRecruteur.model"
 
 import { IRoutesDef } from "./common.routes"
@@ -133,9 +132,13 @@ export const zRecruiterRoutes = {
       body: z.union([zCFA.extend(zShalowUser.shape), zEntreprise.extend(zShalowUser.shape)]),
       response: {
         "2xx": z.union([
-          ZLbarError,
           z.object({
             formulaire: ZRecruiter,
+            user: ZUserRecruteur.extend({
+              type: z.literal("ENTREPRISE"),
+            }),
+          }),
+          z.object({
             user: ZUserRecruteur,
           }),
         ]),
@@ -162,7 +165,7 @@ export const zRecruiterRoutes = {
     "/api/etablissement/validation": {
       body: z.object({ id: zObjectId }),
       response: {
-        "2xx": z.object({ token: z.string() }).strict(), // JWToken
+        "2xx": z.union([z.object({ token: z.string() }).strict(), z.object({ isUserAwaiting: z.boolean() }).strict()]),
       },
       securityScheme: {
         auth: "none",
@@ -175,7 +178,7 @@ export const zRecruiterRoutes = {
       params: z.object({ id: zObjectId }),
       body: ZUserRecruteur,
       response: {
-        "2xx": ZUserRecruteur,
+        "2xx": z.union([ZUserRecruteur, z.null()]),
       },
       securityScheme: {
         auth: "jwt-bearer",

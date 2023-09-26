@@ -52,14 +52,14 @@ export default (server: Server) => {
 
       await getCfaRomeSchema.validateAsync(
         {
-          latitude: parseFloat(latitude),
-          longitude: parseFloat(longitude),
+          latitude: latitude,
+          longitude: longitude,
           rome,
         },
         { abortEarly: false }
       )
 
-      const etablissements = await getNearEtablissementsFromRomes({ rome, origin: { latitude: parseFloat(latitude), longitude: parseFloat(longitude) } })
+      const etablissements = await getNearEtablissementsFromRomes({ rome, origin: { latitude: latitude, longitude: longitude } })
       res.send(etablissements)
     }
   )
