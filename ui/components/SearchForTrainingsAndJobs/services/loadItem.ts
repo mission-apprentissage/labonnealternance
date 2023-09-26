@@ -54,7 +54,6 @@ export const loadItem = async ({
       // lancement d'une recherche d'emploi autour de la formation chargée
       const values = {
         job: {
-          rncps: [itemMarker.rncpCode],
           romes: itemMarker.romes.map((rome) => rome.code),
         },
         location: {

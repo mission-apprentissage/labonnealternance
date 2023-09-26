@@ -3,7 +3,7 @@ import axios from "axios"
 import { logError } from "../../../utils/tools"
 
 import { storeTrainingsInSession } from "./handleSessionStorage"
-import { getRncpFromParameters, getRncpsFromParameters, getRomeFromParameters, trainingErrorText, trainingsApi } from "./utils"
+import { getRomeFromParameters, trainingErrorText, trainingsApi } from "./utils"
 
 export const searchForTrainingsFunction = async ({
   values,
@@ -26,13 +26,10 @@ export const searchForTrainingsFunction = async ({
   try {
     const hasLocation = values?.location?.value ? true : false
     const romes = getRomeFromParameters({ values, widgetParameters })
-    const rncp = romes ? "" : getRncpFromParameters({ widgetParameters }) // on ne transmet pas romes ET rncp
 
     const response = await axios.get(trainingsApi, {
       params: {
         romes,
-        rncps: getRncpsFromParameters({ values, widgetParameters }),
-        rncp,
         longitude: hasLocation ? values.location.value.coordinates[0] : null,
         latitude: hasLocation ? values.location.value.coordinates[1] : null,
         radius: values.radius || 30,
