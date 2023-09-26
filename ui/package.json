@@ -48,7 +48,8 @@
     "react-swipeable": "6.1.0",
     "react-table": "^7.7.0",
     "shared": "workspace:*",
-    "yup": "0.32.9"
+    "yup": "0.32.9",
+    "zod": "^3.22.2"
   },
   "devDependencies": {
     "@testing-library/react": "13.1.1",

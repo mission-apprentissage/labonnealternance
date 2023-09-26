@@ -121,7 +121,7 @@ export type IPatchRoutes = IRoutes["patch"]
 export type IPutRoutes = IRoutes["put"]
 export type IDeleteRoutes = IRoutes["delete"]
 
-export type IResponse<S extends IRouteSchema> = S["response"]["2xx"] extends ZodType ? Jsonify<z.output<S["response"]["2xx"]>> : never
+export type IResponse<S extends IRouteSchema> = S["response"][`2${string}`] extends ZodType ? Jsonify<z.output<S["response"][`2${string}`]>> : never
 
 export type IBody<S extends IRouteSchema> = S["body"] extends ZodType ? z.input<S["body"]> : never
 
@@ -129,8 +129,18 @@ export type IQuery<S extends IRouteSchema> = S["querystring"] extends ZodType ? 
 
 export type IParam<S extends IRouteSchema> = S["params"] extends ZodType ? z.input<S["params"]> : never
 
-export type IHeaders<S extends IRouteSchema> = S["headers"] extends ZodType ? z.input<S["headers"]> : never
+type IHeadersAuth<S extends IRouteSchema> = S["securityScheme"]["auth"] extends "jwt-bearer" ? { authorization: `Bearer ${string}` } : never
 
-export type IRequest<S extends IRouteSchema> = {
-  [Prop in keyof Omit<S, "response">]: S[Prop] extends ZodType ? z.input<S[Prop]> : never
+export type IHeaders<S extends IRouteSchema> = S["headers"] extends ZodType ? z.input<S["headers"]> & IHeadersAuth<S> : IHeadersAuth<S>
+
+type IRequestRaw<S extends IRouteSchema> = {
+  [Prop in Extract<keyof S, "params" | "querystring" | "headers" | "body">]: Prop extends "params"
+    ? IParam<S>
+    : Prop extends "querystring"
+    ? IQuery<S>
+    : Prop extends "headers"
+    ? IHeaders<S>
+    : IBody<S>
 }
+
+export type IRequest<S extends IRouteSchema> = IHeadersAuth<S> extends never ? IRequestRaw<S> : IRequestRaw<S> & { headers: IHeadersAuth<S> }
