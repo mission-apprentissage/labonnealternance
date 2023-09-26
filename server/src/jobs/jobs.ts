@@ -4,7 +4,6 @@ import { IInternalJobs } from "@/common/model/schema/internalJobs/internalJobs.t
 import { getLoggerWithContext } from "../common/logger"
 
 import anonymizeOldApplications from "./anonymizeOldApplications/anonymizeOldApplications"
-import refactorLBACFields from "./cleanAndRenameDBFields/refactorLBACFields"
 import { cronsInit, cronsScheduler } from "./crons_actions"
 // import { findInvalidDocuments } from "./db/findInvalidDocuments"
 // import { recreateIndexes } from "./db/recreateIndexes"
@@ -157,8 +156,6 @@ export async function runJob(job: IInternalJobs): Promise<number> {
         return updateBrevoBlockedEmails(job.payload as any)
       case "applications:anonymize":
         return anonymizeOldApplications()
-      case "lbac:fields:rename":
-        return refactorLBACFields()
       case "companies:update":
         return updateLbaCompanies(job.payload as any)
       case "geo-locations:update":
