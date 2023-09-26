@@ -328,7 +328,7 @@ export const getSomeCompanies = async ({
   opco?: string
   opcoUrl?: string
   api?: string
-  useMock?: string
+  useMock?: boolean
 }): Promise<TLbaItemResult> => {
   const hasLocation = latitude === undefined ? false : true
   const currentRadius = hasLocation ? radius : 21000

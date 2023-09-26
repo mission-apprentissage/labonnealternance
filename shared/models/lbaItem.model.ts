@@ -37,7 +37,7 @@ const ZLbaItemNaf = z
 export const ZLbaItem = z.object({
   ideaType: z.string().nullable(), // type de l'item :  formation | lbb | lba | peJob | matcha
   title: z.string().nullish(), // pe -> intitule | lbb/lba -> enseigne | formation -> intitule_long OU intitule_court | matcha -> offres.libelle || offres.rome_appellation_label
-  longTitle: z.string().nullable(), // formation -> intitule_long,
+  longTitle: z.string().nullish(), // formation -> intitule_long,
   id: z.string().nullable(), // formation -> id | matcha -> id_form
   idRco: z.string().nullable(), // formation -> id_formation
   idRcoFormation: z.string().nullable(), // formation -> id_rco_formation
@@ -138,9 +138,9 @@ export const ZLbaItem = z.object({
       objectif: z.string().nullable(),
       sessions: z.array(
         z.object({
-          startTime: z.string(),
-          endTime: z.string(),
-          isPermanentEntry: z.string(),
+          startDate: z.date(),
+          endDate: z.date(),
+          isPermanentEntry: z.boolean(),
         })
       ),
     })

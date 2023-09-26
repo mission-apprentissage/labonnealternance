@@ -1,8 +1,7 @@
-import { logger } from "@/common/logger.js"
+import Boom from "boom"
 
 import { IApiError } from "../common/utils/errorManager.js"
 import { trackApiCall } from "../common/utils/sendTrackingEvent.js"
-import { sentryCaptureException } from "../common/utils/sentryUtils.js"
 
 import { TJobSearchQuery, TLbaItemResult } from "./jobOpportunity.service.types.js"
 import { getSomeCompanies } from "./lbacompany.service.js"
@@ -43,7 +42,7 @@ export const getJobsFromApi = async ({
   diploma?: string
   opco?: string
   opcoUrl?: string
-  useMock?: string
+  useMock?: boolean
   api?: string
 }): Promise<
   | IApiError
@@ -53,13 +52,14 @@ export const getJobsFromApi = async ({
 > => {
   try {
     const jobSources = !sources ? ["lba", "offres", "matcha"] : sources.split(",")
+    const finalRadius = radius ?? 0
 
     const [peJobs, lbaCompanies, matchas] = await Promise.all([
-      jobSources.indexOf("offres") >= 0
+      jobSources.includes("offres")
         ? getSomePeJobs({
             romes: romes?.split(","),
             insee: insee,
-            radius: radius ?? 0,
+            radius: finalRadius,
             latitude,
             longitude,
             caller,
@@ -69,12 +69,12 @@ export const getJobsFromApi = async ({
             opcoUrl,
           })
         : null,
-      jobSources.indexOf("lba") >= 0
+      jobSources.includes("lba")
         ? getSomeCompanies({
             romes,
             latitude,
             longitude,
-            radius: radius ?? 0,
+            radius: finalRadius,
             referer,
             caller,
             api,
@@ -83,12 +83,12 @@ export const getJobsFromApi = async ({
             useMock,
           })
         : null,
-      jobSources.indexOf("matcha") >= 0
+      jobSources.includes("matcha")
         ? getLbaJobs({
             romes,
             latitude,
             longitude,
-            radius: radius ?? 0,
+            radius: finalRadius,
             api,
             caller,
             diploma,
@@ -108,17 +108,12 @@ export const getJobsFromApi = async ({
     if (lbaCompanies) {
       return { peJobs, matchas, lbaCompanies, lbbCompanies: null }
     }
-
-    throw new Error("All job sources are empty")
+    throw Boom.internal("All job sources are empty")
   } catch (err) {
-    logger.error(err)
-    sentryCaptureException(err)
-
     if (caller) {
       trackApiCall({ caller, api_path: api, response: "Error" })
     }
-
-    return { error: "internal_error" }
+    throw err
   }
 }
 

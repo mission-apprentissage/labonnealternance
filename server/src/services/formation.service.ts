@@ -1,6 +1,7 @@
 import crypto from "crypto"
 
 import axios from "axios"
+import Boom from "boom"
 import { groupBy, maxBy } from "lodash-es"
 import type { IFormationCatalogue } from "shared"
 
@@ -58,33 +59,30 @@ export const getFormations = async ({
   coords,
   radius,
   diploma,
-  limit,
-  caller,
-  api = "formationV1",
+  limit = 10,
   options,
   useMock,
 }: {
   romes?: string[]
   romeDomain?: string
-  coords?: [number | string, number | string]
+  coords?: [number, number]
   radius?: number
   diploma?: string
   limit?: number
   caller?: string
   api?: string
   options: string[]
-  useMock: string
+  useMock?: boolean
 }): Promise<IFormationEsResult[]> => {
   try {
-    if (useMock && useMock !== "false") {
+    if (useMock) {
       return formationsMock
     }
 
     const distance = radius || 30
 
-    const useGeoLocation = coords ? true : false
-    const latitude = coords ? coords[1] : ""
-    const longitude = coords ? coords[0] : ""
+    const latitude = coords?.at(1)
+    const longitude = coords?.at(0)
 
     const now = new Date()
     const tags = [now.getFullYear(), now.getFullYear() + 1, now.getFullYear() + (now.getMonth() < 8 ? -1 : 2)]
@@ -122,10 +120,10 @@ export const getFormations = async ({
 
     const esQuerySort = {
       sort: [
-        useGeoLocation
+        coords
           ? {
               _geo_distance: {
-                lieu_formation_geo_coordonnees: [parseFloat(longitude), parseFloat(latitude)],
+                lieu_formation_geo_coordonnees: coords,
                 order: "asc",
                 unit: "km",
                 mode: "min",
@@ -145,7 +143,7 @@ export const getFormations = async ({
       },
     }
 
-    if (useGeoLocation) {
+    if (coords) {
       esQuery.query.bool.filter = {
         geo_distance: {
           distance: `${distance}km`,
@@ -175,13 +173,9 @@ export const getFormations = async ({
 
     return formations
   } catch (error) {
-    manageApiError({
-      error,
-      api_path: api,
-      caller,
-      errorTitle: `getting trainings from Catalogue (${api})`,
-    })
-    throw new Error(error)
+    const newError = Boom.internal("getting trainings from Catalogue")
+    newError.cause = error
+    throw newError
   }
 }
 
@@ -300,16 +294,10 @@ const getRegionFormations = async ({
     },
   })
 
-  const formations: object[] = []
-
-  responseFormations.body.hits.hits.forEach((formation) => {
-    formations.push({ source: formation._source, sort: formation.sort, id: formation._id })
-  })
-
+  const formations: IFormationEsResult[] = responseFormations.body.hits.hits.map((formation) => ({ source: formation._source, sort: formation.sort, id: formation._id }))
   if (formations.length === 0 && !caller) {
     await notifyToSlack({ subject: "FORMATION", message: `Aucune formation par région trouvée pour les romes ${romes} ou le domaine ${romeDomain}.` })
   }
-
   return formations
 }
 
@@ -346,7 +334,7 @@ const getAtLeastSomeFormations = async ({
   maxOutLimitFormation: number
   caller?: string
   options: string[]
-  useMock: string
+  useMock?: boolean
 }): Promise<ILbaItem[]> => {
   let rawEsFormations: IFormationEsResult[]
   let currentRadius = radius
@@ -382,11 +370,8 @@ const getAtLeastSomeFormations = async ({
   }
 
   rawEsFormations = deduplicateFormations(rawEsFormations)
-
   const formations = transformFormationsForIdea(rawEsFormations)
-
   sortFormations(formations)
-
   return formations
 }
 
@@ -469,7 +454,7 @@ const transformFormationForIdea = (rawFormation: IFormationEsResult): ILbaItem =
     latitude: geoSource ? geoSource.split(",")[0] : null,
     longitude: geoSource ? geoSource.split(",")[1] : null,
     //city: formation.source.etablissement_formateur_localite,
-    city: rawFormation.source.localite,
+    city: rawFormation.source.localite ?? null,
     address: `${rawFormation.source.lieu_formation_adresse}`,
     cedex: rawFormation.source.etablissement_formateur_cedex,
     zipCode: rawFormation.source.code_postal,
@@ -487,11 +472,11 @@ const transformFormationForIdea = (rawFormation: IFormationEsResult): ILbaItem =
     uai: rawFormation.source.etablissement_formateur_uai,
     headquarter: {
       // uniquement pour formation
-      id: rawFormation.source.etablissement_gestionnaire_id,
-      uai: rawFormation.source.etablissement_gestionnaire_uai,
-      siret: rawFormation.source.etablissement_gestionnaire_siret,
-      type: rawFormation.source.etablissement_gestionnaire_type,
-      hasConvention: rawFormation.source.etablissement_gestionnaire_conventionne,
+      id: rawFormation.source.etablissement_gestionnaire_id ?? null,
+      uai: rawFormation.source.etablissement_gestionnaire_uai ?? null,
+      siret: rawFormation.source.etablissement_gestionnaire_siret ?? null,
+      type: rawFormation.source.etablissement_gestionnaire_type ?? null,
+      hasConvention: rawFormation.source.etablissement_gestionnaire_conventionne ?? null,
       place: {
         address: `${rawFormation.source.etablissement_gestionnaire_adresse}${
           rawFormation.source.etablissement_gestionnaire_complement_adresse ? ", " + rawFormation.source.etablissement_gestionnaire_complement_adresse : ""
@@ -500,7 +485,7 @@ const transformFormationForIdea = (rawFormation: IFormationEsResult): ILbaItem =
         zipCode: rawFormation.source.etablissement_gestionnaire_code_postal,
         city: rawFormation.source.etablissement_gestionnaire_localite,
       },
-      name: rawFormation.source.etablissement_gestionnaire_entreprise_raison_sociale,
+      name: rawFormation.source.etablissement_gestionnaire_entreprise_raison_sociale ?? null,
     },
     place: {
       city: rawFormation.source.etablissement_formateur_localite,
@@ -508,14 +493,12 @@ const transformFormationForIdea = (rawFormation: IFormationEsResult): ILbaItem =
   }
 
   if (rawFormation.source.rome_codes && rawFormation.source.rome_codes.length) {
-    resultFormation.romes = []
-
-    rawFormation.source.rome_codes.forEach((rome) => resultFormation.romes.push({ code: rome }))
+    resultFormation.romes = rawFormation.source.rome_codes.map((rome) => ({ code: rome }))
   }
 
   resultFormation.training = {
-    objectif: rawFormation.source?.objectif?.trim(),
-    description: rawFormation.source?.contenu?.trim(),
+    objectif: rawFormation.source?.objectif?.trim() ?? null,
+    description: rawFormation.source?.contenu?.trim() ?? null,
     sessions: setSessions(rawFormation.source),
   }
 
@@ -528,18 +511,12 @@ const transformFormationForIdea = (rawFormation: IFormationEsResult): ILbaItem =
  * @return {ILbaItemTrainingSession[]}
  */
 const setSessions = (formation: Partial<IFormationCatalogue>): ILbaItemTrainingSession[] => {
-  const sessions: object[] = []
-  if (formation?.date_debut?.length) {
-    formation.date_debut.forEach((startDate, idx) => {
-      sessions.push({
-        startDate,
-        endDate: formation.date_fin[idx],
-        isPermanentEntry: formation.modalites_entrees_sorties[idx],
-      })
-    })
-  }
-
-  return sessions
+  const { date_debut = [], date_fin = [], modalites_entrees_sorties = [] } = formation ?? {}
+  return date_debut.map((startDate, idx) => ({
+    startDate,
+    endDate: date_fin[idx],
+    isPermanentEntry: modalites_entrees_sorties[idx],
+  }))
 }
 
 /**
@@ -575,7 +552,7 @@ const getTrainingAddress = (formation: Partial<IFormationCatalogue>): string => 
  * @param {Partial<IFormationCatalogue>} formation
  * @returns {string}
  */
-const getSchoolName = (formation: Partial<IFormationCatalogue>): string => {
+const getSchoolName = (formation: Partial<IFormationCatalogue>): string | undefined => {
   return formation.etablissement_formateur_enseigne || formation.etablissement_formateur_entreprise_raison_sociale || formation.etablissement_gestionnaire_entreprise_raison_sociale
 }
 
@@ -607,7 +584,7 @@ export const getFormationsQuery = async ({
   romeDomain?: string
   caller?: string
   options?: string
-  useMock?: string
+  useMock?: boolean
   referer?: string
   api?: string
 }): Promise<IApiError | { results: ILbaItem[] }> => {
@@ -619,7 +596,7 @@ export const getFormationsQuery = async ({
 
   try {
     const formations = await getAtLeastSomeFormations({
-      romes: parameterControl.romes && parameterControl.romes.split(","),
+      romes: parameterControl.romes?.split(","),
       coords: longitude !== undefined && latitude !== undefined ? [longitude, latitude] : undefined,
       radius,
       diploma: diploma,
@@ -758,7 +735,7 @@ export const getFormationsParRegionQuery = async ({
   caller?: string
   options?: string
   referer?: string
-  useMock?: string
+  useMock?: boolean
 }): Promise<IApiError | { results: ILbaItem[] }> => {
   const queryValidationResult = formationsRegionQueryValidator({ romes, departement, region, diploma, romeDomain, caller, referer, useMock })
 

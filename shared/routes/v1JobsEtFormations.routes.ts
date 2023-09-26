@@ -22,7 +22,7 @@ export const zV1JobsEtFormationsRoutes = {
           opco: z.string().optional(),
           opcoUrl: z.string().optional(),
           options: z.string().optional(), // hidden
-          useMock: z.string().optional(), // hidden
+          useMock: z.boolean().optional(), // hidden
         })
         .strict(),
       headers: z

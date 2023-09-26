@@ -16,7 +16,7 @@ export type TJobSearchQuery = {
   diploma?: string
   opco?: string
   opcoUrl?: string
-  useMock?: string
+  useMock?: boolean
 }
 
 export type TFormationSearchQuery = TJobSearchQuery & { region?: string; departement?: string }

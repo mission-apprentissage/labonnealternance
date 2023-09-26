@@ -131,9 +131,9 @@ export interface ILbaItemNaf {
 }
 
 export interface ILbaItemTrainingSession {
-  startTime: string
-  endTime: string
-  isPermanentEntry: string
+  startDate: Date
+  endDate: Date
+  isPermanentEntry: boolean
 }
 
 export interface ILbaItemTraining {

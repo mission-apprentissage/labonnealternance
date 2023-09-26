@@ -51,7 +51,7 @@ export const getLbaJobs = async ({
   opcoUrl?: string
   diploma?: string
   caller?: string
-  useMock?: string
+  useMock?: boolean
 }): Promise<TLbaItemResult> => {
   if (radius === 0) {
     radius = 10
@@ -74,7 +74,7 @@ export const getLbaJobs = async ({
 
     const jobs = useMock === "true" ? matchasMock : await getJobsFromElasticSearch(params)
 
-    const ids: string[] = jobs.flatMap(({ _source }) => _source?.jobs ? _source.jobs.map(({ _id }) => _id.toString()):[])
+    const ids: string[] = jobs.flatMap(({ _source }) => (_source?.jobs ? _source.jobs.map(({ _id }) => _id.toString()) : []))
 
     const applicationCountByJob = await getApplicationByJobCount(ids)
 
@@ -175,71 +175,73 @@ function transformLbaJob({
   caller?: string
   applicationCountByJob: IApplicationCount[]
 }) {
-  return job.jobs ? job.jobs.map((offre, idx) => {
-    const email = encryptMailWithIV({ value: job.email, caller })
-    const applicationCount = applicationCountByJob.find((job) => job._id.toString() === offre._id.toString())
-    const romes = offre.rome_code.map((code) => ({ code, label: null }))
+  return job.jobs
+    ? job.jobs.map((offre, idx) => {
+        const email = encryptMailWithIV({ value: job.email, caller })
+        const applicationCount = applicationCountByJob.find((job) => job._id.toString() === offre._id.toString())
+        const romes = offre.rome_code.map((code) => ({ code, label: null }))
 
-    const resultJob = {
-      ideaType: "matcha",
-      id: `${job.establishment_id}-${idx}`,
-      title: offre.rome_appellation_label ?? offre.rome_label,
-      contact: {
-        ...email,
-        name: job.first_name + " " + job.last_name,
-        phone: job.phone,
-      },
-      place: {
-        distance: distance ? roundDistance(distance) : null,
-        fullAddress: job.address,
-        address: job.address,
-        latitude: job.geo_coordinates && job.geo_coordinates.split(",")[0],
-        longitude: job.geo_coordinates && job.geo_coordinates.split(",")[1],
-        city: job.address_detail && "localite" in job.address_detail && job.address_detail.localite,
-      },
-      company: {
-        siret: job.establishment_siret,
-        name: job.establishment_enseigne || job.establishment_raison_sociale || "Enseigne inconnue",
-        size: job.establishment_size,
-        mandataire: job.is_delegated,
-        creationDate: job.establishment_creation_date && new Date(job.establishment_creation_date),
-      },
-      nafs: [{ label: job.naf_label }],
-      diplomaLevel: offre.job_level_label,
-      // createdAt: job.createdAt,
-      // lastUpdateAt: job.updatedAt,
-      job: {
-        id: offre._id,
-        description: offre.job_description || "",
-        creationDate: offre.job_creation_date,
-        contractType: offre.job_type && offre.job_type.join(", "),
-        jobStartDate: offre.job_start_date,
-        romeDetails: offre.rome_detail,
-        rythmeAlternance: offre.job_rythm || null,
-        dureeContrat: "" + offre.job_duration,
-        quantiteContrat: offre.job_count,
-        elligibleHandicap: offre.is_disabled_elligible,
-        status: job.status === RECRUITER_STATUS.ACTIF && offre.job_status === JOB_STATUS.ACTIVE ? JOB_STATUS.ACTIVE : JOB_STATUS.ANNULEE,
-      },
-      romes,
-      idRco: null,
-      idRcoFormation: null,
-      url: null,
-      cleMinistereEducatif: null,
-      diploma: null,
-      cfd: null,
-      rncpCode: null,
-      rncpLabel: null,
-      rncpEligibleApprentissage: null,
-      period: null,
-      capacity: null,
-      onisepUrl: null,
-      training: null, 
-      applicationCount,
-    }
+        const resultJob = {
+          ideaType: "matcha",
+          id: `${job.establishment_id}-${idx}`,
+          title: offre.rome_appellation_label ?? offre.rome_label,
+          contact: {
+            ...email,
+            name: job.first_name + " " + job.last_name,
+            phone: job.phone,
+          },
+          place: {
+            distance: distance ? roundDistance(distance) : null,
+            fullAddress: job.address,
+            address: job.address,
+            latitude: job.geo_coordinates && job.geo_coordinates.split(",")[0],
+            longitude: job.geo_coordinates && job.geo_coordinates.split(",")[1],
+            city: job.address_detail && "localite" in job.address_detail && job.address_detail.localite,
+          },
+          company: {
+            siret: job.establishment_siret,
+            name: job.establishment_enseigne || job.establishment_raison_sociale || "Enseigne inconnue",
+            size: job.establishment_size,
+            mandataire: job.is_delegated,
+            creationDate: job.establishment_creation_date && new Date(job.establishment_creation_date),
+          },
+          nafs: [{ label: job.naf_label }],
+          diplomaLevel: offre.job_level_label,
+          // createdAt: job.createdAt,
+          // lastUpdateAt: job.updatedAt,
+          job: {
+            id: offre._id,
+            description: offre.job_description || "",
+            creationDate: offre.job_creation_date,
+            contractType: offre.job_type && offre.job_type.join(", "),
+            jobStartDate: offre.job_start_date,
+            romeDetails: offre.rome_detail,
+            rythmeAlternance: offre.job_rythm || null,
+            dureeContrat: "" + offre.job_duration,
+            quantiteContrat: offre.job_count,
+            elligibleHandicap: offre.is_disabled_elligible,
+            status: job.status === RECRUITER_STATUS.ACTIF && offre.job_status === JOB_STATUS.ACTIVE ? JOB_STATUS.ACTIVE : JOB_STATUS.ANNULEE,
+          },
+          romes,
+          idRco: null,
+          idRcoFormation: null,
+          url: null,
+          cleMinistereEducatif: null,
+          diploma: null,
+          cfd: null,
+          rncpCode: null,
+          rncpLabel: null,
+          rncpEligibleApprentissage: null,
+          period: null,
+          capacity: null,
+          onisepUrl: null,
+          training: null,
+          applicationCount,
+        }
 
-    return resultJob
-  }) : []
+        return resultJob
+      })
+    : []
 }
 
 /**
@@ -248,24 +250,24 @@ function transformLbaJob({
  */
 function sortLbaJobs(jobs: { results: ILbaItem[] }) {
   jobs.results.sort((a, b) => {
-
-    if(a && b)
-    {
-      if(a.title && b.title)
-      {if (a?.title?.toLowerCase() < b?.title?.toLowerCase()) {
-        return -1
+    if (a && b) {
+      if (a.title && b.title) {
+        if (a?.title?.toLowerCase() < b?.title?.toLowerCase()) {
+          return -1
+        }
+        if (a?.title?.toLowerCase() > b?.title?.toLowerCase()) {
+          return 1
+        }
       }
-      if (a?.title?.toLowerCase() > b?.title?.toLowerCase()) {
-        return 1
-      }}
 
-      if(a.company?.name && b.company?.name)
-      {if (a?.company?.name?.toLowerCase() < b?.company?.name?.toLowerCase()) {
-        return -1
+      if (a.company?.name && b.company?.name) {
+        if (a?.company?.name?.toLowerCase() < b?.company?.name?.toLowerCase()) {
+          return -1
+        }
+        if (a?.company?.name?.toLowerCase() > b?.company?.name?.toLowerCase()) {
+          return 1
+        }
       }
-      if (a?.company?.name?.toLowerCase() > b?.company?.name?.toLowerCase()) {
-        return 1
-      }}
     }
 
     return 0

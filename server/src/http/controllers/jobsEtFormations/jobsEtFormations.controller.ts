@@ -52,10 +52,11 @@ export default (server: Server) => {
         return res.send(parameterControl)
       }
 
-      const itemSources = !sources ? ["formations", "lba", "matcha", "offres"] : sources.split(",")
+      const itemSources = sources ? sources.split(",") : ["formations", "lba", "matcha", "offres"]
+      const hasSomeApiTag = ["lba", "lbb", "offres", "matcha"].some((apiTag) => itemSources.includes(apiTag))
 
       const [formations, jobs] = await Promise.all([
-        itemSources.indexOf("formations") >= 0
+        itemSources.includes("formations")
           ? getFormationsQuery({
               romes: parameterControl.romes,
               ...(latitude ? { latitude: latitude } : {}),
@@ -69,7 +70,7 @@ export default (server: Server) => {
               api: "jobEtFormationV1",
             })
           : null,
-        itemSources.indexOf("lba") >= 0 || itemSources.indexOf("lbb") >= 0 || itemSources.indexOf("offres") >= 0 || itemSources.indexOf("matcha") >= 0
+        hasSomeApiTag
           ? getJobsFromApi({
               romes: parameterControl.romes,
               referer,
