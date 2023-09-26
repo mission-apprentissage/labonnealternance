@@ -109,7 +109,7 @@ function transformLbaJobs({ jobs, caller, applicationCountByJob }: { jobs: ILbaJ
     results: jobs.flatMap((job) =>
       transformLbaJob({
         job: job._source,
-        distance: job.sort[0],
+        distance: job.sort && job.sort[0],
         applicationCountByJob,
         caller,
       })
@@ -190,7 +190,7 @@ function transformLbaJob({
         phone: job.phone,
       },
       place: {
-        distance: distance ? roundDistance(distance) : null,
+        distance: distance!==undefined ? roundDistance(distance) : null,
         fullAddress: job.address,
         address: job.address,
         latitude: job.geo_coordinates && job.geo_coordinates.split(",")[0],
@@ -206,8 +206,6 @@ function transformLbaJob({
       },
       nafs: [{ label: job.naf_label }],
       diplomaLevel: offre.job_level_label,
-      // createdAt: job.createdAt,
-      // lastUpdateAt: job.updatedAt,
       job: {
         id: offre._id,
         description: offre.job_description || "",

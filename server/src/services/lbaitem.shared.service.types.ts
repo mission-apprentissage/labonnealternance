@@ -15,8 +15,6 @@ export interface ILbaItem {
 
   company: ILbaItemCompany | null
 
-  createdAt: string | null // formation -> created_at | matcha -> createdAt
-  lastUpdateAt: string | null // formation -> last_update_at | matcha -> updatedAt
   url: string | null // pe -> reconstruction depuis id | lbb/lba url
 
   /** TODO API V2: move inside training<ILbaItemTraining> */
@@ -198,8 +196,6 @@ export class LbaItem implements ILbaItem {
   rncpEligibleApprentissage: ILbaItem["rncpEligibleApprentissage"] = null
   period: ILbaItem["period"] = null
   capacity: ILbaItem["capacity"] = null
-  createdAt: ILbaItem["createdAt"] = null
-  lastUpdateAt: ILbaItem["lastUpdateAt"] = null
   onisepUrl: ILbaItem["onisepUrl"] = null
   url: ILbaItem["url"] = null
 
