@@ -3,7 +3,7 @@ interface IOpco {
   opco: string
   opco_short_name?: string
   idcc: string
-  url: string
+  url?: string
 }
 
 export type { IOpco }

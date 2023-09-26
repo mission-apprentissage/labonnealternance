@@ -219,7 +219,7 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { jobId } = req.params
-      const jobExists = await getOffre(jobId)
+      const jobExists = await getOffre(jobId.toString())
 
       if (!jobExists) {
         return res.status(400).send({ error: true, message: "Job does not exists" })
@@ -245,7 +245,7 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { jobId } = req.params
-      const jobExists = await getOffre(jobId)
+      const jobExists = await getOffre(jobId.toString())
 
       if (!jobExists) {
         return res.status(400).send({ error: true, message: "Job does not exists" })
@@ -285,7 +285,7 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { jobId } = req.params
-      const jobExists = await getOffre(jobId)
+      const jobExists = await getOffre(jobId.toString())
 
       if (!jobExists) {
         return res.status(400).send({ error: true, message: "Job does not exists" })
@@ -293,7 +293,7 @@ export default (server: Server) => {
 
       await createDelegationSchema.validateAsync(req.body)
 
-      const updatedRecruiter = await createJobDelegations({ jobId, etablissementCatalogueIds: req.body.establishmentIds })
+      const updatedRecruiter = await createJobDelegations({ jobId: jobId.toString(), etablissementCatalogueIds: req.body.establishmentIds })
 
       res.status(200)
       return res.send(updatedRecruiter)
@@ -311,7 +311,7 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { jobId } = req.params
-      const job = await getJob(jobId)
+      const job = await getJob(jobId.toString())
 
       if (!job) {
         return res.status(400).send({ error: true, message: "Job does not exists" })
@@ -339,7 +339,7 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { jobId } = req.params
-      const job = await getJob(jobId)
+      const job = await getJob(jobId.toString())
 
       if (!job) {
         res.status(400)
@@ -369,7 +369,7 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { jobId } = req.params
-      const job = await getJob(jobId)
+      const job = await getJob(jobId.toString())
 
       if (!job) {
         res.status(400)

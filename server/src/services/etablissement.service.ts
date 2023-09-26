@@ -216,7 +216,7 @@ export const getOpcoByIdcc = async (idcc: number): Promise<ICFADock | null> => {
  * @param {String} siret
  * @returns {Promise<Object>}
  */
-export const getIdcc = async (siret: string): Promise<ISIRET2IDCC> => {
+export const getIdcc = async (siret: string): Promise<ISIRET2IDCC | null> => {
   try {
     const { data } = await axios.get<ISIRET2IDCC>(`https://siret2idcc.fabrique.social.gouv.fr/api/v2/${encodeURIComponent(siret)}`)
     return data
@@ -243,13 +243,13 @@ export const validateEtablissementEmail = async (_id: IUserRecruteur["_id"]): Pr
  * @param {String} siret
  * @returns {Promise<IApiEntreprise>}
  */
-export const getEtablissementFromGouv = async (siret: string): Promise<IAPIEtablissement> => {
+export const getEtablissementFromGouv = async (siret: string): Promise<IAPIEtablissement | null> => {
   try {
     const { data } = await axios.get<IAPIEtablissement>(`${config.entreprise.baseUrl}/sirene/etablissements/${encodeURIComponent(siret)}`, {
       params: apiParams,
     })
     return data
-  } catch (error) {
+  } catch (error: any) {
     if (error?.response?.status === 404 || error?.response?.status === 422) {
       return null
     }
@@ -351,7 +351,7 @@ export const formatEntrepriseData = (d: IEtablissementGouv): IFormatAPIEntrepris
   establishment_siret: d.siret,
   establishment_raison_sociale: d.unite_legale.personne_morale_attributs.raison_sociale,
   address_detail: d.adresse,
-  address: `${d.adresse.acheminement_postal.l4} ${d.adresse.acheminement_postal.l6}`,
+  address: `${d.adresse?.acheminement_postal?.l4} ${d.adresse?.acheminement_postal?.l6}`,
   contacts: [], // conserve la coherence avec l'UI
   naf_code: d.activite_principale.code,
   naf_label: d.activite_principale.libelle,
@@ -374,7 +374,7 @@ export const formatReferentielData = (d: IReferentiel): IFormatAPIReferentiel =>
   address: d.adresse?.label,
   geo_coordinates: d.adresse
     ? `${d.adresse?.geojson.geometry.coordinates[1]},${d.adresse?.geojson.geometry.coordinates[0]}`
-    : `${d.lieux_de_formation[0].adresse.geojson?.geometry.coordinates[0]},${d.lieux_de_formation[0].adresse.geojson?.geometry.coordinates[1]}`,
+    : `${d.lieux_de_formation[0]?.adresse?.geojson?.geometry.coordinates[0]},${d.lieux_de_formation[0]?.adresse?.geojson?.geometry.coordinates[1]}`,
 })
 
 /**
@@ -406,8 +406,8 @@ export const autoValidateCompany = async (userRecruteur: IUserRecruteur) => {
   const siren = siret.slice(0, 9)
   // Get all corresponding records using the SIREN number in BonneBoiteLegacy collection
   const [bonneBoiteLegacyList, bonneBoiteList, referentielOpcoList] = await Promise.all([
-    getAllEstablishmentFromLbaCompanyLegacy({ siret: { $regex: siren }, email: { $nin: ["", undefined] } }),
-    getAllEstablishmentFromLbaCompany({ siret: { $regex: siren }, email: { $nin: ["", undefined] } }),
+    getAllEstablishmentFromLbaCompanyLegacy({ siret: { $regex: siren }, email: { $nin: ["", null] } }),
+    getAllEstablishmentFromLbaCompany({ siret: { $regex: siren }, email: { $nin: ["", null] } }),
     getAllEstablishmentFromOpcoReferentiel({ siret_code: { $regex: siren } }),
   ])
 
@@ -421,7 +421,7 @@ export const autoValidateCompany = async (userRecruteur: IUserRecruteur) => {
 
   // Check BAL API for validation
 
-  const isValid = validEmails.includes(email) || (isEmailFromPrivateCompany(email) && validEmails.some((validEmail) => isEmailSameDomain(email, validEmail)))
+  const isValid = validEmails.includes(email) || (isEmailFromPrivateCompany(email) && validEmails.some((validEmail) => validEmail && isEmailSameDomain(email, validEmail)))
   if (isValid) {
     userRecruteur = await autoValidateUser(_id)
   } else {
@@ -474,7 +474,7 @@ export const getOpcoData = async (siret: string) => {
     const result = await getOpcoDataRaw(siret)
     if (result) {
       const { opco, idcc } = result
-      await saveOpco({ opco, idcc, siren, url: null })
+      await saveOpco({ opco, idcc, siren })
     }
     return result
   }
