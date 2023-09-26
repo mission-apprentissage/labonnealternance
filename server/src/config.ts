@@ -112,9 +112,9 @@ const config = {
   },
   users: {
     defaultAdmin: {
-      name: env.get("LBA_USERS_DEFAULT_ADMIN_NAME").required().asString(),
-      password: env.get("LBA_USERS_DEFAULT_ADMIN_PASSWORD").required().asString(),
-      role: env.get("LBA_USERS_DEFAULT_ADMIN_ROLE").required().asString(),
+      // name: env.get("LBA_USERS_DEFAULT_ADMIN_NAME").required().asString(),
+      // password: env.get("LBA_USERS_DEFAULT_ADMIN_PASSWORD").required().asString(),
+      // role: env.get("LBA_USERS_DEFAULT_ADMIN_ROLE").required().asString(),
     },
   },
   catalogueMe: {
