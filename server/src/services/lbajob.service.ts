@@ -174,12 +174,11 @@ function transformLbaJob({
   distance?: number
   caller?: string
   applicationCountByJob: IApplicationCount[]
-}): ILbaItem[] {
-  return job.jobs.map((offre, idx) => {
+}) {
+  return job.jobs ? job.jobs.map((offre, idx) => {
     const email = encryptMailWithIV({ value: job.email, caller })
-    const applicationCount = applicationCountByJob.find((job) => job._id == offre._id)
-    const romes = []
-    offre.rome_code.map((code) => romes.push({ code, label: null }))
+    const applicationCount = applicationCountByJob.find((job) => job._id.toString() === offre._id.toString())
+    const romes = offre.rome_code.map((code) => ({ code, label: null }))
 
     const resultJob = {
       ideaType: "matcha",
@@ -194,8 +193,8 @@ function transformLbaJob({
         distance: distance ? roundDistance(distance) : null,
         fullAddress: job.address,
         address: job.address,
-        latitude: job.geo_coordinates.split(",")[0],
-        longitude: job.geo_coordinates.split(",")[1],
+        latitude: job.geo_coordinates && job.geo_coordinates.split(",")[0],
+        longitude: job.geo_coordinates && job.geo_coordinates.split(",")[1],
         city: job.address_detail && "localite" in job.address_detail && job.address_detail.localite,
       },
       company: {
@@ -203,17 +202,17 @@ function transformLbaJob({
         name: job.establishment_enseigne || job.establishment_raison_sociale || "Enseigne inconnue",
         size: job.establishment_size,
         mandataire: job.is_delegated,
-        creationDate: new Date(job.establishment_creation_date),
+        creationDate: job.establishment_creation_date && new Date(job.establishment_creation_date),
       },
       nafs: [{ label: job.naf_label }],
       diplomaLevel: offre.job_level_label,
-      createdAt: job.createdAt,
-      lastUpdateAt: job.updatedAt,
+      // createdAt: job.createdAt,
+      // lastUpdateAt: job.updatedAt,
       job: {
         id: offre._id,
         description: offre.job_description || "",
         creationDate: offre.job_creation_date,
-        contractType: offre.job_type.join(", "),
+        contractType: offre.job_type && offre.job_type.join(", "),
         jobStartDate: offre.job_start_date,
         romeDetails: offre.rome_detail,
         rythmeAlternance: offre.job_rythm || null,
@@ -240,7 +239,7 @@ function transformLbaJob({
     }
 
     return resultJob
-  })
+  }) : []
 }
 
 /**
