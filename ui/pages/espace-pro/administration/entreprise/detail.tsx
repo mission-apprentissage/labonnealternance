@@ -19,14 +19,14 @@ const Formulaire = () => {
   const buttonSize = useBreakpointValue(["sm", "md"])
   const router = useRouter()
   const { widget } = useContext(WidgetContext)
-  const { establishment_siret, opco, idcc } = JSON.parse(router.query.informationSiret)
+  const { establishment_siret, opco, idcc } = JSON.parse(router.query.informationSiret as string)
   const toast = useToast()
   const [auth] = useAuth()
 
   const submitForm = (values, { setSubmitting, setFieldError }) => {
     // save info if not trusted from source
     postFormulaire({ ...values, establishment_siret, opco, idcc, userRecruteurId: auth.id })
-      .then(({ data }) => {
+      .then(({ data }: any) => {
         setSubmitting(false)
         toast({
           title: "Entreprise créée avec succès.",
@@ -39,8 +39,9 @@ const Formulaire = () => {
           query: { establishment_raison_sociale: data.establishment_raison_sociale },
         })
       })
-      .catch((error) => {
-        setFieldError("email", error.response?.data?.message)
+      .catch(({ response }) => {
+        const payload: { error: string; statusCode: number; message: string } = response.data as any
+        setFieldError("email", payload.message)
         setSubmitting(false)
       })
   }
@@ -95,7 +96,7 @@ const Formulaire = () => {
 
 function CreationEntrepriseDetail() {
   const router = useRouter()
-  const informationEntreprise = { ...JSON.parse(router.query.informationSiret), type: AUTHTYPE.ENTREPRISE }
+  const informationEntreprise = { ...JSON.parse(router.query.informationSiret as string), type: AUTHTYPE.ENTREPRISE }
 
   return (
     <AnimationContainer>

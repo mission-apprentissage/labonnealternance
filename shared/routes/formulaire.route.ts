@@ -88,8 +88,8 @@ export const zFormulaireRoute = {
   },
   put: {
     "/api/formulaire/:establishment_id": {
-      body: ZRecruiter.partial(),
       params: z.object({ establishment_id: z.string() }),
+      body: ZRecruiter.partial(),
       response: {
         "2xx": ZRecruiter,
       },
@@ -99,10 +99,10 @@ export const zFormulaireRoute = {
       },
     },
     "/api/formulaire/offre/:jobId": {
-      body: ZJob.partial(),
       params: z.object({ jobId: zObjectId }),
+      body: ZJob.partial(),
       response: {
-        "2xx": ZJob,
+        "2xx": ZRecruiter,
       },
       securityScheme: {
         auth: "none",

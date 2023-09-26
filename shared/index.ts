@@ -83,7 +83,6 @@ const zRoutesPut = {
   ...zUserRecruteurRoutes.put,
   ...zFormulaireRoute.put,
   ...zRecruiterRoutes.put,
-  ...zEligibleTrainingsForAppointmentRoutes.put,
 } as const
 
 const zRoutesDelete = {

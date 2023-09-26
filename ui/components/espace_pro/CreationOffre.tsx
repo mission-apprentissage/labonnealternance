@@ -40,7 +40,7 @@ export default function CreationOffre() {
     } else {
       if (auth.type === AUTHTYPE.ENTREPRISE) {
         // Create the offer and return the form with the related offer created
-        return postOffre(establishment_id, values).then(({ data }) => ({
+        return postOffre(establishment_id, values).then(({ data }: any) => ({
           form: data,
           offre: data.jobs.slice(-1).shift(),
         }))
@@ -82,7 +82,7 @@ export default function CreationOffre() {
           )}
         </Breadcrumb>
       </Box>
-      <AjouterVoeux fromDashboard handleSave={handleSave} {...data?.data[0]} />
+      <AjouterVoeux fromDashboard handleSave={handleSave} {...data?.data} />
     </Container>
   )
 }

@@ -1,3 +1,4 @@
+import Boom from "boom"
 import { zRoutes } from "shared/index"
 
 import { Recruiter } from "../../common/model/index"
@@ -56,7 +57,7 @@ export default (server: Server) => {
 
       await Promise.all(
         result.jobs.map(async (job) => {
-          const candidatures = await getApplication(job._id)
+          const candidatures = await getApplication(job._id.toString())
           return { ...job, candidatures: candidatures && candidatures.length > 0 ? candidatures.length : undefined }
         })
       )
@@ -77,7 +78,7 @@ export default (server: Server) => {
       const { userRecruteurId, establishment_siret, email, last_name, first_name, phone, opco, idcc } = req.body
       const userRecruteurOpt = await getUser({ _id: userRecruteurId })
       if (!userRecruteurOpt) {
-        return res.status(400).send({ error: true, message: "Nous n'avons pas trouvé votre compte utilisateur" })
+        throw Boom.badRequest("Nous n'avons pas trouvé votre compte utilisateur")
       }
       const response = await entrepriseOnboardingWorkflow.createFromCFA({
         email,
@@ -86,13 +87,13 @@ export default (server: Server) => {
         phone,
         siret: establishment_siret,
         cfa_delegated_siret: userRecruteurOpt.establishment_siret,
-        origin: userRecruteurOpt.scope,
+        origin: userRecruteurOpt.scope as string,
         opco,
         idcc,
       })
       if ("error" in response) {
         const { message } = response
-        return res.status(400).send({ error: true, message })
+        throw Boom.badRequest(message)
       }
       return res.status(200).send(response)
     }
@@ -146,10 +147,10 @@ export default (server: Server) => {
     },
     async (req, res) => {
       // Note pour PR quel traitement de getJobById empêche de l'utiliser ici ?
-      const result = await getOffre(req.params.jobId)
+      const result = await getOffre(req.params.jobId.toString())
       const offre = result.jobs.filter((job) => job._id == req.params.jobId)
 
-      res.status(200).send(offre)
+      res.status(200).send(offre[0] || [])
     }
   )
 
@@ -192,7 +193,7 @@ export default (server: Server) => {
       schema: zRoutes.put["/api/formulaire/offre/:jobId"],
     },
     async (req, res) => {
-      const result = await updateOffre(req.params.jobId, req.body)
+      const result = await updateOffre(req.params.jobId.toString(), req.body)
       return res.status(200).send(result)
     }
   )
@@ -213,7 +214,7 @@ export default (server: Server) => {
         return res.status(400).send({ status: "INVALID_RESOURCE", message: "L'offre n'existe pas." })
       }
 
-      const offre = await getJob(jobId)
+      const offre = await getJob(jobId.toString())
 
       const delegationFound = offre.delegations.find((delegation) => delegation.siret_code == req.query.siret_formateur)
 
@@ -234,7 +235,7 @@ export default (server: Server) => {
         }),
       })
 
-      const jobUpdated = await getJob(jobId)
+      const jobUpdated = await getJob(jobId.toString())
       return res.send(jobUpdated)
     }
   )

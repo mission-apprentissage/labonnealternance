@@ -34,6 +34,7 @@ export const getFormulaires = async (query) => {
 
 export const getFormulaire = (establishment_id) => API.get(`/formulaire/${establishment_id}`).catch(errorHandler)
 export const postFormulaire = (form) => API.post(`/formulaire`, form).catch(errorHandler)
+
 export const putFormulaire = (establishment_id, form) => API.put(`/formulaire/${establishment_id}`, form)
 export const archiveFormulaire = (establishment_id) => API.delete(`/formulaire/${establishment_id}`).catch(errorHandler)
 export const archiveDelegatedFormulaire = (siret) => API.delete(`/formulaire/delegated/${siret}`).catch(errorHandler)
@@ -43,6 +44,7 @@ export const archiveDelegatedFormulaire = (siret) => API.delete(`/formulaire/del
  */
 export const getOffre = (jobId) => API.get(`/formulaire/offre/f/${jobId}`)
 export const postOffre = (establishment_id, offre) => API.post(`/formulaire/${establishment_id}/offre`, offre).catch(errorHandler)
+
 export const putOffre = (jobId, offre) => API.put(`/formulaire/offre/${jobId}`, { ...offre, date_mise_a_jour: Date() }).catch(errorHandler)
 export const patchOffre = (jobId, data, config) => API.patch(`/formulaire/offre/${jobId}`, data, config).catch(errorHandler)
 export const cancelOffre = (jobId) => API.put(`/formulaire/offre/${jobId}/cancel`)
