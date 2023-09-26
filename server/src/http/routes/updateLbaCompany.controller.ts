@@ -19,7 +19,7 @@ export default function (server: Server) {
       },
     },
     async (req, res) => {
-      await Joi.object({
+      const { email, phone, siret } = await Joi.object({
         secret: Joi.string().required(),
         email: Joi.string().allow("").email(),
         phone: Joi.string().pattern(REGEX["TELEPHONE"]).allow(""),
@@ -29,7 +29,7 @@ export default function (server: Server) {
       if (req.query.secret !== config.secretUpdateRomesMetiers) {
         return res.status(401).send("unauthorized")
       } else {
-        const result = await updateContactInfo(req.query)
+        const result = await updateContactInfo({ email, phone, siret })
 
         if (result === "not_found") {
           return res.status(404).send(result)
