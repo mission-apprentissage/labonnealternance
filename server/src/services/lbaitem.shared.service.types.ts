@@ -104,12 +104,12 @@ export interface ILbaItemOpco {
 
 export interface ILbaItemJob {
   description: string | null // pe -> description | matcha -> description
-  creationDate: string | Date // pe -> dateCreation | matcha -> createdAt
+  creationDate?: Date | null // pe -> dateCreation | matcha -> createdAt
   id: string | null // pe -> id | matcha -> id mongo offre
   contractType: string | null // pe -> typeContrat | matcha -> offres.type
   contractDescription?: string | null // pe -> typeContratLibelle
   duration?: string | null // pe -> dureeTravailLibelle
-  jobStartDate?: string | Date // matcha -> offres.date_debut_apprentissage
+  jobStartDate?: Date | null // matcha -> offres.date_debut_apprentissage
   romeDetails?: IRomeDetailsFromAPI // matcha -> offres.rome_detail -> détail du code ROME
   rythmeAlternance?: string | null // matcha -> offres.rythme_alternance
   elligibleHandicap?: boolean // matcha -> offres.is_disabled_elligible
