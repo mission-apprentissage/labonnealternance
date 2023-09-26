@@ -32,7 +32,7 @@ fileignoreconfig:
   ignore_detectors:
   - filecontent
 - filename: server/tests/integration/http/passwordRoutes.test.ts
-  checksum: ca06f5c65cc9e3bdc39390cfe5ecdc4e3ea165ce58dc39ce7ac990aff8074a90
+  checksum: 963e2b1e9bb536d194f25b126b8500156fa75387625f1f60d3b906a02dc3e9ea
 - filename: shared/constants/recruteur.ts
   checksum: 28af032d2eb26aec7dd3bb1d32253f992a036626c36a92eb1e7ff07599fd0b2b
 - filename: shared/helpers/openapi/generateOpenapi.test.ts
