@@ -90,7 +90,7 @@ export default (server: Server) => {
 
       // If mail sent from appointment (to the candidat)
       if (appointmentCandidatFound) {
-        const previousEmail = appointmentCandidatFound.to_applicant_mails.find((mail) => mail.message_id.includes(messageId))
+        const previousEmail = appointmentCandidatFound?.to_applicant_mails?.find((mail) => mail.message_id.includes(messageId))
 
         if (!previousEmail) return
 
