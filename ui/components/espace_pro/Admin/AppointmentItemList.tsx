@@ -25,9 +25,9 @@ export const AppointmentItemList = (props) => (
     <Td color="#295a9f" _hover={{ textDecoration: "underline" }}>
       <a href={`mailto:${props.appointment.cfa_recipient_email}`}>{props.appointment.cfa_recipient_email}</a>
     </Td>
-    <Td>{props.appointment.formation?.etablissement_gestionnaire_entreprise_raison_sociale || "N/A"}</Td>
-    <Td>{props.appointment.formation?.etablissement_formateur_siret}</Td>
-    <Td>{props.appointment.formation?.intitule_long}</Td>
+    <Td>{props.appointment.formation.etablissement_gestionnaire_entreprise_raison_sociale || "N/A"}</Td>
+    <Td>{props.appointment.formation.etablissement_formateur_siret}</Td>
+    <Td>{props.appointment.formation.intitule_long}</Td>
     <Td>
       <Text>{props.appointment.appointment_origin}</Text>
     </Td>

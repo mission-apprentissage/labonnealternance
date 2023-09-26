@@ -1,18 +1,30 @@
 import { Box, Heading, Spinner } from "@chakra-ui/react"
 import Head from "next/head"
-import React from "react"
+import { useEffect, useState } from "react"
+import { IAppointment } from "shared"
 
-import { useFetch } from "../../../common/hooks/useFetch"
 import LayoutAdminRdvA from "../../../components/espace_pro/Admin/Layout"
 import { RequestsBoardComponent } from "../../../components/espace_pro/Admin/RequestsBoardComponent"
 import { Breadcrumb } from "../../../components/espace_pro/common/components/Breadcrumb"
 import withAuth from "../../../components/espace_pro/withAuth"
+import { getAppointmentsDetails } from "../../../utils/api"
 
 function AdminPage() {
-  const [data, loading] = useFetch("admin/appointments/details?limit=500")
-  const appointments = data === null ? [] : data.appointments
+
+  const [loading, setLoading] = useState(true)
+  const [appointments, setAppointments] = useState<IAppointment[]>([])
+  // const appointments = data === null ? [] : data.appointments
 
   const title = "Tableau de bord"
+
+  useEffect(() => {
+    getAppointmentsDetails()
+      .then(({ data }) => {
+        setLoading(false)
+        setAppointments(data.appointments)
+      })
+      .catch(console.error)
+  }, [])
 
   return (
     <LayoutAdminRdvA>

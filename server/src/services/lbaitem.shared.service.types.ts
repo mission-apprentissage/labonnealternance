@@ -104,7 +104,7 @@ export interface ILbaItemOpco {
 
 export interface ILbaItemJob {
   description: string | null // pe -> description | matcha -> description
-  creationDate?: Date | null // pe -> dateCreation | matcha -> createdAt
+  creationDate?: Date | string | null // pe -> dateCreation | matcha -> createdAt
   id: string | null // pe -> id | matcha -> id mongo offre
   contractType: string | null // pe -> typeContrat | matcha -> offres.type
   contractDescription?: string | null // pe -> typeContratLibelle

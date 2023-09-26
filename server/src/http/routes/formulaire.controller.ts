@@ -13,7 +13,6 @@ import {
   createJobDelegations,
   getFormulaire,
   getJob,
-  getOffre,
   patchOffre,
   provideOffre,
   updateFormulaire,
@@ -146,11 +145,11 @@ export default (server: Server) => {
       schema: zRoutes.get["/api/formulaire/offre/f/:jobId"],
     },
     async (req, res) => {
-      // Note pour PR quel traitement de getJobById empêche de l'utiliser ici ?
-      const result = await getOffre(req.params.jobId.toString())
-      const offre = result.jobs.filter((job) => job._id == req.params.jobId)
-
-      res.status(200).send(offre[0] || [])
+      const offre = await getJob(req.params.jobId.toString())
+      if (!offre) {
+        throw Boom.badRequest("L'offre n'existe pas")
+      }
+      res.status(200).send(offre)
     }
   )
 

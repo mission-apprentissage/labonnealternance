@@ -86,17 +86,19 @@ export default (server: Server) => {
 
       const { email: userEmail, _id, first_name, last_name, is_email_checked } = user || {}
 
-      const status = getUserStatus(user.status)
+      if (user.status.length) {
+        const status = getUserStatus(user.status)
 
-      if ([ENTREPRISE, CFA].includes(user.type)) {
-        if ([ETAT_UTILISATEUR.ATTENTE, ETAT_UTILISATEUR.ERROR].includes(status)) {
-          return res.status(400).send({ error: true, reason: "VALIDATION" })
-        }
-        if (status === ETAT_UTILISATEUR.DESACTIVE) {
-          return res.status(400).send({
-            error: true,
-            reason: "DISABLED",
-          })
+        if ([ENTREPRISE, CFA].includes(user.type)) {
+          if ([ETAT_UTILISATEUR.ATTENTE, ETAT_UTILISATEUR.ERROR].includes(status)) {
+            return res.status(400).send({ error: true, reason: "VALIDATION" })
+          }
+          if (status === ETAT_UTILISATEUR.DESACTIVE) {
+            return res.status(400).send({
+              error: true,
+              reason: "DISABLED",
+            })
+          }
         }
       }
 

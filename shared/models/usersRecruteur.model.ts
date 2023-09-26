@@ -1,15 +1,18 @@
 import { Jsonify } from "type-fest"
 import { z } from "zod"
 
+import { ETAT_UTILISATEUR } from "../constants/recruteur"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 
 import { ZGlobalAddress } from "./address.model"
 import { zObjectId } from "./common"
 
+const etatUtilisateurValues = Object.values(ETAT_UTILISATEUR)
+
 export const ZUserStatusValidation = z
   .object({
     validation_type: z.enum(["AUTOMATIQUE", "MANUELLE"]).describe("Processus de validation lors de l'inscription de l'utilisateur"),
-    status: z.enum(["VALIDÉ", "DESACTIVÉ", "EN ATTENTE DE VALIDATION", "ERROR"]).describe("Statut de l'utilisateur"),
+    status: z.enum([etatUtilisateurValues[0], ...etatUtilisateurValues.slice(1)]).describe("Statut de l'utilisateur"),
     reason: z.string().describe("Raison du changement de statut"),
     user: z.string().describe("Utilisateur ayant effectué la modification | SERVEUR si le compte a été validé automatiquement"),
     date: z.date().describe("Date de l'évènement"),

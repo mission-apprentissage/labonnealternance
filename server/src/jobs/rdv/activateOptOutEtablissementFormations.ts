@@ -81,8 +81,15 @@ export const activateOptOutEtablissementFormations = async () => {
       })
 
       // Gets all mails (formation email + formateur email), excepted "email_decisionnaire"
-      let emails = eligibleTrainingsForAppointmentsFound.map((eligibleTrainingsForAppointment) => eligibleTrainingsForAppointment.lieu_formation_email)
-      emails = [...new Set(emails.filter((email) => !_.isNil(email) && email !== etablissement.gestionnaire_email))]
+      let emails = eligibleTrainingsForAppointmentsFound.flatMap((eligibleTrainingsForAppointment) => {
+        const email = eligibleTrainingsForAppointment.lieu_formation_email
+        if (!_.isNil(email) && email !== etablissement.gestionnaire_email) {
+          return [email]
+        } else {
+          return []
+        }
+      })
+      emails = [...new Set(emails)]
 
       await Promise.all(
         emails.map((email) =>
