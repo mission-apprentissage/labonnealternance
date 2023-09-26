@@ -6,7 +6,7 @@ import { IDomainesMetiers } from "./domainesmetiers.types"
 export const domainesMetiersSchema = new Schema<IDomainesMetiers>({
   sous_domaine: {
     type: String,
-    default: null,
+    require: true,
     description: "Le sous-domaine d'un métier",
   },
   domaine: {
@@ -36,37 +36,37 @@ export const domainesMetiersSchema = new Schema<IDomainesMetiers>({
   },
   mots_clefs: {
     type: String,
-    default: null,
+    require: true,
     description: "Les mots clefs associés au métier",
   },
   mots_clefs_specifiques: {
     type: String,
-    default: null,
+    require: true,
     description: "Les mots clefs associés à une ligne spécifique du métier",
   },
   appellations_romes: {
     type: String,
-    default: null,
+    require: true,
     description: "Mots clefs tirés des appellations associées à un code ROME",
   },
   couples_appellations_rome_metier: {
     type: [Object],
-    default: null,
+    default: [],
     description: "Couple Appellation, code et libelle ROME",
   },
   codes_fap: {
     type: [String],
-    default: null,
+    default: [],
     description: "Liste des codes FAP",
   },
   intitules_fap: {
     type: [String],
-    default: null,
+    default: [],
     description: "Mots clefs issus des libellés FAP",
   },
   sous_domaine_onisep: {
     type: [String],
-    default: null,
+    default: [],
     description: "Les sous-domaines onisep",
   },
   couples_romes_metiers: {
