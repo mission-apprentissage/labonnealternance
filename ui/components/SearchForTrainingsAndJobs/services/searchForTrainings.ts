@@ -26,7 +26,6 @@ export const searchForTrainingsFunction = async ({
   try {
     const hasLocation = values?.location?.value ? true : false
     const romes = getRomeFromParameters({ values, widgetParameters })
-    const rncp = romes ? "" : getRncpFromParameters({ widgetParameters }) // on ne transmet pas romes ET rncp
 
     const response = await axios.get(trainingsApi, {
       params: {
