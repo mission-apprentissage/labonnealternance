@@ -125,7 +125,7 @@ export const getFormationsByCleMinistereEducatif = ({ cleMinistereEducatifs }: {
  * @param {Object} select
  * @returns {Promise<Object>}
  */
-export const getCatalogueFormations = (query: object, select?: object) => FormationCatalogue.find(query, select)
+export const getCatalogueFormations = (query: object, select?: object) => FormationCatalogue.find(query, select).lean()
 
 /**
  * @description Get formations count through the CARIF OREF catalogue API.

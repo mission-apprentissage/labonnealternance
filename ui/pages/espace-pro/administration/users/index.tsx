@@ -34,7 +34,7 @@ import { Parametre } from "../../../../theme/components/icons"
 import { getUsers } from "../../../../utils/api"
 
 function Users() {
-  const [currentEntreprise, setCurrentEntreprise] = useState()
+  const [currentEntreprise, setCurrentEntreprise] = useState({})
   const [tabIndex, setTabIndex] = useState(0)
   const confirmationDesactivationUtilisateur = useDisclosure()
   const confirmationActivationUtilisateur = useDisclosure()
