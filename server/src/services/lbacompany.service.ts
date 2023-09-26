@@ -179,8 +179,8 @@ const getCompanies = async ({
   api = "jobV1",
 }: {
   romes?: string
-  latitude?: string
-  longitude?: string
+  latitude?: number
+  longitude?: number
   radius?: number
   companyLimit: number
   caller?: string
@@ -222,7 +222,7 @@ const getCompanies = async ({
         latitude
           ? {
               _geo_distance: {
-                geo_coordinates: [parseFloat(longitude ?? "0"), parseFloat(latitude)],
+                geo_coordinates: [longitude ?? 0, latitude ?? 0],
                 order: "asc",
                 unit: "km",
                 mode: "min",
@@ -320,8 +320,8 @@ export const getSomeCompanies = async ({
   useMock,
 }: {
   romes?: string
-  latitude?: string
-  longitude?: string
+  latitude?: number
+  longitude?: number
   radius?: number
   referer?: string
   caller?: string

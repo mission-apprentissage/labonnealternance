@@ -4,7 +4,7 @@ import { IApiError } from "../common/utils/errorManager.js"
 import { trackApiCall } from "../common/utils/sendTrackingEvent.js"
 import { sentryCaptureException } from "../common/utils/sentryUtils.js"
 
-import { TJobSearchQuery } from "./jobOpportunity.service.types.js"
+import { TJobSearchQuery, TLbaItemResult } from "./jobOpportunity.service.types.js"
 import { getSomeCompanies } from "./lbacompany.service.js"
 import { getLbaJobs } from "./lbajob.service.js"
 import { getSomePeJobs } from "./pejob.service.js"
@@ -45,16 +45,21 @@ export const getJobsFromApi = async ({
   opcoUrl?: string
   useMock?: string
   api?: string
-}) => {
+}): Promise<
+  | IApiError
+  | { peJobs: TLbaItemResult; matchas: TLbaItemResult | null; lbaCompanies: TLbaItemResult | null; lbbCompanies: null }
+  | { peJobs: TLbaItemResult | null; matchas: TLbaItemResult; lbaCompanies: TLbaItemResult | null; lbbCompanies: null }
+  | { peJobs: TLbaItemResult | null; matchas: TLbaItemResult | null; lbaCompanies: TLbaItemResult; lbbCompanies: null }
+> => {
   try {
     const jobSources = !sources ? ["lba", "offres", "matcha"] : sources.split(",")
 
-    const [peJobs, lbaCompanies, lbbCompanies, matchas] = await Promise.all([
+    const [peJobs, lbaCompanies, matchas] = await Promise.all([
       jobSources.indexOf("offres") >= 0
         ? getSomePeJobs({
             romes: romes?.split(","),
             insee: insee,
-            radius: radius ? parseInt(radius) : 0,
+            radius: radius ?? 0,
             latitude,
             longitude,
             caller,
@@ -69,7 +74,7 @@ export const getJobsFromApi = async ({
             romes,
             latitude,
             longitude,
-            radius: radius ? parseInt(radius) : 0,
+            radius: radius ?? 0,
             referer,
             caller,
             api,
@@ -78,13 +83,12 @@ export const getJobsFromApi = async ({
             useMock,
           })
         : null,
-      null,
       jobSources.indexOf("matcha") >= 0
         ? getLbaJobs({
             romes,
             latitude,
             longitude,
-            radius: radius ? parseInt(radius) : 0,
+            radius: radius ?? 0,
             api,
             caller,
             diploma,
@@ -95,7 +99,17 @@ export const getJobsFromApi = async ({
         : null,
     ])
 
-    return { peJobs, matchas, lbaCompanies, lbbCompanies }
+    if (peJobs) {
+      return { peJobs, matchas, lbaCompanies, lbbCompanies: null }
+    }
+    if (matchas) {
+      return { peJobs, matchas, lbaCompanies, lbbCompanies: null }
+    }
+    if (lbaCompanies) {
+      return { peJobs, matchas, lbaCompanies, lbbCompanies: null }
+    }
+
+    throw new Error("All job sources are empty")
   } catch (err) {
     logger.error(err)
     sentryCaptureException(err)
@@ -111,10 +125,15 @@ export const getJobsFromApi = async ({
 /**
  * Retourne la compilation d'offres partenaires, d'offres LBA et de sociétés issues de l'algo
  * ou une liste d'erreurs si les paramètres de la requête sont invalides
- * @param {TJobSearchQuery} query les paramètres de recherche
- * @returns {Promise<{ error: string, error_messages: string[] } | IApiError | { job_count: number, matchas: TLbaItemResult, peJobs: TLbaItemResult, lbaCompanies: TLbaItemResult, lbbCompanies: null }>}
  */
-export const getJobsQuery = async (query: TJobSearchQuery) => {
+export const getJobsQuery = async (
+  query: TJobSearchQuery
+): Promise<
+  | IApiError
+  | { peJobs: TLbaItemResult; matchas: TLbaItemResult | null; lbaCompanies: TLbaItemResult | null; lbbCompanies: null }
+  | { peJobs: TLbaItemResult | null; matchas: TLbaItemResult; lbaCompanies: TLbaItemResult | null; lbbCompanies: null }
+  | { peJobs: TLbaItemResult | null; matchas: TLbaItemResult | null; lbaCompanies: TLbaItemResult; lbbCompanies: null }
+> => {
   const parameterControl = await jobsQueryValidator(query)
 
   if ("error" in parameterControl) {
@@ -145,5 +164,5 @@ export const getJobsQuery = async (query: TJobSearchQuery) => {
     trackApiCall({ caller: query.caller, job_count, result_count: job_count, api_path: "jobV1/jobs", response: "OK" })
   }
 
-  return { ...result }
+  return result
 }

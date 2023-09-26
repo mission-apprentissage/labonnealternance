@@ -181,7 +181,6 @@ export default (server: Server) => {
         return res.send({ error: true, message: "ROME Code details could not be retrieved" })
       }
       // Initialize job object with collected data
-      const DATE_FORMAT = "YYYY-MM-DD"
 
       const job: Partial<IJob> = {
         rome_label: romeDetails.libelle,
@@ -190,8 +189,8 @@ export default (server: Server) => {
         job_level_label: body.job_level_label,
         job_start_date: body.job_start_date,
         job_description: body.job_description,
-        job_creation_date: dayjs().format(DATE_FORMAT),
-        job_expiration_date: dayjs().add(1, "month").format(DATE_FORMAT),
+        job_creation_date: dayjs().toDate(),
+        job_expiration_date: dayjs().add(1, "month").toDate(),
         job_status: JOB_STATUS.ACTIVE,
         job_type: body.job_type,
         rome_detail: romeDetails,
@@ -407,8 +406,7 @@ export default (server: Server) => {
       const result = await getJobsQuery({ romes, rncp, caller, referer, latitude, longitude, radius, insee, sources, diploma, opco, opcoUrl, useMock })
 
       if ("error" in result) {
-        res.status(500)
-        return res.send(result)
+        return res.status(500).send(result)
       }
       if ("matchas" in result) {
         const { matchas } = result
@@ -416,7 +414,7 @@ export default (server: Server) => {
           matchas.results.map((matchaOffre) => matchaOffre?.job?.id && addOffreSearchView(matchaOffre.job.id))
         }
       }
-      return res.send(result)
+      return res.status(200).send(result)
     }
   )
 

@@ -132,6 +132,19 @@ export const zV1JobsRoutes = {
             lbbCompanies: z.null(), // always null until removal
           })
           .strict(),
+        "500": z.union([
+          ZResError,
+          z
+            .object({
+              error: z.string(),
+              error_messages: z.array(z.string()).optional(),
+              result: z.string().optional(),
+              message: z.unknown().optional(),
+              status: z.number().optional(),
+              statusText: z.string().optional(),
+            })
+            .strict(),
+        ]),
       },
       securityScheme: {
         auth: "none",
@@ -268,7 +281,7 @@ export const zV1JobsRoutes = {
           is_disabled_elligible: z.boolean(),
           job_count: z.number().optional(),
           job_rythm: z.string().optional(),
-          job_start_date: z.string(),
+          job_start_date: z.date(),
           job_employer_description: z.string().optional(),
           job_description: z.string().optional(),
           custom_address: z.string().optional(),

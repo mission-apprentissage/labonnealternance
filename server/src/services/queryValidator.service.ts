@@ -200,8 +200,6 @@ export const validateCaller = ({ caller, referer }: { caller: string | undefined
 
 /**
  * Ensemble de contrôles complexes sur la requête de recherche d'opportunités d'emploi
- * @param {TJobSearchQuery} query paramètres de la requête
- * @returns {Promise<{ result: "passed", romes: string } | { error: string; error_messages: string[] }>}
  */
 export const jobsQueryValidator = async (query: TJobSearchQuery): Promise<{ result: "passed"; romes: string | undefined } | { error: string; error_messages: string[] }> => {
   const error_messages = []

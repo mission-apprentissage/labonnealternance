@@ -5,7 +5,7 @@ import { sentryCaptureException } from "./sentryUtils"
 
 export interface IApiError {
   result?: string
-  error?: string
+  error: string
   message?: any
   status?: number
   statusText?: string
