@@ -1,3 +1,4 @@
+import { ObjectId } from "mongodb"
 import { FilterQuery } from "mongoose"
 import { IFormationCatalogue, IEligibleTrainingsForAppointment } from "shared"
 
@@ -34,7 +35,8 @@ const findOne = (conditions: FilterQuery<IEligibleTrainingsForAppointment>) => E
  * @param {Partial<IEligibleTrainingsForAppointment>} params - EligibleTrainingsForAppointment params
  * @returns {Promise<IEligibleTrainingsForAppointment>}
  */
-const updateParameter = (id: string, params: Partial<IEligibleTrainingsForAppointment>) => EligibleTrainingsForAppointment.findOneAndUpdate({ _id: id }, params, { new: true })
+const updateParameter = (id: ObjectId | string, params: Partial<IEligibleTrainingsForAppointment>) =>
+  EligibleTrainingsForAppointment.findOneAndUpdate({ _id: id }, params, { new: true })
 
 /**
  * @description Deletes an item.

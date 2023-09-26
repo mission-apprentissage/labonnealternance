@@ -918,7 +918,7 @@ const sortFormations = (formations: ILbaItem[]) => {
  * @param {string} etablissement_formateur_siret
  * @return {Promise<string | null>}
  */
-export const getMostFrequentEmailByLieuFormationSiret = async (etablissement_formateur_siret: string): Promise<string | null> => {
+export const getMostFrequentEmailByLieuFormationSiret = async (etablissement_formateur_siret: string | undefined): Promise<string | null> => {
   const formations = await FormationCatalogue.find(
     {
       email: { $ne: null },

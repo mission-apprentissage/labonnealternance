@@ -71,8 +71,8 @@ export const recruiterSchema = new Schema<IRecruiter>(
     },
     email: {
       type: String,
-      default: null,
       description: "Email du contact",
+      require: true,
     },
     jobs: [{ type: jobsSchema, default: {}, description: "Liste des offres d'apprentissage" }],
     origin: {

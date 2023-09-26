@@ -27,11 +27,6 @@ export default (server: Server) => {
     async (req, res) => {
       const { cfd } = req.params
       const result = await getMetiersPourCfd({ cfd })
-
-      if (result.error) {
-        res.status(500)
-      }
-
       return res.send(result)
     }
   )
@@ -52,11 +47,6 @@ export default (server: Server) => {
     async (req, res) => {
       const { siret } = req.params
       const result = await getMetiersPourEtablissement({ siret })
-
-      if (result.error) {
-        res.status(500)
-      }
-
       return res.send(result)
     }
   )
@@ -77,11 +67,6 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const result = await getTousLesMetiers()
-
-      if (result.error) {
-        res.status(500)
-      }
-
       return res.send(result)
     }
   )
@@ -107,15 +92,6 @@ export default (server: Server) => {
     async (req, res) => {
       const { title, romes, rncps } = req.query
       const result = await getMetiers({ title, romes, rncps })
-
-      if ("error" in result) {
-        if (result.error === "missing_parameters") {
-          res.status(400)
-        } else {
-          res.status(500)
-        }
-      }
-
       return res.send(result)
     }
   )
@@ -141,15 +117,6 @@ export default (server: Server) => {
     async (req, res) => {
       const { label } = req.query
       const result = await getCoupleAppellationRomeIntitule(label)
-
-      if ("error" in result) {
-        if (result.error === "missing_parameters") {
-          res.status(400)
-        } else {
-          res.status(500)
-        }
-      }
-
       return res.send(result)
     }
   )

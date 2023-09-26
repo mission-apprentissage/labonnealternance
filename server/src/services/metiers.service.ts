@@ -1,20 +1,18 @@
+import Boom from "boom"
 import * as _ from "lodash-es"
 import { matchSorter } from "match-sorter"
 
 import { getElasticInstance } from "../common/esClient/index"
-import { logger } from "../common/logger"
-import { sentryCaptureException } from "../common/utils/sentryUtils"
 import { mockedLabelsAndRomes } from "../mocks/labelsAndRomes-mock"
 
 import { getRomesFromCfd, getRomesFromSiret } from "./catalogue.service"
-import { IAppellationsRomes, IMetierEnrichi, IMetiers, IMetiersEnrichis, IMetiersEnrichisForDiplomas } from "./metiers.service.types"
+import { IAppellationsRomes, IMetierEnrichi, IMetiers, IMetiersEnrichis } from "./metiers.service.types"
 
 /**
  * Retourne un ensemble de métiers et/ou diplômes et leurs codes romes et rncps associés en fonction de terme de recherches
  * @param {string} title : le terme de recherche (préfixe | mot entier | plusieurs mots ou préfixes)
  * @param {string} withRomeLabels : (optionel) flag indiquant qu'il faut également retourner les libellé associés aux codes romes
  * @param {string} useMock : (optionel) flag indiquant qu'il faut retourner des données mockées
- * @returns {Promise<IMetiersEnrichis>}
  */
 export const getRomesAndLabelsFromTitleQuery = async ({
   title,
@@ -33,23 +31,6 @@ export const getRomesAndLabelsFromTitleQuery = async ({
     const [romesMetiers, romesDiplomes] = await Promise.all([getLabelsAndRomes(title, withRomeLabels), getLabelsAndRomesForDiplomas(title)])
     return { ...romesMetiers, ...romesDiplomes }
   }
-}
-
-const manageError = ({ error, msgToLog }) => {
-  sentryCaptureException(error)
-  let error_msg = _.get(error, "meta.body") ?? error.message
-
-  if (typeof error_msg === "object") {
-    error_msg = JSON.stringify(error_msg, null, 2)
-  }
-
-  if (error?.meta?.meta?.connection?.status === "dead") {
-    logger.error(`Elastic search is down or unreachable. error_message=${error_msg}`)
-  } else {
-    logger.error(`Error getting ${msgToLog}. error_message=${error_msg}`)
-  }
-
-  return { error: error_msg }
 }
 
 const getMultiMatchTerm = (term) => {
@@ -95,12 +76,17 @@ const getMultiMatchTermForDiploma = (term) => {
 /**
  * retourne une liste de métiers avec leurs codes romes et codes RNCPs associés. le retour respecte strictement les critères
  */
-export const getMetiers = async ({ title, romes, rncps }: { title?: string; romes?: string; rncps?: string }): Promise<IMetiersEnrichis> => {
+export const getMetiers = async ({
+  title,
+  romes,
+  rncps,
+}: {
+  title: string
+  romes?: string[]
+  rncps?: string[]
+}): Promise<{ labelsAndRomes: Omit<IMetierEnrichi, "romeTitles">[] }> => {
   if (!title && !romes && !rncps) {
-    return {
-      error: "missing_parameters",
-      error_messages: ["Parameters must include at least one from 'title', 'romes' and 'rncps'"],
-    }
+    throw Boom.badRequest("Parameters must include at least one from 'title', 'romes' and 'rncps'")
   } else {
     try {
       const terms: any[] = []
@@ -152,20 +138,18 @@ export const getMetiers = async ({ title, romes, rncps }: { title?: string; rome
         },
       })
 
-      const labelsAndRomes: any[] = []
-
-      response.body.hits.hits.forEach((labelAndRome) => {
-        labelsAndRomes.push({
-          label: labelAndRome._source.sous_domaine,
-          romes: labelAndRome._source.codes_romes,
-          rncps: labelAndRome._source.codes_rncps,
-          type: "job",
-        })
-      })
+      const labelsAndRomes: Omit<IMetierEnrichi, "romeTitles">[] = response.body.hits.hits.map((labelAndRome) => ({
+        label: labelAndRome._source.sous_domaine,
+        romes: labelAndRome._source.codes_romes,
+        rncps: labelAndRome._source.codes_rncps,
+        type: "job",
+      }))
 
       return { labelsAndRomes }
     } catch (error) {
-      return manageError({ error, msgToLog: "getting metiers from title romes and rncps" })
+      const newError = Boom.internal("getting metiers from title romes and rncps")
+      newError.cause = error
+      throw newError
     }
   }
 }
@@ -174,9 +158,8 @@ export const getMetiers = async ({ title, romes, rncps }: { title?: string; rome
  * retourne une liste de métiers avec leurs codes romes et codes RNCPs associés. Le retour s'approche au mieux des critères.
  * @param {string} searchTerm : un préfixe, un mot ou un ensemble de préfixes ou mots sur lesquels fonder une recherche de métiers
  * @param {undefined | string} withRomeLabels : indique s'il faut que la fonction retourne également les labels associés aux romes
- * @returns {Promise<IMetiersEnrichis>}
  */
-const getLabelsAndRomes = async (searchTerm: string, withRomeLabels?: boolean): Promise<IMetiersEnrichis> => {
+const getLabelsAndRomes = async (searchTerm: string, withRomeLabels?: boolean): Promise<{ labelsAndRomes: IMetierEnrichi[] }> => {
   try {
     const terms: any[] = []
 
@@ -222,10 +205,11 @@ const getLabelsAndRomes = async (searchTerm: string, withRomeLabels?: boolean): 
 
       labelsAndRomes.push(metier)
     })
-
     return { labelsAndRomes }
   } catch (error) {
-    return manageError({ error, msgToLog: "getting metiers from title" })
+    const newError = Boom.internal("getting metiers from title")
+    newError.cause = error
+    throw newError
   }
 }
 
@@ -235,13 +219,6 @@ const getLabelsAndRomes = async (searchTerm: string, withRomeLabels?: boolean): 
  * @returns {Promise<IAppellationsRomes>}
  */
 export const getCoupleAppellationRomeIntitule = async (searchTerm: string): Promise<IAppellationsRomes> => {
-  if (!searchTerm) {
-    return {
-      error: "missing_parameters",
-      error_messages: ["Parameters must include a label to search for."],
-    }
-  }
-
   try {
     const esClient = getElasticInstance()
 
@@ -278,7 +255,8 @@ export const getCoupleAppellationRomeIntitule = async (searchTerm: string): Prom
 
     let coupleAppellationRomeMetier: any[] = []
 
-    response.body.hits.hits.map((item) => {
+    response.body.hits.hits.forEach((item) => {
+      // TODO comment ça peut fonctionner ? coupleAppellationRomeMetier est typé en array.
       coupleAppellationRomeMetier.push([...item._source.couples_appellations_rome_metier])
     })
 
@@ -291,16 +269,17 @@ export const getCoupleAppellationRomeIntitule = async (searchTerm: string): Prom
 
     return { coupleAppellationRomeMetier }
   } catch (error) {
-    return manageError({ error, msgToLog: "getting intitule from title" })
+    const newError = Boom.internal("getting intitule from title")
+    newError.cause = error
+    throw newError
   }
 }
 
 /**
  * retourne une liste de diplômes avec leurs codes romes et codes RNCPs associés. Le retour s'approche au mieux des critères.
  * @param {string} searchTerm : un préfixe, un mot ou un ensemble de préfixes ou mots sur lesquels fonder une recherche de métiers
- * @returns {Promise<IMetiersEnrichis>}
  */
-const getLabelsAndRomesForDiplomas = async (searchTerm: string): Promise<IMetiersEnrichisForDiplomas> => {
+const getLabelsAndRomesForDiplomas = async (searchTerm: string): Promise<{ labelsAndRomesForDiplomas: IMetierEnrichi[] }> => {
   try {
     const terms: any[] = []
 
@@ -340,7 +319,9 @@ const getLabelsAndRomesForDiplomas = async (searchTerm: string): Promise<IMetier
 
     return { labelsAndRomesForDiplomas }
   } catch (error) {
-    return manageError({ error, msgToLog: "getting diplomes from title" })
+    const newError = Boom.internal("getting diplomes from title")
+    newError.cause = error
+    throw newError
   }
 }
 
@@ -367,18 +348,8 @@ const removeDuplicateDiplomas = (diplomas) => {
  */
 export const getMetiersPourCfd = async ({ cfd }: { cfd: string }): Promise<IMetiers> => {
   const romeResponse = await getRomesFromCfd({ cfd })
-
-  if (romeResponse.error) {
-    return {
-      ...romeResponse,
-      metiers: [],
-    }
-  }
-
-  const romes = [...new Set(romeResponse.romes)]
-
+  const { romes } = romeResponse
   const metiers = await getMetiersFromRomes(romes)
-
   return metiers
 }
 
@@ -389,18 +360,8 @@ export const getMetiersPourCfd = async ({ cfd }: { cfd: string }): Promise<IMeti
  */
 export const getMetiersPourEtablissement = async ({ siret }: { siret: string }): Promise<IMetiers> => {
   const romeResponse = await getRomesFromSiret({ siret })
-
-  if (romeResponse.error) {
-    return {
-      ...romeResponse,
-      metiers: [],
-    }
-  }
-
-  const romes = [...new Set(romeResponse.romes)]
-
+  const { romes } = romeResponse
   const metiers = await getMetiersFromRomes(romes)
-
   return metiers
 }
 
@@ -410,32 +371,23 @@ export const getMetiersPourEtablissement = async ({ siret }: { siret: string }):
  * @returns {IMetiers}
  */
 const getMetiersFromRomes = async (romes: string[]): Promise<IMetiers> => {
-  try {
-    const esClient = getElasticInstance()
-
-    const response = await esClient.search({
-      index: "domainesmetiers",
-      size: 20,
-      _source_includes: ["sous_domaine"],
-      body: {
-        query: {
-          match: {
-            codes_romes: romes.join(","),
-          },
+  const esClient = getElasticInstance()
+  const response = await esClient.search({
+    index: "domainesmetiers",
+    size: 20,
+    _source_includes: ["sous_domaine"],
+    body: {
+      query: {
+        match: {
+          codes_romes: romes.join(","),
         },
       },
-    })
-
-    const metiers: any[] = []
-
-    response.body.hits.hits.forEach((metier) => {
-      metiers.push(metier._source.sous_domaine)
-    })
-
-    return { metiers }
-  } catch (error) {
-    return manageError({ error, msgToLog: "getting metiers from romes" })
-  }
+    },
+  })
+  const metiers: string[] = response.body.hits.hits.map((metier) => {
+    return metier._source.sous_domaine
+  })
+  return { metiers }
 }
 
 /**
@@ -467,6 +419,8 @@ export const getTousLesMetiers = async (): Promise<IMetiers> => {
 
     return { metiers }
   } catch (error) {
-    return manageError({ error, msgToLog: "getting all metiers" })
+    const newError = Boom.internal("getting all metiers")
+    newError.cause = error
+    throw newError
   }
 }
