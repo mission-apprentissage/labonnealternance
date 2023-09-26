@@ -1,3 +1,4 @@
+import Boom from "boom"
 import type { IUserRecruteur } from "shared"
 
 import { logger } from "../../../../common/logger"
@@ -23,7 +24,7 @@ const updateUserRecruteursSiretInfosInError = async () => {
     try {
       let recruteur = await getFormulaire({ establishment_id })
       const { cfa_delegated_siret } = recruteur
-      const siretResponse = await getEntrepriseDataFromSiret({ siret: establishment_siret, cfa_delegated_siret })
+      const siretResponse = await getEntrepriseDataFromSiret({ siret: establishment_siret, cfa_delegated_siret: cfa_delegated_siret ?? undefined })
       if ("error" in siretResponse) {
         logger.warn(`Correction des recruteurs en erreur: userRecruteur id=${_id}, désactivation car création interdite, raison=${siretResponse.message}`)
         await deactivateUser(_id, siretResponse.message)
@@ -41,7 +42,7 @@ const updateUserRecruteursSiretInfosInError = async () => {
         stats.success++
       }
     } catch (err) {
-      const errorMessage = (err && "message" in err && err.message) || err
+      const errorMessage = (err && typeof err === "object" && "message" in err && err.message) || err
       await setUserInError(userRecruteur._id, errorMessage + "")
       logger.error(err)
       logger.error(`Correction des recruteurs en erreur: userRecruteur id=${_id}, erreur: ${errorMessage}`)
@@ -64,6 +65,9 @@ const updateRecruteursSiretInfosInError = async () => {
   logger.info(`Correction des recruteurs en erreur: ${recruteurs.length} user recruteurs à mettre à jour...`)
   await asyncForEach(recruteurs, async (recruteur) => {
     const { establishment_siret, establishment_id, _id, cfa_delegated_siret } = recruteur
+    if (!cfa_delegated_siret) {
+      return
+    }
     try {
       const siretResponse = await getEntrepriseDataFromSiret({ siret: establishment_siret, cfa_delegated_siret })
       if ("error" in siretResponse) {
@@ -73,6 +77,9 @@ const updateRecruteursSiretInfosInError = async () => {
       } else {
         const updatedRecruiter = await updateFormulaire(establishment_id, { ...siretResponse, status: RECRUITER_STATUS.ACTIF })
         const userRecruteurCFA = await getUser({ establishment_siret: cfa_delegated_siret, $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, ETAT_UTILISATEUR.VALIDE] } })
+        if (!userRecruteurCFA) {
+          throw Boom.internal(`unexpected: impossible de trouver le user recruteur CFA avec siret=${cfa_delegated_siret}`)
+        }
         await Promise.all(
           updatedRecruiter.jobs.flatMap((job) => {
             if (job.job_status === JOB_STATUS.ACTIVE) {
@@ -85,7 +92,7 @@ const updateRecruteursSiretInfosInError = async () => {
         stats.success++
       }
     } catch (err) {
-      const errorMessage = (err && "message" in err && err.message) || err
+      const errorMessage = (err && typeof err === "object" && "message" in err && err.message) || err
       await updateFormulaire(establishment_id, { status: RECRUITER_STATUS.EN_ATTENTE_VALIDATION })
       logger.error(err)
       logger.error(`Correction des recruteurs en erreur: recruteur id=${_id}, erreur: ${errorMessage}`)
