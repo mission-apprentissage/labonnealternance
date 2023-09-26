@@ -83,8 +83,8 @@ export const zAppointmentsRoute = {
         }),
       },
       securityScheme: {
-        auth: "none",
-        role: "all",
+        auth: "jwt-rdv-admin",
+        role: "admin",
       },
     },
     "/api/admin/appointments/details": {
@@ -101,8 +101,8 @@ export const zAppointmentsRoute = {
         }),
       },
       securityScheme: {
-        auth: "none",
-        role: "all",
+        auth: "jwt-rdv-admin",
+        role: "admin",
       },
     },
     "/api/appointment-request/context/recap": {
