@@ -1,7 +1,7 @@
 import env from "env-var"
 
 const config = {
-  appName: env.get("LBA_NAME").required().asString(),
+  appName: "lba",
   version: env.get("PUBLIC_VERSION").required().asString(),
   port: env.get("LBA_SERVER_PORT").required().asPortNumber(),
   env: env.get("LBA_ENV").required().asEnum(["local", "recette", "production", "preview"]),
