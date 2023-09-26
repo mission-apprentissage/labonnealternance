@@ -37,7 +37,12 @@ export const zUserRecruteurRoutes = {
         })
         .strict(),
       response: {
-        "200": z.array(ZUserRecruteur),
+        "200": z.object({
+          awaiting: z.array(ZUserRecruteur),
+          active: z.array(ZUserRecruteur),
+          disabled: z.array(ZUserRecruteur),
+          error: z.array(ZUserRecruteur),
+        }),
       },
       securityScheme: {
         auth: "jwt-bearer",

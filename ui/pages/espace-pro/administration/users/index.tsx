@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  Link as ChakraLink,
   Container,
   Flex,
   Icon,
@@ -16,7 +17,6 @@ import {
   Text,
   useDisclosure,
   useToast,
-  Link as ChakraLink,
 } from "@chakra-ui/react"
 // eslint-disable-next-line import/no-extraneous-dependencies
 import dayjs from "dayjs"
@@ -24,8 +24,7 @@ import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import { useQuery } from "react-query"
 
-import { AUTHTYPE, USER_STATUS } from "../../../../common/contants"
-import useAuth from "../../../../common/hooks/useAuth"
+import { USER_STATUS } from "../../../../common/contants"
 import { sortReactTableDate, sortReactTableString } from "../../../../common/utils/dateUtils"
 import { AnimationContainer, ConfirmationActivationUtilsateur, ConfirmationDesactivationUtilisateur, Layout, LoadingEmptySpace, TableNew } from "../../../../components/espace_pro"
 import withAuth from "../../../../components/espace_pro/withAuth"
@@ -40,8 +39,6 @@ function Users() {
   const confirmationActivationUtilisateur = useDisclosure()
   const router = useRouter()
   const toast = useToast()
-  const [auth] = useAuth()
-  const isAdmin = auth.type === AUTHTYPE.ADMIN
 
   useEffect(() => {
     if (router.query.newUser) {
@@ -56,56 +53,11 @@ function Users() {
     }
   }, [])
 
-  let queries = [
-    {
-      id: "awaitingValidationUserList",
-      label: "En attente de vérification",
-      query: {
-        establishment_raison_sociale: { $nin: [null, ""] },
-        $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, USER_STATUS.WAITING] },
-        $or: [{ type: AUTHTYPE.CFA }, { type: AUTHTYPE.ENTREPRISE }],
-      },
-    },
-    {
-      id: "activeUserList",
-      label: "Actifs",
-      query: {
-        establishment_raison_sociale: { $nin: [null, ""] },
-        $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, USER_STATUS.ACTIVE] },
-        $or: [{ type: AUTHTYPE.CFA }, { type: AUTHTYPE.ENTREPRISE }],
-      },
-    },
-    {
-      id: "disableUserList",
-      label: "Désactivés",
-      query: {
-        $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, USER_STATUS.DISABLED] },
-        $or: [{ type: AUTHTYPE.CFA }, { type: AUTHTYPE.ENTREPRISE }],
-      },
-    },
-  ]
-  if (isAdmin) {
-    const errorQuery = {
-      id: "errorUserList",
-      label: "En erreur",
-      query: {
-        $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, USER_STATUS.ERROR] },
-        $or: [{ type: AUTHTYPE.CFA }, { type: AUTHTYPE.ENTREPRISE }],
-      },
-    }
-    queries = [errorQuery, ...queries]
-  }
+  const { isLoading, data } = useQuery("user-list", () => getUsers())
 
-  const queryResponses = queries.map(({ query, id }) => {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    return useQuery(id, () =>
-      getUsers({
-        users: query,
-      })
-    )
-  })
+  console.log(isLoading, data)
 
-  if (queryResponses[0].isLoading) {
+  if (isLoading) {
     return <LoadingEmptySpace />
   }
 
@@ -283,21 +235,25 @@ function Users() {
         <Tabs index={tabIndex} onChange={(index) => setTabIndex(index)} variant="search" isLazy>
           <Box mx={8}>
             <TabList>
-              {queryResponses.map((response, index) => {
-                const { label } = queries[index]
-                return (
-                  <Tab key={label} width="300px">
-                    {label} {response.isFetched && `(${response.data.data.length})`}
-                  </Tab>
-                )
-              })}
+              <Tab width="300px">En attente de vérification ({data.data.awaiting.length})</Tab>
+              <Tab width="300px">Actifs ({data.data.active.length})</Tab>
+              <Tab width="300px">Désactivés ({data.data.disabled.length})</Tab>
+              <Tab width="300px">En erreur ({data.data.error.length})</Tab>
             </TabList>
           </Box>
           <TabPanels mt={3}>
-            {queryResponses.map((response, index) => {
-              const { label } = queries[index]
-              return <TabPanel key={label}>{response.isLoading ? <LoadingEmptySpace /> : <TableNew columns={columns} data={response?.data?.data} />}</TabPanel>
-            })}
+            <TabPanel>
+              <TableNew columns={columns} data={data.data.awaiting} description={null} exportable={null} />
+            </TabPanel>
+            <TabPanel>
+              <TableNew columns={columns} data={data.data.active} description={null} exportable={null} />
+            </TabPanel>
+            <TabPanel>
+              <TableNew columns={columns} data={data.data.disabled} description={null} exportable={null} />
+            </TabPanel>
+            <TabPanel>
+              <TableNew columns={columns} data={data.data.error} description={null} exportable={null} />
+            </TabPanel>
           </TabPanels>
         </Tabs>
       </Container>
