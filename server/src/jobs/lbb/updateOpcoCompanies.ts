@@ -10,7 +10,7 @@ import { getMemoizedOpcoShortName, saveOpco } from "../../services/opco.service"
 import { checkIfAlgoFileIsNew, downloadAlgoCompanyFile, readCompaniesFromJson, removePredictionFile } from "./lbaCompaniesUtils.js"
 
 let errorCount = 0
-let sirenSet = new Set()
+let sirenSet: Set<string> = new Set()
 let sirenWithoutOpco = new Set()
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
