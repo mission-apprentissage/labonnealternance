@@ -54,8 +54,8 @@ const transformCompany = ({
     // @ts-expect-error: TODO
     distance: company.distance?.length ? roundDistance(company.distance[0]) ?? 0 : null,
     fullAddress: address,
-    latitude: company.geo_coordinates.split(",")[0],
-    longitude: company.geo_coordinates.split(",")[1],
+    latitude: parseFloat(company.geo_coordinates.split(",")[0]),
+    longitude: parseFloat(company.geo_coordinates.split(",")[1]),
     city: company.city,
     address,
   }

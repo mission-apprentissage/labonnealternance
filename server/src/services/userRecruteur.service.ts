@@ -1,5 +1,6 @@
 import { randomUUID } from "crypto"
 
+import Boom from "boom"
 import { Filter } from "mongodb"
 import { ModelUpdateOptions, UpdateQuery } from "mongoose"
 import { IUserRecruteur, IUserStatusValidation } from "shared"
@@ -91,8 +92,13 @@ export const createUser = async (values) => {
  * @param {ModelUpdateOptions} options
  * @returns {Promise<IUserRecruteur>}
  */
-export const updateUser = (query: Filter<IUserRecruteur>, update: UpdateQuery<IUserRecruteur>, options: ModelUpdateOptions = { new: true }) =>
-  UserRecruteur.findOneAndUpdate(query, update, options)
+export const updateUser = async (query: Filter<IUserRecruteur>, update: UpdateQuery<IUserRecruteur>, options: ModelUpdateOptions = { new: true }): Promise<IUserRecruteur> => {
+  const userRecruterOpt = await UserRecruteur.findOneAndUpdate(query, update, options)
+  if (!userRecruterOpt) {
+    throw Boom.internal(`could not update one user from query=${JSON.stringify(query)}`)
+  }
+  return userRecruterOpt
+}
 
 /**
  * @description delete user from collection
@@ -136,7 +142,7 @@ export const updateUserValidationHistory = async (
 export const getUserStatus = (stateArray: IUserRecruteur["status"]) => {
   const sortedArray = [...stateArray].sort((a, b) => new Date(a.date).valueOf() - new Date(b.date).valueOf())
   const lastValidationEvent = sortedArray.at(sortedArray.length - 1)
-  return lastValidationEvent?.status
+  return lastValidationEvent?.status as ETAT_UTILISATEUR
 }
 
 export const setUserInError = async (userId: IUserRecruteur["_id"], reason: string) => {

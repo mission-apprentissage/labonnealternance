@@ -1,4 +1,4 @@
-import { IRecruiter, IUserRecruteur } from "shared"
+import { IRecruiter } from "shared"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
@@ -20,7 +20,7 @@ export const relanceFormulaire = async (threshold) => {
 
   // reduce formulaire with eligible offers
   const format = forms.reduce((acc, formulaire) => {
-    acc[formulaire._id] = { ...formulaire, offres: [] }
+    acc[`${formulaire._id}`] = { ...formulaire, offres: [] }
 
     formulaire.jobs
       // The query returns all offers included in the form, regardless of the status filter in the query.
@@ -32,16 +32,17 @@ export const relanceFormulaire = async (threshold) => {
         // if the number of days to the expiration date is strictly above the threshold, do nothing
         if (remainingDays !== threshold) return
 
-        job.supprimer = `${config.publicUrlEspacePro}/job/${job._id}/cancel`
-        job.pourvue = `${config.publicUrlEspacePro}/job/${job._id}/provided`
-
-        acc[formulaire._id].jobs.push(job)
+        acc[`${formulaire._id}`].jobs.push({
+          ...job,
+          supprimer: `${config.publicUrlEspacePro}/job/${job._id}/cancel`,
+          pourvue: `${config.publicUrlEspacePro}/job/${job._id}/provided`,
+        })
       })
     return acc
   }, {})
 
   // format array and remove formulaire without offers
-  const formulaireToExpire = Object.values(format).filter((x: any) => x.jobs.length !== 0)
+  const formulaireToExpire = Object.values<IRecruiter>(format).filter((x: any) => x.jobs.length !== 0)
 
   if (formulaireToExpire.length === 0) {
     logger.info("Aucune offre à relancer aujourd'hui.")
@@ -58,9 +59,11 @@ export const relanceFormulaire = async (threshold) => {
 
   await asyncForEach(formulaireToExpire, async (formulaire: IRecruiter) => {
     const { email, establishment_raison_sociale, last_name, first_name, jobs, is_delegated, cfa_delegated_siret } = formulaire
-
+    let contactCFA
     // get CFA informations if formulaire is handled by a CFA
-    const contactCFA: IUserRecruteur = is_delegated && (await UserRecruteur.findOne({ establishment_siret: cfa_delegated_siret }))
+    if (is_delegated) {
+      contactCFA = await UserRecruteur.findOne({ establishment_siret: cfa_delegated_siret })
+    }
 
     await mailer.sendEmail({
       to: contactCFA?.email ?? email,
