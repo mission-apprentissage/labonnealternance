@@ -64,7 +64,7 @@ export const zUserRecruteurRoutes = {
         opco: true,
       }).partial(),
       response: {
-        "2xx": ZUserRecruteur,
+        "2xx": z.union([ZUserRecruteur, z.null()]),
       },
       securityScheme: {
         auth: "none",

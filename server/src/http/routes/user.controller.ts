@@ -53,7 +53,9 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const query = req.query.users
+      // @ts-expect-error: TODO
       if (query?.$expr?.$eq[0]?.$arrayElemAt[1]) {
+        // @ts-expect-error: TODO
         query.$expr.$eq[0].$arrayElemAt[1] = parseInt(query.$expr.$eq[0].$arrayElemAt[1])
       }
       const users = await UserRecruteur.find(query).lean()
@@ -194,7 +196,13 @@ export default (server: Server) => {
             await updateOffre(job._id, job)
 
             if (job?.delegations && job?.delegations.length) {
-              await Promise.all(job.delegations.map(async (delegation) => await sendDelegationMailToCFA(delegation.email, job, userFormulaire, delegation.siret_code)))
+              await Promise.all(
+                job.delegations.map(
+                  async (delegation) =>
+                    // TODO NIMP
+                    await sendDelegationMailToCFA(delegation.email as string, job, userFormulaire as any, delegation.siret_code as string)
+                )
+              )
             }
           }
         }

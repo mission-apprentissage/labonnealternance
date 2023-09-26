@@ -86,7 +86,7 @@ export const zUserRecruteurRoutes = {
         .partial()
         .strict(),
       response: {
-        "200": ZUserRecruteur,
+        "200": z.union([ZUserRecruteur, z.null()]),
         "400": z.object({ error: z.boolean(), reason: z.string() }),
       },
       securityScheme: {

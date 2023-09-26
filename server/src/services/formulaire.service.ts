@@ -590,7 +590,7 @@ export async function sendDelegationMailToCFA(email: string, offre: IJob, recrui
       },
       enterpriseName: recruiter.establishment_raison_sociale,
       jobName: offre.rome_appellation_label,
-      contractType: offre.job_type.join(", "),
+      contractType: (offre.job_type ?? []).join(", "),
       trainingLevel: offre.job_level_label,
       startDate: dayjs(offre.job_start_date).format("DD/MM/YYYY"),
       duration: offre.job_duration,
