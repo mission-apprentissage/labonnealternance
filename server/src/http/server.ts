@@ -98,7 +98,7 @@ export async function bind(app: Server) {
     global: false,
   })
 
-  const swagegrOpts: FastifyStaticSwaggerOptions = {
+  const swaggerOpts: FastifyStaticSwaggerOptions = {
     mode: "static",
     specification: {
       // @ts-ignore invalid definition of document type
@@ -112,7 +112,7 @@ export async function bind(app: Server) {
     // },
     // transformObject: fastifyZodOpenApiTransformObject,
   }
-  await app.register(fastifySwagger, swagegrOpts)
+  await app.register(fastifySwagger, swaggerOpts)
 
   const swaggerUiOptions: FastifySwaggerUiOptions = {
     routePrefix: "/api/docs",
