@@ -6,22 +6,22 @@ import { model, Schema } from "../../../mongodb"
 export const eligibleTrainingsForAppointmentSchema = new Schema<IEligibleTrainingsForAppointment>({
   training_id_catalogue: {
     type: String,
-    default: null,
+    require: true,
     description: "Identifiant d'une formation Catalogue",
   },
   training_intitule_long: {
     type: String,
-    default: null,
+    require: true,
     description: "Intitulé long de la formation autorisée",
   },
   etablissement_formateur_zip_code: {
     type: String,
-    default: null,
+    require: true,
     description: "Code postal du lieu de formation",
   },
   training_code_formation_diplome: {
     type: String,
-    default: null,
+    require: true,
     description: "CFD de la formation autorisée",
   },
   lieu_formation_email: {
@@ -46,7 +46,7 @@ export const eligibleTrainingsForAppointmentSchema = new Schema<IEligibleTrainin
   },
   is_catalogue_published: {
     type: Boolean,
-    default: null,
+    require: true,
     description: "Si la formation est publiée sur le Catalogue",
   },
   last_catalogue_sync_date: {
@@ -61,53 +61,53 @@ export const eligibleTrainingsForAppointmentSchema = new Schema<IEligibleTrainin
   },
   cle_ministere_educatif: {
     type: String,
-    default: null,
+    require: true,
     description: "Identifiant unique d'une formation",
     index: true,
   },
   etablissement_formateur_raison_sociale: {
     type: String,
-    default: null,
+    require: true,
     description: "Raison sociale de l'établissement",
   },
   etablissement_formateur_street: {
     type: String,
-    default: null,
+    require: true,
     description: "Adresse de l'établissement formateur",
   },
   departement_etablissement_formateur: {
     type: String,
-    default: null,
+    require: true,
     description: "Département de l'établissement formateur",
   },
   etablissement_formateur_city: {
     type: String,
-    default: null,
+    require: true,
     description: "Localité de l'établissement formateur",
   },
   lieu_formation_street: {
     type: String,
-    default: null,
+    require: true,
     description: "Adresse du lieux de formation",
   },
   lieu_formation_city: {
     type: String,
-    default: null,
+    require: true,
     description: "Localité de la formation",
   },
   lieu_formation_zip_code: {
     type: String,
-    default: null,
+    require: true,
     description: "Localité de la formation code postal",
   },
   etablissement_formateur_siret: {
     type: String,
-    default: null,
+    require: true,
     description: "Siret formateur",
   },
   etablissement_gestionnaire_siret: {
     type: String,
-    default: null,
+    require: true,
     description: "Siret gestionnaire",
   },
   created_at: {
@@ -117,6 +117,7 @@ export const eligibleTrainingsForAppointmentSchema = new Schema<IEligibleTrainin
   },
   historization_date: {
     type: Date,
+    default: null,
     description: "Date d'historisation",
   },
 })

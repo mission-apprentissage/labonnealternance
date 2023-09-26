@@ -6,7 +6,7 @@ import { IDiplomesMetiers } from "./diplomesmetiers.types"
 export const diplomesMetiersSchema = new Schema<IDiplomesMetiers>({
   intitule_long: {
     type: String,
-    default: null,
+    require: true,
     description: "Le nom long d'un diplôme",
   },
   codes_romes: {
@@ -21,7 +21,7 @@ export const diplomesMetiersSchema = new Schema<IDiplomesMetiers>({
   },
   acronymes_intitule: {
     type: String,
-    default: null,
+    require: true,
     description: "Les acronymes construit à partir de l'intitulé",
   },
   created_at: {

@@ -1,6 +1,6 @@
 interface IDomainesMetiers {
   sous_domaine: string
-  domaine: string
+  domaine: string | null
   codes_romes: string[]
   intitules_romes: string[]
   codes_rncps: string[]
