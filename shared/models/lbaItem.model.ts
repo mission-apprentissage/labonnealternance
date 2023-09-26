@@ -111,12 +111,12 @@ export const ZLbaItem = z.object({
   job: z
     .object({
       description: z.string().nullable(), // pe -> description | matcha -> description
-      creationDate: z.union([z.string(), z.date()]), // pe -> dateCreation | matcha -> createdAt
+      creationDate: z.date(), // pe -> dateCreation | matcha -> createdAt
       id: z.string().nullable(), // pe -> id | matcha -> id mongo offre
       contractType: z.string().nullable(), // pe -> typeContrat | matcha -> offres.type
       contractDescription: z.string().nullable().optional(), // pe -> typeContratLibelle
       duration: z.string().nullable().optional(), // pe -> dureeTravailLibelle
-      jobStartDate: z.union([z.string(), z.date()]).optional(), // matcha -> offres.date_debut_apprentissage
+      jobStartDate: z.date().optional(), // matcha -> offres.date_debut_apprentissage
       romeDetails: ZRomeDetail.optional().nullish(), // matcha -> offres.rome_detail -> détail du code ROME
       rythmeAlternance: z.string().nullable().optional(), // matcha -> offres.rythme_alternance
       elligibleHandicap: z.boolean(), // matcha -> offres.is_disabled_elligible
@@ -136,11 +136,11 @@ export const ZLbaItem = z.object({
       objectif: z.string().nullable(),
       sessions: z.array(
         z.object({
-          startDate: z.date(),
-          endDate: z.date(),
+          startDate: z.date().nullish(),
+          endDate: z.date().nullish(),
           isPermanentEntry: z.boolean(),
         })
-      ),
+      ).nullish(),
     })
     .strict()
     .nullable(),
