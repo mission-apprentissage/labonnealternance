@@ -15,7 +15,7 @@ export const ZRecruiter = z.object({
   establishment_id: z.string().default(randomUUID).describe("Identifiant de formulaire unique"),
   establishment_raison_sociale: z.string().nullish().describe("Raison social de l'établissement"),
   establishment_enseigne: z.string().nullish().describe("Enseigne de l'établissement"),
-  establishment_siret: z.string().nullish().describe("Numéro SIRET de l'établissement"),
+  establishment_siret: z.string().describe("Numéro SIRET de l'établissement"),
   address_detail: z.any().describe("Détail de l'adresse de l'établissement"),
   address: z.string().nullish().describe("Adresse de l'établissement"),
   geo_coordinates: z.string().nullish().describe("Coordonnées geographique de l'établissement"),

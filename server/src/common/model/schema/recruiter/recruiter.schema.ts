@@ -28,7 +28,7 @@ export const recruiterSchema = new Schema<IRecruiter>(
     },
     establishment_siret: {
       type: String,
-      default: null,
+      require: true,
       description: "Numéro SIRET de l'entreprise",
     },
     address_detail: {
