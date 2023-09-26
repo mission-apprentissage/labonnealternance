@@ -19,14 +19,14 @@ export default (server: Server) => {
         return res.status(401).send({ error: true, reason: "TOKEN_NOT_FOUND" })
       }
 
-      const { siret, email } = jwt.verify(token, config.auth["activation"].jwtSecret)
+      const { siret, email }: any = jwt.verify(token, config.auth["activation"].jwtSecret)
 
       const user = await Optout.findOne({ siret, "contacts.email": email }).lean()
 
       if (!user) {
-        return res.status(200).send({ error: true, reason: "USER_NOT_FOUND" })
+        return res.status(400).send({ error: true, reason: "USER_NOT_FOUND" })
       }
-
+      // @ts-expect-error: TODO
       return res.status(200).send({
         ...user,
         // Set recipient email for the UI
