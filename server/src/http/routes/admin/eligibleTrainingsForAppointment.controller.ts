@@ -1,7 +1,7 @@
+import Boom from "boom"
 import Joi from "joi"
 import { zRoutes } from "shared/index"
 
-import { logger } from "../../../common/logger"
 import { EligibleTrainingsForAppointment } from "../../../common/model/index"
 import * as eligibleTrainingsForAppointmentService from "../../../services/eligibleTrainingsForAppointment.service"
 import { Server } from "../../server"
@@ -13,21 +13,6 @@ const eligibleTrainingsForAppointmentIdPatchSchema = Joi.object({
     .email({ tlds: { allow: false } })
     .allow(null)
     .optional(),
-})
-
-const eligibleTrainingsForAppointmentSchema = Joi.object({
-  etablissement_siret: Joi.string().required(),
-  etablissement_raison_sociale: Joi.string().required(),
-  formation_intitule: Joi.string().required(),
-  formation_cfd: Joi.string().required(),
-  code_postal: Joi.string().required(),
-  lieu_formation_email: Joi.string()
-    .email({ tlds: { allow: false } })
-    .allow(null)
-    .required(),
-  referrers: Joi.array().items(Joi.number()),
-  rco_formation_id: Joi.string().required(),
-  cle_ministere_educatif: Joi.string().required(),
 })
 
 /**
@@ -49,47 +34,10 @@ export default (server: Server) => {
       const parameters = await EligibleTrainingsForAppointment.find({ etablissement_formateur_siret: siret }).lean()
 
       if (parameters == undefined || parameters.length == 0) {
-        return res.status(400).send()
+        throw Boom.badRequest()
       }
 
       return res.send({ parameters })
-    }
-  )
-
-  /**
-   * Get eligibleTrainingsForAppointments by id getEligibleTrainingsForAppointmentsById /{id} GET
-   */
-  server.get(
-    "/api/admin/eligible-trainings-for-appointment/:id",
-    {
-      schema: zRoutes.get["/api/admin/eligible-trainings-for-appointment/:id"],
-      preHandler: server.auth(zRoutes.get["/api/admin/eligible-trainings-for-appointment/:id"].securityScheme),
-    },
-    async (req, res) => {
-      const itemId = req.params.id
-      const retrievedData = await EligibleTrainingsForAppointment.findById(itemId)
-      if (retrievedData) {
-        res.send(retrievedData)
-      } else {
-        res.send({ message: `Item ${itemId} doesn't exist` })
-      }
-    }
-  )
-
-  /**
-   * Update an item validated by schema updateParameter updateParameter/{id} PUT
-   */
-  server.put(
-    "/api/admin/eligible-trainings-for-appointment/:id",
-    {
-      schema: zRoutes.put["/api/admin/eligible-trainings-for-appointment/:id"],
-      preHandler: server.auth(zRoutes.put["/api/admin/eligible-trainings-for-appointment/:id"].securityScheme),
-    },
-    async ({ body, params }, res) => {
-      await eligibleTrainingsForAppointmentSchema.validateAsync(body, { abortEarly: false })
-      logger.info("Updating new item: ", body)
-      const result = await eligibleTrainingsForAppointmentService.updateParameter(params.id, body)
-      res.send(result)
     }
   )
 
@@ -105,7 +53,7 @@ export default (server: Server) => {
     async ({ body, params }, res) => {
       await eligibleTrainingsForAppointmentIdPatchSchema.validateAsync(body, { abortEarly: false })
 
-      const result = await eligibleTrainingsForAppointmentService.updateParameter(params.id, body)
+      const result = await eligibleTrainingsForAppointmentService.updateParameter(params.id.toString(), body)
 
       res.send(result)
     }

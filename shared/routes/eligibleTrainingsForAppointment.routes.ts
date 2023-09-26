@@ -10,29 +10,7 @@ export const zEligibleTrainingsForAppointmentRoutes = {
     "/api/admin/eligible-trainings-for-appointment/etablissement-formateur-siret/:siret": {
       params: z.object({ siret: extensions.siret() }).strict(),
       response: {
-        "200": ZEligibleTrainingsForAppointmentSchema,
-      },
-      securityScheme: {
-        auth: "jwt-rdv-admin",
-        role: "admin",
-      },
-    },
-    "/api/admin/eligible-trainings-for-appointment/:id": {
-      params: z.object({ id: zObjectId }).strict(),
-      response: {
-        "200": ZEligibleTrainingsForAppointmentSchema,
-      },
-      securityScheme: {
-        auth: "jwt-rdv-admin",
-        role: "admin",
-      },
-    },
-  },
-  put: {
-    "/api/admin/eligible-trainings-for-appointment/:id": {
-      params: z.object({ id: zObjectId }).strict(),
-      response: {
-        "200": ZEligibleTrainingsForAppointmentSchema,
+        "200": z.object({ parameters: z.array(ZEligibleTrainingsForAppointmentSchema) }),
       },
       securityScheme: {
         auth: "jwt-rdv-admin",
@@ -43,8 +21,9 @@ export const zEligibleTrainingsForAppointmentRoutes = {
   patch: {
     "/api/admin/eligible-trainings-for-appointment/:id": {
       params: z.object({ id: zObjectId }).strict(),
+      body: ZEligibleTrainingsForAppointmentSchema,
       response: {
-        "200": ZEligibleTrainingsForAppointmentSchema,
+        "200": z.union([ZEligibleTrainingsForAppointmentSchema, z.null()]),
       },
       securityScheme: {
         auth: "jwt-rdv-admin",
