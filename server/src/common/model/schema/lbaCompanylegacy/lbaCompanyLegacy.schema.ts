@@ -1,7 +1,6 @@
-import { Schema } from "mongoose"
 import { ILbaCompany } from "shared"
 
-import { model } from "../../../mongodb.js"
+import { Schema, model } from "../../../mongodb"
 import { lbaCompanySchema } from "../lbaCompany/lbaCompany.schema.js"
 
 export const lbaCompanyLegacySchema = new Schema<Pick<ILbaCompany, "siret" | "email">>({

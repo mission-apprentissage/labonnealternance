@@ -23,6 +23,7 @@ const importFormations = async () => {
         stats.total++
         try {
           // use MongoDB to add only add selected field from getAllFormationFromCatalogue() function and speedup the process
+          // @ts-expect-error: TODO
           await FormationCatalogue.collection.insertOne(formation)
           stats.created++
         } catch (e) {
