@@ -82,7 +82,7 @@ const getEmailForRdv = async (formation: Pick<IFormationCatalogue, "email" | "et
   return (
     getEmailFromCatalogueField(formation.email) ||
     getEmailFromCatalogueField(formation.etablissement_formateur_courriel) ||
-    (await getMostFrequentEmailByLieuFormationSiret(formation.etablissement_formateur_siret))
+    (await getMostFrequentEmailByLieuFormationSiret(formation.etablissement_formateur_siret ?? undefined))
   )
 }
 
