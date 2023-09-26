@@ -27,7 +27,7 @@ export const updateSAVECompanies = async () => {
         if (lbaCompany) {
           if (company.raison_sociale) {
             lbaCompany.raison_sociale = company.raison_sociale
-            lbaCompany.eneigne = company.raison_sociale
+            lbaCompany.enseigne = company.raison_sociale
           }
           if (company.email !== undefined) {
             lbaCompany.email = company.email
