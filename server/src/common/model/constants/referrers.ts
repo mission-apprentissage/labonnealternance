@@ -56,7 +56,8 @@ function isReferrer(name: string): name is keyof typeof referrers {
  * @param {string} name
  * @returns {{code: {Number}, name: {String}, fullName: {String}, url: {String}}}
  */
-function getReferrerByKeyName(name: string): ReferrerObject {
+function getReferrerByKeyName(name: string | null | undefined): ReferrerObject {
+  if (!name) throw Boom.badRequest("Referrer introuvable.")
   const upperName = name.toUpperCase()
   if (!isReferrer(upperName)) {
     throw Boom.badRequest("Referrer introuvable.")

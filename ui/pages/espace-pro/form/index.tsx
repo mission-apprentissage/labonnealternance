@@ -108,7 +108,7 @@ export default function FormCreatePage() {
   const sendNewRequest = async (values, { setStatus }) => {
     try {
       setSubmitLoading(true)
-      const { appointment, error } = await _post("appointment-request/validate", {
+      const { appointment } = await _post("appointment-request/validate", {
         firstname: values.firstname,
         lastname: values.lastname,
         phone: values.phone,
@@ -120,15 +120,11 @@ export default function FormCreatePage() {
         appointmentOrigin: referrer,
       })
 
-      if (error) {
-        setStatus({ error: error.message })
-        return
-      }
-
       router.push(`/form/confirm/${appointment._id}`)
       setTimeout(() => window.scroll({ top: 0, behavior: "smooth" }), 500)
-    } catch (e) {
-      setStatus({ error: e.prettyMessage })
+    } catch ({ message }) {
+      // TODO to check return if already appoitment
+      setStatus({ error: message })
     } finally {
       setSubmitLoading(false)
     }

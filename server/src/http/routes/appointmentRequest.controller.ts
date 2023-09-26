@@ -1,12 +1,12 @@
 import Boom from "boom"
 import Joi from "joi"
-import { zRoutes } from "shared/index"
+import { IAppointment, zRoutes } from "shared/index"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 import { mailType } from "../../common/model/constants/appointments"
 import { getReferrerByKeyName } from "../../common/model/constants/referrers"
-import { Etablissement } from "../../common/model/index"
+import { Appointment, Etablissement } from "../../common/model/index"
 import config from "../../config"
 import * as appointmentService from "../../services/appointment.service"
 import { ROLES } from "../../services/constant.service"
@@ -77,11 +77,7 @@ export default (server: Server) => {
         })
 
         if (appointment) {
-          return res.send({
-            error: {
-              message: `Une demande de prise de RDV en date du ${dayjs(appointment.created_at).format("DD/MM/YYYY")} est actuellement est cours de traitement.`,
-            },
-          })
+          throw Boom.badRequest(`Une demande de prise de RDV en date du ${dayjs(appointment.created_at).format("DD/MM/YYYY")} est actuellement est cours de traitement.`)
         }
       } else {
         user = await users.createUser(email, "NA", {
@@ -157,7 +153,8 @@ export default (server: Server) => {
           data: mailData,
         }),
         mailer.sendEmail({
-          to: eligibleTrainingsForAppointment.lieu_formation_email,
+          // TODO to check string | null
+          to: eligibleTrainingsForAppointment.lieu_formation_email as string,
           subject: emailCfaSubject,
           template: getStaticFilePath("./templates/mail-cfa-demande-de-contact.mjml.ejs"),
           data: mailData,
@@ -194,7 +191,7 @@ export default (server: Server) => {
         ),
       ])
 
-      const appointmentUpdated = await appointmentService.findById(createdAppointement._id)
+      const appointmentUpdated = (await Appointment.findById(createdAppointement._id)) as IAppointment | null
 
       res.status(200).send({
         userId: user._id,
@@ -211,7 +208,7 @@ export default (server: Server) => {
     async (req, res) => {
       const { appointmentId } = req.query
 
-      const appointment = await appointmentService.findById(appointmentId).lean()
+      const appointment = (await Appointment.findById(appointmentId)) as IAppointment | null
 
       if (!appointment) return res.status(400).send()
 
@@ -219,13 +216,14 @@ export default (server: Server) => {
         eligibleTrainingsForAppointmentService.getParameterByCleMinistereEducatif({
           cleMinistereEducatif: appointment.cle_ministere_educatif,
         }),
-        users.getUserById(appointment.applicant_id),
+        // TODO applicant_id null | undefined | string
+        users.getUserById(appointment.applicant_id as string),
       ])
 
       res.status(200).send({
         appointment: {
           ...appointment,
-          appointment_origin_detailed: getReferrerByKeyName(appointment.appointment_origin),
+          appointment_origin_detailed: JSON.stringify(getReferrerByKeyName(appointment.appointment_origin as string)), // TODO unused in front
         },
         user,
         etablissement: { ...eligibleTrainingsForAppointment },
@@ -242,7 +240,7 @@ export default (server: Server) => {
       await appointmentReplySchema.validateAsync(req.body, { abortEarly: false })
       const { appointment_id, cfa_intention_to_applicant, cfa_message_to_applicant, cfa_message_to_applicant_date } = req.body
 
-      const appointment = await appointmentService.findById(appointment_id).lean()
+      const appointment = (await Appointment.findById(appointment_id)) as IAppointment | null
 
       if (!appointment) return res.status(400).send()
 
@@ -250,7 +248,8 @@ export default (server: Server) => {
         eligibleTrainingsForAppointmentService.getParameterByCleMinistereEducatif({
           cleMinistereEducatif: appointment.cle_ministere_educatif,
         }),
-        users.getUserById(appointment.applicant_id),
+        // TODO applicant_id null | undefined | string
+        users.getUserById(appointment.applicant_id as string),
       ])
 
       if (!user || !eligibleTrainingsForAppointment) return res.status(400).send()

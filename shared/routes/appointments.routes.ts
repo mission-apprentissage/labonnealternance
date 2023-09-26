@@ -115,7 +115,7 @@ export const zAppointmentsRoute = {
               appointment_origin_detailed: z.string(),
             }),
             user: z.any(),
-            etablissement: ZEligibleTrainingsForAppointmentSchema,
+            etablissement: z.union([ZEligibleTrainingsForAppointmentSchema, z.object({}).strict()]),
           })
           .strict(),
       },
@@ -165,7 +165,7 @@ export const zAppointmentsRoute = {
           email: z.string(),
           type: z.string(),
           applicantMessageToCfa: z.string().nullable(),
-          applicantReasons: z.enum(["modalite", "contenu", "porte", "frais", "place", "horaire", "plus", "accompagnement", "lieu", "suivi", "autre"]),
+          applicantReasons: z.array(z.enum(["modalite", "contenu", "porte", "frais", "place", "horaire", "plus", "accompagnement", "lieu", "suivi", "autre"])),
           cleMinistereEducatif: z.string(),
           appointmentOrigin: z.string(),
         })
@@ -174,7 +174,7 @@ export const zAppointmentsRoute = {
         "2xx": z
           .object({
             userId: z.string(),
-            appointment: ZAppointment,
+            appointment: z.union([ZAppointment, z.null()]),
           })
           .strict(),
       },
@@ -197,7 +197,7 @@ export const zAppointmentsRoute = {
           .object({
             appointment_id: z.string(),
             cfa_intention_to_applicant: z.string(),
-            cfa_message_to_applicant: z.string(),
+            cfa_message_to_applicant: z.string().nullable(),
             cfa_message_to_applicant_date: z.date(),
           })
           .strict(),
