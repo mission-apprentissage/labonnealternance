@@ -1,15 +1,15 @@
+import { IJob, IRecruiter } from "shared"
 import { ObjectId } from "mongodb"
 import { IRecruiter } from "shared"
 
 import { encryptMailWithIV } from "../common/utils/encryptString"
-import { IApiError, manageApiError } from "../common/utils/errorManager"
+import { manageApiError } from "../common/utils/errorManager"
 import { roundDistance } from "../common/utils/geolib"
 import { trackApiCall } from "../common/utils/sendTrackingEvent"
 
 import { IApplicationCount, getApplicationByJobCount } from "./application.service"
 import { JOB_STATUS, NIVEAUX_POUR_LBA, RECRUITER_STATUS } from "./constant.service"
 import { getJobsFromElasticSearch, getOffreAvecInfoMandataire, incrementLbaJobViewCount } from "./formulaire.service"
-import type { TLbaItemResult } from "./jobOpportunity.service.types"
 import type { ILbaItem } from "./lbaitem.shared.service.types"
 import type { ILbaJobEsResult } from "./lbajob.service.types"
 import { filterJobsByOpco } from "./opco.service"
@@ -72,7 +72,7 @@ export const getLbaJobs = async ({
       matchas.results = await filterJobsByOpco({ opco, opcoUrl, jobs: matchas.results })
     }
 
-    if (!hasLocation) {
+    if (!hasLocation && matchas.results) {
       sortLbaJobs(matchas)
     }
 
@@ -89,25 +89,25 @@ export const getLbaJobs = async ({
  * @param {IApplicationCount[]} applicationCountByJob les décomptes de candidatures par identifiant d'offres
  * @returns {{ results: ILbaItem[] }}
  */
-function transformLbaJobs({ jobs, caller, applicationCountByJob }: { jobs: ILbaJobEsResult[]; caller?: string; applicationCountByJob: IApplicationCount[] }): {
-  results: ILbaItem[]
-} {
-  return {
-    results: jobs.flatMap((job) =>
-      transformLbaJob({
-        job: job._source,
-        distance: job.sort[0],
-        applicationCountByJob,
-        caller,
-      })
-    ),
-  }
+function transformLbaJobs({ jobs, caller, applicationCountByJob }: { jobs: ILbaJobEsResult[]; caller?: string; applicationCountByJob: IApplicationCount[] }): { results: ILbaItem[] }
+{
+  return { results: jobs.flatMap((job) =>
+                                            transformLbaJob({
+                                              job: job._source,
+                                              distance: job.sort && job.sort[0],
+                                              applicationCountByJob,
+                                              caller,
+                                            })
+                                          ) }
+  // return {
+  //   results: transformedJobs.filter(transformedJob => transformedJob !== undefined ),
+  // }
 }
 
 /**
  * Retourne une offre LBA identifiée par son id
  */
-export const getLbaJobById = async ({ id, caller }: { id: string; caller?: string }): Promise<IApiError | { matchas: ILbaItem[] }> => {
+export const getLbaJobById = async ({ id, caller }: { id: string; caller?: string }) => {
   try {
     const rawJob = await getOffreAvecInfoMandataire(id)
 
@@ -142,7 +142,7 @@ export const getLbaJobById = async ({ id, caller }: { id: string; caller?: strin
  * @returns {ILbaItem[]}
  */
 function transformLbaJob({
-  job,
+  job,    
   distance,
   caller,
   applicationCountByJob,
@@ -151,74 +151,76 @@ function transformLbaJob({
   distance?: number
   caller?: string
   applicationCountByJob: IApplicationCount[]
-}) {
-  return job.jobs
-    ? job.jobs.map((offre, idx) => {
-        const email = encryptMailWithIV({ value: job.email, caller })
-        const applicationCount = applicationCountByJob.find((job) => job._id.toString() === offre._id.toString())
-        const romes = offre.rome_code.map((code) => ({ code, label: null }))
+}): ILbaItem[] {
+  if(!job.jobs)
+    {return []}
 
-        const resultJob = {
-          ideaType: "matcha",
-          id: `${job.establishment_id}-${idx}`,
-          title: offre.rome_appellation_label ?? offre.rome_label,
-          contact: {
-            ...email,
-            name: job.first_name + " " + job.last_name,
-            phone: job.phone,
-          },
-          place: {
-            distance: distance ? roundDistance(distance) : null,
-            fullAddress: job.address,
-            address: job.address,
-            latitude: job.geo_coordinates && job.geo_coordinates.split(",")[0],
-            longitude: job.geo_coordinates && job.geo_coordinates.split(",")[1],
-            city: job.address_detail && "localite" in job.address_detail && job.address_detail.localite,
-          },
-          company: {
-            siret: job.establishment_siret,
-            name: job.establishment_enseigne || job.establishment_raison_sociale || "Enseigne inconnue",
-            size: job.establishment_size,
-            mandataire: job.is_delegated,
-            creationDate: job.establishment_creation_date && new Date(job.establishment_creation_date),
-          },
-          nafs: [{ label: job.naf_label }],
-          diplomaLevel: offre.job_level_label,
-          // createdAt: job.createdAt,
-          // lastUpdateAt: job.updatedAt,
-          job: {
-            id: offre._id,
-            description: offre.job_description || "",
-            creationDate: offre.job_creation_date,
-            contractType: offre.job_type && offre.job_type.join(", "),
-            jobStartDate: offre.job_start_date,
-            romeDetails: offre.rome_detail,
-            rythmeAlternance: offre.job_rythm || null,
-            dureeContrat: "" + offre.job_duration,
-            quantiteContrat: offre.job_count,
-            elligibleHandicap: offre.is_disabled_elligible,
-            status: job.status === RECRUITER_STATUS.ACTIF && offre.job_status === JOB_STATUS.ACTIVE ? JOB_STATUS.ACTIVE : JOB_STATUS.ANNULEE,
-          },
-          romes,
-          idRco: null,
-          idRcoFormation: null,
-          url: null,
-          cleMinistereEducatif: null,
-          diploma: null,
-          cfd: null,
-          rncpCode: null,
-          rncpLabel: null,
-          rncpEligibleApprentissage: null,
-          period: null,
-          capacity: null,
-          onisepUrl: null,
-          training: null,
-          applicationCount,
-        }
+  return job.jobs.map((offre, idx): ILbaItem => {
+    const email = encryptMailWithIV({ value: job.email, caller })
+    const applicationCount = applicationCountByJob.find((job) => job._id.toString() === offre._id.toString())
+    const romes = offre.rome_code.map((code) => ({ code, label: null }))
 
-        return resultJob
-      })
-    : []
+    const latitude = parseFloat(job.geo_coordinates ? job.geo_coordinates.split(",")[0] : "0")
+    const longitude = parseFloat(job.geo_coordinates ? job.geo_coordinates.split(",")[1] : "0")
+
+    const resultJob: ILbaItem = {
+      ideaType: "matcha",
+      id: `${job.establishment_id}-${idx}`,
+      title: offre.rome_appellation_label ?? offre.rome_label,
+      contact: {
+        ...email,
+        name: job.first_name + " " + job.last_name,
+        phone: job.phone,
+      },
+      place: {
+        distance: distance!==undefined ? roundDistance(distance) : null,
+        fullAddress: job.address,
+        address: job.address,
+        latitude,
+        longitude,
+        city: job.address_detail && "localite" in job.address_detail && job.address_detail.localite,
+      },
+      company: {
+        siret: job.establishment_siret,
+        name: job.establishment_enseigne || job.establishment_raison_sociale || "Enseigne inconnue",
+        size: job.establishment_size,
+        mandataire: job.is_delegated,
+        creationDate: job.establishment_creation_date && new Date(job.establishment_creation_date),
+      },
+      nafs: [{ label: job.naf_label }],
+      diplomaLevel: offre.job_level_label,
+      job: {
+        id: offre._id.toString(),
+        description: offre.job_description || "",
+        creationDate: offre.job_creation_date,
+        contractType: offre.job_type && offre.job_type.join(", "),
+        jobStartDate: offre.job_start_date,
+        romeDetails: offre.rome_detail,
+        rythmeAlternance: offre.job_rythm || null,
+        dureeContrat: "" + offre.job_duration,
+        quantiteContrat: offre.job_count,
+        elligibleHandicap: offre.is_disabled_elligible,
+        status: job.status === RECRUITER_STATUS.ACTIF && offre.job_status === JOB_STATUS.ACTIVE ? JOB_STATUS.ACTIVE : JOB_STATUS.ANNULEE,
+      },
+      romes,
+      idRco: null,
+      idRcoFormation: null,
+      url: null,
+      cleMinistereEducatif: null,
+      diploma: null,
+      cfd: null,
+      rncpCode: null,
+      rncpLabel: null,
+      rncpEligibleApprentissage: null,
+      period: null,
+      capacity: null,
+      onisepUrl: null,
+      training: null, 
+      applicationCount,
+    }
+
+    return resultJob
+  })
 }
 
 /**
@@ -255,7 +257,7 @@ function sortLbaJobs(jobs: { results: ILbaItem[] }) {
  * Incrémente le compteur de vue de la page de détail d'une offre LBA
  * @param {string} jobId
  */
-export const addOffreDetailView = async (jobId: string | ObjectId) => {
+export const addOffreDetailView = async (jobId: IJob["_id"]) => {
   await incrementLbaJobViewCount(jobId, {
     stats_detail_view: 1,
   })
@@ -264,7 +266,7 @@ export const addOffreDetailView = async (jobId: string | ObjectId) => {
 /**
  * Incrémente le compteur de vue de la page de recherche d'une offre LBA
  */
-export const addOffreSearchView = async (jobId: string | ObjectId) => {
+export const addOffreSearchView = async (jobId: IJob["_id"]) => {
   await incrementLbaJobViewCount(jobId, {
     stats_search_view: 1,
   })
