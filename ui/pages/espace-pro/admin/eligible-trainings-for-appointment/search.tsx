@@ -42,7 +42,7 @@ function SearchPage() {
           position: "bottom-right",
         })
       } else {
-        router.push(`/espace-pro/admin/eligible-trainings-for-appointment/edit/${formations[0].etablissement_formateur_siret}`)
+        await router.push(`/espace-pro/admin/eligible-trainings-for-appointment/edit/${formations[0].etablissement_formateur_siret}`)
       }
     } catch (e) {
       toast({
@@ -68,7 +68,7 @@ function SearchPage() {
           {title}
         </Heading>
         <Box border="1px solid #E0E5ED" bg="white" mx={40} mt={20}>
-          {loading && <Button isLoading={loading} color="secondary" block />}
+          {loading && <Button isLoading={loading} color="secondary" />}
           <Text fontWeight="500" textStyle="h6" p={4} px={6} borderBottom="1px solid #E0E5ED">
             Rechercher un établissement
           </Text>

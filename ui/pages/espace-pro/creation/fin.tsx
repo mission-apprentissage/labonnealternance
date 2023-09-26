@@ -112,7 +112,7 @@ export default function DepotRapideFin() {
    */
   const onClose = async () => {
     await client.invalidateQueries("offre-liste")
-    router.push("/")
+    await router.push("/")
   }
 
   const ValidatedAccountDescription = () => {

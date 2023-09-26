@@ -29,7 +29,7 @@ export default function AdminLogin() {
     try {
       const { token } = await _post("login", values)
       setAuth(token)
-      router.push("/espace-pro/admin")
+      await router.push("/espace-pro/admin")
     } catch (e) {
       console.error(e)
       setStatus({ error: e.prettyMessage })

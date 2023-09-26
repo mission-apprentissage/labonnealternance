@@ -120,7 +120,7 @@ export default function FormCreatePage() {
         appointmentOrigin: referrer,
       })
 
-      router.push(`/form/confirm/${appointment._id}`)
+      await router.push(`/form/confirm/${appointment._id}`)
       setTimeout(() => window.scroll({ top: 0, behavior: "smooth" }), 500)
     } catch ({ message }) {
       // TODO to check return if already appoitment
