@@ -49,7 +49,7 @@ export default (server: Server) => {
     "/api/user",
     {
       schema: zRoutes.get["/api/user"],
-      preHandler: server.auth(zRoutes.get["/api/user"].securityScheme),
+      preHandler: [server.auth(zRoutes.get["/api/user"].securityScheme)],
     },
     async (req, res) => {
       const query = req.query.users

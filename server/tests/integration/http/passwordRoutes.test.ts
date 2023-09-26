@@ -1,6 +1,6 @@
 import assert from "assert"
 
-import jwt from "jsonwebtoken"
+import jwt, { JwtPayload } from "jsonwebtoken"
 import { omit } from "lodash-es"
 import { describe, it } from "vitest"
 
@@ -58,7 +58,7 @@ describe("passwordRoutes", () => {
       })
 
     assert.strictEqual(response.status, 200)
-    const decoded = jwt.verify(response.body.token, config.auth.user.jwtSecret)
+    const decoded = jwt.verify(response.body.token, config.auth.user.jwtSecret) as JwtPayload
     assert.ok(decoded.iat)
     assert.ok(decoded.exp)
     assert.deepStrictEqual(omit(decoded, ["iat", "exp"]), {

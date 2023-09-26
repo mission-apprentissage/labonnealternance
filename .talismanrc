@@ -26,13 +26,13 @@ fileignoreconfig:
 - filename: server/src/http/routes/appointmentRequest.controller.ts
   checksum: d2770daa97ae332eec0b66497fdb717229895583ac3bfd48af1a830b36504968
 - filename: server/src/http/routes/auth/password.controller.ts
-  checksum: b9082b14973b6519b151acd49185e06ccc67a8f49ecf8ba985344eae43e00251
+  checksum: 433f0c943c543b2ec1a2bd69356d3a55213de84a3d77d055d34860fe5c933324
 - filename: server/static/generated/swagger.json
   checksum: any
   ignore_detectors:
   - filecontent
 - filename: server/tests/integration/http/passwordRoutes.test.ts
-  checksum: ca06f5c65cc9e3bdc39390cfe5ecdc4e3ea165ce58dc39ce7ac990aff8074a90
+  checksum: 963e2b1e9bb536d194f25b126b8500156fa75387625f1f60d3b906a02dc3e9ea
 - filename: shared/constants/recruteur.ts
   checksum: 28af032d2eb26aec7dd3bb1d32253f992a036626c36a92eb1e7ff07599fd0b2b
 - filename: shared/helpers/openapi/generateOpenapi.test.ts

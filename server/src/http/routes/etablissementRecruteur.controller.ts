@@ -262,7 +262,7 @@ export default (server: Server) => {
     "/api/etablissement/:id",
     {
       schema: zRoutes.put["/api/etablissement/:id"],
-      preHandler: server.auth(zRoutes.put["/api/etablissement/:id"].securityScheme),
+      preHandler: [server.auth(zRoutes.put["/api/etablissement/:id"].securityScheme)],
     },
     async (req, res) => {
       const result = await updateUser({ _id: req.params.id }, req.body)

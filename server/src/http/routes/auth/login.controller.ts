@@ -18,7 +18,7 @@ export default (server: Server) => {
     "/api/login",
     {
       schema: zRoutes.post["/api/login"],
-      preHandler: server.auth(zRoutes.post["/api/login"].securityScheme),
+      preHandler: [server.auth(zRoutes.post["/api/login"].securityScheme)],
     },
     async (req, res) => {
       const user = req.user
@@ -135,7 +135,7 @@ export default (server: Server) => {
     "/api/login/verification",
     {
       schema: zRoutes.post["/api/login/verification"],
-      preHandler: server.auth(zRoutes.post["/api/login/verification"].securityScheme),
+      preHandler: [server.auth(zRoutes.post["/api/login/verification"].securityScheme)],
     },
     async (req, res) => {
       const user = getUserFromRequest(req, zRoutes.post["/api/login/verification"])

@@ -191,7 +191,7 @@ export const getOffreAvecInfoMandataire = async (id: string | ObjectId): Promise
     throw new Error("getOffreAvecInfoMandataire failed")
   }
 
-  result.jobs = result.jobs.filter((x) => x._id == id)
+  result.jobs = result.jobs.filter((x) => x._id.toString() === id.toString())
 
   if (result.is_delegated && result.address) {
     const [entreprise_localite] = result.address.match(/([0-9]{5})[ ,] ?([A-zÀ-ÿ]*)/) ?? [""]

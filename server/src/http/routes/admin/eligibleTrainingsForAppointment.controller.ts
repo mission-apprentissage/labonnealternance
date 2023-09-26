@@ -26,7 +26,7 @@ export default (server: Server) => {
     "/api/admin/eligible-trainings-for-appointment/etablissement-formateur-siret/:siret",
     {
       schema: zRoutes.get["/api/admin/eligible-trainings-for-appointment/etablissement-formateur-siret/:siret"],
-      preHandler: server.auth(zRoutes.get["/api/admin/eligible-trainings-for-appointment/etablissement-formateur-siret/:siret"].securityScheme),
+      preHandler: [server.auth(zRoutes.get["/api/admin/eligible-trainings-for-appointment/etablissement-formateur-siret/:siret"].securityScheme)],
     },
     async (req, res) => {
       const { siret } = req.params
@@ -48,7 +48,7 @@ export default (server: Server) => {
     "/api/admin/eligible-trainings-for-appointment/:id",
     {
       schema: zRoutes.patch["/api/admin/eligible-trainings-for-appointment/:id"],
-      preHandler: server.auth(zRoutes.patch["/api/admin/eligible-trainings-for-appointment/:id"].securityScheme),
+      preHandler: [server.auth(zRoutes.patch["/api/admin/eligible-trainings-for-appointment/:id"].securityScheme)],
     },
     async ({ body, params }, res) => {
       await eligibleTrainingsForAppointmentIdPatchSchema.validateAsync(body, { abortEarly: false })
