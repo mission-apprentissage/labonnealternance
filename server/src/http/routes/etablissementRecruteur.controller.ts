@@ -121,7 +121,7 @@ export default (server: Server) => {
       if (!result) {
         throw Boom.notFound("aucune données OPCO trouvées")
       }
-      return res.status(200).send(result)
+      return res.status(200).send(result as { opco: string; idcc: string })
     }
   )
 
