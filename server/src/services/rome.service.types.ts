@@ -74,8 +74,8 @@ export interface CompetencesDeBase {
   typeCompetence: string
   competenceCle: boolean
   frequence: number
-  riasecMineur?: string
-  riasecMajeur?: string
+  riasecMineur?: string | null
+  riasecMajeur?: string | null
 }
 
 export interface NoeudCompetence {
