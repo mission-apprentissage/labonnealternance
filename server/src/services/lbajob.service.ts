@@ -1,6 +1,4 @@
 import { IJob, IRecruiter } from "shared"
-import { ObjectId } from "mongodb"
-import { IRecruiter } from "shared"
 
 import { encryptMailWithIV } from "../common/utils/encryptString"
 import { manageApiError } from "../common/utils/errorManager"
