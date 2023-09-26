@@ -98,7 +98,7 @@ export const ZLbaItem = z.object({
 
   /** TODO API V2: move inside training<ILbaItemTraining> */
   cleMinistereEducatif: z.string().nullable(), // formation
-  diplomaLevel: z.string().nullable(), // formation -> niveau  | matcha -> offres.niveau
+  diplomaLevel: z.string().nullish(), // formation -> niveau  | matcha -> offres.niveau
   diploma: z.string().nullable(), // formation -> diplome
   cfd: z.string().nullable(), // formation -> cfd
   rncpCode: z.string().nullable(), // formation -> rncp_code
