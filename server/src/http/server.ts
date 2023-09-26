@@ -4,7 +4,7 @@ import fastifySwagger, { FastifyStaticSwaggerOptions } from "@fastify/swagger"
 import fastifySwaggerUI, { FastifySwaggerUiOptions } from "@fastify/swagger-ui"
 import Boom from "boom"
 import fastify, { FastifyBaseLogger, FastifyInstance, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerDefault } from "fastify"
-import { serializerCompiler, validatorCompiler, ZodTypeProvider } from "fastify-type-provider-zod"
+import { ZodTypeProvider, serializerCompiler, validatorCompiler } from "fastify-type-provider-zod"
 import { OpenAPIV3_1 } from "openapi-types"
 import { generateOpenApiSchema } from "shared/helpers/openapi/generateOpenapi"
 import { SecurityScheme } from "shared/routes/common.routes"
@@ -40,7 +40,6 @@ import optoutRoute from "./routes/optout.controller"
 import partnersRoute from "./routes/partners.controller"
 import sendApplication from "./routes/sendApplication.controller"
 import sendApplicationAPI from "./routes/sendApplicationAPI.controller"
-import sendMail from "./routes/sendMail.controller"
 import trainingLinks from "./routes/trainingLinks.controller"
 import unsubscribeLbaCompany from "./routes/unsubscribeLbaCompany.controller"
 import updateLbaCompany from "./routes/updateLbaCompany.controller"
@@ -156,7 +155,6 @@ export async function bind(app: Server) {
   version(app)
   rome(app)
   updateLbaCompany(app)
-  sendMail(app)
   campaignWebhook(app)
   sendApplication(app)
   sendApplicationAPI(app)
