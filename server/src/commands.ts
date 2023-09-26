@@ -76,6 +76,7 @@ program
     try {
       const signal = createProcessExitSignal()
       const httpServer = await server()
+      await httpServer.ready()
       await httpServer.listen({ port: config.port, host: "0.0.0.0" })
       logger.info(`Server ready and listening on port ${config.port}`)
 

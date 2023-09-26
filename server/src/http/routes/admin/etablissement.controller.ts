@@ -15,7 +15,7 @@ export default (server: Server) => {
     "/api/admin/etablissements",
     {
       schema: zRoutes.get["/api/admin/etablissements"],
-      preHandler: server.auth(zRoutes.get["/api/admin/etablissements"].securityScheme),
+      preHandler: [server.auth(zRoutes.get["/api/admin/etablissements"].securityScheme)],
     },
     async (req, res) => {
       const query = req.query.query ? JSON.parse(req.query.query) : {}
@@ -44,7 +44,7 @@ export default (server: Server) => {
     "/api/admin/etablissements/siret-formateur/:siret",
     {
       schema: zRoutes.get["/api/admin/etablissements/siret-formateur/:siret"],
-      preHandler: server.auth(zRoutes.get["/api/admin/etablissements/siret-formateur/:siret"].securityScheme),
+      preHandler: [server.auth(zRoutes.get["/api/admin/etablissements/siret-formateur/:siret"].securityScheme)],
     },
     async ({ params }, res) => {
       const etablissement = await Etablissement.findOne({ formateur_siret: params.siret })
@@ -64,7 +64,7 @@ export default (server: Server) => {
     "/api/admin/etablissements/:id",
     {
       schema: zRoutes.get["/api/admin/etablissements/:id"],
-      preHandler: server.auth(zRoutes.get["/api/admin/etablissements/:id"].securityScheme),
+      preHandler: [server.auth(zRoutes.get["/api/admin/etablissements/:id"].securityScheme)],
     },
     async (req, res) => {
       const etablissement = await Etablissement.findById(req.params.id)
@@ -84,7 +84,7 @@ export default (server: Server) => {
     "/api/admin/etablissements",
     {
       schema: zRoutes.post["/api/admin/etablissements"],
-      preHandler: server.auth(zRoutes.post["/api/admin/etablissements"].securityScheme),
+      preHandler: [server.auth(zRoutes.post["/api/admin/etablissements"].securityScheme)],
     },
     async ({ body }, res) => {
       const { etablissements } = body
@@ -107,7 +107,7 @@ export default (server: Server) => {
     "/api/admin/etablissements/:id",
     {
       schema: zRoutes.patch["/api/admin/etablissements/:id"],
-      preHandler: server.auth(zRoutes.patch["/api/admin/etablissements/:id"].securityScheme),
+      preHandler: [server.auth(zRoutes.patch["/api/admin/etablissements/:id"].securityScheme)],
     },
     async ({ body, params }, res) => {
       const etablissement = await Etablissement.findById(params.id)

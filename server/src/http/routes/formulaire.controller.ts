@@ -30,7 +30,7 @@ export default (server: Server) => {
     "/api/formulaire",
     {
       schema: zRoutes.get["/api/formulaire"],
-      preHandler: server.auth(zRoutes.get["/api/formulaire"].securityScheme),
+      preHandler: [server.auth(zRoutes.get["/api/formulaire"].securityScheme)],
     },
     async (req, res) => {
       // TODO_AB ??????

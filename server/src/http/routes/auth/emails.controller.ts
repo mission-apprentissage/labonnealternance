@@ -23,7 +23,7 @@ export default (server: Server) => {
     "/api/emails/webhook",
     {
       schema: zRoutes.post["/api/emails/webhook"],
-      preHandler: server.auth(zRoutes.post["/api/emails/webhook"].securityScheme),
+      preHandler: [server.auth(zRoutes.post["/api/emails/webhook"].securityScheme)],
     },
     async (req, res) => {
       const parameters = await Joi.object({

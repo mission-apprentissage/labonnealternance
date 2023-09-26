@@ -14,7 +14,7 @@ export default (server: Server) => {
     "/api/admin/formations",
     {
       schema: zRoutes.get["/api/admin/formations"],
-      preHandler: server.auth(zRoutes.get["/api/admin/formations"].securityScheme),
+      preHandler: [server.auth(zRoutes.get["/api/admin/formations"].securityScheme)],
     },
     async (req, res) => {
       const qs = req.query

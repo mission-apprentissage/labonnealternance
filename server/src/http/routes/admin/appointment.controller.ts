@@ -15,7 +15,7 @@ export default (server: Server) => {
     "/api/admin/appointments",
     {
       schema: zRoutes.get["/api/admin/appointments"],
-      preHandler: server.auth(zRoutes.get["/api/admin/appointments"].securityScheme),
+      preHandler: [server.auth(zRoutes.get["/api/admin/appointments"].securityScheme)],
     },
     async (req, res) => {
       const query = req.query.query ? JSON.parse(req.query.query) : {}
@@ -42,7 +42,7 @@ export default (server: Server) => {
     "/api/admin/appointments/details",
     {
       schema: zRoutes.get["/api/admin/appointments/details"],
-      preHandler: server.auth(zRoutes.get["/api/admin/appointments"].securityScheme),
+      preHandler: [server.auth(zRoutes.get["/api/admin/appointments"].securityScheme)],
     },
     async (req, res) => {
       const query = req.query.query ? JSON.parse(req.query.query) : {}

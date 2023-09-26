@@ -27,7 +27,7 @@ export default (server: Server) => {
     "/api/password/reset-password",
     {
       schema: zRoutes.post["/api/password/reset-password"],
-      preHandler: server.auth(zRoutes.post["/api/password/reset-password"].securityScheme),
+      preHandler: [server.auth(zRoutes.post["/api/password/reset-password"].securityScheme)],
     },
     async (req, res) => {
       const user = req.user

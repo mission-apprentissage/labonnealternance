@@ -191,9 +191,9 @@ function authorizationnMiddleware(strategy: SecurityScheme, req: FastifyRequest)
 const symbol = Symbol("authStrategy")
 
 export function auth(strategy: SecurityScheme) {
-  const authMiddleware = (req: FastifyRequest) => {
-    authenticationMiddleware(strategy, req)
-    authorizationnMiddleware(strategy, req)
+  const authMiddleware = async (req: FastifyRequest) => {
+    await authenticationMiddleware(strategy, req)
+    await authorizationnMiddleware(strategy, req)
   }
 
   authMiddleware[symbol] = strategy
