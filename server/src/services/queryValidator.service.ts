@@ -140,23 +140,19 @@ const validateRegionOrRome = (
  * @param {number} max optionnel. le rayon maximum
  * @returns {undefined}
  */
-const validateRadius = (radius: string | undefined, error_messages: string[], min = 0, max = 200) => {
-  if (radius === undefined || radius === "") error_messages.push("radius : Search radius is missing.")
-  else if (isNaN(parseInt(radius))) error_messages.push("radius : Search radius must be a number.")
-  else if (parseInt(radius) < min || (parseInt(radius) > max && parseInt(radius) !== 20000))
-    error_messages.push(`radius : Search radius must be a number between ${min} and ${max}.`)
+const validateRadius = (radius: number | undefined, error_messages: string[], min = 0, max = 200) => {
+  if (radius === undefined) error_messages.push("radius : Search radius is missing.")
+  else if (radius < min || (radius > max && radius !== 20000)) error_messages.push(`radius : Search radius must be a number between ${min} and ${max}.`)
 }
 
-const validateLatitude = (latitude: string | undefined, error_messages: string[]) => {
-  if (latitude === undefined || latitude === "") error_messages.push("latitude : Search center latitude is missing.")
-  else if (isNaN(parseFloat(latitude))) error_messages.push("latitude : Search center latitude must be a number.")
-  else if (parseFloat(latitude) > 90 || parseFloat(latitude) < -90) error_messages.push("latitude : Search center latitude must be a number between -90 and 90.")
+const validateLatitude = (latitude: number | undefined, error_messages: string[]) => {
+  if (latitude === undefined) error_messages.push("latitude : Search center latitude is missing.")
+  else if (latitude > 90 || latitude < -90) error_messages.push("latitude : Search center latitude must be a number between -90 and 90.")
 }
 
-const validateLongitude = (longitude: string | undefined, error_messages: string[]) => {
-  if (longitude === undefined || longitude === "") error_messages.push("longitude : Search center longitude is missing.")
-  else if (isNaN(parseFloat(longitude))) error_messages.push("longitude : Search center longitude must be a number.")
-  else if (parseFloat(longitude) > 180 || parseFloat(longitude) < -180) error_messages.push("longitude : Search center longitude must be a number between -180 and 180.")
+const validateLongitude = (longitude: number | undefined, error_messages: string[]) => {
+  if (longitude === undefined) error_messages.push("longitude : Search center longitude is missing.")
+  else if (longitude > 180 || longitude < -180) error_messages.push("longitude : Search center longitude must be a number between -180 and 180.")
 }
 
 const validateDiploma = (diploma: string | undefined, error_messages: string[]) => {
