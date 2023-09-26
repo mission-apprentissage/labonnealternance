@@ -25,7 +25,7 @@ const createTransporter = (): Transporter => {
 
   const transporter = nodemailer.createTransport(options)
 
-  transporter.use("compile", htmlToText({ ignoreImage: true }))
+  transporter.use("compile", htmlToText())
 
   return transporter
 }
