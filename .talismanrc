@@ -17,10 +17,14 @@ fileignoreconfig:
   checksum: 171944b26137803ef124182fe78dc33ed701f67b2cb0e04f015de791feb0ed9c
 - filename: server/.env.test
   checksum: 812d70e7fc383abd6942dbaf8691be833d7cd25b13aae6b4bbb2c2da4df6ed51
+- filename: server/src/common/model/constants/referrers.ts
+  checksum: a7205e7da4dca56dc3f989bc4fbbec4ed10c46b963446005a0b0356b0cae3a3d
 - filename: server/src/config.ts
   checksum: 0a7fb0cc67e8d1453b1605840a2ff848466c640557e315929002833c10f58812
 - filename: server/src/http/controllers/appointments/appointments.controller.ts
   checksum: dc77c04efc26dcd8ca4816f392ab24a32a92cb45ca4b94adb593a08e7a2d231e
+- filename: server/src/http/routes/appointmentRequest.controller.ts
+  checksum: d2770daa97ae332eec0b66497fdb717229895583ac3bfd48af1a830b36504968
 - filename: server/src/http/routes/auth/password.controller.ts
   checksum: b9082b14973b6519b151acd49185e06ccc67a8f49ecf8ba985344eae43e00251
 - filename: server/static/generated/swagger.json

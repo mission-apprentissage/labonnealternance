@@ -82,7 +82,8 @@ export const repriseEmailRdvs = async ({ fromDateStr }: { fromDateStr: string })
           data: mailData,
         }),
         mailer.sendEmail({
-          to: eligibleTrainingsForAppointment.lieu_formation_email,
+          // TODO string | null
+          to: eligibleTrainingsForAppointment.lieu_formation_email as string,
           subject: emailCfaSubject,
           template: getStaticFilePath("./templates/mail-cfa-demande-de-contact.mjml.ejs"),
           data: mailData,
@@ -119,7 +120,8 @@ export const repriseEmailRdvs = async ({ fromDateStr }: { fromDateStr: string })
         ),
       ])
       stats.success++
-    } catch (err) {
+      // TODO
+    } catch (err: any) {
       const errorMessage = (err && "message" in err && err.message) || err
       logger.error(err)
       logger.error(`Reprise des emails de rdv: rdv id=${appointment._id}, erreur: ${errorMessage}`)

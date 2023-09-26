@@ -11,7 +11,7 @@ const createAppointment = async (params: Partial<IAppointment>) => {
   return appointment.toObject()
 }
 
-const findById = async (id: ObjectId): Promise<IAppointment | null> => Appointment.findById(id)
+const findById = async (id: ObjectId | string): Promise<IAppointment | null> => Appointment.findById(id).lean()
 
 const find = (conditions: FilterQuery<IAppointment>) => Appointment.find(conditions)
 

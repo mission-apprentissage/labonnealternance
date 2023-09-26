@@ -1,13 +1,13 @@
 import Boom from "boom"
 import Joi from "joi"
 import * as _ from "lodash-es"
-import { zRoutes } from "shared"
+import { IAppointment, zRoutes } from "shared"
 import { referrers } from "shared/constants/referers"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 import { mailType } from "../../common/model/constants/etablissement"
-import { Etablissement } from "../../common/model/index"
+import { Appointment, Etablissement } from "../../common/model/index"
 import config from "../../config"
 import * as appointmentService from "../../services/appointment.service"
 import dayjs from "../../services/dayjs.service"
@@ -114,7 +114,8 @@ export default (server: Server) => {
       await Promise.all(
         emailsAffelnet.map((email) =>
           mailer.sendEmail({
-            to: email,
+            // TODO string | null
+            to: email as string,
             subject: `La prise de RDV est activée pour votre CFA sur Choisir son affectation après la 3e`,
             template: getStaticFilePath("./templates/mail-cfa-premium-activated.mjml.ejs"),
             data: {
@@ -233,7 +234,8 @@ export default (server: Server) => {
       await Promise.all(
         emailsParcoursup.map((email) =>
           mailer.sendEmail({
-            to: email,
+            // TODO string | null
+            to: email as string,
             subject: `La prise de RDV est activée pour votre CFA sur Parcoursup`,
             template: getStaticFilePath("./templates/mail-cfa-premium-activated.mjml.ejs"),
             data: {
@@ -435,7 +437,7 @@ export default (server: Server) => {
       const { id, appointmentId } = params
 
       // eslint-disable-next-line prefer-const
-      let [etablissement, appointment] = await Promise.all([Etablissement.findById(id), appointmentService.findById(appointmentId)])
+      let [etablissement, appointment]: [any, IAppointment | null] = await Promise.all([Etablissement.findById(id), Appointment.findById(appointmentId)])
 
       if (!etablissement) {
         throw Boom.badRequest("Etablissement not found.")
@@ -450,7 +452,7 @@ export default (server: Server) => {
         await appointmentService.updateAppointment(appointmentId.toString(), { cfa_read_appointment_details_date: dayjs().toDate() })
       }
 
-      appointment = await appointmentService.findById(appointmentId)
+      appointment = (await Appointment.findById(appointmentId)) as IAppointment | null
       if (!appointment) {
         throw new Error(`unexpected: could not find appointment with id=${appointmentId}`)
       }

@@ -69,10 +69,13 @@ export default function CfaCandidatInformationPage() {
    * @description Set has "read" if there is utm_source=mail query string.
    * @returns {Promise<void>}
    */
-  useEffect(async () => {
-    if (utmSource === "mail") {
-      await _patch(`etablissements/${establishmentId}/appointments/${appointmentId}`, { has_been_read: true })
+  useEffect(() => {
+    const fetchData = async () => {
+      if (utmSource === "mail") {
+        await _patch(`etablissements/${establishmentId}/appointments/${appointmentId}`, { has_been_read: true })
+      }
     }
+    fetchData().catch(console.error)
   }, [utmSource])
 
   return (
