@@ -4,7 +4,12 @@ import { IAppointment } from "shared"
 
 import { Appointment } from "../common/model/index"
 
-const createAppointment = async (params: Partial<IAppointment>) => {
+export type NewAppointment = Pick<
+  IAppointment,
+  "applicant_id" | "cfa_recipient_email" | "cfa_formateur_siret" | "applicant_message_to_cfa" | "applicant_reasons" | "appointment_origin" | "cle_ministere_educatif"
+>
+
+const createAppointment = async (params: NewAppointment) => {
   const appointment = new Appointment(params)
   await appointment.save()
 
