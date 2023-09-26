@@ -112,7 +112,7 @@ export interface ILbaItemJob {
   jobStartDate?: string | Date // matcha -> offres.date_debut_apprentissage
   romeDetails?: IRomeDetailsFromAPI // matcha -> offres.rome_detail -> détail du code ROME
   rythmeAlternance?: string | null // matcha -> offres.rythme_alternance
-  elligibleHandicap: boolean // matcha -> offres.is_disabled_elligible
+  elligibleHandicap?: boolean // matcha -> offres.is_disabled_elligible
   dureeContrat?: string | null // matcha -> offres.duree_contrat
   quantiteContrat?: number | null // matcha -> offres.quantite
   status?: JOB_STATUS | null
