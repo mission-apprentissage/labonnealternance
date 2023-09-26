@@ -1,7 +1,6 @@
 import { Jsonify } from "type-fest"
 import z, { ZodType } from "zod"
 
-import { zAdminAppointementsRoutes } from "./routes/adminAppointments.routes"
 import { zApplicationRoutes } from "./routes/application.routes"
 import { zAppointmentsRoute } from "./routes/appointments.routes"
 import { zCampaignWebhookRoutes } from "./routes/campaignWebhook.routes"
@@ -58,7 +57,6 @@ const zRoutesGetP2 = {
 const zRoutesGetP3 = {
   ...zEligibleTrainingsForAppointmentRoutes.get,
   ...zMailRoutes.get,
-  ...zAdminAppointementsRoutes.get,
 } as const
 
 const zRoutesGet: typeof zRoutesGetP1 & typeof zRoutesGetP2 & typeof zRoutesGetP3 = {
