@@ -16,18 +16,27 @@ export interface IMetierEnrichi {
   romeTitles?: IRomeWithLabel[]
 }
 
-export interface IMetiersEnrichis {
-  labelsAndRomes?: IMetierEnrichi[]
-  labelsAndRomesForDiplomas?: IMetierEnrichi[]
-  error?: string
+export interface IError {
+  error: string
   error_messages?: string[]
 }
 
-export interface IAppellationsRomes {
-  coupleAppellationRomeMetier?: IAppellationRome[]
-  error?: string
-  error_messages?: string[]
+export interface IMetiersEnrichisSuccess {
+  labelsAndRomes: IMetierEnrichi[]
 }
+
+export interface IMetiersEnrichisForDiplomasSuccess {
+  labelsAndRomesForDiplomas: IMetierEnrichi[]
+}
+
+export type IMetiersEnrichis = IMetiersEnrichisSuccess | IError
+export type IMetiersEnrichisForDiplomas = IMetiersEnrichisForDiplomasSuccess | IError
+
+export interface IAppellationsRomesSuccess {
+  coupleAppellationRomeMetier: IAppellationRome[]
+}
+
+export type IAppellationsRomes = IAppellationsRomesSuccess | IError
 
 export interface IAppellationRome {
   codeRome: string

@@ -387,7 +387,7 @@ export const getSomePeJobs = async ({ romes, insee, radius, latitude, longitude,
  * @param {string} caller l'identifiant de l'appelant de l'api
  * @returns {Promise<ILbaItem[] | IApiError>}
  */
-export const getPeJobFromId = async ({ id, caller }: { id: string; caller: string }) => {
+export const getPeJobFromId = async ({ id, caller }: { id: string; caller: string | undefined }) => {
   try {
     const token = await getAccessToken()
     const headers = peApiHeaders

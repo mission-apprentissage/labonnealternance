@@ -108,7 +108,7 @@ export default (server: Server) => {
       const { title, romes, rncps } = req.query
       const result = await getMetiers({ title, romes, rncps })
 
-      if (result.error) {
+      if ("error" in result) {
         if (result.error === "missing_parameters") {
           res.status(400)
         } else {
@@ -142,7 +142,7 @@ export default (server: Server) => {
       const { label } = req.query
       const result = await getCoupleAppellationRomeIntitule(label)
 
-      if (result.error) {
+      if ("error" in result) {
         if (result.error === "missing_parameters") {
           res.status(400)
         } else {

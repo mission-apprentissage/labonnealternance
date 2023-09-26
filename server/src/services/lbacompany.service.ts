@@ -276,6 +276,12 @@ const getCompanies = async ({
 
     if (!latitude) {
       companies.sort(function (a, b) {
+        if (!a || !a.enseigne) {
+          return -1
+        }
+        if (!b || !b.enseigne) {
+          return 1
+        }
         return a.enseigne.toLowerCase().localeCompare(b.enseigne.toLowerCase())
       })
     }
@@ -360,7 +366,7 @@ export const getSomeCompanies = async ({
  * @param {string} caller
  * @returns {Promise<IApiError | { lbaCompanies: LbaItem[] }>}
  */
-export const getCompanyFromSiret = async ({ siret, referer, caller }: { siret: string; referer: string; caller: string }) => {
+export const getCompanyFromSiret = async ({ siret, referer, caller }: { siret: string; referer: string | undefined; caller: string | undefined }) => {
   try {
     const lbaCompany = await LbaCompany.findOne({ siret })
 

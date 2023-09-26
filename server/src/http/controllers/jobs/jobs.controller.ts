@@ -256,11 +256,17 @@ export default (server: Server) => {
         throw Boom.internal("geo_coordinates is empty", { jobId: jobExists._id })
       }
 
-      const [latitude, longitude] = jobExists.geo_coordinates.split(",")
+      const [latitude = "", longitude = ""] = jobExists.geo_coordinates.split(",")
       const { rome_code } = jobExists.jobs.filter(({ _id }) => _id == jobId)[0]
 
       // Get related establishment from a job offer
-      const etablissements = await getNearEtablissementsFromRomes({ rome: rome_code[0], origin: { latitude, longitude } })
+      const etablissements = await getNearEtablissementsFromRomes({
+        rome: rome_code,
+        origin: {
+          latitude: parseFloat(latitude),
+          longitude: parseFloat(longitude),
+        },
+      })
 
       const top10 = etablissements.slice(0, 10)
 

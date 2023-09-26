@@ -31,8 +31,8 @@ export default (server: Server) => {
         rncp,
         referer,
         caller,
-        ...(latitude ? { latitude: parseFloat(latitude) } : {}),
-        ...(longitude ? { longitude: parseFloat(longitude) } : {}),
+        ...(latitude ? { latitude } : {}),
+        ...(longitude ? { longitude } : {}),
         radius,
         insee,
         sources,
@@ -58,8 +58,8 @@ export default (server: Server) => {
         itemSources.indexOf("formations") >= 0
           ? getFormationsQuery({
               romes: parameterControl.romes,
-              ...(latitude ? { latitude: parseFloat(latitude) } : {}),
-              ...(longitude ? { longitude: parseFloat(longitude) } : {}),
+              ...(latitude ? { latitude: latitude } : {}),
+              ...(longitude ? { longitude: longitude } : {}),
               radius,
               diploma,
               caller,

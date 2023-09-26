@@ -25,7 +25,7 @@ export const zMetiersRoutes = {
     "/api/v1/metiers/metiersParEtablissement/:siret": {
       params: z
         .object({
-          siret: z.object({ siret: extensions.siret() }),
+          siret: extensions.siret(),
         })
         .strict(),
       response: {
@@ -51,8 +51,8 @@ export const zMetiersRoutes = {
       querystring: z
         .object({
           title: z.string().optional(),
-          romes: z.array(z.string()).optional(),
-          rncps: z.array(z.string()).optional(),
+          romes: z.string().optional(),
+          rncps: z.string().optional(),
         })
         .strict(),
       response: {

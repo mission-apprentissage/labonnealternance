@@ -7,7 +7,7 @@ import { sentryCaptureException } from "../common/utils/sentryUtils"
 import { mockedLabelsAndRomes } from "../mocks/labelsAndRomes-mock"
 
 import { getRomesFromCfd, getRomesFromSiret } from "./catalogue.service"
-import { IAppellationsRomes, IMetierEnrichi, IMetiers, IMetiersEnrichis } from "./metiers.service.types"
+import { IAppellationsRomes, IMetierEnrichi, IMetiers, IMetiersEnrichis, IMetiersEnrichisForDiplomas } from "./metiers.service.types"
 
 /**
  * Retourne un ensemble de métiers et/ou diplômes et leurs codes romes et rncps associés en fonction de terme de recherches
@@ -94,12 +94,8 @@ const getMultiMatchTermForDiploma = (term) => {
 
 /**
  * retourne une liste de métiers avec leurs codes romes et codes RNCPs associés. le retour respecte strictement les critères
- * @param {string} title : un préfixe, un mot ou un ensemble de préfixes ou mots sur lesquels fonder une recherche de métiers
- * @param {undefined | string[]} romes : un tableau optionnel de codes ROME pour lesquels limiter la recherche
- * @param {undefined | string[]} rncps: un tableau optionnel de codes RNCP pour lesquels limiter la recherche
- * @returns {Promise<IMetiersEnrichis>}
  */
-export const getMetiers = async ({ title, romes, rncps }: { title: string; romes?: string; rncps?: string }): Promise<IMetiersEnrichis> => {
+export const getMetiers = async ({ title, romes, rncps }: { title?: string; romes?: string; rncps?: string }): Promise<IMetiersEnrichis> => {
   if (!title && !romes && !rncps) {
     return {
       error: "missing_parameters",
@@ -304,7 +300,7 @@ export const getCoupleAppellationRomeIntitule = async (searchTerm: string): Prom
  * @param {string} searchTerm : un préfixe, un mot ou un ensemble de préfixes ou mots sur lesquels fonder une recherche de métiers
  * @returns {Promise<IMetiersEnrichis>}
  */
-const getLabelsAndRomesForDiplomas = async (searchTerm: string): Promise<IMetiersEnrichis> => {
+const getLabelsAndRomesForDiplomas = async (searchTerm: string): Promise<IMetiersEnrichisForDiplomas> => {
   try {
     const terms: any[] = []
 
