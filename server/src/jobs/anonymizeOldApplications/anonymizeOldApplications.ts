@@ -36,7 +36,7 @@ const anonymizeApplications = async () => {
     }
   )
 
-  return res.nModified
+  return res.upserted
 }
 
 export default async function () {
@@ -56,7 +56,7 @@ export default async function () {
     return {
       result: "Anonymisation des candidatures terminée",
     }
-  } catch (err) {
+  } catch (err: any) {
     sentryCaptureException(err)
     logger.error(err)
     const error_msg = get(err, "meta.body") ?? err.message
