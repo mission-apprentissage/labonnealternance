@@ -5,14 +5,14 @@ import { IOpco } from "./opco.types"
 export const opcoSchema = new Schema<IOpco>({
   siren: {
     type: String,
-    default: null,
+    require: true,
     description: "Le SIREN d'un ",
     index: true,
     unique: true,
   },
   opco: {
     type: String,
-    default: null,
+    require: true,
     index: true,
     description: "Nom de l'opco",
   },
