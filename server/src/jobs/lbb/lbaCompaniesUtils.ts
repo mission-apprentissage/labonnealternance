@@ -134,8 +134,8 @@ export const getCompanyMissingData = async (rawCompany) => {
 
     if (opcoData) {
       company.opco = opcoData.opco
-      company.opco_url = opcoData.url
-      company.opco_short_name = opcoData.opco_short_name
+      company.opco_url = opcoData.url as string
+      company.opco_short_name = opcoData.opco_short_name as string
     }
   }
 
@@ -156,12 +156,14 @@ const getGeoLocationForCompany = async (company) => {
 
   // si pas de geoloc on en recherche une avec la ban
   if (!result) {
+    // @ts-expect-error: TODO
     result = await geoData.getFirstMatchUpdates(company)
 
     if (!result) {
       return null
     } else {
       const geoLocation = new GeoLocation({
+        // @ts-expect-error: TODO
         address: geoKey,
         ...result,
       })
