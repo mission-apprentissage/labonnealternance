@@ -23,16 +23,6 @@ const getRomeFromParameters = ({ values, widgetParameters }) => {
   return romes
 }
 
-const getRncpFromParameters = ({ widgetParameters }) => widgetParameters?.parameters?.rncp
-
-const getRncpsFromParameters = ({ values, widgetParameters }) => {
-  return widgetParameters?.parameters?.jobName && widgetParameters?.parameters?.romes && widgetParameters?.parameters?.frozenJob
-    ? ""
-    : values.job?.rncps
-    ? values.job.rncps.join(",")
-    : ""
-}
-
 const getJobCount = (jobs) => {
   let jobCount = 0
 
@@ -67,8 +57,6 @@ export {
   technicalErrorText,
   notFoundErrorText,
   getRomeFromParameters,
-  getRncpFromParameters,
-  getRncpsFromParameters,
   offreApi,
   matchaApi,
   companyApi,

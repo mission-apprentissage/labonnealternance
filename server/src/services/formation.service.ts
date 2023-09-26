@@ -406,12 +406,13 @@ const transformFormationForIdea = (rawFormation: IFormationEsResult): ILbaItem =
   resultFormation.cleMinistereEducatif = rawFormation.source.cle_ministere_educatif ?? null
 
   const geoSource = rawFormation.source.lieu_formation_geo_coordonnees
+  const [latOpt, longOpt] = (geoSource?.split(",") ?? []).map((str) => parseFloat(str))
 
   resultFormation.place = {
     distance: rawFormation.sort ? roundDistance(rawFormation.sort[0]) : null,
     fullAddress: getTrainingAddress(rawFormation.source), // adresse postale reconstruite à partir des éléments d'adresse fournis
-    latitude: geoSource ? geoSource.split(",")[0] : null,
-    longitude: geoSource ? geoSource.split(",")[1] : null,
+    latitude: latOpt ?? null,
+    longitude: longOpt ?? null,
     //city: formation.source.etablissement_formateur_localite,
     city: rawFormation.source.localite ?? null,
     address: `${rawFormation.source.lieu_formation_adresse}`,

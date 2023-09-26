@@ -87,16 +87,19 @@ export const getLbaJobs = async ({
  * @param {IApplicationCount[]} applicationCountByJob les décomptes de candidatures par identifiant d'offres
  * @returns {{ results: ILbaItem[] }}
  */
-function transformLbaJobs({ jobs, caller, applicationCountByJob }: { jobs: ILbaJobEsResult[]; caller?: string; applicationCountByJob: IApplicationCount[] }): { results: ILbaItem[] }
-{
-  return { results: jobs.flatMap((job) =>
-                                            transformLbaJob({
-                                              job: job._source,
-                                              distance: job.sort && job.sort[0],
-                                              applicationCountByJob,
-                                              caller,
-                                            })
-                                          ) }
+function transformLbaJobs({ jobs, caller, applicationCountByJob }: { jobs: ILbaJobEsResult[]; caller?: string; applicationCountByJob: IApplicationCount[] }): {
+  results: ILbaItem[]
+} {
+  return {
+    results: jobs.flatMap((job) =>
+      transformLbaJob({
+        job: job._source,
+        distance: job.sort && job.sort[0],
+        applicationCountByJob,
+        caller,
+      })
+    ),
+  }
   // return {
   //   results: transformedJobs.filter(transformedJob => transformedJob !== undefined ),
   // }
@@ -115,7 +118,7 @@ export const getLbaJobById = async ({ id, caller }: { id: string; caller?: strin
 
     const applicationCountByJob = await getApplicationByJobCount([id])
 
-    const job: ILbaItem = transformLbaJob({
+    const job = transformLbaJob({
       job: rawJob,
       caller,
       applicationCountByJob,
@@ -140,7 +143,7 @@ export const getLbaJobById = async ({ id, caller }: { id: string; caller?: strin
  * @returns {ILbaItem[]}
  */
 function transformLbaJob({
-  job,    
+  job,
   distance,
   caller,
   applicationCountByJob,
@@ -150,8 +153,9 @@ function transformLbaJob({
   caller?: string
   applicationCountByJob: IApplicationCount[]
 }): ILbaItem[] {
-  if(!job.jobs)
-    {return []}
+  if (!job.jobs) {
+    return []
+  }
 
   return job.jobs.map((offre, idx): ILbaItem => {
     const email = encryptMailWithIV({ value: job.email, caller })
@@ -171,7 +175,7 @@ function transformLbaJob({
         phone: job.phone,
       },
       place: {
-        distance: distance!==undefined ? roundDistance(distance) : null,
+        distance: distance !== undefined ? roundDistance(distance) : null,
         fullAddress: job.address,
         address: job.address,
         latitude,
@@ -213,7 +217,7 @@ function transformLbaJob({
       period: null,
       capacity: null,
       onisepUrl: null,
-      training: null, 
+      training: null,
       applicationCount: applicationCountForCurrentJob?.count,
     }
 

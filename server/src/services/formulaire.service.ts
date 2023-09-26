@@ -248,7 +248,7 @@ export const createJob = async ({ job, id }: { job: Partial<IOffreExtended>; id:
     throw new Error("")
   }
 
-  const userStatus: ETAT_UTILISATEUR | null = user ? (getUserStatus(user.status) as ETAT_UTILISATEUR) : null
+  const userStatus: ETAT_UTILISATEUR | null = user ? getUserStatus(user.status) : null
   const isUserAwaiting = userStatus !== ETAT_UTILISATEUR.VALIDE
   // get user activation state if not managed by a CFA
   if (user && isUserAwaiting) {

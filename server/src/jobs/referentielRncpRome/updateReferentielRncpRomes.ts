@@ -49,7 +49,7 @@ export default async function (optionalFileName?: string) {
 
   const workbookRncpRomes = readXLSXFile(FILEPATH)
 
-  let codesROMEs = []
+  let codesROMEs: any[] = []
   let currentRncpCode
 
   logger.info("parcours fichier xlsx")
@@ -58,7 +58,7 @@ export default async function (optionalFileName?: string) {
 
   try {
     for (let i = 0; i < onglet.length; i++) {
-      const row = onglet[i]
+      const row: any = onglet[i]
 
       if (row["RNCP"] !== currentRncpCode) {
         if (currentRncpCode && codesROMEs.length) {

@@ -1,5 +1,6 @@
 import { Readable } from "stream"
 
+import { oleoduc, writeData } from "oleoduc"
 import { referrers } from "shared/constants/referers"
 
 import { logger } from "../../common/logger"
@@ -46,8 +47,8 @@ export const syncAffelnetFormationsFromCatalogueME = async () => {
 
         if (eligibleTrainingsForAppointment) {
           let emailRdv = eligibleTrainingsForAppointment.lieu_formation_email
-
-          // Don't override "email" if this field is true
+          let emailBlacklisted
+          // Don't override "email" if is_lieu_formation_email_customized is true
           if (!eligibleTrainingsForAppointment?.is_lieu_formation_email_customized) {
             emailRdv = await eligibleTrainingsForAppointmentService.getEmailForRdv({
               email: formation.email,
@@ -56,7 +57,9 @@ export const syncAffelnetFormationsFromCatalogueME = async () => {
             })
           }
 
-          const emailBlacklisted = await isEmailBlacklisted(emailRdv)
+          if (emailRdv) {
+            emailBlacklisted = await isEmailBlacklisted(emailRdv)
+          }
 
           await eligibleTrainingsForAppointmentService.updateMany(
             { cle_ministere_educatif: formation.cle_ministere_educatif },
@@ -84,13 +87,16 @@ export const syncAffelnetFormationsFromCatalogueME = async () => {
             }
           )
         } else {
-          const emailRdv = await getEmailForRdv({
+          const emailRdv = await eligibleTrainingsForAppointmentService.getEmailForRdv({
             email: formation.email,
             etablissement_formateur_courriel: formation.etablissement_formateur_courriel,
             etablissement_formateur_siret: formation.etablissement_formateur_siret,
           })
+          let emailBlacklisted
 
-          const emailBlacklisted = await isEmailBlacklisted(emailRdv)
+          if (emailRdv) {
+            emailBlacklisted = await isEmailBlacklisted(emailRdv)
+          }
 
           await eligibleTrainingsForAppointmentService.create({
             training_id_catalogue: formation._id,

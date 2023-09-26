@@ -110,8 +110,15 @@ export const inviteEtablissementToOptOut = async () => {
         },
       })
 
-      let emails = formations.map((formation) => formation.lieu_formation_email)
-      emails = [...new Set(emails.filter((email) => !_.isNil(email) && email !== etablissement.gestionnaire_email))]
+      let emails = formations.flatMap((formation) => {
+        const email = formation.lieu_formation_email
+        if (!_.isNil(email) && email !== etablissement.gestionnaire_email) {
+          return [email]
+        } else {
+          return []
+        }
+      })
+      emails = [...new Set(emails)]
 
       await Promise.all(
         emails.map((email) =>

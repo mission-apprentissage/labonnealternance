@@ -24,7 +24,7 @@ export const zV1FormationsRoutes = {
         .object({
           referer: z.string().optional(),
         })
-        .strict(),
+        .strip(),
       response: {
         "200": z
           .object({
