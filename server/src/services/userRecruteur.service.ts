@@ -142,7 +142,10 @@ export const updateUserValidationHistory = async (
 export const getUserStatus = (stateArray: IUserRecruteur["status"]) => {
   const sortedArray = [...stateArray].sort((a, b) => new Date(a.date).valueOf() - new Date(b.date).valueOf())
   const lastValidationEvent = sortedArray.at(sortedArray.length - 1)
-  return lastValidationEvent?.status as ETAT_UTILISATEUR
+  if (!lastValidationEvent) {
+    throw Boom.internal("no status found in status array")
+  }
+  return lastValidationEvent.status
 }
 
 export const setUserInError = async (userId: IUserRecruteur["_id"], reason: string) => {
