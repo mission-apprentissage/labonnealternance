@@ -17,7 +17,7 @@ import jwt, { JwtPayload } from "jsonwebtoken"
 import passport from "passport"
 import { ICredential } from "shared"
 import { IUserRecruteur } from "shared/models/usersRecruteur.model"
-import { AuthStrategy, SecurityScheme } from "shared/routes/common.routes"
+import { AuthStrategy, IRouteSchema, SecurityScheme } from "shared/routes/common.routes"
 
 import { Credential } from "@/common/model"
 import { IUser } from "@/common/model/schema/user/user.types"
@@ -31,6 +31,18 @@ declare module "fastify" {
   interface FastifyRequest {
     user?: null | IUserRecruteur | IUser | undefined | ICredential
   }
+}
+
+type AuthenticatedUser<AuthScheme extends IRouteSchema["securityScheme"]["auth"]> = AuthScheme extends "jwt-bearer" | "basic" | "jwt-password" | "jwt-rdv-admin"
+  ? IUser
+  : AuthScheme extends "jwt-bearer" | "jwt-token"
+  ? IUserRecruteur
+  : AuthScheme extends "api-key"
+  ? ICredential
+  : null
+
+export const getUserFromRequest = <S extends IRouteSchema>(req: FastifyRequest, _schema: S): AuthenticatedUser<S["securityScheme"]["auth"]> => {
+  return req.user as AuthenticatedUser<S["securityScheme"]["auth"]>
 }
 
 function extractFieldFrom(source: unknown, field: string): null | string {

@@ -2,6 +2,7 @@ import Joi from "joi"
 import { zRoutes } from "shared/index"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { getUserFromRequest } from "@/http/middlewares/authMiddleware"
 
 import { UserRecruteur } from "../../../common/model/index"
 import { createMagicLinkToken, createUserRecruteurToken, createUserToken } from "../../../common/utils/jwtUtils"
@@ -88,6 +89,7 @@ export default (server: Server) => {
       const status = getUserStatus(user.status)
 
       if ([ENTREPRISE, CFA].includes(user.type)) {
+        // @ts-expect-error: TODO
         if (status && [ETAT_UTILISATEUR.ATTENTE, ETAT_UTILISATEUR.ERROR].includes(status)) {
           return res.status(400).send({ error: true, reason: "VALIDATION" })
         }
@@ -136,7 +138,7 @@ export default (server: Server) => {
       preHandler: server.auth(zRoutes.post["/api/login/verification"].securityScheme),
     },
     async (req, res) => {
-      const user = req.user
+      const user = getUserFromRequest(req, zRoutes.post["/api/login/verification"])
       await registerUser(user.email)
       return res.status(200).send({ token: createUserRecruteurToken(user) })
     }
