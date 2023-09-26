@@ -14,7 +14,7 @@ export const zEligibleTrainingsForAppointmentRoutes = {
       },
       securityScheme: {
         auth: "jwt-rdv-admin",
-        role: "admin",
+        role: "administrator",
       },
     },
   },
@@ -27,7 +27,7 @@ export const zEligibleTrainingsForAppointmentRoutes = {
       },
       securityScheme: {
         auth: "jwt-rdv-admin",
-        role: "admin",
+        role: "administrator",
       },
     },
   },

@@ -28,7 +28,7 @@ export const ZEligibleTrainingsForAppointmentSchema = z
     etablissement_formateur_siret: z.string(),
     etablissement_gestionnaire_siret: z.string(),
     created_at: z.date().default(() => new Date()),
-    historization_date: z.date().nullable(),
+    historization_date: z.date().nullish(),
   })
   .strict()
 

@@ -19,7 +19,7 @@ export default (server: Server) => {
       preHandler: [server.auth(zRoutes.get["/api/admin/appointments"].securityScheme)],
     },
     async (req, res) => {
-      const appointments = await Appointment.find().limit(2).sort({ _id: -1 }).lean();
+      const appointments = await Appointment.find().sort({ _id: -1 }).lean();
 
       return res.status(200).send({ appointments });
     }

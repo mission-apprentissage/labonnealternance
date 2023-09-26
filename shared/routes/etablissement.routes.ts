@@ -30,7 +30,7 @@ export const zEtablissementRoutes = {
       },
       securityScheme: {
         auth: "jwt-rdv-admin",
-        role: "admin",
+        role: "administrator",
       },
     },
     "/api/admin/etablissements/siret-formateur/:siret": {
@@ -40,7 +40,7 @@ export const zEtablissementRoutes = {
       },
       securityScheme: {
         auth: "jwt-rdv-admin",
-        role: "admin",
+        role: "administrator",
       },
     },
     "/api/admin/etablissements/:id": {
@@ -50,7 +50,7 @@ export const zEtablissementRoutes = {
       },
       securityScheme: {
         auth: "jwt-rdv-admin",
-        role: "admin",
+        role: "administrator",
       },
     },
     "/api/etablissements/:id": {
@@ -102,7 +102,7 @@ export const zEtablissementRoutes = {
       },
       securityScheme: {
         auth: "jwt-rdv-admin",
-        role: "admin",
+        role: "administrator",
       },
     },
     "/api/etablissements/:id/premium/affelnet/accept": {
@@ -190,7 +190,7 @@ export const zEtablissementRoutes = {
       },
       securityScheme: {
         auth: "jwt-rdv-admin",
-        role: "admin",
+        role: "administrator",
       },
     },
     "/api/etablissements/:id/appointments/:appointmentId": {
