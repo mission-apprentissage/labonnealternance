@@ -13,7 +13,7 @@ export default (server: Server) => {
       preHandler: server.auth(zRoutes.get["/api/optout/validate"].securityScheme),
     },
     async (req, res) => {
-      const token = req.headers.authorization.split(" ")[1]
+      const token = req.headers && req.headers.authorization && req.headers.authorization.split(" ")[1]
 
       if (!token) {
         return res.status(401).send({ error: true, reason: "TOKEN_NOT_FOUND" })
