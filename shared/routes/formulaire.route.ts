@@ -136,7 +136,7 @@ export const zFormulaireRoute = {
       params: z.object({ jobId: zObjectId }),
       querystring: z.object({ siret_formateur: z.string() }),
       response: {
-        "2xx": ZJob,
+        "2xx": z.union([ZJob, z.null()]),
       },
       securityScheme: {
         auth: "none",

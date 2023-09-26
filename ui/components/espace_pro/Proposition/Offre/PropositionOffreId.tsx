@@ -34,19 +34,21 @@ export default function PropositionOffreId() {
    * @description Gets offre.
    * @return {void}
    */
-  // @ts-expect-error: TODO
-  useEffect(async () => {
-    // @ts-expect-error: TODO
-    const { data } = await getFormulaire(idFormulaire)
+  useEffect(() => {
+    const fetchData = async () => {
+      const { data }: any = await getFormulaire(idFormulaire)
 
-    const job = data.jobs.find((job) => job._id === jobId)
+      const job = data.jobs.find((job) => job._id === jobId)
 
-    if (siretFormateur) {
-      await patchOffre(job._id, { cfa_read_company_detail_at: new Date() }, { params: { siret_formateur: siretFormateur } })
+      if (siretFormateur) {
+        await patchOffre(job._id, { cfa_read_company_detail_at: new Date() }, { params: { siret_formateur: siretFormateur } })
+      }
+
+      setFormulaire(data)
+      setJob(job)
     }
 
-    setFormulaire(data)
-    setJob(job)
+    fetchData().catch(console.error)
   }, [])
 
   if (!job) {

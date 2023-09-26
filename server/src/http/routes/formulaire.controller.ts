@@ -211,18 +211,20 @@ export default (server: Server) => {
       const exists = await checkOffreExists(jobId)
 
       if (!exists) {
-        return res.status(400).send({ status: "INVALID_RESOURCE", message: "L'offre n'existe pas." })
+        throw Boom.badRequest("L'offre n'existe pas.")
       }
 
       const offre = await getJob(jobId.toString())
 
+      // @ts-expect-error: TODO
       const delegationFound = offre.delegations.find((delegation) => delegation.siret_code == req.query.siret_formateur)
 
       if (!delegationFound) {
-        return res.status(400).send({ status: "INVALID_RESOURCE", message: `Le siret formateur n'a pas été proposé à l'offre.` })
+        throw Boom.badRequest("Le siret formateur n'a pas été proposé à l'offre.")
       }
 
       await patchOffre(jobId, {
+        // @ts-expect-error: TODO
         delegations: offre.delegations.map((delegation) => {
           // Save the date of the first read of the company detail
           if (delegation.siret_code === delegationFound.siret_code && !delegation.cfa_read_company_detail_at) {
