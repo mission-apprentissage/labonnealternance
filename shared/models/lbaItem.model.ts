@@ -94,8 +94,6 @@ export const ZLbaItem = z.object({
     .strict()
     .nullable(),
 
-  createdAt: z.string().nullable(), // formation -> created_at | matcha -> createdAt
-  lastUpdateAt: z.string().nullable(), // formation -> last_update_at | matcha -> updatedAt
   url: z.string().nullable(), // pe -> reconstruction depuis id | lbb/lba url
 
   /** TODO API V2: move inside training<ILbaItemTraining> */
