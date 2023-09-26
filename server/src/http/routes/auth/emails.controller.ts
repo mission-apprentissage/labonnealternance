@@ -70,7 +70,7 @@ export default (server: Server) => {
               })
             })
           )
-          await addEmailToBlacklist(appointment.cfa_recipient_email, "rdv-transactional")
+          await addEmailToBlacklist(appointment.cfa_recipient_email as string, "rdv-transactional")
         }
       }
 
