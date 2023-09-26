@@ -91,9 +91,9 @@ export default (server: Server) => {
 
       let output
       if (etablissements) {
-        output = await Promise.all(etablissements.map((etablissement) => etablissements.create(etablissement)))
+        output = await Promise.all(etablissements.map((etablissement) => Etablissement.create(etablissement)))
       } else {
-        output = await etablissements.create(body)
+        output = await Etablissement.create(body)
       }
 
       return res.status(200).send(output)
