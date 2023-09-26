@@ -1,7 +1,7 @@
 import { readFileSync } from "fs"
 
 import iconv from "iconv-lite"
-import { isNull, isArray, isObject } from "lodash-es"
+import { isArray, isNull, isObject } from "lodash-es"
 import * as xml2j from "xml2js"
 
 import __dirname from "../../../common/dirname"
@@ -60,7 +60,7 @@ runScript(async () => {
 
   await ReferentielRome.deleteMany({})
 
-  await asyncForEach(data.fiches_metier.fiche_metier, async (ficheMetier) => {
+  await asyncForEach(data.fiches_metier.fiche_metier, async (ficheMetier: any) => {
     const fiche = formatRawData(ficheMetier)
     await ReferentielRome.create(fiche)
   })
