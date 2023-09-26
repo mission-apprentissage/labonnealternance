@@ -60,7 +60,7 @@ export default async function (optionalFileName?: string) {
     sousDomainesOnisep = []
   }
 
-  const avertissements = []
+  const avertissements: any[] = []
 
   logger.info(`Début traitement`)
 
@@ -70,7 +70,7 @@ export default async function (optionalFileName?: string) {
 
   try {
     for (let i = 0; i < onglet.length; i++) {
-      const row = onglet[i]
+      const row: any = onglet[i]
 
       const {
         metier,
