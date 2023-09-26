@@ -17,7 +17,7 @@ export const zUpdateLbaCompanyRoutes = {
         })
         .strict(),
       response: {
-        "200": ZLbaCompany,
+        "200": z.union([ZLbaCompany, z.string()]),
       },
       securityScheme: {
         auth: "none",

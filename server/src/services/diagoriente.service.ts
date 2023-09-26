@@ -5,7 +5,6 @@ import { IMetiersDavenir } from "shared/models"
 import config from "../config"
 
 import dayjs from "./dayjs.service"
-import { ISuggestionMetiersDavenir } from "./diagoriente.service.types"
 
 const paramApi = `grant_type=client_credentials&client_id=${config.diagoriente.clientId}&client_secret=${config.diagoriente.clientSecret}`
 const accessTokenEndpoint = `https://auth.diagoriente.beta.gouv.fr/auth/realms/${config.diagoriente.realm}/protocol/openid-connect/token`

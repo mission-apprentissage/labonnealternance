@@ -30,7 +30,7 @@ export const ZAppointment = z
     to_cfa_mails: z.array(ZMailing),
     cle_ministere_educatif: z.string().nullish(),
     created_at: z.date().default(() => new Date()),
-    cfa_recipient_email: z.string().nullish(),
+    cfa_recipient_email: z.string(),
     is_anonymized: z.boolean().default(false),
   })
   .strict()

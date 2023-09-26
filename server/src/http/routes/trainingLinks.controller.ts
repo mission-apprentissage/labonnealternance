@@ -17,9 +17,7 @@ export default (server: Server) => {
       },
     },
     async (req, res) => {
-      const params = req.body
-
-      await Joi.array()
+      const verifiedParams = await Joi.array()
         .items(
           Joi.object({
             id: Joi.string().required(),
@@ -42,9 +40,9 @@ export default (server: Server) => {
           "array.base": "body must be an Array",
           "array.max": "maximum 100 trainings",
         })
-        .validateAsync(params, { abortEarly: false })
+        .validateAsync(req.body, { abortEarly: false })
 
-      const results = await getTrainingLinks(params)
+      const results = await getTrainingLinks(verifiedParams)
 
       return res.status(200).send(results)
     }

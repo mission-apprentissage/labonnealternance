@@ -52,6 +52,7 @@ const transformCompany = ({
   const address = `${company.street_name ? `${company.street_number ? `${company.street_number} ` : ""}${company.street_name}, ` : ""}${company.zip_code} ${company.city}`.trim()
 
   resultCompany.place = {
+    // @ts-expect-error: TODO
     distance: company.distance?.length ? roundDistance(company.distance[0]) ?? 0 : null,
     fullAddress: address,
     latitude: company.geo_coordinates.split(",")[0],
@@ -334,7 +335,7 @@ export const getSomeCompanies = async ({
   const currentRadius = hasLocation ? radius : 21000
   const companyLimit = 150 //TODO: query params options or default value from properties -> size || 100
 
-  if (useMock && useMock !== "false") {
+  if (useMock !== false) {
     return { results: [lbbMock] }
   } else {
     const companies = await getCompanies({

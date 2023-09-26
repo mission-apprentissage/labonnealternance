@@ -26,18 +26,11 @@ export default (server: Server) => {
       preHandler: [server.auth(zRoutes.post["/api/emails/webhook"].securityScheme)],
     },
     async (req, res) => {
-      const parameters = await Joi.object({
-        event: Joi.string().required(),
-        "message-id": Joi.string().required(),
-        date: Joi.string().required(),
-      })
-        .unknown()
-        .validateAsync(req.body, { abortEarly: false })
+      const { date, event } = req.body
+      const messageId = req.body["message-id"]
+      const eventDate = dayjs.utc(date).tz("Europe/Paris").toDate()
 
-      const messageId = parameters["message-id"]
-      const eventDate = dayjs.utc(parameters["date"]).tz("Europe/Paris").toDate()
-
-      const [appointment] = await appointmentService.find({ "to_cfa_mails.message_id": { $regex: messageId } })
+      const appointment = await appointmentService.findOne({ "to_cfa_mails.message_id": { $regex: messageId } })
 
       // If mail sent from appointment model
       if (appointment) {
@@ -49,7 +42,7 @@ export default (server: Server) => {
           $push: {
             to_etablissement_emails: {
               campaign: previousEmail.campaign,
-              status: parameters.event,
+              status: event,
               message_id: previousEmail.message_id,
               webhook_status_at: eventDate,
             },
@@ -57,7 +50,7 @@ export default (server: Server) => {
         })
 
         // Disable eligibleTrainingsForAppointments in case of hard_bounce
-        if (parameters.event === BrevoEventStatus.HARD_BOUNCE) {
+        if (event === BrevoEventStatus.HARD_BOUNCE) {
           const eligibleTrainingsForAppointmentsWithEmail = await eligibleTrainingsForAppointmentService.find({ cfa_recipient_email: appointment.cfa_recipient_email })
 
           await Promise.all(
@@ -70,7 +63,7 @@ export default (server: Server) => {
               })
             })
           )
-          await addEmailToBlacklist(appointment.cfa_recipient_email, "rdv-transactional")
+          await addEmailToBlacklist(appointment.cfa_recipient_email as string, "rdv-transactional")
         }
       }
 
@@ -84,7 +77,7 @@ export default (server: Server) => {
           $push: {
             to_etablissement_emails: {
               campaign: previousEmail?.campaign,
-              status: parameters.event,
+              status: event,
               message_id: previousEmail?.message_id,
               webhook_status_at: eventDate,
             },
@@ -106,7 +99,7 @@ export default (server: Server) => {
           $push: {
             to_applicant_mails: {
               campaign: previousEmail.campaign,
-              status: parameters.event,
+              status: event,
               message_id: previousEmail.message_id,
               webhook_status_at: eventDate,
             },
@@ -126,7 +119,7 @@ export default (server: Server) => {
           $push: {
             to_cfa_mails: {
               campaign: previousEmail.campaign,
-              status: parameters.event,
+              status: event,
               message_id: previousEmail.message_id,
               webhook_status_at: eventDate,
             },

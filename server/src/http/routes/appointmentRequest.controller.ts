@@ -1,6 +1,6 @@
 import Boom from "boom"
 import Joi from "joi"
-import { IAppointment, zRoutes } from "shared/index"
+import { zRoutes } from "shared/index"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
@@ -90,6 +90,9 @@ export default (server: Server) => {
           last_action_date: dayjs().toDate(),
         })
       }
+      if (!eligibleTrainingsForAppointment.lieu_formation_email) {
+        throw Boom.internal("Le lieu de formation n'a aucun email")
+      }
 
       const [createdAppointement, etablissement] = await Promise.all([
         appointmentService.createAppointment({
@@ -154,7 +157,7 @@ export default (server: Server) => {
         }),
         mailer.sendEmail({
           // TODO to check string | null
-          to: eligibleTrainingsForAppointment.lieu_formation_email as string,
+          to: eligibleTrainingsForAppointment.lieu_formation_email,
           subject: emailCfaSubject,
           template: getStaticFilePath("./templates/mail-cfa-demande-de-contact.mjml.ejs"),
           data: mailData,
@@ -191,7 +194,7 @@ export default (server: Server) => {
         ),
       ])
 
-      const appointmentUpdated = (await Appointment.findById(createdAppointement._id)) as IAppointment | null
+      const appointmentUpdated = await Appointment.findById(createdAppointement._id)
 
       res.status(200).send({
         userId: user._id,
@@ -208,7 +211,7 @@ export default (server: Server) => {
     async (req, res) => {
       const { appointmentId } = req.query
 
-      const appointment = (await Appointment.findById(appointmentId)) as IAppointment | null
+      const appointment = await Appointment.findById(appointmentId)
 
       if (!appointment) return res.status(400).send()
 
@@ -240,7 +243,7 @@ export default (server: Server) => {
       await appointmentReplySchema.validateAsync(req.body, { abortEarly: false })
       const { appointment_id, cfa_intention_to_applicant, cfa_message_to_applicant, cfa_message_to_applicant_date } = req.body
 
-      const appointment = (await Appointment.findById(appointment_id)) as IAppointment | null
+      const appointment = await Appointment.findById(appointment_id)
 
       if (!appointment) return res.status(400).send()
 
