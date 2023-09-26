@@ -154,5 +154,4 @@ export const getAppointmentsDetails = async () => API.get(`/admin/appointments/d
       Authorization: `Bearer ${sessionStorage.getItem("lba:token")}`,
     },
   })
-}
 

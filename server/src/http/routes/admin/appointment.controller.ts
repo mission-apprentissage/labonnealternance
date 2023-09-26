@@ -35,7 +35,7 @@ export default (server: Server) => {
       preHandler: [server.auth(zRoutes.get["/api/admin/appointments"].securityScheme)],
     },
     async (req, res) => {
-      const allAppointments = await Appointment.find().limit(2).sort({ _id: -1 }).lean();
+      const allAppointments = await Appointment.find().limit(100).sort({ _id: -1 }).lean();
 
       const cleMinistereEducatifs: Set<string> = new Set()
       if (allAppointments) {
@@ -64,12 +64,13 @@ export default (server: Server) => {
 
         return {
             created_at: appointment.created_at,
-            applicant_message_to_cfa: appointment.applicant_message_to_cfa,
+            applicant_message_to_cfa: appointment?.applicant_message_to_cfa || null,
             appointment_origin: appointment.appointment_origin,
             cfa_recipient_email: appointment.cfa_recipient_email,
             formation: {
               etablissement_gestionnaire_entreprise_raison_sociale: formation?.etablissement_gestionnaire_entreprise_raison_sociale || null,
               etablissement_formateur_siret: formation?.etablissement_formateur_siret || null,
+              intitule_long: formation?.intitule_long || null,
             },
             candidat: {
               firstname: user.firstname,

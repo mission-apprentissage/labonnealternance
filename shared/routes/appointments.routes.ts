@@ -94,6 +94,7 @@ export const zAppointmentsRoute = {
               formation: z.object({
                 etablissement_gestionnaire_entreprise_raison_sociale: z.string().nullable(),
                 etablissement_formateur_siret: z.string().nullable(),
+                intitule_long: z.string().nullable(),
               }),
               candidat: z.object({
                 firstname: z.string(),
