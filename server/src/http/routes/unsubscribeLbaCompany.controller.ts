@@ -23,7 +23,7 @@ export default function (server: Server) {
       },
     },
     async (req, res) => {
-      let result = "OK"
+      let result = "OK" as "OK" | "NON_RECONNU" | "ETABLISSEMENTS_MULTIPLES"
 
       const email = req.body.email.toLowerCase()
       const reason = req.body.reason
@@ -31,9 +31,9 @@ export default function (server: Server) {
       const lbaCompaniesToUnsubscribe = await LbaCompany.find({ email }).lean()
 
       if (!lbaCompaniesToUnsubscribe.length) {
-        result = UNSUBSCRIBE_EMAIL_ERRORS["NON_RECONNU"]
+        result = UNSUBSCRIBE_EMAIL_ERRORS["NON_RECONNU"] as "NON_RECONNU"
       } else if (lbaCompaniesToUnsubscribe.length > 1) {
-        result = UNSUBSCRIBE_EMAIL_ERRORS["ETABLISSEMENTS_MULTIPLES"]
+        result = UNSUBSCRIBE_EMAIL_ERRORS["ETABLISSEMENTS_MULTIPLES"] as "ETABLISSEMENTS_MULTIPLES"
       } else {
         const unsubscribedLbaCompany = new UnsubscribedLbaCompany({
           ...lbaCompaniesToUnsubscribe[0],
@@ -58,7 +58,7 @@ export default function (server: Server) {
         })
       }
 
-      return res.status(200).send(result as string)
+      return res.status(200).send(result)
     }
   )
 }
