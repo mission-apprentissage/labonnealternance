@@ -23,10 +23,12 @@ export const relanceOpco = async () => {
 
   // count user to validate per opco
   const userList = userAwaitingValidation.reduce((acc, user) => {
-    if (user.opco in acc) {
-      acc[user.opco]++
-    } else {
-      acc[user.opco] = 1
+    if (user.opco) {
+      if (user.opco in acc) {
+        acc[user.opco]++
+      } else {
+        acc[user.opco] = 1
+      }
     }
     return acc
   }, {})
