@@ -43,15 +43,25 @@ export const zApplicationRoutes = {
           id: z.string(),
           iv: z.string(),
           comment: z.string(),
+          intention: z.string(),
+          email: z.string(),
+          phone: z.string(),
         })
         .strict(),
       response: {
-        "200": z
-          .object({
-            result: z.literal("ok"),
-            message: z.literal("comment registered"),
-          })
-          .strict(),
+        "200": z.union([
+          z
+            .object({
+              result: z.literal("ok"),
+              message: z.literal("comment registered"),
+            })
+            .strict(),
+          z
+            .object({
+              error: z.literal("error_saving_comment"),
+            })
+            .strict(),
+        ]),
       },
       securityScheme: {
         auth: "none",
