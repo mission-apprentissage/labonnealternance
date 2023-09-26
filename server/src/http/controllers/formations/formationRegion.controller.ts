@@ -38,12 +38,12 @@ export default (server: Server) => {
         return result
       }
 
-      if (caller && "results" in result) {
+      if (caller) {
         trackApiCall({
           caller: caller,
           api_path: "formationRegionV1",
-          training_count: result.results?.length,
-          result_count: result.results?.length,
+          training_count: result.results.length,
+          result_count: result.results.length,
           response: "OK",
         })
       }
