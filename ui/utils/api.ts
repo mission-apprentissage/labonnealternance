@@ -1,4 +1,4 @@
-import Axios from "axios"
+import Axios, {AxiosResponse} from "axios"
 
 import { publicConfig } from "../config.public"
 
@@ -147,3 +147,11 @@ export const etablissementUnsubscribeDemandeDelegation = (establishmentSiret) =>
  */
 
 export const getOpcoUsers = async (query) => API.get(`/user/opco`, { params: query })
+
+
+export const getAppointmentsDetails = async () => API.get(`/admin/appointments/details`, {
+    headers: {
+      Authorization: `Bearer ${sessionStorage.getItem("lba:token")}`,
+    },
+  })
+

@@ -25,7 +25,7 @@ const esClient = getElasticInstance()
 const JOB_SEARCH_LIMIT = 250
 
 interface IFormulaireExtended extends IRecruiter {
-  entreprise_localite: string
+  entreprise_localite?: string
 }
 
 export interface IOffreExtended extends IJob {
@@ -195,19 +195,21 @@ export const getOffreAvecInfoMandataire = async (id: string | ObjectId): Promise
 
   if (result.is_delegated && result.address) {
     const [entreprise_localite] = result.address.match(/([0-9]{5})[ ,] ?([A-zÀ-ÿ]*)/) ?? [""]
-    const cfa = await getEtablissement({ establishment_siret: result.cfa_delegated_siret })
+    const { cfa_delegated_siret } = result
+    if (cfa_delegated_siret) {
+      const cfa = await getEtablissement({ establishment_siret: cfa_delegated_siret })
 
-    if (cfa) {
-      result.phone = cfa.phone
-      result.email = cfa.email
-      result.last_name = cfa.last_name
-      result.first_name = cfa.first_name
-      result.establishment_raison_sociale = cfa.establishment_raison_sociale
-      result.address = cfa.address
-      result.entreprise_localite = entreprise_localite
+      if (cfa) {
+        result.phone = cfa.phone
+        result.email = cfa.email
+        result.last_name = cfa.last_name
+        result.first_name = cfa.first_name
+        result.establishment_raison_sociale = cfa.establishment_raison_sociale
+        result.address = cfa.address
+        return { ...result, entreprise_localite }
+      }
     }
   }
-
   return result
 }
 
@@ -271,9 +273,12 @@ export const createJob = async ({ job, id }: { job: Partial<IOffreExtended>; id:
     return updatedFormulaire
   }
 
+  let contactCFA: IUserRecruteur | null = null
   // get CFA informations if formulaire is handled by a CFA
-  const contactCFA = is_delegated && (await getUser({ establishment_siret: cfa_delegated_siret }))
-  await sendMailNouvelleOffre(updatedFormulaire, job, contactCFA)
+  if (cfa_delegated_siret && is_delegated) {
+    contactCFA = await getUser({ establishment_siret: cfa_delegated_siret })
+  }
+  await sendMailNouvelleOffre(updatedFormulaire, job, contactCFA ?? undefined)
 
   return updatedFormulaire
 }
@@ -287,6 +292,9 @@ export const createJob = async ({ job, id }: { job: Partial<IOffreExtended>; id:
  */
 export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }: { jobId: string | ObjectId; etablissementCatalogueIds: string[] }): Promise<IRecruiter> => {
   const offreDocument = await getOffre(jobId)
+  if (!offreDocument) {
+    throw Boom.internal("Offre not found", { jobId, etablissementCatalogueIds })
+  }
   const userDocument = await getUser({ establishment_id: offreDocument.establishment_id })
   if (!userDocument) {
     throw Boom.internal("User not found", { jobId, etablissementCatalogueIds })
@@ -459,9 +467,8 @@ export const archiveDelegatedFormulaire = async (siret: IUserRecruteur["establis
 /**
  * @description Get job offer by job id
  * @param {IJob["_id"]} id
- * @returns {Promise<IFormulaireExtended>}
  */
-export async function getOffre(id: string | ObjectId): Promise<IFormulaireExtended> {
+export async function getOffre(id: string | ObjectId) {
   return Recruiter.findOne({ "jobs._id": id }).lean()
 }
 
@@ -609,7 +616,7 @@ export const extendOffre = async (id: IJob["_id"]): Promise<boolean> => {
  */
 export const getJob = async (id: string | ObjectId): Promise<IJob | null> => {
   const offre = await getOffre(id)
-
+  if (!offre) return null
   return offre.jobs.find((job) => job._id.toString() === id.toString()) ?? null
 }
 
@@ -651,7 +658,7 @@ export async function sendMailNouvelleOffre(recruiter: IRecruiter, job: Partial<
   const establishmentTitle = establishment_raison_sociale ?? establishment_siret
   // Send mail with action links to manage offers
   await mailer.sendEmail({
-    to: is_delegated ? contactCFA?.email : email,
+    to: is_delegated && contactCFA ? contactCFA.email : email,
     subject: is_delegated ? `Votre offre d'alternance pour ${establishmentTitle} est publiée` : `Votre offre d'alternance est publiée`,
     template: getStaticFilePath("./templates/mail-nouvelle-offre.mjml.ejs"),
     data: {

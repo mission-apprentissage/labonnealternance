@@ -26,7 +26,7 @@ export const ZAppointment = z
     cfa_formateur_siret: z.string().nullish(),
     appointment_origin: z.string(),
     cfa_read_appointment_details_date: z.date().nullish(),
-    to_applicant_mails: z.array(ZMailing),
+    to_applicant_mails: z.array(ZMailing).nullable(),
     to_cfa_mails: z.array(ZMailing),
     cle_ministere_educatif: z.string().nullish(),
     created_at: z.date().default(() => new Date()),

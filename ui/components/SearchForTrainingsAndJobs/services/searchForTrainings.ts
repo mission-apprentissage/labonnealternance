@@ -1,9 +1,8 @@
-import axios from "axios"
-
+import { apiGet } from "../../../utils/api.utils"
 import { logError } from "../../../utils/tools"
 
 import { storeTrainingsInSession } from "./handleSessionStorage"
-import { getRomeFromParameters, trainingErrorText, trainingsApi } from "./utils"
+import { getRomeFromParameters, trainingErrorText } from "./utils"
 
 export const searchForTrainingsFunction = async ({
   values,
@@ -27,8 +26,8 @@ export const searchForTrainingsFunction = async ({
     const hasLocation = values?.location?.value ? true : false
     const romes = getRomeFromParameters({ values, widgetParameters })
 
-    const response = await axios.get(trainingsApi, {
-      params: {
+    const response = await apiGet("/api/v1/formations", {
+      querystring: {
         romes,
         longitude: hasLocation ? values.location.value.coordinates[0] : null,
         latitude: hasLocation ? values.location.value.coordinates[1] : null,
@@ -37,19 +36,14 @@ export const searchForTrainingsFunction = async ({
       },
     })
 
-    if (response.data.result === "error") {
-      logError("Training Search Error", `${response.data.message}`)
-      setTrainingSearchError(trainingErrorText)
-    }
-
-    setTrainings(response.data.results)
-    storeTrainingsInSession({ trainings: response.data.results, searchTimestamp })
+    setTrainings(response.results)
+    storeTrainingsInSession({ trainings: response.results, searchTimestamp })
     setHasSearch(true)
     setIsFormVisible(false)
 
-    if (response.data.results.length) {
+    if (response.results.length) {
       setTrainingMarkers({
-        trainingList: factorTrainingsForMap(response.data.results),
+        trainingList: factorTrainingsForMap(response.results),
         options: {
           centerMapOnTraining: hasLocation,
         },
@@ -59,7 +53,7 @@ export const searchForTrainingsFunction = async ({
         selectFollowUpItem({
           itemId: followUpItem.parameters.itemId,
           type: followUpItem.parameters.type,
-          trainings: response.data.results,
+          trainings: response.results,
           formValues: values,
         })
       }

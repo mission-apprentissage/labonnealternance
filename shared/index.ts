@@ -1,4 +1,4 @@
-import { Jsonify } from "type-fest"
+import { ConditionalExcept, EmptyObject, Jsonify } from "type-fest"
 import z, { ZodType } from "zod"
 
 import { zApplicationRoutes } from "./routes/application.routes"
@@ -121,7 +121,11 @@ export type IPatchRoutes = IRoutes["patch"]
 export type IPutRoutes = IRoutes["put"]
 export type IDeleteRoutes = IRoutes["delete"]
 
-export type IResponse<S extends IRouteSchema> = S["response"][`2${string}`] extends ZodType ? Jsonify<z.output<S["response"][`2${string}`]>> : never
+export type IResponse<S extends IRouteSchema> = S["response"][`200`] extends ZodType
+  ? Jsonify<z.output<S["response"][`200`]>>
+  : S["response"][`2${string}`] extends ZodType
+  ? Jsonify<z.output<S["response"][`2${string}`]>>
+  : never
 
 export type IBody<S extends IRouteSchema> = S["body"] extends ZodType ? z.input<S["body"]> : never
 
@@ -131,16 +135,13 @@ export type IParam<S extends IRouteSchema> = S["params"] extends ZodType ? z.inp
 
 type IHeadersAuth<S extends IRouteSchema> = S["securityScheme"]["auth"] extends "jwt-bearer" ? { authorization: `Bearer ${string}` } : never
 
-export type IHeaders<S extends IRouteSchema> = S["headers"] extends ZodType ? z.input<S["headers"]> & IHeadersAuth<S> : IHeadersAuth<S>
+export type IHeaders<S extends IRouteSchema> = Omit<S["headers"] extends ZodType ? z.input<S["headers"]> & IHeadersAuth<S> : IHeadersAuth<S>, "referrer">
 
 type IRequestRaw<S extends IRouteSchema> = {
-  [Prop in Extract<keyof S, "params" | "querystring" | "headers" | "body">]: Prop extends "params"
-    ? IParam<S>
-    : Prop extends "querystring"
-    ? IQuery<S>
-    : Prop extends "headers"
-    ? IHeaders<S>
-    : IBody<S>
+  params: IParam<S>
+  querystring: IQuery<S>
+  headers: IHeaders<S>
+  body: IBody<S>
 }
 
-export type IRequest<S extends IRouteSchema> = IHeadersAuth<S> extends never ? IRequestRaw<S> : IRequestRaw<S> & { headers: IHeadersAuth<S> }
+export type IRequest<S extends IRouteSchema> = ConditionalExcept<IRequestRaw<S>, never | EmptyObject>

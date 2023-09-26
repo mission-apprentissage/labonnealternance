@@ -35,10 +35,16 @@ export const premiumActivatedReminder = async () => {
   for (const etablissement of etablissementWithParcoursup) {
     // Retrieve all emails
     let emails = eligibleTrainingsForAppointmentsFound
-      .filter((eligibleTrainingsForAppointment) => eligibleTrainingsForAppointment.etablissement_formateur_siret === etablissement.formateur_siret)
-      .map((eligibleTrainingsForAppointment) => eligibleTrainingsForAppointment.lieu_formation_email)
+      .flatMap((eligibleTrainingsForAppointment) => {
+        if (eligibleTrainingsForAppointment.etablissement_formateur_siret === etablissement.formateur_siret) {
+          const email = eligibleTrainingsForAppointment.lieu_formation_email
+          return email ? [email] : []
+        } else {
+          return []
+        }
+      })
       .concat([etablissement.gestionnaire_email])
-    emails = [...new Set(emails)].filter((email) => email)
+    emails = [...new Set(emails)]
 
     for (const email of emails) {
       try {

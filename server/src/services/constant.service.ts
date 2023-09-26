@@ -1,3 +1,6 @@
+import { ZUserStatusValidation } from "shared/models"
+import { z } from "zod"
+
 export const POURVUE = "Pourvue"
 export const ANNULEE = "Annulée"
 export const ACTIVE = "Active"
@@ -38,6 +41,7 @@ export enum ETAT_UTILISATEUR {
   ATTENTE = "EN ATTENTE DE VALIDATION",
   ERROR = "ERROR",
 }
+
 export const ENTREPRISE = "ENTREPRISE"
 export const CFA = "CFA"
 export const REGEX = {
