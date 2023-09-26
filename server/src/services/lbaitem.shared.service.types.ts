@@ -3,7 +3,7 @@ import { IRomeDetailsFromAPI } from "./rome.service.types"
 
 export interface ILbaItem {
   ideaType: string | null // type de l'item :  formation | lbb | lba | peJob | matcha
-  title: string | null // pe -> intitule | lbb/lba -> enseigne | formation -> intitule_long OU intitule_court | matcha -> offres.libelle || offres.rome_appellation_label
+  title: string | null | undefined // pe -> intitule | lbb/lba -> enseigne | formation -> intitule_long OU intitule_court | matcha -> offres.libelle || offres.rome_appellation_label
   longTitle?: string | null // formation -> intitule_long,
   id: string | null // formation -> id | matcha -> id_form
   idRco: string | null // formation -> id_formation
@@ -19,7 +19,7 @@ export interface ILbaItem {
 
   /** TODO API V2: move inside training<ILbaItemTraining> */
   cleMinistereEducatif: string | null // formation
-  diplomaLevel: string | null // formation -> niveau  | matcha -> offres.niveau
+  diplomaLevel?: string | null // formation -> niveau  | matcha -> offres.niveau
   diploma: string | null // formation -> diplome
   cfd: string | null // formation -> cfd
   rncpCode: string | null // formation -> rncp_code
@@ -51,9 +51,9 @@ export interface ILbaItemContact {
 export interface ILbaItemPlace {
   // lieu principal pour l'item, lieu de formation ou lieu de l'offre ou adresse de l'entreprise
   distance: number | null // distance au centre de recherche en km. pe --> lieutTravail.distance recalculé par turf.js | formation --> sort[0] | lbb/lba -> distance | matcha -> sort[0]
-  fullAddress: string | null // adresse postale reconstruite à partir des éléments d'adresse fournis | matcha -> adresse | formation -> lieu_formation_adresse + code_postal + localite OU etablissement_formateur_adresse + ...complement_adresse + ...code_postal + ...localite + ...cedex OU etablissement_gestionnaire_adresse + ...complement_adresse + ...localite + ...cedex
-  latitude: string | null // formation -> lieu_formation_geo_coordonnees | pe -> lieuTravail.latitude | lbb/lba -> geo_coordinates | matcha -> geo_coordonnees
-  longitude: string | null // formation -> lieu_formation_geo_coordonnees | pe -> lieuTravail.longitude | lbb/lba -> geo_coordinates | matcha -> geo_coordonnees
+  fullAddress?: string | null // adresse postale reconstruite à partir des éléments d'adresse fournis | matcha -> adresse | formation -> lieu_formation_adresse + code_postal + localite OU etablissement_formateur_adresse + ...complement_adresse + ...code_postal + ...localite + ...cedex OU etablissement_gestionnaire_adresse + ...complement_adresse + ...localite + ...cedex
+  latitude?: number | null // formation -> lieu_formation_geo_coordonnees | pe -> lieuTravail.latitude | lbb/lba -> geo_coordinates | matcha -> geo_coordonnees
+  longitude?: number | null // formation -> lieu_formation_geo_coordonnees | pe -> lieuTravail.longitude | lbb/lba -> geo_coordinates | matcha -> geo_coordonnees
   city: string | null // pe -> lieuTravail.libelle | formation -> localite | pe -> city | lba -> city
   address?: string | null // formation -> etablissement_formateur_adresse, etablissement_formateur_complement_adresse | lbb / lba -> address -> street_number + street_name | matcha -> adresse
   cedex?: string | null // formation -> etablissement_formateur_cedex

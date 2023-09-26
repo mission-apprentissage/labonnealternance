@@ -1,7 +1,7 @@
-import { IRecruiter } from "shared"
+import { IJob, IRecruiter } from "shared"
 
 import { encryptMailWithIV } from "../common/utils/encryptString"
-import { IApiError, manageApiError } from "../common/utils/errorManager"
+import { manageApiError } from "../common/utils/errorManager"
 import { roundDistance } from "../common/utils/geolib"
 import { trackApiCall } from "../common/utils/sendTrackingEvent"
 import { matchaMock, matchaMockMandataire, matchasMock } from "../mocks/matchas-mock"
@@ -9,7 +9,6 @@ import { matchaMock, matchaMockMandataire, matchasMock } from "../mocks/matchas-
 import { IApplicationCount, getApplicationByJobCount } from "./application.service"
 import { JOB_STATUS, NIVEAUX_POUR_LBA, RECRUITER_STATUS } from "./constant.service"
 import { getJobsFromElasticSearch, getOffreAvecInfoMandataire, incrementLbaJobViewCount } from "./formulaire.service"
-import type { TLbaItemResult } from "./jobOpportunity.service.types"
 import type { ILbaItem } from "./lbaitem.shared.service.types"
 import type { ILbaJobEsResult } from "./lbajob.service.types"
 import { filterJobsByOpco } from "./opco.service"
@@ -85,7 +84,7 @@ export const getLbaJobs = async ({
       matchas.results = await filterJobsByOpco({ opco, opcoUrl, jobs: matchas.results })
     }
 
-    if (!hasLocation) {
+    if (!hasLocation && matchas.results) {
       sortLbaJobs(matchas)
     }
 
@@ -102,17 +101,19 @@ export const getLbaJobs = async ({
  * @param {IApplicationCount[]} applicationCountByJob les décomptes de candidatures par identifiant d'offres
  * @returns {{ results: ILbaItem[] }}
  */
-function transformLbaJobs({ jobs, caller, applicationCountByJob }: { jobs: ILbaJobEsResult[]; caller?: string; applicationCountByJob: IApplicationCount[] }) {
-  return {
-    results: jobs.flatMap((job) =>
-      transformLbaJob({
-        job: job._source,
-        distance: job.sort && job.sort[0],
-        applicationCountByJob,
-        caller,
-      })
-    ),
-  }
+function transformLbaJobs({ jobs, caller, applicationCountByJob }: { jobs: ILbaJobEsResult[]; caller?: string; applicationCountByJob: IApplicationCount[] }): { results: ILbaItem[] }
+{
+  return { results: jobs.flatMap((job) =>
+                                            transformLbaJob({
+                                              job: job._source,
+                                              distance: job.sort && job.sort[0],
+                                              applicationCountByJob,
+                                              caller,
+                                            })
+                                          ) }
+  // return {
+  //   results: transformedJobs.filter(transformedJob => transformedJob !== undefined ),
+  // }
 }
 
 /**
@@ -163,7 +164,7 @@ export const getLbaJobById = async ({ id, caller }: { id: string; caller?: strin
  * @returns {ILbaItem[]}
  */
 function transformLbaJob({
-  job,
+  job,    
   distance,
   caller,
   applicationCountByJob,
@@ -172,14 +173,19 @@ function transformLbaJob({
   distance?: number
   caller?: string
   applicationCountByJob: IApplicationCount[]
-}) {
-  return job.jobs
-    ? job.jobs.map((offre, idx) => {
-        const email = encryptMailWithIV({ value: job.email, caller })
-        const applicationCount = applicationCountByJob.find((job) => job._id.toString() === offre._id.toString())
-        const romes = offre.rome_code.map((code) => ({ code, label: null }))
+}): ILbaItem[] {
+  if(!job.jobs)
+    {return []}
 
-    const resultJob = {
+  return job.jobs.map((offre, idx): ILbaItem => {
+    const email = encryptMailWithIV({ value: job.email, caller })
+    const applicationCount = applicationCountByJob.find((job) => job._id.toString() === offre._id.toString())
+    const romes = offre.rome_code.map((code) => ({ code, label: null }))
+
+    const latitude = parseFloat(job.geo_coordinates ? job.geo_coordinates.split(",")[0] : "0")
+    const longitude = parseFloat(job.geo_coordinates ? job.geo_coordinates.split(",")[1] : "0")
+
+    const resultJob: ILbaItem = {
       ideaType: "matcha",
       id: `${job.establishment_id}-${idx}`,
       title: offre.rome_appellation_label ?? offre.rome_label,
@@ -192,8 +198,8 @@ function transformLbaJob({
         distance: distance!==undefined ? roundDistance(distance) : null,
         fullAddress: job.address,
         address: job.address,
-        latitude: job.geo_coordinates && job.geo_coordinates.split(",")[0],
-        longitude: job.geo_coordinates && job.geo_coordinates.split(",")[1],
+        latitude,
+        longitude,
         city: job.address_detail && "localite" in job.address_detail && job.address_detail.localite,
       },
       company: {
@@ -206,7 +212,7 @@ function transformLbaJob({
       nafs: [{ label: job.naf_label }],
       diplomaLevel: offre.job_level_label,
       job: {
-        id: offre._id,
+        id: offre._id.toString(),
         description: offre.job_description || "",
         creationDate: offre.job_creation_date,
         contractType: offre.job_type && offre.job_type.join(", "),
@@ -235,9 +241,8 @@ function transformLbaJob({
       applicationCount,
     }
 
-        return resultJob
-      })
-    : []
+    return resultJob
+  })
 }
 
 /**
@@ -274,7 +279,7 @@ function sortLbaJobs(jobs: { results: ILbaItem[] }) {
  * Incrémente le compteur de vue de la page de détail d'une offre LBA
  * @param {string} jobId
  */
-export const addOffreDetailView = async (jobId: string) => {
+export const addOffreDetailView = async (jobId: IJob["_id"]) => {
   await incrementLbaJobViewCount(jobId, {
     stats_detail_view: 1,
   })
@@ -284,7 +289,7 @@ export const addOffreDetailView = async (jobId: string) => {
  * Incrémente le compteur de vue de la page de recherche d'une offre LBA
  * @param {string} jobId
  */
-export const addOffreSearchView = async (jobId: string) => {
+export const addOffreSearchView = async (jobId: IJob["_id"]) => {
   await incrementLbaJobViewCount(jobId, {
     stats_search_view: 1,
   })
