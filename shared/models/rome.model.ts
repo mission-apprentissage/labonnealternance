@@ -79,6 +79,9 @@ export const ZRomeDetail = z
           typeCompetence: z.string(),
           riasecMineur: z.string().nullish(),
           riasecMajeur: z.string().nullish(),
+          competenceCle: z.boolean(),
+          frequence: z.number(),
+
         })
         .strict()
     ),
@@ -120,5 +123,10 @@ export const ZRomeDetail = z
         })
         .strict()
     ),
+    groupesCompetencesSpecifiques: z.array(z.any()),
+    environnementsTravail: z.array(z.any()),
+    mobilitesProchesVersAppellations: z.array(z.any()),
+    mobilitesProchesAppellationsVersMetiers: z.array(z.any()),
+    mobilitesEvolutionsAppellationsVersAppellations: z.array(z.any()),
   })
   .strict()

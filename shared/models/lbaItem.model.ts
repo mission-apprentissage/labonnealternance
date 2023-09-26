@@ -94,13 +94,11 @@ export const ZLbaItem = z.object({
     .strict()
     .nullable(),
 
-  createdAt: z.date().nullable(), // formation -> created_at | matcha -> createdAt
-  lastUpdateAt: z.date().nullable(), // formation -> last_update_at | matcha -> updatedAt
   url: z.string().nullable(), // pe -> reconstruction depuis id | lbb/lba url
 
   /** TODO API V2: move inside training<ILbaItemTraining> */
   cleMinistereEducatif: z.string().nullable(), // formation
-  diplomaLevel: z.string().nullable(), // formation -> niveau  | matcha -> offres.niveau
+  diplomaLevel: z.string().nullish(), // formation -> niveau  | matcha -> offres.niveau
   diploma: z.string().nullable(), // formation -> diplome
   cfd: z.string().nullable(), // formation -> cfd
   rncpCode: z.string().nullable(), // formation -> rncp_code

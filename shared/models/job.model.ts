@@ -45,7 +45,7 @@ export const ZJob = z
     is_delegated: z.boolean().describe("Definit si l'entreprise souhaite déléguer l'offre à un CFA"),
     job_delegation_count: z.number().nullable().describe("Nombre de délégations"),
     delegations: z.array(ZDelegation).nullish().describe("Liste des délégations"),
-    is_disabled_elligible: z.boolean().nullable().describe("Poste ouvert aux personnes en situation de handicap"),
+    is_disabled_elligible: z.boolean().describe("Poste ouvert aux personnes en situation de handicap"),
     job_count: z.number().nullish().describe("Nombre de poste(s) ouvert(s) pour cette offre"),
     job_duration: z.number().nullish().describe("Durée du contrat en année"),
     job_rythm: z.string().nullish().describe("Répartition de la présence de l'alternant en formation/entreprise"),
