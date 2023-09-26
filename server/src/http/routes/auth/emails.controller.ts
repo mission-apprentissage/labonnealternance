@@ -1,4 +1,3 @@
-import Joi from "joi"
 import { zRoutes } from "shared/index"
 
 import { logger } from "../../../common/logger"
