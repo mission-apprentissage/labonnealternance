@@ -37,7 +37,7 @@ export const getLbaJobs = async ({
   opcoUrl?: string
   diploma?: string
   caller?: string
-}): Promise<TLbaItemResult> => {
+}) => {
   if (radius === 0) {
     radius = 10
   }
@@ -214,7 +214,7 @@ function transformLbaJob({
       capacity: null,
       onisepUrl: null,
       training: null, 
-      applicationCount,
+      applicationCount: applicationCount?.count,
     }
 
     return resultJob

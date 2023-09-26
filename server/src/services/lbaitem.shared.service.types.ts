@@ -36,7 +36,7 @@ export interface ILbaItem {
 
   training: ILbaItemTraining | null
 
-  applicationCount: number | null // lba / matcha -> calcul en fonction du nombre de candidatures enregistrées
+  applicationCount?: number | null // lba / matcha -> calcul en fonction du nombre de candidatures enregistrées
 }
 
 export interface ILbaItemContact {
