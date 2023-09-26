@@ -3,10 +3,12 @@ import { z } from "zod"
 import { ZJob } from "../models/job.model"
 import { ZUserRecruteur, ZUserStatusValidation } from "../models/usersRecruteur.model"
 
+import { IRoutesDef } from "./common.routes"
+
 export const zUserRecruteurRoutes = {
   get: {
     "/api/user/opco": {
-      queryParams: z.object({
+      querystring: z.object({
         userQuery: z.string() /* mongo query */,
         formulaireQuery: z.string() /* mongo query */,
       }),
@@ -20,29 +22,41 @@ export const zUserRecruteurRoutes = {
           })
         ),
       },
+      securityScheme: {
+        auth: "none",
+        role: "all",
+      },
     },
     "/api/user": {
-      queryParams: z.object({
+      querystring: z.object({
         users: z.string() /* mongo query */,
       }),
       response: {
         "2xx": z.array(ZUserRecruteur),
       },
+      securityScheme: {
+        auth: "none",
+        role: "all",
+      },
     },
   },
   post: {
     "/api/user": {
-      queryParams: ZUserRecruteur.extend({
+      querystring: ZUserRecruteur.extend({
         scope: z.string().optional(),
       }),
       response: {
         "2xx": ZUserRecruteur,
       },
+      securityScheme: {
+        auth: "none",
+        role: "all",
+      },
     },
   },
   put: {
     "/api/user/:userId": {
-      queryParams: ZUserRecruteur.pick({
+      querystring: ZUserRecruteur.pick({
         last_name: true,
         first_name: true,
         phone: true,
@@ -52,23 +66,35 @@ export const zUserRecruteurRoutes = {
       response: {
         "2xx": ZUserRecruteur,
       },
+      securityScheme: {
+        auth: "none",
+        role: "all",
+      },
     },
     "/api/user/:userId/history": {
-      queryParams: ZUserStatusValidation,
+      querystring: ZUserStatusValidation,
       response: {
         "2xx": ZUserRecruteur,
+      },
+      securityScheme: {
+        auth: "none",
+        role: "all",
       },
     },
   },
   delete: {
     "/api/user": {
-      queryParams: z.object({
+      querystring: z.object({
         userId: z.string(),
         recruiterId: z.string().optional(),
       }),
       response: {
         "2xx": z.undefined(),
       },
+      securityScheme: {
+        auth: "none",
+        role: "all",
+      },
     },
   },
-}
+} as const satisfies IRoutesDef

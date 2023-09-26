@@ -37,6 +37,10 @@ export const zTrainingLinksRoutes = {
             .strict()
         ),
       },
+      securityScheme: {
+        auth: "none",
+        role: "all",
+      },
     },
   },
 } as const satisfies IRoutesDef

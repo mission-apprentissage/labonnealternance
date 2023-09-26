@@ -41,6 +41,10 @@ export const zRomeRoutes = {
       response: {
         "200": ZMetiersEnrichis,
       },
+      securityScheme: {
+        auth: "none",
+        role: "all",
+      },
     },
     "/api/rome/detail/:rome": {
       params: z.object({
@@ -48,6 +52,10 @@ export const zRomeRoutes = {
       }),
       response: {
         "200": ZRomeDetail,
+      },
+      securityScheme: {
+        auth: "none",
+        role: "all",
       },
     },
   },

@@ -26,6 +26,10 @@ export const zLoginRoutes = {
       response: {
         "200": z.undefined(),
       },
+      securityScheme: {
+        auth: "none",
+        role: "all",
+      },
     },
     "/api/login/magiclink": {
       body: z
@@ -35,6 +39,10 @@ export const zLoginRoutes = {
         .strict(),
       response: {
         "200": z.undefined(),
+      },
+      securityScheme: {
+        auth: "none",
+        role: "all",
       },
     },
     "/api/login/verification": {

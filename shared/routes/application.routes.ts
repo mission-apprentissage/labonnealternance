@@ -17,6 +17,10 @@ export const zApplicationRoutes = {
           })
           .strict(),
       },
+      securityScheme: {
+        auth: "none",
+        role: "all",
+      },
     },
     "/api/application": {
       body: ZApplicationUI,
@@ -27,6 +31,10 @@ export const zApplicationRoutes = {
             message: z.literal("messages sent"),
           })
           .strict(),
+      },
+      securityScheme: {
+        auth: "none",
+        role: "all",
       },
     },
     "/api/application/intentionComment": {
@@ -45,6 +53,10 @@ export const zApplicationRoutes = {
           })
           .strict(),
       },
+      securityScheme: {
+        auth: "none",
+        role: "all",
+      },
     },
     "/api/application/webhook": {
       body: extensions.brevoWebhook(),
@@ -54,6 +66,10 @@ export const zApplicationRoutes = {
             result: z.literal("ok"),
           })
           .strict(),
+      },
+      securityScheme: {
+        auth: "none",
+        role: "all",
       },
     },
   },

@@ -25,6 +25,10 @@ export const zUserRecruteurRoutes = {
           }).strict()
         ),
       },
+      securityScheme: {
+        auth: "none",
+        role: "all",
+      },
     },
     "/api/user": {
       querystring: z
@@ -49,6 +53,10 @@ export const zUserRecruteurRoutes = {
       response: {
         "200": ZUserRecruteur.extend({ jobs: z.array(ZJob) }),
       },
+      securityScheme: {
+        auth: "none",
+        role: "all",
+      },
     },
   },
   post: {
@@ -58,6 +66,10 @@ export const zUserRecruteurRoutes = {
       }).strict(),
       response: {
         "200": ZUserRecruteur,
+      },
+      securityScheme: {
+        auth: "none",
+        role: "all",
       },
     },
   },
@@ -77,12 +89,20 @@ export const zUserRecruteurRoutes = {
         "200": ZUserRecruteur,
         "400": z.object({ error: z.boolean(), reason: z.string() }),
       },
+      securityScheme: {
+        auth: "none",
+        role: "all",
+      },
     },
     "/api/user/:userId/history": {
       params: z.object({ userId: zObjectId }),
       body: ZUserStatusValidation,
       response: {
         "200": ZUserRecruteur,
+      },
+      securityScheme: {
+        auth: "none",
+        role: "all",
       },
     },
   },
@@ -96,6 +116,10 @@ export const zUserRecruteurRoutes = {
         .strict(),
       response: {
         "200": z.undefined(),
+      },
+      securityScheme: {
+        auth: "none",
+        role: "all",
       },
     },
   },

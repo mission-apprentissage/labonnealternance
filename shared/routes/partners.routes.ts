@@ -10,6 +10,10 @@ export const zPartnersRoutes = {
       response: {
         "200": z.array(z.object({ parcoursup_id: ZEligibleTrainingsForAppointmentSchema.shape.parcoursup_id })),
       },
+      securityScheme: {
+        auth: "none",
+        role: "all",
+      },
     },
   },
 } as const satisfies IRoutesDef

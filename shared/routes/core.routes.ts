@@ -18,11 +18,19 @@ export const zCoreRoutes = {
         "200": zResponse,
         "500": z.union([ZResError, zResponse]),
       },
+      securityScheme: {
+        auth: "none",
+        role: "all",
+      },
     },
     "/api/healthcheck": {
       response: {
         "200": zResponse,
         "500": z.union([ZResError, zResponse]),
+      },
+      securityScheme: {
+        auth: "none",
+        role: "all",
       },
     },
     "/api/version": {
@@ -32,6 +40,10 @@ export const zCoreRoutes = {
             version: z.string(),
           })
           .strict(),
+      },
+      securityScheme: {
+        auth: "none",
+        role: "all",
       },
     },
   },

@@ -4,7 +4,7 @@ import { referrers } from "../constants/referers"
 import { ZAppointment } from "../models"
 import { ZEligibleTrainingsForAppointmentSchema } from "../models/elligibleTraining.model"
 
-import { ZResError } from "./common.routes"
+import { IRoutesDef, ZResError } from "./common.routes"
 
 const zContextCreateSchemaParcoursup = z
   .object({
@@ -82,6 +82,10 @@ export const zAppointmentsRoute = {
           }),
         }),
       },
+      securityScheme: {
+        auth: "none",
+        role: "all",
+      },
     },
     "/api/admin/appointments/details": {
       querystring: z.object({ query: z.string(), limit: z.number(), page: z.number() }).strict(),
@@ -95,6 +99,10 @@ export const zAppointmentsRoute = {
             total: z.number(),
           }),
         }),
+      },
+      securityScheme: {
+        auth: "none",
+        role: "all",
       },
     },
     "/api/appointment-request/context/recap": {
@@ -110,6 +118,10 @@ export const zAppointmentsRoute = {
             etablissement: ZEligibleTrainingsForAppointmentSchema,
           })
           .strict(),
+      },
+      securityScheme: {
+        auth: "none",
+        role: "all",
       },
     },
   },
@@ -139,6 +151,10 @@ export const zAppointmentsRoute = {
         "404": z.union([ZResError, z.literal("Formation introuvable")]),
         "400": z.union([ZResError, z.literal("Critère de recherche non conforme.")]),
       },
+      securityScheme: {
+        auth: "none",
+        role: "all",
+      },
     },
     "/api/appointment-request/validate": {
       body: z
@@ -162,6 +178,10 @@ export const zAppointmentsRoute = {
           })
           .strict(),
       },
+      securityScheme: {
+        auth: "none",
+        role: "all",
+      },
     },
     "/api/appointment-request/reply": {
       body: z
@@ -182,6 +202,10 @@ export const zAppointmentsRoute = {
           })
           .strict(),
       },
+      securityScheme: {
+        auth: "none",
+        role: "all",
+      },
     },
   },
-}
+} as const satisfies IRoutesDef

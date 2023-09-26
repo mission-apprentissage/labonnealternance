@@ -35,6 +35,10 @@ export const zV1FormationsRoutes = {
         "400": z.union([ZResError, ZLbacError]),
         "500": z.union([ZResError, ZLbacError]),
       },
+      securityScheme: {
+        auth: "none",
+        role: "all",
+      },
     },
     "/api/v1/formations/formation/:id": {
       querystring: z
@@ -57,6 +61,10 @@ export const zV1FormationsRoutes = {
         "404": z.union([ZResError, ZLbacError]),
         "500": z.union([ZResError, ZLbacError]),
       },
+      securityScheme: {
+        auth: "none",
+        role: "all",
+      },
     },
     "/api/v1/formations/formationDescription/:id": {
       params: z
@@ -73,6 +81,10 @@ export const zV1FormationsRoutes = {
         "400": z.union([ZResError, ZLbacError]),
         "404": z.union([ZResError, ZLbacError]),
         "500": z.union([ZResError, ZLbacError]),
+      },
+      securityScheme: {
+        auth: "none",
+        role: "all",
       },
     },
   },

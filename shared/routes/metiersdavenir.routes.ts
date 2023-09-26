@@ -8,6 +8,10 @@ export const zMetiersDAvenirRoutes = {
       response: {
         "200": ZMetiersDAvenir,
       },
+      securityScheme: {
+        auth: "none",
+        role: "all",
+      },
     },
   },
 } as const satisfies IRoutesDef

@@ -34,7 +34,7 @@ fileignoreconfig:
 - filename: shared/helpers/openapi/generateOpenapi.test.ts
   checksum: d7b85c3dff488cec523d78f0926e15dbea41071a1864bda62b4d6caeb2541df3
 - filename: shared/routes/password.routes.ts
-  checksum: f328889ff5a6db74868a82d5725659cd4b26da3126f0778639dc485eace74832
+  checksum: 9c364c30d244786c12c9c464bb50f7b78ede916674110872a6b115e09b7751fc
 - filename: ui/common/hooks/useAuth.ts
   checksum: 7cce935653407e000b35e98bd365a003e538aed4fed432a9a404d4f2412dd2df
 - filename: ui/pages/espace-pro/admin/eligible-trainings-for-appointment/edit/[id].tsx

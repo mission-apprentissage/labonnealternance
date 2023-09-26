@@ -47,6 +47,10 @@ export const zRecruiterRoutes = {
           })
           .strict(),
       },
+      securityScheme: {
+        auth: "none",
+        role: "all",
+      },
     },
     "/api/etablissement/entreprise/:siret": {
       params: z.object({
@@ -75,6 +79,10 @@ export const zRecruiterRoutes = {
           })
           .strict(),
       },
+      securityScheme: {
+        auth: "none",
+        role: "all",
+      },
     },
     "/api/etablissement/entreprise/:siret/opco": {
       params: z.object({ siret: extensions.siret() }),
@@ -85,6 +93,10 @@ export const zRecruiterRoutes = {
             idcc: z.string(),
           })
           .strict(),
+      },
+      securityScheme: {
+        auth: "none",
+        role: "all",
       },
     },
     "/api/etablissement/cfa/:siret": {
@@ -110,6 +122,10 @@ export const zRecruiterRoutes = {
           })
           .strict(),
       },
+      securityScheme: {
+        auth: "none",
+        role: "all",
+      },
     },
   },
   post: {
@@ -124,6 +140,10 @@ export const zRecruiterRoutes = {
           }),
         ]),
       },
+      securityScheme: {
+        auth: "none",
+        role: "all",
+      },
     },
     "/api/etablissement/:establishment_siret/proposition/unsubscribe": {
       params: z.object({ establishment_siret: extensions.siret() }),
@@ -134,11 +154,19 @@ export const zRecruiterRoutes = {
           })
           .strict(),
       },
+      securityScheme: {
+        auth: "none",
+        role: "all",
+      },
     },
     "/api/etablissement/validation": {
       body: z.object({ id: zObjectId }),
       response: {
         "2xx": z.object({ token: z.string() }).strict(), // JWToken
+      },
+      securityScheme: {
+        auth: "none",
+        role: "all",
       },
     },
   },

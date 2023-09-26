@@ -1,7 +1,7 @@
 import Boom from "boom"
-import { ICredential, zRoutes, IJob } from "shared"
+import { FastifyRequest } from "fastify"
+import { ICredential, zRoutes, IJob, IUserRecruteur } from "shared"
 import { IRouteSchema } from "shared/routes/common.routes"
-import { zV1JobsRoutes } from "shared/routes/v1Jobs.routes"
 
 import { IUser } from "@/common/model/schema/user/user.types"
 
@@ -38,12 +38,17 @@ const config = {
     timeWindow: "1s",
   },
 }
-export type AuthStrategy = "api-key" | "basic" | "jwt-password" | "jwt-bearer" | "jwt-token" | "jwt-rdv-admin" | "none"
 
-type AuthenticatedUser<AuthScheme extends IRouteSchema["securityScheme"]["auth"]> = AuthScheme extends "jwt-bearer" ? IUser : AuthScheme extends "api-key" ? ICredential : null
+type AuthenticatedUser<AuthScheme extends IRouteSchema["securityScheme"]["auth"]> = AuthScheme extends "jwt-bearer" | "basic" | "jwt-password" | "jwt-rdv-admin"
+  ? IUser
+  : AuthScheme extends "jwt-bearer"
+  ? IUserRecruteur
+  : AuthScheme extends "api-key"
+  ? ICredential
+  : null
 
-const getUser = <Path extends keyof (typeof zV1JobsRoutes)["get"]>(req): AuthenticatedUser<(typeof zV1JobsRoutes)["get"][Path]["securityScheme"]["auth"]> => {
-  return req.user as AuthenticatedUser<(typeof zV1JobsRoutes)["get"][Path]["securityScheme"]["auth"]>
+const getUser = <S extends IRouteSchema>(req: FastifyRequest, _schema: S): AuthenticatedUser<S["securityScheme"]["auth"]> => {
+  return req.user as AuthenticatedUser<S["securityScheme"]["auth"]>
 }
 
 export default (server: Server) => {
@@ -84,7 +89,7 @@ export default (server: Server) => {
     async (req, res) => {
       const { query, select, page, limit } = req.query
 
-      const user = getUser<"/api/v1/jobs/bulk">(req)
+      const user = getUser(req, zRoutes.get["/api/v1/jobs/bulk"])
 
       const qs = query ? JSON.parse(query) : {}
       const slt = select ? JSON.parse(select) : {}
@@ -112,7 +117,7 @@ export default (server: Server) => {
       await createEstablishmentSchema.validateAsync(body, { abortEarly: false })
 
       const { first_name, last_name, phone, email, origin, idcc, establishment_siret } = body
-      const user = getUser<"/api/v1/jobs/establishment">(req)
+      const user = getUser(req, zRoutes.post["/api/v1/jobs/establishment"])
 
       const result = await entrepriseOnboardingWorkflow.create(
         {

@@ -8,9 +8,11 @@ export const zEmailsRoutes = {
     "/api/emails/webhook": {
       body: extensions.brevoWebhook(),
       response: {
-        "200": z
-          .object({})
-          .strict(),
+        "200": z.object({}).strict(),
+      },
+      securityScheme: {
+        auth: "api-key",
+        role: "all",
       },
     },
   },

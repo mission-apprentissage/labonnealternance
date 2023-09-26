@@ -9,6 +9,10 @@ export const zUnsubscribeRoute = {
       response: {
         "200": z.enum(["OK", "NON_RECONNU", "ETABLISSEMENTS_MULTIPLES"]),
       },
+      securityScheme: {
+        auth: "none",
+        role: "all",
+      },
     },
   },
 } as const satisfies IRoutesDef

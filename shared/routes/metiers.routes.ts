@@ -3,12 +3,12 @@ import { z } from "zod"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { ZAppellationsRomes, ZMetiersEnrichis, ZMetiers } from "../models/metiers.model"
 
-import { ZResError } from "./common.routes"
+import { IRoutesDef, ZResError } from "./common.routes"
 
 export const zMetiersRoutes = {
   get: {
     "/api/v1/metiers/metiersParFormation/:cfd": {
-      param: z
+      params: z
         .object({
           cfd: z.string(),
         })
@@ -17,9 +17,13 @@ export const zMetiersRoutes = {
         200: ZMetiers.strict(),
         500: z.union([ZResError, z.object({ error: z.string() }).strict()]),
       },
+      securityScheme: {
+        auth: "none",
+        role: "all",
+      },
     },
     "/api/v1/metiers/metiersParEtablissement/:siret": {
-      param: z
+      params: z
         .object({
           siret: z.object({ siret: extensions.siret() }),
         })
@@ -28,11 +32,19 @@ export const zMetiersRoutes = {
         200: ZMetiers.strict(),
         500: z.union([ZResError, z.object({ error: z.string() }).strict()]),
       },
+      securityScheme: {
+        auth: "none",
+        role: "all",
+      },
     },
     "/api/v1/metiers/all": {
       response: {
         200: ZMetiers.strict(),
         500: z.union([ZResError, z.object({ error: z.string() }).strict()]),
+      },
+      securityScheme: {
+        auth: "none",
+        role: "all",
       },
     },
     "/api/v1/metiers": {
@@ -50,6 +62,10 @@ export const zMetiersRoutes = {
         400: z.union([ZResError, z.object({ error: z.string() }).strict()]),
         500: z.union([ZResError, z.object({ error: z.string() }).strict()]),
       },
+      securityScheme: {
+        auth: "none",
+        role: "all",
+      },
     },
     "/api/v1/metiers/intitule": {
       querystring: z
@@ -62,6 +78,10 @@ export const zMetiersRoutes = {
         400: z.union([ZResError, z.object({ error: z.string() }).strict()]),
         500: z.union([ZResError, z.object({ error: z.string() }).strict()]),
       },
+      securityScheme: {
+        auth: "none",
+        role: "all",
+      },
     },
   },
-}
+} as const satisfies IRoutesDef

@@ -17,6 +17,10 @@ export const zAuthPasswordRoutes = {
           })
           .strict(),
       },
+      securityScheme: {
+        auth: "none",
+        role: "all",
+      },
     },
     "/api/password/reset-password": {
       body: z

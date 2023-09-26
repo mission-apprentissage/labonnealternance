@@ -34,6 +34,10 @@ export const zV1FormationsParRegion = {
         "400": z.union([ZResError, ZLbacError]),
         "500": z.union([ZResError, ZLbacError]),
       },
+      securityScheme: {
+        auth: "none",
+        role: "all",
+      },
     },
   },
 } as const satisfies IRoutesDef

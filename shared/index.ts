@@ -98,7 +98,7 @@ const zRoutesPatch = {
   ...zEligibleTrainingsForAppointmentRoutes.patch,
 } as const
 
-type ZRoutes = {
+export type IRoutes = {
   get: typeof zRoutesGet
   post: typeof zRoutesPost
   put: typeof zRoutesPut
@@ -106,15 +106,13 @@ type ZRoutes = {
   patch: typeof zRoutesPatch
 }
 
-export const zRoutes: ZRoutes = {
+export const zRoutes: IRoutes = {
   get: zRoutesGet,
   post: zRoutesPost,
   put: zRoutesPut,
   delete: zRoutesDelete,
   patch: zRoutesPatch,
 } as const
-
-export type IRoutes = typeof zRoutes
 
 export type IGetRoutes = IRoutes["get"]
 export type IPostRoutes = IRoutes["post"]

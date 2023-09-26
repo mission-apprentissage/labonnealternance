@@ -19,6 +19,10 @@ export const zUpdateLbaCompanyRoutes = {
       response: {
         "200": ZLbaCompany,
       },
+      securityScheme: {
+        auth: "none",
+        role: "all",
+      },
     },
   },
 } as const satisfies IRoutesDef

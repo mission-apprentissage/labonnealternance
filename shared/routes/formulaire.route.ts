@@ -13,17 +13,29 @@ export const zFormulaireRoute = {
       response: {
         "2xx": z.array(ZRecruiter),
       },
+      securityScheme: {
+        auth: "jwt-bearer",
+        role: "all",
+      },
     },
     "/api/formulaire/:establishment_id": {
       params: z.object({ establishment_id: z.string() }),
       response: {
         "2xx": ZRecruiter,
       },
+      securityScheme: {
+        auth: "none",
+        role: "all",
+      },
     },
     "/api/formulaire/offre/f/:jobId": {
       params: z.object({ jobId: zObjectId }),
       response: {
         "2xx": ZJob,
+      },
+      securityScheme: {
+        auth: "none",
+        role: "all",
       },
     },
   },
@@ -44,12 +56,20 @@ export const zFormulaireRoute = {
       response: {
         "2xx": ZRecruiter,
       },
+      securityScheme: {
+        auth: "none",
+        role: "all",
+      },
     },
     "/api/formulaire/:establishment_id/offre": {
       params: z.object({ establishment_id: z.string() }),
       body: ZJob,
       response: {
         "2xx": ZRecruiter,
+      },
+      securityScheme: {
+        auth: "none",
+        role: "all",
       },
     },
     "/api/formulaire/offre/:jobId/delegation": {
@@ -60,6 +80,10 @@ export const zFormulaireRoute = {
       response: {
         "2xx": ZRecruiter,
       },
+      securityScheme: {
+        auth: "none",
+        role: "all",
+      },
     },
   },
   put: {
@@ -69,6 +93,10 @@ export const zFormulaireRoute = {
       response: {
         "2xx": ZRecruiter,
       },
+      securityScheme: {
+        auth: "none",
+        role: "all",
+      },
     },
     "/api/formulaire/offre/:jobId": {
       body: ZJob.partial(),
@@ -76,17 +104,29 @@ export const zFormulaireRoute = {
       response: {
         "2xx": ZJob,
       },
+      securityScheme: {
+        auth: "none",
+        role: "all",
+      },
     },
     "/api/formulaire/offre/:jobId/cancel": {
       params: z.object({ jobId: zObjectId }),
       response: {
         "2xx": z.undefined(),
       },
+      securityScheme: {
+        auth: "none",
+        role: "all",
+      },
     },
     "/api/formulaire/offre/:jobId/provided": {
       params: z.object({ jobId: zObjectId }),
       response: {
         "2xx": z.undefined(),
+      },
+      securityScheme: {
+        auth: "none",
+        role: "all",
       },
     },
   },
@@ -98,6 +138,10 @@ export const zFormulaireRoute = {
       response: {
         "2xx": ZJob,
       },
+      securityScheme: {
+        auth: "none",
+        role: "all",
+      },
     },
   },
   delete: {
@@ -106,11 +150,19 @@ export const zFormulaireRoute = {
       response: {
         "2xx": z.undefined(),
       },
+      securityScheme: {
+        auth: "none",
+        role: "all",
+      },
     },
     "/api/formulaire/delegated/:establishment_siret": {
       params: z.object({ establishment_siret: z.string() }),
       response: {
         "2xx": z.undefined(),
+      },
+      securityScheme: {
+        auth: "none",
+        role: "all",
       },
     },
   },

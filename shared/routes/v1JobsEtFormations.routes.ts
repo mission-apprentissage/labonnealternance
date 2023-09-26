@@ -72,6 +72,10 @@ export const zV1JobsEtFormationsRoutes = {
         "400": z.union([ZResError, ZLbacError.strict()]),
         "500": z.union([ZResError, ZLbacError.strict()]),
       },
+      securityScheme: {
+        auth: "none",
+        role: "all",
+      },
     },
   },
 } as const satisfies IRoutesDef

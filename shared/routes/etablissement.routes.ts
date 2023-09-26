@@ -58,6 +58,10 @@ export const zEtablissementRoutes = {
       response: {
         "2xx": ZEtablissement,
       },
+      securityScheme: {
+        auth: "none",
+        role: "all",
+      },
     },
   },
   post: {
@@ -100,11 +104,19 @@ export const zEtablissementRoutes = {
       response: {
         "2xx": ZEtablissement,
       },
+      securityScheme: {
+        auth: "none",
+        role: "all",
+      },
     },
     "/api/etablissements/:id/premium/accept": {
       params: z.object({ id: zObjectId }).strict(),
       response: {
         "2xx": ZEtablissement,
+      },
+      securityScheme: {
+        auth: "none",
+        role: "all",
       },
     },
     "/api/etablissements/:id/premium/affelnet/refuse": {
@@ -112,11 +124,19 @@ export const zEtablissementRoutes = {
       response: {
         "2xx": ZEtablissement,
       },
+      securityScheme: {
+        auth: "none",
+        role: "all",
+      },
     },
     "/api/etablissements/:id/premium/refuse": {
       params: z.object({ id: zObjectId }).strict(),
       response: {
         "2xx": ZEtablissement,
+      },
+      securityScheme: {
+        auth: "none",
+        role: "all",
       },
     },
     "/api/etablissements/:id/opt-out/unsubscribe": {
@@ -124,6 +144,10 @@ export const zEtablissementRoutes = {
       body: z.object({ opt_out_question: z.string() }).strict(),
       response: {
         "2xx": ZEtablissement,
+      },
+      securityScheme: {
+        auth: "none",
+        role: "all",
       },
     },
   },
@@ -168,6 +192,10 @@ export const zEtablissementRoutes = {
       params: z.object({ id: zObjectId, appointmentId: zObjectId }).strict(),
       response: {
         "2xx": ZAppointment,
+      },
+      securityScheme: {
+        auth: "none",
+        role: "all",
       },
     },
   },
