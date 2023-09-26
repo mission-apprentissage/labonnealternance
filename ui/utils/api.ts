@@ -2,12 +2,14 @@ import Axios from "axios"
 
 import { publicConfig } from "../config.public"
 
+import { apiGet } from "./api.utils"
+
 const API = Axios.create({
   baseURL: `${publicConfig.baseUrl}/api`,
 })
 
 const errorHandler = (error) => {
-  if (error.response && error.response.data) {
+  if (error) {
     console.error("Erreur de l'API :", error)
   }
 }
@@ -24,10 +26,10 @@ export const getMetier = (search) => Axios.get(`https://labonnealternance.appren
 // TODO_AB
 export const getFormulaires = async (query) => {
   const token = sessionStorage.getItem("lba:token")
-  return API.get("/formulaire", {
-    params: query,
+  return apiGet("/api/formulaire", {
+    querystring: { query },
     headers: {
-      Authorization: `Bearer ${token}`,
+      authorization: `Bearer ${token}`,
     },
   }).catch(errorHandler)
 }
