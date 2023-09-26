@@ -2,6 +2,7 @@ import fs from "fs"
 import path from "path"
 
 import { compose, oleoduc, writeData } from "oleoduc"
+import { ILbaCompany } from "shared/models"
 
 import __dirname from "../../common/dirname"
 import { logger } from "../../common/logger"
@@ -33,9 +34,9 @@ export const removePredictionFile = async () => {
  * Check if algo company file is more recent than when last processed
  * @param {string} reason process calling the function
  */
-export const checkIfAlgoFileIsNew = async (reason: string): void => {
-  const algoFileLastModificationDate = await getFileLastModificationDate()
-  const currentDbCreatedDate = await getCurrentDbCreatedDate()
+export const checkIfAlgoFileIsNew = async (reason: string) => {
+  const algoFileLastModificationDate = await getS3FileLastUpdate({ key: s3File })
+  const currentDbCreatedDate = ((await LbaCompany.findOne({}).select({ created_at: 1, _id: 0 })) as ILbaCompany).created_at
 
   if (algoFileLastModificationDate.getTime() < currentDbCreatedDate.getTime()) {
     await notifyToSlack({
@@ -45,14 +46,6 @@ export const checkIfAlgoFileIsNew = async (reason: string): void => {
     })
     throw new Error("Sociétés issues de l'algo déjà à jour")
   }
-}
-
-const getCurrentDbCreatedDate = async (): Date => {
-  return (await LbaCompany.findOne({}).select({ created_at: 1, _id: 0 })).created_at
-}
-
-const getFileLastModificationDate = async (): Date => {
-  return await getS3FileLastUpdate({ key: s3File })
 }
 
 export const pushFileToBucket = async ({ key, filePath }) => {
@@ -96,7 +89,7 @@ export const readCompaniesFromJson = async () => {
 
   return streamCompanies()
 }
-
+// @ts-expect-error: TODO
 export const countCompaniesInFile = async (): number => {
   let count = 0
   await oleoduc(
