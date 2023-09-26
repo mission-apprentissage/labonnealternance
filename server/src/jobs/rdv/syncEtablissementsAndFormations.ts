@@ -68,7 +68,7 @@ export const syncEtablissementsAndFormations = async () => {
             })
           }
 
-          const emailBlacklisted = await isEmailBlacklisted(emailRdv)
+          const emailBlacklisted = await isEmailBlacklisted(emailRdv as string)
 
           await eligibleTrainingsForAppointmentService.updateMany(
             { cle_ministere_educatif: formation.cle_ministere_educatif },
@@ -102,7 +102,7 @@ export const syncEtablissementsAndFormations = async () => {
             etablissement_formateur_siret: formation.etablissement_formateur_siret,
           })
 
-          const emailBlacklisted = await isEmailBlacklisted(emailRdv)
+          const emailBlacklisted = await isEmailBlacklisted(emailRdv as string)
 
           await eligibleTrainingsForAppointmentService.create({
             training_id_catalogue: formation._id,
