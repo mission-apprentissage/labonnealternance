@@ -7,7 +7,7 @@ import LayoutAdminRdvA from "../../../components/espace_pro/Admin/Layout"
 import { RequestsBoardComponent } from "../../../components/espace_pro/Admin/RequestsBoardComponent"
 import { Breadcrumb } from "../../../components/espace_pro/common/components/Breadcrumb"
 import withAuth from "../../../components/espace_pro/withAuth"
-import { getAppointments } from "../../../utils/api"
+import { getAppointmentsDetails } from "../../../utils/api"
 
 function AdminPage() {
 
@@ -18,7 +18,7 @@ function AdminPage() {
   const title = "Tableau de bord"
 
   useEffect(() => {
-    getAppointments()
+    getAppointmentsDetails()
       .then(({ data }) => {
         setLoading(false)
         setAppointments(data.appointments)

@@ -35,11 +35,7 @@ export default (server: Server) => {
       preHandler: [server.auth(zRoutes.get["/api/admin/appointments"].securityScheme)],
     },
     async (req, res) => {
-      const query = req.query.query ? JSON.parse(req.query.query) : {}
-      const { page, limit } = req.query
-
-
-      const allAppointments = await Appointment.find().limit(2).sort({ created_at: -1 }).lean();
+      const allAppointments = await Appointment.find().limit(2).sort({ _id: -1 }).lean();
 
       const cleMinistereEducatifs: Set<string> = new Set()
       if (allAppointments) {
@@ -65,18 +61,22 @@ export default (server: Server) => {
           throw Boom.internal("Formation non trouvée.")
         }
 
+
         return {
-          ...appointment,
-          formation: {
-            etablissement_gestionnaire_entreprise_raison_sociale: formation?.etablissement_gestionnaire_entreprise_raison_sociale || null,
-            etablissement_formateur_siret: formation?.etablissement_formateur_siret || null,
-          },
-          candidat: {
-            firstname: user.firstname,
-            lastname: user.lastname,
-            email: user.email,
-            phone: user.phone,
-          },
+            created_at: appointment.created_at,
+            applicant_message_to_cfa: appointment.applicant_message_to_cfa,
+            appointment_origin: appointment.appointment_origin,
+            cfa_recipient_email: appointment.cfa_recipient_email,
+            formation: {
+              etablissement_gestionnaire_entreprise_raison_sociale: formation?.etablissement_gestionnaire_entreprise_raison_sociale || null,
+              etablissement_formateur_siret: formation?.etablissement_formateur_siret || null,
+            },
+            candidat: {
+              firstname: user.firstname,
+              lastname: user.lastname,
+              email: user.email,
+              phone: user.phone,
+            },
         }
       })
 

@@ -86,19 +86,22 @@ export const zAppointmentsRoute = {
       response: {
         "2xx": z
           .object({
-            appointments: z.array(ZAppointment.extend({
-                formation: z.object({
-                  etablissement_gestionnaire_entreprise_raison_sociale: z.string().nullable(),
-                  etablissement_formateur_siret: z.string().nullable(),
-                }),
-                candidat: z.object({
-                  firstname: z.string(),
-                  lastname: z.string(),
-                  email: z.string(),
-                  phone: z.string(),
-                })
-              }
-            ))
+            appointments: z.array(z.object({
+              created_at: z.date(),
+              applicant_message_to_cfa: z.string().nullable(),
+              appointment_origin: z.string(),
+              cfa_recipient_email: z.string(),
+              formation: z.object({
+                etablissement_gestionnaire_entreprise_raison_sociale: z.string().nullable(),
+                etablissement_formateur_siret: z.string().nullable(),
+              }),
+              candidat: z.object({
+                firstname: z.string(),
+                lastname: z.string(),
+                email: z.string(),
+                phone: z.string(),
+              })
+            })),
           })
           .strict(),
       },
