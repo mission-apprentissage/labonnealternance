@@ -1,6 +1,5 @@
-export interface IMetiers {
-  metiers?: string[]
-  error?: string
+export type IMetiers = {
+  metiers: string[]
 }
 
 export interface IRomeWithLabel {
@@ -16,27 +15,14 @@ export interface IMetierEnrichi {
   romeTitles?: IRomeWithLabel[]
 }
 
-export interface IError {
-  error: string
-  error_messages?: string[]
+export interface IMetiersEnrichis {
+  labelsAndRomes?: IMetierEnrichi[]
+  labelsAndRomesForDiplomas?: IMetierEnrichi[]
 }
 
-export interface IMetiersEnrichisSuccess {
-  labelsAndRomes: IMetierEnrichi[]
-}
-
-export interface IMetiersEnrichisForDiplomasSuccess {
-  labelsAndRomesForDiplomas: IMetierEnrichi[]
-}
-
-export type IMetiersEnrichis = IMetiersEnrichisSuccess | IError
-export type IMetiersEnrichisForDiplomas = IMetiersEnrichisForDiplomasSuccess | IError
-
-export interface IAppellationsRomesSuccess {
+export interface IAppellationsRomes {
   coupleAppellationRomeMetier: IAppellationRome[]
 }
-
-export type IAppellationsRomes = IAppellationsRomesSuccess | IError
 
 export interface IAppellationRome {
   codeRome: string

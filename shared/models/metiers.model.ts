@@ -8,17 +8,12 @@ export const ZRomeWithLabel = z.object({
 export const ZMetierEnrichi = z.object({
   label: z.string(),
   romes: z.string().array(),
-  rncps: z.string().array().nullish(),
-  type: z.string().nullish(),
-  romeTitles: ZRomeWithLabel.array().nullish(),
+  rncps: z.string().array().nullish().optional(),
+  type: z.string().nullish().optional(),
+  romeTitles: ZRomeWithLabel.array().nullish().optional(),
 })
 
-export const ZMetiersEnrichis = z.object({
-  labelsAndRomes: ZMetierEnrichi.array(),
-  labelsAndRomesForDiplomas: ZMetierEnrichi.array(),
-})
-
-export const ZMetiers = z.object({ metiers: z.string().array() })
+export const ZMetiers = z.object({ metiers: z.string().array() }).strict()
 
 export const ZAppellationRome = z.object({
   codeRome: z.string(),

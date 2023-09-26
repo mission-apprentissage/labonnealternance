@@ -1,9 +1,9 @@
 import { z } from "zod"
 
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
-import { ZAppellationsRomes, ZMetiersEnrichis, ZMetiers } from "../models/metiers.model"
+import { ZAppellationsRomes, ZMetierEnrichi, ZMetiers } from "../models/metiers.model"
 
-import { IRoutesDef, ZResError } from "./common.routes"
+import { IRoutesDef } from "./common.routes"
 
 export const zMetiersRoutes = {
   get: {
@@ -14,8 +14,7 @@ export const zMetiersRoutes = {
         })
         .strict(),
       response: {
-        200: ZMetiers.strict(),
-        500: z.union([ZResError, z.object({ error: z.string() }).strict()]),
+        200: ZMetiers,
       },
       securityScheme: {
         auth: "none",
@@ -29,8 +28,7 @@ export const zMetiersRoutes = {
         })
         .strict(),
       response: {
-        200: ZMetiers.strict(),
-        500: z.union([ZResError, z.object({ error: z.string() }).strict()]),
+        200: ZMetiers,
       },
       securityScheme: {
         auth: "none",
@@ -39,8 +37,7 @@ export const zMetiersRoutes = {
     },
     "/api/v1/metiers/all": {
       response: {
-        200: ZMetiers.strict(),
-        500: z.union([ZResError, z.object({ error: z.string() }).strict()]),
+        200: ZMetiers,
       },
       securityScheme: {
         auth: "none",
@@ -50,17 +47,17 @@ export const zMetiersRoutes = {
     "/api/v1/metiers": {
       querystring: z
         .object({
-          title: z.string().optional(),
-          romes: z.string().optional(),
-          rncps: z.string().optional(),
+          title: z.string(),
+          romes: z.array(z.string()).optional(),
+          rncps: z.array(z.string()).optional(),
         })
         .strict(),
       response: {
-        200: ZMetiersEnrichis.omit({
-          labelsAndRomesForDiplomas: true,
-        }).strict(),
-        400: z.union([ZResError, z.object({ error: z.string() }).strict()]),
-        500: z.union([ZResError, z.object({ error: z.string() }).strict()]),
+        200: z
+          .object({
+            labelsAndRomes: ZMetierEnrichi.array(),
+          })
+          .strict(),
       },
       securityScheme: {
         auth: "none",
@@ -70,13 +67,11 @@ export const zMetiersRoutes = {
     "/api/v1/metiers/intitule": {
       querystring: z
         .object({
-          label: z.string(),
+          label: z.string().nonempty(),
         })
         .strict(),
       response: {
         200: ZAppellationsRomes.strict(),
-        400: z.union([ZResError, z.object({ error: z.string() }).strict()]),
-        500: z.union([ZResError, z.object({ error: z.string() }).strict()]),
       },
       securityScheme: {
         auth: "none",

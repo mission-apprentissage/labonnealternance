@@ -1,6 +1,7 @@
 import querystring from "node:querystring"
 
 import axios, { AxiosInstance } from "axios"
+import Boom from "boom"
 import { got } from "got"
 import * as _ from "lodash-es"
 import { sortBy } from "lodash-es"
@@ -327,10 +328,8 @@ export const getFormationsFromCatalogueMe = async ({
 
 const esClient = getElasticInstance()
 
-export interface IRomeResult {
-  romes?: string[]
-  error?: string
-  message?: string
+export type IRomeResult = {
+  romes: string[]
 }
 
 const getFormationEsQueryIndexFragment = () => {
@@ -380,19 +379,17 @@ const getRomesFromCatalogue = async ({ cfd, siret }: { cfd?: string; siret?: str
       },
     })
 
-    //throw new Error("BOOM");
-    let romes = []
+    const romes: Set<string> = new Set()
 
     responseFormations.body.hits.hits.forEach((formation) => {
-      romes = romes.concat(formation._source.rome_codes)
+      formation._source.rome_codes.forEach((rome) => romes.add(rome))
     })
 
-    const result: IRomeResult = { romes: romes }
+    const result: IRomeResult = { romes: [...romes] }
 
-    if (!romes.length) {
-      result.error = "No training found"
+    if (!result.romes.length) {
+      throw Boom.notFound("No training found")
     }
-
     return result
   } catch (err: any) {
     const error_msg = _.get(err, "meta.body", err.message)
@@ -401,8 +398,7 @@ const getRomesFromCatalogue = async ({ cfd, siret }: { cfd?: string; siret?: str
       console.error("Elastic search is down or unreachable")
     }
     sentryCaptureException(err)
-
-    return { romes: [], error: error_msg, message: error_msg }
+    throw Boom.internal(error_msg)
   }
 }
 
@@ -411,7 +407,7 @@ const getRomesFromCatalogue = async ({ cfd, siret }: { cfd?: string; siret?: str
  * @param {string} cfd
  * @returns {IRomeResult}
  */
-export const getRomesFromCfd = ({ cfd }: { cfd: string }): Promise<IRomeResult> => {
+export const getRomesFromCfd = ({ cfd }: { cfd: string }) => {
   return getRomesFromCatalogue({ cfd })
 }
 
@@ -420,7 +416,7 @@ export const getRomesFromCfd = ({ cfd }: { cfd: string }): Promise<IRomeResult> 
  * @param {string} siret
  * @returns {IRomeResult}
  */
-export const getRomesFromSiret = ({ siret }: { siret: string }): Promise<IRomeResult> => {
+export const getRomesFromSiret = ({ siret }: { siret: string }) => {
   return getRomesFromCatalogue({ siret })
 }
 
