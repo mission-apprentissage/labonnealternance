@@ -1,9 +1,9 @@
 import { mongoosePagination, Pagination } from "mongoose-paginate-ts"
-import { IAppointments } from "shared"
+import { IAppointment } from "shared"
 
 import { model, Schema } from "../../../mongodb"
 
-export const appointmentSchema = new Schema<IAppointments>({
+export const appointmentSchema = new Schema<IAppointment>({
   applicant_id: {
     type: String,
     default: null,
@@ -153,4 +153,4 @@ export const appointmentSchema = new Schema<IAppointments>({
 
 appointmentSchema.plugin(mongoosePagination)
 
-export default model<IAppointments, Pagination<IAppointments>>("appointment", appointmentSchema)
+export default model<IAppointment, Pagination<IAppointment>>("appointment", appointmentSchema)
