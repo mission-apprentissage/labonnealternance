@@ -14,7 +14,7 @@ fileignoreconfig:
 - filename: .infra/env.ini
   checksum: 24332dcab809201ac286e4225a1d861307c291dc4a5e2308b996da2d3547a41c
 - filename: .infra/vault/vault.yml
-  checksum: 171944b26137803ef124182fe78dc33ed701f67b2cb0e04f015de791feb0ed9c
+  checksum: 368eaedcbb0a7e1fb49cb5b4f166691f4653e033822dcc6bc01942fe6a3eeed9
 - filename: server/.env.test
   checksum: 812d70e7fc383abd6942dbaf8691be833d7cd25b13aae6b4bbb2c2da4df6ed51
 - filename: server/src/common/model/constants/referrers.ts
