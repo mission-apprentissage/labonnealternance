@@ -24,7 +24,7 @@ export const ZRecruiter = z.object({
   last_name: z.string().nullish().describe("Nom du contact"),
   first_name: z.string().nullish().describe("Prenom du contact"),
   phone: z.string().nullish().describe("Téléphone du contact"),
-  email: z.string().nullish().describe("Email du contact"),
+  email: z.string().describe("Email du contact"),
   jobs: z.array(ZJob).describe("Liste des offres"),
   origin: z.string().nullish().describe("Origine de la creation de l'établissement"),
   opco: z.string().nullish().describe("Opco de rattachement de l'établissement"),

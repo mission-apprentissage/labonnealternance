@@ -15,9 +15,9 @@ const allJobStatus = Object.values(JOB_STATUS)
 
 export const ZDelegation = z
   .object({
-    siret_code: z.string().nullish().describe("SIRET de l'établissement"),
-    email: z.string().nullish().describe("Email gestionnaire de l'établissement"),
-    cfa_read_company_detail_at: z.date().describe("Date de consultation de l'offre"),
+    siret_code: z.string().describe("SIRET de l'établissement"),
+    email: z.string().describe("Email gestionnaire de l'établissement"),
+    cfa_read_company_detail_at: z.date().nullish().describe("Date de consultation de l'offre"),
   })
   .strict()
 
@@ -47,7 +47,7 @@ export const ZJob = z
     is_multi_published: z.boolean().nullish().describe("Definit si l'offre est diffusée sur d'autres jobboard que La bonne alternance"),
     is_delegated: z.boolean().describe("Definit si l'entreprise souhaite déléguer l'offre à un CFA"),
     job_delegation_count: z.number().describe("Nombre de délégations"),
-    delegations: z.array(ZDelegation).describe("Liste des délégations"),
+    delegations: z.array(ZDelegation).nullish().describe("Liste des délégations"),
     is_disabled_elligible: z.boolean().describe("Poste ouvert aux personnes en situation de handicap"),
     job_count: z.number().nullish().describe("Nombre de poste(s) ouvert(s) pour cette offre"),
     job_duration: z.number().nullish().describe("Durée du contrat en année"),

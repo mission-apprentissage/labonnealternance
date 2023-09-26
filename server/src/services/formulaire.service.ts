@@ -1,8 +1,9 @@
+import Boom from "boom"
 import { pick } from "lodash-es"
 import moment from "moment"
-import { Filter } from "mongodb"
+import { Filter, ObjectId } from "mongodb"
 import { ModelUpdateOptions, UpdateQuery } from "mongoose"
-import { IJob, IRecruiter, IUserRecruteur } from "shared"
+import { IDelegation, IJob, IRecruiter, IUserRecruteur } from "shared"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
@@ -183,7 +184,7 @@ export const getJobsFromElasticSearch = async ({
  * @param {IJob["_id"]} id
  * @returns {Promise<IFormulaireExtended>}
  */
-export const getOffreAvecInfoMandataire = async (id: string): Promise<IFormulaireExtended> => {
+export const getOffreAvecInfoMandataire = async (id: string | ObjectId): Promise<IFormulaireExtended> => {
   const result = await getOffre(id)
 
   if (!result) {
@@ -284,16 +285,23 @@ export const createJob = async ({ job, id }: { job: Partial<IOffreExtended>; id:
  * @param {string[]} payload.etablissementCatalogueIds
  * @returns {Promise<IRecruiter>}
  */
-export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }: { jobId: IJob["_id"]; etablissementCatalogueIds: string[] }): Promise<IRecruiter> => {
+export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }: { jobId: string | ObjectId; etablissementCatalogueIds: string[] }): Promise<IRecruiter> => {
   const offreDocument = await getOffre(jobId)
   const userDocument = await getUser({ establishment_id: offreDocument.establishment_id })
+  if (!userDocument) {
+    throw Boom.internal("User not found", { jobId, etablissementCatalogueIds })
+  }
   const userState = userDocument.status.pop()
 
-  const offre = offreDocument.jobs.find((job) => job._id.toString() === jobId)
+  const offre = offreDocument.jobs.find((job) => job._id.toString() === jobId.toString())
+
+  if (!offre) {
+    throw Boom.internal("Offre not found", { jobId, etablissementCatalogueIds })
+  }
 
   const { etablissements } = await getCatalogueEtablissements({ _id: { $in: etablissementCatalogueIds } }, { _id: 1 })
 
-  const delegations = []
+  const delegations: IDelegation[] = []
 
   const promises = etablissements.map(async (etablissement) => {
     const formations = await getCatalogueFormations(
@@ -312,11 +320,16 @@ export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }:
       { etablissement_gestionnaire_courriel: 1, etablissement_formateur_siret: 1 }
     )
 
-    const { etablissement_formateur_siret: siret_code, etablissement_gestionnaire_courriel: email } = formations[0]
+    const { etablissement_formateur_siret: siret_code, etablissement_gestionnaire_courriel: email } = formations[0] ?? {}
+
+    if (!email || !siret_code) {
+      // This shouldn't happen considering the query filter
+      throw Boom.internal("Unexpected etablissement_gestionnaire_courriel", { jobId, etablissementCatalogueIds })
+    }
 
     delegations.push({ siret_code, email })
 
-    if (userState.status === ETAT_UTILISATEUR.VALIDE) {
+    if (userState?.status === ETAT_UTILISATEUR.VALIDE) {
       await sendDelegationMailToCFA(email, offre, offreDocument, siret_code)
     }
   })
@@ -324,7 +337,7 @@ export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }:
   await Promise.all(promises)
 
   offre.is_delegated = true
-  offre.delegations = offre?.delegations.concat(delegations) || delegations
+  offre.delegations = offre.delegations?.concat(delegations) ?? delegations
   offre.job_delegation_count = offre.delegations.length
 
   return updateOffre(jobId, offre)
@@ -356,11 +369,9 @@ export const createFormulaire = async (payload: Partial<Omit<IRecruiter, "_id" |
   await Recruiter.create(payload)
 
 /**
- * @description Remove formulaire by id
- * @param {IRecruiter["establishment_id"]} id
- * @returns {Promise<IRecruiter>}
+ * Remove formulaire by id
  */
-export const deleteFormulaire = async (id: IRecruiter["_id"]): Promise<IRecruiter> => await Recruiter.findByIdAndDelete(id)
+export const deleteFormulaire = async (id: IRecruiter["_id"]): Promise<IRecruiter | null> => await Recruiter.findByIdAndDelete(id)
 
 /**
  * @description Remove all formulaires belonging to gestionnaire
@@ -377,8 +388,13 @@ export const deleteFormulaireFromGestionnaire = async (siret: IUserRecruteur["es
  * @param {ModelUpdateOptions} [options={new:true}]
  * @returns {Promise<IRecruiter>}
  */
-export const updateFormulaire = async (id: IRecruiter["establishment_id"], payload: UpdateQuery<IRecruiter>, options: ModelUpdateOptions = { new: true }): Promise<IRecruiter> =>
-  await Recruiter.findOneAndUpdate({ establishment_id: id }, payload, options)
+export const updateFormulaire = async (id: IRecruiter["establishment_id"], payload: UpdateQuery<IRecruiter>): Promise<IRecruiter> => {
+  const recruiter = await Recruiter.findOneAndUpdate({ establishment_id: id }, payload, { new: true })
+  if (!recruiter) {
+    throw Boom.internal("Recruiter not found")
+  }
+  return recruiter
+}
 
 /**
  * @description Archive existing formulaire and cancel all its job offers
@@ -386,15 +402,18 @@ export const updateFormulaire = async (id: IRecruiter["establishment_id"], paylo
  * @returns {Promise<boolean>}
  */
 export const archiveFormulaire = async (id: IRecruiter["establishment_id"]): Promise<boolean> => {
-  const form = await Recruiter.findOne({ establishment_id: id })
+  const recruiter = await Recruiter.findOne({ establishment_id: id })
+  if (!recruiter) {
+    throw Boom.internal("Recruiter not found")
+  }
 
-  form.status = RECRUITER_STATUS.ARCHIVE
+  recruiter.status = RECRUITER_STATUS.ARCHIVE
 
-  form.jobs.map((job) => {
+  recruiter.jobs.map((job) => {
     job.job_status = JOB_STATUS.ANNULEE
   })
 
-  await form.save()
+  await recruiter.save()
 
   return true
 }
@@ -405,9 +424,12 @@ export const archiveFormulaire = async (id: IRecruiter["establishment_id"]): Pro
  * @returns {Promise<boolean>}
  */
 export const reactivateRecruiter = async (id: IRecruiter["establishment_id"]): Promise<boolean> => {
-  const form = await Recruiter.findOne({ establishment_id: id })
-  form.status = RECRUITER_STATUS.ACTIF
-  await form.save()
+  const recruiter = await Recruiter.findOne({ establishment_id: id })
+  if (!recruiter) {
+    throw Boom.internal("Recruiter not found")
+  }
+  recruiter.status = RECRUITER_STATUS.ACTIF
+  await recruiter.save()
   return true
 }
 
@@ -419,7 +441,7 @@ export const reactivateRecruiter = async (id: IRecruiter["establishment_id"]): P
 export const archiveDelegatedFormulaire = async (siret: IUserRecruteur["establishment_siret"]): Promise<boolean> => {
   const formulaires = await Recruiter.find({ cfa_delegated_siret: siret }).lean()
 
-  if (!formulaires.length) return
+  if (!formulaires.length) return false
 
   await asyncForEach(formulaires, async (form: IRecruiter) => {
     form.status = RECRUITER_STATUS.ARCHIVE
@@ -439,19 +461,21 @@ export const archiveDelegatedFormulaire = async (siret: IUserRecruteur["establis
  * @param {IJob["_id"]} id
  * @returns {Promise<IFormulaireExtended>}
  */
-export async function getOffre(id: IJob["_id"]): Promise<IFormulaireExtended> {
+export async function getOffre(id: string | ObjectId): Promise<IFormulaireExtended> {
   return Recruiter.findOne({ "jobs._id": id }).lean()
 }
 
 /**
- * @description Create job offer on existing formulaire
- * @param {IRecruiter["establishment_id"]} id
- * @param {UpdateQuery<IJob>} payload
- * @param {ModelUpdateOptions} [options={new:true}]
- * @returns {Promise<IRecruiter>}
+ * Create job offer on existing formulaire
  */
-export async function createOffre(id: IRecruiter["establishment_id"], payload: UpdateQuery<IJob>, options: ModelUpdateOptions = { new: true }): Promise<IRecruiter> {
-  return Recruiter.findOneAndUpdate({ establishment_id: id }, { $push: { jobs: payload } }, options)
+export async function createOffre(id: IRecruiter["establishment_id"], payload: UpdateQuery<IJob>): Promise<IRecruiter> {
+  const recruiter = await Recruiter.findOneAndUpdate({ establishment_id: id }, { $push: { jobs: payload } }, { new: true })
+
+  if (!recruiter) {
+    throw Boom.internal("Recruiter not found")
+  }
+
+  return recruiter
 }
 
 /**
@@ -460,16 +484,21 @@ export async function createOffre(id: IRecruiter["establishment_id"], payload: U
  * @param {object} payload
  * @returns {Promise<IRecruiter>}
  */
-export async function updateOffre(id: IJob["_id"], payload: UpdateQuery<IJob>, options: ModelUpdateOptions = { new: true }): Promise<IRecruiter> {
-  return Recruiter.findOneAndUpdate(
+export async function updateOffre(id: string | ObjectId, payload: UpdateQuery<IJob>): Promise<IRecruiter> {
+  const recruiter = await Recruiter.findOneAndUpdate(
     { "jobs._id": id },
     {
       $set: {
         "jobs.$": payload,
       },
     },
-    options
+    { new: true }
   )
+  if (!recruiter) {
+    throw Boom.internal("Recruiter not found")
+  }
+
+  return recruiter
 }
 
 /**
@@ -480,13 +509,19 @@ export async function updateOffre(id: IJob["_id"], payload: UpdateQuery<IJob>, o
  */
 export const incrementLbaJobViewCount = async (id: IJob["_id"], payload: object, options: ModelUpdateOptions = { new: true }): Promise<IRecruiter> => {
   const incPayload = Object.fromEntries(Object.entries(payload).map(([key, value]) => [`jobs.$.${key}`, value]))
-  return Recruiter.findOneAndUpdate(
+  const recruiter = await Recruiter.findOneAndUpdate(
     { "jobs._id": id },
     {
       $inc: incPayload,
     },
     options
   )
+
+  if (!recruiter) {
+    throw Boom.internal("Recruiter not found")
+  }
+
+  return recruiter
 }
 
 /**
@@ -501,13 +536,19 @@ export const patchOffre = async (id: IJob["_id"], payload: UpdateQuery<IJob>, op
     fields[`jobs.$.${key}`] = payload[key]
   }
 
-  return Recruiter.findOneAndUpdate(
+  const recruiter = await Recruiter.findOneAndUpdate(
     { "jobs._id": id },
     {
       $set: fields,
     },
     options
   )
+
+  if (!recruiter) {
+    throw Boom.internal("Recruiter not found")
+  }
+
+  return recruiter
 }
 
 /**
@@ -565,19 +606,17 @@ export const extendOffre = async (id: IJob["_id"]): Promise<boolean> => {
 
 /**
  * @description Get job offer by its id.
- * @param {IJob["_id"]} id - Job id
- * @returns {Promise<IJob>}
  */
-export const getJob = async (id: IJob["_id"]): Promise<IJob> => {
+export const getJob = async (id: string | ObjectId): Promise<IJob | null> => {
   const offre = await getOffre(id)
 
-  return offre.jobs.find((job) => job._id.toString() == id)
+  return offre.jobs.find((job) => job._id.toString() === id.toString()) ?? null
 }
 
 /**
  * @description Sends the mail informing the CFA that a company wants the CFA to handle the offer.
  */
-export async function sendDelegationMailToCFA(email: string, offre: IJob, recruiter: { establishment_raison_sociale: string; establishment_id: string }, siret_code: string) {
+export async function sendDelegationMailToCFA(email: string, offre: IJob, recruiter: IRecruiter, siret_code: string) {
   const unsubscribeOF = await UnsubscribeOF.findOne({ establishment_siret: siret_code })
   if (unsubscribeOF) return
   await mailer.sendEmail({

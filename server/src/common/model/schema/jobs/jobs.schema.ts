@@ -102,12 +102,12 @@ export const jobsSchema = new Schema<IJob>({
       properties: {
         siret_code: {
           type: String,
-          default: null,
+          require: true,
           description: "SIRET de l'établissement",
         },
         email: {
           type: String,
-          default: null,
+          require: true,
           description: "Email gestionnaire de l'établissement",
         },
         cfa_read_company_detail_at: {
