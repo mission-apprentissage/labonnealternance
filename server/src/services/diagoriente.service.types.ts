@@ -1,6 +1,5 @@
 export interface ISuggestionMetiersDavenir {
   suggestionsMetiersDavenir?: IMetierDavenir[]
-  error?: string
 }
 
 export interface IMetierDavenir {

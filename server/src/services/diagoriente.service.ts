@@ -1,6 +1,6 @@
 import axios from "axios"
+import Boom from "boom"
 
-import { sentryCaptureException } from "../common/utils/sentryUtils"
 import config from "../config"
 
 import dayjs from "./dayjs.service"
@@ -54,9 +54,8 @@ export const getMetiersDAvenir = async (): Promise<ISuggestionMetiersDavenir> =>
     )
     return data.data
   } catch (error) {
-    sentryCaptureException(error)
-    return {
-      error: "Error fetching suggestionsMetiersAvenir",
-    }
+    const newError = Boom.internal("Error fetching suggestionsMetiersAvenir")
+    newError.cause = error
+    throw newError
   }
 }

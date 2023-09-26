@@ -11,13 +11,6 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const result = await getMetiersDAvenir()
-
-      if (result.error) {
-        res.status(500)
-      } else {
-        res.status(201)
-      }
-
       return res.send(result)
     }
   )
