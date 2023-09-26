@@ -18,10 +18,12 @@ export const jobsSchema = new Schema<IJob>({
   },
   job_description: {
     type: String,
+    default: null,
     description: "Description de l'offre d'alternance",
   },
   job_employer_description: {
     type: String,
+    default: null,
     description: "Description de l'employer proposant l'offre d'alternance",
   },
   rome_code: {
@@ -31,6 +33,7 @@ export const jobsSchema = new Schema<IJob>({
   },
   rome_detail: {
     type: Object,
+    default: null,
     description: "Détail du code ROME selon la nomenclature Pole emploi",
   },
   job_creation_date: {
@@ -50,6 +53,7 @@ export const jobsSchema = new Schema<IJob>({
   },
   job_last_prolongation_date: {
     type: Date,
+    default: null,
     description: "Date de dernière prolongation de l'offre",
   },
   job_prolongation_count: {
@@ -85,6 +89,7 @@ export const jobsSchema = new Schema<IJob>({
   },
   is_delegated: {
     type: Boolean,
+    require: true,
     description: "Definit si l'entreprise souhaite déléguer l'offre à un CFA",
   },
   job_delegation_count: {

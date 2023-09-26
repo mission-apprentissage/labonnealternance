@@ -4,13 +4,13 @@ import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 
 export const ZLbaCompany = z
   .object({
-    siret: z.string().nullable().describe("Le Siret de la société"),
+    siret: z.string().describe("Le Siret de la société"),
     recruitment_potential: z.number().describe("Le score de recrutement de la société"),
     raison_sociale: z.string().nullable().describe("Raison sociale de l'entreprise"),
-    enseigne: z.string().nullable().describe("Enseigne de l'entreprise"),
-    naf_code: z.string().nullable().describe("Code NAF de l'entreprise"),
-    naf_label: z.string().nullable().describe("Intitulé du code NAF"),
-    rome_codes: z.array(z.string()).nullable().describe("Liste des codes ROMEs au sein de l'entreprise"),
+    enseigne: z.string().describe("Enseigne de l'entreprise"),
+    naf_code: z.string().describe("Code NAF de l'entreprise"),
+    naf_label: z.string().describe("Intitulé du code NAF"),
+    rome_codes: z.array(z.string()).describe("Liste des codes ROMEs au sein de l'entreprise"),
     street_number: z.string().nullable().describe("Numéro dans la rue"),
     street_name: z.string().nullable().describe("Nom de la rue"),
     insee_city_code: z.string().nullable().describe("Code commune INSEE"),

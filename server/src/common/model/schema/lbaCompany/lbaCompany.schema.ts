@@ -6,7 +6,7 @@ import { Schema, model } from "../../../mongodb"
 export const lbaCompanySchema = new Schema<ILbaCompany>({
   siret: {
     type: String,
-    default: null,
+    require: true,
     description: "Le Siret de la société",
     index: true,
   },
@@ -22,7 +22,7 @@ export const lbaCompanySchema = new Schema<ILbaCompany>({
   },
   enseigne: {
     type: String,
-    default: null,
+    require: true,
     description: "Enseigne de l'entreprise",
   },
   naf_code: {
@@ -37,7 +37,7 @@ export const lbaCompanySchema = new Schema<ILbaCompany>({
   },
   rome_codes: {
     type: [String],
-    default: null,
+    default: [],
     description: "Liste des codes ROMEs au sein de l'entreprise",
   },
   street_number: {
