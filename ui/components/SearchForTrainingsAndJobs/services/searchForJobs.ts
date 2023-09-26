@@ -22,7 +22,6 @@ export const searchForJobsFunction = async ({
   selectFollowUpItem,
   opcoFilter,
   opcoUrlFilter,
-  useMock,
   showCombinedJob,
 }) => {
   setIsJobSearchLoading(true)
@@ -46,7 +45,6 @@ export const searchForJobsFunction = async ({
         diploma: values.diploma,
         opco: opcoFilter,
         opcoUrl: opcoUrlFilter,
-        useMock: useMock,
       },
     })
 

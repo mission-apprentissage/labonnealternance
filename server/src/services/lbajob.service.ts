@@ -1,10 +1,11 @@
 import { IJob, IRecruiter } from "shared"
+import { ObjectId } from "mongodb"
+import { IRecruiter } from "shared"
 
 import { encryptMailWithIV } from "../common/utils/encryptString"
 import { manageApiError } from "../common/utils/errorManager"
 import { roundDistance } from "../common/utils/geolib"
 import { trackApiCall } from "../common/utils/sendTrackingEvent"
-import { matchaMock, matchaMockMandataire, matchasMock } from "../mocks/matchas-mock"
 
 import { IApplicationCount, getApplicationByJobCount } from "./application.service"
 import { JOB_STATUS, NIVEAUX_POUR_LBA, RECRUITER_STATUS } from "./constant.service"
@@ -17,17 +18,6 @@ const coordinatesOfFrance = [2.213749, 46.227638]
 
 /**
  * Retourne les offres LBA correspondantes aux critères de recherche
- * @param {string} romes une liste de codes romes séparée par des virgules
- * @param {number} radius optionnel: le rayon de recherche pour une recherche centrée sur un point géographique
- * @param {string} latitude optionnel: la latitude du centre de recherche
- * @param {string} longitude optionnel: la longitude du centre de recherche
- * @param {string} api le nom de l'api à des fins de traçage des actions
- * @param {string} opco optionnel: le nom d'un opco pour ne retourner que les offres des sociétés affiliées à cet opco
- * @param {string} opcoUrl optionnel: l'url d'un opco pour ne retourner que les offres des sociétés affiliées à cet opcoUrl
- * @param {string} diploma optionnel: un fitre pour ne remonter ques les offres aboutissant à l'obtention du diplôme
- * @param {string} caller optionnel: l'identifiant de l'utilisateur de l'api
- * @param {string} useMock optionnel: un flag indiquant s'il faut retourner une valeur réelle ou une valeur mockée
- * @returns {Promise<TLbaItemResult>}
  */
 export const getLbaJobs = async ({
   romes = "",
@@ -39,7 +29,6 @@ export const getLbaJobs = async ({
   opcoUrl,
   diploma,
   caller,
-  useMock,
 }: {
   romes?: string
   radius?: number
@@ -50,8 +39,7 @@ export const getLbaJobs = async ({
   opcoUrl?: string
   diploma?: string
   caller?: string
-  useMock?: string
-}) => {
+}): Promise<TLbaItemResult> => {
   if (radius === 0) {
     radius = 10
   }
@@ -71,7 +59,7 @@ export const getLbaJobs = async ({
       params.niveau = NIVEAUX_POUR_LBA[diploma]
     }
 
-    const jobs = useMock === "true" ? matchasMock : await getJobsFromElasticSearch(params)
+    const jobs = await getJobsFromElasticSearch(params)
 
     const ids: string[] = jobs.flatMap(({ _source }) => (_source?.jobs ? _source.jobs.map(({ _id }) => _id.toString()) : []))
 
@@ -118,20 +106,10 @@ function transformLbaJobs({ jobs, caller, applicationCountByJob }: { jobs: ILbaJ
 
 /**
  * Retourne une offre LBA identifiée par son id
- * @param {string} id l'identifiant mongo de l'offre LBA
- * @param {string} caller optionnel. l'identifiant de l'utilisateur de l'api
- * @return {Promise<IApiError | { matchas: ILbaItem[] }>}
  */
 export const getLbaJobById = async ({ id, caller }: { id: string; caller?: string }) => {
   try {
-    let rawJob
-    if (id === "id-matcha-test") {
-      rawJob = matchaMock._source
-    } else if (id === "id-matcha-test2") {
-      rawJob = matchaMockMandataire._source
-    } else {
-      rawJob = await getOffreAvecInfoMandataire(id)
-    }
+    const rawJob = await getOffreAvecInfoMandataire(id)
 
     if (!rawJob) {
       return { error: "not_found" }
@@ -139,7 +117,7 @@ export const getLbaJobById = async ({ id, caller }: { id: string; caller?: strin
 
     const applicationCountByJob = await getApplicationByJobCount([id])
 
-    const job = transformLbaJob({
+    const job: ILbaItem = transformLbaJob({
       job: rawJob,
       caller,
       applicationCountByJob,
@@ -287,7 +265,6 @@ export const addOffreDetailView = async (jobId: IJob["_id"]) => {
 
 /**
  * Incrémente le compteur de vue de la page de recherche d'une offre LBA
- * @param {string} jobId
  */
 export const addOffreSearchView = async (jobId: IJob["_id"]) => {
   await incrementLbaJobViewCount(jobId, {

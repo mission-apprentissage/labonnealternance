@@ -97,7 +97,6 @@ export const zV1JobsRoutes = {
           diploma: z.string().optional(),
           opco: z.string().optional(),
           opcoUrl: z.string().optional(),
-          useMock: z.boolean().optional(), // hidden
         })
         .strict(),
       headers: z

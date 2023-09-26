@@ -18,7 +18,6 @@ export const zV1FormationsRoutes = {
           radius: z.coerce.number().optional(),
           diploma: z.string().optional(),
           options: z.string().optional(),
-          useMock: z.boolean().optional(),
         })
         .strict(),
       headers: z

@@ -34,7 +34,6 @@ export const zRomeRoutes = {
       querystring: z
         .object({
           title: z.string(),
-          useMock: z.coerce.boolean().optional(),
           withRomeLabels: z.coerce.boolean().optional(),
         })
         .strict(),

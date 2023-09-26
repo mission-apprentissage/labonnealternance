@@ -3,34 +3,17 @@ import * as _ from "lodash-es"
 import { matchSorter } from "match-sorter"
 
 import { getElasticInstance } from "../common/esClient/index"
-import { mockedLabelsAndRomes } from "../mocks/labelsAndRomes-mock"
 
 import { getRomesFromCfd, getRomesFromSiret } from "./catalogue.service"
 import { IAppellationsRomes, IMetierEnrichi, IMetiers, IMetiersEnrichis } from "./metiers.service.types"
 
 /**
  * Retourne un ensemble de métiers et/ou diplômes et leurs codes romes et rncps associés en fonction de terme de recherches
- * @param {string} title : le terme de recherche (préfixe | mot entier | plusieurs mots ou préfixes)
- * @param {string} withRomeLabels : (optionel) flag indiquant qu'il faut également retourner les libellé associés aux codes romes
- * @param {string} useMock : (optionel) flag indiquant qu'il faut retourner des données mockées
  */
-export const getRomesAndLabelsFromTitleQuery = async ({
-  title,
-  useMock,
-  withRomeLabels,
-}: {
-  title: string
-  useMock?: boolean
-  withRomeLabels?: boolean
-}): Promise<IMetiersEnrichis> => {
-  if (useMock) {
-    // mock case
-    return mockedLabelsAndRomes
-  } else {
-    // nominal case
-    const [romesMetiers, romesDiplomes] = await Promise.all([getLabelsAndRomes(title, withRomeLabels), getLabelsAndRomesForDiplomas(title)])
-    return { ...romesMetiers, ...romesDiplomes }
-  }
+export const getRomesAndLabelsFromTitleQuery = async ({ title, withRomeLabels }: { title: string; withRomeLabels?: boolean }): Promise<IMetiersEnrichis> => {
+  // nominal case
+  const [romesMetiers, romesDiplomes] = await Promise.all([getLabelsAndRomes(title, withRomeLabels), getLabelsAndRomesForDiplomas(title)])
+  return { ...romesMetiers, ...romesDiplomes }
 }
 
 const getMultiMatchTerm = (term) => {

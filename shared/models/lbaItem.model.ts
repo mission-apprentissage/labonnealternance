@@ -103,7 +103,7 @@ export const ZLbaItem = z.object({
   cfd: z.string().nullable(), // formation -> cfd
   rncpCode: z.string().nullable(), // formation -> rncp_code
   rncpLabel: z.string().nullable(), // formation -> rncp_intitule
-  rncpEligibleApprentissage: z.string().nullable(), // formation -> rncp_eligible_apprentissage
+  rncpEligibleApprentissage: z.boolean().nullable(), // formation -> rncp_eligible_apprentissage
   period: z.string().nullable(), // formation -> periode
   capacity: z.string().nullable(), // formation -> capacite
   onisepUrl: z.string().nullable(), // formation -> onisep_url

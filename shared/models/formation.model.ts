@@ -120,7 +120,7 @@ export const zFormationCatalogueSchema = z
     onisep_domaine_sousdomaine: z.string(),
     rncp_code: z.string(),
     rncp_intitule: z.string(),
-    rncp_eligible_apprentissage: z.boolean(),
+    rncp_eligible_apprentissage: z.boolean().nullish(),
     rncp_details: z.record(z.unknown()), // Assuming rncp_details is an object
     rome_codes: z.array(z.string()),
     capacite: z.string(),

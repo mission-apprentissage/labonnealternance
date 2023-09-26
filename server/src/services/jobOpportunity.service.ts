@@ -28,7 +28,6 @@ export const getJobsFromApi = async ({
   diploma,
   opco,
   opcoUrl,
-  useMock,
   api = "jobV1/jobs",
 }: {
   romes?: string
@@ -42,7 +41,6 @@ export const getJobsFromApi = async ({
   diploma?: string
   opco?: string
   opcoUrl?: string
-  useMock?: boolean
   api?: string
 }): Promise<
   | IApiError
@@ -80,7 +78,6 @@ export const getJobsFromApi = async ({
             api,
             opco,
             opcoUrl,
-            useMock,
           })
         : null,
       jobSources.includes("matcha")
@@ -94,7 +91,6 @@ export const getJobsFromApi = async ({
             diploma,
             opco,
             opcoUrl,
-            useMock,
           })
         : null,
     ])

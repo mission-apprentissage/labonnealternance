@@ -32,7 +32,7 @@ class GeoData {
 
     if (!zip_code) {
       console.log(`No zipcode for establishment.\t${this.getAddress(street_number, type_voie, street_name, zip_code, city)}`)
-      return false
+      return null
     }
 
     let responseApiAdresse
@@ -50,12 +50,12 @@ class GeoData {
     }
 
     if (!responseApiAdresse) {
-      return false
+      return null
     }
 
     if (responseApiAdresse.features.length === 0) {
       console.log(`No geoloc result for establishment.\t${this.getAddress(street_number, type_voie, street_name, zip_code, city)}`)
-      return false
+      return null
     }
 
     const geojson = { ...responseApiAdresse }
@@ -67,7 +67,7 @@ class GeoData {
         zip_code: geojson.features[0].properties.postcode,
       }
     } else {
-      return false
+      return null
     }
   }
 }

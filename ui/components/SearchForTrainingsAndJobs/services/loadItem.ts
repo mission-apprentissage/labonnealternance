@@ -24,7 +24,6 @@ export const loadItem = async ({
   setJobs,
   setJobMarkers,
   factorJobsForMap,
-  useMock,
 }) => {
   try {
     setHasSearch(true)
@@ -33,7 +32,7 @@ export const loadItem = async ({
     let itemMarker = null
 
     if (item.type === "training") {
-      const response = await axios.get(`${trainingApi}/${!useMock ? encodeURIComponent(item.itemId) : "id-formation-test"}`)
+      const response = await axios.get(`${trainingApi}/${encodeURIComponent(item.itemId)}`)
 
       if (response.data.result === "error") {
         logError("Training Search Error", `${response.data.message}`)
@@ -113,7 +112,7 @@ export const loadItem = async ({
           break
         }
         case "matcha": {
-          const matchaUrl = `${matchaApi}/${!useMock ? item.itemId : "id-matcha-test"}`
+          const matchaUrl = `${matchaApi}/${item.itemId}`
           const response = await axios.get(matchaUrl)
 
           // gestion des erreurs

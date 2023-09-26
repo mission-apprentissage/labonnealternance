@@ -14,7 +14,6 @@ import { trackApiCall } from "../common/utils/sendTrackingEvent"
 import { sentryCaptureException } from "../common/utils/sentryUtils"
 import { notifyToSlack } from "../common/utils/slackUtils"
 import config from "../config"
-import { formationDetailMock, formationMock, formationsMock } from "../mocks/formations-mock"
 
 import type { IFormationEsResult } from "./formation.service.types"
 import type { ILbaItem, ILbaItemTrainingSession } from "./lbaitem.shared.service.types"
@@ -41,17 +40,6 @@ const getDiplomaIndexName = (value) => {
 
 /**
  * Récupère les formations matchant les critères en paramètre depuis Elasticsearch
- * @param {string[]} romes un tableau de codes ROME
- * @param {string} romeDomain un domaine de ROME
- * @param {[number, number]} coords des coordonnées au format [longitude,latitude] pour centrer la recherche
- * @param {number} radius le rayon de recherche
- * @param {string} diploma le niveau de diplôme visé
- * @param {number} limit le nombre de résultats max à produire
- * @param {string} caller l'identifiant fourni par l'exploitant de l'api
- * @param {string} api le nom de l'api liée à cette fonction
- * @param {string[]} options un tableau d'options modulant la recherche
- * @param {string} useMock un flag indiquant s'il faut retourner des données mockées ou non
- * @returns {Promise<IFormationEsResult[]>}
  */
 export const getFormations = async ({
   romes,
@@ -61,7 +49,6 @@ export const getFormations = async ({
   diploma,
   limit = 10,
   options,
-  useMock,
 }: {
   romes?: string[]
   romeDomain?: string
@@ -72,13 +59,8 @@ export const getFormations = async ({
   caller?: string
   api?: string
   options: string[]
-  useMock?: boolean
 }): Promise<IFormationEsResult[]> => {
   try {
-    if (useMock) {
-      return formationsMock
-    }
-
     const distance = radius || 30
 
     const latitude = coords?.at(1)
@@ -185,13 +167,7 @@ export const getFormations = async ({
  * @returns {Promise<IApiError | IFormationEsResult[]>}
  */
 const getFormation = async ({ id }: { id: string; caller?: string }): Promise<IFormationEsResult[]> => {
-  let formation
-
-  if (id === "id-formation-test") {
-    formation = formationMock
-  } else {
-    formation = await FormationCatalogue.findOne({ cle_ministere_educatif: id })
-  }
+  const formation = await FormationCatalogue.findOne({ cle_ministere_educatif: id })
 
   if (formation) {
     return [{ source: formation }]
@@ -303,17 +279,6 @@ const getRegionFormations = async ({
 
 /**
  * Tente de récupérer des formations dans le rayon de recherche, si sans succès cherche les maxOutLimitFormation les plus proches du centre de recherche
- * @param {string[]} romes un tableau de codes ROME
- * @param {string} romeDomain un domaine de ROME
- * @param {[number, number]} coords des coordonnées au format [longitude,latitude] pour centrer la recherche
- * @param {number} radius le rayon de recherche
- * @param {string} diploma le niveau de diplôme visé
- * @param {number} limit le nombre de résultats max à produire
- * @param {string} caller l'identifiant fourni par l'exploitant de l'api
- * @param {string} api le nom de l'api liée à cette fonction
- * @param {string[]} options un tableau d'options modulant la recherche
- * @param {string} useMock un flag indiquant s'il faut retourner des données mockées ou non
- * @returns {Promise<ILbaItem[]>}
  */
 const getAtLeastSomeFormations = async ({
   romes,
@@ -324,7 +289,6 @@ const getAtLeastSomeFormations = async ({
   maxOutLimitFormation,
   caller,
   options,
-  useMock,
 }: {
   romes?: string[]
   romeDomain?: string
@@ -334,7 +298,6 @@ const getAtLeastSomeFormations = async ({
   maxOutLimitFormation: number
   caller?: string
   options: string[]
-  useMock?: boolean
 }): Promise<ILbaItem[]> => {
   let rawEsFormations: IFormationEsResult[]
   let currentRadius = radius
@@ -349,7 +312,6 @@ const getAtLeastSomeFormations = async ({
     limit: formationLimit,
     caller,
     options,
-    useMock,
   })
 
   // si pas de résultat on étend le rayon de recherche et on réduit le nombre de résultats autorisés
@@ -365,7 +327,6 @@ const getAtLeastSomeFormations = async ({
       limit: formationLimit,
       caller,
       options,
-      useMock,
     })
   }
 
@@ -570,7 +531,6 @@ export const getFormationsQuery = async ({
   romeDomain,
   caller,
   options,
-  useMock,
   referer,
   api = "formationV1",
 }: {
@@ -582,11 +542,10 @@ export const getFormationsQuery = async ({
   romeDomain?: string
   caller?: string
   options?: string
-  useMock?: boolean
   referer?: string
   api?: string
 }): Promise<IApiError | { results: ILbaItem[] }> => {
-  const parameterControl = await formationsQueryValidator({ romes, longitude, latitude, radius, diploma, romeDomain, caller, referer, useMock })
+  const parameterControl = await formationsQueryValidator({ romes, longitude, latitude, radius, diploma, romeDomain, caller, referer })
 
   if ("error" in parameterControl) {
     return parameterControl
@@ -601,7 +560,6 @@ export const getFormationsQuery = async ({
       maxOutLimitFormation: 5,
       romeDomain,
       caller,
-      useMock,
       options: options ? options.split(",") : [],
     })
 
@@ -689,13 +647,7 @@ const removeEmailFromLBFData = (data: any): any => {
  */
 export const getFormationDescriptionQuery = async ({ id }: { id: string }): Promise<IApiError | any> => {
   try {
-    let formationDescription
-
-    if (id === "id-formation-test") {
-      formationDescription = formationDetailMock
-    } else {
-      formationDescription = await axios.get(`${lbfDescriptionUrl}?${getLbfQueryParams(id)}`)
-    }
+    const formationDescription = await axios.get(`${lbfDescriptionUrl}?${getLbfQueryParams(id)}`)
 
     return removeEmailFromLBFData(formationDescription.data)
   } catch (error) {
@@ -723,7 +675,6 @@ export const getFormationsParRegionQuery = async ({
   caller,
   options,
   referer,
-  useMock,
 }: {
   romes?: string
   departement?: string
@@ -733,9 +684,8 @@ export const getFormationsParRegionQuery = async ({
   caller?: string
   options?: string
   referer?: string
-  useMock?: boolean
 }): Promise<IApiError | { results: ILbaItem[] }> => {
-  const queryValidationResult = formationsRegionQueryValidator({ romes, departement, region, diploma, romeDomain, caller, referer, useMock })
+  const queryValidationResult = formationsRegionQueryValidator({ romes, departement, region, diploma, romeDomain, caller, referer })
 
   if ("error" in queryValidationResult) {
     return queryValidationResult

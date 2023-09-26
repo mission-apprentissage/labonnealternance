@@ -23,8 +23,8 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { referer } = req.headers
-      const { romes, romeDomain, caller, latitude, longitude, radius, diploma, options, useMock } = req.query
-      const result = await getFormationsQuery({ romes, longitude, latitude, radius, diploma, romeDomain, caller, options, referer, useMock })
+      const { romes, romeDomain, caller, latitude, longitude, radius, diploma, options } = req.query
+      const result = await getFormationsQuery({ romes, longitude, latitude, radius, diploma, romeDomain, caller, options, referer })
 
       if ("error" in result) {
         if (result.error === "wrong_parameters") {
@@ -34,8 +34,8 @@ export default (server: Server) => {
         }
 
         return res.send(result)
-       } 
-       
+      }
+
       if (caller && "results" in result) {
         trackApiCall({
           caller: caller,

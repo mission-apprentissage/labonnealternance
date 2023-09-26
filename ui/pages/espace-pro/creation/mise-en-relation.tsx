@@ -32,8 +32,7 @@ export default function CreationMiseEnRelation() {
   }
 
   /**
-   * @description Skip delegation stage.
-   * @returns {void}
+   * Skip delegation stage.
    */
   const skip = () =>
     router.push({

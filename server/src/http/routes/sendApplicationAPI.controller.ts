@@ -19,7 +19,7 @@ export default function (server: Server) {
       const result = await sendApplication({
         shouldCheckSecret: req.body.secret ? true : false,
         query: req.body,
-        referer: req.headers.referer as string,
+        referer: req.headers.referer,
       })
 
       if (result.error) {

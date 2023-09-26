@@ -24,7 +24,7 @@ export interface ILbaItem {
   cfd: string | null // formation -> cfd
   rncpCode: string | null // formation -> rncp_code
   rncpLabel: string | null // formation -> rncp_intitule
-  rncpEligibleApprentissage: string | null // formation -> rncp_eligible_apprentissage
+  rncpEligibleApprentissage: boolean | null | undefined // formation -> rncp_eligible_apprentissage
   period: string | null // formation -> periode
   capacity: string | null // formation -> capacite
   onisepUrl: string | null // formation -> onisep_url

@@ -11,7 +11,9 @@ runScript(async () => {
 
   await asyncForEach(forms, async (form) => {
     await asyncForEach(form.jobs, async (job: IJob) => {
-      job.job_delegation_count = job.delegations.length
+      if (job.delegations?.length) {
+        job.job_delegation_count = job.delegations.length
+      }
     })
     await form.save({ timestamps: false })
   })
