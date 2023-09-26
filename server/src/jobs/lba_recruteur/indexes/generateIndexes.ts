@@ -3,7 +3,7 @@ import { DiplomesMetiers, DomainesMetiers, FormationCatalogue, LbaCompany, Recru
 import { rebuildIndex } from "../../../common/utils/esUtils"
 
 export const generateIndexes = async (payload) => {
-  const indexList = payload?.index_list ?? "recruiters,formationcatalogues,bonnesboites,diplomesmetiers,domainesmetiers"
+  const indexList = payload?.index_list ?? "recruiters,formationcatalogues,lbacompanies,diplomesmetiers,domainesmetiers"
   const recreate = payload?.recreate ?? false
   const list = indexList.split(",")
 
