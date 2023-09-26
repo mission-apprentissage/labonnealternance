@@ -51,8 +51,8 @@ export const getLbaJobs = async ({
   opcoUrl?: string
   diploma?: string
   caller?: string
-  useMock?: boolean
-}): Promise<TLbaItemResult> => {
+  useMock?: string
+}) => {
   if (radius === 0) {
     radius = 10
   }
@@ -102,9 +102,7 @@ export const getLbaJobs = async ({
  * @param {IApplicationCount[]} applicationCountByJob les décomptes de candidatures par identifiant d'offres
  * @returns {{ results: ILbaItem[] }}
  */
-function transformLbaJobs({ jobs, caller, applicationCountByJob }: { jobs: ILbaJobEsResult[]; caller?: string; applicationCountByJob: IApplicationCount[] }): {
-  results: ILbaItem[]
-} {
+function transformLbaJobs({ jobs, caller, applicationCountByJob }: { jobs: ILbaJobEsResult[]; caller?: string; applicationCountByJob: IApplicationCount[] }) {
   return {
     results: jobs.flatMap((job) =>
       transformLbaJob({
@@ -123,7 +121,7 @@ function transformLbaJobs({ jobs, caller, applicationCountByJob }: { jobs: ILbaJ
  * @param {string} caller optionnel. l'identifiant de l'utilisateur de l'api
  * @return {Promise<IApiError | { matchas: ILbaItem[] }>}
  */
-export const getLbaJobById = async ({ id, caller }: { id: string; caller?: string }): Promise<IApiError | { matchas: ILbaItem[] }> => {
+export const getLbaJobById = async ({ id, caller }: { id: string; caller?: string }) => {
   try {
     let rawJob
     if (id === "id-matcha-test") {
