@@ -362,7 +362,7 @@ export const zV1JobsRoutes = {
     "/api/v1/jobs/matcha/:id/stats/view-details": {
       params: z
         .object({
-          id: z.string(),
+          id: zObjectId,
         })
         .strict(),
       response: {
