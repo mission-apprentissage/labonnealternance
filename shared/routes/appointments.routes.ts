@@ -87,23 +87,29 @@ export const zAppointmentsRoute = {
         "2xx": z
           .object({
             appointments: z.array(
-              z.object({
-                created_at: z.date(),
-                applicant_message_to_cfa: z.string().nullable(),
-                appointment_origin: z.string(),
-                cfa_recipient_email: z.string(),
-                formation: z.object({
-                  etablissement_gestionnaire_entreprise_raison_sociale: z.string().nullable(),
-                  etablissement_formateur_siret: z.string().nullable(),
-                  intitule_long: z.string().nullable(),
-                }),
-                candidat: z.object({
-                  firstname: z.string(),
-                  lastname: z.string(),
-                  email: z.string(),
-                  phone: z.string(),
-                }),
-              })
+              z
+                .object({
+                  created_at: z.date(),
+                  applicant_message_to_cfa: z.string().nullable(),
+                  appointment_origin: z.string(),
+                  cfa_recipient_email: z.string(),
+                  formation: z
+                    .object({
+                      etablissement_gestionnaire_entreprise_raison_sociale: z.string().nullable(),
+                      etablissement_formateur_siret: z.string().nullable(),
+                      intitule_long: z.string().nullable(),
+                    })
+                    .strict(),
+                  candidat: z
+                    .object({
+                      firstname: z.string(),
+                      lastname: z.string(),
+                      email: z.string(),
+                      phone: z.string(),
+                    })
+                    .strict(),
+                })
+                .strict()
             ),
           })
           .strict(),
@@ -119,10 +125,12 @@ export const zAppointmentsRoute = {
       response: {
         "2xx": z
           .object({
-            appointment: z.object({
-              appointment: z.any(),
-              appointment_origin_detailed: z.string(),
-            }),
+            appointment: z
+              .object({
+                appointment: z.any(),
+                appointment_origin_detailed: z.string(),
+              })
+              .strict(),
             user: z.any(),
             etablissement: z.union([ZEligibleTrainingsForAppointmentSchema, z.object({}).strict()]),
           })
@@ -139,18 +147,20 @@ export const zAppointmentsRoute = {
       body: zContextCreateSchema,
       response: {
         "2xx": z.union([
-          z.object({
-            etablissement_formateur_entreprise_raison_sociale: z.string(),
-            intitule_long: z.string(),
-            lieu_formation_adresse: z.string(),
-            code_postal: z.string(),
-            etablissement_formateur_siret: z.string(),
-            cfd: z.string(),
-            localite: z.string(),
-            id_rco_formation: z.string(),
-            cle_ministere_educatif: z.string(),
-            form_url: z.string(),
-          }),
+          z
+            .object({
+              etablissement_formateur_entreprise_raison_sociale: z.string(),
+              intitule_long: z.string(),
+              lieu_formation_adresse: z.string(),
+              code_postal: z.string(),
+              etablissement_formateur_siret: z.string(),
+              cfd: z.string(),
+              localite: z.string(),
+              id_rco_formation: z.string(),
+              cle_ministere_educatif: z.string(),
+              form_url: z.string(),
+            })
+            .strict(),
           z
             .object({
               error: z.literal("Prise de rendez-vous non disponible."),

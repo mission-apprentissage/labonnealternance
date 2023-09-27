@@ -27,9 +27,11 @@ export const ZReqParamsSearchPagination = z
   .strict()
 export type IReqParamsSearchPagination = z.input<typeof ZReqParamsSearchPagination>
 
-export const ZReqHeadersAuthorization = z.object({
-  Authorization: z.string().describe("Bearer token").optional(),
-})
+export const ZReqHeadersAuthorization = z
+  .object({
+    Authorization: z.string().describe("Bearer token").optional(),
+  })
+  .strict()
 
 export type AuthStrategy = "api-key" | "basic" | "jwt-password" | "jwt-bearer" | "jwt-token" | "jwt-rdv-admin" | "none"
 
@@ -40,7 +42,7 @@ export type SecurityScheme = {
 
 export interface IRouteSchemaGet {
   querystring?: AnyZodObject
-  headers?: ZodType<Record<string, string | undefined> | undefined>
+  headers?: AnyZodObject
   params?: AnyZodObject
   response: { [statuscode: `${1 | 2 | 3 | 4 | 5}${string}`]: ZodType }
   openapi?: null | Omit<ZodOpenApiOperationObject, "parameters" | "requestBody" | "requestParams" | "responses">

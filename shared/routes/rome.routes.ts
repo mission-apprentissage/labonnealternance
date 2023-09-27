@@ -50,7 +50,7 @@ export const zRomeRoutes = {
       // TODO filtrer la payload
       params: z.object({
         rome: z.string(),
-      }),
+      }).strict(),
       response: {
         "200": ZRomeDetail,
       },

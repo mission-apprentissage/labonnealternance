@@ -85,7 +85,7 @@ export const zUserRecruteurRoutes = {
   put: {
     "/api/user/:userId": {
       // TODO_SECURITY_FIX session et cookie + permissions
-      params: z.object({ userId: zObjectId }),
+      params: z.object({ userId: zObjectId }).strict(),
       body: ZUserRecruteur.pick({
         last_name: true,
         first_name: true,
@@ -97,7 +97,7 @@ export const zUserRecruteurRoutes = {
         .strict(),
       response: {
         "200": z.union([ZUserRecruteur, z.null()]),
-        "400": z.object({ error: z.boolean(), reason: z.string() }),
+        "400": z.object({ error: z.boolean(), reason: z.string() }).strict(),
       },
       securityScheme: {
         auth: "none",
@@ -106,7 +106,7 @@ export const zUserRecruteurRoutes = {
     },
     "/api/user/:userId/history": {
       // TODO_SECURITY_FIX session et cookie + permissions + role
-      params: z.object({ userId: zObjectId }),
+      params: z.object({ userId: zObjectId }).strict(),
       body: ZUserStatusValidation,
       response: {
         "200": ZUserRecruteur,

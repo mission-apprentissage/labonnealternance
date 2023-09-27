@@ -180,6 +180,7 @@ export const zFormationCatalogueSchema = z
     date_fin: z.array(z.string()).nullish(),
     modalites_entrees_sorties: z.array(z.boolean()).nullish(),
   })
+  .strict()
   .extend(etablissementFormateurSchema.shape)
   .extend(etablissementGestionnaireSchema.shape)
   .extend(etablissementReferenceSchema.shape)

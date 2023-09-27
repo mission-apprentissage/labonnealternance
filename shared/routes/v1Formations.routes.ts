@@ -21,11 +21,13 @@ export const zV1FormationsRoutes = {
           options: z.string().optional(),
         })
         .strict(),
+      // TODO: How to handle errors
+      // eslint-disable-next-line zod/require-strict
       headers: z
         .object({
           referer: z.string().optional(),
         })
-        .strip(),
+        .passthrough(),
       response: {
         "200": z
           .object({
@@ -73,10 +75,14 @@ export const zV1FormationsRoutes = {
         })
         .strict(),
       response: {
+        // TODO: FIX strip
+        // eslint-disable-next-line zod/require-strict
         "200": z
           .object({
+            // eslint-disable-next-line zod/require-strict
             organisme: z
               .object({
+                // eslint-disable-next-line zod/require-strict
                 contact: z
                   .object({
                     tel: z.string().nullish(),

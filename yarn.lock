@@ -9629,6 +9629,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"eslint-plugin-zod@npm:^1.4.0":
+  version: 1.4.0
+  resolution: "eslint-plugin-zod@npm:1.4.0"
+  peerDependencies:
+    eslint: ">=8.1.0"
+  checksum: e43d5acf3a673f66e850515abb13bd79f175c1388da7b2b357cd1019fdc40dda605e125f2e26579eebc3007f9e270a8e45e428be932cc067851105e7de5d5543
+  languageName: node
+  linkType: hard
+
 "eslint-rule-composer@npm:^0.3.0":
   version: 0.3.0
   resolution: "eslint-rule-composer@npm:0.3.0"
@@ -19597,6 +19606,7 @@ __metadata:
   dependencies:
     "@types/boom": ^7.3.3
     bson: ^5.4.0
+    eslint-plugin-zod: ^1.4.0
     lodash-es: ^4.17.21
     luhn: ^2.4.1
     mongodb: ^5.7.0

@@ -20,11 +20,13 @@ export const zOptoutRoutes = {
               siret: z.string().describe("Numéro SIRET de l'organisme de formation"),
               contacts: z
                 .array(
-                  z.object({
-                    email: z.string().email(),
-                    confirmé: z.boolean(),
-                    sources: z.array(z.string()),
-                  })
+                  z
+                    .object({
+                      email: z.string().email(),
+                      confirmé: z.boolean(),
+                      sources: z.array(z.string()),
+                    })
+                    .strict()
                 )
                 .describe("liste des contacts"),
               qualiopi: z.boolean().describe("Certification QUALIOPI"),
@@ -47,10 +49,12 @@ export const zOptoutRoutes = {
             })
             .strict(),
         ]),
-        "401": z.object({
-          error: z.boolean(),
-          reason: z.string(),
-        }),
+        "401": z
+          .object({
+            error: z.boolean(),
+            reason: z.string(),
+          })
+          .strict(),
       },
       securityScheme: {
         auth: "jwt-password",
