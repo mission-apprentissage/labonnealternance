@@ -13,9 +13,8 @@
   "scripts": {
     "cli": "LBA_LOG_DESTINATIONS=stderr node dist/index.js",
     "build:dev": "tsup-node",
-    "dev": "tsup-node --watch",
-    "build": "yarn tsoa && tsup-node --env.NODE_ENV production",
-    "tsoa": "tsoa spec-and-routes",
+    "dev": "tsup-node --env.TSUP_WATCH true",
+    "build": "tsup-node --env.NODE_ENV production",
     "seed:reference": "dotenv ts-node-esm src/jobs/seed/candidat.seed.ts",
     "typecheck": "tsc --noEmit"
   },
