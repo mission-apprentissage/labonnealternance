@@ -1,6 +1,5 @@
 import { Box, Button, Input, Radio, RadioGroup, Spinner, Stack, Text, CheckboxGroup, Checkbox } from "@chakra-ui/react"
-// eslint-disable-next-line import/no-extraneous-dependencies
-import emailValidator from "email-validator" // TODO_AB
+import emailValidator from "email-validator"
 import { Field, Form, Formik } from "formik"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"

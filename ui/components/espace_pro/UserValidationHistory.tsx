@@ -1,5 +1,4 @@
 import { Badge, Box, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr } from "@chakra-ui/react"
-// eslint-disable-next-line import/no-extraneous-dependencies
 import dayjs from "dayjs"
 import { memo, useCallback, useEffect, useState } from "react"
 

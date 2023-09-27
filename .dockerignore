@@ -14,10 +14,6 @@
 /ui/.next
 /ui/.eslintrc.js
 
-!ui_espace_pro/src
-!ui_espace_pro/public
-!ui_espace_pro/package.json
-
 !/package.json
 !/.yarn/patches
 !/.yarn/plugins

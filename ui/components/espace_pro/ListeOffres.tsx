@@ -25,9 +25,7 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react"
-// eslint-disable-next-line import/no-extraneous-dependencies
 import dayjs from "dayjs"
-// eslint-disable-next-line import/no-extraneous-dependencies
 import relativeTime from "dayjs/plugin/relativeTime"
 import { useRouter } from "next/router"
 import { useState } from "react"

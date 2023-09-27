@@ -200,14 +200,14 @@ export const deactivateUser = async (userId: IUserRecruteur["_id"], reason?: str
 
 export const sendWelcomeEmailToUserRecruteur = async (userRecruteur: IUserRecruteur) => {
   const { email, first_name, last_name, establishment_raison_sociale, type } = userRecruteur
-  const magiclink = `${config.publicUrlEspacePro}/authentification/verification?token=${createMagicLinkToken(email)}`
+  const magiclink = `${config.publicUrl}/espace-pro/authentification/verification?token=${createMagicLinkToken(email)}`
   await mailer.sendEmail({
     to: email,
     subject: "Bienvenue sur La bonne alternance",
     template: getStaticFilePath("./templates/mail-bienvenue.mjml.ejs"),
     data: {
       images: {
-        logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
+        logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
       },
       establishment_raison_sociale,
       last_name,

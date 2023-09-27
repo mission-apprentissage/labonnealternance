@@ -49,7 +49,7 @@ runScript(async () => {
       expiresIn: "45d",
     })
 
-    const accessLink = `${config.publicUrlEspacePro}/authentification/optout/verification?token=${token}`
+    const accessLink = `${config.publicUrl}/espace-pro/authentification/optout/verification?token=${token}`
 
     logger.info(`---- Sending mail for ${etablissement.siret} — ${email} ----`)
 
@@ -62,7 +62,7 @@ runScript(async () => {
         template: getStaticFilePath("./templates/mail-optout.mjml.ejs"),
         data: {
           images: {
-            logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
+            logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
           },
           raison_sociale: etablissement.raison_sociale,
           url: accessLink,

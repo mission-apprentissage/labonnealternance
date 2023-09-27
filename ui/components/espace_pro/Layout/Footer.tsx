@@ -1,6 +1,5 @@
 import { Container, Divider, Icon, Link, Stack, Text } from "@chakra-ui/react"
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { FiExternalLink } from "react-icons/fi" // TODO_AB
+import { FiExternalLink } from "react-icons/fi"
 
 export default function Footer() {
   return (

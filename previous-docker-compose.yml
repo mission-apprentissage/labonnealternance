@@ -39,17 +39,6 @@ services:
     depends_on:
       - server
 
-  ui_espace_pro:
-    image: lba_ui_espace_pro
-    container_name: lba_ui_espace_pro
-    build:
-      context: ui_espace_pro
-    mem_limit: 256m
-    networks:
-      - lba_network
-    depends_on:
-      - server
-
   server:
     image: lba_server
     container_name: lba_server

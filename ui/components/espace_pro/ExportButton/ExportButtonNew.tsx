@@ -1,8 +1,6 @@
 import { Button, Link } from "@chakra-ui/react"
-// eslint-disable-next-line import/no-extraneous-dependencies
 import dayjs from "dayjs"
 import _ from "lodash"
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { CSVLink } from "react-csv"
 
 import { AUTHTYPE } from "../../../common/contants"

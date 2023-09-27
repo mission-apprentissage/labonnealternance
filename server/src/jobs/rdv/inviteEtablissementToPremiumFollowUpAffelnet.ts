@@ -44,14 +44,14 @@ export const inviteEtablissementAffelnetToPremiumFollowUp = async () => {
       data: {
         isAffelnet: true,
         images: {
-          logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
-          logoFooter: `${config.publicUrlEspacePro}/assets/logo-republique-francaise.png?raw=true`,
-          integrationExample: `${config.publicUrlEspacePro}/assets/exemple_integration_affelnet.png?raw=true`,
+          logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
+          logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.png?raw=true`,
+          integrationExample: `${config.publicUrl}/assets/exemple_integration_affelnet.png?raw=true`,
         },
         etablissement: {
           email: etablissement.gestionnaire_email,
           activatedAt: dayjs(etablissement.created_at).format("DD/MM"),
-          linkToForm: `${config.publicUrlEspacePro}/form/premium/affelnet/${etablissement._id}`,
+          linkToForm: `${config.publicUrl}/espace-pro/form/premium/affelnet/${etablissement._id}`,
         },
       },
     })

@@ -1,9 +1,9 @@
+import Boom from "boom"
 import { IFormationCatalogue, zRoutes } from "shared/index"
 
 import { Appointment, User } from "../../../common/model/index"
 import { getFormationsByCleMinistereEducatif } from "../../../services/catalogue.service"
 import { Server } from "../../server"
-import Boom from "boom"
 
 /**
  * Sample entity route module for GET
@@ -19,9 +19,9 @@ export default (server: Server) => {
       preHandler: [server.auth(zRoutes.get["/api/admin/appointments"].securityScheme)],
     },
     async (req, res) => {
-      const appointments = await Appointment.find().sort({ _id: -1 }).lean();
+      const appointments = await Appointment.find().sort({ _id: -1 }).lean()
 
-      return res.status(200).send({ appointments });
+      return res.status(200).send({ appointments })
     }
   )
 
@@ -35,7 +35,7 @@ export default (server: Server) => {
       preHandler: [server.auth(zRoutes.get["/api/admin/appointments"].securityScheme)],
     },
     async (req, res) => {
-      const allAppointments = await Appointment.find().limit(100).sort({ _id: -1 }).lean();
+      const allAppointments = await Appointment.find().limit(100).sort({ _id: -1 }).lean()
 
       const cleMinistereEducatifs: Set<string> = new Set()
       if (allAppointments) {
@@ -51,33 +51,32 @@ export default (server: Server) => {
       const appointmentsPromises = allAppointments.map(async (appointment) => {
         const user = await User.findById(appointment.applicant_id).lean()
 
-        if(!user) {
+        if (!user) {
           throw Boom.internal("Candidat non trouvé.")
         }
 
         const formation = formations.find((item) => item.cle_ministere_educatif === appointment.cle_ministere_educatif)
 
-        if(!formation) {
+        if (!formation) {
           throw Boom.internal("Formation non trouvée.")
         }
 
-
         return {
-            created_at: appointment.created_at,
-            applicant_message_to_cfa: appointment?.applicant_message_to_cfa || null,
-            appointment_origin: appointment.appointment_origin,
-            cfa_recipient_email: appointment.cfa_recipient_email,
-            formation: {
-              etablissement_gestionnaire_entreprise_raison_sociale: formation?.etablissement_gestionnaire_entreprise_raison_sociale || null,
-              etablissement_formateur_siret: formation?.etablissement_formateur_siret || null,
-              intitule_long: formation?.intitule_long || null,
-            },
-            candidat: {
-              firstname: user.firstname,
-              lastname: user.lastname,
-              email: user.email,
-              phone: user.phone,
-            },
+          created_at: appointment.created_at,
+          applicant_message_to_cfa: appointment?.applicant_message_to_cfa || null,
+          appointment_origin: appointment.appointment_origin,
+          cfa_recipient_email: appointment.cfa_recipient_email,
+          formation: {
+            etablissement_gestionnaire_entreprise_raison_sociale: formation?.etablissement_gestionnaire_entreprise_raison_sociale || null,
+            etablissement_formateur_siret: formation?.etablissement_formateur_siret || null,
+            intitule_long: formation?.intitule_long || null,
+          },
+          candidat: {
+            firstname: user.firstname,
+            lastname: user.lastname,
+            email: user.email,
+            phone: user.phone,
+          },
         }
       })
 

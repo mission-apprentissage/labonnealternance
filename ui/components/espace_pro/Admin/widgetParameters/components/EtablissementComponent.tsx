@@ -27,10 +27,8 @@ import {
 } from "@chakra-ui/react"
 import { createRef, useState, useEffect } from "react"
 
-// eslint-disable-next-line import/no-extraneous-dependencies
-import "react-dates/initialize" // TODO_AB
-// eslint-disable-next-line import/no-extraneous-dependencies
-import "react-dates/lib/css/_datepicker.css" // TODO_AB
+import "react-dates/initialize"
+import "react-dates/lib/css/_datepicker.css"
 
 import { dayjs, formatDate } from "../../../../../common/dayjs"
 import { _get, _patch } from "../../../../../common/httpClient"

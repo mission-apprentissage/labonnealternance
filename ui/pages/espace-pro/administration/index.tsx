@@ -18,7 +18,6 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react"
-// eslint-disable-next-line import/no-extraneous-dependencies
 import dayjs from "dayjs"
 import { useRouter } from "next/router"
 import { memo, useEffect, useState } from "react"

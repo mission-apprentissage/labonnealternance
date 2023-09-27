@@ -4,11 +4,3 @@ location / {
 
     client_max_body_size 0;
 }
-
-location /espace-pro {
-    set $upstream http://ui_espace_pro:3000;
-    include includes/proxy.conf;
-
-    client_max_body_size 0;
-}
-
