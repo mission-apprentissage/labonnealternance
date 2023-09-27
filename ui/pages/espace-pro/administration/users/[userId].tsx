@@ -51,14 +51,6 @@ function DetailEntreprise() {
   const toast = useToast()
   const [auth] = useAuth()
 
-  const { data, isLoading }: { data: any; isLoading: boolean } = useQuery("user", () => getUser(userId), { cacheTime: 0 })
-  // @ts-expect-error: TODO
-  const userMutation = useMutation(({ userId, establishment_id, values }) => updateEntreprise(userId, establishment_id, values), {
-    onSuccess: () => {
-      client.invalidateQueries("user")
-    },
-  })
-
   const ActivateUserButton = ({ userId }) => {
     const updateUserHistory = useUserHistoryUpdate(userId, USER_STATUS.ACTIVE)
 
@@ -122,7 +114,15 @@ function DetailEntreprise() {
     }
   }
 
-  if (isLoading && data && data.data && data.data.status) {
+  const { data, isLoading }: { data: any; isLoading: boolean } = useQuery("user", () => getUser(userId), { cacheTime: 0 })
+  // @ts-expect-error: TODO
+  const userMutation = useMutation(({ userId, establishment_id, values }) => updateEntreprise(userId, establishment_id, values), {
+    onSuccess: () => {
+      client.invalidateQueries("user")
+    },
+  })
+
+  if (isLoading || !data) {
     return <LoadingEmptySpace />
   }
 

@@ -58,7 +58,9 @@ export const zUserRecruteurRoutes = {
         })
         .strict(),
       response: {
-        "200": ZUserRecruteur.extend({ jobs: z.array(ZJob) }),
+        // TODO ANY TO BE FIXED
+        "200": z.any(),
+        // "200": ZUserRecruteur.extend({ jobs: z.array(ZJob) }), //  "message": "Unrecognized key(s) in object: '__v'"
       },
       securityScheme: {
         auth: "none",
@@ -107,7 +109,12 @@ export const zUserRecruteurRoutes = {
     "/api/user/:userId/history": {
       // TODO_SECURITY_FIX session et cookie + permissions + role
       params: z.object({ userId: zObjectId }).strict(),
-      body: ZUserStatusValidation,
+      body: ZUserStatusValidation.pick({
+        validation_type: true,
+        status: true,
+        reason: true,
+        user: true,
+      }),
       response: {
         "200": ZUserRecruteur,
       },

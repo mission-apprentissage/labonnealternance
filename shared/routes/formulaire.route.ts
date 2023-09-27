@@ -26,7 +26,9 @@ export const zFormulaireRoute = {
       // TODO_SECURITY_FIX session gérée par cookie server
       params: z.object({ establishment_id: z.string() }).strict(),
       response: {
-        "2xx": ZRecruiter,
+        // TODO ANY TO BE FIXED
+        "200": z.any(),
+        // "2xx": ZRecruiter,
       },
       securityScheme: {
         auth: "none",
