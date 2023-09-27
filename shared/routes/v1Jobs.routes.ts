@@ -107,27 +107,24 @@ export const zV1JobsRoutes = {
       response: {
         "200": z
           .object({
-            peJobs: z
+            peJobs: z.union([z
               .object({
                 results: z.array(ZLbaItem),
               })
               .strict()
-              .or(ZLbacError)
-              .nullable(),
-            matchas: z
+              .nullable(), ZLbacError]),
+            matchas: z.union([z
               .object({
                 results: z.array(ZLbaItem),
               })
               .strict()
-              .or(ZLbacError)
-              .nullable(),
-            lbaCompanies: z
+              .nullable(), ZLbacError]),
+            lbaCompanies: z.union([z
               .object({
                 results: z.array(ZLbaItem),
               })
               .strict()
-              .or(ZLbacError)
-              .nullable(),
+              .nullable(), ZLbacError]),
             lbbCompanies: z.null(), // always null until removal
           })
           .strict(),
