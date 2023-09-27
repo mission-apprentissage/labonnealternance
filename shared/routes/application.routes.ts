@@ -38,9 +38,10 @@ export const zApplicationRoutes = {
       },
     },
     "/api/application/intentionComment": {
+      // TODO_SECURITY_FIX
       body: z
         .object({
-          id: z.string(),
+          id: z.string(), // inutile de chiffrer l'id, rajouter un champ token qui contiendra l'id
           iv: z.string(),
           comment: z.string(),
           intention: z.string(),
@@ -69,6 +70,7 @@ export const zApplicationRoutes = {
       },
     },
     "/api/application/webhook": {
+      // TODO_SECURITY_FIX    ajouter token sans expiration dans les webhooks brevo
       body: extensions.brevoWebhook(),
       response: {
         "200": z

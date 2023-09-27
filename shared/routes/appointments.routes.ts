@@ -73,7 +73,7 @@ export const zAppointmentsRoute = {
       response: {
         "2xx": z
           .object({
-            appointments: z.array(ZAppointment)
+            appointments: z.array(ZAppointment),
           })
           .strict(),
       },
@@ -86,23 +86,25 @@ export const zAppointmentsRoute = {
       response: {
         "2xx": z
           .object({
-            appointments: z.array(z.object({
-              created_at: z.date(),
-              applicant_message_to_cfa: z.string().nullable(),
-              appointment_origin: z.string(),
-              cfa_recipient_email: z.string(),
-              formation: z.object({
-                etablissement_gestionnaire_entreprise_raison_sociale: z.string().nullable(),
-                etablissement_formateur_siret: z.string().nullable(),
-                intitule_long: z.string().nullable(),
-              }),
-              candidat: z.object({
-                firstname: z.string(),
-                lastname: z.string(),
-                email: z.string(),
-                phone: z.string(),
+            appointments: z.array(
+              z.object({
+                created_at: z.date(),
+                applicant_message_to_cfa: z.string().nullable(),
+                appointment_origin: z.string(),
+                cfa_recipient_email: z.string(),
+                formation: z.object({
+                  etablissement_gestionnaire_entreprise_raison_sociale: z.string().nullable(),
+                  etablissement_formateur_siret: z.string().nullable(),
+                  intitule_long: z.string().nullable(),
+                }),
+                candidat: z.object({
+                  firstname: z.string(),
+                  lastname: z.string(),
+                  email: z.string(),
+                  phone: z.string(),
+                }),
               })
-            })),
+            ),
           })
           .strict(),
       },
@@ -112,6 +114,7 @@ export const zAppointmentsRoute = {
       },
     },
     "/api/appointment-request/context/recap": {
+      // TODO_SECURITY_FIX il faut un secure token
       querystring: z.object({ appointmentId: z.string() }).strict(),
       response: {
         "2xx": z
@@ -190,6 +193,7 @@ export const zAppointmentsRoute = {
       },
     },
     "/api/appointment-request/reply": {
+      // TODO_SECURITY_FIX token jwt
       body: z
         .object({
           appointment_id: z.string(),
