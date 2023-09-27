@@ -48,8 +48,11 @@ export default function ExportButtonNew({ data, datasetName = "export" }) {
     .map((x) => {
       return {
         ...x,
+        // @ts-expect-error: TODO
         establishment_siret: `"${x.establishment_siret}"`,
+        // @ts-expect-error: TODO
         phone: `"${x.phone}"`,
+        // @ts-expect-error: TODO
         job_description: x?.job_description ? x.job_description.replace(/(\n|\r|[,.!?;:'-])/g, " ") : undefined,
       }
     })

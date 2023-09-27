@@ -126,7 +126,7 @@ export const InformationLegaleEntreprise = (props) => {
   )
 }
 
-const FieldWithValue = ({ title, value, tooltip, hideIfEmpty }) => {
+const FieldWithValue = ({ title, value, tooltip, hideIfEmpty = false }) => {
   if (hideIfEmpty && !value) {
     return null
   }
