@@ -824,23 +824,16 @@ const sortFormations = (formations: ILbaItem[]) => {
     if (a?.place?.distance !== null) {
       return 0
     }
-    // @ts-expect-error: TODO
-    if (a?.title?.toLowerCase() < b?.title?.toLowerCase()) {
-      return -1
+    const aTitle = a?.title?.toLowerCase()
+    const bTitle = b?.title?.toLowerCase()
+    if (aTitle && bTitle) {
+      return aTitle < bTitle ? -1 : 1
     }
-    // @ts-expect-error: TODO
-    if (a?.title?.toLowerCase() > b?.title?.toLowerCase()) {
-      return 1
+    const aCompanyName = a.company?.name?.toLowerCase()
+    const bCompanyName = b.company?.name?.toLowerCase()
+    if (aCompanyName && bCompanyName) {
+      return aCompanyName < bCompanyName ? -1 : 1
     }
-    // @ts-expect-error: TODO
-    if (a?.company?.name?.toLowerCase() < b?.company?.name?.toLowerCase()) {
-      return -1
-    }
-    // @ts-expect-error: TODO
-    if (a?.company?.name?.toLowerCase() > b?.company?.name?.toLowerCase()) {
-      return 1
-    }
-
     return 0
   })
 }
