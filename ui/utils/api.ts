@@ -1,4 +1,4 @@
-import Axios, {AxiosResponse} from "axios"
+import Axios from "axios"
 
 import { publicConfig } from "../config.public"
 
@@ -61,7 +61,7 @@ export const createEtablissementDelegation = ({ data, jobId }) => API.post(`/for
  * KBA 13/10/2022 : to be reuse when fontend can deal with pagination
  * Quick fix made today
  */
-export const getUsers = async (query) => {
+export const getUsers = async () => {
   const token = sessionStorage.getItem("lba:token")
   return API.get("/user", {
     params: query,
@@ -148,10 +148,9 @@ export const etablissementUnsubscribeDemandeDelegation = (establishmentSiret) =>
 
 export const getOpcoUsers = async (query) => API.get(`/user/opco`, { params: query })
 
-
-export const getAppointmentsDetails = async () => API.get(`/admin/appointments/details`, {
+export const getAppointmentsDetails = async () =>
+  API.get(`/admin/appointments/details`, {
     headers: {
       Authorization: `Bearer ${sessionStorage.getItem("lba:token")}`,
     },
   })
-

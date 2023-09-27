@@ -72,11 +72,14 @@ export const zV1FormationsRoutes = {
         })
         .strict(),
       response: {
-        "200": z
-          .object({
-            results: z.array(ZLbaItem),
-          })
-          .strict(),
+        "200": z.object({
+          organisme: z.object({
+            contact: z.object({
+              tel: z.string().nullish(),
+              url: z.string().nullish(),
+            }).strip(),
+          }).strip(),
+        }).strip(),
         "400": z.union([ZResError, ZLbacError]),
         "404": z.union([ZResError, ZLbacError]),
         "500": z.union([ZResError, ZLbacError]),

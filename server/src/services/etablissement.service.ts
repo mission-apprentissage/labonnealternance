@@ -364,7 +364,7 @@ export const formatEntrepriseData = (d: IEtablissementGouv): IFormatAPIEntrepris
  * @param {IReferentiel} d
  * @returns {Object}
  */
-export const formatReferentielData = (d: IReferentiel): IFormatAPIReferentiel => ({
+export const formatReferentielData = (d: IReferentiel) => ({
   establishment_state: d.etat_administratif,
   is_qualiopi: d.qualiopi,
   establishment_siret: d.siret,

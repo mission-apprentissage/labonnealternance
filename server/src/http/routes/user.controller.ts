@@ -8,7 +8,17 @@ import { ENTREPRISE, ETAT_UTILISATEUR, JOB_STATUS, RECRUITER_STATUS } from "../.
 import dayjs from "../../services/dayjs.service"
 import { deleteFormulaire, getFormulaire, reactivateRecruiter, sendDelegationMailToCFA, updateOffre } from "../../services/formulaire.service"
 import mailer from "../../services/mailer.service"
-import { createUser, removeUser, sendWelcomeEmailToUserRecruteur, updateUser, updateUserValidationHistory } from "../../services/userRecruteur.service"
+import {
+  createUser,
+  getActiveUsers,
+  getAwaitingUsers,
+  getDisabledUsers,
+  getErrorUsers,
+  removeUser,
+  sendWelcomeEmailToUserRecruteur,
+  updateUser,
+  updateUserValidationHistory,
+} from "../../services/userRecruteur.service"
 import { Server } from "../server"
 
 export default (server: Server) => {
@@ -52,27 +62,8 @@ export default (server: Server) => {
       preHandler: [server.auth(zRoutes.get["/api/user"].securityScheme)],
     },
     async (req, res) => {
-      const query = req.query.users
-      // @ts-expect-error: TODO
-      if (query?.$expr?.$eq[0]?.$arrayElemAt[1]) {
-        // @ts-expect-error: TODO
-        query.$expr.$eq[0].$arrayElemAt[1] = parseInt(query.$expr.$eq[0].$arrayElemAt[1])
-      }
-      const users = await UserRecruteur.find(query).lean()
-      return res.status(200).send(users)
-
-      /**
-       * KBA 13/10/2022 : To reuse when frontend can deal with pagination
-       * Quick fix made above for now
-       */
-      // let qs = req.query;
-      // const query = qs && qs.query ? JSON.parse(qs.query) : {};
-      // const options = qs && qs.options ? JSON.parse(qs.options) : {};
-      // const page = qs && qs.page ? qs.page : 1;
-      // const limit = qs && qs.limit ? parseInt(qs.limit, 10) : 100;
-
-      // const result = await getUsers(query, options, { page, limit });
-      // return res.status(200).send(result);
+      const [awaiting, active, disabled, error] = await Promise.all([getAwaitingUsers(), getActiveUsers(), getDisabledUsers(), getErrorUsers()])
+      return res.status(200).send({ awaiting, active, disabled, error })
     }
   )
 

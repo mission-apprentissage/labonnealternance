@@ -471,12 +471,16 @@ const transformFormationForIdea = (rawFormation: IFormationEsResult): ILbaItem =
  * @return {ILbaItemTrainingSession[]}
  */
 const setSessions = (formation: Partial<IFormationCatalogue>): ILbaItemTrainingSession[] => {
-  const { date_debut = [], date_fin = [], modalites_entrees_sorties = [] } = formation ?? {}
-  return date_debut.map((startDate, idx) => ({
-    startDate,
-    endDate: date_fin[idx],
-    isPermanentEntry: modalites_entrees_sorties[idx],
-  }))
+  const { date_debut, date_fin, modalites_entrees_sorties } = formation ?? {}
+  if (date_debut?.length && date_fin?.length && modalites_entrees_sorties?.length) {
+    return (date_debut ?? []).map((startDate, idx) => ({
+      startDate: new Date(startDate),
+      endDate: new Date(date_fin[idx]),
+      isPermanentEntry: modalites_entrees_sorties[idx],
+    }))
+  } else {
+    return []
+  }
 }
 
 /**
@@ -513,7 +517,10 @@ const getTrainingAddress = (formation: Partial<IFormationCatalogue>): string => 
  * @returns {string}
  */
 const getSchoolName = (formation: Partial<IFormationCatalogue>): string | undefined => {
-  return formation.etablissement_formateur_enseigne || formation.etablissement_formateur_entreprise_raison_sociale || formation.etablissement_gestionnaire_entreprise_raison_sociale
+  return (
+    (formation.etablissement_formateur_enseigne || formation.etablissement_formateur_entreprise_raison_sociale || formation.etablissement_gestionnaire_entreprise_raison_sociale) ??
+    undefined
+  )
 }
 
 /**
@@ -854,8 +861,6 @@ export const getMostFrequentEmailByLieuFormationSiret = async (etablissement_for
   ).lean()
 
   const emailGroups = groupBy(formations, "email")
-
   const mostFrequentGroup = maxBy(Object.values(emailGroups), "length")
-
-  return mostFrequentGroup?.length ? mostFrequentGroup[0].email : null
+  return mostFrequentGroup?.length ? mostFrequentGroup[0].email ?? null : null
 }

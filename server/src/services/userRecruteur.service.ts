@@ -11,7 +11,7 @@ import { UserRecruteur } from "../common/model/index"
 import { createMagicLinkToken } from "../common/utils/jwtUtils"
 import config from "../config"
 
-import { CFA, ETAT_UTILISATEUR, VALIDATION_UTILISATEUR } from "./constant.service"
+import { CFA, ENTREPRISE, ETAT_UTILISATEUR, VALIDATION_UTILISATEUR } from "./constant.service"
 import mailer from "./mailer.service"
 
 /**
@@ -218,3 +218,29 @@ export const sendWelcomeEmailToUserRecruteur = async (userRecruteur: IUserRecrut
     },
   })
 }
+
+export const getActiveUsers = () =>
+  UserRecruteur.find({
+    establishment_raison_sociale: { $nin: [null, ""] },
+    $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, ETAT_UTILISATEUR.VALIDE] },
+    $or: [{ type: CFA }, { type: ENTREPRISE }],
+  }).lean()
+
+export const getAwaitingUsers = () =>
+  UserRecruteur.find({
+    establishment_raison_sociale: { $nin: [null, ""] },
+    $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, ETAT_UTILISATEUR.ATTENTE] },
+    $or: [{ type: CFA }, { type: ENTREPRISE }],
+  }).lean()
+
+export const getDisabledUsers = () =>
+  UserRecruteur.find({
+    $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, ETAT_UTILISATEUR.DESACTIVE] },
+    $or: [{ type: CFA }, { type: ENTREPRISE }],
+  }).lean()
+
+export const getErrorUsers = () =>
+  UserRecruteur.find({
+    $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, ETAT_UTILISATEUR.ERROR] },
+    $or: [{ type: CFA }, { type: ENTREPRISE }],
+  }).lean()

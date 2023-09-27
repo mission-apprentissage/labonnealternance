@@ -17,10 +17,9 @@ export default (server: Server) => {
       preHandler: [server.auth(zRoutes.get["/api/admin/formations"].securityScheme)],
     },
     async (req, res) => {
-      const qs = req.query
-      const query = qs && qs.query ? JSON.parse(qs.query) : {}
+      const { search_item } = req.query
 
-      const response = await getCatalogueFormations(query)
+      const response = await getCatalogueFormations({ $or: [ { etablissement_formateur_siret: search_item }, { etablissement_formateur_uai: search_item}, { id_rco_formation: search_item}, {cle_ministere_educatif: search_item} ] })
 
       return res.send(response)
     }
