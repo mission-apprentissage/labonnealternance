@@ -9,6 +9,7 @@
     "noEmit": true,
     "incremental": true,
     "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
     "module": "esnext",
     "moduleResolution": "node",
     "resolveJsonModule": true,
@@ -20,5 +21,5 @@
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "components/greeting.jsx"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "public"]
 }

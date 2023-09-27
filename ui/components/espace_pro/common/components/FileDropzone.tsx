@@ -17,6 +17,7 @@ const FileDropzone = (props) => {
     <Box mt={5}>
       <Box {...getRootProps()} style={{ cursor: "pointer" }}>
         <Text textAlign="center">
+          {/* @ts-expect-error: TODO */}
           <Input {...getInputProps()} />
           {/* eslint-disable-next-line jsx-a11y/alt-text  */}
           <Image display="block" mx="auto" src="/assets/undraw_add_file.svg" height={150} />
