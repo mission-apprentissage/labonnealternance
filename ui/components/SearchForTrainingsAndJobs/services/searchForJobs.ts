@@ -17,12 +17,12 @@ export const searchForJobsFunction = async ({
   setJobMarkers,
   factorJobsForMap,
   scopeContext,
-  widgetParameters,
-  followUpItem,
-  selectFollowUpItem,
-  opcoFilter,
-  opcoUrlFilter,
-  showCombinedJob,
+  widgetParameters = undefined,
+  followUpItem = undefined,
+  selectFollowUpItem = undefined,
+  opcoFilter = undefined,
+  opcoUrlFilter = undefined,
+  showCombinedJob = undefined,
 }) => {
   setIsJobSearchLoading(true)
   setJobSearchError("")

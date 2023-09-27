@@ -6,5 +6,5 @@ import CreationCompte from "../../../../components/espace_pro/Authentification/C
 export default function CreationCFAWithOrigin() {
   const router = useRouter()
   const { origin } = router.query
-  return <CreationCompte type={AUTHTYPE.CFA} origin={origin} />
+  return <CreationCompte type={AUTHTYPE.CFA} origin={origin as string} />
 }

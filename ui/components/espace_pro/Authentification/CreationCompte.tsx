@@ -140,7 +140,7 @@ const CreationCompteForm = ({ type, setQualiopi, setBandeau, origin }) => {
   )
 }
 
-export default function CreationCompte({ type, widget, origin = "lba" }) {
+export default function CreationCompte({ type, widget = false, origin = "lba" }) {
   const { setWidget, widget: wid } = useContext(WidgetContext)
   const { setOrganisation } = useContext(LogoContext)
   const [qualiopi, setQualiopi] = useState(null)

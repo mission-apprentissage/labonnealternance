@@ -9,6 +9,7 @@ const PageLink = ({ pageNumber, fragmentName, setPage, isActive = false }) => {
         setPage(pageNumber - 1)
       }}
       href={`?${fragmentName}=${pageNumber}`}
+      // @ts-expect-error: TODO
       alt={`Page ${pageNumber}`}
       className={`${isActive ? "active" : ""}`}
     >

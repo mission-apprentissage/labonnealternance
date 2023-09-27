@@ -7,6 +7,7 @@ import DomainError from "./DomainError"
 
 describe("DomainError", () => {
   it("Renders static image and text", () => {
+    // @ts-expect-error: TODO
     render(<DomainError />)
     expect(screen.getByTestId("domainError")).not.toBe(null)
   })

@@ -19,7 +19,7 @@ const Formulaire = () => {
   const buttonSize = useBreakpointValue(["sm", "md"])
   const router = useRouter()
   const { widget } = useContext(WidgetContext)
-  const { establishment_siret, opco, idcc } = JSON.parse(router.query.informationSiret as string)
+  const { establishment_siret, opco, idcc } = JSON.parse((router.query.informationSiret as string) || "{}")
   const toast = useToast()
   const [auth] = useAuth()
 
@@ -96,7 +96,7 @@ const Formulaire = () => {
 
 function CreationEntrepriseDetail() {
   const router = useRouter()
-  const informationEntreprise = { ...JSON.parse(router.query.informationSiret as string), type: AUTHTYPE.ENTREPRISE }
+  const informationEntreprise = { ...JSON.parse((router.query.informationSiret as string) || "{}"), type: AUTHTYPE.ENTREPRISE }
 
   return (
     <AnimationContainer>

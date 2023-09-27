@@ -29,7 +29,7 @@ const CGU = ({ recordMap }) => {
       />
 
       <ScrollToTop />
-      <Navigation bgcolor="is-white" />
+      <Navigation />
 
       <Breadcrumb forPage="cgu" label="CGU" />
 

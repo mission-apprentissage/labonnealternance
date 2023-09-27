@@ -57,7 +57,6 @@ const CandidatureLba = ({ item, fakeLocalStorage = undefined }) => {
     initialValues: getInitialSchemaValues(),
     validationSchema: getValidationSchema(),
     onSubmit: async (applicantValues) => {
-      // @ts-expect-error: TODO
       const success = await submitCandidature({ applicantValues, setSendingState, item })
       if (success) {
         setApplied(Date.now().toString())

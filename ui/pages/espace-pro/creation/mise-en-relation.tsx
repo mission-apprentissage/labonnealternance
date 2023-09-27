@@ -17,7 +17,7 @@ export default function CreationMiseEnRelation() {
   const [isSubmitLoading, setIsSubmitLoading] = useState(false)
 
   const { job: jobString, email, geo_coordinates, fromDashboard, userId } = router.query
-  const job = JSON.parse(jobString as string)
+  const job = JSON.parse((jobString as string) ?? "{}")
 
   /**
    * @description Handles all checkboxes.

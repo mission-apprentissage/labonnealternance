@@ -27,8 +27,8 @@ export default function DepotRapideFin() {
     userId,
   }: { job: string; email: string; withDelegation: string; fromDashboard: string; userId: string } = router.query as any
 
-  const job = JSON.parse(jobString)
-  const fromDash = JSON.parse(fromDashboard)
+  const job = JSON.parse(jobString ?? "{}")
+  const fromDash = JSON.parse(fromDashboard ?? "{}")
 
   /**
    * KBA 20230130 : retry set to false to avoid waiting for failure if user is from dashboard (userId is not passed)

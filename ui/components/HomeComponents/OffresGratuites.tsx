@@ -11,6 +11,7 @@ const OffresGratuites = () => {
           <Text as="h2" variant="homeEditorialH2" mb={{ base: "3", lg: "5" }}>
             Vos offres sont diffusées gratuitement au plus près des candidats
           </Text>
+          {/* @ts-expect-error: TODO */}
           <Box variant="homeEditorialText">
             Elles sont mises en ligne sur les sites les plus visités par les candidats en recherche d’alternance :{" "}
             <Link variant="homeEditorialLink" aria-label="Redirection vers la page d'accueil" href="https://labonnealternance.apprentissage.beta.gouv.fr" isExternal>

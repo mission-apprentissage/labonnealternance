@@ -43,6 +43,7 @@ const TrainingDetail = ({ training, hasAlsoJob }) => {
     getStats()
   }, [training.id])
 
+  // @ts-expect-error: TODO not defined in context
   const { trainings, setTrainingsAndSelectedItem } = useContext(SearchResultContext)
   const { formValues } = React.useContext(DisplayContext)
 

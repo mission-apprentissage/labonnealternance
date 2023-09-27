@@ -25,7 +25,7 @@ export default function CfaCandidatInformationPage() {
 
   const [currentState, setCurrentState] = useState("initial")
 
-  const utmSource = new URLSearchParams(window.location.search).get("utm_source")
+  const utmSource = typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("utm_source") : ""
 
   const formik = useFormik({
     initialValues: {

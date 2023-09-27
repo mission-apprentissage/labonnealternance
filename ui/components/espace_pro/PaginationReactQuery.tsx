@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight } from "../../theme/components/icons"
 
 const PageLink = ({ pageNumber, onClick, isActive = false }) => {
   return (
+    // @ts-expect-error: TODO
     <Link onClick={() => onClick()} alt={`Page ${pageNumber}`} className={`${isActive ? "active" : ""}`}>
       {pageNumber}
     </Link>
@@ -28,6 +29,7 @@ const NextLink = ({ nextPage, canNextPage }) => {
 }
 
 const sequence = (from, to) => [...new Array(to - from + 1)].map((_, index) => index + from)
+// @ts-expect-error: TODO
 const uniq = (array) => [...new Set(array)]
 
 export function PaginationReactQuery({ pageCount, gotoPage: goToPageIndex, currentPage: pageIndex }) {

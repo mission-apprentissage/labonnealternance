@@ -54,7 +54,7 @@ const FAQ = ({ recruteur, organisme, candidat }) => {
       <NextSeo title="F.A.Q | La bonne alternance | Trouvez votre alternance" description="Questions fréquemment posées. Résultats entreprises, résultats formations, etc..." />
 
       <ScrollToTop />
-      <Navigation bgcolor="is-white" />
+      <Navigation />
 
       <Breadcrumb forPage="faq" label="FAQ" />
 

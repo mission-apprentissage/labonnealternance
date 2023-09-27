@@ -8,7 +8,14 @@ import HeaderForm from "../HeaderForm/HeaderForm"
 import LogoLBA from "../LogoLBA/LogoLBA"
 import ResultFilterAndCounter from "../SearchForTrainingsAndJobs/components/ResultFilterAndCounter"
 
-const WidgetHeader = ({ handleSearchSubmit, isHome = false, allJobSearchError, trainingSearchError, isJobSearchLoading, isTrainingSearchLoading }) => {
+const WidgetHeader = ({
+  handleSearchSubmit,
+  isHome = false,
+  allJobSearchError = undefined,
+  trainingSearchError = undefined,
+  isJobSearchLoading = undefined,
+  isTrainingSearchLoading = undefined,
+}) => {
   const router = useRouter()
 
   const { selectedItem } = useContext(SearchResultContext)
