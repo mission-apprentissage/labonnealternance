@@ -7,6 +7,7 @@ const Postuler = () => {
   return (
     <>
       <NextSeo title="Recherche d'emploi | La bonne alternance | Trouvez votre alternance" description="Recherche d'emploi sur le site de La bonne alternance." />
+      {/* @ts-expect-error: TODO */}
       <Head />
       <WidgetPostuler />
     </>

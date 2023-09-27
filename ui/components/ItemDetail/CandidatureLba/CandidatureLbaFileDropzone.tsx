@@ -60,6 +60,7 @@ const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
   const getFileDropzone = () => {
     return (
       <FormControl cursor={hasSelectedFile() ? "auto" : "pointer"} data-testid="fileDropzone" isInvalid={formik.touched.fileName && formik.errors.fileName}>
+        {/* @ts-expect-error: TODO */}
         <Input {...getInputProps()} />
         {isDragActive ? (
           <Text ml={6}>Déposez le fichier ici</Text>

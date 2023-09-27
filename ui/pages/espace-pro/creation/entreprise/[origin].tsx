@@ -6,5 +6,5 @@ import CreationCompte from "../../../../components/espace_pro/Authentification/C
 export default function CreationEntrepriseWithOrigin() {
   const router = useRouter()
   const { origin } = router.query
-  return <CreationCompte type={AUTHTYPE.ENTREPRISE} widget={false} origin={origin} />
+  return <CreationCompte type={AUTHTYPE.ENTREPRISE} widget={false} origin={origin as string} />
 }

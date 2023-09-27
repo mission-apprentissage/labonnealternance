@@ -32,7 +32,7 @@ const trimSessionStorage = () => {
     }
 
     if (oldest) {
-      sessionStorage.removeItem(oldest)
+      sessionStorage.removeItem(`${oldest}`)
     }
   }
 }

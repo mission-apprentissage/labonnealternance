@@ -20,7 +20,7 @@ const Organisme = () => {
     <Box>
       <NextSeo title="Organisme de formation | La bonne alternance | Trouvez votre alternance" description="Comment référencer ma formation ? Nous sommes là pour vous aider." />
 
-      <Navigation bgcolor="is-white" currentPage="organisme-de-formation" />
+      <Navigation currentPage="organisme-de-formation" />
       <Breadcrumb forPage="organisme-de-formation" label="Organisme de formation" />
 
       <Container variant="pageContainer" bg="white">

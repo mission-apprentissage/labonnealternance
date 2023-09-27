@@ -12,7 +12,7 @@ import logoCatalogue from "../public/images/logo_catalogue.svg"
 import logoMatcha from "../public/images/logo_matcha.svg"
 import logoPrdv from "../public/images/logo_prdv.svg"
 
-const ServiceCard = ({ logo, title, text, url, mt, mb, imageMT, imageML }) => {
+const ServiceCard = ({ logo, title, text, url, mt, mb = undefined, imageMT, imageML }) => {
   return (
     <Box mt={mt} mb={mb}>
       <Flex bg="white" py="18px" px="24px" direction={["column", "row"]} borderRadius="10px" alignItems="center" boxShadow="0 0 12px rgb(0 0 0 / 21%)">

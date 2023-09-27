@@ -90,7 +90,7 @@ const CandidatureLbaModalBody = ({ formik, sendingState, company, item, kind, fr
             <FormLabel htmlFor="email">E-mail *</FormLabel>
             <Input id="email" data-testid="email" name="email" type="text" width="95%" onChange={onEmailChange} onBlur={formik.handleBlur} value={formik.values.email} />
             {suggestedEmails.length > 0 && (
-              <Box mt={2} fs="12px" color="grey.600">
+              <Box mt={2} fontSize="12px" color="grey.600">
                 <Text as="span" mr={2}>
                   Voulez vous dire ?
                 </Text>
@@ -99,7 +99,7 @@ const CandidatureLbaModalBody = ({ formik, sendingState, company, item, kind, fr
                     key={sE.corrected}
                     onClick={clickSuggestion}
                     textAlign="center"
-                    fs="12px"
+                    fontSize="12px"
                     width="fit-content"
                     px="5px"
                     pb="3px"

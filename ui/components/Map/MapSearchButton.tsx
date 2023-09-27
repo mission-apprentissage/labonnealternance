@@ -33,6 +33,7 @@ const MapSearchButton = ({ handleSearchClick }) => {
   }
 
   return hasSearch ? (
+    // @ts-expect-error: TODO
     <Box {...buttonContainerStyleParameters}>
       <Button {...buttonStyleParameters} onClick={handleSearchClick} title="Lancer une rechercher centrée sur la carte">
         <Flex alignItems="center">
