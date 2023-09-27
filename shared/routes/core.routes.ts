@@ -2,14 +2,16 @@ import { z } from "../helpers/zodWithOpenApi"
 
 import { IRoutesDef, ZResError } from "./common.routes"
 
-const zResponse = z.object({
-  env: z.enum(["local", "recette", "production", "preview"]),
-  healthcheck: z
-    .object({
-      mongodb: z.boolean(),
-    })
-    .strict(),
-})
+const zResponse = z
+  .object({
+    env: z.enum(["local", "recette", "production", "preview"]),
+    healthcheck: z
+      .object({
+        mongodb: z.boolean(),
+      })
+      .strict(),
+  })
+  .strict()
 
 export const zCoreRoutes = {
   get: {

@@ -46,9 +46,11 @@ export const zRomeRoutes = {
       },
     },
     "/api/rome/detail/:rome": {
-      params: z.object({
-        rome: z.string(),
-      }),
+      params: z
+        .object({
+          rome: z.string(),
+        })
+        .strict(),
       response: {
         "200": ZRomeDetail,
       },

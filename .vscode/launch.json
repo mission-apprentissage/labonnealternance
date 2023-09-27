@@ -9,8 +9,8 @@
       "type": "node-terminal",
       "request": "launch",
       "command": "npm run dev",
-      "cwd": "${workspaceFolder}/server",
-      "skipFiles": ["<node_internals>/**", "**/node_modules/**", "**/$KNOWN_TOOLS$/**"]
+      "cwd": "${workspaceFolder}/server"
+      // "skipFiles": ["<node_internals>/**", "**/node_modules/**", "**/$KNOWN_TOOLS$/**"]
     },
     {
       "name": "Ui: Debug Server-Side",

@@ -51,9 +51,11 @@ export const zRecruiterRoutes = {
       },
     },
     "/api/etablissement/entreprise/:siret": {
-      params: z.object({
-        siret: extensions.siret(),
-      }),
+      params: z
+        .object({
+          siret: extensions.siret(),
+        })
+        .strict(),
       querystring: z
         .object({
           cfa_delegated_siret: z.string().optional(),
@@ -83,7 +85,7 @@ export const zRecruiterRoutes = {
       },
     },
     "/api/etablissement/entreprise/:siret/opco": {
-      params: z.object({ siret: extensions.siret() }),
+      params: z.object({ siret: extensions.siret() }).strict(),
       response: {
         "2xx": z
           .object({
@@ -98,7 +100,7 @@ export const zRecruiterRoutes = {
       },
     },
     "/api/etablissement/cfa/:siret": {
-      params: z.object({ siret: extensions.siret() }),
+      params: z.object({ siret: extensions.siret() }).strict(),
       response: {
         "2xx": z
           .object({
@@ -107,12 +109,14 @@ export const zRecruiterRoutes = {
             establishment_siret: z.string(),
             establishment_raison_sociale: z.string(),
             contacts: z.array(
-              z.object({
-                email: z.string(),
-                confirmé: z.boolean(),
-                sources: z.array(z.string()),
-                date_collecte: z.date(),
-              })
+              z
+                .object({
+                  email: z.string(),
+                  confirmé: z.boolean(),
+                  sources: z.array(z.string()),
+                  date_collecte: z.date(),
+                })
+                .strict()
             ),
             address_detail: ZGlobalAddress,
             address: z.string(),
@@ -155,15 +159,19 @@ export const zRecruiterRoutes = {
       ]),
       response: {
         "2xx": z.union([
-          z.object({
-            formulaire: ZRecruiter,
-            user: ZUserRecruteur.extend({
-              type: z.literal("ENTREPRISE"),
-            }),
-          }),
-          z.object({
-            user: ZUserRecruteur,
-          }),
+          z
+            .object({
+              formulaire: ZRecruiter,
+              user: ZUserRecruteur.extend({
+                type: z.literal("ENTREPRISE"),
+              }),
+            })
+            .strict(),
+          z
+            .object({
+              user: ZUserRecruteur,
+            })
+            .strict(),
         ]),
       },
       securityScheme: {
@@ -172,7 +180,7 @@ export const zRecruiterRoutes = {
       },
     },
     "/api/etablissement/:establishment_siret/proposition/unsubscribe": {
-      params: z.object({ establishment_siret: extensions.siret() }),
+      params: z.object({ establishment_siret: extensions.siret() }).strict(),
       response: {
         "2xx": z
           .object({
@@ -186,7 +194,7 @@ export const zRecruiterRoutes = {
       },
     },
     "/api/etablissement/validation": {
-      body: z.object({ id: zObjectId }),
+      body: z.object({ id: zObjectId }).strict(),
       response: {
         "2xx": z.union([z.object({ token: z.string() }).strict(), z.object({ isUserAwaiting: z.boolean() }).strict()]),
       },
@@ -198,7 +206,7 @@ export const zRecruiterRoutes = {
   },
   put: {
     "/api/etablissement/:id": {
-      params: z.object({ id: zObjectId }),
+      params: z.object({ id: zObjectId }).strict(),
       body: ZUserRecruteur,
       response: {
         "2xx": z.union([ZUserRecruteur, z.null()]),

@@ -19,12 +19,14 @@ export const zEtablissementRoutes = {
         "2xx": z
           .object({
             etablissements: z.array(ZEtablissement),
-            pagination: z.object({
-              page: z.number().optional(),
-              resultats_par_page: z.number(),
-              nombre_de_page: z.number().optional(),
-              total: z.number().optional(),
-            }),
+            pagination: z
+              .object({
+                page: z.number().optional(),
+                resultats_par_page: z.number(),
+                nombre_de_page: z.number().optional(),
+                total: z.number().optional(),
+              })
+              .strict(),
           })
           .strict(),
       },
@@ -34,7 +36,7 @@ export const zEtablissementRoutes = {
       },
     },
     "/api/admin/etablissements/siret-formateur/:siret": {
-      params: z.object({ siret: extensions.siret() }),
+      params: z.object({ siret: extensions.siret() }).strict(),
       response: {
         "2xx": ZEtablissement,
       },
@@ -44,7 +46,7 @@ export const zEtablissementRoutes = {
       },
     },
     "/api/admin/etablissements/:id": {
-      params: z.object({ id: zObjectId }),
+      params: z.object({ id: zObjectId }).strict(),
       response: {
         "2xx": ZEtablissement,
       },

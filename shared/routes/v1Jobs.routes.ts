@@ -103,28 +103,37 @@ export const zV1JobsRoutes = {
         .object({
           referer: z.string().optional(),
         })
-        .strip(),
+        .passthrough(),
       response: {
         "200": z
           .object({
-            peJobs: z.union([z
-              .object({
-                results: z.array(ZLbaItem),
-              })
-              .strict()
-              .nullable(), ZLbacError]),
-            matchas: z.union([z
-              .object({
-                results: z.array(ZLbaItem),
-              })
-              .strict()
-              .nullable(), ZLbacError]),
-            lbaCompanies: z.union([z
-              .object({
-                results: z.array(ZLbaItem),
-              })
-              .strict()
-              .nullable(), ZLbacError]),
+            peJobs: z.union([
+              z
+                .object({
+                  results: z.array(ZLbaItem),
+                })
+                .strict()
+                .nullable(),
+              ZLbacError,
+            ]),
+            matchas: z.union([
+              z
+                .object({
+                  results: z.array(ZLbaItem),
+                })
+                .strict()
+                .nullable(),
+              ZLbacError,
+            ]),
+            lbaCompanies: z.union([
+              z
+                .object({
+                  results: z.array(ZLbaItem),
+                })
+                .strict()
+                .nullable(),
+              ZLbacError,
+            ]),
             lbbCompanies: z.null(), // always null until removal
           })
           .strict(),
@@ -162,7 +171,7 @@ export const zV1JobsRoutes = {
         .object({
           referer: z.string().optional(),
         })
-        .strip(),
+        .passthrough(),
       response: {
         "200": z
           .object({
@@ -193,7 +202,7 @@ export const zV1JobsRoutes = {
         .object({
           referer: z.string().optional(),
         })
-        .strip(),
+        .passthrough(),
       response: {
         "200": z
           .object({
@@ -224,7 +233,7 @@ export const zV1JobsRoutes = {
         .object({
           referer: z.string().optional(),
         })
-        .strip(),
+        .passthrough(),
       response: {
         "200": z
           .object({

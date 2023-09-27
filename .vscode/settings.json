@@ -53,10 +53,10 @@
     "**/.hg": true,
     "**/CVS": true,
     "**/.DS_Store": true,
-    "**/node_modules": true,
+    // "**/node_modules": true,
     ".next": true,
     "**/*/lib": true,
-    "**/*/dist": true,
+    // "**/*/dist": true,
     "**/*/build": true,
     "**/.webpack": true
   },
@@ -70,7 +70,7 @@
   "search.exclude": {
     "**/*/lib": true,
     "**/*/coverage": true,
-    "**/*/dist": true,
+    // "**/*/dist": true,
     "**/*/build": true,
     "**/*/.next": true,
     "**/.webpack": true

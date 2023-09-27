@@ -10,7 +10,7 @@ export const zEligibleTrainingsForAppointmentRoutes = {
     "/api/admin/eligible-trainings-for-appointment/etablissement-formateur-siret/:siret": {
       params: z.object({ siret: extensions.siret() }).strict(),
       response: {
-        "200": z.object({ parameters: z.array(ZEligibleTrainingsForAppointmentSchema) }),
+        "200": z.object({ parameters: z.array(ZEligibleTrainingsForAppointmentSchema) }).strict(),
       },
       securityScheme: {
         auth: "jwt-rdv-admin",
