@@ -46,6 +46,7 @@ export const ZLbaItem = z.object({
     .object({
       // informations de contact. optionnel
       email: z.string().nullable().optional(), // pe -> contact.courriel | lbb/lba -> email | formation -> email | matcha -> email
+      iv: z.string().nullish(),
       name: z.string().nullable().optional(), // pe -> contact.nom | matcha -> prenom nom
       phone: extensions.phone().nullable().optional(), // lbb/lba --> phone | matcha -> telephone
       info: z.string().nullable().optional(), // pe -> contact.coordonnees1+contact.coordonnees2+contact.coordonnees3
@@ -134,13 +135,15 @@ export const ZLbaItem = z.object({
     .object({
       description: z.string().nullable(),
       objectif: z.string().nullable(),
-      sessions: z.array(
-        z.object({
-          startDate: z.date().nullish(),
-          endDate: z.date().nullish(),
-          isPermanentEntry: z.boolean(),
-        })
-      ).nullish(),
+      sessions: z
+        .array(
+          z.object({
+            startDate: z.date().nullish(),
+            endDate: z.date().nullish(),
+            isPermanentEntry: z.boolean(),
+          })
+        )
+        .nullish(),
     })
     .strict()
     .nullable(),
