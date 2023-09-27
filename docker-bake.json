@@ -6,19 +6,19 @@
   },
   "group": {
     "production": {
-      "targets": ["server", "ui-production", "ui_espace_pro-production"]
+      "targets": ["server", "ui-production"]
     },
     "recette": {
-      "targets": ["server", "ui-recette", "ui_espace_pro-recette"]
+      "targets": ["server", "ui-recette"]
     },
     "next": {
-      "targets": ["server", "ui-next", "ui_espace_pro-next"]
+      "targets": ["server", "ui-next"]
     },
     "preview": {
-      "targets": ["server", "ui-preview", "ui_espace_pro-preview"]
+      "targets": ["server", "ui-preview"]
     },
     "local": {
-      "targets": ["server", "ui-local", "ui_espace_pro-local"]
+      "targets": ["server", "ui-local"]
     }
   },
   "target": {
@@ -57,21 +57,6 @@
         "org.opencontainers.image.description": "Ui lba"
       },
       "target": "ui"
-    },
-    "ui_espace_pro": {
-      "inherits": ["common"],
-      "matrix": {
-        "ENV": ["production", "recette", "preview", "local", "next"]
-      },
-      "name": "ui_espace_pro-${ENV}",
-      "args": {
-        "PUBLIC_ENV": "${ENV}"
-      },
-      "tags": ["ghcr.io/mission-apprentissage/mna_lba_ui_espace_pro:${VERSION}-${ENV}", "ghcr.io/mission-apprentissage/mna_lba_ui_espace_pro:${CHANNEL}-${ENV}"],
-      "labels": {
-        "org.opencontainers.image.description": "Ui Espace pro lba"
-      },
-      "target": "ui_espace_pro"
     }
   }
 }

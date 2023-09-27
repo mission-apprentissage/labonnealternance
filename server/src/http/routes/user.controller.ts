@@ -148,8 +148,8 @@ export default (server: Server) => {
           template: getStaticFilePath("./templates/mail-compte-desactive.mjml.ejs"),
           data: {
             images: {
-              accountDisabled: `${config.publicUrlEspacePro}/images/image-compte-desactive.png?raw=true`,
-              logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
+              accountDisabled: `${config.publicUrl}/images/image-compte-desactive.png?raw=true`,
+              logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
             },
             last_name,
             first_name,

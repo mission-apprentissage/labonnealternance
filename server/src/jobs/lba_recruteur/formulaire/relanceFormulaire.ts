@@ -34,8 +34,8 @@ export const relanceFormulaire = async (threshold) => {
 
         acc[`${formulaire._id}`].jobs.push({
           ...job,
-          supprimer: `${config.publicUrlEspacePro}/job/${job._id}/cancel`,
-          pourvue: `${config.publicUrlEspacePro}/job/${job._id}/provided`,
+          supprimer: `${config.publicUrl}/espace-pro/job/${job._id}/cancel`,
+          pourvue: `${config.publicUrl}/espace-pro/job/${job._id}/provided`,
         })
       })
     return acc
@@ -71,7 +71,7 @@ export const relanceFormulaire = async (threshold) => {
       template: getStaticFilePath("./templates/mail-expiration-offres.mjml.ejs"),
       data: {
         images: {
-          logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
+          logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
         },
         last_name: contactCFA?.last_name ?? last_name,
         first_name: contactCFA?.first_name ?? first_name,
@@ -79,7 +79,7 @@ export const relanceFormulaire = async (threshold) => {
         is_delegated,
         jobs,
         threshold,
-        url: `${config.publicUrlEspacePro}/authentification`,
+        url: `${config.publicUrl}/espace-pro/authentification`,
       },
     })
   })

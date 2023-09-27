@@ -1,6 +1,5 @@
 import { Box, Divider, Flex, Heading, Link, Text } from "@chakra-ui/react"
 import { useRouter } from "next/router"
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { IoMail } from "react-icons/io5"
 
 import { AuthentificationLayout } from "../index"

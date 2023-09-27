@@ -114,14 +114,14 @@ export default (server: Server) => {
           reason: "VERIFY",
         })
       }
-      const magiclink = `${config.publicUrlEspacePro}/authentification/verification?token=${createMagicLinkToken(userEmail)}`
+      const magiclink = `${config.publicUrl}/espace-pro/authentification/verification?token=${createMagicLinkToken(userEmail)}`
       await mailer.sendEmail({
         to: userEmail,
         subject: "Lien de connexion",
         template: getStaticFilePath("./templates/mail-connexion.mjml.ejs"),
         data: {
           images: {
-            logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
+            logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
           },
           last_name,
           first_name,

@@ -21,7 +21,6 @@ import {
   useToast,
   Link as ChakraLink,
 } from "@chakra-ui/react"
-// eslint-disable-next-line import/no-extraneous-dependencies
 import dayjs from "dayjs"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"

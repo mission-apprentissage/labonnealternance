@@ -1,6 +1,5 @@
 import { captureException } from "@sentry/node"
 import { program } from "commander"
-// eslint-disable-next-line import/no-extraneous-dependencies
 import HttpTerminator from "lil-http-terminator"
 
 import { closeMongoConnection } from "@/common/mongodb"

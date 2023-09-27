@@ -35,13 +35,13 @@ export const inviteEtablissementAffelnetToPremium = async () => {
       data: {
         isAffelnet: true,
         images: {
-          logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
-          exempleParcoursup: `${config.publicUrlEspacePro}/assets/exemple_integration_parcoursup.jpg?raw=true`,
+          logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
+          exempleParcoursup: `${config.publicUrl}/assets/exemple_integration_parcoursup.jpg?raw=true`,
         },
         etablissement: {
           email: etablissement.gestionnaire_email,
           activatedAt: dayjs(etablissement.created_at).format("DD/MM"),
-          linkToForm: `${config.publicUrlEspacePro}/form/premium/affelnet/${etablissement._id}`,
+          linkToForm: `${config.publicUrl}/espace-pro/form/premium/affelnet/${etablissement._id}`,
         },
       },
     })

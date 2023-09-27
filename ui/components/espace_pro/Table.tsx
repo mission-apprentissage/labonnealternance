@@ -1,6 +1,5 @@
 import { Box, Flex, Text } from "@chakra-ui/react"
 import React, { useMemo } from "react"
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { useFlexLayout, useSortBy, useTable } from "react-table"
 
 import { ArrowDownLine, ArrowUpLine } from "../../theme/components/icons"

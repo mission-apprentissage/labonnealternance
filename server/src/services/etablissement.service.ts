@@ -229,7 +229,7 @@ export const getIdcc = async (siret: string): Promise<ISIRET2IDCC | null> => {
  * @param {IRecruiter["_id"]} _id
  * @returns {String}
  */
-export const getValidationUrl = (_id: IRecruiter["_id"]): string => `${config.publicUrlEspacePro}/authentification/validation/${_id}`
+export const getValidationUrl = (_id: IRecruiter["_id"]): string => `${config.publicUrl}/espace-pro/authentification/validation/${_id}`
 /**
  * @description Validate the establishment email for a given ID
  * @param {IUserRecruteur["_id"]} _id
@@ -670,7 +670,7 @@ export const sendUserConfirmationEmail = async ({
     template: getStaticFilePath("./templates/mail-confirmation-email.mjml.ejs"),
     data: {
       images: {
-        logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
+        logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
       },
       last_name: lastName,
       first_name: firstName,
@@ -696,7 +696,7 @@ export const sendEmailConfirmationEntreprise = async (user: IUserRecruteur, recr
       template: getStaticFilePath("./templates/mail-nouvelle-offre-depot-simplifie.mjml.ejs"),
       data: {
         images: {
-          logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
+          logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
         },
         nom: user.last_name,
         prenom: user.first_name,
