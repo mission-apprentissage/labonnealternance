@@ -17,6 +17,7 @@ import formationsRegionV1Route from "./controllers/formations/formationRegion.co
 import formationsV1Route from "./controllers/formations/formations.controller"
 import jobsV1Route from "./controllers/jobs/jobs.controller"
 import jobsEtFormationsV1Route from "./controllers/jobsEtFormations/jobsEtFormations.controller"
+import metiers from "./controllers/metiers/metiers.controller"
 import rome from "./controllers/metiers/rome.controller"
 // import { corsMiddleware } from "./middlewares/corsMiddleware" // TODO_AB To check
 import metiersDAvenirRoute from "./controllers/metiersdavenir/metiersDAvenir.controller"
@@ -153,6 +154,7 @@ export async function bind(app: Server) {
    * LBACandidat
    */
   version(app)
+  metiers(app)
   rome(app)
   updateLbaCompany(app)
   campaignWebhook(app)
