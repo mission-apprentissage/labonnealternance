@@ -103,7 +103,7 @@ const FormulaireDesinscription = ({ handleUnsubscribeSuccess }) => {
                       </Text>
                     </Flex>
                   )}
-                  {touched && submitCount > 0 && errors.email && !emailError && <FormErrorMessage mb={2}>{errors.email}</FormErrorMessage>}
+                  {touched && submitCount > 0 && errors.email && !emailError && <FormErrorMessage mb={2}>{errors.email as string}</FormErrorMessage>}
                 </FormControl>
 
                 <FormControl mt={3} isInvalid={errors.reason && touched && submitCount > 0}>
@@ -118,7 +118,7 @@ const FormulaireDesinscription = ({ handleUnsubscribeSuccess }) => {
                       )
                     }}
                   </Field>
-                  {touched && submitCount > 0 && errors.reason && <FormErrorMessage>{errors.reason}</FormErrorMessage>}
+                  {touched && submitCount > 0 && errors.reason && <FormErrorMessage>{errors.reason as string}</FormErrorMessage>}
                 </FormControl>
 
                 <Flex mt={5} justifyContent="space-between">
