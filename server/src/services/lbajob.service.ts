@@ -259,7 +259,7 @@ function sortLbaJobs(jobs: { results: ILbaItem[] }) {
  * Incrémente le compteur de vue de la page de détail d'une offre LBA
  * @param {string} jobId
  */
-export const addOffreDetailView = async (jobId: IJob["_id"]) => {
+export const addOffreDetailView = async (jobId: IJob["_id"] | string) => {
   await incrementLbaJobViewCount(jobId, {
     stats_detail_view: 1,
   })
@@ -268,7 +268,7 @@ export const addOffreDetailView = async (jobId: IJob["_id"]) => {
 /**
  * Incrémente le compteur de vue de la page de recherche d'une offre LBA
  */
-export const addOffreSearchView = async (jobId: IJob["_id"]) => {
+export const addOffreSearchView = async (jobId: IJob["_id"] | string) => {
   await incrementLbaJobViewCount(jobId, {
     stats_search_view: 1,
   })

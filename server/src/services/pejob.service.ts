@@ -172,7 +172,7 @@ const transformPeJob = ({ job, latitude = null, longitude = null }: { job: PEJob
 
   resultJob.job = {
     id: job.id,
-    creationDate: job.dateCreation,
+    creationDate: new Date(job.dateCreation),
     description: job.description || "",
     contractType: job.typeContrat,
     contractDescription: job.typeContratLibelle,

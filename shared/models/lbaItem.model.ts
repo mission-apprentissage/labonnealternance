@@ -46,6 +46,7 @@ export const ZLbaItem = z.object({
     .object({
       // informations de contact. optionnel
       email: z.string().nullable().optional(), // pe -> contact.courriel | lbb/lba -> email | formation -> email | matcha -> email
+      iv: z.string().nullish(),
       name: z.string().nullable().optional(), // pe -> contact.nom | matcha -> prenom nom
       phone: extensions.phone().nullable().optional(), // lbb/lba --> phone | matcha -> telephone
       info: z.string().nullable().optional(), // pe -> contact.coordonnees1+contact.coordonnees2+contact.coordonnees3
@@ -119,7 +120,7 @@ export const ZLbaItem = z.object({
       jobStartDate: z.date().optional(), // matcha -> offres.date_debut_apprentissage
       romeDetails: ZRomeDetail.optional().nullish(), // matcha -> offres.rome_detail -> détail du code ROME
       rythmeAlternance: z.string().nullable().optional(), // matcha -> offres.rythme_alternance
-      elligibleHandicap: z.boolean(), // matcha -> offres.is_disabled_elligible
+      elligibleHandicap: z.boolean().nullish(), // matcha -> offres.is_disabled_elligible
       dureeContrat: z.string().nullable().optional(), // matcha -> offres.duree_contrat
       quantiteContrat: z.number().nullable().optional(), // matcha -> offres.quantite
       status: z.enum(["Active", "Pourvue", "Annulée", "En attente"]).nullable().optional(),
@@ -134,13 +135,15 @@ export const ZLbaItem = z.object({
     .object({
       description: z.string().nullable(),
       objectif: z.string().nullable(),
-      sessions: z.array(
-        z.object({
-          startDate: z.date().nullish(),
-          endDate: z.date().nullish(),
-          isPermanentEntry: z.boolean(),
-        })
-      ).nullish(),
+      sessions: z
+        .array(
+          z.object({
+            startDate: z.date().nullish(),
+            endDate: z.date().nullish(),
+            isPermanentEntry: z.boolean(),
+          })
+        )
+        .nullish(),
     })
     .strict()
     .nullable(),

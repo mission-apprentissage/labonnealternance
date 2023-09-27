@@ -62,6 +62,7 @@ export default (server: Server) => {
       preHandler: [server.auth(zRoutes.get["/api/user"].securityScheme)],
     },
     async (req, res) => {
+      // TODO KEVIN: ADD PAGINATION
       const [awaiting, active, disabled, error] = await Promise.all([getAwaitingUsers(), getActiveUsers(), getDisabledUsers(), getErrorUsers()])
       return res.status(200).send({ awaiting, active, disabled, error })
     }
