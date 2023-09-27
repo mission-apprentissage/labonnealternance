@@ -40,7 +40,6 @@ export const searchForJobsFunction = async ({
         longitude: values?.location?.value ? values.location.value.coordinates[0] : null,
         latitude: values?.location?.value ? values.location.value.coordinates[1] : null,
         insee: values?.location?.insee,
-        zipcode: values?.location?.zipcode,
         radius: values.radius || 30,
         diploma: values.diploma,
         opco: opcoFilter,
