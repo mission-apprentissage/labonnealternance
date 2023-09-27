@@ -1,5 +1,5 @@
 module.exports = {
-  branches: ["master", { name: "next", channel: "next", prerelease: "rc" }],
+  branches: ["main", { name: "next", channel: "next", prerelease: "rc" }],
   repositoryUrl: "https://github.com/mission-apprentissage/labonnealternance.git",
   plugins: [
     "@semantic-release/commit-analyzer",
