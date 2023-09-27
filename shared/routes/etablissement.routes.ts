@@ -54,6 +54,7 @@ export const zEtablissementRoutes = {
       },
     },
     "/api/etablissements/:id": {
+      // TODO_SECURITY_FIX faire en sorte qu'il n'y ait pas les adresses emails du catalogue exposées au publlic (définir un ZEtablissementPublic)
       params: z.object({ id: zObjectId }).strict(),
       response: {
         "2xx": ZEtablissement,
@@ -106,6 +107,7 @@ export const zEtablissementRoutes = {
       },
     },
     "/api/etablissements/:id/premium/affelnet/accept": {
+      // TODO_SECURITY_FIX ajouter un jwt
       params: z.object({ id: zObjectId }).strict(),
       response: {
         "2xx": ZEtablissement,
@@ -116,6 +118,7 @@ export const zEtablissementRoutes = {
       },
     },
     "/api/etablissements/:id/premium/accept": {
+      // TODO_SECURITY_FIX ajouter un jwt
       params: z.object({ id: zObjectId }).strict(),
       response: {
         "2xx": ZEtablissement,
@@ -126,6 +129,7 @@ export const zEtablissementRoutes = {
       },
     },
     "/api/etablissements/:id/premium/affelnet/refuse": {
+      // TODO_SECURITY_FIX ajouter un jwt
       params: z.object({ id: zObjectId }).strict(),
       response: {
         "2xx": ZEtablissement,
@@ -136,6 +140,7 @@ export const zEtablissementRoutes = {
       },
     },
     "/api/etablissements/:id/premium/refuse": {
+      // TODO_SECURITY_FIX ajouter un jwt
       params: z.object({ id: zObjectId }).strict(),
       response: {
         "2xx": ZEtablissement,
@@ -146,6 +151,7 @@ export const zEtablissementRoutes = {
       },
     },
     "/api/etablissements/:id/opt-out/unsubscribe": {
+      // TODO_SECURITY_FIX ajouter un jwt
       params: z.object({ id: zObjectId }).strict(),
       body: z.object({ opt_out_question: z.string() }).strict(),
       response: {
@@ -161,29 +167,7 @@ export const zEtablissementRoutes = {
     "/api/admin/etablissements/:id": {
       params: z.object({ id: zObjectId }).strict(),
       body: ZEtablissement.pick({
-        formateur_siret: true,
-        gestionnaire_siret: true,
-        raison_sociale: true,
-        adresse: true,
-        formateur_address: true,
-        formateur_zip_code: true,
-        formateur_city: true,
         gestionnaire_email: true,
-        premium_invitation_date: true,
-        premium_activation_date: true,
-        premium_refusal_date: true,
-        premium_affelnet_invitation_date: true,
-        premium_affelnet_activation_date: true,
-        premium_affelnet_refusal_date: true,
-        optout_invitation_date: true,
-        optout_activation_scheduled_date: true,
-        optout_activation_date: true,
-        optout_refusal_date: true,
-        mailing: true,
-        last_catalogue_sync_date: true,
-        created_at: true,
-        affelnet_perimetre: true,
-        to_etablissement_emails: true,
       }).strict(),
       response: {
         "2xx": ZEtablissement,
@@ -194,6 +178,7 @@ export const zEtablissementRoutes = {
       },
     },
     "/api/etablissements/:id/appointments/:appointmentId": {
+      // TODO_SECURITY_FIX ajouter un jwt
       body: z.object({ has_been_read: z.string() }).strict(),
       params: z.object({ id: zObjectId, appointmentId: zObjectId }).strict(),
       response: {
