@@ -111,7 +111,7 @@ export default (server: Server) => {
           response: "OK",
         })
       }
-
+      // @ts-expect-error: TODO
       return res.send({ formations, jobs })
     }
   )

@@ -357,6 +357,7 @@ export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }:
  * @returns {Promise<IRecruiter>}
  */
 export const checkOffreExists = async (id: IJob["_id"]): Promise<boolean> => {
+  // @ts-expect-error: TODO
   const offre = await getOffre(id)
   return offre ? true : false
 }

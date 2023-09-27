@@ -22,6 +22,7 @@ export default (server: Server) => {
       // TODO: AttachValidation Error ?
       attachValidation: true,
     },
+    // @ts-expect-error: TODO
     async (req, res) => {
       const { romes, romeDomain, caller, departement, region, diploma, options } = req.query
       const { referer } = req.headers

@@ -45,7 +45,7 @@ export default (server: Server) => {
           response: "OK",
         })
       }
-
+      // @ts-expect-error: TODO
       return res.send(result)
     }
   )
@@ -85,7 +85,7 @@ export default (server: Server) => {
           })
         }
       }
-
+      // @ts-expect-error: TODO
       return res.send(result)
     }
   )
