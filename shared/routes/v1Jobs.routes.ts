@@ -103,7 +103,7 @@ export const zV1JobsRoutes = {
         .object({
           referer: z.string().optional(),
         })
-        .strict(),
+        .strip(),
       response: {
         "200": z
           .object({
@@ -165,7 +165,7 @@ export const zV1JobsRoutes = {
         .object({
           referer: z.string().optional(),
         })
-        .strict(),
+        .strip(),
       response: {
         "200": z
           .object({
@@ -196,7 +196,7 @@ export const zV1JobsRoutes = {
         .object({
           referer: z.string().optional(),
         })
-        .strict(),
+        .strip(),
       response: {
         "200": z
           .object({
@@ -227,7 +227,7 @@ export const zV1JobsRoutes = {
         .object({
           referer: z.string().optional(),
         })
-        .strict(),
+        .strip(),
       response: {
         "200": z
           .object({
