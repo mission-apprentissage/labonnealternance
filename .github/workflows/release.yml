@@ -1,7 +1,7 @@
 name: Release version
 on:
   push:
-    branches: [main]
+    branches: [main, next]
 
 jobs:
   tests:
@@ -71,7 +71,7 @@ jobs:
     name: Deploy ${{ needs.release.outputs.VERSION }} on recette
     uses: "./.github/workflows/_deploy.yml"
     with:
-      environment: recette
+      environment: next
       app_version: ${{ needs.release.outputs.VERSION }}
     secrets:
       DEPLOY_SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
