@@ -26,7 +26,7 @@ const NavToggle = ({ toggle, isOpen }) => {
   )
 }
 
-const NavItem = ({ children, to = "/", isMyWorkspace, ...rest }) => {
+const NavItem = ({ children, to = "/", isMyWorkspace = false, ...rest }) => {
   const router = useRouter()
   const isActive = router.pathname === to
 
@@ -57,7 +57,7 @@ const NavLinks = ({ isOpen }) => {
   )
 }
 
-const NavBarContainer = ({ children, isMyWorkspace, ...props }) => {
+const NavBarContainer = ({ children, isMyWorkspace = false, ...props }) => {
   const boxProps = !isMyWorkspace
     ? {
         boxShadow: "md",

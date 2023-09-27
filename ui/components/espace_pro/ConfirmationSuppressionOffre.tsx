@@ -114,10 +114,10 @@ export default function ConfirmationSuppressionOffre(props) {
         )}
 
         {extraOption.isOpen && (
-          <ModalBody isRequired>
+          <ModalBody>
             <FormLabel>Raison de l'annulation</FormLabel>
             <FormControl isRequired>
-              <Input onChange={(e) => SetjobStatusComment(e.target.value)} isRequired minLength="3" />
+              <Input onChange={(e) => SetjobStatusComment(e.target.value)} isRequired minLength={3} />
             </FormControl>
             <Flex justify="flex-end">
               <Button variant="secondary" mt={3} onClick={() => updateOffer("Annulée")} isDisabled={job_status_comment.length < 3}>
