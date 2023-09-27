@@ -528,7 +528,6 @@ const getSchoolName = (formation: Partial<IFormationCatalogue>): string | undefi
  * Si aucune ne correspond au lieu, retourne les plus proches quelle que soit la distance.
  * TODO: déplacement du contrôle des paramètres au niveau controller, appel direct de getAtLeastSomeFromations depuis le controller
  * @param {any} query requête
- * @returns {Promise<IApiError | { results: ILbaItem[]}}
  */
 export const getFormationsQuery = async ({
   romes,

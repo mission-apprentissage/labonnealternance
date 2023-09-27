@@ -21,7 +21,6 @@ import {
   IEtablissementCatalogue,
   IEtablissementGouv,
   IFormatAPIEntreprise,
-  IFormatAPIReferentiel,
   IReferentiel,
   ISIRET2IDCC,
 } from "./etablissement.service.types"
