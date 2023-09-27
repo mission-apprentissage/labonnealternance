@@ -5,6 +5,7 @@ import { IRoutesDef } from "./common.routes"
 export const zOptoutRoutes = {
   get: {
     "/api/optout/validate": {
+      // TODO_SECURITY_FIX jwt
       // jwt auth
       response: {
         "200": z.union([

@@ -9,6 +9,9 @@ import { IRoutesDef } from "./common.routes"
 export const zUserRecruteurRoutes = {
   get: {
     "/api/user/opco": {
+      // TODO_SECURITY_FIX supprimer  les mongo query
+      // TODO_SECURITY_FIX session cookie plus permission
+      // TODO_SECURITY_FIX enlever les données privées (dont last connection date)
       querystring: z
         .object({
           userQuery: z.string() /* mongo query */,
@@ -18,8 +21,7 @@ export const zUserRecruteurRoutes = {
       response: {
         "200": z.array(
           ZUserRecruteur.extend({
-            offres: z.number(), // toujours 0, wtf ?
-            jobs: z.number().optional(),
+            jobs: z.number().optional(), // TODO remplacer jobs par jobCount
             origin: z.string().optional(),
             job_detail: z.array(ZJob).optional(),
           }).strict()
@@ -32,6 +34,7 @@ export const zUserRecruteurRoutes = {
     },
     "/api/user": {
       // TODO ANY TO BE FIXED
+      // TODO_SECURITY_FIX session admin only et changer le chemin vers /api/admin/user
       response: {
         "200": z.any(),
         // "200": z.object({
@@ -47,6 +50,8 @@ export const zUserRecruteurRoutes = {
       },
     },
     "/api/user/:userId": {
+      // TODO_SECURITY_FIX session et cookie + permissions
+      // TODO_SECURITY_FIX enlever les données privées (dont last connection date)
       params: z
         .object({
           userId: z.string(),
@@ -63,6 +68,8 @@ export const zUserRecruteurRoutes = {
   },
   post: {
     "/api/user": {
+      // TODO_SECURITY_FIX réduire la payload au strict nécessaire
+      // TODO checker si unused
       body: ZUserRecruteur.extend({
         scope: z.string().optional(),
       }).strict(),
@@ -77,6 +84,7 @@ export const zUserRecruteurRoutes = {
   },
   put: {
     "/api/user/:userId": {
+      // TODO_SECURITY_FIX session et cookie + permissions
       params: z.object({ userId: zObjectId }),
       body: ZUserRecruteur.pick({
         last_name: true,
@@ -97,6 +105,7 @@ export const zUserRecruteurRoutes = {
       },
     },
     "/api/user/:userId/history": {
+      // TODO_SECURITY_FIX session et cookie + permissions + role
       params: z.object({ userId: zObjectId }),
       body: ZUserStatusValidation,
       response: {
@@ -110,6 +119,8 @@ export const zUserRecruteurRoutes = {
   },
   delete: {
     "/api/user": {
+      // TODO_SECURITY_FIX session et cookie + permissions
+      // TODO return json format
       querystring: z
         .object({
           userId: zObjectId,

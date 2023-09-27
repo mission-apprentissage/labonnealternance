@@ -8,6 +8,7 @@ import { IRoutesDef, ZResError } from "./common.routes"
 export const zV1FormationsRoutes = {
   get: {
     "/api/v1/formations": {
+      // TODO_SECURITY_FIX vérifier ce qu'on fait des emails et des téléphones et modifier les modèles en conséquences
       querystring: z
         .object({
           romes: z.string().optional(),

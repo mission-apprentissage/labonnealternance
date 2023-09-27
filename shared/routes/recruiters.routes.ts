@@ -22,6 +22,7 @@ const zShalowUser = ZUserRecruteur.pick({
 export const zRecruiterRoutes = {
   get: {
     "/api/etablissement/cfa/rome": {
+      // TODO rename route for better undeurestandingue
       querystring: z
         .object({
           latitude: z.coerce.number(),
@@ -51,6 +52,7 @@ export const zRecruiterRoutes = {
       },
     },
     "/api/etablissement/entreprise/:siret": {
+      // TODO_SECURITY_FIX réduire les paramètres de réponse remontant à l'ui
       params: z.object({
         siret: extensions.siret(),
       }),
@@ -98,6 +100,8 @@ export const zRecruiterRoutes = {
       },
     },
     "/api/etablissement/cfa/:siret": {
+      // TODO_SECURITY_FIX réduire les paramètres de réponse remontant à l'ui
+      // TODO_SECURITY_FIX faire en sorte que le back refasse l'appel
       params: z.object({ siret: extensions.siret() }),
       response: {
         "2xx": z
@@ -172,6 +176,7 @@ export const zRecruiterRoutes = {
       },
     },
     "/api/etablissement/:establishment_siret/proposition/unsubscribe": {
+      // TODO_SECURITY_FIX jwt
       params: z.object({ establishment_siret: extensions.siret() }),
       response: {
         "2xx": z
@@ -186,6 +191,7 @@ export const zRecruiterRoutes = {
       },
     },
     "/api/etablissement/validation": {
+      // TODO_SECURITY_FIX jwt
       body: z.object({ id: zObjectId }),
       response: {
         "2xx": z.union([z.object({ token: z.string() }).strict(), z.object({ isUserAwaiting: z.boolean() }).strict()]),
@@ -198,6 +204,7 @@ export const zRecruiterRoutes = {
   },
   put: {
     "/api/etablissement/:id": {
+      // TODO_SECURITY_FIX jwt en mode session + filtre sur la payload pour réduction
       params: z.object({ id: zObjectId }),
       body: ZUserRecruteur,
       response: {

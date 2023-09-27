@@ -5,6 +5,7 @@ import { IRoutesDef } from "./common.routes"
 export const zAuthPasswordRoutes = {
   post: {
     "/api/password/forgotten-password": {
+      // TODO_SECURITY_FIX AB will think about it
       body: z
         .object({
           username: z.string(),

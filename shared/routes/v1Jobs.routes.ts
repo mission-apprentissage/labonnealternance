@@ -28,6 +28,7 @@ export const zV1JobsRoutes = {
       },
     },
     "/api/v1/jobs/bulk": {
+      // TODO_SECURITY_FIX il faut faire quelque chose car sinon nous allons claquer des fesses
       querystring: z
         .object({
           query: z.string().optional(), // mongo query
@@ -57,6 +58,7 @@ export const zV1JobsRoutes = {
       },
     },
     "/api/v1/jobs/delegations/:jobId": {
+      // TODO_SECURITY_FIX scoper le retour aux seules offres de l'utilisateur (permissions jobid pour l'utilisateur connecté)
       params: z
         .object({
           jobId: zObjectId,
@@ -107,24 +109,33 @@ export const zV1JobsRoutes = {
       response: {
         "200": z
           .object({
-            peJobs: z.union([z
-              .object({
-                results: z.array(ZLbaItem),
-              })
-              .strict()
-              .nullable(), ZLbacError]),
-            matchas: z.union([z
-              .object({
-                results: z.array(ZLbaItem),
-              })
-              .strict()
-              .nullable(), ZLbacError]),
-            lbaCompanies: z.union([z
-              .object({
-                results: z.array(ZLbaItem),
-              })
-              .strict()
-              .nullable(), ZLbacError]),
+            peJobs: z.union([
+              z
+                .object({
+                  results: z.array(ZLbaItem),
+                })
+                .strict()
+                .nullable(),
+              ZLbacError,
+            ]),
+            matchas: z.union([
+              z
+                .object({
+                  results: z.array(ZLbaItem),
+                })
+                .strict()
+                .nullable(),
+              ZLbacError,
+            ]),
+            lbaCompanies: z.union([
+              z
+                .object({
+                  results: z.array(ZLbaItem),
+                })
+                .strict()
+                .nullable(),
+              ZLbacError,
+            ]),
             lbbCompanies: z.null(), // always null until removal
           })
           .strict(),
@@ -315,6 +326,7 @@ export const zV1JobsRoutes = {
       },
     },
     "/api/v1/jobs/provided/:jobId": {
+      // TODO_SECURITY_FIX vérifier le scope au moment de l'update du statut de l'offre
       params: z
         .object({
           jobId: zObjectId,
@@ -329,6 +341,7 @@ export const zV1JobsRoutes = {
       },
     },
     "/api/v1/jobs/canceled/:jobId": {
+      // TODO_SECURITY_FIX vérifier le scope au moment de l'update du statut de l'offre
       params: z
         .object({
           jobId: zObjectId,
@@ -343,6 +356,7 @@ export const zV1JobsRoutes = {
       },
     },
     "/api/v1/jobs/extend/:jobId": {
+      // TODO_SECURITY_FIX vérifier le scope au moment de l'update du statut de l'offre
       params: z
         .object({
           jobId: zObjectId,
@@ -373,6 +387,7 @@ export const zV1JobsRoutes = {
   },
   patch: {
     "/api/v1/jobs/:jobId": {
+      // TODO_SECURITY_FIX vérifier le scope au moment de l'update du statut de l'offre
       params: z
         .object({
           jobId: zObjectId,
