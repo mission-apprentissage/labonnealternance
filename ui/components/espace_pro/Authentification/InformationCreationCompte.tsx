@@ -155,10 +155,11 @@ export const InformationCreationCompte = () => {
 
   const { type, informationSiret: informationSiretString }: { type: string; informationSiret: string } = router.query as any
   const informationSiret = JSON.parse(informationSiretString || "{}")
+  const { establishment_siret } = informationSiret
 
   const submitForm = (values, { setSubmitting, setFieldError }) => {
     // save info if not trusted from source
-    createPartenaire({ ...informationSiret, ...values, type })
+    createPartenaire({ ...values, type, establishment_siret })
       .then(({ data }) => {
         if (data.user.status[0].status === "VALIDÉ") {
           if (data.user.type === AUTHTYPE.ENTREPRISE) {

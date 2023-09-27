@@ -127,6 +127,7 @@ const userRecruteurSchema = new Schema<IUserRecruteur>(
   },
   {
     timestamps: true,
+    versionKey: false,
   }
 )
 

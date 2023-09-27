@@ -132,7 +132,7 @@ export const updateUserValidationHistory = async (
   userId: IUserRecruteur["_id"],
   state: UpdateQuery<IUserStatusValidation>,
   options: ModelUpdateOptions = { new: true }
-): Promise<IUserRecruteur | null> => await UserRecruteur.findByIdAndUpdate({ _id: userId }, { $push: { status: state } }, options)
+): Promise<IUserRecruteur | null> => await UserRecruteur.findByIdAndUpdate({ _id: userId }, { $push: { status: state } }, options).lean()
 
 /**
  * @description get last user validation state from status array, by creation date
