@@ -51,12 +51,12 @@ const zRoutesGetP2 = {
   ...zFormulaireRoute.get,
   ...zRecruiterRoutes.get,
   ...zAppointmentsRoute.get,
-  ...zFormationRoute.get,
 } as const
 
 const zRoutesGetP3 = {
   ...zEligibleTrainingsForAppointmentRoutes.get,
   ...zMailRoutes.get,
+  ...zFormationRoute.get,
 } as const
 
 const zRoutesGet: typeof zRoutesGetP1 & typeof zRoutesGetP2 & typeof zRoutesGetP3 = {

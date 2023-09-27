@@ -1,6 +1,6 @@
 import { z } from "zod"
 
-import { ZLbacError } from "../models/lbacError.model"
+import { ZApiError, ZLbacError } from "../models/lbacError.model"
 import { ZLbaItem } from "../models/lbaItem.model"
 
 import { IRoutesDef, ZResError } from "./common.routes"
@@ -37,7 +37,7 @@ export const zV1JobsEtFormationsRoutes = {
                 results: z.array(ZLbaItem),
               })
               .strict()
-              .or(ZLbacError)
+              .or(ZApiError)
               .or(z.null()),
             jobs: z
               .object({
@@ -46,25 +46,26 @@ export const zV1JobsEtFormationsRoutes = {
                     results: z.array(ZLbaItem),
                   })
                   .strict()
-                  .or(ZLbacError)
+                  .or(ZApiError)
                   .nullable(),
                 matchas: z
                   .object({
                     results: z.array(ZLbaItem),
                   })
                   .strict()
-                  .or(ZLbacError)
+                  .or(ZApiError)
                   .nullable(),
                 lbaCompanies: z
                   .object({
                     results: z.array(ZLbaItem),
                   })
                   .strict()
-                  .or(ZLbacError)
+                  .or(ZApiError)
                   .nullable(),
                 lbbCompanies: z.null(), // always null until removal
               })
               .strict()
+              .or(ZApiError)
               .or(z.null()),
           })
           .strict(),

@@ -1,15 +1,11 @@
 import Sentry from "@sentry/node"
+import { ZApiError } from "shared/models"
+import { z } from "zod"
 
 import { trackApiCall } from "./sendTrackingEvent"
 import { sentryCaptureException } from "./sentryUtils"
 
-export interface IApiError {
-  result?: string
-  error: string
-  message?: any
-  status?: number
-  statusText?: string
-}
+export type IApiError = z.input<typeof ZApiError>
 
 /**
  * Process une erreur lors d'un appel vers une API LBAC
