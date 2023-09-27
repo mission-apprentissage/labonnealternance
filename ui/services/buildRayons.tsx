@@ -40,12 +40,12 @@ export function buildRayonsButtons(locationRadius, onClickCallback) {
         return (
           <Box
             key={key}
-            value={key}
             {...buttonProperties}
             color={locationRadius?.toString() === key ? "white" : "grey.750"}
             background={locationRadius?.toString() === key ? "#6a6af4" : "white"}
             borderColor={locationRadius?.toString() === key ? "#6a6af4" : "grey.400"}
             onClick={(evt) => {
+              // @ts-expect-error: TODO
               evt.currentTarget.value = key
               onClickCallback(evt, key)
             }}

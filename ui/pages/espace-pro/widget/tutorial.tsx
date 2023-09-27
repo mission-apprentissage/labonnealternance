@@ -14,6 +14,7 @@ export default function WidgetTutorial() {
   useEffect(() => {
     const script = document.createElement("script")
     script.src = "/assets/widget.min.js"
+    // @ts-expect-error: TODO
     script.onload = () => window.initPrdvWidget()
     document.head.appendChild(script)
     setIsLoaded(true)
@@ -82,6 +83,7 @@ export default function WidgetTutorial() {
           <Box textAlign={"center"} mt={12} mb={14} className="widget-example">
             {!isLoaded && <Spinner />}
             {isLoaded && (
+              // @ts-expect-error: TODO
               <Button as="div" variant="secondary" onClick={() => document.querySelector("div.widget-prdv > a").click()}>
                 <div className="widget-prdv" data-id-rco-formation="03_2064746F|03_1133802|104237" data-referrer="lba" />
               </Button>

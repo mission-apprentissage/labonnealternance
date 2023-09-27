@@ -103,7 +103,6 @@ const Map = ({ handleSearchSubmit, showSearchForm, selectItemOnMap }) => {
 
     return (
       !isMapInitialized &&
-      // @ts-expect-error: TODO
       (trainings.length > 0 || jobs.peJobs || jobs.lbaCompanies || jobs.matchas) &&
       (shouldMapBeVisible || vw > 767) &&
       (!map || (map && !document.getElementsByClassName("mapContainer")[0].innerHTML.length))

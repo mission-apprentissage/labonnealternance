@@ -3,7 +3,7 @@ import axios from "axios"
 import { logError } from "../../../utils/tools"
 
 import { storeJobsInSession } from "./handleSessionStorage"
-import { allJobSearchErrorText, getRncpFromParameters, getRomeFromParameters, jobsApi, partialJobSearchErrorText, technicalErrorText } from "./utils"
+import { allJobSearchErrorText, getRomeFromParameters, jobsApi, partialJobSearchErrorText, technicalErrorText } from "./utils"
 
 export const searchForJobsFunction = async ({
   values,
@@ -31,30 +31,32 @@ export const searchForJobsFunction = async ({
   try {
     const searchCenter = values?.location?.value ? [values.location.value.coordinates[0], values.location.value.coordinates[1]] : null
     const romes = getRomeFromParameters({ values, widgetParameters })
-    const rncp = romes ? "" : getRncpFromParameters({ widgetParameters }) // on ne transmet pas romes ET rncp
+    // TODO
+    // const rncp = romes ? "" : getRncpFromParameters({ widgetParameters }) // on ne transmet pas romes ET rncp
 
-    const params: { 
-      romes?: string, 
-      rncp?: string, 
-      opco?: string, 
-      opcoUrl?: string, 
-      longitude?: number, 
-      latitude?: number, 
-      insee?: string, 
-      radius?: number, 
-      diploma?: string } = {
+    const params: {
+      romes?: string
+      rncp?: string
+      opco?: string
+      opcoUrl?: string
+      longitude?: number
+      latitude?: number
+      insee?: string
+      radius?: number
+      diploma?: string
+    } = {
       romes,
-      rncp,
+      // rncp,
       opco: opcoFilter,
       opcoUrl: opcoUrlFilter,
     }
-    if(values?.location?.value){
+    if (values?.location?.value) {
       params.longitude = values.location.value.coordinates[0]
       params.latitude = values.location.value.coordinates[1]
-      params.insee = values.location.insee 
+      params.insee = values.location.insee
       params.radius = values.radius || 30
     }
-    if(values.diploma){
+    if (values.diploma) {
       params.diploma = values.diploma
     }
 
@@ -64,7 +66,7 @@ export const searchForJobsFunction = async ({
 
     let peJobs = null
 
-    let results = {}
+    let results = {} as any
 
     if (response.data === "romes_missing") {
       setJobSearchError(technicalErrorText)

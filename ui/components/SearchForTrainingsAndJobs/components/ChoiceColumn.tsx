@@ -220,6 +220,7 @@ const ChoiceColumn = ({
     return (
       <Box display={displayProperty} width="75%" margin="auto" pt={12}>
         <Image margin="auto" width="75%" src={dosearchImage} alt="" />
+        {/* @ts-expect-error: TODO */}
         <Box pl={12} pr={8} py={4} {...noSearchTextProperties}>
           <Box textAlign="left">
             <Text fontSize="1.7rem" mb={2} fontWeight={700}>

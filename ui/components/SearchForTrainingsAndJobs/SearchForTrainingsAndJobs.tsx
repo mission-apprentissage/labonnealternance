@@ -189,7 +189,6 @@ const SearchForTrainingsAndJobs = () => {
       searchForJobs({ values, searchTimestamp, followUpItem, selectFollowUpItem })
     }
     setIsFormVisible(false)
-    // @ts-expect-error: TODO
     pushHistory({ router, scopeContext, display: "list", searchParameters: values, searchTimestamp, displayMap })
     setCurrentSearch(searchTimestamp)
   }
@@ -279,7 +278,6 @@ const SearchForTrainingsAndJobs = () => {
 
     if (!doNotSaveToHistory) {
       unSelectItem("doNotSaveToHistory")
-      // @ts-expect-error: TODO
       pushHistory({
         router,
         scopeContext,
@@ -307,7 +305,6 @@ const SearchForTrainingsAndJobs = () => {
     setVisiblePane("resultMap")
 
     if (!doNotSaveToHistory) {
-      // @ts-expect-error: TODO
       pushHistory({
         router,
         scopeContext,
@@ -337,7 +334,6 @@ const SearchForTrainingsAndJobs = () => {
     setIsFormVisible(false)
 
     if (!doNotSaveToHistory) {
-      // @ts-expect-error: TODO
       pushHistory({
         router,
         scopeContext,
@@ -352,7 +348,6 @@ const SearchForTrainingsAndJobs = () => {
   const selectItemOnMap = (item) => {
     showResultList(null, "doNotSaveToHistory")
     setCurrentPage("fiche")
-    // @ts-expect-error: TODO
     pushHistory({
       router,
       scopeContext,
@@ -373,7 +368,6 @@ const SearchForTrainingsAndJobs = () => {
     }
 
     if (!doNotSaveToHistory) {
-      // @ts-expect-error: TODO
       pushHistory({ router, scopeContext, searchParameters: formValues, searchTimestamp: currentSearch, displayMap })
     }
   }

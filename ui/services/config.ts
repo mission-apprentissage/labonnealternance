@@ -194,7 +194,7 @@ const buildFormValuesFromParameters = (params) => {
   return formValues
 }
 
-export const initParametersFromQuery = ({ router, shouldPush, parameterContext }) => {
+export const initParametersFromQuery = ({ router, shouldPush = undefined, parameterContext }) => {
   let hasParameters = false
 
   const widgetParameters = getWidgetParameters()

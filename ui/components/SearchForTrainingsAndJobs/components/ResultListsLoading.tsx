@@ -8,7 +8,7 @@ const ResultListsLoading = ({ allJobSearchError, trainingSearchError, isTraining
 
   if (allJobSearchError && trainingSearchError) return ""
 
-  let jobLoading = ""
+  let jobLoading = <></>
 
   if (scopeContext.isJob && isJobSearchLoading) {
     jobLoading = (
@@ -19,7 +19,7 @@ const ResultListsLoading = ({ allJobSearchError, trainingSearchError, isTraining
     )
   }
 
-  let trainingLoading = ""
+  let trainingLoading = <></>
 
   if (scopeContext.isTraining && isTrainingSearchLoading) {
     trainingLoading = (
@@ -43,6 +43,7 @@ const ResultListsLoading = ({ allJobSearchError, trainingSearchError, isTraining
 
   return (
     <Box pt="0">
+      {/* @ts-expect-error: TODO */}
       <Box {...resultListProperties}>
         {trainingLoading}
         {jobLoading}

@@ -16,7 +16,7 @@ export const mergeJobs = ({ jobs, activeFilters }) => {
 }
 
 // fusionne les résultats lbb et lba et les trie par ordre croissant de distance, optionnellement intègre aussi les offres PE et matchas
-export const mergeOpportunities = ({ jobs, onlyLbbLbaCompanies, activeFilters }) => {
+export const mergeOpportunities = ({ jobs, onlyLbbLbaCompanies = undefined, activeFilters }) => {
   let mergedArray = []
   if (jobs) {
     const sources = [jobs.lbaCompanies]

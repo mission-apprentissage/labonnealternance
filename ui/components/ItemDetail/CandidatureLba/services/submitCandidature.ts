@@ -2,7 +2,14 @@ import extractCompanyValues from "../../../../services/extractCompanyValues"
 import postCandidature from "../../../../services/postCandidature"
 
 export default async function submitCandidature(
-  { applicantValues, setSendingState = () => {}, item = {}, caller = null },
+  {
+    applicantValues,
+    setSendingState = (m: string) => {
+      console.log(m)
+    },
+    item = {},
+    caller = null,
+  },
   _postCandidature = postCandidature,
   _extractCompanyValues = extractCompanyValues
 ) {

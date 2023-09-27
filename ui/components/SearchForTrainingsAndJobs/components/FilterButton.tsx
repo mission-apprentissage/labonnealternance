@@ -47,6 +47,7 @@ const FilterButton = ({ type, count, isActive, handleFilterButtonClicked }) => {
 
   return (
     <Checkbox spacing={3} mr={5} isChecked={isActive} onChange={handleClick}>
+      {/* @ts-expect-error: TODO */}
       <Button px="0" {...buttonProperties} onClick={handleClick}>
         {getText()}
       </Button>

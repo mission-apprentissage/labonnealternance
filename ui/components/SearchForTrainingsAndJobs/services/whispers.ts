@@ -45,7 +45,7 @@ function domInsertion(document, randomlyChosenResultCard, msg, indx = 0) {
   const whisperNode = document.createElement("div")
   whisperNode.classList.add("whisper")
   whisperNode.setAttribute("data-testid", `whisper${indx}`)
-  whisperNode.innerHTML = getHTML(msg.message, msg.lien, msg.theme, msg.id)
+  whisperNode.innerHTML = getHTML(msg.message, msg.lien)
   insertAfter(randomlyChosenResultCard, whisperNode)
 }
 

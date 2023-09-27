@@ -13,7 +13,7 @@ import { setSelectedMarker } from "../../utils/mapTools"
 import TagCfaDEntreprise from "./TagCfaDEntreprise"
 import TagFormation from "./TagFormation"
 
-const Training = ({ training, handleSelectItem, showTextOnly, searchForJobsOnNewCenter, isCfa }) => {
+const Training = ({ training, handleSelectItem, showTextOnly = undefined, searchForJobsOnNewCenter, isCfa }) => {
   const { selectedMapPopupItem } = React.useContext(SearchResultContext)
   const { formValues } = React.useContext(DisplayContext)
   const scopeContext = useContext(ScopeContext)
@@ -105,6 +105,7 @@ const Training = ({ training, handleSelectItem, showTextOnly, searchForJobsOnNew
       textDecoration: "none",
       color: "inherit",
     },
+    filter: undefined,
   }
 
   if (shouldBeHighlighted()) {
@@ -112,6 +113,7 @@ const Training = ({ training, handleSelectItem, showTextOnly, searchForJobsOnNew
   }
 
   return (
+    // @ts-expect-error: TODO
     <Link as="a" className="resultCard training" {...cardProperties} onClick={onSelectItem} onMouseOver={highlightItemOnMap} onMouseOut={dimItemOnMap} href={actualLink}>
       <Flex align="flex-start" id={`id${training.id}`}>
         <Box flex="1">
@@ -126,10 +128,10 @@ const Training = ({ training, handleSelectItem, showTextOnly, searchForJobsOnNew
             </Box>
           </Flex>
 
-          <Box as="h3" pt={[4, 4, 4, 1]} fw={500} fontSize="14px">
+          <Box as="h3" pt={[4, 4, 4, 1]} fontWeight={500} fontSize="14px">
             {training.company.name}
           </Box>
-          <Box pt={2} fw={500} fontSize="12px">
+          <Box pt={2} fontWeight={500} fontSize="12px">
             {training.place.fullAddress}
           </Box>
           <Text display="flex" fontSize="12px" color="grey.600" as="span" pt={1}>

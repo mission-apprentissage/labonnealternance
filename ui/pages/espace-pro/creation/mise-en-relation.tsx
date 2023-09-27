@@ -17,7 +17,7 @@ export default function CreationMiseEnRelation() {
   const [isSubmitLoading, setIsSubmitLoading] = useState(false)
 
   const { job: jobString, email, geo_coordinates, fromDashboard, userId } = router.query
-  const job = JSON.parse(jobString)
+  const job = JSON.parse(jobString as string)
 
   /**
    * @description Handles all checkboxes.
@@ -64,7 +64,7 @@ export default function CreationMiseEnRelation() {
    */
   useEffect(() => {
     if (geo_coordinates) {
-      const [latitude, longitude] = geo_coordinates.split(",")
+      const [latitude, longitude] = (geo_coordinates as string).split(",")
 
       getRelatedEtablissementsFromRome({ rome: job?.rome_detail?.code || job?.rome_code[0], latitude, longitude }).then(({ data }) => {
         const etablissementUpdated = data.slice(0, 10).map((data, index) => ({

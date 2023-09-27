@@ -155,10 +155,11 @@ function ListeEntreprise() {
       },
     },
   ]
-
+  // @ts-expect-error: TODO
   if (data?.data.length === 0) {
     return (
       <AnimationContainer>
+        {/* @ts-expect-error: TODO */}
         <ConfirmationSuppressionEntreprise {...confirmationSuppression} {...currentEntreprise} />
         <Container maxW="container.xl" mt={5}>
           <Box mb={5}>
@@ -186,6 +187,7 @@ function ListeEntreprise() {
 
   return (
     <AnimationContainer>
+      {/* @ts-expect-error: TODO */}
       <ConfirmationSuppressionEntreprise {...confirmationSuppression} {...currentEntreprise} />
       <Container maxW="container.xl" mt={5}>
         <Box mb={5}>
@@ -205,6 +207,7 @@ function ListeEntreprise() {
             Nouvelle entreprise
           </Button>
         </Flex>
+        {/* @ts-expect-error: TODO */}
         <TableNew columns={columns} data={data?.data} exportable={false} />
       </Container>
     </AnimationContainer>

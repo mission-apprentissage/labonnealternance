@@ -67,27 +67,9 @@ const ResultFilterAndCounter = ({ allJobSearchError, trainingSearchError, isTrai
             <Flex width="100%" flex="2 auto" flexWrap={["wrap", "wrap", "nowrap"]}>
               {scopeContext.isJob && scopeContext.isTraining && (
                 <>
-                  <FilterButton
-                    type="jobs"
-                    count={jobCount - partnerJobCount}
-                    activeFilters={activeFilters}
-                    isActive={activeFilters.includes("jobs")}
-                    handleFilterButtonClicked={filterButtonClicked}
-                  />
-                  <FilterButton
-                    type="trainings"
-                    count={trainingCount}
-                    activeFilters={activeFilters}
-                    isActive={activeFilters.includes("trainings")}
-                    handleFilterButtonClicked={filterButtonClicked}
-                  />
-                  <FilterButton
-                    type="duo"
-                    count={partnerJobCount}
-                    activeFilters={activeFilters}
-                    isActive={activeFilters.includes("duo")}
-                    handleFilterButtonClicked={filterButtonClicked}
-                  />
+                  <FilterButton type="jobs" count={jobCount - partnerJobCount} isActive={activeFilters.includes("jobs")} handleFilterButtonClicked={filterButtonClicked} />
+                  <FilterButton type="trainings" count={trainingCount} isActive={activeFilters.includes("trainings")} handleFilterButtonClicked={filterButtonClicked} />
+                  <FilterButton type="duo" count={partnerJobCount} isActive={activeFilters.includes("duo")} handleFilterButtonClicked={filterButtonClicked} />
                 </>
               )}
               <DisplayMapButton jobs={jobs} trainings={trainings} />

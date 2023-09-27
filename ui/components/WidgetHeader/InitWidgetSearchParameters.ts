@@ -9,15 +9,18 @@ const InitWidgetSearchParameters = ({ setIsLoading, handleSearchSubmit, handleIt
 
   useEffect(() => {
     // initialisation par les query params
+    // @ts-expect-error: TODO
     if (widgetParameters && widgetParameters.applyWidgetParameters && itemParameters && itemParameters.applyItemParameters) {
       // launchWidget AND item
       launchWidgetSearch({ selectItem: true })
       setWidgetParameters({ ...widgetParameters, applyWidgetParameters: false }) // action one shot
       setItemParameters({ ...itemParameters, applyItemParameters: false }) // action one shot
+      // @ts-expect-error: TODO
     } else if (widgetParameters && widgetParameters.applyWidgetParameters) {
       // launchWidget only
       launchWidgetSearch({ selectItem: false })
       setWidgetParameters({ ...widgetParameters, applyWidgetParameters: false }) // action one shot
+      // @ts-expect-error: TODO
     } else if (itemParameters && itemParameters.applyItemParameters) {
       // launchItem only
       launchItemFetch()
@@ -29,9 +32,12 @@ const InitWidgetSearchParameters = ({ setIsLoading, handleSearchSubmit, handleIt
 
   const launchWidgetSearch = async ({ selectItem = false }) => {
     setIsLoading(true)
+    // @ts-expect-error: TODO
     const p = widgetParameters.parameters
     try {
+      // @ts-expect-error: TODO
       if (widgetParameters.applyFormValues) {
+        // @ts-expect-error: TODO
         handleSearchSubmit({ values: widgetParameters.formValues, followUpItem: selectItem ? itemParameters : null })
       } else {
         let values = {
@@ -72,6 +78,7 @@ const InitWidgetSearchParameters = ({ setIsLoading, handleSearchSubmit, handleIt
 
   const launchItemFetch = async () => {
     setIsLoading(true)
+    // @ts-expect-error: TODO
     const p = itemParameters.parameters
     try {
       await handleItemLoad(p)

@@ -6,7 +6,9 @@ const AlgoRecruiter = ({ withLinks }) => {
   return (
     <Box as="section" pb={24} backgroundColor="white">
       <Box py={12} backgroundColor="#f5f5fe">
+        {/* @ts-expect-error: TODO */}
         <Grid templateColumns={{ base: "repeat(1, 1fr)", lg: "repeat(5, 1fr)" }} spacing="20px">
+          {/* @ts-expect-error: TODO */}
           <GridItem colSpan={{ base: "1", lg: "3" }} px={{ base: 3, md: 6, lg: 12 }}>
             <Box as="h2">
               <Text as="span" display="block" mb={1} variant="editorialContentH1" color="#2a2a2a">
@@ -41,6 +43,7 @@ const AlgoRecruiter = ({ withLinks }) => {
               </NextLink>
             )}
           </GridItem>
+          {/* @ts-expect-error: TODO */}
           <GridItem colSpan={{ base: "2" }}>
             <Box display="flex" justifyContent="center" alignItems="center" pr={{ base: 0, lg: 12 }}>
               <Image src="/images/icons/algo_recruiter.svg" alt="" />

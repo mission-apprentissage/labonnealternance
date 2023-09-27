@@ -48,14 +48,18 @@ export default function OptOutUnsubscribe() {
     opt_out_question ? setIsQuestionSent(true) : setHasBeenUnsubscribed(true)
   }
 
-  useEffect(async () => {
-    const etablissement = await _get(`etablissements/${id}`)
+  useEffect(() => {
+    const fetchData = async () => {
+      const etablissement = await _get(`etablissements/${id}`)
 
-    if (etablissement.optout_refusal_date) {
-      setHasBeenUnsubscribed(true)
+      if (etablissement.optout_refusal_date) {
+        setHasBeenUnsubscribed(true)
+      }
+
+      setEtablissement(etablissement)
     }
 
-    setEtablissement(etablissement)
+    fetchData().catch(console.error)
   }, [id])
 
   // Display nothing until date isn't received
@@ -115,30 +119,35 @@ export default function OptOutUnsubscribe() {
                         <Text>
                           Raison sociale :{" "}
                           <Text as="span" fontWeight="700">
+                            {/* @ts-expect-error: TODO */}
                             {etablissement.raison_sociale}
                           </Text>
                         </Text>
                         <Text>
                           SIRET :{" "}
                           <Text as="span" fontWeight="700">
+                            {/* @ts-expect-error: TODO */}
                             {etablissement.formateur_siret}
                           </Text>
                         </Text>
                         <Text>
                           Adresse :{" "}
                           <Text as="span" fontWeight="700">
+                            {/* @ts-expect-error: TODO */}
                             {etablissement.formateur_address}
                           </Text>
                         </Text>
                         <Text>
                           Code postal :{" "}
                           <Text as="span" fontWeight="700">
+                            {/* @ts-expect-error: TODO */}
                             {etablissement.formateur_zip_code}
                           </Text>
                         </Text>
                         <Text>
                           Ville :{" "}
                           <Text as="span" fontWeight="700">
+                            {/* @ts-expect-error: TODO */}
                             {etablissement.formateur_city}
                           </Text>
                         </Text>

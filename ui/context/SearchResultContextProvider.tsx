@@ -74,7 +74,7 @@ export type IContextSearch = {
   setExtendedSearch: (b: boolean) => void
   hasSearch: boolean
   setHasSearch: (b: boolean) => void
-  selectedMapPopupItem: object
+  selectedMapPopupItem: any
   setSelectedMapPopupItem: (b: object) => void
 }
 // @ts-expect-error: TODO

@@ -3,6 +3,7 @@ import React, { createContext, useReducer } from "react"
 import { defaultFilters } from "../components/SearchForTrainingsAndJobs/services/utils"
 
 // formValues = {
+// radius
 //   location: {
 //     value: {
 //       coordinates: [lon, lat]
@@ -54,7 +55,7 @@ const reducer = (state, action) => {
 }
 
 export type IContextDisplay = {
-  formValues: object
+  formValues: any
   setFormValues: (b: any) => void
   visiblePane: string
   setVisiblePane: (b: string) => void

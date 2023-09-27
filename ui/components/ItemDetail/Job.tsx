@@ -16,7 +16,7 @@ import { setSelectedMarker } from "../../utils/mapTools"
 import TagFormationAssociee from "./TagFormationAssociee"
 import TagOffreEmploi from "./TagOffreEmploi"
 
-const Job = ({ job, handleSelectItem, showTextOnly, searchForTrainingsOnNewCenter }) => {
+const Job = ({ job, handleSelectItem, showTextOnly = undefined, searchForTrainingsOnNewCenter }) => {
   const { selectedMapPopupItem } = React.useContext(SearchResultContext)
   const { formValues } = React.useContext(DisplayContext)
 
@@ -112,6 +112,7 @@ const Job = ({ job, handleSelectItem, showTextOnly, searchForTrainingsOnNewCente
       textDecoration: "none",
       color: "inherit",
     },
+    filter: undefined,
   }
 
   if (shouldBeHighlighted()) {
@@ -121,6 +122,7 @@ const Job = ({ job, handleSelectItem, showTextOnly, searchForTrainingsOnNewCente
   const daysPublished = getDaysSinceDate(job.job.creationDate)
 
   return (
+    // @ts-expect-error: TODO
     <Link
       as="a"
       className={`resultCard ${kind}`}
@@ -145,10 +147,10 @@ const Job = ({ job, handleSelectItem, showTextOnly, searchForTrainingsOnNewCente
             </Box>
           </Flex>
 
-          <Box as="h3" pt={2} fw={500} fontSize="14px">
+          <Box as="h3" pt={2} fontWeight={500} fontSize="14px">
             {job.company && job.company.name ? job.company.name : ReactHtmlParser("<i>Offre anonyme</i>")}
           </Box>
-          <Box pt={2} fw={500} fontSize="12px">
+          <Box pt={2} fontWeight={500} fontSize="12px">
             {job.place.fullAddress}
           </Box>
 

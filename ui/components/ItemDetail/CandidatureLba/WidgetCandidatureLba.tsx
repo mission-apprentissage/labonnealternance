@@ -53,7 +53,6 @@ const WidgetCandidatureLba = ({ item, caller, fakeLocalStorage = null }) => {
     onSubmit: async (applicantValues) => {
       const success = await submitCandidature({
         applicantValues,
-        // @ts-expect-error: TODO
         setSendingState,
         item,
         caller,

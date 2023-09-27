@@ -13,7 +13,7 @@ import { setSelectedMarker } from "../../utils/mapTools"
 
 import TagCandidatureSpontanee from "./TagCandidatureSpontanee"
 
-const LbbCompany = ({ company, handleSelectItem, showTextOnly, searchForTrainingsOnNewCenter }) => {
+const LbbCompany = ({ company, handleSelectItem, showTextOnly = undefined, searchForTrainingsOnNewCenter }) => {
   const { selectedMapPopupItem } = React.useContext(SearchResultContext)
   const { formValues } = React.useContext(DisplayContext)
 
@@ -104,6 +104,7 @@ const LbbCompany = ({ company, handleSelectItem, showTextOnly, searchForTraining
       textDecoration: "none",
       color: "inherit",
     },
+    filter: undefined,
   }
 
   if (shouldBeHighlighted()) {
@@ -111,6 +112,7 @@ const LbbCompany = ({ company, handleSelectItem, showTextOnly, searchForTraining
   }
 
   return (
+    // @ts-expect-error: TODO
     <Link
       as="a"
       className={`resultCard lba ${company?.contact?.email && "hasEmail"}`}
@@ -134,10 +136,10 @@ const LbbCompany = ({ company, handleSelectItem, showTextOnly, searchForTraining
             </Box>
           </Flex>
 
-          <Box as="h3" pt={2} fw={500} fontSize="14px">
+          <Box as="h3" pt={2} fontWeight={500} fontSize="14px">
             Secteur d'activité : {get(company, "nafs[0].label", "")}
           </Box>
-          <Box pt={2} fw={500} fontSize="12px">
+          <Box pt={2} fontWeight={500} fontSize="12px">
             {company.place.fullAddress}
           </Box>
 

@@ -82,7 +82,9 @@ export default function ListeOffres() {
     return <LoadingEmptySpace label="Chargement en cours..." />
   }
 
-  const { jobs = [], establishment_raison_sociale, establishment_siret, establishment_id, geo_coordinates } = data.data ?? {}
+  // @ts-expect-error: TODO
+  const { jobs = [], establishment_raison_sociale, establishment_siret, establishment_id, geo_coordinates, _id: dataId } = data.data ?? {}
+
   const entrepriseTitle = establishment_raison_sociale ?? establishment_siret
   const getOffreCreationUrl = () => {
     switch (auth.type) {
@@ -299,11 +301,7 @@ export default function ListeOffres() {
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbItem>
-                {data.data._id ? (
-                  <BreadcrumbLink textStyle="xs">{establishment_raison_sociale}</BreadcrumbLink>
-                ) : (
-                  <BreadcrumbLink textStyle="xs">Nouvelle entreprise</BreadcrumbLink>
-                )}
+                {dataId ? <BreadcrumbLink textStyle="xs">{establishment_raison_sociale}</BreadcrumbLink> : <BreadcrumbLink textStyle="xs">Nouvelle entreprise</BreadcrumbLink>}
               </BreadcrumbItem>
             </Breadcrumb>
           )}

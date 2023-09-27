@@ -14,7 +14,7 @@ const CandidatureLbaExplanation = (props) => {
   }
 
   const getText = () => {
-    let res = ""
+    let res = <></>
     if (props.about == "what") {
       res = (
         <Box pl="12px">

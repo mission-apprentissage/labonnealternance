@@ -8,7 +8,7 @@ const AlgoHome = () => {
   return (
     <Container variant="responsiveContainer">
       <Grid templateColumns={{ base: "1fr", md: "repeat(12, 1fr)" }}>
-        <GridItem colSpan="8" pr="8">
+        <GridItem colSpan={8} pr="8">
           <Text as="h2">
             <Text as="span" display="block" mb={1} variant="editorialContentH1" color="#2a2a2a">
               Vous révéler
@@ -38,7 +38,7 @@ const AlgoHome = () => {
             </ListItem>
           </UnorderedList>
         </GridItem>
-        <GridItem colSpan="4" display="flex" justifyContent="center" alignItems="center">
+        <GridItem colSpan={4} display="flex" justifyContent="center" alignItems="center">
           <Image src="/images/icons/algo_home.svg" alt="" mt="5" />
         </GridItem>
       </Grid>

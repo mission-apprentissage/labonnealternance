@@ -10,6 +10,7 @@ const PageTracker = (props) => {
   React.useEffect(() => {
     const handleRouteChange = (url) => {
       if (url.indexOf("?") < 0) {
+        // @ts-expect-error: TODO
         plausible("pageview", { url })
       }
     }

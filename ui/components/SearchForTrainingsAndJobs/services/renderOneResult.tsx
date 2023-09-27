@@ -12,6 +12,7 @@ export const renderJob = (isTestMode, idx, job, handleSelectItem, searchForTrain
     return <Job key={idx} job={job} handleSelectItem={handleSelectItem} searchForTrainingsOnNewCenter={searchForTrainingsOnNewCenter} />
   }
 }
+
 export const renderTraining = (isTestMode, idx, training, handleSelectItem, searchForJobsOnNewCenter, isCfa) => {
   if (isTestMode) {
     return <Box key={idx} data-testid={`Training-${training?.id}`}></Box>

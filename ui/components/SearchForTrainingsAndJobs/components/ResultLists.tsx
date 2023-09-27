@@ -29,10 +29,10 @@ const ResultLists = ({
   showSearchForm,
   allJobSearchError,
   trainingSearchError,
-  isTestMode,
-  stubbedExtendedSearch,
-  stubbedHasSearch,
-  stubbedIsFormVisible,
+  isTestMode = undefined,
+  stubbedExtendedSearch = undefined,
+  stubbedHasSearch = undefined,
+  stubbedIsFormVisible = undefined,
 }) => {
   const scopeContext = useContext(ScopeContext)
 

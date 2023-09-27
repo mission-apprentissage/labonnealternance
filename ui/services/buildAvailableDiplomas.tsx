@@ -77,12 +77,12 @@ export function buildAvailableDiplomasButtons(currentDiploma, diplomas, onClickC
         return (
           <Box
             key={indx}
-            value={diplomaValue(key)}
             {...buttonProperties}
             color={localDiploma === key ? "white" : "grey.750"}
             background={localDiploma === key ? "#6a6af4" : "white"}
             borderColor={localDiploma === key ? "#6a6af4" : "grey.400"}
             onClick={(evt) => {
+              // @ts-expect-error: TODO
               evt.currentTarget.value = diplomaValue(key)
               onClickCallback(evt, key)
             }}

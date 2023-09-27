@@ -45,13 +45,14 @@ function GlobalFilter({ globalFilter, setGlobalFilter }) {
 }
 
 function fuzzyTextFilterFn(rows, id, filterValue) {
+  // @ts-expect-error: TODO
   return matchSorter(rows, filterValue, { keys: [(row) => row.values[id]], threshold: matchSorter.rankings.CONTAINS })
 }
 
 // Let the table remove the filter if the string is empty
 fuzzyTextFilterFn.autoRemove = (val) => !val
 
-export function TableNew({ data, columns, description, exportable }) {
+export function TableNew({ data, columns, description = undefined, exportable }) {
   const tableData = useMemo(() => data, [data])
   const tableColumns = useMemo(() => columns, [columns])
 
@@ -102,6 +103,7 @@ export function TableNew({ data, columns, description, exportable }) {
       <Flex align="center" mb={10}>
         <Box width="90%">
           <Box width="50%">
+            {/*  @ts-expect-error: TODO */}
             <GlobalFilter preGlobalFilteredRows={preGlobalFilteredRows} globalFilter={globalFilter} setGlobalFilter={setGlobalFilter} />
           </Box>
           {description && (

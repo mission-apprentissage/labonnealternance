@@ -5,7 +5,7 @@ const amongst = (item, collection) => {
   return includes(collection, item)
 }
 
-const randomWithin = (collection, limitation) => {
+const randomWithin = (collection, limitation = undefined) => {
   let searchLimit = collection.length - 1
   if (limitation && limitation < collection.length - 1) {
     searchLimit = limitation

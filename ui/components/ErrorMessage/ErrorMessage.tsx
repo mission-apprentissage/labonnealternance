@@ -12,7 +12,7 @@ const cssParameters = {
   padding: "5px",
 }
 
-const ErrorMessage = ({ type, message }) => {
+const ErrorMessage = ({ type = undefined, message }) => {
   return (
     <>
       {type === "column" && <Image width="256px" margin="auto" src={searchingPeople} alt="" />}
