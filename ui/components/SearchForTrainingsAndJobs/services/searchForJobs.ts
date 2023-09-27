@@ -33,18 +33,33 @@ export const searchForJobsFunction = async ({
     const romes = getRomeFromParameters({ values, widgetParameters })
     const rncp = romes ? "" : getRncpFromParameters({ widgetParameters }) // on ne transmet pas romes ET rncp
 
+    const params: { 
+      romes?: string, 
+      rncp?: string, 
+      opco?: string, 
+      opcoUrl?: string, 
+      longitude?: number, 
+      latitude?: number, 
+      insee?: string, 
+      radius?: number, 
+      diploma?: string } = {
+      romes,
+      rncp,
+      opco: opcoFilter,
+      opcoUrl: opcoUrlFilter,
+    }
+    if(values?.location?.value){
+      params.longitude = values.location.value.coordinates[0]
+      params.latitude = values.location.value.coordinates[1]
+      params.insee = values.location.insee 
+      params.radius = values.radius || 30
+    }
+    if(values.diploma){
+      params.diploma = values.diploma
+    }
+
     const response = await axios.get(jobsApi, {
-      params: {
-        romes,
-        rncp,
-        longitude: values?.location?.value ? values.location.value.coordinates[0] : null,
-        latitude: values?.location?.value ? values.location.value.coordinates[1] : null,
-        insee: values?.location?.insee,
-        radius: values.radius || 30,
-        diploma: values.diploma,
-        opco: opcoFilter,
-        opcoUrl: opcoUrlFilter,
-      },
+      params,
     })
 
     let peJobs = null
