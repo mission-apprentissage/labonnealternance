@@ -54,8 +54,6 @@ function Users() {
 
   const { isLoading, data } = useQuery("user-list", () => getUsers())
 
-  console.log(isLoading, data)
-
   if (isLoading) {
     return <LoadingEmptySpace />
   }
