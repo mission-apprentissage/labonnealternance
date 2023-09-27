@@ -61,11 +61,11 @@ export const premiumActivatedReminder = async () => {
             url: config.publicUrl,
             replyTo: config.publicEmail,
             images: {
-              logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
-              logoParcoursup: `${config.publicUrlEspacePro}/assets/logo-parcoursup.png?raw=true`,
-              logoFooter: `${config.publicUrlEspacePro}/assets/logo-republique-francaise.png?raw=true`,
-              peopleLaptop: `${config.publicUrlEspacePro}/assets/people-laptop.png?raw=true`,
-              integrationExample: `${config.publicUrlEspacePro}/assets/exemple_integration_parcoursup.jpg?raw=true`,
+              logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
+              logoParcoursup: `${config.publicUrl}/assets/logo-parcoursup.png?raw=true`,
+              logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.png?raw=true`,
+              peopleLaptop: `${config.publicUrl}/assets/people-laptop.png?raw=true`,
+              integrationExample: `${config.publicUrl}/assets/exemple_integration_parcoursup.jpg?raw=true`,
             },
             etablissement: {
               name: etablissement.raison_sociale,

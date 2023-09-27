@@ -1,6 +1,3 @@
-import { ZUserStatusValidation } from "shared/models"
-import { z } from "zod"
-
 export const POURVUE = "Pourvue"
 export const ANNULEE = "Annulée"
 export const ACTIVE = "Active"

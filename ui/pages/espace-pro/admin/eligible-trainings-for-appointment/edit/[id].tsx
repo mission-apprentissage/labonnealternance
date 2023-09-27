@@ -1,12 +1,11 @@
 import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Button, Checkbox, Editable, EditableInput, EditablePreview, Flex, Heading, Spinner, Table, Tbody, Td, Text, Th, Thead, Tr, useToast } from "@chakra-ui/react"
-// eslint-disable-next-line import/no-extraneous-dependencies
-import emailValidator from "email-validator" // TODO_AB
+import emailValidator from "email-validator"
 import Head from "next/head"
 import { useRouter } from "next/router"
 import React, { createRef, useEffect, useState } from "react"
 import { IEtablissement } from "shared"
-import { referrers} from "shared/constants/referers"
+import { referrers } from "shared/constants/referers"
 import { IEligibleTrainingsForAppointmentJson } from "shared/models/elligibleTraining.model"
 
 import { formatDate } from "../../../../../common/dayjs"

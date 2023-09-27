@@ -31,18 +31,15 @@ export const zUserRecruteurRoutes = {
       },
     },
     "/api/user": {
-      querystring: z
-        .object({
-          users: z.string() /* mongo query */,
-        })
-        .strict(),
+      // TODO ANY TO BE FIXED
       response: {
-        "200": z.object({
-          awaiting: z.array(ZUserRecruteur),
-          active: z.array(ZUserRecruteur),
-          disabled: z.array(ZUserRecruteur),
-          error: z.array(ZUserRecruteur),
-        }),
+        "200": z.any(),
+        // "200": z.object({
+        //   awaiting: z.array(ZUserRecruteur),
+        //   active: z.array(ZUserRecruteur),
+        //   disabled: z.array(ZUserRecruteur),
+        //   error: z.array(ZUserRecruteur),
+        // }),
       },
       securityScheme: {
         auth: "jwt-bearer",

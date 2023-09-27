@@ -62,6 +62,7 @@ export default (server: Server) => {
       preHandler: [server.auth(zRoutes.get["/api/user"].securityScheme)],
     },
     async (req, res) => {
+      // TODO KEVIN: ADD PAGINATION
       const [awaiting, active, disabled, error] = await Promise.all([getAwaitingUsers(), getActiveUsers(), getDisabledUsers(), getErrorUsers()])
       return res.status(200).send({ awaiting, active, disabled, error })
     }
@@ -147,8 +148,8 @@ export default (server: Server) => {
           template: getStaticFilePath("./templates/mail-compte-desactive.mjml.ejs"),
           data: {
             images: {
-              accountDisabled: `${config.publicUrlEspacePro}/images/image-compte-desactive.png?raw=true`,
-              logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
+              accountDisabled: `${config.publicUrl}/images/image-compte-desactive.png?raw=true`,
+              logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
             },
             last_name,
             first_name,

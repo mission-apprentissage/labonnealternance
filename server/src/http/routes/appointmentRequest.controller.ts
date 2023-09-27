@@ -132,12 +132,12 @@ export default (server: Server) => {
           reasons: createdAppointement.applicant_reasons,
           referrerLink: referrerObj.url,
           appointment_origin: referrerObj.full_name,
-          link: `${config.publicUrlEspacePro}/establishment/${etablissement?._id}/appointments/${createdAppointement._id}?utm_source=mail`,
+          link: `${config.publicUrl}/espace-pro/establishment/${etablissement?._id}/appointments/${createdAppointement._id}?utm_source=mail`,
         },
         images: {
-          logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
-          logoFooter: `${config.publicUrlEspacePro}/assets/logo-republique-francaise.png?raw=true`,
-          peopleLaptop: `${config.publicUrlEspacePro}/assets/people-laptop.png?raw=true`,
+          logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
+          logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.png?raw=true`,
+          peopleLaptop: `${config.publicUrl}/assets/people-laptop.png?raw=true`,
         },
       }
 
@@ -263,7 +263,7 @@ export default (server: Server) => {
           subject: `[La bonne alternance] Le centre de formation vous répond`,
           template: getStaticFilePath("./templates/mail-reponse-cfa.mjml.ejs"),
           data: {
-            logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
+            logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
             prenom: user.firstname,
             nom: user.lastname,
             message: cfa_message_to_applicant,

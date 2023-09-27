@@ -24,7 +24,6 @@ import {
   Text,
   Textarea,
 } from "@chakra-ui/react"
-// eslint-disable-next-line import/no-extraneous-dependencies
 import dayjs from "dayjs"
 import { Formik } from "formik"
 import omit from "lodash/omit"

@@ -64,7 +64,6 @@ export const createEtablissementDelegation = ({ data, jobId }) => API.post(`/for
 export const getUsers = async () => {
   const token = sessionStorage.getItem("lba:token")
   return API.get("/user", {
-    params: query,
     headers: {
       Authorization: `Bearer ${token}`,
     },

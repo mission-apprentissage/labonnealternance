@@ -6,7 +6,6 @@ COPY package.json package.json
 COPY yarn.lock yarn.lock
 COPY .yarnrc.yml .yarnrc.yml
 COPY ui/package.json ui/package.json
-COPY ui_espace_pro/package.json ui_espace_pro/package.json
 COPY server/package.json server/package.json
 COPY shared/package.json shared/package.json
 
@@ -104,36 +103,3 @@ USER nextjs
 EXPOSE 3000
 ENV PORT 3000
 CMD ["node", "ui/server.js"]
-
-##############################################################
-######################   UI ESPACE PRO  ######################
-##############################################################
-
-FROM root AS build_espace_pro
-WORKDIR /app
-COPY ./ui_espace_pro ./ui_espace_pro
-COPY ./shared ./shared
-
-ENV NODE_ENV production
-
-ENV NODE_OPTIONS=--openssl-legacy-provider
-
-ARG PUBLIC_VERSION
-ENV REACT_APP_VERSION=$PUBLIC_VERSION
-
-ARG PUBLIC_ENV
-ENV REACT_APP_ENV=$PUBLIC_ENV
-
-ENV DISABLE_ESLINT_PLUGIN=true
-ENV INLINE_RUNTIME_CHUNK=false
-ENV SKIP_PREFLIGHT_CHECK=true
-
-#https://drag13.io/posts/react-inline-runtimer-chunk/index.html
-RUN yarn --cwd ui_espace_pro build
-
-FROM node:20-alpine as ui_espace_pro
-WORKDIR /app
-RUN yarn global add local-web-server
-RUN mkdir /site
-COPY --from=build_espace_pro /app/ui_espace_pro/build /site/espace-pro
-CMD ["ws", "--port", "3000", "-d" ,"/site", "--log.format", "dev", "--spa", "espace-pro/index.html"]

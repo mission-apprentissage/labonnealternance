@@ -77,10 +77,10 @@ export const inviteEtablissementToOptOut = async () => {
         template: getStaticFilePath("./templates/mail-cfa-optout-invitation.mjml.ejs"),
         data: {
           images: {
-            logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
-            logoFooter: `${config.publicUrlEspacePro}/assets/logo-republique-francaise.png?raw=true`,
-            peopleLaptop: `${config.publicUrlEspacePro}/assets/people-laptop.png?raw=true`,
-            optOutLbaIntegrationExample: `${config.publicUrlEspacePro}/assets/exemple_integration_lba.png?raw=true`,
+            logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
+            logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.png?raw=true`,
+            peopleLaptop: `${config.publicUrl}/assets/people-laptop.png?raw=true`,
+            optOutLbaIntegrationExample: `${config.publicUrl}/assets/exemple_integration_lba.png?raw=true`,
           },
           etablissement: {
             name: etablissement.raison_sociale,
@@ -89,7 +89,7 @@ export const inviteEtablissementToOptOut = async () => {
             formateur_city: etablissement.formateur_city,
             siret: etablissement?.formateur_siret,
             optOutActivatedAtDate: willBeActivatedAt.format("DD/MM"),
-            linkToUnsubscribe: `${config.publicUrlEspacePro}/form/opt-out/unsubscribe/${etablissement._id}`,
+            linkToUnsubscribe: `${config.publicUrl}/espace-pro/form/opt-out/unsubscribe/${etablissement._id}`,
           },
           user: {
             destinataireEmail: emailDecisionaire,
@@ -130,9 +130,9 @@ export const inviteEtablissementToOptOut = async () => {
               url: config.publicUrl,
               replyTo: config.publicEmail,
               images: {
-                logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
-                logoFooter: `${config.publicUrlEspacePro}/assets/logo-republique-francaise.png?raw=true`,
-                peopleLaptop: `${config.publicUrlEspacePro}/assets/people-laptop.png?raw=true`,
+                logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
+                logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.png?raw=true`,
+                peopleLaptop: `${config.publicUrl}/assets/people-laptop.png?raw=true`,
               },
               etablissement: {
                 name: etablissement.raison_sociale,

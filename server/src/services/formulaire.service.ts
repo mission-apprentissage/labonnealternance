@@ -264,8 +264,8 @@ export const createJob = async ({ job, id }: { job: Partial<IOffreExtended>; id:
 
   job._id = updatedFormulaire.jobs.filter((x) => x.rome_label === job.rome_label)[0]._id
 
-  job.supprimer = `${config.publicUrlEspacePro}/offre/${job._id}/cancel`
-  job.pourvue = `${config.publicUrlEspacePro}/offre/${job._id}/provided`
+  job.supprimer = `${config.publicUrl}/espace-pro/offre/${job._id}/cancel`
+  job.pourvue = `${config.publicUrl}/espace-pro/offre/${job._id}/provided`
 
   // if first offer creation for an Entreprise, send specific mail
   if (jobs.length === 1 && is_delegated === false) {
@@ -632,7 +632,7 @@ export async function sendDelegationMailToCFA(email: string, offre: IJob, recrui
     template: getStaticFilePath("./templates/mail-cfa-delegation.mjml.ejs"),
     data: {
       images: {
-        logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
+        logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
       },
       enterpriseName: recruiter.establishment_raison_sociale,
       jobName: offre.rome_appellation_label,
@@ -641,9 +641,9 @@ export async function sendDelegationMailToCFA(email: string, offre: IJob, recrui
       startDate: dayjs(offre.job_start_date).format("DD/MM/YYYY"),
       duration: offre.job_duration,
       rhythm: offre.job_rythm,
-      offerButton: `${config.publicUrlEspacePro}/proposition/formulaire/${recruiter.establishment_id}/offre/${offre._id}/siret/${siret_code}`,
-      createAccountButton: `${config.publicUrlEspacePro}/creation/cfa`,
-      unsubscribeUrl: `${config.publicUrlEspacePro}/proposition/formulaire/${recruiter.establishment_id}/offre/${offre._id}/siret/${siret_code}/unsubscribe`,
+      offerButton: `${config.publicUrl}/espace-pro/proposition/formulaire/${recruiter.establishment_id}/offre/${offre._id}/siret/${siret_code}`,
+      createAccountButton: `${config.publicUrl}/espace-pro/creation/cfa`,
+      unsubscribeUrl: `${config.publicUrl}/espace-pro/proposition/formulaire/${recruiter.establishment_id}/offre/${offre._id}/siret/${siret_code}/unsubscribe`,
     },
   })
 }
@@ -663,7 +663,7 @@ export async function sendMailNouvelleOffre(recruiter: IRecruiter, job: Partial<
     template: getStaticFilePath("./templates/mail-nouvelle-offre.mjml.ejs"),
     data: {
       images: {
-        logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
+        logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
       },
       nom: is_delegated ? contactCFA?.last_name : last_name,
       prenom: is_delegated ? contactCFA?.first_name : first_name,

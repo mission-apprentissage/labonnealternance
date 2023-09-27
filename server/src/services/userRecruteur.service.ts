@@ -200,14 +200,14 @@ export const deactivateUser = async (userId: IUserRecruteur["_id"], reason?: str
 
 export const sendWelcomeEmailToUserRecruteur = async (userRecruteur: IUserRecruteur) => {
   const { email, first_name, last_name, establishment_raison_sociale, type } = userRecruteur
-  const magiclink = `${config.publicUrlEspacePro}/authentification/verification?token=${createMagicLinkToken(email)}`
+  const magiclink = `${config.publicUrl}/espace-pro/authentification/verification?token=${createMagicLinkToken(email)}`
   await mailer.sendEmail({
     to: email,
     subject: "Bienvenue sur La bonne alternance",
     template: getStaticFilePath("./templates/mail-bienvenue.mjml.ejs"),
     data: {
       images: {
-        logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
+        logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
       },
       establishment_raison_sociale,
       last_name,
@@ -219,28 +219,52 @@ export const sendWelcomeEmailToUserRecruteur = async (userRecruteur: IUserRecrut
   })
 }
 
+const projection = {
+  _id: 1,
+  establishment_id: 1,
+  establishment_raison_sociale: 1,
+  establishment_siret: 1,
+  type: 1,
+  first_name: 1,
+  last_name: 1,
+  email: 1,
+  phone: 1,
+  createdAt: 1,
+  origin: 1,
+  opco: 1,
+  status: 1,
+}
+
 export const getActiveUsers = () =>
   UserRecruteur.find({
     establishment_raison_sociale: { $nin: [null, ""] },
     $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, ETAT_UTILISATEUR.VALIDE] },
     $or: [{ type: CFA }, { type: ENTREPRISE }],
-  }).lean()
+  })
+    .select(projection)
+    .lean()
 
 export const getAwaitingUsers = () =>
   UserRecruteur.find({
     establishment_raison_sociale: { $nin: [null, ""] },
     $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, ETAT_UTILISATEUR.ATTENTE] },
     $or: [{ type: CFA }, { type: ENTREPRISE }],
-  }).lean()
+  })
+    .select(projection)
+    .lean()
 
 export const getDisabledUsers = () =>
   UserRecruteur.find({
     $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, ETAT_UTILISATEUR.DESACTIVE] },
     $or: [{ type: CFA }, { type: ENTREPRISE }],
-  }).lean()
+  })
+    .select(projection)
+    .lean()
 
 export const getErrorUsers = () =>
   UserRecruteur.find({
     $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, ETAT_UTILISATEUR.ERROR] },
     $or: [{ type: CFA }, { type: ENTREPRISE }],
-  }).lean()
+  })
+    .select(projection)
+    .lean()

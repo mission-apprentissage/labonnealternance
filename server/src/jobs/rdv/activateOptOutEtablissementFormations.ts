@@ -57,10 +57,10 @@ export const activateOptOutEtablissementFormations = async () => {
         template: getStaticFilePath("./templates/mail-cfa-optout-start.mjml.ejs"),
         data: {
           images: {
-            logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
-            logoFooter: `${config.publicUrlEspacePro}/assets/logo-republique-francaise.png?raw=true`,
-            optOutLbaIntegrationExample: `${config.publicUrlEspacePro}/assets/exemple_integration_lba.png?raw=true`,
-            informationIcon: `${config.publicUrlEspacePro}/assets/icon-information-blue.png?raw=true`,
+            logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
+            logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.png?raw=true`,
+            optOutLbaIntegrationExample: `${config.publicUrl}/assets/exemple_integration_lba.png?raw=true`,
+            informationIcon: `${config.publicUrl}/assets/icon-information-blue.png?raw=true`,
           },
           etablissement: {
             name: etablissement.raison_sociale,
@@ -68,7 +68,7 @@ export const activateOptOutEtablissementFormations = async () => {
             formateur_zip_code: etablissement.formateur_zip_code,
             formateur_city: etablissement.formateur_city,
             formateur_siret: etablissement.formateur_siret,
-            linkToUnsubscribe: `${config.publicUrlEspacePro}/form/opt-out/unsubscribe/${etablissement._id}`,
+            linkToUnsubscribe: `${config.publicUrl}/espace-pro/form/opt-out/unsubscribe/${etablissement._id}`,
           },
           user: {
             destinataireEmail: etablissement.gestionnaire_email,
@@ -101,10 +101,10 @@ export const activateOptOutEtablissementFormations = async () => {
               url: config.publicUrl,
               replyTo: config.publicEmail,
               images: {
-                logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
-                logoFooter: `${config.publicUrlEspacePro}/assets/logo-republique-francaise.png?raw=true`,
-                peopleLaptop: `${config.publicUrlEspacePro}/assets/people-laptop.png?raw=true`,
-                optOutLbaIntegrationExample: `${config.publicUrlEspacePro}/assets/exemple_integration_lba.png?raw=true`,
+                logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
+                logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.png?raw=true`,
+                peopleLaptop: `${config.publicUrl}/assets/people-laptop.png?raw=true`,
+                optOutLbaIntegrationExample: `${config.publicUrl}/assets/exemple_integration_lba.png?raw=true`,
               },
               etablissement: {
                 name: etablissement.raison_sociale,

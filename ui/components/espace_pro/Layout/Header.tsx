@@ -1,8 +1,7 @@
 import { Alert, AlertIcon, Box, Button, Container, Flex, Icon, Menu, MenuButton, MenuDivider, MenuItem, MenuList, Spacer, Text } from "@chakra-ui/react"
 import { useRouter } from "next/router"
 import { useContext } from "react"
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { RiAccountCircleLine } from "react-icons/ri" // TODO_AB
+import { RiAccountCircleLine } from "react-icons/ri"
 
 import { AUTHTYPE } from "../../../common/contants"
 import useAuth from "../../../common/hooks/useAuth"

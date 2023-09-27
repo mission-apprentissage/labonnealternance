@@ -18,7 +18,6 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react"
-// eslint-disable-next-line import/no-extraneous-dependencies
 import dayjs from "dayjs"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
@@ -54,8 +53,6 @@ function Users() {
   }, [])
 
   const { isLoading, data } = useQuery("user-list", () => getUsers())
-
-  console.log(isLoading, data)
 
   if (isLoading) {
     return <LoadingEmptySpace />

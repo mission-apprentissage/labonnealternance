@@ -1,7 +1,5 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
-import dayjs from "dayjs" // TODO_AB
-// eslint-disable-next-line import/no-extraneous-dependencies
-import relativeTime from "dayjs/plugin/relativeTime" // TODO_AB
+import dayjs from "dayjs"
+import relativeTime from "dayjs/plugin/relativeTime"
 
 import { NBR_EXPIRATION_J7 } from "../contants"
 

@@ -110,7 +110,7 @@ export default (server: Server) => {
         localite: eligibleTrainingsForAppointment.lieu_formation_city,
         id_rco_formation: eligibleTrainingsForAppointment.rco_formation_id,
         cle_ministere_educatif: eligibleTrainingsForAppointment.cle_ministere_educatif,
-        form_url: `${config.publicUrlEspacePro}/form?referrer=${referrerObj.name.toLowerCase()}&cleMinistereEducatif=${encodeURIComponent(
+        form_url: `${config.publicUrl}/espace-pro/form?referrer=${referrerObj.name.toLowerCase()}&cleMinistereEducatif=${encodeURIComponent(
           eligibleTrainingsForAppointment.cle_ministere_educatif
         )}`,
       })

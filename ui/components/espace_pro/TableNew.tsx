@@ -1,8 +1,6 @@
 import { Box, Flex, Input, InputGroup, InputRightElement, Text } from "@chakra-ui/react"
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { matchSorter } from "match-sorter"
 import React, { useMemo } from "react"
-// eslint-disable-next-line import/no-extraneous-dependencies
 import {
   // useAsyncDebounce,
   useFilters,

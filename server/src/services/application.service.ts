@@ -22,7 +22,6 @@ import mailer from "./mailer.service.js"
 import { validateCaller } from "./queryValidator.service.js"
 
 const publicUrl = config.publicUrl
-const publicUrlEspacePro = config.publicUrlEspacePro
 
 const imagePath = `${config.publicUrl}/images/emails/`
 
@@ -317,8 +316,8 @@ const buildRecruiterEmailUrls = ({
     lbaRecruiterUrl: `${publicUrl}/acces-recruteur?${utmRecruiterData}`,
     unsubscribeUrl: `${publicUrl}/desinscription?email=${application.company_email}${utmRecruiterData}`,
     lbaUrl: `${publicUrl}?${utmRecruiterData}`,
-    jobProvidedUrl: `${publicUrlEspacePro}/offre/${application.job_id}/provided?${utmRecruiterData}`,
-    cancelJobUrl: `${publicUrlEspacePro}/offre/${application.job_id}/cancel?${utmRecruiterData}`,
+    jobProvidedUrl: `${publicUrl}/espace-pro/offre/${application.job_id}/provided?${utmRecruiterData}`,
+    cancelJobUrl: `${publicUrl}/espace-pro/offre/${application.job_id}/cancel?${utmRecruiterData}`,
     faqUrl: `${publicUrl}/faq?${utmRecruiterData}`,
   }
 

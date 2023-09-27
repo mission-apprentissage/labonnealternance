@@ -81,22 +81,6 @@ services:
         tag: docker.txt.lba.{{env_type}}.ui
         fluentd-async: "true"
 
-  ui_espace_pro:
-    <<: *default
-    image: ghcr.io/mission-apprentissage/mna_lba_ui_espace_pro:{{app_version}}-{{env_type}}
-    deploy:
-      <<: *deploy-default
-      resources:
-        limits:
-          memory: 256m
-      replicas: 2
-    logging:
-      driver: "fluentd"
-      options:
-        fluentd-address: localhost:24224
-        tag: docker.txt.lba.{{env_type}}.ui
-        fluentd-async: "true"
-
   metabase:
     <<: *default
     image: metabase/metabase:v0.46.6.4

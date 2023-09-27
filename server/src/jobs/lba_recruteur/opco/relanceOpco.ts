@@ -45,10 +45,10 @@ export const relanceOpco = async () => {
         template: getStaticFilePath("./templates/mail-relance-opco.mjml.ejs"),
         data: {
           images: {
-            logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
+            logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
           },
           count: userList[opco],
-          url: `${config.publicUrlEspacePro}/authentification`,
+          url: `${config.publicUrl}/espace-pro/authentification`,
         },
       })
     })

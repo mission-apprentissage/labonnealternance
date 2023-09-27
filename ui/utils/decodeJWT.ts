@@ -1,11 +1,8 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { decodeJwt } from "jose" // TODO_AB
+import { JWTPayload, decodeJwt as decodeJwtBase } from "jose"
 
-// eslint-disable-next-line import/no-anonymous-default-export
-export default (token) => {
-  // TODO_AB
+export default function decodeJwt(token: string): JWTPayload & { token: string } {
   return {
     token,
-    ...decodeJwt(token),
+    ...decodeJwtBase(token),
   }
 }

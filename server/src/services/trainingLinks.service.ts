@@ -101,7 +101,7 @@ const getPrdvLink = async (wish: IWish): Promise<string> => {
 
   if (elligibleFormation) {
     return buildEmploiUrl({
-      baseUrl: `${config.publicUrlEspacePro}/form`,
+      baseUrl: `${config.publicUrl}/espace-pro/form`,
       params: { referrer: "lba", cleMinistereEducatif: wish.cle_ministere_educatif, ...utmData },
     })
   }
