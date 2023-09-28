@@ -63,7 +63,7 @@ export async function bind(app: Server) {
   const swaggerOpts: FastifyStaticSwaggerOptions = {
     mode: "static",
     specification: {
-      // @ts-ignore invalid definition of document type
+      // @ts-expect-error invalid definition of document type
       document: generateOpenApiSchema() as OpenAPIV3_1.Document,
     },
     // openapi: {
@@ -79,7 +79,7 @@ export async function bind(app: Server) {
   const swaggerUiOptions: FastifySwaggerUiOptions = {
     routePrefix: "/api/docs",
     theme: {
-      // @ts-ignore invalid definition of css theme type
+      // @ts-expect-error invalid definition of css theme type
       css: [{ content: ".swagger-ui .topbar { display: none }" }],
     },
   }

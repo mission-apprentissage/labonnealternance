@@ -3,7 +3,7 @@ import { z } from "../helpers/zodWithOpenApi"
 
 import { ZRomeDetail } from "./rome.model"
 
-const ZLBAItemPlace = z
+const ZLbaItemPlace = z
   .object({
     distance: z
       .number()
@@ -84,6 +84,8 @@ const ZLBAItemPlace = z
       "Un lieu. Selon le contexte il peut s'agir du lieu de formation, du lieu du centre de formation responsable de la formation ou de l'emplacement d'une entreprise offrant une opportunité d'emploi",
   })
 
+export type ILbaItemPlace = z.output<typeof ZLbaItemPlace>
+
 const ZLbaItemRome = z
   .object({
     code: z
@@ -104,12 +106,16 @@ const ZLbaItemRome = z
   .strict()
   .openapi("Rome")
 
+export type ILbaItemRome = z.output<typeof ZLbaItemRome>
+
 const ZLbaItemNaf = z
   .object({
     code: z.string().nullish(), // lbb/lba -> naf_code | pe -> secteurActivite
     label: z.string().nullish(), // lbb/lba -> naf_label | matcha -> libelle_naf | pe -> secteurActiviteLibelle
   })
   .strict()
+
+export type ILbaItemNaf = z.output<typeof ZLbaItemNaf>
 
 const ZLbaItemContact = z
   .object({
@@ -148,7 +154,38 @@ const ZLbaItemContact = z
   .strict()
   .openapi("Contact", { description: "Informations de contact" })
 
-const ZLbaCompany = z
+export type ILbaItemContact = z.output<typeof ZLbaItemContact>
+
+const ZLbaItemCompanyHQ = z
+  .object({
+    siret: extensions.siret().nullable(), // formation -> etablissement_gestionaire_siret
+    id: z.string().openapi({ description: "Lieu de formation seulement : l'identifiant de l'établissement gestionnaire" }).nullable(), // formation -> etablissement_gestionnaire_id
+    uai: z.string().openapi({ description: "Lieu de formation seulement : l'uai de l'établissement gestionnaire" }).nullable(), // formation -> etablissement_gestionnaire_uai
+    type: z.string().openapi({ description: "Lieu de formation seulement : le type de l'établissement gestionnaire" }).nullable(), // formation -> etablissement_gestionnaire_type
+    hasConvention: z.string().openapi({ description: "Lieu de formation seulement : indique si l'établissement gestionnaire est conventionné" }).nullable(), // formation -> etablissement_gestionnaire_conventionne
+    place: ZLbaItemPlace.partial().nullable(),
+    name: z
+      .string()
+      .openapi({
+        example: "ECOLE DE TRAVAIL ORT",
+        description: "La raison sociale du centre de formation auquel est affilié la formation",
+      })
+      .nullable(), // formation -> etablissement_gestionnaire_entreprise_raison_sociale
+  })
+  .strict()
+
+export type ILbaItemCompanyHQ = z.output<typeof ZLbaItemCompanyHQ>
+
+const ZLbaItemOpco = z
+  .object({
+    label: z.string().nullable(), // lba -> opco
+    url: z.string().nullable(), // lba -> opco_url
+  })
+  .strict()
+
+export type ILbaItemOpco = z.output<typeof ZLbaItemOpco>
+
+const ZLbaItemCompany = z
   .object({
     name: z
       .string()
@@ -170,60 +207,79 @@ const ZLbaCompany = z
     url: z.string().openapi({ description: "Un lien vers le site de l'entreprise" }).nullish(), // lbb / lba -> website
     id: z.string().openapi({ description: "Lieu de formation seulement : l'identifiant du lieu de formation" }).nullish(), // formation -> etablissement_formateur_id
     uai: z.string().openapi({ description: "Lieu de formation seulement : l'uai du lieu de formation" }).nullish(), // formation -> etablissement_formateur_uai
-    place: ZLBAItemPlace.partial().nullish(),
+    place: ZLbaItemPlace.partial().nullish(),
     mandataire: z.boolean().openapi({ description: "Indique si l'offre est déposée par un CFA mandataire (offres Matcha seulement)" }).nullish(), // matcha -> mandataire
     creationDate: z.date().nullish(), // matcha -> date_creation_etablissement
-    headquarter: z
-      .object({
-        siret: extensions.siret().nullable(), // formation -> etablissement_gestionaire_siret
-        id: z.string().openapi({ description: "Lieu de formation seulement : l'identifiant de l'établissement gestionnaire" }).nullable(), // formation -> etablissement_gestionnaire_id
-        uai: z.string().openapi({ description: "Lieu de formation seulement : l'uai de l'établissement gestionnaire" }).nullable(), // formation -> etablissement_gestionnaire_uai
-        type: z.string().openapi({ description: "Lieu de formation seulement : le type de l'établissement gestionnaire" }).nullable(), // formation -> etablissement_gestionnaire_type
-        hasConvention: z.string().openapi({ description: "Lieu de formation seulement : indique si l'établissement gestionnaire est conventionné" }).nullable(), // formation -> etablissement_gestionnaire_conventionne
-        place: ZLBAItemPlace.partial().nullable(),
-        name: z
-          .string()
-          .openapi({
-            example: "ECOLE DE TRAVAIL ORT",
-            description: "La raison sociale du centre de formation auquel est affilié la formation",
-          })
-          .nullable(), // formation -> etablissement_gestionnaire_entreprise_raison_sociale
-      })
-      .strict()
-      .nullish(), // uniquement pour formation
-    opco: z
-      .object({
-        label: z.string().nullable(), // lba -> opco
-        url: z.string().nullable(), // lba -> opco_url
-      })
-      .strict()
-      .nullish(),
+    headquarter: ZLbaItemCompanyHQ.nullish(), // uniquement pour formation
+    opco: ZLbaItemOpco.nullish(),
   })
   .strict()
   .openapi({
     description: "Les informations de la société. Selon le contexte il peut s'agir du centre de formation ou de l'entreprise offrant une opportunité d'emploi.",
   })
 
+export type ILbaItemCompany = z.output<typeof ZLbaItemCompany>
+
+const ZLbaItemJob = z
+  .object({
+    description: z.string().nullable(), // pe -> description | matcha -> description
+    creationDate: z.date(), // pe -> dateCreation | matcha -> createdAt
+    id: z.string().nullable(), // pe -> id | matcha -> id mongo offre
+    contractType: z.string().nullable(), // pe -> typeContrat | matcha -> offres.type
+    contractDescription: z.string().nullish(), // pe -> typeContratLibelle
+    duration: z.string().nullish(), // pe -> dureeTravailLibelle
+    jobStartDate: z.date().optional(), // matcha -> offres.date_debut_apprentissage
+    romeDetails: ZRomeDetail.optional().nullish(), // matcha -> offres.rome_detail -> détail du code ROME
+    rythmeAlternance: z.string().nullish(), // matcha -> offres.rythme_alternance
+    elligibleHandicap: z.boolean().nullish(), // matcha -> offres.is_disabled_elligible
+    dureeContrat: z.string().nullish(), // matcha -> offres.duree_contrat
+    quantiteContrat: z.number().nullish(), // matcha -> offres.quantite
+    status: z.enum(["Active", "Pourvue", "Annulée", "En attente"]).nullish(),
+  })
+  .strict() // uniquement pour pe et matcha
+
+export type ILbaItemJob = z.output<typeof ZLbaItemJob>
+
+const ZLbaItemTrainingSession = z
+  .object({
+    startDate: z.date().nullish(),
+    endDate: z.date().nullish(),
+    isPermanentEntry: z.boolean(),
+  })
+  .strict()
+
+export type ILbaItemTrainingSession = z.output<typeof ZLbaItemTrainingSession>
+
+const ZLbaItemTraining = z
+  .object({
+    description: z.string().nullable(),
+    objectif: z.string().nullable(),
+    sessions: z.array(ZLbaItemTrainingSession).nullish(),
+  })
+  .strict()
+
+export type ILbaItemTraining = z.output<typeof ZLbaItemTraining>
+
 export const ZLbaItemFormation = z
   .object({
+    ideaType: z.literal("formation").openapi({
+      example: "formation",
+      description: "Le type labonnealternance d'objet, ici la seule valeur possible est 'formation'",
+    }),
     title: z.string().nullish().openapi({
       description: "Le titre de la formation",
       example: "CAP Monteur en Installation Thermique",
     }), // formation -> intitule_long OU intitule_court
     contact: ZLbaItemContact.nullable(),
-    place: ZLBAItemPlace.openapi({
+    place: ZLbaItemPlace.openapi({
       description: "Le lieu de formation",
     }).nullable(),
-    company: ZLbaCompany.nullable(),
+    company: ZLbaItemCompany.nullable(),
 
     longTitle: z.string().nullish().openapi({
       example: "MONTEUR EN INSTALLATIONS THERMIQUES (CAP)",
       description: "Le titre en version longue de la formation",
     }), // formation -> intitule_long,
-    ideaType: z.literal("formation").openapi({
-      example: "formation",
-      description: "Le type labonnealternance d'objet, ici la seule valeur possible est 'formation'",
-    }),
     id: z.string().nullable().openapi({
       example: "5e8dfad720ff3b2161269d86",
       description: "L'identifiant de la formation dans le catalogue de la mission apprentissage.",
@@ -293,154 +349,67 @@ export const ZLbaItemFormation = z
 
     romes: z.array(ZLbaItemRome).nullable(),
 
-    training: z
-      .object({
-        description: z.string().nullable(),
-        objectif: z.string().nullable(),
-        sessions: z
-          .array(
-            z
-              .object({
-                startDate: z.date().nullish(),
-                endDate: z.date().nullish(),
-                isPermanentEntry: z.boolean(),
-              })
-              .strict()
-          )
-          .nullish(),
-      })
-      .strict()
-      .nullable(),
+    training: ZLbaItemTraining.nullable(),
   })
   .strict()
   .openapi("Formation")
 
 export type ILbaItemFormation = z.output<typeof ZLbaItemFormation>
 
-export const ZLbaItem = z
+export const ZLbaItemLbaJob = z
   .object({
-    title: z.string().nullish(), // pe -> intitule | lbb/lba -> enseigne | formation -> intitule_long OU intitule_court | matcha -> offres.libelle || offres.rome_appellation_label
-    longTitle: z.string().nullish().openapi({
-      example: "MONTEUR EN INSTALLATIONS THERMIQUES (CAP)",
-      description: "Le titre en version longue de la formation",
-    }), // formation -> intitule_long,
-    ideaType: z.string().nullable().openapi({
-      example: "formation",
-      description: "Le type labonnealternance d'objet, ici la seule valeur possible est 'formation'",
-    }), // type de l'item :  formation | lbb | lba | peJob | matcha
-    id: z.string().nullable().openapi({}), // formation -> id | matcha -> id_form
-    idRco: z.string().nullable().openapi({}), // formation -> id_formation
-    idRcoFormation: z.string().nullable().openapi({}), // formation -> id_rco_formation
+    ideaType: z.literal("matcha"),
+    title: z.string().nullish(), // matcha -> offres.libelle || offres.rome_appellation_label
+    contact: ZLbaItemContact.nullable(),
+    place: ZLbaItemPlace.nullable(),
+    company: ZLbaItemCompany.nullable(),
 
-    contact: z
-      .object({
-        // informations de contact. optionnel
-        email: z.string().nullish(), // pe -> contact.courriel | lbb/lba -> email | formation -> email | matcha -> email
-        iv: z.string().nullish(),
-        name: z.string().nullish(), // pe -> contact.nom | matcha -> prenom nom
-        phone: extensions.phone().nullish(), // lbb/lba --> phone | matcha -> telephone
-        info: z.string().nullish(), // pe -> contact.coordonnees1+contact.coordonnees2+contact.coordonnees3
+    id: z.string().nullable().openapi({}), // matcha -> id_form
+    diplomaLevel: z
+      .string()
+      .openapi({
+        example: "3 (CAP...)",
+        description: "Le niveau de la formation.",
       })
-      .strict()
-      .nullable()
-      .openapi({}), // informations de contact. optionnel
-
-    place: ZLBAItemPlace.nullable().openapi({}), // lieu principal pour l'item, lieu de formation ou lieu de l'offre ou adresse de l'entreprise
-
-    company: z
-      .object({
-        name: z.string().nullish(), // pe -> entreprise.nom | formation -> etablissement_formateur_entreprise_raison_sociale | lbb/lba -> enseigne / raison_sociale | matcha -> enseigne > raison_sociale
-        siret: z.string().nullish(), // lbb/lba -> siret | formation -> etablissement_formateur_siret | matcha -> siret | pe -> entreprise.siret réservé à notre front
-        size: z.string().nullish(), // lbb/lba -> company_size | matcha -> tranche_effectif
-        logo: z.string().nullish(), // pe -> entreprise.logo
-        description: z.string().nullish(), // pe -> entreprise.description
-        socialNetwork: z.string().nullish(), // lbb / lba -> social_network
-        url: z.string().nullish(), // lbb / lba -> website
-        id: z.string().nullish(), // formation -> etablissement_formateur_id
-        uai: z.string().nullish(), // formation -> etablissement_formateur_uai
-        place: ZLBAItemPlace.partial().nullish(),
-        mandataire: z.boolean().nullish(), // matcha -> mandataire
-        creationDate: z.date().nullish(), // matcha -> date_creation_etablissement
-        headquarter: z
-          .object({
-            siret: z.string().nullable(), // formation -> etablissement_gestionaire_siret
-            id: z.string().nullable(), // formation -> etablissement_gestionnaire_id
-            uai: z.string().nullable(), // formation -> etablissement_gestionnaire_uai
-            type: z.string().nullable(), // formation -> etablissement_gestionnaire_type
-            hasConvention: z.string().nullable(), // formation -> etablissement_gestionnaire_conventionne
-            place: ZLBAItemPlace.partial().nullable(),
-            name: z.string().nullable(), // formation -> etablissement_gestionnaire_entreprise_raison_sociale
-          })
-          .strict()
-          .nullable()
-          .optional(), // uniquement pour formation
-        opco: z
-          .object({
-            label: z.string().nullable(), // lba -> opco
-            url: z.string().nullable(), // lba -> opco_url
-          })
-          .strict()
-          .nullable()
-          .optional(),
-      })
-      .strict()
-      .nullable(),
-
-    url: z.string().nullable(), // pe -> reconstruction depuis id | lbb/lba url
-
-    /** TODO API V2: move inside training<ILbaItemTraining> */
-    cleMinistereEducatif: z.string().nullable(), // formation
-    diplomaLevel: z.string().nullish(), // formation -> niveau  | matcha -> offres.niveau
-    diploma: z.string().nullable(), // formation -> diplome
-    cfd: z.string().nullable(), // formation -> cfd
-    rncpCode: z.string().nullable(), // formation -> rncp_code
-    rncpLabel: z.string().nullable(), // formation -> rncp_intitule
-    rncpEligibleApprentissage: z.boolean().nullable(), // formation -> rncp_eligible_apprentissage
-    period: z.string().nullable(), // formation -> periode
-    capacity: z.string().nullable(), // formation -> capacite
-    onisepUrl: z.string().nullable(), // formation -> onisep_url
-
-    job: z
-      .object({
-        description: z.string().nullable(), // pe -> description | matcha -> description
-        creationDate: z.date(), // pe -> dateCreation | matcha -> createdAt
-        id: z.string().nullable(), // pe -> id | matcha -> id mongo offre
-        contractType: z.string().nullable(), // pe -> typeContrat | matcha -> offres.type
-        contractDescription: z.string().nullish(), // pe -> typeContratLibelle
-        duration: z.string().nullish(), // pe -> dureeTravailLibelle
-        jobStartDate: z.date().optional(), // matcha -> offres.date_debut_apprentissage
-        romeDetails: ZRomeDetail.optional().nullish(), // matcha -> offres.rome_detail -> détail du code ROME
-        rythmeAlternance: z.string().nullish(), // matcha -> offres.rythme_alternance
-        elligibleHandicap: z.boolean().nullish(), // matcha -> offres.is_disabled_elligible
-        dureeContrat: z.string().nullish(), // matcha -> offres.duree_contrat
-        quantiteContrat: z.number().nullish(), // matcha -> offres.quantite
-        status: z.enum(["Active", "Pourvue", "Annulée", "En attente"]).nullish(),
-      })
-      .strict()
-      .nullable(), // uniquement pour pe et matcha
-
+      .nullish(), // matcha -> offres.niveau
+    job: ZLbaItemJob.nullable(),
     romes: z.array(ZLbaItemRome).nullable(),
     nafs: z.array(ZLbaItemNaf).nullable(),
-
-    training: z
-      .object({
-        description: z.string().nullable(),
-        objectif: z.string().nullable(),
-        sessions: z
-          .array(
-            z
-              .object({
-                startDate: z.date().nullish(),
-                endDate: z.date().nullish(),
-                isPermanentEntry: z.boolean(),
-              })
-              .strict()
-          )
-          .nullish(),
-      })
-      .strict()
-      .nullable(),
-
-    applicationCount: z.number().nullable(), // lba / matcha -> calcul en fonction du nombre de candidatures enregistrées
+    applicationCount: z.number(), // calcul en fonction du nombre de candidatures enregistrées
   })
   .strict()
+
+export type ILbaItemLbaJob = z.output<typeof ZLbaItemLbaJob>
+
+export const ZLbaItemLbaCompany = z
+  .object({
+    ideaType: z.literal("lba"),
+    title: z.string().nullish(), // lbb/lba -> enseigne
+    contact: ZLbaItemContact.nullable(),
+    place: ZLbaItemPlace.nullable(),
+    company: ZLbaItemCompany.nullable(),
+
+    url: z.null(),
+    nafs: z.array(ZLbaItemNaf).nullable(),
+    applicationCount: z.number(), // calcul en fonction du nombre de candidatures enregistrées
+  })
+  .strict()
+
+export type ILbaItemLbaCompany = z.output<typeof ZLbaItemLbaCompany>
+
+export const ZLbaItemPeJob = z
+  .object({
+    ideaType: z.literal("peJob"),
+    title: z.string().nullish(), // pe -> intitule
+    contact: ZLbaItemContact.nullable(),
+    place: ZLbaItemPlace.nullable(),
+    company: ZLbaItemCompany.nullable(),
+
+    url: z.string().nullable(), // pe -> reconstruction depuis id
+    job: ZLbaItemJob.nullable(),
+    romes: z.array(ZLbaItemRome).nullable(),
+    nafs: z.array(ZLbaItemNaf).nullable(),
+  })
+  .strict()
+
+export type ILbaItemPeJob = z.output<typeof ZLbaItemPeJob>

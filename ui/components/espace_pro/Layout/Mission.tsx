@@ -1,15 +1,12 @@
 import { Container, Grid, GridItem, Image, Link, Stack, Text } from "@chakra-ui/react"
 
-import logo from "../assets/images/logo-ministere.svg"
-
 export default function Mission() {
   return (
     <Container maxW="container.xl">
       <Grid templateColumns={["1fr", "5fr 7fr"]} gap={5} alignItems="center" pb={4}>
         <GridItem>
           {/* eslint-disable-next-line jsx-a11y/alt-text */}
-          <Image src={logo} w="40%" />
-          {/* TODO_AB */}
+          <Image src="/images/logo-ministere.svg" w="40%" />
         </GridItem>
         <GridItem>
           <Text pb={4}>

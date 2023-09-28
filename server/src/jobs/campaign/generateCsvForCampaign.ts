@@ -7,7 +7,7 @@ import { createXLSXFile } from "../../common/utils/fileUtils"
 import { getDistanceInKm } from "../../common/utils/geolib"
 import { runScript } from "../scriptWrapper"
 
-// @ts-ignore
+// @ts-expect-error
 // eslint-disable-next-line import/no-unresolved, import/extensions
 import jeunes from "./jeunes.json" assert { type: "json" }
 

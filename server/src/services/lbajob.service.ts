@@ -1,7 +1,7 @@
 import { IJob, IRecruiter } from "shared"
 
 import { encryptMailWithIV } from "../common/utils/encryptString"
-import { manageApiError } from "../common/utils/errorManager"
+import { IApiError, manageApiError } from "../common/utils/errorManager"
 import { roundDistance } from "../common/utils/geolib"
 import { trackApiCall } from "../common/utils/sendTrackingEvent"
 
@@ -108,7 +108,7 @@ function transformLbaJobs({ jobs, caller, applicationCountByJob }: { jobs: ILbaJ
 /**
  * Retourne une offre LBA identifiée par son id
  */
-export const getLbaJobById = async ({ id, caller }: { id: string; caller?: string }) => {
+export const getLbaJobById = async ({ id, caller }: { id: string; caller?: string }): Promise<IApiError | { matchas: ILbaItemLbaJob[] }> => {
   try {
     const rawJob = await getOffreAvecInfoMandataire(id)
 
@@ -185,15 +185,13 @@ function transformLbaJob({
         creationDate: job.establishment_creation_date && new Date(job.establishment_creation_date),
       },
       nafs: [{ label: job.naf_label }],
-      // @ts-expect-error: TODO
-      diplomaLevel: offre.job_level_label,
+      diplomaLevel: offre.job_level_label || null,
       job: {
         id: offre._id.toString(),
         description: offre.job_description || "",
-        creationDate: offre.job_creation_date && new Date(offre.job_creation_date),
+        creationDate: new Date(offre.job_creation_date),
         contractType: offre.job_type && offre.job_type.join(", "),
-        jobStartDate: offre.job_start_date && new Date(offre.job_start_date),
-        // @ts-expect-error: TODO
+        jobStartDate: new Date(offre.job_start_date),
         romeDetails: offre.rome_detail,
         rythmeAlternance: offre.job_rythm || null,
         dureeContrat: "" + offre.job_duration,

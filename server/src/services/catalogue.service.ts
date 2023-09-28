@@ -302,14 +302,14 @@ export const getFormationsFromCatalogueMe = async ({
   allFormations?: object[]
 }) => {
   if (api === null) {
-    // @ts-ignore
+    // @ts-expect-error
     api = await createCatalogueMeAPI()
   }
 
   const params = { page, limit, query: JSON.stringify(query), select: JSON.stringify(select) }
 
   try {
-    // @ts-ignore
+    // @ts-expect-error
     const response = await api.get(`/entity/formations`, { params })
 
     const { formations, pagination } = response.data

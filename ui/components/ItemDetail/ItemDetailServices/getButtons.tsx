@@ -3,9 +3,6 @@ import { findIndex } from "lodash"
 import React from "react"
 import { useSwipeable } from "react-swipeable"
 
-import chevronLeft from "../../../public/images/chevronleft.svg"
-import chevronRight from "../../../public/images/chevronright.svg"
-import chevronClose from "../../../public/images/close.svg"
 import { SendPlausibleEvent } from "../../../utils/plausible"
 
 const navigationButtonProperties = {
@@ -95,7 +92,7 @@ export const getNavigationButtons = ({
             goPrev()
           }}
         >
-          <Image width="30px" height="30px" src={chevronLeft} alt="Résultat précédent" />
+          <Image width="30px" height="30px" src="/images/chevronleft.svg" alt="Résultat précédent" />
         </Button>
       </Box>
       <Box ml={2}>
@@ -105,7 +102,7 @@ export const getNavigationButtons = ({
             goNext()
           }}
         >
-          <Image width="30px" height="30px" src={chevronRight} alt="Résultat suivant" />
+          <Image width="30px" height="30px" src="/images/chevronright.svg" alt="Résultat suivant" />
         </Button>
       </Box>
       <Box ml={2}>
@@ -116,7 +113,7 @@ export const getNavigationButtons = ({
             handleClose()
           }}
         >
-          <Image width="30px" height="30px" src={chevronClose} alt="Fermer la fenêtre" />
+          <Image width="30px" height="30px" src="/images/close.svg" alt="Fermer la fenêtre" />
         </Button>
       </Box>
     </>

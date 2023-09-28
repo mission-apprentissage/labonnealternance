@@ -84,6 +84,8 @@ export const ZRomeDetail = z
         })
         .strict()
     ),
+    groupesCompetencesSpecifiques: z.array(z.any()),
+    environnementsTravail: z.array(z.any()),
     themes: z.array(
       z
         .object({
@@ -94,6 +96,7 @@ export const ZRomeDetail = z
     ),
     mobilitesProchesVersMetiers: z.array(ZMetierCible),
     mobilitesEvolutionsVersMetiers: z.array(ZMetierCible),
+    mobilitesProchesVersAppellations: z.array(z.any()),
     mobilitesEvolutionsVersAppellations: z.array(
       z
         .object({
@@ -101,6 +104,7 @@ export const ZRomeDetail = z
         })
         .strict()
     ),
+    mobilitesProchesAppellationsVersMetiers: z.array(z.any()),
     mobilitesEvolutionsAppellationsVersMetiers: z.array(
       z
         .object({
@@ -122,11 +126,7 @@ export const ZRomeDetail = z
         })
         .strict()
     ),
-    groupesCompetencesSpecifiques: z.array(z.any()),
-    environnementsTravail: z.array(z.any()),
-    mobilitesProchesVersAppellations: z.array(z.any()),
-    mobilitesProchesAppellationsVersMetiers: z.array(z.any()),
     mobilitesEvolutionsAppellationsVersAppellations: z.array(z.any()),
   })
   .strict()
-  .deepPartial()
+//.deepPartial()

@@ -4,8 +4,6 @@ import ReactHtmlParser from "react-html-parser"
 
 import { DisplayContext } from "../../context/DisplayContextProvider"
 import { SearchResultContext } from "../../context/SearchResultContextProvider"
-import eclair from "../../public/images/eclair.svg"
-import extendedSearchPin from "../../public/images/icons/trainingPin.svg"
 import { fetchAddresses } from "../../services/baseAdresse"
 import { getDaysSinceDate } from "../../utils/dateUtils"
 import { getItemQueryParameters } from "../../utils/getItemId"
@@ -47,7 +45,7 @@ const Job = ({ job, handleSelectItem, showTextOnly = undefined, searchForTrainin
   const getCenterSearchOnJobButton = () => {
     return (
       <Button variant="centerSearch" color="#01ac8c" title="Voir les formations proches" onClick={centerSearchOnJob}>
-        <Image mb="2px" mr="5px" src={extendedSearchPin} alt="" />{" "}
+        <Image mb="2px" mr="5px" src="/images/icons/trainingPin.svg" alt="" />{" "}
         <Text textDecoration="underline" as="span">
           Voir les formations proches
         </Text>
@@ -165,7 +163,7 @@ const Job = ({ job, handleSelectItem, showTextOnly = undefined, searchForTrainin
                 )}
                 {kind === "matcha" && (
                   <Flex alignItems="center">
-                    <Image mr={1} src={eclair} alt="" />
+                    <Image mr={1} src="/images/eclair.svg" alt="" />
                     <Text color="#0063CB" display="flex" fontSize="12px" whiteSpace="nowrap" mr={2}>
                       {job.applicationCount} candidature(s)
                     </Text>

@@ -20,6 +20,7 @@ import { resetApiKey } from "./lba_recruteur/api/resetApiKey"
 import { annuleFormulaire } from "./lba_recruteur/formulaire/annuleFormulaire"
 import { createUserFromCLI } from "./lba_recruteur/formulaire/createUser"
 import { exportPE } from "./lba_recruteur/formulaire/misc/exportPE"
+import { removeIsDelegatedFromJobs } from "./lba_recruteur/formulaire/misc/removeIsDelegatedFromJobs"
 import { relanceFormulaire } from "./lba_recruteur/formulaire/relanceFormulaire"
 import { generateIndexes } from "./lba_recruteur/indexes/generateIndexes"
 import { relanceOpco } from "./lba_recruteur/opco/relanceOpco"
@@ -71,6 +72,8 @@ export async function runJob(job: IInternalJobs): Promise<number> {
       return CRONS[job.name].handler()
     }
     switch (job.name) {
+      case "migration:remove-delegated-from-jobs": // Temporaire, doit tourner en recette et production
+        return removeIsDelegatedFromJobs()
       case "indexes:generate":
         return generateIndexes(job.payload as any)
       case "user:create": {

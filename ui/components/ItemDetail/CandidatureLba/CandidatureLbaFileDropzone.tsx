@@ -2,8 +2,6 @@ import { Box, Button, Flex, FormControl, FormErrorMessage, Image, Input, Spinner
 import React, { useState } from "react"
 import { useDropzone } from "react-dropzone"
 
-import dropzoneIco from "../../../public/images/icons/candidature_file_upload.svg"
-
 const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
   const [fileData, setFileData] = useState(formik.values.fileName ? { fileName: formik.values.fileName, fileContent: formik.values.fileContent } : null)
   const [fileLoading, setFileLoading] = useState(false)
@@ -66,7 +64,7 @@ const CandidatureLbaFileDropzone = ({ setFileValue, formik }) => {
           <Text ml={6}>Déposez le fichier ici</Text>
         ) : (
           <Flex ml={6} direction="row" alignItems="center">
-            <Image mr={2} alt="" src={dropzoneIco} />{" "}
+            <Image mr={2} alt="" src="/images/icons/candidature_file_upload.svg" />{" "}
             <Box>
               <Text fontSize="14px" fontWeight={700} color="grey.700">
                 Chargez votre CV ou déposez le ici
