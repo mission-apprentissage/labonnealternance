@@ -39,7 +39,7 @@ const ZLBAItemPlace = z
         example: "PARIS 4",
         description: "La ville",
       })
-      .optional(), // pe -> lieuTravail.libelle | formation -> localite | pe -> city | lba -> city
+      .nullish(), // pe -> lieuTravail.libelle | formation -> localite | pe -> city | lba -> city
     address: z.string().nullish().openapi({
       example: "4 RUE DES ROSIERS",
       description: "L'adresse du lieu",
@@ -103,6 +103,7 @@ const ZLbaItemRome = z
   })
   .strict()
   .openapi("Rome")
+
 const ZLbaItemNaf = z
   .object({
     code: z.string().nullish(), // lbb/lba -> naf_code | pe -> secteurActivite
@@ -273,7 +274,7 @@ export const ZLbaItemFormation = z
         example: true,
         description: "Indique si le titre RNCP est éligible en apprentissage.",
       })
-      .nullable(), // formation -> rncp_eligible_apprentissage
+      .nullish(), // formation -> rncp_eligible_apprentissage
     period: z.string().nullable(), // formation -> periode
     capacity: z
       .string()

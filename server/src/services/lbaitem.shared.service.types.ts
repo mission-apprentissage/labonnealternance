@@ -42,8 +42,6 @@ export interface ILbaItemPeJob extends ILbaItemCommon {
   nafs: ILbaItemNaf[] | null
 }
 
-export type ILbaItem = ILbaItemFormation | ILbaItemLbaJob | ILbaItemLbaCompany | ILbaItemPeJob
-
 export interface ILbaItemContact {
   // informations de contact. optionnel
   email?: string | null // pe -> contact.courriel | lbb/lba -> email | formation -> email | matcha -> email
@@ -144,69 +142,4 @@ export interface ILbaItemTraining {
   description: string | null
   objectif: string | null
   sessions: ILbaItemTrainingSession[]
-}
-
-export class LbaItem implements ILbaItem {
-  constructor(type) {
-    this.ideaType = type
-  }
-
-  ideaType: ILbaItem["ideaType"] = null
-  title: ILbaItem["title"] = null
-  longTitle: ILbaItem["longTitle"] = null
-  id: ILbaItem["id"] = null
-  idRco: ILbaItem["idRco"] = null
-  idRcoFormation: ILbaItem["idRcoFormation"] = null
-
-  contact: ILbaItemContact | null = null
-
-  place: ILbaItemPlace = {
-    distance: null,
-    fullAddress: null,
-    latitude: null,
-    longitude: null,
-    city: null,
-    address: null,
-    cedex: null,
-    zipCode: null,
-    insee: null,
-    departementNumber: null,
-    region: null,
-    remoteOnly: null,
-  }
-
-  company: ILbaItemCompany = {
-    name: null,
-    siret: null,
-    size: null,
-    logo: null,
-    description: null,
-    socialNetwork: null,
-    url: null,
-    id: null,
-    uai: null,
-    place: null,
-    mandataire: null,
-    creationDate: null,
-    headquarter: null,
-    opco: null,
-  }
-
-  diplomaLevel: ILbaItem["diplomaLevel"] = null
-  diploma: ILbaItem["diploma"] = null
-  cleMinistereEducatif: ILbaItem["cleMinistereEducatif"] = null
-  cfd: ILbaItem["cfd"] = null
-  rncpCode: ILbaItem["rncpCode"] = null
-  rncpLabel: ILbaItem["rncpLabel"] = null
-  rncpEligibleApprentissage: ILbaItem["rncpEligibleApprentissage"] = null
-  period: ILbaItem["period"] = null
-  capacity: ILbaItem["capacity"] = null
-  onisepUrl: ILbaItem["onisepUrl"] = null
-  url: ILbaItem["url"] = null
-
-  job: ILbaItemJob | null = null
-  romes: ILbaItemRome[] | null = null
-  nafs: ILbaItemNaf[] | null = null
-  training: ILbaItemTraining | null = null
-  applicationCount = null
 }

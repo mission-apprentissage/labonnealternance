@@ -12,7 +12,7 @@ import config from "../config.js"
 import { NIVEAUX_POUR_OFFRES_PE } from "./constant.service.js"
 import dayjs from "./dayjs.service.js"
 import { TLbaItemResult } from "./jobOpportunity.service.types.js"
-import { ILbaItem, ILbaItemCompany, ILbaItemContact } from "./lbaitem.shared.service.types.js"
+import { ILbaItemCompany, ILbaItemContact, ILbaItemPeJob } from "./lbaitem.shared.service.types.js"
 import { filterJobsByOpco } from "./opco.service.js"
 import { PEJob, PEResponse } from "./pejob.service.types.js"
 
@@ -117,12 +117,8 @@ const computeJobDistanceToSearchCenter = (job: PEJob, latitude: string, longitud
 
 /**
  * Adaptation au modèle LBA et conservation des seules infos utilisées des offres
- * @param {PEJob} job une offre Pôle Emploi
- * @param {string | null} latitude la latitude du centre de recherche
- * @param {string | null} longitude la longitude du centre de recherche
- * @return {ILbaItem}
  */
-const transformPeJob = ({ job, latitude = null, longitude = null }: { job: PEJob; latitude?: string | null; longitude?: string | null }): ILbaItem => {
+const transformPeJob = ({ job, latitude = null, longitude = null }: { job: PEJob; latitude?: string | null; longitude?: string | null }): ILbaItemPeJob => {
   const contact: ILbaItemContact | null = job.contact
     ? {
         name: job.contact.nom,
@@ -147,7 +143,7 @@ const transformPeJob = ({ job, latitude = null, longitude = null }: { job: PEJob
     company.siret = job.entreprise.siret
   }
 
-  const resultJob: ILbaItem = {
+  const resultJob: ILbaItemPeJob = {
     ideaType: "peJob",
     title: job.intitule,
     contact,
@@ -193,14 +189,9 @@ const transformPeJob = ({ job, latitude = null, longitude = null }: { job: PEJob
 
 /**
  * Converti les offres issues de l'api Pôle emploi en objets de type ILbaItem
- * @param {PEJob[]} jobs offres issues de l'api offres de Pôle emploi
- * @param {number} radius le rayon de recherche
- * @param {string} latitude la latitude du centre de recherche
- * @param {string} longitude la longitude du centre de recherche
- * @returns {{ results: ILbaItem[] }}
  */
 const transformPeJobs = ({ jobs, radius, latitude, longitude }: { jobs: PEJob[]; radius: number; latitude: string; longitude: string }) => {
-  const resultJobs: ILbaItem[] = []
+  const resultJobs: ILbaItemPeJob[] = []
 
   if (jobs && jobs.length) {
     for (let i = 0; i < jobs.length; ++i) {
@@ -220,14 +211,6 @@ const transformPeJobs = ({ jobs, radius, latitude, longitude }: { jobs: PEJob[];
 
 /**
  * Récupère une liste d'offres depuis l'API Pôle emploi
- * @param {string[]} romes un tableau de codes ROME
- * @param {insee} insee le code insee du centre de recherche
- * @param {number} radius le rayon de recherche
- * @param {number} jobLimit le nombre maximum de résultats à retourner
- * @param {string} caller l'identifiant de l'appelant
- * @param {string} diploma le filtre sur le diplome
- * @param {string} api le nom de l'api utilisée pour l'appel de la fonction
- * @returns
  */
 const getPeJobs = async ({
   romes,
@@ -306,19 +289,8 @@ const getPeJobs = async ({
  * applique post traitements suivants :
  * - filtrage optionnel sur les opco
  * - suppressions de données non autorisées pour des consommateurs extérieurs
- *
- * @param {string[]} romes un tableau de codes ROME
- * @param {insee} insee le code insee du centre de recherche
- * @param {number} radius le rayon de recherche
- * @param {number} jobLimit le nombre maximum de résultats à retourner
- * @param {string} caller l'identifiant de l'appelant
- * @param {string} diploma le filtre sur le diplome
- * @param {string} opco le filtre sur l'opco
- * @param {string} opcoUrl le filtre sur l'url de l'opco
- * @param {string} api le nom de l'api utilisée pour l'appel de la fonction
- * @returns {Promise<ILbaItem[] | IApiError>}
  */
-export const getSomePeJobs = async ({ romes, insee, radius, latitude, longitude, caller, diploma, opco, opcoUrl, api }): Promise<TLbaItemResult> => {
+export const getSomePeJobs = async ({ romes, insee, radius, latitude, longitude, caller, diploma, opco, opcoUrl, api }): Promise<TLbaItemResult<ILbaItemPeJob>> => {
   let peResponse: PEResponse | IApiError | null = null
   const currentRadius = radius || 20000
   const jobLimit = 150
@@ -375,9 +347,6 @@ export const getSomePeJobs = async ({ romes, insee, radius, latitude, longitude,
 
 /**
  * Retourne un tableau contenant la seule offre Pôle emploi identifiée
- * @param {string} id l'identifiant technique de l'offre Pôle emploi voulue
- * @param {string} caller l'identifiant de l'appelant de l'api
- * @returns {Promise<ILbaItem[] | IApiError>}
  */
 export const getPeJobFromId = async ({ id, caller }: { id: string; caller: string | undefined }) => {
   try {
