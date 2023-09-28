@@ -1,10 +1,7 @@
-import { optional, z } from "zod"
+import { z } from "zod"
 
 import { zObjectId } from "../models/common"
-import {
-  ZJob,
-  // ZJobWithoutId
-} from "../models/job.model"
+import { ZJob } from "../models/job.model"
 import { ZRecruiter } from "../models/recruiter.model"
 
 import { IRoutesDef } from "./common.routes"
@@ -125,7 +122,6 @@ export const zFormulaireRoute = {
     "/api/formulaire/offre/:jobId": {
       // TODO_SECURITY_FIX gestion des permissions
       // TODO_SECURITY_FIX session gérée par cookie server
-      // TODO_SECURITY_FIX réduire aux champs modifiables
       params: z.object({ jobId: zObjectId }).strict(),
       body: ZJob.pick({
         rome_label: true,
@@ -133,8 +129,6 @@ export const zFormulaireRoute = {
         rome_code: true,
         job_level_label: true,
         job_description: true,
-        job_creation_date: true,
-        job_expiration_date: true,
         job_status: true,
         job_type: true,
         is_multi_published: true,
@@ -147,6 +141,8 @@ export const zFormulaireRoute = {
       }).extend({
         job_start_date: z.coerce.date(),
         job_update_date: z.coerce.date(),
+        job_creation_date: z.coerce.date(),
+        job_expiration_date: z.coerce.date(),
       }),
       response: {
         "2xx": ZRecruiter,
