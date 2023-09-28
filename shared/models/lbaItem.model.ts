@@ -374,6 +374,8 @@ export const ZLbaItemLbaJob = z
       .nullish(), // matcha -> offres.niveau
     job: ZLbaItemJob.nullable(),
     romes: z.array(ZLbaItemRome).nullable(),
+    nafs: z.array(ZLbaItemNaf).nullable(),
+    applicationCount: z.number(), // calcul en fonction du nombre de candidatures enregistrées
   })
   .strict()
 
@@ -388,8 +390,8 @@ export const ZLbaItemLbaCompany = z
     company: ZLbaItemCompany.nullable(),
 
     url: z.null(),
-    applicationCount: z.number(), // calcul en fonction du nombre de candidatures enregistrées
     nafs: z.array(ZLbaItemNaf).nullable(),
+    applicationCount: z.number(), // calcul en fonction du nombre de candidatures enregistrées
   })
   .strict()
 
