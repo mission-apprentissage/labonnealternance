@@ -199,7 +199,7 @@ const getLabelsAndRomes = async (searchTerm: string, withRomeLabels?: boolean): 
 }
 
 /**
- * Retourne les appellations, initués et codes romes correspondant au terme de recherche
+ * Retourne les appellations, intitulés et codes romes correspondant au terme de recherche
  * @param {string} searchTerm un mot ou un préfixe sur lequel doit se baser la recherche
  * @returns {Promise<IAppellationsRomes>}
  */

@@ -148,8 +148,8 @@ const transformPeJob = ({ job, latitude = null, longitude = null }: { job: PEJob
     insee: job.lieuTravail.commune,
     zipCode: job.lieuTravail.codePostal,
     city: job.lieuTravail.libelle,
-    latitude: parseFloat(job.lieuTravail.latitude),
-    longitude: parseFloat(job.lieuTravail.longitude),
+    latitude: job.lieuTravail.latitude && parseFloat(job.lieuTravail.latitude),
+    longitude: job.lieuTravail.longitude && parseFloat(job.lieuTravail.longitude),
     fullAddress: `${job.lieuTravail.libelle}${job.lieuTravail.codePostal ? " " + job.lieuTravail.codePostal : ""}`,
   }
 
