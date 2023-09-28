@@ -1,8 +1,6 @@
 import { Box, Image, Show, SimpleGrid, Text } from "@chakra-ui/react"
 import React from "react"
 
-import votrebesoinImage from "../../public/images/home_pics/illu-votrebesoin.svg"
-
 import ConnectionActions from "./ConnectionActions"
 
 const Entreprise = () => {
@@ -23,7 +21,7 @@ const Entreprise = () => {
         </Box>
         <Show above="md">
           <Box>
-            <Image src={votrebesoinImage} alt="" />
+            <Image src="/images/home_pics/illu-votrebesoin.svg" alt="" />
           </Box>
         </Show>
       </SimpleGrid>

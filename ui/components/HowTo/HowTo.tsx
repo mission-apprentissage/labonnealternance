@@ -1,23 +1,15 @@
 import { Box, Container, Grid, GridItem, Image, Show, Text } from "@chakra-ui/react"
 import React from "react"
 
-import howto1 from "../../public/images/howto1.svg"
-import howto2 from "../../public/images/howto2.svg"
-import howto3 from "../../public/images/howto3.svg"
-import howtoline1 from "../../public/images/howtoline1.svg"
-import howtoline2a from "../../public/images/howtoline2a.svg"
-import howtoline3a from "../../public/images/howtoline3a.svg"
-import howtoline3b from "../../public/images/howtoline3b.svg"
-
 const HowTo = () => {
   return (
     <>
       <Container variant="responsiveContainer">
         <Grid templateColumns={{ base: "1fr", md: "repeat(3, 1fr)" }} gap={{ base: "10", md: "24" }}>
           <GridItem position="relative" width={{ base: "200px", md: "auto" }} mx="auto">
-            <Image src={howto1} alt="" zIndex="2" position="inherit" />
+            <Image src="/images/howto1.svg" alt="" zIndex="2" position="inherit" />
             <Show above="md">
-              <Image src={howtoline1} alt="" position="absolute" top="85px" left="-162px" />
+              <Image src="/images/howtoline1.svg" alt="" position="absolute" top="85px" left="-162px" />
             </Show>
             <Box>
               <Text as="h3" fontSize="1.25rem" fontWeight="500" mb="3">
@@ -27,9 +19,9 @@ const HowTo = () => {
             </Box>
           </GridItem>
           <GridItem position="relative" width={{ base: "200px", md: "auto" }} mx="auto">
-            <Image src={howto2} alt="" zIndex="2" position="inherit" />
+            <Image src="/images/howto2.svg" alt="" zIndex="2" position="inherit" />
             <Show above="md">
-              <Image src={howtoline2a} alt="" position="absolute" top="47px" left="-208px" />
+              <Image src="/images/howtoline2a.svg" alt="" position="absolute" top="47px" left="-208px" />
             </Show>
             <Box>
               <Text as="h3" fontSize="1.25rem" fontWeight="500" mb="3">
@@ -39,10 +31,10 @@ const HowTo = () => {
             </Box>
           </GridItem>
           <GridItem position="relative" width={{ base: "200px", md: "auto" }} mx="auto" mb="12">
-            <Image src={howto3} alt="" zIndex="2" position="inherit" />
+            <Image src="/images/howto3.svg" alt="" zIndex="2" position="inherit" />
             <Show above="md">
-              <Image src={howtoline3a} alt="" position="absolute" top="47px" left="-200px" />
-              <Image src={howtoline3b} alt="" position="absolute" top="47px" left="158px" />
+              <Image src="/images/howtoline3a.svg" alt="" position="absolute" top="47px" left="-200px" />
+              <Image src="/images/howtoline3b.svg" alt="" position="absolute" top="47px" left="158px" />
             </Show>
             <Box>
               <Text as="h3" fontSize="1.25rem" fontWeight="500" mb="3">
