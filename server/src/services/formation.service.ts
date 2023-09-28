@@ -16,7 +16,7 @@ import { notifyToSlack } from "../common/utils/slackUtils"
 import config from "../config"
 
 import type { IFormationEsResult } from "./formation.service.types"
-import type { ILbaItem, ILbaItemTrainingSession } from "./lbaitem.shared.service.types"
+import type { ILbaItem, ILbaItemFormation, ILbaItemTrainingSession } from "./lbaitem.shared.service.types"
 import { LbaItem } from "./lbaitem.shared.service.types"
 import { formationsQueryValidator, formationsRegionQueryValidator } from "./queryValidator.service"
 
@@ -181,7 +181,7 @@ const getFormation = async ({ id }: { id: string; caller?: string }): Promise<IF
  * @param {string} id l'identifiant de la formation
  * @returns {Promise<ILbaItem[]>}
  */
-const getOneFormationFromId = async ({ id }: { id: string }): Promise<ILbaItem[]> => {
+const getOneFormationFromId = async ({ id }: { id: string }): Promise<ILbaItemFormation[]> => {
   const rawEsFormations = await getFormation({ id })
   const formations = transformFormationsForIdea(rawEsFormations)
 
@@ -298,7 +298,7 @@ const getAtLeastSomeFormations = async ({
   maxOutLimitFormation: number
   caller?: string
   options: string[]
-}): Promise<ILbaItem[]> => {
+}): Promise<ILbaItemFormation[]> => {
   let rawEsFormations: IFormationEsResult[]
   let currentRadius = radius
   let formationLimit = formationResultLimit
@@ -370,8 +370,8 @@ export const deduplicateFormations = (formations: IFormationEsResult[]): IFormat
  * @param {IFormationEsResult[]} rawEsFormations formations issues de la mongo ou de l'elasticsearch
  * @returns {ILbaItem[]}
  */
-const transformFormationsForIdea = (rawEsFormations: IFormationEsResult[]): ILbaItem[] => {
-  const formations: ILbaItem[] = []
+const transformFormationsForIdea = (rawEsFormations: IFormationEsResult[]): ILbaItemFormation[] => {
+  const formations: ILbaItemFormation[] = []
 
   if (rawEsFormations.length) {
     for (let i = 0; i < rawEsFormations.length; ++i) {
@@ -387,79 +387,85 @@ const transformFormationsForIdea = (rawEsFormations: IFormationEsResult[]): ILba
  * @param {IFormationEsResult} rawFormation formation brute issue de la mongo ou de l'ES
  * @return {ILbaItem}
  */
-const transformFormationForIdea = (rawFormation: IFormationEsResult): ILbaItem => {
-  const resultFormation = new LbaItem("formation")
-
-  resultFormation.title = (rawFormation.source?.intitule_long || rawFormation.source.intitule_court) ?? null
-  resultFormation.longTitle = rawFormation.source.intitule_long ?? null
-  resultFormation.diplomaLevel = rawFormation.source.niveau ?? null
-  resultFormation.onisepUrl = rawFormation.source.onisep_url ?? null
-  resultFormation.id = rawFormation.source.cle_ministere_educatif ?? null
-  resultFormation.diploma = rawFormation.source.diplome ?? null
-  resultFormation.cfd = rawFormation.source.cfd ?? null
-  resultFormation.rncpCode = rawFormation.source.rncp_code ?? null
-  resultFormation.rncpLabel = rawFormation.source.rncp_intitule ?? null
-  resultFormation.rncpEligibleApprentissage = rawFormation.source.rncp_eligible_apprentissage
-  resultFormation.capacity = rawFormation.source.capacite ?? null
-  resultFormation.idRco = rawFormation.source.id_formation ?? null
-  resultFormation.idRcoFormation = rawFormation.source.id_rco_formation ?? null
-  resultFormation.cleMinistereEducatif = rawFormation.source.cle_ministere_educatif ?? null
-
+const transformFormationForIdea = (rawFormation: IFormationEsResult): ILbaItemFormation => {
   const geoSource = rawFormation.source.lieu_formation_geo_coordonnees
   const [latOpt, longOpt] = (geoSource?.split(",") ?? []).map((str) => parseFloat(str))
 
-  resultFormation.place = {
-    distance: rawFormation.sort ? roundDistance(rawFormation.sort[0]) : null,
-    fullAddress: getTrainingAddress(rawFormation.source), // adresse postale reconstruite à partir des éléments d'adresse fournis
-    latitude: latOpt ?? null,
-    longitude: longOpt ?? null,
-    //city: formation.source.etablissement_formateur_localite,
-    city: rawFormation.source.localite ?? null,
-    address: `${rawFormation.source.lieu_formation_adresse}`,
-    cedex: rawFormation.source.etablissement_formateur_cedex,
-    zipCode: rawFormation.source.code_postal,
-    //trainingZipCode: formation.source.code_postal,
-    departementNumber: rawFormation.source.num_departement,
-    region: rawFormation.source.region,
-    insee: rawFormation.source.code_commune_insee,
-    remoteOnly: rawFormation.source.entierement_a_distance,
-  }
+  const resultFormation = {
+    ideaType: "formation",
+    title: (rawFormation.source?.intitule_long || rawFormation.source.intitule_court) ?? null,
+    longTitle: rawFormation.source.intitule_long ?? null,
+    id: rawFormation.source.cle_ministere_educatif ?? null,
+    idRco: rawFormation.source.id_formation ?? null,
+    idRcoFormation: rawFormation.source.id_rco_formation ?? null,
 
-  resultFormation.company = {
-    name: getSchoolName(rawFormation.source), // pe -> entreprise.nom | formation -> etablissement_formateur_enseigne | lbb/lba -> name
-    siret: rawFormation.source.etablissement_formateur_siret,
-    id: rawFormation.source.etablissement_formateur_id,
-    uai: rawFormation.source.etablissement_formateur_uai,
-    headquarter: {
-      // uniquement pour formation
-      id: rawFormation.source.etablissement_gestionnaire_id ?? null,
-      uai: rawFormation.source.etablissement_gestionnaire_uai ?? null,
-      siret: rawFormation.source.etablissement_gestionnaire_siret ?? null,
-      type: rawFormation.source.etablissement_gestionnaire_type ?? null,
-      hasConvention: rawFormation.source.etablissement_gestionnaire_conventionne ?? null,
-      place: {
-        address: `${rawFormation.source.etablissement_gestionnaire_adresse}${
-          rawFormation.source.etablissement_gestionnaire_complement_adresse ? ", " + rawFormation.source.etablissement_gestionnaire_complement_adresse : ""
-        }`,
-        cedex: rawFormation.source.etablissement_gestionnaire_cedex,
-        zipCode: rawFormation.source.etablissement_gestionnaire_code_postal,
-        city: rawFormation.source.etablissement_gestionnaire_localite,
-      },
-      name: rawFormation.source.etablissement_gestionnaire_entreprise_raison_sociale ?? null,
-    },
+    contact: null,
+
     place: {
-      city: rawFormation.source.etablissement_formateur_localite,
+      distance: rawFormation.sort ? roundDistance(rawFormation.sort[0]) : null,
+      fullAddress: getTrainingAddress(rawFormation.source), // adresse postale reconstruite à partir des éléments d'adresse fournis
+      latitude: latOpt ?? null,
+      longitude: longOpt ?? null,
+      //city: formation.source.etablissement_formateur_localite,
+      city: rawFormation.source.localite ?? null,
+      address: `${rawFormation.source.lieu_formation_adresse}`,
+      cedex: rawFormation.source.etablissement_formateur_cedex,
+      zipCode: rawFormation.source.code_postal,
+      //trainingZipCode: formation.source.code_postal,
+      departementNumber: rawFormation.source.num_departement,
+      region: rawFormation.source.region,
+      insee: rawFormation.source.code_commune_insee,
+      remoteOnly: rawFormation.source.entierement_a_distance,
     },
-  }
 
-  if (rawFormation.source.rome_codes && rawFormation.source.rome_codes.length) {
-    resultFormation.romes = rawFormation.source.rome_codes.map((rome) => ({ code: rome }))
-  }
+    company: {
+      name: getSchoolName(rawFormation.source), // pe -> entreprise.nom | formation -> etablissement_formateur_enseigne | lbb/lba -> name
+      siret: rawFormation.source.etablissement_formateur_siret,
+      id: rawFormation.source.etablissement_formateur_id,
+      uai: rawFormation.source.etablissement_formateur_uai,
+      headquarter: {
+        // uniquement pour formation
+        id: rawFormation.source.etablissement_gestionnaire_id ?? null,
+        uai: rawFormation.source.etablissement_gestionnaire_uai ?? null,
+        siret: rawFormation.source.etablissement_gestionnaire_siret ?? null,
+        type: rawFormation.source.etablissement_gestionnaire_type ?? null,
+        hasConvention: rawFormation.source.etablissement_gestionnaire_conventionne ?? null,
+        place: {
+          address: `${rawFormation.source.etablissement_gestionnaire_adresse}${
+            rawFormation.source.etablissement_gestionnaire_complement_adresse ? ", " + rawFormation.source.etablissement_gestionnaire_complement_adresse : ""
+          }`,
+          cedex: rawFormation.source.etablissement_gestionnaire_cedex,
+          zipCode: rawFormation.source.etablissement_gestionnaire_code_postal,
+          city: rawFormation.source.etablissement_gestionnaire_localite,
+        },
+        name: rawFormation.source.etablissement_gestionnaire_entreprise_raison_sociale ?? null,
+      },
+      place: {
+        city: rawFormation.source.etablissement_formateur_localite,
+      },
+    },
 
-  resultFormation.training = {
-    objectif: rawFormation.source?.objectif?.trim() ?? null,
-    description: rawFormation.source?.contenu?.trim() ?? null,
-    sessions: setSessions(rawFormation.source),
+    diplomaLevel: rawFormation.source.niveau ?? null,
+    diploma: rawFormation.source.diplome ?? null,
+    cleMinistereEducatif: rawFormation.source.cle_ministere_educatif ?? null,
+    cfd: rawFormation.source.cfd ?? null,
+    rncpCode: rawFormation.source.rncp_code ?? null,
+    rncpLabel: rawFormation.source.rncp_intitule ?? null,
+    rncpEligibleApprentissage: rawFormation.source.rncp_eligible_apprentissage,
+    period: null,
+    capacity: rawFormation.source.capacite ?? null,
+    onisepUrl: rawFormation.source.onisep_url ?? null,
+    url: null,
+
+    job: null,
+    romes: rawFormation.source.rome_codes && rawFormation.source.rome_codes.length ? rawFormation.source.rome_codes.map((rome) => ({ code: rome })) : null,
+    nafs: null,
+    training: {
+      objectif: rawFormation.source?.objectif?.trim() ?? null,
+      description: rawFormation.source?.contenu?.trim() ?? null,
+      sessions: setSessions(rawFormation.source),
+    },
+    applicationCount: null,
   }
 
   return resultFormation

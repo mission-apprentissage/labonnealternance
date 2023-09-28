@@ -1,8 +1,7 @@
 import { JOB_STATUS } from "./constant.service"
 import { IRomeDetailsFromAPI } from "./rome.service.types"
 
-export interface ILbaItem {
-  ideaType: string | null // type de l'item :  formation | lbb | lba | peJob | matcha
+interface ILbaItemCommon {
   title: string | null | undefined // pe -> intitule | lbb/lba -> enseigne | formation -> intitule_long OU intitule_court | matcha -> offres.libelle || offres.rome_appellation_label
   longTitle?: string | null // formation -> intitule_long,
   id: string | null // formation -> id | matcha -> id_form
@@ -38,6 +37,24 @@ export interface ILbaItem {
 
   applicationCount?: number | null // lba / matcha -> calcul en fonction du nombre de candidatures enregistrées
 }
+
+export interface ILbaItemFormation extends ILbaItemCommon {
+  ideaType: "formation"
+}
+
+export interface ILbaItemLbaJob extends ILbaItemCommon {
+  ideaType: "matcha"
+}
+
+export interface ILbaItemLbaCompany extends ILbaItemCommon {
+  ideaType: "lba"
+}
+
+export interface ILbaItemPeJob extends ILbaItemCommon {
+  ideaType: "peJob"
+}
+
+export type ILbaItem = ILbaItemFormation | ILbaItemLbaJob | ILbaItemLbaCompany | ILbaItemPeJob
 
 export interface ILbaItemContact {
   // informations de contact. optionnel
