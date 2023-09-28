@@ -4,7 +4,6 @@ import React, { useContext } from "react"
 import { DisplayContext } from "../../../context/DisplayContextProvider"
 import { ScopeContext } from "../../../context/ScopeContext"
 import { SearchResultContext } from "../../../context/SearchResultContextProvider"
-import filterIcon from "../../../public/images/icons/filter.svg"
 import { filterLayers } from "../../../utils/mapTools"
 import { SendPlausibleEvent } from "../../../utils/plausible"
 import DisplayMapButton from "../../DisplayMapButton/displayMapButton"
@@ -97,7 +96,7 @@ const ResultFilterAndCounter = ({ allJobSearchError, trainingSearchError, isTrai
                   background: "none",
                 }}
               >
-                <Image width="24px" height="24px" src={filterIcon} alt="" />
+                <Image width="24px" height="24px" src="/images/icons/filter.svg" alt="" />
                 Filtres
               </Button>
             </Flex>
