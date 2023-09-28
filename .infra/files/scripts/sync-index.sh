@@ -4,7 +4,7 @@ set -euo pipefail
 
 run_migrations(){
     echo "Application des migrations ..."
-    docker compose run --rm --no-deps server yarn cli index --queued
-} 
+    docker compose run --rm --no-deps server yarn cli index --recreate --queued
+}
 
 run_migrations
