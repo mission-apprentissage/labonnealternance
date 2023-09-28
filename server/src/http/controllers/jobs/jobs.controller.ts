@@ -415,7 +415,7 @@ export default (server: Server) => {
           matchas.results.map((matchaOffre) => matchaOffre?.job?.id && addOffreSearchView(matchaOffre.job.id))
         }
       }
-      // @ts-expect-error: TODO
+
       return res.status(200).send(result)
     }
   )
@@ -447,7 +447,7 @@ export default (server: Server) => {
           res.status(result.status || 500)
         }
       }
-      // @ts-expect-error: TODO
+
       return res.send(result)
     }
   )
@@ -488,7 +488,7 @@ export default (server: Server) => {
           }
         }
       }
-      // @ts-expect-error: TODO
+
       return res.send(result)
     }
   )
@@ -533,7 +533,7 @@ export default (server: Server) => {
           res.status(result.status || 500)
         }
       }
-      // @ts-expect-error: TODO
+
       return res.send(result)
     }
   )

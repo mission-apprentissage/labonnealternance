@@ -1,6 +1,6 @@
 import { z } from "../helpers/zodWithOpenApi"
 import { ZLbacError } from "../models/lbacError.model"
-import { ZLbaItem, ZLbaItemFormation } from "../models/lbaItem.model"
+import { ZLbaItemFormation } from "../models/lbaItem.model"
 
 import { IRoutesDef, ZResError } from "./common.routes"
 
@@ -132,7 +132,7 @@ export const zV1FormationsRoutes = {
       response: {
         "200": z
           .object({
-            results: z.array(ZLbaItem),
+            results: z.array(ZLbaItemFormation),
           })
           .strict(),
         "400": z.union([ZResError, ZLbacError]),

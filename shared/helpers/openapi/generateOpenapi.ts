@@ -7,8 +7,7 @@ function generateOpenApiResponsesObject<R extends IRouteSchema["response"]>(resp
   return Object.keys(response).reduce(
     (acc: { [statusCode: string]: ResponseConfig }, code: any) => {
       acc[code] = {
-        // @ts-expect-error: TODO
-        description: response[code]._def.openapi?.metadata.description ?? response[code].description ?? "",
+        description: response[code]._def.openapi?.metadata?.description ?? response[code].description ?? "",
         content: {
           "application/json": {
             schema: response[code],

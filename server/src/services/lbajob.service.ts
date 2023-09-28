@@ -1,7 +1,7 @@
 import { IJob, IRecruiter } from "shared"
 
 import { encryptMailWithIV } from "../common/utils/encryptString"
-import { manageApiError } from "../common/utils/errorManager"
+import { IApiError, manageApiError } from "../common/utils/errorManager"
 import { roundDistance } from "../common/utils/geolib"
 import { trackApiCall } from "../common/utils/sendTrackingEvent"
 
@@ -108,7 +108,7 @@ function transformLbaJobs({ jobs, caller, applicationCountByJob }: { jobs: ILbaJ
 /**
  * Retourne une offre LBA identifiée par son id
  */
-export const getLbaJobById = async ({ id, caller }: { id: string; caller?: string }) => {
+export const getLbaJobById = async ({ id, caller }: { id: string; caller?: string }): Promise<IApiError | { matchas: ILbaItemLbaJob[] }> => {
   try {
     const rawJob = await getOffreAvecInfoMandataire(id)
 

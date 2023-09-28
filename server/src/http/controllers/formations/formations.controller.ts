@@ -84,7 +84,7 @@ export default (server: Server) => {
           })
         }
       }
-      // @ts-expect-error: TODO
+
       return res.send(result)
     }
   )
