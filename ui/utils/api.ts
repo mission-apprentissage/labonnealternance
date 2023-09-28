@@ -30,7 +30,7 @@ export const getEntreprisesOfCfa = async (cfaId: string) => {
 }
 
 export const getFormulaire = (establishment_id) => API.get(`/formulaire/${establishment_id}`).catch(errorHandler)
-export const postFormulaire = (form) => API.post(`/formulaire`, form).catch(errorHandler)
+export const postFormulaire = (form) => API.post(`/formulaire`, form)
 
 export const putFormulaire = (establishment_id, form) => API.put(`/formulaire/${establishment_id}`, form)
 export const archiveFormulaire = (establishment_id) => API.delete(`/formulaire/${establishment_id}`).catch(errorHandler)
