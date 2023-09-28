@@ -1,7 +1,10 @@
 import { z } from "zod"
 
 import { zObjectId } from "../models/common"
-import { ZJob } from "../models/job.model"
+import {
+  ZJob,
+  // ZJobWithoutId
+} from "../models/job.model"
 import { ZRecruiter } from "../models/recruiter.model"
 
 import { IRoutesDef } from "./common.routes"
