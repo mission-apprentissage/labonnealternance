@@ -17,7 +17,7 @@ class BufferedHttpAgent extends http.Agent {
   }
 
   createConnection(options, callback) {
-    // @ts-ignore
+    // @ts-expect-error
     return super.createConnection({ ...options, highWaterMark: this.highWaterMark }, callback)
   }
 }
@@ -31,7 +31,7 @@ class BufferedHttpsAgent extends https.Agent {
   }
 
   createConnection(options, callback) {
-    // @ts-ignore
+    // @ts-expect-error
     return super.createConnection({ ...options, highWaterMark: this.highWaterMark }, callback)
   }
 }

@@ -31,7 +31,7 @@ export const useMongo = () => {
 
     await Promise.all(
       Object.values(collections).map(async (collection) => {
-        // @ts-ignore
+        // @ts-expect-error
         await collection.deleteMany({})
       })
     )

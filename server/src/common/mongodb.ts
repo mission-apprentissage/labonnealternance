@@ -6,7 +6,7 @@ import { logger } from "./logger"
 
 export const mongooseInstance = mongoose
 export const { model, Schema } = mongoose
-// @ts-ignore
+// @ts-expect-error
 export let db: ReturnType<typeof mongoose.Connection> // eslint-disable-line import/no-mutable-exports
 
 export const connectToMongo = (mongoUri = config.mongodb.uri, mongooseInst = null) => {
