@@ -3,7 +3,7 @@ import { ILbaCompany } from "shared"
 import { getElasticInstance } from "../common/esClient/index.js"
 import { LbaCompany } from "../common/model/index.js"
 import { encryptMailWithIV } from "../common/utils/encryptString.js"
-import { manageApiError } from "../common/utils/errorManager.js"
+import { IApiError, manageApiError } from "../common/utils/errorManager.js"
 import { roundDistance } from "../common/utils/geolib.js"
 import { isAllowedSource } from "../common/utils/isAllowedSource.js"
 import { trackApiCall } from "../common/utils/sendTrackingEvent.js"
@@ -11,7 +11,7 @@ import { sentryCaptureException } from "../common/utils/sentryUtils.js"
 
 import { getApplicationByCompanyCount, IApplicationCount } from "./application.service.js"
 import { TLbaItemResult } from "./jobOpportunity.service.types.js"
-import { ILbaItem } from "./lbaitem.shared.service.types.js"
+import { ILbaItemLbaCompany } from "./lbaitem.shared.service.types.js"
 
 const esClient = getElasticInstance()
 
@@ -33,7 +33,7 @@ const transformCompany = ({
   caller?: string
   contactAllowedOrigin: boolean
   applicationCountByCompany: IApplicationCount[]
-}) => {
+}): ILbaItemLbaCompany => {
   const contact: {
     email?: string
     iv?: string
@@ -50,7 +50,7 @@ const transformCompany = ({
 
   const applicationCount = applicationCountByCompany.find((cmp) => company.siret == cmp._id)
 
-  const resultCompany = {
+  const resultCompany: ILbaItemLbaCompany = {
     ideaType: "lba",
     title: company.enseigne,
     contact,
@@ -79,6 +79,7 @@ const transformCompany = ({
       },
     ],
     applicationCount: applicationCount?.count || 0,
+    url: null,
   }
 
   return resultCompany
@@ -102,8 +103,8 @@ const transformCompanies = ({
   referer?: string
   caller?: string
   applicationCountByCompany: IApplicationCount[]
-}) => {
-  const transformedCompanies: { results: ILbaItem[] } = { results: [] }
+}): { results: ILbaItemLbaCompany[] } => {
+  const transformedCompanies: { results: ILbaItemLbaCompany[] } = { results: [] }
 
   if (companies?.length) {
     transformedCompanies.results = companies.map((company) => {
@@ -344,12 +345,21 @@ export const getSomeCompanies = async ({
 
 /**
  * Retourne une société issue de l'algo identifiée par sont SIRET
- * @param {string} siret
- * @param {string} referer
- * @param {string} caller
- * @returns {Promise<IApiError | { lbaCompanies: LbaItem[] }>}
  */
-export const getCompanyFromSiret = async ({ siret, referer, caller }: { siret: string; referer: string | undefined; caller: string | undefined }) => {
+export const getCompanyFromSiret = async ({
+  siret,
+  referer,
+  caller,
+}: {
+  siret: string
+  referer: string | undefined
+  caller: string | undefined
+}): Promise<
+  | IApiError
+  | {
+      lbaCompanies: ILbaItemLbaCompany[]
+    }
+> => {
   try {
     const lbaCompany = await LbaCompany.findOne({ siret })
 
