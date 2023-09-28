@@ -97,7 +97,7 @@ export default (server: Server) => {
       schema: zRoutes.get["/api/etablissement/entreprise/:siret/opco"],
     },
     async (req, res) => {
-      const siret: string | undefined = req.params.siret
+      const siret = req.params.siret
       if (!siret) {
         throw Boom.badRequest("Le numéro siret est obligatoire.")
       }
