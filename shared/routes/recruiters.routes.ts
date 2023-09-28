@@ -1,7 +1,7 @@
 import { z } from "zod"
 
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
-import { zEtablissementCatalogue } from "../interface/etablissement.types"
+// import { zEtablissementCatalogue } from "../interface/etablissement.types"
 import { ZGlobalAddress } from "../models"
 import { zCFA } from "../models/cfa.model"
 import { zObjectId } from "../models/common"
@@ -131,6 +131,16 @@ export const zRecruiterRoutes = {
       },
       securityScheme: {
         auth: "none",
+        role: "all",
+      },
+    },
+    "/api/etablissement/cfa/:userRecruteurId/entreprises": {
+      params: z.object({ userRecruteurId: zObjectId }).strict(),
+      response: {
+        "200": z.array(ZRecruiter),
+      },
+      securityScheme: {
+        auth: "jwt-bearer",
         role: "all",
       },
     },
