@@ -20,10 +20,10 @@ const Header = () => {
 
   return (
     <Box>
-      {publicConfig.baseUrl.includes("recette") && (
+      {publicConfig.env !== "production" && (
         <Alert status="info" variant="top-accent" justifyContent="center">
           <AlertIcon />
-          Environnement de test
+          {`Environnement ${publicConfig.env}`}
         </Alert>
       )}
       <Container maxW="full" px={[0, 4]} py={4} borderBottom={"1px solid"} borderColor="grey.400">

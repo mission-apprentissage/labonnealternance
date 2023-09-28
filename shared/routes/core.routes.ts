@@ -4,7 +4,7 @@ import { IRoutesDef, ZResError } from "./common.routes"
 
 const zResponse = z
   .object({
-    env: z.enum(["local", "recette", "production", "preview"]),
+    env: z.enum(["local", "recette", "production", "preview", "next"]),
     healthcheck: z
       .object({
         mongodb: z.boolean(),

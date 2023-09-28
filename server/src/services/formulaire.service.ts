@@ -671,10 +671,7 @@ export async function sendMailNouvelleOffre(recruiter: IRecruiter, job: Partial<
       raison_sociale: establishmentTitle,
       mandataire: recruiter.is_delegated,
       offre: pick(job, ["rome_appellation_label", "job_start_date", "type", "job_level_label"]),
-      lba_url:
-        config.env !== "recette"
-          ? `https://labonnealternance.apprentissage.beta.gouv.fr/recherche-apprentissage?&display=list&page=fiche&type=matcha&itemId=${job._id}`
-          : `https://labonnealternance-recette.apprentissage.beta.gouv.fr/recherche-apprentissage?&display=list&page=fiche&type=matcha&itemId=${job._id}`,
+      lba_url: `${config.publicUrl}/recherche-apprentissage?&display=list&page=fiche&type=matcha&itemId=${job._id}`,
     },
   })
 }
