@@ -1,7 +1,7 @@
 import { Box, Button, Flex, Heading, Text } from "@chakra-ui/react"
+import { useRouter } from "next/router"
 import { useContext } from "react"
 
-import { redirect } from "../../../common/utils/router"
 import { WidgetContext } from "../../../context/contextWidget"
 import { InfoCircle } from "../../../theme/components/icons"
 import { MailCloud } from "../../../theme/components/logos_pro"
@@ -9,8 +9,9 @@ import { AuthentificationLayout } from "../index"
 
 export default function CompteEnAttente() {
   const { widget } = useContext(WidgetContext)
+  const router = useRouter()
 
-  const redirectFn = () => redirect("/organisme-de-formation")
+  const redirectFn = () => router.push(`/organisme-de-formation`)
 
   return (
     <AuthentificationLayout onClose={redirectFn}>
