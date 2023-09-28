@@ -119,7 +119,7 @@ export const zRecruiterRoutes = {
                   email: z.string(),
                   confirmé: z.boolean(),
                   sources: z.array(z.string()),
-                  date_collecte: z.date(),
+                  date_collecte: z.string(),
                 })
                 .strict()
             ),
