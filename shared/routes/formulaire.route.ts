@@ -2,7 +2,7 @@ import { z } from "zod"
 
 import { zObjectId } from "../models/common"
 import { ZJob } from "../models/job.model"
-import { ZRecruiter } from "../models/recruiter.model"
+import { ZRecruiter, ZRecruiterPublic } from "../models/recruiter.model"
 
 import { IRoutesDef } from "./common.routes"
 
@@ -145,7 +145,7 @@ export const zFormulaireRoute = {
         job_expiration_date: z.coerce.date(),
       }),
       response: {
-        "2xx": ZRecruiter,
+        "2xx": ZRecruiterPublic,
       },
       securityScheme: {
         auth: "none",

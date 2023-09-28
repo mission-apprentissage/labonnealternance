@@ -193,7 +193,7 @@ const AjouterVoeuxForm = (props) => {
         job_type: props.job_type ?? ["Apprentissage"],
         is_multi_published: props.is_multi_published ?? undefined,
         delegations: props.delegations ?? undefined,
-        rome_detail: {},
+        rome_detail: props.rome_detail ?? {},
         is_disabled_elligible: props.is_disabled_elligible ?? false,
         job_count: props.job_count ?? 1,
         job_duration: props.job_duration ?? 6,
