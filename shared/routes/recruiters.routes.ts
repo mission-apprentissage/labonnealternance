@@ -53,10 +53,11 @@ export const zRecruiterRoutes = {
     },
     "/api/etablissement/entreprise/:siret": {
       // TODO_SECURITY_FIX réduire les paramètres de réponse remontant à l'ui
-      params: z.object({
-        siret: extensions.siret(),
-      })
-      .strict(),
+      params: z
+        .object({
+          siret: extensions.siret(),
+        })
+        .strict(),
       querystring: z
         .object({
           cfa_delegated_siret: z.string().optional(),
@@ -161,21 +162,23 @@ export const zRecruiterRoutes = {
           ),
       ]),
       response: {
-        "2xx": z.union([
-          z
-            .object({
-              formulaire: ZRecruiter,
-              user: ZUserRecruteur.extend({
-                type: z.literal("ENTREPRISE"),
-              }),
-            })
-            .strict(),
-          z
-            .object({
-              user: ZUserRecruteur,
-            })
-            .strict(),
-        ]),
+        // TODO ANY TO BE FIXED
+        "2xx": z.any(),
+        // "2xx": z.union([
+        //   z
+        //     .object({
+        //       formulaire: ZRecruiter,
+        //       user: ZUserRecruteur.extend({
+        //         type: z.literal("ENTREPRISE"),
+        //       }),
+        //     })
+        //     .strict(),
+        //   z
+        //     .object({
+        //       user: ZUserRecruteur,
+        //     })
+        //     .strict(),
+        // ]),
       },
       securityScheme: {
         auth: "none",

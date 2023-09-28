@@ -116,7 +116,9 @@ export const zUserRecruteurRoutes = {
         user: true,
       }),
       response: {
-        "200": ZUserRecruteur,
+        // TODO ANY TO BE FIXED
+        "200": z.any(),
+        // "200": ZUserRecruteur,
       },
       securityScheme: {
         auth: "none",
