@@ -54,9 +54,7 @@ export const zRomeRoutes = {
         })
         .strict(),
       response: {
-        // TODO ANY TO BE FIXED
-        "200": z.any(),
-        // "200": ZRomeDetail,
+        "200": ZRomeDetail,
       },
       securityScheme: {
         auth: "none",
