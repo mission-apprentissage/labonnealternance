@@ -82,7 +82,6 @@ export default function ListeOffres() {
     return <LoadingEmptySpace label="Chargement en cours..." />
   }
 
-  // @ts-expect-error: TODO
   const { jobs = [], establishment_raison_sociale, establishment_siret, establishment_id, geo_coordinates, _id: dataId } = data.data ?? {}
 
   const entrepriseTitle = establishment_raison_sociale ?? establishment_siret
