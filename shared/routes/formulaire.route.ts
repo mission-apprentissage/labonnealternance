@@ -1,7 +1,7 @@
 import { z } from "zod"
 
 import { zObjectId } from "../models/common"
-import { ZJob, ZJobWithoutId } from "../models/job.model"
+import { ZJob } from "../models/job.model"
 import { ZRecruiter } from "../models/recruiter.model"
 
 import { IRoutesDef } from "./common.routes"
@@ -119,7 +119,9 @@ export const zFormulaireRoute = {
       params: z.object({ establishment_id: z.string() }).strict(),
       body: ZRecruiter.partial(),
       response: {
-        "2xx": ZRecruiter,
+        // TODO ANY TO BE FIXED
+        "2xx": z.any(),
+        // "2xx": ZRecruiter,
       },
       securityScheme: {
         auth: "none",
