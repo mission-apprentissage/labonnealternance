@@ -21,9 +21,8 @@ export const ZDelegation = z
   })
   .strict()
 
-export const ZJob = z
+export const ZJobWithoutId = z
   .object({
-    _id: zObjectId,
     rome_label: z.string().nullish().describe("Libellé du métier concerné"),
     rome_appellation_label: z.string().nullish().describe("Libellé de l'appelation ROME"),
     job_level_label: z.string().nullish().describe("Niveau de formation requis"),
@@ -55,6 +54,10 @@ export const ZJob = z
     stats_search_view: z.number().nullish().describe("Nombre de vues sur une page de recherche"),
   })
   .strict()
+
+export const ZJob = ZJobWithoutId.extend({
+  _id: zObjectId,
+}).strict()
 
 export type IDelegation = z.output<typeof ZDelegation>
 

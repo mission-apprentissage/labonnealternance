@@ -1,7 +1,7 @@
 import { z } from "zod"
 
 import { zObjectId } from "../models/common"
-import { ZJob } from "../models/job.model"
+import { ZJob, ZJobWithoutId } from "../models/job.model"
 import { ZRecruiter } from "../models/recruiter.model"
 
 import { IRoutesDef } from "./common.routes"
@@ -78,9 +78,13 @@ export const zFormulaireRoute = {
       // TODO_SECURITY_FIX session gérée par cookie server
       // TODO_SECURITY_FIX limiter les champs autorisés à la modification. Utiliser un "ZRecruiterNew" (ou un autre nom du genre ZFormulaire)
       params: z.object({ establishment_id: z.string() }).strict(),
-      body: ZJob,
+      // TODO ANY TO BE FIXED
+      // body: ZJobWithoutId,
+      body: z.any(),
       response: {
-        "2xx": ZRecruiter,
+        // TODO ANY TO BE FIXED
+        // "2xx": ZRecruiter,
+        "2xx": z.any(),
       },
       securityScheme: {
         auth: "none",
@@ -97,7 +101,9 @@ export const zFormulaireRoute = {
         })
         .strict(),
       response: {
-        "2xx": ZRecruiter,
+        // TODO ANY TO BE FIXED
+        "2xx": z.any(),
+        // "2xx": ZRecruiter,
       },
       securityScheme: {
         auth: "none",
