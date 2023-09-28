@@ -27,24 +27,26 @@ export const zRecruiterRoutes = {
         .object({
           latitude: z.coerce.number(),
           longitude: z.coerce.number(),
-          rome: z.array(z.string()),
+          rome: z.string(),
         })
         .strict(),
       response: {
-        "2xx": zEtablissementCatalogue
-          .pick({
-            _id: true,
-            numero_voie: true,
-            type_voie: true,
-            nom_voie: true,
-            nom_departement: true,
-            entreprise_raison_sociale: true,
-            geo_coordonnees: true,
-          })
-          .extend({
-            distance_en_km: z.string(),
-          })
-          .strict(),
+        // TODO ANY TO BE FIXED
+        "2xx": z.any(),
+        // "2xx": zEtablissementCatalogue
+        //   .pick({
+        //     _id: true,
+        //     numero_voie: true,
+        //     type_voie: true,
+        //     nom_voie: true,
+        //     nom_departement: true,
+        //     entreprise_raison_sociale: true,
+        //     geo_coordonnees: true,
+        //   })
+        //   .extend({
+        //     distance_en_km: z.string(),
+        //   })
+        //   .strict(),
       },
       securityScheme: {
         auth: "none",

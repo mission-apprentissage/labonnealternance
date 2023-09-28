@@ -34,7 +34,7 @@ import { Server } from "../server"
 const getCfaRomeSchema = joi.object({
   latitude: joi.number().required(),
   longitude: joi.number().required(),
-  rome: joi.array().items(joi.string()).required(),
+  rome: joi.string(),
 })
 
 export default (server: Server) => {
@@ -60,6 +60,7 @@ export default (server: Server) => {
       )
 
       const etablissements = await getNearEtablissementsFromRomes({ rome, origin: { latitude: latitude, longitude: longitude } })
+
       res.send(etablissements)
     }
   )
