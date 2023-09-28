@@ -21,8 +21,6 @@ export const zV1FormationsRoutes = {
           options: z.string().optional(),
         })
         .strict(),
-      // TODO: How to handle errors
-      // eslint-disable-next-line zod/require-strict
       headers: z
         .object({
           referer: z.string().optional(),
@@ -75,7 +73,7 @@ export const zV1FormationsRoutes = {
         })
         .strict(),
       response: {
-        // TODO: FIX strip
+        // Strip souhaité. Appel à une API décommissionnée en attente de remplacement
         // eslint-disable-next-line zod/require-strict
         "200": z
           .object({

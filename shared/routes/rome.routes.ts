@@ -48,9 +48,11 @@ export const zRomeRoutes = {
     },
     "/api/rome/detail/:rome": {
       // TODO filtrer la payload
-      params: z.object({
-        rome: z.string(),
-      }).strict(),
+      params: z
+        .object({
+          rome: z.string(),
+        })
+        .strict(),
       response: {
         "200": ZRomeDetail,
       },

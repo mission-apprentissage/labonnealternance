@@ -152,7 +152,7 @@ const AjouterVoeuxForm = (props) => {
    * @param {string} rome
    * @return {Promise<void>}
    */
-  const checkIfThereAreProposal = async (rome) => {
+  const checkIfThereAreProposal = async (rome: string) => {
     /**
      * KBA 20220105: Issue comes from address API if it's down or no result is found
      */

@@ -113,6 +113,7 @@ export const recruiterSchema = new Schema<IRecruiter>(
   },
   {
     timestamps: true,
+    versionKey: false,
   }
 )
 
