@@ -12,7 +12,7 @@ import config from "../config.js"
 import { NIVEAUX_POUR_OFFRES_PE } from "./constant.service.js"
 import dayjs from "./dayjs.service.js"
 import { TLbaItemResult } from "./jobOpportunity.service.types.js"
-import { ILbaItem, LbaItem } from "./lbaitem.shared.service.types.js"
+import { ILbaItem, ILbaItemCompany, ILbaItemContact } from "./lbaitem.shared.service.types.js"
 import { filterJobsByOpco } from "./opco.service.js"
 import { PEJob, PEResponse } from "./pejob.service.types.js"
 
@@ -123,77 +123,69 @@ const computeJobDistanceToSearchCenter = (job: PEJob, latitude: string, longitud
  * @return {ILbaItem}
  */
 const transformPeJob = ({ job, latitude = null, longitude = null }: { job: PEJob; latitude?: string | null; longitude?: string | null }): ILbaItem => {
-  const resultJob = new LbaItem("peJob")
+  const contact: ILbaItemContact | null = job.contact
+    ? {
+        name: job.contact.nom,
+        email: job.contact.courriel,
+        info: job.contact.coordonnees1
+          ? `${job.contact.coordonnees1}${job.contact.coordonnees2 ? "\n" + job.contact.coordonnees2 : ""}${job.contact.coordonnees3 ? "\n" + job.contact.coordonnees3 : ""}`
+          : "",
+      }
+    : null
 
-  resultJob.title = job.intitule
-
-  //contact
-  if (job.contact) {
-    resultJob.contact = {}
-    if (job.contact.nom) {
-      resultJob.contact.name = job.contact.nom
-    }
-    if (job.contact.courriel) {
-      resultJob.contact.email = job.contact.courriel
-    }
-    if (job.contact.coordonnees1) {
-      resultJob.contact.info = `${job.contact.coordonnees1}${job.contact.coordonnees2 ? "\n" + job.contact.coordonnees2 : ""}${
-        job.contact.coordonnees3 ? "\n" + job.contact.coordonnees3 : ""
-      }`
-    }
-  }
-
-  resultJob.place = {
-    distance: !latitude || !longitude ? 0 : computeJobDistanceToSearchCenter(job, latitude, longitude),
-    insee: job.lieuTravail.commune,
-    zipCode: job.lieuTravail.codePostal,
-    city: job.lieuTravail.libelle,
-    latitude: job.lieuTravail.latitude && parseFloat(job.lieuTravail.latitude),
-    longitude: job.lieuTravail.longitude && parseFloat(job.lieuTravail.longitude),
-    fullAddress: `${job.lieuTravail.libelle}${job.lieuTravail.codePostal ? " " + job.lieuTravail.codePostal : ""}`,
-  }
-
-  resultJob.company = {}
-
+  const company: ILbaItemCompany = {}
   if (job.entreprise) {
     if (job.entreprise.nom) {
-      resultJob.company.name = job.entreprise.nom
+      company.name = job.entreprise.nom
     }
     if (job.entreprise.logo) {
-      resultJob.company.logo = job.entreprise.logo
+      company.logo = job.entreprise.logo
     }
     if (job.entreprise.description) {
-      resultJob.company.description = job.entreprise.description
+      company.description = job.entreprise.description
     }
-    resultJob.company.siret = job.entreprise.siret
+    company.siret = job.entreprise.siret
   }
 
-  resultJob.url = `https://candidat.pole-emploi.fr/offres/recherche/detail/${job.id}?at_medium=CMP&at_campaign=labonnealternance_candidater_a_une_offre`
-
-  resultJob.job = {
-    id: job.id,
-    creationDate: new Date(job.dateCreation),
-    description: job.description || "",
-    contractType: job.typeContrat,
-    contractDescription: job.typeContratLibelle,
-    duration: job.dureeTravailLibelle,
-  }
-
-  if (job.romeCode) {
-    resultJob.romes = [
-      {
-        code: job.romeCode,
-        label: job.appellationLibelle,
-      },
-    ]
-  }
-  if (job.secteurActivite) {
-    resultJob.nafs = [
-      {
-        code: job.secteurActivite,
-        label: job.secteurActiviteLibelle,
-      },
-    ]
+  const resultJob: ILbaItem = {
+    ideaType: "peJob",
+    title: job.intitule,
+    contact,
+    place: {
+      distance: !latitude || !longitude ? 0 : computeJobDistanceToSearchCenter(job, latitude, longitude),
+      insee: job.lieuTravail.commune,
+      zipCode: job.lieuTravail.codePostal,
+      city: job.lieuTravail.libelle,
+      latitude: job.lieuTravail.latitude ? parseFloat(job.lieuTravail.latitude) : null,
+      longitude: job.lieuTravail.longitude ? parseFloat(job.lieuTravail.longitude) : null,
+      fullAddress: `${job.lieuTravail.libelle}${job.lieuTravail.codePostal ? " " + job.lieuTravail.codePostal : ""}`,
+    },
+    company,
+    url: `https://candidat.pole-emploi.fr/offres/recherche/detail/${job.id}?at_medium=CMP&at_campaign=labonnealternance_candidater_a_une_offre`,
+    job: {
+      id: job.id,
+      creationDate: new Date(job.dateCreation),
+      description: job.description || "",
+      contractType: job.typeContrat,
+      contractDescription: job.typeContratLibelle,
+      duration: job.dureeTravailLibelle,
+    },
+    romes: job.romeCode
+      ? [
+          {
+            code: job.romeCode,
+            label: job.appellationLibelle,
+          },
+        ]
+      : null,
+    nafs: job.secteurActivite
+      ? [
+          {
+            code: job.secteurActivite,
+            label: job.secteurActiviteLibelle,
+          },
+        ]
+      : null,
   }
 
   return resultJob
