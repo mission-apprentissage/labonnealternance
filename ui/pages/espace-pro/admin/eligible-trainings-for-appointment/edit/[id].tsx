@@ -215,12 +215,12 @@ function EditPage() {
                     </Tr>
                   </Thead>
                   <Tbody>
-                    {eligibleTrainingsForAppointmentResult.map((parameter) => {
+                    {eligibleTrainingsForAppointmentResult.map((parameter, i) => {
                       const emailRef = createRef()
                       const emailFocusRef = createRef()
 
                       return (
-                        <Tr key={parameter._id} _hover={{ bg: "#f4f4f4", transition: "0.5s" }} transition="0.5s">
+                        <Tr key={i} _hover={{ bg: "#f4f4f4", transition: "0.5s" }} transition="0.5s">
                           <Td>
                             <a
                               href={`https://catalogue-apprentissage.intercariforef.org/recherche/formations?SEARCH=%22${encodeURIComponent(parameter.cle_ministere_educatif)}%22`}
