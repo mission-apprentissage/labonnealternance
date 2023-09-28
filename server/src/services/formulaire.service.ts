@@ -499,7 +499,7 @@ export async function updateOffre(id: string | ObjectId, payload: UpdateQuery<IJ
       },
     },
     { new: true }
-  )
+  ).lean()
   if (!recruiter) {
     throw Boom.internal("Recruiter not found")
   }
