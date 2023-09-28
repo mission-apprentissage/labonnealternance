@@ -1,8 +1,8 @@
 import { capitalize } from "lodash-es"
-import { z } from "zod"
 
 import { CODE_NAF_REGEX, SIRET_REGEX, UAI_REGEX } from "../../constants/regex"
 import { validateSIRET } from "../../validators/siretValidator"
+import { z } from "../zodWithOpenApi"
 
 // custom error map to translate zod errors to french
 const customErrorMap: z.ZodErrorMap = (issue, ctx) => {
@@ -18,9 +18,17 @@ z.setErrorMap(customErrorMap)
 
 export const extensions = {
   siret: () =>
-    z.string().trim().regex(SIRET_REGEX, "SIRET invalide").refine(validateSIRET, {
-      message: "Le siret ne respecte pas l'algorithme luhn (https://fr.wikipedia.org/wiki/Formule_de_Luhn)",
-    }),
+    z
+      .string()
+      .trim()
+      .regex(SIRET_REGEX, "SIRET invalide")
+      .refine(validateSIRET, {
+        message: "Le siret ne respecte pas l'algorithme luhn (https://fr.wikipedia.org/wiki/Formule_de_Luhn)",
+      })
+      .openapi({
+        description: "Le numéro de SIRET de l'établissement",
+        example: "78424186100011",
+      }),
   uai: () => z.string().trim().regex(UAI_REGEX, "UAI invalide"), // e.g 0123456B
   phone: () => z.string(), // TODO refine
   code_naf: () =>

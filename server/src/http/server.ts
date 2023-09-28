@@ -8,7 +8,6 @@ import { ZodTypeProvider, serializerCompiler, validatorCompiler } from "fastify-
 import { OpenAPIV3_1 } from "openapi-types"
 import { generateOpenApiSchema } from "shared/helpers/openapi/generateOpenapi"
 import { SecurityScheme } from "shared/routes/common.routes"
-import swaggerDoc from "swagger-jsdoc"
 
 import config from "../config"
 import { initBrevoWebhooks } from "../services/brevo.service"
@@ -50,43 +49,6 @@ import { initSentryFastify } from "./sentry"
 
 export interface Server
   extends FastifyInstance<RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>, FastifyBaseLogger, ZodTypeProvider> {}
-
-const swaggerOptions = {
-  definition: {
-    openapi: "3.0.0",
-    info: {
-      title: "La bonne alternance - recruteur",
-      version: "1.0.0",
-      description: `Vous trouverez ici la définition de l'API La bonne alternance recruteur<br/><br/>
-      <h3><strong>${config.publicUrl}/api</strong></h3><br/>
-      Contact:
-      `,
-      contact: {
-        name: "Mission Nationale pour l'apprentissage",
-        url: "https://mission-apprentissage.gitbook.io/general/",
-        email: "labonnealternance-contact@apprentissage.beta.gouv.fr",
-      },
-    },
-    servers: [
-      {
-        url: `${config.publicUrl}/api`,
-      },
-    ],
-  },
-  apis: ["./src/http/routes/api", "./src/http/routes/appointmentRequest"],
-} as const
-
-const swaggerSpecification = swaggerDoc(swaggerOptions)
-
-swaggerSpecification.components = {
-  securitySchemes: {
-    bearerAuth: {
-      type: "http",
-      scheme: "bearer",
-      bearerFormat: "api-key",
-    },
-  },
-}
 
 export async function bind(app: Server) {
   initSentryFastify(app)

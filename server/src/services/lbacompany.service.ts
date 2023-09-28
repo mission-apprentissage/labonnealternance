@@ -3,7 +3,7 @@ import { ILbaCompany } from "shared"
 import { getElasticInstance } from "../common/esClient/index.js"
 import { LbaCompany } from "../common/model/index.js"
 import { encryptMailWithIV } from "../common/utils/encryptString.js"
-import { manageApiError } from "../common/utils/errorManager.js"
+import { IApiError, manageApiError } from "../common/utils/errorManager.js"
 import { roundDistance } from "../common/utils/geolib.js"
 import { isAllowedSource } from "../common/utils/isAllowedSource.js"
 import { trackApiCall } from "../common/utils/sendTrackingEvent.js"
@@ -11,7 +11,7 @@ import { sentryCaptureException } from "../common/utils/sentryUtils.js"
 
 import { getApplicationByCompanyCount, IApplicationCount } from "./application.service.js"
 import { TLbaItemResult } from "./jobOpportunity.service.types.js"
-import { ILbaItem, LbaItem } from "./lbaitem.shared.service.types.js"
+import { ILbaItemLbaCompany } from "./lbaitem.shared.service.types.js"
 
 const esClient = getElasticInstance()
 
@@ -33,64 +33,60 @@ const transformCompany = ({
   caller?: string
   contactAllowedOrigin: boolean
   applicationCountByCompany: IApplicationCount[]
-}) => {
-  const resultCompany: ILbaItem = new LbaItem("lba")
-
-  resultCompany.title = company.enseigne
-  const email = encryptMailWithIV({ value: company.email !== "null" ? company.email : "", caller })
-
-  resultCompany.contact = {
-    ...email,
+}): ILbaItemLbaCompany => {
+  const contact: {
+    email?: string
+    iv?: string
+    phone?: string | null
+  } = {
+    ...encryptMailWithIV({ value: company.email !== "null" ? company.email : "", caller }),
   }
 
   if (contactAllowedOrigin) {
-    resultCompany.contact.phone = company.phone
+    contact.phone = company.phone
   }
-
   // format différent selon accès aux bonnes boîtes par recherche ou par siret
   const address = `${company.street_name ? `${company.street_number ? `${company.street_number} ` : ""}${company.street_name}, ` : ""}${company.zip_code} ${company.city}`.trim()
 
-  resultCompany.place = {
-    // @ts-expect-error: TODO
-    distance: company.distance?.length ? roundDistance(company.distance[0]) ?? 0 : null,
-    fullAddress: address,
-    latitude: parseFloat(company.geo_coordinates.split(",")[0]),
-    longitude: parseFloat(company.geo_coordinates.split(",")[1]),
-    city: company.city,
-    address,
-  }
-
-  resultCompany.company = {
-    name: company.enseigne,
-    siret: company.siret,
-    size: company.company_size,
-    url: company.website,
-    opco: {
-      label: company.opco,
-      url: company.opco_url,
-    },
-  }
-
-  resultCompany.nafs = [
-    {
-      code: company.naf_code,
-      label: company.naf_label,
-    },
-  ]
-
   const applicationCount = applicationCountByCompany.find((cmp) => company.siret == cmp._id)
-  resultCompany.applicationCount = applicationCount?.count || 0
+
+  const resultCompany: ILbaItemLbaCompany = {
+    ideaType: "lba",
+    title: company.enseigne,
+    contact,
+    place: {
+      distance: company.distance?.length ? roundDistance(company.distance[0]) ?? 0 : null,
+      fullAddress: address,
+      latitude: parseFloat(company.geo_coordinates.split(",")[0]),
+      longitude: parseFloat(company.geo_coordinates.split(",")[1]),
+      city: company.city,
+      address,
+    },
+    company: {
+      name: company.enseigne,
+      siret: company.siret,
+      size: company.company_size,
+      url: company.website,
+      opco: {
+        label: company.opco,
+        url: company.opco_url,
+      },
+    },
+    nafs: [
+      {
+        code: company.naf_code,
+        label: company.naf_label,
+      },
+    ],
+    applicationCount: applicationCount?.count || 0,
+    url: null,
+  }
 
   return resultCompany
 }
 
 /**
  * Transformer au format unifié une liste de sociétés issues de l'algo
- * @param {ILbaCompany[]} companies
- * @param {string} referer
- * @param {string} caller
- * @param {IApplicationCount[]} applicationCountByCompany
- * @returns {{ results: LbaItem[]}}
  */
 const transformCompanies = ({
   companies = [],
@@ -102,8 +98,8 @@ const transformCompanies = ({
   referer?: string
   caller?: string
   applicationCountByCompany: IApplicationCount[]
-}) => {
-  const transformedCompanies: { results: ILbaItem[] } = { results: [] }
+}): { results: ILbaItemLbaCompany[] } => {
+  const transformedCompanies: { results: ILbaItemLbaCompany[] } = { results: [] }
 
   if (companies?.length) {
     transformedCompanies.results = companies.map((company) => {
@@ -344,12 +340,21 @@ export const getSomeCompanies = async ({
 
 /**
  * Retourne une société issue de l'algo identifiée par sont SIRET
- * @param {string} siret
- * @param {string} referer
- * @param {string} caller
- * @returns {Promise<IApiError | { lbaCompanies: LbaItem[] }>}
  */
-export const getCompanyFromSiret = async ({ siret, referer, caller }: { siret: string; referer: string | undefined; caller: string | undefined }) => {
+export const getCompanyFromSiret = async ({
+  siret,
+  referer,
+  caller,
+}: {
+  siret: string
+  referer: string | undefined
+  caller: string | undefined
+}): Promise<
+  | IApiError
+  | {
+      lbaCompanies: ILbaItemLbaCompany[]
+    }
+> => {
   try {
     const lbaCompany = await LbaCompany.findOne({ siret })
 

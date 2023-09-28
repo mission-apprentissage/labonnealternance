@@ -247,7 +247,7 @@ export const createJob = async ({ job, id }: { job: Partial<IOffreExtended>; id:
   const user = await getUser({ establishment_id: id })
 
   if (!user) {
-    throw new Error("")
+    throw new Error("Etablisement dos not exist")
   }
 
   const userStatus: ETAT_UTILISATEUR | null = user ? getUserStatus(user.status) : null

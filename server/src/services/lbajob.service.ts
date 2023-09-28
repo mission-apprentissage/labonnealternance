@@ -205,20 +205,7 @@ function transformLbaJob({
         status: job.status === RECRUITER_STATUS.ACTIF && offre.job_status === JOB_STATUS.ACTIVE ? JOB_STATUS.ACTIVE : JOB_STATUS.ANNULEE,
       },
       romes,
-      idRco: null,
-      idRcoFormation: null,
-      url: null,
-      cleMinistereEducatif: null,
-      diploma: null,
-      cfd: null,
-      rncpCode: null,
-      rncpLabel: null,
-      rncpEligibleApprentissage: null,
-      period: null,
-      capacity: null,
-      onisepUrl: null,
-      training: null,
-      applicationCount: applicationCountForCurrentJob?.count,
+      applicationCount: applicationCountForCurrentJob?.count || 0,
     }
 
     return resultJob

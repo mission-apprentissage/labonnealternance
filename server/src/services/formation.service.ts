@@ -17,7 +17,6 @@ import config from "../config"
 
 import type { IFormationEsResult } from "./formation.service.types"
 import type { ILbaItem, ILbaItemFormation, ILbaItemTrainingSession } from "./lbaitem.shared.service.types"
-import { LbaItem } from "./lbaitem.shared.service.types"
 import { formationsQueryValidator, formationsRegionQueryValidator } from "./queryValidator.service"
 
 const formationResultLimit = 500
@@ -391,7 +390,7 @@ const transformFormationForIdea = (rawFormation: IFormationEsResult): ILbaItemFo
   const geoSource = rawFormation.source.lieu_formation_geo_coordonnees
   const [latOpt, longOpt] = (geoSource?.split(",") ?? []).map((str) => parseFloat(str))
 
-  const resultFormation = {
+  const resultFormation: ILbaItemFormation = {
     ideaType: "formation",
     title: (rawFormation.source?.intitule_long || rawFormation.source.intitule_court) ?? null,
     longTitle: rawFormation.source.intitule_long ?? null,
@@ -455,17 +454,13 @@ const transformFormationForIdea = (rawFormation: IFormationEsResult): ILbaItemFo
     period: null,
     capacity: rawFormation.source.capacite ?? null,
     onisepUrl: rawFormation.source.onisep_url ?? null,
-    url: null,
 
-    job: null,
     romes: rawFormation.source.rome_codes && rawFormation.source.rome_codes.length ? rawFormation.source.rome_codes.map((rome) => ({ code: rome })) : null,
-    nafs: null,
     training: {
       objectif: rawFormation.source?.objectif?.trim() ?? null,
       description: rawFormation.source?.contenu?.trim() ?? null,
       sessions: setSessions(rawFormation.source),
     },
-    applicationCount: null,
   }
 
   return resultFormation

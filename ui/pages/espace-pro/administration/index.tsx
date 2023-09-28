@@ -174,8 +174,7 @@ function ListeEntreprise() {
             Nouvelle entreprise
           </Button>
         </Flex>
-        {/* @ts-expect-error: TODO */}
-        {data?.data?.length ? <TableNew columns={columns} data={data?.data} exportable={false} /> : <EmptySpace />}
+        {data?.length ? <TableNew columns={columns} data={data} exportable={false} /> : <EmptySpace />}
       </Container>
     </AnimationContainer>
   )

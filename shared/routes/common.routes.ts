@@ -6,12 +6,44 @@ import { z } from "../helpers/zodWithOpenApi"
 
 export const ZResError = z
   .object({
-    data: z.any().optional(),
-    message: z.string(),
-    error: z.string(),
-    statusCode: z.number(),
+    data: z
+      .any()
+      .optional()
+      .openapi({
+        description: "Données contextuelles liées à l'erreur",
+        example: {
+          validationError: {
+            issues: [
+              {
+                code: "invalid_type",
+                expected: "number",
+                received: "nan",
+                path: ["longitude"],
+                message: "Number attendu",
+              },
+            ],
+            name: "ZodError",
+            statusCode: 400,
+            code: "FST_ERR_VALIDATION",
+            validationContext: "querystring",
+          },
+        },
+      }),
+    message: z.string().openapi({
+      description: "Un message explicatif de l'erreur",
+      example: "querystring.longitude: Number attendu",
+    }),
+    error: z.string().openapi({
+      description: "Le type générique de l'erreur",
+      example: "Bad Request",
+    }),
+    statusCode: z.number().openapi({
+      description: "Le status code retourné",
+      example: 400,
+    }),
   })
   .strict()
+  .openapi("Error")
 
 export const ZResOk = z.object({}).strict()
 

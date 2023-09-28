@@ -44,7 +44,7 @@ const EmptySpace = () => (
   <Stack direction={["column", "column", "column", "row"]} mt={12} pt={12} py={8} border="1px solid" borderColor="grey.400" spacing="32px">
     <Flex justify={["center", "center", "center", "flex-end"]} align={["center", "center", "center", "flex-start"]} w={["100%", "100%", "100%", "350px"]} h="150px">
       {/* eslint-disable-next-line jsx-a11y/alt-text */}
-      <Image src="/public/images/espace_pro/add-offer.svg" />
+      <Image src="/images/espace_pro/add-offer.svg" />
     </Flex>
 
     <Box w={["100%", "100%", "100%", "600px"]}>
@@ -82,7 +82,6 @@ export default function ListeOffres() {
     return <LoadingEmptySpace label="Chargement en cours..." />
   }
 
-  // @ts-expect-error: TODO
   const { jobs = [], establishment_raison_sociale, establishment_siret, establishment_id, geo_coordinates, _id: dataId } = data.data ?? {}
 
   const entrepriseTitle = establishment_raison_sociale ?? establishment_siret
