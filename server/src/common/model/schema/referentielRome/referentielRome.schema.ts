@@ -49,7 +49,7 @@ export const referentielRomeSchema = new Schema<IReferentielRome>(
       si_evolution: [mobiliteSchema],
     },
   },
-  { versionKey: false, versionKey: false }
+  { versionKey: false }
 )
 
 referentielRomeSchema.index({ "appelations.libelle": "text" })
