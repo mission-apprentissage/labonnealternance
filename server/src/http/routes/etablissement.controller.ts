@@ -39,7 +39,7 @@ export default (server: Server) => {
       const etablissement = await Etablissement.findById(req.params.id)
 
       if (!etablissement) {
-        return res.status(404).send({})
+        throw Boom.notFound()
       }
 
       return res.send(etablissement)

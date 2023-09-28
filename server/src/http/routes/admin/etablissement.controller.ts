@@ -23,7 +23,9 @@ export default (server: Server) => {
 
       const allData = await Etablissement.paginate({ query, page, limit })
 
-      if (!allData) return res.status(400).send({})
+      if (!allData) {
+        throw Boom.notFound()
+      }
 
       return res.status(200).send({
         etablissements: allData.docs,
@@ -50,7 +52,7 @@ export default (server: Server) => {
       const etablissement = await Etablissement.findOne({ formateur_siret: params.siret })
 
       if (!etablissement) {
-        return res.status(404).send({})
+        throw Boom.notFound()
       }
 
       return res.status(200).send(etablissement)
@@ -70,7 +72,7 @@ export default (server: Server) => {
       const etablissement = await Etablissement.findById(req.params.id)
 
       if (!etablissement) {
-        return res.status(404).send({})
+        throw Boom.notFound()
       }
 
       return res.send(etablissement)

@@ -1,6 +1,7 @@
 "use strict"
 
 import { RequestParams } from "@elastic/elasticsearch"
+import { Document } from "mongoose"
 import { oleoduc, writeData } from "oleoduc"
 
 import { logger } from "@/common/logger"
@@ -223,7 +224,7 @@ function Mongoosastic(schema, options) {
     }
   }
 
-  async function schemaIndex(doc: object, refresh = true) {
+  async function schemaIndex(doc: Document, refresh = true) {
     const _opts: RequestParams.Index<Record<string, string>> = {
       index: indexName,
       type: typeName,
