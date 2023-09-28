@@ -41,5 +41,10 @@ export const ZRecruiter = z
   })
   .strict()
 
+export const ZRecruiterPublic = ZRecruiter.extend({
+  createdAt: z.date().describe("timestamp mongoose"),
+  updatedAt: z.date().describe("timestamp mongoose"),
+})
+
 export type IRecruiter = z.output<typeof ZRecruiter>
 export type IRecruiterJson = Jsonify<z.input<typeof ZRecruiter>>

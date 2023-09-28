@@ -61,7 +61,7 @@ export const relanceFormulaire = async (threshold) => {
     const { email, establishment_raison_sociale, last_name, first_name, jobs, is_delegated, cfa_delegated_siret } = formulaire
     let contactCFA
     // get CFA informations if formulaire is handled by a CFA
-    if (is_delegated) {
+    if (is_delegated && cfa_delegated_siret) {
       contactCFA = await UserRecruteur.findOne({ establishment_siret: cfa_delegated_siret })
     }
 

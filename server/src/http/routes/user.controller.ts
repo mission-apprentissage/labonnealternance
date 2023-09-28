@@ -31,6 +31,7 @@ export default (server: Server) => {
     async (req, res) => {
       const { userQuery, formulaireQuery } = req.query
 
+      // @ts-expect-error
       const [users, formulaires] = await Promise.all([UserRecruteur.find(userQuery).lean(), Recruiter.find(formulaireQuery).lean()])
 
       const results = users.reduce((acc: any[], user) => {
@@ -78,7 +79,7 @@ export default (server: Server) => {
       const user = await UserRecruteur.findOne({ _id: req.params.userId }).lean()
       let jobs: IJob[] = []
 
-      if (!user) return res.status(400).send()
+      if (!user) return res.status(400).send({})
 
       if (user.type === ENTREPRISE) {
         const response = await Recruiter.findOne({ establishment_id: user.establishment_id }).select({ jobs: 1, _id: 0 }).lean()
@@ -135,7 +136,7 @@ export default (server: Server) => {
       const history = req.body
       const user = await updateUserValidationHistory(req.params.userId, history)
 
-      if (!user) return res.status(400).send()
+      if (!user) return res.status(400).send({})
 
       const { email, last_name, first_name } = user
 
@@ -222,7 +223,7 @@ export default (server: Server) => {
         await deleteFormulaire(recruiterId)
       }
 
-      return res.status(200).send()
+      return res.status(200).send({})
     }
   )
 }

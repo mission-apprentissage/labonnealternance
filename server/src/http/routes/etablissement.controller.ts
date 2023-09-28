@@ -39,7 +39,7 @@ export default (server: Server) => {
       const etablissement = await Etablissement.findById(req.params.id)
 
       if (!etablissement) {
-        return res.status(404).send()
+        throw Boom.notFound()
       }
 
       return res.send(etablissement)
@@ -63,6 +63,10 @@ export default (server: Server) => {
 
       if (etablissement.premium_affelnet_activation_date) {
         throw Boom.badRequest("Premium already activated.")
+      }
+
+      if (!etablissement.gestionnaire_email) {
+        throw Boom.badRequest("Gestionnaire email not found")
       }
 
       const mailAffelnet = await mailer.sendEmail({
@@ -180,6 +184,10 @@ export default (server: Server) => {
 
       if (etablissement.premium_activation_date) {
         throw Boom.badRequest("Premium Parcoursup already activated.")
+      }
+
+      if (!etablissement.gestionnaire_email) {
+        throw Boom.badRequest("Gestionnaire email not found")
       }
 
       const mailParcoursup = await mailer.sendEmail({
@@ -306,6 +314,10 @@ export default (server: Server) => {
         throw Boom.badRequest("Premium Affelnet already activated.")
       }
 
+      if (!etablissement.gestionnaire_email) {
+        throw Boom.badRequest("Gestionnaire email not found")
+      }
+
       const mailAffelnet = await mailer.sendEmail({
         to: etablissement.gestionnaire_email,
         subject: `La prise de RDV ne sera pas activée pour votre CFA sur Choisir son affectation après la 3e`,
@@ -373,6 +385,10 @@ export default (server: Server) => {
 
       if (etablissement.premium_activation_date) {
         throw Boom.badRequest("Premium Parcoursup already activated.")
+      }
+
+      if (!etablissement.gestionnaire_email) {
+        throw Boom.badRequest("Gestionnaire email not found")
       }
 
       const mailParcoursup = await mailer.sendEmail({
@@ -474,12 +490,8 @@ export default (server: Server) => {
 
       let etablissement = await Etablissement.findById(req.params.id)
 
-      if (!etablissement) {
-        return res.status(404).send()
-      }
-
-      if (etablissement.optout_refusal_date) {
-        return res.status(400).send()
+      if (!etablissement || etablissement.optout_refusal_date) {
+        throw Boom.notFound()
       }
 
       if (opt_out_question) {
@@ -525,6 +537,10 @@ export default (server: Server) => {
       await Etablissement.findByIdAndUpdate(req.params.id, {
         optout_refusal_date: dayjs().toDate(),
       })
+
+      if (!etablissement.gestionnaire_email) {
+        throw Boom.badRequest("Gestionnaire email not found")
+      }
 
       const { messageId } = await mailer.sendEmail({
         to: etablissement.gestionnaire_email,

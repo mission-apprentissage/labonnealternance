@@ -117,7 +117,7 @@ export const getFormationById = (id: string) => FormationCatalogue.findById(id)
  * @returns {Promise<Object[]>}
  */
 export const getFormationsByCleMinistereEducatif = ({ cleMinistereEducatifs }: { cleMinistereEducatifs: string[] }) =>
-  FormationCatalogue.find({ cle_ministere_educatif: cleMinistereEducatifs }).lean()
+  FormationCatalogue.find({ cle_ministere_educatif: { $in: cleMinistereEducatifs } }).lean()
 
 /**
  * @description Get formations from the formation catalogue collection.

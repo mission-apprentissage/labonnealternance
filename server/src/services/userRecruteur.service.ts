@@ -1,7 +1,7 @@
 import { randomUUID } from "crypto"
 
 import Boom from "boom"
-import { Filter } from "mongodb"
+import { FilterQuery } from "mongodb"
 import { ModelUpdateOptions, UpdateQuery } from "mongoose"
 import { IUserRecruteur, IUserStatusValidation } from "shared"
 
@@ -29,7 +29,7 @@ export const createApiKey = (): string => `mna-${randomUUID()}`
  * @param {Number} pagination.limit
  * @returns {Promise<IUserRecruteur>}
  */
-export const getUsers = async (query: Filter<IUserRecruteur>, options, { page, limit }) => {
+export const getUsers = async (query: FilterQuery<IUserRecruteur>, options, { page, limit }) => {
   const response = await UserRecruteur.paginate({ query, ...options, page, limit, lean: true, select: "-password" })
   return {
     pagination: {
@@ -47,7 +47,7 @@ export const getUsers = async (query: Filter<IUserRecruteur>, options, { page, l
  * @param {Filter<IUserRecruteur>} query
  * @returns {Promise<IUserRecruteur>}
  */
-export const getUser = async (query: Filter<IUserRecruteur>): Promise<IUserRecruteur | null> => UserRecruteur.findOne(query)
+export const getUser = async (query: FilterQuery<IUserRecruteur>): Promise<IUserRecruteur | null> => UserRecruteur.findOne(query)
 
 /**
  * @description create user
@@ -92,8 +92,8 @@ export const createUser = async (values) => {
  * @param {ModelUpdateOptions} options
  * @returns {Promise<IUserRecruteur>}
  */
-export const updateUser = async (query: Filter<IUserRecruteur>, update: UpdateQuery<IUserRecruteur>, options: ModelUpdateOptions = { new: true }): Promise<IUserRecruteur> => {
-  const userRecruterOpt = await UserRecruteur.findOneAndUpdate(query, update, options)
+export const updateUser = async (query: FilterQuery<IUserRecruteur>, update: UpdateQuery<IUserRecruteur>, options: ModelUpdateOptions = { new: true }): Promise<IUserRecruteur> => {
+  const userRecruterOpt = await UserRecruteur.findOneAndUpdate(query, update, options).lean()
   if (!userRecruterOpt) {
     throw Boom.internal(`could not update one user from query=${JSON.stringify(query)}`)
   }

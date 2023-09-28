@@ -2,6 +2,7 @@
   "include": ["**/*.ts"],
   "exclude": ["**/node_modules"],
   "compilerOptions": {
+    "incremental": true,
     "strictPropertyInitialization": false,
     "declarationMap": true,
     "listEmittedFiles": false,

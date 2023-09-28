@@ -2,6 +2,7 @@ import * as _ from "lodash-es"
 import { referrers } from "shared/constants/referers"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { isValidEmail } from "@/common/utils/isValidEmail"
 
 import { logger } from "../../common/logger"
 import { mailType } from "../../common/model/constants/etablissement"
@@ -49,6 +50,10 @@ export const activateOptOutEtablissementFormations = async () => {
           { optout_activation_date: dayjs().toDate() }
         ),
       ])
+
+      if (!isValidEmail(etablissement.gestionnaire_email)) {
+        return
+      }
 
       // Send email
       const { messageId } = await mailer.sendEmail({

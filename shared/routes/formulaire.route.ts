@@ -2,7 +2,7 @@ import { z } from "zod"
 
 import { zObjectId } from "../models/common"
 import { ZJob } from "../models/job.model"
-import { ZRecruiter } from "../models/recruiter.model"
+import { ZRecruiter, ZRecruiterPublic } from "../models/recruiter.model"
 
 import { IRoutesDef } from "./common.routes"
 
@@ -145,7 +145,7 @@ export const zFormulaireRoute = {
         job_expiration_date: z.coerce.date(),
       }),
       response: {
-        "2xx": ZRecruiter,
+        "2xx": ZRecruiterPublic,
       },
       securityScheme: {
         auth: "none",
@@ -158,7 +158,7 @@ export const zFormulaireRoute = {
       // TODO_SECURITY_FIX Scinder les routes pour cancel depuis admin OU cancel depuis CTA dans un email (avec jwt)
       params: z.object({ jobId: zObjectId }).strict(),
       response: {
-        "2xx": z.undefined(),
+        "2xx": z.object({}).strict(),
       },
       securityScheme: {
         auth: "none",
@@ -171,7 +171,7 @@ export const zFormulaireRoute = {
       // TODO_SECURITY_FIX Scinder les routes pour cancel depuis admin OU cancel depuis CTA dans un email (avec jwt)
       params: z.object({ jobId: zObjectId }).strict(),
       response: {
-        "2xx": z.undefined(),
+        "2xx": z.object({}).strict(),
       },
       securityScheme: {
         auth: "none",
@@ -203,7 +203,7 @@ export const zFormulaireRoute = {
       // TODO_SECURITY_FIX session gérée par cookie server
       params: z.object({ establishment_id: z.string() }).strict(),
       response: {
-        "2xx": z.undefined(),
+        "2xx": z.object({}).strict(),
       },
       securityScheme: {
         auth: "none",
@@ -215,7 +215,7 @@ export const zFormulaireRoute = {
       // TODO_SECURITY_FIX session gérée par cookie server
       params: z.object({ establishment_siret: z.string() }).strict(),
       response: {
-        "2xx": z.undefined(),
+        "2xx": z.object({}).strict(),
       },
       securityScheme: {
         auth: "none",

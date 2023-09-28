@@ -7,7 +7,7 @@ import useAuth from "../../common/hooks/useAuth"
 import { ArrowDropRightLine } from "../../theme/components/icons"
 import { getOffre, postOffre, putOffre } from "../../utils/api"
 
-import { AjouterVoeux } from "."
+import { AjouterVoeux, LoadingEmptySpace } from "."
 
 export default function CreationOffre() {
   const toast = useToast()
@@ -62,7 +62,7 @@ export default function CreationOffre() {
     }
   }
 
-  if (isLoading) return "Chargement en cours..."
+  if (isLoading) return <LoadingEmptySpace label="Chargement en cours" />
 
   return (
     <Container maxW="container.xl" mt={5}>

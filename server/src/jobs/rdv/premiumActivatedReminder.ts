@@ -34,21 +34,23 @@ export const premiumActivatedReminder = async () => {
 
   for (const etablissement of etablissementWithParcoursup) {
     // Retrieve all emails
-    let emails = eligibleTrainingsForAppointmentsFound
-      .flatMap((eligibleTrainingsForAppointment) => {
-        if (eligibleTrainingsForAppointment.etablissement_formateur_siret === etablissement.formateur_siret) {
-          const email = eligibleTrainingsForAppointment.lieu_formation_email
-          return email ? [email] : []
-        } else {
-          return []
-        }
-      })
-      .concat([etablissement.gestionnaire_email])
+    let emails = eligibleTrainingsForAppointmentsFound.flatMap((eligibleTrainingsForAppointment) => {
+      if (eligibleTrainingsForAppointment.etablissement_formateur_siret === etablissement.formateur_siret) {
+        const email = eligibleTrainingsForAppointment.lieu_formation_email
+        return email ? [email] : []
+      } else {
+        return []
+      }
+    })
+
+    if (etablissement.gestionnaire_email) {
+      emails.push(etablissement.gestionnaire_email)
+    }
     emails = [...new Set(emails)]
 
     for (const email of emails) {
       try {
-        if (!isValidEmail) {
+        if (!isValidEmail(email)) {
           logger.info("Invalid email syntax.", { email, etablissement })
           continue
         }

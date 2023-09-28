@@ -26,7 +26,7 @@ export const zLoginRoutes = {
         })
         .strict(),
       response: {
-        "200": z.undefined(),
+        "200": z.object({}).strict(),
       },
       securityScheme: {
         auth: "none",
@@ -41,7 +41,7 @@ export const zLoginRoutes = {
         })
         .strict(),
       response: {
-        "200": z.undefined(),
+        "200": z.object({}).strict(),
       },
       securityScheme: {
         auth: "none",

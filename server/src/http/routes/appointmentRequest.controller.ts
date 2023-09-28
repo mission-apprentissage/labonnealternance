@@ -213,7 +213,9 @@ export default (server: Server) => {
 
       const appointment = await Appointment.findById(appointmentId)
 
-      if (!appointment) return res.status(400).send()
+      if (!appointment) {
+        throw Boom.notFound()
+      }
 
       const [eligibleTrainingsForAppointment, user] = await Promise.all([
         eligibleTrainingsForAppointmentService.getParameterByCleMinistereEducatif({
@@ -245,7 +247,7 @@ export default (server: Server) => {
 
       const appointment = await Appointment.findById(appointment_id)
 
-      if (!appointment) return res.status(400).send()
+      if (!appointment) throw Boom.notFound()
 
       const [eligibleTrainingsForAppointment, user] = await Promise.all([
         eligibleTrainingsForAppointmentService.getParameterByCleMinistereEducatif({
@@ -255,7 +257,7 @@ export default (server: Server) => {
         users.getUserById(appointment.applicant_id as string),
       ])
 
-      if (!user || !eligibleTrainingsForAppointment) return res.status(400).send()
+      if (!user || !eligibleTrainingsForAppointment) throw Boom.notFound()
 
       if (cfa_intention_to_applicant === "personalised_answer") {
         await mailer.sendEmail({

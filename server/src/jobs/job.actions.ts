@@ -1,4 +1,4 @@
-import { Filter, FindOptions, MatchKeysAndValues, ObjectId, WithoutId } from "mongodb"
+import { MatchKeysAndValues, ObjectId, FilterQuery, FindOneOptions } from "mongodb"
 
 import { IInternalJobs } from "@/common/model/schema/internalJobs/internalJobs.types"
 import { db } from "@/common/mongodb"
@@ -9,7 +9,7 @@ type CreateJobParam = Pick<IInternalJobs, "name" | "type" | "cron_string" | "pay
  * Création d'un job
  */
 export const createJob = async ({ name, type = "simple", payload, scheduled_for = new Date(), sync = false, cron_string }: CreateJobParam): Promise<IInternalJobs> => {
-  const job: WithoutId<IInternalJobs> = {
+  const job: Omit<IInternalJobs, "_id"> = {
     name,
     type,
     status: sync ? "will_start" : "pending",
@@ -24,11 +24,11 @@ export const createJob = async ({ name, type = "simple", payload, scheduled_for 
   return { ...job, _id }
 }
 
-export const findJob = async (filter: Filter<IInternalJobs>, options?: FindOptions<IInternalJobs>): Promise<IInternalJobs | null> => {
+export const findJob = async (filter: FilterQuery<IInternalJobs>, options?: FindOneOptions<IInternalJobs>): Promise<IInternalJobs | null> => {
   return await db.collection("internalJobs").findOne(filter, options)
 }
 
-export const findJobs = async (filter: Filter<IInternalJobs>, options?: FindOptions<IInternalJobs>): Promise<IInternalJobs[]> => {
+export const findJobs = async (filter: FilterQuery<IInternalJobs>, options?: FindOneOptions<IInternalJobs>): Promise<IInternalJobs[]> => {
   return await db.collection("internalJobs").find(filter, options).toArray()
 }
 

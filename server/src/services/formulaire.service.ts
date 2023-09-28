@@ -1,7 +1,7 @@
 import Boom from "boom"
 import { pick } from "lodash-es"
 import moment from "moment"
-import { Filter, ObjectId } from "mongodb"
+import { FilterQuery, ObjectId } from "mongodb"
 import { ModelUpdateOptions, UpdateQuery } from "mongoose"
 import { IDelegation, IJob, IRecruiter, IUserRecruteur } from "shared"
 
@@ -216,12 +216,12 @@ export const getOffreAvecInfoMandataire = async (id: string | ObjectId): Promise
 /**
  * @description Get formulaire list with mondodb paginate query
  * @param {Object} payload
- * @param {Filter<IRecruiter>} payload.query
+ * @param {FilterQuery<IRecruiter>} payload.query
  * @param {object} payload.options
  * @param {number} payload.page
  * @param {number} payload.limit
  */
-export const getFormulaires = async (query: Filter<IRecruiter>, select: object, { page, limit }: { page?: number; limit?: number }) => {
+export const getFormulaires = async (query: FilterQuery<IRecruiter>, select: object, { page, limit }: { page?: number; limit?: number }) => {
   const response = await Recruiter.paginate({ query, ...select, page, limit, lean: true })
 
   return {
@@ -362,10 +362,10 @@ export const checkOffreExists = async (id: IJob["_id"]): Promise<boolean> => {
 
 /**
  * @description Find formulaire by query
- * @param {Filter<IRecruiter>} query
+ * @param {FilterQuery<IRecruiter>} query
  * @returns {Promise<IRecruiter>}
  */
-export const getFormulaire = async (query: Filter<IRecruiter>): Promise<IRecruiter> => Recruiter.findOne(query).lean()
+export const getFormulaire = async (query: FilterQuery<IRecruiter>): Promise<IRecruiter> => Recruiter.findOne(query).lean()
 
 /**
  * @description Create new formulaire
@@ -386,6 +386,7 @@ export const deleteFormulaire = async (id: IRecruiter["_id"]): Promise<IRecruite
  * @returns {Promise<IRecruiter>}
  */
 export const deleteFormulaireFromGestionnaire = async (siret: IUserRecruteur["establishment_siret"]): Promise<IRecruiter> =>
+  // @ts-expect-error
   await Recruiter.deleteMany({ cfa_delegated_siret: siret })
 
 /**
@@ -499,7 +500,7 @@ export async function updateOffre(id: string | ObjectId, payload: UpdateQuery<IJ
       },
     },
     { new: true }
-  )
+  ).lean()
   if (!recruiter) {
     throw Boom.internal("Recruiter not found")
   }

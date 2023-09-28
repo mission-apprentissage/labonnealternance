@@ -333,7 +333,7 @@ export const zV1JobsRoutes = {
         })
         .strict(),
       response: {
-        "200": z.undefined(),
+        "200": z.object({}).strict(),
       },
       securityScheme: {
         auth: "api-key",
@@ -348,7 +348,7 @@ export const zV1JobsRoutes = {
         })
         .strict(),
       response: {
-        "200": z.undefined(),
+        "200": z.object({}).strict(),
       },
       securityScheme: {
         auth: "api-key",
@@ -363,7 +363,7 @@ export const zV1JobsRoutes = {
         })
         .strict(),
       response: {
-        "200": z.undefined(),
+        "200": z.object({}).strict(),
       },
       securityScheme: {
         auth: "api-key",
@@ -377,7 +377,7 @@ export const zV1JobsRoutes = {
         })
         .strict(),
       response: {
-        "200": z.undefined(),
+        "200": z.object({}).strict(),
       },
       securityScheme: {
         auth: "none",

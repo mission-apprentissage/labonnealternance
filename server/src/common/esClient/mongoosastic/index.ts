@@ -1,6 +1,7 @@
 "use strict"
 
 import { RequestParams } from "@elastic/elasticsearch"
+import { Document } from "mongoose"
 import { oleoduc, writeData } from "oleoduc"
 
 import { logger } from "@/common/logger"
@@ -223,13 +224,13 @@ function Mongoosastic(schema, options) {
     }
   }
 
-  schema.methods.index = async function schemaIndex(refresh = true) {
+  async function schemaIndex(doc: Document, refresh = true) {
     const _opts: RequestParams.Index<Record<string, string>> = {
       index: indexName,
       type: typeName,
       refresh,
-      body: serialize(this, mapping),
-      id: this._id.toString(),
+      body: serialize(doc, mapping),
+      id: doc._id.toString(),
     }
 
     await esClient.index(_opts)
@@ -263,7 +264,7 @@ function Mongoosastic(schema, options) {
       writeData(
         async (doc) => {
           try {
-            await doc.index(refresh)
+            await schemaIndex(doc, refresh)
             if (++count % 1000 === 0) {
               logMessage("info", `${count} indexed ${this.modelName}`)
             }
@@ -294,7 +295,7 @@ function Mongoosastic(schema, options) {
   function postSave(doc) {
     if (doc) {
       const _doc = new doc.constructor(doc)
-      return _doc.index()
+      return schemaIndex(_doc)
     }
   }
 

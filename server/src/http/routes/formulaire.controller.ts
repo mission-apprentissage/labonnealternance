@@ -34,7 +34,7 @@ export default (server: Server) => {
       const result = await getFormulaire({ establishment_id: req.params.establishment_id })
 
       if (!result) {
-        return res.status(401).send()
+        return res.status(401).send({})
       }
 
       await Promise.all(
@@ -102,7 +102,7 @@ export default (server: Server) => {
     },
     async (req, res) => {
       await archiveFormulaire(req.params.establishment_id)
-      return res.status(200).send()
+      return res.status(200).send({})
     }
   )
 
@@ -113,7 +113,7 @@ export default (server: Server) => {
     },
     async (req, res) => {
       await archiveDelegatedFormulaire(req.params.establishment_siret)
-      return res.status(200).send()
+      return res.status(200).send({})
     }
   )
 
@@ -168,7 +168,7 @@ export default (server: Server) => {
   )
 
   /**
-   * Put existing offer from id
+   * Update an existing offer from id
    */
   server.put(
     "/api/formulaire/offre/:jobId",
@@ -239,7 +239,7 @@ export default (server: Server) => {
         return res.status(400).send({ status: "INVALID_RESSOURCE", message: "L'offre n'existe pas" })
       }
       await cancelOffre(req.params.jobId)
-      return res.status(200).send()
+      return res.status(200).send({})
     }
   )
 
@@ -257,7 +257,7 @@ export default (server: Server) => {
         return res.status(400).send({ status: "INVALID_RESSOURCE", message: "L'offre n'existe pas" })
       }
       await provideOffre(req.params.jobId)
-      return res.status(200).send()
+      return res.status(200).send({})
     }
   )
 }

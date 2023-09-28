@@ -1,4 +1,5 @@
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { isValidEmail } from "@/common/utils/isValidEmail"
 
 import { logger } from "../../common/logger"
 import { mailType } from "../../common/model/constants/etablissement"
@@ -37,7 +38,7 @@ export const inviteEtablissementToPremium = async () => {
       parcoursup_id: { $ne: null },
     }).lean()
 
-    if (!hasOneAvailableFormation) {
+    if (!hasOneAvailableFormation || !isValidEmail(etablissement.gestionnaire_email)) {
       continue
     }
 

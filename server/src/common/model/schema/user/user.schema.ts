@@ -1,6 +1,5 @@
-import { mongoosePagination, Pagination } from "mongoose-paginate-ts"
-
 import { model, Schema } from "../../../mongodb"
+import { mongoosePagination, Pagination } from "../_shared/mongoose-paginate"
 
 import { IUser } from "./user.types"
 

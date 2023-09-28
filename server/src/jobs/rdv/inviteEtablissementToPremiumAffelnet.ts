@@ -27,6 +27,10 @@ export const inviteEtablissementAffelnetToPremium = async () => {
   })
 
   for (const etablissement of etablissementToInvite) {
+    if (!etablissement.gestionnaire_email) {
+      continue
+    }
+
     // send the invitation mail
     const { messageId } = await mailer.sendEmail({
       to: etablissement.gestionnaire_email,

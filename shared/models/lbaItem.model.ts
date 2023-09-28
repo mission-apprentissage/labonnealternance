@@ -21,6 +21,7 @@ const ZLbaItemPlace = z
       .nullish(), // adresse postale reconstruite à partir des éléments d'adresse fournis | matcha -> adresse | formation -> lieu_formation_adresse + code_postal + localite OU etablissement_formateur_adresse + ...complement_adresse + ...code_postal + ...localite + ...cedex OU etablissement_gestionnaire_adresse + ...complement_adresse + ...localite + ...cedex
     latitude: z
       .number()
+      .nullable()
       .openapi({
         example: 48.845,
         description: "La latitude du lieu",
@@ -28,6 +29,7 @@ const ZLbaItemPlace = z
       .optional(), // formation -> lieu_formation_geo_coordonnees | pe -> lieuTravail.latitude | lbb/lba -> geo_coordinates | matcha -> geo_coordonnees
     longitude: z
       .number()
+      .nullable()
       .openapi({
         example: 2.3752,
         description: "La longitude du lieu",
@@ -122,7 +124,7 @@ const ZLbaItemContact = z
     // informations de contact. optionnel
     email: z
       .string()
-      .email()
+      //.email()   TODO: actuellement string chiffrée qui n'a pas la shape d'une email
       .openapi({
         example: "contact@domaine.fr",
         description: "L'adresse email du contact de référence",
@@ -223,12 +225,12 @@ export type ILbaItemCompany = z.output<typeof ZLbaItemCompany>
 const ZLbaItemJob = z
   .object({
     description: z.string().nullable(), // pe -> description | matcha -> description
-    creationDate: z.date(), // pe -> dateCreation | matcha -> createdAt
+    creationDate: z.date().nullable(), // pe -> dateCreation | matcha -> createdAt
     id: z.string().nullable(), // pe -> id | matcha -> id mongo offre
     contractType: z.string().nullable(), // pe -> typeContrat | matcha -> offres.type
     contractDescription: z.string().nullish(), // pe -> typeContratLibelle
     duration: z.string().nullish(), // pe -> dureeTravailLibelle
-    jobStartDate: z.date().optional(), // matcha -> offres.date_debut_apprentissage
+    jobStartDate: z.date().optional().nullable(), // matcha -> offres.date_debut_apprentissage
     romeDetails: ZRomeDetail.optional().nullish(), // matcha -> offres.rome_detail -> détail du code ROME
     rythmeAlternance: z.string().nullish(), // matcha -> offres.rythme_alternance
     elligibleHandicap: z.boolean().nullish(), // matcha -> offres.is_disabled_elligible
