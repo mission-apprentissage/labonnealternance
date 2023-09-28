@@ -93,7 +93,7 @@ export const createUser = async (values) => {
  * @returns {Promise<IUserRecruteur>}
  */
 export const updateUser = async (query: Filter<IUserRecruteur>, update: UpdateQuery<IUserRecruteur>, options: ModelUpdateOptions = { new: true }): Promise<IUserRecruteur> => {
-  const userRecruterOpt = await UserRecruteur.findOneAndUpdate(query, update, options)
+  const userRecruterOpt = await UserRecruteur.findOneAndUpdate(query, update, options).lean()
   if (!userRecruterOpt) {
     throw Boom.internal(`could not update one user from query=${JSON.stringify(query)}`)
   }
