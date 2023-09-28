@@ -1,7 +1,6 @@
 import { Flex, Image, Text } from "@chakra-ui/react"
 import React from "react"
 
-import eclair from "../../../public/images/eclair.svg"
 import { getDaysSinceDate } from "../../../utils/dateUtils"
 
 export default function getJobPublishedTimeAndApplications({ item }) {
@@ -14,7 +13,7 @@ export default function getJobPublishedTimeAndApplications({ item }) {
       )}
       {["matcha", "lba"].includes(item?.ideaType) && (
         <Flex alignItems="center">
-          <Image mr={1} src={eclair} alt="" />
+          <Image mr={1} src="/images/eclair.svg" alt="" />
           <Text color="#0063CB" display="flex" fontSize="12px" whiteSpace="nowrap" mr={2}>
             {item.applicationCount} candidature(s)
           </Text>

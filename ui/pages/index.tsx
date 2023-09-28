@@ -13,11 +13,6 @@ import Navigation from "../components/navigation"
 import ScrollToTop from "../components/ScrollToTop"
 import config from "../config/config"
 import { ParameterContext } from "../context/ParameterContextProvider"
-import howtocircle1 from "../public/images/howtocircle1.svg"
-import howtocircle2 from "../public/images/howtocircle2.svg"
-import howtocircle3 from "../public/images/howtocircle3.svg"
-import howtocircle4 from "../public/images/howtocircle4.svg"
-import howtocircle5 from "../public/images/howtocircle5.svg"
 import { initParametersFromQuery } from "../services/config"
 
 const blockCssProperties = {
@@ -53,15 +48,15 @@ const Home = () => {
       {/* @ts-expect-error: TODO */}
       <Box background="beige" {...blockCssProperties}>
         {/* @ts-expect-error: TODO */}
-        <Image src={howtocircle1} {...circleImgCssProperties} top="60px" left="50px" alt="" />
+        <Image src="/images/howtocircle1.svg" {...circleImgCssProperties} top="60px" left="50px" alt="" />
         {/* @ts-expect-error: TODO */}
-        <Image src={howtocircle2} {...circleImgCssProperties} bottom="-28px" left="444px" alt="" />
+        <Image src="/images/howtocircle2.svg" {...circleImgCssProperties} bottom="-28px" left="444px" alt="" />
         {/* @ts-expect-error: TODO */}
-        <Image src={howtocircle3} {...circleImgCssProperties} top="182px" right="512px" alt="" />
+        <Image src="/images/howtocircle3.svg" {...circleImgCssProperties} top="182px" right="512px" alt="" />
         {/* @ts-expect-error: TODO */}
-        <Image src={howtocircle4} {...circleImgCssProperties} top="12px" right="312px" alt="" />
+        <Image src="/images/howtocircle4.svg" {...circleImgCssProperties} top="12px" right="312px" alt="" />
         {/* @ts-expect-error: TODO */}
-        <Image src={howtocircle5} {...circleImgCssProperties} bottom="112px" right="-12px" alt="" />
+        <Image src="/images/howtocircle5.svg" {...circleImgCssProperties} bottom="112px" right="-12px" alt="" />
         <HomeHero />
         <HowTo />
       </Box>

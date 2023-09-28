@@ -1,8 +1,6 @@
 import { Image, Text } from "@chakra-ui/react"
 import React from "react"
 
-import smileyIcon from "../../public/images/smiley.svg"
-
 const tagProperties = {
   color: "greensoft.600",
   background: "greensoft.200",
@@ -11,7 +9,7 @@ const tagProperties = {
 const TagCfaDEntreprise = () => {
   return (
     <Text as="span" variant="tag" {...tagProperties}>
-      <Image width="16px" mb="-2px" src={smileyIcon} alt="" />
+      <Image width="16px" mb="-2px" src="/images/smiley.svg" alt="" />
       <Text whiteSpace="nowrap" as="span" ml={1}>
         CFA d&apos;entreprise
       </Text>

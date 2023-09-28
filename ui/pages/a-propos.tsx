@@ -6,11 +6,6 @@ import Breadcrumb from "../components/breadcrumb"
 import Footer from "../components/footer"
 import Navigation from "../components/navigation"
 import ScrollToTop from "../components/ScrollToTop"
-import logoAvril from "../public/images/logo-avril.svg"
-import logoLbb from "../public/images/logo-lbb.svg"
-import logoCatalogue from "../public/images/logo_catalogue.svg"
-import logoMatcha from "../public/images/logo_matcha.svg"
-import logoPrdv from "../public/images/logo_prdv.svg"
 
 const ServiceCard = ({ logo, title, text, url, mt, mb = undefined, imageMT, imageML }) => {
   return (
@@ -134,7 +129,7 @@ const APropos = () => (
 
           <ServiceCard
             mt={6}
-            logo={logoMatcha}
+            logo="/images/logo_matcha.svg"
             title="Dépôt d'offres simplifié"
             text="Susciter des recrutements en alternance"
             url="https://mission-apprentissage.gitbook.io/general/les-services-en-devenir/untitled"
@@ -144,7 +139,7 @@ const APropos = () => (
 
           <ServiceCard
             mt={4}
-            logo={logoCatalogue}
+            logo="/images/logo_catalogue.svg"
             title="Catalogue des formations"
             text="Un catalogue élargi de formations en apprentissage"
             url="https://mission-apprentissage.gitbook.io/catalogue/"
@@ -155,7 +150,7 @@ const APropos = () => (
           <ServiceCard
             mt={4}
             mb={6}
-            logo={logoPrdv}
+            logo="/images/logo_prdv.svg"
             title="Rendez-vous apprentissage"
             text="Pour échanger facilement avec les centres de formation"
             url="https://mission-apprentissage.gitbook.io/general/les-services-en-devenir/prise-de-rendez-vous"
@@ -165,13 +160,13 @@ const APropos = () => (
 
           <SimpleGrid columns={[1, 1, 2]}>
             <StartupCard
-              logoUrl={logoLbb}
+              logoUrl="/images/logo-lbb.svg"
               url="https://labonneboite.pole-emploi.fr/"
               aria-label="Accès au site La bonne boite"
               title="Trouver des entreprises qui recrutent sans déposer d'offres d'emploi"
             />
             <StartupCard
-              logoUrl={logoAvril}
+              logoUrl="/images/logo-avril.svg"
               url="https://avril.pole-emploi.fr/"
               aria-label="Accès au site Avril"
               title="Trouvez une formation en fonction de votre profil ET du marché du travail"

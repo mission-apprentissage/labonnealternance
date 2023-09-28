@@ -27,7 +27,6 @@ import useAuth from "../../../common/hooks/useAuth"
 import { sortReactTableDate, sortReactTableString } from "../../../common/utils/dateUtils"
 import BreadcrumbLink from "../../../components/BreadcrumbLink"
 import { AnimationContainer, ConfirmationSuppressionEntreprise, Layout, LoadingEmptySpace, TableNew } from "../../../components/espace_pro"
-import addOfferImage from "../../../components/espace_pro/assets/images/add-offer.svg"
 import withAuth from "../../../components/espace_pro/withAuth"
 import Link from "../../../components/Link"
 import { Parametre } from "../../../theme/components/icons"
@@ -37,7 +36,7 @@ const EmptySpace = () => (
   <Stack direction={["column", "column", "column", "row"]} mt={12} pt={12} py={8} border="1px solid" borderColor="grey.400" spacing="32px">
     <Flex justify={["center", "center", "center", "flex-end"]} align={["center", "center", "center", "flex-start"]} w={["100%", "100%", "100%", "350px"]} h="150px">
       {/* eslint-disable-next-line jsx-a11y/alt-text */}
-      <Image src={addOfferImage} />
+      <Image src="/images/espace_pro/images/add-offer.svg" />
     </Flex>
 
     <Box w={["100%", "100%", "100%", "600px"]}>
