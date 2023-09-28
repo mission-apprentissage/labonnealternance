@@ -168,7 +168,7 @@ export default (server: Server) => {
   )
 
   /**
-   * Put existing offer from id
+   * Update an existing offer from id
    */
   server.put(
     "/api/formulaire/offre/:jobId",
