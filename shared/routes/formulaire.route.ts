@@ -41,6 +41,8 @@ export const zFormulaireRoute = {
       // TODO_SECURITY_FIX faire un ZJobPublic sans la partie delegations
       params: z.object({ jobId: zObjectId }).strict(),
       response: {
+        // TODO ANY TO BE FIXED
+        // "200": z.any(),
         "2xx": ZJob,
       },
       securityScheme: {
@@ -133,7 +135,27 @@ export const zFormulaireRoute = {
       // TODO_SECURITY_FIX session gérée par cookie server
       // TODO_SECURITY_FIX réduire aux champs modifiables
       params: z.object({ jobId: zObjectId }).strict(),
-      body: ZJob.partial(),
+      body: ZJob.pick({
+        rome_label: true,
+        rome_appellation_label: true,
+        rome_code: true,
+        job_level_label: true,
+        job_description: true,
+        job_creation_date: true,
+        job_expiration_date: true,
+        job_status: true,
+        job_type: true,
+        is_multi_published: true,
+        delegations: true,
+        rome_detail: true,
+        is_disabled_elligible: true,
+        job_count: true,
+        job_duration: true,
+        job_rythm: true,
+      }).extend({
+        job_start_date: z.coerce.date(),
+        job_update_date: z.coerce.date(),
+      }),
       response: {
         "2xx": ZRecruiter,
       },
