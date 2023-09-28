@@ -1,12 +1,12 @@
 import { ObjectId } from "bson"
-import type { CreateIndexesOptions, IndexSpecification } from "mongodb"
+import type { IndexOptions, IndexSpecification } from "mongodb"
 import { z, ZodType } from "zod"
 
 export type CollectionName = "users" | "jobs" | "organisations" | "persons" | "events" | "sessions" | "documents" | "documentContents" | "mailingLists"
 
 export interface IModelDescriptor {
   zod: ZodType
-  indexes: [IndexSpecification, CreateIndexesOptions][]
+  indexes: [IndexSpecification, IndexOptions][]
   collectionName: CollectionName
 }
 

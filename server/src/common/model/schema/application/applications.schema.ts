@@ -1,7 +1,7 @@
-import { mongoosePagination, Pagination } from "mongoose-paginate-ts"
 import { IApplication } from "shared"
 
 import { model, Schema } from "../../../mongodb"
+import { mongoosePagination, Pagination } from "../_shared/mongoose-paginate"
 
 export const applicationSchema = new Schema<IApplication>(
   {

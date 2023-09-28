@@ -35,13 +35,14 @@ export const premiumInviteOneShot = async () => {
 
   for (const etablissement of etablissementWithParcoursup) {
     try {
-      if (!isValidEmail) {
+      const email = etablissement.gestionnaire_email
+      if (!isValidEmail(email)) {
         logger.info("Invalid email syntax.", { etablissement })
         continue
       }
 
       const { messageId } = await mailer.sendEmail({
-        to: etablissement.gestionnaire_email,
+        to: email,
         subject: `Trouvez et recrutez vos candidats sur Parcoursup`,
         template: getStaticFilePath("./templates/mail-cfa-premium-invite-one-shot.mjml.ejs"),
         data: {

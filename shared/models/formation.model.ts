@@ -1,5 +1,8 @@
 import { z } from "zod"
 
+import { zAppointmentsRoute } from "../routes/appointments.routes"
+
+import { ZAppointment } from "./appointments.model"
 import { zObjectId } from "./common"
 
 // Define schemas for nested objects
@@ -90,7 +93,7 @@ const stringOrArraySchema = z.union([z.string(), z.array(z.string())])
 export const zFormationCatalogueSchema = z
   .object({
     _id: zObjectId,
-    cle_ministere_educatif: z.string(),
+    cle_ministere_educatif: ZAppointment.shape.cle_ministere_educatif,
     cfd: z.string(),
     cfd_specialite: z.string().nullish(),
     cfa_outdated: z.boolean().nullish(),

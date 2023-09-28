@@ -1,7 +1,7 @@
 import axios, { AxiosResponse } from "axios"
 import Boom from "boom"
 import { pick } from "lodash-es"
-import { Filter } from "mongodb"
+import { FilterQuery } from "mongodb"
 import { IEtablissement, ILbaCompany, IRecruiter, IUserRecruteur } from "shared"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
@@ -179,7 +179,7 @@ export const findByIdAndDelete = async (id): Promise<IEtablissement | null> => E
  * @param {Object} query
  * @returns {Promise<void>}
  */
-export const getEtablissement = async (query: Filter<IUserRecruteur>): Promise<IUserRecruteur | null> => UserRecruteur.findOne(query)
+export const getEtablissement = async (query: FilterQuery<IUserRecruteur>): Promise<IUserRecruteur | null> => UserRecruteur.findOne(query)
 
 /**
  * @description Get opco details from CFADOCK API for a given SIRET
@@ -321,24 +321,24 @@ export const getGeoCoordinates = async (adresse: string): Promise<string> => {
 export const getEstablishmentFromOpcoReferentiel = async (siretCode: IReferentielOpco["siret_code"]) => await ReferentielOpco.findOne({ siret_code: siretCode })
 /**
  * @description Get all matching records from the ReferentielOpco collection
- * @param {Filter<IReferentielOpco>} query
+ * @param {FilterQuery<IReferentielOpco>} query
  * @returns {Promise<IReferentielOpco[]>}
  */
-export const getAllEstablishmentFromOpcoReferentiel = async (query: Filter<IReferentielOpco>): Promise<IReferentielOpco[]> => await ReferentielOpco.find(query).lean()
+export const getAllEstablishmentFromOpcoReferentiel = async (query: FilterQuery<IReferentielOpco>): Promise<IReferentielOpco[]> => await ReferentielOpco.find(query).lean()
 /**
  * @description Get all matching records from the LbaCompanyLegacy collection
- * @param {Filter<ILbaCompany>} query
+ * @param {FilterQuery<ILbaCompany>} query
  * @returns {Promise<ILbaCompany["email"]>}
  */
-export const getAllEstablishmentFromLbaCompanyLegacy = async (query: Filter<ILbaCompany>): Promise<ILbaCompany[]> =>
+export const getAllEstablishmentFromLbaCompanyLegacy = async (query: FilterQuery<ILbaCompany>): Promise<ILbaCompany[]> =>
   await LbaCompanyLegacy.find(query).select({ email: 1, _id: 0 }).lean()
 
 /**
  * @description Get all matching records from the LbaCompanies collection
- * @param {Filter<ILbaCompany>} query
+ * @param {FilterQuery<ILbaCompany>} query
  * @returns {Promise<ILbaCompany["email"]>}
  */
-export const getAllEstablishmentFromLbaCompany = async (query: Filter<ILbaCompany>): Promise<ILbaCompany[]> => await LbaCompany.find(query).select({ email: 1, _id: 0 }).lean()
+export const getAllEstablishmentFromLbaCompany = async (query: FilterQuery<ILbaCompany>): Promise<ILbaCompany[]> => await LbaCompany.find(query).select({ email: 1, _id: 0 }).lean()
 
 /**
  * @description Format Entreprise data

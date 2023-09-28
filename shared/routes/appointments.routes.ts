@@ -1,7 +1,7 @@
 import { z } from "zod"
 
 import { referrers } from "../constants/referers"
-import { ZAppointment } from "../models"
+import { ZAppointment, ZEtablissement } from "../models"
 import { ZEligibleTrainingsForAppointmentSchema } from "../models/elligibleTraining.model"
 
 import { IRoutesDef, ZResError } from "./common.routes"
@@ -149,11 +149,11 @@ export const zAppointmentsRoute = {
         "2xx": z.union([
           z
             .object({
-              etablissement_formateur_entreprise_raison_sociale: z.string(),
+              etablissement_formateur_entreprise_raison_sociale: ZEtablissement.shape.raison_sociale,
               intitule_long: z.string(),
               lieu_formation_adresse: z.string(),
               code_postal: z.string(),
-              etablissement_formateur_siret: z.string(),
+              etablissement_formateur_siret: ZEtablissement.shape.formateur_siret,
               cfd: z.string(),
               localite: z.string(),
               id_rco_formation: z.string(),

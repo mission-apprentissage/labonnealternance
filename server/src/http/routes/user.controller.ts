@@ -31,6 +31,7 @@ export default (server: Server) => {
     async (req, res) => {
       const { userQuery, formulaireQuery } = req.query
 
+      // @ts-expect-error
       const [users, formulaires] = await Promise.all([UserRecruteur.find(userQuery).lean(), Recruiter.find(formulaireQuery).lean()])
 
       const results = users.reduce((acc: any[], user) => {

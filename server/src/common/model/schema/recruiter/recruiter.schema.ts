@@ -1,11 +1,11 @@
 import { randomUUID } from "crypto"
 
-import { mongoosePagination, Pagination } from "mongoose-paginate-ts"
 import { IRecruiter } from "shared"
 
 import { RECRUITER_STATUS } from "../../../../services/constant.service"
 import { mongoosastic } from "../../../esClient/index"
 import { model, Schema } from "../../../mongodb"
+import { mongoosePagination, Pagination } from "../_shared/mongoose-paginate"
 import { jobsSchema } from "../jobs/jobs.schema"
 
 export const recruiterSchema = new Schema<IRecruiter>(
