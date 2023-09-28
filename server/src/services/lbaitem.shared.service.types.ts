@@ -1,3 +1,5 @@
+import type { ILbaItemFormation } from "shared/models/lbaItem.model"
+
 import { JOB_STATUS } from "./constant.service"
 import { IRomeDetailsFromAPI } from "./rome.service.types"
 
@@ -13,27 +15,7 @@ interface ILbaItemCommon {
   /** TODO API V2: move inside training<ILbaItemTraining> */
 }
 
-export interface ILbaItemFormation extends ILbaItemCommon {
-  ideaType: "formation"
-  longTitle?: string | null // formation -> intitule_long
-  id: string | null // formation -> id
-  idRco: string | null // formation -> id_formation
-  idRcoFormation: string | null // formation -> id_rco_formation
-
-  cleMinistereEducatif: string | null // formation
-  diplomaLevel: string | null // formation -> niveau
-  diploma: string | null // formation -> diplome
-  cfd: string | null // formation -> cfd
-  rncpCode: string | null // formation -> rncp_code
-  rncpLabel: string | null // formation -> rncp_intitule
-  rncpEligibleApprentissage: boolean | null | undefined // formation -> rncp_eligible_apprentissage
-  period: string | null // formation -> periode
-  capacity: string | null // formation -> capacite
-  onisepUrl: string | null // formation -> onisep_url
-
-  training: ILbaItemTraining
-  romes: ILbaItemRome[] | null
-}
+export type { ILbaItemFormation }
 
 export interface ILbaItemLbaJob extends ILbaItemCommon {
   ideaType: "matcha"

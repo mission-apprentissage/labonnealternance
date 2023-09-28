@@ -64,6 +64,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@asteasolutions/zod-to-openapi@npm:^5.5.0":
+  version: 5.5.0
+  resolution: "@asteasolutions/zod-to-openapi@npm:5.5.0"
+  dependencies:
+    openapi3-ts: ^4.1.2
+  peerDependencies:
+    zod: ^3.20.2
+  checksum: dfff401060c3ada0271d036984c78db41ea5e865fd1fea3b5605e90cf2e23ceec0697dc7736426d11f9687dbd90aa78e6713080bfda76b6c1a5fade32f15f091
+  languageName: node
+  linkType: hard
+
 "@aws-crypto/crc32@npm:3.0.0":
   version: 3.0.0
   resolution: "@aws-crypto/crc32@npm:3.0.0"
@@ -16531,6 +16542,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"openapi3-ts@npm:^4.1.2":
+  version: 4.1.2
+  resolution: "openapi3-ts@npm:4.1.2"
+  dependencies:
+    yaml: ^2.2.2
+  checksum: 019a66f4195966bf58ee29f913b91e39975616458fdb40a15507a3b3e338eacfc882def0dda1a5001edf962e382ed6f46c8a0d40684adcccb868960267df30d9
+  languageName: node
+  linkType: hard
+
 "optional-require@npm:1.0.x":
   version: 1.0.3
   resolution: "optional-require@npm:1.0.3"
@@ -19541,6 +19561,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "shared@workspace:shared"
   dependencies:
+    "@asteasolutions/zod-to-openapi": ^5.5.0
     "@types/boom": ^7.3.3
     bson: ^5.4.0
     eslint-plugin-zod: ^1.4.0
