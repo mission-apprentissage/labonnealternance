@@ -2,7 +2,7 @@ import { z } from "zod"
 
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 // import { zEtablissementCatalogue } from "../interface/etablissement.types"
-import { ZGlobalAddress } from "../models"
+import { ZGlobalAddress, ZRecruiter } from "../models"
 import { zCFA } from "../models/cfa.model"
 import { zObjectId } from "../models/common"
 import { ZUserRecruteur } from "../models/usersRecruteur.model"
