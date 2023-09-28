@@ -619,7 +619,7 @@ export const entrepriseOnboardingWorkflow = {
     cfa_delegated_siret: string
     origin: string
     opco?: string
-    idcc?: string
+    idcc?: string | null
   }) => {
     const cfaErrorOpt = await validateCreationEntrepriseFromCfa({ siret, cfa_delegated_siret })
     if (cfaErrorOpt) return cfaErrorOpt
