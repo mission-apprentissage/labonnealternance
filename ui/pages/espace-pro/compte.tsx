@@ -26,6 +26,10 @@ function Compte() {
         return `/espace-pro/administration/entreprise/${auth.establishment_id}`
       case AUTHTYPE.CFA:
         return `/espace-pro/administration`
+      case AUTHTYPE.ADMIN:
+        return `/espace-pro/administration/users`
+      case AUTHTYPE.OPCO:
+        return `/espace-pro/administration/opco`
       default:
         break
     }
