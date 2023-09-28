@@ -90,7 +90,7 @@ export const jobsSchema = new Schema<IJob>(
     },
     is_delegated: {
       type: Boolean,
-      require: true,
+      require: false,
       description: "Definit si l'entreprise souhaite déléguer l'offre à un CFA",
     },
     job_delegation_count: {
