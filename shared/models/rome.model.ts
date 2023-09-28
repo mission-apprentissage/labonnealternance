@@ -81,7 +81,6 @@ export const ZRomeDetail = z
           riasecMajeur: z.string().nullish(),
           competenceCle: z.boolean(),
           frequence: z.number(),
-
         })
         .strict()
     ),
@@ -130,3 +129,4 @@ export const ZRomeDetail = z
     mobilitesEvolutionsAppellationsVersAppellations: z.array(z.any()),
   })
   .strict()
+  .deepPartial()
