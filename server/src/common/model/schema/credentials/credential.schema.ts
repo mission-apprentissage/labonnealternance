@@ -37,7 +37,7 @@ export const credentialSchema = new Schema<ICredential>(
       default: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true, versionKey: false }
 )
 
 export default model<ICredential>("credential", credentialSchema)
