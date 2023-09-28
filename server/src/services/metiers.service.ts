@@ -2,6 +2,8 @@ import Boom from "boom"
 import * as _ from "lodash-es"
 import { matchSorter } from "match-sorter"
 
+import { IDomainesMetiers } from "@/common/model/schema/domainesmetiers/domainesmetiers.types"
+
 import { getElasticInstance } from "../common/esClient/index"
 
 import { getRomesFromCfd, getRomesFromSiret } from "./catalogue.service"
@@ -236,21 +238,14 @@ export const getCoupleAppellationRomeIntitule = async (searchTerm: string): Prom
 
     const response = await esClient.search({ index: "domainesmetiers", body })
 
-    let coupleAppellationRomeMetier: any[] = []
-
-    response.body.hits.hits.forEach((item) => {
-      // TODO comment ça peut fonctionner ? coupleAppellationRomeMetier est typé en array.
-      coupleAppellationRomeMetier.push([...item._source.couples_appellations_rome_metier])
-    })
-
+    const domaineMetiers: IDomainesMetiers[] = response.body.hits.hits.map(({ _source }) => _source)
+    const coupleAppellationRomeMetier = domaineMetiers.map(({ couples_appellations_rome_metier }) => couples_appellations_rome_metier)
     const intitulesAndRomesUnique = _.uniqBy(_.flatten(coupleAppellationRomeMetier), "appellation")
-
-    coupleAppellationRomeMetier = matchSorter(intitulesAndRomesUnique, searchTerm, {
+    const sorted = matchSorter(intitulesAndRomesUnique, searchTerm, {
       keys: ["appellation"],
       threshold: matchSorter.rankings.NO_MATCH,
     })
-
-    return { coupleAppellationRomeMetier }
+    return { coupleAppellationRomeMetier: sorted }
   } catch (error) {
     const newError = Boom.internal("getting intitule from title")
     newError.cause = error
