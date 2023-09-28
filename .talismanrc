@@ -39,6 +39,8 @@ fileignoreconfig:
   checksum: 28af032d2eb26aec7dd3bb1d32253f992a036626c36a92eb1e7ff07599fd0b2b
 - filename: shared/helpers/openapi/generateOpenapi.test.ts
   checksum: d7b85c3dff488cec523d78f0926e15dbea41071a1864bda62b4d6caeb2541df3
+- filename: shared/models/lbaItem.model.ts
+  checksum: 144ab34674299cdac89d96ffa6ed834814135c54e1621e1fa47ec5012924f862
 - filename: shared/routes/password.routes.ts
   checksum: 9c364c30d244786c12c9c464bb50f7b78ede916674110872a6b115e09b7751fc
 - filename: ui/common/hooks/useAuth.ts
