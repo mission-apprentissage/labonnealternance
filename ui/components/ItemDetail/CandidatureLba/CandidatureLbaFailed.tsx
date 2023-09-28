@@ -1,8 +1,6 @@
 import { Box, Container, Flex, Image, Text } from "@chakra-ui/react"
 import React from "react"
 
-import error2 from "../../../public/images/icons/input_value_error.svg"
-
 const sendingStateValues = {
   "email temporaire non autorisé": {
     title: "Les adresses emails temporaires ne sont pas acceptées",
@@ -37,7 +35,7 @@ const CandidatureLbaFailed = ({ sendingState }) => {
     return (
       <>
         <Flex direction="row" alignItems="center">
-          <Image src={error2} mr={4} alt="" />
+          <Image src="/images/icons/input_value_error.svg" mr={4} alt="" />
           <Text as="h2" fontWeight={700} fontSize="20px" data-testid={sendingStateValues[sendingState]?.dataTestId || "CandidatureSpontaneeFailedTitle"}>
             {sendingStateValues[sendingState]?.title || "Une erreur est survenue"}
           </Text>

@@ -4,7 +4,6 @@ import { useRouter } from "next/router"
 import React from "react"
 
 import { ParameterContext } from "../../context/ParameterContextProvider"
-import logoLBA from "../../public/images/logo-violet-seul.svg"
 
 const LogoLBA = () => {
   const router = useRouter()
@@ -33,7 +32,7 @@ const LogoLBA = () => {
         <Link as="a" onClick={goToLbaHome} ml={4}>
           <Image
             // @ts-expect-error: TODO
-            src={widgetParameters && widgetParameters?.parameters?.returnLogoURL ? widgetParameters.parameters.returnLogoURL : logoLBA}
+            src={widgetParameters && widgetParameters?.parameters?.returnLogoURL ? widgetParameters.parameters.returnLogoURL : "/images/logo-violet-seul.svg"}
             alt="Retour page d'accueil de La bonne alternance"
           />
         </Link>

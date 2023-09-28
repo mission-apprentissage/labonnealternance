@@ -2,8 +2,6 @@ import { Box, Button, ChakraProvider, Flex, Image, Text, VStack } from "@chakra-
 import React, { useEffect } from "react"
 
 import { ErrorMessage } from "../.."
-import bookIcon from "../../../public/images/icons/book.svg"
-import jobIcon from "../../../public/images/icons/job.svg"
 import theme from "../../../theme"
 import { getJobAddress } from "../../../utils/jobs"
 import { setSelectedMarker } from "../../../utils/mapTools"
@@ -28,7 +26,7 @@ const MapPopup = ({ type, item, handleSelectItem, setSelectedItem, setSelectedMa
         return (
           <Box>
             <Flex ml={4} my={4} alignItems="center" direction="row">
-              <Image mr={2} width="24px" src={jobIcon} alt="" />
+              <Image mr={2} width="24px" src="/images/icons/job.svg" alt="" />
               <Text as="span" fontSize="16px" fontWeight={700} color="black">
                 {`Opportunité${list.length > 1 ? "s" : ""} d'emploi`}
               </Text>
@@ -58,7 +56,7 @@ const MapPopup = ({ type, item, handleSelectItem, setSelectedItem, setSelectedMa
         return (
           <Box>
             <Flex ml={4} my={4} alignItems="center" direction="row">
-              <Image mr={2} width="24px" src={bookIcon} alt="" />
+              <Image mr={2} width="24px" src="/images/icons/book.svg" alt="" />
               <Text as="span" fontSize="16px" fontWeight={700} color="black">
                 Formations :
               </Text>

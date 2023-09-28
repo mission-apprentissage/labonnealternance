@@ -8,7 +8,6 @@ import { DisplayContext } from "../../../context/DisplayContextProvider"
 import { ParameterContext } from "../../../context/ParameterContextProvider"
 import { ScopeContext } from "../../../context/ScopeContext"
 import { SearchResultContext } from "../../../context/SearchResultContextProvider"
-import dosearchImage from "../../../public/images/dosearch.svg"
 import { currentSearch, setCurrentPage, setCurrentSearch } from "../../../utils/currentPage"
 import { closeMapPopups, filterLayers, flyToLocation, flyToMarker, setSelectedMarker } from "../../../utils/mapTools"
 import pushHistory from "../../../utils/pushHistory"
@@ -219,7 +218,7 @@ const ChoiceColumn = ({
 
     return (
       <Box display={displayProperty} width="75%" margin="auto" pt={12}>
-        <Image margin="auto" width="75%" src={dosearchImage} alt="" />
+        <Image margin="auto" width="75%" src="/images/dosearch.svg" alt="" />
         {/* @ts-expect-error: TODO */}
         <Box pl={12} pr={8} py={4} {...noSearchTextProperties}>
           <Box textAlign="left">

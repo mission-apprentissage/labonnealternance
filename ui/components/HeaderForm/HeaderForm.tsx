@@ -6,7 +6,6 @@ import React, { useEffect, useState } from "react"
 import { AutoCompleteField, DomainError } from ".."
 import { DisplayContext } from "../../context/DisplayContextProvider"
 import { ParameterContext } from "../../context/ParameterContextProvider"
-import glassImage from "../../public/images/glass_white.svg"
 import { autoCompleteToStringFunction, compareAutoCompleteValues } from "../../services/autoCompleteUtilities"
 import { fetchAddresses } from "../../services/baseAdresse"
 import { buildAvailableDiplomasOptions } from "../../services/buildAvailableDiplomas"
@@ -145,7 +144,7 @@ const HeaderForm = ({ handleSearchSubmit, isHome }) => {
               <Box ml={[1, 1, 1, 3]}>
                 {/* @ts-expect-error: TODO */}
                 <Button type="submit" variant="blackButton" borderRadius="unset" disabled={isSubmitting} alt="Lancer la recherche" height="57px" paddingTop="3px">
-                  <Image maxWidth="unset" alt="Lancer la recherche" src={glassImage} />
+                  <Image maxWidth="unset" alt="Lancer la recherche" src="/images/glass_white.svg" />
                   {isHome && (
                     <Box fontSize="18px" mx={3} display={{ base: "none", xl: "inline-block" }}>
                       C&apos;est parti

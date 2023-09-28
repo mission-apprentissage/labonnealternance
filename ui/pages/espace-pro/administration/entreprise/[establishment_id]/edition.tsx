@@ -150,7 +150,6 @@ function EditionEntrepriseContact() {
   }
 
   // add type ENTREPRISE for legale information
-  // @ts-expect-error: TODO
   const entreprise = { ...data.data, type: AUTHTYPE.ENTREPRISE }
 
   return (
@@ -165,7 +164,6 @@ function EditionEntrepriseContact() {
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbItem>
-                {/* @ts-expect-error: TODO */}
                 <BreadcrumbLink textStyle="xs">{data.data.establishment_raison_sociale}</BreadcrumbLink>
               </BreadcrumbItem>
             </Breadcrumb>

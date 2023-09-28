@@ -3,8 +3,6 @@ import React from "react"
 
 import { DisplayContext } from "../../../context/DisplayContextProvider"
 import { SearchResultContext } from "../../../context/SearchResultContextProvider"
-import toggleCard from "../../../public/images/icons/toggleCard.svg"
-import toggleList from "../../../public/images/icons/toggleList.svg"
 
 const MapListSwitchButton = ({ showResultMap, showResultList, isFormVisible }) => {
   const { hasSearch } = React.useContext(SearchResultContext)
@@ -47,7 +45,7 @@ const MapListSwitchButton = ({ showResultMap, showResultList, isFormVisible }) =
         <Box display={resultListFloatingButtonDisplayProperty} {...floatingButtonProperties}>
           <Button {...buttonProperties} onClick={showResultMap} title="Afficher la carte">
             <Flex alignItems="center">
-              <Image src={toggleCard} alt="" />
+              <Image src="/images/icons/toggleCard.svg" alt="" />
               <Text as="span" marginLeft={2}>
                 Carte
               </Text>
@@ -63,7 +61,7 @@ const MapListSwitchButton = ({ showResultMap, showResultList, isFormVisible }) =
         {hasSearch ? (
           <Button {...buttonProperties} onClick={showResultList} title="Afficher la liste">
             <Flex alignItems="center">
-              <Image src={toggleList} alt="" />
+              <Image src="/images/icons/toggleList.svg" alt="" />
               <Text as="span" marginLeft={2}>
                 Liste
               </Text>

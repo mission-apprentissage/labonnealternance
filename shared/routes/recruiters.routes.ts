@@ -3,21 +3,10 @@ import { z } from "zod"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 // import { zEtablissementCatalogue } from "../interface/etablissement.types"
 import { ZGlobalAddress, ZRecruiter } from "../models"
-import { zCFA } from "../models/cfa.model"
 import { zObjectId } from "../models/common"
 import { ZUserRecruteur } from "../models/usersRecruteur.model"
 
 import { IRoutesDef } from "./common.routes"
-
-const zShalowUser = ZUserRecruteur.pick({
-  type: true,
-  first_name: true,
-  last_name: true,
-  phone: true,
-  email: true,
-  origin: true,
-  opco: true,
-})
 
 export const zRecruiterRoutes = {
   get: {
@@ -153,27 +142,41 @@ export const zRecruiterRoutes = {
   post: {
     "/api/etablissement/creation": {
       body: z.union([
-        zCFA.extend(zShalowUser.shape).extend({
-          type: z.literal("CFA"),
-        }),
+        z
+          .object({
+            type: z.literal("CFA"),
+          })
+          .strict()
+          .extend(
+            ZUserRecruteur.pick({
+              last_name: true,
+              first_name: true,
+              phone: true,
+              email: true,
+              origin: true,
+              establishment_siret: true,
+            }).shape
+          ),
         z
           .object({
             type: z.literal("ENTREPRISE"),
-            establishment_siret: z.string(),
             opco: z.string(),
             idcc: z.string().optional(),
           })
           .strict()
           .extend(
+            ZRecruiter.pick({
+              cfa_delegated_siret: true,
+            }).shape
+          )
+          .extend(
             ZUserRecruteur.pick({
-              type: true,
-              siret: true,
               last_name: true,
               first_name: true,
               phone: true,
               email: true,
-              cfa_delegated_siret: true,
               origin: true,
+              establishment_siret: true,
             }).shape
           ),
       ]),

@@ -1,9 +1,6 @@
 import { Box, Flex, Image, Text } from "@chakra-ui/react"
 import React from "react"
 
-import errorAlertIcon from "../../public/images/icons/errorAlert.svg"
-import searchingPeople from "../../public/images/icons/searchingPeople.svg"
-
 const cssParameters = {
   background: "#fff1e5",
   borderRadius: "10px",
@@ -15,9 +12,9 @@ const cssParameters = {
 const ErrorMessage = ({ type = undefined, message }) => {
   return (
     <>
-      {type === "column" && <Image width="256px" margin="auto" src={searchingPeople} alt="" />}
+      {type === "column" && <Image width="256px" margin="auto" src="/images/icons/searchingPeople.svg" alt="" />}
       <Flex alignItems="center" {...cssParameters} color="grey.650">
-        <Image width="32px" mr={2} src={errorAlertIcon} alt="" />
+        <Image width="32px" mr={2} src="/images/icons/errorAlert.svg" alt="" />
         {message}
       </Flex>
       {type === "column" && (
