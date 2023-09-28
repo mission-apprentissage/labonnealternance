@@ -56,8 +56,8 @@ export interface ILbaItemPeJob extends ILbaItemCommon {
   ideaType: "peJob"
   url: string | null // pe -> reconstruction depuis id
   job: ILbaItemJob // uniquement pour pe et matcha
-
   romes: ILbaItemRome[] | null
+  nafs: ILbaItemNaf[] | null
 }
 
 export type ILbaItem = ILbaItemFormation | ILbaItemLbaJob | ILbaItemLbaCompany | ILbaItemPeJob
