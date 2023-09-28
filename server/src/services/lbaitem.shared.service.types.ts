@@ -3,10 +3,6 @@ import { IRomeDetailsFromAPI } from "./rome.service.types"
 
 interface ILbaItemCommon {
   title: string | null | undefined // pe -> intitule | lbb/lba -> enseigne | formation -> intitule_long OU intitule_court | matcha -> offres.libelle || offres.rome_appellation_label
-  longTitle?: string | null // formation -> intitule_long,
-  id: string | null // formation -> id | matcha -> id_form
-  idRco: string | null // formation -> id_formation
-  idRcoFormation: string | null // formation -> id_rco_formation
 
   contact: ILbaItemContact | null // informations de contact. optionnel
 
@@ -14,11 +10,18 @@ interface ILbaItemCommon {
 
   company: ILbaItemCompany | null
 
-  url: string | null // pe -> reconstruction depuis id | lbb/lba url
-
   /** TODO API V2: move inside training<ILbaItemTraining> */
+}
+
+export interface ILbaItemFormation extends ILbaItemCommon {
+  ideaType: "formation"
+  longTitle?: string | null // formation -> intitule_long
+  id: string | null // formation -> id
+  idRco: string | null // formation -> id_formation
+  idRcoFormation: string | null // formation -> id_rco_formation
+
   cleMinistereEducatif: string | null // formation
-  diplomaLevel?: string | null // formation -> niveau  | matcha -> offres.niveau
+  diplomaLevel: string | null // formation -> niveau
   diploma: string | null // formation -> diplome
   cfd: string | null // formation -> cfd
   rncpCode: string | null // formation -> rncp_code
@@ -28,30 +31,33 @@ interface ILbaItemCommon {
   capacity: string | null // formation -> capacite
   onisepUrl: string | null // formation -> onisep_url
 
-  job: ILbaItemJob | null // uniquement pour pe et matcha
-
+  training: ILbaItemTraining
   romes: ILbaItemRome[] | null
-  nafs: ILbaItemNaf[] | null
-
-  training: ILbaItemTraining | null
-
-  applicationCount?: number | null // lba / matcha -> calcul en fonction du nombre de candidatures enregistrées
-}
-
-export interface ILbaItemFormation extends ILbaItemCommon {
-  ideaType: "formation"
 }
 
 export interface ILbaItemLbaJob extends ILbaItemCommon {
   ideaType: "matcha"
+  id: string | null // matcha -> id_form
+  diplomaLevel: string | null // matcha -> offres.niveau
+  applicationCount: number // lba / matcha -> calcul en fonction du nombre de candidatures enregistrées
+  job: ILbaItemJob // uniquement pour pe et matcha
+
+  romes: ILbaItemRome[] | null
 }
 
 export interface ILbaItemLbaCompany extends ILbaItemCommon {
   ideaType: "lba"
+  url: null // lbb/lba url
+  applicationCount: number // lba / matcha -> calcul en fonction du nombre de candidatures enregistrées
+  nafs: ILbaItemNaf[] | null
 }
 
 export interface ILbaItemPeJob extends ILbaItemCommon {
   ideaType: "peJob"
+  url: string | null // pe -> reconstruction depuis id
+  job: ILbaItemJob // uniquement pour pe et matcha
+
+  romes: ILbaItemRome[] | null
 }
 
 export type ILbaItem = ILbaItemFormation | ILbaItemLbaJob | ILbaItemLbaCompany | ILbaItemPeJob

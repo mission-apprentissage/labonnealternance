@@ -237,7 +237,6 @@ const projection = {
 
 export const getActiveUsers = () =>
   UserRecruteur.find({
-    establishment_raison_sociale: { $nin: [null, ""] },
     $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, ETAT_UTILISATEUR.VALIDE] },
     $or: [{ type: CFA }, { type: ENTREPRISE }],
   })
