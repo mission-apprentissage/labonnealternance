@@ -194,9 +194,9 @@ function transformLbaJob({
       job: {
         id: offre._id.toString(),
         description: offre.job_description || "",
-        creationDate: offre.job_creation_date,
+        creationDate: offre.job_creation_date && new Date(offre.job_creation_date),
         contractType: offre.job_type && offre.job_type.join(", "),
-        jobStartDate: offre.job_start_date,
+        jobStartDate: offre.job_start_date && new Date(offre.job_start_date),
         romeDetails: offre.rome_detail,
         rythmeAlternance: offre.job_rythm || null,
         dureeContrat: "" + offre.job_duration,

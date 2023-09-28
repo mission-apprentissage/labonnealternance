@@ -1,26 +1,16 @@
 import { z } from "zod"
 
 import { zObjectId } from "../models/common"
-import { ZJob } from "../models/job.model"
+import {
+  ZJob,
+  // ZJobWithoutId
+} from "../models/job.model"
 import { ZRecruiter } from "../models/recruiter.model"
 
 import { IRoutesDef } from "./common.routes"
 
 export const zFormulaireRoute = {
   get: {
-    "/api/formulaire": {
-      // TODO_SECURITY_FIX faire un endpoint dédié à chaque plutôt que de faire de l'injection mongo
-      // TODO_SECURITY_FIX gestion des permissions
-      // TODO_SECURITY_FIX session gérée par cookie server
-      querystring: z.object({ query: z.string() }).strict(), // mongo query
-      response: {
-        "2xx": z.array(ZRecruiter),
-      },
-      securityScheme: {
-        auth: "jwt-bearer",
-        role: "all",
-      },
-    },
     "/api/formulaire/:establishment_id": {
       // TODO_SECURITY_FIX gestion des permissions
       // TODO_SECURITY_FIX session gérée par cookie server
@@ -68,7 +58,9 @@ export const zFormulaireRoute = {
         })
         .strict(),
       response: {
-        "2xx": ZRecruiter,
+        // TODO ANY TO BE FIXED
+        // "2xx": ZRecruiter,
+        "2xx": z.any(),
       },
       securityScheme: {
         auth: "none",

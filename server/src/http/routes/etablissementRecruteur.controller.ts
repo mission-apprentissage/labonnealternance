@@ -1,6 +1,9 @@
 import Boom from "boom"
-import joi from "joi"
+// import joi from "joi"
 import { IUserRecruteur, zRoutes } from "shared"
+import { RECRUITER_STATUS } from "shared/constants/recruteur"
+
+import { Recruiter, UserRecruteur } from "@/common/model"
 
 import { createUserRecruteurToken } from "../../common/utils/jwtUtils"
 import { getAllDomainsFromEmailList, getEmailDomain, isEmailFromPrivateCompany, isUserMailExistInReferentiel } from "../../common/utils/mailUtils"
@@ -133,6 +136,27 @@ export default (server: Server) => {
       } else {
         return res.status(200).send(response)
       }
+    }
+  )
+
+  /**
+   * Retourne les entreprises gérées par un CFA
+   */
+  server.get(
+    "/api/etablissement/cfa/:userRecruteurId/entreprises",
+    {
+      schema: zRoutes.get["/api/etablissement/cfa/:userRecruteurId/entreprises"],
+      preHandler: [server.auth(zRoutes.get["/api/etablissement/cfa/:userRecruteurId/entreprises"].securityScheme)],
+    },
+    async (req, res) => {
+      const { userRecruteurId } = req.params
+      const cfa = await UserRecruteur.findOne({ _id: userRecruteurId }).lean()
+      if (!cfa) {
+        throw Boom.notFound(`Aucun CFA ayant pour id ${userRecruteurId.toString()}`)
+      }
+      const cfa_delegated_siret = cfa.establishment_siret
+      const entreprises = await Recruiter.find({ status: { $in: [RECRUITER_STATUS.ACTIF, RECRUITER_STATUS.EN_ATTENTE_VALIDATION] }, cfa_delegated_siret }).lean()
+      return res.status(200).send(entreprises)
     }
   )
 

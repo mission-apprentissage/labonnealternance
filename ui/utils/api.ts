@@ -17,12 +17,12 @@ const errorHandler = (error) => {
 /**
  * Formulaire API
  */
-// export const getFormulaires = (query, options, limit, page) => securedAPI.get("/formulaire", { params: { query, options, limit, page } }).catch(errorHandler)
-// TODO_AB
-export const getFormulaires = async (query) => {
+export const getEntreprisesOfCfa = async (cfaId: string) => {
   const token = sessionStorage.getItem("lba:token")
-  return apiGet("/api/formulaire", {
-    querystring: { query },
+  return apiGet("/api/etablissement/cfa/:userRecruteurId/entreprises", {
+    params: {
+      userRecruteurId: cfaId,
+    },
     headers: {
       authorization: `Bearer ${token}`,
     },
@@ -30,7 +30,7 @@ export const getFormulaires = async (query) => {
 }
 
 export const getFormulaire = (establishment_id) => API.get(`/formulaire/${establishment_id}`).catch(errorHandler)
-export const postFormulaire = (form) => API.post(`/formulaire`, form).catch(errorHandler)
+export const postFormulaire = (form) => API.post(`/formulaire`, form)
 
 export const putFormulaire = (establishment_id, form) => API.put(`/formulaire/${establishment_id}`, form)
 export const archiveFormulaire = (establishment_id) => API.delete(`/formulaire/${establishment_id}`).catch(errorHandler)
