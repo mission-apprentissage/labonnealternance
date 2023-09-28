@@ -1,9 +1,6 @@
 import { Box, Button, Image } from "@chakra-ui/react"
 import React from "react"
 
-import domainErrorMainSvg from "./domain_error_main.svg"
-import domainErrorNoticeSvg from "./domain_error_notice.svg"
-
 const cssParameters = {
   padding: "1rem",
   background: "#fff1e5",
@@ -34,10 +31,10 @@ export default function DomainError({ position = undefined, setDomainError, setD
     return (
       <Box px={4} data-testid="domainError">
         <Box>
-          <Image src={domainErrorMainSvg} alt="" />
+          <Image src="/images/domain_error_main.svg" alt="" />
         </Box>
         <Box {...cssParameters} mb={2}>
-          <Image float="left" mr={2} src={domainErrorNoticeSvg} alt="" />
+          <Image float="left" mr={2} src="/images/domain_error_notice.svg" alt="" />
           Erreur technique momentanée
         </Box>
         <Box fontWeight={700}>Pas de panique !</Box>
@@ -55,7 +52,7 @@ export default function DomainError({ position = undefined, setDomainError, setD
     return (
       <Box data-testid="domainError">
         <Box {...cssParameters} mb={2} float="left">
-          <Image float="left" mr={2} src={domainErrorNoticeSvg} alt="" />
+          <Image float="left" mr={2} src="/images/domain_error_notice.svg" alt="" />
           Erreur technique momentanée
         </Box>
         <Box float="left" ml={8} mt={1} fontWeight={700}>

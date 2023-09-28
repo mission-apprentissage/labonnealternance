@@ -114,7 +114,7 @@ export const getEntrepriseOpco = async (siret) => {
   }
 }
 
-export const createPartenaire = (partenaire) => API.post("/etablissement/creation", partenaire)
+export const createEtablissement = (etablissement) => API.post("/etablissement/creation", etablissement)
 
 export const updatePartenaire = async (id, partenaire) => {
   const token = sessionStorage.getItem("lba:token")

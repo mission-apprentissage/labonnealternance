@@ -4,9 +4,6 @@ import React, { useContext, useEffect, useState } from "react"
 
 import { DisplayContext } from "../../context/DisplayContextProvider"
 import { SearchResultContext } from "../../context/SearchResultContextProvider"
-import academicCapIcon from "../../public/images/icons/training-academic-cap.svg"
-import targetIcon from "../../public/images/icons/training-target.svg"
-import clipboardListIcon from "../../public/images/icons/traning-clipboard-list.svg"
 import fetchInserJeuneStats from "../../services/fetchInserJeuneStats"
 import fetchPrdv from "../../services/fetchPrdv"
 import fetchTrainingDetails from "../../services/fetchTrainingDetails"
@@ -155,7 +152,7 @@ const getTrainingDetails = (training) => {
     <>
       {training.description && (
         <Flex alignItems="flex-start" mt={5}>
-          <Image src={clipboardListIcon} alt="" />
+          <Image src="/images/icons/traning-clipboard-list.svg" alt="" />
           <Box pl={4} whiteSpace="pre-wrap">
             <Text as="h3" mt="0" mb={4} fontWeight={700} color="grey.700">
               Description de la formation
@@ -169,7 +166,7 @@ const getTrainingDetails = (training) => {
 
       {training.objectif && (
         <Flex alignItems="flex-start" mt={10}>
-          <Image src={targetIcon} alt="" />
+          <Image src="/images/icons/training-target.svg" alt="" />
           <Box pl={4} whiteSpace="pre-wrap">
             <Text as="h3" mt="0" mb={4} fontWeight={700} color="grey.700">
               Objectifs
@@ -183,7 +180,7 @@ const getTrainingDetails = (training) => {
 
       {training["sessions"] && training["sessions"].length && (
         <Flex alignItems="flex-start" mt={10}>
-          <Image src={academicCapIcon} alt="" />
+          <Image src="/images/icons/training-academic-cap.svg" alt="" />
           <Box pl={4} whiteSpace="pre-wrap">
             <Text as="h3" mt="0" mb={4} fontWeight={700} color="grey.700">
               Sessions de formation
@@ -222,7 +219,7 @@ const getTrainingSessions = (training) => {
     return (
       sessions.length > 0 && (
         <Flex alignItems="flex-start" mt={10}>
-          <Image src={clipboardListIcon} alt="" />
+          <Image src="/images/icons/traning-clipboard-list.svg" alt="" />
           <Box pl={4} whiteSpace="pre-wrap">
             <Text as="h3" mt="0" mb={4} fontWeight={700} color="grey.700">
               Sessions

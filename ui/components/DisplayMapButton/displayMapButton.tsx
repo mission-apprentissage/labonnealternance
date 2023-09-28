@@ -5,8 +5,6 @@ import React, { useContext } from "react"
 import { DisplayContext } from "../../context/DisplayContextProvider"
 import { ParameterContext } from "../../context/ParameterContextProvider"
 import { ScopeContext } from "../../context/ScopeContext"
-import switchOffImage from "../../public/images/switch-off.svg"
-import switchOnImage from "../../public/images/switch-on.svg"
 import { currentSearch } from "../../utils/currentPage"
 import { refreshLocationMarkers } from "../../utils/mapTools"
 import pushHistory from "../../utils/pushHistory"
@@ -43,7 +41,7 @@ const DisplayMapButton = (props) => {
           <Text as="span" fontWeight={400} mr={8} mb="0" fontSize="1rem">
             Afficher la carte
           </Text>{" "}
-          <Image mb="2px" mr="5px" src={displayMap ? switchOnImage : switchOffImage} alt={`Cliquer pour ${displayMap ? "masquer" : "afficher"} la carte`} />
+          <Image mb="2px" mr="5px" src={displayMap ? "/images/switch-on.svg" : "/images/switch-off.svg"} alt={`Cliquer pour ${displayMap ? "masquer" : "afficher"} la carte`} />
         </Button>
       </FormControl>
     </Flex>

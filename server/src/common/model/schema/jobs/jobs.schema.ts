@@ -88,11 +88,6 @@ export const jobsSchema = new Schema<IJob>(
       default: null,
       description: "Definit si l'offre est diffusée sur d'autres jobboard que La bonne alternance",
     },
-    is_delegated: {
-      type: Boolean,
-      require: true,
-      description: "Definit si l'entreprise souhaite déléguer l'offre à un CFA",
-    },
     job_delegation_count: {
       type: Number,
       default: 0,

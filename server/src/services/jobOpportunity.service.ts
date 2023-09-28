@@ -94,9 +94,11 @@ export const getJobsFromApi = async ({
     ])
 
     if (peJobs) {
+      // @ts-expect-error: TODO
       return { peJobs, matchas, lbaCompanies, lbbCompanies: null }
     }
     if (matchas) {
+      // @ts-expect-error: TODO
       return { peJobs, matchas, lbaCompanies, lbbCompanies: null }
     }
     if (lbaCompanies) {

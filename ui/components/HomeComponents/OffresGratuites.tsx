@@ -1,8 +1,6 @@
 import { Box, Image, Link, SimpleGrid, Text } from "@chakra-ui/react"
 import React from "react"
 
-import plateformesjeunesImage from "../../public/images/home_pics/illu-plateformesjeunes.svg"
-
 const OffresGratuites = () => {
   return (
     <Box as="section" py={3} mb={{ base: "2", md: "5" }}>
@@ -29,7 +27,7 @@ const OffresGratuites = () => {
           </Box>
         </Box>
         <Box order={{ base: "-1", md: "1" }}>
-          <Image src={plateformesjeunesImage} alt="Plateforme jeune" />
+          <Image src="/images/home_pics/illu-plateformesjeunes.svg" alt="Plateforme jeune" />
         </Box>
       </SimpleGrid>
     </Box>

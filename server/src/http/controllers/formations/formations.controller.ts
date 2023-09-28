@@ -45,7 +45,6 @@ export default (server: Server) => {
           response: "OK",
         })
       }
-
       return res.send(result)
     }
   )

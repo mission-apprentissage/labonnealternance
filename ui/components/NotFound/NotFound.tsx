@@ -1,7 +1,6 @@
 import { Box, Flex, Grid, GridItem, Image, Link, Text } from "@chakra-ui/react"
 import React from "react"
 
-import lostCat from "../../public/images/lostCat.svg"
 import Footer from "../footer"
 
 const NotFound = () => (
@@ -9,7 +8,7 @@ const NotFound = () => (
     <Flex alignItems="center" flex={1} textAlign="center">
       <Grid templateColumns="repeat(2, 1fr)" gap={4}>
         <GridItem display="inline-grid" colSpan={{ base: 2, lg: 1 }} order={{ base: -1, lg: 1 }}>
-          <Image src={lostCat} alt="" width="75%" />
+          <Image src="/images/lostCat.svg" alt="" width="75%" />
         </GridItem>
         <GridItem display="inline-grid" colSpan={{ base: 2, lg: 1 }}>
           <Text as="h1" fontSize={{ base: "54px", md: "76px" }} mt={{ base: 4, md: 0 }}>

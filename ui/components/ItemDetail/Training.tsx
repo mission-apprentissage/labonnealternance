@@ -4,7 +4,6 @@ import React, { useContext, useState } from "react"
 import { DisplayContext } from "../../context/DisplayContextProvider"
 import { ScopeContext } from "../../context/ScopeContext"
 import { SearchResultContext } from "../../context/SearchResultContextProvider"
-import extendedSearchPin from "../../public/images/icons/jobPin.svg"
 import { fetchAddresses } from "../../services/baseAdresse"
 import { getItemQueryParameters } from "../../utils/getItemId"
 import { getSearchQueryParameters } from "../../utils/getSearchParameters"
@@ -41,7 +40,7 @@ const Training = ({ training, handleSelectItem, showTextOnly = undefined, search
   const getCenterSearchOnTrainingButton = () => {
     return (
       <Button variant="centerSearch" color="#ff8d7e" title="Voir les entreprises proches" onClick={centerSearchOnTraining}>
-        <Image mb="2px" mr="5px" src={extendedSearchPin} alt="" />{" "}
+        <Image mb="2px" mr="5px" src="/images/icons/jobPin.svg" alt="" />{" "}
         <Text textDecoration="underline" as="span">
           Voir les entreprises proches
         </Text>

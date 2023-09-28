@@ -7,15 +7,12 @@ export const getEmailDomain = (email: string) => {
 
 /**
  * @description Check if an email is included in the provided array
- * @param {object[]} contactList
- * @param {string} userEmail
- * @returns {boolean}
  */
-export const isUserMailExistInReferentiel = (contactList, userEmail): boolean => contactList.map((x) => x.email.toLowerCase()).includes(userEmail.toLowerCase())
+export const isUserMailExistInReferentiel = (contactList: { email: string }[], userEmail: string): boolean =>
+  contactList.map((x) => x.email.toLowerCase()).includes(userEmail.toLowerCase())
 
 /**
  * @description get all domains from an array of emails
- * @param {object[]} contactList
  * @returns {string[]}
  */
 export const getAllDomainsFromEmailList = (contactList: string[]) => {
@@ -33,5 +30,5 @@ export const isEmailFromPrivateCompany = (userEmail: string) => mailController.i
 
 export const isEmailSameDomain = (email1: string, email2: string) => {
   const domain1 = getEmailDomain(email1)
-  return domain1 && getEmailDomain(email2) === domain1
+  return Boolean(domain1 && getEmailDomain(email2) === domain1)
 }

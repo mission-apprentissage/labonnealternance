@@ -41,7 +41,6 @@ export const ZJobWithoutId = z
     job_status_comment: z.string().nullish().describe("Raison de la suppression de l'offre"),
     job_type: z.array(z.enum(["Apprentissage", "Professionnalisation"])).describe("Type de contrat"),
     is_multi_published: z.boolean().nullish().describe("Definit si l'offre est diffusée sur d'autres jobboard que La bonne alternance"),
-    is_delegated: z.boolean().describe("Definit si l'entreprise souhaite déléguer l'offre à un CFA"),
     job_delegation_count: z.number().nullable().describe("Nombre de délégations"),
     delegations: z.array(ZDelegation).nullish().describe("Liste des délégations"),
     is_disabled_elligible: z.boolean().describe("Poste ouvert aux personnes en situation de handicap"),

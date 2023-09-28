@@ -1,4 +1,5 @@
 import axios, { AxiosResponse } from "axios"
+import Boom from "boom"
 import { pick } from "lodash-es"
 import { Filter } from "mongodb"
 import { IEtablissement, ILbaCompany, IRecruiter, IUserRecruteur } from "shared"
@@ -517,16 +518,20 @@ export const getEntrepriseDataFromSiret = async ({ siret, cfa_delegated_siret }:
 export const getOrganismeDeFormationDataFromSiret = async (siret: string) => {
   const cfaUserRecruteurOpt = await getEtablissement({ establishment_siret: siret, type: CFA })
   if (cfaUserRecruteurOpt) {
-    return errorFactory("EXIST", BusinessErrorCodes.ALREADY_EXISTS)
+    throw Boom.forbidden("Ce numéro siret est déjà associé à un compte utilisateur.", { reason: "EXIST" })
   }
   const referentiel = await getEtablissementFromReferentiel(siret)
   if (!referentiel) {
-    return errorFactory("UNKNOWN")
+    throw Boom.badRequest("Le numéro siret n'est pas référencé comme centre de formation.", { reason: "UNKNOWN" })
   }
   if (referentiel.etat_administratif === "fermé") {
-    return errorFactory("CLOSED")
+    throw Boom.badRequest("Le numéro siret indique un établissement fermé.", { reason: "CLOSED" })
   }
-  return formatReferentielData(referentiel)
+  const formattedReferentiel = formatReferentielData(referentiel)
+  if (!formattedReferentiel.is_qualiopi) {
+    throw Boom.badRequest("L’organisme rattaché à ce SIRET n’est pas certifié Qualiopi", { reason: "QUALIOPI", ...formattedReferentiel })
+  }
+  return formattedReferentiel
 }
 
 export const entrepriseOnboardingWorkflow = {

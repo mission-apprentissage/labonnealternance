@@ -14,7 +14,6 @@ import {
   etablissementUnsubscribeDemandeDelegation,
   getEntrepriseDataFromSiret,
   getEtablissement,
-  getEtablissementFromReferentiel,
   getOpcoData,
   getOrganismeDeFormationDataFromSiret,
   sendUserConfirmationEmail,
@@ -45,7 +44,7 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { latitude, longitude, rome } = req.query
-      const etablissements = await getNearEtablissementsFromRomes({ rome, origin: { latitude: latitude, longitude: longitude } })
+      const etablissements = await getNearEtablissementsFromRomes({ rome: [rome], origin: { latitude: latitude, longitude: longitude } })
       res.send(etablissements)
     }
   )
@@ -79,9 +78,7 @@ export default (server: Server) => {
             })
           }
           default: {
-            throw Boom.badRequest(result.message, {
-              isCfa: true,
-            })
+            throw Boom.badRequest(result.message)
           }
         }
       } else {
@@ -112,7 +109,7 @@ export default (server: Server) => {
   )
 
   /**
-   * Récupération des informations d'un établissement à l'aide des tables de correspondances et du référentiel
+   * Récupération des informations d'un cfa à l'aide des tables de correspondances et du référentiel
    */
   server.get(
     "/api/etablissement/cfa/:siret",
@@ -125,16 +122,8 @@ export default (server: Server) => {
         throw Boom.badRequest("Le numéro siret est obligatoire.")
       }
       const response = await getOrganismeDeFormationDataFromSiret(siret)
-      if ("error" in response) {
-        const { message, errorCode } = response
-        if (errorCode === BusinessErrorCodes.ALREADY_EXISTS) throw Boom.forbidden("Ce numéro siret est déjà associé à un compte utilisateur.", { reason: message })
-        if (message === "CLOSED") throw Boom.badRequest("Le numéro siret indique un établissement fermé.", { reason: message })
-        if (message === "UNKNOWN") throw Boom.badRequest("Le numéro siret n'est pas référencé comme centre de formation.", { reason: message })
-      } else if (!response.is_qualiopi) {
-        throw Boom.badRequest("L’organisme rattaché à ce SIRET n’est pas certifié Qualiopi", { reason: "QUALIOPI", data: response })
-      } else {
-        return res.status(200).send(response)
-      }
+      // @ts-expect-error: TODO
+      return res.status(200).send(response)
     }
   )
 
@@ -155,6 +144,7 @@ export default (server: Server) => {
       }
       const cfa_delegated_siret = cfa.establishment_siret
       const entreprises = await Recruiter.find({ status: { $in: [RECRUITER_STATUS.ACTIF, RECRUITER_STATUS.EN_ATTENTE_VALIDATION] }, cfa_delegated_siret }).lean()
+      // @ts-expect-error: TODO
       return res.status(200).send(entreprises)
     }
   )
@@ -171,7 +161,8 @@ export default (server: Server) => {
       switch (req.body.type) {
         case ENTREPRISE: {
           const siret = req.body.establishment_siret
-          const result = await entrepriseOnboardingWorkflow.create({ ...req.body, siret })
+          const cfa_delegated_siret = req.body.cfa_delegated_siret ?? undefined
+          const result = await entrepriseOnboardingWorkflow.create({ ...req.body, siret, cfa_delegated_siret })
           if ("error" in result) {
             if (result.errorCode === BusinessErrorCodes.ALREADY_EXISTS) throw Boom.forbidden(result.message)
             else throw Boom.badRequest(result.message)
@@ -186,11 +177,14 @@ export default (server: Server) => {
           if (userRecruteurOpt) {
             throw Boom.forbidden("L'adresse mail est déjà associée à un compte La bonne alternance.")
           }
-          // Contrôle du mail avec le référentiel :
-          const referentiel = await getEtablissementFromReferentiel(establishment_siret)
+
+          const siretInfos = await getOrganismeDeFormationDataFromSiret(establishment_siret)
+          const { contacts } = siretInfos
+
           // Creation de l'utilisateur en base de données
-          let newCfa: IUserRecruteur = await createUser(req.body)
-          if (!referentiel?.contacts.length) {
+          let newCfa: IUserRecruteur = await createUser({ ...req.body, ...siretInfos })
+
+          if (!contacts.length) {
             // Validation manuelle de l'utilisateur à effectuer pas un administrateur
             newCfa = await setUserHasToBeManuallyValidated(newCfa._id)
             await notifyToSlack({
@@ -199,7 +193,7 @@ export default (server: Server) => {
             })
             return res.status(200).send({ user: newCfa })
           }
-          if (isUserMailExistInReferentiel(referentiel.contacts, email)) {
+          if (isUserMailExistInReferentiel(contacts, email)) {
             // Validation automatique de l'utilisateur
             newCfa = await autoValidateUser(newCfa._id)
             const { email, _id, last_name, first_name } = newCfa
@@ -213,7 +207,7 @@ export default (server: Server) => {
             return res.status(200).send({ user: newCfa })
           }
           if (isEmailFromPrivateCompany(formatedEmail)) {
-            const domains = getAllDomainsFromEmailList(referentiel.contacts.map(({ email }) => email))
+            const domains = getAllDomainsFromEmailList(contacts.map(({ email }) => email))
             const userEmailDomain = getEmailDomain(formatedEmail)
             if (userEmailDomain && domains.includes(userEmailDomain)) {
               // Validation automatique de l'utilisateur

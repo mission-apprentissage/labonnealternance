@@ -3,8 +3,6 @@ import React from "react"
 
 import { DisplayContext } from "../../context/DisplayContextProvider"
 import { SearchResultContext } from "../../context/SearchResultContextProvider"
-import lookingGlassOnMap from "../../public/images/glass.svg"
-import refreshSearchOnMap from "../../public/images/icons/refreshSearchOnMap.svg"
 
 const MapSearchButton = ({ handleSearchClick }) => {
   const { formValues } = React.useContext(DisplayContext)
@@ -39,14 +37,14 @@ const MapSearchButton = ({ handleSearchClick }) => {
         <Flex alignItems="center">
           {formValues ? (
             <>
-              <Image src={refreshSearchOnMap} alt="" />
+              <Image src="/images/icons/refreshSearchOnMap.svg" alt="" />
               <Text as="span" marginLeft={2}>
                 Rechercher dans cette zone
               </Text>
             </>
           ) : (
             <>
-              <Image src={lookingGlassOnMap} alt="" />
+              <Image src="/images/glass.svg" alt="" />
               <Text as="span" marginLeft={2}>
                 Lancer une recherche
               </Text>

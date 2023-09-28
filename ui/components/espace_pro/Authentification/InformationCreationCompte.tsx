@@ -9,7 +9,7 @@ import { phoneValidation } from "../../../common/validation/fieldValidations"
 import { WidgetContext } from "../../../context/contextWidget"
 import { ArrowRightLine } from "../../../theme/components/icons"
 import logosOpco from "../../../theme/components/logos_pro/logosOpco"
-import { createPartenaire } from "../../../utils/api"
+import { createEtablissement } from "../../../utils/api"
 import { OpcoSelect } from "../CreationRecruteur/OpcoSelect"
 import { AnimationContainer, AuthentificationLayout, ConfirmationCreationCompte, CustomInput, InformationLegaleEntreprise, InformationOpco } from "../index"
 
@@ -153,13 +153,16 @@ export const InformationCreationCompte = () => {
   const validationPopup = useDisclosure()
   const [popupData, setPopupData] = useState({})
 
-  const { type, informationSiret: informationSiretString }: { type: string; informationSiret: string } = router.query as any
+  const { type, informationSiret: informationSiretString }: { type: "CFA" | "ENTREPRISE"; informationSiret: string } = router.query as any
   const informationSiret = JSON.parse(informationSiretString || "{}")
   const { establishment_siret } = informationSiret
 
   const submitForm = (values, { setSubmitting, setFieldError }) => {
-    // save info if not trusted from source
-    createPartenaire({ ...values, type, establishment_siret })
+    const payload = { ...values, type, establishment_siret }
+    if (type === "CFA") {
+      delete payload.opco
+    }
+    createEtablissement(payload)
       .then(({ data }) => {
         if (data.user.status[0].status === "VALIDÉ") {
           if (data.user.type === AUTHTYPE.ENTREPRISE) {
