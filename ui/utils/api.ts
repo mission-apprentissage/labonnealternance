@@ -8,7 +8,7 @@ const API = Axios.create({
   baseURL: `${publicConfig.baseUrl}/api`,
 })
 
-const errorHandler = (error) => {
+const errorHandler = (error: any): undefined => {
   if (error) {
     console.error("Erreur de l'API :", error)
   }
