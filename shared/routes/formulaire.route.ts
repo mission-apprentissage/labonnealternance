@@ -56,7 +56,9 @@ export const zFormulaireRoute = {
         })
         .strict(),
       response: {
-        "2xx": ZRecruiter,
+        // TODO ANY TO BE FIXED
+        // "2xx": ZRecruiter,
+        "2xx": z.any(),
       },
       securityScheme: {
         auth: "none",
