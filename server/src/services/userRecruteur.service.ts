@@ -246,7 +246,6 @@ export const getActiveUsers = () =>
 
 export const getAwaitingUsers = () =>
   UserRecruteur.find({
-    establishment_raison_sociale: { $nin: [null, ""] },
     $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, ETAT_UTILISATEUR.ATTENTE] },
     $or: [{ type: CFA }, { type: ENTREPRISE }],
   })
