@@ -411,7 +411,6 @@ export default (server: Server) => {
       if ("matchas" in result) {
         const { matchas } = result
         if (matchas && "results" in matchas) {
-          // @ts-expect-error: TODO
           matchas.results.map((matchaOffre) => matchaOffre?.job?.id && addOffreSearchView(matchaOffre.job.id))
         }
       }

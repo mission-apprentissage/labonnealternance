@@ -4,8 +4,6 @@ import React, { useState } from "react"
 
 import { DisplayContext } from "../../context/DisplayContextProvider"
 import { SearchResultContext } from "../../context/SearchResultContextProvider"
-import eclair from "../../public/images/eclair.svg"
-import extendedSearchPin from "../../public/images/icons/trainingPin.svg"
 import { fetchAddresses } from "../../services/baseAdresse"
 import { getItemQueryParameters } from "../../utils/getItemId"
 import { getSearchQueryParameters } from "../../utils/getSearchParameters"
@@ -30,7 +28,7 @@ const LbbCompany = ({ company, handleSelectItem, showTextOnly = undefined, searc
   const getCenterSearchOnCompanyButton = () => {
     return (
       <Button variant="centerSearch" title="Voir les formations proches" color="#01ac8c" onClick={centerSearchOnCompany}>
-        <Image mb="2px" mr="5px" src={extendedSearchPin} alt="" />{" "}
+        <Image mb="2px" mr="5px" src="/images/icons/trainingPin.svg" alt="" />{" "}
         <Text textDecoration="underline" as="span">
           Voir les formations proches
         </Text>
@@ -148,7 +146,7 @@ const LbbCompany = ({ company, handleSelectItem, showTextOnly = undefined, searc
             {!showTextOnly && (
               <Flex mt={4} alignItems="center">
                 <Flex alignItems="center">
-                  <Image mr={1} src={eclair} alt="" />
+                  <Image mr={1} src="/images/eclair.svg" alt="" />
                   <Text color="#0063CB" display="flex" fontSize="12px" whiteSpace="nowrap" mr={2}>
                     {company.applicationCount} candidature(s)
                   </Text>

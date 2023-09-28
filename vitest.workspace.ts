@@ -4,7 +4,7 @@ import { defineWorkspace } from "vitest/config"
 
 export default defineWorkspace([
   {
-    // @ts-ignore
+    // @ts-expect-error
     plugins: [tsconfigPaths()],
     test: {
       name: "server",
