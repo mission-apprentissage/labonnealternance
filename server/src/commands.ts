@@ -158,6 +158,13 @@ program.command("migrations:status").description("Check migrations status").acti
 
 program.command("migrations:create").description("Run migrations create").requiredOption("-d, --description <string>", "description").action(createJobAction("migrations:create"))
 
+// Temporaire, one shot à executer en recette et prod
+program
+  .command("migration:remove-delegated-from-jobs")
+  .description("Retirer le champ is_delegated des offres")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("migration:remove-delegated-from-jobs"))
+
 program
   .command("indexes:create")
   .description("Creation des indexes mongo")
