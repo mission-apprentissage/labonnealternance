@@ -324,7 +324,7 @@ export default (server: Server) => {
       await provideOffre(jobId)
 
       res.status(200)
-      return res.send()
+      return res.send({})
     }
   )
 
@@ -354,7 +354,7 @@ export default (server: Server) => {
       await cancelOffre(jobId)
 
       res.status(200)
-      return res.send()
+      return res.send({})
     }
   )
 
@@ -389,7 +389,7 @@ export default (server: Server) => {
       await extendOffre(jobId)
 
       res.status(200)
-      return res.send()
+      return res.send({})
     }
   )
   // @OperationId("getJobOpportunities")
@@ -503,7 +503,7 @@ export default (server: Server) => {
     async (req, res) => {
       const { id } = req.params
       await addOffreDetailView(id)
-      return res.send()
+      return res.send({})
     }
   )
 

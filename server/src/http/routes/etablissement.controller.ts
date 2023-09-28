@@ -39,7 +39,7 @@ export default (server: Server) => {
       const etablissement = await Etablissement.findById(req.params.id)
 
       if (!etablissement) {
-        return res.status(404).send()
+        return res.status(404).send({})
       }
 
       return res.send(etablissement)
@@ -475,11 +475,11 @@ export default (server: Server) => {
       let etablissement = await Etablissement.findById(req.params.id)
 
       if (!etablissement) {
-        return res.status(404).send()
+        return res.status(404).send({})
       }
 
       if (etablissement.optout_refusal_date) {
-        return res.status(400).send()
+        return res.status(400).send({})
       }
 
       if (opt_out_question) {

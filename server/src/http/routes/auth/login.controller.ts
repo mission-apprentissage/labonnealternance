@@ -56,7 +56,7 @@ export default (server: Server) => {
           lastName: last_name,
           userRecruteurId: _id,
         })
-        return res.status(200).send()
+        return res.status(200).send({})
       } catch (error) {
         return res.status(400).send({
           errorMessage: "l'adresse mail n'est pas valide.",
@@ -128,7 +128,7 @@ export default (server: Server) => {
           connexion_url: magiclink,
         },
       })
-      return res.status(200).send()
+      return res.status(200).send({})
     }
   )
 
