@@ -21,6 +21,7 @@ const ZLbaItemPlace = z
       .nullish(), // adresse postale reconstruite à partir des éléments d'adresse fournis | matcha -> adresse | formation -> lieu_formation_adresse + code_postal + localite OU etablissement_formateur_adresse + ...complement_adresse + ...code_postal + ...localite + ...cedex OU etablissement_gestionnaire_adresse + ...complement_adresse + ...localite + ...cedex
     latitude: z
       .number()
+      .nullable()
       .openapi({
         example: 48.845,
         description: "La latitude du lieu",
@@ -28,6 +29,7 @@ const ZLbaItemPlace = z
       .optional(), // formation -> lieu_formation_geo_coordonnees | pe -> lieuTravail.latitude | lbb/lba -> geo_coordinates | matcha -> geo_coordonnees
     longitude: z
       .number()
+      .nullable()
       .openapi({
         example: 2.3752,
         description: "La longitude du lieu",
