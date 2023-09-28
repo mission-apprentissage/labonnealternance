@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-PROPS=$(curl -s https://{{dns_name}}/metabase/api/session/properties)
+PROPS=$(curl -sS https://{{dns_name}}/metabase/api/session/properties)
 IS_SETUP=$(echo $PROPS | jq -r '."has-user-setup"')
 
 if [[ $IS_SETUP == "true" ]]; then
