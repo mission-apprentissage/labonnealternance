@@ -2,7 +2,7 @@ import { z } from "zod"
 
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { zEtablissementCatalogue } from "../interface/etablissement.types"
-import { ZGlobalAddress, ZRecruiter } from "../models"
+import { ZGlobalAddress } from "../models"
 import { zCFA } from "../models/cfa.model"
 import { zObjectId } from "../models/common"
 import { ZUserRecruteur } from "../models/usersRecruteur.model"
@@ -21,8 +21,7 @@ const zShalowUser = ZUserRecruteur.pick({
 
 export const zRecruiterRoutes = {
   get: {
-    "/api/etablissement/cfa/rome": {
-      // TODO rename route for better undeurestandingue
+    "/api/etablissement/cfas-proches": {
       querystring: z
         .object({
           latitude: z.coerce.number(),

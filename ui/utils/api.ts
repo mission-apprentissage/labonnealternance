@@ -126,7 +126,8 @@ export const updatePartenaire = async (id, partenaire) => {
 }
 
 export const getRomeDetail = (rome) => API.get(`/rome/detail/${rome}`)
-export const getRelatedEtablissementsFromRome = ({ rome, latitude, longitude }) => API.get(`/etablissement/cfa/rome?rome=${rome}&latitude=${latitude}&longitude=${longitude}`)
+export const getRelatedEtablissementsFromRome = ({ rome, latitude, longitude }: { rome: string; latitude: number; longitude: number }) =>
+  API.get(`/etablissement/cfas-proches?rome=${rome}&latitude=${latitude}&longitude=${longitude}`)
 export const validateOptOutToken = (token) =>
   API.get(`/optout/validate`, {
     headers: {

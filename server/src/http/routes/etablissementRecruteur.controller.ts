@@ -31,36 +31,19 @@ import {
 } from "../../services/userRecruteur.service"
 import { Server } from "../server"
 
-const getCfaRomeSchema = joi.object({
-  latitude: joi.number().required(),
-  longitude: joi.number().required(),
-  rome: joi.string(),
-})
-
 export default (server: Server) => {
   /**
    * Retourne la liste de tous les CFA ayant une formation avec les ROME passés..
    * Resultats triés par proximité (km).
    */
   server.get(
-    "/api/etablissement/cfa/rome",
+    "/api/etablissement/cfas-proches",
     {
-      schema: zRoutes.get["/api/etablissement/cfa/rome"],
+      schema: zRoutes.get["/api/etablissement/cfas-proches"],
     },
     async (req, res) => {
       const { latitude, longitude, rome } = req.query
-
-      await getCfaRomeSchema.validateAsync(
-        {
-          latitude: latitude,
-          longitude: longitude,
-          rome,
-        },
-        { abortEarly: false }
-      )
-
       const etablissements = await getNearEtablissementsFromRomes({ rome, origin: { latitude: latitude, longitude: longitude } })
-
       res.send(etablissements)
     }
   )
