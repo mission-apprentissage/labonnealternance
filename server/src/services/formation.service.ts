@@ -429,11 +429,13 @@ const transformFormationForIdea = (rawFormation: IFormationEsResult): ILbaItemFo
           }`,
           cedex: rawFormation.source.etablissement_gestionnaire_cedex,
           zipCode: rawFormation.source.etablissement_gestionnaire_code_postal,
+          // @ts-expect-error: TODO
           city: rawFormation.source.etablissement_gestionnaire_localite,
         },
         name: rawFormation.source.etablissement_gestionnaire_entreprise_raison_sociale ?? null,
       },
       place: {
+        // @ts-expect-error: TODO
         city: rawFormation.source.etablissement_formateur_localite,
       },
     },
@@ -444,6 +446,7 @@ const transformFormationForIdea = (rawFormation: IFormationEsResult): ILbaItemFo
     cfd: rawFormation.source.cfd ?? null,
     rncpCode: rawFormation.source.rncp_code ?? null,
     rncpLabel: rawFormation.source.rncp_intitule ?? null,
+    // @ts-expect-error: TODO
     rncpEligibleApprentissage: rawFormation.source.rncp_eligible_apprentissage,
     period: null,
     capacity: rawFormation.source.capacite ?? null,

@@ -46,7 +46,7 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { latitude, longitude, rome } = req.query
-      const etablissements = await getNearEtablissementsFromRomes({ rome, origin: { latitude: latitude, longitude: longitude } })
+      const etablissements = await getNearEtablissementsFromRomes({ rome: [rome], origin: { latitude: latitude, longitude: longitude } })
       res.send(etablissements)
     }
   )
@@ -134,6 +134,7 @@ export default (server: Server) => {
       } else if (!response.is_qualiopi) {
         throw Boom.badRequest("L’organisme rattaché à ce SIRET n’est pas certifié Qualiopi", { reason: "QUALIOPI", data: response })
       } else {
+        // @ts-expect-error: TODO
         return res.status(200).send(response)
       }
     }
@@ -156,6 +157,7 @@ export default (server: Server) => {
       }
       const cfa_delegated_siret = cfa.establishment_siret
       const entreprises = await Recruiter.find({ status: { $in: [RECRUITER_STATUS.ACTIF, RECRUITER_STATUS.EN_ATTENTE_VALIDATION] }, cfa_delegated_siret }).lean()
+      // @ts-expect-error: TODO
       return res.status(200).send(entreprises)
     }
   )
