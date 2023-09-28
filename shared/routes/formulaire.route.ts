@@ -1,4 +1,4 @@
-import { z } from "zod"
+import { optional, z } from "zod"
 
 import { zObjectId } from "../models/common"
 import {
@@ -53,8 +53,8 @@ export const zFormulaireRoute = {
           last_name: z.string(),
           first_name: z.string(),
           phone: z.string(),
-          opco: z.string(),
-          idcc: z.string(),
+          opco: z.string().optional(),
+          idcc: z.string().nullish().optional(),
         })
         .strict(),
       response: {

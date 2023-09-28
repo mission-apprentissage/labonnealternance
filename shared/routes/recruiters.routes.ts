@@ -137,7 +137,12 @@ export const zRecruiterRoutes = {
     "/api/etablissement/cfa/:userRecruteurId/entreprises": {
       params: z.object({ userRecruteurId: zObjectId }).strict(),
       response: {
-        "200": z.array(ZRecruiter),
+        "200": z.array(
+          ZRecruiter.extend({
+            createdAt: z.date(),
+            updatedAt: z.date(),
+          })
+        ),
       },
       securityScheme: {
         auth: "jwt-bearer",
