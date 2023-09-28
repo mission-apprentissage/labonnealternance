@@ -79,8 +79,8 @@ export const ZRomeDetail = z
           typeCompetence: z.string(),
           riasecMineur: z.string().nullish(),
           riasecMajeur: z.string().nullish(),
-          competenceCle: z.boolean(),
-          frequence: z.number(),
+          competenceCle: z.boolean().nullish(),
+          frequence: z.number().nullish(),
         })
         .strict()
     ),
