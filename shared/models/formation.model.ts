@@ -1,7 +1,5 @@
 import { z } from "zod"
 
-import { zAppointmentsRoute } from "../routes/appointments.routes"
-
 import { ZAppointment } from "./appointments.model"
 import { zObjectId } from "./common"
 
