@@ -16,7 +16,7 @@ import { notifyToSlack } from "../common/utils/slackUtils"
 import config from "../config"
 
 import type { IFormationEsResult } from "./formation.service.types"
-import type { ILbaItem, ILbaItemFormation, ILbaItemTrainingSession } from "./lbaitem.shared.service.types"
+import type { ILbaItemFormation, ILbaItemTrainingSession } from "./lbaitem.shared.service.types"
 import { formationsQueryValidator, formationsRegionQueryValidator } from "./queryValidator.service"
 
 const formationResultLimit = 500
@@ -177,8 +177,6 @@ const getFormation = async ({ id }: { id: string; caller?: string }): Promise<IF
 
 /**
  * Retourne une formation du catalogue transformée en LbaItem
- * @param {string} id l'identifiant de la formation
- * @returns {Promise<ILbaItem[]>}
  */
 const getOneFormationFromId = async ({ id }: { id: string }): Promise<ILbaItemFormation[]> => {
   const rawEsFormations = await getFormation({ id })
@@ -366,8 +364,6 @@ export const deduplicateFormations = (formations: IFormationEsResult[]): IFormat
 
 /**
  * Retourne un ensemble de formations LbaItem à partir de formations issues d'elasticsearch ou de la mongo
- * @param {IFormationEsResult[]} rawEsFormations formations issues de la mongo ou de l'elasticsearch
- * @returns {ILbaItem[]}
  */
 const transformFormationsForIdea = (rawEsFormations: IFormationEsResult[]): ILbaItemFormation[] => {
   const formations: ILbaItemFormation[] = []
@@ -383,8 +379,6 @@ const transformFormationsForIdea = (rawEsFormations: IFormationEsResult[]): ILba
 
 /**
  * Adaptation au modèle LBAC et conservation des seules infos utilisées des formations
- * @param {IFormationEsResult} rawFormation formation brute issue de la mongo ou de l'ES
- * @return {ILbaItem}
  */
 const transformFormationForIdea = (rawFormation: IFormationEsResult): ILbaItemFormation => {
   const geoSource = rawFormation.source.lieu_formation_geo_coordonnees
@@ -552,7 +546,7 @@ export const getFormationsQuery = async ({
   options?: string
   referer?: string
   api?: string
-}): Promise<IApiError | { results: ILbaItem[] }> => {
+}): Promise<IApiError | { results: ILbaItemFormation[] }> => {
   const parameterControl = await formationsQueryValidator({ romes, longitude, latitude, radius, diploma, romeDomain, caller, referer })
 
   if ("error" in parameterControl) {
@@ -584,11 +578,8 @@ export const getFormationsQuery = async ({
 /**
  * Retourne une formation identifiée par son id
  * TODO: passer directement du controller à getOneFormationFromId
- * @param {string} id l'identifiant de la formation (clef ministère éducatif)
- * @param {string} caller l'identifiant de l'appelant de l'api
- * @returns {Promise<IApiError | { results: ILbaItem[] }>}
  */
-export const getFormationQuery = async ({ id, caller }: { id: string; caller?: string }): Promise<IApiError | { results: ILbaItem[] }> => {
+export const getFormationQuery = async ({ id, caller }: { id: string; caller?: string }): Promise<IApiError | { results: ILbaItemFormation[] }> => {
   try {
     const formation = await getOneFormationFromId({ id })
     return {
@@ -650,7 +641,6 @@ const removeEmailFromLBFData = (data: any): any => {
 
 /**
  * Récupère depuis l'api LBF des éléments de description indisponibles depuis le catalogue
- * @param {string} id l'identifiant de la formation chez LBF (id RCO)
  * @returns {Promise<IApiError | any>}
  */
 export const getFormationDescriptionQuery = async ({ id }: { id: string }): Promise<IApiError | any> => {
@@ -671,8 +661,6 @@ export const getFormationDescriptionQuery = async ({ id }: { id: string }): Prom
 /**
  * Retourne les formations matchant les critères dans la requête
  * TODO: déporter les ctrls dans le controller, appeler directement getRegionFormations depuis le controller
- * @param {any} query la requête http
- * @returns {Promise< IApiError | ILbaItem[] >}
  */
 export const getFormationsParRegionQuery = async ({
   romes,
@@ -692,7 +680,7 @@ export const getFormationsParRegionQuery = async ({
   caller?: string
   options?: string
   referer?: string
-}): Promise<IApiError | { results: ILbaItem[] }> => {
+}): Promise<IApiError | { results: ILbaItemFormation[] }> => {
   const queryValidationResult = formationsRegionQueryValidator({ romes, departement, region, diploma, romeDomain, caller, referer })
 
   if ("error" in queryValidationResult) {
@@ -817,10 +805,8 @@ const getEsRegionTermFragment = (region: string): object => {
 /**
  * tri alphabétique de formations sur le title (primaire) ou le company.name (secondaire )
  * lorsque les formations ne sont pas déjà triées sur la distance par rapport à un point de recherche
- * @param {ILbaItem[]} formations tableau de formations converties au format unifié
- * @return
  */
-const sortFormations = (formations: ILbaItem[]) => {
+const sortFormations = (formations: ILbaItemFormation[]) => {
   formations.sort((a, b) => {
     if (a?.place?.distance !== null) {
       return 0
@@ -841,8 +827,6 @@ const sortFormations = (formations: ILbaItem[]) => {
 
 /**
  * Retourne l'email le plus présent parmi toutes les formations du catalogue ayant un même "etablissement_formateur_siret".
- * @param {string} etablissement_formateur_siret
- * @return {Promise<string | null>}
  */
 export const getMostFrequentEmailByLieuFormationSiret = async (etablissement_formateur_siret: string | undefined): Promise<string | null> => {
   const formations = await FormationCatalogue.find(

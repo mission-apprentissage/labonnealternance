@@ -8,7 +8,7 @@ import { trackApiCall } from "../common/utils/sendTrackingEvent"
 import { IApplicationCount, getApplicationByJobCount } from "./application.service"
 import { JOB_STATUS, NIVEAUX_POUR_LBA, RECRUITER_STATUS } from "./constant.service"
 import { getJobsFromElasticSearch, getOffreAvecInfoMandataire, incrementLbaJobViewCount } from "./formulaire.service"
-import type { ILbaItem } from "./lbaitem.shared.service.types"
+import { ILbaItemLbaJob } from "./lbaitem.shared.service.types"
 import type { ILbaJobEsResult } from "./lbajob.service.types"
 import { filterJobsByOpco } from "./opco.service"
 
@@ -85,10 +85,10 @@ export const getLbaJobs = async ({
  * @param {ILbaJobEsResult[]} jobs offres issues de l'elasticsearch ou de la mogon
  * @param {string} caller l'identifiant de l'utilisateur de l'api
  * @param {IApplicationCount[]} applicationCountByJob les décomptes de candidatures par identifiant d'offres
- * @returns {{ results: ILbaItem[] }}
+ * @returns {{ results: ILbaItemLbaJob[] }}
  */
 function transformLbaJobs({ jobs, caller, applicationCountByJob }: { jobs: ILbaJobEsResult[]; caller?: string; applicationCountByJob: IApplicationCount[] }): {
-  results: ILbaItem[]
+  results: ILbaItemLbaJob[]
 } {
   return {
     results: jobs.flatMap((job) =>
@@ -136,11 +136,6 @@ export const getLbaJobById = async ({ id, caller }: { id: string; caller?: strin
 
 /**
  * Adaptation au modèle LBAC et conservation des seules infos utilisées de l'offre
- * @param {Partial<IRecruiter>} job l'offre retournée d'ES ou de la mongo
- * @param {number} distance optionnel: la distance du lieu de l'offre au centre de la recherche
- * @param {string} caller optionnel: l'id de l'utilisateur de l'api
- * @param {IApplicationCount[]} applicationCountByJob le tableau des décomptes de candidatures par offre
- * @returns {ILbaItem[]}
  */
 function transformLbaJob({
   job,
@@ -152,12 +147,12 @@ function transformLbaJob({
   distance?: number
   caller?: string
   applicationCountByJob: IApplicationCount[]
-}): ILbaItem[] {
+}): ILbaItemLbaJob[] {
   if (!job.jobs) {
     return []
   }
 
-  return job.jobs.map((offre, idx): ILbaItem => {
+  return job.jobs.map((offre, idx): ILbaItemLbaJob => {
     const email = encryptMailWithIV({ value: job.email, caller })
     const applicationCountForCurrentJob = applicationCountByJob.find((job) => job._id.toString() === offre._id.toString())
     const romes = offre.rome_code.map((code) => ({ code, label: null }))
@@ -165,7 +160,7 @@ function transformLbaJob({
     const latitude = parseFloat(job.geo_coordinates ? job.geo_coordinates.split(",")[0] : "0")
     const longitude = parseFloat(job.geo_coordinates ? job.geo_coordinates.split(",")[1] : "0")
 
-    const resultJob: ILbaItem = {
+    const resultJob: ILbaItemLbaJob = {
       ideaType: "matcha",
       id: `${job.establishment_id}-${idx}`,
       title: offre.rome_appellation_label ?? offre.rome_label,
@@ -190,6 +185,7 @@ function transformLbaJob({
         creationDate: job.establishment_creation_date && new Date(job.establishment_creation_date),
       },
       nafs: [{ label: job.naf_label }],
+      // @ts-expect-error: TODO
       diplomaLevel: offre.job_level_label,
       job: {
         id: offre._id.toString(),
@@ -197,6 +193,7 @@ function transformLbaJob({
         creationDate: offre.job_creation_date && new Date(offre.job_creation_date),
         contractType: offre.job_type && offre.job_type.join(", "),
         jobStartDate: offre.job_start_date && new Date(offre.job_start_date),
+        // @ts-expect-error: TODO
         romeDetails: offre.rome_detail,
         rythmeAlternance: offre.job_rythm || null,
         dureeContrat: "" + offre.job_duration,
@@ -214,9 +211,8 @@ function transformLbaJob({
 
 /**
  * tri des ofres selon l'ordre alphabétique du titre (primaire) puis du nom de société (secondaire)
- * @param {{ results: ILbaItem[] }}
  */
-function sortLbaJobs(jobs: { results: ILbaItem[] }) {
+function sortLbaJobs(jobs: { results: ILbaItemLbaJob[] }) {
   jobs.results.sort((a, b) => {
     if (a && b) {
       if (a.title && b.title) {

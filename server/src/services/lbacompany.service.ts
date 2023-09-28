@@ -17,11 +17,6 @@ const esClient = getElasticInstance()
 
 /**
  * Adaptation au modèle LBA d'une société issue de l'algo
- * @param {ILbaCompany} company une société issue de l'algo
- * @param {string} caller l'identifiant de l'appelant de l'api
- * @param {boolean} contactAllowedOrigin flag indiquant si les données privées peuvent être retournées
- * @param {IApplicationCount[]} applicationCountByCompany map des nombres de candidatures par sociétés
- * @return {ILbaItem}
  */
 const transformCompany = ({
   company,
@@ -152,16 +147,6 @@ const getCompanyEsQueryIndexFragment = (limit: number) => {
 
 /**
  * Retourne des sociétés issues de l'algo matchant les critères en paramètres
- * @param {string} romes une liste de codes ROME séparés par des virgules
- * @param {string} latitude la latitude du centre de recherche
- * @param {string} longitude la latitude du centre de recherche
- * @param {number} radius le rayon de recherche
- * @param {number} companyLimit le nombre maximum de sociétés à retourner
- * @param {string} caller l'identifiant de l'utilisateur de l'api qui a lancé la recherche
- * @param {string} opco un filtre sur l'opco auquel doivent être rattachés les sociétés
- * @param {string} opcoUrl un filtre sur l'url de l'opco auquel doivent être rattachés les sociétés
- * @param {string} api l'identifiant du endpoint api utilisé pour exploiter cette fonction
- * @returns {Promise<ILbaCompany[] | IApiError>}
  */
 const getCompanies = async ({
   romes,
@@ -183,7 +168,7 @@ const getCompanies = async ({
   opco?: string
   opcoUrl?: string
   api: string
-}) => {
+}): Promise<ILbaCompany[] | IApiError> => {
   try {
     const distance = radius || 10
 
@@ -312,7 +297,7 @@ export const getSomeCompanies = async ({
   opco?: string
   opcoUrl?: string
   api?: string
-}): Promise<TLbaItemResult> => {
+}): Promise<TLbaItemResult<ILbaItemLbaCompany>> => {
   const hasLocation = latitude === undefined ? false : true
   const currentRadius = hasLocation ? radius : 21000
   const companyLimit = 150 //TODO: query params options or default value from properties -> size || 100
