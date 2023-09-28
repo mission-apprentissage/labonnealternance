@@ -1,5 +1,4 @@
 import Boom from "boom"
-// import joi from "joi"
 import { IUserRecruteur, zRoutes } from "shared"
 import { RECRUITER_STATUS } from "shared/constants/recruteur"
 

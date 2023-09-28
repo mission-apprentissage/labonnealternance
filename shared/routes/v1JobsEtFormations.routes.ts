@@ -1,7 +1,7 @@
 import { z } from "zod"
 
 import { ZApiError, ZLbacError } from "../models/lbacError.model"
-import { ZLbaItem } from "../models/lbaItem.model"
+import { ZLbaItemFormation, ZLbaItemLbaCompany, ZLbaItemLbaJob, ZLbaItemPeJob } from "../models/lbaItem.model"
 
 import { IRoutesDef, ZResError } from "./common.routes"
 
@@ -32,36 +32,44 @@ export const zV1JobsEtFormationsRoutes = {
       response: {
         "200": z
           .object({
-            formations: z
-              .object({
-                results: z.array(ZLbaItem),
-              })
-              .strict()
-              .or(ZApiError)
-              .or(z.null()),
+            formations: z.union([
+              z
+                .object({
+                  results: z.array(ZLbaItemFormation),
+                })
+                .strict(),
+              ZApiError,
+              z.null(),
+            ]),
             jobs: z
               .object({
-                peJobs: z
-                  .object({
-                    results: z.array(ZLbaItem),
-                  })
-                  .strict()
-                  .or(ZApiError)
-                  .nullable(),
-                matchas: z
-                  .object({
-                    results: z.array(ZLbaItem),
-                  })
-                  .strict()
-                  .or(ZApiError)
-                  .nullable(),
-                lbaCompanies: z
-                  .object({
-                    results: z.array(ZLbaItem),
-                  })
-                  .strict()
-                  .or(ZApiError)
-                  .nullable(),
+                peJobs: z.union([
+                  z
+                    .object({
+                      results: z.array(ZLbaItemPeJob),
+                    })
+                    .strict(),
+                  ZApiError,
+                  z.null(),
+                ]),
+                matchas: z.union([
+                  z
+                    .object({
+                      results: z.array(ZLbaItemLbaJob),
+                    })
+                    .strict(),
+                  ZApiError,
+                  z.null(),
+                ]),
+                lbaCompanies: z.union([
+                  z
+                    .object({
+                      results: z.array(ZLbaItemLbaCompany),
+                    })
+                    .strict(),
+                  ZApiError,
+                  z.null(),
+                ]),
                 lbbCompanies: z.null(), // always null until removal
               })
               .strict()

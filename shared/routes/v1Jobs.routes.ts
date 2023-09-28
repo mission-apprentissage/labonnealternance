@@ -4,7 +4,7 @@ import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { ZJob } from "../models"
 import { zObjectId } from "../models/common"
 import { ZLbacError, ZLbarError } from "../models/lbacError.model"
-import { ZLbaItem } from "../models/lbaItem.model"
+import { ZLbaItemLbaCompany, ZLbaItemLbaJob, ZLbaItemPeJob } from "../models/lbaItem.model"
 import { ZRecruiter } from "../models/recruiter.model"
 
 import { IRoutesDef, ZResError } from "./common.routes"
@@ -112,7 +112,7 @@ export const zV1JobsRoutes = {
             peJobs: z.union([
               z
                 .object({
-                  results: z.array(ZLbaItem),
+                  results: z.array(ZLbaItemPeJob),
                 })
                 .strict()
                 .nullable(),
@@ -121,7 +121,7 @@ export const zV1JobsRoutes = {
             matchas: z.union([
               z
                 .object({
-                  results: z.array(ZLbaItem),
+                  results: z.array(ZLbaItemLbaJob),
                 })
                 .strict()
                 .nullable(),
@@ -130,7 +130,7 @@ export const zV1JobsRoutes = {
             lbaCompanies: z.union([
               z
                 .object({
-                  results: z.array(ZLbaItem),
+                  results: z.array(ZLbaItemLbaCompany),
                 })
                 .strict()
                 .nullable(),
@@ -177,7 +177,7 @@ export const zV1JobsRoutes = {
       response: {
         "200": z
           .object({
-            lbaCompanies: z.array(ZLbaItem),
+            lbaCompanies: z.array(ZLbaItemLbaCompany),
           })
           .strict(),
         "400": z.union([ZResError, ZLbacError]),
@@ -208,7 +208,7 @@ export const zV1JobsRoutes = {
       response: {
         "200": z
           .object({
-            matchas: z.array(ZLbaItem),
+            matchas: z.array(ZLbaItemLbaJob),
           })
           .strict(),
         //"419": le code correspondant a disparu. ticket bug ouvert
@@ -239,7 +239,7 @@ export const zV1JobsRoutes = {
       response: {
         "200": z
           .object({
-            peJobs: z.array(ZLbaItem),
+            peJobs: z.array(ZLbaItemPeJob),
           })
           .strict(),
         "400": z.union([ZResError, ZLbacError]),

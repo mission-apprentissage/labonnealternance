@@ -348,7 +348,7 @@ export const getSomePeJobs = async ({ romes, insee, radius, latitude, longitude,
 /**
  * Retourne un tableau contenant la seule offre Pôle emploi identifiée
  */
-export const getPeJobFromId = async ({ id, caller }: { id: string; caller: string | undefined }) => {
+export const getPeJobFromId = async ({ id, caller }: { id: string; caller: string | undefined }): Promise<IApiError | { peJobs: ILbaItemPeJob[] }> => {
   try {
     const token = await getAccessToken()
     const headers = peApiHeaders

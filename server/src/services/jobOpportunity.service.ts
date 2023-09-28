@@ -5,7 +5,7 @@ import { trackApiCall } from "../common/utils/sendTrackingEvent.js"
 
 import { TJobSearchQuery, TLbaItemResult } from "./jobOpportunity.service.types.js"
 import { getSomeCompanies } from "./lbacompany.service.js"
-import { ILbaItemCompany, ILbaItemJob, ILbaItemPeJob } from "./lbaitem.shared.service.types.js"
+import { ILbaItemLbaJob, ILbaItemLbaCompany, ILbaItemPeJob } from "./lbaitem.shared.service.types.js"
 import { getLbaJobs } from "./lbajob.service.js"
 import { getSomePeJobs } from "./pejob.service.js"
 import { jobsQueryValidator } from "./queryValidator.service.js"
@@ -42,9 +42,9 @@ export const getJobsFromApi = async ({
   api?: string
 }): Promise<
   | IApiError
-  | { peJobs: TLbaItemResult<ILbaItemPeJob>; matchas: TLbaItemResult<ILbaItemJob> | null; lbaCompanies: TLbaItemResult<ILbaItemCompany> | null; lbbCompanies: null }
-  | { peJobs: TLbaItemResult<ILbaItemPeJob> | null; matchas: TLbaItemResult<ILbaItemJob>; lbaCompanies: TLbaItemResult<ILbaItemCompany> | null; lbbCompanies: null }
-  | { peJobs: TLbaItemResult<ILbaItemPeJob> | null; matchas: TLbaItemResult<ILbaItemJob> | null; lbaCompanies: TLbaItemResult<ILbaItemCompany>; lbbCompanies: null }
+  | { peJobs: TLbaItemResult<ILbaItemPeJob>; matchas: TLbaItemResult<ILbaItemLbaJob> | null; lbaCompanies: TLbaItemResult<ILbaItemLbaCompany> | null; lbbCompanies: null }
+  | { peJobs: TLbaItemResult<ILbaItemPeJob> | null; matchas: TLbaItemResult<ILbaItemLbaJob>; lbaCompanies: TLbaItemResult<ILbaItemLbaCompany> | null; lbbCompanies: null }
+  | { peJobs: TLbaItemResult<ILbaItemPeJob> | null; matchas: TLbaItemResult<ILbaItemLbaJob> | null; lbaCompanies: TLbaItemResult<ILbaItemLbaCompany>; lbbCompanies: null }
 > => {
   try {
     const jobSources = !sources ? ["lba", "offres", "matcha"] : sources.split(",")
@@ -119,9 +119,9 @@ export const getJobsQuery = async (
   query: TJobSearchQuery
 ): Promise<
   | IApiError
-  | { peJobs: TLbaItemResult<ILbaItemPeJob>; matchas: TLbaItemResult<ILbaItemJob> | null; lbaCompanies: TLbaItemResult<ILbaItemCompany> | null; lbbCompanies: null }
-  | { peJobs: TLbaItemResult<ILbaItemPeJob> | null; matchas: TLbaItemResult<ILbaItemJob>; lbaCompanies: TLbaItemResult<ILbaItemCompany> | null; lbbCompanies: null }
-  | { peJobs: TLbaItemResult<ILbaItemPeJob> | null; matchas: TLbaItemResult<ILbaItemJob> | null; lbaCompanies: TLbaItemResult<ILbaItemCompany>; lbbCompanies: null }
+  | { peJobs: TLbaItemResult<ILbaItemPeJob>; matchas: TLbaItemResult<ILbaItemLbaJob> | null; lbaCompanies: TLbaItemResult<ILbaItemLbaCompany> | null; lbbCompanies: null }
+  | { peJobs: TLbaItemResult<ILbaItemPeJob> | null; matchas: TLbaItemResult<ILbaItemLbaJob>; lbaCompanies: TLbaItemResult<ILbaItemLbaCompany> | null; lbbCompanies: null }
+  | { peJobs: TLbaItemResult<ILbaItemPeJob> | null; matchas: TLbaItemResult<ILbaItemLbaJob> | null; lbaCompanies: TLbaItemResult<ILbaItemLbaCompany>; lbbCompanies: null }
 > => {
   const parameterControl = await jobsQueryValidator(query)
 
