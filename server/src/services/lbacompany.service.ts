@@ -87,11 +87,6 @@ const transformCompany = ({
 
 /**
  * Transformer au format unifié une liste de sociétés issues de l'algo
- * @param {ILbaCompany[]} companies
- * @param {string} referer
- * @param {string} caller
- * @param {IApplicationCount[]} applicationCountByCompany
- * @returns {{ results: LbaItem[]}}
  */
 const transformCompanies = ({
   companies = [],

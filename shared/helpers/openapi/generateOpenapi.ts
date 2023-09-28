@@ -1,81 +1,90 @@
-import { ZodOpenApiOperationObject, ZodOpenApiParameters, ZodOpenApiPathItemObject, ZodOpenApiPathsObject, ZodOpenApiResponsesObject, createDocument } from "zod-openapi"
+import { OpenApiGeneratorV31, OpenAPIRegistry, ResponseConfig, RouteConfig } from "@asteasolutions/zod-to-openapi"
 
 import { zRoutes } from "../../index"
 import { IRouteSchema } from "../../routes/common.routes"
 
-function generateOpenApiResponsesObject(response: IRouteSchema["response"]): ZodOpenApiResponsesObject {
-  return Object.keys(response).reduce((acc: ZodOpenApiResponsesObject, code: any) => {
-    acc[code] = {
-      content: { "application/json": { schema: response["200"] } },
-    }
+function generateOpenApiResponsesObject<R extends IRouteSchema["response"]>(response: R): { [statusCode: string]: ResponseConfig } {
+  return Object.keys(response).reduce(
+    (acc: { [statusCode: string]: ResponseConfig }, code: any) => {
+      acc[code] = {
+        description: response[code]._def.openapi?.metadata.description ?? response[code].description ?? "",
+        content: {
+          "application/json": {
+            schema: response[code],
+          },
+        },
+      }
 
-    return acc
-  }, {})
+      return acc
+    },
+    {} as { [statusCode: string]: ResponseConfig }
+  )
 }
 
-function generateOpenApiParameters(route: IRouteSchema): ZodOpenApiParameters {
-  const requestParams: ZodOpenApiParameters = {}
+function generateOpenApiRequest(route: IRouteSchema): RouteConfig["request"] {
+  const requestParams: RouteConfig["request"] = {}
 
+  if (route.body) {
+    requestParams.body = {
+      content: {
+        "application/json": { schema: route.body },
+      },
+      required: true,
+    }
+  }
   if (route.params) {
-    requestParams.path = route.params.shape
+    requestParams.params = route.params
   }
   if (route.querystring) {
-    requestParams.query = route.querystring.shape
+    requestParams.query = route.querystring
+  }
+  if (route.headers) {
+    requestParams.headers = route.headers
   }
 
   return requestParams
 }
 
-function generateOpenApiOperationObject(route: IRouteSchema): ZodOpenApiOperationObject | null {
+function addOpenApiOperation(path: string, method: "get" | "put" | "post" | "delete", route: IRouteSchema, registry: OpenAPIRegistry) {
   if (!route.openapi) {
-    return null
+    return
   }
 
-  return {
+  registry.registerPath({
     ...route.openapi,
-    requestParams: generateOpenApiParameters(route),
+    method,
+    path,
+    request: generateOpenApiRequest(route),
     responses: generateOpenApiResponsesObject(route.response),
-  }
-}
-
-function addOpenApiOperation(path: string, method: "get" | "put" | "post" | "delete", route: IRouteSchema, pathsObject: ZodOpenApiPathsObject): ZodOpenApiPathsObject {
-  const op = generateOpenApiOperationObject(route)
-
-  if (!op) {
-    return pathsObject
-  }
-
-  const pathItem: ZodOpenApiPathItemObject = pathsObject[path] ?? {}
-  pathItem[method] = op
-  pathsObject[path] = pathItem
-
-  return pathsObject
+  })
 }
 
 export function generateOpenApiSchema() {
-  let pathObject: ZodOpenApiPathsObject = {}
+  const registry = new OpenAPIRegistry()
 
   for (const [method, pathRoutes] of Object.entries(zRoutes)) {
     for (const [path, route] of Object.entries(pathRoutes)) {
-      pathObject = addOpenApiOperation(path, method as "get" | "put" | "post" | "delete", route, pathObject)
+      addOpenApiOperation(path, method as "get" | "put" | "post" | "delete", route, registry)
     }
   }
 
-  return createDocument({
+  const generator = new OpenApiGeneratorV31(registry.definitions)
+
+  return generator.generateDocument({
     info: {
       title: "La bonne alternance",
-      version: "0.0.0",
-      description: "Trouvez ici les formations en alternance et les entreprises qui recrutent régulièrement en alternance",
+      version: "V1.0",
+      description: "Cherchez des formations et des emplois en alternance",
       license: {
         name: "MIT",
       },
       contact: {
         name: "La bonne alternance",
         url: "https://labonnealternance.apprentissage.beta.gouv.fr",
+        email: "labonnealternance@apprentissage.beta.gouv.fr",
       },
     },
     openapi: "3.1.0",
-    paths: pathObject,
     servers: [
       {
         url: "https://labonnealternance.apprentissage.beta.gouv.fr",
@@ -86,12 +95,12 @@ export function generateOpenApiSchema() {
         description: "Recette",
       },
       {
-        url: "https://labonnealternance-develop.apprentissage.beta.gouv.fr",
-        description: "Developpement",
+        url: "https://labonnealternance-next.apprentissage.beta.gouv.fr",
+        description: "Next",
       },
       {
-        url: "http://localhost",
-        description: "Localhost",
+        url: "http://localhost:5001",
+        description: "Local",
       },
     ],
   })
