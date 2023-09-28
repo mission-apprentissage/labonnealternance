@@ -134,6 +134,16 @@ export const zRecruiterRoutes = {
         role: "all",
       },
     },
+    "/api/etablissement/cfa/:userRecruteurId/entreprises": {
+      params: z.object({ userRecruteurId: zObjectId }).strict(),
+      response: {
+        "200": z.array(ZRecruiter),
+      },
+      securityScheme: {
+        auth: "jwt-bearer",
+        role: "all",
+      },
+    },
   },
   post: {
     "/api/etablissement/creation": {

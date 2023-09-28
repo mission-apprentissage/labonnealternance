@@ -23,23 +23,6 @@ import { Server } from "../server"
 
 export default (server: Server) => {
   /**
-   * Query search endpoint
-   */
-  server.get(
-    "/api/formulaire",
-    {
-      schema: zRoutes.get["/api/formulaire"],
-      preHandler: [server.auth(zRoutes.get["/api/formulaire"].securityScheme)],
-    },
-    async (req, res) => {
-      // TODO_AB ??????
-      const query = req.query.query
-      const results = await Recruiter.find(query).limit(50).lean()
-      return res.status(200).send(results)
-    }
-  )
-
-  /**
    * Get form from id
    */
   server.get(
