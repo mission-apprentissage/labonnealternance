@@ -1,7 +1,7 @@
 import Boom from "boom"
 import { zRoutes } from "shared/index"
 
-import { Recruiter } from "../../common/model/index"
+// import { Recruiter } from "../../common/model/index"
 import { getApplication } from "../../services/application.service"
 import { entrepriseOnboardingWorkflow } from "../../services/etablissement.service"
 import {
