@@ -66,7 +66,7 @@ export default function CreationMiseEnRelation() {
     if (geo_coordinates) {
       const [latitude, longitude] = (geo_coordinates as string).split(",")
 
-      getRelatedEtablissementsFromRome({ rome: job?.rome_detail?.code || job?.rome_code[0], latitude, longitude }).then(({ data }) => {
+      getRelatedEtablissementsFromRome({ rome: job?.rome_detail?.code || job?.rome_code[0], latitude: parseFloat(latitude), longitude: parseFloat(longitude) }).then(({ data }) => {
         const etablissementUpdated = data.slice(0, 10).map((data, index) => ({
           ...data,
           checked: index < 3,
