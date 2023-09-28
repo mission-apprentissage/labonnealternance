@@ -23,7 +23,6 @@ import { useRouter } from "next/router"
 import { memo, useEffect, useState } from "react"
 import { useQuery } from "react-query"
 
-import { RECRUITER_STATUS } from "../../../common/contants"
 import useAuth from "../../../common/hooks/useAuth"
 import { sortReactTableDate, sortReactTableString } from "../../../common/utils/dateUtils"
 import BreadcrumbLink from "../../../components/BreadcrumbLink"
@@ -32,7 +31,7 @@ import addOfferImage from "../../../components/espace_pro/assets/images/add-offe
 import withAuth from "../../../components/espace_pro/withAuth"
 import Link from "../../../components/Link"
 import { Parametre } from "../../../theme/components/icons"
-import { getFormulaires } from "../../../utils/api"
+import { getEntreprisesOfCfa } from "../../../utils/api"
 
 const EmptySpace = () => (
   <Stack direction={["column", "column", "column", "row"]} mt={12} pt={12} py={8} border="1px solid" borderColor="grey.400" spacing="32px">
@@ -73,9 +72,7 @@ function ListeEntreprise() {
     }
   }, [])
 
-  const { data, isLoading } = useQuery("listeEntreprise", () =>
-    getFormulaires({ status: { $in: [RECRUITER_STATUS.ACTIF, RECRUITER_STATUS.EN_ATTENTE_VALIDATION] }, cfa_delegated_siret: auth.cfa_delegated_siret })
-  )
+  const { data, isLoading } = useQuery("listeEntreprise", () => getEntreprisesOfCfa(auth.id))
 
   if (isLoading) {
     return <LoadingEmptySpace />
@@ -155,36 +152,6 @@ function ListeEntreprise() {
       },
     },
   ]
-  // @ts-expect-error: TODO
-  if (data?.data.length === 0) {
-    return (
-      <AnimationContainer>
-        {/* @ts-expect-error: TODO */}
-        <ConfirmationSuppressionEntreprise {...confirmationSuppression} {...currentEntreprise} />
-        <Container maxW="container.xl" mt={5}>
-          <Box mb={5}>
-            <Breadcrumb spacing="4px" textStyle="xs">
-              <BreadcrumbItem isCurrentPage>
-                <BreadcrumbLink href="/espace-pro/administration" textStyle="xs">
-                  Administration des offres
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-            </Breadcrumb>
-          </Box>
-          <Flex justify="space-between" mb={12}>
-            <Text fontSize="2rem" fontWeight={700}>
-              Mes entreprises
-            </Text>
-            <Button variant="primary" size="sm" mr={3} onClick={() => router.push(`/espace-pro/administration/entreprise`)}>
-              Nouvelle entreprise
-            </Button>
-          </Flex>
-          <EmptySpace />
-        </Container>
-      </AnimationContainer>
-    )
-  }
-
   return (
     <AnimationContainer>
       {/* @ts-expect-error: TODO */}
@@ -208,7 +175,7 @@ function ListeEntreprise() {
           </Button>
         </Flex>
         {/* @ts-expect-error: TODO */}
-        <TableNew columns={columns} data={data?.data} exportable={false} />
+        {data?.data?.length ? <TableNew columns={columns} data={data?.data} exportable={false} /> : <EmptySpace />}
       </Container>
     </AnimationContainer>
   )

@@ -52,7 +52,7 @@ function fuzzyTextFilterFn(rows, id, filterValue) {
 // Let the table remove the filter if the string is empty
 fuzzyTextFilterFn.autoRemove = (val) => !val
 
-export function TableNew({ data, columns, description = undefined, exportable }) {
+export function TableNew({ data = [], columns, description = undefined, exportable }) {
   const tableData = useMemo(() => data, [data])
   const tableColumns = useMemo(() => columns, [columns])
 
