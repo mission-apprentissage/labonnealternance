@@ -124,7 +124,7 @@ const ZLbaItemContact = z
     // informations de contact. optionnel
     email: z
       .string()
-      .email()
+      //.email()   TODO: actuellement string chiffrée qui n'a pas la shape d'une email
       .openapi({
         example: "contact@domaine.fr",
         description: "L'adresse email du contact de référence",
