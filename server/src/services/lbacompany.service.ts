@@ -11,7 +11,7 @@ import { sentryCaptureException } from "../common/utils/sentryUtils.js"
 
 import { getApplicationByCompanyCount, IApplicationCount } from "./application.service.js"
 import { TLbaItemResult } from "./jobOpportunity.service.types.js"
-import { ILbaItem, LbaItem } from "./lbaitem.shared.service.types.js"
+import { ILbaItem } from "./lbaitem.shared.service.types.js"
 
 const esClient = getElasticInstance()
 
@@ -34,52 +34,52 @@ const transformCompany = ({
   contactAllowedOrigin: boolean
   applicationCountByCompany: IApplicationCount[]
 }) => {
-  const resultCompany: ILbaItem = new LbaItem("lba")
-
-  resultCompany.title = company.enseigne
-  const email = encryptMailWithIV({ value: company.email !== "null" ? company.email : "", caller })
-
-  resultCompany.contact = {
-    ...email,
+  const contact: {
+    email?: string
+    iv?: string
+    phone?: string | null
+  } = {
+    ...encryptMailWithIV({ value: company.email !== "null" ? company.email : "", caller }),
   }
 
   if (contactAllowedOrigin) {
-    resultCompany.contact.phone = company.phone
+    contact.phone = company.phone
   }
-
   // format différent selon accès aux bonnes boîtes par recherche ou par siret
   const address = `${company.street_name ? `${company.street_number ? `${company.street_number} ` : ""}${company.street_name}, ` : ""}${company.zip_code} ${company.city}`.trim()
 
-  resultCompany.place = {
-    // @ts-expect-error: TODO
-    distance: company.distance?.length ? roundDistance(company.distance[0]) ?? 0 : null,
-    fullAddress: address,
-    latitude: parseFloat(company.geo_coordinates.split(",")[0]),
-    longitude: parseFloat(company.geo_coordinates.split(",")[1]),
-    city: company.city,
-    address,
-  }
-
-  resultCompany.company = {
-    name: company.enseigne,
-    siret: company.siret,
-    size: company.company_size,
-    url: company.website,
-    opco: {
-      label: company.opco,
-      url: company.opco_url,
-    },
-  }
-
-  resultCompany.nafs = [
-    {
-      code: company.naf_code,
-      label: company.naf_label,
-    },
-  ]
-
   const applicationCount = applicationCountByCompany.find((cmp) => company.siret == cmp._id)
-  resultCompany.applicationCount = applicationCount?.count || 0
+
+  const resultCompany = {
+    ideaType: "lba",
+    title: company.enseigne,
+    contact,
+    place: {
+      distance: company.distance?.length ? roundDistance(company.distance[0]) ?? 0 : null,
+      fullAddress: address,
+      latitude: parseFloat(company.geo_coordinates.split(",")[0]),
+      longitude: parseFloat(company.geo_coordinates.split(",")[1]),
+      city: company.city,
+      address,
+    },
+    company: {
+      name: company.enseigne,
+      siret: company.siret,
+      size: company.company_size,
+      url: company.website,
+      opco: {
+        label: company.opco,
+        url: company.opco_url,
+      },
+    },
+    nafs: [
+      {
+        code: company.naf_code,
+        label: company.naf_label,
+      },
+    ],
+    applicationCount: applicationCount?.count || 0,
+  }
 
   return resultCompany
 }
