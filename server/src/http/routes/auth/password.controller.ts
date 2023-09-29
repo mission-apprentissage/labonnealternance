@@ -8,9 +8,9 @@ import { Server } from "../../server"
 
 export default (server: Server) => {
   server.post(
-    "/api/password/forgotten-password",
+    "/password/forgotten-password",
     {
-      schema: zRoutes.post["/api/password/forgotten-password"],
+      schema: zRoutes.post["/password/forgotten-password"],
     },
     async (req, res) => {
       const { username } = req.body
@@ -24,10 +24,10 @@ export default (server: Server) => {
   )
 
   server.post(
-    "/api/password/reset-password",
+    "/password/reset-password",
     {
-      schema: zRoutes.post["/api/password/reset-password"],
-      preHandler: [server.auth(zRoutes.post["/api/password/reset-password"].securityScheme)],
+      schema: zRoutes.post["/password/reset-password"],
+      preHandler: [server.auth(zRoutes.post["/password/reset-password"].securityScheme)],
     },
     async (req, res) => {
       const user = req.user

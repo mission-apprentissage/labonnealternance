@@ -69,7 +69,7 @@ const zContextCreateSchema = z.union([
 
 export const zAppointmentsRoute = {
   get: {
-    "/api/admin/appointments": {
+    "/admin/appointments": {
       response: {
         "2xx": z
           .object({
@@ -82,7 +82,7 @@ export const zAppointmentsRoute = {
         role: "administrator",
       },
     },
-    "/api/admin/appointments/details": {
+    "/admin/appointments/details": {
       response: {
         "2xx": z
           .object({
@@ -119,7 +119,7 @@ export const zAppointmentsRoute = {
         role: "administrator",
       },
     },
-    "/api/appointment-request/context/recap": {
+    "/appointment-request/context/recap": {
       // TODO_SECURITY_FIX il faut un secure token
       querystring: z.object({ appointmentId: z.string() }).strict(),
       response: {
@@ -143,7 +143,7 @@ export const zAppointmentsRoute = {
     },
   },
   post: {
-    "/api/appointment-request/context/create": {
+    "/appointment-request/context/create": {
       body: zContextCreateSchema,
       response: {
         "2xx": z.union([
@@ -175,7 +175,7 @@ export const zAppointmentsRoute = {
         role: "all",
       },
     },
-    "/api/appointment-request/validate": {
+    "/appointment-request/validate": {
       body: z
         .object({
           firstname: z.string(),
@@ -202,7 +202,7 @@ export const zAppointmentsRoute = {
         role: "all",
       },
     },
-    "/api/appointment-request/reply": {
+    "/appointment-request/reply": {
       // TODO_SECURITY_FIX token jwt
       body: z
         .object({

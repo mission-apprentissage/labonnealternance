@@ -7,7 +7,7 @@ import { IRoutesDef, ZResError } from "./common.routes"
 
 export const zV1JobsEtFormationsRoutes = {
   get: {
-    "/api/v1/jobsEtFormations": {
+    "/v1/jobsEtFormations": {
       querystring: z
         .object({
           romes: z.string().optional(),

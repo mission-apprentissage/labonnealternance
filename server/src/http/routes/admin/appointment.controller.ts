@@ -13,10 +13,10 @@ export default (server: Server) => {
    * Get all formations getRequests /requests GET
    * */
   server.get(
-    "/api/admin/appointments",
+    "/admin/appointments",
     {
-      schema: zRoutes.get["/api/admin/appointments"],
-      preHandler: [server.auth(zRoutes.get["/api/admin/appointments"].securityScheme)],
+      schema: zRoutes.get["/admin/appointments"],
+      preHandler: [server.auth(zRoutes.get["/admin/appointments"].securityScheme)],
     },
     async (req, res) => {
       const appointments = await Appointment.find().sort({ _id: -1 }).lean()
@@ -29,10 +29,10 @@ export default (server: Server) => {
    * Get all formations getRequests /requests GET (with details)
    * */
   server.get(
-    "/api/admin/appointments/details",
+    "/admin/appointments/details",
     {
-      schema: zRoutes.get["/api/admin/appointments/details"],
-      preHandler: [server.auth(zRoutes.get["/api/admin/appointments"].securityScheme)],
+      schema: zRoutes.get["/admin/appointments/details"],
+      preHandler: [server.auth(zRoutes.get["/admin/appointments"].securityScheme)],
     },
     async (req, res) => {
       const allAppointments = await Appointment.find().limit(100).sort({ _id: -1 }).lean()

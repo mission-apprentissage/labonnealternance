@@ -6,9 +6,9 @@ import { Server } from "../server"
 
 export default (server: Server) => {
   server.get(
-    "/api/version",
+    "/version",
     {
-      schema: zRoutes.get["/api/version"],
+      schema: zRoutes.get["/version"],
       config: {
         rateLimit: {
           max: 3,

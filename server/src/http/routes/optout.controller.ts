@@ -7,10 +7,10 @@ import { Server } from "../server"
 
 export default (server: Server) => {
   server.get(
-    "/api/optout/validate",
+    "/optout/validate",
     {
-      schema: zRoutes.get["/api/optout/validate"],
-      preHandler: [server.auth(zRoutes.get["/api/optout/validate"].securityScheme)],
+      schema: zRoutes.get["/optout/validate"],
+      preHandler: [server.auth(zRoutes.get["/optout/validate"].securityScheme)],
     },
     async (req, res) => {
       const token = req.headers && req.headers.authorization && req.headers.authorization.split(" ")[1]

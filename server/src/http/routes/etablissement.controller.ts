@@ -31,9 +31,9 @@ export default (server: Server) => {
    * @description Returns etablissement from its id.
    */
   server.get(
-    "/api/etablissements/:id",
+    "/etablissements/:id",
     {
-      schema: zRoutes.get["/api/etablissements/:id"],
+      schema: zRoutes.get["/etablissements/:id"],
     },
     async (req, res) => {
       const etablissement = await Etablissement.findById(req.params.id)
@@ -50,9 +50,9 @@ export default (server: Server) => {
    * @description Accepts "Premium Affelnet".
    */
   server.post(
-    "/api/etablissements/:id/premium/affelnet/accept",
+    "/etablissements/:id/premium/affelnet/accept",
     {
-      schema: zRoutes.post["/api/etablissements/:id/premium/affelnet/accept"],
+      schema: zRoutes.post["/etablissements/:id/premium/affelnet/accept"],
     },
     async (req, res) => {
       const etablissement = await Etablissement.findById(req.params.id)
@@ -171,9 +171,9 @@ export default (server: Server) => {
    * @description Accepts "Premium Parcoursup".
    */
   server.post(
-    "/api/etablissements/:id/premium/accept",
+    "/etablissements/:id/premium/accept",
     {
-      schema: zRoutes.post["/api/etablissements/:id/premium/accept"],
+      schema: zRoutes.post["/etablissements/:id/premium/accept"],
     },
     async (req, res) => {
       const etablissement = await Etablissement.findById(req.params.id)
@@ -295,9 +295,9 @@ export default (server: Server) => {
    * @description Refuses "Premium Affelnet"
    */
   server.post(
-    "/api/etablissements/:id/premium/affelnet/refuse",
+    "/etablissements/:id/premium/affelnet/refuse",
     {
-      schema: zRoutes.post["/api/etablissements/:id/premium/affelnet/refuse"],
+      schema: zRoutes.post["/etablissements/:id/premium/affelnet/refuse"],
     },
     async (req, res) => {
       const etablissement = await Etablissement.findById(req.params.id)
@@ -368,9 +368,9 @@ export default (server: Server) => {
    * @description Refuses "Premium Parcoursup"
    */
   server.post(
-    "/api/etablissements/:id/premium/refuse",
+    "/etablissements/:id/premium/refuse",
     {
-      schema: zRoutes.post["/api/etablissements/:id/premium/refuse"],
+      schema: zRoutes.post["/etablissements/:id/premium/refuse"],
     },
     async (req, res) => {
       const etablissement = await Etablissement.findById(req.params.id)
@@ -441,9 +441,9 @@ export default (server: Server) => {
    * Patch etablissement appointment.
    */
   server.patch(
-    "/api/etablissements/:id/appointments/:appointmentId",
+    "/etablissements/:id/appointments/:appointmentId",
     {
-      schema: zRoutes.patch["/api/etablissements/:id/appointments/:appointmentId"],
+      schema: zRoutes.patch["/etablissements/:id/appointments/:appointmentId"],
     },
     async ({ body, params }, res) => {
       const { has_been_read } = await patchEtablissementIdAppointmentIdReadAppointSchema.validateAsync(body, {
@@ -481,9 +481,9 @@ export default (server: Server) => {
    * @description OptOutUnsubscribe to "opt-out".
    */
   server.post(
-    "/api/etablissements/:id/opt-out/unsubscribe",
+    "/etablissements/:id/opt-out/unsubscribe",
     {
-      schema: zRoutes.post["/api/etablissements/:id/opt-out/unsubscribe"],
+      schema: zRoutes.post["/etablissements/:id/opt-out/unsubscribe"],
     },
     async (req, res) => {
       const { opt_out_question } = await optOutUnsubscribeSchema.validateAsync(req.body, { abortEarly: false })

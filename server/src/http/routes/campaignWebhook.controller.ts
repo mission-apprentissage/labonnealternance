@@ -6,9 +6,9 @@ import { Server } from "../server"
 
 export default function (server: Server) {
   server.post(
-    "/api/campaign/webhook",
+    "/campaign/webhook",
     {
-      schema: zRoutes.post["/api/campaign/webhook"],
+      schema: zRoutes.post["/campaign/webhook"],
     },
     async (req, res) => {
       /* Format payload

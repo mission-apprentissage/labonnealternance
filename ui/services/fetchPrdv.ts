@@ -1,8 +1,8 @@
 import axios from "axios"
 import _ from "lodash"
 
-import { baseUrl } from "../config/config"
 import { logError } from "../utils/tools"
+import { publicConfig } from "config.public"
 
 /**
  * @description Returns "RDV" link.
@@ -18,7 +18,7 @@ export default async function fetchPrdv(training, hasAlsoJob, _axios = axios, _w
     return null
   }
 
-  const rdvUrl = `${baseUrl}/api/appointment-request/context/create`
+  const rdvUrl = `${publicConfig.apiEndpoint}/appointment-request/context/create`
 
   try {
     const response = await _axios.post(

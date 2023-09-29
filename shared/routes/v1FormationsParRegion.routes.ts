@@ -8,7 +8,7 @@ import { IRoutesDef, ZResError } from "./common.routes"
 
 export const zV1FormationsParRegion = {
   get: {
-    "/api/v1/formationsParRegion": {
+    "/v1/formationsParRegion": {
       querystring: z
         .object({
           romes: z

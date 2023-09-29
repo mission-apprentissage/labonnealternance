@@ -8,9 +8,9 @@ import { Server } from "../server"
 
 export default function (server: Server) {
   server.get(
-    "/api/updateLBB/updateContactInfo",
+    "/updateLBB/updateContactInfo",
     {
-      schema: zRoutes.get["/api/updateLBB/updateContactInfo"],
+      schema: zRoutes.get["/updateLBB/updateContactInfo"],
       config: {
         rateLimit: {
           max: 1,

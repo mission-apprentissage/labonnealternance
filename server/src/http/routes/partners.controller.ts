@@ -13,9 +13,9 @@ export default (server: Server) => {
    * This endpoint is used by Parcoursup.
    */
   server.get(
-    "/api/partners/parcoursup/formations",
+    "/partners/parcoursup/formations",
     {
-      schema: zRoutes.get["/api/partners/parcoursup/formations"],
+      schema: zRoutes.get["/partners/parcoursup/formations"],
     },
     async (req, res) => {
       const ids = await eligibleTrainingsForAppointmentService.find(

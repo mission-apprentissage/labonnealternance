@@ -100,53 +100,56 @@ export async function bind(app: Server) {
     })
   }
 
-  coreRoutes(app)
+  app.register(
+    (subApp, _, done) => {
+      const typedSubApp = subApp.withTypeProvider<ZodTypeProvider>()
+      coreRoutes(typedSubApp)
 
-  /**
-   * Swaggers
-   */
-  // app.get("/api-docs/swagger.json", (req, res) => {
-  //   res.sendFile(getStaticFilePath("./api-docs/swagger.json"))
-  // })
+      /**
+       * Swaggers
+       */
+      // app.get("/api-docs/swagger.json", (req, res) => {
+      //   res.sendFile(getStaticFilePath("./api-docs/swagger.json"))
+      // })
 
-  // app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument))
-  // app.use("/api/v1/lba-docs", swaggerUi.serve, swaggerUi.setup(deprecatedSwaggerDocument, swaggerUIOptions))
-  // app.use("/api/v1/lbar-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpecification, swaggerUIOptions))
+      // app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument))
+      // app.use("/api/v1/lba-docs", swaggerUi.serve, swaggerUi.setup(deprecatedSwaggerDocument, swaggerUIOptions))
+      // app.use("/api/v1/lbar-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpecification, swaggerUIOptions))
 
-  /**
-   * LBACandidat
-   */
-  version(app)
-  metiers(app)
-  rome(app)
-  updateLbaCompany(app)
-  campaignWebhook(app)
-  sendApplication(app)
-  sendApplicationAPI(app)
-  unsubscribeLbaCompany(app)
-  metiersDAvenirRoute(app)
-  jobsV1Route(app)
-  formationsV1Route(app)
-  formationsRegionV1Route(app)
-  jobsEtFormationsV1Route(app)
+      /**
+       * LBACandidat
+       */
+      version(typedSubApp)
+      metiers(typedSubApp)
+      rome(typedSubApp)
+      updateLbaCompany(typedSubApp)
+      campaignWebhook(typedSubApp)
+      sendApplication(typedSubApp)
+      sendApplicationAPI(typedSubApp)
+      unsubscribeLbaCompany(typedSubApp)
+      metiersDAvenirRoute(typedSubApp)
+      jobsV1Route(typedSubApp)
+      formationsV1Route(typedSubApp)
+      formationsRegionV1Route(typedSubApp)
+      jobsEtFormationsV1Route(typedSubApp)
 
-  /**
-   * Admin / Auth
-   */
-  login(app)
-  password(app)
+      /**
+       * Admin / Auth
+       */
+      login(typedSubApp)
+      password(typedSubApp)
 
-  /**
-   * LBA-Organisme de formation
-   */
-  adminAppointmentRoute(app)
-  adminEtablissementRoute(app)
-  formationsRoute(app)
-  eligibleTrainingsForAppointmentRoute(app)
-  etablissementRoute(app)
-  appointmentRequestRoute(app)
-  partnersRoute(app)
-  emailsRoute(app)
+      /**
+       * LBA-Organisme de formation
+       */
+      adminAppointmentRoute(typedSubApp)
+      adminEtablissementRoute(typedSubApp)
+      formationsRoute(typedSubApp)
+      eligibleTrainingsForAppointmentRoute(typedSubApp)
+      etablissementRoute(typedSubApp)
+      appointmentRequestRoute(typedSubApp)
+      partnersRoute(typedSubApp)
+      emailsRoute(typedSubApp)
 
   appointmentsController(app)
 
@@ -158,7 +161,11 @@ export async function bind(app: Server) {
   optoutRoute(app)
   etablissementsRecruteurRoute(app)
 
-  trainingLinks(app)
+      trainingLinks(typedSubApp)
+      done()
+    },
+    { prefix: "/api" }
+  )
 
   initBrevoWebhooks()
 

@@ -99,7 +99,7 @@ function getLocalPublicConfig(): PublicConfig {
     sentry_dsn: SENTRY_DSN,
     env: "local",
     host,
-    baseUrl: `http://${host}:${process.env.NEXT_PUBLIC_API_PORT}`,
+    baseUrl: `http://${host}:3000`,
     apiEndpoint: `http://${host}:${process.env.NEXT_PUBLIC_API_PORT ?? 5000}/api`,
     matomo: {
       url: "https://stats.beta.gouv.fr",

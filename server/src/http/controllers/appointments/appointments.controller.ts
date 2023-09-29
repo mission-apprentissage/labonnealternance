@@ -27,9 +27,9 @@ import { contextCreateSchema } from "./validators"
 // })
 export default (server: Server) => {
   server.post(
-    "/api/appointment-request/context/create",
+    "/appointment-request/context/create",
     {
-      schema: zRoutes.post["/api/appointment-request/context/create"],
+      schema: zRoutes.post["/appointment-request/context/create"],
       // TODO: AttachValidation Error ?
     },
     async (req, res) => {
