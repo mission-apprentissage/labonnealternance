@@ -187,7 +187,7 @@ const validateApiSources = (apiSources: string | undefined, error_messages: stri
  * @param {string} referer
  * @returns {boolean}
  */
-export const validateCaller = ({ caller, referer }: { caller: string | undefined; referer: string | undefined }, error_messages: string[] = []) => {
+export const validateCaller = ({ caller, referer }: { caller: string | null | undefined; referer: string | undefined }, error_messages: string[] = []) => {
   if (!isOriginLocal(referer) && !caller) {
     error_messages.push("caller : caller is missing.")
     return false
