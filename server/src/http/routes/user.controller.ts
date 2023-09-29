@@ -8,6 +8,7 @@ import { ENTREPRISE, ETAT_UTILISATEUR, JOB_STATUS, RECRUITER_STATUS } from "../.
 import dayjs from "../../services/dayjs.service"
 import { deleteFormulaire, getFormulaire, reactivateRecruiter, sendDelegationMailToCFA, updateOffre } from "../../services/formulaire.service"
 import mailer from "../../services/mailer.service"
+import { getUserAndRecruitersDataForOpcoUser } from "../../services/user.service"
 import {
   createUser,
   getActiveUsers,
@@ -26,33 +27,19 @@ export default (server: Server) => {
     "/user/opco",
     {
       schema: zRoutes.get["/user/opco"],
-      preHandler: [],
     },
     async (req, res) => {
-      const { userQuery, formulaireQuery } = req.query
+      const { opco } = req.params
 
-      // @ts-expect-error
-      const [users, formulaires] = await Promise.all([UserRecruteur.find(userQuery).lean(), Recruiter.find(formulaireQuery).lean()])
+      console.log(opco)
 
-      const results = users.reduce((acc: any[], user) => {
-        acc.push({ ...user, offres: 0 })
+      const [awaiting, active, disable] = await Promise.all([
+        getUserAndRecruitersDataForOpcoUser(opco, ETAT_UTILISATEUR.ATTENTE),
+        getUserAndRecruitersDataForOpcoUser(opco, ETAT_UTILISATEUR.VALIDE),
+        getUserAndRecruitersDataForOpcoUser(opco, ETAT_UTILISATEUR.DESACTIVE),
+      ])
 
-        const form = formulaires.find((x) => x.establishment_id === user.establishment_id)
-
-        if (form) {
-          const found = acc.findIndex((x) => x.establishment_id === form.establishment_id)
-
-          if (found !== -1) {
-            acc[found].jobs = form.jobs.length ?? 0
-            acc[found].origin = form.origin
-            acc[found].job_detail = form.jobs ?? []
-          }
-        }
-
-        return acc
-      }, [])
-
-      return res.status(200).send(results)
+      return res.status(200).send({ awaiting, active, disable })
     }
   )
 

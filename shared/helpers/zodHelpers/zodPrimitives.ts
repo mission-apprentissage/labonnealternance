@@ -29,6 +29,9 @@ export const extensions = {
       })
       .openapi({
         description: "Le numéro de SIRET de l'établissement",
+        param: {
+          description: "Le numéro de SIRET de l'établissement",
+        },
         example: "78424186100011",
       }),
   uai: () => z.string().trim().regex(UAI_REGEX, "UAI invalide"), // e.g 0123456B

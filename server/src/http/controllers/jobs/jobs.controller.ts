@@ -52,7 +52,6 @@ const getUser = <S extends IRouteSchema>(req: FastifyRequest, _schema: S): Authe
 }
 
 export default (server: Server) => {
-  // @Tags("Jobs")
   server.get(
     "/v1/jobs/establishment",
     {
@@ -323,8 +322,7 @@ export default (server: Server) => {
 
       await provideOffre(jobId)
 
-      res.status(200)
-      return res.send({})
+      return res.status(204).send({})
     }
   )
 
@@ -353,8 +351,7 @@ export default (server: Server) => {
 
       await cancelOffre(jobId)
 
-      res.status(200)
-      return res.send({})
+      return res.status(204).send({})
     }
   )
 
@@ -388,11 +385,10 @@ export default (server: Server) => {
 
       await extendOffre(jobId)
 
-      res.status(200)
+      res.status(204)
       return res.send({})
     }
   )
-  // @OperationId("getJobOpportunities")
   server.get(
     "/v1/jobs",
     {

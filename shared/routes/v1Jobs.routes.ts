@@ -7,7 +7,20 @@ import { ZApiError, ZLbacError, ZLbarError } from "../models/lbacError.model"
 import { ZLbaItemLbaCompany, ZLbaItemLbaJob, ZLbaItemPeJob } from "../models/lbaItem.model"
 import { ZRecruiter } from "../models/recruiter.model"
 
-import { zRefererHeaders } from "./_params"
+import {
+  zCallerParam,
+  zDiplomaParams,
+  zInseeParams,
+  ZLatitudeParam,
+  ZLongitudeParam,
+  zOpcoParams,
+  zOpcoUrlParams,
+  ZRadiusParam,
+  zRefererHeaders,
+  zRncpsParams,
+  zRomesParams,
+  zSourcesParams,
+} from "./_params"
 import { IRoutesDef, ZResError } from "./common.routes"
 
 export const zV1JobsRoutes = {
@@ -16,32 +29,76 @@ export const zV1JobsRoutes = {
       querystring: z
         .object({
           establishment_siret: extensions.siret(),
-          email: z.string().email(),
+          email: z
+            .string()
+            .email()
+            .openapi({
+              param: {
+                description: "Establishment email",
+              },
+            }),
         })
         .strict(),
       response: {
-        "200": z.string(),
-        "400": ZLbarError,
+        "200": z.string().openapi({
+          description: "Etablishment id",
+        }),
+        "400": z.union([ZResError, ZLbarError]).openapi({
+          description: "Bad Request",
+        }),
       },
       securityScheme: {
         auth: "api-key",
         role: "all",
+      },
+      openapi: {
+        tags: ["Jobs"] as string[],
+        description: "Get existing establishment id from siret & email",
       },
     },
     "/v1/jobs/bulk": {
       // TODO_SECURITY_FIX il faut faire quelque chose car sinon nous allons claquer des fesses
       querystring: z
         .object({
-          query: z.string().optional(), // mongo query
-          select: z.string().optional(), // mongo projection
-          page: z.coerce.number().optional(),
-          limit: z.coerce.number().optional(),
+          query: z
+            .string()
+            .optional()
+            .openapi({
+              param: {
+                description: "query mongodb query allowing specific filtering, JSON stringified",
+              },
+            }), // mongo query
+          select: z
+            .string()
+            .optional()
+            .openapi({
+              param: {
+                description: "select fields to return",
+              },
+              example: "{_id: 1, first_name:1, last_name:0}",
+            }), // mongo projection
+          page: z.coerce
+            .number()
+            .optional()
+            .openapi({
+              param: {
+                description: "the current page.",
+              },
+            }),
+          limit: z.coerce
+            .number()
+            .optional()
+            .openapi({
+              param: {
+                description: "the limit of results per page",
+              },
+            }),
         })
         .strict(),
       response: {
         "200": z
           .object({
-            data: z.array(ZRecruiter).or(z.undefined()),
+            data: z.array(ZRecruiter).optional(),
             pagination: z
               .object({
                 page: z.number().optional(),
@@ -56,6 +113,11 @@ export const zV1JobsRoutes = {
       securityScheme: {
         auth: "api-key",
         role: "all",
+      },
+      openapi: {
+        tags: ["Jobs"] as string[],
+        description: "Get all jobs related to my organization",
+        operationId: "getJobs",
       },
     },
     "/v1/jobs/delegations/:jobId": {
@@ -85,21 +147,26 @@ export const zV1JobsRoutes = {
         auth: "api-key",
         role: "all",
       },
+      openapi: {
+        tags: ["Jobs"] as string[],
+        operationId: "getDelegation",
+        description: "Get related training organization related to a job offer.",
+      },
     },
     "/v1/jobs": {
       querystring: z
         .object({
-          romes: z.string().optional(),
-          rncp: z.string().optional(),
-          caller: z.string().optional(),
-          latitude: z.coerce.number().optional(),
-          longitude: z.coerce.number().optional(),
-          radius: z.coerce.number().optional(),
-          insee: z.string().optional(),
-          sources: z.string().optional(),
-          diploma: z.string().optional(),
-          opco: z.string().optional(),
-          opcoUrl: z.string().optional(),
+          romes: zRomesParams("rncp"),
+          rncp: zRncpsParams,
+          caller: zCallerParam.nullish(),
+          latitude: ZLatitudeParam,
+          longitude: ZLongitudeParam,
+          radius: ZRadiusParam,
+          insee: zInseeParams,
+          sources: zSourcesParams,
+          diploma: zDiplomaParams,
+          opco: zOpcoParams,
+          opcoUrl: zOpcoUrlParams,
         })
         .strict(),
       headers: zRefererHeaders,
@@ -136,23 +203,16 @@ export const zV1JobsRoutes = {
             lbbCompanies: z.null(), // always null until removal
           })
           .strict(),
-        "500": z.union([
-          ZResError,
-          z
-            .object({
-              error: z.string(),
-              error_messages: z.array(z.string()).optional(),
-              result: z.string().optional(),
-              message: z.unknown().optional(),
-              status: z.number().optional(),
-              statusText: z.string().optional(),
-            })
-            .strict(),
-        ]),
+        "500": z.union([ZResError, ZApiError]),
       },
       securityScheme: {
         auth: "none",
         role: "all",
+      },
+      openapi: {
+        tags: ["Jobs"] as string[],
+        operationId: "getJobOpportunities",
+        description: "Get job opportunities matching the query parameters",
       },
     },
     "/v1/jobs/company/:siret": {
@@ -163,7 +223,7 @@ export const zV1JobsRoutes = {
         .strict(),
       querystring: z
         .object({
-          caller: z.string().optional(),
+          caller: zCallerParam,
         })
         .strict(),
       headers: zRefererHeaders,
@@ -181,16 +241,25 @@ export const zV1JobsRoutes = {
         auth: "none",
         role: "all",
       },
+      openapi: {
+        tags: ["Jobs"] as string[],
+        operationId: "getCompany",
+        description: "Get one company identified by it's siret",
+      },
     },
     "/v1/jobs/matcha/:id": {
       params: z
         .object({
-          id: z.string(),
+          id: z.string().openapi({
+            param: {
+              description: "the id the lba job looked for.",
+            },
+          }),
         })
         .strict(),
       querystring: z
         .object({
-          caller: z.string().optional(),
+          caller: zCallerParam,
         })
         .strict(),
       headers: zRefererHeaders,
@@ -208,6 +277,11 @@ export const zV1JobsRoutes = {
         auth: "none",
         role: "all",
       },
+      openapi: {
+        tags: ["Jobs"] as string[],
+        operationId: "getLbaJob",
+        description: "Get one lba job identified by it's id",
+      },
     },
     "/v1/jobs/job/:id": {
       params: z
@@ -217,7 +291,7 @@ export const zV1JobsRoutes = {
         .strict(),
       querystring: z
         .object({
-          caller: z.string().optional(),
+          caller: zCallerParam,
         })
         .strict(),
       headers: zRefererHeaders,
@@ -235,6 +309,11 @@ export const zV1JobsRoutes = {
         auth: "none",
         role: "all",
       },
+      openapi: {
+        tags: ["Jobs"] as string[],
+        operationId: "getPeJob",
+        description: "Get one pe job identified by it's id",
+      },
     },
   },
   post: {
@@ -247,16 +326,25 @@ export const zV1JobsRoutes = {
           phone: extensions.phone().optional(),
           email: z.string().email(),
           idcc: z.string().optional(),
-          origin: z.string().optional(),
+          origin: z.string().optional().openapi({
+            description:
+              "always prefixed with you identification name declared at the API user creation. BETA GOUV with an origin set to 'campaign2023' will be betagouv-campaign2023.",
+            example: "betagouv-campaign2023",
+          }),
         })
         .strict(),
       response: {
         "201": ZRecruiter,
-        "400": ZLbarError,
+        "400": z.union([ZResError, ZLbarError]),
       },
       securityScheme: {
         auth: "api-key",
         role: "all",
+      },
+      openapi: {
+        tags: ["Jobs"] as string[],
+        description: "Create an establishment entity",
+        operationId: "createEstablishment",
       },
     },
     "/v1/jobs/:establishmentId": {
@@ -283,11 +371,16 @@ export const zV1JobsRoutes = {
         .strict(),
       response: {
         "201": ZRecruiter,
-        "400": ZLbarError,
+        "400": z.union([ZResError, ZLbarError]),
       },
       securityScheme: {
         auth: "api-key",
         role: "all",
+      },
+      openapi: {
+        tags: ["Jobs"] as string[],
+        description: "Create a job offer inside an establishment entity.",
+        operationId: "createJob",
       },
     },
     "/v1/jobs/delegations/:jobId": {
@@ -303,11 +396,16 @@ export const zV1JobsRoutes = {
         .strict(),
       response: {
         "200": ZRecruiter,
-        "400": ZLbarError,
+        "400": z.union([ZResError, ZLbarError]),
       },
       securityScheme: {
         auth: "api-key",
         role: "all",
+      },
+      openapi: {
+        tags: ["Jobs"] as string[],
+        operationId: "createDelegation",
+        description: "Create delegation related to a job offer.",
       },
     },
     "/v1/jobs/provided/:jobId": {
@@ -318,11 +416,16 @@ export const zV1JobsRoutes = {
         })
         .strict(),
       response: {
-        "200": z.object({}).strict(),
+        "204": z.object({}).strict(),
       },
       securityScheme: {
         auth: "api-key",
         role: "all",
+      },
+      openapi: {
+        tags: ["Jobs"] as string[],
+        description: 'Update a job offer status to "Provided"',
+        operationId: "setJobAsProvided",
       },
     },
     "/v1/jobs/canceled/:jobId": {
@@ -333,11 +436,16 @@ export const zV1JobsRoutes = {
         })
         .strict(),
       response: {
-        "200": z.object({}).strict(),
+        "204": z.object({}).strict(),
       },
       securityScheme: {
         auth: "api-key",
         role: "all",
+      },
+      openapi: {
+        tags: ["Jobs"] as string[],
+        operationId: "setJobAsCanceled",
+        description: 'Update a job offer status to "Canceled".',
       },
     },
     "/v1/jobs/extend/:jobId": {
@@ -348,11 +456,16 @@ export const zV1JobsRoutes = {
         })
         .strict(),
       response: {
-        "200": z.object({}).strict(),
+        "204": z.object({}).strict(),
       },
       securityScheme: {
         auth: "api-key",
         role: "all",
+      },
+      openapi: {
+        tags: ["Jobs"] as string[],
+        operationId: "extendJobExpiration",
+        description: "Update a job expiration date by 30 days.",
       },
     },
     "/v1/jobs/matcha/:id/stats/view-details": {
@@ -367,6 +480,11 @@ export const zV1JobsRoutes = {
       securityScheme: {
         auth: "none",
         role: "all",
+      },
+      openapi: {
+        tags: ["Jobs"] as string[],
+        operationId: "statsViewLbaJob",
+        description: "Notifies that the detail of a matcha job has been viewed",
       },
     },
   },
@@ -398,6 +516,11 @@ export const zV1JobsRoutes = {
       securityScheme: {
         auth: "api-key",
         role: "all",
+      },
+      openapi: {
+        tags: ["Jobs"] as string[],
+        operationId: "updateJob",
+        description: "Update a job offer specific fields inside an establishment entity.",
       },
     },
   },

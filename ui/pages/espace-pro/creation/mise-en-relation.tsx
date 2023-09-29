@@ -100,9 +100,8 @@ export default function CreationMiseEnRelation() {
                     <Flex borderStyle="solid" borderWidth="1px" borderColor="#000091" py={4} key={etablissement._id} mb={4}>
                       <Center w="70px">
                         <Checkbox
-                          key={etablissement.ref}
                           defaultChecked={etablissement.checked}
-                          icon={<Check w="20px" h="18px" />}
+                          icon={etablissement.checked ? <Check w="20px" h="18px" /> : <></>}
                           onChange={() => checkEtablissement(etablissement)}
                         />
                       </Center>
