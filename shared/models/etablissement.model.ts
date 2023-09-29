@@ -11,7 +11,9 @@ export const ZEtablissement = z
     _id: zObjectId,
     formateur_siret: extensions.siret().nullable(),
     gestionnaire_siret: extensions.siret().nullable(),
-    raison_sociale: z.string().nullable(),
+    raison_sociale: z.string().nullable().openapi({
+      example: "CAMPUS FONDERIE DE L'IMAGE",
+    }),
     adresse: z.string().nullable(),
     formateur_address: z.string().nullable(),
     formateur_zip_code: z.string().nullable(),

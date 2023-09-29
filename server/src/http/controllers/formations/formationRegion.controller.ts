@@ -12,8 +12,6 @@ const config = {
 }
 
 export default (server: Server) => {
-  // @Tags("Formations par région")
-  // @OperationId("getFormations")
   server.get(
     "/v1/formationsParRegion",
     {

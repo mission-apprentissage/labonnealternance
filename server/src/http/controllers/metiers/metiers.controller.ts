@@ -11,13 +11,6 @@ const config = {
 }
 
 export default (server: Server) => {
-  // /**
-  //  * Retourne la liste des métiers associé à une formation identifiée par son CFD dans le chemin de l'appel
-  //  * @returns {Promise<TMetiersResponseSuccess | TResponseError>}
-  //  */
-  // @Response<"List unavailable">(500)
-  // @OperationId("getMetiersParCfd")
-  // @Tags("Metiers")
   server.get(
     "/v1/metiers/metiersParFormation/:cfd",
     {
@@ -31,13 +24,6 @@ export default (server: Server) => {
     }
   )
 
-  // /**
-  //  * Retourne la liste des métiers associé à un établissment identifié par son siret dans le chemin de l'appel
-  //  * @returns {Promise<TMetiersResponseSuccess | TResponseError>}
-  //  */
-  // @Response<"List unavailable">(500)
-  // @OperationId("getMetiersParEtablissement")
-  // @Tags("Metiers")
   server.get(
     "/v1/metiers/metiersParEtablissement/:siret",
     {
@@ -51,14 +37,6 @@ export default (server: Server) => {
     }
   )
 
-  // /**
-  //  * Retourne la liste de tous les métiers référencés sur LBA
-  //  * @returns {Promise<TMetiersResponseSuccess | TResponseError>}
-  //  */
-  // @Response<"List unavailable">(500)
-  // @OperationId("getTousLesMetiers")
-  // public async getTousLesMetiers(): Promise<TGetMetiersResponseSuccess | TResponseError> {
-  // @Tags("Metiers")
   server.get(
     "/v1/metiers/all",
     {
@@ -71,18 +49,6 @@ export default (server: Server) => {
     }
   )
 
-  // /**
-  //  * Retourne une liste de métiers enrichis avec les codes romes associés correspondant aux critères en paramètres
-  //  * @param {string} title le(s) terme(s) de recherche
-  //  * @param {string[]} romes (optionnel) critère de codes romes
-  //  * @param {string[]} rncps (optionnel) critère de codes RNCPs
-  //  * @returns {Promise<TGetMetiersEnrichisResponseSuccess | TResponseError>}
-  //  */
-  // @Response<"Missing parameters">(400)
-  // @Response<"List unavailable">(500)
-  // @OperationId("getMetiers")
-  // public async getMetiers(@Query() title: string, @Query() romes?: string, @Query() rncps?: string): Promise<TGetMetiersEnrichisResponseSuccess> {
-  // @Tags("Metiers")
   server.get(
     "/v1/metiers",
     {
@@ -96,18 +62,6 @@ export default (server: Server) => {
     }
   )
 
-  // /**
-  //  * Retourne une liste de métiers enrichis avec les codes romes associés correspondant aux critères en paramètres
-  //  * @param {string} label le(s) terme(s) de recherche
-  //  * @param {string[]} romes (optionnel) critère de codes romes
-  //  * @param {string[]} rncps (optionnel) critère de codes RNCPs
-  //  * @returns {Promise<TGetAppellationsRomesResponseSuccess | TResponseError>}
-  //  */
-  // @Response<"Missing parameters">(400)
-  // @Response<"List unavailable">(500)
-  // @OperationId("getCoupleAppellationRomeIntitule")
-  // public async getCoupleAppelationRomeIntitule(@Query() label: string): Promise<TGetAppellationsRomesResponseSuccess> {
-  // @Tags("Metiers")
   server.get(
     "/v1/metiers/intitule",
     {
