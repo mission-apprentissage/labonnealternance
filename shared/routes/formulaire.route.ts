@@ -1,7 +1,7 @@
 import { z } from "zod"
 
 import { zObjectId } from "../models/common"
-import { ZJob } from "../models/job.model"
+import { ZJob, ZJobWrite } from "../models/job.model"
 import { ZRecruiter, ZRecruiterWritable } from "../models/recruiter.model"
 
 import { IRoutesDef } from "./common.routes"
@@ -69,13 +69,12 @@ export const zFormulaireRoute = {
       // TODO_SECURITY_FIX session gérée par cookie server
       // TODO_SECURITY_FIX limiter les champs autorisés à la modification. Utiliser un "ZRecruiterNew" (ou un autre nom du genre ZFormulaire)
       params: z.object({ establishment_id: z.string() }).strict(),
-      // TODO ANY TO BE FIXED
-      // body: ZJobWritable,
-      body: z.any(),
+      // TODO nonstrict TO BE FIXED on the frontend
+      body: ZJobWrite.nonstrict(),
       response: {
         // TODO ANY TO BE FIXED
         // "2xx": ZRecruiter,
-        "2xx": z.any(),
+        "200": z.any(),
       },
       securityScheme: {
         auth: "none",
@@ -219,7 +218,7 @@ export const zFormulaireRoute = {
     "/formulaire/offre/:jobId": {
       params: z.object({ jobId: zObjectId }).strict(),
       querystring: z.object({ siret_formateur: z.string() }).strict(),
-      body: z.object({ cfa_read_company_detail_at: z.date() }).strict(),
+      body: z.object({ cfa_read_company_detail_at: z.string() }).strict(),
       response: {
         "2xx": ZJob.nullable(),
       },

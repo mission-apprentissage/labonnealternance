@@ -185,5 +185,6 @@ export const zFormationCatalogueSchema = z
   .extend(etablissementFormateurSchema.shape)
   .extend(etablissementGestionnaireSchema.shape)
   .extend(etablissementReferenceSchema.shape)
+  .openapi("FormationCatalogue")
 
 export type IFormationCatalogue = z.output<typeof zFormationCatalogueSchema>

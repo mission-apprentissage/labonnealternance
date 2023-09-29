@@ -129,4 +129,5 @@ export const ZRomeDetail = z
     mobilitesEvolutionsAppellationsVersAppellations: z.array(z.any()),
   })
   .strict()
+  .openapi("RomeDetail")
 //.deepPartial()

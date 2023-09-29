@@ -34,3 +34,14 @@ export const zRefererHeaders = z
     referer: z.string().optional(),
   })
   .passthrough()
+
+export const zRomesParams = (imcompatibleWith: "romeDomain" | "rncp") =>
+  z
+    .string()
+    .optional()
+    .openapi({
+      param: {
+        description: `Une liste de codes ROME séparés par des virgules correspondant au(x) métier(s) recherché(s). Maximum 20.<br />rome et ${imcompatibleWith} sont incompatibles.<br/><strong>Au moins un des deux doit être renseigné.</strong>`,
+      },
+      example: "F1603,I1308",
+    })

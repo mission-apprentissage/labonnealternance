@@ -27,6 +27,8 @@ export const zMetiersRoutes = {
       },
       openapi: {
         description: "Récupérer la liste des noms des métiers du référentiel de La bonne alternance pour une formation donnée",
+        tags: ["Metiers"] as string[],
+        operationId: "getMetiersParCfd",
       },
     },
     "/v1/metiers/metiersParEtablissement/:siret": {
@@ -44,6 +46,8 @@ export const zMetiersRoutes = {
       },
       openapi: {
         description: "Récupérer la liste des noms des métiers du référentiel de La bonne alternance pour un établissement de formation",
+        tags: ["Metiers"] as string[],
+        operationId: "getMetiersParEtablissement",
       },
     },
     "/v1/metiers/all": {
@@ -53,6 +57,11 @@ export const zMetiersRoutes = {
       securityScheme: {
         auth: "none",
         role: "all",
+      },
+      openapi: {
+        description: "Retourne la liste de tous les métiers référencés sur LBA",
+        tags: ["Metiers"] as string[],
+        operationId: "getTousLesMetiers",
       },
     },
     "/v1/metiers": {
@@ -91,16 +100,22 @@ export const zMetiersRoutes = {
           })
           .strict(),
       },
-      openapi: { description: "Récupérer la liste des noms des métiers du référentiel de La bonne alternance" },
       securityScheme: {
         auth: "none",
         role: "all",
+      },
+      openapi: {
+        description: "Récupérer la liste des noms des métiers du référentiel de La bonne alternance",
+        tags: ["Metiers"] as string[],
+        operationId: "getMetiers",
       },
     },
     "/v1/metiers/intitule": {
       querystring: z
         .object({
-          label: z.string().nonempty(),
+          label: z.string().nonempty().openapi({
+            description: "le(s) terme(s) de recherche",
+          }),
         })
         .strict(),
       response: {
@@ -109,6 +124,11 @@ export const zMetiersRoutes = {
       securityScheme: {
         auth: "none",
         role: "all",
+      },
+      openapi: {
+        description: "Retourne une liste de métiers enrichis avec les codes romes associés correspondant aux critères en paramètres",
+        tags: ["Metiers"] as string[],
+        operationId: "getCoupleAppellationRomeIntitule",
       },
     },
   },

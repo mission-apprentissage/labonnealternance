@@ -49,7 +49,7 @@ export default function PropositionOffreId() {
     }
 
     fetchData().catch(console.error)
-  }, [])
+  }, [idFormulaire])
 
   if (!job) {
     return <LoadingEmptySpace />

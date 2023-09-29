@@ -26,6 +26,7 @@ export const ZApiError = z
     statusText: z.string().optional(),
   })
   .strict()
+  .openapi("ApiError")
 
 export const ZLbarError = z
   .object({
@@ -33,3 +34,4 @@ export const ZLbarError = z
     message: z.string(),
   })
   .strict()
+  .openapi("ZLbarError")

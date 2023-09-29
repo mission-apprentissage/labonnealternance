@@ -1,9 +1,8 @@
 import Boom from "boom"
-import { pick } from "lodash-es"
 import moment from "moment"
 import type { ObjectId } from "mongodb"
 import type { FilterQuery, ModelUpdateOptions, UpdateQuery } from "mongoose"
-import { IDelegation, IJob, IRecruiter, IUserRecruteur } from "shared"
+import { IDelegation, IJob, IJobWritable, IRecruiter, IUserRecruteur } from "shared"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
@@ -18,6 +17,7 @@ import dayjs from "./dayjs.service"
 import { getEtablissement, sendEmailConfirmationEntreprise } from "./etablissement.service"
 import { ILbaJobEsResult } from "./lbajob.service.types"
 import mailer from "./mailer.service"
+import { getRomeDetailsFromAPI } from "./rome.service"
 import { getUser, getUserStatus } from "./userRecruteur.service"
 
 const esClient = getElasticInstance()
@@ -237,49 +237,55 @@ export const getFormulaires = async (query: FilterQuery<IRecruiter>, select: obj
 
 /**
  * @description Create job offer for formulaire
- * @param {Object} payload
- * @param {IOffreExtended} payload.job
- * @param {IUserRecruteur["establishment_id"]} payload.id
- * @returns {Promise<IRecruiter>}
  */
-export const createJob = async ({ job, id }: { job: Partial<IOffreExtended>; id: IUserRecruteur["establishment_id"] }): Promise<IRecruiter> => {
+export const createJob = async ({ job, id }: { job: IJobWritable; id: IUserRecruteur["establishment_id"] }): Promise<IRecruiter> => {
   // get user data
   const user = await getUser({ establishment_id: id })
   const userStatus: ETAT_UTILISATEUR | null = user ? getUserStatus(user.status) : null
   const isUserAwaiting = userStatus !== ETAT_UTILISATEUR.VALIDE
+
+  const jobPartial: Partial<IJob> = job
+  jobPartial.job_status = user && isUserAwaiting ? JOB_STATUS.EN_ATTENTE : JOB_STATUS.ACTIVE
   // get user activation state if not managed by a CFA
-  if (user && isUserAwaiting) {
-    // upon user creation, if user is awaiting validation, update job status to "En attente"
-    job.job_status = JOB_STATUS.EN_ATTENTE
+  const codeRome = job.rome_code[0]
+  const romeData = await getRomeDetailsFromAPI(codeRome)
+  if (!romeData) {
+    throw Boom.internal(`could not find rome infos for rome=${codeRome}`)
   }
+  const creationDate = new Date()
+  const { job_start_date = creationDate } = job
+  const updatedJob: Partial<IJob> = Object.assign(job, {
+    job_start_date,
+    rome_detail: romeData,
+    job_creation_date: creationDate,
+    job_expiration_date: dayjs(job_start_date).add(1, "month").toDate(),
+    job_update_date: creationDate,
+  })
   // insert job
-  const updatedFormulaire = await createOffre(id, job)
-
+  const updatedFormulaire = await createOffre(id, updatedJob)
   const { is_delegated, cfa_delegated_siret, jobs } = updatedFormulaire
-
-  job._id = updatedFormulaire.jobs.filter((x) => x.rome_label === job.rome_label)[0]._id
-
-  job.supprimer = `${config.publicUrl}/espace-pro/offre/${job._id}/cancel`
-  job.pourvue = `${config.publicUrl}/espace-pro/offre/${job._id}/provided`
-
+  const createdJob = jobs.at(jobs.length - 1)
+  if (!createdJob) {
+    throw Boom.internal("unexpected: no job found after job creation")
+  }
   // if first offer creation for an Entreprise, send specific mail
   if (jobs.length === 1 && is_delegated === false && user) {
     await sendEmailConfirmationEntreprise(user, updatedFormulaire)
     return updatedFormulaire
   }
 
+  let contactCFA: IUserRecruteur | null = null
   if (is_delegated) {
     if (!cfa_delegated_siret) {
       throw Boom.internal(`unexpected: could not find user recruteur CFA that created the job`)
     }
     // get CFA informations if formulaire is handled by a CFA
-    const contactCFA = await getUser({ establishment_siret: cfa_delegated_siret })
+    contactCFA = await getUser({ establishment_siret: cfa_delegated_siret })
     if (!contactCFA) {
       throw Boom.internal(`unexpected: could not find user recruteur CFA that created the job`)
     }
-    await sendMailNouvelleOffre(updatedFormulaire, job, contactCFA)
   }
-
+  await sendMailNouvelleOffre(updatedFormulaire, createdJob, contactCFA ?? undefined)
   return updatedFormulaire
 }
 
@@ -672,13 +678,12 @@ export async function sendDelegationMailToCFA(email: string, offre: IJob, recrui
   })
 }
 
-export async function sendMailNouvelleOffre(recruiter: IRecruiter, job: Partial<IOffreExtended>, contactCFA?: IUserRecruteur) {
+export async function sendMailNouvelleOffre(recruiter: IRecruiter, job: IJob, contactCFA?: IUserRecruteur) {
   const isRecruteurAwaiting = recruiter.status === RECRUITER_STATUS.EN_ATTENTE_VALIDATION
   if (isRecruteurAwaiting) {
     return
   }
   const { is_delegated, email, last_name, first_name, establishment_raison_sociale, establishment_siret } = recruiter
-
   const establishmentTitle = establishment_raison_sociale ?? establishment_siret
   // Send mail with action links to manage offers
   await mailer.sendEmail({
@@ -693,7 +698,7 @@ export async function sendMailNouvelleOffre(recruiter: IRecruiter, job: Partial<
       prenom: is_delegated ? contactCFA?.first_name : first_name,
       raison_sociale: establishmentTitle,
       mandataire: recruiter.is_delegated,
-      offre: pick(job, ["rome_appellation_label", "job_start_date", "type", "job_level_label"]),
+      offre: job,
       lba_url: `${config.publicUrl}/recherche-apprentissage?&display=list&page=fiche&type=matcha&itemId=${job._id}`,
     },
   })

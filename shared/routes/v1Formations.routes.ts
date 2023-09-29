@@ -2,7 +2,7 @@ import { z } from "../helpers/zodWithOpenApi"
 import { ZLbacError } from "../models/lbacError.model"
 import { ZLbaItemFormationResult } from "../models/lbaItem.model"
 
-import { zCallerParam, zDiplomaParam, zGetFormationOptions, zRefererHeaders } from "./_params"
+import { zCallerParam, zDiplomaParam, zGetFormationOptions, zRefererHeaders, zRomesParams } from "./_params"
 import { IRoutesDef, ZResError } from "./common.routes"
 
 export const zV1FormationsRoutes = {
@@ -11,16 +11,7 @@ export const zV1FormationsRoutes = {
       // TODO_SECURITY_FIX vérifier ce qu'on fait des emails et des téléphones et modifier les modèles en conséquences
       querystring: z
         .object({
-          romes: z
-            .string()
-            .optional()
-            .openapi({
-              param: {
-                description:
-                  "Une liste de codes ROME séparés par des virgules correspondant au(x) métier(s) recherché(s). Maximum 20.<br />rome et romeDomain sont incompatibles.<br/><strong>Au moins un des deux doit être renseigné.</strong>",
-              },
-              example: "F1603,I1308",
-            }),
+          romes: zRomesParams("romeDomain"),
           romeDomain: z
             .string()
             .optional()
