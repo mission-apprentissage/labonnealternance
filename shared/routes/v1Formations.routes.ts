@@ -1,7 +1,8 @@
 import { z } from "../helpers/zodWithOpenApi"
 import { ZLbacError } from "../models/lbacError.model"
-import { ZLbaItemFormation } from "../models/lbaItem.model"
+import { ZLbaItemFormationResult } from "../models/lbaItem.model"
 
+import { zCallerParam, zDiplomaParam, zGetFormationOptions, zRefererHeaders } from "./_params"
 import { IRoutesDef, ZResError } from "./common.routes"
 
 export const zV1FormationsRoutes = {
@@ -58,51 +59,14 @@ export const zV1FormationsRoutes = {
               },
               example: 30,
             }),
-          diploma: z
-            .union([z.string().startsWith("3"), z.string().startsWith("4"), z.string().startsWith("5"), z.string().startsWith("6"), z.string().startsWith("7")])
-            .optional()
-            .openapi({
-              param: {
-                description: "Le niveau de diplôme requis. Si précisé, doit contenir à minima le chiffre d'une seule des valeurs autorisées",
-              },
-              type: "string",
-              example: "3",
-            }),
-          caller: z
-            .string()
-            .optional()
-            .openapi({
-              param: {
-                description: "Votre raison sociale ou le nom de votre produit qui fait appel à l'API idéalement préfixé par une adresse email de contact",
-              },
-              example: "contact@domaine nom_de_societe",
-            }),
-          options: z
-            .literal("with_description")
-            .optional()
-            .openapi({
-              param: {
-                description: "Ajoute la description au résultat de retour",
-              },
-              example: "with_description",
-            }),
+          diploma: zDiplomaParam.optional(),
+          caller: zCallerParam.optional(),
+          options: zGetFormationOptions,
         })
         .strict(),
-      headers: z
-        .object({
-          referer: z.string().optional(),
-        })
-        .passthrough(),
+      headers: zRefererHeaders,
       response: {
-        "200": z
-          .object({
-            results: z.array(ZLbaItemFormation).openapi({ description: "Un tableau de formations correspondantes aux critères" }),
-          })
-          .strict()
-          .openapi({
-            description:
-              "Un tableau contenant la liste des formations correspondants aux critères transmis en paramètre de la requête. Le tableau peut être vide si aucune formation ne correspond.",
-          }),
+        "200": ZLbaItemFormationResult,
         "400": z.union([ZResError, ZLbacError]).openapi({
           description: "Bad Request",
         }),
@@ -130,11 +94,7 @@ export const zV1FormationsRoutes = {
         })
         .strict(),
       response: {
-        "200": z
-          .object({
-            results: z.array(ZLbaItemFormation),
-          })
-          .strict(),
+        "200": ZLbaItemFormationResult,
         "400": z.union([ZResError, ZLbacError]),
         "404": z.union([ZResError, ZLbacError]),
         "500": z.union([ZResError, ZLbacError]),
@@ -169,9 +129,15 @@ export const zV1FormationsRoutes = {
               .strip(),
           })
           .strip(),
-        "400": z.union([ZResError, ZLbacError]),
-        "404": z.union([ZResError, ZLbacError]),
-        "500": z.union([ZResError, ZLbacError]),
+        "400": z.union([ZResError, ZLbacError]).openapi({
+          description: "Bad Request",
+        }),
+        "404": z.union([ZResError, ZLbacError]).openapi({
+          description: "Not Found",
+        }),
+        "500": z.union([ZResError, ZLbacError]).openapi({
+          description: "Internal Server Error",
+        }),
       },
       securityScheme: {
         auth: "none",
