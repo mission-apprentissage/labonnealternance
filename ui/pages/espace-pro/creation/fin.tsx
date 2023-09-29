@@ -10,6 +10,10 @@ import { InfoCircle } from "../../../theme/components/icons"
 import { MailCloud } from "../../../theme/components/logos"
 import { getUser, sendValidationLink } from "../../../utils/api"
 
+function parseQueryString(value: string | string[]): string {
+  return Array.isArray(value) ? value[0] : value
+}
+
 export default function DepotRapideFin() {
   const [disableLink, setDisableLink] = useState(false)
   const [userIsValidated, setUserIsValidated] = useState(false)
@@ -19,23 +23,17 @@ export default function DepotRapideFin() {
   const client = useQueryClient()
 
   const { widget } = useContext(WidgetContext)
-  const {
-    job: jobString,
-    email,
-    withDelegation,
-    fromDashboard,
-    userId,
-    establishment_id,
-  }: { job: string; email: string; withDelegation: string; fromDashboard: string; userId: string; establishment_id: string } = router.query as any
+  const { job: jobString, email, withDelegation, fromDashboard, userId, establishment_id } = router.query
+  const fromDashboardString = parseQueryString(fromDashboard)
 
-  const job = JSON.parse(jobString ?? "{}")
-  const fromDash = JSON.parse(fromDashboard ?? "{}")
+  const job = JSON.parse(parseQueryString(jobString) ?? "{}")
+  const fromDash = fromDashboardString === "true"
 
   /**
    * KBA 20230130 : retry set to false to avoid waiting for failure if user is from dashboard (userId is not passed)
    * - To be changed with userID in URL params
    */
-  const { isIdle } = useQuery("userdetail", () => getUser(userId), {
+  const { isFetched } = useQuery("userdetail", () => getUser(userId), {
     enabled: userId ? true : false,
     onSettled: (data) => {
       const latestStatus = data?.data?.status.pop().status || false
@@ -58,9 +56,9 @@ export default function DepotRapideFin() {
   })
 
   // TODO_AB to redirect
-  if (!job && !email && !withDelegation && !fromDashboard && !userId) return <></>
+  if (!job && !email && !withDelegation && !fromDash && !userId) return <></>
 
-  if (!isIdle) {
+  if (!isFetched) {
     return <LoadingEmptySpace />
   }
 
@@ -191,7 +189,7 @@ export default function DepotRapideFin() {
           <Heading fontSize="24px" mb="16px" mt={widget?.mobile ? "10px" : "0px"}>
             <div dangerouslySetInnerHTML={{ __html: title }} />
           </Heading>
-          {fromDash ? null : userIsValidated ? <ValidatedAccountDescription /> : <AwaitingAccountDescription />}
+          {userIsValidated ? fromDash ? null : <ValidatedAccountDescription /> : <AwaitingAccountDescription />}
           <Box bg="#F6F6F6" p={4}>
             <Stack direction="column" spacing="16px">
               <Heading fontSize="20px">Récapitulatif de votre besoin</Heading>
