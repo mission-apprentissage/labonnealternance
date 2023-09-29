@@ -11,20 +11,6 @@ import { Server } from "../../server"
 
 import { contextCreateSchema } from "./validators"
 
-// @Tags("Appointment Request")
-// @OperationId("appointmentCreateContext")
-// @Example<TCreateContextResponse>({
-//   etablissement_formateur_entreprise_raison_sociale: "CAMPUS FONDERIE DE L'IMAGE",
-//   intitule_long: "METIERS D'ART ET DU DESIGN (DN)",
-//   lieu_formation_adresse: "80 Rue Jules Ferry",
-//   code_postal: "93170",
-//   etablissement_formateur_siret: "35386977900036",
-//   cfd: "24113401",
-//   localite: "Bagnolet",
-//   id_rco_formation: "14_AF_0000095539|14_SE_0000501120##14_SE_0000598458##14_SE_0000642556##14_SE_0000642557##14_SE_0000825379##14_SE_0000825382|101249",
-//   cle_ministere_educatif: "101249P01313538697790003635386977900036-93006#L01",
-//   form_url: "https://labonnealternance.apprentissage.beta.gouv.fr/espace-pro/form?referrer=affelnet&cleMinistereEducatif=101249P01313538697790003635386977900036-93006%23L01",
-// })
 export default (server: Server) => {
   server.post(
     "/appointment-request/context/create",

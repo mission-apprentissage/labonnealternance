@@ -160,6 +160,13 @@ program.command("migrations:create").description("Run migrations create").requir
 
 // Temporaire, one shot à executer en recette et prod
 program
+  .command("migration:remove-versionkey-from-recruiters")
+  .description("Retirer le champ is_delegated des offres")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("migration:remove-versionkey-from-recruiters"))
+
+// Temporaire, one shot à executer en recette et prod
+program
   .command("migration:remove-delegated-from-jobs")
   .description("Retirer le champ is_delegated des offres")
   .option("-q, --queued", "Run job asynchronously", false)

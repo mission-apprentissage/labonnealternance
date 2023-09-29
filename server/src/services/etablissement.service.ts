@@ -707,7 +707,7 @@ export const sendEmailConfirmationEntreprise = async (user: IUserRecruteur, recr
         prenom: user.first_name,
         email: user.email,
         confirmation_url: url,
-        offre: pick(offre, ["rome_appellation_label", "job_start_date", "type", "job_level_label"]),
+        offre,
         isUserAwaiting,
       },
     })
