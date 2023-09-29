@@ -1,4 +1,4 @@
-import { ObjectId } from "bson"
+import BSON, { type ObjectId } from "bson"
 import type { IndexOptions, IndexSpecification } from "mongodb"
 import { z, ZodType } from "zod"
 
@@ -13,7 +13,7 @@ export interface IModelDescriptor {
 export const zObjectId = z
   .custom<ObjectId | string>((v) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return ObjectId.isValid(v as any)
+    return BSON.ObjectId.isValid(v as any)
   })
-  .transform((v) => new ObjectId(v))
+  .transform((v) => new BSON.ObjectId(v))
   .describe("Identifiant unique")

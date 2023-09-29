@@ -1,6 +1,6 @@
 import { captureException, getCurrentHub, runWithAsyncContext } from "@sentry/node"
 import { formatDuration, intervalToDuration } from "date-fns"
-import { ObjectId } from "mongodb"
+import mongoose from "mongoose"
 
 import { IInternalJobs } from "@/common/model/schema/internalJobs/internalJobs.types"
 import { db } from "@/common/mongodb"
@@ -72,7 +72,7 @@ const runner = async (job: IInternalJobs, jobFunc: () => Promise<unknown>): Prom
 
   jobLogger.info("job started")
   const startDate = new Date()
-  await updateJob(new ObjectId(job._id), {
+  await updateJob(new mongoose.Types.ObjectId(job._id), {
     status: "running",
     started_at: startDate,
   })
@@ -92,7 +92,7 @@ const runner = async (job: IInternalJobs, jobFunc: () => Promise<unknown>): Prom
   const ts = endDate.getTime() - startDate.getTime()
   const duration = formatDuration(intervalToDuration({ start: startDate, end: endDate })) || `${ts}ms`
   const status = error ? "errored" : "finished"
-  await updateJob(new ObjectId(job._id), {
+  await updateJob(new mongoose.Types.ObjectId(job._id), {
     status: error ? "errored" : "finished",
     output: { duration, result, error },
     ended_at: endDate,

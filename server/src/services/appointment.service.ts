@@ -1,5 +1,4 @@
-import { ObjectId } from "mongodb"
-import { FilterQuery } from "mongoose"
+import type { ObjectId, FilterQuery } from "mongoose"
 import { IAppointment } from "shared"
 
 import { Appointment } from "../common/model/index"

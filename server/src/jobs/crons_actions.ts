@@ -1,5 +1,5 @@
 import cronParser from "cron-parser"
-import { ObjectId } from "mongodb"
+import mongoose from "mongoose"
 
 import { db } from "@/common/mongodb"
 
@@ -65,7 +65,7 @@ export async function cronsScheduler(): Promise<void> {
       sync: true,
     })
 
-    await updateJob(new ObjectId(cron._id), {
+    await updateJob(new mongoose.Types.ObjectId(cron._id), {
       scheduled_for: next.toDate(),
     })
   }
