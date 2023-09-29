@@ -76,7 +76,6 @@ export default (server: Server) => {
     }
   )
 
-  // @OperationId("getJobs")
   server.get(
     "/v1/jobs/bulk",
     {
@@ -100,7 +99,6 @@ export default (server: Server) => {
     }
   )
 
-  // @OperationId("createEstablishment")
   server.post(
     "/v1/jobs/establishment",
     {
@@ -142,7 +140,6 @@ export default (server: Server) => {
     }
   )
 
-  // @OperationId("createJob")
   server.post(
     "/v1/jobs/:establishmentId",
     {
@@ -207,7 +204,6 @@ export default (server: Server) => {
     }
   )
 
-  // @OperationId("updateJob")
   server.patch(
     "/v1/jobs/:jobId",
     {
@@ -232,7 +228,6 @@ export default (server: Server) => {
     }
   )
 
-  // @OperationId("getDelegation")
   server.get(
     "/v1/jobs/delegations/:jobId",
     {
@@ -272,7 +267,6 @@ export default (server: Server) => {
     }
   )
 
-  // @OperationId("createDelegation")
   server.post(
     "/v1/jobs/delegations/:jobId",
     {
@@ -299,7 +293,6 @@ export default (server: Server) => {
     }
   )
 
-  // @OperationId("setJobAsProvided")
   server.post(
     "/v1/jobs/provided/:jobId",
     {
@@ -326,7 +319,6 @@ export default (server: Server) => {
     }
   )
 
-  // @OperationId("setJobAsCanceled")
   server.post(
     "/v1/jobs/canceled/:jobId",
     {
@@ -355,7 +347,6 @@ export default (server: Server) => {
     }
   )
 
-  // @OperationId("extendJobExpiration")
   server.post(
     "/v1/jobs/extend/:jobId",
     {
@@ -415,7 +406,6 @@ export default (server: Server) => {
     }
   )
 
-  // @OperationId("getCompany")
   server.get(
     "/v1/jobs/company/:siret",
     {
@@ -447,7 +437,6 @@ export default (server: Server) => {
     }
   )
 
-  // @OperationId("getLbaJob")
   server.get(
     "/v1/jobs/matcha/:id",
     {
@@ -488,7 +477,6 @@ export default (server: Server) => {
     }
   )
 
-  // @OperationId("statsViewLbaJob")
   server.post(
     "/v1/jobs/matcha/:id/stats/view-details",
     {
@@ -503,7 +491,6 @@ export default (server: Server) => {
     }
   )
 
-  // @OperationId("getPeJob")
   server.get(
     "/v1/jobs/job/:id",
     {

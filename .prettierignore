@@ -1,4 +1,2 @@
 .yarn
 .talismanrc
-server/src/generated
-server/static/generated

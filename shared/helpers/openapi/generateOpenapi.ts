@@ -59,7 +59,7 @@ function addOpenApiOperation(path: string, method: "get" | "put" | "post" | "del
   })
 }
 
-export function generateOpenApiSchema() {
+export function generateOpenApiSchema(version: string, env: string, publicUrl: string) {
   const registry = new OpenAPIRegistry()
 
   for (const [method, pathRoutes] of Object.entries(zRoutes)) {
@@ -73,7 +73,7 @@ export function generateOpenApiSchema() {
   return generator.generateDocument({
     info: {
       title: "La bonne alternance",
-      version: "V1.0",
+      version,
       description: "Cherchez des formations et des emplois en alternance",
       license: {
         name: "MIT",
@@ -87,20 +87,8 @@ export function generateOpenApiSchema() {
     openapi: "3.1.0",
     servers: [
       {
-        url: "https://labonnealternance.apprentissage.beta.gouv.fr",
-        description: "Production",
-      },
-      {
-        url: "https://labonnealternance-recette.apprentissage.beta.gouv.fr",
-        description: "Recette",
-      },
-      {
-        url: "https://labonnealternance-next.apprentissage.beta.gouv.fr",
-        description: "Next",
-      },
-      {
-        url: "http://localhost:5001",
-        description: "Local",
+        url: publicUrl,
+        description: env,
       },
     ],
   })

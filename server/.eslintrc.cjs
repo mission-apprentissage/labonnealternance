@@ -11,15 +11,6 @@ module.exports = {
   parserOptions: {
     project: "server/tsconfig.json",
   },
-  overrides: [
-    {
-      files: ["src/generated/**/*.ts"],
-      rules: {
-        "@eslint-community/eslint-comments/disable-enable-pair": "off",
-        "@eslint-community/eslint-comments/no-unlimited-disable": "off",
-      },
-    },
-  ],
   settings: {
     "import/resolver": {
       typescript: {
