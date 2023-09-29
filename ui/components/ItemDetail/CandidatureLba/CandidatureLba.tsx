@@ -100,6 +100,7 @@ const CandidatureLba = ({ item, fakeLocalStorage = undefined }) => {
                 <Modal isOpen={isOpen} onClose={onModalClose} closeOnOverlayClick={false} size="3xl">
                   <ModalOverlay />
                   <ModalContent>
+                    {/* @ts-expect-error: Chakra error */}
                     <ModalHeader paddingTop="8px" paddingBottom="0" align="right">
                       <Button
                         fontSize="14px"
