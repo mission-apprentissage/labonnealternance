@@ -6,6 +6,7 @@ import * as Yup from "yup"
 
 import { AUTHTYPE } from "../../common/contants"
 import useAuth from "../../common/hooks/useAuth"
+import { LoadingEmptySpace } from "../../components/espace_pro"
 import AnimationContainer from "../../components/espace_pro/AnimationContainer"
 import CustomInput from "../../components/espace_pro/CustomInput"
 import InformationLegaleEntreprise from "../../components/espace_pro/InformationLegaleEntreprise"
@@ -50,7 +51,7 @@ function Compte() {
   })
 
   if (isLoading) {
-    return <Text>Chargement en cours...</Text>
+    return <LoadingEmptySpace label="Chargement en cours" />
   }
 
   return (
