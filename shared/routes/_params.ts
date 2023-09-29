@@ -10,14 +10,17 @@ export const zDiplomaParam = z
     example: "3",
   })
 
-export const zCallerParam = z.string().openapi({
-  // Duplicated description because we have description when used in queryparams vs body
-  param: {
+export const zCallerParam = z
+  .string()
+  .openapi({
+    // Duplicated description because we have description when used in queryparams vs body
+    param: {
+      description: "Votre raison sociale ou le nom de votre produit qui fait appel à l'API idéalement préfixé par une adresse email de contact",
+    },
     description: "Votre raison sociale ou le nom de votre produit qui fait appel à l'API idéalement préfixé par une adresse email de contact",
-  },
-  description: "Votre raison sociale ou le nom de votre produit qui fait appel à l'API idéalement préfixé par une adresse email de contact",
-  example: "contact@domaine nom_de_societe",
-})
+    example: "contact@domaine nom_de_societe",
+  })
+  .optional()
 
 export const zGetFormationOptions = z
   .literal("with_description")
@@ -60,8 +63,9 @@ export const ZLatitudeParam = z.coerce
   .optional()
   .openapi({
     param: {
-      description: "search center latitude. Without latitude, the search will target whole France",
+      description: "La latitude du centre de recherche. Nécessaire avec insee et longitude pour une recherche localisée.",
     },
+    example: 48.845,
   })
 
 export const ZLongitudeParam = z.coerce
@@ -69,8 +73,9 @@ export const ZLongitudeParam = z.coerce
   .optional()
   .openapi({
     param: {
-      description: "search center longitude. Without longitude, the search will target whole France",
+      description: "La longitude du centre de recherche. Nécessaire avec latitude et insee pour une recherche localisée.",
     },
+    example: 2.3752,
   })
 
 export const ZRadiusParam = z.coerce
@@ -78,8 +83,9 @@ export const ZRadiusParam = z.coerce
   .optional()
   .openapi({
     param: {
-      description: "the search radius",
+      description: "Le rayon de recherche en kilomètres",
     },
+    example: 30,
   })
 
 export const zInseeParams = z

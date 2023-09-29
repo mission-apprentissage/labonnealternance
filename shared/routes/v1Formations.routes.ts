@@ -2,7 +2,7 @@ import { z } from "../helpers/zodWithOpenApi"
 import { ZLbacError } from "../models/lbacError.model"
 import { ZLbaItemFormationResult } from "../models/lbaItem.model"
 
-import { zCallerParam, zDiplomaParam, zGetFormationOptions, zRefererHeaders, zRomesParams } from "./_params"
+import { zCallerParam, zDiplomaParam, zGetFormationOptions, ZLatitudeParam, ZLongitudeParam, ZRadiusParam, zRefererHeaders, zRomesParams } from "./_params"
 import { IRoutesDef, ZResError } from "./common.routes"
 
 export const zV1FormationsRoutes = {
@@ -22,34 +22,9 @@ export const zV1FormationsRoutes = {
               },
               example: "F ou I13",
             }),
-          latitude: z.coerce
-            .number()
-            .optional()
-            .openapi({
-              param: {
-                description: "La latitude du centre de recherche. Nécessaire avec insee et longitude pour une recherche localisée.",
-              },
-              example: 48.845,
-            }),
-          longitude: z.coerce
-            .number()
-            .optional()
-            .openapi({
-              param: {
-                description: "La longitude du centre de recherche. Nécessaire avec latitude et insee pour une recherche localisée.",
-              },
-              example: 2.3752,
-            }),
-          radius: z.coerce
-            .number()
-            .default(30)
-            .optional()
-            .openapi({
-              param: {
-                description: "Le rayon de recherche en kilomètres",
-              },
-              example: 30,
-            }),
+          latitude: ZLatitudeParam,
+          longitude: ZLongitudeParam,
+          radius: ZRadiusParam.default(30),
           diploma: zDiplomaParam.optional(),
           caller: zCallerParam.optional(),
           options: zGetFormationOptions,
@@ -70,6 +45,8 @@ export const zV1FormationsRoutes = {
         role: "all",
       },
       openapi: {
+        tags: ["Formations"] as string[],
+        operationId: "getFormations",
         description: "Rechercher des formations en alternance pour un métier ou un ensemble de métiers autour d'un point géographique",
       },
     },
@@ -93,6 +70,11 @@ export const zV1FormationsRoutes = {
       securityScheme: {
         auth: "none",
         role: "all",
+      },
+      openapi: {
+        tags: ["Formations"] as string[],
+        operationId: "getFormation",
+        description: "Get one formation identified by it's clé ministère éducatif",
       },
     },
     "/v1/formations/formationDescription/:id": {
@@ -133,6 +115,11 @@ export const zV1FormationsRoutes = {
       securityScheme: {
         auth: "none",
         role: "all",
+      },
+      openapi: {
+        tags: ["Formations"] as string[],
+        operationId: "getFormationDescription",
+        description: "Get details for one formation identified by it's clé ministère éducatif",
       },
     },
   },

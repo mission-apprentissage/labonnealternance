@@ -140,8 +140,8 @@ const SatisfactionForm = ({ formType }) => {
           id,
           intention,
           iv,
-          formType,
         },
+        formType as string,
         setSendingState as any
       )
     },

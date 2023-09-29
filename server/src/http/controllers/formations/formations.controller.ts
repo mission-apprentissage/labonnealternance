@@ -12,8 +12,6 @@ const config = {
 }
 
 export default (server: Server) => {
-  // @Tags("Formations")
-  // @OperationId("getFormations")
   server.get(
     "/v1/formations",
     {
@@ -49,7 +47,6 @@ export default (server: Server) => {
     }
   )
 
-  // @OperationId("getFormation")
   server.get(
     "/v1/formations/formation/:id",
     {
@@ -89,7 +86,6 @@ export default (server: Server) => {
     }
   )
 
-  // @OperationId("getFormationDescription")
   server.get(
     "/v1/formations/formationDescription/:id",
     {

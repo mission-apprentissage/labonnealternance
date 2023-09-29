@@ -12,7 +12,9 @@ const allRecruiterStatus = Object.values(RECRUITER_STATUS)
 
 export const ZRecruiterWritable = z
   .object({
-    establishment_id: z.string().default(randomUUID).describe("Identifiant de formulaire unique"),
+    establishment_id: z.string().default(randomUUID).describe("Identifiant de formulaire unique").openapi({
+      default: "Random UUID",
+    }),
     establishment_raison_sociale: z.string().nullish().describe("Raison social de l'établissement"),
     establishment_enseigne: z.string().nullish().describe("Enseigne de l'établissement"),
     establishment_siret: z.string().describe("Numéro SIRET de l'établissement"),

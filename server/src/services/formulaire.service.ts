@@ -290,13 +290,9 @@ export const createJob = async ({ job, id }: { job: IJobWritable; id: IUserRecru
 }
 
 /**
- * @description Create job delegations
- * @param {Object} payload
- * @param {IJob["_id"]} payload.jobId
- * @param {string[]} payload.etablissementCatalogueIds
- * @returns {Promise<IRecruiter>}
+ * Create job delegations
  */
-export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }: { jobId: IJob["_id"]; etablissementCatalogueIds: string[] }): Promise<IRecruiter> => {
+export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }: { jobId: IJob["_id"] | string; etablissementCatalogueIds: string[] }): Promise<IRecruiter> => {
   const offreDocument = await getOffre(jobId)
   if (!offreDocument) {
     throw Boom.internal("Offre not found", { jobId, etablissementCatalogueIds })
