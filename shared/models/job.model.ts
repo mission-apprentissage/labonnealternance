@@ -22,7 +22,7 @@ export const ZDelegation = z
   .strict()
   .openapi("Delegation")
 
-export const ZJobWritable = z
+const ZJobFields = z
   .object({
     rome_label: z.string().nullish().describe("Libellé du métier concerné"),
     rome_appellation_label: z.string().nullish().describe("Libellé de l'appelation ROME"),
@@ -56,13 +56,13 @@ export const ZJobWritable = z
   .strict()
   .openapi("JobWritable")
 
-export const ZJob = ZJobWritable.extend({
+export const ZJob = ZJobFields.extend({
   _id: zObjectId,
 })
   .strict()
   .openapi("Job")
 
-export const ZJobWrite = ZJobWritable.pick({
+export const ZJobWrite = ZJobFields.pick({
   rome_appellation_label: true,
   rome_code: true,
   job_type: true,
@@ -81,5 +81,5 @@ export const ZJobWrite = ZJobWritable.pick({
 export type IDelegation = z.output<typeof ZDelegation>
 
 export type IJob = z.output<typeof ZJob>
-export type IJobWrite = z.output<typeof ZJobWrite>
+export type IJobWritable = z.output<typeof ZJobWrite>
 export type IJobJson = Jsonify<z.input<typeof ZJob>>
