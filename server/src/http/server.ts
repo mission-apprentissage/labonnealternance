@@ -12,6 +12,7 @@ import { SecurityScheme } from "shared/routes/common.routes"
 import config from "../config"
 import { initBrevoWebhooks } from "../services/brevo.service"
 
+import appointmentsController from "./controllers/appointments/appointments.controller"
 import formationsRegionV1Route from "./controllers/formations/formationRegion.controller"
 import formationsV1Route from "./controllers/formations/formations.controller"
 import jobsV1Route from "./controllers/jobs/jobs.controller"
@@ -146,6 +147,8 @@ export async function bind(app: Server) {
   appointmentRequestRoute(app)
   partnersRoute(app)
   emailsRoute(app)
+
+  appointmentsController(app)
 
   /**
    * LBA-Recruteur

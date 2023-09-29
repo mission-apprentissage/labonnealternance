@@ -36,8 +36,9 @@ function EditPage() {
   const fetchData = async () => {
     try {
       setLoading(true)
-      const [parametersResponse, etablissementResponse] = await Promise.all([getEligibleTrainingsForAppointments(id), getEtablissement(id)])
+      const [eligibleTrainingsForAppointmentsResponse, etablissementResponse] = await Promise.all([getEligibleTrainingsForAppointments(id), getEtablissement(id)])
 
+      const { parameters: parametersResponse } = eligibleTrainingsForAppointmentsResponse
       setEligibleTrainingsForAppointmentResult(parametersResponse)
       setEtablissement(etablissementResponse)
     } catch (error) {
@@ -64,8 +65,9 @@ function EditPage() {
    * @returns {Promise<void>}
    */
   const refreshParameters = async () => {
-    const parametersResponse = await getEligibleTrainingsForAppointments(id)
+    const eligibleTrainingsForAppointmentsResponse = await getEligibleTrainingsForAppointments(id)
 
+    const { parameters: parametersResponse } = eligibleTrainingsForAppointmentsResponse
     setEligibleTrainingsForAppointmentResult(parametersResponse)
   }
 

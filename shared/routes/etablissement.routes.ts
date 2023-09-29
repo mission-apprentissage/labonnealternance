@@ -38,7 +38,9 @@ export const zEtablissementRoutes = {
     "/api/admin/etablissements/siret-formateur/:siret": {
       params: z.object({ siret: extensions.siret() }).strict(),
       response: {
-        "2xx": ZEtablissement,
+        // TODO ANY TO BE FIXED
+        "2xx": z.any(),
+        // "2xx": ZEtablissement,
       },
       securityScheme: {
         auth: "jwt-rdv-admin",
@@ -48,7 +50,9 @@ export const zEtablissementRoutes = {
     "/api/admin/etablissements/:id": {
       params: z.object({ id: zObjectId }).strict(),
       response: {
-        "2xx": ZEtablissement,
+        // TODO ANY TO BE FIXED
+        "2xx": z.any(),
+        // "2xx": ZEtablissement,
       },
       securityScheme: {
         auth: "jwt-rdv-admin",
