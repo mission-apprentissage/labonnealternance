@@ -37,9 +37,9 @@ const appointmentReplySchema = Joi.object({
 
 export default (server: Server) => {
   server.post(
-    "/api/appointment-request/validate",
+    "/appointment-request/validate",
     {
-      schema: zRoutes.post["/api/appointment-request/validate"],
+      schema: zRoutes.post["/appointment-request/validate"],
     },
     async (req, res) => {
       await userRequestSchema.validateAsync(req.body, { abortEarly: false })
@@ -204,9 +204,9 @@ export default (server: Server) => {
   )
 
   server.get(
-    "/api/appointment-request/context/recap",
+    "/appointment-request/context/recap",
     {
-      schema: zRoutes.get["/api/appointment-request/context/recap"],
+      schema: zRoutes.get["/appointment-request/context/recap"],
     },
     async (req, res) => {
       const { appointmentId } = req.query
@@ -237,9 +237,9 @@ export default (server: Server) => {
   )
 
   server.post(
-    "/api/appointment-request/reply",
+    "/appointment-request/reply",
     {
-      schema: zRoutes.post["/api/appointment-request/reply"],
+      schema: zRoutes.post["/appointment-request/reply"],
     },
     async (req, res) => {
       await appointmentReplySchema.validateAsync(req.body, { abortEarly: false })

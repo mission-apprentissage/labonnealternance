@@ -1,6 +1,6 @@
 import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Flex, Image, Link, Spinner, Text } from "@chakra-ui/react"
-import React, { useContext, useEffect, useState } from "react"
+import React, { Fragment, useContext, useEffect, useState } from "react"
 
 import { DisplayContext } from "../../context/DisplayContextProvider"
 import { SearchResultContext } from "../../context/SearchResultContextProvider"
@@ -187,11 +187,11 @@ const getTrainingDetails = (training) => {
             </Text>
             {training["sessions"][0].isPermanentEntry
               ? "Il est possible de s’inscrire à cette formation tout au long de l’année."
-              : training["sessions"].map((session) => (
-                  <>
+              : training["sessions"].map((session, i) => (
+                  <Fragment key={i}>
                     du {formatDate(session.startDate)} au {formatDate(session.endDate)}
                     <br />
-                  </>
+                  </Fragment>
                 ))}
           </Box>
         </Flex>

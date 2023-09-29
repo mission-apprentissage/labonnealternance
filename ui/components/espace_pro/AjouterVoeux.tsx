@@ -43,7 +43,7 @@ import { getFormulaire, getRelatedEtablissementsFromRome, getRomeDetail, postOff
 import DropdownCombobox from "./DropdownCombobox"
 
 const DATE_FORMAT = "YYYY-MM-DD"
-const URL_LBA = `${publicConfig.baseUrl}/api`
+const URL_LBA = publicConfig.apiEndpoint
 
 const ChampNombre = ({ value, max, name, handleChange, label }) => {
   return (

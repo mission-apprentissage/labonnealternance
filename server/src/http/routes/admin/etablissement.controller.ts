@@ -12,10 +12,10 @@ export default (server: Server) => {
    * Gets all etablissements
    * */
   server.get(
-    "/api/admin/etablissements",
+    "/admin/etablissements",
     {
-      schema: zRoutes.get["/api/admin/etablissements"],
-      preHandler: [server.auth(zRoutes.get["/api/admin/etablissements"].securityScheme)],
+      schema: zRoutes.get["/admin/etablissements"],
+      preHandler: [server.auth(zRoutes.get["/admin/etablissements"].securityScheme)],
     },
     async (req, res) => {
       const query = req.query.query ? JSON.parse(req.query.query) : {}
@@ -43,10 +43,10 @@ export default (server: Server) => {
    * Gets an etablissement from its siret_formateur.
    */
   server.get(
-    "/api/admin/etablissements/siret-formateur/:siret",
+    "/admin/etablissements/siret-formateur/:siret",
     {
-      schema: zRoutes.get["/api/admin/etablissements/siret-formateur/:siret"],
-      preHandler: [server.auth(zRoutes.get["/api/admin/etablissements/siret-formateur/:siret"].securityScheme)],
+      schema: zRoutes.get["/admin/etablissements/siret-formateur/:siret"],
+      preHandler: [server.auth(zRoutes.get["/admin/etablissements/siret-formateur/:siret"].securityScheme)],
     },
     async ({ params }, res) => {
       const etablissement = await Etablissement.findOne({ formateur_siret: params.siret })
@@ -63,10 +63,10 @@ export default (server: Server) => {
    * Gets an etablissement from its id.
    */
   server.get(
-    "/api/admin/etablissements/:id",
+    "/admin/etablissements/:id",
     {
-      schema: zRoutes.get["/api/admin/etablissements/:id"],
-      preHandler: [server.auth(zRoutes.get["/api/admin/etablissements/:id"].securityScheme)],
+      schema: zRoutes.get["/admin/etablissements/:id"],
+      preHandler: [server.auth(zRoutes.get["/admin/etablissements/:id"].securityScheme)],
     },
     async (req, res) => {
       const etablissement = await Etablissement.findById(req.params.id)
@@ -83,10 +83,10 @@ export default (server: Server) => {
    * Creates one or multiple etablissements.
    */
   server.post(
-    "/api/admin/etablissements",
+    "/admin/etablissements",
     {
-      schema: zRoutes.post["/api/admin/etablissements"],
-      preHandler: [server.auth(zRoutes.post["/api/admin/etablissements"].securityScheme)],
+      schema: zRoutes.post["/admin/etablissements"],
+      preHandler: [server.auth(zRoutes.post["/admin/etablissements"].securityScheme)],
     },
     async ({ body }, res) => {
       const { etablissements } = body
@@ -106,10 +106,10 @@ export default (server: Server) => {
    * Updates an etablissement.
    */
   server.patch(
-    "/api/admin/etablissements/:id",
+    "/admin/etablissements/:id",
     {
-      schema: zRoutes.patch["/api/admin/etablissements/:id"],
-      preHandler: [server.auth(zRoutes.patch["/api/admin/etablissements/:id"].securityScheme)],
+      schema: zRoutes.patch["/admin/etablissements/:id"],
+      preHandler: [server.auth(zRoutes.patch["/admin/etablissements/:id"].securityScheme)],
     },
     async ({ body, params }, res) => {
       const etablissement = await Etablissement.findById(params.id)

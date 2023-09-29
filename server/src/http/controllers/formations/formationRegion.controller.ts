@@ -15,9 +15,9 @@ export default (server: Server) => {
   // @Tags("Formations par région")
   // @OperationId("getFormations")
   server.get(
-    "/api/v1/formationsParRegion",
+    "/v1/formationsParRegion",
     {
-      schema: zRoutes.get["/api/v1/formationsParRegion"],
+      schema: zRoutes.get["/v1/formationsParRegion"],
       config,
       // TODO: AttachValidation Error ?
       attachValidation: true,

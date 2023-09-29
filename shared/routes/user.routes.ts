@@ -8,7 +8,7 @@ import { IRoutesDef } from "./common.routes"
 
 export const zUserRecruteurRoutes = {
   get: {
-    "/api/user/opco": {
+    "/user/opco": {
       // TODO_SECURITY_FIX supprimer  les mongo query
       // TODO_SECURITY_FIX session cookie plus permission
       // TODO_SECURITY_FIX enlever les données privées (dont last connection date)
@@ -32,9 +32,9 @@ export const zUserRecruteurRoutes = {
         role: "all",
       },
     },
-    "/api/user": {
+    "/user": {
       // TODO ANY TO BE FIXED
-      // TODO_SECURITY_FIX session admin only et changer le chemin vers /api/admin/user
+      // TODO_SECURITY_FIX session admin only et changer le chemin vers /admin/user
       response: {
         "200": z.any(),
         // "200": z.object({
@@ -49,7 +49,7 @@ export const zUserRecruteurRoutes = {
         role: "all",
       },
     },
-    "/api/user/:userId": {
+    "/user/:userId": {
       // TODO_SECURITY_FIX session et cookie + permissions
       // TODO_SECURITY_FIX enlever les données privées (dont last connection date)
       params: z
@@ -69,7 +69,7 @@ export const zUserRecruteurRoutes = {
     },
   },
   post: {
-    "/api/user": {
+    "/user": {
       // TODO_SECURITY_FIX réduire la payload au strict nécessaire
       // TODO checker si unused
       body: ZUserRecruteur.extend({
@@ -85,7 +85,7 @@ export const zUserRecruteurRoutes = {
     },
   },
   put: {
-    "/api/user/:userId": {
+    "/user/:userId": {
       // TODO_SECURITY_FIX session et cookie + permissions
       params: z.object({ userId: zObjectId }).strict(),
       body: ZUserRecruteur.pick({
@@ -106,7 +106,7 @@ export const zUserRecruteurRoutes = {
         role: "all",
       },
     },
-    "/api/user/:userId/history": {
+    "/user/:userId/history": {
       // TODO_SECURITY_FIX session et cookie + permissions + role
       params: z.object({ userId: zObjectId }).strict(),
       body: ZUserStatusValidation.pick({
@@ -127,7 +127,7 @@ export const zUserRecruteurRoutes = {
     },
   },
   delete: {
-    "/api/user": {
+    "/user": {
       // TODO_SECURITY_FIX session et cookie + permissions
       // TODO return json format
       querystring: z

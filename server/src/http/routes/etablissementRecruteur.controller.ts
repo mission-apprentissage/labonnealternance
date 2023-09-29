@@ -38,9 +38,9 @@ export default (server: Server) => {
    * Resultats triés par proximité (km).
    */
   server.get(
-    "/api/etablissement/cfas-proches",
+    "/etablissement/cfas-proches",
     {
-      schema: zRoutes.get["/api/etablissement/cfas-proches"],
+      schema: zRoutes.get["/etablissement/cfas-proches"],
     },
     async (req, res) => {
       const { latitude, longitude, rome } = req.query
@@ -53,9 +53,9 @@ export default (server: Server) => {
    * Récupérer les informations d'une entreprise à l'aide de l'API du gouvernement
    */
   server.get(
-    "/api/etablissement/entreprise/:siret",
+    "/etablissement/entreprise/:siret",
     {
-      schema: zRoutes.get["/api/etablissement/entreprise/:siret"],
+      schema: zRoutes.get["/etablissement/entreprise/:siret"],
     },
     async (req, res) => {
       const siret: string | undefined = req.params.siret
@@ -91,9 +91,9 @@ export default (server: Server) => {
    * Récupérer l'OPCO d'une entreprise à l'aide des données en base ou de l'API CFA DOCK
    */
   server.get(
-    "/api/etablissement/entreprise/:siret/opco",
+    "/etablissement/entreprise/:siret/opco",
     {
-      schema: zRoutes.get["/api/etablissement/entreprise/:siret/opco"],
+      schema: zRoutes.get["/etablissement/entreprise/:siret/opco"],
     },
     async (req, res) => {
       const siret = req.params.siret
@@ -112,9 +112,9 @@ export default (server: Server) => {
    * Récupération des informations d'un cfa à l'aide des tables de correspondances et du référentiel
    */
   server.get(
-    "/api/etablissement/cfa/:siret",
+    "/etablissement/cfa/:siret",
     {
-      schema: zRoutes.get["/api/etablissement/cfa/:siret"],
+      schema: zRoutes.get["/etablissement/cfa/:siret"],
     },
     async (req, res) => {
       const { siret } = req.params
@@ -131,10 +131,10 @@ export default (server: Server) => {
    * Retourne les entreprises gérées par un CFA
    */
   server.get(
-    "/api/etablissement/cfa/:userRecruteurId/entreprises",
+    "/etablissement/cfa/:userRecruteurId/entreprises",
     {
-      schema: zRoutes.get["/api/etablissement/cfa/:userRecruteurId/entreprises"],
-      preHandler: [server.auth(zRoutes.get["/api/etablissement/cfa/:userRecruteurId/entreprises"].securityScheme)],
+      schema: zRoutes.get["/etablissement/cfa/:userRecruteurId/entreprises"],
+      preHandler: [server.auth(zRoutes.get["/etablissement/cfa/:userRecruteurId/entreprises"].securityScheme)],
     },
     async (req, res) => {
       const { userRecruteurId } = req.params
@@ -153,9 +153,9 @@ export default (server: Server) => {
    * Enregistrement d'un partenaire
    */
   server.post(
-    "/api/etablissement/creation",
+    "/etablissement/creation",
     {
-      schema: zRoutes.post["/api/etablissement/creation"],
+      schema: zRoutes.post["/etablissement/creation"],
     },
     async (req, res) => {
       switch (req.body.type) {
@@ -244,9 +244,9 @@ export default (server: Server) => {
    */
 
   server.post(
-    "/api/etablissement/:establishment_siret/proposition/unsubscribe",
+    "/etablissement/:establishment_siret/proposition/unsubscribe",
     {
-      schema: zRoutes.post["/api/etablissement/:establishment_siret/proposition/unsubscribe"],
+      schema: zRoutes.post["/etablissement/:establishment_siret/proposition/unsubscribe"],
     },
     async (req, res) => {
       await etablissementUnsubscribeDemandeDelegation(req.params.establishment_siret)
@@ -260,10 +260,10 @@ export default (server: Server) => {
    */
 
   server.put(
-    "/api/etablissement/:id",
+    "/etablissement/:id",
     {
-      schema: zRoutes.put["/api/etablissement/:id"],
-      preHandler: [server.auth(zRoutes.put["/api/etablissement/:id"].securityScheme)],
+      schema: zRoutes.put["/etablissement/:id"],
+      preHandler: [server.auth(zRoutes.put["/etablissement/:id"].securityScheme)],
     },
     async (req, res) => {
       const result = await updateUser({ _id: req.params.id }, req.body)
@@ -272,9 +272,9 @@ export default (server: Server) => {
   )
 
   server.post(
-    "/api/etablissement/validation",
+    "/etablissement/validation",
     {
-      schema: zRoutes.post["/api/etablissement/validation"],
+      schema: zRoutes.post["/etablissement/validation"],
     },
     async (req, res) => {
       const id = req.body.id

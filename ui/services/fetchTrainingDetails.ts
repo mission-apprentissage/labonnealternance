@@ -1,18 +1,18 @@
 import axios from "axios"
 import _ from "lodash"
 
-import { baseUrl } from "../config/config"
+import { apiEndpoint } from "../config/config"
 import { logError } from "../utils/tools"
 
-export default async function fetchTrainingDetails(training, errorCallbackFn = _.noop, _baseUrl = baseUrl, _axios = axios, _window = window, _logError = logError) {
+export default async function fetchTrainingDetails(training, errorCallbackFn = _.noop, _apiEndpoint = apiEndpoint, _axios = axios, _window = window, _logError = logError) {
   let res = null
 
   if (!training) {
     return res
   }
 
-  const trainingsApi = `${_baseUrl}/api/v1/formations/formation/${encodeURIComponent(training.id)}`
-  const lbfApi = `${_baseUrl}/api/v1/formations/formationDescription/${training.idRco}`
+  const trainingsApi = `${_apiEndpoint}/v1/formations/formation/${encodeURIComponent(training.id)}`
+  const lbfApi = `${_apiEndpoint}/v1/formations/formationDescription/${training.idRco}`
 
   const [response, lbfResponse] = await Promise.all([_axios.get(trainingsApi), _axios.get(lbfApi)])
 

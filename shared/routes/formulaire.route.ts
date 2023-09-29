@@ -8,7 +8,7 @@ import { IRoutesDef } from "./common.routes"
 
 export const zFormulaireRoute = {
   get: {
-    "/api/formulaire/:establishment_id": {
+    "/formulaire/:establishment_id": {
       // TODO_SECURITY_FIX gestion des permissions
       // TODO_SECURITY_FIX session gérée par cookie server
       params: z.object({ establishment_id: z.string() }).strict(),
@@ -22,7 +22,7 @@ export const zFormulaireRoute = {
         role: "all",
       },
     },
-    "/api/formulaire/offre/f/:jobId": {
+    "/formulaire/offre/f/:jobId": {
       // TODO_SECURITY_FIX gestion des permissions
       // TODO_SECURITY_FIX session gérée par cookie server
       // TODO_SECURITY_FIX faire un ZJobPublic sans la partie delegations
@@ -39,7 +39,7 @@ export const zFormulaireRoute = {
     },
   },
   post: {
-    "/api/formulaire": {
+    "/formulaire": {
       // TODO_SECURITY_FIX gestion des permissions
       // TODO_SECURITY_FIX session gérée par cookie server
       body: z
@@ -64,7 +64,7 @@ export const zFormulaireRoute = {
         role: "all",
       },
     },
-    "/api/formulaire/:establishment_id/offre": {
+    "/formulaire/:establishment_id/offre": {
       // TODO_SECURITY_FIX gestion des permissions
       // TODO_SECURITY_FIX session gérée par cookie server
       // TODO_SECURITY_FIX limiter les champs autorisés à la modification. Utiliser un "ZRecruiterNew" (ou un autre nom du genre ZFormulaire)
@@ -82,7 +82,7 @@ export const zFormulaireRoute = {
         role: "all",
       },
     },
-    "/api/formulaire/offre/:jobId/delegation": {
+    "/formulaire/offre/:jobId/delegation": {
       // TODO_SECURITY_FIX gestion des permissions
       // TODO_SECURITY_FIX session gérée par cookie server
       params: z.object({ jobId: z.string() }).strict(),
@@ -103,7 +103,7 @@ export const zFormulaireRoute = {
     },
   },
   put: {
-    "/api/formulaire/:establishment_id": {
+    "/formulaire/:establishment_id": {
       // TODO_SECURITY_FIX gestion des permissions
       // TODO_SECURITY_FIX session gérée par cookie server
       // TODO_SECURITY_FIX réduire aux champs modifiables
@@ -119,7 +119,7 @@ export const zFormulaireRoute = {
         role: "all",
       },
     },
-    "/api/formulaire/offre/:jobId": {
+    "/formulaire/offre/:jobId": {
       // TODO_SECURITY_FIX gestion des permissions
       // TODO_SECURITY_FIX session gérée par cookie server
       params: z.object({ jobId: zObjectId }).strict(),
@@ -152,7 +152,7 @@ export const zFormulaireRoute = {
         role: "all",
       },
     },
-    "/api/formulaire/offre/:jobId/cancel": {
+    "/formulaire/offre/:jobId/cancel": {
       // TODO_SECURITY_FIX gestion des permissions
       // TODO_SECURITY_FIX session gérée par cookie server
       // TODO_SECURITY_FIX Scinder les routes pour cancel depuis admin OU cancel depuis CTA dans un email (avec jwt)
@@ -165,7 +165,7 @@ export const zFormulaireRoute = {
         role: "all",
       },
     },
-    "/api/formulaire/offre/:jobId/provided": {
+    "/formulaire/offre/:jobId/provided": {
       // TODO_SECURITY_FIX gestion des permissions
       // TODO_SECURITY_FIX session gérée par cookie server
       // TODO_SECURITY_FIX Scinder les routes pour cancel depuis admin OU cancel depuis CTA dans un email (avec jwt)
@@ -184,7 +184,7 @@ export const zFormulaireRoute = {
     // TODO_SECURITY_FIX gestion des permissions
     // TODO_SECURITY_FIX session gérée par cookie server
     // TODO_PAS_SECURITY faut la corriger cette route !!!!! (un certain "KB" circa 2023)
-    "/api/formulaire/offre/:jobId": {
+    "/formulaire/offre/:jobId": {
       params: z.object({ jobId: zObjectId }).strict(),
       querystring: z.object({ siret_formateur: z.string() }).strict(),
       body: z.object({ cfa_read_company_detail_at: z.date() }).strict(),
@@ -198,7 +198,7 @@ export const zFormulaireRoute = {
     },
   },
   delete: {
-    "/api/formulaire/:establishment_id": {
+    "/formulaire/:establishment_id": {
       // TODO_SECURITY_FIX gestion des permissions
       // TODO_SECURITY_FIX session gérée par cookie server
       params: z.object({ establishment_id: z.string() }).strict(),
@@ -210,7 +210,7 @@ export const zFormulaireRoute = {
         role: "all",
       },
     },
-    "/api/formulaire/delegated/:establishment_siret": {
+    "/formulaire/delegated/:establishment_siret": {
       // TODO_SECURITY_FIX gestion des permissions
       // TODO_SECURITY_FIX session gérée par cookie server
       params: z.object({ establishment_siret: z.string() }).strict(),

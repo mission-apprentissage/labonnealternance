@@ -15,9 +15,9 @@ export default (server: Server) => {
   // @Tags("Formations")
   // @OperationId("getFormations")
   server.get(
-    "/api/v1/formations",
+    "/v1/formations",
     {
-      schema: zRoutes.get["/api/v1/formations"],
+      schema: zRoutes.get["/v1/formations"],
       config,
       // TODO: AttachValidation Error ?
     },
@@ -51,9 +51,9 @@ export default (server: Server) => {
 
   // @OperationId("getFormation")
   server.get(
-    "/api/v1/formations/formation/:id",
+    "/v1/formations/formation/:id",
     {
-      schema: zRoutes.get["/api/v1/formations/formation/:id"],
+      schema: zRoutes.get["/v1/formations/formation/:id"],
       config,
       // TODO: AttachValidation Error ?
     },
@@ -91,9 +91,9 @@ export default (server: Server) => {
 
   // @OperationId("getFormationDescription")
   server.get(
-    "/api/v1/formations/formationDescription/:id",
+    "/v1/formations/formationDescription/:id",
     {
-      schema: zRoutes.get["/api/v1/formations/formationDescription/:id"],
+      schema: zRoutes.get["/v1/formations/formationDescription/:id"],
       config,
       // TODO: AttachValidation Error ?
     },

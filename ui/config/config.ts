@@ -7,6 +7,7 @@ const config = {
 export default config
 
 export const baseUrl = publicConfig.baseUrl
+export const apiEndpoint = publicConfig.apiEndpoint
 export const env = publicConfig.env
 
 export const inserJeuneApiUrl = publicConfig.inserJeuneApiUrl

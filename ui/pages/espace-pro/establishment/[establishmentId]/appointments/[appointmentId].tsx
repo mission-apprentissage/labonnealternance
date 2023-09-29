@@ -13,6 +13,7 @@ import { CfaCandidatInformationAnswered } from "../../../../../components/espace
 import { CfaCandidatInformationForm } from "../../../../../components/espace_pro/CfaCandidatInformationPage/CfaCandidatInformationForm"
 import { CfaCandidatInformationOther } from "../../../../../components/espace_pro/CfaCandidatInformationPage/CfaCandidatInformationOther"
 import { CfaCandidatInformationUnreachable } from "../../../../../components/espace_pro/CfaCandidatInformationPage/CfaCandidatInformationUnreachable"
+import { publicConfig } from "config.public"
 
 /**
  * @description CfaCandidatInformationPage component.
@@ -21,7 +22,7 @@ import { CfaCandidatInformationUnreachable } from "../../../../../components/esp
 export default function CfaCandidatInformationPage() {
   const router = useRouter()
   const { establishmentId, appointmentId } = router.query
-  const [data, loading] = useFetch(`/api/appointment-request/context/recap?appointmentId=${appointmentId}`)
+  const [data, loading] = useFetch(`${publicConfig.apiEndpoint}/appointment-request/context/recap?appointmentId=${appointmentId}`)
 
   const [currentState, setCurrentState] = useState("initial")
 

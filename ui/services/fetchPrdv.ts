@@ -1,7 +1,7 @@
 import axios from "axios"
 import _ from "lodash"
 
-import { baseUrl } from "../config/config"
+import { publicConfig } from "../config.public"
 import { logError } from "../utils/tools"
 
 /**
@@ -18,7 +18,7 @@ export default async function fetchPrdv(training, hasAlsoJob, _axios = axios, _w
     return null
   }
 
-  const rdvUrl = `${baseUrl}/api/appointment-request/context/create`
+  const rdvUrl = `${publicConfig.apiEndpoint}/appointment-request/context/create`
 
   try {
     const response = await _axios.post(
@@ -32,7 +32,7 @@ export default async function fetchPrdv(training, hasAlsoJob, _axios = axios, _w
     )
     return response.data
   } catch (error) {
-    if (error?.response?.data?.error === "Prise de rendez-vous non disponible." || error?.response?.data?.message === "Formation introuvable.") {
+    if (error?.response?.data?.error === "Prise de rendez-vous non disponible." || error?.response?.data?.message === "Formation introuvable") {
       return { error: "indisponible" }
     }
 

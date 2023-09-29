@@ -4,7 +4,7 @@ import { IRoutesDef } from "./common.routes"
 
 export const zMetiersDAvenirRoutes = {
   get: {
-    "/api/metiersdavenir": {
+    "/metiersdavenir": {
       response: {
         "200": ZMetiersDAvenir,
       },

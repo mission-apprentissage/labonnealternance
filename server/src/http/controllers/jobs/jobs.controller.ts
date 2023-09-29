@@ -54,11 +54,11 @@ const getUser = <S extends IRouteSchema>(req: FastifyRequest, _schema: S): Authe
 export default (server: Server) => {
   // @Tags("Jobs")
   server.get(
-    "/api/v1/jobs/establishment",
+    "/v1/jobs/establishment",
     {
-      schema: zRoutes.get["/api/v1/jobs/establishment"],
+      schema: zRoutes.get["/v1/jobs/establishment"],
       config,
-      onRequest: server.auth(zRoutes.get["/api/v1/jobs/establishment"].securityScheme),
+      onRequest: server.auth(zRoutes.get["/v1/jobs/establishment"].securityScheme),
       // TODO: AttachValidation Error ?
     },
     async (req, res) => {
@@ -79,17 +79,17 @@ export default (server: Server) => {
 
   // @OperationId("getJobs")
   server.get(
-    "/api/v1/jobs/bulk",
+    "/v1/jobs/bulk",
     {
-      schema: zRoutes.get["/api/v1/jobs/bulk"],
+      schema: zRoutes.get["/v1/jobs/bulk"],
       config,
-      onRequest: server.auth(zRoutes.get["/api/v1/jobs/bulk"].securityScheme),
+      onRequest: server.auth(zRoutes.get["/v1/jobs/bulk"].securityScheme),
       // TODO: AttachValidation Error ?
     },
     async (req, res) => {
       const { query, select, page, limit } = req.query
 
-      const user = getUser(req, zRoutes.get["/api/v1/jobs/bulk"])
+      const user = getUser(req, zRoutes.get["/v1/jobs/bulk"])
 
       const qs = query ? JSON.parse(query) : {}
       const slt = select ? JSON.parse(select) : {}
@@ -103,11 +103,11 @@ export default (server: Server) => {
 
   // @OperationId("createEstablishment")
   server.post(
-    "/api/v1/jobs/establishment",
+    "/v1/jobs/establishment",
     {
-      schema: zRoutes.post["/api/v1/jobs/establishment"],
+      schema: zRoutes.post["/v1/jobs/establishment"],
       config,
-      onRequest: server.auth(zRoutes.post["/api/v1/jobs/establishment"].securityScheme),
+      onRequest: server.auth(zRoutes.post["/v1/jobs/establishment"].securityScheme),
       attachValidation: true,
       // TODO: AttachValidation Error ?
     },
@@ -117,7 +117,7 @@ export default (server: Server) => {
       await createEstablishmentSchema.validateAsync(body, { abortEarly: false })
 
       const { first_name, last_name, phone, email, origin, idcc, establishment_siret } = body
-      const user = getUser(req, zRoutes.post["/api/v1/jobs/establishment"])
+      const user = getUser(req, zRoutes.post["/v1/jobs/establishment"])
 
       const result = await entrepriseOnboardingWorkflow.create(
         {
@@ -145,11 +145,11 @@ export default (server: Server) => {
 
   // @OperationId("createJob")
   server.post(
-    "/api/v1/jobs/:establishmentId",
+    "/v1/jobs/:establishmentId",
     {
-      schema: zRoutes.post["/api/v1/jobs/:establishmentId"],
+      schema: zRoutes.post["/v1/jobs/:establishmentId"],
       config,
-      onRequest: server.auth(zRoutes.post["/api/v1/jobs/:establishmentId"].securityScheme),
+      onRequest: server.auth(zRoutes.post["/v1/jobs/:establishmentId"].securityScheme),
       attachValidation: true,
     },
     async (req, res) => {
@@ -210,11 +210,11 @@ export default (server: Server) => {
 
   // @OperationId("updateJob")
   server.patch(
-    "/api/v1/jobs/:jobId",
+    "/v1/jobs/:jobId",
     {
-      schema: zRoutes.patch["/api/v1/jobs/:jobId"],
+      schema: zRoutes.patch["/v1/jobs/:jobId"],
       config,
-      onRequest: server.auth(zRoutes.patch["/api/v1/jobs/:jobId"].securityScheme),
+      onRequest: server.auth(zRoutes.patch["/v1/jobs/:jobId"].securityScheme),
       attachValidation: true,
     },
     async (req, res) => {
@@ -235,11 +235,11 @@ export default (server: Server) => {
 
   // @OperationId("getDelegation")
   server.get(
-    "/api/v1/jobs/delegations/:jobId",
+    "/v1/jobs/delegations/:jobId",
     {
-      schema: zRoutes.get["/api/v1/jobs/delegations/:jobId"],
+      schema: zRoutes.get["/v1/jobs/delegations/:jobId"],
       config,
-      onRequest: server.auth(zRoutes.get["/api/v1/jobs/delegations/:jobId"].securityScheme),
+      onRequest: server.auth(zRoutes.get["/v1/jobs/delegations/:jobId"].securityScheme),
       attachValidation: true,
       // TODO: AttachValidation Error ?
     },
@@ -275,11 +275,11 @@ export default (server: Server) => {
 
   // @OperationId("createDelegation")
   server.post(
-    "/api/v1/jobs/delegations/:jobId",
+    "/v1/jobs/delegations/:jobId",
     {
-      schema: zRoutes.post["/api/v1/jobs/delegations/:jobId"],
+      schema: zRoutes.post["/v1/jobs/delegations/:jobId"],
       config,
-      onRequest: server.auth(zRoutes.post["/api/v1/jobs/delegations/:jobId"].securityScheme),
+      onRequest: server.auth(zRoutes.post["/v1/jobs/delegations/:jobId"].securityScheme),
       attachValidation: true,
       // TODO: AttachValidation Error ?
     },
@@ -302,11 +302,11 @@ export default (server: Server) => {
 
   // @OperationId("setJobAsProvided")
   server.post(
-    "/api/v1/jobs/provided/:jobId",
+    "/v1/jobs/provided/:jobId",
     {
-      schema: zRoutes.post["/api/v1/jobs/provided/:jobId"],
+      schema: zRoutes.post["/v1/jobs/provided/:jobId"],
       config,
-      onRequest: server.auth(zRoutes.post["/api/v1/jobs/provided/:jobId"].securityScheme),
+      onRequest: server.auth(zRoutes.post["/v1/jobs/provided/:jobId"].securityScheme),
       // TODO: AttachValidation Error ?
     },
     async (req, res) => {
@@ -330,11 +330,11 @@ export default (server: Server) => {
 
   // @OperationId("setJobAsCanceled")
   server.post(
-    "/api/v1/jobs/canceled/:jobId",
+    "/v1/jobs/canceled/:jobId",
     {
-      schema: zRoutes.post["/api/v1/jobs/canceled/:jobId"],
+      schema: zRoutes.post["/v1/jobs/canceled/:jobId"],
       config,
-      onRequest: server.auth(zRoutes.post["/api/v1/jobs/canceled/:jobId"].securityScheme),
+      onRequest: server.auth(zRoutes.post["/v1/jobs/canceled/:jobId"].securityScheme),
       // TODO: AttachValidation Error ?
     },
     async (req, res) => {
@@ -360,11 +360,11 @@ export default (server: Server) => {
 
   // @OperationId("extendJobExpiration")
   server.post(
-    "/api/v1/jobs/extend/:jobId",
+    "/v1/jobs/extend/:jobId",
     {
-      schema: zRoutes.post["/api/v1/jobs/extend/:jobId"],
+      schema: zRoutes.post["/v1/jobs/extend/:jobId"],
       config,
-      onRequest: server.auth(zRoutes.post["/api/v1/jobs/extend/:jobId"].securityScheme),
+      onRequest: server.auth(zRoutes.post["/v1/jobs/extend/:jobId"].securityScheme),
       // TODO: AttachValidation Error ?
     },
     async (req, res) => {
@@ -394,9 +394,9 @@ export default (server: Server) => {
   )
   // @OperationId("getJobOpportunities")
   server.get(
-    "/api/v1/jobs",
+    "/v1/jobs",
     {
-      schema: zRoutes.get["/api/v1/jobs"],
+      schema: zRoutes.get["/v1/jobs"],
       config,
       // TODO: AttachValidation Error ?
     },
@@ -421,9 +421,9 @@ export default (server: Server) => {
 
   // @OperationId("getCompany")
   server.get(
-    "/api/v1/jobs/company/:siret",
+    "/v1/jobs/company/:siret",
     {
-      schema: zRoutes.get["/api/v1/jobs/company/:siret"],
+      schema: zRoutes.get["/v1/jobs/company/:siret"],
       config,
       // TODO: AttachValidation Error ?
     },
@@ -453,9 +453,9 @@ export default (server: Server) => {
 
   // @OperationId("getLbaJob")
   server.get(
-    "/api/v1/jobs/matcha/:id",
+    "/v1/jobs/matcha/:id",
     {
-      schema: zRoutes.get["/api/v1/jobs/matcha/:id"],
+      schema: zRoutes.get["/v1/jobs/matcha/:id"],
       config,
       // TODO: AttachValidation Error ?
     },
@@ -494,9 +494,9 @@ export default (server: Server) => {
 
   // @OperationId("statsViewLbaJob")
   server.post(
-    "/api/v1/jobs/matcha/:id/stats/view-details",
+    "/v1/jobs/matcha/:id/stats/view-details",
     {
-      schema: zRoutes.post["/api/v1/jobs/matcha/:id/stats/view-details"],
+      schema: zRoutes.post["/v1/jobs/matcha/:id/stats/view-details"],
       config,
       // TODO: AttachValidation Error ?
     },
@@ -509,9 +509,9 @@ export default (server: Server) => {
 
   // @OperationId("getPeJob")
   server.get(
-    "/api/v1/jobs/job/:id",
+    "/v1/jobs/job/:id",
     {
-      schema: zRoutes.get["/api/v1/jobs/job/:id"],
+      schema: zRoutes.get["/v1/jobs/job/:id"],
       config,
       // TODO: AttachValidation Error ?
     },

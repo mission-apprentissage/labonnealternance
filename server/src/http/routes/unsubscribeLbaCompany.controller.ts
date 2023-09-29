@@ -12,9 +12,9 @@ const imagePath = `${config.publicUrl}/images/emails/`
 
 export default function (server: Server) {
   server.post(
-    "/api/unsubscribe",
+    "/unsubscribe",
     {
-      schema: zRoutes.post["/api/unsubscribe"],
+      schema: zRoutes.post["/unsubscribe"],
       config: {
         rateLimit: {
           max: 1,

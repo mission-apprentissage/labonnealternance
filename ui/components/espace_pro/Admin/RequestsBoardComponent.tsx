@@ -52,7 +52,7 @@ export const RequestsBoardComponent = (props) => (
         </Thead>
         <Tbody>
           {props.appointments.map((appointment, index) => (
-            <AppointmentItemList key={appointment._id} appointment={appointment} index={index} />
+            <AppointmentItemList key={index} appointment={appointment} index={index} />
           ))}
         </Tbody>
       </Table>

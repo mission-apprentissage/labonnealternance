@@ -23,9 +23,9 @@ import { Server } from "../server"
 
 export default (server: Server) => {
   server.get(
-    "/api/user/opco",
+    "/user/opco",
     {
-      schema: zRoutes.get["/api/user/opco"],
+      schema: zRoutes.get["/user/opco"],
       preHandler: [],
     },
     async (req, res) => {
@@ -57,10 +57,10 @@ export default (server: Server) => {
   )
 
   server.get(
-    "/api/user",
+    "/user",
     {
-      schema: zRoutes.get["/api/user"],
-      preHandler: [server.auth(zRoutes.get["/api/user"].securityScheme)],
+      schema: zRoutes.get["/user"],
+      preHandler: [server.auth(zRoutes.get["/user"].securityScheme)],
     },
     async (req, res) => {
       // TODO KEVIN: ADD PAGINATION
@@ -70,9 +70,9 @@ export default (server: Server) => {
   )
 
   server.get(
-    "/api/user/:userId",
+    "/user/:userId",
     {
-      schema: zRoutes.get["/api/user/:userId"],
+      schema: zRoutes.get["/user/:userId"],
       preHandler: [],
     },
     async (req, res) => {
@@ -94,9 +94,9 @@ export default (server: Server) => {
   )
 
   server.post(
-    "/api/user",
+    "/user",
     {
-      schema: zRoutes.post["/api/user"],
+      schema: zRoutes.post["/user"],
       preHandler: [],
     },
     async (req, res) => {
@@ -106,9 +106,9 @@ export default (server: Server) => {
   )
 
   server.put(
-    "/api/user/:userId",
+    "/user/:userId",
     {
-      schema: zRoutes.put["/api/user/:userId"],
+      schema: zRoutes.put["/user/:userId"],
       preHandler: [],
     },
     async (req, res) => {
@@ -127,9 +127,9 @@ export default (server: Server) => {
   )
 
   server.put(
-    "/api/user/:userId/history",
+    "/user/:userId/history",
     {
-      schema: zRoutes.put["/api/user/:userId/history"],
+      schema: zRoutes.put["/user/:userId/history"],
       preHandler: [],
     },
     async (req, res) => {
@@ -209,9 +209,9 @@ export default (server: Server) => {
   )
 
   server.delete(
-    "/api/user",
+    "/user",
     {
-      schema: zRoutes.delete["/api/user"],
+      schema: zRoutes.delete["/user"],
       preHandler: [],
     },
     async (req, res) => {

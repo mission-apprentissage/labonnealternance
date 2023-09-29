@@ -26,24 +26,25 @@ export const searchForTrainingsFunction = async ({
     const hasLocation = values?.location?.value ? true : false
     const romes = getRomeFromParameters({ values, widgetParameters })
 
-    const querystring: { 
-      romes?: string, 
-      longitude?: number, 
-      latitude?: number, 
-      radius?: number, 
-      diploma?: string } = {
+    const querystring: {
+      romes?: string
+      longitude?: number
+      latitude?: number
+      radius?: number
+      diploma?: string
+    } = {
       romes,
     }
-    if(hasLocation){
+    if (hasLocation) {
       querystring.longitude = values.location.value.coordinates[0]
       querystring.latitude = values.location.value.coordinates[1]
       querystring.radius = values.radius || 30
     }
-    if(values.diploma){
+    if (values.diploma) {
       querystring.diploma = values.diploma
     }
 
-    const response = await apiGet("/api/v1/formations", {querystring})
+    const response = await apiGet("/v1/formations", { querystring })
 
     setTrainings(response.results)
     storeTrainingsInSession({ trainings: response.results, searchTimestamp })

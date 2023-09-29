@@ -15,10 +15,10 @@ import { Server } from "../../server"
 
 export default (server: Server) => {
   server.post(
-    "/api/login",
+    "/login",
     {
-      schema: zRoutes.post["/api/login"],
-      preHandler: [server.auth(zRoutes.post["/api/login"].securityScheme)],
+      schema: zRoutes.post["/login"],
+      preHandler: [server.auth(zRoutes.post["/login"].securityScheme)],
     },
     async (req, res) => {
       const user = req.user
@@ -28,9 +28,9 @@ export default (server: Server) => {
   )
 
   server.post(
-    "/api/login/confirmation-email",
+    "/login/confirmation-email",
     {
-      schema: zRoutes.post["/api/login/confirmation-email"],
+      schema: zRoutes.post["/login/confirmation-email"],
       preHandler: [],
     },
     async (req, res) => {
@@ -67,9 +67,9 @@ export default (server: Server) => {
   )
 
   server.post(
-    "/api/login/magiclink",
+    "/login/magiclink",
     {
-      schema: zRoutes.post["/api/login/magiclink"],
+      schema: zRoutes.post["/login/magiclink"],
       preHandler: [],
     },
     async (req, res) => {
@@ -133,13 +133,13 @@ export default (server: Server) => {
   )
 
   server.post(
-    "/api/login/verification",
+    "/login/verification",
     {
-      schema: zRoutes.post["/api/login/verification"],
-      preHandler: [server.auth(zRoutes.post["/api/login/verification"].securityScheme)],
+      schema: zRoutes.post["/login/verification"],
+      preHandler: [server.auth(zRoutes.post["/login/verification"].securityScheme)],
     },
     async (req, res) => {
-      const user = getUserFromRequest(req, zRoutes.post["/api/login/verification"])
+      const user = getUserFromRequest(req, zRoutes.post["/login/verification"])
       await registerUser(user.email)
       return res.status(200).send({ token: createUserRecruteurToken(user) })
     }

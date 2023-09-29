@@ -26,9 +26,9 @@ export default (server: Server) => {
    * Get form from id
    */
   server.get(
-    "/api/formulaire/:establishment_id",
+    "/formulaire/:establishment_id",
     {
-      schema: zRoutes.get["/api/formulaire/:establishment_id"],
+      schema: zRoutes.get["/formulaire/:establishment_id"],
     },
     async (req, res) => {
       const result = await getFormulaire({ establishment_id: req.params.establishment_id })
@@ -52,9 +52,9 @@ export default (server: Server) => {
    * Post form
    */
   server.post(
-    "/api/formulaire",
+    "/formulaire",
     {
-      schema: zRoutes.post["/api/formulaire"],
+      schema: zRoutes.post["/formulaire"],
     },
     async (req, res) => {
       const { userRecruteurId, establishment_siret, email, last_name, first_name, phone, opco, idcc } = req.body
@@ -85,9 +85,9 @@ export default (server: Server) => {
    * Put form
    */
   server.put(
-    "/api/formulaire/:establishment_id",
+    "/formulaire/:establishment_id",
     {
-      schema: zRoutes.put["/api/formulaire/:establishment_id"],
+      schema: zRoutes.put["/formulaire/:establishment_id"],
     },
     async (req, res) => {
       const result = await updateFormulaire(req.params.establishment_id, req.body)
@@ -96,9 +96,9 @@ export default (server: Server) => {
   )
 
   server.delete(
-    "/api/formulaire/:establishment_id",
+    "/formulaire/:establishment_id",
     {
-      schema: zRoutes.delete["/api/formulaire/:establishment_id"],
+      schema: zRoutes.delete["/formulaire/:establishment_id"],
     },
     async (req, res) => {
       await archiveFormulaire(req.params.establishment_id)
@@ -107,9 +107,9 @@ export default (server: Server) => {
   )
 
   server.delete(
-    "/api/formulaire/delegated/:establishment_siret",
+    "/formulaire/delegated/:establishment_siret",
     {
-      schema: zRoutes.delete["/api/formulaire/delegated/:establishment_siret"],
+      schema: zRoutes.delete["/formulaire/delegated/:establishment_siret"],
     },
     async (req, res) => {
       await archiveDelegatedFormulaire(req.params.establishment_siret)
@@ -123,9 +123,9 @@ export default (server: Server) => {
    *
    */
   server.get(
-    "/api/formulaire/offre/f/:jobId",
+    "/formulaire/offre/f/:jobId",
     {
-      schema: zRoutes.get["/api/formulaire/offre/f/:jobId"],
+      schema: zRoutes.get["/formulaire/offre/f/:jobId"],
     },
     async (req, res) => {
       const offre = await getJob(req.params.jobId.toString())
@@ -140,9 +140,9 @@ export default (server: Server) => {
    * Create new offer
    */
   server.post(
-    "/api/formulaire/:establishment_id/offre",
+    "/formulaire/:establishment_id/offre",
     {
-      schema: zRoutes.post["/api/formulaire/:establishment_id/offre"],
+      schema: zRoutes.post["/formulaire/:establishment_id/offre"],
     },
     async (req, res) => {
       // @ts-expect-error: TODO
@@ -155,9 +155,9 @@ export default (server: Server) => {
    * Create offer delegations
    */
   server.post(
-    "/api/formulaire/offre/:jobId/delegation",
+    "/formulaire/offre/:jobId/delegation",
     {
-      schema: zRoutes.post["/api/formulaire/offre/:jobId/delegation"],
+      schema: zRoutes.post["/formulaire/offre/:jobId/delegation"],
     },
     async (req, res) => {
       const { etablissementCatalogueIds } = req.body
@@ -171,9 +171,9 @@ export default (server: Server) => {
    * Update an existing offer from id
    */
   server.put(
-    "/api/formulaire/offre/:jobId",
+    "/formulaire/offre/:jobId",
     {
-      schema: zRoutes.put["/api/formulaire/offre/:jobId"],
+      schema: zRoutes.put["/formulaire/offre/:jobId"],
     },
     async (req, res) => {
       const result = await updateOffre(req.params.jobId.toString(), req.body)
@@ -185,9 +185,9 @@ export default (server: Server) => {
    * Permet de passer une offre en statut ANNULER (mail transactionnel)
    */
   server.patch(
-    "/api/formulaire/offre/:jobId",
+    "/formulaire/offre/:jobId",
     {
-      schema: zRoutes.patch["/api/formulaire/offre/:jobId"],
+      schema: zRoutes.patch["/formulaire/offre/:jobId"],
     },
     async (req, res) => {
       const { jobId } = req.params
@@ -229,9 +229,9 @@ export default (server: Server) => {
    * Permet de passer une offre en statut ANNULER (mail transactionnel)
    */
   server.put(
-    "/api/formulaire/offre/:jobId/cancel",
+    "/formulaire/offre/:jobId/cancel",
     {
-      schema: zRoutes.put["/api/formulaire/offre/:jobId/cancel"],
+      schema: zRoutes.put["/formulaire/offre/:jobId/cancel"],
     },
     async (req, res) => {
       const exists = await checkOffreExists(req.params.jobId)
@@ -247,9 +247,9 @@ export default (server: Server) => {
    * Permet de passer une offre en statut POURVUE (mail transactionnel)
    */
   server.put(
-    "/api/formulaire/offre/:jobId/provided",
+    "/formulaire/offre/:jobId/provided",
     {
-      schema: zRoutes.put["/api/formulaire/offre/:jobId/provided"],
+      schema: zRoutes.put["/formulaire/offre/:jobId/provided"],
     },
     async (req, res) => {
       const exists = await checkOffreExists(req.params.jobId)

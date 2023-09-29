@@ -11,7 +11,7 @@ const LayoutAdminRdvA = (props) => {
 
   const logout = () => {
     setAuth(null)
-    router.push("espace-pro/admin/login")
+    router.push("/espace-pro/admin/login")
   }
 
   const subAnonymous = "anonymous"

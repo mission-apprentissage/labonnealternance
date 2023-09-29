@@ -27,9 +27,9 @@ import { contextCreateSchema } from "./validators"
 // })
 export default (server: Server) => {
   server.post(
-    "/api/appointment-request/context/create",
+    "/appointment-request/context/create",
     {
-      schema: zRoutes.post["/api/appointment-request/context/create"],
+      schema: zRoutes.post["/appointment-request/context/create"],
       // TODO: AttachValidation Error ?
     },
     async (req, res) => {
@@ -63,7 +63,7 @@ export default (server: Server) => {
         })
 
         if (!referentielOnisepIdActionFormation) {
-          return res.status(404).send("Formation introuvable")
+          throw Boom.notFound("Formation introuvable")
         }
 
         eligibleTrainingsForAppointment = await eligibleTrainingsForAppointmentService.findOne({
@@ -74,7 +74,7 @@ export default (server: Server) => {
       }
 
       if (!eligibleTrainingsForAppointment) {
-        return res.status(404).send("Formation introuvable")
+        throw Boom.notFound("Formation introuvable")
       }
 
       const isOpenForAppointments = await eligibleTrainingsForAppointmentService.findOne({

@@ -7,7 +7,7 @@ import { IRoutesDef, ZResError } from "./common.routes"
 
 export const zV1JobsEtFormationsRoutes = {
   get: {
-    "/api/v1/jobsEtFormations": {
+    "/v1/jobsEtFormations": {
       querystring: z
         .object({
           romes: z.string().optional(),
@@ -28,7 +28,7 @@ export const zV1JobsEtFormationsRoutes = {
         .object({
           referer: z.string().optional(),
         })
-        .strict(),
+        .passthrough(),
       response: {
         "200": z
           .object({

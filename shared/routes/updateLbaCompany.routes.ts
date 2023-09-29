@@ -8,7 +8,7 @@ import { IRoutesDef } from "./common.routes"
 export const zUpdateLbaCompanyRoutes = {
   get: {
     // TODO_SECURITY passer en session role is-admin et faire un formulaire (migrer en POST)
-    "/api/updateLBB/updateContactInfo": {
+    "/updateLBB/updateContactInfo": {
       querystring: z
         .object({
           secret: z.string(),

@@ -5,9 +5,9 @@ import { Server } from "../server"
 
 export default function (server: Server) {
   server.post(
-    "/api/V1/application",
+    "/V1/application",
     {
-      schema: zRoutes.post["/api/V1/application"],
+      schema: zRoutes.post["/V1/application"],
       config: {
         rateLimit: {
           max: 5,

@@ -51,9 +51,9 @@ export default function (server: Server) {
   let token: Token | null = null
 
   server.get(
-    "/api/romelabels",
+    "/romelabels",
     {
-      schema: zRoutes.get["/api/rome"],
+      schema: zRoutes.get["/rome"],
     },
     async (req, res) => {
       const result = await getRomesAndLabelsFromTitleQuery(req.query)
@@ -62,9 +62,9 @@ export default function (server: Server) {
   )
 
   server.get(
-    "/api/rome",
+    "/rome",
     {
-      schema: zRoutes.get["/api/rome"],
+      schema: zRoutes.get["/rome"],
     },
     async (req, res) => {
       const result = await getRomesAndLabelsFromTitleQuery(req.query)
@@ -73,9 +73,9 @@ export default function (server: Server) {
   )
 
   server.get(
-    "/api/romelabels/detail/:rome",
+    "/romelabels/detail/:rome",
     {
-      schema: zRoutes.get["/api/rome/detail/:rome"],
+      schema: zRoutes.get["/rome/detail/:rome"],
     },
     async (req, res) => {
       token = await getToken(token)
@@ -91,9 +91,9 @@ export default function (server: Server) {
   )
 
   server.get(
-    "/api/rome/detail/:rome",
+    "/rome/detail/:rome",
     {
-      schema: zRoutes.get["/api/rome/detail/:rome"],
+      schema: zRoutes.get["/rome/detail/:rome"],
     },
     async (req, res) => {
       token = await getToken(token)
