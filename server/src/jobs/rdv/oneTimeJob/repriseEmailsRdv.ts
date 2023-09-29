@@ -15,7 +15,7 @@ import mailer from "../../../services/mailer.service"
 export const repriseEmailRdvs = async ({ fromDateStr }: { fromDateStr: string }) => {
   const fromDate = dayjs(fromDateStr, "DD-MM-YYYY")
   logger.info(`Reprise des emails de rdv: récupération des rdvs depuis le ${fromDate.toISOString()}...`)
-  // @ts-expect-error
+  // @ts-expect-error MongoDB operators not recognised
   const appointments = await Appointment.find({ to_cfa_mails: { $size: 0 }, created_at: { $gt: fromDate } })
   logger.info(`Reprise des emails de rdv: ${appointments.length} rdvs à envoyer`)
   const stats = { success: 0, failure: 0 }

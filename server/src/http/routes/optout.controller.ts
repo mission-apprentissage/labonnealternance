@@ -26,7 +26,6 @@ export default (server: Server) => {
       if (!user) {
         return res.status(400).send({ error: true, reason: "USER_NOT_FOUND" })
       }
-      // @ts-expect-error: TODO
       return res.status(200).send({
         ...user,
         // Set recipient email for the UI

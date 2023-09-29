@@ -287,7 +287,7 @@ const createCatalogueMeAPI = async (): Promise<AxiosInstance> => {
  */
 
 // KBA 20221227 : find more elegant solution
-let api = null
+let api: AxiosInstance | null = null
 export const getFormationsFromCatalogueMe = async ({
   query,
   limit,
@@ -302,14 +302,12 @@ export const getFormationsFromCatalogueMe = async ({
   allFormations?: object[]
 }) => {
   if (api === null) {
-    // @ts-expect-error
     api = await createCatalogueMeAPI()
   }
 
   const params = { page, limit, query: JSON.stringify(query), select: JSON.stringify(select) }
 
   try {
-    // @ts-expect-error
     const response = await api.get(`/entity/formations`, { params })
 
     const { formations, pagination } = response.data

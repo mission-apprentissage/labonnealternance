@@ -2,9 +2,9 @@ import { z } from "zod"
 
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 // import { zEtablissementCatalogue } from "../interface/etablissement.types"
-import { ZGlobalAddress, ZRecruiter } from "../models"
+import { ZRecruiter } from "../models"
 import { zObjectId } from "../models/common"
-import { ZUserRecruteur } from "../models/usersRecruteur.model"
+import { ZUserRecruteur, zReferentielData } from "../models/usersRecruteur.model"
 
 import { IRoutesDef } from "./common.routes"
 
@@ -96,27 +96,7 @@ export const zRecruiterRoutes = {
       // TODO_SECURITY_FIX faire en sorte que le back refasse l'appel
       params: z.object({ siret: extensions.siret() }).strict(),
       response: {
-        "2xx": z
-          .object({
-            establishment_state: z.string(),
-            is_qualiopi: z.boolean(),
-            establishment_siret: z.string(),
-            establishment_raison_sociale: z.string(),
-            contacts: z.array(
-              z
-                .object({
-                  email: z.string(),
-                  confirmé: z.boolean(),
-                  sources: z.array(z.string()),
-                  date_collecte: z.string(),
-                })
-                .strict()
-            ),
-            address_detail: ZGlobalAddress,
-            address: z.string(),
-            geo_coordinates: z.string().nullish(),
-          })
-          .strict(),
+        "2xx": zReferentielData,
       },
       securityScheme: {
         auth: "none",

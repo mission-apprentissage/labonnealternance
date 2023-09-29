@@ -1,7 +1,7 @@
+import { IOptout } from "shared"
+
 import { model, mongooseInstance, Schema } from "../../../mongodb"
 import { mongoosePagination, Pagination } from "../_shared/mongoose-paginate"
-
-import { IOptout } from "./optout.types"
 
 export const optoutSchema = new Schema<IOptout>(
   {

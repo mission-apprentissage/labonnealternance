@@ -122,7 +122,6 @@ export default (server: Server) => {
         throw Boom.badRequest("Le numéro siret est obligatoire.")
       }
       const response = await getOrganismeDeFormationDataFromSiret(siret)
-      // @ts-expect-error: TODO
       return res.status(200).send(response)
     }
   )

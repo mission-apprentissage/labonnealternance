@@ -1,7 +1,7 @@
 import axios, { AxiosResponse } from "axios"
 import Boom from "boom"
 import type { FilterQuery } from "mongoose"
-import { IEtablissement, ILbaCompany, IRecruiter, IUserRecruteur } from "shared"
+import { IEtablissement, ILbaCompany, IRecruiter, IReferentielData, IUserRecruteur } from "shared"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
@@ -258,17 +258,14 @@ export const getEtablissementFromGouv = async (siret: string): Promise<IAPIEtabl
 }
 /**
  * @description Get the establishment information from the REFERENTIEL API for a given SIRET
- * @param {String} siret
- * @returns {Promise<IReferentiel>}
  */
-export const getEtablissementFromReferentiel = async (siret: string): Promise<IReferentiel> => {
+export const getEtablissementFromReferentiel = async (siret: string): Promise<IReferentiel | null> => {
   try {
     const { data } = await axios.get<IReferentiel>(`https://referentiel.apprentissage.beta.gouv.fr/api/v1/organismes/${siret}`)
     return data
   } catch (error: any) {
     sentryCaptureException(error)
     if (error?.response?.status === 404) {
-      // @ts-expect-error
       return null
     } else {
       throw error
@@ -363,7 +360,7 @@ export const formatEntrepriseData = (d: IEtablissementGouv): IFormatAPIEntrepris
  * @param {IReferentiel} d
  * @returns {Object}
  */
-export const formatReferentielData = (d: IReferentiel) => ({
+export const formatReferentielData = (d: IReferentiel): IReferentielData => ({
   establishment_state: d.etat_administratif,
   is_qualiopi: d.qualiopi,
   establishment_siret: d.siret,

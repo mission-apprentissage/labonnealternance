@@ -18,7 +18,6 @@
     "@socialgouv/matomo-next": "^1.8.0",
     "@turf/distance": "^6.5.0",
     "axios": "^1.5.1",
-    "config": "^3.3.9",
     "dayjs": "^1.11.10",
     "downshift": "5.2.0",
     "email-misspelled": "^3.4.2",
@@ -54,7 +53,6 @@
   },
   "devDependencies": {
     "@testing-library/react": "^13.4.0",
-    "@testing-library/user-event": "^14.5.1",
     "@types/node": "^20.7.1",
     "@types/react": "^18.2.23",
     "dotenv": "^16.3.1",

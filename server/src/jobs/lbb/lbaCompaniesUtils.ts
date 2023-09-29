@@ -89,8 +89,8 @@ export const readCompaniesFromJson = async () => {
 
   return streamCompanies()
 }
-// @ts-expect-error: TODO
-export const countCompaniesInFile = async (): number => {
+
+export const countCompaniesInFile = async (): Promise<number> => {
   let count = 0
   await oleoduc(
     await readCompaniesFromJson(),

@@ -19,7 +19,6 @@ import jobsV1Route from "./controllers/jobs/jobs.controller"
 import jobsEtFormationsV1Route from "./controllers/jobsEtFormations/jobsEtFormations.controller"
 import metiers from "./controllers/metiers/metiers.controller"
 import rome from "./controllers/metiers/rome.controller"
-// import { corsMiddleware } from "./middlewares/corsMiddleware" // TODO_AB To check
 import metiersDAvenirRoute from "./controllers/metiersdavenir/metiersDAvenir.controller"
 import { auth } from "./middlewares/authMiddleware"
 import { errorMiddleware } from "./middlewares/errorMiddleware"

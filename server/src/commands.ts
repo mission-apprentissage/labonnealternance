@@ -5,9 +5,9 @@ import HttpTerminator from "lil-http-terminator"
 import { closeMongoConnection } from "@/common/mongodb"
 
 import { logger } from "./common/logger"
-// import { closeSentry, initSentryProcessor } from "./common/services/sentry/sentry"
 import { sleep } from "./common/utils/asyncUtils"
 import config from "./config"
+import { initSentryProcessor, closeSentry } from "./http/sentry"
 import server from "./http/server"
 import { addJob, processor } from "./jobs/jobs_actions"
 
@@ -59,12 +59,12 @@ program
     if (command !== "start") {
       logger.fields.module = `cli:${command}`
       // Pas besoin d'init Sentry dans le cas du server car il est start automatiquement
-      // initSentryProcessor() // TODO
+      initSentryProcessor()
     }
   })
   .hook("postAction", async () => {
     await closeMongoConnection()
-    // await closeSentry() // TODO
+    await closeSentry()
   })
 
 program

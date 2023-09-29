@@ -47,6 +47,30 @@ export const ZUserRecruteur = z
   })
   .strict()
 
+export const zReferentielData = z
+  .object({
+    establishment_state: z.string(),
+    is_qualiopi: z.boolean(),
+    establishment_siret: z.string(),
+    establishment_raison_sociale: z.string(),
+    contacts: z.array(
+      z
+        .object({
+          email: z.string(),
+          confirmé: z.boolean(),
+          sources: z.array(z.string()),
+          date_collecte: z.string(),
+        })
+        .strict()
+    ),
+    address_detail: ZGlobalAddress,
+    address: z.string(),
+    geo_coordinates: z.string().nullish(),
+  })
+  .strict()
+
+export type IReferentielData = z.output<typeof zReferentielData>
+
 export type IUserStatusValidation = z.output<typeof ZUserStatusValidation>
 export type IUserRecruteur = z.output<typeof ZUserRecruteur>
 export type IUserRecruteurJson = Jsonify<z.input<typeof ZUserRecruteur>>

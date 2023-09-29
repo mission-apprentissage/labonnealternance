@@ -228,16 +228,20 @@ export default (server: Server) => {
 
       const offre = await getJob(jobId.toString())
 
-      // @ts-expect-error: TODO
-      const delegationFound = offre.delegations.find((delegation) => delegation.siret_code == req.query.siret_formateur)
+      const delegations = offre?.delegations
+
+      if (!delegations) {
+        throw Boom.badRequest("Le siret formateur n'a pas été proposé à l'offre.")
+      }
+
+      const delegationFound = delegations.find((delegation) => delegation.siret_code == req.query.siret_formateur)
 
       if (!delegationFound) {
         throw Boom.badRequest("Le siret formateur n'a pas été proposé à l'offre.")
       }
 
       await patchOffre(jobId, {
-        // @ts-expect-error: TODO
-        delegations: offre.delegations.map((delegation) => {
+        delegations: delegations.map((delegation) => {
           // Save the date of the first read of the company detail
           if (delegation.siret_code === delegationFound.siret_code && !delegation.cfa_read_company_detail_at) {
             return {
