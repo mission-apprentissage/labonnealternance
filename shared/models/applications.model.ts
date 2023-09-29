@@ -1,26 +1,75 @@
 import { z } from "zod"
 
-const phoneRegex = new RegExp(/^\d{10}$/)
+import { extensions } from "../helpers/zodHelpers/zodPrimitives"
+import { zCallerParam } from "../routes/_params"
 
 export const ZApplication = z
   .object({
-    applicant_email: z.string().describe("Adresse email candidat"),
-    applicant_first_name: z.string().describe("Prénom du candidat"),
-    applicant_last_name: z.string().describe("Nom du candidat"),
-    applicant_phone: z.string().regex(phoneRegex).describe("Téléphone du candidat"),
-    applicant_attachment_name: z.string().describe("Nom du fichier du CV du candidat"),
-    applicant_message_to_company: z.string().nullable().describe("Le message envoyé par le candidat"),
+    applicant_email: z.string().email().openapi({
+      description: "L'adresse email du candidat à laquelle l'entreprise contactée pourra répondre. Les adresses emails temporaires ne sont pas acceptées.",
+      example: "john.smith@mail.com",
+    }),
+    applicant_first_name: z.string().max(50).openapi({
+      description: "Le prénom du candidat.",
+      example: "Jean",
+    }),
+    applicant_last_name: z.string().max(50).openapi({
+      description: "Le nom du candidat.",
+      example: "Dupont",
+    }),
+    applicant_phone: extensions.phone().openapi({
+      description: "Le numéro de téléphone du candidat.",
+      example: "0101010101",
+    }),
+    applicant_attachment_name: z
+      .string()
+      .regex(/((.*?))(\.)+(docx|pdf)$/i)
+      .openapi({
+        description: "Le nom du fichier du CV du candidat. Seuls les .docx et .pdf sont autorisés.",
+        example: "cv.pdf",
+      }),
+    applicant_message_to_company: z.string().nullable().openapi({
+      description: "Un message du candidat vers le recruteur. Ce champ peut contenir la lettre de motivation du candidat.",
+      example: "Madame, monsieur...",
+    }),
     company_recruitment_intention: z.string().nullable().describe("L'intention de la société vis à vis du candidat"),
     company_feedback: z.string().nullable().describe("L'avis donné par la société"),
     company_feedback_date: z.date().nullable().describe("Date d'intention/avis donnée"),
-    company_siret: z.string().describe("Le siret de l'établissement"),
-    company_email: z.string().describe("L'adresse email de destination de la candidature"),
-    company_name: z.string().describe("Le nom de la société"),
-    company_naf: z.string().describe("Le label naf de la société"),
-    company_address: z.string().describe("L'adresse physique de la société"),
-    job_origin: z.string().describe("Le type de société / offre au sens source d'info La bonne alternance. Ex : lba, lbb, matcha, pejob"),
-    job_title: z.string().describe("Le titre de l'offre à laquelle répond le candidat ou le nom de la société en cas de candidature spontanée"),
-    job_id: z.string().nullable().describe("L'id externe de l'offre d'emploi"),
+    company_siret: extensions.siret().openapi({
+      description: "Le siret de l'entreprise. Fourni par La bonne alternance. ",
+      example: "00004993900000",
+    }),
+    company_email: z.string().openapi({
+      description:
+        "L'adresse email de la société pour postuler. Vous devez impérativement utiliser les valeurs émises par l'API LBA avec le vecteur d'initialisation correspondant à l'adresse.",
+      example: "...f936e4352b5ae5...",
+    }),
+    company_name: z.string().openapi({
+      description: "Le nom de la société. Fourni par La bonne alternance. ",
+      example: "Au bon pain d'antan",
+    }),
+    company_naf: z.string().openapi({
+      description: "La valeur associée au code NAF de l'entreprise. Fournie par La bonne alternance. ",
+      example: "Boulangerie et boulangerie-pâtisserie",
+    }),
+    company_address: z.string().openapi({
+      description: "L'adresse postale de la société. Fournie par La bonne alternance. (champs : place.fullAddress)",
+      example: "38 RUE DES HAMECONS, 75021 PARIS-21",
+    }),
+    job_origin: z.string().nullable().openapi({
+      description: "Le type de société selon la nomenclature La bonne alternance. Fourni par La bonne alternance.",
+      example: "lba|lbb|matcha",
+    }),
+    job_title: z.string().openapi({
+      description:
+        'Le titre de l\'offre La bonne alternance Recruteur pour laquelle la candidature est envoyée. Seulement si le type de la société (company_type) est "matcha" . La valeur est fournie par La bonne alternance. ',
+      example: "Téléconseil, vente à distance",
+    }),
+    job_id: z.string().nullable().openapi({
+      description:
+        "L'identifiant de l'offre La bonne alternance Recruteur pour laquelle la candidature est envoyée. Seulement si le type de la société (company_type) est \"matcha\" . La valeur est fournie par La bonne alternance. ",
+      example: "...59c24c059b...",
+    }),
     to_applicant_message_id: z.string().nullable().describe("Identifiant chez le transporteur du mail envoyé au candidat"),
     to_company_message_id: z.string().nullable().describe("Identifiant chez le transporteur du mail envoyé à l'entreprise"),
     caller: z.string().nullable().describe("L'identification de la source d'émission de la candidature (pour widget et api)"),
@@ -31,20 +80,35 @@ export const ZApplication = z
   .strict()
 
 export const ZApplicationUI = ZApplication.extend({
-  message: ZApplication.shape.applicant_message_to_company,
-  applicant_file_name: z.string().describe("Nom du fichier du CV du candidat"),
-  applicant_file_content: z.string().describe("Contenu de la pièce jointe de candidature"),
-  company_type: z.string().describe("Le type de société / offre au sens source d'info La bonne alternance. Ex : lba, lbb, matcha, pejob"),
-  iv: z.string().describe("Initialization vector de chiffrement de l'adresse email société"),
-  secret: z.string().nullable(),
-  crypted_company_email: z.string().nullable(),
+  message: ZApplication.shape.applicant_message_to_company.optional(),
+  applicant_file_name: ZApplication.shape.applicant_attachment_name,
+  applicant_file_content: z.string().max(4215276).openapi({
+    description: "Le contenu du fichier du CV du candidat. La taille maximale autorisée est de 3 Mo.",
+    example: "data:application/pdf;base64,JVBERi0xLjQKJ...",
+  }),
+  company_type: z.enum(["matcha", "lba"]).openapi({
+    description: "Le type de société selon la nomenclature La bonne alternance. Fourni par La bonne alternance.",
+    example: "lba",
+  }),
+  iv: z.string().openapi({
+    description: "Le vecteur d'initialisation permettant de déchiffrer l'adresse email de la société. Cette valeur est fournie par les apis de LBA.",
+    example: "...59c24c059b...",
+  }),
+  secret: z.string().optional(),
+  crypted_company_email: z.string().nullish(),
+  caller: zCallerParam.optional(),
+  job_id: ZApplication.shape.job_id.optional(),
 }).omit({
   applicant_message_to_company: true,
+  applicant_attachment_name: true,
+  job_origin: true,
   to_applicant_message_id: true,
   to_company_message_id: true,
   is_anonymized: true,
   created_at: true,
   last_update_at: true,
 })
+
+export type IApplicationUI = z.output<typeof ZApplicationUI>
 
 export type IApplication = z.output<typeof ZApplication>

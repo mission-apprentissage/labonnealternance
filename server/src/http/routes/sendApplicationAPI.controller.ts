@@ -5,9 +5,9 @@ import { Server } from "../server"
 
 export default function (server: Server) {
   server.post(
-    "/V1/application",
+    "/v1/application",
     {
-      schema: zRoutes.post["/V1/application"],
+      schema: zRoutes.post["/v1/application"],
       config: {
         rateLimit: {
           max: 5,
@@ -22,7 +22,7 @@ export default function (server: Server) {
         referer: req.headers.referer,
       })
 
-      if (result.error) {
+      if ("error" in result) {
         if (result.error === "error_sending_application") {
           res.status(500)
         } else {

@@ -269,6 +269,9 @@ export const createJob = async ({ job, id }: { job: Partial<IOffreExtended>; id:
   }
 
   if (is_delegated) {
+    if (!cfa_delegated_siret) {
+      throw Boom.internal(`unexpected: could not find user recruteur CFA that created the job`)
+    }
     // get CFA informations if formulaire is handled by a CFA
     const contactCFA = await getUser({ establishment_siret: cfa_delegated_siret })
     if (!contactCFA) {
@@ -287,7 +290,7 @@ export const createJob = async ({ job, id }: { job: Partial<IOffreExtended>; id:
  * @param {string[]} payload.etablissementCatalogueIds
  * @returns {Promise<IRecruiter>}
  */
-export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }: { jobId: string | ObjectId; etablissementCatalogueIds: string[] }): Promise<IRecruiter> => {
+export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }: { jobId: IJob["_id"]; etablissementCatalogueIds: string[] }): Promise<IRecruiter> => {
   const offreDocument = await getOffre(jobId)
   if (!offreDocument) {
     throw Boom.internal("Offre not found", { jobId, etablissementCatalogueIds })
@@ -295,6 +298,9 @@ export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }:
   const userDocument = await getUser({ establishment_id: offreDocument.establishment_id })
   if (!userDocument) {
     throw Boom.internal("User not found", { jobId, etablissementCatalogueIds })
+  }
+  if (!userDocument.status) {
+    throw Boom.internal("User is missing status object", { jobId, etablissementCatalogueIds })
   }
   const userState = userDocument.status.pop()
 
@@ -382,8 +388,9 @@ export const deleteFormulaire = async (id: IRecruiter["_id"]): Promise<IRecruite
  * @param {IUserRecruteur["establishment_siret"]} establishment_siret
  * @returns {Promise<IRecruiter>}
  */
-export const deleteFormulaireFromGestionnaire = async (siret: IUserRecruteur["establishment_siret"]): Promise<IRecruiter> =>
+export const deleteFormulaireFromGestionnaire = async (siret: IUserRecruteur["establishment_siret"]): Promise<void> => {
   await Recruiter.deleteMany({ cfa_delegated_siret: siret })
+}
 
 /**
  * @description Update existing formulaire and return updated version

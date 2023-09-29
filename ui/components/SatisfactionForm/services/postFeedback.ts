@@ -1,13 +1,13 @@
 import axios from "axios"
 import _ from "lodash"
 
-import { baseUrl } from "../../../config/config"
+import { apiEndpoint } from "../../../config/config"
 import { logError } from "../../../utils/tools"
 
-export default async function postFeedback(params, _baseUrl = baseUrl, _axios = axios, _window = window, _logError = logError) {
+export default async function postFeedback(params, _apiEndpoint = apiEndpoint, _axios = axios, _window = window, _logError = logError) {
   let res = ""
 
-  const candidatureApi = _baseUrl + "/api/application/feedback"
+  const candidatureApi = _apiEndpoint + "/application/feedback"
   const response = await _axios.post(candidatureApi, params)
 
   const isAxiosError = !!_.get(response, "data.error")
