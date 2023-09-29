@@ -94,7 +94,7 @@ function transformLbaJobs({ jobs, caller, applicationCountByJob }: { jobs: ILbaJ
     results: jobs.flatMap((job) =>
       transformLbaJob({
         job: job._source,
-        distance: job.sort && job.sort[0],
+        distance: job.sort ? job.sort[0] : undefined,
         applicationCountByJob,
         caller,
       })
@@ -175,14 +175,14 @@ function transformLbaJob({
         address: job.address,
         latitude,
         longitude,
-        city: job.address_detail && "localite" in job.address_detail && job.address_detail.localite,
+        city: job.address_detail && "localite" in job.address_detail ? job.address_detail.localite : null,
       },
       company: {
         siret: job.establishment_siret,
         name: job.establishment_enseigne || job.establishment_raison_sociale || "Enseigne inconnue",
         size: job.establishment_size,
         mandataire: job.is_delegated,
-        creationDate: job.establishment_creation_date && new Date(job.establishment_creation_date),
+        creationDate: job.establishment_creation_date ? new Date(job.establishment_creation_date) : null,
       },
       nafs: [{ label: job.naf_label }],
       diplomaLevel: offre.job_level_label || null,
@@ -190,7 +190,7 @@ function transformLbaJob({
         id: offre._id.toString(),
         description: offre.job_description || "",
         creationDate: offre.job_creation_date ? new Date(offre.job_creation_date) : null,
-        contractType: offre.job_type && offre.job_type.join(", "),
+        contractType: offre.job_type ? offre.job_type.join(", ") : null,
         jobStartDate: offre.job_start_date ? new Date(offre.job_start_date) : null,
         romeDetails: offre.rome_detail,
         rythmeAlternance: offre.job_rythm || null,
