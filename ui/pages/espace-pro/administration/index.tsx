@@ -84,9 +84,36 @@ function ListeEntreprise() {
       width: "500",
       maxWidth: "500",
       sortType: (a, b) => sortReactTableString(a.original.establishment_raison_sociale, b.original.establishment_raison_sociale),
-      accessor: ({ establishment_id, establishment_raison_sociale, establishment_siret }) => (
-        <Link href={`/espace-pro/administration/entreprise/${establishment_id}`}>{establishment_raison_sociale ?? establishment_siret}</Link>
-      ),
+      Cell: ({
+        data,
+        cell: {
+          row: { id },
+        },
+      }) => {
+        const { establishment_raison_sociale, establishment_siret, establishment_id, opco } = data[id]
+        const siretText = (
+          <Text color="#666666" fontSize="14px">
+            SIRET {establishment_siret}
+          </Text>
+        )
+        return (
+          <Flex direction="column">
+            <Link fontWeight="700" href={`/espace-pro/administration/entreprise/${establishment_id}`} aria-label="voir les informations">
+              {establishment_raison_sociale}
+            </Link>
+            {establishment_raison_sociale ? (
+              siretText
+            ) : (
+              <Link fontWeight="700" href={`/espace-pro/administration/entreprise/${establishment_id}`} aria-label="voir les informations">
+                {siretText}
+              </Link>
+            )}
+            <Text color="redmarianne" fontSize="14px">
+              {opco}
+            </Text>
+          </Flex>
+        )
+      },
     },
     {
       Header: "Ajoutée le",
