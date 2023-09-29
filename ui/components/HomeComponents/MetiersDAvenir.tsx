@@ -7,6 +7,7 @@ import { useQuery } from "react-query"
 
 import { baseUrl } from "../../config/config"
 import { SendPlausibleEvent } from "../../utils/plausible"
+import { publicConfig } from "config.public"
 
 const jobCssProperties = {
   background: "beige",
@@ -49,7 +50,7 @@ const buildJobBlock = ({ idx, title, rome }) => {
 }
 
 const getMetiersDAvenir = async () => {
-  const res = await axios.get(`${baseUrl}/api/metiersdavenir`)
+  const res = await axios.get(`${publicConfig.apiEndpoint}/metiersdavenir`)
   return res.data
 }
 

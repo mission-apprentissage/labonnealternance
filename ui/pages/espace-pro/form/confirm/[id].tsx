@@ -5,11 +5,12 @@ import { useRouter } from "next/router"
 import { useFetch } from "../../../../common/hooks/useFetch"
 import { FormLayoutComponent } from "../../../../components/espace_pro/Candidat/layout/FormLayoutComponent"
 import { BarberGuy } from "../../../../theme/components/icons"
+import { publicConfig } from "config.public"
 
 export default function FormRecapPage() {
   const router = useRouter()
   const { id: appointmentId } = router.query
-  const [data, loading] = useFetch(`/api/appointment-request/context/recap?appointmentId=${appointmentId}`)
+  const [data, loading] = useFetch(`${publicConfig.apiEndpoint}/appointment-request/context/recap?appointmentId=${appointmentId}`)
 
   return (
     <FormLayoutComponent

@@ -1,8 +1,10 @@
-import { baseUrl } from "../../../config/config"
+import { publicConfig } from "config.public"
 
-const trainingsApi = baseUrl + "/api/v1/formations"
+const { apiEndpoint } = publicConfig
+
+const trainingsApi = `${apiEndpoint}/v1/formations`
 const trainingApi = trainingsApi + "/formation"
-const jobsApi = baseUrl + "/api/v1/jobs"
+const jobsApi = `${apiEndpoint}/v1/jobs`
 const offreApi = jobsApi + "/job"
 const companyApi = jobsApi + "/company"
 const matchaApi = jobsApi + "/matcha"
@@ -48,19 +50,19 @@ const getPartnerJobCount = (jobs) => {
 const defaultFilters = ["jobs", "trainings", "duo"]
 
 export {
-  trainingApi,
-  trainingsApi,
-  jobsApi,
   allJobSearchErrorText,
-  partialJobSearchErrorText,
-  trainingErrorText,
-  technicalErrorText,
-  notFoundErrorText,
-  getRomeFromParameters,
-  offreApi,
-  matchaApi,
   companyApi,
+  defaultFilters,
   getJobCount,
   getPartnerJobCount,
-  defaultFilters,
+  getRomeFromParameters,
+  jobsApi,
+  matchaApi,
+  notFoundErrorText,
+  offreApi,
+  partialJobSearchErrorText,
+  technicalErrorText,
+  trainingApi,
+  trainingErrorText,
+  trainingsApi,
 }
