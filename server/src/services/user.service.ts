@@ -1,6 +1,6 @@
 import type { FilterQuery } from "mongoose"
 
-import { User } from "../common/model/index"
+import { Recruiter, User, UserRecruteur } from "../common/model/index"
 import { IUser } from "../common/model/schema/user/user.types"
 import * as sha512Utils from "../common/utils/sha512Utils"
 
@@ -126,4 +126,32 @@ const changePassword = async (username: string, newPassword: string) => {
   return user.save()
 }
 
-export { authenticate, changePassword, createUser, find, findOne, getUser, getUserById, getUserByMail, rehashPassword, update }
+const getUserAndRecruitersDataForOpcoUser = async (opco, userState) => {
+  const [users, recruiters] = await Promise.all([
+    UserRecruteur.find({
+      $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, userState] },
+      opco: opco,
+    }),
+    Recruiter.find({ opco: opco }),
+  ])
+
+  const results = users.reduce((acc: any[], user) => {
+    acc.push({ ...user })
+    const form = recruiters.find((x) => x.establishment_id === user.establishment_id)
+
+    if (form) {
+      const found = acc.findIndex((x) => x.establishment_id === form.establishment_id)
+
+      if (found !== -1) {
+        acc[found].jobs_count = form.jobs.length ?? 0
+        acc[found].origin = form.origin
+        acc[found].jobs = form.jobs ?? []
+      }
+    }
+
+    return acc
+  }, [])
+  return results
+}
+
+export { authenticate, changePassword, createUser, find, findOne, getUser, getUserAndRecruitersDataForOpcoUser, getUserById, getUserByMail, rehashPassword, update }

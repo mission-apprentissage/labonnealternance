@@ -144,7 +144,7 @@ export const etablissementUnsubscribeDemandeDelegation = (establishmentSiret) =>
  * Administration OPCO
  */
 
-export const getOpcoUsers = async (query) => API.get(`/user/opco`, { params: query })
+export const getOpcoUsers = async (opco) => API.get(`/user/opco`, { params: opco })
 
 export const getAppointmentsDetails = async () =>
   API.get(`/admin/appointments/details`, {

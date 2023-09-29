@@ -1,7 +1,6 @@
 import { z } from "zod"
 
 import { zObjectId } from "../models/common"
-import { ZJob } from "../models/job.model"
 import { ZUserRecruteur, ZUserStatusValidation } from "../models/usersRecruteur.model"
 
 import { IRoutesDef } from "./common.routes"
@@ -12,20 +11,15 @@ export const zUserRecruteurRoutes = {
       // TODO_SECURITY_FIX supprimer  les mongo query
       // TODO_SECURITY_FIX session cookie plus permission
       // TODO_SECURITY_FIX enlever les données privées (dont last connection date)
-      querystring: z
-        .object({
-          userQuery: z.string() /* mongo query */,
-          formulaireQuery: z.string() /* mongo query */,
-        })
-        .strict(),
+      params: z.object({
+        opco: z.string(),
+      }),
       response: {
-        "200": z.array(
-          ZUserRecruteur.extend({
-            jobs: z.number().optional(), // TODO remplacer jobs par jobCount
-            origin: z.string().optional(),
-            job_detail: z.array(ZJob).optional(),
-          }).strict()
-        ),
+        "200": z.object({
+          awaiting: z.array(z.any()),
+          active: z.array(z.any()),
+          disable: z.array(z.any()),
+        }),
       },
       securityScheme: {
         auth: "none",
