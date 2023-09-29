@@ -4,10 +4,10 @@ import _ from "lodash"
 import { apiEndpoint } from "../../../config/config"
 import { logError } from "../../../utils/tools"
 
-export default async function postCommentaire(params, _apiEndpoint = apiEndpoint, _axios = axios, _window = window, _logError = logError) {
+export default async function postCommentaire(params, formType, _apiEndpoint = apiEndpoint, _axios = axios, _window = window, _logError = logError) {
   let res = ""
 
-  const candidatureApi = `${_apiEndpoint}/application/${params?.formType === "avis" ? "feedbackComment" : "intentionComment"}`
+  const candidatureApi = `${_apiEndpoint}/application/${formType === "avis" ? "feedbackComment" : "intentionComment"}`
   const response = await _axios.post(candidatureApi, params)
 
   const isAxiosError = !!_.get(response, "data.error")

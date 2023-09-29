@@ -2,6 +2,7 @@ import postCommentaire from "./postCommentaire"
 
 export default async function submitCommentaire(
   params,
+  formType,
   setSendingState = (t: string) => {
     console.log(t)
   },
@@ -11,7 +12,7 @@ export default async function submitCommentaire(
   let success = true
 
   try {
-    await _postCommentaire(params)
+    await _postCommentaire(params, formType)
   } catch (error) {
     console.log("error", error)
     success = false
