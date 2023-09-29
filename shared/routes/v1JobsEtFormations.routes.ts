@@ -28,7 +28,7 @@ export const zV1JobsEtFormationsRoutes = {
         .object({
           referer: z.string().optional(),
         })
-        .strict(),
+        .passthrough(),
       response: {
         "200": z
           .object({
