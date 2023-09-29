@@ -36,7 +36,7 @@ export const getLbaJobs = async ({
   opco?: string
   opcoUrl?: string
   diploma?: string
-  caller?: string
+  caller?: string | null
 }) => {
   if (radius === 0) {
     radius = 10
@@ -82,12 +82,8 @@ export const getLbaJobs = async ({
 
 /**
  * Converti les offres issues de l'elasticsearch ou de la mongo en objet de type ILbaItem
- * @param {ILbaJobEsResult[]} jobs offres issues de l'elasticsearch ou de la mogon
- * @param {string} caller l'identifiant de l'utilisateur de l'api
- * @param {IApplicationCount[]} applicationCountByJob les décomptes de candidatures par identifiant d'offres
- * @returns {{ results: ILbaItemLbaJob[] }}
  */
-function transformLbaJobs({ jobs, caller, applicationCountByJob }: { jobs: ILbaJobEsResult[]; caller?: string; applicationCountByJob: IApplicationCount[] }): {
+function transformLbaJobs({ jobs, caller, applicationCountByJob }: { jobs: ILbaJobEsResult[]; caller?: string | null; applicationCountByJob: IApplicationCount[] }): {
   results: ILbaItemLbaJob[]
 } {
   return {
@@ -145,7 +141,7 @@ function transformLbaJob({
 }: {
   job: Partial<IRecruiter>
   distance?: number
-  caller?: string
+  caller?: string | null
   applicationCountByJob: IApplicationCount[]
 }): ILbaItemLbaJob[] {
   if (!job.jobs) {

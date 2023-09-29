@@ -9,13 +9,8 @@ export type IApiError = z.input<typeof ZApiError>
 
 /**
  * Process une erreur lors d'un appel vers une API LBAC
- * @param {any} error l'erreur JS levée
- * @param {string} api_path Le nom de l'API LBAC appelée
- * @param {string} caller L'identification fournie par l'utilisateur de l'api
- * @param {string} errorTitle Le titre de l'erreur
- * @returns {IApiError}
  */
-export const manageApiError = ({ error, api_path, caller, errorTitle }: { error: any; api_path?: string; caller?: string; errorTitle: string }): IApiError => {
+export const manageApiError = ({ error, api_path, caller, errorTitle }: { error: any; api_path?: string; caller?: string | null; errorTitle: string }): IApiError => {
   const errorObj: IApiError = { result: "error", error: "error", message: error.message }
   const status = error?.response?.status || ""
   error.name = `API error ${status ? status + " " : ""}${errorTitle}`

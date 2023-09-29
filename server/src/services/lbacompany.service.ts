@@ -25,7 +25,7 @@ const transformCompany = ({
   applicationCountByCompany,
 }: {
   company: ILbaCompany
-  caller?: string
+  caller?: string | null
   contactAllowedOrigin: boolean
   applicationCountByCompany: IApplicationCount[]
 }): ILbaItemLbaCompany => {
@@ -91,7 +91,7 @@ const transformCompanies = ({
 }: {
   companies: ILbaCompany[]
   referer?: string
-  caller?: string
+  caller?: string | null
   applicationCountByCompany: IApplicationCount[]
 }): { results: ILbaItemLbaCompany[] } => {
   const transformedCompanies: { results: ILbaItemLbaCompany[] } = { results: [] }
@@ -164,7 +164,7 @@ const getCompanies = async ({
   longitude?: number
   radius?: number
   companyLimit: number
-  caller?: string
+  caller?: string | null
   opco?: string
   opcoUrl?: string
   api: string
@@ -293,7 +293,7 @@ export const getSomeCompanies = async ({
   longitude?: number
   radius?: number
   referer?: string
-  caller?: string
+  caller?: string | null
   opco?: string
   opcoUrl?: string
   api?: string

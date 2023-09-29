@@ -1,5 +1,3 @@
-import Boom from "boom"
-
 import { IApiError } from "../common/utils/errorManager.js"
 import { trackApiCall } from "../common/utils/sendTrackingEvent.js"
 
@@ -30,7 +28,7 @@ export const getJobsFromApi = async ({
 }: {
   romes?: string
   referer?: string
-  caller?: string
+  caller?: string | null
   latitude?: number
   longitude?: number
   radius?: number

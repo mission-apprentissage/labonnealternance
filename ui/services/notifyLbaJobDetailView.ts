@@ -1,5 +1,6 @@
 import axios from "axios"
-import { publicConfig } from "config.public"
+
+import { publicConfig } from "@/config.public"
 
 /**
  * notifie le backend que la page de détail de l'offre LBA a été ouverte

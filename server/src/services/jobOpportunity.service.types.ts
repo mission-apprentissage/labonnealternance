@@ -7,7 +7,7 @@ export type TJobSearchQuery = {
   romeDomain?: string
   rncp?: string
   referer?: string
-  caller?: string
+  caller?: string | null | undefined
   latitude?: number
   longitude?: number
   radius?: number

@@ -1,7 +1,8 @@
 import axios from "axios"
 
+import { publicConfig } from "@/config.public"
+
 import { logError } from "../utils/tools"
-import { publicConfig } from "config.public"
 
 export default async function postUnsubscribe({ email, reason }) {
   let res = ""

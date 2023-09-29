@@ -8,5 +8,10 @@ module.exports = {
     next: {
       rootDir: "ui",
     },
+    "import/resolver": {
+      typescript: {
+        project: "ui/tsconfig.json",
+      },
+    },
   },
 }

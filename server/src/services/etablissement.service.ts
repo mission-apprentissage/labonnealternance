@@ -1,6 +1,5 @@
 import axios, { AxiosResponse } from "axios"
 import Boom from "boom"
-import { pick } from "lodash-es"
 import type { FilterQuery } from "mongoose"
 import { IEtablissement, ILbaCompany, IRecruiter, IUserRecruteur } from "shared"
 

@@ -5,9 +5,9 @@ import NextLink from "next/link"
 import React from "react"
 import { useQuery } from "react-query"
 
-import { baseUrl } from "../../config/config"
+import { publicConfig } from "@/config.public"
+
 import { SendPlausibleEvent } from "../../utils/plausible"
-import { publicConfig } from "config.public"
 
 const jobCssProperties = {
   background: "beige",

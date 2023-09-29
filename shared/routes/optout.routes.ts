@@ -1,6 +1,6 @@
 import { z } from "zod"
 
-import { IRoutesDef } from "./common.routes"
+import { IRoutesDef, ZResError } from "./common.routes"
 
 export const zOptoutRoutes = {
   get: {
@@ -49,12 +49,15 @@ export const zOptoutRoutes = {
             })
             .strict(),
         ]),
-        "401": z
-          .object({
-            error: z.boolean(),
-            reason: z.string(),
-          })
-          .strict(),
+        "401": z.union([
+          z
+            .object({
+              error: z.boolean(),
+              reason: z.string(),
+            })
+            .strict(),
+          ZResError,
+        ]),
       },
       securityScheme: {
         auth: "jwt-password",

@@ -3,7 +3,7 @@ import { z } from "zod"
 import { zObjectId } from "../models/common"
 import { ZUserRecruteur, ZUserStatusValidation } from "../models/usersRecruteur.model"
 
-import { IRoutesDef } from "./common.routes"
+import { IRoutesDef, ZResError } from "./common.routes"
 
 export const zUserRecruteurRoutes = {
   get: {
@@ -11,15 +11,19 @@ export const zUserRecruteurRoutes = {
       // TODO_SECURITY_FIX supprimer  les mongo query
       // TODO_SECURITY_FIX session cookie plus permission
       // TODO_SECURITY_FIX enlever les données privées (dont last connection date)
-      params: z.object({
-        opco: z.string(),
-      }),
+      params: z
+        .object({
+          opco: z.string(),
+        })
+        .strict(),
       response: {
-        "200": z.object({
-          awaiting: z.array(z.any()),
-          active: z.array(z.any()),
-          disable: z.array(z.any()),
-        }),
+        "200": z
+          .object({
+            awaiting: z.array(z.any()),
+            active: z.array(z.any()),
+            disable: z.array(z.any()),
+          })
+          .strict(),
       },
       securityScheme: {
         auth: "none",
@@ -93,7 +97,7 @@ export const zUserRecruteurRoutes = {
         .strict(),
       response: {
         "200": z.union([ZUserRecruteur, z.null()]),
-        "400": z.object({ error: z.boolean(), reason: z.string() }).strict(),
+        "400": z.union([ZResError, z.object({ error: z.boolean(), reason: z.string() }).strict()]),
       },
       securityScheme: {
         auth: "none",

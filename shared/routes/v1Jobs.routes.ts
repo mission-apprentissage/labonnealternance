@@ -141,7 +141,7 @@ export const zV1JobsRoutes = {
             distance_en_km: z.number(),
           })
           .strict(),
-        "4xx": ZLbarError,
+        "4xx": z.union([ZLbarError, ZResError]),
       },
       securityScheme: {
         auth: "api-key",
@@ -512,7 +512,7 @@ export const zV1JobsRoutes = {
       }).partial(),
       response: {
         "200": ZRecruiter,
-        "400": ZLbarError,
+        "400": z.union([ZResError, ZLbarError]),
       },
       securityScheme: {
         auth: "api-key",
