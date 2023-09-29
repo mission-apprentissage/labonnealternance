@@ -4,7 +4,7 @@ import { zRoutes } from "shared/index"
 import { Application } from "../../common/model/index"
 import { decryptWithIV } from "../../common/utils/encryptString"
 import { sentryCaptureException } from "../../common/utils/sentryUtils"
-import { sendApplication, sendNotificationToApplicant, updateApplicationStatus, validateFeedbackApplicationComment } from "../../services/application.service"
+import { sendNotificationToApplicant, updateApplicationStatus, validateFeedbackApplicationComment } from "../../services/application.service"
 import { Server } from "../server"
 
 const config = {
@@ -15,33 +15,6 @@ const config = {
 } as const
 
 export default function (server: Server) {
-  server.post(
-    "/application",
-    {
-      schema: zRoutes.post["/application"],
-      config,
-    },
-    async (req, res) => {
-      const result = await sendApplication({
-        shouldCheckSecret: req.body.secret ? true : false,
-        query: req.body,
-        referer: req.headers.referer as string,
-      })
-
-      if (result.error) {
-        if (result.error === "error_sending_application") {
-          res.status(500)
-        } else {
-          res.status(400)
-        }
-      } else {
-        res.status(200)
-      }
-
-      return res.send(result)
-    }
-  )
-
   server.post(
     "/application/intentionComment",
     {

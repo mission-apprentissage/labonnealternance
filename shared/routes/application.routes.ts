@@ -7,22 +7,7 @@ import { IRoutesDef } from "./common.routes"
 
 export const zApplicationRoutes = {
   post: {
-    "/V1/application": {
-      body: ZApplicationUI,
-      response: {
-        "200": z
-          .object({
-            result: z.literal("ok"),
-            message: z.literal("messages sent"),
-          })
-          .strict(),
-      },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
-    },
-    "/application": {
+    "/v1/application": {
       body: ZApplicationUI,
       response: {
         "200": z

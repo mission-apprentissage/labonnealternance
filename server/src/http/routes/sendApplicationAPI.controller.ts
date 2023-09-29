@@ -5,9 +5,9 @@ import { Server } from "../server"
 
 export default function (server: Server) {
   server.post(
-    "/V1/application",
+    "/v1/application",
     {
-      schema: zRoutes.post["/V1/application"],
+      schema: zRoutes.post["/v1/application"],
       config: {
         rateLimit: {
           max: 5,
@@ -19,7 +19,7 @@ export default function (server: Server) {
       const result = await sendApplication({
         shouldCheckSecret: req.body.secret ? true : false,
         query: req.body,
-        referer: req.headers.referer,
+        referer: req.headers.referer as string,
       })
 
       if (result.error) {
