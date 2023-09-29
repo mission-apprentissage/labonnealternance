@@ -2,7 +2,7 @@ import Boom from "boom"
 import moment from "moment"
 import type { ObjectId } from "mongodb"
 import type { FilterQuery, ModelUpdateOptions, UpdateQuery } from "mongoose"
-import { IDelegation, IJob, IJobWrite, IRecruiter, IUserRecruteur } from "shared"
+import { IDelegation, IJob, IJobWritable, IRecruiter, IUserRecruteur } from "shared"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
@@ -238,7 +238,7 @@ export const getFormulaires = async (query: FilterQuery<IRecruiter>, select: obj
 /**
  * @description Create job offer for formulaire
  */
-export const createJob = async ({ job, id }: { job: IJobWrite; id: IUserRecruteur["establishment_id"] }): Promise<IRecruiter> => {
+export const createJob = async ({ job, id }: { job: IJobWritable; id: IUserRecruteur["establishment_id"] }): Promise<IRecruiter> => {
   // get user data
   const user = await getUser({ establishment_id: id })
   const userStatus: ETAT_UTILISATEUR | null = user ? getUserStatus(user.status) : null
