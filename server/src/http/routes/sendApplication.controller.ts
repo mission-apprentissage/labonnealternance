@@ -60,7 +60,6 @@ export default function (server: Server) {
     "/application/webhook",
     {
       schema: zRoutes.post["/application/webhook"],
-      config,
     },
     async (req, res) => {
       await updateApplicationStatus({ payload: req.body })
