@@ -3,7 +3,20 @@ import { z } from "zod"
 import { ZApiError, ZLbacError } from "../models/lbacError.model"
 import { ZLbaItemFormation, ZLbaItemLbaCompany, ZLbaItemLbaJob, ZLbaItemPeJob } from "../models/lbaItem.model"
 
-import { zCallerParam, zRefererHeaders, zRomesParams } from "./_params"
+import {
+  zCallerParam,
+  zDiplomaParams,
+  zInseeParams,
+  ZLatitudeParam,
+  ZLongitudeParam,
+  zOpcoParams,
+  zOpcoUrlParams,
+  ZRadiusParam,
+  zRefererHeaders,
+  zRncpsParams,
+  zRomesParams,
+  zSourcesParams,
+} from "./_params"
 import { IRoutesDef, ZResError } from "./common.routes"
 
 export const zV1JobsEtFormationsRoutes = {
@@ -12,79 +25,16 @@ export const zV1JobsEtFormationsRoutes = {
       querystring: z
         .object({
           romes: zRomesParams("rncp"),
-          rncp: z
-            .string()
-            .optional()
-            .openapi({
-              param: {
-                description: "Un code RNCP. <br />rome et rncp sont incompatibles.<br /><strong>Au moins un des deux doit être renseigné.</strong>",
-              },
-            }),
+          rncp: zRncpsParams,
           caller: zCallerParam,
-          latitude: z.coerce
-            .number()
-            .optional()
-            .openapi({
-              param: {
-                description: "search center latitude. Without latitude, the search will target whole France",
-              },
-            }),
-          longitude: z.coerce
-            .number()
-            .optional()
-            .openapi({
-              param: {
-                description: "search center longitude. Without longitude, the search will target whole France",
-              },
-            }),
-          radius: z.coerce
-            .number()
-            .optional()
-            .openapi({
-              param: {
-                description: "the search radius",
-              },
-            }),
-          insee: z
-            .string()
-            .optional()
-            .openapi({
-              param: {
-                description: "search center insee code",
-              },
-            }),
-          sources: z
-            .string()
-            .optional()
-            .openapi({
-              param: {
-                description: 'comma separated list of job opportunities sources and trainings (possible values : "formations", "lba", "matcha", "offres")',
-              },
-            }),
-          diploma: z
-            .string()
-            .optional()
-            .openapi({
-              param: {
-                description: "targeted diploma",
-              },
-            }),
-          opco: z
-            .string()
-            .optional()
-            .openapi({
-              param: {
-                description: "filter opportunities on opco name",
-              },
-            }),
-          opcoUrl: z
-            .string()
-            .optional()
-            .openapi({
-              param: {
-                description: "filter opportunities on opco url",
-              },
-            }),
+          latitude: ZLatitudeParam,
+          longitude: ZLongitudeParam,
+          radius: ZRadiusParam,
+          insee: zInseeParams,
+          sources: zSourcesParams,
+          diploma: zDiplomaParams,
+          opco: zOpcoParams,
+          opcoUrl: zOpcoUrlParams,
           options: z.literal("with_description").optional(), // hidden
         })
         .strict(),

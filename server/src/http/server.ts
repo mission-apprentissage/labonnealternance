@@ -83,6 +83,11 @@ export async function bind(app: Server) {
       // @ts-expect-error invalid definition of css theme type
       css: [{ content: ".swagger-ui .topbar { display: none }" }],
     },
+    uiConfig: {
+      displayOperationId: true,
+      operationsSorter: "method",
+      tagsSorter: "alpha",
+    },
   }
   await app.register(fastifySwaggerUI, swaggerUiOptions)
 

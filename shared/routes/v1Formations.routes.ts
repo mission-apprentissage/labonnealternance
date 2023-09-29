@@ -76,7 +76,7 @@ export const zV1FormationsRoutes = {
     "/v1/formations/formation/:id": {
       querystring: z
         .object({
-          caller: z.string().optional(),
+          caller: zCallerParam,
         })
         .strict(),
       params: z
