@@ -6,7 +6,7 @@ export default function Mission() {
       <Grid templateColumns={["1fr", "5fr 7fr"]} gap={5} alignItems="center" pb={4}>
         <GridItem>
           {/* eslint-disable-next-line jsx-a11y/alt-text */}
-          <Image src="/images/logo-ministere.svg" w="40%" />
+          <Image src="/images/espace_pro/logo-ministere.svg" w="40%" />
         </GridItem>
         <GridItem>
           <Text pb={4}>
