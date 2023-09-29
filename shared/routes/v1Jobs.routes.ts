@@ -203,6 +203,7 @@ export const zV1JobsRoutes = {
             lbbCompanies: z.null(), // always null until removal
           })
           .strict(),
+        "400": z.union([ZResError, ZLbacError]),
         "500": z.union([ZResError, ZApiError]),
       },
       securityScheme: {
