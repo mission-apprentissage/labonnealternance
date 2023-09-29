@@ -134,7 +134,7 @@ export default (server: Server) => {
     "/etablissement/cfa/:userRecruteurId/entreprises",
     {
       schema: zRoutes.get["/etablissement/cfa/:userRecruteurId/entreprises"],
-      preHandler: [server.auth(zRoutes.get["/etablissement/cfa/:userRecruteurId/entreprises"].securityScheme)],
+      onRequest: [server.auth(zRoutes.get["/etablissement/cfa/:userRecruteurId/entreprises"].securityScheme)],
     },
     async (req, res) => {
       const { userRecruteurId } = req.params
@@ -263,7 +263,7 @@ export default (server: Server) => {
     "/etablissement/:id",
     {
       schema: zRoutes.put["/etablissement/:id"],
-      preHandler: [server.auth(zRoutes.put["/etablissement/:id"].securityScheme)],
+      onRequest: [server.auth(zRoutes.put["/etablissement/:id"].securityScheme)],
     },
     async (req, res) => {
       const result = await updateUser({ _id: req.params.id }, req.body)

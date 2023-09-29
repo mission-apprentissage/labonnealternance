@@ -3,8 +3,10 @@ import assert from "assert"
 import fastify, { RouteOptions } from "fastify"
 import { ZodTypeProvider } from "fastify-type-provider-zod"
 import { zRoutes } from "shared/index"
+import { SecurityScheme } from "shared/routes/common.routes"
 import { describe, it } from "vitest"
 
+import { describeAuthMiddleware } from "@/http/middlewares/authMiddleware"
 import { bind } from "@/http/server"
 
 describe("server", () => {
@@ -19,15 +21,14 @@ describe("server", () => {
     const seen = new Set()
 
     for (const route of routes) {
-      const { path, schema } = route
+      const { routePath, schema, prefix, onRequest = [], preHandler = [] } = route
 
-      // Swagger is not following schema
-      if (path.startsWith("/api/docs")) {
+      if (prefix !== "/api") {
         continue
       }
 
       // Known path aliases
-      const normalizedPath = path.startsWith("/api/romelabels") ? path.replace("/api/romelabels", "/api/rome") : path
+      const normalizedPath = routePath.startsWith("/romelabels") ? routePath.replace("/romelabels", "/rome") : routePath
 
       const methods = Array.isArray(route.method) ? route.method : [route.method]
       for (const method of methods) {
@@ -36,12 +37,37 @@ describe("server", () => {
           continue
         }
 
-        assert.equal(!!schema, true, `${method} ${path}: schema not define in route`)
+        assert.equal(!!schema, true, `${method} ${routePath}: schema not define in route`)
         const sharedSchema = zRoutes?.[method.toLowerCase()]?.[normalizedPath]
-        assert.equal(!!sharedSchema, true, `${method} ${path}: schema not define in shared`)
-        assert.equal(schema, sharedSchema, `${method} ${path}: schema not match shared schema`)
+        assert.equal(!!sharedSchema, true, `${method} ${routePath}: schema not define in shared`)
+        assert.equal(schema, sharedSchema, `${method} ${routePath}: schema not match shared schema`)
 
-        seen.add(`${method} ${path}`)
+        const onRequestAuth = (Array.isArray(onRequest) ? onRequest : [onRequest]).reduce((acc, fn) => {
+          const s = describeAuthMiddleware(fn)
+          if (s) {
+            acc.push(s)
+          }
+          return acc
+        }, [] as SecurityScheme[])
+        const preHandlerAuth = (Array.isArray(preHandler) ? preHandler : [preHandler]).reduce((acc, fn) => {
+          const s = describeAuthMiddleware(fn)
+          if (s) {
+            acc.push(s)
+          }
+          return acc
+        }, [] as SecurityScheme[])
+
+        const expectedAuth: { onRequestAuth: SecurityScheme[]; preHandlerAuth: SecurityScheme[] } = { onRequestAuth: [], preHandlerAuth: [] }
+        // Only following 2 auth strategy doesn't require parsing
+        if (["api-key", "jwt-bearer"].includes(sharedSchema.securityScheme.auth)) {
+          expectedAuth.onRequestAuth.push(sharedSchema.securityScheme)
+        } else if (sharedSchema.securityScheme.auth !== "none") {
+          expectedAuth.preHandlerAuth.push(sharedSchema.securityScheme)
+        }
+
+        assert.deepEqual({ onRequestAuth, preHandlerAuth }, expectedAuth, `${method} ${routePath}: security not match shared schema`)
+
+        seen.add(`${method} ${routePath}`)
       }
     }
 
