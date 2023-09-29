@@ -165,7 +165,37 @@ export const zFormulaireRoute = {
         role: "all",
       },
     },
+    "/formulaire/offre/f/:jobId/cancel": {
+      // TODO_SECURITY_FIX gestion des permissions
+      // TODO_SECURITY_FIX session gérée par cookie server
+      // TODO_SECURITY_FIX Scinder les routes pour cancel depuis admin OU cancel depuis CTA dans un email (avec jwt)
+      params: z.object({ jobId: zObjectId }).strict(),
+      body: z.object({
+        job_status: z.string(),
+        job_status_comment: z.string(),
+      }),
+      response: {
+        "2xx": z.object({}).strict(),
+      },
+      securityScheme: {
+        auth: "none",
+        role: "all",
+      },
+    },
     "/formulaire/offre/:jobId/provided": {
+      // TODO_SECURITY_FIX gestion des permissions
+      // TODO_SECURITY_FIX session gérée par cookie server
+      // TODO_SECURITY_FIX Scinder les routes pour cancel depuis admin OU cancel depuis CTA dans un email (avec jwt)
+      params: z.object({ jobId: zObjectId }).strict(),
+      response: {
+        "2xx": z.object({}).strict(),
+      },
+      securityScheme: {
+        auth: "none",
+        role: "all",
+      },
+    },
+    "/formulaire/offre/:jobId/extend": {
       // TODO_SECURITY_FIX gestion des permissions
       // TODO_SECURITY_FIX session gérée par cookie server
       // TODO_SECURITY_FIX Scinder les routes pour cancel depuis admin OU cancel depuis CTA dans un email (avec jwt)

@@ -8,9 +8,11 @@ import {
   archiveDelegatedFormulaire,
   archiveFormulaire,
   cancelOffre,
+  cancelOffreFromAdminInterface,
   checkOffreExists,
   createJob,
   createJobDelegations,
+  extendOffre,
   getFormulaire,
   getJob,
   patchOffre,
@@ -244,6 +246,24 @@ export default (server: Server) => {
   )
 
   /**
+   * Permet de passer une offre en statut ANNULER (depuis l'interface d'admin)
+   */
+  server.put(
+    "/formulaire/offre/f/:jobId/cancel",
+    {
+      schema: zRoutes.put["/formulaire/offre/f/:jobId/cancel"],
+    },
+    async (req, res) => {
+      const exists = await checkOffreExists(req.params.jobId)
+      if (!exists) {
+        return res.status(400).send({ status: "INVALID_RESSOURCE", message: "L'offre n'existe pas" })
+      }
+      await cancelOffreFromAdminInterface(req.params.jobId, req.body)
+      return res.status(200).send({})
+    }
+  )
+
+  /**
    * Permet de passer une offre en statut POURVUE (mail transactionnel)
    */
   server.put(
@@ -257,6 +277,24 @@ export default (server: Server) => {
         return res.status(400).send({ status: "INVALID_RESSOURCE", message: "L'offre n'existe pas" })
       }
       await provideOffre(req.params.jobId)
+      return res.status(200).send({})
+    }
+  )
+
+  /**
+   * Permet de passer une offre en statut POURVUE (mail transactionnel)
+   */
+  server.put(
+    "/formulaire/offre/:jobId/extend",
+    {
+      schema: zRoutes.put["/formulaire/offre/:jobId/extend"],
+    },
+    async (req, res) => {
+      const exists = await checkOffreExists(req.params.jobId)
+      if (!exists) {
+        return res.status(400).send({ status: "INVALID_RESSOURCE", message: "L'offre n'existe pas" })
+      }
+      await extendOffre(req.params.jobId)
       return res.status(200).send({})
     }
   )

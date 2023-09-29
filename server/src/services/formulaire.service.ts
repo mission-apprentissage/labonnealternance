@@ -564,6 +564,7 @@ export const provideOffre = async (id: IJob["_id"]): Promise<boolean> => {
     {
       $set: {
         "jobs.$.job_status": JOB_STATUS.POURVUE,
+        "jobs.$.job_update_date": () => new Date(),
       },
     }
   )
@@ -571,7 +572,7 @@ export const provideOffre = async (id: IJob["_id"]): Promise<boolean> => {
 }
 
 /**
- * @description Cancel job
+ * @description Cancel job from transaction email
  * @param {IJob["_id"]} id
  * @returns {Promise<boolean>}
  */
@@ -581,6 +582,26 @@ export const cancelOffre = async (id: IJob["_id"]): Promise<boolean> => {
     {
       $set: {
         "jobs.$.job_status": JOB_STATUS.ANNULEE,
+        "jobs.$.job_update_date": Date.now(),
+      },
+    }
+  )
+  return true
+}
+
+/**
+ * @description Cancel job from admin interface
+ * @param {IJob["_id"]} id
+ * @returns {Promise<boolean>}
+ */
+export const cancelOffreFromAdminInterface = async (id: IJob["_id"], { job_status, job_status_comment }): Promise<boolean> => {
+  await Recruiter.findOneAndUpdate(
+    { "jobs._id": id },
+    {
+      $set: {
+        "jobs.$.job_status": job_status,
+        "jobs.$.job_status_comment": job_status_comment,
+        "jobs.$.job_update_date": Date.now(),
       },
     }
   )
@@ -599,6 +620,7 @@ export const extendOffre = async (id: IJob["_id"]): Promise<boolean> => {
       $set: {
         "jobs.$.job_expiration_date": moment().add(1, "months").format("YYYY-MM-DD"),
         "jobs.$.job_last_prolongation_date": Date.now(),
+        "jobs.$.job_update_date": Date.now(),
       },
       $inc: { "jobs.$.job_prolongation_count": 1 },
     }

@@ -20,7 +20,7 @@ import { useState } from "react"
 import { useQueryClient } from "react-query"
 
 import { ArrowRightLine, Close } from "../../theme/components/icons"
-import { putOffre } from "../../utils/api"
+import { cancelOffreFromAdmin } from "../../utils/api"
 
 export default function ConfirmationSuppressionOffre(props) {
   const [job_status_comment, SetjobStatusComment] = useState("")
@@ -48,7 +48,7 @@ export default function ConfirmationSuppressionOffre(props) {
   }
 
   const updateOffer = (job_status) => {
-    putOffre(offre._id, { ...offre, job_status, job_status_comment: job_status_comment ?? undefined })
+    cancelOffreFromAdmin(offre._id, { job_status, job_status_comment: job_status_comment ?? undefined })
       .then(() => {
         toast({
           title: `Offre ${job_status}`,
