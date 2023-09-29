@@ -42,9 +42,7 @@ export const getJobsFromApi = async ({
   api?: string
 }): Promise<
   | IApiError
-  | { peJobs: TLbaItemResult<ILbaItemPeJob>; matchas: TLbaItemResult<ILbaItemLbaJob> | null; lbaCompanies: TLbaItemResult<ILbaItemLbaCompany> | null; lbbCompanies: null }
-  | { peJobs: TLbaItemResult<ILbaItemPeJob> | null; matchas: TLbaItemResult<ILbaItemLbaJob>; lbaCompanies: TLbaItemResult<ILbaItemLbaCompany> | null; lbbCompanies: null }
-  | { peJobs: TLbaItemResult<ILbaItemPeJob> | null; matchas: TLbaItemResult<ILbaItemLbaJob> | null; lbaCompanies: TLbaItemResult<ILbaItemLbaCompany>; lbbCompanies: null }
+  | { peJobs: TLbaItemResult<ILbaItemPeJob> | null; matchas: TLbaItemResult<ILbaItemLbaJob> | null; lbaCompanies: TLbaItemResult<ILbaItemLbaCompany> | null; lbbCompanies: null }
 > => {
   try {
     const jobSources = !sources ? ["lba", "offres", "matcha"] : sources.split(",")
@@ -93,17 +91,9 @@ export const getJobsFromApi = async ({
         : null,
     ])
 
-    if (peJobs) {
-      return { peJobs, matchas, lbaCompanies, lbbCompanies: null }
-    }
-    if (matchas) {
-      return { peJobs, matchas, lbaCompanies, lbbCompanies: null }
-    }
-    if (lbaCompanies) {
-      return { peJobs, matchas, lbaCompanies, lbbCompanies: null }
-    }
-    throw Boom.internal("All job sources are empty")
+    return { peJobs, matchas, lbaCompanies, lbbCompanies: null }
   } catch (err) {
+    console.log(err)
     if (caller) {
       trackApiCall({ caller, api_path: api, response: "Error" })
     }

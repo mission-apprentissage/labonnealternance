@@ -3,7 +3,7 @@ import { z } from "zod"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { ZJob } from "../models"
 import { zObjectId } from "../models/common"
-import { ZLbacError, ZLbarError } from "../models/lbacError.model"
+import { ZApiError, ZLbacError, ZLbarError } from "../models/lbacError.model"
 import { ZLbaItemLbaCompany, ZLbaItemLbaJob, ZLbaItemPeJob } from "../models/lbaItem.model"
 import { ZRecruiter } from "../models/recruiter.model"
 
@@ -116,7 +116,7 @@ export const zV1JobsRoutes = {
                 })
                 .strict()
                 .nullable(),
-              ZLbacError,
+              ZApiError,
             ]),
             matchas: z.union([
               z
@@ -125,7 +125,7 @@ export const zV1JobsRoutes = {
                 })
                 .strict()
                 .nullable(),
-              ZLbacError,
+              ZApiError,
             ]),
             lbaCompanies: z.union([
               z
@@ -134,7 +134,7 @@ export const zV1JobsRoutes = {
                 })
                 .strict()
                 .nullable(),
-              ZLbacError,
+              ZApiError,
             ]),
             lbbCompanies: z.null(), // always null until removal
           })
