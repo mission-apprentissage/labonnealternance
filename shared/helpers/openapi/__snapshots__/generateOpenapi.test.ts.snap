@@ -3845,7 +3845,10 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
             "schema": {
               "description": "Votre raison sociale ou le nom de votre produit qui fait appel à l'API idéalement préfixé par une adresse email de contact",
               "example": "contact@domaine nom_de_societe",
-              "type": "string",
+              "type": [
+                "string",
+                "null",
+              ],
             },
           },
           {
@@ -5758,18 +5761,6 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
     {
       "description": "Production",
       "url": "https://labonnealternance.apprentissage.beta.gouv.fr",
-    },
-    {
-      "description": "Recette",
-      "url": "https://labonnealternance-recette.apprentissage.beta.gouv.fr",
-    },
-    {
-      "description": "Next",
-      "url": "https://labonnealternance-next.apprentissage.beta.gouv.fr",
-    },
-    {
-      "description": "Local",
-      "url": "http://localhost:5001",
     },
   ],
   "webhooks": {},
