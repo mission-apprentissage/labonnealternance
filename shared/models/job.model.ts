@@ -20,6 +20,7 @@ export const ZDelegation = z
     cfa_read_company_detail_at: z.date().nullish().describe("Date de consultation de l'offre"),
   })
   .strict()
+  .openapi("Delegation")
 
 export const ZJobWritable = z
   .object({
@@ -53,10 +54,13 @@ export const ZJobWritable = z
     stats_search_view: z.number().nullish().describe("Nombre de vues sur une page de recherche"),
   })
   .strict()
+  .openapi("JobWritable")
 
 export const ZJob = ZJobWritable.extend({
   _id: zObjectId,
-}).strict()
+})
+  .strict()
+  .openapi("Job")
 
 export const ZJobWrite = ZJobWritable.pick({
   rome_appellation_label: true,
@@ -70,7 +74,9 @@ export const ZJobWrite = ZJobWritable.pick({
   job_rythm: true,
   job_description: true,
   delegations: true,
-}).strict()
+})
+  .strict()
+  .openapi("JobWrite")
 
 export type IDelegation = z.output<typeof ZDelegation>
 

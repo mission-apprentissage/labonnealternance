@@ -14,8 +14,6 @@ const config = {
 }
 
 export default (server: Server) => {
-  // @Tags("Jobs et formations")
-  // @OperationId("getJobsEtFormations")
   server.get(
     "/v1/jobsEtFormations",
     {

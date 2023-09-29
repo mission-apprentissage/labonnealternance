@@ -30,5 +30,6 @@ export const ZLbaCompany = z
     distance: z.array(z.number()).nullish().describe("Distance de la société au centre de recherche en km"),
   })
   .strict()
+  .openapi("LbaCompany")
 
 export type ILbaCompany = z.output<typeof ZLbaCompany>

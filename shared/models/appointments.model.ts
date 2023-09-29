@@ -12,6 +12,7 @@ export const ZMailing = z
     email_sent_at: z.date(),
   })
   .strict()
+  .openapi("Mailing")
 
 export const ZAppointment = z
   .object({
@@ -34,6 +35,7 @@ export const ZAppointment = z
     is_anonymized: z.boolean().default(false),
   })
   .strict()
+  .openapi("Appointment")
 
 export type IAppointment = z.output<typeof ZAppointment>
 export type IAppointmentJson = Jsonify<z.input<typeof ZAppointment>>
