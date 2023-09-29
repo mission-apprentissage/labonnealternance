@@ -1,9 +1,9 @@
 import axios from "axios"
 
-import { baseUrl, inserJeuneApiUrl } from "../config/config"
+import { inserJeuneApiUrl } from "../config/config"
 import { logError } from "../utils/tools"
 
-export default async function fetchInserJeuneStats(training, _baseUrl = baseUrl, _axios = axios, _window = window, _logError = logError) {
+export default async function fetchInserJeuneStats(training, _axios = axios, _window = window, _logError = logError) {
   let res = null
 
   if (!training) {
