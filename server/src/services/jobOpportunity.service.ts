@@ -108,7 +108,7 @@ export const getJobsFromApi = async ({
 export const getJobsQuery = async (
   query: TJobSearchQuery
 ): Promise<
-  | ZLbacError
+  | IApiError
   | { peJobs: TLbaItemResult<ILbaItemPeJob> | null; matchas: TLbaItemResult<ILbaItemLbaJob> | null; lbaCompanies: TLbaItemResult<ILbaItemLbaCompany> | null; lbbCompanies: null }
 > => {
   const parameterControl = await jobsQueryValidator(query)
