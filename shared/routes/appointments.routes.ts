@@ -2,7 +2,6 @@ import { z } from "zod"
 
 import { referrers } from "../constants/referers"
 import { ZAppointment, ZEtablissement } from "../models"
-import { ZEligibleTrainingsForAppointmentSchema } from "../models/elligibleTraining.model"
 
 import { IRoutesDef, ZResError } from "./common.routes"
 
@@ -123,18 +122,20 @@ export const zAppointmentsRoute = {
       // TODO_SECURITY_FIX il faut un secure token
       querystring: z.object({ appointmentId: z.string() }).strict(),
       response: {
-        "2xx": z
-          .object({
-            appointment: z
-              .object({
-                appointment: z.any(),
-                appointment_origin_detailed: z.string(),
-              })
-              .strict(),
-            user: z.any(),
-            etablissement: z.union([ZEligibleTrainingsForAppointmentSchema, z.object({}).strict()]),
-          })
-          .strict(),
+        // TODO ANY TO BE FIXED  __v
+        "2xx": z.any(),
+        // "2xx": z
+        //   .object({
+        //     appointment: z
+        //       .object({
+        //         appointment: z.any(),
+        //         appointment_origin_detailed: z.string(),
+        //       })
+        //       .strict(),
+        //     user: z.any(),
+        //     etablissement: z.union([ZEligibleTrainingsForAppointmentSchema, z.object({}).strict()]),
+        //   })
+        //   .strict(),
       },
       securityScheme: {
         auth: "none",
@@ -230,7 +231,7 @@ export const zAppointmentsRoute = {
         .object({
           appointment_id: z.string(),
           cfa_intention_to_applicant: z.string(),
-          cfa_message_to_applicant_date: z.date(),
+          cfa_message_to_applicant_date: z.string(),
           cfa_message_to_applicant: z.string().nullable(),
         })
         .strict(),
@@ -240,7 +241,7 @@ export const zAppointmentsRoute = {
             appointment_id: z.string(),
             cfa_intention_to_applicant: z.string(),
             cfa_message_to_applicant: z.string().nullable(),
-            cfa_message_to_applicant_date: z.date(),
+            cfa_message_to_applicant_date: z.string(),
           })
           .strict(),
       },

@@ -22,12 +22,11 @@ const CreationCompteForm = ({ type, setQualiopi, setBandeau, origin }) => {
   const submitSiret = ({ establishment_siret }, { setSubmitting, setFieldError }) => {
     setBandeau(null)
     const formattedSiret = establishment_siret.replace(/[^0-9]/g, "")
-
     // validate establishment_siret
     if (type === AUTHTYPE.ENTREPRISE) {
       Promise.all([getEntrepriseOpco(formattedSiret), getEntrepriseInformation(formattedSiret)]).then(([opcoInfos, entrepriseData]) => {
         if (entrepriseData.error) {
-          if (!entrepriseData.data) {
+          if (entrepriseData.statusCode >= 500) {
             router.push({
               pathname: "/espace-pro/creation/detail",
               query: { type, origin, informationSiret: JSON.stringify({ establishment_siret: formattedSiret, ...opcoInfos }) },

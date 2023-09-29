@@ -4,8 +4,7 @@ import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import * as Yup from "yup"
 
-import { useFetch } from "../../../../../common/hooks/useFetch"
-import { _patch, _post } from "../../../../../common/httpClient"
+import { _get, _patch, _post } from "../../../../../common/httpClient"
 import { formatDate } from "../../../../../common/utils/dateUtils"
 import { getReasonText } from "../../../../../common/utils/reasonsUtils"
 import { FormLayoutComponent } from "../../../../../components/espace_pro/Candidat/layout/FormLayoutComponent"
@@ -13,7 +12,6 @@ import { CfaCandidatInformationAnswered } from "../../../../../components/espace
 import { CfaCandidatInformationForm } from "../../../../../components/espace_pro/CfaCandidatInformationPage/CfaCandidatInformationForm"
 import { CfaCandidatInformationOther } from "../../../../../components/espace_pro/CfaCandidatInformationPage/CfaCandidatInformationOther"
 import { CfaCandidatInformationUnreachable } from "../../../../../components/espace_pro/CfaCandidatInformationPage/CfaCandidatInformationUnreachable"
-import { publicConfig } from "config.public"
 
 /**
  * @description CfaCandidatInformationPage component.
@@ -22,7 +20,7 @@ import { publicConfig } from "config.public"
 export default function CfaCandidatInformationPage() {
   const router = useRouter()
   const { establishmentId, appointmentId } = router.query
-  const [data, loading] = useFetch(`${publicConfig.apiEndpoint}/appointment-request/context/recap?appointmentId=${appointmentId}`)
+  const [data, setData] = useState(null)
 
   const [currentState, setCurrentState] = useState("initial")
 
@@ -35,7 +33,7 @@ export default function CfaCandidatInformationPage() {
     validationSchema: Yup.object({ message: Yup.string().required("Veuillez remplir le message") }),
     onSubmit: async (values) => {
       setCurrentState("sending")
-      await _post("/appointment-request/reply", {
+      await _post("appointment-request/reply", {
         appointment_id: appointmentId,
         cfa_intention_to_applicant: "personalised_answer",
         cfa_message_to_applicant: values.message,
@@ -72,12 +70,16 @@ export default function CfaCandidatInformationPage() {
    */
   useEffect(() => {
     const fetchData = async () => {
-      if (utmSource === "mail") {
-        await _patch(`etablissements/${establishmentId}/appointments/${appointmentId}`, { has_been_read: true })
+      if (appointmentId && establishmentId) {
+        if (utmSource === "mail") {
+          await _patch(`etablissements/${establishmentId}/appointments/${appointmentId}`, { has_been_read: true })
+        }
+        const response = await _get(`appointment-request/context/recap?appointmentId=${appointmentId}`)
+        setData(response)
       }
     }
     fetchData().catch(console.error)
-  }, [utmSource])
+  }, [utmSource, appointmentId])
 
   return (
     <FormLayoutComponent
@@ -91,7 +93,7 @@ export default function CfaCandidatInformationPage() {
         </>
       }
     >
-      {loading && <span>Chargement des données...</span>}
+      {!data && <span>Chargement des données...</span>}
       {data?.user && (
         <Box mt={10}>
           <Text as="span" color="bluefrance" textStyle="h6">
