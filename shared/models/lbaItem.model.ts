@@ -415,3 +415,13 @@ export const ZLbaItemPeJob = z
   .strict()
 
 export type ILbaItemPeJob = z.output<typeof ZLbaItemPeJob>
+
+export const ZLbaItemFormationResult = z
+  .object({
+    results: z.array(ZLbaItemFormation).openapi({ description: "Un tableau de formations correspondantes aux critères" }),
+  })
+  .strict()
+  .openapi({
+    description:
+      "Un tableau contenant la liste des formations correspondants aux critères transmis en paramètre de la requête. Le tableau peut être vide si aucune formation ne correspond.",
+  })

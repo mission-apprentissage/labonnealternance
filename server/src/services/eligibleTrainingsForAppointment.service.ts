@@ -1,5 +1,5 @@
-import { ObjectId } from "mongodb"
-import { FilterQuery } from "mongoose"
+import type { ObjectId } from "mongodb"
+import type { FilterQuery } from "mongoose"
 import { IFormationCatalogue, IEligibleTrainingsForAppointment } from "shared"
 
 import { EligibleTrainingsForAppointment } from "../common/model/index"

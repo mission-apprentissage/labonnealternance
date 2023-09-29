@@ -173,6 +173,7 @@ export default async () => {
     logger: logMiddleware(),
     bodyLimit: 5 * 1024 ** 2, // 5MB
     trustProxy: 1,
+    caseSensitive: false,
   }).withTypeProvider<ZodTypeProvider>()
 
   return bind(app)

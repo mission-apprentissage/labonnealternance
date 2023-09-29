@@ -57,7 +57,7 @@ export const getFormations = async ({
   limit?: number
   caller?: string
   api?: string
-  options: string[]
+  options: "with_description"[]
 }): Promise<IFormationEsResult[]> => {
   try {
     const distance = radius || 30
@@ -213,7 +213,7 @@ const getRegionFormations = async ({
   departement?: string
   diploma?: string
   limit?: number
-  options: string[]
+  options: "with_description"[]
   caller?: string
 }): Promise<IFormationEsResult[]> => {
   const mustTerm: any[] = []
@@ -294,7 +294,7 @@ const getAtLeastSomeFormations = async ({
   diploma?: string
   maxOutLimitFormation: number
   caller?: string
-  options: string[]
+  options: "with_description"[]
 }): Promise<ILbaItemFormation[]> => {
   let rawEsFormations: IFormationEsResult[]
   let currentRadius = radius
@@ -543,7 +543,7 @@ export const getFormationsQuery = async ({
   diploma?: string
   romeDomain?: string
   caller?: string
-  options?: string
+  options?: "with_description"
   referer?: string
   api?: string
 }): Promise<IApiError | { results: ILbaItemFormation[] }> => {
@@ -562,7 +562,7 @@ export const getFormationsQuery = async ({
       maxOutLimitFormation: 5,
       romeDomain,
       caller,
-      options: options ? options.split(",") : [],
+      options: options === "with_description" ? ["with_description"] : [],
     })
 
     return { results: formations }
@@ -678,7 +678,7 @@ export const getFormationsParRegionQuery = async ({
   diploma?: string
   romeDomain?: string
   caller?: string
-  options?: string
+  options?: "with_description"
   referer?: string
 }): Promise<IApiError | { results: ILbaItemFormation[] }> => {
   const queryValidationResult = formationsRegionQueryValidator({ romes, departement, region, diploma, romeDomain, caller, referer })
@@ -695,7 +695,7 @@ export const getFormationsParRegionQuery = async ({
       diploma: diploma,
       romeDomain: romeDomain,
       caller: caller,
-      options: options ? options.split(",") : [],
+      options: options === "with_description" ? ["with_description"] : [],
     })
 
     const formations = transformFormationsForIdea(rawEsFormations)
@@ -719,7 +719,7 @@ export const getFormationsParRegionQuery = async ({
  * @param {string[]} options une liste d'options permettant de moduler le fragment de requête
  * @returns {{ index: string; size: number; _source_includes: string[] }}
  */
-const getFormationEsQueryIndexFragment = (limit: number, options: string[]): { index: string; size: number; _source_includes: string[] } => {
+const getFormationEsQueryIndexFragment = (limit: number, options: "with_description"[]): { index: string; size: number; _source_includes: string[] } => {
   return {
     index: "formationcatalogues",
     size: limit,

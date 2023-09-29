@@ -20,7 +20,7 @@
     "axios": "^1.5.1",
     "config": "^3.3.9",
     "dayjs": "^1.11.10",
-    "downshift": "^5.4.7",
+    "downshift": "5.2.0",
     "email-misspelled": "^3.4.2",
     "email-validator": "^2.0.4",
     "formik": "^2.4.5",
