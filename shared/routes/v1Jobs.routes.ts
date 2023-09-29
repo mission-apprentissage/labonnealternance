@@ -7,6 +7,7 @@ import { ZApiError, ZLbacError, ZLbarError } from "../models/lbacError.model"
 import { ZLbaItemLbaCompany, ZLbaItemLbaJob, ZLbaItemPeJob } from "../models/lbaItem.model"
 import { ZRecruiter } from "../models/recruiter.model"
 
+import { zRefererHeaders } from "./_params"
 import { IRoutesDef, ZResError } from "./common.routes"
 
 export const zV1JobsRoutes = {
@@ -101,11 +102,7 @@ export const zV1JobsRoutes = {
           opcoUrl: z.string().optional(),
         })
         .strict(),
-      headers: z
-        .object({
-          referer: z.string().optional(),
-        })
-        .passthrough(),
+      headers: zRefererHeaders,
       response: {
         "200": z
           .object({
@@ -169,11 +166,7 @@ export const zV1JobsRoutes = {
           caller: z.string().optional(),
         })
         .strict(),
-      headers: z
-        .object({
-          referer: z.string().optional(),
-        })
-        .passthrough(),
+      headers: zRefererHeaders,
       response: {
         "200": z
           .object({
@@ -200,11 +193,7 @@ export const zV1JobsRoutes = {
           caller: z.string().optional(),
         })
         .strict(),
-      headers: z
-        .object({
-          referer: z.string().optional(),
-        })
-        .passthrough(),
+      headers: zRefererHeaders,
       response: {
         "200": z
           .object({
@@ -231,11 +220,7 @@ export const zV1JobsRoutes = {
           caller: z.string().optional(),
         })
         .strict(),
-      headers: z
-        .object({
-          referer: z.string().optional(),
-        })
-        .passthrough(),
+      headers: zRefererHeaders,
       response: {
         "200": z
           .object({

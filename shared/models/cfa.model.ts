@@ -12,3 +12,4 @@ export const zCFA = z
     geo_coordinates: z.string(),
   })
   .strict()
+  .openapi("Model")

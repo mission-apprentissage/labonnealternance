@@ -39,12 +39,13 @@ export const ZRecruiterWritable = z
     establishment_creation_date: z.date().nullish().describe("Date de creation de l'établissement"),
   })
   .strict()
+  .openapi("RecruiterWritable")
 
 export const ZRecruiter = ZRecruiterWritable.extend({
   _id: zObjectId,
   createdAt: z.date().describe("Date de creation"),
   updatedAt: z.date().describe("Date de mise à jour"),
-})
+}).openapi("Recruiter")
 
 export type IRecruiter = z.output<typeof ZRecruiter>
 export type IRecruiterJson = Jsonify<z.input<typeof ZRecruiter>>

@@ -6,6 +6,7 @@ export const ZRomeWithLabel = z
     intitule: z.string(),
   })
   .strict()
+  .openapi("RomeWithLabel")
 
 export type IRomeWithLabel = z.output<typeof ZRomeWithLabel>
 
@@ -40,6 +41,7 @@ export const ZMetierEnrichi = z
     }),
   })
   .strict()
+  .openapi("MetierEnrichi")
 
 export type IMetierEnrichi = z.output<typeof ZMetierEnrichi>
 

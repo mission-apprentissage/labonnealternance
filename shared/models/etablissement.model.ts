@@ -36,6 +36,7 @@ export const ZEtablissement = z
     to_etablissement_emails: z.array(ZMailing),
   })
   .strict()
+  .openapi("Etablissement")
 
 export type IEtablissement = z.output<typeof ZEtablissement>
 export type IEtablissementJson = Jsonify<z.input<typeof ZEtablissement>>

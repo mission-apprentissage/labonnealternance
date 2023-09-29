@@ -238,7 +238,8 @@ const ZLbaItemJob = z
     quantiteContrat: z.number().nullish(), // matcha -> offres.quantite
     status: z.enum(["Active", "Pourvue", "Annulée", "En attente"]).nullish(),
   })
-  .strict() // uniquement pour pe et matcha
+  .strict()
+  .openapi("Job") // uniquement pour pe et matcha
 
 export type ILbaItemJob = z.output<typeof ZLbaItemJob>
 
@@ -249,6 +250,7 @@ const ZLbaItemTrainingSession = z
     isPermanentEntry: z.boolean(),
   })
   .strict()
+  .openapi("TrainingSession")
 
 export type ILbaItemTrainingSession = z.output<typeof ZLbaItemTrainingSession>
 
@@ -259,6 +261,7 @@ const ZLbaItemTraining = z
     sessions: z.array(ZLbaItemTrainingSession).nullish(),
   })
   .strict()
+  .openapi("Training")
 
 export type ILbaItemTraining = z.output<typeof ZLbaItemTraining>
 
@@ -380,6 +383,7 @@ export const ZLbaItemLbaJob = z
     applicationCount: z.number(), // calcul en fonction du nombre de candidatures enregistrées
   })
   .strict()
+  .openapi("LbaJob")
 
 export type ILbaItemLbaJob = z.output<typeof ZLbaItemLbaJob>
 
@@ -396,6 +400,7 @@ export const ZLbaItemLbaCompany = z
     applicationCount: z.number(), // calcul en fonction du nombre de candidatures enregistrées
   })
   .strict()
+  .openapi("LbaCompany")
 
 export type ILbaItemLbaCompany = z.output<typeof ZLbaItemLbaCompany>
 
@@ -413,6 +418,7 @@ export const ZLbaItemPeJob = z
     nafs: z.array(ZLbaItemNaf).nullable(),
   })
   .strict()
+  .openapi("PeJob")
 
 export type ILbaItemPeJob = z.output<typeof ZLbaItemPeJob>
 

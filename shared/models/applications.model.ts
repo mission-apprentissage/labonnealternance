@@ -78,6 +78,7 @@ export const ZApplication = z
     last_update_at: z.date().nullable().describe("Date de dernières mise à jour"),
   })
   .strict()
+  .openapi("Application")
 
 export const ZApplicationUI = ZApplication.extend({
   message: ZApplication.shape.applicant_message_to_company.optional(),
@@ -94,20 +95,25 @@ export const ZApplicationUI = ZApplication.extend({
     description: "Le vecteur d'initialisation permettant de déchiffrer l'adresse email de la société. Cette valeur est fournie par les apis de LBA.",
     example: "...59c24c059b...",
   }),
-  secret: z.string().optional(),
+  secret: z.string().nullish(),
   crypted_company_email: z.string().nullish(),
-  caller: zCallerParam.optional(),
+  caller: zCallerParam.nullish(),
   job_id: ZApplication.shape.job_id.optional(),
-}).omit({
-  applicant_message_to_company: true,
-  applicant_attachment_name: true,
-  job_origin: true,
-  to_applicant_message_id: true,
-  to_company_message_id: true,
-  is_anonymized: true,
-  created_at: true,
-  last_update_at: true,
 })
+.omit({
+    applicant_message_to_company: true,
+    applicant_attachment_name: true,
+    job_origin: true,
+    to_applicant_message_id: true,
+    to_company_message_id: true,
+    is_anonymized: true,
+    company_recruitment_intention: true,
+    company_feedback: true,
+    company_feedback_date: true,
+    created_at: true,
+    last_update_at: true,
+})
+.openapi("ApplicationUi")
 
 export type IApplicationUI = z.output<typeof ZApplicationUI>
 

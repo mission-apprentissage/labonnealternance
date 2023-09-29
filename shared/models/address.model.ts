@@ -53,6 +53,7 @@ export const ZAdresseCFA = z
     acheminement_postal: ZAcheminementPostal.optional(),
   })
   .strict()
+  .openapi("AdresseCFA")
 
 const ZAdresseV2 = ZAdresseCFA.extend({
   numero_voie: z.string(),
@@ -64,7 +65,9 @@ const ZAdresseV2 = ZAdresseCFA.extend({
   code_insee_localite: z.string(),
   cedex: z.null(),
   acheminement_postal: ZAcheminementPostal.optional(),
-}).strict()
+})
+  .strict()
+  .openapi("AdresseV2")
 
 const ZAdresseV3 = z
   .object({
@@ -86,5 +89,6 @@ const ZAdresseV3 = z
     acheminement_postal: ZAcheminementPostal.optional(),
   })
   .strict()
+  .openapi("AdresseV3")
 
 export const ZGlobalAddress = z.union([ZAdresseCFA, ZAdresseV2, ZAdresseV3])
