@@ -32,7 +32,7 @@ fileignoreconfig:
 - filename: server/src/http/routes/auth/password.controller.ts
   checksum: 433f0c943c543b2ec1a2bd69356d3a55213de84a3d77d055d34860fe5c933324
 - filename: server/src/jobs/job.actions.ts
-  checksum: dc3a63beaf667494b3591497def0c27bb0dca391f0edddc9ebd1e112df3429dc
+  checksum: d716e214d828109181a138f0ae253d5489a3c544b2625917b458d1e07886c408
 - filename: server/src/services/application.service.ts
   checksum: 30ca009c87350b987cefd4ff940ac9069b70c086ae4bb857ae3372bf03be86ab
 - filename: server/static/generated/swagger.json

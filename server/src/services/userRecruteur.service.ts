@@ -1,8 +1,7 @@
 import { randomUUID } from "crypto"
 
 import Boom from "boom"
-import { FilterQuery } from "mongodb"
-import { ModelUpdateOptions, UpdateQuery } from "mongoose"
+import type { FilterQuery, ModelUpdateOptions, UpdateQuery } from "mongoose"
 import { IUserRecruteur, IUserStatusValidation } from "shared"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"

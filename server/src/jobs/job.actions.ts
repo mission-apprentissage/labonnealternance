@@ -1,4 +1,4 @@
-import { MatchKeysAndValues, ObjectId, FilterQuery, FindOneOptions } from "mongodb"
+import type { ObjectId, MatchKeysAndValues, FilterQuery, FindOneOptions } from "mongodb"
 
 import { IInternalJobs } from "@/common/model/schema/internalJobs/internalJobs.types"
 import { db } from "@/common/mongodb"

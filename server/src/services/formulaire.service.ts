@@ -1,8 +1,8 @@
 import Boom from "boom"
 import { pick } from "lodash-es"
 import moment from "moment"
-import { FilterQuery, ObjectId } from "mongodb"
-import { ModelUpdateOptions, UpdateQuery } from "mongoose"
+import type { ObjectId } from "mongodb"
+import type { FilterQuery, ModelUpdateOptions, UpdateQuery } from "mongoose"
 import { IDelegation, IJob, IRecruiter, IUserRecruteur } from "shared"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"

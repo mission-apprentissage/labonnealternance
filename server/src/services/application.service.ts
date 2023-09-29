@@ -1,6 +1,6 @@
 import { isEmailBurner } from "burner-email-providers"
 import Joi from "joi"
-import { Document } from "mongoose"
+import type { Document } from "mongoose"
 import { oleoduc, writeData } from "oleoduc"
 import { IApplication, ILbaCompany } from "shared"
 

@@ -1,7 +1,7 @@
 "use strict"
 
 import { RequestParams } from "@elastic/elasticsearch"
-import { Document } from "mongoose"
+import type { Document } from "mongoose"
 import { oleoduc, writeData } from "oleoduc"
 
 import { logger } from "@/common/logger"

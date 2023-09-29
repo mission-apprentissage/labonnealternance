@@ -25,8 +25,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import * as mongoose from "mongoose"
-import { Schema, Model } from "mongoose"
+import type { Schema, Aggregate, Model } from "mongoose"
 
 export class PaginationModel<T> {
   totalDocs: number | undefined
@@ -113,7 +112,7 @@ export function mongoosePagination<T>(schema: Schema<T>) {
     //MARK: QUERY
     let docsPromise = []
 
-    let mQuery: mongoose.Aggregate<T> | any
+    let mQuery: Aggregate<T> | any
 
     if (aggregate != undefined) {
       mQuery = this.aggregate(aggregate)

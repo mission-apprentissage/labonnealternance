@@ -1,4 +1,4 @@
-import { ObjectId } from "mongodb"
+import mongoose from "mongoose"
 import { zRoutes } from "shared/index"
 
 import { Application } from "../../common/model/index"
@@ -60,7 +60,7 @@ export default function (server: Server) {
 
       try {
         const application = await Application.findOneAndUpdate(
-          { _id: new ObjectId(decryptedId) },
+          { _id: new mongoose.Types.ObjectId(decryptedId) },
           { company_recruitment_intention: req.body.intention, company_feedback: req.body.comment, company_feedback_date: new Date() }
         )
         if (!application) throw new Error("application not found")
