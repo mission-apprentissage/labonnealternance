@@ -5,7 +5,7 @@ import { publicConfig } from "../config.public"
 import { apiGet } from "./api.utils"
 
 const API = Axios.create({
-  baseURL: `${publicConfig.baseUrl}/api`,
+  baseURL: publicConfig.apiEndpoint,
 })
 
 const errorHandler = (error: any): undefined => {
@@ -19,7 +19,7 @@ const errorHandler = (error: any): undefined => {
  */
 export const getEntreprisesOfCfa = async (cfaId: string) => {
   const token = sessionStorage.getItem("lba:token")
-  return apiGet("/api/etablissement/cfa/:userRecruteurId/entreprises", {
+  return apiGet("/etablissement/cfa/:userRecruteurId/entreprises", {
     params: {
       userRecruteurId: cfaId,
     },

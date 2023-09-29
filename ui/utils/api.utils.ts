@@ -113,11 +113,11 @@ export function generateQueryString(query: QueryString = {}): string {
   return `?${searchParams.toString()}`
 }
 
+const removeAtEnd = (url: string, removed: string): string => (url.endsWith(removed) ? url.slice(0, -removed.length) : url)
+
 export function generateUrl(path: string, options: WithQueryStringAndPathParam = {}): string {
-  const normalisedEndpoint = publicConfig.baseUrl.endsWith("/") ? publicConfig.baseUrl.slice(0, -1) : publicConfig.baseUrl
-
+  const normalisedEndpoint = removeAtEnd(publicConfig.apiEndpoint, "/")
   const url = normalisedEndpoint + generatePath(path, options.params) + generateQueryString(options.querystring)
-
   return url
 }
 
