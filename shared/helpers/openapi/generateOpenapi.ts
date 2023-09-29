@@ -1,4 +1,5 @@
 import { OpenApiGeneratorV31, OpenAPIRegistry, ResponseConfig, RouteConfig } from "@asteasolutions/zod-to-openapi"
+import type { SecurityRequirementObject } from "openapi3-ts/oas30"
 
 import { zRoutes } from "../../index"
 import { IRouteSchema } from "../../routes/common.routes"
@@ -45,6 +46,18 @@ function generateOpenApiRequest(route: IRouteSchema): RouteConfig["request"] {
   return requestParams
 }
 
+function getSecurityRequirementObject(route: IRouteSchema): SecurityRequirementObject[] {
+  if (route.securityScheme.auth === "none") {
+    return []
+  }
+
+  if (route.securityScheme.auth !== "api-key") {
+    throw new Error("getSecurityRequirementObject: securityScheme not supported")
+  }
+
+  return [{ "api-key": [] }]
+}
+
 function addOpenApiOperation(path: string, method: "get" | "put" | "post" | "delete", route: IRouteSchema, registry: OpenAPIRegistry) {
   if (!route.openapi) {
     return
@@ -56,11 +69,20 @@ function addOpenApiOperation(path: string, method: "get" | "put" | "post" | "del
     path,
     request: generateOpenApiRequest(route),
     responses: generateOpenApiResponsesObject(route.response),
+    security: getSecurityRequirementObject(route),
   })
 }
 
 export function generateOpenApiSchema(version: string, env: string, publicUrl: string) {
   const registry = new OpenAPIRegistry()
+
+  registry.registerComponent("securitySchemes", "api-key", {
+    type: "http",
+    name: "authorization",
+    in: "header",
+    scheme: "bearer",
+    bearerFormat: "bearer",
+  })
 
   for (const [method, pathRoutes] of Object.entries(zRoutes)) {
     for (const [path, route] of Object.entries(pathRoutes)) {

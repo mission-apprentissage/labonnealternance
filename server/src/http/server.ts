@@ -65,7 +65,7 @@ export async function bind(app: Server) {
     mode: "static",
     specification: {
       // @ts-expect-error invalid definition of document type
-      document: generateOpenApiSchema(config.version, config.env, config.publicUrl) as OpenAPIV3_1.Document,
+      document: generateOpenApiSchema(config.version, config.env, config.env === "local" ? "http://localhost:5001/api" : `${config.publicUrl}/api`) as OpenAPIV3_1.Document,
     },
   }
   await app.register(fastifySwagger, swaggerOpts)
