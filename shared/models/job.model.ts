@@ -26,7 +26,7 @@ export const ZJobWritable = z
     rome_label: z.string().nullish().describe("Libellé du métier concerné"),
     rome_appellation_label: z.string().nullish().describe("Libellé de l'appelation ROME"),
     job_level_label: z.string().nullish().describe("Niveau de formation requis"),
-    job_start_date: z.date().nullish().describe("Date de début de l'alternance"),
+    job_start_date: z.coerce.date().nullish().describe("Date de début de l'alternance"),
     job_description: z.string().nullish().describe("Description de l'offre d'alternance"),
     job_employer_description: z.string().nullish().describe("Description de l'employer proposant l'offre d'alternance"),
     rome_code: z.array(z.string()).describe("Liste des romes liés au métier"),
@@ -58,7 +58,22 @@ export const ZJob = ZJobWritable.extend({
   _id: zObjectId,
 }).strict()
 
+export const ZJobWrite = ZJobWritable.pick({
+  rome_appellation_label: true,
+  rome_code: true,
+  job_type: true,
+  job_level_label: true,
+  job_start_date: true,
+  is_disabled_elligible: true,
+  job_count: true,
+  job_duration: true,
+  job_rythm: true,
+  job_description: true,
+  delegations: true,
+}).strict()
+
 export type IDelegation = z.output<typeof ZDelegation>
 
 export type IJob = z.output<typeof ZJob>
+export type IJobWrite = z.output<typeof ZJobWrite>
 export type IJobJson = Jsonify<z.input<typeof ZJob>>
