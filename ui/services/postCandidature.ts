@@ -10,7 +10,7 @@ import extractCandidatureParams from "./extractCandidatureParams"
 export default async function postCandidature(applicant_h, company_h, caller, _apiEndpoint = apiEndpoint, _axios = axios, _window = window, _logError = logError) {
   let res = ""
 
-  const candidatureApi = _apiEndpoint + "/application"
+  const candidatureApi = _apiEndpoint + "/v1/application"
 
   let response = null
   let isAxiosError = false
