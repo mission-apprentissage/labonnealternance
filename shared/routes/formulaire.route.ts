@@ -218,7 +218,7 @@ export const zFormulaireRoute = {
     "/formulaire/offre/:jobId": {
       params: z.object({ jobId: zObjectId }).strict(),
       querystring: z.object({ siret_formateur: z.string() }).strict(),
-      body: z.object({ cfa_read_company_detail_at: z.date() }).strict(),
+      body: z.object({ cfa_read_company_detail_at: z.string() }).strict(),
       response: {
         "2xx": ZJob.nullable(),
       },
