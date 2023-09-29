@@ -36,7 +36,7 @@ import useAuth from "../../common/hooks/useAuth"
 import { sortReactTableDate } from "../../common/utils/dateUtils"
 import { publicConfig } from "../../config.public"
 import { ArrowDropRightLine, Building, ExternalLinkLine, Parametre, Plus } from "../../theme/components/icons"
-import { getFormulaire, putOffre } from "../../utils/api"
+import { extendOffre, getFormulaire } from "../../utils/api"
 
 import { ConfirmationSuppressionOffre, LoadingEmptySpace, Table } from "."
 
@@ -221,12 +221,7 @@ export default function ListeOffres() {
                       <Link
                         onClick={() => {
                           const newExpirationDate = dayjs().add(1, "month")
-                          putOffre(row._id, {
-                            ...row,
-                            job_expiration_date: newExpirationDate.format("YYYY-MM-DD"),
-                            job_last_prolongation_date: Date(),
-                            job_prolongation_count: row.job_prolongation_count >= 0 ? row.job_prolongation_count + 1 : 1,
-                          })
+                          extendOffre(row._id)
                             .then(() =>
                               toast({
                                 title: `Date d'expiration : ${newExpirationDate.format("DD/MM/YYYY")}`,

@@ -22,7 +22,7 @@ export default (server: Server) => {
     "/emails/webhook",
     {
       schema: zRoutes.post["/emails/webhook"],
-      preHandler: [server.auth(zRoutes.post["/emails/webhook"].securityScheme)],
+      onRequest: [server.auth(zRoutes.post["/emails/webhook"].securityScheme)],
     },
     async (req, res) => {
       const { date, event } = req.body

@@ -1,24 +1,6 @@
-export type IMetiers = {
-  metiers: string[]
-}
+import type { IMetierEnrichi, IRomeWithLabel, IMetiers, IMetiersEnrichis } from "shared"
 
-export interface IRomeWithLabel {
-  codeRome: string
-  intitule: string
-}
-
-export interface IMetierEnrichi {
-  label: string
-  romes: string[]
-  rncps?: string[]
-  type?: string
-  romeTitles?: IRomeWithLabel[]
-}
-
-export interface IMetiersEnrichis {
-  labelsAndRomes?: IMetierEnrichi[]
-  labelsAndRomesForDiplomas?: IMetierEnrichi[]
-}
+export type { IMetierEnrichi, IRomeWithLabel, IMetiers, IMetiersEnrichis }
 
 export interface IAppellationsRomes {
   coupleAppellationRomeMetier: IAppellationRome[]

@@ -60,7 +60,7 @@ export default (server: Server) => {
     "/user",
     {
       schema: zRoutes.get["/user"],
-      preHandler: [server.auth(zRoutes.get["/user"].securityScheme)],
+      onRequest: [server.auth(zRoutes.get["/user"].securityScheme)],
     },
     async (req, res) => {
       // TODO KEVIN: ADD PAGINATION

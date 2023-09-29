@@ -61,15 +61,7 @@ const getMultiMatchTermForDiploma = (term) => {
 /**
  * retourne une liste de métiers avec leurs codes romes et codes RNCPs associés. le retour respecte strictement les critères
  */
-export const getMetiers = async ({
-  title,
-  romes,
-  rncps,
-}: {
-  title: string
-  romes?: string[]
-  rncps?: string[]
-}): Promise<{ labelsAndRomes: Omit<IMetierEnrichi, "romeTitles">[] }> => {
+export const getMetiers = async ({ title, romes, rncps }: { title: string; romes?: string; rncps?: string }): Promise<{ labelsAndRomes: Omit<IMetierEnrichi, "romeTitles">[] }> => {
   if (!title && !romes && !rncps) {
     throw Boom.badRequest("Parameters must include at least one from 'title', 'romes' and 'rncps'")
   } else {

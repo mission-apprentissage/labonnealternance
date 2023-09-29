@@ -201,8 +201,8 @@ export function auth(strategy: SecurityScheme) {
   return authMiddleware
 }
 
-export function describeAuthMiddleware(fn) {
-  return fn[symbol]
+export function describeAuthMiddleware(fn: any): SecurityScheme | null {
+  return fn[symbol] ?? null
 }
 
 declare module "fastify" {
