@@ -96,7 +96,7 @@ export const ZApplicationUI = ZApplication.extend({
   }),
   secret: z.string().nullish(),
   crypted_company_email: z.string().nullish(),
-  caller: zCallerParam.optional(),
+  caller: zCallerParam.nullish(),
   job_id: ZApplication.shape.job_id.optional(),
 }).omit({
   applicant_message_to_company: true,
@@ -105,8 +105,6 @@ export const ZApplicationUI = ZApplication.extend({
   to_applicant_message_id: true,
   to_company_message_id: true,
   is_anonymized: true,
-  applicant_attachment_name: true,
-  job_origin: true,
   company_recruitment_intention: true,
   company_feedback: true,
   company_feedback_date: true,
