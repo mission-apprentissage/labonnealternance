@@ -234,13 +234,15 @@ const ResultLists = ({
             showSearchForm={showSearchForm}
           />
         </Box>
-        <ResultListsLoading
-          allJobSearchError={allJobSearchError}
-          trainingSearchError={trainingSearchError}
-          isJobSearchLoading={isJobSearchLoading}
-          isTrainingSearchLoading={isTrainingSearchLoading}
-        />
-        {getErrorMessages()}
+        <Box margin="auto" maxWidth="1310px">
+          <ResultListsLoading
+            allJobSearchError={allJobSearchError}
+            trainingSearchError={trainingSearchError}
+            isJobSearchLoading={isJobSearchLoading}
+            isTrainingSearchLoading={isTrainingSearchLoading}
+          />
+          {getErrorMessages()}
+        </Box>
       </Box>
       <Box
         flex="1"
