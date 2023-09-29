@@ -245,11 +245,6 @@ export const getFormulaires = async (query: FilterQuery<IRecruiter>, select: obj
 export const createJob = async ({ job, id }: { job: Partial<IOffreExtended>; id: IUserRecruteur["establishment_id"] }): Promise<IRecruiter> => {
   // get user data
   const user = await getUser({ establishment_id: id })
-
-  if (!user) {
-    throw new Error("Etablisement dos not exist")
-  }
-
   const userStatus: ETAT_UTILISATEUR | null = user ? getUserStatus(user.status) : null
   const isUserAwaiting = userStatus !== ETAT_UTILISATEUR.VALIDE
   // get user activation state if not managed by a CFA
@@ -268,17 +263,19 @@ export const createJob = async ({ job, id }: { job: Partial<IOffreExtended>; id:
   job.pourvue = `${config.publicUrl}/espace-pro/offre/${job._id}/provided`
 
   // if first offer creation for an Entreprise, send specific mail
-  if (jobs.length === 1 && is_delegated === false) {
+  if (jobs.length === 1 && is_delegated === false && user) {
     await sendEmailConfirmationEntreprise(user, updatedFormulaire)
     return updatedFormulaire
   }
 
-  let contactCFA: IUserRecruteur | null = null
-  // get CFA informations if formulaire is handled by a CFA
-  if (cfa_delegated_siret && is_delegated) {
-    contactCFA = await getUser({ establishment_siret: cfa_delegated_siret })
+  if (is_delegated) {
+    // get CFA informations if formulaire is handled by a CFA
+    const contactCFA = await getUser({ establishment_siret: cfa_delegated_siret })
+    if (!contactCFA) {
+      throw Boom.internal(`unexpected: could not find user recruteur CFA that created the job`)
+    }
+    await sendMailNouvelleOffre(updatedFormulaire, job, contactCFA)
   }
-  await sendMailNouvelleOffre(updatedFormulaire, job, contactCFA ?? undefined)
 
   return updatedFormulaire
 }
@@ -386,7 +383,6 @@ export const deleteFormulaire = async (id: IRecruiter["_id"]): Promise<IRecruite
  * @returns {Promise<IRecruiter>}
  */
 export const deleteFormulaireFromGestionnaire = async (siret: IUserRecruteur["establishment_siret"]): Promise<IRecruiter> =>
-  // @ts-expect-error
   await Recruiter.deleteMany({ cfa_delegated_siret: siret })
 
 /**
@@ -504,7 +500,6 @@ export async function updateOffre(id: string | ObjectId, payload: UpdateQuery<IJ
   if (!recruiter) {
     throw Boom.internal("Recruiter not found")
   }
-
   return recruiter
 }
 

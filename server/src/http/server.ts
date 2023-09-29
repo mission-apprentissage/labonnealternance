@@ -164,7 +164,6 @@ export async function bind(app: Server) {
   })
 
   errorMiddleware(app)
-
   return app
 }
 
