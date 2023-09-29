@@ -158,7 +158,7 @@ export const zV1JobsRoutes = {
         .object({
           romes: zRomesParams("rncp"),
           rncp: zRncpsParams,
-          caller: zCallerParam,
+          caller: zCallerParam.nullish(),
           latitude: ZLatitudeParam,
           longitude: ZLongitudeParam,
           radius: ZRadiusParam,
