@@ -51,6 +51,8 @@ fileignoreconfig:
   checksum: ffb18305ed9f3aa033c8aa680711e97796fe4f73e98c32dcf22247e0e1815ad8
 - filename: shared/models/lbaItem.model.ts
   checksum: 144ab34674299cdac89d96ffa6ed834814135c54e1621e1fa47ec5012924f862
+- filename: shared/routes/appointments.routes.ts
+  checksum: 46d94affa911e46d6e3f72d453412c4b5378a4ef71e6ee6cb3ab2f43eee3d5d4
 - filename: shared/routes/password.routes.ts
   checksum: c121585c43e8594b80abf691810bf33e44a83c46af29ba1ab6ef27a2cdab7f3f
 - filename: ui/common/hooks/useAuth.ts
