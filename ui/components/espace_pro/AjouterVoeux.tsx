@@ -102,13 +102,13 @@ const AjouterVoeuxForm = (props) => {
     if (haveProposals) {
       return router.push({
         pathname: "/espace-pro/creation/mise-en-relation",
-        query: { job: JSON.stringify(omit(job, "rome_detail")), email, geo_coordinates: form.geo_coordinates, fromDashboard, userId },
+        query: { job: JSON.stringify(omit(job, "rome_detail")), email, geo_coordinates: form.geo_coordinates, fromDashboard, userId, establishment_id },
       })
     }
 
     router.push({
       pathname: "/espace-pro/creation/fin",
-      query: { job: JSON.stringify(omit(job, "rome_detail")), email, withDelegation: false, fromDashboard, userId },
+      query: { job: JSON.stringify(omit(job, "rome_detail")), email, withDelegation: false, fromDashboard, userId, establishment_id },
     })
   }
 
@@ -479,7 +479,7 @@ export const PageAjouterVoeux = (props) => {
   const router = useRouter()
   const { establishment_id } = router.query
 
-  const getRomeInformation = (rome, appellation, formik) => {
+  const getRomeInformation = (rome: string, appellation, formik) => {
     getRomeDetail(rome)
       .then((result) => {
         setLoading(true)

@@ -1,16 +1,16 @@
 import axios from "axios"
 import _ from "lodash"
 
-import { baseUrl } from "../config/config"
+import { apiEndpoint } from "../config/config"
 import { SendPlausibleEvent } from "../utils/plausible"
 import { logError } from "../utils/tools"
 
 import extractCandidatureParams from "./extractCandidatureParams"
 
-export default async function postCandidature(applicant_h, company_h, caller, _baseUrl = baseUrl, _axios = axios, _window = window, _logError = logError) {
+export default async function postCandidature(applicant_h, company_h, caller, _apiEndpoint = apiEndpoint, _axios = axios, _window = window, _logError = logError) {
   let res = ""
 
-  const candidatureApi = _baseUrl + "/api/application"
+  const candidatureApi = _apiEndpoint + "/application"
 
   let response = null
   let isAxiosError = false

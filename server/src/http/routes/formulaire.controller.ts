@@ -147,8 +147,35 @@ export default (server: Server) => {
       schema: zRoutes.post["/formulaire/:establishment_id/offre"],
     },
     async (req, res) => {
-      // @ts-expect-error: TODO
-      const updatedFormulaire = await createJob({ job: req.body, id: req.params.establishment_id })
+      const {
+        is_disabled_elligible,
+        job_type,
+        delegations,
+        job_count,
+        job_description,
+        job_duration,
+        job_level_label,
+        job_rythm,
+        job_start_date,
+        rome_appellation_label,
+        rome_code,
+      } = req.body
+      const updatedFormulaire = await createJob({
+        job: {
+          is_disabled_elligible,
+          job_type,
+          delegations,
+          job_count,
+          job_description,
+          job_duration,
+          job_level_label,
+          job_rythm,
+          job_start_date,
+          rome_appellation_label,
+          rome_code,
+        },
+        id: req.params.establishment_id,
+      })
       return res.status(200).send(updatedFormulaire)
     }
   )

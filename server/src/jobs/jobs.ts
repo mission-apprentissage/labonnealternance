@@ -21,6 +21,7 @@ import { annuleFormulaire } from "./lba_recruteur/formulaire/annuleFormulaire"
 import { createUserFromCLI } from "./lba_recruteur/formulaire/createUser"
 import { exportPE } from "./lba_recruteur/formulaire/misc/exportPE"
 import { removeIsDelegatedFromJobs } from "./lba_recruteur/formulaire/misc/removeIsDelegatedFromJobs"
+import { removeVersionKeyFromRecruiters } from "./lba_recruteur/formulaire/misc/removeVersionKeyFromRecruiters"
 import { relanceFormulaire } from "./lba_recruteur/formulaire/relanceFormulaire"
 import { generateIndexes } from "./lba_recruteur/indexes/generateIndexes"
 import { relanceOpco } from "./lba_recruteur/opco/relanceOpco"
@@ -72,6 +73,8 @@ export async function runJob(job: IInternalJobs): Promise<number> {
       return CRONS[job.name].handler()
     }
     switch (job.name) {
+      case "migration:remove-versionkey-from-recruiters": // Temporaire, doit tourner en recette et production
+        return removeVersionKeyFromRecruiters()
       case "migration:remove-delegated-from-jobs": // Temporaire, doit tourner en recette et production
         return removeIsDelegatedFromJobs()
       case "indexes:generate":

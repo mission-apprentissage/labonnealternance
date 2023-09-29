@@ -29,7 +29,7 @@ class HTTPError extends Error {
 }
 
 const emitter = new EventEmitter()
-const handleResponse = (path, response) => {
+const handleResponse = async (path, response) => {
   const statusCode = response.status
   if (statusCode >= 400 && statusCode < 600) {
     emitter.emit("http:error", response)
@@ -37,7 +37,7 @@ const handleResponse = (path, response) => {
     if (statusCode === 401 || statusCode === 403) {
       throw new AuthError(response.json(), statusCode)
     } else {
-      throw new HTTPError(`Server returned ${statusCode} when requesting resource ${path}`, response.json(), statusCode)
+      throw new HTTPError(`Server returned ${statusCode} when requesting resource ${path}`, await response.json(), statusCode)
     }
   }
   return response.json()

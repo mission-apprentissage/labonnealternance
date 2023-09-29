@@ -16,7 +16,7 @@ export default function CreationMiseEnRelation() {
   const [isSubmitButtonEnabled, setIsSubmitButtonEnabled] = useState(false)
   const [isSubmitLoading, setIsSubmitLoading] = useState(false)
 
-  const { job: jobString, email, geo_coordinates, fromDashboard, userId } = router.query
+  const { job: jobString, email, geo_coordinates, fromDashboard, userId, establishment_id } = router.query
   const job = JSON.parse((jobString as string) ?? "{}")
 
   /**
@@ -37,7 +37,7 @@ export default function CreationMiseEnRelation() {
   const skip = () =>
     router.push({
       pathname: "/espace-pro/creation/fin",
-      query: { job: JSON.stringify(job), email, withDelegation: false, fromDashboard, userId },
+      query: { job: JSON.stringify(job), email, withDelegation: false, fromDashboard, userId, establishment_id },
     })
 
   /**
@@ -54,7 +54,7 @@ export default function CreationMiseEnRelation() {
     }).finally(() => setIsSubmitLoading(false))
     router.push({
       pathname: "/espace-pro/creation/fin",
-      query: { job: JSON.stringify(job), email, withDelegation: true, fromDashboard, userId },
+      query: { job: JSON.stringify(job), email, withDelegation: true, fromDashboard, userId, establishment_id },
     })
   }
 
