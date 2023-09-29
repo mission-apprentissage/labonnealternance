@@ -151,15 +151,15 @@ export async function bind(app: Server) {
       partnersRoute(typedSubApp)
       emailsRoute(typedSubApp)
 
-  appointmentsController(app)
+      appointmentsController(typedSubApp)
 
-  /**
-   * LBA-Recruteur
-   */
-  userRoute(app)
-  formulaireRoute(app)
-  optoutRoute(app)
-  etablissementsRecruteurRoute(app)
+      /**
+       * LBA-Recruteur
+       */
+      userRoute(typedSubApp)
+      formulaireRoute(typedSubApp)
+      optoutRoute(typedSubApp)
+      etablissementsRecruteurRoute(typedSubApp)
 
       trainingLinks(typedSubApp)
       done()

@@ -1,8 +1,8 @@
 import axios from "axios"
 import _ from "lodash"
 
+import { publicConfig } from "../config.public"
 import { logError } from "../utils/tools"
-import { publicConfig } from "config.public"
 
 /**
  * @description Returns "RDV" link.
