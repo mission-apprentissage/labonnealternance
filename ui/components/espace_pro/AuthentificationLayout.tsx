@@ -1,12 +1,10 @@
-import { Box, Button, Container, Flex } from "@chakra-ui/react"
+import { Box, Button, Container, Flex, Image } from "@chakra-ui/react"
 import { useRouter } from "next/router"
 import { useContext } from "react"
 
 import { WidgetContext } from "../../context/contextWidget"
 import { Close } from "../../theme/components/icons"
 import { LbaNew } from "../../theme/components/logos_pro"
-
-import Logo from "./Layout/Logo"
 
 export default function AuthentificationLayout(props) {
   const router = useRouter()
@@ -31,7 +29,7 @@ export default function AuthentificationLayout(props) {
       <Flex direction="column" px={[0, 4]}>
         <Flex justifyContent="space-between" align="center" justify="center" mb={["4", "0"]}>
           <Flex direction="row" align="center" px={[0, 4]}>
-            <Logo display={["none", "flex"]} />
+            <Image src="/images/espace_pro/logo.svg" alt="marianne" />
             <LbaNew />
           </Flex>
           <Button

@@ -1,16 +1,26 @@
 import { ExternalLinkIcon } from "@chakra-ui/icons"
 import { Box, Flex, Link, Text } from "@chakra-ui/react"
 import { useRouter } from "next/router"
+import { useEffect, useState } from "react"
 
-import { useFetch } from "../../../../common/hooks/useFetch"
+import { _get } from "../../../../common/httpClient"
 import { FormLayoutComponent } from "../../../../components/espace_pro/Candidat/layout/FormLayoutComponent"
 import { BarberGuy } from "../../../../theme/components/icons"
-import { publicConfig } from "config.public"
 
 export default function FormRecapPage() {
   const router = useRouter()
   const { id: appointmentId } = router.query
-  const [data, loading] = useFetch(`${publicConfig.apiEndpoint}/appointment-request/context/recap?appointmentId=${appointmentId}`)
+  const [data, setData] = useState(null)
+
+  useEffect(() => {
+    const fetchData = async () => {
+      if (appointmentId) {
+        const response = await _get(`appointment-request/context/recap?appointmentId=${appointmentId}`)
+        setData(response)
+      }
+    }
+    fetchData().catch(console.error)
+  }, [appointmentId])
 
   return (
     <FormLayoutComponent
@@ -24,7 +34,7 @@ export default function FormRecapPage() {
         </>
       }
     >
-      {loading && <span>Chargement des données...</span>}
+      {!data && <span>Chargement des données...</span>}
       {data && (
         <>
           {data.user && (
