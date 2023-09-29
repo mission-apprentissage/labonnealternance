@@ -85,7 +85,7 @@ export const zFormulaireRoute = {
     "/formulaire/offre/:jobId/delegation": {
       // TODO_SECURITY_FIX gestion des permissions
       // TODO_SECURITY_FIX session gérée par cookie server
-      params: z.object({ jobId: z.string() }).strict(),
+      params: z.object({ jobId: zObjectId }).strict(),
       body: z
         .object({
           etablissementCatalogueIds: z.array(z.string()),

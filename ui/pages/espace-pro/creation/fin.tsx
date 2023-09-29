@@ -25,7 +25,8 @@ export default function DepotRapideFin() {
     withDelegation,
     fromDashboard,
     userId,
-  }: { job: string; email: string; withDelegation: string; fromDashboard: string; userId: string } = router.query as any
+    establishment_id,
+  }: { job: string; email: string; withDelegation: string; fromDashboard: string; userId: string; establishment_id: string } = router.query as any
 
   const job = JSON.parse(jobString ?? "{}")
   const fromDash = JSON.parse(fromDashboard ?? "{}")
@@ -34,8 +35,8 @@ export default function DepotRapideFin() {
    * KBA 20230130 : retry set to false to avoid waiting for failure if user is from dashboard (userId is not passed)
    * - To be changed with userID in URL params
    */
-  const { isFetched } = useQuery("userdetail", () => getUser(userId), {
-    retry: false,
+  const { isIdle } = useQuery("userdetail", () => getUser(userId), {
+    enabled: userId ? true : false,
     onSettled: (data) => {
       const latestStatus = data?.data?.status.pop().status || false
 
@@ -59,7 +60,7 @@ export default function DepotRapideFin() {
   // TODO_AB to redirect
   if (!job && !email && !withDelegation && !fromDashboard && !userId) return <></>
 
-  if (!isFetched) {
+  if (!isIdle) {
     return <LoadingEmptySpace />
   }
 
@@ -111,7 +112,7 @@ export default function DepotRapideFin() {
    */
   const onClose = async () => {
     await client.invalidateQueries("offre-liste")
-    await router.push("/")
+    await router.push(`/espace-pro/administration/entreprise/${establishment_id}`)
   }
 
   const ValidatedAccountDescription = () => {
@@ -183,14 +184,14 @@ export default function DepotRapideFin() {
   }
 
   return (
-    <AuthentificationLayout fromDashboard={fromDashboard} onClose={onClose}>
+    <AuthentificationLayout fromDashboard={fromDash} onClose={onClose}>
       <Flex direction={["column", widget?.mobile ? "column" : "row"]} align={widget?.mobile ? "center" : "flex-start"} border="1px solid #000091" mt={[4, 8]} p={[4, 8]}>
         <MailCloud style={{ paddingRight: "10px" }} />
         <Box pt={[3, 0]} ml={10}>
           <Heading fontSize="24px" mb="16px" mt={widget?.mobile ? "10px" : "0px"}>
             <div dangerouslySetInnerHTML={{ __html: title }} />
           </Heading>
-          {userIsValidated ? fromDashboard ? null : <ValidatedAccountDescription /> : <AwaitingAccountDescription />}
+          {fromDash ? null : userIsValidated ? <ValidatedAccountDescription /> : <AwaitingAccountDescription />}
           <Box bg="#F6F6F6" p={4}>
             <Stack direction="column" spacing="16px">
               <Heading fontSize="20px">Récapitulatif de votre besoin</Heading>

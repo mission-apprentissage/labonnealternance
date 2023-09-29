@@ -290,7 +290,7 @@ export const createJob = async ({ job, id }: { job: Partial<IOffreExtended>; id:
  * @param {string[]} payload.etablissementCatalogueIds
  * @returns {Promise<IRecruiter>}
  */
-export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }: { jobId: string | ObjectId; etablissementCatalogueIds: string[] }): Promise<IRecruiter> => {
+export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }: { jobId: IJob["_id"]; etablissementCatalogueIds: string[] }): Promise<IRecruiter> => {
   const offreDocument = await getOffre(jobId)
   if (!offreDocument) {
     throw Boom.internal("Offre not found", { jobId, etablissementCatalogueIds })
@@ -298,6 +298,9 @@ export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }:
   const userDocument = await getUser({ establishment_id: offreDocument.establishment_id })
   if (!userDocument) {
     throw Boom.internal("User not found", { jobId, etablissementCatalogueIds })
+  }
+  if (!userDocument.status) {
+    throw Boom.internal("User is missing status object", { jobId, etablissementCatalogueIds })
   }
   const userState = userDocument.status.pop()
 
