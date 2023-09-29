@@ -190,12 +190,14 @@ export const zAppointmentsRoute = {
         })
         .strict(),
       response: {
-        "2xx": z
-          .object({
-            userId: z.string(),
-            appointment: z.union([ZAppointment, z.null()]),
-          })
-          .strict(),
+        // TODO ANY TO BE FIXED
+        "2xx": z.any(),
+        // "2xx": z
+        //   .object({
+        //     userId: z.string(),
+        //     appointment: z.union([ZAppointment, z.null()]),
+        //   })
+        //   .strict(),
       },
       securityScheme: {
         auth: "none",

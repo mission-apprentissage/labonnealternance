@@ -119,11 +119,11 @@ export default function FormCreatePage() {
         appointmentOrigin: referrer,
       })
 
-      await router.push(`/form/confirm/${appointment._id}`)
+      await router.push(`/espace-pro/form/confirm/${appointment._id}`)
       setTimeout(() => window.scroll({ top: 0, behavior: "smooth" }), 500)
-    } catch ({ message }) {
+    } catch ({ json }) {
       // TODO to check return if already appoitment
-      setStatus({ error: message })
+      setStatus({ error: json.message })
     } finally {
       setSubmitLoading(false)
     }
