@@ -21,7 +21,7 @@ export const zV1JobsEtFormationsRoutes = {
           diploma: z.string().optional(),
           opco: z.string().optional(),
           opcoUrl: z.string().optional(),
-          options: z.string().optional(), // hidden
+          options: z.literal("with_description").optional(), // hidden
         })
         .strict(),
       headers: z

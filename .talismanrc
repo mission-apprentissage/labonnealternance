@@ -14,7 +14,7 @@ fileignoreconfig:
 - filename: .infra/env.ini
   checksum: 24332dcab809201ac286e4225a1d861307c291dc4a5e2308b996da2d3547a41c
 - filename: .infra/files/configs/mongodb/seed.gpg
-  checksum: 2ed7a8bd7b4e488e525c2a8be5b6c45fbe7749692428b0ef83515326b6f09fd9
+  checksum: a44797b846dcd58f2fc8ceebbfc0ce805ff822409f7d7e322acd08485398dccb
 - filename: .infra/vault/vault.yml
   checksum: be891b8d48595418ff79b33c402b28e0f824471459af9e57801e3131e1d28e5a
 - filename: server/.env.test
@@ -33,8 +33,10 @@ fileignoreconfig:
   checksum: 0eb3948d875508edf6d31f0ffe1290aac0cc02c9c80c913bcb04a312edd062cc
 - filename: server/src/jobs/job.actions.ts
   checksum: d716e214d828109181a138f0ae253d5489a3c544b2625917b458d1e07886c408
+- filename: server/src/jobs/lba_recruteur/formulaire/misc/removeVersionKeyFromRecruiters.ts
+  checksum: 3cd111d8c109cfec357bae48af70d0cf5644d02cd2c4b9afc5b8aa07bccbd535
 - filename: server/src/services/application.service.ts
-  checksum: 30ca009c87350b987cefd4ff940ac9069b70c086ae4bb857ae3372bf03be86ab
+  checksum: 33503cd813a530c16e4cec58dfd52a4d78204063bf1c69989b84950393a4a9e6
 - filename: server/static/generated/swagger.json
   checksum: any
   ignore_detectors:
@@ -45,6 +47,8 @@ fileignoreconfig:
   checksum: 28af032d2eb26aec7dd3bb1d32253f992a036626c36a92eb1e7ff07599fd0b2b
 - filename: shared/helpers/openapi/generateOpenapi.test.ts
   checksum: d7b85c3dff488cec523d78f0926e15dbea41071a1864bda62b4d6caeb2541df3
+- filename: shared/models/applications.model.ts
+  checksum: ffb18305ed9f3aa033c8aa680711e97796fe4f73e98c32dcf22247e0e1815ad8
 - filename: shared/models/lbaItem.model.ts
   checksum: 144ab34674299cdac89d96ffa6ed834814135c54e1621e1fa47ec5012924f862
 - filename: shared/routes/password.routes.ts

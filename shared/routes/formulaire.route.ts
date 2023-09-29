@@ -2,7 +2,7 @@ import { z } from "zod"
 
 import { zObjectId } from "../models/common"
 import { ZJob } from "../models/job.model"
-import { ZRecruiter, ZRecruiterPublic } from "../models/recruiter.model"
+import { ZRecruiter, ZRecruiterWritable } from "../models/recruiter.model"
 
 import { IRoutesDef } from "./common.routes"
 
@@ -70,7 +70,7 @@ export const zFormulaireRoute = {
       // TODO_SECURITY_FIX limiter les champs autorisés à la modification. Utiliser un "ZRecruiterNew" (ou un autre nom du genre ZFormulaire)
       params: z.object({ establishment_id: z.string() }).strict(),
       // TODO ANY TO BE FIXED
-      // body: ZJobWithoutId,
+      // body: ZJobWritable,
       body: z.any(),
       response: {
         // TODO ANY TO BE FIXED
@@ -85,7 +85,7 @@ export const zFormulaireRoute = {
     "/formulaire/offre/:jobId/delegation": {
       // TODO_SECURITY_FIX gestion des permissions
       // TODO_SECURITY_FIX session gérée par cookie server
-      params: z.object({ jobId: z.string() }).strict(),
+      params: z.object({ jobId: zObjectId }).strict(),
       body: z
         .object({
           etablissementCatalogueIds: z.array(z.string()),
@@ -108,7 +108,7 @@ export const zFormulaireRoute = {
       // TODO_SECURITY_FIX session gérée par cookie server
       // TODO_SECURITY_FIX réduire aux champs modifiables
       params: z.object({ establishment_id: z.string() }).strict(),
-      body: ZRecruiter.partial(),
+      body: ZRecruiterWritable.partial(),
       response: {
         // TODO ANY TO BE FIXED
         "2xx": z.any(),
@@ -145,7 +145,7 @@ export const zFormulaireRoute = {
         job_expiration_date: z.coerce.date(),
       }),
       response: {
-        "2xx": ZRecruiterPublic,
+        "2xx": ZRecruiter,
       },
       securityScheme: {
         auth: "none",
@@ -170,10 +170,12 @@ export const zFormulaireRoute = {
       // TODO_SECURITY_FIX session gérée par cookie server
       // TODO_SECURITY_FIX Scinder les routes pour cancel depuis admin OU cancel depuis CTA dans un email (avec jwt)
       params: z.object({ jobId: zObjectId }).strict(),
-      body: z.object({
-        job_status: z.string(),
-        job_status_comment: z.string(),
-      }),
+      body: z
+        .object({
+          job_status: z.string(),
+          job_status_comment: z.string(),
+        })
+        .strict(),
       response: {
         "2xx": z.object({}).strict(),
       },
@@ -219,7 +221,7 @@ export const zFormulaireRoute = {
       querystring: z.object({ siret_formateur: z.string() }).strict(),
       body: z.object({ cfa_read_company_detail_at: z.date() }).strict(),
       response: {
-        "2xx": z.union([ZJob, z.null()]),
+        "2xx": ZJob.nullable(),
       },
       securityScheme: {
         auth: "none",

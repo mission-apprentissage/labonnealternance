@@ -11,9 +11,11 @@ export const zDiplomaParam = z
   })
 
 export const zCallerParam = z.string().openapi({
+  // Duplicated description because we have description when used in queryparams vs body
   param: {
     description: "Votre raison sociale ou le nom de votre produit qui fait appel à l'API idéalement préfixé par une adresse email de contact",
   },
+  description: "Votre raison sociale ou le nom de votre produit qui fait appel à l'API idéalement préfixé par une adresse email de contact",
   example: "contact@domaine nom_de_societe",
 })
 

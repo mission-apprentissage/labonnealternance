@@ -22,7 +22,7 @@ export default function (server: Server) {
         referer: req.headers.referer as string,
       })
 
-      if (result.error) {
+      if ("error" in result) {
         if (result.error === "error_sending_application") {
           res.status(500)
         } else {
