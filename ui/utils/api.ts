@@ -102,6 +102,7 @@ export const getEntrepriseInformation = async (siret, options: { cfa_delegated_s
     return data
   } catch (error: any) {
     const payload: { data: object | undefined; error: string; statusCode: number; message: string } = error.response.data
+
     return payload
   }
 }
