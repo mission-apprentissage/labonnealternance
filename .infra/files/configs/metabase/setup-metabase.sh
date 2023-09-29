@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-PROPS=$(curl -s https://{{dns_name}}/metabase/api/session/properties)
+PROPS=$(curl -sS --retry 5 --retry-all-errors https://{{dns_name}}/metabase/api/session/properties)
 IS_SETUP=$(echo $PROPS | jq -r '."has-user-setup"')
 
 if [[ $IS_SETUP == "true" ]]; then
@@ -11,7 +11,7 @@ fi
 
 TOKEN=$(echo $PROPS | jq -r '."setup-token"')
 
-curl -s https://{{dns_name}}/metabase/api/setup \
+curl -sS --retry 5 --retry-all-errors https://{{dns_name}}/metabase/api/setup \
 --header 'Content-Type: application/json' \
 --data-raw "{
     \"token\": \"$TOKEN\",
