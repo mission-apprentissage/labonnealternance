@@ -5,9 +5,9 @@ import { Server } from "../../server"
 
 export default (server: Server) => {
   server.get(
-    "/api/metiersdavenir",
+    "/metiersdavenir",
     {
-      schema: zRoutes.get["/api/metiersdavenir"],
+      schema: zRoutes.get["/metiersdavenir"],
     },
     async (req, res) => {
       const result = await getMetiersDAvenir()

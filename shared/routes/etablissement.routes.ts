@@ -7,7 +7,7 @@ import { IRoutesDef } from "./common.routes"
 
 export const zEtablissementRoutes = {
   get: {
-    "/api/admin/etablissements": {
+    "/admin/etablissements": {
       querystring: z
         .object({
           query: z.string().optional(),
@@ -35,7 +35,7 @@ export const zEtablissementRoutes = {
         role: "administrator",
       },
     },
-    "/api/admin/etablissements/siret-formateur/:siret": {
+    "/admin/etablissements/siret-formateur/:siret": {
       params: z.object({ siret: extensions.siret() }).strict(),
       response: {
         "2xx": ZEtablissement,
@@ -45,7 +45,7 @@ export const zEtablissementRoutes = {
         role: "administrator",
       },
     },
-    "/api/admin/etablissements/:id": {
+    "/admin/etablissements/:id": {
       params: z.object({ id: zObjectId }).strict(),
       response: {
         "2xx": ZEtablissement,
@@ -55,7 +55,7 @@ export const zEtablissementRoutes = {
         role: "administrator",
       },
     },
-    "/api/etablissements/:id": {
+    "/etablissements/:id": {
       // TODO_SECURITY_FIX faire en sorte qu'il n'y ait pas les adresses emails du catalogue exposées au publlic (définir un ZEtablissementPublic)
       params: z.object({ id: zObjectId }).strict(),
       response: {
@@ -68,7 +68,7 @@ export const zEtablissementRoutes = {
     },
   },
   post: {
-    "/api/admin/etablissements": {
+    "/admin/etablissements": {
       body: z
         .object({
           etablissements: z.array(
@@ -108,7 +108,7 @@ export const zEtablissementRoutes = {
         role: "administrator",
       },
     },
-    "/api/etablissements/:id/premium/affelnet/accept": {
+    "/etablissements/:id/premium/affelnet/accept": {
       // TODO_SECURITY_FIX ajouter un jwt
       params: z.object({ id: zObjectId }).strict(),
       response: {
@@ -119,7 +119,7 @@ export const zEtablissementRoutes = {
         role: "all",
       },
     },
-    "/api/etablissements/:id/premium/accept": {
+    "/etablissements/:id/premium/accept": {
       // TODO_SECURITY_FIX ajouter un jwt
       params: z.object({ id: zObjectId }).strict(),
       response: {
@@ -130,7 +130,7 @@ export const zEtablissementRoutes = {
         role: "all",
       },
     },
-    "/api/etablissements/:id/premium/affelnet/refuse": {
+    "/etablissements/:id/premium/affelnet/refuse": {
       // TODO_SECURITY_FIX ajouter un jwt
       params: z.object({ id: zObjectId }).strict(),
       response: {
@@ -141,7 +141,7 @@ export const zEtablissementRoutes = {
         role: "all",
       },
     },
-    "/api/etablissements/:id/premium/refuse": {
+    "/etablissements/:id/premium/refuse": {
       // TODO_SECURITY_FIX ajouter un jwt
       params: z.object({ id: zObjectId }).strict(),
       response: {
@@ -152,7 +152,7 @@ export const zEtablissementRoutes = {
         role: "all",
       },
     },
-    "/api/etablissements/:id/opt-out/unsubscribe": {
+    "/etablissements/:id/opt-out/unsubscribe": {
       // TODO_SECURITY_FIX ajouter un jwt
       params: z.object({ id: zObjectId }).strict(),
       body: z.object({ opt_out_question: z.string() }).strict(),
@@ -166,7 +166,7 @@ export const zEtablissementRoutes = {
     },
   },
   patch: {
-    "/api/admin/etablissements/:id": {
+    "/admin/etablissements/:id": {
       params: z.object({ id: zObjectId }).strict(),
       body: ZEtablissement.pick({
         gestionnaire_email: true,
@@ -179,7 +179,7 @@ export const zEtablissementRoutes = {
         role: "administrator",
       },
     },
-    "/api/etablissements/:id/appointments/:appointmentId": {
+    "/etablissements/:id/appointments/:appointmentId": {
       // TODO_SECURITY_FIX ajouter un jwt
       body: z.object({ has_been_read: z.string() }).strict(),
       params: z.object({ id: zObjectId, appointmentId: zObjectId }).strict(),

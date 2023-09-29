@@ -19,9 +19,9 @@ export default (server: Server) => {
   // @OperationId("getMetiersParCfd")
   // @Tags("Metiers")
   server.get(
-    "/api/v1/metiers/metiersParFormation/:cfd",
+    "/v1/metiers/metiersParFormation/:cfd",
     {
-      schema: zRoutes.get["/api/v1/metiers/metiersParFormation/:cfd"],
+      schema: zRoutes.get["/v1/metiers/metiersParFormation/:cfd"],
       config,
     },
     async (req, res) => {
@@ -39,9 +39,9 @@ export default (server: Server) => {
   // @OperationId("getMetiersParEtablissement")
   // @Tags("Metiers")
   server.get(
-    "/api/v1/metiers/metiersParEtablissement/:siret",
+    "/v1/metiers/metiersParEtablissement/:siret",
     {
-      schema: zRoutes.get["/api/v1/metiers/metiersParEtablissement/:siret"],
+      schema: zRoutes.get["/v1/metiers/metiersParEtablissement/:siret"],
       config,
     },
     async (req, res) => {
@@ -60,9 +60,9 @@ export default (server: Server) => {
   // public async getTousLesMetiers(): Promise<TGetMetiersResponseSuccess | TResponseError> {
   // @Tags("Metiers")
   server.get(
-    "/api/v1/metiers/all",
+    "/v1/metiers/all",
     {
-      schema: zRoutes.get["/api/v1/metiers/all"],
+      schema: zRoutes.get["/v1/metiers/all"],
       config,
     },
     async (req, res) => {
@@ -84,9 +84,9 @@ export default (server: Server) => {
   // public async getMetiers(@Query() title: string, @Query() romes?: string, @Query() rncps?: string): Promise<TGetMetiersEnrichisResponseSuccess> {
   // @Tags("Metiers")
   server.get(
-    "/api/v1/metiers",
+    "/v1/metiers",
     {
-      schema: zRoutes.get["/api/v1/metiers"],
+      schema: zRoutes.get["/v1/metiers"],
       config,
     },
     async (req, res) => {
@@ -109,9 +109,9 @@ export default (server: Server) => {
   // public async getCoupleAppelationRomeIntitule(@Query() label: string): Promise<TGetAppellationsRomesResponseSuccess> {
   // @Tags("Metiers")
   server.get(
-    "/api/v1/metiers/intitule",
+    "/v1/metiers/intitule",
     {
-      schema: zRoutes.get["/api/v1/metiers/intitule"],
+      schema: zRoutes.get["/v1/metiers/intitule"],
       config,
     },
     async (req, res) => {

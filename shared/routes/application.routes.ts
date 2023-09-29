@@ -7,7 +7,7 @@ import { IRoutesDef } from "./common.routes"
 
 export const zApplicationRoutes = {
   post: {
-    "/api/V1/application": {
+    "/V1/application": {
       body: ZApplicationUI,
       response: {
         "200": z
@@ -22,7 +22,7 @@ export const zApplicationRoutes = {
         role: "all",
       },
     },
-    "/api/application": {
+    "/application": {
       body: ZApplicationUI,
       response: {
         "200": z
@@ -37,7 +37,7 @@ export const zApplicationRoutes = {
         role: "all",
       },
     },
-    "/api/application/intentionComment": {
+    "/application/intentionComment": {
       // TODO_SECURITY_FIX
       body: z
         .object({
@@ -69,7 +69,7 @@ export const zApplicationRoutes = {
         role: "all",
       },
     },
-    "/api/application/webhook": {
+    "/application/webhook": {
       // TODO_SECURITY_FIX    ajouter token sans expiration dans les webhooks brevo
       body: extensions.brevoWebhook(),
       response: {

@@ -16,9 +16,9 @@ const config = {
 
 export default function (server: Server) {
   server.post(
-    "/api/application",
+    "/application",
     {
-      schema: zRoutes.post["/api/application"],
+      schema: zRoutes.post["/application"],
       config,
     },
     async (req, res) => {
@@ -43,9 +43,9 @@ export default function (server: Server) {
   )
 
   server.post(
-    "/api/application/intentionComment",
+    "/application/intentionComment",
     {
-      schema: zRoutes.post["/api/application/intentionComment"],
+      schema: zRoutes.post["/application/intentionComment"],
       config,
     },
     async (req, res) => {
@@ -84,9 +84,9 @@ export default function (server: Server) {
   )
 
   server.post(
-    "/api/application/webhook",
+    "/application/webhook",
     {
-      schema: zRoutes.post["/api/application/webhook"],
+      schema: zRoutes.post["/application/webhook"],
       config,
     },
     async (req, res) => {

@@ -10,7 +10,7 @@ import { IRoutesDef } from "./common.routes"
 
 export const zRecruiterRoutes = {
   get: {
-    "/api/etablissement/cfas-proches": {
+    "/etablissement/cfas-proches": {
       querystring: z
         .object({
           latitude: z.coerce.number(),
@@ -41,7 +41,7 @@ export const zRecruiterRoutes = {
         role: "all",
       },
     },
-    "/api/etablissement/entreprise/:siret": {
+    "/etablissement/entreprise/:siret": {
       // TODO_SECURITY_FIX réduire les paramètres de réponse remontant à l'ui
       params: z
         .object({
@@ -76,7 +76,7 @@ export const zRecruiterRoutes = {
         role: "all",
       },
     },
-    "/api/etablissement/entreprise/:siret/opco": {
+    "/etablissement/entreprise/:siret/opco": {
       params: z.object({ siret: extensions.siret() }).strict(),
       response: {
         "2xx": z
@@ -91,7 +91,7 @@ export const zRecruiterRoutes = {
         role: "all",
       },
     },
-    "/api/etablissement/cfa/:siret": {
+    "/etablissement/cfa/:siret": {
       // TODO_SECURITY_FIX réduire les paramètres de réponse remontant à l'ui
       // TODO_SECURITY_FIX faire en sorte que le back refasse l'appel
       params: z.object({ siret: extensions.siret() }).strict(),
@@ -123,7 +123,7 @@ export const zRecruiterRoutes = {
         role: "all",
       },
     },
-    "/api/etablissement/cfa/:userRecruteurId/entreprises": {
+    "/etablissement/cfa/:userRecruteurId/entreprises": {
       params: z.object({ userRecruteurId: zObjectId }).strict(),
       response: {
         "200": z.array(
@@ -140,7 +140,7 @@ export const zRecruiterRoutes = {
     },
   },
   post: {
-    "/api/etablissement/creation": {
+    "/etablissement/creation": {
       body: z.union([
         z
           .object({
@@ -204,7 +204,7 @@ export const zRecruiterRoutes = {
         role: "all",
       },
     },
-    "/api/etablissement/:establishment_siret/proposition/unsubscribe": {
+    "/etablissement/:establishment_siret/proposition/unsubscribe": {
       // TODO_SECURITY_FIX jwt
       params: z.object({ establishment_siret: extensions.siret() }).strict(),
       response: {
@@ -219,7 +219,7 @@ export const zRecruiterRoutes = {
         role: "all",
       },
     },
-    "/api/etablissement/validation": {
+    "/etablissement/validation": {
       // TODO_SECURITY_FIX jwt
       body: z.object({ id: zObjectId }).strict(),
       response: {
@@ -232,7 +232,7 @@ export const zRecruiterRoutes = {
     },
   },
   put: {
-    "/api/etablissement/:id": {
+    "/etablissement/:id": {
       // TODO_SECURITY_FIX jwt en mode session + filtre sur la payload pour réduction
       params: z.object({ id: zObjectId }).strict(),
       body: ZUserRecruteur,

@@ -4,7 +4,7 @@ import { IRoutesDef } from "./common.routes"
 
 export const zAuthPasswordRoutes = {
   post: {
-    "/api/password/forgotten-password": {
+    "/password/forgotten-password": {
       // TODO_SECURITY_FIX AB will think about it
       body: z
         .object({
@@ -23,7 +23,7 @@ export const zAuthPasswordRoutes = {
         role: "all",
       },
     },
-    "/api/password/reset-password": {
+    "/password/reset-password": {
       body: z
         .object({
           passwordToken: z.string(),

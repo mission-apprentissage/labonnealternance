@@ -6,7 +6,7 @@ import { IRoutesDef } from "./common.routes"
 
 export const zFormationRoute = {
   get: {
-    "/api/admin/formations": {
+    "/admin/formations": {
       querystring: z.object({ search_item: z.string() }).strict(),
       response: {
         "2xx": z.array(zFormationCatalogueSchema),

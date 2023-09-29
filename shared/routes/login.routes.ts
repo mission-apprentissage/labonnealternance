@@ -4,7 +4,7 @@ import { IRoutesDef } from "./common.routes"
 
 export const zLoginRoutes = {
   post: {
-    "/api/login": {
+    "/login": {
       // TODO_SECURITY_FIX AB s'en occupe
       response: {
         "200": z
@@ -18,7 +18,7 @@ export const zLoginRoutes = {
         role: "all",
       },
     },
-    "/api/login/confirmation-email": {
+    "/login/confirmation-email": {
       // TODO_SECURITY_FIX faire en sorte que le lien magique ne soit pas human readable. Rename en /resend-confirmation-email
       body: z
         .object({
@@ -33,7 +33,7 @@ export const zLoginRoutes = {
         role: "all",
       },
     },
-    "/api/login/magiclink": {
+    "/login/magiclink": {
       // TODO_SECURITY_FIX cf. lien magique ci-dessus
       body: z
         .object({
@@ -48,7 +48,7 @@ export const zLoginRoutes = {
         role: "all",
       },
     },
-    "/api/login/verification": {
+    "/login/verification": {
       // TODO_SECURITY_FIX AB déclencher session ici
       response: {
         "200": z

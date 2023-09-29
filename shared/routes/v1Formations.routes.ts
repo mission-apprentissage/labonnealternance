@@ -7,7 +7,7 @@ import { IRoutesDef, ZResError } from "./common.routes"
 
 export const zV1FormationsRoutes = {
   get: {
-    "/api/v1/formations": {
+    "/v1/formations": {
       // TODO_SECURITY_FIX vérifier ce qu'on fait des emails et des téléphones et modifier les modèles en conséquences
       querystring: z
         .object({
@@ -82,7 +82,7 @@ export const zV1FormationsRoutes = {
         description: "Rechercher des formations en alternance pour un métier ou un ensemble de métiers autour d'un point géographique",
       },
     },
-    "/api/v1/formations/formation/:id": {
+    "/v1/formations/formation/:id": {
       querystring: z
         .object({
           caller: z.string().optional(),
@@ -104,7 +104,7 @@ export const zV1FormationsRoutes = {
         role: "all",
       },
     },
-    "/api/v1/formations/formationDescription/:id": {
+    "/v1/formations/formationDescription/:id": {
       params: z
         .object({
           id: z.string(),

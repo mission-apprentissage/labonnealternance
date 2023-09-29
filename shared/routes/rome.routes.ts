@@ -30,7 +30,7 @@ const ZMetiersEnrichis = z
 
 export const zRomeRoutes = {
   get: {
-    "/api/rome": {
+    "/rome": {
       // TODO à fusionner avec romeLabels dans metiers.route ou supprimer si obsolète
       querystring: z
         .object({
@@ -46,7 +46,7 @@ export const zRomeRoutes = {
         role: "all",
       },
     },
-    "/api/rome/detail/:rome": {
+    "/rome/detail/:rome": {
       // TODO filtrer la payload
       params: z
         .object({

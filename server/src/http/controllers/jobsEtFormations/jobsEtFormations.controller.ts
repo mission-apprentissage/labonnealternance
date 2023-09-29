@@ -17,9 +17,9 @@ export default (server: Server) => {
   // @Tags("Jobs et formations")
   // @OperationId("getJobsEtFormations")
   server.get(
-    "/api/v1/jobsEtFormations",
+    "/v1/jobsEtFormations",
     {
-      schema: zRoutes.get["/api/v1/jobsEtFormations"],
+      schema: zRoutes.get["/v1/jobsEtFormations"],
       config,
       // TODO: AttachValidation Error ?
     },

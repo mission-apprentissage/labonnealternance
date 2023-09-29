@@ -15,7 +15,7 @@ const zResponse = z
 
 export const zCoreRoutes = {
   get: {
-    "/api": {
+    "/": {
       response: {
         "200": zResponse,
         "500": z.union([ZResError, zResponse]),
@@ -25,7 +25,7 @@ export const zCoreRoutes = {
         role: "all",
       },
     },
-    "/api/healthcheck": {
+    "/healthcheck": {
       response: {
         "200": zResponse,
         "500": z.union([ZResError, zResponse]),
@@ -35,7 +35,7 @@ export const zCoreRoutes = {
         role: "all",
       },
     },
-    "/api/version": {
+    "/version": {
       response: {
         "200": z
           .object({

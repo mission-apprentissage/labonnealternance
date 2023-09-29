@@ -6,7 +6,7 @@ import { IRoutesDef } from "./common.routes"
 
 export const zPartnersRoutes = {
   get: {
-    "/api/partners/parcoursup/formations": {
+    "/partners/parcoursup/formations": {
       response: {
         "200": z.object({ ids: z.array(ZEligibleTrainingsForAppointmentSchema.shape.parcoursup_id) }).strict(),
       },
