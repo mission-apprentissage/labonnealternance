@@ -479,7 +479,7 @@ export const PageAjouterVoeux = (props) => {
   const router = useRouter()
   const { establishment_id } = router.query
 
-  const getRomeInformation = (rome, appellation, formik) => {
+  const getRomeInformation = (rome: string, appellation, formik) => {
     getRomeDetail(rome)
       .then((result) => {
         setLoading(true)
