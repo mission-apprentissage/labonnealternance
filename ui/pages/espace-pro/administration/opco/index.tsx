@@ -4,6 +4,7 @@ import {
   BreadcrumbItem,
   BreadcrumbLink,
   Button,
+  Link as ChakraLink,
   Container,
   Flex,
   Icon,
@@ -19,14 +20,12 @@ import {
   Text,
   useDisclosure,
   useToast,
-  Link as ChakraLink,
 } from "@chakra-ui/react"
 import dayjs from "dayjs"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import { useQuery } from "react-query"
 
-import { USER_STATUS } from "../../../../common/contants"
 import useAuth from "../../../../common/hooks/useAuth"
 import { sortReactTableDate, sortReactTableString } from "../../../../common/utils/dateUtils"
 import { AnimationContainer, ConfirmationActivationUtilsateur, ConfirmationDesactivationUtilisateur, Layout, LoadingEmptySpace, TableNew } from "../../../../components/espace_pro"
@@ -57,35 +56,9 @@ function AdministrationOpco() {
     }
   }, [])
 
-  const awaitingValidationUserList = useQuery("awaitingValidationUserList", () =>
-    getOpcoUsers({
-      userQuery: {
-        $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, USER_STATUS.WAITING] },
-        opco: auth.scope,
-      },
-      formulaireQuery: { opco: auth.scope },
-    })
-  )
+  const { data, isLoading } = useQuery("user-list-opco", () => getOpcoUsers(auth.scope))
 
-  const activeUserList = useQuery("activeUserList", () =>
-    getOpcoUsers({
-      userQuery: {
-        $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, USER_STATUS.ACTIVE] },
-        opco: auth.scope,
-      },
-      formulaireQuery: { opco: auth.scope },
-    })
-  )
-
-  const disableUserList = useQuery("disableUserList", () =>
-    getOpcoUsers({
-      userQuery: {
-        $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, USER_STATUS.DISABLED] },
-        opco: auth.scope,
-      },
-      formulaireQuery: { opco: auth.scope },
-    })
-  )
+  console.log(data, isLoading)
 
   const columns = [
     {
@@ -228,7 +201,7 @@ function AdministrationOpco() {
     },
   ]
 
-  if (awaitingValidationUserList.isLoading) {
+  if (isLoading) {
     return <LoadingEmptySpace />
   }
 
@@ -255,9 +228,9 @@ function AdministrationOpco() {
         <Tabs index={tabIndex} onChange={(index) => setTabIndex(index)} variant="search" isLazy>
           <Box mx={8}>
             <TabList>
-              <Tab width="300px">En attente de vérification ({awaitingValidationUserList.data.data.length})</Tab>
-              <Tab width="300px">Actives {activeUserList.isFetched && `(${activeUserList.data.data.length})`}</Tab>
-              <Tab width="300px">Désactivées {disableUserList.isFetched && `(${disableUserList.data.data.length})`}</Tab>
+              <Tab width="300px">En attente de vérification ({data.data.awaiting.length})</Tab>
+              <Tab width="300px">Actives ({data.data.active.length})</Tab>
+              <Tab width="300px">Désactivées ({data.data.disable.length})</Tab>
             </TabList>
           </Box>
           <TabPanels mt={3}>
@@ -265,13 +238,13 @@ function AdministrationOpco() {
               {/* @ts-expect-error: TODO */}
               <TableNew
                 columns={columns}
-                data={awaitingValidationUserList.data.data}
+                data={data.data.awaiting}
                 description="Les entreprises en attente de vérification représentent pour votre OPCO de nouvelles opportunités d’accompagnement.  Vous pouvez contacter chacun des comptes en attente, vérifier qu’il s’agit bien d’une entreprise relevant de vos champs de compétences, et qu’il ne s’agit pas d’une tentative d’usurpation de compte."
               />
             </TabPanel>
-            <TabPanel>{activeUserList.isLoading ? <LoadingEmptySpace /> : <TableNew columns={columns} data={activeUserList?.data?.data} exportable />}</TabPanel>
+            <TabPanel>{isLoading ? <LoadingEmptySpace /> : <TableNew columns={columns} data={data.data.active} exportable />}</TabPanel>
             {/* @ts-expect-error: TODO */}
-            <TabPanel>{disableUserList.isLoading ? <LoadingEmptySpace /> : <TableNew columns={columns} data={disableUserList?.data?.data} />}</TabPanel>
+            <TabPanel>{isLoading ? <LoadingEmptySpace /> : <TableNew columns={columns} data={data.data.disable} />}</TabPanel>
           </TabPanels>
         </Tabs>
       </Container>
