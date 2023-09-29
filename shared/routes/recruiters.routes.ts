@@ -126,12 +126,7 @@ export const zRecruiterRoutes = {
     "/etablissement/cfa/:userRecruteurId/entreprises": {
       params: z.object({ userRecruteurId: zObjectId }).strict(),
       response: {
-        "200": z.array(
-          ZRecruiter.extend({
-            createdAt: z.date(),
-            updatedAt: z.date(),
-          })
-        ),
+        "200": z.array(ZRecruiter),
       },
       securityScheme: {
         auth: "jwt-bearer",
@@ -164,11 +159,9 @@ export const zRecruiterRoutes = {
             idcc: z.string().optional(),
           })
           .strict()
-          .extend(
-            ZRecruiter.pick({
-              cfa_delegated_siret: true,
-            }).shape
-          )
+          .extend({
+            cfa_delegated_siret: ZRecruiter.shape.cfa_delegated_siret,
+          })
           .extend(
             ZUserRecruteur.pick({
               last_name: true,

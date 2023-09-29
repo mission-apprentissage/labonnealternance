@@ -10,9 +10,8 @@ import { ZJob } from "./job.model"
 
 const allRecruiterStatus = Object.values(RECRUITER_STATUS)
 
-export const ZRecruiter = z
+export const ZRecruiterWritable = z
   .object({
-    _id: zObjectId,
     establishment_id: z.string().default(randomUUID).describe("Identifiant de formulaire unique"),
     establishment_raison_sociale: z.string().nullish().describe("Raison social de l'établissement"),
     establishment_enseigne: z.string().nullish().describe("Enseigne de l'établissement"),
@@ -41,9 +40,10 @@ export const ZRecruiter = z
   })
   .strict()
 
-export const ZRecruiterPublic = ZRecruiter.extend({
-  createdAt: z.date().describe("timestamp mongoose"),
-  updatedAt: z.date().describe("timestamp mongoose"),
+export const ZRecruiter = ZRecruiterWritable.extend({
+  _id: zObjectId,
+  createdAt: z.date().describe("Date de creation"),
+  updatedAt: z.date().describe("Date de mise à jour"),
 })
 
 export type IRecruiter = z.output<typeof ZRecruiter>
