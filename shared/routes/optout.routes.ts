@@ -1,4 +1,4 @@
-import { z } from "zod"
+import { z } from "../helpers/zodWithOpenApi"
 
 import { ZOptout } from "../models/optout.model"
 

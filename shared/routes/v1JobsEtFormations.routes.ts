@@ -1,4 +1,4 @@
-import { z } from "zod"
+import { z } from "../helpers/zodWithOpenApi"
 
 import { ZApiError, ZLbacError } from "../models/lbacError.model"
 import { ZLbaItemFormation, ZLbaItemLbaCompany, ZLbaItemLbaJob, ZLbaItemPeJob } from "../models/lbaItem.model"

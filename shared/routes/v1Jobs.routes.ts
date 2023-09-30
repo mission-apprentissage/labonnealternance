@@ -1,4 +1,4 @@
-import { z } from "zod"
+import { z } from "../helpers/zodWithOpenApi"
 
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { ZJob } from "../models"

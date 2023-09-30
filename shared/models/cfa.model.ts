@@ -1,4 +1,4 @@
-import { z } from "zod"
+import { z } from "../helpers/zodWithOpenApi"
 
 export const zCFA = z
   .object({

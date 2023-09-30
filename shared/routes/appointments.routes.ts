@@ -1,4 +1,4 @@
-import { z } from "zod"
+import { z } from "../helpers/zodWithOpenApi"
 
 import { referrers } from "../constants/referers"
 import { ZAppointment, ZEtablissement } from "../models"

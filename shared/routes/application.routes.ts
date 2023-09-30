@@ -1,6 +1,5 @@
-import { z } from "zod"
-
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
+import { z } from "../helpers/zodWithOpenApi"
 import { ZLbacError } from "../models"
 import { ZApplicationUI } from "../models/applications.model"
 

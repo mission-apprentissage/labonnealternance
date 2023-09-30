@@ -1,5 +1,5 @@
 import { Jsonify } from "type-fest"
-import { z } from "zod"
+import { z } from "../helpers/zodWithOpenApi"
 
 import { ZAppointment } from "./appointments.model"
 import { zObjectId } from "./common"

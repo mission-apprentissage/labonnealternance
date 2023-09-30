@@ -1,4 +1,4 @@
-import { z } from "zod"
+import { z } from "../helpers/zodWithOpenApi"
 
 import { zFormationCatalogueSchema } from "../models/formation.model"
 

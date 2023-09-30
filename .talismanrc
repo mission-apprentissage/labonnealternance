@@ -52,7 +52,7 @@ fileignoreconfig:
 - filename: shared/routes/appointments.routes.ts
   checksum: 46d94affa911e46d6e3f72d453412c4b5378a4ef71e6ee6cb3ab2f43eee3d5d4
 - filename: shared/routes/password.routes.ts
-  checksum: c121585c43e8594b80abf691810bf33e44a83c46af29ba1ab6ef27a2cdab7f3f
+  checksum: f9d2657f85f9f885deddf2ed1fd006d8278d27174659f0ed5a35e4d11343bb3a
 - filename: ui/common/hooks/useAuth.ts
   checksum: 7cce935653407e000b35e98bd365a003e538aed4fed432a9a404d4f2412dd2df
 - filename: ui/pages/espace-pro/admin/eligible-trainings-for-appointment/edit/[id].tsx

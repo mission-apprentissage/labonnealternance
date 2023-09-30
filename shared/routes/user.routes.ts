@@ -1,5 +1,4 @@
-import { z } from "zod"
-
+import { z } from "../helpers/zodWithOpenApi"
 import { zObjectId } from "../models/common"
 import { ZUserRecruteur, ZUserStatusValidation } from "../models/usersRecruteur.model"
 

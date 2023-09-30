@@ -83,6 +83,10 @@ export async function bind(app: Server) {
   }
   await app.register(fastifySwaggerUI, swaggerUiOptions)
 
+  app.get("/api/docs/swagger.json", (_req, res) => {
+    return res.redirect(301, "/api/docs/json")
+  })
+
   app.decorate("auth", (strategy: SecurityScheme) => auth(strategy))
 
   // TODO_AB To check

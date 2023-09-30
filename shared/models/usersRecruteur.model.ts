@@ -1,5 +1,5 @@
 import { Jsonify } from "type-fest"
-import { z } from "zod"
+import { z } from "../helpers/zodWithOpenApi"
 
 import { ETAT_UTILISATEUR } from "../constants/recruteur"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"

@@ -1,4 +1,4 @@
-import { z } from "zod"
+import { z } from "../helpers/zodWithOpenApi"
 
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { zCallerParam } from "../routes/_params"
@@ -100,7 +100,7 @@ export const ZApplicationUI = ZApplication.extend({
   caller: zCallerParam.nullish(),
   job_id: ZApplication.shape.job_id.optional(),
 })
-.omit({
+  .omit({
     applicant_message_to_company: true,
     applicant_attachment_name: true,
     job_origin: true,
@@ -112,8 +112,8 @@ export const ZApplicationUI = ZApplication.extend({
     company_feedback_date: true,
     created_at: true,
     last_update_at: true,
-})
-.openapi("ApplicationUi")
+  })
+  .openapi("ApplicationUi")
 
 export type IApplicationUI = z.output<typeof ZApplicationUI>
 

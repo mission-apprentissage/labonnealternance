@@ -1,4 +1,4 @@
-import { z } from "zod"
+import { z } from "../helpers/zodWithOpenApi"
 
 import { ZMetiersEnrichis } from "../models"
 import { ZRomeDetail } from "../models/rome.model"

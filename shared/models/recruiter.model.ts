@@ -1,7 +1,7 @@
 import { randomUUID } from "crypto"
 
 import { Jsonify } from "type-fest"
-import { z } from "zod"
+import { z } from "../helpers/zodWithOpenApi"
 
 import { RECRUITER_STATUS } from "../constants/recruteur"
 
