@@ -1,5 +1,3 @@
-import assert from "assert"
-
 import { describe, it, expect } from "vitest"
 
 import { useMongo } from "@tests/utils/mongo.utils"
@@ -12,121 +10,116 @@ describe("formationRegionV1", () => {
   const httpClient = useServer()
 
   it("Vérifie que la route répond", async () => {
-    await httpClient().get("/api/V1/formationsParRegion").expect(400)
+    const res = await httpClient().inject({ method: "GET", path: "/api/V1/formationsParRegion" })
+
+    expect(res.statusCode).toBe(400)
   })
 
-  /*it("Vérifie que la recherche répond", async () => {
-    ;
+  it("Vérifie que la recherche répond", async () => {
+    const res = await httpClient().inject({ method: "GET", path: "/api/V1/formationsParRegion?romes=F1603,I1308&region=01&caller=a" })
 
-    const response = await httpClient().get("/api/V1/formationsParRegion?romes=F1603,I1308&region=01&caller=a");
+    expect(res.statusCode).toBe(200)
+    expect(JSON.parse(res.body).results).not.toHaveLength(0)
+  })
 
-    assert.strictEqual(response.status, 200);
-  });*/
+  it("Vérifie que la recherche avec Rome et region répond avec des résultats", async () => {
+    const res = await httpClient().inject({ method: "GET", path: "/api/V1/formationsParRegion?romes=F1603,I1308&region=01&caller=a" })
 
-  /*it("Vérifie que la recherche avec Rome et region répond avec des résultats", async () => {
-    ;
+    expect(res.statusCode).toBe(200)
+    expect(JSON.parse(res.body).results).not.toHaveLength(0)
+  })
 
-    const response = await httpClient().get("/api/V1/formationsParRegion?romes=F1603,I1308&region=01&caller=a");
+  it("Vérifie que la recherche avec département répond avec des résultats", async () => {
+    const res = await httpClient().inject({ method: "GET", path: "/api/V1/formationsParRegion?departement=44&caller=a" })
 
-    assert.strictEqual(response.status, 200);
-    assert.ok(response.body.results instanceof Array);
-  });*/
-
-  /*it("Vérifie que la recherche avec département répond avec des résultats", async () => {
-    ;
-
-    const response = await httpClient().get("/api/V1/formationsParRegion?departement=44&caller=a");
-
-    assert.strictEqual(response.status, 200);
-    assert.ok(response.body.results instanceof Array);
-  });*/
+    expect(res.statusCode).toBe(200)
+    expect(JSON.parse(res.body).results).not.toHaveLength(0)
+  })
 
   it("Vérifie que les requêtes avec region et departement sont refusées", async () => {
-    const response = await httpClient().get("/api/V1/formationsParRegion?departement=44&region=01").expect(400)
+    const res = await httpClient().inject({ method: "GET", path: "/api/V1/formationsParRegion?departement=44&region=01" })
+    expect(res.statusCode).toBe(400)
 
-    expect(response.body.error).toBe("wrong_parameters")
-    expect(response.body.error_messages.includes("region, departement : You must define either region OR departement, not both.")).toBe(true)
+    expect(JSON.parse(res.body).error).toEqual("wrong_parameters")
+    expect(JSON.parse(res.body).error_messages).toContain("region, departement : You must define either region OR departement, not both.")
   })
 
   it("Vérifie que les requêtes avec departement mal formé sont refusées", async () => {
-    const response = await httpClient().get("/api/V1/formationsParRegion?departement=9745")
+    const res = await httpClient().inject({ method: "GET", path: "/api/V1/formationsParRegion?departement=9745" })
 
-    assert.strictEqual(response.status, 400)
-    assert.deepStrictEqual(response.body.error, "wrong_parameters")
-    assert.ok(
-      response.body.error_messages.indexOf(
-        "departement : Badly formatted departement. departement must be a two digit number or three digit number for overseas departments. ex : 01 or 974"
-      ) >= 0
+    expect(res.statusCode).toBe(400)
+    expect(JSON.parse(res.body).error).toEqual("wrong_parameters")
+    expect(JSON.parse(res.body).error_messages).toContain(
+      "departement : Badly formatted departement. departement must be a two digit number or three digit number for overseas departments. ex : 01 or 974"
     )
   })
 
   it("Vérifie que les requêtes avec region mal formée sont refusées", async () => {
-    const response = await httpClient().get("/api/V1/formationsParRegion?region=123")
+    const res = await httpClient().inject({ method: "GET", path: "/api/V1/formationsParRegion?region=123" })
 
-    assert.strictEqual(response.status, 400)
-    assert.deepStrictEqual(response.body.error, "wrong_parameters")
-    assert.ok(response.body.error_messages.indexOf("region : Badly formatted region. region must be a two digit number. ex : 01") >= 0)
+    expect(res.statusCode).toBe(400)
+    expect(JSON.parse(res.body).error).toEqual("wrong_parameters")
+    expect(JSON.parse(res.body).error_messages).toContain("region : Badly formatted region. region must be a two digit number. ex : 01")
   })
 
   it("Vérifie que les requêtes avec code region hors liste sont refusées", async () => {
-    const response = await httpClient().get("/api/V1/formationsParRegion?region=07")
+    const res = await httpClient().inject({ method: "GET", path: "/api/V1/formationsParRegion?region=07" })
 
-    assert.strictEqual(response.status, 400)
-    assert.deepStrictEqual(response.body.error, "wrong_parameters")
-    assert.ok(response.body.error_messages.indexOf("region : Badly formatted region. region must be one of the allowed values as described in the api online doc.") >= 0)
+    expect(res.statusCode).toBe(400)
+    expect(JSON.parse(res.body).error).toEqual("wrong_parameters")
+    expect(JSON.parse(res.body).error_messages).toContain("region : Badly formatted region. region must be one of the allowed values as described in the api online doc.")
   })
 
   it("Vérifie que les requêtes avec ROME et domaine ROME sont refusées", async () => {
-    const response = await httpClient().get("/api/V1/formationsParRegion?romes=F1603,I1308&romeDomain=A20&region=01")
+    const res = await httpClient().inject({ method: "GET", path: "/api/V1/formationsParRegion?romes=F1603,I1308&romeDomain=A20&region=01" })
 
-    assert.strictEqual(response.status, 400)
-    assert.deepStrictEqual(response.body.error, "wrong_parameters")
-    assert.ok(response.body.error_messages.indexOf("romes, romeDomain : You must define either romes OR romeDomain, not both.") >= 0)
+    expect(res.statusCode).toBe(400)
+    expect(JSON.parse(res.body).error).toEqual("wrong_parameters")
+    expect(JSON.parse(res.body).error_messages).toContain("romes, romeDomain : You must define either romes OR romeDomain, not both.")
   })
 
   it("Vérifie que les requêtes avec ROME mal formé sont refusées", async () => {
-    const response = await httpClient().get("/api/V1/formationsParRegion?romes=ABCDE&region=01")
+    const res = await httpClient().inject({ method: "GET", path: "/api/V1/formationsParRegion?romes=ABCDE&region=01" })
 
-    assert.strictEqual(response.status, 400)
-    assert.deepStrictEqual(response.body.error, "wrong_parameters")
-    assert.ok(response.body.error_messages.indexOf("romes : Badly formatted rome codes. Rome code must be one letter followed by 4 digit number. ex : A1234") >= 0)
+    expect(res.statusCode).toBe(400)
+    expect(JSON.parse(res.body).error).toEqual("wrong_parameters")
+    expect(JSON.parse(res.body).error_messages).toContain("romes : Badly formatted rome codes. Rome code must be one letter followed by 4 digit number. ex : A1234")
   })
 
   it("Vérifie que les requêtes avec trop de ROME sont refusées", async () => {
-    const response = await httpClient().get(
-      "/api/V1/formationsParRegion?romes=ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE&region=01"
-    )
+    const res = await httpClient().inject({
+      method: "GET",
+      path: "/api/V1/formationsParRegion?romes=ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE,ABCDE&region=01",
+    })
 
-    assert.strictEqual(response.status, 400)
-    assert.deepStrictEqual(response.body.error, "wrong_parameters")
-    assert.ok(response.body.error_messages.indexOf("romes : Too many rome codes. Maximum is 20.") >= 0)
+    expect(res.statusCode).toBe(400)
+    expect(JSON.parse(res.body).error).toEqual("wrong_parameters")
+    expect(JSON.parse(res.body).error_messages).toContain("romes : Too many rome codes. Maximum is 20.")
   })
 
   it("Vérifie que les requêtes sans caller sont refusées", async () => {
-    const response = await httpClient().get("/api/V1/formationsParRegion?romes=F1603,I1308&region=01")
+    const res = await httpClient().inject({ method: "GET", path: "/api/V1/formationsParRegion?romes=F1603,I1308&region=01" })
 
-    assert.strictEqual(response.status, 400)
-    assert.deepStrictEqual(response.body.error, "wrong_parameters")
-    assert.ok(response.body.error_messages.indexOf("caller : caller is missing.") >= 0)
+    expect(res.statusCode).toBe(400)
+    expect(JSON.parse(res.body).error).toEqual("wrong_parameters")
+    expect(JSON.parse(res.body).error_messages).toContain("caller : caller is missing.")
   })
 
   it("Vérifie que les requêtes sans region ou département et sans rome ou domaine rome sont refusées", async () => {
-    const response = await httpClient().get("/api/V1/formationsParRegion")
+    const res = await httpClient().inject({ method: "GET", path: "/api/V1/formationsParRegion" })
 
-    assert.strictEqual(response.status, 400)
-    assert.deepStrictEqual(response.body.error, "wrong_parameters")
-    assert.ok(response.body.error_messages.indexOf("region, departement, romes, romeDomain : You must assign a value to at least one of these parameters.") >= 0)
+    expect(res.statusCode).toBe(400)
+    expect(JSON.parse(res.body).error).toEqual("wrong_parameters")
+    expect(JSON.parse(res.body).error_messages).toContain("region, departement, romes, romeDomain : You must assign a value to at least one of these parameters.")
   })
 
   it("Vérifie que les requêtes avec diploma mal formée sont refusées", async () => {
-    const response = await httpClient().get("/api/V1/formationsParRegion?romes=F1603,I1308&radius=0&longitude=180&latitude=90&diploma=lba,lbc")
+    const res = await httpClient().inject({ method: "GET", path: "/api/V1/formationsParRegion?romes=F1603,I1308&radius=0&longitude=180&latitude=90&diploma=lba,lbc" })
 
-    assert.strictEqual(response.status, 400)
-    assert.deepStrictEqual(response.body.error, "wrong_parameters")
-    assert.ok(
-      response.body.error_messages.indexOf(
-        'diploma : Optional diploma argument used with wrong value. Should contains only one of "3xxx","4xxx","5xxx","6xxx","7xxx". xxx maybe any value'
-      ) >= 0
+    expect(res.statusCode).toBe(400)
+    expect(JSON.parse(res.body).error).toEqual("wrong_parameters")
+    expect(JSON.parse(res.body).error_messages).toContain(
+      'diploma : Optional diploma argument used with wrong value. Should contains only one of "3xxx","4xxx","5xxx","6xxx","7xxx". xxx maybe any value'
     )
   })
 })

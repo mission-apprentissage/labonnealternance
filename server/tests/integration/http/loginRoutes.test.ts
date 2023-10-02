@@ -2,7 +2,7 @@ import assert from "assert"
 
 import jwt, { JwtPayload } from "jsonwebtoken"
 import { omit } from "lodash-es"
-import { describe, it } from "vitest"
+import { describe, expect, it } from "vitest"
 
 import { createAndLogUser } from "@tests/utils/login.utils"
 import { useMongo } from "@tests/utils/mongo.utils"
@@ -19,13 +19,17 @@ describe("loginRoutes", () => {
   it("Vérifie qu'on peut se connecter", async () => {
     await createAndLogUser(httpClient, "user", "password")
 
-    const response = await httpClient().post("/api/login").send({
-      username: "user",
-      password: "password",
+    const response = await httpClient().inject({
+      method: "POST",
+      path: "/api/login",
+      body: {
+        username: "user",
+        password: "password",
+      },
     })
 
-    assert.strictEqual(response.status, 200)
-    const decoded = jwt.verify(response.body.token, config.auth.user.jwtSecret) as JwtPayload
+    expect(response.statusCode).toBe(200)
+    const decoded = jwt.verify(JSON.parse(response.body).token, config.auth.user.jwtSecret) as JwtPayload
     assert.ok(decoded.iat)
     assert.ok(decoded.exp)
     assert.deepStrictEqual(omit(decoded, ["iat", "exp"]), {
@@ -38,52 +42,72 @@ describe("loginRoutes", () => {
   it("Vérifie qu'un mot de passe invalide est rejeté", async () => {
     await createAndLogUser(httpClient, "user", "password")
 
-    const response = await httpClient().post("/api/login").send({
-      username: "user",
-      password: "INVALID",
+    const response = await httpClient().inject({
+      method: "POST",
+      path: "/api/login",
+      body: {
+        username: "user",
+        password: "INVALID",
+      },
     })
 
-    assert.strictEqual(response.status, 401)
+    expect(response.statusCode).toBe(401)
   })
 
   it("Vérifie qu'un login invalide est rejeté", async () => {
-    const response = await httpClient().post("/api/login").send({
-      username: "INVALID",
-      password: "INVALID",
+    const response = await httpClient().inject({
+      method: "POST",
+      path: "/api/login",
+      body: {
+        username: "INVALID",
+        password: "INVALID",
+      },
     })
 
-    assert.strictEqual(response.status, 401)
+    expect(response.statusCode).toBe(401)
   })
 
   it("Vérifie que le mot de passe est rehashé si trop faible", async () => {
     await createAndLogUser(httpClient, "user", "password", { hash: hash("password", 1000) })
 
-    let response = await httpClient().post("/api/login").send({
-      username: "user",
-      password: "password",
+    let response = await httpClient().inject({
+      method: "POST",
+      path: "/api/login",
+      body: {
+        username: "user",
+        password: "password",
+      },
     })
 
-    assert.strictEqual(response.status, 200)
+    expect(response.statusCode).toBe(200)
     const found = await User.findOne({ username: "user" })
-    assert.strictEqual(found?.password.startsWith("$6$rounds=1001"), true)
+    assert.strictEqual(found?.password.startsWith(`$6$rounds=${process.env.LBA_AUTH_PASSWORD_HASH_ROUNDS}`), true)
 
-    response = await httpClient().post("/api/login").send({
-      username: "user",
-      password: "password",
+    response = await httpClient().inject({
+      method: "POST",
+      path: "/api/login",
+      body: {
+        username: "user",
+        password: "password",
+      },
     })
-    assert.strictEqual(response.status, 200)
+    expect(response.statusCode).toBe(200)
   })
 
   it("Vérifie que le mot de passe n'est pas rehashé si ok", async () => {
     await createAndLogUser(httpClient, "user", "password", { hash: hash("password", 1001) })
     const previous = await User.findOne({ username: "user" })
 
-    const response = await httpClient().post("/api/login").send({
-      username: "user",
-      password: "password",
+    const response = await httpClient().inject({
+      method: "POST",
+      path: "/api/login",
+      body: {
+        username: "user",
+        password: "password",
+      },
     })
 
-    assert.strictEqual(response.status, 200)
+    expect(response.statusCode).toBe(200)
     const found = await User.findOne({ username: "user" })
     assert.strictEqual(previous?.password, found?.password)
   })
@@ -92,12 +116,16 @@ describe("loginRoutes", () => {
     await createAndLogUser(httpClient, "user", "password", { hash: hash("password", 1001) })
     const previous = await User.findOne({ username: "user" })
 
-    const response = await httpClient().post("/api/login").send({
-      username: "user",
-      password: "invalid",
+    const response = await httpClient().inject({
+      method: "POST",
+      path: "/api/login",
+      body: {
+        username: "user",
+        password: "invalid",
+      },
     })
 
-    assert.strictEqual(response.status, 401)
+    expect(response.statusCode).toBe(401)
     const found = await User.findOne({ username: "user" })
     assert.strictEqual(previous?.password, found?.password)
   })

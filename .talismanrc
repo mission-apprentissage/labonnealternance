@@ -18,7 +18,7 @@ fileignoreconfig:
 - filename: .infra/vault/vault.yml
   checksum: be891b8d48595418ff79b33c402b28e0f824471459af9e57801e3131e1d28e5a
 - filename: server/.env.test
-  checksum: 812d70e7fc383abd6942dbaf8691be833d7cd25b13aae6b4bbb2c2da4df6ed51
+  checksum: a25dd7f90a3bff45f97f82e253b830f54ca74ba81b7eab485c899ad5edf3d770
 - filename: server/src/common/model/constants/referrers.ts
   checksum: a7205e7da4dca56dc3f989bc4fbbec4ed10c46b963446005a0b0356b0cae3a3d
 - filename: server/src/common/model/schema/_shared/mongoose-paginate.ts
@@ -37,8 +37,10 @@ fileignoreconfig:
   checksum: 3cd111d8c109cfec357bae48af70d0cf5644d02cd2c4b9afc5b8aa07bccbd535
 - filename: server/src/services/application.service.ts
   checksum: 33503cd813a530c16e4cec58dfd52a4d78204063bf1c69989b84950393a4a9e6
+- filename: server/tests/integration/http/formationV1.test.ts
+  checksum: 5ea3eed110facafaa7c3cbe3a6cb9f4bca5984f9c34b5e6987355aaea90bdbf6
 - filename: server/tests/integration/http/passwordRoutes.test.ts
-  checksum: 963e2b1e9bb536d194f25b126b8500156fa75387625f1f60d3b906a02dc3e9ea
+  checksum: 2d6bb4cd78a7ecc1392239fc1479725258adcc5520237d3b254d4334d2fdce83
 - filename: shared/constants/recruteur.ts
   checksum: 28af032d2eb26aec7dd3bb1d32253f992a036626c36a92eb1e7ff07599fd0b2b
 - filename: shared/helpers/openapi/__snapshots__/generateOpenapi.test.ts.snap

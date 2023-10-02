@@ -14,11 +14,11 @@ describe("users", () => {
   it("Permet de créer un utilisateur", async () => {
     const created = await createUser("user", "password", {})
     assert.strictEqual(created.username, "user")
-    assert.strictEqual(created.password.startsWith("$6$rounds=1001"), true)
+    assert.strictEqual(created.password.startsWith(`$6$rounds=${process.env.LBA_AUTH_PASSWORD_HASH_ROUNDS}`), true)
 
     const found = await User.findOne({ username: "user" })
     assert.strictEqual(found?.username, "user")
-    assert.strictEqual(found?.password.startsWith("$6$rounds=1001"), true)
+    assert.strictEqual(found?.password.startsWith(`$6$rounds=${process.env.LBA_AUTH_PASSWORD_HASH_ROUNDS}`), true)
   })
 
   it("Permet de créer un utilisateur avec le role d'administrateur", async () => {

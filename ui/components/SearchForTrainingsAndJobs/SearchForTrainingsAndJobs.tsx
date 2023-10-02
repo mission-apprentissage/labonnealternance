@@ -386,7 +386,7 @@ const SearchForTrainingsAndJobs = () => {
         isJobSearchLoading={isJobSearchLoading}
       />
       <Flex direction="row" overflow="hidden" height="100%">
-        <Box flex={{ base: 8, xl: 6 }} display={listDisplayParameters} height="100%" overflow="auto" flexDirection="column">
+        <Box flex={{ base: 8, xl: 6 }} display={listDisplayParameters} height="100%" flexDirection="column">
           <ChoiceColumn
             shouldShowWelcomeMessage={shouldShowWelcomeMessage}
             handleSearchSubmit={handleSearchSubmit}

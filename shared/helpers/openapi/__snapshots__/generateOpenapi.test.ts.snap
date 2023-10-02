@@ -11,6 +11,20 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "error": {
             "type": "string",
           },
+          "error_messages": {
+            "description": "Une liste d'erreurs détaillées. Ex : les erreurs de paramétrage de la requête.",
+            "example": [
+              "romes : Badly formatted rome codes. Rome code must be one letter followed by 4 digit number. ex : A1234",
+              "romes : Too many rome codes. Maximum is 20.",
+            ],
+            "items": {
+              "type": "string",
+            },
+            "type": [
+              "array",
+              "null",
+            ],
+          },
           "message": {},
           "result": {
             "type": "string",
@@ -4057,6 +4071,23 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
             },
             "description": "",
           },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/Error",
+                    },
+                    {
+                      "$ref": "#/components/schemas/LbacError",
+                    },
+                  ],
+                },
+              },
+            },
+            "description": "",
+          },
           "500": {
             "content": {
               "application/json": {
@@ -4318,7 +4349,14 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ZLbarError",
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/Error",
+                    },
+                    {
+                      "$ref": "#/components/schemas/ZLbarError",
+                    },
+                  ],
                 },
               },
             },
@@ -4661,7 +4699,14 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ZLbarError",
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/ZLbarError",
+                    },
+                    {
+                      "$ref": "#/components/schemas/Error",
+                    },
+                  ],
                 },
               },
             },

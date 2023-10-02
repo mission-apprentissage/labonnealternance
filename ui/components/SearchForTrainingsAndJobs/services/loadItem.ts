@@ -127,7 +127,7 @@ export const loadItem = async ({
         }
 
         default: {
-          const response = await axios.get(`${companyApi}/${item.itemId}?type=${item.type}`)
+          const response = await axios.get(`${companyApi}/${item.itemId}`)
 
           // gestion des erreurs
           if (!response?.data?.message) {

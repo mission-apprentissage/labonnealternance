@@ -42,6 +42,10 @@ export function boomify(rawError: FastifyError | ValidationError | Boom<unknown>
     return Boom.badRequest(undefined, { details: rawError.details })
   }
 
+  if ((rawError as FastifyError).statusCode) {
+    return new Boom(rawError.message, { statusCode: (rawError as FastifyError).statusCode, data: { rawError } })
+  }
+
   if (config.env === "local") {
     return Boom.internal(rawError.message, { rawError })
   }

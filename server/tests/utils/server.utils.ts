@@ -1,14 +1,13 @@
-import request from "supertest"
 import { beforeAll } from "vitest"
 
-import server from "@/http/server"
+import server, { Server } from "@/http/server"
 
 export const useServer = () => {
-  let app
+  let app: Server
 
   beforeAll(async () => {
     app = await server()
   })
 
-  return () => request(app)
+  return () => app
 }
