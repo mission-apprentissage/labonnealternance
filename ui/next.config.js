@@ -14,49 +14,50 @@ function inline(value) {
 }
 
 const contentSecurityPolicy = `
-  default-src 'self'; 
-  base-uri 'self' 
+  default-src 'self';
+  base-uri 'self'
               https://stats.beta.gouv.fr;
-  script-src 'self' 
-              'unsafe-inline' 
+  script-src 'self'
+              'unsafe-inline'
               ${process.env.NEXT_PUBLIC_ENV === "local" ? "'unsafe-eval'" : ""}
-              https://plausible.io 
-              http://localhost:3000 
+              https://plausible.io
+              http://localhost:3000
               https://stats.beta.gouv.fr
               https://stats.data.gouv.fr
-              blob:; 
+              blob:;
   script-src-attr 'none';
   connect-src 'self'
-              https://labonnealternance.apprentissage.beta.gouv.fr 
+              https://labonnealternance.apprentissage.beta.gouv.fr
               https://labonnealternance-recette.apprentissage.beta.gouv.fr
               https://labonnealternance.pole-emploi.fr
               https://catalogue-apprentissage.intercariforef.org
-              https://api-adresse.data.gouv.fr 
-              https://api.mapbox.com 
+              https://api-adresse.data.gouv.fr
+              https://api.mapbox.com
               https://stats.beta.gouv.fr
               https://stats.data.gouv.fr
-              https://events.mapbox.com 
-              https://plausible.io 
+              https://events.mapbox.com
+              https://plausible.io
               http://localhost:5000
-              https://exposition-recette.inserjeunes.beta.gouv.fr 
-              https://exposition.inserjeunes.beta.gouv.fr 
+              https://exposition-recette.inserjeunes.beta.gouv.fr
+              https://exposition.inserjeunes.beta.gouv.fr
               https://*.ingest.sentry.io
               ${process.env.NEXT_PUBLIC_ENV === "local" ? "http://localhost:5001" : ""};
-  img-src 'self' 
-              data: 
+  img-src 'self'
+              data:
               blob:
               https://www.notion.so
               https://www.google.com
               https://www.google.fr
-              https://stats.beta.gouv.fr; 
-  object-src 'self' data: 
+              https://stats.beta.gouv.fr;
+  object-src 'self' data:
               https://labonnealternance.apprentissage.beta.gouv.fr
               https://labonnealternance-recette.apprentissage.beta.gouv.fr
               https://labonnealternance.pole-emploi.fr;
   font-src 'self' https: data:;
   style-src 'self' https: 'unsafe-inline';
   frame-src ${process.env.NEXT_PUBLIC_ENV === "local" ? "http://localhost:3000" : ""}
-            https://plausible.io             
+            'self'
+            https://plausible.io
             https://labonnealternance.pole-emploi.fr
             https://labonnealternance.apprentissage.beta.gouv.fr
             https://labonnealternance-recette.apprentissage.beta.gouv.fr;
