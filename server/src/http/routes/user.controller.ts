@@ -29,9 +29,7 @@ export default (server: Server) => {
       schema: zRoutes.get["/user/opco"],
     },
     async (req, res) => {
-      const { opco } = req.params
-
-      console.log(opco)
+      const { opco } = req.query
 
       const [awaiting, active, disable] = await Promise.all([
         getUserAndRecruitersDataForOpcoUser(opco, ETAT_UTILISATEUR.ATTENTE),

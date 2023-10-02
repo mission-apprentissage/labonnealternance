@@ -131,8 +131,8 @@ const getUserAndRecruitersDataForOpcoUser = async (opco, userState) => {
     UserRecruteur.find({
       $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, userState] },
       opco: opco,
-    }),
-    Recruiter.find({ opco: opco }),
+    }).lean(),
+    Recruiter.find({ opco: opco }).lean(),
   ])
 
   const results = users.reduce((acc: any[], user) => {

@@ -58,8 +58,6 @@ function AdministrationOpco() {
 
   const { data, isLoading } = useQuery("user-list-opco", () => getOpcoUsers(auth.scope))
 
-  console.log(data, isLoading)
-
   const columns = [
     {
       Header: "Entreprise",
@@ -144,7 +142,7 @@ function AdministrationOpco() {
       id: "nombre_offres",
       disableSortBy: true,
       sortType: "basic",
-      accessor: ({ jobs }) => jobs,
+      accessor: ({ jobs_count }) => jobs_count,
     },
     {
       Header: "Actions",

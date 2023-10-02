@@ -10,7 +10,7 @@ export const zUserRecruteurRoutes = {
       // TODO_SECURITY_FIX supprimer  les mongo query
       // TODO_SECURITY_FIX session cookie plus permission
       // TODO_SECURITY_FIX enlever les données privées (dont last connection date)
-      params: z
+      querystring: z
         .object({
           opco: z.string(),
         })
