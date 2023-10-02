@@ -1,4 +1,5 @@
 import { Jsonify } from "type-fest"
+
 import { z } from "../helpers/zodWithOpenApi"
 
 import { zObjectId } from "./common"
@@ -65,6 +66,7 @@ export const ZJob = ZJobFields.extend({
 export const ZJobWrite = ZJobFields.pick({
   rome_appellation_label: true,
   rome_code: true,
+  rome_label: true,
   job_type: true,
   job_level_label: true,
   job_start_date: true,
