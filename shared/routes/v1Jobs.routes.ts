@@ -1,6 +1,5 @@
-import { z } from "../helpers/zodWithOpenApi"
-
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
+import { z } from "../helpers/zodWithOpenApi"
 import { ZJob } from "../models"
 import { zObjectId } from "../models/common"
 import { ZApiError, ZLbacError, ZLbarError } from "../models/lbacError.model"
@@ -225,6 +224,7 @@ export const zV1JobsRoutes = {
       querystring: z
         .object({
           caller: zCallerParam,
+          type: z.string().nullish(),
         })
         .strict(),
       headers: zRefererHeaders,
