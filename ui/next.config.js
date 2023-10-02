@@ -60,7 +60,7 @@ const contentSecurityPolicy = `
             https://plausible.io
             https://labonnealternance.pole-emploi.fr
             https://labonnealternance.apprentissage.beta.gouv.fr
-            https://labonnealternance-recette.apprentissage.beta.gouv.fr;
+            https://labonnealternance*.apprentissage.beta.gouv.fr;
   child-src 'self' blob:;
   block-all-mixed-content;
   upgrade-insecure-requests;
