@@ -1,6 +1,6 @@
+import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 
-import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 // import { zEtablissementCatalogue } from "../interface/etablissement.types"
 import { ZRecruiter } from "../models"
 import { zObjectId } from "../models/common"
@@ -208,7 +208,14 @@ export const zRecruiterRoutes = {
     "/etablissement/:id": {
       // TODO_SECURITY_FIX jwt en mode session + filtre sur la payload pour réduction
       params: z.object({ id: zObjectId }).strict(),
-      body: ZUserRecruteur,
+      body: ZUserRecruteur.pick({
+        last_name: true,
+        first_name: true,
+        phone: true,
+        email: true,
+        is_email_checked: true,
+        last_connection: true,
+      }).partial(),
       response: {
         "2xx": z.union([ZUserRecruteur, z.null()]),
       },

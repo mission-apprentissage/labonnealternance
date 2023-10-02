@@ -159,6 +159,7 @@ export default (server: Server) => {
         job_start_date,
         rome_appellation_label,
         rome_code,
+        rome_label,
       } = req.body
       const updatedFormulaire = await createJob({
         job: {
@@ -173,6 +174,7 @@ export default (server: Server) => {
           job_start_date,
           rome_appellation_label,
           rome_code,
+          rome_label,
         },
         id: req.params.establishment_id,
       })

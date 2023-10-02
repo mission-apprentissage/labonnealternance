@@ -1,9 +1,9 @@
 import { randomUUID } from "crypto"
 
 import { Jsonify } from "type-fest"
-import { z } from "../helpers/zodWithOpenApi"
 
 import { RECRUITER_STATUS } from "../constants/recruteur"
+import { z } from "../helpers/zodWithOpenApi"
 
 import { zObjectId } from "./common"
 import { ZJob } from "./job.model"
@@ -12,7 +12,7 @@ const allRecruiterStatus = Object.values(RECRUITER_STATUS)
 
 export const ZRecruiterWritable = z
   .object({
-    establishment_id: z.string().default(randomUUID).describe("Identifiant de formulaire unique").openapi({
+    establishment_id: z.string().nullish().default(randomUUID).describe("Identifiant de formulaire unique").openapi({
       default: "Random UUID",
     }),
     establishment_raison_sociale: z.string().nullish().describe("Raison social de l'établissement"),
