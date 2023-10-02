@@ -5,6 +5,7 @@ import fastifySwaggerUI, { FastifySwaggerUiOptions } from "@fastify/swagger-ui"
 import Boom from "boom"
 import fastify, { FastifyBaseLogger, FastifyInstance, RawReplyDefaultExpression, RawRequestDefaultExpression, RawServerDefault } from "fastify"
 import { ZodTypeProvider, serializerCompiler, validatorCompiler } from "fastify-type-provider-zod"
+import { Netmask } from "netmask"
 import { OpenAPIV3_1 } from "openapi-types"
 import { generateOpenApiSchema } from "shared/helpers/openapi/generateOpenapi"
 import { SecurityScheme } from "shared/routes/common.routes"
@@ -56,8 +57,13 @@ export async function bind(app: Server) {
   app.setValidatorCompiler(validatorCompiler)
   app.setSerializerCompiler(serializerCompiler)
 
+  const allowedIps = [new Netmask("127.0.0.0/16"), new Netmask("10.0.0.0/8"), new Netmask("172.16.0.0/12"), new Netmask("192.168.0.0/16")]
   await app.register(fastifyRateLimt, {
     global: false,
+    allowList: (req) => {
+      // Do not rate-limit private & internal IPs
+      return allowedIps.some((block) => block.contains(req.ip))
+    },
   })
 
   const swaggerOpts: FastifyStaticSwaggerOptions = {
@@ -178,7 +184,7 @@ export async function bind(app: Server) {
   return app
 }
 
-export default async () => {
+export default async (): Promise<Server> => {
   const app: Server = fastify({
     logger: logMiddleware(),
     bodyLimit: 5 * 1024 ** 2, // 5MB

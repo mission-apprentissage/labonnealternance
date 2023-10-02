@@ -4119,6 +4119,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/netmask@npm:^2.0.3":
+  version: 2.0.3
+  resolution: "@types/netmask@npm:2.0.3"
+  checksum: 0f7a94fef4a154bd4294ef7286c15f88827b0209ace68349f03755ce3c2c7b276d44974b1548aa2c683a27bfb66cff9edb728739d2581ef8efa7d5a0c8173884
+  languageName: node
+  linkType: hard
+
 "@types/node@npm:*, @types/node@npm:20.7.1, @types/node@npm:^20.7.1":
   version: 20.7.1
   resolution: "@types/node@npm:20.7.1"
@@ -13626,6 +13633,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"netmask@npm:^2.0.2":
+  version: 2.0.2
+  resolution: "netmask@npm:2.0.2"
+  checksum: c65cb8d3f7ea5669edddb3217e4c96910a60d0d9a4b52d9847ff6b28b2d0277cd8464eee0ef85133cdee32605c57940cacdd04a9a019079b091b6bba4cb0ec22
+  languageName: node
+  linkType: hard
+
 "next-images@npm:1.8.5":
   version: 1.8.5
   resolution: "next-images@npm:1.8.5"
@@ -17167,6 +17181,7 @@ __metadata:
     "@types/lodash-es": ^4.17.9
     "@types/memoizee": ^0.4.9
     "@types/mjml": ^4.7.2
+    "@types/netmask": ^2.0.3
     "@types/node": 20.7.1
     "@types/nodemailer": ^6.4.11
     "@types/nodemailer-html-to-text": ^3.1.1
@@ -17213,6 +17228,7 @@ __metadata:
     moment: ^2.29.4
     mongodb: ^3.7.4
     mongoose: ^5.13.20
+    netmask: ^2.0.2
     nodemailer: ^6.9.5
     nodemailer-html-to-text: ^3.2.0
     oleoduc: ^0.7.0
@@ -17229,6 +17245,7 @@ __metadata:
     supertest: ^6.3.3
     tcp-port-used: ^1.0.2
     tsup: ^7.2.0
+    type-fest: ^4.3.3
     typescript: ^5.2.2
     vitest: ^0.34.5
     xlsx: ^0.18.5
@@ -18752,6 +18769,13 @@ __metadata:
   version: 4.3.1
   resolution: "type-fest@npm:4.3.1"
   checksum: 04e0f073dcc31c113c1b8856c089b388e7e9f4383a9ed72cc1466a89ec50d9d67678844eeec342b5a1ce71b21e817764d4f067aa148f6bcb5df9005ff3803382
+  languageName: node
+  linkType: hard
+
+"type-fest@npm:^4.3.3":
+  version: 4.3.3
+  resolution: "type-fest@npm:4.3.3"
+  checksum: 843c1bb3c2c185594a3a3d67bd92e8194dfa31ca0d88c078371efdd8d2150ea278a624cb260c91824e1f486ff06759c96bc03a134af7f0575e2d06eaa8be1c32
   languageName: node
   linkType: hard
 

@@ -1,4 +1,5 @@
 import { IRecruiter, IUserRecruteur } from "shared"
+import { Jsonify } from "type-fest"
 
 import { IAdresseCFA, IAdresseV3 } from "../common/model/schema/_shared/shared.types"
 
@@ -118,7 +119,7 @@ interface IMetaAPIEtablissement {
   redirect_from_siret: any
 }
 
-export interface IReferentiel {
+interface IReferentielRaw {
   siret: string
   _meta: IMetaReferentiel
   certifications: ICertification[]
@@ -139,6 +140,8 @@ export interface IReferentiel {
   qualiopi: boolean
   uai: string
 }
+
+export type IReferentiel = Jsonify<IReferentielRaw>
 
 interface IMetaReferentiel {
   anomalies: Anomaly[]
@@ -193,7 +196,7 @@ interface IUaiPotentiel {
   date_collecte: Date
 }
 
-export interface IEtablissementCatalogue {
+interface IEtablissementCatalogueRaw {
   _id: string
   siege_social: boolean
   etablissement_siege_siret: string
@@ -296,6 +299,8 @@ export interface IEtablissementCatalogue {
   uais_potentiels: null
   update_error: null
 }
+
+export type IEtablissementCatalogue = Jsonify<IEtablissementCatalogueRaw>
 
 export interface IAPIAdresse {
   type: string

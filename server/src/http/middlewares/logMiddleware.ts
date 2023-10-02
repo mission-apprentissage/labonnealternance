@@ -11,7 +11,11 @@ const withoutSensibleFields = (obj: object | null | undefined) => {
   })
 }
 
-export function logMiddleware(): FastifyLoggerOptions | PinoLoggerOptions {
+export function logMiddleware(): FastifyLoggerOptions | PinoLoggerOptions | false {
+  if (process.env.NODE_ENV === "test") {
+    return false
+  }
+
   const defaultSettings = {
     serializers: {
       req: (request: FastifyRequest) => {

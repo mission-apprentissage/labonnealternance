@@ -2,7 +2,7 @@ import assert from "assert"
 
 import jwt, { JwtPayload } from "jsonwebtoken"
 import { omit } from "lodash-es"
-import { describe, it } from "vitest"
+import { describe, expect, it } from "vitest"
 
 import { createAndLogUser } from "@tests/utils/login.utils"
 import { useMongo } from "@tests/utils/mongo.utils"
@@ -18,47 +18,61 @@ describe("passwordRoutes", () => {
   it("Vérifie qu'un utilisateur peut faire une demande de réinitialisation de mot de passe", async () => {
     await createAndLogUser(httpClient, "user", "password", { role: ROLES.administrator })
 
-    const response = await httpClient().post("/api/password/forgotten-password").send({
-      username: "user",
+    const response = await httpClient().inject({
+      method: "POST",
+      path: "/api/password/forgotten-password",
+      body: {
+        username: "user",
+      },
     })
 
-    assert.strictEqual(response.status, 200)
-    assert.ok(response.body.url)
+    expect(response.statusCode).toBe(200)
+    assert.ok(JSON.parse(response.body).url)
   })
 
   it("Vérifie qu'on ne peut pas demander la réinitialisation du mot de passe pour un utilisateur inconnu", async () => {
     await createAndLogUser(httpClient, "admin", "password", { role: ROLES.administrator })
 
-    const response = await httpClient().post("/api/password/forgotten-password").send({
-      username: "inconnu",
+    const response = await httpClient().inject({
+      method: "POST",
+      path: "/api/password/forgotten-password",
+      body: {
+        username: "inconnu",
+      },
     })
 
-    assert.strictEqual(response.status, 400)
+    expect(response.statusCode).toBe(400)
   })
 
   it("Vérifie qu'on ne peut pas demander la réinitialisation du mot de passe pour un utilisateur invalide", async () => {
     await createAndLogUser(httpClient, "user123", "password")
 
-    const response = await httpClient().post("/api/password/forgotten-password").send({
-      type: "cfa",
-      username: "user123456",
+    const response = await httpClient().inject({
+      method: "POST",
+      path: "/api/password/forgotten-password",
+      body: {
+        type: "cfa",
+        username: "user123456",
+      },
     })
 
-    assert.strictEqual(response.status, 400)
+    expect(response.statusCode).toBe(400)
   })
 
   it("Vérifie qu'un utilisateur peut changer son mot de passe", async () => {
     await createAndLogUser(httpClient, "admin", "password", { role: ROLES.administrator })
 
-    const response = await httpClient()
-      .post("/api/password/reset-password")
-      .send({
+    const response = await httpClient().inject({
+      method: "POST",
+      path: "/api/password/reset-password",
+      body: {
         passwordToken: createPasswordToken("admin"),
         newPassword: "Password!123456",
-      })
+      },
+    })
 
-    assert.strictEqual(response.status, 200)
-    const decoded = jwt.verify(response.body.token, config.auth.user.jwtSecret) as JwtPayload
+    expect(response.statusCode).toBe(200)
+    const decoded = jwt.verify(JSON.parse(response.body).token, config.auth.user.jwtSecret) as JwtPayload
     assert.ok(decoded.iat)
     assert.ok(decoded.exp)
     assert.deepStrictEqual(omit(decoded, ["iat", "exp"]), {
@@ -71,14 +85,16 @@ describe("passwordRoutes", () => {
   it("Vérifie qu'on doit spécifier un mot de passe valide", async () => {
     await createAndLogUser(httpClient, "admin", "password", { role: ROLES.administrator })
 
-    const response = await httpClient()
-      .post("/api/password/reset-password")
-      .send({
+    const response = await httpClient().inject({
+      method: "POST",
+      path: "/api/password/reset-password",
+      body: {
         passwordToken: createPasswordToken("admin"),
         newPassword: "invalid",
-      })
+      },
+    })
 
-    assert.strictEqual(response.status, 400)
+    expect(response.statusCode).toBe(400)
     assert.deepStrictEqual(response.body, {
       statusCode: 400,
       error: "Bad Request",

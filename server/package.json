@@ -70,6 +70,7 @@
     "moment": "^2.29.4",
     "mongodb": "^3.7.4",
     "mongoose": "^5.13.20",
+    "netmask": "^2.0.2",
     "nodemailer": "^6.9.5",
     "nodemailer-html-to-text": "^3.2.0",
     "oleoduc": "^0.7.0",
@@ -84,6 +85,7 @@
     "sib-api-v3-sdk": "^8.5.0",
     "stream-json": "^1.8.0",
     "tcp-port-used": "^1.0.2",
+    "type-fest": "^4.3.3",
     "xlsx": "^0.18.5",
     "xml2js": "^0.6.2",
     "zod": "^3.22.2"
@@ -99,6 +101,7 @@
     "@types/lodash-es": "^4.17.9",
     "@types/memoizee": "^0.4.9",
     "@types/mjml": "^4.7.2",
+    "@types/netmask": "^2.0.3",
     "@types/node": "20.7.1",
     "@types/supertest": "^2.0.13",
     "@typescript-eslint/eslint-plugin": "^5.62.0",
