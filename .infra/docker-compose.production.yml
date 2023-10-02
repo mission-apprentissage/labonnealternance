@@ -36,7 +36,7 @@ services:
       driver: "fluentd"
       options:
         fluentd-address: localhost:24224
-        tag: docker.lba.{{env_type}}.server
+        tag: docker.json.lba.{{env_type}}.server
         fluentd-async: "true"
     healthcheck:
       test: ["CMD", "curl", "--fail", "http://localhost:5000/api/healthcheck"]

@@ -18,8 +18,6 @@ export default function AuthValidation() {
         .then(({ data }) => {
           setAuth(data?.token)
           // KBA 20230712 : Temporary solution until migration : use location href to reload the page to make the JWT token work.
-          // window.location.href = "espace-pro/authentification/validation"
-          // TODO AB
           router.push("/espace-pro/authentification/validation")
         })
         .catch(() => {
