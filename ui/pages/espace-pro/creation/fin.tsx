@@ -128,12 +128,14 @@ export default function DepotRapideFin() {
             </Text>
           </Box>
         </Flex>
-        <Stack direction="row" align="center" spacing={4} mt={4} ml={6}>
-          <Text mr={10}>Vous n’avez pas reçu le mail ? </Text>
-          <Button variant="popover" textDecoration="underline" onClick={() => resendMail(email)} isDisabled={disableLink}>
-            Renvoyer le mail
-          </Button>
-        </Stack>
+        {userIsValidated && (
+          <Stack direction="row" align="center" spacing={4} mt={4} ml={6}>
+            <Text mr={10}>Vous n’avez pas reçu le mail ? </Text>
+            <Button variant="popover" textDecoration="underline" onClick={() => resendMail(email)} isDisabled={disableLink}>
+              Renvoyer le mail
+            </Button>
+          </Stack>
+        )}
       </Box>
     )
   }
@@ -151,12 +153,14 @@ export default function DepotRapideFin() {
               Afin de finaliser la diffusion de votre besoin auprès des jeunes, merci de confirmer votre adresse mail en cliquant sur le lien que nous venons de vous transmettre à
               l’adresse suivante: <span style={{ fontWeight: "700" }}>{email}</span>.
             </Text>
-            <Stack direction="row" align="center" spacing={4} mt={4}>
-              <Text mr={10}>Vous n’avez pas reçu le mail ? </Text>
-              <Button variant="popover" textDecoration="underline" onClick={() => resendMail(email)} isDisabled={disableLink}>
-                Renvoyer le mail
-              </Button>
-            </Stack>
+            {userIsValidated && (
+              <Stack direction="row" align="center" spacing={4} mt={4}>
+                <Text mr={10}>Vous n’avez pas reçu le mail ? </Text>
+                <Button variant="popover" textDecoration="underline" onClick={() => resendMail(email)} isDisabled={disableLink}>
+                  Renvoyer le mail
+                </Button>
+              </Stack>
+            )}
           </Box>
         </Stack>
         <Stack direction="row" spacing={4}>
