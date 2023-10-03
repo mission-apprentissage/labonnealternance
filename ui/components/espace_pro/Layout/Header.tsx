@@ -1,4 +1,4 @@
-import { Alert, AlertIcon, Box, Button, Container, Flex, Icon, Menu, MenuButton, MenuDivider, MenuItem, MenuList, Spacer, Text } from "@chakra-ui/react"
+import { Alert, AlertIcon, Box, Button, Container, Flex, Icon, Image, Menu, MenuButton, MenuDivider, MenuItem, MenuList, Spacer, Text } from "@chakra-ui/react"
 import { useRouter } from "next/router"
 import { useContext } from "react"
 import { RiAccountCircleLine } from "react-icons/ri"
@@ -10,8 +10,6 @@ import { LogoContext } from "../../../context/contextLogo"
 import { LockFill } from "../../../theme/components/icons"
 import { LbaNew } from "../../../theme/components/logos_pro"
 import LogoAkto from "../assets/images/akto"
-
-import Logo from "./Logo"
 
 const Header = () => {
   const { organisation } = useContext(LogoContext)
@@ -29,7 +27,7 @@ const Header = () => {
       <Container maxW="full" px={[0, 4]} py={4} borderBottom={"1px solid"} borderColor="grey.400">
         <Container maxW="container.xl">
           <Flex alignItems="center" px={[0, 4]}>
-            <Logo display={["none", "flex"]} />
+            <Image src="/images/espace_pro/logo.svg" alt="marianne" />
             <LbaNew />
             {organisation?.includes("akto") && <LogoAkto display={["none", "flex"]} w="100px" h={6} />}
             <Spacer />
