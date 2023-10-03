@@ -187,7 +187,7 @@ export default (server: Server) => {
             newCfa = await setUserHasToBeManuallyValidated(newCfa._id)
             await notifyToSlack({
               subject: "RECRUTEUR",
-              message: `Nouvel OF en attente de validation - ${newCfa.email} - https://referentiel.apprentissage.beta.gouv.fr/organismes/${newCfa.establishment_siret}`,
+              message: `Nouvel OF en attente de validation - https://referentiel.apprentissage.beta.gouv.fr/organismes/${newCfa.establishment_siret}`,
             })
             return res.status(200).send({ user: newCfa })
           }
