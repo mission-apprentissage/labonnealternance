@@ -21,7 +21,18 @@ export const zEligibleTrainingsForAppointmentRoutes = {
   patch: {
     "/admin/eligible-trainings-for-appointment/:id": {
       params: z.object({ id: zObjectId }).strict(),
-      body: ZEligibleTrainingsForAppointmentSchema,
+      body: z.union([
+          ZEligibleTrainingsForAppointmentSchema.pick({
+            is_lieu_formation_email_customized: true,
+            lieu_formation_email: true,
+          }),
+          ZEligibleTrainingsForAppointmentSchema.pick({
+            is_lieu_formation_email_customized: true,
+          }),
+          ZEligibleTrainingsForAppointmentSchema.pick({
+            referrers: true,
+          }),
+        ]),
       response: {
         "200": z.union([ZEligibleTrainingsForAppointmentSchema, z.null()]),
       },
