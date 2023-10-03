@@ -30,14 +30,7 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const { opco } = req.query
-
-      const [awaiting, active, disable] = await Promise.all([
-        getUserAndRecruitersDataForOpcoUser(opco, ETAT_UTILISATEUR.ATTENTE),
-        getUserAndRecruitersDataForOpcoUser(opco, ETAT_UTILISATEUR.VALIDE),
-        getUserAndRecruitersDataForOpcoUser(opco, ETAT_UTILISATEUR.DESACTIVE),
-      ])
-
-      return res.status(200).send({ awaiting, active, disable })
+      return res.status(200).send(await getUserAndRecruitersDataForOpcoUser(opco))
     }
   )
 
