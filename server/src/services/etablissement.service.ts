@@ -708,7 +708,7 @@ export const sendEmailConfirmationEntreprise = async (user: IUserRecruteur, recr
           rome_appellation_label: offre.rome_appellation_label,
           job_type: offre.job_type,
           job_level_label: offre.job_level_label,
-          job_start_date: dayjs(offre.job_start_date).format("D MMMM YYYY"),
+          job_start_date: dayjs(offre.job_start_date).format("DD/MM/YY"),
         },
         isUserAwaiting,
       },
