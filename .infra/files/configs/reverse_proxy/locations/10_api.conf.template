@@ -1,5 +1,6 @@
 location /api {
     set $upstream http://server:5000;
+    include includes/error_page_json.conf;
     include includes/proxy.conf;
 
     # client_max_body_size 0;

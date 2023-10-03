@@ -132,6 +132,7 @@ function EditPage() {
    */
   const disableEmailOverriding = async (id, is_lieu_formation_email_customized) => {
     await patchEligibleTrainingsForAppointment(id, { is_lieu_formation_email_customized })
+    await refreshParameters()
     if (is_lieu_formation_email_customized) {
       toast({
         title: "Lors de la prochaine synchronisation l'email ne sera pas écrasé car il est personnalisé.",
