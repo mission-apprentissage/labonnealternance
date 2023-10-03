@@ -70,6 +70,10 @@ export const zEtablissementRoutes = {
           formateur_address: true,
           formateur_zip_code: true,
           formateur_city: true,
+          premium_affelnet_activation_date: true,
+          gestionnaire_siret: true,
+          premium_activation_date: true,
+          premium_refusal_date: true,
         }).strict(),
       },
       securityScheme: {

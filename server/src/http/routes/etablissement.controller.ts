@@ -1,5 +1,4 @@
 import Boom from "boom"
-import Joi from "joi"
 import * as _ from "lodash-es"
 import { IAppointment, zRoutes } from "shared"
 import { referrers } from "shared/constants/referers"
@@ -15,13 +14,19 @@ import * as eligibleTrainingsForAppointmentService from "../../services/eligible
 import mailer from "../../services/mailer.service"
 import { Server } from "../server"
 
-const optOutUnsubscribeSchema = Joi.object({
-  opt_out_question: Joi.string().optional(),
-})
-
-const patchEtablissementIdAppointmentIdReadAppointSchema = Joi.object({
-  has_been_read: Joi.boolean().required(),
-})
+const etablissementProjection = {
+  optout_refusal_date: 1,
+  raison_sociale: 1,
+  formateur_siret: 1,
+  formateur_address: 1,
+  formateur_zip_code: 1,
+  formateur_city: 1,
+  premium_refusal_date: 1,
+  premium_activation_date: 1,
+  gestionnaire_siret: 1,
+  premium_affelnet_refusal_date: 1,
+  premium_affelnet_activation_date: 1,
+}
 
 /**
  * @description Etablissement server.
@@ -36,14 +41,7 @@ export default (server: Server) => {
       schema: zRoutes.get["/etablissements/:id"],
     },
     async (req, res) => {
-      const etablissement = await Etablissement.findById(req.params.id, {
-        optout_refusal_date: 1,
-        raison_sociale: 1,
-        formateur_siret: 1,
-        formateur_address: 1,
-        formateur_zip_code: 1,
-        formateur_city: 1,
-      }).lean()
+      const etablissement = await Etablissement.findById(req.params.id, etablissementProjection).lean()
 
       if (!etablissement) {
         throw Boom.notFound()
@@ -157,7 +155,7 @@ export default (server: Server) => {
       )
 
       const [resultAffelnet] = await Promise.all([
-        Etablissement.findById(req.params.id),
+        Etablissement.findById(req.params.id, etablissementProjection).lean(),
         ...eligibleTrainingsForAppointmentsAffelnetFound.map((eligibleTrainingsForAppointment) =>
           eligibleTrainingsForAppointmentService.update(
             { _id: eligibleTrainingsForAppointment._id, lieu_formation_email: { $nin: [null, ""] } },
@@ -363,7 +361,7 @@ export default (server: Server) => {
         }
       )
 
-      const etablissementAffelnetUpdated = await Etablissement.findById(req.params.id)
+      const etablissementAffelnetUpdated = await Etablissement.findById(req.params.id, etablissementProjection).lean()
       if (!etablissementAffelnetUpdated) {
         throw new Error(`unexpected: could not find etablissement with id=${req.params.id}`)
       }
@@ -436,7 +434,7 @@ export default (server: Server) => {
         }
       )
 
-      const etablissementParcoursupUpdated = await Etablissement.findById(req.params.id)
+      const etablissementParcoursupUpdated = await Etablissement.findById(req.params.id, etablissementProjection).lean()
       if (!etablissementParcoursupUpdated) {
         throw new Error(`unexpected: could not find etablissement with id=${req.params.id}`)
       }
@@ -453,9 +451,7 @@ export default (server: Server) => {
       schema: zRoutes.patch["/etablissements/:id/appointments/:appointmentId"],
     },
     async ({ body, params }, res) => {
-      const { has_been_read } = await patchEtablissementIdAppointmentIdReadAppointSchema.validateAsync(body, {
-        abortEarly: false,
-      })
+      const { has_been_read } = body;
 
       const { id, appointmentId } = params
 
@@ -475,7 +471,7 @@ export default (server: Server) => {
         await appointmentService.updateAppointment(appointmentId.toString(), { cfa_read_appointment_details_date: dayjs().toDate() })
       }
 
-      appointment = (await Appointment.findById(appointmentId)) as IAppointment | null
+      appointment = (await Appointment.findById(appointmentId, etablissementProjection).lean()) as IAppointment | null
       if (!appointment) {
         throw new Error(`unexpected: could not find appointment with id=${appointmentId}`)
       }
@@ -493,22 +489,13 @@ export default (server: Server) => {
       schema: zRoutes.post["/etablissements/:id/opt-out/unsubscribe"],
     },
     async (req, res) => {
-      const { opt_out_question } = await optOutUnsubscribeSchema.validateAsync(req.body, { abortEarly: false })
-
-      let etablissement = await Etablissement.findById(req.params.id, {
-        optout_refusal_date: 1,
-        raison_sociale: 1,
-        formateur_siret: 1,
-        formateur_address: 1,
-        formateur_zip_code: 1,
-        formateur_city: 1,
-      }).lean()
+      let etablissement = await Etablissement.findById(req.params.id, etablissementProjection).lean()
 
       if (!etablissement || etablissement.optout_refusal_date) {
         throw Boom.notFound()
       }
 
-      if (opt_out_question) {
+      if ('opt_out_question' in req.body) {
         await mailer.sendEmail({
           to: config.publicEmail,
           subject: `Un CFA se pose une question concernant l'opt-out"`,
@@ -523,7 +510,7 @@ export default (server: Server) => {
               formateur_address: etablissement.formateur_address,
               formateur_zip_code: etablissement.formateur_zip_code,
               formateur_city: etablissement.formateur_city,
-              opt_out_question,
+              opt_out_question: req.body.opt_out_question,
             },
             user: {
               destinataireEmail: etablissement.gestionnaire_email,
@@ -592,14 +579,7 @@ export default (server: Server) => {
         }
       )
 
-      etablissement = await Etablissement.findById(req.params.id, {
-        optout_refusal_date: 1,
-        raison_sociale: 1,
-        formateur_siret: 1,
-        formateur_address: 1,
-        formateur_zip_code: 1,
-        formateur_city: 1,
-      }).lean()
+      etablissement = await Etablissement.findById(req.params.id, etablissementProjection).lean()
       if (!etablissement) {
         throw new Error(`unexpected: could not find appointment with id=${req.params.id}`)
       }
