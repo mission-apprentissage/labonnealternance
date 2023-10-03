@@ -96,9 +96,6 @@ function transformLbaJobs({ jobs, caller, applicationCountByJob }: { jobs: ILbaJ
       })
     ),
   }
-  // return {
-  //   results: transformedJobs.filter(transformedJob => transformedJob !== undefined ),
-  // }
 }
 
 /**
