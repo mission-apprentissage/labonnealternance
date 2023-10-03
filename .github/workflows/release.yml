@@ -71,7 +71,7 @@ jobs:
     name: Deploy ${{ needs.release.outputs.VERSION }} on recette
     uses: "./.github/workflows/_deploy.yml"
     with:
-      environment: next
+      environment: recette
       app_version: ${{ needs.release.outputs.VERSION }}
     secrets:
       DEPLOY_SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
