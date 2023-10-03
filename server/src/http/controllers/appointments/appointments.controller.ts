@@ -9,8 +9,6 @@ import config from "../../../config"
 import * as eligibleTrainingsForAppointmentService from "../../../services/eligibleTrainingsForAppointment.service"
 import { Server } from "../../server"
 
-import { contextCreateSchema } from "./validators"
-
 export default (server: Server) => {
   server.post(
     "/appointment-request/context/create",
@@ -19,9 +17,6 @@ export default (server: Server) => {
       // TODO: AttachValidation Error ?
     },
     async (req, res) => {
-      // TODO: remove this validate ?
-      await contextCreateSchema.validateAsync(req.body, { abortEarly: false })
-
       const { referrer } = req.body
 
       const referrerObj = getReferrerByKeyName(referrer)

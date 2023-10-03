@@ -118,7 +118,7 @@ export default (server: Server) => {
         throw Boom.notFound()
       }
 
-      const result = await Etablissement.findByIdAndUpdate(params.id, body)
+      const result = await Etablissement.findByIdAndUpdate(params.id, body).lean()
 
       if (!result) {
         throw Boom.notFound()
