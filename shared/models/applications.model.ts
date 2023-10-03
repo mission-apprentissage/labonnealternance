@@ -1,6 +1,5 @@
-import { z } from "../helpers/zodWithOpenApi"
-
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
+import { z } from "../helpers/zodWithOpenApi"
 import { zCallerParam } from "../routes/_params"
 
 export const ZApplication = z
@@ -52,7 +51,7 @@ export const ZApplication = z
       description: "La valeur associée au code NAF de l'entreprise. Fournie par La bonne alternance. ",
       example: "Boulangerie et boulangerie-pâtisserie",
     }),
-    company_address: z.string().openapi({
+    company_address: z.string().nullish().openapi({
       description: "L'adresse postale de la société. Fournie par La bonne alternance. (champs : place.fullAddress)",
       example: "38 RUE DES HAMECONS, 75021 PARIS-21",
     }),
