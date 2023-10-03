@@ -29,7 +29,8 @@ export const zV1FormationsRoutes = {
           caller: zCallerParam.optional(),
           options: zGetFormationOptions,
         })
-        .strict(),
+        .strict()
+        .passthrough(),
       headers: zRefererHeaders,
       response: {
         "200": ZLbaItemFormationResult,
