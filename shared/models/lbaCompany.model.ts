@@ -1,6 +1,6 @@
+import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 
-import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 
 export const ZLbaCompany = z
   .object({

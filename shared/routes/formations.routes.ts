@@ -1,5 +1,4 @@
 import { z } from "../helpers/zodWithOpenApi"
-
 import { zFormationCatalogueSchema } from "../models/formation.model"
 
 import { IRoutesDef } from "./common.routes"

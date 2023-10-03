@@ -1,6 +1,5 @@
-import { z } from "../helpers/zodWithOpenApi"
-
 import { referrers } from "../constants/referers"
+import { z } from "../helpers/zodWithOpenApi"
 import { ZAppointment, ZEtablissement } from "../models"
 
 import { IRoutesDef, ZResError } from "./common.routes"

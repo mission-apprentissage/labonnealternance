@@ -1,7 +1,5 @@
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
-
-// import { zEtablissementCatalogue } from "../interface/etablissement.types"
 import { ZRecruiter } from "../models"
 import { zObjectId } from "../models/common"
 import { ZUserRecruteur, zReferentielData } from "../models/usersRecruteur.model"

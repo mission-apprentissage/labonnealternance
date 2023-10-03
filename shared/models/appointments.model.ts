@@ -1,4 +1,5 @@
 import { Jsonify } from "type-fest"
+
 import { z } from "../helpers/zodWithOpenApi"
 
 import { zObjectId } from "./common"
@@ -7,9 +8,9 @@ export const ZMailing = z
   .object({
     campaign: z.string(),
     message_id: z.string(),
-    status: z.string(),
-    webhook_status_at: z.date(),
-    email_sent_at: z.date(),
+    status: z.string().nullish(),
+    webhook_status_at: z.date().nullish(),
+    email_sent_at: z.date().nullish(),
   })
   .strict()
   .openapi("Mailing")
