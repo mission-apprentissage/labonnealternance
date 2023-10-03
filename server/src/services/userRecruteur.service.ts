@@ -46,7 +46,7 @@ export const getUsers = async (query: FilterQuery<IUserRecruteur>, options, { pa
  * @param {Filter<IUserRecruteur>} query
  * @returns {Promise<IUserRecruteur>}
  */
-export const getUser = async (query: FilterQuery<IUserRecruteur>): Promise<IUserRecruteur | null> => UserRecruteur.findOne(query)
+export const getUser = async (query: FilterQuery<IUserRecruteur>): Promise<IUserRecruteur | null> => UserRecruteur.findOne(query).lean()
 
 /**
  * @description create user

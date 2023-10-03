@@ -125,14 +125,14 @@ export const findById = async (id): Promise<IEtablissement> => {
  * @param {Object} conditions
  * @returns {Promise<Etablissement[]>}
  */
-export const find = async (conditions): Promise<IEtablissement[]> => Etablissement.find(conditions)
+export const find = async (conditions): Promise<IEtablissement[]> => Etablissement.find(conditions).lean()
 
 /**
  * @description Returns one item.
  * @param {Object} conditions
  * @returns {Promise<Etablissement>}
  */
-export const findOne = async (conditions): Promise<IEtablissement | null> => Etablissement.findOne(conditions)
+export const findOne = async (conditions): Promise<IEtablissement | null> => Etablissement.findOne(conditions).lean()
 
 /**
  * @description Updates an etablissement from its conditions.
@@ -140,7 +140,7 @@ export const findOne = async (conditions): Promise<IEtablissement | null> => Eta
  * @param {Object} values
  * @returns {Promise<Etablissement>}
  */
-export const findOneAndUpdate = async (conditions, values): Promise<IEtablissement | null> => Etablissement.findOneAndUpdate(conditions, values, { new: true })
+export const findOneAndUpdate = async (conditions, values): Promise<IEtablissement | null> => Etablissement.findOneAndUpdate(conditions, values, { new: true }).lean()
 
 /**
  * @description Upserts.
@@ -148,7 +148,7 @@ export const findOneAndUpdate = async (conditions, values): Promise<IEtablisseme
  * @param {Object} values
  * @returns {Promise<Etablissement>}
  */
-export const updateMany = async (conditions, values): Promise<any> => Etablissement.updateMany(conditions, values, { new: true, upsert: true })
+export const updateMany = async (conditions, values): Promise<any> => Etablissement.updateMany(conditions, values, { new: true, upsert: true }).lean()
 
 /**
  * @description Update one.
@@ -156,7 +156,7 @@ export const updateMany = async (conditions, values): Promise<any> => Etablissem
  * @param {Object} values
  * @returns {Promise<Etablissement>}
  */
-export const updateOne = async (conditions, values): Promise<any> => Etablissement.updateOne(conditions, values, { new: true, upsert: true })
+export const updateOne = async (conditions, values): Promise<any> => Etablissement.updateOne(conditions, values, { new: true, upsert: true }).lean()
 
 /**
  * @description Updates an etablissement from its id.
@@ -164,21 +164,21 @@ export const updateOne = async (conditions, values): Promise<any> => Etablisseme
  * @param {Object} values
  * @returns {Promise<Etablissement>}
  */
-export const findByIdAndUpdate = async (id, values): Promise<IEtablissement | null> => Etablissement.findByIdAndUpdate({ _id: id }, values, { new: true })
+export const findByIdAndUpdate = async (id, values): Promise<IEtablissement | null> => Etablissement.findByIdAndUpdate({ _id: id }, values, { new: true }).lean()
 
 /**
  * @description Deletes an etablissement from its id.
  * @param {ObjectId} id
  * @returns {Promise<void>}
  */
-export const findByIdAndDelete = async (id): Promise<IEtablissement | null> => Etablissement.findByIdAndDelete(id)
+export const findByIdAndDelete = async (id): Promise<IEtablissement | null> => Etablissement.findByIdAndDelete(id).lean()
 
 /**
  * @description Get etablissement from a given query
  * @param {Object} query
  * @returns {Promise<void>}
  */
-export const getEtablissement = async (query: FilterQuery<IUserRecruteur>): Promise<IUserRecruteur | null> => UserRecruteur.findOne(query)
+export const getEtablissement = async (query: FilterQuery<IUserRecruteur>): Promise<IUserRecruteur | null> => UserRecruteur.findOne(query).lean()
 
 /**
  * @description Get opco details from CFADOCK API for a given SIRET
