@@ -36,7 +36,14 @@ export default (server: Server) => {
       schema: zRoutes.get["/etablissements/:id"],
     },
     async (req, res) => {
-      const etablissement = await Etablissement.findById(req.params.id)
+      const etablissement = await Etablissement.findById(req.params.id, {
+        optout_refusal_date: 1,
+        raison_sociale: 1,
+        formateur_siret: 1,
+        formateur_address: 1,
+        formateur_zip_code: 1,
+        formateur_city: 1,
+      }).lean()
 
       if (!etablissement) {
         throw Boom.notFound()

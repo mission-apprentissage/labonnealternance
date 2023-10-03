@@ -60,10 +60,17 @@ export const zEtablissementRoutes = {
       },
     },
     "/etablissements/:id": {
-      // TODO_SECURITY_FIX faire en sorte qu'il n'y ait pas les adresses emails du catalogue exposées au publlic (définir un ZEtablissementPublic)
       params: z.object({ id: zObjectId }).strict(),
       response: {
-        "2xx": ZEtablissement,
+        "2xx": ZEtablissement.pick({
+          _id: true,
+          optout_refusal_date: true,
+          raison_sociale: true,
+          formateur_siret: true,
+          formateur_address: true,
+          formateur_zip_code: true,
+          formateur_city: true,
+        }).strict(),
       },
       securityScheme: {
         auth: "none",
