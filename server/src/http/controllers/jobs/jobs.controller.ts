@@ -1,6 +1,6 @@
 import Boom from "boom"
 import { FastifyRequest } from "fastify"
-import { ICredential, zRoutes, IJob, IUserRecruteur } from "shared"
+import { ICredential, IJob, IUserRecruteur, zRoutes } from "shared"
 import { IRouteSchema } from "shared/routes/common.routes"
 
 import { IUser } from "@/common/model/schema/user/user.types"
@@ -64,15 +64,13 @@ export default (server: Server) => {
       const { establishment_siret, email } = req.query
       await getEstablishmentEntitySchema.validateAsync({ establishment_siret, email }, { abortEarly: false })
 
-      const establishment = await Recruiter.findOne({ establishment_siret, email })
+      const establishment = await Recruiter.findOne({ establishment_siret, email }).lean()
 
       if (!establishment) {
-        res.status(400)
-        return res.send({ error: true, message: "Establishment not found" })
+        return res.status(400).send({ error: true, message: "Establishment not found" })
       }
 
-      res.status(200)
-      return res.send(establishment.establishment_id)
+      return res.status(200).send(establishment.establishment_id)
     }
   )
 
