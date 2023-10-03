@@ -29,7 +29,7 @@ services:
       <<: *deploy-default
       resources:
         limits:
-          memory: 1g
+          memory: 2g
       replicas: 2
     env_file: .env_server
     volumes:
@@ -54,7 +54,7 @@ services:
       <<: *deploy-default
       resources:
         limits:
-          memory: 1g
+          memory: 2g
     command: ["yarn", "cli", "job_processor:start"]
     env_file: .env_server
     volumes:
