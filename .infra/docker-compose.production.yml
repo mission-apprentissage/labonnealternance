@@ -13,7 +13,7 @@ x-deploy-default: &deploy-default
     delay: 10s
   restart_policy:
     window: 360s
-    delay: 120s
+    delay: 30s
     # Max 24hours
     max_attempts: 240
 
