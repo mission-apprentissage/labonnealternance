@@ -1,4 +1,5 @@
 import dayjs from "dayjs"
+import "dayjs/locale/fr"
 import advancedFormat from "dayjs/plugin/advancedFormat.js"
 import customParseFormat from "dayjs/plugin/customParseFormat.js"
 import duration from "dayjs/plugin/duration.js"
@@ -10,6 +11,7 @@ import localizedFormat from "dayjs/plugin/localizedFormat.js"
 import timezone from "dayjs/plugin/timezone.js"
 import utc from "dayjs/plugin/utc.js"
 
+dayjs.locale("fr")
 dayjs.extend(utc)
 dayjs.extend(duration)
 dayjs.extend(timezone)

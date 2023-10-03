@@ -1,15 +1,14 @@
-import { Box, Flex, Heading, Link, Spinner, Text, useBoolean } from "@chakra-ui/react"
+import { Box, Heading, Link, Text, useBoolean } from "@chakra-ui/react"
 import { useRouter } from "next/router"
 import { useEffect } from "react"
 
 import { AUTHTYPE } from "../../../../../common/contants"
 import useAuth from "../../../../../common/hooks/useAuth"
-import { redirect } from "../../../../../common/utils/router"
-import { AuthentificationLayout } from "../../../../../components/espace_pro"
+import { AuthentificationLayout, LoadingEmptySpace } from "../../../../../components/espace_pro"
 import { validationCompte } from "../../../../../utils/api"
 
 const EmailValide = () => (
-  <Box pt={["6w", "12w"]} px={["6", "8"]}>
+  <Box pt={["6", "12"]} px={["6", "8"]}>
     <Heading fontSize="28px" as="h1" mb={7}>
       Merci ! Votre adresse email est bien confirmée.
     </Heading>
@@ -22,7 +21,7 @@ const EmailValide = () => (
 )
 
 const EmailInvalide = () => (
-  <Box pt={["6w", "12w"]} px={["6", "8"]}>
+  <Box pt={["6", "12"]} px={["6", "8"]}>
     <Heading fontSize="28px" as="h1" mb={7}>
       Mail invalide
     </Heading>
@@ -36,25 +35,33 @@ const EmailInvalide = () => (
 )
 
 export default function ConfirmationValidationEmail() {
-  const [isValid, setIsValid] = useBoolean(true)
-  const [isAwaitingValidation, setIsAwaitingValidation] = useBoolean(false)
+  const [loading, setLoading] = useBoolean()
+  const [isInvalid, setIsInvalid] = useBoolean()
+  const [isAwaitingValidation, setIsAwaitingValidation] = useBoolean()
   const router = useRouter()
   const { id } = router.query
   const [auth, setAuth] = useAuth()
 
   useEffect(() => {
+    setLoading.on()
     // get user from params coming from email link
     validationCompte({ id })
       .then(({ data }) => {
         if (data?.isUserAwaiting) {
+          setLoading.off()
+          setIsInvalid.off()
           setIsAwaitingValidation.on()
-          setTimeout(() => redirect("/", true), 10000)
+          // setTimeout(() => redirect("/", true), 10000)
         }
         if (data?.token) {
+          setLoading.off()
           setAuth(data?.token)
         }
       })
-      .catch(() => setIsValid.off())
+      .catch(() => {
+        setLoading.off()
+        setIsInvalid.on()
+      })
   }, [id])
 
   useEffect(() => {
@@ -87,20 +94,13 @@ export default function ConfirmationValidationEmail() {
 
   return (
     <>
-      {isValid && !isAwaitingValidation && (
-        <Box>
-          <Flex justify="center" align="center" h="100vh" direction="column">
-            <Spinner thickness="4px" speed="0.5s" emptyColor="gray.200" color="bluefrance.500" size="xl" />
-            <Text>Verification en cours...</Text>
-          </Flex>
-        </Box>
-      )}
+      {loading && <LoadingEmptySpace label="Vérification en cours" />}
       {isAwaitingValidation && (
         <AuthentificationLayout>
           <EmailValide />
         </AuthentificationLayout>
       )}
-      {!isValid && (
+      {isInvalid && (
         <AuthentificationLayout>
           <EmailInvalide />
         </AuthentificationLayout>
