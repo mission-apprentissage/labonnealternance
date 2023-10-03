@@ -1,5 +1,4 @@
 import { z } from "../helpers/zodWithOpenApi"
-
 import { ZLbacError } from "../models/lbacError.model"
 import { ZLbaItemFormationResult } from "../models/lbaItem.model"
 
@@ -51,7 +50,8 @@ export const zV1FormationsParRegion = {
           diploma: zDiplomaParam.optional(),
           options: zGetFormationOptions,
         })
-        .strict(),
+        .strict()
+        .passthrough(),
       headers: zRefererHeaders,
       response: {
         "200": ZLbaItemFormationResult,

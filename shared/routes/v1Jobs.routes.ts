@@ -167,7 +167,8 @@ export const zV1JobsRoutes = {
           opco: zOpcoParams,
           opcoUrl: zOpcoUrlParams,
         })
-        .strict(),
+        .strict()
+        .passthrough(),
       headers: zRefererHeaders,
       response: {
         "200": z
@@ -224,9 +225,9 @@ export const zV1JobsRoutes = {
       querystring: z
         .object({
           caller: zCallerParam,
-          type: z.string().nullish(),
         })
-        .strict(),
+        .strict()
+        .passthrough(),
       headers: zRefererHeaders,
       response: {
         "200": z
@@ -262,7 +263,8 @@ export const zV1JobsRoutes = {
         .object({
           caller: zCallerParam,
         })
-        .strict(),
+        .strict()
+        .passthrough(),
       headers: zRefererHeaders,
       response: {
         "200": z
@@ -294,7 +296,8 @@ export const zV1JobsRoutes = {
         .object({
           caller: zCallerParam,
         })
-        .strict(),
+        .strict()
+        .passthrough(),
       headers: zRefererHeaders,
       response: {
         "200": z
