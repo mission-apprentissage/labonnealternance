@@ -17,6 +17,7 @@ function parseQueryString(value: string | string[]): string {
 export default function DepotRapideFin() {
   const [disableLink, setDisableLink] = useState(false)
   const [userIsValidated, setUserIsValidated] = useState(false)
+  const [userIsInError, setUserIsInError] = useState(false)
   const [title, setTitle] = useState("")
   const router = useRouter()
   const toast = useToast()
@@ -38,7 +39,10 @@ export default function DepotRapideFin() {
     onSettled: (data) => {
       const latestStatus = data?.data?.status.pop().status || false
 
-      if (latestStatus === "VALIDÉ" || fromDash === true) {
+      if (latestStatus === "ERROR") {
+        setUserIsInError(true)
+        setTitle("Félicitations,<br>votre offre a bien été créée.<br>Elle sera publiée dès validation de votre compte.")
+      } else if (latestStatus === "VALIDÉ" || fromDash === true) {
         setUserIsValidated(true)
         setTitle(
           withDelegation
@@ -128,7 +132,7 @@ export default function DepotRapideFin() {
             </Text>
           </Box>
         </Flex>
-        {userIsValidated && (
+        {userIsInError && (
           <Stack direction="row" align="center" spacing={4} mt={4} ml={6}>
             <Text mr={10}>Vous n’avez pas reçu le mail ? </Text>
             <Button variant="popover" textDecoration="underline" onClick={() => resendMail(email)} isDisabled={disableLink}>
@@ -153,7 +157,7 @@ export default function DepotRapideFin() {
               Afin de finaliser la diffusion de votre besoin auprès des jeunes, merci de confirmer votre adresse mail en cliquant sur le lien que nous venons de vous transmettre à
               l’adresse suivante: <span style={{ fontWeight: "700" }}>{email}</span>.
             </Text>
-            {userIsValidated && (
+            {userIsInError && (
               <Stack direction="row" align="center" spacing={4} mt={4}>
                 <Text mr={10}>Vous n’avez pas reçu le mail ? </Text>
                 <Button variant="popover" textDecoration="underline" onClick={() => resendMail(email)} isDisabled={disableLink}>
@@ -193,7 +197,8 @@ export default function DepotRapideFin() {
           <Heading fontSize="24px" mb="16px" mt={widget?.mobile ? "10px" : "0px"}>
             <div dangerouslySetInnerHTML={{ __html: title }} />
           </Heading>
-          {userIsValidated ? fromDash ? null : <ValidatedAccountDescription /> : <AwaitingAccountDescription />}
+          {fromDash ? null : userIsInError ? null : userIsValidated ? <ValidatedAccountDescription /> : <AwaitingAccountDescription />}
+          {/* {userIsValidated ? fromDash ? null : <ValidatedAccountDescription /> : <AwaitingAccountDescription />} */}
           <Box bg="#F6F6F6" p={4}>
             <Stack direction="column" spacing="16px">
               <Heading fontSize="20px">Récapitulatif de votre besoin</Heading>
