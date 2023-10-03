@@ -2,6 +2,8 @@ import { Box, Divider, Flex, Grid, GridItem, Image, Link, ListItem, UnorderedLis
 import NextLink from "next/link"
 import React from "react"
 
+import { publicConfig } from "../config.public"
+
 const Footer = () => {
   return (
     <Box as="footer" borderTop="1px solid" borderTopColor="info" pt={6}>
@@ -169,17 +171,21 @@ const Footer = () => {
               </UnorderedList>
             </GridItem>
             <GridItem>
-              <Box color="grey.425" fontSize={12} mt={6} pb={12}>
+              <Box color="grey.425" fontSize={12} mt={6}>
                 Sauf mention contraire, tous les contenus de ce site sont sous licence{" "}
                 <Link
                   href="https://www.etalab.gouv.fr/licence-version-2-0-de-la-licence-ouverte-suite-a-la-consultation-et-presentation-du-decret"
                   aria-label="Accès au site Etalab"
                   textDecor="underline"
                   isExternal
+                  mr={4}
                 >
                   etalab-2.0
                   <Image src="/images/square_link.svg" alt="Ouverture dans un nouvel onglet" display="inline-block" pl="1" />
                 </Link>
+              </Box>
+              <Box color="grey.425" fontSize={12} mt={6} pb={12}>
+                v.{publicConfig.version} © République française {new Date().getFullYear()}
               </Box>
             </GridItem>
           </Grid>

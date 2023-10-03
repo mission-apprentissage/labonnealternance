@@ -3,7 +3,6 @@ import { Jsonify } from "type-fest"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 
-
 import { ZMailing } from "./appointments.model"
 import { zObjectId } from "./common"
 
