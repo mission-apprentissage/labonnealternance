@@ -33,11 +33,11 @@ const CreationCompteForm = ({ type, setQualiopi, setBandeau, origin }) => {
             })
           } else {
             setFieldError("establishment_siret", entrepriseData.message)
-            setIsCfa(entrepriseData.data.isCfa)
             setSubmitting(false)
           }
         } else {
           setSubmitting(true)
+          setIsCfa(entrepriseData.data.isCfa)
           router.push({
             pathname: "/espace-pro/creation/detail",
             query: { informationSiret: JSON.stringify({ ...entrepriseData, ...opcoInfos }), type, origin },
