@@ -131,8 +131,20 @@ const getUserAndRecruitersDataForOpcoUser = async (opco, userState) => {
     UserRecruteur.find({
       $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, userState] },
       opco: opco,
-    }).lean(),
-    Recruiter.find({ opco: opco }).lean(),
+    })
+      .select({
+        _id: 1,
+        first_name: 1,
+        last_name: 1,
+        establishment_id: 1,
+        establishment_raison_sociale: 1,
+        establishment_siret: 1,
+        createdAt: 1,
+        email: 1,
+        phone: 1,
+      })
+      .lean(),
+    Recruiter.find({ opco: opco }).select({ establishment_id: 1, origin: 1, jobs: 1, _id: 0 }).lean(),
   ])
 
   const results = users.reduce((acc: any[], user) => {
@@ -145,7 +157,6 @@ const getUserAndRecruitersDataForOpcoUser = async (opco, userState) => {
       if (found !== -1) {
         acc[found].jobs_count = form.jobs.length ?? 0
         acc[found].origin = form.origin
-        acc[found].jobs = form.jobs ?? []
       }
     }
 
