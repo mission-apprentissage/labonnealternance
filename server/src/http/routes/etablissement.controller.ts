@@ -495,7 +495,14 @@ export default (server: Server) => {
     async (req, res) => {
       const { opt_out_question } = await optOutUnsubscribeSchema.validateAsync(req.body, { abortEarly: false })
 
-      let etablissement = await Etablissement.findById(req.params.id)
+      let etablissement = await Etablissement.findById(req.params.id, {
+        optout_refusal_date: 1,
+        raison_sociale: 1,
+        formateur_siret: 1,
+        formateur_address: 1,
+        formateur_zip_code: 1,
+        formateur_city: 1,
+      }).lean()
 
       if (!etablissement || etablissement.optout_refusal_date) {
         throw Boom.notFound()
@@ -585,7 +592,14 @@ export default (server: Server) => {
         }
       )
 
-      etablissement = await Etablissement.findById(req.params.id)
+      etablissement = await Etablissement.findById(req.params.id, {
+        optout_refusal_date: 1,
+        raison_sociale: 1,
+        formateur_siret: 1,
+        formateur_address: 1,
+        formateur_zip_code: 1,
+        formateur_city: 1,
+      }).lean()
       if (!etablissement) {
         throw new Error(`unexpected: could not find appointment with id=${req.params.id}`)
       }
