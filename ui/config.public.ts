@@ -10,6 +10,7 @@ export interface PublicConfig {
   }
   inserJeuneApiUrl: string
   apiEndpoint: string
+  version: string
 }
 
 const SENTRY_DSN = ""
@@ -29,6 +30,7 @@ function getProductionPublicConfig(): PublicConfig {
     },
     inserJeuneApiUrl: "https://exposition.inserjeunes.beta.gouv.fr",
     apiEndpoint: `https://${host}/api`,
+    version: getVersion(),
   }
 }
 
@@ -47,6 +49,7 @@ function getRecettePublicConfig(): PublicConfig {
     },
     inserJeuneApiUrl: "https://exposition-recette.inserjeunes.beta.gouv.fr",
     apiEndpoint: `https://${host}/api`,
+    version: getVersion(),
   }
 }
 function getNextPublicConfig(): PublicConfig {
@@ -64,6 +67,7 @@ function getNextPublicConfig(): PublicConfig {
     },
     inserJeuneApiUrl: "https://exposition-recette.inserjeunes.beta.gouv.fr",
     apiEndpoint: `https://${host}/api`,
+    version: getVersion(),
   }
 }
 
@@ -89,6 +93,7 @@ function getPreviewPublicConfig(): PublicConfig {
     },
     inserJeuneApiUrl: "https://exposition-recette.inserjeunes.beta.gouv.fr",
     apiEndpoint: `https://${host}/api`,
+    version,
   }
 }
 
@@ -107,6 +112,7 @@ function getLocalPublicConfig(): PublicConfig {
       jsTrackerFile: "",
     },
     inserJeuneApiUrl: "https://exposition-recette.inserjeunes.beta.gouv.fr",
+    version: getVersion(),
   }
 }
 
