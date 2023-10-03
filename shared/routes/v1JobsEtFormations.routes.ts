@@ -1,5 +1,4 @@
 import { z } from "../helpers/zodWithOpenApi"
-
 import { ZApiError, ZLbacError } from "../models/lbacError.model"
 import { ZLbaItemFormation, ZLbaItemLbaCompany, ZLbaItemLbaJob, ZLbaItemPeJob } from "../models/lbaItem.model"
 
@@ -37,7 +36,8 @@ export const zV1JobsEtFormationsRoutes = {
           opcoUrl: zOpcoUrlParams,
           options: z.literal("with_description").optional(), // hidden
         })
-        .strict(),
+        .strict()
+        .passthrough(),
       headers: zRefererHeaders,
       response: {
         "200": z
