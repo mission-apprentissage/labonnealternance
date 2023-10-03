@@ -6,7 +6,7 @@ import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
 import { mailType } from "../../common/model/constants/appointments"
 import { getReferrerByKeyName } from "../../common/model/constants/referrers"
-import { Appointment, Etablissement } from "../../common/model/index"
+import { Appointment, EligibleTrainingsForAppointment, Etablissement, User } from "../../common/model/index"
 import config from "../../config"
 import * as appointmentService from "../../services/appointment.service"
 import { ROLES } from "../../services/constant.service"
@@ -211,27 +211,41 @@ export default (server: Server) => {
     async (req, res) => {
       const { appointmentId } = req.query
 
-      const appointment = await Appointment.findById(appointmentId)
+      const appointment = await Appointment.findById(appointmentId, {
+        cle_ministere_educatif: 1,
+        applicant_id: 1,
+        applicant_reasons: 1,
+        applicant_message_to_cfa: 1,
+        cfa_intention_to_applicant: 1,
+        cfa_message_to_applicant: 1,
+        cfa_message_to_applicant_date: 1,
+      }).lean()
 
       if (!appointment) {
         throw Boom.notFound()
       }
 
-      const [eligibleTrainingsForAppointment, user] = await Promise.all([
-        eligibleTrainingsForAppointmentService.getParameterByCleMinistereEducatif({
-          cleMinistereEducatif: appointment.cle_ministere_educatif,
+      const [etablissement, user] = await Promise.all([
+        EligibleTrainingsForAppointment.findOne({ cle_ministere_educatif: appointment.cle_ministere_educatif }, {
+          training_intitule_long: 1,
+          etablissement_formateur_raison_sociale: 1,
+          lieu_formation_street: 1,
+          lieu_formation_zip_code: 1,
+          lieu_formation_city: 1,
+        }).lean(),
+        User.findById(appointment.applicant_id, {
+          type: 1,
+          lastname: 1,
+          firstname: 1,
+          phone: 1,
+          email: 1,
         }),
-        // TODO applicant_id null | undefined | string
-        users.getUserById(appointment.applicant_id as string),
       ])
 
       res.status(200).send({
-        appointment: {
-          ...appointment,
-          appointment_origin_detailed: JSON.stringify(getReferrerByKeyName(appointment.appointment_origin as string)), // TODO unused in front
-        },
+        appointment,
         user,
-        etablissement: { ...eligibleTrainingsForAppointment },
+        etablissement,
       })
     }
   )
