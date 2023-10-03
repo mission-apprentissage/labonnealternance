@@ -13,7 +13,7 @@ export const FormHeaderComponent = ({ children }) => {
       <Flex alignItems="center" flexDirection={["column", "column", "row"]}>
         <Box flex="1" ml={["0", "0", "6em"]}>
           <Flex flexDirection={["column", "column", "row"]} mt={[7, 0, 0]}>
-            <Text textStyle="h2" color="info">
+            <Text fontSize="2rem" fontWeight="bold" lineHeight="2.5rem" color="info">
               {children}
             </Text>
           </Flex>

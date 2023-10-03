@@ -9,9 +9,11 @@ x-deploy-default: &deploy-default
     parallelism: 1
     delay: 10s
   rollback_config:
-    parallelism: 0
+    parallelism: 1
+    delay: 10s
   restart_policy:
     window: 360s
+    delay: 120s
     # Max 24hours
     max_attempts: 240
 
