@@ -1,5 +1,4 @@
 import { z } from "../helpers/zodWithOpenApi"
-
 import { zObjectId } from "../models/common"
 import { ZJob, ZJobWrite } from "../models/job.model"
 import { ZRecruiter, ZRecruiterWritable } from "../models/recruiter.model"

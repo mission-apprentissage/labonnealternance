@@ -1,5 +1,4 @@
 import { z } from "../helpers/zodWithOpenApi"
-
 import { ZOptout } from "../models/optout.model"
 
 import { IRoutesDef, ZResError } from "./common.routes"
