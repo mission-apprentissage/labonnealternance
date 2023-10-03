@@ -9,3 +9,70 @@ jobs:
     uses: "./.github/workflows/ci.yml"
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  deploy:
+    if: github.event.pull_request.draft == false
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+    name: Deploy Preview ${{ github.event.pull_request.number }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          name: github_actions
+          key: ${{ secrets.DEPLOY_SSH_PRIVATE_KEY }}
+          known_hosts: ${{ vars.SSH_KNOWN_HOSTS }}
+          config: |
+            Host *
+              IdentityFile ~/.ssh/github_actions
+
+      - name: Create vault pwd file
+        run: echo ${{ secrets.VAULT_PWD }} > .infra/.vault_pwd.txt
+
+      - name: Install jmespath
+        run: |
+          sudo pipx inject ansible-core jmespath
+
+      - name: Run playbook
+        run: .bin/mna-lba deploy preview "${{ github.event.pull_request.number }}"
+        env:
+          ANSIBLE_VAULT_PASSWORD_FILE: .infra/.vault_pwd.txt
+          ANSIBLE_REMOTE_USER: deploy
+          ANSIBLE_BECOME_PASS: ${{ secrets.DEPLOY_PASS }}
+
+      - name: Encrypt Error log on failure
+        run: .bin/mna-lba deploy:log:encrypt
+        if: failure()
+        env:
+          ANSIBLE_VAULT_PASSWORD_FILE: .infra/.vault_pwd.txt
+
+      - name: Upload failure artifacts on failure
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: error-logs
+          path: /tmp/deploy_error.log.gpg
+
+      - name: Preview Summary when failed
+        if: failure()
+        run: echo 'You can get error logs using `.bin/mna-lba deploy:log:decrypt ${{ github.run_id }}`' >> $GITHUB_STEP_SUMMARY
+
+      - name: Preview Summary
+        run: echo 'https://${{ github.event.pull_request.number }}.labonnealternance-preview.apprentissage.beta.gouv.fr/ 🚀' >> $GITHUB_STEP_SUMMARY
+
+      - name: Comment PR Preview
+        if: github.event.pull_request.state != 'closed'
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          message: |
+            ### :rocket: Prévisualisation
+            https://${{ github.event.pull_request.number }}.labonnealternance-preview.apprentissage.beta.gouv.fr/
+          comment_tag: execution
+          mode: recreate
