@@ -56,7 +56,7 @@ function Compte() {
 
   return (
     <AnimationContainer>
-      <Layout>
+      <Layout footer={false}>
         <Container maxW="container.xl">
           <Box mt="16px" mb={6}>
             <Breadcrumb separator={<ArrowDropRightLine color="grey.600" />} textStyle="xs">

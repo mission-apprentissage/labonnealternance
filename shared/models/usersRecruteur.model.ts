@@ -1,8 +1,8 @@
 import { Jsonify } from "type-fest"
-import { z } from "../helpers/zodWithOpenApi"
 
 import { ETAT_UTILISATEUR } from "../constants/recruteur"
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
+import { z } from "../helpers/zodWithOpenApi"
 
 import { ZGlobalAddress } from "./address.model"
 import { zObjectId } from "./common"

@@ -45,7 +45,7 @@ const CreationCompte = () => {
             })
           } else {
             setFieldError("establishment_siret", entrepriseData.message)
-            setIsCfa(entrepriseData.data.isCfa)
+            setIsCfa(Boolean(entrepriseData.data?.isCfa))
             setSubmitting(false)
           }
         } else {

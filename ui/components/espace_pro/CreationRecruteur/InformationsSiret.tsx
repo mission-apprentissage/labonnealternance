@@ -60,7 +60,7 @@ export const InformationsSiret = ({ type }) => {
         <Heading fontSize="24px" mb={3}>
           Vous avez déjà déposé une offre en alternance par le passé ?
         </Heading>
-        <Text>Connectez-vous à votre compte entreprise pour publier de nouvelles offres et administrer vos offres existantes.</Text>
+        <Text>Connectez-vous à votre compte pour publier de nouvelles offres et administrer vos offres existantes.</Text>
         <Button variant="primary" mt={4} onClick={() => router.push("/espace-pro/authentification")}>
           Me connecter
         </Button>

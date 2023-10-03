@@ -303,7 +303,7 @@ export default function ListeOffres() {
       </Box>
       <Flex justify="space-between" align="center">
         <Text fontSize="2rem" fontWeight={700}>
-          {establishment_raison_sociale}
+          {establishment_raison_sociale ?? `SIRET ${establishment_siret}`}
         </Text>
         <Box>
           {auth.type !== AUTHTYPE.OPCO && (
