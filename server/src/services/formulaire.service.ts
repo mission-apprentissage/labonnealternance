@@ -694,7 +694,12 @@ export async function sendMailNouvelleOffre(recruiter: IRecruiter, job: IJob, co
       prenom: is_delegated ? contactCFA?.first_name : first_name,
       raison_sociale: establishmentTitle,
       mandataire: recruiter.is_delegated,
-      offre: job,
+      offre: {
+        rome_appellation_label: job.rome_appellation_label,
+        job_type: job.job_type,
+        job_level_label: job.job_level_label,
+        job_start_date: dayjs(job.job_start_date).format("DD/MM/YY"),
+      },
       lba_url: `${config.publicUrl}/recherche-apprentissage?&display=list&page=fiche&type=matcha&itemId=${job._id}`,
     },
   })

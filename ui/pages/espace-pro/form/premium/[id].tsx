@@ -66,7 +66,9 @@ export default function PremiumForm() {
       setEtablissement(etablissement)
     }
 
-    fetchData().catch(console.error)
+    if (id) {
+      fetchData().catch(console.error)
+    }
   }, [id])
 
   if (!etablissement) {

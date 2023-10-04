@@ -60,10 +60,21 @@ export const zEtablissementRoutes = {
       },
     },
     "/etablissements/:id": {
-      // TODO_SECURITY_FIX faire en sorte qu'il n'y ait pas les adresses emails du catalogue exposées au publlic (définir un ZEtablissementPublic)
       params: z.object({ id: zObjectId }).strict(),
       response: {
-        "2xx": ZEtablissement,
+        "2xx": ZEtablissement.pick({
+          _id: true,
+          optout_refusal_date: true,
+          raison_sociale: true,
+          formateur_siret: true,
+          formateur_address: true,
+          formateur_zip_code: true,
+          formateur_city: true,
+          premium_affelnet_activation_date: true,
+          gestionnaire_siret: true,
+          premium_activation_date: true,
+          premium_refusal_date: true,
+        }).strict(),
       },
       securityScheme: {
         auth: "none",
@@ -159,7 +170,7 @@ export const zEtablissementRoutes = {
     "/etablissements/:id/opt-out/unsubscribe": {
       // TODO_SECURITY_FIX ajouter un jwt
       params: z.object({ id: zObjectId }).strict(),
-      body: z.object({ opt_out_question: z.string() }).strict(),
+      body: z.union([z.object({ opt_out_question: z.string() }).strict(), z.object({}).strict()]),
       response: {
         "2xx": ZEtablissement,
       },

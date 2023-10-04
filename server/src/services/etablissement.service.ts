@@ -14,6 +14,7 @@ import config from "../config"
 import { validationOrganisation } from "./bal.service"
 import { getCatalogueEtablissements } from "./catalogue.service"
 import { BusinessErrorCodes, CFA, ENTREPRISE, ETAT_UTILISATEUR, RECRUITER_STATUS } from "./constant.service"
+import dayjs from "./dayjs.service"
 import {
   IAPIAdresse,
   IAPIEtablissement,
@@ -703,7 +704,12 @@ export const sendEmailConfirmationEntreprise = async (user: IUserRecruteur, recr
         prenom: user.first_name,
         email: user.email,
         confirmation_url: url,
-        offre,
+        offre: {
+          rome_appellation_label: offre.rome_appellation_label,
+          job_type: offre.job_type,
+          job_level_label: offre.job_level_label,
+          job_start_date: dayjs(offre.job_start_date).format("DD/MM/YY"),
+        },
         isUserAwaiting,
       },
     })
