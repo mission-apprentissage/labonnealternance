@@ -2,13 +2,18 @@ location /api {
     set $upstream http://server:5000;
     include includes/error_page_json.conf;
     include includes/proxy.conf;
+
+    # TODO: Use allow list
+    more_clear_headers 'X-Frame-Options';
 }
 
 location ~* ^/api/v1/application$ {
-  client_max_body_size    5M;
+    client_max_body_size    5M;
 
-  set $upstream http://server:5000;
-  include includes/error_page_json.conf;
-  include includes/proxy.conf;
+    set $upstream http://server:5000;
+    include includes/error_page_json.conf;
+    include includes/proxy.conf;
 
+    # TODO: Use allow list
+    more_clear_headers 'X-Frame-Options';
 }
