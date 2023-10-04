@@ -9,9 +9,7 @@ const localOrigin = [
   "https://labonnealternance.pole-emploi.fr",
   "https://labonnealternance.apprentissage.beta.gouv.fr",
   "https://labonnealternance-recette.apprentissage.beta.gouv.fr",
-  "http://localhost:3003",
-  "http://localhost:3000",
-  "http://localhost",
+  config.publicUrl,
 ]
 
 const localOriginRegexp = /^https:\/\/labonnealternance(.*).apprentissage.beta.gouv.fr(.*)/i
