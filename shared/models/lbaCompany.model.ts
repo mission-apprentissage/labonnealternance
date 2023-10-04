@@ -1,7 +1,6 @@
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 
-
 export const ZLbaCompany = z
   .object({
     siret: z.string().describe("Le Siret de la société"),
