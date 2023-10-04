@@ -47,8 +47,9 @@ export default function PropositionOffreId() {
       setFormulaire(data)
       setJob(job)
     }
-
-    fetchData().catch(console.error)
+    if (idFormulaire && siretFormateur && jobId) {
+      fetchData().catch(console.error)
+    }
   }, [idFormulaire])
 
   if (!job) {
