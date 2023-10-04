@@ -104,8 +104,8 @@
     - name: "Verification des certificats SSL"
       shell:
         chdir: /opt/app
-        cmd: "sudo /opt/app/tools/ssl/renew-certificate.sh labonnealternance.pole-emploi.fr"
-      when: env_type == "production"
+        cmd: "sudo /opt/app/tools/ssl/renew-certificate.sh {{ alias_dns_name }}"
+      when: env_type != "preview"
 
     - name: Add cron to renew pole-emploi cert
       ansible.builtin.cron:
@@ -113,8 +113,8 @@
         minute: "0"
         hour: "2"
         weekday: "1"
-        job: "bash /opt/app/tools/ssl/renew-certificate.sh labonnealternance.pole-emploi.fr >> /var/log/cron.log 2>&1; /opt/app/tools/monitoring/export-cron-status-prom.sh -c 'Renew certificate Pole Emploi' -v $?"
-      when: env_type == "production"
+        job: "bash /opt/app/tools/ssl/renew-certificate.sh {{ alias_dns_name }} >> /var/log/cron.log 2>&1; /opt/app/tools/monitoring/export-cron-status-prom.sh -c 'Renew certificate Alias' -v $?"
+      when: env_type != "preview"
 
     - name: "Setup de la Metabase"
       shell:
