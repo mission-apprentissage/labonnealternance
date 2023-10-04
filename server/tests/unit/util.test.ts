@@ -18,7 +18,7 @@ describe(__filename(import.meta.url), () => {
   })
 
   it("Détection origine autorisée - retourne true si origine connue localhost ", () => {
-    const result = isOriginLocal("http://localhost:3003")
+    const result = isOriginLocal(process.env.LBA_PUBLIC_URL)
     assert.strictEqual(result, true)
   })
 
