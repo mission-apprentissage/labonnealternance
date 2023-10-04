@@ -248,7 +248,6 @@ export default (server: Server) => {
     },
     async (req, res) => {
       await etablissementUnsubscribeDemandeDelegation(req.params.establishment_siret)
-      res.status(200)
       return res.status(200).send({ ok: true })
     }
   )

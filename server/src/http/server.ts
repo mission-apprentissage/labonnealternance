@@ -187,7 +187,6 @@ export async function bind(app: Server) {
 export default async (): Promise<Server> => {
   const app: Server = fastify({
     logger: logMiddleware(),
-    bodyLimit: 5 * 1024 ** 2, // 5MB
     trustProxy: 1,
     caseSensitive: false,
   }).withTypeProvider<ZodTypeProvider>()
