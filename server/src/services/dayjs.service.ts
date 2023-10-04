@@ -1,5 +1,5 @@
 import dayjs from "dayjs"
-import "dayjs/locale/fr.js"
+import "dayjs/locale/fr"
 import advancedFormat from "dayjs/plugin/advancedFormat.js"
 import customParseFormat from "dayjs/plugin/customParseFormat.js"
 import duration from "dayjs/plugin/duration.js"
