@@ -55,26 +55,38 @@ const getFormation = (
  * @param {object} wish wish data
  * @returns {Promise<IFormationCatalogue>}
  */
-const getTrainingFromParameters = (wish: IWish) => {
+const getTrainingFromParameters = async (wish: IWish) => {
+  let formation
   // search by cle ME
   if (wish.cle_ministere_educatif) {
-    return getFormation({ cle_ministere_educatif: wish.cle_ministere_educatif })
+    formation = await getFormation({ cle_ministere_educatif: wish.cle_ministere_educatif })
   }
 
-  // search by uai_lieu_formation
-  if (wish.uai_lieu_formation) {
-    return getFormation({ $or: [{ cfd: wish.cfd }, { rncp_code: wish.rncp }], uai_lieu_formation: wish.uai_lieu_formation })
+  if (!formation) {
+    // search by uai_lieu_formation
+    if (wish.uai_lieu_formation) {
+      formation = await getFormation({ $or: [{ cfd: wish.cfd }, { rncp_code: wish.rncp }, { "bcn_mefs_10.mef10": wish.mef }], uai_formation: wish.uai_lieu_formation })
+    }
   }
 
-  // search by uai_formateur
-  if (wish.uai_formateur) {
-    return getFormation({ $or: [{ cfd: wish.cfd }, { rncp_code: wish.rncp }], uai_formateur: wish.uai_formateur })
+  if (!formation) {
+    // search by uai_formateur
+    if (wish.uai_formateur) {
+      formation = await getFormation({ $or: [{ cfd: wish.cfd }, { rncp_code: wish.rncp }, { "bcn_mefs_10.mef10": wish.mef }], etablissement_formateur_uai: wish.uai_formateur })
+    }
   }
 
-  // search by uai_formateur_responsable
-  if (wish.uai_formateur_responsable) {
-    return getFormation({ $or: [{ cfd: wish.cfd }, { rncp_code: wish.rncp }], uai_formateur_responsable: wish.uai_formateur_responsable })
+  if (!formation) {
+    // search by uai_formateur_responsable
+    if (wish.uai_formateur_responsable) {
+      formation = await getFormation({
+        $or: [{ cfd: wish.cfd }, { rncp_code: wish.rncp }, { "bcn_mefs_10.mef10": wish.mef }],
+        etablissement_gestionnaire_uai: wish.uai_formateur_responsable,
+      })
+    }
   }
+
+  return formation
 }
 
 /**
@@ -172,9 +184,9 @@ const getLBALink = async (wish: IWish): Promise<string> => {
 
         if (formation) {
           ;[lat, lon] = formation.lieu_formation_geo_coordonnees.split(",")
-        } else if (wish.code_postal) {
+        } else if (wish.code_insee || wish.code_postal) {
           // KBA 20230817 : might be modified using INSEE postcode.
-          const responseApiAdresse = await apiGeoAdresse.searchPostcodeOnly(wish.code_postal)
+          const responseApiAdresse = await apiGeoAdresse.searchPostcodeOnly(wish.code_insee ?? wish.code_postal)
           if (responseApiAdresse && responseApiAdresse.features.length) {
             ;[lon, lat] = responseApiAdresse.features[0].geometry.coordinates
           }
