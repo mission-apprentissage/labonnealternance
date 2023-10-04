@@ -418,11 +418,12 @@ export const autoValidateCompany = async (userRecruteur: IUserRecruteur) => {
 
   // Check BAL API for validation
 
-  const isValid = validEmails.includes(email) || (isEmailFromPrivateCompany(email) && validEmails.some((validEmail) => validEmail && isEmailSameDomain(email, validEmail)))
+  let isValid: boolean = validEmails.includes(email) || (isEmailFromPrivateCompany(email) && validEmails.some((validEmail) => validEmail && isEmailSameDomain(email, validEmail)))
   if (isValid) {
     userRecruteur = await autoValidateUser(_id)
   } else {
     const balControl = await validationOrganisation(siret, email)
+    isValid = balControl.is_valid
     if (balControl.is_valid) {
       userRecruteur = await autoValidateUser(_id)
     } else {
@@ -689,9 +690,9 @@ export const sendEmailConfirmationEntreprise = async (user: IUserRecruteur, recr
   const isUserAwaiting = userStatus !== ETAT_UTILISATEUR.VALIDE
   const { jobs, is_delegated, email } = recruteur
   const offre = jobs.at(0)
-  // Get user account validation link
-  const url = getValidationUrl(user._id)
   if (jobs.length === 1 && offre && is_delegated === false) {
+    // Get user account validation link
+    const url = getValidationUrl(user._id)
     await mailer.sendEmail({
       to: email,
       subject: "Confirmez votre adresse mail",
