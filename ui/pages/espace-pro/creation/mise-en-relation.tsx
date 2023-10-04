@@ -59,8 +59,6 @@ export default function CreationMiseEnRelation() {
     }).finally(() => setIsSubmitLoading(false))
 
     goToEndStep({ withDelegation: true })
-
-    setIsSubmitLoading(false)
   }
 
   /**
