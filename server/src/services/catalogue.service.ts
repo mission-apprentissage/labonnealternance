@@ -344,7 +344,7 @@ const getFormationEsQueryIndexFragment = () => {
  * @param {string} siret
  * @returns {Promise<IRomeResult>}
  */
-const getRomesFromCatalogue = async ({ cfd, siret }: { cfd?: string; siret?: string }): Promise<IRomeResult> => {
+export const getRomesFromCatalogue = async ({ cfd, siret }: { cfd?: string; siret?: string }): Promise<IRomeResult> => {
   try {
     const mustTerm = [] as any[]
 
@@ -398,24 +398,6 @@ const getRomesFromCatalogue = async ({ cfd, siret }: { cfd?: string; siret?: str
     sentryCaptureException(err)
     throw Boom.internal(error_msg)
   }
-}
-
-/**
- * @description retourne une liste de romes associés à un code cfd à partir des formations du catalogue
- * @param {string} cfd
- * @returns {IRomeResult}
- */
-export const getRomesFromCfd = ({ cfd }: { cfd: string }) => {
-  return getRomesFromCatalogue({ cfd })
-}
-
-/**
- * @description retourne une liste de romes associés à un numéro de siret à partir des formations du catalogue
- * @param {string} siret
- * @returns {IRomeResult}
- */
-export const getRomesFromSiret = ({ siret }: { siret: string }) => {
-  return getRomesFromCatalogue({ siret })
 }
 
 /**
