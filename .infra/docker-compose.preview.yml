@@ -4,7 +4,7 @@ x-default: &default
   deploy:
     resources:
       limits:
-        memory: 256m
+        memory: 2g
   restart: always
   networks:
     - mna_network
