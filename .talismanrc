@@ -20,7 +20,7 @@ fileignoreconfig:
 - filename: .infra/vault/vault.yml
   checksum: cf7d2ff944c146e63201195e3a6579e2d665a13b605b8cbc95fa1f6597eb08bc
 - filename: server/.env.test
-  checksum: a25dd7f90a3bff45f97f82e253b830f54ca74ba81b7eab485c899ad5edf3d770
+  checksum: a01fb129758d140e8c76f5f17184be514db29fea969872ef93d1dc25a7f5dbe2
 - filename: server/src/common/model/constants/referrers.ts
   checksum: a7205e7da4dca56dc3f989bc4fbbec4ed10c46b963446005a0b0356b0cae3a3d
 - filename: server/src/common/model/schema/_shared/mongoose-paginate.ts
