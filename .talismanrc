@@ -12,13 +12,15 @@ fileignoreconfig:
 - filename: .github/workflows/release.yml
   checksum: 04cd4e69c67ffb0baa69892cb715aab8221d10587af0b2f27af38b2d4a968b93
 - filename: .infra/.env_server
-  checksum: 618e1aad8e37a060c78ddca285899ae61cd2a6c584895a3c4dfd54f392ed6112
+  checksum: 59746bdaeaeb88dcf84012f225a8db08e0ddb0225300ab9c806140f25f3c3140
 - filename: .infra/env.ini
-  checksum: 69144ad5ed8621621ecca44bd93ca55e4f183416fda1cd443b20d2a382dadaf1
+  checksum: e356f57bb2f245c2f2fe4f4bdcb6e27aeed88781cfe3259b088e53dac4698e23
 - filename: .infra/files/configs/mongodb/seed.gpg
   checksum: 7141d3836a9746d58ca3331b6ce2911a3b260131d47af6e402d39962c411eac8
+- filename: .infra/files/configs/reverse_proxy/extra-conf.d/alias.conf.template
+  checksum: 22b92189fc92a094fcdf6453df23e692dfabe88efdf916576da0b35afdfae1bd
 - filename: .infra/vault/vault.yml
-  checksum: cf7d2ff944c146e63201195e3a6579e2d665a13b605b8cbc95fa1f6597eb08bc
+  checksum: 47e906ff5113fa180d974d9e6ff6a782c3ab3f5c05bfe021ab08b351b8e7a568
 - filename: server/.env.test
   checksum: a01fb129758d140e8c76f5f17184be514db29fea969872ef93d1dc25a7f5dbe2
 - filename: server/src/common/model/constants/referrers.ts

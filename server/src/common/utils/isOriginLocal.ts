@@ -4,13 +4,7 @@ import config from "../../config"
  * @description : préciser l'usage de cet utils
  */
 
-const localOrigin = [
-  "https://labonnealternance.beta.pole-emploi.fr",
-  "https://labonnealternance.pole-emploi.fr",
-  "https://labonnealternance.apprentissage.beta.gouv.fr",
-  "https://labonnealternance-recette.apprentissage.beta.gouv.fr",
-  config.publicUrl,
-]
+const localOrigin = [config.publicUrl]
 
 const localOriginRegexp = /^https:\/\/labonnealternance(.*).apprentissage.beta.gouv.fr(.*)/i
 const recetteRegexp = /^https:\/\/labonnealternance-recette.apprentissage.beta.gouv.fr(.*)/i
@@ -37,4 +31,4 @@ const isOriginLocal = (origin) => {
   }
 }
 
-export { isOriginLocal }
+export { isOriginLocal, localOrigin }

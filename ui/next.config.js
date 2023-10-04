@@ -27,9 +27,6 @@ const contentSecurityPolicy = `
               blob:;
   script-src-attr 'none';
   connect-src 'self'
-              https://labonnealternance.apprentissage.beta.gouv.fr
-              https://labonnealternance-recette.apprentissage.beta.gouv.fr
-              https://labonnealternance.pole-emploi.fr
               https://catalogue-apprentissage.intercariforef.org
               https://api-adresse.data.gouv.fr
               https://api.mapbox.com
@@ -49,18 +46,12 @@ const contentSecurityPolicy = `
               https://www.google.com
               https://www.google.fr
               https://stats.beta.gouv.fr;
-  object-src 'self' data:
-              https://labonnealternance.apprentissage.beta.gouv.fr
-              https://labonnealternance-recette.apprentissage.beta.gouv.fr
-              https://labonnealternance.pole-emploi.fr;
+  object-src 'self' data:;
   font-src 'self' https: data:;
   style-src 'self' https: 'unsafe-inline';
   frame-src ${process.env.NEXT_PUBLIC_ENV === "local" ? "http://localhost:3000" : ""}
             'self'
-            https://plausible.io
-            https://labonnealternance.pole-emploi.fr
-            https://labonnealternance.apprentissage.beta.gouv.fr
-            https://labonnealternance*.apprentissage.beta.gouv.fr;
+            https://plausible.io;
   child-src 'self' blob:;
   block-all-mixed-content;
   upgrade-insecure-requests;
@@ -115,6 +106,15 @@ const nextConfig = withTM(
             {
               key: "Content-Security-Policy",
               value: inline(contentSecurityPolicy),
+            },
+          ],
+        },
+        {
+          source: "/espace-pro/widget/:slug*",
+          headers: [
+            {
+              key: "Content-Security-Policy",
+              value: inline(contentSecurityPolicy + " frame-ancestors 'none';"),
             },
           ],
         },

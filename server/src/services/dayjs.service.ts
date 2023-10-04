@@ -1,5 +1,6 @@
 import dayjs from "dayjs"
-import "dayjs/locale/fr.js" // eslint-disable-line import/extensions
+// eslint-disable-next-line import/extensions
+import "dayjs/locale/fr.js"
 import advancedFormat from "dayjs/plugin/advancedFormat.js"
 import customParseFormat from "dayjs/plugin/customParseFormat.js"
 import duration from "dayjs/plugin/duration.js"

@@ -10,6 +10,8 @@ jobs:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   release:
+    concurrency:
+      group: "release-${{ github.workflow }}-${{ github.ref }}"
     permissions: write-all
     outputs:
       VERSION: ${{ steps.get-version.outputs.VERSION }}
@@ -66,7 +68,7 @@ jobs:
 
   deploy:
     concurrency:
-      group: ${{ github.workflow }}-${{ github.ref }}
+      group: "deploy-${{ github.workflow }}-${{ github.ref }}"
     needs: ["release"]
     name: Deploy ${{ needs.release.outputs.VERSION }} on recette
     uses: "./.github/workflows/_deploy.yml"
