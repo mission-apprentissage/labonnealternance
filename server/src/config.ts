@@ -68,6 +68,19 @@ const config = {
       jwtSecret: env.get("LBA_AUTH_MAGICLINK_JWT_SECRET").required().asString(),
       expiresIn: env.get("LBA_MAGICLINK_JWT_SECRET_EXPIRE").required().asString(),
     },
+    session: {
+      cookieName: env.get("LBA_AUTH_SESSION_COOKIE_NAME").default("lba_session").asString(),
+      cookie: {
+        maxAge: env
+          .get("LBA_AUTH_SESSION_COOKIE_MAX_AGE")
+          .default(30 * 24 * 3600000)
+          .asInt(),
+        httpOnly: env.get("LBA_AUTH_SESSION_COOKIE_HTTP_ONLY").default("true").asBool(),
+        sameSite: "lax" as const,
+        path: "/",
+        secure: env.get("LBA_AUTH_SESSION_COOKIE_SECURE").default("true").asBool(),
+      },
+    },
   },
   ftp: {
     host: env.get("LBA_FTP_HOST").required().asString(),

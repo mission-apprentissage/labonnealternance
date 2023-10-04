@@ -80,7 +80,6 @@ export default function CreationMiseEnRelation() {
     }
   }, [])
 
-  // TODO_AB to redirect
   if (!job && !email && !geo_coordinates && !fromDashboard && !userId) return <></>
 
   return (

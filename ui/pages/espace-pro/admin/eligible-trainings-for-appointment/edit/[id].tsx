@@ -8,12 +8,14 @@ import { IEtablissement } from "shared"
 import { referrers } from "shared/constants/referers"
 import { IEligibleTrainingsForAppointmentJson } from "shared/models/elligibleTraining.model"
 
+import { getAuthServerSideProps } from "@/common/SSR/getAuthServerSideProps"
+import { Layout } from "@/components/espace_pro"
+import { apiGet, apiPatch } from "@/utils/api.utils"
+
 import { formatDate } from "../../../../../common/dayjs"
-import { _get, _patch } from "../../../../../common/httpClient"
-import LayoutAdminRdvA from "../../../../../components/espace_pro/Admin/Layout"
 import EtablissementComponent from "../../../../../components/espace_pro/Admin/widgetParameters/components/EtablissementComponent"
 import { Breadcrumb } from "../../../../../components/espace_pro/common/components/Breadcrumb"
-import withAuth from "../../../../../components/espace_pro/withAuth"
+import { authProvider, withAuth } from "../../../../../components/espace_pro/withAuth"
 
 /**
  * @description Page that handle formation editions.
@@ -76,14 +78,14 @@ function EditPage() {
    * @param {String} id
    * @returns {Promise<*>}
    */
-  const getEligibleTrainingsForAppointments = (id) => _get(`admin/eligible-trainings-for-appointment/etablissement-formateur-siret/${id}`)
+  const getEligibleTrainingsForAppointments = (id) => apiGet("/admin/eligible-trainings-for-appointment/etablissement-formateur-siret/:siret", { params: { siret: id } })
 
   /**
    * @description Returns etablissement from its SIRET.
    * @param {String} siret
    * @returns {Promise<*>}
    */
-  const getEtablissement = (siret) => _get(`admin/etablissements/siret-formateur/${siret}`)
+  const getEtablissement = (siret) => apiGet("/admin/etablissements/siret-formateur/:siret", { params: { siret: siret } })
 
   /**
    * @description Patch eligibleTrainingsForAppointments.
@@ -92,7 +94,7 @@ function EditPage() {
    * @returns {Promise<void>}
    */
   const patchEligibleTrainingsForAppointment = async (id, body) => {
-    await _patch(`admin/eligible-trainings-for-appointment/${id}`, body)
+    await apiPatch("/admin/eligible-trainings-for-appointment/:id", { params: { id }, body })
   }
 
   /**
@@ -174,20 +176,20 @@ function EditPage() {
 
   if (!eligibleTrainingsForAppointmentResult) {
     return (
-      <LayoutAdminRdvA>
+      <Layout footer={false} rdva>
         <Spinner display="block" mx="auto" mt="10rem" />
-      </LayoutAdminRdvA>
+      </Layout>
     )
   }
 
   return (
-    <LayoutAdminRdvA>
+    <Layout footer={false} rdva>
       <Box w="100%" pt={[4, 8]} px={[1, 1, 12, 24]} pb={40}>
         <Head>
           <title>{title}</title>
           <link rel="icon" href="/favicon/favicon.ico" />
         </Head>
-        <Breadcrumb pages={[{ title: "Administration", to: "/admin" }, { title: title }]} />
+        <Breadcrumb pages={[{ title: "Administration", to: "/espace-pro/admin" }, { title: title }]} />
         <Heading textStyle="h2" mt={5}>
           {title}
         </Heading>
@@ -304,7 +306,10 @@ function EditPage() {
           )}
         </Box>
       </Box>
-    </LayoutAdminRdvA>
+    </Layout>
   )
 }
-export default withAuth(EditPage, "adminRva")
+
+export const getServerSideProps = async (context) => ({ props: { ...(await getAuthServerSideProps(context)) } })
+
+export default authProvider(withAuth(EditPage, "adminRva"))

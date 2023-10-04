@@ -51,14 +51,38 @@ export const zLoginRoutes = {
     "/login/verification": {
       // TODO_SECURITY_FIX AB déclencher session ici
       response: {
-        "200": z
-          .object({
-            token: z.string(),
-          })
-          .strict(),
+        // TODO ANY TO BE FIXED
+        "2xx": z.any(),
+        // "200": z
+        //   .object({
+        //     token: z.string(),
+        //   })
+        //   .strict(),
       },
       securityScheme: {
         auth: "jwt-token",
+        role: "all",
+      },
+    },
+  },
+  get: {
+    "/auth/session": {
+      response: {
+        // TODO ANY TO BE FIXED
+        "2xx": z.any(),
+      },
+      securityScheme: {
+        auth: "cookie-session",
+        role: "all",
+      },
+    },
+    "/auth/logout": {
+      response: {
+        // TODO ANY TO BE FIXED
+        "2xx": z.any(),
+      },
+      securityScheme: {
+        auth: "cookie-session",
         role: "all",
       },
     },

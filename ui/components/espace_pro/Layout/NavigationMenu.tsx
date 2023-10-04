@@ -2,12 +2,13 @@ import { Box, Container, Flex, Text } from "@chakra-ui/react"
 import { useRouter } from "next/router"
 import { useState } from "react"
 
+import { useAuth } from "@/context/UserContext"
+
 import { AUTHTYPE } from "../../../common/contants"
-import useAuth from "../../../common/hooks/useAuth"
 import { Close, MenuFill } from "../../../theme/components/icons"
 import Link from "../../Link"
 
-const NavigationMenu = (props) => {
+const NavigationMenu = ({ rdva = false, ...props }) => {
   const [isOpen, setIsOpen] = useState(false)
 
   const toggle = () => setIsOpen(!isOpen)
@@ -15,7 +16,7 @@ const NavigationMenu = (props) => {
   return (
     <NavBarContainer {...props} position={"relative"}>
       <NavToggle toggle={toggle} isOpen={isOpen} />
-      <NavLinks isOpen={isOpen} />
+      <NavLinks isOpen={isOpen} rdva={rdva} />
     </NavBarContainer>
   )
 }
@@ -48,16 +49,22 @@ const NavItem = ({ children, to = "/", ...rest }) => {
   )
 }
 
-const NavLinks = ({ isOpen }) => {
-  const [auth] = useAuth()
+const NavLinks = ({ isOpen, rdva = false }) => {
+  const { user } = useAuth()
 
-  if (auth.type === AUTHTYPE.OPCO) return null
+  if (user.type === AUTHTYPE.OPCO) return null
 
   return (
     <Box display={{ base: isOpen ? "block" : "none", md: "block" }} flexBasis={{ base: "100%", md: "auto" }}>
       <Flex align="center" justify={["center", "center", "flex-end", "flex-end"]} direction={["column", "column", "row", "row"]} py={0} textStyle="sm">
-        {auth.type === AUTHTYPE.CFA && <NavItem to="/espace-pro/administration">Entreprises partenaires</NavItem>}
-        {auth.type === AUTHTYPE.ENTREPRISE && <NavItem to={`/espace-pro/administration/entreprise/${auth.establishment_id}`}>Gerer mes offres</NavItem>}
+        {user.type === AUTHTYPE.CFA && <NavItem to="/espace-pro/administration">Entreprises partenaires</NavItem>}
+        {user.type === AUTHTYPE.ENTREPRISE && <NavItem to={`/espace-pro/administration/entreprise/${user.establishment_id}`}>Gerer mes offres</NavItem>}
+        {user.type === AUTHTYPE.ADMIN && rdva && (
+          <>
+            <NavItem to={`/espace-pro/admin`}>Dashboard</NavItem>
+            <NavItem to={`/espace-pro/admin/eligible-trainings-for-appointment/search`}>Rechercher / modifier un siret formateur</NavItem>
+          </>
+        )}
       </Flex>
     </Box>
   )

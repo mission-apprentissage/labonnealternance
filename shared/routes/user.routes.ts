@@ -42,12 +42,11 @@ export const zUserRecruteurRoutes = {
         // }),
       },
       securityScheme: {
-        auth: "jwt-bearer",
+        auth: "cookie-session",
         role: "all",
       },
     },
     "/user/:userId": {
-      // TODO_SECURITY_FIX session et cookie + permissions
       // TODO_SECURITY_FIX enlever les données privées (dont last connection date)
       params: z
         .object({
@@ -58,6 +57,21 @@ export const zUserRecruteurRoutes = {
         // TODO ANY TO BE FIXED
         "200": z.any(),
         // "200": ZUserRecruteur.extend({ jobs: z.array(ZJob) }), //  "message": "Unrecognized key(s) in object: '__v'"
+      },
+      securityScheme: {
+        auth: "cookie-session",
+        role: "all",
+      },
+    },
+    "/user/status/:userId": {
+      params: z
+        .object({
+          userId: z.string(),
+        })
+        .strict(),
+      response: {
+        // TODO ANY TO BE FIXED
+        "200": z.any(),
       },
       securityScheme: {
         auth: "none",
@@ -99,7 +113,7 @@ export const zUserRecruteurRoutes = {
         "400": z.union([ZResError, z.object({ error: z.boolean(), reason: z.string() }).strict()]),
       },
       securityScheme: {
-        auth: "none",
+        auth: "cookie-session",
         role: "all",
       },
     },
