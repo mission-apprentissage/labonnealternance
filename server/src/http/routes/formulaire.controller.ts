@@ -145,6 +145,7 @@ export default (server: Server) => {
     "/formulaire/:establishment_id/offre",
     {
       schema: zRoutes.post["/formulaire/:establishment_id/offre"],
+      bodyLimit: 5 * 1024 ** 2, // 5MB
     },
     async (req, res) => {
       const {

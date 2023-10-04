@@ -14,6 +14,7 @@ export default function (server: Server) {
           timeWindow: "5s",
         },
       },
+      bodyLimit: 5 * 1024 ** 2, // 5MB
     },
     async (req, res) => {
       const result = await sendApplication({
