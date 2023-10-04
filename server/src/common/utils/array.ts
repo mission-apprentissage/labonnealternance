@@ -5,7 +5,7 @@
  * @returns {T[]}
  */
 const getUniqueArray = (arr, properties) => {
-  const modifiedArray = []
+  const modifiedArray: any = []
 
   if (properties.length === 0 && arr.length > 0) {
     properties.push(...Object.keys(arr[0]))

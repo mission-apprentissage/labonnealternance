@@ -1,10 +1,12 @@
 import { randomUUID } from "crypto"
-import { mongoosePagination, Pagination } from "mongoose-paginate-ts"
-import { RECRUITER_STATUS } from "../../../../services/constant.service.js"
-import { getElasticInstance, mongoosastic } from "../../../esClient/index.js"
-import { model, Schema } from "../../../mongodb.js"
-import { jobsSchema } from "../jobs/jobs.schema.js"
-import { IRecruiter } from "./recruiter.types.js"
+
+import { IRecruiter } from "shared"
+
+import { RECRUITER_STATUS } from "../../../../services/constant.service"
+import { mongoosastic } from "../../../esClient/index"
+import { model, Schema } from "../../../mongodb"
+import { mongoosePagination, Pagination } from "../_shared/mongoose-paginate"
+import { jobsSchema } from "../jobs/jobs.schema"
 
 export const recruiterSchema = new Schema<IRecruiter>(
   {
@@ -26,7 +28,7 @@ export const recruiterSchema = new Schema<IRecruiter>(
     },
     establishment_siret: {
       type: String,
-      default: null,
+      require: true,
       description: "Numéro SIRET de l'entreprise",
     },
     address_detail: {
@@ -69,8 +71,8 @@ export const recruiterSchema = new Schema<IRecruiter>(
     },
     email: {
       type: String,
-      default: null,
       description: "Email du contact",
+      require: true,
     },
     jobs: [{ type: jobsSchema, default: {}, description: "Liste des offres d'apprentissage" }],
     origin: {
@@ -111,10 +113,11 @@ export const recruiterSchema = new Schema<IRecruiter>(
   },
   {
     timestamps: true,
+    versionKey: false,
   }
 )
 
 recruiterSchema.plugin(mongoosePagination)
-recruiterSchema.plugin(mongoosastic, { esClient: getElasticInstance(), index: "recruiters" })
+recruiterSchema.plugin(mongoosastic, { index: "recruiters" })
 
 export default model<IRecruiter, Pagination<IRecruiter>>("recruiter", recruiterSchema)

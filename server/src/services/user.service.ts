@@ -1,7 +1,11 @@
-import { FilterQuery } from "mongoose"
-import * as sha512Utils from "../common/utils/sha512Utils.js"
-import { User } from "../common/model/index.js"
-import { IUser } from "../common/model/schema/user/user.types.js"
+import type { FilterQuery } from "mongoose"
+import { IRecruiter, IUserRecruteur } from "shared"
+
+import { Recruiter, User, UserRecruteur } from "../common/model/index"
+import { IUser } from "../common/model/schema/user/user.types"
+import * as sha512Utils from "../common/utils/sha512Utils"
+
+import { ETAT_UTILISATEUR } from "./constant.service"
 
 /**
  * @description Hash password
@@ -21,7 +25,7 @@ const rehashPassword = (user, password: string) => {
  * @param {string} password
  * @returns {Promise<null|User>}
  */
-const authenticate = async (username: string, password: string) => {
+const authenticate = async (username: string, password: string): Promise<IUser | null> => {
   const user = await getUser(username)
 
   if (!user) {
@@ -125,4 +129,81 @@ const changePassword = async (username: string, newPassword: string) => {
   return user.save()
 }
 
-export { rehashPassword, authenticate, getUser, getUserById, getUserByMail, update, createUser, find, findOne, changePassword }
+type IUserRecruterPicked = Pick<
+  IUserRecruteur,
+  "_id" | "first_name" | "last_name" | "establishment_id" | "establishment_raison_sociale" | "establishment_siret" | "createdAt" | "email" | "phone"
+>
+
+type TReturnedType = {
+  awaiting: Array<IUserRecruterPicked & { jobs_count: number; origin: string }>
+  active: Array<IUserRecruterPicked & { jobs_count: number; origin: string }>
+  disable: Array<IUserRecruterPicked & { jobs_count: number; origin: string }>
+}
+
+const getUserAndRecruitersDataForOpcoUser = async (opco): Promise<TReturnedType> => {
+  const [users, recruiters]: [Array<IUserRecruterPicked & { status: IUserRecruteur["status"] }>, Pick<IRecruiter, "establishment_id" | "origin" | "jobs" | "_id">[]] =
+    await Promise.all([
+      UserRecruteur.find({
+        $expr: { $ne: [{ $arrayElemAt: ["$status.status", -1] }, ETAT_UTILISATEUR.ERROR] },
+        opco: opco,
+      })
+        .select({
+          _id: 1,
+          first_name: 1,
+          last_name: 1,
+          establishment_id: 1,
+          establishment_raison_sociale: 1,
+          establishment_siret: 1,
+          createdAt: 1,
+          email: 1,
+          phone: 1,
+          status: 1,
+        })
+        .lean(),
+      Recruiter.find({ opco: opco }).select({ establishment_id: 1, origin: 1, jobs: 1, _id: 0 }).lean(),
+    ])
+
+  const recruiterPerEtablissement = new Map()
+  for (const recruiter of recruiters) {
+    recruiterPerEtablissement.set(recruiter.establishment_id, recruiter)
+  }
+
+  const results = users.reduce(
+    (acc, user) => {
+      const status = user.status?.at(-1)?.status ?? null
+
+      if (status === null) {
+        return acc
+      }
+
+      const form = recruiterPerEtablissement.get(user.establishment_id)
+
+      const { status: _status, ...rest } = user
+      const u = {
+        ...rest,
+        jobs_count: form?.jobs?.length ?? 0,
+        origin: form?.origin ?? "",
+      }
+
+      if (status === ETAT_UTILISATEUR.ATTENTE) {
+        acc.awaiting.push(u)
+      }
+      if (status === ETAT_UTILISATEUR.VALIDE) {
+        acc.active.push(u)
+      }
+      if (status === ETAT_UTILISATEUR.DESACTIVE) {
+        acc.disable.push(u)
+      }
+
+      return acc
+    },
+    {
+      awaiting: [],
+      active: [],
+      disable: [],
+    } as TReturnedType
+  )
+  return results
+}
+
+export { authenticate, changePassword, createUser, find, findOne, getUser, getUserAndRecruitersDataForOpcoUser, getUserById, getUserByMail, rehashPassword, update }

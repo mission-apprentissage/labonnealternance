@@ -1,8 +1,8 @@
 import { oleoduc, writeData } from "oleoduc"
-import { logger } from "../../common/logger.js"
-import { EligibleTrainingsForAppointment, eligibleTrainingsForAppointmentHistory, FormationCatalogue } from "../../common/model/index.js"
 
-import dayjs from "../../services/dayjs.service.js"
+import { logger } from "../../common/logger"
+import { EligibleTrainingsForAppointment, eligibleTrainingsForAppointmentHistory, FormationCatalogue } from "../../common/model/index"
+import dayjs from "../../services/dayjs.service"
 
 /**
  * @description Check if a training is still available for appointments again it's presence in the training catalogue

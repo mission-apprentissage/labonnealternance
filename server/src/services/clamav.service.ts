@@ -1,11 +1,13 @@
-import NodeClam from "clamscan"
 import { Readable } from "stream"
-import tcpPortUsed from "tcp-port-used"
-import config from "../config.js"
-import { logger } from "../common/logger.js"
-import { notifyToSlack } from "../common/utils/slackUtils.js"
 
-let scanner = null
+import NodeClam from "clamscan"
+import tcpPortUsed from "tcp-port-used"
+
+import { logger } from "../common/logger"
+import { notifyToSlack } from "../common/utils/slackUtils"
+import config from "../config"
+
+let scanner
 
 const setScanner = async () => {
   scanner = await initScanner()

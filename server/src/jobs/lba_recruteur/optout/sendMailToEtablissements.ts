@@ -1,13 +1,15 @@
 import Joi from "joi"
 import { differenceBy } from "lodash-es"
-import { mailTemplate } from "../../../assets/index.js"
-import { logger } from "../../../common/logger.js"
-import { Optout, UserRecruteur } from "../../../common/model/index.js"
-import { asyncForEach } from "../../../common/utils/asyncUtils.js"
-import { createActivationToken } from "../../../common/utils/jwtUtils.js"
-import config from "../../../config.js"
-import mailer from "../../../services/mailer.service.js"
-import { runScript } from "../../scriptWrapper.js"
+
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+
+import { logger } from "../../../common/logger"
+import { Optout, UserRecruteur } from "../../../common/model/index"
+import { asyncForEach } from "../../../common/utils/asyncUtils"
+import { createActivationToken } from "../../../common/utils/jwtUtils"
+import config from "../../../config"
+import mailer from "../../../services/mailer.service"
+import { runScript } from "../../scriptWrapper"
 
 /**
  * @param {number} ms delay in millisecond
@@ -47,7 +49,7 @@ runScript(async () => {
       expiresIn: "45d",
     })
 
-    const accessLink = `${config.publicUrlEspacePro}/authentification/optout/verification?token=${token}`
+    const accessLink = `${config.publicUrl}/espace-pro/authentification/optout/verification?token=${token}`
 
     logger.info(`---- Sending mail for ${etablissement.siret} — ${email} ----`)
 
@@ -57,10 +59,10 @@ runScript(async () => {
       data = await mailer.sendEmail({
         to: email,
         subject: "Vous êtes invité à rejoindre La bonne alternance",
-        template: mailTemplate["mail-optout"],
+        template: getStaticFilePath("./templates/mail-optout.mjml.ejs"),
         data: {
           images: {
-            logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
+            logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
           },
           raison_sociale: etablissement.raison_sociale,
           url: accessLink,

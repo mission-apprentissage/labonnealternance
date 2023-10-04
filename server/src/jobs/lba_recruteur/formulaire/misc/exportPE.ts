@@ -1,17 +1,20 @@
+import { createReadStream, createWriteStream } from "fs"
 import path from "path"
+import { Readable } from "stream"
+
 import axios from "axios"
 import FormData from "form-data"
-import { createWriteStream, createReadStream } from "fs"
 import { pick } from "lodash-es"
 import { oleoduc, transformData, transformIntoCSV } from "oleoduc"
-import { Readable } from "stream"
-import dayjs from "../../../../services/dayjs.service.js"
-import { logger } from "../../../../common/logger.js"
-import { UserRecruteur } from "../../../../common/model/index.js"
-import { asyncForEach } from "../../../../common/utils/asyncUtils.js"
-import { IUserRecruteur } from "../../../../common/model/schema/userRecruteur/userRecruteur.types.js"
-import config from "../../../../config.js"
-import { getDepartmentByZipCode } from "../../../../common/territoires.js"
+
+import { db } from "@/common/mongodb"
+
+import { logger } from "../../../../common/logger"
+import { UserRecruteur } from "../../../../common/model/index"
+import { getDepartmentByZipCode } from "../../../../common/territoires"
+import { asyncForEach } from "../../../../common/utils/asyncUtils"
+import config from "../../../../config"
+import dayjs from "../../../../services/dayjs.service"
 
 const stat = {
   ok: 0,
@@ -203,16 +206,16 @@ const sendCsvToPE = async (csvPath: string): Promise<void> => {
 /**
  * @description Generate a CSV with eligible offers for Pole Emploi integration
  */
-export const exportPE = async ({ db }): Promise<void> => {
+export const exportPE = async (): Promise<void> => {
   const csvPath = new URL("./exportPE.csv", import.meta.url)
-  const buffer = []
+  const buffer: any[] = []
 
   // Retrieve only active offers
   const offres: any[] = await db.collection("jobs").find({ job_status: "Active", recruiterStatus: "Actif" }).toArray()
 
   logger.info("get info from user...")
   await asyncForEach(offres, async (offre) => {
-    const user: IUserRecruteur = offre.is_delegated ? await UserRecruteur.findOne({ establishment_siret: offre.cfa_delegated_siret }) : null
+    const user = offre.is_delegated ? await UserRecruteur.findOne({ establishment_siret: offre.cfa_delegated_siret }) : null
 
     if (typeof offre.rome_detail !== "string" && offre.rome_detail) {
       offre.job_type.map(async (type) => {

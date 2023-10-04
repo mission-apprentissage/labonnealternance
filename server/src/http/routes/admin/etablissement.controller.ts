@@ -1,27 +1,33 @@
-import express from "express"
-import { Etablissement } from "../../../common/model/index.js"
-import { tryCatch } from "../../middlewares/tryCatchMiddleware.js"
+import Boom from "boom"
+import { zRoutes } from "shared/index"
+
+import { Etablissement } from "../../../common/model/index"
+import { Server } from "../../server"
 
 /**
- * @description Etablissement Router.
+ * @description Etablissement server.
  */
-export default () => {
-  const router = express.Router()
-
+export default (server: Server) => {
   /**
    * Gets all etablissements
    * */
-  router.get(
-    "/",
-    tryCatch(async (req, res) => {
-      const qs = req.query
-      const query = qs && qs.query ? JSON.parse(qs.query) : {}
-      const page = qs && qs.page ? qs.page : 1
-      const limit = qs && qs.limit ? parseInt(qs.limit, 50) : 50
+  server.get(
+    "/admin/etablissements",
+    {
+      schema: zRoutes.get["/admin/etablissements"],
+      preHandler: [server.auth(zRoutes.get["/admin/etablissements"].securityScheme)],
+    },
+    async (req, res) => {
+      const query = req.query.query ? JSON.parse(req.query.query) : {}
+      const { page, limit } = req.query
 
       const allData = await Etablissement.paginate({ query, page, limit })
 
-      return res.send({
+      if (!allData) {
+        throw Boom.notFound()
+      }
+
+      return res.status(200).send({
         etablissements: allData.docs,
         pagination: {
           page: allData.page,
@@ -30,77 +36,95 @@ export default () => {
           total: allData.totalDocs,
         },
       })
-    })
+    }
   )
 
   /**
    * Gets an etablissement from its siret_formateur.
    */
-  router.get(
-    "/siret-formateur/:siret",
-    tryCatch(async ({ params }, res) => {
+  server.get(
+    "/admin/etablissements/siret-formateur/:siret",
+    {
+      schema: zRoutes.get["/admin/etablissements/siret-formateur/:siret"],
+      preHandler: [server.auth(zRoutes.get["/admin/etablissements/siret-formateur/:siret"].securityScheme)],
+    },
+    async ({ params }, res) => {
       const etablissement = await Etablissement.findOne({ formateur_siret: params.siret })
 
       if (!etablissement) {
-        return res.sendStatus(404)
+        throw Boom.notFound()
       }
 
-      return res.send(etablissement)
-    })
+      return res.status(200).send(etablissement)
+    }
   )
 
   /**
    * Gets an etablissement from its id.
    */
-  router.get(
-    "/:id",
-    tryCatch(async (req, res) => {
+  server.get(
+    "/admin/etablissements/:id",
+    {
+      schema: zRoutes.get["/admin/etablissements/:id"],
+      preHandler: [server.auth(zRoutes.get["/admin/etablissements/:id"].securityScheme)],
+    },
+    async (req, res) => {
       const etablissement = await Etablissement.findById(req.params.id)
 
       if (!etablissement) {
-        return res.sendStatus(404)
+        throw Boom.notFound()
       }
 
       return res.send(etablissement)
-    })
+    }
   )
 
   /**
    * Creates one or multiple etablissements.
    */
-  router.post(
-    "/",
-    tryCatch(async ({ body }, res) => {
+  server.post(
+    "/admin/etablissements",
+    {
+      schema: zRoutes.post["/admin/etablissements"],
+      preHandler: [server.auth(zRoutes.post["/admin/etablissements"].securityScheme)],
+    },
+    async ({ body }, res) => {
       const { etablissements } = body
 
       let output
       if (etablissements) {
-        output = await Promise.all(etablissements.map((etablissement) => etablissements.create(etablissement)))
+        output = await Promise.all(etablissements.map((etablissement) => Etablissement.create(etablissement)))
       } else {
-        output = await etablissements.create(body)
+        output = await Etablissement.create(body)
       }
 
-      return res.send(output)
-    })
+      return res.status(200).send(output)
+    }
   )
 
   /**
    * Updates an etablissement.
    */
-  router.patch(
-    "/:id",
-    tryCatch(async ({ body, params }, res) => {
+  server.patch(
+    "/admin/etablissements/:id",
+    {
+      schema: zRoutes.patch["/admin/etablissements/:id"],
+      preHandler: [server.auth(zRoutes.patch["/admin/etablissements/:id"].securityScheme)],
+    },
+    async ({ body, params }, res) => {
       const etablissement = await Etablissement.findById(params.id)
 
       if (!etablissement) {
-        return res.sendStatus(404)
+        throw Boom.notFound()
       }
 
-      const result = await Etablissement.findByIdAndUpdate(params.id, body)
+      const result = await Etablissement.findByIdAndUpdate(params.id, body).lean()
 
-      res.send(result)
-    })
+      if (!result) {
+        throw Boom.notFound()
+      }
+
+      res.status(200).send(result)
+    }
   )
-
-  return router
 }

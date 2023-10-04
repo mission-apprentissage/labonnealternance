@@ -1,18 +1,21 @@
-import axios, { AxiosInstance } from "axios"
-import got from "got"
-import { sortBy } from "lodash-es"
 import querystring from "node:querystring"
-import { compose } from "oleoduc"
-import { getDistanceInKm } from "../common/utils/geolib.js"
-import { logger } from "../common/logger.js"
-import { FormationCatalogue, UnsubscribeOF } from "../common/model/index.js"
-import { fetchStream } from "../common/utils/httpUtils.js"
-import { streamJsonArray } from "../common/utils/streamUtils.js"
+
+import axios, { AxiosInstance } from "axios"
+import Boom from "boom"
+import { got } from "got"
 import * as _ from "lodash-es"
-import { getElasticInstance } from "../common/esClient/index.js"
-import config from "../config.js"
-import { sentryCaptureException } from "../common/utils/sentryUtils.js"
-import { isValidEmail } from "../common/utils/isValidEmail.js"
+import { sortBy } from "lodash-es"
+import { compose } from "oleoduc"
+
+import { getElasticInstance } from "../common/esClient/index"
+import { logger } from "../common/logger"
+import { FormationCatalogue, UnsubscribeOF } from "../common/model/index"
+import { getDistanceInKm } from "../common/utils/geolib"
+import { fetchStream } from "../common/utils/httpUtils"
+import { isValidEmail } from "../common/utils/isValidEmail"
+import { sentryCaptureException } from "../common/utils/sentryUtils"
+import { streamJsonArray } from "../common/utils/streamUtils"
+import config from "../config"
 
 export const affelnetSelectedFields = {
   _id: 1,
@@ -114,7 +117,7 @@ export const getFormationById = (id: string) => FormationCatalogue.findById(id)
  * @returns {Promise<Object[]>}
  */
 export const getFormationsByCleMinistereEducatif = ({ cleMinistereEducatifs }: { cleMinistereEducatifs: string[] }) =>
-  FormationCatalogue.find({ cle_ministere_educatif: cleMinistereEducatifs })
+  FormationCatalogue.find({ cle_ministere_educatif: { $in: cleMinistereEducatifs } }).lean()
 
 /**
  * @description Get formations from the formation catalogue collection.
@@ -122,7 +125,7 @@ export const getFormationsByCleMinistereEducatif = ({ cleMinistereEducatifs }: {
  * @param {Object} select
  * @returns {Promise<Object>}
  */
-export const getCatalogueFormations = (query: object, select?: object) => FormationCatalogue.find(query, select)
+export const getCatalogueFormations = (query: object, select?: object) => FormationCatalogue.find(query, select).lean()
 
 /**
  * @description Get formations count through the CARIF OREF catalogue API.
@@ -159,7 +162,7 @@ export const getCatalogueEtablissements = (query: object = {}, select: object = 
  * @param {{latitude: string, longitude: string}} origin
  * @returns {Promise<Object[]>}
  */
-export const getNearEtablissementsFromRomes = async ({ rome, origin }: { rome: string; origin: object }) => {
+export const getNearEtablissementsFromRomes = async ({ rome, origin }: { rome: string[]; origin: { latitude: number; longitude: number } }) => {
   const formations = await getCatalogueFormations(
     {
       rome_codes: { $in: rome },
@@ -190,6 +193,7 @@ export const getNearEtablissementsFromRomes = async ({ rome, origin }: { rome: s
       return []
     }
 
+    // eslint-disable-next-line no-unsafe-optional-chaining
     const [latitude, longitude] = etablissement.geo_coordonnees?.split(",")
 
     return [
@@ -264,8 +268,8 @@ const createCatalogueMeAPI = async (): Promise<AxiosInstance> => {
       password: config.catalogueMe.password,
     })
 
-    instance.defaults.headers.common["Cookie"] = response.headers["set-cookie"][0]
-  } catch (error) {
+    instance.defaults.headers.common["Cookie"] = response?.headers["set-cookie"]?.[0]
+  } catch (error: any) {
     logger.error(error.response)
   }
 
@@ -283,7 +287,7 @@ const createCatalogueMeAPI = async (): Promise<AxiosInstance> => {
  */
 
 // KBA 20221227 : find more elegant solution
-let api = null
+let api: AxiosInstance | null = null
 export const getFormationsFromCatalogueMe = async ({
   query,
   limit,
@@ -322,10 +326,8 @@ export const getFormationsFromCatalogueMe = async ({
 
 const esClient = getElasticInstance()
 
-export interface IRomeResult {
-  romes?: string[]
-  error?: string
-  message?: string
+export type IRomeResult = {
+  romes: string[]
 }
 
 const getFormationEsQueryIndexFragment = () => {
@@ -342,9 +344,9 @@ const getFormationEsQueryIndexFragment = () => {
  * @param {string} siret
  * @returns {Promise<IRomeResult>}
  */
-const getRomesFromCatalogue = async ({ cfd, siret }: { cfd?: string; siret?: string }): Promise<IRomeResult> => {
+export const getRomesFromCatalogue = async ({ cfd, siret }: { cfd?: string; siret?: string }): Promise<IRomeResult> => {
   try {
-    const mustTerm = []
+    const mustTerm = [] as any[]
 
     if (cfd) {
       mustTerm.push({
@@ -375,48 +377,27 @@ const getRomesFromCatalogue = async ({ cfd, siret }: { cfd?: string; siret?: str
       },
     })
 
-    //throw new Error("BOOM");
-    let romes = []
+    const romes: Set<string> = new Set()
 
     responseFormations.body.hits.hits.forEach((formation) => {
-      romes = romes.concat(formation._source.rome_codes)
+      formation._source.rome_codes.forEach((rome) => romes.add(rome))
     })
 
-    const result: IRomeResult = { romes: romes }
+    const result: IRomeResult = { romes: [...romes] }
 
-    if (!romes.length) {
-      result.error = "No training found"
+    if (!result.romes.length) {
+      throw Boom.notFound("No training found")
     }
-
     return result
-  } catch (err) {
+  } catch (err: any) {
     const error_msg = _.get(err, "meta.body", err.message)
     console.error("Error getting trainings from romes ", error_msg)
     if (_.get(err, "meta.meta.connection.status") === "dead") {
       console.error("Elastic search is down or unreachable")
     }
     sentryCaptureException(err)
-
-    return { romes: [], error: error_msg, message: error_msg }
+    throw Boom.internal(error_msg)
   }
-}
-
-/**
- * @description retourne une liste de romes associés à un code cfd à partir des formations du catalogue
- * @param {string} cfd
- * @returns {IRomeResult}
- */
-export const getRomesFromCfd = ({ cfd }: { cfd: string }): Promise<IRomeResult> => {
-  return getRomesFromCatalogue({ cfd })
-}
-
-/**
- * @description retourne une liste de romes associés à un numéro de siret à partir des formations du catalogue
- * @param {string} siret
- * @returns {IRomeResult}
- */
-export const getRomesFromSiret = ({ siret }: { siret: string }): Promise<IRomeResult> => {
-  return getRomesFromCatalogue({ siret })
 }
 
 /**
@@ -425,7 +406,7 @@ export const getRomesFromSiret = ({ siret }: { siret: string }): Promise<IRomeRe
  * @param {string|null} email
  * @return {string|null}
  */
-export const getEmailFromCatalogueField = (email: null | string) => {
+export const getEmailFromCatalogueField = (email) => {
   if (!email) {
     return null
   }

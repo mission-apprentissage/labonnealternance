@@ -1,19 +1,23 @@
 import { randomUUID } from "crypto"
-import { ModelUpdateOptions, UpdateQuery } from "mongoose"
-import { Filter } from "mongodb"
-import { UserRecruteur } from "../common/model/index.js"
-import { IUserRecruteur, IUserStatusValidation } from "../common/model/schema/userRecruteur/userRecruteur.types.js"
-import { CFA, ETAT_UTILISATEUR, VALIDATION_UTILISATEUR } from "./constant.service.js"
-import mailer from "./mailer.service.js"
-import { mailTemplate } from "../assets/index.js"
-import config from "../config.js"
-import { createMagicLinkToken } from "../common/utils/jwtUtils.js"
+
+import Boom from "boom"
+import type { FilterQuery, ModelUpdateOptions, UpdateQuery } from "mongoose"
+import { IUserRecruteur, IUserStatusValidation } from "shared"
+
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+
+import { UserRecruteur } from "../common/model/index"
+import { createMagicLinkToken } from "../common/utils/jwtUtils"
+import config from "../config"
+
+import { CFA, ENTREPRISE, ETAT_UTILISATEUR, VALIDATION_UTILISATEUR } from "./constant.service"
+import mailer from "./mailer.service"
 
 /**
  * @description generate an API key
  * @returns {string}
  */
-export const createApiKey = () => `mna-${randomUUID()}`
+export const createApiKey = (): string => `mna-${randomUUID()}`
 
 /**
  * @query get all user using a given query filter
@@ -24,16 +28,16 @@ export const createApiKey = () => `mna-${randomUUID()}`
  * @param {Number} pagination.limit
  * @returns {Promise<IUserRecruteur>}
  */
-export const getUsers = async (query: Filter<IUserRecruteur>, options, { page, limit }) => {
+export const getUsers = async (query: FilterQuery<IUserRecruteur>, options, { page, limit }) => {
   const response = await UserRecruteur.paginate({ query, ...options, page, limit, lean: true, select: "-password" })
   return {
     pagination: {
-      page: response.page,
+      page: response?.page,
       result_per_page: limit,
-      number_of_page: response.totalPages,
-      total: response.totalDocs,
+      number_of_page: response?.totalPages,
+      total: response?.totalDocs,
     },
-    data: response.docs,
+    data: response?.docs,
   }
 }
 
@@ -42,7 +46,7 @@ export const getUsers = async (query: Filter<IUserRecruteur>, options, { page, l
  * @param {Filter<IUserRecruteur>} query
  * @returns {Promise<IUserRecruteur>}
  */
-export const getUser = async (query: Filter<IUserRecruteur>): Promise<IUserRecruteur | null> => UserRecruteur.findOne(query)
+export const getUser = async (query: FilterQuery<IUserRecruteur>): Promise<IUserRecruteur | null> => UserRecruteur.findOne(query).lean()
 
 /**
  * @description create user
@@ -87,8 +91,13 @@ export const createUser = async (values) => {
  * @param {ModelUpdateOptions} options
  * @returns {Promise<IUserRecruteur>}
  */
-export const updateUser = (query: Filter<IUserRecruteur>, update: UpdateQuery<IUserRecruteur>, options: ModelUpdateOptions = { new: true }) =>
-  UserRecruteur.findOneAndUpdate(query, update, options)
+export const updateUser = async (query: FilterQuery<IUserRecruteur>, update: UpdateQuery<IUserRecruteur>, options: ModelUpdateOptions = { new: true }): Promise<IUserRecruteur> => {
+  const userRecruterOpt = await UserRecruteur.findOneAndUpdate(query, update, options).lean()
+  if (!userRecruterOpt) {
+    throw Boom.internal(`could not update one user from query=${JSON.stringify(query)}`)
+  }
+  return userRecruterOpt
+}
 
 /**
  * @description delete user from collection
@@ -118,8 +127,11 @@ export const registerUser = (email: IUserRecruteur["email"]) => UserRecruteur.fi
  * @param {ModelUpdateOptions} [options={new:true}]
  * @returns {Promise<IUserRecruteur>}
  */
-export const updateUserValidationHistory = (userId: IUserRecruteur["_id"], state: UpdateQuery<IUserStatusValidation>, options: ModelUpdateOptions = { new: true }) =>
-  UserRecruteur.findByIdAndUpdate({ _id: userId }, { $push: { status: state } }, options)
+export const updateUserValidationHistory = async (
+  userId: IUserRecruteur["_id"],
+  state: UpdateQuery<IUserStatusValidation>,
+  options: ModelUpdateOptions = { new: true }
+): Promise<IUserRecruteur | null> => await UserRecruteur.findByIdAndUpdate({ _id: userId }, { $push: { status: state } }, options).lean()
 
 /**
  * @description get last user validation state from status array, by creation date
@@ -129,49 +141,72 @@ export const updateUserValidationHistory = (userId: IUserRecruteur["_id"], state
 export const getUserStatus = (stateArray: IUserRecruteur["status"]) => {
   const sortedArray = [...stateArray].sort((a, b) => new Date(a.date).valueOf() - new Date(b.date).valueOf())
   const lastValidationEvent = sortedArray.at(sortedArray.length - 1)
-  return lastValidationEvent?.status
+  if (!lastValidationEvent) {
+    throw Boom.internal("no status found in status array")
+  }
+  return lastValidationEvent.status
 }
 
-export const setUserInError = async (userId: IUserRecruteur["_id"], reason: string) =>
-  await updateUserValidationHistory(userId, {
+export const setUserInError = async (userId: IUserRecruteur["_id"], reason: string) => {
+  const response = await updateUserValidationHistory(userId, {
     validation_type: VALIDATION_UTILISATEUR.AUTO,
     user: "SERVEUR",
     status: ETAT_UTILISATEUR.ERROR,
     reason,
   })
+  if (!response) {
+    throw new Error(`could not find user history for user with id=${userId}`)
+  }
+  return response
+}
 
-export const autoValidateUser = async (userId: IUserRecruteur["_id"]) =>
-  await updateUserValidationHistory(userId, {
+export const autoValidateUser = async (userId: IUserRecruteur["_id"]) => {
+  const response = await updateUserValidationHistory(userId, {
     validation_type: VALIDATION_UTILISATEUR.AUTO,
     user: "SERVEUR",
     status: ETAT_UTILISATEUR.VALIDE,
   })
+  if (!response) {
+    throw new Error(`could not find user history for user with id=${userId}`)
+  }
+  return response
+}
 
-export const setUserHasToBeManuallyValidated = async (userId: IUserRecruteur["_id"]) =>
-  await updateUserValidationHistory(userId, {
+export const setUserHasToBeManuallyValidated = async (userId: IUserRecruteur["_id"]) => {
+  const response = await updateUserValidationHistory(userId, {
     validation_type: VALIDATION_UTILISATEUR.AUTO,
     user: "SERVEUR",
     status: ETAT_UTILISATEUR.ATTENTE,
   })
+  if (!response) {
+    throw new Error(`could not find user history for user with id=${userId}`)
+  }
+  return response
+}
 
-export const deactivateUser = async (userId: IUserRecruteur["_id"], reason?: string) =>
-  await updateUserValidationHistory(userId, {
+export const deactivateUser = async (userId: IUserRecruteur["_id"], reason?: string) => {
+  const response = await updateUserValidationHistory(userId, {
     validation_type: VALIDATION_UTILISATEUR.AUTO,
     user: "SERVEUR",
     status: ETAT_UTILISATEUR.DESACTIVE,
     reason,
   })
+  if (!response) {
+    throw new Error(`could not find user history for user with id=${userId}`)
+  }
+  return response
+}
 
 export const sendWelcomeEmailToUserRecruteur = async (userRecruteur: IUserRecruteur) => {
   const { email, first_name, last_name, establishment_raison_sociale, type } = userRecruteur
-  const magiclink = `${config.publicUrlEspacePro}/authentification/verification?token=${createMagicLinkToken(email)}`
+  const magiclink = `${config.publicUrl}/espace-pro/authentification/verification?token=${createMagicLinkToken(email)}`
   await mailer.sendEmail({
     to: email,
     subject: "Bienvenue sur La bonne alternance",
-    template: mailTemplate["mail-bienvenue"],
+    template: getStaticFilePath("./templates/mail-bienvenue.mjml.ejs"),
     data: {
       images: {
-        logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
+        logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
       },
       establishment_raison_sociale,
       last_name,
@@ -182,3 +217,51 @@ export const sendWelcomeEmailToUserRecruteur = async (userRecruteur: IUserRecrut
     },
   })
 }
+
+const projection = {
+  _id: 1,
+  establishment_id: 1,
+  establishment_raison_sociale: 1,
+  establishment_siret: 1,
+  type: 1,
+  first_name: 1,
+  last_name: 1,
+  email: 1,
+  phone: 1,
+  createdAt: 1,
+  origin: 1,
+  opco: 1,
+  status: 1,
+}
+
+export const getActiveUsers = () =>
+  UserRecruteur.find({
+    $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, ETAT_UTILISATEUR.VALIDE] },
+    $or: [{ type: CFA }, { type: ENTREPRISE }],
+  })
+    .select(projection)
+    .lean()
+
+export const getAwaitingUsers = () =>
+  UserRecruteur.find({
+    $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, ETAT_UTILISATEUR.ATTENTE] },
+    $or: [{ type: CFA }, { type: ENTREPRISE }],
+  })
+    .select(projection)
+    .lean()
+
+export const getDisabledUsers = () =>
+  UserRecruteur.find({
+    $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, ETAT_UTILISATEUR.DESACTIVE] },
+    $or: [{ type: CFA }, { type: ENTREPRISE }],
+  })
+    .select(projection)
+    .lean()
+
+export const getErrorUsers = () =>
+  UserRecruteur.find({
+    $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, ETAT_UTILISATEUR.ERROR] },
+    $or: [{ type: CFA }, { type: ENTREPRISE }],
+  })
+    .select(projection)
+    .lean()

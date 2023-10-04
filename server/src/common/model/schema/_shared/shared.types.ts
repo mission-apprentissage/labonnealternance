@@ -72,8 +72,6 @@ interface IAdresseV3 {
   acheminement_postal?: AcheminementPostal
 }
 
-declare function getAddressInterface(): IAdresseCFA | IAdresseV2 | IAdresseV3
-
 type IGlobalAddress = IAdresseCFA | IAdresseV2 | IAdresseV3
 
-export { IAdresseV2, IAdresseV3, IAdresseCFA, IGlobalAddress, getAddressInterface }
+export type { IAdresseCFA, IAdresseV2, IAdresseV3, IGlobalAddress }

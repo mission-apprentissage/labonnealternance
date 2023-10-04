@@ -1,17 +1,23 @@
-import express from "express"
 import Joi from "joi"
-import { getTrainingLinks } from "../../services/trainingLinks.service.js"
-import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
+import { zRoutes } from "shared/index"
 
-export default () => {
-  const router = express.Router()
+import { getTrainingLinks } from "../../services/trainingLinks.service"
+import { Server } from "../server"
 
-  router.post(
-    "/",
-    tryCatch(async (req, res) => {
-      const params = req.body
-
-      await Joi.array()
+export default (server: Server) => {
+  server.post(
+    "/trainingLinks",
+    {
+      schema: zRoutes.post["/trainingLinks"],
+      config: {
+        rateLimit: {
+          max: 3,
+          timeWindow: "1s",
+        },
+      },
+    },
+    async (req, res) => {
+      const verifiedParams = await Joi.array()
         .items(
           Joi.object({
             id: Joi.string().required(),
@@ -34,13 +40,11 @@ export default () => {
           "array.base": "body must be an Array",
           "array.max": "maximum 100 trainings",
         })
-        .validateAsync(params, { abortEarly: false })
+        .validateAsync(req.body, { abortEarly: false })
 
-      const results = await getTrainingLinks(params)
+      const results = await getTrainingLinks(verifiedParams)
 
-      return res.json(results)
-    })
+      return res.status(200).send(results)
+    }
   )
-
-  return router
 }

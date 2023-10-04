@@ -6,6 +6,7 @@ export const etablissementFormateurInfo = {
   etablissement_formateur_siret: {
     type: String,
     description: "Numéro siret formateur",
+    require: true,
   },
   etablissement_formateur_enseigne: {
     type: String,

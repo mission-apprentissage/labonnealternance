@@ -1,9 +1,9 @@
-import updateReferentielRncpRomes from "../referentielRncpRome/updateReferentielRncpRomes.js"
-import { logger } from "../../common/logger.js"
-import updateDiplomesMetiers from "../diplomesMetiers/updateDiplomesMetiers.js"
-import updateDomainesMetiers from "../domainesMetiers/updateDomainesMetiers.js"
-import { importCatalogueFormationJob } from "../formationsCatalogue/formationsCatalogue.js"
-import { runScript } from "../scriptWrapper.js"
+import { logger } from "../../common/logger"
+import updateDiplomesMetiers from "../diplomesMetiers/updateDiplomesMetiers"
+import updateDomainesMetiers from "../domainesMetiers/updateDomainesMetiers"
+import { importCatalogueFormationJob } from "../formationsCatalogue/formationsCatalogue"
+import updateReferentielRncpRomes from "../referentielRncpRome/updateReferentielRncpRomes"
+import { runScript } from "../scriptWrapper"
 
 runScript(async () => {
   logger.info("Début de l'import des données de référence.")

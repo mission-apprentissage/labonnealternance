@@ -1,16 +1,11 @@
-/* eslint-disable prefer-const */
-/* eslint-disable one-var */
-/* eslint-disable no-prototype-builtins */
-/* eslint-disable no-restricted-syntax */
-/* eslint-disable no-underscore-dangle */
-
 "use strict"
 
 function _serializeObject(object, mappingData) {
-  let serialized = {}
+  const serialized = {}
   let field
   let val
   for (field in mappingData.properties) {
+    // eslint-disable-next-line no-prototype-builtins
     if (mappingData.properties.hasOwnProperty(field)) {
       val = serialize.call(object, object[field], mappingData.properties[field])
       if (val !== undefined) {
@@ -22,7 +17,7 @@ function _serializeObject(object, mappingData) {
 }
 
 const serialize = (model, mapping) => {
-  let name, outModel
+  let name
 
   if (mapping.properties && model) {
     if (Array.isArray(model)) {
@@ -36,7 +31,7 @@ const serialize = (model, mapping) => {
     throw new Error("es_cast must be a function")
   }
 
-  outModel = mapping.cast ? mapping.cast.call(this, model) : model
+  const outModel = mapping.cast ? mapping.cast.call(this, model) : model
   if (typeof outModel === "object" && outModel !== null) {
     name = outModel.constructor.name
     if (name === "ObjectID") {

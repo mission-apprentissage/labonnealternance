@@ -1,15 +1,16 @@
-//@ts-nocheck
-import { notifyToSlack } from "../../common/utils/slackUtils.js"
 import { oleoduc, writeData } from "oleoduc"
-import { logger } from "../../common/logger.js"
-import { Opco } from "../../common/model/index.js"
-import { logMessage } from "../../common/utils/logMessage.js"
-import { CFADOCK_FILTER_LIMIT, fetchOpcosFromCFADock } from "../../services/cfadock.service.js"
-import { checkIfAlgoFileIsNew, downloadAlgoCompanyFile, readCompaniesFromJson, removePredictionFile } from "./lbaCompaniesUtils.js"
-import { getMemoizedOpcoShortName, saveOpco } from "../../services/opco.service.js"
-let errorCount = 0
 
-let sirenSet = new Set()
+import { logger } from "../../common/logger"
+import { Opco } from "../../common/model/index"
+import { logMessage } from "../../common/utils/logMessage"
+import { notifyToSlack } from "../../common/utils/slackUtils"
+import { CFADOCK_FILTER_LIMIT, fetchOpcosFromCFADock } from "../../services/cfadock.service"
+import { getMemoizedOpcoShortName, saveOpco } from "../../services/opco.service"
+
+import { checkIfAlgoFileIsNew, downloadAlgoCompanyFile, readCompaniesFromJson, removePredictionFile } from "./lbaCompaniesUtils.js"
+
+let errorCount = 0
+let sirenSet: Set<string> = new Set()
 let sirenWithoutOpco = new Set()
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))

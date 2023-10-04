@@ -1,18 +1,15 @@
 import axios from "axios"
-import dayjs from "./dayjs.service.js"
-import { sentryCaptureException } from "../common/utils/sentryUtils.js"
-import config from "../config.js"
-import { ISuggestionMetiersDavenir } from "./diagoriente.service.types.js"
+import Boom from "boom"
+import { IMetiersDavenir } from "shared/models"
 
-let diagorienteToken = null
+import config from "../config"
 
-const clientId = config.diagoriente.clientId
-const clientSecret = config.diagoriente.clientSecret
-const realm = config.diagoriente.realm
+import dayjs from "./dayjs.service"
 
-const paramApi = `grant_type=client_credentials&client_id=${clientId}&client_secret=${clientSecret}`
-const accessTokenEndpoint = `https://auth.diagoriente.beta.gouv.fr/auth/realms/${realm}/protocol/openid-connect/token`
-const diagorienteUrl = config.diagoriente.queryUrl
+const paramApi = `grant_type=client_credentials&client_id=${config.diagoriente.clientId}&client_secret=${config.diagoriente.clientSecret}`
+const accessTokenEndpoint = `https://auth.diagoriente.beta.gouv.fr/auth/realms/${config.diagoriente.realm}/protocol/openid-connect/token`
+
+let diagorienteToken
 
 const getAccessToken = async () => {
   const now = dayjs()
@@ -32,9 +29,8 @@ const getAccessToken = async () => {
 
 /**
  * @description Interroge l'api Diagoriente pour récupérer des suggestions de métiers d'avenir
- * @returns {Promise<ISuggestionMetiersDavenir>}
  */
-export const getMetiersDAvenir = async (): Promise<ISuggestionMetiersDavenir> => {
+export const getMetiersDAvenir = async (): Promise<IMetiersDavenir> => {
   try {
     const token = await getAccessToken()
     const headers = {
@@ -43,7 +39,7 @@ export const getMetiersDAvenir = async (): Promise<ISuggestionMetiersDavenir> =>
     }
 
     const { data } = await axios.post(
-      diagorienteUrl,
+      config.diagoriente.queryUrl,
       JSON.stringify({
         query: `{
           suggestionsMetiersAvenir(count: 8) {
@@ -57,9 +53,8 @@ export const getMetiersDAvenir = async (): Promise<ISuggestionMetiersDavenir> =>
     )
     return data.data
   } catch (error) {
-    sentryCaptureException(error)
-    return {
-      error: "Error fetching suggestionsMetiersAvenir",
-    }
+    const newError = Boom.internal("Error fetching suggestionsMetiersAvenir")
+    newError.cause = error
+    throw newError
   }
 }

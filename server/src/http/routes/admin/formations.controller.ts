@@ -1,26 +1,34 @@
-import express from "express"
-import { tryCatch } from "../../middlewares/tryCatchMiddleware.js"
-import { getCatalogueFormations } from "../../../services/catalogue.service.js"
+import { zRoutes } from "shared/index"
+
+import { getCatalogueFormations } from "../../../services/catalogue.service"
+import { Server } from "../../server"
 
 /**
- * @description Formations router.
+ * @description Formations server.
  */
-export default () => {
-  const router = express.Router()
-
+export default (server: Server) => {
   /**
    * @description Get in formation collection.
    */
-  router.get(
-    "/",
-    tryCatch(async (req, res) => {
-      const qs = req.query
-      const query = qs && qs.query ? JSON.parse(qs.query) : {}
+  server.get(
+    "/admin/formations",
+    {
+      schema: zRoutes.get["/admin/formations"],
+      preHandler: [server.auth(zRoutes.get["/admin/formations"].securityScheme)],
+    },
+    async (req, res) => {
+      const { search_item } = req.query
 
-      const response = await getCatalogueFormations(query)
+      const response = await getCatalogueFormations({
+        $or: [
+          { etablissement_formateur_siret: search_item },
+          { etablissement_formateur_uai: search_item },
+          { id_rco_formation: search_item },
+          { cle_ministere_educatif: search_item },
+        ],
+      })
 
       return res.send(response)
-    })
+    }
   )
-  return router
 }

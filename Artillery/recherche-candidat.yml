@@ -30,5 +30,3 @@ scenarios:
       - think: 5
       - get:
           url: "/api/romelabels?title={{ keyword }}"
-
-

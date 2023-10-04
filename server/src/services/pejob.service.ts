@@ -1,16 +1,20 @@
+import { setTimeout } from "timers/promises"
+
 import distance from "@turf/distance"
 import axios, { AxiosRequestHeaders } from "axios"
-import { setTimeout } from "timers/promises"
-import { NIVEAUX_POUR_OFFRES_PE } from "./constant.service.js"
-import { roundDistance } from "../common/utils/geolib.js"
+import { Dayjs } from "dayjs"
+
 import { IApiError, manageApiError } from "../common/utils/errorManager.js"
+import { roundDistance } from "../common/utils/geolib.js"
 import { trackApiCall } from "../common/utils/sendTrackingEvent.js"
-import { filterJobsByOpco } from "./opco.service.js"
-import { ILbaItem, LbaItem } from "./lbaitem.shared.service.types.js"
-import dayjs from "./dayjs.service.js"
 import config from "../config.js"
-import { PEJob, PEResponse } from "./pejob.service.types.js"
+
+import { NIVEAUX_POUR_OFFRES_PE } from "./constant.service.js"
+import dayjs from "./dayjs.service.js"
 import { TLbaItemResult } from "./jobOpportunity.service.types.js"
+import { ILbaItemCompany, ILbaItemContact, ILbaItemPeJob } from "./lbaitem.shared.service.types.js"
+import { filterJobsByOpco } from "./opco.service.js"
+import { PEJob, PEResponse } from "./pejob.service.types.js"
 
 const accessTokenEndpoint = "https://entreprise.pole-emploi.fr/connexion/oauth2/access_token?realm=%2Fpartenaire"
 const contentType = "application/x-www-form-urlencoded"
@@ -22,7 +26,11 @@ const scopePE = "api_offresdemploiv2%20o2dsoffre"
 const paramApisPE = `grant_type=client_credentials&client_id=${clientId}&client_secret=${clientSecret}&scope=${scopeApisPE}`
 const paramPE = `${paramApisPE}${scopePE}`
 const peApiHeaders = { "Content-Type": "application/json", Accept: "application/json" } as AxiosRequestHeaders
-let tokenPE = null
+type TokenPE = {
+  expiry: Dayjs
+  value: string
+}
+let tokenPE: TokenPE | null = null
 
 const blackListedCompanies = ["iscod", "oktogone", "institut europeen f 2i"]
 
@@ -101,7 +109,7 @@ const getRoundedRadius = (radius: number) => {
  */
 const computeJobDistanceToSearchCenter = (job: PEJob, latitude: string, longitude: string) => {
   if (job.lieuTravail && job.lieuTravail.latitude && job.lieuTravail.longitude) {
-    return roundDistance(distance([longitude, latitude], [job.lieuTravail.longitude, job.lieuTravail.latitude]))
+    return roundDistance(distance([parseFloat(longitude), parseFloat(latitude)], [parseFloat(job.lieuTravail.longitude), parseFloat(job.lieuTravail.latitude)]))
   }
 
   return null
@@ -109,83 +117,71 @@ const computeJobDistanceToSearchCenter = (job: PEJob, latitude: string, longitud
 
 /**
  * Adaptation au modèle LBA et conservation des seules infos utilisées des offres
- * @param {PEJob} job une offre Pôle Emploi
- * @param {string | null} latitude la latitude du centre de recherche
- * @param {string | null} longitude la longitude du centre de recherche
- * @return {ILbaItem}
  */
-const transformPeJob = ({ job, latitude = null, longitude = null }: { job: PEJob; latitude?: string; longitude?: string }): ILbaItem => {
-  const resultJob = new LbaItem("peJob")
+const transformPeJob = ({ job, latitude = null, longitude = null }: { job: PEJob; latitude?: string | null; longitude?: string | null }): ILbaItemPeJob => {
+  const contact: ILbaItemContact | null = job.contact
+    ? {
+        name: job.contact.nom,
+        email: job.contact.courriel,
+        info: job.contact.coordonnees1
+          ? `${job.contact.coordonnees1}${job.contact.coordonnees2 ? "\n" + job.contact.coordonnees2 : ""}${job.contact.coordonnees3 ? "\n" + job.contact.coordonnees3 : ""}`
+          : "",
+      }
+    : null
 
-  resultJob.title = job.intitule
-
-  //contact
-  if (job.contact) {
-    resultJob.contact = {}
-    if (job.contact.nom) {
-      resultJob.contact.name = job.contact.nom
-    }
-    if (job.contact.courriel) {
-      resultJob.contact.email = job.contact.courriel
-    }
-    if (job.contact.coordonnees1) {
-      resultJob.contact.info = `${job.contact.coordonnees1}${job.contact.coordonnees2 ? "\n" + job.contact.coordonnees2 : ""}${
-        job.contact.coordonnees3 ? "\n" + job.contact.coordonnees3 : ""
-      }`
-    }
-  }
-
-  resultJob.place = {
-    distance: latitude === null || latitude === "" ? 0 : computeJobDistanceToSearchCenter(job, latitude, longitude),
-    insee: job.lieuTravail.commune,
-    zipCode: job.lieuTravail.codePostal,
-    city: job.lieuTravail.libelle,
-    latitude: job.lieuTravail.latitude,
-    longitude: job.lieuTravail.longitude,
-    fullAddress: `${job.lieuTravail.libelle}${job.lieuTravail.codePostal ? " " + job.lieuTravail.codePostal : ""}`,
-  }
-
-  resultJob.company = {}
-
+  const company: ILbaItemCompany = {}
   if (job.entreprise) {
     if (job.entreprise.nom) {
-      resultJob.company.name = job.entreprise.nom
+      company.name = job.entreprise.nom
     }
     if (job.entreprise.logo) {
-      resultJob.company.logo = job.entreprise.logo
+      company.logo = job.entreprise.logo
     }
     if (job.entreprise.description) {
-      resultJob.company.description = job.entreprise.description
+      company.description = job.entreprise.description
     }
-    resultJob.company.siret = job.entreprise.siret
+    company.siret = job.entreprise.siret
   }
 
-  resultJob.url = `https://candidat.pole-emploi.fr/offres/recherche/detail/${job.id}?at_medium=CMP&at_campaign=labonnealternance_candidater_a_une_offre`
-
-  resultJob.job = {
-    id: job.id,
-    creationDate: job.dateCreation,
-    description: job.description || "",
-    contractType: job.typeContrat,
-    contractDescription: job.typeContratLibelle,
-    duration: job.dureeTravailLibelle,
-  }
-
-  if (job.romeCode) {
-    resultJob.romes = [
-      {
-        code: job.romeCode,
-        label: job.appellationLibelle,
-      },
-    ]
-  }
-  if (job.secteurActivite) {
-    resultJob.nafs = [
-      {
-        code: job.secteurActivite,
-        label: job.secteurActiviteLibelle,
-      },
-    ]
+  const resultJob: ILbaItemPeJob = {
+    ideaType: "peJob",
+    title: job.intitule,
+    contact,
+    place: {
+      distance: !latitude || !longitude ? 0 : computeJobDistanceToSearchCenter(job, latitude, longitude),
+      insee: job.lieuTravail.commune,
+      zipCode: job.lieuTravail.codePostal,
+      city: job.lieuTravail.libelle,
+      latitude: job.lieuTravail.latitude ? parseFloat(job.lieuTravail.latitude) : null,
+      longitude: job.lieuTravail.longitude ? parseFloat(job.lieuTravail.longitude) : null,
+      fullAddress: `${job.lieuTravail.libelle}${job.lieuTravail.codePostal ? " " + job.lieuTravail.codePostal : ""}`,
+    },
+    company,
+    url: `https://candidat.pole-emploi.fr/offres/recherche/detail/${job.id}?at_medium=CMP&at_campaign=labonnealternance_candidater_a_une_offre`,
+    job: {
+      id: job.id,
+      creationDate: new Date(job.dateCreation),
+      description: job.description || "",
+      contractType: job.typeContrat,
+      contractDescription: job.typeContratLibelle,
+      duration: job.dureeTravailLibelle,
+    },
+    romes: job.romeCode
+      ? [
+          {
+            code: job.romeCode,
+            label: job.appellationLibelle,
+          },
+        ]
+      : null,
+    nafs: job.secteurActivite
+      ? [
+          {
+            code: job.secteurActivite,
+            label: job.secteurActiviteLibelle,
+          },
+        ]
+      : null,
   }
 
   return resultJob
@@ -193,20 +189,16 @@ const transformPeJob = ({ job, latitude = null, longitude = null }: { job: PEJob
 
 /**
  * Converti les offres issues de l'api Pôle emploi en objets de type ILbaItem
- * @param {PEJob[]} jobs offres issues de l'api offres de Pôle emploi
- * @param {number} radius le rayon de recherche
- * @param {string} latitude la latitude du centre de recherche
- * @param {string} longitude la longitude du centre de recherche
- * @returns {{ results: ILbaItem[] }}
  */
 const transformPeJobs = ({ jobs, radius, latitude, longitude }: { jobs: PEJob[]; radius: number; latitude: string; longitude: string }) => {
-  const resultJobs: ILbaItem[] = []
+  const resultJobs: ILbaItemPeJob[] = []
 
   if (jobs && jobs.length) {
     for (let i = 0; i < jobs.length; ++i) {
       const job = transformPeJob({ job: jobs[i], latitude, longitude })
 
-      if (job.place.distance < getRoundedRadius(radius)) {
+      const d = job.place?.distance ?? 0
+      if (d < getRoundedRadius(radius)) {
         if (!job?.company?.name || blackListedCompanies.indexOf(job.company.name.toLowerCase()) < 0) {
           resultJobs.push(job)
         }
@@ -219,14 +211,6 @@ const transformPeJobs = ({ jobs, radius, latitude, longitude }: { jobs: PEJob[];
 
 /**
  * Récupère une liste d'offres depuis l'API Pôle emploi
- * @param {string[]} romes un tableau de codes ROME
- * @param {insee} insee le code insee du centre de recherche
- * @param {number} radius le rayon de recherche
- * @param {number} jobLimit le nombre maximum de résultats à retourner
- * @param {string} caller l'identifiant de l'appelant
- * @param {string} diploma le filtre sur le diplome
- * @param {string} api le nom de l'api utilisée pour l'appel de la fonction
- * @returns
  */
 const getPeJobs = async ({
   romes,
@@ -305,20 +289,9 @@ const getPeJobs = async ({
  * applique post traitements suivants :
  * - filtrage optionnel sur les opco
  * - suppressions de données non autorisées pour des consommateurs extérieurs
- *
- * @param {string[]} romes un tableau de codes ROME
- * @param {insee} insee le code insee du centre de recherche
- * @param {number} radius le rayon de recherche
- * @param {number} jobLimit le nombre maximum de résultats à retourner
- * @param {string} caller l'identifiant de l'appelant
- * @param {string} diploma le filtre sur le diplome
- * @param {string} opco le filtre sur l'opco
- * @param {string} opcoUrl le filtre sur l'url de l'opco
- * @param {string} api le nom de l'api utilisée pour l'appel de la fonction
- * @returns {Promise<ILbaItem[] | IApiError>}
  */
-export const getSomePeJobs = async ({ romes, insee, radius, latitude, longitude, caller, diploma, opco, opcoUrl, api }): Promise<TLbaItemResult> => {
-  let peResponse: PEResponse | IApiError = null
+export const getSomePeJobs = async ({ romes, insee, radius, latitude, longitude, caller, diploma, opco, opcoUrl, api }): Promise<TLbaItemResult<ILbaItemPeJob>> => {
+  let peResponse: PEResponse | IApiError | null = null
   const currentRadius = radius || 20000
   const jobLimit = 150
 
@@ -341,14 +314,16 @@ export const getSomePeJobs = async ({ romes, insee, radius, latitude, longitude,
     return peResponse
   }
 
-  const resultats = "resultats" in peResponse ? peResponse.resultats : []
+  const resultats = peResponse && "resultats" in peResponse ? peResponse.resultats : []
 
   let jobs = transformPeJobs({ jobs: resultats, radius: currentRadius, latitude, longitude })
 
   // tri du résultat fusionné sur le critère de poids descendant
   if (jobs) {
     jobs.sort((a, b) => {
-      return b.place.distance - a.place.distance
+      const bDist = b.place?.distance ?? 0
+      const aDist = a.place?.distance ?? 0
+      return bDist - aDist
     })
   }
 
@@ -360,8 +335,10 @@ export const getSomePeJobs = async ({ romes, insee, radius, latitude, longitude,
   // suppression du siret pour les appels par API. On ne remonte le siret que dans le cadre du front LBA.
   if (caller) {
     // on ne remonte le siret que dans le cadre du front LBA. Cette info n'est pas remontée par API
-    jobs.forEach((job, idx) => {
-      jobs[idx].company.siret = null
+    jobs.forEach((job) => {
+      if (job.company) {
+        job.company.siret = null
+      }
     })
   }
 
@@ -370,11 +347,8 @@ export const getSomePeJobs = async ({ romes, insee, radius, latitude, longitude,
 
 /**
  * Retourne un tableau contenant la seule offre Pôle emploi identifiée
- * @param {string} id l'identifiant technique de l'offre Pôle emploi voulue
- * @param {string} caller l'identifiant de l'appelant de l'api
- * @returns {Promise<ILbaItem[] | IApiError>}
  */
-export const getPeJobFromId = async ({ id, caller }: { id: string; caller: string }) => {
+export const getPeJobFromId = async ({ id, caller }: { id: string; caller: string | undefined }): Promise<IApiError | { peJobs: ILbaItemPeJob[] }> => {
   try {
     const token = await getAccessToken()
     const headers = peApiHeaders
@@ -396,7 +370,9 @@ export const getPeJobFromId = async ({ id, caller }: { id: string; caller: strin
       if (caller) {
         trackApiCall({ caller, job_count: 1, result_count: 1, api_path: "jobV1/job", response: "OK" })
         // on ne remonte le siret que dans le cadre du front LBA. Cette info n'est pas remontée par API
-        peJob.company.siret = null
+        if (peJob.company) {
+          peJob.company.siret = null
+        }
       }
 
       return { peJobs: [peJob] }

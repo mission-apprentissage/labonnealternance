@@ -1,8 +1,10 @@
 import memoize from "memoizee"
-import { IOpco } from "../common/model/schema/opco/opco.types.js"
-import { Opco } from "../common/model/index.js"
-import { OPCOS } from "./constant.service.js"
-import { CFADOCK_FILTER_LIMIT, fetchOpcosFromCFADock } from "../services/cfadock.service.js"
+
+import { Opco } from "../common/model/index"
+import { IOpco } from "../common/model/schema/opco/opco.types"
+
+import { CFADOCK_FILTER_LIMIT, fetchOpcosFromCFADock } from "./cfadock.service"
+import { OPCOS } from "./constant.service"
 
 /**
  * @description get opco from database collection OPCOS
@@ -16,25 +18,21 @@ export const getOpcoBySirenFromDB = (siren) => Opco.findOne({ siren })
  * @param {IOpco} opcoData
  * @returns {Promise<IOpco>}
  */
-export const saveOpco = async (opcoData: IOpco): Promise<IOpco> => Opco.findOneAndUpdate({ siren: opcoData.siren }, opcoData, { upsert: true })
+export const saveOpco = async (opcoData: IOpco) => Opco.findOneAndUpdate({ siren: opcoData.siren }, opcoData, { upsert: true })
 
 /**
  * @description retourne le nom court d'un opco en paramètre
  * @param {string} shortName
  * @returns {string}
  */
-export const getOpcoLongName = memoize((shortName: string): string => {
-  return Object.values(OPCOS).find((k) => OPCOS[k] === shortName.toUpperCase())
-})
+export const getOpcoLongName = memoize((shortName: string) => Object.values(OPCOS).find((k) => OPCOS[k] === shortName.toUpperCase()))
 
 /**
  * @description retourne le nom court d'un opco en paramètre
  * @param {string} longName
  * @returns {string}
  */
-const getOpcoShortName = (longName: string): string => {
-  return Object.keys(OPCOS).find((k) => OPCOS[k] === longName)
-}
+const getOpcoShortName = (longName: string) => Object.keys(OPCOS).find((k) => OPCOS[k] === longName)
 
 export const getMemoizedOpcoShortName = memoize(getOpcoShortName)
 
@@ -46,7 +44,7 @@ export const getMemoizedOpcoShortName = memoize(getOpcoShortName)
  * @returns {Promise<any[]>}
  */
 export const filterJobsByOpco = async ({ jobs, opco, opcoUrl }: { jobs: any[]; opco?: string; opcoUrl?: string }): Promise<any[]> => {
-  let sirensToFind = []
+  let sirensToFind: any[] = []
 
   jobs.forEach((job) => {
     if (job?.company?.siret) {
@@ -61,15 +59,18 @@ export const filterJobsByOpco = async ({ jobs, opco, opcoUrl }: { jobs: any[]; o
 
   // STEP 1 identifier les sociétés présentent dans notre base
   const searchForOpcoParams: any = { siren: { $in: sirensToFind } }
+
   if (opcoUrl) {
     searchForOpcoParams.url = opcoUrl.toLowerCase()
-  } else {
+  }
+
+  if (opco) {
     searchForOpcoParams.opco = OPCOS[opco.toUpperCase()]
   }
 
   const foundInMongoOpcos = await Opco.find(searchForOpcoParams)
 
-  let opcoFilteredSirens = []
+  let opcoFilteredSirens: any[] = []
 
   const foundInMongoOpcoSirens = foundInMongoOpcos.map((opco) => opco.siren)
 

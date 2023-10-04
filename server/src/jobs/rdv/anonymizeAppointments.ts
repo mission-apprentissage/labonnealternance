@@ -1,5 +1,5 @@
-import { logger } from "../../common/logger.js"
-import { Appointment } from "../../common/model/index.js"
+import { logger } from "../../common/logger"
+import { Appointment } from "../../common/model/index"
 
 export const anonimizeAppointments = async () => {
   logger.info("job #anonimizeAppointments start")

@@ -1,33 +1,36 @@
-// @ts-nocheck
-import express from "express"
 import jwt from "jsonwebtoken"
-import { Optout } from "../../common/model/index.js"
-import config from "../../config.js"
+import { zRoutes } from "shared/index"
 
-export default () => {
-  const router = express.Router()
+import { Optout } from "../../common/model/index"
+import config from "../../config"
+import { Server } from "../server"
 
-  router.get("/validate", async (req, res) => {
-    const token = req.headers.authorization.split(" ")[1]
+export default (server: Server) => {
+  server.get(
+    "/optout/validate",
+    {
+      schema: zRoutes.get["/optout/validate"],
+      preHandler: [server.auth(zRoutes.get["/optout/validate"].securityScheme)],
+    },
+    async (req, res) => {
+      const token = req.headers && req.headers.authorization && req.headers.authorization.split(" ")[1]
 
-    if (!token) {
-      return res.statut(401).json({ error: true, reason: "TOKEN_NOT_FOUND" })
+      if (!token) {
+        return res.status(401).send({ error: true, reason: "TOKEN_NOT_FOUND" })
+      }
+
+      const { siret, email }: any = jwt.verify(token, config.auth["activation"].jwtSecret)
+
+      const user = await Optout.findOne({ siret, "contacts.email": email }).lean()
+
+      if (!user) {
+        return res.status(400).send({ error: true, reason: "USER_NOT_FOUND" })
+      }
+      return res.status(200).send({
+        ...user,
+        // Set recipient email for the UI
+        email,
+      })
     }
-
-    const { siret, email } = jwt.verify(token, config.auth["activation"].jwtSecret)
-
-    const user = await Optout.findOne({ siret, "contacts.email": email }).lean()
-
-    if (!user) {
-      return res.json({ error: true, reason: "USER_NOT_FOUND" })
-    }
-
-    return res.json({
-      ...user,
-      // Set recipient email for the UI
-      email,
-    })
-  })
-
-  return router
+  )
 }

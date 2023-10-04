@@ -1,11 +1,12 @@
-import { IAdresseCFA, IAdresseV3, IGlobalAddress } from "../common/model/schema/_shared/shared.types.js"
-import { IRecruiter } from "../common/model/schema/recruiter/recruiter.types.js"
-import { IUserRecruteur } from "../common/model/schema/userRecruteur/userRecruteur.types.js"
+import { IRecruiter, IUserRecruteur } from "shared"
+import { Jsonify } from "type-fest"
+
+import { IAdresseCFA, IAdresseV3 } from "../common/model/schema/_shared/shared.types"
 
 export interface IFormatAPIReferentiel
   extends Pick<IUserRecruteur, "establishment_raison_sociale" | "establishment_siret" | "is_qualiopi" | "address_detail" | "geo_coordinates" | "address"> {
   establishment_state: string
-  contacts: object[]
+  contacts: IContact[]
 }
 export interface IFormatAPIEntreprise
   extends Pick<
@@ -118,7 +119,7 @@ interface IMetaAPIEtablissement {
   redirect_from_siret: any
 }
 
-export interface IReferentiel {
+interface IReferentielRaw {
   siret: string
   _meta: IMetaReferentiel
   certifications: ICertification[]
@@ -139,6 +140,8 @@ export interface IReferentiel {
   qualiopi: boolean
   uai: string
 }
+
+export type IReferentiel = Jsonify<IReferentielRaw>
 
 interface IMetaReferentiel {
   anomalies: Anomaly[]
@@ -193,7 +196,7 @@ interface IUaiPotentiel {
   date_collecte: Date
 }
 
-export interface IEtablissementCatalogue {
+interface IEtablissementCatalogueRaw {
   _id: string
   siege_social: boolean
   etablissement_siege_siret: string
@@ -296,6 +299,8 @@ export interface IEtablissementCatalogue {
   uais_potentiels: null
   update_error: null
 }
+
+export type IEtablissementCatalogue = Jsonify<IEtablissementCatalogueRaw>
 
 export interface IAPIAdresse {
   type: string

@@ -1,5 +1,6 @@
-import { model } from "../../../mongodb.js"
-import { appointmentSchema } from "../appointments/appointment.schema.js"
-import { IAppointments } from "../appointments/appointments.types.js"
+import { IAppointment } from "shared"
 
-export default model<IAppointments>("appointmentDetailed", appointmentSchema)
+import { model } from "../../../mongodb"
+import { appointmentSchema } from "../appointments/appointment.schema"
+
+export default model<IAppointment>("appointmentDetailed", appointmentSchema)

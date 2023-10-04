@@ -1,18 +1,25 @@
-// @ts-nocheck
-import { REGEX } from "../../services/constant.service.js"
-import express from "express"
 import Joi from "joi"
-import { updateContactInfo } from "../../services/lbacompany.service.js"
-import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
-import config from "../../config.js"
+import { zRoutes } from "shared/index"
 
-export default function () {
-  const router = express.Router()
+import config from "../../config"
+import { REGEX } from "../../services/constant.service"
+import { updateContactInfo } from "../../services/lbacompany.service"
+import { Server } from "../server"
 
-  router.get(
-    "/updateContactInfo",
-    tryCatch(async (req, res) => {
-      await Joi.object({
+export default function (server: Server) {
+  server.get(
+    "/updateLBB/updateContactInfo",
+    {
+      schema: zRoutes.get["/updateLBB/updateContactInfo"],
+      config: {
+        rateLimit: {
+          max: 1,
+          timeWindow: "20s",
+        },
+      },
+    },
+    async (req, res) => {
+      const { email, phone, siret } = await Joi.object({
         secret: Joi.string().required(),
         email: Joi.string().allow("").email(),
         phone: Joi.string().pattern(REGEX["TELEPHONE"]).allow(""),
@@ -20,18 +27,16 @@ export default function () {
       }).validateAsync(req.query)
 
       if (req.query.secret !== config.secretUpdateRomesMetiers) {
-        return res.status(401).json("unauthorized")
+        return res.status(401).send("unauthorized")
       } else {
-        const result = await updateContactInfo(req.query)
+        const result = await updateContactInfo({ email, phone, siret })
 
         if (result === "not_found") {
-          return res.status(404).json(result)
+          return res.status(404).send(result)
         }
 
-        return res.json(result)
+        return res.status(200).send(result)
       }
-    })
+    }
   )
-
-  return router
 }

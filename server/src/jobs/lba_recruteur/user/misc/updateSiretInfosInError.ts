@@ -1,19 +1,23 @@
-import { archiveFormulaire, getFormulaire, sendMailNouvelleOffre, updateFormulaire } from "../../../../services/formulaire.service.js"
-import { autoValidateUser, deactivateUser, getUser, setUserInError, updateUser } from "../../../../services/userRecruteur.service.js"
-import { logger } from "../../../../common/logger.js"
-import { Recruiter, UserRecruteur } from "../../../../common/model/index.js"
-import { asyncForEach } from "../../../../common/utils/asyncUtils.js"
-import { sentryCaptureException } from "../../../../common/utils/sentryUtils.js"
-import { CFA, ENTREPRISE, ETAT_UTILISATEUR, JOB_STATUS, RECRUITER_STATUS } from "../../../../services/constant.service.js"
-import { autoValidateCompany, getEntrepriseDataFromSiret, sendEmailConfirmationEntreprise } from "../../../../services/etablissement.service.js"
-import { notifyToSlack } from "../../../../common/utils/slackUtils.js"
-import { IUserRecruteur } from "../../../../common/model/schema/userRecruteur/userRecruteur.types.js"
+import Boom from "boom"
+import type { IUserRecruteur } from "shared"
+
+import { logger } from "../../../../common/logger"
+import { Recruiter, UserRecruteur } from "../../../../common/model/index"
+import { asyncForEach } from "../../../../common/utils/asyncUtils"
+import { sentryCaptureException } from "../../../../common/utils/sentryUtils"
+import { notifyToSlack } from "../../../../common/utils/slackUtils"
+import { CFA, ENTREPRISE, ETAT_UTILISATEUR, JOB_STATUS, RECRUITER_STATUS } from "../../../../services/constant.service"
+import { autoValidateCompany, getEntrepriseDataFromSiret, sendEmailConfirmationEntreprise } from "../../../../services/etablissement.service"
+import { archiveFormulaire, getFormulaire, sendMailNouvelleOffre, updateFormulaire } from "../../../../services/formulaire.service"
+import { autoValidateUser, deactivateUser, getUser, setUserInError, updateUser } from "../../../../services/userRecruteur.service"
 
 const updateUserRecruteursSiretInfosInError = async () => {
   const query = {
     $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, ETAT_UTILISATEUR.ERROR] },
     $or: [{ type: CFA }, { type: ENTREPRISE }],
   }
+
+  // @ts-expect-error
   const userRecruteurs = await UserRecruteur.find(query).lean()
   const stats = { success: 0, failure: 0, deactivated: 0 }
   logger.info(`Correction des user recruteurs en erreur: ${userRecruteurs.length} user recruteurs à mettre à jour...`)
@@ -22,7 +26,7 @@ const updateUserRecruteursSiretInfosInError = async () => {
     try {
       let recruteur = await getFormulaire({ establishment_id })
       const { cfa_delegated_siret } = recruteur
-      const siretResponse = await getEntrepriseDataFromSiret({ siret: establishment_siret, cfa_delegated_siret })
+      const siretResponse = await getEntrepriseDataFromSiret({ siret: establishment_siret, cfa_delegated_siret: cfa_delegated_siret ?? undefined })
       if ("error" in siretResponse) {
         logger.warn(`Correction des recruteurs en erreur: userRecruteur id=${_id}, désactivation car création interdite, raison=${siretResponse.message}`)
         await deactivateUser(_id, siretResponse.message)
@@ -40,7 +44,7 @@ const updateUserRecruteursSiretInfosInError = async () => {
         stats.success++
       }
     } catch (err) {
-      const errorMessage = (err && "message" in err && err.message) || err
+      const errorMessage = (err && typeof err === "object" && "message" in err && err.message) || err
       await setUserInError(userRecruteur._id, errorMessage + "")
       logger.error(err)
       logger.error(`Correction des recruteurs en erreur: userRecruteur id=${_id}, erreur: ${errorMessage}`)
@@ -63,6 +67,9 @@ const updateRecruteursSiretInfosInError = async () => {
   logger.info(`Correction des recruteurs en erreur: ${recruteurs.length} user recruteurs à mettre à jour...`)
   await asyncForEach(recruteurs, async (recruteur) => {
     const { establishment_siret, establishment_id, _id, cfa_delegated_siret } = recruteur
+    if (!cfa_delegated_siret) {
+      return
+    }
     try {
       const siretResponse = await getEntrepriseDataFromSiret({ siret: establishment_siret, cfa_delegated_siret })
       if ("error" in siretResponse) {
@@ -72,6 +79,9 @@ const updateRecruteursSiretInfosInError = async () => {
       } else {
         const updatedRecruiter = await updateFormulaire(establishment_id, { ...siretResponse, status: RECRUITER_STATUS.ACTIF })
         const userRecruteurCFA = await getUser({ establishment_siret: cfa_delegated_siret, $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, ETAT_UTILISATEUR.VALIDE] } })
+        if (!userRecruteurCFA) {
+          throw Boom.internal(`unexpected: impossible de trouver le user recruteur CFA avec siret=${cfa_delegated_siret}`)
+        }
         await Promise.all(
           updatedRecruiter.jobs.flatMap((job) => {
             if (job.job_status === JOB_STATUS.ACTIVE) {
@@ -84,7 +94,7 @@ const updateRecruteursSiretInfosInError = async () => {
         stats.success++
       }
     } catch (err) {
-      const errorMessage = (err && "message" in err && err.message) || err
+      const errorMessage = (err && typeof err === "object" && "message" in err && err.message) || err
       await updateFormulaire(establishment_id, { status: RECRUITER_STATUS.EN_ATTENTE_VALIDATION })
       logger.error(err)
       logger.error(`Correction des recruteurs en erreur: recruteur id=${_id}, erreur: ${errorMessage}`)

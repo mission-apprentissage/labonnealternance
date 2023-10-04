@@ -1,7 +1,8 @@
 import path from "path"
-import { uploadFileToS3 } from "../../common/utils/awsUtils.js"
-import __dirname from "../../common/dirname.js"
-import { logger } from "../../common/logger.js"
+
+import __dirname from "../../common/dirname"
+import { logger } from "../../common/logger"
+import { uploadFileToS3 } from "../../common/utils/awsUtils"
 
 const currentDirname = __dirname(import.meta.url)
 

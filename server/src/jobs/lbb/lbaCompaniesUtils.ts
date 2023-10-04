@@ -1,17 +1,20 @@
-// @ts-nocheck
-import { getFileFromS3Bucket, getS3FileLastUpdate, uploadFileToS3 } from "../../common/utils/awsUtils.js"
-import { streamJsonArray } from "../../common/utils/streamUtils.js"
-import { logger } from "../../common/logger.js"
 import fs from "fs"
 import path from "path"
-import config from "../../config.js"
-import __dirname from "../../common/dirname.js"
+
 import { compose, oleoduc, writeData } from "oleoduc"
-import geoData from "../../common/utils/geoData.js"
-import { EmailBlacklist, LbaCompany, GeoLocation, Opco } from "../../common/model/index.js"
-import initNafMap from "./initNafMap.js"
-import initNafScoreMap from "./initNafScoreMap.js"
-import { notifyToSlack } from "../../common/utils/slackUtils.js"
+import { ILbaCompany } from "shared/models"
+
+import __dirname from "../../common/dirname"
+import { logger } from "../../common/logger"
+import { EmailBlacklist, GeoLocation, Opco, LbaCompany } from "../../common/model/index"
+import { getFileFromS3Bucket, getS3FileLastUpdate, uploadFileToS3 } from "../../common/utils/awsUtils"
+import geoData from "../../common/utils/geoData"
+import { notifyToSlack } from "../../common/utils/slackUtils"
+import { streamJsonArray } from "../../common/utils/streamUtils"
+import config from "../../config"
+
+import initNafMap from "./initNafMap"
+import initNafScoreMap from "./initNafScoreMap"
 
 const currentDirname = __dirname(import.meta.url)
 
@@ -31,9 +34,9 @@ export const removePredictionFile = async () => {
  * Check if algo company file is more recent than when last processed
  * @param {string} reason process calling the function
  */
-export const checkIfAlgoFileIsNew = async (reason: string): void => {
-  const algoFileLastModificationDate = await getFileLastModificationDate()
-  const currentDbCreatedDate = await getCurrentDbCreatedDate()
+export const checkIfAlgoFileIsNew = async (reason: string) => {
+  const algoFileLastModificationDate = await getS3FileLastUpdate({ key: s3File })
+  const currentDbCreatedDate = ((await LbaCompany.findOne({}).select({ created_at: 1, _id: 0 })) as ILbaCompany).created_at
 
   if (algoFileLastModificationDate.getTime() < currentDbCreatedDate.getTime()) {
     await notifyToSlack({
@@ -43,14 +46,6 @@ export const checkIfAlgoFileIsNew = async (reason: string): void => {
     })
     throw new Error("Sociétés issues de l'algo déjà à jour")
   }
-}
-
-const getCurrentDbCreatedDate = async (): Date => {
-  return (await LbaCompany.findOne({}).select({ created_at: 1, _id: 0 })).created_at
-}
-
-const getFileLastModificationDate = async (): Date => {
-  return await getS3FileLastUpdate({ key: s3File })
 }
 
 export const pushFileToBucket = async ({ key, filePath }) => {
@@ -95,7 +90,7 @@ export const readCompaniesFromJson = async () => {
   return streamCompanies()
 }
 
-export const countCompaniesInFile = async (): number => {
+export const countCompaniesInFile = async (): Promise<number> => {
   let count = 0
   await oleoduc(
     await readCompaniesFromJson(),
@@ -107,7 +102,7 @@ export const countCompaniesInFile = async (): number => {
 }
 
 /*
-Initialize bonneBoite from data, add missing data from maps, 
+Initialize bonneBoite from data, add missing data from maps,
 */
 export const getCompanyMissingData = async (rawCompany) => {
   const company = new LbaCompany(rawCompany)
@@ -139,8 +134,8 @@ export const getCompanyMissingData = async (rawCompany) => {
 
     if (opcoData) {
       company.opco = opcoData.opco
-      company.opco_url = opcoData.url
-      company.opco_short_name = opcoData.opco_short_name
+      company.opco_url = opcoData.url as string
+      company.opco_short_name = opcoData.opco_short_name as string
     }
   }
 
@@ -161,12 +156,14 @@ const getGeoLocationForCompany = async (company) => {
 
   // si pas de geoloc on en recherche une avec la ban
   if (!result) {
+    // @ts-expect-error: TODO
     result = await geoData.getFirstMatchUpdates(company)
 
     if (!result) {
       return null
     } else {
       const geoLocation = new GeoLocation({
+        // @ts-expect-error: TODO
         address: geoKey,
         ...result,
       })

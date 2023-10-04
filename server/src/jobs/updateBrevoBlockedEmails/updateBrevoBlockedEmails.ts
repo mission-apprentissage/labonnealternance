@@ -1,10 +1,10 @@
-// @ts-nocheck
 import SibApiV3Sdk from "sib-api-v3-sdk"
-import { logger } from "../../common/logger.js"
-import { LbaCompany, EmailBlacklist } from "../../common/model/index.js"
-import { sentryCaptureException } from "../../common/utils/sentryUtils.js"
-import { notifyToSlack } from "../../common/utils/slackUtils.js"
-import config from "../../config.js"
+
+import { logger } from "../../common/logger"
+import { EmailBlacklist, LbaCompany } from "../../common/model/index.js"
+import { sentryCaptureException } from "../../common/utils/sentryUtils"
+import { notifyToSlack } from "../../common/utils/slackUtils"
+import config from "../../config"
 
 const saveBlacklistEmails = async (contacts) => {
   for (let i = 0; i < contacts.length; ++i) {

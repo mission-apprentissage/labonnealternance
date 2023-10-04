@@ -7,4 +7,4 @@ const emailSchema = joi.string().email()
  * @param {string} email
  * @return {boolean}
  */
-export const isValidEmail = (email) => !emailSchema.validate(email)?.error
+export const isValidEmail = (email: unknown): email is string => !emailSchema.validate(email)?.error

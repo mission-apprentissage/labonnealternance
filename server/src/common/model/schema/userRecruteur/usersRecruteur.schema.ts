@@ -1,7 +1,8 @@
-import { mongoosePagination, Pagination } from "mongoose-paginate-ts"
-import { ETAT_UTILISATEUR, VALIDATION_UTILISATEUR } from "../../../../services/constant.service.js"
-import { model, Schema } from "../../../mongodb.js"
-import { IUserRecruteur, IUserStatusValidation } from "./userRecruteur.types.js"
+import { IUserRecruteur, IUserStatusValidation } from "shared"
+
+import { ETAT_UTILISATEUR, VALIDATION_UTILISATEUR } from "../../../../services/constant.service"
+import { model, Schema } from "../../../mongodb"
+import { mongoosePagination, Pagination } from "../_shared/mongoose-paginate"
 
 const userValidationSchema = new Schema<IUserStatusValidation>(
   {
@@ -82,7 +83,7 @@ const userRecruteurSchema = new Schema<IUserRecruteur>(
     },
     email: {
       type: String,
-      default: null,
+      required: true,
       description: "L'email de l'utilisateur",
       unique: true,
     },
@@ -126,6 +127,7 @@ const userRecruteurSchema = new Schema<IUserRecruteur>(
   },
   {
     timestamps: true,
+    versionKey: false,
   }
 )
 

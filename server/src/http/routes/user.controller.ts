@@ -1,130 +1,134 @@
-import express from "express"
-import { mailTemplate } from "../../assets/index.js"
-import { Recruiter, UserRecruteur } from "../../common/model/index.js"
-import config from "../../config.js"
-import { ENTREPRISE, ETAT_UTILISATEUR, JOB_STATUS, RECRUITER_STATUS } from "../../services/constant.service.js"
-import dayjs from "../../services/dayjs.service.js"
-import { deleteFormulaire, getFormulaire, reactivateRecruiter, sendDelegationMailToCFA, updateOffre } from "../../services/formulaire.service.js"
-import mailer from "../../services/mailer.service.js"
-import { createUser, removeUser, sendWelcomeEmailToUserRecruteur, updateUser, updateUserValidationHistory } from "../../services/userRecruteur.service.js"
-import authMiddleware from "../middlewares/authMiddleware.js"
-import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
+import Boom from "boom"
+import { IJob, zRoutes } from "shared/index"
 
-export default () => {
-  const router = express.Router()
+import { Recruiter, UserRecruteur } from "../../common/model/index"
+import { getStaticFilePath } from "../../common/utils/getStaticFilePath"
+import config from "../../config"
+import { ENTREPRISE, ETAT_UTILISATEUR, JOB_STATUS, RECRUITER_STATUS } from "../../services/constant.service"
+import dayjs from "../../services/dayjs.service"
+import { deleteFormulaire, getFormulaire, reactivateRecruiter, sendDelegationMailToCFA, updateOffre } from "../../services/formulaire.service"
+import mailer from "../../services/mailer.service"
+import { getUserAndRecruitersDataForOpcoUser } from "../../services/user.service"
+import {
+  createUser,
+  getActiveUsers,
+  getAwaitingUsers,
+  getDisabledUsers,
+  getErrorUsers,
+  removeUser,
+  sendWelcomeEmailToUserRecruteur,
+  updateUser,
+  updateUserValidationHistory,
+} from "../../services/userRecruteur.service"
+import { Server } from "../server"
 
-  router.get(
-    "/opco",
-    tryCatch(async (req, res) => {
-      const userQuery = JSON.parse(req.query.userQuery)
-      const formulaireQuery = JSON.parse(req.query.formulaireQuery)
+export default (server: Server) => {
+  server.get(
+    "/user/opco",
+    {
+      schema: zRoutes.get["/user/opco"],
+    },
+    async (req, res) => {
+      const { opco } = req.query
+      return res.status(200).send(await getUserAndRecruitersDataForOpcoUser(opco))
+    }
+  )
 
-      const [users, formulaires] = await Promise.all([UserRecruteur.find(userQuery).lean(), Recruiter.find(formulaireQuery).lean()])
+  server.get(
+    "/user",
+    {
+      schema: zRoutes.get["/user"],
+      onRequest: [server.auth(zRoutes.get["/user"].securityScheme)],
+    },
+    async (req, res) => {
+      // TODO KEVIN: ADD PAGINATION
+      const [awaiting, active, disabled, error] = await Promise.all([getAwaitingUsers(), getActiveUsers(), getDisabledUsers(), getErrorUsers()])
+      return res.status(200).send({ awaiting, active, disabled, error })
+    }
+  )
 
-      const results = users.reduce((acc, user) => {
-        acc.push({ ...user, offres: 0 })
+  server.get(
+    "/user/:userId",
+    {
+      schema: zRoutes.get["/user/:userId"],
+      preHandler: [],
+    },
+    async (req, res) => {
+      const user = await UserRecruteur.findOne({ _id: req.params.userId }).lean()
+      let jobs: IJob[] = []
 
-        const form = formulaires.find((x) => x.establishment_id === user.establishment_id)
+      if (!user) return res.status(400).send({})
 
-        if (form) {
-          const found = acc.findIndex((x) => x.establishment_id === form.establishment_id)
-
-          if (found !== -1) {
-            acc[found].jobs = form.jobs.length ?? 0
-            acc[found].origin = form.origin
-            acc[found].job_detail = form.jobs ?? []
-          }
+      if (user.type === ENTREPRISE) {
+        const response = await Recruiter.findOne({ establishment_id: user.establishment_id }).select({ jobs: 1, _id: 0 }).lean()
+        if (!response) {
+          throw Boom.internal("Get establishement from user failed to fetch", { userId: user._id })
         }
-
-        return acc
-      }, [])
-
-      return res.json(results)
-    })
-  )
-
-  router.get(
-    "/",
-    authMiddleware("jwt-bearer"),
-    tryCatch(async (req, res) => {
-      const query = JSON.parse(req.query.users)
-
-      const users = await UserRecruteur.find(query).lean()
-
-      return res.json(users)
-
-      /**
-       * KBA 13/10/2022 : To reuse when frontend can deal with pagination
-       * Quick fix made above for now
-       */
-      // let qs = req.query;
-      // const query = qs && qs.query ? JSON.parse(qs.query) : {};
-      // const options = qs && qs.options ? JSON.parse(qs.options) : {};
-      // const page = qs && qs.page ? qs.page : 1;
-      // const limit = qs && qs.limit ? parseInt(qs.limit, 10) : 100;
-
-      // const result = await getUsers(query, options, { page, limit });
-      // return res.json(result);
-    })
-  )
-
-  router.get(
-    "/:userId",
-    tryCatch(async (req, res) => {
-      const users = await UserRecruteur.findOne({ _id: req.params.userId }).lean()
-      let formulaire
-
-      if (users.type === ENTREPRISE) {
-        formulaire = await Recruiter.findOne({ establishment_id: users.establishment_id }).select({ jobs: 1, _id: 0 }).lean()
+        jobs = response.jobs
       }
 
-      return res.json({ ...users, ...formulaire })
-    })
+      return res.status(200).send({ ...user, jobs })
+    }
   )
 
-  router.post(
-    "/",
-    tryCatch(async (req, res) => {
+  server.post(
+    "/user",
+    {
+      schema: zRoutes.post["/user"],
+      preHandler: [],
+    },
+    async (req, res) => {
       const user = await createUser(req.body)
-      return res.json(user)
-    })
+      return res.status(200).send(user)
+    }
   )
 
-  router.put(
-    "/:userId",
-    tryCatch(async (req, res) => {
+  server.put(
+    "/user/:userId",
+    {
+      schema: zRoutes.put["/user/:userId"],
+      preHandler: [],
+    },
+    async (req, res) => {
       const userPayload = req.body
       const { userId } = req.params
 
       const exist = await UserRecruteur.findOne({ email: userPayload.email, _id: { $ne: userId } }).lean()
 
       if (exist) {
-        return res.status(400).json({ error: true, reason: "EMAIL_TAKEN" })
+        return res.status(400).send({ error: true, reason: "EMAIL_TAKEN" })
       }
 
       const user = await updateUser({ _id: userId }, userPayload)
-      return res.json(user)
-    })
+      return res.status(200).send(user)
+    }
   )
 
-  router.put(
-    "/:userId/history",
-    tryCatch(async (req, res) => {
+  server.put(
+    "/user/:userId/history",
+    {
+      schema: zRoutes.put["/user/:userId/history"],
+      preHandler: [],
+    },
+    async (req, res) => {
       const history = req.body
       const user = await updateUserValidationHistory(req.params.userId, history)
-      const { email, last_name, first_name, establishment_raison_sociale, opco } = user
+
+      if (!user) return res.status(400).send({})
+
+      const { email, last_name, first_name } = user
 
       // if user is disabled, return the user data directly
       if (history.status === ETAT_UTILISATEUR.DESACTIVE) {
         // send email to user to notify him his account has been disabled
         await mailer.sendEmail({
-          to: user.email,
+          to: email,
           subject: "Votre compte a été désactivé sur La bonne alternance",
-          template: mailTemplate["mail-compte-desactive"],
+          template: getStaticFilePath("./templates/mail-compte-desactive.mjml.ejs"),
           data: {
             images: {
-              accountDisabled: `${config.publicUrlEspacePro}/images/image-compte-desactive.png?raw=true`,
-              logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
+              accountDisabled: `${config.publicUrl}/images/image-compte-desactive.png?raw=true`,
+              logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
             },
             last_name,
             first_name,
@@ -133,7 +137,7 @@ export default () => {
             emailSupport: "mailto:labonnealternance@apprentissage.beta.gouv.fr?subject=Compte%20pro%20non%20validé",
           },
         })
-        return res.json(user)
+        return res.status(200).send(user)
       }
 
       /**
@@ -141,7 +145,7 @@ export default () => {
        */
       // if user isn't part of the OPCO, just send the user straigth back
       if (history.reason === "Ne relève pas des champs de compétences de mon OPCO") {
-        return res.json(user)
+        return res.status(200).send(user)
       }
 
       if (user.type === ENTREPRISE) {
@@ -159,11 +163,17 @@ export default () => {
         } else {
           // le compte se trouve validé et on procède à l'activation de la première offre et à la notification aux CFAs
           if (userFormulaire?.jobs?.length) {
-            const job = Object.assign(userFormulaire.jobs[0], { job_status: JOB_STATUS.ACTIVE, job_expiration_date: dayjs().add(1, "month").format("YYYY-MM-DD") })
-            await updateOffre(job._id, job)
+            const job: IJob = Object.assign(userFormulaire.jobs[0], { job_status: JOB_STATUS.ACTIVE, job_expiration_date: dayjs().add(1, "month").format("YYYY-MM-DD") })
+            await updateOffre(job._id.toString(), job)
 
             if (job?.delegations && job?.delegations.length) {
-              await Promise.all(job.delegations.map(async (delegation) => await sendDelegationMailToCFA(delegation.email, job, userFormulaire, delegation.siret_code)))
+              await Promise.all(
+                job.delegations.map(
+                  async (delegation) =>
+                    // TODO NIMP
+                    await sendDelegationMailToCFA(delegation.email as string, job, userFormulaire as any, delegation.siret_code as string)
+                )
+              )
             }
           }
         }
@@ -172,13 +182,17 @@ export default () => {
       // validate user email addresse
       await updateUser({ _id: user._id }, { is_email_checked: true })
       await sendWelcomeEmailToUserRecruteur(user)
-      return res.json(user)
-    })
+      return res.status(200).send(user)
+    }
   )
 
-  router.delete(
-    "/",
-    tryCatch(async (req, res) => {
+  server.delete(
+    "/user",
+    {
+      schema: zRoutes.delete["/user"],
+      preHandler: [],
+    },
+    async (req, res) => {
       const { userId, recruiterId } = req.query
 
       await removeUser(userId)
@@ -187,9 +201,7 @@ export default () => {
         await deleteFormulaire(recruiterId)
       }
 
-      return res.sendStatus(200)
-    })
+      return res.status(200).send({})
+    }
   )
-
-  return router
 }

@@ -1,0 +1,13 @@
+location /api {
+    set $upstream http://server:5000;
+    include includes/error_page_json.conf;
+    include includes/proxy.conf;
+}
+
+location ~* ^/api/v1/application$ {
+    client_max_body_size    5M;
+
+    set $upstream http://server:5000;
+    include includes/error_page_json.conf;
+    include includes/proxy.conf;
+}

@@ -1,30 +1,27 @@
 import { isEmailBurner } from "burner-email-providers"
-import path from "path"
-import { oleoduc, writeData } from "oleoduc"
-import { Application, LbaCompany, EmailBlacklist } from "../common/model/index.js"
-import { manageApiError } from "../common/utils/errorManager.js"
-import { decryptWithIV, encryptIdWithIV } from "../common/utils/encryptString.js"
-import { validateCaller } from "./queryValidator.service.js"
-import { logger } from "../common/logger.js"
-import { prepareMessageForMail } from "../common/utils/fileUtils.js"
-import config from "../config.js"
-import __dirname from "../common/dirname.js"
-import { BrevoEventStatus } from "./brevo.service.js"
-import mailer from "./mailer.service.js"
-import { sentryCaptureException } from "../common/utils/sentryUtils.js"
-import { IApplication } from "../common/model/schema/application/applications.types.js"
-import { IJobs } from "../common/model/schema/jobs/jobs.types.js"
-import { ILbaCompany } from "../common/model/schema/lbaCompany/lbaCompany.types.js"
-
-import { Document } from "mongoose"
 import Joi from "joi"
-import { scan } from "./clamav.service.js"
-import { getOffreAvecInfoMandataire } from "./formulaire.service.js"
-import { RECRUITER_STATUS, JOB_STATUS } from "./constant.service.js"
+import type { EnforceDocument } from "mongoose"
+import { oleoduc, writeData } from "oleoduc"
+import { IApplication, IApplicationUI, ILbaCompany } from "shared"
+
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+
+import { logger } from "../common/logger.js"
+import { Application, EmailBlacklist, LbaCompany } from "../common/model/index.js"
+import { decryptWithIV, encryptIdWithIV } from "../common/utils/encryptString.js"
+import { manageApiError } from "../common/utils/errorManager.js"
+import { prepareMessageForMail } from "../common/utils/fileUtils.js"
+import { sentryCaptureException } from "../common/utils/sentryUtils.js"
+import config from "../config.js"
+
+import { BrevoEventStatus } from "./brevo.service.js"
+import { scan } from "./clamav.service"
+import { JOB_STATUS, RECRUITER_STATUS } from "./constant.service"
+import { getOffreAvecInfoMandataire } from "./formulaire.service"
+import mailer from "./mailer.service.js"
+import { validateCaller } from "./queryValidator.service.js"
 
 const publicUrl = config.publicUrl
-const publicUrlEspacePro = config.publicUrlEspacePro
-const currentDirname = __dirname(import.meta.url)
 
 const imagePath = `${config.publicUrl}/images/emails/`
 
@@ -50,15 +47,13 @@ const images: object = {
 
 /**
  * @description Get applications by job id
- * @param {IJobs["_id"]} job_id
  */
-export const getApplication = (job_id: IJobs["_id"]) => Application.find({ job_id }).lean()
+export const getApplication = (job_id: IApplication["job_id"]) => Application.find({ job_id }).lean()
 
 /**
  * @description Get applications count by job id
- * @param {IJobs["_id"]} job_id
  */
-export const getApplicationCount = (job_id: IJobs["_id"]) => Application.count({ job_id }).lean()
+export const getApplicationCount = (job_id: IApplication["job_id"]) => Application.count({ job_id }).lean()
 
 /**
  * @description Check if an email if blacklisted.
@@ -90,21 +85,10 @@ export const addEmailToBlacklist = async (email: string, blacklistingOrigin: str
  * @param {string} messageId
  * @param {string} type
  * @param {string} email
- * @returns {Promise<IApplication & Document<any, any, IApplication>>}
+ * @returns {Promise<IApplication>}
  */
-const findApplicationByTypeAndMessageId = async ({
-  messageId,
-  type,
-  email,
-}: {
-  messageId: string
-  type: string
-  email: string
-}): Promise<IApplication & Document<any, any, IApplication>> => {
-  return await Application.findOne(
-    type === "application" ? { company_email: email, to_company_message_id: messageId } : { applicant_email: email, to_applicant_message_id: messageId }
-  )
-}
+const findApplicationByTypeAndMessageId = async ({ messageId, type, email }: { messageId: string; type: string; email: string }) =>
+  Application.findOne(type === "application" ? { company_email: email, to_company_message_id: messageId } : { applicant_email: email, to_applicant_message_id: messageId })
 
 /**
  * @description Remove an email address form all bonnesboites where it is present
@@ -127,13 +111,17 @@ export const removeEmailFromLbaCompanies = async (email: string) => {
 }
 
 /**
- * @description Send an application email to a company and a confirmation email to the applicant
- * @param {any} query
- * @param {string} referer
- * @param {boolean} shouldCheckSecret
- * @return {Promise<any>}
+ * Send an application email to a company and a confirmation email to the applicant
  */
-export const sendApplication = async ({ query, referer, shouldCheckSecret }: { query: any; referer: string; shouldCheckSecret: boolean }): Promise<any> => {
+export const sendApplication = async ({
+  query,
+  referer,
+  shouldCheckSecret,
+}: {
+  query: IApplicationUI
+  referer: string | undefined
+  shouldCheckSecret: boolean
+}): Promise<{ error: string } | { result: "ok"; message: "messages sent" }> => {
   if (shouldCheckSecret && !query.secret) {
     return { error: "secret_missing" }
   } else if (shouldCheckSecret && query.secret !== config.secretUpdateRomesMetiers) {
@@ -141,13 +129,7 @@ export const sendApplication = async ({ query, referer, shouldCheckSecret }: { q
   } else if (!validateCaller({ caller: query.caller, referer })) {
     return { error: "missing_caller" }
   } else {
-    let validationResult = await validateSendApplication(query)
-
-    if (validationResult !== "ok") {
-      return { error: validationResult }
-    }
-
-    validationResult = await validateApplicationType(query)
+    let validationResult = await validateApplicationType(query)
 
     if (validationResult !== "ok") {
       return { error: validationResult }
@@ -278,12 +260,9 @@ export const sendApplication = async ({ query, referer, shouldCheckSecret }: { q
 }
 
 /**
- * @description Build url to access item detail on LBA ui
- * @param {string} publicUrl
- * @param {any} query
- * @return {string}
+ * Build url to access item detail on LBA ui
  */
-const buildUrlOfDetail = (publicUrl: string, query: any): string => {
+const buildUrlOfDetail = (publicUrl: string, query: IApplicationUI): string => {
   const itemId = ((aCompanyType) => {
     if (aCompanyType === "peJob") {
       return query.job_id
@@ -292,7 +271,7 @@ const buildUrlOfDetail = (publicUrl: string, query: any): string => {
     } else if (aCompanyType !== "formation") {
       return query.company_siret || "siret"
     }
-  })(query.company_type)
+  })(query.company_type as string)
   const moreParams = ((aCompanyType) => {
     let res = ""
     if (aCompanyType === "matcha") {
@@ -306,21 +285,9 @@ const buildUrlOfDetail = (publicUrl: string, query: any): string => {
 }
 
 /**
- * @description Build urls to add in email messages sent to the recruiter
- * @param {string} publicUrl
- * @param {IApplication} application
- * @param {object} encryptedId
- * @return {object}
+ * Build urls to add in email messages sent to the recruiter
  */
-const buildRecruiterEmailUrls = ({
-  publicUrl,
-  application,
-  encryptedId,
-}: {
-  publicUrl: string
-  application: IApplication & Document<any, any, IApplication>
-  encryptedId: any
-}) => {
+const buildRecruiterEmailUrls = ({ publicUrl, application, encryptedId }: { publicUrl: string; application: EnforceDocument<IApplication, any>; encryptedId: any }) => {
   const utmRecruiterData = "&utm_source=jecandidate&utm_medium=email&utm_campaign=jecandidaterecruteur"
   const candidateData = `&fn=${application.toObject().applicant_first_name}&ln=${application.toObject().applicant_last_name}`
   const encryptedData = `&id=${encryptedId.id}&iv=${encryptedId.iv}`
@@ -332,8 +299,8 @@ const buildRecruiterEmailUrls = ({
     lbaRecruiterUrl: `${publicUrl}/acces-recruteur?${utmRecruiterData}`,
     unsubscribeUrl: `${publicUrl}/desinscription?email=${application.company_email}${utmRecruiterData}`,
     lbaUrl: `${publicUrl}?${utmRecruiterData}`,
-    jobProvidedUrl: `${publicUrlEspacePro}/offre/${application.job_id}/provided?${utmRecruiterData}`,
-    cancelJobUrl: `${publicUrlEspacePro}/offre/${application.job_id}/cancel?${utmRecruiterData}`,
+    jobProvidedUrl: `${publicUrl}/espace-pro/offre/${application.job_id}/provided?${utmRecruiterData}`,
+    cancelJobUrl: `${publicUrl}/espace-pro/offre/${application.job_id}/cancel?${utmRecruiterData}`,
     faqUrl: `${publicUrl}/faq?${utmRecruiterData}`,
   }
 
@@ -341,12 +308,9 @@ const buildRecruiterEmailUrls = ({
 }
 
 /**
- * @description Initialize application object from query parameters
- * @param {any} params
- * @param {string} company_email
- * @return {IApplication}
+ * Initialize application object from query parameters
  */
-const initApplication = (params: any, company_email: string) => {
+const initApplication = (params: IApplicationUI, company_email: string): EnforceDocument<IApplication, any> => {
   const res = new Application({
     ...params,
     applicant_attachment_name: params.applicant_file_name,
@@ -364,8 +328,8 @@ const initApplication = (params: any, company_email: string) => {
  * @param {string} type
  * @return {string}
  */
-export const getEmailTemplate = (type = "mail-candidat") => {
-  return path.join(currentDirname, `../assets/templates/${type}.mjml.ejs`)
+export const getEmailTemplate = (type = "mail-candidat"): string => {
+  return getStaticFilePath(`./templates/${type}.mjml.ejs`)
 }
 
 interface IApplicationTemplates {
@@ -391,70 +355,10 @@ const getEmailTemplates = (applicationType: string): IApplicationTemplates => {
   }
 }
 
-interface IApplicationParameters {
-  applicant_file_name: string
-  applicant_file_content: string
-  applicant_first_name: string
-  applicant_last_name: string
-  applicant_email: string
-  applicant_phone: string
-  company_email: string
-  iv: string
-  company_naf?: string
-  company_name?: string
-  job_id?: string
-  job_title?: string
-  company_siret?: string
-  company_type?: string
-  company_address?: string
-  caller?: string
-}
-/**
- * @description checks if values are valid for sending an application
- * @param {Partial<IApplicationParameters>} validable
- * @return {Promise<string>}
- */
-export const validateSendApplication = async (validable: Partial<IApplicationParameters>) => {
-  const schema = Joi.object({
-    applicant_file_name: Joi.string()
-      .required()
-      .pattern(/((.*?))(\.)+(docx|pdf)$/i),
-    applicant_file_content: Joi.string().required().max(4215276),
-    applicant_first_name: Joi.string().required().max(50),
-    applicant_last_name: Joi.string().required().max(50),
-    applicant_phone: Joi.string()
-      .pattern(/^0[1-9]\d{8}$/)
-      .required(),
-    applicant_email: Joi.string().email().required(),
-    company_email: Joi.string().required(),
-    iv: Joi.string().required(),
-    company_naf: Joi.string().required(),
-    company_name: Joi.string().required(),
-    job_title: Joi.string().required(),
-    company_type: Joi.string().valid("matcha", "lba").required(),
-    company_siret: Joi.string().required(),
-    company_address: Joi.string().required(),
-    job_id: Joi.optional(),
-    caller: Joi.optional(),
-    message: Joi.optional(),
-    secret: Joi.optional(),
-    crypted_company_email: Joi.optional(),
-  })
-  try {
-    await schema.validateAsync(validable)
-  } catch (err) {
-    return "données de candidature invalides"
-  }
-
-  return "ok"
-}
-
 /**
  * @description checks if job applied to is still active or exists
- * @param {Partial<IApplicationParameters>} validable
- * @return {Promise<"ok" | "offre expirée">}
  */
-export const validateJobStatus = async (validable: Partial<IApplicationParameters>) => {
+export const validateJobStatus = async (validable: Partial<IApplicationUI>): Promise<"ok" | "offre expirée"> => {
   const { company_type, job_id } = validable
 
   if (company_type === "matcha" && job_id) {
@@ -469,12 +373,9 @@ export const validateJobStatus = async (validable: Partial<IApplicationParameter
 }
 
 /**
- * @description checks if company applied to exists in base
- * @param {Partial<IApplicationParameters>} validable
- * @param {string} company_email
- * @return {Promise<"ok" | "société désinscrite" | "email société invalide">}
+ * checks if company applied to exists in base
  */
-export const validateCompany = async (validable: Partial<IApplicationParameters>, company_email: string) => {
+export const validateCompany = async (validable: Partial<IApplicationUI>, company_email: string): Promise<"ok" | "société désinscrite" | "email société invalide"> => {
   const { company_siret, company_type } = validable
 
   if (company_type === "lba") {
@@ -491,10 +392,10 @@ export const validateCompany = async (validable: Partial<IApplicationParameters>
 
 /**
  * @description checks if attachment is corrupted
- * @param {Partial<IApplicationParameters>} validable
+ * @param {Partial<IApplicationUI>} validable
  * @return {Promise<string>}
  */
-const scanFileContent = async (validable: Partial<IApplicationParameters>) => {
+const scanFileContent = async (validable: IApplicationUI): Promise<string> => {
   return (await scan(validable.applicant_file_content)) ? "pièce jointe invalide" : "ok"
 }
 
@@ -503,9 +404,7 @@ interface ICompanyEmail {
   crypted_email?: string
 }
 /**
- * @description checks if company email is valid for sending an application
- * @param {ICompanyEmail} validable
- * @return {Promise<string>}
+ * checks if company email is valid for sending an application
  */
 export const validateCompanyEmail = async (validable: ICompanyEmail): Promise<string> => {
   const schema = Joi.object({
@@ -522,12 +421,10 @@ export const validateCompanyEmail = async (validable: ICompanyEmail): Promise<st
 }
 
 /**
- * @description checks if email is not disposable
- * @param {Partial<IApplicationParameters>} validable
- * @return {Promise<string>}
+ * checks if email is not disposable
  */
-export const validatePermanentEmail = async (validable: Partial<IApplicationParameters>): Promise<string> => {
-  if (isEmailBurner(validable.applicant_email)) {
+export const validatePermanentEmail = async (validable: Partial<IApplicationUI>): Promise<string> => {
+  if (isEmailBurner(validable?.applicant_email ?? "")) {
     return "email temporaire non autorisé"
   }
   return "ok"
@@ -535,10 +432,10 @@ export const validatePermanentEmail = async (validable: Partial<IApplicationPara
 
 /**
  * @description Checks if application type matches params
- * @param {Partial<IApplicationParameters>} validable
+ * @param {Partial<IApplicationUI>} validable
  * @return {<string>}
  */
-export const validateApplicationType = (validable: Partial<IApplicationParameters>) => {
+export const validateApplicationType = (validable: Partial<IApplicationUI>) => {
   const { company_type, company_siret, job_id } = validable
   if ((company_type === "matcha" && !job_id) || (company_type === "lba" && (!company_siret || job_id))) {
     return "paramètres sociétés non autorisés"
@@ -612,7 +509,7 @@ export const sendNotificationToApplicant = async ({
   phone,
   comment,
 }: {
-  application: IApplication & Document<any, any, IApplication>
+  application: EnforceDocument<IApplication, any>
   intention: string
   email: string
   phone: string
@@ -653,12 +550,10 @@ export const sendNotificationToApplicant = async ({
 
 /**
  * @description updates application and triggers action from email webhook
- * @param {any} payload
- * @return {Promise<void>}
  */
 export const updateApplicationStatus = async ({ payload }: { payload: any }): Promise<void> => {
   /* Format payload
-      { 
+      {
         event : "unique_opened",
         id: 497470,
         date: "2021-12-27 14:12:54",
@@ -693,7 +588,7 @@ export const updateApplicationStatus = async ({ payload }: { payload: any }): Pr
   }
 
   if (event === BrevoEventStatus.HARD_BOUNCE && messageType === "application") {
-    await addEmailToBlacklist(payload.email, application.job_origin)
+    await addEmailToBlacklist(payload.email, application.job_origin ?? "unknown")
 
     if (application.job_origin === "lbb" || application.job_origin === "lba") {
       await removeEmailFromLbaCompanies(payload.email)
@@ -706,11 +601,9 @@ export const updateApplicationStatus = async ({ payload }: { payload: any }): Pr
 }
 
 /**
- * @description sends email notification to applicant if it's application hardbounced
- * @param {IApplication & Document<any, any, IApplication>} application
- * @return {Promise<void>}
+ * sends email notification to applicant if it's application hardbounced
  */
-const notifyHardbounceToApplicant = async ({ application }: { application: IApplication & Document<any, any, IApplication> }): Promise<void> => {
+const notifyHardbounceToApplicant = async ({ application }: { application: EnforceDocument<IApplication, any> }): Promise<void> => {
   mailer.sendEmail({
     to: application.applicant_email,
     subject: `Votre candidature n'a pas pu être envoyée à ${application.company_name}`,
@@ -720,11 +613,9 @@ const notifyHardbounceToApplicant = async ({ application }: { application: IAppl
 }
 
 /**
- * @description sends email notification to applicant if it's application hardbounced
- * @param {IApplication & Document<any, any, IApplication>} application
- * @return {Promise<void>}
+ * sends email notification to applicant if it's application hardbounced
  */
-const warnMatchaTeamAboutBouncedEmail = async ({ application }: { application: IApplication & Document<any, any, IApplication> }): Promise<void> => {
+const warnMatchaTeamAboutBouncedEmail = async ({ application }: { application: EnforceDocument<IApplication, any> }): Promise<void> => {
   mailer.sendEmail({
     to: config.transactionalEmail,
     subject: `Votre candidature n'a pas pu être envoyée à ${application.company_name}`,
@@ -743,7 +634,7 @@ export interface IApplicationCount {
  * @param {IJobs["_id"][]} job_ids
  * @returns {Promise<IApplicationCount[]>} token data
  */
-export const getApplicationByJobCount = async (job_ids: IJobs["_id"][]): Promise<IApplicationCount[]> => {
+export const getApplicationByJobCount = async (job_ids: IApplication["job_id"][]): Promise<IApplicationCount[]> => {
   const applicationCountByJob: IApplicationCount[] = await Application.aggregate([
     {
       $match: {

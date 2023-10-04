@@ -1,27 +1,22 @@
+import { ILbaCompany } from "shared"
+
 import { getElasticInstance } from "../common/esClient/index.js"
+import { LbaCompany } from "../common/model/index.js"
 import { encryptMailWithIV } from "../common/utils/encryptString.js"
-import { manageApiError } from "../common/utils/errorManager.js"
+import { IApiError, manageApiError } from "../common/utils/errorManager.js"
+import { roundDistance } from "../common/utils/geolib.js"
 import { isAllowedSource } from "../common/utils/isAllowedSource.js"
-import { ILbaCompany } from "../common/model/schema/lbaCompany/lbaCompany.types.js"
+import { trackApiCall } from "../common/utils/sendTrackingEvent.js"
 import { sentryCaptureException } from "../common/utils/sentryUtils.js"
 
-import { roundDistance } from "../common/utils/geolib.js"
-import { lbbMock } from "../mocks/lbbs-mock.js"
-import { LbaCompany } from "../common/model/index.js"
 import { getApplicationByCompanyCount, IApplicationCount } from "./application.service.js"
-import { trackApiCall } from "../common/utils/sendTrackingEvent.js"
-import { LbaItem } from "./lbaitem.shared.service.types.js"
 import { TLbaItemResult } from "./jobOpportunity.service.types.js"
+import { ILbaItemLbaCompany } from "./lbaitem.shared.service.types.js"
 
 const esClient = getElasticInstance()
 
 /**
  * Adaptation au modèle LBA d'une société issue de l'algo
- * @param {ILbaCompany} company une société issue de l'algo
- * @param {string} caller l'identifiant de l'appelant de l'api
- * @param {boolean} contactAllowedOrigin flag indiquant si les données privées peuvent être retournées
- * @param {IApplicationCount[]} applicationCountByCompany map des nombres de candidatures par sociétés
- * @return {ILbaItem}
  */
 const transformCompany = ({
   company,
@@ -30,66 +25,63 @@ const transformCompany = ({
   applicationCountByCompany,
 }: {
   company: ILbaCompany
-  caller: string
+  caller?: string | null
   contactAllowedOrigin: boolean
   applicationCountByCompany: IApplicationCount[]
-}) => {
-  const resultCompany = new LbaItem("lba")
-
-  resultCompany.title = company.enseigne
-  const email = encryptMailWithIV({ value: company.email !== "null" ? company.email : "", caller })
-
-  resultCompany.contact = {
-    ...email,
+}): ILbaItemLbaCompany => {
+  const contact: {
+    email?: string
+    iv?: string
+    phone?: string | null
+  } = {
+    ...encryptMailWithIV({ value: company.email !== "null" ? company.email : "", caller }),
   }
 
   if (contactAllowedOrigin) {
-    resultCompany.contact.phone = company.phone
+    contact.phone = company.phone
   }
-
   // format différent selon accès aux bonnes boîtes par recherche ou par siret
   const address = `${company.street_name ? `${company.street_number ? `${company.street_number} ` : ""}${company.street_name}, ` : ""}${company.zip_code} ${company.city}`.trim()
 
-  resultCompany.place = {
-    distance: company.distance?.length ? roundDistance(company.distance[0]) ?? 0 : null,
-    fullAddress: address,
-    latitude: company.geo_coordinates.split(",")[0],
-    longitude: company.geo_coordinates.split(",")[1],
-    city: company.city,
-    address,
-  }
-
-  resultCompany.company = {
-    name: company.enseigne,
-    siret: company.siret,
-    size: company.company_size,
-    url: company.website,
-    opco: {
-      label: company.opco,
-      url: company.opco_url,
-    },
-  }
-
-  resultCompany.nafs = [
-    {
-      code: company.naf_code,
-      label: company.naf_label,
-    },
-  ]
-
   const applicationCount = applicationCountByCompany.find((cmp) => company.siret == cmp._id)
-  resultCompany.applicationCount = applicationCount?.count || 0
+
+  const resultCompany: ILbaItemLbaCompany = {
+    ideaType: "lba",
+    title: company.enseigne,
+    contact,
+    place: {
+      distance: company.distance?.length ? roundDistance(company.distance[0]) ?? 0 : null,
+      fullAddress: address,
+      latitude: parseFloat(company.geo_coordinates.split(",")[0]),
+      longitude: parseFloat(company.geo_coordinates.split(",")[1]),
+      city: company.city,
+      address,
+    },
+    company: {
+      name: company.enseigne,
+      siret: company.siret,
+      size: company.company_size,
+      url: company.website,
+      opco: {
+        label: company.opco,
+        url: company.opco_url,
+      },
+    },
+    nafs: [
+      {
+        code: company.naf_code,
+        label: company.naf_label,
+      },
+    ],
+    applicationCount: applicationCount?.count || 0,
+    url: null,
+  }
 
   return resultCompany
 }
 
 /**
  * Transformer au format unifié une liste de sociétés issues de l'algo
- * @param {ILbaCompany[]} companies
- * @param {string} referer
- * @param {string} caller
- * @param {IApplicationCount[]} applicationCountByCompany
- * @returns {{ results: LbaItem[]}}
  */
 const transformCompanies = ({
   companies = [],
@@ -98,11 +90,11 @@ const transformCompanies = ({
   applicationCountByCompany,
 }: {
   companies: ILbaCompany[]
-  referer: string
-  caller: string
+  referer?: string
+  caller?: string | null
   applicationCountByCompany: IApplicationCount[]
-}) => {
-  const transformedCompanies: { results: LbaItem[] } = { results: [] }
+}): { results: ILbaItemLbaCompany[] } => {
+  const transformedCompanies: { results: ILbaItemLbaCompany[] } = { results: [] }
 
   if (companies?.length) {
     transformedCompanies.results = companies.map((company) => {
@@ -155,16 +147,6 @@ const getCompanyEsQueryIndexFragment = (limit: number) => {
 
 /**
  * Retourne des sociétés issues de l'algo matchant les critères en paramètres
- * @param {string} romes une liste de codes ROME séparés par des virgules
- * @param {string} latitude la latitude du centre de recherche
- * @param {string} longitude la latitude du centre de recherche
- * @param {number} radius le rayon de recherche
- * @param {number} companyLimit le nombre maximum de sociétés à retourner
- * @param {string} caller l'identifiant de l'utilisateur de l'api qui a lancé la recherche
- * @param {string} opco un filtre sur l'opco auquel doivent être rattachés les sociétés
- * @param {string} opcoUrl un filtre sur l'url de l'opco auquel doivent être rattachés les sociétés
- * @param {string} api l'identifiant du endpoint api utilisé pour exploiter cette fonction
- * @returns {Promise<ILbaCompany[] | IApiError>}
  */
 const getCompanies = async ({
   romes,
@@ -177,23 +159,23 @@ const getCompanies = async ({
   opcoUrl,
   api = "jobV1",
 }: {
-  romes: string
-  latitude: string
-  longitude: string
-  radius: number
+  romes?: string
+  latitude?: number
+  longitude?: number
+  radius?: number
   companyLimit: number
-  caller?: string
+  caller?: string | null
   opco?: string
   opcoUrl?: string
   api: string
-}) => {
+}): Promise<ILbaCompany[] | IApiError> => {
   try {
     const distance = radius || 10
 
     const mustTerm: object[] = [
       {
         match: {
-          rome_codes: romes.split(",").join(" "),
+          rome_codes: romes?.split(",").join(" "),
         },
       },
     ]
@@ -221,7 +203,7 @@ const getCompanies = async ({
         latitude
           ? {
               _geo_distance: {
-                geo_coordinates: [parseFloat(longitude), parseFloat(latitude)],
+                geo_coordinates: [longitude ?? 0, latitude ?? 0],
                 order: "asc",
                 unit: "km",
                 mode: "min",
@@ -275,6 +257,12 @@ const getCompanies = async ({
 
     if (!latitude) {
       companies.sort(function (a, b) {
+        if (!a || !a.enseigne) {
+          return -1
+        }
+        if (!b || !b.enseigne) {
+          return 1
+        }
         return a.enseigne.toLowerCase().localeCompare(b.enseigne.toLowerCase())
       })
     }
@@ -288,17 +276,6 @@ const getCompanies = async ({
 /**
  * Retourne des sociétés issues de l'algo au format unifié LBA
  * Les sociétés retournées sont celles matchant les critères en paramètres
- * @param {string} romes une liste de codes ROME séparés par des virgules
- * @param {string} latitude la latitude du centre de recherche
- * @param {string} longitude la latitude du centre de recherche
- * @param {number} radius le rayon de recherche
- * @param {string} referer le referer de la requête pour identifier si l'appel est de LBA ou d'un service tiers
- * @param {string} caller l'identifiant de l'utilisateur de l'api qui a lancé la recherche
- * @param {string} opco un filtre sur l'opco auquel doivent être rattachés les sociétés
- * @param {string} opcoUrl un filtre sur l'url de l'opco auquel doivent être rattachés les sociétés
- * @param {string} api l'identifiant du endpoint api utilisé pour exploiter cette fonction
- * @param {string} useMock un paramètre optionnel indiquant qu'il faut retourner des données mockées
- * @returns {Promise<TLbaItemResult>}
  */
 export const getSomeCompanies = async ({
   romes,
@@ -310,56 +287,59 @@ export const getSomeCompanies = async ({
   opco,
   opcoUrl,
   api = "jobV1",
-  useMock,
 }: {
-  romes: string
-  latitude: string
-  longitude: string
-  radius: number
-  referer: string
-  caller: string
-  opco: string
-  opcoUrl: string
-  api: string
-  useMock: string
-}): Promise<TLbaItemResult> => {
+  romes?: string
+  latitude?: number
+  longitude?: number
+  radius?: number
+  referer?: string
+  caller?: string | null
+  opco?: string
+  opcoUrl?: string
+  api?: string
+}): Promise<TLbaItemResult<ILbaItemLbaCompany>> => {
   const hasLocation = latitude === undefined ? false : true
   const currentRadius = hasLocation ? radius : 21000
   const companyLimit = 150 //TODO: query params options or default value from properties -> size || 100
 
-  if (useMock && useMock !== "false") {
-    return { results: [lbbMock] }
-  } else {
-    const companies = await getCompanies({
-      romes,
-      latitude,
-      longitude,
-      radius: currentRadius,
-      companyLimit,
-      caller,
-      api,
-      opco,
-      opcoUrl,
-    })
+  const companies = await getCompanies({
+    romes,
+    latitude,
+    longitude,
+    radius: currentRadius,
+    companyLimit,
+    caller,
+    api,
+    opco,
+    opcoUrl,
+  })
 
-    if (!("error" in companies) && companies instanceof Array) {
-      const sirets = companies.map(({ siret }) => siret)
-      const applicationCountByCompany = await getApplicationByCompanyCount(sirets)
-      return transformCompanies({ companies, referer, caller, applicationCountByCompany })
-    } else {
-      return companies
-    }
+  if (!("error" in companies) && companies instanceof Array) {
+    const sirets = companies.map(({ siret }) => siret)
+    const applicationCountByCompany = await getApplicationByCompanyCount(sirets)
+    return transformCompanies({ companies, referer, caller, applicationCountByCompany })
+  } else {
+    return companies
   }
 }
 
 /**
  * Retourne une société issue de l'algo identifiée par sont SIRET
- * @param {string} siret
- * @param {string} referer
- * @param {string} caller
- * @returns {Promise<IApiError | { lbaCompanies: LbaItem[] }>}
  */
-export const getCompanyFromSiret = async ({ siret, referer, caller }: { siret: string; referer: string; caller: string }) => {
+export const getCompanyFromSiret = async ({
+  siret,
+  referer,
+  caller,
+}: {
+  siret: string
+  referer: string | undefined
+  caller: string | undefined
+}): Promise<
+  | IApiError
+  | {
+      lbaCompanies: ILbaItemLbaCompany[]
+    }
+> => {
   try {
     const lbaCompany = await LbaCompany.findOne({ siret })
 
@@ -403,7 +383,7 @@ export const getCompanyFromSiret = async ({ siret, referer, caller }: { siret: s
  * @param {string} phone
  * @returns {Promise<ILbaCompany | string>}
  */
-export const updateContactInfo = async ({ siret, email, phone }: { siret: string; email: string; phone: string }): Promise<ILbaCompany | string> => {
+export const updateContactInfo = async ({ siret, email, phone }: { siret: string; email: string; phone: string }) => {
   try {
     const lbaCompany = await LbaCompany.findOne({ siret })
 

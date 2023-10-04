@@ -1,12 +1,14 @@
-import axios from "axios"
-import { pipeline } from "stream/promises"
 import { createReadStream } from "node:fs"
 import { writeFile } from "node:fs/promises"
+import { pipeline } from "stream/promises"
+
+import axios from "axios"
 import { oleoduc, transformData, writeData, filterData } from "oleoduc"
-import { logger } from "../../common/logger.js"
-import { parseCsv } from "../../common/utils/fileUtils.js"
-import { ReferentielOnisep } from "../../common/model/index.js"
-import { notifyToSlack } from "../../common/utils/slackUtils.js"
+
+import { logger } from "../../common/logger"
+import { ReferentielOnisep } from "../../common/model/index"
+import { parseCsv } from "../../common/utils/fileUtils"
+import { notifyToSlack } from "../../common/utils/slackUtils"
 
 type TCsvRow = {
   "ID formation MA": string

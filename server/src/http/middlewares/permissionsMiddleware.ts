@@ -1,10 +1,20 @@
-export default (role = {}) => {
-  return async (req, res, next) => {
-    const { user } = req
-    if (user && user.role === role) {
-      next()
-    } else {
-      return res.status(401).send("Not authorized")
+import Boom from "boom"
+import { FastifyRequest } from "fastify"
+
+import { IRole, ROLES } from "@/services/constant.service"
+
+export function permissionsMiddleware(role: IRole) {
+  return async (req: FastifyRequest) => {
+    if (!req.user) {
+      throw Boom.forbidden()
+    }
+    if (!("role" in req.user)) {
+      throw Boom.forbidden()
+    }
+    if (req.user.role !== role) {
+      throw Boom.forbidden()
     }
   }
 }
+
+export const administratorOnly = permissionsMiddleware(ROLES.administrator)

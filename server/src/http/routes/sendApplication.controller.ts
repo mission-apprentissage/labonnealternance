@@ -1,48 +1,27 @@
-// @ts-nocheck
-import express from "express"
-import rateLimit from "express-rate-limit"
-import { ObjectId } from "mongodb"
-import { Application } from "../../common/model/index.js"
-import { sendApplication, sendNotificationToApplicant, updateApplicationStatus, validateFeedbackApplicationComment } from "../../services/application.service.js"
-import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
-import { decryptWithIV } from "../../common/utils/encryptString.js"
-import { sentryCaptureException } from "../../common/utils/sentryUtils.js"
+import mongoose from "mongoose"
+import { zRoutes } from "shared/index"
 
-const limiter1Per5Second = rateLimit({
-  windowMs: 5000, // 5 seconds
-  max: 1, // limit each IP to 1 request per windowMs
-})
+import { Application } from "../../common/model/index"
+import { decryptWithIV } from "../../common/utils/encryptString"
+import { sentryCaptureException } from "../../common/utils/sentryUtils"
+import { sendNotificationToApplicant, updateApplicationStatus, validateFeedbackApplicationComment } from "../../services/application.service"
+import { Server } from "../server"
 
-export default function (components) {
-  const router = express.Router()
+const config = {
+  rateLimit: {
+    max: 1,
+    timeWindow: "5s",
+  },
+} as const
 
-  router.post(
-    "/",
-    limiter1Per5Second,
-    tryCatch(async (req, res) => {
-      const result = await sendApplication({
-        shouldCheckSecret: req.body.secret ? true : false,
-        query: req.body,
-        referer: req.headers.referer,
-        ...components,
-      })
-
-      if (result.error) {
-        if (result.error === "error_sending_application") {
-          res.status(500)
-        } else {
-          res.status(400)
-        }
-      }
-
-      return res.json(result)
-    })
-  )
-
-  router.post(
-    "/intentionComment",
-    limiter1Per5Second,
-    tryCatch(async (req, res) => {
+export default function (server: Server) {
+  server.post(
+    "/application/intentionComment",
+    {
+      schema: zRoutes.post["/application/intentionComment"],
+      config,
+    },
+    async (req, res) => {
       // email and phone should appear
       await validateFeedbackApplicationComment({
         id: req.body.id,
@@ -54,11 +33,12 @@ export default function (components) {
 
       try {
         const application = await Application.findOneAndUpdate(
-          { _id: ObjectId(decryptedId) },
+          { _id: new mongoose.Types.ObjectId(decryptedId) },
           { company_recruitment_intention: req.body.intention, company_feedback: req.body.comment, company_feedback_date: new Date() }
         )
+        if (!application) throw new Error("application not found")
 
-        sendNotificationToApplicant({
+        await sendNotificationToApplicant({
           application,
           intention: req.body.intention,
           email: req.body.email,
@@ -66,37 +46,24 @@ export default function (components) {
           comment: req.body.comment,
         })
 
-        return res.json({ result: "ok", message: "comment registered" })
+        return res.status(200).send({ result: "ok", message: "comment registered" })
       } catch (err) {
         console.error("err ", err)
         sentryCaptureException(err)
-        return res.json({ error: "error_saving_comment" })
+        // TODO: return 500
+        return res.status(200).send({ error: "error_saving_comment" })
       }
-    })
+    }
   )
 
-  router.post(
-    "/webhook",
-    tryCatch(async (req, res) => {
-      updateApplicationStatus({ payload: req.body })
-      return res.json({ result: "ok" })
-    })
+  server.post(
+    "/application/webhook",
+    {
+      schema: zRoutes.post["/application/webhook"],
+    },
+    async (req, res) => {
+      await updateApplicationStatus({ payload: req.body })
+      return res.status(200).send({ result: "ok" })
+    }
   )
-
-  router.get(
-    "/webhook",
-    tryCatch(async (req, res) => {
-      if (!req.query.secret) {
-        logger.error("Debugging Brevo webhook : secret missing")
-      } else if (req.query.secret !== config.secretUpdateRomesMetiers) {
-        logger.error("Debugging Brevo webhook : wrong secret")
-      } else {
-        updateApplicationStatus({ payload: { ...query, secret: "" } })
-      }
-
-      return res.json({ result: "ok" })
-    })
-  )
-
-  return router
 }

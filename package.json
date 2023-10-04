@@ -2,23 +2,54 @@
   "name": "mna-lba",
   "description": "Plateforme de recherche de formation et d'offres en apprentissage",
   "repository": "https://github.com/mission-apprentissage/labonnealternance.git",
-  "version": "1.32.1",
-  "author": "Mission apprentissage",
+  "version": "0.0.0",
+  "author": "MNA",
   "license": "MIT",
-  "private": "false",
+  "packageManager": "yarn@3.6.1",
+  "engines": {
+    "node": ">=20",
+    "npm": "please-use-yarn"
+  },
+  "workspaces": [
+    "ui",
+    "server",
+    "shared"
+  ],
   "scripts": {
-    "prepare": "husky install",
-    "docker:start": "docker-compose up -d --build --force-recreate",
-    "docker:stop": "docker-compose stop",
-    "lint": "yarn --cwd server lint && yarn --cwd ui lint && yarn --cwd ui_espace_pro lint",
-    "lint:staged": "lint-staged",
-    "prettier:fix": "prettier --write ./server ./ui ./ui_espace_pro",
-    "prettier:check": "prettier --check ./server ./ui ./ui_espace_pro",
-    "hook:pre-commit": "bash ./hooks/preventSensibleFilesCommit.sh && yarn lint-staged && yarn node-talisman --githook pre-commit",
-    "hook:commit-msg": "commitlint --config package.json --edit ${1}",
-    "npm:release": "semantic-release",
-    "npm:release:local": "CI=true LOCAL_RELEASE=true semantic-release",
+    "setup": ".bin/mna-lba init:env",
+    "dev": "yarn services:start; yarn foreach:parallel run dev",
+    "cli": "yarn workspace server cli",
+    "seed": "./.bin/mna-lba seed:apply",
+    "seed:es": "./.bin/mna-lba seed:es",
+    "deploy": "./.bin/mna-lba deploy",
+    "build": "yarn foreach:seq run build",
+    "migrations:status": "yarn cli migrations:status",
+    "migrations:up": "yarn cli migrations:up",
+    "migration:create": "yarn cli migrations:create",
+    "server:dev": "yarn workspace server dev",
+    "ui:dev": "yarn workspace ui dev",
+    "services:start": "docker compose up --remove-orphans -d",
+    "services:stop": "docker compose down",
+    "services:clean": "yarn services:stop; docker system prune --volumes",
+    "seed:update": "./.bin/mna-lba seed:update",
+    "lint": "eslint --ignore-path .gitignore --cache --ext .js,.jsx,.ts,.tsx .",
+    "lint:fix": "yarn lint --fix",
+    "prettier:fix": "prettier --write  -u .",
+    "prettier:check": "prettier --check -u .",
+    "release": "semantic-release",
+    "release:interactive": "./.bin/mna-lba release:interactive",
+    "postinstall": "husky install",
     "talisman:add-exception": "yarn node-talisman --githook pre-commit -i",
+    "test": "vitest",
+    "test:ci": "yarn test --run",
+    "test:ci:coverage": "yarn test:ci --coverage.include='ui' --coverage.include='server/src' --coverage.include='shared' --coverage.provider='v8' --coverage.enabled --coverage.all --coverage.exclude='**/tests' --coverage.exclude='**/.next'",
+    "test:watch": "vitest --watch",
+    "typecheck": "yarn foreach:parallel run typecheck",
+    "typecheck:ci": "yarn foreach:ci run typecheck",
+    "vault:edit": ".bin/mna-lba vault:edit",
+    "foreach:seq": "yarn workspaces foreach -Av --exclude mna-lba",
+    "foreach:parallel": "yarn foreach:seq -pi",
+    "foreach:ci": "yarn foreach:seq -p",
     "e2e": "cypress open",
     "e2e:headless": "cypress run",
     "e2e:production": "cypress run --env host=https://labonnealternance-recette.apprentissage.beta.gouv.fr",
@@ -26,29 +57,41 @@
     "e2e:convert2": "node cypress/convertRecords.mjs",
     "e2e:specific": "cypress run --spec=./cypress/e2e/ui/send-job-application.cy.js --env host=localhost"
   },
+  "dependencies": {
+    "husky": "^8.0.3"
+  },
   "devDependencies": {
     "@commitlint/cli": "^17.1.2",
     "@commitlint/config-conventional": "^17.1.0",
     "@cypress/chrome-recorder": "^2.3.1",
+    "@eslint-community/eslint-plugin-eslint-comments": "^4.1.0",
     "@semantic-release/changelog": "^6.0.2",
     "@semantic-release/exec": "^6.0.3",
     "@semantic-release/git": "^10.0.1",
+    "@typescript-eslint/eslint-plugin": "^6.7.2",
+    "@typescript-eslint/parser": "^6.7.2",
+    "cross-env": "^7.0.3",
     "cypress": "^12.14.0",
     "dotenv": "^16.1.4",
-    "eslint": "^8.27.0",
-    "eslint-config-next": "^13.0.3",
-    "eslint-config-prettier": "^8.5.0",
-    "eslint-plugin-import": "^2.26.0",
-    "eslint-plugin-jsx-a11y": "^6.6.1",
-    "eslint-plugin-mocha": "^10.1.0",
-    "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-prettier": "^4.2.1",
-    "husky": "^8.0.2",
-    "lint-staged": "^13.0.3",
-    "node-talisman": "^1.29.9",
-    "prettier": "^2.7.1",
-    "semantic-release": "^19.0.5",
-    "semantic-release-slack-bot": "^3.5.3"
+    "eslint": "^8.49.0",
+    "eslint-config-next": "^13.4.19",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-import-resolver-typescript": "^3.6.0",
+    "eslint-plugin-cypress": "^2.15.1",
+    "eslint-plugin-import": "^2.28.1",
+    "eslint-plugin-jsx-a11y": "^6.7.1",
+    "eslint-plugin-n": "^16.1.0",
+    "eslint-plugin-simple-import-sort": "^10.0.0",
+    "eslint-plugin-unused-imports": "^3.0.0",
+    "lint-staged": "^14.0.1",
+    "node-talisman": "^1.29.10",
+    "prettier": "^3.0.3",
+    "semantic-release": "^21.1.1",
+    "semantic-release-slack-bot": "^4.0.2",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.2.2",
+    "vite-tsconfig-paths": "^4.2.1",
+    "vitest": "^0.34.4"
   },
   "commitlint": {
     "extends": [
@@ -63,18 +106,12 @@
     "trailingComma": "es5"
   },
   "lint-staged": {
-    "./server/*.{js, ts}": [
-      "eslint --cache --fix ./server/src ./server/tests"
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --ignore-path .gitignore --cache --fix",
+      "prettier --write -u"
     ],
-    "./ui/*.{js, jsx, tsx}": [
-      "yarn --cwd ui eslint"
-    ],
-    "./ui_espace_pro/*.{js, jsx, tsx}": [
-      "yarn --cwd ui_espace_pro lint"
-    ],
-    "*.{js, jsx}": [
-      "prettier --write ./ui ./server ./ui_espace_pro"
-    ],
-    "*.{md, json, html}": "prettier --write ./ui ./server ./ui_espace_pro"
+    "*": [
+      "prettier --write -u"
+    ]
   }
 }

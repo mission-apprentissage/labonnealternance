@@ -1,24 +1,27 @@
-// @ts-nocheck
 import axios from "axios"
-import __dirname from "../../common/dirname.js"
-import { getDistanceInKm } from "../../common/utils/geolib.js"
-import { FormationCatalogue } from "../../common/model/index.js"
-import { asyncForEach } from "../../common/utils/asyncUtils.js"
-import { createXLSXFile } from "../../common/utils/fileUtils.js"
-import { runScript } from "../scriptWrapper.js"
+
+import __dirname from "../../common/dirname"
+import { FormationCatalogue } from "../../common/model/index"
+import { asyncForEach } from "../../common/utils/asyncUtils"
+import { createXLSXFile } from "../../common/utils/fileUtils"
+import { getDistanceInKm } from "../../common/utils/geolib"
+import { runScript } from "../scriptWrapper"
+
+// @ts-expect-error
+// eslint-disable-next-line import/no-unresolved, import/extensions
 import jeunes from "./jeunes.json" assert { type: "json" }
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
 runScript(async () => {
-  const buffer = []
+  const buffer: any[] = []
 
-  await asyncForEach(jeunes, async (jeune, index, array) => {
+  await asyncForEach(jeunes, async (jeune: any, index) => {
     if (!jeune.email_contact) return
 
-    console.log(`${index}/${array.length}`)
+    console.log(`${index}/${jeunes.length}`)
 
-    let formation = []
+    let formation: any[] = []
 
     formation = await FormationCatalogue.find({
       $or: [
@@ -83,7 +86,7 @@ runScript(async () => {
 
         const [origineLat, origineLong] = features[0].geometry.coordinates
 
-        const distanceBuffer = []
+        const distanceBuffer: any[] = []
         //prendre la formation la plus proche par rapport à la géoloc trouvé
         formation.map((form) => {
           if (!form.lieu_formation_geo_coordonnees) return

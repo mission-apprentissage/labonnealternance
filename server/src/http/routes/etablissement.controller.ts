@@ -1,54 +1,65 @@
 import Boom from "boom"
-import express from "express"
-import Joi from "joi"
 import * as _ from "lodash-es"
-import { mailTemplate } from "../../assets/index.js"
-import { mailType } from "../../common/model/constants/etablissement.js"
-import { referrers } from "../../common/model/constants/referrers.js"
-import dayjs from "../../services/dayjs.service.js"
-import config from "../../config.js"
-import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
-import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service.js"
-import * as appointmentService from "../../services/appointment.service.js"
-import mailer from "../../services/mailer.service.js"
-import { Etablissement } from "../../common/model/index.js"
+import { IAppointment, zRoutes } from "shared"
+import { referrers } from "shared/constants/referers"
 
-const optOutUnsubscribeSchema = Joi.object({
-  opt_out_question: Joi.string().optional(),
-})
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 
-const patchEtablissementIdAppointmentIdReadAppointSchema = Joi.object({
-  has_been_read: Joi.boolean().required(),
-})
+import { mailType } from "../../common/model/constants/etablissement"
+import { Appointment, Etablissement } from "../../common/model/index"
+import config from "../../config"
+import * as appointmentService from "../../services/appointment.service"
+import dayjs from "../../services/dayjs.service"
+import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service"
+import mailer from "../../services/mailer.service"
+import { Server } from "../server"
+
+const etablissementProjection = {
+  optout_refusal_date: 1,
+  raison_sociale: 1,
+  formateur_siret: 1,
+  formateur_address: 1,
+  formateur_zip_code: 1,
+  formateur_city: 1,
+  premium_refusal_date: 1,
+  premium_activation_date: 1,
+  gestionnaire_siret: 1,
+  premium_affelnet_refusal_date: 1,
+  premium_affelnet_activation_date: 1,
+}
 
 /**
- * @description Etablissement Router.
+ * @description Etablissement server.
  */
-export default () => {
-  const router = express.Router()
-
+export default (server: Server) => {
   /**
    * @description Returns etablissement from its id.
    */
-  router.get(
-    "/:id",
-    tryCatch(async (req, res) => {
-      const etablissement = await Etablissement.findById(req.params.id)
+  server.get(
+    "/etablissements/:id",
+    {
+      schema: zRoutes.get["/etablissements/:id"],
+    },
+    async (req, res) => {
+      const etablissement = await Etablissement.findById(req.params.id, etablissementProjection).lean()
 
       if (!etablissement) {
-        return res.sendStatus(404)
+        throw Boom.notFound()
       }
 
       return res.send(etablissement)
-    })
+    }
   )
 
   /**
    * @description Accepts "Premium Affelnet".
    */
-  router.post(
-    "/:id/premium/affelnet/accept",
-    tryCatch(async (req, res) => {
+  server.post(
+    "/etablissements/:id/premium/affelnet/accept",
+    {
+      schema: zRoutes.post["/etablissements/:id/premium/affelnet/accept"],
+    },
+    async (req, res) => {
       const etablissement = await Etablissement.findById(req.params.id)
 
       if (!etablissement) {
@@ -59,15 +70,19 @@ export default () => {
         throw Boom.badRequest("Premium already activated.")
       }
 
+      if (!etablissement.gestionnaire_email) {
+        throw Boom.badRequest("Gestionnaire email not found")
+      }
+
       const mailAffelnet = await mailer.sendEmail({
         to: etablissement.gestionnaire_email,
         subject: `La prise de RDV est activée pour votre CFA sur Choisir son affectation après la 3e`,
-        template: mailTemplate["mail-cfa-premium-start"],
+        template: getStaticFilePath("./templates/mail-cfa-premium-start.mjml.ejs"),
         data: {
           isAffelnet: true,
           images: {
-            logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
-            logoFooter: `${config.publicUrlEspacePro}/assets/logo-republique-francaise.png?raw=true`,
+            logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
+            logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.png?raw=true`,
           },
           etablissement: {
             name: etablissement.raison_sociale,
@@ -108,17 +123,18 @@ export default () => {
       await Promise.all(
         emailsAffelnet.map((email) =>
           mailer.sendEmail({
-            to: email,
+            // TODO string | null
+            to: email as string,
             subject: `La prise de RDV est activée pour votre CFA sur Choisir son affectation après la 3e`,
-            template: mailTemplate["mail-cfa-premium-activated"],
+            template: getStaticFilePath("./templates/mail-cfa-premium-activated.mjml.ejs"),
             data: {
               isAffelnet: true,
               url: config.publicUrl,
               replyTo: `${config.publicEmail}?subject=Email%20CFA%20Premium%20invite%20-%20MAJ%20contact%20formation`,
               images: {
-                logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
-                logoFooter: `${config.publicUrlEspacePro}/assets/logo-republique-francaise.png?raw=true`,
-                peopleLaptop: `${config.publicUrlEspacePro}/assets/people-laptop.png?raw=true`,
+                logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
+                logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.png?raw=true`,
+                peopleLaptop: `${config.publicUrl}/assets/people-laptop.png?raw=true`,
               },
               etablissement: {
                 name: etablissement.raison_sociale,
@@ -127,7 +143,7 @@ export default () => {
                 formateur_city: etablissement.formateur_city,
                 siret: etablissement.formateur_siret,
                 email: etablissement.gestionnaire_email,
-                premiumActivatedDate: dayjs(etablissementAffelnetUpdated.premium_affelnet_activation_date).format("DD/MM"),
+                premiumActivatedDate: dayjs(etablissementAffelnetUpdated?.premium_affelnet_activation_date).format("DD/MM"),
                 emailGestionnaire: etablissement.gestionnaire_email,
               },
               user: {
@@ -139,7 +155,7 @@ export default () => {
       )
 
       const [resultAffelnet] = await Promise.all([
-        Etablissement.findById(req.params.id),
+        Etablissement.findById(req.params.id, etablissementProjection).lean(),
         ...eligibleTrainingsForAppointmentsAffelnetFound.map((eligibleTrainingsForAppointment) =>
           eligibleTrainingsForAppointmentService.update(
             { _id: eligibleTrainingsForAppointment._id, lieu_formation_email: { $nin: [null, ""] } },
@@ -149,17 +165,22 @@ export default () => {
           )
         ),
       ])
-
+      if (!resultAffelnet) {
+        throw new Error(`unexpected: could not find etablissement with id=${req.params.id}`)
+      }
       return res.send(resultAffelnet)
-    })
+    }
   )
 
   /**
    * @description Accepts "Premium Parcoursup".
    */
-  router.post(
-    "/:id/premium/accept",
-    tryCatch(async (req, res) => {
+  server.post(
+    "/etablissements/:id/premium/accept",
+    {
+      schema: zRoutes.post["/etablissements/:id/premium/accept"],
+    },
+    async (req, res) => {
       const etablissement = await Etablissement.findById(req.params.id)
 
       if (!etablissement) {
@@ -170,15 +191,19 @@ export default () => {
         throw Boom.badRequest("Premium Parcoursup already activated.")
       }
 
+      if (!etablissement.gestionnaire_email) {
+        throw Boom.badRequest("Gestionnaire email not found")
+      }
+
       const mailParcoursup = await mailer.sendEmail({
         to: etablissement.gestionnaire_email,
         subject: `La prise de RDV est activée pour votre CFA sur Parcoursup`,
-        template: mailTemplate["mail-cfa-premium-start"],
+        template: getStaticFilePath("./templates/mail-cfa-premium-start.mjml.ejs"),
         data: {
           isParcoursup: true,
           images: {
-            logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
-            logoFooter: `${config.publicUrlEspacePro}/assets/logo-republique-francaise.png?raw=true`,
+            logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
+            logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.png?raw=true`,
           },
           etablissement: {
             name: etablissement.raison_sociale,
@@ -222,17 +247,18 @@ export default () => {
       await Promise.all(
         emailsParcoursup.map((email) =>
           mailer.sendEmail({
-            to: email,
+            // TODO string | null
+            to: email as string,
             subject: `La prise de RDV est activée pour votre CFA sur Parcoursup`,
-            template: mailTemplate["mail-cfa-premium-activated"],
+            template: getStaticFilePath("./templates/mail-cfa-premium-activated.mjml.ejs"),
             data: {
               isParcoursup: true,
               url: config.publicUrl,
               replyTo: `${config.publicEmail}?subject=Email%20CFA%20Premium%20invite%20-%20MAJ%20contact%20formation`,
               images: {
-                logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
-                logoFooter: `${config.publicUrlEspacePro}/assets/logo-republique-francaise.png?raw=true`,
-                peopleLaptop: `${config.publicUrlEspacePro}/assets/people-laptop.png?raw=true`,
+                logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
+                logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.png?raw=true`,
+                peopleLaptop: `${config.publicUrl}/assets/people-laptop.png?raw=true`,
               },
               etablissement: {
                 name: etablissement.raison_sociale,
@@ -241,7 +267,7 @@ export default () => {
                 formateur_city: etablissement.formateur_city,
                 siret: etablissement.formateur_siret,
                 email: etablissement.gestionnaire_email,
-                premiumActivatedDate: dayjs(etablissementParcoursupUpdated.premium_activation_date).format("DD/MM"),
+                premiumActivatedDate: dayjs(etablissementParcoursupUpdated?.premium_activation_date).format("DD/MM"),
                 emailGestionnaire: etablissement.gestionnaire_email,
               },
               user: {
@@ -263,17 +289,22 @@ export default () => {
           )
         ),
       ])
-
+      if (!result) {
+        throw new Error(`unexpected: could not find etablissement with id=${req.params.id}`)
+      }
       return res.send(result)
-    })
+    }
   )
 
   /**
    * @description Refuses "Premium Affelnet"
    */
-  router.post(
-    "/:id/premium/affelnet/refuse",
-    tryCatch(async (req, res) => {
+  server.post(
+    "/etablissements/:id/premium/affelnet/refuse",
+    {
+      schema: zRoutes.post["/etablissements/:id/premium/affelnet/refuse"],
+    },
+    async (req, res) => {
       const etablissement = await Etablissement.findById(req.params.id)
 
       if (!etablissement) {
@@ -288,16 +319,20 @@ export default () => {
         throw Boom.badRequest("Premium Affelnet already activated.")
       }
 
+      if (!etablissement.gestionnaire_email) {
+        throw Boom.badRequest("Gestionnaire email not found")
+      }
+
       const mailAffelnet = await mailer.sendEmail({
         to: etablissement.gestionnaire_email,
         subject: `La prise de RDV ne sera pas activée pour votre CFA sur Choisir son affectation après la 3e`,
-        template: mailTemplate["mail-cfa-premium-refused"],
+        template: getStaticFilePath("./templates/mail-cfa-premium-refused.mjml.ejs"),
         data: {
           isAffelnet: true,
           images: {
-            informationIcon: `${config.publicUrlEspacePro}/assets/icon-information-blue.png?raw=true`,
-            logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
-            logoFooter: `${config.publicUrlEspacePro}/assets/logo-republique-francaise.png?raw=true`,
+            informationIcon: `${config.publicUrl}/assets/icon-information-blue.png?raw=true`,
+            logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
+            logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.png?raw=true`,
           },
           etablissement: {
             raison_sociale: etablissement.raison_sociale,
@@ -326,18 +361,23 @@ export default () => {
         }
       )
 
-      const etablissementAffelnetUpdated = await Etablissement.findById(req.params.id)
-
+      const etablissementAffelnetUpdated = await Etablissement.findById(req.params.id, etablissementProjection).lean()
+      if (!etablissementAffelnetUpdated) {
+        throw new Error(`unexpected: could not find etablissement with id=${req.params.id}`)
+      }
       return res.send(etablissementAffelnetUpdated)
-    })
+    }
   )
 
   /**
    * @description Refuses "Premium Parcoursup"
    */
-  router.post(
-    "/:id/premium/refuse",
-    tryCatch(async (req, res) => {
+  server.post(
+    "/etablissements/:id/premium/refuse",
+    {
+      schema: zRoutes.post["/etablissements/:id/premium/refuse"],
+    },
+    async (req, res) => {
       const etablissement = await Etablissement.findById(req.params.id)
 
       if (!etablissement) {
@@ -352,16 +392,20 @@ export default () => {
         throw Boom.badRequest("Premium Parcoursup already activated.")
       }
 
+      if (!etablissement.gestionnaire_email) {
+        throw Boom.badRequest("Gestionnaire email not found")
+      }
+
       const mailParcoursup = await mailer.sendEmail({
         to: etablissement.gestionnaire_email,
         subject: `La prise de RDV ne sera pas activée pour votre CFA sur Parcoursup`,
-        template: mailTemplate["mail-cfa-premium-refused"],
+        template: getStaticFilePath("./templates/mail-cfa-premium-refused.mjml.ejs"),
         data: {
           isParcoursup: true,
           images: {
-            informationIcon: `${config.publicUrlEspacePro}/assets/icon-information-blue.png?raw=true`,
-            logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
-            logoFooter: `${config.publicUrlEspacePro}/assets/logo-republique-francaise.png?raw=true`,
+            informationIcon: `${config.publicUrl}/assets/icon-information-blue.png?raw=true`,
+            logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
+            logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.png?raw=true`,
           },
           etablissement: {
             raison_sociale: etablissement.raison_sociale,
@@ -390,26 +434,29 @@ export default () => {
         }
       )
 
-      const etablissementParcoursupUpdated = await Etablissement.findById(req.params.id)
-
+      const etablissementParcoursupUpdated = await Etablissement.findById(req.params.id, etablissementProjection).lean()
+      if (!etablissementParcoursupUpdated) {
+        throw new Error(`unexpected: could not find etablissement with id=${req.params.id}`)
+      }
       return res.send(etablissementParcoursupUpdated)
-    })
+    }
   )
 
   /**
    * Patch etablissement appointment.
    */
-  router.patch(
-    "/:id/appointments/:appointmentId",
-    tryCatch(async ({ body, params }, res) => {
-      const { has_been_read } = await patchEtablissementIdAppointmentIdReadAppointSchema.validateAsync(body, {
-        abortEarly: false,
-      })
+  server.patch(
+    "/etablissements/:id/appointments/:appointmentId",
+    {
+      schema: zRoutes.patch["/etablissements/:id/appointments/:appointmentId"],
+    },
+    async ({ body, params }, res) => {
+      const { has_been_read } = body;
 
       const { id, appointmentId } = params
 
       // eslint-disable-next-line prefer-const
-      let [etablissement, appointment] = await Promise.all([Etablissement.findById(id), appointmentService.findById(appointmentId)])
+      let [etablissement, appointment]: [any, IAppointment | null] = await Promise.all([Etablissement.findById(id), Appointment.findById(appointmentId)])
 
       if (!etablissement) {
         throw Boom.badRequest("Etablissement not found.")
@@ -421,51 +468,49 @@ export default () => {
 
       // Save current date
       if (!appointment.cfa_read_appointment_details_date && has_been_read) {
-        await appointment.update({ cfa_read_appointment_details_date: dayjs().toDate() })
+        await appointmentService.updateAppointment(appointmentId.toString(), { cfa_read_appointment_details_date: dayjs().toDate() })
       }
 
-      appointment = await appointmentService.findById(appointmentId)
+      appointment = (await Appointment.findById(appointmentId, etablissementProjection).lean()) as IAppointment | null
+      if (!appointment) {
+        throw new Error(`unexpected: could not find appointment with id=${appointmentId}`)
+      }
 
       res.send(appointment)
-    })
+    }
   )
 
   /**
    * @description OptOutUnsubscribe to "opt-out".
    */
-  router.post(
-    "/:id/opt-out/unsubscribe",
-    tryCatch(async (req, res) => {
-      const { opt_out_question } = await optOutUnsubscribeSchema.validateAsync(req.body, { abortEarly: false })
+  server.post(
+    "/etablissements/:id/opt-out/unsubscribe",
+    {
+      schema: zRoutes.post["/etablissements/:id/opt-out/unsubscribe"],
+    },
+    async (req, res) => {
+      let etablissement = await Etablissement.findById(req.params.id, etablissementProjection).lean()
 
-      let etablissement = await Etablissement.findById(req.params.id)
-
-      if (!etablissement) {
-        return res.sendStatus(404)
+      if (!etablissement || etablissement.optout_refusal_date) {
+        throw Boom.notFound()
       }
 
-      if (etablissement.optout_refusal_date) {
-        return res.sendStatus(400)
-      }
-
-      if (opt_out_question) {
-        etablissement = await Etablissement.findById(req.params.id)
-
+      if ('opt_out_question' in req.body) {
         await mailer.sendEmail({
           to: config.publicEmail,
           subject: `Un CFA se pose une question concernant l'opt-out"`,
-          template: mailTemplate["mail-rdva-optout-unsubscription-question"],
+          template: getStaticFilePath("./templates/mail-rdva-optout-unsubscription-question.mjml.ejs"),
           data: {
             images: {
-              logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
-              logoFooter: `${config.publicUrlEspacePro}/assets/logo-republique-francaise.png?raw=true`,
+              logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
+              logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.png?raw=true`,
             },
             etablissement: {
               name: etablissement.raison_sociale,
               formateur_address: etablissement.formateur_address,
               formateur_zip_code: etablissement.formateur_zip_code,
               formateur_city: etablissement.formateur_city,
-              opt_out_question,
+              opt_out_question: req.body.opt_out_question,
             },
             user: {
               destinataireEmail: etablissement.gestionnaire_email,
@@ -494,14 +539,18 @@ export default () => {
         optout_refusal_date: dayjs().toDate(),
       })
 
+      if (!etablissement.gestionnaire_email) {
+        throw Boom.badRequest("Gestionnaire email not found")
+      }
+
       const { messageId } = await mailer.sendEmail({
         to: etablissement.gestionnaire_email,
         subject: `La prise de RDV ne sera pas activée pour votre CFA sur La bonne alternance`,
-        template: mailTemplate["mail-cfa-optout-unsubscription"],
+        template: getStaticFilePath("./templates/mail-cfa-optout-unsubscription.mjml.ejs"),
         data: {
           images: {
-            logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
-            logoFooter: `${config.publicUrlEspacePro}/assets/logo-republique-francaise.png?raw=true`,
+            logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
+            logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.png?raw=true`,
           },
           etablissement: {
             name: etablissement.raison_sociale,
@@ -530,11 +579,12 @@ export default () => {
         }
       )
 
-      etablissement = await Etablissement.findById(req.params.id)
+      etablissement = await Etablissement.findById(req.params.id, etablissementProjection).lean()
+      if (!etablissement) {
+        throw new Error(`unexpected: could not find appointment with id=${req.params.id}`)
+      }
 
       return res.send(etablissement)
-    })
+    }
   )
-
-  return router
 }

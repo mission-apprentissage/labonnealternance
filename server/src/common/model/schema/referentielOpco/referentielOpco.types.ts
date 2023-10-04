@@ -4,4 +4,4 @@ interface IReferentielOpco {
   emails: string[]
 }
 
-export { IReferentielOpco }
+export type { IReferentielOpco }

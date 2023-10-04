@@ -1,9 +1,9 @@
-// @ts-ignore
-// @ts-nocheck
 import axios from "axios"
 import { differenceBy } from "lodash-es"
-import { Optout } from "../../../common/model/index.js"
-import { runScript } from "../../scriptWrapper.js"
+
+import { Optout } from "../../../common/model/index"
+import { formatReferentielData } from "../../../services/etablissement.service"
+import { runScript } from "../../scriptWrapper"
 
 type Etablissement = { contacts: { email: string }[]; adresse: string }
 
@@ -52,7 +52,7 @@ runScript(async () => {
     return acc
   }, {})
 
-  const organismesFiltered = []
+  const organismesFiltered: any[] = []
 
   // ajout de l'établissement pour lequels le contact est dans un seul établissement
   for (const obj in siretListByEmail) {
@@ -67,7 +67,7 @@ runScript(async () => {
   await Promise.all(
     organismesFiltered.map(async (x) => {
       // TODO wtf is this ?
-      const formated = etablissement.formatReferentielData(x)
+      const formated = formatReferentielData(x)
       await Optout.create(formated)
     })
   )

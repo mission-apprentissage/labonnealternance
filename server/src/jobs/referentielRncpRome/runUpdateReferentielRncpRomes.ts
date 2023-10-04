@@ -1,5 +1,6 @@
-import { runScript } from "../scriptWrapper.js"
-import updateReferentielRncpRomes from "./updateReferentielRncpRomes.js"
+import { runScript } from "../scriptWrapper"
+
+import updateReferentielRncpRomes from "./updateReferentielRncpRomes"
 
 runScript(async () => {
   await updateReferentielRncpRomes()

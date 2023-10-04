@@ -1,10 +1,12 @@
-import { mailTemplate } from "../../../assets/index.js"
-import { ETAT_UTILISATEUR } from "../../../services/constant.service.js"
-import { UserRecruteur } from "../../../common/model/index.js"
-import { IUserRecruteur } from "../../../common/model/schema/userRecruteur/userRecruteur.types.js"
-import { asyncForEach } from "../../../common/utils/asyncUtils.js"
-import config from "../../../config.js"
-import mailer from "../../../services/mailer.service.js"
+import { IUserRecruteur } from "shared"
+
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+
+import { UserRecruteur } from "../../../common/model/index"
+import { asyncForEach } from "../../../common/utils/asyncUtils"
+import config from "../../../config"
+import { ETAT_UTILISATEUR } from "../../../services/constant.service"
+import mailer from "../../../services/mailer.service"
 
 /**
  * @description send mail to ocpo with awaiting validation user number
@@ -21,10 +23,12 @@ export const relanceOpco = async () => {
 
   // count user to validate per opco
   const userList = userAwaitingValidation.reduce((acc, user) => {
-    if (user.opco in acc) {
-      acc[user.opco]++
-    } else {
-      acc[user.opco] = 1
+    if (user.opco) {
+      if (user.opco in acc) {
+        acc[user.opco]++
+      } else {
+        acc[user.opco] = 1
+      }
     }
     return acc
   }, {})
@@ -38,13 +42,13 @@ export const relanceOpco = async () => {
       await mailer.sendEmail({
         to: user.email,
         subject: "Nouveaux comptes entreprises à valider",
-        template: mailTemplate["mail-relance-opco"],
+        template: getStaticFilePath("./templates/mail-relance-opco.mjml.ejs"),
         data: {
           images: {
-            logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
+            logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
           },
           count: userList[opco],
-          url: `${config.publicUrlEspacePro}/authentification`,
+          url: `${config.publicUrl}/espace-pro/authentification`,
         },
       })
     })

@@ -1,58 +1,50 @@
 # [1.98.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.97.1...v1.98.0) (2023-09-22)
 
-
 ### Features
 
-* training links logic review ([3195c3a](https://github.com/mission-apprentissage/labonnealternance/commit/3195c3a4662ff17cb7cdf167d9d0bf922d6b45e8))
+- training links logic review ([3195c3a](https://github.com/mission-apprentissage/labonnealternance/commit/3195c3a4662ff17cb7cdf167d9d0bf922d6b45e8))
 
 ## [1.97.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.97.0...v1.97.1) (2023-09-21)
 
-
 ### Bug Fixes
 
-* max ogr appellation code limit ([3c33a0b](https://github.com/mission-apprentissage/labonnealternance/commit/3c33a0b05b13780baf8b6c35e592cb6fb7e2bda5))
+- max ogr appellation code limit ([3c33a0b](https://github.com/mission-apprentissage/labonnealternance/commit/3c33a0b05b13780baf8b6c35e592cb6fb7e2bda5))
 
 # [1.97.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.96.0...v1.97.0) (2023-09-20)
 
-
 ### Features
 
-* LBAC-1505 précisions sur page test-widget ([#586](https://github.com/mission-apprentissage/labonnealternance/issues/586)) ([9b28f89](https://github.com/mission-apprentissage/labonnealternance/commit/9b28f895a9115658b52c98a4ffa55fa2f523fdd8))
+- LBAC-1505 précisions sur page test-widget ([#586](https://github.com/mission-apprentissage/labonnealternance/issues/586)) ([9b28f89](https://github.com/mission-apprentissage/labonnealternance/commit/9b28f895a9115658b52c98a4ffa55fa2f523fdd8))
 
 # [1.96.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.95.0...v1.96.0) (2023-09-19)
 
-
 ### Features
 
-* LBAC-1018 liens google sur ville + cp seulement ([f7c916f](https://github.com/mission-apprentissage/labonnealternance/commit/f7c916fd021cb8f21f7ddd28c6d9b9b78e59843a))
+- LBAC-1018 liens google sur ville + cp seulement ([f7c916f](https://github.com/mission-apprentissage/labonnealternance/commit/f7c916fd021cb8f21f7ddd28c6d9b9b78e59843a))
 
 # [1.95.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.94.0...v1.95.0) (2023-09-19)
 
-
 ### Features
 
-* LBAC-1455 balises hx sur cartes ([#589](https://github.com/mission-apprentissage/labonnealternance/issues/589)) ([a677c24](https://github.com/mission-apprentissage/labonnealternance/commit/a677c245351e4417b4fb75dda1135e3de853f4d8))
+- LBAC-1455 balises hx sur cartes ([#589](https://github.com/mission-apprentissage/labonnealternance/issues/589)) ([a677c24](https://github.com/mission-apprentissage/labonnealternance/commit/a677c245351e4417b4fb75dda1135e3de853f4d8))
 
 # [1.94.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.93.0...v1.94.0) (2023-09-19)
 
-
 ### Features
 
-* endpoint rework (LBAC-1554) ([#590](https://github.com/mission-apprentissage/labonnealternance/issues/590)) ([5c50d6c](https://github.com/mission-apprentissage/labonnealternance/commit/5c50d6c303f64f669a0880f1d1f2ff8aa6c0faf5))
+- endpoint rework (LBAC-1554) ([#590](https://github.com/mission-apprentissage/labonnealternance/issues/590)) ([5c50d6c](https://github.com/mission-apprentissage/labonnealternance/commit/5c50d6c303f64f669a0880f1d1f2ff8aa6c0faf5))
 
 # [1.93.0](https://github.com/mission-apprentissage/labonnealternance/compare/v1.92.2...v1.93.0) (2023-09-19)
 
-
 ### Features
 
-* LBAC-1447 Ajout bloc mes aides ([aad3dc7](https://github.com/mission-apprentissage/labonnealternance/commit/aad3dc704e71e4f8eeb9920c35db8862e8064212))
+- LBAC-1447 Ajout bloc mes aides ([aad3dc7](https://github.com/mission-apprentissage/labonnealternance/commit/aad3dc704e71e4f8eeb9920c35db8862e8064212))
 
 ## [1.92.2](https://github.com/mission-apprentissage/labonnealternance/compare/v1.92.1...v1.92.2) (2023-09-19)
 
-
 ### Bug Fixes
 
-* redirect CFA ([8b6f88a](https://github.com/mission-apprentissage/labonnealternance/commit/8b6f88ae1dabbcd2004c25fef8149006047d916d))
+- redirect CFA ([8b6f88a](https://github.com/mission-apprentissage/labonnealternance/commit/8b6f88ae1dabbcd2004c25fef8149006047d916d))
 
 ## [1.92.1](https://github.com/mission-apprentissage/labonnealternance/compare/v1.92.0...v1.92.1) (2023-09-18)
 

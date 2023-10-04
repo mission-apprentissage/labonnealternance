@@ -1,5 +1,6 @@
-import { model, Schema } from "../../../mongodb.js"
-import { IMobiliteItem, IReferentielRome } from "./referentielRome.types.js"
+import { model, Schema } from "../../../mongodb"
+
+import { IMobiliteItem, IReferentielRome } from "./referentielRome.types"
 
 const mobiliteSchema = new Schema<IMobiliteItem>(
   {

@@ -1,66 +1,77 @@
-import express from "express"
-import { logger } from "../../../common/logger.js"
-import { Appointment, User } from "../../../common/model/index.js"
-import { getFormationsByCleMinistereEducatif } from "../../../services/catalogue.service.js"
-import { tryCatch } from "../../middlewares/tryCatchMiddleware.js"
+import Boom from "boom"
+import { IFormationCatalogue, zRoutes } from "shared/index"
+
+import { Appointment, User } from "../../../common/model/index"
+import { getFormationsByCleMinistereEducatif } from "../../../services/catalogue.service"
+import { Server } from "../../server"
 
 /**
  * Sample entity route module for GET
  */
-export default () => {
-  const router = express.Router()
-
+export default (server: Server) => {
   /**
    * Get all formations getRequests /requests GET
    * */
-  router.get(
-    "/",
-    tryCatch(async (req, res) => {
-      const qs = req.query
-      const query = qs && qs.query ? JSON.parse(qs.query) : {}
-      const page = qs && qs.page ? qs.page : 1
-      const limit = qs && qs.limit ? parseInt(qs.limit, 50) : 50
+  server.get(
+    "/admin/appointments",
+    {
+      schema: zRoutes.get["/admin/appointments"],
+      preHandler: [server.auth(zRoutes.get["/admin/appointments"].securityScheme)],
+    },
+    async (req, res) => {
+      const appointments = await Appointment.find().sort({ _id: -1 }).lean()
 
-      const allData = await Appointment.paginate({ query, page, limit })
-      return res.send({
-        appointments: allData.docs,
-        pagination: {
-          page: allData.page,
-          resultats_par_page: limit,
-          nombre_de_page: allData.totalPages,
-          total: allData.totalDocs,
-        },
-      })
-    })
+      return res.status(200).send({ appointments })
+    }
   )
 
   /**
    * Get all formations getRequests /requests GET (with details)
    * */
-  router.get(
-    "/details",
-    tryCatch(async (req, res) => {
-      const qs = req.query
-      const query = qs && qs.query ? JSON.parse(qs.query) : {}
-      const page = qs && qs.page ? qs.page : 1
-      const limit = qs && qs.limit ? parseInt(qs.limit, 10) : 50
+  server.get(
+    "/admin/appointments/details",
+    {
+      schema: zRoutes.get["/admin/appointments/details"],
+      preHandler: [server.auth(zRoutes.get["/admin/appointments"].securityScheme)],
+    },
+    async (req, res) => {
+      const allAppointments = await Appointment.find().limit(100).sort({ _id: -1 }).lean()
 
-      const allAppointments = await Appointment.paginate({ query, page, limit, sort: { created_at: -1 } })
+      const cleMinistereEducatifs: Set<string> = new Set()
+      if (allAppointments) {
+        for (const doc of allAppointments) {
+          if (doc.cle_ministere_educatif) {
+            cleMinistereEducatifs.add(doc.cle_ministere_educatif)
+          }
+        }
+      }
 
-      const cleMinistereEducatifs = [...new Set(allAppointments.docs.map((document) => document.cle_ministere_educatif))]
+      const formations: IFormationCatalogue[] = await getFormationsByCleMinistereEducatif({ cleMinistereEducatifs: Array.from(cleMinistereEducatifs) })
 
-      const formations = await getFormationsByCleMinistereEducatif({ cleMinistereEducatifs })
+      const appointmentsPromises = allAppointments.map(async (appointment) => {
+        const user = await User.findById(appointment.applicant_id).lean()
 
-      const appointmentsPromises = allAppointments.docs.map(async (document) => {
-        const user = await User.findById(document.applicant_id)
-        const formation = formations.find((item) => item.cle_ministere_educatif === document.cle_ministere_educatif)
+        if (!user) {
+          throw Boom.internal("Candidat non trouvé.")
+        }
+
+        const formation = formations.find((item) => item.cle_ministere_educatif === appointment.cle_ministere_educatif)
+
+        if (!formation) {
+          throw Boom.internal("Formation non trouvée.")
+        }
 
         return {
-          ...document,
-          appointment_origin: document.appointment_origin,
-          formation,
+          created_at: appointment.created_at,
+          applicant_message_to_cfa: appointment?.applicant_message_to_cfa || null,
+          appointment_origin: appointment.appointment_origin,
+          cfa_recipient_email: appointment.cfa_recipient_email,
+          formation: {
+            etablissement_gestionnaire_entreprise_raison_sociale: formation?.etablissement_gestionnaire_entreprise_raison_sociale || null,
+            etablissement_formateur_siret: formation?.etablissement_formateur_siret || null,
+            intitule_long: formation?.intitule_long || null,
+          },
           candidat: {
-            _id: user._id,
             firstname: user.firstname,
             lastname: user.lastname,
             email: user.email,
@@ -69,19 +80,11 @@ export default () => {
         }
       })
 
-      const appointments = await Promise.all(appointmentsPromises)
+      const appointments = await Promise.all(appointmentsPromises || [])
 
-      return res.send({
+      return res.status(200).send({
         appointments,
-        pagination: {
-          page: allAppointments.page,
-          resultats_par_page: limit,
-          nombre_de_page: allAppointments.totalPages,
-          total: allAppointments.totalDocs,
-        },
       })
-    })
+    }
   )
-
-  return router
 }

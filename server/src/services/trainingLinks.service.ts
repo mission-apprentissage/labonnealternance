@@ -1,8 +1,8 @@
 import { URL } from "url"
-import { EligibleTrainingsForAppointment, FormationCatalogue } from "../common/model/index.js"
-import { IFormationCatalogue } from "../common/model/schema/formationCatalogue/formationCatalogue.types.js"
-import apiGeoAdresse from "../common/utils/apiGeoAdresse.js"
-import { asyncForEach } from "../common/utils/asyncUtils.js"
+
+import { EligibleTrainingsForAppointment, FormationCatalogue } from "../common/model/index"
+import apiGeoAdresse from "../common/utils/apiGeoAdresse"
+import { asyncForEach } from "../common/utils/asyncUtils"
 import config from "../config.js"
 
 interface IWish {
@@ -113,10 +113,12 @@ const getPrdvLink = async (wish: IWish): Promise<string> => {
 
   if (elligibleFormation) {
     return buildEmploiUrl({
-      baseUrl: `${config.publicUrlEspacePro}/form`,
+      baseUrl: `${config.publicUrl}/espace-pro/form`,
       params: { referrer: "lba", cleMinistereEducatif: wish.cle_ministere_educatif, ...utmData },
     })
   }
+
+  return ""
 }
 
 /**
@@ -135,7 +137,7 @@ const getLBALink = async (wish: IWish): Promise<string> => {
     return buildEmploiUrl({ params: { romes: formation.rome_codes, lat, lon, radius: "60", ...utmData } })
   } else {
     // identify rome codes
-    let romes = null
+    let romes
     formation = await FormationCatalogue.find(
       {
         $or: [
@@ -163,7 +165,7 @@ const getLBALink = async (wish: IWish): Promise<string> => {
       return buildEmploiUrl({ params: utmData })
     }
 
-    if (!romes?.length) {
+    if (!romes.length) {
       return buildEmploiUrl({ params: utmData })
     } else {
       // identify location
@@ -202,7 +204,7 @@ const getLBALink = async (wish: IWish): Promise<string> => {
  * @returns {Promise<ILinks[]>} LBA link
  */
 export const getTrainingLinks = async (params: IWish[]): Promise<ILinks[]> => {
-  const results = []
+  const results: any[] = []
   await asyncForEach(params, async (training) => {
     const [lien_prdv, lien_lba] = await Promise.all([getPrdvLink(training), getLBALink(training)])
     results.push({ id: training.id, lien_prdv, lien_lba })

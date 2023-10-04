@@ -1,12 +1,13 @@
-import { mailTemplate } from "../../assets/index.js"
-import { logger } from "../../common/logger.js"
-import { mailType } from "../../common/model/constants/etablissement.js"
-import dayjs from "../../services/dayjs.service.js"
-import config from "../../config.js"
-import { isValidEmail } from "../../common/utils/isValidEmail.js"
-import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service.js"
-import { Etablissement } from "../../common/model/index.js"
-import mailer from "../../services/mailer.service.js"
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+
+import { logger } from "../../common/logger"
+import { mailType } from "../../common/model/constants/etablissement"
+import { Etablissement } from "../../common/model/index"
+import { isValidEmail } from "../../common/utils/isValidEmail"
+import config from "../../config"
+import dayjs from "../../services/dayjs.service"
+import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service"
+import mailer from "../../services/mailer.service"
 
 /**
  * @description Send a "Premium" reminder mail.
@@ -34,24 +35,25 @@ export const premiumInviteOneShot = async () => {
 
   for (const etablissement of etablissementWithParcoursup) {
     try {
-      if (!isValidEmail) {
+      const email = etablissement.gestionnaire_email
+      if (!isValidEmail(email)) {
         logger.info("Invalid email syntax.", { etablissement })
         continue
       }
 
       const { messageId } = await mailer.sendEmail({
-        to: etablissement.gestionnaire_email,
+        to: email,
         subject: `Trouvez et recrutez vos candidats sur Parcoursup`,
-        template: mailTemplate["mail-cfa-premium-invite-one-shot"],
+        template: getStaticFilePath("./templates/mail-cfa-premium-invite-one-shot.mjml.ejs"),
         data: {
           replyTo: config.publicEmail,
           url: config.publicUrl,
           images: {
-            logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
-            logoParcoursup: `${config.publicUrlEspacePro}/assets/logo-parcoursup.png?raw=true`,
-            logoFooter: `${config.publicUrlEspacePro}/assets/logo-republique-francaise.png?raw=true`,
-            peopleLaptop: `${config.publicUrlEspacePro}/assets/people-laptop.png?raw=true`,
-            informationIcon: `${config.publicUrlEspacePro}/assets/icon-information-orange.png?raw=true`,
+            logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
+            logoParcoursup: `${config.publicUrl}/assets/logo-parcoursup.png?raw=true`,
+            logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.png?raw=true`,
+            peopleLaptop: `${config.publicUrl}/assets/people-laptop.png?raw=true`,
+            informationIcon: `${config.publicUrl}/assets/icon-information-orange.png?raw=true`,
           },
           etablissement: {
             name: etablissement.raison_sociale,
@@ -60,7 +62,7 @@ export const premiumInviteOneShot = async () => {
             formateur_city: etablissement.formateur_city,
             siret: etablissement.formateur_siret,
             email: etablissement.gestionnaire_email,
-            linkToForm: `${config.publicUrlEspacePro}/form/premium/${etablissement._id}`,
+            linkToForm: `${config.publicUrl}/espace-pro/form/premium/${etablissement._id}`,
             optOutActivatedAtDate: dayjs(etablissement.optout_activation_date).format("DD/MM/YYYY"),
             emailGestionnaire: etablissement.gestionnaire_email,
           },

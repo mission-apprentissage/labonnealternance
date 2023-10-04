@@ -1,12 +1,13 @@
 import { oleoduc, writeData } from "oleoduc"
-import { logger } from "../../common/logger.js"
-import { referrers } from "../../common/model/constants/referrers.js"
-import { Etablissement, FormationCatalogue } from "../../common/model/index.js"
-import dayjs from "../../services/dayjs.service.js"
-import { isEmailBlacklisted } from "../../services/application.service.js"
-import { getEmailFromCatalogueField, getFormationsFromCatalogueMe } from "../../services/catalogue.service.js"
-import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service.js"
-import { getEmailForRdv } from "../../services/eligibleTrainingsForAppointment.service.js"
+import { referrers } from "shared/constants/referers"
+
+import { logger } from "../../common/logger"
+import { Etablissement, FormationCatalogue } from "../../common/model/index"
+import { isEmailBlacklisted } from "../../services/application.service"
+import { getEmailFromCatalogueField, getFormationsFromCatalogueMe } from "../../services/catalogue.service"
+import dayjs from "../../services/dayjs.service"
+import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service"
+import { getEmailForRdv } from "../../services/eligibleTrainingsForAppointment.service"
 
 /**
  * @description Gets Catalogue etablissments informations and insert in etablissement collection.
@@ -42,7 +43,7 @@ export const syncEtablissementsAndFormations = async () => {
         ])
 
         // Activate opt_out referrers
-        const referrersToActivate = []
+        const referrersToActivate: any[] = []
         if (etablissement?.optout_activation_date) {
           referrersToActivate.push(referrers.LBA.name)
           referrersToActivate.push(referrers.ONISEP.name)
@@ -60,14 +61,14 @@ export const syncEtablissementsAndFormations = async () => {
 
           // Don't override "email" if this field is true
           if (!eligibleTrainingsForAppointment?.is_lieu_formation_email_customized) {
-            emailRdv = await getEmailForRdv({
+            emailRdv = await eligibleTrainingsForAppointmentService.getEmailForRdv({
               email: formation.email,
               etablissement_formateur_courriel: formation.etablissement_formateur_courriel,
               etablissement_formateur_siret: formation.etablissement_formateur_siret,
             })
           }
 
-          const emailBlacklisted = await isEmailBlacklisted(emailRdv)
+          const emailBlacklisted = await isEmailBlacklisted(emailRdv as string)
 
           await eligibleTrainingsForAppointmentService.updateMany(
             { cle_ministere_educatif: formation.cle_ministere_educatif },
@@ -101,7 +102,7 @@ export const syncEtablissementsAndFormations = async () => {
             etablissement_formateur_siret: formation.etablissement_formateur_siret,
           })
 
-          const emailBlacklisted = await isEmailBlacklisted(emailRdv)
+          const emailBlacklisted = await isEmailBlacklisted(emailRdv as string)
 
           await eligibleTrainingsForAppointmentService.create({
             training_id_catalogue: formation._id,

@@ -25,4 +25,4 @@ interface IEligibleTrainingsForAppointment {
   historization_date: Date
 }
 
-export { IEligibleTrainingsForAppointment }
+export type { IEligibleTrainingsForAppointment }

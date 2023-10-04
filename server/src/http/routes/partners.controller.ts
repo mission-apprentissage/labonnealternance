@@ -1,21 +1,23 @@
-import express from "express"
-import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
-import { referrers } from "../../common/model/constants/referrers.js"
-import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service.js"
+import { zRoutes } from "shared"
+import { referrers } from "shared/constants/referers"
+
+import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service"
+import { Server } from "../server"
 
 /**
- * @description Partners router.
+ * @description Partners server.
  */
-export default () => {
-  const router = express.Router()
-
+export default (server: Server) => {
   /**
    * @description Returns all available parcoursup ids.
    * This endpoint is used by Parcoursup.
    */
-  router.get(
-    "/parcoursup/formations",
-    tryCatch(async (req, res) => {
+  server.get(
+    "/partners/parcoursup/formations",
+    {
+      schema: zRoutes.get["/partners/parcoursup/formations"],
+    },
+    async (req, res) => {
       const ids = await eligibleTrainingsForAppointmentService.find(
         {
           parcoursup_id: {
@@ -27,8 +29,6 @@ export default () => {
       )
 
       return res.send({ ids: ids.map((eligibleTrainingsForAppointment) => eligibleTrainingsForAppointment.parcoursup_id) })
-    })
+    }
   )
-
-  return router
 }

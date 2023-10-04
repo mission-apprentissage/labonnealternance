@@ -1,12 +1,15 @@
 import distance from "@turf/distance"
 import { round } from "lodash-es"
 
+type Coordinate = {
+  origin: { latitude: number; longitude: number }
+  destination: { latitude: number; longitude: number }
+}
+
 /**
- * @description Returns number of kilometers between two geo points.
- * @param {{origin: {latitude: number, longitude: number}, destination: {latitude: number, longitude: number}} } coordinate - Coordinate of Origin and Destination
- * @returns {number}
+ * Returns number of kilometers between two geo points.
  */
-export const getDistanceInKm = (coordinate) => {
+export const getDistanceInKm = (coordinate: Coordinate): number => {
   const distanceInKm = distance(Object.values(coordinate.origin).reverse(), Object.values(coordinate.destination).reverse())
 
   return Math.ceil(distanceInKm)

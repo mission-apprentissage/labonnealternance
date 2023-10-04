@@ -1,13 +1,14 @@
-import { oleoduc, writeData } from "oleoduc"
 import { Readable } from "stream"
-import { logger } from "../../common/logger.js"
-import { referrers } from "../../common/model/constants/referrers.js"
-import dayjs from "../../services/dayjs.service.js"
-import { isEmailBlacklisted } from "../../services/application.service.js"
-import { affelnetSelectedFields, getEmailFromCatalogueField, getFormationsFromCatalogueMe } from "../../services/catalogue.service.js"
-import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service.js"
-import { Etablissement } from "../../common/model/index.js"
-import { getEmailForRdv } from "../../services/eligibleTrainingsForAppointment.service.js"
+
+import { oleoduc, writeData } from "oleoduc"
+import { referrers } from "shared/constants/referers"
+
+import { logger } from "../../common/logger"
+import { Etablissement } from "../../common/model/index"
+import { isEmailBlacklisted } from "../../services/application.service"
+import { affelnetSelectedFields, getEmailFromCatalogueField, getFormationsFromCatalogueMe } from "../../services/catalogue.service"
+import dayjs from "../../services/dayjs.service"
+import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service"
 
 /**
  * @description Gets Catalogue etablissments informations and insert in etablissement collection.
@@ -46,17 +47,19 @@ export const syncAffelnetFormationsFromCatalogueME = async () => {
 
         if (eligibleTrainingsForAppointment) {
           let emailRdv = eligibleTrainingsForAppointment.lieu_formation_email
-
-          // Don't override "email" if this field is true
+          let emailBlacklisted
+          // Don't override "email" if is_lieu_formation_email_customized is true
           if (!eligibleTrainingsForAppointment?.is_lieu_formation_email_customized) {
-            emailRdv = await getEmailForRdv({
+            emailRdv = await eligibleTrainingsForAppointmentService.getEmailForRdv({
               email: formation.email,
               etablissement_formateur_courriel: formation.etablissement_formateur_courriel,
               etablissement_formateur_siret: formation.etablissement_formateur_siret,
             })
           }
 
-          const emailBlacklisted = await isEmailBlacklisted(emailRdv)
+          if (emailRdv) {
+            emailBlacklisted = await isEmailBlacklisted(emailRdv)
+          }
 
           await eligibleTrainingsForAppointmentService.updateMany(
             { cle_ministere_educatif: formation.cle_ministere_educatif },
@@ -84,13 +87,16 @@ export const syncAffelnetFormationsFromCatalogueME = async () => {
             }
           )
         } else {
-          const emailRdv = await getEmailForRdv({
+          const emailRdv = await eligibleTrainingsForAppointmentService.getEmailForRdv({
             email: formation.email,
             etablissement_formateur_courriel: formation.etablissement_formateur_courriel,
             etablissement_formateur_siret: formation.etablissement_formateur_siret,
           })
+          let emailBlacklisted
 
-          const emailBlacklisted = await isEmailBlacklisted(emailRdv)
+          if (emailRdv) {
+            emailBlacklisted = await isEmailBlacklisted(emailRdv)
+          }
 
           await eligibleTrainingsForAppointmentService.create({
             training_id_catalogue: formation._id,

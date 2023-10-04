@@ -1,13 +1,12 @@
-// @ts-nocheck
 import { oleoduc, transformData, writeData } from "oleoduc"
-import _ from "lodash-es"
-import { LbaCompany, UnsubscribedLbaCompany } from "../../common/model/index.js"
-import { rebuildIndex } from "../../common/utils/esUtils.js"
-import { logMessage } from "../../common/utils/logMessage.js"
-import { insertSAVECompanies, updateSAVECompanies, removeSAVECompanies } from "./updateSAVECompanies.js"
 
-import { countCompaniesInFile, downloadAlgoCompanyFile, getCompanyMissingData, checkIfAlgoFileIsNew, readCompaniesFromJson, removePredictionFile } from "./lbaCompaniesUtils.js"
-import { notifyToSlack } from "../../common/utils/slackUtils.js"
+import { LbaCompany, UnsubscribedLbaCompany } from "../../common/model/index.js"
+import { rebuildIndex } from "../../common/utils/esUtils"
+import { logMessage } from "../../common/utils/logMessage"
+import { notifyToSlack } from "../../common/utils/slackUtils"
+
+import { checkIfAlgoFileIsNew, countCompaniesInFile, downloadAlgoCompanyFile, getCompanyMissingData, readCompaniesFromJson, removePredictionFile } from "./lbaCompaniesUtils.js"
+import { insertSAVECompanies, removeSAVECompanies, updateSAVECompanies } from "./updateSAVECompanies"
 
 // nombre minimal arbitraire de sociétés attendus dans le fichier
 const MIN_COMPANY_THRESHOLD = 200000
@@ -108,7 +107,7 @@ export default async function updateLbaCompanies({ UseAlgoFile = false, ClearMon
     }
 
     if (BuildIndex) {
-      await rebuildIndex(LbaCompany, { skipNotFound: true })
+      await rebuildIndex(LbaCompany, { skipNotFound: true, recreate: true })
     }
 
     logMessage("info", `End updating lbb db`)

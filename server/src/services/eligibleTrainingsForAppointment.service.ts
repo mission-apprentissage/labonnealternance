@@ -1,9 +1,11 @@
-import { EligibleTrainingsForAppointment } from "../common/model/index.js"
-import { IEligibleTrainingsForAppointment } from "../common/model/schema/eligibleTrainingsForAppointment/eligibleTrainingsForAppointment.types.js"
-import { FilterQuery } from "mongoose"
-import { getEmailFromCatalogueField } from "./catalogue.service.js"
-import { getMostFrequentEmailByLieuFormationSiret } from "./formation.service.js"
-import { IFormationCatalogue } from "../common/model/schema/formationCatalogue/formationCatalogue.types.js"
+import type { ObjectId } from "mongodb"
+import type { FilterQuery } from "mongoose"
+import { IFormationCatalogue, IEligibleTrainingsForAppointment } from "shared"
+
+import { EligibleTrainingsForAppointment } from "../common/model/index"
+
+import { getEmailFromCatalogueField } from "./catalogue.service"
+import { getMostFrequentEmailByLieuFormationSiret } from "./formation.service"
 
 /**
  * @description Creates new item.
@@ -33,7 +35,8 @@ const findOne = (conditions: FilterQuery<IEligibleTrainingsForAppointment>) => E
  * @param {Partial<IEligibleTrainingsForAppointment>} params - EligibleTrainingsForAppointment params
  * @returns {Promise<IEligibleTrainingsForAppointment>}
  */
-const updateParameter = (id: string, params: Partial<IEligibleTrainingsForAppointment>) => EligibleTrainingsForAppointment.findOneAndUpdate({ _id: id }, params, { new: true })
+const updateParameter = (id: ObjectId | string, params: Partial<IEligibleTrainingsForAppointment>) =>
+  EligibleTrainingsForAppointment.findOneAndUpdate({ _id: id }, params, { new: true })
 
 /**
  * @description Deletes an item.
@@ -79,7 +82,7 @@ const getEmailForRdv = async (formation: Pick<IFormationCatalogue, "email" | "et
   return (
     getEmailFromCatalogueField(formation.email) ||
     getEmailFromCatalogueField(formation.etablissement_formateur_courriel) ||
-    (await getMostFrequentEmailByLieuFormationSiret(formation.etablissement_formateur_siret))
+    (await getMostFrequentEmailByLieuFormationSiret(formation.etablissement_formateur_siret ?? undefined))
   )
 }
 

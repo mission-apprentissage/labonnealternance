@@ -1,10 +1,11 @@
-import { isEmpty } from "lodash-es"
 import { access, mkdir } from "node:fs/promises"
+
+import { isEmpty } from "lodash-es"
 import prettyMilliseconds from "pretty-ms"
-import createComponents, { Components } from "../common/components/components.js"
-import { getLoggerWithContext } from "../common/logger.js"
-import { closeMongoConnection } from "../common/mongodb.js"
-import config from "../config.js"
+
+import { getLoggerWithContext } from "../common/logger"
+import { closeMongoConnection } from "../common/mongodb"
+import config from "../config"
 
 const logger = getLoggerWithContext("script")
 
@@ -12,7 +13,7 @@ process.on("unhandledRejection", (e) => logger.error(e))
 process.on("uncaughtException", (e) => logger.error(e))
 process.stdout.on("error", function (err) {
   if (err.code === "EPIPE") {
-    // eslint-disable-next-line no-process-exit
+    // eslint-disable-next-line n/no-process-exit
     process.exit(0)
   }
 })
@@ -38,7 +39,7 @@ const ensureOutputDirExists = async () => {
   const outputDir = config.outputDir
   try {
     await access(outputDir)
-  } catch (e) {
+  } catch (e: any) {
     if (e.code !== "EEXIST") {
       await mkdir(outputDir, { recursive: true })
     }
@@ -61,15 +62,14 @@ const exit = async (scriptError?: any) => {
   }, 250)
 }
 
-async function runScript(job: (components: Components) => Promise<any>) {
+async function runScript(job: () => Promise<any>) {
   try {
     const timer = createTimer()
     timer.start()
 
     await ensureOutputDirExists()
 
-    const components = await createComponents()
-    const results = await job(components)
+    const results = await job()
 
     timer.stop(results)
     await exit()

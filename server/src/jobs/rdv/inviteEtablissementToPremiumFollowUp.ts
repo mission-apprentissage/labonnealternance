@@ -1,11 +1,12 @@
-import { mailTemplate } from "../../assets/index.js"
-import { logger } from "../../common/logger.js"
-import { mailType } from "../../common/model/constants/etablissement.js"
-import dayjs from "../../services/dayjs.service.js"
-import { isValidEmail } from "../../common/utils/isValidEmail.js"
-import config from "../../config.js"
-import { Etablissement } from "../../common/model/index.js"
-import mailer from "../../services/mailer.service.js"
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+
+import { logger } from "../../common/logger"
+import { mailType } from "../../common/model/constants/etablissement"
+import { Etablissement } from "../../common/model/index"
+import { isValidEmail } from "../../common/utils/isValidEmail"
+import config from "../../config"
+import dayjs from "../../services/dayjs.service"
+import mailer from "../../services/mailer.service"
 
 /**
  * @description Invite all "etablissements" to Premium (followup).
@@ -42,18 +43,18 @@ export const inviteEtablissementToPremiumFollowUp = async () => {
     const { messageId } = await mailer.sendEmail({
       to: etablissement.gestionnaire_email,
       subject: `Trouvez et recrutez vos candidats sur Parcoursup`,
-      template: mailTemplate["mail-cfa-premium-invite-followup"],
+      template: getStaticFilePath("./templates/mail-cfa-premium-invite-followup.mjml.ejs"),
       data: {
         isParcoursup: true,
         images: {
-          logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
-          logoFooter: `${config.publicUrlEspacePro}/assets/logo-republique-francaise.png?raw=true`,
-          integrationExample: `${config.publicUrlEspacePro}/assets/exemple_integration_parcoursup.jpg?raw=true`,
+          logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
+          logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.png?raw=true`,
+          integrationExample: `${config.publicUrl}/assets/exemple_integration_parcoursup.jpg?raw=true`,
         },
         etablissement: {
           email: etablissement.gestionnaire_email,
           activatedAt: dayjs(etablissement.optout_activation_scheduled_date).format("DD/MM"),
-          linkToForm: `${config.publicUrlEspacePro}/form/premium/${etablissement._id}`,
+          linkToForm: `${config.publicUrl}/espace-pro/form/premium/${etablissement._id}`,
         },
       },
     })

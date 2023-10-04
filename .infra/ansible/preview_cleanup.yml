@@ -1,0 +1,23 @@
+---
+- hosts: preview
+  become: true
+  gather_facts: false
+  vars_files:
+    - "../vault/vault.yml"
+  tasks:
+    - name: List projects
+      ansible.builtin.find:
+        paths: /opt/app/projects
+        file_type: directory
+      register: projects
+
+    - include_tasks: ./tasks/preview_pr.yml
+      loop: "{{ projects.files | map(attribute='path')| map('basename') | list }}"
+      loop_control:
+        loop_var: pr_number
+      vars:
+        build: false
+        repo_name: labonnealternance
+        docker_images:
+          - mna_lba_ui
+          - mna_lba_server

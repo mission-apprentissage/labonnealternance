@@ -1,18 +1,16 @@
-import { trackApiCall } from "../common/utils/sendTrackingEvent.js"
-import { sentryCaptureException } from "../common/utils/sentryUtils.js"
-import { getLbaJobs } from "./lbajob.service.js"
-import { getSomeCompanies } from "./lbacompany.service.js"
-import { jobsQueryValidator } from "./queryValidator.service.js"
-import { getSomePeJobs } from "./pejob.service.js"
-import { TJobSearchQuery } from "./jobOpportunity.service.types.js"
 import { IApiError } from "../common/utils/errorManager.js"
+import { trackApiCall } from "../common/utils/sendTrackingEvent.js"
+
+import { TJobSearchQuery, TLbaItemResult } from "./jobOpportunity.service.types.js"
+import { getSomeCompanies } from "./lbacompany.service.js"
+import { ILbaItemLbaJob, ILbaItemLbaCompany, ILbaItemPeJob } from "./lbaitem.shared.service.types.js"
+import { getLbaJobs } from "./lbajob.service.js"
+import { getSomePeJobs } from "./pejob.service.js"
+import { jobsQueryValidator } from "./queryValidator.service.js"
 
 /**
  * Retourn la compilation d'opportunités d'emploi au format unifié
  * chaque type d'opportunités d'emploi peut être émis en succès même si d'autres groupes sont en erreur
- * @param {TJobQuery} query un objet contenant les paramètres de recherche
- * @param {string} api l'identifiant de l'api utilisée
- * @returns {Promise<IApiError | { peJobs: { results: ILbaItem[] } | IApiError, matchas: { results: ILbaItem[] } | IApiError, lbaCompanies: { results: ILbaItem[] } | IApiError, lbbCompanies: null}>}
  */
 export const getJobsFromApi = async ({
   romes,
@@ -26,32 +24,34 @@ export const getJobsFromApi = async ({
   diploma,
   opco,
   opcoUrl,
-  useMock,
   api = "jobV1/jobs",
 }: {
   romes?: string
   referer?: string
-  caller?: string
-  latitude?: string
-  longitude?: string
-  radius?: string
+  caller?: string | null
+  latitude?: number
+  longitude?: number
+  radius?: number
   insee?: string
   sources?: string
   diploma?: string
   opco?: string
   opcoUrl?: string
-  useMock?: string
   api?: string
-}) => {
+}): Promise<
+  | IApiError
+  | { peJobs: TLbaItemResult<ILbaItemPeJob> | null; matchas: TLbaItemResult<ILbaItemLbaJob> | null; lbaCompanies: TLbaItemResult<ILbaItemLbaCompany> | null; lbbCompanies: null }
+> => {
   try {
     const jobSources = !sources ? ["lba", "offres", "matcha"] : sources.split(",")
+    const finalRadius = radius ?? 0
 
-    const [peJobs, lbaCompanies, lbbCompanies, matchas] = await Promise.all([
-      jobSources.indexOf("offres") >= 0
+    const [peJobs, lbaCompanies, matchas] = await Promise.all([
+      jobSources.includes("offres")
         ? getSomePeJobs({
-            romes: romes.split(","),
+            romes: romes?.split(","),
             insee: insee,
-            radius: parseInt(radius),
+            radius: finalRadius,
             latitude,
             longitude,
             caller,
@@ -61,58 +61,54 @@ export const getJobsFromApi = async ({
             opcoUrl,
           })
         : null,
-      jobSources.indexOf("lba") >= 0
+      jobSources.includes("lba")
         ? getSomeCompanies({
             romes,
             latitude,
             longitude,
-            radius: parseInt(radius),
+            radius: finalRadius,
             referer,
             caller,
             api,
             opco,
             opcoUrl,
-            useMock,
           })
         : null,
-      null,
-      jobSources.indexOf("matcha") >= 0
+      jobSources.includes("matcha")
         ? getLbaJobs({
             romes,
             latitude,
             longitude,
-            radius: parseInt(radius),
+            radius: finalRadius,
             api,
             caller,
             diploma,
             opco,
             opcoUrl,
-            useMock,
           })
         : null,
     ])
 
-    return { peJobs, matchas, lbaCompanies, lbbCompanies }
+    return { peJobs, matchas, lbaCompanies, lbbCompanies: null }
   } catch (err) {
-    console.log("Error ", err.message)
-    sentryCaptureException(err)
-
+    console.log(err)
     if (caller) {
       trackApiCall({ caller, api_path: api, response: "Error" })
     }
-    const errorReturn: IApiError = { error: "internal_error" }
-
-    return errorReturn
+    throw err
   }
 }
 
 /**
  * Retourne la compilation d'offres partenaires, d'offres LBA et de sociétés issues de l'algo
  * ou une liste d'erreurs si les paramètres de la requête sont invalides
- * @param {TJobSearchQuery} query les paramètres de recherche
- * @returns {Promise<{ error: string, error_messages: string[] } | IApiError | { job_count: number, matchas: TLbaItemResult, peJobs: TLbaItemResult, lbaCompanies: TLbaItemResult, lbbCompanies: null }>}
  */
-export const getJobsQuery = async (query: TJobSearchQuery) => {
+export const getJobsQuery = async (
+  query: TJobSearchQuery
+): Promise<
+  | IApiError
+  | { peJobs: TLbaItemResult<ILbaItemPeJob> | null; matchas: TLbaItemResult<ILbaItemLbaJob> | null; lbaCompanies: TLbaItemResult<ILbaItemLbaCompany> | null; lbbCompanies: null }
+> => {
   const parameterControl = await jobsQueryValidator(query)
 
   if ("error" in parameterControl) {
@@ -127,15 +123,15 @@ export const getJobsQuery = async (query: TJobSearchQuery) => {
 
   let job_count = 0
 
-  if ("lbaCompanies" in result && "results" in result.lbaCompanies) {
+  if ("lbaCompanies" in result && result.lbaCompanies && "results" in result.lbaCompanies) {
     job_count += result.lbaCompanies.results.length
   }
 
-  if ("peJobs" in result && "results" in result.peJobs) {
+  if ("peJobs" in result && result.peJobs && "results" in result.peJobs) {
     job_count += result.peJobs.results.length
   }
 
-  if ("matchas" in result && "results" in result.matchas) {
+  if ("matchas" in result && result.matchas && "results" in result.matchas) {
     job_count += result.matchas.results.length
   }
 
@@ -143,5 +139,5 @@ export const getJobsQuery = async (query: TJobSearchQuery) => {
     trackApiCall({ caller: query.caller, job_count, result_count: job_count, api_path: "jobV1/jobs", response: "OK" })
   }
 
-  return { ...result, job_count }
+  return result
 }

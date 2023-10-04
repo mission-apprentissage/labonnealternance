@@ -1,10 +1,13 @@
-import { logger } from "../../common/logger.js"
-import { FormationCatalogue } from "../../common/model/index.js"
-import { IFormationCatalogue } from "../../common/model/schema/formationCatalogue/formationCatalogue.types.js"
-import { asyncForEach } from "../../common/utils/asyncUtils.js"
-import { getFormationsFromCatalogueMe } from "../../services/catalogue.service.js"
+import { IFormationCatalogue } from "shared"
 
-export const updateFormationCatalogue = async ({ db }) => {
+import { db } from "@/common/mongodb"
+
+import { logger } from "../../common/logger"
+import { FormationCatalogue } from "../../common/model/index"
+import { asyncForEach } from "../../common/utils/asyncUtils"
+import { getFormationsFromCatalogueMe } from "../../services/catalogue.service"
+
+export const updateFormationCatalogue = async () => {
   logger.info("--- update formation catalogue data --- start")
   const formations = await FormationCatalogue.find({ $and: [{ affelnet_statut: null }, { parcoursup_id: null }] }).lean()
 

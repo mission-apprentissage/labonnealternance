@@ -7,4 +7,4 @@ interface IDiplomesMetiers {
   last_update_at: Date
 }
 
-export { IDiplomesMetiers }
+export type { IDiplomesMetiers }

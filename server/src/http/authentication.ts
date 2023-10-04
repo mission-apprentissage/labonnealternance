@@ -1,6 +1,6 @@
 import * as express from "express"
-import { Credential } from "../common/model/index.js"
-import { ICredential } from "../common/model/schema/credentials/credential.types.js"
+
+import { Credential } from "../common/model/index"
 
 /**
  * @description This function is the authentication middleware. tsoa needs all parameters, even if not used.
@@ -9,7 +9,7 @@ import { ICredential } from "../common/model/schema/credentials/credential.types
  * @param {Array} scope
  * @returns {Promise<ICredential>}
  */
-export const expressAuthentication = async (request: express.Request, securityName?: string, scope?: string[]): Promise<any> => {
+export const expressAuthentication = async (request: express.Request, _securityName?: string, _scope?: string[]): Promise<any> => {
   let token
   if (request.headers && request.headers.authorization) {
     token = request.headers.authorization

@@ -1,31 +1,39 @@
-import express from "express"
-import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
-import { sendApplication } from "../../services/application.service.js"
+import { zRoutes } from "shared/index"
 
-export default function (components) {
-  const router = express.Router()
+import { sendApplication } from "../../services/application.service"
+import { Server } from "../server"
 
-  router.post(
-    "/",
-    tryCatch(async (req, res) => {
+export default function (server: Server) {
+  server.post(
+    "/v1/application",
+    {
+      schema: zRoutes.post["/v1/application"],
+      config: {
+        rateLimit: {
+          max: 5,
+          timeWindow: "5s",
+        },
+      },
+      bodyLimit: 5 * 1024 ** 2, // 5MB
+    },
+    async (req, res) => {
       const result = await sendApplication({
         shouldCheckSecret: req.body.secret ? true : false,
         query: req.body,
-        referer: req.headers.referer,
-        ...components,
+        referer: req.headers.referer as string,
       })
 
-      if (result.error) {
+      if ("error" in result) {
         if (result.error === "error_sending_application") {
           res.status(500)
         } else {
           res.status(400)
         }
+      } else {
+        res.status(200)
       }
 
-      return res.json(result)
-    })
+      return res.send(result)
+    }
   )
-
-  return router
 }

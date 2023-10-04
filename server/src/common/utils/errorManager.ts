@@ -1,24 +1,16 @@
 import Sentry from "@sentry/node"
-import { trackApiCall } from "./sendTrackingEvent.js"
-import { sentryCaptureException } from "./sentryUtils.js"
+import { ZApiError } from "shared/models"
+import { z } from "zod"
 
-export interface IApiError {
-  result?: string
-  error?: string
-  message?: any
-  status?: number
-  statusText?: string
-}
+import { trackApiCall } from "./sendTrackingEvent"
+import { sentryCaptureException } from "./sentryUtils"
+
+export type IApiError = z.input<typeof ZApiError>
 
 /**
  * Process une erreur lors d'un appel vers une API LBAC
- * @param {any} error l'erreur JS levée
- * @param {string} api_path Le nom de l'API LBAC appelée
- * @param {string} caller L'identification fournie par l'utilisateur de l'api
- * @param {string} errorTitle Le titre de l'erreur
- * @returns {IApiError}
  */
-export const manageApiError = ({ error, api_path, caller, errorTitle }: { error: any; api_path?: string; caller?: string; errorTitle: string }): IApiError => {
+export const manageApiError = ({ error, api_path, caller, errorTitle }: { error: any; api_path?: string; caller?: string | null; errorTitle: string }): IApiError => {
   const errorObj: IApiError = { result: "error", error: "error", message: error.message }
   const status = error?.response?.status || ""
   error.name = `API error ${status ? status + " " : ""}${errorTitle}`
@@ -27,7 +19,7 @@ export const manageApiError = ({ error, api_path, caller, errorTitle }: { error:
   }
   sentryCaptureException(error)
 
-  if (caller) {
+  if (caller && api_path) {
     trackApiCall({ caller, api_path, response: "Error" })
   }
 

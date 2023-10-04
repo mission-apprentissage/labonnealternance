@@ -1,6 +1,6 @@
 describe("send-job-application", () => {
   it("tests send-job-application on " + Cypress.env("host"), () => {
-    cy.on("uncaught:exception", (err, runnable) => {
+    cy.on("uncaught:exception", () => {
       return false
     })
 
@@ -20,7 +20,7 @@ describe("send-job-application", () => {
       cy.get("[data-testid='widget-form'] select[data-testid='locationRadius']").select("60")
       cy.get("[data-testid='widget-form'] button").click()
 
-      cy.wait("@submitJobCall").then((interception) => {
+      cy.wait("@submitJobCall").then(() => {
         cy.get(".resultCard.matcha").first().click()
         cy.get("[data-testid='CandidatureSpontanee'] button").click()
         cy.get("[data-testid='lastName']").click()
@@ -36,7 +36,7 @@ describe("send-job-application", () => {
         cy.get("[data-testid='fileDropzone']").selectFile("cypress/fixtures/CV - John Doe.docx", { action: "drag-drop" })
         cy.get("[data-testid='candidature-not-sent']").click()
 
-        cy.wait("@submitApplication").then((applicationResultData) => {
+        cy.wait("@submitApplication").then(() => {
           cy.get("[data-testid='CandidatureSpontaneeWorked']")
         })
       })

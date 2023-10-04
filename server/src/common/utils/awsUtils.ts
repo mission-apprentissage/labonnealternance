@@ -1,7 +1,9 @@
-import * as stream from "stream"
-import AWS from "aws-sdk"
 import fs from "fs"
-import config from "../../config.js"
+import * as stream from "stream"
+
+import AWS from "aws-sdk"
+
+import config from "../../config"
 
 const { endpoint, region, bucket, accessKeyId, secretAccessKey }: { endpoint: string; region: string; bucket: string; accessKeyId: string; secretAccessKey: string } = config.s3
 
@@ -36,5 +38,9 @@ export const getS3FileLastUpdate = async ({ key }: { key: string }): Promise<Dat
     })
     .promise()
 
-  return new Date(headResponse.LastModified)
+  if (headResponse.LastModified) {
+    return new Date(headResponse.LastModified)
+  } else {
+    throw new Error(`getS3FileLastUpdate failed to fetch`)
+  }
 }

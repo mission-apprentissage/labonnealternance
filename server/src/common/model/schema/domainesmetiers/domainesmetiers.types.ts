@@ -1,6 +1,6 @@
 interface IDomainesMetiers {
   sous_domaine: string
-  domaine: string
+  domaine: string | null
   codes_romes: string[]
   intitules_romes: string[]
   codes_rncps: string[]
@@ -8,7 +8,11 @@ interface IDomainesMetiers {
   mots_clefs: string
   mots_clefs_specifiques: string
   appellations_romes: string
-  couples_appellations_rome_metier: object[]
+  couples_appellations_rome_metier: {
+    codeRome: string
+    intitule: string
+    appellation: string
+  }[]
   codes_fap: string[]
   intitules_fap: string[]
   sous_domaine_onisep: string[]
@@ -17,4 +21,4 @@ interface IDomainesMetiers {
   last_update_at: Date
 }
 
-export { IDomainesMetiers }
+export type { IDomainesMetiers }

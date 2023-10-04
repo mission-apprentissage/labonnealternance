@@ -1,52 +1,47 @@
-import express from "express"
-import Joi from "joi"
-import { logger } from "../../../common/logger.js"
-import { BrevoEventStatus } from "../../../services/brevo.service.js"
-import dayjs from "../../../services/dayjs.service.js"
-import { addEmailToBlacklist } from "../../../services/application.service.js"
-import { tryCatch } from "../../middlewares/tryCatchMiddleware.js"
-import * as eligibleTrainingsForAppointmentService from "../../../services/eligibleTrainingsForAppointment.service.js"
-import * as appointmentService from "../../../services/appointment.service.js"
-import authMiddleware from "../../middlewares/authMiddleware.js"
-import { Etablissement } from "../../../common/model/index.js"
+import { zRoutes } from "shared/index"
+
+import { logger } from "../../../common/logger"
+import { Etablissement } from "../../../common/model"
+import { addEmailToBlacklist } from "../../../services/application.service"
+import * as appointmentService from "../../../services/appointment.service"
+import { BrevoEventStatus } from "../../../services/brevo.service"
+import dayjs from "../../../services/dayjs.service"
+import * as eligibleTrainingsForAppointmentService from "../../../services/eligibleTrainingsForAppointment.service"
+import { Server } from "../../server"
 
 /**
  * Email controllers.
  */
-export default () => {
-  const router = express.Router()
-
+export default (server: Server) => {
   /**
    * @description Update email status.
    * @method {POST}
    * @returns {Promise<void>}
    */
-  router.post(
-    "/webhook",
-    authMiddleware("api-key"),
-    tryCatch(async (req, res) => {
-      const parameters = await Joi.object({
-        event: Joi.string().required(),
-        "message-id": Joi.string().required(),
-        date: Joi.string().required(),
-      })
-        .unknown()
-        .validateAsync(req.body, { abortEarly: false })
+  server.post(
+    "/emails/webhook",
+    {
+      schema: zRoutes.post["/emails/webhook"],
+      onRequest: [server.auth(zRoutes.post["/emails/webhook"].securityScheme)],
+    },
+    async (req, res) => {
+      const { date, event } = req.body
+      const messageId = req.body["message-id"]
+      const eventDate = dayjs.utc(date).tz("Europe/Paris").toDate()
 
-      const messageId = parameters["message-id"]
-      const eventDate = dayjs.utc(parameters["date"]).tz("Europe/Paris").toDate()
-
-      const [appointment] = await appointmentService.find({ "to_cfa_mails.message_id": { $regex: messageId } })
+      const appointment = await appointmentService.findOne({ "to_cfa_mails.message_id": { $regex: messageId } })
 
       // If mail sent from appointment model
       if (appointment) {
         const previousEmail = appointment.to_cfa_mails.find((mail) => mail.message_id.includes(messageId))
 
+        if (!previousEmail) return
+
         await appointment.update({
           $push: {
             to_etablissement_emails: {
               campaign: previousEmail.campaign,
-              status: parameters.event,
+              status: event,
               message_id: previousEmail.message_id,
               webhook_status_at: eventDate,
             },
@@ -54,7 +49,7 @@ export default () => {
         })
 
         // Disable eligibleTrainingsForAppointments in case of hard_bounce
-        if (parameters.event === BrevoEventStatus.HARD_BOUNCE) {
+        if (event === BrevoEventStatus.HARD_BOUNCE) {
           const eligibleTrainingsForAppointmentsWithEmail = await eligibleTrainingsForAppointmentService.find({ cfa_recipient_email: appointment.cfa_recipient_email })
 
           await Promise.all(
@@ -67,7 +62,7 @@ export default () => {
               })
             })
           )
-          await addEmailToBlacklist(appointment.cfa_recipient_email, "rdv-transactional")
+          await addEmailToBlacklist(appointment.cfa_recipient_email as string, "rdv-transactional")
         }
       }
 
@@ -75,14 +70,14 @@ export default () => {
 
       // If mail sent from etablissement model
       if (etablissementFound) {
-        const previousEmail = etablissementFound.to_etablissement_emails.find((mail) => mail.message_id.includes(messageId))
+        const previousEmail = etablissementFound?.to_etablissement_emails?.find((mail) => mail?.message_id?.includes(messageId))
 
         await etablissementFound.update({
           $push: {
             to_etablissement_emails: {
-              campaign: previousEmail.campaign,
-              status: parameters.event,
-              message_id: previousEmail.message_id,
+              campaign: previousEmail?.campaign,
+              status: event,
+              message_id: previousEmail?.message_id,
               webhook_status_at: eventDate,
             },
           },
@@ -95,13 +90,15 @@ export default () => {
 
       // If mail sent from appointment (to the candidat)
       if (appointmentCandidatFound) {
-        const previousEmail = appointmentCandidatFound.to_applicant_mails.find((mail) => mail.message_id.includes(messageId))
+        const previousEmail = appointmentCandidatFound?.to_applicant_mails?.find((mail) => mail.message_id.includes(messageId))
+
+        if (!previousEmail) return
 
         await appointmentCandidatFound.update({
           $push: {
             to_applicant_mails: {
               campaign: previousEmail.campaign,
-              status: parameters.event,
+              status: event,
               message_id: previousEmail.message_id,
               webhook_status_at: eventDate,
             },
@@ -115,11 +112,13 @@ export default () => {
       if (appointmentCfaFound && appointmentCfaFound?.to_cfa_mails) {
         const previousEmail = appointmentCfaFound.to_cfa_mails.find((mail) => mail.message_id.includes(messageId))
 
+        if (!previousEmail) return
+
         await appointmentCfaFound.update({
           $push: {
             to_cfa_mails: {
               campaign: previousEmail.campaign,
-              status: parameters.event,
+              status: event,
               message_id: previousEmail.message_id,
               webhook_status_at: eventDate,
             },
@@ -127,9 +126,7 @@ export default () => {
         })
       }
 
-      return res.json({})
-    })
+      return res.status(200).send({})
+    }
   )
-
-  return router
 }

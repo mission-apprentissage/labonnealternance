@@ -12,13 +12,14 @@ describe("send-rdv-from-widget", () => {
       cy.get("#headerFormJobField-input").should("have.value", "Esthétique")
       cy.get("[data-testid='widget-form'] button").click()
 
-      cy.wait("@submitTrainingCall").then((interception) => {
+      cy.wait("@submitTrainingCall").then(() => {
         cy.get(".resultCard.training").first().click()
-
+        // eslint-disable-next-line cypress/unsafe-to-chain-command
         cy.get("[data-testid='prdvButton']")
           .invoke("removeAttr", "target")
           .click()
           .then(() => {
+            // eslint-disable-next-line cypress/no-unnecessary-waiting
             cy.wait(5000).then(() => {
               cy.get("input[name='firstname']").click()
               cy.get("input[name='firstname']").type("John")
@@ -34,7 +35,7 @@ describe("send-rdv-from-widget", () => {
               cy.get("input[name='applicantMessageToCfa']").click()
               cy.get("input[name='applicantMessageToCfa']").type("horaires")
               cy.get("button").click()
-              cy.wait("@submitRdv").then((rdvResultData) => {
+              cy.wait("@submitRdv").then(() => {
                 cy.get("[data-testid='rdv-sent']")
               })
             })

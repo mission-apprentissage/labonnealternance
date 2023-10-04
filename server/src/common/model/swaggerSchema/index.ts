@@ -1,10 +1,12 @@
 import requireAll from "require-all"
-import __dirname from "../../dirname.js"
 
+import __dirname from "../../dirname"
+
+// eslint-disable-next-line import/no-mutable-exports
 let models = {}
 
 function filterFile(filename) {
-  if (filename.endsWith(".js") && filename !== "index.js") {
+  if (filename.endsWith("") && filename !== "index") {
     return filename
   }
 

@@ -1,8 +1,8 @@
-import { ILbaCompany } from "../lbaCompany/lbaCompany.types.js"
+import { ILbaCompany } from "shared"
 
 interface IUnsubscribedLbaCompany extends ILbaCompany {
   unsubscribe_date: Date
   unsubscribe_reason: string
 }
 
-export { IUnsubscribedLbaCompany }
+export type { IUnsubscribedLbaCompany }

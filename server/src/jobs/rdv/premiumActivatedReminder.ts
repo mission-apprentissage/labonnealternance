@@ -1,12 +1,13 @@
-import { mailTemplate } from "../../assets/index.js"
-import { logger } from "../../common/logger.js"
-import { mailType } from "../../common/model/constants/etablissement.js"
-import dayjs from "../../services/dayjs.service.js"
-import config from "../../config.js"
-import { isValidEmail } from "../../common/utils/isValidEmail.js"
-import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service.js"
-import { Etablissement } from "../../common/model/index.js"
-import mailer from "../../services/mailer.service.js"
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+
+import { logger } from "../../common/logger"
+import { mailType } from "../../common/model/constants/etablissement"
+import { Etablissement } from "../../common/model/index"
+import { isValidEmail } from "../../common/utils/isValidEmail"
+import config from "../../config"
+import dayjs from "../../services/dayjs.service"
+import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service"
+import mailer from "../../services/mailer.service"
 
 /**
  * @description Send a "Premium" reminder mail.
@@ -33,15 +34,23 @@ export const premiumActivatedReminder = async () => {
 
   for (const etablissement of etablissementWithParcoursup) {
     // Retrieve all emails
-    let emails = eligibleTrainingsForAppointmentsFound
-      .filter((eligibleTrainingsForAppointment) => eligibleTrainingsForAppointment.etablissement_formateur_siret === etablissement.formateur_siret)
-      .map((eligibleTrainingsForAppointment) => eligibleTrainingsForAppointment.lieu_formation_email)
-      .concat([etablissement.gestionnaire_email])
-    emails = [...new Set(emails)].filter((email) => email)
+    let emails = eligibleTrainingsForAppointmentsFound.flatMap((eligibleTrainingsForAppointment) => {
+      if (eligibleTrainingsForAppointment.etablissement_formateur_siret === etablissement.formateur_siret) {
+        const email = eligibleTrainingsForAppointment.lieu_formation_email
+        return email ? [email] : []
+      } else {
+        return []
+      }
+    })
+
+    if (etablissement.gestionnaire_email) {
+      emails.push(etablissement.gestionnaire_email)
+    }
+    emails = [...new Set(emails)]
 
     for (const email of emails) {
       try {
-        if (!isValidEmail) {
+        if (!isValidEmail(email)) {
           logger.info("Invalid email syntax.", { email, etablissement })
           continue
         }
@@ -49,16 +58,16 @@ export const premiumActivatedReminder = async () => {
         const { messageId } = await mailer.sendEmail({
           to: email,
           subject: `Rappel - Les jeunes peuvent prendre contact avec votre CFA sur Parcoursup`,
-          template: mailTemplate["mail-cfa-premium-activated-reminder"],
+          template: getStaticFilePath("./templates/mail-cfa-premium-activated-reminder.mjml.ejs"),
           data: {
             url: config.publicUrl,
             replyTo: config.publicEmail,
             images: {
-              logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
-              logoParcoursup: `${config.publicUrlEspacePro}/assets/logo-parcoursup.png?raw=true`,
-              logoFooter: `${config.publicUrlEspacePro}/assets/logo-republique-francaise.png?raw=true`,
-              peopleLaptop: `${config.publicUrlEspacePro}/assets/people-laptop.png?raw=true`,
-              integrationExample: `${config.publicUrlEspacePro}/assets/exemple_integration_parcoursup.jpg?raw=true`,
+              logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
+              logoParcoursup: `${config.publicUrl}/assets/logo-parcoursup.png?raw=true`,
+              logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.png?raw=true`,
+              peopleLaptop: `${config.publicUrl}/assets/people-laptop.png?raw=true`,
+              integrationExample: `${config.publicUrl}/assets/exemple_integration_parcoursup.jpg?raw=true`,
             },
             etablissement: {
               name: etablissement.raison_sociale,

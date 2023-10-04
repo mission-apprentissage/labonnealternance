@@ -1,12 +1,14 @@
-// @ts-nocheck
+import path from "path"
+
 import csvToJson from "convert-csv-to-json"
 import { parse } from "csv-parse"
 import { isEmpty, pickBy } from "lodash-es"
-import path from "path"
 import XLSX from "xlsx"
-import __dirname from "../../common/dirname.js"
-import config from "../../config.js"
-import { FTPClient } from "./ftpUtils.js"
+
+import config from "../../config"
+import __dirname from "../dirname"
+
+import { FTPClient } from "./ftpUtils"
 
 export const readJsonFromCsvFile = (localPath) => {
   return csvToJson.getJsonFromCsv(localPath)
@@ -21,6 +23,7 @@ export const createXLSXFile = (data, localPath) => {
   const workbook = XLSX.utils.book_new()
   XLSX.utils.book_append_sheet(workbook, XLSX.utils.json_to_sheet(data), "data")
 
+  // @ts-expect-error writeFileAsync Cb function is not properly typed
   XLSX.writeFileAsync(path.join(localPath), workbook, (e) => {
     if (e) {
       console.log(e)
@@ -31,21 +34,6 @@ export const createXLSXFile = (data, localPath) => {
 
 export const convertIntoBuffer = (workbook) => {
   return XLSX.write(workbook, { type: "buffer", bookType: "xlsx" })
-}
-
-export const writeXlsxFile = async (workbook, filePath, fileName) => {
-  const execWrite = () =>
-    new Promise((resolve) => {
-      XLSX.writeFileAsync(path.join(__dirname(import.meta.url), `${filePath}/${fileName}`), workbook, (e) => {
-        if (e) {
-          console.log(e)
-          throw new Error("La génération du fichier excel à échoué : ", e)
-        }
-        resolve()
-      })
-    })
-
-  await execWrite()
 }
 
 export const removeLine = (data, regex) => {
@@ -74,7 +62,7 @@ export const parseCsv = (options = {}) => {
   })
 }
 
-export const fileDownloader = async (filePath, remoteFileName, { ftp = {} }) => {
+export const fileDownloader = async (filePath: string, remoteFileName: string, ftp: { user: string; password: string }) => {
   const opt = {
     host: config.ftp.host,
     user: ftp.user,

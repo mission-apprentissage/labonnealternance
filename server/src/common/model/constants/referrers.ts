@@ -47,9 +47,6 @@ const referrers = {
   },
 }
 
-// verifies typing
-const typedReferrers: Record<string, ReferrerObject> = referrers
-
 function isReferrer(name: string): name is keyof typeof referrers {
   return Object.keys(referrers).includes(name)
 }
@@ -59,7 +56,8 @@ function isReferrer(name: string): name is keyof typeof referrers {
  * @param {string} name
  * @returns {{code: {Number}, name: {String}, fullName: {String}, url: {String}}}
  */
-function getReferrerByKeyName(name: string): ReferrerObject {
+function getReferrerByKeyName(name: string | null | undefined): ReferrerObject {
+  if (!name) throw Boom.badRequest("Referrer introuvable.")
   const upperName = name.toUpperCase()
   if (!isReferrer(upperName)) {
     throw Boom.badRequest("Referrer introuvable.")
@@ -83,4 +81,4 @@ function getReferrerById(id) {
   return referrer
 }
 
-export { referrers, getReferrerByKeyName, getReferrerById }
+export { getReferrerById, getReferrerByKeyName, referrers }

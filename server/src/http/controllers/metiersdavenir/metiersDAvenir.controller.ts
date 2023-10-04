@@ -1,27 +1,17 @@
-import { getMetiersDAvenir } from "../../../services/diagoriente.service.js"
-import { Controller, Get, Hidden, OperationId, Response, Route, SuccessResponse, Tags } from "tsoa"
-import { TResponseError } from "../shared.types.js"
-import { TGetMetiersDAvenirResponseSuccess } from "./metiersDAvenir.type.js"
+import { zRoutes } from "shared/index.js"
 
-@Tags("MetiersDAvenir")
-@Route("/api/metiersdavenir")
-@Hidden()
-export class MetiersDAvenirController extends Controller {
-  /**
-   * @description get a list of "métiers d'avenir" from Diagoriente API
-   * @returns {Promise<TGetMetiersDAvenirResponseSuccess | TResponseError>}
-   */
-  @Response<"List unavailable">(500)
-  @SuccessResponse("201", "List retrieved")
-  @Get("/")
-  @OperationId("getMetiersDAvenir")
-  public async getMetiersDAvenir(): Promise<TGetMetiersDAvenirResponseSuccess | TResponseError> {
-    const result = await getMetiersDAvenir()
+import { getMetiersDAvenir } from "../../../services/diagoriente.service"
+import { Server } from "../../server"
 
-    if (result.error) {
-      this.setStatus(500)
+export default (server: Server) => {
+  server.get(
+    "/metiersdavenir",
+    {
+      schema: zRoutes.get["/metiersdavenir"],
+    },
+    async (req, res) => {
+      const result = await getMetiersDAvenir()
+      return res.send(result)
     }
-
-    return result
-  }
+  )
 }

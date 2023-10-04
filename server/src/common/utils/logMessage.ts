@@ -1,4 +1,5 @@
-import { logger } from "../logger.js"
+import { logger } from "../logger"
+
 const logMessage = (level, msg) => {
   if (level === "info") {
     logger.info(msg)

@@ -1,18 +1,19 @@
 import { createReadStream } from "fs"
+import path from "path"
+
 import Joi from "joi"
 import { filterData, oleoduc, transformData, writeData } from "oleoduc"
-import path from "path"
-import config from "../../../../config.js"
 
-import __dirname from "../../../../common/dirname.js"
-import { logger } from "../../../../common/logger.js"
-import { ReferentielOpco } from "../../../../common/model/index.js"
-import { fileDownloader, parseCsv } from "../../../../common/utils/fileUtils.js"
-import { runScript } from "../../../scriptWrapper.js"
+import __dirname from "../../../../common/dirname"
+import { logger } from "../../../../common/logger"
+import { ReferentielOpco } from "../../../../common/model/index"
+import { fileDownloader, parseCsv } from "../../../../common/utils/fileUtils"
+import config from "../../../../config"
+import { runScript } from "../../../scriptWrapper"
 
 const importer = async (filePath, remoteFileName, opco_label) => {
   logger.info("Downloading file...")
-  await fileDownloader(filePath, remoteFileName, { ftp: config.ftp.ocapiat })
+  await fileDownloader(filePath, remoteFileName, config.ftp.ocapiat)
 
   logger.info(`Deleting collection entries for ${opco_label}...`)
   await ReferentielOpco.deleteMany({ opco_label })
@@ -30,7 +31,7 @@ const importer = async (filePath, remoteFileName, opco_label) => {
     parseCsv({ trim: true, delimiter: ";" }),
     filterData((e) => e["Email du contact"]),
     transformData((e) => {
-      const emails = []
+      const emails: any[] = []
 
       const Siret = e.Siret
       const email = e["Email du contact"]

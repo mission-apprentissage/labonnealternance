@@ -1,5 +1,6 @@
-import updateDiplomesMetiers from "./updateDiplomesMetiers.js"
-import { runScript } from "../scriptWrapper.js"
+import { runScript } from "../scriptWrapper"
+
+import updateDiplomesMetiers from "./updateDiplomesMetiers"
 
 runScript(async () => {
   await updateDiplomesMetiers()

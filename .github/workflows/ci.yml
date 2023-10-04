@@ -1,16 +1,51 @@
 name: CI
-on: [push]
+
+on:
+  workflow_call:
+    secrets:
+      CODECOV_TOKEN:
+        description: Code coverrage token
+        required: true
 jobs:
-  test:
+  tests:
+    name: "Tests"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: "18"
-      - run: make ci
+      - name: Checkout project
+        uses: actions/checkout@v4
 
-      - name: Upload coverage reports to Codecov
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - uses: actions/cache@v3
+        with:
+          path: |
+            **/node_modules
+            .yarn/install-state.gz
+            .yarn/cache
+          key: yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: yarn-
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Make sure to use same dependencies version across all packages
+        run: yarn dedupe --check
+
+      - name: lint
+        run: yarn lint
+
+      - name: typecheck
+        run: yarn typecheck:ci
+
+      - name: test
+        run: yarn test:ci
+
+      - name: prettier
+        run: yarn prettier:check
+
+      - name: Upload coverage report to Codecov
         uses: codecov/codecov-action@v3
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}

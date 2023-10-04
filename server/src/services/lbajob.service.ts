@@ -1,36 +1,24 @@
-import { encryptMailWithIV } from "../common/utils/encryptString.js"
-import { IApiError, manageApiError } from "../common/utils/errorManager.js"
-import { trackApiCall } from "../common/utils/sendTrackingEvent.js"
-import { filterJobsByOpco } from "./opco.service.js"
+import { IJob, IRecruiter } from "shared"
+
+import { encryptMailWithIV } from "../common/utils/encryptString"
+import { IApiError, manageApiError } from "../common/utils/errorManager"
+import { roundDistance } from "../common/utils/geolib"
+import { trackApiCall } from "../common/utils/sendTrackingEvent"
+
+import { IApplicationCount, getApplicationByJobCount } from "./application.service"
+import { JOB_STATUS, NIVEAUX_POUR_LBA, RECRUITER_STATUS } from "./constant.service"
+import { getJobsFromElasticSearch, getOffreAvecInfoMandataire, incrementLbaJobViewCount } from "./formulaire.service"
+import { ILbaItemLbaJob } from "./lbaitem.shared.service.types"
+import type { ILbaJobEsResult } from "./lbajob.service.types"
+import { filterJobsByOpco } from "./opco.service"
 
 const coordinatesOfFrance = [2.213749, 46.227638]
 
-import { NIVEAUX_POUR_LBA, ACTIVE, JOB_STATUS, RECRUITER_STATUS } from "./constant.service.js"
-import { roundDistance } from "../common/utils/geolib.js"
-import { matchaMock, matchaMockMandataire, matchasMock } from "../mocks/matchas-mock.js"
-import { getOffreAvecInfoMandataire, getJobsFromElasticSearch, incrementLbaJobViewCount } from "./formulaire.service.js"
-import { getApplicationByJobCount, IApplicationCount } from "./application.service.js"
-import { ILbaItem, LbaItem } from "./lbaitem.shared.service.types.js"
-import { IRecruiter } from "../common/model/schema/recruiter/recruiter.types.js"
-import { ILbaJobEsResult } from "./lbajob.service.types.js"
-import { TLbaItemResult } from "./jobOpportunity.service.types.js"
-
 /**
  * Retourne les offres LBA correspondantes aux critères de recherche
- * @param {string} romes une liste de codes romes séparée par des virgules
- * @param {number} radius optionnel: le rayon de recherche pour une recherche centrée sur un point géographique
- * @param {string} latitude optionnel: la latitude du centre de recherche
- * @param {string} longitude optionnel: la longitude du centre de recherche
- * @param {string} api le nom de l'api à des fins de traçage des actions
- * @param {string} opco optionnel: le nom d'un opco pour ne retourner que les offres des sociétés affiliées à cet opco
- * @param {string} opcoUrl optionnel: l'url d'un opco pour ne retourner que les offres des sociétés affiliées à cet opcoUrl
- * @param {string} diploma optionnel: un fitre pour ne remonter ques les offres aboutissant à l'obtention du diplôme
- * @param {string} caller optionnel: l'identifiant de l'utilisateur de l'api
- * @param {string} useMock optionnel: un flag indiquant s'il faut retourner une valeur réelle ou une valeur mockée
- * @returns {Promise<TLbaItemResult>}
  */
 export const getLbaJobs = async ({
-  romes,
+  romes = "",
   radius = 10,
   latitude,
   longitude,
@@ -39,19 +27,17 @@ export const getLbaJobs = async ({
   opcoUrl,
   diploma,
   caller,
-  useMock,
 }: {
-  romes: string
+  romes?: string
   radius?: number
-  latitude?: string
-  longitude?: string
+  latitude?: number
+  longitude?: number
   api: string
   opco?: string
   opcoUrl?: string
   diploma?: string
-  caller?: string
-  useMock?: string
-}): Promise<TLbaItemResult> => {
+  caller?: string | null
+}) => {
   if (radius === 0) {
     radius = 10
   }
@@ -61,7 +47,7 @@ export const getLbaJobs = async ({
     const distance = hasLocation ? radius : 21000
 
     const params: any = {
-      romes: romes.split(","),
+      romes: romes?.split(","),
       distance,
       lat: hasLocation ? latitude : coordinatesOfFrance[1],
       lon: hasLocation ? longitude : coordinatesOfFrance[0],
@@ -71,9 +57,9 @@ export const getLbaJobs = async ({
       params.niveau = NIVEAUX_POUR_LBA[diploma]
     }
 
-    const jobs = useMock === "true" ? matchasMock : await getJobsFromElasticSearch(params)
+    const jobs = await getJobsFromElasticSearch(params)
 
-    const ids: string[] = jobs.flatMap(({ _source }) => _source.jobs.map(({ _id }) => _id))
+    const ids: string[] = jobs.flatMap(({ _source }) => (_source?.jobs ? _source.jobs.map(({ _id }) => _id.toString()) : []))
 
     const applicationCountByJob = await getApplicationByJobCount(ids)
 
@@ -84,7 +70,7 @@ export const getLbaJobs = async ({
       matchas.results = await filterJobsByOpco({ opco, opcoUrl, jobs: matchas.results })
     }
 
-    if (!hasLocation) {
+    if (!hasLocation && matchas.results) {
       sortLbaJobs(matchas)
     }
 
@@ -96,19 +82,15 @@ export const getLbaJobs = async ({
 
 /**
  * Converti les offres issues de l'elasticsearch ou de la mongo en objet de type ILbaItem
- * @param {ILbaJobEsResult[]} jobs offres issues de l'elasticsearch ou de la mogon
- * @param {string} caller l'identifiant de l'utilisateur de l'api
- * @param {IApplicationCount[]} applicationCountByJob les décomptes de candidatures par identifiant d'offres
- * @returns {{ results: ILbaItem[] }}
  */
-function transformLbaJobs({ jobs, caller, applicationCountByJob }: { jobs: ILbaJobEsResult[]; caller?: string; applicationCountByJob: IApplicationCount[] }): {
-  results: ILbaItem[]
+function transformLbaJobs({ jobs, caller, applicationCountByJob }: { jobs: ILbaJobEsResult[]; caller?: string | null; applicationCountByJob: IApplicationCount[] }): {
+  results: ILbaItemLbaJob[]
 } {
   return {
     results: jobs.flatMap((job) =>
       transformLbaJob({
         job: job._source,
-        distance: job.sort[0],
+        distance: job.sort ? job.sort[0] : undefined,
         applicationCountByJob,
         caller,
       })
@@ -118,20 +100,10 @@ function transformLbaJobs({ jobs, caller, applicationCountByJob }: { jobs: ILbaJ
 
 /**
  * Retourne une offre LBA identifiée par son id
- * @param {string} id l'identifiant mongo de l'offre LBA
- * @param {string} caller optionnel. l'identifiant de l'utilisateur de l'api
- * @return {Promise<IApiError | { matchas: ILbaItem[] }>}
  */
-export const getLbaJobById = async ({ id, caller }: { id: string; caller: string }): Promise<IApiError | { matchas: ILbaItem[] }> => {
+export const getLbaJobById = async ({ id, caller }: { id: string; caller?: string }): Promise<IApiError | { matchas: ILbaItemLbaJob[] }> => {
   try {
-    let rawJob = null
-    if (id === "id-matcha-test") {
-      rawJob = matchaMock._source
-    } else if (id === "id-matcha-test2") {
-      rawJob = matchaMockMandataire._source
-    } else {
-      rawJob = await getOffreAvecInfoMandataire(id)
-    }
+    const rawJob = await getOffreAvecInfoMandataire(id)
 
     if (!rawJob) {
       return { error: "not_found" }
@@ -157,11 +129,6 @@ export const getLbaJobById = async ({ id, caller }: { id: string; caller: string
 
 /**
  * Adaptation au modèle LBAC et conservation des seules infos utilisées de l'offre
- * @param {Partial<IRecruiter>} job l'offre retournée d'ES ou de la mongo
- * @param {number} distance optionnel: la distance du lieu de l'offre au centre de la recherche
- * @param {string} caller optionnel: l'id de l'utilisateur de l'api
- * @param {IApplicationCount[]} applicationCountByJob le tableau des décomptes de candidatures par offre
- * @returns {ILbaItem[]}
  */
 function transformLbaJob({
   job,
@@ -171,85 +138,91 @@ function transformLbaJob({
 }: {
   job: Partial<IRecruiter>
   distance?: number
-  caller?: string
+  caller?: string | null
   applicationCountByJob: IApplicationCount[]
-}): ILbaItem[] {
-  return job.jobs.map((offre, idx) => {
-    const resultJob = new LbaItem("matcha")
+}): ILbaItemLbaJob[] {
+  if (!job.jobs) {
+    return []
+  }
+
+  return job.jobs.map((offre, idx): ILbaItemLbaJob => {
     const email = encryptMailWithIV({ value: job.email, caller })
+    const applicationCountForCurrentJob = applicationCountByJob.find((job) => job._id.toString() === offre._id.toString())
+    const romes = offre.rome_code.map((code) => ({ code, label: null }))
 
-    resultJob.id = `${job.establishment_id}-${idx}`
-    resultJob.title = offre.rome_appellation_label ?? offre.rome_label
-    resultJob.contact = {
-      ...email,
-      name: job.first_name + " " + job.last_name,
-      phone: job.phone,
+    const latitude = parseFloat(job.geo_coordinates ? job.geo_coordinates.split(",")[0] : "0")
+    const longitude = parseFloat(job.geo_coordinates ? job.geo_coordinates.split(",")[1] : "0")
+
+    const resultJob: ILbaItemLbaJob = {
+      ideaType: "matcha",
+      id: `${job.establishment_id}-${idx}`,
+      title: offre.rome_appellation_label ?? offre.rome_label,
+      contact: {
+        ...email,
+        name: job.first_name + " " + job.last_name,
+        phone: job.phone,
+      },
+      place: {
+        distance: distance !== undefined ? roundDistance(distance) : null,
+        fullAddress: job.address,
+        address: job.address,
+        latitude,
+        longitude,
+        city: job.address_detail && "localite" in job.address_detail ? job.address_detail.localite : null,
+      },
+      company: {
+        siret: job.establishment_siret,
+        name: job.establishment_enseigne || job.establishment_raison_sociale || "Enseigne inconnue",
+        size: job.establishment_size,
+        mandataire: job.is_delegated,
+        creationDate: job.establishment_creation_date ? new Date(job.establishment_creation_date) : null,
+      },
+      nafs: [{ label: job.naf_label }],
+      diplomaLevel: offre.job_level_label || null,
+      job: {
+        id: offre._id.toString(),
+        description: offre.job_description || "",
+        creationDate: offre.job_creation_date ? new Date(offre.job_creation_date) : null,
+        contractType: offre.job_type ? offre.job_type.join(", ") : null,
+        jobStartDate: offre.job_start_date ? new Date(offre.job_start_date) : null,
+        romeDetails: offre.rome_detail,
+        rythmeAlternance: offre.job_rythm || null,
+        dureeContrat: "" + offre.job_duration,
+        quantiteContrat: offre.job_count,
+        elligibleHandicap: offre.is_disabled_elligible,
+        status: job.status === RECRUITER_STATUS.ACTIF && offre.job_status === JOB_STATUS.ACTIVE ? JOB_STATUS.ACTIVE : JOB_STATUS.ANNULEE,
+      },
+      romes,
+      applicationCount: applicationCountForCurrentJob?.count || 0,
     }
 
-    resultJob.place.distance = distance ? roundDistance(distance) : null
-    resultJob.place.fullAddress = job.address
-    resultJob.place.address = job.address
-    resultJob.place.latitude = job.geo_coordinates.split(",")[0]
-    resultJob.place.longitude = job.geo_coordinates.split(",")[1]
-
-    if (job.address_detail && "localite" in job.address_detail) {
-      resultJob.place.city = job.address_detail.localite
-    }
-
-    resultJob.company.siret = job.establishment_siret
-    resultJob.company.name = job.establishment_enseigne || job.establishment_raison_sociale || "Enseigne inconnue"
-    resultJob.company.size = job.establishment_size
-
-    resultJob.company.mandataire = job.is_delegated
-
-    resultJob.nafs = [{ label: job.naf_label }]
-    resultJob.company.creationDate = new Date(job.establishment_creation_date)
-
-    resultJob.diplomaLevel = offre.job_level_label
-    resultJob.createdAt = job.createdAt
-    resultJob.lastUpdateAt = job.updatedAt
-
-    resultJob.job = {
-      id: offre._id,
-      description: offre.job_description || "",
-      creationDate: offre.job_creation_date,
-      contractType: offre.job_type.join(", "),
-      jobStartDate: offre.job_start_date,
-      romeDetails: offre.rome_detail,
-      rythmeAlternance: offre.job_rythm || null,
-      dureeContrat: "" + offre.job_duration,
-      quantiteContrat: offre.job_count,
-      elligibleHandicap: offre.is_disabled_elligible,
-      status: job.status === RECRUITER_STATUS.ACTIF && offre.job_status === JOB_STATUS.ACTIVE ? JOB_STATUS.ACTIVE : JOB_STATUS.ANNULEE,
-    }
-
-    resultJob.romes = []
-    offre.rome_code.map((code) => resultJob.romes.push({ code, label: null }))
-
-    const applicationCount = applicationCountByJob.find((job) => job._id == offre._id)
-    resultJob.applicationCount = applicationCount?.count || 0
     return resultJob
   })
 }
 
 /**
  * tri des ofres selon l'ordre alphabétique du titre (primaire) puis du nom de société (secondaire)
- * @param {{ results: ILbaItem[] }}
  */
-function sortLbaJobs(jobs: { results: ILbaItem[] }) {
+function sortLbaJobs(jobs: { results: ILbaItemLbaJob[] }) {
   jobs.results.sort((a, b) => {
-    if (a?.title?.toLowerCase() < b?.title?.toLowerCase()) {
-      return -1
-    }
-    if (a?.title?.toLowerCase() > b?.title?.toLowerCase()) {
-      return 1
-    }
+    if (a && b) {
+      if (a.title && b.title) {
+        if (a?.title?.toLowerCase() < b?.title?.toLowerCase()) {
+          return -1
+        }
+        if (a?.title?.toLowerCase() > b?.title?.toLowerCase()) {
+          return 1
+        }
+      }
 
-    if (a?.company?.name?.toLowerCase() < b?.company?.name?.toLowerCase()) {
-      return -1
-    }
-    if (a?.company?.name?.toLowerCase() > b?.company?.name?.toLowerCase()) {
-      return 1
+      if (a.company?.name && b.company?.name) {
+        if (a?.company?.name?.toLowerCase() < b?.company?.name?.toLowerCase()) {
+          return -1
+        }
+        if (a?.company?.name?.toLowerCase() > b?.company?.name?.toLowerCase()) {
+          return 1
+        }
+      }
     }
 
     return 0
@@ -260,7 +233,7 @@ function sortLbaJobs(jobs: { results: ILbaItem[] }) {
  * Incrémente le compteur de vue de la page de détail d'une offre LBA
  * @param {string} jobId
  */
-export const addOffreDetailView = async (jobId: string) => {
+export const addOffreDetailView = async (jobId: IJob["_id"] | string) => {
   await incrementLbaJobViewCount(jobId, {
     stats_detail_view: 1,
   })
@@ -268,9 +241,8 @@ export const addOffreDetailView = async (jobId: string) => {
 
 /**
  * Incrémente le compteur de vue de la page de recherche d'une offre LBA
- * @param {string} jobId
  */
-export const addOffreSearchView = async (jobId: string) => {
+export const addOffreSearchView = async (jobId: IJob["_id"] | string) => {
   await incrementLbaJobViewCount(jobId, {
     stats_search_view: 1,
   })

@@ -1,6 +1,8 @@
 import { randomUUID } from "crypto"
-import { model, Schema } from "../../../mongodb.js"
-import { ICredential } from "./credential.types.js"
+
+import { ICredential } from "shared"
+
+import { model, Schema } from "../../../mongodb"
 
 export const credentialSchema = new Schema<ICredential>(
   {
@@ -35,7 +37,7 @@ export const credentialSchema = new Schema<ICredential>(
       default: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true, versionKey: false }
 )
 
 export default model<ICredential>("credential", credentialSchema)

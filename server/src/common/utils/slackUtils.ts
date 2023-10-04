@@ -1,5 +1,6 @@
 import axios from "axios"
-import config from "../../config.js"
+
+import config from "../../config"
 
 export const notifyToSlack = async ({ subject, message, error }: { subject: string; message: string; error?: boolean }) => {
   if (config.jobSlackWebhook) {

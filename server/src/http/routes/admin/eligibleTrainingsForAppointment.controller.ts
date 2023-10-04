@@ -1,123 +1,76 @@
-import express from "express"
-import Joi from "joi"
-import { logger } from "../../../common/logger.js"
-import { EligibleTrainingsForAppointment, Etablissement } from "../../../common/model/index.js"
-import { tryCatch } from "../../middlewares/tryCatchMiddleware.js"
-import * as eligibleTrainingsForAppointmentService from "../../../services/eligibleTrainingsForAppointment.service.js"
+import Boom from "boom"
+import { zRoutes } from "shared/index"
 
-const eligibleTrainingsForAppointmentIdPatchSchema = Joi.object({
-  is_lieu_formation_email_customized: Joi.boolean().optional(),
-  referrers: Joi.array().items(Joi.string()).optional(),
-  lieu_formation_email: Joi.string()
-    .email({ tlds: { allow: false } })
-    .allow(null)
-    .optional(),
-})
-
-const eligibleTrainingsForAppointmentSchema = Joi.object({
-  etablissement_siret: Joi.string().required(),
-  etablissement_raison_sociale: Joi.string().required(),
-  formation_intitule: Joi.string().required(),
-  formation_cfd: Joi.string().required(),
-  code_postal: Joi.string().required(),
-  lieu_formation_email: Joi.string()
-    .email({ tlds: { allow: false } })
-    .allow(null)
-    .required(),
-  referrers: Joi.array().items(Joi.number()),
-  rco_formation_id: Joi.string().required(),
-  cle_ministere_educatif: Joi.string().required(),
-})
+import { EligibleTrainingsForAppointment } from "../../../common/model/index"
+import * as eligibleTrainingsForAppointmentService from "../../../services/eligibleTrainingsForAppointment.service"
+import { Server } from "../../server"
 
 /**
  * Sample entity route module for GET
  */
-export default () => {
-  const router = express.Router()
-
+export default (server: Server) => {
   /**
    * Get all eligibleTrainingsForAppointments GET
    * */
-  router.get(
-    "/",
-    tryCatch(async (req, res) => {
-      const qs = req.query
-      const query = qs && qs.query ? JSON.parse(qs.query) : {}
-      const page = qs && qs.page ? qs.page : 1
-      const limit = qs && qs.limit ? parseInt(qs.limit, 10) : 50
+  server.get(
+    "/admin/eligible-trainings-for-appointment/etablissement-formateur-siret/:siret",
+    {
+      schema: zRoutes.get["/admin/eligible-trainings-for-appointment/etablissement-formateur-siret/:siret"],
+      preHandler: [server.auth(zRoutes.get["/admin/eligible-trainings-for-appointment/etablissement-formateur-siret/:siret"].securityScheme)],
+    },
+    async (req, res) => {
+      const { siret } = req.params
 
-      const allData = await EligibleTrainingsForAppointment.paginate({ query, page, limit })
+      const parameters = await EligibleTrainingsForAppointment.find(
+        { etablissement_formateur_siret: siret },
+        {
+          training_id_catalogue: 1,
+          training_intitule_long: 1,
+          etablissement_formateur_zip_code: 1,
+          training_code_formation_diplome: 1,
+          lieu_formation_email: 1,
+          is_lieu_formation_email_customized: 1,
+          referrers: 1,
+          rco_formation_id: 1,
+          is_catalogue_published: 1,
+          last_catalogue_sync_date: 1,
+          parcoursup_id: 1,
+          cle_ministere_educatif: 1,
+          etablissement_formateur_raison_sociale: 1,
+          etablissement_formateur_street: 1,
+          departement_etablissement_formateur: 1,
+          etablissement_formateur_city: 1,
+          lieu_formation_street: 1,
+          lieu_formation_city: 1,
+          lieu_formation_zip_code: 1,
+          etablissement_formateur_siret: 1,
+          etablissement_gestionnaire_siret: 1,
+          created_at: 1,
+          historization_date: 1,
+        }
+      ).lean()
 
-      const parameters = await Promise.all(
-        allData.docs.map(async (parameter) => {
-          const etablissement = await Etablissement.findOne({ formateur_siret: parameter.etablissement_formateur_siret })
-
-          return {
-            etablissement_raison_sociale: etablissement?.raison_sociale || "N/C",
-            ...parameter,
-            referrers: parameter.referrers,
-          }
-        })
-      )
-
-      return res.send({
-        parameters,
-        pagination: {
-          page: allData.page,
-          resultats_par_page: limit,
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          nombre_de_page: allData.pages,
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          total: allData.total,
-        },
-      })
-    })
-  )
-
-  /**
-   * Get eligibleTrainingsForAppointments by id getEligibleTrainingsForAppointmentsById /{id} GET
-   */
-  router.get(
-    "/:id",
-    tryCatch(async (req, res) => {
-      const itemId = req.params.id
-      const retrievedData = await EligibleTrainingsForAppointment.findById(itemId)
-      if (retrievedData) {
-        res.send(retrievedData)
-      } else {
-        res.send({ message: `Item ${itemId} doesn't exist` })
+      if (parameters == undefined || parameters.length == 0) {
+        throw Boom.badRequest()
       }
-    })
-  )
 
-  /**
-   * Update an item validated by schema updateParameter updateParameter/{id} PUT
-   */
-  router.put(
-    "/:id",
-    tryCatch(async ({ body, params }, res) => {
-      await eligibleTrainingsForAppointmentSchema.validateAsync(body, { abortEarly: false })
-      logger.info("Updating new item: ", body)
-      const result = await eligibleTrainingsForAppointmentService.updateParameter(params.id, body)
-      res.send(result)
-    })
+      return res.send({ parameters })
+    }
   )
 
   /**
    * Patch parameter.
    */
-  router.patch(
-    "/:id",
-    tryCatch(async ({ body, params }, res) => {
-      await eligibleTrainingsForAppointmentIdPatchSchema.validateAsync(body, { abortEarly: false })
-
-      const result = await eligibleTrainingsForAppointmentService.updateParameter(params.id, body)
+  server.patch(
+    "/admin/eligible-trainings-for-appointment/:id",
+    {
+      schema: zRoutes.patch["/admin/eligible-trainings-for-appointment/:id"],
+      preHandler: [server.auth(zRoutes.patch["/admin/eligible-trainings-for-appointment/:id"].securityScheme)],
+    },
+    async ({ body, params }, res) => {
+      const result = await eligibleTrainingsForAppointmentService.updateParameter(params.id.toString(), body).lean()
 
       res.send(result)
-    })
+    }
   )
-
-  return router
 }

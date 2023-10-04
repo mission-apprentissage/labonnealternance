@@ -1,4 +1,4 @@
-import { BrevoEventStatus } from "../../../services/brevo.service.js"
+import { BrevoEventStatus } from "../../../services/brevo.service"
 
 const emailStatus = {
   request: "Envoyé",

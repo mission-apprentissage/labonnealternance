@@ -1,13 +1,16 @@
 import * as _ from "lodash-es"
-import { mailTemplate } from "../../assets/index.js"
-import { logger } from "../../common/logger.js"
-import { mailType } from "../../common/model/constants/etablissement.js"
-import { referrers } from "../../common/model/constants/referrers.js"
-import dayjs from "../../services/dayjs.service.js"
-import config from "../../config.js"
-import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service.js"
-import { Etablissement } from "../../common/model/index.js"
-import mailer from "../../services/mailer.service.js"
+import { referrers } from "shared/constants/referers"
+
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+import { isValidEmail } from "@/common/utils/isValidEmail"
+
+import { logger } from "../../common/logger"
+import { mailType } from "../../common/model/constants/etablissement"
+import { Etablissement } from "../../common/model/index"
+import config from "../../config"
+import dayjs from "../../services/dayjs.service"
+import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service"
+import mailer from "../../services/mailer.service"
 
 /**
  * @description Active all etablissement's formations that have subscribed to opt-out.
@@ -48,17 +51,21 @@ export const activateOptOutEtablissementFormations = async () => {
         ),
       ])
 
+      if (!isValidEmail(etablissement.gestionnaire_email)) {
+        return
+      }
+
       // Send email
       const { messageId } = await mailer.sendEmail({
         to: etablissement.gestionnaire_email,
         subject: `La prise de RDV est activée pour votre CFA sur La bonne alternance`,
-        template: mailTemplate["mail-cfa-optout-start"],
+        template: getStaticFilePath("./templates/mail-cfa-optout-start.mjml.ejs"),
         data: {
           images: {
-            logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
-            logoFooter: `${config.publicUrlEspacePro}/assets/logo-republique-francaise.png?raw=true`,
-            optOutLbaIntegrationExample: `${config.publicUrlEspacePro}/assets/exemple_integration_lba.png?raw=true`,
-            informationIcon: `${config.publicUrlEspacePro}/assets/icon-information-blue.png?raw=true`,
+            logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
+            logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.png?raw=true`,
+            optOutLbaIntegrationExample: `${config.publicUrl}/assets/exemple_integration_lba.png?raw=true`,
+            informationIcon: `${config.publicUrl}/assets/icon-information-blue.png?raw=true`,
           },
           etablissement: {
             name: etablissement.raison_sociale,
@@ -66,7 +73,7 @@ export const activateOptOutEtablissementFormations = async () => {
             formateur_zip_code: etablissement.formateur_zip_code,
             formateur_city: etablissement.formateur_city,
             formateur_siret: etablissement.formateur_siret,
-            linkToUnsubscribe: `${config.publicUrlEspacePro}/form/opt-out/unsubscribe/${etablissement._id}`,
+            linkToUnsubscribe: `${config.publicUrl}/espace-pro/form/opt-out/unsubscribe/${etablissement._id}`,
           },
           user: {
             destinataireEmail: etablissement.gestionnaire_email,
@@ -79,23 +86,30 @@ export const activateOptOutEtablissementFormations = async () => {
       })
 
       // Gets all mails (formation email + formateur email), excepted "email_decisionnaire"
-      let emails = eligibleTrainingsForAppointmentsFound.map((eligibleTrainingsForAppointment) => eligibleTrainingsForAppointment.lieu_formation_email)
-      emails = [...new Set(emails.filter((email) => !_.isNil(email) && email !== etablissement.gestionnaire_email))]
+      let emails = eligibleTrainingsForAppointmentsFound.flatMap((eligibleTrainingsForAppointment) => {
+        const email = eligibleTrainingsForAppointment.lieu_formation_email
+        if (!_.isNil(email) && email !== etablissement.gestionnaire_email) {
+          return [email]
+        } else {
+          return []
+        }
+      })
+      emails = [...new Set(emails)]
 
       await Promise.all(
         emails.map((email) =>
           mailer.sendEmail({
             to: email,
             subject: `La prise de RDV est activée pour votre CFA sur La bonne alternance`,
-            template: mailTemplate["mail-cfa-optout-activated"],
+            template: getStaticFilePath("./templates/mail-cfa-optout-activated.mjml.ejs"),
             data: {
               url: config.publicUrl,
               replyTo: config.publicEmail,
               images: {
-                logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
-                logoFooter: `${config.publicUrlEspacePro}/assets/logo-republique-francaise.png?raw=true`,
-                peopleLaptop: `${config.publicUrlEspacePro}/assets/people-laptop.png?raw=true`,
-                optOutLbaIntegrationExample: `${config.publicUrlEspacePro}/assets/exemple_integration_lba.png?raw=true`,
+                logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
+                logoFooter: `${config.publicUrl}/assets/logo-republique-francaise.png?raw=true`,
+                peopleLaptop: `${config.publicUrl}/assets/people-laptop.png?raw=true`,
+                optOutLbaIntegrationExample: `${config.publicUrl}/assets/exemple_integration_lba.png?raw=true`,
               },
               etablissement: {
                 name: etablissement.raison_sociale,

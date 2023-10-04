@@ -1,0 +1,12 @@
+location / {
+    set $upstream http://ui:3000;
+    include includes/proxy.conf;
+
+    client_max_body_size 0;
+
+    # TODO: Use allow list
+    add_header Strict-Transport-Security "max-age=31536000; includeSubdomains" always;
+    add_header X-Frame-Options "";
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header Referrer-Policy "no-referrer-when-downgrade";
+}

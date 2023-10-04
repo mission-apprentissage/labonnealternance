@@ -4,4 +4,4 @@ interface IEmailBlacklist {
   created_at: Date
 }
 
-export { IEmailBlacklist }
+export type { IEmailBlacklist }

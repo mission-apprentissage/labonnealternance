@@ -1,20 +1,20 @@
 import axios, { AxiosResponse } from "axios"
-import { pick } from "lodash-es"
-import { LbaCompanyLegacy, LbaCompany, Etablissement, ReferentielOpco, UnsubscribeOF, UserRecruteur } from "../common/model/index.js"
-import { mailTemplate } from "../assets/index.js"
-import { Filter } from "mongodb"
-import { ILbaCompany } from "../common/model/schema/lbaCompany/lbaCompany.types.js"
-import { IEtablissement } from "../common/model/schema/etablissements/etablissement.types.js"
-import { IRecruiter } from "../common/model/schema/recruiter/recruiter.types.js"
-import { IReferentielOpco } from "../common/model/schema/referentielOpco/referentielOpco.types.js"
-import { IUnsubscribedOF } from "../common/model/schema/unsubscribedOF/unsubscribeOF.types.js"
-import { IUserRecruteur } from "../common/model/schema/userRecruteur/userRecruteur.types.js"
-import { isEmailFromPrivateCompany, isEmailSameDomain } from "../common/utils/mailUtils.js"
-import { sentryCaptureException } from "../common/utils/sentryUtils.js"
-import config from "../config.js"
-import { validationOrganisation } from "./bal.service.js"
-import { getCatalogueEtablissements } from "./catalogue.service.js"
-import { BusinessErrorCodes, CFA, ENTREPRISE, ETAT_UTILISATEUR, RECRUITER_STATUS } from "./constant.service.js"
+import Boom from "boom"
+import type { FilterQuery } from "mongoose"
+import { IEtablissement, ILbaCompany, IRecruiter, IReferentielData, IUserRecruteur } from "shared"
+
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+
+import { Etablissement, LbaCompany, LbaCompanyLegacy, ReferentielOpco, UnsubscribeOF, UserRecruteur } from "../common/model/index"
+import { IReferentielOpco } from "../common/model/schema/referentielOpco/referentielOpco.types"
+import { isEmailFromPrivateCompany, isEmailSameDomain } from "../common/utils/mailUtils"
+import { sentryCaptureException } from "../common/utils/sentryUtils"
+import config from "../config"
+
+import { validationOrganisation } from "./bal.service"
+import { getCatalogueEtablissements } from "./catalogue.service"
+import { BusinessErrorCodes, CFA, ENTREPRISE, ETAT_UTILISATEUR, RECRUITER_STATUS } from "./constant.service"
+import dayjs from "./dayjs.service"
 import {
   IAPIAdresse,
   IAPIEtablissement,
@@ -22,14 +22,13 @@ import {
   IEtablissementCatalogue,
   IEtablissementGouv,
   IFormatAPIEntreprise,
-  IFormatAPIReferentiel,
   IReferentiel,
   ISIRET2IDCC,
-} from "./etablissement.service.types.js"
-import { createFormulaire, getFormulaire } from "./formulaire.service.js"
-import mailer from "./mailer.service.js"
-import { getOpcoBySirenFromDB, saveOpco } from "./opco.service.js"
-import { autoValidateUser, createUser, getUser, getUserStatus, setUserHasToBeManuallyValidated, setUserInError } from "./userRecruteur.service.js"
+} from "./etablissement.service.types"
+import { createFormulaire, getFormulaire } from "./formulaire.service"
+import mailer from "./mailer.service"
+import { getOpcoBySirenFromDB, saveOpco } from "./opco.service"
+import { autoValidateUser, createUser, getUser, getUserStatus, setUserHasToBeManuallyValidated, setUserInError } from "./userRecruteur.service"
 
 const apiParams = {
   token: config.entreprise.apiKey,
@@ -127,14 +126,14 @@ export const findById = async (id): Promise<IEtablissement> => {
  * @param {Object} conditions
  * @returns {Promise<Etablissement[]>}
  */
-export const find = async (conditions): Promise<IEtablissement[]> => Etablissement.find(conditions)
+export const find = async (conditions): Promise<IEtablissement[]> => Etablissement.find(conditions).lean()
 
 /**
  * @description Returns one item.
  * @param {Object} conditions
  * @returns {Promise<Etablissement>}
  */
-export const findOne = async (conditions): Promise<IEtablissement> => Etablissement.findOne(conditions)
+export const findOne = async (conditions): Promise<IEtablissement | null> => Etablissement.findOne(conditions).lean()
 
 /**
  * @description Updates an etablissement from its conditions.
@@ -142,7 +141,7 @@ export const findOne = async (conditions): Promise<IEtablissement> => Etablissem
  * @param {Object} values
  * @returns {Promise<Etablissement>}
  */
-export const findOneAndUpdate = async (conditions, values): Promise<IEtablissement> => Etablissement.findOneAndUpdate(conditions, values, { new: true })
+export const findOneAndUpdate = async (conditions, values): Promise<IEtablissement | null> => Etablissement.findOneAndUpdate(conditions, values, { new: true }).lean()
 
 /**
  * @description Upserts.
@@ -150,7 +149,7 @@ export const findOneAndUpdate = async (conditions, values): Promise<IEtablisseme
  * @param {Object} values
  * @returns {Promise<Etablissement>}
  */
-export const updateMany = async (conditions, values): Promise<any> => Etablissement.updateMany(conditions, values, { new: true, upsert: true })
+export const updateMany = async (conditions, values): Promise<any> => Etablissement.updateMany(conditions, values, { new: true, upsert: true }).lean()
 
 /**
  * @description Update one.
@@ -158,7 +157,7 @@ export const updateMany = async (conditions, values): Promise<any> => Etablissem
  * @param {Object} values
  * @returns {Promise<Etablissement>}
  */
-export const updateOne = async (conditions, values): Promise<any> => Etablissement.updateOne(conditions, values, { new: true, upsert: true })
+export const updateOne = async (conditions, values): Promise<any> => Etablissement.updateOne(conditions, values, { new: true, upsert: true }).lean()
 
 /**
  * @description Updates an etablissement from its id.
@@ -166,21 +165,21 @@ export const updateOne = async (conditions, values): Promise<any> => Etablisseme
  * @param {Object} values
  * @returns {Promise<Etablissement>}
  */
-export const findByIdAndUpdate = async (id, values): Promise<IEtablissement> => Etablissement.findByIdAndUpdate({ _id: id }, values, { new: true })
+export const findByIdAndUpdate = async (id, values): Promise<IEtablissement | null> => Etablissement.findByIdAndUpdate({ _id: id }, values, { new: true }).lean()
 
 /**
  * @description Deletes an etablissement from its id.
  * @param {ObjectId} id
  * @returns {Promise<void>}
  */
-export const findByIdAndDelete = async (id): Promise<IEtablissement> => Etablissement.findByIdAndDelete(id)
+export const findByIdAndDelete = async (id): Promise<IEtablissement | null> => Etablissement.findByIdAndDelete(id).lean()
 
 /**
  * @description Get etablissement from a given query
  * @param {Object} query
  * @returns {Promise<void>}
  */
-export const getEtablissement = async (query: Filter<IUserRecruteur>): Promise<IUserRecruteur | null> => UserRecruteur.findOne(query)
+export const getEtablissement = async (query: FilterQuery<IUserRecruteur>): Promise<IUserRecruteur | null> => UserRecruteur.findOne(query).lean()
 
 /**
  * @description Get opco details from CFADOCK API for a given SIRET
@@ -191,7 +190,7 @@ export const getOpco = async (siret: string): Promise<ICFADock | null> => {
   try {
     const { data } = await axios.get<ICFADock>(`https://www.cfadock.fr/api/opcos?siret=${encodeURIComponent(siret)}`)
     return data
-  } catch (err) {
+  } catch (err: any) {
     sentryCaptureException(err)
     return null
   }
@@ -206,7 +205,7 @@ export const getOpcoByIdcc = async (idcc: number): Promise<ICFADock | null> => {
   try {
     const { data } = await axios.get<ICFADock>(`https://www.cfadock.fr/api/opcos?idcc=${idcc}`)
     return data
-  } catch (err) {
+  } catch (err: any) {
     sentryCaptureException(err)
     return null
   }
@@ -217,7 +216,7 @@ export const getOpcoByIdcc = async (idcc: number): Promise<ICFADock | null> => {
  * @param {String} siret
  * @returns {Promise<Object>}
  */
-export const getIdcc = async (siret: string): Promise<ISIRET2IDCC> => {
+export const getIdcc = async (siret: string): Promise<ISIRET2IDCC | null> => {
   try {
     const { data } = await axios.get<ISIRET2IDCC>(`https://siret2idcc.fabrique.social.gouv.fr/api/v2/${encodeURIComponent(siret)}`)
     return data
@@ -231,26 +230,26 @@ export const getIdcc = async (siret: string): Promise<ISIRET2IDCC> => {
  * @param {IRecruiter["_id"]} _id
  * @returns {String}
  */
-export const getValidationUrl = (_id: IRecruiter["_id"]): string => `${config.publicUrlEspacePro}/authentification/validation/${_id}`
+export const getValidationUrl = (_id: IRecruiter["_id"]): string => `${config.publicUrl}/espace-pro/authentification/validation/${_id}`
 /**
  * @description Validate the establishment email for a given ID
  * @param {IUserRecruteur["_id"]} _id
  * @returns {Promise<void>}
  */
-export const validateEtablissementEmail = async (_id: IUserRecruteur["_id"]): Promise<IUserRecruteur> => UserRecruteur.findByIdAndUpdate(_id, { is_email_checked: true })
+export const validateEtablissementEmail = async (_id: IUserRecruteur["_id"]): Promise<IUserRecruteur | null> => UserRecruteur.findByIdAndUpdate(_id, { is_email_checked: true })
 
 /**
  * @description Get the establishment information from the ENTREPRISE API for a given SIRET
  * @param {String} siret
  * @returns {Promise<IApiEntreprise>}
  */
-export const getEtablissementFromGouv = async (siret: string): Promise<IAPIEtablissement> => {
+export const getEtablissementFromGouv = async (siret: string): Promise<IAPIEtablissement | null> => {
   try {
     const { data } = await axios.get<IAPIEtablissement>(`${config.entreprise.baseUrl}/sirene/etablissements/${encodeURIComponent(siret)}`, {
       params: apiParams,
     })
     return data
-  } catch (error) {
+  } catch (error: any) {
     if (error?.response?.status === 404 || error?.response?.status === 422) {
       return null
     }
@@ -260,14 +259,12 @@ export const getEtablissementFromGouv = async (siret: string): Promise<IAPIEtabl
 }
 /**
  * @description Get the establishment information from the REFERENTIEL API for a given SIRET
- * @param {String} siret
- * @returns {Promise<IReferentiel>}
  */
-export const getEtablissementFromReferentiel = async (siret: string): Promise<IReferentiel> => {
+export const getEtablissementFromReferentiel = async (siret: string): Promise<IReferentiel | null> => {
   try {
     const { data } = await axios.get<IReferentiel>(`https://referentiel.apprentissage.beta.gouv.fr/api/v1/organismes/${siret}`)
     return data
-  } catch (error) {
+  } catch (error: any) {
     sentryCaptureException(error)
     if (error?.response?.status === 404) {
       return null
@@ -289,7 +286,7 @@ export const getEtablissementFromCatalogue = async (siret: string): Promise<IEta
       },
     })
     return result
-  } catch (error) {
+  } catch (error: any) {
     sentryCaptureException(error)
     return error
   }
@@ -302,12 +299,13 @@ export const getEtablissementFromCatalogue = async (siret: string): Promise<IEta
 export const getGeoCoordinates = async (adresse: string): Promise<string> => {
   try {
     const response: AxiosResponse<IAPIAdresse> = await axios.get(`https://api-adresse.data.gouv.fr/search/?q=${adresse}`)
+    // eslint-disable-next-line no-unsafe-optional-chaining
     const [firstFeature] = response.data?.features
     if (!firstFeature) {
       return "NOT FOUND"
     }
     return firstFeature.geometry.coordinates.reverse().join(",")
-  } catch (error) {
+  } catch (error: any) {
     sentryCaptureException(error)
     return "NOT FOUND"
   }
@@ -317,28 +315,27 @@ export const getGeoCoordinates = async (adresse: string): Promise<string> => {
  * @param {IReferentielOpco["siret_code"]} siretCode
  * @returns {Promise<IReferentielOpco>}
  */
-export const getEstablishmentFromOpcoReferentiel = async (siretCode: IReferentielOpco["siret_code"]): Promise<IReferentielOpco> =>
-  await ReferentielOpco.findOne({ siret_code: siretCode })
+export const getEstablishmentFromOpcoReferentiel = async (siretCode: IReferentielOpco["siret_code"]) => await ReferentielOpco.findOne({ siret_code: siretCode })
 /**
  * @description Get all matching records from the ReferentielOpco collection
- * @param {Filter<IReferentielOpco>} query
+ * @param {FilterQuery<IReferentielOpco>} query
  * @returns {Promise<IReferentielOpco[]>}
  */
-export const getAllEstablishmentFromOpcoReferentiel = async (query: Filter<IReferentielOpco>): Promise<IReferentielOpco[]> => await ReferentielOpco.find(query).lean()
+export const getAllEstablishmentFromOpcoReferentiel = async (query: FilterQuery<IReferentielOpco>): Promise<IReferentielOpco[]> => await ReferentielOpco.find(query).lean()
 /**
  * @description Get all matching records from the LbaCompanyLegacy collection
- * @param {Filter<ILbaCompany>} query
+ * @param {FilterQuery<ILbaCompany>} query
  * @returns {Promise<ILbaCompany["email"]>}
  */
-export const getAllEstablishmentFromLbaCompanyLegacy = async (query: Filter<ILbaCompany>): Promise<ILbaCompany[]> =>
+export const getAllEstablishmentFromLbaCompanyLegacy = async (query: FilterQuery<ILbaCompany>): Promise<ILbaCompany[]> =>
   await LbaCompanyLegacy.find(query).select({ email: 1, _id: 0 }).lean()
 
 /**
  * @description Get all matching records from the LbaCompanies collection
- * @param {Filter<ILbaCompany>} query
+ * @param {FilterQuery<ILbaCompany>} query
  * @returns {Promise<ILbaCompany["email"]>}
  */
-export const getAllEstablishmentFromLbaCompany = async (query: Filter<ILbaCompany>): Promise<ILbaCompany[]> => await LbaCompany.find(query).select({ email: 1, _id: 0 }).lean()
+export const getAllEstablishmentFromLbaCompany = async (query: FilterQuery<ILbaCompany>): Promise<ILbaCompany[]> => await LbaCompany.find(query).select({ email: 1, _id: 0 }).lean()
 
 /**
  * @description Format Entreprise data
@@ -351,12 +348,12 @@ export const formatEntrepriseData = (d: IEtablissementGouv): IFormatAPIEntrepris
   establishment_siret: d.siret,
   establishment_raison_sociale: d.unite_legale.personne_morale_attributs.raison_sociale,
   address_detail: d.adresse,
-  address: `${d.adresse.acheminement_postal.l4} ${d.adresse.acheminement_postal.l6}`,
+  address: `${d.adresse?.acheminement_postal?.l4} ${d.adresse?.acheminement_postal?.l6}`,
   contacts: [], // conserve la coherence avec l'UI
   naf_code: d.activite_principale.code,
   naf_label: d.activite_principale.libelle,
   establishment_size: getEffectif(d.unite_legale.tranche_effectif_salarie.code),
-  establishment_creation_date: new Date(d.unite_legale.date_creation * 1000).toISOString(),
+  establishment_creation_date: new Date(d.unite_legale.date_creation * 1000),
 })
 
 /**
@@ -364,7 +361,7 @@ export const formatEntrepriseData = (d: IEtablissementGouv): IFormatAPIEntrepris
  * @param {IReferentiel} d
  * @returns {Object}
  */
-export const formatReferentielData = (d: IReferentiel): IFormatAPIReferentiel => ({
+export const formatReferentielData = (d: IReferentiel): IReferentielData => ({
   establishment_state: d.etat_administratif,
   is_qualiopi: d.qualiopi,
   establishment_siret: d.siret,
@@ -374,7 +371,7 @@ export const formatReferentielData = (d: IReferentiel): IFormatAPIReferentiel =>
   address: d.adresse?.label,
   geo_coordinates: d.adresse
     ? `${d.adresse?.geojson.geometry.coordinates[1]},${d.adresse?.geojson.geometry.coordinates[0]}`
-    : `${d.lieux_de_formation[0].adresse.geojson?.geometry.coordinates[0]},${d.lieux_de_formation[0].adresse.geojson?.geometry.coordinates[1]}`,
+    : `${d.lieux_de_formation[0]?.adresse?.geojson?.geometry.coordinates[0]},${d.lieux_de_formation[0]?.adresse?.geojson?.geometry.coordinates[1]}`,
 })
 
 /**
@@ -382,7 +379,8 @@ export const formatReferentielData = (d: IReferentiel): IFormatAPIReferentiel =>
  * @param etablissementSiret siret de l'organisme de formation ne souhaitant plus recevoir les demandes
  */
 export const etablissementUnsubscribeDemandeDelegation = async (etablissementSiret: string) => {
-  const unsubscribeOF: IUnsubscribedOF = await UnsubscribeOF.findOne({ establishment_siret: etablissementSiret })
+  const unsubscribeOF = await UnsubscribeOF.findOne({ establishment_siret: etablissementSiret })
+
   if (!unsubscribeOF) {
     const { etablissements } = await getCatalogueEtablissements(
       {
@@ -405,8 +403,8 @@ export const autoValidateCompany = async (userRecruteur: IUserRecruteur) => {
   const siren = siret.slice(0, 9)
   // Get all corresponding records using the SIREN number in BonneBoiteLegacy collection
   const [bonneBoiteLegacyList, bonneBoiteList, referentielOpcoList] = await Promise.all([
-    getAllEstablishmentFromLbaCompanyLegacy({ siret: { $regex: siren }, email: { $nin: ["", undefined] } }),
-    getAllEstablishmentFromLbaCompany({ siret: { $regex: siren }, email: { $nin: ["", undefined] } }),
+    getAllEstablishmentFromLbaCompanyLegacy({ siret: { $regex: siren }, email: { $nin: ["", null] } }),
+    getAllEstablishmentFromLbaCompany({ siret: { $regex: siren }, email: { $nin: ["", null] } }),
     getAllEstablishmentFromOpcoReferentiel({ siret_code: { $regex: siren } }),
   ])
 
@@ -420,7 +418,7 @@ export const autoValidateCompany = async (userRecruteur: IUserRecruteur) => {
 
   // Check BAL API for validation
 
-  const isValid = validEmails.includes(email) || (isEmailFromPrivateCompany(email) && validEmails.some((validEmail) => isEmailSameDomain(email, validEmail)))
+  const isValid = validEmails.includes(email) || (isEmailFromPrivateCompany(email) && validEmails.some((validEmail) => validEmail && isEmailSameDomain(email, validEmail)))
   if (isValid) {
     userRecruteur = await autoValidateUser(_id)
   } else {
@@ -473,7 +471,7 @@ export const getOpcoData = async (siret: string) => {
     const result = await getOpcoDataRaw(siret)
     if (result) {
       const { opco, idcc } = result
-      await saveOpco({ opco, idcc, siren, url: null })
+      await saveOpco({ opco, idcc, siren })
     }
     return result
   }
@@ -481,7 +479,7 @@ export const getOpcoData = async (siret: string) => {
 
 export type EntrepriseData = IFormatAPIEntreprise & { opco: string; idcc: string; geo_coordinates: string }
 
-export const validateCreationEntrepriseFromCfa = async ({ siret, cfa_delegated_siret }: { siret: string; cfa_delegated_siret: string }) => {
+export const validateCreationEntrepriseFromCfa = async ({ siret, cfa_delegated_siret }: { siret: string; cfa_delegated_siret?: string }) => {
   if (!cfa_delegated_siret) return
   const recruteurOpt = await getFormulaire({
     establishment_siret: siret,
@@ -517,16 +515,20 @@ export const getEntrepriseDataFromSiret = async ({ siret, cfa_delegated_siret }:
 export const getOrganismeDeFormationDataFromSiret = async (siret: string) => {
   const cfaUserRecruteurOpt = await getEtablissement({ establishment_siret: siret, type: CFA })
   if (cfaUserRecruteurOpt) {
-    return errorFactory("EXIST", BusinessErrorCodes.ALREADY_EXISTS)
+    throw Boom.forbidden("Ce numéro siret est déjà associé à un compte utilisateur.", { reason: "EXIST" })
   }
   const referentiel = await getEtablissementFromReferentiel(siret)
   if (!referentiel) {
-    return errorFactory("UNKNOWN")
+    throw Boom.badRequest("Le numéro siret n'est pas référencé comme centre de formation.", { reason: "UNKNOWN" })
   }
   if (referentiel.etat_administratif === "fermé") {
-    return errorFactory("CLOSED")
+    throw Boom.badRequest("Le numéro siret indique un établissement fermé.", { reason: "CLOSED" })
   }
-  return formatReferentielData(referentiel)
+  const formattedReferentiel = formatReferentielData(referentiel)
+  if (!formattedReferentiel.is_qualiopi) {
+    throw Boom.badRequest("L’organisme rattaché à ce SIRET n’est pas certifié Qualiopi", { reason: "QUALIOPI", ...formattedReferentiel })
+  }
+  return formattedReferentiel
 }
 
 export const entrepriseOnboardingWorkflow = {
@@ -545,7 +547,7 @@ export const entrepriseOnboardingWorkflow = {
       siret: string
       last_name: string
       first_name: string
-      phone: string
+      phone?: string
       email: string
       cfa_delegated_siret?: string
       origin: string
@@ -619,7 +621,7 @@ export const entrepriseOnboardingWorkflow = {
     cfa_delegated_siret: string
     origin: string
     opco?: string
-    idcc?: string
+    idcc?: string | null
   }) => {
     const cfaErrorOpt = await validateCreationEntrepriseFromCfa({ siret, cfa_delegated_siret })
     if (cfaErrorOpt) return cfaErrorOpt
@@ -667,10 +669,10 @@ export const sendUserConfirmationEmail = async ({
   await mailer.sendEmail({
     to: email,
     subject: "Confirmez votre adresse mail",
-    template: mailTemplate["mail-confirmation-email"],
+    template: getStaticFilePath("./templates/mail-confirmation-email.mjml.ejs"),
     data: {
       images: {
-        logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
+        logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
       },
       last_name: lastName,
       first_name: firstName,
@@ -693,16 +695,21 @@ export const sendEmailConfirmationEntreprise = async (user: IUserRecruteur, recr
     await mailer.sendEmail({
       to: email,
       subject: "Confirmez votre adresse mail",
-      template: mailTemplate["mail-nouvelle-offre-depot-simplifie"],
+      template: getStaticFilePath("./templates/mail-nouvelle-offre-depot-simplifie.mjml.ejs"),
       data: {
         images: {
-          logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
+          logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
         },
         nom: user.last_name,
         prenom: user.first_name,
         email: user.email,
         confirmation_url: url,
-        offre: pick(offre, ["rome_appellation_label", "job_start_date", "type", "job_level_label"]),
+        offre: {
+          rome_appellation_label: offre.rome_appellation_label,
+          job_type: offre.job_type,
+          job_level_label: offre.job_level_label,
+          job_start_date: dayjs(offre.job_start_date).format("DD/MM/YY"),
+        },
         isUserAwaiting,
       },
     })

@@ -1,10 +1,13 @@
-// @ts-nocheck
-import { logMessage } from "../../common/utils/logMessage.js"
-import { oleoduc, accumulateData, readLineByLine, transformData, writeData } from "oleoduc"
 import fs from "fs"
 import path from "path"
-import __dirname from "../../common/dirname.js"
-import { pushFileToBucket } from "./lbaCompaniesUtils.js"
+
+import { accumulateData, oleoduc, readLineByLine, transformData, writeData } from "oleoduc"
+
+import __dirname from "../../common/dirname"
+import { logMessage } from "../../common/utils/logMessage"
+
+import { pushFileToBucket } from "./lbaCompaniesUtils"
+
 const currentDirname = __dirname(import.meta.url)
 
 const tempDir = "./assets/"
@@ -22,6 +25,17 @@ let removeCount = 0
 let addCount = 0
 let updateCount = 0
 
+type ICompany = {
+  siret: string
+  raison_sociale: string | undefined
+  enseigne: string | undefined
+  email: string
+  phone: string
+  website: string
+  rome_codes: string[] | undefined
+  removedRomes: string[] | undefined
+}
+
 const parseUpdateLine = (line) => {
   const terms = line.split("\t")
 
@@ -36,39 +50,39 @@ const parseUpdateLine = (line) => {
 
   if (updateCount > 1) {
     /* Liste des champs dans l'ordre de 0 à N :
-    
+
     "id"
-    "sirets"	
-    "name"	
-    "new_email"	
-    "new_phone"	
-    "new_website"	
-    "remove_email"	
-    "remove_phone"	
-    "remove_website"	
-    "date_created"	
-    "updated_by_id"	
-    "romes_to_boost"	
-    "boost"	
-    "romes_to_remove"	
-    "nafs_to_add"	
-    "email_alternance"	
-    "romes_alternance_to_boost"	
-    "boost_alternance"	
-    "romes_alternance_to_remove"	
-    "score"	
-    "score_alternance"	
-    "social_network"	
-    "phone_alternance"	
-    "website_alternance"	
-    "contact_mode"	
-    "certified_recruiter"	
-    "recruiter_uid"	
-    "new_company_name"	
+    "sirets"
+    "name"
+    "new_email"
+    "new_phone"
+    "new_website"
+    "remove_email"
+    "remove_phone"
+    "remove_website"
+    "date_created"
+    "updated_by_id"
+    "romes_to_boost"
+    "boost"
+    "romes_to_remove"
+    "nafs_to_add"
+    "email_alternance"
+    "romes_alternance_to_boost"
+    "boost_alternance"
+    "romes_alternance_to_remove"
+    "score"
+    "score_alternance"
+    "social_network"
+    "phone_alternance"
+    "website_alternance"
+    "contact_mode"
+    "certified_recruiter"
+    "recruiter_uid"
+    "new_company_name"
     "new_office_name"
     */
 
-    const companies = []
+    const companies = [] as ICompany[]
 
     let sirets = terms[1].replace(/"/g, "").trim().split(/,|\s/g)
     sirets = sirets.map((siret) => siret.padStart(14, "0"))
@@ -103,16 +117,16 @@ const parseUpdateLine = (line) => {
     phone = removePhone === "1" ? "remove" : phone
     email = removeEmail === "1" ? "remove" : email
 
-    let romes = null
+    let romes = [] as string[]
     if (romesToBoost || romesAlternance) {
       // merge et unique sur les romes
-      romes = [...new Set((romesToBoost ? romesToBoost.split(",") : []).concat(romesAlternance ? romesAlternance.split(",") : []))]
+      romes = [...new Set((romesToBoost ? romesToBoost.split(",") : []).concat(romesAlternance ? romesAlternance.split(",") : []))] as string[]
     }
 
-    let removedRomes = null
+    let removedRomes = [] as string[]
     if (romesToRemove || romesAlternanceToRemove) {
       // merge et unique sur les romes
-      removedRomes = [...new Set((romesToRemove ? romesToRemove.split(",") : []).concat(romesAlternanceToRemove ? romesAlternanceToRemove.split(",") : []))]
+      removedRomes = [...new Set((romesToRemove ? romesToRemove.split(",") : []).concat(romesAlternanceToRemove ? romesAlternanceToRemove.split(",") : []))] as string[]
     }
 
     const name = newCompanyName || newOfficeName
@@ -120,7 +134,7 @@ const parseUpdateLine = (line) => {
     sirets.forEach((siret) => {
       const company = {
         siret,
-      }
+      } as ICompany
 
       if (name) {
         company.raison_sociale = name
@@ -145,9 +159,9 @@ const parseUpdateLine = (line) => {
         company.website = website
       }
 
-      if (romes) {
+      if (romes.length) {
         company.rome_codes = romes
-      } else if (removedRomes) {
+      } else if (removedRomes.length) {
         company.removedRomes = removedRomes
       }
 
@@ -223,7 +237,7 @@ const initSAVERemoveFile = async () => {
   try {
     logMessage("info", " -- Start init SAVE Remove File -- ")
 
-    const companiesToRemove = []
+    const companiesToRemove = [] as object[]
     await oleoduc(
       fs.createReadStream(removeFilePath),
       readLineByLine(),
@@ -249,7 +263,7 @@ const initSAVEAddFile = async () => {
   try {
     logMessage("info", " -- Start init SAVE Add file -- ")
 
-    const companiesToAdd = []
+    const companiesToAdd = [] as object[]
     await oleoduc(
       fs.createReadStream(addFilePath),
       readLineByLine(),
@@ -302,7 +316,7 @@ const initSAVEUpdateFile = async () => {
   try {
     logMessage("info", " -- Start init SAVE Update file -- ")
 
-    const companiesToUpdate = []
+    const companiesToUpdate = [] as object[]
     await oleoduc(
       fs.createReadStream(updateFilePath),
       readLineByLine(),

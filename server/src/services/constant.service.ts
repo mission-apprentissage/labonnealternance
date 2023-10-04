@@ -38,6 +38,7 @@ export enum ETAT_UTILISATEUR {
   ATTENTE = "EN ATTENTE DE VALIDATION",
   ERROR = "ERROR",
 }
+
 export const ENTREPRISE = "ENTREPRISE"
 export const CFA = "CFA"
 export const REGEX = {
@@ -107,6 +108,10 @@ export const ROLES = {
   cfa: "cfa",
   administrator: "administrator",
 }
+
+export type IRoles = typeof ROLES
+
+export type IRole = IRoles[keyof IRoles]
 
 export enum BusinessErrorCodes {
   IS_CFA = "IS_CFA",

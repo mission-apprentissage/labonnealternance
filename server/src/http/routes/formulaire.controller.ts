@@ -1,76 +1,68 @@
-import express from "express"
-import { entrepriseOnboardingWorkflow } from "../../services/etablissement.service.js"
-import { getUser } from "../../services/userRecruteur.service.js"
-import { Recruiter } from "../../common/model/index.js"
-import { getApplication } from "../../services/application.service.js"
+import Boom from "boom"
+import { zRoutes } from "shared/index"
+
+// import { Recruiter } from "../../common/model/index"
+import { getApplication } from "../../services/application.service"
+import { entrepriseOnboardingWorkflow } from "../../services/etablissement.service"
 import {
   archiveDelegatedFormulaire,
   archiveFormulaire,
   cancelOffre,
+  cancelOffreFromAdminInterface,
   checkOffreExists,
   createJob,
   createJobDelegations,
+  extendOffre,
   getFormulaire,
   getJob,
-  getOffre,
   patchOffre,
   provideOffre,
   updateFormulaire,
   updateOffre,
-} from "../../services/formulaire.service.js"
-import authMiddleware from "../middlewares/authMiddleware.js"
-import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
+} from "../../services/formulaire.service"
+import { getUser } from "../../services/userRecruteur.service"
+import { Server } from "../server"
 
-export default () => {
-  const router = express.Router()
-
-  /**
-   * Query search endpoint
-   */
-  router.get(
-    "/",
-    authMiddleware("jwt-bearer"),
-    tryCatch(async (req, res) => {
-      const query = JSON.parse(req.query.query)
-      const results = await Recruiter.find(query).lean()
-
-      return res.json(results)
-    })
-  )
-
+export default (server: Server) => {
   /**
    * Get form from id
    */
-  router.get(
-    "/:establishment_id",
-    tryCatch(async (req, res) => {
+  server.get(
+    "/formulaire/:establishment_id",
+    {
+      schema: zRoutes.get["/formulaire/:establishment_id"],
+    },
+    async (req, res) => {
       const result = await getFormulaire({ establishment_id: req.params.establishment_id })
 
       if (!result) {
-        return res.sendStatus(401)
+        return res.status(401).send({})
       }
 
-      await Promise.all(
+      result.jobs = await Promise.all(
         result.jobs.map(async (job) => {
-          const candidatures = await getApplication(job._id)
+          const candidatures = await getApplication(job._id.toString())
           return { ...job, candidatures: candidatures && candidatures.length > 0 ? candidatures.length : undefined }
         })
       )
 
-      return res.json(result)
-    })
+      return res.status(200).send(result)
+    }
   )
 
   /**
    * Post form
    */
-  router.post(
-    "/",
-    tryCatch(async (req, res) => {
+  server.post(
+    "/formulaire",
+    {
+      schema: zRoutes.post["/formulaire"],
+    },
+    async (req, res) => {
       const { userRecruteurId, establishment_siret, email, last_name, first_name, phone, opco, idcc } = req.body
       const userRecruteurOpt = await getUser({ _id: userRecruteurId })
       if (!userRecruteurOpt) {
-        return res.status(400).json({ error: true, message: "Nous n'avons pas trouvé votre compte utilisateur" })
+        throw Boom.badRequest("Nous n'avons pas trouvé votre compte utilisateur")
       }
       const response = await entrepriseOnboardingWorkflow.createFromCFA({
         email,
@@ -79,43 +71,52 @@ export default () => {
         phone,
         siret: establishment_siret,
         cfa_delegated_siret: userRecruteurOpt.establishment_siret,
-        origin: userRecruteurOpt.scope,
+        origin: userRecruteurOpt.scope as string,
         opco,
         idcc,
       })
       if ("error" in response) {
         const { message } = response
-        return res.status(400).json({ error: true, message })
+        throw Boom.badRequest(message)
       }
-      return res.json(response)
-    })
+      return res.status(200).send(response)
+    }
   )
 
   /**
    * Put form
    */
-  router.put(
-    "/:establishment_id",
-    tryCatch(async (req, res) => {
+  server.put(
+    "/formulaire/:establishment_id",
+    {
+      schema: zRoutes.put["/formulaire/:establishment_id"],
+    },
+    async (req, res) => {
       const result = await updateFormulaire(req.params.establishment_id, req.body)
-      return res.json(result)
-    })
+      return res.status(200).send(result)
+    }
   )
 
-  router.delete(
-    "/:establishment_id",
-    tryCatch(async (req, res) => {
+  server.delete(
+    "/formulaire/:establishment_id",
+    {
+      schema: zRoutes.delete["/formulaire/:establishment_id"],
+    },
+    async (req, res) => {
       await archiveFormulaire(req.params.establishment_id)
-      return res.sendStatus(200)
-    })
+      return res.status(200).send({})
+    }
   )
 
-  router.delete(
-    "/delegated/:establishment_siret",
-    tryCatch(async (req, res) => {
+  server.delete(
+    "/formulaire/delegated/:establishment_siret",
+    {
+      schema: zRoutes.delete["/formulaire/delegated/:establishment_siret"],
+    },
+    async (req, res) => {
       await archiveDelegatedFormulaire(req.params.establishment_siret)
-      return res.sendStatus(200)
-    })
+      return res.status(200).send({})
+    }
   )
 
   /**
@@ -123,75 +124,127 @@ export default () => {
    * TO BE REPLACE
    *
    */
-  router.get(
-    "/offre/f/:jobId",
-    tryCatch(async (req, res) => {
-      // Note pour PR quel traitement de getJobById empêche de l'utiliser ici ?
-      const result = await getOffre(req.params.jobId)
-      const offre = result.jobs.filter((job) => job._id == req.params.jobId)
-
-      res.json(offre)
-    })
+  server.get(
+    "/formulaire/offre/f/:jobId",
+    {
+      schema: zRoutes.get["/formulaire/offre/f/:jobId"],
+    },
+    async (req, res) => {
+      const offre = await getJob(req.params.jobId.toString())
+      if (!offre) {
+        throw Boom.badRequest("L'offre n'existe pas")
+      }
+      res.status(200).send(offre)
+    }
   )
 
   /**
    * Create new offer
    */
-  router.post(
-    "/:establishment_id/offre",
-    tryCatch(async (req, res) => {
-      const updatedFormulaire = await createJob({ job: req.body, id: req.params.establishment_id })
-      return res.json(updatedFormulaire)
-    })
+  server.post(
+    "/formulaire/:establishment_id/offre",
+    {
+      schema: zRoutes.post["/formulaire/:establishment_id/offre"],
+      bodyLimit: 5 * 1024 ** 2, // 5MB
+    },
+    async (req, res) => {
+      const {
+        is_disabled_elligible,
+        job_type,
+        delegations,
+        job_count,
+        job_description,
+        job_duration,
+        job_level_label,
+        job_rythm,
+        job_start_date,
+        rome_appellation_label,
+        rome_code,
+        rome_label,
+      } = req.body
+      const updatedFormulaire = await createJob({
+        job: {
+          is_disabled_elligible,
+          job_type,
+          delegations,
+          job_count,
+          job_description,
+          job_duration,
+          job_level_label,
+          job_rythm,
+          job_start_date,
+          rome_appellation_label,
+          rome_code,
+          rome_label,
+        },
+        id: req.params.establishment_id,
+      })
+      return res.status(200).send(updatedFormulaire)
+    }
   )
 
   /**
    * Create offer delegations
    */
-  router.post(
-    "/offre/:jobId/delegation",
-    tryCatch(async (req, res) => {
+  server.post(
+    "/formulaire/offre/:jobId/delegation",
+    {
+      schema: zRoutes.post["/formulaire/offre/:jobId/delegation"],
+    },
+    async (req, res) => {
       const { etablissementCatalogueIds } = req.body
       const { jobId } = req.params
       const job = await createJobDelegations({ jobId, etablissementCatalogueIds })
-      return res.json(job)
-    })
+      return res.status(200).send(job)
+    }
   )
 
   /**
-   * Put existing offer from id
+   * Update an existing offer from id
    */
-  router.put(
-    "/offre/:jobId",
-    tryCatch(async (req, res) => {
-      const result = await updateOffre(req.params.jobId, req.body)
-      return res.json(result)
-    })
+  server.put(
+    "/formulaire/offre/:jobId",
+    {
+      schema: zRoutes.put["/formulaire/offre/:jobId"],
+    },
+    async (req, res) => {
+      const result = await updateOffre(req.params.jobId.toString(), req.body)
+      return res.status(200).send(result)
+    }
   )
 
   /**
    * Permet de passer une offre en statut ANNULER (mail transactionnel)
    */
-  router.patch(
-    "/offre/:jobId",
-    tryCatch(async (req, res) => {
+  server.patch(
+    "/formulaire/offre/:jobId",
+    {
+      schema: zRoutes.patch["/formulaire/offre/:jobId"],
+    },
+    async (req, res) => {
       const { jobId } = req.params
       const exists = await checkOffreExists(jobId)
 
       if (!exists) {
-        return res.status(400).json({ status: "INVALID_RESOURCE", message: "L'offre n'existe pas." })
+        throw Boom.badRequest("L'offre n'existe pas.")
       }
 
-      const offre = await getJob(jobId)
+      const offre = await getJob(jobId.toString())
 
-      const delegationFound = offre.delegations.find((delegation) => delegation.siret_code == req.query.siret_formateur)
+      const delegations = offre?.delegations
+
+      if (!delegations) {
+        throw Boom.badRequest("Le siret formateur n'a pas été proposé à l'offre.")
+      }
+
+      const delegationFound = delegations.find((delegation) => delegation.siret_code == req.query.siret_formateur)
 
       if (!delegationFound) {
-        return res.status(400).json({ status: "INVALID_RESOURCE", message: `Le siret formateur n'a pas été proposé à l'offre.` })
+        throw Boom.badRequest("Le siret formateur n'a pas été proposé à l'offre.")
       }
 
       await patchOffre(jobId, {
-        delegations: offre.delegations.map((delegation) => {
+        delegations: delegations.map((delegation) => {
           // Save the date of the first read of the company detail
           if (delegation.siret_code === delegationFound.siret_code && !delegation.cfa_read_company_detail_at) {
             return {
@@ -203,40 +256,80 @@ export default () => {
         }),
       })
 
-      const jobUpdated = await getJob(jobId)
+      const jobUpdated = await getJob(jobId.toString())
       return res.send(jobUpdated)
-    })
+    }
   )
 
   /**
    * Permet de passer une offre en statut ANNULER (mail transactionnel)
    */
-  router.put(
-    "/offre/:jobId/cancel",
-    tryCatch(async (req, res) => {
+  server.put(
+    "/formulaire/offre/:jobId/cancel",
+    {
+      schema: zRoutes.put["/formulaire/offre/:jobId/cancel"],
+    },
+    async (req, res) => {
       const exists = await checkOffreExists(req.params.jobId)
       if (!exists) {
-        return res.status(400).json({ status: "INVALID_RESSOURCE", message: "L'offre n'existe pas" })
+        return res.status(400).send({ status: "INVALID_RESSOURCE", message: "L'offre n'existe pas" })
       }
       await cancelOffre(req.params.jobId)
-      return res.sendStatus(200)
-    })
+      return res.status(200).send({})
+    }
+  )
+
+  /**
+   * Permet de passer une offre en statut ANNULER (depuis l'interface d'admin)
+   */
+  server.put(
+    "/formulaire/offre/f/:jobId/cancel",
+    {
+      schema: zRoutes.put["/formulaire/offre/f/:jobId/cancel"],
+    },
+    async (req, res) => {
+      const exists = await checkOffreExists(req.params.jobId)
+      if (!exists) {
+        return res.status(400).send({ status: "INVALID_RESSOURCE", message: "L'offre n'existe pas" })
+      }
+      await cancelOffreFromAdminInterface(req.params.jobId, req.body)
+      return res.status(200).send({})
+    }
   )
 
   /**
    * Permet de passer une offre en statut POURVUE (mail transactionnel)
    */
-  router.put(
-    "/offre/:jobId/provided",
-    tryCatch(async (req, res) => {
+  server.put(
+    "/formulaire/offre/:jobId/provided",
+    {
+      schema: zRoutes.put["/formulaire/offre/:jobId/provided"],
+    },
+    async (req, res) => {
       const exists = await checkOffreExists(req.params.jobId)
       if (!exists) {
-        return res.status(400).json({ status: "INVALID_RESSOURCE", message: "L'offre n'existe pas" })
+        return res.status(400).send({ status: "INVALID_RESSOURCE", message: "L'offre n'existe pas" })
       }
       await provideOffre(req.params.jobId)
-      return res.sendStatus(200)
-    })
+      return res.status(200).send({})
+    }
   )
 
-  return router
+  /**
+   * Permet de passer une offre en statut POURVUE (mail transactionnel)
+   */
+  server.put(
+    "/formulaire/offre/:jobId/extend",
+    {
+      schema: zRoutes.put["/formulaire/offre/:jobId/extend"],
+    },
+    async (req, res) => {
+      const exists = await checkOffreExists(req.params.jobId)
+      if (!exists) {
+        return res.status(400).send({ status: "INVALID_RESSOURCE", message: "L'offre n'existe pas" })
+      }
+      await extendOffre(req.params.jobId)
+      return res.status(200).send({})
+    }
+  )
 }

@@ -1,8 +1,11 @@
 import fs from "fs"
-import { accumulateData, oleoduc, readLineByLine, transformData, writeData } from "oleoduc"
 import path from "path"
-import __dirname from "../../common/dirname.js"
-import { logMessage } from "../../common/utils/logMessage.js"
+
+import { accumulateData, oleoduc, readLineByLine, transformData, writeData } from "oleoduc"
+
+import __dirname from "../../common/dirname"
+import { logMessage } from "../../common/utils/logMessage"
+
 const currentDirname = __dirname(import.meta.url)
 
 const updateFilePath = path.join(currentDirname, "./assets/lba_save_etablissements_admin_update.csv")
@@ -30,37 +33,37 @@ const parseUpdateLine = (line) => {
 
   if (updateCount > 1) {
     /*"id"
-    "sirets"	
-    "name"	
-    "new_email"	
-    "new_phone"	
-    "new_website"	
-    "remove_email"	
-    "remove_phone"	
-    "remove_website"	
-    "date_created"	
-    "updated_by_id"	
-    "romes_to_boost"	
-    "boost"	
-    "romes_to_remove"	
-    "nafs_to_add"	
-    "email_alternance"	
-    "romes_alternance_to_boost"	
-    "boost_alternance"	
-    "romes_alternance_to_remove"	
-    "score"	
-    "score_alternance"	
-    "social_network"	
-    "phone_alternance"	
-    "website_alternance"	
-    "contact_mode"	
-    "certified_recruiter"	
-    "recruiter_uid"	
-    "new_company_name"	
+    "sirets"
+    "name"
+    "new_email"
+    "new_phone"
+    "new_website"
+    "remove_email"
+    "remove_phone"
+    "remove_website"
+    "date_created"
+    "updated_by_id"
+    "romes_to_boost"
+    "boost"
+    "romes_to_remove"
+    "nafs_to_add"
+    "email_alternance"
+    "romes_alternance_to_boost"
+    "boost_alternance"
+    "romes_alternance_to_remove"
+    "score"
+    "score_alternance"
+    "social_network"
+    "phone_alternance"
+    "website_alternance"
+    "contact_mode"
+    "certified_recruiter"
+    "recruiter_uid"
+    "new_company_name"
     "new_office_name"
     */
 
-    const companies = []
+    const companies: any[] = []
 
     let sirets = terms[1].replace(/"/g, "").trim().split(/,|\s/g)
     sirets = sirets.map((siret) => siret.padStart(14, "0"))
@@ -102,13 +105,13 @@ const parseUpdateLine = (line) => {
       type = "lba"
     }
 
-    let romes = null
+    let romes: any[] = []
     if (romesToBoost || romesAlternance) {
       // merge et unique sur les romes
       romes = [...new Set((romesToBoost ? romesToBoost.split(",") : []).concat(romesAlternance ? romesAlternance.split(",") : []))]
     }
 
-    let removedRomes = null
+    let removedRomes: any[] = []
     if (romesToRemove || romesAlternanceToRemove) {
       // merge et unique sur les romes
       removedRomes = [...new Set((romesToRemove ? romesToRemove.split(",") : []).concat(romesAlternanceToRemove ? romesAlternanceToRemove.split(",") : []))]
@@ -294,4 +297,4 @@ const initSAVEUpdateMap = async () => {
   return updateMap
 }
 
-export { initSAVERemoveMap, initSAVEAddMap, initSAVEUpdateMap }
+export { initSAVEAddMap, initSAVERemoveMap, initSAVEUpdateMap }

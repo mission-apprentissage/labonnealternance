@@ -1,6 +1,8 @@
 import { Client } from "@elastic/elasticsearch"
-import config from "../../config.js"
-import mongoosastic from "./mongoosastic/index.js"
+
+import config from "../../config"
+
+import mongoosastic from "./mongoosastic/index"
 
 const createEsInstance = () => {
   const client = new Client({

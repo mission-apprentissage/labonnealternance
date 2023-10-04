@@ -1,8 +1,8 @@
-import { ETAT_UTILISATEUR, RECRUITER_STATUS, VALIDATION_UTILISATEUR } from "../../../../services/constant.service.js"
-import { logger } from "../../../../common/logger.js"
-import { Recruiter, UserRecruteur } from "../../../../common/model/index.js"
-import { asyncForEach } from "../../../../common/utils/asyncUtils.js"
-import { runScript } from "../../../scriptWrapper.js"
+import { logger } from "../../../../common/logger"
+import { Recruiter, UserRecruteur } from "../../../../common/model/index"
+import { asyncForEach } from "../../../../common/utils/asyncUtils"
+import { ETAT_UTILISATEUR, RECRUITER_STATUS, VALIDATION_UTILISATEUR } from "../../../../services/constant.service"
+import { runScript } from "../../../scriptWrapper"
 
 function hasUpperCase(str) {
   return str !== str.toLowerCase()

@@ -1,10 +1,11 @@
-import { mailTemplate } from "../../assets/index.js"
-import dayjs from "../../services/dayjs.service.js"
-import { logger } from "../../common/logger.js"
-import { mailType } from "../../common/model/constants/etablissement.js"
-import { Etablissement } from "../../common/model/index.js"
-import config from "../../config.js"
-import mailer from "../../services/mailer.service.js"
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+
+import { logger } from "../../common/logger"
+import { mailType } from "../../common/model/constants/etablissement"
+import { Etablissement } from "../../common/model/index"
+import config from "../../config"
+import dayjs from "../../services/dayjs.service"
+import mailer from "../../services/mailer.service"
 
 export const inviteEtablissementAffelnetToPremium = async () => {
   logger.info("Cron #inviteEtablissementAffelnetToPremium started.")
@@ -26,21 +27,25 @@ export const inviteEtablissementAffelnetToPremium = async () => {
   })
 
   for (const etablissement of etablissementToInvite) {
+    if (!etablissement.gestionnaire_email) {
+      continue
+    }
+
     // send the invitation mail
     const { messageId } = await mailer.sendEmail({
       to: etablissement.gestionnaire_email,
       subject: `Trouvez et recrutez vos candidats sur Choisir son affectation après la 3e !`,
-      template: mailTemplate["mail-cfa-premium-invite"],
+      template: getStaticFilePath("./templates/mail-cfa-premium-invite.mjml.ejs"),
       data: {
         isAffelnet: true,
         images: {
-          logoLba: `${config.publicUrlEspacePro}/images/logo_LBA.png?raw=true`,
-          exempleParcoursup: `${config.publicUrlEspacePro}/assets/exemple_integration_parcoursup.jpg?raw=true`,
+          logoLba: `${config.publicUrl}/images/emails/logo_LBA.png?raw=true`,
+          exempleParcoursup: `${config.publicUrl}/assets/exemple_integration_parcoursup.jpg?raw=true`,
         },
         etablissement: {
           email: etablissement.gestionnaire_email,
           activatedAt: dayjs(etablissement.created_at).format("DD/MM"),
-          linkToForm: `${config.publicUrlEspacePro}/form/premium/affelnet/${etablissement._id}`,
+          linkToForm: `${config.publicUrl}/espace-pro/form/premium/affelnet/${etablissement._id}`,
         },
       },
     })

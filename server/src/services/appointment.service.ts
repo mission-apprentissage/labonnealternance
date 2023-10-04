@@ -1,62 +1,30 @@
-import { Appointment } from "../common/model/index.js"
-import { IAppointments } from "../common/model/schema/appointments/appointments.types.js"
-import { FilterQuery } from "mongoose"
+import type { ObjectId, FilterQuery } from "mongoose"
+import { IAppointment } from "shared"
 
-/**
- * @description Create a new appointment.
- * @param {Partial<IAppointments>} params - Appointment params.
- * @returns {Promise<IAppointments>}
- */
-const createAppointment = async (params: Partial<IAppointments>) => {
+import { Appointment } from "../common/model/index"
+
+export type NewAppointment = Pick<
+  IAppointment,
+  "applicant_id" | "cfa_recipient_email" | "cfa_formateur_siret" | "applicant_message_to_cfa" | "applicant_reasons" | "appointment_origin" | "cle_ministere_educatif"
+>
+
+const createAppointment = async (params: NewAppointment) => {
   const appointment = new Appointment(params)
   await appointment.save()
 
   return appointment.toObject()
 }
 
-/**
- * @description Find by id.
- * @param {string} id - Appointment id.
- * @returns {Promise<IAppointments>}
- */
-const findById = (id: string) => Appointment.findById(id)
+const findById = async (id: ObjectId | string): Promise<IAppointment | null> => Appointment.findById(id).lean()
 
-/**
- * @description Find items.
- * @param {FilterQuery<IAppointments>} conditions - Query conditions.
- * @returns {Promise<IAppointments[]>}
- */
-const find = (conditions: FilterQuery<IAppointments>) => Appointment.find(conditions)
+const find = (conditions: FilterQuery<IAppointment>) => Appointment.find(conditions)
 
-/**
- * @description Find one.
- * @param {FilterQuery<IAppointments>} conditions - Query conditions.
- * @returns {Promise<IAppointments>}
- */
-const findOne = (conditions: FilterQuery<IAppointments>) => Appointment.findOne(conditions)
+const findOne = (conditions: FilterQuery<IAppointment>) => Appointment.findOne(conditions)
 
-/**
- * @description Find on and update it.
- * @param {FilterQuery<IAppointments>} conditions - Query conditions.
- * @param {Partial<IAppointments>} values - Appointment params.
- * @returns {Promise<IAppointments>}
- */
-const findOneAndUpdate = (conditions: FilterQuery<IAppointments>, values) => Appointment.findOneAndUpdate(conditions, values, { new: true })
+const findOneAndUpdate = (conditions: FilterQuery<IAppointment>, values) => Appointment.findOneAndUpdate(conditions, values, { new: true })
 
-/**
- * @description Update many items.
- * @param {FilterQuery<IAppointments>} conditions - Query conditions.
- * @param {Partial<IAppointments>} values - Appointment params.
- * @returns {Promise<IAppointments>}
- */
-const updateMany = (conditions: FilterQuery<IAppointments>, values) => Appointment.updateMany(conditions, values)
+const updateMany = (conditions: FilterQuery<IAppointment>, values) => Appointment.updateMany(conditions, values)
 
-/**
- * @description Update one.
- * @param {string} id - Appointment id.
- * @param {Partial<IAppointments>} values - Appointment params.
- * @returns {Promise<IAppointments>}
- */
 const updateAppointment = (id: string, values) => Appointment.findOneAndUpdate({ _id: id }, values, { new: true })
 
 export { createAppointment, findById, find, findOne, findOneAndUpdate, updateMany, updateAppointment }

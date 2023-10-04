@@ -1,7 +1,8 @@
-// @ts-nocheck
 import { oleoduc, transformData, writeData } from "oleoduc"
+
 import { LbaCompany } from "../../common/model/index.js"
-import { logMessage } from "../../common/utils/logMessage.js"
+import { logMessage } from "../../common/utils/logMessage"
+
 import { downloadSAVEFile, getCompanyMissingData, initMaps, streamSAVECompanies } from "./lbaCompaniesUtils.js"
 
 export const updateSAVECompanies = async () => {
@@ -26,7 +27,7 @@ export const updateSAVECompanies = async () => {
         if (lbaCompany) {
           if (company.raison_sociale) {
             lbaCompany.raison_sociale = company.raison_sociale
-            lbaCompany.eneigne = company.raison_sociale
+            lbaCompany.enseigne = company.raison_sociale
           }
           if (company.email !== undefined) {
             lbaCompany.email = company.email

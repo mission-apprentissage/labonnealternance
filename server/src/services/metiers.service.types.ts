@@ -1,32 +1,9 @@
-export interface IMetiers {
-  metiers?: string[]
-  error?: string
-}
+import type { IMetierEnrichi, IRomeWithLabel, IMetiers, IMetiersEnrichis } from "shared"
 
-export interface IRomeWithLabel {
-  codeRome: string
-  intitule: string
-}
-
-export interface IMetierEnrichi {
-  label: string
-  romes: string[]
-  rncps?: string[]
-  type?: string
-  romeTitles?: IRomeWithLabel[]
-}
-
-export interface IMetiersEnrichis {
-  labelsAndRomes?: IMetierEnrichi[]
-  labelsAndRomesForDiplomas?: IMetierEnrichi[]
-  error?: string
-  error_messages?: string[]
-}
+export type { IMetierEnrichi, IRomeWithLabel, IMetiers, IMetiersEnrichis }
 
 export interface IAppellationsRomes {
-  coupleAppellationRomeMetier?: IAppellationRome[]
-  error?: string
-  error_messages?: string[]
+  coupleAppellationRomeMetier: IAppellationRome[]
 }
 
 export interface IAppellationRome {

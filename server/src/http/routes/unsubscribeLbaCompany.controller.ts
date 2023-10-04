@@ -1,29 +1,29 @@
-import { LbaCompany, UnsubscribedLbaCompany } from "../../common/model/index.js"
-import express from "express"
-import rateLimit from "express-rate-limit"
-import { tryCatch } from "../middlewares/tryCatchMiddleware.js"
-import { UNSUBSCRIBE_EMAIL_ERRORS } from "../../services/constant.service.js"
-import config from "../../config.js"
-import path from "path"
-import __dirname from "../../common/dirname.js"
-import mailer from "../../services/mailer.service.js"
-const currentDirname = __dirname(import.meta.url)
+import { zRoutes } from "shared/index.js"
 
-const limiter1Per5Second = rateLimit({
-  windowMs: 5000, // 5 seconds
-  max: 1, // limit each IP to 1 request per windowMs
-})
+import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
+
+import { LbaCompany, UnsubscribedLbaCompany } from "../../common/model/index.js"
+import config from "../../config"
+import { UNSUBSCRIBE_EMAIL_ERRORS } from "../../services/constant.service"
+import mailer from "../../services/mailer.service"
+import { Server } from "../server.js"
 
 const imagePath = `${config.publicUrl}/images/emails/`
 
-export default function () {
-  const router = express.Router()
-
-  router.post(
-    "/",
-    limiter1Per5Second,
-    tryCatch(async (req, res) => {
-      let result = "OK"
+export default function (server: Server) {
+  server.post(
+    "/unsubscribe",
+    {
+      schema: zRoutes.post["/unsubscribe"],
+      config: {
+        rateLimit: {
+          max: 1,
+          timeWindow: "5s",
+        },
+      },
+    },
+    async (req, res) => {
+      let result = "OK" as "OK" | "NON_RECONNU" | "ETABLISSEMENTS_MULTIPLES"
 
       const email = req.body.email.toLowerCase()
       const reason = req.body.reason
@@ -31,9 +31,9 @@ export default function () {
       const lbaCompaniesToUnsubscribe = await LbaCompany.find({ email }).lean()
 
       if (!lbaCompaniesToUnsubscribe.length) {
-        result = UNSUBSCRIBE_EMAIL_ERRORS["NON_RECONNU"]
+        result = UNSUBSCRIBE_EMAIL_ERRORS["NON_RECONNU"] as "NON_RECONNU"
       } else if (lbaCompaniesToUnsubscribe.length > 1) {
-        result = UNSUBSCRIBE_EMAIL_ERRORS["ETABLISSEMENTS_MULTIPLES"]
+        result = UNSUBSCRIBE_EMAIL_ERRORS["ETABLISSEMENTS_MULTIPLES"] as "ETABLISSEMENTS_MULTIPLES"
       } else {
         const unsubscribedLbaCompany = new UnsubscribedLbaCompany({
           ...lbaCompaniesToUnsubscribe[0],
@@ -43,12 +43,12 @@ export default function () {
         unsubscribedLbaCompany.save()
 
         const lbaCompanyToUnsubscribe = await LbaCompany.findOne({ siret: lbaCompaniesToUnsubscribe[0].siret })
-        lbaCompanyToUnsubscribe.remove()
+        lbaCompanyToUnsubscribe?.remove()
 
         await mailer.sendEmail({
           to: email,
           subject: `Confirmation de déréférencement du service La bonne alternance`,
-          template: path.join(currentDirname, `../../assets/templates/mail-desinscription-algo.mjml.ejs`),
+          template: getStaticFilePath("./templates/mail-desinscription-algo.mjml.ejs"),
           data: {
             images: {
               logoLba: `${imagePath}logo_LBA.png`,
@@ -58,9 +58,7 @@ export default function () {
         })
       }
 
-      return res.json(result)
-    })
+      return res.status(200).send(result)
+    }
   )
-
-  return router
 }

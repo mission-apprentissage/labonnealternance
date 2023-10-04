@@ -1,9 +1,5 @@
 import { ArrowForwardIcon } from "@chakra-ui/icons"
 import { Box, Container, Divider, Flex, Grid, GridItem, Image, Link, Text } from "@chakra-ui/react"
-import hommeAuTelephone from "../../public/images/hommeAuTelephone.svg"
-import fuseeDecollant from "../../public/images/fuseeDecollant.svg"
-import hommeFemmeDiscutentAssisATable from "../../public/images/hommeFemmeDiscutentAssisATable.svg"
-import femmeMontrantNavigateur from "../../public/images/femmeMontrantNavigateur.svg"
 
 const gridGapY = 4
 const gridGapX = [0, 0, 6, 6]
@@ -52,7 +48,7 @@ const TestezConnaissancesQuiz = () => {
           <Card
             title="Vous recherchez votre formation ?"
             linkText="Préparez-vous à échanger avec une école"
-            imageUrl={hommeAuTelephone}
+            imageUrl="/images/hommeAuTelephone.svg"
             linkUrl="https://dinum.didask.com/courses/demonstration/60abc18c075edf000065c987"
           />
         </GridItem>
@@ -60,7 +56,7 @@ const TestezConnaissancesQuiz = () => {
           <Card
             title="Vous recherchez votre employeur ?"
             linkText="Apprenez à bien cibler les entreprises"
-            imageUrl={femmeMontrantNavigateur}
+            imageUrl="/images/femmeMontrantNavigateur.svg"
             linkUrl="https://dinum.didask.com/courses/demonstration/60d21bf5be76560000ae916e"
           />
         </GridItem>
@@ -68,7 +64,7 @@ const TestezConnaissancesQuiz = () => {
           <Card
             title="Vous avez bientôt un entretien d’embauche ?"
             linkText="Entraînez-vous pour avoir plus de chances d'être retenu"
-            imageUrl={hommeFemmeDiscutentAssisATable}
+            imageUrl="/images/hommeFemmeDiscutentAssisATable.svg"
             linkUrl="https://dinum.didask.com/courses/demonstration/60d1adbb877dae00003f0eac"
           />
         </GridItem>
@@ -76,7 +72,7 @@ const TestezConnaissancesQuiz = () => {
           <Card
             title="Vous allez bientôt démarrer votre contrat ?"
             linkText="Familiarisez-vous avec la posture à adopter en entreprise"
-            imageUrl={fuseeDecollant}
+            imageUrl="/images/fuseeDecollant.svg"
             linkUrl="https://dinum.didask.com/courses/demonstration/6283bd5ad9c7ae00003ede91"
           />
         </GridItem>

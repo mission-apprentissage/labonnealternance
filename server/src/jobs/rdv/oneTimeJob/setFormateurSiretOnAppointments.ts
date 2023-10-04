@@ -1,7 +1,8 @@
 import { oleoduc, writeData } from "oleoduc"
-import { logger } from "../../../common/logger.js"
-import { getFormationsFromCatalogueMe } from "../../../services/catalogue.service.js"
-import * as appointmentService from "../../../services/appointment.service.js"
+
+import { logger } from "../../../common/logger"
+import * as appointmentService from "../../../services/appointment.service"
+import { getFormationsFromCatalogueMe } from "../../../services/catalogue.service"
 
 /**
  * @description Updates all appointments and set "cfa_formateur_siret" value.

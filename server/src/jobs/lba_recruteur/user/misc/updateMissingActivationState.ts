@@ -1,12 +1,12 @@
-import { logger } from "../../../../common/logger.js"
-import { UserRecruteur } from "../../../../common/model/index.js"
-import { asyncForEach } from "../../../../common/utils/asyncUtils.js"
-import { notifyToSlack } from "../../../../common/utils/slackUtils.js"
-import { ENTREPRISE, ETAT_UTILISATEUR } from "../../../../services/constant.service.js"
-import dayjs from "../../../../services/dayjs.service.js"
-import { autoValidateCompany } from "../../../../services/etablissement.service.js"
-import { getFormulaire, sendDelegationMailToCFA, updateOffre } from "../../../../services/formulaire.service.js"
-import { updateUser, sendWelcomeEmailToUserRecruteur } from "../../../../services/userRecruteur.service.js"
+import { logger } from "../../../../common/logger"
+import { UserRecruteur } from "../../../../common/model/index"
+import { asyncForEach } from "../../../../common/utils/asyncUtils"
+import { notifyToSlack } from "../../../../common/utils/slackUtils"
+import { ENTREPRISE, ETAT_UTILISATEUR } from "../../../../services/constant.service"
+import dayjs from "../../../../services/dayjs.service"
+import { autoValidateCompany } from "../../../../services/etablissement.service"
+import { getFormulaire, sendDelegationMailToCFA, updateOffre } from "../../../../services/formulaire.service"
+import { updateUser, sendWelcomeEmailToUserRecruteur } from "../../../../services/userRecruteur.service"
 
 export const checkAwaitingCompaniesValidation = async () => {
   logger.info(`Start update missing validation state for companies...`)
@@ -45,7 +45,7 @@ export const checkAwaitingCompaniesValidation = async () => {
       // Get job and update its expiration date
       const job = Object.assign(userFormulaire.jobs[0], { job_status: "Active", job_expiration_date: dayjs().add(1, "month").format("YYYY-MM-DD") })
       // save job
-      await updateOffre(job._id, job)
+      await updateOffre(job._id.toString(), job)
 
       // Send delegation if any
       if (job?.delegations?.length) {

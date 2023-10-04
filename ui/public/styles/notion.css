@@ -1,10 +1,8 @@
-.notion-link
-{
-    color:#000091;
-    text-decoration: none;
+.notion-link {
+  color: #000091;
+  text-decoration: none;
 }
 
-.notion-link:hover
-{
-    text-decoration: underline;
+.notion-link:hover {
+  text-decoration: underline;
 }
