@@ -109,6 +109,15 @@ const nextConfig = withTM(
             },
           ],
         },
+        {
+          source: "/espace-pro/widget/:slug*",
+          headers: [
+            {
+              key: "Content-Security-Policy",
+              value: inline(contentSecurityPolicy + " frame-ancestors 'none';"),
+            },
+          ],
+        },
       ]
     },
   })
