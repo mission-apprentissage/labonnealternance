@@ -13,7 +13,7 @@ export default function MailActionsOnOffre() {
   const [result, setResult] = useState("")
 
   const error = () => {
-    setResult("Une erreur s'est produite. Merci de contacter le support de La Bonne Alternance")
+    setResult("Une erreur s'est produite. Merci de contacter le support de La bonne alternance")
   }
 
   useEffect(() => {
@@ -52,12 +52,12 @@ export default function MailActionsOnOffre() {
         <Box margin="auto">
           {option === "cancel" && (
             <Text as="h1" variant="homeEditorialH1">
-              Annulation de l'offre déposée sur La Bonne Alternance
+              Annulation de l'offre déposée sur La bonne alternance
             </Text>
           )}
           {option === "provided" && (
             <Text as="h1" variant="homeEditorialH1">
-              Modification de l'offre déposée sur La Bonne Alternance
+              Modification de l'offre déposée sur La bonne alternance
             </Text>
           )}
 
@@ -77,8 +77,8 @@ export default function MailActionsOnOffre() {
 
           <Box mt={8}>
             Aller sur le site{" "}
-            <Link href="/" aria-label="Accès au site La Bonne Alternace" textDecoration="underline" fontWeight={700}>
-              La Bonne Alternance
+            <Link href="/" aria-label="Accès au site La bonne alternace" textDecoration="underline" fontWeight={700}>
+              La bonne alternance
             </Link>
             <br />
             <br />
@@ -99,7 +99,7 @@ export default function MailActionsOnOffre() {
                 >
                   l'offre
                 </Link>{" "}
-                sur le site La Bonne Alternance
+                sur le site La bonne alternance
               </>
             )}
           </Box>

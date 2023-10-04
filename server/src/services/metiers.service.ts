@@ -6,7 +6,7 @@ import { IDomainesMetiers } from "@/common/model/schema/domainesmetiers/domaines
 
 import { getElasticInstance } from "../common/esClient/index"
 
-import { getRomesFromCfd, getRomesFromSiret } from "./catalogue.service"
+import { getRomesFromCatalogue } from "./catalogue.service"
 import { IAppellationsRomes, IMetierEnrichi, IMetiers, IMetiersEnrichis } from "./metiers.service.types"
 
 /**
@@ -317,7 +317,7 @@ const removeDuplicateDiplomas = (diplomas) => {
  * @returns {Promise<IMetiers>}
  */
 export const getMetiersPourCfd = async ({ cfd }: { cfd: string }): Promise<IMetiers> => {
-  const romeResponse = await getRomesFromCfd({ cfd })
+  const romeResponse = await getRomesFromCatalogue({ cfd })
   const { romes } = romeResponse
   const metiers = await getMetiersFromRomes(romes)
   return metiers
@@ -329,7 +329,7 @@ export const getMetiersPourCfd = async ({ cfd }: { cfd: string }): Promise<IMeti
  * @returns {Promise<IMetiers>}
  */
 export const getMetiersPourEtablissement = async ({ siret }: { siret: string }): Promise<IMetiers> => {
-  const romeResponse = await getRomesFromSiret({ siret })
+  const romeResponse = await getRomesFromCatalogue({ siret })
   const { romes } = romeResponse
   const metiers = await getMetiersFromRomes(romes)
   return metiers

@@ -1,4 +1,4 @@
-import { Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, Button, Container, Flex, Heading, SimpleGrid, Text, useToast } from "@chakra-ui/react"
+import { Box, Breadcrumb, BreadcrumbItem, BreadcrumbLink, Button, Container, Flex, Heading, SimpleGrid, Text, useDisclosure, useToast } from "@chakra-ui/react"
 import { Form, Formik } from "formik"
 import { useRouter } from "next/router"
 import { useMutation, useQuery, useQueryClient } from "react-query"
@@ -11,6 +11,7 @@ import AnimationContainer from "../../components/espace_pro/AnimationContainer"
 import CustomInput from "../../components/espace_pro/CustomInput"
 import InformationLegaleEntreprise from "../../components/espace_pro/InformationLegaleEntreprise"
 import Layout from "../../components/espace_pro/Layout"
+import ModificationCompteEmail from "../../components/espace_pro/ModificationCompteEmail"
 import withAuth from "../../components/espace_pro/withAuth"
 import { ArrowDropRightLine, ArrowRightLine } from "../../theme/components/icons"
 import { getUser, updateEntreprise, updatePartenaire } from "../../utils/api"
@@ -20,6 +21,7 @@ function Compte() {
   const toast = useToast()
   const router = useRouter()
   const [auth] = useAuth()
+  const ModificationEmailPopup = useDisclosure()
 
   const getUserNavigationContext = () => {
     switch (auth.type) {
@@ -107,12 +109,16 @@ function Compte() {
                 duration: 2000,
                 isClosable: true,
               })
+              if (data.data.email !== values.email) {
+                ModificationEmailPopup.onOpen()
+              }
               setSubmitting(false)
             }}
           >
             {({ values, isSubmitting, isValid }) => {
               return (
                 <>
+                  <ModificationCompteEmail {...ModificationEmailPopup} />
                   <SimpleGrid columns={[1, 1, 1, 2]} spacing={[0, 10]}>
                     <Box>
                       <Heading>Vos informations de contact</Heading>
