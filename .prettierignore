@@ -1,2 +1,3 @@
 .yarn
 .talismanrc
+.infra/files/configs/mongodb/seed.gpg
