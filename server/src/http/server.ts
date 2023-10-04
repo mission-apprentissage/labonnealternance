@@ -10,6 +10,8 @@ import { OpenAPIV3_1 } from "openapi-types"
 import { generateOpenApiSchema } from "shared/helpers/openapi/generateOpenapi"
 import { SecurityScheme } from "shared/routes/common.routes"
 
+import { localOrigin } from "@/common/utils/isOriginLocal"
+
 import config from "../config"
 import { initBrevoWebhooks } from "../services/brevo.service"
 
@@ -95,15 +97,14 @@ export async function bind(app: Server) {
 
   app.decorate("auth", (strategy: SecurityScheme) => auth(strategy))
 
-  // TODO_AB To check
-  // app.register(fastifyCors, {
-  //   origin: "*",
-  // })
-
   if (config.env === "local") {
     app.register(fastifyCors, {
       origin: config.publicUrl,
       credentials: true,
+    })
+  } else {
+    app.register(fastifyCors, {
+      origin: localOrigin,
     })
   }
 

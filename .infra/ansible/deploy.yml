@@ -4,6 +4,11 @@
   gather_facts: false
   vars_files:
     - "../vault/vault.yml"
+  handlers:
+    - name: restart-fail2ban
+      service:
+        name: fail2ban
+        state: restarted
   tasks:
     - include_tasks: ./tasks/files_copy.yml
 
@@ -95,6 +100,21 @@
       shell:
         chdir: /opt/app
         cmd: "sudo /opt/app/tools/ssl/renew-certificate.sh {{dns_name}}"
+
+    - name: "Verification des certificats SSL"
+      shell:
+        chdir: /opt/app
+        cmd: "sudo /opt/app/tools/ssl/renew-certificate.sh labonnealternance.pole-emploi.fr"
+      when: env_type == "production"
+
+    - name: Add cron to renew pole-emploi cert
+      ansible.builtin.cron:
+        name: "renew-certificate"
+        minute: "0"
+        hour: "2"
+        weekday: "1"
+        job: "bash /opt/app/tools/ssl/renew-certificate.sh labonnealternance.pole-emploi.fr >> /var/log/cron.log 2>&1; /opt/app/tools/monitoring/export-cron-status-prom.sh -c 'Renew certificate Pole Emploi' -v $?"
+      when: env_type == "production"
 
     - name: "Setup de la Metabase"
       shell:

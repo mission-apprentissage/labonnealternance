@@ -10,15 +10,17 @@ fileignoreconfig:
 - filename: .github/workflows/release.yml
   checksum: 04cd4e69c67ffb0baa69892cb715aab8221d10587af0b2f27af38b2d4a968b93
 - filename: .infra/.env_server
-  checksum: 618e1aad8e37a060c78ddca285899ae61cd2a6c584895a3c4dfd54f392ed6112
+  checksum: aab1ecd35161750c0cc60ab49274fe67c54d54e65309d324daa95d666a6355cb
 - filename: .infra/env.ini
-  checksum: 46009eb5ccdcc992bfcc93feb40bb6e5dbaad5b57bec5a47ed4122a7ebbd243f
+  checksum: 8a4a01117d2fb9a54092d62cc5e07fd9418b2777cfbed8453571fe093b6a833a
 - filename: .infra/files/configs/mongodb/seed.gpg
   checksum: 7141d3836a9746d58ca3331b6ce2911a3b260131d47af6e402d39962c411eac8
+- filename: .infra/files/configs/reverse_proxy/extra-conf.d/alias.conf.template
+  checksum: 07875ae04a27fc2220ddf4d0010225d7f62529187328c93d6dbc8d008eb27ff7
 - filename: .infra/vault/vault.yml
   checksum: be891b8d48595418ff79b33c402b28e0f824471459af9e57801e3131e1d28e5a
 - filename: server/.env.test
-  checksum: a25dd7f90a3bff45f97f82e253b830f54ca74ba81b7eab485c899ad5edf3d770
+  checksum: c5b14d25731246734d6f024cf0b36936cdf1c84195d9096f379f9adccb85740b
 - filename: server/src/common/model/constants/referrers.ts
   checksum: a7205e7da4dca56dc3f989bc4fbbec4ed10c46b963446005a0b0356b0cae3a3d
 - filename: server/src/common/model/schema/_shared/mongoose-paginate.ts
