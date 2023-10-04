@@ -15,6 +15,16 @@ jobs:
         image: mongo:6.0.2-focal
         ports:
           - "27017:27017"
+      elasticsearch:
+        image: docker.elastic.co/elasticsearch/elasticsearch:7.17.6
+        env:
+          ES_JAVA_OPTS: -Xmx512m -Xms512m
+          discovery.type: single-node
+          cluster.name: docker-cluster
+          network.host: 0.0.0.0
+          discovery.zen.minimum_master_nodes: 1
+        ports:
+          - "9200:9200"
     steps:
       - name: Checkout project
         uses: actions/checkout@v4
