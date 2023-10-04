@@ -18,7 +18,7 @@ fileignoreconfig:
 - filename: .infra/files/configs/reverse_proxy/extra-conf.d/alias.conf.template
   checksum: 07875ae04a27fc2220ddf4d0010225d7f62529187328c93d6dbc8d008eb27ff7
 - filename: .infra/vault/vault.yml
-  checksum: 2fcfcfe30e5641538b108dfc4d6265dba09100b169ddc7c545ded467c125fbaf
+  checksum: 9c916b5326d9a6c2305850c9e66f9a13a93f95f9e3ca8f334e0a39bdcce47083
 - filename: CHANGELOG.md
   checksum: any
 - filename: server/.env.test
