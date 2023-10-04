@@ -1,5 +1,5 @@
 [whitelist]
-ignoreip = 213.91.3.170 213.91.3.180 onisep.fr brevo.com 171.33.105.206
+ignoreip = 213.91.3.170 213.91.3.180 91.173.13.14 onisep.fr brevo.com 171.33.105.206
 
 [nginx-req-limit]
 enabled = true
