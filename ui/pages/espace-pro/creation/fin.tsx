@@ -29,13 +29,14 @@ export default function DepotRapideFin() {
 
   const job = JSON.parse(parseQueryString(jobString) ?? "{}")
   const fromDash = fromDashboardString === "true"
+  const withDelegationBoolean = withDelegation === "true"
 
   /**
    * KBA 20230130 : retry set to false to avoid waiting for failure if user is from dashboard (userId is not passed)
    * - To be changed with userID in URL params
    */
   const { isFetched } = useQuery("userdetail", () => getUser(userId), {
-    enabled: userId ? true : false,
+    retry: userId ? true : false,
     onSettled: (data) => {
       const latestStatus = data?.data?.status.pop().status || false
 
@@ -45,13 +46,13 @@ export default function DepotRapideFin() {
       } else if (latestStatus === "VALIDÉ" || fromDash === true) {
         setUserIsValidated(true)
         setTitle(
-          withDelegation
+          withDelegationBoolean
             ? "Félicitations,<br>votre offre a bien été créée et transmise aux organismes de formation que vous avez sélectionnés."
             : "Félicitations,<br>votre offre a bien été créée!"
         )
       } else {
         setTitle(
-          withDelegation
+          withDelegationBoolean
             ? "Félicitations,<br>votre offre a bien été créée.<br>Elle sera publiée et transmise aux organismes de formation que vous avez sélectionnés dès validation de votre compte."
             : "Félicitations,<br>votre offre a bien été créée.<br>Elle sera publiée dès validation de votre compte."
         )
@@ -198,7 +199,6 @@ export default function DepotRapideFin() {
             <div dangerouslySetInnerHTML={{ __html: title }} />
           </Heading>
           {fromDash ? null : userIsInError ? null : userIsValidated ? <ValidatedAccountDescription /> : <AwaitingAccountDescription />}
-          {/* {userIsValidated ? fromDash ? null : <ValidatedAccountDescription /> : <AwaitingAccountDescription />} */}
           <Box bg="#F6F6F6" p={4}>
             <Stack direction="column" spacing="16px">
               <Heading fontSize="20px">Récapitulatif de votre besoin</Heading>
