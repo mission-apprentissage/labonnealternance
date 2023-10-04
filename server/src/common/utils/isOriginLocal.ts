@@ -4,7 +4,7 @@ import config from "../../config"
  * @description : préciser l'usage de cet utils
  */
 
-const localOrigin = [config.publicUrl, config.aliasPublicUrl].filter(Boolean)
+const localOrigin = [config.publicUrl]
 
 const localOriginRegexp = /^https:\/\/labonnealternance(.*).apprentissage.beta.gouv.fr(.*)/i
 const recetteRegexp = /^https:\/\/labonnealternance-recette.apprentissage.beta.gouv.fr(.*)/i

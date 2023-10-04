@@ -6,7 +6,6 @@ const config = {
   port: env.get("LBA_SERVER_PORT").required().asPortNumber(),
   env: env.get("LBA_ENV").required().asEnum(["local", "recette", "production", "preview"]),
   publicUrl: env.get("LBA_PUBLIC_URL").required().asString(),
-  aliasPublicUrl: env.get("LBA_ALIAS_PUBLIC_URL").required().asString(),
   outputDir: env.get("LBA_OUTPUT_DIR").required().asString(),
   formationsEndPoint: "/api/v1/entity/formations",
   maxApplicationPerDay: 100,

@@ -28,10 +28,8 @@ server {
     }
 
     if ($always_redirect = true) {
-      return 301 https://$host$request_uri;
+      return 301 https://${SERVER_NAME}$request_uri;
     }
-
-    include locations/*.conf;
 }
 
 # Use map to allow starting reverse_proxy without SSL ssl_certificate
@@ -68,5 +66,6 @@ server {
     include includes/location_acme.conf;
     include includes/location_maintenance.conf;
     include includes/location_monitoring.conf;
-    include locations/*.conf;
+
+    return 301 https://${SERVER_NAME}$request_uri;
 }
