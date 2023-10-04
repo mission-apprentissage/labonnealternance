@@ -31,14 +31,19 @@ export default function CreationMiseEnRelation() {
     setEtablissements(etablissementUpdated)
   }
 
+  const goToEndStep = ({ withDelegation }) => {
+    router.push({
+      pathname: "/espace-pro/creation/fin",
+      query: { job: JSON.stringify(job), email, withDelegation, fromDashboard, userId, establishment_id },
+    })
+  }
+
   /**
    * Skip delegation stage.
    */
-  const skip = () =>
-    router.push({
-      pathname: "/espace-pro/creation/fin",
-      query: { job: JSON.stringify(job), email, withDelegation: false, fromDashboard, userId, establishment_id },
-    })
+  const skip = () => {
+    goToEndStep({ withDelegation: false })
+  }
 
   /**
    * @description Handles submit button.
@@ -52,10 +57,8 @@ export default function CreationMiseEnRelation() {
       jobId: job._id,
       data: { etablissementCatalogueIds },
     }).finally(() => setIsSubmitLoading(false))
-    router.push({
-      pathname: "/espace-pro/creation/fin",
-      query: { job: JSON.stringify(job), email, withDelegation: true, fromDashboard, userId, establishment_id },
-    })
+
+    goToEndStep({ withDelegation: true })
   }
 
   /**

@@ -59,7 +59,9 @@ export default function OptOutUnsubscribe() {
       setEtablissement(etablissement)
     }
 
-    fetchData().catch(console.error)
+    if(id) {
+      fetchData().catch(console.error)
+    }
   }, [id])
 
   // Display nothing until date isn't received
