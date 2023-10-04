@@ -3,4 +3,7 @@ location / {
     include includes/proxy.conf;
 
     client_max_body_size 0;
+
+    # TODO: Use allow list
+    more_clear_headers 'X-Frame-Options';
 }

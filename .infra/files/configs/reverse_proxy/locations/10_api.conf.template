@@ -2,9 +2,6 @@ location /api {
     set $upstream http://server:5000;
     include includes/error_page_json.conf;
     include includes/proxy.conf;
-
-    # TODO: Use allow list
-    more_clear_headers 'X-Frame-Options';
 }
 
 location ~* ^/api/v1/application$ {
@@ -13,7 +10,4 @@ location ~* ^/api/v1/application$ {
     set $upstream http://server:5000;
     include includes/error_page_json.conf;
     include includes/proxy.conf;
-
-    # TODO: Use allow list
-    more_clear_headers 'X-Frame-Options';
 }
