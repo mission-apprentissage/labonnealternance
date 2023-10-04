@@ -39,6 +39,7 @@ const zRoutesGetP1 = {
   ...zUserRecruteurRoutes.get,
   ...zV1FormationsParRegion.get,
   ...zPartnersRoutes.get,
+  ...zLoginRoutes.get,
 } as const
 
 const zRoutesGetP2 = {

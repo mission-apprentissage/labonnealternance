@@ -22,7 +22,8 @@ import { AuthStrategy, IRouteSchema, SecurityScheme } from "shared/routes/common
 import { Credential } from "@/common/model"
 import { IUser } from "@/common/model/schema/user/user.types"
 import config from "@/config"
-import { authenticate, getUser, getUserByMail } from "@/services/user.service"
+import { getSession } from "@/services/sessions.service"
+import { authenticate, getUser } from "@/services/user.service"
 import { getUser as getUserRecruteur } from "@/services/userRecruteur.service"
 
 export default (strategyName: AuthStrategy) => passport.authenticate(strategyName, { session: false })
@@ -33,9 +34,9 @@ declare module "fastify" {
   }
 }
 
-type AuthenticatedUser<AuthScheme extends IRouteSchema["securityScheme"]["auth"]> = AuthScheme extends "jwt-bearer" | "basic" | "jwt-password" | "jwt-rdv-admin"
+type AuthenticatedUser<AuthScheme extends IRouteSchema["securityScheme"]["auth"]> = AuthScheme extends "jwt-bearer" | "basic" | "jwt-password"
   ? IUser
-  : AuthScheme extends "jwt-bearer" | "jwt-token"
+  : AuthScheme extends "jwt-bearer" | "jwt-token" | "cookie-session"
   ? IUserRecruteur
   : AuthScheme extends "api-key"
   ? ICredential
@@ -113,16 +114,32 @@ const authJwtToken = createAuthHandler(async (req: FastifyRequest): Promise<IUse
   return payload.sub ? getUserRecruteur({ email: payload.sub }) : null
 })
 
-const authJwtRdvAdmin = createAuthHandler(async (req: FastifyRequest): Promise<IUser | null> => {
-  const token = extractBearerTokenFromHeader(req) ?? extractFieldFrom(req.params, "token")
+const authCookieSession = createAuthHandler(async (req: FastifyRequest): Promise<IUserRecruteur | null> => {
+  const token = req.cookies?.[config.auth.session.cookieName]
 
-  if (token === null) {
-    return null
+  if (!token) {
+    throw Boom.forbidden("Session invalide")
   }
 
-  const payload = jwt.verify(token, config.auth.user.jwtSecret) as JwtPayload
+  try {
+    const session = await getSession({ token })
 
-  return payload.sub ? getUserByMail(payload.sub) : null
+    if (!session) {
+      throw Boom.forbidden("Session invalide")
+    }
+
+    const { email } = jwt.verify(token, config.auth.user.jwtSecret) as JwtPayload
+
+    const user = await getUserRecruteur({ email })
+
+    if (!user) {
+      throw Boom.forbidden("Session invalide")
+    }
+
+    return user
+  } catch (error) {
+    throw Boom.forbidden("Session invalide")
+  }
 })
 
 const authApiKey = createAuthHandler(async (req: FastifyRequest): Promise<ICredential | null> => {
@@ -158,8 +175,8 @@ function authenticationMiddleware(strategy: SecurityScheme, req: FastifyRequest)
       return authJwtBearer(req)
     case "jwt-token":
       return authJwtToken(req)
-    case "jwt-rdv-admin":
-      return authJwtRdvAdmin(req)
+    case "cookie-session":
+      return authCookieSession(req)
     case "api-key":
       return authApiKey(req)
     case "none":

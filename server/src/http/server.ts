@@ -1,3 +1,4 @@
+import fastifyCookie from "@fastify/cookie"
 import fastifyCors from "@fastify/cors"
 import fastifyRateLimt from "@fastify/rate-limit"
 import fastifySwagger, { FastifyStaticSwaggerOptions } from "@fastify/swagger"
@@ -94,6 +95,8 @@ export async function bind(app: Server) {
   app.get("/api-docs/swagger.json", (_req, res) => {
     return res.redirect(301, "/api/docs/json")
   })
+
+  app.register(fastifyCookie)
 
   app.decorate("auth", (strategy: SecurityScheme) => auth(strategy))
 

@@ -51,7 +51,7 @@ export default (server: Server) => {
     "/user/:userId",
     {
       schema: zRoutes.get["/user/:userId"],
-      preHandler: [],
+      preHandler: [server.auth(zRoutes.get["/user/:userId"].securityScheme)],
     },
     async (req, res) => {
       const user = await UserRecruteur.findOne({ _id: req.params.userId }).lean()
@@ -71,6 +71,24 @@ export default (server: Server) => {
     }
   )
 
+  server.get(
+    "/user/status/:userId",
+    {
+      schema: zRoutes.get["/user/status/:userId"],
+    },
+    async (req, res) => {
+      const user = await UserRecruteur.findOne({ _id: req.params.userId }).lean()
+
+      if (!user) throw Boom.notFound("User not found")
+      if (!user.status || user.status.length === 0) throw Boom.internal("User doesn't have status")
+
+      // @ts-expect-error: TODO
+      const status_current = user.status.pop().status
+
+      return res.status(200).send({ status_current })
+    }
+  )
+
   server.post(
     "/user",
     {
@@ -87,7 +105,7 @@ export default (server: Server) => {
     "/user/:userId",
     {
       schema: zRoutes.put["/user/:userId"],
-      preHandler: [],
+      preHandler: [server.auth(zRoutes.put["/user/:userId"].securityScheme)],
     },
     async (req, res) => {
       const userPayload = req.body

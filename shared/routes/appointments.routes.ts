@@ -1,6 +1,6 @@
 import { referrers } from "../constants/referers"
 import { z } from "../helpers/zodWithOpenApi"
-import { ZAppointment, ZEtablissement } from "../models"
+import { ZEtablissement } from "../models"
 
 import { IRoutesDef, ZResError } from "./common.routes"
 
@@ -67,19 +67,20 @@ const zContextCreateSchema = z.union([
 
 export const zAppointmentsRoute = {
   get: {
-    "/admin/appointments": {
-      response: {
-        "2xx": z
-          .object({
-            appointments: z.array(ZAppointment),
-          })
-          .strict(),
-      },
-      securityScheme: {
-        auth: "jwt-rdv-admin",
-        role: "administrator",
-      },
-    },
+    // TODO NOT USED TO DELETE
+    // "/admin/appointments": {
+    //   response: {
+    //     "2xx": z
+    //       .object({
+    //         appointments: z.array(ZAppointment),
+    //       })
+    //       .strict(),
+    //   },
+    //   securityScheme: {
+    //     auth: "jwt-rdv-admin",
+    //     role: "administrator",
+    //   },
+    // },
     "/admin/appointments/details": {
       response: {
         "2xx": z
@@ -113,8 +114,8 @@ export const zAppointmentsRoute = {
           .strict(),
       },
       securityScheme: {
-        auth: "jwt-rdv-admin",
-        role: "administrator",
+        auth: "cookie-session",
+        role: "all", // TODO administrator
       },
     },
     "/appointment-request/context/recap": {

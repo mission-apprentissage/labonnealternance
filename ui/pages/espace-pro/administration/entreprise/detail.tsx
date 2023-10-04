@@ -5,11 +5,13 @@ import { useRouter } from "next/router"
 import { useContext } from "react"
 import * as Yup from "yup"
 
+import { getAuthServerSideProps } from "@/common/SSR/getAuthServerSideProps"
+import { useAuth } from "@/context/UserContext"
+
 import { AUTHTYPE } from "../../../../common/contants"
-import useAuth from "../../../../common/hooks/useAuth"
 import { phoneValidation } from "../../../../common/validation/fieldValidations"
 import { AnimationContainer, CustomInput, InformationLegaleEntreprise, Layout } from "../../../../components/espace_pro"
-import withAuth from "../../../../components/espace_pro/withAuth"
+import { authProvider, withAuth } from "../../../../components/espace_pro/withAuth"
 import Link from "../../../../components/Link"
 import { WidgetContext } from "../../../../context/contextWidget"
 import { ArrowDropRightLine, ArrowRightLine } from "../../../../theme/components/icons"
@@ -21,11 +23,11 @@ const Formulaire = () => {
   const { widget } = useContext(WidgetContext)
   const { establishment_siret, opco, idcc } = JSON.parse((router.query.informationSiret as string) || "{}")
   const toast = useToast()
-  const [auth] = useAuth()
+  const { user } = useAuth()
 
   const submitForm = (values, { setSubmitting, setFieldError }) => {
     // save info if not trusted from source
-    postFormulaire({ ...values, establishment_siret, opco, idcc, userRecruteurId: auth.id })
+    postFormulaire({ ...values, establishment_siret, opco, idcc, userRecruteurId: user._id })
       .then(({ data }: any) => {
         setSubmitting(false)
         toast({
@@ -138,4 +140,7 @@ function CreationEntrepriseDetailPage() {
     </Layout>
   )
 }
-export default withAuth(CreationEntrepriseDetailPage)
+
+export const getServerSideProps = async (context) => ({ props: { ...(await getAuthServerSideProps(context)) } })
+
+export default authProvider(withAuth(CreationEntrepriseDetailPage))

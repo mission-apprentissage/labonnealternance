@@ -17,7 +17,6 @@ const updateUserRecruteursSiretInfosInError = async () => {
     $or: [{ type: CFA }, { type: ENTREPRISE }],
   }
 
-  // @ts-expect-error
   const userRecruteurs = await UserRecruteur.find(query).lean()
   const stats = { success: 0, failure: 0, deactivated: 0 }
   logger.info(`Correction des user recruteurs en erreur: ${userRecruteurs.length} user recruteurs à mettre à jour...`)
