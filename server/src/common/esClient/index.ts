@@ -6,7 +6,7 @@ import mongoosastic from "./mongoosastic/index"
 
 const createEsInstance = () => {
   const client = new Client({
-    node: config.env === "local" || config.env === "preview" ? "http://localhost:9200" : "http://elasticsearch:9200",
+    node: config.env === "local" ? "http://localhost:9200" : "http://elasticsearch:9200",
     maxRetries: 5,
     requestTimeout: 60000,
   })
