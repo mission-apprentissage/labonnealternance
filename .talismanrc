@@ -16,7 +16,7 @@ fileignoreconfig:
 - filename: .infra/env.ini
   checksum: 55332a5edf8c13ed6f12346993579eac23d07d6c499d9a9b5b9b42c289d09823
 - filename: .infra/files/configs/mongodb/seed.gpg
-  checksum: 7141d3836a9746d58ca3331b6ce2911a3b260131d47af6e402d39962c411eac8
+  checksum: 4088248bf73cdb7c7f3b09a95fb0dd8cd2c953b1a9c401ecc91f15a4664d249c
 - filename: .infra/files/configs/reverse_proxy/extra-conf.d/alias.conf.template
   checksum: 22b92189fc92a094fcdf6453df23e692dfabe88efdf916576da0b35afdfae1bd
 - filename: .infra/vault/vault.yml
