@@ -148,14 +148,14 @@ export const sendApplication = async ({
     }
 
     const company_email = shouldCheckSecret ? query.company_email : decryptWithIV(query.company_email, query.iv) // utilisation email de test ou decrypt vrai mail crypté
-    const crypted_email = shouldCheckSecret ? decryptWithIV(query.crypted_company_email, query.iv) : "" // présent uniquement pour les tests utilisateurs
+    const decrypted_email = shouldCheckSecret ? decryptWithIV(query.crypted_company_email, query.iv) : company_email // présent uniquement pour les tests utilisateurs
 
     validationResult = await validateCompanyEmail({
       company_email,
-      crypted_email,
+      decrypted_email,
     })
 
-    validationResult = await validateCompany(query, company_email)
+    validationResult = await validateCompany(query, decrypted_email)
 
     if (validationResult !== "ok") {
       return { error: validationResult }
@@ -401,7 +401,7 @@ const scanFileContent = async (validable: IApplicationUI): Promise<string> => {
 
 interface ICompanyEmail {
   company_email: string
-  crypted_email?: string
+  decrypted_email?: string
 }
 /**
  * checks if company email is valid for sending an application
@@ -409,7 +409,7 @@ interface ICompanyEmail {
 export const validateCompanyEmail = async (validable: ICompanyEmail): Promise<string> => {
   const schema = Joi.object({
     company_email: Joi.string().email().required(),
-    crypted_email: Joi.optional(),
+    decrypted_email: Joi.optional(),
   })
   try {
     await schema.validateAsync(validable)
