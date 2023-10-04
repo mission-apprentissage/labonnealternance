@@ -39,7 +39,7 @@ export default (server: Server) => {
         return res.status(401).send({})
       }
 
-      await Promise.all(
+      result.jobs = await Promise.all(
         result.jobs.map(async (job) => {
           const candidatures = await getApplication(job._id.toString())
           return { ...job, candidatures: candidatures && candidatures.length > 0 ? candidatures.length : undefined }
