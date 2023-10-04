@@ -573,7 +573,7 @@ export const provideOffre = async (id: IJob["_id"]): Promise<boolean> => {
     {
       $set: {
         "jobs.$.job_status": JOB_STATUS.POURVUE,
-        "jobs.$.job_update_date": () => new Date(),
+        "jobs.$.job_update_date": Date.now(),
       },
     }
   )
