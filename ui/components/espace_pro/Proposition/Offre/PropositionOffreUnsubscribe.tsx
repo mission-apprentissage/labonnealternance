@@ -9,10 +9,15 @@ export const PropositionOffreUnsubscribe = () => {
   const router = useRouter()
   const { siretFormateur } = router.query
   const toast = useToast()
-  const { isLoading, isError, isSuccess } = useQuery("proposition-offre-unsubscribe", async () => {
-    if (!siretFormateur) return
-    await etablissementUnsubscribeDemandeDelegation(siretFormateur)
-  })
+  const { isLoading, isError, isSuccess } = useQuery(
+    "proposition-offre-unsubscribe",
+    async () => {
+      await etablissementUnsubscribeDemandeDelegation(siretFormateur)
+    },
+    {
+      enabled: Boolean(siretFormateur),
+    }
+  )
   useEffect(() => {
     if (isError) {
       toast({
@@ -32,9 +37,6 @@ export const PropositionOffreUnsubscribe = () => {
       })
     }
   }, [isError, isLoading, isSuccess, toast])
-  if (!siretFormateur) {
-    throw new Error("unexpected: siretFormateur not found")
-  }
 
   return (
     <Box>
