@@ -646,7 +646,7 @@ export const entrepriseOnboardingWorkflow = {
     const savedData = { ...entrepriseData, ...contactInfos, email: formatedEmail }
     const formulaireInfo = await createFormulaire({
       ...savedData,
-      status: RECRUITER_STATUS.EN_ATTENTE_VALIDATION,
+      status: RECRUITER_STATUS.ACTIF,
       jobs: [],
       cfa_delegated_siret,
       is_delegated: true,
