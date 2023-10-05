@@ -1,4 +1,5 @@
 // import { create as createMigration, status as statusMigration, up as upMigration } from "@/jobs/migrations/migrations"
+import { createMongoDBIndexes } from "@/common/model"
 import { IInternalJobs } from "@/common/model/schema/internalJobs/internalJobs.types"
 
 import { getLoggerWithContext } from "../common/logger"
@@ -179,10 +180,8 @@ export async function runJob(job: IInternalJobs): Promise<number> {
       case "referentiel:rncp-romes:update":
         return updateReferentielRncpRomes()
       ///////
-      // case "indexes:create":
-      // case "indexes:recreate":
-      //recreateIndexes((job.payload as any)?.drop)
-      // return
+      case "mongodb:indexes:create":
+        return createMongoDBIndexes()
       case "db:validate":
         //validateModels()
         return

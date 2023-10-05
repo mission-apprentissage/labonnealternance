@@ -4,6 +4,7 @@ import HttpTerminator from "lil-http-terminator"
 
 import { closeMongoConnection } from "@/common/mongodb"
 
+import { closeElasticSearch } from "./common/esClient"
 import { logger } from "./common/logger"
 import { sleep } from "./common/utils/asyncUtils"
 import config from "./config"
@@ -41,7 +42,7 @@ function createProcessExitSignal() {
         abortController.abort()
       } catch (err) {
         captureException(err)
-        logger.error({ err }, "error during shutdown")
+        logger.error(err, "error during shutdown")
       }
     })
   })
@@ -53,6 +54,7 @@ program
   .configureHelp({
     sortSubcommands: true,
   })
+  .showSuggestionAfterError()
   .hook("preAction", (_, actionCommand) => {
     const command = actionCommand.name()
     // on définit le module du logger en global pour distinguer les logs des jobs
@@ -61,9 +63,10 @@ program
       // Pas besoin d'init Sentry dans le cas du server car il est start automatiquement
       initSentryProcessor()
     }
+    logger.info(`Starting command ${command}`)
   })
   .hook("postAction", async () => {
-    await closeMongoConnection()
+    await Promise.all([closeMongoConnection(), closeElasticSearch()])
     await closeSentry()
   })
 
@@ -173,18 +176,10 @@ program
   .action(createJobAction("migration:remove-delegated-from-jobs"))
 
 program
-  .command("indexes:create")
+  .command("mongodb:indexes:create")
   .description("Creation des indexes mongo")
-  .option("-d, --drop", "Supprime les indexes existants avant de les recréer")
   .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("indexes:create"))
-
-program
-  .command("indexes:recreate")
-  .description("Drop and recreate indexes")
-  .option("-d, --drop", "Drop indexes before recreating them")
-  .option("-q, --queued", "Run job asynchronously", false)
-  .action(createJobAction("indexes:recreate"))
+  .action(createJobAction("mongodb:indexes:create"))
 
 /********************/
 

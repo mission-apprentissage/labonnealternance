@@ -37,9 +37,9 @@ function getProperties(type, instance = null, requireAsciiFolding = false) {
       ...asciiFoldingParameters,
     }
 
-  if (type === "Date") return { type: "date" }
-  if (type === "Number") return { type: "long" }
-  if (type === "Boolean") return { type: "boolean" }
+  if (type === "Date") return { type: "date", ignore_malformed: true }
+  if (type === "Number") return { type: "long", coerce: true, ignore_malformed: true }
+  if (type === "Boolean") return { type: "boolean", ignore_malformed: true }
   if (type === "Mixed") return { type: "nested" }
 
   if (type === "Array") {
@@ -56,11 +56,11 @@ function getProperties(type, instance = null, requireAsciiFolding = false) {
     }
 
     if (instance === "Boolean") {
-      return { type: "boolean" }
+      return { type: "boolean", ignore_malformed: true }
     }
 
     if (instance === "Date") {
-      return { type: "date" }
+      return { type: "date", ignore_malformed: true }
     }
   }
 }
@@ -83,7 +83,7 @@ function getMapping(schema, requireAsciiFolding = false) {
     }
 
     if (/geo_/.test(key)) {
-      properties[key] = { type: "geo_point" }
+      properties[key] = { type: "geo_point", ignore_malformed: true }
       isMappingNeedingGeoPoint = true
     } else {
       if (isSubDocument) {

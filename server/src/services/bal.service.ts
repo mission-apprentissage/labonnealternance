@@ -4,7 +4,7 @@ import https from "https"
 import axios from "axios"
 import { setupCache } from "axios-cache-interceptor"
 
-import { ApiError, apiRateLimiter } from "../common/utils/apiUtils"
+import { apiRateLimiter } from "../common/utils/apiUtils"
 import { sentryCaptureException } from "../common/utils/sentryUtils"
 import config from "../config"
 
@@ -64,7 +64,6 @@ export const validationOrganisation = async (siret: string, email: string): Prom
     } catch (error: any) {
       sentryCaptureException(error)
       return { is_valid: false }
-      throw new ApiError("Api BAL", `${error.message} for siret=${siret}`, error.code || error.response?.status)
     }
   })
 }

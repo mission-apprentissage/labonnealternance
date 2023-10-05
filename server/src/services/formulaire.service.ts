@@ -402,7 +402,7 @@ export const deleteFormulaireFromGestionnaire = async (siret: IUserRecruteur["es
  * @returns {Promise<IRecruiter>}
  */
 export const updateFormulaire = async (id: IRecruiter["establishment_id"], payload: UpdateQuery<IRecruiter>): Promise<IRecruiter> => {
-  const recruiter = await Recruiter.findOneAndUpdate({ establishment_id: id }, payload, { new: true })
+  const recruiter = await Recruiter.findOneAndUpdate({ establishment_id: id }, payload, { new: true }).lean()
   if (!recruiter) {
     throw Boom.internal("Recruiter not found")
   }
