@@ -93,6 +93,11 @@
         chdir: "/opt/app"
         cmd: "/opt/app/scripts/seed.sh preview_{{ pr_number | default('00') }}"
 
+    - name: "[{{ pr_number }}] ElasticSearch Index"
+      shell:
+        chdir: "/opt/app/projects/{{ pr_number }}"
+        cmd: "docker compose run --rm --no-deps server yarn cli index --recreate --queued"
+
     - name: "[{{ pr_number }}] Preview URL"
       debug:
         msg: "{{ vault[env_type].LBA_PUBLIC_URL }}"
