@@ -4,20 +4,6 @@ import { IRoutesDef } from "./common.routes"
 
 export const zLoginRoutes = {
   post: {
-    "/login": {
-      // TODO_SECURITY_FIX AB s'en occupe
-      response: {
-        "200": z
-          .object({
-            token: z.string(),
-          })
-          .strict(),
-      },
-      securityScheme: {
-        auth: "basic",
-        role: "all",
-      },
-    },
     "/login/confirmation-email": {
       // TODO_SECURITY_FIX faire en sorte que le lien magique ne soit pas human readable. Rename en /resend-confirmation-email
       body: z

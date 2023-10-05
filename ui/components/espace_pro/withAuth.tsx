@@ -24,7 +24,7 @@ export const withAuth = (Component, scope = null) => {
 
     if (scope && scope === "adminRva" && user.type !== AUTHTYPE.ADMIN) {
       if (typeof window !== "undefined") {
-        router.push("/espace-pro/admin/login")
+        router.push("/espace-pro/authentification")
       }
       return <></>
     }

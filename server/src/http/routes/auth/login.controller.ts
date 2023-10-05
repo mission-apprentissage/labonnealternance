@@ -17,19 +17,6 @@ import { Server } from "../../server"
 
 export default (server: Server) => {
   server.post(
-    "/login",
-    {
-      schema: zRoutes.post["/login"],
-      preHandler: [server.auth(zRoutes.post["/login"].securityScheme)],
-    },
-    async (req, res) => {
-      const user = req.user
-      const token = createUserToken(user)
-      return res.status(200).send({ token })
-    }
-  )
-
-  server.post(
     "/login/confirmation-email",
     {
       schema: zRoutes.post["/login/confirmation-email"],

@@ -34,7 +34,6 @@ import formationsRoute from "./routes/admin/formations.controller"
 import appointmentRequestRoute from "./routes/appointmentRequest.controller"
 import emailsRoute from "./routes/auth/emails.controller"
 import login from "./routes/auth/login.controller"
-import password from "./routes/auth/password.controller"
 import campaignWebhook from "./routes/campaignWebhook.controller"
 import { coreRoutes } from "./routes/core.controller"
 import etablissementRoute from "./routes/etablissement.controller"
@@ -148,7 +147,6 @@ export async function bind(app: Server) {
        * Admin / Auth
        */
       login(typedSubApp)
-      password(typedSubApp)
 
       /**
        * LBA-Organisme de formation
