@@ -13,7 +13,7 @@ export interface PublicConfig {
   version: string
 }
 
-const SENTRY_DSN = ""
+const SENTRY_DSN = "https://d04df44068da41a19f478822fe1d58ea@sentry.apprentissage.beta.gouv.fr/8"
 
 function getProductionPublicConfig(): PublicConfig {
   const host = "labonnealternance.apprentissage.beta.gouv.fr"

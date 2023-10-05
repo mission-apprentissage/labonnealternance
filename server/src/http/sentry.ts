@@ -1,5 +1,5 @@
 import fastifySentryPlugin from "@immobiliarelabs/fastify-sentry"
-import { CaptureConsole, ExtraErrorData } from "@sentry/integrations"
+import { ExtraErrorData } from "@sentry/integrations"
 import * as Sentry from "@sentry/node"
 import { FastifyRequest } from "fastify"
 
@@ -11,15 +11,11 @@ function getOptions() {
   return {
     dsn: config.serverSentryDsn,
     tracesSampleRate: config.env === "production" ? 0.1 : 1.0,
-    tracePropagationTargets: [/\.apprentissage\.beta\.gouv\.fr$/],
+    tracePropagationTargets: [/^https:\/\/[^/]*\.apprentissage\.beta\.gouv\.fr/],
     environment: config.env,
+    release: config.version,
     enabled: config.env !== "local",
-    integrations: [
-      new Sentry.Integrations.Http({ tracing: true }),
-      new Sentry.Integrations.Mongo({ useMongoose: true }),
-      new CaptureConsole({ levels: ["error"] }),
-      new ExtraErrorData({ depth: 8 }),
-    ],
+    integrations: [new Sentry.Integrations.Http({ tracing: true }), new Sentry.Integrations.Mongo({ useMongoose: true }), new ExtraErrorData({ depth: 8 })],
   }
 }
 
