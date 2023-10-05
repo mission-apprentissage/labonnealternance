@@ -30,9 +30,7 @@ function SearchPage() {
 
     try {
       const keywordEncoded = encodeURIComponent(keyword)
-      const formations = await _get(
-        `admin/formations?search_item=${keywordEncoded}`
-      )
+      const formations = await _get(`admin/formations?search_item=${keywordEncoded}`)
 
       if (!formations.length) {
         toast({
