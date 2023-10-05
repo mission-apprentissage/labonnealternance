@@ -45,7 +45,7 @@ export const zEtablissementRoutes = {
       },
       securityScheme: {
         auth: "cookie-session",
-        role: "all", // TODO administrator
+        role: "administrator",
       },
     },
     "/admin/etablissements/:id": {
@@ -57,7 +57,7 @@ export const zEtablissementRoutes = {
       },
       securityScheme: {
         auth: "cookie-session",
-        role: "all", // TODO administrator
+        role: "administrator",
       },
     },
     "/etablissements/:id": {
@@ -194,7 +194,7 @@ export const zEtablissementRoutes = {
       },
       securityScheme: {
         auth: "cookie-session",
-        role: "all", // TODO administrator
+        role: "administrator",
       },
     },
     "/etablissements/:id/appointments/:appointmentId": {

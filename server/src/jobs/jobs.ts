@@ -221,6 +221,13 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
             address,
             email,
             scope,
+            status: [
+              {
+                status: "VALIDÉ",
+                validation_type: "AUTOMATIQUE",
+                user: "SERVEUR",
+              },
+            ],
           },
           {
             options: {

@@ -39,8 +39,6 @@ export const createEtablissementDelegation = ({ data, jobId }) => API.post(`/for
 /**
  * User API
  */
-
-export const createUser = async (user) => await API.post("/user", user).catch(errorHandler)
 export const updateUserValidationHistory = async (userId, state) => await API.put(`user/${userId}/history`, state).catch(errorHandler)
 export const deleteCfa = async (userId) => await API.delete(`/user`, { params: { userId } }).catch(errorHandler)
 export const deleteEntreprise = async (userId, recruiterId) => await API.delete(`/user`, { params: { userId, recruiterId } }).catch(errorHandler)

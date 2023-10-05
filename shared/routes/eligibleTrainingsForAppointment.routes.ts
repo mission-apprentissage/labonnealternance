@@ -14,7 +14,7 @@ export const zEligibleTrainingsForAppointmentRoutes = {
       },
       securityScheme: {
         auth: "cookie-session",
-        role: "all", // TODO administrator
+        role: "administrator",
       },
     },
   },
@@ -38,7 +38,7 @@ export const zEligibleTrainingsForAppointmentRoutes = {
       },
       securityScheme: {
         auth: "cookie-session",
-        role: "all", // TODO administrator
+        role: "administrator",
       },
     },
   },

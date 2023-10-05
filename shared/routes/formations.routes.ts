@@ -12,7 +12,7 @@ export const zFormationRoute = {
       },
       securityScheme: {
         auth: "cookie-session",
-        role: "all", // TODO administrator
+        role: "administrator",
       },
     },
   },

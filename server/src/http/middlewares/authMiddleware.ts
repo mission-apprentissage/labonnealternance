@@ -154,6 +154,16 @@ const authApiKey = createAuthHandler(async (req: FastifyRequest): Promise<ICrede
   return user ?? null
 })
 
+const authorizationnAdmin = async (req: FastifyRequest) => {
+  if (!req.user) {
+    throw Boom.unauthorized()
+  }
+  // @ts-expect-error: TODO
+  if (req.user.type !== "ADMIN") {
+    throw Boom.unauthorized()
+  }
+}
+
 // We need this to be able to compare in test and check what's the proper auth
 function createAuthHandler(authFn: (req: FastifyRequest) => Promise<FastifyRequest["user"]>) {
   return async (req: FastifyRequest) => {
@@ -194,6 +204,8 @@ function authorizationnMiddleware(strategy: SecurityScheme, req: FastifyRequest)
   switch (strategy.role) {
     case "admin":
       return authBasic(req)
+    case "administrator":
+      return authorizationnAdmin(req)
     case "all":
       return async () => {
         // noop
