@@ -16,7 +16,7 @@ describe("validateSendApplication", () => {
     expect(
       await validateCompanyEmail({
         company_email: companyEmail,
-        crypted_email: companyEmail,
+        decrypted_email: companyEmail,
       })
     ).to.equal("ok")
   })
@@ -26,7 +26,7 @@ describe("validateSendApplication", () => {
     expect(
       await validateCompanyEmail({
         company_email: companyEmail,
-        crypted_email: companyEmail,
+        decrypted_email: companyEmail,
       })
     ).to.equal("email société invalide")
   })
