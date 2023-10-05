@@ -451,7 +451,7 @@ export default (server: Server) => {
       schema: zRoutes.patch["/etablissements/:id/appointments/:appointmentId"],
     },
     async ({ body, params }, res) => {
-      const { has_been_read } = body;
+      const { has_been_read } = body
 
       const { id, appointmentId } = params
 
@@ -495,7 +495,7 @@ export default (server: Server) => {
         throw Boom.notFound()
       }
 
-      if ('opt_out_question' in req.body) {
+      if ("opt_out_question" in req.body) {
         await mailer.sendEmail({
           to: config.publicEmail,
           subject: `Un CFA se pose une question concernant l'opt-out"`,

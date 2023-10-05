@@ -59,7 +59,7 @@ export default function OptOutUnsubscribe() {
       setEtablissement(etablissement)
     }
 
-    if(id) {
+    if (id) {
       fetchData().catch(console.error)
     }
   }, [id])

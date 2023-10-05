@@ -66,7 +66,7 @@ export default function PremiumAffelnetForm() {
       setEtablissement(etablissement)
     }
 
-    if(id) {
+    if (id) {
       fetchData().catch(console.error)
     }
   }, [id])
