@@ -7,22 +7,20 @@ import config from "../config.js"
 
 interface IWish {
   id: string
-  cle_ministere_educatif: string
-  mef: string
-  cfd: string
-  rncp: string
-  code_postal: string
-  uai: string
-  uai_lieu_formation: string
-  uai_formateur: string
-  uai_formateur_responsable: string
-  code_insee: string
+  cle_ministere_educatif?: string | null
+  mef?: string | null
+  cfd?: string | null
+  rncp?: string | null
+  code_postal?: string | null
+  uai?: string | null
+  uai_lieu_formation?: string | null
+  uai_formateur?: string | null
+  uai_formateur_responsable?: string | null
+  code_insee?: string | null
 }
 
 interface ILinks {
   id: string
-  error: boolean
-  message: string
   lien_prdv: string
   lien_lba: string
 }
