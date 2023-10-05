@@ -90,7 +90,10 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "company_address": {
             "description": "L'adresse postale de la société. Fournie par La bonne alternance. (champs : place.fullAddress)",
             "example": "38 RUE DES HAMECONS, 75021 PARIS-21",
-            "type": "string",
+            "type": [
+              "string",
+              "null",
+            ],
           },
           "company_email": {
             "description": "L'adresse email de la société pour postuler. Vous devez impérativement utiliser les valeurs émises par l'API LBA avec le vecteur d'initialisation correspondant à l'adresse.",
@@ -170,7 +173,6 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
           "company_email",
           "company_name",
           "company_naf",
-          "company_address",
           "job_title",
           "applicant_file_name",
           "applicant_file_content",
@@ -3119,7 +3121,6 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
                         "intitule_long",
                         "lieu_formation_adresse",
                         "code_postal",
-                        "etablissement_formateur_siret",
                         "cfd",
                         "localite",
                         "id_rco_formation",
@@ -3462,7 +3463,7 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
         ],
       },
     },
-    "/v1/formations/formation/:id": {
+    "/v1/formations/formation/{id}": {
       "get": {
         "description": "Get one formation identified by it's clé ministère éducatif",
         "operationId": "getFormation",
@@ -3570,7 +3571,7 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
         ],
       },
     },
-    "/v1/formations/formationDescription/:id": {
+    "/v1/formations/formationDescription/{id}": {
       "get": {
         "description": "Get details for one formation identified by it's clé ministère éducatif",
         "operationId": "getFormationDescription",
@@ -4112,267 +4113,6 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
         ],
       },
     },
-    "/v1/jobs/:establishmentId": {
-      "post": {
-        "description": "Create a job offer inside an establishment entity.",
-        "operationId": "createJob",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "establishmentId",
-            "required": true,
-            "schema": {
-              "type": "string",
-            },
-          },
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "additionalProperties": false,
-                "properties": {
-                  "appellation_code": {
-                    "type": "string",
-                  },
-                  "custom_address": {
-                    "type": "string",
-                  },
-                  "custom_geo_coordinates": {
-                    "type": "string",
-                  },
-                  "is_disabled_elligible": {
-                    "type": "boolean",
-                  },
-                  "job_count": {
-                    "type": "number",
-                  },
-                  "job_description": {
-                    "type": "string",
-                  },
-                  "job_duration": {
-                    "type": "number",
-                  },
-                  "job_employer_description": {
-                    "type": "string",
-                  },
-                  "job_level_label": {
-                    "type": "string",
-                  },
-                  "job_rythm": {
-                    "type": "string",
-                  },
-                  "job_start_date": {
-                    "type": "string",
-                  },
-                  "job_type": {
-                    "items": {
-                      "enum": [
-                        "Apprentissage",
-                        "Professionnalisation",
-                      ],
-                      "type": "string",
-                    },
-                    "type": "array",
-                  },
-                },
-                "required": [
-                  "job_level_label",
-                  "job_duration",
-                  "job_type",
-                  "is_disabled_elligible",
-                  "job_start_date",
-                  "appellation_code",
-                ],
-                "type": "object",
-              },
-            },
-          },
-          "required": true,
-        },
-        "responses": {
-          "201": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Recruiter",
-                },
-              },
-            },
-            "description": "",
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/Error",
-                    },
-                    {
-                      "$ref": "#/components/schemas/ZLbarError",
-                    },
-                  ],
-                },
-              },
-            },
-            "description": "",
-          },
-        },
-        "security": [
-          {
-            "api-key": [],
-          },
-        ],
-        "tags": [
-          "Jobs",
-        ],
-      },
-    },
-    "/v1/jobs/:jobId": {
-      "patch": {
-        "description": "Update a job offer specific fields inside an establishment entity.",
-        "operationId": "updateJob",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "jobId",
-            "required": false,
-            "schema": {
-              "description": "Identifiant unique",
-            },
-          },
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "additionalProperties": false,
-                "properties": {
-                  "custom_address": {
-                    "description": "Adresse personnalisée de l'entreprise",
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "custom_geo_coordinates": {
-                    "description": "Latitude/Longitude de l'adresse personnalisée de l'entreprise",
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "is_disabled_elligible": {
-                    "description": "Poste ouvert aux personnes en situation de handicap",
-                    "type": "boolean",
-                  },
-                  "job_count": {
-                    "description": "Nombre de poste(s) ouvert(s) pour cette offre",
-                    "type": [
-                      "number",
-                      "null",
-                    ],
-                  },
-                  "job_description": {
-                    "description": "Description de l'offre d'alternance",
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "job_duration": {
-                    "description": "Durée du contrat en année",
-                    "type": [
-                      "number",
-                      "null",
-                    ],
-                  },
-                  "job_employer_description": {
-                    "description": "Description de l'employer proposant l'offre d'alternance",
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "job_level_label": {
-                    "description": "Niveau de formation requis",
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "job_rythm": {
-                    "description": "Répartition de la présence de l'alternant en formation/entreprise",
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "job_start_date": {
-                    "description": "Date de début de l'alternance",
-                    "type": [
-                      "string",
-                      "null",
-                    ],
-                  },
-                  "job_type": {
-                    "description": "Type de contrat",
-                    "items": {
-                      "enum": [
-                        "Apprentissage",
-                        "Professionnalisation",
-                      ],
-                      "type": "string",
-                    },
-                    "type": "array",
-                  },
-                },
-                "type": "object",
-              },
-            },
-          },
-          "required": true,
-        },
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Recruiter",
-                },
-              },
-            },
-            "description": "",
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/components/schemas/Error",
-                    },
-                    {
-                      "$ref": "#/components/schemas/ZLbarError",
-                    },
-                  ],
-                },
-              },
-            },
-            "description": "",
-          },
-        },
-        "security": [
-          {
-            "api-key": [],
-          },
-        ],
-        "tags": [
-          "Jobs",
-        ],
-      },
-    },
     "/v1/jobs/bulk": {
       "get": {
         "description": "Get all jobs related to my organization",
@@ -4474,7 +4214,7 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
         ],
       },
     },
-    "/v1/jobs/canceled/:jobId": {
+    "/v1/jobs/canceled/{jobId}": {
       "post": {
         "description": "Update a job offer status to \\"Canceled\\".",
         "operationId": "setJobAsCanceled",
@@ -4512,7 +4252,7 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
         ],
       },
     },
-    "/v1/jobs/company/:siret": {
+    "/v1/jobs/company/{siret}": {
       "get": {
         "description": "Get one company identified by it's siret",
         "operationId": "getCompany",
@@ -4630,7 +4370,7 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
         ],
       },
     },
-    "/v1/jobs/delegations/:jobId": {
+    "/v1/jobs/delegations/{jobId}": {
       "get": {
         "description": "Get related training organization related to a job offer.",
         "operationId": "getDelegation",
@@ -4951,7 +4691,7 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
         ],
       },
     },
-    "/v1/jobs/extend/:jobId": {
+    "/v1/jobs/extend/{jobId}": {
       "post": {
         "description": "Update a job expiration date by 30 days.",
         "operationId": "extendJobExpiration",
@@ -4989,7 +4729,7 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
         ],
       },
     },
-    "/v1/jobs/job/:id": {
+    "/v1/jobs/job/{id}": {
       "get": {
         "description": "Get one pe job identified by it's id",
         "operationId": "getPeJob",
@@ -5103,7 +4843,7 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
         ],
       },
     },
-    "/v1/jobs/matcha/:id": {
+    "/v1/jobs/matcha/{id}": {
       "get": {
         "description": "Get one lba job identified by it's id",
         "operationId": "getLbaJob",
@@ -5201,7 +4941,7 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
         ],
       },
     },
-    "/v1/jobs/matcha/:id/stats/view-details": {
+    "/v1/jobs/matcha/{id}/stats/view-details": {
       "post": {
         "description": "Notifies that the detail of a matcha job has been viewed",
         "operationId": "statsViewLbaJob",
@@ -5235,7 +4975,7 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
         ],
       },
     },
-    "/v1/jobs/provided/:jobId": {
+    "/v1/jobs/provided/{jobId}": {
       "post": {
         "description": "Update a job offer status to \\"Provided\\"",
         "operationId": "setJobAsProvided",
@@ -5257,6 +4997,267 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
                   "additionalProperties": false,
                   "properties": {},
                   "type": "object",
+                },
+              },
+            },
+            "description": "",
+          },
+        },
+        "security": [
+          {
+            "api-key": [],
+          },
+        ],
+        "tags": [
+          "Jobs",
+        ],
+      },
+    },
+    "/v1/jobs/{establishmentId}": {
+      "post": {
+        "description": "Create a job offer inside an establishment entity.",
+        "operationId": "createJob",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "establishmentId",
+            "required": true,
+            "schema": {
+              "type": "string",
+            },
+          },
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "appellation_code": {
+                    "type": "string",
+                  },
+                  "custom_address": {
+                    "type": "string",
+                  },
+                  "custom_geo_coordinates": {
+                    "type": "string",
+                  },
+                  "is_disabled_elligible": {
+                    "type": "boolean",
+                  },
+                  "job_count": {
+                    "type": "number",
+                  },
+                  "job_description": {
+                    "type": "string",
+                  },
+                  "job_duration": {
+                    "type": "number",
+                  },
+                  "job_employer_description": {
+                    "type": "string",
+                  },
+                  "job_level_label": {
+                    "type": "string",
+                  },
+                  "job_rythm": {
+                    "type": "string",
+                  },
+                  "job_start_date": {
+                    "type": "string",
+                  },
+                  "job_type": {
+                    "items": {
+                      "enum": [
+                        "Apprentissage",
+                        "Professionnalisation",
+                      ],
+                      "type": "string",
+                    },
+                    "type": "array",
+                  },
+                },
+                "required": [
+                  "job_level_label",
+                  "job_duration",
+                  "job_type",
+                  "is_disabled_elligible",
+                  "job_start_date",
+                  "appellation_code",
+                ],
+                "type": "object",
+              },
+            },
+          },
+          "required": true,
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Recruiter",
+                },
+              },
+            },
+            "description": "",
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/Error",
+                    },
+                    {
+                      "$ref": "#/components/schemas/ZLbarError",
+                    },
+                  ],
+                },
+              },
+            },
+            "description": "",
+          },
+        },
+        "security": [
+          {
+            "api-key": [],
+          },
+        ],
+        "tags": [
+          "Jobs",
+        ],
+      },
+    },
+    "/v1/jobs/{jobId}": {
+      "patch": {
+        "description": "Update a job offer specific fields inside an establishment entity.",
+        "operationId": "updateJob",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "jobId",
+            "required": false,
+            "schema": {
+              "description": "Identifiant unique",
+            },
+          },
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": false,
+                "properties": {
+                  "custom_address": {
+                    "description": "Adresse personnalisée de l'entreprise",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                  "custom_geo_coordinates": {
+                    "description": "Latitude/Longitude de l'adresse personnalisée de l'entreprise",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                  "is_disabled_elligible": {
+                    "description": "Poste ouvert aux personnes en situation de handicap",
+                    "type": "boolean",
+                  },
+                  "job_count": {
+                    "description": "Nombre de poste(s) ouvert(s) pour cette offre",
+                    "type": [
+                      "number",
+                      "null",
+                    ],
+                  },
+                  "job_description": {
+                    "description": "Description de l'offre d'alternance",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                  "job_duration": {
+                    "description": "Durée du contrat en année",
+                    "type": [
+                      "number",
+                      "null",
+                    ],
+                  },
+                  "job_employer_description": {
+                    "description": "Description de l'employer proposant l'offre d'alternance",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                  "job_level_label": {
+                    "description": "Niveau de formation requis",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                  "job_rythm": {
+                    "description": "Répartition de la présence de l'alternant en formation/entreprise",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                  "job_start_date": {
+                    "description": "Date de début de l'alternance",
+                    "type": [
+                      "string",
+                      "null",
+                    ],
+                  },
+                  "job_type": {
+                    "description": "Type de contrat",
+                    "items": {
+                      "enum": [
+                        "Apprentissage",
+                        "Professionnalisation",
+                      ],
+                      "type": "string",
+                    },
+                    "type": "array",
+                  },
+                },
+                "type": "object",
+              },
+            },
+          },
+          "required": true,
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Recruiter",
+                },
+              },
+            },
+            "description": "",
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/Error",
+                    },
+                    {
+                      "$ref": "#/components/schemas/ZLbarError",
+                    },
+                  ],
                 },
               },
             },
@@ -5777,7 +5778,7 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
         ],
       },
     },
-    "/v1/metiers/metiersParEtablissement/:siret": {
+    "/v1/metiers/metiersParEtablissement/{siret}": {
       "get": {
         "description": "Récupérer la liste des noms des métiers du référentiel de La bonne alternance pour un établissement de formation",
         "operationId": "getMetiersParEtablissement",
@@ -5828,7 +5829,7 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
         ],
       },
     },
-    "/v1/metiers/metiersParFormation/:cfd": {
+    "/v1/metiers/metiersParFormation/{cfd}": {
       "get": {
         "description": "Récupérer la liste des noms des métiers du référentiel de La bonne alternance pour une formation donnée",
         "operationId": "getMetiersParCfd",
