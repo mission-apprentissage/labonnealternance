@@ -649,12 +649,10 @@ export const getFormationDescriptionQuery = async ({ id }: { id: string }): Prom
 
     return removeEmailFromLBFData(formationDescription.data)
   } catch (error) {
-    manageApiError({
+    return manageApiError({
       error,
       errorTitle: `getting training description from Labonneformation`,
     })
-
-    return { error: "internal_error" }
   }
 }
 
