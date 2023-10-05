@@ -61,6 +61,8 @@ fileignoreconfig:
   checksum: f9d2657f85f9f885deddf2ed1fd006d8278d27174659f0ed5a35e4d11343bb3a
 - filename: ui/common/hooks/useAuth.ts
   checksum: 7cce935653407e000b35e98bd365a003e538aed4fed432a9a404d4f2412dd2df
+- filename: ui/config.public.ts
+  checksum: 3fe173cb12a51d9a25f6e955e72d6e5ffd7ec45cdaaefeae78171a348fbbb734
 - filename: ui/pages/espace-pro/admin/eligible-trainings-for-appointment/edit/[id].tsx
   checksum: e8b1197c5340965b02a4152edd1a06fd08627225538ec67f6767e8d4e93971fa
 - filename: ui/pages/espace-pro/admin/eligible-trainings-for-appointment/search.jsx
