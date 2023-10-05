@@ -266,7 +266,7 @@ function Mongoosastic(schema, options) {
           try {
             await schemaIndex(doc, refresh)
             if (++count % 1000 === 0) {
-              logMessage("info", `${count} indexed ${this.modelName}`)
+              logMessage("info", `progress: ${count} indexed ${this.modelName}`)
             }
           } catch (error) {
             logger.error(error)
@@ -276,6 +276,7 @@ function Mongoosastic(schema, options) {
         { parallel: 8 }
       )
     )
+    logMessage("info", `end: ${count} indexed ${this.modelName}`)
   }
 
   schema.statics.unsynchronize = async function unsynchronize() {
