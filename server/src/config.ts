@@ -136,6 +136,7 @@ const config = {
     recipient: "12000101100010", // Siret Dinum
     object: "Consolidation des données",
     apiKey: env.get("LBA_ENTREPRISE_API_KEY").required().asString(),
+    simulateError: env.get("LBA_ENTREPRISE_SIMULATE_ERROR").default("false").asBool(),
   },
 }
 

@@ -8,7 +8,7 @@ import { sentryCaptureException } from "../../../../common/utils/sentryUtils"
 import { notifyToSlack } from "../../../../common/utils/slackUtils"
 import { CFA, ENTREPRISE, ETAT_UTILISATEUR, JOB_STATUS, RECRUITER_STATUS } from "../../../../services/constant.service"
 import { autoValidateCompany, getEntrepriseDataFromSiret, sendEmailConfirmationEntreprise } from "../../../../services/etablissement.service"
-import { archiveFormulaire, getFormulaire, sendMailNouvelleOffre, updateFormulaire } from "../../../../services/formulaire.service"
+import { archiveFormulaire, getFormulaire, sendMailNouvelleOffre, updateFormulaire, updateOffre } from "../../../../services/formulaire.service"
 import { autoValidateUser, deactivateUser, getUser, setUserInError, updateUser } from "../../../../services/userRecruteur.service"
 
 const updateUserRecruteursSiretInfosInError = async () => {
@@ -22,7 +22,7 @@ const updateUserRecruteursSiretInfosInError = async () => {
   const stats = { success: 0, failure: 0, deactivated: 0 }
   logger.info(`Correction des user recruteurs en erreur: ${userRecruteurs.length} user recruteurs à mettre à jour...`)
   await asyncForEach(userRecruteurs, async (userRecruteur) => {
-    const { establishment_siret, _id, establishment_id, scope } = userRecruteur
+    const { establishment_siret, _id, establishment_id, type } = userRecruteur
     try {
       let recruteur = await getFormulaire({ establishment_id })
       const { cfa_delegated_siret } = recruteur
@@ -34,10 +34,17 @@ const updateUserRecruteursSiretInfosInError = async () => {
       } else {
         let updatedUserRecruteur: IUserRecruteur = await updateUser({ _id }, siretResponse)
         recruteur = await updateFormulaire(recruteur.establishment_id, siretResponse)
-        if (scope === "matcha") {
+        if (type === "ENTREPRISE") {
           const result = await autoValidateCompany(updatedUserRecruteur)
           updatedUserRecruteur = result.userRecruteur
-          await sendEmailConfirmationEntreprise(updatedUserRecruteur, recruteur)
+          if (result.validated) {
+            await Promise.all(
+              recruteur.jobs.map(async (job) => {
+                await updateOffre(job._id.toString(), { ...job, job_status: JOB_STATUS.ACTIVE })
+              })
+            )
+            await sendEmailConfirmationEntreprise(updatedUserRecruteur, recruteur)
+          }
         } else {
           updatedUserRecruteur = await autoValidateUser(userRecruteur._id)
         }
