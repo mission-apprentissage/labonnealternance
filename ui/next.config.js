@@ -1,11 +1,11 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const path = require("path")
 
+const { withSentryConfig } = require("@sentry/nextjs")
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const withImages = require("next-images")
 // eslint-disable-next-line import/no-extraneous-dependencies
 const withTM = require("next-transpile-modules")(["shared"])
-
 /**
  * supprime les espacements inutiles pour remettre la séquence sur une seule ligne
  */
@@ -37,7 +37,7 @@ const contentSecurityPolicy = `
               http://localhost:5000
               https://exposition-recette.inserjeunes.beta.gouv.fr
               https://exposition.inserjeunes.beta.gouv.fr
-              https://*.ingest.sentry.io
+              https://sentry.apprentissage.beta.gouv.fr
               ${process.env.NEXT_PUBLIC_ENV === "local" ? "http://localhost:5001" : ""};
   img-src 'self'
               data:
@@ -120,7 +120,11 @@ const nextConfig = withTM(
         },
       ]
     },
+    sentry: {
+      disableServerWebpackPlugin: true,
+      disableClientWebpackPlugin: true,
+    },
   })
 )
 
-module.exports = nextConfig
+module.exports = withSentryConfig(nextConfig)
