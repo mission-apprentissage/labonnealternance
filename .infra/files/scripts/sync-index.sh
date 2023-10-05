@@ -2,9 +2,10 @@
 set -euo pipefail
 #Needs to be run as sudo
 
-run_migrations(){
-    echo "Application des migrations ..."
+sync_indexes(){
+    echo "Creation des indexes MongoDB & ElasticSearch"
+    docker compose run --rm --no-deps server yarn cli mongodb:indexes:create --queued
     docker compose run --rm --no-deps server yarn cli index --recreate --queued
 }
 
-run_migrations
+sync_indexes
