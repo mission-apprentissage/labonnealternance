@@ -226,13 +226,16 @@ export default (server: Server) => {
       }
 
       const [etablissement, user] = await Promise.all([
-        EligibleTrainingsForAppointment.findOne({ cle_ministere_educatif: appointment.cle_ministere_educatif }, {
-          training_intitule_long: 1,
-          etablissement_formateur_raison_sociale: 1,
-          lieu_formation_street: 1,
-          lieu_formation_zip_code: 1,
-          lieu_formation_city: 1,
-        }).lean(),
+        EligibleTrainingsForAppointment.findOne(
+          { cle_ministere_educatif: appointment.cle_ministere_educatif },
+          {
+            training_intitule_long: 1,
+            etablissement_formateur_raison_sociale: 1,
+            lieu_formation_street: 1,
+            lieu_formation_zip_code: 1,
+            lieu_formation_city: 1,
+          }
+        ).lean(),
         User.findById(appointment.applicant_id, {
           type: 1,
           lastname: 1,

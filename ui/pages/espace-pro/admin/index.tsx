@@ -10,7 +10,6 @@ import withAuth from "../../../components/espace_pro/withAuth"
 import { getAppointmentsDetails } from "../../../utils/api"
 
 function AdminPage() {
-
   const [loading, setLoading] = useState(true)
   const [appointments, setAppointments] = useState<IAppointment[]>([])
   // const appointments = data === null ? [] : data.appointments

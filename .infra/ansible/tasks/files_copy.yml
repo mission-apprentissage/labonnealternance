@@ -37,6 +37,7 @@
   with_fileglob:
     - "{{inventory_dir}}/files/fail2ban/jail.d/*"
   notify: restart-fail2ban
+  when: env_type != 'preview'
 
 - name: Copie du fichier de seed
   ansible.builtin.copy:
