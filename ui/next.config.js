@@ -114,7 +114,7 @@ const nextConfig = withTM(
           headers: [
             {
               key: "Content-Security-Policy",
-              value: inline(contentSecurityPolicy + " frame-ancestors 'none';"),
+              value: inline(contentSecurityPolicy),
             },
           ],
         },
