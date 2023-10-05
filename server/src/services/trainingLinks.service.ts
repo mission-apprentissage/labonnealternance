@@ -143,6 +143,7 @@ const getLBALink = async (wish: IWish): Promise<string> => {
             rncp_code: wish.rncp,
           },
           {
+            // @ts-expect-error: TODO
             cfd: wish.cfd,
           },
           {
@@ -180,11 +181,12 @@ const getLBALink = async (wish: IWish): Promise<string> => {
           }
         )
 
+        const postCode = wish.code_insee || wish.code_postal
         if (formation) {
           ;[lat, lon] = formation.lieu_formation_geo_coordonnees.split(",")
-        } else if (wish.code_insee || wish.code_postal) {
+        } else if (postCode) {
           // KBA 20230817 : might be modified using INSEE postcode.
-          const responseApiAdresse = await apiGeoAdresse.searchPostcodeOnly(wish.code_insee ?? wish.code_postal)
+          const responseApiAdresse = await apiGeoAdresse.searchPostcodeOnly(postCode)
           if (responseApiAdresse && responseApiAdresse.features.length) {
             ;[lon, lat] = responseApiAdresse.features[0].geometry.coordinates
           }
