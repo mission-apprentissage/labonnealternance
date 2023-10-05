@@ -70,6 +70,11 @@
       async: 1800
       poll: 10
 
+    - name: "Create MongoDB & ElasticSearch Indexes"
+      shell:
+        chdir: /opt/app
+        cmd: "sudo /opt/app/scripts/sync-index.sh"
+
     - name: Lancement de l'application {{env_type}}
       shell:
         chdir: /opt/app
@@ -90,11 +95,6 @@
       shell:
         chdir: /opt/app
         cmd: "sudo /opt/app/tools/reload-proxy.sh"
-
-    - name: "Seed ElasticSearch"
-      shell:
-        chdir: /opt/app
-        cmd: "sudo /opt/app/scripts/sync-index.sh"
 
     - name: "Verification des certificats SSL"
       shell:
