@@ -386,10 +386,11 @@ export const getRomesFromCatalogue = async ({ cfd, siret }: { cfd?: string; sire
     const result: IRomeResult = { romes: [...romes] }
 
     if (!result.romes.length) {
-      throw Boom.notFound("No training found")
+      throw new Error("not found")
     }
     return result
   } catch (err: any) {
+    if (err.message === "not found") throw Boom.notFound("No training found")
     const error_msg = _.get(err, "meta.body", err.message)
     console.error("Error getting trainings from romes ", error_msg)
     if (_.get(err, "meta.meta.connection.status") === "dead") {
