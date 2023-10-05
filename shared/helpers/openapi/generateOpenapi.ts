@@ -1,4 +1,5 @@
 import { OpenApiGeneratorV31, OpenAPIRegistry, ResponseConfig, RouteConfig } from "@asteasolutions/zod-to-openapi"
+import { formatParamUrl } from "@fastify/swagger"
 import type { SecurityRequirementObject } from "openapi3-ts/oas30"
 
 import { zRoutes } from "../../index"
@@ -66,7 +67,7 @@ function addOpenApiOperation(path: string, method: "get" | "put" | "post" | "del
   registry.registerPath({
     ...route.openapi,
     method,
-    path,
+    path: formatParamUrl(path),
     request: generateOpenApiRequest(route),
     responses: generateOpenApiResponsesObject(route.response),
     security: getSecurityRequirementObject(route),
