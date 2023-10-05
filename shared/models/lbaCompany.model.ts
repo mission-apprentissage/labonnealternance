@@ -1,6 +1,7 @@
 import { extensions } from "../helpers/zodHelpers/zodPrimitives"
 import { z } from "../helpers/zodWithOpenApi"
 
+import { zObjectId } from "./common"
 
 export const ZLbaCompany = z
   .object({
@@ -28,6 +29,8 @@ export const ZLbaCompany = z
     created_at: z.date().describe("La date création de la demande"),
     last_update_at: z.date().describe("Date de dernières mise à jour"),
     distance: z.array(z.number()).nullish().describe("Distance de la société au centre de recherche en km"),
+    _id: zObjectId.nullish(),
+    __v: z.number().nullish(),
   })
   .strict()
   .openapi("LbaCompany")

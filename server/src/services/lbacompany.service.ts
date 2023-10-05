@@ -400,7 +400,7 @@ export const updateContactInfo = async ({ siret, email, phone }: { siret: string
 
       await lbaCompany.save()
 
-      return lbaCompany
+      return lbaCompany.toJSON()
     }
   } catch (err) {
     sentryCaptureException(err)
