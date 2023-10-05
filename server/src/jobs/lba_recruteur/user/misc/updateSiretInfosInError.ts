@@ -22,7 +22,7 @@ const updateUserRecruteursSiretInfosInError = async () => {
   const stats = { success: 0, failure: 0, deactivated: 0 }
   logger.info(`Correction des user recruteurs en erreur: ${userRecruteurs.length} user recruteurs à mettre à jour...`)
   await asyncForEach(userRecruteurs, async (userRecruteur) => {
-    const { establishment_siret, _id, establishment_id, scope } = userRecruteur
+    const { establishment_siret, _id, establishment_id, type } = userRecruteur
     try {
       let recruteur = await getFormulaire({ establishment_id })
       const { cfa_delegated_siret } = recruteur
@@ -34,7 +34,7 @@ const updateUserRecruteursSiretInfosInError = async () => {
       } else {
         let updatedUserRecruteur: IUserRecruteur = await updateUser({ _id }, siretResponse)
         recruteur = await updateFormulaire(recruteur.establishment_id, siretResponse)
-        if (scope?.startsWith("etp-")) {
+        if (type === "ENTREPRISE") {
           const result = await autoValidateCompany(updatedUserRecruteur)
           updatedUserRecruteur = result.userRecruteur
           if (result.validated) {
