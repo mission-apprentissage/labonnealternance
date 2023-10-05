@@ -17,12 +17,8 @@ fileignoreconfig:
   checksum: 55332a5edf8c13ed6f12346993579eac23d07d6c499d9a9b5b9b42c289d09823
 - filename: .infra/files/configs/mongodb/seed.gpg
   checksum: 4088248bf73cdb7c7f3b09a95fb0dd8cd2c953b1a9c401ecc91f15a4664d249c
-- filename: .infra/files/configs/reverse_proxy/extra-conf.d/alias.conf.template
-  checksum: 22b92189fc92a094fcdf6453df23e692dfabe88efdf916576da0b35afdfae1bd
 - filename: .infra/vault/vault.yml
-  checksum: 47e906ff5113fa180d974d9e6ff6a782c3ab3f5c05bfe021ab08b351b8e7a568
-- filename: README.md
-  checksum: 6a5f0709ab1bb0b68a992af0d41c5cb7c4559aa77bcabb80de62c55b987bfca1
+  checksum: 9c916b5326d9a6c2305850c9e66f9a13a93f95f9e3ca8f334e0a39bdcce47083
 - filename: server/.env.test
   checksum: a01fb129758d140e8c76f5f17184be514db29fea969872ef93d1dc25a7f5dbe2
 - filename: server/src/common/model/constants/referrers.ts
@@ -49,8 +45,6 @@ fileignoreconfig:
   checksum: e9869aceb9bb23877dccf1c6e2de729bfe685f7e40231c465fc40cdcc7c68c14
 - filename: shared/constants/recruteur.ts
   checksum: 28af032d2eb26aec7dd3bb1d32253f992a036626c36a92eb1e7ff07599fd0b2b
-- filename: shared/helpers/openapi/__snapshots__/generateOpenapi.test.ts.snap
-  checksum: b99b070a4ecddb65e054868c605473d48b3e2ac701df19f847730faf27524104
 - filename: shared/helpers/openapi/generateOpenapi.test.ts
   checksum: d7b85c3dff488cec523d78f0926e15dbea41071a1864bda62b4d6caeb2541df3
 - filename: shared/models/applications.model.ts
@@ -63,10 +57,6 @@ fileignoreconfig:
   checksum: f9d2657f85f9f885deddf2ed1fd006d8278d27174659f0ed5a35e4d11343bb3a
 - filename: ui/common/hooks/useAuth.ts
   checksum: 7cce935653407e000b35e98bd365a003e538aed4fed432a9a404d4f2412dd2df
-- filename: ui/config.public.ts
-  checksum: 3fe173cb12a51d9a25f6e955e72d6e5ffd7ec45cdaaefeae78171a348fbbb734
-- filename: ui/pages/espace-pro/admin/eligible-trainings-for-appointment/edit/[id].tsx
-  checksum: e8b1197c5340965b02a4152edd1a06fd08627225538ec67f6767e8d4e93971fa
 - filename: ui/pages/espace-pro/admin/eligible-trainings-for-appointment/search.jsx
   checksum: 26e08a59fba2fbace721a6109af82b5d0d70bd91ddf590484c69fd34a60db17b
 - filename: ui/pages/espace-pro/admin/widget-parameters/search.jsx

@@ -115,7 +115,7 @@ export const zAppointmentsRoute = {
       },
       securityScheme: {
         auth: "cookie-session",
-        role: "all", // TODO administrator
+        role: "administrator",
       },
     },
     "/appointment-request/context/recap": {

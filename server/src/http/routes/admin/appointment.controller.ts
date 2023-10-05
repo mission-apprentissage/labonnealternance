@@ -58,9 +58,10 @@ export default (server: Server) => {
 
         const formation = formations.find((item) => item.cle_ministere_educatif === appointment.cle_ministere_educatif)
 
-        if (!formation) {
-          throw Boom.internal("Formation non trouvée.")
-        }
+        // TODO do not throw but do something else
+        // if (!formation) {
+        //   throw Boom.internal("Formation non trouvée.")
+        // }
 
         return {
           created_at: appointment.created_at,

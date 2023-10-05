@@ -12,6 +12,7 @@ import { getUserAndRecruitersDataForOpcoUser } from "../../services/user.service
 import {
   createUser,
   getActiveUsers,
+  getAdminUsers,
   getAwaitingUsers,
   getDisabledUsers,
   getErrorUsers,
@@ -44,6 +45,93 @@ export default (server: Server) => {
       // TODO KEVIN: ADD PAGINATION
       const [awaiting, active, disabled, error] = await Promise.all([getAwaitingUsers(), getActiveUsers(), getDisabledUsers(), getErrorUsers()])
       return res.status(200).send({ awaiting, active, disabled, error })
+    }
+  )
+  server.get(
+    "/admin/users",
+    {
+      schema: zRoutes.get["/admin/users"],
+      onRequest: [server.auth(zRoutes.get["/admin/users"].securityScheme)],
+    },
+    async (req, res) => {
+      const users = await getAdminUsers()
+      return res.status(200).send({ users })
+    }
+  )
+
+  server.get(
+    "/admin/users/:userId",
+    {
+      schema: zRoutes.get["/admin/users/:userId"],
+      onRequest: [server.auth(zRoutes.get["/admin/users/:userId"].securityScheme)],
+    },
+    async (req, res) => {
+      const user = await UserRecruteur.findOne({ _id: req.params.userId }).lean()
+      let jobs: IJob[] = []
+
+      if (!user) return res.status(400).send({})
+
+      if (user.type === ENTREPRISE) {
+        const response = await Recruiter.findOne({ establishment_id: user.establishment_id }).select({ jobs: 1, _id: 0 }).lean()
+        if (!response) {
+          throw Boom.internal("Get establishement from user failed to fetch", { userId: user._id })
+        }
+        jobs = response.jobs
+      }
+
+      return res.status(200).send({ ...user, jobs })
+    }
+  )
+
+  server.post(
+    "/admin/users",
+    {
+      schema: zRoutes.post["/admin/users"],
+      onRequest: [server.auth(zRoutes.post["/admin/users"].securityScheme)],
+    },
+    async (req, res) => {
+      const user = await createUser(req.body)
+      return res.status(200).send(user)
+    }
+  )
+
+  server.put(
+    "/admin/users/:userId",
+    {
+      schema: zRoutes.put["/admin/users/:userId"],
+      onRequest: [server.auth(zRoutes.put["/admin/users/:userId"].securityScheme)],
+    },
+    async (req, res) => {
+      // const userPayload = req.body
+      // const { userId } = req.params
+
+      // const exist = await UserRecruteur.findOne({ email: userPayload.email, _id: { $ne: userId } }).lean()
+
+      // if (exist) {
+      //   return res.status(400).send({ error: true, reason: "EMAIL_TAKEN" })
+      // }
+
+      // const user = await updateUser({ _id: userId }, userPayload)
+      return res.status(200).send({})
+    }
+  )
+
+  server.delete(
+    "/admin/users/:userId",
+    {
+      schema: zRoutes.delete["/admin/users/:userId"],
+      onRequest: [server.auth(zRoutes.delete["/admin/users/:userId"].securityScheme)],
+    },
+    async (req, res) => {
+      // const { userId, recruiterId } = req.query
+
+      // await removeUser(userId)
+
+      // if (recruiterId) {
+      //   await deleteFormulaire(recruiterId)
+      // }
+
+      return res.status(200).send({})
     }
   )
 
@@ -86,18 +174,6 @@ export default (server: Server) => {
       const status_current = user.status.pop().status
 
       return res.status(200).send({ status_current })
-    }
-  )
-
-  server.post(
-    "/user",
-    {
-      schema: zRoutes.post["/user"],
-      preHandler: [],
-    },
-    async (req, res) => {
-      const user = await createUser(req.body)
-      return res.status(200).send(user)
     }
   )
 

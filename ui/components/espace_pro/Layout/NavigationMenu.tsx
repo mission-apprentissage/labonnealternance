@@ -51,7 +51,7 @@ const NavItem = ({ children, to = "/", ...rest }) => {
 
 const NavLinks = ({ isOpen, rdva = false }) => {
   const { user } = useAuth()
-
+  if (!user) return null
   if (user.type === AUTHTYPE.OPCO) return null
 
   return (
