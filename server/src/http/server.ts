@@ -104,7 +104,7 @@ export async function bind(app: Server) {
     })
   } else {
     app.register(fastifyCors, {
-      origin: [...localOrigin, /gouv\.fr/],
+      origin: [...localOrigin, /\.gouv\.fr$/],
     })
   }
 
