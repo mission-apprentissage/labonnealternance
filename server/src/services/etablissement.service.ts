@@ -299,18 +299,18 @@ export const getEtablissementFromCatalogue = async (siret: string): Promise<IEta
  * @param {String} adresse
  * @returns {Promise<string>}
  */
-export const getGeoCoordinates = async (adresse: string): Promise<string> => {
+export const getGeoCoordinates = async (adresse: string): Promise<string | null> => {
   try {
     const response: AxiosResponse<IAPIAdresse> = await axios.get(`https://api-adresse.data.gouv.fr/search/?q=${adresse}`)
     // eslint-disable-next-line no-unsafe-optional-chaining
     const [firstFeature] = response.data?.features
     if (!firstFeature) {
-      return "NOT FOUND"
+      return null
     }
     return firstFeature.geometry.coordinates.reverse().join(",")
   } catch (error: any) {
     sentryCaptureException(error)
-    return "NOT FOUND"
+    return null
   }
 }
 /**
