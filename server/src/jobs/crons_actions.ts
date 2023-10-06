@@ -22,7 +22,7 @@ export async function cronsInit() {
   logger.info(`Crons - initialise crons in DB`)
   await db.collection("internalJobs").deleteMany({ type: "cron" })
   await db.collection("internalJobs").deleteMany({
-    status: "pending",
+    status: { $in: ["pending", "will_start"] },
     type: "cron_task",
   })
 
@@ -62,7 +62,7 @@ export async function cronsScheduler(): Promise<void> {
       type: "cron_task",
       name: cron.name,
       scheduled_for: next.toDate(),
-      sync: true,
+      sync: false,
     })
 
     await updateJob(new mongoose.Types.ObjectId(cron._id), {
@@ -83,6 +83,6 @@ export async function cronsScheduler(): Promise<void> {
     type: "simple",
     name: "crons:scheduler",
     scheduled_for: cron.scheduled_for,
-    sync: true,
+    sync: false,
   })
 }
