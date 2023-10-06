@@ -4,7 +4,7 @@ import { logger } from "../../../common/logger"
 import { DiplomesMetiers, DomainesMetiers, FormationCatalogue, LbaCompany, Recruiter } from "../../../common/model/index"
 import { rebuildIndex } from "../../../common/utils/esUtils"
 
-export const generateIndexes = async (payload) => {
+export const generateIndexes = async (payload: { index_list?: string; recreate?: boolean }) => {
   const indexList = payload?.index_list ?? "recruiters,formationcatalogues,lbacompanies,diplomesmetiers,domainesmetiers"
   const recreate = payload?.recreate ?? false
   const list = indexList.split(",")

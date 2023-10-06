@@ -1,11 +1,12 @@
 import cronParser from "cron-parser"
 import mongoose from "mongoose"
 
+import { IInternalJobsCron } from "@/common/model/schema/internalJobs/internalJobs.types"
 import { db } from "@/common/mongodb"
 
 import { getLoggerWithContext } from "../common/logger"
 
-import { createJob, findJob, findJobs, updateJob } from "./job.actions"
+import { createJobCron, createJobCronTask, createJobSimple, findJob, findJobs, updateJob } from "./job.actions"
 import { CRONS } from "./jobs"
 import { addJob } from "./jobs_actions"
 
@@ -31,38 +32,35 @@ export async function cronsInit() {
   }
 
   for (const cron of Object.values(CRONS)) {
-    await createJob({
+    await createJobCron({
       name: cron.name,
-      type: "cron",
       cron_string: cron.cron_string,
       scheduled_for: new Date(),
       sync: true,
     })
   }
 
-  await addJob({ name: "crons:scheduler", queued: true })
+  await addJob({ name: "crons:scheduler", queued: true, payload: {} })
 }
 
 export async function cronsScheduler(): Promise<void> {
   logger.info(`Crons - Check and run crons`)
 
-  const crons = await findJobs(
+  const crons = (await findJobs(
     {
       type: "cron",
       scheduled_for: { $lte: new Date() },
     },
     { sort: { scheduled_for: 1 } }
-  )
+  )) as IInternalJobsCron[]
 
   for (const cron of crons) {
     const next = parseCronString(cron.cron_string ?? "", {
       currentDate: cron.scheduled_for,
     }).next()
-    await createJob({
-      type: "cron_task",
+    await createJobCronTask({
       name: cron.name,
       scheduled_for: next.toDate(),
-      sync: false,
     })
 
     await updateJob(new mongoose.Types.ObjectId(cron._id), {
@@ -79,10 +77,10 @@ export async function cronsScheduler(): Promise<void> {
   if (!cron) return
 
   cron.scheduled_for.setSeconds(cron.scheduled_for.getSeconds() + 1) // add DELTA of 1 sec
-  await createJob({
-    type: "simple",
+  await createJobSimple({
     name: "crons:scheduler",
     scheduled_for: cron.scheduled_for,
     sync: false,
+    payload: {},
   })
 }
