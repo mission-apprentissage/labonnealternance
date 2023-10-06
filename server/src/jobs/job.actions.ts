@@ -57,7 +57,7 @@ export const findJob = async (filter: FilterQuery<IInternalJobs>, options?: Find
   return await db.collection("internalJobs").findOne(filter, options)
 }
 
-export const findJobs = async (filter: FilterQuery<IInternalJobs>, options?: FindOneOptions<IInternalJobs>): Promise<IInternalJobs[]> => {
+export const findJobs = async <T extends IInternalJobs>(filter: FilterQuery<T>, options?: FindOneOptions<T>): Promise<T[]> => {
   return await db.collection("internalJobs").find(filter, options).toArray()
 }
 

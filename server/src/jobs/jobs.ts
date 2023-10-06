@@ -85,7 +85,7 @@ export const CRONS: Record<CronName, CronDef> = {
   },
   "Send reminder to OPCO about awaiting validation users": {
     name: "Send reminder to OPCO about awaiting validation users",
-    cron_string: "30 0 * * * 1,3,5",
+    cron_string: "30 0 * * 1,3,5",
     handler: () => addJob({ name: "opco:relance", payload: { threshold: "1" } }),
   },
   "Send CSV offers to Pôle emploi": {
@@ -101,7 +101,7 @@ export const CRONS: Record<CronName, CronDef> = {
   "Mise à jour des recruteurs en erreur": {
     name: "Mise à jour des recruteurs en erreur",
     cron_string: "10 0 * * *",
-    handler: () => addJob({ name: "siret:inError:update", payload: { threshold: "1" } }),
+    handler: () => addJob({ name: "siret:inError:update", payload: {} }),
   },
   "Active tous les établissements qui ont souscrits à l'opt-out.": {
     name: "Active tous les établissements qui ont souscrits à l'opt-out.",
@@ -160,7 +160,7 @@ export const CRONS: Record<CronName, CronDef> = {
   },
   "Alimentation de la table de correspondance entre Id formation Onisep et Clé ME du catalogue RCO, utilisé pour diffuser la prise de RDV sur l’Onisep": {
     name: "Alimentation de la table de correspondance entre Id formation Onisep et Clé ME du catalogue RCO, utilisé pour diffuser la prise de RDV sur l’Onisep",
-    cron_string: "45 23 * * * 2",
+    cron_string: "45 23 * * 2",
     handler: () => addJob({ name: "referentiel:onisep:import", payload: {} }),
   },
   "Mise à jour depuis le Catalogue des formations.": {
@@ -185,17 +185,17 @@ export const CRONS: Record<CronName, CronDef> = {
   },
   "Géolocation de masse des sociétés issues de l'algo": {
     name: "Géolocation de masse des sociétés issues de l'algo",
-    cron_string: "0 5 * * * 6",
+    cron_string: "0 5 * * 6",
     handler: () => addJob({ name: "geo-locations:update", payload: {} }),
   },
   "Détermination des opcos des sociétés issues de l'algo": {
     name: "Détermination des opcos des sociétés issues de l'algo",
-    cron_string: "30 6 * * * 6",
+    cron_string: "30 6 * * 6",
     handler: () => addJob({ name: "opcos:update", payload: {} }),
   },
   "Mise à jour des sociétés issues de l'algo": {
     name: "Mise à jour des sociétés issues de l'algo",
-    cron_string: "0 5 * * * 7",
+    cron_string: "0 5 * * 7",
     handler: () => addJob({ name: "companies:update", payload: { UseAlgoFile: true, ClearMongo: true, UseSave: true, BuildIndex: true } }),
   },
 }

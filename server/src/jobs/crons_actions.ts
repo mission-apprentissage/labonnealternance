@@ -46,13 +46,13 @@ export async function cronsInit() {
 export async function cronsScheduler(): Promise<void> {
   logger.info(`Crons - Check and run crons`)
 
-  const crons = (await findJobs(
+  const crons = await findJobs<IInternalJobsCron>(
     {
       type: "cron",
       scheduled_for: { $lte: new Date() },
     },
     { sort: { scheduled_for: 1 } }
-  )) as IInternalJobsCron[]
+  )
 
   for (const cron of crons) {
     const next = parseCronString(cron.cron_string ?? "", {
