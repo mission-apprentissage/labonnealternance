@@ -520,7 +520,9 @@ export const getEntrepriseDataFromSiret = async ({ siret, cfa_delegated_siret }:
     }
   }
   const entrepriseData = formatEntrepriseData(result.data)
-  const geo_coordinates = await getGeoCoordinates(`${entrepriseData.address_detail.acheminement_postal.l4}, ${entrepriseData.address_detail.acheminement_postal.l6}`)
+  const numeroEtRue = entrepriseData.address_detail.acheminement_postal.l4
+  const codePostalEtVille = entrepriseData.address_detail.acheminement_postal.l6
+  const geo_coordinates = await getGeoCoordinates(`${numeroEtRue}, ${codePostalEtVille}`).catch(() => getGeoCoordinates(codePostalEtVille))
   return { ...entrepriseData, geo_coordinates: geo_coordinates.join(",") }
 }
 
