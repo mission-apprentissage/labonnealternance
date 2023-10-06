@@ -294,23 +294,26 @@ export const getEtablissementFromCatalogue = async (siret: string): Promise<IEta
     return error
   }
 }
+
+export type GeoCoord = [number, number]
+
 /**
  * @description Get the geolocation information from the ADDRESS API for a given address
  * @param {String} adresse
- * @returns {Promise<string>}
  */
-export const getGeoCoordinates = async (adresse: string): Promise<string> => {
+export const getGeoCoordinates = async (adresse: string): Promise<GeoCoord> => {
   try {
     const response: AxiosResponse<IAPIAdresse> = await axios.get(`https://api-adresse.data.gouv.fr/search/?q=${adresse}`)
-    // eslint-disable-next-line no-unsafe-optional-chaining
-    const [firstFeature] = response.data?.features
+    const firstFeature = response.data?.features.at(0)
     if (!firstFeature) {
-      return "NOT FOUND"
+      throw Boom.internal(`erreur de récupération des geo coordonnées: pas trouvé`, { adresse })
     }
-    return firstFeature.geometry.coordinates.reverse().join(",")
+    const [first, second] = firstFeature.geometry.coordinates.reverse()
+    return [first, second]
   } catch (error: any) {
-    sentryCaptureException(error)
-    return "NOT FOUND"
+    const newError = Boom.internal(`erreur de récupération des geo coordonnées`, { adresse })
+    newError.cause = error
+    throw newError
   }
 }
 /**
@@ -513,7 +516,7 @@ export const getEntrepriseDataFromSiret = async ({ siret, cfa_delegated_siret }:
   }
   const entrepriseData = formatEntrepriseData(result.data)
   const geo_coordinates = await getGeoCoordinates(`${entrepriseData.address_detail.acheminement_postal.l4}, ${entrepriseData.address_detail.acheminement_postal.l6}`)
-  return { ...entrepriseData, geo_coordinates }
+  return { ...entrepriseData, geo_coordinates: geo_coordinates.join(",") }
 }
 
 export const getOrganismeDeFormationDataFromSiret = async (siret: string) => {
