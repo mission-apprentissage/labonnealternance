@@ -37,9 +37,9 @@ function getProperties(type, instance = null, requireAsciiFolding = false) {
       ...asciiFoldingParameters,
     }
 
-  if (type === "Date") return { type: "date", ignore_malformed: true }
-  if (type === "Number") return { type: "long", coerce: true, ignore_malformed: true }
-  if (type === "Boolean") return { type: "boolean", ignore_malformed: true }
+  if (type === "Date") return { type: "date" }
+  if (type === "Number") return { type: "long" }
+  if (type === "Boolean") return { type: "boolean" }
   if (type === "Mixed") return { type: "nested" }
 
   if (type === "Array") {
@@ -56,11 +56,11 @@ function getProperties(type, instance = null, requireAsciiFolding = false) {
     }
 
     if (instance === "Boolean") {
-      return { type: "boolean", ignore_malformed: true }
+      return { type: "boolean" }
     }
 
     if (instance === "Date") {
-      return { type: "date", ignore_malformed: true }
+      return { type: "date" }
     }
   }
 }
@@ -83,7 +83,7 @@ function getMapping(schema, requireAsciiFolding = false) {
     }
 
     if (/geo_/.test(key)) {
-      properties[key] = { type: "geo_point", ignore_malformed: true }
+      properties[key] = { type: "geo_point" }
       isMappingNeedingGeoPoint = true
     } else {
       if (isSubDocument) {
@@ -233,7 +233,12 @@ function Mongoosastic(schema, options) {
       id: doc._id.toString(),
     }
 
-    await esClient.index(_opts)
+    try {
+      await esClient.index(_opts)
+    } catch (e) {
+      logger.error(e)
+      sentryCaptureException(e)
+    }
   }
 
   schema.methods.unIndex = async function schemaUnIndex() {
@@ -263,14 +268,9 @@ function Mongoosastic(schema, options) {
       this.find({}).cursor(),
       writeData(
         async (doc) => {
-          try {
-            await schemaIndex(doc, refresh)
-            if (++count % 1000 === 0) {
-              logMessage("info", `progress: ${count} indexed ${this.modelName}`)
-            }
-          } catch (error) {
-            logger.error(error)
-            sentryCaptureException(error)
+          await schemaIndex(doc, refresh)
+          if (++count % 1000 === 0) {
+            logMessage("info", `progress: ${count} indexed ${this.modelName}`)
           }
         },
         { parallel: 8 }
@@ -313,12 +313,7 @@ function Mongoosastic(schema, options) {
 
     inSchema.post("insertMany", async (docs) => {
       for (let i = 0; i < docs.length; i++) {
-        try {
-          await postSave(docs[i])
-        } catch (e) {
-          logger.error(e)
-          sentryCaptureException(e)
-        }
+        await postSave(docs[i])
       }
     })
   }
