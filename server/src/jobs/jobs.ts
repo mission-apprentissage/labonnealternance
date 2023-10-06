@@ -9,12 +9,13 @@ import { cronsInit, cronsScheduler } from "./crons_actions"
 // import { findInvalidDocuments } from "./db/findInvalidDocuments"
 // import { recreateIndexes } from "./db/recreateIndexes"
 // import { validateModels } from "./db/schemaValidation"
+import { validateModels } from "./database/validateModels"
 import updateDiplomesMetiers from "./diplomesMetiers/updateDiplomesMetiers"
 import updateDomainesMetiers from "./domainesMetiers/updateDomainesMetiers"
 import updateDomainesMetiersFile from "./domainesMetiers/updateDomainesMetiersFile"
 import { importCatalogueFormationJob } from "./formationsCatalogue/formationsCatalogue"
 import { updateFormationCatalogue } from "./formationsCatalogue/updateFormationCatalogue"
-import { addJob, executeJob } from "./jobs_actions"
+import { executeJob } from "./jobs_actions"
 import { createApiUser } from "./lba_recruteur/api/createApiUser"
 import { disableApiUser } from "./lba_recruteur/api/disableApiUser"
 import { resetApiKey } from "./lba_recruteur/api/resetApiKey"
@@ -183,12 +184,11 @@ export async function runJob(job: IInternalJobs): Promise<number> {
       case "mongodb:indexes:create":
         return createMongoDBIndexes()
       case "db:validate":
-        //validateModels()
-        return
+        return validateModels()
       case "migrations:up": {
         // await upMigration()
         // Validate all documents after the migration
-        await addJob({ name: "db:validate", queued: true })
+        // await addJob({ name: "db:validate", queued: true })
         return
       }
       case "migrations:status": {
