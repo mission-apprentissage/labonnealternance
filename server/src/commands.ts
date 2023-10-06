@@ -161,6 +161,12 @@ program.command("migrations:status").description("Check migrations status").acti
 
 program.command("migrations:create").description("Run migrations create").requiredOption("-d, --description <string>", "description").action(createJobAction("migrations:create"))
 
+program
+  .command("recruiters:get-missing-address-detail")
+  .description("Récupération des address_detail manquauts dans la collection Recruiters")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("recruiters:get-missing-address-detail"))
+
 // Temporaire, one shot à executer en recette et prod
 program
   .command("migration:get-missing-geocoords")
