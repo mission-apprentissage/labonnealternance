@@ -3589,39 +3589,7 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
           "200": {
             "content": {
               "application/json": {
-                "schema": {
-                  "properties": {
-                    "organisme": {
-                      "properties": {
-                        "contact": {
-                          "properties": {
-                            "tel": {
-                              "type": [
-                                "string",
-                                "null",
-                              ],
-                            },
-                            "url": {
-                              "type": [
-                                "string",
-                                "null",
-                              ],
-                            },
-                          },
-                          "type": "object",
-                        },
-                      },
-                      "required": [
-                        "contact",
-                      ],
-                      "type": "object",
-                    },
-                  },
-                  "required": [
-                    "organisme",
-                  ],
-                  "type": "object",
-                },
+                "schema": {},
               },
             },
             "description": "",
