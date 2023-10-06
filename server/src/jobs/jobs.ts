@@ -58,13 +58,50 @@ interface CronDef {
 }
 
 export const CRONS: Record<string, CronDef> = {
-  "Run daily jobs each day at 02h30": {
-    name: "Run daily jobs each day at 02h30",
-    cron_string: "30 2 * * *",
-    handler: async () => {
-      // TODO
-      return 0
-    },
+  "Reindex formulaire collection": {
+    name: "Reindex formulaire collection",
+    cron_string: "5 1 * * *",
+    handler: () => addJob({ name: "indexes:generate", payload: { index_list: "recruiters" } }),
+  },
+  "Create offre collection for metabase": {
+    name: "Create offre collection for metabase",
+    cron_string: "55 0 * * *",
+    handler: () => addJob({ name: "metabase:offre:create", payload: {} }),
+  },
+  "Cancel lba recruteur expired offers": {
+    name: "Cancel lba recruteur expired offers",
+    cron_string: "15 0 * * *",
+    handler: () => addJob({ name: "formulaire:annulation", payload: {} }),
+  },
+  "Send offer reminder email at J+7": {
+    name: "Send offer reminder email at J+7",
+    cron_string: "20 0 * * *",
+    handler: () => addJob({ name: "formulaire:relance", payload: { threshold: 7 } }),
+  },
+  "Send offer reminder email at J+1": {
+    name: "Send offer reminder email at J+1",
+    cron_string: "25 0 * * *",
+    handler: () => addJob({ name: "formulaire:relance", payload: { threshold: 1 } }),
+  },
+  "Send reminder to OPCO about awaiting validation users": {
+    name: "Send reminder to OPCO about awaiting validation users",
+    cron_string: "30 0 * * * 1,3,5",
+    handler: () => addJob({ name: "opco:relance", payload: { threshold: 1 } }),
+  },
+  "Send CSV offers to Pôle emploi": {
+    name: "Send CSV offers to Pôle emploi",
+    cron_string: "30 5 * * *",
+    handler: () => addJob({ name: "pe:offre:export", payload: { threshold: 1 } }),
+  },
+  "Check companies validation state": {
+    name: "Check companies validation state",
+    cron_string: "30 6 * * *",
+    handler: () => addJob({ name: "user:validate", payload: { threshold: 1 } }),
+  },
+  "Mise à jour des recruteurs en erreur": {
+    name: "Mise à jour des recruteurs en erreur",
+    cron_string: "10 0 * * *",
+    handler: () => addJob({ name: "siret:inError:update", payload: { threshold: 1 } }),
   },
 }
 
