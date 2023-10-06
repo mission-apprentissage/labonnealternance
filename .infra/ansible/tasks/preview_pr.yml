@@ -68,7 +68,7 @@
 
     - name: "[{{ pr_number }}] Build local images 0.0.0-{{ pr_number }}"
       shell:
-        cmd: ".bin/mna-lba preview:build 0.0.0-{{ pr_number }} load preview"
+        cmd: "flock --verbose --close /tmp/deployment_build.lock .bin/mna-lba preview:build 0.0.0-{{ pr_number }} load preview"
         chdir: "/opt/app/projects/{{ pr_number }}/repository"
       async: 900 # max 15 minutes
       poll: 15 # check every 15s
@@ -83,20 +83,24 @@
         chdir: /opt/app
         cmd: docker exec nginx-proxy-acme /app/force_renew
 
+    - name: "[{{ pr_number }}] Seed database"
+      shell:
+        chdir: "/opt/app"
+        cmd: "flock --verbose --close /tmp/deployment_seed.lock /opt/app/scripts/seed.sh preview_{{ pr_number | default('00') }}"
+      async: 900 # max 15 minutes
+      poll: 15 # check every 15s
+
     - name: "[{{ pr_number }}] Execute MongoDB migrations"
       shell:
         chdir: "/opt/app/projects/{{ pr_number }}"
         cmd: "docker compose run --rm server yarn cli migrations:up"
 
-    - name: "[{{ pr_number }}] Seed database"
-      shell:
-        chdir: "/opt/app"
-        cmd: "/opt/app/scripts/seed.sh preview_{{ pr_number | default('00') }}"
-
-    - name: "[{{ pr_number }}] ElasticSearch Index"
+    - name: "Create MongoDB & ElasticSearch Indexes"
       shell:
         chdir: "/opt/app/projects/{{ pr_number }}"
-        cmd: "docker compose run --rm --no-deps server yarn cli index --recreate --queued"
+        cmd: "flock --verbose --close /tmp/deployment_index.lock /opt/app/scripts/sync-index.sh"
+      async: 900 # max 15 minutes
+      poll: 15 # check every 15s
 
     - name: "[{{ pr_number }}] Preview URL"
       debug:

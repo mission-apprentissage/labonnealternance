@@ -631,7 +631,7 @@ export const entrepriseOnboardingWorkflow = {
     phone: string
     email: string
     cfa_delegated_siret: string
-    origin: string
+    origin?: string | null
     opco?: string
     idcc?: string | null
   }) => {
@@ -639,6 +639,7 @@ export const entrepriseOnboardingWorkflow = {
     if (cfaErrorOpt) return cfaErrorOpt
     const formatedEmail = email.toLocaleLowerCase()
     let entrepriseData: Partial<EntrepriseData>
+    let siretCallInError = false
     try {
       const siretResponse = await getEntrepriseDataFromSiret({ siret, cfa_delegated_siret })
       if ("error" in siretResponse) {
@@ -647,6 +648,7 @@ export const entrepriseOnboardingWorkflow = {
         entrepriseData = siretResponse
       }
     } catch (err) {
+      siretCallInError = true
       entrepriseData = { establishment_siret: siret }
       sentryCaptureException(err)
     }
@@ -654,7 +656,7 @@ export const entrepriseOnboardingWorkflow = {
     const savedData = { ...entrepriseData, ...contactInfos, email: formatedEmail }
     const formulaireInfo = await createFormulaire({
       ...savedData,
-      status: RECRUITER_STATUS.EN_ATTENTE_VALIDATION,
+      status: siretCallInError ? RECRUITER_STATUS.EN_ATTENTE_VALIDATION : RECRUITER_STATUS.ACTIF,
       jobs: [],
       cfa_delegated_siret,
       is_delegated: true,
