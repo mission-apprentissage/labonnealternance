@@ -35,25 +35,41 @@ import {
 import { Pagination } from "@/common/model/schema/_shared/mongoose-paginate"
 
 async function validateModel<T>(model: Model<T> | Pagination<T>, z: ZodType<T, any, any>) {
-  const cursor = model.find({}, { lean: true })
+  const collectionName = model.collection.name
+  const cursor = await model.find({}).lean()
 
   let totalCount = 0
   let count = 0
-  for await (const doc of cursor) {
+  const errorStats: Record<string, number> = {}
+  for (const doc of cursor) {
     try {
       totalCount++
       z.parse(doc)
     } catch (err) {
       count++
+      if (err && typeof err === "object" && "issues" in err && Array.isArray(err.issues)) {
+        err.issues.forEach(({ code, path, expected, received, message }) => {
+          const pointPath = path.join(".")
+          const key = `${pointPath}: code=${code}, expected=${expected}, received=${received}, message=${message}`
+          const oldCount = errorStats[key] ?? 0
+          errorStats[key] = oldCount + 1
+        })
+      }
     }
   }
 
   if (count > 0) {
-    const e = new Error(`Found ${count}/${totalCount} invalid document for ${model.name}`)
-    logger.error(e)
-    captureException(e)
+    const errorMessage = `Found ${count}/${totalCount} invalid document for ${collectionName}
+    Error cases:
+    ${Object.entries(errorStats)
+      .map(([message, count]) => `${count} : ${message}`)
+      .join("\n")}
+    `
+    console.error(errorMessage)
+    captureException(new Error(errorMessage))
+  } else {
+    logger.info(`All documents ${totalCount} for ${collectionName} are valid`)
   }
-  logger.info(`All documents ${totalCount} for ${model.name} are valid`)
 }
 
 export async function validateModels(): Promise<void> {
