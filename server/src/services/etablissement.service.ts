@@ -306,9 +306,14 @@ export const getGeoCoordinates = async (adresse: string): Promise<GeoCoord> => {
     const response: AxiosResponse<IAPIAdresse> = await axios.get(`https://api-adresse.data.gouv.fr/search/?q=${adresse}`)
     const firstFeature = response.data?.features.at(0)
     if (!firstFeature) {
-      throw Boom.internal(`erreur de récupération des geo coordonnées: pas trouvé`, { adresse })
+      throw new Error("pas trouvé")
     }
-    const [first, second] = firstFeature.geometry.coordinates.reverse()
+    const coords = firstFeature.geometry.coordinates.reverse()
+    const first = coords.at(0)
+    const second = coords.at(1)
+    if (first === undefined || second === undefined) {
+      throw Boom.internal("moins de 2 coordonnées", { first, second })
+    }
     return [first, second]
   } catch (error: any) {
     const newError = Boom.internal(`erreur de récupération des geo coordonnées`, { adresse })
