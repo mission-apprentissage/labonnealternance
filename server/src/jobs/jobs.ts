@@ -21,6 +21,7 @@ import { resetApiKey } from "./lba_recruteur/api/resetApiKey"
 import { annuleFormulaire } from "./lba_recruteur/formulaire/annuleFormulaire"
 import { createUserFromCLI } from "./lba_recruteur/formulaire/createUser"
 import { exportPE } from "./lba_recruteur/formulaire/misc/exportPE"
+import { recoverMissingGeocoordinates } from "./lba_recruteur/formulaire/misc/recoverGeocoordinates"
 import { removeIsDelegatedFromJobs } from "./lba_recruteur/formulaire/misc/removeIsDelegatedFromJobs"
 import { removeVersionKeyFromAllCollections } from "./lba_recruteur/formulaire/misc/removeVersionKeyFromAllCollections"
 import { relanceFormulaire } from "./lba_recruteur/formulaire/relanceFormulaire"
@@ -74,6 +75,8 @@ export async function runJob(job: IInternalJobs): Promise<number> {
       return CRONS[job.name].handler()
     }
     switch (job.name) {
+      case "migration:get-missing-geocoords": // Temporaire, doit tourner en recette et production
+        return recoverMissingGeocoordinates()
       case "migration:remove-version-key-from-all-collections": // Temporaire, doit tourner en recette et production
         return removeVersionKeyFromAllCollections()
       case "migration:remove-delegated-from-jobs": // Temporaire, doit tourner en recette et production

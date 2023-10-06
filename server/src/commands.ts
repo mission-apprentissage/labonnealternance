@@ -8,7 +8,7 @@ import { closeElasticSearch } from "./common/esClient"
 import { logger } from "./common/logger"
 import { sleep } from "./common/utils/asyncUtils"
 import config from "./config"
-import { initSentryProcessor, closeSentry } from "./http/sentry"
+import { closeSentry, initSentryProcessor } from "./http/sentry"
 import server from "./http/server"
 import { addJob, processor } from "./jobs/jobs_actions"
 
@@ -160,6 +160,13 @@ program.command("migrations:up").description("Run migrations up").action(createJ
 program.command("migrations:status").description("Check migrations status").action(createJobAction("migrations:status"))
 
 program.command("migrations:create").description("Run migrations create").requiredOption("-d, --description <string>", "description").action(createJobAction("migrations:create"))
+
+// Temporaire, one shot à executer en recette et prod
+program
+  .command("migration:get-missing-geocoords")
+  .description("Récupération des geocoordonnées manquautes")
+  .option("-q, --queued", "Run job asynchronously", false)
+  .action(createJobAction("migration:get-missing-geocoords"))
 
 // Temporaire, one shot à executer en recette et prod
 program
