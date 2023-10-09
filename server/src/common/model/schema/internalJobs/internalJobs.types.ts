@@ -1,12 +1,10 @@
-import { ICredential, IUserRecruteur } from "shared/models"
-
-interface IInternalJobsSimpleGeneric<Name extends string, Payload = Record<string, never>> {
+interface IInternalJobsSimple {
   _id: string
-  name: Name
+  name: string
   type: "simple"
   status: "pending" | "will_start" | "running" | "finished" | "blocked" | "errored"
   sync: boolean
-  payload: Payload
+  payload: Record<string, any>
   output?: Record<string, unknown> | undefined
   scheduled_for: Date
   started_at?: Date
@@ -14,96 +12,6 @@ interface IInternalJobsSimpleGeneric<Name extends string, Payload = Record<strin
   updated_at: Date
   created_at: Date
 }
-
-type IInternalJobsSimple =
-  | IInternalJobsSimpleGeneric<"migration:remove-version-key-from-all-collections">
-  | IInternalJobsSimpleGeneric<"migration:remove-delegated-from-jobs">
-  | IInternalJobsSimpleGeneric<"indexes:generate", { index_list?: string; recreate?: boolean }>
-  | IInternalJobsSimpleGeneric<
-      "user:create",
-      Pick<IUserRecruteur, "first_name" | "last_name" | "establishment_siret" | "establishment_raison_sociale" | "phone" | "address" | "email" | "scope"> & {
-        type: IUserRecruteur["type"]
-        email_valide: IUserRecruteur["is_email_checked"]
-      }
-    >
-  | IInternalJobsSimpleGeneric<"api:user:create", Pick<ICredential, "nom" | "prenom" | "email" | "scope"> & { organization: ICredential["organisation"] }>
-  | IInternalJobsSimpleGeneric<"api:user:reset", { email: string }>
-  | IInternalJobsSimpleGeneric<"api:user:disable", { email: ICredential["email"]; state?: ICredential["actif"] }>
-  | IInternalJobsSimpleGeneric<"formulaire:relance", { threshold: string }>
-  | IInternalJobsSimpleGeneric<"formulaire:annulation">
-  | IInternalJobsSimpleGeneric<"metabase:offre:create">
-  | IInternalJobsSimpleGeneric<"opco:relance">
-  | IInternalJobsSimpleGeneric<"pe:offre:export">
-  | IInternalJobsSimpleGeneric<"user:validate">
-  | IInternalJobsSimpleGeneric<"siret:inError:update">
-  | IInternalJobsSimpleGeneric<"etablissement:formations:activate:opt-out">
-  | IInternalJobsSimpleGeneric<"etablissement:invite:opt-out">
-  | IInternalJobsSimpleGeneric<"etablissement:invite:premium">
-  | IInternalJobsSimpleGeneric<"etablissement:invite:premium:affelnet">
-  | IInternalJobsSimpleGeneric<"etablissement:invite:premium:follow-up">
-  | IInternalJobsSimpleGeneric<"etablissement:invite:premium:affelnet:follow-up">
-  | IInternalJobsSimpleGeneric<"premium:activated:reminder">
-  | IInternalJobsSimpleGeneric<"premium:invite:one-shot">
-  | IInternalJobsSimpleGeneric<"etablissements:formations:sync">
-  | IInternalJobsSimpleGeneric<"etablissements:formations:affelnet:sync">
-  | IInternalJobsSimpleGeneric<"appointments:anonimize">
-  | IInternalJobsSimpleGeneric<"users:anonimize">
-  | IInternalJobsSimpleGeneric<"catalogue:trainings:appointments:archive:eligible">
-  | IInternalJobsSimpleGeneric<"referentiel:onisep:import">
-  | IInternalJobsSimpleGeneric<"catalogue:trainings:sync">
-  | IInternalJobsSimpleGeneric<"catalogue:trainings:sync:extra">
-  | IInternalJobsSimpleGeneric<"brevo:blocked:sync", { AllAddresses?: boolean }>
-  | IInternalJobsSimpleGeneric<"applications:anonymize">
-  | IInternalJobsSimpleGeneric<
-      "companies:update",
-      {
-        UseAlgoFile?: boolean
-        ClearMongo?: boolean
-        BuildIndex?: boolean
-        UseSave?: boolean
-        ForceRecreate?: boolean
-        SourceFile?: string | null
-      }
-    >
-  | IInternalJobsSimpleGeneric<"geo-locations:update", { ForceRecreate?: boolean; SourceFile?: string | null }>
-  | IInternalJobsSimpleGeneric<
-      "opcos:update",
-      {
-        ClearMongo?: boolean
-        ForceRecreate?: boolean
-        SourceFile?: string | null
-      }
-    >
-  | IInternalJobsSimpleGeneric<"domaines-metiers:update">
-  | IInternalJobsSimpleGeneric<"domaines-metiers:file:update", { filename: string; key: string }>
-  | IInternalJobsSimpleGeneric<"diplomes-metiers:update">
-  | IInternalJobsSimpleGeneric<"referentiel:rncp-romes:update">
-  | IInternalJobsSimpleGeneric<"mongodb:indexes:create">
-  | IInternalJobsSimpleGeneric<"db:validate">
-  | IInternalJobsSimpleGeneric<"migrations:up">
-  | IInternalJobsSimpleGeneric<"migrations:status">
-  | IInternalJobsSimpleGeneric<"migrations:create">
-  | IInternalJobsSimpleGeneric<"crons:init">
-  | IInternalJobsSimpleGeneric<"crons:scheduler">
-// | IInternalJobsSimpleGeneric<"migration:remove-version-key-from-all-collections">
-// | IInternalJobsSimpleGeneric<"migration:remove-version-key-from-all-collections">
-// | IInternalJobsSimpleGeneric<"migration:remove-version-key-from-all-collections">
-
-// interface IInternalJobs {
-//   _id: string
-//   name: string
-//   type: "simple" | "cron" | "cron_task"
-//   status: "pending" | "will_start" | "running" | "finished" | "blocked" | "errored"
-//   sync: boolean
-//   payload?: Record<string, unknown> | undefined
-//   output?: Record<string, unknown> | undefined
-//   cron_string?: string
-//   scheduled_for: Date
-//   started_at?: Date
-//   ended_at?: Date
-//   updated_at?: Date
-//   created_at?: Date | undefined
-// }
 
 type CronName =
   | "Reindex formulaire collection"
