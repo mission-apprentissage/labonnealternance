@@ -3,6 +3,7 @@ import mongoose from "mongoose"
 
 import { IInternalJobsCron } from "@/common/model/schema/internalJobs/internalJobs.types"
 import { db } from "@/common/mongodb"
+import config from "@/config"
 
 import { getLoggerWithContext } from "../common/logger"
 
@@ -20,6 +21,10 @@ function parseCronString(cronString: string, options: { currentDate: string } | 
 }
 
 export async function cronsInit() {
+  if (config.env === "preview") {
+    return
+  }
+
   logger.info(`Crons - initialise crons in DB`)
   await db.collection("internalJobs").deleteMany({ type: "cron" })
   await db.collection("internalJobs").deleteMany({
