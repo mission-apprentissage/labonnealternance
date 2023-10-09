@@ -337,8 +337,7 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
         return cronsScheduler()
 
       default: {
-        const j: never = job
-        logger.warn(`Job not found ${(j as any).name}`)
+        logger.warn(`Job not found ${job.name}`)
       }
     }
   })
