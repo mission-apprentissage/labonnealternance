@@ -1,4 +1,3 @@
-// import { create as createMigration, status as statusMigration, up as upMigration } from "@/jobs/migrations/migrations"
 import { createMongoDBIndexes } from "@/common/model"
 import { CronName, IInternalJobsCronTask, IInternalJobsSimple } from "@/common/model/schema/internalJobs/internalJobs.types"
 
@@ -6,9 +5,7 @@ import { getLoggerWithContext } from "../common/logger"
 
 import anonymizeOldApplications from "./anonymizeOldApplications/anonymizeOldApplications"
 import { cronsInit, cronsScheduler } from "./crons_actions"
-// import { findInvalidDocuments } from "./db/findInvalidDocuments"
-// import { recreateIndexes } from "./db/recreateIndexes"
-// import { validateModels } from "./db/schemaValidation"
+import { validateModels } from "./database/validateModels"
 import updateDiplomesMetiers from "./diplomesMetiers/updateDiplomesMetiers"
 import updateDomainesMetiers from "./domainesMetiers/updateDomainesMetiers"
 import updateDomainesMetiersFile from "./domainesMetiers/updateDomainesMetiersFile"
@@ -315,12 +312,11 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       case "mongodb:indexes:create":
         return createMongoDBIndexes()
       case "db:validate":
-        //validateModels()
-        return
+        return validateModels()
       case "migrations:up": {
         // await upMigration()
         // Validate all documents after the migration
-        await addJob({ name: "db:validate", queued: true, payload: {} })
+        // await addJob({ name: "db:validate", queued: true })
         return
       }
       case "migrations:status": {
