@@ -17,6 +17,7 @@ async function startJobProcessor(signal: AbortSignal) {
   await addJob({
     name: "crons:init",
     queued: true,
+    payload: {},
   })
 
   await processor(signal)
