@@ -25,7 +25,7 @@ const trackApiCall = async ({
       response,
     })
 
-    apiCall.save()
+    await apiCall.save()
   } catch (err) {
     console.log("Error tracking api call.", err)
   }

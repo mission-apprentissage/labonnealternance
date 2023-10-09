@@ -1,3 +1,5 @@
+import { sentryCaptureException } from "@/common/utils/sentryUtils.js"
+
 import { IApiError } from "../common/utils/errorManager.js"
 import { trackApiCall } from "../common/utils/sendTrackingEvent.js"
 
@@ -91,10 +93,10 @@ export const getJobsFromApi = async ({
 
     return { peJobs, matchas, lbaCompanies, lbbCompanies: null }
   } catch (err) {
-    console.log(err)
     if (caller) {
-      trackApiCall({ caller, api_path: api, response: "Error" })
+      await trackApiCall({ caller, api_path: api, response: "Error" })
     }
+    sentryCaptureException(err)
     throw err
   }
 }
@@ -136,7 +138,7 @@ export const getJobsQuery = async (
   }
 
   if (query.caller) {
-    trackApiCall({ caller: query.caller, job_count, result_count: job_count, api_path: "jobV1/jobs", response: "OK" })
+    await trackApiCall({ caller: query.caller, job_count, result_count: job_count, api_path: "jobV1/jobs", response: "OK" })
   }
 
   return result

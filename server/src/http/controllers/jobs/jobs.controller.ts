@@ -4,6 +4,7 @@ import { ICredential, IJob, IUserRecruteur, zRoutes } from "shared"
 import { IRouteSchema } from "shared/routes/common.routes"
 
 import { IUser } from "@/common/model/schema/user/user.types"
+import { sentryCaptureException } from "@/common/utils/sentryUtils"
 
 import { Recruiter } from "../../../common/model/index"
 import { delay } from "../../../common/utils/asyncUtils"
@@ -395,8 +396,12 @@ export default (server: Server) => {
       }
       if ("matchas" in result) {
         const { matchas } = result
-        if (matchas && "results" in matchas) {
-          matchas.results.map((matchaOffre) => matchaOffre?.job?.id && addOffreSearchView(matchaOffre.job.id))
+        try {
+          if (matchas && "results" in matchas) {
+            matchas.results.map(async (matchaOffre) => matchaOffre?.job?.id && (await addOffreSearchView(matchaOffre.job.id)))
+          }
+        } catch (err) {
+          sentryCaptureException(err)
         }
       }
 
