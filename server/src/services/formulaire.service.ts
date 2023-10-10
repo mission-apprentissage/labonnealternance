@@ -377,8 +377,10 @@ export const getFormulaire = async (query: FilterQuery<IRecruiter>): Promise<IRe
  * @param {IRecruiter} payload
  * @returns {Promise<IRecruiter>}
  */
-export const createFormulaire = async (payload: Partial<Omit<IRecruiter, "_id" | "establishment_id" | "createdAt" | "updatedAt">>): Promise<IRecruiter> =>
-  await Recruiter.create(payload)
+export const createFormulaire = async (payload: Partial<Omit<IRecruiter, "_id" | "establishment_id" | "createdAt" | "updatedAt">>): Promise<IRecruiter> => {
+  const recruiter = await Recruiter.create(payload)
+  return recruiter.toObject()
+}
 
 /**
  * Remove formulaire by id
