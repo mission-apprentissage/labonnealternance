@@ -1,5 +1,4 @@
 import { Box, Container, Divider, Flex, Spacer } from "@chakra-ui/react"
-// import { Outlet } from "react-router-dom" // TODO_AB to check consequences
 
 import Footer from "./Footer"
 import Header from "./Header"
@@ -14,14 +13,14 @@ import NavigationMenu from "./NavigationMenu"
  * @param {boolean} displayNavigationMenu
  * @return {JSX.Element}
  */
-export default function Layout({ header = true, children, widget = false, footer = true, displayNavigationMenu = true }) {
+export default function Layout({ header = true, children, widget = false, footer = true, rdva = false, displayNavigationMenu = true }) {
   return (
     <Container maxW="full" p="0">
       <Flex direction="column" h="100vh">
         {!widget && (
           <>
             {header && <Header />}
-            {displayNavigationMenu && <NavigationMenu />}
+            {displayNavigationMenu && <NavigationMenu rdva={rdva} />}
           </>
         )}
         <Container maxW="container.xl" flexGrow="1">

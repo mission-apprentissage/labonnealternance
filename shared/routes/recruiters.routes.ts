@@ -107,7 +107,7 @@ export const zRecruiterRoutes = {
         "200": z.array(ZRecruiter),
       },
       securityScheme: {
-        auth: "jwt-bearer",
+        auth: "cookie-session",
         role: "all",
       },
     },
@@ -191,13 +191,14 @@ export const zRecruiterRoutes = {
       },
     },
     "/etablissement/validation": {
-      // TODO_SECURITY_FIX jwt
-      body: z.object({ id: zObjectId }).strict(),
+      body: z.object({ id: zObjectId, token: z.string() }).strict(),
       response: {
-        "2xx": z.union([z.object({ token: z.string() }).strict(), z.object({ isUserAwaiting: z.boolean() }).strict()]),
+        // TODO ANY TO BE FIXED
+        "2xx": z.any(),
+        // "2xx": z.union([z.object({ token: z.string() }).strict(), z.object({ isUserAwaiting: z.boolean() }).strict()]),
       },
       securityScheme: {
-        auth: "none",
+        auth: "jwt-token",
         role: "all",
       },
     },
@@ -218,7 +219,7 @@ export const zRecruiterRoutes = {
         "2xx": z.union([ZUserRecruteur, z.null()]),
       },
       securityScheme: {
-        auth: "jwt-bearer",
+        auth: "cookie-session",
         role: "all",
       },
     },

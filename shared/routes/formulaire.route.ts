@@ -65,7 +65,6 @@ export const zFormulaireRoute = {
     },
     "/formulaire/:establishment_id/offre": {
       // TODO_SECURITY_FIX gestion des permissions
-      // TODO_SECURITY_FIX session gérée par cookie server
       // TODO_SECURITY_FIX limiter les champs autorisés à la modification. Utiliser un "ZRecruiterNew" (ou un autre nom du genre ZFormulaire)
       params: z.object({ establishment_id: z.string() }).strict(),
       // TODO nonstrict TO BE FIXED on the frontend
@@ -103,7 +102,6 @@ export const zFormulaireRoute = {
   put: {
     "/formulaire/:establishment_id": {
       // TODO_SECURITY_FIX gestion des permissions
-      // TODO_SECURITY_FIX session gérée par cookie server
       // TODO_SECURITY_FIX réduire aux champs modifiables
       params: z.object({ establishment_id: z.string() }).strict(),
       body: ZRecruiterWritable.partial(),
@@ -113,7 +111,7 @@ export const zFormulaireRoute = {
         // "2xx": ZRecruiter,
       },
       securityScheme: {
-        auth: "none",
+        auth: "cookie-session",
         role: "all",
       },
     },

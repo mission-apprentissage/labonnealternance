@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "@elastic/elasticsearch": "^7.17.13",
+    "@fastify/cookie": "^9.1.0",
     "@fastify/cors": "^8.4.0",
     "@fastify/rate-limit": "^8.0.3",
     "@fastify/swagger": "^8.10.1",
@@ -28,6 +29,7 @@
     "@sentry/integrations": "^7.72.0",
     "@sentry/node": "^7.72.0",
     "@turf/distance": "^6.5.0",
+    "@types/netmask": "^2.0.3",
     "@types/nodemailer": "^6.4.11",
     "@types/nodemailer-html-to-text": "^3.1.1",
     "aws-sdk": "^2.1466.0",
@@ -101,7 +103,6 @@
     "@types/lodash-es": "^4.17.9",
     "@types/memoizee": "^0.4.9",
     "@types/mjml": "^4.7.2",
-    "@types/netmask": "^2.0.3",
     "@types/node": "20.7.1",
     "@types/supertest": "^2.0.13",
     "@typescript-eslint/eslint-plugin": "^5.62.0",

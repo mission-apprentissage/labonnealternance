@@ -3,8 +3,9 @@ import dayjs from "dayjs"
 import _ from "lodash"
 import { CSVLink } from "react-csv"
 
+import { useAuth } from "@/context/UserContext"
+
 import { AUTHTYPE } from "../../../common/contants"
-import useAuth from "../../../common/hooks/useAuth"
 import { DownloadLine } from "../../../theme/components/icons"
 
 const formatDate = (date) => dayjs(date).format("YYYY-MM-DD")
@@ -12,11 +13,11 @@ const formatDate = (date) => dayjs(date).format("YYYY-MM-DD")
 export default function ExportButtonNew({ data, datasetName = "export" }) {
   /** Map et reduce data per offre */
 
-  const [auth] = useAuth()
+  const { user } = useAuth()
 
   const buffer = []
 
-  if (auth.type === AUTHTYPE.OPCO) {
+  if (user.type === AUTHTYPE.OPCO) {
     data.forEach((e) => {
       if (e.job_detail?.length) {
         e.job_detail.forEach((job) => {

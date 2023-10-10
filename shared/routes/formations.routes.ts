@@ -11,7 +11,7 @@ export const zFormationRoute = {
         "2xx": z.array(zFormationCatalogueSchema),
       },
       securityScheme: {
-        auth: "jwt-rdv-admin",
+        auth: "cookie-session",
         role: "administrator",
       },
     },

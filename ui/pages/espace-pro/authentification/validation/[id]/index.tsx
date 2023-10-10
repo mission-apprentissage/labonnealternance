@@ -1,11 +1,13 @@
 import { Box, Heading, Link, Text, useBoolean } from "@chakra-ui/react"
 import { useRouter } from "next/router"
 import { useEffect } from "react"
+import { IUserRecruteurPublic } from "shared"
+import { ETAT_UTILISATEUR } from "shared/constants/recruteur"
 
-import { AUTHTYPE } from "../../../../../common/contants"
-import useAuth from "../../../../../common/hooks/useAuth"
+import { useAuth } from "@/context/UserContext"
+import { apiPost } from "@/utils/api.utils"
+
 import { AuthentificationLayout, LoadingEmptySpace } from "../../../../../components/espace_pro"
-import { validationCompte } from "../../../../../utils/api"
 
 const EmailValide = () => (
   <Box pt={["6", "12"]} px={["6", "8"]}>
@@ -39,58 +41,32 @@ export default function ConfirmationValidationEmail() {
   const [isInvalid, setIsInvalid] = useBoolean()
   const [isAwaitingValidation, setIsAwaitingValidation] = useBoolean()
   const router = useRouter()
-  const { id } = router.query
-  const [auth, setAuth] = useAuth()
+  const { id, token } = router.query as { id: string; token: string }
+
+  const { setUser } = useAuth()
 
   useEffect(() => {
-    setLoading.on()
-    // get user from params coming from email link
-    validationCompte({ id })
-      .then(({ data }) => {
-        if (data?.isUserAwaiting) {
+    const fetchData = async () => {
+      setLoading.on()
+      if (token && id) {
+        const user = (await apiPost("/etablissement/validation", { body: { id, token } })) as IUserRecruteurPublic
+        if (user.status_current === ETAT_UTILISATEUR.ATTENTE) {
           setLoading.off()
           setIsInvalid.off()
           setIsAwaitingValidation.on()
-          // setTimeout(() => redirect("/", true), 10000)
-        }
-        if (data?.token) {
+          setTimeout(() => router.push("/"), 10000)
+        } else {
           setLoading.off()
-          setAuth(data?.token)
+          setUser(user)
+          router.push("/espace-pro/authentification/validation")
         }
-      })
-      .catch(() => {
-        setLoading.off()
-        setIsInvalid.on()
-      })
-  }, [id])
-
-  useEffect(() => {
-    switch (auth.type) {
-      case AUTHTYPE.ENTREPRISE:
-        setTimeout(() => {
-          router.push({
-            pathname: `/espace-pro/administration/entreprise/${auth.establishment_id}`,
-            query: { newUser: true },
-          })
-        }, 1000)
-        break
-
-      case AUTHTYPE.CFA:
-        setTimeout(() => {
-          router.push("/espace-pro/administration")
-        }, 1000)
-        break
-
-      case AUTHTYPE.OPCO:
-        setTimeout(() => {
-          router.push("/espace-pro/administration/opco")
-        }, 1000)
-        break
-
-      default:
-        break
+      }
     }
-  }, [auth])
+    fetchData().catch(() => {
+      setLoading.off()
+      setIsInvalid.on()
+    })
+  }, [token, id])
 
   return (
     <>

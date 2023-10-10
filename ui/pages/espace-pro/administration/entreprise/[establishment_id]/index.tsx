@@ -1,6 +1,8 @@
+import { getAuthServerSideProps } from "@/common/SSR/getAuthServerSideProps"
+
 import { Layout } from "../../../../../components/espace_pro"
 import ListeOffres from "../../../../../components/espace_pro/ListeOffres"
-import withAuth from "../../../../../components/espace_pro/withAuth"
+import { authProvider, withAuth } from "../../../../../components/espace_pro/withAuth"
 
 function EntrepriseListOffrePage() {
   return (
@@ -9,4 +11,7 @@ function EntrepriseListOffrePage() {
     </Layout>
   )
 }
-export default withAuth(EntrepriseListOffrePage)
+
+export const getServerSideProps = async (context) => ({ props: { ...(await getAuthServerSideProps(context)) } })
+
+export default authProvider(withAuth(EntrepriseListOffrePage))

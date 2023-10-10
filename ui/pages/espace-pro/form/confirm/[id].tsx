@@ -3,19 +3,23 @@ import { Box, Flex, Link, Text } from "@chakra-ui/react"
 import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 
-import { _get } from "../../../../common/httpClient"
+import { apiGet } from "@/utils/api.utils"
+
 import { FormLayoutComponent } from "../../../../components/espace_pro/Candidat/layout/FormLayoutComponent"
 import { BarberGuy } from "../../../../theme/components/icons"
 
 export default function FormRecapPage() {
   const router = useRouter()
-  const { id: appointmentId } = router.query
+  const { id: appointmentId } = router.query as { id: string }
   const [data, setData] = useState(null)
 
   useEffect(() => {
     const fetchData = async () => {
       if (appointmentId) {
-        const response = await _get(`appointment-request/context/recap?appointmentId=${appointmentId}`)
+        const response = await apiGet("/appointment-request/context/recap", {
+          querystring: { appointmentId },
+        })
+
         setData(response)
       }
     }

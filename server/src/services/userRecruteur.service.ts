@@ -10,7 +10,7 @@ import { UserRecruteur } from "../common/model/index"
 import { createMagicLinkToken } from "../common/utils/jwtUtils"
 import config from "../config"
 
-import { CFA, ENTREPRISE, ETAT_UTILISATEUR, VALIDATION_UTILISATEUR } from "./constant.service"
+import { CFA, ENTREPRISE, ETAT_UTILISATEUR, VALIDATION_UTILISATEUR, ADMIN } from "./constant.service"
 import mailer from "./mailer.service"
 
 /**
@@ -233,6 +233,8 @@ const projection = {
   opco: 1,
   status: 1,
 }
+
+export const getAdminUsers = () => UserRecruteur.find({ type: ADMIN }).lean()
 
 export const getActiveUsers = () =>
   UserRecruteur.find({
