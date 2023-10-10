@@ -1,6 +1,8 @@
 import { Filter, FindOptions, ObjectId } from "mongodb"
 import { ISession } from "shared"
 
+import config from "@/config"
+
 import { Session } from "../common/model/index"
 
 type TCreateSession = Pick<ISession, "token">
@@ -12,6 +14,7 @@ export const createSession = async (data: TCreateSession) => {
     ...data,
     updated_at: now,
     created_at: now,
+    expires_at: new Date(now.getTime() + config.auth.session.cookie.maxAge),
   })
   await sessionObj.save()
 
