@@ -1,9 +1,10 @@
 import crypto from "crypto"
 
-import axios from "axios"
 import Boom from "boom"
 import { groupBy, maxBy } from "lodash-es"
 import type { IFormationCatalogue } from "shared"
+
+import { getHttpClient } from "@/common/utils/httpUtils"
 
 import { getElasticInstance } from "../common/esClient/index"
 import { FormationCatalogue } from "../common/model/index"
@@ -645,7 +646,7 @@ const removeEmailFromLBFData = (data: any): any => {
  */
 export const getFormationDescriptionQuery = async ({ id }: { id: string }): Promise<IApiError | any> => {
   try {
-    const formationDescription = await axios.get(`${lbfDescriptionUrl}?${getLbfQueryParams(id)}`)
+    const formationDescription = await getHttpClient().get(`${lbfDescriptionUrl}?${getLbfQueryParams(id)}`)
 
     return removeEmailFromLBFData(formationDescription.data)
   } catch (error) {
