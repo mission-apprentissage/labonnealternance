@@ -10,23 +10,6 @@ import { Server } from "../../server"
  */
 export default (server: Server) => {
   /**
-   * Get all formations getRequests /requests GET
-   * */
-  // TODO NOT USED TO DELETE
-  // server.get(
-  //   "/admin/appointments",
-  //   {
-  //     schema: zRoutes.get["/admin/appointments"],
-  //     preHandler: [server.auth(zRoutes.get["/admin/appointments"].securityScheme)],
-  //   },
-  //   async (req, res) => {
-  //     const appointments = await Appointment.find().sort({ _id: -1 }).lean()
-
-  //     return res.status(200).send({ appointments })
-  //   }
-  // )
-
-  /**
    * Get all formations getRequests /requests GET (with details)
    * */
   server.get(

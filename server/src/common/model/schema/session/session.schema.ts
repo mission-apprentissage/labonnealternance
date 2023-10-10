@@ -24,6 +24,6 @@ export const sessionSchema = new Schema<ISession>(
   }
 )
 
-sessionSchema.index({ token: 1 }, { name: "token" })
+sessionSchema.index({ token: 1 })
 
 export default model<ISession>("session", sessionSchema)

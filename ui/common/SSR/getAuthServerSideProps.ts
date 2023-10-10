@@ -5,7 +5,8 @@ import { apiGet } from "@/utils/api.utils"
 import { isInitialServerSideProps } from "./isInitialServerSideProps"
 
 export const getAuthServerSideProps = async (context) => {
-  if (!isInitialServerSideProps(context)) {
+  console.log(context.req.headers)
+  if (!isInitialServerSideProps(context) || !context.req.headers.cookie) {
     return {}
   }
   try {

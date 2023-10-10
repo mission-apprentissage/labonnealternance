@@ -35,7 +35,6 @@ export const zLoginRoutes = {
       },
     },
     "/login/verification": {
-      // TODO_SECURITY_FIX AB déclencher session ici
       response: {
         // TODO ANY TO BE FIXED
         "2xx": z.any(),
