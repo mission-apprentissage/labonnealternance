@@ -30,8 +30,9 @@ import { createRef, useState, useEffect } from "react"
 import "react-dates/initialize"
 import "react-dates/lib/css/_datepicker.css"
 
+import { apiGet, apiPatch } from "@/utils/api.utils"
+
 import { dayjs, formatDate } from "../../../../../common/dayjs"
-import { _get, _patch } from "../../../../../common/httpClient"
 import { Disquette } from "../../../../../theme/components/icons"
 import { emailStatus } from "../constants/email"
 
@@ -54,7 +55,7 @@ const EtablissementComponent = ({ id }) => {
    */
   const fetchData = async () => {
     try {
-      const response = await _get(`admin/etablissements/${id}`)
+      const response = await apiGet("/admin/etablissements/:id", { params: { id } })
       setEtablissement(response)
     } catch (error) {
       toast({
@@ -103,7 +104,7 @@ const EtablissementComponent = ({ id }) => {
    */
   const upsertEmailDecisionnaire = async (email) => {
     try {
-      const response = await _patch(`admin/etablissements/${etablissement?._id}`, { gestionnaire_email: email })
+      const response = await apiPatch("/admin/etablissements/:id", { params: { id: etablissement?._id }, body: { gestionnaire_email: email } })
       setEtablissement(response)
       putSuccess()
     } catch (error) {

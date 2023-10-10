@@ -31,8 +31,9 @@ import { useRouter } from "next/router"
 import { useState } from "react"
 import { useQuery, useQueryClient } from "react-query"
 
+import { useAuth } from "@/context/UserContext"
+
 import { AUTHTYPE } from "../../common/contants"
-import useAuth from "../../common/hooks/useAuth"
 import { sortReactTableDate } from "../../common/utils/dateUtils"
 import { publicConfig } from "../../config.public"
 import { ArrowDropRightLine, Building, ExternalLinkLine, Parametre, Plus } from "../../theme/components/icons"
@@ -70,7 +71,7 @@ export default function ListeOffres() {
   const router = useRouter()
   const confirmationSuppression = useDisclosure()
   const [currentOffre, setCurrentOffre] = useState()
-  const [auth] = useAuth()
+  const { user } = useAuth()
   const toast = useToast()
   const client = useQueryClient()
 
@@ -86,7 +87,7 @@ export default function ListeOffres() {
 
   const entrepriseTitle = establishment_raison_sociale ?? establishment_siret
   const getOffreCreationUrl = () => {
-    switch (auth.type) {
+    switch (user.type) {
       case AUTHTYPE.OPCO:
         return `/espace-pro/administration/opco/entreprise/${establishment_siret}/${establishment_id}/offre/creation`
       default:
@@ -111,7 +112,7 @@ export default function ListeOffres() {
             {entrepriseTitle}
           </Text>
           <Box>
-            {auth.type !== AUTHTYPE.OPCO && (
+            {user.type !== AUTHTYPE.OPCO && (
               <Button mr={5} variant="secondary" leftIcon={<Building />} onClick={() => router.push(`/espace-pro/administration/entreprise/${establishment_id}/edition`)}>
                 Modifier l'entreprise
               </Button>
@@ -243,7 +244,7 @@ export default function ListeOffres() {
                         <ExternalLinkLine ml={1} color="bluefrance.500" />
                       </Link>
                     </MenuItem>
-                    {auth.type !== AUTHTYPE.CFA && (
+                    {user.type !== AUTHTYPE.CFA && (
                       <MenuItem>
                         <Link isExternal href={`${publicConfig.baseUrl}/recherche-apprentissage-formation?&caller=matcha&romes=${row.rome_code}&lon=${lon}&lat=${lat}`}>
                           Voir les centres de formations
@@ -275,7 +276,7 @@ export default function ListeOffres() {
       <ConfirmationSuppressionOffre {...confirmationSuppression} offre={currentOffre} />
       <Box mb={5}>
         <Breadcrumb separator={<ArrowDropRightLine color="grey.600" />} textStyle="xs">
-          {auth.type === AUTHTYPE.OPCO && (
+          {user.type === AUTHTYPE.OPCO && (
             <Breadcrumb separator={<ArrowDropRightLine color="grey.600" />} textStyle="xs">
               <BreadcrumbItem>
                 <BreadcrumbLink textDecoration="underline" onClick={() => router.push("/espace-pro/administration/opco")} textStyle="xs">
@@ -287,7 +288,7 @@ export default function ListeOffres() {
               </BreadcrumbItem>
             </Breadcrumb>
           )}
-          {auth.sub !== "anonymous" && auth.type !== AUTHTYPE.ENTREPRISE && auth.type !== AUTHTYPE.OPCO && (
+          {user && user.type !== AUTHTYPE.ENTREPRISE && user.type !== AUTHTYPE.OPCO && (
             <Breadcrumb separator={<ArrowDropRightLine color="grey.600" />} textStyle="xs">
               <BreadcrumbItem>
                 <BreadcrumbLink textDecoration="underline" onClick={() => router.back()} textStyle="xs">
@@ -306,9 +307,9 @@ export default function ListeOffres() {
           {establishment_raison_sociale ?? `SIRET ${establishment_siret}`}
         </Text>
         <Box>
-          {auth.type !== AUTHTYPE.OPCO && (
+          {user.type !== AUTHTYPE.OPCO && (
             <Button mr={5} variant="secondary" leftIcon={<Building />} onClick={() => router.push(`/espace-pro/administration/entreprise/${establishment_id}/edition`)}>
-              {auth.type === AUTHTYPE.ENTREPRISE ? "Mes informations" : "Modifier l'entreprise"}
+              {user.type === AUTHTYPE.ENTREPRISE ? "Mes informations" : "Modifier l'entreprise"}
             </Button>
           )}
           <Button variant="primary" leftIcon={<Plus />} onClick={navigateToCreation}>

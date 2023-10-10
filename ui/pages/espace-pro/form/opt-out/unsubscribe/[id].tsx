@@ -3,7 +3,8 @@ import Head from "next/head"
 import { useRouter } from "next/router"
 import React, { useEffect, useState } from "react"
 
-import { _get, _post } from "../../../../../common/httpClient"
+import { apiGet, apiPost } from "@/utils/api.utils"
+
 import { Breadcrumb } from "../../../../../components/espace_pro/common/components/Breadcrumb"
 import Layout from "../../../../../components/espace_pro/common/components/Layout"
 import { SuccessCircle } from "../../../../../theme/components/icons"
@@ -19,7 +20,7 @@ export default function OptOutUnsubscribe() {
   }
 
   const router = useRouter()
-  const { id } = router.query
+  const { id } = router.query as { id: string }
   const [textarea, setTextarea] = useState("")
   const [hasBeenUnsubscribed, setHasBeenUnsubscribed] = useState(false)
   const [isQuestionSent, setIsQuestionSent] = useState(false)
@@ -42,7 +43,11 @@ export default function OptOutUnsubscribe() {
   const submit = async () => {
     const opt_out_question = textarea === "" ? undefined : textarea
 
-    await _post(`etablissements/${id}/opt-out/unsubscribe`, { opt_out_question })
+    await apiPost("/etablissements/:id/opt-out/unsubscribe", {
+      params: { id },
+      body: { opt_out_question },
+    })
+
     window.scrollTo(0, 0)
 
     opt_out_question ? setIsQuestionSent(true) : setHasBeenUnsubscribed(true)
@@ -50,7 +55,9 @@ export default function OptOutUnsubscribe() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const etablissement = await _get(`etablissements/${id}`)
+      const etablissement = (await apiGet("/etablissements/:id", {
+        params: { id },
+      })) as any // TODO not any
 
       if (etablissement.optout_refusal_date) {
         setHasBeenUnsubscribed(true)

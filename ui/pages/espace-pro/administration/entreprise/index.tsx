@@ -20,10 +20,12 @@ import { useRouter } from "next/router"
 import { useState } from "react"
 import * as Yup from "yup"
 
-import useAuth from "../../../../common/hooks/useAuth"
+import { getAuthServerSideProps } from "@/common/SSR/getAuthServerSideProps"
+import { useAuth } from "@/context/UserContext"
+
 import { SIRETValidation } from "../../../../common/validation/fieldValidations"
 import { AnimationContainer, CustomInput, Layout } from "../../../../components/espace_pro"
-import withAuth from "../../../../components/espace_pro/withAuth"
+import { authProvider, withAuth } from "../../../../components/espace_pro/withAuth"
 import { InfoCircle, SearchLine } from "../../../../theme/components/icons"
 import { getEntrepriseInformation, getEntrepriseOpco } from "../../../../utils/api"
 
@@ -31,11 +33,11 @@ const CreationCompte = () => {
   const [isCfa, setIsCfa] = useState(false)
   const buttonSize = useBreakpointValue(["sm", "md"])
   const router = useRouter()
-  const [auth] = useAuth()
+  const { user } = useAuth()
 
   const submitSiret = ({ establishment_siret }, { setSubmitting, setFieldError }) => {
     const formattedSiret = establishment_siret.replace(/[^0-9]/g, "")
-    Promise.all([getEntrepriseOpco(formattedSiret), getEntrepriseInformation(formattedSiret, { cfa_delegated_siret: auth.cfa_delegated_siret })]).then(
+    Promise.all([getEntrepriseOpco(formattedSiret), getEntrepriseInformation(formattedSiret, { cfa_delegated_siret: user.cfa_delegated_siret })]).then(
       ([opcoInfos, entrepriseData]) => {
         if (entrepriseData.error) {
           if (entrepriseData.statusCode >= 500) {
@@ -170,4 +172,7 @@ function CreationEntreprisePage() {
     </Layout>
   )
 }
-export default withAuth(CreationEntreprisePage)
+
+export const getServerSideProps = async (context) => ({ props: { ...(await getAuthServerSideProps(context)) } })
+
+export default authProvider(withAuth(CreationEntreprisePage))

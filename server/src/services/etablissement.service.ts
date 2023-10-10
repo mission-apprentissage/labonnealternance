@@ -5,6 +5,7 @@ import { IEtablissement, ILbaCompany, IRecruiter, IReferentielData, IUserRecrute
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getHttpClient } from "@/common/utils/httpUtils"
+import { createMagicLinkToken } from "@/common/utils/jwtUtils"
 
 import { Etablissement, LbaCompany, LbaCompanyLegacy, ReferentielOpco, UnsubscribeOF, UserRecruteur } from "../common/model/index"
 import { IReferentielOpco } from "../common/model/schema/referentielOpco/referentielOpco.types"
@@ -226,12 +227,7 @@ export const getIdcc = async (siret: string): Promise<ISIRET2IDCC | null> => {
     return null
   }
 }
-/**
- * @description Get the establishment validation url for a given SIRET
- * @param {IRecruiter["_id"]} _id
- * @returns {String}
- */
-export const getValidationUrl = (_id: IRecruiter["_id"]): string => `${config.publicUrl}/espace-pro/authentification/validation/${_id}`
+
 /**
  * @description Validate the establishment email for a given ID
  * @param {IUserRecruteur["_id"]} _id
@@ -661,6 +657,17 @@ export const entrepriseOnboardingWorkflow = {
   },
 }
 
+/**
+ * @description Get the establishment validation url for a given SIRET
+ * @param {IRecruiter["_id"]} _id
+ * @returns {String}
+ */
+const getValidationUrl = (_id: IRecruiter["_id"], email): string => {
+  return `${config.publicUrl}/espace-pro/authentification/validation/${_id}?token=${createMagicLinkToken(email, {
+    expiresIn: "30d",
+  })}`
+}
+
 export const sendUserConfirmationEmail = async ({
   email,
   firstName,
@@ -672,7 +679,7 @@ export const sendUserConfirmationEmail = async ({
   firstName: string
   userRecruteurId: IUserRecruteur["_id"]
 }) => {
-  const url = getValidationUrl(userRecruteurId)
+  const url = getValidationUrl(userRecruteurId, email)
   await mailer.sendEmail({
     to: email,
     subject: "Confirmez votre adresse mail",
@@ -698,7 +705,7 @@ export const sendEmailConfirmationEntreprise = async (user: IUserRecruteur, recr
   const offre = jobs.at(0)
   if (jobs.length === 1 && offre && is_delegated === false) {
     // Get user account validation link
-    const url = getValidationUrl(user._id)
+    const url = getValidationUrl(user._id, user.email)
     await mailer.sendEmail({
       to: email,
       subject: "Confirmez votre adresse mail",

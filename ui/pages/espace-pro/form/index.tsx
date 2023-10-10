@@ -5,7 +5,8 @@ import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import * as Yup from "yup"
 
-import { _post } from "../../../common/httpClient"
+import { apiPost } from "@/utils/api.utils"
+
 import { getReasonText, getDefaultReasonsAsFalse, getReasons } from "../../../common/utils/reasonsUtils"
 import { ContactCfaComponent } from "../../../components/espace_pro/Candidat/layout/ContactCfaComponent"
 import { FormLayoutComponent } from "../../../components/espace_pro/Candidat/layout/FormLayoutComponent"
@@ -34,7 +35,7 @@ export default function FormCreatePage() {
   const [loading, setLoading] = useState(false)
   const [displayMessage, setDisplayMessage] = useState(false)
 
-  const { cleMinistereEducatif, referrer } = router.query
+  const { cleMinistereEducatif, referrer } = router.query as { cleMinistereEducatif: string; referrer: string }
   /**
    * @description Initialize.
    */
@@ -43,10 +44,9 @@ export default function FormCreatePage() {
       try {
         setLoading(true)
 
-        const response = await _post(`appointment-request/context/create`, {
-          idCleMinistereEducatif: cleMinistereEducatif,
-          referrer,
-        })
+        const response = (await apiPost("/appointment-request/context/create", {
+          body: { idCleMinistereEducatif: cleMinistereEducatif, referrer },
+        })) as any // TODO not any
 
         if (response?.error) {
           throw new Error(response?.error)
@@ -107,17 +107,20 @@ export default function FormCreatePage() {
   const sendNewRequest = async (values, { setStatus }) => {
     try {
       setSubmitLoading(true)
-      const { appointment } = await _post("appointment-request/validate", {
-        firstname: values.firstname,
-        lastname: values.lastname,
-        phone: values.phone,
-        email: values.email,
-        type: values.applicantType,
-        applicantMessageToCfa: values.applicantMessageToCfa,
-        cleMinistereEducatif,
-        applicantReasons: getReasons().filter((e) => checkedState[e]),
-        appointmentOrigin: referrer,
-      })
+
+      const { appointment } = (await apiPost("/appointment-request/validate", {
+        body: {
+          firstname: values.firstname,
+          lastname: values.lastname,
+          phone: values.phone,
+          email: values.email,
+          type: values.applicantType,
+          applicantMessageToCfa: values.applicantMessageToCfa,
+          cleMinistereEducatif,
+          applicantReasons: getReasons().filter((e) => checkedState[e]),
+          appointmentOrigin: referrer,
+        },
+      })) as any // TODO not any
 
       await router.push(`/espace-pro/form/confirm/${appointment._id}`)
       setTimeout(() => window.scroll({ top: 0, behavior: "smooth" }), 500)

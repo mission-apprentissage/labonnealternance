@@ -35,6 +35,7 @@ export const createUserFromCLI = async (
     scope,
     type: Type,
     is_email_checked: Email_valide,
+    status,
   }
 
   await createUser(payload)

@@ -31,14 +31,16 @@ import { useRouter } from "next/router"
 import { useContext, useEffect, useState } from "react"
 import * as Yup from "yup"
 
+import { useAuth } from "@/context/UserContext"
+import { apiPost } from "@/utils/api.utils"
+
 import { AUTHTYPE } from "../../common/contants"
-import useAuth from "../../common/hooks/useAuth"
 import { publicConfig } from "../../config.public"
 import { LogoContext } from "../../context/contextLogo"
 import { WidgetContext } from "../../context/contextWidget"
 import { ArrowRightLine, ExternalLinkLine, InfoCircle, Minus, Plus, Warning } from "../../theme/components/icons"
 import { J1S, Parcoursup } from "../../theme/components/logos_pro"
-import { getFormulaire, getRelatedEtablissementsFromRome, getRomeDetail, postOffre } from "../../utils/api"
+import { getFormulaire, getRelatedEtablissementsFromRome, getRomeDetail } from "../../utils/api"
 
 import DropdownCombobox from "./DropdownCombobox"
 
@@ -69,9 +71,10 @@ const AjouterVoeuxForm = (props) => {
   const [formulaire, setFormulaire] = useState(null)
   const [haveProposals, setHaveProposals] = useState(false)
   const router = useRouter()
-  const [auth] = useAuth()
 
-  const { establishment_id, email, userId, type } = router.query
+  const { user } = useAuth()
+
+  const { establishment_id, email, userId, type } = router.query as { establishment_id: string; email: string; userId: string; type: string }
 
   const minDate = dayjs().format(DATE_FORMAT)
 
@@ -119,7 +122,7 @@ const AjouterVoeuxForm = (props) => {
    * @return {Promise<void>}
    */
   const submitFromDashboard = async (values, { resetForm }) => {
-    if (auth.type !== AUTHTYPE.ENTREPRISE) {
+    if (user && user.type !== AUTHTYPE.ENTREPRISE) {
       await props.handleSave(values)
     } else {
       const res = await props.handleSave(values)
@@ -141,10 +144,10 @@ const AjouterVoeuxForm = (props) => {
    * @return {Promise<void>}
    */
   const submitFromDepotRapide = async (values) => {
-    const { data } = (await postOffre(establishment_id, values)) as any
-    data.jobs.slice(-1)
-    const [job] = data.jobs.slice(-1)
-    await handleRedirectionAfterSubmit(data, job, false)
+    const formulaire = (await apiPost("/formulaire/:establishment_id/offre", { params: { establishment_id }, body: values })) as any
+    formulaire.jobs.slice(-1)
+    const [job] = formulaire.jobs.slice(-1)
+    await handleRedirectionAfterSubmit(formulaire, job, false)
   }
 
   /**
@@ -313,7 +316,7 @@ const AjouterVoeuxForm = (props) => {
                 </Flex>
               </FormErrorMessage>
             </FormControl>
-            {auth.type !== AUTHTYPE.ENTREPRISE || type !== AUTHTYPE.ENTREPRISE ? (
+            {(user && user.type !== AUTHTYPE.ENTREPRISE) || type !== AUTHTYPE.ENTREPRISE ? (
               <FormControl mt={6}>
                 <FormLabel>Rythme de l'alternance (formation / entreprise)</FormLabel>
                 <FormHelperText pb={2}>Facultatif</FormHelperText>
@@ -494,7 +497,6 @@ export const PageAjouterVoeux = (props) => {
       })
   }
 
-  // TODO_AB to redirect
   if (!establishment_id) return <></>
 
   return (
