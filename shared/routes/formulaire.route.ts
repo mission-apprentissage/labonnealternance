@@ -75,7 +75,7 @@ export const zFormulaireRoute = {
         "200": z.any(),
       },
       securityScheme: {
-        auth: "none", // "cookie-session",
+        auth: "none",
         role: "all",
       },
     },

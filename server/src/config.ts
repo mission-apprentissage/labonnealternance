@@ -69,16 +69,13 @@ const config = {
       expiresIn: env.get("LBA_MAGICLINK_JWT_SECRET_EXPIRE").required().asString(),
     },
     session: {
-      cookieName: env.get("LBA_AUTH_SESSION_COOKIE_NAME").default("lba_session").asString(),
+      cookieName: "lba_session",
       cookie: {
-        maxAge: env
-          .get("LBA_AUTH_SESSION_COOKIE_MAX_AGE")
-          .default(30 * 24 * 3600000)
-          .asInt(),
-        httpOnly: env.get("LBA_AUTH_SESSION_COOKIE_HTTP_ONLY").default("true").asBool(),
+        maxAge: 30 * 24 * 3600000,
+        httpOnly: true,
         sameSite: "lax" as const,
         path: "/",
-        secure: env.get("LBA_AUTH_SESSION_COOKIE_SECURE").default("true").asBool(),
+        secure: true,
       },
     },
   },
