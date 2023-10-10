@@ -1,7 +1,6 @@
-import { sentryCaptureException } from "@/common/utils/sentryUtils.js"
-
 import { IApiError } from "../common/utils/errorManager.js"
 import { trackApiCall } from "../common/utils/sendTrackingEvent.js"
+import { sentryCaptureException } from "../common/utils/sentryUtils.js"
 
 import { TJobSearchQuery, TLbaItemResult } from "./jobOpportunity.service.types.js"
 import { getSomeCompanies } from "./lbacompany.service.js"
