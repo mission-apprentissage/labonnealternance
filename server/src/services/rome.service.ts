@@ -1,6 +1,6 @@
 import querystring from "querystring"
 
-import axios from "axios"
+import { getHttpClient } from "@/common/utils/httpUtils"
 
 import { sentryCaptureException } from "../common/utils/sentryUtils"
 import config from "../config"
@@ -25,7 +25,7 @@ const getToken = async (token): Promise<IPEAPIToken> => {
   }
 
   try {
-    const response = await axios.post(
+    const response = await getHttpClient().post(
       "https://entreprise.pole-emploi.fr/connexion/oauth2/access_token?realm=partenaire",
       querystring.stringify({
         grant_type: "client_credentials",
@@ -54,7 +54,7 @@ export const getRomeDetailsFromAPI = async (romeCode: string): Promise<IRomeDeta
   token = await getToken(token)
 
   try {
-    const { data } = await axios.get<IRomeDetailsFromAPI>(`https://api.pole-emploi.io/partenaire/rome/v1/metier/${romeCode}`, {
+    const { data } = await getHttpClient().get<IRomeDetailsFromAPI>(`https://api.pole-emploi.io/partenaire/rome/v1/metier/${romeCode}`, {
       headers: {
         Authorization: `Bearer ${token.access_token}`,
       },
@@ -73,7 +73,7 @@ export const getAppellationDetailsFromAPI = async (appellationCode: string): Pro
   token = await getToken(token)
 
   try {
-    const { data } = await axios.get<IAppelattionDetailsFromAPI>(`https://api.pole-emploi.io/partenaire/rome/v1/appellation/${appellationCode}`, {
+    const { data } = await getHttpClient().get<IAppelattionDetailsFromAPI>(`https://api.pole-emploi.io/partenaire/rome/v1/appellation/${appellationCode}`, {
       headers: {
         Authorization: `Bearer ${token.access_token}`,
       },
