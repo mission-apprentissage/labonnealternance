@@ -1,6 +1,5 @@
 import { IApiError } from "../common/utils/errorManager.js"
 import { trackApiCall } from "../common/utils/sendTrackingEvent.js"
-import { sentryCaptureException } from "../common/utils/sentryUtils.js"
 
 import { TJobSearchQuery, TLbaItemResult } from "./jobOpportunity.service.types.js"
 import { getSomeCompanies } from "./lbacompany.service.js"
@@ -95,7 +94,6 @@ export const getJobsFromApi = async ({
     if (caller) {
       trackApiCall({ caller, api_path: api, response: "Error" })
     }
-    sentryCaptureException(err)
     throw err
   }
 }
