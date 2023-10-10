@@ -91,7 +91,6 @@ export const getJobsFromApi = async ({
 
     return { peJobs, matchas, lbaCompanies, lbbCompanies: null }
   } catch (err) {
-    console.log(err)
     if (caller) {
       trackApiCall({ caller, api_path: api, response: "Error" })
     }

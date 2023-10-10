@@ -4,6 +4,7 @@ import { encryptMailWithIV } from "../common/utils/encryptString"
 import { IApiError, manageApiError } from "../common/utils/errorManager"
 import { roundDistance } from "../common/utils/geolib"
 import { trackApiCall } from "../common/utils/sendTrackingEvent"
+import { sentryCaptureException } from "../common/utils/sentryUtils"
 
 import { IApplicationCount, getApplicationByJobCount } from "./application.service"
 import { JOB_STATUS, NIVEAUX_POUR_LBA, RECRUITER_STATUS } from "./constant.service"
@@ -243,7 +244,11 @@ export const addOffreDetailView = async (jobId: IJob["_id"] | string) => {
  * Incrémente le compteur de vue de la page de recherche d'une offre LBA
  */
 export const addOffreSearchView = async (jobId: IJob["_id"] | string) => {
-  await incrementLbaJobViewCount(jobId, {
-    stats_search_view: 1,
-  })
+  try {
+    await incrementLbaJobViewCount(jobId, {
+      stats_search_view: 1,
+    })
+  } catch (err) {
+    sentryCaptureException(err)
+  }
 }
