@@ -94,7 +94,7 @@ export const getJobsFromApi = async ({
     return { peJobs, matchas, lbaCompanies, lbbCompanies: null }
   } catch (err) {
     if (caller) {
-      await trackApiCall({ caller, api_path: api, response: "Error" })
+      trackApiCall({ caller, api_path: api, response: "Error" })
     }
     sentryCaptureException(err)
     throw err
@@ -138,7 +138,7 @@ export const getJobsQuery = async (
   }
 
   if (query.caller) {
-    await trackApiCall({ caller: query.caller, job_count, result_count: job_count, api_path: "jobV1/jobs", response: "OK" })
+    trackApiCall({ caller: query.caller, job_count, result_count: job_count, api_path: "jobV1/jobs", response: "OK" })
   }
 
   return result
