@@ -1,5 +1,7 @@
 import { ISession } from "shared"
 
+import config from "@/config"
+
 import { model, Schema } from "../../../mongodb"
 
 export const sessionSchema = new Schema<ISession>(
@@ -18,6 +20,11 @@ export const sessionSchema = new Schema<ISession>(
       default: Date.now,
       description: "Date d'ajout en base de données",
     },
+    expires_at: {
+      type: Date,
+      default: Date.now,
+      description: "Date d'expiration",
+    },
   },
   {
     versionKey: false,
@@ -25,5 +32,6 @@ export const sessionSchema = new Schema<ISession>(
 )
 
 sessionSchema.index({ token: 1 })
+sessionSchema.index({ expires_at: 1 }, { expireAfterSeconds: config.auth.session.cookie.maxAge / 100 })
 
 export default model<ISession>("session", sessionSchema)
