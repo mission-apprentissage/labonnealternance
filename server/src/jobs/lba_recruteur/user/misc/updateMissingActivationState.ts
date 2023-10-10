@@ -41,9 +41,10 @@ export const checkAwaitingCompaniesValidation = async () => {
       stat.notFound++
     }
 
-    if (hasBeenValidated) {
+    const firstJob = userFormulaire.jobs.at(0)
+    if (hasBeenValidated && firstJob) {
       // Get job and update its expiration date
-      const job = Object.assign(userFormulaire.jobs[0], { job_status: "Active", job_expiration_date: dayjs().add(1, "month").format("YYYY-MM-DD") })
+      const job = Object.assign(firstJob, { job_status: "Active", job_expiration_date: dayjs().add(1, "month").format("YYYY-MM-DD") })
       // save job
       await updateOffre(job._id.toString(), job)
 
