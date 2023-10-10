@@ -13,9 +13,9 @@ import * as eligibleTrainingsForAppointmentService from "../../../services/eligi
 import mailer from "../../../services/mailer.service"
 
 export const repriseEmailRdvs = async ({ fromDateStr }: { fromDateStr: string }) => {
-  const fromDate = dayjs(fromDateStr, "DD-MM-YYYY")
+  const fromDate = dayjs(fromDateStr, "DD-MM-YYYY").toDate()
   logger.info(`Reprise des emails de rdv: récupération des rdvs depuis le ${fromDate.toISOString()}...`)
-  const appointments = await Appointment.find({ to_cfa_mails: { $size: 0 }, created_at: { $gt: fromDate } })
+  const appointments = await Appointment.find({ to_cfa_mails: { $size: 0 }, created_at: { $gt: fromDate } }).lean()
   logger.info(`Reprise des emails de rdv: ${appointments.length} rdvs à envoyer`)
   const stats = { success: 0, failure: 0 }
 
