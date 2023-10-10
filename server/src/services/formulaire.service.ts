@@ -361,7 +361,7 @@ export const createJobDelegations = async ({ jobId, etablissementCatalogueIds }:
  * @returns {Promise<IRecruiter>}
  */
 export const checkOffreExists = async (id: IJob["_id"]): Promise<boolean> => {
-  const offre = await getOffre(id)
+  const offre = await getOffre(id.toString())
   return offre ? true : false
 }
 
