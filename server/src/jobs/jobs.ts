@@ -1,5 +1,6 @@
 import { createMongoDBIndexes } from "@/common/model"
 import { CronName, IInternalJobsCronTask, IInternalJobsSimple } from "@/common/model/schema/internalJobs/internalJobs.types"
+import { ETAT_UTILISATEUR } from "@/services/constant.service"
 
 import { getLoggerWithContext } from "../common/logger"
 
@@ -223,9 +224,10 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
             scope,
             status: [
               {
-                status: "VALIDÉ",
+                status: ETAT_UTILISATEUR.VALIDE,
                 validation_type: "AUTOMATIQUE",
                 user: "SERVEUR",
+                date: new Date(),
               },
             ],
           },

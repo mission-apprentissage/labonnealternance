@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-unresolved
 import fastifyCookie from "@fastify/cookie"
 import fastifyCors from "@fastify/cors"
 import fastifyRateLimt from "@fastify/rate-limit"
