@@ -705,7 +705,7 @@ export const sendEmailConfirmationEntreprise = async (user: IUserRecruteur, recr
   const offre = jobs.at(0)
   if (jobs.length === 1 && offre && is_delegated === false) {
     // Get user account validation link
-    const url = getValidationUrl(user._id)
+    const url = getValidationUrl(user._id, user.email)
     await mailer.sendEmail({
       to: email,
       subject: "Confirmez votre adresse mail",
