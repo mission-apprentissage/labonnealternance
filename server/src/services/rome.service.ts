@@ -19,7 +19,7 @@ const getApiClient = (options = {}) =>
       ...options,
     }),
     {
-      ttl: 1000 * 60 * 10, // 10 Minutes
+      ttl: 2000 * 60 * 10, // 20 Minutes
     }
   )
 
