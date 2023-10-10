@@ -2111,6 +2111,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@fastify/cookie@npm:^9.1.0":
+  version: 9.1.0
+  resolution: "@fastify/cookie@npm:9.1.0"
+  dependencies:
+    cookie: ^0.5.0
+    fastify-plugin: ^4.0.0
+  checksum: 568e30c014b46b7d30376a783d60491a5dd654150b7ec53de9c79d590d1cc37b805bb71383066ec9cc76bad8d9c2aab325563484ca6692a5ce2bab3155693c6b
+  languageName: node
+  linkType: hard
+
 "@fastify/cors@npm:^8.4.0":
   version: 8.4.0
   resolution: "@fastify/cors@npm:8.4.0"
@@ -17375,6 +17385,7 @@ __metadata:
   resolution: "server@workspace:server"
   dependencies:
     "@elastic/elasticsearch": ^7.17.13
+    "@fastify/cookie": ^9.1.0
     "@fastify/cors": ^8.4.0
     "@fastify/rate-limit": ^8.0.3
     "@fastify/swagger": ^8.10.1

@@ -232,6 +232,56 @@ export async function apiGet<P extends keyof IRoutes["get"], S extends IRoutes["
   return res.json()
 }
 
+export async function apiPut<P extends keyof IRoutes["put"], S extends IRoutes["put"][P] = IRoutes["put"][P]>(path: P, options: IRequest<S>): Promise<IResponse<S>> {
+  // TODO: Use a better cast
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const o: any = options
+  const headers = await getHeaders(options)
+
+  if (!(o.body instanceof FormData)) {
+    headers.append("Content-Type", "application/json")
+  }
+
+  const res = await fetch(generateUrl(path, o), {
+    method: "PUT",
+    mode: publicConfig.env === "local" ? "cors" : "same-origin",
+    credentials: publicConfig.env === "local" ? "include" : "same-origin",
+    body: getBody(headers, o?.body),
+    headers,
+  })
+
+  if (!res.ok) {
+    throw await ApiError.build(path, headers, o, res)
+  }
+
+  return res.json()
+}
+
+export async function apiPatch<P extends keyof IRoutes["patch"], S extends IRoutes["patch"][P] = IRoutes["patch"][P]>(path: P, options: IRequest<S>): Promise<IResponse<S>> {
+  // TODO: Use a better cast
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const o: any = options
+  const headers = await getHeaders(options)
+
+  if (!(o.body instanceof FormData)) {
+    headers.append("Content-Type", "application/json")
+  }
+
+  const res = await fetch(generateUrl(path, o), {
+    method: "PATCH",
+    mode: publicConfig.env === "local" ? "cors" : "same-origin",
+    credentials: publicConfig.env === "local" ? "include" : "same-origin",
+    body: getBody(headers, o?.body),
+    headers,
+  })
+
+  if (!res.ok) {
+    throw await ApiError.build(path, headers, o, res)
+  }
+
+  return res.json()
+}
+
 export async function apiDelete<P extends keyof IRoutes["delete"], S extends IRoutes["delete"][P] = IRoutes["delete"][P]>(path: P, options: IRequest<S>): Promise<IResponse<S>> {
   // TODO: Use a better cast
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

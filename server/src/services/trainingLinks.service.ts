@@ -143,7 +143,6 @@ const getLBALink = async (wish: IWish): Promise<string> => {
             rncp_code: wish.rncp,
           },
           {
-            // @ts-expect-error
             cfd: wish.cfd,
           },
           {

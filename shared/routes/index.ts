@@ -16,7 +16,6 @@ import { zMetiersRoutes } from "./metiers.routes"
 import { zMetiersDAvenirRoutes } from "./metiersdavenir.routes"
 import { zOptoutRoutes } from "./optout.routes"
 import { zPartnersRoutes } from "./partners.routes"
-import { zAuthPasswordRoutes } from "./password.routes"
 import { zRecruiterRoutes } from "./recruiters.routes"
 import { zRomeRoutes } from "./rome.routes"
 import { zTrainingLinksRoutes } from "./trainingLinks.routes"
@@ -39,6 +38,7 @@ const zRoutesGetP1 = {
   ...zUserRecruteurRoutes.get,
   ...zV1FormationsParRegion.get,
   ...zPartnersRoutes.get,
+  ...zLoginRoutes.get,
 } as const
 
 const zRoutesGetP2 = {
@@ -74,7 +74,6 @@ const zRoutesPost = {
   ...zEtablissementRoutes.post,
   ...zAppointmentsRoute.post,
   ...zEmailsRoutes.post,
-  ...zAuthPasswordRoutes.post,
 } as const
 
 const zRoutesPut = {

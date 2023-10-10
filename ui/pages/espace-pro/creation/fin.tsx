@@ -4,11 +4,13 @@ import { useRouter } from "next/router"
 import { useContext, useState } from "react"
 import { useQuery, useQueryClient } from "react-query"
 
+import { apiGet } from "@/utils/api.utils"
+
 import { AuthentificationLayout, LoadingEmptySpace } from "../../../components/espace_pro"
 import { WidgetContext } from "../../../context/contextWidget"
 import { InfoCircle } from "../../../theme/components/icons"
 import { MailCloud } from "../../../theme/components/logos"
-import { getUser, sendValidationLink } from "../../../utils/api"
+import { sendValidationLink } from "../../../utils/api"
 
 function parseQueryString(value: string | string[]): string {
   return Array.isArray(value) ? value[0] : value
@@ -24,7 +26,14 @@ export default function DepotRapideFin() {
   const client = useQueryClient()
 
   const { widget } = useContext(WidgetContext)
-  const { job: jobString, email, withDelegation, fromDashboard, userId, establishment_id } = router.query
+  const {
+    job: jobString,
+    email,
+    withDelegation,
+    fromDashboard,
+    userId,
+    establishment_id,
+  } = router.query as { job: string; email: string; withDelegation: string; fromDashboard: string; userId: string; establishment_id: string }
   const fromDashboardString = parseQueryString(fromDashboard)
 
   const job = JSON.parse(parseQueryString(jobString) ?? "{}")
@@ -35,15 +44,13 @@ export default function DepotRapideFin() {
    * KBA 20230130 : retry set to false to avoid waiting for failure if user is from dashboard (userId is not passed)
    * - To be changed with userID in URL params
    */
-  const { isFetched } = useQuery("userdetail", () => getUser(userId), {
+  const { isFetched } = useQuery("userdetail", () => apiGet("/user/status/:userId", { params: { userId } }), {
     retry: userId ? true : false,
     onSettled: (data) => {
-      const latestStatus = data?.data?.status.pop().status || false
-
-      if (latestStatus === "ERROR") {
+      if (data?.status_current === "ERROR") {
         setUserIsInError(true)
         setTitle("Félicitations,<br>votre offre a bien été créée.<br>Elle sera publiée dès validation de votre compte.")
-      } else if (latestStatus === "VALIDÉ" || fromDash === true) {
+      } else if (data?.status_current === "VALIDÉ" || fromDash === true) {
         setUserIsValidated(true)
         setTitle(
           withDelegationBoolean
@@ -60,10 +67,9 @@ export default function DepotRapideFin() {
     },
   })
 
-  // TODO_AB to redirect
   if (!job && !email && !withDelegation && !fromDash && !userId) return <></>
 
-  if (!isFetched) {
+  if (!isFetched && userId) {
     return <LoadingEmptySpace />
   }
 

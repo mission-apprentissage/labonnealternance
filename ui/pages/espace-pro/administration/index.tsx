@@ -23,14 +23,16 @@ import { useRouter } from "next/router"
 import { memo, useEffect, useState } from "react"
 import { useQuery } from "react-query"
 
-import useAuth from "../../../common/hooks/useAuth"
+import { getAuthServerSideProps } from "@/common/SSR/getAuthServerSideProps"
+import { useAuth } from "@/context/UserContext"
+import { apiGet } from "@/utils/api.utils"
+
 import { sortReactTableDate, sortReactTableString } from "../../../common/utils/dateUtils"
 import BreadcrumbLink from "../../../components/BreadcrumbLink"
 import { AnimationContainer, ConfirmationSuppressionEntreprise, Layout, LoadingEmptySpace, TableNew } from "../../../components/espace_pro"
-import withAuth from "../../../components/espace_pro/withAuth"
+import { authProvider, withAuth } from "../../../components/espace_pro/withAuth"
 import Link from "../../../components/Link"
 import { Parametre } from "../../../theme/components/icons"
-import { getEntreprisesOfCfa } from "../../../utils/api"
 
 const EmptySpace = () => (
   <Stack direction={["column", "column", "column", "row"]} mt={12} pt={12} py={8} border="1px solid" borderColor="grey.400" spacing="32px">
@@ -55,7 +57,7 @@ function ListeEntreprise() {
   const [currentEntreprise, setCurrentEntreprise] = useState()
   const confirmationSuppression = useDisclosure()
   const router = useRouter()
-  const [auth] = useAuth()
+  const { user } = useAuth()
   const toast = useToast()
 
   useEffect(() => {
@@ -71,7 +73,13 @@ function ListeEntreprise() {
     }
   }, [])
 
-  const { data, isLoading } = useQuery("listeEntreprise", () => getEntreprisesOfCfa(auth.id))
+  const { data, isLoading } = useQuery("listeEntreprise", () =>
+    apiGet("/etablissement/cfa/:userRecruteurId/entreprises", {
+      params: {
+        userRecruteurId: user._id.toString(),
+      },
+    })
+  )
 
   if (isLoading) {
     return <LoadingEmptySpace />
@@ -213,4 +221,7 @@ function ListeEntreprisePage() {
     </Layout>
   )
 }
-export default withAuth(memo(ListeEntreprisePage))
+
+export const getServerSideProps = async (context) => ({ props: { ...(await getAuthServerSideProps(context)) } })
+
+export default authProvider(withAuth(memo(ListeEntreprisePage)))
