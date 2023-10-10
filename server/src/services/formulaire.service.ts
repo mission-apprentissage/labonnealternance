@@ -377,8 +377,10 @@ export const getFormulaire = async (query: FilterQuery<IRecruiter>): Promise<IRe
  * @param {IRecruiter} payload
  * @returns {Promise<IRecruiter>}
  */
-export const createFormulaire = async (payload: Partial<Omit<IRecruiter, "_id" | "establishment_id" | "createdAt" | "updatedAt">>): Promise<IRecruiter> =>
-  await Recruiter.create(payload)
+export const createFormulaire = async (payload: Partial<Omit<IRecruiter, "_id" | "establishment_id" | "createdAt" | "updatedAt">>): Promise<IRecruiter> => {
+  const recruiter = await Recruiter.create(payload)
+  return recruiter.toObject()
+}
 
 /**
  * Remove formulaire by id
@@ -481,7 +483,7 @@ export async function getOffre(id: string | ObjectId) {
  * Create job offer on existing formulaire
  */
 export async function createOffre(id: IRecruiter["establishment_id"], payload: UpdateQuery<IJob>): Promise<IRecruiter> {
-  const recruiter = await Recruiter.findOneAndUpdate({ establishment_id: id }, { $push: { jobs: payload } }, { new: true })
+  const recruiter = await Recruiter.findOneAndUpdate({ establishment_id: id }, { $push: { jobs: payload } }, { new: true }).lean()
 
   if (!recruiter) {
     throw Boom.internal("Recruiter not found")
@@ -526,7 +528,7 @@ export const incrementLbaJobViewCount = async (id: IJob["_id"] | string, payload
       $inc: incPayload,
     },
     options
-  )
+  ).lean()
 
   if (!recruiter) {
     throw Boom.internal("Recruiter not found")
@@ -553,7 +555,7 @@ export const patchOffre = async (id: IJob["_id"], payload: UpdateQuery<IJob>, op
       $set: fields,
     },
     options
-  )
+  ).lean()
 
   if (!recruiter) {
     throw Boom.internal("Recruiter not found")
