@@ -1,4 +1,4 @@
-import { Filter, FindOptions, ObjectId } from "mongodb"
+import { FilterQuery, FindOneOptions, ObjectId } from "mongodb"
 import { ISession } from "shared"
 
 import config from "@/config"
@@ -23,7 +23,7 @@ export const createSession = async (data: TCreateSession) => {
   return session
 }
 
-export const getSession = async (filter: Filter<ISession>, options?: FindOptions): Promise<ISession | null> => {
+export const getSession = async (filter: FilterQuery<ISession>, options?: FindOneOptions<unknown>): Promise<ISession | null> => {
   return Session.findOne(filter, options)
 }
 
