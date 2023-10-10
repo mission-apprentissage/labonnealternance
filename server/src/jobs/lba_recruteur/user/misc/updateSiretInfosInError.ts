@@ -12,12 +12,10 @@ import { archiveFormulaire, getFormulaire, sendMailNouvelleOffre, updateFormulai
 import { autoValidateUser, deactivateUser, getUser, setUserInError, updateUser } from "../../../../services/userRecruteur.service"
 
 const updateUserRecruteursSiretInfosInError = async () => {
-  const query = {
+  const userRecruteurs = await UserRecruteur.find({
     $expr: { $eq: [{ $arrayElemAt: ["$status.status", -1] }, ETAT_UTILISATEUR.ERROR] },
     $or: [{ type: CFA }, { type: ENTREPRISE }],
-  }
-
-  const userRecruteurs = await UserRecruteur.find(query).lean()
+  }).lean()
   const stats = { success: 0, failure: 0, deactivated: 0 }
   logger.info(`Correction des user recruteurs en erreur: ${userRecruteurs.length} user recruteurs à mettre à jour...`)
   await asyncForEach(userRecruteurs, async (userRecruteur) => {

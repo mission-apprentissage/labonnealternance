@@ -32,7 +32,6 @@ export const sessionSchema = new Schema<ISession>(
 )
 
 sessionSchema.index({ token: 1 })
-// @ts-expect-error
 sessionSchema.index({ expires_at: 1 }, { expireAfterSeconds: config.auth.session.cookie.maxAge / 100 })
 
 export default model<ISession>("session", sessionSchema)
