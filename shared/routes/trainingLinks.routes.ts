@@ -13,7 +13,10 @@ export const zTrainingLinksRoutes = {
                 message: "l'id est obligatoire",
               }),
               cle_ministere_educatif: z.string().nullable(),
-              mef: z.string().nullable(),
+              mef: z
+                .string()
+                .nullable()
+                .transform((mef) => mef?.slice(0, 10)),
               cfd: z.string().nullable(),
               rncp: z.string().nullable(),
               code_postal: z.string().nullable(),
