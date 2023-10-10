@@ -144,6 +144,8 @@ services:
         fluentd-address: localhost:24224
         tag: docker.txt.lba.{{env_type}}.elasticsearch
         fluentd-async: "true"
+    volumes:
+      - lba_elasticsearch_data:/usr/share/elasticsearch/data
 
   clamav:
     <<: *default
@@ -166,3 +168,8 @@ services:
         fluentd-async: "true"
     volumes:
       - /opt/app/data/clamav:/var/lib/clamav
+
+volumes:
+  lba_elasticsearch_data:
+    driver: local
+    name: lba_elasticsearch_data
