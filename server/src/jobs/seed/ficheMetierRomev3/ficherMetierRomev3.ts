@@ -8,7 +8,7 @@ import { romes } from "./romeCodeList"
 export const importFicheMetierRomeV3 = async () => {
   await asyncForEach(romes, async (rome, index) => {
     logger.info(`${index}/${romes.length}`)
-    const exist = await FicheMetierRomeV3.find({ code: rome }).lean()
+    const exist = await FicheMetierRomeV3.findOne({ code: rome }).lean()
     if (exist) return
     const response = await getRomeDetailsFromAPI(rome)
     await FicheMetierRomeV3.create({ code: response?.code, fiche_metier: response })
