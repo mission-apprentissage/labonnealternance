@@ -230,6 +230,7 @@ const getPeJobs = async ({
   api: string
 }) => {
   try {
+    /* TODO: remove temporary bypass
     const token = await getAccessToken()
 
     const hasLocation = insee ? true : false
@@ -278,7 +279,10 @@ const getPeJobs = async ({
       return emptyPeResponse
     }
 
-    return data
+    return data*/
+    console.log(romes, insee, radius, jobLimit, diploma, NIVEAUX_POUR_OFFRES_PE, peJobsApiEndpoint, peContratsAlternances)
+    const emptyPeResponse: PEResponse = { resultats: [] }
+    return emptyPeResponse
   } catch (error) {
     return manageApiError({ error, api_path: api, caller, errorTitle: `getting jobs from PE (${api})` })
   }
