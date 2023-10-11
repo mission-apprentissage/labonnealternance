@@ -555,7 +555,7 @@ export const entrepriseOnboardingWorkflow = {
       phone?: string
       email: string
       cfa_delegated_siret?: string
-      origin: string
+      origin?: string | null
       opco: string
       idcc?: string
     },

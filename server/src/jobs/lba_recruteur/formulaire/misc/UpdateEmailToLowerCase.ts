@@ -34,7 +34,10 @@ runScript(async () => {
           },
         }
       )
-      await Recruiter.findOneAndUpdate({ establishment_id: user.establishment_id }, { $set: { status: RECRUITER_STATUS.ARCHIVE } })
+      const { establishment_id } = user
+      if (establishment_id) {
+        await Recruiter.findOneAndUpdate({ establishment_id }, { $set: { status: RECRUITER_STATUS.ARCHIVE } })
+      }
       return
     } else {
       user.email = user.email.toLowerCase()
