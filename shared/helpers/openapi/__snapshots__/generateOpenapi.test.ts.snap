@@ -3101,7 +3101,10 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
                         },
                         "id_rco_formation": {
                           "example": "14_AF_0000095539|14_SE_0000501120##14_SE_0000598458##14_SE_0000642556##14_SE_0000642557##14_SE_0000825379##14_SE_0000825382|101249",
-                          "type": "string",
+                          "type": [
+                            "string",
+                            "null",
+                          ],
                         },
                         "intitule_long": {
                           "example": "METIERS D'ART ET DU DESIGN (DN)",
