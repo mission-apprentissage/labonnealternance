@@ -8,6 +8,8 @@ import { IRoutesDef } from "./common.routes"
 export const zFormulaireRoute = {
   get: {
     "/formulaire/:establishment_id": {
+      method: "get",
+      path: "/formulaire/:establishment_id",
       // TODO_SECURITY_FIX gestion des permissions
       // TODO_SECURITY_FIX session gérée par cookie server
       params: z.object({ establishment_id: z.string() }).strict(),
@@ -22,6 +24,8 @@ export const zFormulaireRoute = {
       },
     },
     "/formulaire/offre/f/:jobId": {
+      method: "get",
+      path: "/formulaire/offre/f/:jobId",
       // TODO_SECURITY_FIX gestion des permissions
       // TODO_SECURITY_FIX session gérée par cookie server
       // TODO_SECURITY_FIX faire un ZJobPublic sans la partie delegations
@@ -39,6 +43,8 @@ export const zFormulaireRoute = {
   },
   post: {
     "/formulaire": {
+      method: "post",
+      path: "/formulaire",
       // TODO_SECURITY_FIX gestion des permissions
       // TODO_SECURITY_FIX session gérée par cookie server
       body: z
@@ -64,6 +70,8 @@ export const zFormulaireRoute = {
       },
     },
     "/formulaire/:establishment_id/offre": {
+      method: "post",
+      path: "/formulaire/:establishment_id/offre",
       // TODO_SECURITY_FIX gestion des permissions
       // TODO_SECURITY_FIX limiter les champs autorisés à la modification. Utiliser un "ZRecruiterNew" (ou un autre nom du genre ZFormulaire)
       params: z.object({ establishment_id: z.string() }).strict(),
@@ -80,6 +88,8 @@ export const zFormulaireRoute = {
       },
     },
     "/formulaire/offre/:jobId/delegation": {
+      method: "post",
+      path: "/formulaire/offre/:jobId/delegation",
       // TODO_SECURITY_FIX gestion des permissions
       // TODO_SECURITY_FIX session gérée par cookie server
       params: z.object({ jobId: zObjectId }).strict(),
@@ -101,6 +111,8 @@ export const zFormulaireRoute = {
   },
   put: {
     "/formulaire/:establishment_id": {
+      method: "put",
+      path: "/formulaire/:establishment_id",
       // TODO_SECURITY_FIX gestion des permissions
       // TODO_SECURITY_FIX réduire aux champs modifiables
       params: z.object({ establishment_id: z.string() }).strict(),
@@ -116,6 +128,8 @@ export const zFormulaireRoute = {
       },
     },
     "/formulaire/offre/:jobId": {
+      method: "put",
+      path: "/formulaire/offre/:jobId",
       // TODO_SECURITY_FIX gestion des permissions
       // TODO_SECURITY_FIX session gérée par cookie server
       params: z.object({ jobId: zObjectId }).strict(),
@@ -149,6 +163,8 @@ export const zFormulaireRoute = {
       },
     },
     "/formulaire/offre/:jobId/cancel": {
+      method: "put",
+      path: "/formulaire/offre/:jobId/cancel",
       // TODO_SECURITY_FIX gestion des permissions
       // TODO_SECURITY_FIX session gérée par cookie server
       // TODO_SECURITY_FIX Scinder les routes pour cancel depuis admin OU cancel depuis CTA dans un email (avec jwt)
@@ -162,6 +178,8 @@ export const zFormulaireRoute = {
       },
     },
     "/formulaire/offre/f/:jobId/cancel": {
+      method: "put",
+      path: "/formulaire/offre/f/:jobId/cancel",
       // TODO_SECURITY_FIX gestion des permissions
       // TODO_SECURITY_FIX session gérée par cookie server
       // TODO_SECURITY_FIX Scinder les routes pour cancel depuis admin OU cancel depuis CTA dans un email (avec jwt)
@@ -181,6 +199,8 @@ export const zFormulaireRoute = {
       },
     },
     "/formulaire/offre/:jobId/provided": {
+      method: "put",
+      path: "/formulaire/offre/:jobId/provided",
       // TODO_SECURITY_FIX gestion des permissions
       // TODO_SECURITY_FIX session gérée par cookie server
       // TODO_SECURITY_FIX Scinder les routes pour cancel depuis admin OU cancel depuis CTA dans un email (avec jwt)
@@ -194,6 +214,8 @@ export const zFormulaireRoute = {
       },
     },
     "/formulaire/offre/:jobId/extend": {
+      method: "put",
+      path: "/formulaire/offre/:jobId/extend",
       // TODO_SECURITY_FIX gestion des permissions
       // TODO_SECURITY_FIX session gérée par cookie server
       // TODO_SECURITY_FIX Scinder les routes pour cancel depuis admin OU cancel depuis CTA dans un email (avec jwt)
@@ -213,6 +235,8 @@ export const zFormulaireRoute = {
     // TODO_SECURITY_FIX session gérée par cookie server
     // TODO_PAS_SECURITY faut la corriger cette route !!!!! (un certain "KB" circa 2023)
     "/formulaire/offre/:jobId": {
+      method: "patch",
+      path: "/formulaire/offre/:jobId",
       params: z.object({ jobId: zObjectId }).strict(),
       querystring: z.object({ siret_formateur: z.string() }).strict(),
       body: z.object({ cfa_read_company_detail_at: z.string() }).strict(),
@@ -227,6 +251,8 @@ export const zFormulaireRoute = {
   },
   delete: {
     "/formulaire/:establishment_id": {
+      method: "delete",
+      path: "/formulaire/:establishment_id",
       // TODO_SECURITY_FIX gestion des permissions
       // TODO_SECURITY_FIX session gérée par cookie server
       params: z.object({ establishment_id: z.string() }).strict(),
@@ -239,6 +265,8 @@ export const zFormulaireRoute = {
       },
     },
     "/formulaire/delegated/:establishment_siret": {
+      method: "delete",
+      path: "/formulaire/delegated/:establishment_siret",
       // TODO_SECURITY_FIX gestion des permissions
       // TODO_SECURITY_FIX session gérée par cookie server
       params: z.object({ establishment_siret: z.string() }).strict(),

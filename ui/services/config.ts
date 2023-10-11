@@ -28,12 +28,10 @@ export const getWidgetParameters = () => {
   parameters = {}
 
   let p = getValueFromPath("lat")
-  // @ts-expect-error: TODO
-  if (p && !isNaN(p)) parameters.lat = parseFloat(p)
+  if (p && !Number.isNaN(p)) parameters.lat = parseFloat(p)
 
   p = getValueFromPath("lon")
-  // @ts-expect-error: TODO
-  if (p && !isNaN(p)) parameters.lon = parseFloat(p)
+  if (p && !Number.isNaN(p)) parameters.lon = parseFloat(p)
 
   p = getValueFromPath("rncp")
   if (p) {
@@ -50,8 +48,7 @@ export const getWidgetParameters = () => {
   }
 
   p = getValueFromPath("radius")
-  // @ts-expect-error: TODO
-  if (p && !isNaN(p) && (p === "10" || p === "30" || p === "60" || p === "100")) {
+  if (p && !Number.isNaN(p) && (p === "10" || p === "30" || p === "60" || p === "100")) {
     parameters.radius = parseInt(p)
   }
 

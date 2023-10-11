@@ -82,6 +82,8 @@ export const zAppointmentsRoute = {
     //   },
     // },
     "/admin/appointments/details": {
+      method: "get",
+      path: "/admin/appointments/details",
       response: {
         "2xx": z
           .object({
@@ -119,6 +121,8 @@ export const zAppointmentsRoute = {
       },
     },
     "/appointment-request/context/recap": {
+      method: "get",
+      path: "/appointment-request/context/recap",
       // TODO_SECURITY_FIX il faut un secure token
       querystring: z.object({ appointmentId: z.string() }).strict(),
       response: {
@@ -145,6 +149,8 @@ export const zAppointmentsRoute = {
   },
   post: {
     "/appointment-request/context/create": {
+      method: "post",
+      path: "/appointment-request/context/create",
       body: zContextCreateSchema,
       response: {
         "2xx": z.union([
@@ -197,6 +203,8 @@ export const zAppointmentsRoute = {
       },
     },
     "/appointment-request/validate": {
+      method: "post",
+      path: "/appointment-request/validate",
       body: z
         .object({
           firstname: z.string(),
@@ -226,6 +234,8 @@ export const zAppointmentsRoute = {
       },
     },
     "/appointment-request/reply": {
+      method: "post",
+      path: "/appointment-request/reply",
       // TODO_SECURITY_FIX token jwt
       body: z
         .object({

@@ -1,3 +1,4 @@
+import { captureException } from "@sentry/nextjs"
 import Axios from "axios"
 
 import { publicConfig } from "../config.public"
@@ -82,7 +83,8 @@ export const getEntrepriseOpco = async (siret) => {
     return data
   } catch (error) {
     const payload: { data: object | undefined; error: string; statusCode: number; message: string } = error.response.data
-    console.log(payload) // TODO sentry
+    captureException(error)
+    console.log(payload)
     return null
   }
 }

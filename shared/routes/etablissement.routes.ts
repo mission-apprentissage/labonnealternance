@@ -37,6 +37,8 @@ export const zEtablissementRoutes = {
     //   },
     // },
     "/admin/etablissements/siret-formateur/:siret": {
+      method: "get",
+      path: "/admin/etablissements/siret-formateur/:siret",
       params: z.object({ siret: extensions.siret() }).strict(),
       response: {
         // TODO ANY TO BE FIXED
@@ -49,6 +51,8 @@ export const zEtablissementRoutes = {
       },
     },
     "/admin/etablissements/:id": {
+      method: "get",
+      path: "/admin/etablissements/:id",
       params: z.object({ id: zObjectId }).strict(),
       response: {
         // TODO ANY TO BE FIXED
@@ -61,6 +65,8 @@ export const zEtablissementRoutes = {
       },
     },
     "/etablissements/:id": {
+      method: "get",
+      path: "/etablissements/:id",
       params: z.object({ id: zObjectId }).strict(),
       response: {
         "2xx": ZEtablissement.pick({
@@ -128,6 +134,8 @@ export const zEtablissementRoutes = {
     // },
     "/etablissements/:id/premium/affelnet/accept": {
       // TODO_SECURITY_FIX ajouter un jwt
+      method: "post",
+      path: "/etablissements/:id/premium/affelnet/accept",
       params: z.object({ id: zObjectId }).strict(),
       response: {
         "2xx": ZEtablissement,
@@ -138,6 +146,8 @@ export const zEtablissementRoutes = {
       },
     },
     "/etablissements/:id/premium/accept": {
+      method: "post",
+      path: "/etablissements/:id/premium/accept",
       // TODO_SECURITY_FIX ajouter un jwt
       params: z.object({ id: zObjectId }).strict(),
       response: {
@@ -149,6 +159,8 @@ export const zEtablissementRoutes = {
       },
     },
     "/etablissements/:id/premium/affelnet/refuse": {
+      method: "post",
+      path: "/etablissements/:id/premium/affelnet/refuse",
       // TODO_SECURITY_FIX ajouter un jwt
       params: z.object({ id: zObjectId }).strict(),
       response: {
@@ -160,6 +172,8 @@ export const zEtablissementRoutes = {
       },
     },
     "/etablissements/:id/premium/refuse": {
+      method: "post",
+      path: "/etablissements/:id/premium/refuse",
       // TODO_SECURITY_FIX ajouter un jwt
       params: z.object({ id: zObjectId }).strict(),
       response: {
@@ -171,6 +185,8 @@ export const zEtablissementRoutes = {
       },
     },
     "/etablissements/:id/opt-out/unsubscribe": {
+      method: "post",
+      path: "/etablissements/:id/opt-out/unsubscribe",
       // TODO_SECURITY_FIX ajouter un jwt
       params: z.object({ id: zObjectId }).strict(),
       body: z.union([z.object({ opt_out_question: z.string() }).strict(), z.object({}).strict()]),
@@ -185,6 +201,8 @@ export const zEtablissementRoutes = {
   },
   patch: {
     "/admin/etablissements/:id": {
+      method: "patch",
+      path: "/admin/etablissements/:id",
       params: z.object({ id: zObjectId }).strict(),
       body: ZEtablissement.pick({
         gestionnaire_email: true,
@@ -198,6 +216,8 @@ export const zEtablissementRoutes = {
       },
     },
     "/etablissements/:id/appointments/:appointmentId": {
+      method: "patch",
+      path: "/etablissements/:id/appointments/:appointmentId",
       // TODO_SECURITY_FIX ajouter un jwt
       body: z.object({ has_been_read: z.boolean() }).strict(),
       params: z.object({ id: zObjectId, appointmentId: zObjectId }).strict(),

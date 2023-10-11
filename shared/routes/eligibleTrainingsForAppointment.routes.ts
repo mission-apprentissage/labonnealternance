@@ -8,6 +8,8 @@ import { IRoutesDef } from "./common.routes"
 export const zEligibleTrainingsForAppointmentRoutes = {
   get: {
     "/admin/eligible-trainings-for-appointment/etablissement-formateur-siret/:siret": {
+      method: "get",
+      path: "/admin/eligible-trainings-for-appointment/etablissement-formateur-siret/:siret",
       params: z.object({ siret: extensions.siret() }).strict(),
       response: {
         "200": z.object({ parameters: z.array(ZEligibleTrainingsForAppointmentSchema) }).strict(),
@@ -20,6 +22,8 @@ export const zEligibleTrainingsForAppointmentRoutes = {
   },
   patch: {
     "/admin/eligible-trainings-for-appointment/:id": {
+      method: "patch",
+      path: "/admin/eligible-trainings-for-appointment/:id",
       params: z.object({ id: zObjectId }).strict(),
       body: z.union([
         ZEligibleTrainingsForAppointmentSchema.pick({

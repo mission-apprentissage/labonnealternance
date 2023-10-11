@@ -8,6 +8,8 @@ import { IRoutesDef, ZResError } from "./common.routes"
 export const zApplicationRoutes = {
   post: {
     "/v1/application": {
+      path: "/v1/application",
+      method: "post",
       body: ZApplicationUI,
       response: {
         "200": z
@@ -38,6 +40,8 @@ export const zApplicationRoutes = {
     },
     "/application/intentionComment": {
       // TODO_SECURITY_FIX
+      path: "/application/intentionComment",
+      method: "post",
       body: z
         .object({
           id: z.string(), // inutile de chiffrer l'id, rajouter un champ token qui contiendra l'id
@@ -70,6 +74,8 @@ export const zApplicationRoutes = {
     },
     "/application/webhook": {
       // TODO_SECURITY_FIX    ajouter token sans expiration dans les webhooks brevo
+      path: "/application/webhook",
+      method: "post",
       body: extensions.brevoWebhook(),
       response: {
         "200": z

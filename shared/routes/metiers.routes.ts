@@ -7,6 +7,8 @@ import { IRoutesDef } from "./common.routes"
 export const zMetiersRoutes = {
   get: {
     "/v1/metiers/metiersParFormation/:cfd": {
+      method: "get",
+      path: "/v1/metiers/metiersParFormation/:cfd",
       params: z
         .object({
           cfd: z.string().openapi({
@@ -31,6 +33,8 @@ export const zMetiersRoutes = {
       },
     },
     "/v1/metiers/metiersParEtablissement/:siret": {
+      method: "get",
+      path: "/v1/metiers/metiersParEtablissement/:siret",
       params: z
         .object({
           siret: extensions.siret(),
@@ -50,6 +54,8 @@ export const zMetiersRoutes = {
       },
     },
     "/v1/metiers/all": {
+      method: "get",
+      path: "/v1/metiers/all",
       response: {
         200: ZMetiers,
       },
@@ -64,6 +70,8 @@ export const zMetiersRoutes = {
       },
     },
     "/v1/metiers": {
+      method: "get",
+      path: "/v1/metiers",
       querystring: z
         .object({
           title: z.string().openapi({
@@ -110,6 +118,8 @@ export const zMetiersRoutes = {
       },
     },
     "/v1/metiers/intitule": {
+      method: "get",
+      path: "/v1/metiers/intitule",
       querystring: z
         .object({
           label: z.string().nonempty().openapi({
