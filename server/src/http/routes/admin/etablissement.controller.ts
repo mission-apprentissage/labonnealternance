@@ -15,7 +15,7 @@ export default (server: Server) => {
     "/admin/etablissements/siret-formateur/:siret",
     {
       schema: zRoutes.get["/admin/etablissements/siret-formateur/:siret"],
-      preHandler: [server.auth(zRoutes.get["/admin/etablissements/siret-formateur/:siret"].securityScheme)],
+      onRequest: [server.auth(zRoutes.get["/admin/etablissements/siret-formateur/:siret"].securityScheme)],
     },
     async ({ params }, res) => {
       const etablissement = await Etablissement.findOne({ formateur_siret: params.siret })
@@ -35,7 +35,7 @@ export default (server: Server) => {
     "/admin/etablissements/:id",
     {
       schema: zRoutes.get["/admin/etablissements/:id"],
-      preHandler: [server.auth(zRoutes.get["/admin/etablissements/:id"].securityScheme)],
+      onRequest: [server.auth(zRoutes.get["/admin/etablissements/:id"].securityScheme)],
     },
     async (req, res) => {
       const etablissement = await Etablissement.findById(req.params.id)
@@ -55,7 +55,7 @@ export default (server: Server) => {
     "/admin/etablissements/:id",
     {
       schema: zRoutes.patch["/admin/etablissements/:id"],
-      preHandler: [server.auth(zRoutes.patch["/admin/etablissements/:id"].securityScheme)],
+      onRequest: [server.auth(zRoutes.patch["/admin/etablissements/:id"].securityScheme)],
     },
     async ({ body, params }, res) => {
       const etablissement = await Etablissement.findById(params.id)

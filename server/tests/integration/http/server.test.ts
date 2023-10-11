@@ -58,8 +58,8 @@ describe("server", () => {
         }, [] as SecurityScheme[])
 
         const expectedAuth: { onRequestAuth: SecurityScheme[]; preHandlerAuth: SecurityScheme[] } = { onRequestAuth: [], preHandlerAuth: [] }
-        // Only following 2 auth strategy doesn't require parsing
-        if (["api-key", "jwt-bearer"].includes(sharedSchema.securityScheme.auth)) {
+        // Only following 3 auth strategy doesn't require parsing
+        if (["api-key", "jwt-bearer", "cookie-session"].includes(sharedSchema.securityScheme.auth)) {
           expectedAuth.onRequestAuth.push(sharedSchema.securityScheme)
         } else if (sharedSchema.securityScheme.auth !== "none") {
           expectedAuth.preHandlerAuth.push(sharedSchema.securityScheme)

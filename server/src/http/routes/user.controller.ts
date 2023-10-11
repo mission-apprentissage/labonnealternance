@@ -139,7 +139,7 @@ export default (server: Server) => {
     "/user/:userId",
     {
       schema: zRoutes.get["/user/:userId"],
-      preHandler: [server.auth(zRoutes.get["/user/:userId"].securityScheme)],
+      onRequest: [server.auth(zRoutes.get["/user/:userId"].securityScheme)],
     },
     async (req, res) => {
       const user = await UserRecruteur.findOne({ _id: req.params.userId }).lean()
@@ -181,7 +181,7 @@ export default (server: Server) => {
     "/user/:userId",
     {
       schema: zRoutes.put["/user/:userId"],
-      preHandler: [server.auth(zRoutes.put["/user/:userId"].securityScheme)],
+      onRequest: [server.auth(zRoutes.put["/user/:userId"].securityScheme)],
     },
     async (req, res) => {
       const userPayload = req.body

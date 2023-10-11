@@ -150,7 +150,7 @@ export default (server: Server) => {
     "/auth/session",
     {
       schema: zRoutes.get["/auth/session"],
-      preHandler: [server.auth(zRoutes.get["/auth/session"].securityScheme)],
+      onRequest: [server.auth(zRoutes.get["/auth/session"].securityScheme)],
     },
     async (request, response) => {
       if (!request.user) {
@@ -165,7 +165,6 @@ export default (server: Server) => {
     "/auth/logout",
     {
       schema: zRoutes.get["/auth/logout"],
-      preHandler: [server.auth(zRoutes.get["/auth/logout"].securityScheme)],
     },
     async (request, response) => {
       const token = request.cookies[config.auth.session.cookieName]

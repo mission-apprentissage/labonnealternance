@@ -90,7 +90,7 @@ export default (server: Server) => {
     "/formulaire/:establishment_id",
     {
       schema: zRoutes.put["/formulaire/:establishment_id"],
-      preHandler: [server.auth(zRoutes.put["/formulaire/:establishment_id"].securityScheme)],
+      onRequest: [server.auth(zRoutes.put["/formulaire/:establishment_id"].securityScheme)],
     },
     async (req, res) => {
       const result = await updateFormulaire(req.params.establishment_id, req.body)
