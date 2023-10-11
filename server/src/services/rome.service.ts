@@ -1,12 +1,27 @@
+import http from "http"
+import https from "https"
 import querystring from "querystring"
 
-import { getHttpClient } from "@/common/utils/httpUtils"
+import axios from "axios"
+import { setupCache } from "axios-cache-interceptor"
 
 import { sentryCaptureException } from "../common/utils/sentryUtils"
 import config from "../config"
 
 import dayjs from "./dayjs.service"
 import { IAppelattionDetailsFromAPI, IPEAPIToken, IRomeDetailsFromAPI } from "./rome.service.types"
+
+const getApiClient = (options = {}) =>
+  setupCache(
+    axios.create({
+      httpAgent: new http.Agent({ keepAlive: true }),
+      httpsAgent: new https.Agent({ keepAlive: true }),
+      ...options,
+    }),
+    {
+      ttl: 2000 * 60 * 10, // 20 Minutes
+    }
+  )
 
 let token: IPEAPIToken = {
   access_token: "",
@@ -25,7 +40,7 @@ const getToken = async (token): Promise<IPEAPIToken> => {
   }
 
   try {
-    const response = await getHttpClient().post(
+    const response = await axios.post(
       "https://entreprise.pole-emploi.fr/connexion/oauth2/access_token?realm=partenaire",
       querystring.stringify({
         grant_type: "client_credentials",
@@ -54,7 +69,7 @@ export const getRomeDetailsFromAPI = async (romeCode: string): Promise<IRomeDeta
   token = await getToken(token)
 
   try {
-    const { data } = await getHttpClient().get<IRomeDetailsFromAPI>(`https://api.pole-emploi.io/partenaire/rome/v1/metier/${romeCode}`, {
+    const { data } = await getApiClient().get<IRomeDetailsFromAPI>(`https://api.pole-emploi.io/partenaire/rome/v1/metier/${romeCode}`, {
       headers: {
         Authorization: `Bearer ${token.access_token}`,
       },
@@ -63,9 +78,7 @@ export const getRomeDetailsFromAPI = async (romeCode: string): Promise<IRomeDeta
     return data
   } catch (error: any) {
     sentryCaptureException(error)
-    if (error.response.status === 404) {
-      return null
-    }
+    return null
   }
 }
 
@@ -73,7 +86,7 @@ export const getAppellationDetailsFromAPI = async (appellationCode: string): Pro
   token = await getToken(token)
 
   try {
-    const { data } = await getHttpClient().get<IAppelattionDetailsFromAPI>(`https://api.pole-emploi.io/partenaire/rome/v1/appellation/${appellationCode}`, {
+    const { data } = await axios.get<IAppelattionDetailsFromAPI>(`https://api.pole-emploi.io/partenaire/rome/v1/appellation/${appellationCode}`, {
       headers: {
         Authorization: `Bearer ${token.access_token}`,
       },
