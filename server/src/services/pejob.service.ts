@@ -1,10 +1,8 @@
 import { setTimeout } from "timers/promises"
 
 import distance from "@turf/distance"
-import { AxiosRequestHeaders } from "axios"
+import axios, { AxiosRequestHeaders } from "axios"
 import { Dayjs } from "dayjs"
-
-import { getHttpClient } from "@/common/utils/httpUtils.js"
 
 import { IApiError, manageApiError } from "../common/utils/errorManager.js"
 import { roundDistance } from "../common/utils/geolib.js"
@@ -51,7 +49,7 @@ const getAccessToken = async (): Promise<string> => {
     if (tokenPE?.expiry.isAfter(now)) {
       return tokenPE.value
     } else {
-      const response = await getHttpClient().post(accessTokenEndpoint, paramPE, headers)
+      const response = await axios.post(accessTokenEndpoint, paramPE, headers)
 
       if (response.data) {
         tokenPE = {
@@ -82,7 +80,7 @@ export const getPeApiReferentiels = async (referentiel: string) => {
     const headers = peApiHeaders
     headers.Authorization = `Bearer ${token}`
 
-    const referentiels = await getHttpClient().get(`${peJobApiEndpointReferentiel}${referentiel}`, {
+    const referentiels = await axios.get(`${peJobApiEndpointReferentiel}${referentiel}`, {
       headers,
     })
 
@@ -268,7 +266,7 @@ const getPeJobs = async ({
       params.distance = distance
     }
 
-    const jobs = await getHttpClient().get(`${peJobsApiEndpoint}`, {
+    const jobs = await axios.get(`${peJobsApiEndpoint}`, {
       params,
       headers,
     })
@@ -356,7 +354,7 @@ export const getPeJobFromId = async ({ id, caller }: { id: string; caller: strin
     const headers = peApiHeaders
     headers.Authorization = `Bearer ${token}`
 
-    const job = await getHttpClient().get(`${peJobApiEndpoint}${id}`, {
+    const job = await axios.get(`${peJobApiEndpoint}${id}`, {
       headers,
     })
 

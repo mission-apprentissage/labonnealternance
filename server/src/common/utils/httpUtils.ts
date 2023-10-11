@@ -73,10 +73,10 @@ function addCsvHeaders(filename, encoding, res) {
 
 const getHttpClient = (options: CreateAxiosDefaults<any> = {}) =>
   axios.create({
-    timeout: 5000,
+    timeout: 15000,
     httpAgent: new http.Agent({ keepAlive: true }),
     httpsAgent: new https.Agent({ keepAlive: true }),
     ...options,
   })
 
-export { fetchStream, fetchJson, addCsvHeaders, getHttpClient }
+export { addCsvHeaders, fetchJson, fetchStream, getHttpClient }
