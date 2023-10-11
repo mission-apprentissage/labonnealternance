@@ -4072,7 +4072,7 @@ L'email est envoyé depuis l'adresse générique \\"Ne pas répondre\\" de La bo
                       "$ref": "#/components/schemas/Error",
                     },
                     {
-                      "$ref": "#/components/schemas/ApiError",
+                      "$ref": "#/components/schemas/LbacError",
                     },
                     {
                       "$ref": "#/components/schemas/ApiError",
