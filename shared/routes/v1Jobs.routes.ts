@@ -204,7 +204,7 @@ export const zV1JobsRoutes = {
           })
           .strict(),
         "400": z.union([ZResError, ZLbacError, ZApiError]),
-        "500": z.union([ZResError, ZApiError, ZApiError]),
+        "500": z.union([ZResError, ZLbacError, ZApiError]),
       },
       securityScheme: {
         auth: "none",
