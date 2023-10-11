@@ -2,6 +2,7 @@ import querystring from "querystring"
 
 import axios from "axios"
 
+import { FicheMetierRomeV3 } from "../common/model"
 import { sentryCaptureException } from "../common/utils/sentryUtils"
 import config from "../config"
 
@@ -78,6 +79,8 @@ export const getRomeDetailsFromAPI = async (romeCode: string): Promise<IRomeDeta
     return null
   }
 }
+
+export const getRomeDetailsFromDB = async (romeCode: string) => FicheMetierRomeV3.findOne({ code: romeCode }).select({ fiche_metier: 1 }).lean()
 
 export const getAppellationDetailsFromAPI = async (appellationCode: string): Promise<IAppelattionDetailsFromAPI | null | undefined> => {
   token = await getToken(token)
