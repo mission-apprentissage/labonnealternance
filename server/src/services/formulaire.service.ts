@@ -181,8 +181,6 @@ export const getJobsFromElasticSearch = async ({
 
 /**
  * @description get formulaire by offer id
- * @param {IJob["_id"]} id
- * @returns {Promise<IFormulaireExtended>}
  */
 export const getOffreAvecInfoMandataire = async (id: string | ObjectId): Promise<IFormulaireExtended> => {
   const result = await getOffre(id)
@@ -238,7 +236,7 @@ export const getFormulaires = async (query: FilterQuery<IRecruiter>, select: obj
 /**
  * @description Create job offer for formulaire
  */
-export const createJob = async ({ job, id }: { job: IJobWritable; id: NonNullable<Required<IUserRecruteur>["establishment_id"]> }): Promise<IRecruiter> => {
+export const createJob = async ({ job, id }: { job: IJobWritable; id: string }): Promise<IRecruiter> => {
   // get user data
   const user = await getUser({ establishment_id: id })
   const userStatus: ETAT_UTILISATEUR | null = user ? getUserStatus(user.status) : null
