@@ -3,7 +3,7 @@ import Joi from "joi"
 import { toPublicUser, zRoutes } from "shared/index"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
-import { getUserFromRequest } from "@/http/middlewares/authMiddleware"
+import { ServerBuilder } from "@/http/utils/serverBuilder"
 import { createSession, deleteSession } from "@/services/sessions.service"
 
 import { UserRecruteur } from "../../../common/model/index"
@@ -13,14 +13,11 @@ import { CFA, ENTREPRISE, ETAT_UTILISATEUR } from "../../../services/constant.se
 import { sendUserConfirmationEmail } from "../../../services/etablissement.service"
 import mailer from "../../../services/mailer.service"
 import { getUser, getUserStatus, registerUser } from "../../../services/userRecruteur.service"
-import { Server } from "../../server"
 
-export default (server: Server) => {
+export default (server: ServerBuilder) => {
   server.post(
-    "/login/confirmation-email",
     {
       schema: zRoutes.post["/login/confirmation-email"],
-      preHandler: [],
     },
     async (req, res) => {
       try {
@@ -56,10 +53,8 @@ export default (server: Server) => {
   )
 
   server.post(
-    "/login/magiclink",
     {
       schema: zRoutes.post["/login/magiclink"],
-      preHandler: [],
     },
     async (req, res) => {
       const { email } = await Joi.object({
@@ -122,14 +117,10 @@ export default (server: Server) => {
   )
 
   server.post(
-    "/login/verification",
     {
       schema: zRoutes.post["/login/verification"],
-      preHandler: [server.auth(zRoutes.post["/login/verification"].securityScheme)],
     },
-    async (req, res) => {
-      const user = getUserFromRequest(req, zRoutes.post["/login/verification"])
-
+    async (req, res, user) => {
       const token = createUserToken({ email: user.email }, { payload: { email: user.email } })
       await createSession({ token })
 
@@ -147,22 +138,15 @@ export default (server: Server) => {
    * Récupérer l'utilisateur connecté
    */
   server.get(
-    "/auth/session",
     {
       schema: zRoutes.get["/auth/session"],
-      onRequest: [server.auth(zRoutes.get["/auth/session"].securityScheme)],
     },
-    async (request, response) => {
-      if (!request.user) {
-        throw Boom.forbidden()
-      }
-      const user = getUserFromRequest(request, zRoutes.get["/auth/session"])
+    async (request, response, user) => {
       return response.status(200).send(toPublicUser(user))
     }
   )
 
   server.get(
-    "/auth/logout",
     {
       schema: zRoutes.get["/auth/logout"],
     },

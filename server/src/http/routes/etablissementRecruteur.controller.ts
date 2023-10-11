@@ -31,16 +31,14 @@ import {
   setUserHasToBeManuallyValidated,
   updateUser,
 } from "../../services/userRecruteur.service"
-import { getUserFromRequest } from "../middlewares/authMiddleware"
-import { Server } from "../server"
+import { ServerBuilder } from "../utils/serverBuilder"
 
-export default (server: Server) => {
+export default (server: ServerBuilder) => {
   /**
    * Retourne la liste de tous les CFA ayant une formation avec les ROME passés..
    * Resultats triés par proximité (km).
    */
   server.get(
-    "/etablissement/cfas-proches",
     {
       schema: zRoutes.get["/etablissement/cfas-proches"],
     },
@@ -55,7 +53,6 @@ export default (server: Server) => {
    * Récupérer les informations d'une entreprise à l'aide de l'API du gouvernement
    */
   server.get(
-    "/etablissement/entreprise/:siret",
     {
       schema: zRoutes.get["/etablissement/entreprise/:siret"],
     },
@@ -93,7 +90,6 @@ export default (server: Server) => {
    * Récupérer l'OPCO d'une entreprise à l'aide des données en base ou de l'API CFA DOCK
    */
   server.get(
-    "/etablissement/entreprise/:siret/opco",
     {
       schema: zRoutes.get["/etablissement/entreprise/:siret/opco"],
     },
@@ -114,7 +110,6 @@ export default (server: Server) => {
    * Récupération des informations d'un cfa à l'aide des tables de correspondances et du référentiel
    */
   server.get(
-    "/etablissement/cfa/:siret",
     {
       schema: zRoutes.get["/etablissement/cfa/:siret"],
     },
@@ -132,10 +127,8 @@ export default (server: Server) => {
    * Retourne les entreprises gérées par un CFA
    */
   server.get(
-    "/etablissement/cfa/:userRecruteurId/entreprises",
     {
       schema: zRoutes.get["/etablissement/cfa/:userRecruteurId/entreprises"],
-      onRequest: [server.auth(zRoutes.get["/etablissement/cfa/:userRecruteurId/entreprises"].securityScheme)],
     },
     async (req, res) => {
       const { userRecruteurId } = req.params
@@ -153,7 +146,6 @@ export default (server: Server) => {
    * Enregistrement d'un partenaire
    */
   server.post(
-    "/etablissement/creation",
     {
       schema: zRoutes.post["/etablissement/creation"],
     },
@@ -244,7 +236,6 @@ export default (server: Server) => {
    */
 
   server.post(
-    "/etablissement/:establishment_siret/proposition/unsubscribe",
     {
       schema: zRoutes.post["/etablissement/:establishment_siret/proposition/unsubscribe"],
     },
@@ -259,10 +250,8 @@ export default (server: Server) => {
    */
 
   server.put(
-    "/etablissement/:id",
     {
       schema: zRoutes.put["/etablissement/:id"],
-      onRequest: [server.auth(zRoutes.put["/etablissement/:id"].securityScheme)],
     },
     async (req, res) => {
       const result = await updateUser({ _id: req.params.id }, req.body)
@@ -271,14 +260,10 @@ export default (server: Server) => {
   )
 
   server.post(
-    "/etablissement/validation",
     {
       schema: zRoutes.post["/etablissement/validation"],
-      preHandler: [server.auth(zRoutes.post["/etablissement/validation"].securityScheme)],
     },
-    async (req, res) => {
-      const user = getUserFromRequest(req, zRoutes.post["/etablissement/validation"])
-
+    async (req, res, user) => {
       // Validate email
       const validation = await validateEtablissementEmail(user._id)
 

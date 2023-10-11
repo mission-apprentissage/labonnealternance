@@ -2,11 +2,10 @@ import { zRoutes } from "shared/index"
 
 import { addEmailToBlacklist, removeEmailFromLbaCompanies } from "../../services/application.service"
 import { BrevoEventStatus } from "../../services/brevo.service"
-import { Server } from "../server"
+import { ServerBuilder } from "../utils/serverBuilder"
 
-export default function (server: Server) {
+export default function (server: ServerBuilder) {
   server.post(
-    "/campaign/webhook",
     {
       schema: zRoutes.post["/campaign/webhook"],
     },

@@ -1,20 +1,19 @@
 import { zRoutes } from "shared/index"
 
+import { ServerBuilder } from "@/http/utils/serverBuilder"
+
 import { getCatalogueFormations } from "../../../services/catalogue.service"
-import { Server } from "../../server"
 
 /**
  * @description Formations server.
  */
-export default (server: Server) => {
+export default (server: ServerBuilder) => {
   /**
    * @description Get in formation collection.
    */
   server.get(
-    "/admin/formations",
     {
       schema: zRoutes.get["/admin/formations"],
-      onRequest: [server.auth(zRoutes.get["/admin/formations"].securityScheme)],
     },
     async (req, res) => {
       const { search_item } = req.query

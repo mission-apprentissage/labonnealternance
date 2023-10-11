@@ -5,21 +5,12 @@ import { Application } from "../../common/model/index"
 import { decryptWithIV } from "../../common/utils/encryptString"
 import { sentryCaptureException } from "../../common/utils/sentryUtils"
 import { sendNotificationToApplicant, updateApplicationStatus, validateFeedbackApplicationComment } from "../../services/application.service"
-import { Server } from "../server"
+import { ServerBuilder } from "../utils/serverBuilder"
 
-const config = {
-  rateLimit: {
-    max: 1,
-    timeWindow: "5s",
-  },
-} as const
-
-export default function (server: Server) {
+export default function (server: ServerBuilder) {
   server.post(
-    "/application/intentionComment",
     {
       schema: zRoutes.post["/application/intentionComment"],
-      config,
     },
     async (req, res) => {
       // email and phone should appear
@@ -57,7 +48,6 @@ export default function (server: Server) {
   )
 
   server.post(
-    "/application/webhook",
     {
       schema: zRoutes.post["/application/webhook"],
     },

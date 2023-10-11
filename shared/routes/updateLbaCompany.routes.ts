@@ -25,6 +25,10 @@ export const zUpdateLbaCompanyRoutes = {
         auth: "none",
         role: "all",
       },
+      rateLimit: {
+        max: 1,
+        timeWindow: "20s",
+      },
     },
   },
 } as const satisfies IRoutesDef

@@ -47,6 +47,10 @@ export const zV1FormationsRoutes = {
         auth: "none",
         role: "all",
       },
+      rateLimit: {
+        max: 7,
+        timeWindow: "1s",
+      },
       openapi: {
         tags: ["Formations"] as string[],
         operationId: "getFormations",
@@ -75,6 +79,10 @@ export const zV1FormationsRoutes = {
       securityScheme: {
         auth: "none",
         role: "all",
+      },
+      rateLimit: {
+        max: 7,
+        timeWindow: "1s",
       },
       openapi: {
         tags: ["Formations"] as string[],
@@ -122,6 +130,10 @@ export const zV1FormationsRoutes = {
       securityScheme: {
         auth: "none",
         role: "all",
+      },
+      rateLimit: {
+        max: 7,
+        timeWindow: "1s",
       },
       openapi: {
         tags: ["Formations"] as string[],

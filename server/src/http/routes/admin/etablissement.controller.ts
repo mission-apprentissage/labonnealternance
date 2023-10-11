@@ -1,21 +1,20 @@
 import Boom from "boom"
 import { zRoutes } from "shared/index"
 
+import { ServerBuilder } from "@/http/utils/serverBuilder"
+
 import { Etablissement } from "../../../common/model/index"
-import { Server } from "../../server"
 
 /**
  * @description Etablissement server.
  */
-export default (server: Server) => {
+export default (server: ServerBuilder) => {
   /**
    * Gets an etablissement from its siret_formateur.
    */
   server.get(
-    "/admin/etablissements/siret-formateur/:siret",
     {
       schema: zRoutes.get["/admin/etablissements/siret-formateur/:siret"],
-      onRequest: [server.auth(zRoutes.get["/admin/etablissements/siret-formateur/:siret"].securityScheme)],
     },
     async ({ params }, res) => {
       const etablissement = await Etablissement.findOne({ formateur_siret: params.siret })
@@ -32,10 +31,8 @@ export default (server: Server) => {
    * Gets an etablissement from its id.
    */
   server.get(
-    "/admin/etablissements/:id",
     {
       schema: zRoutes.get["/admin/etablissements/:id"],
-      onRequest: [server.auth(zRoutes.get["/admin/etablissements/:id"].securityScheme)],
     },
     async (req, res) => {
       const etablissement = await Etablissement.findById(req.params.id)
@@ -52,10 +49,8 @@ export default (server: Server) => {
    * Updates an etablissement.
    */
   server.patch(
-    "/admin/etablissements/:id",
     {
       schema: zRoutes.patch["/admin/etablissements/:id"],
-      onRequest: [server.auth(zRoutes.patch["/admin/etablissements/:id"].securityScheme)],
     },
     async ({ body, params }, res) => {
       const etablissement = await Etablissement.findById(params.id)

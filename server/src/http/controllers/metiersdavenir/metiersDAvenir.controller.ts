@@ -1,11 +1,11 @@
 import { zRoutes } from "shared/index.js"
 
-import { getMetiersDAvenir } from "../../../services/diagoriente.service"
-import { Server } from "../../server"
+import { ServerBuilder } from "@/http/utils/serverBuilder"
 
-export default (server: Server) => {
+import { getMetiersDAvenir } from "../../../services/diagoriente.service"
+
+export default (server: ServerBuilder) => {
   server.get(
-    "/metiersdavenir",
     {
       schema: zRoutes.get["/metiersdavenir"],
     },

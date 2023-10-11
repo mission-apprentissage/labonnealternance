@@ -3,14 +3,12 @@ import { zRoutes } from "shared/index"
 
 import { Optout } from "../../common/model/index"
 import config from "../../config"
-import { Server } from "../server"
+import { ServerBuilder } from "../utils/serverBuilder"
 
-export default (server: Server) => {
+export default (server: ServerBuilder) => {
   server.get(
-    "/optout/validate",
     {
       schema: zRoutes.get["/optout/validate"],
-      preHandler: [server.auth(zRoutes.get["/optout/validate"].securityScheme)],
     },
     async (req, res) => {
       const token = req.headers && req.headers.authorization && req.headers.authorization.split(" ")[1]

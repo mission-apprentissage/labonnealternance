@@ -32,6 +32,10 @@ export const zApplicationRoutes = {
         auth: "none",
         role: "all",
       },
+      rateLimit: {
+        max: 1,
+        timeWindow: "5s",
+      },
       openapi: {
         tags: ["Applications"] as string[],
         description:
@@ -70,6 +74,10 @@ export const zApplicationRoutes = {
       securityScheme: {
         auth: "none",
         role: "all",
+      },
+      rateLimit: {
+        max: 5,
+        timeWindow: "5s",
       },
     },
     "/application/webhook": {

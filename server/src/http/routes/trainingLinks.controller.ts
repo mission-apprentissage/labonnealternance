@@ -1,19 +1,12 @@
 import { zRoutes } from "shared/index"
 
 import { getTrainingLinks } from "../../services/trainingLinks.service"
-import { Server } from "../server"
+import { ServerBuilder } from "../utils/serverBuilder"
 
-export default (server: Server) => {
+export default (server: ServerBuilder) => {
   server.post(
-    "/traininglinks",
     {
       schema: zRoutes.post["/traininglinks"],
-      config: {
-        rateLimit: {
-          max: 3,
-          timeWindow: "1s",
-        },
-      },
     },
     async (req, res) => {
       const results = await getTrainingLinks(req.body)

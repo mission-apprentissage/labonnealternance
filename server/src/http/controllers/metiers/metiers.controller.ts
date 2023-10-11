@@ -1,21 +1,13 @@
 import { zRoutes } from "shared/index.js"
 
+import { ServerBuilder } from "@/http/utils/serverBuilder"
+
 import { getCoupleAppellationRomeIntitule, getMetiers, getMetiersPourCfd, getMetiersPourEtablissement, getTousLesMetiers } from "../../../services/metiers.service"
-import { Server } from "../../server"
 
-const config = {
-  rateLimit: {
-    max: 20,
-    timeWindow: "1s",
-  },
-}
-
-export default (server: Server) => {
+export default (server: ServerBuilder) => {
   server.get(
-    "/v1/metiers/metiersParFormation/:cfd",
     {
       schema: zRoutes.get["/v1/metiers/metiersParFormation/:cfd"],
-      config,
     },
     async (req, res) => {
       const { cfd } = req.params
@@ -25,10 +17,8 @@ export default (server: Server) => {
   )
 
   server.get(
-    "/v1/metiers/metiersParEtablissement/:siret",
     {
       schema: zRoutes.get["/v1/metiers/metiersParEtablissement/:siret"],
-      config,
     },
     async (req, res) => {
       const { siret } = req.params
@@ -38,10 +28,8 @@ export default (server: Server) => {
   )
 
   server.get(
-    "/v1/metiers/all",
     {
       schema: zRoutes.get["/v1/metiers/all"],
-      config,
     },
     async (req, res) => {
       const result = await getTousLesMetiers()
@@ -50,10 +38,8 @@ export default (server: Server) => {
   )
 
   server.get(
-    "/v1/metiers",
     {
       schema: zRoutes.get["/v1/metiers"],
-      config,
     },
     async (req, res) => {
       const { title, romes, rncps } = req.query
@@ -63,10 +49,8 @@ export default (server: Server) => {
   )
 
   server.get(
-    "/v1/metiers/intitule",
     {
       schema: zRoutes.get["/v1/metiers/intitule"],
-      config,
     },
     async (req, res) => {
       const { label } = req.query

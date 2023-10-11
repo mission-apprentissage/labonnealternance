@@ -47,6 +47,10 @@ export const zTrainingLinksRoutes = {
         auth: "none",
         role: "all",
       },
+      rateLimit: {
+        max: 3,
+        timeWindow: "1s",
+      },
     },
   },
 } as const satisfies IRoutesDef

@@ -12,7 +12,7 @@ import * as appointmentService from "../../services/appointment.service"
 import dayjs from "../../services/dayjs.service"
 import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service"
 import mailer from "../../services/mailer.service"
-import { Server } from "../server"
+import { ServerBuilder } from "../utils/serverBuilder"
 
 const etablissementProjection = {
   optout_refusal_date: 1,
@@ -31,12 +31,11 @@ const etablissementProjection = {
 /**
  * @description Etablissement server.
  */
-export default (server: Server) => {
+export default (server: ServerBuilder) => {
   /**
    * @description Returns etablissement from its id.
    */
   server.get(
-    "/etablissements/:id",
     {
       schema: zRoutes.get["/etablissements/:id"],
     },
@@ -55,7 +54,6 @@ export default (server: Server) => {
    * @description Accepts "Premium Affelnet".
    */
   server.post(
-    "/etablissements/:id/premium/affelnet/accept",
     {
       schema: zRoutes.post["/etablissements/:id/premium/affelnet/accept"],
     },
@@ -176,7 +174,6 @@ export default (server: Server) => {
    * @description Accepts "Premium Parcoursup".
    */
   server.post(
-    "/etablissements/:id/premium/accept",
     {
       schema: zRoutes.post["/etablissements/:id/premium/accept"],
     },
@@ -300,7 +297,6 @@ export default (server: Server) => {
    * @description Refuses "Premium Affelnet"
    */
   server.post(
-    "/etablissements/:id/premium/affelnet/refuse",
     {
       schema: zRoutes.post["/etablissements/:id/premium/affelnet/refuse"],
     },
@@ -373,7 +369,6 @@ export default (server: Server) => {
    * @description Refuses "Premium Parcoursup"
    */
   server.post(
-    "/etablissements/:id/premium/refuse",
     {
       schema: zRoutes.post["/etablissements/:id/premium/refuse"],
     },
@@ -446,7 +441,6 @@ export default (server: Server) => {
    * Patch etablissement appointment.
    */
   server.patch(
-    "/etablissements/:id/appointments/:appointmentId",
     {
       schema: zRoutes.patch["/etablissements/:id/appointments/:appointmentId"],
     },
@@ -484,7 +478,6 @@ export default (server: Server) => {
    * @description OptOutUnsubscribe to "opt-out".
    */
   server.post(
-    "/etablissements/:id/opt-out/unsubscribe",
     {
       schema: zRoutes.post["/etablissements/:id/opt-out/unsubscribe"],
     },

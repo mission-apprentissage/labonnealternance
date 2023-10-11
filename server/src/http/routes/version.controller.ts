@@ -2,19 +2,12 @@ import { zRoutes } from "shared/index"
 
 import config from "@/config"
 
-import { Server } from "../server"
+import { ServerBuilder } from "../utils/serverBuilder"
 
-export default (server: Server) => {
+export default (server: ServerBuilder) => {
   server.get(
-    "/version",
     {
       schema: zRoutes.get["/version"],
-      config: {
-        rateLimit: {
-          max: 3,
-          timeWindow: "1s",
-        },
-      },
     },
     async (_req, res) => {
       return res.status(200).send({ version: config.version })

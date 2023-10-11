@@ -80,6 +80,10 @@ interface IRouteSchemaCommon {
   response: { [statuscode: `${1 | 2 | 3 | 4 | 5}${string}`]: ZodType }
   openapi?: null | Omit<OpenAPIV3.OperationObject, "parameters" | "requestBody" | "requestParams" | "responses">
   securityScheme: SecurityScheme
+  rateLimit?: {
+    max: number
+    timeWindow: number | string
+  }
 }
 
 export interface IRouteSchemaGet extends IRouteSchemaCommon {

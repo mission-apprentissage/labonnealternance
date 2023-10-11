@@ -1,9 +1,7 @@
 import Boom from "boom"
-import { FastifyRequest } from "fastify"
-import { ICredential, IJob, IUserRecruteur, zRoutes } from "shared"
-import { IRouteSchema } from "shared/routes/common.routes"
+import { IJob, zRoutes } from "shared"
 
-import { IUser } from "@/common/model/schema/user/user.types"
+import { ServerBuilder } from "@/http/utils/serverBuilder"
 
 import { Recruiter } from "../../../common/model/index"
 import { delay } from "../../../common/utils/asyncUtils"
@@ -28,36 +26,13 @@ import { getCompanyFromSiret } from "../../../services/lbacompany.service"
 import { addOffreDetailView, addOffreSearchView, getLbaJobById } from "../../../services/lbajob.service"
 import { getPeJobFromId } from "../../../services/pejob.service"
 import { getAppellationDetailsFromAPI, getRomeDetailsFromAPI } from "../../../services/rome.service"
-import { Server } from "../../server"
 
 import { createDelegationSchema, createEstablishmentSchema, createJobSchema, getEstablishmentEntitySchema, updateJobSchema } from "./jobs.validators"
 
-const config = {
-  rateLimit: {
-    max: 5,
-    timeWindow: "1s",
-  },
-}
-
-type AuthenticatedUser<AuthScheme extends IRouteSchema["securityScheme"]["auth"]> = AuthScheme extends "jwt-bearer" | "basic" | "jwt-password"
-  ? IUser
-  : AuthScheme extends "jwt-bearer"
-  ? IUserRecruteur
-  : AuthScheme extends "api-key"
-  ? ICredential
-  : null
-
-const getUser = <S extends IRouteSchema>(req: FastifyRequest, _schema: S): AuthenticatedUser<S["securityScheme"]["auth"]> => {
-  return req.user as AuthenticatedUser<S["securityScheme"]["auth"]>
-}
-
-export default (server: Server) => {
+export default (server: ServerBuilder) => {
   server.get(
-    "/v1/jobs/establishment",
     {
       schema: zRoutes.get["/v1/jobs/establishment"],
-      config,
-      onRequest: server.auth(zRoutes.get["/v1/jobs/establishment"].securityScheme),
       // TODO: AttachValidation Error ?
     },
     async (req, res) => {
@@ -75,17 +50,12 @@ export default (server: Server) => {
   )
 
   server.get(
-    "/v1/jobs/bulk",
     {
       schema: zRoutes.get["/v1/jobs/bulk"],
-      config,
-      onRequest: server.auth(zRoutes.get["/v1/jobs/bulk"].securityScheme),
       // TODO: AttachValidation Error ?
     },
-    async (req, res) => {
+    async (req, res, user) => {
       const { query, select, page, limit } = req.query
-
-      const user = getUser(req, zRoutes.get["/v1/jobs/bulk"])
 
       const qs = query ? JSON.parse(query) : {}
       const slt = select ? JSON.parse(select) : {}
@@ -98,21 +68,17 @@ export default (server: Server) => {
   )
 
   server.post(
-    "/v1/jobs/establishment",
     {
       schema: zRoutes.post["/v1/jobs/establishment"],
-      config,
-      onRequest: server.auth(zRoutes.post["/v1/jobs/establishment"].securityScheme),
       attachValidation: true,
       // TODO: AttachValidation Error ?
     },
-    async (req, res) => {
+    async (req, res, user) => {
       const { body } = req
       // Validate establishment parameters
       await createEstablishmentSchema.validateAsync(body, { abortEarly: false })
 
       const { first_name, last_name, phone, email, origin, idcc, establishment_siret } = body
-      const user = getUser(req, zRoutes.post["/v1/jobs/establishment"])
 
       const result = await entrepriseOnboardingWorkflow.create(
         {
@@ -139,11 +105,8 @@ export default (server: Server) => {
   )
 
   server.post(
-    "/v1/jobs/:establishmentId",
     {
       schema: zRoutes.post["/v1/jobs/:establishmentId"],
-      config,
-      onRequest: server.auth(zRoutes.post["/v1/jobs/:establishmentId"].securityScheme),
       attachValidation: true,
     },
     async (req, res) => {
@@ -203,11 +166,8 @@ export default (server: Server) => {
   )
 
   server.patch(
-    "/v1/jobs/:jobId",
     {
       schema: zRoutes.patch["/v1/jobs/:jobId"],
-      config,
-      onRequest: server.auth(zRoutes.patch["/v1/jobs/:jobId"].securityScheme),
       attachValidation: true,
     },
     async (req, res) => {
@@ -227,11 +187,8 @@ export default (server: Server) => {
   )
 
   server.get(
-    "/v1/jobs/delegations/:jobId",
     {
       schema: zRoutes.get["/v1/jobs/delegations/:jobId"],
-      config,
-      onRequest: server.auth(zRoutes.get["/v1/jobs/delegations/:jobId"].securityScheme),
       attachValidation: true,
       // TODO: AttachValidation Error ?
     },
@@ -266,11 +223,8 @@ export default (server: Server) => {
   )
 
   server.post(
-    "/v1/jobs/delegations/:jobId",
     {
       schema: zRoutes.post["/v1/jobs/delegations/:jobId"],
-      config,
-      onRequest: server.auth(zRoutes.post["/v1/jobs/delegations/:jobId"].securityScheme),
       attachValidation: true,
       // TODO: AttachValidation Error ?
     },
@@ -292,11 +246,8 @@ export default (server: Server) => {
   )
 
   server.post(
-    "/v1/jobs/provided/:jobId",
     {
       schema: zRoutes.post["/v1/jobs/provided/:jobId"],
-      config,
-      onRequest: server.auth(zRoutes.post["/v1/jobs/provided/:jobId"].securityScheme),
       // TODO: AttachValidation Error ?
     },
     async (req, res) => {
@@ -318,11 +269,8 @@ export default (server: Server) => {
   )
 
   server.post(
-    "/v1/jobs/canceled/:jobId",
     {
       schema: zRoutes.post["/v1/jobs/canceled/:jobId"],
-      config,
-      onRequest: server.auth(zRoutes.post["/v1/jobs/canceled/:jobId"].securityScheme),
       // TODO: AttachValidation Error ?
     },
     async (req, res) => {
@@ -346,11 +294,8 @@ export default (server: Server) => {
   )
 
   server.post(
-    "/v1/jobs/extend/:jobId",
     {
       schema: zRoutes.post["/v1/jobs/extend/:jobId"],
-      config,
-      onRequest: server.auth(zRoutes.post["/v1/jobs/extend/:jobId"].securityScheme),
       // TODO: AttachValidation Error ?
     },
     async (req, res) => {
@@ -379,10 +324,8 @@ export default (server: Server) => {
     }
   )
   server.get(
-    "/v1/jobs",
     {
       schema: zRoutes.get["/v1/jobs"],
-      config,
       // TODO: AttachValidation Error ?
     },
     async (req, res) => {
@@ -405,10 +348,8 @@ export default (server: Server) => {
   )
 
   server.get(
-    "/v1/jobs/company/:siret",
     {
       schema: zRoutes.get["/v1/jobs/company/:siret"],
-      config,
       // TODO: AttachValidation Error ?
     },
     async (req, res) => {
@@ -436,10 +377,8 @@ export default (server: Server) => {
   )
 
   server.get(
-    "/v1/jobs/matcha/:id",
     {
       schema: zRoutes.get["/v1/jobs/matcha/:id"],
-      config,
       // TODO: AttachValidation Error ?
     },
     async (req, res) => {
@@ -476,10 +415,8 @@ export default (server: Server) => {
   )
 
   server.post(
-    "/v1/jobs/matcha/:id/stats/view-details",
     {
       schema: zRoutes.post["/v1/jobs/matcha/:id/stats/view-details"],
-      config,
       // TODO: AttachValidation Error ?
     },
     async (req, res) => {
@@ -490,10 +427,8 @@ export default (server: Server) => {
   )
 
   server.get(
-    "/v1/jobs/job/:id",
     {
       schema: zRoutes.get["/v1/jobs/job/:id"],
-      config,
       // TODO: AttachValidation Error ?
     },
     async (req, res) => {

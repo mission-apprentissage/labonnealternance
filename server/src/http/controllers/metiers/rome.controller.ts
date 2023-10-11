@@ -1,20 +1,17 @@
 import Boom from "boom"
 import { zRoutes } from "shared/index"
 
+import { ServerBuilder } from "@/http/utils/serverBuilder"
 import { getRomeDetailsFromAPI } from "@/services/rome.service"
 
 import { getRomesAndLabelsFromTitleQuery } from "../../../services/metiers.service"
-import { Server } from "../../server"
 
 // TODO: Remove duplicated routes
-/**
- * API romes
- */
-export default function (server: Server) {
+export default function (server: ServerBuilder) {
   server.get(
-    "/romelabels",
     {
       schema: zRoutes.get["/rome"],
+      aliases: ["/romelabels"],
     },
     async (req, res) => {
       const result = await getRomesAndLabelsFromTitleQuery(req.query)
@@ -23,35 +20,9 @@ export default function (server: Server) {
   )
 
   server.get(
-    "/rome",
-    {
-      schema: zRoutes.get["/rome"],
-    },
-    async (req, res) => {
-      const result = await getRomesAndLabelsFromTitleQuery(req.query)
-      return res.status(200).send(result)
-    }
-  )
-
-  server.get(
-    "/romelabels/detail/:rome",
     {
       schema: zRoutes.get["/rome/detail/:rome"],
-    },
-    async (req, res) => {
-      const { rome } = req.params
-      const romeData = await getRomeDetailsFromAPI(rome)
-      if (!romeData) {
-        throw Boom.notFound(`rome ${rome} not found`)
-      }
-      return res.status(200).send(romeData)
-    }
-  )
-
-  server.get(
-    "/rome/detail/:rome",
-    {
-      schema: zRoutes.get["/rome/detail/:rome"],
+      aliases: ["/romelabels/detail/:rome"],
     },
     async (req, res) => {
       const { rome } = req.params
