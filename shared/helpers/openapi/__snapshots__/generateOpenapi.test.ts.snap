@@ -880,12 +880,8 @@ exports[`generateOpenApiSchema > should generate proper schema 1`] = `
         },
         "required": [
           "rome_code",
-          "job_update_date",
-          "job_prolongation_count",
-          "relance_mail_sent",
           "job_status",
           "job_type",
-          "job_delegation_count",
           "is_disabled_elligible",
         ],
         "type": "object",
