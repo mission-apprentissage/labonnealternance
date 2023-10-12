@@ -23,13 +23,15 @@ import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 import { useQuery } from "react-query"
 
+import { getAuthServerSideProps } from "@/common/SSR/getAuthServerSideProps"
+import { apiGet } from "@/utils/api.utils"
+
 import { USER_STATUS } from "../../../../common/contants"
 import { sortReactTableDate, sortReactTableString } from "../../../../common/utils/dateUtils"
 import { AnimationContainer, ConfirmationActivationUtilsateur, ConfirmationDesactivationUtilisateur, Layout, LoadingEmptySpace, TableNew } from "../../../../components/espace_pro"
-import withAuth from "../../../../components/espace_pro/withAuth"
+import { authProvider, withAuth } from "../../../../components/espace_pro/withAuth"
 import Link from "../../../../components/Link"
 import { Parametre } from "../../../../theme/components/icons"
-import { getUsers } from "../../../../utils/api"
 
 function Users() {
   const [currentEntreprise, setCurrentEntreprise] = useState({})
@@ -52,7 +54,7 @@ function Users() {
     }
   }, [])
 
-  const { isLoading, data } = useQuery("user-list", () => getUsers())
+  const { isLoading, data } = useQuery("user-list", () => apiGet(`/user`, {}))
 
   if (isLoading) {
     return <LoadingEmptySpace />
@@ -232,24 +234,24 @@ function Users() {
         <Tabs index={tabIndex} onChange={(index) => setTabIndex(index)} variant="search" isLazy>
           <Box mx={8}>
             <TabList>
-              <Tab width="300px">En attente de vérification ({data.data.awaiting.length})</Tab>
-              <Tab width="300px">Actifs ({data.data.active.length})</Tab>
-              <Tab width="300px">Désactivés ({data.data.disabled.length})</Tab>
-              <Tab width="300px">En erreur ({data.data.error.length})</Tab>
+              <Tab width="300px">En attente de vérification ({data.awaiting.length})</Tab>
+              <Tab width="300px">Actifs ({data.active.length})</Tab>
+              <Tab width="300px">Désactivés ({data.disabled.length})</Tab>
+              <Tab width="300px">En erreur ({data.error.length})</Tab>
             </TabList>
           </Box>
           <TabPanels mt={3}>
             <TabPanel>
-              <TableNew columns={columns} data={data.data.awaiting} description={null} exportable={null} />
+              <TableNew columns={columns} data={data.awaiting} description={null} exportable={null} />
             </TabPanel>
             <TabPanel>
-              <TableNew columns={columns} data={data.data.active} description={null} exportable={null} />
+              <TableNew columns={columns} data={data.active} description={null} exportable={null} />
             </TabPanel>
             <TabPanel>
-              <TableNew columns={columns} data={data.data.disabled} description={null} exportable={null} />
+              <TableNew columns={columns} data={data.disabled} description={null} exportable={null} />
             </TabPanel>
             <TabPanel>
-              <TableNew columns={columns} data={data.data.error} description={null} exportable={null} />
+              <TableNew columns={columns} data={data.error} description={null} exportable={null} />
             </TabPanel>
           </TabPanels>
         </Tabs>
@@ -266,4 +268,6 @@ function UsersPage() {
   )
 }
 
-export default withAuth(UsersPage, "adminLbaR")
+export const getServerSideProps = async (context) => ({ props: { ...(await getAuthServerSideProps(context)) } })
+
+export default authProvider(withAuth(UsersPage, "adminLbaR"))

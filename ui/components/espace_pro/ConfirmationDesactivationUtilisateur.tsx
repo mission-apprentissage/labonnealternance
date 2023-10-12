@@ -87,7 +87,7 @@ export const ConfirmationDesactivationUtilisateur = (props) => {
               <option value="Tentative de fraude">Tentative de fraude</option>
               <option value="Injoignable">Injoignable</option>
               <option value="Compte en doublon">Compte en doublon</option>
-              {type === "CFA" && <option value="Non référencé dans le catalogue">Non référencé dans le catalogue</option>}
+              {type === "CFA" && <option value="Non référencé dans le catalogue du Réseau des Carif-Oref">Non référencé dans le catalogue</option>}
               <option value="Autre">Autre</option>
             </Select>
           </FormControl>

@@ -13,7 +13,7 @@ export const zEligibleTrainingsForAppointmentRoutes = {
         "200": z.object({ parameters: z.array(ZEligibleTrainingsForAppointmentSchema) }).strict(),
       },
       securityScheme: {
-        auth: "jwt-rdv-admin",
+        auth: "cookie-session",
         role: "administrator",
       },
     },
@@ -37,7 +37,7 @@ export const zEligibleTrainingsForAppointmentRoutes = {
         "200": z.union([ZEligibleTrainingsForAppointmentSchema, z.null()]),
       },
       securityScheme: {
-        auth: "jwt-rdv-admin",
+        auth: "cookie-session",
         role: "administrator",
       },
     },

@@ -17,7 +17,7 @@ import ExportButtonNew from "./ExportButton/ExportButtonNew"
 import PaginationReactQuery from "./PaginationReactQuery"
 
 // Define a default UI for filtering
-function GlobalFilter({ globalFilter, setGlobalFilter }) {
+function GlobalFilter({ globalFilter, setGlobalFilter, searchPlaceholder }) {
   const [value, setValue] = React.useState(globalFilter)
   // const onChange = useAsyncDebounce((value) => { // TODO_AB
   //   setGlobalFilter(value || undefined)
@@ -35,7 +35,7 @@ function GlobalFilter({ globalFilter, setGlobalFilter }) {
           setValue(e.target.value)
           onChange(e.target.value)
         }}
-        placeholder={`Rechercher par raison sociale, email ou téléphone...`}
+        placeholder={searchPlaceholder}
       />
       <InputRightElement background="bluefrance.500" border="none" pointerEvents="none">
         <SearchLine color="white" />
@@ -52,7 +52,7 @@ function fuzzyTextFilterFn(rows, id, filterValue) {
 // Let the table remove the filter if the string is empty
 fuzzyTextFilterFn.autoRemove = (val) => !val
 
-export function TableNew({ data = [], columns, description = undefined, exportable }) {
+export function TableNew({ data = [], columns, description = undefined, exportable, searchPlaceholder = "Rechercher par raison sociale, email ou téléphone..." }) {
   const tableData = useMemo(() => data, [data])
   const tableColumns = useMemo(() => columns, [columns])
 
@@ -104,7 +104,7 @@ export function TableNew({ data = [], columns, description = undefined, exportab
         <Box width="90%">
           <Box width="50%">
             {/*  @ts-expect-error: TODO */}
-            <GlobalFilter preGlobalFilteredRows={preGlobalFilteredRows} globalFilter={globalFilter} setGlobalFilter={setGlobalFilter} />
+            <GlobalFilter preGlobalFilteredRows={preGlobalFilteredRows} globalFilter={globalFilter} setGlobalFilter={setGlobalFilter} searchPlaceholder={searchPlaceholder} />
           </Box>
           {description && (
             <Box width="95%">
