@@ -87,7 +87,7 @@
     - name: Attente du deploiement
       shell:
         chdir: /opt/app
-        cmd: "sudo docker run --rm -v /var/run/docker.sock:/var/run/docker.sock sudobmitch/docker-stack-wait lba"
+        cmd: "sudo docker run --rm -v /var/run/docker.sock:/var/run/docker.sock sudobmitch/docker-stack-wait:v0.2.3 lba"
       async: 1800
       poll: 10
 
