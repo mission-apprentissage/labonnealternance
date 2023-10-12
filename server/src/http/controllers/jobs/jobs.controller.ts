@@ -396,7 +396,7 @@ export default (server: Server) => {
       if ("matchas" in result) {
         const { matchas } = result
         if (matchas && "results" in matchas) {
-          matchas.results.map((matchaOffre) => matchaOffre?.job?.id && addOffreSearchView(matchaOffre.job.id))
+          await Promise.all(matchas.results.map((matchaOffre) => matchaOffre?.job?.id && addOffreSearchView(matchaOffre.job.id)))
         }
       }
 
@@ -427,7 +427,7 @@ export default (server: Server) => {
         } else if (result.error === "not_found") {
           res.status(404)
         } else {
-          res.status(result.status || 500)
+          res.status(500)
         }
       }
 
@@ -465,7 +465,7 @@ export default (server: Server) => {
             break
           }
           default: {
-            res.status(result.status || 500)
+            res.status(500)
             break
           }
         }
@@ -510,7 +510,7 @@ export default (server: Server) => {
         } else if (result.error === "not_found") {
           res.status(404)
         } else {
-          res.status(result.status || 500)
+          res.status(500)
         }
       }
 

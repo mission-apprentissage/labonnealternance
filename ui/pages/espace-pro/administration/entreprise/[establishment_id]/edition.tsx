@@ -143,9 +143,9 @@ function EditionEntrepriseContact() {
   const router = useRouter()
   const [auth] = useAuth()
 
-  const { data, isLoading } = useQuery("formulaire-edition", () => getFormulaire(router.query.establishment_id), { cacheTime: 0 })
+  const { data, isLoading } = useQuery("formulaire-edition", () => getFormulaire(router.query.establishment_id), { cacheTime: 0, enabled: !!router.query.establishment_id })
 
-  if (isLoading) {
+  if (isLoading || !router.query.establishment_id) {
     return <LoadingEmptySpace />
   }
 

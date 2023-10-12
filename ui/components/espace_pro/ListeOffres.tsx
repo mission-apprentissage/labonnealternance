@@ -76,9 +76,12 @@ export default function ListeOffres() {
 
   dayjs.extend(relativeTime)
 
-  const { data, isLoading } = useQuery("offre-liste", () => getFormulaire(router.query.establishment_id))
+  const { data, isLoading } = useQuery("offre-liste", {
+    enabled: !!router.query.establishment_id,
+    queryFn: () => getFormulaire(router.query.establishment_id),
+  })
 
-  if (isLoading) {
+  if (isLoading || !router.query.establishment_id) {
     return <LoadingEmptySpace label="Chargement en cours..." />
   }
 

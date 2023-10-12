@@ -1,4 +1,4 @@
-import axios from "axios"
+import { getHttpClient } from "./httpUtils"
 
 // Cf Documentation : https://geo.api.gouv.fr/adresse
 const apiEndpoint = "https://api-adresse.data.gouv.fr"
@@ -64,7 +64,7 @@ class ApiGeoAdresse {
     let trys = 0
 
     while (trys < 3) {
-      response = await axios.get<IGeoAddress>(query)
+      response = await getHttpClient().get<IGeoAddress>(query)
 
       if (response?.data?.status === 429) {
         console.log("429 ", new Date(), query)
@@ -80,7 +80,7 @@ class ApiGeoAdresse {
 
   async searchPostcodeOnly(postcode: string) {
     try {
-      const response = await axios.get<IGeoAddress>(`${apiEndpoint}/search/?q=${postcode}&postcode=${postcode}`)
+      const response = await getHttpClient().get<IGeoAddress>(`${apiEndpoint}/search/?q=${postcode}&postcode=${postcode}`)
       return response.data
     } catch (error) {
       console.log(`geo searchPostcodeOnly error : ${postcode} ${error}`)

@@ -19,10 +19,14 @@ export type IUserPublic = {
 
 const anonymous = { sub: "anonymous", permissions: {} } as IUserPublic
 
-let token // TODO_AB
+let token
 if (typeof window !== "undefined") {
   // Perform localStorage action
-  token = sessionStorage.getItem("lba:token")
+  try {
+    token = sessionStorage.getItem("lba:token")
+  } catch (error) {
+    console.log(error)
+  }
 }
 
 const { useGlobalState, getGlobalState } = createGlobalState<{ auth: IUserPublic }>({
