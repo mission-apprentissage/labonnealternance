@@ -1,14 +1,22 @@
 import { zRoutes } from "shared/index.js"
 
-import { IServerBuilder } from "@/http/utils/serverBuilder.js"
-
 import { trackApiCall } from "../../../common/utils/sendTrackingEvent.js"
 import { getFormationDescriptionQuery, getFormationQuery, getFormationsQuery } from "../../../services/formation.service.js"
+import { Server } from "../../server"
 
-export default (server: IServerBuilder) => {
+const config = {
+  rateLimit: {
+    max: 7,
+    timeWindow: "1s",
+  },
+}
+
+export default (server: Server) => {
   server.get(
+    "/v1/formations",
     {
       schema: zRoutes.get["/v1/formations"],
+      config,
       // TODO: AttachValidation Error ?
     },
     async (req, res) => {
@@ -40,8 +48,10 @@ export default (server: IServerBuilder) => {
   )
 
   server.get(
+    "/v1/formations/formation/:id",
     {
       schema: zRoutes.get["/v1/formations/formation/:id"],
+      config,
       // TODO: AttachValidation Error ?
     },
     async (req, res) => {
@@ -77,8 +87,10 @@ export default (server: IServerBuilder) => {
   )
 
   server.get(
+    "/v1/formations/formationDescription/:id",
     {
       schema: zRoutes.get["/v1/formations/formationDescription/:id"],
+      config,
       // TODO: AttachValidation Error ?
     },
     async (req, res) => {

@@ -26,10 +26,6 @@ export const zMetiersRoutes = {
         auth: "none",
         role: "all",
       },
-      rateLimit: {
-        max: 20,
-        timeWindow: "1s",
-      },
       openapi: {
         description: "Récupérer la liste des noms des métiers du référentiel de La bonne alternance pour une formation donnée",
         tags: ["Metiers"] as string[],
@@ -51,10 +47,6 @@ export const zMetiersRoutes = {
         auth: "none",
         role: "all",
       },
-      rateLimit: {
-        max: 20,
-        timeWindow: "1s",
-      },
       openapi: {
         description: "Récupérer la liste des noms des métiers du référentiel de La bonne alternance pour un établissement de formation",
         tags: ["Metiers"] as string[],
@@ -70,10 +62,6 @@ export const zMetiersRoutes = {
       securityScheme: {
         auth: "none",
         role: "all",
-      },
-      rateLimit: {
-        max: 20,
-        timeWindow: "1s",
       },
       openapi: {
         description: "Retourne la liste de tous les métiers référencés sur LBA",
@@ -123,10 +111,6 @@ export const zMetiersRoutes = {
         auth: "none",
         role: "all",
       },
-      rateLimit: {
-        max: 20,
-        timeWindow: "1s",
-      },
       openapi: {
         description: "Récupérer la liste des noms des métiers du référentiel de La bonne alternance",
         tags: ["Metiers"] as string[],
@@ -149,10 +133,6 @@ export const zMetiersRoutes = {
       securityScheme: {
         auth: "none",
         role: "all",
-      },
-      rateLimit: {
-        max: 20,
-        timeWindow: "1s",
       },
       openapi: {
         description: "Retourne une liste de métiers enrichis avec les codes romes associés correspondant aux critères en paramètres",

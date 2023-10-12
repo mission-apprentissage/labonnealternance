@@ -1,21 +1,22 @@
 import Boom from "boom"
 import { zRoutes } from "shared/index"
 
-import { ServerBuilder } from "@/http/utils/serverBuilder"
-
 import { EligibleTrainingsForAppointment } from "../../../common/model/index"
 import * as eligibleTrainingsForAppointmentService from "../../../services/eligibleTrainingsForAppointment.service"
+import { Server } from "../../server"
 
 /**
  * Sample entity route module for GET
  */
-export default (server: ServerBuilder) => {
+export default (server: Server) => {
   /**
    * Get all eligibleTrainingsForAppointments GET
    * */
   server.get(
+    "/admin/eligible-trainings-for-appointment/etablissement-formateur-siret/:siret",
     {
       schema: zRoutes.get["/admin/eligible-trainings-for-appointment/etablissement-formateur-siret/:siret"],
+      onRequest: [server.auth(zRoutes.get["/admin/eligible-trainings-for-appointment/etablissement-formateur-siret/:siret"].securityScheme)],
     },
     async (req, res) => {
       const { siret } = req.params
@@ -61,8 +62,10 @@ export default (server: ServerBuilder) => {
    * Patch parameter.
    */
   server.patch(
+    "/admin/eligible-trainings-for-appointment/:id",
     {
       schema: zRoutes.patch["/admin/eligible-trainings-for-appointment/:id"],
+      onRequest: [server.auth(zRoutes.patch["/admin/eligible-trainings-for-appointment/:id"].securityScheme)],
     },
     async ({ body, params }, res) => {
       const result = await eligibleTrainingsForAppointmentService.updateParameter(params.id.toString(), body).lean()

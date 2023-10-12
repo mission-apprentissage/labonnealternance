@@ -1,21 +1,22 @@
 import Boom from "boom"
 import { IFormationCatalogue, zRoutes } from "shared/index"
 
-import { ServerBuilder } from "@/http/utils/serverBuilder"
-
 import { Appointment, User } from "../../../common/model/index"
 import { getFormationsByCleMinistereEducatif } from "../../../services/catalogue.service"
+import { Server } from "../../server"
 
 /**
  * Sample entity route module for GET
  */
-export default (server: ServerBuilder) => {
+export default (server: Server) => {
   /**
    * Get all formations getRequests /requests GET (with details)
    * */
   server.get(
+    "/admin/appointments/details",
     {
       schema: zRoutes.get["/admin/appointments/details"],
+      onRequest: [server.auth(zRoutes.get["/admin/appointments/details"].securityScheme)],
     },
     async (_req, res) => {
       const allAppointments = await Appointment.find().limit(100).sort({ _id: -1 }).lean()

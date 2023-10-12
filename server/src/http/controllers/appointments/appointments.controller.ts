@@ -2,16 +2,16 @@ import Sentry from "@sentry/node"
 import Boom from "boom"
 import { zRoutes } from "shared/index"
 
-import { ServerBuilder } from "@/http/utils/serverBuilder"
-
 import { getReferrerByKeyName } from "../../../common/model/constants/referrers"
 import { Etablissement, ReferentielOnisep } from "../../../common/model/index"
 import { isValidEmail } from "../../../common/utils/isValidEmail"
 import config from "../../../config"
 import * as eligibleTrainingsForAppointmentService from "../../../services/eligibleTrainingsForAppointment.service"
+import { Server } from "../../server"
 
-export default (server: ServerBuilder) => {
+export default (server: Server) => {
   server.post(
+    "/appointment-request/context/create",
     {
       schema: zRoutes.post["/appointment-request/context/create"],
       // TODO: AttachValidation Error ?

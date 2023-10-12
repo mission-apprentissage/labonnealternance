@@ -1,16 +1,24 @@
 import { zRoutes } from "shared/index.js"
 
-import { ServerBuilder } from "@/http/utils/serverBuilder.js"
-
 import { trackApiCall } from "../../../common/utils/sendTrackingEvent.js"
 import { getFormationsQuery } from "../../../services/formation.service.js"
 import { getJobsFromApi } from "../../../services/jobOpportunity.service.js"
 import { jobsEtFormationsQueryValidator } from "../../../services/queryValidator.service.js"
+import { Server } from "../../server"
 
-export default (server: ServerBuilder) => {
+const config = {
+  rateLimit: {
+    max: 5,
+    timeWindow: "1s",
+  },
+}
+
+export default (server: Server) => {
   server.get(
+    "/v1/jobsEtFormations",
     {
       schema: zRoutes.get["/v1/jobsEtFormations"],
+      config,
       // TODO: AttachValidation Error ?
     },
     async (req, res) => {

@@ -3,10 +3,10 @@ import { zRoutes } from "shared"
 
 import config from "@/config"
 
-import { ServerBuilder } from "../utils/serverBuilder"
+import { Server } from "../server"
 
-export const coreRoutes = (app: ServerBuilder) => {
-  app.get({ schema: zRoutes.get["/"] }, async (request, response) => {
+export const coreRoutes = (app: Server) => {
+  app.get("/", { schema: zRoutes.get["/"] }, async (request, response) => {
     const healthcheck = {
       // https://mongoosejs.com/docs/5.x/docs/api/connection.html#connection_Connection-readyState
       mongodb: mongoose.connection.readyState === 1,
@@ -17,7 +17,7 @@ export const coreRoutes = (app: ServerBuilder) => {
       healthcheck,
     })
   })
-  app.get({ schema: zRoutes.get["/healthcheck"] }, async (request, response) => {
+  app.get("/healthcheck", { schema: zRoutes.get["/healthcheck"] }, async (request, response) => {
     const healthcheck = {
       // https://mongoosejs.com/docs/5.x/docs/api/connection.html#connection_Connection-readyState
       mongodb: mongoose.connection.readyState === 1,

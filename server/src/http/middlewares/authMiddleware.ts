@@ -3,6 +3,7 @@ import {
   ContextConfigDefault,
   FastifyBaseLogger,
   FastifyRequest,
+  FastifySchema,
   FastifyTypeProvider,
   FastifyTypeProviderDefault,
   RawReplyDefaultExpression,
@@ -33,7 +34,7 @@ declare module "fastify" {
   }
 }
 
-export type AuthenticatedUser<AuthScheme extends IRouteSchema["securityScheme"]["auth"]> = AuthScheme extends "jwt-bearer" | "basic" | "jwt-password"
+type AuthenticatedUser<AuthScheme extends IRouteSchema["securityScheme"]["auth"]> = AuthScheme extends "jwt-bearer" | "basic" | "jwt-password"
   ? IUser
   : AuthScheme extends "jwt-bearer" | "jwt-token" | "cookie-session"
   ? IUserRecruteur
@@ -42,7 +43,7 @@ export type AuthenticatedUser<AuthScheme extends IRouteSchema["securityScheme"][
   : null
 
 export const getUserFromRequest = <S extends IRouteSchema>(req: FastifyRequest, _schema: S): AuthenticatedUser<S["securityScheme"]["auth"]> => {
-  return (req.user ?? null) as AuthenticatedUser<S["securityScheme"]["auth"]>
+  return req.user as AuthenticatedUser<S["securityScheme"]["auth"]>
 }
 
 function extractFieldFrom(source: unknown, field: string): null | string {
@@ -193,7 +194,7 @@ function authenticationMiddleware(strategy: SecurityScheme, req: FastifyRequest)
         // noop
       }
     default:
-      // TODO: Temp solution to not break server
+      // Temp solution to not break server
       return async () => {}
     // throw Boom.internal("Unknown authMiddleware strategy", { strategy })
   }

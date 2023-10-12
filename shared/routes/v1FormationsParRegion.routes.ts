@@ -68,10 +68,6 @@ export const zV1FormationsParRegion = {
         auth: "none",
         role: "all",
       },
-      rateLimit: {
-        max: 5,
-        timeWindow: "1s",
-      },
       openapi: {
         description: "Rechercher des formations en alternance dans un département ou dans une région ou dans la France entière pour un métier ou un ensemble de métiers",
         tags: ["Formations par région"] as string[],

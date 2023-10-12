@@ -2,17 +2,18 @@ import { zRoutes } from "shared"
 import { referrers } from "shared/constants/referers"
 
 import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service"
-import { ServerBuilder } from "../utils/serverBuilder"
+import { Server } from "../server"
 
 /**
  * @description Partners server.
  */
-export default (server: ServerBuilder) => {
+export default (server: Server) => {
   /**
    * @description Returns all available parcoursup ids.
    * This endpoint is used by Parcoursup.
    */
   server.get(
+    "/partners/parcoursup/formations",
     {
       schema: zRoutes.get["/partners/parcoursup/formations"],
     },

@@ -6,14 +6,21 @@ import { LbaCompany, UnsubscribedLbaCompany } from "../../common/model/index.js"
 import config from "../../config"
 import { UNSUBSCRIBE_EMAIL_ERRORS } from "../../services/constant.service"
 import mailer from "../../services/mailer.service"
-import { ServerBuilder } from "../utils/serverBuilder.js"
+import { Server } from "../server.js"
 
 const imagePath = `${config.publicUrl}/images/emails/`
 
-export default function (server: ServerBuilder) {
+export default function (server: Server) {
   server.post(
+    "/unsubscribe",
     {
       schema: zRoutes.post["/unsubscribe"],
+      config: {
+        rateLimit: {
+          max: 1,
+          timeWindow: "5s",
+        },
+      },
     },
     async (req, res) => {
       let result = "OK" as "OK" | "NON_RECONNU" | "ETABLISSEMENTS_MULTIPLES"

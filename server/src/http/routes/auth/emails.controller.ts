@@ -1,7 +1,5 @@
 import { zRoutes } from "shared/index"
 
-import { ServerBuilder } from "@/http/utils/serverBuilder"
-
 import { logger } from "../../../common/logger"
 import { Etablissement } from "../../../common/model"
 import { addEmailToBlacklist } from "../../../services/application.service"
@@ -9,19 +7,22 @@ import * as appointmentService from "../../../services/appointment.service"
 import { BrevoEventStatus } from "../../../services/brevo.service"
 import dayjs from "../../../services/dayjs.service"
 import * as eligibleTrainingsForAppointmentService from "../../../services/eligibleTrainingsForAppointment.service"
+import { Server } from "../../server"
 
 /**
  * Email controllers.
  */
-export default (server: ServerBuilder) => {
+export default (server: Server) => {
   /**
    * @description Update email status.
    * @method {POST}
    * @returns {Promise<void>}
    */
   server.post(
+    "/emails/webhook",
     {
       schema: zRoutes.post["/emails/webhook"],
+      onRequest: [server.auth(zRoutes.post["/emails/webhook"].securityScheme)],
     },
     async (req, res) => {
       const { date, event } = req.body

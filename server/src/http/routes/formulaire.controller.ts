@@ -21,13 +21,14 @@ import {
   updateOffre,
 } from "../../services/formulaire.service"
 import { getUser } from "../../services/userRecruteur.service"
-import { ServerBuilder } from "../utils/serverBuilder"
+import { Server } from "../server"
 
-export default (server: ServerBuilder) => {
+export default (server: Server) => {
   /**
    * Get form from id
    */
   server.get(
+    "/formulaire/:establishment_id",
     {
       schema: zRoutes.get["/formulaire/:establishment_id"],
     },
@@ -53,6 +54,7 @@ export default (server: ServerBuilder) => {
    * Post form
    */
   server.post(
+    "/formulaire",
     {
       schema: zRoutes.post["/formulaire"],
     },
@@ -85,8 +87,10 @@ export default (server: ServerBuilder) => {
    * Put form
    */
   server.put(
+    "/formulaire/:establishment_id",
     {
       schema: zRoutes.put["/formulaire/:establishment_id"],
+      onRequest: [server.auth(zRoutes.put["/formulaire/:establishment_id"].securityScheme)],
     },
     async (req, res) => {
       const result = await updateFormulaire(req.params.establishment_id, req.body)
@@ -95,6 +99,7 @@ export default (server: ServerBuilder) => {
   )
 
   server.delete(
+    "/formulaire/:establishment_id",
     {
       schema: zRoutes.delete["/formulaire/:establishment_id"],
     },
@@ -105,6 +110,7 @@ export default (server: ServerBuilder) => {
   )
 
   server.delete(
+    "/formulaire/delegated/:establishment_siret",
     {
       schema: zRoutes.delete["/formulaire/delegated/:establishment_siret"],
     },
@@ -120,6 +126,7 @@ export default (server: ServerBuilder) => {
    *
    */
   server.get(
+    "/formulaire/offre/f/:jobId",
     {
       schema: zRoutes.get["/formulaire/offre/f/:jobId"],
     },
@@ -136,6 +143,7 @@ export default (server: ServerBuilder) => {
    * Create new offer
    */
   server.post(
+    "/formulaire/:establishment_id/offre",
     {
       schema: zRoutes.post["/formulaire/:establishment_id/offre"],
       // preHandler: [server.auth(zRoutes.post["/formulaire/:establishment_id/offre"].securityScheme)],
@@ -181,6 +189,7 @@ export default (server: ServerBuilder) => {
    * Create offer delegations
    */
   server.post(
+    "/formulaire/offre/:jobId/delegation",
     {
       schema: zRoutes.post["/formulaire/offre/:jobId/delegation"],
     },
@@ -196,6 +205,7 @@ export default (server: ServerBuilder) => {
    * Update an existing offer from id
    */
   server.put(
+    "/formulaire/offre/:jobId",
     {
       schema: zRoutes.put["/formulaire/offre/:jobId"],
       // TODO no security ?
@@ -210,6 +220,7 @@ export default (server: ServerBuilder) => {
    * Permet de passer une offre en statut ANNULER (mail transactionnel)
    */
   server.patch(
+    "/formulaire/offre/:jobId",
     {
       schema: zRoutes.patch["/formulaire/offre/:jobId"],
     },
@@ -257,6 +268,7 @@ export default (server: ServerBuilder) => {
    * Permet de passer une offre en statut ANNULER (mail transactionnel)
    */
   server.put(
+    "/formulaire/offre/:jobId/cancel",
     {
       schema: zRoutes.put["/formulaire/offre/:jobId/cancel"],
     },
@@ -274,6 +286,7 @@ export default (server: ServerBuilder) => {
    * Permet de passer une offre en statut ANNULER (depuis l'interface d'admin)
    */
   server.put(
+    "/formulaire/offre/f/:jobId/cancel",
     {
       schema: zRoutes.put["/formulaire/offre/f/:jobId/cancel"],
     },
@@ -291,6 +304,7 @@ export default (server: ServerBuilder) => {
    * Permet de passer une offre en statut POURVUE (mail transactionnel)
    */
   server.put(
+    "/formulaire/offre/:jobId/provided",
     {
       schema: zRoutes.put["/formulaire/offre/:jobId/provided"],
     },
@@ -308,6 +322,7 @@ export default (server: ServerBuilder) => {
    * Permet de passer une offre en statut POURVUE (mail transactionnel)
    */
   server.put(
+    "/formulaire/offre/:jobId/extend",
     {
       schema: zRoutes.put["/formulaire/offre/:jobId/extend"],
     },

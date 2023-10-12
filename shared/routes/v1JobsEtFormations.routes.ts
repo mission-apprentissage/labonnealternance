@@ -96,10 +96,6 @@ export const zV1JobsEtFormationsRoutes = {
         auth: "none",
         role: "all",
       },
-      rateLimit: {
-        max: 5,
-        timeWindow: "1s",
-      },
       openapi: {
         tags: ["Jobs et formations"] as string[],
         operationId: "getJobsEtFormations",

@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-unresolved
 import fastifyCookie from "@fastify/cookie"
 import fastifyCors from "@fastify/cors"
 import fastifyRateLimt from "@fastify/rate-limit"
@@ -49,7 +50,6 @@ import updateLbaCompany from "./routes/updateLbaCompany.controller"
 import userRoute from "./routes/user.controller"
 import version from "./routes/version.controller"
 import { initSentryFastify } from "./sentry"
-import { ServerBuilder } from "./utils/serverBuilder"
 
 export interface Server
   extends FastifyInstance<RawServerDefault, RawRequestDefaultExpression<RawServerDefault>, RawReplyDefaultExpression<RawServerDefault>, FastifyBaseLogger, ZodTypeProvider> {}
@@ -114,9 +114,7 @@ export async function bind(app: Server) {
   app.register(
     (subApp, _, done) => {
       const typedSubApp = subApp.withTypeProvider<ZodTypeProvider>()
-      const serverBuilder = new ServerBuilder(typedSubApp)
-
-      coreRoutes(serverBuilder)
+      coreRoutes(typedSubApp)
 
       /**
        * Swaggers
@@ -132,48 +130,48 @@ export async function bind(app: Server) {
       /**
        * LBACandidat
        */
-      version(serverBuilder)
-      metiers(serverBuilder)
-      rome(serverBuilder)
-      updateLbaCompany(serverBuilder)
-      campaignWebhook(serverBuilder)
-      sendApplication(serverBuilder)
-      sendApplicationAPI(serverBuilder)
-      unsubscribeLbaCompany(serverBuilder)
-      metiersDAvenirRoute(serverBuilder)
-      jobsV1Route(serverBuilder)
-      formationsV1Route(serverBuilder)
-      formationsRegionV1Route(serverBuilder)
-      jobsEtFormationsV1Route(serverBuilder)
+      version(typedSubApp)
+      metiers(typedSubApp)
+      rome(typedSubApp)
+      updateLbaCompany(typedSubApp)
+      campaignWebhook(typedSubApp)
+      sendApplication(typedSubApp)
+      sendApplicationAPI(typedSubApp)
+      unsubscribeLbaCompany(typedSubApp)
+      metiersDAvenirRoute(typedSubApp)
+      jobsV1Route(typedSubApp)
+      formationsV1Route(typedSubApp)
+      formationsRegionV1Route(typedSubApp)
+      jobsEtFormationsV1Route(typedSubApp)
 
       /**
        * Admin / Auth
        */
-      login(serverBuilder)
+      login(typedSubApp)
 
       /**
        * LBA-Organisme de formation
        */
-      adminAppointmentRoute(serverBuilder)
-      adminEtablissementRoute(serverBuilder)
-      formationsRoute(serverBuilder)
-      eligibleTrainingsForAppointmentRoute(serverBuilder)
-      etablissementRoute(serverBuilder)
-      appointmentRequestRoute(serverBuilder)
-      partnersRoute(serverBuilder)
-      emailsRoute(serverBuilder)
+      adminAppointmentRoute(typedSubApp)
+      adminEtablissementRoute(typedSubApp)
+      formationsRoute(typedSubApp)
+      eligibleTrainingsForAppointmentRoute(typedSubApp)
+      etablissementRoute(typedSubApp)
+      appointmentRequestRoute(typedSubApp)
+      partnersRoute(typedSubApp)
+      emailsRoute(typedSubApp)
 
-      appointmentsController(serverBuilder)
+      appointmentsController(typedSubApp)
 
       /**
        * LBA-Recruteur
        */
-      userRoute(serverBuilder)
-      formulaireRoute(serverBuilder)
-      optoutRoute(serverBuilder)
-      etablissementsRecruteurRoute(serverBuilder)
+      userRoute(typedSubApp)
+      formulaireRoute(typedSubApp)
+      optoutRoute(typedSubApp)
+      etablissementsRecruteurRoute(typedSubApp)
 
-      trainingLinks(serverBuilder)
+      trainingLinks(typedSubApp)
       done()
     },
     { prefix: "/api" }

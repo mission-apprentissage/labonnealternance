@@ -52,10 +52,6 @@ export const zV1JobsRoutes = {
         auth: "api-key",
         role: "all",
       },
-      rateLimit: {
-        max: 5,
-        timeWindow: "1s",
-      },
       openapi: {
         tags: ["Jobs"] as string[],
         description: "Get existing establishment id from siret & email",
@@ -121,10 +117,6 @@ export const zV1JobsRoutes = {
         auth: "api-key",
         role: "all",
       },
-      rateLimit: {
-        max: 5,
-        timeWindow: "1s",
-      },
       openapi: {
         tags: ["Jobs"] as string[],
         description: "Get all jobs related to my organization",
@@ -159,10 +151,6 @@ export const zV1JobsRoutes = {
       securityScheme: {
         auth: "api-key",
         role: "all",
-      },
-      rateLimit: {
-        max: 5,
-        timeWindow: "1s",
       },
       openapi: {
         tags: ["Jobs"] as string[],
@@ -230,10 +218,6 @@ export const zV1JobsRoutes = {
         auth: "none",
         role: "all",
       },
-      rateLimit: {
-        max: 5,
-        timeWindow: "1s",
-      },
       openapi: {
         tags: ["Jobs"] as string[],
         operationId: "getJobOpportunities",
@@ -268,10 +252,6 @@ export const zV1JobsRoutes = {
       securityScheme: {
         auth: "none",
         role: "all",
-      },
-      rateLimit: {
-        max: 5,
-        timeWindow: "1s",
       },
       openapi: {
         tags: ["Jobs"] as string[],
@@ -312,10 +292,6 @@ export const zV1JobsRoutes = {
         auth: "none",
         role: "all",
       },
-      rateLimit: {
-        max: 5,
-        timeWindow: "1s",
-      },
       openapi: {
         tags: ["Jobs"] as string[],
         operationId: "getLbaJob",
@@ -351,10 +327,6 @@ export const zV1JobsRoutes = {
         auth: "none",
         role: "all",
       },
-      rateLimit: {
-        max: 5,
-        timeWindow: "1s",
-      },
       openapi: {
         tags: ["Jobs"] as string[],
         operationId: "getPeJob",
@@ -388,10 +360,6 @@ export const zV1JobsRoutes = {
       securityScheme: {
         auth: "api-key",
         role: "all",
-      },
-      rateLimit: {
-        max: 5,
-        timeWindow: "1s",
       },
       openapi: {
         tags: ["Jobs"] as string[],
@@ -431,10 +399,6 @@ export const zV1JobsRoutes = {
         auth: "api-key",
         role: "all",
       },
-      rateLimit: {
-        max: 5,
-        timeWindow: "1s",
-      },
       openapi: {
         tags: ["Jobs"] as string[],
         description: "Create a job offer inside an establishment entity.",
@@ -462,10 +426,6 @@ export const zV1JobsRoutes = {
         auth: "api-key",
         role: "all",
       },
-      rateLimit: {
-        max: 5,
-        timeWindow: "1s",
-      },
       openapi: {
         tags: ["Jobs"] as string[],
         operationId: "createDelegation",
@@ -487,10 +447,6 @@ export const zV1JobsRoutes = {
       securityScheme: {
         auth: "api-key",
         role: "all",
-      },
-      rateLimit: {
-        max: 5,
-        timeWindow: "1s",
       },
       openapi: {
         tags: ["Jobs"] as string[],
@@ -514,10 +470,6 @@ export const zV1JobsRoutes = {
         auth: "api-key",
         role: "all",
       },
-      rateLimit: {
-        max: 5,
-        timeWindow: "1s",
-      },
       openapi: {
         tags: ["Jobs"] as string[],
         operationId: "setJobAsCanceled",
@@ -540,10 +492,6 @@ export const zV1JobsRoutes = {
         auth: "api-key",
         role: "all",
       },
-      rateLimit: {
-        max: 5,
-        timeWindow: "1s",
-      },
       openapi: {
         tags: ["Jobs"] as string[],
         operationId: "extendJobExpiration",
@@ -564,10 +512,6 @@ export const zV1JobsRoutes = {
       securityScheme: {
         auth: "none",
         role: "all",
-      },
-      rateLimit: {
-        max: 5,
-        timeWindow: "1s",
       },
       openapi: {
         tags: ["Jobs"] as string[],
@@ -606,10 +550,6 @@ export const zV1JobsRoutes = {
       securityScheme: {
         auth: "api-key",
         role: "all",
-      },
-      rateLimit: {
-        max: 5,
-        timeWindow: "1s",
       },
       openapi: {
         tags: ["Jobs"] as string[],

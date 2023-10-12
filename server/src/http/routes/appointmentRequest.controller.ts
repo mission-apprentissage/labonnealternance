@@ -14,7 +14,7 @@ import dayjs from "../../services/dayjs.service"
 import * as eligibleTrainingsForAppointmentService from "../../services/eligibleTrainingsForAppointment.service"
 import mailer from "../../services/mailer.service"
 import * as users from "../../services/user.service"
-import { ServerBuilder } from "../utils/serverBuilder"
+import { Server } from "../server"
 
 const userRequestSchema = Joi.object({
   firstname: Joi.string().required(),
@@ -35,8 +35,9 @@ const appointmentReplySchema = Joi.object({
   cfa_message_to_applicant: Joi.string().allow("").optional(),
 })
 
-export default (server: ServerBuilder) => {
+export default (server: Server) => {
   server.post(
+    "/appointment-request/validate",
     {
       schema: zRoutes.post["/appointment-request/validate"],
     },
@@ -203,6 +204,7 @@ export default (server: ServerBuilder) => {
   )
 
   server.get(
+    "/appointment-request/context/recap",
     {
       schema: zRoutes.get["/appointment-request/context/recap"],
     },
@@ -252,6 +254,7 @@ export default (server: ServerBuilder) => {
   )
 
   server.post(
+    "/appointment-request/reply",
     {
       schema: zRoutes.post["/appointment-request/reply"],
     },

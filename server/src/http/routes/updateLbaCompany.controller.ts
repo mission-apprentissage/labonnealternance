@@ -4,12 +4,19 @@ import { zRoutes } from "shared/index"
 import config from "../../config"
 import { REGEX } from "../../services/constant.service"
 import { updateContactInfo } from "../../services/lbacompany.service"
-import { ServerBuilder } from "../utils/serverBuilder"
+import { Server } from "../server"
 
-export default function (server: ServerBuilder) {
+export default function (server: Server) {
   server.get(
+    "/updateLBB/updateContactInfo",
     {
       schema: zRoutes.get["/updateLBB/updateContactInfo"],
+      config: {
+        rateLimit: {
+          max: 1,
+          timeWindow: "20s",
+        },
+      },
     },
     async (req, res) => {
       const { email, phone, siret } = await Joi.object({

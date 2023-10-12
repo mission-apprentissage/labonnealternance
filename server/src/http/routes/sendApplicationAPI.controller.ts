@@ -1,12 +1,19 @@
 import { zRoutes } from "shared/index"
 
 import { sendApplication } from "../../services/application.service"
-import { ServerBuilder } from "../utils/serverBuilder"
+import { Server } from "../server"
 
-export default function (server: ServerBuilder) {
+export default function (server: Server) {
   server.post(
+    "/v1/application",
     {
       schema: zRoutes.post["/v1/application"],
+      config: {
+        rateLimit: {
+          max: 5,
+          timeWindow: "5s",
+        },
+      },
       bodyLimit: 5 * 1024 ** 2, // 5MB
     },
     async (req, res) => {

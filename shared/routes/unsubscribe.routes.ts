@@ -16,10 +16,6 @@ export const zUnsubscribeRoute = {
         auth: "none",
         role: "all",
       },
-      rateLimit: {
-        max: 1,
-        timeWindow: "5s",
-      },
     },
   },
 } as const satisfies IRoutesDef
