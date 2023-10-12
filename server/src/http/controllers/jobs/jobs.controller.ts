@@ -39,13 +39,7 @@ const config = {
   },
 }
 
-type AuthenticatedUser<AuthScheme extends IRouteSchema["securityScheme"]["auth"]> = AuthScheme extends "jwt-bearer" | "basic" | "jwt-password"
-  ? IUser
-  : AuthScheme extends "jwt-bearer"
-  ? IUserRecruteur
-  : AuthScheme extends "api-key"
-  ? ICredential
-  : null
+type AuthenticatedUser<AuthScheme extends IRouteSchema["securityScheme"]["auth"]> = AuthScheme extends "jwt-password" ? IUser : AuthScheme extends "api-key" ? ICredential : null
 
 const getUser = <S extends IRouteSchema>(req: FastifyRequest, _schema: S): AuthenticatedUser<S["securityScheme"]["auth"]> => {
   return req.user as AuthenticatedUser<S["securityScheme"]["auth"]>

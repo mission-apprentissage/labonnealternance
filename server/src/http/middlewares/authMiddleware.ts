@@ -34,7 +34,7 @@ declare module "fastify" {
   }
 }
 
-type AuthenticatedUser<AuthScheme extends IRouteSchema["securityScheme"]["auth"]> = AuthScheme extends "jwt-bearer" | "basic" | "jwt-password"
+type AuthenticatedUser<AuthScheme extends IRouteSchema["securityScheme"]["auth"]> = AuthScheme extends "jwt-password"
   ? IUser
   : AuthScheme extends "jwt-bearer" | "jwt-token" | "cookie-session"
   ? IUserRecruteur
@@ -55,29 +55,6 @@ function extractFieldFrom(source: unknown, field: string): null | string {
 }
 
 const bearerRegex = /^bearer\s+(\S+)$/i
-function extractBearerTokenFromHeader(req: FastifyRequest): null | string {
-  const { authorization } = req.headers
-
-  if (!authorization) {
-    return null
-  }
-
-  const matches = authorization.match(bearerRegex)
-
-  return matches === null ? null : matches[1]
-}
-
-const authBasic = createAuthHandler(async (req: FastifyRequest): Promise<IUser | null> => {
-  const username = extractFieldFrom(req.body, "username")
-  const password = extractFieldFrom(req.body, "password")
-
-  if (username === null || password === null) {
-    return null
-  }
-
-  return authenticate(username, password)
-})
-
 const authJwtPassword = createAuthHandler(async (req: FastifyRequest): Promise<IUser | null> => {
   const passwordToken = extractFieldFrom(req.body, "passwordToken")
 
@@ -88,18 +65,6 @@ const authJwtPassword = createAuthHandler(async (req: FastifyRequest): Promise<I
   const payload = jwt.verify(passwordToken, config.auth.password.jwtSecret) as JwtPayload
 
   return payload.sub ? getUser(payload.sub) : null
-})
-
-const authJwtBearer = createAuthHandler(async (req: FastifyRequest): Promise<IUserRecruteur | null> => {
-  const token = extractBearerTokenFromHeader(req)
-
-  if (token === null) {
-    return null
-  }
-
-  const payload = jwt.verify(token, config.auth.user.jwtSecret) as JwtPayload
-
-  return payload.sub ? getUserRecruteur({ email: payload.sub }) : null
 })
 
 const authJwtToken = createAuthHandler(async (req: FastifyRequest): Promise<IUserRecruteur | null> => {
@@ -177,12 +142,8 @@ function createAuthHandler(authFn: (req: FastifyRequest) => Promise<FastifyReque
 
 function authenticationMiddleware(strategy: SecurityScheme, req: FastifyRequest) {
   switch (strategy.auth) {
-    case "basic":
-      return authBasic(req)
     case "jwt-password":
       return authJwtPassword(req)
-    case "jwt-bearer":
-      return authJwtBearer(req)
     case "jwt-token":
       return authJwtToken(req)
     case "cookie-session":
