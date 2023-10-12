@@ -41,6 +41,7 @@ export const zLoginRoutes = {
     "/login/verification": {
       method: "post",
       path: "/login/verification",
+      querystring: z.object({ token: z.string() }).strict(),
       response: {
         // TODO ANY TO BE FIXED
         "2xx": z.any(),

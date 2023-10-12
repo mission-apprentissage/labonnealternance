@@ -207,7 +207,7 @@ export const zRecruiterRoutes = {
     "/etablissement/validation": {
       method: "post",
       path: "/etablissement/validation",
-      body: z.object({ id: zObjectId, token: z.string() }).strict(),
+      querystring: z.object({ token: z.string() }).strict(),
       response: {
         // TODO ANY TO BE FIXED
         "2xx": z.any(),

@@ -9,12 +9,12 @@ export default function AuthValidation() {
   const router = useRouter()
   const { setUser } = useAuth()
 
-  const { token } = router.query
+  const { token } = router.query as { token: string | undefined }
 
   useEffect(() => {
     const fetchData = async () => {
       if (token) {
-        const user = await apiPost("/login/verification", { body: { token } })
+        const user = await apiPost("/login/verification", { querystring: { token } })
         setUser(user)
         router.push("/espace-pro/authentification/validation")
       }

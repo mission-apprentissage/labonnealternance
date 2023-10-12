@@ -67,20 +67,6 @@ const zContextCreateSchema = z.union([
 
 export const zAppointmentsRoute = {
   get: {
-    // TODO NOT USED TO DELETE
-    // "/admin/appointments": {
-    //   response: {
-    //     "2xx": z
-    //       .object({
-    //         appointments: z.array(ZAppointment),
-    //       })
-    //       .strict(),
-    //   },
-    //   securityScheme: {
-    //     auth: "jwt-rdv-admin",
-    //     role: "administrator",
-    //   },
-    // },
     "/admin/appointments/details": {
       method: "get",
       path: "/admin/appointments/details",
