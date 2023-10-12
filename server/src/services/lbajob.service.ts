@@ -90,7 +90,7 @@ function transformLbaJobs({ jobs, caller, applicationCountByJob }: { jobs: ILbaJ
   return {
     results: jobs.flatMap((job) =>
       transformLbaJob({
-        job: job._source,
+        recruiter: job._source,
         distance: job.sort ? job.sort[0] : undefined,
         applicationCountByJob,
         caller,
@@ -113,7 +113,7 @@ export const getLbaJobById = async ({ id, caller }: { id: string; caller?: strin
     const applicationCountByJob = await getApplicationByJobCount([id])
 
     const job = transformLbaJob({
-      job: rawJob,
+      recruiter: rawJob,
       caller,
       applicationCountByJob,
     })
@@ -132,53 +132,53 @@ export const getLbaJobById = async ({ id, caller }: { id: string; caller?: strin
  * Adaptation au modèle LBAC et conservation des seules infos utilisées de l'offre
  */
 function transformLbaJob({
-  job,
+  recruiter,
   distance,
   caller,
   applicationCountByJob,
 }: {
-  job: Partial<IRecruiter>
+  recruiter: Partial<IRecruiter>
   distance?: number
   caller?: string | null
   applicationCountByJob: IApplicationCount[]
 }): ILbaItemLbaJob[] {
-  if (!job.jobs) {
+  if (!recruiter.jobs) {
     return []
   }
 
-  return job.jobs.map((offre, idx): ILbaItemLbaJob => {
-    const email = encryptMailWithIV({ value: job.email, caller })
+  return recruiter.jobs.map((offre, idx): ILbaItemLbaJob => {
+    const email = encryptMailWithIV({ value: recruiter.email, caller })
     const applicationCountForCurrentJob = applicationCountByJob.find((job) => job._id.toString() === offre._id.toString())
     const romes = offre.rome_code.map((code) => ({ code, label: null }))
 
-    const latitude = parseFloat(job.geo_coordinates ? job.geo_coordinates.split(",")[0] : "0")
-    const longitude = parseFloat(job.geo_coordinates ? job.geo_coordinates.split(",")[1] : "0")
+    const latitude = parseFloat(recruiter.geo_coordinates ? recruiter.geo_coordinates.split(",")[0] : "0")
+    const longitude = parseFloat(recruiter.geo_coordinates ? recruiter.geo_coordinates.split(",")[1] : "0")
 
     const resultJob: ILbaItemLbaJob = {
       ideaType: "matcha",
-      id: `${job.establishment_id}-${idx}`,
+      id: `${recruiter.establishment_id}-${idx}`,
       title: offre.rome_appellation_label ?? offre.rome_label,
       contact: {
         ...email,
-        name: job.first_name + " " + job.last_name,
-        phone: job.phone,
+        name: recruiter.first_name + " " + recruiter.last_name,
+        phone: recruiter.phone,
       },
       place: {
         distance: distance !== undefined ? roundDistance(distance) : null,
-        fullAddress: job.address,
-        address: job.address,
+        fullAddress: recruiter.address,
+        address: recruiter.address,
         latitude,
         longitude,
-        city: job.address_detail && "localite" in job.address_detail ? job.address_detail.localite : null,
+        city: recruiter.address_detail && "localite" in recruiter.address_detail ? recruiter.address_detail.localite : null,
       },
       company: {
-        siret: job.establishment_siret,
-        name: job.establishment_enseigne || job.establishment_raison_sociale || "Enseigne inconnue",
-        size: job.establishment_size,
-        mandataire: job.is_delegated,
-        creationDate: job.establishment_creation_date ? new Date(job.establishment_creation_date) : null,
+        siret: recruiter.establishment_siret,
+        name: recruiter.establishment_enseigne || recruiter.establishment_raison_sociale || "Enseigne inconnue",
+        size: recruiter.establishment_size,
+        mandataire: recruiter.is_delegated,
+        creationDate: recruiter.establishment_creation_date ? new Date(recruiter.establishment_creation_date) : null,
       },
-      nafs: [{ label: job.naf_label }],
+      nafs: [{ label: recruiter.naf_label }],
       diplomaLevel: offre.job_level_label || null,
       job: {
         id: offre._id.toString(),
@@ -191,7 +191,7 @@ function transformLbaJob({
         dureeContrat: "" + offre.job_duration,
         quantiteContrat: offre.job_count,
         elligibleHandicap: offre.is_disabled_elligible,
-        status: job.status === RECRUITER_STATUS.ACTIF && offre.job_status === JOB_STATUS.ACTIVE ? JOB_STATUS.ACTIVE : JOB_STATUS.ANNULEE,
+        status: recruiter.status === RECRUITER_STATUS.ACTIF && offre.job_status === JOB_STATUS.ACTIVE ? JOB_STATUS.ACTIVE : JOB_STATUS.ANNULEE,
       },
       romes,
       applicationCount: applicationCountForCurrentJob?.count || 0,
