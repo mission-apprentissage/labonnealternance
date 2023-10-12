@@ -101,20 +101,20 @@
         chdir: /opt/app
         cmd: "sudo /opt/app/tools/ssl/renew-certificate.sh {{dns_name}}"
 
-    # - name: "Verification des certificats SSL"
-    #   shell:
-    #     chdir: /opt/app
-    #     cmd: "sudo /opt/app/tools/ssl/renew-certificate.sh {{ alias_dns_name }}"
-    #   when: env_type != "preview"
+    - name: "Verification des certificats SSL"
+      shell:
+        chdir: /opt/app
+        cmd: "sudo /opt/app/tools/ssl/renew-certificate.sh {{ alias_dns_name }}"
+      when: env_type != "preview"
 
-    # - name: Add cron to renew pole-emploi cert
-    #   ansible.builtin.cron:
-    #     name: "renew-certificate"
-    #     minute: "0"
-    #     hour: "2"
-    #     weekday: "1"
-    #     job: "bash /opt/app/tools/ssl/renew-certificate.sh {{ alias_dns_name }} >> /var/log/cron.log 2>&1; /opt/app/tools/monitoring/export-cron-status-prom.sh -c 'Renew certificate Alias' -v $?"
-    #   when: env_type != "preview"
+    - name: Add cron to renew pole-emploi cert
+      ansible.builtin.cron:
+        name: "renew-certificate"
+        minute: "0"
+        hour: "2"
+        weekday: "1"
+        job: "bash /opt/app/tools/ssl/renew-certificate.sh {{ alias_dns_name }} >> /var/log/cron.log 2>&1; /opt/app/tools/monitoring/export-cron-status-prom.sh -c 'Renew certificate Alias' -v $?"
+      when: env_type != "preview"
 
     - name: "Setup de la Metabase"
       shell:
