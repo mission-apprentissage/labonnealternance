@@ -73,7 +73,7 @@ export default (server: Server) => {
       const user = await getUser({ email: formatedEmail })
 
       if (!user) {
-        return res.status(400).send({ error: true, reason: "UNKNOWN" }).lean()
+        return res.status(400).send({ error: true, reason: "UNKNOWN" })
       }
 
       const { email: userEmail, _id, first_name, last_name, is_email_checked } = user || {}
