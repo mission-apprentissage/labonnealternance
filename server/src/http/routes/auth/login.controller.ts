@@ -1,10 +1,8 @@
-import Joi from "joi"
 import { zRoutes } from "shared/index"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
 import { getUserFromRequest } from "@/http/middlewares/authMiddleware"
 
-import { UserRecruteur } from "../../../common/model/index"
 import { createMagicLinkToken, createUserRecruteurToken, createUserToken } from "../../../common/utils/jwtUtils"
 import config from "../../../config"
 import { CFA, ENTREPRISE, ETAT_UTILISATEUR } from "../../../services/constant.service"
@@ -35,11 +33,9 @@ export default (server: Server) => {
     },
     async (req, res) => {
       try {
-        const { email } = await Joi.object({
-          email: Joi.string().email().required(),
-        }).validateAsync(req.body, { abortEarly: false })
-
-        const user = await getUser({ email })
+        const { email } = req.body
+        const formatedEmail = email.toLowerCase()
+        const user = await getUser({ email: formatedEmail })
 
         if (!user) {
           return res.status(400).send({ error: true, reason: "UNKNOWN" })
@@ -70,18 +66,14 @@ export default (server: Server) => {
     "/login/magiclink",
     {
       schema: zRoutes.post["/login/magiclink"],
-      preHandler: [],
     },
     async (req, res) => {
-      const { email } = await Joi.object({
-        email: Joi.string().email().required(),
-      }).validateAsync(req.body, { abortEarly: false })
-
+      const { email } = req.body
       const formatedEmail = email.toLowerCase()
-      const user = await UserRecruteur.findOne({ email: formatedEmail })
+      const user = await getUser({ email: formatedEmail })
 
       if (!user) {
-        return res.status(400).send({ error: true, reason: "UNKNOWN" })
+        return res.status(400).send({ error: true, reason: "UNKNOWN" }).lean()
       }
 
       const { email: userEmail, _id, first_name, last_name, is_email_checked } = user || {}
@@ -140,7 +132,8 @@ export default (server: Server) => {
     },
     async (req, res) => {
       const user = getUserFromRequest(req, zRoutes.post["/login/verification"])
-      await registerUser(user.email)
+      const formatedEmail = user.email.toLowerCase()
+      await registerUser(formatedEmail)
       return res.status(200).send({ token: createUserRecruteurToken(user) })
     }
   )
