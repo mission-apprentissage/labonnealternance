@@ -79,7 +79,7 @@ export default function ConfirmationSuppressionOffre(props) {
                 <ArrowRightLine boxSize={26} />
               </Text>
               <Text as={"span"} ml={4}>
-                l'offre a t'elle été pourvue ?
+                l'offre a-t-elle été pourvue ?
               </Text>
             </Flex>
           </Heading>
