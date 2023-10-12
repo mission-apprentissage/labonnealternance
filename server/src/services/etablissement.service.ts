@@ -509,6 +509,9 @@ export const getEntrepriseDataFromSiret = async ({ siret, cfa_delegated_siret }:
     }
   }
   const entrepriseData = formatEntrepriseData(result.data)
+  if (!entrepriseData.establishment_raison_sociale) {
+    throw Boom.internal("pas de raison sociale trouvée", { siret, cfa_delegated_siret, entrepriseData, apiData: result.data })
+  }
   const geo_coordinates = await getGeoCoordinates(`${entrepriseData.address_detail.acheminement_postal.l4}, ${entrepriseData.address_detail.acheminement_postal.l6}`)
   return { ...entrepriseData, geo_coordinates }
 }

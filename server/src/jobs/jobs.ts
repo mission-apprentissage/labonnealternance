@@ -45,6 +45,7 @@ import { premiumInviteOneShot } from "./rdv/premiumInviteOneShot"
 import { syncEtablissementsAndFormations } from "./rdv/syncEtablissementsAndFormations"
 import { syncAffelnetFormationsFromCatalogueME } from "./rdv/syncEtablissementsAndFormationsAffelnet"
 import updateReferentielRncpRomes from "./referentielRncpRome/updateReferentielRncpRomes"
+import { importFicheMetierRomeV3 } from "./seed/ficheMetierRomev3/ficherMetierRomev3"
 import updateBrevoBlockedEmails from "./updateBrevoBlockedEmails/updateBrevoBlockedEmails"
 
 const logger = getLoggerWithContext("script")
@@ -204,6 +205,8 @@ export async function runJob(job: IInternalJobsCronTask | IInternalJobsSimple): 
       return CRONS[job.name].handler()
     }
     switch (job.name) {
+      case "import:rome":
+        return importFicheMetierRomeV3()
       case "migration:remove-version-key-from-all-collections": // Temporaire, doit tourner en recette et production
         return removeVersionKeyFromAllCollections()
       case "migration:remove-delegated-from-jobs": // Temporaire, doit tourner en recette et production

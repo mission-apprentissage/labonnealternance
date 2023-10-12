@@ -165,9 +165,12 @@ export const zAppointmentsRoute = {
                 example: "24113401",
               }),
               localite: z.string().openapi({ example: "Bagnolet" }),
-              id_rco_formation: z.string().openapi({
-                example: "14_AF_0000095539|14_SE_0000501120##14_SE_0000598458##14_SE_0000642556##14_SE_0000642557##14_SE_0000825379##14_SE_0000825382|101249",
-              }),
+              id_rco_formation: z
+                .string()
+                .openapi({
+                  example: "14_AF_0000095539|14_SE_0000501120##14_SE_0000598458##14_SE_0000642556##14_SE_0000642557##14_SE_0000825379##14_SE_0000825382|101249",
+                })
+                .nullable(),
               cle_ministere_educatif: z.string().openapi({
                 example: "101249P01313538697790003635386977900036-93006#L01",
               }),

@@ -53,9 +53,12 @@ function DetailEntreprise() {
   const router = useRouter()
   const { siret_userId } = router.query as { siret_userId: string } // Here userId
 
-  const { data, isLoading } = useQuery("user", () => apiGet(`/user/:userId`, { params: { userId: siret_userId } }), { cacheTime: 0 })
+  const { data, isLoading } = useQuery("user", {
+    enabled: !!siret_userId,
+    queryFn: () => apiGet(`/user/:userId`, { params: { userId: siret_userId } }),
+    cacheTime: 0,
+  })
 
-  // TODO
   const userMutation = useMutation(({ userId, establishment_id, values }: any) => updateEntreprise(userId, establishment_id, values), {
     onSuccess: () => {
       client.invalidateQueries("user")
@@ -125,7 +128,7 @@ function DetailEntreprise() {
     }
   }
 
-  if (isLoading) {
+  if (isLoading || !siret_userId) {
     return <LoadingEmptySpace />
   }
 

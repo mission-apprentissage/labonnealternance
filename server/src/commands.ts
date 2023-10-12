@@ -8,17 +8,19 @@ import { closeElasticSearch } from "./common/esClient"
 import { logger } from "./common/logger"
 import { sleep } from "./common/utils/asyncUtils"
 import config from "./config"
-import { initSentryProcessor, closeSentry } from "./http/sentry"
+import { closeSentry, initSentryProcessor } from "./http/sentry"
 import server from "./http/server"
 import { addJob, processor } from "./jobs/jobs_actions"
 
 async function startJobProcessor(signal: AbortSignal) {
   logger.info(`Process jobs queue - start`)
-  await addJob({
-    name: "crons:init",
-    queued: true,
-    payload: {},
-  })
+  if (config.env !== "local") {
+    await addJob({
+      name: "crons:init",
+      queued: true,
+      payload: {},
+    })
+  }
 
   await processor(signal)
   logger.info(`Processor shut down`)
@@ -162,6 +164,8 @@ program.command("migrations:status").description("Check migrations status").acti
 
 program.command("migrations:create").description("Run migrations create").requiredOption("-d, --description <string>", "description").action(createJobAction("migrations:create"))
 
+// Temporaire, one shot à executer en recette et prod
+program.command("import:rome").description("import référentiel fiche metier rome v3").option("-q, --queued", "Run job asynchronously", false).action(createJobAction("import:rome"))
 // Temporaire, one shot à executer en recette et prod
 program
   .command("migration:remove-version-key-from-all-collections")

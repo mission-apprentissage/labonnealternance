@@ -1,27 +1,25 @@
-import http from "http"
-import https from "https"
 import querystring from "querystring"
 
 import axios from "axios"
-import { setupCache } from "axios-cache-interceptor"
 
+import { FicheMetierRomeV3 } from "../common/model"
 import { sentryCaptureException } from "../common/utils/sentryUtils"
 import config from "../config"
 
 import dayjs from "./dayjs.service"
 import { IAppelattionDetailsFromAPI, IPEAPIToken, IRomeDetailsFromAPI } from "./rome.service.types"
 
-const getApiClient = (options = {}) =>
-  setupCache(
-    axios.create({
-      httpAgent: new http.Agent({ keepAlive: true }),
-      httpsAgent: new https.Agent({ keepAlive: true }),
-      ...options,
-    }),
-    {
-      ttl: 2000 * 60 * 10, // 20 Minutes
-    }
-  )
+// const getApiClient = (options = {}) =>
+//   setupCache(
+//     axios.create({
+//       httpAgent: new http.Agent({ keepAlive: true }),
+//       httpsAgent: new https.Agent({ keepAlive: true }),
+//       ...options,
+//     }),
+//     {
+//       ttl: 2000 * 60 * 10, // 20 Minutes
+//     }
+//   )
 
 let token: IPEAPIToken = {
   access_token: "",
@@ -69,7 +67,7 @@ export const getRomeDetailsFromAPI = async (romeCode: string): Promise<IRomeDeta
   token = await getToken(token)
 
   try {
-    const { data } = await getApiClient().get<IRomeDetailsFromAPI>(`https://api.pole-emploi.io/partenaire/rome/v1/metier/${romeCode}`, {
+    const { data } = await axios.get<IRomeDetailsFromAPI>(`https://api.pole-emploi.io/partenaire/rome/v1/metier/${romeCode}`, {
       headers: {
         Authorization: `Bearer ${token.access_token}`,
       },
@@ -81,6 +79,8 @@ export const getRomeDetailsFromAPI = async (romeCode: string): Promise<IRomeDeta
     return null
   }
 }
+
+export const getRomeDetailsFromDB = async (romeCode: string) => FicheMetierRomeV3.findOne({ code: romeCode }).select({ fiche_metier: 1 }).lean()
 
 export const getAppellationDetailsFromAPI = async (appellationCode: string): Promise<IAppelattionDetailsFromAPI | null | undefined> => {
   token = await getToken(token)
