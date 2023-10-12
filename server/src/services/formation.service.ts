@@ -701,6 +701,7 @@ export const getFormationsParRegionQuery = async ({
 
     return { results: formations }
   } catch (err) {
+    logger.error(err)
     sentryCaptureException(err)
     if (caller) {
       trackApiCall({ caller, api_path: "formationRegionV1", response: "Error" })

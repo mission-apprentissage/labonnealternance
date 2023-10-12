@@ -3,7 +3,6 @@ import {
   ContextConfigDefault,
   FastifyBaseLogger,
   FastifyRequest,
-  FastifySchema,
   FastifyTypeProvider,
   FastifyTypeProviderDefault,
   RawReplyDefaultExpression,
@@ -14,10 +13,9 @@ import {
   preHandlerHookHandler,
 } from "fastify"
 import jwt, { JwtPayload } from "jsonwebtoken"
-import passport from "passport"
 import { ICredential } from "shared"
 import { IUserRecruteur } from "shared/models/usersRecruteur.model"
-import { AuthStrategy, IRouteSchema, SecurityScheme } from "shared/routes/common.routes"
+import { IRouteSchema, SecurityScheme } from "shared/routes/common.routes"
 
 import { Credential } from "@/common/model"
 import { IUser } from "@/common/model/schema/user/user.types"
@@ -25,8 +23,6 @@ import config from "@/config"
 import { getSession } from "@/services/sessions.service"
 import { getUser } from "@/services/user.service"
 import { getUser as getUserRecruteur } from "@/services/userRecruteur.service"
-
-export default (strategyName: AuthStrategy) => passport.authenticate(strategyName, { session: false })
 
 declare module "fastify" {
   interface FastifyRequest {
@@ -67,7 +63,7 @@ const authJwtPassword = createAuthHandler(async (req: FastifyRequest): Promise<I
 })
 
 const authJwtToken = createAuthHandler(async (req: FastifyRequest): Promise<IUserRecruteur | null> => {
-  const token = extractFieldFrom(req.body, "token")
+  const token = extractFieldFrom(req.query, "token")
 
   if (token === null) {
     return null
@@ -75,7 +71,7 @@ const authJwtToken = createAuthHandler(async (req: FastifyRequest): Promise<IUse
 
   const payload = jwt.verify(token, config.auth.magiclink.jwtSecret) as JwtPayload
 
-  return payload.sub ? getUserRecruteur({ email: payload.sub }) : null
+  return payload.sub ? getUserRecruteur({ email: payload.sub.toLocaleLowerCase() }) : null
 })
 
 const authCookieSession = createAuthHandler(async (req: FastifyRequest): Promise<IUserRecruteur | null> => {
