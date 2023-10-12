@@ -23,7 +23,7 @@ import { Credential } from "@/common/model"
 import { IUser } from "@/common/model/schema/user/user.types"
 import config from "@/config"
 import { getSession } from "@/services/sessions.service"
-import { authenticate, getUser } from "@/services/user.service"
+import { getUser } from "@/services/user.service"
 import { getUser as getUserRecruteur } from "@/services/userRecruteur.service"
 
 export default (strategyName: AuthStrategy) => passport.authenticate(strategyName, { session: false })
@@ -54,7 +54,6 @@ function extractFieldFrom(source: unknown, field: string): null | string {
   return field in source && typeof source[field] === "string" ? source[field] : null
 }
 
-const bearerRegex = /^bearer\s+(\S+)$/i
 const authJwtPassword = createAuthHandler(async (req: FastifyRequest): Promise<IUser | null> => {
   const passwordToken = extractFieldFrom(req.body, "passwordToken")
 
@@ -163,8 +162,6 @@ function authenticationMiddleware(strategy: SecurityScheme, req: FastifyRequest)
 
 function authorizationnMiddleware(strategy: SecurityScheme, req: FastifyRequest) {
   switch (strategy.role) {
-    case "admin":
-      return authBasic(req)
     case "administrator":
       return authorizationnAdmin(req)
     case "all":

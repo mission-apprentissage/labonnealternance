@@ -1,6 +1,6 @@
 import Boom from "boom"
 import { FastifyRequest } from "fastify"
-import { ICredential, IJob, IUserRecruteur, zRoutes } from "shared"
+import { ICredential, IJob, zRoutes } from "shared"
 import { IRouteSchema } from "shared/routes/common.routes"
 
 import { IUser } from "@/common/model/schema/user/user.types"
