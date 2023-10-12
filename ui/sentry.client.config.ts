@@ -7,8 +7,6 @@ import * as Sentry from "@sentry/nextjs"
 
 import { publicConfig } from "./config.public"
 
-console.log([/^https:\/\/[^/]*\.apprentissage\.beta\.gouv\.fr/, publicConfig.baseUrl, publicConfig.apiEndpoint])
-
 Sentry.init({
   dsn: publicConfig.sentry_dsn,
   tracesSampleRate: publicConfig.env === "production" ? 0.1 : 1.0,

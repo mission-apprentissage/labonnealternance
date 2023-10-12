@@ -14,11 +14,13 @@ import { addJob, processor } from "./jobs/jobs_actions"
 
 async function startJobProcessor(signal: AbortSignal) {
   logger.info(`Process jobs queue - start`)
-  await addJob({
-    name: "crons:init",
-    queued: true,
-    payload: {},
-  })
+  if (config.env !== "local") {
+    await addJob({
+      name: "crons:init",
+      queued: true,
+      payload: {},
+    })
+  }
 
   await processor(signal)
   logger.info(`Processor shut down`)
