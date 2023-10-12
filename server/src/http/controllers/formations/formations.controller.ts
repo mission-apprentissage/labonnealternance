@@ -68,7 +68,7 @@ export default (server: Server) => {
         } else if (result.error === "not_found") {
           res.status(404)
         } else {
-          res.status(result.status || 500)
+          res.status(500)
         }
       } else {
         if (caller) {
@@ -106,7 +106,7 @@ export default (server: Server) => {
         } else if (status === 404) {
           return res.status(404).send({ error: "not_found" })
         } else {
-          return res.status(result.status || 500).send({ error: "internal_error" })
+          return res.status(500).send({ error: "internal_error" })
         }
       }
 
