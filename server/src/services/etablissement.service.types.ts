@@ -80,7 +80,7 @@ interface IUniteLegale {
 }
 
 interface IPersonneMoraleAttributs {
-  raison_sociale: string
+  raison_sociale: string | null
   sigle: any
 }
 
