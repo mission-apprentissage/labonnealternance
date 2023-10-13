@@ -341,6 +341,18 @@ export const getAllEstablishmentFromLbaCompanyLegacy = async (query: FilterQuery
  */
 export const getAllEstablishmentFromLbaCompany = async (query: FilterQuery<ILbaCompany>): Promise<ILbaCompany[]> => await LbaCompany.find(query).select({ email: 1, _id: 0 }).lean()
 
+function getRaisonSocialeFromGouvResponse(d: IEtablissementGouv): string | undefined {
+  const { personne_morale_attributs, personne_physique_attributs } = d.unite_legale
+  const { raison_sociale } = personne_morale_attributs
+  if (raison_sociale) {
+    return raison_sociale
+  }
+  if (personne_physique_attributs) {
+    const { prenom_usuel, nom_naissance, nom_usage } = personne_physique_attributs
+    return `${prenom_usuel} ${nom_usage ?? nom_naissance}`
+  }
+}
+
 /**
  * @description Format Entreprise data
  * @param {IEtablissementGouv} data
@@ -354,7 +366,7 @@ export const formatEntrepriseData = (d: IEtablissementGouv): IFormatAPIEntrepris
     establishment_enseigne: d.enseigne,
     establishment_state: d.etat_administratif, // F pour fermé ou A pour actif
     establishment_siret: d.siret,
-    establishment_raison_sociale: d.unite_legale.personne_morale_attributs.raison_sociale,
+    establishment_raison_sociale: getRaisonSocialeFromGouvResponse(d),
     address_detail: d.adresse,
     address: `${d.adresse?.acheminement_postal?.l4} ${d.adresse?.acheminement_postal?.l6}`,
     contacts: [], // conserve la coherence avec l'UI
