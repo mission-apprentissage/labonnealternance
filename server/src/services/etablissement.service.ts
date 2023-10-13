@@ -342,19 +342,24 @@ export const getAllEstablishmentFromLbaCompany = async (query: FilterQuery<ILbaC
  * @param {IEtablissementGouv} data
  * @returns {IFormatAPIEntreprise}
  */
-export const formatEntrepriseData = (d: IEtablissementGouv): IFormatAPIEntreprise => ({
-  establishment_enseigne: d.enseigne,
-  establishment_state: d.etat_administratif, // F pour fermé ou A pour actif
-  establishment_siret: d.siret,
-  establishment_raison_sociale: d.unite_legale.personne_morale_attributs.raison_sociale,
-  address_detail: d.adresse,
-  address: `${d.adresse?.acheminement_postal?.l4} ${d.adresse?.acheminement_postal?.l6}`,
-  contacts: [], // conserve la coherence avec l'UI
-  naf_code: d.activite_principale.code,
-  naf_label: d.activite_principale.libelle,
-  establishment_size: getEffectif(d.unite_legale.tranche_effectif_salarie.code),
-  establishment_creation_date: new Date(d.unite_legale.date_creation * 1000),
-})
+export const formatEntrepriseData = (d: IEtablissementGouv): IFormatAPIEntreprise => {
+  if (!d.adresse) {
+    throw new Error("erreur dans le format de l'api SIRENE : le champ adresse est vide")
+  }
+  return {
+    establishment_enseigne: d.enseigne,
+    establishment_state: d.etat_administratif, // F pour fermé ou A pour actif
+    establishment_siret: d.siret,
+    establishment_raison_sociale: d.unite_legale.personne_morale_attributs.raison_sociale,
+    address_detail: d.adresse,
+    address: `${d.adresse?.acheminement_postal?.l4} ${d.adresse?.acheminement_postal?.l6}`,
+    contacts: [], // conserve la coherence avec l'UI
+    naf_code: d.activite_principale.code,
+    naf_label: d.activite_principale.libelle,
+    establishment_size: getEffectif(d.unite_legale.tranche_effectif_salarie.code),
+    establishment_creation_date: new Date(d.unite_legale.date_creation * 1000),
+  }
+}
 
 /**
  * @description Format Referentiel data
@@ -554,7 +559,7 @@ export const entrepriseOnboardingWorkflow = {
       phone?: string
       email: string
       cfa_delegated_siret?: string
-      origin: string
+      origin?: string | null
       opco: string
       idcc?: string
     },

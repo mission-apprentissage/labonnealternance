@@ -23,7 +23,7 @@ export default function (server: Server) {
       },
     },
     async (req, res) => {
-      let result = "OK" as "OK" | "NON_RECONNU" | "ETABLISSEMENTS_MULTIPLES"
+      let result: "OK" | UNSUBSCRIBE_EMAIL_ERRORS = "OK"
 
       const email = req.body.email.toLowerCase()
       const reason = req.body.reason
@@ -31,19 +31,21 @@ export default function (server: Server) {
       const lbaCompaniesToUnsubscribe = await LbaCompany.find({ email }).lean()
 
       if (!lbaCompaniesToUnsubscribe.length) {
-        result = UNSUBSCRIBE_EMAIL_ERRORS["NON_RECONNU"] as "NON_RECONNU"
+        result = UNSUBSCRIBE_EMAIL_ERRORS.NON_RECONNU
       } else if (lbaCompaniesToUnsubscribe.length > 1) {
-        result = UNSUBSCRIBE_EMAIL_ERRORS["ETABLISSEMENTS_MULTIPLES"] as "ETABLISSEMENTS_MULTIPLES"
+        result = UNSUBSCRIBE_EMAIL_ERRORS.ETABLISSEMENTS_MULTIPLES
       } else {
         const unsubscribedLbaCompany = new UnsubscribedLbaCompany({
           ...lbaCompaniesToUnsubscribe[0],
           unsubscribe_reason: reason,
         })
 
-        unsubscribedLbaCompany.save()
+        await unsubscribedLbaCompany.save()
 
         const lbaCompanyToUnsubscribe = await LbaCompany.findOne({ siret: lbaCompaniesToUnsubscribe[0].siret })
-        lbaCompanyToUnsubscribe?.remove()
+        if (lbaCompanyToUnsubscribe) {
+          await lbaCompanyToUnsubscribe.remove()
+        }
 
         await mailer.sendEmail({
           to: email,

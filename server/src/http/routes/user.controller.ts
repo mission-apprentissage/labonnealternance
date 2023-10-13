@@ -71,8 +71,12 @@ export default (server: Server) => {
 
       if (!user) return res.status(400).send({})
 
+      const { establishment_id } = user
       if (user.type === ENTREPRISE) {
-        const response = await Recruiter.findOne({ establishment_id: user.establishment_id }).select({ jobs: 1, _id: 0 }).lean()
+        if (!establishment_id) {
+          throw Boom.internal("Unexpected: no establishment_id in userRecruteur of type ENTREPRISE", { userId: user._id })
+        }
+        const response = await Recruiter.findOne({ establishment_id }).select({ jobs: 1, _id: 0 }).lean()
         if (!response) {
           throw Boom.internal("Get establishement from user failed to fetch", { userId: user._id })
         }
@@ -243,17 +247,21 @@ export default (server: Server) => {
       }
 
       if (user.type === ENTREPRISE) {
+        const { establishment_id } = user
+        if (!establishment_id) {
+          throw Boom.internal("unexpected: no establishment_id on userRecruteur of type ENTREPRISE", { userId: user._id })
+        }
         /**
          * if entreprise type of user is validated :
          * - activate offer
          * - update expiration date to one month later
          * - send email to delegation if available
          */
-        const userFormulaire = await getFormulaire({ establishment_id: user.establishment_id })
+        const userFormulaire = await getFormulaire({ establishment_id })
 
         if (userFormulaire.status === RECRUITER_STATUS.ARCHIVE) {
           // le recruiter étant archivé on se contente de le rendre de nouveau Actif
-          await reactivateRecruiter(user.establishment_id)
+          await reactivateRecruiter(establishment_id)
         } else {
           // le compte se trouve validé et on procède à l'activation de la première offre et à la notification aux CFAs
           if (userFormulaire?.jobs?.length) {
