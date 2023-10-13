@@ -28,17 +28,6 @@
     - item.path | regex_search('^tools/?') == none
     - item.path | regex_search('^system/?') == none
 
-- name: Copy fail2ban jails
-  copy:
-    src: "{{ item }}"
-    dest: "/etc/fail2ban/jail.d"
-    owner: "root"
-    mode: 0600
-  with_fileglob:
-    - "{{inventory_dir}}/files/fail2ban/jail.d/*"
-  notify: restart-fail2ban
-  when: env_type != 'preview'
-
 - name: Copie du fichier de seed
   ansible.builtin.copy:
     src: "{{inventory_dir}}/files/configs/mongodb/seed.gpg"
