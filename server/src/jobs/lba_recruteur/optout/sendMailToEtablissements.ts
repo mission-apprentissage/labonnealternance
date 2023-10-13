@@ -17,9 +17,9 @@ import { runScript } from "../../scriptWrapper"
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
 runScript(async () => {
-  const [etablissements, users] = await Promise.all([Optout.find().lean(), UserRecruteur.find({ type: "CFA" }).lean()])
+  const [optOutList, users] = await Promise.all([Optout.find().lean(), UserRecruteur.find({ type: "CFA" }).lean()])
 
-  const etablissementsToContact = differenceBy(etablissements, users, "siret")
+  const etablissementsToContact = differenceBy(optOutList, users, "siret")
 
   logger.info(`Sending optout mail to ${etablissementsToContact.length} etablissement`)
 

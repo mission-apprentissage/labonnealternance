@@ -16,10 +16,7 @@ export const zLoginRoutes = {
       response: {
         "200": z.object({}).strict(),
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
     },
     "/login/magiclink": {
       method: "post",
@@ -33,10 +30,7 @@ export const zLoginRoutes = {
       response: {
         "200": z.object({}).strict(),
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
     },
     "/login/verification": {
       method: "post",
@@ -53,7 +47,10 @@ export const zLoginRoutes = {
       },
       securityScheme: {
         auth: "jwt-token",
-        role: "all",
+        access: "user:manage",
+        ressources: {
+          user: ["self"],
+        },
       },
     },
   },
@@ -67,7 +64,10 @@ export const zLoginRoutes = {
       },
       securityScheme: {
         auth: "cookie-session",
-        role: "all",
+        access: "user:manage",
+        ressources: {
+          user: ["self"],
+        },
       },
     },
     "/auth/logout": {
@@ -77,10 +77,7 @@ export const zLoginRoutes = {
         // TODO ANY TO BE FIXED
         "2xx": z.any(),
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
     },
   },
 } as const satisfies IRoutesDef

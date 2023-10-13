@@ -4,6 +4,7 @@ import { RECRUITER_STATUS } from "shared/constants/recruteur"
 
 import { Recruiter, UserRecruteur } from "@/common/model"
 import config from "@/config"
+import { getUserFromRequest } from "@/security/authenticationService"
 import { createSession } from "@/services/sessions.service"
 
 import { createUserToken } from "../../common/utils/jwtUtils"
@@ -31,7 +32,6 @@ import {
   setUserHasToBeManuallyValidated,
   updateUser,
 } from "../../services/userRecruteur.service"
-import { getUserFromRequest } from "../middlewares/authMiddleware"
 import { Server } from "../server"
 
 export default (server: Server) => {
@@ -135,7 +135,7 @@ export default (server: Server) => {
     "/etablissement/cfa/:userRecruteurId/entreprises",
     {
       schema: zRoutes.get["/etablissement/cfa/:userRecruteurId/entreprises"],
-      onRequest: [server.auth(zRoutes.get["/etablissement/cfa/:userRecruteurId/entreprises"].securityScheme)],
+      onRequest: [server.auth(zRoutes.get["/etablissement/cfa/:userRecruteurId/entreprises"])],
     },
     async (req, res) => {
       const { userRecruteurId } = req.params
@@ -262,7 +262,7 @@ export default (server: Server) => {
     "/etablissement/:id",
     {
       schema: zRoutes.put["/etablissement/:id"],
-      onRequest: [server.auth(zRoutes.put["/etablissement/:id"].securityScheme)],
+      onRequest: [server.auth(zRoutes.put["/etablissement/:id"])],
     },
     async (req, res) => {
       const result = await updateUser({ _id: req.params.id }, req.body)
@@ -274,10 +274,10 @@ export default (server: Server) => {
     "/etablissement/validation",
     {
       schema: zRoutes.post["/etablissement/validation"],
-      onRequest: [server.auth(zRoutes.post["/etablissement/validation"].securityScheme)],
+      onRequest: [server.auth(zRoutes.post["/etablissement/validation"])],
     },
     async (req, res) => {
-      const user = getUserFromRequest(req, zRoutes.post["/etablissement/validation"])
+      const user = getUserFromRequest(req, zRoutes.post["/etablissement/validation"]).value
 
       // Validate email
       const validation = await validateEtablissementEmail(user._id)

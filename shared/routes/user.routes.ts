@@ -26,10 +26,7 @@ export const zUserRecruteurRoutes = {
           })
           .strict(),
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
     },
     "/user": {
       method: "get",
@@ -48,7 +45,8 @@ export const zUserRecruteurRoutes = {
       },
       securityScheme: {
         auth: "cookie-session",
-        role: "all",
+        access: "admin",
+        ressources: {},
       },
     },
     "/admin/users": {
@@ -60,7 +58,8 @@ export const zUserRecruteurRoutes = {
       },
       securityScheme: {
         auth: "cookie-session",
-        role: "administrator",
+        access: "admin",
+        ressources: {},
       },
     },
     "/admin/users/:userId": {
@@ -77,7 +76,8 @@ export const zUserRecruteurRoutes = {
       },
       securityScheme: {
         auth: "cookie-session",
-        role: "administrator",
+        access: "admin",
+        ressources: {},
       },
     },
     "/user/:userId": {
@@ -96,7 +96,14 @@ export const zUserRecruteurRoutes = {
       },
       securityScheme: {
         auth: "cookie-session",
-        role: "all",
+        access: "recruiter:manage",
+        ressources: {
+          user: [
+            {
+              _id: "params.userId",
+            },
+          ],
+        },
       },
     },
     "/user/status/:userId": {
@@ -111,10 +118,7 @@ export const zUserRecruteurRoutes = {
         // TODO ANY TO BE FIXED
         "200": z.any(),
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
     },
   },
   post: {
@@ -131,7 +135,8 @@ export const zUserRecruteurRoutes = {
       },
       securityScheme: {
         auth: "cookie-session",
-        role: "administrator",
+        access: "admin",
+        ressources: {},
       },
     },
   },
@@ -156,7 +161,10 @@ export const zUserRecruteurRoutes = {
       },
       securityScheme: {
         auth: "cookie-session",
-        role: "all",
+        access: "recruiter:manage",
+        ressources: {
+          user: ["self"],
+        },
       },
     },
     "/admin/users/:userId": {
@@ -170,7 +178,8 @@ export const zUserRecruteurRoutes = {
       },
       securityScheme: {
         auth: "cookie-session",
-        role: "administrator",
+        access: "admin",
+        ressources: {},
       },
     },
     "/user/:userId/history": {
@@ -189,10 +198,7 @@ export const zUserRecruteurRoutes = {
         "200": z.any(),
         // "200": ZUserRecruteur,
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
     },
   },
   delete: {
@@ -210,10 +216,7 @@ export const zUserRecruteurRoutes = {
       response: {
         "200": z.object({}).strict(),
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
     },
     "/admin/users/:userId": {
       method: "delete",
@@ -233,7 +236,8 @@ export const zUserRecruteurRoutes = {
       },
       securityScheme: {
         auth: "cookie-session",
-        role: "administrator",
+        access: "admin",
+        ressources: {},
       },
     },
   },

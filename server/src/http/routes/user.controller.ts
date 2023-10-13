@@ -39,7 +39,7 @@ export default (server: Server) => {
     "/user",
     {
       schema: zRoutes.get["/user"],
-      onRequest: [server.auth(zRoutes.get["/user"].securityScheme)],
+      onRequest: [server.auth(zRoutes.get["/user"])],
     },
     async (req, res) => {
       // TODO KEVIN: ADD PAGINATION
@@ -51,7 +51,7 @@ export default (server: Server) => {
     "/admin/users",
     {
       schema: zRoutes.get["/admin/users"],
-      onRequest: [server.auth(zRoutes.get["/admin/users"].securityScheme)],
+      onRequest: [server.auth(zRoutes.get["/admin/users"])],
     },
     async (req, res) => {
       const users = await getAdminUsers()
@@ -63,7 +63,7 @@ export default (server: Server) => {
     "/admin/users/:userId",
     {
       schema: zRoutes.get["/admin/users/:userId"],
-      onRequest: [server.auth(zRoutes.get["/admin/users/:userId"].securityScheme)],
+      onRequest: [server.auth(zRoutes.get["/admin/users/:userId"])],
     },
     async (req, res) => {
       const user = await UserRecruteur.findOne({ _id: req.params.userId }).lean()
@@ -91,7 +91,7 @@ export default (server: Server) => {
     "/admin/users",
     {
       schema: zRoutes.post["/admin/users"],
-      onRequest: [server.auth(zRoutes.post["/admin/users"].securityScheme)],
+      onRequest: [server.auth(zRoutes.post["/admin/users"])],
     },
     async (req, res) => {
       const user = await createUser(req.body)
@@ -103,7 +103,7 @@ export default (server: Server) => {
     "/admin/users/:userId",
     {
       schema: zRoutes.put["/admin/users/:userId"],
-      onRequest: [server.auth(zRoutes.put["/admin/users/:userId"].securityScheme)],
+      onRequest: [server.auth(zRoutes.put["/admin/users/:userId"])],
     },
     async (req, res) => {
       const userPayload = req.body
@@ -125,7 +125,7 @@ export default (server: Server) => {
     "/admin/users/:userId",
     {
       schema: zRoutes.delete["/admin/users/:userId"],
-      onRequest: [server.auth(zRoutes.delete["/admin/users/:userId"].securityScheme)],
+      onRequest: [server.auth(zRoutes.delete["/admin/users/:userId"])],
     },
     async (req, res) => {
       const { recruiterId } = req.query
@@ -145,7 +145,7 @@ export default (server: Server) => {
     "/user/:userId",
     {
       schema: zRoutes.get["/user/:userId"],
-      onRequest: [server.auth(zRoutes.get["/user/:userId"].securityScheme)],
+      onRequest: [server.auth(zRoutes.get["/user/:userId"])],
     },
     async (req, res) => {
       const user = await UserRecruteur.findOne({ _id: req.params.userId }).lean()
@@ -189,7 +189,7 @@ export default (server: Server) => {
     "/user/:userId",
     {
       schema: zRoutes.put["/user/:userId"],
-      onRequest: [server.auth(zRoutes.put["/user/:userId"].securityScheme)],
+      onRequest: [server.auth(zRoutes.put["/user/:userId"])],
     },
     async (req, res) => {
       const userPayload = req.body

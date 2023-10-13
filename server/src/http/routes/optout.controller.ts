@@ -10,7 +10,7 @@ export default (server: Server) => {
     "/optout/validate",
     {
       schema: zRoutes.get["/optout/validate"],
-      preHandler: [server.auth(zRoutes.get["/optout/validate"].securityScheme)],
+      preHandler: [server.auth(zRoutes.get["/optout/validate"])],
     },
     async (req, res) => {
       const token = req.headers && req.headers.authorization && req.headers.authorization.split(" ")[1]

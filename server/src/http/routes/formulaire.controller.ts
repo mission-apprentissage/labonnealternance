@@ -90,7 +90,7 @@ export default (server: Server) => {
     "/formulaire/:establishment_id",
     {
       schema: zRoutes.put["/formulaire/:establishment_id"],
-      onRequest: [server.auth(zRoutes.put["/formulaire/:establishment_id"].securityScheme)],
+      onRequest: [server.auth(zRoutes.put["/formulaire/:establishment_id"])],
     },
     async (req, res) => {
       const result = await updateFormulaire(req.params.establishment_id, req.body)
@@ -146,7 +146,7 @@ export default (server: Server) => {
     "/formulaire/:establishment_id/offre",
     {
       schema: zRoutes.post["/formulaire/:establishment_id/offre"],
-      // preHandler: [server.auth(zRoutes.post["/formulaire/:establishment_id/offre"].securityScheme)],
+      // preHandler: [server.auth(zRoutes.post["/formulaire/:establishment_id/offre"])],
       bodyLimit: 5 * 1024 ** 2, // 5MB
     },
     async (req, res) => {

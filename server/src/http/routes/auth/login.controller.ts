@@ -2,7 +2,7 @@ import Boom from "boom"
 import { toPublicUser, zRoutes } from "shared/index"
 
 import { getStaticFilePath } from "@/common/utils/getStaticFilePath"
-import { getUserFromRequest } from "@/http/middlewares/authMiddleware"
+import { getUserFromRequest } from "@/security/authenticationService"
 import { createSession, deleteSession } from "@/services/sessions.service"
 
 import { createMagicLinkToken, createUserToken } from "../../../common/utils/jwtUtils"
@@ -117,10 +117,10 @@ export default (server: Server) => {
     "/login/verification",
     {
       schema: zRoutes.post["/login/verification"],
-      onRequest: [server.auth(zRoutes.post["/login/verification"].securityScheme)],
+      onRequest: [server.auth(zRoutes.post["/login/verification"])],
     },
     async (req, res) => {
-      const user = getUserFromRequest(req, zRoutes.post["/login/verification"])
+      const user = getUserFromRequest(req, zRoutes.post["/login/verification"]).value
 
       const token = createUserToken({ email: user.email }, { payload: { email: user.email } })
       await createSession({ token })
@@ -143,13 +143,13 @@ export default (server: Server) => {
     "/auth/session",
     {
       schema: zRoutes.get["/auth/session"],
-      onRequest: [server.auth(zRoutes.get["/auth/session"].securityScheme)],
+      onRequest: [server.auth(zRoutes.get["/auth/session"])],
     },
     async (request, response) => {
       if (!request.user) {
         throw Boom.forbidden()
       }
-      const user = getUserFromRequest(request, zRoutes.get["/auth/session"])
+      const user = getUserFromRequest(request, zRoutes.get["/auth/session"]).value
       return response.status(200).send(toPublicUser(user))
     }
   )

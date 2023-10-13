@@ -15,7 +15,8 @@ export const zEmailsRoutes = {
       },
       securityScheme: {
         auth: "api-key",
-        role: "all",
+        access: null,
+        ressources: {},
       },
     },
   },

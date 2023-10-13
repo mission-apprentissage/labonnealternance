@@ -48,7 +48,7 @@ function generateOpenApiRequest(route: IRouteSchema): RouteConfig["request"] {
 }
 
 function getSecurityRequirementObject(route: IRouteSchema): SecurityRequirementObject[] {
-  if (route.securityScheme.auth === "none") {
+  if (route.securityScheme === null) {
     return []
   }
 

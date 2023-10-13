@@ -18,7 +18,8 @@ export const zEtablissementRoutes = {
       },
       securityScheme: {
         auth: "cookie-session",
-        role: "administrator",
+        access: "admin",
+        ressources: {},
       },
     },
     "/admin/etablissements/:id": {
@@ -32,7 +33,8 @@ export const zEtablissementRoutes = {
       },
       securityScheme: {
         auth: "cookie-session",
-        role: "administrator",
+        access: "admin",
+        ressources: {},
       },
     },
     "/etablissements/:id": {
@@ -55,10 +57,7 @@ export const zEtablissementRoutes = {
         }).strict(),
       },
       // TODO SHOULD HAVE AUTH ???? Jwt at least
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
     },
   },
   post: {
@@ -70,10 +69,7 @@ export const zEtablissementRoutes = {
       response: {
         "2xx": ZEtablissement,
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
     },
     "/etablissements/:id/premium/accept": {
       method: "post",
@@ -83,10 +79,7 @@ export const zEtablissementRoutes = {
       response: {
         "2xx": ZEtablissement,
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
     },
     "/etablissements/:id/premium/affelnet/refuse": {
       method: "post",
@@ -96,10 +89,7 @@ export const zEtablissementRoutes = {
       response: {
         "2xx": ZEtablissement,
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
     },
     "/etablissements/:id/premium/refuse": {
       method: "post",
@@ -109,10 +99,7 @@ export const zEtablissementRoutes = {
       response: {
         "2xx": ZEtablissement,
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
     },
     "/etablissements/:id/opt-out/unsubscribe": {
       method: "post",
@@ -123,10 +110,7 @@ export const zEtablissementRoutes = {
       response: {
         "2xx": ZEtablissement,
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
     },
   },
   patch: {
@@ -142,7 +126,8 @@ export const zEtablissementRoutes = {
       },
       securityScheme: {
         auth: "cookie-session",
-        role: "administrator",
+        access: "admin",
+        ressources: {},
       },
     },
     "/etablissements/:id/appointments/:appointmentId": {
@@ -156,10 +141,7 @@ export const zEtablissementRoutes = {
         "2xx": z.any(),
         // "2xx": ZAppointment,
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
     },
   },
 } as const satisfies IRoutesDef

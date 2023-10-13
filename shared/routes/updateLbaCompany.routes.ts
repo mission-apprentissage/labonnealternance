@@ -21,10 +21,7 @@ export const zUpdateLbaCompanyRoutes = {
       response: {
         "200": z.union([ZLbaCompany, z.string()]),
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
     },
   },
 } as const satisfies IRoutesDef

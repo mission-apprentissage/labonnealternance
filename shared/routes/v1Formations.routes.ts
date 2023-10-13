@@ -43,10 +43,7 @@ export const zV1FormationsRoutes = {
           description: "Internal Server Error",
         }),
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
       openapi: {
         tags: ["Formations"] as string[],
         operationId: "getFormations",
@@ -72,10 +69,7 @@ export const zV1FormationsRoutes = {
         "404": z.union([ZResError, ZLbacError]),
         "500": z.union([ZResError, ZLbacError]),
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
       openapi: {
         tags: ["Formations"] as string[],
         operationId: "getFormation",
@@ -119,10 +113,7 @@ export const zV1FormationsRoutes = {
           description: "Internal Server Error",
         }),
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
       openapi: {
         tags: ["Formations"] as string[],
         operationId: "getFormationDescription",

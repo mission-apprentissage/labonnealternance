@@ -36,10 +36,7 @@ export const zRecruiterRoutes = {
         //   })
         //   .strict(),
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
     },
     "/etablissement/entreprise/:siret": {
       method: "get",
@@ -73,10 +70,7 @@ export const zRecruiterRoutes = {
           })
           .strict(),
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
     },
     "/etablissement/entreprise/:siret/opco": {
       method: "get",
@@ -90,10 +84,7 @@ export const zRecruiterRoutes = {
           })
           .strict(),
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
     },
     "/etablissement/cfa/:siret": {
       method: "get",
@@ -104,10 +95,7 @@ export const zRecruiterRoutes = {
       response: {
         "2xx": zReferentielData,
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
     },
     "/etablissement/cfa/:userRecruteurId/entreprises": {
       method: "get",
@@ -118,7 +106,10 @@ export const zRecruiterRoutes = {
       },
       securityScheme: {
         auth: "cookie-session",
-        role: "all",
+        access: "user:manage",
+        ressources: {
+          user: ["self"],
+        },
       },
     },
   },
@@ -182,10 +173,7 @@ export const zRecruiterRoutes = {
         //     .strict(),
         // ]),
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
     },
     "/etablissement/:establishment_siret/proposition/unsubscribe": {
       method: "post",
@@ -199,10 +187,7 @@ export const zRecruiterRoutes = {
           })
           .strict(),
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
     },
     "/etablissement/validation": {
       method: "post",
@@ -215,7 +200,10 @@ export const zRecruiterRoutes = {
       },
       securityScheme: {
         auth: "jwt-token",
-        role: "all",
+        access: "user:manage",
+        ressources: {
+          user: ["self"],
+        },
       },
     },
   },
@@ -238,7 +226,10 @@ export const zRecruiterRoutes = {
       },
       securityScheme: {
         auth: "cookie-session",
-        role: "all",
+        access: null,
+        ressources: {
+          user: ["self"],
+        },
       },
     },
   },

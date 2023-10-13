@@ -22,10 +22,7 @@ export const zMetiersRoutes = {
       response: {
         200: ZMetiers,
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
       openapi: {
         description: "Récupérer la liste des noms des métiers du référentiel de La bonne alternance pour une formation donnée",
         tags: ["Metiers"] as string[],
@@ -43,10 +40,7 @@ export const zMetiersRoutes = {
       response: {
         200: ZMetiers,
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
       openapi: {
         description: "Récupérer la liste des noms des métiers du référentiel de La bonne alternance pour un établissement de formation",
         tags: ["Metiers"] as string[],
@@ -59,10 +53,7 @@ export const zMetiersRoutes = {
       response: {
         200: ZMetiers,
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
       openapi: {
         description: "Retourne la liste de tous les métiers référencés sur LBA",
         tags: ["Metiers"] as string[],
@@ -107,10 +98,7 @@ export const zMetiersRoutes = {
           })
           .strict(),
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
       openapi: {
         description: "Récupérer la liste des noms des métiers du référentiel de La bonne alternance",
         tags: ["Metiers"] as string[],
@@ -130,10 +118,7 @@ export const zMetiersRoutes = {
       response: {
         200: ZAppellationsRomes.strict(),
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
       openapi: {
         description: "Retourne une liste de métiers enrichis avec les codes romes associés correspondant aux critères en paramètres",
         tags: ["Metiers"] as string[],

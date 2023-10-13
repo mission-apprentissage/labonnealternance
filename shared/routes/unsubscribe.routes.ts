@@ -13,10 +13,7 @@ export const zUnsubscribeRoute = {
       response: {
         "200": z.enum(["OK", ...Object.values(UNSUBSCRIBE_EMAIL_ERRORS)]),
       },
-      securityScheme: {
-        auth: "none",
-        role: "all",
-      },
+      securityScheme: null,
     },
   },
 } as const satisfies IRoutesDef

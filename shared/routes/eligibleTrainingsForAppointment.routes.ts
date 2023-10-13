@@ -16,7 +16,8 @@ export const zEligibleTrainingsForAppointmentRoutes = {
       },
       securityScheme: {
         auth: "cookie-session",
-        role: "administrator",
+        access: "admin",
+        ressources: {},
       },
     },
   },
@@ -42,7 +43,8 @@ export const zEligibleTrainingsForAppointmentRoutes = {
       },
       securityScheme: {
         auth: "cookie-session",
-        role: "administrator",
+        access: "admin",
+        ressources: {},
       },
     },
   },
