@@ -4,6 +4,7 @@ import { ICredential, IJob, IUserRecruteur, zRoutes } from "shared"
 import { IRouteSchema } from "shared/routes/common.routes"
 
 import { IUser } from "@/common/model/schema/user/user.types"
+import { Appellation } from "@/services/rome.service.types"
 
 import { Recruiter } from "../../../common/model/index"
 import { getNearEtablissementsFromRomes } from "../../../services/catalogue.service"
@@ -168,7 +169,7 @@ export default (server: Server) => {
         return res.send({ error: true, message: "ROME Code details could not be retrieved" })
       }
 
-      const appellation = romeDetails.fiche_metier.appellations.find(({ code }) => code === body.appellation_code)
+      const appellation = romeDetails.fiche_metier.appellations.find(({ code }) => code === body.appellation_code) as Appellation
 
       const job: Partial<IJob> = {
         rome_label: romeDetails.fiche_metier.libelle,
