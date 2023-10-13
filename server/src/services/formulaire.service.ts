@@ -182,11 +182,11 @@ export const getJobsFromElasticSearch = async ({
 /**
  * @description get formulaire by offer id
  */
-export const getOffreAvecInfoMandataire = async (id: string | ObjectId): Promise<IFormulaireExtended> => {
+export const getOffreAvecInfoMandataire = async (id: string | ObjectId): Promise<IFormulaireExtended | null> => {
   const result = await getOffre(id)
 
   if (!result) {
-    throw new Error("getOffreAvecInfoMandataire failed")
+    return null
   }
 
   result.jobs = result.jobs.filter((x) => x._id.toString() === id.toString())
